@@ -91,8 +91,8 @@ theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
 #align simple_graph.partition.part_of_vertex_mem SimpleGraph.Partition.partOfVertex_mem
 
 theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
-  obtain ⟨⟨h1, h2⟩, _h3⟩ := (P.isPartition.2 v).choose_spec
-  exact h2.1
+  obtain ⟨⟨_, h⟩, _⟩ := (P.isPartition.2 v).choose_spec
+  exact h
 #align simple_graph.partition.mem_part_of_vertex SimpleGraph.Partition.mem_partOfVertex
 
 theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w := by
@@ -106,7 +106,7 @@ theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ 
 Each vertex is colored by the part it's contained in. -/
 def toColoring : G.Coloring P.parts :=
   Coloring.mk (fun v ↦ ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦ by
-    rw [Ne.def, Subtype.mk_eq_mk]
+    rw [Ne, Subtype.mk_eq_mk]
     exact P.partOfVertex_ne_of_adj hvw
 #align simple_graph.partition.to_coloring SimpleGraph.Partition.toColoring
 
@@ -125,8 +125,7 @@ variable {G}
 
 /-- Creates a partition from a coloring. -/
 @[simps]
-def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition
-    where
+def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition where
   parts := C.colorClasses
   isPartition := C.colorClasses_isPartition
   independent := by
@@ -145,9 +144,10 @@ theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorabl
     rw [Set.Finite.card_toFinset hf] at hc
     apply P.colorable.mono hc
   · rintro ⟨C⟩
-    refine' ⟨C.toPartition, C.colorClasses_finite, le_trans _ (Fintype.card_fin n).le⟩
+    refine ⟨C.toPartition, C.colorClasses_finite, le_trans ?_ (Fintype.card_fin n).le⟩
     generalize_proofs h
-    haveI : Fintype C.colorClasses := C.colorClasses_finite.fintype
+    change Set.Finite (Coloring.colorClasses C) at h
+    have : Fintype C.colorClasses := C.colorClasses_finite.fintype
     rw [h.card_toFinset]
     exact C.card_colorClasses_le
 #align simple_graph.partitionable_iff_colorable SimpleGraph.partitionable_iff_colorable

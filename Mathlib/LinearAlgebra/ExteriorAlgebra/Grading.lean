@@ -20,7 +20,6 @@ The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior
 namespace ExteriorAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (R M)
 
 open scoped DirectSum
@@ -49,7 +48,7 @@ instance : SetLike.GradedMonoid fun i : ℕ ↦ ⋀[R]^i M :=
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
 -- synthesize 0 in the next theorem
-attribute [instance 1100] MulZeroClass.toZero in
+attribute [local instance 1100] MulZeroClass.toZero in
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
   exact DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
@@ -96,7 +95,7 @@ instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M) :=
 #align exterior_algebra.graded_algebra ExteriorAlgebra.gradedAlgebra
 
 /-- The union of the images of the maps `ExteriorAlgebra.ιMulti R n` for `n` running through
-all natural numbers spans the exterior algebra.-/
+all natural numbers spans the exterior algebra. -/
 lemma ιMulti_span :
     Submodule.span R (Set.range fun x : Σ n, (Fin n → M) => ιMulti R x.1 x.2) = ⊤ := by
   rw [Submodule.eq_top_iff']

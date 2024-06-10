@@ -64,8 +64,8 @@ See also `LinearIsometryClass F R E E₂` for the case where `σ` is the identit
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiring R] [Semiring R₂]
-  (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam (Type*)) [SeminormedAddCommGroup E]
+class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R] [Semiring R₂]
+  (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] extends
   SemilinearMapClass 𝓕 σ₁₂ E E₂ : Prop where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
@@ -76,7 +76,7 @@ class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiri
 
 This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`.
 -/
-abbrev LinearIsometryClass (𝓕 : Type*) (R E E₂ : outParam (Type*)) [Semiring R]
+abbrev LinearIsometryClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [FunLike 𝓕 E E₂] :=
   SemilinearIsometryClass 𝓕 (RingHom.id R) E E₂
@@ -509,9 +509,9 @@ See also `LinearIsometryEquivClass F R E E₂` for the case where `σ` is the id
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiring R]
+class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R]
   [Semiring R₂] (σ₁₂ : outParam <| R →+* R₂) {σ₂₁ : outParam <| R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
-  [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam (Type*)) [SeminormedAddCommGroup E]
+  [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [EquivLike 𝓕 E E₂]
   extends SemilinearEquivClass 𝓕 σ₁₂ E E₂ : Prop where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
@@ -522,7 +522,7 @@ class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [S
 
 This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`.
 -/
-abbrev LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam (Type*)) [Semiring R]
+abbrev LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [EquivLike 𝓕 E E₂] :=
   SemilinearIsometryEquivClass 𝓕 (RingHom.id R) E E₂
@@ -1148,7 +1148,9 @@ def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R]
     toFun := Equiv.prodAssoc E E₂ E₃
     invFun := (Equiv.prodAssoc E E₂ E₃).symm
     map_add' := by simp [-_root_.map_add] --  Fix timeout from #8386
-    map_smul' := by simp
+    map_smul' := by -- was `by simp` before #6057 caused that to time out.
+      rintro m ⟨⟨e, f⟩, g⟩
+      simp only [Prod.smul_mk, Equiv.prodAssoc_apply, RingHom.id_apply]
     norm_map' := by
       rintro ⟨⟨e, f⟩, g⟩
       simp only [LinearEquiv.coe_mk, Equiv.prodAssoc_apply, Prod.norm_def, max_assoc] }
@@ -1174,7 +1176,6 @@ def ofTop {R : Type*} [Ring R] [Module R E] (p : Submodule R E) (hp : p = ⊤) :
 #align linear_isometry_equiv.of_top LinearIsometryEquiv.ofTop
 
 variable {R E E₂ E₃} {R' : Type*} [Ring R']
-
 variable [Module R' E] (p q : Submodule R' E)
 
 /-- `LinearEquiv.ofEq` as a `LinearIsometryEquiv`. -/
@@ -1195,7 +1196,7 @@ theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
 #align linear_isometry_equiv.of_eq_symm LinearIsometryEquiv.ofEq_symm
 
 @[simp]
-theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := by funext; rfl
+theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 #align linear_isometry_equiv.of_eq_rfl LinearIsometryEquiv.ofEq_rfl
 
 end LinearIsometryEquiv

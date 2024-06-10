@@ -13,7 +13,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 -/
 
 
-open Filter Germ Topology Classical
+open scoped Classical
+open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
 def Hyperreal : Type :=
@@ -149,7 +150,7 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
 def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 #align hyperreal.of_seq Hyperreal.ofSeq
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
@@ -525,7 +526,8 @@ theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infini
   cases le_total 0 x <;> simp [*, abs_of_nonneg, abs_of_nonpos, infinite_neg]
 #align hyperreal.infinite_iff_infinite_abs Hyperreal.infinite_abs_iffₓ
 
--- Porting note: swapped LHS with RHS; todo: make it a `simp` lemma
+-- Porting note: swapped LHS with RHS;
+-- Porting note (#11215): TODO: make it a `simp` lemma
 @[simp] theorem infinitePos_abs_iff_infinite {x : ℝ*} : InfinitePos |x| ↔ Infinite x :=
   infinitePos_abs_iff_infinite_abs.trans infinite_abs_iff
 #align hyperreal.infinite_iff_infinite_pos_abs Hyperreal.infinitePos_abs_iff_infiniteₓ
@@ -791,11 +793,11 @@ theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) :
 
 theorem st_inv (x : ℝ*) : st x⁻¹ = (st x)⁻¹ := by
   by_cases h0 : x = 0
-  rw [h0, inv_zero, ← coe_zero, st_id_real, inv_zero]
+  · rw [h0, inv_zero, ← coe_zero, st_id_real, inv_zero]
   by_cases h1 : Infinitesimal x
-  rw [((infinitesimal_iff_infinite_inv h0).mp h1).st_eq, h1.st_eq, inv_zero]
+  · rw [((infinitesimal_iff_infinite_inv h0).mp h1).st_eq, h1.st_eq, inv_zero]
   by_cases h2 : Infinite x
-  rw [(infinitesimal_inv_of_infinite h2).st_eq, h2.st_eq, inv_zero]
+  · rw [(infinitesimal_inv_of_infinite h2).st_eq, h2.st_eq, inv_zero]
   exact ((isSt_st' h2).inv h1).st_eq
 #align hyperreal.st_inv Hyperreal.st_inv
 
@@ -816,8 +818,8 @@ theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
   have hy₁' := not_forall.mp (mt infinitesimal_def.2 hy₁)
   let ⟨r₁, hy₁''⟩ := hy₁'
   have hyr : 0 < r₁ ∧ ↑r₁ ≤ y := by
-    rwa [not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
-  rw [← div_mul_cancel r (ne_of_gt hyr.1), coe_mul]
+    rwa [Classical.not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
+  rw [← div_mul_cancel₀ r (ne_of_gt hyr.1), coe_mul]
   exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (le_of_lt (hx 0))
 #align hyperreal.infinite_pos_mul_of_infinite_pos_not_infinitesimal_pos Hyperreal.infinitePos_mul_of_infinitePos_not_infinitesimal_pos
 
@@ -903,7 +905,7 @@ theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * 
 end Hyperreal
 
 /-
-Porting note: todo: restore `positivity` plugin
+Porting note (#11215): TODO: restore `positivity` plugin
 
 namespace Tactic
 

@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 #align_import algebra.squarefree from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
@@ -118,7 +119,7 @@ variable [CommMonoid R] [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 theorem squarefree_iff_multiplicity_le_one (r : R) :
     Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
-  refine' forall_congr' fun a => _
+  refine forall_congr' fun a => ?_
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   norm_cast
   rw [← one_add_one_eq_two]
@@ -189,7 +190,8 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
 theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
     x ∣ y ^ n ↔ x ∣ y := ⟨hsq.isRadical n y, (·.pow h0)⟩
 #align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree Squarefree.dvd_pow_iff_dvd
-@[deprecated]
+
+@[deprecated (since := "2024-02-12")]
 alias UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree := Squarefree.dvd_pow_iff_dvd
 
 end
@@ -212,7 +214,7 @@ theorem pow_dvd_of_squarefree_of_pow_succ_dvd_mul_right {k : ℕ}
   · obtain ⟨x', rfl⟩ := hxp
     have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_unit <| hx p (mul_dvd_mul_left p contra)
     replace h : p ^ k ∣ x' * y := by
-      rw [pow_succ, mul_assoc] at h
+      rw [pow_succ', mul_assoc] at h
       exact (mul_dvd_mul_iff_left hp.ne_zero).mp h
     exact hp.pow_dvd_of_dvd_mul_left _ hx' h
   · exact (pow_dvd_pow _ k.le_succ).trans (hp.pow_dvd_of_dvd_mul_left _ hxp h)
@@ -274,14 +276,14 @@ lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     · exact ⟨p, 1, hp.squarefree, dvd_mul_right p z, by simp [isUnit_of_dvd_one (pow_zero y ▸ hy')]⟩
     by_cases hp' : p ∣ y
     · exact ⟨y, n + 1, hy, dvd_mul_of_dvd_right hyx _,
-        mul_comm p z ▸ pow_succ' y n ▸ mul_dvd_mul hy' hp'⟩
+        mul_comm p z ▸ pow_succ y n ▸ mul_dvd_mul hy' hp'⟩
     · suffices Squarefree (p * y) from ⟨p * y, n, this,
         mul_dvd_mul_left p hyx, mul_pow p y n ▸ mul_dvd_mul (dvd_pow_self p hn.ne') hy'⟩
       exact squarefree_mul_iff.mpr ⟨hp.isRelPrime_iff_not_dvd.mpr hp', hp.squarefree, hy⟩
 
-theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [DecidableEq R] {x : R}
+theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
-  have drel : DecidableRel (Dvd.dvd : R → R → Prop) := by classical infer_instance
+  classical
   rw [multiplicity.squarefree_iff_multiplicity_le_one, Multiset.nodup_iff_count_le_one]
   haveI := nontrivial_of_ne x 0 x0
   constructor <;> intro h a
@@ -296,13 +298,12 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [Decidabl
     · simp [Multiset.count_eq_zero_of_not_mem hmem]
   · rw [or_iff_not_imp_right]
     intro hu
-    by_cases h0 : a = 0
-    · simp [h0, x0]
+    rcases eq_or_ne a 0 with rfl | h0
+    · simp [x0]
     rcases WfDvdMonoid.exists_irreducible_factor hu h0 with ⟨b, hib, hdvd⟩
     apply le_trans (multiplicity.multiplicity_le_multiplicity_of_dvd_left hdvd)
     rw [multiplicity_eq_count_normalizedFactors hib x0]
-    specialize h (normalize b)
-    assumption_mod_cast
+    exact_mod_cast h (normalize b)
 #align unique_factorization_monoid.squarefree_iff_nodup_normalized_factors UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors
 
 end UniqueFactorizationMonoid
@@ -316,8 +317,10 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 #align int.squarefree_nat_abs Int.squarefree_natAbs
 
 @[simp]
-theorem squarefree_coe_nat {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
+theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
   rw [← squarefree_natAbs, natAbs_ofNat]
-#align int.squarefree_coe_nat Int.squarefree_coe_nat
+#align int.squarefree_coe_nat Int.squarefree_natCast
+
+@[deprecated (since := "2024-04-05")] alias squarefree_coe_nat := squarefree_natCast
 
 end Int

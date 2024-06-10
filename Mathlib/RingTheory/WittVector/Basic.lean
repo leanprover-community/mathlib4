@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Data.MvPolynomial.Counit
-import Mathlib.Data.MvPolynomial.Invertible
+import Mathlib.Algebra.MvPolynomial.Counit
+import Mathlib.Algebra.MvPolynomial.Invertible
 import Mathlib.RingTheory.WittVector.Defs
 
 #align_import ring_theory.witt_vector.basic from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
@@ -51,13 +51,9 @@ noncomputable section
 
 open MvPolynomial Function
 
-open scoped BigOperators
-
 variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
-
 variable {α : Type*} {β : Type*}
 
--- mathport name: expr𝕎
 local notation "𝕎" => WittVector p
 local notation "W_" => wittPolynomial p
 
@@ -89,7 +85,7 @@ theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 
 variable (f : R →+* S) (x y : WittVector p R)
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
---  porting note: a very crude port.
+-- porting note: a very crude port.
 macro "map_fun_tac" : tactic => `(tactic| (
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
@@ -121,24 +117,30 @@ theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
 theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.neg WittVector.mapFun.neg
 
-theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
+theorem nsmul (n : ℕ) (x : WittVector p R) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.nsmul WittVector.mapFun.nsmul
 
-theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
+theorem zsmul (z : ℤ) (x : WittVector p R) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.zsmul WittVector.mapFun.zsmul
 
 theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
 #align witt_vector.map_fun.pow WittVector.mapFun.pow
 
-theorem nat_cast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
+theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.unaryCast = (n : WittVector p S) by
     induction n <;> simp [*, Nat.unaryCast, add, one, zero] <;> rfl
-#align witt_vector.map_fun.nat_cast WittVector.mapFun.nat_cast
+#align witt_vector.map_fun.nat_cast WittVector.mapFun.natCast
 
-theorem int_cast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
+@[deprecated (since := "2024-04-17")]
+alias nat_cast := natCast
+
+theorem intCast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
-    cases n <;> simp [*, Int.castDef, add, one, neg, zero, nat_cast] <;> rfl
-#align witt_vector.map_fun.int_cast WittVector.mapFun.int_cast
+    cases n <;> simp [*, Int.castDef, add, one, neg, zero, natCast] <;> rfl
+#align witt_vector.map_fun.int_cast WittVector.mapFun.intCast
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast := intCast
 
 end mapFun
 
@@ -156,8 +158,7 @@ private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ 
 section Tactic
 open Lean Elab Tactic
 
---  porting note: removed mathport output related to meta code.
---  I do not know what to do with `#align`
+-- porting note: removed mathport output related to meta code.
 /-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
 elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
   evalTactic (← `(tactic| (
@@ -193,10 +194,13 @@ private theorem ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
 private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
   ghost_fun_tac X 0 + X 1, ![x.coeff, y.coeff]
 
-private theorem ghostFun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
+private theorem ghostFun_natCast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.unaryCast = _ by
     induction i <;>
-      simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.coe_nat]
+      simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.natCast_def]
+
+@[deprecated (since := "2024-04-17")]
+alias ghostFun_nat_cast := ghostFun_natCast
 
 private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
@@ -206,18 +210,22 @@ private theorem ghostFun_mul : ghostFun (x * y) = ghostFun x * ghostFun y := by
 
 private theorem ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -X 0, ![x.coeff]
 
-private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
+private theorem ghostFun_intCast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
-    cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
+    cases i <;> simp [*, Int.castDef, ghostFun_natCast, ghostFun_neg, -Pi.natCast_def,
+      -Pi.intCast_def]
 
-private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
-  --  porting note: I had to add the explicit type ascription.
-  --  This could very well be due to my poor tactic writing!
+@[deprecated (since := "2024-04-17")]
+alias ghostFun_int_cast := ghostFun_intCast
+
+private lemma ghostFun_nsmul (m : ℕ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
+  -- porting note: I had to add the explicit type ascription.
+  -- This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
-private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
-  --  porting note: I had to add the explicit type ascription.
-  --  This could very well be due to my poor tactic writing!
+private lemma ghostFun_zsmul (m : ℤ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
+  -- porting note: I had to add the explicit type ascription.
+  -- This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
 private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
@@ -252,21 +260,19 @@ private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
   -- letI : CommRing (MvPolynomial R ℚ) := MvPolynomial.commRing
   (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
     ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
-    ghostFun_pow ghostFun_nat_cast ghostFun_int_cast
+    ghostFun_pow ghostFun_natCast ghostFun_intCast
 
 @[local instance]
-private def comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
+private abbrev comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
   (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).commRing _
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
-    (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.nat_cast _) (mapFun.int_cast _)
-
-attribute [reducible] comm_ring_aux₂
+    (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
 
 /-- The commutative ring structure on `𝕎 R`. -/
 instance : CommRing (𝕎 R) :=
   (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
-    (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.nat_cast _) (mapFun.int_cast _)
+    (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
 
 variable {p R}
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Positivity.Core
 
 /-!
@@ -94,7 +96,7 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib.Algebra.Order.Ring.Lemmas` custom typeclasses too.
+`Mathlib.Algebra.Order.GroupWithZero.Unbundled` custom typeclasses too.
 
 ## TODO
 
@@ -620,11 +622,11 @@ variable [LinearOrder α] [LinearOrder β]
 lemma pos_and_pos_or_neg_and_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 < a • b) :
     0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   obtain ha | rfl | ha := lt_trichotomy a 0
-  · refine' Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
+  · refine Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact smul_nonpos_of_nonpos_of_nonneg ha.le hb
   · rw [zero_smul] at hab
     exact hab.false.elim
-  · refine' Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
+  · refine Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact smul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 lemma neg_of_smul_pos_right [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : a ≤ 0) :
@@ -1204,33 +1206,39 @@ end Mathlib.Meta.Positivity
 Those lemmas have been deprecated on 2023-12-23.
 -/
 
-@[deprecated] alias monotone_smul_left := monotone_smul_left_of_nonneg
-@[deprecated] alias strict_mono_smul_left := strictMono_smul_left_of_pos
-@[deprecated] alias smul_le_smul_of_nonneg := smul_le_smul_of_nonneg_left
-@[deprecated] alias smul_lt_smul_of_pos := smul_lt_smul_of_pos_left
-@[deprecated] alias lt_of_smul_lt_smul_of_nonneg := lt_of_smul_lt_smul_of_nonneg_left
-@[deprecated] alias smul_le_smul_iff_of_pos := smul_le_smul_iff_of_pos_left
-@[deprecated] alias smul_lt_smul_iff_of_pos := smul_lt_smul_iff_of_pos_left
-@[deprecated] alias smul_max := smul_max_of_nonneg
-@[deprecated] alias smul_min := smul_min_of_nonneg
-@[deprecated] alias smul_pos_iff_of_pos := smul_pos_iff_of_pos_left
-@[deprecated] alias inv_smul_le_iff := inv_smul_le_iff_of_pos
-@[deprecated] alias le_inv_smul_iff := le_inv_smul_iff_of_pos
-@[deprecated] alias inv_smul_lt_iff := inv_smul_lt_iff_of_pos
-@[deprecated] alias lt_inv_smul_iff := lt_inv_smul_iff_of_pos
-@[deprecated] alias OrderIso.smulLeft := OrderIso.smulRight
-@[deprecated] alias OrderIso.smulLeft_symm_apply := OrderIso.smulRight_symm_apply
-@[deprecated] alias OrderIso.smulLeft_apply := OrderIso.smulRight_apply
-@[deprecated] alias smul_neg_iff_of_pos := smul_neg_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias monotone_smul_left := monotone_smul_left_of_nonneg
+@[deprecated (since := "2023-12-23")] alias strict_mono_smul_left := strictMono_smul_left_of_pos
+@[deprecated (since := "2023-12-23")] alias smul_le_smul_of_nonneg := smul_le_smul_of_nonneg_left
+@[deprecated (since := "2023-12-23")] alias smul_lt_smul_of_pos := smul_lt_smul_of_pos_left
+
+@[deprecated (since := "2023-12-23")]
+alias lt_of_smul_lt_smul_of_nonneg := lt_of_smul_lt_smul_of_nonneg_left
+
+@[deprecated (since := "2023-12-23")] alias smul_le_smul_iff_of_pos := smul_le_smul_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias smul_lt_smul_iff_of_pos := smul_lt_smul_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias smul_max := smul_max_of_nonneg
+@[deprecated (since := "2023-12-23")] alias smul_min := smul_min_of_nonneg
+@[deprecated (since := "2023-12-23")] alias smul_pos_iff_of_pos := smul_pos_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias inv_smul_le_iff := inv_smul_le_iff_of_pos
+@[deprecated (since := "2023-12-23")] alias le_inv_smul_iff := le_inv_smul_iff_of_pos
+@[deprecated (since := "2023-12-23")] alias inv_smul_lt_iff := inv_smul_lt_iff_of_pos
+@[deprecated (since := "2023-12-23")] alias lt_inv_smul_iff := lt_inv_smul_iff_of_pos
+@[deprecated (since := "2023-12-23")] alias OrderIso.smulLeft := OrderIso.smulRight
+
+@[deprecated (since := "2023-12-23")]
+alias OrderIso.smulLeft_symm_apply := OrderIso.smulRight_symm_apply
+
+@[deprecated (since := "2023-12-23")] alias OrderIso.smulLeft_apply := OrderIso.smulRight_apply
+@[deprecated (since := "2023-12-23")] alias smul_neg_iff_of_pos := smul_neg_iff_of_pos_left
 
 /-!
 Those lemmas have been deprecated on 2023-12-27.
 -/
 
-@[deprecated] alias strict_anti_smul_left := strictAnti_smul_left
-@[deprecated] alias smul_le_smul_of_nonpos := smul_le_smul_of_nonpos_left
-@[deprecated] alias smul_lt_smul_of_neg := smul_lt_smul_of_neg_left
-@[deprecated] alias smul_pos_iff_of_neg := smul_pos_iff_of_neg_left
-@[deprecated] alias smul_neg_iff_of_neg := smul_neg_iff_of_neg_left
-@[deprecated] alias smul_le_smul_iff_of_neg := smul_le_smul_iff_of_neg_left
-@[deprecated] alias smul_lt_smul_iff_of_neg := smul_lt_smul_iff_of_neg_left
+@[deprecated (since := "2023-12-27")] alias strict_anti_smul_left := strictAnti_smul_left
+@[deprecated (since := "2023-12-27")] alias smul_le_smul_of_nonpos := smul_le_smul_of_nonpos_left
+@[deprecated (since := "2023-12-27")] alias smul_lt_smul_of_neg := smul_lt_smul_of_neg_left
+@[deprecated (since := "2023-12-27")] alias smul_pos_iff_of_neg := smul_pos_iff_of_neg_left
+@[deprecated (since := "2023-12-27")] alias smul_neg_iff_of_neg := smul_neg_iff_of_neg_left
+@[deprecated (since := "2023-12-27")] alias smul_le_smul_iff_of_neg := smul_le_smul_iff_of_neg_left
+@[deprecated (since := "2023-12-27")] alias smul_lt_smul_iff_of_neg := smul_lt_smul_iff_of_neg_left

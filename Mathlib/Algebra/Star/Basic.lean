@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Invertible.Defs
+import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Invertible.Defs
+import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Data.SetLike.Basic
@@ -204,7 +204,7 @@ variable (R)
 
 @[simp]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
-  op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans (op_one _).symm
+  op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
 #align star_one star_one
 
 variable {R}
@@ -236,8 +236,7 @@ theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / s
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
+abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
   star := id
   star_involutive _ := rfl
   star_mul := mul_comm
@@ -338,7 +337,7 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
     star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
@@ -350,6 +349,10 @@ section
 theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
 #align star_int_cast star_intCast
+
+@[simp, norm_cast]
+lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q : R) = q :=
+  (congr_arg unop <| map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q).trans (unop_nnratCast _)
 
 @[simp, norm_cast]
 theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
@@ -390,7 +393,7 @@ scoped[ComplexConjugate] notation "conj" => starRingEnd _
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 #align star_ring_end_apply starRingEnd_apply
 
-/- Porting note: removed `simp` attribute due to report by linter:
+/- Porting note (#11119): removed `simp` attribute due to report by linter:
 
 simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
@@ -421,9 +424,9 @@ theorem RingHom.star_apply {S : Type*} [NonAssocSemiring S] (f : S →+* R) (s :
 alias Complex.conj_conj := starRingEnd_self_apply
 #align complex.conj_conj Complex.conj_conj
 
-alias IsROrC.conj_conj := starRingEnd_self_apply
+alias RCLike.conj_conj := starRingEnd_self_apply
 set_option linter.uppercaseLean3 false in
-#align is_R_or_C.conj_conj IsROrC.conj_conj
+#align is_R_or_C.conj_conj RCLike.conj_conj
 
 open scoped ComplexConjugate
 
@@ -448,28 +451,14 @@ theorem star_div' [Semifield R] [StarRing R] (x y : R) : star (x / y) = star x /
   rw [division_def, op_div, mul_comm, star_mul, star_inv', op_mul, op_inv]
 #align star_div' star_div'
 
-section
-
-set_option linter.deprecated false
-
-@[simp]
-theorem star_bit0 [AddMonoid R] [StarAddMonoid R] (r : R) : star (bit0 r) = bit0 (star r) := by
-  simp [bit0]
-#align star_bit0 star_bit0
-
-@[simp]
-theorem star_bit1 [Semiring R] [StarRing R] (r : R) : star (bit1 r) = bit1 (star r) := by
-  simp [bit1]
-#align star_bit1 star_bit1
-
-end
+#noalign star_bit0
+#noalign star_bit1
 
 /-- Any commutative semiring admits the trivial `*`-structure.
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
+abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
   { starMulOfComm with
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
@@ -524,8 +513,7 @@ end RingHomInvPair
 section
 
 /-- `StarHomClass F R S` states that `F` is a type of `star`-preserving maps from `R` to `S`. -/
-class StarHomClass (F : Type*) (R S : outParam Type*) [Star R] [Star S] [FunLike F R S] : Prop
-  where
+class StarHomClass (F : Type*) (R S : outParam Type*) [Star R] [Star S] [FunLike F R S] : Prop where
   /-- the maps preserve star -/
   map_star : ∀ (f : F) (r : R), f (star r) = star (f r)
 #align star_hom_class StarHomClass

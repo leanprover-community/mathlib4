@@ -29,9 +29,7 @@ variable {ι : Type*}
 section
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
-
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
-
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
 
 /-- A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
@@ -75,7 +73,7 @@ variable {W : Type*} [Category W] [Preadditive W] [HasCokernels W] [HasImages W]
 /-- A homotopy equivalence is a quasi-isomorphism. -/
 theorem toQuasiIso' {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) : QuasiIso' e.hom :=
   ⟨fun i => by
-    refine' ⟨⟨(homology'Functor W c i).map e.inv, _⟩⟩
+    refine ⟨⟨(homology'Functor W c i).map e.inv, ?_⟩⟩
     simp only [← Functor.map_comp, ← (homology'Functor W c i).map_id]
     constructor <;> apply homology'_map_eq_of_homotopy
     exacts [e.homotopyHomInvId, e.homotopyInvHomId]⟩
@@ -132,7 +130,7 @@ theorem to_single₀_epi_at_zero [hf : QuasiIso' f] : Epi (f.f 0) := by
 theorem to_single₀_exact_d_f_at_zero [hf : QuasiIso' f] : Exact (X.d 1 0) (f.f 0) := by
   rw [Preadditive.exact_iff_homology'_zero]
   have h : X.d 1 0 ≫ f.f 0 = 0 := by simp only [← f.comm 1 0, single_obj_d, comp_zero]
-  refine' ⟨h, Nonempty.intro (homology'IsoKernelDesc _ _ _ ≪≫ _)⟩
+  refine ⟨h, Nonempty.intro (homology'IsoKernelDesc _ _ _ ≪≫ ?_)⟩
   suffices IsIso (cokernel.desc _ _ h) by apply kernel.ofMono
   rw [← toSingle₀CokernelAtZeroIso_hom_eq]
   infer_instance
@@ -184,7 +182,7 @@ theorem from_single₀_mono_at_zero [hf : QuasiIso' f] : Mono (f.f 0) := by
 theorem from_single₀_exact_f_d_at_zero [hf : QuasiIso' f] : Exact (f.f 0) (X.d 0 1) := by
   rw [Preadditive.exact_iff_homology'_zero]
   have h : f.f 0 ≫ X.d 0 1 = 0 := by simp
-  refine' ⟨h, Nonempty.intro (homology'IsoCokernelLift _ _ _ ≪≫ _)⟩
+  refine ⟨h, Nonempty.intro (homology'IsoCokernelLift _ _ _ ≪≫ ?_)⟩
   suffices IsIso (kernel.lift (X.d 0 1) (f.f 0) h) by apply cokernel.ofEpi
   rw [← fromSingle₀KernelAtZeroIso_inv_eq f]
   infer_instance
@@ -205,7 +203,7 @@ end ToSingle₀
 end HomologicalComplex.Hom
 
 variable {A : Type*} [Category A] [Abelian A] {B : Type*} [Category B] [Abelian B] (F : A ⥤ B)
-  [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F] [Faithful F]
+  [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F] [F.Faithful]
 
 theorem CategoryTheory.Functor.quasiIso'_of_map_quasiIso' {C D : HomologicalComplex A c}
     (f : C ⟶ D) (hf : QuasiIso' ((F.mapHomologicalComplex _).map f)) : QuasiIso' f :=
@@ -440,7 +438,7 @@ instance quasiIsoAt_map_of_preservesHomology [hφ : QuasiIsoAt φ i] :
   exact ShortComplex.quasiIso_map_of_preservesLeftHomology F
     ((shortComplexFunctor C₁ c i).map φ)
 
-lemma quasiIsoAt_map_iff_of_preservesHomology [ReflectsIsomorphisms F] :
+lemma quasiIsoAt_map_iff_of_preservesHomology [F.ReflectsIsomorphisms] :
     QuasiIsoAt ((F.mapHomologicalComplex c).map φ) i ↔ QuasiIsoAt φ i := by
   simp only [quasiIsoAt_iff]
   exact ShortComplex.quasiIso_map_iff_of_preservesLeftHomology F
@@ -457,7 +455,7 @@ variable [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
 instance quasiIso_map_of_preservesHomology [hφ : QuasiIso φ] :
     QuasiIso ((F.mapHomologicalComplex c).map φ) where
 
-lemma quasiIso_map_iff_of_preservesHomology [ReflectsIsomorphisms F] :
+lemma quasiIso_map_iff_of_preservesHomology [F.ReflectsIsomorphisms] :
     QuasiIso ((F.mapHomologicalComplex c).map φ) ↔ QuasiIso φ := by
   simp only [quasiIso_iff, quasiIsoAt_map_iff_of_preservesHomology φ F]
 
@@ -493,14 +491,14 @@ instance : QuasiIso e.hom where
   quasiIsoAt n := by
     classical
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    exact IsIso.of_iso (e.toHomologyIso n)
+    exact (e.toHomologyIso n).isIso_hom
 
 instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
 
 variable (C c)
 
-lemma homotopyEquivalences_subset_quasiIso [CategoryWithHomology C] :
-    homotopyEquivalences C c ⊆ quasiIso C c := by
+lemma homotopyEquivalences_le_quasiIso [CategoryWithHomology C] :
+    homotopyEquivalences C c ≤ quasiIso C c := by
   rintro K L _ ⟨e, rfl⟩
   simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance

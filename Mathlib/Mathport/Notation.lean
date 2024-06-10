@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Kyle Miller
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
-import Std.Linter.UnreachableTactic
-import Std.Util.ExtendedBinder
-import Std.Lean.Syntax
+import Batteries.Linter.UnreachableTactic
+import Batteries.Util.ExtendedBinder
+import Batteries.Lean.Syntax
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
@@ -19,13 +19,11 @@ import Std.Lean.Syntax
 
 namespace Mathlib.Notation3
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
-open Std.ExtendedBinder
+open Batteries.ExtendedBinder
 
 initialize registerTraceClass `notation3
 
 /-! ### Syntaxes supporting `notation3` -/
-
-set_option autoImplicit true
 
 /--
 Expands binders into nested combinators.
@@ -118,7 +116,7 @@ def MatchState.empty : MatchState where
 
 /-- Evaluate `f` with the given variable's value as the `SubExpr` and within that subexpression's
 saved context. Fails if the variable has no value. -/
-def MatchState.withVar (s : MatchState) (name : Name)
+def MatchState.withVar {α : Type} (s : MatchState) (name : Name)
     (m : DelabM α) : DelabM α := do
   let some (se, lctx, linsts) := s.vars.find? name | failure
   withLCtx lctx linsts <| withTheReader SubExpr (fun _ => se) <| m
@@ -179,7 +177,7 @@ def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
 
 /-- Matches raw nat lits. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
-  guard <| (← getExpr).natLit? == n
+  guard <| (← getExpr).rawNatLit? == n
   return s
 
 /-- Matches applications. -/
@@ -250,10 +248,25 @@ partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashM
         -- This is an fvar from a `variable`. Match by name and type.
         let (_, m) ← exprToMatcher boundFVars localFVars (← instantiateMVars (← inferType e))
         return ([`fvar], ← ``(matchFVar $(quote n) $m))
-  | .app f arg =>
-    let (keys, matchF) ← exprToMatcher boundFVars localFVars f
-    let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
-    return (if keys.isEmpty then [`app] else keys, ← ``(matchApp $matchF $matchArg))
+  | .app .. =>
+    e.withApp fun f args => do
+      let (keys, matchF) ← exprToMatcher boundFVars localFVars f
+      let mut fty ← inferType f
+      let mut matcher := matchF
+      for arg in args do
+        fty ← whnf fty
+        guard fty.isForall
+        let bi := fty.bindingInfo!
+        fty := fty.bindingBody!.instantiate1 arg
+        if bi.isInstImplicit then
+          -- Assumption: elaborated instances are canonical, so no need to match.
+          -- The type of the instance is already accounted for by the previous arguments
+          -- and the type of `f`.
+          matcher ← ``(matchApp $matcher pure)
+        else
+          let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
+          matcher ← ``(matchApp $matcher $matchArg)
+      return (if keys.isEmpty then [`app] else keys, matcher)
   | .lit (.natVal n) => return ([`lit], ← ``(natLitMatcher $(quote n)))
   | .forallE n t b bi =>
     let (_, matchDom) ← exprToMatcher boundFVars localFVars t
@@ -340,7 +353,7 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
       else
         return {s with scopeState := binders}
 
-/- Create a `Term` that represents a matcher for `scoped` notation.
+/-- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
 Also returns a delaborator key like in `mkExprMatcher`.
 Reminder: `$lit:ident : (scoped $scopedId:ident => $scopedTerm:Term)` -/
@@ -530,7 +543,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| lit.1.mkAntiquotNode `term
       boundNames := boundNames.push lit.getId
-    | stx => throwUnsupportedSyntax
+    | _stx => throwUnsupportedSyntax
   if hasScoped && !hasBindersItem then
     throwError "If there is a `scoped` item then there must be a `(...)` item for binders."
 
@@ -568,7 +581,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       trace[notation3] "Matcher creation succeeded; assembling delaborator"
       let delabName := name ++ `delab
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
-      trace[notation3] "matcher: {indentD matcher}"
+      trace[notation3] "matcher:{indentD matcher}"
       let mut result ← `(`($pat))
       for (name, id) in boundIdents.toArray do
         match boundType.findD name .normal with

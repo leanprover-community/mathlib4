@@ -191,7 +191,8 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simp [decode₂]; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  simpa [decode₂, bind_eq_some] using
+    ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
 #align encodable.mem_decode₂' Encodable.mem_decode₂'
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
@@ -210,7 +211,7 @@ theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = som
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     decode₂ α n ≠ none ↔ n ∈ Set.range (encode : α → ℕ) := by
-  simp_rw [Set.range, Set.mem_setOf_eq, Ne.def, Option.eq_none_iff_forall_not_mem,
+  simp_rw [Set.range, Set.mem_setOf_eq, Ne, Option.eq_none_iff_forall_not_mem,
     Encodable.mem_decode₂, not_forall, not_not]
 #align encodable.decode₂_ne_none_iff Encodable.decode₂_ne_none_iff
 
@@ -236,8 +237,7 @@ def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
-def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _)
-    where
+def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _) where
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
@@ -332,7 +332,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
     rw [Nat.le_div_iff_mul_le]
     exacts [h, by decide]
   cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
-  simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
+  simp only [decodeSum, boddDiv2_eq, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
@@ -481,11 +481,11 @@ def ULower (α : Type*) [Encodable α] : Type :=
   Set.range (Encodable.encode : α → ℕ)
 #align ulower ULower
 
-instance {α : Type*} [Encodable α] : DecidableEq (ULower α) :=
-  by delta ULower; exact Encodable.decidableEqOfEncodable _
+instance {α : Type*} [Encodable α] : DecidableEq (ULower α) := by
+  delta ULower; exact Encodable.decidableEqOfEncodable _
 
-instance {α : Type*} [Encodable α] : Encodable (ULower α) :=
-  by delta ULower; infer_instance
+instance {α : Type*} [Encodable α] : Encodable (ULower α) := by
+  delta ULower; infer_instance
 
 end ULower
 
@@ -606,9 +606,6 @@ There is a total ordering on the elements of an encodable type, induced by the m
 def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 #align encodable.encode' Encodable.encode'
-
-instance {α} [Encodable α] : IsTrans _ (encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isTrans
 
 instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isAntisymm

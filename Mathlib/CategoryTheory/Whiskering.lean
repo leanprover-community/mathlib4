@@ -107,12 +107,30 @@ def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
 
 variable {C} {D} {E}
 
-instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
-    Faithful ((whiskeringRight C D E).obj F) where
+instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
+    ((whiskeringRight C D E).obj F).Faithful where
   map_injective hαβ := by
     ext X
-    exact (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X)
+    exact F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
+
+/-- If `F : D ⥤ E` is fully faithful, then so is
+`(whiskeringRight C D E).obj F : (C ⥤ D) ⥤ C ⥤ E`. -/
+@[simps]
+def Functor.FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
+    (C : Type*) [Category C] :
+    ((whiskeringRight C D E).obj F).FullyFaithful where
+  preimage f :=
+    { app := fun X => hF.preimage (f.app X)
+      naturality := fun _ _ g => by
+        apply hF.map_injective
+        dsimp
+        simp only [map_comp, map_preimage]
+        apply f.naturality }
+
+instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
+    ((whiskeringRight C D E).obj F).Full :=
+  ((Functor.FullyFaithful.ofFullyFaithful F).whiskeringRight C).full
 
 @[simp]
 theorem whiskerLeft_id (F : C ⥤ D) {G : D ⥤ E} :
@@ -188,12 +206,12 @@ theorem isoWhiskerRight_inv {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
 
 instance isIso_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
     IsIso (whiskerLeft F α) :=
-  IsIso.of_iso (isoWhiskerLeft F (asIso α))
+  (isoWhiskerLeft F (asIso α)).isIso_hom
 #align category_theory.is_iso_whisker_left CategoryTheory.isIso_whiskerLeft
 
 instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso α] :
     IsIso (whiskerRight α F) :=
-  IsIso.of_iso (isoWhiskerRight (asIso α) F)
+  (isoWhiskerRight (asIso α) F).isIso_hom
 #align category_theory.is_iso_whisker_right CategoryTheory.isIso_whiskerRight
 
 variable {B : Type u₄} [Category.{v₄} B]
@@ -226,7 +244,6 @@ namespace Functor
 universe u₅ v₅
 
 variable {A : Type u₁} [Category.{v₁} A]
-
 variable {B : Type u₂} [Category.{v₂} B]
 
 /-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
@@ -252,7 +269,6 @@ def rightUnitor (F : A ⥤ B) :
 #align category_theory.functor.right_unitor_inv_app CategoryTheory.Functor.rightUnitor_inv_app
 
 variable {C : Type u₃} [Category.{v₃} C]
-
 variable {D : Type u₄} [Category.{v₄} D]
 
 /-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
@@ -280,7 +296,6 @@ theorem triangle (F : A ⥤ B) (G : B ⥤ C) :
 
 -- See note [dsimp, simp].
 variable {E : Type u₅} [Category.{v₅} E]
-
 variable (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
 theorem pentagon :

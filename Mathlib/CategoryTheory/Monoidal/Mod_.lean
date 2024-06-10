@@ -17,7 +17,6 @@ universe v₁ v₂ u₁ u₂
 open CategoryTheory MonoidalCategory
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-
 variable {C}
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/
@@ -40,7 +39,6 @@ theorem assoc_flip :
 set_option linter.uppercaseLean3 false in
 #align Mod_.assoc_flip Mod_.assoc_flip
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A morphism of module objects. -/
 @[ext]
 structure Hom (M N : Mod_ A) where

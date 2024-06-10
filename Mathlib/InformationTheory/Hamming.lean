@@ -33,7 +33,6 @@ section HammingDistNorm
 open Finset Function
 
 variable {α ι : Type*} {β : ι → Type*} [Fintype ι] [∀ i, DecidableEq (β i)]
-
 variable {γ : ι → Type*} [∀ i, DecidableEq (γ i)]
 
 /-- The Hamming distance function to the naturals. -/
@@ -116,7 +115,7 @@ theorem hammingDist_ne_zero {x y : ∀ i, β i} : hammingDist x y ≠ 0 ↔ x �
 /-- Corresponds to `dist_pos`. -/
 @[simp]
 theorem hammingDist_pos {x y : ∀ i, β i} : 0 < hammingDist x y ↔ x ≠ y := by
-  rw [← hammingDist_ne_zero, iff_not_comm, not_lt, le_zero_iff]
+  rw [← hammingDist_ne_zero, iff_not_comm, not_lt, Nat.le_zero]
 #align hamming_dist_pos hammingDist_pos
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -332,12 +331,14 @@ theorem ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
   rfl
 #align hamming.of_hamming_to_hamming Hamming.ofHamming_toHamming
 
---@[simp] -- Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
+--@[simp] -- Porting note (#10618): removing `simp`, `simp` can prove it
+-- and `dsimp` cannot use `Iff.rfl`
 theorem toHamming_inj {x y : ∀ i, β i} : toHamming x = toHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.to_hamming_inj Hamming.toHamming_inj
 
---@[simp] -- Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
+--@[simp] -- Porting note (#10618): removing `simp`, `simp` can prove it
+-- and `dsimp` cannot use `Iff.rfl`
 theorem ofHamming_inj {x y : Hamming β} : ofHamming x = ofHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.of_hamming_inj Hamming.ofHamming_inj
@@ -428,20 +429,20 @@ instance : PseudoMetricSpace (Hamming β) where
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast
     constructor
-    · refine' fun hs => ⟨1, zero_lt_one, fun hab => _⟩
+    · refine fun hs => ⟨1, zero_lt_one, fun hab => ?_⟩
       rw_mod_cast [hammingDist_lt_one] at hab
       rw [ofHamming_inj, ← mem_idRel] at hab
       exact hs hab
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
       rw [mem_idRel] at hab
       rw [hab]
-      refine' hs (lt_of_eq_of_lt _ hε)
+      refine hs (lt_of_eq_of_lt ?_ hε)
       exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by
     ext
     push_cast
-    refine' iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
+    refine iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => ?_⟩
     exact mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]
@@ -450,7 +451,7 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
   rfl
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist
 
--- Porting note: new
+-- Porting note (#10754): new instance
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _

@@ -117,6 +117,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory, performance
 * Reid Barton (@rwbarton): category theory, topology
 * Riccardo Brasca (@riccardobrasca): algebra, number theory, algebraic geometry, category theory
+* Kevin Buzzard (@kbuzzard): algebra, number theory, algebraic geometry, category theory
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering
 * Bryan Gin-ge Chen (@bryangingechen): documentation, infrastructure
 * Johan Commelin (@jcommelin): algebra, number theory, category theory, algebraic geometry

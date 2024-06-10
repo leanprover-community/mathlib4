@@ -43,7 +43,6 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 
 /-- Class that expresses that a ring homomorphism is in fact the identity. -/
@@ -127,10 +126,7 @@ instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂�
 
 This is not an instance, as for equivalences that are involutions, a better instance
 would be `RingHomInvPair e e`. Indeed, this declaration is not currently used in mathlib.
-
-See note [reducible non-instances].
 -/
-@[reducible]
 theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
 #align ring_hom_inv_pair.of_ring_equiv RingHomInvPair.of_ringEquiv
@@ -139,10 +135,7 @@ theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R
 Swap the direction of a `RingHomInvPair`. This is not an instance as it would loop, and better
 instances are often available and may often be preferrable to using this one. Indeed, this
 declaration is not currently used in mathlib.
-
-See note [reducible non-instances].
 -/
-@[reducible]
 theorem symm (σ₁₂ : R₁ →+* R₂) (σ₂₁ : R₂ →+* R₁) [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomInvPair σ₂₁ σ₁₂ :=
   ⟨RingHomInvPair.comp_eq₂, RingHomInvPair.comp_eq⟩
@@ -180,7 +173,8 @@ theorem RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : F
 namespace RingHomSurjective
 
 -- The linter gives a false positive, since `σ₂` is an out_param
--- @[nolint dangerous_instance] Porting note: this linter is not implemented yet
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
+-- @[nolint dangerous_instance]
 instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩

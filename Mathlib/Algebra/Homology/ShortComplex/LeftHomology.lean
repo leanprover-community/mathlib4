@@ -29,8 +29,6 @@ and `S.homology`.
 
 -/
 
-set_option autoImplicit true
-
 namespace CategoryTheory
 
 open Category Limits
@@ -421,21 +419,22 @@ instance : Epi S.leftHomologyπ := by
   dsimp only [leftHomologyπ]
   infer_instance
 
-lemma leftHomology_ext_iff (f₁ f₂ : S.leftHomology ⟶ A) :
+lemma leftHomology_ext_iff {A : C} (f₁ f₂ : S.leftHomology ⟶ A) :
     f₁ = f₂ ↔ S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂ := by
   rw [cancel_epi]
 
 @[ext]
-lemma leftHomology_ext (f₁ f₂ : S.leftHomology ⟶ A)
+lemma leftHomology_ext {A : C} (f₁ f₂ : S.leftHomology ⟶ A)
     (h : S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂) : f₁ = f₂ := by
   simpa only [leftHomology_ext_iff] using h
 
-lemma cycles_ext_iff (f₁ f₂ : A ⟶ S.cycles) :
+lemma cycles_ext_iff {A : C} (f₁ f₂ : A ⟶ S.cycles) :
     f₁ = f₂ ↔ f₁ ≫ S.iCycles = f₂ ≫ S.iCycles := by
   rw [cancel_mono]
 
 @[ext]
-lemma cycles_ext (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) : f₁ = f₂ := by
+lemma cycles_ext {A : C} (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) :
+    f₁ = f₂ := by
   simpa only [cycles_ext_iff] using h
 
 lemma isIso_iCycles (hg : S.g = 0) : IsIso S.iCycles :=
@@ -1028,7 +1027,7 @@ of short complexes to induce an isomorphism on cycles. -/
 lemma isIso_cyclesMap'_of_isIso_of_mono (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     IsIso (cyclesMap' φ h₁ h₂) := by
-  refine' ⟨h₁.liftK (h₂.i ≫ inv φ.τ₂) _, _, _⟩
+  refine ⟨h₁.liftK (h₂.i ≫ inv φ.τ₂) ?_, ?_, ?_⟩
   · simp only [assoc, ← cancel_mono φ.τ₃, zero_comp, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, h₂.wi]
   · simp only [← cancel_mono h₁.i, assoc, h₁.liftK_i, cyclesMap'_i_assoc,
       IsIso.hom_inv_id, comp_id, id_comp]

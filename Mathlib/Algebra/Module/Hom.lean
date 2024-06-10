@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
@@ -34,7 +34,6 @@ instance instDistribSMul [AddZeroClass A] [AddCommMonoid B] [DistribSMul M B] :
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
 
 variable [Monoid R] [Monoid S] [AddMonoid A] [AddCommMonoid B]
-
 variable [DistribMulAction R B] [DistribMulAction S B]
 
 instance instDistribMulAction : DistribMulAction R (A →+ B) where

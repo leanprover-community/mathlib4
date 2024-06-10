@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Kyle Miller All rights reserved.
+Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
@@ -29,6 +29,8 @@ symmetric powers
 
 -/
 
+assert_not_exists MonoidWithZero
+
 set_option autoImplicit true
 
 
@@ -43,7 +45,7 @@ def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 #align sym Sym
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
@@ -53,14 +55,14 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 #align sym.has_coe Sym.hasCoe
 
 -- Porting note: instance needed for Data.Finset.Sym
-instance [DecidableEq α] : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance [DecidableEq α] : DecidableEq (Sym α n) :=
+  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
+abbrev Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val
 #align vector.perm.is_setoid Vector.Perm.isSetoid
 
@@ -79,11 +81,11 @@ theorem coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = 
   coe_injective.eq_iff
 #align sym.coe_inj Sym.coe_inj
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[ext] theorem ext {s₁ s₂ : Sym α n} (h : (s₁ : Multiset α) = ↑s₂) : s₁ = s₂ :=
   coe_injective h
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
   rfl
@@ -268,6 +270,8 @@ theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) 
 instance instZeroSym : Zero (Sym α 0) :=
   ⟨⟨0, rfl⟩⟩
 
+@[simp] theorem toMultiset_zero : toMultiset (0 : Sym α 0) = 0 := rfl
+
 instance : EmptyCollection (Sym α 0) :=
   ⟨0⟩
 
@@ -380,11 +384,11 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
-  ext; simp [Sym.map]; rfl
+  ext; simp only [map, val_eq_coe, Multiset.map_id', coe_inj]; rfl
 #align sym.map_id' Sym.map_id'
 
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
-  ext; simp [Sym.map]; rfl
+  ext; simp only [map, val_eq_coe, id_eq, Multiset.map_id', coe_inj]; rfl
 #align sym.map_id Sym.map_id
 
 @[simp]
@@ -439,7 +443,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
-  ⟨s.val.attach, by conv_rhs => rw [← s.2, ← Multiset.card_attach]⟩
+  ⟨s.val.attach, by (conv_rhs => rw [← s.2, ← Multiset.card_attach]); rfl⟩
 #align sym.attach Sym.attach
 
 @[simp]
@@ -559,11 +563,11 @@ Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
 def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
     m.1.filter (a ≠ ·),
-    eq_tsub_of_add_eq <|
+    Nat.eq_sub_of_add_eq <|
       Eq.trans
         (by
           rw [← countP_eq_card_filter, add_comm]
-          simp only [eq_comm, Ne.def, count]
+          simp only [eq_comm, Ne, count]
           rw [← card_eq_countP_add_countP _ _])
         m.2⟩
 #align sym.filter_ne Sym.filterNe
@@ -657,12 +661,12 @@ def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inr s => s.map Embedding.some
 #align sym_option_succ_equiv.decode SymOptionSuccEquiv.decode
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
   rfl
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
   rfl
@@ -685,10 +689,9 @@ theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.su
     split_ifs with h
     · obtain ⟨a, _, ha⟩ := Multiset.mem_map.mp h
       exact Option.some_ne_none _ ha
-    · refine' congr_arg Sum.inr _
-      refine' map_injective (Option.some_injective _) _ _
-      refine' Eq.trans _ (Eq.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe _)
-      simp; simp
+    · refine congr_arg Sum.inr ?_
+      refine map_injective (Option.some_injective _) _ ?_
+      refine Eq.trans ?_ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe ?_) <;> simp
 #align sym_option_succ_equiv.encode_decode SymOptionSuccEquiv.encode_decode
 
 end SymOptionSuccEquiv

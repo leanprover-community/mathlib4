@@ -75,11 +75,8 @@ class NonUnitalStarAlgHomClass (F : Type*) (R A B : outParam Type*)
 namespace NonUnitalStarAlgHomClass
 
 variable {F R A B : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 
 /-- Turn an element of a type `F` satisfying `NonUnitalStarAlgHomClass F R A B` into an actual
@@ -99,29 +96,22 @@ namespace NonUnitalStarAlgHom
 section Basic
 
 variable {R A B C D : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C] [Star C]
-
 variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
-instance : FunLike (A →⋆ₙₐ[R] B) A B
-    where
+instance : FunLike (A →⋆ₙₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
 
-instance : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B
-    where
-  map_smul f := f.map_smul'
+instance : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B where
+  map_smulₛₗ f := f.map_smul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
 
-instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B
-    where
+instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B where
   map_star f := f.map_star'
 
 -- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
@@ -149,8 +139,7 @@ theorem ext {f g : A →⋆ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
 
 /-- Copy of a `NonUnitalStarAlgHom` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
-protected def copy (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆ₙₐ[R] B
-    where
+protected def copy (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆ₙₐ[R] B where
   toFun := f'
   map_smul' := h.symm ▸ map_smul f
   map_zero' := h.symm ▸ map_zero f
@@ -262,13 +251,11 @@ section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
 variable {R A B C D : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
 instance : Zero (A →⋆ₙₐ[R] B) :=
-  ⟨{ (0 : NonUnitalAlgHom R A B) with map_star' := by simp }⟩
+  ⟨{ (0 : NonUnitalAlgHom (MonoidHom.id R) A B) with map_star' := by simp }⟩
 
 instance : Inhabited (A →⋆ₙₐ[R] B) :=
   ⟨0⟩
@@ -289,6 +276,32 @@ theorem zero_apply (a : A) : (0 : A →⋆ₙₐ[R] B) a = 0 :=
 #align non_unital_star_alg_hom.zero_apply NonUnitalStarAlgHom.zero_apply
 
 end Zero
+
+section RestrictScalars
+
+variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S] [Star A] [Star B]
+    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S]
+    [DistribMulAction S A] [DistribMulAction S B] [DistribMulAction R A] [DistribMulAction R B]
+    [IsScalarTower R S A] [IsScalarTower R S B]
+
+/-- If a monoid `R` acts on another monoid `S`, then a non-unital star algebra homomorphism
+over `S` can be viewed as a non-unital star algebra homomorphism over `R`.  -/
+def restrictScalars (f : A →⋆ₙₐ[S] B) : A →⋆ₙₐ[R] B :=
+  { (f : A →ₙₐ[S] B).restrictScalars R with
+    map_star' := map_star f }
+
+@[simp]
+lemma restrictScalars_apply (f : A →⋆ₙₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
+
+lemma coe_restrictScalars (f : A →⋆ₙₐ[S] B) : (f.restrictScalars R : A →ₙ+* B) = f := rfl
+
+lemma coe_restrictScalars' (f : A →⋆ₙₐ[S] B) : (f.restrictScalars R : A → B) = f := rfl
+
+theorem restrictScalars_injective :
+    Function.Injective (restrictScalars R : (A →⋆ₙₐ[S] B) → A →⋆ₙₐ[R] B) :=
+  fun _ _ h ↦ ext (DFunLike.congr_fun h : _)
+
+end RestrictScalars
 
 end NonUnitalStarAlgHom
 
@@ -338,7 +351,6 @@ instance (priority := 100) toNonUnitalStarAlgHomClass {_ : CommSemiring R} {_ : 
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
 
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
-
 variable [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
 variable [StarAlgHomClass F R A B]
 
@@ -360,21 +372,18 @@ namespace StarAlgHom
 variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
   [Algebra R B] [Star B] [Semiring C] [Algebra R C] [Star C] [Semiring D] [Algebra R D] [Star D]
 
-instance : FunLike (A →⋆ₐ[R] B) A B
-    where
+instance : FunLike (A →⋆ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
 
-instance : AlgHomClass (A →⋆ₐ[R] B) R A B
-    where
+instance : AlgHomClass (A →⋆ₐ[R] B) R A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   commutes f := f.commutes'
 
-instance : StarAlgHomClass (A →⋆ₐ[R] B) R A B
-    where
+instance : StarAlgHomClass (A →⋆ₐ[R] B) R A B where
   map_star f := f.map_star'
 
 @[simp]
@@ -402,8 +411,7 @@ theorem ext {f g : A →⋆ₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
 
 /-- Copy of a `StarAlgHom` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
-protected def copy (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆ₐ[R] B
-    where
+protected def copy (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆ₐ[R] B where
   toFun := f'
   map_one' := h.symm ▸ map_one f
   map_mul' := h.symm ▸ map_mul f
@@ -581,8 +589,7 @@ theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
 @[simps]
-def prodEquiv : (A →⋆ₙₐ[R] B) × (A →⋆ₙₐ[R] C) ≃ (A →⋆ₙₐ[R] B × C)
-    where
+def prodEquiv : (A →⋆ₙₐ[R] B) × (A →⋆ₙₐ[R] C) ≃ (A →⋆ₙₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
@@ -678,8 +685,7 @@ theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
 @[simps]
-def prodEquiv : (A →⋆ₐ[R] B) × (A →⋆ₐ[R] C) ≃ (A →⋆ₐ[R] B × C)
-    where
+def prodEquiv : (A →⋆ₐ[R] B) × (A →⋆ₐ[R] C) ≃ (A →⋆ₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
@@ -718,7 +724,7 @@ Mostly an implementation detail for `StarAlgEquivClass`.
 -/
 class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
   [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B]
-  extends RingEquivClass F A B, SMulHomClass F R A B : Prop where
+  extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B : Prop where
 
 /-- `StarAlgEquivClass F R A B` asserts `F` is a type of bundled ⋆-algebra equivalences between
 `A` and `B`.
@@ -801,8 +807,7 @@ section Basic
 variable {F R A B C : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B] [Star A]
   [Star B] [Add C] [Mul C] [SMul R C] [Star C]
 
-instance : EquivLike (A ≃⋆ₐ[R] B) A B
-    where
+instance : EquivLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
@@ -812,19 +817,16 @@ instance : EquivLike (A ≃⋆ₐ[R] B) A B
     rcases g with ⟨⟨⟨_, _, _⟩, _⟩, _⟩
     congr
 
-instance : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B
-    where
+instance : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
-  map_smul := map_smul'
+  map_smulₛₗ := map_smul'
 
-instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
-    where
+instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
   map_star := map_star'
 
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
-instance : FunLike (A ≃⋆ₐ[R] B) A B
-    where
+instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := DFunLike.coe_injective
 
@@ -841,7 +843,7 @@ theorem ext_iff {f g : A ≃⋆ₐ[R] B} : f = g ↔ ∀ a, f a = g a :=
   DFunLike.ext_iff
 #align star_alg_equiv.ext_iff StarAlgEquiv.ext_iff
 
-/-- Star algebra equivalences are reflexive. -/
+/-- The identity map is a star algebra isomorphism. -/
 @[refl]
 def refl : A ≃⋆ₐ[R] A :=
   { RingEquiv.refl A with
@@ -858,7 +860,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
 #align star_alg_equiv.coe_refl StarAlgEquiv.coe_refl
 
 -- Porting note: changed proof a bit by using `EquivLike` to avoid lots of coercions
-/-- Star algebra equivalences are symmetric. -/
+/-- The inverse of a star algebra isomorphism is a star algebra isomorphism. -/
 @[symm]
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
@@ -929,7 +931,7 @@ theorem symm_to_ringEquiv (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A
   rfl
 #align star_alg_equiv.symm_to_ring_equiv StarAlgEquiv.symm_to_ringEquiv
 
-/-- Star algebra equivalences are transitive. -/
+/-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
 def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C :=
   { e₁.toRingEquiv.trans
@@ -981,19 +983,15 @@ end Basic
 section Bijective
 
 variable {F G R A B : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [NonUnitalStarAlgHomClass G R B A]
 
 /-- If a (unital or non-unital) star algebra morphism has an inverse, it is an isomorphism of
 star algebras. -/
 @[simps]
-def ofStarAlgHom (f : F) (g : G) (h₁ : ∀ x, g (f x) = x) (h₂ : ∀ x, f (g x) = x) : A ≃⋆ₐ[R] B
-    where
+def ofStarAlgHom (f : F) (g : G) (h₁ : ∀ x, g (f x) = x) (h₂ : ∀ x, f (g x) = x) : A ≃⋆ₐ[R] B where
   toFun := f
   invFun := g
   left_inv := h₁

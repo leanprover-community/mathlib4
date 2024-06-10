@@ -25,10 +25,9 @@ import Mathlib.Data.Matrix.Basic
 
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
-
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 
@@ -142,8 +141,9 @@ theorem fromBlocks_inj {A : Matrix n l α} {B : Matrix n m α} {C : Matrix o l �
 #align matrix.from_blocks_inj Matrix.fromBlocks_inj
 
 theorem fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
-    (f : α → β) : (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
-  by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
+    (f : α → β) : (fromBlocks A B C D).map f =
+      fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) := by
+  ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
 #align matrix.from_blocks_map Matrix.fromBlocks_map
 
 theorem fromBlocks_transpose (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
@@ -239,9 +239,9 @@ theorem fromBlocks_zero [Zero α] : fromBlocks (0 : Matrix n l α) 0 0 (0 : Matr
 
 theorem fromBlocks_add [Add α] (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (A' : Matrix n l α) (B' : Matrix n m α) (C' : Matrix o l α)
-    (D' : Matrix o m α) :
-    fromBlocks A B C D + fromBlocks A' B' C' D' = fromBlocks (A + A') (B + B') (C + C') (D + D') :=
-  by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
+    (D' : Matrix o m α) : fromBlocks A B C D + fromBlocks A' B' C' D' =
+      fromBlocks (A + A') (B + B') (C + C') (D + D') := by
+  ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
 #align matrix.from_blocks_add Matrix.fromBlocks_add
 
 theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
@@ -449,8 +449,8 @@ variable (o m n α)
 
 /-- `Matrix.blockDiagonal` as an `AddMonoidHom`. -/
 @[simps]
-def blockDiagonalAddMonoidHom [AddZeroClass α] : (o → Matrix m n α) →+ Matrix (m × o) (n × o) α
-    where
+def blockDiagonalAddMonoidHom [AddZeroClass α] :
+    (o → Matrix m n α) →+ Matrix (m × o) (n × o) α where
   toFun := blockDiagonal
   map_zero' := blockDiagonal_zero
   map_add' := blockDiagonal_add

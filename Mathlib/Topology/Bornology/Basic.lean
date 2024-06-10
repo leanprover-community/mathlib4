@@ -225,8 +225,8 @@ theorem isBounded_insert : IsBounded (insert x s) ↔ IsBounded s :=
 
 theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
     (cobounded β).comap f ≤ cobounded α ↔ ∀ ⦃s⦄, IsBounded s → IsBounded (f '' s) := by
-  refine'
-    ⟨fun h s hs => _, fun h t ht =>
+  refine
+    ⟨fun h s hs => ?_, fun h t ht =>
       ⟨(f '' tᶜ)ᶜ, h <| IsCobounded.compl ht, compl_subset_comm.1 <| subset_preimage_image _ _⟩⟩
   obtain ⟨t, ht, hts⟩ := h hs.compl
   rw [subset_compl_comm, ← preimage_compl] at hts
@@ -296,8 +296,9 @@ theorem isBounded_sUnion {S : Set (Set α)} (hs : S.Finite) :
 #align bornology.is_bounded_sUnion Bornology.isBounded_sUnion
 
 @[simp]
-theorem isBounded_iUnion [Finite ι] {s : ι → Set α} : IsBounded (⋃ i, s i) ↔ ∀ i, IsBounded (s i) :=
-  by rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_range_iff]
+theorem isBounded_iUnion [Finite ι] {s : ι → Set α} :
+    IsBounded (⋃ i, s i) ↔ ∀ i, IsBounded (s i) := by
+  rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_mem_range]
 #align bornology.is_bounded_Union Bornology.isBounded_iUnion
 
 lemma eventually_ne_cobounded (a : α) : ∀ᶠ x in cobounded α, x ≠ a :=
@@ -324,8 +325,7 @@ instance : Bornology PUnit :=
   ⟨⊥, bot_le⟩
 
 /-- The cofinite filter as a bornology -/
-@[reducible]
-def Bornology.cofinite : Bornology α where
+abbrev Bornology.cofinite : Bornology α where
   cobounded' := Filter.cofinite
   le_cofinite' := le_rfl
 #align bornology.cofinite Bornology.cofinite
@@ -371,3 +371,22 @@ theorem cobounded_eq_bot : cobounded α = ⊥ :=
 #align bornology.cobounded_eq_bot Bornology.cobounded_eq_bot
 
 end Bornology
+
+namespace OrderDual
+variable [Bornology α]
+
+instance instBornology : Bornology αᵒᵈ := ‹Bornology α›
+
+@[simp] lemma isCobounded_preimage_ofDual {s : Set α} :
+    IsCobounded (ofDual ⁻¹' s) ↔ IsCobounded s := Iff.rfl
+
+@[simp] lemma isCobounded_preimage_toDual {s : Set αᵒᵈ} :
+    IsCobounded (toDual ⁻¹' s) ↔ IsCobounded s := Iff.rfl
+
+@[simp] lemma isBounded_preimage_ofDual {s : Set α} :
+    IsBounded (ofDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+
+@[simp] lemma isBounded_preimage_toDual {s : Set αᵒᵈ} :
+    IsBounded (toDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+
+end OrderDual

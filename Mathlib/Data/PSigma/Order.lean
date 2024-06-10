@@ -37,7 +37,7 @@ variable {ι : Type*} {α : ι → Type*}
 namespace PSigma
 
 /-- The notation `Σₗ' i, α i` refers to a sigma type which is locally equipped with the
-lexicographic order.-/
+lexicographic order. -/
 -- TODO: make `Lex` be `Sort u -> Sort u` so we can remove `.{_+1, _+1}`
 notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma.{_+1, _+1} p)) => r
 
@@ -69,7 +69,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
         apply le_trans
         repeat' assumption,
     lt_iff_le_not_le := by
-      refine' fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, _⟩, _⟩
+      refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨i, a, hji⟩ | ⟨i, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, hab⟩ := hab
         · exact hij.not_lt hji
         · exact lt_irrefl _ hji
@@ -153,7 +153,7 @@ instance denselyOrdered_of_noMaxOrder [Preorder ι] [∀ i, Preorder (α i)]
       exact ⟨⟨i, c⟩, right _ ha, right _ hb⟩⟩
 #align psigma.lex.densely_ordered_of_no_max_order PSigma.Lex.denselyOrdered_of_noMaxOrder
 
-instance densely_ordered_of_noMinOrder [Preorder ι] [∀ i, Preorder (α i)]
+instance denselyOrdered_of_noMinOrder [Preorder ι] [∀ i, Preorder (α i)]
     [∀ i, DenselyOrdered (α i)] [∀ i, NoMinOrder (α i)] : DenselyOrdered (Σₗ' i, α i) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩ (⟨_, _, h⟩ | @⟨_, _, b, h⟩)
@@ -161,7 +161,7 @@ instance densely_ordered_of_noMinOrder [Preorder ι] [∀ i, Preorder (α i)]
       exact ⟨⟨j, c⟩, left _ _ h, right _ hb⟩
     · obtain ⟨c, ha, hb⟩ := exists_between h
       exact ⟨⟨i, c⟩, right _ ha, right _ hb⟩⟩
-#align psigma.lex.densely_ordered_of_no_min_order PSigma.Lex.densely_ordered_of_noMinOrder
+#align psigma.lex.densely_ordered_of_no_min_order PSigma.Lex.denselyOrdered_of_noMinOrder
 
 instance noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrder ι]
     [∀ i, Nonempty (α i)] : NoMaxOrder (Σₗ' i, α i) :=

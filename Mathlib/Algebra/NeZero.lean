@@ -102,3 +102,5 @@ theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x := ⟨ne_of_gt h⟩
 #align ne_zero.of_pos NeZero.of_pos
 
 end NeZero
+
+lemma Nat.pos_of_neZero (n : ℕ) [NeZero n] : 0 < n := Nat.pos_of_ne_zero (NeZero.ne _)

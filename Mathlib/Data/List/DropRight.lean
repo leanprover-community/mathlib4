@@ -3,7 +3,6 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Infix
 
 #align_import data.list.rdrop from "leanprover-community/mathlib"@"26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2"
@@ -32,6 +31,8 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 
 -/
 
+-- Make sure we don't import algebra
+assert_not_exists Monoid
 
 variable {α : Type*} (p : α → Bool) (l : List α) (n : ℕ)
 
@@ -140,22 +141,22 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 
 -- it is in this file because it requires `List.Infix`
 @[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
+theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
   cases' l with hd tl
   · simp only [dropWhile, true_iff]
     intro h
     by_contra
     rwa [length_nil, lt_self_iff_false] at h
   · rw [dropWhile]
-    refine' ⟨fun h => _, fun h => _⟩
+    refine ⟨fun h => ?_, fun h => ?_⟩
     · intro _ H
-      rw [nthLe, get] at H
-      refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
+      rw [get] at H
+      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons _ _))
       rw [← h]
       simp only [H]
       exact List.IsSuffix.sublist (dropWhile_suffix p)
     · have := h (by simp only [length, Nat.succ_pos])
-      rw [nthLe, get] at this
+      rw [get] at this
       simp_rw [this]
 #align list.drop_while_eq_self_iff List.dropWhile_eq_self_iff
 
@@ -164,13 +165,13 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
   simp only [rdropWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_get]
-  refine' ⟨fun h hl => _, fun h hl => _⟩
+  refine ⟨fun h hl => ?_, fun h hl => ?_⟩
   · rw [← length_pos, ← length_reverse] at hl
     have := h hl
-    rwa [nthLe, get_reverse'] at this
+    rwa [get_reverse'] at this
   · rw [length_reverse, length_pos] at hl
     have := h hl
-    rwa [nthLe, get_reverse']
+    rwa [get_reverse']
 #align list.rdrop_while_eq_self_iff List.rdropWhile_eq_self_iff
 
 variable (p) (l)
@@ -230,7 +231,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
     intro f; contradiction
   · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil_iff, getLast_append, ne_eq,
       append_eq_nil, and_false, not_false_eq_true, forall_true_left]
-    refine' ⟨fun h => _ , fun h => _⟩
+    refine ⟨fun h => ?_ , fun h => ?_⟩
     · intro pa; simp [pa] at h
     · simp [h]
 #align list.rtake_while_eq_nil_iff List.rtakeWhile_eq_nil_iff
@@ -240,10 +241,30 @@ theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   exact mem_takeWhile_imp hx
 #align list.mem_rtake_while_imp List.mem_rtakeWhile_imp
 
-variable (p) (l)
-
-theorem rtakeWhile_idempotent : rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
+theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
+    rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 #align list.rtake_while_idempotent List.rtakeWhile_idempotent
+
+lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
+  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop, Nat.add_comm]
+
+@[simp]
+lemma rdrop_append_length {l₁ l₂ : List α} :
+    List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁:= by
+  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse l₂,
+      reverse_append, drop_left, reverse_reverse]
+
+lemma rdrop_append_of_le_length {l₁ l₂ : List α} (k : ℕ) :
+    k ≤ length l₂ → List.rdrop (l₁ ++ l₂) k = l₁ ++ List.rdrop l₂ k := by
+  intro hk
+  rw [← length_reverse] at hk
+  rw [rdrop_eq_reverse_drop_reverse, reverse_append, drop_append_of_le_length hk,
+    reverse_append, reverse_reverse, ← rdrop_eq_reverse_drop_reverse]
+
+@[simp]
+lemma rdrop_append_length_add {l₁ l₂ : List α} (k : ℕ) :
+    List.rdrop (l₁ ++ l₂) (length l₂ + k)  = List.rdrop l₁ k:= by
+  rw [← rdrop_add, rdrop_append_length]
 
 end List
