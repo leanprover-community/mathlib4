@@ -68,6 +68,9 @@ section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
+instance (priority := 500) Module.instSMul : SMul R M :=
+  ‹Module R M›.toSMul
+
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
 instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=

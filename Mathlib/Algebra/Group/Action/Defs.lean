@@ -118,6 +118,8 @@ class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
 #align mul_action.ext_iff MulAction.ext_iff
 #align add_action.ext AddAction.ext
 
+attribute [instance 100] MulAction.toSMul
+
 /-!
 ### (Pre)transitive action
 
