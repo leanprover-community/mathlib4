@@ -133,7 +133,7 @@ syntax "warning:" build ":" num ":" num ": `" ident
   "` has been deprecated, use `" ident "` instead" : build
 
 /-- an unnecessary `set_option ... in`. -/
-syntax "warning:" build ":" num ":" num ": unnecessary `set_option " ident ident &"`" : build
+syntax "warning:" build ":" num ":" num ": unnecessary `set_option " ident term &"`" : build
 
 /-- instruction to silence the linter -/
 example := Nat
