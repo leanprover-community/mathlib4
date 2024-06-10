@@ -20,6 +20,8 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 
 * `SeparatedNhds`: Two `Set`s are separated by neighbourhoods if they are contained in disjoint
   open sets.
+* `SeparatingCover`: A countable cover that can be used with
+  `separating_covers_iff_separated_nhds` to witness when two `Set`s have `SeparatedNhds`.
 * `T0Space`: A T₀/Kolmogorov space is a space where, for every two points `x ≠ y`,
   there is an open set that contains one, but not the other.
 * `R0Space`: An R₀ space (sometimes called a *symmetric space*) is a topological space
@@ -56,7 +58,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 ### TODOs
 
 * Add perfectly normal and T6 spaces.
-* Use `countable_covers_witnessing_separated_nhds` to prove that perfectly normal spaces
+* Use `separating_covers_iff_separated_nhds` to prove that perfectly normal spaces
   are completely normal.
 
 ## Main results
@@ -114,8 +116,9 @@ If the space is also Lindelöf:
 
 ## References
 
-https://en.wikipedia.org/wiki/Separation_axiom
-https://en.wikipedia.org/wiki/Normal_space
+* https://en.wikipedia.org/wiki/Separation_axiom
+* https://en.wikipedia.org/wiki/Normal_space
+* General Topology (Willard): https://zbmath.org/1052.54001
 
 -/
 
@@ -2351,7 +2354,9 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
-/-- A regular topological space with Lindelöf topology is a normal space. -/
+/-- A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
+Corollaries 20.8 and 20.10 of Willard's *General Topology* <https://zbmath.org/1052.54001> (without
+the assumption of Hausdorff). -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
   normal h k hcl kcl hkdis := by
