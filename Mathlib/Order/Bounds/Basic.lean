@@ -148,6 +148,15 @@ theorem not_bddBelow_iff {α : Type*} [LinearOrder α] {s : Set α} :
   @not_bddAbove_iff αᵒᵈ _ _
 #align not_bdd_below_iff not_bddBelow_iff
 
+@[simp] lemma bddBelow_preimage_ofDual {s : Set α} : BddBelow (ofDual ⁻¹' s) ↔ BddAbove s := Iff.rfl
+@[simp] lemma bddAbove_preimage_ofDual {s : Set α} : BddAbove (ofDual ⁻¹' s) ↔ BddBelow s := Iff.rfl
+
+@[simp] lemma bddBelow_preimage_toDual {s : Set αᵒᵈ} :
+    BddBelow (toDual ⁻¹' s) ↔ BddAbove s := Iff.rfl
+
+@[simp] lemma bddAbove_preimage_toDual {s : Set αᵒᵈ} :
+    BddAbove (toDual ⁻¹' s) ↔ BddBelow s := Iff.rfl
+
 theorem BddAbove.dual (h : BddAbove s) : BddBelow (ofDual ⁻¹' s) :=
   h
 #align bdd_above.dual BddAbove.dual
@@ -373,8 +382,8 @@ theorem lowerBounds_union : lowerBounds (s ∪ t) = lowerBounds s ∩ lowerBound
 
 theorem union_upperBounds_subset_upperBounds_inter :
     upperBounds s ∪ upperBounds t ⊆ upperBounds (s ∩ t) :=
-  union_subset (upperBounds_mono_set <| inter_subset_left _ _)
-    (upperBounds_mono_set <| inter_subset_right _ _)
+  union_subset (upperBounds_mono_set inter_subset_left)
+    (upperBounds_mono_set inter_subset_right)
 #align union_upper_bounds_subset_upper_bounds_inter union_upperBounds_subset_upperBounds_inter
 
 theorem union_lowerBounds_subset_lowerBounds_inter :
@@ -395,22 +404,22 @@ theorem isGreatest_union_iff :
 
 /-- If `s` is bounded, then so is `s ∩ t` -/
 theorem BddAbove.inter_of_left (h : BddAbove s) : BddAbove (s ∩ t) :=
-  h.mono <| inter_subset_left s t
+  h.mono inter_subset_left
 #align bdd_above.inter_of_left BddAbove.inter_of_left
 
 /-- If `t` is bounded, then so is `s ∩ t` -/
 theorem BddAbove.inter_of_right (h : BddAbove t) : BddAbove (s ∩ t) :=
-  h.mono <| inter_subset_right s t
+  h.mono inter_subset_right
 #align bdd_above.inter_of_right BddAbove.inter_of_right
 
 /-- If `s` is bounded, then so is `s ∩ t` -/
 theorem BddBelow.inter_of_left (h : BddBelow s) : BddBelow (s ∩ t) :=
-  h.mono <| inter_subset_left s t
+  h.mono inter_subset_left
 #align bdd_below.inter_of_left BddBelow.inter_of_left
 
 /-- If `t` is bounded, then so is `s ∩ t` -/
 theorem BddBelow.inter_of_right (h : BddBelow t) : BddBelow (s ∩ t) :=
-  h.mono <| inter_subset_right s t
+  h.mono inter_subset_right
 #align bdd_below.inter_of_right BddBelow.inter_of_right
 
 /-- In a directed order, the union of bounded above sets is bounded above. -/
@@ -425,7 +434,7 @@ theorem BddAbove.union [IsDirected α (· ≤ ·)] {s t : Set α} :
 /-- In a directed order, the union of two sets is bounded above if and only if both sets are. -/
 theorem bddAbove_union [IsDirected α (· ≤ ·)] {s t : Set α} :
     BddAbove (s ∪ t) ↔ BddAbove s ∧ BddAbove t :=
-  ⟨fun h => ⟨h.mono <| subset_union_left s t, h.mono <| subset_union_right s t⟩, fun h =>
+  ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 #align bdd_above_union bddAbove_union
 
@@ -633,12 +642,10 @@ theorem isGLB_singleton : IsGLB {a} a :=
   isLeast_singleton.isGLB
 #align is_glb_singleton isGLB_singleton
 
-theorem bddAbove_singleton : BddAbove ({a} : Set α) :=
-  isLUB_singleton.bddAbove
+@[simp] lemma bddAbove_singleton : BddAbove ({a} : Set α) := isLUB_singleton.bddAbove
 #align bdd_above_singleton bddAbove_singleton
 
-theorem bddBelow_singleton : BddBelow ({a} : Set α) :=
-  isGLB_singleton.bddBelow
+@[simp] lemma bddBelow_singleton : BddBelow ({a} : Set α) := isGLB_singleton.bddBelow
 #align bdd_below_singleton bddBelow_singleton
 
 @[simp]
