@@ -219,7 +219,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
   -- Porting note: this was a `let` but then Lean would time out at
   -- unification so it is changed to a `set` and `FF'` is replaced by its
   -- definition before unification
-  set FF' := CyclotomicField ψ.n F' with FF'_def
+  let FF' := CyclotomicField ψ.n F'
   have hchar := Algebra.ringChar_eq F' FF'
   apply (algebraMap F' FF').injective
   rw [map_pow, map_mul, map_natCast, hc', hchar, Nat.cast_pow]
@@ -227,15 +227,9 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
   haveI := Fact.mk hp'
   haveI := Fact.mk (hchar.subst hp')
   rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp' hp, ← isUnit_iff_not_dvd_char, hchar] at hch₁
-  -- Porting note: original proof is below and, as noted above, `FF'` needs to
-  -- be replaced by its definition before unification to avoid time out
-  -- exact Char.card_pow_char_pow (hχ₂.comp _) ψ.char (ringChar FF') n' hch₁ (hchar ▸ hch₂)
-  --      (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
-  have := Char.card_pow_char_pow (hχ₂.comp (algebraMap F' FF')) ψ.char
+  exact Char.card_pow_char_pow (hχ₂.comp (algebraMap F' FF')) ψ.char
     (ringChar FF') n' hch₁ (hchar ▸ hch₂)
     (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
-  simp_rw [ψ, FF'_def] at this
-  exact this
 #align char.card_pow_card Char.card_pow_card
 
 end GaussSumValues
