@@ -2492,7 +2492,7 @@ theorem closed_gdelta_separating_cover {s t : Set X} [NormalSpace X] (st_dis : D
     apply normal_exists_closure_subset t_cl (T_open (g n).1 (g n).2)
     rw [T_int]
     exact sInter_subset_of_mem (g n).2
-  have T_int' : ⋂ i, closure (g' i) = t := by
+  have clg'_int : ⋂ i, closure (g' i) = t := by
     apply Subset.antisymm ?_
       (subset_iInter fun n ↦ Subset.trans (clt_sub_g' n) subset_closure)
     rw [T_int]
@@ -2503,7 +2503,7 @@ theorem closed_gdelta_separating_cover {s t : Set X} [NormalSpace X] (st_dis : D
     rw [gn]
   use fun n ↦ (closure (g' n))ᶜ
   constructor
-  · rw [← compl_iInter, subset_compl_comm, T_int']
+  · rw [← compl_iInter, subset_compl_comm, clg'_int]
     exact Disjoint.subset_compl_left st_dis
   intro n
   constructor
