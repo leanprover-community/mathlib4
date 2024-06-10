@@ -20,9 +20,6 @@ then `SheafOfModules.{u} R` is abelian: this instance shall be
 found automatically if this file and `Algebra.Category.GroupCat.FilteredColimits`
 are imported.
 
-For example, the category of sheaves of modules over a scheme is an abelian
-category, see `AlgebraicGeometry.Modules.Sheaf`.
-
 -/
 
 universe v v' u u'
