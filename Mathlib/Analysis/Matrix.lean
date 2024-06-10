@@ -206,8 +206,8 @@ lemma norm_eq_natNorm (A : Matrix m n ℤ) : ‖A‖ = natNorm A := by
   exact (NNReal.natCast_natAbs (A i j)).symm
 
 /-- The natNorm of a non-zero integral matrix is at least 1-/
-lemma one_le_natNorm (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) : 1 ≤ natNorm A := by
-  simp only [← norm_pos_iff', norm_eq_natNorm A, Nat.cast_pos] at hA_nezero
+lemma one_le_natNorm_of_ne_zero (A : Matrix m n ℤ) (hA_ne_zero : A ≠ 0) : 1 ≤ natNorm A := by
+  simp only [← norm_pos_iff', norm_eq_natNorm A, Nat.cast_pos] at hA_ne_zero
   linarith
 
 end Int
