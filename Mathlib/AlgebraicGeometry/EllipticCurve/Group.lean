@@ -655,24 +655,24 @@ namespace WeierstrassCurve.Jacobian.Point
 variable {F : Type u} [Field F] {W : Jacobian F}
 
 lemma zero_add (P : W.Point) : 0 + P = P :=
-  toAffineAddEquiv.injective <| by
+  (toAffineAddEquiv W).injective <| by
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, _root_.zero_add]
 
 lemma add_zero (P : W.Point) : P + 0 = P :=
-  toAffineAddEquiv.injective <| by
+  (toAffineAddEquiv W).injective <| by
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, _root_.add_zero]
 
 lemma add_left_neg (P : W.Point) : -P + P = 0 :=
-  toAffineAddEquiv.injective <| by
-    rcases P with @⟨⟨_⟩, _⟩
+  (toAffineAddEquiv W).injective <| by
+    rcases P
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, _root_.add_left_neg,
       toAffineLift_zero]
 
 lemma add_comm (P Q : W.Point) : P + Q = Q + P :=
-  toAffineAddEquiv.injective <| by simp only [map_add, _root_.add_comm]
+  (toAffineAddEquiv W).injective <| by simp only [map_add, _root_.add_comm]
 
 lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
-  toAffineAddEquiv.injective <| by simp only [map_add, _root_.add_assoc]
+  (toAffineAddEquiv W).injective <| by simp only [map_add, _root_.add_assoc]
 
 noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
   nsmul := nsmulRec
