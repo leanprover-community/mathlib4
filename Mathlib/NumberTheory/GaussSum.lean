@@ -247,6 +247,7 @@ in this way, the result is reduced to `card_pow_char_pow`.
 
 open ZMod
 
+count_heartbeats in
 -- TODO: make this faster!
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
@@ -271,19 +272,17 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   -- with a primitive eighth root of unity `τ`
   let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
   -- We cast from `AddChar (ZMod (8 : ℕ+)) FF` to `AddChar (ZMod 8) FF`
-  -- This is needed to make `simp only [← h₁]` below work.
+  -- This is needed to make `simp_rw [← h₁]` below work.
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
   let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
     refine (sq_eq_one_iff.1 ?_).resolve_left ?_
     · rw [← pow_mul, ← map_nsmul_eq_pow ψ₈char]
       -- doesn't match syntactically for `rw`
-      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).2 ?_
-      decide
+      exact (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).2 (by decide)
     · rw [← map_nsmul_eq_pow ψ₈char]
       -- doesn't match syntactically for `rw`
-      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).not.2 ?_
-      decide
+      exact (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).not.2 (by decide)
 
   -- we consider `χ₈` as a multiplicative character `ℤ/8ℤ → FF`
   let χ := χ₈.ringHomComp (Int.castRingHom FF)
@@ -293,36 +292,23 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   -- we now show that the Gauss sum of `χ` and `ψ₈` has the relevant property
   -- (this is the slow part)
   have hg : gaussSum χ ψ₈char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
-    have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈char a)) := by
-      ext; congr; apply pow_one
-    have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
-        8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by
-      ring
-    have h₃ : 8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) = ↑8 := by
-      rw [τ_spec, neg_add_self, zero_mul, add_zero]
-    have h₄ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 = ↑8 := by
-      rw [← h₃, ← h₂]
-    have h₅ :
-        (↑(χ₈ 0) * τ ^ 0 + ↑(χ₈ 1) * τ ^ 1 + ↑(χ₈ 2) * τ ^ 2 + ↑(χ₈ 3) * τ ^ 3 + ↑(χ₈ 4) * τ ^ 4 +
-        ↑(χ₈ 5) * τ ^ 5 + ↑(χ₈ 6) * τ ^ 6 + ↑(χ₈ 7) * τ ^ 7) ^ 2 = 8 := by
-      -- TODO: simplify if/when `simp` can reduce `![0,1,0,-1,0,-1,0,1] 5` to `-1`.
-      simp only [χ₈_apply, Int.reduceNeg, Matrix.cons_val_zero, Int.cast_zero, pow_zero, mul_one,
-        Matrix.cons_val_two, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.tail_cons, Matrix.head_cons,
-        zero_mul, Matrix.cons_val_three, Int.cast_neg, Int.cast_one, Matrix.cons_val_four, ← h₄]
-      congr
-      · -- `(↑(![0, 1, 0, -1, 0, -1, 0, 1] 5) : FF) = -1`
-        rw [show (-1 : FF) = (-1 : ℤ) by rw [Int.cast_neg, Int.cast_one]]
-        rfl
-      · -- `(↑(![0, 1, 0, -1, 0, -1, 0, 1] 6) : FF) * τ ^ 6 = 0`
-        refine mul_eq_zero_of_left ?_ _
-        rw [← Int.cast_zero (R := FF)]
-        rfl
-
-    -- Porting note: original proof
-    -- simpa only [hχ, one_mul, card, gaussSum, ← h₅, h₁] using h (`h` does not exist here?)
-    rw [gaussSum, hχ, one_mul, ZMod.card, Nat.cast_ofNat, ← h₅]
-    simp only [← h₁]
-    exact congrArg (· ^ 2) <| Fin.sum_univ_eight _
+    have h₁ : (fun (a : Fin 8) ↦ ↑(χ₈ a) * τ ^ a.val) = fun a ↦ χ a * ↑(ψ₈char a) := by
+      ext1; congr; apply pow_one
+    -- replace right had side by `8`
+    rw [hχ, one_mul, ZMod.card, Nat.cast_ofNat]
+    calc gaussSum χ ψ₈char ^ 2
+    _ = (∑ x : Fin 8, ↑(χ₈ x) * τ ^ x.val) ^ 2 := by simp_rw [gaussSum, ← h₁]
+    _ = (↑(χ₈ 0) * τ ^ 0 + ↑(χ₈ 1) * τ ^ 1 + ↑(χ₈ 2) * τ ^ 2 + ↑(χ₈ 3) * τ ^ 3 + ↑(χ₈ 4) * τ ^ 4 +
+          ↑(χ₈ 5) * τ ^ 5 + ↑(χ₈ 6) * τ ^ 6 + ↑(χ₈ 7) * τ ^ 7) ^ 2 :=
+      congrArg (· ^ 2) <| Fin.sum_univ_eight _
+    _ = (τ + -τ ^ 3 + -τ ^ 5 + τ ^ 7) ^ 2 := by
+      rw [show χ₈ 0 = 0 from rfl, show χ₈ 1 = 1 from rfl, show χ₈ 2 = 0 from rfl,
+        show χ₈ 3 = -1 from rfl, show χ₈ 4 = 0 from rfl, show χ₈ 5 = -1 from rfl,
+        show χ₈ 6 = 0 from rfl, show χ₈ 7 = 1 from rfl]
+      simp only [Int.cast_zero, pow_zero, mul_one, Int.cast_one, pow_one, one_mul, zero_add,
+        zero_mul, add_zero, Int.cast_neg, neg_mul]
+    _ = 8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring
+    _ = 8 := by rw [τ_spec, neg_add_self, zero_mul, add_zero]
 
   -- this allows us to apply `card_pow_char_pow` to our situation
   have h := Char.card_pow_char_pow (R := ZMod 8) hq ψ₈char (ringChar FF) n hu hFF hg
