@@ -613,8 +613,6 @@ lemma awayToSection_germ (f x) :
   ext z
   apply (Proj.stalkIso' 𝒜 x).eq_symm_apply.mpr
   apply Proj.stalkIso'_germ
-
-
 /--
 The ring map from `A⁰_ f` to the global sections of the structure sheaf of the projective spectrum
 of `A` restricted to the basic open set `D(f)`.
