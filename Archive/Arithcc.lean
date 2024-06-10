@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
@@ -53,20 +54,17 @@ section Types
 
 
 /-- Value type shared by both source and target languages. -/
-@[reducible]
-def Word :=
+abbrev Word :=
   ℕ
 #align arithcc.word Arithcc.Word
 
 /-- Variable identifier type in the source language. -/
-@[reducible]
-def Identifier :=
+abbrev Identifier :=
   String
 #align arithcc.identifier Arithcc.Identifier
 
 /-- Register name type in the target language. -/
-@[reducible]
-def Register :=
+abbrev Register :=
   ℕ
 #align arithcc.register Arithcc.Register
 
@@ -249,7 +247,7 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
   · trans ζ₂ <;> assumption
 #align arithcc.state_eq.trans Arithcc.StateEq.trans
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
   ⟨@StateEq.trans _⟩
 
@@ -261,7 +259,7 @@ protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : Sta
   trans ζ₂ <;> assumption
 #align arithcc.state_eq_state_eq_rs.trans Arithcc.StateEqStateEqRs.trans
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
   ⟨@StateEqStateEqRs.trans _⟩
 
@@ -319,7 +317,8 @@ theorem compiler_correctness
   -- 5.III
   | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂
-    simp
+    simp only [compile, List.append_assoc, List.singleton_append, List.cons_append, outcome_append,
+      outcome, value]
     generalize value e_s₁ ξ = ν₁ at e_ih_s₁ ⊢
     generalize value e_s₂ ξ = ν₂ at e_ih_s₂ ⊢
     generalize dν : ν₁ + ν₂ = ν
@@ -327,13 +326,11 @@ theorem compiler_correctness
     generalize dζ₂ : step (Instruction.sto t) ζ₁ = ζ₂
     generalize dζ₃ : outcome (compile _ e_s₂ (t + 1)) ζ₂ = ζ₃
     generalize dζ₄ : step (Instruction.add t) ζ₃ = ζ₄
-    have hζ₁ : ζ₁ ≃[t] { η with ac := ν₁ }
-    calc
+    have hζ₁ : ζ₁ ≃[t] { η with ac := ν₁ } := calc
       ζ₁ = outcome (compile map e_s₁ t) η := by simp_all
       _ ≃[t] { η with ac := ν₁ } := by apply e_ih_s₁ <;> assumption
     have hζ₁_ν₁ : ζ₁.ac = ν₁ := by simp_all [StateEq]
-    have hζ₂ : ζ₂ ≃[t + 1]/ac write t ν₁ η
-    calc
+    have hζ₂ : ζ₂ ≃[t + 1]/ac write t ν₁ η := calc
       ζ₂ = step (Instruction.sto t) ζ₁ := by simp_all
       _ = write t ζ₁.ac ζ₁ := by simp [step]
       _ = write t ν₁ ζ₁ := by simp_all
@@ -350,8 +347,7 @@ theorem compiler_correctness
         read (loc x map) ζ₂ = read (loc x map) (write t ν₁ η) := hζ₂ _ (ht' _)
         _ = read (loc x map) η := by simp only [loc] at ht; simp [(ht _).ne]
         _ = ξ x := hmap x
-    have hζ₃ : ζ₃ ≃[t + 1] { write t ν₁ η with ac := ν₂ }
-    calc
+    have hζ₃ : ζ₃ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := calc
       ζ₃ = outcome (compile map e_s₂ (t + 1)) ζ₂ := by simp_all
       _ ≃[t + 1] { ζ₂ with ac := ν₂ } := by apply e_ih_s₂ <;> assumption
       _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simp [StateEq]; apply hζ₂
@@ -361,14 +357,13 @@ theorem compiler_correctness
       cases' hζ₃ with _ hζ₃
       specialize hζ₃ t (Register.lt_succ_self _)
       simp_all
-    have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν }
-    calc
+    have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν } := calc
       ζ₄ = step (Instruction.add t) ζ₃ := by simp_all
-      _ = { ζ₃ with ac := read t ζ₃ + ζ₃.ac } := by simp [step]
-      _ = { ζ₃ with ac := ν } := by simp_all
-      _ ≃[t + 1] { { write t ν₁ η with ac := ν₂ } with ac := ν } := by
+      _  = { ζ₃ with ac := read t ζ₃ + ζ₃.ac } := by simp [step]
+      _  = { ζ₃ with ac := ν } := by simp_all
+      _  ≃[t + 1] { { write t ν₁ η with ac := ν₂ } with ac := ν } := by
         simp [StateEq] at hζ₃ ⊢; cases hζ₃; assumption
-      _ ≃[t + 1] { write t ν₁ η with ac := ν } := by simp_all; rfl
+      _  ≃[t + 1] { write t ν₁ η with ac := ν } := by simp_all; rfl
     apply write_eq_implies_stateEq <;> assumption
 #align arithcc.compiler_correctness Arithcc.compiler_correctness
 

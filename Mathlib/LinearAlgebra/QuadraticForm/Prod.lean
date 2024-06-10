@@ -77,6 +77,40 @@ def Isometry.inr (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : Q
   toLinearMap := LinearMap.inr R _ _
   map_app' m₁ := by simp
 
+variable (M₂) in
+/-- `LinearMap.fst` as an isometry, when the second space has the zero quadratic form. -/
+@[simps!]
+def Isometry.fst (Q₁ : QuadraticForm R M₁) : (Q₁.prod (0 : QuadraticForm R M₂)) →qᵢ Q₁ where
+  toLinearMap := LinearMap.fst R _ _
+  map_app' m₁ := by simp
+
+variable (M₁) in
+/-- `LinearMap.snd` as an isometry, when the first space has the zero quadratic form. -/
+@[simps!]
+def Isometry.snd (Q₂ : QuadraticForm R M₂) : ((0 : QuadraticForm R M₁).prod Q₂) →qᵢ Q₂ where
+  toLinearMap := LinearMap.snd R _ _
+  map_app' m₁ := by simp
+
+@[simp]
+lemma Isometry.fst_comp_inl (Q₁ : QuadraticForm R M₁) :
+    (fst M₂ Q₁).comp (inl Q₁ (0 : QuadraticForm R M₂)) = .id _ :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.snd_comp_inr (Q₂ : QuadraticForm R M₂) :
+    (snd M₁ Q₂).comp (inr (0 : QuadraticForm R M₁) Q₂) = .id _ :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.snd_comp_inl (Q₂ : QuadraticForm R M₂) :
+    (snd M₁ Q₂).comp (inl (0 : QuadraticForm R M₁) Q₂) = 0 :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.fst_comp_inr (Q₁ : QuadraticForm R M₁) :
+    (fst M₂ Q₁).comp (inr Q₁ (0 : QuadraticForm R M₂)) = 0 :=
+  ext fun _ => rfl
+
 theorem Equivalent.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₁' : QuadraticForm R N₁} {Q₂' : QuadraticForm R N₂} (e₁ : Q₁.Equivalent Q₁')
     (e₂ : Q₂.Equivalent Q₂') : (Q₁.prod Q₂).Equivalent (Q₁'.prod Q₂') :=
@@ -106,10 +140,10 @@ theorem anisotropic_of_prod {R} [OrderedCommRing R] [Module R M₁] [Module R M�
   simp_rw [Anisotropic, prod_apply, Prod.forall, Prod.mk_eq_zero] at h
   constructor
   · intro x hx
-    refine' (h x 0 _).1
+    refine (h x 0 ?_).1
     rw [hx, zero_add, map_zero]
   · intro x hx
-    refine' (h 0 x _).2
+    refine (h 0 x ?_).2
     rw [hx, add_zero, map_zero]
 #align quadratic_form.anisotropic_of_prod QuadraticForm.anisotropic_of_prod
 
@@ -133,9 +167,9 @@ theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
   constructor
   · rintro ⟨⟨hle₁, hle₂⟩, ha⟩
     obtain ⟨ha₁, ha₂⟩ := anisotropic_of_prod ha
-    refine' ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
+    exact ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
   · rintro ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
-    refine' ⟨⟨hle₁, hle₂⟩, _⟩
+    refine ⟨⟨hle₁, hle₂⟩, ?_⟩
     rintro ⟨x₁, x₂⟩ (hx : Q₁ x₁ + Q₂ x₂ = 0)
     rw [add_eq_zero_iff' (hle₁ x₁) (hle₂ x₂), ha₁.eq_zero_iff, ha₂.eq_zero_iff] at hx
     rwa [Prod.mk_eq_zero]
@@ -185,15 +219,15 @@ variable [Module R M₁] [Module R M₂]
 
 @[simp] theorem polarBilin_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.prod Q₂).polarBilin =
-      Q₁.polarBilin.comp (.fst _ _ _) (.fst _ _ _) +
-      Q₂.polarBilin.comp (.snd _ _ _) (.snd _ _ _) :=
-  BilinForm.ext <| polar_prod _ _
+      Q₁.polarBilin.compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
+      Q₂.polarBilin.compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) :=
+  LinearMap.ext₂ <| polar_prod _ _
 
 @[simp] theorem associated_prod [Invertible (2 : R)]
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     associated (Q₁.prod Q₂) =
-      Q₁.associated.comp (.fst _ _ _) (.fst _ _ _) +
-      Q₂.associated.comp (.snd _ _ _) (.snd _ _ _) := by
+      (associated Q₁).compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
+      (associated Q₂).compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) := by
   dsimp [associated, associatedHom]
   rw [polarBilin_prod, smul_add]
   rfl
@@ -203,8 +237,6 @@ end Ring
 end Prod
 
 section Pi
-
-open scoped BigOperators
 
 section Semiring
 variable [CommSemiring R]
@@ -246,6 +278,30 @@ def Isometry.single [Fintype ι] [DecidableEq ι] (Q : ∀ i, QuadraticForm R (M
     Q i →qᵢ pi Q where
   toLinearMap := LinearMap.single i
   map_app' := pi_apply_single _ _
+
+/-- `LinearMap.proj` as an isometry, when all but one quadratic form is zero. -/
+@[simps!]
+def Isometry.proj [Fintype ι] [DecidableEq ι] (i : ι) (Q : QuadraticForm R (Mᵢ i)) :
+    pi (Pi.single i Q) →qᵢ Q where
+  toLinearMap := LinearMap.proj i
+  map_app' m := by
+    dsimp
+    rw [pi_apply, Fintype.sum_eq_single i (fun j hij => ?_), Pi.single_eq_same]
+    rw [Pi.single_eq_of_ne hij, zero_apply]
+
+/-- Note that `QuadraticForm.Isometry.id` would not be well-typed as the RHS. -/
+@[simp, nolint simpNF]  -- ignore the bogus "Left-hand side does not simplify" lint error
+theorem Isometry.proj_comp_single_of_same [Fintype ι] [DecidableEq ι]
+    (i : ι) (Q : QuadraticForm R (Mᵢ i)) :
+    (proj i Q).comp (single _ i) = .ofEq (Pi.single_eq_same _ _) :=
+  ext fun _ => Pi.single_eq_same _ _
+
+/-- Note that `0 : 0 →qᵢ Q` alone would not be well-typed as the RHS. -/
+@[simp]
+theorem Isometry.proj_comp_single_of_ne [Fintype ι] [DecidableEq ι]
+    {i j : ι} (h : i ≠ j) (Q : QuadraticForm R (Mᵢ i)) :
+    (proj i Q).comp (single _ j) = (0 : 0 →qᵢ Q).comp (ofEq (Pi.single_eq_of_ne h.symm _)) :=
+  ext fun _ => Pi.single_eq_of_ne h _
 
 theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
     {Q' : ∀ i, QuadraticForm R (Nᵢ i)} (e : ∀ i, (Q i).Equivalent (Q' i)) :
@@ -291,7 +347,7 @@ theorem posDef_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (M�
     intro i
     exact ⟨hle i, anisotropic_of_pi ha i⟩
   · intro h
-    refine' ⟨fun i => (h i).1, fun x hx => funext fun i => (h i).2 _ _⟩
+    refine ⟨fun i => (h i).1, fun x hx => funext fun i => (h i).2 _ ?_⟩
     rw [pi_apply, Finset.sum_eq_zero_iff_of_nonneg fun j _ => ?_] at hx
     · exact hx _ (Finset.mem_univ _)
     exact (h j).1 _
@@ -312,11 +368,11 @@ variable [Fintype ι]
   simp_rw [Finset.sum_sub_distrib, pi_apply, Pi.add_apply]
 
 @[simp] theorem polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
-    (pi Q).polarBilin = ∑ i, (Q i).polarBilin.comp (.proj i) (.proj i) :=
-  BilinForm.ext fun x y => (polar_pi _ _ _).trans <| by simp
+    (pi Q).polarBilin = ∑ i, (Q i).polarBilin.compl₁₂ (.proj i) (.proj i) :=
+  LinearMap.ext₂ fun x y => (polar_pi _ _ _).trans <| by simp
 
 @[simp] theorem associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
-    associated (pi Q) = ∑ i, (Q i).associated.comp (.proj i) (.proj i) := by
+    associated (pi Q) = ∑ i, (Q i).associated.compl₁₂ (.proj i) (.proj i) := by
   dsimp [associated, associatedHom]
   rw [polarBilin_pi, Finset.smul_sum]
   rfl

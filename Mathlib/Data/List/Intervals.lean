@@ -39,7 +39,7 @@ def Ico (n m : ℕ) : List ℕ :=
 
 namespace Ico
 
-theorem zero_bot (n : ℕ) : Ico 0 n = range n := by rw [Ico, tsub_zero, range_eq_range']
+theorem zero_bot (n : ℕ) : Ico 0 n = range n := by rw [Ico, Nat.sub_zero, range_eq_range']
 #align list.Ico.zero_bot List.Ico.zero_bot
 
 @[simp]
@@ -62,24 +62,24 @@ theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
 theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
   suffices n ≤ l ∧ l < n + (m - n) ↔ n ≤ l ∧ l < m by simp [Ico, this]
   rcases le_total n m with hnm | hmn
-  · rw [add_tsub_cancel_of_le hnm]
-  · rw [tsub_eq_zero_iff_le.mpr hmn, add_zero]
+  · rw [Nat.add_sub_cancel' hnm]
+  · rw [Nat.sub_eq_zero_iff_le.mpr hmn, Nat.add_zero]
     exact
       and_congr_right fun hnl =>
         Iff.intro (fun hln => (not_le_of_gt hln hnl).elim) fun hlm => lt_of_lt_of_le hlm hmn
 #align list.Ico.mem List.Ico.mem
 
 theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
-  simp [Ico, tsub_eq_zero_iff_le.mpr h]
+  simp [Ico, Nat.sub_eq_zero_iff_le.mpr h]
 #align list.Ico.eq_nil_of_le List.Ico.eq_nil_of_le
 
 theorem map_add (n m k : ℕ) : (Ico n m).map (k + ·) = Ico (n + k) (m + k) := by
-  rw [Ico, Ico, map_add_range', add_tsub_add_eq_tsub_right m k, add_comm n k]
+  rw [Ico, Ico, map_add_range', Nat.add_sub_add_right m k, Nat.add_comm n k]
 #align list.Ico.map_add List.Ico.map_add
 
 theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
     ((Ico n m).map fun x => x - k) = Ico (n - k) (m - k) := by
-  rw [Ico, Ico, tsub_tsub_tsub_cancel_right h₁, map_sub_range' _ _ _ h₁]
+  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' _ _ _ h₁]
 #align list.Ico.map_sub List.Ico.map_sub
 
 @[simp]
@@ -89,15 +89,15 @@ theorem self_empty {n : ℕ} : Ico n n = [] :=
 
 @[simp]
 theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
-  Iff.intro (fun h => tsub_eq_zero_iff_le.mp <| by rw [← length, h, List.length]) eq_nil_of_le
+  Iff.intro (fun h => Nat.sub_eq_zero_iff_le.mp <| by rw [← length, h, List.length]) eq_nil_of_le
 #align list.Ico.eq_empty_iff List.Ico.eq_empty_iff
 
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
   convert range'_append n (m-n) (l-m) 1 using 2
-  · rw [one_mul, add_tsub_cancel_of_le hnm]
-  · rw [tsub_add_tsub_cancel hml hnm]
+  · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
+  · rw [Nat.sub_add_sub_cancel hml hnm]
 #align list.Ico.append_consecutive List.Ico.append_consecutive
 
 @[simp]
@@ -111,14 +111,15 @@ theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
 #align list.Ico.inter_consecutive List.Ico.inter_consecutive
 
 @[simp]
-theorem bagInter_consecutive (n m l : Nat) :  @List.bagInter ℕ instBEq (Ico n m) (Ico m l) = [] :=
-  (bagInter_nil_iff_inter_nil _ _).2 (inter_consecutive n m l)
+theorem bagInter_consecutive (n m l : Nat) :
+    @List.bagInter ℕ instBEqOfDecidableEq (Ico n m) (Ico m l) = [] :=
+  (bagInter_nil_iff_inter_nil _ _).2 (by convert inter_consecutive n m l)
 #align list.Ico.bag_inter_consecutive List.Ico.bagInter_consecutive
 
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
   dsimp [Ico]
-  simp [range', add_tsub_cancel_left]
+  simp [range', Nat.add_sub_cancel_left]
 #align list.Ico.succ_singleton List.Ico.succ_singleton
 
 theorem succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
@@ -134,7 +135,7 @@ theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
 @[simp]
 theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
   dsimp [Ico]
-  rw [tsub_tsub_cancel_of_le (succ_le_of_lt h)]
+  rw [Nat.sub_sub_self (succ_le_of_lt h)]
   simp [← Nat.one_eq_succ_zero]
 
 #align list.Ico.pred_singleton List.Ico.pred_singleton
@@ -147,7 +148,7 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
     trivial
 #align list.Ico.chain'_succ List.Ico.chain'_succ
 
--- Porting Note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
 #align list.Ico.not_mem_top List.Ico.not_mem_top
@@ -220,7 +221,7 @@ theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => 
   rw [← filter_lt_of_succ_bot hnm]
   exact filter_congr' fun _ _ => by
     rw [decide_eq_true_eq, decide_eq_true_eq]
-    exact lt_succ_iff.symm
+    exact Nat.lt_succ_iff.symm
 #align list.Ico.filter_le_of_bot List.Ico.filter_le_of_bot
 
 /-- For any natural numbers n, a, and b, one of the following holds:

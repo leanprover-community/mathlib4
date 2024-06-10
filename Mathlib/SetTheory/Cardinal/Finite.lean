@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Data.ULift
 import Mathlib.Data.ZMod.Defs
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.PartENat
 
 #align_import set_theory.cardinal.finite from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 
@@ -23,7 +23,6 @@ import Mathlib.SetTheory.Cardinal.Basic
 set_option autoImplicit true
 
 open Cardinal Function
-open scoped BigOperators
 
 noncomputable section
 
@@ -41,6 +40,11 @@ protected def card (α : Type*) : ℕ :=
 theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 #align nat.card_eq_fintype_card Nat.card_eq_fintype_card
+
+/-- Because this theorem takes `Fintype α` as a non-instance argument, it can be used in particular
+when `Fintype.card` ends up with different instance than the one found by inference  -/
+theorem _root_.Fintype.card_eq_nat_card {_ : Fintype α} : Fintype.card α = Nat.card α :=
+  mk_toNat_eq_card.symm
 
 lemma card_eq_finsetCard (s : Finset α) : Nat.card s = s.card := by
   simp only [Nat.card_eq_fintype_card, Fintype.card_coe]
@@ -79,13 +83,12 @@ theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
 
 lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
     (hf : Injective f) : Nat.card α ≤ Nat.card β := by
-  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) <|
-    mk_le_of_injective (α := ULift.{max u v} α) (β := ULift.{max u v} β) <| ULift.map_injective.2 hf
+  simpa using toNat_le_toNat (lift_mk_le_lift_mk_of_injective hf) (by simp [lt_aleph0_of_finite])
 
 lemma card_le_card_of_surjective {α : Type u} {β : Type v} [Finite α] (f : α → β)
     (hf : Surjective f) : Nat.card β ≤ Nat.card α := by
-  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) <| mk_le_of_surjective
-    (α := ULift.{max u v} α) (β := ULift.{max u v} β) <| ULift.map_surjective.2 hf
+  have : lift.{u} #β ≤ lift.{v} #α := mk_le_of_surjective (ULift.map_surjective.2 hf)
+  simpa using toNat_le_toNat this (by simp [lt_aleph0_of_finite])
 
 theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
   card_congr (Equiv.ofBijective f hf)
@@ -100,7 +103,7 @@ open Set
 variable {s t : Set α}
 
 lemma card_mono (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
-  toNat_le_of_le_of_lt_aleph0 ht.lt_aleph0 <| mk_le_mk_of_subset h
+  toNat_le_toNat (mk_le_mk_of_subset h) ht.lt_aleph0
 
 lemma card_image_le (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
   have := hs.to_subtype; card_le_card_of_surjective (imageFactorization f s) surjective_onto_image
@@ -116,7 +119,7 @@ lemma card_image_of_injOn (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := b
     simp [Nat.card_eq_zero_of_infinite]
 
 lemma card_image_of_injective (hf : Injective f) (s : Set α) :
-    Nat.card (f '' s) = Nat.card s := card_image_of_injOn <| hf.injOn _
+    Nat.card (f '' s) = Nat.card s := card_image_of_injOn hf.injOn
 
 lemma card_image_equiv (e : α ≃ β) : Nat.card (e '' s) = Nat.card s :=
     Nat.card_congr (e.image s).symm
@@ -126,7 +129,7 @@ lemma card_preimage_of_injOn {s : Set β} (hf : (f ⁻¹' s).InjOn f) (hsf : s �
   rw [← Nat.card_image_of_injOn hf, image_preimage_eq_iff.2 hsf]
 
 lemma card_preimage_of_injective {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
-    Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn (hf.injOn _) hsf
+    Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
 
 end Set
 
@@ -143,7 +146,7 @@ theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
 #align nat.card_of_subsingleton Nat.card_of_subsingleton
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem card_unique [Unique α] : Nat.card α = 1 :=
   card_of_subsingleton default
 #align nat.card_unique Nat.card_unique
@@ -182,7 +185,7 @@ theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
 #align nat.card_plift Nat.card_plift
 
 theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
-  simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, toNat_finset_prod]
+  simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, map_prod]
 #align nat.card_pi Nat.card_pi
 
 theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α := by
@@ -248,21 +251,21 @@ theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set
 #align part_enat.card_image_of_inj_on PartENat.card_image_of_injOn
 
 theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
-    (h : Function.Injective f) : card (f '' s) = card s :=
-  card_image_of_injOn (Set.injOn_of_injective h s)
+    (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 #align part_enat.card_image_of_injective PartENat.card_image_of_injective
 
--- Should I keeep the 6 following lemmas ?
+-- Should I keep the 6 following lemmas ?
+-- TODO: Add ofNat, zero, and one versions for simp confluence
 @[simp]
 theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
-  rw [← toPartENat_cast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+  rw [← toPartENat_natCast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 #align cardinal.coe_nat_le_to_part_enat_iff Cardinal.natCast_le_toPartENat_iff
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
     toPartENat c ≤ n ↔ c ≤ n := by
-  rw [← toPartENat_cast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
+  rw [← toPartENat_natCast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
 #align cardinal.to_part_enat_le_coe_nat_iff Cardinal.toPartENat_le_natCast_iff
 
 @[simp]
@@ -286,8 +289,8 @@ theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
-    toPartENat c < ↑n ↔ c < ↑n :=
-by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
+    toPartENat c < ↑n ↔ c < ↑n := by
+  simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
 #align lt_coe_nat_iff_lt Cardinal.toPartENat_lt_natCast_iff
 
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by

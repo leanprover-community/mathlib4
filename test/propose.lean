@@ -1,7 +1,8 @@
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Algebra.Associated
+import Mathlib.Data.Set.Subsingleton
 
 -- For debugging, you may find these options useful:
 -- set_option trace.Tactic.propose true
@@ -11,9 +12,9 @@ set_option autoImplicit true
 theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
 
 /--
-info: Try this: have : List.Disjoint K M := List.disjoint_of_subset_left m w
+info: Try this: have : K.Disjoint M := List.disjoint_of_subset_left m w
 ---
-info: Try this: have : List.Disjoint M L := List.disjoint_symm w
+info: Try this: have : M.Disjoint L := List.disjoint_symm w
 -/
 #guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
@@ -23,9 +24,9 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
   trivial
 
 /--
-info: Try this: have : List.Disjoint K M := List.disjoint_of_subset_left m w
+info: Try this: have : K.Disjoint M := List.disjoint_of_subset_left m w
 ---
-info: Try this: have : List.Disjoint K M := List.disjoint_of_subset_left m w
+info: Try this: have : K.Disjoint M := List.disjoint_of_subset_left m w
 -/
 #guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
@@ -54,12 +55,12 @@ example (p : Nat × String) : True := by
   trivial
 
 /--
-info: Try this: have : List.Disjoint M L := List.disjoint_symm w
+info: Try this: have : M.Disjoint L := List.disjoint_symm w
 ---
 info: Try this: have : a ∉ M := foo L M w m
 -/
 #guard_msgs in
-example (K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
+example (_K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
   have?! using w
   guard_hyp List.disjoint_symm : List.Disjoint M L := _root_.List.disjoint_symm w
   have : a ∉ M := by assumption
@@ -72,9 +73,13 @@ info: Try this: have : ¬IsUnit p := not_unit hp
 ---
 info: Try this: have : ¬p ∣ 1 := not_dvd_one hp
 ---
+info: Try this: have : p ∣ p ∨ p ∣ p := dvd_or_dvd hp (Exists.intro p (Eq.refl (p * p)))
+---
 info: Try this: have : p ≠ 0 := ne_zero hp
 ---
-info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := dvd_mul hp
+info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := Prime.dvd_mul hp
+---
+info: Try this: have : IsPrimal p := isPrimal hp
 ---
 info: Try this: have : p ≠ 1 := ne_one hp
 -/
@@ -94,7 +99,7 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     have?! using hp
     guard_hyp Prime.not_unit : ¬IsUnit p := not_unit hp
     contradiction
-  rw [pow_succ] at h
+  rw [pow_succ'] at h
   cases' dvd_or_dvd hp h with dvd_a dvd_pow
   · assumption
   exact ih dvd_pow

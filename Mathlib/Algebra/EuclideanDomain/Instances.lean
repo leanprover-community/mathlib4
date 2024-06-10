@@ -5,12 +5,10 @@ Authors: Louis Carlin, Mario Carneiro
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Ring.Lemmas
-import Mathlib.Init.Data.Int.Order
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Ring.Int
 
 #align_import algebra.euclidean_domain.instances from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
 
@@ -40,7 +38,7 @@ instance (priority := 100) Field.toEuclideanDomain {K : Type*} [Field K] : Eucli
 { toCommRing := Field.toCommRing
   quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,
   quotient_mul_add_remainder_eq := fun a b => by
-    by_cases h : b = 0 <;> simp [h, mul_div_cancel']
+    by_cases h : b = 0 <;> simp [h, mul_div_cancel₀]
   r := fun a b => a = 0 ∧ b ≠ 0,
   r_wellFounded :=
     WellFounded.intro fun a =>

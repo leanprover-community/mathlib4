@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj
-import Mathlib.Data.Fin.Basic
 
 #align_import representation_theory.Action from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
@@ -130,7 +129,7 @@ instance : Category (Action V G) where
   id M := Hom.id M
   comp f g := Hom.comp f g
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Hom.ext _ _ h
@@ -164,19 +163,19 @@ set_option linter.uppercaseLean3 false in
 #align Action.mk_iso Action.mkIso
 
 instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [IsIso f.hom] :
-    IsIso f := IsIso.of_iso (mkIso (asIso f.hom) f.comm)
+    IsIso f := (mkIso (asIso f.hom) f.comm).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Action.is_iso_of_hom_is_iso Action.isIso_of_hom_isIso
 
 instance isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
     @IsIso _ _ M N (Hom.mk f w) :=
-  IsIso.of_iso (mkIso (asIso f) w)
+  (mkIso (asIso f) w).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Action.is_iso_hom_mk Action.isIso_hom_mk
 
 namespace FunctorCategoryEquivalence
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
 def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
@@ -190,7 +189,7 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.functor Action.FunctorCategoryEquivalence.functor
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
 def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
@@ -205,14 +204,14 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.inverse Action.FunctorCategoryEquivalence.inverse
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.unit_iso Action.FunctorCategoryEquivalence.unitIso
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
   NatIso.ofComponents fun M => NatIso.ofComponents fun X => Iso.refl _
@@ -274,7 +273,7 @@ def forget : Action V G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.forget Action.forget
 
-instance : Faithful (forget V G) where map_injective w := Hom.ext _ _ w
+instance : (forget V G).Faithful where map_injective w := Hom.ext _ _ w
 
 instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
   forget := forget V G ⋙ ConcreteCategory.forget
@@ -303,8 +302,8 @@ noncomputable instance instPreservesColimitsForget [HasColimits V] :
 end Forget
 
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
-    N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) :=
-      by rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
+    N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
+      rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 set_option linter.uppercaseLean3 false in
 #align Action.iso.conj_ρ Action.Iso.conj_ρ
 

@@ -44,9 +44,7 @@ open scoped Matrix
 section CommRing
 
 variable [Fintype l] [Fintype m] [Fintype n]
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
-
 variable [CommRing α]
 
 /-- LDU decomposition of a block matrix with an invertible top-left corner, using the
@@ -58,7 +56,7 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
         fromBlocks 1 (⅟ A * B) 0 1 := by
   simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
     Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_self_assoc,
-    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel'_right]
+    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel]
 #align matrix.from_blocks_eq_of_invertible₁₁ Matrix.fromBlocks_eq_of_invertible₁₁
 
 /-- LDU decomposition of a block matrix with an invertible bottom-right corner, using the
@@ -251,15 +249,13 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟ D * C)] :
     Invertible (fromBlocks A B C D) := by
   -- factor `fromBlocks` via `fromBlocks_eq_of_invertible₂₂`, and state the inverse we expect
-  refine'
-    Invertible.copy' _ _
-      (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
-        (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+  convert Invertible.copy' _ _ (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+    (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D))
       (fromBlocks_eq_of_invertible₂₂ _ _ _ _) _
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
     letI : Invertible (1 : Matrix m m α) := invertibleOne
-    refine' Invertible.mul _ (fromBlocksZero₁₂Invertible _ _ _)
+    refine Invertible.mul ?_ (fromBlocksZero₁₂Invertible _ _ _)
     exact
       Invertible.mul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
@@ -326,8 +322,8 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
   letI iBD : Invertible (fromBlocks 1 (B * ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
     fromBlocksZero₂₁Invertible _ _ _
   letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
-  refine' (iBD.mulLeft _).symm _
-  refine' (iDC.mulRight _).symm iBDC
+  refine (iBD.mulLeft _).symm ?_
+  exact (iDC.mulRight _).symm iBDC
 #align matrix.invertible_of_from_blocks₂₂_invertible Matrix.invertibleOfFromBlocks₂₂Invertible
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
@@ -339,7 +335,7 @@ def invertibleOfFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n �
   letI iABCD' :=
     submatrixEquivInvertible (fromBlocks A B C D) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
   letI iDCBA := iABCD'.copy _ (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
-  refine' invertibleOfFromBlocks₂₂Invertible D C B A
+  exact invertibleOfFromBlocks₂₂Invertible D C B A
 #align matrix.invertible_of_from_blocks₁₁_invertible Matrix.invertibleOfFromBlocks₁₁Invertible
 
 /-- `Matrix.invertibleOfFromBlocks₂₂Invertible` and `Matrix.fromBlocks₂₂Invertible` as an
@@ -453,7 +449,7 @@ theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 +
 /-- The **Matrix determinant lemma**
 
 TODO: show the more general version without `hA : IsUnit A.det` as
-`(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A).mulVec u`.
+`(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
 -/
 theorem det_add_col_mul_row {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
     (A + col u * row v).det = A.det * (1 + row v * A⁻¹ * col u).det := by
@@ -479,16 +475,16 @@ end CommRing
 
 section StarOrderedRing
 
-variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
+variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarRing 𝕜] [StarOrderedRing 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
 theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (x : m → 𝕜) (y : n → 𝕜) [Invertible A]
     (hA : A.IsHermitian) :
-    vecMul (star (x ⊕ᵥ y)) (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
-      vecMul (star (x + (A⁻¹ * B).mulVec y)) A ⬝ᵥ (x + (A⁻¹ * B).mulVec y) +
-        vecMul (star y) (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
+    (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
+      (star (x + (A⁻¹ * B) *ᵥ y)) ᵥ* A ⬝ᵥ (x + (A⁻¹ * B) *ᵥ y) +
+        (star y) ᵥ* (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
   simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hA.eq,
     conjTranspose_nonsing_inv, star_mulVec]
@@ -498,9 +494,9 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
 theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
     (B : Matrix m n 𝕜) {D : Matrix n n 𝕜} (x : m → 𝕜) (y : n → 𝕜) [Invertible D]
     (hD : D.IsHermitian) :
-    vecMul (star (x ⊕ᵥ y)) (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
-      vecMul (star ((D⁻¹ * Bᴴ).mulVec x + y)) D ⬝ᵥ ((D⁻¹ * Bᴴ).mulVec x + y) +
-        vecMul (star x) (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
+    (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
+      (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) ᵥ* D ⬝ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
+        (star x) ᵥ* (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
   simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hD.eq,
     conjTranspose_nonsing_inv, star_mulVec]
@@ -518,7 +514,7 @@ theorem IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m
   · intro h
     apply IsHermitian.sub h.2.2.2 hBAB
   · intro h
-    refine' ⟨hA, rfl, conjTranspose_conjTranspose B, _⟩
+    refine ⟨hA, rfl, conjTranspose_conjTranspose B, ?_⟩
     rw [← sub_add_cancel D]
     apply IsHermitian.add h hBAB
 #align matrix.is_hermitian.from_blocks₁₁ Matrix.IsHermitian.fromBlocks₁₁
@@ -536,12 +532,12 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
   rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
   constructor
-  · refine' fun h => ⟨h.1, fun x => _⟩
-    have := h.2 (-(A⁻¹ * B).mulVec x ⊕ᵥ x)
+  · refine fun h => ⟨h.1, fun x => ?_⟩
+    have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
     rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_self, dotProduct_zero,
       zero_add] at this
     rw [dotProduct_mulVec]; exact this
-  · refine' fun h => ⟨h.1, fun x => _⟩
+  · refine fun h => ⟨h.1, fun x => ?_⟩
     rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
     apply le_add_of_nonneg_of_le
     · rw [← dotProduct_mulVec]
@@ -556,9 +552,7 @@ theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A :
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
   convert PosSemidef.fromBlocks₁₁ Bᴴ A hD <;>
-    first
-    | infer_instance
-    | simp
+    simp
 #align matrix.pos_semidef.from_blocks₂₂ Matrix.PosSemidef.fromBlocks₂₂
 
 end StarOrderedRing

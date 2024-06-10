@@ -18,7 +18,7 @@ This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, 
 
 namespace Nat.Primes
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- The canonical map from `Nat.Primes` to `ℕ+` -/
 @[coe] def toPNat : Nat.Primes → ℕ+ :=
   fun p => ⟨(p : ℕ), p.property.pos⟩
@@ -101,8 +101,9 @@ theorem gcd_mul_lcm (n m : ℕ+) : gcd n m * lcm n m = n * m :=
 #align pnat.gcd_mul_lcm PNat.gcd_mul_lcm
 
 theorem eq_one_of_lt_two {n : ℕ+} : n < 2 → n = 1 := by
-  intro h; apply le_antisymm; swap; apply PNat.one_le
-  exact PNat.lt_add_one_iff.1 h
+  intro h; apply le_antisymm; swap
+  · apply PNat.one_le
+  · exact PNat.lt_add_one_iff.1 h
 #align pnat.eq_one_of_lt_two PNat.eq_one_of_lt_two
 
 section Prime
@@ -122,6 +123,23 @@ theorem Prime.one_lt {p : ℕ+} : p.Prime → 1 < p :=
 theorem prime_two : (2 : ℕ+).Prime :=
   Nat.prime_two
 #align pnat.prime_two PNat.prime_two
+
+instance {p : ℕ+} [h : Fact p.Prime] : Fact (p : ℕ).Prime := h
+
+instance fact_prime_two : Fact (2 : ℕ+).Prime :=
+  ⟨prime_two⟩
+
+theorem prime_three : (3 : ℕ+).Prime :=
+  Nat.prime_three
+
+instance fact_prime_three : Fact (3 : ℕ+).Prime :=
+  ⟨prime_three⟩
+
+theorem prime_five : (5 : ℕ+).Prime :=
+  Nat.prime_five
+
+instance fact_prime_five : Fact (5 : ℕ+).Prime :=
+  ⟨prime_five⟩
 
 theorem dvd_prime {p m : ℕ+} (pp : p.Prime) : m ∣ p ↔ m = 1 ∨ m = p := by
   rw [PNat.dvd_iff]
@@ -172,13 +190,13 @@ theorem coprime_coe {m n : ℕ+} : Nat.Coprime ↑m ↑n ↔ m.Coprime n := by
 #align pnat.coprime_coe PNat.coprime_coe
 
 theorem Coprime.mul {k m n : ℕ+} : m.Coprime k → n.Coprime k → (m * n).Coprime k := by
-  repeat' rw [← coprime_coe]
+  repeat rw [← coprime_coe]
   rw [mul_coe]
   apply Nat.Coprime.mul
 #align pnat.coprime.mul PNat.Coprime.mul
 
 theorem Coprime.mul_right {k m n : ℕ+} : k.Coprime m → k.Coprime n → k.Coprime (m * n) := by
-  repeat' rw [← coprime_coe]
+  repeat rw [← coprime_coe]
   rw [mul_coe]
   apply Nat.Coprime.mul_right
 #align pnat.coprime.mul_right PNat.Coprime.mul_right
@@ -207,8 +225,8 @@ theorem Coprime.gcd_mul_left_cancel (m : ℕ+) {n k : ℕ+} :
   apply Nat.Coprime.gcd_mul_left_cancel; simpa
 #align pnat.coprime.gcd_mul_left_cancel PNat.Coprime.gcd_mul_left_cancel
 
-theorem Coprime.gcd_mul_right_cancel (m : ℕ+) {n k : ℕ+} : k.Coprime n → (m * k).gcd n = m.gcd n :=
-  by rw [mul_comm]; apply Coprime.gcd_mul_left_cancel
+theorem Coprime.gcd_mul_right_cancel (m : ℕ+) {n k : ℕ+} :
+    k.Coprime n → (m * k).gcd n = m.gcd n := by rw [mul_comm]; apply Coprime.gcd_mul_left_cancel
 #align pnat.coprime.gcd_mul_right_cancel PNat.Coprime.gcd_mul_right_cancel
 
 theorem Coprime.gcd_mul_left_cancel_right (m : ℕ+) {n k : ℕ+} :
@@ -254,7 +272,7 @@ theorem coprime_one {n : ℕ+} : n.Coprime 1 :=
 
 theorem Coprime.coprime_dvd_left {m k n : ℕ+} : m ∣ k → k.Coprime n → m.Coprime n := by
   rw [dvd_iff]
-  repeat' rw [← coprime_coe]
+  repeat rw [← coprime_coe]
   apply Nat.Coprime.coprime_dvd_left
 #align pnat.coprime.coprime_dvd_left PNat.Coprime.coprime_dvd_left
 

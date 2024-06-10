@@ -11,6 +11,14 @@ import Qq
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
 
+-- Currently we don't need to import all of ProofWidgets,
+-- but without this, if you don't run `lake build ProofWidgets` then `make test` will fail.
+-- Hopefully `lake` will be able to handle tests later.
+import ProofWidgets
+
+-- Import Mathlib-specific linters.
+import Mathlib.Tactic.Linter.Lint
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
@@ -22,9 +30,9 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.Check
 import Mathlib.Tactic.Choose
-import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
@@ -48,18 +56,16 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
-import Mathlib.Tactic.Have
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Lint
+import Mathlib.Tactic.Linter
 import Mathlib.Tactic.MkIffOfInductiveProp
--- NormNum imports `Mathlib.Algebra.GroupPower.Lemmas` and `Mathlib.Algebra.Order.Invertible`
+-- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
@@ -70,13 +76,10 @@ import Mathlib.Tactic.Propose
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
-import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
-import Mathlib.Tactic.Replace
-import Mathlib.Tactic.Rewrites
-import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
@@ -100,7 +103,6 @@ import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
-import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
@@ -120,6 +122,9 @@ thereby making tactics widely available without needing specific imports.
 
 We include some commented out imports here, with an explanation of their theory requirements,
 to save some time for anyone wondering why they are not here.
+
+We also import theory-free linters, commands, and utilities which are useful to have low in the
+import hierarchy.
 -/
 
 /-!
@@ -134,5 +139,6 @@ register_hint aesop
 register_hint simp_all?
 register_hint exact?
 register_hint decide
+register_hint omega
 
 end Hint

@@ -1,66 +1,27 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Mario Carneiro
 -/
-import Std.Tactic.TryThis
-import Mathlib.Util.Syntax
+import Lean
 
 /-!
-# Additions to "Try this" support
+# 'Try this' tactic macro
 
-This file could be upstreamed to `Std`.
+This is a convenient shorthand intended for macro authors to be able to generate "Try this"
+recommendations. (It is not the main implementation of 'Try this',
+which is implemented in Lean core, see `Lean.Meta.Tactic.TryThis`.)
 -/
 
-open Lean Elab Elab.Tactic PrettyPrinter Meta Std.Tactic.TryThis
+namespace Mathlib.Tactic
+open Lean
 
-/-- Add a suggestion for `have : t := e`. -/
-def addHaveSuggestion (ref : Syntax) (h? : Option Name) (t? : Option Expr) (e : Expr)
-    (origSpan? : Option Syntax := none) : TermElabM Unit := do
-  let estx ← delabToRefinableSyntax e
-  let prop ← isProp (← inferType e)
-  let tac ← if let some t := t? then
-    let tstx ← delabToRefinableSyntax t
-    if prop then
-      match h? with
-      | some h => `(tactic| have $(mkIdent h) : $tstx := $estx)
-      | none => `(tactic| have : $tstx := $estx)
-    else
-      `(tactic| let $(mkIdent (h?.getD `_)) : $tstx := $estx)
-  else
-    if prop then
-      match h? with
-      | some h => `(tactic| have $(mkIdent h) := $estx)
-      | none => `(tactic| have := $estx)
-    else
-      `(tactic| let $(mkIdent (h?.getD `_)) := $estx)
-  addSuggestion ref tac origSpan?
+/-- Produces the text `Try this: <tac>` with the given tactic, and then executes it. -/
+elab tk:"try_this" tac:tactic : tactic => do
+  Elab.Tactic.evalTactic tac
+  Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := ← getRef)
 
-open Lean.Parser.Tactic
-open Lean.Syntax
-
-/-- Add a suggestion for `rw [h₁, ← h₂] at loc`. -/
-def addRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
-    (type? : Option Expr := none) (loc? : Option Expr := none)
-  (origSpan? : Option Syntax := none) :
-    TermElabM Unit := do
-  let rules_stx := TSepArray.ofElems <| ← rules.toArray.mapM fun ⟨e, symm⟩ => do
-    let t ← delabToRefinableSyntax e
-    if symm then `(rwRule| ← $t:term) else `(rwRule| $t:term)
-  let tac ← do
-    let loc ← loc?.mapM fun loc => do `(location| at $(← delab loc):term)
-    `(tactic| rw [$rules_stx,*] $(loc)?)
-
-  let mut tacMsg :=
-    let rulesMsg := MessageData.sbracket <| MessageData.joinSep
-      (rules.map fun ⟨e, symm⟩ => (if symm then "← " else "") ++ m!"{e}") ", "
-    if let some loc := loc? then
-      m!"rw {rulesMsg} at {loc}"
-    else
-      m!"rw {rulesMsg}"
-  let mut extraMsg := ""
-  if let some type := type? then
-    tacMsg := tacMsg ++ m!"\n-- {type}"
-    extraMsg := extraMsg ++ s!"\n-- {← PrettyPrinter.ppExpr type}"
-  addSuggestion ref origSpan?
-    (s := { suggestion := tac, postInfo? := extraMsg, messageData? := tacMsg })
+/-- Produces the text `Try this: <tac>` with the given conv tactic, and then executes it. -/
+elab tk:"try_this" tac:conv : conv => do
+  Elab.Tactic.evalTactic tac
+  Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := ← getRef)

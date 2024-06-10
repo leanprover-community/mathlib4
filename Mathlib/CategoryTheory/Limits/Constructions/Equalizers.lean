@@ -29,7 +29,6 @@ open CategoryTheory CategoryTheory.Category
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v'} D] (G : C ⥤ D)
 
 -- We hide the "implementation details" inside a namespace
@@ -38,8 +37,7 @@ namespace HasEqualizersOfHasPullbacksAndBinaryProducts
 variable [HasBinaryProducts C] [HasPullbacks C]
 
 /-- Define the equalizing object -/
-@[reducible]
-def constructEqualizer (F : WalkingParallelPair ⥤ C) : C :=
+abbrev constructEqualizer (F : WalkingParallelPair ⥤ C) : C :=
   pullback (prod.lift (𝟙 _) (F.map WalkingParallelPairHom.left))
     (prod.lift (𝟙 _) (F.map WalkingParallelPairHom.right))
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.construct_equalizer CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.constructEqualizer
@@ -50,14 +48,14 @@ abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
   pullback.fst
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst
 
-theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) : pullbackFst F = pullback.snd :=
-  by convert (eq_whisker pullback.condition Limits.prod.fst :
+theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
+    pullbackFst F = pullback.snd := by
+  convert (eq_whisker pullback.condition Limits.prod.fst :
       (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst_eq_pullback_snd CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst_eq_pullback_snd
 
 /-- Define the equalizing cone -/
-@[reducible]
-def equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
+abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
   Cone.ofFork
     (Fork.ofι (pullbackFst F)
       (by
@@ -103,7 +101,7 @@ def preservesEqualizersOfPreservesPullbacksAndBinaryProducts [HasBinaryProducts 
   ⟨fun {K} =>
     preservesLimitOfPreservesLimitCone (equalizerConeIsLimit K) <|
       { lift := fun c => by
-          refine' pullback.lift ?_ ?_ ?_ ≫ (PreservesPullback.iso _ _ _ ).inv
+          refine pullback.lift ?_ ?_ ?_ ≫ (PreservesPullback.iso _ _ _ ).inv
           · exact c.π.app WalkingParallelPair.zero
           · exact c.π.app WalkingParallelPair.zero
           apply (mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd _ _)).hom_ext
@@ -137,8 +135,7 @@ namespace HasCoequalizersOfHasPushoutsAndBinaryCoproducts
 variable [HasBinaryCoproducts C] [HasPushouts C]
 
 /-- Define the equalizing object -/
-@[reducible]
-def constructCoequalizer (F : WalkingParallelPair ⥤ C) : C :=
+abbrev constructCoequalizer (F : WalkingParallelPair ⥤ C) : C :=
   pushout (coprod.desc (𝟙 _) (F.map WalkingParallelPairHom.left))
     (coprod.desc (𝟙 _) (F.map WalkingParallelPairHom.right))
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.construct_coequalizer CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.constructCoequalizer
@@ -155,8 +152,7 @@ theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) : pushoutInl F
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.pushout_inl_eq_pushout_inr CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.pushoutInl_eq_pushout_inr
 
 /-- Define the equalizing cocone -/
-@[reducible]
-def coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
+abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
   Cocone.ofCofork
     (Cofork.ofπ (pushoutInl F) (by
         conv_rhs => rw [pushoutInl_eq_pushout_inr]
@@ -205,7 +201,7 @@ def preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts [HasBinaryCoprod
   ⟨fun {K} =>
     preservesColimitOfPreservesColimitCocone (coequalizerCoconeIsColimit K) <|
       { desc := fun c => by
-          refine' (PreservesPushout.iso _ _ _).inv ≫ pushout.desc _ _ _
+          refine (PreservesPushout.iso _ _ _).inv ≫ pushout.desc ?_ ?_ ?_
           · exact c.ι.app WalkingParallelPair.one
           · exact c.ι.app WalkingParallelPair.one
           apply (mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod _ _)).hom_ext

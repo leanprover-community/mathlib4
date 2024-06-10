@@ -211,7 +211,7 @@ lemma L₀_exact : S.L₀.Exact := by
     simp only [← cancel_mono S.L₂.f, assoc, zero_comp, S.v₁₂.comm₁₂,
       ← reassoc_of% hy₁, w₀₂_τ₂, comp_zero]
   obtain ⟨x₁, hx₁⟩ : ∃ x₁, x₁ ≫ S.v₀₁.τ₁ = y₁ := ⟨_, S.exact_C₁_up.lift_f y₁ hy₁'⟩
-  refine' ⟨A₁, π₁, hπ₁, x₁, _⟩
+  refine ⟨A₁, π₁, hπ₁, x₁, ?_⟩
   simp only [← cancel_mono S.v₀₁.τ₂, assoc, ← S.v₀₁.comm₁₂, reassoc_of% hx₁, hy₁]
 
 lemma L₃_exact : S.L₃.Exact := S.op.L₀_exact.unop
@@ -319,11 +319,11 @@ lemma L₁'_exact : S.L₁'.Exact := by
   let x₂' := x₁ ≫ S.L₁.f
   let x₂ := π₂ ≫ p ≫ pullback.fst
   have hx₂' : (x₂ - x₂') ≫ S.v₁₂.τ₂ = 0 := by
-    simp only [sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
+    simp only [x₂, x₂', sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
   let k₂ : A₂ ⟶ S.L₀.X₂ := S.exact_C₂_up.lift _ hx₂'
   have hk₂ : k₂ ≫ S.v₀₁.τ₂ = x₂ - x₂' := S.exact_C₂_up.lift_f _ _
   have hk₂' : k₂ ≫ S.L₀.g = π₂ ≫ p ≫ pullback.snd := by
-    simp only [← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂,
+    simp only [x₂, x₂', ← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂,
       sub_comp, S.L₁.zero, comp_zero, sub_zero, pullback.condition]
   exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, k₂, by simp only [assoc, L₁'_f, ← hk₂', hp]⟩
 
@@ -446,7 +446,7 @@ end
 
 /-- The functor which sends `S : SnakeInput C` to its zeroth line `S.L₀`. -/
 @[simps]
-def functorL₉ : SnakeInput C ⥤ ShortComplex C where
+def functorL₀ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₀
   map f := f.f₀
 

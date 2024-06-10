@@ -18,7 +18,7 @@ It also provides the expected value for specific probability mass functions.
 
 namespace PMF
 
-open MeasureTheory BigOperators ENNReal TopologicalSpace
+open MeasureTheory ENNReal TopologicalSpace
 
 section General
 
@@ -32,7 +32,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
     apply integral_countable f p.support_countable
     rwa [restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p a).toReal • f a := by
-    congr with x; congr
+    congr with x; congr 2
     apply PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
   _ = ∑' a, (p a).toReal • f a :=
     tsum_subtype_eq_of_support_subset <| by calc
@@ -42,8 +42,8 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
 
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
-  rw [integral_fintype _ (integrable_of_fintype _ f)]
-  congr with x; congr
+  rw [integral_fintype _ (.of_finite _ f)]
+  congr with x; congr 2
   exact PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
 
 end General

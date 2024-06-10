@@ -38,7 +38,7 @@ namespace Monad
 
 attribute [local instance] endofunctorMonoidalCategory
 
-/-- To every `Monad C` we associated a monoid object in `C ⥤ C`.-/
+/-- To every `Monad C` we associated a monoid object in `C ⥤ C`. -/
 @[simps]
 def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   X := (M : C ⥤ C)
@@ -66,14 +66,14 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   μ' := M.mul
   left_unit' := fun X => by
     -- Porting note: now using `erw`
-    erw [← NatTrans.id_hcomp_app M.one, ← NatTrans.comp_app, M.mul_one]
+    erw [← whiskerLeft_app, ← NatTrans.comp_app, M.mul_one]
     rfl
   right_unit' := fun X => by
     -- Porting note: now using `erw`
-    erw [← NatTrans.hcomp_id_app M.one, ← NatTrans.comp_app, M.one_mul]
+    erw [← whiskerRight_app, ← NatTrans.comp_app, M.one_mul]
     rfl
   assoc' := fun X => by
-    rw [← NatTrans.hcomp_id_app, ← NatTrans.comp_app]
+    rw [← whiskerLeft_app, ← whiskerRight_app, ← NatTrans.comp_app]
     -- Porting note: had to add this step:
     erw [M.mul_assoc]
     simp
@@ -93,13 +93,12 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
       app_η := by
         intro X
         erw [← NatTrans.comp_app, f.one_hom]
-        rfl
+        simp only [Functor.id_obj, ofMon_obj, ofMon_η]
       app_μ := by
         intro Z
         erw [← NatTrans.comp_app, f.mul_hom]
         dsimp
-        simp only [NatTrans.naturality, NatTrans.hcomp_app, assoc, NatTrans.comp_app,
-          ofMon_μ] }
+        simp only [Category.assoc, NatTrans.naturality, ofMon_obj, ofMon] }
 #align category_theory.Monad.Mon_to_Monad CategoryTheory.Monad.monToMonad
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/

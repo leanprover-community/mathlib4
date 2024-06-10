@@ -3,11 +3,12 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Scott Morrison, Simon Hudon
 -/
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Opposites
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import category_theory.endomorphism from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
@@ -58,11 +59,11 @@ def of (f : X ⟶ X) : End X := f
 def asHom (f : End X) : X ⟶ X := f
 #align category_theory.End.as_hom CategoryTheory.End.asHom
 
-@[simp] -- porting note: todo: use `of`/`asHom`?
+@[simp] -- Porting note (#11215): TODO: use `of`/`asHom`?
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 #align category_theory.End.one_def CategoryTheory.End.one_def
 
-@[simp] -- porting note: todo: use `of`/`asHom`?
+@[simp] -- Porting note (#11215): TODO: use `of`/`asHom`?
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 #align category_theory.End.mul_def CategoryTheory.End.mul_def
 
@@ -130,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Aut
 
--- porting note: added because `Iso.ext` is not triggered automatically
+-- Porting note: added because `Iso.ext` is not triggered automatically
 @[ext]
 lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Iso.ext h
@@ -168,6 +169,10 @@ def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.units_End_equiv_Aut CategoryTheory.Aut.unitsEndEquivAut
 
+/-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/
+@[simps!]
+def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEndEquivAut X).symm
+
 /-- Isomorphisms induce isomorphisms of the automorphism group -/
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := ⟨h.inv ≫ x.hom ≫ h.hom, h.inv ≫ x.inv ≫ h.hom, _, _⟩
@@ -200,19 +205,26 @@ def mapAut : Aut X →* Aut (f.obj X) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Aut CategoryTheory.Functor.mapAut
 
-/-- `equivOfFullyFaithful f` as an isomorphism between endomorphism monoids. -/
+namespace FullyFaithful
+
+variable {f}
+variable (hf : FullyFaithful f)
+
+/-- `mulEquivEnd` as an isomorphism between endomorphism monoids. -/
 @[simps!]
-def mulEquivOfFullyFaithful [Full f] [Faithful f] :
+noncomputable def mulEquivEnd (X : C) :
     End X ≃* End (f.obj X) where
-  toEquiv := equivOfFullyFaithful f
+  toEquiv := hf.homEquiv
   __ := mapEnd X f
 
-/-- `isoEquivOfFullyFaithful f` as an isomorphism between automorphism groups. -/
+/-- `mulEquivAut` as an isomorphism between automorphism groups. -/
 @[simps!]
-def autMulEquivOfFullyFaithful [Full f] [Faithful f] :
+noncomputable def autMulEquivOfFullyFaithful (X : C) :
     Aut X ≃* Aut (f.obj X) where
-  toEquiv := isoEquivOfFullyFaithful f
+  toEquiv := hf.isoEquiv
   __ := mapAut X f
+
+end FullyFaithful
 
 end Functor
 

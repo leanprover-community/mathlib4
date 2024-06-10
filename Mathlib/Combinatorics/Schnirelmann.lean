@@ -3,10 +3,11 @@ Copyright (c) 2023 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
-import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Real.Archimedean
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Schnirelmann density
@@ -93,9 +94,9 @@ lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
   · simpa using schnirelmannDensity_le_one
   apply schnirelmannDensity_le_of_le k hk'.ne'
   rw [← one_div, one_sub_div (Nat.cast_pos.2 hk').ne']
-  apply div_le_div_of_le (Nat.cast_nonneg _)
+  gcongr
   rw [← Nat.cast_pred hk', Nat.cast_le]
-  suffices : (Ioc 0 k).filter (· ∈ A) ⊆ Ioo 0 k; exact (card_le_card this).trans_eq (by simp)
+  suffices (Ioc 0 k).filter (· ∈ A) ⊆ Ioo 0 k from (card_le_card this).trans_eq (by simp)
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
@@ -106,8 +107,8 @@ lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDen
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
-  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩ fun _ => div_le_div_of_le (by positivity) <|
-    Nat.cast_le.2 <| card_le_card <| monotone_filter_right _ h
+  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
+    gcongr; exact monotone_filter_right _ h
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
@@ -141,8 +142,8 @@ lemma le_schnirelmannDensity_iff {x : ℝ} :
   (le_ciInf_iff ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩).trans Subtype.forall
 
 lemma schnirelmannDensity_lt_iff {x : ℝ} :
-    schnirelmannDensity A < x ↔ ∃ n : ℕ, 0 < n ∧ ((Ioc 0 n).filter (· ∈ A)).card / n < x :=
-  by rw [← not_le, le_schnirelmannDensity_iff]; simp
+    schnirelmannDensity A < x ↔ ∃ n : ℕ, 0 < n ∧ ((Ioc 0 n).filter (· ∈ A)).card / n < x := by
+  rw [← not_le, le_schnirelmannDensity_iff]; simp
 
 lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
     schnirelmannDensity A ≤ x ↔
@@ -151,8 +152,8 @@ lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
   simp only [schnirelmannDensity_lt_iff]
 
 lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
-    (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B :=
-  by rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
+    (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B := by
+  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
 
 /-- The Schnirelmann density is unaffected by adding `0`. -/
 @[simp] lemma schnirelmannDensity_insert_zero [DecidablePred (· ∈ insert 0 A)] :
@@ -196,8 +197,7 @@ lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 :=
   have hn : 0 < n := Nat.succ_pos _
   use n, hn
   rw [div_lt_iff (Nat.cast_pos.2 hn), ← div_lt_iff' hε, Nat.cast_add_one]
-  exact (Nat.lt_floor_add_one _).trans_le' <| div_le_div_of_le hε.le <| Nat.cast_le.2 <|
-    card_le_card <| by simp [subset_iff]
+  exact (Nat.lt_floor_add_one _).trans_le' <| by gcongr; simp [subset_iff]
 
 /-- The Schnirelmann density of any finite set is `0`. -/
 lemma schnirelmannDensity_finite {A : Set ℕ} [DecidablePred (· ∈ A)] (hA : A.Finite) :
@@ -236,8 +236,8 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   rw [le_schnirelmannDensity_iff]
   intro n hn
   simp only [Set.mem_setOf_eq]
-  have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ (Ioc 0 n).filter (· % m = 1)
-  · simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
+  have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ (Ioc 0 n).filter (· % m = 1) := by
+    simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
     rintro _ y _ hy' rfl
     have hm : 2 ≤ m := hm.lt_of_le' hm'
     simp only [Nat.mul_add_mod', Nat.mod_eq_of_lt hm, add_pos_iff, or_true, and_true, true_and,

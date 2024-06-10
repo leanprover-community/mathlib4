@@ -338,7 +338,8 @@ theorem fderivWithin_ccos (hf : DifferentiableWithinAt ℂ f s x) (hxs : UniqueD
   hf.hasFDerivWithinAt.ccos.fderivWithin hxs
 #align fderiv_within_ccos fderivWithin_ccos
 
-@[simp]
+@[simp, nolint simpNF] -- `simp` times out trying to find `Module ℂ (E →L[ℂ] ℂ)`
+-- with all of `Mathlib` opened -- no idea why
 theorem fderiv_ccos (hc : DifferentiableAt ℂ f x) :
     fderiv ℂ (fun x => Complex.cos (f x)) x = -Complex.sin (f x) • fderiv ℂ f x :=
   hc.hasFDerivAt.ccos.fderiv
@@ -723,7 +724,7 @@ theorem abs_sinh (x : ℝ) : |sinh x| = sinh |x| := by
 #align real.abs_sinh Real.abs_sinh
 
 theorem cosh_strictMonoOn : StrictMonoOn cosh (Ici 0) :=
-  (convex_Ici _).strictMonoOn_of_deriv_pos continuous_cosh.continuousOn fun x hx => by
+  strictMonoOn_of_deriv_pos (convex_Ici _) continuous_cosh.continuousOn fun x hx => by
     rw [interior_Ici, mem_Ioi] at hx; rwa [deriv_cosh, sinh_pos_iff]
 #align real.cosh_strict_mono_on Real.cosh_strictMonoOn
 
@@ -749,8 +750,8 @@ theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
 
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   -- Porting note: `by simp; abel` was just `by simp` in mathlib3.
-  refine' strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) _
-  refine' (convex_Ici _).strictMonoOn_of_deriv_pos _ fun x hx => _
+  refine strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) ?_
+  refine strictMonoOn_of_deriv_pos (convex_Ici _) ?_ fun x hx => ?_
   · exact (continuous_sinh.sub continuous_id).continuousOn
   · rw [interior_Ici, mem_Ioi] at hx
     rw [deriv_sub, deriv_sinh, deriv_id'', sub_pos, one_lt_cosh]
@@ -1201,17 +1202,15 @@ is. -/
 def evalSinh : PositivityExt where eval {u α} _ _ e := do
   let zα : Q(Zero ℝ) := q(inferInstance)
   let pα : Q(PartialOrder ℝ) := q(inferInstance)
-  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
-    match α, e with
-    | ~q(ℝ), ~q(Real.sinh $a) =>
-      assumeInstancesCommute
-      match ← core zα pα a with
-      | .positive pa => return .positive q(sinh_pos_of_pos $pa)
-      | .nonnegative pa => return .nonnegative q(sinh_nonneg_of_nonneg $pa)
-      | .nonzero pa => return .nonzero q(sinh_ne_zero_of_ne_zero $pa)
-      | _ => return .none
-    | _, _ => throwError "not Real.sinh"
-  else throwError "not Real.sinh"
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.sinh $a) =>
+    assumeInstancesCommute
+    match ← core zα pα a with
+    | .positive pa => return .positive q(sinh_pos_of_pos $pa)
+    | .nonnegative pa => return .nonnegative q(sinh_nonneg_of_nonneg $pa)
+    | .nonzero pa => return .nonzero q(sinh_ne_zero_of_ne_zero $pa)
+    | _ => return .none
+  | _, _, _ => throwError "not Real.sinh"
 
 example (x : ℝ) (hx : 0 < x) : 0 < x.sinh := by positivity
 example (x : ℝ) (hx : 0 ≤ x) : 0 ≤ x.sinh := by positivity

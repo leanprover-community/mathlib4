@@ -3,6 +3,7 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
@@ -36,7 +37,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 namespace Subgroup
 
-open BigOperators Cardinal
+open Cardinal
 
 variable {G : Type*} [Group G] (H K L : Subgroup G)
 
@@ -65,12 +66,12 @@ theorem index_comap_of_surjective {G' : Type*} [Group G'] {f : G' →* G}
   have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
-  refine' Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨_, _⟩)
+  refine Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
-    refine' Quotient.ind' fun x => _
-    refine' Quotient.ind' fun y => _
+    refine Quotient.ind' fun x => ?_
+    refine Quotient.ind' fun y => ?_
     exact (key x y).mpr
-  · refine' Quotient.ind' fun x => _
+  · refine Quotient.ind' fun x => ?_
     obtain ⟨y, hy⟩ := hf x
     exact ⟨y, (Quotient.map'_mk'' f _ y).trans (congr_arg Quotient.mk'' hy)⟩
 #align subgroup.index_comap_of_surjective Subgroup.index_comap_of_surjective
@@ -180,10 +181,10 @@ of `b * a` and `b` belong to `H`. -/
 for all `b`, exactly one of `b + a` and `b` belong to `H`."]
 theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈ H) := by
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
-    QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne.def, QuotientGroup.eq, mul_one,
+    QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne, QuotientGroup.eq, mul_one,
     xor_iff_iff_not]
-  refine'
-    exists_congr fun a => ⟨fun ha b => ⟨fun hba hb => _, fun hb => _⟩, fun ha => ⟨_, fun b hb => _⟩⟩
+  refine exists_congr fun a =>
+    ⟨fun ha b => ⟨fun hba hb => ?_, fun hb => ?_⟩, fun ha => ⟨?_, fun b hb => ?_⟩⟩
   · exact ha.1 ((mul_mem_cancel_left hb).1 hba)
   · exact inv_inv b ▸ ha.2 _ (mt (inv_mem_iff (x := b)).1 hb)
   · rw [← inv_mem_iff (x := a), ← ha, inv_mul_self]
@@ -198,7 +199,7 @@ theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (
   by_cases hb : b ∈ H; · simp only [hb, iff_true_iff, mul_mem_cancel_right hb]
   simp only [ha, hb, iff_self_iff, iff_true_iff]
   rcases index_eq_two_iff.1 h with ⟨c, hc⟩
-  refine' (hc _).or.resolve_left _
+  refine (hc _).or.resolve_left ?_
   rwa [mul_assoc, mul_mem_cancel_right ((hc _).or.resolve_right hb)]
 #align subgroup.mul_mem_iff_of_index_two Subgroup.mul_mem_iff_of_index_two
 #align add_subgroup.add_mem_iff_of_index_two AddSubgroup.add_mem_iff_of_index_two
@@ -217,7 +218,7 @@ theorem sq_mem_of_index_two (h : H.index = 2) (a : G) : a ^ 2 ∈ H :=
 
 variable (H K)
 
---porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
+-- Porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
 @[to_additive (attr := simp)]
 theorem index_top : (⊤ : Subgroup G).index = 1 :=
   Nat.card_eq_one_iff_unique.mpr ⟨QuotientGroup.subsingleton_quotient_top, ⟨1⟩⟩
@@ -481,7 +482,7 @@ theorem index_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
 #align subgroup.index_infi_le Subgroup.index_iInf_le
 #align add_subgroup.index_infi_le AddSubgroup.index_iInf_le
 
---porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
+-- Porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
 @[to_additive (attr := simp) index_eq_one]
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
   ⟨fun h =>
@@ -510,7 +511,7 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
 #align subgroup.index_ne_zero_of_finite Subgroup.index_ne_zero_of_finite
 #align add_subgroup.index_ne_zero_of_finite AddSubgroup.index_ne_zero_of_finite
 
---porting note: changed due to error with `Cardinal.toNat_apply_of_aleph0_le`
+-- Porting note: changed due to error with `Cardinal.toNat_apply_of_aleph0_le`
 /-- Finite index implies finite quotient. -/
 @[to_additive "Finite index implies finite quotient."]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
@@ -559,7 +560,7 @@ theorem finiteIndex_of_finite_quotient [Finite (G ⧸ H)] : FiniteIndex H :=
 #align subgroup.finite_index_of_finite_quotient Subgroup.finiteIndex_of_finite_quotient
 #align add_subgroup.finite_index_of_finite_quotient AddSubgroup.finiteIndex_of_finite_quotient
 
---porting note: had to manually provide finite instance for quotient when it should be automatic
+-- Porting note: had to manually provide finite instance for quotient when it should be automatic
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
   @finiteIndex_of_finite_quotient _ _ H (Quotient.finite _)

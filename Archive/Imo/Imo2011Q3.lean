@@ -28,7 +28,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
   have hxt : ∀ x t, f t ≤ t * f x - x * f x + f (f x) := fun x t =>
     calc
       f t = f (x + (t - x)) := by rw [add_eq_of_eq_sub' rfl]
-      _ ≤ (t - x) * f x + f (f x) := (hf x (t - x))
+      _ ≤ (t - x) * f x + f (f x) := hf x (t - x)
       _ = t * f x - x * f x + f (f x) := by rw [sub_mul]
   have h_ab_combined : ∀ a b, a * f a + b * f b ≤ 2 * f a * f b := fun a b => by
     linarith [hxt b (f a), hxt a (f b)]
@@ -41,7 +41,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
     let s := (x * f x - f (f x)) / f x
     have hm : min 0 s - 1 < s := (sub_one_lt _).trans_le (min_le_right 0 s)
     have hml : min 0 s - 1 < 0 := (sub_one_lt _).trans_le (min_le_left 0 s)
-    suffices : f (min 0 s - 1) < 0; exact not_le.mpr this (h_f_nonneg_of_pos (min 0 s - 1) hml)
+    suffices f (min 0 s - 1) < 0 from not_le.mpr this (h_f_nonneg_of_pos (min 0 s - 1) hml)
     have hp : 0 < f x := not_le.mp h_suppose_not
     calc
       f (min 0 s - 1) ≤ (min 0 s - 1) * f x - x * f x + f (f x) := hxt x (min 0 s - 1)

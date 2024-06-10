@@ -50,7 +50,7 @@ separable closure, separably closed
 
 universe u v w
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 open Polynomial
 
@@ -110,7 +110,7 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
     rw [degree_X_pow_sub_C hn' x]
     exact (WithBot.coe_lt_coe.2 hn').ne'
   by_cases hx : x = 0
-  · exact ⟨0, by rw [hx, pow_eq_zero_iff hn']⟩
+  · exact ⟨0, by rw [hx, pow_eq_zero_iff hn'.ne']⟩
   · obtain ⟨z, hz⟩ := exists_root _ this <| separable_X_pow_sub_C x hn.out hx
     use z
     simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
@@ -121,7 +121,7 @@ theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z
 
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
+  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
   rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
@@ -232,8 +232,8 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
-  to_normal := ⟨fun x ↦ (IsSeparable.isIntegral k x).isAlgebraic,
-    fun x ↦ (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)⟩
+  to_normal.toIsAlgebraic :=  inferInstance
+  to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)
 
 end IsSepClosure
 
@@ -267,10 +267,10 @@ variable [Algebra K L] [IsSepClosure K L]
 
 /-- A (random) isomorphism between two separable closures of `K`. -/
 noncomputable def equiv : L ≃ₐ[K] M :=
-  -- Porting note: added to replace local instance above
+  -- Porting note (#10754): added to replace local instance above
   haveI : IsSepClosed L := IsSepClosure.sep_closed K
   haveI : IsSepClosed M := IsSepClosure.sep_closed K
-  AlgEquiv.ofBijective _ (Normal.isAlgebraic'.algHom_bijective₂
+  AlgEquiv.ofBijective _ (Normal.toIsAlgebraic.algHom_bijective₂
     (IsSepClosed.lift : L →ₐ[K] M) (IsSepClosed.lift : M →ₐ[K] L)).1
 
 end IsSepClosure

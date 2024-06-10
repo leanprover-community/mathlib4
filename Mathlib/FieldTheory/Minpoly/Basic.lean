@@ -17,7 +17,8 @@ such as irreducibility under the assumption `B` is a domain.
 -/
 
 
-open Classical Polynomial Set Function
+open scoped Classical
+open Polynomial Set Function
 
 variable {A B B' : Type*}
 
@@ -45,7 +46,6 @@ namespace minpoly
 section Ring
 
 variable [CommRing A] [Ring B] [Ring B'] [Algebra A B] [Algebra A B']
-
 variable {x : B}
 
 /-- A minimal polynomial is monic. -/
@@ -66,7 +66,7 @@ theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
 
 theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
-  refine' dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => _) fun _ => rfl
+  refine dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => ?_) fun _ => rfl
   simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 #align minpoly.minpoly_alg_hom minpoly.algHom_eq
 
@@ -94,7 +94,7 @@ theorem aeval : aeval x (minpoly A x) = 0 := by
 /-- A minimal polynomial is not `1`. -/
 theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   intro h
-  refine' (one_ne_zero : (1 : B) ≠ 0) _
+  refine (one_ne_zero : (1 : B) ≠ 0) ?_
   simpa using congr_arg (Polynomial.aeval x) h
 #align minpoly.ne_one minpoly.ne_one
 
@@ -144,7 +144,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   obtain h | h := hl _ ((minpoly A x).degree_modByMonic_lt hm)
   swap
   · exact (h <| (aeval_modByMonic_eq_self_of_root hm hp).trans <| aeval A x).elim
-  obtain ⟨r, hr⟩ := (dvd_iff_modByMonic_eq_zero hm).1 h
+  obtain ⟨r, hr⟩ := (modByMonic_eq_zero_iff_dvd hm).1 h
   rw [hr]
   have hlead := congr_arg leadingCoeff hr
   rw [mul_comm, leadingCoeff_mul_monic hm, (monic hx).leadingCoeff] at hlead
@@ -181,7 +181,6 @@ variable [CommRing A]
 section Ring
 
 variable [Ring B] [Algebra A B]
-
 variable {x : B}
 
 /-- The degree of a minimal polynomial, as a natural number, is positive. -/
@@ -233,7 +232,7 @@ then the minimal polynomial of `algebraMap A B a` is `X - C a`. -/
 theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMap A B)) :
     minpoly A (algebraMap A B a) = X - C a := by
   nontriviality A
-  refine' (unique' A _ (monic_X_sub_C a) _ _).symm
+  refine (unique' A _ (monic_X_sub_C a) ?_ ?_).symm
   · rw [map_sub, aeval_C, aeval_X, sub_self]
   simp_rw [or_iff_not_imp_left]
   intro q hl h0
@@ -248,13 +247,12 @@ end Ring
 section IsDomain
 
 variable [Ring B] [Algebra A B]
-
 variable {x : B}
 
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
 theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
-  refine' fun ha => (min A x hamonic ha).not_lt (degree_lt_degree _)
+  refine fun ha => (min A x hamonic ha).not_lt (degree_lt_degree ?_)
   obtain ⟨_, c, hu, he⟩ := hdvd
   have hcm := hamonic.of_mul_monic_left (he.subst <| monic hx)
   rw [he, hamonic.natDegree_mul hcm]
@@ -270,14 +268,14 @@ variable [IsDomain A] [IsDomain B]
 
 /-- A minimal polynomial is irreducible. -/
 theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
-  refine' (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => _
+  refine (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => ?_
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
   by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
   cases' heval with heval heval
   · exact aeval_ne_zero_of_dvdNotUnit_minpoly hx hf ⟨hf.ne_zero, g, h.2, he.symm⟩ heval
-  · refine' aeval_ne_zero_of_dvdNotUnit_minpoly hx hg ⟨hg.ne_zero, f, h.1, _⟩ heval
+  · refine aeval_ne_zero_of_dvdNotUnit_minpoly hx hg ⟨hg.ne_zero, f, h.1, ?_⟩ heval
     rw [mul_comm, he]
 #align minpoly.irreducible minpoly.irreducible
 

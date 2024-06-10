@@ -30,11 +30,10 @@ open nonZeroDivisors
 universe u u' v v'
 
 variable {R : Type u} (S : Type u') {M : Type v} {N : Type v'}
-variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N] [Module R M]
+variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (hp : p ≤ R⁰)
-
 variable (M' : Submodule R M)
 
 /-- Let `S` be the localization of `R` at `p` and `N` be the localization of `M` at `p`.
@@ -86,6 +85,7 @@ def Submodule.toLocalizedQuotient' : M ⧸ M' →ₗ[R] N ⧸ M'.localized' S p 
 abbrev Submodule.toLocalizedQuotient : M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p :=
   M'.toLocalizedQuotient' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 lemma Submodule.toLocalizedQuotient'_mk (x : M) :
     M'.toLocalizedQuotient' S p f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (f x) := rfl

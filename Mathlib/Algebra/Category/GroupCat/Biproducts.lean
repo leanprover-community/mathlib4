@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Limits
@@ -19,8 +19,6 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 open CategoryTheory
 
 open CategoryTheory.Limits
-
-open BigOperators
 
 universe w u
 
@@ -99,7 +97,11 @@ variable {J : Type w} (f : J → AddCommGroupCat.{max w u})
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the cartesian product of those groups.
 -/
-@[simps]
+-- This was marked `@[simps]` until we made `AddCommGroupCat.coe_of` a simp lemma,
+-- after which the simp normal form linter complains.
+-- The generated simp lemmas were not used in Mathlib.
+-- Possible solution: higher priority function coercions that remove the `of`?
+-- @[simps]
 def lift (s : Fan f) : s.pt ⟶ AddCommGroupCat.of (∀ j, f j) where
   toFun x j := s.π.app ⟨j⟩ x
   map_zero' := by
@@ -131,7 +133,7 @@ end HasLimit
 
 open HasLimit
 
-variable {J : Type} [Fintype J]
+variable {J : Type} [Finite J]
 
 /-- We verify that the biproduct we've just defined is isomorphic to the `AddCommGroupCat` structure
 on the dependent function type.
