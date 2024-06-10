@@ -278,5 +278,3 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
 end Finsupp
 
 end CommSemiring
-
-#lint
