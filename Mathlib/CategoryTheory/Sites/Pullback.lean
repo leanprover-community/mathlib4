@@ -67,13 +67,8 @@ instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) :
 /-- The pullback functor is left adjoint to the pushforward functor. -/
 def Functor.sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] :
     G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K :=
-<<<<<<< HEAD
   ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (sheafToPresheaf J A) (𝟭 _) (Iso.refl _) (Iso.refl _)
-=======
-  ((Lan.adjunction A G.op).comp (sheafificationAdjunction K A)).restrictFullyFaithful
-    (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
->>>>>>> origin
 #align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Functor.sheafAdjunctionContinuous
 
 end CategoryTheory
