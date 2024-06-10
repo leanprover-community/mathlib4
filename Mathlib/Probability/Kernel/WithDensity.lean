@@ -33,7 +33,7 @@ an s-finite kernel.
 
 open MeasureTheory ProbabilityTheory
 
-open scoped MeasureTheory ENNReal NNReal BigOperators
+open scoped MeasureTheory ENNReal NNReal
 
 namespace ProbabilityTheory.kernel
 
@@ -48,7 +48,7 @@ noncomputable def withDensity (κ : kernel α β) [IsSFiniteKernel κ] (f : α �
   @dite _ (Measurable (Function.uncurry f)) (Classical.dec _) (fun hf =>
     (⟨fun a => (κ a).withDensity (f a),
       by
-        refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+        refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
         simp_rw [withDensity_apply _ hs]
         exact hf.set_lintegral_kernel_prod_right hs⟩ : kernel α β)) fun _ => 0
 #align probability_theory.kernel.with_density ProbabilityTheory.kernel.withDensity
@@ -239,7 +239,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
     ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
-    have h_finset_sum : ∀ n, ∑ i in Finset.range n, fs i a b = min (f a b) n := by
+    have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := by
       intro n
       induction' n with n hn
       · simp

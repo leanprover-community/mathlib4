@@ -114,14 +114,14 @@ def plusObj : Cᵒᵖ ⥤ D where
   map f := colimMap (J.diagramPullback P f.unop) ≫ colimit.pre _ _
   map_id := by
     intro X
-    refine' colimit.hom_ext (fun S => _)
+    refine colimit.hom_ext (fun S => ?_)
     dsimp
     simp only [diagramPullback_app, colimit.ι_pre, ι_colimMap_assoc, Category.comp_id]
     let e := S.unop.pullbackId
     dsimp only [Functor.op, pullback_obj]
     erw [← colimit.w _ e.inv.op, ← Category.assoc]
     convert Category.id_comp (colimit.ι (diagram J P (unop X)) S)
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
     simp only [Multiequalizer.lift_ι, Category.id_comp, Category.assoc]
     dsimp [Cover.Arrow.map, Cover.Arrow.base]
@@ -130,7 +130,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     simp
   map_comp := by
     intro X Y Z f g
-    refine' colimit.hom_ext (fun S => _)
+    refine colimit.hom_ext (fun S => ?_)
     dsimp
     simp only [diagramPullback_app, colimit.ι_pre_assoc, colimit.ι_pre, ι_colimMap_assoc,
       Category.assoc]
@@ -138,7 +138,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     dsimp only [Functor.op, pullback_obj]
     erw [← colimit.w _ e.inv.op, ← Category.assoc, ← Category.assoc]
     congr 1
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
     simp only [Multiequalizer.lift_ι, Category.assoc]
     cases I
@@ -210,7 +210,7 @@ def toPlus : P ⟶ J.plusObj P where
     let e : (J.pullback f.unop).obj ⊤ ⟶ ⊤ := homOfLE (OrderTop.le_top _)
     rw [← colimit.w _ e.op, ← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     simp only [Multiequalizer.lift_ι, Category.assoc]
     dsimp [Cover.Arrow.base]
     simp
@@ -255,7 +255,7 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   erw [← colimit.w _ ee.op, ι_colimMap_assoc, colimit.ι_pre, diagramPullback_app,
     ← Category.assoc, ← Category.assoc]
   congr 1
-  refine' Multiequalizer.hom_ext _ _ _ (fun II => _)
+  refine Multiequalizer.hom_ext _ _ _ (fun II => ?_)
   convert Multiequalizer.condition (S.unop.index P)
     (Cover.Relation.mk I II.base { g₁ := II.f, g₂ := 𝟙 _ }) using 1
   all_goals dsimp; simp

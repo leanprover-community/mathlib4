@@ -6,7 +6,6 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.GroupTheory.OrderOfElement
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -14,12 +13,11 @@ import Mathlib.GroupTheory.OrderOfElement
 # Characteristic of semirings
 -/
 
+assert_not_exists orderOf
 
 universe u v
 
 open Finset
-
-open BigOperators
 
 variable {R : Type*}
 
@@ -30,8 +28,8 @@ variable [Semiring R] {p : ℕ} {x y : R}
 protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
-        p * ∑ k in Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
-  trans x ^ p ^ n + y ^ p ^ n + ∑ k in Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k
+        p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
+  trans x ^ p ^ n + y ^ p ^ n + ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k
   · simp_rw [h.add_pow, ← Nat.Ico_zero_eq_range, Nat.Ico_succ_right, Icc_eq_cons_Ico (zero_le _),
       Finset.sum_cons, Ico_eq_cons_Ioo (pow_pos hp.pos _), Finset.sum_cons, tsub_self, tsub_zero,
       pow_zero, Nat.choose_zero_right, Nat.choose_self, Nat.cast_one, mul_one, one_mul, ← add_assoc]
@@ -44,8 +42,8 @@ protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ
 
 protected theorem add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
     (x + y) ^ p =
-      x ^ p + y ^ p + p * ∑ k in Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
-  by simpa using h.add_pow_prime_pow_eq hp 1
+      x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) := by
+  simpa using h.add_pow_prime_pow_eq hp 1
 #align commute.add_pow_prime_eq Commute.add_pow_prime_eq
 
 protected theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
@@ -67,13 +65,13 @@ variable [CommSemiring R] {p : ℕ} {x y : R}
 theorem add_pow_prime_pow_eq (hp : p.Prime) (x y : R) (n : ℕ) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
-        p * ∑ k in Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
+        p * ∑ k ∈ Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
   (Commute.all x y).add_pow_prime_pow_eq hp n
 #align add_pow_prime_pow_eq add_pow_prime_pow_eq
 
 theorem add_pow_prime_eq (hp : p.Prime) (x y : R) :
     (x + y) ^ p =
-      x ^ p + y ^ p + p * ∑ k in Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+      x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
   (Commute.all x y).add_pow_prime_eq hp
 #align add_pow_prime_eq add_pow_prime_eq
 
@@ -90,15 +88,6 @@ theorem exists_add_pow_prime_eq (hp : p.Prime) (x y : R) :
 end CommSemiring
 
 variable (R)
-
-@[simp]
-theorem CharP.cast_card_eq_zero [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by
-  rw [← nsmul_one, card_nsmul_eq_zero]
-#align char_p.cast_card_eq_zero CharP.cast_card_eq_zero
-
-theorem CharP.addOrderOf_one (R) [Semiring R] : CharP R (addOrderOf (1 : R)) :=
-  ⟨fun n => by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]⟩
-#align char_p.add_order_of_one CharP.addOrderOf_one
 
 theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p] (x y : R)
     (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
@@ -193,37 +182,3 @@ theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
 
 end Ring
 end CharP
-
-section
-
-variable [NonAssocRing R] [Fintype R] (n : ℕ)
-
-theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 → i = 0) :
-    CharP R n :=
-  { cast_eq_zero_iff' := by
-      have H : (n : R) = 0 := by rw [← hn, CharP.cast_card_eq_zero]
-      intro k
-      constructor
-      · intro h
-        rw [← Nat.mod_add_div k n, Nat.cast_add, Nat.cast_mul, H, zero_mul,
-          add_zero] at h
-        rw [Nat.dvd_iff_mod_eq_zero]
-        apply hR _ (Nat.mod_lt _ _) h
-        rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
-        exact ⟨0⟩
-      · rintro ⟨k, rfl⟩
-        rw [Nat.cast_mul, H, zero_mul] }
-#align char_p_of_ne_zero charP_of_ne_zero
-
-theorem charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p : ℕ) [hp : Fact p.Prime] (n : ℕ)
-    (hn : Fintype.card R = p ^ n) (hR : ∀ i ≤ n, (p : R) ^ i = 0 → i = n) : CharP R (p ^ n) := by
-  obtain ⟨c, hc⟩ := CharP.exists R
-  have hcpn : c ∣ p ^ n := by rw [← CharP.cast_eq_zero_iff R c, ← hn, CharP.cast_card_eq_zero]
-  obtain ⟨i, hi, hc⟩ : ∃ i ≤ n, c = p ^ i := by rwa [Nat.dvd_prime_pow hp.1] at hcpn
-  obtain rfl : i = n := by
-    apply hR i hi
-    rw [← Nat.cast_pow, ← hc, CharP.cast_eq_zero]
-  rwa [← hc]
-#align char_p_of_prime_pow_injective charP_of_prime_pow_injective
-
-end

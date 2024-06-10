@@ -243,7 +243,6 @@ lemma preOneHypercover_sieve₁ (f₁ f₂ : S.Arrow) {W : C} (p₁ : W ⟶ f₁
     (w : p₁ ≫ f₁.f = p₂ ≫ f₂.f) :
     S.preOneHypercover.sieve₁ p₁ p₂ = ⊤ := by
   ext Y f
-  dsimp
   simp only [Sieve.top_apply, iff_true]
   exact ⟨{ w := w}, f, rfl, rfl⟩
 

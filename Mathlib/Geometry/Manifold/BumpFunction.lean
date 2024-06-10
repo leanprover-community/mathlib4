@@ -37,7 +37,7 @@ variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensi
 
 open Function Filter FiniteDimensional Set Metric
 
-open scoped Topology Manifold Classical Filter BigOperators
+open scoped Topology Manifold Classical Filter
 
 noncomputable section
 
@@ -92,7 +92,7 @@ theorem ball_subset : ball (extChartAt I c c) f.rOut ∩ range I ⊆ (extChartAt
 theorem ball_inter_range_eq_ball_inter_target :
     ball (extChartAt I c c) f.rOut ∩ range I =
       ball (extChartAt I c c) f.rOut ∩ (extChartAt I c).target :=
-  (subset_inter (inter_subset_left _ _) f.ball_subset).antisymm <| inter_subset_inter_right _ <|
+  (subset_inter inter_subset_left f.ball_subset).antisymm <| inter_subset_inter_right _ <|
     extChartAt_target_subset_range _ _
 
 theorem eqOn_source : EqOn f (f.toContDiffBump ∘ extChartAt I c) (chartAt H c).source :=
@@ -129,7 +129,7 @@ theorem support_eq_symm_image :
 #align smooth_bump_function.support_eq_symm_image SmoothBumpFunction.support_eq_symm_image
 
 theorem support_subset_source : support f ⊆ (chartAt H c).source := by
-  rw [f.support_eq_inter_preimage, ← extChartAt_source I]; exact inter_subset_left _ _
+  rw [f.support_eq_inter_preimage, ← extChartAt_source I]; exact inter_subset_left
 #align smooth_bump_function.support_subset_source SmoothBumpFunction.support_subset_source
 
 theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ support f) :
@@ -141,7 +141,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
   · refine subset_inter (subset_inter (hsf.trans ball_subset_closedBall) ?_) ?_
     · rintro _ ⟨x, -, rfl⟩; exact mem_range_self _
     · rw [(extChartAt I c).image_eq_target_inter_inv_preimage hse]
-      exact inter_subset_right _ _
+      exact inter_subset_right
   · refine Subset.trans (inter_subset_inter_left _ f.closedBall_subset) ?_
     rw [(extChartAt I c).image_eq_target_inter_inv_preimage hse]
 #align smooth_bump_function.image_eq_inter_preimage_of_subset_support SmoothBumpFunction.image_eq_inter_preimage_of_subset_support
@@ -294,7 +294,7 @@ theorem nhds_basis_tsupport :
       (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) := by
     rw [← map_extChartAt_symm_nhdsWithin_range I c]
     exact nhdsWithin_range_basis.map _
-  refine' this.to_hasBasis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
+  exact this.to_hasBasis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
     fun f _ => f.tsupport_mem_nhds
 #align smooth_bump_function.nhds_basis_tsupport SmoothBumpFunction.nhds_basis_tsupport
 

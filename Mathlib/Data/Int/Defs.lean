@@ -49,11 +49,31 @@ variable {a b c d m n : ℤ}
 #align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ
 #align int.nat_abs_of_neg_succ_of_nat Int.natAbs_negSucc
 
+section Order
+variable {a b c : ℤ}
+
+protected lemma le_rfl : a ≤ a := a.le_refl
+protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
+protected lemma lt_or_le (a b : ℤ) : a < b ∨ b ≤ a := by rw [← Int.not_lt]; exact em _
+protected lemma le_or_lt (a b : ℤ) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
+protected lemma lt_asymm : a < b → ¬ b < a := by rw [Int.not_lt]; exact Int.le_of_lt
+protected lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]; exact Int.le_rfl
+protected lemma ge_of_eq (hab : a = b) : b ≤ a := Int.le_of_eq hab.symm
+protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
+  ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
+protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
+  rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [em]
+protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
+
+end Order
+
 -- TODO: Tag in Lean
 attribute [simp] natAbs_pos
 
 protected lemma one_pos : 0 < (1 : Int) := Int.zero_lt_one
 #align int.one_pos Int.one_pos
+
+protected lemma one_ne_zero : (1 : ℤ) ≠ 0 := by decide
 
 protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
 #align int.one_nonneg Int.one_nonneg
@@ -61,11 +81,33 @@ protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
 lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
+-- We want to use these lemmas earlier than the lemmas simp can prove them with
+@[simp, nolint simpNF]
+protected lemma neg_pos : 0 < -a ↔ a < 0 := ⟨Int.neg_of_neg_pos, Int.neg_pos_of_neg⟩
+
+@[simp, nolint simpNF]
+protected lemma neg_nonneg : 0 ≤ -a ↔ a ≤ 0 := ⟨Int.nonpos_of_neg_nonneg, Int.neg_nonneg_of_nonpos⟩
+
+@[simp, nolint simpNF]
+protected lemma neg_neg_iff_pos : -a < 0 ↔ 0 < a := ⟨Int.pos_of_neg_neg, Int.neg_neg_of_pos⟩
+
+@[simp, nolint simpNF]
+protected lemma neg_nonpos_iff_nonneg : -a ≤ 0 ↔ 0 ≤ a :=
+  ⟨Int.nonneg_of_neg_nonpos, Int.neg_nonpos_of_nonneg⟩
+
+@[simp, nolint simpNF]
+protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_pos_of_lt⟩
+
+@[simp, nolint simpNF]
+protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg, Int.sub_nonneg_of_le⟩
+
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+
+@[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
 
 @[simp] lemma ofNat_eq_natCast (n : ℕ) : Int.ofNat n = n := rfl
 
-@[deprecated ofNat_eq_natCast] -- 2024-03-24
+@[deprecated ofNat_eq_natCast (since := "2024-03-24")]
 protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
 #align int.coe_nat_eq Int.natCast_eq_ofNat
 
@@ -137,6 +179,12 @@ set_option linter.deprecated false
 #align int.coe_nat_bit1 Int.ofNat_bit1
 
 end deprecated
+
+protected lemma mul_le_mul_iff_of_pos_right (ha : 0 < a) : b * a ≤ c * a ↔ b ≤ c :=
+  ⟨(le_of_mul_le_mul_right · ha), (Int.mul_le_mul_of_nonneg_right · (Int.le_of_lt ha))⟩
+
+protected lemma mul_nonneg_iff_of_pos_right (hb : 0 < b) : 0 ≤ a * b ↔ 0 ≤ a := by
+  simpa using (Int.mul_le_mul_iff_of_pos_right hb : 0 * b ≤ a * b ↔ 0 ≤ a)
 
 /-! ### succ and pred -/
 
@@ -291,16 +339,18 @@ lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 #align int.nat_abs_mul_nat_abs_eq Int.natAbs_mul_natAbs_eq
 #align int.nat_abs_mul_self' Int.natAbs_mul_self'
 #align int.neg_succ_of_nat_eq' Int.negSucc_eq'
-
-@[deprecated natAbs_ne_zero]
-lemma natAbs_ne_zero_of_ne_zero : ∀ {a : ℤ}, a ≠ 0 → natAbs a ≠ 0 := natAbs_ne_zero.2
-#align int.nat_abs_ne_zero_of_ne_zero Int.natAbs_ne_zero_of_ne_zero
-
+#align int.nat_abs_ne_zero_of_ne_zero Int.natAbs_ne_zero
 #align int.nat_abs_eq_zero Int.natAbs_eq_zero
 #align int.nat_abs_ne_zero Int.natAbs_ne_zero
 #align int.nat_abs_lt_nat_abs_of_nonneg_of_lt Int.natAbs_lt_natAbs_of_nonneg_of_lt
 #align int.nat_abs_eq_nat_abs_iff Int.natAbs_eq_natAbs_iff
 #align int.nat_abs_eq_iff Int.natAbs_eq_iff
+
+lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
+  induction' k with k ih
+  · rfl
+  · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
+#align int.nat_abs_pow Int.natAbs_pow
 
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
@@ -561,10 +611,9 @@ lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ nat
   not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
 #align int.nat_abs_le_of_dvd_ne_zero Int.natAbs_le_of_dvd_ne_zero
 
--- 2024-04-02
-@[deprecated] alias coe_nat_dvd := natCast_dvd_natCast
-@[deprecated] alias coe_nat_dvd_right := dvd_natCast
-@[deprecated] alias coe_nat_dvd_left := natCast_dvd
+@[deprecated (since := "2024-04-02")] alias coe_nat_dvd := natCast_dvd_natCast
+@[deprecated (since := "2024-04-02")] alias coe_nat_dvd_right := dvd_natCast
+@[deprecated (since := "2024-04-02")] alias coe_nat_dvd_left := natCast_dvd
 
 /-! #### `/` and ordering -/
 
@@ -657,9 +706,8 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
   Int.toNat_of_nonneg (Int.sub_nonneg_of_le h)
 #align int.to_nat_sub_of_le Int.toNat_sub_of_le
 
--- 2024-04-05
-@[deprecated] alias coe_nat_pos := natCast_pos
-@[deprecated] alias coe_nat_succ_pos := natCast_succ_pos
+@[deprecated (since := "2024-04-05")] alias coe_nat_pos := natCast_pos
+@[deprecated (since := "2024-04-05")] alias coe_nat_succ_pos := natCast_succ_pos
 
 lemma toNat_lt' {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by
   rw [← toNat_lt_toNat, toNat_natCast]; omega
@@ -669,10 +717,10 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
   (toNat_lt' hn).2 <| emod_lt_of_pos _ <| by omega
 #align int.nat_mod_lt Int.natMod_lt
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] lemma coe_nat_pow (m n : ℕ) : ↑(m ^ n : ℕ) = (m ^ n : ℤ) := by
-  induction n <;> simp [Int.pow_succ, Nat.pow_succ, Int.pow_zero, *]
-#align int.coe_nat_pow Int.coe_nat_pow
+attribute [simp] natCast_pow
+
+@[deprecated (since := "2024-05-25")] alias coe_nat_pow := natCast_pow
+#align int.coe_nat_pow Int.natCast_pow
 
 #align int.le_to_nat Int.self_le_toNat
 #align int.le_to_nat_iff Int.le_toNat
@@ -687,17 +735,16 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
 
--- 2024-04-02
-@[deprecated] alias ofNat_eq_cast := ofNat_eq_natCast
-@[deprecated] alias cast_eq_cast_iff_Nat := natCast_inj
-@[deprecated] alias coe_nat_sub := Int.natCast_sub
-@[deprecated] alias coe_nat_nonneg := natCast_nonneg
-@[deprecated] alias sign_coe_add_one := sign_natCast_add_one
-@[deprecated] alias nat_succ_eq_int_succ := natCast_succ
-@[deprecated] alias succ_neg_nat_succ := succ_neg_natCast_succ
-@[deprecated] alias coe_pred_of_pos := natCast_pred_of_pos
-@[deprecated] alias coe_nat_div := natCast_div
-@[deprecated] alias coe_nat_ediv := natCast_ediv
-@[deprecated] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
-@[deprecated] alias toNat_coe_nat := toNat_natCast
-@[deprecated] alias toNat_coe_nat_add_one := toNat_natCast_add_one
+@[deprecated (since := "2024-04-02")] alias ofNat_eq_cast := ofNat_eq_natCast
+@[deprecated (since := "2024-04-02")] alias cast_eq_cast_iff_Nat := natCast_inj
+@[deprecated (since := "2024-04-02")] alias coe_nat_sub := Int.natCast_sub
+@[deprecated (since := "2024-04-02")] alias coe_nat_nonneg := natCast_nonneg
+@[deprecated (since := "2024-04-02")] alias sign_coe_add_one := sign_natCast_add_one
+@[deprecated (since := "2024-04-02")] alias nat_succ_eq_int_succ := natCast_succ
+@[deprecated (since := "2024-04-02")] alias succ_neg_nat_succ := succ_neg_natCast_succ
+@[deprecated (since := "2024-04-02")] alias coe_pred_of_pos := natCast_pred_of_pos
+@[deprecated (since := "2024-04-02")] alias coe_nat_div := natCast_div
+@[deprecated (since := "2024-04-02")] alias coe_nat_ediv := natCast_ediv
+@[deprecated (since := "2024-04-02")] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
+@[deprecated (since := "2024-04-02")] alias toNat_coe_nat := toNat_natCast
+@[deprecated (since := "2024-04-02")] alias toNat_coe_nat_add_one := toNat_natCast_add_one

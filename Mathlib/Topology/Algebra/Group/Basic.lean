@@ -1023,7 +1023,7 @@ instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
       apply IsOpenMap.to_quotientMap
       · exact (QuotientGroup.isOpenMap_coe N).prod (QuotientGroup.isOpenMap_coe N)
       · exact continuous_quot_mk.prod_map continuous_quot_mk
-      · exact (surjective_quot_mk _).Prod_map (surjective_quot_mk _)
+      · exact (surjective_quot_mk _).prodMap (surjective_quot_mk _)
     exact quot.continuous_iff.2 cont
   continuous_inv := by
     have quot := IsOpenMap.to_quotientMap
@@ -1591,7 +1591,7 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
     continuous_mul.tendsto' _ _ (mul_one a)
   rcases mem_nhds_prod_iff.mp (this hs) with ⟨U, hU, V, hV, hUV⟩
   rw [← image_subset_iff, image_prod] at hUV
-  refine' ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, _⟩
+  refine ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, ?_⟩
   calc
     closure U ⊆ closure U * interior V := subset_mul_left _ (mem_interior_iff_mem_nhds.2 hV)
     _ = U * interior V := isOpen_interior.closure_mul U
@@ -1645,7 +1645,7 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
     by simp [inter_comm], ?_⟩
   calc
   W ∩ W⁻¹ * (W ∩ W⁻¹)
-    ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
+    ⊆ W * W := mul_subset_mul inter_subset_left inter_subset_left
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := hV
 
@@ -1735,8 +1735,8 @@ theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : 
     use V ∩ W, inter_mem V_in W_in
     rw [union_mul]
     exact
-      union_subset ((mul_subset_mul_left (V.inter_subset_left W)).trans hV')
-        ((mul_subset_mul_left (V.inter_subset_right W)).trans hW')
+      union_subset ((mul_subset_mul_left V.inter_subset_left).trans hV')
+        ((mul_subset_mul_left V.inter_subset_right).trans hW')
   · intro x hx
     have := tendsto_mul (show U ∈ 𝓝 (x * 1) by simpa using hU.mem_nhds (hKU hx))
     rw [nhds_prod_eq, mem_map, mem_prod_iff] at this
@@ -1796,10 +1796,10 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
 instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
     [WeaklyLocallyCompactSpace G] : SigmaCompactSpace G := by
   obtain ⟨L, hLc, hL1⟩ := exists_compact_mem_nhds (1 : G)
-  refine' ⟨⟨fun n => (fun x => x * denseSeq G n) ⁻¹' L, _, _⟩⟩
+  refine ⟨⟨fun n => (fun x => x * denseSeq G n) ⁻¹' L, ?_, ?_⟩⟩
   · intro n
     exact (Homeomorph.mulRight _).isCompact_preimage.mpr hLc
-  · refine' iUnion_eq_univ_iff.2 fun x => _
+  · refine iUnion_eq_univ_iff.2 fun x => ?_
     obtain ⟨_, ⟨n, rfl⟩, hn⟩ : (range (denseSeq G) ∩ (fun y => x * y) ⁻¹' L).Nonempty := by
       rw [← (Homeomorph.mulLeft x).apply_symm_apply 1] at hL1
       exact (denseRange_denseSeq G).inter_nhds_nonempty

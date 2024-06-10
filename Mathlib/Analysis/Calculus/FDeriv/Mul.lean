@@ -619,8 +619,6 @@ end Mul
 
 section Prod
 
-open BigOperators
-
 /-! ### Derivative of a finite product of functions -/
 
 variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸]
@@ -708,12 +706,12 @@ theorem hasFDerivAt_multiset_prod [DecidableEq ι] [Fintype ι] {u : Multiset ι
   hasStrictFDerivAt_multiset_prod.hasFDerivAt
 
 theorem hasStrictFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'} :
-    HasStrictFDerivAt (𝕜 := 𝕜) (∏ i in u, · i) (∑ i in u, (∏ j in u.erase i, x j) • proj i) x := by
+    HasStrictFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x := by
   simp only [Finset.sum_eq_multiset_sum, Finset.prod_eq_multiset_prod]
   exact hasStrictFDerivAt_multiset_prod
 
 theorem hasFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'} :
-    HasFDerivAt (𝕜 := 𝕜) (∏ i in u, · i) (∑ i in u, (∏ j in u.erase i, x j) • proj i) x :=
+    HasFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x :=
   hasStrictFDerivAt_finset_prod.hasFDerivAt
 
 section Comp
@@ -821,34 +819,34 @@ theorem fderivWithin_multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
 
 theorem HasStrictFDerivAt.finset_prod [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasStrictFDerivAt (g i) (g' i) x) :
-    HasStrictFDerivAt (∏ i in u, g i ·) (∑ i in u, (∏ j in u.erase i, g j x) • g' i) x := by
+    HasStrictFDerivAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
     (hasStrictFDerivAt_finset_prod.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ hg i i.prop)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
 theorem HasFDerivAt.finset_prod [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivAt (g i) (g' i) x) :
-    HasFDerivAt (∏ i in u, g i ·) (∑ i in u, (∏ j in u.erase i, g j x) • g' i) x := by
+    HasFDerivAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
     (hasFDerivAt_finset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg i i.prop)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
 theorem HasFDerivWithinAt.finset_prod [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivWithinAt (g i) (g' i) s x) :
-    HasFDerivWithinAt (∏ i in u, g i ·) (∑ i in u, (∏ j in u.erase i, g j x) • g' i) s x := by
+    HasFDerivWithinAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) s x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
     (hasFDerivAt_finset_prod.comp_hasFDerivWithinAt x <|
       hasFDerivWithinAt_pi.mpr fun i ↦ hg i i.prop)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
 theorem fderiv_finset_prod [DecidableEq ι] {x : E} (hg : ∀ i ∈ u, DifferentiableAt 𝕜 (g i) x) :
-    fderiv 𝕜 (∏ i in u, g i ·) x = ∑ i in u, (∏ j in u.erase i, (g j x)) • fderiv 𝕜 (g i) x :=
+    fderiv 𝕜 (∏ i ∈ u, g i ·) x = ∑ i ∈ u, (∏ j ∈ u.erase i, (g j x)) • fderiv 𝕜 (g i) x :=
   (HasFDerivAt.finset_prod fun i hi ↦ (hg i hi).hasFDerivAt).fderiv
 
 theorem fderivWithin_finset_prod [DecidableEq ι] {x : E} (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hg : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (g i) s x) :
-    fderivWithin 𝕜 (∏ i in u, g i ·) s x =
-      ∑ i in u, (∏ j in u.erase i, (g j x)) • fderivWithin 𝕜 (g i) s x :=
+    fderivWithin 𝕜 (∏ i ∈ u, g i ·) s x =
+      ∑ i ∈ u, (∏ j ∈ u.erase i, (g j x)) • fderivWithin 𝕜 (g i) s x :=
   (HasFDerivWithinAt.finset_prod fun i hi ↦ (hg i hi).hasFDerivWithinAt).fderivWithin hxs
 
 end Comp
@@ -936,8 +934,9 @@ open NormedRing ContinuousLinearMap Ring
 /-- At an invertible element `x` of a normed division algebra `R`, the Fréchet derivative of the
 inversion operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`. -/
 @[fun_prop]
-theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) : HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x :=
-  by simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
+theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) :
+    HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x := by
+  simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
 #align has_fderiv_at_inv' hasFDerivAt_inv'
 
 @[fun_prop]

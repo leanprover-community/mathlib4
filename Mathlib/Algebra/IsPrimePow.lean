@@ -88,7 +88,7 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   rintro ⟨p, k, hp, hk, rfl⟩
   refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
   conv => { lhs; rw [← (pow_one p)] }
-  exact pow_le_pow_right hp.one_lt.le hk
+  exact Nat.pow_le_pow_right hp.one_lt.le hk
 #align is_prime_pow_nat_iff_bounded isPrimePow_nat_iff_bounded
 
 instance {n : ℕ} : Decidable (IsPrimePow n) :=

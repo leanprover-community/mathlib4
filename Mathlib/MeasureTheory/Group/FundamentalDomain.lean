@@ -464,9 +464,8 @@ theorem setIntegral_eq_tsum (h : IsFundamentalDomain G s μ) {f : α → E} {t :
 #align measure_theory.is_fundamental_domain.set_integral_eq_tsum MeasureTheory.IsFundamentalDomain.setIntegral_eq_tsum
 #align measure_theory.is_add_fundamental_domain.set_integral_eq_tsum MeasureTheory.IsAddFundamentalDomain.setIntegral_eq_tsum
 
-@[deprecated]
-alias set_integral_eq_tsum :=
-  setIntegral_eq_tsum -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_eq_tsum := setIntegral_eq_tsum
 
 @[to_additive]
 theorem setIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) {f : α → E} {t : Set α}
@@ -481,9 +480,8 @@ theorem setIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) {f : α → E} {t 
 #align measure_theory.is_fundamental_domain.set_integral_eq_tsum' MeasureTheory.IsFundamentalDomain.setIntegral_eq_tsum'
 #align measure_theory.is_add_fundamental_domain.set_integral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.setIntegral_eq_tsum'
 
-@[deprecated]
-alias set_integral_eq_tsum' :=
-  setIntegral_eq_tsum' -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_eq_tsum' := setIntegral_eq_tsum'
 
 @[to_additive]
 protected theorem setIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ)
@@ -499,9 +497,8 @@ protected theorem setIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFunda
 #align measure_theory.is_fundamental_domain.set_integral_eq MeasureTheory.IsFundamentalDomain.setIntegral_eq
 #align measure_theory.is_add_fundamental_domain.set_integral_eq MeasureTheory.IsAddFundamentalDomain.setIntegral_eq
 
-@[deprecated]
-alias set_integral_eq :=
-  MeasureTheory.IsFundamentalDomain.setIntegral_eq -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_eq := MeasureTheory.IsFundamentalDomain.setIntegral_eq
 
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` such that the sets `g • t ∩ s` are pairwise a.e.-disjoint
@@ -516,7 +513,7 @@ theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
     μ t = ∑' g : G, μ (g • t ∩ s) := hs.measure_eq_tsum t
     _ = μ (⋃ g : G, g • t ∩ s) := Eq.symm <| measure_iUnion₀ hd fun _ =>
       (ht.smul _).inter hs.nullMeasurableSet
-    _ ≤ μ s := measure_mono (iUnion_subset fun _ => inter_subset_right _ _)
+    _ ≤ μ s := measure_mono (iUnion_subset fun _ => inter_subset_right)
 #align measure_theory.is_fundamental_domain.measure_le_of_pairwise_disjoint MeasureTheory.IsFundamentalDomain.measure_le_of_pairwise_disjoint
 #align measure_theory.is_add_fundamental_domain.measure_le_of_pairwise_disjoint MeasureTheory.IsAddFundamentalDomain.measure_le_of_pairwise_disjoint
 
@@ -603,13 +600,13 @@ theorem mem_fundamentalInterior :
 
 @[to_additive MeasureTheory.addFundamentalFrontier_subset]
 theorem fundamentalFrontier_subset : fundamentalFrontier G s ⊆ s :=
-  inter_subset_left _ _
+  inter_subset_left
 #align measure_theory.fundamental_frontier_subset MeasureTheory.fundamentalFrontier_subset
 #align measure_theory.add_fundamental_frontier_subset MeasureTheory.addFundamentalFrontier_subset
 
 @[to_additive MeasureTheory.addFundamentalInterior_subset]
 theorem fundamentalInterior_subset : fundamentalInterior G s ⊆ s :=
-  diff_subset _ _
+  diff_subset
 #align measure_theory.fundamental_interior_subset MeasureTheory.fundamentalInterior_subset
 #align measure_theory.add_fundamental_interior_subset MeasureTheory.addFundamentalInterior_subset
 

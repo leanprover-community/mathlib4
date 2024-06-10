@@ -23,7 +23,7 @@ commutative ring, field of fractions
 
 
 
-open Function BigOperators
+open Function
 
 namespace IsLocalization
 

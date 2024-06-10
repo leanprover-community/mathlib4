@@ -88,7 +88,7 @@ theorem refine_apply {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T)
 def pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     Meq P ((J.pullback f).obj S) :=
   ⟨fun I => x ⟨_, I.f ≫ f, I.hf⟩, fun I =>
-    x.condition (GrothendieckTopology.Cover.Relation.mk' (I.r.base))⟩
+    x.condition (GrothendieckTopology.Cover.Relation.mk' I.r.base)⟩
 #align category_theory.meq.pullback CategoryTheory.Meq.pullback
 
 @[simp]
@@ -612,7 +612,7 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext : 3
-    refine' colimit.hom_ext (fun j => _)
+    refine colimit.hom_ext (fun j => ?_)
     erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
 set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf_preserves_zero_morphisms CategoryTheory.plusPlusSheaf_preservesZeroMorphisms

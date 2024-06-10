@@ -75,6 +75,9 @@ invertible, inverse element, invOf, a half, one half, a third, one third, ½, �
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 universe u
 
 variable {α : Type u}

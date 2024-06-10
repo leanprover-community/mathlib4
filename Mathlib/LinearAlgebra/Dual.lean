@@ -3,13 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Ideal.LocalRing
 
 #align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
@@ -285,8 +285,6 @@ namespace Basis
 universe u v w
 
 open Module Module.Dual Submodule LinearMap Cardinal Function
-
-open BigOperators
 
 universe uR uM uK uV uι
 variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
@@ -690,7 +688,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       ext m f <;> simp [e]
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
-    exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
+    exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
 variable {R M N} in
 lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
@@ -1480,6 +1478,27 @@ lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
   rwa [finrank_top, this, ← finrank_ker_add_one_of_ne_zero hf, add_le_add_iff_left,
     Submodule.one_le_finrank_iff]
 
+lemma eq_of_ker_eq_of_apply_eq {f g : Module.Dual K V₁} (x : V₁)
+    (h : LinearMap.ker f = LinearMap.ker g) (h' : f x = g x) (hx : f x ≠ 0) :
+    f = g := by
+  let p := K ∙ x
+  have hp : p ≠ ⊥ := by aesop
+  have hpf : Disjoint (LinearMap.ker f) p := by
+    rw [disjoint_iff, Submodule.eq_bot_iff]
+    rintro y ⟨hfy : f y = 0, hpy : y ∈ p⟩
+    obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hpy
+    have ht : t = 0 := by simpa [hx] using hfy
+    simp [ht]
+  have hf : f ≠ 0 := by aesop
+  ext v
+  obtain ⟨y, hy, z, hz, rfl⟩ : ∃ᵉ (y ∈ LinearMap.ker f) (z ∈ p), y + z = v := by
+    have : v ∈ (⊤ : Submodule K V₁) := Submodule.mem_top
+    rwa [← (isCompl_ker_of_disjoint_of_ne_bot hf hpf hp).sup_eq_top, Submodule.mem_sup] at this
+  have hy' : g y = 0 := by rwa [← LinearMap.mem_ker, ← h]
+  replace hy : f y = 0 := by rwa [LinearMap.mem_ker] at hy
+  obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hz
+  simp [h', hy, hy']
+
 end Module.Dual
 
 namespace LinearMap
@@ -1691,8 +1710,19 @@ theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [Finite
 theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)} :
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
-    fun _ ↦ have := Basis.dual_finite (R := K) (M := W)
-    FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
+    fun _ ↦ by
+      #adaptation_note
+      /--
+      After https://github.com/leanprover/lean4/pull/4119
+      the `Free K W` instance isn't found unless we use `set_option maxSynthPendingDepth 2`, or add
+      explicit instances:
+      ```
+      have := Free.of_divisionRing K ↥W
+      have := Basis.dual_finite (R := K) (M := W)
+      ```
+      -/
+      set_option maxSynthPendingDepth 2 in
+      exact FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order
@@ -1747,8 +1777,6 @@ variable (R A : Type*) (M : Type*) (N : Type*)
 variable {ι κ : Type*}
 variable [DecidableEq ι] [DecidableEq κ]
 variable [Fintype ι] [Fintype κ]
-
-open BigOperators
 
 open TensorProduct
 
@@ -1853,7 +1881,7 @@ isomorphism `R ⊗ R ≃ R`.
 @[simps!]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
+  refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
   · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
   · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
 #align tensor_product.dual_distrib_equiv_of_basis TensorProduct.dualDistribEquivOfBasis
