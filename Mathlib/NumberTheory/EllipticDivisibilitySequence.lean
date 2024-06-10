@@ -42,10 +42,10 @@ Some examples of EDSs include
 ## Implementation notes
 
 The normalised EDS `normEDS b c d n` is defined in terms of the auxiliary sequence
-`preNormEDS (b ^ 4) c d n`, which are equal when `n` is odd, and which differ by a factor of an
-extra parameter `b` when `n` is even. This coincides with the definition in the references since
-both agree for `normEDS b c d 2` and for `normEDS b c d 4`, and the correct factors of `b` are
-removed in `normEDS b c d (2 * (m + 2) + 1)` and in `normEDS b c d (2 * (m + 3))`.
+`preNormEDS (b ^ 4) c d n`, which are equal when `n` is odd, and which differ by a factor of `b`
+when `n` is even. This coincides with the definition in the references since both agree for
+`normEDS b c d 2` and for `normEDS b c d 4`, and the correct factors of `b` are removed in
+`normEDS b c d (2 * (m + 2) + 1)` and in `normEDS b c d (2 * (m + 3))`.
 
 One reason is to avoid the necessity for ring division by `b` in the inductive definition of
 `normEDS b c d (2 * (m + 3))`. The idea is that, it can be shown that `normEDS b c d (2 * (m + 3))`
@@ -102,8 +102,8 @@ lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W)
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
 
-/-- The auxiliary sequence for a normalised EDS `W : ℕ → R`, with extra parameter `b` and initial
-values `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d`. -/
+/-- The auxiliary sequence for a normalised EDS `W : ℕ → R`, with initial values
+`W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`. -/
 def preNormEDS' (b c d : R) : ℕ → R
   | 0 => 0
   | 1 => 1
@@ -159,8 +159,8 @@ lemma preNormEDS'_even (m : ℕ) : preNormEDS' b c d (2 * (m + 3)) =
   simp only [Nat.mul_add_div two_pos]
   rfl
 
-/-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with extra parameter `b` and initial
-values `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d`.
+/-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
+`W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`.
 
 This extends `preNormEDS'` by defining its values at negative integers. -/
 def preNormEDS (n : ℤ) : R :=
