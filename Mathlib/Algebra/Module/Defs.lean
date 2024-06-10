@@ -68,6 +68,7 @@ section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
+@[reducible]
 instance (priority := 500) Module.instSMul : SMul R M :=
   ‹Module R M›.toSMul
 
