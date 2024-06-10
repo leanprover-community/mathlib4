@@ -1837,6 +1837,25 @@ theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0}
 #align nnnorm_prod_le_of_le nnnorm_prod_le_of_le
 #align nnnorm_sum_le_of_le nnnorm_sum_le_of_le
 
+section RingHomIsometric
+
+variable {R₁ R₂ : Type*}
+
+/-- This class states that a ring homomorphism is isometric. This is a sufficient assumption
+for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
+class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (σ : R₁ →+* R₂) : Prop where
+  /-- The ring homomorphism is an isometry. -/
+  is_iso : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
+#align ring_hom_isometric RingHomIsometric
+
+attribute [simp] RingHomIsometric.is_iso
+
+instance RingHomIsometric.ids [Semiring R₁] [Norm R₁] : RingHomIsometric (RingHom.id R₁) :=
+  ⟨rfl⟩
+#align ring_hom_isometric.ids RingHomIsometric.ids
+
+end RingHomIsometric
+
 namespace Real
 
 instance norm : Norm ℝ where
@@ -1934,20 +1953,17 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℤ where
   norm n := ‖(n : ℝ)‖
   dist_eq m n := by simp only [Int.dist_eq, norm, Int.cast_sub]
 
-@[norm_cast]
-theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
-  rfl
-#align int.norm_cast_real Int.norm_cast_real
+instance : RingHomIsometric (castRingHom ℝ) := ⟨rfl⟩
+instance : RingHomIsometric (castRingHom ℤ) := ⟨rfl⟩
 
-theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
-  rfl
+@[simp, norm_cast]
+theorem norm_cast (R : Type*) [Ring R] [Norm R] [RingHomIsometric (castRingHom R)] (m : ℤ) :
+    ‖(m : R)‖ = |(m : ℝ)| :=
+  RingHomIsometric.is_iso (σ := castRingHom R)
+#align int.norm_cast_real Int.norm_cast
+
+theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| := rfl
 #align int.norm_eq_abs Int.norm_eq_abs
-
-@[simp]
-theorem norm_natCast (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
-#align int.norm_coe_nat Int.norm_natCast
-
-@[deprecated] alias norm_coe_nat := norm_natCast -- 2024-04-05
 
 theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|
@@ -1963,22 +1979,38 @@ theorem abs_le_floor_nnreal_iff (z : ℤ) (c : ℝ≥0) : |z| ≤ ⌊c⌋₊ ↔
 
 end Int
 
+@[simp]
+theorem Nat.norm_cast (R : Type*) [Ring R] [Norm R] [RingHomIsometric (Int.castRingHom R)] (n : ℕ) :
+    ‖(n : R)‖ = n := by
+  simpa using (n : ℤ).norm_cast (R := R)
+#align int.norm_coe_nat Nat.norm_cast
+
+@[simp]
+theorem norm_ofNat {R : Type*} [Ring R] [Norm R] [RingHomIsometric (Int.castRingHom R)]
+    (n : ℕ) [n.AtLeastTwo] : ‖(OfNat.ofNat n : R)‖ = OfNat.ofNat n :=
+  n.norm_cast R
+
 namespace Rat
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℚ where
   norm r := ‖(r : ℝ)‖
   dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
 
-@[norm_cast, simp 1001]
--- Porting note: increase priority to prevent the left-hand side from simplifying
-theorem norm_cast_real (r : ℚ) : ‖(r : ℝ)‖ = ‖r‖ :=
-  rfl
-#align rat.norm_cast_real Rat.norm_cast_real
+instance : RingHomIsometric (castHom ℝ) := ⟨rfl⟩
+instance : RingHomIsometric (castHom ℚ) := ⟨rfl⟩
 
-@[norm_cast, simp]
-theorem _root_.Int.norm_cast_rat (m : ℤ) : ‖(m : ℚ)‖ = ‖m‖ := by
-  rw [← Rat.norm_cast_real, ← Int.norm_cast_real]; congr 1
-#align int.norm_cast_rat Int.norm_cast_rat
+@[simp]
+theorem norm_cast (R : Type*) [DivisionRing R] [CharZero R] [Norm R] [RingHomIsometric (castHom R)]
+    (r : ℚ) : ‖(r : R)‖ = |(r : ℝ)| :=
+  RingHomIsometric.is_iso (σ := castHom R)
+#align rat.norm_cast_real Rat.norm_cast
+#align int.norm_cast_rat Int.norm_cast
+
+theorem norm_eq_abs (r : ℚ) : ‖r‖ = |(r : ℝ)| := rfl
+
+instance {R : Type*} [DivisionRing R] [Norm R] [CharZero R] [RingHomIsometric (castHom R)] :
+    RingHomIsometric (Int.castRingHom R) :=
+  ⟨fun {m} ↦ by simpa using (m : ℚ).norm_cast R⟩
 
 end Rat
 

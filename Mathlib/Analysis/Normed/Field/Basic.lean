@@ -1124,8 +1124,11 @@ instance Int.instNormedCommRing : NormedCommRing ℤ where
   __ := instNormedAddCommGroup
   norm_mul m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
 
-instance Int.instNormOneClass : NormOneClass ℤ :=
-  ⟨by simp [← Int.norm_cast_real]⟩
+instance (priority := 100) RingHomIsometric.normOneClass {R : Type*} [Ring R] [Norm R]
+    [RingHomIsometric (Int.castRingHom R)] : NormOneClass R :=
+  ⟨by simpa using (1 : ℕ).norm_cast R⟩
+
+instance Int.normOneClass : NormOneClass ℤ := inferInstance
 
 instance Rat.instNormedField : NormedField ℚ where
   __ := instField
@@ -1135,31 +1138,9 @@ instance Rat.instNormedField : NormedField ℚ where
 instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
-    ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
-
-section RingHomIsometric
-
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-
-/-- This class states that a ring homomorphism is isometric. This is a sufficient assumption
-for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
-class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (σ : R₁ →+* R₂) : Prop where
-  /-- The ring homomorphism is an isometry. -/
-  is_iso : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
-#align ring_hom_isometric RingHomIsometric
-
-attribute [simp] RingHomIsometric.is_iso
-
-variable [SeminormedRing R₁] [SeminormedRing R₂] [SeminormedRing R₃]
-
-instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
-  ⟨rfl⟩
-#align ring_hom_isometric.ids RingHomIsometric.ids
-
-end RingHomIsometric
+    ⟨q, by rwa [Rat.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
 
 /-! ### Induced normed structures -/
-
 
 section Induced
 

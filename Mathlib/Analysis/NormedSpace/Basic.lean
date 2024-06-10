@@ -67,7 +67,7 @@ instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
 
 variable (𝕜) in
 theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
-  rw [← norm_smul, ← Int.smul_one_eq_cast, smul_assoc, one_smul]
+  rw [zsmul_eq_smul_cast α, norm_smul]
 #align norm_zsmul norm_zsmul
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
@@ -101,9 +101,9 @@ instance NormedSpace.discreteTopology_zmultiples
     ext ⟨x, hx⟩
     obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
     rw [mem_preimage, mem_ball_zero_iff, AddSubgroup.coe_mk, mem_singleton_iff, Subtype.ext_iff,
-      AddSubgroup.coe_mk, AddSubgroup.coe_zero, norm_zsmul ℚ k e, Int.norm_cast_rat,
-      Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ← @Int.cast_one ℝ _,
-      ← Int.cast_abs, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
+      AddSubgroup.coe_mk, AddSubgroup.coe_zero, norm_zsmul ℚ k e, Int.norm_cast, ← Int.cast_abs,
+      mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ← @Int.cast_one ℝ _, Int.cast_lt,
+      Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
 
 open NormedField
 
@@ -310,6 +310,11 @@ theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 
   Subtype.ext <| norm_algebraMap' _ _
 #align nnnorm_algebra_map' nnnorm_algebraMap'
 
+instance NormedAlgebra.ringHomIsometric_rat
+    {𝕜 : Type*} [NormedDivisionRing 𝕜] [NormedAlgebra ℚ 𝕜] [CharZero 𝕜] :
+    RingHomIsometric (Rat.castHom 𝕜) :=
+  ⟨fun {x} ↦ by simpa using norm_algebraMap' 𝕜 x⟩
+
 section NNReal
 
 variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
@@ -346,8 +351,7 @@ Phrased another way, if `𝕜` is a normed algebra over the reals, then `Algebra
 norm. -/
 instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [NormedAlgebra ℝ 𝕜] :
     NormedAlgebra ℚ 𝕜 where
-  norm_smul_le q x := by
-    rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_cast, norm_smul, Rat.norm_cast_real]
+  norm_smul_le q x := by rw [← algebraMap_smul ℝ q x, norm_smul, eq_ratCast]; rfl
 #align normed_algebra_rat normedAlgebraRat
 
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
