@@ -101,7 +101,7 @@ variable [OrderedAddCommMonoid R] {N : Network V R}
     permitted, this usually does not help in proofs. To the contrary, defining a flow becomes more
     cumbersome, sometimes significantly so. -/
 @[ext]
-structure Flow (Pr : N.Problem) where
+structure Network.Problem.Flow (Pr : N.Problem) where
   /-- The assignment of flow units to each edge. -/
   f : V → V → R
   nonneg : ∀ u v, 0 ≤ f u v
@@ -115,12 +115,12 @@ def Network.Problem.nullFlow (Pr : N.Problem) : Flow Pr where
   conservation _ _ := rfl
   capacity := N.nonneg
 
-instance {Pr : N.Problem} : Zero (Flow Pr) where
+instance {Pr : N.Problem} : Zero Pr.Flow where
   zero := Pr.nullFlow
 
 end FlowDefinition
 
-namespace Flow
+namespace Network.Problem.Flow
 section FlowValue
 
 variable [OrderedAddCommGroup R] {N : Network V R} {Pr : N.Problem}
@@ -164,4 +164,4 @@ instance : IsNonstrictStrictOrder (Flow Pr) (· ⊆ ·) (· ⊂ ·) where
     constructor <;> (intro h; simp_all only [instHasSSubset, instHasSubset]; exact h)
 
 end Subflows
-end Flow
+end Network.Problem.Flow
