@@ -10,13 +10,13 @@ import Mathlib.NumberTheory.EllipticDivisibilitySequence
 # Division polynomials of Weierstrass curves
 
 This file defines certain polynomials associated to division polynomials of Weierstrass curves.
-These are defined in terms of the auxiliary sequences of normalised elliptic divisibility sequences
-defined in `Mathlib.NumberTheory.EllipticDivisibilitySequence`.
+These are defined in terms of the auxiliary sequences for normalised elliptic divisibility sequences
+(EDS) as defined in `Mathlib.NumberTheory.EllipticDivisibilitySequence`.
 
 ## Mathematical background
 
 Let $W$ be a Weierstrass curve over a commutative ring $R$. The sequence of $n$-division polynomials
-$\psi_n \in R[X, Y]$ of $W$ is the normalised elliptic divisibility sequence with initial values
+$\psi_n \in R[X, Y]$ of $W$ is the normalised EDS with initial values
  * $\psi_0 := 0$,
  * $\psi_1 := 1$,
  * $\psi_2 := 2Y + a_1X + a_3$,
@@ -28,8 +28,8 @@ Furthermore, define the associated sequences $\phi_n, \omega_n \in R[X, Y]$ by
  * $\phi_n := X\psi_n^2 - \psi_{n + 1}\psi_{n - 1}$, and
  * $\omega_n := \tfrac{1}{2} \cdot (\psi_{2n} / \psi_n - \psi_n(a_1\phi_n + a_3\psi_n^2))$.
 
-Note that $\omega_n$ is always well-defined as a polynomial. As a start, it can be shown by
-induction that $\psi_n$ always divides $\psi_{2n}$, so that $\psi_{2n} / \psi_n$ is always
+Note that $\omega_n$ is always well-defined as a polynomial in $R[X, Y]$. As a start, it can be
+shown by induction that $\psi_n$ always divides $\psi_{2n}$, so that $\psi_{2n} / \psi_n$ is always
 well-defined as a polynomial, while division by 2 is well-defined when $R$ has characteristic
 different from 2. In general, it can be shown that 2 always divides the polynomial
 $\psi_{2n} / \psi_n - \psi_n(a_1\phi_n + a_3\psi_n^2)$ in the characteristic zero universal ring
@@ -38,16 +38,16 @@ defined as its image under the associated universal morphism $\mathbb{Z}[A_i][X,
 
 Now, in the coordinate ring $R[W]$, note that $\psi_2^2$ is congruent to the polynomial
 $\Psi_2^{[2]} := 4X^3 + b_2X^2 + 2b_4X + b_6 \in R[X]$. As such, in $R[W]$, the recurrences
-associated to a normalised elliptic divisibility sequence show that $\psi_n / \psi_2$ are congruent
-to certain polynomials in $R[X]$. In particular, define $\tilde{\Psi}_n \in R[X]$ as the auxiliary
-sequence for a normalised elliptic divisibility sequence with initial values
+associated to a normalised EDS show that $\psi_n / \psi_2$ are congruent to certain polynomials in
+$R[X]$. In particular, define $\tilde{\Psi}_n \in R[X]$ as the auxiliary sequence for a normalised
+EDS with extraneous parameter $\Psi_2^{[2]}$ and initial values
  * $\tilde{\Psi}_0 := 0$,
  * $\tilde{\Psi}_1 := 1$,
  * $\tilde{\Psi}_2 := 1$,
  * $\tilde{\Psi}_3 := \psi_3$, and
  * $\tilde{\Psi}_4 := \psi_4 / \psi_2$.
 
-The corresponding normalised elliptic divisibility sequence $\Psi_n \in R[X, Y]$ is then given by
+The corresponding normalised EDS $\Psi_n \in R[X, Y]$ is then given by
  * $\Psi_n := \tilde{\Psi}_n\psi_2$ if $n$ is even, and
  * $\Psi_n := \tilde{\Psi}_n$ if $n$ is odd.
 
