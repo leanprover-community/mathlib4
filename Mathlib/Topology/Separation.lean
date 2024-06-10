@@ -10,8 +10,6 @@ import Mathlib.Topology.GDelta
 
 #align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
-set_option linter.uppercaseLean3 false
-
 /-!
 # Separation properties of topological spaces.
 
@@ -107,6 +105,8 @@ If the space is also compact:
 https://en.wikipedia.org/wiki/Separation_axiom
 -/
 
+
+set_option linter.uppercaseLean3 false
 
 open Function Set Filter Topology TopologicalSpace
 open scoped Classical
