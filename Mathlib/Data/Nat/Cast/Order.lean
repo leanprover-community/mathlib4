@@ -34,7 +34,7 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
-@[deprecated mono_cast] -- Since 2024-02-10
+@[deprecated mono_cast (since := "2024-02-10")]
 theorem cast_le_cast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
 @[gcongr]
