@@ -2471,8 +2471,11 @@ def SeparatingCover : Set X → Set X → Prop := fun s t : Set X =>
 theorem separating_covers_iff_separated_nhds {h k : Set X} :
     SeparatingCover h k ∧ SeparatingCover k h ↔ SeparatedNhds h k := sorry
 
-theorem separating_cover_mono {s₁ s₂ t₁ t₂ : Set X} (st_sc : SeparatingCover s₂ t₂)
-    (s_sub : s₁ ⊆ s₂) (t_sub : t₁ ⊆ t₂) : SeparatingCover s₁ t₁ := sorry
+theorem separating_cover_mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : SeparatingCover s₂ t₂)
+    (s_sub : s₁ ⊆ s₂) (t_sub : t₁ ⊆ t₂) : SeparatingCover s₁ t₁ := by
+  obtain ⟨u, u_cov, u_props⟩ := sc_st
+  refine ⟨u, Subset.trans s_sub u_cov,
+    fun n ↦ ⟨(u_props n).1, disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
 
 theorem closed_gdelta_separating_cover {s t : Set X} [NormalSpace X] (st_dis : Disjoint s t)
     (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : SeparatingCover s t := by
@@ -2482,7 +2485,7 @@ theorem closed_gdelta_separating_cover {s t : Set X} [NormalSpace X] (st_dis : D
       rw [← disjoint_univ, ← sInter_empty, ← not_nonempty_iff_eq_empty.mp T_nonempty, ← T_int]
       exact st_dis
     rw [this]
-    refine ⟨fun _ ↦ ∅, empty_subset (⋃ n, ∅), fun _ ↦ ⟨isOpen_empty, ?_⟩⟩
+    refine ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅), fun _ ↦ ⟨isOpen_empty, ?_⟩⟩
     simp only [closure_empty, empty_disjoint]
   obtain ⟨g, g_surj⟩ := Countable.exists_surjective T_nonempty T_count
   choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
@@ -2491,7 +2494,7 @@ theorem closed_gdelta_separating_cover {s t : Set X} [NormalSpace X] (st_dis : D
     exact sInter_subset_of_mem (g n).2
   have T_int' : ⋂ i, closure (g' i) = t := by
     apply Subset.antisymm ?_
-        (subset_iInter fun n ↦ Subset.trans (clt_sub_g' n) subset_closure)
+      (subset_iInter fun n ↦ Subset.trans (clt_sub_g' n) subset_closure)
     rw [T_int]
     apply subset_sInter
     intro t tinT
@@ -2508,7 +2511,7 @@ theorem closed_gdelta_separating_cover {s t : Set X} [NormalSpace X] (st_dis : D
   · simp only [closure_compl, disjoint_compl_left_iff_subset]
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
     exact Subset.trans subset_closure
-        (Subset.trans (clt_sub_g' n) (subset_interior_closure (g'_open n)))
+      (Subset.trans (clt_sub_g' n) (subset_interior_closure (g'_open n)))
 
 section PerfectlyNormal
 
