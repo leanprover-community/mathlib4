@@ -79,6 +79,8 @@ instance : (forget.{v} R).Faithful := (fullyFaithfulForget R).faithful
 
 instance : (forget.{v} R).Full := (fullyFaithfulForget R).full
 
+instance : (forget.{v} R).ReflectsIsomorphisms := (fullyFaithfulForget R).reflectsIsomorphisms
+
 /-- Evaluation on an object `X` gives a functor
 `SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
 def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
