@@ -115,8 +115,7 @@ theorem zpow_neg_natCast (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
   · exact DivInvMonoid.zpow_neg' _ _
 #align matrix.zpow_neg_coe_nat Matrix.zpow_neg_natCast
 
--- 2024-04-05
-@[deprecated] alias zpow_neg_coe_nat := zpow_neg_natCast
+@[deprecated (since := "2024-04-05")] alias zpow_neg_coe_nat := zpow_neg_natCast
 
 theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A ^ n).det := by
   cases' n with n n
@@ -204,7 +203,7 @@ theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det
       rw [det_pow]
       exact hy.pow n.succ
     rw [zpow_negSucc, zpow_negSucc, nonsing_inv_apply _ hx', nonsing_inv_apply _ hy', SemiconjBy]
-    refine' (isRegular_of_isLeftRegular_det hy'.isRegular.left).left _
+    refine (isRegular_of_isLeftRegular_det hy'.isRegular.left).left ?_
     dsimp only
     rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, mul_smul,
       mul_adjugate, ← Matrix.mul_assoc,
@@ -214,7 +213,7 @@ theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det
 
 theorem Commute.zpow_right {A B : M} (h : Commute A B) (m : ℤ) : Commute A (B ^ m) := by
   rcases nonsing_inv_cancel_or_zero B with (⟨hB, _⟩ | hB)
-  · refine' SemiconjBy.zpow_right _ _ h _ <;> exact isUnit_det_of_left_inverse hB
+  · refine SemiconjBy.zpow_right ?_ ?_ h _ <;> exact isUnit_det_of_left_inverse hB
   · cases m
     · simpa using h.pow_right _
     · simp [← inv_pow', hB]

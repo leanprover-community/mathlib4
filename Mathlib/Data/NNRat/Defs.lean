@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Rat.Order
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -121,7 +121,9 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
   rfl
 #align nnrat.coe_mul NNRat.coe_mul
 
-@[simp, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n := rfl
+-- eligible for dsimp
+@[simp, nolint simpNF, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
+  rfl
 #align nnrat.coe_pow NNRat.coe_pow
 
 @[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
@@ -154,7 +156,8 @@ theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
 
-@[simp, norm_cast]
+-- `cast_pos`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_pos : (0 : ℚ) < q ↔ 0 < q :=
   Iff.rfl
 #align nnrat.coe_pos NNRat.coe_pos
@@ -201,7 +204,7 @@ theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
   rfl
 #align nnrat.mk_coe_nat NNRat.mk_natCast
 
-@[deprecated] alias mk_coe_nat := mk_natCast -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
 
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
@@ -224,12 +227,14 @@ theorem bddBelow_coe (s : Set ℚ≥0) : BddBelow (((↑) : ℚ≥0 → ℚ) '' 
   ⟨0, fun _ ⟨q, _, h⟩ ↦ h ▸ q.2⟩
 #align nnrat.bdd_below_coe NNRat.bddBelow_coe
 
-@[simp, norm_cast]
+-- `cast_max`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_max (x y : ℚ≥0) : ((max x y : ℚ≥0) : ℚ) = max (x : ℚ) (y : ℚ) :=
   coe_mono.map_max
 #align nnrat.coe_max NNRat.coe_max
 
-@[simp, norm_cast]
+-- `cast_max`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_min (x y : ℚ≥0) : ((min x y : ℚ≥0) : ℚ) = min (x : ℚ) (y : ℚ) :=
   coe_mono.map_min
 #align nnrat.coe_min NNRat.coe_min
@@ -369,6 +374,11 @@ lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den]
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
+-- See note [no_index around OfNat.ofNat]
+@[simp] lemma num_ofNat (n : ℕ) [n.AtLeastTwo] : num (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  rfl
+@[simp] lemma den_ofNat (n : ℕ) [n.AtLeastTwo] : den (no_index (OfNat.ofNat n)) = 1 := rfl
+
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   refine ext <| Rat.ext ?_ ?_
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
@@ -396,8 +406,30 @@ lemma mk_divInt (n d : ℕ) :
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
 
+@[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]; rfl
+
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=
   ext $ by rw [← (q : ℚ).mkRat_num_den']; simp [num_coe, den_coe]
+
+lemma natCast_eq_divNat (n : ℕ) : (n : ℚ≥0) = divNat n 1 := (num_divNat_den _).symm
+
+lemma divNat_mul_divNat (n₁ n₂ : ℕ) {d₁ d₂} (hd₁ : d₁ ≠ 0) (hd₂ : d₂ ≠ 0) :
+    divNat n₁ d₁ * divNat n₂ d₂ = divNat (n₁ * n₂) (d₁ * d₂) := by
+  ext; push_cast; exact Rat.divInt_mul_divInt _ _ (mod_cast hd₁) (mod_cast hd₂)
+
+lemma divNat_mul_left {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (a * n) (a * d) = divNat n d := by
+  ext; push_cast; exact Rat.divInt_mul_left (mod_cast ha)
+
+lemma divNat_mul_right {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (n * a) (d * a) = divNat n d := by
+  ext; push_cast; exact Rat.divInt_mul_right (mod_cast ha)
+
+@[simp] lemma mul_den_eq_num (q : ℚ≥0) : q * q.den = q.num := by
+  ext
+  push_cast
+  rw [← Int.cast_natCast, ← den_coe, ← Int.cast_natCast q.num, ← num_coe]
+  exact Rat.mul_den_eq_num _
+
+@[simp] lemma den_mul_eq_num (q : ℚ≥0) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with nonnegative rational
 numbers of the form `n / d` with `d ≠ 0` and `n`, `d` coprime. -/
@@ -410,5 +442,11 @@ lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (
 
 lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) := by
   ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
+
+theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
+  rw [← NNRat.coe_lt_coe, Rat.lt_def]; norm_cast
+
+theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
+  rw [← NNRat.coe_le_coe, Rat.le_def]; norm_cast
 
 end NNRat

@@ -133,10 +133,9 @@ section sqrt
 variable [DecidableEq n] {A : Matrix n n 𝕜} (hA : PosSemidef A)
 
 /-- The positive semidefinite square root of a positive semidefinite matrix -/
-@[pp_dot]
 noncomputable def sqrt : Matrix n n 𝕜 :=
   hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) *
-  hA.1.eigenvectorUnitaryᴴ
+  (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
@@ -237,8 +236,8 @@ theorem posSemidef_conjTranspose_mul_self (A : Matrix m n R) : PosSemidef (Aᴴ 
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
-theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) :=
-  by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
+theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) := by
+  simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
@@ -302,7 +301,7 @@ theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜}
   RCLike.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
-  refine' ⟨hM.1, _⟩
+  refine ⟨hM.1, ?_⟩
   intro x
   by_cases hx : x = 0
   · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']
@@ -318,7 +317,7 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
-  refine' ⟨hM, fun x hx => _⟩
+  refine ⟨hM, fun x hx => ?_⟩
   simp only [toQuadraticForm', QuadraticForm.PosDef, LinearMap.BilinForm.toQuadraticForm_apply,
     toLinearMap₂'_apply'] at hMq
   apply hMq x hx
@@ -343,6 +342,7 @@ theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M
    apply Finset.prod_pos
    intro i _
    exact hM.eigenvalues_pos i
+#align matrix.pos_def.det_pos Matrix.PosDef.det_pos
 
 end PosDef
 
@@ -373,8 +373,7 @@ namespace Matrix
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
-@[reducible]
-noncomputable def NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
+noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
     { inner := fun x y => dotProduct (star x) (M *ᵥ y)

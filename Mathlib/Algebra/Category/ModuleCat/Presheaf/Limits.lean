@@ -13,9 +13,6 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 In this file, it is shown that under suitable assumptions,
 limits exist in the category `PresheafOfModules R`.
 
-## TODO
-* do the same for colimits
-
 -/
 
 universe v v₁ v₂ u₁ u₂ u u'
@@ -152,7 +149,7 @@ noncomputable instance toPresheafPreservesLimitsOfShape :
 
 end Small
 
-namespace Finite
+section Finite
 
 instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
   ⟨fun _ => inferInstance⟩
@@ -161,7 +158,7 @@ noncomputable instance evaluationPreservesFiniteLimits (X : Cᵒᵖ) :
     PreservesFiniteLimits (evaluation.{v} R X) where
 
 noncomputable instance toPresheafPreservesFiniteLimits :
-    PreservesFiniteLimits (toPresheaf R) where
+    PreservesFiniteLimits (toPresheaf.{v} R) where
 
 end Finite
 

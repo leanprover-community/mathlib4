@@ -8,7 +8,7 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
-import Std.Classes.Order
+import Batteries.Classes.Order
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
@@ -389,8 +389,7 @@ theorem eq_or_lt_of_not_lt {a b : α} (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 #align eq_or_lt_of_not_lt eq_or_lt_of_not_lt
 
-instance : IsTotalPreorder α (· ≤ ·)
-    where
+instance : IsTotalPreorder α (· ≤ ·) where
   trans := @le_trans _ _
   total := le_total
 
@@ -455,7 +454,7 @@ theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b 
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-instance : Std.TransCmp (compare (α := α)) where
+instance : Batteries.TransCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm

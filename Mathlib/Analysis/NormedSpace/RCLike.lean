@@ -93,7 +93,7 @@ theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r)
   exact fun z hz => h z hz
 #align continuous_linear_map.op_norm_bound_of_ball_bound ContinuousLinearMap.opNorm_bound_of_ball_bound
 
-@[deprecated] -- 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias ContinuousLinearMap.op_norm_bound_of_ball_bound :=
   ContinuousLinearMap.opNorm_bound_of_ball_bound
 

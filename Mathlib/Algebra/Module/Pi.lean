@@ -84,8 +84,7 @@ instance Function.module (α β : Type*) [Semiring α] [AddCommMonoid β] [Modul
 variable {I f}
 
 instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCommMonoid (g i)}
-    [∀ i, Module (f i) (g i)] : Module (∀ i, f i) (∀ i, g i)
-    where
+    [∀ i, Module (f i) (g i)] : Module (∀ i, f i) (∀ i, g i) where
   add_smul := by
     intros
     ext1
