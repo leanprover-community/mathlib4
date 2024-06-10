@@ -44,10 +44,15 @@ that is equal to `comul a`.
 -/
 structure CoalgebraStruct.Repr (R : Type u) {A : Type v}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) where
+  /-- the indexing type of a representation of `comul a` -/
   {ι : Type*}
+  /-- the finite indexing set of a representation of `comul a` -/
   (index : Finset ι)
+  /-- the first coordinate of a representation of `comul a` -/
   (left : ι → A)
+  /-- the second coordinate of a representation of `comul a` -/
   (right : ι → A)
+  /-- `comul a` is equal to a finite sum of some pure tensors -/
   (eq : ∑ i ∈ index, left i ⊗ₜ[R] right i = comul a)
 
 variable (R) in
@@ -273,3 +278,5 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
 end Finsupp
 
 end CommSemiring
+
+#lint
