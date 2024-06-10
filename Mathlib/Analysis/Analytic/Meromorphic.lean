@@ -160,15 +160,14 @@ lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
     filter_upwards [h] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
   · obtain ⟨m, hm⟩ := WithTop.ne_top_iff_exists.mp h
-    rw [← hm, WithTop.map_coe, sub_eq_top_iff, eq_false_intro WithTop.coe_ne_top,
-      false_and, false_iff, eventually_nhdsWithin_iff]
+    rw [← hm, WithTop.map_coe, sub_eq_top_iff, eq_false_intro WithTop.coe_ne_top, false_or]
+    simp only [WithTop.natCast_ne_top, false_iff]
     contrapose! h
     rw [AnalyticAt.order_eq_top_iff]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
     apply Eventually.frequently
-    rw [eventually_nhdsWithin_iff]
-    filter_upwards [h] with z hfz hz
-    rw [hfz hz, smul_zero]
+    filter_upwards [h] with z hfz
+    rw [hfz, smul_zero]
 
 lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
