@@ -469,7 +469,7 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
 
 instance instIsFractionRingInteger: IsFractionRing v.integer K :=
   ValuationRing.isFractionRing_iff.mpr
-    ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap, Subtype.coe_injective⟩
+    ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap (Valuation.integer.integers v), Subtype.coe_injective⟩
 
 end
 
