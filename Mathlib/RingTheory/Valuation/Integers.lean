@@ -151,7 +151,8 @@ theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) :
   rw [← v.ne_zero_iff]
   simp only [hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
-theorem eq_algebraMap_or_inv_eq_algebraMap (x : F) : ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
+theorem eq_algebraMap_or_inv_eq_algebraMap (x : F) :
+    ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
   by_cases h : v x ≤ 1
   · obtain ⟨a, ha⟩ := exists_of_le_one hv h
     use a

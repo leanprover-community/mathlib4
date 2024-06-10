@@ -141,15 +141,15 @@ theorem algebraMap_injective {K A ΓK ΓA : Type*} [Field K] [Ring A] [Nontrivia
   ext
   apply RingHom.injective (algebraMap K A) h
 
-instance instIsLocalRingHomValuationInteger {K L ΓK ΓL : Type*} [CommRing K] [CommRing L]
-    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓL]
-    [Algebra K L] [IsLocalRingHom (algebraMap K L)] {vK : Valuation K ΓK} {vL : Valuation L ΓL} [IsValExtension vK vL] :
-    IsLocalRingHom (algebraMap vK.integer vL.integer) where
+instance instIsLocalRingHomValuationInteger {R A ΓR ΓA : Type*} [CommRing R] [CommRing A]
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    [Algebra R A] [IsLocalRingHom (algebraMap R A)] {vR : Valuation R ΓR} {vA : Valuation A ΓA}
+    [IsValExtension vR vA] : IsLocalRingHom (algebraMap vR.integer vA.integer) where
   map_nonunit r hr := by
-    apply (Valuation.integer.integers (v := vK)).isUnit_of_one
-    · exact (isUnit_map_iff (algebraMap K L) _).mp (hr.map (algebraMap _ L))
-    · apply (Valuation.integer.integers (v := vL)).one_of_isUnit at hr
-      exact (val_map_eq_one_iff vK vL _).mp hr
+    apply (Valuation.integer.integers (v := vR)).isUnit_of_one
+    · exact (isUnit_map_iff (algebraMap R A) _).mp (hr.map (algebraMap _ A))
+    · apply (Valuation.integer.integers (v := vA)).one_of_isUnit at hr
+      exact (val_map_eq_one_iff vR vA _).mp hr
 
 end integer
 
