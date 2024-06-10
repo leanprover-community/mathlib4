@@ -85,20 +85,18 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z :=
   OreLocalization.add_smul _ _ _
 #align ore_localization.right_distrib OreLocalization.right_distrib
 
-instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
-  { OreLocalization.instAddCommMonoidOreLocalization,
-    OreLocalization.instMonoidOreLocalization with
-    zero_mul := OreLocalization.zero_mul
-    mul_zero := OreLocalization.mul_zero
-    left_distrib := OreLocalization.left_distrib
-    right_distrib := right_distrib }
+instance : Semiring R[S⁻¹] where
+  __ := inferInstanceAs (Monoid (R[S⁻¹]))
+  zero_mul := OreLocalization.zero_mul
+  mul_zero := OreLocalization.mul_zero
+  left_distrib := OreLocalization.left_distrib
+  right_distrib := right_distrib
 
 variable {X : Type*} [AddCommMonoid X] [Module R X]
 
-instance instModuleOreLocalization : Module R[S⁻¹] X[S⁻¹] :=
-  { instDistribMulActionOreLocalization with
-    add_smul := OreLocalization.add_smul
-    zero_smul := OreLocalization.zero_smul }
+instance : Module R[S⁻¹] X[S⁻¹] where
+  add_smul := OreLocalization.add_smul
+  zero_smul := OreLocalization.zero_smul
 
 section UMP
 
@@ -165,9 +163,9 @@ section Ring
 
 variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
 
-instance ring : Ring R[S⁻¹] :=
-  { OreLocalization.instSemiringOreLocalization,
-    OreLocalization.instAddGroupOreLocalization with }
+instance : Ring R[S⁻¹] where
+  __ := inferInstanceAs (Semiring R[S⁻¹])
+  __ := inferInstanceAs (AddGroup R[S⁻¹])
 
 open nonZeroDivisors
 
@@ -256,10 +254,7 @@ protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   simp
 #align ore_localization.inv_zero OreLocalization.inv_zero
 
-instance divisionRing : DivisionRing R[R⁰⁻¹] where
-  __ := ring
-  __ := nontrivial
-  __ := inv'
+instance : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel
   inv_zero := OreLocalization.inv_zero
   nnqsmul := _
