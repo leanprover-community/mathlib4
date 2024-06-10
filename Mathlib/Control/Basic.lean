@@ -208,7 +208,7 @@ instance : Monad (Sum.{v, u} e) where
   bind := @Sum.bind e
 
 instance : LawfulFunctor (Sum.{v, u} e) := by
-  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
+  constructor <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by

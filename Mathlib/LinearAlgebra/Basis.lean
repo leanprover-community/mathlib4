@@ -1166,7 +1166,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
-        (span R (Set.range fun i => Subtype.mk (v i) _)) := by
+        (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
       rw [h₂]
       apply Subtype.mem x
     rcases mem_map.1 h₃ with ⟨y, hy₁, hy₂⟩

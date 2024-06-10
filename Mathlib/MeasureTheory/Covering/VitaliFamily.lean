@@ -116,7 +116,7 @@ theorem exists_disjoint_covering_ae :
       (t.PairwiseDisjoint fun p => p.2) ∧
       (∀ p : α × Set α, p ∈ t → p.2 ∈ v.setsAt p.1 ∩ f p.1) ∧
       μ (s \ ⋃ (p : α × Set α) (_ : p ∈ t), p.2) = 0 :=
-  v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left _ _) h
+  v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left) h
 #align vitali_family.fine_subfamily_on.exists_disjoint_covering_ae VitaliFamily.FineSubfamilyOn.exists_disjoint_covering_ae
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
@@ -211,7 +211,7 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
       · exact ⟨a, ⟨af, h'a⟩, ha.trans (closedBall_subset_closedBall (min_le_left _ _))⟩
       · refine False.elim (h'a.2.2 ?_)
         exact ha.trans (closedBall_subset_closedBall (min_le_right _ _))
-    rcases v.covering s g (fun x _ => inter_subset_right _ _) this with ⟨t, ts, tdisj, tg, μt⟩
+    rcases v.covering s g (fun x _ => inter_subset_right) this with ⟨t, ts, tdisj, tg, μt⟩
     exact ⟨t, ts, tdisj, fun p hp => (tg p hp).1, μt⟩
 #align vitali_family.enlarge VitaliFamily.enlarge
 

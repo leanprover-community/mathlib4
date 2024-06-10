@@ -740,12 +740,12 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
-    rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [elim_inr, lex_inl_inl, bot_le, none_eq_bot]
-    · simp only [elim_inr, elim_inl, Lex.sep, bot_le, none_eq_bot]
+    cases' a <;> cases' b
+    · simp only [elim_inr, lex_inl_inl, bot_le, le_rfl]
+    · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
-    · simp only [elim_inl, lex_inr_inr, coe_le_coe, WithBot.some_eq_coe]
+    · simp only [elim_inl, lex_inr_inr, coe_le_coe]
   ⟩
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
 
@@ -782,14 +782,12 @@ def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
-    rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [lex_inr_inr, le_top, WithTop.none_eq_top]
+    cases' a <;> cases' b
+    · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _
-    · simp only [Lex.sep, le_top, WithTop.none_eq_top]
-    · simp only [lex_inl_inl, coe_le_coe, WithTop.some_eq_coe]
-
-  ⟩
+    · simp only [Lex.sep, le_top]
+    · simp only [lex_inl_inl, coe_le_coe]⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit
 
 @[simp]

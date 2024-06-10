@@ -252,7 +252,7 @@ theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
   intro a ha
   obtain rfl | h := eq_or_ne a 0
   · rw [zero_smul_set]
-    exacts [subset_union_left _ _, ⟨0, Or.inl rfl⟩]
+    exacts [subset_union_left, ⟨0, Or.inl rfl⟩]
   · rw [← image_smul, image_insert_eq, smul_zero]
     apply insert_subset_insert
     exact ((isOpenMap_smul₀ h).mapsTo_interior <| hA.smul_mem ha).image_subset
@@ -280,7 +280,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-@[deprecated Absorbent.zero_mem] -- Since 2024-02-02
+@[deprecated Absorbent.zero_mem (since := "2024-02-02")]
 theorem Absorbent.zero_mem' (hs : Absorbent 𝕜 s) : (0 : E) ∈ s := hs.zero_mem
 
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
