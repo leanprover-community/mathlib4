@@ -12,16 +12,14 @@ Try this:
 theorem good_mul : True :=
   .intro
 
--- 2024-02-23
-@[deprecated]
+@[deprecated (since := "2024-06-10")]
 alias aDeprecatable_mul := good_mul
 
--- 2024-02-23
-@[deprecated]
+@[deprecated (since := "2024-06-10")]
 alias aDeprecatable_add := good_add
 -/
 #guard_msgs in
-deprecate to good_mul good_add "2024-02-23"
+deprecate to good_mul good_add
 /-- I also have a doc-string -/
 @[to_additive "As do I"]
 theorem aDeprecatable_mul : True := .intro
