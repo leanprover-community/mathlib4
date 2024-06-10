@@ -422,3 +422,155 @@ lemma LiftedContextFreeGrammar.sink_derives (G : LiftedContextFreeGrammar T)
   (sink_derives_aux hG hw₁).left
 
 end lift_sink
+
+section closure_union
+
+/-- Grammar for a union of two context-free languages. -/
+def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGrammar T :=
+  ContextFreeGrammar.mk (Option (g₁.NT ⊕ g₂.NT)) none (
+    ⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩ :: (
+    ⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩ :: (
+    List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inl)) g₁.rules ++
+    List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inr)) g₂.rules)))
+
+variable {g₁ g₂ : ContextFreeGrammar T}
+
+private def oN₁_of_N : (ContextFreeGrammar.union g₁ g₂).NT → Option g₁.NT
+  | none => none
+  | some (Sum.inl n) => some n
+  | some (Sum.inr _) => none
+
+private def oN₂_of_N : (ContextFreeGrammar.union g₁ g₂).NT → Option g₂.NT
+  | none => none
+  | some (Sum.inl _) => none
+  | some (Sum.inr n) => some n
+
+private def g₁g : LiftedContextFreeGrammar T :=
+  ⟨g₁, ContextFreeGrammar.union g₁ g₂, some ∘ Sum.inl, oN₁_of_N,
+    (fun x y hxy => Sum.inl_injective (Option.some_injective _ hxy)),
+    (by
+      intro x y hxy
+      cases x with
+      | none => right; rfl;
+      | some x₀ =>
+        cases y with
+        | none => right; exact hxy
+        | some y₀ =>
+          cases x₀ with
+          | inl =>
+            cases y₀ with
+            | inl =>
+              simp only [oN₁_of_N, Option.some.injEq] at hxy
+              left
+              rw [hxy]
+            | inr =>
+              exfalso
+              simp [oN₁_of_N] at hxy
+          | inr =>
+            cases y₀ with
+            | inl =>
+              exfalso
+              simp [oN₁_of_N] at hxy
+            | inr =>
+              right
+              rfl),
+    (fun _ => rfl),
+    (by
+      intro r _
+      apply List.mem_cons_of_mem
+      apply List.mem_cons_of_mem
+      apply List.mem_append_left
+      rw [List.mem_map]
+      use r),
+    (by
+      intro r ⟨hr, ⟨n₀, imposs⟩⟩
+      cases hr with
+      | head =>
+        exfalso
+        exact Option.noConfusion imposs
+      | tail _ hr =>
+        cases hr with
+        | head =>
+          exfalso
+          exact Option.noConfusion imposs
+        | tail _ hr =>
+          change r ∈ List.map _ g₁.rules ++ List.map _ g₂.rules at hr
+          rw [List.mem_append] at hr
+          cases hr with
+          | inl hr =>
+            rw [List.mem_map] at hr
+            rcases hr with ⟨r₁, _, _⟩
+            use r₁
+          | inr hr =>
+            exfalso
+            rw [List.mem_map] at hr
+            rcases hr with ⟨_, -, rfl⟩
+            simp only [ContextFreeRule.lift, Function.comp_apply] at imposs
+            rw [Option.some_inj] at imposs
+            exact Sum.noConfusion imposs)⟩
+
+private def g₂g : LiftedContextFreeGrammar T :=
+  ⟨g₂, ContextFreeGrammar.union g₁ g₂, some ∘ Sum.inr, oN₂_of_N,
+    (fun x y hxy => Sum.inr_injective (Option.some_injective _ hxy)),
+    (by
+      intro x y hxy
+      cases x with
+      | none => right; rfl;
+      | some x₀ =>
+        cases y with
+        | none => right; exact hxy
+        | some y₀ =>
+          cases x₀ with
+          | inl =>
+            cases y₀ with
+            | inl =>
+              right
+              rfl
+            | inr =>
+              exfalso
+              simp [oN₂_of_N] at hxy
+          | inr =>
+            cases y₀ with
+            | inl =>
+              exfalso
+              simp [oN₂_of_N] at hxy
+            | inr =>
+              simp only [oN₂_of_N, Option.some.injEq] at hxy
+              left
+              rw [hxy]),
+    (fun _ => rfl),
+    (by
+      intro r _
+      apply List.mem_cons_of_mem
+      apply List.mem_cons_of_mem
+      apply List.mem_append_right
+      rw [List.mem_map]
+      use r),
+    (by
+    intro r ⟨hr, ⟨n₀, imposs⟩⟩
+    cases hr with
+    | head =>
+      exfalso
+      exact Option.noConfusion imposs
+    | tail _ hr =>
+      cases hr with
+      | head =>
+        exfalso
+        exact Option.noConfusion imposs
+      | tail _ hr =>
+        change r ∈ List.map _ g₁.rules ++ List.map _ g₂.rules at hr
+        rw [List.mem_append] at hr
+        cases hr with
+        | inl hr =>
+          exfalso
+          rw [List.mem_map] at hr
+          rcases hr with ⟨_, -, rfl⟩
+          simp only [ContextFreeRule.lift, Function.comp_apply] at imposs
+          rw [Option.some_inj] at imposs
+          exact Sum.noConfusion imposs
+        | inr hr =>
+          rw [List.mem_map] at hr
+          rcases hr with ⟨r₂, _, _⟩
+          use r₂)⟩
+
+end closure_union
