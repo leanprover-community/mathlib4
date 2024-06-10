@@ -54,23 +54,6 @@ More fine grained instances for `FirstCountableTopology`,
 
 open Set Filter Function Topology
 
-namespace Set
-variable {ι : Type*} {α : ι → Type*} {i : ι} {s : Set ι} {t : ∀ i, Set (α i)}
-
-lemma eval_image_pi_of_not_mem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
-    Function.eval i '' s.pi t = if (s.pi t).Nonempty then univ else ∅ := by
-  classical
-  ext xᵢ
-  simp only [eval, mem_image, mem_pi, Set.Nonempty, mem_ite_empty_right, mem_univ, and_true]
-  constructor
-  · rintro ⟨x, hx, rfl⟩
-    exact ⟨x, hx⟩
-  · rintro ⟨x, hx⟩
-    refine ⟨Function.update x i xᵢ, ?_⟩
-    simpa (config := { contextual := true }) [(ne_of_mem_of_not_mem · hi)]
-
-end Set
-
 noncomputable section
 
 namespace TopologicalSpace
