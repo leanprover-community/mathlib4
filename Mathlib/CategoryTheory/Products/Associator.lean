@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.CategoryTheory.DiscreteCategory
 
 #align_import category_theory.products.associator from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -53,60 +52,6 @@ instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
 instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalence :=
   (by infer_instance : (associativity C D E).inverse.IsEquivalence)
 #align category_theory.prod.inverse_associator_is_equivalence CategoryTheory.prod.inverseAssociatorIsEquivalence
-
-/-- The left unitor functor `1 × C ⥤ C` -/
-@[simps]
-def leftUnitor : Discrete PUnit × C ⥤ C where
-  obj X := X.2
-  map f := f.2
-#align category_theory.prod.left_unitor CategoryTheory.prod.leftUnitor
-
-/-- The right unitor functor `C × 1 ⥤ C` -/
-@[simps]
-def rightUnitor : C × Discrete PUnit ⥤ C where
-  obj X := X.1
-  map f := f.1
-#align category_theory.prod.right_unitor CategoryTheory.prod.rightUnitor
-
-/-- The left inverse unitor `C ⥤ 1 × C` -/
-@[simps]
-def leftInverseUnitor : C ⥤ Discrete PUnit × C where
-  obj X := ⟨⟨PUnit.unit⟩, X⟩
-  map f := ⟨𝟙 _, f⟩
-#align category_theory.prod.left_inverse_unitor CategoryTheory.prod.leftInverseUnitor
-
-/-- The right inverse unitor `C ⥤ C × 1` -/
-@[simps]
-def rightInverseUnitor : C ⥤ C × Discrete PUnit where
-  obj X := ⟨X, ⟨PUnit.unit⟩⟩
-  map f := ⟨f, 𝟙 _⟩
-#align category_theory.prod.right_inverse_unitor CategoryTheory.prod.rightInverseUnitor
-
-/-- The equivalence of categories expressing left unity of products of categories.  -/
-@[simps]
-def leftUnitorEquivalence : Discrete PUnit × C ≌ C where
-  functor := leftUnitor C
-  inverse := leftInverseUnitor C
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
-#align category_theory.prod.left_unitor_equivalence CategoryTheory.prod.leftUnitorEquivalence
-
-/-- The equivalence of categories expressing right unity of products of categories.  -/
-@[simps]
-def rightUnitorEquivalence : C × Discrete PUnit ≌ C where
-  functor := rightUnitor C
-  inverse := rightInverseUnitor C
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
-#align category_theory.prod.right_unitor_equivalence CategoryTheory.prod.rightUnitorEquivalence
-
-instance leftUnitor_isEquivalence : (leftUnitor C).IsEquivalence :=
-  (leftUnitorEquivalence C).isEquivalence_functor
-#align category_theory.prod.left_unitor_is_equivalence CategoryTheory.prod.leftUnitor_isEquivalence
-
-instance rightUnitor_isEquivalence : (rightUnitor C).IsEquivalence :=
-  (rightUnitorEquivalence C).isEquivalence_functor
-#align category_theory.prod.right_unitor_is_equivalence CategoryTheory.prod.rightUnitor_isEquivalence
 
 -- TODO pentagon natural transformation? ...satisfying?
 end CategoryTheory.prod
