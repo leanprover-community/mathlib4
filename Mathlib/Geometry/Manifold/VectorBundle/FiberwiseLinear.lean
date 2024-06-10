@@ -224,7 +224,9 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
 variable (F B IB)
 
 variable {F B IB} in
--- Having this private lemma speeds up `simp` calls a lot.
+-- Having this private lemma speeds up `simp` calls below a lot.
+-- TODO: understand why and fix the underlying issue (relatedly, the `simp` calls
+-- in `smoothFiberwiseLinear` are quite slow, even with this change)
 private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} :
     (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
       (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)
