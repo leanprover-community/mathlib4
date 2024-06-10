@@ -153,10 +153,7 @@ and (todo) a perfectly normal space is a completely normal space. -/
 theorem separating_covers_iff_separated_nhds {h k : Set X} :
     SeparatingCover h k ∧ SeparatingCover k h ↔ SeparatedNhds h k := by
   constructor
-  · rintro ⟨h_cov, k_cov⟩
-    rcases h_cov, k_cov with ⟨⟨u, u_cov, u_props⟩, ⟨v, v_cov, v_props⟩⟩
-    use ⋃ n : ℕ, u n \ (closure (⋃ m ∈ {m | m ≤ n}, v m)),
-      ⋃ n : ℕ, v n \ (closure (⋃ m ∈ {m | m ≤ n}, u m))
+  · rintro ⟨⟨u, u_cov, u_props⟩, ⟨v, v_cov, v_props⟩⟩
     have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
       IsOpen (⋃ n, u₀ n \ closure (a n)) := fun _ _ u₀i_open ↦
       isOpen_iUnion (fun i ↦ IsOpen.sdiff (u₀i_open i) (isClosed_closure))
@@ -172,6 +169,8 @@ theorem separating_covers_iff_separated_nhds {h k : Set X} :
       simp_all only [disjoint_right, mem_setOf_eq, mem_iUnion, exists_false, exists_const,
         not_false_eq_true]
     refine ⟨
+      ⋃ n : ℕ, u n \ (closure (⋃ m ∈ {m | m ≤ n}, v m)),
+      ⋃ n : ℕ, v n \ (closure (⋃ m ∈ {m | m ≤ n}, u m)),
       open_lemma u (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v m) (fun n ↦ (u_props n).1),
       open_lemma v (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u m) (fun n ↦ (v_props n).1),
       cover_lemma h u v u_cov (fun n ↦ (v_props n).2),
@@ -187,21 +186,13 @@ theorem separating_covers_iff_separated_nhds {h k : Set X} :
       exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvgm))
     exact subset_closure (mem_biUnion n_le_m xinun.1)
   · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
-    constructor
-    · use fun _ ↦ U
-      constructor
-      · rw [iUnion_const]
-        exact h_sub_U
-      · intros
-        exact ⟨U_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) k_sub_V
-          (Disjoint.closure_left UV_dis V_open)⟩
-    · use fun _ ↦ V
-      constructor
-      · rw [iUnion_const]
-        exact k_sub_V
-      · intros
-        exact ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U
-          (Disjoint.symm (Disjoint.closure_right UV_dis U_open))⟩
+    exact ⟨
+      ⟨fun _ ↦ U, Subset.trans h_sub_U (Eq.subset (Eq.symm (iUnion_const U))),
+      fun _ ↦ ⟨U_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) k_sub_V
+        (Disjoint.closure_left UV_dis V_open)⟩⟩,
+      ⟨fun _ ↦ V, Subset.trans k_sub_V (Eq.subset (Eq.symm (iUnion_const V))),
+      fun _ ↦ ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U
+        (Disjoint.symm (Disjoint.closure_right UV_dis U_open))⟩⟩⟩
 
 namespace SeparatedNhds
 
