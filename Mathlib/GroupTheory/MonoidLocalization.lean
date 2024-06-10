@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.Congruence
 import Mathlib.Init.Data.Prod
+import Mathlib.RingTheory.OreLocalization.Basic
 
 #align_import group_theory.monoid_localization from "leanprover-community/mathlib"@"10ee941346c27bdb5e87bb3535100c0b1f08ac41"
 
@@ -2159,3 +2160,36 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
     decidableEq := Localization.decidableEq }
 
 end Localization
+
+namespace OreLocalization
+
+variable (R) [CommMonoid R] (S : Submonoid R)
+
+/-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
+protected def localizationMap : S.LocalizationMap R[S⁻¹] where
+  toFun := numeratorHom
+  map_one' := rfl
+  map_mul' r₁ r₂ := by simp
+  map_units' := numerator_isUnit
+  surj' z := by
+    induction' z using OreLocalization.ind with r s
+    use (r, s); dsimp
+    rw [numeratorHom_apply, numeratorHom_apply, OreLocalization.expand' r 1 s]
+    simp only [mul_div_one, mul_one, Submonoid.smul_def, smul_eq_mul, mul_comm r]
+  exists_of_eq r₁ r₂ := by
+    dsimp
+    intro h
+    rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
+    rcases h with ⟨u, v, h₁, h₂⟩
+    dsimp at h₂
+    rw [mul_one, mul_one] at h₂
+    subst h₂
+    exact ⟨u, h₁.symm⟩
+#align ore_localization.localization_map OreLocalization.localizationMap
+
+/-- If `R` is commutative, Ore localization and monoid localization are isomorphic. -/
+protected noncomputable def equivMonoidLocalization : Localization S ≃* R[S⁻¹] :=
+  Localization.mulEquivOfQuotient (OreLocalization.localizationMap R S)
+#align ore_localization.equiv_monoid_localization OreLocalization.equivMonoidLocalization
+
+end OreLocalization
