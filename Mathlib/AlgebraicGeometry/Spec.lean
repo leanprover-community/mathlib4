@@ -331,7 +331,7 @@ set_option linter.uppercaseLean3 false in
 This `maxHeartbeats` was not previously required.
 Without the backwards compatibility flag even more is needed. -/
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 40000 in
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
 def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
