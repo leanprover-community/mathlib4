@@ -323,6 +323,6 @@ theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
 #align int.mod_mul_left_mod Int.mod_mul_left_mod
 
-@[deprecated] alias coe_nat_modEq_iff := natCast_modEq_iff -- 2024-04-02
+@[deprecated (since := "2024-04-02")] alias coe_nat_modEq_iff := natCast_modEq_iff
 
 end Int

@@ -26,7 +26,7 @@ protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Fil
     Tendsto (↿(IccExtend h ∘ f)) (lc ×ˢ la) lb :=
   hf.comp <| tendsto_id.prod_map tendsto_map
 
-@[deprecated Filter.Tendsto.IccExtend]
+@[deprecated Filter.Tendsto.IccExtend (since := "2023-02-06")]
 theorem Filter.Tendsto.IccExtend' (f : γ → Icc a b → β) {z : γ} {l : Filter α} {l' : Filter β}
     (hf : Tendsto (↿f) (𝓝 z ×ˢ l.map (projIcc a b h)) l') :
     Tendsto (↿(IccExtend h ∘ f)) (𝓝 z ×ˢ l) l' :=

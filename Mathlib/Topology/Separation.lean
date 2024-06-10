@@ -993,7 +993,7 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x 
 /-- Let `X` be a topological space and let `s, t ⊆ X` be two subsets.  If there is an inclusion
 `t ⊆ s`, then the topological space structure on `t` induced by `X` is the same as the one
 obtained by the induced topological space structure on `s`. Use `embedding_inclusion` instead. -/
-@[deprecated embedding_inclusion]
+@[deprecated embedding_inclusion (since := "2023-02-02")]
 theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
     (instTopologicalSpaceSubtype : TopologicalSpace t) =
       (instTopologicalSpaceSubtype : TopologicalSpace s).induced (Set.inclusion ts) :=
@@ -1765,8 +1765,8 @@ theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y →
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
 #align function.left_inverse.closed_range Function.LeftInverse.isClosed_range
 
-@[deprecated] alias Function.LeftInverse.closed_range :=
-  Function.LeftInverse.isClosed_range -- 2024-03-17
+@[deprecated (since := "2024-03-17")]
+alias Function.LeftInverse.closed_range := Function.LeftInverse.isClosed_range
 
 theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : ClosedEmbedding g :=
@@ -2128,7 +2128,7 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
   exact L_compact.closure_of_subset interior_subset
 #align exists_open_between_and_is_compact_closure exists_open_between_and_isCompact_closure
 
-@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace] -- 3 Sep 2023
+@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace (since := "2023-09-03")]
 theorem locally_compact_of_compact [T2Space X] [CompactSpace X] :
     LocallyCompactSpace X :=
   inferInstance

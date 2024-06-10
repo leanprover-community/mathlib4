@@ -884,6 +884,6 @@ end Equiv
 
 namespace Finset
 
-@[deprecated] alias image_filter := filter_image -- 2023-12-27
+@[deprecated (since := "2023-12-27")] alias image_filter := filter_image
 
 end Finset

@@ -371,7 +371,7 @@ The main constructor used to use a different compatibility assumption.
 This definition was created as a step towards porting to a new definition.
 Now the main definition is ported,
 so this constructor will be removed in a few months. -/
-@[deprecated UniformSpace.mk]
+@[deprecated UniformSpace.mk (since := "2024-03-20")]
 def UniformSpace.ofNhdsEqComap (u : UniformSpace.Core α) (_t : TopologicalSpace α)
     (h : ∀ x, 𝓝 x = u.uniformity.comap (Prod.mk x)) : UniformSpace α where
   __ := u
@@ -1166,8 +1166,6 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
--- TODO: Replace `.ofNhdsEqComap` with `.mk`.
-set_option linter.deprecated false in
 instance : Top (UniformSpace α) :=
   ⟨@UniformSpace.mk α ⊤ ⊤ le_top le_top fun x ↦ by simp only [nhds_top, comap_top]⟩
 
@@ -1760,7 +1758,7 @@ instance Sum.instUniformSpace : UniformSpace (α ⊕ β) where
       Prod.ext_iff]
 #align sum.uniform_space Sum.instUniformSpace
 
-@[reducible, deprecated] alias Sum.uniformSpace := Sum.instUniformSpace -- 2024-02-15
+@[reducible, deprecated (since := "2024-02-15")] alias Sum.uniformSpace := Sum.instUniformSpace
 
 /-- The union of an entourage of the diagonal in each set of a disjoint union is again an entourage
 of the diagonal. -/
