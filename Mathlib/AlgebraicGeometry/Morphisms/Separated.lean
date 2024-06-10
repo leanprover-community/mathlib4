@@ -38,13 +38,13 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism is separated if the diagonal map is a closed immersion. -/
 @[mk_iff]
-class IsSeparated (f : X ⟶ Y) : Prop where
+class IsSeparated : Prop where
   /-- A morphism is separated if the diagonal map is a closed immersion. -/
-  diagonalClosedImmersion : IsClosedImmersion (pullback.diagonal f) := by infer_instance
+  diagonal_isClosedImmersion : IsClosedImmersion (pullback.diagonal f) := by infer_instance
 
 namespace IsSeparated
 
-attribute [instance] diagonalClosedImmersion
+attribute [instance] diagonal_isClosedImmersion
 
 theorem isSeparated_eq_diagonal_isClosedImmersion :
     @IsSeparated = MorphismProperty.diagonal @IsClosedImmersion := by
@@ -52,15 +52,14 @@ theorem isSeparated_eq_diagonal_isClosedImmersion :
   exact isSeparated_iff _
 
 /-- Monomorphisms are separated. -/
-instance (priority := 900) separatedOfMono {X Y : Scheme} (f : X ⟶ Y) [Mono f] :
-    IsSeparated f where
+instance (priority := 900) isSeparated_of_mono [Mono f] : IsSeparated f where
 
 theorem respectsIso : MorphismProperty.RespectsIso @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   apply MorphismProperty.RespectsIso.diagonal
   exact IsClosedImmersion.respectsIso
 
-instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsSeparated f] : QuasiSeparated f where
+instance (priority := 900) [IsSeparated f] : QuasiSeparated f where
 
 end IsSeparated
 
