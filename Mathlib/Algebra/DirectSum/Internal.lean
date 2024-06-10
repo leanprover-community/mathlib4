@@ -35,13 +35,13 @@ When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
-## tags
+## Tags
 
 internally graded ring
 -/
 
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ι : Type*} {σ S R : Type*}
 
@@ -59,23 +59,29 @@ theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [A
   exact (A 0).smul_mem s <| SetLike.one_mem_graded _
 #align set_like.algebra_map_mem_graded SetLike.algebraMap_mem_graded
 
-theorem SetLike.nat_cast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
+theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 := by
   induction' n with _ n_ih
   · rw [Nat.cast_zero]
     exact zero_mem (A 0)
   · rw [Nat.cast_succ]
     exact add_mem n_ih (SetLike.one_mem_graded _)
-#align set_like.nat_cast_mem_graded SetLike.nat_cast_mem_graded
+#align set_like.nat_cast_mem_graded SetLike.natCast_mem_graded
 
-theorem SetLike.int_cast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
+@[deprecated (since := "2024-04-17")]
+alias SetLike.nat_cast_mem_graded := SetLike.natCast_mem_graded
+
+theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
-  · rw [Int.ofNat_eq_coe, Int.cast_ofNat]
-    exact SetLike.nat_cast_mem_graded _ _
+  · rw [Int.ofNat_eq_coe, Int.cast_natCast]
+    exact SetLike.natCast_mem_graded _ _
   · rw [Int.cast_negSucc]
-    exact neg_mem (SetLike.nat_cast_mem_graded _ _)
-#align set_like.int_cast_mem_graded SetLike.int_cast_mem_graded
+    exact neg_mem (SetLike.natCast_mem_graded _ _)
+#align set_like.int_cast_mem_graded SetLike.intCast_mem_graded
+
+@[deprecated (since := "2024-04-17")]
+alias SetLike.int_cast_mem_graded := SetLike.intCast_mem_graded
 
 section DirectSum
 
@@ -106,7 +112,7 @@ instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass
     zero_mul := fun _ => Subtype.ext (zero_mul _)
     mul_add := fun _ _ _ => Subtype.ext (mul_add _ _ _)
     add_mul := fun _ _ _ => Subtype.ext (add_mul _ _ _)
-    natCast := fun n => ⟨n, SetLike.nat_cast_mem_graded _ _⟩
+    natCast := fun n => ⟨n, SetLike.natCast_mem_graded _ _⟩
     natCast_zero := Subtype.ext Nat.cast_zero
     natCast_succ := fun n => Subtype.ext (Nat.cast_succ n) }
 #align set_like.gsemiring SetLike.gsemiring
@@ -121,8 +127,8 @@ instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSu
 instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i :=
   { SetLike.gsemiring A with
-    intCast := fun z => ⟨z, SetLike.int_cast_mem_graded _ _⟩
-    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_ofNat _
+    intCast := fun z => ⟨z, SetLike.intCast_mem_graded _ _⟩
+    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_natCast _
     intCast_negSucc_ofNat := fun n => Subtype.ext <| Int.cast_negSucc n }
 #align set_like.gring SetLike.gring
 
@@ -155,7 +161,7 @@ theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i)
 theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
-      ∑ ij in (r.support ×ˢ r'.support).filter (fun ij : ι × ι => ij.1 + ij.2 = n),
+      ∑ ij ∈ (r.support ×ˢ r'.support).filter (fun ij : ι × ι => ij.1 + ij.2 = n),
         (r ij.1 * r' ij.2 : R) := by
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
@@ -187,7 +193,7 @@ theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r
       exact DFinsupp.sum_zero
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
-    rfl
+    · rfl
     rw [DFinsupp.not_mem_support_iff.mp h, ZeroMemClass.coe_zero, mul_zero]
 #align direct_sum.coe_of_mul_apply_aux DirectSum.coe_of_mul_apply_aux
 
@@ -202,7 +208,7 @@ theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i,
       exact DFinsupp.sum_zero
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
-    rfl
+    · rfl
     rw [DFinsupp.not_mem_support_iff.mp h, ZeroMemClass.coe_zero, zero_mul]
 #align direct_sum.coe_mul_of_apply_aux DirectSum.coe_mul_of_apply_aux
 
@@ -221,7 +227,6 @@ end coe
 section CanonicallyOrderedAddCommMonoid
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-
 variable [CanonicallyOrderedAddCommMonoid ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :

@@ -47,7 +47,7 @@ instance : ConcreteCategory SemiNormedGroupCat := by
   dsimp [SemiNormedGroupCat]
   infer_instance
 
-instance : CoeSort SemiNormedGroupCat (Type*) where
+instance : CoeSort SemiNormedGroupCat Type* where
   coe X := X.α
 
 /-- Construct a bundled `SemiNormedGroupCat` from the underlying type and typeclass. -/
@@ -67,7 +67,7 @@ instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V �
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
--- Porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma ext {M N : SemiNormedGroupCat} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
   DFunLike.ext _ _ h
@@ -77,13 +77,13 @@ theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of 
   rfl
 #align SemiNormedGroup.coe_of SemiNormedGroupCat.coe_of
 
--- Porting note : marked with high priority to short circuit simplifier's path
+-- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
 theorem coe_id (V : SemiNormedGroupCat) : (𝟙 V : V → V) = id :=
   rfl
 #align SemiNormedGroup.coe_id SemiNormedGroupCat.coe_id
 
--- Porting note : marked with high priority to short circuit simplifier's path
+-- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
 theorem coe_comp {M N K : SemiNormedGroupCat} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=
@@ -109,7 +109,7 @@ theorem zero_apply {V W : SemiNormedGroupCat} (x : V) : (0 : V ⟶ W) x = 0 :=
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat where
 
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
-  refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroupCat.isZero_of_subsingleton
@@ -140,7 +140,7 @@ def SemiNormedGroupCat₁ : Type (u + 1) :=
 
 namespace SemiNormedGroupCat₁
 
-instance : CoeSort SemiNormedGroupCat₁ (Type*) where
+instance : CoeSort SemiNormedGroupCat₁ Type* where
   coe X := X.α
 
 instance : LargeCategory.{u} SemiNormedGroupCat₁ where
@@ -210,13 +210,13 @@ theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat₁.
   rfl
 #align SemiNormedGroup₁.coe_of SemiNormedGroupCat₁.coe_of
 
--- Porting note : marked with high priority to short circuit simplifier's path
+-- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
 theorem coe_id (V : SemiNormedGroupCat₁) : ⇑(𝟙 V) = id :=
   rfl
 #align SemiNormedGroup₁.coe_id SemiNormedGroupCat₁.coe_id
 
--- Porting note : marked with high priority to short circuit simplifier's path
+-- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
 theorem coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=
@@ -246,7 +246,7 @@ theorem zero_apply {V W : SemiNormedGroupCat₁} (x : V) : (0 : V ⟶ W) x = 0 :
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat₁ where
 
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
-  refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
 #align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGroupCat₁.isZero_of_subsingleton
@@ -257,7 +257,7 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
 
 theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
   change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
-  refine' AddMonoidHomClass.isometry_of_norm _ _
+  refine AddMonoidHomClass.isometry_of_norm _ ?_
   intro v
   apply le_antisymm (i.hom.2 v)
   calc

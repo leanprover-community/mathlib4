@@ -14,14 +14,11 @@ import Mathlib.Logic.Equiv.Set
 In particular we prove `small_of_injective` and `small_of_surjective`.
 -/
 
-set_option autoImplicit true
-
-
 universe u w v v'
 
 section
 
-open Classical
+open scoped Classical
 
 instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
@@ -37,13 +34,8 @@ theorem small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α �
   small_of_injective (Function.injective_surjInv hf)
 #align small_of_surjective small_of_surjective
 
-theorem small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] : Small.{u} t :=
-  let f : t → s := fun x => ⟨x, hts x.prop⟩
-  @small_of_injective _ _ _ f fun _ _ hxy => Subtype.ext (Subtype.mk.inj hxy)
-#align small_subset small_subset
-
 instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : Small.{w} α := by
-  rcases isEmpty_or_nonempty α with ⟨⟩ <;> skip
+  rcases isEmpty_or_nonempty α with ⟨⟩
   · apply small_map (Equiv.equivPEmpty α)
   · apply small_map Equiv.punitOfNonemptyOfSubsingleton
 #align small_subsingleton small_subsingleton
@@ -55,15 +47,14 @@ theorem small_of_injective_of_exists {α : Type v} {β : Type w} {γ : Type v'} 
     (f : α → γ) {g : β → γ} (hg : Function.Injective g) (h : ∀ b : β, ∃ a : α, f a = g b) :
     Small.{u} β := by
   by_cases hβ : Nonempty β
-  · refine' small_of_surjective (f := Function.invFun g ∘ f) (fun b => _)
+  · refine small_of_surjective (f := Function.invFun g ∘ f) (fun b => ?_)
     obtain ⟨a, ha⟩ := h b
     exact ⟨a, by rw [Function.comp_apply, ha, Function.leftInverse_invFun hg]⟩
   · simp only [not_nonempty_iff] at hβ
     infer_instance
 
 /-!
-We don't define `small_of_fintype` or `small_of_countable` in this file,
-to keep imports to `Logic` to a minimum.
+We don't define `Countable.toSmall` in this file, to keep imports to `Logic` to a minimum.
 -/
 
 instance small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
@@ -83,15 +74,5 @@ instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (Sum α β)
 instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
   ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩
 #align small_set small_set
-
-instance small_range {α : Type v} {β : Type w} (f : α → β) [Small.{u} α] :
-    Small.{u} (Set.range f) :=
-  small_of_surjective Set.surjective_onto_range
-#align small_range small_range
-
-instance small_image {α : Type v} {β : Type w} (f : α → β) (S : Set α) [Small.{u} S] :
-    Small.{u} (f '' S) :=
-  small_of_surjective Set.surjective_onto_image
-#align small_image small_image
 
 end

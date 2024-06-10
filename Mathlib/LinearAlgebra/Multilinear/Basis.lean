@@ -24,9 +24,7 @@ This file proves lemmas about the action of multilinear maps on basis vectors.
 open MultilinearMap
 
 variable {R : Type*} {ι : Type*} {n : ℕ} {M : Fin n → Type*} {M₂ : Type*} {M₃ : Type*}
-
 variable [CommSemiring R] [AddCommMonoid M₂] [AddCommMonoid M₃] [∀ i, AddCommMonoid (M i)]
-
 variable [∀ i, Module R (M i)] [Module R M₂] [Module R M₃]
 
 /-- Two multilinear maps indexed by `Fin n` are equal if they are equal when all arguments are
@@ -38,7 +36,7 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
   · ext x
     convert h finZeroElim
   · apply Function.LeftInverse.injective uncurry_curryLeft
-    refine' Basis.ext (e 0) _
+    refine Basis.ext (e 0) ?_
     intro i
     apply hm (Fin.tail e)
     intro j
@@ -46,7 +44,7 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
     iterate 2
       rw [curryLeft_apply]
       congr 1 with x
-      refine' Fin.cases rfl (fun x => _) x
+      refine Fin.cases rfl (fun x => ?_) x
       dsimp [Fin.tail]
       rw [Fin.cons_succ, Fin.cons_succ]
 #align basis.ext_multilinear_fin Basis.ext_multilinear_fin

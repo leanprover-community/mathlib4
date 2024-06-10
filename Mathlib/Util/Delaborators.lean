@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Std.Classes.SetNotation
+import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! # Pi type notation
 
@@ -29,7 +29,7 @@ def piNotation := leading_parser:leadPrec
 
 /-- Dependent function type (a "pi type"). The notation `Π x ∈ s, β x` is
 short for `Π x, x ∈ s → β x`. -/
--- A copy of forall notation from `Std.Util.ExtendedBinder` for pi notation
+-- A copy of forall notation from `Batteries.Util.ExtendedBinder` for pi notation
 syntax "Π " binderIdent binderPred ", " term : term
 
 macro_rules

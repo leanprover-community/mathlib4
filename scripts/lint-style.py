@@ -52,6 +52,8 @@ ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NUM_LIN = 19 # file is too large
+ERR_NSP = 20 # non-terminal simp
+ERR_ADN = 25 # the string "Adaptation note"
 
 exceptions = []
 
@@ -73,6 +75,8 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_OPT, path, None)]
         elif errno == "ERR_AUT":
             exceptions += [(ERR_AUT, path, None)]
+        elif errno == "ERR_ADN":
+            exceptions += [(ERR_ADN, path, None)]
         elif errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path, None)]
         elif errno == "ERR_NUM_LIN":
@@ -91,21 +95,21 @@ def annotate_comments(enumerate_lines):
     (line_number, line, ..., True/False)
     where lines have True attached when they are in comments.
     """
-    in_comment = False
+    nesting_depth = 0 # We're in a comment when `nesting_depth > 0`.
+    starts_in_comment = False # Whether we're in a comment when starting the line.
     for line_nr, line, *rem in enumerate_lines:
-        if line.lstrip().startswith("--"):
+        # We assume multiline comments do not begin or end within single-line comments.
+        if line == "\n" or line.lstrip().startswith("--"):
             yield line_nr, line, *rem, True
             continue
-        if "/-" in line:
-            in_comment = True
-        if "-/" in line:
-            in_comment = False
-            yield line_nr, line, *rem, True
-            continue
-        if line == "\n" or in_comment:
-            yield line_nr, line, *rem, True
-            continue
-        yield line_nr, line, *rem, False
+        # We assume that "/-/" and "-/-" never occur outside of "--" comments.
+        # We assume that we do not encounter "... -/ <term> /- ...".
+        # We also don't account for "/-" and "-/" appearing in strings.
+        starts_in_comment = (nesting_depth > 0)
+        nesting_depth = nesting_depth + line.count("/-") - line.count("-/")
+        in_comment = (starts_in_comment or line.lstrip().startswith("/-")) and \
+            (nesting_depth > 0 or line.rstrip().endswith("-/"))
+        yield line_nr, line, *rem, in_comment
 
 def annotate_strings(enumerate_lines):
     """
@@ -200,6 +204,36 @@ def four_spaces_in_second_line(lines, path):
                         errors += [(ERR_IND, next_line_nr, path)]
                         new_next_line = ' ' * 4 + stripped_next_line
         newlines.append((next_line_nr, new_next_line))
+    return errors, newlines
+
+flexible_tactics = ["rfl", "ring", "aesop", "norm_num", "positivity", "abel", "omega", "linarith", "nlinarith"]
+
+def nonterminal_simp_check(lines, path):
+    errors = []
+    newlines = []
+    annotated_lines = list(annotate_comments(lines))
+    for (line_nr, line, is_comment), (_, next_line, _) in zip(annotated_lines,
+                                                              annotated_lines[1:]):
+        # Check if the current line matches whitespace followed by "simp"
+        new_line = line
+        # TODO it would be better to use a regex like r"^\s*simp( \[.*\])?( at .*)?$" and thereby
+        # catch all possible simp invocations. Adding this will require more initial cleanup or
+        # nolint.
+        if (not is_comment) and re.search(r"^\s*simp$", line):
+            # Calculate the number of spaces before the first non-space character in the line
+            num_spaces = len(line) - len(line.lstrip())
+            # Calculate the number of spaces before the first non-space character in the next line
+            stripped_next_line = next_line.lstrip()
+
+            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--") or any(f in next_line for f in flexible_tactics)):
+                num_next_spaces = len(next_line) - len(stripped_next_line)
+                # Check if the number of leading spaces is the same
+                if num_spaces == num_next_spaces:
+                    # If so, the simp is nonterminal
+                    errors += [(ERR_NSP, line_nr, path)]
+                    new_line = line.replace("simp", "simp?")
+        newlines.append((line_nr, new_line))
+    newlines.append(lines[-1])
     return errors, newlines
 
 def long_lines_check(lines, path):
@@ -311,11 +345,21 @@ def left_arrow_check(lines, path):
         if is_comment or in_string:
             newlines.append((line_nr, line))
             continue
-        new_line = re.sub(r'←(?!%)(\S)', r'← \1', line)
+        # Allow "←" to be followed by "%" or "`", but not by "`(" or "``(" (since "`()" and "``()"
+        # are used for syntax quotations). Otherwise, insert a space after "←".
+        new_line = re.sub(r'←(?:(?=``?\()|(?![%`]))(\S)', r'← \1', line)
         if new_line != line:
             errors += [(ERR_ARR, line_nr, path)]
         newlines.append((line_nr, new_line))
     return errors, newlines
+
+def adaptation_note_check(lines, path):
+    errors = []
+    for line_nr, line in lines:
+        # We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
+        if "daptation note" in line:
+            errors += [(ERR_ADN, line_nr, path)]
+    return errors, lines
 
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
@@ -329,7 +373,7 @@ def output_message(path, line_nr, code, msg):
             msg_type = "warning"
         # We are outputting for github. We duplicate path, line_nr and code,
         # so that they are also visible in the plaintext output.
-        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}#L{line_nr}: {code}: {msg}")
+        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
 
 def format_errors(errors):
     global new_exceptions
@@ -365,6 +409,10 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
         if errno == ERR_ARR:
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
+        if errno == ERR_NSP:
+            output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
+        if errno == ERR_ADN:
+            output_message(path, line_nr, "ERR_ADN", 'Found the string "Adaptation note:", please use the #adaptation_note command instead')
 
 def lint(path, fix=False):
     global new_exceptions
@@ -379,7 +427,9 @@ def lint(path, fix=False):
                             long_lines_check,
                             isolated_by_dot_semicolon_check,
                             set_option_check,
-                            left_arrow_check]:
+                            left_arrow_check,
+                            adaptation_note_check,
+                            nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 

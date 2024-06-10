@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Matrix
-import Mathlib.LinearAlgebra.Matrix.BilinearForm
+import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.Tactic.NoncommRing
 
 #align_import algebra.lie.skew_adjoint from "leanprover-community/mathlib"@"075b3f7d19b9da85a0b54b3e33055a74fc388dec"
@@ -37,21 +37,21 @@ universe u v w w₁
 
 section SkewAdjointEndomorphisms
 
-open BilinForm
+open LinearMap (BilinForm)
 
 variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (B : BilinForm R M)
 
 -- Porting note: Changed `(f g)` to `{f g}` for convenience in `skewAdjointLieSubalgebra`
-theorem BilinForm.isSkewAdjoint_bracket {f g : Module.End R M} (hf : f ∈ B.skewAdjointSubmodule)
-    (hg : g ∈ B.skewAdjointSubmodule) : ⁅f, g⁆ ∈ B.skewAdjointSubmodule := by
+theorem LinearMap.BilinForm.isSkewAdjoint_bracket {f g : Module.End R M}
+    (hf : f ∈ B.skewAdjointSubmodule) (hg : g ∈ B.skewAdjointSubmodule) :
+    ⁅f, g⁆ ∈ B.skewAdjointSubmodule := by
   rw [mem_skewAdjointSubmodule] at *
   have hfg : IsAdjointPair B B (f * g) (g * f) := by rw [← neg_mul_neg g f]; exact hf.mul hg
   have hgf : IsAdjointPair B B (g * f) (f * g) := by rw [← neg_mul_neg f g]; exact hg.mul hf
-  change BilinForm.IsAdjointPair B B (f * g - g * f) (-(f * g - g * f)); rw [neg_sub]
+  change IsAdjointPair B B (f * g - g * f) (-(f * g - g * f)); rw [neg_sub]
   exact hfg.sub hgf
-#align bilin_form.is_skew_adjoint_bracket BilinForm.isSkewAdjoint_bracket
+#align bilin_form.is_skew_adjoint_bracket LinearMap.BilinForm.isSkewAdjoint_bracket
 
 /-- Given an `R`-module `M`, equipped with a bilinear form, the skew-adjoint endomorphisms form a
 Lie subalgebra of the Lie algebra of endomorphisms. -/
@@ -65,16 +65,17 @@ variable {N : Type w} [AddCommGroup N] [Module R N] (e : N ≃ₗ[R] M)
 /-- An equivalence of modules with bilinear forms gives equivalence of Lie algebras of skew-adjoint
 endomorphisms. -/
 def skewAdjointLieSubalgebraEquiv :
-    skewAdjointLieSubalgebra (B.comp (↑e : N →ₗ[R] M) ↑e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
+    skewAdjointLieSubalgebra (B.compl₁₂ (↑e : N →ₗ[R] M) ↑e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
   apply LieEquiv.ofSubalgebras _ _ e.lieConj
   ext f
   simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
     LinearEquiv.coe_coe]
-  exact (BilinForm.isPairSelfAdjoint_equiv (-B) B e f).symm
+  exact (LinearMap.isPairSelfAdjoint_equiv (B := -B) (F := B) e f).symm
 #align skew_adjoint_lie_subalgebra_equiv skewAdjointLieSubalgebraEquiv
 
 @[simp]
-theorem skewAdjointLieSubalgebraEquiv_apply (f : skewAdjointLieSubalgebra (B.comp ↑e ↑e)) :
+theorem skewAdjointLieSubalgebraEquiv_apply
+    (f : skewAdjointLieSubalgebra (B.compl₁₂ (Qₗ := N) (Qₗ' := N) ↑e ↑e)) :
     ↑(skewAdjointLieSubalgebraEquiv B e f) = e.lieConj f := by
   simp [skewAdjointLieSubalgebraEquiv]
 #align skew_adjoint_lie_subalgebra_equiv_apply skewAdjointLieSubalgebraEquiv_apply
@@ -92,7 +93,6 @@ section SkewAdjointMatrices
 open scoped Matrix
 
 variable {R : Type u} {n : Type w} [CommRing R] [DecidableEq n] [Fintype n]
-
 variable (J : Matrix n n R)
 
 theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=
@@ -135,7 +135,7 @@ def skewAdjointMatricesLieSubalgebraEquiv (P : Matrix n n R) (h : Invertible P) 
       simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
         LinearEquiv.coe_coe]
       exact this
-    simp [Matrix.IsSkewAdjoint, J.isAdjointPair_equiv' _ _ P (isUnit_of_invertible P)]
+    simp [Matrix.IsSkewAdjoint, J.isAdjointPair_equiv _ _ P (isUnit_of_invertible P)]
 #align skew_adjoint_matrices_lie_subalgebra_equiv skewAdjointMatricesLieSubalgebraEquiv
 
 -- TODO(mathlib4#6607): fix elaboration so annotation on `A` isn't needed

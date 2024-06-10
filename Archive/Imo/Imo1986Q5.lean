@@ -54,7 +54,7 @@ theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
   have hfx : f x ≠ 0 := hf.map_ne_zero_iff.2 hx
   apply le_antisymm
   · rw [NNReal.le_div_iff hx', ← NNReal.le_div_iff' hfx, tsub_le_iff_right, ← hf.map_eq_zero,
-     hf.map_add, div_mul_cancel _ hfx, hf.map_two, zero_mul]
+     hf.map_add, div_mul_cancel₀ _ hfx, hf.map_two, zero_mul]
   · rw [NNReal.div_le_iff' hx', ← hf.map_eq_zero]
     refine (mul_eq_zero.1 ?_).resolve_right hfx
     rw [hf.map_add_rev, hf.map_eq_zero, tsub_add_cancel_of_le hx.le]
@@ -77,7 +77,7 @@ theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2
     cases lt_or_le y 2 with
     | inl hy =>
       have hy' : 2 - y ≠ 0 := (tsub_pos_of_lt hy).ne'
-      rw [div_mul_div_comm, tsub_mul, mul_assoc, div_mul_cancel _ hy', mul_comm x,
+      rw [div_mul_div_comm, tsub_mul, mul_assoc, div_mul_cancel₀ _ hy', mul_comm x,
         ← mul_tsub, tsub_add_eq_tsub_tsub_swap, mul_div_mul_left _ _ two_ne_zero]
     | inr hy =>
       have : 2 ≤ x + y := le_add_left hy

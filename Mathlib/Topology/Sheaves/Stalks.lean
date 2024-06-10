@@ -64,9 +64,7 @@ open TopologicalSpace
 open Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable [HasColimits.{v} C]
-
 variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
@@ -110,7 +108,8 @@ theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
 
--- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
+-- Porting note: `@[elementwise]` did not generate the best lemma when applied to `germ_res`
+attribute [local instance] ConcreteCategory.instFunLike in
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
     (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [← comp_apply, germ_res]
 set_option linter.uppercaseLean3 false in
@@ -142,7 +141,7 @@ stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
 def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
   -- Porting note: The original proof was `trans; swap`, but `trans` does nothing.
-  refine' ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
+  refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward TopCat.Presheaf.stalkPushforward
@@ -151,9 +150,7 @@ set_option linter.uppercaseLean3 false in
 theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
     (x : (Opens.map f).obj U) :
       (f _* F).germ ⟨(f : X → Y) (x : X), x.2⟩ ≫ F.stalkPushforward C f x = F.germ x := by
-  rw [stalkPushforward, germ, colimit.ι_map_assoc, colimit.ι_pre, whiskerRight_app]
-  erw [CategoryTheory.Functor.map_id, Category.id_comp]
-  rfl
+  simp [germ, stalkPushforward]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward_germ TopCat.Presheaf.stalkPushforward_germ
 
@@ -176,41 +173,40 @@ namespace stalkPushforward
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
     ℱ.stalkPushforward C (𝟙 X) x = (stalkFunctor C x).map (Pushforward.id ℱ).hom := by
-  -- Porting note: We need to this to help ext tactic.
-  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-  ext1 j
-  induction' j with j
-  rcases j with ⟨⟨_, _⟩, _⟩
-  erw [colimit.ι_map_assoc]
-  simp [stalkFunctor, stalkPushforward]
+  ext
+  simp only [stalkPushforward, germ, colim_map, ι_colimMap_assoc, whiskerRight_app]
+  erw [CategoryTheory.Functor.map_id]
+  simp [stalkFunctor]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.id TopCat.Presheaf.stalkPushforward.id
 
--- This proof is sadly not at all robust:
--- having to use `erw` at all is a bad sign.
 @[simp]
 theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
       (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x := by
-  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-  ext U
-  rcases U with ⟨⟨_, _⟩, _⟩
-  simp [stalkFunctor, stalkPushforward]
+  ext
+  simp only [germ, stalkPushforward]
+  -- Now `simp` finishes, but slowly:
+  simp only [pushforwardObj_obj, Functor.op_obj, Opens.map_comp_obj, whiskeringLeft_obj_obj,
+    OpenNhds.inclusionMapIso_inv, NatTrans.op_id, colim_map, ι_colimMap_assoc, Functor.comp_obj,
+    OpenNhds.inclusion_obj, OpenNhds.map_obj, whiskerRight_app, NatTrans.id_app,
+    CategoryTheory.Functor.map_id, colimit.ι_pre, Category.id_comp, Category.assoc,
+    pushforwardObj_map, Functor.op_map, unop_id, op_id, colimit.ι_pre_assoc]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.comp TopCat.Presheaf.stalkPushforward.comp
 
 theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
     (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
-  convert IsIso.of_iso
+  convert
       ((Functor.Final.colimitIso (hf.isOpenMap.functorNhds x).op
               ((OpenNhds.inclusion (f x)).op ⋙ f _* F) :
             _).symm ≪≫
-        colim.mapIso _)
+        colim.mapIso _).isIso_hom
   swap
   · fapply NatIso.ofComponents
     · intro U
-      refine' F.mapIso (eqToIso _)
+      refine F.mapIso (eqToIso ?_)
       dsimp only [Functor.op]
       exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1
@@ -222,7 +218,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
     erw [colimit.ι_map_assoc, colimit.ι_pre, ← F.map_comp_assoc]
     apply colimit.w ((OpenNhds.inclusion (f x)).op ⋙ f _* F) _
     dsimp only [Functor.op]
-    refine' ((homOfLE _).op : op (unop U) ⟶ _)
+    refine ((homOfLE ?_).op : op (unop U) ⟶ _)
     exact Set.image_preimage_subset _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.stalk_pushforward_iso_of_open_embedding TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding
@@ -310,7 +306,7 @@ variable {C}
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by
-  refine' colimit.desc _ ⟨_, fun U => _, _⟩
+  refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
         (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 : _)⟩)
@@ -388,14 +384,11 @@ end stalkSpecializes
 section Concrete
 
 variable {C}
-
 variable [ConcreteCategory.{v} C]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort
--- Porting note: The following does not seem to be needed.
--- ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- Porting note: Todo: @[ext] attribute only applies to structures or lemmas proving x = y
+-- Porting note (#11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}
@@ -448,7 +441,7 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_map_injective_of_app_injective TopCat.Presheaf.stalkFunctor_map_injective_of_app_injective
 
-variable [HasLimits C] [PreservesLimits (forget C)] [ReflectsIsomorphisms (forget C)]
+variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
 
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,
 preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.
@@ -569,7 +562,7 @@ set_option linter.uppercaseLean3 false in
 theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     (h : ∀ x : U, Function.Bijective ((stalkFunctor C x.val).map f.1)) :
     Function.Surjective (f.1.app (op U)) := by
-  refine' app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => _
+  refine app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => ?_
   -- Now we need to prove our initial claim: That we can find preimages of `t` locally.
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
   obtain ⟨s₀, hs₀⟩ := (h x).2 (G.presheaf.germ x t)

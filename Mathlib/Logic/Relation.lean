@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
-import Mathlib.Init.Propext
 import Mathlib.Init.Data.Quot
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Use
@@ -161,16 +160,16 @@ theorem comp_assoc : (r ∘r p) ∘r q = r ∘r p ∘r q := by
   funext a d
   apply propext
   constructor
-  exact fun ⟨c, ⟨b, hab, hbc⟩, hcd⟩ ↦ ⟨b, hab, c, hbc, hcd⟩
-  exact fun ⟨b, hab, c, hbc, hcd⟩ ↦ ⟨c, ⟨b, hab, hbc⟩, hcd⟩
+  · exact fun ⟨c, ⟨b, hab, hbc⟩, hcd⟩ ↦ ⟨b, hab, c, hbc, hcd⟩
+  · exact fun ⟨b, hab, c, hbc, hcd⟩ ↦ ⟨c, ⟨b, hab, hbc⟩, hcd⟩
 #align relation.comp_assoc Relation.comp_assoc
 
 theorem flip_comp : flip (r ∘r p) = flip p ∘r flip r := by
   funext c a
   apply propext
   constructor
-  exact fun ⟨b, hab, hbc⟩ ↦ ⟨b, hbc, hab⟩
-  exact fun ⟨b, hbc, hab⟩ ↦ ⟨b, hab, hbc⟩
+  · exact fun ⟨b, hab, hbc⟩ ↦ ⟨b, hbc, hab⟩
+  · exact fun ⟨b, hbc, hab⟩ ↦ ⟨b, hab, hbc⟩
 #align relation.flip_comp Relation.flip_comp
 
 end Comp
@@ -192,7 +191,7 @@ variable {rα rβ}
   accessible under `rα`, then `f a` is accessible under `rβ`. -/
 theorem _root_.Acc.of_fibration (fib : Fibration rα rβ f) {a} (ha : Acc rα a) : Acc rβ (f a) := by
   induction' ha with a _ ih
-  refine' Acc.intro (f a) fun b hr ↦ _
+  refine Acc.intro (f a) fun b hr ↦ ?_
   obtain ⟨a', hr', rfl⟩ := fib hr
   exact ih a' hr'
 #align acc.of_fibration Acc.of_fibration
@@ -201,8 +200,8 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
     (ha : Acc (InvImage rβ f) a) : Acc rβ (f a) :=
   ha.of_fibration f fun a _ h ↦
     let ⟨a', he⟩ := dc h
-    -- porting note: Lean 3 did not need the motive
-    ⟨a', he.substr (p := λ x => rβ x (f a)) h, he⟩
+    -- Porting note: Lean 3 did not need the motive
+    ⟨a', he.substr (p := fun x ↦ rβ x (f a)) h, he⟩
 #align acc.of_downward_closed Acc.of_downward_closed
 
 end Fibration
@@ -226,7 +225,7 @@ lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b 
     Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
   ext a b
   simp_rw [Relation.Map, Function.comp_apply, ← exists_and_right, @exists_comm γ, @exists_comm δ]
-  refine' exists₂_congr fun a b ↦ ⟨_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
+  refine exists₂_congr fun a b ↦ ⟨?_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
   rintro ⟨_, _, ⟨hab, rfl, rfl⟩, h⟩
   exact ⟨hab, h⟩
 #align relation.map_map Relation.map_map
@@ -328,8 +327,7 @@ theorem head_induction_on {P : ∀ a : α, ReflTransGen r a b → Prop} {a : α}
   induction h with
   | refl => exact refl
   | @tail b c _ hbc ih =>
-  -- Porting note: Lean 3 figured out the motive and `apply ih` worked
-  refine @ih (λ {a : α} (hab : ReflTransGen r a b) => P a (ReflTransGen.tail hab hbc)) ?_ ?_
+  apply ih
   · exact head hbc _ refl
   · exact fun h1 h2 ↦ head h1 (h2.tail hbc)
 #align relation.refl_trans_gen.head_induction_on Relation.ReflTransGen.head_induction_on
@@ -377,9 +375,9 @@ namespace TransGen
 
 theorem to_reflTransGen {a b} (h : TransGen r a b) : ReflTransGen r a b := by
   induction' h with b h b c _ bc ab
-  exact ReflTransGen.single h
-  exact ReflTransGen.tail ab bc
--- porting note: in Lean 3 this function was called `to_refl` which seems wrong.
+  · exact ReflTransGen.single h
+  · exact ReflTransGen.tail ab bc
+-- Porting note: in Lean 3 this function was called `to_refl` which seems wrong.
 #align relation.trans_gen.to_refl Relation.TransGen.to_reflTransGen
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
@@ -420,10 +418,9 @@ theorem head_induction_on {P : ∀ a : α, TransGen r a b → Prop} {a : α} (h 
   induction h with
   | single h => exact base h
   | @tail b c _ hbc h_ih =>
-  -- Lean 3 could figure out the motive and `apply h_ih` worked
-  refine @h_ih (λ {a : α} (hab : @TransGen α r a b) => P a (TransGen.tail hab hbc)) ?_ ?_;
-  exact fun h ↦ ih h (single hbc) (base hbc)
-  exact fun hab hbc ↦ ih hab _
+  apply h_ih
+  · exact fun h ↦ ih h (single hbc) (base hbc)
+  · exact fun hab hbc ↦ ih hab _
 #align relation.trans_gen.head_induction_on Relation.TransGen.head_induction_on
 
 @[elab_as_elim]
@@ -446,14 +443,14 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
   ⟨trans_right⟩
 
 theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
-  refine' ⟨fun h ↦ _, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
+  refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
   cases' h with _ hac b _ hab hbc
   · exact ⟨_, by rfl, hac⟩
   · exact ⟨_, hab.to_reflTransGen, hbc⟩
 #align relation.trans_gen.tail'_iff Relation.TransGen.tail'_iff
 
 theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
-  refine' ⟨fun h ↦ _, fun ⟨b, hab, hbc⟩ ↦ head' hab hbc⟩
+  refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ head' hab hbc⟩
   induction h with
   | single hac => exact ⟨_, hac, by rfl⟩
   | tail _ hbc IH =>
@@ -465,7 +462,7 @@ end TransGen
 
 theorem _root_.Acc.TransGen (h : Acc r a) : Acc (TransGen r) a := by
   induction' h with x _ H
-  refine' Acc.intro x fun y hy ↦ _
+  refine Acc.intro x fun y hy ↦ ?_
   cases' hy with _ hyx z _ hyz hzx
   exacts [H y hyx, (H z hzx).inv hyz]
 #align acc.trans_gen Acc.TransGen
@@ -560,7 +557,7 @@ theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a 
 #align relation.refl_trans_gen_iff_eq Relation.reflTransGen_iff_eq
 
 theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ TransGen r a b := by
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · cases' h with c _ hac hcb
     · exact Or.inl rfl
     · exact Or.inr (TransGen.tail' hac hcb)

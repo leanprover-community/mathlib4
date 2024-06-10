@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
@@ -19,9 +19,7 @@ import Mathlib.RingTheory.Derivation.Basic
 namespace Derivation
 
 variable {R : Type*} [CommRing R]
-
 variable {A : Type*} [CommRing A] [Algebra R A]
-
 variable (D : Derivation R A A) {D1 D2 : Derivation R A A} (a : A)
 
 section LieStructures

@@ -17,7 +17,6 @@ We also prove basic lemmas about this definition.
 
 universe u v
 open Function Set
-open scoped BigOperators
 
 namespace Cardinal
 
@@ -63,7 +62,7 @@ theorem cast_toNat_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : ↑(toNat c)
 #align cardinal.cast_to_nat_of_aleph_0_le Cardinal.cast_toNat_of_aleph0_le
 
 theorem toNat_strictMonoOn : StrictMonoOn toNat (Iio ℵ₀) := by
-  simp only [← range_natCast, StrictMonoOn, forall_range_iff, toNat_natCast, Nat.cast_lt]
+  simp only [← range_natCast, StrictMonoOn, forall_mem_range, toNat_natCast, Nat.cast_lt]
   exact fun _ _ ↦ id
 
 theorem toNat_monotoneOn : MonotoneOn toNat (Iio ℵ₀) := toNat_strictMonoOn.monotoneOn
@@ -176,7 +175,7 @@ theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mu
 
 @[deprecated map_prod]
 theorem toNat_finset_prod (s : Finset α) (f : α → Cardinal) :
-    toNat (∏ i in s, f i) = ∏ i in s, toNat (f i) :=
+    toNat (∏ i ∈ s, f i) = ∏ i ∈ s, toNat (f i) :=
   map_prod toNat _ _
 #align cardinal.to_nat_finset_prod Cardinal.toNat_finset_prod
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Endomorphism
 
 #align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"
@@ -18,9 +19,6 @@ We introduce the bundled categories:
 * `AddCommGroupCat`
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
-
-set_option autoImplicit true
-
 
 universe u v
 
@@ -53,7 +51,7 @@ instance concreteCategory : ConcreteCategory GroupCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort GroupCat (Type*) where
+instance : CoeSort GroupCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -68,19 +66,19 @@ instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 instance instFunLike (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y from inferInstance
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : GroupCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive]
 lemma comp_def {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
 
--- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupCat).map f = (f : X → Y) := rfl
+-- porting note (#10756): added lemma
+@[simp] lemma forget_map {X Y : GroupCat} (f : X ⟶ Y) : (forget GroupCat).map f = (f : X → Y) := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : GroupCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -105,6 +103,18 @@ set_option linter.uppercaseLean3 false in
 #align Group.coe_of GroupCat.coe_of
 set_option linter.uppercaseLean3 false in
 #align AddGroup.coe_of AddGroupCat.coe_of
+
+@[to_additive (attr := simp)]
+theorem coe_comp' {G H K : Type _} [Group G] [Group H] [Group K] (f : G →* H) (g : H →* K) :
+    @DFunLike.coe (G →* K) G (fun _ ↦ K) MonoidHom.instFunLike (CategoryStruct.comp
+      (X := GroupCat.of G) (Y := GroupCat.of H) (Z := GroupCat.of K) f g) = g ∘ f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem coe_id' {G : Type _} [Group G] :
+    @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike
+      (CategoryStruct.id (X := GroupCat.of G)) = id :=
+  rfl
 
 @[to_additive]
 instance : Inhabited GroupCat :=
@@ -165,6 +175,16 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 example {R S : GroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
 
+/-- Universe lift functor for groups. -/
+@[to_additive (attr := simps)
+  "Universe lift functor for additive groups."]
+def uliftFunctor : GroupCat.{u} ⥤ GroupCat.{max u v} where
+  obj X := GroupCat.of (ULift.{v, u} X)
+  map {X Y} f := GroupCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
+
 end GroupCat
 
 /-- The category of commutative groups and group morphisms. -/
@@ -198,7 +218,7 @@ instance concreteCategory : ConcreteCategory CommGroupCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommGroupCat (Type*) where
+instance : CoeSort CommGroupCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -217,18 +237,18 @@ instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 instance instFunLike (X Y : CommGroupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y from inferInstance
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : CommGroupCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive]
 lemma comp_def {X Y Z : CommGroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommGroupCat} (f : X ⟶ Y) :
     (forget CommGroupCat).map f = (f : X → Y) :=
@@ -254,16 +274,26 @@ add_decl_doc AddCommGroupCat.of
 instance : Inhabited CommGroupCat :=
   ⟨CommGroupCat.of PUnit⟩
 
--- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
--- bundled or unbundled lemmas.
--- (This change seems dangerous!)
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_of (R : Type u) [CommGroup R] : (CommGroupCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommGroup.coe_of CommGroupCat.coe_of
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.coe_of AddCommGroupCat.coe_of
+
+@[to_additive (attr := simp)]
+theorem coe_comp' {G H K : Type _} [CommGroup G] [CommGroup H] [CommGroup K]
+    (f : G →* H) (g : H →* K) :
+    @DFunLike.coe (G →* K) G (fun _ ↦ K) MonoidHom.instFunLike (CategoryStruct.comp
+      (X := CommGroupCat.of G) (Y := CommGroupCat.of H) (Z := CommGroupCat.of K) f g) = g ∘ f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem coe_id' {G : Type _} [CommGroup G] :
+    @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike
+      (CategoryStruct.id (X := CommGroupCat.of G)) = id :=
+  rfl
 
 @[to_additive]
 instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGroupCat.of G) :=
@@ -321,7 +351,7 @@ add_decl_doc AddCommGroupCat.ofHom
 
 @[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
-    (ofHom f) x = f x :=
+    @DFunLike.coe (X →* Y) X (fun _ ↦ Y) _ (ofHom f) x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommGroup.of_hom_apply CommGroupCat.ofHom_apply
@@ -331,6 +361,16 @@ set_option linter.uppercaseLean3 false in
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : CommGroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+
+/-- Universe lift functor for commutative groups. -/
+@[to_additive (attr := simps)
+  "Universe lift functor for additive commutative groups."]
+def uliftFunctor : CommGroupCat.{u} ⥤ CommGroupCat.{max u v} where
+  obj X := CommGroupCat.of (ULift.{v, u} X)
+  map {X Y} f := CommGroupCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
 
 end CommGroupCat
 
@@ -347,7 +387,8 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom AddCommGroupCat.asHom
 
 @[simp]
-theorem asHom_apply {G : AddCommGroupCat.{0}} (g : G) (i : ℤ) : (asHom g) i = i • g :=
+theorem asHom_apply {G : AddCommGroupCat.{0}} (g : G) (i : ℤ) :
+    @DFunLike.coe (ℤ →+ ↑G) ℤ (fun _ ↦ ↑G) _ (asHom g) i = i • g :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom_apply AddCommGroupCat.asHom_apply
@@ -443,12 +484,12 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddGroup_iso addEquivIsoAddGroupIso
 
-/-- "additive equivalences between `add_group`s are the same
-as (isomorphic to) isomorphisms in `AddGroup` -/
+/-- Additive equivalences between `AddGroup`s are the same
+as (isomorphic to) isomorphisms in `AddGroupCat`. -/
 add_decl_doc addEquivIsoAddGroupIso
 
-/-- multiplicative equivalences between `comm_group`s are the same as (isomorphic to) isomorphisms
-in `CommGroup` -/
+/-- Multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
+in `CommGroupCat`. -/
 @[to_additive]
 def mulEquivIsoCommGroupIso {X Y : CommGroupCat.{u}} : X ≃* Y ≅ X ≅ Y where
   hom e := e.toCommGroupCatIso
@@ -458,8 +499,8 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddCommGroup_iso addEquivIsoAddCommGroupIso
 
-/-- additive equivalences between `AddCommGroup`s are
-the same as (isomorphic to) isomorphisms in `AddCommGroup` -/
+/-- Additive equivalences between `AddCommGroup`s are
+the same as (isomorphic to) isomorphisms in `AddCommGroupCat`. -/
 add_decl_doc addEquivIsoAddCommGroupIso
 
 namespace CategoryTheory.Aut
@@ -478,7 +519,7 @@ def isoPerm {α : Type u} : GroupCat.of (Aut α) ≅ GroupCat.of (Equiv.Perm α)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.iso_perm CategoryTheory.Aut.isoPerm
 
-/-- The (unbundled) group of automorphisms of a type is `mul_equiv` to the (unbundled) group
+/-- The (unbundled) group of automorphisms of a type is `MulEquiv` to the (unbundled) group
 of permutations. -/
 def mulEquivPerm {α : Type u} : Aut α ≃* Equiv.Perm α :=
   isoPerm.groupIsoToMulEquiv
@@ -488,22 +529,22 @@ set_option linter.uppercaseLean3 false in
 end CategoryTheory.Aut
 
 @[to_additive]
-instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
+instance GroupCat.forget_reflects_isos : (forget GroupCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
-    exact IsIso.of_iso e.toGroupCatIso
+    exact e.toGroupCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_reflects_isos AddGroupCat.forget_reflects_isos
 
 @[to_additive]
-instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
+instance CommGroupCat.forget_reflects_isos : (forget CommGroupCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
-    exact IsIso.of_iso e.toCommGroupCatIso
+    exact e.toCommGroupCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -528,3 +569,21 @@ abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
 /-- An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGroupCatMax.{u1, u2} := AddCommGroupCat.{max u1 u2}
+
+/-!
+`@[simp]` lemmas for `MonoidHom.comp` and categorical identities.
+-/
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_groupCat
+    {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (GroupCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_groupCat_comp
+    {G : Type u} [Group G] {H : GroupCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (GroupCat.ofHom f)
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_commGroupCat
+    {G : CommGroupCat.{u}} {H : Type u} [CommGroup H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommGroupCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_commGroupCat_comp
+    {G : Type u} [CommGroup G] {H : CommGroupCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommGroupCat.ofHom f)

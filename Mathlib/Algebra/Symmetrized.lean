@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Jordan.Basic
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 
 #align_import algebra.symmetrized from "leanprover-community/mathlib"@"933547832736be61a5de6576e22db351c6c2fbfd"
 
@@ -38,7 +38,6 @@ def SymAlg (α : Type*) : Type _ :=
   α
 #align sym_alg SymAlg
 
--- mathport name: «expr ˢʸᵐ»
 postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
@@ -47,13 +46,13 @@ variable {α : Type*}
 
 /-- The element of `SymAlg α` that represents `a : α`. -/
 @[match_pattern]
--- Porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def sym : α ≃ αˢʸᵐ :=
   Equiv.refl _
 #align sym_alg.sym SymAlg.sym
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
--- Porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=
   Equiv.refl _
 #align sym_alg.unsym SymAlg.unsym

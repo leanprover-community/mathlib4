@@ -53,19 +53,19 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     (hg : ContMDiffWithinAt I' I'' n g t (f x)) (hf : ContMDiffWithinAt I I' n f s x)
     (st : MapsTo f s t) : ContMDiffWithinAt I I'' n (g ∘ f) s x := by
   rw [contMDiffWithinAt_iff] at hg hf ⊢
-  refine' ⟨hg.1.comp hf.1 st, _⟩
+  refine ⟨hg.1.comp hf.1 st, ?_⟩
   set e := extChartAt I x
   set e' := extChartAt I' (f x)
-  have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [mfld_simps]
+  have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [e, e', mfld_simps]
   rw [this] at hg
   have A : ∀ᶠ y in 𝓝[e.symm ⁻¹' s ∩ range I] e x, f (e.symm y) ∈ t ∧ f (e.symm y) ∈ e'.source := by
-    simp only [← map_extChartAt_nhdsWithin, eventually_map]
+    simp only [e, ← map_extChartAt_nhdsWithin, eventually_map]
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds I' (f x)),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds I x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
     simp only [e.map_source hx', true_and_iff, e.left_inv hx', st hx's, *]
-  refine' ((hg.2.comp _ (hf.2.mono (inter_subset_right _ _)) (inter_subset_left _ _)).mono_of_mem
-    (inter_mem _ self_mem_nhdsWithin)).congr_of_eventuallyEq _ _
+  refine ((hg.2.comp _ (hf.2.mono inter_subset_right) inter_subset_left).mono_of_mem
+    (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
     simp only [*, mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
@@ -74,7 +74,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
     simp only [*, (· ∘ ·), writtenInExtChartAt, e'.left_inv]
-  · simp only [writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source, e.left_inv, e'.left_inv]
+  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source, e.left_inv, e'.left_inv]
 #align cont_mdiff_within_at.comp ContMDiffWithinAt.comp
 
 /-- See note [comp_of_eq lemmas] -/
@@ -106,7 +106,7 @@ nonrec theorem SmoothOn.comp {t : Set M'} {g : M' → M''} (hg : SmoothOn I' I''
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContMDiffOn.comp' {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) (s ∩ f ⁻¹' t) :=
-  hg.comp (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp (hf.mono inter_subset_left) inter_subset_right
 #align cont_mdiff_on.comp' ContMDiffOn.comp'
 
 /-- The composition of `C^∞` functions is `C^∞`. -/
@@ -132,7 +132,7 @@ nonrec theorem Smooth.comp {g : M' → M''} (hg : Smooth I' I'' g) (hf : Smooth 
 theorem ContMDiffWithinAt.comp' {t : Set M'} {g : M' → M''} (x : M)
     (hg : ContMDiffWithinAt I' I'' n g t (f x)) (hf : ContMDiffWithinAt I I' n f s x) :
     ContMDiffWithinAt I I'' n (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp x (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp x (hf.mono inter_subset_left) inter_subset_right
 #align cont_mdiff_within_at.comp' ContMDiffWithinAt.comp'
 
 /-- The composition of `C^∞` functions within domains at points is `C^∞`. -/
@@ -243,7 +243,7 @@ variable {c : M'}
 
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
-  refine' ⟨continuousWithinAt_const, _⟩
+  refine ⟨continuousWithinAt_const, ?_⟩
   simp only [ContDiffWithinAtProp, (· ∘ ·)]
   exact contDiffWithinAt_const
 #align cont_mdiff_const contMDiff_const
@@ -338,8 +338,7 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
       (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
 #align cont_mdiff_of_support contMDiff_of_tsupport
 
--- deprecated since 15 January 2024
-@[deprecated] alias contMDiff_of_support := contMDiff_of_tsupport
+@[deprecated (since := "2024-01-15")] alias contMDiff_of_support := contMDiff_of_tsupport
 
 @[to_additive contMDiffWithinAt_of_not_mem]
 theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}

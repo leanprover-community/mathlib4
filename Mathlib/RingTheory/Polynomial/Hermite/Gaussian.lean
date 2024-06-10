@@ -50,7 +50,7 @@ theorem deriv_gaussian_eq_hermite_mul_gaussian (n : ℕ) (x : ℝ) :
       rw [deriv_exp (by simp)]; simp; ring
     rw [Function.iterate_succ_apply', ih, deriv_const_mul_field, deriv_mul, pow_succ (-1 : ℝ),
       deriv_gaussian, hermite_succ, map_sub, map_mul, aeval_X, Polynomial.deriv_aeval]
-    ring
+    · ring
     · apply Polynomial.differentiable_aeval
     · apply DifferentiableAt.exp; simp -- Porting note: was just `simp`
 #align polynomial.deriv_gaussian_eq_hermite_mul_gaussian Polynomial.deriv_gaussian_eq_hermite_mul_gaussian

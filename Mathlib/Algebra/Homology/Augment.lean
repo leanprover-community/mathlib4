@@ -61,7 +61,8 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
     | 1, 0, h => absurd rfl h
     | i + 2, 0, _ => rfl
     | 0, _, _ => rfl
-    | i + 1, j + 1, h => by simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
+    | i + 1, j + 1, h => by
+      simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
   d_comp_d'
     | _, _, 0, rfl, rfl => w
     | _, _, k + 1, rfl, rfl => C.d_comp_d _ _ _
@@ -139,17 +140,21 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
 def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun i => by cases i <;> exact 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
-        | 0 | 1 | n+2 => cases' j with j <;> dsimp [augment, truncate] <;> simp }
+        | 0 | 1 | n+2 =>
+          cases' j with j <;> dsimp [augment, truncate] <;> simp
+    }
   inv :=
-    { f := fun i => by cases i <;> exact 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
-        | 0 | 1 | n+2 => cases' j with j <;> dsimp [augment, truncate] <;> simp }
+          | 0 | 1 | n+2 =>
+          cases' j with j <;> dsimp [augment, truncate] <;> simp
+    }
   hom_inv_id := by
     ext i
     cases i <;>
@@ -244,7 +249,6 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
       simp only [ComplexShape.up_Rel]
       contrapose! s
       rw [← s]
-      rfl
   d_comp_d' i j k hij hjk := by
     rcases k with (_ | _ | k) <;> rcases j with (_ | _ | j) <;> cases i <;> try simp
     cases k
@@ -330,18 +334,18 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
 def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun i => by cases i <;> exact 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;>
           · dsimp
-            -- Porting note: simp can't handle this now but aesop does
+            -- Porting note (#10959): simp can't handle this now but aesop does
             aesop }
   inv :=
-    { f := fun i => by cases i <;> exact 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases' i with i <;>
           · dsimp
-            -- Porting note: simp can't handle this now but aesop does
+            -- Porting note (#10959): simp can't handle this now but aesop does
             aesop }
   hom_inv_id := by
     ext i

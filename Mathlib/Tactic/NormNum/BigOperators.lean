@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
 
 #align_import algebra.big_operators.norm_num from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -354,7 +354,7 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.prod _ _ _ _ _]
 partial def evalFinsetProd : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const `Finset.prod [_, v]) β') α) _) s) f ←
+  let .app (.app (.app (.app (.app (.const `Finset.prod [_, v]) α) β') _) s) f ←
     whnfR e | failure
   guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
@@ -383,7 +383,7 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.sum _ _ _ _ _]
 partial def evalFinsetSum : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const `Finset.sum [_, v]) β') α) _) s) f ←
+  let .app (.app (.app (.app (.app (.const `Finset.sum [_, v]) α) β') _) s) f ←
     whnfR e | failure
   guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
