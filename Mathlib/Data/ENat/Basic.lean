@@ -25,6 +25,8 @@ and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may e
 and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 -/
 
+attribute [local instance] WithTop.instSub
+
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 def ENat : Type :=
   WithTop ℕ
@@ -47,7 +49,7 @@ namespace ENat
 -- Porting note: instances that derive failed to find
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
-instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
+instance : OrderedSub ℕ∞ := WithTop.instOrderedSub
 instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))

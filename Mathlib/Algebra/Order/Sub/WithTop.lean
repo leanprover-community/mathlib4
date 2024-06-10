@@ -21,15 +21,19 @@ section
 
 variable [Sub α] [Zero α]
 
-/-- If `α` has subtraction and `0`, we can extend the subtraction to `WithTop α`. -/
+/-- If `α` has subtraction and `0`, we can extend the subtraction to `WithTop α`. This is not an
+instance, as there is another possible choice (setting `- ⊤ = ⊤`) which is more natural in the
+case of valuation targets as this is the additivization of `0⁻¹ = 0`. -/
 protected def sub : ∀ _ _ : WithTop α, WithTop α
   | _, ⊤ => 0
   | ⊤, (x : α) => ⊤
   | (x : α), (y : α) => (x - y : α)
 #align with_top.sub WithTop.sub
 
-instance : Sub (WithTop α) :=
+def instSub : Sub (WithTop α) :=
   ⟨WithTop.sub⟩
+
+attribute [local instance] instSub
 
 @[simp, norm_cast]
 theorem coe_sub {a b : α} : (↑(a - b) : WithTop α) = ↑a - ↑b :=
@@ -62,7 +66,10 @@ end
 
 variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
 
-instance : OrderedSub (WithTop α) := by
+attribute [local instance] instSub
+
+/- This is not an instance as the choice of subtraction on `WithTop α` is not canonical. -/
+def instOrderedSub : OrderedSub (WithTop α) := by
   constructor
   rintro x y z
   induction y; · simp
