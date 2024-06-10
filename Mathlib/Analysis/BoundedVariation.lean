@@ -50,7 +50,7 @@ that the sets one uses are nonempty and bounded above as these are only conditio
 -/
 
 
-open scoped BigOperators NNReal ENNReal Topology UniformConvergence
+open scoped NNReal ENNReal Topology UniformConvergence
 
 open Set MeasureTheory Filter
 
@@ -62,7 +62,7 @@ the supremum of the sum of `edist (f (u (i+1))) (f (u i))` over all finite incre
 sequences `u` in `s`. -/
 noncomputable def eVariationOn (f : α → E) (s : Set α) : ℝ≥0∞ :=
   ⨆ p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ s },
-    ∑ i in Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i))
+    ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i))
 #align evariation_on eVariationOn
 
 /-- A function has bounded variation on a set `s` if its total variation there is finite. -/
@@ -100,25 +100,25 @@ theorem eq_of_eqOn {f f' : α → E} {s : Set α} (h : EqOn f f' s) :
 #align evariation_on.eq_of_eq_on eVariationOn.eq_of_eqOn
 
 theorem sum_le (f : α → E) {s : Set α} (n : ℕ) {u : ℕ → α} (hu : Monotone u) (us : ∀ i, u i ∈ s) :
-    (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s :=
+    (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s :=
   le_iSup_of_le ⟨n, u, hu, us⟩ le_rfl
 #align evariation_on.sum_le eVariationOn.sum_le
 
 theorem sum_le_of_monotoneOn_Icc (f : α → E) {s : Set α} {m n : ℕ} {u : ℕ → α}
     (hu : MonotoneOn u (Icc m n)) (us : ∀ i ∈ Icc m n, u i ∈ s) :
-    (∑ i in Finset.Ico m n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s := by
+    (∑ i ∈ Finset.Ico m n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s := by
   rcases le_total n m with hnm | hmn
   · simp [Finset.Ico_eq_empty_of_le hnm]
   let π := projIcc m n hmn
   let v i := u (π i)
   calc
-    ∑ i in Finset.Ico m n, edist (f (u (i + 1))) (f (u i))
-        = ∑ i in Finset.Ico m n, edist (f (v (i + 1))) (f (v i)) :=
+    ∑ i ∈ Finset.Ico m n, edist (f (u (i + 1))) (f (u i))
+        = ∑ i ∈ Finset.Ico m n, edist (f (v (i + 1))) (f (v i)) :=
       Finset.sum_congr rfl fun i hi ↦ by
         rw [Finset.mem_Ico] at hi
         simp only [v, π, projIcc_of_mem hmn ⟨hi.1, hi.2.le⟩,
           projIcc_of_mem hmn ⟨hi.1.trans i.le_succ, hi.2⟩]
-    _ ≤ ∑ i in Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
+    _ ≤ ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
       Finset.sum_mono_set _ (Nat.Iio_eq_range ▸ Finset.Ico_subset_Iio_self)
     _ ≤ eVariationOn f s :=
       sum_le _ _ (fun i j h ↦ hu (π i).2 (π j).2 (monotone_projIcc hmn h)) fun i ↦ us _ (π i).2
@@ -126,7 +126,7 @@ theorem sum_le_of_monotoneOn_Icc (f : α → E) {s : Set α} {m n : ℕ} {u : �
 
 theorem sum_le_of_monotoneOn_Iic (f : α → E) {s : Set α} {n : ℕ} {u : ℕ → α}
     (hu : MonotoneOn u (Iic n)) (us : ∀ i ≤ n, u i ∈ s) :
-    (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s := by
+    (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s := by
   simpa using sum_le_of_monotoneOn_Icc f (m := 0) (hu.mono Icc_subset_Iic_self) fun i hi ↦ us i hi.2
 #align evariation_on.sum_le_of_monotone_on_Iic eVariationOn.sum_le_of_monotoneOn_Iic
 
@@ -143,7 +143,7 @@ theorem _root_.BoundedVariationOn.mono {f : α → E} {s : Set α} (h : BoundedV
 
 theorem _root_.BoundedVariationOn.locallyBoundedVariationOn {f : α → E} {s : Set α}
     (h : BoundedVariationOn f s) : LocallyBoundedVariationOn f s := fun _ _ _ _ =>
-  h.mono (inter_subset_left _ _)
+  h.mono inter_subset_left
 #align has_bounded_variation_on.has_locally_bounded_variation_on BoundedVariationOn.locallyBoundedVariationOn
 
 theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
@@ -192,10 +192,10 @@ theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter �
     ∀ᶠ n : ι in p, v < eVariationOn (F n) s := by
   obtain ⟨⟨n, ⟨u, um, us⟩⟩, hlt⟩ :
     ∃ p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ s },
-      v < ∑ i in Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i)) :=
+      v < ∑ i ∈ Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i)) :=
     lt_iSup_iff.mp hv
-  have : Tendsto (fun j => ∑ i : ℕ in Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
-      (𝓝 (∑ i : ℕ in Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
+  have : Tendsto (fun j => ∑ i ∈ Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
+      (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
     apply tendsto_finset_sum
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
   exact (eventually_gt_of_tendsto_gt hlt this).mono fun i h => h.trans_le (sum_le (F i) n um us)
@@ -242,8 +242,8 @@ In particular, the variation of a function along `u` is bounded by its variation
 theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ → α) (hu : Monotone u)
     (us : ∀ i, u i ∈ s) (n : ℕ) :
     ∃ (v : ℕ → α) (m : ℕ), Monotone v ∧ (∀ i, v i ∈ s) ∧ x ∈ v '' Iio m ∧
-      (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
-        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) := by
+      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
+        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) := by
   rcases le_or_lt (u n) x with (h | h)
   · let v i := if i ≤ n then u i else x
     have vs : ∀ i, v i ∈ s := fun i ↦ by
@@ -263,18 +263,18 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       · have A : ¬i ≤ n := hi.not_le
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
         simp only [A, B, if_false, le_rfl]
-    refine' ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, _, _⟩, _⟩
+    refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
     · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
     · have : ¬n + 1 ≤ n := Nat.not_succ_le_self n
       simp only [v, this, ite_eq_right_iff, IsEmpty.forall_iff]
     · calc
-        (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-            ∑ i in Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
+        (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
+            ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
           apply Finset.sum_congr rfl fun i hi => ?_
           simp only [Finset.mem_range] at hi
           have : i + 1 ≤ n := Nat.succ_le_of_lt hi
           simp only [v, hi.le, this, if_true]
-        _ ≤ ∑ j in Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) :=
+        _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) :=
           Finset.sum_le_sum_of_subset (Finset.range_mono (Nat.le_add_right n 2))
   have exists_N : ∃ N, N ≤ n ∧ x < u N := ⟨n, le_rfl, h⟩
   let N := Nat.find exists_N
@@ -306,37 +306,37 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       split_ifs
       · exact hN.2.le.trans (hu (le_of_not_lt A))
       · exact hu (Nat.pred_le _)
-  refine' ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), _⟩, _⟩
+  refine ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), ?_⟩, ?_⟩
   · dsimp only [w]; rw [if_neg (lt_irrefl N), if_pos rfl]
   rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
   · calc
-      (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-          ∑ i in Finset.range n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
+      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
+          ∑ i ∈ Finset.range n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
         apply Finset.sum_congr rfl fun i _hi => ?_
         dsimp only [w]
         simp only [← Npos, Nat.not_lt_zero, Nat.add_succ_sub_one, add_zero, if_false,
           add_eq_zero_iff, Nat.one_ne_zero, false_and_iff, Nat.succ_add_sub_one, zero_add]
         rw [add_comm 1 i]
-      _ = ∑ i in Finset.Ico 1 (n + 1), edist (f (w (i + 1))) (f (w i)) := by
+      _ = ∑ i ∈ Finset.Ico 1 (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         rw [Finset.range_eq_Ico]
         exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) 0 n 1
-      _ ≤ ∑ j in Finset.range (n + 1), edist (f (w (j + 1))) (f (w j)) := by
+      _ ≤ ∑ j ∈ Finset.range (n + 1), edist (f (w (j + 1))) (f (w j)) := by
         apply Finset.sum_le_sum_of_subset _
         rw [Finset.range_eq_Ico]
         exact Finset.Ico_subset_Ico zero_le_one le_rfl
   · calc
-      (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-          ((∑ i in Finset.Ico 0 (N - 1), edist (f (u (i + 1))) (f (u i))) +
-              ∑ i in Finset.Ico (N - 1) N, edist (f (u (i + 1))) (f (u i))) +
-            ∑ i in Finset.Ico N n, edist (f (u (i + 1))) (f (u i)) := by
+      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
+          ((∑ i ∈ Finset.Ico 0 (N - 1), edist (f (u (i + 1))) (f (u i))) +
+              ∑ i ∈ Finset.Ico (N - 1) N, edist (f (u (i + 1))) (f (u i))) +
+            ∑ i ∈ Finset.Ico N n, edist (f (u (i + 1))) (f (u i)) := by
         rw [Finset.sum_Ico_consecutive, Finset.sum_Ico_consecutive, Finset.range_eq_Ico]
         · exact zero_le _
         · exact hN.1
         · exact zero_le _
         · exact Nat.pred_le _
-      _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
+      _ = (∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (u N)) (f (u (N - 1))) +
-            ∑ i in Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
+            ∑ i ∈ Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
         congr 1
         · congr 1
           · apply Finset.sum_congr rfl fun i hi => ?_
@@ -357,9 +357,9 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
           have D : ¬1 + i = N := by omega
           rw [if_neg A, if_neg B, if_neg C, if_neg D]
           congr 3 <;> · rw [add_comm, Nat.sub_one]; apply Nat.pred_succ
-      _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
+      _ = (∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
-            ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
+            ∑ i ∈ Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         congr 1
         · congr 1
           · dsimp only [w]
@@ -368,17 +368,17 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
             simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero,
               if_false, B, if_true]
         · exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) N n 1
-      _ ≤ ((∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
-              ∑ i in Finset.Ico (N - 1) (N + 1), edist (f (w (i + 1))) (f (w i))) +
-            ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
-        refine' add_le_add (add_le_add le_rfl _) le_rfl
+      _ ≤ ((∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
+              ∑ i ∈ Finset.Ico (N - 1) (N + 1), edist (f (w (i + 1))) (f (w i))) +
+            ∑ i ∈ Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
+        refine add_le_add (add_le_add le_rfl ?_) le_rfl
         have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
         have B : N - 1 + 1 < N + 1 := A.symm ▸ N.lt_succ_self
         have C : N - 1 < N + 1 := lt_of_le_of_lt N.pred_le N.lt_succ_self
         rw [Finset.sum_eq_sum_Ico_succ_bot C, Finset.sum_eq_sum_Ico_succ_bot B, A, Finset.Ico_self,
           Finset.sum_empty, add_zero, add_comm (edist _ _)]
         exact edist_triangle _ _ _
-      _ = ∑ j in Finset.range (n + 1), edist (f (w (j + 1))) (f (w j)) := by
+      _ = ∑ j ∈ Finset.range (n + 1), edist (f (w (j + 1))) (f (w j)) := by
         rw [Finset.sum_Ico_consecutive, Finset.sum_Ico_consecutive, Finset.range_eq_Ico]
         · exact zero_le _
         · exact Nat.succ_le_succ hN.left
@@ -398,7 +398,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
   · simp [ht]
   have : Nonempty { u // Monotone u ∧ ∀ i : ℕ, u i ∈ t } :=
     nonempty_monotone_mem (nonempty_iff_ne_empty.2 ht)
-  refine' ENNReal.iSup_add_iSup_le _
+  refine ENNReal.iSup_add_iSup_le ?_
   /- We start from two sequences `u` and `v` along `s` and `t` respectively, and we build a new
     sequence `w` along `s ∪ t` by juxtaposing them. Its variation is larger than the sum of the
     variations. -/
@@ -418,10 +418,10 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
     · exfalso; exact h_1 (hij.trans h_2)
     · apply hv (tsub_le_tsub hij le_rfl)
   calc
-    ((∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) +
-          ∑ i : ℕ in Finset.range m, edist (f (v (i + 1))) (f (v i))) =
-        (∑ i in Finset.range n, edist (f (w (i + 1))) (f (w i))) +
-          ∑ i : ℕ in Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
+    ((∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) +
+          ∑ i ∈ Finset.range m, edist (f (v (i + 1))) (f (v i))) =
+        (∑ i ∈ Finset.range n, edist (f (w (i + 1))) (f (w i))) +
+          ∑ i ∈ Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
       dsimp only [w]
       congr 1
       · refine Finset.sum_congr rfl fun i hi => ?_
@@ -437,13 +437,13 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           · abel
           · exact n.le_succ.trans (n.succ.le_add_right i)
         simp only [A, B, C, Nat.succ_sub_succ_eq_sub, if_false, add_tsub_cancel_left]
-    _ = (∑ i in Finset.range n, edist (f (w (i + 1))) (f (w i))) +
-          ∑ i : ℕ in Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
+    _ = (∑ i ∈ Finset.range n, edist (f (w (i + 1))) (f (w i))) +
+          ∑ i ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       congr 1
       rw [Finset.range_eq_Ico]
       convert Finset.sum_Ico_add (fun i : ℕ => edist (f (w (i + 1))) (f (w i))) 0 m (n + 1)
         using 3 <;> abel
-    _ ≤ ∑ i in Finset.range (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
+    _ ≤ ∑ i ∈ Finset.range (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       rw [← Finset.sum_union]
       · apply Finset.sum_le_sum_of_subset _
         rintro i hi
@@ -467,19 +467,19 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
   rintro ⟨n, ⟨u, hu, ust⟩⟩
   obtain ⟨v, m, hv, vst, xv, huv⟩ : ∃ (v : ℕ → α) (m : ℕ),
     Monotone v ∧ (∀ i, v i ∈ s ∪ t) ∧ x ∈ v '' Iio m ∧
-      (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
-        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
+      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
+        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
     eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
   obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x := xv
   calc
-    (∑ j in Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
-        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
+    (∑ j ∈ Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
+        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
       huv
-    _ = (∑ j in Finset.Ico 0 N, edist (f (v (j + 1))) (f (v j))) +
-          ∑ j in Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) :=
-      by rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
+    _ = (∑ j ∈ Finset.Ico 0 N, edist (f (v (j + 1))) (f (v j))) +
+          ∑ j ∈ Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) := by
+      rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
     _ ≤ eVariationOn f s + eVariationOn f t := by
-      refine' add_le_add _ _
+      refine add_le_add ?_ ?_
       · apply sum_le_of_monotoneOn_Icc _ (hv.monotoneOn _) fun i hi => ?_
         rcases vst i with (h | h); · exact h
         have : v i = x := by
@@ -501,9 +501,9 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) + eVariationOn f (s ∩ Icc b c) = eVariationOn f (s ∩ Icc a c) := by
   have A : IsGreatest (s ∩ Icc a b) b :=
-    ⟨⟨hb, hab, le_rfl⟩, (inter_subset_right _ _).trans Icc_subset_Iic_self⟩
+    ⟨⟨hb, hab, le_rfl⟩, inter_subset_right.trans Icc_subset_Iic_self⟩
   have B : IsLeast (s ∩ Icc b c) b :=
-    ⟨⟨hb, le_rfl, hbc⟩, (inter_subset_right _ _).trans Icc_subset_Ici_self⟩
+    ⟨⟨hb, le_rfl, hbc⟩, inter_subset_right.trans Icc_subset_Ici_self⟩
   rw [← eVariationOn.union f A B, ← inter_union_distrib_left, Icc_union_Icc_eq_Icc hab hbc]
 #align evariation_on.Icc_add_Icc eVariationOn.Icc_add_Icc
 
@@ -519,10 +519,10 @@ theorem comp_le_of_monotoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
 
 theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t)
     (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s := by
-  refine' iSup_le _
+  refine iSup_le ?_
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
-  refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le
+  refine (Finset.sum_congr rfl fun x hx => ?_).trans_le <| le_iSup_of_le
     ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
@@ -552,7 +552,7 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
     {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
     eVariationOn (f ∘ φ) (t ∩ Icc x y) = eVariationOn f (φ '' t ∩ Icc (φ x) (φ y)) := by
   rcases le_total x y with (h | h)
-  · convert comp_eq_of_monotoneOn f φ (hφ.mono (Set.inter_subset_left t (Icc x y)))
+  · convert comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
     apply le_antisymm
     · rintro _ ⟨⟨u, us, rfl⟩, vφx, vφy⟩
       rcases le_total x u with (xu | ux)
@@ -565,8 +565,8 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
     · rintro _ ⟨u, ⟨⟨hu, xu, uy⟩, rfl⟩⟩
       exact ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
   · rw [eVariationOn.subsingleton, eVariationOn.subsingleton]
-    exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti (Set.inter_subset_right _ _),
-      (Set.subsingleton_Icc_of_ge h).anti (Set.inter_subset_right _ _)]
+    exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti Set.inter_subset_right,
+      (Set.subsingleton_Icc_of_ge h).anti Set.inter_subset_right]
 #align evariation_on.comp_inter_Icc_eq_of_monotone_on eVariationOn.comp_inter_Icc_eq_of_monotoneOn
 
 theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t) :
@@ -604,13 +604,13 @@ theorem MonotoneOn.eVariationOn_le {f : α → ℝ} {s : Set α} (hf : MonotoneO
   apply iSup_le _
   rintro ⟨n, ⟨u, hu, us⟩⟩
   calc
-    (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-        ∑ i in Finset.range n, ENNReal.ofReal (f (u (i + 1)) - f (u i)) := by
+    (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
+        ∑ i ∈ Finset.range n, ENNReal.ofReal (f (u (i + 1)) - f (u i)) := by
       refine Finset.sum_congr rfl fun i hi => ?_
       simp only [Finset.mem_range] at hi
       rw [edist_dist, Real.dist_eq, abs_of_nonneg]
       exact sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
-    _ = ENNReal.ofReal (∑ i in Finset.range n, (f (u (i + 1)) - f (u i))) := by
+    _ = ENNReal.ofReal (∑ i ∈ Finset.range n, (f (u (i + 1)) - f (u i))) := by
       rw [ENNReal.ofReal_sum_of_nonneg]
       intro i _
       exact sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
@@ -673,7 +673,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b + variationOnFromTo f s b c = variationOnFromTo f s a c := by
   symm
-  refine' additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) _ _ ha hb hc
+  refine additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
     simp only [variationOnFromTo.eq_neg_swap f s y x, Subtype.coe_mk, add_right_neg,
       forall_true_left]
@@ -800,10 +800,10 @@ theorem LipschitzOnWith.comp_eVariationOn_le {f : E → F} {C : ℝ≥0} {t : Se
   apply iSup_le _
   rintro ⟨n, ⟨u, hu, us⟩⟩
   calc
-    (∑ i in Finset.range n, edist (f (g (u (i + 1)))) (f (g (u i)))) ≤
-        ∑ i in Finset.range n, C * edist (g (u (i + 1))) (g (u i)) :=
+    (∑ i ∈ Finset.range n, edist (f (g (u (i + 1)))) (f (g (u i)))) ≤
+        ∑ i ∈ Finset.range n, C * edist (g (u (i + 1))) (g (u i)) :=
       Finset.sum_le_sum fun i _ => h (hg (us _)) (hg (us _))
-    _ = C * ∑ i in Finset.range n, edist (g (u (i + 1))) (g (u i)) := by rw [Finset.mul_sum]
+    _ = C * ∑ i ∈ Finset.range n, edist (g (u (i + 1))) (g (u i)) := by rw [Finset.mul_sum]
     _ ≤ C * eVariationOn g s := mul_le_mul_left' (eVariationOn.sum_le _ _ hu us) _
 #align lipschitz_on_with.comp_evariation_on_le LipschitzOnWith.comp_eVariationOn_le
 
@@ -817,7 +817,7 @@ theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥
     (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)
     (h : LocallyBoundedVariationOn g s) : LocallyBoundedVariationOn (f ∘ g) s :=
   fun x y xs ys =>
-  hf.comp_boundedVariationOn (hg.mono_left (inter_subset_left _ _)) (h x y xs ys)
+  hf.comp_boundedVariationOn (hg.mono_left inter_subset_left) (h x y xs ys)
 #align lipschitz_on_with.comp_has_locally_bounded_variation_on LipschitzOnWith.comp_locallyBoundedVariationOn
 
 theorem LipschitzWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} (hf : LipschitzWith C f)

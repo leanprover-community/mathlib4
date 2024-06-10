@@ -62,6 +62,6 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } :=
     · rintro ⟨s, hs⟩
       simpa [← Multiset.coe_nodup, ← hs] using s.nodup
     · intro hl
-      refine' ⟨⟨↑l, hl⟩, _⟩
+      refine ⟨⟨↑l, hl⟩, ?_⟩
       simp
 #align fintype_nodup_list fintypeNodupList

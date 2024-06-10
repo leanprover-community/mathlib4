@@ -3,7 +3,6 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Cast.Basic
@@ -34,6 +33,8 @@ We also produce the following instances:
 * to_additive?
 
 -/
+
+assert_not_exists DenselyOrdered
 
 variable {M : Type*}
 
@@ -78,6 +79,18 @@ theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by
   exact npow_mul x n m
 
 end MulOneClass
+
+section Neg
+
+theorem neg_npow_assoc {R : Type*} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (a b : R) (k : ℕ) :
+    (-1)^k * a * b = (-1)^k * (a * b) := by
+  induction k with
+  | zero => simp only [npow_zero, one_mul]
+  | succ k ih =>
+    rw [npow_add, npow_one, ← neg_mul_comm, mul_one]
+    simp only [neg_mul, ih]
+
+end Neg
 
 instance Pi.instNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, MulOneClass <| α i] [∀ i, Pow (α i) ℕ]
     [∀ i, NatPowAssoc <| α i] : NatPowAssoc (∀ i, α i) where

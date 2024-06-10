@@ -5,9 +5,8 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
@@ -520,7 +519,7 @@ theorem mul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
 
 @[to_additive]
 theorem iInter_mul_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) * t ⊆ ⋂ i, s i * t :=
-  image2_iInter_subset_left _ _ _
+  Set.image2_iInter_subset_left _ _ _
 #align set.Inter_mul_subset Set.iInter_mul_subset
 #align set.Inter_add_subset Set.iInter_add_subset
 
@@ -1040,13 +1039,13 @@ variable [DivisionMonoid α] {s t : Set α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have hst : (s * t).Nonempty := h.symm.subst one_nonempty
     obtain ⟨a, ha⟩ := hst.of_image2_left
     obtain ⟨b, hb⟩ := hst.of_image2_right
     have H : ∀ {a b}, a ∈ s → b ∈ t → a * b = (1 : α) := fun {a b} ha hb =>
       h.subset <| mem_image2_of_mem ha hb
-    refine' ⟨a, b, _, _, H ha hb⟩ <;> refine' eq_singleton_iff_unique_mem.2 ⟨‹_›, fun x hx => _⟩
+    refine ⟨a, b, ?_, ?_, H ha hb⟩ <;> refine eq_singleton_iff_unique_mem.2 ⟨‹_›, fun x hx => ?_⟩
     · exact (eq_inv_of_mul_eq_one_left <| H hx hb).trans (inv_eq_of_mul_eq_one_left <| H ha hb)
     · exact (eq_inv_of_mul_eq_one_right <| H ha hx).trans (inv_eq_of_mul_eq_one_right <| H ha hb)
   · rintro ⟨b, c, rfl, rfl, h⟩
@@ -1078,7 +1077,7 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Set.mul_eq_one_iff.1 u.mul_inv
-    refine' ⟨a, ha, ⟨a, b, h, singleton_injective _⟩, rfl⟩
+    refine ⟨a, ha, ⟨a, b, h, singleton_injective ?_⟩, rfl⟩
     rw [← singleton_mul_singleton, ← ha, ← hb]
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩
