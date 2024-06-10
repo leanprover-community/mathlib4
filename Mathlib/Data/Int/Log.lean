@@ -74,7 +74,7 @@ theorem log_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : log b r = -Nat.cl
 theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
   cases n
   · simp [log_of_right_le_one]
-  · rw [log_of_one_le_right, Nat.floor_coe]
+  · rw [log_of_one_le_right, Nat.floor_natCast]
     simp
 #align int.log_nat_cast Int.log_natCast
 
@@ -120,7 +120,7 @@ theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (lo
       Nat.succ_le_of_lt (Nat.clog_pos hb <| Nat.one_lt_cast.1 <| hcri.trans_le (Nat.le_ceil _))
     rw [neg_add_eq_sub, ← neg_sub, ← Int.ofNat_one, ← Int.ofNat_sub this, zpow_neg, zpow_natCast,
       lt_inv hr (pow_pos (Nat.cast_pos.mpr <| zero_lt_one.trans hb) _), ← Nat.cast_pow]
-    refine' Nat.lt_ceil.1 _
+    refine Nat.lt_ceil.1 ?_
     exact Nat.pow_pred_clog_lt_self hb <| Nat.one_lt_cast.1 <| hcri.trans_le <| Nat.le_ceil _
 #align int.lt_zpow_succ_log_self Int.lt_zpow_succ_log_self
 
@@ -138,7 +138,7 @@ theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
 theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
   · rw [log_of_one_le_right _ (one_le_zpow_of_nonneg _ <| Int.natCast_nonneg _), zpow_natCast, ←
-      Nat.cast_pow, Nat.floor_coe, Nat.log_pow hb]
+      Nat.cast_pow, Nat.floor_natCast, Nat.log_pow hb]
     exact mod_cast hb.le
   · rw [log_of_right_le_one _ (zpow_le_one_of_nonpos _ <| neg_nonpos.mpr (Int.natCast_nonneg _)),
       zpow_neg, inv_inv, zpow_natCast, ← Nat.cast_pow, Nat.ceil_natCast, Nat.clog_pow _ _ hb]
@@ -206,7 +206,7 @@ theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 :=
     Nat.log_eq_zero_iff]
   rcases le_or_lt b 1 with hb | hb
   · exact Or.inr hb
-  · refine' Or.inl (lt_of_le_of_lt _ hb)
+  · refine Or.inl (lt_of_le_of_lt ?_ hb)
     exact Nat.floor_le_one_of_le_one ((inv_nonpos.2 hr).trans zero_le_one)
 #align int.clog_of_right_le_zero Int.clog_of_right_le_zero
 

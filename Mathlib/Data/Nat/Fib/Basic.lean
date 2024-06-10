@@ -3,11 +3,11 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
@@ -50,8 +50,6 @@ For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
 fib, fibonacci
 -/
-
-open BigOperators
 
 namespace Nat
 
@@ -121,7 +119,7 @@ theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
 
 /-- `fib (n + 2)` is strictly monotone. -/
 theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
-  refine' strictMono_nat_of_lt_succ fun n => _
+  refine strictMono_nat_of_lt_succ fun n => ?_
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
 #align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
@@ -306,19 +304,19 @@ theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
 #align nat.fib_dvd Nat.fib_dvd
 
 theorem fib_succ_eq_sum_choose :
-    ∀ n : ℕ, fib (n + 1) = ∑ p in Finset.antidiagonal n, choose p.1 p.2 :=
+    ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=
   twoStepInduction rfl rfl fun n h1 h2 => by
     rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 #align nat.fib_succ_eq_sum_choose Nat.fib_succ_eq_sum_choose
 
-theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k in Finset.range n, fib k) + 1 := by
+theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k ∈ Finset.range n, fib k) + 1 := by
   induction' n with n ih
   · simp
   · calc
       fib (n + 2) = fib n + fib (n + 1) := fib_add_two
-      _ = (fib n + ∑ k in Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
-      _ = (∑ k in Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
+      _ = (fib n + ∑ k ∈ Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
+      _ = (∑ k ∈ Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
 #align nat.fib_succ_eq_succ_sum Nat.fib_succ_eq_succ_sum
 
 end Nat

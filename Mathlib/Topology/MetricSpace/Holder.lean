@@ -135,7 +135,7 @@ theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : Holder
 /-- A Hölder continuous function is uniformly continuous -/
 protected theorem uniformContinuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) :
     UniformContinuousOn f s := by
-  refine' EMetric.uniformContinuousOn_iff.2 fun ε εpos => _
+  refine EMetric.uniformContinuousOn_iff.2 fun ε εpos => ?_
   have : Tendsto (fun d : ℝ≥0∞ => (C : ℝ≥0∞) * d ^ (r : ℝ)) (𝓝 0) (𝓝 0) :=
     ENNReal.tendsto_const_mul_rpow_nhds_zero_of_pos ENNReal.coe_ne_top h0
   rcases ENNReal.nhds_zero_basis.mem_iff.1 (this (gt_mem_nhds εpos)) with ⟨δ, δ0, H⟩
@@ -173,8 +173,8 @@ theorem ediam_image_le_of_subset_of_le (hf : HolderOnWith C r f s) (ht : t ⊆ s
 
 theorem ediam_image_inter_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞}
     (hd : EMetric.diam t ≤ d) : EMetric.diam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
-  hf.ediam_image_le_of_subset_of_le (inter_subset_right _ _) <|
-    (EMetric.diam_mono <| inter_subset_left _ _).trans hd
+  hf.ediam_image_le_of_subset_of_le inter_subset_right <|
+    (EMetric.diam_mono inter_subset_left).trans hd
 #align holder_on_with.ediam_image_inter_le_of_le HolderOnWith.ediam_image_inter_le_of_le
 
 theorem ediam_image_inter_le (hf : HolderOnWith C r f s) (t : Set X) :

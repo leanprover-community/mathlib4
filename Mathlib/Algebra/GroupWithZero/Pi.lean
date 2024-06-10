@@ -13,7 +13,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 This file defines monoid with zero, group with zero, and related structure instances for pi types.
 -/
 
--- Porting note: All these instances used `refine_struct` and `pi_instance_derive_field`
+assert_not_exists DenselyOrdered
 
 open Function Pi
 

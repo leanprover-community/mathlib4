@@ -37,8 +37,6 @@ endomorphism. We provide basic definitions and results about such endomorphisms 
 ## TODO
 
 In finite dimensions over a field:
- * If semisimple then generalized eigenspace is eigenspace
- * Restriction of semisimple endomorphism is semisimple
  * Triangularizable iff diagonalisable for semisimple endomorphisms
 
 -/
@@ -84,6 +82,25 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical ⟨n, h0⟩
 
+@[simp]
+lemma isSemisimple_sub_algebraMap_iff {μ : R} :
+    (f - algebraMap R (End R M) μ).IsSemisimple ↔ f.IsSemisimple := by
+  suffices ∀ p : Submodule R M, p ≤ p.comap (f - algebraMap R (Module.End R M) μ) ↔ p ≤ p.comap f by
+    simp [isSemisimple_iff, this]
+  refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
+  simpa using p.add_mem (h hx) (p.smul_mem μ hx)
+
+lemma IsSemisimple.restrict {p : Submodule R M} {hp : MapsTo f p p} (hf : f.IsSemisimple) :
+    IsSemisimple (f.restrict hp) := by
+  simp only [isSemisimple_iff] at hf ⊢
+  intro q hq
+  replace hq : MapsTo f (q.map p.subtype) (q.map p.subtype) := by
+    rintro - ⟨⟨x, hx⟩, hx', rfl⟩; exact ⟨⟨f x, hp hx⟩, by simpa using hq hx', rfl⟩
+  obtain ⟨r, hr₁, hr₂⟩ := hf _ hq
+  refine ⟨r.comap p.subtype, fun x hx ↦ hr₁ hx, ?_⟩
+  rw [← q.comap_map_eq_of_injective p.injective_subtype]
+  exact p.isCompl_comap_subtype_of_isCompl_of_le hr₂ <| p.map_subtype_le q
+
 end CommRing
 
 section field
@@ -122,12 +139,13 @@ variable (hf : f.IsSemisimple)
 
 /-- The minimal polynomial of a semisimple endomorphism is square free -/
 theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
-  IsRadical.squarefree (minpoly.ne_zero <| isIntegral _) <| by
+  IsRadical.squarefree (minpoly.ne_zero <| Algebra.IsIntegral.isIntegral _) <| by
     rw [isRadical_iff_span_singleton, span_minpoly_eq_annihilator]; exact hf.annihilator_isRadical
 
 protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
   let R := K[X] ⧸ Ideal.span {minpoly K f}
-  have : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
+  have : Finite K R :=
+    (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
     span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
   isSemisimple_of_squarefree_aeval_eq_zero ((minpoly.isRadical K _).squarefree <|
@@ -154,8 +172,18 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     a.IsSemisimple := by
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   let S := AdjoinRoot ((minpoly K g).map <| algebraMap K R)
-  have : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
-  have : Finite R S := (AdjoinRoot.powerBasis' <| (minpoly.monic <| isIntegral g).map _).finite
+  have : Finite K R :=
+    (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
+  have : Finite R S :=
+    (AdjoinRoot.powerBasis' <| (minpoly.monic <| Algebra.IsIntegral.isIntegral g).map _).finite
+  #adaptation_note
+  /--
+  After https://github.com/leanprover/lean4/pull/4119 we either need
+  to specify the `(S := R)` argument, or use `set_option maxSynthPendingDepth 2 in`.
+
+  In either case this step is too slow!
+  -/
+  set_option maxSynthPendingDepth 2 in
   have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
   have : Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R

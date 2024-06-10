@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Int.Units
 import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import data.fintype.units from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
@@ -36,7 +35,7 @@ instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ex
 
 theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card α = Fintype.card αˣ + 1 := by
-  rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
+  rw [eq_comm, Fintype.card_congr unitsEquivNeZero]
   have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α)))
   rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
 
