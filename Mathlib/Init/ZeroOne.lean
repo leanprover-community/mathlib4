@@ -17,7 +17,7 @@ class Zero.{u} (α : Type u) where
 instance (priority := 300) Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
   ofNat := ‹Zero α›.1
 
-instance (priority := 200) Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
+instance (priority := 10) Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
   zero := 0
 
 
@@ -30,7 +30,7 @@ class One (α : Type u) where
 instance (priority := 300) One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
   ofNat := ‹One α›.1
 @[to_additive existing Zero.ofOfNat0, to_additive_change_numeral 2]
-instance (priority := 200) One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
+instance (priority := 10) One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
   one := 1
 
 @[deprecated, match_pattern] def bit0 {α : Type u} [Add α] (a : α) : α := a + a
