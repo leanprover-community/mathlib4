@@ -7,6 +7,16 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
+/-!
+# Refinements
+
+This file contains lemmas about "refinements" that are specific to
+the study of the homology of `HomologicalComplex`. General
+lemmas about refinements and the case of `ShortComplex` appear
+in the file `CategoryTheory.Abelian.Refinements`.
+
+-/
+
 open CategoryTheory
 
 variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
