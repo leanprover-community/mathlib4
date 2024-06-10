@@ -25,8 +25,9 @@ open Bicategory Discrete
 
 open Bicategory
 
+universe w₂ w₁ v₂ v₁ v u₂ u₁ u
 
-universe w₂ v v₁ v₂ u u₁ u₂
+section
 
 variable {C : Type u}
 
@@ -137,6 +138,19 @@ def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B wh
   mapId i := eqToHom (F.map_id i.as)
   mapComp f g := eqToHom (F.map_comp f.as g.as)
 #align category_theory.functor.to_oplax_functor CategoryTheory.Functor.toOplaxFunctor
+
+end
+
+section
+
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
+
+@[simp]
+lemma OplaxFunctor.map₂_eqToHom (F : OplaxFunctor B C) {a b : B} {f g : a ⟶ b} (h : f = g) :
+    F.map₂ (eqToHom h) = eqToHom (F.congr_map h) := by
+  subst h; simp only [eqToHom_refl, OplaxFunctor.map₂_id]
+
+end
 
 end CategoryTheory
 
