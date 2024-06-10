@@ -685,11 +685,9 @@ noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
 
 end WeierstrassCurve.Jacobian.Point
 
-namespace EllipticCurve.Affine
+namespace EllipticCurve.Affine.Point
 
 /-! ## Elliptic curves in affine coordinates -/
-
-namespace Point
 
 variable {R : Type} [Nontrivial R] [CommRing R] (E : EllipticCurve R)
 
@@ -698,6 +696,4 @@ def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
   WeierstrassCurve.Affine.Point.some <| nonsingular E h
 #align elliptic_curve.point.mk EllipticCurve.Affine.Point.mk
 
-end Point
-
-end EllipticCurve.Affine
+end EllipticCurve.Affine.Point
