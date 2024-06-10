@@ -765,14 +765,14 @@ instance (L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ) [PreservesColimitsOfSize.{v₁, m
 /-- If `L` preserves colimits and `ℰ` has them, then it is a left adjoint. Note this is a (partial)
 converse to `leftAdjointPreservesColimits`.
 -/
-lemma isLeftAdjointOfPreservesColimits (L : (C ⥤ Type v₁) ⥤ ℰ)
+lemma isLeftAdjoint_of_preservesColimits (L : (C ⥤ Type v₁) ⥤ ℰ)
     [PreservesColimitsOfSize.{v₁, max u₁ v₁} L]
     [yoneda.HasPointwiseLeftKanExtension
       (yoneda ⋙ (opOpEquivalence C).congrLeft.functor.comp L)] :
     L.IsLeftAdjoint :=
   ⟨_, ⟨((opOpEquivalence C).congrLeft.symm.toAdjunction.comp
     (yonedaAdjunction _ (𝟙 _))).ofNatIsoLeft ((opOpEquivalence C).congrLeft.invFunIdAssoc L)⟩⟩
-#align category_theory.is_left_adjoint_of_preserves_colimits CategoryTheory.Presheaf.isLeftAdjointOfPreservesColimits
+#align category_theory.is_left_adjoint_of_preserves_colimits CategoryTheory.Presheaf.isLeftAdjoint_of_preservesColimits
 
 section
 
