@@ -248,6 +248,9 @@ theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 < q) :
   · exact (continuous_id'.prod_mk continuous_const).continuousAt
 #align real.continuous_at_rpow_const Real.continuousAt_rpow_const
 
+@[fun_prop]
+theorem continuous_rpow_const {q : ℝ} (h : 0 < q) : Continuous (fun x : ℝ => x ^ q) :=
+  continuous_iff_continuousAt.mpr fun x ↦ continuousAt_rpow_const x q (.inr h)
 end Real
 
 section

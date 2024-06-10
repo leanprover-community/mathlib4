@@ -1161,6 +1161,12 @@ theorem forall₂_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ 
   Iff.trans (forall_congr' fun _ ↦ forall_and) forall_and
 #align ball_and_distrib forall₂_and
 
+theorem forall_and_left [Nonempty α] (q : Prop) (p : α → Prop) :
+    (∀ x, q ∧ p x) ↔ (q ∧ ∀ x, p x) := by rw [forall_and, forall_const]
+
+theorem forall_and_right [Nonempty α] (p : α → Prop) (q : Prop) :
+    (∀ x, p x ∧ q) ↔ (∀ x, p x) ∧ q := by rw [forall_and, forall_const]
+
 theorem exists_mem_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
   Iff.trans (exists_congr fun _ ↦ exists_or) exists_or
 #align bex_or_distrib exists_mem_or
