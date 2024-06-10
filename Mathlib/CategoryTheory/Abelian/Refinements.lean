@@ -114,7 +114,7 @@ lemma ShortComplex.eq_liftCycles_homologyπ_up_to_refinements {A : C} (γ : A �
     ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (z : A' ⟶ S.X₂) (hz : z ≫ S.g = 0),
       π ≫ γ = S.liftCycles z hz ≫ S.homologyπ := by
   obtain ⟨A', π, hπ, z, hz⟩ := surjective_up_to_refinements_of_epi S.homologyπ γ
-  refine' ⟨A', π, hπ, z ≫ S.iCycles, by simp, _⟩
+  refine ⟨A', π, hπ, z ≫ S.iCycles, by simp, ?_⟩
   rw [hz]
   congr 1
   rw [← cancel_mono S.iCycles, liftCycles_i]
