@@ -156,7 +156,7 @@ variable [DecidableEq n]
 
 variable {A : Matrix n n 𝕜} (hA : IsHermitian A)
 
-/-- Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc. toEuclideanLin-/
+/--Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc.toEuclideanLin -/
 theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
@@ -180,7 +180,7 @@ theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectru
 theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A := by
   intro i
   apply spectrum.of_algebraMap_mem (S := 𝕜) (R := ℝ) (A := Matrix n n 𝕜)
-  rw [←spec_toEuclideanLin_eq_spec]
+  rw [← spec_toEuclideanLin_eq_spec]
   apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
 
 /--Definition of the StarAlgHom for the continuous functional calculus of a Hermitian matrix. -/
@@ -258,8 +258,7 @@ instance instContinuousFunctionalCalculus :
                 star (eigenvectorUnitary ha : Matrix n n 𝕜)) *
                 (ha.eigenvectorUnitary : Matrix n n 𝕜) =
                 (star ha.eigenvectorUnitary : Matrix n n 𝕜) *
-                (0 : Matrix n n 𝕜) * (ha.eigenvectorUnitary : Matrix n n 𝕜)
-                := by congr
+                (0 : Matrix n n 𝕜) * (ha.eigenvectorUnitary : Matrix n n 𝕜) := by congr
            simp only [← mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, one_mul,
                     mul_zero, zero_mul] at hlr
            simp only [mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one] at hlr
