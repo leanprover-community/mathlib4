@@ -73,7 +73,7 @@ def substitutions (lines : Array String) (dat : Array ((String × String) × (Na
     match new[l]!.replaceCheck check repl c with
       | some newLine => (new, replaced) := (new.modify l (fun _ => newLine), replaced + 1)
       | none         =>
-        dbg_trace "Could not replace '{check}' with '{repl}'"
+        dbg_trace s!"Could not replace '{check}' with '{repl}'"
         unreplaced := unreplaced + 1
   return ((replaced, unreplaced), new)
 
@@ -156,14 +156,26 @@ def toFile : TSyntax `build → System.FilePath
 
 section elabs
 
+--#eval show Elab.Command.CommandElabM _ from do
+--  let f ← `(term| 40)
+--  let f ← `(term| $(mkIdent `false))
+--  --logInfo m!"{f}"
+--  dbg_trace (f.raw[0], f.raw.getKind)
+--#check Parser.numLit
+--#check
 /-- extracts the corrections from a `build` syntax. -/
 def getCorrections : TSyntax `build → Option (System.FilePath × (String × String) × (Nat × Nat))
   | `(build| warning: $fil:build: $s : $f : `$depr` has been deprecated, use `$new` instead) =>
     let oldNewName := (depr.getId.toString, new.getId.toString)
     (toFile fil, oldNewName, s.getNat, f.getNat)
-  | `(build|warning: $fil:build: $s : $f : unnecessary `set_option $optN:ident $opt:ident`) =>
-    (toFile fil, (s!"set_option {optN.getId.toString} {opt.getId.toString} in",
-      "/-set_option {optN.getId.toString} {opt.getId.toString} in-/"),
+  | `(build|warning: $fil:build: $s : $f : unnecessary `set_option $optN:ident $opt:term`) =>
+    --dbg_trace "opt.raw.getKind: '{opt.raw.getKind}'"
+    let ropt := if opt.raw.isOfKind ``Parser.numLit then opt.raw.toNat else default --toString opt.raw
+                  --| _ => default
+                    --if opt.raw.isOfKind ``Parser.numLit then opt.raw[0] else opt.raw[0]
+    --dbg_trace "ropt is '{ropt}'"
+    (toFile fil, (s!"set_option {optN.getId.toString} {(toString ropt).dropWhile (· == '`')} in",
+      s!"/-set_option {optN.getId.toString} {toString ropt} in-/"),
       s.getNat, f.getNat)
   | _ => default
 
