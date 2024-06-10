@@ -556,7 +556,7 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
-    any_goals simp only [zero_def, toClassFun, _root_.zero_add, _root_.add_zero]
+    any_goals simp only [zero_def, toClassFun, zero_add, add_zero]
     by_cases hx : x₁ = x₂
     · by_cases hy : y₁ = W.negY x₂ y₂
       · substs hx hy
@@ -597,7 +597,7 @@ private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
   · intro hP
-    rcases P with (_ | @⟨_, _, ⟨h, _⟩⟩)
+    rcases P with (_ | ⟨h, _⟩)
     · rfl
     · rcases (ClassGroup.mk_eq_one_of_coe_ideal <| by rfl).mp hP with ⟨p, h0, hp⟩
       apply (p.natDegree_norm_ne_one _).elim
@@ -621,8 +621,8 @@ noncomputable instance : AddCommGroup W.Point where
   zero_add := zero_add
   add_zero := add_zero
   add_left_neg _ := by rw [add_eq_zero]
-  add_comm _ _ := toClass_injective <| by simp only [map_add, _root_.add_comm]
-  add_assoc _ _ _ := toClass_injective <| by simp only [map_add, _root_.add_assoc]
+  add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
+  add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
 
 #noalign weierstrass_curve.point.add_eq_zero
 #noalign weierstrass_curve.point.neg_add_eq_zero
@@ -644,15 +644,13 @@ noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
   zero_add _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, _root_.zero_add]
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
   add_zero _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, _root_.add_zero]
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
   add_left_neg P := (toAffineAddEquiv W).injective <| by
-    rcases P
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, _root_.add_left_neg,
-      toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, _root_.add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, _root_.add_assoc]
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, add_left_neg, toAffineLift_zero]
+  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
+  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
 
 end WeierstrassCurve.Jacobian.Point
 
