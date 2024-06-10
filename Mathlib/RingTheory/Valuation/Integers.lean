@@ -151,36 +151,22 @@ theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) :
   rw [← v.ne_zero_iff]
   simp only [hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
-end Integers
+theorem eq_algebraMap_or_inv_eq_algebraMap (x : F) : ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
+  by_cases h : v x ≤ 1
+  · obtain ⟨a, ha⟩ := exists_of_le_one hv h
+    use a
+    exact Or.inl ha.symm
+  · have : v x⁻¹ ≤ 1 := by
+      apply le_of_lt
+      push_neg at h
+      rwa [← Valuation.one_lt_val_iff]
+      intro h0
+      simp [h0] at h
+    obtain ⟨a, ha⟩ := exists_of_le_one hv this
+    use a
+    exact Or.inr ha.symm
 
-instance instIsFractionRingInteger: IsFractionRing v.integer F where
-  map_units' x := by
-    field_simp
-    apply ((injective_iff_map_eq_zero _).mp (integer.integers v).hom_inj x).mt
-    exact nonZeroDivisors.coe_ne_zero x
-  surj' z := by
-    by_cases h : v z ≤ 1
-    · use ⟨⟨z, h⟩, 1⟩
-      simp only [OneMemClass.coe_one, _root_.map_one, mul_one]
-      rfl
-    · simp only [not_le] at h
-      have : z ≠ 0 := by
-        by_contra! hz
-        simp only [hz, _root_.map_zero, not_lt_zero'] at h
-      let zinv : nonZeroDivisors v.integer := {
-        val := ⟨z⁻¹, le_of_lt ((v.one_lt_val_iff this).mp h)⟩
-        property := by
-          apply mem_nonZeroDivisors_of_ne_zero
-          apply Subtype.ext_iff.not.mpr
-          simp only [ZeroMemClass.coe_zero, inv_eq_zero, this, not_false_eq_true]
-      }
-      use ⟨1, zinv⟩
-      calc
-      _ = z * z⁻¹ := by rfl
-      _ = 1 := by field_simp
-  exists_of_eq h := by
-    use 1
-    simp only [OneMemClass.coe_one, (integer.integers v).hom_inj h, one_mul]
+end Integers
 
 end Field
 
