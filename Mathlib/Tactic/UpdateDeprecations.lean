@@ -170,7 +170,7 @@ def getCorrections : TSyntax `build → Option (System.FilePath × (String × St
     (toFile fil, oldNewName, s.getNat, f.getNat)
   | `(build|warning: $fil:build: $s : $f : unnecessary `set_option $optN:ident $opt:term`) =>
     --dbg_trace "opt.raw.getKind: '{opt.raw.getKind}'"
-    let ropt := if opt.raw.isOfKind ``Parser.numLit then opt.raw.toNat else default --toString opt.raw
+    let ropt := if opt.raw.isOfKind ``Parser.numLit then opt.raw.toNat else default
                   --| _ => default
                     --if opt.raw.isOfKind ``Parser.numLit then opt.raw[0] else opt.raw[0]
     --dbg_trace "ropt is '{ropt}'"
