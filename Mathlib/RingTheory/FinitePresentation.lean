@@ -33,7 +33,9 @@ set_option autoImplicit true
 
 open Function (Surjective)
 
-open Polynomial TensorProduct
+open Polynomial
+
+open scoped TensorProduct
 
 section ModuleAndAlgebra
 
