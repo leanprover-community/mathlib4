@@ -29,6 +29,7 @@ attribute [fun_prop] Real.continuousAt_rpow_const Continuous.clm_comp
 
 end fun_prop
 
+-- PRd
 section RPow
 
 theorem NNReal.rpow_add_of_nonneg (x : ℝ≥0) {y z : ℝ} (hy : 0 ≤ y) (hz : 0 ≤ z) :
@@ -86,33 +87,16 @@ end MeasureTheory
 
 namespace Filter
 
-theorem eventually_of_isEmpty {α : Type*} {p : α → Prop} [IsEmpty α] {l : Filter α} :
+theorem eventually_of_isEmpty {α : Type*} (p : α → Prop) [IsEmpty α] (l : Filter α) :
     ∀ᶠ (x : α) in l, p x :=
   eventually_of_forall <| fun x ↦ isEmptyElim x
 
 end Filter
 
-section ContDiff
-
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
-
-theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
-    ∃ f' : E → E →L[𝕜] F, Continuous f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
-  convert contDiff_succ_iff_hasFDerivAt using 4; simp
-
-end ContDiff
-
 section ClosedEmbedding
 variable {ι : Type*} {β : ι → Type*} [DecidableEq ι]
   [(i : ι) → TopologicalSpace (β i)]
   (x : (i : ι) → β i) (i : ι) {s : Set (β i)}
-
-theorem forall_and_left {ι : Sort*} [Nonempty ι] {q : Prop} {p : ι → Prop} :
-    (∀ x, q ∧ p x) ↔ (q ∧ ∀ x, p x) := by rw [forall_and, forall_const]
-
-theorem forall_and_right {ι : Sort*} [Nonempty ι] {p : ι → Prop} {q : Prop} :
-    (∀ x, p x ∧ q) ↔ (∀ x, p x) ∧ q := by rw [forall_and, forall_const]
 
 theorem image_update : update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
   ext y
@@ -242,6 +226,7 @@ protected theorem abs {f : α → β} (hf : HasCompactSupport f) : HasCompactSup
 protected theorem rpow_const {f : α → ℝ} (hf : HasCompactSupport f) {r : ℝ} (hr : r ≠ 0) :
     HasCompactSupport (fun x ↦ f x ^ r) :=
   hf.comp_left (g := (· ^ r)) (Real.zero_rpow hr)
+
 variable (𝕜 : Type*) {E : Type*} {F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
 protected theorem fderiv_apply (hf : HasCompactSupport f) (v : E) :
@@ -331,29 +316,6 @@ theorem Pi.norm_single {i : ι} (y : E i) : ‖Pi.single i y‖ = ‖y‖ :=
   congr_arg Subtype.val (Pi.nnnorm_single y)
 
 end NormedAddCommGroup
-
-section updateFinset
-
-variable {ι : Sort _} {π α : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]
-
--- this would be slightly nicer if we had a version of `Equiv.piFinsetUnion` for `insert`.
-theorem update_updateFinset {s y i z} (hi : i ∉ s) :
-    Function.update (updateFinset x s y) i z = updateFinset x (s ∪ {i})
-      ((Equiv.piFinsetUnion π <| Finset.disjoint_singleton_right.mpr hi) (y, uniqueElim z)) := by
-  rw [update_eq_updateFinset, updateFinset_updateFinset]
-
-theorem updateFinset_congr {s t : Finset ι} {y : ∀ i : s, π i} (h : s = t) :
-    updateFinset x s y = updateFinset x t (fun i ↦ y ⟨i, h ▸ i.prop⟩) := by
-  subst h; rfl
-
-theorem updateFinset_univ [Fintype ι] {y : ∀ i : Finset.univ, π i} :
-    updateFinset x .univ y = fun i : ι ↦ y ⟨i, Finset.mem_univ i⟩ := by
-  simp [updateFinset_def]
-
-lemma Finset.singleton_union {s : Finset ι} {i : ι} : {i} ∪ s = insert i s := by ext; simp
-lemma Finset.union_singleton {s : Finset ι} {i : ι} : s ∪ {i} = insert i s := by ext; simp [or_comm]
-
-end updateFinset
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
