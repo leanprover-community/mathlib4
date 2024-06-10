@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Std.Data.Array.Init.Lemmas
+import Batteries.Data.Array.Init.Lemmas
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Lemma
 
