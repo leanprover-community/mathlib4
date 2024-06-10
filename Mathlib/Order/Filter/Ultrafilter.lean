@@ -445,7 +445,7 @@ theorem Iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
 #align filter.Iic_pure Filter.Iic_pure
 
 theorem mem_iff_ultrafilter : s ∈ f ↔ ∀ g : Ultrafilter α, ↑g ≤ f → s ∈ g := by
-  refine' ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => _⟩
+  refine ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => ?_⟩
   set g : Filter (sᶜ : Set α) := comap (↑) f
   haveI : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf] )
   simpa using H ((of g).map (↑)) (map_le_iff_le_comap.mpr (of_le g))
@@ -473,7 +473,7 @@ theorem exists_ultrafilter_iff {f : Filter α} : (∃ u : Ultrafilter α, ↑u �
 
 theorem forall_neBot_le_iff {g : Filter α} {p : Filter α → Prop} (hp : Monotone p) :
     (∀ f : Filter α, NeBot f → f ≤ g → p f) ↔ ∀ f : Ultrafilter α, ↑f ≤ g → p f := by
-  refine' ⟨fun H f hf => H f f.neBot hf, _⟩
+  refine ⟨fun H f hf => H f f.neBot hf, ?_⟩
   intro H f hf hfg
   exact hp (of_le f) (H _ ((of_le f).trans hfg))
 #align filter.forall_ne_bot_le_iff Filter.forall_neBot_le_iff

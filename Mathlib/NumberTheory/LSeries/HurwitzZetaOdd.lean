@@ -28,7 +28,7 @@ Of course, we cannot *define* these functions by the above formulae (since exist
 analytic continuation is not at all obvious); we in fact construct them as Mellin transforms of
 various versions of the Jacobi theta function.
 
-## Main definitions and theorems
+## Main definitions and theorems
 
 * `completedHurwitzZetaOdd`: the completed Hurwitz zeta function
 * `completedSinZeta`: the completed cosine zeta function
@@ -45,6 +45,8 @@ noncomputable section
 open Complex hiding abs_of_nonneg
 open Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate
+
+namespace HurwitzZeta
 
 section kernel_defs
 /-!
@@ -243,7 +245,7 @@ lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℕ ↦ 2 * n * Real.sin (2 * π * a * n) * rexp (-π * n ^ 2 * t))
     (sinKernel ↑a t) := by
   rw [← hasSum_ofReal]
-  have := (hasSum_int_sinKernel a ht).sum_nat_of_sum_int
+  have := (hasSum_int_sinKernel a ht).nat_add_neg
   simp only [Int.cast_zero, sq (0 : ℂ), zero_mul, mul_zero, add_zero] at this
   refine this.congr_fun fun n ↦ ?_
   simp_rw [Int.cast_neg, neg_sq, mul_neg, ofReal_mul, Int.cast_natCast, ofReal_natCast,
@@ -326,6 +328,8 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
   h_feq x hx := by simp_rw [Function.comp_apply, one_mul, smul_eq_mul, ← ofReal_mul,
     oddKernel_functional_equation a, one_div x, one_div x⁻¹, inv_rpow (le_of_lt hx), one_div,
     inv_inv]
+
+end FEPair
 
 /-!
 ## Definition of the completed odd Hurwitz zeta function
@@ -418,7 +422,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 lemma hasSum_nat_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ Gammaℝ (s + 1) * Real.sin (2 * π * a * n) / (n : ℂ) ^ s)
     (completedSinZeta a s) := by
-  have := (hasSum_int_completedSinZeta a hs).sum_nat_of_sum_int
+  have := (hasSum_int_completedSinZeta a hs).nat_add_neg
   simp_rw [Int.sign_zero, Int.cast_zero, mul_zero, zero_mul, zero_div, add_zero, abs_neg,
     Int.sign_neg, Nat.abs_cast, Int.cast_neg, Int.cast_natCast, ← add_div] at this
   refine this.congr_fun fun n ↦ ?_
@@ -529,7 +533,7 @@ theorem hasSum_int_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 /-- Formula for `sinZeta` as a Dirichlet series in the convergence range, with sum over `ℕ`. -/
 lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ Real.sin (2 * π * a * n) / (n : ℂ) ^ s) (sinZeta a s) := by
-  have := (hasSum_int_sinZeta a hs).sum_nat_of_sum_int
+  have := (hasSum_int_sinZeta a hs).nat_add_neg
   simp_rw [abs_neg, Int.sign_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg, abs_zero,
     Int.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero, zero_div, add_zero] at this
   simp_rw [push_cast, Complex.sin]
@@ -541,7 +545,7 @@ lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   · simp only [Nat.cast_zero, Int.sign_zero, Int.cast_zero, mul_zero, zero_mul, neg_zero,
       sub_self, zero_div, zero_add]
 
-/-- Reformulation of `hasSum_nat_cosZeta` using `LSeriesHasSum`. -/
+/-- Reformulation of `hasSum_nat_sinZeta` using `LSeriesHasSum`. -/
 lemma LSeriesHasSum_sin (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     LSeriesHasSum (Real.sin <| 2 * π * a * ·) s (sinZeta a s) := by
   refine (hasSum_nat_sinZeta a hs).congr_fun (fun n ↦ ?_)
@@ -574,3 +578,5 @@ lemma sinZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -
   rw [← Gammaℂ, sinZeta, (by ring : 1 - s + 1 = 2 - s), div_eq_mul_inv, inv_Gammaℝ_two_sub hs,
     completedSinZeta_one_sub, hurwitzZetaOdd, ← div_eq_mul_inv, ← mul_div_assoc, ← mul_div_assoc,
     mul_comm]
+
+end HurwitzZeta

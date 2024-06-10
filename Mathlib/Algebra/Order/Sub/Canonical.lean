@@ -3,6 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 
@@ -22,7 +23,7 @@ variable [AddCommSemigroup α] [PartialOrder α] [ExistsAddOfLE α]
 
 @[simp]
 theorem add_tsub_cancel_of_le (h : a ≤ b) : a + (b - a) = b := by
-  refine' le_antisymm _ le_add_tsub
+  refine le_antisymm ?_ le_add_tsub
   obtain ⟨c, rfl⟩ := exists_add_of_le h
   exact add_le_add_left add_tsub_le_left a
 #align add_tsub_cancel_of_le add_tsub_cancel_of_le
@@ -54,7 +55,7 @@ theorem tsub_inj_left (h₁ : a ≤ b) (h₂ : a ≤ c) : b - a = c - a → b = 
 
 /-- See `lt_of_tsub_lt_tsub_right` for a stronger statement in a linear order. -/
 theorem lt_of_tsub_lt_tsub_right_of_le (h : c ≤ b) (h2 : a - c < b - c) : a < b := by
-  refine' ((tsub_le_tsub_iff_right h).mp h2.le).lt_of_ne _
+  refine ((tsub_le_tsub_iff_right h).mp h2.le).lt_of_ne ?_
   rintro rfl
   exact h2.false
 #align lt_of_tsub_lt_tsub_right_of_le lt_of_tsub_lt_tsub_right_of_le
@@ -115,8 +116,8 @@ protected theorem le_tsub_iff_right (ha : AddLECancellable a) (h : a ≤ c) :
 
 protected theorem tsub_lt_iff_left (hb : AddLECancellable b) (hba : b ≤ a) :
     a - b < c ↔ a < b + c := by
-  refine' ⟨hb.lt_add_of_tsub_lt_left, _⟩
-  intro h; refine' (tsub_le_iff_left.mpr h.le).lt_of_ne _
+  refine ⟨hb.lt_add_of_tsub_lt_left, ?_⟩
+  intro h; refine (tsub_le_iff_left.mpr h.le).lt_of_ne ?_
   rintro rfl; exact h.ne' (add_tsub_cancel_of_le hba)
 #align add_le_cancellable.tsub_lt_iff_left AddLECancellable.tsub_lt_iff_left
 
@@ -138,7 +139,7 @@ protected theorem le_tsub_iff_le_tsub (ha : AddLECancellable a) (hc : AddLECance
 
 protected theorem lt_tsub_iff_right_of_le (hc : AddLECancellable c) (h : c ≤ b) :
     a < b - c ↔ a + c < b := by
-  refine' ⟨fun h' => (add_le_of_le_tsub_right_of_le h h'.le).lt_of_ne _, hc.lt_tsub_of_add_lt_right⟩
+  refine ⟨fun h' => (add_le_of_le_tsub_right_of_le h h'.le).lt_of_ne ?_, hc.lt_tsub_of_add_lt_right⟩
   rintro rfl
   exact h'.ne' hc.add_tsub_cancel_right
 #align add_le_cancellable.lt_tsub_iff_right_of_le AddLECancellable.lt_tsub_iff_right_of_le
@@ -370,7 +371,7 @@ namespace AddLECancellable
 
 protected theorem tsub_le_tsub_iff_left (ha : AddLECancellable a) (hc : AddLECancellable c)
     (h : c ≤ a) : a - b ≤ a - c ↔ c ≤ b := by
-  refine' ⟨_, fun h => tsub_le_tsub_left h a⟩
+  refine ⟨?_, fun h => tsub_le_tsub_left h a⟩
   rw [tsub_le_iff_left, ← hc.add_tsub_assoc_of_le h, hc.le_tsub_iff_right (h.trans le_add_self),
     add_comm b]
   apply ha
@@ -448,14 +449,14 @@ protected theorem tsub_lt_tsub_iff_right (hc : AddLECancellable c) (h : c ≤ a)
 #align add_le_cancellable.tsub_lt_tsub_iff_right AddLECancellable.tsub_lt_tsub_iff_right
 
 protected theorem tsub_lt_self (ha : AddLECancellable a) (h₁ : 0 < a) (h₂ : 0 < b) : a - b < a := by
-  refine' tsub_le_self.lt_of_ne fun h => _
+  refine tsub_le_self.lt_of_ne fun h => ?_
   rw [← h, tsub_pos_iff_lt] at h₁
   exact h₂.not_le (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
 #align add_le_cancellable.tsub_lt_self AddLECancellable.tsub_lt_self
 
 protected theorem tsub_lt_self_iff (ha : AddLECancellable a) : a - b < a ↔ 0 < a ∧ 0 < b := by
-  refine'
-    ⟨fun h => ⟨(zero_le _).trans_lt h, (zero_le b).lt_of_ne _⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
+  refine
+    ⟨fun h => ⟨(zero_le _).trans_lt h, (zero_le b).lt_of_ne ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
   rintro rfl
   rw [tsub_zero] at h
   exact h.false
@@ -515,5 +516,17 @@ theorem tsub_add_min : a - b + min a b = a := by
   rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 #align tsub_add_min tsub_add_min
+
+-- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
+lemma Even.tsub [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+    Even (m - n) := by
+  obtain ⟨a, rfl⟩ := hm
+  obtain ⟨b, rfl⟩ := hn
+  refine ⟨a - b, ?_⟩
+  obtain h | h := le_total a b
+  · rw [tsub_eq_zero_of_le h, tsub_eq_zero_of_le (add_le_add h h), add_zero]
+  · exact (tsub_add_tsub_comm h h).symm
+#align even.tsub Even.tsub
 
 end CanonicallyLinearOrderedAddCommMonoid

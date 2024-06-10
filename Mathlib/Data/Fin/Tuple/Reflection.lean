@@ -46,7 +46,7 @@ theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v =
   | n + 1, f, v =>
     funext fun i => by
       simp_rw [seq, seq_eq]
-      refine' i.cases _ fun i => _
+      refine i.cases ?_ fun i => ?_
       · rfl
       · rw [Matrix.cons_val_succ]
         rfl
@@ -144,8 +144,6 @@ def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   -- Porting note: inline `∘` since it is no longer reducible
   | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
 #align fin_vec.sum FinVec.sum
-
-open BigOperators
 
 /-- This can be used to prove
 ```lean

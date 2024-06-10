@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Star.Order
 import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Algebra.Order.Monoid.Submonoid

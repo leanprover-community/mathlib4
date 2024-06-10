@@ -211,7 +211,7 @@ lemma L₀_exact : S.L₀.Exact := by
     simp only [← cancel_mono S.L₂.f, assoc, zero_comp, S.v₁₂.comm₁₂,
       ← reassoc_of% hy₁, w₀₂_τ₂, comp_zero]
   obtain ⟨x₁, hx₁⟩ : ∃ x₁, x₁ ≫ S.v₀₁.τ₁ = y₁ := ⟨_, S.exact_C₁_up.lift_f y₁ hy₁'⟩
-  refine' ⟨A₁, π₁, hπ₁, x₁, _⟩
+  refine ⟨A₁, π₁, hπ₁, x₁, ?_⟩
   simp only [← cancel_mono S.v₀₁.τ₂, assoc, ← S.v₀₁.comm₁₂, reassoc_of% hx₁, hy₁]
 
 lemma L₃_exact : S.L₃.Exact := S.op.L₀_exact.unop
@@ -446,7 +446,7 @@ end
 
 /-- The functor which sends `S : SnakeInput C` to its zeroth line `S.L₀`. -/
 @[simps]
-def functorL₉ : SnakeInput C ⥤ ShortComplex C where
+def functorL₀ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₀
   map f := f.f₀
 
