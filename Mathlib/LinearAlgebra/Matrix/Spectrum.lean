@@ -152,44 +152,6 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
   exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
 #align matrix.is_hermitian.exists_eigenvector_of_ne_zero Matrix.IsHermitian.exists_eigenvector_of_ne_zero
 
-/-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
-theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  convert congr_arg det hA.spectral_theorem
-  rw [det_mul_right_comm]
-  simp
-
-/--The lemmas `rank_mul_units` and `rank_units_mul` below  are waiting on #12244-/
-@[simp]
-theorem rank_mul_units (A : (Matrix n n 𝕜)ˣ) (B : Matrix n n 𝕜) :
-    rank (B * (A : Matrix n n 𝕜)) = rank B := by
-  simp only [rank_mul_eq_left_of_isUnit_det A B
-  ((Matrix.isUnit_iff_isUnit_det (A : Matrix n n 𝕜)).mp (Units.isUnit A))]
-
-@[simp]
-theorem rank_units_mul (A : (Matrix n n 𝕜)ˣ) (B : Matrix n n 𝕜) :
-    rank ((A : Matrix n n 𝕜) * B) = rank B := by
-  simp only [rank_mul_eq_right_of_isUnit_det A B
-  ((Matrix.isUnit_iff_isUnit_det (A : Matrix n n 𝕜)).mp (Units.isUnit A))]
-
-@[simp]
-theorem rank_unitary_mul (A : unitaryGroup n 𝕜) (B : Matrix n n 𝕜) :
-    rank (B * (A : Matrix n n 𝕜)) = rank B := rank_mul_units (unitary.toUnits A) B
-
-@[simp]
-theorem rank_mul_unitary (A : unitaryGroup n 𝕜)(B : Matrix n n 𝕜) :
-    rank ((A : Matrix n n 𝕜) * B) = rank B := rank_units_mul (unitary.toUnits A) B
-
-/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
-lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem, ← unitary.coe_star]
-  simp [-unitary.coe_star, rank_diagonal]
-
-/-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
-lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
-  rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
-
-end DecidableEq
-
 end IsHermitian
 
 end Matrix
