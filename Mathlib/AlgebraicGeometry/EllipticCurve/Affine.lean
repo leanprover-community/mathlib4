@@ -699,15 +699,15 @@ noncomputable def add : W.Point → W.Point → W.Point
     if hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂ then 0 else some <| nonsingular_add h₁ h₂ hxy
 #align weierstrass_curve.point.add WeierstrassCurve.Affine.Point.add
 
-noncomputable instance instAddPoint : Add W.Point :=
+noncomputable instance : Add W.Point :=
   ⟨add⟩
+
+noncomputable instance : AddZeroClass W.Point :=
+  ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
   rfl
 #align weierstrass_curve.point.add_def WeierstrassCurve.Affine.Point.add_def
-
-noncomputable instance instAddZeroClassPoint : AddZeroClass W.Point :=
-  ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
 
 lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) {h₁ : W.Nonsingular x₁ y₁}
     {h₂ : W.Nonsingular x₂ y₂} : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) := by
@@ -1060,8 +1060,8 @@ end BaseChange
 @[deprecated (since := "2024-06-03")] alias Yeq_of_Yne := Y_eq_of_Y_ne
 @[deprecated (since := "2024-06-03")] alias equation_add' := equation_negAdd
 @[deprecated (since := "2024-06-03")] alias nonsingular_add' := nonsingular_negAdd
-@[deprecated (since := "2024-06-03")] alias baseChange_addY' := baseChange_negAddY
 @[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
+@[deprecated (since := "2024-06-03")] alias baseChange_addY' := baseChange_negAddY
 
 end WeierstrassCurve.Affine
 
