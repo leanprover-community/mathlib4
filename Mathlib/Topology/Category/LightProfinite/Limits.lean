@@ -38,7 +38,7 @@ section Pullbacks
 variable {X Y B : LightProfinite.{u}} (f : X ⟶ B) (g : Y ⟶ B)
 
 /--
-The pullback of two morphisms `f, g` in `Profinite`, constructed explicitly as the set of
+The pullback of two morphisms `f, g` in `LightProfinite`, constructed explicitly as the set of
 pairs `(x, y)` such that `f x = g y`, with the topology induced by the product.
 -/
 def pullback : LightProfinite.{u} :=
@@ -139,8 +139,8 @@ section FiniteCoproducts
 variable {α : Type w} [Finite α] (X : α → LightProfinite.{max u w})
 
 /--
-The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
-union with its usual topology.
+The "explicit" coproduct of a finite family of objects in `LightProfinite`, whose underlying
+profinite set is the disjoint union with its usual topology.
 -/
 def finiteCoproduct : LightProfinite := LightProfinite.of <| Σ (a : α), X a
 
@@ -151,8 +151,7 @@ def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
 
 /--
 To construct a morphism from the explicit finite coproduct, it suffices to
-specify a morphism from each of its factors.
-This is essentially the universal property of the coproduct.
+specify a morphism from each of its factors. This is the universal property of the coproduct.
 -/
 def finiteCoproduct.desc {B : LightProfinite.{max u w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
@@ -224,20 +223,6 @@ lemma finiteCoproduct.ι_desc_apply {B : LightProfinite} {π : (a : α) → X a 
   change (ι X a ≫ desc X π) _ = _
   simp only [ι_desc]
 
-instance : PreservesFiniteCoproducts profiniteToCompHaus := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) profiniteToCompHaus from
-    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
-  apply preservesColimitOfPreservesColimitCocone (Profinite.finiteCoproduct.isColimit _)
-  exact CompHaus.finiteCoproduct.isColimit _
-
-noncomputable instance : PreservesFiniteCoproducts Profinite.toTopCat.{u} where
-  preserves _ _:= (inferInstance :
-    PreservesColimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
-
-instance : FinitaryExtensive Profinite :=
-  finitaryExtensive_of_preserves_and_reflects profiniteToCompHaus
-
 end FiniteCoproducts
 
 section HasPreserves
@@ -286,6 +271,20 @@ noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} w
 noncomputable instance : PreservesLimitsOfShape WalkingCospan LightProfinite.toTopCat.{u} :=
   (inferInstance : PreservesLimitsOfShape WalkingCospan
     (lightToProfinite.{u} ⋙ Profinite.toTopCat.{u}))
+
+instance : PreservesFiniteCoproducts lightProfiniteToCompHaus := by
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) lightProfiniteToCompHaus from
+    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimitOfPreservesColimitCocone (LightProfinite.finiteCoproduct.isColimit _)
+  exact CompHaus.finiteCoproduct.isColimit _
+
+noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} where
+  preserves _ _:= (inferInstance :
+    PreservesColimitsOfShape _ (lightProfiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
+
+instance : FinitaryExtensive LightProfinite :=
+  finitaryExtensive_of_preserves_and_reflects lightToProfinite
 
 end HasPreserves
 
