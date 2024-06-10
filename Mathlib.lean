@@ -96,6 +96,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
@@ -288,6 +289,7 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Exact
@@ -701,6 +703,7 @@ import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
@@ -3125,6 +3128,7 @@ import Mathlib.NumberTheory.FLT.Three
 import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.FunctionField
+import Mathlib.NumberTheory.GaussSum
 import Mathlib.NumberTheory.Harmonic.Bounds
 import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Harmonic.EulerMascheroni
@@ -3148,7 +3152,6 @@ import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.NumberTheory.LegendreSymbol.Basic
 import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
-import Mathlib.NumberTheory.LegendreSymbol.GaussSum
 import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
