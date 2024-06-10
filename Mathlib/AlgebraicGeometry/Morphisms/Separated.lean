@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 
@@ -59,6 +60,9 @@ theorem respectsIso : MorphismProperty.RespectsIso @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   apply MorphismProperty.RespectsIso.diagonal
   exact IsClosedImmersion.respectsIso
+
+instance {X Y : Scheme} (f : X ⟶ Y) [IsSeparated f] : QuasiSeparated f where
+  diagonalQuasiCompact := inferInstance
 
 end IsSeparated
 
