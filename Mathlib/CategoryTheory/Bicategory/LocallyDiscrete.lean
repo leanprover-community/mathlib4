@@ -174,8 +174,7 @@ lemma id_toLoc (a : C) : (𝟙 a).toLoc = 𝟙 (LocallyDiscrete.mk a) :=
   rfl
 
 @[simp]
-lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
-    (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
+lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
   rfl
 
 end Quiver.Hom
