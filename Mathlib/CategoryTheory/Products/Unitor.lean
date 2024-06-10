@@ -6,7 +6,9 @@ Authors: Shanghe Chen
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.DiscreteCategory
 
-/-!  The left/right unitor functors `1 × C ⥤ C`, `C × 1 ⥤ C`, and their inverses form an equivalence respectively.  -/
+/-!
+# The left/right unitor equivalences `1 × C ≌ C` and `C × 1 ≌ C`.
+-/
 
 universe v u
 
