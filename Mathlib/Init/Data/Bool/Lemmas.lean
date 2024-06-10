@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Logic
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Coe
 
 /-!
@@ -75,7 +76,8 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 #align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
 
--- Adaptation note: this is no longer a simp lemma, as after nightly-2024-03-05 the LHS simplifies.
+#adaptation_note /-- this is no longer a simp lemma,
+  as after nightly-2024-03-05 the LHS simplifies. -/
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp

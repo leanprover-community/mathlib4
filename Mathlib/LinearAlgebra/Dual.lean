@@ -688,7 +688,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       ext m f <;> simp [e]
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
-    exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
+    exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
 variable {R M N} in
 lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
@@ -1710,8 +1710,19 @@ theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [Finite
 theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)} :
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
-    fun _ ↦ have := Basis.dual_finite (R := K) (M := W)
-    FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
+    fun _ ↦ by
+      #adaptation_note
+      /--
+      After https://github.com/leanprover/lean4/pull/4119
+      the `Free K W` instance isn't found unless we use `set_option maxSynthPendingDepth 2`, or add
+      explicit instances:
+      ```
+      have := Free.of_divisionRing K ↥W
+      have := Basis.dual_finite (R := K) (M := W)
+      ```
+      -/
+      set_option maxSynthPendingDepth 2 in
+      exact FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order

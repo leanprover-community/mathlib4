@@ -3,8 +3,8 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
 
 #align_import data.zmod.basic from "leanprover-community/mathlib"@"74ad1c88c77e799d2fea62801d1dbbd698cff1b7"
@@ -708,7 +708,7 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
   exact Injective.eq_iff' (cast_injective_of_le h) rfl
 
 -- Porting note: commented
--- attribute [local semireducible] Int.NonNeg
+-- unseal Int.NonNeg
 
 @[simp]
 theorem natCast_toNat (p : ℕ) : ∀ {z : ℤ} (_h : 0 ≤ z), (z.toNat : ZMod p) = z
