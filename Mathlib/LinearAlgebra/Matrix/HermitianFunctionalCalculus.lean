@@ -9,9 +9,18 @@ import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
 import Mathlib.Analysis.NormedSpace.Star.Matrix
 
-/-
+/-!
+# Continuous Functional Calculus for Hermitian Matrices
+
 This file defines an instance of the continuous functional calculus for Hermitian matrices over an
 RCLike field 𝕜.
+
+## Main Results
+
+- definition of φ : the real StarAlgHom from C(spectrum ℝ A, ℝ) to (Matrix n n 𝕜) appearing in the
+                    instance.
+- instContinuousFunctionalCalculus : Instance of the Continuous functional Calculus for a hermitian
+                                     matrix A over 𝕜.
 
 ## Tags
 
@@ -147,16 +156,12 @@ variable [DecidableEq n]
 
 variable {A : Matrix n n 𝕜} (hA : IsHermitian A)
 
+/-- Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc. toEuclideanLin-/
 theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
-/-The following needs a name change-/
-theorem range_thm_RCLike : Set.range
-    (fun (i : n) ↦ (RCLike.ofReal ∘ hA.eigenvalues) i) ⊆ (spectrum 𝕜 (toEuclideanLin A)) := by
-    rw [Set.range_subset_iff]
-    apply eigenvalue_mem_toEuclideanLin_spectrum_RCLike
-
+/-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dim module.-/
 def AlgEquivFiniteDimNormedLinearCLM.{v} (E : Type v) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E][FiniteDimensional 𝕜 E] :
     AlgEquiv (R := 𝕜) (A := E →ₗ[𝕜] E) (B := E →L[𝕜] E) :=
@@ -164,18 +169,21 @@ def AlgEquivFiniteDimNormedLinearCLM.{v} (E : Type v) [NormedAddCommGroup E]
     map_mul' := fun _ _ ↦ rfl
     commutes' := fun _ ↦ rfl}
 
-theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A
-    := AlgEquiv.spectrum_eq ((AlgEquiv.trans ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜]
-    EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) : Matrix n n 𝕜 ≃ₐ[𝕜]
-    EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
-    (AlgEquivFiniteDimNormedLinearCLM (EuclideanSpace 𝕜 n)).symm) _
+/--Spectrum of a Hermitian matrix equals the spectrum as a EuclideanLin. -/
+theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
+  AlgEquiv.spectrum_eq ((AlgEquiv.trans ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜]
+  EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) : Matrix n n 𝕜 ≃ₐ[𝕜]
+  EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
+  (AlgEquivFiniteDimNormedLinearCLM (EuclideanSpace 𝕜 n)).symm) _
 
+/--Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
 theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A := by
-    intro i
-    apply spectrum.of_algebraMap_mem (S := 𝕜) (R := ℝ) (A := Matrix n n 𝕜)
-    rw [←spec_toEuclideanLin_eq_spec]
-    apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
+  intro i
+  apply spectrum.of_algebraMap_mem (S := 𝕜) (R := ℝ) (A := Matrix n n 𝕜)
+  rw [←spec_toEuclideanLin_eq_spec]
+  apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
 
+/--Definition of the StarAlgHom for the continuous functional calculus of a Hermitian matrix. -/
 @[simps]
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
@@ -207,26 +215,30 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     ext
     simp
 
+/-- The ℝ-spectrum of a Hermitian Matrix over RCLike field is the range of the eigenvalue function-/
 theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
     (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
-   ext x
-   conv_lhs => rw [ha.spectral_theorem, spectrum.unitary_conjugate,
-   ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
-   simp
+  ext x
+  conv_lhs => rw [ha.spectral_theorem, spectrum.unitary_conjugate,
+  ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
+  simp
 
+/--The ℝ-spectrum of an n x n Hermitian matrix is finite. -/
 theorem finite_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a).Finite := by
-   have H := Set.finite_range (ha.eigenvalues)
-   exact (ha.eigenvalues_eq_spectrum).symm ▸ H
+  have H := Set.finite_range (ha.eigenvalues)
+  exact (ha.eigenvalues_eq_spectrum).symm ▸ H
 
+/-- The ℝ-spectrum of an n x n Hermitian matrix over an RCLike field is a compact space. -/
 theorem compact_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : CompactSpace (spectrum ℝ a) := by
-   convert Finite.compactSpace (X := spectrum ℝ a)
-   refine Set.finite_coe_iff.mpr ?_
-   apply finite_spectrum
-   assumption
+  convert Finite.compactSpace (X := spectrum ℝ a)
+  refine Set.finite_coe_iff.mpr ?_
+  apply finite_spectrum
+  assumption
 
+/-- Instance of the Continuous Functional Calculus for a Hermitian Matrix over an RCLike field.-/
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
-exists_cfc_of_predicate a ha := by
+  exists_cfc_of_predicate a ha := by
     refine ⟨φ ha, ?closedEmbedding, ?mapId, ?map_spec, ?hermitian⟩
     case closedEmbedding =>
       have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
