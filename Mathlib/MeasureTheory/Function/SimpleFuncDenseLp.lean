@@ -842,7 +842,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
   rw [mem_closure_iff_seq_limit]
   have hg_memℒp : Memℒp (g : α → G) p μ := Lp.memℒp (g : Lp G p μ)
   have zero_mem : (0 : G) ∈ (range (g : α → G) ∪ {0} : Set G) ∩ { y | 0 ≤ y } := by
-    simp only [union_singleton, mem_inter_iff, mem_insert_iff, eq_self_iff_true, true_or_iff,
+    simp only [Set.union_singleton, mem_inter_iff, mem_insert_iff, eq_self_iff_true, true_or_iff,
       mem_setOf_eq, le_refl, and_self_iff]
   have : SeparableSpace ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y } : Set G) := by
     apply IsSeparable.separableSpace
