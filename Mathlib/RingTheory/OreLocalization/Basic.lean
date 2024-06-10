@@ -334,7 +334,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 #align ore_localization.ore_div_mul_char' OreLocalization.oreDivMulChar'
 
-@[to_additive]
+@[to_additive AddOreLocalization.instZeroAddOreLocalization]
 instance instOneOreLocalization : One R[S⁻¹] :=
   ⟨1 /ₒ 1⟩
 
