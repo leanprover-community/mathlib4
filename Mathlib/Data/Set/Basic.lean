@@ -2056,7 +2056,7 @@ theorem subset_insert_iff {s t : Set α} {x : α} :
     s ⊆ insert x t ↔ s ⊆ t ∨ (x ∈ s ∧ s \ {x} ⊆ t) := by
   rw [← diff_singleton_subset_iff]
   by_cases hx : x ∈ s
-  · rw [and_iff_right hx, or_iff_right_of_imp (fun h ↦ (diff_subset _ _).trans h)]
+  · rw [and_iff_right hx, or_iff_right_of_imp diff_subset.trans]
   rw [diff_singleton_eq_self hx, or_iff_left_of_imp And.right]
 
 theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t ∪ t \ s ∪ s ∩ t :=
