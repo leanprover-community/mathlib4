@@ -43,6 +43,8 @@ class IsSeparated (f : X ⟶ Y) : Prop where
 
 namespace IsSeparated
 
+attribute [instance] diagonalClosedImmersion
+
 theorem isSeparated_eq_diagonal_isClosedImmersion :
     @IsSeparated = MorphismProperty.diagonal @IsClosedImmersion := by
   ext
