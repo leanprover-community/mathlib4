@@ -925,7 +925,6 @@ end Equivalence
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
   a cocone on `F` with cone point `W`. -/
-@[pp_dot]
 def homEquiv (h : IsColimit t) (W : C) : (t.pt ⟶ W) ≃ (F ⟶ (const J).obj W) where
   toFun f := (t.extend f).ι
   invFun ι := h.desc
