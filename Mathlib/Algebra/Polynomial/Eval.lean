@@ -810,17 +810,8 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : R[X]).map f = OfNat.ofNat n :=
   show (n : R[X]).map f = n by rw [Polynomial.map_natCast]
 
-set_option linter.deprecated false in
-@[simp]
-protected theorem map_bit0 : (bit0 p).map f = bit0 (p.map f) :=
-  map_bit0 (mapRingHom f) p
-#align polynomial.map_bit0 Polynomial.map_bit0
-
-set_option linter.deprecated false in
-@[simp]
-protected theorem map_bit1 : (bit1 p).map f = bit1 (p.map f) :=
-  map_bit1 (mapRingHom f) p
-#align polynomial.map_bit1 Polynomial.map_bit1
+#noalign polynomial.map_bit0
+#noalign polynomial.map_bit1
 
 --TODO rename to `map_dvd_map`
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
