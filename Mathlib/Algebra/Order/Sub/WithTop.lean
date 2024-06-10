@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 /-!
 # Lemma about subtraction in ordered monoids with a top element adjoined.
 
-This file introduces a subtration on `WithTop α` when `α` has a subtraction and a bottom element,
+This file introduces a subtraction on `WithTop α` when `α` has a subtraction and a bottom element,
 given by `x - ⊤ = ⊥` and `⊤ - x = ⊤`. This will be instantiated mostly for `ℕ∞` and `ℝ≥0∞`, where
 the bottom element is zero.
 
@@ -30,7 +30,7 @@ section
 
 variable [Sub α] [Bot α]
 
-/-- If `α` has subtraction and a bottom element, we can extend the subtraction to `WithTop α`, by
+/-- If `α` has a subtraction and a bottom element, we can extend the subtraction to `WithTop α`, by
 setting `x - ⊤ = ⊥` and `⊤ - x = ⊤`. -/
 protected def sub : ∀ _ _ : WithTop α, WithTop α
   | _, ⊤ => (⊥ : α)
