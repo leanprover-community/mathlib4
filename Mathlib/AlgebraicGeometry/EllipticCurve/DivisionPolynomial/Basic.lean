@@ -41,7 +41,7 @@ Now, in the coordinate ring $R[W]$, note that $\psi_2^2$ is congruent to the pol
 $\Psi_2^{[2]} := 4X^3 + b_2X^2 + 2b_4X + b_6 \in R[X]$. As such, in $R[W]$, the recurrences
 associated to a normalised EDS show that $\psi_n / \psi_2$ are congruent to certain polynomials in
 $R[X]$. In particular, define $\tilde{\Psi}_n \in R[X]$ as the auxiliary sequence for a normalised
-EDS with extraneous parameter $\Psi_2^{[2]}$ and initial values
+EDS with extra parameter $(\Psi_2^{[2]})^2$ and initial values
  * $\tilde{\Psi}_0 := 0$,
  * $\tilde{\Psi}_1 := 1$,
  * $\tilde{\Psi}_2 := 1$,
