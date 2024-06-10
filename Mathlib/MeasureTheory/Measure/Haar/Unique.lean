@@ -893,7 +893,7 @@ lemma isMulLeftInvariant_eq_smul [LocallyCompactSpace G] [SecondCountableTopolog
 #align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isMulLeftInvariant_eq_smul
 #align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddLeftInvariant_eq_smul
 
-@[deprecated] alias isHaarMeasure_eq_smul := isMulLeftInvariant_eq_smul -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")] alias isHaarMeasure_eq_smul := isMulLeftInvariant_eq_smul
 @[deprecated] alias isAddHaarMeasure_eq_smul :=
   isAddLeftInvariant_eq_smul -- deprecated on 2024-02-12
 
