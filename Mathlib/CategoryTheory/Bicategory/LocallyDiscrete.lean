@@ -140,26 +140,35 @@ def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B wh
 
 end CategoryTheory
 
-section Quiver
+namespace Quiver.Hom
 
 open CategoryTheory LocallyDiscrete
 
 universe v u
 
+section
+
 variable {C : Type u} [CategoryStruct.{v} C]
 
 /-- The 1-morphism in `LocallyDiscrete C` associated to a given morphism `f : a ⟶ b` in `C` -/
 @[simps]
-def Quiver.Hom.toLoc {a b : C} (f : a ⟶ b) : LocallyDiscrete.mk a ⟶ LocallyDiscrete.mk b :=
+def toLoc {a b : C} (f : a ⟶ b) : LocallyDiscrete.mk a ⟶ LocallyDiscrete.mk b :=
   ⟨f⟩
 
 @[simp]
-lemma Quiver.Hom.id_toLoc (a : C) : (𝟙 a).toLoc = 𝟙 (LocallyDiscrete.mk a) :=
+lemma id_toLoc (a : C) : (𝟙 a).toLoc = 𝟙 (LocallyDiscrete.mk a) :=
   rfl
 
 @[simp]
-lemma Quiver.Hom.comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
+lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
     (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
   rfl
 
-end Quiver
+end
+
+@[simp]
+lemma eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C} (h : a = b) :
+    (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
+  subst h; rfl
+
+end Quiver.Hom
