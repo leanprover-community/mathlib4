@@ -376,13 +376,10 @@ theorem archimedean_iff_int_le : Archimedean α ↔ ∀ x : α, ∃ n : ℤ, x �
       ⟨n + 1, lt_of_le_of_lt h (Int.cast_lt.2 (lt_add_one _))⟩⟩
 #align archimedean_iff_int_le archimedean_iff_int_le
 
-theorem archimedean_iff_rat_lt : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x < q :=
-  ⟨@exists_rat_gt α _, fun H =>
-    archimedean_iff_nat_lt.2 fun x =>
-      let ⟨q, h⟩ := H x
-      ⟨⌈q⌉₊,
-        lt_of_lt_of_le h <| by
-          simpa only [Rat.cast_natCast] using (@Rat.cast_le α _ _ _).2 (Nat.le_ceil _)⟩⟩
+theorem archimedean_iff_rat_lt : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x < q where
+  mp := @exists_rat_gt α _
+  mpr H := archimedean_iff_nat_lt.2 fun x ↦
+    let ⟨q, h⟩ := H x; ⟨⌈q⌉₊, lt_of_lt_of_le h <| mod_cast Nat.le_ceil _⟩
 #align archimedean_iff_rat_lt archimedean_iff_rat_lt
 
 theorem archimedean_iff_rat_le : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x ≤ q :=

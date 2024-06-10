@@ -110,7 +110,7 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊)
   conv in L _ => rw [← add_sub_cancel_right v v₀]
   rw [integral_add_right_eq_self fun v : V ↦ (e (-L (v - v₀) w) : ℂ) • f v, ← integral_smul]
   congr 1 with v
-  rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← e.map_add_mul, ← LinearMap.neg_apply,
+  rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← e.map_add_eq_mul, ← LinearMap.neg_apply,
     ← sub_eq_add_neg, ← LinearMap.sub_apply, LinearMap.map_sub, neg_sub]
 #align vector_fourier.fourier_integral_comp_add_right VectorFourier.fourierIntegral_comp_add_right
 
@@ -142,8 +142,8 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   -- then use it for both directions
   refine ⟨fun hf ↦ ?_, fun hf ↦ aux hf w⟩
   have := aux hf (-w)
-  simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_mul, LinearMap.map_neg, neg_add_self,
-    e.map_zero_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
+  simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_eq_mul, LinearMap.map_neg, neg_add_self,
+    e.map_zero_eq_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
   exact this
 #align vector_fourier.fourier_integral_convergent_iff VectorFourier.fourierIntegral_convergent_iff
 
@@ -326,8 +326,8 @@ namespace Real
 /-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
 def fourierChar : AddChar ℝ 𝕊 where
   toFun z := expMapCircle (2 * π * z)
-  map_zero_one' := by simp only; rw [mul_zero, expMapCircle_zero]
-  map_add_mul' x y := by simp only; rw [mul_add, expMapCircle_add]
+  map_zero_eq_one' := by simp only; rw [mul_zero, expMapCircle_zero]
+  map_add_eq_mul' x y := by simp only; rw [mul_add, expMapCircle_add]
 #align real.fourier_char Real.fourierChar
 
 @[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
@@ -455,7 +455,7 @@ theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_real_eq
 
-@[deprecated] alias fourierIntegral_def := fourierIntegral_real_eq -- deprecated on 2024-02-21
+@[deprecated (since := "2024-02-21")] alias fourierIntegral_def := fourierIntegral_real_eq
 
 theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
@@ -463,7 +463,7 @@ theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     mul_assoc]
 #align real.fourier_integral_eq_integral_exp_smul Real.fourierIntegral_real_eq_integral_exp_smul
 
-@[deprecated] -- deprecated on 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias fourierIntegral_eq_integral_exp_smul := fourierIntegral_real_eq_integral_exp_smul
 
 @[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} {f : V → E} (w : V) :
