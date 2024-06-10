@@ -272,18 +272,7 @@ noncomputable instance : PreservesLimitsOfShape WalkingCospan LightProfinite.toT
   (inferInstance : PreservesLimitsOfShape WalkingCospan
     (lightToProfinite.{u} ⋙ Profinite.toTopCat.{u}))
 
-instance : PreservesFiniteCoproducts lightProfiniteToCompHaus := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) lightProfiniteToCompHaus from
-    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
-  apply preservesColimitOfPreservesColimitCocone (LightProfinite.finiteCoproduct.isColimit _)
-  exact CompHaus.finiteCoproduct.isColimit _
-
-noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} where
-  preserves _ _:= (inferInstance :
-    PreservesColimitsOfShape _ (lightProfiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
-
-instance : FinitaryExtensive LightProfinite :=
+instance : FinitaryExtensive LightProfinite.{u} :=
   finitaryExtensive_of_preserves_and_reflects lightToProfinite
 
 end HasPreserves
