@@ -6,8 +6,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.GDelta
 
 #align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
+
+set_option linter.uppercaseLean3 false
 
 /-!
 # Separation properties of topological spaces.
@@ -482,6 +485,10 @@ class T1Space (X : Type u) [TopologicalSpace X] : Prop where
   t1 : ∀ x, IsClosed ({x} : Set X)
 #align t1_space T1Space
 
+section T1Space
+
+variable [T1Space X]
+
 theorem isClosed_singleton [T1Space X] {x : X} : IsClosed ({x} : Set X) :=
   T1Space.t1 x
 #align is_closed_singleton isClosed_singleton
@@ -926,6 +933,45 @@ instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_o
   replace contra := nonempty_inter isOpen_compl_singleton
     contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
   simp [compl_inter_self {x}] at contra
+
+theorem IsGδ.compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
+  isOpen_compl_singleton.isGδ
+#align is_Gδ_compl_singleton IsGδ.compl_singleton
+
+@[deprecated (since := "2024-02-15")] alias isGδ_compl_singleton := IsGδ.compl_singleton
+
+theorem Set.Countable.isGδ_compl {s : Set X} (hs : s.Countable) : IsGδ sᶜ := by
+  rw [← biUnion_of_singleton s, compl_iUnion₂]
+  exact .biInter hs fun x _ => .compl_singleton x
+#align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
+
+theorem Set.Finite.isGδ_compl {s : Set X} (hs : s.Finite) : IsGδ sᶜ :=
+  hs.countable.isGδ_compl
+#align set.finite.is_Gδ_compl Set.Finite.isGδ_compl
+
+theorem Set.Subsingleton.isGδ_compl {s : Set X} (hs : s.Subsingleton) : IsGδ sᶜ :=
+  hs.finite.isGδ_compl
+#align set.subsingleton.is_Gδ_compl Set.Subsingleton.isGδ_compl
+
+theorem Finset.isGδ_compl (s : Finset X) : IsGδ (sᶜ : Set X) :=
+  s.finite_toSet.isGδ_compl
+#align finset.is_Gδ_compl Finset.isGδ_compl
+
+variable [FirstCountableTopology X]
+
+protected theorem IsGδ.singleton (x : X) : IsGδ ({x} : Set X) := by
+  rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
+  rw [← biInter_basis_nhds h_basis.toHasBasis]
+  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
+#align is_Gδ_singleton IsGδ.singleton
+
+@[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton
+
+theorem Set.Finite.isGδ {s : Set X} (hs : s.Finite) : IsGδ s :=
+  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
+#align set.finite.is_Gδ Set.Finite.isGδ
+
+end T1Space
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
   rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
