@@ -121,29 +121,10 @@ theorem add_im (z w : ℤ√d) : (z + w).im = z.im + w.im :=
   rfl
 #align zsqrtd.add_im Zsqrtd.add_im
 
-section bit
-set_option linter.deprecated false
-
-@[simp]
-theorem bit0_re (z) : (bit0 z : ℤ√d).re = bit0 z.re :=
-  rfl
-#align zsqrtd.bit0_re Zsqrtd.bit0_re
-
-@[simp]
-theorem bit0_im (z) : (bit0 z : ℤ√d).im = bit0 z.im :=
-  rfl
-#align zsqrtd.bit0_im Zsqrtd.bit0_im
-
-@[simp]
-theorem bit1_re (z) : (bit1 z : ℤ√d).re = bit1 z.re :=
-  rfl
-#align zsqrtd.bit1_re Zsqrtd.bit1_re
-
-@[simp]
-theorem bit1_im (z) : (bit1 z : ℤ√d).im = bit0 z.im := by simp [bit1]
-#align zsqrtd.bit1_im Zsqrtd.bit1_im
-
-end bit
+#noalign zsqrtd.bit0_re
+#noalign zsqrtd.bit0_im
+#noalign zsqrtd.bit1_re
+#noalign zsqrtd.bit1_im
 
 /-- Negation in `ℤ√d` -/
 instance : Neg (ℤ√d) :=
