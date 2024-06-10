@@ -55,16 +55,10 @@ for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
 theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] {f : C(ℝ, E)}
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
-  refine'
-    @integrable_of_summable_norm_restrict ℝ E _ ℤ _ volume _ _ _ _ _ _ _
-      (.of_nonneg_of_le
-        (fun n : ℤ => mul_nonneg (norm_nonneg
-            (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
-            ENNReal.toReal_nonneg)
-        (fun n => _) hf) _
-  -- Porting note: `refine` was able to find that on its own before
-  · intro n
-    exact ⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩
+  refine integrable_of_summable_norm_restrict (.of_nonneg_of_le
+    (fun n : ℤ => mul_nonneg (norm_nonneg
+      (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
+        ENNReal.toReal_nonneg) (fun n => ?_) hf) ?_
   · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel_left,
       ENNReal.toReal_ofReal zero_le_one, mul_one, norm_le _ (norm_nonneg _)]
     intro x

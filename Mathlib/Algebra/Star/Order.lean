@@ -3,8 +3,8 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -94,12 +94,12 @@ If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 lemma of_le_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff x y := by
-    refine' ⟨fun h => _, _⟩
+    refine ⟨fun h => ?_, ?_⟩
     · obtain ⟨p, hp⟩ := (h_le_iff x y).mp h
       exact ⟨star p * p, AddSubmonoid.subset_closure ⟨p, rfl⟩, hp⟩
     · rintro ⟨p, hp, hpxy⟩
       revert x y hpxy
-      refine' AddSubmonoid.closure_induction hp _ (fun x y h => add_zero x ▸ h.ge) _
+      refine AddSubmonoid.closure_induction hp ?_ (fun x y h => add_zero x ▸ h.ge) ?_
       · rintro _ ⟨s, rfl⟩ x y rfl
         exact (h_le_iff _ _).mpr ⟨s, rfl⟩
       · rintro a b ha hb x y rfl
@@ -155,8 +155,8 @@ theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
 
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
-  refine' AddSubmonoid.closure_induction ha (fun x hx => _)
-    (by rw [mul_zero, zero_mul]) fun x y hx hy => _
+  refine AddSubmonoid.closure_induction ha (fun x hx => ?_)
+    (by rw [mul_zero, zero_mul]) fun x y hx hy => ?_
   · obtain ⟨x, rfl⟩ := hx
     convert star_mul_self_nonneg (x * c) using 1
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
@@ -178,8 +178,9 @@ theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
   exact ⟨star c * p * c, conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
 #align conjugate_le_conjugate conjugate_le_conjugate
 
-theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star c ≤ c * b * star c :=
-  by simpa only [star_star] using conjugate_le_conjugate hab (star c)
+theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) :
+    c * a * star c ≤ c * b * star c := by
+  simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
 @[simp]

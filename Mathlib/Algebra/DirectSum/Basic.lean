@@ -3,8 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.DFinsupp.Basic
-import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.direct_sum.basic from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -24,7 +24,6 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 -/
 
 open Function
-open scoped BigOperators
 
 universe u v w u₁
 
@@ -60,7 +59,7 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 
 -- Porting note: The below recreates some of the lean3 notation, not fully yet
 -- section
--- open Std.ExtendedBinder
+-- open Batteries.ExtendedBinder
 -- syntax (name := bigdirectsum) "⨁ " extBinders ", " term : term
 -- macro_rules (kind := bigdirectsum)
 --   | `(⨁ $_:ident, $y:ident → $z:ident) => `(DirectSum _ (fun $y ↦ $z))
@@ -68,6 +67,9 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 --   | `(⨁ $_:ident : $t:ident, $p) => `(DirectSum _ (fun $t ↦ $p))
 --   | `(⨁ ($x:ident) ($y:ident), $p) => `(DirectSum _ (fun $x ↦ fun $y ↦ $p))
 -- end
+
+instance [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (DirectSum ι β) :=
+  inferInstanceAs <| DecidableEq (Π₀ i, β i)
 
 namespace DirectSum
 
@@ -106,8 +108,7 @@ variable (β)
 
 /-- `mk β s x` is the element of `⨁ i, β i` that is zero outside `s`
 and has coefficient `x i` for `i` in `s`. -/
-def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i
-    where
+def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i where
   toFun := DFinsupp.mk s
   map_add' _ _ := DFinsupp.mk_add
   map_zero' := DFinsupp.mk_zero
@@ -144,7 +145,7 @@ theorem support_of_subset [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] {i : ι
 #align direct_sum.support_of_subset DirectSum.support_of_subset
 
 theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i, β i) :
-    (∑ i in x.support, of β i (x i)) = x :=
+    (∑ i ∈ x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 #align direct_sum.sum_support_of DirectSum.sum_support_of
 
@@ -312,8 +313,7 @@ section Sigma
 variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
-def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
-    where
+def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j where
   toFun := DFinsupp.sigmaCurry (δ := δ)
   map_zero' := DFinsupp.sigmaCurry_zero
   map_add' f g := DFinsupp.sigmaCurry_add f g
@@ -328,8 +328,7 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
-    (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2
-    where
+    (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2 where
   toFun := DFinsupp.sigmaUncurry
   map_zero' := DFinsupp.sigmaUncurry_zero
   map_add' := DFinsupp.sigmaUncurry_add

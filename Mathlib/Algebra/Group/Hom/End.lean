@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Ring.Basic
 
@@ -24,27 +25,43 @@ universe uM uN uP uQ
 
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
 
+namespace AddMonoid.End
 
-instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
+instance instAddMonoidWithOne (M) [AddCommMonoid M] : AddMonoidWithOne (AddMonoid.End M) where
+  natCast n := n • (1 : AddMonoid.End M)
+  natCast_zero := AddMonoid.nsmul_zero _
+  natCast_succ n := AddMonoid.nsmul_succ n 1
+
+/-- See also `AddMonoid.End.natCast_def`. -/
+@[simp]
+lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End M) m = n • m := rfl
+#align add_monoid.End.nat_cast_apply AddMonoid.End.natCast_apply
+
+-- See note [no_index around OfNat.ofNat]
+@[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m := rfl
+
+instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
   { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid, AddMonoid.End.instAddMonoidWithOne M with
     zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,
     mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
     left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _,
     right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl }
 
-instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
+instance instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
     intCast_ofNat := natCast_zsmul _,
     intCast_negSucc := negSucc_zsmul _ }
 
+end AddMonoid.End
 
 /-!
 ### Miscellaneous definitions
 
-Due to the fact this file imports `Algebra.GroupPower.Basic`, it is not possible to import it in
-some of the lower-level files like `Algebra.Ring.Basic`. The following lemmas should be rehomed
-if the import structure permits them to be.
+This file used to import `Algebra.GroupPower.Basic`, hence it was not possible to import it in
+some of the lower-level files like `Algebra.Ring.Basic`. The following lemmas should be rehomed now
+that `Algebra.GroupPower.Basic` was deleted.
 -/
 
 

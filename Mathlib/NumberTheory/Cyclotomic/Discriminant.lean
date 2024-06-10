@@ -39,12 +39,12 @@ theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
   haveI : NumberField K := @NumberField.mk _ _ _ (IsCyclotomicExtension.finiteDimensional {n} ℚ K)
   have H₁ : (aeval (hζ.powerBasis ℚ).gen) (X - 1 : ℤ[X]) = (hζ.subOnePowerBasis ℚ).gen := by simp
   have H₂ : (aeval (hζ.subOnePowerBasis ℚ).gen) (X + 1 : ℤ[X]) = (hζ.powerBasis ℚ).gen := by simp
-  refine' discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ _ _ _ _)
-    fun i j => toMatrix_isIntegral H₂ _ _ _ _
+  refine discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ ?_ ?_ _ _)
+    fun i j => toMatrix_isIntegral H₂ ?_ ?_ _ _
   · exact hζ.isIntegral n.pos
-  · refine' minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) (hζ.isIntegral n.pos)
+  · refine minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) (hζ.isIntegral n.pos)
   · exact (hζ.isIntegral n.pos).sub isIntegral_one
-  · refine' minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) _
+  · refine minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) ?_
     exact (hζ.isIntegral n.pos).sub isIntegral_one
 #align is_primitive_root.discr_zeta_eq_discr_zeta_sub_one IsPrimitiveRoot.discr_zeta_eq_discr_zeta_sub_one
 
@@ -81,7 +81,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       rw [mul_assoc, Nat.mul_div_cancel_left _ zero_lt_two, Nat.mul_div_cancel_left _ zero_lt_two]
       cases k
       · simp
-      · norm_num; simp_rw [_root_.pow_succ', (even_two.mul_right _).neg_one_pow,
+      · simp_rw [_root_.pow_succ', (even_two.mul_right _).neg_one_pow,
           ((even_two.mul_right _).mul_right _).neg_one_pow]
     · replace hp2 : (p : ℕ) ≠ 2 := by rwa [Ne, ← coe_two, PNat.coe_inj]
       have hpo : Odd (p : ℕ) := hp.out.odd_of_ne_two hp2
@@ -89,7 +89,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       rw [ha, mul_left_comm, mul_assoc, Nat.mul_div_cancel_left _ two_pos,
         Nat.mul_div_cancel_left _ two_pos, mul_right_comm, pow_mul, (hpo.pow.mul _).neg_one_pow,
         pow_mul, hpo.pow.neg_one_pow]
-      refine' Nat.Even.sub_odd _ (even_two_mul _) odd_one
+      refine Nat.Even.sub_odd ?_ (even_two_mul _) odd_one
       rw [mul_left_comm, ← ha]
       exact one_le_mul (one_le_pow _ _ hp.1.pos) (succ_le_iff.2 <| tsub_pos_of_lt hp.1.one_lt)
   · have H := congr_arg (@derivative K _) (cyclotomic_prime_pow_mul_X_pow_sub_one K p k)
@@ -102,8 +102,8 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     replace H := congr_arg (Algebra.norm K) H
     have hnorm : (norm K) (ζ ^ (p : ℕ) ^ k - 1) = (p : K) ^ (p : ℕ) ^ k := by
       by_cases hp : p = 2
-      · exact mod_cast hζ.pow_sub_one_norm_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
-      · exact mod_cast hζ.pow_sub_one_norm_prime_ne_two hirr le_rfl hp
+      · exact mod_cast hζ.norm_pow_sub_one_eq_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
+      · exact mod_cast hζ.norm_pow_sub_one_of_prime_ne_two hirr le_rfl hp
     rw [MonoidHom.map_mul, hnorm, MonoidHom.map_mul, ← map_natCast (algebraMap K L),
       Algebra.norm_algebraMap, finrank L hirr] at H
     conv_rhs at H => -- Porting note: need to drill down to successfully rewrite the totient
@@ -128,8 +128,8 @@ if `Irreducible (cyclotomic (p ^ (k + 1)) K))`, and `p ^ (k + 1) ≠ 2`. -/
 theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : Fact (p : ℕ).Prime]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K))
     (hk : p ^ (k + 1) ≠ 2) : discr K (hζ.powerBasis K).basis =
-      (-1) ^ ((p : ℕ) ^ k * (p - 1) / 2) * p ^ ((p : ℕ) ^ k * ((p - 1) * (k + 1) - 1)) :=
-  by simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow_ne_two hζ hirr hk
+      (-1) ^ ((p : ℕ) ^ k * (p - 1) / 2) * p ^ ((p : ℕ) ^ k * ((p - 1) * (k + 1) - 1)) := by
+  simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow_ne_two hζ hirr hk
 #align is_cyclotomic_extension.discr_prime_pow_ne_two' IsCyclotomicExtension.discr_prime_pow_ne_two'
 
 set_option tactic.skipAssignedInstances false in
@@ -164,7 +164,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_left_eq_self] at hk
       subst hk
-      rw [← Nat.one_eq_succ_zero, pow_one] at hζ hcycl
+      rw [pow_one] at hζ hcycl
       have : natDegree (minpoly K ζ) = 1 := by
         rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp,
           minpoly.eq_X_sub_C_of_algebraMap_inj _ (NoZeroSMulDivisors.algebraMap_injective K L)]
@@ -196,7 +196,7 @@ theorem discr_prime_pow_eq_unit_mul_pow [IsCyclotomicExtension {p ^ k} K L]
     ∃ (u : ℤˣ) (n : ℕ), discr K (hζ.powerBasis K).basis = u * p ^ n := by
   rw [discr_prime_pow hζ hirr]
   by_cases heven : Even ((p ^ k : ℕ).totient / 2)
-  · refine' ⟨1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
+  · exact ⟨1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
   · exact ⟨-1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by
       rw [(odd_iff_not_even.2 heven).neg_one_pow]; norm_num⟩
 #align is_cyclotomic_extension.discr_prime_pow_eq_unit_mul_pow IsCyclotomicExtension.discr_prime_pow_eq_unit_mul_pow

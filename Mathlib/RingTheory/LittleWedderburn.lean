@@ -34,7 +34,7 @@ below proof is free, then the proof works nearly verbatim.
 
 -/
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 open Fintype
 
 /-! Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
@@ -57,6 +57,7 @@ private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
 private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical
@@ -82,7 +83,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   let Φₙ := cyclotomic n ℤ
   apply_fun (Nat.cast : ℕ → ℤ) at key
   rw [Nat.cast_add, Nat.cast_sub h1qn, Nat.cast_sub hq.le, Nat.cast_one, Nat.cast_pow] at key
-  suffices Φₙ.eval ↑q ∣ ↑(∑ x in (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card) by
+  suffices Φₙ.eval ↑q ∣ ↑(∑ x ∈ (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card) by
     have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
     rw [eval_sub, eval_pow, eval_X, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_lt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')

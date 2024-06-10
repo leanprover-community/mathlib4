@@ -101,7 +101,7 @@ theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x �
 #align list.pairwise_middle List.pairwise_middle
 
 -- Porting note: Duplicate of `pairwise_map` but with `f` explicit.
-@[deprecated] theorem pairwise_map' (f : β → α) :
+@[deprecated (since := "2024-02-25")] theorem pairwise_map' (f : β → α) :
     ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by simp only [map, Pairwise.nil]
   | b :: l => by
@@ -128,7 +128,7 @@ theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h
   · simp
   obtain ⟨_, hl⟩ : p a ∧ ∀ b, b ∈ l → p b := by simpa using h
   simp only [ihl hl, pairwise_cons, exists₂_imp, pmap, and_congr_left_iff, mem_pmap]
-  refine' fun _ => ⟨fun H b hb _ hpb => H _ _ hb rfl, _⟩
+  refine fun _ => ⟨fun H b hb _ hpb => H _ _ hb rfl, ?_⟩
   rintro H _ b hb rfl
   exact H b hb _ _
 #align list.pairwise_pmap List.pairwise_pmap
@@ -137,7 +137,7 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
     (h : ∀ x ∈ l, p x) {S : β → β → Prop}
     (hS : ∀ ⦃x⦄ (hx : p x) ⦃y⦄ (hy : p y), R x y → S (f x hx) (f y hy)) :
     Pairwise S (l.pmap f h) := by
-  refine' (pairwise_pmap h).2 (Pairwise.imp_of_mem _ hl)
+  refine (pairwise_pmap h).2 (Pairwise.imp_of_mem ?_ hl)
   intros; apply hS; assumption
 #align list.pairwise.pmap List.Pairwise.pmap
 
@@ -168,7 +168,7 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
 #align list.pairwise_of_reflexive_of_forall_ne List.pairwise_of_reflexive_of_forall_ne
 
 set_option linter.deprecated false in
-@[deprecated pairwise_iff_get]
+@[deprecated pairwise_iff_get (since := "2023-01-10")]
 theorem pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
     ∀ (i j) (h₁ : j < length l) (h₂ : i < j), R (nthLe l i (lt_trans h₂ h₁)) (nthLe l j h₁) :=
   pairwise_iff_get.trans

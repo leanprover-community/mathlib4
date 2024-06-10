@@ -39,8 +39,7 @@ def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
 @[simps]
-def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X)
-    where
+def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
   desc s _ := s.ι.app (unop X) (𝟙 _)
   fac s Y := by
     funext f
@@ -175,11 +174,11 @@ noncomputable instance coyonedaFunctorPreservesLimits :
   infer_instance
 #align category_theory.coyoneda_functor_preserves_limits CategoryTheory.coyonedaFunctorPreservesLimits
 
-instance yonedaFunctorReflectsLimits :
+noncomputable instance yonedaFunctorReflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@yoneda C _) := inferInstance
 #align category_theory.yoneda_functor_reflects_limits CategoryTheory.yonedaFunctorReflectsLimits
 
-instance coyonedaFunctorReflectsLimits :
+noncomputable instance coyonedaFunctorReflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@coyoneda C _) := inferInstance
 #align category_theory.coyoneda_functor_reflects_limits CategoryTheory.coyonedaFunctorReflectsLimits
 

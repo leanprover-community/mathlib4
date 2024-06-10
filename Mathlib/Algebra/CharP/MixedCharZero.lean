@@ -164,7 +164,7 @@ theorem of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero 
   intro a b h_ab
   contrapose! hI
   -- `↑a - ↑b` is a unit contained in `I`, which contradicts `I ≠ ⊤`.
-  refine' I.eq_top_of_isUnit_mem _ (IsUnit.map (algebraMap ℚ R) (IsUnit.mk0 (a - b : ℚ) _))
+  refine I.eq_top_of_isUnit_mem ?_ (IsUnit.map (algebraMap ℚ R) (IsUnit.mk0 (a - b : ℚ) ?_))
   · simpa only [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero, map_natCast]
   simpa only [Ne, sub_eq_zero] using (@Nat.cast_injective ℚ _ _).ne hI
 set_option linter.uppercaseLean3 false in
@@ -375,7 +375,7 @@ In a `LocalRing R`, split any `Prop` over `R` into the three cases:
 theorem split_by_characteristic_localRing [LocalRing R]
     (h_pos : ∀ p : ℕ, IsPrimePow p → CharP R p → P) (h_equal : Algebra ℚ R → P)
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
-  refine' split_by_characteristic R _ h_equal h_mixed
+  refine split_by_characteristic R ?_ h_equal h_mixed
   intro p p_pos p_char
   have p_ppow : IsPrimePow (p : ℕ) := or_iff_not_imp_left.mp (charP_zero_or_prime_power R p) p_pos
   exact h_pos p p_ppow p_char

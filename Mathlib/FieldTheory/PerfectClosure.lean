@@ -374,10 +374,16 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   apply R.intro
 #align perfect_closure.nat_cast PerfectClosure.natCast
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast := natCast
+
 theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
   induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, natCast K p 0]
   rfl
 #align perfect_closure.int_cast PerfectClosure.intCast
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast := intCast
 
 theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
@@ -386,6 +392,9 @@ theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = 
     simpa only [zero_add, iterate_fixed (frobenius_natCast K p _)] using H
   rw [natCast K p 0, natCast K p 0, H]
 #align perfect_closure.nat_cast_eq_iff PerfectClosure.natCast_eq_iff
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_eq_iff := natCast_eq_iff
 
 instance instCharP : CharP (PerfectClosure K p) p := by
   constructor; intro x; rw [← CharP.cast_eq_zero_iff K]
@@ -433,7 +442,8 @@ instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
 @[simp]
 theorem iterate_frobenius_mk (n : ℕ) (x : K) :
     (frobenius (PerfectClosure K p) p)^[n] (mk K p ⟨n, x⟩) = of K p x := by
-  induction' n with n ih; rfl
+  induction' n with n ih
+  · rfl
   rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
 
 /-- Given a ring `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
@@ -442,7 +452,7 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
-        refine' fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) _
+        refine fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
         rintro - - ⟨n, x⟩
         simp [f.map_frobenius]
       map_one' := f.map_one
@@ -498,20 +508,17 @@ theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl
 
 -- Porting note: added to avoid "unknown free variable" error
-instance instDivisionRing : DivisionRing (PerfectClosure K p) :=
-  { (inferInstance : Inv (PerfectClosure K p)) with
-    exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
-    mul_inv_cancel := fun e =>
-      induction_on e fun ⟨m, x⟩ H => by
-        -- Porting note: restructured
-        have := mt (eq_iff _ _ _ _).2 H
-        rw [mk_inv, mk_mul_mk]
-        refine (eq_iff K p _ _).2 ?_
-        simp only [iterate_map_one, iterate_map_zero,
-            iterate_zero_apply, ← iterate_map_mul] at this ⊢
-        rw [mul_inv_cancel this, iterate_map_one]
-    inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
-    qsmul := qsmulRec _ }
+instance instDivisionRing : DivisionRing (PerfectClosure K p) where
+  exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
+  mul_inv_cancel e := induction_on e fun ⟨m, x⟩ H ↦ by
+    have := mt (eq_iff _ _ _ _).2 H
+    rw [mk_inv, mk_mul_mk]
+    refine (eq_iff K p _ _).2 ?_
+    simp only [iterate_map_one, iterate_map_zero, iterate_zero_apply, ← iterate_map_mul] at this ⊢
+    rw [mul_inv_cancel this, iterate_map_one]
+  inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
+  nnqsmul := _
+  qsmul := _
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),

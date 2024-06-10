@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Defs
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 
 #align_import data.nat.log from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
@@ -40,7 +40,7 @@ def log (b : ℕ) : ℕ → ℕ
 @[simp]
 theorem log_eq_zero_iff {b n : ℕ} : log b n = 0 ↔ n < b ∨ b ≤ 1 := by
   rw [log, dite_eq_right_iff]
-  simp only [Nat.succ_ne_zero, imp_false, not_and_or, not_le, not_lt]
+  simp only [Nat.add_eq_zero_iff, Nat.one_ne_zero, and_false, imp_false, not_and_or, not_le, not_lt]
 #align nat.log_eq_zero_iff Nat.log_eq_zero_iff
 
 theorem log_of_lt {b n : ℕ} (hb : n < b) : log b n = 0 :=
@@ -93,7 +93,7 @@ theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
   | succ x =>
     rw [log]; split_ifs with h
     · have b_pos : 0 < b := lt_of_succ_lt hb
-      rw [succ_eq_add_one, Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
+      rw [Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
         (Nat.pos_iff_ne_zero.2 hy) hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
         pow_succ', Nat.mul_comm]
     · exact iff_of_false (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
@@ -105,7 +105,7 @@ theorem lt_pow_iff_log_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : y 
 #align nat.lt_pow_iff_log_lt Nat.lt_pow_iff_log_lt
 
 theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ x ≤ y := by
-  refine' (le_or_lt b 1).elim (fun hb => _) fun hb => (pow_le_iff_le_log hb hy).2 h
+  refine (le_or_lt b 1).elim (fun hb => ?_) fun hb => (pow_le_iff_le_log hb hy).2 h
   rw [log_of_left_le_one hb, Nat.le_zero] at h
   rwa [h, Nat.pow_zero, one_le_iff_ne_zero]
 #align nat.pow_le_of_le_log Nat.pow_le_of_le_log
@@ -180,7 +180,7 @@ theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
 #align nat.pow_log_le_add_one Nat.pow_log_le_add_one
 
 theorem log_monotone {b : ℕ} : Monotone (log b) := by
-  refine' monotone_nat_of_le_succ fun n => _
+  refine monotone_nat_of_le_succ fun n => ?_
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb]
     exact zero_le _
@@ -288,13 +288,13 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
   induction' x using Nat.strong_induction_on with x ih generalizing y
   cases y
   · rw [Nat.pow_zero]
-    refine' ⟨fun h => (clog_of_right_le_one h b).le, _⟩
+    refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩
     simp_rw [← not_lt]
     contrapose!
     exact clog_pos hb
   have b_pos : 0 < b := zero_lt_of_lt hb
   rw [clog]; split_ifs with h
-  · rw [succ_eq_add_one, Nat.add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
+  · rw [Nat.add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
       Nat.div_le_iff_le_mul_add_pred b_pos, Nat.mul_comm b, ← Nat.pow_succ,
       Nat.add_sub_assoc (Nat.succ_le_of_lt b_pos), Nat.add_le_add_iff_right]
   · exact iff_of_true ((not_lt.1 (not_and.1 h hb)).trans <| succ_le_of_lt <| Nat.pow_pos b_pos)

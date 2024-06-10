@@ -3,9 +3,9 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 #align_import number_theory.modular_forms.congruence_subgroups from "leanprover-community/mathlib"@"ae690b0c236e488a0043f6faa8ce3546e7f2f9c5"
@@ -87,6 +87,14 @@ theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
   · intro h
     simp [h]
 #align Gamma_zero_bot Gamma_zero_bot
+
+lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
+    (ModularGroup.T ^ M) ∈ _root_.Gamma (Int.natAbs N) := by
+  simp only [Gamma_mem, Fin.isValue, ModularGroup.coe_T_zpow, of_apply, cons_val', cons_val_zero,
+    empty_val', cons_val_fin_one, Int.cast_one, cons_val_one, head_cons, head_fin_const,
+    Int.cast_zero, and_self, and_true, true_and]
+  refine Iff.mpr (ZMod.intCast_zmod_eq_zero_iff_dvd M (Int.natAbs N)) ?_
+  simp only [Int.natCast_natAbs, abs_dvd, hNM]
 
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
@@ -188,7 +196,7 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
       simp only [Gamma1_to_Gamma0_mem, Subgroup.coe_mk, coe_matrix_coe,
         Int.coe_castRingHom, map_apply]
       exact ha
-    refine' ⟨(⟨(⟨A, hA⟩ : Gamma0 N), HA⟩ : (Gamma1' N : Subgroup (Gamma0 N))), _⟩
+    refine ⟨(⟨(⟨A, hA⟩ : Gamma0 N), HA⟩ : (Gamma1' N : Subgroup (Gamma0 N))), ?_⟩
     simp
 #align Gamma1_mem Gamma1_mem
 
@@ -217,7 +225,7 @@ theorem Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=
 #align Gamma_is_cong_sub Gamma_is_cong_sub
 
 theorem Gamma1_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma1 N) := by
-  refine' ⟨N, _⟩
+  refine ⟨N, ?_⟩
   intro A hA
   simp only [Gamma1_mem, Gamma_mem] at *
   simp only [hA, eq_self_iff_true, and_self_iff]
@@ -240,7 +248,7 @@ theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = 
 theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
     (h : IsCongruenceSubgroup Γ) : IsCongruenceSubgroup (g • Γ) := by
   obtain ⟨N, HN⟩ := h
-  refine' ⟨N, _⟩
+  refine ⟨N, ?_⟩
   rw [← Gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
   exact HN
 #align conj_cong_is_cong conj_cong_is_cong

@@ -73,59 +73,29 @@ lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
   exact h
 
 /-- The coproduct cocone associated to the explicit finite coproduct. -/
-@[simps]
-def finiteCoproduct.cocone (F : Discrete α ⥤ Stonean) :
-    Cocone F where
-  pt := finiteCoproduct (F.obj ∘ Discrete.mk)
-  ι := Discrete.natTrans fun a => finiteCoproduct.ι (F.obj ∘ Discrete.mk) a.as
+abbrev finiteCoproduct.cofan : Limits.Cofan X :=
+  Cofan.mk (finiteCoproduct X) (finiteCoproduct.ι X)
 
 /-- The explicit finite coproduct cocone is a colimit cocone. -/
-@[simps]
-def finiteCoproduct.isColimit (F : Discrete α ⥤ Stonean) :
-    IsColimit (finiteCoproduct.cocone F) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
-  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
-  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm ⟨a⟩
-    ext t
-    apply_fun (fun q => q t) at hm
-    exact hm
+def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
+  mkCofanColimit _
+    (fun s ↦ desc _ fun a ↦ s.inj a)
+    (fun s a ↦ ι_desc _ _ _)
+    fun s m hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
+      (by ext t; exact congrFun (congrArg DFunLike.coe (hm a)) t)
 
-/-- The category of extremally disconnected spaces has finite coproducts.
--/
-instance hasFiniteCoproducts : HasFiniteCoproducts Stonean.{u} where
-  out _ := {
-    has_colimit := fun F => {
-      exists_colimit := ⟨{
-        cocone := finiteCoproduct.cocone F
-        isColimit := finiteCoproduct.isColimit F }⟩ } }
+instance (n : ℕ) (F : Discrete (Fin n) ⥤ Stonean) :
+    HasColimit (Discrete.functor (F.obj ∘ Discrete.mk) : Discrete (Fin n) ⥤ Stonean) where
+  exists_colimit := ⟨⟨finiteCoproduct.cofan _, finiteCoproduct.isColimit _⟩⟩
 
-/--
-A coproduct cocone associated to the explicit finite coproduct with cone point `finiteCoproduct X`.
--/
-@[simps]
-def finiteCoproduct.explicitCocone : Limits.Cocone (Discrete.functor X) where
-  pt := finiteCoproduct X
-  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
-
-/--
-The more explicit finite coproduct cocone is a colimit cocone.
--/
-@[simps]
-def finiteCoproduct.isColimit' : Limits.IsColimit (finiteCoproduct.explicitCocone X) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
-  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
-  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm ⟨a⟩
-    ext t
-    apply_fun (fun q => q t) at hm
-    exact hm
+instance : HasFiniteCoproducts Stonean where
+  out _ := { has_colimit := fun _ ↦ hasColimitOfIso Discrete.natIsoFunctor }
 
 /-- The isomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
 def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
 Limits.IsColimit.coconePointUniqueUpToIso
-  (finiteCoproduct.isColimit' X) (Limits.colimit.isColimit _)
+  (finiteCoproduct.isColimit X) (Limits.colimit.isColimit _)
 
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
 lemma finiteCoproduct.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
@@ -135,12 +105,11 @@ lemma finiteCoproduct.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stone
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
-  refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
+  refine OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding ?_
   convert finiteCoproduct.openEmbedding_ι Z a
   ext x
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
-  simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
-    finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
+  simp [coproductIsoCoproduct]
 
 instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
@@ -191,7 +160,7 @@ def pullback : Stonean where
     dsimp at U
     have h : IsClopen (f ⁻¹' (Set.range i)) := by
       constructor
-      · refine' IsClosed.preimage f.continuous _
+      · refine IsClosed.preimage f.continuous ?_
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
         exact IsCompact.image isCompact_univ i.continuous
@@ -305,9 +274,9 @@ def pullbackIsoPullback : Stonean.pullback f hi ≅
       pullback.hom_ext f hi _ _ (by simp only [pullback.cone_pt, Category.assoc, pullback.lift_fst,
         limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.id_comp])
     inv_hom_id := by
-      refine' Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
+      refine Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
         Limits.pullback.snd Limits.pullback.condition ≫ Limits.pullback.lift
-        (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) _ _
+        (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) ?_ ?_
       · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
           pullback.lift_fst, Category.id_comp]
       · rw [Category.id_comp, Category.assoc, Limits.pullback.lift_snd, pullback.lift_snd] }

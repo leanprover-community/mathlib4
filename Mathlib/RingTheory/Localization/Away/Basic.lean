@@ -260,7 +260,7 @@ theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := b
   · erw [selfZPow_of_nonneg x B (le_of_not_le hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
       @IsLocalization.mk'_spec' R _ (Submonoid.powers x) B _ _ _ 1 (Submonoid.pow x d.natAbs),
       map_one]
-    refine' nonpos_of_neg_nonneg (le_of_lt _)
+    refine nonpos_of_neg_nonneg (le_of_lt ?_)
     rwa [neg_neg, ← not_le]
 #align self_zpow_mul_neg selfZPow_mul_neg
 
@@ -295,16 +295,16 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
         (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
     simp only [map_zero, ← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt
-    rw [← H]
-    apply mul_ne_zero hb (pow_ne_zero _ _)
-    exact
-      IsLocalization.to_map_ne_zero_of_mem_nonZeroDivisors B
-        (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
-        (mem_nonZeroDivisors_iff_ne_zero.mpr hx.ne_zero)
-    exact IsLocalization.injective B (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
+    · rw [← H]
+      apply mul_ne_zero hb (pow_ne_zero _ _)
+      exact
+        IsLocalization.to_map_ne_zero_of_mem_nonZeroDivisors B
+          (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
+          (mem_nonZeroDivisors_iff_ne_zero.mpr hx.ne_zero)
+    · exact IsLocalization.injective B (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
   simp only [← hy] at H
   obtain ⟨m, a, hyp1, hyp2⟩ := WfDvdMonoid.max_power_factor ha₀ hx
-  refine' ⟨a, m - d, _⟩
+  refine ⟨a, m - d, ?_⟩
   rw [← mk'_one (M := Submonoid.powers x) B, selfZPow_pow_sub, selfZPow_natCast, selfZPow_natCast,
     ← map_pow _ _ d, mul_comm _ b, H, hyp2, map_mul, map_pow _ _ m]
   exact ⟨hyp1, congr_arg _ (IsLocalization.mk'_one _ _)⟩
