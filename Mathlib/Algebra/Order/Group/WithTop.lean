@@ -64,6 +64,10 @@ theorem top_sub_coe {a : WithTop α} : (⊤ : WithTop α) - a = ⊤ := by
 @[simp]
 theorem sub_top {a : WithTop α} : a - ⊤ = ⊤ := by cases a <;> rfl
 
+@[simp]
+lemma sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ (a = ⊤ ∨ b = ⊤) := by
+  cases a <;> cases b <;> simp [← coe_sub]
+
 instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
   __ := Option.nontrivial
