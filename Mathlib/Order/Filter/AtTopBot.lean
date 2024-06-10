@@ -735,15 +735,8 @@ theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
   @Tendsto.nsmul_atTop α βᵒᵈ _ l f hf n hn
 #align filter.tendsto.nsmul_at_bot Filter.Tendsto.nsmul_atBot
 
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit0_atTop : Tendsto bit0 (atTop : Filter β) atTop :=
-  tendsto_atTop_add tendsto_id tendsto_id
-#align filter.tendsto_bit0_at_top Filter.tendsto_bit0_atTop
-
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit0_atBot : Tendsto bit0 (atBot : Filter β) atBot :=
-  tendsto_atBot_add tendsto_id tendsto_id
-#align filter.tendsto_bit0_at_bot Filter.tendsto_bit0_atBot
+#noalign filter.tendsto_bit0_at_top
+#noalign filter.tendsto_bit0_at_bot
 
 end OrderedAddCommMonoid
 
