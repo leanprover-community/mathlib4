@@ -61,26 +61,36 @@ theorem unif_prod_bound2 (F : ι → α → ℂ)
   apply le_trans (HB s x)
   rfl
 
-theorem sum_prod_unif_conv2 (F : ℕ → α → ℂ) (g : α → ℂ) (K : Set α)
-    (hf :
-      TendstoUniformlyOn (fun n : ℕ => fun a : α => ∑ i in Finset.range n, Complex.abs (F i a))
-        (fun a : α => ∑' n : ℕ, Complex.abs (F n a)) Filter.atTop K)
-    (hb : ∃ T : ℝ, ∀ x : α, x ∈ K → ∑' n : ℕ, Complex.abs (F n x) ≤ T)
-    (hs : ∀ x : α, Summable fun n : ℕ => Complex.abs (F n x))
-    (hp :
-      ∀ x : α , x ∈ K → Tendsto (fun n : ℕ => ∏ i in Finset.range n, (1 + F i x)) atTop (𝓝 (g x))) :
-    TendstoUniformlyOn (fun n : ℕ => fun a : α => ∏ i in Finset.range n, (1 + F i a)) g Filter.atTop
-      K := by
-  apply UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto _ hp
-  rw [Metric.uniformCauchySeqOn_iff]
-  intro ε hε
-  sorry
 
-lemma tenstoUniformlyOn_const_self {α: Type*} (ι) [Preorder ι] [UniformSpace α] (a : α → α)
-    (K : Set α) : TendstoUniformlyOn (fun _: ι => a) a atTop K:= by
+
+
+
+
+lemma tenstoUniformlyOn_const_self {α β : Type*} (ι) [Preorder ι] [UniformSpace α] [UniformSpace β]
+    (a : α → β) (K : Set α) : TendstoUniformlyOn (fun _: ι => a) a atTop K:= by
     refine TendstoUniformlyOnFilter.tendstoUniformlyOn ?_
     rw [tendstoUniformlyOnFilter_iff_tendsto]
     exact tendsto_diag_uniformity (fun x ↦ a x.2) (_ ×ˢ 𝓟 K)
+
+theorem tsum_unif23 {α ι: Type*} [Preorder ι] [UniformSpace α] [AddCommMonoid α] [ AddGroup α]
+    [UniformAddGroup α] (F : ι → α → ℂ) (K : Set α)
+    (hf : TendstoUniformlyOn (fun n : Finset ι => fun a : α => ∑ i in n, (F i a))
+        (fun a : α => ∑' n : ι, (F n a)) Filter.atTop K)
+    (hs : ∀ x : α, x ∈ K →  Summable fun n : ι => (F n x)) :
+    TendstoUniformlyOn (fun k : Finset ι => fun a : α => ∑' n : {x // x ∉ k}, (F (n) a)) 0 Filter.atTop K := by
+  have := (tenstoUniformlyOn_const_self (Finset ι) (fun a : α => ∑' n : ι, (F n a)) K).sub hf
+  simp only [sub_self] at this
+  apply this.congr
+  simp only [Pi.sub_apply, eventually_atTop, ge_iff_le]
+  use ⊥
+  intro b _
+  intro x hx
+  simp only [Pi.sub_apply]
+  rw [← sum_add_tsum_compl (s :=b)]
+  ring_nf
+  congr
+  exact hs x hx
+
 
 theorem tsum_unif2 (F : ℕ → ℂ → ℂ) (K : Set ℂ)
     (hf : TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n,  (F i a))
@@ -98,6 +108,96 @@ theorem tsum_unif2 (F : ℕ → ℂ → ℂ) (K : Set ℂ)
   rw [← sum_add_tsum_nat_add b]
   ring
   exact hs x hx
+
+
+theorem sum_prod_unif_conv23 (F : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set  ℂ)
+    (hf :
+      TendstoUniformlyOn (fun n : Finset ℕ => fun a : ℂ => ∑ i in n, (F i a))
+        (fun a : ℂ  => ∑' n : ℕ, (F n a)) Filter.atTop K)
+    (hb : ∃ T : ℝ, ∀ x :  ℂ, x ∈ K → ∑' n : ℕ, Complex.abs (F n x) ≤ T)
+    (hs : ∀ x :  K, Summable fun n : ℕ => (F n x))
+    (hpp :  Multipliable fun n a => 1 + F n a):
+    TendstoUniformlyOn (fun N : Finset ℕ => fun a :  ℂ => ∏ b in N, (1 + F b a))
+      (fun x => ∏' n,  (fun a => 1 + F n a) x ) Filter.atTop
+      K := by
+
+  apply UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto _
+  have := hpp.hasProd
+  rw [HasProd] at this
+  have ht := this.apply_nhds
+  intro x hx
+
+  convert ht x
+  exact Eq.symm (Finset.prod_apply x _ fun c a ↦ 1 + F c a)
+  exact Eq.symm (tprod_apply hpp)
+  simp at hs
+  have tt := (tsum_unif23  F K hf hs)
+  have tt2 := tt.uniformCauchySeqOn
+  have ft2 := hf.uniformCauchySeqOn
+  rw [Metric.uniformCauchySeqOn_iff] at *
+  intro ε hε
+
+  obtain ⟨T, hT⟩ := hb
+  have hdelta := exists_pos_mul_lt hε (Real.exp T)
+  have tt3:= tt2 (Real.exp T) (by exact Real.exp_pos T)
+  obtain ⟨δ, hδ⟩ := hdelta
+  obtain ⟨ N1, hN1⟩ := tt3
+  obtain ⟨ N2, hN2⟩ := ft2 δ hδ.1
+  use N1 ⊔ N2
+  intro n hn m hm x hx
+  have hN1 := hN1 n ?_ m ?_ x hx
+  have hN2 := hN2 n ?_ m ?_ x hx
+  have AB := mul_le_mul hN1.le hN2.le (by exact dist_nonneg) (by exact Real.exp_nonneg T)
+  rw [dist_eq_norm] at *
+  apply lt_of_le_of_lt (norm_sub_le _ _)
+  rw [Metric.tendstoUniformlyOn_iff] at tt
+
+
+
+  --apply lt_of_le_of_lt AB
+
+
+
+  sorry
+  simp
+
+
+
+
+
+theorem sum_prod_unif_conv2 (F : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set  ℂ)
+    (hf :
+      TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n, (F i a))
+        (fun a : ℂ  => ∑' n : ℕ, (F n a)) Filter.atTop K)
+    (hb : ∃ T : ℝ, ∀ x :  ℂ, x ∈ K → ∑' n : ℕ, Complex.abs (F n x) ≤ T)
+    (hs : ∀ x :  K, Summable fun n : ℕ => (F n x))
+    (hpp :  Multipliable fun n a => 1 + F n a):
+    TendstoUniformlyOn (fun N : Finset ℕ => fun a :  ℂ => ∏ b in N, (1 + F b a))
+      (fun x => ∏' n,  (fun a => 1 + F n a) x ) Filter.atTop
+      K := by
+
+  apply UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto _
+  have := hpp.hasProd
+  rw [HasProd] at this
+  have ht := this.apply_nhds
+  intro x hx
+
+  convert ht x
+  exact Eq.symm (Finset.prod_apply x _ fun c a ↦ 1 + F c a)
+  exact Eq.symm (tprod_apply hpp)
+  simp at hs
+  have tt := (tsum_unif2  F K hf hs)
+  have tt2 := tt.uniformCauchySeqOn
+  have ft2 := hf.uniformCauchySeqOn
+  rw [Metric.uniformCauchySeqOn_iff] at *
+  intro ε hε
+  have tt3:= tt2 ε hε
+  simp at *
+  --have hdelta := exists_pos_mul_lt hε (Real.exp (∑' n : ℕ, Complex.abs (F n x)))
+
+
+
+  sorry
 
 
 theorem tsum_unif (F : ℕ → ℂ → ℂ) (K : Set ℂ)
