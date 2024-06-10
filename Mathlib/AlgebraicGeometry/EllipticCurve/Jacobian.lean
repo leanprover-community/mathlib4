@@ -91,8 +91,12 @@ universe u v
 /-! ## Weierstrass curves -/
 
 /-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
-abbrev WeierstrassCurve.Jacobian :=
-  WeierstrassCurve
+abbrev WeierstrassCurve.Jacobian (R : Type u) : Type u :=
+  WeierstrassCurve R
+
+/-- The coercion to a Weierstrass curve in Jacobian coordinates. -/
+abbrev WeierstrassCurve.toJacobian {R : Type u} (W : WeierstrassCurve R) : Jacobian R :=
+  W
 
 namespace WeierstrassCurve.Jacobian
 
@@ -1476,6 +1480,7 @@ lemma toAffineLift_add {P Q : PointClass F} (hP : W.NonsingularLift P) (hQ : W.N
   rcases P; rcases Q
   exact toAffine_add hP hQ
 
+variable (W) in
 /-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` in Jacobian
 coordinates with the nonsingular rational points on `W` in affine coordinates. -/
 @[simps]
@@ -1502,3 +1507,8 @@ end Point
 end Affine
 
 end WeierstrassCurve.Jacobian
+
+/-- An abbreviation for `WeierstrassCurve.Jacobian.Point.fromAffine` for dot notation. -/
+abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type u} [CommRing R]
+    [Nontrivial R] {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
+  Jacobian.Point.fromAffine P
