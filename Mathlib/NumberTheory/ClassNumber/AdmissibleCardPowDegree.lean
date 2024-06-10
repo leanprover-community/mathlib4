@@ -139,7 +139,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
       mul_div_cancel_right₀ _ (log_pos one_lt_q').ne']
   -- And that result follows from manipulating the result from `exists_approx_polynomial_aux`
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
-  refine' lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
+  apply lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
   swap
   · convert deg_lt
     rw [degree_eq_natDegree h']; rfl
@@ -184,7 +184,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
     exact mul_pos (Int.cast_pos.mpr (AbsoluteValue.pos _ hb)) hε
   -- We go by induction on the size `A`.
   induction' n with n ih
-  · refine' ⟨finZeroElim, finZeroElim⟩
+  · refine ⟨finZeroElim, finZeroElim⟩
   -- Show `anti_archimedean` also holds for real distances.
   have anti_archim' : ∀ {i j k} {ε : ℝ},
     (cardPowDegree (A i % b - A j % b) : ℝ) < ε →
@@ -198,7 +198,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
   rsuffices ⟨j, hj⟩ :
     ∃ j, ∀ i, t' i = j ↔ (cardPowDegree (A 0 % b - A i.succ % b) : ℝ) < cardPowDegree b • ε
   · refine ⟨Fin.cons j t', fun i₀ i₁ => ?_⟩
-    refine Fin.cases ?_ (fun i₀ => ?_) i₀ <;> refine' Fin.cases _ (fun i₁ => _) i₁
+    refine Fin.cases ?_ (fun i₀ => ?_) i₀ <;> refine Fin.cases ?_ (fun i₁ => ?_) i₁
     · simpa using hbε
     · rw [Fin.cons_succ, Fin.cons_zero, eq_comm, AbsoluteValue.map_sub]
       exact hj i₁

@@ -186,7 +186,7 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
 instance : CovariantClass (Ideal R) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ => map₂_le_map₂_right⟩
 
-@[deprecated smul_mono_right] -- 2024-03-31
+@[deprecated smul_mono_right (since := "2024-03-31")]
 protected theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
   _root_.smul_mono_right I h
 #align submodule.smul_mono_right Submodule.smul_mono_right
@@ -250,7 +250,7 @@ protected theorem smul_assoc : (I • J) • N = I • J • N :=
         show r • s • n ∈ (I • J) • N from mul_smul r s n ▸ smul_mem_smul (smul_mem_smul hr hs) hn)
 #align submodule.smul_assoc Submodule.smul_assoc
 
-@[deprecated smul_inf_le] -- 2024-03-31
+@[deprecated smul_inf_le (since := "2024-03-31")]
 protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
     I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
 #align submodule.smul_inf_le Submodule.smul_inf_le
@@ -259,7 +259,7 @@ theorem smul_iSup {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} : I • 
   map₂_iSup_right _ _ _
 #align submodule.smul_supr Submodule.smul_iSup
 
-@[deprecated smul_iInf_le] -- 2024-03-31
+@[deprecated smul_iInf_le (since := "2024-03-31")]
 protected theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
     I • iInf t ≤ ⨅ i, I • t i :=
   smul_iInf_le
@@ -322,8 +322,8 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
 open Pointwise in
 @[simp]
 theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
-    (r • N).map f = r • N.map f :=
-  by simp_rw [← ideal_span_singleton_smul, map_smul'']
+    (r • N).map f = r • N.map f := by
+  simp_rw [← ideal_span_singleton_smul, map_smul'']
 
 variable {I}
 
@@ -364,8 +364,9 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
 #align submodule.mem_ideal_smul_span_iff_exists_sum Submodule.mem_ideal_smul_span_iff_exists_sum
 
 theorem mem_ideal_smul_span_iff_exists_sum' {ι : Type*} (s : Set ι) (f : ι → M) (x : M) :
-    x ∈ I • span R (f '' s) ↔ ∃ (a : s →₀ R) (_ : ∀ i, a i ∈ I), (a.sum fun i c => c • f i) = x :=
-  by rw [← Submodule.mem_ideal_smul_span_iff_exists_sum, ← Set.image_eq_range]
+    x ∈ I • span R (f '' s) ↔
+    ∃ (a : s →₀ R) (_ : ∀ i, a i ∈ I), (a.sum fun i c => c • f i) = x := by
+  rw [← Submodule.mem_ideal_smul_span_iff_exists_sum, ← Set.image_eq_range]
 #align submodule.mem_ideal_smul_span_iff_exists_sum' Submodule.mem_ideal_smul_span_iff_exists_sum'
 
 theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
@@ -587,8 +588,8 @@ theorem eq_span_singleton_mul {x : R} (I J : Ideal R) :
 
 theorem span_singleton_mul_eq_span_singleton_mul {x y : R} (I J : Ideal R) :
     span {x} * I = span {y} * J ↔
-      (∀ zI ∈ I, ∃ zJ ∈ J, x * zI = y * zJ) ∧ ∀ zJ ∈ J, ∃ zI ∈ I, x * zI = y * zJ :=
-  by simp only [le_antisymm_iff, span_singleton_mul_le_span_singleton_mul, eq_comm]
+      (∀ zI ∈ I, ∃ zJ ∈ J, x * zI = y * zJ) ∧ ∀ zJ ∈ J, ∃ zI ∈ I, x * zI = y * zJ := by
+  simp only [le_antisymm_iff, span_singleton_mul_le_span_singleton_mul, eq_comm]
 #align ideal.span_singleton_mul_eq_span_singleton_mul Ideal.span_singleton_mul_eq_span_singleton_mul
 
 theorem prod_span {ι : Type*} (s : Finset ι) (I : ι → Set R) :
@@ -866,6 +867,13 @@ theorem _root_.IsCoprime.exists (h : IsCoprime I J) : ∃ i ∈ I, ∃ j ∈ J, 
 
 theorem _root_.IsCoprime.sup_eq (h : IsCoprime I J) : I ⊔ J = ⊤ := isCoprime_iff_sup_eq.mp h
 
+theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
+  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
+#align ideal.inf_eq_mul_of_coprime Ideal.inf_eq_mul_of_isCoprime
+
+@[deprecated (since := "2024-05-28")]
+alias inf_eq_mul_of_coprime := inf_eq_mul_of_isCoprime
+
 theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
   simp_rw [isCoprime_iff_codisjoint, codisjoint_iff, eq_top_iff_one, mem_span_singleton_sup,
@@ -1051,7 +1059,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
                 ⟨n + k, by
                   rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
                       mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc];
-                    refine'
+                    refine
                       m.add_mem (m.mul_mem_right _ hpm)
                         (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|
@@ -1138,14 +1146,14 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
       Or.casesOn h
         (fun h =>
           Set.Subset.trans h <|
-            Set.Subset.trans (Set.subset_union_left _ _) (Set.subset_union_left _ _))
+            Set.Subset.trans Set.subset_union_left Set.subset_union_left)
         fun h =>
         Or.casesOn h
           (fun h =>
             Set.Subset.trans h <|
-              Set.Subset.trans (Set.subset_union_right _ _) (Set.subset_union_left _ _))
+              Set.Subset.trans Set.subset_union_right Set.subset_union_left)
           fun ⟨i, his, hi⟩ => by
-          refine Set.Subset.trans hi <| Set.Subset.trans ?_ <| Set.subset_union_right _ _;
+          refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right;
             exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
   induction' n with n ih generalizing a b s

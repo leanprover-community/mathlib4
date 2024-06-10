@@ -595,8 +595,8 @@ theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) 
 -- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    HEq (@Eq.rec α a' motive p a t) p :=
-  by subst t; rfl
+    HEq (@Eq.rec α a' motive p a t) p := by
+  subst t; rfl
 
 set_option autoImplicit true in
 theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
@@ -1089,7 +1089,7 @@ theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x
 #align ball_congr forall₂_congr
 #align bex_congr exists₂_congr
 
-@[deprecated exists_eq_left] -- 2024-04-06
+@[deprecated exists_eq_left (since := "2024-04-06")]
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
 #align bex_eq_left bex_eq_left
@@ -1114,11 +1114,11 @@ theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x : _) (_ : p x), r x) →
   | ⟨x, hp, hr⟩ => ⟨x, H _ hp, hr⟩
 #align bex.imp_left BEx.imp_left
 
-@[deprecated id] -- 2024-03-23
+@[deprecated id (since := "2024-03-23")]
 theorem ball_of_forall (h : ∀ x, p x) (x) : p x := h x
 #align ball_of_forall ball_of_forall
 
-@[deprecated forall_imp] -- 2024-03-23
+@[deprecated forall_imp (since := "2024-03-23")]
 theorem forall_of_ball (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
 #align forall_of_ball forall_of_ball
 
