@@ -35,6 +35,8 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 @[default_target]
 lean_lib Mathlib
 
+-- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
+-- `Mathlib/Util/GetAllModules.lean`.
 lean_lib Cache
 lean_lib LongestPole
 lean_lib Archive
@@ -53,6 +55,11 @@ lean_exe cache where
 
 /-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe checkYaml where
+  srcDir := "scripts"
+  supportInterpreter := true
+
+/-- `lake exe mk_all` constructs the files containing all imports for a project. -/
+lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
 
@@ -80,7 +87,7 @@ https://github.com/leanprover/lean4/issues/4121 is resolved.
 
 You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
 -/
-@[test_runner]
+@[test_driver]
 lean_exe test where
   srcDir := "scripts"
 

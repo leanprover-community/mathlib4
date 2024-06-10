@@ -50,7 +50,7 @@ then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
 
 universe u v w z
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 open Matrix FiniteDimensional Fintype Polynomial Finset IntermediateField
 
@@ -160,7 +160,7 @@ theorem discr_eq_det_embeddingsMatrixReindex_pow_two [IsSeparable K L] (e : ι �
 /-- The discriminant of a power basis. -/
 theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparable K L] :
     algebraMap K E (discr K pb.basis) =
-      ∏ i : Fin pb.dim, ∏ j in Ioi i, (e j pb.gen - e i pb.gen) ^ 2 := by
+      ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, (e j pb.gen - e i pb.gen) ^ 2 := by
   rw [discr_eq_det_embeddingsMatrixReindex_pow_two K E pb.basis e,
     embeddingsMatrixReindex_eq_vandermonde, det_transpose, det_vandermonde, ← prod_pow]
   congr; ext i
@@ -170,7 +170,7 @@ theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparab
 /-- A variation of `Algebra.discr_powerBasis_eq_prod`. -/
 theorem discr_powerBasis_eq_prod' [IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
-      ∏ i : Fin pb.dim, ∏ j in Ioi i, -((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)) := by
+      ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, -((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)) := by
   rw [discr_powerBasis_eq_prod _ _ _ e]
   congr; ext i; congr; ext j
   ring
@@ -182,7 +182,7 @@ local notation "n" => finrank K L
 theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
       (-1) ^ (n * (n - 1) / 2) *
-        ∏ i : Fin pb.dim, ∏ j in Ioi i, (e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen) := by
+        ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, (e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen) := by
   rw [discr_powerBasis_eq_prod' _ _ _ e]
   simp_rw [fun i j => neg_eq_neg_one_mul ((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)),
     prod_mul_distrib]
@@ -281,8 +281,8 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     simpa [← discr_def] using discr_isUnit_of_basis _ B.basis
   have H :
     (traceMatrix K B.basis).det • (traceMatrix K B.basis) *ᵥ (B.basis.equivFun z) =
-      (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) :=
-    by congr; exact traceMatrix_of_basis_mulVec _ _
+      (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) := by
+    congr; exact traceMatrix_of_basis_mulVec _ _
   have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
   suffices ∀ i, ((traceMatrix K B.basis).det • B.basis.equivFun z) i ∈ (⊥ : Subalgebra R K) by
     rw [← B.basis.sum_repr z, Finset.smul_sum]

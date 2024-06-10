@@ -3,10 +3,10 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Algebra.BigOperators.Basic
 
 #align_import combinatorics.hales_jewett from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -61,8 +61,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 
 
 open scoped Classical
-
-open BigOperators
 
 universe u v
 
@@ -142,7 +140,7 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
 #align combinatorics.line.color_focused Combinatorics.Line.ColorFocused
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
-  refine' ⟨⟨0, fun _ => none, fun h => _, Multiset.nodup_zero⟩⟩
+  refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
   simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`,
@@ -234,7 +232,7 @@ private theorem exists_mono_in_high_dimension' :
     -- This deals with the degenerate case where `α` is empty.
     intro κ _
     by_cases h : Nonempty κ
-    · refine' ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
+    · refine ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
     · exact ⟨Empty, inferInstance, fun C => (h ⟨C (Empty.rec)⟩).elim⟩)
   (by
     -- Now we have to show that the theorem holds for `Option α` if it holds for `α`.
@@ -346,7 +344,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
   obtain ⟨l, c, hl⟩ := hι
   set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
   refine
-    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i in sᶜ, ((l.idxFun i).map ?_).getD 0,
+    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
       c, ?_⟩
   · rw [hs, Finset.mem_filter]
     exact ⟨Finset.mem_univ _, l.proper.choose_spec⟩

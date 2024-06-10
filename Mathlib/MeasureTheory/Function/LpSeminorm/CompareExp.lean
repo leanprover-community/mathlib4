@@ -15,7 +15,7 @@ In this file we compare `MeasureTheory.snorm'` and `MeasureTheory.snorm` for dif
 -/
 
 open Filter
-open scoped ENNReal Topology BigOperators
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 

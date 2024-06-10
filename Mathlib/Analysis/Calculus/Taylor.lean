@@ -43,7 +43,7 @@ Taylor polynomial, Taylor's theorem
 -/
 
 
-open scoped BigOperators Interval Topology Nat
+open scoped Interval Topology Nat
 
 open Set
 
@@ -113,7 +113,7 @@ theorem taylorWithinEval_self (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ : �
 
 theorem taylor_within_apply (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ x : ℝ) :
     taylorWithinEval f n s x₀ x =
-      ∑ k in Finset.range (n + 1), ((k ! : ℝ)⁻¹ * (x - x₀) ^ k) • iteratedDerivWithin k f s x₀ := by
+      ∑ k ∈ Finset.range (n + 1), ((k ! : ℝ)⁻¹ * (x - x₀) ^ k) • iteratedDerivWithin k f s x₀ := by
   induction' n with k hk
   · simp
   rw [taylorWithinEval_succ, Finset.sum_range_succ, hk]

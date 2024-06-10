@@ -24,6 +24,12 @@ So far, we have the following:
 
 namespace CompHaus
 
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 universe u w
 
 open CategoryTheory Limits

@@ -29,8 +29,6 @@ variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 open Function
 
-open BigOperators
-
 namespace IsLocalization
 
 section
@@ -93,8 +91,8 @@ theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a)
 theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
     ∃ b : M, ∀ i ∈ s, IsLocalization.IsInteger R ((b : R) • f i) := by
   haveI := Classical.propDecidable
-  refine ⟨∏ i in s, (sec M (f i)).2, fun i hi => ⟨?_, ?_⟩⟩
-  · exact (∏ j in s.erase i, (sec M (f j)).2) * (sec M (f i)).1
+  refine ⟨∏ i ∈ s, (sec M (f i)).2, fun i hi => ⟨?_, ?_⟩⟩
+  · exact (∏ j ∈ s.erase i, (sec M (f j)).2) * (sec M (f i)).1
   rw [RingHom.map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]
   congr 2
   refine _root_.trans ?_ (map_prod (Submonoid.subtype M) _ _).symm

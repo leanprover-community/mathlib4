@@ -256,8 +256,8 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
       -- homomorphism.
 
-      -- Adaptation note: nightly-2024-04-01
-      -- It's this `erw` that is blowing up. The implicit arguments differ significantly.
+      #adaptation_note /-- nightly-2024-04-01
+      It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply] at ha
       replace ha := (stalkIso S p).hom.isUnit_map ha
       rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
@@ -327,9 +327,9 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_naturality AlgebraicGeometry.Spec_Γ_naturality
 
--- Adaptation note: 2024-04-23
--- This `maxHeartbeats` was not previously required.
--- Without the backwards compatibility flag even more is needed.
+#adaptation_note /-- 2024-04-23
+This `maxHeartbeats` was not previously required.
+Without the backwards compatibility flag even more is needed. -/
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 set_option maxHeartbeats 800000 in
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
