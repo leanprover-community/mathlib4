@@ -286,10 +286,6 @@ def comp {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g) _* ℱ ≅ g
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.comp TopCat.Presheaf.Pushforward.comp
 
-theorem comp_eq {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g) _* ℱ = g _* (f _* ℱ) :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward.comp_eq TopCat.Presheaf.Pushforward.comp_eq
 
 @[simp]
 theorem comp_hom_app {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
@@ -405,6 +401,7 @@ end Pullback-/
 variable (C)
 
 /-- The pushforward functor. -/
+@[simps!]
 def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C :=
   (whiskeringLeft _ _ _).obj (Opens.map f).op
 
@@ -419,9 +416,23 @@ theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Pres
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_map_app' TopCat.Presheaf.pushforward_map_app'
 
-lemma id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := rfl
+lemma id_pushforward (X : TopCat.{w}) : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward
+
+variable {C}
+
+theorem Pushforward.id_eq {X : TopCat.{w}} (ℱ : X.Presheaf C) : 𝟙 X _* ℱ = ℱ := rfl
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward.id_eq TopCat.Presheaf.Pushforward.id_eq
+
+theorem Pushforward.comp_eq {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) :
+    (f ≫ g) _* ℱ = g _* (f _* ℱ) :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward.comp_eq TopCat.Presheaf.Pushforward.comp_eq
+
+variable (C)
 
 section Iso
 
