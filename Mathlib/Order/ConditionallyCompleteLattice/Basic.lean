@@ -42,56 +42,57 @@ section
 Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot α`
 -/
 
+variable [Preorder α]
 
 open scoped Classical
 
-noncomputable instance WithTop.instSupSet {α : Type*} [Preorder α] [SupSet α] :
+noncomputable instance WithTop.instSupSet [SupSet α] :
     SupSet (WithTop α) :=
   ⟨fun S =>
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
-noncomputable instance WithTop.instInfSet {α : Type*} [InfSet α] : InfSet (WithTop α) :=
-  ⟨fun S => if S ⊆ {⊤} then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
+noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
+  ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
-noncomputable instance WithBot.instSupSet {α : Type*} [SupSet α] : SupSet (WithBot α) :=
+noncomputable instance WithBot.instSupSet[SupSet α] : SupSet (WithBot α) :=
   ⟨(WithTop.instInfSet (α := αᵒᵈ)).sInf⟩
 
-noncomputable instance WithBot.instInfSet {α : Type*} [Preorder α] [InfSet α] :
+noncomputable instance WithBot.instInfSet [InfSet α] :
     InfSet (WithBot α) :=
   ⟨(WithTop.instSupSet (α := αᵒᵈ)).sSup⟩
 
-theorem WithTop.sSup_eq [Preorder α] [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
+theorem WithTop.sSup_eq [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
   (if_neg hs).trans <| if_pos hs'
 #align with_top.Sup_eq WithTop.sSup_eq
 
-theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) :
+theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) (h's : BddBelow s) :
     sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
-  if_neg hs
+  if_neg <| by simp [hs, h's]
 #align with_top.Inf_eq WithTop.sInf_eq
 
-theorem WithBot.sInf_eq [Preorder α] [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
+theorem WithBot.sInf_eq [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
     (hs' : BddBelow ((↑) ⁻¹' s : Set α)) : sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
   (if_neg hs).trans <| if_pos hs'
 #align with_bot.Inf_eq WithBot.sInf_eq
 
-theorem WithBot.sSup_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) :
+theorem WithBot.sSup_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) (h's : BddAbove s) :
     sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
-  if_neg hs
+  WithTop.sInf_eq (α := αᵒᵈ) hs h's
 #align with_bot.Sup_eq WithBot.sSup_eq
 
 @[simp]
-theorem WithTop.sInf_empty {α : Type*} [InfSet α] : sInf (∅ : Set (WithTop α)) = ⊤ :=
-  if_pos <| Set.empty_subset _
+theorem WithTop.sInf_empty [InfSet α] : sInf (∅ : Set (WithTop α)) = ⊤ :=
+  if_pos <| by simp
 #align with_top.cInf_empty WithTop.sInf_empty
 
 @[simp]
-theorem WithTop.iInf_empty {α : Type*} [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
+theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
     ⨅ i, f i = ⊤ := by rw [iInf, range_eq_empty, WithTop.sInf_empty]
 #align with_top.cinfi_empty WithTop.iInf_empty
 
-theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) :
+theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddBelow s) :
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   obtain ⟨x, hx⟩ := hs
   change _ = ite _ _ _
@@ -101,6 +102,8 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) :
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_sInf'
 
+#exit
+
 -- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
 -- does not need `rfl`.
 @[norm_cast]
@@ -109,7 +112,7 @@ theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] (f : ι → α) :
   rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f), ← range_comp]; rfl
 #align with_top.coe_infi WithTop.coe_iInf
 
-theorem WithTop.coe_sSup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove s) :
+theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   change _ = ite _ _ _
   rw [if_neg, preimage_image_eq, if_pos hs]
@@ -120,18 +123,18 @@ theorem WithTop.coe_sSup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove 
 -- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
 -- does not need `rfl`.
 @[norm_cast]
-theorem WithTop.coe_iSup [Preorder α] [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
+theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
     rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp]; rfl
 #align with_top.coe_supr WithTop.coe_iSup
 
 @[simp]
-theorem WithBot.csSup_empty {α : Type*} [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
+theorem WithBot.csSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
   if_pos <| Set.empty_subset _
 #align with_bot.cSup_empty WithBot.csSup_empty
 
 @[simp]
-theorem WithBot.ciSup_empty {α : Type*} [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
+theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
     ⨆ i, f i = ⊥ :=
   WithTop.iInf_empty (α := αᵒᵈ) _
 #align with_bot.csupr_empty WithBot.ciSup_empty
@@ -149,13 +152,13 @@ theorem WithBot.coe_iSup [Nonempty ι] [SupSet α] (f : ι → α) :
 #align with_bot.coe_supr WithBot.coe_iSup
 
 @[norm_cast]
-theorem WithBot.coe_sInf' [Preorder α] [InfSet α] {s : Set α} (hs : BddBelow s) :
+theorem WithBot.coe_sInf' [InfSet α] {s : Set α} (hs : BddBelow s) :
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
   WithTop.coe_sSup' (α := αᵒᵈ) hs
 #align with_bot.coe_Inf' WithBot.coe_sInf'
 
 @[norm_cast]
-theorem WithBot.coe_iInf [Preorder α] [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)) :
+theorem WithBot.coe_iInf [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithBot α) :=
   WithTop.coe_iSup (α := αᵒᵈ) _ h
 #align with_bot.coe_infi WithBot.coe_iInf
