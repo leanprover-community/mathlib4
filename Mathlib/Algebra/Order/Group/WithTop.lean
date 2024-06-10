@@ -20,33 +20,62 @@ Note that there is another subtraction on objects of the form `WithTop α` in th
 `Mathlib.Algebra.Order.Sub.WithTop`, setting `-⊤ = ⊥` when `α` has a bottom element. This is the
 right convention for `ℕ∞` or `ℝ≥0∞`. Since `LinearOrderedAddCommGroup`s don't have a bottom element
 (unless they are trivial), this shouldn't create diamonds.
+
+To avoid conflicts between the two notions, we put everything in the current file in the namespace
+`WithTop.LinearOrderedAddCommGroup`.
 -/
 
 namespace WithTop
 
 variable {α : Type*}
 
-section LinearOrderedAddCommGroup
+namespace LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {a b c d : α}
 
 instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
 
-instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (WithTop α) where
+/-- If `α` has subtraction, we can extend the subtraction to `WithTop α`, by
+setting `x - ⊤ = ⊤` and `⊤ - x = ⊤`. This definition is only registered as an instance on linearly
+ordered additive commutative groups, to avoid conflicting with the instance `WithTop.instSub` on
+types with a bottom element. -/
+protected def sub : ∀ _ _ : WithTop α, WithTop α
+  | _, ⊤ => ⊤
+  | ⊤, (x : α) => ⊤
+  | (x : α), (y : α) => (x - y : α)
+
+instance instSub : Sub (WithTop α) where sub := WithTop.LinearOrderedAddCommGroup.sub
+
+@[simp, norm_cast]
+theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
+  rfl
+#align with_top.coe_neg WithTop.LinearOrderedAddCommGroup.coe_neg
+
+@[simp]
+theorem neg_top : -(⊤ : WithTop α) = ⊤ := rfl
+
+@[simp, norm_cast]
+theorem coe_sub {a b : α} : (↑(a - b) : WithTop α) = ↑a - ↑b := rfl
+
+@[simp]
+theorem top_sub_coe {a : WithTop α} : (⊤ : WithTop α) - a = ⊤ := by
+  cases a <;> rfl
+
+@[simp]
+theorem sub_top {a : WithTop α} : a - ⊤ = ⊤ := by cases a <;> rfl
+
+instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
   __ := Option.nontrivial
+  sub_eq_add_neg a b := by
+    cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg]
   neg_top := Option.map_none
   zsmul := zsmulRec
   add_neg_cancel := by
     rintro (a | a) ha
     · exact (ha rfl).elim
     · exact (WithTop.coe_add ..).symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
-#align with_top.linear_ordered_add_comm_group_with_top WithTop.linearOrderedAddCommGroupWithTop
-
-@[simp, norm_cast]
-theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
-  rfl
-#align with_top.coe_neg WithTop.coe_neg
+#align with_top.linear_ordered_add_comm_group_with_top WithTop.LinearOrderedAddCommGroup.instLinearOrderedAddCommGroupWithTop
 
 end LinearOrderedAddCommGroup
 

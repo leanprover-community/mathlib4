@@ -41,8 +41,6 @@ protected def sub : ∀ _ _ : WithTop α, WithTop α
 instance : Sub (WithTop α) :=
   ⟨WithTop.sub⟩
 
-attribute [local instance] instSub
-
 @[simp, norm_cast]
 theorem coe_sub {a b : α} : (↑(a - b) : WithTop α) = ↑a - ↑b :=
   rfl
