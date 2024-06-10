@@ -649,7 +649,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
   by_cases hμs' : μ s = 0
   · rw [(snorm_eq_zero_iff ((hf i).indicator hs).aestronglyMeasurable hpzero).2
         (indicator_meas_zero hμs')]
-    set_option tactic.skipAssignedInstances false in norm_num
+    norm_num
   calc
     snorm (Set.indicator s (f i)) p μ ≤
         snorm (Set.indicator (s ∩ { x | C ≤ ‖f i x‖₊ }) (f i)) p μ +
