@@ -298,25 +298,22 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
 
 variable {A B}
-lemma apply_repr {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F)
-    {a : A} {ι : Type*} {s : Finset ι} {x y : ι → A}
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    comul (φ a) = ∑ i in s, φ (x i) ⊗ₜ[R] φ (y i) :=
-  congr($((CoalgHomClass.map_comp_comul φ).symm) a).trans <|
-    by simp only [LinearMap.coe_comp, Function.comp_apply, repr, map_sum, map_tmul]; rfl
+def Repr.induced {a : A} (repr : Repr R a) {F : Type*} [FunLike F A B] [CoalgHomClass F R A B]
+    (φ : F) : Repr R (φ a) where
+  index := repr.index
+  left := φ ∘ repr.left
+  right := φ ∘ repr.right
+  eq := (congr($((CoalgHomClass.map_comp_comul φ).symm) a).trans <|
+      by rw [LinearMap.comp_apply, ← repr.eq, map_sum]; rfl).symm
 
 lemma sum_tmul_counit_apply_eq
-    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F)
-    (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, counit (R := R) (x i) ⊗ₜ φ (y i) = 1 ⊗ₜ[R] φ a := by
-  simp [← sum_counit_tmul_eq (repr := apply_repr φ repr)]
+    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F) {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ φ (repr.right i) = 1 ⊗ₜ[R] φ a := by
+  simp [← sum_counit_tmul_eq  (repr.induced φ)]
 
 lemma sum_tmul_apply_counit_eq
-    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F)
-    (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, φ (x i) ⊗ₜ counit (R := R) (y i) = φ a ⊗ₜ[R] 1 := by
-  simp [← sum_tmul_counit_eq (repr := apply_repr φ repr)]
+    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F) {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, φ (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = φ a ⊗ₜ[R] 1 := by
+  simp [← sum_tmul_counit_eq (repr.induced φ)]
 
 end Coalgebra
