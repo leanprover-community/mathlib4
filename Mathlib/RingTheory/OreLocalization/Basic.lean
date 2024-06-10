@@ -282,11 +282,11 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
 #align ore_localization.mul OreLocalization.smul
 
 @[to_additive]
-instance instSMulOreLocalization : SMul R[S⁻¹] X[S⁻¹] :=
+instance : SMul R[S⁻¹] X[S⁻¹] :=
   ⟨OreLocalization.smul⟩
 
 @[to_additive]
-instance instMulOreLocalization : Mul R[S⁻¹] :=
+instance : Mul R[S⁻¹] :=
   ⟨OreLocalization.smul⟩
 
 @[to_additive]
@@ -335,7 +335,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
 #align ore_localization.ore_div_mul_char' OreLocalization.oreDivMulChar'
 
 @[to_additive AddOreLocalization.instZeroAddOreLocalization]
-instance instOneOreLocalization : One R[S⁻¹] :=
+instance : One R[S⁻¹] :=
   ⟨1 /ₒ 1⟩
 
 @[to_additive]
@@ -395,18 +395,15 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) :=
 #align ore_localization.mul_assoc OreLocalization.mul_assoc
 
 @[to_additive]
-instance instMonoidOreLocalization : Monoid R[S⁻¹] :=
-  { OreLocalization.instMulOreLocalization,
-    OreLocalization.instOneOreLocalization with
-    one_mul := OreLocalization.one_mul
-    mul_one := OreLocalization.mul_one
-    mul_assoc := OreLocalization.mul_assoc }
+instance : Monoid R[S⁻¹] where
+  one_mul := OreLocalization.one_mul
+  mul_one := OreLocalization.mul_one
+  mul_assoc := OreLocalization.mul_assoc
 
 @[to_additive]
-instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] :=
-  { OreLocalization.instSMulOreLocalization with
-    one_smul := OreLocalization.one_smul
-    mul_smul := OreLocalization.mul_smul }
+instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
+  one_smul := OreLocalization.one_smul
+  mul_smul := OreLocalization.mul_smul
 
 @[to_additive]
 protected theorem mul_inv (s s' : S) : ((s : R) /ₒ s') * ((s' : R) /ₒ s) = 1 := by
@@ -453,7 +450,7 @@ theorem mul_div_one {p r : R} {s : S} : (p /ₒ s) * (r /ₒ 1) = (p * r) /ₒ s
 #align ore_localization.div_one_mul OreLocalization.mul_div_one
 
 @[to_additive]
-instance instSMulOreLocalization' : SMul R X[S⁻¹] where
+instance : SMul R X[S⁻¹] where
   smul r := liftExpand (fun x s ↦ oreNum r s • x /ₒ (oreDenom r s)) (by
     intro x r' s h
     dsimp only
@@ -470,8 +467,7 @@ theorem oreDiv_one_smul (r : R) (x : X[S⁻¹]) : (r /ₒ (1 : S)) • x = r •
   rw [smul_oreDiv, oreDiv_smul_oreDiv, mul_one]
 
 @[to_additive]
-instance instMulActionOreLocalization' : MulAction R X[S⁻¹] where
-  __ := instSMulOreLocalization'
+instance : MulAction R X[S⁻¹] where
   one_smul := OreLocalization.ind fun x s ↦ by
     rw [← oreDiv_one_smul, ← OreLocalization.one_def, one_smul]
   mul_smul r r' := OreLocalization.ind fun x s ↦ by
@@ -581,12 +577,11 @@ theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
 #align ore_localization.ore_div_mul_ore_div_comm OreLocalization.oreDiv_mul_oreDiv_comm
 
 @[to_additive]
-instance : CommMonoid R[S⁻¹] :=
-  { OreLocalization.instMonoidOreLocalization with
-    mul_comm := fun x y => by
-      induction' x using OreLocalization.ind with r₁ s₁
-      induction' y using OreLocalization.ind with r₂ s₂
-      rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁] }
+instance : CommMonoid R[S⁻¹] where
+  mul_comm := fun x y => by
+    induction' x using OreLocalization.ind with r₁ s₁
+    induction' y using OreLocalization.ind with r₂ s₂
+    rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁]
 
 end CommMonoid
 
@@ -661,7 +656,7 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
       simp only [one_smul, one_mul, mul_smul, ← hb, Submonoid.smul_def, ← mul_assoc, and_true]
       simp only [smul_smul, hd])
 
-instance instAddOreLocalization : Add X[S⁻¹] :=
+instance : Add X[S⁻¹] :=
   ⟨add⟩
 
 theorem oreDiv_add_oreDiv {r r' : X} {s s' : S} :
@@ -732,13 +727,11 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
   induction x using OreLocalization.ind
   rw [← zero_oreDiv, add_oreDiv]; simp
 
-instance instAddMonoidOreLocalization : AddMonoid X[S⁻¹] :=
-  { OreLocalization.instAddOreLocalization with
+instance : AddMonoid X[S⁻¹] where
     add_assoc := OreLocalization.add_assoc
-    zero := zero
     zero_add := OreLocalization.zero_add
     add_zero := OreLocalization.add_zero
-    nsmul := nsmulRec }
+    nsmul := nsmulRec
 
 protected theorem smul_zero (x : R[S⁻¹]) : x • (0 : X[S⁻¹]) = 0 := by
   induction' x using OreLocalization.ind with r s
@@ -756,13 +749,11 @@ protected theorem smul_add (z : R[S⁻¹]) (x y : X[S⁻¹]) :
   repeat rw [oreDiv_smul_oreDiv]
   simp only [smul_add, add_oreDiv]
 
-instance instDistribMulActionOreLocalization : DistribMulAction R[S⁻¹] X[S⁻¹] where
-  __ := instMulActionOreLocalization
+instance : DistribMulAction R[S⁻¹] X[S⁻¹] where
   smul_zero := OreLocalization.smul_zero
   smul_add := OreLocalization.smul_add
 
-instance instDistribMulActionOreLocalization' : DistribMulAction R X[S⁻¹] where
-  __ := instMulActionOreLocalization'
+instance : DistribMulAction R X[S⁻¹] where
   smul_zero _ := by rw [← oreDiv_one_smul, smul_zero]
   smul_add _ _ _ := by simp only [← oreDiv_one_smul, smul_add]
 
@@ -781,9 +772,8 @@ protected theorem add_comm (x y : X[S⁻¹]) : x + y = y + x := by
   congr; ext; exact ha
 #align ore_localization.add_comm OreLocalization.add_comm
 
-instance instAddCommMonoidOreLocalization : AddCommMonoid X[S⁻¹] :=
-  { OreLocalization.instAddMonoidOreLocalization with
-    add_comm := OreLocalization.add_comm }
+instance instAddCommMonoidOreLocalization : AddCommMonoid X[S⁻¹] where
+  add_comm := OreLocalization.add_comm
 
 end AddCommMonoid
 
@@ -812,11 +802,9 @@ protected theorem add_left_neg (x : X[S⁻¹]) : -x + x = 0 := by
   induction' x using OreLocalization.ind with r s; simp
 #align ore_localization.add_left_neg OreLocalization.add_left_neg
 
-instance instAddGroupOreLocalization : AddGroup X[S⁻¹] :=
-  { OreLocalization.instAddMonoidOreLocalization,
-    instNegOreLocalization with
-    add_left_neg := OreLocalization.add_left_neg
-    zsmul := zsmulRec }
+instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
+  add_left_neg := OreLocalization.add_left_neg
+  zsmul := zsmulRec
 
 end AddGroup
 
@@ -825,9 +813,9 @@ section AddCommGroup
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommGroup X] [DistribMulAction R X]
 
-instance instAddCommGroupOreLocalization : AddCommGroup X[S⁻¹] :=
-  { OreLocalization.instAddGroupOreLocalization,
-    instAddCommMonoidOreLocalization with }
+instance : AddCommGroup X[S⁻¹] where
+  __ := inferInstanceAs (AddGroup X[S⁻¹])
+  __ := inferInstanceAs (AddCommMonoid X[S⁻¹])
 
 end AddCommGroup
 
