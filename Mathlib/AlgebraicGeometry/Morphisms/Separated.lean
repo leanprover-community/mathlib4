@@ -61,7 +61,7 @@ theorem respectsIso : MorphismProperty.RespectsIso @IsSeparated := by
   apply MorphismProperty.RespectsIso.diagonal
   exact IsClosedImmersion.respectsIso
 
-instance {X Y : Scheme} (f : X ⟶ Y) [IsSeparated f] : QuasiSeparated f where
+instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsSeparated f] : QuasiSeparated f where
   diagonalQuasiCompact := inferInstance
 
 end IsSeparated
