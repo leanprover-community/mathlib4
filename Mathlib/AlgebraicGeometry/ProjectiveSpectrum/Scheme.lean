@@ -81,6 +81,7 @@ If we further assume `m` is positive
 * `ProjIsoSpec.toSpec`: the morphism of locally ringed spaces between `Proj| pbo f` and `Spec A⁰_f`
   corresponding to the ring map `A⁰_f → Γ(Proj, pbo f)` under the Gamma-Spec adjunction defined by
   sending `s` to the section `x ↦ s` on `pbo f`.
+  
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
