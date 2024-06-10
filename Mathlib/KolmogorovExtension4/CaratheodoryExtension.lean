@@ -57,7 +57,7 @@ theorem OuterMeasure.ofFunction_eq_of_mono_of_subadditive (hC : SetSemiring C) (
     _ ≤ ∑' i, m (f i) :=
       by
       refine tsum_le_tsum (fun i ↦ ?_) ENNReal.summable ENNReal.summable
-      exact m_mono (hC.inter_mem _ hs _ (hf i)) (hf i) (Set.inter_subset_right _ _)
+      exact m_mono (hC.inter_mem _ hs _ (hf i)) (hf i) Set.inter_subset_right
 
 theorem OuterMeasure.ofFunction_addContent_eq (hC : SetSemiring C) (m : AddContent C)
     (m_sigma_subadd : ∀ ⦃f : ℕ → Set α⦄ (_hf : ∀ i, f i ∈ C) (_hf_Union : (⋃ i, f i) ∈ C),
@@ -111,7 +111,7 @@ theorem caratheodory_semiring_extension' (hC : SetSemiring C) (m : Set α → �
   have h_m_eq : ∀ i, m (f i) = m (f i ∩ s) + ∑ u in A i, m u := by
     intro i
     rw [hC.eq_add_diffFinset_of_subset m m_add (hC.inter_mem _ (hf i) _ hs) (hf i)
-        (inter_subset_left _ _)]
+        inter_subset_left]
   simp_rw [h_m_eq]
   rw [tsum_add ENNReal.summable ENNReal.summable]
   refine add_le_add ?_ ?_

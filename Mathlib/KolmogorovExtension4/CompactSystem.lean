@@ -234,7 +234,7 @@ theorem nonempty_iInter_projCylinder (hs : ∀ n, s n ∈ closedCompactCylinders
     (fun n ↦ (⋂ i ≤ n, projCylinder hs i) ∩ piCylinderSet hs) ?_ ?_ ?_ ?_
   · refine fun i ↦ inter_subset_inter ?_ subset_rfl
     simp_rw [Set.bInter_le_succ]
-    exact inter_subset_left _ _
+    exact inter_subset_left
   · exact fun n ↦ nonempty_iInter_projCylinder_inter_piCylinderSet hs hs_nonempty h_nonempty n
   · exact (isCompact_piCylinderSet hs).inter_left (h_closed _)
   · exact fun n ↦ IsClosed.inter (h_closed n) (isClosed_piCylinderSet hs)

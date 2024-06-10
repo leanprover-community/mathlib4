@@ -208,8 +208,8 @@ theorem box_inter (t₁ t₂ : (i : ι) → Set (α i)) (s₁ s₂ : Finset ι)
   rw [mem_inter_iff]
   simp_rw [mem_box]
   refine ⟨fun h ↦ ⟨fun i his₁ ↦ ?_, fun i his₂ ↦ ?_⟩, fun h i hi ↦ ?_⟩
-  · exact inter_subset_left _ _ (h i (Finset.mem_union_left s₂ his₁))
-  · exact inter_subset_right _ _ (h i (Finset.mem_union_right s₁ his₂))
+  · exact inter_subset_left (h i (Finset.mem_union_left s₂ his₁))
+  · exact inter_subset_right (h i (Finset.mem_union_right s₁ his₂))
   · rw [Finset.mem_union] at hi
     cases' hi with hi hi
     · by_cases hi2 : i ∈ s₂
@@ -461,8 +461,8 @@ theorem inter_mem_cylinders {s t : Set (∀ i : ι, α i)} (hs : s ∈ cylinders
     (fun f ↦ (fun i ↦ f ⟨i, Finset.mem_union_left s₂ i.prop⟩ : ∀ i : s₁, α i)) ⁻¹' S₁ ∩
       {f | (fun i ↦ f ⟨i, Finset.mem_union_right s₁ i.prop⟩ : ∀ i : s₂, α i) ∈ S₂}, ?_, ?_⟩
   · refine MeasurableSet.inter ?_ ?_
-    · exact (measurable_proj₂' (s₁ ∪ s₂) s₁ (Finset.subset_union_left _ _)) hS₁
-    · exact (measurable_proj₂' (s₁ ∪ s₂) s₂ (Finset.subset_union_right _ _)) hS₂
+    · exact (measurable_proj₂' (s₁ ∪ s₂) s₁ Finset.subset_union_left) hS₁
+    · exact (measurable_proj₂' (s₁ ∪ s₂) s₂ Finset.subset_union_right) hS₂
   · exact inter_cylinder _ _ _ _
 
 theorem compl_mem_cylinders {s : Set (∀ i : ι, α i)} (hs : s ∈ cylinders α) :

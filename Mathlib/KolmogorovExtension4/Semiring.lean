@@ -56,7 +56,7 @@ theorem diffFinset_disjoint (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [
   simp only [SetSemiring.diffFinset, coe_sdiff, coe_singleton]
   exact
     Set.PairwiseDisjoint.subset (hC.diff_eq_Union' s hs t ht).choose_spec.choose_spec.choose
-      (Set.diff_subset _ _)
+      Set.diff_subset
 
 theorem diff_eq_sUnion (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
     t \ s = ⋃₀ hC.diffFinset hs ht := by
@@ -141,7 +141,7 @@ theorem exists_disjoint_finset_diff_eq (hC : SetSemiring C) (hs : s ∈ C) (I : 
       Disjoint (⋃₀ (Ju u hu : Set (Set α))) (⋃₀ ↑(Ju v hv)) :=by
     intro u hu v hv huv_disj
     rw [hJu_sUnion, hJu_sUnion]
-    exact disjoint_of_subset (Set.diff_subset u t) (Set.diff_subset v t) huv_disj
+    exact disjoint_of_subset Set.diff_subset Set.diff_subset huv_disj
   let J' : Finset (Set α) := Finset.biUnion (Finset.univ : Finset J) fun u ↦ Ju u (h_ss u.prop)
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
@@ -201,7 +201,7 @@ theorem pairwiseDisjoint_diff₀ (hC : SetSemiring C) (hs : s ∈ C) (I : Finset
     [DecidableEq (Set α)] : (hC.diff₀ hs I hI : Set (Set α)).PairwiseDisjoint id := by
   simp only [SetSemiring.diff₀, coe_sdiff, coe_singleton]
   exact Set.PairwiseDisjoint.subset
-    (hC.exists_disjoint_finset_diff_eq hs I hI).choose_spec.choose_spec.choose (Set.diff_subset _ _)
+    (hC.exists_disjoint_finset_diff_eq hs I hI).choose_spec.choose_spec.choose Set.diff_subset
 
 theorem diff_sUnion_eq_sUnion_diff₀ (hC : SetSemiring C) (hs : s ∈ C) (I : Finset (Set α))
     (hI : ↑I ⊆ C) [DecidableEq (Set α)] : s \ ⋃₀ I = ⋃₀ hC.diff₀ hs I hI := by
@@ -212,7 +212,7 @@ theorem diff_sUnion_eq_sUnion_diff₀ (hC : SetSemiring C) (hs : s ∈ C) (I : F
 theorem sUnion_diff₀_subset (hC : SetSemiring C) (hs : s ∈ C) (I : Finset (Set α)) (hI : ↑I ⊆ C)
     [DecidableEq (Set α)] : ⋃₀ (hC.diff₀ hs I hI : Set (Set α)) ⊆ s := by
   rw [← hC.diff_sUnion_eq_sUnion_diff₀]
-  exact diff_subset _ _
+  exact diff_subset
 
 theorem disjoint_sUnion_diff₀ (hC : SetSemiring C) (hs : s ∈ C) (I : Finset (Set α)) (hI : ↑I ⊆ C)
     [DecidableEq (Set α)] : Disjoint (⋃₀ (I : Set (Set α))) (⋃₀ hC.diff₀ hs I hI) := by
@@ -367,7 +367,7 @@ theorem indexedDiff₀_subset (hC : SetSemiring C) (J : Finset (Set α)) (hJ : �
 
 theorem sUnion_indexedDiff₀_subset (hC : SetSemiring C) (J : Finset (Set α)) (hJ : ↑J ⊆ C)
     (n : Fin J.card) : ⋃₀ ↑(hC.indexedDiff₀ J hJ n) ⊆ J.ordered n :=
-  subset_trans (hC.sUnion_indexedDiff₀ J hJ n).subset (Set.diff_subset _ _)
+  subset_trans (hC.sUnion_indexedDiff₀ J hJ n).subset Set.diff_subset
 
 theorem empty_not_mem_indexedDiff₀ (hC : SetSemiring C) (J : Finset (Set α)) (hJ : ↑J ⊆ C)
     (n : Fin J.card) : ∅ ∉ hC.indexedDiff₀ J hJ n := by

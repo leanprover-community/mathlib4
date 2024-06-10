@@ -387,6 +387,13 @@ theorem ext_node (i : ι) (x y : (transitionGraph α).node i) (h : ∀ j : Iic i
   ext j
   aesop
 
+@[ext]
+theorem ext_path (i j : ι) (x y : (transitionGraph α).path i j) (h : ∀ k : Ioc i j, x k = y k) :
+    x = y := by
+  apply (path_equiv α).injective
+  ext j
+  aesop
+
 end transitionGraph
 
 end TransitionGraph

@@ -378,7 +378,7 @@ theorem secondLemma
   choose s S mS A_eq using A_cyl
   -- The goal of the proof is to apply the same result when the index set is `ℕ`. To do so we
   -- have to pull back the sets `sₙ` and `Sₙ` using equivalences.
-  let t n := (s n).preimage φ (φ.injective.injOn _)
+  let t n := (s n).preimage φ φ.injective.injOn
   have h i : X (φ (φ.symm i)) = X i := congrArg X (φ.apply_symm_apply i)
   have e n i (h : i ∈ s n) : φ.symm i ∈ t n := by simpa [t] using h
   have e' n k (h : k ∈ t n) : φ k ∈ s n := by simpa [t] using h
@@ -496,7 +496,7 @@ theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylind
   -- that the use of coercions avoids manipulating `cast`, as equalities will hold by `rfl`.
   let u := ⋃ n, (s n).toSet
   -- `tₙ` will be `sₙ` seen as a subset of `u`.
-  let t : ℕ → Finset u := fun n ↦ (s n).preimage Subtype.val (Subtype.val_injective.injOn _)
+  let t : ℕ → Finset u := fun n ↦ (s n).preimage Subtype.val Subtype.val_injective.injOn
   -- These are a few lemmas to move between `sₙ` and `tₙ`.
   have su n : (s n).toSet ⊆ u := Set.subset_iUnion (fun n ↦ (s n).toSet) n
   have st n i (hi : i ∈ s n) : ⟨i, su n hi⟩ ∈ t n := by simpa [t] using hi

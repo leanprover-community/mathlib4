@@ -36,7 +36,7 @@ namespace Function
 Then, there is s' ⊆ s with S' = f '' s'. -/
 theorem subset_image {α β : Type _} {f : α → β} {s : Set α} {S' : Set β} (hS' : S' ⊆ f '' s) :
     ∃ (s' : Set α) (_ : s' ⊆ s), f '' s' = S' := by
-  refine ⟨f ⁻¹' S' ∩ s, Set.inter_subset_right _ _, ?_⟩
+  refine ⟨f ⁻¹' S' ∩ s, Set.inter_subset_right, ?_⟩
   ext x
   simp only [mem_image, mem_inter_iff, mem_preimage]
   constructor
@@ -265,7 +265,7 @@ theorem innerRegular_of_univ [TopologicalSpace α] [OpensMeasurableSpace α] (μ
   obtain ⟨K, hK_relatively_compact, hKA, h_lt⟩ :
     ∃ (K : _) (_ : IsCompact (closure K)) (_ : K ⊆ A), μ (A \ closure K) < μ A - r := by
     obtain ⟨K', hK'_relatively_compact, hK'_lt⟩ := hμ (μ A - r) (tsub_pos_of_lt hr)
-    refine ⟨closure K' ∩ A, ?_, ⟨inter_subset_right _ _, ?_⟩⟩
+    refine ⟨closure K' ∩ A, ?_, ⟨inter_subset_right, ?_⟩⟩
     · rw [IsClosed.closure_eq]
       exact hK'_relatively_compact.inter_right hA
       apply IsClosed.inter isClosed_closure hA
@@ -299,7 +299,7 @@ theorem innerRegular_isCompact_isClosed_of_univ [TopologicalSpace α] [OpensMeas
   obtain ⟨K, hK_compact, hK_closed, hKA, h_lt⟩ :
       ∃ K, IsCompact K ∧ IsClosed K ∧ K ⊆ A ∧ μ (A \ K) < μ A - r := by
     obtain ⟨K', hK'_compact, hK'_closed, hK'_lt⟩ := hμ (μ A - r) (tsub_pos_of_lt hr)
-    refine ⟨K' ∩ A, ?_, hK'_closed.inter hA, ⟨inter_subset_right _ _, ?_⟩⟩
+    refine ⟨K' ∩ A, ?_, hK'_closed.inter hA, ⟨inter_subset_right, ?_⟩⟩
     · exact hK'_compact.inter_right hA
     · refine (measure_mono fun x ↦ ?_).trans_lt hK'_lt
       simp only [diff_inter_self_eq_diff, mem_diff, mem_compl_iff, and_imp, imp_self, imp_true_iff]

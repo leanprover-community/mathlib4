@@ -97,6 +97,8 @@ theorem my_ker_pos [∀ k, IsSFiniteKernel (κ k)] {N : ℕ} (hN : 0 < N) :
   · rfl
   · exact (ne_of_lt hN).symm
 
+theorem my_ker_decomp (N : ℕ) : my_ker κ N = (transition κ).er
+
 variable [∀ k, IsMarkovKernel (κ k)]
 
 theorem markov1 {M : MeasurableSpaceGraph ℕ} {i j k : ℕ}
@@ -682,73 +684,78 @@ theorem kerint_eq {a b : ℕ} (hab : a + 1 < b) {f : ((n : ℕ) → X n) → ℝ
     (x₀ : X 0) :
     kerint κ a b f x₀ = kerint κ a (a + 1) (kerint κ (a + 1) b f x₀) x₀ := by
   ext x
-  simp [kerint, transition_ker, lt_trans a.lt_succ_self hab, hab]
-  rw [kerNat_succ_left κ _ _ hab, compProd_eq _ _ _ (Nat.lt_succ_self _) hab,
-    kernel.map_apply, lintegral_map (f := fun z ↦ f (updateSet x (pioc a b) (pioc_ioc z))),
-    kernel.lintegral_compProd]
-  congrm ∫⁻ _ : ?_, ∫⁻ _ : ?_, ?_ ∂(?_) ∂(?_)
-  · rfl
-  · rfl
-  · rw [split_eq_comap, kernel.comap_apply]
-    congr
-    rw [el_eq, ProbabilityTheory.el]
-    simp only [Nat.succ_eq_add_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk]
-    ext i
-    simp only [fus, pioc, Nat.reduceAdd, PNat.mk_ofNat, Nat.succ_eq_add_one, updateSet, mem_Ico,
-      pioc_ioc, ioc_eq, PNat.mk_coe]
-    split_ifs with h1 h2 h3 h4 h5
+  simp only [kerint, lt_trans a.lt_succ_self hab, ↓reduceIte, transition_ker, add_eq_zero,
+    one_ne_zero, and_false, hab, lt_add_iff_pos_right, zero_lt_one]
+  by_cases ha : a = 0
+  · cases ha
+    simp only [↓reduceIte]
+
+  · rw [kerNat_succ_left κ _ _ hab, compProd_eq _ _ _ (Nat.lt_succ_self _) hab,
+      kernel.map_apply, lintegral_map (f := fun z ↦ f (updateSet x (pioc a b) (pioc_ioc z))),
+      kernel.lintegral_compProd]
+    congrm ∫⁻ _ : ?_, ∫⁻ _ : ?_, ?_ ∂(?_) ∂(?_)
     · rfl
-    · have := (PNat.coe_le_coe _ _).2 h3.1
-      change a + 1 ≤ i.1 at this
-      exfalso; linarith
     · rfl
-    · have : i.1 ≤ a := by
-        rw [h4]
-        exact zero_le _
-      exact (h1 this).elim
+    · rw [split_eq_comap, kernel.comap_apply]
+      congr
+      rw [el_eq, ProbabilityTheory.el]
+      simp only [Nat.succ_eq_add_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk]
+      ext i
+      simp only [fus, pioc, Nat.reduceAdd, PNat.mk_ofNat, Nat.succ_eq_add_one, updateSet, mem_Ico,
+        pioc_ioc, ioc_eq, PNat.mk_coe]
+      split_ifs with h1 h2 h3 h4 h5
+      · rfl
+      · have := (PNat.coe_le_coe _ _).2 h3.1
+        change a + 1 ≤ i.1 at this
+        exfalso; linarith
+      · rfl
+      · have : i.1 ≤ a := by
+          rw [h4]
+          exact zero_le _
+        exact (h1 this).elim
+      · rfl
+      · push_neg at h5
+        rw [← PNat.coe_le_coe] at h5
+        have hi := mem_Iic.1 i.2
+        have : i.1 = a + 1 := by
+          rcases Nat.le_succ_iff.1 hi with h | h'
+          · exact (h1 h).elim
+          · exact h'
+        rw [← PNat.coe_le_coe] at h5
+        simp at h5
+        rw [this] at h5 hi
+        exfalso
+        linarith [h5 hi]
     · rfl
-    · push_neg at h5
-      rw [← PNat.coe_le_coe] at h5
-      have hi := mem_Iic.1 i.2
-      have : i.1 = a + 1 := by
-        rcases Nat.le_succ_iff.1 hi with h | h'
-        · exact (h1 h).elim
-        · exact h'
-      rw [← PNat.coe_le_coe] at h5
-      simp at h5
-      rw [this] at h5 hi
-      exfalso
-      linarith [h5 hi]
-  · rfl
-  · congr
-    ext i
-    rw [er_eq, ProbabilityTheory.er]
-    simp only [updateSet, pioc, mem_Ico, pioc_ioc, Nat.succ_eq_add_one, ioc_eq,
-      MeasurableEquiv.coe_mk, Equiv.coe_fn_mk]
-    split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 <;>
-      rw [← PNat.coe_le_coe, ← PNat.coe_lt_coe, PNat.mk_coe] at *
-    · exfalso; linarith [le_trans h3.1 h2]
-    · push_neg at h3 h4
-      exfalso; linarith [h3 (h4 h1.1), h1.2]
-    · rw [PNat.mk_coe, Nat.lt_succ] at h6
-      exact (h2 h6.2).elim
-    · push_neg at h5 h6
-      rw [PNat.mk_coe] at h6
-      exfalso; linarith [h1.2, h5 (h6 h1.1)]
-    · push_neg at h1
-      exfalso; linarith [h7.2, h1 (le_trans (a + 1).le_succ h7.1)]
-    · push_neg at h1 h7
-      have := Nat.eq_of_le_of_lt_succ h8.1 h8.2
-      rw [this, PNat.mk_coe] at h1
-      exfalso; linarith [h1 (le_refl _)]
-  · apply hf.comp
-    apply (measurable_updateSet _ _).comp
-    apply (measurable_pioc_ioc _ _).comp
-    apply (transitionGraph X).er_meas
-  · apply hf.comp
-    apply (measurable_updateSet _ _).comp
-    apply measurable_pioc_ioc
-  · apply (transitionGraph X).er_meas
+    · congr
+      ext i
+      rw [er_eq, ProbabilityTheory.er]
+      simp only [updateSet, pioc, mem_Ico, pioc_ioc, Nat.succ_eq_add_one, ioc_eq,
+        MeasurableEquiv.coe_mk, Equiv.coe_fn_mk]
+      split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 <;>
+        rw [← PNat.coe_le_coe, ← PNat.coe_lt_coe, PNat.mk_coe] at *
+      · exfalso; linarith [le_trans h3.1 h2]
+      · push_neg at h3 h4
+        exfalso; linarith [h3 (h4 h1.1), h1.2]
+      · rw [PNat.mk_coe, Nat.lt_succ] at h6
+        exact (h2 h6.2).elim
+      · push_neg at h5 h6
+        rw [PNat.mk_coe] at h6
+        exfalso; linarith [h1.2, h5 (h6 h1.1)]
+      · push_neg at h1
+        exfalso; linarith [h7.2, h1 (le_trans (a + 1).le_succ h7.1)]
+      · push_neg at h1 h7
+        have := Nat.eq_of_le_of_lt_succ h8.1 h8.2
+        rw [this, PNat.mk_coe] at h1
+        exfalso; linarith [h1 (le_refl _)]
+    · apply hf.comp
+      apply (measurable_updateSet _ _).comp
+      apply (measurable_pioc_ioc _ _).comp
+      apply (transitionGraph X).er_meas
+    · apply hf.comp
+      apply (measurable_updateSet _ _).comp
+      apply measurable_pioc_ioc
+    · apply (transitionGraph X).er_meas
 
 
 theorem auxiliaire (f : ℕ → ((n : ℕ) → X n) → ℝ≥0∞) (N : ℕ → ℕ)

@@ -134,7 +134,7 @@ theorem le_sum_of_additive (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (ht : t ∈
   refine sum_le_sum fun u hu ↦ ?_
   exact
     monotone_of_additive hC m m_add (hC.inter_mem _ ht _ (h_ss hu)) (h_ss hu)
-      (inter_subset_right _ _)
+      inter_subset_right
 
 theorem sigma_additive_of_sigma_subadditive (m_empty : m ∅ = 0)
     (m_subadd : ∀ (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
@@ -378,7 +378,7 @@ theorem addContent_union (m : AddContent C) (hC : SetRing C) (hs : s ∈ C) (ht 
 theorem addContent_union_le (m : AddContent C) (hC : SetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m (s ∪ t) ≤ m s + m t := by
   rw [← union_diff_self, addContent_union m hC hs (hC.diff_mem ht hs)]
-  · exact add_le_add le_rfl (m.mono hC.setSemiring (hC.diff_mem ht hs) ht (diff_subset _ _))
+  · exact add_le_add le_rfl (m.mono hC.setSemiring (hC.diff_mem ht hs) ht diff_subset)
   · rw [Set.disjoint_iff_inter_eq_empty, inter_diff_self]
 
 theorem addContent_iUnion_le (m : AddContent C) (hC : SetRing C) {s : ℕ → Set α}
@@ -386,7 +386,7 @@ theorem addContent_iUnion_le (m : AddContent C) (hC : SetRing C) {s : ℕ → Se
     m (⋃ i ≤ n, s i) ≤ ∑ i in range (n + 1), m (s i) := by
   induction' n with n hn
   · simp only [le_zero_iff, iUnion_iUnion_eq_left, Finset.range_one, Finset.sum_singleton, le_refl]
-    simp only [Nat.zero_eq, nonpos_iff_eq_zero, iUnion_iUnion_eq_left, zero_add, range_one,
+    simp only [Nat.zero_eq, nonpos_iff_eq_zero, iUnion_iUnion_eq_left, zero_add, Finset.range_one,
       sum_singleton, le_refl]
   rw [Set.bUnion_le_succ _ n, Finset.sum_range_succ]
   exact (addContent_union_le m hC (hC.iUnion_le_mem hs n) (hs _)).trans (add_le_add hn le_rfl)
@@ -397,7 +397,7 @@ theorem addContent_diff (m : AddContent C) (hC : SetRing C) (hs : s ∈ C) (ht :
   conv_lhs => rw [h]
   rw [addContent_union m hC (hC.inter_mem hs ht) (hC.diff_mem hs ht) disjoint_inf_sdiff, add_comm]
   refine add_tsub_le_assoc.trans_eq ?_
-  rw [tsub_eq_zero_of_le (m.mono hC.setSemiring (hC.inter_mem hs ht) ht (inter_subset_right _ _)),
+  rw [tsub_eq_zero_of_le (m.mono hC.setSemiring (hC.inter_mem hs ht) ht inter_subset_right),
     add_zero]
 
 theorem AddContent.sigma_subadditive_of_sigma_additive (hC : SetRing C) (m : AddContent C)

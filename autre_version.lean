@@ -13,7 +13,7 @@ variable {X : ℕ → Type*} [∀ n, Nonempty (X n)] [∀ n, MeasurableSpace (X 
 variable (κ : (k : ℕ) → kernel ((transitionGraph X).node k) ((transitionGraph X).path k (k + 1)))
 variable [∀ k, IsMarkovKernel (κ k)]
 
-def zer : (X 0) ≃ᵐ (transitionGraph X).node 0 where
+def zer : (X 0) ≃ᵐ ((i : Iic 0) → X i) where
   toFun := fun x₀ i ↦ by
     have : 0 = i.1 := by
       have := i.2
@@ -24,20 +24,22 @@ def zer : (X 0) ≃ᵐ (transitionGraph X).node 0 where
   left_inv := fun x₀ ↦ by simp
   right_inv := fun x ↦ by
     ext i
-    have : 0 = i.1 := by
+    have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by
+      rw [← Subtype.coe_inj]
       have := i.2
       simp at this
       exact this.symm
-    aesop
+    cases this; rfl
   measurable_toFun := by
     refine measurable_pi_lambda _ (fun i ↦ ?_)
     simp_rw [eqRec_eq_cast]
     apply measurable_cast
-    have : 0 = i.1 := by
+    have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by
+      rw [← Subtype.coe_inj]
       have := i.2
       simp at this
       exact this.symm
-    aesop
+    cases this; rfl
   measurable_invFun := measurable_pi_apply _
 
 noncomputable def family (x₀ : X 0) :
@@ -206,6 +208,30 @@ theorem measurable_ioc_eq (a b : ℕ) : Measurable (@ioc_eq a b) := measurable_d
 
 def pioc_ioc {a b : ℕ} (z : (i : Ioc a b) → X i) (i : pioc a b) : X i := z (ioc_eq i)
 
+def ioc_fpioc {a b : ℕ} : ((i : Ioc a b) → X i) ≃ᵐ ((i : fpioc a b) → X i) where
+  toFun := fun z i ↦ by
+    have : i.1.1 ∈ Ioc a b := by
+      simp only [mem_Ioc]
+      have := i.2
+      simp only [fpioc, Finset.mem_Ico] at this
+      rw [← PNat.coe_le_coe, ← PNat.coe_lt_coe, PNat.mk_coe, PNat.mk_coe] at this
+      exact mem_Ioc.2 ⟨Nat.succ_le.2 this.1, Nat.lt_succ.1 this.2⟩
+    exact z ⟨i.1.1, this⟩
+  invFun := fun z i ↦ by
+    have := i.2
+    simp only [Finset.mem_Ioc] at this
+    have i_pos := Nat.zero_lt_of_lt this.1
+    have : ⟨i.1, i_pos⟩ ∈ fpioc a b := by
+      simp only [fpioc, Finset.mem_Ico]
+      exact ⟨Nat.succ_le.2 this.1, Nat.lt_succ.2 this.2⟩
+    exact z ⟨⟨i.1, i_pos⟩, this⟩
+  left_inv := fun z ↦ by simp
+  right_inv := fun z ↦ by
+    ext i
+    rfl
+  measurable_toFun := measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+  measurable_invFun := measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+
 theorem measurable_pioc_ioc (a b : ℕ) : Measurable (@pioc_ioc X a b) := by
   apply measurable_pi_lambda
   intro a_1
@@ -291,12 +317,10 @@ theorem lint_eq'' {α β : Type _} [hα : MeasurableSpace α] [hβ : MeasurableS
     exact measurable_cast h.symm h'.symm
 
 theorem eq_pi (s t : Set ℕ) (h : s = t) :
-    ((i : s) → X i) = ((i : t) → X i) := by
-  aesop
+    ((i : s) → X i) = ((i : t) → X i) := by cases h; rfl
 
 theorem eq_pi' {a b : ℕ} (h : a = b) :
-    ((i : Ioc 0 a) → X i) = ((i : Ioc 0 b) → X i) := by
-  aesop
+    ((i : Ioc 0 a) → X i) = ((i : Ioc 0 b) → X i) := by cases h; rfl
 
 theorem eq_fpioc {N : ℕ} (hN : 0 < N) :
     ((transitionGraph X).path 0 ((fpioc 0 N).sup id).1) = ((i : Ioc 0 N) → X i) := by
@@ -305,8 +329,7 @@ theorem eq_fpioc {N : ℕ} (hN : 0 < N) :
 
 theorem heq_meas (s t : Set ℕ) (h : s = t) :
     HEq (inferInstance : MeasurableSpace ((i : s) → X i))
-    (inferInstance : MeasurableSpace ((i : t) → X i)) := by
-  aesop
+    (inferInstance : MeasurableSpace ((i : t) → X i)) := by cases h; rfl
 
 theorem heq_fpioc {N : ℕ} (hN : 0 < N) :
     HEq (inferInstance : MeasurableSpace ((i : Ioc 0 ((fpioc 0 N).sup id).1) → X i))
@@ -692,7 +715,7 @@ theorem auxiliaire (f : ℕ → ((n : ℕ+) → X n) → ℝ≥0∞) (N : ℕ �
           ext i
           simp [updateSet, pioc, pioc_ioc, ioc_eq, Function.update]
           split_ifs with h1 h2 h3 h4 h5 h6
-          · aesop
+          · cases h2; rfl
           · exfalso; linarith [(PNat.coe_le_coe _ _).2 h1.1, (PNat.coe_lt_coe _ _).2 h3]
           · have : i.1 = k + 1 :=
               Nat.eq_of_le_of_lt_succ ((PNat.coe_le_coe _ _).2 h1.1) ((PNat.coe_lt_coe _ _).2 h1.2)
@@ -949,8 +972,7 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ+) → X n)) (A_mem : ∀ n, A n �
         simp only [updateSet, pioc, zero_add, PNat.mk_ofNat, mem_Ico, PNat.one_le, true_and,
           Nat.reduceAdd, dite_eq_ite, Function.update]
         split_ifs with h1 h2 h3 h4 h5
-        · aesop_subst h2
-          simp_all only [le_refl, implies_true, PNat.mk_coe, χ, z]
+        · cases h2; rfl
         · rfl
         · rw [← PNat.coe_lt_coe] at h1 h3
           rw [← PNat.coe_inj] at h2
@@ -1113,10 +1135,10 @@ noncomputable def ionescu_tulcea_kernel : kernel (X 0) ((n : ℕ+) → X n) :=
 
 instance : IsMarkovKernel (ionescu_tulcea_kernel κ) := IsMarkovKernel.mk fun _ ↦ proba_ionescu _ _
 
-def er' (N : ℕ) : (X 0) × ((i : Ioc 0 N) → X i) ≃ᵐ ((i : Icc 0 N) → X i) where
+def er' (N : ℕ) : (X 0) × ((i : Ioc 0 N) → X i) ≃ᵐ ((i : Iic N) → X i) where
   toFun := fun p n ↦ if h : n.1 = 0 then h.symm ▸ p.1 else
-    p.2 ⟨n.1, ⟨Nat.zero_lt_of_ne_zero h, (mem_Icc.1 n.2).2⟩⟩
-  invFun := fun x ↦ ⟨x ⟨0, left_mem_Icc.2 N.zero_le⟩, fun n ↦ x ⟨n.1, Ioc_subset_Icc_self n.2⟩⟩
+    p.2 ⟨n.1, ⟨Nat.zero_lt_of_ne_zero h, n.2⟩⟩
+  invFun := fun x ↦ ⟨x ⟨0, N.zero_le⟩, fun n ↦ x ⟨n.1, Ioc_subset_Iic_self n.2⟩⟩
   left_inv := fun p ↦ by
     ext n
     · simp
@@ -1130,7 +1152,7 @@ def er' (N : ℕ) : (X 0) × ((i : Ioc 0 N) → X i) ≃ᵐ ((i : Icc 0 N) → X
     ext n
     simp only
     split_ifs with h
-    · have : n = ⟨0, left_mem_Icc.2 N.zero_le⟩ := by
+    · have : n = ⟨0, N.zero_le⟩ := by
         rwa [← Subtype.val_inj]
       cases this; rfl
     · rfl
@@ -1150,12 +1172,6 @@ def er' (N : ℕ) : (X 0) × ((i : Ioc 0 N) → X i) ≃ᵐ ((i : Icc 0 N) → X
     · apply measurable_pi_apply
     · exact measurable_pi_lambda _ (fun a ↦ measurable_id.eval)
 
-noncomputable def ker (N : ℕ) : kernel (X 0) ((i : Icc 0 N) → X i) :=
-  kernel.map
-    ((kernel.deterministic id measurable_id) ×ₖ
-      (kernel.comap ((transition κ).ker 0 N) zer zer.measurable_toFun))
-    (er' N) (er' N).measurable_toFun
-
 def er'' :
     (X 0) × ((n : ℕ+) → X n) ≃ᵐ ((n : ℕ) → X n) where
   toFun := fun p n ↦ if h : n = 0 then h ▸ p.1 else p.2 ⟨n, Nat.zero_lt_of_ne_zero h⟩
@@ -1166,15 +1182,17 @@ def er'' :
   right_inv := fun p ↦ by
     simp only [PNat.mk_coe]
     ext n
-    split_ifs
-    · aesop
+    split_ifs with h
+    · cases h; rfl
     · rfl
   measurable_toFun := by
     apply measurable_pi_lambda _ (fun n ↦ ?_)
     by_cases h : n = 0
     · simp only [Equiv.coe_fn_mk, h, dite_true]
-      aesop_subst h
+      simp_rw [eqRec_eq_cast]
+      apply (measurable_cast _ _).comp
       apply measurable_fst
+      cases h; rfl
     · simp only [Equiv.coe_fn_mk, h, dite_false]
       exact measurable_snd.eval
   measurable_invFun := by
@@ -1187,7 +1205,138 @@ noncomputable def ionescu_ker : kernel (X 0) ((n : ℕ) → X n) :=
     ((kernel.deterministic id measurable_id) ×ₖ (ionescu_tulcea_kernel κ))
     er'' er''.measurable_toFun
 
+noncomputable def my_ker (N : ℕ) :
+    kernel (X 0) ((i : Iic N) → X i) := by
+  cases N with
+  | zero =>
+    exact kernel.map (kernel.deterministic id measurable_id) zer zer.measurable_toFun
+  | succ n =>
+    exact kernel.map ((kernel.deterministic id measurable_id) ×ₖ
+        (kernel.comap ((transition κ).ker 0 (n + 1)) zer zer.measurable_toFun))
+      (er' (n + 1)) (er' (n + 1)).measurable_toFun
 
+theorem my_ker_zero : my_ker κ 0 =
+    kernel.map (kernel.deterministic id measurable_id) zer zer.measurable_toFun := rfl
+
+theorem my_ker_pos {N : ℕ} (hN : 0 < N) :
+    my_ker κ N = kernel.map ((kernel.deterministic id measurable_id) ×ₖ
+        (kernel.comap ((transition κ).ker 0 N) zer zer.measurable_toFun))
+      (er' N) (er' N).measurable_toFun := by
+  rw [← N.succ_pred]
+  · rfl
+  · exact (ne_of_lt hN).symm
+
+theorem Measure.map_prod {X Y Z T : Type*} [MeasurableSpace X] [MeasurableSpace Y]
+    [MeasurableSpace Z] [MeasurableSpace T] (μ : Measure X) [IsFiniteMeasure μ]
+    (ν : Measure Y) [IsFiniteMeasure ν] {f : X → Z} (hf : Measurable f)
+    {g : Y → T} (hg : Measurable g) :
+    (μ.prod ν).map (Prod.map f g) = (μ.map f).prod (ν.map g) := by
+  apply (Measure.prod_eq _).symm
+  intro s t ms mt
+  rw [Measure.map_apply]
+  · have : Prod.map f g ⁻¹' s ×ˢ t = (f ⁻¹' s) ×ˢ (g ⁻¹' t) := prod_preimage_eq.symm
+    rw [this, Measure.prod_prod, Measure.map_apply hf ms, Measure.map_apply hg mt]
+  · exact hf.prod_map hg
+  · exact ms.prod mt
+
+theorem kernel.map_prod {X Y Z T U : Type*} [MeasurableSpace X] [MeasurableSpace Y]
+    [MeasurableSpace Z] [MeasurableSpace T] [MeasurableSpace U]
+    (κ : kernel X Y) [IsFiniteKernel κ] (η : kernel X T) [IsFiniteKernel η]
+    {f : Y → Z} (hf : Measurable f) {g : T → U} (hg : Measurable g) :
+    kernel.map (κ ×ₖ η) (Prod.map f g) (hf.prod_map hg) =
+    (kernel.map κ f hf) ×ₖ (kernel.map η g hg) := by
+  ext1 x
+  rw [kernel.map_apply, kernel.prod_apply, Measure.map_prod, kernel.prod_apply, kernel.map_apply,
+    kernel.map_apply]
+  · exact hf
+  · exact hg
+
+theorem ionescu_tulcea_kernel_apply (x₀ : X 0) :
+    ionescu_tulcea_kernel κ x₀ = ionescu_tulcea_fun κ x₀ := by
+  rw [ionescu_tulcea_kernel]
+  rfl
+
+lemma omg' {s t : Set ℕ} (h : s = t) (h' : ((i : s) → X i) = ((i : t) → X i))
+    (x : (i : s) → X i) (i : s) (hi : i.1 ∈ t) :
+    cast h' x ⟨i.1, hi⟩ = x i := by
+  subst h
+  rfl
+
+theorem ionescu_ker_proj (N : ℕ) :
+    kernel.map (ionescu_ker κ) (fun x (i : Iic N) ↦ x i) (measurable_proj _) =
+    my_ker κ N := by
+  rcases eq_zero_or_pos N with hN | hN
+  · cases hN
+    rw [my_ker_zero]
+    have : (fun (x : (n : ℕ) → X n) (i : Iic 0) ↦ x i) = zer ∘ (fun x ↦ x 0) := by
+      ext x i
+      simp [zer]
+      have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by
+        have := i.2
+        simp only [mem_Iic, nonpos_iff_eq_zero] at this
+        rw [← Subtype.coe_inj]
+        exact this.symm
+      cases this; rfl
+    conv_lhs => enter [2]; rw [this]
+    rw [← kernel.map_map]
+    · have : (fun x : (n : ℕ) → X n ↦ x 0) = Prod.fst ∘ er''.symm := by
+        ext x; simp [er'']
+      conv_lhs => enter [1, 2]; rw [this]
+      rw [← kernel.map_map, ionescu_ker]
+      · nth_rw 3 [kernel.map_map]
+        · conv_lhs => enter [1, 1, 2]; rw [er''.symm_comp_self]
+          rw [kernel.map_id]
+          · congr
+            nth_rw 2 [← kernel.fst_prod (kernel.deterministic id _) (ionescu_tulcea_kernel κ)]
+            · rfl
+            · exact measurable_fst
+          · exact zer.measurable_toFun
+        · exact er''.measurable_invFun
+    · exact measurable_pi_apply _
+  · rw [ionescu_ker, kernel.map_map]
+    have : (fun (x : (n : ℕ) → X n) (i : Iic N) ↦ x i) ∘ er'' = (er' N) ∘
+        (Prod.map id (fun x (i : Ioc 0 N) ↦ x ⟨i.1, (mem_Ioc.1 i.2).1⟩)) := by
+      ext x i
+      simp only [er', MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, er'', MeasurableEquiv.symm_mk,
+        Equiv.coe_fn_symm_mk, Function.comp_apply, Prod_map, id_eq, PNat.mk_coe]
+    conv_lhs => enter [2]; rw [this]
+    rw [← kernel.map_map, my_ker_pos _ hN]
+    · congr
+      rw [kernel.map_prod, kernel.map_id]
+      · congr
+        ext1 x₀
+        rw [kernel.map_apply, ionescu_tulcea_kernel_apply,
+          ← Function.id_comp
+            (fun (x : (n : ℕ+) → X n) (i : Ioc 0 N) ↦ x ⟨i.1, (mem_Ioc.1 i.2).1⟩),
+          ← (@ioc_fpioc _ _ 0 N).symm_comp_self, Function.comp.assoc, ← Measure.map_map]
+        · have : ⇑ioc_fpioc ∘ (fun (x : (n : ℕ+) → X n) (i : Ioc 0 N) ↦
+              x ⟨i.1, (mem_Ioc.1 i.2).1⟩) =
+              fun (x : (n : ℕ+) → X n) (i : fpioc 0 N) ↦ x i := by ext; rfl
+          rw [this, isProjectiveLimit_ionescu_tulcea_fun, family,
+            ← measure_cast (sup_fpioc hN).symm (fun n ↦ (transition κ).ker 0 n (zer x₀)),
+            Measure.map_map, Measure.map_map]
+          · convert kernel.comap_apply ((transition κ).ker 0 N) zer.measurable_toFun x₀
+            rw [kernel.comap_apply]
+            nth_rw 2 [← kernel.map_id ((transition κ).ker 0 N)]
+            rw [kernel.map_apply]
+            congr
+            ext x i
+            simp only [ioc_fpioc, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
+              Equiv.coe_fn_symm_mk, Function.comp_apply, PNat.mk_coe, id_eq]
+            apply omg'
+            rw [sup_fpioc hN]
+          · apply ioc_fpioc.measurable_invFun.comp
+            exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+          · apply measurable_cast
+            apply heq_meas
+            rw [sup_fpioc hN]
+          · exact ioc_fpioc.measurable_invFun
+          · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+        · exact ioc_fpioc.measurable_invFun
+        · exact ioc_fpioc.measurable_toFun.comp <|
+            measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+        · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+    · exact (er' N).measurable_toFun
 
 def equiv_Icc (a b : ℕ) : ((i : Finset.Icc a b) → X i) ≃ᵐ ((i : Icc a b) → X i) where
   toFun := by
@@ -1204,7 +1353,223 @@ def equiv_Icc (a b : ℕ) : ((i : Finset.Icc a b) → X i) ≃ᵐ ((i : Icc a b)
   measurable_invFun := measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
 
 theorem integral_dep {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {N : ℕ} {f : ((i : Icc 0 N) → X i) → E} (hf : StronglyMeasurable f)
-    (x₀ : X 0) :
-    ∫ y, f ((fun x (i : Icc 0 N) ↦ x i) y) ∂ionescu_ker κ x₀ =
-    ∫ y, f y ∂ker κ N x₀ := by
+    {N : ℕ} (x₀ : X 0) {f : ((i : Iic N) → X i) → E} (hf : AEStronglyMeasurable f (my_ker κ N x₀)) :
+    ∫ y, f ((fun x (i : Iic N) ↦ x i) y) ∂ionescu_ker κ x₀ =
+    ∫ y, f y ∂my_ker κ N x₀ := by
+  rw [← ionescu_ker_proj, kernel.map_apply, integral_map]
+  · exact (measurable_proj _).aemeasurable
+  · rw [← kernel.map_apply, ionescu_ker_proj]
+    exact hf
+
+
+
+
+
+def e (n : ℕ) : (X (n + 1)) ≃ᵐ ((i : Ioc n (n + 1)) → X i) where
+  toFun := fun x i ↦ by
+    have : n + 1 = i.1 := by
+      have := i.2
+      simp at this
+      linarith
+    exact this ▸ x
+  invFun := fun x ↦ x ⟨n + 1, mem_Ioc.2 ⟨n.lt_succ_self, le_refl (n + 1)⟩⟩
+  left_inv := fun x ↦ by simp
+  right_inv := fun x ↦ by
+    ext i
+    have : ⟨n + 1, mem_Ioc.2 ⟨n.lt_succ_self, le_refl (n + 1)⟩⟩ = i := by
+      have := i.2
+      simp at this
+      rw [← Subtype.coe_inj]
+      linarith
+    cases this; rfl
+  measurable_toFun := by
+    refine measurable_pi_lambda _ (fun i ↦ ?_)
+    simp_rw [eqRec_eq_cast]
+    apply measurable_cast
+    have : ⟨n + 1, mem_Ioc.2 ⟨n.lt_succ_self, le_refl (n + 1)⟩⟩ = i := by
+      have := i.2
+      simp at this
+      rw [← Subtype.coe_inj]
+      linarith
+    cases this; rfl
+  measurable_invFun := measurable_pi_apply _
+
+variable (κ : (n : ℕ) → kernel ((i : Iic n) → X i) (X (n + 1)))
+variable [∀ n, IsMarkovKernel (κ n)]
+
+noncomputable def noyau : kernel (X 0) ((n : ℕ) → X n) :=
+  ionescu_ker (fun n ↦ kernel.map (κ n) (e n) (e n).measurable_toFun)
+
+noncomputable def noyau_partiel (N : ℕ) : kernel (X 0) ((i : Iic N) → X i) :=
+  my_ker (fun n ↦ kernel.map (κ n) (e n) (e n).measurable_toFun) N
+
+theorem noyau_proj (N : ℕ) :
+    kernel.map (noyau κ) (fun x (i : Iic N) ↦ x i) (measurable_proj _) =
+    noyau_partiel κ N := ionescu_ker_proj _ _
+
+variable (μ : (n : ℕ) → Measure (X n)) [∀ n, IsProbabilityMeasure (μ n)]
+
+noncomputable def prod_meas : Measure ((n : ℕ) → X n) :=
+  Measure.snd ((μ 0) ⊗ₘ (noyau (fun n ↦ kernel.const _ (μ (n + 1)))))
+
+abbrev M := transitionGraph X
+
+lemma obvious {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)] (f : (i : ι) → α i) (i : ι) :
+    MeasurableEquiv.refl ((i : ι) → α i) f i = f i := rfl
+
+theorem kernel.comap_const {X Y Z : Type*} [MeasurableSpace X] [MeasurableSpace Y]
+    [MeasurableSpace Z] (μ : Measure Z) {f : X → Y} (hf : Measurable f) :
+    kernel.comap (kernel.const Y μ) f hf = kernel.const X μ := by
+  ext1 x
+  rw [kernel.const_apply, kernel.comap_apply, kernel.const_apply]
+
+theorem kerNat_prod {N : ℕ} (hN : 0 < N) :
+    kernel.map
+      (kerNat (M := M) (fun n ↦ kernel.const _ ((μ (n + 1)).map (e n))) 0 N)
+      (transitionGraph.path_equiv X) (transitionGraph.path_equiv X).measurable_toFun =
+      kernel.const _ (Measure.pi (fun i : Ioc 0 N ↦ μ i)) := by
+  ext1 x₀
+  refine Nat.le_induction ?_ ?_ N (Nat.succ_le.2 hN)
+  · sorry
+  · intro n hn h_ind
+    rw [kernel.const_apply]
+    refine (Measure.pi_eq ?_).symm
+    intro s ms
+    rw [kerNat_succ_right, kerNat_succ, kernel.map_apply', compProd,
+      dif_pos ⟨Nat.succ_le.1 hn, n.lt_succ_self⟩, kernel.map_apply']
+    · have : M.er 0 n (n + 1) (Nat.succ_le.1 hn) n.lt_succ_self ⁻¹'
+            ((transitionGraph.path_equiv X) ⁻¹' univ.pi s) =
+          (univ.pi (fun i : Ioc 0 n ↦ s ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩)) ×ˢ
+            ((e n).symm ⁻¹' (s ⟨n + 1, mem_Ioc.2 ⟨n.succ_pos, le_refl (n + 1)⟩⟩)) := by
+        ext p
+        simp only [M, er_eq, ProbabilityTheory.er, Nat.succ_eq_add_one, Nat.reduceAdd,
+          MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, transitionGraph.path_equiv, mem_preimage,
+          Set.mem_pi, mem_univ, true_implies, Subtype.forall, mem_Ioc, e, MeasurableEquiv.symm_mk,
+          Equiv.coe_fn_symm_mk, mem_prod]
+        refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h1, h2⟩ i ⟨hi1, hi2⟩ ↦ ?_⟩
+        · rw [mem_univ_pi]
+          rintro ⟨i, hi⟩
+          convert h i (mem_Ioc.1 <| Ioc_subset_Ioc_right n.le_succ hi)
+          simp only [transitionGraph, Nat.succ_eq_add_one, MeasurableEquiv.refl_apply]
+          rw [dif_pos (mem_Ioc.1 hi).2]
+        · convert h (n + 1) ⟨n.succ_pos, le_refl _⟩
+          simp [transitionGraph]
+        · simp only [transitionGraph, MeasurableEquiv.refl_apply]
+          split_ifs with h
+          · rw [mem_univ_pi] at h1
+            exact h1 ⟨i, mem_Ioc.2 ⟨hi1, h⟩⟩
+          · have : i = n + 1 := by
+              rcases Nat.le_or_eq_of_le_succ hi2 with a | b
+              · exact (h a).elim
+              · exact b
+            cases this
+            exact h2
+      rw [this, split, kernel.comap_const, kernel.compProd_apply]
+      · simp only [kernel.const_apply, Nat.succ_eq_add_one, mem_prod, mem_preimage]
+        have this b : (μ (n + 1)).map (e n) {c | b ∈
+            (univ.pi (fun i : Ioc 0 n ↦ s ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩)) ∧
+              (e n).symm c ∈ s ⟨n + 1, mem_Ioc.2 ⟨n.succ_pos, le_refl (n + 1)⟩⟩} =
+            (univ.pi (fun i : Ioc 0 n ↦ s ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩)).indicator
+            (fun _ ↦ (μ (n + 1)) (s ⟨n + 1, mem_Ioc.2 ⟨n.succ_pos, le_refl _⟩⟩)) b := by
+          simp only [Nat.succ_eq_add_one, Set.mem_pi, mem_univ, true_implies, Subtype.forall,
+            mem_Ioc, indicator, Pi.one_apply, mul_ite, mul_one, mul_zero]
+          split_ifs with h
+          · rw [mem_univ_pi] at h
+            rw [Measure.map_apply]
+            · congr
+              ext x
+              simp only [e, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.symm_mk,
+                Equiv.coe_fn_symm_mk, preimage_setOf_eq, mem_setOf_eq, and_iff_right_iff_imp]
+              rintro hx i ⟨hi1, hi2⟩
+              exact h ⟨i, mem_Ioc.2 ⟨hi1, hi2⟩⟩
+            · exact (e n).measurable_toFun
+            · have : MeasurableSet ((e n).symm ⁻¹' s ⟨n + 1, right_mem_Ioc.2 n.succ_pos⟩) :=
+                (ms ⟨n + 1, right_mem_Ioc.2 n.succ_pos⟩).preimage (e n).measurable_invFun
+              convert this
+              ext x
+              simp only [mem_setOf_eq, mem_preimage, and_iff_right_iff_imp]
+              exact fun _ ↦ by simpa [mem_univ_pi] using h
+          · rw [Measure.map_apply]
+            · convert measure_empty
+              · ext x
+                simp only [e, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.symm_mk,
+                  Equiv.coe_fn_symm_mk, preimage_setOf_eq, mem_setOf_eq, mem_empty_iff_false,
+                  iff_false, not_and]
+                intro h1 h2
+                apply h
+                rw [mem_univ_pi]
+                rintro ⟨i, hi⟩
+                exact h1 i (mem_Ioc.1 hi)
+              infer_instance
+            · exact (e n).measurable_toFun
+            · convert MeasurableSet.empty
+              ext x
+              simp only [e, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.symm_mk,
+                Equiv.coe_fn_symm_mk, preimage_setOf_eq, mem_setOf_eq, mem_empty_iff_false,
+                iff_false, not_and]
+              intro h1 h2
+              apply h
+              rw [mem_univ_pi]
+              rintro ⟨i, hi⟩
+              exact h1 i (mem_Ioc.1 hi)
+        simp only [M, transitionGraph]
+        simp_rw [this]
+        rw [lintegral_indicator_const]
+        · sorry
+        · exact MeasurableSet.univ_pi (fun i ↦ ms ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩)
+      apply MeasurableSet.prod
+      · exact MeasurableSet.univ_pi (fun i ↦ ms ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩)
+      · exact (ms ⟨n + 1, right_mem_Ioc.2 n.succ_pos⟩).preimage (e n).measurable_invFun
+    · exact (MeasurableSet.univ_pi ms).preimage (MeasurableEquiv.measurable _)
+    · exact MeasurableSet.univ_pi ms
+    exact Nat.succ_le.1 hn
+
+theorem prod_noyau_proj (N : ℕ) :
+    noyau_partiel (fun n ↦ kernel.const _ (μ (n + 1))) N =
+      kernel.map ((kernel.deterministic id measurable_id) ×ₖ
+          (kernel.const _ (Measure.pi (fun i : Ioc 0 N ↦ μ i))))
+        (er' N) (er' N).measurable_toFun := by sorry
+
+variable {ι : Type*} {α : ι → Type*}
+
+theorem preimage_proj (I J : Finset ι) [∀ i : ι, Decidable (i ∈ I)]
+    (hIJ : I ⊆ J) (s : (i : I) → Set (α i)) :
+    (fun t : (∀ j : J, α j) ↦ fun i : I ↦ t ⟨i, hIJ i.2⟩) ⁻¹' (univ.pi s) =
+    (@Set.univ J).pi (fun j ↦ if h : j.1 ∈ I then s ⟨j.1, h⟩ else univ) := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies, Subtype.forall]
+  refine ⟨fun h i hi ↦ ?_, fun h i i_mem ↦ by simpa [i_mem] using h i (hIJ i_mem)⟩
+  split_ifs with i_mem
+  · simp [i_mem, h i i_mem]
+  · simp [i_mem]
+
+variable {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)]
+variable (ν : (i : ι) → Measure (Y i)) [hμ : ∀ i, IsProbabilityMeasure (ν i)]
+
+/-- Consider a family of probability measures. You can take their products for any fimite
+subfamily. This gives a projective family of measures, see `IsProjectiveMeasureFamily`. -/
+theorem isProjectiveMeasureFamily_pi :
+    IsProjectiveMeasureFamily (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ ν i))) := by
+  classical
+  intro I J hJI
+  refine Measure.pi_eq (fun s ms ↦ ?_)
+  rw [Measure.map_apply (measurable_proj₂' (α := Y) I J hJI) (MeasurableSet.univ_pi ms),
+    preimage_proj J I hJI, Measure.pi_pi]
+  have h1 : (@Finset.univ I _).prod (fun i ↦ (ν i) (if hi : i.1 ∈ J then s ⟨i.1, hi⟩ else univ)) =
+      (@Finset.univ I.toSet _).prod
+      (fun i ↦ (fun j ↦ (ν j) (if hj : j ∈ J then s ⟨j, hj⟩ else univ)) i) :=
+    Finset.prod_congr rfl (by simp)
+  have h2 : (@Finset.univ J _).prod (fun i ↦ (ν i) (s i)) =
+      (@Finset.univ J.toSet _).prod
+      (fun i ↦ (fun j ↦ (ν j) (if hj : j ∈ J then s ⟨j, hj⟩ else univ)) i) :=
+    Finset.prod_congr rfl (by simp)
+  rw [h1, h2, Finset.prod_set_coe
+      (f := fun i ↦ (fun j ↦ (ν j) (if hj : j ∈ J then s ⟨j, hj⟩ else univ)) i),
+    Finset.prod_set_coe
+      (f := fun i ↦ (fun j ↦ (ν j) (if hj : j ∈ J then s ⟨j, hj⟩ else univ)) i),
+    Finset.toFinset_coe, Finset.toFinset_coe,
+    Finset.prod_subset hJI (fun _ h h' ↦ by simp [h, h'])]
+
+theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
+    (fun I : Finset ℕ ↦ (Measure.pi (fun i : I ↦ μ i))) := by
+  intro I
