@@ -469,7 +469,7 @@ theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAdd
 
 -- Adaptation note: nightly-2024-04-01
 -- Previously this maxHeartbeats was not required. None of the backwards compatibility flags help.
-set_option maxHeartbeats 400000 in
+/-set_option maxHeartbeats 400000 in-/
 /-- Dependent version of `Submodule.pow_induction_on_left`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}

@@ -246,7 +246,7 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
 #adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
 (Part of the code was ignoring the `maxDischargeDepth` setting:
  now that we have to increase it, other paths become slow.) -/
-set_option maxHeartbeats 400000 in
+/-set_option maxHeartbeats 400000 in-/
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
