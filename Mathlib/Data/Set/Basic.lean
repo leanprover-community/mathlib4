@@ -2083,7 +2083,7 @@ theorem pair_diff_left (hne : a ≠ b) : ({a, b} : Set α) \ {a} = {b} := by
 theorem pair_diff_right (hne : a ≠ b) : ({a, b} : Set α) \ {b} = {a} := by
   rw [pair_comm, pair_diff_left hne.symm]
 
-@[simp] theorem pair_subset_iff : {a, b} ⊆ s ↔ a ∈ s ∧ b ∈ s := by
+theorem pair_subset_iff : {a, b} ⊆ s ↔ a ∈ s ∧ b ∈ s := by
   rw [insert_subset_iff, singleton_subset_iff]
 
 theorem pair_subset (ha : a ∈ s) (hb : b ∈ s) : {a, b} ⊆ s :=
@@ -2092,17 +2092,12 @@ theorem pair_subset (ha : a ∈ s) (hb : b ∈ s) : {a, b} ⊆ s :=
 theorem subset_pair_iff : s ⊆ {a, b} ↔ ∀ x ∈ s, x = a ∨ x = b := by
   simp [subset_def]
 
-theorem subset_pair_iff_eq {x y : α} {s : Set α} :
-    s ⊆ {x, y} ↔ s = ∅ ∨ s = {x} ∨ s = {y} ∨ s = {x, y} := by
-  obtain (rfl | hne) := eq_or_ne x y
-  · simp only [mem_singleton_iff, insert_eq_of_mem, subset_singleton_iff_eq, or_self]
-  rw [pair_comm, subset_insert_iff, subset_singleton_iff_eq, subset_singleton_iff_eq,
-    diff_eq_empty, and_or_left, ← singleton_subset_iff, and_comm, ← subset_antisymm_iff,
-    ← or_assoc, ← or_assoc, ← or_assoc]
-  apply or_congr_right
-  rw [subset_antisymm_iff, subset_diff, diff_subset_iff, singleton_subset_iff, singleton_subset_iff,
-    union_singleton, disjoint_singleton, and_iff_left hne, ← and_assoc, and_comm, ← and_assoc,
-    ← pair_subset_iff, ← subset_antisymm_iff, pair_comm, eq_comm]
+theorem subset_pair_iff_eq {x y : α} : s ⊆ {x, y} ↔ s = ∅ ∨ s = {x} ∨ s = {y} ∨ s = {x, y} := by
+  refine ⟨?_, by rintro (rfl | rfl | rfl | rfl) <;> simp [pair_subset_iff]⟩
+  rw [subset_insert_iff, subset_singleton_iff_eq, subset_singleton_iff_eq,
+    ← subset_empty_iff (s := s \ {x}), diff_subset_iff, union_empty, subset_singleton_iff_eq]
+  have h : x ∈ s → {y} = s \ {x} → s = {x,y} := fun h₁ h₂ ↦ by simp [h₁, h₂]
+  tauto
 
 theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
     s ⊆ {a, b} ↔ s = {a} ∨ s = {b} ∨ s = {a, b} := by
