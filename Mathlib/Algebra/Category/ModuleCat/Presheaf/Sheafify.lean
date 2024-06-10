@@ -20,17 +20,6 @@ In many application, the morphism `α` shall be the identity, but this more
 general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-## TODO
-
-- promote this construction to a functor from presheaves of modules over `R₀`
-  to sheaves of modules over `R`, and construct an adjunction.
-
->>>>>>> origin
-=======
->>>>>>> origin/presheaves-of-modules-sheafification
 -/
 
 universe w v v₁ u₁ u
@@ -357,7 +346,11 @@ lemma comp_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
 /-- The bijection
 `(sheafify α φ ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F))`
 which is part of the universal property of the sheafification of the presheaf of modules `M₀`,
+<<<<<<< HEAD
 for any sheaf of modules `F`. -/
+=======
+for any sheaf of modules `F`, see `PresheafOfModules.sheafificationAdjunction` -/
+>>>>>>> origin
 noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
     (sheafify α φ ⟶ F) ≃
       (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :=

@@ -13,6 +13,8 @@ In this file, we construct a functor
 `PresheafOfModules.sheafification α : PresheafOfModules R₀ ⥤ SheafOfModules R`
 for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings.
+In particular, if `α` is the identity of `R.val`, we obtain the
+sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
 
 -/
 
@@ -31,7 +33,7 @@ namespace PresheafOfModules
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
 the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R`. -/
-@[simps map]
+@[simps! (config := .lemmasOnly) map]
 noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R where
   obj M₀ := sheafify α (CategoryTheory.toSheafify J M₀.presheaf)
   map f := sheafifyMap _ _ _ f ((presheafToSheaf J AddCommGroupCat).map f.hom) (by simp)
@@ -43,8 +45,6 @@ noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules
     ext1
     apply (toPresheaf _).map_injective
     simp [toPresheaf, sheafify]
-
-attribute [-simp] sheafification_map
 
 /-- The sheafification of presheaves of modules commutes with the functor which
 forgets the module structures. -/
@@ -97,6 +97,7 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
+@[simps! (config := .lemmasOnly) homEquiv_apply]
 noncomputable def sheafificationAdjunction :
     sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α :=
   Adjunction.mkOfHomEquiv
@@ -113,6 +114,11 @@ noncomputable def sheafificationAdjunction :
         erw [sheafificationHomEquiv_hom, sheafificationHomEquiv_hom]
         rw [Functor.map_comp]
         apply Adjunction.homEquiv_naturality_right }
+
+@[simp]
+lemma sheafificationAdjunction_unit_app_hom (M₀ : PresheafOfModules.{v} R₀) :
+    ((sheafificationAdjunction α).unit.app M₀).hom = CategoryTheory.toSheafify J M₀.presheaf := by
+  rfl
 
 instance : (sheafification.{v} α).IsLeftAdjoint :=
   (sheafificationAdjunction α).isLeftAdjoint

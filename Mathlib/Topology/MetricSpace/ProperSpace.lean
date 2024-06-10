@@ -68,7 +68,7 @@ theorem ProperSpace.of_isCompact_closedBall_of_le (R : ℝ)
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
 #align proper_space_of_compact_closed_ball_of_le ProperSpace.of_isCompact_closedBall_of_le
 
-@[deprecated] -- Since 2024-01-31
+@[deprecated (since := "2024-01-31")]
 alias properSpace_of_compact_closedBall_of_le := ProperSpace.of_isCompact_closedBall_of_le
 
 /-- If there exists a sequence of compact closed balls with the same center
