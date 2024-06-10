@@ -263,7 +263,7 @@ theorem opNorm_extend_le :
       _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 #align continuous_linear_map.op_norm_extend_le ContinuousLinearMap.opNorm_extend_le
 
-@[deprecated] alias op_norm_extend_le := opNorm_extend_le -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_norm_extend_le := opNorm_extend_le
 
 end
 

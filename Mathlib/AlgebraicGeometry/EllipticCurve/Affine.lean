@@ -768,13 +768,22 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_some_of_Xne' WeierstrassCurve.Affine.Point.add_of_X_ne'
 
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yeq := add_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yeq := add_self_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne := add_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne' := add_of_Y_ne'
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne := add_self_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne' := add_self_of_Y_ne'
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne := add_of_X_ne
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne' := add_of_X_ne'
+
 end Point
 
 end Group
 
-section BaseChange
+section Map
 
-/-! ### Maps and base changes -/
+/-! ### Maps across ring homomorphisms -/
 
 variable {S : Type v} [CommRing S] (f : R →+* S)
 
@@ -873,92 +882,98 @@ lemma map_slope {F : Type u} [Field F] (W : Affine F) {K : Type v} [Field K] (f 
     map_simp
 #align weierstrass_curve.base_change_slope WeierstrassCurve.Affine.map_slope
 
+end Map
+
+section BaseChange
+
+/-! ### Base changes across algebra homomorphisms -/
+
 variable {R : Type r} [CommRing R] (W : Affine R) {S : Type s} [CommRing S] [Algebra R S]
   {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (g : A →ₐ[S] B)
+  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
 
 lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
-    (W.baseChange A).toAffine.polynomial.map (mapRingHom g) := by
+    (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
 
 lemma baseChange_eval_polynomial (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomial.eval <| x.map g).eval (g y) =
-      g (((W.baseChange A).toAffine.polynomial.eval x).eval y) := by
+    ((W.baseChange B).toAffine.polynomial.eval <| x.map f).eval (f y) =
+      f (((W.baseChange A).toAffine.polynomial.eval x).eval y) := by
   erw [← map_eval_polynomial, map_baseChange]
   rfl
 
-variable {g} in
-lemma baseChange_equation (hg : Function.Injective g) (x y : A) :
-    (W.baseChange B).toAffine.Equation (g x) (g y) ↔ (W.baseChange A).toAffine.Equation x y := by
-  erw [← map_equation _ hg, map_baseChange]
+variable {f} in
+lemma baseChange_equation (hf : Function.Injective f) (x y : A) :
+    (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
+  erw [← map_equation _ hf, map_baseChange]
   rfl
 #align weierstrass_curve.equation_iff_base_change_of_base_change WeierstrassCurve.Affine.baseChange_equation
 
 lemma baseChange_polynomialX : (W.baseChange B).toAffine.polynomialX =
-    (W.baseChange A).toAffine.polynomialX.map (mapRingHom g) := by
+    (W.baseChange A).toAffine.polynomialX.map (mapRingHom f) := by
   rw [← map_polynomialX, map_baseChange]
 
 lemma baseChange_eval_polynomialX (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomialX.eval <| x.map g).eval (g y) =
-      g (((W.baseChange A).toAffine.polynomialX.eval x).eval y) := by
+    ((W.baseChange B).toAffine.polynomialX.eval <| x.map f).eval (f y) =
+      f (((W.baseChange A).toAffine.polynomialX.eval x).eval y) := by
   erw [← map_eval_polynomialX, map_baseChange]
   rfl
 
 lemma baseChange_polynomialY : (W.baseChange B).toAffine.polynomialY =
-    (W.baseChange A).toAffine.polynomialY.map (mapRingHom g) := by
+    (W.baseChange A).toAffine.polynomialY.map (mapRingHom f) := by
   rw [← map_polynomialY, map_baseChange]
 
 lemma baseChange_eval_polynomialY (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomialY.eval <| x.map g).eval (g y) =
-      g (((W.baseChange A).toAffine.polynomialY.eval x).eval y) := by
+    ((W.baseChange B).toAffine.polynomialY.eval <| x.map f).eval (f y) =
+      f (((W.baseChange A).toAffine.polynomialY.eval x).eval y) := by
   erw [← map_eval_polynomialY, map_baseChange]
   rfl
 
-variable {g} in
-lemma baseChange_nonsingular (hg : Function.Injective g) (x y : A) :
-    (W.baseChange B).toAffine.Nonsingular (g x) (g y) ↔
+variable {f} in
+lemma baseChange_nonsingular (hf : Function.Injective f) (x y : A) :
+    (W.baseChange B).toAffine.Nonsingular (f x) (f y) ↔
       (W.baseChange A).toAffine.Nonsingular x y := by
-  erw [← map_nonsingular _ hg, map_baseChange]
+  erw [← map_nonsingular _ hf, map_baseChange]
   rfl
 #align weierstrass_curve.nonsingular_iff_base_change_of_base_change WeierstrassCurve.Affine.baseChange_nonsingular
 
 lemma baseChange_negPolynomial :
     (W.baseChange B).toAffine.negPolynomial =
-      (W.baseChange A).toAffine.negPolynomial.map (mapRingHom g) := by
+      (W.baseChange A).toAffine.negPolynomial.map (mapRingHom f) := by
   rw [← map_negPolynomial, map_baseChange]
 
 lemma baseChange_negY (x y : A) :
-    (W.baseChange B).toAffine.negY (g x) (g y) = g ((W.baseChange A).toAffine.negY x y) := by
+    (W.baseChange B).toAffine.negY (f x) (f y) = f ((W.baseChange A).toAffine.negY x y) := by
   erw [← map_negY, map_baseChange]
   rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_neg_Y_of_base_change WeierstrassCurve.Affine.baseChange_negY
 
 lemma baseChange_addPolynomial (x y L : A) :
-    (W.baseChange B).toAffine.addPolynomial (g x) (g y) (g L) =
-      ((W.baseChange A).toAffine.addPolynomial x y L).map g := by
+    (W.baseChange B).toAffine.addPolynomial (f x) (f y) (f L) =
+      ((W.baseChange A).toAffine.addPolynomial x y L).map f := by
   rw [← map_addPolynomial, map_baseChange]
   rfl
 
 lemma baseChange_addX (x₁ x₂ L : A) :
-    (W.baseChange B).toAffine.addX (g x₁) (g x₂) (g L) =
-      g ((W.baseChange A).toAffine.addX x₁ x₂ L) := by
+    (W.baseChange B).toAffine.addX (f x₁) (f x₂) (f L) =
+      f ((W.baseChange A).toAffine.addX x₁ x₂ L) := by
   erw [← map_addX, map_baseChange]
   rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_X_of_base_change WeierstrassCurve.Affine.baseChange_addX
 
 lemma baseChange_negAddY (x₁ x₂ y₁ L : A) :
-    (W.baseChange B).toAffine.negAddY (g x₁) (g x₂) (g y₁) (g L) =
-      g ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by
+    (W.baseChange B).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f L) =
+      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by
   erw [← map_negAddY, map_baseChange]
   rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_Y'_of_base_change WeierstrassCurve.Affine.baseChange_negAddY
 
 lemma baseChange_addY (x₁ x₂ y₁ L : A) :
-    (W.baseChange B).toAffine.addY (g x₁) (g x₂) (g y₁) (g L) =
-      g ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by
+    (W.baseChange B).toAffine.addY (f x₁) (f x₂) (f y₁) (f L) =
+      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by
   erw [← map_addY, map_baseChange]
   rfl
 set_option linter.uppercaseLean3 false in
@@ -1033,6 +1048,20 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
 end Point
 
 end BaseChange
+
+@[deprecated (since := "2024-06-03")] alias addY' := negAddY
+@[deprecated (since := "2024-06-03")] alias
+  nonsingular_add_of_eval_derivative_ne_zero := nonsingular_negAdd_of_eval_derivative_ne_zero
+@[deprecated (since := "2024-06-03")] alias slope_of_Yeq := slope_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias slope_of_Yne := slope_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias slope_of_Xne := slope_of_X_ne
+@[deprecated (since := "2024-06-03")] alias slope_of_Yne_eq_eval := slope_of_Y_ne_eq_eval
+@[deprecated (since := "2024-06-03")] alias Yeq_of_Xeq := Y_eq_of_X_eq
+@[deprecated (since := "2024-06-03")] alias Yeq_of_Yne := Y_eq_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias equation_add' := equation_negAdd
+@[deprecated (since := "2024-06-03")] alias nonsingular_add' := nonsingular_negAdd
+@[deprecated (since := "2024-06-03")] alias baseChange_addY' := baseChange_negAddY
+@[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
 
 end WeierstrassCurve.Affine
 
