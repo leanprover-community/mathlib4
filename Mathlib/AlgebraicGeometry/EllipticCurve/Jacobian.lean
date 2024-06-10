@@ -13,7 +13,8 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 This file defines the type of points on a Weierstrass curve as a tuple, consisting of an equivalence
 class of triples up to scaling by weights, satisfying a Weierstrass equation with a nonsingular
 condition. This file also defines the negation and addition operations of the group law for this
-type, and proves that they respect the Weierstrass equation and the nonsingular condition.
+type, and proves that they respect the Weierstrass equation and the nonsingular condition. The fact
+that they form an abelian group is proven in `Mathlib.AlgebraicGeometry.EllipticCurve.Group`.
 
 ## Mathematical background
 
@@ -90,8 +91,12 @@ universe u v
 /-! ## Weierstrass curves -/
 
 /-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
-abbrev WeierstrassCurve.Jacobian :=
-  WeierstrassCurve
+abbrev WeierstrassCurve.Jacobian (R : Type u) : Type u :=
+  WeierstrassCurve R
+
+/-- The coercion to a Weierstrass curve in Jacobian coordinates. -/
+abbrev WeierstrassCurve.toJacobian {R : Type u} (W : WeierstrassCurve R) : Jacobian R :=
+  W
 
 namespace WeierstrassCurve.Jacobian
 
@@ -1465,16 +1470,16 @@ lemma toAffineLift_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
     toAffineLift ⟨h⟩ = .some ((nonsingular_some ..).mp h) :=
   toAffine_some h
 
-lemma toAffineLift_neg {P : PointClass F} (hP : W.NonsingularLift P) :
-    toAffineLift (-⟨hP⟩) = -toAffineLift ⟨hP⟩ := by
-  rcases P
+lemma toAffineLift_neg (P : W.Point) : (-P).toAffineLift = -P.toAffineLift := by
+  rcases P with @⟨⟨_⟩, hP⟩
   exact toAffine_neg hP
 
-lemma toAffineLift_add {P Q : PointClass F} (hP : W.NonsingularLift P) (hQ : W.NonsingularLift Q) :
-    toAffineLift (⟨hP⟩ + ⟨hQ⟩) = toAffineLift ⟨hP⟩ + toAffineLift ⟨hQ⟩ := by
-  rcases P; rcases Q
+lemma toAffineLift_add (P Q : W.Point) :
+    (P + Q).toAffineLift = P.toAffineLift + Q.toAffineLift := by
+  rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
   exact toAffine_add hP hQ
 
+variable (W) in
 /-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` in Jacobian
 coordinates with the nonsingular rational points on `W` in affine coordinates. -/
 @[simps]
@@ -1492,12 +1497,15 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
     rintro (_ | _)
     · erw [fromAffine_zero, toAffineLift_zero, Affine.Point.zero_def]
     · rw [fromAffine_some, toAffineLift_some]
-  map_add' := by
-    rintro ⟨_⟩ ⟨_⟩
-    simpa only using toAffineLift_add ..
+  map_add' := toAffineLift_add
 
 end Point
 
 end Affine
 
 end WeierstrassCurve.Jacobian
+
+/-- An abbreviation for `WeierstrassCurve.Jacobian.Point.fromAffine` for dot notation. -/
+abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type u} [CommRing R]
+    [Nontrivial R] {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
+  Jacobian.Point.fromAffine P
