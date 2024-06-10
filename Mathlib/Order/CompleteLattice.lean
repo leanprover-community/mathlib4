@@ -540,6 +540,12 @@ theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b > ⊥, ∃ a ∈ s, a < b :=
   @sSup_eq_top αᵒᵈ _ _
 #align Inf_eq_bot sInf_eq_bot
 
+lemma sup_eq_top_of_top_mem (h : ⊤ ∈ s) : sSup s = ⊤ :=
+  sSup_eq_top.mpr fun _ _ => by use ⊤
+
+lemma inf_eq_bot_of_bot_mem (h : ⊥ ∈ s) : sInf s = ⊥ :=
+  sInf_eq_bot.mpr fun _ _ => by use ⊥
+
 theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
   lt_sSup_iff.trans exists_range_iff
 #align lt_supr_iff lt_iSup_iff
