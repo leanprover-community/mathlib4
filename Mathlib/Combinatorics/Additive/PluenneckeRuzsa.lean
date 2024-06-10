@@ -3,7 +3,8 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Tactic.GCongr
@@ -101,9 +102,9 @@ theorem mul_pluennecke_petridis (C : Finset α)
     rw [hC', insert_eq, union_comm, mul_union]
     refine (sup_sdiff_eq_sup ?_).symm
     rw [mul_right_comm, mul_right_comm A, h₀]
-    exact mul_subset_mul_right (inter_subset_right _ _)
+    exact mul_subset_mul_right inter_subset_right
   have h₂ : A' * B * {x} ⊆ A * B * {x} :=
-    mul_subset_mul_right (mul_subset_mul_right <| inter_subset_left _ _)
+    mul_subset_mul_right (mul_subset_mul_right inter_subset_left)
   have h₃ : (A * B * C').card ≤ (A * B * C).card + (A * B).card - (A' * B).card := by
     rw [h₁]
     refine (card_union_le _ _).trans_eq ?_
@@ -111,7 +112,7 @@ theorem mul_pluennecke_petridis (C : Finset α)
       card_mul_singleton]
   refine (mul_le_mul_right' h₃ _).trans ?_
   rw [tsub_mul, add_mul]
-  refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ <| inter_subset_left _ _).trans_eq ?_
+  refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_
   rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, mul_union, ← card_mul_singleton A x, ←
     card_mul_singleton A' x, add_comm (card _), h₀,
     eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
@@ -150,7 +151,7 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
   push_cast
   refine (le_div_iff <| cast_pos.2 hB.card_pos).1 ?_
   rw [mul_div_right_comm, mul_comm _ B]
-  refine (cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
+  refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
@@ -198,7 +199,7 @@ theorem card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B :
     ← cast_mul]
   swap
   · exact cast_pos.2 hA.card_pos
-  refine (cast_le.2 <| add_pluennecke_petridis _ hAB).trans ?_
+  refine (Nat.cast_le.2 <| add_pluennecke_petridis _ hAB).trans ?_
   rw [cast_mul]
   gcongr
 #align finset.card_add_nsmul_le Finset.card_add_nsmul_le
@@ -214,7 +215,7 @@ theorem card_mul_pow_le (hAB : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B)
     le_div_iff, ← cast_mul]
   swap
   · exact cast_pos.2 hA.card_pos
-  refine (cast_le.2 <| mul_pluennecke_petridis _ hAB).trans ?_
+  refine (Nat.cast_le.2 <| mul_pluennecke_petridis _ hAB).trans ?_
   rw [cast_mul]
   gcongr
 #align finset.card_mul_pow_le Finset.card_mul_pow_le
@@ -231,7 +232,7 @@ theorem card_pow_div_pow_le (hA : A.Nonempty) (B : Finset α) (m n : ℕ) :
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hC
   refine (mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
   norm_cast
-  refine (cast_le.2 <| card_div_mul_le_card_mul_mul_card_mul _ _ _).trans ?_
+  refine (Nat.cast_le.2 <| card_div_mul_le_card_mul_mul_card_mul _ _ _).trans ?_
   push_cast
   rw [mul_comm _ C]
   refine (mul_le_mul (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) _)

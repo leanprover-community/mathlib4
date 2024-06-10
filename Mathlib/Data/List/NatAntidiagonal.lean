@@ -86,7 +86,7 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
   rw [antidiagonal_succ']
-  simp only [antidiagonal_succ, map_cons, Prod_map, id_eq, map_map, cons_append, cons.injEq,
+  simp only [antidiagonal_succ, map_cons, Prod.map_apply, id_eq, map_map, cons_append, cons.injEq,
     append_cancel_right_eq, true_and]
   ext
   simp

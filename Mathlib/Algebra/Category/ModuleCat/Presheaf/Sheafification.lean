@@ -11,8 +11,10 @@ import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 In this file, we construct a functor
 `PresheafOfModules.sheafification α : PresheafOfModules R₀ ⥤ SheafOfModules R`
-for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preasheaf of rings
+for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings.
+In particular, if `α` is the identity of `R.val`, we obtain the
+sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
 
 -/
 
@@ -28,10 +30,10 @@ variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 
 namespace PresheafOfModules
 
-/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preasheaf of rings
+/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
 the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R`. -/
-@[simps map]
+@[simps! (config := .lemmasOnly) map]
 noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R where
   obj M₀ := sheafify α (CategoryTheory.toSheafify J M₀.presheaf)
   map f := sheafifyMap _ _ _ f ((presheafToSheaf J AddCommGroupCat).map f.hom) (by simp)
@@ -43,8 +45,6 @@ noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules
     ext1
     apply (toPresheaf _).map_injective
     simp [toPresheaf, sheafify]
-
-attribute [-simp] sheafification_map
 
 /-- The sheafification of presheaves of modules commutes with the functor which
 forgets the module structures. -/
@@ -68,11 +68,20 @@ noncomputable def sheafificationHomEquiv
       (P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) := by
   apply sheafifyHomEquiv
 
-lemma sheafificationHomEquiv_hom
+lemma sheafificationHomEquiv_hom'
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (sheafificationHomEquiv α f).hom =
       CategoryTheory.toSheafify J P.presheaf ≫ f.val.hom := rfl
+
+lemma sheafificationHomEquiv_hom
+    {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
+    (f : (sheafification α).obj P ⟶ F) :
+    (sheafificationHomEquiv α f).hom =
+      (sheafificationAdjunction J AddCommGroupCat).homEquiv P.presheaf
+        ((SheafOfModules.toSheaf _).obj F) ((SheafOfModules.toSheaf _).map f) := by
+  rw [sheafificationHomEquiv_hom', Adjunction.homEquiv_unit]
+  dsimp
 
 lemma toSheaf_map_sheafificationHomEquiv_symm
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
@@ -85,46 +94,30 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
   rfl
 
-lemma sheafificationHomEquiv_symm_val_hom
-    {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
-    (g : P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :
-    ((sheafificationHomEquiv α).symm g).val.hom =
-      (((sheafificationAdjunction J AddCommGroupCat).homEquiv
-        P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm g.hom).val :=
-  (sheafToPresheaf _ _).congr_map (toSheaf_map_sheafificationHomEquiv_symm α g)
-
-/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preasheaf of rings
+/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
+@[simps! (config := .lemmasOnly) homEquiv_apply]
 noncomputable def sheafificationAdjunction :
     sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦ sheafificationHomEquiv α
       homEquiv_naturality_left_symm := fun {P₀ Q₀ N} f g ↦ by
-        dsimp
-        apply (sheafificationHomEquiv α).injective
-        erw [Equiv.apply_symm_apply]
-        apply (toPresheaf _).map_injective
-        dsimp [toPresheaf]
-        erw [sheafificationHomEquiv_hom]
-        dsimp
-        rw [sheafification_map]
-        erw [sheafificationHomEquiv_symm_val_hom]
-        dsimp
-        let adj := CategoryTheory.sheafificationAdjunction J AddCommGroupCat
-        change _ = adj.unit.app P₀.presheaf ≫
-          (sheafToPresheaf _ _).map ((presheafToSheaf J _).map f.hom ≫
-            (adj.homEquiv Q₀.presheaf ((SheafOfModules.toSheaf R).obj N)).symm g.hom)
-        rw [← Adjunction.homEquiv_naturality_left_symm, adj.homEquiv_counit]
-        erw [← NatTrans.naturality_assoc, adj.right_triangle_components, comp_id]
-        rfl
+        apply (SheafOfModules.toSheaf _).map_injective
+        rw [Functor.map_comp]
+        erw [toSheaf_map_sheafificationHomEquiv_symm,
+          toSheaf_map_sheafificationHomEquiv_symm]
+        apply Adjunction.homEquiv_naturality_left_symm
       homEquiv_naturality_right := fun {P₀ M N} f g ↦ by
         apply (toPresheaf _).map_injective
         dsimp [toPresheaf]
         erw [sheafificationHomEquiv_hom, sheafificationHomEquiv_hom]
-        simp [restrictScalars] }
+        rw [Functor.map_comp]
+        apply Adjunction.homEquiv_naturality_right }
 
-instance : (sheafification.{v} α).IsLeftAdjoint :=
-  (sheafificationAdjunction α).isLeftAdjoint
+@[simp]
+lemma sheafificationAdjunction_unit_app_hom (M₀ : PresheafOfModules.{v} R₀) :
+    ((sheafificationAdjunction α).unit.app M₀).hom = CategoryTheory.toSheafify J M₀.presheaf := by
+  rfl
 
 end PresheafOfModules

@@ -64,4 +64,21 @@ noncomputable def pushforwardCompToPresheaf :
     pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
+-- unfortunately, `pushforward_obj_obj` and `pushforward_obj_map` cannot be both simp lemmas
+lemma pushforward_obj_obj (M : PresheafOfModules.{v} R) (X : Cᵒᵖ) :
+    ((pushforward φ).obj M).obj X =
+      (ModuleCat.restrictScalars (φ.app X)).obj (M.obj (Opposite.op (F.obj X.unop))) := rfl
+
+@[simp]
+lemma pushforward_obj_map_apply (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    (m : (ModuleCat.restrictScalars (φ.app X)).obj (M.obj (Opposite.op (F.obj X.unop)))) :
+      ((pushforward φ).obj M).map f m = M.map (F.map f.unop).op m := by
+  rfl
+
+@[simp]
+lemma pushforward_map_app_apply {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (X : Cᵒᵖ)
+    (m : (ModuleCat.restrictScalars (φ.app X)).obj (M.obj (Opposite.op (F.obj X.unop)))) :
+    ((pushforward φ).map α).app X m = α.app (Opposite.op (F.obj X.unop)) m := by
+  rfl
+
 end PresheafOfModules

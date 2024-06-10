@@ -346,7 +346,7 @@ lemma comp_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
 /-- The bijection
 `(sheafify α φ ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F))`
 which is part of the universal property of the sheafification of the presheaf of modules `M₀`,
-for any sheaf of modules `F`. -/
+for any sheaf of modules `F`, see `PresheafOfModules.sheafificationAdjunction` -/
 noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
     (sheafify α φ ⟶ F) ≃
       (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :=
