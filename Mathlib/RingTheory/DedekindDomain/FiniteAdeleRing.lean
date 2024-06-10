@@ -336,6 +336,34 @@ instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
   Subtype.ext h
 
+@[simp]
+lemma mem_FiniteAdeleRing (x : K_hat R K) : x ∈ (
+    { carrier := {x : K_hat R K | x.IsFiniteAdele}
+      mul_mem' := mul
+      one_mem' := one
+      add_mem' := add
+      zero_mem' := zero
+      algebraMap_mem' := algebraMap'
+    } : Subalgebra K (K_hat R K)) ↔ {v | x v ∉ adicCompletionIntegers K v}.Finite := Iff.rfl
+
+/-- The finite adele ring is an algebra over the finite integral adeles. -/
+instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
+  smul rhat fadele := ⟨fun v ↦ rhat v * fadele.1 v, by
+    have this := fadele.2
+    rw [mem_FiniteAdeleRing] at this ⊢
+    apply Finite.subset this (fun v hv ↦ ?_)
+    rw [mem_setOf_eq, mem_adicCompletionIntegers] at hv ⊢
+    contrapose! hv
+    rw [map_mul]
+    exact mul_le_one₀ (rhat v).2 hv
+    ⟩
+  toFun r := ⟨r, by simp_all⟩
+  map_one' := by ext; rfl
+  map_mul' _ _ := by ext; rfl
+  map_zero' := by ext; rfl
+  map_add' _ _ := by ext; rfl
+  commutes' _ _ := mul_comm _ _
+  smul_def' r x := rfl
 end FiniteAdeleRing
 
 end DedekindDomain
