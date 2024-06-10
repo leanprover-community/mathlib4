@@ -354,7 +354,8 @@ def left_arrow_check(lines, path):
 def adaptation_note_check(lines, path):
     errors = []
     for line_nr, line in lines:
-        if "Adaptation note:" in line:
+        # We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
+        if "daptation note" in line:
             errors += [(ERR_ADN, line_nr, path)]
     return errors, lines
 
