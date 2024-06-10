@@ -14,8 +14,8 @@ In this file we establish functorial properties of the adic completion.
 
 ## Main definitions
 
-- `LinearMap.adicCauchy I f`: the by `f` induced linear map on `I`-adic cauchy sequences
-- `LinearMap.adicCompletion I f`: the by `f` induced linear map on `I`-adic completions
+- `LinearMap.adicCauchy I f`: the linear map on `I`-adic cauchy sequences induced by `f`
+- `LinearMap.adicCompletion I f`: the linear map on `I`-adic completions induced by `f`
 
 ## Main results
 
@@ -134,7 +134,6 @@ theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
   rfl
 
 /-- Equality of maps out of an adic completion can be checked on Cauchy sequences. -/
-@[ext]
 theorem map_ext {f g : AdicCompletion I M → N}
     (h : ∀ (a : AdicCauchySequence I M),
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
@@ -143,20 +142,21 @@ theorem map_ext {f g : AdicCompletion I M → N}
   apply induction_on I M x (fun a ↦ h a)
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
-theorem map_ext' {f g : AdicCompletion I M →ₗ[R] N}
-    (h : f.comp (AdicCompletion.mk I M) = g.comp (AdicCompletion.mk I M)) :
-    f = g := by
-  ext x
-  apply induction_on I M x (fun a ↦ LinearMap.ext_iff.mp h a)
-
-/-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 @[ext]
-theorem map_ext'' {f g : AdicCompletion I M →ₗ[AdicCompletion I R] T}
+theorem map_ext' {f g : AdicCompletion I M →ₗ[AdicCompletion I R] T}
     (h : ∀ (a : AdicCauchySequence I M),
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
   ext x
   apply induction_on I M x (fun a ↦ h a)
+
+/-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
+@[ext]
+theorem map_ext'' {f g : AdicCompletion I M →ₗ[R] N}
+    (h : f.comp (AdicCompletion.mk I M) = g.comp (AdicCompletion.mk I M)) :
+    f = g := by
+  ext x
+  apply induction_on I M x (fun a ↦ LinearMap.ext_iff.mp h a)
 
 variable (M) in
 @[simp]
