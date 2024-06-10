@@ -249,19 +249,17 @@ instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
     (Profinite.pullback.isLimit _ _)
 
 instance (X : LightProfinite) :
-    Unique (X ⟶ FintypeCat.toLightProfinite.obj (FintypeCat.of PUnit.{u+1})) :=
+    Unique (X ⟶ LightProfinite.of PUnit.{u+1}) :=
   ⟨⟨⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩
 
 /-- A one-element space is terminal in `LightProfinite` -/
-def isTerminalPUnit : IsTerminal (FintypeCat.toLightProfinite.obj (FintypeCat.of PUnit.{u+1})) :=
-  Limits.IsTerminal.ofUnique _
+def isTerminalPUnit : IsTerminal (LightProfinite.of PUnit.{u+1}) := Limits.IsTerminal.ofUnique _
 
 instance : HasTerminal LightProfinite.{u} :=
-  Limits.hasTerminal_of_unique (FintypeCat.toLightProfinite.obj (FintypeCat.of PUnit.{u+1}))
+  Limits.hasTerminal_of_unique (LightProfinite.of PUnit.{u+1})
 
 /-- The isomorphism from an arbitrary terminal object of `LightProfinite` to a one-element space. -/
-noncomputable def terminalIsoPUnit :
-    ⊤_ LightProfinite.{u} ≅ FintypeCat.toLightProfinite.obj (FintypeCat.of PUnit.{u+1}) :=
+noncomputable def terminalIsoPUnit : ⊤_ LightProfinite.{u} ≅ LightProfinite.of PUnit.{u+1} :=
   terminalIsTerminal.uniqueUpToIso LightProfinite.isTerminalPUnit
 
 noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} where
