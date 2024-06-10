@@ -25,16 +25,17 @@ $\psi_n \in R[X, Y]$ of $W$ is the normalised EDS with initial values
     (2X^6 + b_2X^5 + 5b_4X^4 + 10b_6X^3 + 10b_8X^2 + (b_2b_8 - b_4b_6)X + (b_4b_8 - b_6^2))$.
 
 Furthermore, define the associated sequences $\phi_n, \omega_n \in R[X, Y]$ by
- * $\phi_n := X\psi_n^2 - \psi_{n + 1}\psi_{n - 1}$, and
- * $\omega_n := \tfrac{1}{2} \cdot (\psi_{2n} / \psi_n - \psi_n(a_1\phi_n + a_3\psi_n^2))$.
+ * $\phi_n := X\psi_n^2 - \psi_{n + 1} \cdot \psi_{n - 1}$, and
+ * $\omega_n := (\psi_{2n} / \psi_n - \psi_n \cdot (a_1\phi_n + a_3\psi_n^2)) / 2$.
 
 Note that $\omega_n$ is always well-defined as a polynomial in $R[X, Y]$. As a start, it can be
-shown by induction that $\psi_n$ always divides $\psi_{2n}$, so that $\psi_{2n} / \psi_n$ is always
-well-defined as a polynomial, while division by 2 is well-defined when $R$ has characteristic
-different from 2. In general, it can be shown that 2 always divides the polynomial
-$\psi_{2n} / \psi_n - \psi_n(a_1\phi_n + a_3\psi_n^2)$ in the characteristic zero universal ring
-$\mathbb{Z}[A_i][X, Y]$ of $W$, where $A_i$ are indeterminates. Then $\omega_n$ can be equivalently
-defined as its image under the associated universal morphism $\mathbb{Z}[A_i][X, Y] \to R[X, Y]$.
+shown by induction that $\psi_n$ always divides $\psi_{2n}$ in $R[X, Y]$, so that
+$\psi_{2n} / \psi_n$ is always well-defined as a polynomial, while division by 2 is well-defined
+when $R$ has characteristic different from 2. In general, it can be shown that 2 always divides the
+polynomial $\psi_{2n} / \psi_n - \psi_n \cdot (a_1\phi_n + a_3\psi_n^2)$ in the characteristic zero
+universal ring $\mathcal{R}[X, Y] := \mathbb{Z}[A_1, A_2, A_3, A_4, A_6][X, Y]$ of $W$, where the
+$A_i$ are indeterminates. Then $\omega_n$ can be equivalently defined as the image of this division
+under the associated universal morphism $\mathcal{R}[X, Y] \to R[X, Y]$ mapping $A_i$ to $a_i$.
 
 Now, in the coordinate ring $R[W]$, note that $\psi_2^2$ is congruent to the polynomial
 $\Psi_2^{[2]} := 4X^3 + b_2X^2 + 2b_4X + b_6 \in R[X]$. As such, in $R[W]$, the recurrences
@@ -48,14 +49,15 @@ EDS with extraneous parameter $\Psi_2^{[2]}$ and initial values
  * $\tilde{\Psi}_4 := \psi_4 / \psi_2$.
 
 The corresponding normalised EDS $\Psi_n \in R[X, Y]$ is then given by
- * $\Psi_n := \tilde{\Psi}_n\psi_2$ if $n$ is even, and
+ * $\Psi_n := \tilde{\Psi}_n \cdot \psi_2$ if $n$ is even, and
  * $\Psi_n := \tilde{\Psi}_n$ if $n$ is odd.
 
 Furthermore, define the associated sequences $\Psi_n^{[2]}, \Phi_n \in R[X]$ by
- * $\Psi_n^{[2]} := \tilde{\Psi}_n^2\Psi_2^{[2]}$ if $n$ is even,
+ * $\Psi_n^{[2]} := \tilde{\Psi}_n^2 \cdot \Psi_2^{[2]}$ if $n$ is even,
  * $\Psi_n^{[2]} := \tilde{\Psi}_n^2$ if $n$ is odd,
- * $\Phi_n := X\Psi_n^{[2]} - \tilde{\Psi}_{n + 1}\tilde{\Psi}_{n - 1}$ if $n$ is even, and
- * $\Phi_n := X\Psi_n^{[2]} - \tilde{\Psi}_{n + 1}\tilde{\Psi}_{n - 1}\Psi_2^{[2]}$ if $n$ is odd.
+ * $\Phi_n := X\Psi_n^{[2]} - \tilde{\Psi}_{n + 1} \cdot \tilde{\Psi}_{n - 1}$ if $n$ is even, and
+ * $\Phi_n := X\Psi_n^{[2]} - \tilde{\Psi}_{n + 1} \cdot \tilde{\Psi}_{n - 1} \cdot \Psi_2^{[2]}$
+    if $n$ is odd.
 
 With these definitions in mind, $\psi_n \in R[X, Y]$ and $\phi_n \in R[X, Y]$ are congruent in
 $R[W]$ to $\Psi_n \in R[X, Y]$ and $\Phi_n \in R[X]$ respectively, which are defined in terms of
@@ -73,13 +75,13 @@ $\Psi_2^{[2]} \in R[X]$ and $\tilde{\Psi}_n \in R[X]$.
 
 ## Implementation notes
 
-Analogously to `Mathlib.NumberTheory.EllipticDivisibilitySequence`, the $n$-division bivariate
-polynomials $\Psi_n$ are defined in terms of the univariate polynomials $\tilde{\Psi}_n$. This is
-done partially to avoid ring division, but more crucially to allow the definition of $\Psi_n^{[2]}$
-and $\Phi_n$ as univariate polynomials without needing to work under the coordinate ring, and to
-allow the computation of their leading terms without ambiguity. Furthermore, evaluating these
-polynomials at a rational point on $W$ recovers their original definition up to linear combinations
-of the Weierstrass equation of $W$, hence also avoiding the need to work under the coordinate ring.
+Analogously to `Mathlib.NumberTheory.EllipticDivisibilitySequence`, the bivariate polynomials
+$\Psi_n$ are defined in terms of the univariate polynomials $\tilde{\Psi}_n$. This is done partially
+to avoid ring division, but more crucially to allow the definition of $\Psi_n^{[2]}$ and $\Phi_n$ as
+univariate polynomials without needing to work under the coordinate ring, and to allow the
+computation of their leading terms without ambiguity. Furthermore, evaluating these polynomials at a
+rational point on $W$ recovers their original definition up to linear combinations of the
+Weierstrass equation of $W$, hence also avoiding the need to work in the coordinate ring.
 
 TODO: implementation notes for the definition of $\omega_n$.
 
