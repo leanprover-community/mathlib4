@@ -70,7 +70,7 @@ structure Repr (a : A) where
 
 variable (R) in
 /-- An arbitrarily chosen representation. -/
-def arbitrary (a : A) : Repr R a where
+def Repr.arbitrary (a : A) : Repr R a where
   index := TensorProduct.exists_finset (R := R) (comul a) |>.choose
   eq := TensorProduct.exists_finset (R := R) (comul a) |>.choose_spec.symm
 
