@@ -488,7 +488,7 @@ theorem kahler_swap (x y : E) : o.kahler x y = conj (o.kahler y x) := by
   have : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
   simp only [kahler_apply_apply]
   rw [real_inner_comm, areaForm_swap]
-  simp [this]
+  simp [-Complex.coe_algebraMap, this]
 #align orientation.kahler_swap Orientation.kahler_swap
 
 @[simp]
@@ -525,7 +525,7 @@ theorem kahler_comp_rightAngleRotation' (x y : E) :
 @[simp]
 theorem kahler_neg_orientation (x y : E) : (-o).kahler x y = conj (o.kahler x y) := by
   have : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
-  simp [kahler_apply_apply, this]
+  simp [kahler_apply_apply, this, -Complex.coe_algebraMap]
 #align orientation.kahler_neg_orientation Orientation.kahler_neg_orientation
 
 theorem kahler_mul (a x y : E) : o.kahler x a * o.kahler a y = ‖a‖ ^ 2 * o.kahler x y := by
