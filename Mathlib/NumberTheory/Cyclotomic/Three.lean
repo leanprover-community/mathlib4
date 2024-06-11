@@ -33,7 +33,7 @@ namespace IsCyclotomicExtension.Rat.Three
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
-local notation3 "λ" => (η : 𝓞 K) - 1
+local notation3 "λ" => hζ.toInteger - 1
 
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ [1, -1, η, -η, η^2, -η^2]`. -/
 -- Here `List` is more convenient than `Finset`, even if further from the informal statement.
@@ -70,7 +70,8 @@ theorem Units.mem : u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
 /-- We have that `λ ^ 2 = -3 * η`. -/
 private lemma lambda_sq : λ ^ 2 = -3 * η := by
   ext
-  calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by ring
+  calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by
+        simp only [RingOfIntegers.map_mk, IsUnit.unit_spec]; ring
   _ = 0 - 3 * η := by simpa using hζ.isRoot_cyclotomic (by decide)
   _ = -3 * η := by ring
 
