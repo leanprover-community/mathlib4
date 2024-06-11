@@ -24,7 +24,7 @@ noncomputable section
 
 open Finset Filter Metric Asymptotics Set Function Bornology
 
-open scoped Classical Topology BigOperators Nat
+open scoped Classical Topology Nat
 
 namespace Complex
 
@@ -78,7 +78,7 @@ theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
 #align complex.continuous_on_exp Complex.continuousOn_exp
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
-    (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
+    (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
   rcases (zero_le n).eq_or_lt with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
@@ -88,7 +88,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     field_simp [mul_comm]
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
-    (fun x ↦ exp x - ∑ i in Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
+    (fun x ↦ exp x - ∑ i ∈ Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
   (exp_sub_sum_range_isBigO_pow (n + 1)).trans_isLittleO <| isLittleO_pow_pow n.lt_succ_self
 
 end Complex
@@ -142,14 +142,14 @@ theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s :=
 #align real.continuous_on_exp Real.continuousOn_exp
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
-    (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
+    (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
   have := (Complex.exp_sub_sum_range_isBigO_pow n).comp_tendsto
     (Complex.continuous_ofReal.tendsto' 0 0 rfl)
   simp only [(· ∘ ·)] at this
   norm_cast at this
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
-    (fun x ↦ exp x - ∑ i in Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
+    (fun x ↦ exp x - ∑ i ∈ Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
   (exp_sub_sum_range_isBigO_pow (n + 1)).trans_isLittleO <| isLittleO_pow_pow n.lt_succ_self
 
 end Real
@@ -167,28 +167,32 @@ theorem Filter.Tendsto.rexp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Ten
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
--- TODO: the two next theorems should be `rexp` as well
 nonrec
-theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun y => exp (f y)) s x :=
+theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
-#align continuous_within_at.exp ContinuousWithinAt.exp
+#align continuous_within_at.exp ContinuousWithinAt.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousWithinAt.exp := ContinuousWithinAt.rexp
 
 @[fun_prop]
 nonrec
-theorem ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
+theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
   h.rexp
-#align continuous_at.exp ContinuousAt.exp
+#align continuous_at.exp ContinuousAt.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousAt.exp := ContinuousAt.rexp
 
 @[fun_prop]
-theorem ContinuousOn.exp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s := fun x hx =>
-  (h x hx).exp
-#align continuous_on.exp ContinuousOn.exp
+theorem ContinuousOn.rexp (h : ContinuousOn f s) :
+    ContinuousOn (fun y ↦ exp (f y)) s :=
+  fun x hx ↦ (h x hx).rexp
+#align continuous_on.exp ContinuousOn.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousOn.exp := ContinuousOn.rexp
 
 @[fun_prop]
-theorem Continuous.exp (h : Continuous f) : Continuous fun y => exp (f y) :=
-  continuous_iff_continuousAt.2 fun _ => h.continuousAt.exp
-#align continuous.exp Continuous.exp
+theorem Continuous.rexp (h : Continuous f) : Continuous fun y ↦ exp (f y) :=
+  continuous_iff_continuousAt.2 fun _ ↦ h.continuousAt.rexp
+#align continuous.exp Continuous.rexp
+@[deprecated (since := "2024-05-09")] alias Continuous.exp := Continuous.rexp
 
 end RealContinuousExpComp
 
@@ -213,14 +217,17 @@ at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp tendsto_exp_atTop).congr fun x => (exp_neg x).symm
 #align real.tendsto_exp_neg_at_top_nhds_0 Real.tendsto_exp_neg_atTop_nhds_zero
-@[deprecated] alias tendsto_exp_neg_atTop_nhds_0 := tendsto_exp_neg_atTop_nhds_zero -- 2024-01-31
+@[deprecated (since := "2024-01-31")]
+alias tendsto_exp_neg_atTop_nhds_0 := tendsto_exp_neg_atTop_nhds_zero
 
 /-- The real exponential function tends to `1` at `0`. -/
 theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
   convert continuous_exp.tendsto 0
   simp
 #align real.tendsto_exp_nhds_0_nhds_1 Real.tendsto_exp_nhds_zero_nhds_one
-@[deprecated] alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
@@ -245,7 +252,7 @@ theorem isBoundedUnder_le_exp_comp {f : α → ℝ} :
 
 /-- The function `exp(x)/x^n` tends to `+∞` at `+∞`, for any natural number `n` -/
 theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) atTop atTop := by
-  refine' (atTop_basis_Ioi.tendsto_iff (atTop_basis' 1)).2 fun C hC₁ => _
+  refine (atTop_basis_Ioi.tendsto_iff (atTop_basis' 1)).2 fun C hC₁ => ?_
   have hC₀ : 0 < C := zero_lt_one.trans_le hC₁
   have : 0 < (exp 1 * C)⁻¹ := inv_pos.2 (mul_pos (exp_pos _) hC₀)
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ k ≥ N, (↑k : ℝ) ^ n / exp 1 ^ k < (exp 1 * C)⁻¹ :=
@@ -253,7 +260,7 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
       ((tendsto_pow_const_div_const_pow_of_one_lt n (one_lt_exp_iff.2 zero_lt_one)).eventually
         (gt_mem_nhds this))
   simp only [← exp_nat_mul, mul_one, div_lt_iff, exp_pos, ← div_eq_inv_mul] at hN
-  refine' ⟨N, trivial, fun x hx => _⟩
+  refine ⟨N, trivial, fun x hx => ?_⟩
   rw [Set.mem_Ioi] at hx
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
   rw [Set.mem_Ici, le_div_iff (pow_pos hx₀ _), ← le_div_iff' hC₀]
@@ -270,7 +277,7 @@ theorem tendsto_pow_mul_exp_neg_atTop_nhds_zero (n : ℕ) :
   (tendsto_inv_atTop_zero.comp (tendsto_exp_div_pow_atTop n)).congr fun x => by
     rw [comp_apply, inv_eq_one_div, div_div_eq_mul_div, one_mul, div_eq_mul_inv, exp_neg]
 #align real.tendsto_pow_mul_exp_neg_at_top_nhds_0 Real.tendsto_pow_mul_exp_neg_atTop_nhds_zero
-@[deprecated] -- 2024-01-31
+@[deprecated (since := "2024-01-31")]
 alias tendsto_pow_mul_exp_neg_atTop_nhds_0 := tendsto_pow_mul_exp_neg_atTop_nhds_zero
 
 /-- The function `(b * exp x + c) / (x ^ n)` tends to `+∞` at `+∞`, for any natural number

@@ -175,7 +175,7 @@ theorem quadraticChar_dichotomy {a : F} (ha : a ≠ 0) :
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
 theorem quadraticChar_eq_neg_one_iff_not_one {a : F} (ha : a ≠ 0) :
     quadraticChar F a = -1 ↔ ¬quadraticChar F a = 1 := by
-  refine' ⟨fun h => _, fun h₂ => (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
+  refine ⟨fun h => ?_, fun h₂ => (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
   rw [h]
   norm_num
 #align quadratic_char_eq_neg_one_iff_not_one quadraticChar_eq_neg_one_iff_not_one
@@ -235,7 +235,7 @@ when the domain has odd characteristic. -/
 theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial := by
   rcases quadraticChar_exists_neg_one hF with ⟨a, ha⟩
   have hu : IsUnit a := by by_contra hf; rw [MulChar.map_nonunit _ hf] at ha; norm_num at ha
-  refine' ⟨hu.unit, (_ : quadraticChar F a ≠ 1)⟩
+  refine ⟨hu.unit, (?_ : quadraticChar F a ≠ 1)⟩
   rw [ha]
   norm_num
 #align quadratic_char_is_nontrivial quadraticChar_isNontrivial
@@ -276,8 +276,6 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [isSquare_iff_exists_sq] at h
       exact fun h' => h ⟨_, h'.symm⟩
 #align quadratic_char_card_sqrts quadraticChar_card_sqrts
-
-open scoped BigOperators
 
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=

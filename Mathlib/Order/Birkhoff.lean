@@ -68,7 +68,7 @@ variable {s : UpperSet α}
 variable [Finite α]
 
 @[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
-  refine' ⟨fun hs ↦ _, _⟩
+  refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
     exact ⟨a, (hs.2 <| erase_inf_Ici ha <| by simpa [eq_comm] using has).resolve_left
       (lt_erase.2 ha).ne'⟩
@@ -81,7 +81,7 @@ namespace LowerSet
 variable {s : LowerSet α}
 
 @[simp] lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
-  refine' ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ _⟩
+  refine ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ ?_⟩
   have := mem_Iic_iff.2 (le_refl a)
   rw [← hst] at this
   exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm <| Iic_le.2 ha) fun ha ↦
@@ -90,7 +90,7 @@ variable {s : LowerSet α}
 variable [Finite α]
 
 @[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
-  refine' ⟨fun hs ↦ _, _⟩
+  refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
     exact ⟨a, (hs.2 <| erase_sup_Iic ha <| by simpa [eq_comm] using has).resolve_left
       (erase_lt.2 ha).ne⟩
@@ -189,14 +189,14 @@ noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrr
     { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun b c hcb hba ↦ hba.trans' hcb⟩
       invFun := fun s ↦ (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
       left_inv := fun a ↦ by
-        refine' le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) _
+        refine le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) ?_
         obtain ⟨s, rfl, hs⟩ := exists_supIrred_decomposition a
         exact Finset.sup_le fun i hi ↦
           le_sup_of_le (b := ⟨i, hs hi⟩) (Set.mem_toFinset.2 <| le_sup (f := id) hi) le_rfl
       right_inv := fun s ↦ by
         ext a
         dsimp
-        refine' ⟨fun ha ↦ _, fun ha ↦ _⟩
+        refine ⟨fun ha ↦ ?_, fun ha ↦ ?_⟩
         · obtain ⟨i, hi, ha⟩ := a.2.supPrime.le_finset_sup.1 ha
           exact s.lower ha (Set.mem_toFinset.1 hi)
         · dsimp

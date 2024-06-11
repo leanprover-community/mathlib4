@@ -61,14 +61,14 @@ def openSegment (x y : E) : Set E :=
 
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
-      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } :=
-  by simp only [segment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
+      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } := by
+  simp only [segment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
 #align segment_eq_image₂ segment_eq_image₂
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
-      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } :=
-  by simp only [openSegment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
+      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } := by
+  simp only [openSegment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
 #align open_segment_eq_image₂ openSegment_eq_image₂
 
 theorem segment_symm (x y : E) : [x -[𝕜] y] = [y -[𝕜] x] :=
@@ -139,7 +139,7 @@ theorem insert_endpoints_openSegment (x y : E) :
   simp only [subset_antisymm_iff, insert_subset_iff, left_mem_segment, right_mem_segment,
     openSegment_subset_segment, true_and_iff]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
-  refine' hb.eq_or_gt.imp _ fun hb' => ha.eq_or_gt.imp _ fun ha' => _
+  refine hb.eq_or_gt.imp ?_ fun hb' => ha.eq_or_gt.imp ?_ fun ha' => ?_
   · rintro rfl
     rw [← add_zero a, hab, one_smul, zero_smul, add_zero]
   · rintro rfl
@@ -182,7 +182,7 @@ theorem openSegment_same (x : E) : openSegment 𝕜 x x = {x} :=
       simpa only [← add_smul, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
     fun h : z = x => by
       obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : 𝕜) 1 zero_lt_one
-      refine' ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel _ _, _⟩
+      refine ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel _ _, ?_⟩
       rw [← add_smul, add_sub_cancel, one_smul, h]⟩
 #align open_segment_same openSegment_same
 
@@ -337,12 +337,12 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
 #align midpoint_mem_segment midpoint_mem_segment
 
 theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
-  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ _ _
+  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ (x - y) (x + y)
   rw [midpoint_sub_add]
 #align mem_segment_sub_add mem_segment_sub_add
 
 theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
-  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ _ _
+  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ (x + y) (x - y)
   rw [midpoint_add_sub]
 #align mem_segment_add_sub mem_segment_add_sub
 
@@ -351,7 +351,7 @@ theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 
     x ∈ openSegment 𝕜 x y ↔ x = y := by
   constructor
   · rintro ⟨a, b, _, hb, hab, hx⟩
-    refine' smul_right_injective _ hb.ne' ((add_right_inj (a • x)).1 _)
+    refine smul_right_injective _ hb.ne' ((add_right_inj (a • x)).1 ?_)
     rw [hx, ← add_smul, hab, one_smul]
   · rintro rfl
     rw [openSegment_same]
@@ -377,7 +377,7 @@ theorem mem_segment_iff_div :
     use a, b, ha, hb
     simp [*]
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
-    refine' ⟨a / (a + b), b / (a + b), by positivity, by positivity, _, rfl⟩
+    refine ⟨a / (a + b), b / (a + b), by positivity, by positivity, ?_, rfl⟩
     rw [← add_div, div_self hab.ne']
 #align mem_segment_iff_div mem_segment_iff_div
 
@@ -389,7 +389,7 @@ theorem mem_openSegment_iff_div : x ∈ openSegment 𝕜 y z ↔
     rw [hab, div_one, div_one]
   · rintro ⟨a, b, ha, hb, rfl⟩
     have hab : 0 < a + b := by positivity
-    refine' ⟨a / (a + b), b / (a + b), by positivity, by positivity, _, rfl⟩
+    refine ⟨a / (a + b), b / (a + b), by positivity, by positivity, ?_, rfl⟩
     rw [← add_div, div_self hab.ne']
 #align mem_open_segment_iff_div mem_openSegment_iff_div
 
@@ -400,11 +400,11 @@ section LinearOrderedField
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
 
 theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (z - x) := by
-  refine' ⟨sameRay_of_mem_segment, fun h => _⟩
+  refine ⟨sameRay_of_mem_segment, fun h => ?_⟩
   rcases h.exists_eq_smul_add with ⟨a, b, ha, hb, hab, hxy, hzx⟩
   rw [add_comm, sub_add_sub_cancel] at hxy hzx
   rw [← mem_segment_translate _ (-x), neg_add_self]
-  refine' ⟨b, a, hb, ha, add_comm a b ▸ hab, _⟩
+  refine ⟨b, a, hb, ha, add_comm a b ▸ hab, ?_⟩
   rw [← sub_eq_neg_add, ← neg_sub, hxy, ← sub_eq_neg_add, hzx, smul_neg, smul_comm, neg_add_self]
 #align mem_segment_iff_same_ray mem_segment_iff_sameRay
 
@@ -422,7 +422,7 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
   · right
     left
     have hc : 0 < c := h₀.trans hac
-    refine' ⟨a / c, ⟨div_pos h₀ hc, (div_lt_one hc).2 hac⟩, _⟩
+    refine ⟨a / c, ⟨div_pos h₀ hc, (div_lt_one hc).2 hac⟩, ?_⟩
     simp only [← homothety_eq_lineMap, ← homothety_mul_apply, div_mul_cancel₀ _ hc.ne']
   · left
     rfl
@@ -430,9 +430,9 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
     right
     have hc : 0 < 1 - c := sub_pos.2 (hca.trans h₁)
     simp only [← lineMap_apply_one_sub y]
-    refine'
+    refine
       ⟨(a - c) / (1 - c), ⟨div_pos (sub_pos.2 hca) hc, (div_lt_one hc).2 <| sub_lt_sub_right h₁ _⟩,
-        _⟩
+        ?_⟩
     simp only [← homothety_eq_lineMap, ← homothety_mul_apply, sub_mul, one_mul,
       div_mul_cancel₀ _ hc.ne', sub_sub_sub_cancel_right]
 #align open_segment_subset_union openSegment_subset_union
@@ -521,7 +521,7 @@ theorem Icc_subset_segment : Icc x y ⊆ [x -[𝕜] y] := by
     exact hyz.antisymm hxz
   rw [← sub_nonneg] at hxz hyz
   rw [← sub_pos] at h
-  refine' ⟨(y - z) / (y - x), (z - x) / (y - x), div_nonneg hyz h.le, div_nonneg hxz h.le, _, _⟩
+  refine ⟨(y - z) / (y - x), (z - x) / (y - x), div_nonneg hyz h.le, div_nonneg hxz h.le, ?_, ?_⟩
   · rw [← add_div, sub_add_sub_cancel, div_self h.ne']
   · rw [smul_eq_mul, smul_eq_mul, ← mul_div_right_comm, ← mul_div_right_comm, ← add_div,
       div_eq_iff h.ne', add_comm, sub_mul, sub_mul, mul_comm x, sub_add_sub_cancel, mul_sub]
@@ -576,7 +576,7 @@ theorem Convex.mem_Ioo (h : x < y) :
 endpoints. -/
 theorem Convex.mem_Ioc (h : x < y) :
     z ∈ Ioc x y ↔ ∃ a b, 0 ≤ a ∧ 0 < b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  refine' ⟨fun hz => _, _⟩
+  refine ⟨fun hz => ?_, ?_⟩
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ioc_subset_Icc_self hz)
     obtain rfl | hb' := hb.eq_or_lt
     · rw [add_zero] at hab
@@ -594,7 +594,7 @@ theorem Convex.mem_Ioc (h : x < y) :
 endpoints. -/
 theorem Convex.mem_Ico (h : x < y) :
     z ∈ Ico x y ↔ ∃ a b, 0 < a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  refine' ⟨fun hz => _, _⟩
+  refine ⟨fun hz => ?_, ?_⟩
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ico_subset_Icc_self hz)
     obtain rfl | ha' := ha.eq_or_lt
     · rw [zero_add] at hab

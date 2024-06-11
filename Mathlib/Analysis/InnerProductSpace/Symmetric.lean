@@ -97,15 +97,15 @@ theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
 theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) :
     Continuous T := by
   -- We prove it by using the closed graph theorem
-  refine' T.continuous_of_seq_closed_graph fun u x y hu hTu => _
+  refine T.continuous_of_seq_closed_graph fun u x y hu hTu => ?_
   rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜]
   have hlhs : ∀ k : ℕ, ⟪T (u k) - T x, y - T x⟫ = ⟪u k - x, T (y - T x)⟫ := by
     intro k
     rw [← T.map_sub, hT]
-  refine' tendsto_nhds_unique ((hTu.sub_const _).inner tendsto_const_nhds) _
+  refine tendsto_nhds_unique ((hTu.sub_const _).inner tendsto_const_nhds) ?_
   simp_rw [Function.comp_apply, hlhs]
   rw [← inner_zero_left (T (y - T x))]
-  refine' Filter.Tendsto.inner _ tendsto_const_nhds
+  refine Filter.Tendsto.inner ?_ tendsto_const_nhds
   rw [← sub_self x]
   exact hu.sub_const _
 #align linear_map.is_symmetric.continuous LinearMap.IsSymmetric.continuous
@@ -185,7 +185,7 @@ See `inner_map_self_eq_zero` for the complex version without the symmetric assum
 theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     (∀ x, ⟪T x, x⟫ = 0) ↔ T = 0 := by
   simp_rw [LinearMap.ext_iff, zero_apply]
-  refine' ⟨fun h x => _, fun h => by simp_rw [h, inner_zero_left, forall_const]⟩
+  refine ⟨fun h x => ?_, fun h => by simp_rw [h, inner_zero_left, forall_const]⟩
   rw [← @inner_self_eq_zero 𝕜, hT.inner_map_polarization]
   simp_rw [h _]
   ring

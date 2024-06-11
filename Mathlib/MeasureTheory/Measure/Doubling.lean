@@ -76,7 +76,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     induction' n with n ih
     · simp
     replace ih := eventually_nhdsWithin_pos_mul_left (two_pos : 0 < (2 : ℝ)) ih
-    refine' (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => _
+    refine (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => ?_
     calc
       μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
         rw [pow_succ, mul_assoc]
@@ -84,7 +84,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
       _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
       _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ, ENNReal.coe_mul]
   rcases lt_or_le K 1 with (hK | hK)
-  · refine' ⟨1, _⟩
+  · refine ⟨1, ?_⟩
     simp only [ENNReal.coe_one, one_mul]
     refine eventually_mem_nhdsWithin.mono fun ε hε x t ht ↦ ?_
     gcongr
@@ -117,12 +117,12 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
           μ (closedBall x (t * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   have h := Classical.choose_spec (exists_eventually_forall_measure_closedBall_le_mul μ K)
   rcases mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩
-  refine' ⟨R, Rpos, fun x t r ht hr => _⟩
+  refine ⟨R, Rpos, fun x t r ht hr => ?_⟩
   rcases lt_trichotomy r 0 with (rneg | rfl | rpos)
   · have : t * r < 0 := mul_neg_of_pos_of_neg ht.1 rneg
     simp only [closedBall_eq_empty.2 this, measure_empty, zero_le']
   · simp only [mul_zero, closedBall_zero]
-    refine' le_mul_of_one_le_of_le _ le_rfl
+    refine le_mul_of_one_le_of_le ?_ le_rfl
     apply ENNReal.one_le_coe_iff.2 (le_max_right _ _)
   · apply (hR ⟨rpos, hr⟩ x t ht.2).trans
     gcongr

@@ -117,7 +117,7 @@ variable {s t}
 
 @[to_additive Set.AddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
-  refine' not_infinite.1 fun h => _
+  refine not_infinite.1 fun h => ?_
   have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
     hs (Prod.fst ∘ f) fun n => (mem_mulAntidiagonal.1 (hf n)).1
   have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) := fun f hf =>
@@ -125,7 +125,7 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t
   obtain ⟨g, hg⟩ :=
     h1.exists_monotone_subseq (fun n => h.natEmbedding _ n) fun n => (h.natEmbedding _ n).2
   obtain ⟨m, n, mn, h2'⟩ := h2 (fun x => (h.natEmbedding _) (g x)) fun n => (h.natEmbedding _ _).2
-  refine' mn.ne (g.injective <| (h.natEmbedding _).injective _)
+  refine mn.ne (g.injective <| (h.natEmbedding _).injective ?_)
   exact eq_of_fst_le_fst_of_snd_le_snd _ _ _ (hg _ _ mn.le) h2'
 #align set.mul_antidiagonal.finite_of_is_pwo Set.MulAntidiagonal.finite_of_isPWO
 #align set.add_antidiagonal.finite_of_is_pwo Set.AddAntidiagonal.finite_of_isPWO

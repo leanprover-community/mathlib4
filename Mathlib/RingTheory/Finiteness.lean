@@ -37,8 +37,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 open Function (Surjective)
 
-open BigOperators
-
 namespace Submodule
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -87,7 +85,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
   rw [fg_def] at hn
   rcases hn with ⟨s, hfs, hs⟩
   have : ∃ r : R, r - 1 ∈ I ∧ N ≤ (I • span R s).comap (LinearMap.lsmul R M r) ∧ s ⊆ N := by
-    refine' ⟨1, _, _, _⟩
+    refine ⟨1, ?_, ?_, ?_⟩
     · rw [sub_self]
       exact I.zero_mem
     · rw [hs]
@@ -99,9 +97,9 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     · rw [← span_le, hs]
   clear hin hs
   revert this
-  refine' Set.Finite.dinduction_on _ hfs (fun H => _) @fun i s _ _ ih H => _
+  refine Set.Finite.dinduction_on _ hfs (fun H => ?_) @fun i s _ _ ih H => ?_
   · rcases H with ⟨r, hr1, hrn, _⟩
-    refine' ⟨r, hr1, fun n hn => _⟩
+    refine ⟨r, hr1, fun n hn => ?_⟩
     specialize hrn hn
     rwa [mem_comap, span_empty, smul_bot, mem_bot] at hrn
   apply ih
@@ -122,7 +120,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     · rw [sub_smul, ← hyz, add_sub_cancel_left]
       exact hz
   rcases this with ⟨c, hc1, hci⟩
-  refine' ⟨c * r, _, _, hs.2⟩
+  refine ⟨c * r, ?_, ?_, hs.2⟩
   · simpa only [mul_sub, mul_one, sub_add_sub_cancel] using I.add_mem (I.mul_mem_left c hr1) hc1
   · intro n hn
     specialize hrn hn
@@ -158,10 +156,10 @@ theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (
     rw [I.mul_inv]
     exact one_le.mp le_rfl
   obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul this
-  refine' ⟨T, span_eq_of_le _ hT _⟩
+  refine ⟨T, span_eq_of_le _ hT ?_⟩
   rw [← one_mul I, ← mul_one (span R (T : Set A))]
   conv_rhs => rw [← I.inv_mul, ← mul_assoc]
-  refine' mul_le_mul_left (le_trans _ <| mul_le_mul_right <| span_le.mpr hT')
+  refine mul_le_mul_left (le_trans ?_ <| mul_le_mul_right <| span_le.mpr hT')
   simp only [Units.val_one, span_mul_span]
   rwa [one_le]
 #align submodule.fg_unit Submodule.fg_unit
@@ -252,7 +250,6 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
   classical
     simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
-    -- Porting note: `refine'` doesn't work here
     refine
       ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
     -- Note: #8386 changed `span_image` into `span_image _`
@@ -291,7 +288,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   exists t1.image g ∪ t2
   rw [Finset.coe_union, span_union, Finset.coe_image]
   apply le_antisymm
-  · refine' sup_le (span_le.2 <| image_subset_iff.2 _) (span_le.2 _)
+  · refine sup_le (span_le.2 <| image_subset_iff.2 ?_) (span_le.2 ?_)
     · intro y hy
       exact (hg y hy).1
     · intro x hx
@@ -304,22 +301,22 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
     exact ⟨x, hx, rfl⟩
   rw [← ht1, ← Set.image_id (t1 : Set P), Finsupp.mem_span_image_iff_total] at this
   rcases this with ⟨l, hl1, hl2⟩
-  refine'
+  refine
     mem_sup.2
-      ⟨(Finsupp.total M M R id).toFun ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), _,
-        x - Finsupp.total M M R id ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), _,
+      ⟨(Finsupp.total M M R id).toFun ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
+        x - Finsupp.total M M R id ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
         add_sub_cancel _ _⟩
   · rw [← Set.image_id (g '' ↑t1), Finsupp.mem_span_image_iff_total]
-    refine' ⟨_, _, rfl⟩
+    refine ⟨_, ?_, rfl⟩
     haveI : Inhabited P := ⟨0⟩
     rw [← Finsupp.lmapDomain_supported _ _ g, mem_map]
-    refine' ⟨l, hl1, _⟩
+    refine ⟨l, hl1, ?_⟩
     rfl
   rw [ht2, mem_inf]
   constructor
   · apply s.sub_mem hx
     rw [Finsupp.total_apply, Finsupp.lmapDomain_apply, Finsupp.sum_mapDomain_index]
-    · refine' s.sum_mem _
+    · refine s.sum_mem ?_
       intro y hy
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
@@ -328,7 +325,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
     · rw [sub_eq_zero]
-      refine' Finset.sum_congr rfl fun y hy => _
+      refine Finset.sum_congr rfl fun y hy => ?_
       unfold id
       rw [f.map_smul, (hg y (hl1 hy)).2]
     · exact zero_smul _
@@ -495,7 +492,7 @@ theorem FG.map {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) 
     (I.map f).FG := by
   classical
     obtain ⟨s, hs⟩ := h
-    refine' ⟨s.image f, _⟩
+    refine ⟨s.image f, ?_⟩
     rw [Finset.coe_image, ← Ideal.map_span, hs]
 #align ideal.fg.map Ideal.FG.map
 
@@ -514,7 +511,7 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by
   have := le_refl I.radical; revert this
-  refine' Submodule.fg_induction _ _ (fun J => J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I) _ _ _ h
+  refine Submodule.fg_induction _ _ (fun J => J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I) ?_ ?_ _ h
   · intro x hx
     obtain ⟨n, hn⟩ := hx (subset_span (Set.mem_singleton x))
     exact ⟨n, by rwa [← Ideal.span, span_singleton_pow, span_le, Set.singleton_subset_iff]⟩
@@ -523,11 +520,11 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     obtain ⟨m, hm⟩ := hK fun x hx => hJK <| Ideal.mem_sup_right hx
     use n + m
     rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
-    refine' fun i _ => Ideal.mul_le_right.trans _
+    refine fun i _ => Ideal.mul_le_right.trans ?_
     obtain h | h := le_or_lt n i
     · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
     · apply Ideal.mul_le_left.trans
-      refine' (Ideal.pow_le_pow_right _).trans hm
+      refine (Ideal.pow_le_pow_right ?_).trans hm
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 #align ideal.exists_radical_pow_le_of_fg Ideal.exists_radical_pow_le_of_fg
@@ -616,7 +613,7 @@ theorem of_restrictScalars_finite (R A M : Type*) [CommSemiring R] [Semiring A] 
     Finite A M := by
   rw [finite_def, Submodule.fg_def] at hM ⊢
   obtain ⟨S, hSfin, hSgen⟩ := hM
-  refine' ⟨S, hSfin, eq_top_iff.2 _⟩
+  refine ⟨S, hSfin, eq_top_iff.2 ?_⟩
   have := Submodule.span_le_restrictScalars R A S
   rw [hSgen] at this
   exact this
@@ -781,9 +778,9 @@ Note that strictly this only needs `∀ i ∈ s, FiniteDimensional K (S i)`, but
 work well with typeclass search. -/
 instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R V)
     [∀ i, Module.Finite R (S i)] : Module.Finite R (s.sup S : Submodule R V) := by
-  refine'
+  refine
     @Finset.sup_induction _ _ _ _ s S (fun i => Module.Finite R ↑i) (Module.Finite.bot R V)
-      _ fun i _ => by infer_instance
+      ?_ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finite_sup S₁ S₂
 
