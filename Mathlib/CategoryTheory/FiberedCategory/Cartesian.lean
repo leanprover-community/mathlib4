@@ -35,7 +35,7 @@ class Functor.IsCartesian {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
 
-namespace IsCartesian
+namespace Functor.IsCartesian
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsCartesian p f φ]
 
@@ -115,4 +115,4 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     apply map_uniq
     simp only [Iso.eq_comp_inv, assoc, hτ₂]
 
-end IsCartesian
+end Functor.IsCartesian
