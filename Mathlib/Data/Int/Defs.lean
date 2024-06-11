@@ -353,9 +353,9 @@ variable {P : ℤ → Sort*} (lt : ∀ n < m, P n) (ge : ∀ n ≥ m, (∀ k < n
 /-- A strong recursor for `Int` that specifies explicit values for integers below a threshold,
 and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
 @[elab_as_elim] protected def strongRec (n : ℤ) : P n :=
-  (em <| n < m).by_cases (lt n) fun hnm ↦ ge n (by omega) <| n.inductionOn' m lt
-    (fun _n _ ih l hln ↦ (em <| l < m).by_cases (lt l)
-      fun hlm ↦ ge l (by omega) fun k hkl ↦ ih k <| by omega)
+  if hnm : n < m then lt n hnm else ge n (by omega) <| n.inductionOn' m lt
+    (fun _n _ ih l hln ↦ if hlm : l < m then lt l hlm
+      else ge l (by omega) fun k hkl ↦ ih k <| by omega)
     fun n _ hn l lt1 ↦ hn l (by omega)
 
 variable {lt ge}
@@ -364,11 +364,11 @@ lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
 lemma strongRec_of_ge :
     ∀ hn : m ≤ n, m.strongRec lt ge n = ge n hn fun k _ ↦ m.strongRec lt ge k := by
   refine m.strongRec (fun n hnm hmn ↦ (Int.not_lt.mpr hmn hnm).elim) (fun n _ ih hn ↦ ?_) n
-  rw [Int.strongRec, Or.by_cases, dif_neg (Int.not_lt.mpr hn)]
+  rw [Int.strongRec, dif_neg (Int.not_lt.mpr hn)]
   congr; revert ih
   refine n.inductionOn' m (fun _ ↦ ?_) (fun k hmk ih' ih ↦ ?_) (fun k hkm ih' _ ↦ ?_) <;> ext l hl
   · rw [inductionOn'_self, strongRec_of_lt hl]
-  · rw [inductionOn'_add_one hmk, Or.by_cases]; split_ifs with hlm
+  · rw [inductionOn'_add_one hmk]; split_ifs with hlm
     · rw [strongRec_of_lt hlm]
     · rw [ih' fun l hl ↦ ih l (Int.lt_trans hl k.lt_succ), ih _ hl]
   · rw [inductionOn'_sub_one hkm, ih']
