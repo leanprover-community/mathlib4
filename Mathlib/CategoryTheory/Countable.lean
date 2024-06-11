@@ -35,6 +35,8 @@ attribute [instance] CountableCategory.countableObj CountableCategory.countableH
 instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
 
+instance : CountableCategory ℕ where
+
 namespace CountableCategory
 
 variable (α : Type u) [Category.{v} α] [CountableCategory α]
