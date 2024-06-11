@@ -240,6 +240,13 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_to_pullback_stalk TopCat.Presheaf.germToPullbackStalk
 
+-- is this useful?
+lemma pushforwardPullbackAdjunction_unit_app_app_germToPullbackStalk
+    (f : X ⟶ Y) (F : Y.Presheaf C) (V : (Opens Y)ᵒᵖ) (x : (Opens.map f).obj V.unop) :
+    ((pushforwardPullbackAdjunction C f).unit.app F).app V ≫ germToPullbackStalk C f F _ x =
+      F.germ ⟨f x, x.2⟩ := by
+  sorry
+
 /-- The morphism `(f⁻¹ℱ)ₓ ⟶ ℱ_{f(x)}`. -/
 def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     ((pullback C f).obj F).stalk x ⟶ F.stalk (f x) :=
