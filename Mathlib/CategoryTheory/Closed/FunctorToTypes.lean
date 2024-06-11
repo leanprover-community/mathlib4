@@ -74,7 +74,7 @@ def homEquiv_toFun (f : F ⊗ G ⟶ H) : G ⟶ ihom F H where
 
 @[ext]
 lemma homEquiv_toFun_ext {f g : G ⟶ ihom F H} :
-  f.app = g.app → f = g := NatTrans.ext _ _
+    f.app = g.app → f = g := NatTrans.ext _ _
 
 /-- Given a morphism `G ⟶ ihom F H`, construct a morphism `F ⊗ G ⟶ H`. -/
 def homEquiv_invFun (f : G ⟶ ihom F H) : F ⊗ G ⟶ H where
