@@ -190,9 +190,6 @@ lemma eval_polynomial_zero : (W.polynomial.eval 0).eval 0 = -W.a₆ := by
   simp only [← C_0, eval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 #align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.Affine.eval_polynomial_zero
 
-lemma map_polynomial {S} [CommRing S] (f : R →+* S) :
-    polynomial (W.map f) = W.polynomial.map (mapRingHom f) := by simp [polynomial]
-
 /-- The proposition that an affine point $(x, y)$ lies in `W`. In other words, $W(x, y) = 0$. -/
 def Equation (x y : R) : Prop :=
   (W.polynomial.eval <| C y).eval x = 0
