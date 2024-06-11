@@ -353,9 +353,9 @@ variable {P : ℤ → Sort*} (lt : ∀ n < m, P n) (ge : ∀ n ≥ m, (∀ k < n
 /-- A strong recursor for `Int` that specifies explicit values for integers below a threshold,
 and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
 @[elab_as_elim] protected def strongRec (n : ℤ) : P n :=
-  (em <| n < m).by_cases (lt n) fun h ↦ ge n (Int.not_lt.mp h) <| n.inductionOn' m lt
-    (fun _ _ hn l lt1 ↦ (em <| l < m).by_cases (lt l) fun nlt ↦ ge l (Int.not_lt.mp nlt)
-      fun n lt2 ↦ hn n <| Int.lt_of_lt_of_le lt2 <| lt_add_one_iff.mp lt1)
+  (em <| n < m).by_cases (lt n) fun hnm ↦ ge n (Int.not_lt.mp hnm) <| n.inductionOn' m lt
+    (fun _n _ ih l hln ↦ (em <| l < m).by_cases (lt l) fun hlm ↦ ge l (Int.not_lt.mp hlm)
+      fun k hkl ↦ ih k <| Int.lt_of_lt_of_le hkl <| lt_add_one_iff.mp hln)
     fun n _ hn l lt1 ↦ hn l <| Int.lt_trans lt1 n.pred_self_lt
 
 variable {lt ge}
