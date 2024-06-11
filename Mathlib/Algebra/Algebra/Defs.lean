@@ -111,7 +111,8 @@ def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra 
 #align algebra_map algebraMap
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
-@[coe, reducible] def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
+@[coe, reducible]
+def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
   algebraMap R A
 
 namespace algebraMap
