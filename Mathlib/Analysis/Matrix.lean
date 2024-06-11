@@ -190,28 +190,6 @@ theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v�
 instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
   ⟨(norm_diagonal _).trans <| norm_one⟩
 
-namespace Int
-
-open Finset
-
-/-- The norm of an integral matrix as the sup of the sup of the natAbs of the entries -/
-def natNorm (A : Matrix m n ℤ) : ℕ := sup univ fun i ↦ sup univ fun j ↦ (A i j).natAbs
-
-/-- The norm of an integral matrix is equal to the natNorm -/
-lemma norm_eq_natNorm (A : Matrix m n ℤ) : ‖A‖ = natNorm A := by
-  simp only [norm_eq_sup_sup_nnnorm, ← NNReal.coe_natCast, bot_eq_zero', CharP.cast_eq_zero,
-    comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast, Function.comp_def, NNReal.coe_inj,
-    natNorm]
-  congr! with i j
-  exact (NNReal.natCast_natAbs (A i j)).symm
-
-/-- The natNorm of a non-zero integral matrix is at least 1-/
-lemma one_le_natNorm_of_ne_zero (A : Matrix m n ℤ) (hA_ne_zero : A ≠ 0) : 1 ≤ natNorm A := by
-  simp only [← norm_pos_iff', norm_eq_natNorm A, Nat.cast_pos] at hA_ne_zero
-  linarith
-
-end Int
-
 end SeminormedAddCommGroup
 
 /-- Normed group instance (using sup norm of sup norm) for matrices over a normed group.  Not
