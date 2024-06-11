@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Topology.MetricSpace.PseudoMetric
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -436,9 +436,6 @@ end
 instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
 instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
 
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
-
 instance MulOpposite.instMetricSpace [MetricSpace X] : MetricSpace Xᵐᵒᵖ :=
   MetricSpace.induced unop unop_injective ‹_›
 
@@ -479,5 +476,3 @@ instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
 end
 
 instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›
-
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := ‹ProperSpace X›
