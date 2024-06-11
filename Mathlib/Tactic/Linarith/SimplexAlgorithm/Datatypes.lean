@@ -65,10 +65,10 @@ instance : UsableInSimplexAlgorithm Matrix where
   divideRow mat i coef := ⟨mat.data.modify i (·.map (· / coef))⟩
 
 /--
-`Tableu` is a structure the Simplex Algorithm operates on. The `i`-th row of `mat` expresses the
+`Tableau` is a structure the Simplex Algorithm operates on. The `i`-th row of `mat` expresses the
 variable `basic[i]` as a linear combination of variables from `free`.
 -/
-structure Tableu (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] where
+structure Tableau (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] where
   /-- Array containing the basic variables' indexes -/
   basic : Array Nat
   /-- Array containing the free variables' indexes -/
