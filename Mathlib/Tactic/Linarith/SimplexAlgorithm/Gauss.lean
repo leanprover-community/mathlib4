@@ -15,37 +15,19 @@ solution which is done by standard Gaussian Elimination algorithm implemented in
 namespace Linarith.SimplexAlgorithm.Gauss
 
 /-- The monad for the Gaussian Elimination algorithm. -/
-abbrev GaussM (n m : Nat) := StateM <| Matrix n m
+abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) := StateM <| matType n m
+
+variable {n m : Nat} {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
 /-- Finds the first row starting from the current row with nonzero element in current column. -/
-def findNonzeroRow (row col : Nat) {n m : Nat} : GaussM n m <| Option Nat := do
+def findNonzeroRow (row col : Nat) : GaussM n m matType <| Option Nat := do
   for i in [row:n] do
-    if (← get)[i]![col]! != 0 then
+    if (← get)[(i, col)]! != 0 then
       return i
   return .none
 
-/-- Swaps two rows. -/
-def swapRows {n m : Nat} (i j : Nat) : GaussM n m Unit := do
-  if i != j then
-    modify fun mat =>
-      let swapped : Matrix n m := ⟨mat.data.swap! i j⟩
-      swapped
-
-/-- Subtracts `i`-th row * `coef` from `j`-th row. -/
-def subtractRow {n m : Nat} (i j : Nat) (coef : Rat) : GaussM n m Unit :=
-  modify fun mat =>
-    let newData : Array (Array Rat) := mat.data.modify j fun row =>
-      row.zipWith mat[i]! fun x y => x - coef * y
-    ⟨newData⟩
-
-/-- Divides row by `coef`. -/
-def divideRow {n m : Nat} (i : Nat) (coef : Rat) : GaussM n m Unit :=
-  modify fun mat =>
-    let newData : Array (Array Rat) := mat.data.modify i (·.map (· / coef))
-    ⟨newData⟩
-
-/-- Implementation of `getTable` in `GaussM` monad. -/
-def getTableImp {n m : Nat} : GaussM n m Table := do
+/-- Implementation of `getTableau` in `GaussM` monad. -/
+def getTableauImp : GaussM n m matType <| Tableau matType := do
   let mut free : Array Nat := #[]
   let mut basic : Array Nat := #[]
 
@@ -59,15 +41,16 @@ def getTableImp {n m : Nat} : GaussM n m Table := do
       col := col + 1
       continue
     | .some rowToSwap =>
-      swapRows row rowToSwap
+      modify fun mat => swapRows mat row rowToSwap
 
-    divideRow row (← get)[row]![col]!
+    modify fun mat => divideRow mat row mat[(row, col)]!
 
     for i in [:n] do
       if i == row then
         continue
-      let coef := (← get)[i]![col]!
-      subtractRow row i coef
+      let coef := (← get)[(i, col)]!
+      if coef != 0 then
+        modify fun mat => subtractRow mat row i coef
 
     basic := basic.push col
     row := row + 1
@@ -76,22 +59,21 @@ def getTableImp {n m : Nat} : GaussM n m Table := do
   for i in [col:m] do
     free := free.push i
 
-  let ansData : Array (Array Rat) := ← do
+  let ansMatrix : matType basic.size free.size := ← do
     let mat := (← get)
-    return Array.ofFn (fun row : Fin row => free.map fun f => -mat[row]![f]!)
+    let arr : Array (Array (Nat × Nat × Rat)) := Array.ofFn fun bIdx : Fin row =>
+      free.mapIdx fun fIdx f =>
+        ((bIdx : Nat), (fIdx : Nat), -mat[((bIdx : Nat), f)]!)
+    return ofValues arr.flatten.toList
 
-  return {
-    free := free
-    basic := basic
-    mat := ⟨ansData⟩
-  }
+  return ⟨basic, free, ansMatrix⟩
 
 /--
-Given matrix `A`, solves the linear equation `A x = 0` and returns the solution as a table where
+Given matrix `A`, solves the linear equation `A x = 0` and returns the solution as a tableau where
 some variables are free and others (basic) variable are expressed as linear combinations of the free
 ones.
 -/
-def getTable {n m : Nat} (A : Matrix n m) : Table := Id.run do
-  return (← getTableImp.run A).fst
+def getTableau (A : matType n m) : Tableau matType := Id.run do
+  return (← getTableauImp.run A).fst
 
 end Linarith.SimplexAlgorithm.Gauss
