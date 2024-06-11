@@ -247,21 +247,18 @@ in this way, the result is reduced to `card_pow_char_pow`.
 
 open ZMod
 
-count_heartbeats in
--- TODO: make this faster!
-/-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`. -/
+/-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈ #F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by
-  have hp2 : ∀ n : ℕ, (2 ^ n : F) ≠ 0 := fun n => pow_ne_zero n (Ring.two_ne_zero hF)
+  have hp2 (n : ℕ) : (2 ^ n : F) ≠ 0 := pow_ne_zero n (Ring.two_ne_zero hF)
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
 
   -- we work in `FF`, the eighth cyclotomic field extension of `F`
-  let FF := (Polynomial.cyclotomic 8 F).SplittingField
+  let FF := CyclotomicField 8 F
   have hchar := Algebra.ringChar_eq F FF
   have FFp := hchar.subst hp
   have := Fact.mk FFp
-  have hFF := ne_of_eq_of_ne hchar.symm hF
-  -- `ringChar FF ≠ 2`
+  have hFF := hchar ▸ hF -- `ringChar FF ≠ 2`
   have hu : IsUnit (ringChar FF : ZMod 8) := by
     rw [isUnit_iff_not_dvd_char, ringChar_zmod_n]
     rw [Ne, ← Nat.prime_dvd_prime_iff_eq FFp Nat.prime_two] at hFF
@@ -276,13 +273,12 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
   let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
+    rw [show τ = ψ₈.char 1 from rfl] -- to make `rw [ψ₈.prim.zmod_char_eq_one_iff]` work
     refine (sq_eq_one_iff.1 ?_).resolve_left ?_
-    · rw [← pow_mul, ← map_nsmul_eq_pow ψ₈char]
-      -- doesn't match syntactically for `rw`
-      exact (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).2 (by decide)
-    · rw [← map_nsmul_eq_pow ψ₈char]
-      -- doesn't match syntactically for `rw`
-      exact (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).not.2 (by decide)
+    · rw [← pow_mul, ← map_nsmul_eq_pow ψ₈.char, ψ₈.prim.zmod_char_eq_one_iff]
+      decide
+    · rw [← map_nsmul_eq_pow ψ₈.char, ψ₈.prim.zmod_char_eq_one_iff]
+      decide
 
   -- we consider `χ₈` as a multiplicative character `ℤ/8ℤ → FF`
   let χ := χ₈.ringHomComp (Int.castRingHom FF)
@@ -290,25 +286,23 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   have hq : IsQuadratic χ := isQuadratic_χ₈.comp _
 
   -- we now show that the Gauss sum of `χ` and `ψ₈` has the relevant property
-  -- (this is the slow part)
+  have h₁ : (fun (a : Fin 8) ↦ ↑(χ₈ a) * τ ^ (a : ℕ)) = fun a ↦ χ a * ↑(ψ₈char a) := by
+    ext1; congr; apply pow_one
+  have hg₁ : gaussSum χ ψ₈char = 2 * (τ - τ ^ 3) := by
+    rw [gaussSum, ← h₁, Fin.sum_univ_eight,
+      -- evaluate `χ₈`
+      show χ₈ 0 = 0 from rfl, show χ₈ 1 = 1 from rfl, show χ₈ 2 = 0 from rfl,
+      show χ₈ 3 = -1 from rfl, show χ₈ 4 = 0 from rfl, show χ₈ 5 = -1 from rfl,
+      show χ₈ 6 = 0 from rfl, show χ₈ 7 = 1 from rfl,
+      -- normalize exponents
+      show ((3 : Fin 8) : ℕ) = 3 from rfl, show ((5 : Fin 8) : ℕ) = 5 from rfl,
+      show ((7 : Fin 8) : ℕ) = 7 from rfl]
+    simp only [Int.cast_zero, zero_mul, Int.cast_one, Fin.val_one, pow_one, one_mul, zero_add,
+      Fin.val_two, add_zero, Int.reduceNeg, Int.cast_neg, neg_mul]
+    linear_combination (τ ^ 3 - τ) * τ_spec
   have hg : gaussSum χ ψ₈char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
-    have h₁ : (fun (a : Fin 8) ↦ ↑(χ₈ a) * τ ^ a.val) = fun a ↦ χ a * ↑(ψ₈char a) := by
-      ext1; congr; apply pow_one
-    -- replace right had side by `8`
-    rw [hχ, one_mul, ZMod.card, Nat.cast_ofNat]
-    calc gaussSum χ ψ₈char ^ 2
-    _ = (∑ x : Fin 8, ↑(χ₈ x) * τ ^ x.val) ^ 2 := by simp_rw [gaussSum, ← h₁]
-    _ = (↑(χ₈ 0) * τ ^ 0 + ↑(χ₈ 1) * τ ^ 1 + ↑(χ₈ 2) * τ ^ 2 + ↑(χ₈ 3) * τ ^ 3 + ↑(χ₈ 4) * τ ^ 4 +
-          ↑(χ₈ 5) * τ ^ 5 + ↑(χ₈ 6) * τ ^ 6 + ↑(χ₈ 7) * τ ^ 7) ^ 2 :=
-      congrArg (· ^ 2) <| Fin.sum_univ_eight _
-    _ = (τ + -τ ^ 3 + -τ ^ 5 + τ ^ 7) ^ 2 := by
-      rw [show χ₈ 0 = 0 from rfl, show χ₈ 1 = 1 from rfl, show χ₈ 2 = 0 from rfl,
-        show χ₈ 3 = -1 from rfl, show χ₈ 4 = 0 from rfl, show χ₈ 5 = -1 from rfl,
-        show χ₈ 6 = 0 from rfl, show χ₈ 7 = 1 from rfl]
-      simp only [Int.cast_zero, pow_zero, mul_one, Int.cast_one, pow_one, one_mul, zero_add,
-        zero_mul, add_zero, Int.cast_neg, neg_mul]
-    _ = 8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring
-    _ = 8 := by rw [τ_spec, neg_add_self, zero_mul, add_zero]
+    rw [hχ, one_mul, ZMod.card, Nat.cast_ofNat, hg₁]
+    linear_combination (4 * τ ^ 2 - 8) * τ_spec
 
   -- this allows us to apply `card_pow_char_pow` to our situation
   have h := Char.card_pow_char_pow (R := ZMod 8) hq ψ₈char (ringChar FF) n hu hFF hg
@@ -319,8 +313,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   · rw [(by norm_num : (8 : F) = 2 ^ 2 * 2), mul_pow,
       (FiniteField.isSquare_iff hF <| hp2 2).mp ⟨2, pow_two 2⟩, one_mul]
   apply (algebraMap F FF).injective
-  simp only [map_pow, map_ofNat, map_intCast]
-  simpa only [Nat.cast_ofNat, ringHomComp_apply, eq_intCast] using h
+  simpa only [map_pow, map_ofNat, map_intCast, Nat.cast_ofNat] using h
 
 #align finite_field.two_pow_card FiniteField.two_pow_card
 
