@@ -71,7 +71,7 @@ jobs:
         else
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
-
-        message="$(printf '%s\n\n%s\n\n---\n\n%s\n' "${title}" "${importCount}" "${declDiff}")"
+        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.issue.number }}/commits/${currentHash}"
+        message="$(printf '%s [%s](%s)\n\n%s\n\n---\n\n%s\n' "${title}" "${currentHash}" "${hashURL}" "${importCount}" "${declDiff}")"
 
         ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
