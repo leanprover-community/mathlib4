@@ -373,6 +373,9 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   commutes' _ _ := mul_comm _ _
   smul_def' r x := rfl
 
+instance : CoeFun (FiniteAdeleRing R K)
+    (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
+      coe a v := a.1 v
 section Topology
 
 open Classical
@@ -380,6 +383,24 @@ open Classical
 open nonZeroDivisors
 
 open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
+
+example (α : Type) [CommMonoid α] (P : α → Prop) (h0 : P 1) (h1 : ∀ x y, P x → P y → P (x * y))
+    (s : Finset α) (hs : ∀ a ∈ s, P a) : P (∏ a ∈ s, a) := by
+  sorry
+
+variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
+    [IsFractionRing R K] in
+@[elab_as_elim]
+lemma mul_induction_on {P : FiniteAdeleRing R K → Prop}
+    (h0 : ∀ (a : FiniteIntegralAdeles R K), P a)
+    (h1 : ∀ x y, P x → P y → P (x * y))
+    (h2 : ∀ (a : FiniteAdeleRing R K) (v :IsDedekindDomain.HeightOneSpectrum R),
+      Valued.v (a v) = Multiplicative.ofAdd (-1 : ℤ) ∧
+      ∀ w ≠ v, a v ∈ v.adicCompletionIntegers K) : ∀ x, P x := fun x ↦ by
+
+  sorry
+
+
 
 variable {R K} in
 lemma clear_denominator (a : FiniteAdeleRing R K) :
