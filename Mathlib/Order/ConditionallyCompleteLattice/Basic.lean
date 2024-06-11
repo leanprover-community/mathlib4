@@ -55,7 +55,7 @@ noncomputable instance WithTop.instSupSet [SupSet α] :
 noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
-noncomputable instance WithBot.instSupSet[SupSet α] : SupSet (WithBot α) :=
+noncomputable instance WithBot.instSupSet [SupSet α] : SupSet (WithBot α) :=
   ⟨(WithTop.instInfSet (α := αᵒᵈ)).sInf⟩
 
 noncomputable instance WithBot.instInfSet [InfSet α] :
