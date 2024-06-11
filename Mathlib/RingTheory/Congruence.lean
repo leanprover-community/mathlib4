@@ -42,7 +42,7 @@ add_decl_doc RingCon.toCon
 /-- The induced additive congruence from a `RingCon`. -/
 add_decl_doc RingCon.toAddCon
 
-variable {α R : Type*}
+variable {α β R : Type*}
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
@@ -227,9 +227,21 @@ end One
 
 section SMul
 
-variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon R)
+variable [Add R] [Mul R]
+variable [SMul α R] [SMul β R] (c : RingCon R)
+variable [Con.CompatibleSMul α c.toCon] [Con.CompatibleSMul β c.toCon]
 
 instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
+
+instance [SMul α β] [IsScalarTower α β R] : IsScalarTower α β c.Quotient :=
+  inferInstanceAs (IsScalarTower α β c.toCon.Quotient)
+
+instance [SMulCommClass α β R] : SMulCommClass α β c.Quotient :=
+  inferInstanceAs (SMulCommClass α β c.toCon.Quotient)
+
+instance [SMul αᵐᵒᵖ R] [Con.CompatibleSMul αᵐᵒᵖ c.toCon] [IsCentralScalar α R] :
+    IsCentralScalar α c.Quotient :=
+  inferInstanceAs (IsCentralScalar α c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
@@ -388,25 +400,25 @@ instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower 
   smul_assoc _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc _ _ _
 #align ring_con.is_scalar_tower_right RingCon.isScalarTower_right
 
-instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
-    [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
+instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [SMulCommClass α R R]
+    (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
   smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
 #align ring_con.smul_comm_class RingCon.smulCommClass
 
-instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
-    [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
+instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [SMulCommClass R α R]
+    (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
   haveI := SMulCommClass.symm R α R
   SMulCommClass.symm _ _ _
 #align ring_con.smul_comm_class' RingCon.smulCommClass'
 
-instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
-    (c : RingCon R) : DistribMulAction α c.Quotient :=
+instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] (c : RingCon R)
+    [Con.CompatibleSMul α c.toCon] : DistribMulAction α c.Quotient :=
   { c.toCon.mulAction with
     smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
     smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
 
-instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
-    MulSemiringAction α c.Quotient :=
+instance [Monoid α] [Semiring R] [MulSemiringAction α R] (c : RingCon R)
+    [Con.CompatibleSMul α c.toCon] : MulSemiringAction α c.Quotient :=
   { smul_one := fun _ => congr_arg toQuotient <| smul_one _
     smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
       MulSemiringAction.smul_mul _ _ _ }

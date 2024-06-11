@@ -1146,10 +1146,42 @@ instance one [MulOneClass M] (c : Con M) : One c.Quotient where
   one := Quotient.mk'' (1 : M)
   -- one := ((1 : M) : c.Quotient)
 
+/-- The proposition that the `+ᵥ` operation is compatible with the congruence relation.
+
+Note that this is similar to `AddAction.QuotientAction`, but with slightly different assumptions. -/
+class _root_.AddCon.CompatibleVAdd (α : Type*) [Add M] [VAdd α M] (c : AddCon M) :
+    Prop where
+  rel_smul (a : α) {w x : M} : c w x → c (a +ᵥ w) (a +ᵥ x)
+
+/-- The proposition that the `•` operation is compatible with the congruence relation.
+
+Note that this is similar to `MulAction.QuotientAction`, but with slightly different assumptions. -/
 @[to_additive]
-theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
-    {w x : M} (h : c w x) : c (a • w) (a • x) := by
-  simpa only [smul_one_mul] using c.mul (c.refl' (a • (1 : M) : M)) h
+class CompatibleSMul (α : Type*) [Mul M] [SMul α M] (c : Con M) : Prop where
+  rel_smul (a : α) {w x : M} : c w x → c (a • w) (a • x)
+
+/-- This instance notably works for `α = M`. -/
+@[to_additive]
+instance CompatibleSMul.ofIsScalarTower {α M : Type*}
+    [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) : CompatibleSMul α c where
+  rel_smul a w x h := by simpa only [smul_one_mul] using c.mul (c.refl' (a • (1 : M) : M)) h
+
+/-- This instance notably works for `α = Mᵐᵒᵖ`. -/
+@[to_additive]
+instance CompatibleSMul.ofSMulCommClass {α M : Type*}
+    [MulOneClass M] [SMul α M] [SMulCommClass α M M] (c : Con M) : CompatibleSMul α c where
+  rel_smul a w x h := by simpa only [mul_smul_one] using c.mul h (c.refl' (a • (1 : M) : M))
+
+/-- This instance notably works for `α = Mᵐᵒᵖ`. -/
+@[to_additive]
+instance CompatibleSMul.ofSMulCommClass' {α M : Type*}
+    [MulOneClass M] [SMul α M] [SMulCommClass M α M] (c : Con M) : CompatibleSMul α c :=
+  letI := SMulCommClass.symm; inferInstance
+
+@[to_additive]
+theorem smul {α M : Type*} [Mul M] [SMul α M] (c : Con M) [CompatibleSMul α c] (a : α)
+    {w x : M} (h : c w x) : c (a • w) (a • x) :=
+  CompatibleSMul.rel_smul _ h
 #align con.smul Con.smul
 #align add_con.vadd AddCon.vadd
 
@@ -1369,29 +1401,47 @@ end Units
 section Actions
 
 @[to_additive]
-instance instSMul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
+instance instSMul {α M : Type*} [Mul M] [SMul α M] (c : Con M) [CompatibleSMul α c] :
     SMul α c.Quotient where
   smul a := (Quotient.map' (a • ·)) fun _ _ => c.smul a
 #align con.has_smul Con.instSMul
 #align add_con.has_vadd AddCon.instVAdd
 
+instance instIsScalarTower
+    {α β M : Type*} [Mul M] [SMul α β] [SMul α M] [SMul β M] (c : Con M)
+    [CompatibleSMul α c] [CompatibleSMul β c] [IsScalarTower α β M] :
+    IsScalarTower α β c.Quotient where
+  smul_assoc _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| smul_assoc _ _ _
+
+instance instSMulCommClass
+    {α β M : Type*} [Mul M] [SMul α M] [SMul β M] (c : Con M)
+    [CompatibleSMul α c] [CompatibleSMul β c] [SMulCommClass α β M] :
+    SMulCommClass α β c.Quotient where
+  smul_comm _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| smul_comm _ _ _
+
+instance instIsCentralScalar
+    {α M : Type*} [Mul M] [SMul α M] [SMul αᵐᵒᵖ M] (c : Con M)
+    [CompatibleSMul α c] [CompatibleSMul αᵐᵒᵖ c] [IsCentralScalar α M] :
+    IsCentralScalar α c.Quotient where
+  op_smul_eq_smul _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| op_smul_eq_smul _ _
+
 @[to_additive]
-theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)
+theorem coe_smul {α M : Type*} [Mul M] [SMul α M] (c : Con M) [CompatibleSMul α c]
     (a : α) (x : M) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
 #align con.coe_smul Con.coe_smul
 #align add_con.coe_vadd AddCon.coe_vadd
 
 @[to_additive]
-instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
-    (c : Con M) : MulAction α c.Quotient where
+instance mulAction {α M : Type*} [Monoid α] [Mul M] [MulAction α M]
+    (c : Con M) [CompatibleSMul α c] : MulAction α c.Quotient where
   one_smul := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| one_smul _ _
   mul_smul _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
 #align con.mul_action Con.mulAction
 #align add_con.add_action AddCon.addAction
 
 instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
-    [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
+    (c : Con M) [CompatibleSMul α c] : MulDistribMulAction α c.Quotient :=
   { smul_one := fun _ => congr_arg Quotient.mk'' <| smul_one _
     smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
 #align con.mul_distrib_mul_action Con.mulDistribMulAction
