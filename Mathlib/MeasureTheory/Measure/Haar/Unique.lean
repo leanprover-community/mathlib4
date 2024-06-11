@@ -681,7 +681,8 @@ lemma isHaarMeasure_eq_of_isProbabilityMeasure [LocallyCompactSpace G] (μ' μ :
 alias haarScalarFactor_eq_one_of_isProbabilityMeasure := isHaarMeasure_eq_of_isProbabilityMeasure
 
 @[deprecated (since := "2024-02-12")]
-alias addHaarScalarFactor_eq_one_of_isProbabilityMeasure := isAddHaarMeasure_eq_of_isProbabilityMeasure
+alias addHaarScalarFactor_eq_one_of_isProbabilityMeasure :=
+  isAddHaarMeasure_eq_of_isProbabilityMeasure
 
 /-!
 ### Uniqueness of measure of open sets
