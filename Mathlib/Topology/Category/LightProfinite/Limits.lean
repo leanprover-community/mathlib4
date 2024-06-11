@@ -49,12 +49,12 @@ def pullback : LightProfinite.{u} :=
 
 /-- The projection from the pullback to the first component. -/
 def pullback.fst : pullback f g ⟶ X where
-  toFun := fun ⟨⟨x, _⟩, _⟩ => x
+  toFun := fun ⟨⟨x, _⟩, _⟩ ↦ x
   continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val
 
 /-- The projection from the pullback to the second component. -/
 def pullback.snd : pullback f g ⟶ Y where
-  toFun := fun ⟨⟨_, y⟩, _⟩ => y
+  toFun := fun ⟨⟨_, y⟩, _⟩ ↦ y
   continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val
 
 @[reassoc]
@@ -69,7 +69,7 @@ This is essentially the universal property of the pullback.
 -/
 def pullback.lift {Z : LightProfinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
     Z ⟶ pullback f g where
-  toFun := fun z => ⟨⟨a z, b z⟩, by apply_fun (· z) at w; exact w⟩
+  toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (· z) at w; exact w⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     rw [continuous_prod_mk]
@@ -102,10 +102,10 @@ def pullback.cone : Limits.PullbackCone f g :=
 @[simps! lift]
 def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
   Limits.PullbackCone.isLimitAux _
-    (fun s => pullback.lift f g s.fst s.snd s.condition)
-    (fun _ => pullback.lift_fst _ _ _ _ _)
-    (fun _ => pullback.lift_snd _ _ _ _ _)
-    (fun _ _ hm => pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
+    (fun s ↦ pullback.lift f g s.fst s.snd s.condition)
+    (fun _ ↦ pullback.lift_fst _ _ _ _ _)
+    (fun _ ↦ pullback.lift_snd _ _ _ _ _)
+    (fun _ _ hm ↦ pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
 
 section Isos
 
@@ -139,8 +139,8 @@ section FiniteCoproducts
 variable {α : Type w} [Finite α] (X : α → LightProfinite.{max u w})
 
 /--
-The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
-union with its usual topology.
+The "explicit" coproduct of a finite family of objects in `LightProfinite`, whose underlying
+profinite set is the disjoint union with its usual topology.
 -/
 def finiteCoproduct : LightProfinite := LightProfinite.of <| Σ (a : α), X a
 
@@ -151,12 +151,11 @@ def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
 
 /--
 To construct a morphism from the explicit finite coproduct, it suffices to
-specify a morphism from each of its factors.
-This is essentially the universal property of the coproduct.
+specify a morphism from each of its factors. This is the universal property of the coproduct.
 -/
 def finiteCoproduct.desc {B : LightProfinite.{max u w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
-  toFun := fun ⟨a, x⟩ => e a x
+  toFun := fun ⟨a, x⟩ ↦ e a x
   continuous_toFun := by
     apply continuous_sigma
     intro a
