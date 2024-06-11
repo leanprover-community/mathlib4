@@ -244,7 +244,7 @@ instance baseChange [hfa : FiniteType R A] :
   let g : B ⊗[R] MvPolynomial (Fin n) R →ₐ[B] B ⊗[R] A :=
     Algebra.TensorProduct.map (AlgHom.id B B) f
   have : Function.Surjective g := baseChangeAux_surj B hf
-  use n, AlgHom.comp g (MvPolynomial.algebraTensorAlgEquiv (R := R) B).symm.toAlgHom
+  use n, AlgHom.comp g (MvPolynomial.algebraTensorAlgEquiv R B).symm.toAlgHom
   simpa
 
 end BaseChange

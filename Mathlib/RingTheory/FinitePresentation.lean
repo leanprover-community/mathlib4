@@ -407,9 +407,8 @@ theorem ker_fG_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
   rw [← Ideal.comap_comap, Ideal.map_comap_of_surjective (g : MvPolynomial (Fin n) R →+* A) hg]
 #align algebra.finite_presentation.ker_fg_of_surjective Algebra.FinitePresentation.ker_fG_of_surjective
 
-theorem baseChange (hfa : Algebra.FinitePresentation R A) :
-    Algebra.FinitePresentation B (B ⊗[R] A) := by
-  obtain ⟨n, f, hsurj, hfg⟩ := hfa
+instance baseChange [FinitePresentation R A] : FinitePresentation B (B ⊗[R] A) := by
+  obtain ⟨n, f, hsurj, hfg⟩ := ‹FinitePresentation R A›
   let g : B ⊗[R] MvPolynomial (Fin n) R →ₐ[B] B ⊗[R] A :=
     Algebra.TensorProduct.map (AlgHom.id B B) f
   have hgsurj : Function.Surjective g := Algebra.FiniteType.baseChangeAux_surj B hsurj
@@ -419,10 +418,10 @@ theorem baseChange (hfa : Algebra.FinitePresentation R A) :
     rw [hker_eq]
     exact Ideal.FG.map hfg _
   let g' : MvPolynomial (Fin n) B →ₐ[B] B ⊗[R] A :=
-    AlgHom.comp g (MvPolynomial.algebraTensorAlgEquiv B).symm.toAlgHom
+    AlgHom.comp g (MvPolynomial.algebraTensorAlgEquiv R B).symm.toAlgHom
   refine ⟨n, g', ?_, Ideal.fg_ker_comp _ _ ?_ hfgg ?_⟩
   · simp_all [g, g']
-  · show Ideal.FG (RingHom.ker (AlgEquiv.symm (MvPolynomial.algebraTensorAlgEquiv B)))
+  · show Ideal.FG (RingHom.ker (AlgEquiv.symm (MvPolynomial.algebraTensorAlgEquiv R B)))
     simp only [RingHom.ker_equiv]
     exact Submodule.fg_bot
   · simpa using EquivLike.surjective _
