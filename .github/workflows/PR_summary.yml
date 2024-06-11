@@ -71,7 +71,7 @@ jobs:
         else
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
-        branchName="${{ github.ref_name }}"
+        branchName="${{ github.head_ref }}"
         echo "${branchName}"
         git checkout "${branchName}"
         currentHash="$(git rev-parse HEAD)"
