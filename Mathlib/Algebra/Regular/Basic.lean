@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Star.Basic
 import Mathlib.Tactic.NthRewrite
 
 #align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
@@ -75,6 +76,10 @@ structure IsRegular (c : R) : Prop where
 attribute [simp] IsRegular.left IsRegular.right
 
 attribute [to_additive] IsRegular
+
+@[to_additive]
+theorem isRegular_iff {c : R} : IsRegular c ↔ IsLeftRegular c ∧ IsRightRegular c :=
+  ⟨fun ⟨h1, h2⟩ => ⟨h1, h2⟩, fun ⟨h1, h2⟩ => ⟨h1, h2⟩⟩
 
 @[to_additive]
 protected theorem MulLECancellable.isLeftRegular [PartialOrder R] {a : R}
@@ -388,3 +393,34 @@ theorem isRegular_iff_ne_zero [Nontrivial R] : IsRegular a ↔ a ≠ 0 :=
 #align is_regular_iff_ne_zero isRegular_iff_ne_zero
 
 end CancelMonoidWithZero
+
+section StarMul
+
+protected theorem IsLeftRegular.star [Mul R] [StarMul R] {x : R} (hx : IsLeftRegular x) :
+    IsRightRegular (star x) :=
+  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+
+protected theorem IsRightRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRightRegular x) :
+    IsLeftRegular (star x) :=
+  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+
+protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) :
+    IsRegular (star x) :=
+  ⟨hx.right.star, hx.left.star⟩
+
+@[simp]
+theorem isRightRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsRightRegular (star x) ↔ IsLeftRegular x :=
+  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+
+@[simp]
+theorem isLeftRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsLeftRegular (star x) ↔ IsRightRegular x :=
+  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+
+@[simp]
+theorem isRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsRegular (star x) ↔ IsRegular x := by
+  rw [isRegular_iff, isRegular_iff, isRightRegular_star_iff, isLeftRegular_star_iff, and_comm]
+
+end StarMul
