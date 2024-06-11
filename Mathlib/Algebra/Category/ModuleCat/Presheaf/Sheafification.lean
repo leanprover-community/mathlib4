@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # The sheafification functor for presheaves of modules
@@ -20,15 +24,18 @@ sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
 
 universe v v' u u'
 
-open CategoryTheory Category
+open CategoryTheory Category Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
   {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.val)
   [Presheaf.IsLocallyInjective J α] [Presheaf.IsLocallySurjective J α]
-  [HasWeakSheafify J AddCommGroupCat.{v}]
   [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
 
 namespace PresheafOfModules
+
+section
+
+variable [HasWeakSheafify J AddCommGroupCat.{v}]
 
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
@@ -119,5 +126,33 @@ noncomputable def sheafificationAdjunction :
 lemma sheafificationAdjunction_unit_app_hom (M₀ : PresheafOfModules.{v} R₀) :
     ((sheafificationAdjunction α).unit.app M₀).hom = CategoryTheory.toSheafify J M₀.presheaf := by
   rfl
+
+instance : (sheafification.{v} α).IsLeftAdjoint :=
+  (sheafificationAdjunction α).isLeftAdjoint
+
+end
+
+section
+
+variable [HasSheafify J AddCommGroupCat.{v}]
+
+noncomputable instance :
+    PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
+  compPreservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGroupCat)
+
+instance : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomorphisms :=
+  inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
+
+instance : (SheafOfModules.toSheaf.{v} R).ReflectsIsomorphisms :=
+  reflectsIsomorphisms_of_comp (SheafOfModules.toSheaf.{v} R) (sheafToPresheaf J _)
+
+noncomputable instance : ReflectsFiniteLimits (SheafOfModules.toSheaf.{v} R) where
+  reflects _ _ _ := inferInstance
+
+noncomputable instance : PreservesFiniteLimits (sheafification.{v} α) :=
+  preservesFiniteLimitsOfReflectsOfPreserves
+    (sheafification.{v} α) (SheafOfModules.toSheaf.{v} R)
+
+end
 
 end PresheafOfModules

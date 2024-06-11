@@ -62,18 +62,6 @@ open sets in `Proj`, more specifically:
     local sections of structure sheaf of projective spectrum on the basic open set around `f`.
     The map `A⁰_f → Γ(Proj, pbo f)` is constructed in `awayToΓ` and is defined by sending
     `s ∈ A⁰_f` to the section `x ↦ s` on `pbo f`.
-4. We prove that the morphism `α` is an isomorphism of locally ringed spaces when `f : A` is a
-    homogeneous element of positive degree `m` (`ProjIsoSpec.isIso_toSpec`). This is done by
-    checking both of the topological component and the sheaf component are isomorphisms. Note that
-    the topological component of `α` defined via Gamma-Spec adjunction agrees with
-    `ProjIsoSpecTopComponent.fromSpec` defined above, hence it is an isomorphism.
-    We then prove that the induce stalk map of the sheaf component `f` is an isomorphism as well.
-    We first prove that, for any `x ∈ pbo f`, `A⁰ₓ` has the universal property of localization of
-    `A⁰_f` at `φ(x)` where `φ : Proj|pbo f → Spec A⁰_f`. Thus induced stalk map is the map fomr
-    `(A⁰_f)_(φ(x))` to `A⁰ₓ` is an isomorphism (`ProjIsoSpec.specStalkEquiv`).
-5. Since for each `x ∈ Proj` is a relevant ideal, there exists some `f ∈ ⨁_{0 < i} Aᵢ` not in `x`,
-    thus, if we write `f = f₁ + ... + fₙ`, `x` is in at least one of `pbo fᵢ`. Hence we have an
-    affine neighbourhood around `x`, namely `Spec A⁰_f`. This proves that `Proj A` is a scheme.
 
 ## Main Definitions and Statements
 
@@ -90,15 +78,9 @@ If we further assume `m` is positive
   We also denote this map as `φ`
 * `projIsoSpecTopComponent`: the homeomorphism `Proj.T| pbo f ≅ Spec.T A⁰_f` obtained by `φ` and
   `ψ`.
-* `ProjIsoSpec.toSpec`: the morphism of locally ringed spaces between `Proj| pbo f` and `Spec A⁰_f`
-  corresponding to the ring map `A⁰_f → Γ(Proj, pbo f)` under the Gamma-Spec adjunction defined by
-  sending `s` to the section `x ↦ s` on `pbo f`.
-* `ProjIsoSpec.specStalkEquiv`: for any `x ∈ pbo f`, the stalk of `Spec A⁰_f` at `φ(x)` is
-  isomorphic to `A⁰ₓ`.
-* `ProjIsoSpec.isIso_toSpec`: the morphism `ProjIsoSpec.toSpec` is an isomorphism.
-* `projIsoSpec`: the isomorphism between `Proj| pbo f` and `Spec A⁰_f`.
-
-* `Proj.toScheme`: `Proj A` as a scheme.
+* `ProjectiveSpectrum.Proj.toSpec`: the morphism of locally ringed spaces between `Proj| pbo f`
+  and `Spec A⁰_f` corresponding to the ring map `A⁰_f → Γ(Proj, pbo f)` under the Gamma-Spec
+  adjunction defined by sending `s` to the section `x ↦ s` on `pbo f`.
 
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
@@ -606,9 +588,8 @@ def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m
   inv_hom_id := ConcreteCategory.hom_ext _ _
     (ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 f_deg hm)
 
-namespace ProjIsoSpec
+namespace ProjectiveSpectrum.Proj
 
-open ProjectiveSpectrum.Proj in
 /--
 The ring map from `A⁰_ f` to the local sections of the structure sheaf of the projective spectrum of
 `A` on the basic open set `D(f)` defined by sending `s ∈ A⁰_f` to the section `x ↦ s` on `D(f)`.
@@ -625,17 +606,13 @@ def awayToSection (f) : CommRingCat.of (A⁰_ f) ⟶ (structureSheaf 𝒜).1.obj
   map_zero' := by ext; simp only [map_zero, HomogeneousLocalization.val_zero, Proj.zero_apply]
   map_one' := by ext; simp only [map_one, HomogeneousLocalization.val_one, Proj.one_apply]
 
-open ProjectiveSpectrum.Proj in
 lemma awayToSection_germ (f x) :
     awayToSection 𝒜 f ≫ (structureSheaf 𝒜).presheaf.germ x =
       (HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr x.2)) ≫
         (Proj.stalkIso' 𝒜 x).toCommRingCatIso.inv := by
   ext z
   apply (Proj.stalkIso' 𝒜 x).eq_symm_apply.mpr
-  simp only [RingEquiv.toEquiv_eq_coe, comp_apply, EquivLike.coe_coe]
-  rw [Proj.stalkIso'_germ]
-  rfl
-
+  apply Proj.stalkIso'_germ
 /--
 The ring map from `A⁰_ f` to the global sections of the structure sheaf of the projective spectrum
 of `A` restricted to the basic open set `D(f)`.
@@ -659,7 +636,6 @@ lemma awayToΓ_ΓToStalk (f) (x) :
   rw [Presheaf.germ_res, awayToSection_germ]
   rfl
 
-open ProjectiveSpectrum.Proj in
 /--
 The morphism of locally ringed space from `Proj|D(f)` to `Spec A⁰_f` induced by the ring map
 `A⁰_ f → Γ(Proj, D(f))` under the gamma spec adjunction.
@@ -846,7 +822,7 @@ lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
   convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).surjective using 1
   ext; exact ProjIsoSpec.toSpec_eq_toSpec 𝒜 _
 
-end ProjIsoSpec
+end ProjectiveSpectrum.Proj
 
 /--
 If `f ∈ A` is a homogeneous element of positive degree, then the projective spectrum restricted to
@@ -869,5 +845,6 @@ def Proj.toScheme : Scheme where
       rw [← DirectSum.sum_support_decompose 𝒜 z]
       exact x.1.toIdeal.sum_mem fun k hk ↦ this _ k (SetLike.coe_mem _) <| by_contra <| by aesop
     exact ⟨⟨pbo f, hx⟩, .of (A⁰_ f), ⟨projIsoSpec 𝒜 f f_deg hm⟩⟩
+
 
 end AlgebraicGeometry
