@@ -772,7 +772,7 @@ set_option linter.uppercaseLean3 false in
 #align is_R_or_C.norm_I_of_ne_zero RCLike.norm_I_of_ne_zero
 
 theorem re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
-  rw [mul_conj, ← ofReal_pow]; simp [-ofReal_pow]
+  rw [mul_conj, ← ofReal_pow]; simp [-ofReal_pow, -map_pow]
 #align is_R_or_C.re_eq_norm_of_mul_conj RCLike.re_eq_norm_of_mul_conj
 
 theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2 := by
