@@ -31,7 +31,7 @@ arrays, performs pivot operation, i.e. expresses one through the other and makes
 and vice versa.
 -/
 def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :=
-  modify fun s => Id.run do
+  modify fun s : Tableau matType => Id.run do
     let mut mat := s.mat
     let intersectCoef := mat[(exitIdx, enterIdx)]!
 
