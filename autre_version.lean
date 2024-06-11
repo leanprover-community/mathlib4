@@ -1646,17 +1646,23 @@ theorem Measure.map_snd_compProd {X Y Z : Type*} [MeasurableSpace X] [Measurable
   rw [kernel.map_apply', preimage_preimage]
   exact measurable_id ms
 
-def equiv_Iic (b : ℕ) : ((i : Finset.Iic b) → X i) ≃ᵐ ((i : Iic b) → X i) where
+def e_Iic (b : ℕ) : (Finset.Iic b) ≃ (Iic b) where
   toFun := by
-    intro x ⟨i, hi⟩
-    rw [← Finset.coe_Iic, Finset.mem_coe] at hi
-    exact x ⟨i, hi⟩
-  invFun := by
-    intro x ⟨i, hi⟩
+    intro ⟨i, hi⟩
     rw [← Finset.mem_coe, Finset.coe_Iic] at hi
-    exact x ⟨i, hi⟩
-  left_inv := fun x ↦ by simp
-  right_inv := fun x ↦ by simp
+    exact ⟨i, hi⟩
+  invFun := by
+    intro ⟨i, hi⟩
+    rw [← Finset.coe_Iic, Finset.mem_coe] at hi
+    exact ⟨i, hi⟩
+  left_inv := fun _ ↦ by simp
+  right_inv := fun _ ↦ by simp
+
+def equiv_Iic (b : ℕ) : ((i : Finset.Iic b) → X i) ≃ᵐ ((i : Iic b) → X i) where
+  toFun := fun x i ↦ x ((e_Iic b).symm i)
+  invFun := fun x i ↦ x (e_Iic b i)
+  left_inv := fun _ ↦ by simp [e_Iic]
+  right_inv := fun _ ↦ by simp [e_Iic]
   measurable_toFun := measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
   measurable_invFun := measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
 
@@ -1692,15 +1698,36 @@ theorem prod_iic (n : ℕ) (f : (Iic n) → ℝ≥0∞) :
 theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
     (fun I : Finset ℕ ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I
+  have sub : I ⊆ Finset.Iic (I.sup id) := fun i hi ↦ Finset.mem_Iic.2 <| Finset.le_sup (f := id) hi
   have : Measure.pi (fun i : I ↦ μ i) =
       (Measure.pi (fun i : Iic (I.sup id) ↦ μ i)).map
-      (fun x (i : I) ↦ ((equiv_Iic _).symm x)
-        ⟨i.1, Finset.mem_Iic.2 <| Finset.le_sup (f := id) i.2⟩) := by sorry
+      (fun x (i : I) ↦ ((equiv_Iic _).symm x) ⟨i.1, sub i.2⟩) := by
+    conv_lhs => change (fun I : Finset ℕ ↦ Measure.pi (fun i : I ↦ μ i)) I
+    rw [isProjectiveMeasureFamily_pi μ (Finset.Iic (I.sup id)) I sub]
+    simp only
+    conv_rhs =>
+      enter [1]
+      change fun x ↦ ((fun x (i : I) ↦ x ⟨i.1, sub i.2⟩) ∘ (equiv_Iic (I.sup id)).symm) x
+    rw [← Measure.map_map]
+    · congr
+      refine Measure.pi_eq (fun s ms ↦ ?_)
+      rw [Measure.map_apply]
+      · have : (equiv_Iic (I.sup id)).symm ⁻¹' univ.pi s =
+            univ.pi (fun i : Iic (I.sup id) ↦ s ((e_Iic _).symm i)) := by
+          ext x
+          simp [equiv_Iic, e_Iic]
+        rw [this, Measure.pi_pi]
+        apply Fintype.prod_equiv ((e_Iic (I.sup id)).symm)
+        simp [e_Iic]
+      · exact MeasurableEquiv.measurable_invFun _
+      · exact MeasurableSet.univ_pi ms
+    · exact measurable_proj₂' _ _ sub
+    · exact MeasurableEquiv.measurable_invFun _
   simp_rw [this]
   have : (fun (x : (n : ℕ) → X n) (i : I) ↦ x i) =
       (fun x (i : I) ↦ x ⟨i.1, Finset.mem_Iic.2 <| Finset.le_sup (f := id) i.2⟩) ∘
       (equiv_Iic (I.sup id)).symm ∘
-      (fun x (i : Iic (I.sup id)) ↦ x i) := by sorry
+      (fun x (i : Iic (I.sup id)) ↦ x i) := by ext x i; simp [equiv_Iic, e_Iic]
   rw [this, ← Function.comp.assoc, ← Measure.map_map]
   congr
   rw [prod_meas, Measure.map_snd_compProd, noyau_proj, prod_noyau_proj]
@@ -1712,7 +1739,18 @@ theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
   · refine lintegral_congr fun x₀ ↦ ?_
     have this : (er' (I.sup id)) ⁻¹' (Prod.mk x₀ ⁻¹' (Prod.snd ⁻¹' univ.pi fun i ↦ s i)) =
         s ⟨0, mem_Iic.2 <| zero_le _⟩ ×ˢ
-          univ.pi (fun i : Ioc 0 (I.sup id) ↦ s ⟨i.1, Ioc_subset_Iic_self i.2⟩) := by sorry
+          univ.pi (fun i : Ioc 0 (I.sup id) ↦ s ⟨i.1, Ioc_subset_Iic_self i.2⟩) := by
+      ext x
+      simp only [er', MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, mem_preimage, Set.mem_pi, mem_univ,
+        true_implies, Subtype.forall, mem_Iic, mem_prod, mem_Ioc]
+      refine ⟨fun h ↦ ⟨?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
+      · exact h 0 (zero_le _)
+      · convert h i hi2
+        simp [hi1.ne.symm]
+      · split_ifs with h
+        · cases h; exact h1
+        · have : 0 < i := by omega
+          exact h2 i ⟨this, hi⟩
     rw [kernel.map_apply', this, kernel.prod_apply, Measure.prod_prod, kernel.deterministic_apply,
       Measure.dirac_apply', kernel.const_apply, Measure.pi_pi]
     · exact ms _
