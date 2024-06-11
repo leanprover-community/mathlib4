@@ -12,14 +12,6 @@ import Mathlib.Algebra.Order.Antidiag.Prod
 This file provides the finset of functions summing to a specific value on a finset. Such finsets
 should be thought of as the "antidiagonals" in the space of functions.
 
-Precisely, for a commutative monoid `μ` with antidiagonals, `Finset.piAntidiag s n` is the finset of
-all functions `f : ι → μ` with support contained in `s` and such that the sum of its values equals
-`n : μ`.
-
-We define it recursively on `s` using `Finset.HasAntidiagonal.antidiagonal : μ → Finset (μ × μ)`.
-Technically, we non-canonically identify `s` with `Fin n` where `n = s.card`, recurse on `n` using
-that `(Fin (n + 1) → μ) ≃ (Fin n → μ) × μ`, and show the end result doesn't depend on our identification. See `Finset.finAntidiag` for the details.
-
 ## TODO
 
 `Finset.finAntidiagonal` is strictly more general than `Finset.Nat.antidiagonalTuple`. Deduplicate.
