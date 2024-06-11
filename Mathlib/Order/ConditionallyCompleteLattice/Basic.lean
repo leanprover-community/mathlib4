@@ -107,9 +107,10 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddB
 -- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
 -- does not need `rfl`.
 @[norm_cast]
-theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] (f : ι → α) :
+theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
-  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f), ← range_comp]; rfl
+  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp]
+  rfl
 #align with_top.coe_infi WithTop.coe_iInf
 
 theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
@@ -142,15 +143,15 @@ theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
 #align with_bot.csupr_empty WithBot.ciSup_empty
 
 @[norm_cast]
-theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) :
+theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) (h's : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
-  WithTop.coe_sInf' (α := αᵒᵈ) hs
+  WithTop.coe_sInf' (α := αᵒᵈ) hs h's
 #align with_bot.coe_Sup' WithBot.coe_sSup'
 
 @[norm_cast]
-theorem WithBot.coe_iSup [Nonempty ι] [SupSet α] (f : ι → α) :
+theorem WithBot.coe_iSup [Nonempty ι] [SupSet α] {f : ι → α} (hf : BddAbove (range f)) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
-  WithTop.coe_iInf (α := αᵒᵈ) _
+  WithTop.coe_iInf (α := αᵒᵈ) hf
 #align with_bot.coe_supr WithBot.coe_iSup
 
 @[norm_cast]
@@ -1340,6 +1341,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
     (hs : BddBelow s) : IsGLB s (sInf s) := by
   constructor
   · show ite _ _ _ ∈ _
+    simp only [hs, not_true_eq_false, or_false]
     split_ifs with h
     · intro a ha
       exact top_le_iff.2 (Set.mem_singleton_iff.1 (h ha))
@@ -1356,6 +1358,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       intro c hc
       exact coe_le_coe.1 (hb hc)
   · show ite _ _ _ ∈ _
+    simp only [hs, not_true_eq_false, or_false]
     split_ifs with h
     · intro _ _
       exact le_top
@@ -1402,8 +1405,9 @@ theorem coe_sSup {s : Set α} (hb : BddAbove s) : ↑(sSup s) = (⨆ a ∈ s, �
 
 /-- A version of `WithTop.coe_sInf'` with a more convenient but less general statement. -/
 @[norm_cast]
-theorem coe_sInf {s : Set α} (hs : s.Nonempty) : ↑(sInf s) = (⨅ a ∈ s, ↑a : WithTop α) := by
-  rw [coe_sInf' hs, sInf_image]
+theorem coe_sInf {s : Set α} (hs : s.Nonempty) (h's : BddBelow s) :
+    ↑(sInf s) = (⨅ a ∈ s, ↑a : WithTop α) := by
+  rw [coe_sInf' hs h's, sInf_image]
 #align with_top.coe_Inf WithTop.coe_sInf
 
 end WithTop
@@ -1663,7 +1667,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           -- Porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg
-          simp only [h, preimage_empty, WithBot.csSup_empty]
+          simp only [h, preimage_empty, WithBot.sSup_empty]
         · exfalso
           apply h₂
           use ⊥
@@ -1672,6 +1676,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
       · exact (WithTop.isLUB_sSup' h).2 ha
     sInf_le := fun S a haS =>
       show ite _ _ _ ≤ a by
+        simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
         split_ifs with h₁
         · cases' a with a
           · exact le_rfl
