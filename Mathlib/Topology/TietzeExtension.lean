@@ -495,8 +495,8 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
     exact hgG.2 (congr_fun hGF _)
 #align continuous_map.exists_extension_forall_mem_of_closed_embedding ContinuousMap.exists_extension_forall_mem_of_closedEmbedding
 
+@[deprecated (since := "2024-01-16")]
 alias exists_extension_of_closedEmbedding := exists_extension'
-attribute [deprecated] exists_extension_of_closedEmbedding -- deprecated since 2024-01-16
 
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed set. Let
 `s` be a closed set in a normal topological space `Y`. Let `f` be a continuous real-valued function
@@ -512,8 +512,7 @@ theorem exists_restrict_eq_forall_mem_of_closed {s : Set Y} (f : C(s, ℝ)) {t :
   ⟨g, hgt, coe_injective hgf⟩
 #align continuous_map.exists_restrict_eq_forall_mem_of_closed ContinuousMap.exists_restrict_eq_forall_mem_of_closed
 
-alias exists_restrict_eq_of_closed := exists_restrict_eq
-attribute [deprecated] exists_restrict_eq_of_closed -- deprecated since 2024-01-16
+@[deprecated (since := "2024-01-16")] alias exists_restrict_eq_of_closed := exists_restrict_eq
 
 end ContinuousMap
 

@@ -80,8 +80,8 @@ theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
 @[deprecated] alias Real.cocompact_eq := cocompact_eq_atBot_atTop
 #align real.cocompact_eq Real.cocompact_eq
 
-@[deprecated] alias Real.atBot_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
-@[deprecated] alias Real.atTop_le_cocompact := atTop_le_cocompact -- deprecated on 2024-02-07
+@[deprecated (since := "2024-02-07")] alias Real.atBot_le_cocompact := atBot_le_cocompact
+@[deprecated (since := "2024-02-07")] alias Real.atTop_le_cocompact := atTop_le_cocompact
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
