@@ -2150,9 +2150,11 @@ namespace MeasurableEmbedding
 
 open MeasureTheory Measure
 
-variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} (hf : MeasurableEmbedding f)
+variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β}
+  {μ ν : Measure α}
 
-nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻¹' s) := by
+nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set β) :
+    μ.map f s = μ (f ⁻¹' s) := by
   refine le_antisymm ?_ (le_map_apply hf.measurable.aemeasurable s)
   set t := f '' toMeasurable μ (f ⁻¹' s) ∪ (range f)ᶜ
   have htm : MeasurableSet t :=
@@ -2169,10 +2171,17 @@ nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻
     _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
 #align measurable_embedding.map_apply MeasurableEmbedding.map_apply
 
-lemma comap_add (μ ν : Measure β) : (μ + ν).comap f = μ.comap f + ν.comap f := by
+lemma comap_add (hf : MeasurableEmbedding f) (μ ν : Measure β) :
+    (μ + ν).comap f = μ.comap f + ν.comap f := by
   ext s hs
   simp only [← comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
     _root_.map_add, add_apply]
+
+lemma absolutelyContinuous_map (hf : MeasurableEmbedding f) (hμν : μ ≪ ν) :
+    μ.map f ≪ ν.map f := by
+  intro t ht
+  rw [hf.map_apply] at ht ⊢
+  exact hμν ht
 
 end MeasurableEmbedding
 
