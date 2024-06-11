@@ -79,6 +79,58 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
 /-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
 scoped notation "Measure[" mα "] " α:arg => @Measure α mα
 
+end MeasureTheory
+
+namespace Mathlib.Meta
+open Lean Elab Term Meta Qq MeasureTheory
+
+/-- Try to elaborate `μ` as a term of type `T` where `OuterMeasureClass T ?Ω`. If that fails, try to
+elaborate `μ` as `Measure ?Ω`. -/
+def elabMeasure (μ : TSyntax `term) (expectedType? : Option Expr) : TermElabM Expr := do
+  let ⟨u, T, _⟩ ← inferTypeQ (← elabTerm μ expectedType?)
+  match u, T with
+  | .succ v, ~q(OuterMeasure $α) => elabTerm μ <| .some q(OuterMeasure $α)
+  | .succ v, _ =>
+    let ty ← mkFreshExprMVarQ q(Type v)
+    let _ ← mkFreshExprMVarQ q(MeasurableSpace $ty)
+    elabTerm μ q(Measure $ty)
+
+/-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
+i.e. `f=g` away from a null set.
+
+This is notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
+syntax:50 (name := aeEq) term:50 " =ᵐ[" term:50 "] " term:50 : term
+
+/-- `f ≤ᵐ[μ] g` means `f` is eventually less than `g` along the a.e. filter,
+i.e. `f ≤ g` away from a null set.
+
+This is notation for `Filter.EventuallyLE (MeasureTheory.ae μ) f g`. -/
+syntax:50 (name := aeLE) term:50 " ≤ᵐ[" term:50 "] " term:50 : term
+
+/-- Elaborate almost everywhere equal notation.
+
+We elabore `f =ᵐ[μ] g` as `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
+@[term_elab aeEq]
+def elabAEEq : TermElab
+  | `($f =ᵐ[$μ] $g), expectedType? => do
+    let μ' ← elabMeasure μ expectedType?
+    elabTerm (← `(Filter.EventuallyEq (MeasureTheory.ae $(← μ'.toSyntax)) $f $g)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+/-- Elaborate almost everywhere equal notation.
+
+We elabore `f ≤ᵐ[μ] g` as `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
+@[term_elab aeLE]
+def elabAELE : TermElab
+  | `($f ≤ᵐ[$μ] $g), expectedType? => do
+    let μ' ← elabMeasure μ expectedType?
+    elabTerm (← `(Filter.EventuallyLE (MeasureTheory.ae $(← μ'.toSyntax)) $f $g)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+end Mathlib.Meta
+
+namespace MeasureTheory
+
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
