@@ -72,9 +72,8 @@ jobs:
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
 
-        currentHash="$(git rev-parse HEAD)"
-        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
+        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${GITHUB_SHA}"
 
-        message="$(printf '%s [%s](%s)\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${importCount}" "${declDiff}")"
+        message="$(printf '%s [%s](%s)\n\n%s\n\n---\n\n%s\n' "${title}" "${GITHUB_SHA:0:10}" "${hashURL}" "${importCount}" "${declDiff}")"
 
         ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
