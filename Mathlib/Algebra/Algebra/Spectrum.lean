@@ -477,24 +477,3 @@ lemma spectrum.conjugate_units' {a : A} {u : Aˣ} :
   simpa using spectrum.conjugate_units (u := u⁻¹)
 
 end ConjugateUnits
-
-section UnitaryConjugate
-
-variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
-
-/-- Unitary conjugation preserves the spectrum, star on left. -/
-@[simp]
-lemma spectrum.unitary_conjugate {a : A} {u : unitary A} :
-    spectrum R (u * a * (star u : A)) = spectrum R a :=
-  spectrum.conjugate_units (u := unitary.toUnits u)
-
-#find_home! spectrum.unitary_conjugate
-
-
-/-- Unitary conjugation preserves the spectrum, star on right. -/
-@[simp]
-lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
-    spectrum R ((star u : A) * a * u) = spectrum R a := by
-  simpa using spectrum.unitary_conjugate (u := star u)
-
-end UnitaryConjugate
