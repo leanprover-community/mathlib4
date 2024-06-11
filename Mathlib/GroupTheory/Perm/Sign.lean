@@ -132,12 +132,12 @@ theorem mclosure_swap_castSucc_succ (n : ℕ) :
   · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_lt.resolve_left lt)
   induction' j using Fin.induction with j ih
   · cases lt
-  have mem : ?_ := ?_ -- swap i j.succ ∈ Submonoid.closure ... (the LHS)
-  · obtain rfl | lts := (Fin.le_castSucc_iff.mpr lt).eq_or_lt
-    · exact mem
-    rw [swap_comm, ← swap_mul_swap_mul_swap (y := Fin.castSucc j) lts.ne lt.ne]
-    exact mul_mem (mul_mem mem <| ih lts.ne lts) mem
-  exact Submonoid.subset_closure ⟨_, rfl⟩
+  have mem : swap j.castSucc j.succ ∈ Submonoid.closure
+      (Set.range fun (i : Fin n) ↦ swap i.castSucc i.succ) := Submonoid.subset_closure ⟨_, rfl⟩
+  obtain rfl | lts := (Fin.le_castSucc_iff.mpr lt).eq_or_lt
+  · exact mem
+  rw [swap_comm, ← swap_mul_swap_mul_swap (y := Fin.castSucc j) lts.ne lt.ne]
+  exact mul_mem (mul_mem mem <| ih lts.ne lts) mem
 
 /-- Like `swap_induction_on`, but with the composition on the right of `f`.
 
