@@ -100,6 +100,8 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   simp only [Nat.cast_ofNat, Nat.succ_sub_succ_eq_sub, tsub_zero, pow_one, ← neg_sub', neg_sub,
     ← mul_assoc] at hderiv
   have hmono : MonotoneOn (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) (Icc 0 (π / 2)) := by
+    -- Compiles without this option, but somewhat slower.
+    set_option tactic.skipAssignedInstances false in
     refine monotoneOn_of_hasDerivWithinAt_nonneg
       (convex_Icc ..)
       (Continuous.continuousOn $ by continuity)
@@ -112,6 +114,8 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
           gcongr; exacts [div_le_one_of_le two_le_pi (by positivity), two_div_pi_mul_le_sin hx₀ hx]
       _ = sin x := one_mul _
   have hconc : ConcaveOn ℝ (Icc (π / 2) π) (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) := by
+    -- Compiles without this option, but somewhat slower.
+    set_option tactic.skipAssignedInstances false in
     refine concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
       (Continuous.continuousOn $ by continuity) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
       (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
