@@ -6,6 +6,15 @@ Authors: Joël Riou
 
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 
+/-!
+# Generating sections of sheaves of modules
+
+In this file, given a sheaf of modules `M` over a sheaf of rings `R`, we introduce
+the structure `M.GeneratingSections` which consists of a family of (global)
+sections `s : I → M.sections` which generate `M`.
+
+-/
+
 universe u v' u'
 open CategoryTheory Limits
 
