@@ -17,9 +17,10 @@ The goal of this file is to prove Ostrowski’s Theorem which gives a list of al
 absolute values on a number field up to equivalence. (TODO)
 
 ## References
-* https://kconrad.math.uconn.edu/blurbs/gradnumthy/ostrowskiQ.pdf
-* https://kconrad.math.uconn.edu/blurbs/gradnumthy/ostrowskinumbfield.pdf
-* J. W. S. Cassels, "Local fields", Cambridge University Press, 1986 https://doi.org/10.1017/CBO9781139171885
+* [K. Conrad, *Ostroski's Theorem for Q*][conradQ]
+* [K. Conrad, *Ostroski for number fields*][conradnumbfield]
+* [J. W. S. Cassels, *Local fields*][cassels1986local]
+
 
 ## Tags
 ring_norm, ostrowski
@@ -34,9 +35,8 @@ variable {f g : MulRingNorm ℚ}
 on ℤ. -/
 lemma eq_on_Nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ a n⟩
-  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z
-  · exact h n
-  · simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map, h n]
+  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;>
+  simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map, h n]
 
 /-- Values of a multiplicative norm of the rationals are determined by the values on the natural
 numbers. -/
