@@ -158,7 +158,6 @@ theorem mk_smul_mk (r : R) (x : M) :
 
 theorem val_smul_eq_evalₐ_smul (n : ℕ) (r : AdicCompletion I R)
     (x : M ⧸ (I ^ n • ⊤ : Submodule R M)) : r.val n • x = evalₐ I n r • x := by
-  dsimp [evalₐ]
   apply induction_on I R r (fun r ↦ ?_)
   exact Quotient.inductionOn' x (fun x ↦ rfl)
 
