@@ -141,7 +141,7 @@ theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
 @[deprecated (since := "2024-02-05")]
 alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
 
-@[deprecated StronglyMeasurable.of_finite]
+@[deprecated StronglyMeasurable.of_finite (since := "2024-02-06")]
 theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [TopologicalSpace β]
     (f : α → β) : StronglyMeasurable f :=
   .of_finite f
@@ -307,7 +307,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
       rw [Finset.mem_filter] at hy
       exact hy.2
-    refine (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+    refine (measure_mono Set.inter_subset_left).trans_lt ?_
     have h_lt_top := measure_spanningSets_lt_top (μ.restrict t) n
     rwa [Measure.restrict_apply' ht] at h_lt_top
   · by_cases hxt : x ∈ t
@@ -1069,7 +1069,7 @@ theorem exists_set_sigmaFinite [Zero β] [TopologicalSpace β] [T2Space β]
   · refine ⟨⟨⟨fun n => tᶜ ∪ T n, fun _ => trivial, fun n => ?_, ?_⟩⟩⟩
     · rw [Measure.restrict_apply' (MeasurableSet.iUnion hT_meas), Set.union_inter_distrib_right,
         Set.compl_inter_self t, Set.empty_union]
-      exact (measure_mono (Set.inter_subset_left _ _)).trans_lt (hT_lt_top n)
+      exact (measure_mono Set.inter_subset_left).trans_lt (hT_lt_top n)
     · rw [← Set.union_iUnion tᶜ T]
       exact Set.compl_union_self _
 #align measure_theory.fin_strongly_measurable.exists_set_sigma_finite MeasureTheory.FinStronglyMeasurable.exists_set_sigmaFinite
@@ -1272,7 +1272,7 @@ protected lemma mono_ac (h : ν ≪ μ) (hμ : AEStronglyMeasurable f μ) : AESt
 #align measure_theory.ae_strongly_measurable.mono' MeasureTheory.AEStronglyMeasurable.mono_ac
 #align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.AEStronglyMeasurable.mono_ac
 
-@[deprecated] protected alias mono' := AEStronglyMeasurable.mono_ac
+@[deprecated (since := "2024-02-15")] protected alias mono' := AEStronglyMeasurable.mono_ac
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEStronglyMeasurable f (μ.restrict t)) :
     AEStronglyMeasurable f (μ.restrict s) :=
@@ -1827,16 +1827,16 @@ theorem _root_.aestronglyMeasurable_iUnion_iff [PseudoMetrizableSpace β] {s : �
 @[simp]
 theorem _root_.aestronglyMeasurable_union_iff [PseudoMetrizableSpace β] {s t : Set α} :
     AEStronglyMeasurable f (μ.restrict (s ∪ t)) ↔
-      AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable f (μ.restrict t) :=
-  by simp only [union_eq_iUnion, aestronglyMeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
+      AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable f (μ.restrict t) := by
+  simp only [union_eq_iUnion, aestronglyMeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 #align ae_strongly_measurable_union_iff aestronglyMeasurable_union_iff
 
 theorem aestronglyMeasurable_uIoc_iff [LinearOrder α] [PseudoMetrizableSpace β] {f : α → β}
     {a b : α} :
     AEStronglyMeasurable f (μ.restrict <| uIoc a b) ↔
       AEStronglyMeasurable f (μ.restrict <| Ioc a b) ∧
-        AEStronglyMeasurable f (μ.restrict <| Ioc b a) :=
-  by rw [uIoc_eq_union, aestronglyMeasurable_union_iff]
+        AEStronglyMeasurable f (μ.restrict <| Ioc b a) := by
+  rw [uIoc_eq_union, aestronglyMeasurable_union_iff]
 #align measure_theory.ae_strongly_measurable.ae_strongly_measurable_uIoc_iff MeasureTheory.AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff
 
 @[measurability]

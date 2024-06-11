@@ -363,7 +363,7 @@ instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
     uniq := by
       rintro ⟨x⟩
-      refine' congr_arg ofFinsupp _
+      apply congr_arg ofFinsupp
       simp [eq_iff_true_of_subsingleton] }
 #align polynomial.unique Polynomial.unique
 
@@ -554,6 +554,9 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 #align polynomial.C_eq_nat_cast Polynomial.C_eq_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias C_eq_nat_cast := C_eq_natCast
 
 @[simp]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
@@ -756,6 +759,9 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 @[simp]
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
+
+@[deprecated (since := "2024-04-17")]
+alias coeff_nat_cast_ite := coeff_natCast_ite
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -966,6 +972,9 @@ theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v �
 theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
 #align polynomial.nat_cast_mul Polynomial.natCast_mul
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mul := natCast_mul
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
@@ -1223,6 +1232,9 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias C_eq_int_cast := C_eq_intCast
 
 theorem C_neg : C (-a) = -C a :=
   RingHom.map_neg C a

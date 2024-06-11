@@ -68,6 +68,9 @@ theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     exact add_mem n_ih (SetLike.one_mem_graded _)
 #align set_like.nat_cast_mem_graded SetLike.natCast_mem_graded
 
+@[deprecated (since := "2024-04-17")]
+alias SetLike.nat_cast_mem_graded := SetLike.natCast_mem_graded
+
 theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
@@ -76,6 +79,9 @@ theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
   · rw [Int.cast_negSucc]
     exact neg_mem (SetLike.natCast_mem_graded _ _)
 #align set_like.int_cast_mem_graded SetLike.intCast_mem_graded
+
+@[deprecated (since := "2024-04-17")]
+alias SetLike.int_cast_mem_graded := SetLike.intCast_mem_graded
 
 section DirectSum
 
