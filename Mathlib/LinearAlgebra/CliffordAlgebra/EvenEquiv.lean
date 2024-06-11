@@ -80,7 +80,7 @@ theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
 #align clifford_algebra.equiv_even.v_sq_scalar CliffordAlgebra.EquivEven.v_sq_scalar
 
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
-  refine' neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _)
+  refine neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans ?_)
   dsimp [QuadraticForm.polar]
   simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
     add_sub_cancel_right, sub_self, map_zero, zero_sub]
@@ -122,8 +122,8 @@ open EquivEven
 
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
-  refine' CliffordAlgebra.lift Q ⟨_, fun m => _⟩
-  · refine' LinearMap.codRestrict _ _ fun m => Submodule.mem_iSup_of_mem ⟨2, rfl⟩ _
+  refine CliffordAlgebra.lift Q ⟨?_, fun m => ?_⟩
+  · refine LinearMap.codRestrict _ ?_ fun m => Submodule.mem_iSup_of_mem ⟨2, rfl⟩ ?_
     · exact (LinearMap.mulLeft R <| e0 Q).comp (v Q)
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
@@ -163,7 +163,7 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
       ι Q m.1 * ι Q m.1 - algebraMap R _ m.2 * algebraMap R _ m.2 = algebraMap R _ (Q' Q m) := by
     intro m
     rw [ι_sq_scalar, ← RingHom.map_mul, ← RingHom.map_sub, sub_eq_add_neg, Q'_apply, sub_eq_add_neg]
-  refine' even.lift (Q' Q) ⟨f, _, _⟩ <;> simp_rw [f_apply]
+  refine even.lift (Q' Q) ⟨f, ?_, ?_⟩ <;> simp_rw [f_apply]
   · intro m
     rw [← (hc _ _).symm.mul_self_sub_mul_self_eq, hm]
   · intro m₁ m₂ m₃
@@ -247,14 +247,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
   | mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
-  | add x y hx hy =>
-    -- TODO: The `()` around `map_add` are a regression from leanprover/lean4#2478
-    rw [map_add, map_add]
-    erw [RingHom.map_add, RingHom.map_add]
-    dsimp
-    -- The line below used to be sufficient but we need to use `RingHom.map_add` to avoid a timeout
-    -- and it only unifies at `default` transparency #8386
-    simp only [(map_add), Subalgebra.coe_add, hx, hy]
+  | add x y hx hy => simp only [map_add, Subalgebra.coe_add, hx, hy]
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
@@ -268,9 +261,7 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
     { bilin := -(even.ι Q' : _).bilin
       contract := fun m => by
-      -- Not sure what causes the timeout with unqualified `map_neg`,
-      -- the synthInstance trace looks okay #8386
-        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, RingHom.map_neg,
+        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, map_neg,
           neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,
