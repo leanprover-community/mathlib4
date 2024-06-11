@@ -141,7 +141,7 @@ theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
 @[deprecated (since := "2024-02-05")]
 alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
 
-@[deprecated StronglyMeasurable.of_finite]
+@[deprecated StronglyMeasurable.of_finite (since := "2024-02-06")]
 theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [TopologicalSpace β]
     (f : α → β) : StronglyMeasurable f :=
   .of_finite f
@@ -1272,7 +1272,7 @@ protected lemma mono_ac (h : ν ≪ μ) (hμ : AEStronglyMeasurable f μ) : AESt
 #align measure_theory.ae_strongly_measurable.mono' MeasureTheory.AEStronglyMeasurable.mono_ac
 #align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.AEStronglyMeasurable.mono_ac
 
-@[deprecated] protected alias mono' := AEStronglyMeasurable.mono_ac
+@[deprecated (since := "2024-02-15")] protected alias mono' := AEStronglyMeasurable.mono_ac
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEStronglyMeasurable f (μ.restrict t)) :
     AEStronglyMeasurable f (μ.restrict s) :=

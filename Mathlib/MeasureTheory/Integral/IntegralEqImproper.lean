@@ -639,12 +639,15 @@ theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded_right {I a b₀ : ℝ}
   integrableOn_Ioc_of_intervalIntegral_norm_bounded hfi tendsto_const_nhds hb h
 #align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded_right MeasureTheory.integrableOn_Ioc_of_intervalIntegral_norm_bounded_right
 
-@[deprecated] alias integrableOn_Ioc_of_interval_integral_norm_bounded :=
-  integrableOn_Ioc_of_intervalIntegral_norm_bounded -- 2024-04-06
-@[deprecated] alias integrableOn_Ioc_of_interval_integral_norm_bounded_left :=
-  integrableOn_Ioc_of_intervalIntegral_norm_bounded_left -- 2024-04-06
-@[deprecated] alias integrableOn_Ioc_of_interval_integral_norm_bounded_right :=
-  integrableOn_Ioc_of_intervalIntegral_norm_bounded_right -- 2024-04-06
+@[deprecated (since := "2024-04-06")]
+alias integrableOn_Ioc_of_interval_integral_norm_bounded :=
+  integrableOn_Ioc_of_intervalIntegral_norm_bounded
+@[deprecated (since := "2024-04-06")]
+alias integrableOn_Ioc_of_interval_integral_norm_bounded_left :=
+  integrableOn_Ioc_of_intervalIntegral_norm_bounded_left
+@[deprecated (since := "2024-04-06")]
+alias integrableOn_Ioc_of_interval_integral_norm_bounded_right :=
+  integrableOn_Ioc_of_intervalIntegral_norm_bounded_right
 
 end IntegrableOfIntervalIntegral
 
