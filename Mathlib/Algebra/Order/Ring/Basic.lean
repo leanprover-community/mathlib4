@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Parity
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
-# Lemmas about the interaction of power operations with order
+# Basic lemmas about ordered rings
 -/
 
 -- We should need only a minimal development of sets in order to get here.
@@ -19,134 +20,22 @@ open Function Int
 
 variable {α M R : Type*}
 
-section OrderedCommGroup
-variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
+namespace MonoidHom
 
-@[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
-  obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
-  rw [zpow_natCast]
-  refine one_lt_pow' ha ?_
-  rintro rfl
-  simp at hn
-#align one_lt_zpow' one_lt_zpow'
-#align zsmul_pos zsmul_pos
+variable [Ring R] [Monoid M] [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)] (f : R →* M)
 
-@[to_additive zsmul_strictMono_left]
-lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := fun m n h ↦
-  calc
-    a ^ m = a ^ m * 1 := (mul_one _).symm
-    _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| Int.sub_pos_of_lt h) _
-    _ = a ^ n := by simp [← zpow_add, m.add_comm]
-#align zpow_strict_mono_right zpow_right_strictMono
-#align zsmul_strict_mono_left zsmul_strictMono_left
+theorem map_neg_one : f (-1) = 1 :=
+  (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
+#align monoid_hom.map_neg_one MonoidHom.map_neg_one
 
-@[to_additive zsmul_mono_left]
-lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := fun m n h ↦
-  calc
-    a ^ m = a ^ m * 1 := (mul_one _).symm
-    _ ≤ a ^ m * a ^ (n - m) := mul_le_mul_left' (one_le_zpow ha <| Int.sub_nonneg_of_le h) _
-    _ = a ^ n := by simp [← zpow_add, m.add_comm]
-#align zpow_mono_right zpow_mono_right
-#align zsmul_mono_left zsmul_mono_left
+@[simp]
+theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
+#align monoid_hom.map_neg MonoidHom.map_neg
 
-@[to_additive (attr := gcongr)]
-lemma zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_mono_right ha h
-#align zpow_le_zpow zpow_le_zpow
-#align zsmul_le_zsmul zsmul_le_zsmul
+theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
+#align monoid_hom.map_sub_swap MonoidHom.map_sub_swap
 
-@[to_additive (attr := gcongr)]
-lemma zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n := zpow_right_strictMono ha h
-#align zpow_lt_zpow zpow_lt_zpow
-#align zsmul_lt_zsmul zsmul_lt_zsmul
-
-@[to_additive]
-lemma zpow_le_zpow_iff (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n := (zpow_right_strictMono ha).le_iff_le
-#align zpow_le_zpow_iff zpow_le_zpow_iff
-#align zsmul_le_zsmul_iff zsmul_le_zsmul_iff
-
-@[to_additive]
-lemma zpow_lt_zpow_iff (ha : 1 < a) : a ^ m < a ^ n ↔ m < n := (zpow_right_strictMono ha).lt_iff_lt
-#align zpow_lt_zpow_iff zpow_lt_zpow_iff
-#align zsmul_lt_zsmul_iff zsmul_lt_zsmul_iff
-
-variable (α)
-
-@[to_additive zsmul_strictMono_right]
-lemma zpow_strictMono_left (hn : 0 < n) : StrictMono ((· ^ n) : α → α) := fun a b hab => by
-  rw [← one_lt_div', ← div_zpow]; exact one_lt_zpow' (one_lt_div'.2 hab) hn
-#align zpow_strict_mono_left zpow_strictMono_left
-#align zsmul_strict_mono_right zsmul_strictMono_right
-
-@[to_additive zsmul_mono_right]
-lemma zpow_mono_left (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
-  rw [← one_le_div', ← div_zpow]; exact one_le_zpow (one_le_div'.2 hab) hn
-#align zpow_mono_left zpow_mono_left
-#align zsmul_mono_right zsmul_mono_right
-
-variable {α}
-
-@[to_additive (attr := gcongr)]
-lemma zpow_le_zpow' (hn : 0 ≤ n) (h : a ≤ b) : a ^ n ≤ b ^ n := zpow_mono_left α hn h
-#align zpow_le_zpow' zpow_le_zpow'
-#align zsmul_le_zsmul' zsmul_le_zsmul'
-
-@[to_additive (attr := gcongr)]
-lemma zpow_lt_zpow' (hn : 0 < n) (h : a < b) : a ^ n < b ^ n := zpow_strictMono_left α hn h
-#align zpow_lt_zpow' zpow_lt_zpow'
-#align zsmul_lt_zsmul' zsmul_lt_zsmul'
-
-end OrderedCommGroup
-
-section LinearOrderedCommGroup
-
-variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
-
-@[to_additive] lemma zpow_le_zpow_iff' (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
-  (zpow_strictMono_left α hn).le_iff_le
-#align zpow_le_zpow_iff' zpow_le_zpow_iff'
-#align zsmul_le_zsmul_iff' zsmul_le_zsmul_iff'
-
-@[to_additive] lemma zpow_lt_zpow_iff' (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
-  (zpow_strictMono_left α hn).lt_iff_lt
-#align zpow_lt_zpow_iff' zpow_lt_zpow_iff'
-#align zsmul_lt_zsmul_iff' zsmul_lt_zsmul_iff'
-
-@[to_additive zsmul_right_injective
-"See also `smul_right_injective`. TODO: provide a `NoZeroSMulDivisors` instance. We can't do
-that here because importing that definition would create import cycles."]
-lemma zpow_left_injective (hn : n ≠ 0) : Injective ((· ^ n) : α → α) := by
-  obtain hn | hn := hn.lt_or_lt
-  · refine fun a b (hab : a ^ n = b ^ n) ↦
-      (zpow_strictMono_left _ $ Int.neg_pos_of_neg hn).injective ?_
-    rw [zpow_neg, zpow_neg, hab]
-  · exact (zpow_strictMono_left _ hn).injective
-#align zpow_left_injective zpow_left_injective
-#align zsmul_right_injective zsmul_right_injective
-
-@[to_additive zsmul_right_inj]
-lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
-#align zpow_left_inj zpow_left_inj
-#align zsmul_right_inj zsmul_right_inj
-
-/-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`. -/
-@[to_additive "Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`."]
-lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
-#align zpow_eq_zpow_iff' zpow_eq_zpow_iff'
-#align zsmul_eq_zsmul_iff' zsmul_eq_zsmul_iff'
-
-end LinearOrderedCommGroup
-
-namespace CanonicallyOrderedCommSemiring
-
-variable [CanonicallyOrderedCommSemiring R]
-
-theorem pow_pos {a : R} (H : 0 < a) (n : ℕ) : 0 < a ^ n :=
-  pos_iff_ne_zero.2 <| pow_ne_zero _ H.ne'
-#align canonically_ordered_comm_semiring.pow_pos CanonicallyOrderedCommSemiring.pow_pos
-
-end CanonicallyOrderedCommSemiring
+end MonoidHom
 
 section OrderedSemiring
 
@@ -507,72 +396,41 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
 section deprecated
 set_option linter.deprecated false
 
-@[deprecated Even.pow_nonneg] -- 2024-04-06
+@[deprecated Even.pow_nonneg (since := "2024-04-06")]
 lemma pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := (even_bit0 _).pow_nonneg _
 #align pow_bit0_nonneg pow_bit0_nonneg
 
-@[deprecated Even.pow_pos] -- 2024-04-06
+@[deprecated Even.pow_pos (since := "2024-04-06")]
 lemma pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n := (even_bit0 _).pow_pos h
 #align pow_bit0_pos pow_bit0_pos
 
-@[deprecated Even.pow_pos_iff] -- 2024-04-06
+@[deprecated Even.pow_pos_iff (since := "2024-04-06")]
 lemma pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 :=
   (even_bit0 _).pow_pos_iff (by simpa [bit0])
 #align pow_bit0_pos_iff pow_bit0_pos_iff
 
-@[simp, deprecated Odd.pow_neg_iff] -- 2024-04-06
+@[simp, deprecated Odd.pow_neg_iff (since := "2024-04-06")]
 lemma pow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 := (odd_bit1 _).pow_neg_iff
 #align pow_bit1_neg_iff pow_bit1_neg_iff
 
-@[simp, deprecated Odd.pow_nonneg_iff] -- 2024-04-06
+@[simp, deprecated Odd.pow_nonneg_iff (since := "2024-04-06")]
 lemma pow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a := (odd_bit1 _).pow_nonneg_iff
 #align pow_bit1_nonneg_iff pow_bit1_nonneg_iff
 
-@[simp, deprecated Odd.pow_nonpos_iff] -- 2024-04-06
+@[simp, deprecated Odd.pow_nonpos_iff (since := "2024-04-06")]
 lemma pow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := (odd_bit1 _).pow_nonpos_iff
 #align pow_bit1_nonpos_iff pow_bit1_nonpos_iff
 
-@[simp, deprecated Odd.pow_pos_iff] -- 2024-04-06
+@[simp, deprecated Odd.pow_pos_iff (since := "2024-04-06")]
 lemma pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a := (odd_bit1 _).pow_pos_iff
 #align pow_bit1_pos_iff pow_bit1_pos_iff
 
-@[deprecated Odd.strictMono_pow] -- 2024-04-06
+@[deprecated Odd.strictMono_pow (since := "2024-04-06")]
 lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := (odd_bit1 _).strictMono_pow
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end deprecated
 end LinearOrderedSemiring
-
-namespace MonoidHom
-
-variable [Ring R] [Monoid M] [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)] (f : R →* M)
-
-theorem map_neg_one : f (-1) = 1 :=
-  (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
-#align monoid_hom.map_neg_one MonoidHom.map_neg_one
-
-@[simp]
-theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
-#align monoid_hom.map_neg MonoidHom.map_neg
-
-theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
-#align monoid_hom.map_sub_swap MonoidHom.map_sub_swap
-
-end MonoidHom
-
-namespace Nat
-variable {n : ℕ} {f : α → ℕ}
-
-/-- See also `pow_left_strictMonoOn`. -/
-protected lemma pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : ℕ → ℕ) :=
-  fun _ _ h ↦ Nat.pow_lt_pow_left h hn
-#align nat.pow_left_strict_mono Nat.pow_left_strictMono
-
-lemma _root_.StrictMono.nat_pow [Preorder α] (hn : n ≠ 0) (hf : StrictMono f) :
-    StrictMono (f · ^ n) := (Nat.pow_left_strictMono hn).comp hf
-#align strict_mono.nat_pow StrictMono.nat_pow
-
-end Nat
 
 /-!
 ### Deprecated lemmas
@@ -596,8 +454,6 @@ Those lemmas have been deprecated on 2023-12-23.
 @[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
 @[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
 @[deprecated] alias self_le_pow := le_self_pow
-@[deprecated] alias Nat.pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
-@[deprecated] alias Nat.pow_le_iff_le_left := Nat.pow_le_pow_iff_left
 @[deprecated] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
 @[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
 @[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right

@@ -35,7 +35,7 @@ lemma Concrete.small_sections_of_hasLimit
   rw [← Types.hasLimit_iff_small_sections]
   infer_instance
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{max w v} C] {J : Type w} [SmallCategory J]
+variable {C : Type u} [Category.{v} C] [ConcreteCategory.{max w v} C] {J : Type w} [Category.{t} J]
   (F : J ⥤ C) [PreservesLimit F (forget C)]
 
 theorem Concrete.to_product_injective_of_isLimit {D : Cone F} (hD : IsLimit D) :

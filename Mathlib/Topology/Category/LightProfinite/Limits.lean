@@ -38,7 +38,7 @@ section Pullbacks
 variable {X Y B : LightProfinite.{u}} (f : X ⟶ B) (g : Y ⟶ B)
 
 /--
-The pullback of two morphisms `f, g` in `Profinite`, constructed explicitly as the set of
+The pullback of two morphisms `f, g` in `LightProfinite`, constructed explicitly as the set of
 pairs `(x, y)` such that `f x = g y`, with the topology induced by the product.
 -/
 def pullback : LightProfinite.{u} :=
@@ -49,12 +49,12 @@ def pullback : LightProfinite.{u} :=
 
 /-- The projection from the pullback to the first component. -/
 def pullback.fst : pullback f g ⟶ X where
-  toFun := fun ⟨⟨x, _⟩, _⟩ => x
+  toFun := fun ⟨⟨x, _⟩, _⟩ ↦ x
   continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val
 
 /-- The projection from the pullback to the second component. -/
 def pullback.snd : pullback f g ⟶ Y where
-  toFun := fun ⟨⟨_, y⟩, _⟩ => y
+  toFun := fun ⟨⟨_, y⟩, _⟩ ↦ y
   continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val
 
 @[reassoc]
@@ -69,7 +69,7 @@ This is essentially the universal property of the pullback.
 -/
 def pullback.lift {Z : LightProfinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
     Z ⟶ pullback f g where
-  toFun := fun z => ⟨⟨a z, b z⟩, by apply_fun (· z) at w; exact w⟩
+  toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (· z) at w; exact w⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     rw [continuous_prod_mk]
@@ -102,10 +102,10 @@ def pullback.cone : Limits.PullbackCone f g :=
 @[simps! lift]
 def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
   Limits.PullbackCone.isLimitAux _
-    (fun s => pullback.lift f g s.fst s.snd s.condition)
-    (fun _ => pullback.lift_fst _ _ _ _ _)
-    (fun _ => pullback.lift_snd _ _ _ _ _)
-    (fun _ _ hm => pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
+    (fun s ↦ pullback.lift f g s.fst s.snd s.condition)
+    (fun _ ↦ pullback.lift_fst _ _ _ _ _)
+    (fun _ ↦ pullback.lift_snd _ _ _ _ _)
+    (fun _ _ hm ↦ pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
 
 section Isos
 
@@ -139,24 +139,23 @@ section FiniteCoproducts
 variable {α : Type w} [Finite α] (X : α → LightProfinite.{max u w})
 
 /--
-The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
-union with its usual topology.
+The "explicit" coproduct of a finite family of objects in `LightProfinite`, whose underlying
+profinite set is the disjoint union with its usual topology.
 -/
 def finiteCoproduct : LightProfinite := LightProfinite.of <| Σ (a : α), X a
 
 /-- The inclusion of one of the factors into the explicit finite coproduct. -/
 def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
   toFun := (⟨a, ·⟩)
-  continuous_toFun := continuous_sigmaMk (σ := fun a => X a)
+  continuous_toFun := continuous_sigmaMk (σ := fun a ↦ X a)
 
 /--
 To construct a morphism from the explicit finite coproduct, it suffices to
-specify a morphism from each of its factors.
-This is essentially the universal property of the coproduct.
+specify a morphism from each of its factors. This is the universal property of the coproduct.
 -/
 def finiteCoproduct.desc {B : LightProfinite.{max u w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
-  toFun := fun ⟨a, x⟩ => e a x
+  toFun := fun ⟨a, x⟩ ↦ e a x
   continuous_toFun := by
     apply continuous_sigma
     intro a
@@ -224,20 +223,6 @@ lemma finiteCoproduct.ι_desc_apply {B : LightProfinite} {π : (a : α) → X a 
   change (ι X a ≫ desc X π) _ = _
   simp only [ι_desc]
 
-instance : PreservesFiniteCoproducts profiniteToCompHaus := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) profiniteToCompHaus from
-    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
-  apply preservesColimitOfPreservesColimitCocone (Profinite.finiteCoproduct.isColimit _)
-  exact CompHaus.finiteCoproduct.isColimit _
-
-noncomputable instance : PreservesFiniteCoproducts Profinite.toTopCat.{u} where
-  preserves _ _:= (inferInstance :
-    PreservesColimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
-
-instance : FinitaryExtensive Profinite :=
-  finitaryExtensive_of_preserves_and_reflects profiniteToCompHaus
-
 end FiniteCoproducts
 
 section HasPreserves
@@ -264,19 +249,17 @@ instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
     (Profinite.pullback.isLimit _ _)
 
 instance (X : LightProfinite) :
-    Unique (X ⟶ FintypeCat.toLightProfinite.obj (FintypeCat.of PUnit.{u+1})) :=
+    Unique (X ⟶ LightProfinite.of PUnit.{u+1}) :=
   ⟨⟨⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩
 
 /-- A one-element space is terminal in `LightProfinite` -/
-def isTerminalPUnit : IsTerminal (FintypeCat.toLightProfinite.obj (FintypeCat.of PUnit.{u+1})) :=
-  Limits.IsTerminal.ofUnique _
+def isTerminalPUnit : IsTerminal (LightProfinite.of PUnit.{u+1}) := Limits.IsTerminal.ofUnique _
 
 instance : HasTerminal LightProfinite.{u} :=
-  Limits.hasTerminal_of_unique (FintypeCat.toLightProfinite.obj (FintypeCat.of PUnit.{u+1}))
+  Limits.hasTerminal_of_unique (LightProfinite.of PUnit.{u+1})
 
 /-- The isomorphism from an arbitrary terminal object of `LightProfinite` to a one-element space. -/
-noncomputable def terminalIsoPUnit :
-    ⊤_ LightProfinite.{u} ≅ FintypeCat.toLightProfinite.obj (FintypeCat.of PUnit.{u+1}) :=
+noncomputable def terminalIsoPUnit : ⊤_ LightProfinite.{u} ≅ LightProfinite.of PUnit.{u+1} :=
   terminalIsTerminal.uniqueUpToIso LightProfinite.isTerminalPUnit
 
 noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} where
@@ -286,6 +269,9 @@ noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} w
 noncomputable instance : PreservesLimitsOfShape WalkingCospan LightProfinite.toTopCat.{u} :=
   (inferInstance : PreservesLimitsOfShape WalkingCospan
     (lightToProfinite.{u} ⋙ Profinite.toTopCat.{u}))
+
+instance : FinitaryExtensive LightProfinite.{u} :=
+  finitaryExtensive_of_preserves_and_reflects lightToProfinite
 
 end HasPreserves
 

@@ -66,9 +66,6 @@ instance : Preregular LightProfinite where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-instance : FinitaryExtensive LightProfinite.{u} :=
-  finitaryExtensive_of_preserves_and_reflects lightToProfinite
-
 -- Was an `example`, but that made the linter complain about unused imports
 instance : Precoherent LightProfinite.{u} := inferInstance
 

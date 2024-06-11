@@ -445,14 +445,8 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
   refine ⟨fun h => ?_, fun h => support_swap h⟩
-  by_contra!
-  rw [← this] at h
-  simp only [swap_self, support_refl, pair_eq_singleton] at h
-  have : x ∈ ∅ := by
-    rw [h]
-    exact mem_singleton.mpr rfl
-  have := Finset.ne_empty_of_mem this
-  exact this rfl
+  rintro rfl
+  simp [Finset.ext_iff] at h
 #align equiv.perm.support_swap_iff Equiv.Perm.support_swap_iff
 
 theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
@@ -463,10 +457,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
   apply le_antisymm
   · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
-    simp only [sup_eq_union]
-    simp only [mem_singleton, mem_insert, union_insert, insert_union, mem_union, true_or, or_true,
-      insert_eq_of_mem]
-    rfl
+    simp [Finset.ext_iff]
   · intro
     simp only [mem_insert, mem_singleton]
     rintro (rfl | rfl | rfl | _) <;>
