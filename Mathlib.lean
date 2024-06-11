@@ -1213,6 +1213,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
+import Mathlib.CategoryTheory.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.Closed.Ideal
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Closed.Types
