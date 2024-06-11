@@ -244,8 +244,8 @@ variable (c)
 
 -- Quotients
 /-- Defining the quotient by a congruence relation of a type with a multiplication. -/
-@[to_additive "Defining the quotient by an additive congruence relation of a type with
-an addition."]
+@[to_additive (attr := reducible) "Defining the quotient by an additive congruence relation
+of a type with an addition."]
 protected def Quotient :=
   Quotient c.toSetoid
 #align con.quotient Con.Quotient
@@ -682,8 +682,7 @@ the order-preserving bijection between the set of additive congruence relations 
 the additive congruence relations on the quotient of `M` by `c`."]
 def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
   toFun d :=
-    d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq]; exact d.2) <|
-      @Quotient.exists_rep _ c.toSetoid
+    d.1.mapOfSurjective (↑) _ (by rw [mul_ker_mk_eq]; exact d.2) <| @exists_rep _ c.toSetoid
   invFun d :=
     ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
@@ -708,8 +707,7 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
     constructor
     · intros h x y hs
       rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
-      exact t.1.trans (t.1.symm <| t.2 <| Quotient.eq_rel.1 hx)
-        (t.1.trans ht (t.2 <| Quotient.eq_rel.1 hy))
+      exact t.1.trans (t.1.symm <| t.2 <| eq_rel.1 hx) (t.1.trans ht (t.2 <| eq_rel.1 hy))
     · intros h _ _ hs
       rcases hs with ⟨a, b, hx, hy, Hs⟩
       exact ⟨a, b, hx, hy, h Hs⟩
@@ -1166,12 +1164,7 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 @[to_additive "The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`."]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
-  { (Function.Surjective.semigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
-      Semigroup c.Quotient) with
-    /- The `toMul` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.semigroup` when the type checker is checking
-    that instance diagrams commute -/
-    toMul := Con.hasMul _ }
+  Function.Surjective.semigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.semigroup Con.semigroup
 #align add_con.add_semigroup AddCon.addSemigroup
 
@@ -1179,12 +1172,7 @@ instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient 
 @[to_additive "The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`."]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
-  { (Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
-      CommSemigroup c.Quotient) with
-    /- The `toSemigroup` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commSemigroup` when the type checker is
-    checking that instance diagrams commute -/
-    toSemigroup := Con.semigroup _ }
+  Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.comm_semigroup Con.commSemigroup
 #align add_con.add_comm_semigroup AddCon.addCommSemigroup
 
@@ -1192,13 +1180,8 @@ instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
-  { (Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl
-      (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
-    /- The `toSemigroup` and `toOne` fields are given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.monoid` when the type checker is
-    checking that instance diagrams commute -/
-    toSemigroup := Con.semigroup _
-    toOne := Con.one _ }
+  Function.Surjective.monoid
+    _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) fun _ _ => rfl
 #align con.monoid Con.monoid
 #align add_con.add_monoid AddCon.addMonoid
 
@@ -1206,12 +1189,9 @@ instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
 @[to_additive "The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`."]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
-  { (Function.Surjective.commMonoid _ Quotient.surjective_Quotient_mk'' rfl
-      (fun _ _ => rfl) fun _ _ => rfl : CommMonoid c.Quotient) with
-    /- The `toMonoid` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commMonoid` when the type checker is
-    checking that instance diagrams commute -/
-    toMonoid := Con.monoid _ }
+  Function.Surjective.commMonoid
+    _ Quotient.surjective_Quotient_mk'' rfl
+      (fun _ _ => rfl) fun _ _ => rfl
 #align con.comm_monoid Con.commMonoid
 #align add_con.add_comm_monoid AddCon.addCommMonoid
 
