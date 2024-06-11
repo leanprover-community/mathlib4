@@ -164,8 +164,7 @@ theorem separating_covers_iff_separated_nhds {h k : Set X} :
         (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
         (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) :=
         fun h₀ u₀ v₀ h₀_cov dis x xinh ↦ by
-      rcases h₀_cov xinh with ⟨un , ⟨n, un'⟩ , xinun⟩
-      rw [← un'] at xinun
+      rcases h₀_cov xinh with ⟨un , ⟨n, rfl⟩ , xinun⟩
       simp only [mem_iUnion]
       refine ⟨n, xinun, ?_⟩
       rw [Set.Finite.closure_biUnion (finite_le_nat n)]
