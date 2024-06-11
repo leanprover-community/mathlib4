@@ -470,7 +470,6 @@ theorem real_inner_smul_left (x y : F) (r : ℝ) : ⟪r • x, y⟫_ℝ = r * �
 
 theorem inner_smul_real_left (x y : E) (r : ℝ) : ⟪(r : 𝕜) • x, y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_left, conj_ofReal, Algebra.smul_def]
-  rfl
 #align inner_smul_real_left inner_smul_real_left
 
 theorem inner_smul_right (x y : E) (r : 𝕜) : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
@@ -483,7 +482,6 @@ theorem real_inner_smul_right (x y : F) (r : ℝ) : ⟪x, r • y⟫_ℝ = r * �
 
 theorem inner_smul_real_right (x y : E) (r : ℝ) : ⟪x, (r : 𝕜) • y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_right, Algebra.smul_def]
-  rfl
 #align inner_smul_real_right inner_smul_real_right
 
 /-- The inner product as a sesquilinear form.
