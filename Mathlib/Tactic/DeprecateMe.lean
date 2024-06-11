@@ -38,7 +38,7 @@ namespace Mathlib.Tactic.DeprecateMe
 
 open Lean Elab Term Command
 
-/-- Produce the syntax for the command `@[deprecated( since := "YYYY-MM-DD")] alias n := id`. -/
+/-- Produce the syntax for the command `@[deprecated (since := "YYYY-MM-DD")] alias n := id`. -/
 def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := none) :
     CommandElabM (TSyntax `command) := do
   let dat := ← match dat with
