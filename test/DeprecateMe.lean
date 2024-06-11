@@ -4,7 +4,7 @@ import Mathlib.Tactic
 
 /--
 info: * Pairings:
-#[(`new_name_mul, mul_easy_deprecated), (`new_name_add, add_easy_deprecated)]
+#[(new_name_mul, mul_easy_deprecated), (new_name_add, add_easy_deprecated)]
 
 Try this:
 /-- I also have a doc-string -/

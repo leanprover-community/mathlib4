@@ -130,7 +130,8 @@ elab tk:"deprecate to " id:ident* dat:(str)? ppLine cmd:command : command => do
     if oldId != default then
       news := #[fil[0]!] ++ (news.erase fil[0]!)
     let pairs := id.zip news
-    let msg := s!"* Pairings:\n{pairs}" ++ if skip.size != 0 then s!"\n\n* Ignoring: {skip}" else ""
+    let msg := s!"* Pairings:\n{pairs.map fun (l, r) => (l.getId, r)}" ++
+      if skip.size != 0 then s!"\n\n* Ignoring: {skip}" else ""
     let dat := if dat.isSome then some dat.get!.getString else none
     let stxs ← pairs.mapM fun (id, n) => mkDeprecationStx id n dat
     if newCmd == cmd then
