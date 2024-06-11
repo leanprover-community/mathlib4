@@ -865,8 +865,8 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
 #align list.nth_le_eq_iff List.get_eq_iff
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
-    l.get i = (l.get? i).get (by simp [get?_eq_get]) := by
-  simp [get_eq_iff]
+    l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
+  simp [getElem_eq_iff]
 #align list.some_nth_le_eq List.get?_eq_get
 
 section deprecated
@@ -1316,17 +1316,13 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
 #align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length
 #align list.ext List.ext
 
--- TODO one may rename ext in the standard library, and it is also not clear
--- which of ext_get?, ext_get?', ext_get should be @[ext], if any
-alias ext_get? := ext
-
 theorem ext_get?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
     l₁ = l₂ := by
   apply ext
   intro n
   rcases Nat.lt_or_ge n <| max l₁.length l₂.length with hn | hn
   · exact h' n hn
-  · simp_all [Nat.max_le, get?_eq_none.mpr]
+  · simp_all [Nat.max_le, getElem?_eq_none.mpr]
 
 theorem ext_get?_iff {l₁ l₂ : List α} : l₁ = l₂ ↔ ∀ n, l₁.get? n = l₂.get? n :=
   ⟨by rintro rfl _; rfl, ext_get?⟩
@@ -1457,11 +1453,11 @@ theorem modifyNthTail_modifyNthTail_same {f g : List α → List α} (n : ℕ) (
 @[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyNthTail
 
 theorem modifyNth_eq_set (f : α → α) :
-    ∀ (n) (l : List α), modifyNth f n l = ((fun a => set l n (f a)) <$> get? l n).getD l
-  | 0, l => by cases l <;> rfl
+    ∀ (n) (l : List α), modifyNth f n l = ((fun a => set l n (f a)) <$> l[n]?).getD l
+  | 0, l => by cases l <;> simp
   | n + 1, [] => rfl
   | n + 1, b :: l =>
-    (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases h : get? l n <;> simp [h]
+    (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases h : l[n]? <;> simp [h]
 #align list.modify_nth_eq_update_nth List.modifyNth_eq_set
 
 #align list.nth_modify_nth List.get?_modifyNth
@@ -2598,26 +2594,46 @@ theorem getLast_pmap {α β : Type*} (p : α → Prop) (f : ∀ a, p a → β) (
       simp only [getLast_cons hl_tl]
 #align list.last_pmap List.getLast_pmap
 
-theorem get?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) (n : ℕ) :
-    get? (pmap f l h) n = Option.pmap f (get? l n) fun x H => h x (get?_mem H) := by
+theorem getElem?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) (n : ℕ) :
+    (pmap f l h)[n]? = Option.pmap f l[n]? fun x H => h x (getElem?_mem H) := by
   induction' l with hd tl hl generalizing n
   · simp
   · cases' n with n
-    · simp
-    · simp [hl]
+    · simp only [Option.pmap]
+      split <;> simp_all
+    · simp only [hl, pmap, Option.pmap, getElem?_cons_succ]
+      split <;> rename_i h₁ _ <;> split <;> rename_i h₂ _
+      · simp_all
+      · simp at h₂
+        simp_all
+      · simp_all
+      · simp_all
+
+theorem get?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) (n : ℕ) :
+    get? (pmap f l h) n = Option.pmap f (get? l n) fun x H => h x (get?_mem H) := by
+  simp only [get?_eq_getElem?]
+  simp [getElem?_pmap, h]
 #align list.nth_pmap List.get?_pmap
 
-theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
+theorem getElem_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
     (hn : n < (pmap f l h).length) :
-    get (pmap f l h) ⟨n, hn⟩ =
-      f (get l ⟨n, @length_pmap _ _ p f l h ▸ hn⟩)
-        (h _ (get_mem l n (@length_pmap _ _ p f l h ▸ hn))) := by
+    (pmap f l h)[n] =
+      f (l[n]'(@length_pmap _ _ p f l h ▸ hn))
+        (h _ (getElem_mem l n (@length_pmap _ _ p f l h ▸ hn))) := by
   induction' l with hd tl hl generalizing n
   · simp only [length, pmap] at hn
     exact absurd hn (not_lt_of_le n.zero_le)
   · cases n
     · simp
     · simp [hl]
+
+theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
+    (hn : n < (pmap f l h).length) :
+    get (pmap f l h) ⟨n, hn⟩ =
+      f (get l ⟨n, @length_pmap _ _ p f l h ▸ hn⟩)
+        (h _ (get_mem l n (@length_pmap _ _ p f l h ▸ hn))) := by
+  simp only [get_eq_getElem]
+  simp [getElem_pmap]
 
 set_option linter.deprecated false in
 @[deprecated get_pmap] -- 2023-01-05
@@ -3106,7 +3122,8 @@ theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
     | succ i =>
       by_cases ha : a = l.get i
       · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
-      · simpa [ha] using IH i
+      · simp only [get_eq_getElem] at IH ha ⊢
+        simpa [ha] using IH i
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
     (l.eraseIdx i).length + 1 = l.length := calc

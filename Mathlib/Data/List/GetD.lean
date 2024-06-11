@@ -77,7 +77,7 @@ theorem getD_singleton_default_eq (n : ℕ) : [d].getD n d = d := by cases n <;>
 theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := by
   induction r generalizing n with
   | zero => simp
-  | succ n ih => cases n <;> simp [ih]
+  | succ n ih => simp at ih; cases n <;> simp [ih]
 #align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
