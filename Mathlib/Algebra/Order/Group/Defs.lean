@@ -1104,6 +1104,15 @@ class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddComm
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 #align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
 
+@[simp]
+lemma neg_top {α : Type*} [LinearOrderedAddCommGroupWithTop α] : -(⊤ : α) = ⊤ :=
+  LinearOrderedAddCommGroupWithTop.neg_top
+
+
+lemma add_neg_cancel_of_ne_top {α : Type*} [LinearOrderedAddCommGroupWithTop α] {a : α} (h : a ≠ ⊤) :
+    a + -a = 0 :=
+  LinearOrderedAddCommGroupWithTop.add_neg_cancel a h
+
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
 multiplication is monotone. -/

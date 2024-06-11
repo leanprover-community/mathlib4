@@ -137,3 +137,80 @@ lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_in
 #align zsmul_eq_zsmul_iff' zsmul_eq_zsmul_iff'
 
 end LinearOrderedCommGroup
+
+section LinearOrderedAddCommGroupWithTop
+
+variable (α : Type*) [LinearOrderedAddCommGroupWithTop α]
+
+@[simp]
+lemma top_ne_zero :
+    (⊤ : α) ≠ 0 := by
+  intro nh
+  have ⟨a, b, h⟩ := Nontrivial.exists_pair_ne (α := α)
+  have : a + 0 ≠ b + 0 := by simpa
+  rw [← nh] at this
+  simp at this
+
+@[simp]
+lemma neg_eq_top_iff (a : α) :
+    -a = ⊤ ↔ a = ⊤ :=
+  ⟨by
+  intro h
+  by_contra nh
+  replace nh := add_neg_cancel_of_ne_top nh
+  rw [h, add_top] at nh
+  exact top_ne_zero _ nh, fun h ↦ h ▸ neg_top⟩
+
+@[simp]
+lemma add_eq_top_iff (a b : α) :
+    (a + b = ⊤) ↔ a = ⊤ ∨ b = ⊤ := by
+  constructor
+  · intro h
+    by_contra nh
+    rw [not_or] at nh
+    replace h := congrArg (-a + ·) h
+    dsimp only at h
+    rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top,
+      zero_add] at h
+    exact nh.2 h
+    exact nh.1
+  · intro h
+    cases h <;> simp_all
+
+instance : SubtractionMonoid α where
+  neg_neg (a) := by
+    by_cases h : a = ⊤
+    · simp [h]
+    · have h2 : ¬-a = ⊤ := fun nh ↦ h <| (neg_eq_top_iff ..).mp nh
+      replace h2 : a + (-a + - -a) = a + 0 := congrArg (a + ·) (add_neg_cancel_of_ne_top h2)
+      rw [← add_assoc, add_neg_cancel_of_ne_top h] at h2
+      simp only [zero_add, add_zero] at h2
+      exact h2
+  neg_add_rev (a b) := by
+    by_cases ha : a = ⊤
+    · simp [ha]
+    by_cases hb : b = ⊤
+    · simp [hb]
+    apply (_ : Function.Injective (a + b + ·))
+    dsimp
+    rw [add_neg_cancel_of_ne_top, ← add_assoc, add_assoc a,
+      add_neg_cancel_of_ne_top, add_zero,
+      add_neg_cancel_of_ne_top]
+    exact ha
+    exact hb
+    simp [ha, hb]
+    apply Function.LeftInverse.injective (g := (-(a + b) + ·))
+    intro x
+    dsimp only
+    rw [← add_assoc, add_comm (-(a+b)), LinearOrderedAddCommGroupWithTop.add_neg_cancel, zero_add]
+    simp [ha, hb]
+  neg_eq_of_add (a b) (h) := by
+    have oh := congrArg (-a + ·) h
+    dsimp only at oh
+    rw [add_zero, ← add_assoc, add_comm (-a), LinearOrderedAddCommGroupWithTop.add_neg_cancel,
+      zero_add] at oh
+    exact oh.symm
+    intro v
+    simp [v] at h
+
+end LinearOrderedAddCommGroupWithTop
