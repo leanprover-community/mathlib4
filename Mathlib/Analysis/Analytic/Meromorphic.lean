@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Algebra.Order.Group.WithTop
-import Mathlib.Algebra.Order.Group.Int
 
 /-!
 # Meromorphic functions
