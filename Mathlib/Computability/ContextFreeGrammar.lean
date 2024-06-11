@@ -433,7 +433,7 @@ def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGra
     List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inl)) g₁.rules ++
     List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inr)) g₂.rules)))
 
-variable {g₁ g₂ : ContextFreeGrammar T}
+variable {g₁ g₂ : ContextFreeGrammar.{uT} T}
 
 private def oN₁_of_N : (ContextFreeGrammar.union g₁ g₂).NT → Option g₁.NT
   | none => none
@@ -547,30 +547,44 @@ private def g₂g : LiftedContextFreeGrammar T :=
       rw [List.mem_map]
       use r),
     (by
-    intro r ⟨hr, ⟨n₀, imposs⟩⟩
-    cases hr with
-    | head =>
-      exfalso
-      exact Option.noConfusion imposs
-    | tail _ hr =>
+      intro r ⟨hr, ⟨n₀, imposs⟩⟩
       cases hr with
       | head =>
         exfalso
         exact Option.noConfusion imposs
       | tail _ hr =>
-        change r ∈ List.map _ g₁.rules ++ List.map _ g₂.rules at hr
-        rw [List.mem_append] at hr
         cases hr with
-        | inl hr =>
+        | head =>
           exfalso
-          rw [List.mem_map] at hr
-          rcases hr with ⟨_, -, rfl⟩
-          simp only [ContextFreeRule.lift, Function.comp_apply] at imposs
-          rw [Option.some_inj] at imposs
-          exact Sum.noConfusion imposs
-        | inr hr =>
-          rw [List.mem_map] at hr
-          rcases hr with ⟨r₂, _, _⟩
-          use r₂)⟩
+          exact Option.noConfusion imposs
+        | tail _ hr =>
+          change r ∈ List.map _ g₁.rules ++ List.map _ g₂.rules at hr
+          rw [List.mem_append] at hr
+          cases hr with
+          | inl hr =>
+            exfalso
+            rw [List.mem_map] at hr
+            rcases hr with ⟨_, -, rfl⟩
+            simp only [ContextFreeRule.lift, Function.comp_apply] at imposs
+            rw [Option.some_inj] at imposs
+            exact Sum.noConfusion imposs
+          | inr hr =>
+            rw [List.mem_map] at hr
+            rcases hr with ⟨r₂, _, _⟩
+            use r₂)⟩
+
+private lemma deri₁_more (w : List (Symbol T g₁.NT))
+    (hw : g₁.Derives [Symbol.nonterminal g₁.initial] w) :
+    (ContextFreeGrammar.union g₁ g₂).Derives
+      (Symbol.liftString (Option.some ∘ Sum.inl) [Symbol.nonterminal g₁.initial])
+      (Symbol.liftString (Option.some ∘ Sum.inl) w) :=
+  g₁g.lift_derives hw
+
+private lemma deri₂_more (w : List (Symbol T g₂.NT))
+    (hw : g₂.Derives [Symbol.nonterminal g₂.initial] w) :
+    (ContextFreeGrammar.union g₁ g₂).Derives
+      (Symbol.liftString (Option.some ∘ Sum.inr) [Symbol.nonterminal g₂.initial])
+      (Symbol.liftString (Option.some ∘ Sum.inr) w) :=
+  g₂g.lift_derives hw
 
 end closure_union
