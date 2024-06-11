@@ -116,7 +116,7 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   let tgt ← getMainTarget''
   match tgt with
   | .forallE name binderType body info =>
-    -- only consider non-dependent functions
+    -- only consider non-dependent arrows
     if body.hasLooseBVars then
       throwError "`trans` is not implemented for dependent arrows{indentExpr tgt}"
     -- parse the intermeditate term
