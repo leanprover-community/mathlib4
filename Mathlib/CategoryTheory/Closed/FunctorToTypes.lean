@@ -27,6 +27,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace FunctorToTypes
 
+
 /-- The ulift functor `(C ⥤ Type v) ⥤ C ⥤ Type max w v u` on functors to Type. -/
 def uliftFunctor : (C ⥤ Type v) ⥤ C ⥤ Type max w v u :=
   (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{max w v u}
@@ -62,7 +63,7 @@ def homEquiv_toFun_app (f : F ⊗ G ⟶ H) (c : C) (y : G.obj c) :
     aesop
 
 @[ext]
-lemma homEquiv_toFun_app_ext {c : C} {f g : (ihom F G).obj c} :
+lemma homEquiv_toFun_app_ext {c : C} (f g : (ihom F G).obj c) :
     f.app = g.app → f = g := NatTrans.ext _ _
 
 /-- Given a morphism `F ⊗ G ⟶ H`, construct a morphism `G ⟶ ihom F H`. -/
@@ -74,7 +75,7 @@ def homEquiv_toFun (f : F ⊗ G ⟶ H) : G ⟶ ihom F H where
     aesop
 
 @[ext]
-lemma homEquiv_toFun_ext {f g : G ⟶ ihom F H} :
+lemma homEquiv_toFun_ext (f g : G ⟶ ihom F H) :
     f.app = g.app → f = g := NatTrans.ext _ _
 
 /-- Given a morphism `G ⟶ ihom F H`, construct a morphism `F ⊗ G ⟶ H`. -/
@@ -90,7 +91,7 @@ def homEquiv_invFun (f : G ⟶ ihom F H) : F ⊗ G ⟶ H where
     aesop
 
 @[ext]
-lemma homEquiv_invFun_ext {f g : F ⊗ G ⟶ H} :
+lemma homEquiv_invFun_ext (f g : F ⊗ G ⟶ H) :
     f.app = g.app → f = g := NatTrans.ext _ _
 
 /-- The bijection between morphisms `F ⊗ G ⟶ H` and morphisms `G ⟶ ihom F H`. -/
