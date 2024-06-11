@@ -1117,6 +1117,14 @@ theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : 
   snd_map_prod_mk₀ hX.aemeasurable
 #align measure_theory.measure.snd_map_prod_mk MeasureTheory.Measure.snd_map_prod_mk
 
+@[simp] lemma fst_map_swap : (ρ.map Prod.swap).fst = ρ.snd := by
+  rw [Measure.fst, Measure.map_map measurable_fst measurable_swap]
+  rfl
+
+@[simp] lemma snd_map_swap : (ρ.map Prod.swap).snd = ρ.fst := by
+  rw [Measure.snd, Measure.map_map measurable_snd measurable_swap]
+  rfl
+
 end Measure
 
 end MeasureTheory
