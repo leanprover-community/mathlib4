@@ -29,14 +29,17 @@ namespace Batteries.HashMap
 variable [BEq α] [Hashable α]
 
 /-- The list of keys in a `HashMap`. -/
+@[deprecated "Cleaning up unused API additions in Mathlib." (since := "2024-06-12")]
 def keys (m : HashMap α β) : List α :=
   m.fold (fun ks k _ => k :: ks) []
 
 /-- The list of values in a `HashMap`. -/
+@[deprecated "Cleaning up unused API additions in Mathlib." (since := "2024-06-12")]
 def values (m : HashMap α β) : List β :=
   m.fold (fun vs _ v => v :: vs) []
 
 /-- Add a value to a `HashMap α (List β)` viewed as a multimap. -/
+@[deprecated "Cleaning up unused API additions in Mathlib." (since := "2024-06-12")]
 def consVal (self : HashMap α (List β)) (a : α) (b : β) : HashMap α (List β) :=
   match self.find? a with
   | none => self.insert a [b]
