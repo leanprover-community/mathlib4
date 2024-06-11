@@ -492,7 +492,7 @@ theorem factorial_smul (n : ℕ) :
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
   · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
-      factorial_smul'.{_,u,v} _ h.fderiv, iteratedFDeriv_succ_apply_right]
+      factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
 theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0 r) :
