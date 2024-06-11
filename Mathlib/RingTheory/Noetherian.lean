@@ -126,8 +126,8 @@ instance isNoetherian_quotient {R} [Ring R] {M} [AddCommGroup M] [Module R M]
   isNoetherian_of_surjective _ _ (LinearMap.range_eq_top.mpr N.mkQ_surjective)
 #align submodule.quotient.is_noetherian isNoetherian_quotient
 
--- deprecated on 2024-04-27
-@[deprecated, nolint defLemma] alias Submodule.Quotient.isNoetherian := isNoetherian_quotient
+@[deprecated (since := "2024-04-27"), nolint defLemma]
+alias Submodule.Quotient.isNoetherian := isNoetherian_quotient
 
 theorem isNoetherian_of_linearEquiv (f : M ≃ₗ[R] P) [IsNoetherian R M] : IsNoetherian R P :=
   isNoetherian_of_surjective _ f.toLinearMap f.range
