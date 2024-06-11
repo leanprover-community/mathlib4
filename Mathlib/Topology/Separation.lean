@@ -148,7 +148,7 @@ theorem separatedNhds_iff_disjoint {s t : Set X} : SeparatedNhds s t ↔ Disjoin
 alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
 
 /-- `SeparatingCover`s can be useful witnesses for `SeparatedNhds`. -/
-def SeparatingCover : Set X → Set X → Prop := fun s t : Set X =>
+def SeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
