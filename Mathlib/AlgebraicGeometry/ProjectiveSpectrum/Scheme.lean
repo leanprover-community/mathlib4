@@ -398,14 +398,14 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
             HomogeneousLocalization.val_mk]
           · simp_rw [mul_pow]; rw [Localization.mk_mul]
             · congr; erw [← pow_add, Nat.add_sub_of_le h]
-            · rw [(_ : m • n = _)]
-              · mem_tac
-              · simp only [smul_eq_mul, mul_comm]
-            · rw [(_ : m • (i - n) = _)]
-              · mem_tac
-              · simp only [smul_eq_mul, mul_comm]
         · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
+          rw [(_ : m • n = _)]
+          · mem_tac
+          · simp only [smul_eq_mul, mul_comm]
       · simpa only [map_zero, zero_pow hm.ne'] using zero_mem f_deg hm q i
+    rw [(_ : m • (i - n) = _)]
+    · mem_tac
+    · simp only [smul_eq_mul, mul_comm]
   · simp_rw [add_smul]; exact fun _ _ => carrier.add_mem f_deg q
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.smul_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.smul_mem
 

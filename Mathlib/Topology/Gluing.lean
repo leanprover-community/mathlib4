@@ -368,8 +368,8 @@ theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i)
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
     · convert Subtype.eq this
-    rw [h.V_id]
-    trivial
+  rw [h.V_id]
+  trivial
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
