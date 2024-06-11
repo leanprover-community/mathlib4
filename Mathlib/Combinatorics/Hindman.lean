@@ -183,8 +183,7 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
         ⟨p.val ∩ {m : M | elem p * m ∈ p.val},
          inter_mem p.property
            (show (exists_elem p.property).some ∈ {m : M | ∀ᶠ (m' : M) in ↑U, m * m' ∈ p.val} from
-              p.val.inter_subset_right {m : M | ∀ᶠ (m' : M) in ↑U, m * m' ∈ p.val}
-                (exists_elem p.property).some_mem)⟩
+              p.val.inter_subset_right (exists_elem p.property).some_mem)⟩
   use Stream'.corec elem succ (Subtype.mk s₀ sU)
   suffices ∀ (a : Stream' M), ∀ m ∈ FP a, ∀ p, a = Stream'.corec elem succ p → m ∈ p.val by
     intro m hm
@@ -194,12 +193,12 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
   induction' h with b b n h ih b n h ih
   · rintro p rfl
     rw [Stream'.corec_eq, Stream'.head_cons]
-    exact Set.inter_subset_left _ _ (Set.Nonempty.some_mem _)
+    exact Set.inter_subset_left (Set.Nonempty.some_mem _)
   · rintro p rfl
-    refine Set.inter_subset_left _ _ (ih (succ p) ?_)
+    refine Set.inter_subset_left (ih (succ p) ?_)
     rw [Stream'.corec_eq, Stream'.tail_cons]
   · rintro p rfl
-    have := Set.inter_subset_right _ _ (ih (succ p) ?_)
+    have := Set.inter_subset_right (ih (succ p) ?_)
     · simpa only using this
     rw [Stream'.corec_eq, Stream'.tail_cons]
 set_option linter.uppercaseLean3 false in

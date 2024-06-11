@@ -115,6 +115,13 @@ namespace Hom
 
 variable {P Q T : PresheafOfModules R}
 
+variable (P) in
+@[simp]
+lemma id_hom : Hom.hom (𝟙 P) = 𝟙 _ := rfl
+
+@[simp, reassoc]
+lemma comp_hom (f : P ⟶ Q) (g : Q ⟶ T) : (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
 /--
 The `(X : Cᵒᵖ)`-component of morphism between presheaves of modules
 over a presheaf of rings `R`, as an `R.obj X`-linear map. -/

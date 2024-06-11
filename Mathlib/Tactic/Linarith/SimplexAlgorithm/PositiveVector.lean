@@ -39,7 +39,7 @@ The objective function also interpreted as an auxiliary variable with constraint
 The variable `f` has to always be basic while `y` has to be free. Our Gauss method implementation
 greedy collects basic variables moving from left to right. So we place `f` before `x`-s and `y`
 after them. We place `z` between `f` and `x` because in this case `z` will be basic and
-`Gauss.getTableu` produce tableu with non-negative last column, meaning that we are starting from
+`Gauss.getTableau` produce tableau with non-negative last column, meaning that we are starting from
 a feasible point.
 -/
 def stateLP {n m : Nat} (A : matType n m) (strictIndexes : List Nat) :
@@ -56,11 +56,11 @@ def stateLP {n m : Nat} (A : matType n m) (strictIndexes : List Nat) :
 
   return ofValues values
 
-/-- Extracts target vector from the tableu, putting auxilary variables aside (see `stateLP`). -/
-def extractSolution (tableu : Tableu matType) : Array Rat := Id.run do
-  let mut ans : Array Rat := Array.mkArray (tableu.basic.size + tableu.free.size - 3) 0
-  for i in [1:tableu.basic.size] do
-    ans := ans.set! (tableu.basic[i]! - 2) <| tableu.mat[(i, tableu.free.size - 1)]!
+/-- Extracts target vector from the tableau, putting auxilary variables aside (see `stateLP`). -/
+def extractSolution (tableau : Tableau matType) : Array Rat := Id.run do
+  let mut ans : Array Rat := Array.mkArray (tableau.basic.size + tableau.free.size - 3) 0
+  for i in [1:tableau.basic.size] do
+    ans := ans.set! (tableau.basic[i]! - 2) <| tableau.mat[(i, tableau.free.size - 1)]!
   return ans
 
 /--
@@ -74,12 +74,12 @@ def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [UsableInSim
   /- State the linear programming problem. -/
   let B := stateLP A strictIndexes
 
-  /- Using Gaussian elimination split variable into free and basic forming the tableu that will be
+  /- Using Gaussian elimination split variable into free and basic forming the tableau that will be
   operated by the Simplex Algorithm. -/
-  let initTableu := Gauss.getTableu B
+  let initTableau := Gauss.getTableau B
 
   /- Run the Simplex Algorithm and extract the solution. -/
-  let res := runSimplexAlgorithm.run initTableu
+  let res := runSimplexAlgorithm.run initTableau
   if res.fst.isOk then
     return extractSolution res.snd
   else

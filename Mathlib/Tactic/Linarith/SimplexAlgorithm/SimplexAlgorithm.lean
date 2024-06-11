@@ -21,7 +21,7 @@ inductive SimplexAlgorithmException
 
 /-- The monad for the Simplex Algorithm. -/
 abbrev SimplexAlgorithmM (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] :=
-  ExceptT SimplexAlgorithmException <| StateM (Tableu matType)
+  ExceptT SimplexAlgorithmException <| StateM (Tableau matType)
 
 variable {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
@@ -31,7 +31,7 @@ arrays, performs pivot operation, i.e. expresses one through the other and makes
 and vice versa.
 -/
 def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :=
-  modify fun s => Id.run do
+  modify fun s : Tableau matType => Id.run do
     let mut mat := s.mat
     let intersectCoef := mat[(exitIdx, enterIdx)]!
 
@@ -50,7 +50,7 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
     have hb : newBasic.size = s.basic.size := by apply Array.size_setD
     have hf : newFree.size = s.free.size := by apply Array.size_setD
 
-    return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Tableu matType)
+    return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Tableau matType)
 
 /--
 Check if the solution is found: the objective function is positive and all basic variables are

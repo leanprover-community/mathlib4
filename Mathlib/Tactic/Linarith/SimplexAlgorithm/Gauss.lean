@@ -26,8 +26,8 @@ def findNonzeroRow (row col : Nat) : GaussM n m matType <| Option Nat := do
       return i
   return .none
 
-/-- Implementation of `getTableu` in `GaussM` monad. -/
-def getTableuImp : GaussM n m matType <| Tableu matType := do
+/-- Implementation of `getTableau` in `GaussM` monad. -/
+def getTableauImp : GaussM n m matType <| Tableau matType := do
   let mut free : Array Nat := #[]
   let mut basic : Array Nat := #[]
 
@@ -69,11 +69,11 @@ def getTableuImp : GaussM n m matType <| Tableu matType := do
   return ⟨basic, free, ansMatrix⟩
 
 /--
-Given matrix `A`, solves the linear equation `A x = 0` and returns the solution as a tableu where
+Given matrix `A`, solves the linear equation `A x = 0` and returns the solution as a tableau where
 some variables are free and others (basic) variable are expressed as linear combinations of the free
 ones.
 -/
-def getTableu (A : matType n m) : Tableu matType := Id.run do
-  return (← getTableuImp.run A).fst
+def getTableau (A : matType n m) : Tableau matType := Id.run do
+  return (← getTableauImp.run A).fst
 
 end Linarith.SimplexAlgorithm.Gauss
