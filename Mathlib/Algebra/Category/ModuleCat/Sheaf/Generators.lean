@@ -118,6 +118,7 @@ section
 
 variable [h : M.IsFiniteType]
 
+/-- A choice of local generators when `M` is a sheaf of modules of finite type. -/
 noncomputable def localGeneratorsDataOfIsFiniteType : M.LocalGeneratorsData :=
   h.exists_localGeneratorsData.choose
 
