@@ -94,22 +94,29 @@ run_cmd
 namespace UInt8
 
 /-- Is this an uppercase ASCII letter? -/
+@[deprecated "Any downstream users should make a copy outside of Mathlib." (since := "2024-06-10")]
 def isASCIIUpper (c : UInt8) : Bool :=
   c ≥ 65 && c ≤ 90
 
 /-- Is this a lowercase ASCII letter? -/
+@[deprecated "Any downstream users should make a copy outside of Mathlib." (since := "2024-06-10")]
 def isASCIILower (c : UInt8) : Bool :=
   c ≥ 97 && c ≤ 122
 
+set_option linter.deprecated false in
 /-- Is this an alphabetic ASCII character? -/
+@[deprecated "Any downstream users should make a copy outside of Mathlib." (since := "2024-06-10")]
 def isASCIIAlpha (c : UInt8) : Bool :=
   c.isASCIIUpper || c.isASCIILower
 
 /-- Is this an ASCII digit character? -/
+@[deprecated "Any downstream users should make a copy outside of Mathlib." (since := "2024-06-10")]
 def isASCIIDigit (c : UInt8) : Bool :=
   c ≥ 48 && c ≤ 57
 
+set_option linter.deprecated false in
 /-- Is this an alphanumeric ASCII character? -/
+@[deprecated "Any downstream users should make a copy outside of Mathlib." (since := "2024-06-10")]
 def isASCIIAlphanum (c : UInt8) : Bool :=
   c.isASCIIAlpha || c.isASCIIDigit
 
