@@ -190,7 +190,7 @@ theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
   ofReal_eq_zero.not
 #align is_R_or_C.of_real_ne_zero RCLike.ofReal_ne_zero
 
-@[simp, rclike_simps, norm_cast]
+@[rclike_simps, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
   algebraMap.coe_add _ _
 #align is_R_or_C.of_real_add RCLike.ofReal_add
@@ -199,17 +199,17 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
 #noalign is_R_or_C.of_real_bit0
 #noalign is_R_or_C.of_real_bit1
 
-@[simp, norm_cast, rclike_simps]
+@[rclike_simps, norm_cast]
 theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r :=
   algebraMap.coe_neg r
 #align is_R_or_C.of_real_neg RCLike.ofReal_neg
 
-@[simp, norm_cast, rclike_simps]
+@[rclike_simps, norm_cast]
 theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s :=
   map_sub (algebraMap ℝ K) r s
 #align is_R_or_C.of_real_sub RCLike.ofReal_sub
 
-@[simp, rclike_simps, norm_cast]
+@[rclike_simps, norm_cast]
 theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     ((∑ i ∈ s, f i : ℝ) : K) = ∑ i ∈ s, (f i : K) :=
   map_sum (algebraMap ℝ K) _ _
@@ -221,17 +221,17 @@ theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α →
   map_finsupp_sum (algebraMap ℝ K) f g
 #align is_R_or_C.of_real_finsupp_sum RCLike.ofReal_finsupp_sum
 
-@[simp, norm_cast, rclike_simps]
+@[rclike_simps, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
   algebraMap.coe_mul _ _
 #align is_R_or_C.of_real_mul RCLike.ofReal_mul
 
-@[simp, norm_cast, rclike_simps]
+@[rclike_simps, norm_cast]
 theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_pow (algebraMap ℝ K) r n
 #align is_R_or_C.of_real_pow RCLike.ofReal_pow
 
-@[simp, rclike_simps, norm_cast]
+@[rclike_simps, norm_cast]
 theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
     ((∏ i ∈ s, f i : ℝ) : K) = ∏ i ∈ s, (f i : K) :=
   map_prod (algebraMap ℝ K) _ _
@@ -268,7 +268,7 @@ theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
   rw [real_smul_eq_coe_mul, im_ofReal_mul]
 #align is_R_or_C.smul_im RCLike.smul_im
 
-@[simp, norm_cast, rclike_simps]
+@[rclike_simps, norm_cast]
 theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
   norm_algebraMap' K r
 #align is_R_or_C.norm_of_real RCLike.norm_ofReal
@@ -524,7 +524,7 @@ theorem sqrt_normSq_eq_norm {z : K} : √(normSq z) = ‖z‖ := by
 
 /-! ### Inversion -/
 
-@[simp, norm_cast, rclike_simps]
+@[rclike_simps, norm_cast]
 theorem ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : K) = (r : K)⁻¹ :=
   map_inv₀ _ r
 #align is_R_or_C.of_real_inv RCLike.ofReal_inv
@@ -575,7 +575,7 @@ lemma exists_norm_mul_eq_self (x : K) : ∃ c, ‖c‖ = 1 ∧ c * ‖x‖ = x :
   · exact ⟨1, by simp⟩
   · exact ⟨x / ‖x‖, by simp [norm_ne_zero_iff.2, hx]⟩
 
-@[simp, norm_cast, rclike_simps]
+@[rclike_simps, norm_cast]
 theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : K) = r / s :=
   map_div₀ (algebraMap ℝ K) r s
 #align is_R_or_C.of_real_div RCLike.ofReal_div
@@ -584,7 +584,7 @@ theorem div_re_ofReal {z : K} {r : ℝ} : re (z / r) = re z / r := by
   rw [div_eq_inv_mul, div_eq_inv_mul, ← ofReal_inv, re_ofReal_mul]
 #align is_R_or_C.div_re_of_real RCLike.div_re_ofReal
 
-@[simp, norm_cast, rclike_simps]
+@[rclike_simps, norm_cast]
 theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_zpow₀ (algebraMap ℝ K) r n
 #align is_R_or_C.of_real_zpow RCLike.ofReal_zpow
@@ -626,7 +626,7 @@ instance (priority := 100) : CstarRing K where
 
 /-! ### Cast lemmas -/
 
-@[simp, rclike_simps, norm_cast]
+@[rclike_simps, norm_cast]
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 #align is_R_or_C.of_real_nat_cast RCLike.ofReal_natCast
@@ -650,7 +650,7 @@ theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (no_index (OfNat.ofNat n) : K) = 
   natCast_im n
 
 -- See note [no_index around OfNat.ofNat]
-@[simp, rclike_simps, norm_cast]
+@[rclike_simps, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℝ) : K) = OfNat.ofNat n :=
   ofReal_natCast n
@@ -663,7 +663,7 @@ theorem ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
     im (OfNat.ofNat n * z) = OfNat.ofNat n * im z := by
   rw [← ofReal_ofNat, im_ofReal_mul]
 
-@[simp, rclike_simps, norm_cast]
+@[rclike_simps, norm_cast]
 theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : K) = n :=
   map_intCast _ n
 #align is_R_or_C.of_real_int_cast RCLike.ofReal_intCast
@@ -676,7 +676,7 @@ theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofRe
 theorem intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofReal_im]
 #align is_R_or_C.int_cast_im RCLike.intCast_im
 
-@[simp, rclike_simps, norm_cast]
+@[rclike_simps, norm_cast]
 theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
 #align is_R_or_C.of_real_rat_cast RCLike.ofReal_ratCast

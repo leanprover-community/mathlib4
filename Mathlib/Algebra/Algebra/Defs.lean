@@ -126,12 +126,12 @@ section CommSemiringSemiring
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_zero : (↑(0 : R) : A) = 0 :=
   map_zero (algebraMap R A)
 #align algebra_map.coe_zero algebraMap.coe_zero
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_one : (↑(1 : R) : A) = 1 :=
   map_one (algebraMap R A)
 #align algebra_map.coe_one algebraMap.coe_one
@@ -195,7 +195,7 @@ theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
   (algebraMap R A).injective.eq_iff
 #align algebra_map.coe_inj algebraMap.coe_inj
 
-@[norm_cast, simp]
+@[norm_cast]
 theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
   map_eq_zero_iff _ (algebraMap R A).injective
 #align algebra_map.lift_map_eq_zero_iff algebraMap.lift_map_eq_zero_iff
