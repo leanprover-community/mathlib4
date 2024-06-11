@@ -226,7 +226,7 @@ The type is required to come with an “inverse” function, and the inverse of 
 
 Examples include division rings and the ordered monoids that are the
 target of valuations in general valuation theory. -/
-class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
+class GroupWithZero (G₀ : Type u) extends DivInvMonoid G₀, MonoidWithZero G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
   inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
@@ -235,8 +235,7 @@ class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G�
 
 attribute [instance 100] GroupWithZero.toMonoidWithZero
 attribute [instance 0] GroupWithZero.toDivInvMonoid -- use `GroupWithZero.toDivisionMonoid`
-attribute [instance 0] GroupWithZero.toInv
-attribute [instance 0] GroupWithZero.toDiv
+attribute [instance 0] GroupWithZero.toZero
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero

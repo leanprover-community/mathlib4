@@ -48,7 +48,9 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
       rw [Rat.inv_def]
       rfl
     mul_inv_cancel := Rat.mul_inv_cancel
-    mul_comm := mul_comm }
+    mul_comm := mul_comm
+    zero_mul := zero_mul
+    mul_zero := mul_zero }
 
 instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
 instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr_arg num hab
