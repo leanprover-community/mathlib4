@@ -1449,8 +1449,8 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
       obtain ⟨c, hc, hc'⟩ := exists_mem_normalizedFactors_of_dvd ?_ this.irreducible
           (dvd_iff_le.mpr (span_singleton_le_span_singleton.mpr (dvd_of_mem_normalizedFactors ha)))
       rwa [associated_iff_eq.mp hc']
-    · by_contra h
-      exact hb (span_singleton_eq_bot.mp h)
+      · by_contra h
+        exact hb (span_singleton_eq_bot.mp h)
     rw [prime_iff_isPrime]
     · exact (span_singleton_prime (prime_of_normalized_factor a ha).ne_zero).mpr
         (prime_of_normalized_factor a ha)
