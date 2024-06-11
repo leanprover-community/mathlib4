@@ -47,7 +47,7 @@ lemma eq_on_Nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
 
 /-- The equivalence class of a multiplicative norm on the rationals is determined by its values on
 the natural numbers. -/
-lemma equiv_iff_equiv_on_Nat : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n)^c = g n)) ↔
+lemma equiv_on_Nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n)^c = g n)) ↔
     f.equiv g := by
     refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, ?_⟩⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, fun n ↦ by rw [← h]⟩⟩⟩
     ext x
