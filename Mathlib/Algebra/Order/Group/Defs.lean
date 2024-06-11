@@ -1109,7 +1109,8 @@ lemma neg_top {α : Type*} [LinearOrderedAddCommGroupWithTop α] : -(⊤ : α) =
   LinearOrderedAddCommGroupWithTop.neg_top
 
 
-lemma add_neg_cancel_of_ne_top {α : Type*} [LinearOrderedAddCommGroupWithTop α] {a : α} (h : a ≠ ⊤) :
+lemma add_neg_cancel_of_ne_top {α : Type*} [LinearOrderedAddCommGroupWithTop α]
+    {a : α} (h : a ≠ ⊤) :
     a + -a = 0 :=
   LinearOrderedAddCommGroupWithTop.add_neg_cancel a h
 
