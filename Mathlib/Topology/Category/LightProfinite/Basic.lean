@@ -432,13 +432,8 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
         lightDiagramToProfinite_obj, Functor.preimageIso_hom, Iso.refl_hom, Functor.id_map]
       erw [lightDiagramToProfinite.preimage_id, lightDiagramToProfinite.preimage_id,
         Category.comp_id f])
-  functor_unitIso_comp := by
-    intro
-    simp only [Functor.id_obj, lightProfiniteToLightDiagram_obj, Functor.comp_obj,
-      lightDiagramToLightProfinite_obj, Iso.refl_hom, NatTrans.id_app,
-      lightProfiniteToLightDiagram_map, lightDiagramToProfinite_obj,
-      NatIso.ofComponents_hom_app, Functor.preimageIso_hom]
-    exact lightDiagramToProfinite.preimage_id
+  functor_unitIso_comp _ := by
+    simpa using lightDiagramToProfinite.preimage_id
 
 instance : lightProfiniteToLightDiagram.IsEquivalence :=
   show LightProfinite.equivDiagram.functor.IsEquivalence from inferInstance
