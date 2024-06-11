@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.AEDisjoint
+import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
 
 #align_import measure_theory.measure.null_measurable from "leanprover-community/mathlib"@"e4edb23029fff178210b9945dcb77d293f001e1c"
 
@@ -83,14 +84,8 @@ instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
   h
 #align measure_theory.null_measurable_space.subsingleton MeasureTheory.NullMeasurableSpace.instSubsingleton
 
-instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) where
-  MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᵐ[μ] t
-  measurableSet_empty := ⟨∅, MeasurableSet.empty, ae_eq_refl _⟩
-  measurableSet_compl := fun s ⟨t, htm, hts⟩ => ⟨tᶜ, htm.compl, hts.compl⟩
-  measurableSet_iUnion s hs := by
-    choose t htm hts using hs
-    exact ⟨⋃ i, t i, MeasurableSet.iUnion htm, EventuallyEq.countable_iUnion hts⟩
-#align measure_theory.null_measurable_space.measurable_space MeasureTheory.NullMeasurableSpace.instMeasurableSpace
+instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) :=
+  @EventuallyMeasurableSpace α inferInstance (ae μ) _
 
 /-- A set is called `NullMeasurableSet` if it can be approximated by a measurable set up to
 a set of null measure. -/
@@ -101,7 +96,7 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
 
 @[simp]
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
-  ⟨s, h, ae_eq_refl _⟩
+  h.eventuallyMeasurableSet
 #align measurable_set.null_measurable_set MeasurableSet.nullMeasurableSet
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -139,8 +134,7 @@ theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
 #align measure_theory.null_measurable_set.of_subsingleton MeasureTheory.NullMeasurableSet.of_subsingleton
 
 protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
-  let ⟨s', hm, hs'⟩ := hs
-  ⟨s', hm, h.symm.trans hs'⟩
+  EventuallyMeasurableSet.congr hs h.symm
 #align measure_theory.null_measurable_set.congr MeasureTheory.NullMeasurableSet.congr
 
 protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
@@ -216,7 +210,7 @@ protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
 
 instance instMeasurableSingletonClass [MeasurableSingletonClass α] :
     MeasurableSingletonClass (NullMeasurableSpace α μ) :=
-  ⟨fun x => MeasurableSet.nullMeasurableSet (@measurableSet_singleton α _ _ x)⟩
+  EventuallyMeasurableSpace.measurableSingleton (m := m0)
 #align measure_theory.null_measurable_set.measure_theory.null_measurable_space.measurable_singleton_class MeasureTheory.NullMeasurableSet.instMeasurableSingletonClass
 
 protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
@@ -409,7 +403,7 @@ def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
 #align measure_theory.null_measurable MeasureTheory.NullMeasurable
 
 protected theorem _root_.Measurable.nullMeasurable (h : Measurable f) : NullMeasurable f μ :=
-  fun _s hs => (h hs).nullMeasurableSet
+  h.eventuallyMeasurable
 #align measurable.null_measurable Measurable.nullMeasurable
 
 protected theorem NullMeasurable.measurable' (h : NullMeasurable f μ) :
@@ -419,13 +413,12 @@ protected theorem NullMeasurable.measurable' (h : NullMeasurable f μ) :
 
 theorem Measurable.comp_nullMeasurable {g : β → γ} (hg : Measurable g) (hf : NullMeasurable f μ) :
     NullMeasurable (g ∘ f) μ :=
-  hg.comp hf
+  hg.comp_eventuallyMeasurable hf
 #align measure_theory.measurable.comp_null_measurable MeasureTheory.Measurable.comp_nullMeasurable
 
 theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f =ᵐ[μ] g) :
-    NullMeasurable g μ := fun s hs =>
-    NullMeasurableSet.congr (hf hs) <| eventuallyEq_set.2 <| hg.mono fun x hx =>
-      by rw [mem_preimage, mem_preimage, hx]
+    NullMeasurable g μ :=
+  EventuallyMeasurable.congr hf hg.symm
 #align measure_theory.null_measurable.congr MeasureTheory.NullMeasurable.congr
 
 end NullMeasurable

@@ -175,6 +175,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact lt_mul_of_one_lt_left Fintype.card_pos (one_lt_index_of_ne_top h3)
   have h6 : Nat.Coprime (Fintype.card (N.comap K.subtype)) (N.comap K.subtype).index := by
     rw [h4]
+    rw [← Nat.card_eq_fintype_card] at h1 ⊢
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Fintype.card (H.map K.subtype) = N.index := by
@@ -204,6 +205,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
     rw [index_map]
     refine h1.coprime_dvd_left ?_
     rw [← Nat.mul_dvd_mul_iff_left index_pos, index_mul_card, ← index_map, index_mul_card]
+    simp only [← Nat.card_eq_fintype_card]
     exact K.card_quotient_dvd_card
   obtain ⟨H, hH⟩ := h2 (G ⧸ K) h5 h6
   refine ⟨H.comap (QuotientGroup.mk' K), ?_, ?_⟩

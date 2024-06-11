@@ -46,8 +46,6 @@ open Encodable Denumerable
 
 namespace Nat.Partrec
 
-open Nat (pair)
-
 theorem rfind' {f} (hf : Nat.Partrec f) :
     Nat.Partrec
       (Nat.unpaired fun a m =>
@@ -91,10 +89,6 @@ compile_inductive% Code
 end Nat.Partrec
 
 namespace Nat.Partrec.Code
-
-open Nat (pair unpair)
-
-open Nat.Partrec (Code)
 
 instance instInhabited : Inhabited Code :=
   ⟨zero⟩

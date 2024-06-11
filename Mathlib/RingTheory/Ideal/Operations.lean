@@ -186,7 +186,7 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
 instance : CovariantClass (Ideal R) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ => map₂_le_map₂_right⟩
 
-@[deprecated smul_mono_right] -- 2024-03-31
+@[deprecated smul_mono_right (since := "2024-03-31")]
 protected theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
   _root_.smul_mono_right I h
 #align submodule.smul_mono_right Submodule.smul_mono_right
@@ -250,7 +250,7 @@ protected theorem smul_assoc : (I • J) • N = I • J • N :=
         show r • s • n ∈ (I • J) • N from mul_smul r s n ▸ smul_mem_smul (smul_mem_smul hr hs) hn)
 #align submodule.smul_assoc Submodule.smul_assoc
 
-@[deprecated smul_inf_le] -- 2024-03-31
+@[deprecated smul_inf_le (since := "2024-03-31")]
 protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
     I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
 #align submodule.smul_inf_le Submodule.smul_inf_le
@@ -259,7 +259,7 @@ theorem smul_iSup {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} : I • 
   map₂_iSup_right _ _ _
 #align submodule.smul_supr Submodule.smul_iSup
 
-@[deprecated smul_iInf_le] -- 2024-03-31
+@[deprecated smul_iInf_le (since := "2024-03-31")]
 protected theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
     I • iInf t ≤ ⨅ i, I • t i :=
   smul_iInf_le
@@ -866,6 +866,13 @@ theorem _root_.IsCoprime.exists (h : IsCoprime I J) : ∃ i ∈ I, ∃ j ∈ J, 
   isCoprime_iff_exists.mp h
 
 theorem _root_.IsCoprime.sup_eq (h : IsCoprime I J) : I ⊔ J = ⊤ := isCoprime_iff_sup_eq.mp h
+
+theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
+  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
+#align ideal.inf_eq_mul_of_coprime Ideal.inf_eq_mul_of_isCoprime
+
+@[deprecated (since := "2024-05-28")]
+alias inf_eq_mul_of_coprime := inf_eq_mul_of_isCoprime
 
 theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
