@@ -478,38 +478,18 @@ TODO: Write a delaborator
 @[term_elab setBuilder]
 def elabFinsetBuilderIxx : TermElab
   | `({ $x:ident ≤ $a | $p }), expectedType? => do
-    -- AS we want to reason about the expected type, we would like to wait for it to be available.
-    -- However this means that if we fall back on `elabSetBuilder` we will have postponed.
-    -- This is undesirable as we want set builder notation to quickly elaborate to a `Set` when no
-    -- expected type is available.
-    -- tryPostponeIfNoneOrMVar expectedType?
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (Finset.Iic $a))) expectedType?
   | `({ $x:ident ≥ $a | $p }), expectedType? => do
-    -- AS we want to reason about the expected type, we would like to wait for it to be available.
-    -- However this means that if we fall back on `elabSetBuilder` we will have postponed.
-    -- This is undesirable as we want set builder notation to quickly elaborate to a `Set` when no
-    -- expected type is available.
-    -- tryPostponeIfNoneOrMVar expectedType?
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (Finset.Ici $a))) expectedType?
   | `({ $x:ident < $a | $p }), expectedType? => do
-    -- AS we want to reason about the expected type, we would like to wait for it to be available.
-    -- However this means that if we fall back on `elabSetBuilder` we will have postponed.
-    -- This is undesirable as we want set builder notation to quickly elaborate to a `Set` when no
-    -- expected type is available.
-    -- tryPostponeIfNoneOrMVar expectedType?
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (Finset.Iio $a))) expectedType?
   | `({ $x:ident > $a | $p }), expectedType? => do
-    -- AS we want to reason about the expected type, we would like to wait for it to be available.
-    -- However this means that if we fall back on `elabSetBuilder` we will have postponed.
-    -- This is undesirable as we want set builder notation to quickly elaborate to a `Set` when no
-    -- expected type is available.
-    -- tryPostponeIfNoneOrMVar expectedType?
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (Finset.Ioi $a))) expectedType?
