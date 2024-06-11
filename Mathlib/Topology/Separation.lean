@@ -2166,6 +2166,36 @@ lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
 @[deprecated] -- Since 28 Jan 2024
 alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
 
+/-- This technique to produce a SeparatingCover in regular Lindelöf topological spaces
+will be used to prove regular Lindelöf spaces are normal. -/
+lemma SeparatedCover.of_isClosed {s t : Set X} [r: RegularSpace X] [LindelofSpace X]
+    (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : SeparatingCover s t := by
+  -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
+  wlog nonempty_X : Nonempty X
+  · have : s = ∅ := subset_eq_empty (fun ⦃_⦄ _ ↦ trivial)
+      (univ_eq_empty_iff.mpr (not_nonempty_iff.mp nonempty_X))
+    rw [this]
+    apply And.left
+    exact separating_covers_iff_separated_nhds.mpr (SeparatedNhds.empty_left t)
+  -- This is almost a `SeparatingCover`, but is not countable. We define for all `a : X` for use
+  -- with `IsLindelof.indexed_countable_subcover` momentarily.
+  have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
+    wlog ains : a ∈ s
+    · exact ⟨∅, isOpen_empty, SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left t),
+        fun a ↦ ains a⟩
+    obtain ⟨n, nna, ncl, nsubkc⟩ := (((regularSpace_TFAE X).out 0 3).mp r:) a tᶜ
+      (t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains))
+    exact ⟨interior n, isOpen_interior, disjoint_left.mpr fun ⦃a⦄ ain ↦
+      nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset ain),
+      fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
+  -- By Lindelöf, we may obtain a countable subcover which is a `SeparatingCover`
+  choose u u_open u_dis u_nhd using this
+  obtain ⟨f, f_cov⟩ := IsLindelof.indexed_countable_subcover
+    (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ s_cl (subset_univ s))
+    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
+  exact ⟨u ∘ f, ⟨f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩⟩
+
+
 end RegularSpace
 
 section LocallyCompactRegularSpace
@@ -2356,36 +2386,10 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
 Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without the
 assumption of Hausdorff). -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
-    [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
-  normal h k hcl kcl hkdis := by
-    -- Empty spaces are normal vacuously
-    wlog nonempty_space : Nonempty X
-    · rw [not_nonempty_iff] at nonempty_space
-      exact normal h k hcl kcl hkdis
-    -- This lemma constructs the appropriate cover to be made countable by the Lindelöf property
-    have disjoint_cover_lemma (h₀ k₀ : Set X) (k₀cl : IsClosed k₀) (h₀k₀dis : Disjoint h₀ k₀)
-        (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) k₀ ∧ (a ∈ h₀ → a ∈ n) := by
-      wlog ainh₀ : a ∈ h₀
-      · exact ⟨∅, isOpen_empty, SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left k₀),
-          fun a ↦ ainh₀ a⟩
-      obtain ⟨n, nna, ncl, nsubkc⟩ := (((regularSpace_TFAE X).out 0 3).mp r:) a k₀ᶜ
-        (k₀cl.compl_mem_nhds (disjoint_left.mp h₀k₀dis ainh₀))
-      exact ⟨interior n, isOpen_interior, disjoint_left.mpr fun ⦃a⦄ ain ↦
-        nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset ain),
-        fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
-    -- By Lindelöf, we may construct a `SeparatingCover h k`
-    choose u u_open u_dis u_nhd using disjoint_cover_lemma h k kcl hkdis
-    obtain ⟨f, f_cov⟩ := IsLindelof.indexed_countable_subcover
-      (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h))
-      u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
-    -- Again by Lindelöf, we may construct a `SeparatingCover k h`
-    choose v v_open v_dis v_nhd using disjoint_cover_lemma k h hcl (Disjoint.symm hkdis)
-    obtain ⟨g, g_cov⟩ := IsLindelof.indexed_countable_subcover
-      (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k))
-      v v_open (fun a aink ↦ mem_iUnion.mpr ⟨a, v_nhd a aink⟩)
-    exact separating_covers_iff_separated_nhds.mp ⟨
-      ⟨u ∘ f, ⟨f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩⟩,
-      ⟨v ∘ g, ⟨g_cov, fun n ↦ ⟨v_open (g n), v_dis (g n)⟩⟩⟩⟩
+    [RegularSpace X] [LindelofSpace X] : NormalSpace X where
+  normal _ _ hcl kcl hkdis := separating_covers_iff_separated_nhds.mp ⟨
+    SeparatedCover.of_isClosed hcl kcl hkdis,
+    SeparatedCover.of_isClosed kcl hcl (Disjoint.symm hkdis)⟩
 
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     [RegularSpace X] [SecondCountableTopology X] : NormalSpace X :=
