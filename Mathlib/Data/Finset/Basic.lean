@@ -504,7 +504,7 @@ alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
 #align finset.nonempty.bex Finset.Nonempty.exists_mem
-@[deprecated] alias Nonempty.bex := Nonempty.exists_mem -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias Nonempty.bex := Nonempty.exists_mem
 
 theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs
@@ -850,7 +850,6 @@ instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
   uniq j := Subtype.ext <| mem_singleton.mp j.2
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
