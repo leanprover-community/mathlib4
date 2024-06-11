@@ -466,6 +466,9 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.Antidiag.Finsupp
+import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.List
@@ -1902,7 +1905,6 @@ import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finmap
-import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
@@ -1924,7 +1926,6 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.PImage
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Pointwise
