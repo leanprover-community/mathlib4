@@ -381,7 +381,9 @@ open nonZeroDivisors
 
 open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
 
-lemma bar (a : FiniteAdeleRing R K) : ∃ (b : R⁰) (c : R_hat R K), a * (b : R) = c := by
+variable {R K} in
+lemma clear_denominator (a : FiniteAdeleRing R K) :
+    ∃ (b : R⁰) (c : R_hat R K), a * (b : R) = c := by
   sorry
 
 #check Submodule.pointwiseMulActionWithZero
@@ -398,7 +400,7 @@ theorem submodulesRingBasis : SubmodulesRingBasis
     rfl
     ⟩
   leftMul a r := by
-    rcases bar R K a with ⟨b, c, h⟩
+    rcases clear_denominator a with ⟨b, c, h⟩
     use r * b
     rintro x ⟨m, hm, rfl⟩
     simp only [Submonoid.coe_mul, SetLike.mem_coe] at hm
