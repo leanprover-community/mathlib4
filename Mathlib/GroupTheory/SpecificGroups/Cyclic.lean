@@ -132,14 +132,21 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
 @[deprecated (since := "2024-02-21")]
 alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 
+@[to_additive]
+theorem Subgroup.eq_bot_or_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G}
+    (H : Subgroup G) [hp : Fact (Fintype.card G).Prime] : H = ⊥ ∨ H = ⊤ := by
+  classical
+  have := card_subgroup_dvd_card H
+  rwa [Nat.card_eq_fintype_card (α := G), Nat.dvd_prime hp.1, ← Nat.card_eq_fintype_card,
+    ← eq_bot_iff_card, card_eq_iff_eq_top] at this
+
 /-- Any non-identity element of a finite group of prime order generates the group. -/
 @[to_additive "Any non-identity element of a finite group of prime order generates the group."]
 theorem zpowers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ}
     [hp : Fact p.Prime] (h : Fintype.card G = p) {g : G} (hg : g ≠ 1) : zpowers g = ⊤ := by
-  have := card_subgroup_dvd_card (zpowers g)
-  simp_rw [h, Nat.dvd_prime hp.1, ← eq_bot_iff_card, zpowers_eq_bot, hg, false_or, ← h,
-    card_eq_iff_eq_top] at this
-  exact this
+  subst h
+  have := (zpowers g).eq_bot_or_eq_top_of_prime_card
+  rwa [zpowers_eq_bot, or_iff_right hg] at this
 
 @[to_additive]
 theorem mem_zpowers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
@@ -198,7 +205,7 @@ theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cycli
   use a
   contrapose! k_lt_card_G
   convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
-  rw [← Fintype.card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top, eq_top_iff]
+  rw [← Nat.card_eq_fintype_card, ← Nat.card_zpowers, eq_comm, card_eq_iff_eq_top, eq_top_iff]
   exact fun x _ ↦ ha x
 
 @[to_additive]
@@ -516,19 +523,12 @@ alias IsAddCyclic.card_orderOf_eq_totient := IsAddCyclic.card_addOrderOf_eq_toti
 /-- A finite group of prime order is simple. -/
 @[to_additive "A finite group of prime order is simple."]
 theorem isSimpleGroup_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [hp : Fact p.Prime]
-    (h : Fintype.card α = p) : IsSimpleGroup α :=
+    (h : Fintype.card α = p) : IsSimpleGroup α := by
+  subst h
   have : Nontrivial α := by
-    have h' := Nat.Prime.one_lt (Fact.out (p := p.Prime))
-    rw [← h] at h'
+    have h' := Nat.Prime.one_lt hp.out
     exact Fintype.one_lt_card_iff_nontrivial.1 h'
-  ⟨fun H _ => by
-    classical
-      have hcard := card_subgroup_dvd_card H
-      rw [h, dvd_prime (Fact.out (p := p.Prime))] at hcard
-      refine hcard.imp (fun h1 => ?_) fun hp => ?_
-      · haveI := Fintype.card_le_one_iff_subsingleton.1 (le_of_eq h1)
-        apply eq_bot_of_subsingleton
-      · exact eq_top_of_card_eq _ (hp.trans h.symm)⟩
+  exact ⟨fun H _ => H.eq_bot_or_eq_top_of_prime_card⟩
 #align is_simple_group_of_prime_card isSimpleGroup_of_prime_card
 #align is_simple_add_group_of_prime_card isSimpleAddGroup_of_prime_card
 
