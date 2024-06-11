@@ -4,13 +4,12 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Tactic.Linarith
 
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits ZeroObject
 
-open CategoryTheory
-
-universe v u u'
+universe v u u' v'
 
 def CategoryTheory.Limits.compNatIso' {C : Type u} [CategoryTheory.Category.{v, u} C]
     [CategoryTheory.Limits.HasZeroMorphisms C] {X : C} {Y : C} {f : X ⟶ Y} {D : Type u'}
@@ -165,9 +164,74 @@ map α :=
               simp only [parallelPair_obj_one, Functor.const_obj_obj, Fork.π_comp_hom]
   }
 
-#exit
+variable {A : Type u} [Category.{v, u} A] [Abelian A] {B : Type u'} [Category.{v', u'} B]
+  [Abelian B]
+variable {X Y : A} {f : X ⟶ Y} (S : ShortComplex A)
+variable (F : A ⥤ B) [Functor.Additive F]
 
-variable {A : Type u} [Category.{v} A] [Abelian A]
+noncomputable def imageComparison (h : IsIso (cokernelComparison f F)) :
+    F.obj (Abelian.image f) ⟶ Abelian.image (F.map f) := by
+  refine kernel.lift (cokernel.π (F.map f)) (F.map (Abelian.image.ι f)) ?_
+  refine Mono.right_cancellation (f := cokernelComparison f F) _ _ ?_
+  simp only [equalizer_as_kernel, Category.assoc, π_comp_cokernelComparison, zero_comp]
+  rw [← F.map_comp]
+  convert F.map_zero _ _
+  simp only [kernel.condition]
+
+lemma kernelImageComparison_compat (hcoker : IsIso (cokernelComparison S.f F)) :
+    F.map S.abelianImageToKernel ≫ kernelComparison S.g F =
+    imageComparison F hcoker ≫ (F.mapShortComplex.obj S).abelianImageToKernel := by
+  refine Mono.right_cancellation (f := kernel.ι (F.map S.g)) _ _ ?_
+  simp only [Category.assoc, kernelComparison_comp_ι]
+  rw [← F.map_comp, S.abelianImageToKernel_comp_kernel_ι]
+  erw [(F.mapShortComplex.obj S).abelianImageToKernel_comp_kernel_ι]
+  rw [imageComparison]
+  simp only [equalizer_as_kernel, Functor.mapShortComplex_obj, ShortComplex.map_X₁,
+    ShortComplex.map_X₂, ShortComplex.map_f, kernel.lift_ι]
+
+lemma image_compat : (Abelian.imageIsoImage S.f).hom ≫ (imageToKernel' S.f S.g S.zero) =
+    S.abelianImageToKernel := by
+  refine Mono.right_cancellation (f := kernel.ι S.g) _ _ ?_
+  refine Epi.left_cancellation (f := (Abelian.imageIsoImage S.f).inv) _ _ ?_
+  conv_lhs => rw [← Category.assoc, ← Category.assoc,  Iso.inv_hom_id, Category.id_comp]
+  simp only [imageToKernel']
+  simp only [kernel.lift_ι, IsImage.isoExt_inv, image.isImage_lift,
+    ShortComplex.abelianImageToKernel_comp_kernel_ι, equalizer_as_kernel]
+  refine Epi.left_cancellation (f := factorThruImage S.f) _ _ ?_
+  simp only [image.fac, image.fac_lift_assoc, Abelian.imageStrongEpiMonoFactorisation_I,
+    Abelian.imageStrongEpiMonoFactorisation_e, kernel.lift_ι]
+
+noncomputable def ShortComplex.homologyIsoCokernelAbelianImageToKernel (S : ShortComplex A) :
+    S.homology ≅ Limits.cokernel S.abelianImageToKernel := by
+  refine (S.homology'IsoHomology.symm.trans (homology'IsoCokernelImageToKernel' S.f S.g
+    S.zero)).trans ?_
+  refine cokernel.mapIso (imageToKernel' S.f S.g S.zero) S.abelianImageToKernel
+    (Abelian.imageIsoImage S.f).symm (Iso.refl _) ?_
+  refine Epi.left_cancellation (f := (Abelian.imageIsoImage S.f).hom) _ _ ?_
+  rw [Iso.refl, Category.comp_id, ← Category.assoc, Iso.symm_hom, Iso.hom_inv_id,
+    Category.id_comp, image_compat]
+
+def imageToKernelIsIsoOfExact {S : ShortComplex A} (h : IsZero S.homology) :
+    IsIso S.abelianImageToKernel := by
+  have : Epi S.abelianImageToKernel := by
+    refine NormalMonoCategory.epi_of_zero_cokernel _ (cokernel S.abelianImageToKernel) ?_
+    have : cokernel.π S.abelianImageToKernel = 0 :=
+      IsZero.eq_zero_of_tgt (IsZero.of_iso h (ShortComplex.homologyIsoCokernelAbelianImageToKernel
+      S).symm) _
+    conv => congr; congr; rw [← this]
+    exact cokernelIsCokernel _
+  exact isIso_of_mono_of_epi S.abelianImageToKernel (C := A)
+
+/-
+variable {ι : Type*} {c : ComplexShape ι}
+
+def HomologicalComplex.homologyIsoCokernelAbelianImageToKernel (S : HomologicalComplex A c)
+    {i j k : ι} (hij : i = c.prev j) (hjk : k = c.next j) :
+  S.homology j ≅ Limits.cokernel
+  (ShortComplex.abelianImageToKernel (ShortComplex.mk (S.d i j) (S.d j k) sorry)) := sorry
+-/
+
+#exit
 
 noncomputable def CochainComplexToShortComplex (S : CochainComplex A ℤ) (n : ℤ) : ShortComplex A :=
   ShortComplex.mk (Abelian.image.ι (S.d (n - 1) n)) (Abelian.coimage.π (S.d n (n + 1)))
