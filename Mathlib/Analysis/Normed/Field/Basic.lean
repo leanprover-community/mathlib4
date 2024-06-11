@@ -192,12 +192,12 @@ theorem NormOneClass.nontrivial (α : Type*) [SeminormedAddCommGroup α] [One α
 #align norm_one_class.nontrivial NormOneClass.nontrivial
 
 -- see Note [lower instance priority]
-instance (priority := 10) NonUnitalSeminormedCommRing.toNonUnitalCommRing
+instance (priority := 100) NonUnitalSeminormedCommRing.toNonUnitalCommRing
     [β : NonUnitalSeminormedCommRing α] : NonUnitalCommRing α :=
   { β with }
 
 -- see Note [lower instance priority]
-instance (priority := 10) SeminormedCommRing.toCommRing [β : SeminormedCommRing α] : CommRing α :=
+instance (priority := 100) SeminormedCommRing.toCommRing [β : SeminormedCommRing α] : CommRing α :=
   { β with }
 #align semi_normed_comm_ring.to_comm_ring SeminormedCommRing.toCommRing
 
