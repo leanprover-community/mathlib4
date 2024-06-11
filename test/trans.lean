@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Relation.Trans
 import Batteries.Data.Nat.Lemmas
+import Mathlib.Tactic.GuardGoalNums
 
 set_option autoImplicit true
 -- testing that the attribute is recognized and used
@@ -85,5 +86,14 @@ example {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
 /-- `trans` for implications. -/
 example {A B C: Prop} (h : A → B) (g : B → C) : A → C := by
   trans B
-  assumption
-  assumption
+  · guard_target =ₛ A → B -- ensure we have `B` and not a free metavariable.
+    exact h
+  · guard_target =ₛ B → C
+    exact g
+
+/-- `trans` for arrows between types. -/
+example {A B C: Type} (h : A → B) (g : B → C) : A → C := by
+  trans
+  guard_goal_nums 3 -- 3rd goal is the middle term
+  · exact h
+  · exact g
