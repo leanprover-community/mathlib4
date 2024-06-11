@@ -52,7 +52,7 @@ theorem multinomial_spec : (∏ i ∈ s, (f i)!) * multinomial s f = (∑ i ∈ 
   Nat.mul_div_cancel' (prod_factorial_dvd_factorial_sum s f)
 #align nat.multinomial_spec Nat.multinomial_spec
 
-@[simp] lemma multinomial_empty : multinomial ∅ f = 1 := rfl
+@[simp] lemma multinomial_empty : multinomial ∅ f = 1 := by simp [multinomial]
 #align nat.multinomial_nil Nat.multinomial_empty
 
 @[deprecated (since := "2024-06-01")] alias multinomial_nil := multinomial_empty
@@ -248,6 +248,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
         exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       convert @Nat.cast_one R _
+      simp
     · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty

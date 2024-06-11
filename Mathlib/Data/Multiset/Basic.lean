@@ -329,7 +329,7 @@ end Mem
 instance : Singleton α (Multiset α) :=
   ⟨fun a => a ::ₘ 0⟩
 
-instance : IsLawfulSingleton α (Multiset α) :=
+instance : LawfulSingleton α (Multiset α) :=
   ⟨fun _ => rfl⟩
 
 @[simp]
@@ -2643,7 +2643,7 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
 theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (hf : Function.Injective f)
     (x : α) : (s.map f).count (f x) = s.count x := by
   by_cases H : x ∈ s
-  · exact count_map_eq_count f _ (Set.injOn_of_injective hf _) _ H
+  · exact count_map_eq_count f _ hf.injOn _ H
   · rw [count_eq_zero_of_not_mem H, count_eq_zero, mem_map]
     rintro ⟨k, hks, hkx⟩
     rw [hf hkx] at hks

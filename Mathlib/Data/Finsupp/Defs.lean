@@ -458,7 +458,9 @@ lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
     e ((single a n) b) = single a (e n) b := by
   classical
   simp only [single_apply]
-  split_ifs; rfl; exact map_zero e
+  split_ifs
+  · rfl
+  · exact map_zero e
 
 theorem support_eq_singleton {f : α →₀ M} {a : α} :
     f.support = {a} ↔ f a ≠ 0 ∧ f = single a (f a) :=
