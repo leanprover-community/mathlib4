@@ -101,7 +101,7 @@ theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x �
 #align list.pairwise_middle List.pairwise_middle
 
 -- Porting note: Duplicate of `pairwise_map` but with `f` explicit.
-@[deprecated] theorem pairwise_map' (f : β → α) : -- 2024-02-25
+@[deprecated (since := "2024-02-25")] theorem pairwise_map' (f : β → α) :
     ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by simp only [map, Pairwise.nil]
   | b :: l => by
@@ -168,7 +168,7 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
 #align list.pairwise_of_reflexive_of_forall_ne List.pairwise_of_reflexive_of_forall_ne
 
 set_option linter.deprecated false in
-@[deprecated pairwise_iff_get] -- 2023-01-10
+@[deprecated pairwise_iff_get (since := "2023-01-10")]
 theorem pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
     ∀ (i j) (h₁ : j < length l) (h₂ : i < j), R (nthLe l i (lt_trans h₂ h₁)) (nthLe l j h₁) :=
   pairwise_iff_get.trans

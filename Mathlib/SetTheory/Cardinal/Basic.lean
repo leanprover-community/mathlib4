@@ -1991,6 +1991,10 @@ lemma lift_mk_le_lift_mk_of_injective {α : Type u} {β : Type v} {f : α → β
   rw [← Cardinal.mk_range_eq_of_injective hf]
   exact Cardinal.lift_le.2 (Cardinal.mk_set_le _)
 
+lemma lift_mk_le_lift_mk_of_surjective {α : Type u} {β : Type v} {f : α → β} (hf : Surjective f) :
+    Cardinal.lift.{u} (#β) ≤ Cardinal.lift.{v} (#α) :=
+  lift_mk_le_lift_mk_of_injective (injective_surjInv hf)
+
 theorem mk_image_eq_of_injOn {α β : Type u} (f : α → β) (s : Set α) (h : InjOn f s) :
     #(f '' s) = #s :=
   mk_congr (Equiv.Set.imageOfInjOn f s h).symm
@@ -2002,12 +2006,12 @@ theorem mk_image_eq_of_injOn_lift {α : Type u} {β : Type v} (f : α → β) (s
 #align cardinal.mk_image_eq_of_inj_on_lift Cardinal.mk_image_eq_of_injOn_lift
 
 theorem mk_image_eq {α β : Type u} {f : α → β} {s : Set α} (hf : Injective f) : #(f '' s) = #s :=
-  mk_image_eq_of_injOn _ _ <| hf.injOn _
+  mk_image_eq_of_injOn _ _ hf.injOn
 #align cardinal.mk_image_eq Cardinal.mk_image_eq
 
 theorem mk_image_eq_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α) (h : Injective f) :
     lift.{u} #(f '' s) = lift.{v} #s :=
-  mk_image_eq_of_injOn_lift _ _ <| h.injOn _
+  mk_image_eq_of_injOn_lift _ _ h.injOn
 #align cardinal.mk_image_eq_lift Cardinal.mk_image_eq_lift
 
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
@@ -2131,8 +2135,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
   refine ⟨fun H s hs ↦ by simpa using (mk_le_mk_of_subset hs).trans H, fun H ↦ ?_⟩
   apply card_le_of (fun s ↦ ?_)
   let u : Finset α := s.image Subtype.val
-  have : u.card = s.card :=
-    Finset.card_image_of_injOn (injOn_of_injective Subtype.coe_injective _)
+  have : u.card = s.card := Finset.card_image_of_injOn Subtype.coe_injective.injOn
   rw [← this]
   apply H
   simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
