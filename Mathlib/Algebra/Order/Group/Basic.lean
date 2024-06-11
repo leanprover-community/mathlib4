@@ -202,13 +202,12 @@ instance : SubtractionMonoid α where
     apply Function.LeftInverse.injective (g := (-(a + b) + ·))
     intro x
     dsimp only
-    rw [← add_assoc, add_comm (-(a + b)), LinearOrderedAddCommGroupWithTop.add_neg_cancel, zero_add]
+    rw [← add_assoc, add_comm (-(a + b)), add_neg_cancel_of_ne_top, zero_add]
     simp [ha, hb]
   neg_eq_of_add (a b) (h) := by
     have oh := congrArg (-a + ·) h
     dsimp only at oh
-    rw [add_zero, ← add_assoc, add_comm (-a), LinearOrderedAddCommGroupWithTop.add_neg_cancel,
-      zero_add] at oh
+    rw [add_zero, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top, zero_add] at oh
     exact oh.symm
     intro v
     simp [v] at h
