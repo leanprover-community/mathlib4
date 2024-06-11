@@ -107,6 +107,7 @@ class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S�
 
 attribute [instance 50] SemigroupWithZero.toMulZeroClass
 attribute [instance 20] SemigroupWithZero.toSemigroup
+attribute [instance 0] SemigroupWithZero.toZero
 
 /-- A typeclass for non-associative monoids with zero elements. -/
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
