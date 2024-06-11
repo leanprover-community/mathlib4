@@ -71,12 +71,10 @@ jobs:
         else
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
-        branchName="${{ github.head_ref }}"
-        echo "${branchName}"
-        git checkout "${branchName}"
+        git checkout "${{ github.head_ref }}"
         currentHash="$(git rev-parse HEAD)"
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
 
-        message="$(printf '%s %s [%s](%s)\n\n%s\n\n---\n\n%s\n' "${title}" "${branchName}" "$(git rev-parse --short HEAD)" "${hashURL}" "${importCount}" "${declDiff}")"
+        message="$(printf '%s %s [%s](%s)\n\n%s\n\n---\n\n%s\n' "${title}" "${{ github.head_ref }}" "$(git rev-parse --short HEAD)" "${hashURL}" "${importCount}" "${declDiff}")"
 
         ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
