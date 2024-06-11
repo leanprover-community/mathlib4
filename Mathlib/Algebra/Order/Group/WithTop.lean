@@ -58,7 +58,7 @@ theorem neg_top : -(⊤ : WithTop α) = ⊤ := rfl
 theorem coe_sub {a b : α} : (↑(a - b) : WithTop α) = ↑a - ↑b := rfl
 
 @[simp]
-theorem top_sub_coe {a : WithTop α} : (⊤ : WithTop α) - a = ⊤ := by
+theorem top_sub {a : WithTop α} : (⊤ : WithTop α) - a = ⊤ := by
   cases a <;> rfl
 
 @[simp]
