@@ -96,7 +96,7 @@ lemma homEquiv_invFun_ext {f g : F ⊗ G ⟶ H} :
 def homEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (G ⟶ ihom F H) where
   toFun := homEquiv_toFun
   invFun := homEquiv_invFun
-  left_inv _ := by ext ; dsimp only [homEquiv_invFun, homEquiv_toFun, homEquiv_toFun_app] ; aesop
+  left_inv _ := by ext; dsimp only [homEquiv_invFun, homEquiv_toFun, homEquiv_toFun_app]; aesop
   right_inv f := by
     ext c y d ⟨g, x⟩
     have b := f.naturality g.down
