@@ -143,7 +143,7 @@ section LinearOrderedAddCommGroupWithTop
 variable (α : Type*) [LinearOrderedAddCommGroupWithTop α]
 
 @[simp]
-lemma top_ne_zero :
+lemma top_ne_zero' :
     (⊤ : α) ≠ 0 := by
   intro nh
   have ⟨a, b, h⟩ := Nontrivial.exists_pair_ne (α := α)
@@ -159,7 +159,7 @@ lemma neg_eq_top_iff (a : α) :
   by_contra nh
   replace nh := add_neg_cancel_of_ne_top nh
   rw [h, add_top] at nh
-  exact top_ne_zero _ nh, fun h ↦ h ▸ neg_top⟩
+  exact top_ne_zero' _ nh, fun h ↦ h ▸ neg_top⟩
 
 @[simp]
 lemma add_eq_top_iff (a b : α) :
