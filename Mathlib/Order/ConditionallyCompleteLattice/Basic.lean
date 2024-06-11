@@ -117,6 +117,13 @@ theorem WithTop.coe_sSup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove 
   · rintro ⟨x, _, ⟨⟩⟩
 #align with_top.coe_Sup' WithTop.coe_sSup'
 
+theorem WithTop.sSup_coe_eq_top [Preorder α] [SupSet α] {s : Set α}
+    (hs : ¬ BddAbove s) : (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) = ⊤ := by
+  change ite _ _ _ = _
+  rw [if_neg, preimage_image_eq, if_neg hs]
+  · exact Option.some_injective _
+  · rintro ⟨x, _, ⟨⟩⟩
+
 -- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
 -- does not need `rfl`.
 @[norm_cast]
@@ -153,6 +160,10 @@ theorem WithBot.coe_sInf' [Preorder α] [InfSet α] {s : Set α} (hs : BddBelow 
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
   WithTop.coe_sSup' (α := αᵒᵈ) hs
 #align with_bot.coe_Inf' WithBot.coe_sInf'
+
+theorem WithBot.sInf_coe_eq_bot [Preorder α] [InfSet α] {s : Set α}
+    (hs : ¬ BddBelow s) : (sInf ((fun (a : α) ↦ ↑a) '' s) : WithBot α) = ⊥ :=
+  WithTop.sSup_coe_eq_top (α := αᵒᵈ) hs
 
 @[norm_cast]
 theorem WithBot.coe_iInf [Preorder α] [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)) :
