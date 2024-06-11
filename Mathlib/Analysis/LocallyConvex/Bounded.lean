@@ -84,7 +84,7 @@ theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → S
   exact (hA i hi).mono_left hV
 #align filter.has_basis.is_vonN_bounded_basis_iff Filter.HasBasis.isVonNBounded_iff
 
-@[deprecated] -- since 2024-01-12
+@[deprecated (since := "2024-01-12")]
 alias _root_.Filter.HasBasis.isVonNBounded_basis_iff := Filter.HasBasis.isVonNBounded_iff
 
 /-- Subsets of bounded sets are bounded. -/
