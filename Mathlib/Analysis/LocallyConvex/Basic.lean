@@ -236,7 +236,7 @@ theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
 #align balanced.mem_smul_iff Balanced.smul_mem_iff
 
-@[deprecated] alias Balanced.mem_smul_iff := Balanced.smul_mem_iff -- since 2024-02-02
+@[deprecated (since := "2024-02-02")] alias Balanced.mem_smul_iff := Balanced.smul_mem_iff
 
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
@@ -280,7 +280,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-@[deprecated Absorbent.zero_mem] -- Since 2024-02-02
+@[deprecated Absorbent.zero_mem (since := "2024-02-02")]
 theorem Absorbent.zero_mem' (hs : Absorbent 𝕜 s) : (0 : E) ∈ s := hs.zero_mem
 
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
@@ -295,7 +295,7 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
 #align balanced_convex_hull_of_balanced Balanced.convexHull
 
-@[deprecated] alias balanced_convexHull_of_balanced := Balanced.convexHull -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")] alias balanced_convexHull_of_balanced := Balanced.convexHull
 
 end NontriviallyNormedField
 
