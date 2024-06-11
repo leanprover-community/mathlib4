@@ -138,17 +138,21 @@ attribute [instance 0] NonAssocSemiring.toNatCast
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
+attribute [instance 50] NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring
 attribute [instance 0] NonUnitalNonAssocRing.toMul
 
 /-- An associative but not-necessarily unital ring. -/
 class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
 #align non_unital_ring NonUnitalRing
 
+attribute [instance 50] NonUnitalRing.toNonUnitalSemiring
+
 /-- A unital but not-necessarily-associative ring. -/
 class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
+attribute [instance 50] NonAssocRing.toNonAssocSemiring
 attribute [instance 0] NonAssocRing.toOne
 attribute [instance 0] NonAssocRing.toNatCast
 attribute [instance 0] NonAssocRing.toIntCast
