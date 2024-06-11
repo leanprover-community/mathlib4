@@ -185,13 +185,7 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
       (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x := by
   ext
-  simp only [germ, stalkPushforward]
-  -- Now `simp` finishes, but slowly:
-  simp only [pushforwardObj_obj, Functor.op_obj, Opens.map_comp_obj, whiskeringLeft_obj_obj,
-    OpenNhds.inclusionMapIso_inv, NatTrans.op_id, colim_map, ι_colimMap_assoc, Functor.comp_obj,
-    OpenNhds.inclusion_obj, OpenNhds.map_obj, whiskerRight_app, NatTrans.id_app,
-    CategoryTheory.Functor.map_id, colimit.ι_pre, Category.id_comp, Category.assoc,
-    pushforwardObj_map, Functor.op_map, unop_id, op_id, colimit.ι_pre_assoc]
+  simp [germ, stalkPushforward]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.comp TopCat.Presheaf.stalkPushforward.comp
 
@@ -229,7 +223,7 @@ section stalkPullback
 
 /-- The morphism `ℱ_{f x} ⟶ (f⁻¹ℱ)ₓ` that factors through `(f_*f⁻¹ℱ)_{f x}`. -/
 def stalkPullbackHom (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
-    F.stalk (f x) ⟶ (pullbackObj f F).stalk x :=
+    F.stalk (f x) ⟶ ((pullback C f).obj F).stalk x :=
   (stalkFunctor _ (f x)).map ((pushforwardPullbackAdjunction C f).unit.app F) ≫
     stalkPushforward _ _ _ x
 set_option linter.uppercaseLean3 false in
@@ -237,7 +231,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
-    (pullbackObj f F).obj (op U) ⟶ F.stalk ((f : X → Y) (x : X)) :=
+    ((pullback C f).obj F).obj (op U) ⟶ F.stalk ((f : X → Y) (x : X)) :=
   ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F (op U)).desc
     { pt := F.stalk ((f : X → Y) (x : X))
       ι :=
@@ -248,12 +242,13 @@ set_option linter.uppercaseLean3 false in
 
 /-- The morphism `(f⁻¹ℱ)ₓ ⟶ ℱ_{f(x)}`. -/
 def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
-    (pullbackObj f F).stalk x ⟶ F.stalk (f x) :=
-  colimit.desc ((OpenNhds.inclusion x).op ⋙ Presheaf.pullbackObj f F)
+    ((pullback C f).obj F).stalk x ⟶ F.stalk (f x) :=
+  colimit.desc ((OpenNhds.inclusion x).op ⋙ (Presheaf.pullback C f).obj F)
     { pt := F.stalk (f x)
       ι :=
         { app := fun U => F.germToPullbackStalk _ f (unop U).1 ⟨x, (unop U).2⟩
-          naturality := fun _ _ _ => by
+          naturality := fun U V i => by
+            dsimp [pullback, germToPullbackStalk]
             sorry
             --erw [colimit.pre_desc, Category.comp_id]; congr
              } }
@@ -262,7 +257,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The isomorphism `ℱ_{f(x)} ≅ (f⁻¹ℱ)ₓ`. -/
 def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
-    F.stalk (f x) ≅ (pullbackObj f F).stalk x where
+    F.stalk (f x) ≅ ((pullback C f).obj F).stalk x where
   hom := stalkPullbackHom _ _ _ _
   inv := stalkPullbackInv _ _ _ _
   hom_inv_id := by
