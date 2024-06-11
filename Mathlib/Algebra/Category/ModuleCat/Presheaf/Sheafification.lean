@@ -144,7 +144,7 @@ instance : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomor
   inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
 
 instance : (SheafOfModules.toSheaf.{v} R).ReflectsIsomorphisms :=
-  reflectsIsomorphisms_of_comp' (SheafOfModules.toSheaf.{v} R) (sheafToPresheaf J _)
+  reflectsIsomorphisms_of_comp (SheafOfModules.toSheaf.{v} R) (sheafToPresheaf J _)
 
 noncomputable instance : ReflectsFiniteLimits (SheafOfModules.toSheaf.{v} R) where
   reflects _ _ _ := inferInstance

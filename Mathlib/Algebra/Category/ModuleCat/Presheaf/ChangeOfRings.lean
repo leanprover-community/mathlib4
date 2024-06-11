@@ -57,6 +57,8 @@ noncomputable def restrictScalars (α : R ⟶ R') :
 instance (α : R ⟶ R') : (restrictScalars.{v} α).Additive where
 
 instance : (restrictScalars (𝟙 R)).Full := inferInstanceAs (𝟭 _).Full
-instance : (restrictScalars (𝟙 R)).Faithful := inferInstanceAs (𝟭 _).Faithful
+
+instance (α : R ⟶ R') : (restrictScalars α).Faithful where
+  map_injective h := (toPresheaf R').map_injective ((toPresheaf R).congr_map h)
 
 end PresheafOfModules

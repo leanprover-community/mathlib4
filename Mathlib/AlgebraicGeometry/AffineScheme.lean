@@ -327,7 +327,7 @@ theorem fromSpec_base_preimage :
 
 #adaptation_note /-- 2024-04-23
 The backwards compatibility flags don't help here. -/
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 400000 in
 -- Doesn't build without the `IsAffine` instance but the linter complains
 @[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :
