@@ -7,9 +7,6 @@ import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.NoncommRing
 
---import Mathlib.LinearAlgebra.Matrix.Spectrum
-import Mathlib.Analysis.NormedSpace.Star.Matrix
-
 #align_import algebra.algebra.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
