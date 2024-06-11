@@ -200,16 +200,28 @@ noncomputable def algebraTensorAlgEquiv :
   (by ext s; simp)
 
 @[simp]
-lemma algebraTensorAlgEquiv_apply (a : A) (s : σ) :
-    algebraTensorAlgEquiv (R := R) A (a ⊗ₜ X s) = a • X s := by
+lemma algebraTensorAlgEquiv_tmul (a : A) (p : MvPolynomial σ R) :
+    algebraTensorAlgEquiv (R := R) A (a ⊗ₜ p) = a • MvPolynomial.map (algebraMap R A) p := by
   simp [algebraTensorAlgEquiv]
   rw [Algebra.smul_def]
   rfl
 
 @[simp]
-lemma algebraTensorAlgEquiv_symm_apply (s : σ) :
+lemma algebraTensorAlgEquiv_symm_X (s : σ) :
     (algebraTensorAlgEquiv (R := R) A).symm (X s) = 1 ⊗ₜ X s := by
   simp [algebraTensorAlgEquiv]
+
+@[simp]
+lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
+    (algebraTensorAlgEquiv (R := R) A).symm (monomial m a) = a ⊗ₜ monomial m 1 := by
+  apply @Finsupp.induction σ ℕ _ _ m
+  · simp [algebraTensorAlgEquiv]
+  · intro i n f _ _ hfa
+    simp only [algebraTensorAlgEquiv, AlgEquiv.ofAlgHom_symm_apply] at hfa ⊢
+    simp only [add_comm, monomial_add_single, _root_.map_mul, map_pow, aeval_X,
+      Algebra.TensorProduct.tmul_pow, one_pow, hfa]
+    nth_rw 2 [← mul_one a]
+    rw [Algebra.TensorProduct.tmul_mul_tmul]
 
 end Algebra
 
