@@ -37,7 +37,7 @@ class UniformContinuousConstVAdd [VAdd M X] : Prop where
 #align has_uniform_continuous_const_vadd UniformContinuousConstVAdd
 
 /-- A multiplicative action such that for all `c`,
-the map `fun x ↦c • x` is uniformly continuous. -/
+the map `fun x ↦ c • x` is uniformly continuous. -/
 @[to_additive]
 class UniformContinuousConstSMul [SMul M X] : Prop where
   uniformContinuous_const_smul : ∀ c : M, UniformContinuous (c • · : X → X)

@@ -131,8 +131,7 @@ theorem IsGδ.sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Counta
   simpa only [sInter_eq_biInter] using IsGδ.biInter hS h
 #align is_Gδ_sInter IsGδ.sInter
 
-@[deprecated] -- 2024-02-15
-alias isGδ_sInter := IsGδ.sInter
+@[deprecated (since := "2024-02-15")] alias isGδ_sInter := IsGδ.sInter
 
 theorem IsGδ.inter {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
   rw [inter_eq_iInter]
@@ -164,7 +163,7 @@ theorem IsGδ.biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i
   exact .sUnion (hs.image _) (forall_mem_image.2 h)
 #align is_Gδ_bUnion IsGδ.biUnion
 
-@[deprecated] -- 2024-02-15
+@[deprecated (since := "2024-02-15")]
 alias isGδ_biUnion := IsGδ.biUnion
 
 /-- The union of finitely many Gδ sets is a Gδ set, bounded indexed union version. -/
@@ -326,7 +325,7 @@ lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t 
 
 /-- An intersection with a meagre set is meagre. -/
 lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
-  hs.mono (inter_subset_left s t)
+  hs.mono inter_subset_left
 
 /-- A countable union of meagre sets is meagre. -/
 lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by

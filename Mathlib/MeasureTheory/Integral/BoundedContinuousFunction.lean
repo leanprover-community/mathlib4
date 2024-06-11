@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.Topology.Order.Bounded
 
 /-!
 # Integration of bounded continuous functions
@@ -148,10 +147,8 @@ lemma tendsto_integral_of_forall_limsup_integral_le_integral {ι : Type*} {L : F
   rcases eq_or_neBot L with rfl|hL
   · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
-  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
-    isBounded_le_map_of_bounded_range _ obs
-  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
-    isBounded_ge_map_of_bounded_range _ obs
+  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ x, f x ∂μs i) := obs.bddAbove.isBoundedUnder
+  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) := obs.bddBelow.isBoundedUnder
   apply tendsto_of_le_liminf_of_limsup_le _ _ bdd_above bdd_below
   · have key := h _ (f.norm_sub_nonneg)
     simp_rw [f.integral_const_sub ‖f‖] at key
@@ -172,10 +169,8 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
   rcases eq_or_neBot L with rfl|hL
   · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
-  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
-    isBounded_le_map_of_bounded_range _ obs
-  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
-    isBounded_ge_map_of_bounded_range _ obs
+  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ x, f x ∂μs i) := obs.bddAbove.isBoundedUnder
+  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) := obs.bddBelow.isBoundedUnder
   apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, f x ∂ (μs i)) (∫ x, f x ∂μ)
   · have key := h _ (f.add_norm_nonneg)
     simp_rw [f.integral_add_const ‖f‖] at key

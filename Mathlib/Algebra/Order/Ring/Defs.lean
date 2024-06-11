@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.NeZero
@@ -14,6 +15,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Tauto
 
+#align_import algebra.order.ring.char_zero from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
 /-!
@@ -543,6 +545,13 @@ instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemi
       letI := @StrictOrderedSemiring.toOrderedSemiring' α _ (Classical.decRel _)
       mul_le_mul_of_nonneg_right }
 #align strict_ordered_semiring.to_ordered_semiring StrictOrderedSemiring.toOrderedSemiring
+
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedSemiring.toCharZero [StrictOrderedSemiring α] :
+    CharZero α where
+  cast_injective :=
+    (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
+#align strict_ordered_semiring.to_char_zero StrictOrderedSemiring.toCharZero
 
 theorem mul_lt_mul (hac : a < c) (hbd : b ≤ d) (hb : 0 < b) (hc : 0 ≤ c) : a * b < c * d :=
   (mul_lt_mul_of_pos_right hac hb).trans_le <| mul_le_mul_of_nonneg_left hbd hc

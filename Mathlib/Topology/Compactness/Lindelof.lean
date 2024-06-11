@@ -6,7 +6,6 @@ Authors: Josha Dekker
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Lindelöf sets and Lindelöf spaces
@@ -400,8 +399,8 @@ def Filter.coLindelof (X : Type*) [TopologicalSpace X] : Filter X :=
 theorem hasBasis_coLindelof : (coLindelof X).HasBasis IsLindelof compl :=
   hasBasis_biInf_principal'
     (fun s hs t ht =>
-      ⟨s ∪ t, hs.union ht, compl_subset_compl.2 (subset_union_left s t),
-        compl_subset_compl.2 (subset_union_right s t)⟩)
+      ⟨s ∪ t, hs.union ht, compl_subset_compl.2 subset_union_left,
+        compl_subset_compl.2 subset_union_right⟩)
     ⟨∅, isLindelof_empty⟩
 
 theorem mem_coLindelof : s ∈ coLindelof X ↔ ∃ t, IsLindelof t ∧ tᶜ ⊆ s :=
@@ -443,8 +442,8 @@ theorem hasBasis_coclosedLindelof :
   simp only [Filter.coclosedLindelof, iInf_and']
   refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isLindelof_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
-  exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
-    compl_subset_compl.2 (subset_union_right _ _)⟩⟩
+  exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 subset_union_left,
+    compl_subset_compl.2 subset_union_right⟩⟩
 
 theorem mem_coclosedLindelof : s ∈ coclosedLindelof X ↔
     ∃ t, IsClosed t ∧ IsLindelof t ∧ tᶜ ⊆ s := by
@@ -708,25 +707,6 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     rcases this with ⟨t, ⟨htc, htu⟩⟩
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
-
-instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMetrizableSpace X]
-    [LindelofSpace X] : SecondCountableTopology X := by
-  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
-  have h_dense : ∀ ε > 0, ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
-    intro ε hpos
-    let U := fun (z : X) ↦ Metric.ball z ε
-    have hU : ∀ z, U z ∈ 𝓝 z := by
-      intro z
-      have : IsOpen (U z) := Metric.isOpen_ball
-      refine IsOpen.mem_nhds this ?hx
-      simp only [U, Metric.mem_ball, dist_self, hpos]
-    have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
-    refine ⟨t, hct, ?_⟩
-    intro z
-    have ⟨y, ht, hzy⟩ : ∃ y ∈ t, z ∈ U y := exists_set_mem_of_union_eq_top t (fun i ↦ U i) huniv z
-    simp only [Metric.mem_ball, U] at hzy
-    exact ⟨y, ht, hzy.le⟩
-  exact Metric.secondCountable_of_almost_dense_set h_dense
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by

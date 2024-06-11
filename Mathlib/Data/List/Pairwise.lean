@@ -168,7 +168,7 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
 #align list.pairwise_of_reflexive_of_forall_ne List.pairwise_of_reflexive_of_forall_ne
 
 set_option linter.deprecated false in
-@[deprecated pairwise_iff_get] -- 2023-01-10
+@[deprecated pairwise_iff_get (since := "2023-01-10")]
 theorem pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
     ∀ (i j) (h₁ : j < length l) (h₂ : i < j), R (nthLe l i (lt_trans h₂ h₁)) (nthLe l j h₁) :=
   pairwise_iff_get.trans
