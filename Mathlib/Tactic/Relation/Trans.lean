@@ -109,7 +109,8 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 * `trans s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`.
 * If `s` is omitted, then a metavariable is used instead.
 
-Additionally, `trans` also applies to a goal whose target has the form `t → u`, in which case it replaces the goal with `t → s` and `s → u`.
+Additionally, `trans` also applies to a goal whose target has the form `t → u`,
+in which case it replaces the goal with `t → s` and `s → u`.
 -/
 elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   let tgt ← getMainTarget''
