@@ -82,8 +82,8 @@ else
       rest="instance"
       for(i=7; i<=NF-1; i++){rest=rest" "$i}
       # remove trailing `where` or `:=`
-      gsub(/ where.*/, "", rest)
-      gsub(/ :=.*/, "", rest)
+      gsub(/ where$/, "", rest)
+      gsub(/ :=$/, "", rest)
       # accumulate in `acc` the whole line with value the 4th field -- this is the +- field.
       acc[rest]=acc[rest] $4
       # if the line is not a nameless instance, accumulate the declaration name and +-
@@ -127,6 +127,8 @@ inductive triggers the count even if it is not lean code
 instance [I pretend] {to be a nameless} instance where
 def ohMy im a def
 instance [I also pretend] {to be a nameless} instance :=
+instance withAName {to be a nameless} instance :=
+instance (priority := high) {to be a nameless} instance :=
 def testingLongDiff1 im a def
 def testingLongDiff2 im a def
 def testingLongDiff3 im a def

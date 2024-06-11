@@ -50,6 +50,7 @@ import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Limits
 import Mathlib.Algebra.Category.AlgebraCat.Monoidal
 import Mathlib.Algebra.Category.AlgebraCat.Symmetric
+import Mathlib.Algebra.Category.BialgebraCat.Basic
 import Mathlib.Algebra.Category.BoolRing
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
@@ -101,6 +102,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
@@ -721,6 +723,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
@@ -1159,6 +1162,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Integral
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.SmoothTransition
@@ -3615,6 +3619,7 @@ import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.Perfection
 import Mathlib.RingTheory.PiTensorProduct
