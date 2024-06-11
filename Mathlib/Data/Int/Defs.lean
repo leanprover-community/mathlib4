@@ -352,10 +352,11 @@ variable {P : ℤ → Sort*} (lt : ∀ n < m, P n) (ge : ∀ n ≥ m, (∀ k < n
 
 /-- A strong recursor for `Int` that specifies explicit values for integers below a threshold,
 and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
-@[elab_as_elim] protected def strongRec (n : ℤ) : P n :=
-  if hnm : n < m then lt n hnm else ge n (by omega) <| n.inductionOn' m lt
-    (fun _n _ ih l _ ↦ if hlm : l < m then lt l hlm else ge l (by omega) fun k _ ↦ ih k <| by omega)
-    (fun n _ hn l _ ↦ hn l <| by omega)
+@[elab_as_elim] protected def strongRec (n : ℤ) : P n := by
+  refine if hnm : n < m then lt n hnm else ge n (by omega) (n.inductionOn' m lt ?_ ?_)
+  · intro _n _ ih l _
+    exact if hlm : l < m then lt l hlm else ge l (by omega) fun k _ ↦ ih k (by omega)
+  · exact fun n _ hn l _ ↦ hn l (by omega)
 
 variable {lt ge}
 lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
