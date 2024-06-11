@@ -68,10 +68,10 @@ lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
 #align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
 lemma two_le_iff_pos_of_even {m : ℤ} (even : Even m) : 2 ≤ m ↔ 0 < m :=
-  le_iff_zero_lt_of_dvd (by decide) (even_iff_two_dvd.mp even)
+  le_iff_pos_of_dvd (by decide) even.two_dvd
 
 lemma add_two_le_iff_lt_of_even_sub {m n : ℤ} (even : Even (n - m)) : m + 2 ≤ n ↔ m < n := by
-  rw [add_comm]; exact le_add_iff_lt_of_dvd_sub (by decide) (even_iff_two_dvd.mp even)
+  rw [add_comm]; exact le_add_iff_lt_of_dvd_sub (by decide) even.two_dvd
 
 end Int
 

@@ -248,6 +248,23 @@ lemma sub_one_lt_iff : m - 1 < n ↔ m ≤ n := by omega
 lemma le_sub_one_iff : m ≤ n - 1 ↔ m < n := by omega
 #align int.le_sub_one_iff Int.le_sub_one_iff
 
+section
+open Lean.Omega.Int
+
+/-!
+The following few lemmas are proved in the core implementation of the `omega` tactic. We expose
+them here with nice user-facing names.
+-/
+
+protected lemma add_le_iff_le_sub : a + b ≤ c ↔ a ≤ c - b := add_le_iff_le_sub ..
+protected lemma le_add_iff_sub_le : a ≤ b + c ↔ a - c ≤ b := le_add_iff_sub_le ..
+protected lemma add_le_zero_iff_le_neg : a + b ≤ 0 ↔ a ≤ - b := add_le_zero_iff_le_neg ..
+protected lemma add_le_zero_iff_le_neg' : a + b ≤ 0 ↔ b ≤ -a := add_le_zero_iff_le_neg' ..
+protected lemma add_nonnneg_iff_neg_le : 0 ≤ a + b ↔ -b ≤ a := add_nonnneg_iff_neg_le ..
+protected lemma add_nonnneg_iff_neg_le' : 0 ≤ a + b ↔ -a ≤ b := add_nonnneg_iff_neg_le' ..
+
+end
+
 @[elab_as_elim] protected lemma induction_on {p : ℤ → Prop} (i : ℤ)
     (hz : p 0) (hp : ∀ i : ℕ, p i → p (i + 1)) (hn : ∀ i : ℕ, p (-i) → p (-i - 1)) : p i := by
   induction i with
@@ -708,6 +725,12 @@ lemma ediv_dvd_of_dvd (hmn : m ∣ n) : n / m ∣ n := by
   · obtain ⟨a, ha⟩ := hmn
     simp [ha, Int.mul_ediv_cancel_left _ hm, Int.dvd_mul_left]
 #align int.div_dvd_of_dvd Int.ediv_dvd_of_dvd
+
+lemma le_iff_pos_of_dvd (ha : 0 < a) (hab : a ∣ b) : a ≤ b ↔ 0 < b :=
+  ⟨Int.lt_of_lt_of_le ha, (Int.le_of_dvd · hab)⟩
+
+lemma le_add_iff_lt_of_dvd_sub (ha : 0 < a) (hab : a ∣ c - b) : a + b ≤ c ↔ b < c := by
+  rw [Int.add_le_iff_le_sub, ← Int.sub_pos, le_iff_pos_of_dvd ha hab]
 
 /-! ### sign -/
 
