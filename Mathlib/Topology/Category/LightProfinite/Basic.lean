@@ -21,6 +21,9 @@ We define an equivalence of categories `LightProfinite ≌ LightDiagram` and pr
 essentially small categories.
 -/
 
+/- The basic API for `LightProfinite` is largely copied from the API of `Profinite`;
+where possible, try to keep them in sync -/
+
 universe v u
 
 /-
@@ -64,12 +67,6 @@ instance hasForget₂ : HasForget₂ LightProfinite TopCat :=
 
 instance : CoeSort LightProfinite (Type*) :=
   ⟨fun X => X.toCompHaus⟩
-
--- -- Porting note (#10688): This lemma was not needed in mathlib3
--- @[simp]
--- lemma forget_ContinuousMap_mk {X Y : LightProfinite} (f : X → Y) (hf : Continuous f) :
---     (forget LightProfinite).map (ContinuousMap.mk f hf) = f :=
---   rfl
 
 instance {X : LightProfinite} : TotallyDisconnectedSpace X :=
   X.isTotallyDisconnected
@@ -117,20 +114,25 @@ def lightToProfinite : LightProfinite ⥤ Profinite where
   obj X := Profinite.of X
   map f := f
 
-instance : lightToProfinite.Faithful := show (inducedFunctor _).Faithful from inferInstance
+/-- `lightToProfinite` is fully faithful. -/
+def lightToProfiniteFullyFaithful : lightToProfinite.FullyFaithful := fullyFaithfulInducedFunctor _
 
-instance : lightToProfinite.Full := show (inducedFunctor _).Full from inferInstance
+instance : lightToProfinite.Faithful := lightToProfiniteFullyFaithful.faithful
+
+instance : lightToProfinite.Full := lightToProfiniteFullyFaithful.full
 
 /-- The fully faithful embedding of `LightProfinite` in `CompHaus`. -/
 @[simps!]
 def lightProfiniteToCompHaus : LightProfinite ⥤ CompHaus :=
   inducedFunctor _
 
-instance : lightProfiniteToCompHaus.Full :=
-  show (inducedFunctor _).Full from inferInstance
+/-- `lightProfiniteToCompHaus` is fully faithful. -/
+def lightProfiniteToCompHausFullyFaithful : lightProfiniteToCompHaus.FullyFaithful :=
+  fullyFaithfulInducedFunctor _
 
-instance : lightProfiniteToCompHaus.Faithful :=
-  show (inducedFunctor _).Faithful from inferInstance
+instance : lightProfiniteToCompHaus.Full := lightProfiniteToCompHausFullyFaithful.full
+
+instance : lightProfiniteToCompHaus.Faithful := lightProfiniteToCompHausFullyFaithful.faithful
 
 instance {X : LightProfinite} : TotallyDisconnectedSpace (lightProfiniteToCompHaus.obj X) :=
   X.isTotallyDisconnected
@@ -146,14 +148,16 @@ def LightProfinite.toTopCat : LightProfinite ⥤ TopCat :=
 -- Porting note: deriving fails, adding manually.
 -- deriving Full, Faithful
 
-instance : LightProfinite.toTopCat.Full :=
-  show (inducedFunctor _).Full from inferInstance
+/-- `LightProfinite.toTopCat` is fully faithful. -/
+def LightProfinite.toTopCatFullyFaithful : LightProfinite.toTopCat.FullyFaithful :=
+  fullyFaithfulInducedFunctor _
 
-instance : LightProfinite.toTopCat.Faithful :=
-  show (inducedFunctor _).Faithful from inferInstance
+instance : LightProfinite.toTopCat.Full := LightProfinite.toTopCatFullyFaithful.full
+
+instance : LightProfinite.toTopCat.Faithful := LightProfinite.toTopCatFullyFaithful.faithful
 
 @[simp]
-theorem LightProfinite.to_compHausToTopCat :
+theorem LightProfinite.toCompHaus_comp_toTop :
     lightProfiniteToCompHaus ⋙ compHausToTop = LightProfinite.toTopCat :=
   rfl
 
@@ -169,11 +173,17 @@ def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
   map f := ⟨f, by continuity⟩
 
-instance : FintypeCat.toLightProfinite.Faithful where
-  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+/-- `FintypeCat.toLightProfinite` is fully faithful. -/
+def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
+  preimage f := (f : _ → _)
+  map_preimage _ := rfl
+  preimage_map _ := rfl
 
-instance : FintypeCat.toLightProfinite.Full where
-  map_surjective f := ⟨fun x ↦ f x, rfl⟩
+instance : FintypeCat.toLightProfinite.Faithful :=
+  FintypeCat.toLightProfiniteFullyFaithful.faithful
+
+instance : FintypeCat.toLightProfinite.Full :=
+  FintypeCat.toLightProfiniteFullyFaithful.full
 
 end DiscreteTopology
 
@@ -185,7 +195,7 @@ instance {J : Type v} [SmallCategory J] (F : J ⥤ LightProfinite.{max u v}) :
   change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
   exact Subtype.totallyDisconnectedSpace
 
-/-- An explicit limit cone for a functor `F : J ⥤ LightCompHausLike`, for a countable category `J`
+/-- An explicit limit cone for a functor `F : J ⥤ LightProfinite`, for a countable category `J`
   defined in terms of `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
@@ -202,7 +212,7 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
       ext ⟨g, p⟩
       exact (p f).symm }
 
-/-- The limit cone `LightCompHausLike.limitCone F` is indeed a limit cone. -/
+/-- The limit cone `LightProfinite.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
     Limits.IsLimit (limitCone F) where
@@ -247,8 +257,7 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
 @[simps! hom inv]
 noncomputable
 def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
-  @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ lightProfiniteToCompHaus
-    (Iso.isIso_hom (CompHaus.isoOfHomeo f)) _)
+  lightProfiniteToCompHausFullyFaithful.preimageIso (CompHaus.isoOfHomeo f)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
@@ -267,7 +276,7 @@ def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   constructor
-  · -- Porting note: in mathlib3 `contrapose` saw through `Function.Surjective`.
+  · -- Note: in mathlib3 `contrapose` saw through `Function.Surjective`.
     dsimp [Function.Surjective]
     contrapose!
     rintro ⟨y, hy⟩ hf
@@ -432,13 +441,7 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
         lightDiagramToProfinite_obj, Functor.preimageIso_hom, Iso.refl_hom, Functor.id_map]
       erw [lightDiagramToProfinite.preimage_id, lightDiagramToProfinite.preimage_id,
         Category.comp_id f])
-  functor_unitIso_comp := by
-    intro
-    simp only [Functor.id_obj, lightProfiniteToLightDiagram_obj, Functor.comp_obj,
-      lightDiagramToLightProfinite_obj, Iso.refl_hom, NatTrans.id_app,
-      lightProfiniteToLightDiagram_map, lightDiagramToProfinite_obj,
-      NatIso.ofComponents_hom_app, Functor.preimageIso_hom]
-    exact lightDiagramToProfinite.preimage_id
+  functor_unitIso_comp _ := by simpa using lightDiagramToProfinite.preimage_id
 
 instance : lightProfiniteToLightDiagram.IsEquivalence :=
   show LightProfinite.equivDiagram.functor.IsEquivalence from inferInstance
@@ -450,7 +453,13 @@ noncomputable section EssentiallySmall
 
 open LightDiagram
 
-/-- This is an auxiliary definition used to show that `LightDiagram` is essentially small. -/
+/--
+This is an auxiliary definition used to show that `LightDiagram` is essentially small.
+
+Note that below we put a category instance on this structure which is completely different from the
+category instance on `ℕᵒᵖ ⥤ FintypeCat.Skeleton.{u}`. Neither the morphisms nor the objects are the
+same.
+-/
 structure LightDiagram' : Type u where
   /-- The diagram takes values in a small category equivalent to `FintypeCat`. -/
   diagram : ℕᵒᵖ ⥤ FintypeCat.Skeleton.{u}

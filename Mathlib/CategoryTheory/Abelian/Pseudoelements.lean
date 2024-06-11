@@ -303,7 +303,7 @@ theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Inj
   intro abar abar'
   refine Quotient.inductionOn₂ abar abar' fun a a' ha => ?_
   apply Quotient.sound
-  have : ⟦(a.hom ≫ f : Over Q)⟧ = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
+  have : (⟦(a.hom ≫ f : Over Q)⟧ : Quotient (setoid Q)) = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
   have ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
   exact ⟨R, p, q, ep, Eq, (cancel_mono f).1 <| by
     simp only [Category.assoc]
@@ -343,7 +343,7 @@ theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f
   intro h
   have ⟨pbar, hpbar⟩ := h (𝟙 Q)
   have ⟨p, hp⟩ := Quotient.exists_rep pbar
-  have : ⟦(p.hom ≫ f : Over Q)⟧ = ⟦↑(𝟙 Q)⟧ := by
+  have : (⟦(p.hom ≫ f : Over Q)⟧ : Quotient (setoid Q)) = ⟦↑(𝟙 Q)⟧ := by
     rw [← hp] at hpbar
     exact hpbar
   have ⟨R, x, y, _, ey, comm⟩ := Quotient.exact this
