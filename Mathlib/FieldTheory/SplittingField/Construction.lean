@@ -269,7 +269,9 @@ def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingF
 
 instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f
-  { inv := fun a ↦ e.symm (e a)⁻¹
+  { zero_mul := zero_mul
+    mul_zero := mul_zero
+    inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
     mul_inv_cancel := fun a ha ↦ e.injective $ by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
     __ := e.surjective.nontrivial }
