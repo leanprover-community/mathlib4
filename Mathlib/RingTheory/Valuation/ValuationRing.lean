@@ -423,7 +423,7 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
   constructor <;> intro h
   · constructor
     · intro x
-      obtain (⟨a, e⟩ | ⟨a, e⟩) := (iff_isInteger_or_isInteger 𝒪 K).mp inferInstance x
+      obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
       exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
     · exact IsFractionRing.injective _ _
   · constructor

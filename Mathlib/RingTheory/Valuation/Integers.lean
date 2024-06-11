@@ -152,19 +152,9 @@ theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) :
 
 theorem eq_algebraMap_or_inv_eq_algebraMap (x : F) :
     ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
-  by_cases h : v x ≤ 1
-  · obtain ⟨a, ha⟩ := exists_of_le_one hv h
-    use a
-    exact Or.inl ha.symm
-  · have : v x⁻¹ ≤ 1 := by
-      apply le_of_lt
-      push_neg at h
-      rwa [← Valuation.one_lt_val_iff]
-      intro h0
-      simp [h0] at h
-    obtain ⟨a, ha⟩ := exists_of_le_one hv this
-    use a
-    exact Or.inr ha.symm
+  rcases val_le_one_or_val_inv_le_one v x with h | h <;>
+  obtain ⟨a, ha⟩ := exists_of_le_one hv h
+  exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
 
 end Integers
 

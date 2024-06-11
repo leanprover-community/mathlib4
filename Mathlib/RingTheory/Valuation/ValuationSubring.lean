@@ -420,13 +420,8 @@ def valuationSubring : ValuationSubring K :=
   { v.integer with
     mem_or_inv_mem' := by
       intro x
-      rcases le_or_lt (v x) 1 with h | h
-      · left; exact h
-      · right; change v x⁻¹ ≤ 1
-        rw [map_inv₀ v, ← inv_one, inv_le_inv₀]
-        · exact le_of_lt h
-        · intro c; simp [c] at h
-        · exact one_ne_zero }
+      rcases val_le_one_or_val_inv_le_one v x with h | h
+      exacts [Or.inl h, Or.inr h] }
 #align valuation.valuation_subring Valuation.valuationSubring
 
 @[simp]
