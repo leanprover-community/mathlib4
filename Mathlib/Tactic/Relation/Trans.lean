@@ -116,10 +116,10 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   let tgt ← getMainTarget''
   match tgt with
   | .forallE name binderType body info =>
-    -- Only consider non-dependent functions `Prop → Prop`
+    -- only consider non-dependent functions
     if body.hasLooseBVars then
       throwError "`trans` is not implemented for dependent arrows{indentExpr tgt}"
-    -- Parse the intermeditate term
+    -- parse the intermeditate term
     let middleType ← mkFreshExprMVar none
     let t'? ← t?.mapM (elabTermWithHoles · middleType (← getMainTag))
     let middle ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar middleType)
