@@ -179,8 +179,7 @@ theorem separating_covers_iff_separated_nhds {h k : Set X} :
       cover_lemma k v u v_cov (fun n ↦ (u_props n).2),
     ?_⟩
     rw [Set.disjoint_left]
-    rintro x ⟨un, ⟨n, un'⟩, xinun⟩
-    rw [← un'] at xinun
+    rintro x ⟨un, ⟨n, rfl⟩, xinun⟩
     simp only [mem_iUnion, mem_diff, not_exists, not_and, Decidable.not_not]
     intro m xinvgm
     have n_le_m : n ≤ m := by
