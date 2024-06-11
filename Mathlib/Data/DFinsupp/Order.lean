@@ -38,16 +38,15 @@ variable [∀ i, LE (α i)] {f g : Π₀ i, α i}
 instance : LE (Π₀ i, α i) :=
   ⟨fun f g ↦ ∀ i, f i ≤ g i⟩
 
+instance instPointwiseLE : DFunLike.PointwiseLE (Π₀ i, α i) where
+
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 #align dfinsupp.le_def DFinsupp.le_def
 
-@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
+lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
 
 /-- The order on `DFinsupp`s over a partial order embeds into the order on functions -/
-def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
-  toFun := DFunLike.coe
-  inj' := DFunLike.coe_injective
-  map_rel_iff' := by rfl
+def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i := DFunLike.orderEmbeddingCoe
 #align dfinsupp.order_embedding_to_fun DFinsupp.orderEmbeddingToFun
 
 @[simp, norm_cast]
@@ -62,12 +61,12 @@ theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
 end LE
 
 section Preorder
+
 variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
 
-instance : Preorder (Π₀ i, α i) :=
-  { (inferInstance : LE (DFinsupp α)) with
-    le_refl := fun f i ↦ le_rfl
-    le_trans := fun f g h hfg hgh i ↦ (hfg i).trans (hgh i) }
+instance : Preorder (Π₀ i, α i) where
+  toLE := inferInstance
+  __ := Preorder.lift DFunLike.coe
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
@@ -80,8 +79,7 @@ lemma coe_strictMono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun
 end Preorder
 
 instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) :=
-  { (inferInstance : Preorder (DFinsupp α)) with
-    le_antisymm := fun _ _ hfg hgf ↦ ext fun i ↦ (hfg i).antisymm (hgf i) }
+  DFunLike.toPartialOrder
 
 instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with

@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
+import Mathlib.Order.FunLike
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Util.AssertExists
@@ -288,16 +289,17 @@ instance : Inhabited (α →o α) :=
 
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
 instance : Preorder (α →o β) :=
-  @Preorder.lift (α →o β) (α → β) _ toFun
+  Preorder.lift DFunLike.coe
+
+instance : DFunLike.PointwiseLE (α →o β) where
 
 instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
-  @PartialOrder.lift (α →o β) (α → β) _ toFun ext
+  DFunLike.toPartialOrder
 
 theorem le_def {f g : α →o β} : f ≤ g ↔ ∀ x, f x ≤ g x :=
   Iff.rfl
 #align order_hom.le_def OrderHom.le_def
 
-@[simp, norm_cast]
 theorem coe_le_coe {f g : α →o β} : (f : α → β) ≤ g ↔ f ≤ g :=
   Iff.rfl
 #align order_hom.coe_le_coe OrderHom.coe_le_coe
@@ -746,6 +748,15 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
 lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
 
 end OrderEmbedding
+
+/-- `DFunLike.coe` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+def DFunLike.orderEmbeddingCoe {F α : Type*} {β : α → Type*}
+    [DFunLike F α β] [∀ a, LE (β a)] [LE F] [PointwiseLE F] :
+    F ↪o ∀ a, β a where
+  toFun := coe
+  inj' := coe_injective
+  map_rel_iff' := DFunLike.coe_le_coe
 
 section Disjoint
 

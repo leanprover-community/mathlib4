@@ -363,6 +363,8 @@ variable { _ : CompleteLattice β}
 instance : PartialOrder (sSupHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
+instance instPointwiseLE : DFunLike.PointwiseLE (sSupHom α β) where
+
 instance : Bot (sSupHom α β) :=
   ⟨⟨fun _ => ⊥, fun s => by
       obtain rfl | hs := s.eq_empty_or_nonempty
@@ -371,7 +373,7 @@ instance : Bot (sSupHom α β) :=
 
 instance : OrderBot (sSupHom α β) where
   bot := ⊥
-  bot_le := fun _ _ ↦ CompleteLattice.bot_le _
+  bot_le _ _ := bot_le
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : sSupHom α β) = ⊥ :=
@@ -501,6 +503,8 @@ variable [CompleteLattice β]
 
 instance : PartialOrder (sInfHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
+
+instance instPointwiseLE : DFunLike.PointwiseLE (sInfHom α β) where
 
 instance : Top (sInfHom α β) :=
   ⟨⟨fun _ => ⊤, fun s => by
@@ -643,6 +647,8 @@ theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Inje
 
 instance : PartialOrder (FrameHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
+
+instance instPointwiseLE : DFunLike.PointwiseLE (FrameHom α β) where
 
 end FrameHom
 

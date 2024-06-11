@@ -310,11 +310,13 @@ end Top
 instance instLE [LE β] [Top β] : LE (TopHom α β) where
   le f g := (f : α → β) ≤ g
 
-instance [Preorder β] [Top β] : Preorder (TopHom α β) :=
+instance instPointwiseLE [LE β] [Top β] : DFunLike.PointwiseLE (TopHom α β) where
+
+instance instPreorder [Preorder β] [Top β] : Preorder (TopHom α β) :=
   Preorder.lift (DFunLike.coe : TopHom α β → α → β)
 
-instance [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+instance instPartialOrder [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
+  DFunLike.toPartialOrder
 
 section OrderTop
 
@@ -506,11 +508,13 @@ end Bot
 instance instLE [LE β] [Bot β] : LE (BotHom α β) where
   le f g := (f : α → β) ≤ g
 
-instance [Preorder β] [Bot β] : Preorder (BotHom α β) :=
+instance instPointwiseLE [LE β] [Bot β] : DFunLike.PointwiseLE (BotHom α β) where
+
+instance instPreorder [Preorder β] [Bot β] : Preorder (BotHom α β) :=
   Preorder.lift (DFunLike.coe : BotHom α β → α → β)
 
-instance [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+instance instPartialOrder [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
+  DFunLike.toPartialOrder
 
 section OrderBot
 

@@ -334,6 +334,8 @@ instance : Inhabited (HeytingHom α α) :=
 instance : PartialOrder (HeytingHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
+instance instPointwiseLE : DFunLike.PointwiseLE (HeytingHom α β) where
+
 /-- Composition of `HeytingHom`s as a `HeytingHom`. -/
 def comp (f : HeytingHom β γ) (g : HeytingHom α β) : HeytingHom α γ :=
   { f.toLatticeHom.comp g.toLatticeHom with
@@ -456,6 +458,8 @@ instance : Inhabited (CoheytingHom α α) :=
 instance : PartialOrder (CoheytingHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
+instance instPointwiseLE : DFunLike.PointwiseLE (CoheytingHom α β) where
+
 /-- Composition of `CoheytingHom`s as a `CoheytingHom`. -/
 def comp (f : CoheytingHom β γ) (g : CoheytingHom α β) : CoheytingHom α γ :=
   { f.toLatticeHom.comp g.toLatticeHom with
@@ -575,6 +579,8 @@ instance : Inhabited (BiheytingHom α α) :=
 
 instance : PartialOrder (BiheytingHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
+
+instance instPointwiseLE : DFunLike.PointwiseLE (BiheytingHom α β) where
 
 /-- Composition of `BiheytingHom`s as a `BiheytingHom`. -/
 def comp (f : BiheytingHom β γ) (g : BiheytingHom α β) : BiheytingHom α γ :=

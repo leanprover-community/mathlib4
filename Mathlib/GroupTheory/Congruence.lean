@@ -409,10 +409,12 @@ protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
 instance : LE (Con M) where
   le c d := ∀ ⦃x y⦄, c x y → d x y
 
+@[to_additive]
+instance instPointwiseLE : DFunLike.PointwiseLE (Con M) where
+
 /-- Definition of `≤` for congruence relations. -/
 @[to_additive "Definition of `≤` for additive congruence relations."]
-theorem le_def {c d : Con M} : c ≤ d ↔ ∀ {x y}, c x y → d x y :=
-  Iff.rfl
+theorem le_def {c d : Con M} : c ≤ d ↔ ∀ {x y}, c x y → d x y := Iff.rfl
 #align con.le_def Con.le_def
 #align add_con.le_def AddCon.le_def
 
@@ -464,9 +466,7 @@ instance : PartialOrder (Con M) where
 an addition."]
 instance : CompleteLattice (Con M) where
   __ := completeLatticeOfInf (Con M) fun s =>
-      ⟨fun r hr x y h => (h : ∀ r ∈ s, (r : Con M) x y) r hr, fun r hr x y h r' hr' =>
-        hr hr'
-          h⟩
+      ⟨fun r hr x y h => h r hr, fun r hr x y h r' hr' => hr hr' h⟩
   inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
   inf_le_left _ _ := fun _ _ h => h.1
   inf_le_right _ _ := fun _ _ h => h.2
@@ -893,7 +893,7 @@ variable (c) (f : M →* P)
 @[to_additive "The homomorphism on the quotient of an `AddMonoid` by an additive congruence
 relation `c` induced by a homomorphism constant on `c`'s equivalence classes."]
 def lift (H : c ≤ ker f) : c.Quotient →* P where
-  toFun x := (Con.liftOn x f) fun _ _ h => H h
+  toFun x := Con.liftOn x f H
   map_one' := by rw [← f.map_one]; rfl
   map_mul' x y := Con.induction_on₂ x y fun m n => by
     dsimp only [← coe_mul, Con.liftOn_coe]
@@ -1037,7 +1037,7 @@ theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
 contains `c`, `d`'s quotient map induces a homomorphism from the quotient by `c` to the quotient
 by `d`."]
 def map (c d : Con M) (h : c ≤ d) : c.Quotient →* d.Quotient :=
-  (c.lift d.mk') fun x y hc => show (ker d.mk') x y from (mk'_ker d).symm ▸ h hc
+  c.lift d.mk' fun _x _y hc => (mk'_ker d).symm ▸ h hc
 #align con.map Con.map
 #align add_con.map AddCon.map
 

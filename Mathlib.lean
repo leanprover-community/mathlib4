@@ -3308,6 +3308,7 @@ import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.Fin
 import Mathlib.Order.FixedPoints
+import Mathlib.Order.FunLike
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Grade

@@ -323,8 +323,10 @@ variable [NonAssocSemiring β]
 instance [Preorder β] : Preorder (OrderRingHom α β) :=
   Preorder.lift ((⇑) : _ → α → β)
 
+instance instPointwiseLE [Preorder β] : DFunLike.PointwiseLE (OrderRingHom α β) where
+
 instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+  DFunLike.toPartialOrder
 
 end OrderRingHom
 
