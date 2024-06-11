@@ -181,7 +181,7 @@ instance : SubtractionMonoid α where
   neg_neg (a) := by
     by_cases h : a = ⊤
     · simp [h]
-    · have h2 : ¬-a = ⊤ := fun nh ↦ h <| (neg_eq_top_iff ..).mp nh
+    · have h2 : ¬ -a = ⊤ := fun nh ↦ h <| (neg_eq_top_iff ..).mp nh
       replace h2 : a + (-a + - -a) = a + 0 := congrArg (a + ·) (add_neg_cancel_of_ne_top h2)
       rw [← add_assoc, add_neg_cancel_of_ne_top h] at h2
       simp only [zero_add, add_zero] at h2
@@ -202,7 +202,7 @@ instance : SubtractionMonoid α where
     apply Function.LeftInverse.injective (g := (-(a + b) + ·))
     intro x
     dsimp only
-    rw [← add_assoc, add_comm (-(a+b)), LinearOrderedAddCommGroupWithTop.add_neg_cancel, zero_add]
+    rw [← add_assoc, add_comm (-(a + b)), LinearOrderedAddCommGroupWithTop.add_neg_cancel, zero_add]
     simp [ha, hb]
   neg_eq_of_add (a b) (h) := by
     have oh := congrArg (-a + ·) h
