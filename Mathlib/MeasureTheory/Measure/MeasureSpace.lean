@@ -2150,8 +2150,7 @@ namespace MeasurableEmbedding
 
 open MeasureTheory Measure
 
-variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β}
-  {μ ν : Measure α}
+variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} {μ ν : Measure α}
 
 nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set β) :
     μ.map f s = μ (f ⁻¹' s) := by
