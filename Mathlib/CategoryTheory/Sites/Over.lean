@@ -201,7 +201,7 @@ end GrothendieckTopology
 
 variable {J}
 
-/-- Given `F : Sheaf J A` and `X ; C`, this is the pullback of `F` on `J.over X`. -/
+/-- Given `F : Sheaf J A` and `X : C`, this is the pullback of `F` on `J.over X`. -/
 abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
     Sheaf (J.over X) A := (J.overPullback A X).obj F
 
