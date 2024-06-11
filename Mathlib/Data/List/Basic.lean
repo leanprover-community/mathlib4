@@ -3545,6 +3545,14 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
 #noalign list.ilast'_mem --List.ilast'_mem
 
 @[simp]
+theorem getElem_attach (L : List α) (i : Nat) (h : i < L.attach.length) :
+    L.attach[i].1 = L[i]'(length_attach L ▸ h) :=
+  calc
+    L.attach[i].1 = (L.attach.map Subtype.val)[i]'(by simpa using h) := by
+      rw [getElem_map]
+    _ = L[i]'_ := by congr 2; simp
+
+@[simp]
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ :=
   calc

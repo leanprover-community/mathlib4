@@ -128,7 +128,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 @[simp]
 theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
-  cases v; simp [Vector.map, get_eq_get]; rfl
+  cases v; simp [Vector.map, get_eq_get]
 #align vector.nth_map Vector.get_map
 
 @[simp]
@@ -648,7 +648,7 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
-  simp [get_eq_get, mul_assoc]; rfl
+  simp [get_eq_get, mul_assoc]
 #align vector.prod_update_nth' Vector.prod_set'
 
 end ModifyNth

@@ -218,6 +218,7 @@ theorem formPerm_apply_get (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < xs.
     formPerm xs (xs.get ⟨n, hn⟩) =
       xs.get ⟨((n + 1) % xs.length), (Nat.mod_lt _ (n.zero_le.trans_lt hn))⟩ :=
   formPerm_apply_nthLe xs h n hn
+
 attribute [deprecated formPerm_apply_get (since := "2024-04-23")] formPerm_apply_nthLe
 
 set_option linter.deprecated false in
@@ -287,6 +288,13 @@ theorem formPerm_reverse : ∀ l : List α, formPerm l.reverse = (formPerm l)⁻
   | a::b::l => by
     simp [formPerm_append_pair, swap_comm, ← formPerm_reverse (b::l)]
 #align list.form_perm_reverse List.formPerm_reverse
+
+theorem formPerm_pow_apply_getElem (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
+    (formPerm l ^ n) l[k] =
+      l[(k + n) % l.length]'(Nat.mod_lt _ (k.zero_le.trans_lt hk)) := by
+  induction' n with n hn
+  · simp [Nat.mod_eq_of_lt hk]
+  · simp [pow_succ', mul_apply, hn, formPerm_apply_get _ h, Nat.succ_eq_add_one, ← Nat.add_assoc]
 
 theorem formPerm_pow_apply_get (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
     (formPerm l ^ n) (l.get ⟨k, hk⟩) =

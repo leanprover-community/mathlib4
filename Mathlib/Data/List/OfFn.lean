@@ -202,8 +202,21 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
     exact ofFn_get l
 
 @[simp]
+theorem ofFn_getElem : ∀ l : List α, (ofFn (fun i : Fin l.length => l[(i : Nat)])) = l
+  | [] => by rw [ofFn_zero]
+  | a :: l => by
+    rw [ofFn_succ]
+    congr
+    exact ofFn_get l
+
+@[simp]
 theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
   rw [← Function.comp_def, ← map_ofFn, ofFn_get]
+
+@[simp]
+theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
+    ofFn (fun i : Fin l.length => f <| l[(i : Nat)]) = l.map f := by
+  rw [← Function.comp_def, ← map_ofFn, ofFn_getElem]
 
 set_option linter.deprecated false in
 @[deprecated ofFn_get] -- 2023-01-17

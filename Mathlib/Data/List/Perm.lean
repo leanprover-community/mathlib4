@@ -767,15 +767,20 @@ theorem perm_permutations'_iff {s t : List α} : permutations' s ~ permutations'
     Perm.permutations'⟩
 #align list.perm_permutations'_iff List.perm_permutations'_iff
 
-theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
+theorem getElem_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
-    (permutations'Aux x s).get ⟨n, hn⟩ = s.insertNth n x := by
+    (permutations'Aux x s)[n] = s.insertNth n x := by
   induction' s with y s IH generalizing n
   · simp only [length, Nat.zero_add, Nat.lt_one_iff] at hn
     simp [hn]
   · cases n
     · simp [get]
     · simpa [get] using IH _ _
+
+theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
+    (hn : n < length (permutations'Aux x s)) :
+    (permutations'Aux x s).get ⟨n, hn⟩ = s.insertNth n x := by
+  simp [getElem_permutations'Aux]
 #align list.nth_le_permutations'_aux List.get_permutations'Aux
 
 set_option linter.deprecated false in
