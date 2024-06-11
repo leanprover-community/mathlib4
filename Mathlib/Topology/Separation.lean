@@ -2168,7 +2168,7 @@ alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
 
 /-- This technique to produce a SeparatingCover in regular Lindelöf topological spaces
 will be used to prove regular Lindelöf spaces are normal. -/
-lemma SeparatedCover.of_isClosed {s t : Set X} [r: RegularSpace X] [LindelofSpace X]
+lemma SeparatingCover.of_isClosed {s t : Set X} [r: RegularSpace X] [LindelofSpace X]
     (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : SeparatingCover s t := by
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
   wlog nonempty_X : Nonempty X
@@ -2388,8 +2388,8 @@ assumption of Hausdorff). -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [RegularSpace X] [LindelofSpace X] : NormalSpace X where
   normal _ _ hcl kcl hkdis := separating_covers_iff_separated_nhds.mp ⟨
-    SeparatedCover.of_isClosed hcl kcl hkdis,
-    SeparatedCover.of_isClosed kcl hcl (Disjoint.symm hkdis)⟩
+    SeparatingCover.of_isClosed hcl kcl hkdis,
+    SeparatingCover.of_isClosed kcl hcl (Disjoint.symm hkdis)⟩
 
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     [RegularSpace X] [SecondCountableTopology X] : NormalSpace X :=
