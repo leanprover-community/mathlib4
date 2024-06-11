@@ -27,9 +27,6 @@ but the `Finsupp` condition provides a natural `DecidableEq` instance.
   with finite support contained in `s` and such that the sum of its values equals `n : μ`
   That condition is expressed by `Finset.mem_finsuppAntidiag`
 * `Finset.mem_finsuppAntidiag'` rewrites the `Finsupp.sum` condition as a `Finset.sum`.
-* `Finset.finAntidiagonal`, a more general case of `Finset.Nat.antidiagonalTuple`
-  (TODO: deduplicate).
-
 -/
 
 namespace Finset
