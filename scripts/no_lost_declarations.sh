@@ -81,6 +81,9 @@ else
     if(($6 == "instance") && !($7 ~ /^[a-zA-Z]/)) {
       rest="instance"
       for(i=7; i<=NF-1; i++){rest=rest" "$i}
+      # remove trailing `where` or `:=`
+      gsub(/ where$/, "", rest)
+      gsub(/ :=$/, "", rest)
       # accumulate in `acc` the whole line with value the 4th field -- this is the +- field.
       acc[rest]=acc[rest] $4
       # if the line is not a nameless instance, accumulate the declaration name and +-
