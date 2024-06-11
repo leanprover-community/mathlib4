@@ -84,6 +84,6 @@ example {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
 
 /-- `trans` for implications. -/
 example {A B C: Prop} (h : A → B) (g : B → C) : A → C := by
-  trans
+  trans B
   assumption
   assumption
