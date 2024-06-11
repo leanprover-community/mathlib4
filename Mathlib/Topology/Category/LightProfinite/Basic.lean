@@ -114,6 +114,7 @@ def lightToProfinite : LightProfinite ⥤ Profinite where
   obj X := Profinite.of X
   map f := f
 
+/-- `lightToProfinite` is fully faithful. -/
 def lightToProfiniteFullyFaithful : lightToProfinite.FullyFaithful := fullyFaithfulInducedFunctor _
 
 instance : lightToProfinite.Faithful := lightToProfiniteFullyFaithful.faithful
@@ -125,6 +126,7 @@ instance : lightToProfinite.Full := lightToProfiniteFullyFaithful.full
 def lightProfiniteToCompHaus : LightProfinite ⥤ CompHaus :=
   inducedFunctor _
 
+/-- `lightProfiniteToCompHaus` is fully faithful. -/
 def lightProfiniteToCompHausFullyFaithful : lightProfiniteToCompHaus.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
@@ -146,6 +148,7 @@ def LightProfinite.toTopCat : LightProfinite ⥤ TopCat :=
 -- Porting note: deriving fails, adding manually.
 -- deriving Full, Faithful
 
+/-- `LightProfinite.toTopCat` is fully faithful. -/
 def LightProfinite.toTopCatFullyFaithful : LightProfinite.toTopCat.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
@@ -170,6 +173,7 @@ def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
   map f := ⟨f, by continuity⟩
 
+/-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
   preimage f := (f : _ → _)
   map_preimage _ := rfl
