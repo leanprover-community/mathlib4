@@ -7,7 +7,6 @@ import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
 
 #align_import ring_theory.congruence from "leanprover-community/mathlib"@"2f39bcbc98f8255490f8d4562762c9467694c809"
 
