@@ -3,9 +3,10 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
+import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
+import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -106,7 +107,7 @@ def homEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (G ⟶ ihom F 
 
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
 def adj (F : C ⥤ Type max w v u) : tensorLeft F ⊣ rightAdj F where
-  homEquiv G H := homEquiv F G H
+  homEquiv := homEquiv F
   unit := {
     app := fun G ↦ homEquiv_toFun (𝟙 _)
     naturality := fun G H f ↦ by
@@ -122,16 +123,13 @@ instance closed (F : C ⥤ Type max w v u) : Closed F where
   rightAdj := rightAdj F
   adj := adj F
 
-instance monoidalClosed : MonoidalClosed (C ⥤ Type max w v u) where
-  closed := inferInstance
-
-/-
-instance : Limits.HasFiniteProducts (C ⥤ Type max w v u) := sorry
-
 instance cartesianClosed : CartesianClosed (C ⥤ Type max w v u) :=
+  letI _ : MonoidalCategory (C ⥤ Type (max w v u)) := monoidalOfHasFiniteProducts _
   {
-  closed := _
+  closed := fun F ↦ {
+    rightAdj := rightAdj F
+    adj := adj F
   }
--/
+  }
 
 end
