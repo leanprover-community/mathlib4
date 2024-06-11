@@ -2353,14 +2353,16 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
 /-- A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
-Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without
-the assumption of Hausdorff). -/
+Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without the
+assumption of Hausdorff). -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
   normal h k hcl kcl hkdis := by
+    -- Empty spaces are normal vacuously
     wlog nonempty_space : Nonempty X
     · rw [not_nonempty_iff] at nonempty_space
       exact normal h k hcl kcl hkdis
+    -- This lemma constructs the appropriate cover to be made countable by the Lindelöf property
     have disjoint_cover_lemma (h₀ k₀ : Set X) (k₀cl : IsClosed k₀) (h₀k₀dis : Disjoint h₀ k₀)
         (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) k₀ ∧ (a ∈ h₀ → a ∈ n) := by
       wlog ainh₀ : a ∈ h₀
@@ -2371,10 +2373,12 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       exact ⟨interior n, isOpen_interior, disjoint_left.mpr fun ⦃a⦄ ain ↦
         nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset ain),
         fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
+    -- By Lindelöf, we may construct a `SeparatingCover h k`
     choose u u_open u_dis u_nhd using disjoint_cover_lemma h k kcl hkdis
     obtain ⟨f, f_cov⟩ := IsLindelof.indexed_countable_subcover
       (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h))
       u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
+    -- Again by Lindelöf, we may construct a `SeparatingCover k h`
     choose v v_open v_dis v_nhd using disjoint_cover_lemma k h hcl (Disjoint.symm hkdis)
     obtain ⟨g, g_cov⟩ := IsLindelof.indexed_countable_subcover
       (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k))
