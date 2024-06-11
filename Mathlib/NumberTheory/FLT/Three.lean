@@ -120,8 +120,10 @@ open NumberField
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ (3 : ℕ+))
 
-local notation3 "η" => hζ.toInteger
-local notation3 "λ" => η - 1
+local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
+local notation3 "λ" => (η : 𝓞 K) - 1
+
+private lemma coe_lambda : (λ : 𝓞 K) = hζ.toInteger - 1 := rfl
 
 /-- `FermatLastTheoremForThreeGen` is the statement that `a ^ 3 + b ^ 3 = u * c ^ 3` has no
 nontrivial solutions in `𝓞 K` for all `u : (𝓞 K)ˣ` such that `¬ λ ∣ a`, `¬ λ ∣ b` and `λ ∣ c`.
@@ -136,10 +138,10 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen :
   intro H
   refine fermatLastTheoremThree_of_three_dvd_only_c (fun a b c hc ha hb ⟨x, hx⟩ hcoprime h ↦ ?_)
   refine H a b c 1 (by simp [hc]) (fun hdvd ↦ ha ?_) (fun hdvd ↦ hb ?_) ?_ ?_ ?_
-  · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),
-      hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
-  · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),
-      hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
+  · rwa [coe_lambda, ← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two'
+      (by decide)), hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
+  · rwa [coe_lambda, ← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two'
+      (by decide)), hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
   · exact dvd_trans hζ.toInteger_sub_one_dvd_prime' ⟨x, by simp [hx]⟩
   · rw [show a = algebraMap _ (𝓞 K) a by simp, show b = algebraMap _ (𝓞 K) b by simp]
     exact hcoprime.map _
