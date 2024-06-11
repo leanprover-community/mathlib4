@@ -447,6 +447,10 @@ variable {R}
 /-- The type of sections of a presheaf of modules. -/
 def sections (M : PresheafOfModules.{v} R) : Type _ := (M.presheaf ⋙ forget _).sections
 
+@[simp]
+lemma sections_property {M : PresheafOfModules.{v} R} (s : M.sections)
+    {X Y : Cᵒᵖ} (f : X ⟶ Y) : M.map f (s.1 X) = s.1 Y := s.2 f
+
 /-- Constructor for sections of a presheaf of modules. -/
 @[simps]
 def sectionsMk {M : PresheafOfModules.{v} R} (s : ∀ X, M.obj X)
@@ -458,6 +462,20 @@ def sectionsMk {M : PresheafOfModules.{v} R} (s : ∀ X, M.obj X)
 lemma sections_ext {M : PresheafOfModules.{v} R} (s t : M.sections)
     (h : ∀ (X : Cᵒᵖ), s.val X = t.val X) : s = t :=
   Subtype.ext (by ext; apply h)
+
+/-- The map `M.sections → N.sections` induced by a morphisms `M ⟶ N` of presheaves of modules. -/
+@[simps!]
+def sectionsMap {M N : PresheafOfModules.{v} R} (f : M ⟶ N) (s : M.sections) : N.sections :=
+  N.sectionsMk (fun X ↦ f.app X (s.1 _))
+    (fun X Y g ↦ by rw [← naturality_apply, sections_property])
+
+@[simp]
+lemma sectionsMap_comp {M N P : PresheafOfModules.{v} R} (f : M ⟶ N) (g : N ⟶ P) (s : M.sections) :
+    sectionsMap (f ≫ g) s = sectionsMap g (sectionsMap f s) := rfl
+
+@[simp]
+lemma sectionsMap_id {M : PresheafOfModules.{v} R} (s : M.sections) :
+    sectionsMap (𝟙 M) s = s := rfl
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
 @[simps! apply_coe]

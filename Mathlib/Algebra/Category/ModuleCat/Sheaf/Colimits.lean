@@ -24,10 +24,8 @@ variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 
 namespace SheafOfModules
 
-variable (R : Sheaf J RingCat.{u})
-  [HasWeakSheafify J AddCommGroupCat.{v}]
-  [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
-  (K : Type w) [Category.{w'} K]
+variable (R : Sheaf J RingCat.{u}) [HasWeakSheafify J AddCommGroupCat.{v}]
+  [J.WEqualsLocallyBijective AddCommGroupCat.{v}] (K : Type w) [Category.{w'} K]
 
 instance [HasColimitsOfShape K (PresheafOfModules.{v} R.val)] :
     HasColimitsOfShape K (SheafOfModules.{v} R) where

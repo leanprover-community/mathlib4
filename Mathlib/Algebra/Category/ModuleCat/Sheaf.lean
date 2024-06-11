@@ -117,18 +117,31 @@ instance : (forget R).Additive where
 
 instance : (toSheaf R).Additive where
 
+variable {R}
+
 /-- The type of sections of a sheaf of modules. -/
 abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
 
+/-- The map `M.sections → N.sections` induced by a morphisms `M ⟶ N` of sheaves of modules. -/
+abbrev sectionsMap {M N : SheafOfModules.{v} R} (f : M ⟶ N) (s : M.sections) : N.sections :=
+  PresheafOfModules.sectionsMap f.val s
+
+@[simp]
+lemma sectionsMap_comp {M N P : SheafOfModules.{v} R} (f : M ⟶ N) (g : N ⟶ P) (s : M.sections) :
+    sectionsMap (f ≫ g) s = sectionsMap g (sectionsMap f s) := rfl
+
+@[simp]
+lemma sectionsMap_id {M : SheafOfModules.{v} R} (s : M.sections) :
+    sectionsMap (𝟙 M) s = s := rfl
+
 variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGroupCat.{u})]
 
+variable (R) in
 /-- The obvious free sheaf of modules of rank `1`. -/
 @[simps]
 def unit : SheafOfModules R where
   val := PresheafOfModules.unit R.val
   isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGroupCat.{u})).obj R).cond
-
-variable {R}
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : SheafOfModules R`. -/
 def unitHomEquiv (M : SheafOfModules R) :
@@ -138,6 +151,14 @@ def unitHomEquiv (M : SheafOfModules R) :
 @[simp]
 lemma unitHomEquiv_apply_coe (M : SheafOfModules R) (f : unit R ⟶ M) (X : Cᵒᵖ) :
     (M.unitHomEquiv f).val X = f.val.app X (1 : R.val.obj X) := rfl
+
+lemma unitHomEquiv_comp_apply {M N : SheafOfModules.{u} R}
+    (f : unit R ⟶ M) (p : M ⟶ N) :
+    N.unitHomEquiv (f ≫ p) = sectionsMap p (M.unitHomEquiv f) := rfl
+
+lemma unitHomEquiv_symm_comp {M N : SheafOfModules.{u} R} (s : M.sections) (p : M ⟶ N) :
+    M.unitHomEquiv.symm s ≫ p = N.unitHomEquiv.symm (sectionsMap p s) :=
+  N.unitHomEquiv.injective (by simp [unitHomEquiv_comp_apply])
 
 end SheafOfModules
 
