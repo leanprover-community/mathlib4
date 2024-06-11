@@ -68,7 +68,7 @@ def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ 
     Fin l.length ≃ α where
   toFun i := l.get i
   invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
-  left_inv i := by simp [List.get_indexOf, nd]
+  left_inv i := by simp [List.indexOf_getElem, nd]
   right_inv a := by simp
 #align list.nodup.nth_le_equiv_of_forall_mem_list List.Nodup.getEquivOfForallMemList
 
@@ -182,7 +182,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     · simp
     · intro i
       apply Option.some_injective
-      simpa [get?_eq_get i.2, get?_eq_get (h i.2)] using hf i
+      simpa [getElem?_eq_getElem i.2, getElem?_eq_getElem (h i.2)] using hf i
   · rintro ⟨f, hf⟩
     refine
       ⟨OrderEmbedding.ofStrictMono (fun i => if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)

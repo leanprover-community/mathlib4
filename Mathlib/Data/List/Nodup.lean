@@ -152,12 +152,17 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   exact fun hinj => hne (hinj h)
 #align list.nth_le_eq_of_ne_imp_not_nodup List.not_nodup_of_get_eq_of_ne
 
--- Porting note (#10756): new theorem
-theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
-    indexOf (get l i) l = i :=
-  suffices (⟨indexOf (get l i) l, indexOf_lt_length.2 (get_mem _ _ _)⟩ : Fin l.length) = i
+theorem indexOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
+    indexOf l[i] l = i :=
+  suffices (⟨indexOf l[i] l, indexOf_lt_length.2 (get_mem _ _ _)⟩ : Fin l.length) = ⟨i, h⟩
     from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
+
+-- This is incorrectly named and should be `indexOf_get`;
+-- this already exists, so will require a deprecation dance.
+theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
+    indexOf (get l i) l = i := by
+  simp [indexOf_getElem, H]
 
 #align list.nth_le_index_of List.get_indexOf
 
@@ -306,20 +311,25 @@ theorem Nodup.erase [DecidableEq α] (a : α) : Nodup l → Nodup (l.erase a) :=
   Nodup.sublist <| erase_sublist _ _
 #align list.nodup.erase List.Nodup.erase
 
-theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) :
-    ∀ i : Fin l.length, l.erase (l.get i) = l.eraseIdx ↑i := by
-  induction l with
+theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
+    (i : Nat) (h : i < l.length) : l.erase l[i] = l.eraseIdx ↑i := by
+  induction l generalizing i with
   | nil => simp
   | cons a l IH =>
-    intro i
-    cases i using Fin.cases with
+    cases i with
     | zero => simp
     | succ i =>
       rw [nodup_cons] at hl
       rw [erase_cons_tail]
       · simp [IH hl.2]
-      · rw [beq_iff_eq, get_cons_succ']
-        exact mt (· ▸ l.get_mem i i.isLt) hl.1
+      · rw [beq_iff_eq]
+        simp only [cons_getElem_succ]
+        simp only [length_cons, succ_eq_add_one, Nat.add_lt_add_iff_right] at h
+        exact mt (· ▸ l.getElem_mem i h) hl.1
+
+theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
+    l.erase (l.get i) = l.eraseIdx ↑i := by
+  simp [erase_getElem, hl]
 
 theorem Nodup.diff [DecidableEq α] : l₁.Nodup → (l₁.diff l₂).Nodup :=
   Nodup.sublist <| diff_sublist _ _

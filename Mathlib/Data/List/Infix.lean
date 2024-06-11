@@ -459,23 +459,31 @@ theorem length_inits (l : List α) : length (inits l) = length l + 1 := by simp 
 #align list.length_inits List.length_inits
 
 @[simp]
-theorem get_tails (l : List α) (n : Fin (length (tails l))) : (tails l).get n = l.drop n := by
-  induction l with
+theorem getElem_tails (l : List α) (n : Nat) (h : n < (tails l).length) :
+    (tails l)[n] = l.drop n := by
+  induction l generalizing n with
   | nil => simp
   | cons a l ihl =>
-    cases n using Fin.cases with
+    cases n with
     | zero => simp
     | succ n => simp [ihl]
+
+theorem get_tails (l : List α) (n : Fin (length (tails l))) : (tails l).get n = l.drop n := by
+  simp
 #align list.nth_le_tails List.get_tails
 
 @[simp]
-theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n = l.take n := by
-  induction l with
+theorem getElem_inits (l : List α) (n : Nat) (h : n < length (inits l)) :
+    (inits l)[n] = l.take n := by
+  induction l generalizing n with
   | nil => simp
   | cons a l ihl =>
-    cases n using Fin.cases with
+    cases n with
     | zero => simp
     | succ n => simp [ihl]
+
+theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n = l.take n := by
+  simp
 #align list.nth_le_inits List.get_inits
 
 section deprecated

@@ -47,16 +47,23 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 #noalign list.nth_of_fn_aux
 
-theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
-    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
+theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+    (ofFn.go f i j h)[k] = f ⟨j + k, by simp at hk; omega⟩ := by
   let i+1 := i
-  cases k <;> simp [ofFn.go, get_ofFn_go (i := i)]
+  cases k <;> simp [ofFn.go, getElem_ofFn_go (i := i)]
   congr 2; omega
 
--- Porting note (#10756): new theorem
+theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
+  simp [getElem_ofFn_go]
+
 @[simp]
+theorem getElem_ofFn {n} (f : Fin n → α) (i : Nat) (h : i < (ofFn f).length) :
+    (ofFn f)[i] = f ⟨i, by simp_all⟩ := by
+  simp [ofFn, getElem_ofFn_go]
+
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
-  cases i; simp [ofFn, get_ofFn_go]
+  simp; congr
 
 /-- The `n`th element of a list -/
 @[simp]
@@ -118,7 +125,7 @@ theorem ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
 theorem ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i => f i.succ :=
   ext_get (by simp) (fun i hi₁ hi₂ => by
     cases i
-    · simp; rfl
+    · simp
     · simp)
 #align list.of_fn_succ List.ofFn_succ
 

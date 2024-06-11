@@ -864,6 +864,10 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
 
 #align list.nth_le_eq_iff List.get_eq_iff
 
+theorem getElem_eq_getElem? (l : List α) (i : Nat) (h : i < l.length) :
+    l[i] = l[i]?.get (by simp [getElem?_eq_getElem, h]) := by
+  simp [getElem_eq_iff]
+
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
   simp [getElem_eq_iff]
@@ -1346,15 +1350,25 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
 #align list.ext_le List.ext_nthLe
 
 @[simp]
-theorem indexOf_get [DecidableEq α] {a : α} : ∀ {l : List α} (h), get l ⟨indexOf a l, h⟩ = a
+theorem getElem_indexOf [DecidableEq α] {a : α} : ∀ {l : List α} (h), l[indexOf a l] = a
   | b :: l, h => by
     by_cases h' : b = a <;>
-    simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l, cond_eq_if, beq_iff_eq]
+    simp [h', if_pos, if_false, getElem_indexOf]
+
+-- This is incorrectly named and should be `get_indexOf`;
+-- this already exists, so will require a deprecation dance.
+theorem indexOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨indexOf a l, h⟩ = a := by
+  simp
 #align list.index_of_nth_le List.indexOf_get
 
 @[simp]
+theorem getElem?_indexOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
+    l[indexOf a l]? = some a := by rw [getElem?_eq_getElem, getElem_indexOf (indexOf_lt_length.2 h)]
+
+-- This is incorrectly named and should be `get?_indexOf`;
+-- this already exists, so will require a deprecation dance.
 theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    get? l (indexOf a l) = some a := by rw [get?_eq_get, indexOf_get (indexOf_lt_length.2 h)]
+    get? l (indexOf a l) = some a := by simp [h]
 #align list.index_of_nth List.indexOf_get?
 
 @[deprecated] -- 2023-01-05

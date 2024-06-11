@@ -194,11 +194,15 @@ theorem nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i
   get_range i H
 #align list.nth_le_range List.nthLe_range
 
--- Porting note (#10756): new theorem
 @[simp]
+theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
+    (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
+  simp only [finRange, getElem_range, getElem_pmap]
+
+-- Porting note (#10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
-  simp only [finRange, get_range, get_pmap]
+  simp
 
 -- Porting note (#10756): new theorem, corresponding theorem used to be in Data.List.FinRange
 @[simp]

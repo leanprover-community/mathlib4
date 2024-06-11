@@ -583,13 +583,18 @@ theorem cyclicPermutations_ne_nil : ∀ l : List α, cyclicPermutations l ≠ []
   | a::l, h => by simpa using congr_arg length h
 
 @[simp]
-theorem get_cyclicPermutations (l : List α) (n : Fin (length (cyclicPermutations l))) :
-    (cyclicPermutations l).get n = l.rotate n := by
+theorem getElem_cyclicPermutations (l : List α) (n : Nat) (h : n < length (cyclicPermutations l)) :
+    (cyclicPermutations l)[n] = l.rotate n := by
   cases l with
   | nil => simp
   | cons a l =>
-    simp only [cyclicPermutations_cons, get_dropLast, get_zipWith, get_tails, get_inits]
-    rw [rotate_eq_drop_append_take (by simpa using n.2.le)]
+    simp only [cyclicPermutations_cons, getElem_dropLast, getElem_zipWith, getElem_tails,
+      getElem_inits]
+    rw [rotate_eq_drop_append_take (by simpa using h.le)]
+
+theorem get_cyclicPermutations (l : List α) (n : Fin (length (cyclicPermutations l))) :
+    (cyclicPermutations l).get n = l.rotate n := by
+  simp
 #align list.nth_le_cyclic_permutations List.get_cyclicPermutations
 
 @[simp]
