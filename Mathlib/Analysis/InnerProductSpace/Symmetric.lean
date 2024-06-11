@@ -126,12 +126,9 @@ theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric 
     (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w => hT v w
 #align linear_map.is_symmetric.restrict_invariant LinearMap.IsSymmetric.restrict_invariant
 
-@[nolint docBlame defLemma] -- linter bug?
-local instance : ContinuousSMul ℝ 𝕜 := inferInstance in
-@[nolint docBlame] -- linter bug?
-noncomputable local instance : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E in
-theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
-    (T.restrictScalars ℝ).IsSymmetric :=
+theorem IsSymmetric.restrictScalars [InnerProductSpace ℝ E] [IsScalarTower ℝ 𝕜 E]
+    {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    @LinearMap.IsSymmetric _ _ _ _ (InnerProductSpace.rclikeToReal 𝕜 E) (T.restrictScalars ℝ) :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 #align linear_map.is_symmetric.restrict_scalars LinearMap.IsSymmetric.restrictScalars
 
