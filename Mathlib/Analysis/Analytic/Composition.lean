@@ -1151,7 +1151,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
           rfl
         · simp only [map_ofFn]
           rfl
-        · congr
+      · congr
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
 end Composition
