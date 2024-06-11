@@ -187,7 +187,7 @@ noncomputable def scalarRTensorAlgEquiv :
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
 
 variable (R)
-variable (A : Type*) [CommRing A] [Algebra R A]
+variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
 equivalent to `M̀vPolynomial σ A`. -/
