@@ -62,10 +62,12 @@ design enjoys: by introducing the indexing type `ι`, one does not have to pick 
 providing the user with the additional definitional power to specify an indexing type `ι` is a
 benefit and the junk-value pattern is a cost.
 
-As a final point of divergence from the literature, we make the reflection permutation on roots and
-coroots explcit, rather than specifying only that reflection preserves the sets of roots and
-coroots.  This is made easier by our use of the parametrizing set `ι`, since we simply define a map
-from `ι` to permutations on `ι`, and require that it is compatible with reflection.
+As a final point of divergence from the classical literature, we make the reflection permutation on
+roots and coroots explicit, rather than specifying only that reflection preserves the sets of roots
+and coroots. This is necessary when working with infinite root systems, where the coroots are not
+uniquely determined by the roots, because without it, the reflection permutations on roots and
+coroots may not correspond. For this purpose, we define a map from `ι` to permutations on `ι`, and
+require that it is compatible with reflections and coreflections.
 
 -/
 
@@ -351,6 +353,49 @@ infinite dihedral group. -/
 def IsUltraParallel : Prop := 4 < coxeterWeight P i j
 
 end pairs
+
+section reflection_perm
+
+theorem preReflection_self (P : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N)
+    (hp : ∀ i, P.toLin (root i) (coroot i) = 2) (i j : ι) :
+    (preReflection (root i) (P.toLin.flip (coroot i)))
+      ((preReflection (root i) (P.toLin.flip (coroot i))) (root j)) = root j := by
+  have hpf : ∀ i, P.flip.toLin (coroot i) (root i) = 2 := hp
+  have h : preReflection (root i) (P.toLin.flip (coroot i)) = Module.reflection (hpf i) := rfl
+  rw [h, LinearEquiv.coe_toLinearMap]
+  exact (LinearEquiv.eq_symm_apply (Module.reflection (hpf i))).mp rfl
+
+theorem exist_root_reflection (P : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N)
+    (hs : ∀ i, MapsTo (preReflection (root i) (P.toLin.flip (coroot i))) (range root) (range root))
+    (i j : ι) :
+    ∃ k, (preReflection (root i) (P.toLin.flip (coroot i))) (root j) = root k := by
+  refine exists_range_iff.mp <| exists_eq_right'.mpr ?_
+  simp_all only [mapsTo_range_iff, mem_range]
+
+theorem root_reflection_comp_self (P : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N)
+    (hp : ∀ i, P.toLin (root i) (coroot i) = 2) (hs : ∀ i, MapsTo (preReflection (root i)
+    (P.toLin.flip (coroot i))) (range root) (range root)) (i j : ι) :
+    (exist_root_reflection P root coroot hs i
+      (exist_root_reflection P root coroot hs i j).choose).choose = j := by
+  refine (Embedding.injective root) ?_
+  rw [← (exist_root_reflection P root coroot hs i _).choose_spec,
+    ← (exist_root_reflection P root coroot hs i j).choose_spec]
+  simp_all only [mapsTo_range_iff, mem_range]
+  exact preReflection_self P root coroot hp i j
+
+/-- The bijection on the indexing set induced by reflection. -/
+@[simps]
+def reflection_in (P : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N)
+    (hp : ∀ i, P.toLin (root i) (coroot i) = 2) (hs : ∀ i, MapsTo (preReflection (root i)
+    (P.toLin.flip (coroot i))) (range root) (range root)) : ι ≃ ι where
+  toFun j := (exist_root_reflection P root coroot hs i j).choose
+  invFun j := (exist_root_reflection P root coroot hs i j).choose
+  left_inv j := by
+    exact root_reflection_comp_self P root coroot hp hs i j
+  right_inv j := by
+    exact root_reflection_comp_self P root coroot hp hs i j
+
+end reflection_perm
 
 section BaseChange
 
