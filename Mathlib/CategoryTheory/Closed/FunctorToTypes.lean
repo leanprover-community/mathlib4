@@ -90,7 +90,7 @@ def homEquiv_invFun (f : G ⟶ ihom F H) : F ⊗ G ⟶ H where
 
 @[ext]
 lemma homEquiv_invFun_ext {f g : F ⊗ G ⟶ H} :
-  f.app = g.app → f = g := NatTrans.ext _ _
+    f.app = g.app → f = g := NatTrans.ext _ _
 
 /-- The bijection between morphisms `F ⊗ G ⟶ H` and morphisms `G ⟶ ihom F H`. -/
 def homEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (G ⟶ ihom F H) where
