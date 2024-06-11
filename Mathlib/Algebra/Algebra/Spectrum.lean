@@ -7,6 +7,9 @@ import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.NoncommRing
 
+--import Mathlib.LinearAlgebra.Matrix.Spectrum
+import Mathlib.Analysis.NormedSpace.Star.Matrix
+
 #align_import algebra.algebra.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
@@ -474,3 +477,24 @@ lemma spectrum.conjugate_units' {a : A} {u : Aˣ} :
   simpa using spectrum.conjugate_units (u := u⁻¹)
 
 end ConjugateUnits
+
+section UnitaryConjugate
+
+variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
+
+/-- Unitary conjugation preserves the spectrum, star on left. -/
+@[simp]
+lemma spectrum.unitary_conjugate {a : A} {u : unitary A} :
+    spectrum R (u * a * (star u : A)) = spectrum R a :=
+  spectrum.conjugate_units (u := unitary.toUnits u)
+
+#find_home! spectrum.unitary_conjugate
+
+
+/-- Unitary conjugation preserves the spectrum, star on right. -/
+@[simp]
+lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
+    spectrum R ((star u : A) * a * u) = spectrum R a := by
+  simpa using spectrum.unitary_conjugate (u := star u)
+
+end UnitaryConjugate
