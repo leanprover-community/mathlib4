@@ -5,11 +5,9 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.GroupTheory.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Noetherian
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 #align_import ring_theory.finite_type from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
@@ -31,7 +29,7 @@ open Polynomial
 
 section ModuleAndAlgebra
 
-universe uR uS uA uB uM uN uC
+universe uR uS uA uB uM uN
 variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB) (M : Type uM) (N : Type uN)
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
@@ -63,8 +61,6 @@ end Algebra
 end Finite
 
 end Module
-
-open TensorProduct
 
 namespace Algebra
 
@@ -129,8 +125,6 @@ theorem trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : 
     FiniteType R A :=
   ⟨fg_trans' hRS.1 hSA.1⟩
 #align algebra.finite_type.trans Algebra.FiniteType.trans
-
-open TensorProduct
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/
@@ -220,34 +214,6 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
   S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
 #align subalgebra.fg_iff_finite_type Subalgebra.fg_iff_finiteType
-
-section BaseChange
-
-/- We change assumptions to `CommRing` instead of `CommSemiring`, because
-we depend on right exactness of the tensor product. -/
-variable {R : Type uR} [CommRing R]
-variable {A : Type uA} [CommRing A] [Algebra R A]
-variable (B : Type uB) [CommRing B] [Algebra R B]
-
-theorem baseChangeAux_surj {σ : Type*}
-    {f : MvPolynomial σ R →ₐ[R] A} (hf : Function.Surjective f) :
-    Function.Surjective (Algebra.TensorProduct.map (AlgHom.id B B) f) := by
-  show Function.Surjective (TensorProduct.map (AlgHom.id R B) f)
-  apply TensorProduct.map_surjective
-  · exact Function.RightInverse.surjective (congrFun rfl)
-  · exact hf
-
-instance baseChange [hfa : FiniteType R A] :
-    Algebra.FiniteType B (B ⊗[R] A) := by
-  rw [iff_quotient_mvPolynomial''] at *
-  obtain ⟨n, f, hf⟩ := hfa
-  let g : B ⊗[R] MvPolynomial (Fin n) R →ₐ[B] B ⊗[R] A :=
-    Algebra.TensorProduct.map (AlgHom.id B B) f
-  have : Function.Surjective g := baseChangeAux_surj B hf
-  use n, AlgHom.comp g (MvPolynomial.algebraTensorAlgEquiv R B).symm.toAlgHom
-  simpa
-
-end BaseChange
 
 end FiniteType
 
