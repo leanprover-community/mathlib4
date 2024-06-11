@@ -118,7 +118,7 @@ If the space is also Lindelöf:
 
 * https://en.wikipedia.org/wiki/Separation_axiom
 * https://en.wikipedia.org/wiki/Normal_space
-* General Topology (Willard): https://zbmath.org/1052.54001
+* [Willard's *General Topology*][zbMATH02107988]
 
 -/
 
@@ -2355,7 +2355,7 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
 /-- A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
-Corollaries 20.8 and 20.10 of Willard's *General Topology* <https://zbmath.org/1052.54001> (without
+Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without
 the assumption of Hausdorff). -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
