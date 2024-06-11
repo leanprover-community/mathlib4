@@ -937,7 +937,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
 
 /-- Given countably many disjoint measurable sets `t n` and countably many measurable
 functions `g n`, one can construct a measurable function that coincides with `g n` on `t n`. -/
-@[deprecated exists_measurable_piecewise]
+@[deprecated exists_measurable_piecewise (since := "2023-02-11")]
 theorem exists_measurable_piecewise_nat {m : MeasurableSpace α} (t : ℕ → Set β)
     (t_meas : ∀ n, MeasurableSet (t n)) (t_disj : Pairwise (Disjoint on t)) (g : ℕ → β → α)
     (hg : ∀ n, Measurable (g n)) : ∃ f : β → α, Measurable f ∧ ∀ n x, x ∈ t n → f x = g n x :=
