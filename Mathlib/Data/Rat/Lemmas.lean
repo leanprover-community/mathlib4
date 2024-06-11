@@ -231,8 +231,7 @@ theorem den_div_intCast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).
 theorem den_div_natCast_eq_one_iff (m n : ℕ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m :=
   (den_div_intCast_eq_one_iff m n (Int.ofNat_ne_zero.mpr hn)).trans Int.ofNat_dvd
 
--- 2024-05-11
-@[deprecated] alias den_div_cast_eq_one_iff := den_div_intCast_eq_one_iff
+@[deprecated (since := "2024-05-11")] alias den_div_cast_eq_one_iff := den_div_intCast_eq_one_iff
 
 theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
   rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt', divInt_eq_div, Nat.cast_one]
@@ -294,19 +293,18 @@ theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
   simpa [-inv_intCast_den, ofInt_eq_cast] using inv_intCast_den a
 #align rat.inv_coe_nat_denom Rat.inv_natCast_den
 
--- 2024-04-05
-@[deprecated] alias coe_int_div_self := intCast_div_self
-@[deprecated] alias coe_nat_div_self := natCast_div_self
-@[deprecated] alias coe_int_div := intCast_div
-@[deprecated] alias coe_nat_div := natCast_div
-@[deprecated] alias inv_coe_int_num_of_pos := inv_intCast_num_of_pos
-@[deprecated] alias inv_coe_nat_num_of_pos := inv_natCast_num_of_pos
-@[deprecated] alias inv_coe_int_den_of_pos := inv_intCast_den_of_pos
-@[deprecated] alias inv_coe_nat_den_of_pos := inv_natCast_den_of_pos
-@[deprecated] alias inv_coe_int_num := inv_intCast_num
-@[deprecated] alias inv_coe_nat_num := inv_natCast_num
-@[deprecated] alias inv_coe_int_den := inv_intCast_den
-@[deprecated] alias inv_coe_nat_den := inv_natCast_den
+@[deprecated (since := "2024-04-05")] alias coe_int_div_self := intCast_div_self
+@[deprecated (since := "2024-04-05")] alias coe_nat_div_self := natCast_div_self
+@[deprecated (since := "2024-04-05")] alias coe_int_div := intCast_div
+@[deprecated (since := "2024-04-05")] alias coe_nat_div := natCast_div
+@[deprecated (since := "2024-04-05")] alias inv_coe_int_num_of_pos := inv_intCast_num_of_pos
+@[deprecated (since := "2024-04-05")] alias inv_coe_nat_num_of_pos := inv_natCast_num_of_pos
+@[deprecated (since := "2024-04-05")] alias inv_coe_int_den_of_pos := inv_intCast_den_of_pos
+@[deprecated (since := "2024-04-05")] alias inv_coe_nat_den_of_pos := inv_natCast_den_of_pos
+@[deprecated (since := "2024-04-05")] alias inv_coe_int_num := inv_intCast_num
+@[deprecated (since := "2024-04-05")] alias inv_coe_nat_num := inv_natCast_num
+@[deprecated (since := "2024-04-05")] alias inv_coe_int_den := inv_intCast_den
+@[deprecated (since := "2024-04-05")] alias inv_coe_nat_den := inv_natCast_den
 
 @[simp]
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
