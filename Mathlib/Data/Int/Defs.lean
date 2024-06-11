@@ -9,8 +9,6 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Set
-import Mathlib.Tactic.SimpRw
 
 #align_import init.data.int.comp_lemmas from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
 
