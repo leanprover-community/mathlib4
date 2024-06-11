@@ -375,8 +375,8 @@ nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : �
       · congr
         · rw [toJordanDecomposition_smul_real,
             JordanDecomposition.real_smul_negPart_neg _ _ hr, singularPart_smul]
-    rw [toSignedMeasure_smul, toSignedMeasure_smul, ← neg_sub, ← smul_sub, NNReal.smul_def,
-      ← neg_smul, Real.coe_toNNReal _ (le_of_lt (neg_pos.mpr hr)), neg_neg]
+    rw [toSignedMeasure_smul, toSignedMeasure_smul, ← neg_sub, ← smul_sub (A := SignedMeasure α),
+      NNReal.smul_def, ← neg_smul, Real.coe_toNNReal _ (le_of_lt (neg_pos.mpr hr)), neg_neg]
 #align measure_theory.signed_measure.singular_part_smul MeasureTheory.SignedMeasure.singularPart_smul
 
 theorem singularPart_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
