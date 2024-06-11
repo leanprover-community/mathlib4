@@ -154,7 +154,7 @@ lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
   · rw [h, WithTop.map_top, ← WithTop.coe_natCast,
-      top_sub_coe, eq_self, true_iff, eventually_nhdsWithin_iff]
+      top_sub, eq_self, true_iff, eventually_nhdsWithin_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
     filter_upwards [h] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
@@ -172,7 +172,7 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
-  · rw [h, WithTop.map_top, ← WithTop.coe_natCast, top_sub_coe,
+  · rw [h, WithTop.map_top, ← WithTop.coe_natCast, top_sub,
       eq_false_intro WithTop.top_ne_coe, false_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
     refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne ?_
