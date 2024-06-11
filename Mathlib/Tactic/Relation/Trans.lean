@@ -108,9 +108,33 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 
 * `trans s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`.
 * If `s` is omitted, then a metavariable is used instead.
+
+Moreover, `trans` also applies to a goal whose target has the form `t → u` where `(t u : Prop)`, as
+in this case `→` can be considered a transitive relation.
 -/
 elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   let tgt ← getMainTarget''
+  match tgt with
+  | .forallE name binderType body info =>
+    -- Only consider non-dependent functions `Prop → Prop`
+    if body.hasLooseBVars then
+      throwError "`trans` is not implemented for dependent arrows{indentExpr tgt}"
+    if !((← inferType binderType).isProp ∧ (← inferType body).isProp) then
+      throwError m!"`trans` is only implemented for binary relations and non-dependent arrow " ++
+        m!"between `Prop`s, but got{indentExpr tgt}"
+    -- Parse the intermeditate term
+    let t'? ← t?.mapM (elabTermWithHoles · (Expr.sort 0) (← getMainTag))
+    let middle ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar (Expr.sort 0))
+    liftMetaTactic fun goal => do
+      -- create two new goals
+      let g₁ ← mkFreshExprMVar (some <| .forallE name binderType middle info) .synthetic
+      let g₂ ← mkFreshExprMVar (some <| .forallE name middle body info) .synthetic
+      -- close the original goal with `fun x => g₂ (g₁ x)`
+      goal.assign (.lam name binderType (.app g₂ (.app g₁ (.bvar 0))) .default)
+      pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [middle.mvarId!]
+    return
+  | _ => pure ()
+
   let (rel, x, z) ←
     match tgt with
     | Expr.app f z =>

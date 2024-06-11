@@ -81,3 +81,9 @@ def MyLE (n m : Nat) := ∃ k, n + k = m
 
 example {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
   trans <;> assumption
+
+/-- `trans` for implications. -/
+example {A B C: Prop} (h : A → B) (g : B → C) : A → C := by
+  trans
+  assumption
+  assumption
