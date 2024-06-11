@@ -274,7 +274,7 @@ theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
 #align exists_imp_exists Exists.imp
 
 -- @[congr]
-theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
+theorem existsUnique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
   exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
 
 /- decidable -/

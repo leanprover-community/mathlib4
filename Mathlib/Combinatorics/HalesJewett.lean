@@ -227,7 +227,7 @@ private theorem exists_mono_in_high_dimension' :
         Exists.imp fun ι =>
           Exists.imp fun _ h C =>
             let ⟨l, c, lc⟩ := h fun v => C (e ∘ v)
-            ⟨l.map e, c, e.forall_congr_left.mp fun x => by rw [← lc x, Line.map_apply]⟩)
+            ⟨l.map e, c, e.forall_congr_right.mp fun x => by rw [← lc x, Line.map_apply]⟩)
   (by
     -- This deals with the degenerate case where `α` is empty.
     intro κ _

@@ -996,7 +996,7 @@ theorem piCongrLeft_symm_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i
 theorem piCongrLeft_preimage_pi (f : ι' ≃ ι) (s : Set ι') (t : ∀ i, Set (α i)) :
     f.piCongrLeft α ⁻¹' (f '' s).pi t = s.pi fun i => t (f i) := by
   apply Set.ext;
-  rw [← (f.piCongrLeft α).symm.forall_congr_left]
+  rw [← (f.piCongrLeft α).symm.forall_congr_right]
   simp
 
 theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :

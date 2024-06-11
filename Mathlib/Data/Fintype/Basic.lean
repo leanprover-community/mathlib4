@@ -477,7 +477,7 @@ This function computes by checking all terms `a : α` to find the `f a = b`, so 
 -/
 def invOfMemRange : Set.range f → α := fun b =>
   Finset.choose (fun a => f a = b) Finset.univ
-    ((exists_unique_congr (by simp)).mp (hf.exists_unique_of_mem_range b.property))
+    ((existsUnique_congr (by simp)).mp (hf.exists_unique_of_mem_range b.property))
 #align function.injective.inv_of_mem_range Function.Injective.invOfMemRange
 
 theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b :=
