@@ -67,11 +67,11 @@ lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
     simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
 #align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
-lemma pos_iff_two_le_of_even {m : ℤ} (even : Even m) : 0 < m ↔ 2 ≤ m :=
-  add_one_le_iff.symm.trans <| Ne.le_iff_lt <| by rintro rfl; exact not_even_one even
+lemma two_le_iff_pos_of_even {m : ℤ} (even : Even m) : 2 ≤ m ↔ 0 < m :=
+  le_iff_zero_lt_of_dvd (by decide) (even_iff_two_dvd.mp even)
 
-lemma lt_iff_add_two_le_of_even_sub {m n : ℤ} (even : Even (n - m)) : m < n ↔ m + 2 ≤ n := by
-  rw [add_comm, ← le_sub_iff_add_le, ← sub_pos, pos_iff_two_le_of_even even]
+lemma add_two_le_iff_lt_of_even_sub {m n : ℤ} (even : Even (n - m)) : m + 2 ≤ n ↔ m < n := by
+  rw [add_comm, ← le_sub_iff_add_le, ← sub_pos, two_le_iff_pos_of_even even]
 
 end Int
 

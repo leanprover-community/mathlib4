@@ -116,6 +116,11 @@ theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
 #align int.mod_lt Int.emod_lt
 
+/-! #### `∣` -/
+
+lemma le_iff_zero_lt_of_dvd {a b : ℤ} (ha : 0 < a) (hab : a ∣ b) : a ≤ b ↔ 0 < b :=
+  ⟨lt_of_lt_of_le ha, (le_of_dvd · hab)⟩
+
 /-! ### properties of `/` and `%` -/
 
 theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
