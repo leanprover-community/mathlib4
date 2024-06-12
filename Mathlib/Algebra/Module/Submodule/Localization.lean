@@ -85,7 +85,6 @@ def Submodule.toLocalizedQuotient' : M ⧸ M' →ₗ[R] N ⧸ M'.localized' S p 
 abbrev Submodule.toLocalizedQuotient : M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p :=
   M'.toLocalizedQuotient' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 lemma Submodule.toLocalizedQuotient'_mk (x : M) :
     M'.toLocalizedQuotient' S p f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (f x) := rfl

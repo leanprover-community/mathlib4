@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Function.LpOrder
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 #align_import measure_theory.function.l1_space from "leanprover-community/mathlib"@"ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f"
 
@@ -185,7 +186,8 @@ theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α →
   let ⟨_⟩ := nonempty_fintype α
   hasFiniteIntegral_of_bounded <| ae_of_all μ <| norm_le_pi_norm f
 
-@[deprecated] alias hasFiniteIntegral_of_fintype := HasFiniteIntegral.of_finite -- Since 2024-02-05
+@[deprecated (since := "2024-02-05")]
+alias hasFiniteIntegral_of_fintype := HasFiniteIntegral.of_finite
 
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
@@ -499,7 +501,7 @@ theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSinglet
     (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
   ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
 
-@[deprecated] alias integrable_of_fintype := Integrable.of_finite -- Since 2024-02-05
+@[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
@@ -705,6 +707,33 @@ lemma integrable_add_iff_integrable_right {f g : α → β} (hf : Integrable f �
 lemma integrable_add_iff_integrable_left {f g : α → β} (hf : Integrable f μ) :
     Integrable (g + f) μ ↔ Integrable g μ := by
   rw [add_comm, integrable_add_iff_integrable_right hf]
+
+lemma integrable_left_of_integrable_add_of_nonneg {f g : α → ℝ}
+    (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
+    (h_int : Integrable (f + g) μ) : Integrable f μ := by
+  refine h_int.mono' h_meas ?_
+  filter_upwards [hf, hg] with a haf hag
+  exact (Real.norm_of_nonneg haf).symm ▸ (le_add_iff_nonneg_right _).mpr hag
+
+lemma integrable_right_of_integrable_add_of_nonneg {f g : α → ℝ}
+    (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
+    (h_int : Integrable (f + g) μ) : Integrable g μ :=
+  integrable_left_of_integrable_add_of_nonneg
+    ((AEStronglyMeasurable.add_iff_right h_meas).mp h_int.aestronglyMeasurable)
+      hg hf (add_comm f g ▸ h_int)
+
+lemma integrable_add_iff_of_nonneg {f g : α → ℝ} (h_meas : AEStronglyMeasurable f μ)
+    (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g) :
+    Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ :=
+  ⟨fun h ↦ ⟨integrable_left_of_integrable_add_of_nonneg h_meas hf hg h,
+    integrable_right_of_integrable_add_of_nonneg h_meas hf hg h⟩, fun ⟨hf, hg⟩ ↦ hf.add hg⟩
+
+lemma integrable_add_iff_of_nonpos {f g : α → ℝ} (h_meas : AEStronglyMeasurable f μ)
+    (hf : f ≤ᵐ[μ] 0) (hg : g ≤ᵐ[μ] 0) :
+    Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
+  rw [← integrable_neg_iff, ← integrable_neg_iff (f := f), ← integrable_neg_iff (f := g), neg_add]
+  exact integrable_add_iff_of_nonneg h_meas.neg (hf.mono (fun _ ↦ neg_nonneg_of_nonpos))
+    (hg.mono (fun _ ↦ neg_nonneg_of_nonpos))
 
 @[simp]
 lemma integrable_add_const_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :

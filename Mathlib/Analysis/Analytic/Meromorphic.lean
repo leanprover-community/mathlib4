@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Algebra.Order.Group.WithTop
 
 /-!
 # Meromorphic functions
@@ -146,31 +147,32 @@ case of functions identically 0 near `x`). -/
 noncomputable def order {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : WithTop ℤ :=
   (hf.choose_spec.order.map (↑· : ℕ → ℤ)) - hf.choose
 
+open WithTop.LinearOrderedAddCommGroup
+
 lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
     hf.order = ⊤ ↔ ∀ᶠ z in 𝓝[≠] x, f z = 0 := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
   · rw [h, WithTop.map_top, ← WithTop.coe_natCast,
-      WithTop.top_sub_coe, eq_self, true_iff, eventually_nhdsWithin_iff]
+      top_sub, eq_self, true_iff, eventually_nhdsWithin_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
     filter_upwards [h] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
   · obtain ⟨m, hm⟩ := WithTop.ne_top_iff_exists.mp h
-    rw [← hm, WithTop.map_coe, WithTop.sub_eq_top_iff, eq_false_intro WithTop.coe_ne_top,
-      false_and, false_iff, eventually_nhdsWithin_iff]
+    rw [← hm, WithTop.map_coe, sub_eq_top_iff, eq_false_intro WithTop.coe_ne_top, false_or]
+    simp only [WithTop.natCast_ne_top, false_iff]
     contrapose! h
     rw [AnalyticAt.order_eq_top_iff]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
     apply Eventually.frequently
-    rw [eventually_nhdsWithin_iff]
-    filter_upwards [h] with z hfz hz
-    rw [hfz hz, smul_zero]
+    filter_upwards [h] with z hfz
+    rw [hfz, smul_zero]
 
 lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
-  · rw [h, WithTop.map_top, ← WithTop.coe_natCast, WithTop.top_sub_coe,
+  · rw [h, WithTop.map_top, ← WithTop.coe_natCast, top_sub,
       eq_false_intro WithTop.top_ne_coe, false_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
     refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne ?_
@@ -182,7 +184,7 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     rwa [hfz_eq hz, ← mul_smul, smul_eq_zero_iff_right] at hfz
     exact mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz)) (zpow_ne_zero _ (sub_ne_zero.mpr hz))
   · obtain ⟨m, h⟩ := WithTop.ne_top_iff_exists.mp h
-    rw [← h, WithTop.map_coe, ← WithTop.coe_natCast, ← WithTop.coe_sub, WithTop.coe_inj]
+    rw [← h, WithTop.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
     obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := (AnalyticAt.order_eq_nat_iff _ _).mp h.symm
     replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
       rw [eventually_nhdsWithin_iff]
