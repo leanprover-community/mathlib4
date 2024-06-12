@@ -333,6 +333,14 @@ lemma quasispectrum_eq_spectrum_inr' (R S : Type*) {A : Type*} [Semifield R]
 
 end Unitization
 
+lemma quasispectrum.zero_eq (R S : Type*) {A : Type*} [Semifield R]
+    [Field S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
+    [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] : quasispectrum R (0 : A) = {0} := by
+  rw [Unitization.quasispectrum_eq_spectrum_inr' R S]
+  simp
+  --exact spectrum.zero_eq
+  sorry
+
 /-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
 (quasi)spectrum. -/
 class NonnegSpectrumClass (𝕜 A : Type*) [OrderedCommSemiring 𝕜] [NonUnitalRing A] [PartialOrder A]

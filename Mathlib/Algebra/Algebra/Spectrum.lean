@@ -334,10 +334,10 @@ theorem sub_singleton_eq (a : A) (r : R) : σ a - {r} = σ (a - ↑ₐ r) := by
 
 end ScalarRing
 
-section ScalarField
+section ScalarSemifield
 
 variable {𝕜 : Type u} {A : Type v}
-variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+variable [Semifield 𝕜] [Ring A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜
 
@@ -353,19 +353,6 @@ theorem zero_eq [Nontrivial A] : σ (0 : A) = {0} := by
   have : IsUnit (Units.mk0 k hk • (1 : A)) := IsUnit.smul (Units.mk0 k hk) isUnit_one
   simpa [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one]
 #align spectrum.zero_eq spectrum.zero_eq
-
-@[simp]
-theorem scalar_eq [Nontrivial A] (k : 𝕜) : σ (↑ₐ k) = {k} := by
-  rw [← add_zero (↑ₐ k), ← singleton_add_eq, zero_eq, Set.singleton_add_singleton, add_zero]
-#align spectrum.scalar_eq spectrum.scalar_eq
-
-@[simp]
-theorem one_eq [Nontrivial A] : σ (1 : A) = {1} :=
-  calc
-    σ (1 : A) = σ (↑ₐ 1) := by rw [Algebra.algebraMap_eq_smul_one, one_smul]
-    _ = {1} := scalar_eq 1
-
-#align spectrum.one_eq spectrum.one_eq
 
 /-- the assumption `(σ a).Nonempty` is necessary and cannot be removed without
 further conditions on the algebra `A` and scalar field `𝕜`. -/
@@ -394,6 +381,30 @@ protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := 
   · lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr (ne_zero_of_mem_of_unit hk)
     simpa only [Units.val_inv_eq_inv_val] using inv_mem_iff.mp hk
 #align spectrum.map_inv spectrum.map_inv
+
+end ScalarSemifield
+
+section ScalarField
+
+variable {𝕜 : Type u} {A : Type v}
+variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+
+local notation "σ" => spectrum 𝕜
+
+local notation "↑ₐ" => algebraMap 𝕜 A
+
+
+@[simp]
+theorem scalar_eq [Nontrivial A] (k : 𝕜) : σ (↑ₐ k) = {k} := by
+  rw [← add_zero (↑ₐ k), ← singleton_add_eq, zero_eq, Set.singleton_add_singleton, add_zero]
+#align spectrum.scalar_eq spectrum.scalar_eq
+
+@[simp]
+theorem one_eq [Nontrivial A] : σ (1 : A) = {1} :=
+  calc
+    σ (1 : A) = σ (↑ₐ 1) := by rw [Algebra.algebraMap_eq_smul_one, one_smul]
+    _ = {1} := scalar_eq 1
+#align spectrum.one_eq spectrum.one_eq
 
 end ScalarField
 

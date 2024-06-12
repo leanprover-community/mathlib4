@@ -402,6 +402,16 @@ lemma eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a :=
     a = 0 := by
   simpa [cfcₙ_id R a] using cfcₙ_congr (a := a) (f := id) (g := fun _ : R ↦ 0) fun x ↦ by simp_all
 
+@[simp]
+lemma cfcₙ_apply_zero {f : R → R} : cfcₙ f (0 : A) = 0 := by
+  by_cases htriv : f 0 = 0
+  · have h₁ : cfcₙ (0 : R → R) (0 : A) = 0 := by simp
+    conv_rhs => rw [← h₁]
+    refine cfcₙ_congr ?_
+    rw [quasispectrum_zero]
+    simp [htriv]
+  · exact cfcₙ_apply_of_not_map_zero 0 htriv
+
 end CFCn
 
 end Main
