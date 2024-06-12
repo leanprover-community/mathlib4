@@ -98,7 +98,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
     intro hp
     simpa only [constantCoeff_apply, coeff_p_zero, not_isUnit_zero] using
       (constantCoeff : WittVector p k →+* _).isUnit_map hp
-  refine' ⟨hp, fun a b hab => _⟩
+  refine ⟨hp, fun a b hab => ?_⟩
   obtain ⟨ha0, hb0⟩ : a ≠ 0 ∧ b ≠ 0 := by
     rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_nonzero p k hab
   obtain ⟨m, a, ha, rfl⟩ := verschiebung_nonzero ha0
@@ -126,7 +126,7 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   have := congr_fun (WittVector.verschiebung_frobenius_comm.comp_iterate m) b
   simp only [Function.comp_apply] at this
   rw [← this] at hcm
-  refine' ⟨m, b, _, _⟩
+  refine ⟨m, b, ?_, ?_⟩
   · contrapose! hc
     simp [hc, zero_pow $ pow_ne_zero _ hp.out.ne_zero]
   · simp_rw [← mul_left_iterate (p : 𝕎 k) m]
@@ -159,7 +159,7 @@ https://github.com/leanprover/lean4/issues/1102
 -/
 theorem discreteValuationRing : DiscreteValuationRing (𝕎 k) :=
   DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
-    refine' ⟨p, irreducible p, fun {x} hx => _⟩
+    refine ⟨p, irreducible p, fun {x} hx => ?_⟩
     obtain ⟨n, b, hb⟩ := exists_eq_pow_p_mul' x hx
     exact ⟨n, b, hb.symm⟩)
 #align witt_vector.discrete_valuation_ring WittVector.discreteValuationRing

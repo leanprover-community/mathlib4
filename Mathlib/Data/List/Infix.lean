@@ -288,16 +288,10 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
     | cons l ls =>
       cases n with
       | zero =>
-        refine' iff_of_false _ (zero_lt_succ _).not_le
-        rw [take_zero, take_nil]
-        simp only [take, not_false_eq_true]
+        simp
       | succ n =>
-        simp only [length] at hm
-        have specializedIH := @IH n ls (Nat.lt_of_succ_lt_succ hm)
-        simp only [le_of_lt (Nat.lt_of_succ_lt_succ hm), min_eq_left] at specializedIH
-        simp only [take, length, ge_iff_le, le_of_lt hm, min_eq_left, take_cons_succ, cons.injEq,
-          specializedIH, true_and]
-        exact ⟨Nat.succ_le_succ, Nat.le_of_succ_le_succ⟩
+        simp only [length_cons, succ_eq_add_one, Nat.add_lt_add_iff_right] at hm
+        simp [← @IH n ls hm, Nat.min_eq_left, Nat.le_of_lt hm]
 #align list.prefix_take_le_iff List.prefix_take_le_iff
 
 theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
@@ -331,7 +325,7 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
       exact hl h.right
 #align list.is_prefix.filter_map List.IsPrefix.filterMap
 
-@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap -- 2024-03-26
+@[deprecated (since := "2024-03-26")] alias IsPrefix.filter_map := IsPrefix.filterMap
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
@@ -487,12 +481,12 @@ theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n =
 section deprecated
 set_option linter.deprecated false
 
-@[simp, deprecated get_tails] -- 2024-04-16
+@[simp, deprecated get_tails (since := "2024-04-16")]
 theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
     nthLe (tails l) n hn = l.drop n :=
   get_tails l _
 
-@[simp, deprecated get_inits] -- 2024-04-16
+@[simp, deprecated get_inits (since := "2024-04-16")]
 theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
     nthLe (inits l) n hn = l.take n :=
   get_inits l _

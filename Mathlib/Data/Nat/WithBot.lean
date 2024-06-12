@@ -34,7 +34,7 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := b
 
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
-  repeat refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
+  repeat refine ⟨fun h => Option.noConfusion h, fun h => ?_⟩;
               aesop (simp_config := { decide := true })
   repeat erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_one_iff
@@ -43,7 +43,7 @@ theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n
 theorem add_eq_two_iff {n m : WithBot ℕ} :
     n + m = 2 ↔ n = 0 ∧ m = 2 ∨ n = 1 ∧ m = 1 ∨ n = 2 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
-  repeat refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
+  repeat refine ⟨fun h => Option.noConfusion h, fun h => ?_⟩;
               aesop (simp_config := { decide := true })
   repeat erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_two_iff
@@ -52,7 +52,7 @@ theorem add_eq_two_iff {n m : WithBot ℕ} :
 theorem add_eq_three_iff {n m : WithBot ℕ} :
     n + m = 3 ↔ n = 0 ∧ m = 3 ∨ n = 1 ∧ m = 2 ∨ n = 2 ∧ m = 1 ∨ n = 3 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
-  repeat refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
+  repeat refine ⟨fun h => Option.noConfusion h, fun h => ?_⟩;
               aesop (simp_config := { decide := true })
   repeat erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_three_iff
@@ -68,8 +68,8 @@ theorem lt_zero_iff {n : WithBot ℕ} : n < 0 ↔ n = ⊥ := WithBot.lt_coe_bot
 #align nat.with_bot.lt_zero_iff Nat.WithBot.lt_zero_iff
 
 theorem one_le_iff_zero_lt {x : WithBot ℕ} : 1 ≤ x ↔ 0 < x := by
-  refine' ⟨fun h => lt_of_lt_of_le (WithBot.coe_lt_coe.mpr zero_lt_one) h, fun h => _⟩
-  induction x using WithBot.recBotCoe
+  refine ⟨fun h => lt_of_lt_of_le (WithBot.coe_lt_coe.mpr zero_lt_one) h, fun h => ?_⟩
+  induction x
   · exact (not_lt_bot h).elim
   · exact WithBot.coe_le_coe.mpr (Nat.succ_le_iff.mpr (WithBot.coe_lt_coe.mp h))
 #align nat.with_bot.one_le_iff_zero_lt Nat.WithBot.one_le_iff_zero_lt
@@ -82,7 +82,7 @@ theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
   cases n
   · exact bot_le
   cases m
-  exacts [(not_lt_bot h).elim, WithBot.some_le_some.2 (WithBot.some_lt_some.1 h)]
+  exacts [(not_lt_bot h).elim, WithBot.coe_le_coe.2 (WithBot.coe_lt_coe.1 h)]
 #align nat.with_bot.add_one_le_of_lt Nat.WithBot.add_one_le_of_lt
 
 end WithBot

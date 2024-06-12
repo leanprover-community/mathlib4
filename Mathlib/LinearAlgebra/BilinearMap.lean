@@ -132,8 +132,6 @@ theorem flip_flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.f
   LinearMap.ext₂ fun _x _y => (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
 #align linear_map.flip_flip LinearMap.flip_flip
 
-open BigOperators
-
 theorem flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
   ext₂ fun m n => show flip f n m = flip g n m by rw [H]
 #align linear_map.flip_inj LinearMap.flip_inj
@@ -163,7 +161,7 @@ theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r
 #align linear_map.map_smulₛₗ₂ LinearMap.map_smulₛₗ₂
 
 theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
-    f (∑ i in t, x i) y = ∑ i in t, f (x i) y :=
+    f (∑ i ∈ t, x i) y = ∑ i ∈ t, f (x i) y :=
   _root_.map_sum (flip f y) _ _
 #align linear_map.map_sum₂ LinearMap.map_sum₂
 
@@ -327,8 +325,14 @@ end
 
 /-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
 form a bilinear map `M → Q → P`. -/
-def compl₂ (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₃] Q →ₛₗ[σ₄₃] P :=
-  (lcompₛₗ _ _ g).comp f
+def compl₂ {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
+    (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
+  toFun a := (lcompₛₗ P σ₂₃ g) (h a)
+  map_add' _ _ := by
+    simp [map_add]
+  map_smul' _ _ := by
+    simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
+    rfl
 #align linear_map.compl₂ LinearMap.compl₂
 
 @[simp]
@@ -343,8 +347,10 @@ theorem compl₂_id : f.compl₂ LinearMap.id = f := by
 
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
 form a bilinear map `Q → Q' → P`. -/
-def compl₁₂ (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] Mₗ) (g' : Qₗ' →ₗ[R] Nₗ) :
-    Qₗ →ₗ[R] Qₗ' →ₗ[R] Pₗ :=
+def compl₁₂ {R₁ : Type*} [CommSemiring R₁] [Module R₂ N] [Module R₂ Pₗ] [Module R₁ Pₗ]
+    [Module R₁ Mₗ] [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ']
+    (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) :
+    Qₗ →ₗ[R₁] Qₗ' →ₗ[R₂] Pₗ :=
   (f.comp g).compl₂ g'
 #align linear_map.compl₁₂ LinearMap.compl₁₂
 
@@ -387,21 +393,25 @@ theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R]
 
 variable (R M)
 
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
+
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
 def lsmul : R →ₗ[R] M →ₗ[R] M :=
   mk₂ R (· • ·) add_smul (fun _ _ _ => mul_smul _ _ _) smul_add fun r s m => by
     simp only [smul_smul, smul_eq_mul, mul_comm]
 #align linear_map.lsmul LinearMap.lsmul
 
-variable {R M}
+variable {R}
+
+lemma lsmul_eq_DistribMulAction_toLinearMap (r : R) :
+    lsmul R M r = DistribMulAction.toLinearMap R M r := rfl
+
+variable {M}
 
 @[simp]
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
-
-variable (R M) in
-/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
-protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
 
 end CommSemiring
 

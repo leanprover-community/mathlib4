@@ -30,8 +30,6 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
 
 open derangements Equiv Fintype
 
-open BigOperators
-
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
@@ -114,7 +112,7 @@ theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [Decidabl
 
 theorem numDerangements_sum (n : ℕ) :
     (numDerangements n : ℤ) =
-      ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
+      ∑ k ∈ Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
   induction' n with n hn; · rfl
   rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
     Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ', neg_one_mul, sub_eq_add_neg,

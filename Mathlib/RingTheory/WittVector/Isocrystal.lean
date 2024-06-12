@@ -202,7 +202,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
   obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x := by
     rw [finrank_eq_one_iff_of_nonzero' x hx] at h_dim
     obtain ⟨a, ha⟩ := h_dim (Φ(p, k) x)
-    refine' ⟨a, _, ha.symm⟩
+    refine ⟨a, ?_, ha.symm⟩
     intro ha'
     apply this
     simp only [← ha, ha', zero_smul]
@@ -211,17 +211,13 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
   use m
   let F₀ : StandardOneDimIsocrystal p k m →ₗ[K(p, k)] V := LinearMap.toSpanSingleton K(p, k) V x
   let F : StandardOneDimIsocrystal p k m ≃ₗ[K(p, k)] V := by
-    refine' LinearEquiv.ofBijective F₀ ⟨_, _⟩
+    refine LinearEquiv.ofBijective F₀ ⟨?_, ?_⟩
     · rw [← LinearMap.ker_eq_bot]
       exact LinearMap.ker_toSpanSingleton K(p, k) V hx
     · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
-  -- Porting note: `refine'` below gets confused when this is inlined.
-  let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
-  refine' ⟨⟨E, _⟩⟩
-  simp only [E]
-  intro c
+  refine ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, fun c ↦ ?_⟩⟩
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
     LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
   -- Porting note: was
