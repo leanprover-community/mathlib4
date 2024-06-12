@@ -137,7 +137,7 @@ instance : Inf (ExtensionOf i f) where
       le := fun x hx =>
         (by
           rcases hx with ⟨x, rfl⟩
-          refine' ⟨X1.le (Set.mem_range_self _), X2.le (Set.mem_range_self _), _⟩
+          refine ⟨X1.le (Set.mem_range_self _), X2.le (Set.mem_range_self _), ?_⟩
           rw [← X1.is_extension x, ← X2.is_extension x] :
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
       is_extension := fun m => X1.is_extension _ }
@@ -180,7 +180,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
-      refine' Eq.trans (hnonempty.some.is_extension m) _
+      refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
       generalize_proofs _ h1
       exact

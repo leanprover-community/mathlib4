@@ -95,6 +95,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 -- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 #noalign category_theory.forget_obj_eq_coe
 
+/-- In any concrete category, `(forget C).map` is injective. -/
 abbrev ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
   coe f := (forget C).map f
   coe_injective' _ _ h := (forget C).map_injective h

@@ -55,6 +55,11 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 * `HomogeneousLocalization.localRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
 
+* `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a grading
+  preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then `g`
+  induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
+  localization of `B` at `Q`.
+
 ## References
 
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
@@ -605,6 +610,54 @@ theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
   rw [← smul_eq_mul, add_smul,
     DirectSum.degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded _ hf) (hk.symm ▸ z.den_mem_deg) hfk]
   exact ⟨_, SetLike.mul_mem_graded (SetLike.pow_mem_graded _ hf) z.num_mem_deg, rfl⟩
+
+end
+
+section
+
+variable (𝒜)
+variable {B : Type*} [CommRing B] [Algebra R B]
+variable (ℬ : ι → Submodule R B) [GradedAlgebra ℬ]
+variable {P : Submonoid A} {Q : Submonoid B}
+
+/--
+Let `A, B` be two graded algebras with the same indexing set and `g : A → B` be a graded algebra
+homomorphism (i.e. `g(Aₘ) ⊆ Bₘ`). Let `P ≤ A` be a submonoid and `Q ≤ B` be a submonoid such that
+`P ≤ g⁻¹ Q`, then `g` induce a map from the homogeneous localizations `A⁰_P` to the homogeneous
+localizations `B⁰_Q`.
+-/
+def map (g : A →+* B)
+    (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) :
+    HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
+  toFun := Quotient.map'
+    (fun x ↦ ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩)
+    fun x y (e : x.embedding = y.embedding) ↦ by
+      apply_fun IsLocalization.map (Localization Q) g comap_le at e
+      simp_rw [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
+        IsLocalization.map_mk', ← Localization.mk_eq_mk'] at e
+      exact e
+  map_add' := Quotient.ind₂' fun x y ↦ by
+    simp only [← mk_add, Quotient.map'_mk'', num_add, map_add, map_mul, den_add]; rfl
+  map_mul' := Quotient.ind₂' fun x y ↦ by
+    simp only [← mk_mul, Quotient.map'_mk'', num_mul, map_mul, den_mul]; rfl
+  map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
+    num_zero, ZeroMemClass.coe_zero, map_zero, den_zero, map_one]; rfl
+  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
+    num_one, ZeroMemClass.coe_zero, map_zero, den_one, map_one]; rfl
+
+/--
+Let `A` be a graded algebra and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
+at `P` embedds into the homogeneous localization of `A` at `Q`.
+-/
+abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
+    HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
+  map 𝒜 𝒜 (RingHom.id _) h (fun _ _ ↦ id)
+
+lemma map_mk (g : A →+* B)
+    (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) (x) :
+    map 𝒜 ℬ g comap_le hg (mk x) =
+    mk ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩ :=
+  rfl
 
 end
 

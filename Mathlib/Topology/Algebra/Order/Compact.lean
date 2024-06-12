@@ -82,7 +82,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]
-  refine' isCompact_iff_ultrafilter_le_nhds.2 fun f hf => _
+  refine isCompact_iff_ultrafilter_le_nhds.2 fun f hf => ?_
   contrapose! hf
   rw [le_principal_iff]
   have hpt : ∀ x ∈ Icc a b, {x} ∉ f := fun x hx hxf =>
@@ -106,7 +106,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
       with ⟨x, hxc, hxU⟩
     rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually
       (Ioc_mem_nhdsWithin_Iic ⟨hxc, le_rfl⟩)).exists with ⟨y, ⟨_hyab, hyf⟩, hy⟩
-    refine' mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans _ hxU)
+    refine mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans ?_ hxU)
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
       Ioc_subset_Ioc_left hy.1.le
@@ -117,10 +117,10 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
-  refine' mem_of_superset _ hyU; clear! U
+  refine mem_of_superset ?_ hyU; clear! U
   have hy : y ∈ Icc a b := ⟨hc.1.trans hxy.1.le, hxy.2⟩
   by_cases hay : Icc a y ∈ f
-  · refine' mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) _
+  · refine mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) ?_
     rw [diff_subset_iff, union_comm, Ico_union_right hxy.1.le, diff_subset_iff]
     exact Icc_subset_Icc_union_Icc
   · exact ((hsc.1 ⟨hy, hay⟩).not_lt hxy.1).elim
@@ -279,7 +279,7 @@ theorem IsCompact.exists_forall_le' [ClosedIicTopology α] [NoMaxOrder α] {f : 
     exact ⟨f x, hf' x hx, hx'⟩
 
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
-@[deprecated IsCompact.exists_isMinOn]
+@[deprecated IsCompact.exists_isMinOn (since := "2023-02-06")]
 theorem IsCompact.exists_forall_le [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, ∀ y ∈ s, f x ≤ f y :=
   hs.exists_isMinOn ne_s hf
@@ -292,7 +292,7 @@ theorem IsCompact.exists_isMaxOn [ClosedIciTopology α] {s : Set β} (hs : IsCom
   IsCompact.exists_isMinOn (α := αᵒᵈ) hs ne_s hf
 
 /-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
-@[deprecated IsCompact.exists_isMaxOn]
+@[deprecated IsCompact.exists_isMaxOn (since := "2023-02-06")]
 theorem IsCompact.exists_forall_ge [ClosedIciTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, ∀ y ∈ s, f y ≤ f x :=
   IsCompact.exists_isMaxOn hs ne_s hf
@@ -304,7 +304,7 @@ theorem ContinuousOn.exists_isMinOn' [ClosedIicTopology α] {s : Set β} {f : β
     (hf : ContinuousOn f s) (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s)
     (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x₀ ≤ f x) : ∃ x ∈ s, IsMinOn f s x := by
   rcases (hasBasis_cocompact.inf_principal _).eventually_iff.1 hc with ⟨K, hK, hKf⟩
-  have hsub : insert x₀ (K ∩ s) ⊆ s := insert_subset_iff.2 ⟨h₀, inter_subset_right _ _⟩
+  have hsub : insert x₀ (K ∩ s) ⊆ s := insert_subset_iff.2 ⟨h₀, inter_subset_right⟩
   obtain ⟨x, hx, hxf⟩ : ∃ x ∈ insert x₀ (K ∩ s), ∀ y ∈ insert x₀ (K ∩ s), f x ≤ f y :=
     ((hK.inter_right hsc).insert x₀).exists_isMinOn (insert_nonempty _ _) (hf.mono hsub)
   refine ⟨x, hsub hx, fun y hy => ?_⟩
@@ -313,7 +313,7 @@ theorem ContinuousOn.exists_isMinOn' [ClosedIicTopology α] {s : Set β} {f : β
 
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 larger than a value in its image away from compact sets, then it has a minimum on this set. -/
-@[deprecated ContinuousOn.exists_isMinOn']
+@[deprecated ContinuousOn.exists_isMinOn' (since := "2023-02-06")]
 theorem ContinuousOn.exists_forall_le' [ClosedIicTopology α] {s : Set β} {f : β → α}
     (hf : ContinuousOn f s) (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s)
     (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x₀ ≤ f x) : ∃ x ∈ s, ∀ y ∈ s, f x ≤ f y :=
@@ -329,7 +329,7 @@ theorem ContinuousOn.exists_isMaxOn' [ClosedIciTopology α] {s : Set β} {f : β
 
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 smaller than a value in its image away from compact sets, then it has a maximum on this set. -/
-@[deprecated ContinuousOn.exists_isMaxOn']
+@[deprecated ContinuousOn.exists_isMaxOn' (since := "2023-02-06")]
 theorem ContinuousOn.exists_forall_ge' [ClosedIciTopology α] {s : Set β} {f : β → α}
     (hf : ContinuousOn f s) (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s)
     (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x ≤ f x₀) : ∃ x ∈ s, ∀ y ∈ s, f y ≤ f x :=
@@ -538,7 +538,7 @@ theorem IsCompact.exists_isMaxOn_mem_subset [ClosedIciTopology α] {f : β → �
   let ⟨x, hxt, hfx⟩ := ht.exists_isMaxOn ⟨z, hz⟩ hf
   ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
 
-@[deprecated IsCompact.exists_isMinOn_mem_subset]
+@[deprecated IsCompact.exists_isMinOn_mem_subset (since := "2023-02-06")]
 theorem IsCompact.exists_isLocalMinOn_mem_subset [ClosedIicTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z < f z') : ∃ x ∈ s, IsLocalMinOn f t x :=

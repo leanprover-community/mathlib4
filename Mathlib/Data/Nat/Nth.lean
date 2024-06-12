@@ -59,8 +59,8 @@ variable {p}
 -/
 
 
-theorem nth_of_card_le (hf : (setOf p).Finite) {n : ℕ} (hn : hf.toFinset.card ≤ n) : nth p n = 0 :=
-  by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
+theorem nth_of_card_le (hf : (setOf p).Finite) {n : ℕ} (hn : hf.toFinset.card ≤ n) :
+    nth p n = 0 := by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
 #align nat.nth_of_card_le Nat.nth_of_card_le
 
 theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :

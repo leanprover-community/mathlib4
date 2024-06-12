@@ -52,6 +52,10 @@ instance [Reflective i] : i.IsRightAdjoint := ⟨_, ⟨reflectorAdjunction i⟩�
 
 instance [Reflective i] : (reflector i).IsLeftAdjoint := ⟨_, ⟨reflectorAdjunction i⟩⟩
 
+/-- A reflective functor is fully faithful. -/
+def Functor.fullyFaithfulOfReflective [Reflective i] : i.FullyFaithful :=
+  (reflectorAdjunction i).fullyFaithfulROfIsIsoCounit
+
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
 /-- For a reflective functor `i` (with left adjoint `L`), with unit `η`, we have `η_iL = iL η`.
 -/
@@ -115,7 +119,8 @@ instance Reflective.comp (F : C ⥤ D) (G : D ⥤ E) [Reflective F] [Reflective 
 /-- (Implementation) Auxiliary definition for `unitCompPartialBijective`. -/
 def unitCompPartialBijectiveAux [Reflective i] (A : C) (B : D) :
     (A ⟶ i.obj B) ≃ (i.obj ((reflector i).obj A) ⟶ i.obj B) :=
-  ((reflectorAdjunction i).homEquiv _ _).symm.trans (equivOfFullyFaithful i)
+  ((reflectorAdjunction i).homEquiv _ _).symm.trans
+    (Functor.FullyFaithful.ofFullyFaithful i).homEquiv
 #align category_theory.unit_comp_partial_bijective_aux CategoryTheory.unitCompPartialBijectiveAux
 
 /-- The description of the inverse of the bijection `unitCompPartialBijectiveAux`. -/

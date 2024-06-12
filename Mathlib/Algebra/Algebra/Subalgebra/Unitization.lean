@@ -105,7 +105,7 @@ theorem lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
   · rintro - ⟨x, rfl⟩
     exact @h (f x) ⟨x, by simp⟩
   · rintro - ⟨x, rfl⟩
-    induction x using ind with
+    induction x with
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem lift_range (f : A →ₙₐ[R] C) :
@@ -148,7 +148,7 @@ theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R]
     [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
     (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
   refine (injective_iff_map_eq_zero f).mpr fun x hx => ?_
-  induction' x using Unitization.ind with r a
+  induction' x with r a
   simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
   rw [add_eq_zero_iff_eq_neg] at hx ⊢
   by_cases hr : r = 0
@@ -360,7 +360,7 @@ theorem starLift_range_le
   · rintro - ⟨x, rfl⟩
     exact @h (f x) ⟨x, by simp⟩
   · rintro - ⟨x, rfl⟩
-    induction x using ind with
+    induction x with
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem starLift_range (f : A →⋆ₙₐ[R] C) :

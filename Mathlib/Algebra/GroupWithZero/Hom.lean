@@ -145,25 +145,10 @@ lemma toMonoidHom_coe (f : α →*₀ β) : f.toMonoidHom.toFun = f := rfl
 @[ext] lemma ext ⦃f g : α →*₀ β⦄ (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 #align monoid_with_zero_hom.ext MonoidWithZeroHom.ext
 
-section Deprecated -- since 2022-12-03
-
-@[deprecated DFunLike.congr_fun]
-lemma congr_fun {f g : α →*₀ β} (h : f = g) (x : α) : f x = g x := DFunLike.congr_fun h x
-#align monoid_with_zero_hom.congr_fun MonoidWithZeroHom.congr_fun
-
-@[deprecated DFunLike.congr_arg]
-lemma congr_arg (f : α →*₀ β) {x y : α} (h : x = y) : f x = f y := DFunLike.congr_arg f h
-#align monoid_with_zero_hom.congr_arg MonoidWithZeroHom.congr_arg
-
-@[deprecated DFunLike.coe_injective]
-lemma coe_inj ⦃f g : α →*₀ β⦄ (h : (f : α → β) = g) : f = g := DFunLike.coe_injective h
-#align monoid_with_zero_hom.coe_inj MonoidWithZeroHom.coe_inj
-
-@[deprecated DFunLike.ext_iff]
-lemma ext_iff {f g : α →*₀ β} : f = g ↔ ∀ x, f x = g x := DFunLike.ext_iff
-#align monoid_with_zero_hom.ext_iff MonoidWithZeroHom.ext_iff
-
-end Deprecated
+#align monoid_with_zero_hom.congr_fun DFunLike.congr_fun
+#align monoid_with_zero_hom.congr_arg DFunLike.congr_arg
+#align monoid_with_zero_hom.coe_inj DFunLike.coe_injective
+#align monoid_with_zero_hom.ext_iff DFunLike.ext_iff
 
 @[simp] lemma mk_coe (f : α →*₀ β) (h1 hmul) : mk f h1 hmul = f := ext fun _ ↦ rfl
 #align monoid_with_zero_hom.mk_coe MonoidWithZeroHom.mk_coe
@@ -233,13 +218,12 @@ lemma cancel_left {g : β →*₀ γ} {f₁ f₂ : α →*₀ β} (hg : Injectiv
     comp_apply], fun h ↦ h ▸ rfl⟩
 #align monoid_with_zero_hom.cancel_left MonoidWithZeroHom.cancel_left
 
-set_option linter.deprecated false in
 lemma toMonoidHom_injective : Injective (toMonoidHom : (α →*₀ β) → α →* β) :=
-  fun _ _ h ↦ ext $ MonoidHom.ext_iff.mp h
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align monoid_with_zero_hom.to_monoid_hom_injective MonoidWithZeroHom.toMonoidHom_injective
 
 lemma toZeroHom_injective : Injective (toZeroHom : (α →*₀ β) → ZeroHom α β) :=
-  fun _ _ h ↦ ext $ (DFunLike.ext_iff (F := ZeroHom α β)).mp h
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align monoid_with_zero_hom.to_zero_hom_injective MonoidWithZeroHom.toZeroHom_injective
 
 @[simp] lemma comp_id (f : α →*₀ β) : f.comp (id α) = f := ext fun _ ↦ rfl

@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Algebra.Order.Group.Nat
 
 #align_import data.string.basic from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
 
@@ -120,18 +121,22 @@ theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s
   ⟨congr_arg mk, congr_arg toList⟩
 #align string.to_list_inj String.toList_inj
 
-theorem nil_asString_eq_empty : [].asString = "" :=
+theorem asString_nil : [].asString = "" :=
   rfl
-#align string.nil_as_string_eq_empty String.nil_asString_eq_empty
+#align string.nil_as_string_eq_empty String.asString_nil
+
+@[deprecated (since := "2024-06-04")] alias nil_asString_eq_empty := asString_nil
 
 @[simp]
 theorem toList_empty : "".toList = [] :=
   rfl
 #align string.to_list_empty String.toList_empty
 
-theorem asString_inv_toList (s : String) : s.toList.asString = s :=
+theorem asString_toList (s : String) : s.toList.asString = s :=
   rfl
-#align string.as_string_inv_to_list String.asString_inv_toList
+#align string.as_string_inv_to_list String.asString_toList
+
+@[deprecated (since := "2024-06-04")] alias asString_inv_toList := asString_toList
 
 #align string.to_list_singleton String.data_singleton
 
@@ -175,26 +180,32 @@ end String
 
 open String
 
-theorem List.toList_inv_asString (l : List Char) : l.asString.toList = l :=
+namespace List
+
+theorem toList_asString (l : List Char) : l.asString.toList = l :=
   rfl
-#align list.to_list_inv_as_string List.toList_inv_asString
+#align list.to_list_inv_as_string List.toList_asString
+
+@[deprecated (since := "2024-06-04")] alias toList_inv_asString := toList_asString
 
 @[simp]
-theorem List.length_asString (l : List Char) : l.asString.length = l.length :=
+theorem length_asString (l : List Char) : l.asString.length = l.length :=
   rfl
 #align list.length_as_string List.length_asString
 
 @[simp]
-theorem List.asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
-  ⟨fun h ↦ by rw [← toList_inv_asString l, ← toList_inv_asString l', toList_inj, h],
+theorem asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
+  ⟨fun h ↦ by rw [← toList_asString l, ← toList_asString l', toList_inj, h],
    fun h ↦ h ▸ rfl⟩
 #align list.as_string_inj List.asString_inj
+
+theorem asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
+  rw [← asString_toList s, asString_inj, asString_toList s]
+#align list.as_string_eq List.asString_eq
+
+end List
 
 @[simp]
 theorem String.length_data (s : String) : s.data.length = s.length :=
   rfl
 #align string.length_to_list String.length_data
-
-theorem List.asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
-  rw [← asString_inv_toList s, asString_inj, asString_inv_toList s]
-#align list.as_string_eq List.asString_eq
