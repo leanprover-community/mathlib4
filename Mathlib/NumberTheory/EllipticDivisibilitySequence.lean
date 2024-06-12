@@ -802,7 +802,7 @@ lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
 
 @[simp]
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
-  rw [normEDS, preNormEDS_neg, Int.natAbs_neg, neg_mul, normEDS]
+  simp_rw [normEDS, preNormEDS_neg, neg_mul, even_neg]
 
 /- superseded by `IsEllSequence.normEDS` which doesn't require `hb`. -/
 private theorem IsEllSequence.normEDS_of_mem_nonZeroDivisors (hb : b ∈ R⁰) :
@@ -960,20 +960,26 @@ end EllSequence
 
 end Complement
 
-section map
+section Map
 
-variable {b c d : R}
+variable {b c d}
 
-lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n :=
-  normEDSRec (map_zero f) (map_one f) (map_one f) rfl rfl
-    (fun m h₁ h₂ h₃ h₄ h₅ ↦ by simp [preNormEDS'_even, h₁, h₂, h₃, h₄, h₅])
-    (fun m h₁ h₂ h₃ h₄ ↦ by simp [preNormEDS'_odd, h₁, h₂, h₃, h₄, apply_ite f]) n
+lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
+  induction n using normEDSRec' with
+  | zero => rw [preNormEDS'_zero, map_zero, preNormEDS'_zero]
+  | one => rw [preNormEDS'_one, map_one, preNormEDS'_one]
+  | two => rw [preNormEDS'_two, map_one, preNormEDS'_two]
+  | three => rw [preNormEDS'_three, preNormEDS'_three]
+  | four => rw [preNormEDS'_four, preNormEDS'_four]
+  | _ _ ih =>
+    simp only [preNormEDS'_odd, preNormEDS'_even, map_one, map_sub, map_mul, map_pow, apply_ite f]
+    repeat rw [ih _ <| by linarith only]
 
 lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
-  simp_rw [preNormEDS, map_mul, map_intCast, map_preNormEDS']
+  rw [preNormEDS, map_mul, map_intCast, map_preNormEDS', preNormEDS]
 
 lemma map_normEDS (n : ℤ) : f (normEDS b c d n) = normEDS (f b) (f c) (f d) n := by
-  simp_rw [normEDS, map_mul, map_preNormEDS, apply_ite f, map_pow, map_one]
+  rw [normEDS, map_mul, map_preNormEDS, map_pow, apply_ite f, map_one, normEDS]
 
 lemma map_compl₂EDS (n : ℤ) : f (compl₂EDS b c d n) = compl₂EDS (f b) (f c) (f d) n := by
   simp only [compl₂EDS, map_sub, map_mul, map_pow, map_preNormEDS, apply_ite f, map_one]
@@ -1036,11 +1042,11 @@ lemma complEDS_eq_aeval :
       (aeval (Param.rec b c d) <| complEDS (X (R := ℤ) B) (X C) (X D) · ·) := by
   simp_rw [map_complEDS, aeval_X]
 
-end map
+end Map
 
 section
 
-variable {b c d : R} {U : ℤ → R} (ellW : IsEllSequence W) (ellU : IsEllSequence U)
+variable {b c d} {U : ℤ → R} (ellW : IsEllSequence W) (ellU : IsEllSequence U)
 open MvPolynomial
 
 /-- A normalised EDS is in fact an elliptic sequenc. -/
@@ -1066,9 +1072,11 @@ protected lemma IsEllSequence.ext (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     | neg n hn =>
       rw [ellW.neg one two, ellU.neg (h1 ▸ one) (h2 ▸ two), hn]
 
-lemma normEDS_two_three_two : normEDS 2 3 2 = id :=
-  IsEllSequence.normEDS.ext isEllSequence_id (mem_nonZeroDivisors_of_ne_zero one_ne_zero)
-    (mem_nonZeroDivisors_of_ne_zero two_ne_zero) rfl rfl rfl rfl
+lemma normEDS_two_three_two : normEDS 2 3 2 = id := by
+  apply IsEllSequence.normEDS.ext isEllSequence_id <;>
+    simp only [normEDS_one, normEDS_two, normEDS_three, normEDS_four]
+  exacts [mem_nonZeroDivisors_of_ne_zero one_ne_zero,
+    mem_nonZeroDivisors_of_ne_zero two_ne_zero, rfl, rfl, rfl, rfl]
 
 lemma compl₂EDS_two_three_two (n : ℤ) : compl₂EDS (2 : ℤ) 3 2 n = 2 := by
   obtain rfl | hn := eq_or_ne n 0
@@ -1249,8 +1257,6 @@ lemma IsEllSequence.isEllDivSequence_of_dvd : IsEllDivSequence W :=
 end Divisibility
 
 section
-
-variable {b c d : R}
 
 lemma net_normEDS (p q r s : ℤ) : net (normEDS b c d) p q r s = 0 := by
   rw [normEDS_eq_aeval, ← Function.comp, ← map_net,
