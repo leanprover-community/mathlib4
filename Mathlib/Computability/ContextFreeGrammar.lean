@@ -577,16 +577,9 @@ private def g₂g : LiftedContextFreeGrammar T :=
             rw [List.mem_map] at hr
             exact hr)⟩
 
-private lemma both_empty {u v : List (Symbol T (ContextFreeGrammar.union g₁ g₂).NT)}
-    {a : Symbol T (ContextFreeGrammar.union g₁ g₂).NT}
-    (bef : [Symbol.nonterminal (ContextFreeGrammar.union g₁ g₂).initial] = u ++ [a] ++ v) :
+private lemma both_empty {u v : List T} {a b : T} (ha : [a] = u ++ [b] ++ v) :
     u = [] ∧ v = [] := by
-  have len := congr_arg List.length bef
-  rw [List.length_singleton, List.length_append, List.length_append, List.length_singleton] at len
-  constructor <;>
-  · by_contra hne
-    rw [← List.length_eq_zero] at hne
-    exact Nat.not_succ_le_self 1 (by omega)
+  cases u <;> cases v <;> simp at ha; trivial
 
 variable {w : List T}
 
@@ -715,11 +708,8 @@ end union_aux
 theorem Language.IsContextFree.union (L₁ L₂ : Language T) :
     L₁.IsContextFree ∧ L₂.IsContextFree → (L₁ + L₂).IsContextFree := by
   rintro ⟨⟨g₁, rfl⟩, ⟨g₂, rfl⟩⟩
-  use ContextFreeGrammar.union g₁ g₂
-  apply Set.eq_of_subset_of_subset <;> intro w hw
-  · exact in_language_of_in_union hw
-  · cases hw with
-    | inl case₁ => exact in_union_of_in_first case₁
-    | inr case₂ => exact in_union_of_in_second case₂
+  exact ⟨ContextFreeGrammar.union g₁ g₂, Set.eq_of_subset_of_subset
+    (fun _ => in_language_of_in_union)
+    (fun _ hw => hw.elim in_union_of_in_first in_union_of_in_second)⟩
 
 end closure_union
