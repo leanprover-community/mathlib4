@@ -149,8 +149,7 @@ end CoeLemmas
 variable {S T : Type v} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
-def map (n : ℕ) (f : R →+* S) : GL (Fin n) R →* GL (Fin n) S
-    where
+def map  (f : R →+* S) : GL n R →* GL n S where
   toFun g :=
     { val := f.mapMatrix g
       inv := f.mapMatrix (Units.inv g)
@@ -174,18 +173,18 @@ def map (n : ℕ) (f : R →+* S) : GL (Fin n) R →* GL (Fin n) S
     rfl
 
 @[simp]
-theorem map_id (n : ℕ) :
-    map n (RingHom.id R) = MonoidHom.id (GL (Fin n) R) := by
+theorem map_id :
+    map (RingHom.id R) = MonoidHom.id (GL n R) := by
   rfl
 
 @[simp]
-theorem map_comp (n : ℕ) (f : T →+* R) (g : R →+* S) :
-    map n (g.comp f) = (map n g ).comp (map n f) :=
+theorem map_comp (f : T →+* R) (g : R →+* S) :
+    map (g.comp f) = (map g).comp (@map n _  _ _ _ _ _ f) :=
   rfl
 
 @[simp]
-theorem map_comp_apply (n : ℕ) (f : T →+* R) (g : R →+* S) (x : GL (Fin n) T) :
-    (map n g).comp (map n f) x = map n g (map n f x) := rfl
+theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
+    (map g).comp (map f) x = map g (map f x) := rfl
 
 end GeneralLinearGroup
 
