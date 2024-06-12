@@ -261,7 +261,7 @@ theorem cauchySeq_iff' {u : ℕ → α} :
 
 theorem cauchySeq_iff {u : ℕ → α} :
     CauchySeq u ↔ ∀ V ∈ 𝓤 α, ∃ N, ∀ k ≥ N, ∀ l ≥ N, (u k, u l) ∈ V := by
-  simp only [cauchySeq_iff', Filter.eventually_atTop_prod_self', mem_preimage, Prod_map]
+  simp only [cauchySeq_iff', Filter.eventually_atTop_prod_self', mem_preimage, Prod.map_apply]
 #align cauchy_seq_iff cauchySeq_iff
 
 theorem CauchySeq.prod_map {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ] {u : γ → α}
@@ -393,7 +393,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
   cases' cauchy_iff.1 hl with hl_ne hl'
   obtain ⟨t, htS, htl, htU⟩ : ∃ t, t ⊆ S ∧ t ∈ l ∧ t ×ˢ t ⊆ U := by
     rcases hl' U hU with ⟨t, htl, htU⟩
-    refine ⟨t ∩ S, inter_subset_right _ _, inter_mem htl hls, Subset.trans ?_ htU⟩
+    refine ⟨t ∩ S, inter_subset_right, inter_mem htl hls, Subset.trans ?_ htU⟩
     gcongr <;> apply inter_subset_left
   obtain ⟨i, hi⟩ : ∃ i, t ⊆ s i := by
     rcases Filter.nonempty_of_mem htl with ⟨x, hx⟩
@@ -779,9 +779,9 @@ theorem complete_of_convergent_controlled_sequences (U : ℕ → Set (α × α))
   have Hmem : ∀ n, U n ∩ U' n ∈ 𝓤 α := fun n => inter_mem (U_mem n) (hU'.2 ⟨n, Subset.refl _⟩)
   refine ⟨fun hf => (HU (seq hf Hmem) fun N m n hm hn => ?_).imp <|
     le_nhds_of_seq_tendsto_nhds _ _ fun s hs => ?_⟩
-  · exact inter_subset_left _ _ (seq_pair_mem hf Hmem hm hn)
+  · exact inter_subset_left (seq_pair_mem hf Hmem hm hn)
   · rcases hU'.1 hs with ⟨N, hN⟩
-    exact ⟨N, Subset.trans (inter_subset_right _ _) hN⟩
+    exact ⟨N, Subset.trans inter_subset_right hN⟩
 #align uniform_space.complete_of_convergent_controlled_sequences UniformSpace.complete_of_convergent_controlled_sequences
 
 /-- A sequentially complete uniform space with a countable basis of the uniformity filter is

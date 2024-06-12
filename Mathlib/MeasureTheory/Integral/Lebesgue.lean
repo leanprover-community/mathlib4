@@ -938,6 +938,10 @@ theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
   simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
 #align measure_theory.lintegral_pos_iff_support MeasureTheory.lintegral_pos_iff_support
 
+theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
+    0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
+  rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
+
 /-- Weaker version of the monotone convergence theorem-/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
     (h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f n.succ a) : ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
@@ -1292,8 +1296,8 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
   · intro s t
     use s ∪ t
     constructor
-    · exact fun a => Finset.sum_le_sum_of_subset (Finset.subset_union_left _ _)
-    · exact fun a => Finset.sum_le_sum_of_subset (Finset.subset_union_right _ _)
+    · exact fun a => Finset.sum_le_sum_of_subset Finset.subset_union_left
+    · exact fun a => Finset.sum_le_sum_of_subset Finset.subset_union_right
 #align measure_theory.lintegral_tsum MeasureTheory.lintegral_tsum
 
 open Measure

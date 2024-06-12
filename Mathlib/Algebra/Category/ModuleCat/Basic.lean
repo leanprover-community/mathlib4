@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.LinearAlgebra.Basic
 
 #align_import algebra.category.Module.basic from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 

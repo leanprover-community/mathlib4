@@ -74,7 +74,7 @@ protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
 #align algebraic_geometry.Scheme.sheaf AlgebraicGeometry.Scheme.sheaf
 
-instance : CoeSort Scheme (Type*) where
+instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/

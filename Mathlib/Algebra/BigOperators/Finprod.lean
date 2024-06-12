@@ -608,8 +608,8 @@ the product of `f i` multiplied by the product of `g i`. -/
 theorem finprod_mul_distrib (hf : (mulSupport f).Finite) (hg : (mulSupport g).Finite) :
     ∏ᶠ i, f i * g i = (∏ᶠ i, f i) * ∏ᶠ i, g i := by
   classical
-    rw [finprod_eq_prod_of_mulSupport_toFinset_subset _ hf (Finset.subset_union_left _ _),
-      finprod_eq_prod_of_mulSupport_toFinset_subset _ hg (Finset.subset_union_right _ _), ←
+    rw [finprod_eq_prod_of_mulSupport_toFinset_subset f hf Finset.subset_union_left,
+      finprod_eq_prod_of_mulSupport_toFinset_subset g hg Finset.subset_union_right, ←
       Finset.prod_mul_distrib]
     refine finprod_eq_prod_of_mulSupport_subset _ ?_
     simp only [Finset.coe_union, Finite.coe_toFinset, mulSupport_subset_iff,
@@ -686,7 +686,7 @@ theorem finprod_mem_mul_distrib (hs : s.Finite) :
 @[to_additive]
 theorem MonoidHom.map_finprod {f : α → M} (g : M →* N) (hf : (mulSupport f).Finite) :
     g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
-  g.map_finprod_plift f <| hf.preimage <| Equiv.plift.injective.injOn _
+  g.map_finprod_plift f <| hf.preimage Equiv.plift.injective.injOn
 #align monoid_hom.map_finprod MonoidHom.map_finprod
 #align add_monoid_hom.map_finsum AddMonoidHom.map_finsum
 
@@ -954,7 +954,7 @@ theorem finprod_mem_image' {s : Set β} {g : β → α} (hg : (s ∩ mulSupport 
       `g` is injective on `s`."]
 theorem finprod_mem_image {s : Set β} {g : β → α} (hg : s.InjOn g) :
     ∏ᶠ i ∈ g '' s, f i = ∏ᶠ j ∈ s, f (g j) :=
-  finprod_mem_image' <| hg.mono <| inter_subset_left _ _
+  finprod_mem_image' <| hg.mono inter_subset_left
 #align finprod_mem_image finprod_mem_image
 #align finsum_mem_image finsum_mem_image
 
@@ -976,7 +976,7 @@ provided that `g` is injective. -/
       "The sum of `f y` over `y ∈ Set.range g` equals the sum of `f (g i)` over all `i`
       provided that `g` is injective."]
 theorem finprod_mem_range {g : β → α} (hg : Injective g) : ∏ᶠ i ∈ range g, f i = ∏ᶠ j, f (g j) :=
-  finprod_mem_range' (hg.injOn _)
+  finprod_mem_range' hg.injOn
 #align finprod_mem_range finprod_mem_range
 #align finsum_mem_range finsum_mem_range
 

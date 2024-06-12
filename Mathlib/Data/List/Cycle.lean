@@ -303,7 +303,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       · rw [get_cons_succ]; exact get_mem _ _ _
 
 set_option linter.deprecated false in
-@[deprecated next_get] -- 2023-01-27
+@[deprecated next_get (since := "2023-01-27")]
 theorem next_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     next l (l.nthLe n hn) (nthLe_mem _ _ _) =
       l.nthLe ((n + 1) % l.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) :=
@@ -344,12 +344,12 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
       · intro H
         suffices n.succ.succ = 0 by simpa
         rw [nodup_iff_nthLe_inj] at h
-        refine' h _ _ hn Nat.succ_pos' _
+        refine h _ _ hn Nat.succ_pos' ?_
         simpa using H
       · intro H
         suffices n.succ.succ = 1 by simpa
         rw [nodup_iff_nthLe_inj] at h
-        refine' h _ _ hn (Nat.succ_lt_succ Nat.succ_pos') _
+        refine h _ _ hn (Nat.succ_lt_succ Nat.succ_pos') ?_
         simpa using H
 #align list.prev_nth_le List.prev_nthLe
 

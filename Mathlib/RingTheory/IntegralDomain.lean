@@ -187,14 +187,8 @@ end EuclideanDivision
 
 variable [Fintype G]
 
-theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G →* H) {x y : H}
-    (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
-    -- Porting note: the `filter` had an index `ₓ` that I removed.
-    (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
-  rcases hx with ⟨x, rfl⟩
-  rcases hy with ⟨y, rfl⟩
-  exact card_equiv (Equiv.mulRight (x⁻¹ * y)) (by simp [mul_inv_eq_one])
-#align card_fiber_eq_of_mem_range card_fiber_eq_of_mem_range
+@[deprecated (since := "2024-06-10")]
+alias card_fiber_eq_of_mem_range := MonoidHom.card_fiber_eq_of_mem_range
 
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
 -/
@@ -231,7 +225,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       _ = (0 : R) := smul_zero _
     · -- remaining goal 1
       show (univ.filter fun g : G => f.toHomUnits g = u).card = c
-      apply card_fiber_eq_of_mem_range f.toHomUnits
+      apply MonoidHom.card_fiber_eq_of_mem_range f.toHomUnits
       · simpa only [mem_image, mem_univ, true_and, Set.mem_range] using hu
       · exact ⟨1, f.toHomUnits.map_one⟩
     -- remaining goal 2

@@ -634,7 +634,7 @@ theorem tfae_modEq :
   tfae_have 1 → 4
   · intro h
     rw [h, eq_comm, toIocMod_eq_iff, Set.right_mem_Ioc]
-    refine' ⟨lt_add_of_pos_right a hp, toIcoDiv hp a b - 1, _⟩
+    refine ⟨lt_add_of_pos_right a hp, toIcoDiv hp a b - 1, ?_⟩
     rw [sub_one_zsmul, add_add_add_comm, add_right_neg, add_zero]
     conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul hp a b, h]
   tfae_have 2 → 1
