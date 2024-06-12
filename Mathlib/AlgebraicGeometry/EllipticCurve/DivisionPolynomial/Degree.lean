@@ -182,7 +182,7 @@ private lemma expectedDegree_rec (m : ℕ) :
   simp_rw [left_distrib (R := ℤ), mul_left_comm (2 : ℤ)]
   rw [two_mul_expectedDegree, two_mul_expectedDegree, two_mul_expectedDegree,
     two_mul_expectedDegree, two_mul_expectedDegree, two_mul_expectedDegree, two_mul_expectedDegree]
-    -- iterate/repeat malfunctioning
+    -- iterate/repeat malfunctions, generates too many goals
   simp_rw [if_neg (Nat.not_even_two_mul_add_one _), if_pos (even_two_mul _), Nat.even_add,
     Nat.not_even_one, even_two, show ¬ Even 3 by decide, show Even 4 by decide,
     show ¬ Even 5 by decide, iff_false, iff_true]
@@ -195,7 +195,11 @@ private lemma expectedCoeff_rec (m : ℕ) :
     expectedCoeff (2 * (m + 3)) =
       expectedCoeff (m + 2) ^ 2 * expectedCoeff (m + 3) * expectedCoeff (m + 5) -
       expectedCoeff (m + 1) * expectedCoeff (m + 3) * expectedCoeff (m + 4) ^ 2 := by
-  sorry
+  simp_rw [← Int.cast_inj (α := ℚ)]; push_cast
+  simp_rw [expectedCoeff_eq, if_neg (Nat.not_even_two_mul_add_one _), if_pos (even_two_mul _),
+    Nat.even_add, Nat.not_even_one, even_two, show ¬ Even 3 by decide, show Even 4 by decide,
+    show ¬ Even 5 by decide, iff_false, iff_true]
+  constructor <;> split_ifs <;> field_simp <;> ring
 
 private lemma natDegree_ite_le (P : Prop) [Decidable P] :
     ((if P then W.Ψ₂Sq else 1).natDegree ≤ if P then 3 else 0) ∧
