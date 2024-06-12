@@ -179,15 +179,15 @@ lemma preΨ'_three : W.preΨ' 3 = W.Ψ₃ :=
 lemma preΨ'_four : W.preΨ' 4 = W.preΨ₄ :=
   preNormEDS'_four ..
 
-lemma preΨ'_odd (m : ℕ) : W.preΨ' (2 * (m + 2) + 1) =
-    W.preΨ' (m + 4) * W.preΨ' (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
-      W.preΨ' (m + 1) * W.preΨ' (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
-  preNormEDS'_odd ..
-
 lemma preΨ'_even (m : ℕ) : W.preΨ' (2 * (m + 3)) =
     W.preΨ' (m + 2) ^ 2 * W.preΨ' (m + 3) * W.preΨ' (m + 5) -
       W.preΨ' (m + 1) * W.preΨ' (m + 3) * W.preΨ' (m + 4) ^ 2 :=
   preNormEDS'_even ..
+
+lemma preΨ'_odd (m : ℕ) : W.preΨ' (2 * (m + 2) + 1) =
+    W.preΨ' (m + 4) * W.preΨ' (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
+      W.preΨ' (m + 1) * W.preΨ' (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
+  preNormEDS'_odd ..
 
 end preΨ'
 
@@ -224,29 +224,29 @@ lemma preΨ_three : W.preΨ 3 = W.Ψ₃ :=
 lemma preΨ_four : W.preΨ 4 = W.preΨ₄ :=
   preNormEDS_four ..
 
-lemma preΨ_odd' (m : ℕ) : W.preΨ (2 * (m + 2) + 1) =
-    W.preΨ (m + 4) * W.preΨ (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
-      W.preΨ (m + 1) * W.preΨ (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
-  preNormEDS_odd' ..
-
 lemma preΨ_even' (m : ℕ) : W.preΨ (2 * (m + 3)) =
     W.preΨ (m + 2) ^ 2 * W.preΨ (m + 3) * W.preΨ (m + 5) -
       W.preΨ (m + 1) * W.preΨ (m + 3) * W.preΨ (m + 4) ^ 2 :=
   preNormEDS_even' ..
 
+lemma preΨ_odd' (m : ℕ) : W.preΨ (2 * (m + 2) + 1) =
+    W.preΨ (m + 4) * W.preΨ (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
+      W.preΨ (m + 1) * W.preΨ (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
+  preNormEDS_odd' ..
+
 @[simp]
 lemma preΨ_neg (n : ℤ) : W.preΨ (-n) = -W.preΨ n :=
   preNormEDS_neg ..
-
-lemma preΨ_odd (m : ℤ) : W.preΨ (2 * m + 1) =
-    W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
-      W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
-  preNormEDS_odd ..
 
 lemma preΨ_even (m : ℤ) : W.preΨ (2 * m) =
     W.preΨ (m - 1) ^ 2 * W.preΨ m * W.preΨ (m + 2) -
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2 :=
   preNormEDS_even ..
+
+lemma preΨ_odd (m : ℤ) : W.preΨ (2 * m + 1) =
+    W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
+      W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
+  preNormEDS_odd ..
 
 end preΨ
 
@@ -282,29 +282,29 @@ lemma ΨSq_three : W.ΨSq 3 = W.Ψ₃ ^ 2 := by
 lemma ΨSq_four : W.ΨSq 4 = W.preΨ₄ ^ 2 * W.Ψ₂Sq := by
   erw [ΨSq_ofNat, preΨ'_four, if_pos <| by decide]
 
-lemma ΨSq_odd' (m : ℕ) : W.ΨSq (2 * (m + 2) + 1) =
-    (W.preΨ' (m + 4) * W.preΨ' (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
-      W.preΨ' (m + 1) * W.preΨ' (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
-  erw [ΨSq_ofNat, preΨ'_odd, if_neg (m + 2).not_even_two_mul_add_one, mul_one]
-
 lemma ΨSq_even' (m : ℕ) : W.ΨSq (2 * (m + 3)) =
     (W.preΨ' (m + 2) ^ 2 * W.preΨ' (m + 3) * W.preΨ' (m + 5) -
       W.preΨ' (m + 1) * W.preΨ' (m + 3) * W.preΨ' (m + 4) ^ 2) ^ 2 * W.Ψ₂Sq := by
   erw [ΨSq_ofNat, preΨ'_even, if_pos <| even_two_mul _]
 
+lemma ΨSq_odd' (m : ℕ) : W.ΨSq (2 * (m + 2) + 1) =
+    (W.preΨ' (m + 4) * W.preΨ' (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
+      W.preΨ' (m + 1) * W.preΨ' (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
+  erw [ΨSq_ofNat, preΨ'_odd, if_neg (m + 2).not_even_two_mul_add_one, mul_one]
+
 @[simp]
 lemma ΨSq_neg (n : ℤ) : W.ΨSq (-n) = W.ΨSq n := by
   simp only [ΨSq, preΨ_neg, neg_sq, even_neg]
-
-lemma ΨSq_odd (m : ℤ) : W.ΨSq (2 * m + 1) =
-    (W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
-      W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
-  erw [ΨSq, preΨ_odd, if_neg m.not_even_two_mul_add_one, mul_one]
 
 lemma ΨSq_even (m : ℤ) : W.ΨSq (2 * m) =
     (W.preΨ (m - 1) ^ 2 * W.preΨ m * W.preΨ (m + 2) -
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2) ^ 2 * W.Ψ₂Sq := by
   erw [ΨSq, preΨ_even, if_pos <| even_two_mul _]
+
+lemma ΨSq_odd (m : ℤ) : W.ΨSq (2 * m + 1) =
+    (W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
+      W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
+  erw [ΨSq, preΨ_odd, if_neg m.not_even_two_mul_add_one, mul_one]
 
 end ΨSq
 
@@ -342,6 +342,12 @@ lemma Ψ_three : W.Ψ 3 = C W.Ψ₃ := by
 lemma Ψ_four : W.Ψ 4 = C W.preΨ₄ * W.ψ₂ := by
   erw [Ψ_ofNat, preΨ'_four, if_pos <| by decide]
 
+lemma Ψ_even' (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
+    W.Ψ (m + 2) ^ 2 * W.Ψ (m + 3) * W.Ψ (m + 5) - W.Ψ (m + 1) * W.Ψ (m + 3) * W.Ψ (m + 4) ^ 2 := by
+  repeat erw [Ψ_ofNat]
+  simp_rw [preΨ'_even, if_pos <| even_two_mul _, Nat.even_add_one, ite_not]
+  split_ifs <;> C_simp <;> ring1
+
 lemma Ψ_odd' (m : ℕ) : W.Ψ (2 * (m + 2) + 1) =
     W.Ψ (m + 4) * W.Ψ (m + 2) ^ 3 - W.Ψ (m + 1) * W.Ψ (m + 3) ^ 3 +
       W.toAffine.polynomial * (16 * W.toAffine.polynomial - 8 * W.ψ₂ ^ 2) *
@@ -351,15 +357,16 @@ lemma Ψ_odd' (m : ℕ) : W.Ψ (2 * (m + 2) + 1) =
   simp_rw [preΨ'_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add_one, ite_not]
   split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
 
-lemma Ψ_even' (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
-    W.Ψ (m + 2) ^ 2 * W.Ψ (m + 3) * W.Ψ (m + 5) - W.Ψ (m + 1) * W.Ψ (m + 3) * W.Ψ (m + 4) ^ 2 := by
-  repeat erw [Ψ_ofNat]
-  simp_rw [preΨ'_even, if_pos <| even_two_mul _, Nat.even_add_one, ite_not]
-  split_ifs <;> C_simp <;> ring1
-
 @[simp]
 lemma Ψ_neg (n : ℤ) : W.Ψ (-n) = -W.Ψ n := by
   simp only [Ψ, preΨ_neg, C_neg, neg_mul (α := R[X][Y]), even_neg]
+
+lemma Ψ_even (m : ℤ) : W.Ψ (2 * m) * W.ψ₂ =
+    W.Ψ (m - 1) ^ 2 * W.Ψ m * W.Ψ (m + 2) - W.Ψ (m - 2) * W.Ψ m * W.Ψ (m + 1) ^ 2 := by
+  repeat erw [Ψ]
+  simp_rw [preΨ_even, if_pos <| even_two_mul _, Int.even_add_one, show m + 2 = m + 1 + 1 by ring1,
+    Int.even_add_one, show m - 2 = m - 1 - 1 by ring1, Int.even_sub_one, ite_not]
+  split_ifs <;> C_simp <;> ring1
 
 lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
     W.Ψ (m + 2) * W.Ψ m ^ 3 - W.Ψ (m - 1) * W.Ψ (m + 1) ^ 3 +
@@ -370,13 +377,6 @@ lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
   simp_rw [preΨ_odd, if_neg m.not_even_two_mul_add_one, show m + 2 = m + 1 + 1 by ring1,
     Int.even_add_one, Int.even_sub_one, ite_not]
   split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
-
-lemma Ψ_even (m : ℤ) : W.Ψ (2 * m) * W.ψ₂ =
-    W.Ψ (m - 1) ^ 2 * W.Ψ m * W.Ψ (m + 2) - W.Ψ (m - 2) * W.Ψ m * W.Ψ (m + 1) ^ 2 := by
-  repeat erw [Ψ]
-  simp_rw [preΨ_even, if_pos <| even_two_mul _, Int.even_add_one, show m + 2 = m + 1 + 1 by ring1,
-    Int.even_add_one, show m - 2 = m - 1 - 1 by ring1, Int.even_sub_one, ite_not]
-  split_ifs <;> C_simp <;> ring1
 
 lemma Affine.CoordinateRing.mk_Ψ_sq (n : ℤ) : mk W (W.Ψ n) ^ 2 = mk W (C <| W.ΨSq n) := by
   simp only [Ψ, ΨSq, map_one, map_mul, map_pow, one_pow, mul_pow, ite_pow, apply_ite C,
@@ -463,25 +463,25 @@ lemma ψ_three : W.ψ 3 = C W.Ψ₃ :=
 lemma ψ_four : W.ψ 4 = C W.preΨ₄ * W.ψ₂ :=
   normEDS_four ..
 
-lemma ψ_odd' (m : ℕ) : W.ψ (2 * (m + 2) + 1) =
-    W.ψ (m + 4) * W.ψ (m + 2) ^ 3 - W.ψ (m + 1) * W.ψ (m + 3) ^ 3 :=
-  normEDS_odd' ..
-
 lemma ψ_even' (m : ℕ) : W.ψ (2 * (m + 3)) * W.ψ₂ =
     W.ψ (m + 2) ^ 2 * W.ψ (m + 3) * W.ψ (m + 5) - W.ψ (m + 1) * W.ψ (m + 3) * W.ψ (m + 4) ^ 2 :=
   normEDS_even' ..
+
+lemma ψ_odd' (m : ℕ) : W.ψ (2 * (m + 2) + 1) =
+    W.ψ (m + 4) * W.ψ (m + 2) ^ 3 - W.ψ (m + 1) * W.ψ (m + 3) ^ 3 :=
+  normEDS_odd' ..
 
 @[simp]
 lemma ψ_neg (n : ℤ) : W.ψ (-n) = -W.ψ n :=
   normEDS_neg ..
 
-lemma ψ_odd (m : ℤ) : W.ψ (2 * m + 1) =
-    W.ψ (m + 2) * W.ψ m ^ 3 - W.ψ (m - 1) * W.ψ (m + 1) ^ 3 :=
-  normEDS_odd ..
-
 lemma ψ_even (m : ℤ) : W.ψ (2 * m) * W.ψ₂ =
     W.ψ (m - 1) ^ 2 * W.ψ m * W.ψ (m + 2) - W.ψ (m - 2) * W.ψ m * W.ψ (m + 1) ^ 2 :=
   normEDS_even ..
+
+lemma ψ_odd (m : ℤ) : W.ψ (2 * m + 1) =
+    W.ψ (m + 2) * W.ψ m ^ 3 - W.ψ (m - 1) * W.ψ (m + 1) ^ 3 :=
+  normEDS_odd ..
 
 lemma Affine.CoordinateRing.mk_ψ (n : ℤ) : mk W (W.ψ n) = mk W (W.Ψ n) := by
   simp only [ψ, normEDS, Ψ, preΨ, map_mul, map_pow, map_preNormEDS, ← mk_ψ₂_sq, ← pow_mul]
