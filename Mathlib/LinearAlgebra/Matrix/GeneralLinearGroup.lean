@@ -156,9 +156,8 @@ def map  (f : R →+* S) : GL n R →* GL n S where
       val_inv := by
         rw [← RingHom.map_mul, Units.val_inv g, RingHom.map_one _]
       inv_val := by
-        rw [← RingHom.map_mul]
-        convert RingHom.map_one _
-        exact Units.inv_val g }
+        rw [← RingHom.map_mul, Units.inv_val g, RingHom.map_one _]
+    }
   map_one' := by aesop
   map_mul' x y := by aesop
 
