@@ -249,6 +249,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_to_pullback_stalk TopCat.Presheaf.germToPullbackStalk
 
 variable {C} in
+@[ext]
 lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens X)ᵒᵖ)
     {φ ψ : ((pullback C f).obj F).obj U ⟶ Z}
     (h : ∀ (V : Opens Y) (hV : U.unop ≤ (Opens.map f).obj V),
@@ -263,12 +264,6 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
     using h V (leOfHom b)
 
 @[reassoc (attr := simp)]
-lemma germToPullbackStalk_stalkPullbackHom
-    (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
-    germToPullbackStalk C f F U x ≫ stalkPullbackHom C f F x =
-      ((pullback C f).obj F).germ x := sorry
-
-@[reassoc (attr := simp)]
 lemma pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) (V : Opens Y)
     (hV : U ≤ (Opens.map f).obj V) :
@@ -276,6 +271,17 @@ lemma pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullback
       ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x =
         F.germ ⟨f x, hV x.2⟩ := by
   sorry
+
+
+@[reassoc (attr := simp)]
+lemma germToPullbackStalk_stalkPullbackHom
+    (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
+    germToPullbackStalk C f F U x ≫ stalkPullbackHom C f F x =
+      ((pullback C f).obj F).germ x := by
+  ext V hV
+  dsimp
+  simp only [pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk_assoc,
+    germ_stalkPullbackHom, germ_res]
 
 @[reassoc (attr := simp)]
 lemma pushforwardPullbackAdjunction_unit_app_app_germToPullbackStalk
