@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.TypeStar
+import Mathlib.Data.List.Basic
 
 /-!
 # Properties of `List.reduceOption`
