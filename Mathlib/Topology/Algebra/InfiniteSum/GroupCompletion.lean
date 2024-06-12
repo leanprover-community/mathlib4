@@ -39,8 +39,8 @@ be checked using `cauchySeq_finset_iff_prod_vanishing` or `cauchySeq_finset_iff_
 -/
 @[to_additive "A function `f` is summable in a uniform additive group `α` if and only if the net of
 its partial sums is Cauchy and its sum in `Completion α` lies in the range of
-`toComplAddHom : α →+ Completion α`. (The condition that the net of partial sums is Cauchy can be checked
-using `cauchySeq_finset_iff_sum_vanishing` or `cauchySeq_finset_iff_tsum_vanishing`.)"]
+`toComplAddHom : α →+ Completion α`. (The condition that the net of partial sums is Cauchy can be
+checked using `cauchySeq_finset_iff_sum_vanishing` or `cauchySeq_finset_iff_tsum_vanishing`.)"]
 theorem multipliable_iff_cauchySeq_finset_and_tprod_mem (f : β → α) :
     Multipliable f ↔ CauchySeq (fun s : Finset β ↦ ∏ b in s, f b) ∧
       ∏' i, toComplMulHom (f i) ∈ Set.range toComplMulHom := by
