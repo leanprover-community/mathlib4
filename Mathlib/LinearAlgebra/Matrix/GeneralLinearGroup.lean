@@ -199,7 +199,7 @@ theorem map_id (n : ℕ) : map n (RingHom.id R) = MonoidHom.id (GL (Fin n) R) :=
 
 @[simp]
 theorem map_comp (n : ℕ) (f : T →+* R) (g : R →+* S) :
-<<<<<<< HEAD
+    <<<<<<< HEAD
     map n (g.comp f) = (map n g ).comp (map n f) :=
   rfl
 
