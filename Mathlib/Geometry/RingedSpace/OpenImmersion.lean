@@ -123,9 +123,10 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
       erw [Set.preimage_image_eq _ H.base_open.inj]
       rfl
     · intro U V i
-      simp only [CategoryTheory.eqToIso.hom, TopCat.Presheaf.pushforwardObj_map, Category.assoc,
-        Functor.op_map, Iso.trans_hom, asIso_hom, Functor.mapIso_hom, ← X.presheaf.map_comp]
-      erw [f.c.naturality_assoc, ← X.presheaf.map_comp]
+      dsimp
+      simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_obj,
+        TopCat.Presheaf.pushforward_obj_map, Quiver.Hom.unop_op, Category.assoc]
+      erw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
       congr 1
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.iso_restrict AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict
 
