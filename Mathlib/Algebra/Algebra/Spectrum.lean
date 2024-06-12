@@ -456,7 +456,7 @@ variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
 
 /-- Conjugation by a unit preserves the spectrum, inverse on right. -/
 @[simp]
-lemma spectrum.conjugate_units {a : A} {u : Aˣ} :
+lemma spectrum.units_conjugate {a : A} {u : Aˣ} :
     spectrum R (u * a * u⁻¹) = spectrum R a := by
   suffices ∀ (b : A) (v : Aˣ), spectrum R (v * b * v⁻¹) ⊆ spectrum R b by
     refine le_antisymm (this a u) ?_
@@ -469,7 +469,7 @@ lemma spectrum.conjugate_units {a : A} {u : Aˣ} :
 
 /-- Conjugation by a unit preserves the spectrum, inverse on left. -/
 @[simp]
-lemma spectrum.conjugate_units' {a : A} {u : Aˣ} :
+lemma spectrum.units_conjugate' {a : A} {u : Aˣ} :
     spectrum R (u⁻¹ * a * u) = spectrum R a := by
   simpa using spectrum.conjugate_units (u := u⁻¹)
 
