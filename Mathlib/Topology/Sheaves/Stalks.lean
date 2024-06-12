@@ -270,8 +270,9 @@ lemma pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullback
     ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
       ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x =
         F.germ ⟨f x, hV x.2⟩ := by
-  sorry
-
+  simpa [pushforwardPullbackAdjunction] using
+    ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F (op U)).fac _
+      (CostructuredArrow.mk (homOfLE hV).op)
 
 @[reassoc (attr := simp)]
 lemma germToPullbackStalk_stalkPullbackHom
@@ -299,10 +300,12 @@ def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
       ι :=
         { app := fun U => F.germToPullbackStalk _ f (unop U).1 ⟨x, (unop U).2⟩
           naturality := fun U V i => by
-            dsimp [pullback, germToPullbackStalk]
-            sorry
-            --erw [colimit.pre_desc, Category.comp_id]; congr
-             } }
+            dsimp
+            ext W hW
+            dsimp [OpenNhds.inclusion]
+            rw [Category.comp_id, ← Functor.map_comp_assoc,
+              pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk]
+            erw [pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk] } }
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pullback_inv TopCat.Presheaf.stalkPullbackInv
 
