@@ -10,7 +10,6 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Nat.EvenOddRec
-import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Polynomial.Basic
@@ -21,7 +20,8 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Elliptic divisibility sequences
 
-This file defines the type of an elliptic divisibility sequence (EDS) and a few examples.
+This file defines elliptic divisibility sequences (EDS) and
+gives a construction of normalised EDSs from initial terms.
 
 ## Mathematical background
 
@@ -127,8 +127,8 @@ def Rel₃ (m n r : ℤ) : Prop :=
 def _root_.IsEllSequence : Prop :=
   ∀ m n r : ℤ, Rel₃ W m n r
 
-/-- The numerator of an invariant of an elliptic sequence,
-such that `invarNum n / invarDenom n` is a constant independent of `n`. -/
+/-- The numerator of an invariant of an elliptic sequence, such that for each `s`,
+`invarNum s n / invarDenom s n` is a constant independent of `n`. -/
 def invarNum (s n : ℤ) : R :=
   (W (n + 2 * s) * W (n - s) ^ 2 + W (n + s) ^ 2 * W (n - 2 * s)) * W s ^ 2
     + W n ^ 3 * W (2 * s) ^ 2
@@ -232,7 +232,7 @@ lemma perm (σ : Perm (Fin 4)) :
 lemma six_le_of_strictAnti₄ (anti : StrictAnti₄ a b c d) : 6 ≤ a := by
   simp_rw [HaveSameParity₄, negOnePow_eq_iff] at same
   obtain ⟨hd, hdc, hcb, hba⟩ := anti
-  rw [lt_iff_add_two_le_of_even_sub] at hdc hcb hba
+  rw [← add_two_le_iff_lt_of_even_sub] at hdc hcb hba
   · linarith
   exacts [same.1, same.2.1, same.2.2]
 
@@ -420,10 +420,10 @@ theorem rel₄_of_min₂ (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   obtain rfl|hc := hc.eq_or_lt
   · exact fix.1 same anti
   obtain rfl : dMin a = d := (dMin_le same.same₀₃ anti.1).antisymm <| by
-    rwa [lt_iff_add_two_le_of_even_sub, cMin, add_le_add_iff_right] at hc
+    rwa [← add_two_le_iff_lt_of_even_sub, cMin, add_le_add_iff_right] at hc
     rw [← negOnePow_eq_iff, negOnePow_cMin, same.same₀₃]
-  obtain rfl|hc : cMin a = c ∨ _ := ((lt_iff_add_two_le_of_even_sub <| by
-    rw [← negOnePow_eq_iff, negOnePow_dMin, same.1, same.2.1]).mp anti.2.1).eq_or_lt
+  obtain rfl|hc : cMin a = c ∨ _ := ((add_two_le_iff_lt_of_even_sub <| by
+    rw [← negOnePow_eq_iff, negOnePow_dMin, same.1, same.2.1]).mpr anti.2.1).eq_or_lt
   exacts [rel le_rfl same anti, fix.2 hc same anti]
 
 -- The main inductive argument.
@@ -431,7 +431,7 @@ theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (oddRec : ∀ m ≥ 2, OddRec W m) (evenRec : ∀ m ≥ 3, EvenRec W m) :
     ∀ ⦃a b c d : ℤ⦄, Rel₄OfValid W a b c d :=
   -- apply induction on `a`
-  strongRec 6 -- if `a < 6` the conclusion holds vacuously
+  Int.strongRec (m := 6) -- if `a < 6` the conclusion holds vacuously
     (fun a ha b c d same anti ↦ ((same.six_le_of_strictAnti₄ anti).not_lt ha).elim)
     -- otherwise, it suffices to deal with the "minimal" case `c = cMin a` and `d = dMin a`
     fun a h6 ih ↦ rel₄_of_min₂ one two fun {a' b} haa same anti ↦ by
@@ -439,7 +439,7 @@ theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   · -- if `a' < a`, apply the inductive hypothesis
     exact ih _ ha' same anti
   obtain hba|rfl := lt_or_eq_of_le <| show b + 2 ≤ a' from
-    (lt_iff_add_two_le_of_even_sub <| (negOnePow_eq_iff _ _).1 same.1).1 anti.2.2.2
+    (add_two_le_iff_lt_of_even_sub <| (negOnePow_eq_iff _ _).1 same.1).mpr anti.2.2.2
   · -- if `b + 2 < a'`, apply `transf` and then the inductive hypothesis is applicable
     rw [← same.rel₄_transf]
     refine ih _ ?_ same.transf (same.strictAnti₄_transf anti)
