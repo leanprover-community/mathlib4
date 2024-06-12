@@ -294,7 +294,7 @@ theorem u_int_pos : 0 < ∫ x : E, u x ∂μ := by
 #align exists_cont_diff_bump_base.u_int_pos ExistsContDiffBumpBase.u_int_pos
 
 variable {E}
--- Porting note: `W` upper case
+
 set_option linter.uppercaseLean3 false
 
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,

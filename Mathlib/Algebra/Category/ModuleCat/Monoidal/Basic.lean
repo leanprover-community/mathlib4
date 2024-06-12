@@ -29,7 +29,6 @@ If you're happy using the bundled `ModuleCat R`, it may be possible to mostly
 use this as an interface and not need to interact much with the implementation details.
 -/
 
--- Porting note: Module
 set_option linter.uppercaseLean3 false
 
 suppress_compilation

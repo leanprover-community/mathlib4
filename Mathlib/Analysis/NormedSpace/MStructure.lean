@@ -64,7 +64,6 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 variable (X : Type*) [NormedAddCommGroup X]
 variable {M : Type*} [Ring M] [Module M X]
 
--- Porting note: Mathlib3 uses names with uppercase 'L' for L-projections
 set_option linter.uppercaseLean3 false
 
 /-- A projection on a normed space `X` is said to be an L-projection if, for all `x` in `X`,

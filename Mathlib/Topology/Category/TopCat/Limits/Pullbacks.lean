@@ -11,7 +11,6 @@ import Mathlib.Topology.Category.TopCat.Limits.Products
 # Pullbacks and pushouts in the category of topological spaces
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace

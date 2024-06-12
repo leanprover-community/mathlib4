@@ -144,7 +144,6 @@ instance : GradedAlgebra (grading R) where
   left_inv := by convert grading.left_inv
   right_inv := by convert grading.right_inv
 
--- Porting note: `I` upper case
 set_option linter.uppercaseLean3 false
 
 /-- The counterexample is the ideal `I = span {(2, 2)}`. -/

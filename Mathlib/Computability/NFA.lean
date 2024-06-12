@@ -25,7 +25,6 @@ open Computability
 
 universe u v
 
--- Porting note: Required as `NFA` is used in mathlib3
 set_option linter.uppercaseLean3 false
 
 /-- An NFA is a set of states (`σ`), a transition function from state to state labelled by the
