@@ -225,8 +225,8 @@ variable {x : E}
 
 -- TODO clean up, put somewhere else?
 lemma not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_
-    (hf : ¬ DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x)
-    : ¬ DifferentiableAt 𝕜 (fun y => f y + g y) x := by
+    (hf : ¬ DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
+    ¬ DifferentiableAt 𝕜 (fun y => f y + g y) x := by
   have f_eq_sum_sub_g: f = (fun y => f y + g y) - g := by
     ext
     simp only [Pi.sub_apply, add_sub_cancel_right]
@@ -241,8 +241,8 @@ lemma not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_
 
 -- TODO clean up, put somewhere else?
 lemma not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt
-    (hf : DifferentiableAt 𝕜 f x) (hg : ¬ DifferentiableAt 𝕜 g x)
-    : ¬ DifferentiableAt 𝕜 (fun y => f y + g y) x := by
+    (hf : DifferentiableAt 𝕜 f x) (hg : ¬ DifferentiableAt 𝕜 g x) :
+     ¬ DifferentiableAt 𝕜 (fun y => f y + g y) x := by
   rw [show (fun y ↦ f y + g y) = (fun y ↦ g y + f y) by ext; rw [add_comm]]
   exact not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_ hg hf
 
@@ -274,7 +274,7 @@ lemma differentiableAt_iff_differentiableAt_comp_mul_add
 @[simp]
 lemma fderiv_deriv' {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
   rw [← deriv_fderiv]
-  simp
+  simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, smul_eq_mul]
   ring
 
 end general
@@ -520,20 +520,19 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
       | inl xis0 => simp_all only [zero_ne_one, sub_zero, mul_one, div_zero]
       | inr xis1 => simp_all only [one_ne_zero, sub_self, mul_zero, div_zero]
     · sorry
-    --   rw [qaryEntropy_eq_log_mul_add_binaryEntropy']
-    --   have : ((fun p ↦ p * ((q:ℝ) - 1).log) + binaryEntropy)
-    --         = (fun x ↦ (fun p ↦ p * ((q:ℝ) - 1).log) x + binaryEntropy x) := by
-    --     simp only [ne_eq, not_and, Decidable.not_not]; rfl
-    --   rw [this]
-    --   have is_diff : DifferentiableAt ℝ (fun p ↦ p * ((q:ℝ) - 1).log) x := by
-    --     simp only [differentiableAt_id', differentiableAt_const, DifferentiableAt.mul]
-    --   have not_diff : ¬ DifferentiableAt ℝ binaryEntropy x := by
-    --     sorry
-    --   apply not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt (x := x) is_diff not_diff
+-- rw [qaryEntropy_eq_log_mul_add_binaryEntropy']
+-- have : ((fun p ↦ p * ((q:ℝ) - 1).log) + binaryEntropy)
+--       = (fun x ↦ (fun p ↦ p * ((q:ℝ) - 1).log) x + binaryEntropy x) := by
+--   simp only [ne_eq, not_and, Decidable.not_not]; rfl
+-- rw [this]
+-- have is_diff : DifferentiableAt ℝ (fun p ↦ p * ((q:ℝ) - 1).log) x := by
+--   simp only [differentiableAt_id', differentiableAt_const, DifferentiableAt.mul]
+-- have not_diff : ¬ DifferentiableAt ℝ binaryEntropy x := by
+--   sorry
+-- apply not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt (x := x) is_diff not_diff
 
--- TODO don't need assumptions
-lemma deriv2_binaryEntropy {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) :
-    deriv^[2] binaryEntropy x = -1 / (x * (1-x)) := deriv2_qaryEntropy
+lemma deriv2_binaryEntropy {x : ℝ} : deriv^[2] binaryEntropy x = -1 / (x * (1-x)) :=
+  deriv2_qaryEntropy
 
 /-! ### Strict Monotonicity of binary entropy -/
 
