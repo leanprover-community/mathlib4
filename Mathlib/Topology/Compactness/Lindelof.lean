@@ -181,13 +181,11 @@ theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
     (hs : IsLindelof s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
     ∃ f : ℕ → ι, s ⊆ ⋃ n, U (f n) := by
   obtain ⟨c, ⟨c_count, c_cov⟩⟩ := IsLindelof.elim_countable_subcover hs U hUo hsU
-  wlog c_nonempty : c.Nonempty
-  · simp only [not_nonempty_iff_eq_empty.mp c_nonempty, mem_empty_iff_false, iUnion_of_empty,
-      iUnion_empty] at c_cov
+  rcases c.eq_empty_or_nonempty with rfl | c_nonempty
+  · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c_cov
     simp only [subset_eq_empty c_cov rfl, empty_subset, exists_const]
   obtain ⟨f, f_surj⟩ := (Set.countable_iff_exists_surjective c_nonempty).mp c_count
-  refine ⟨Subtype.val ∘ f, Subset.trans c_cov ?_⟩
-  simp only [Function.comp_apply, iUnion_subset_iff]
+  refine ⟨fun x ↦ f x, c_cov.trans <| iUnion₂_subset_iff.mpr (?_ : ∀ i ∈ c, U i ⊆ ⋃ n, U (f n))⟩
   intro x hx
   obtain ⟨n, hn⟩ := f_surj ⟨x, hx⟩
   exact subset_iUnion_of_subset n <| subset_of_eq (by rw [hn])
