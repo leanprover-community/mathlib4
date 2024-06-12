@@ -615,55 +615,87 @@ lemma AcyclicKerOfExactComplexAndBoundedFunctor (S : CochainComplex t₁.Heart �
   | inr h => exact RightAcyclicKerOfBoundedFunctor F t₁ t₂ S h (fun _ _ ↦ hexact _)
                (fun _ _ ↦ hacy _) hb
 
-lemma AcyclicImageOfBoundedExactComplex (S : CochainComplex t₁.Heart ℤ) {a b k : ℤ}
+lemma AcyclicImageOfBoundedExactComplex (S : CochainComplex t₁.Heart ℤ) {a b: ℤ}
     (hexact : ∀ (i : ℤ), IsZero (S.homology i))
     (hacy : ∀ (i : ℤ), AcyclicObject F t₁ t₂ (S.X i))
     (ha : ∀ (j : ℤ), j ≤ a → IsZero (S.X j))
-    (hb : ∀ (j : ℤ), b ≤ j → IsZero (S.X j)) :
+    (hb : ∀ (j : ℤ), b ≤ j → IsZero (S.X j)) (k : ℤ) :
     AcyclicObject F t₁ t₂ (Abelian.image (S.d k (k + 1))) := by
   refine ClosedUnderIsomorphisms.of_iso ?_ (AcyclicKerOfBoundedExactComplex F t₁ t₂ S hexact
     hacy ha hb (k + 1))
   set e : S.sc (k + 1) ≅ S.sc' k (k + 1) (k + 1 + 1) :=
     S.isoSc' k (k + 1) (k + 1 + 1) (by simp only [CochainComplex.prev, add_sub_cancel_right])
     (by simp only [CochainComplex.next])
-  have := imageToKernelIsIsoOfExact (IsZero.of_iso (hexact (k + 1))
+  have := ShortComplex.imageToKernelIsIsoOfExact (IsZero.of_iso (hexact (k + 1))
     (ShortComplex.homologyMapIso e).symm)
   exact (asIso (S.sc' k (k + 1) (k + 1 + 1)).abelianImageToKernel).symm
 
-lemma AcyclicImageOfExactComplexAndBoundedFunctor (S : CochainComplex t₁.Heart ℤ) {a b k : ℤ}
+lemma AcyclicImageOfExactComplexAndBoundedFunctor (S : CochainComplex t₁.Heart ℤ) {a b : ℤ}
     (hexact : ∀ (i : ℤ), IsZero (S.homology i))
     (hacy : ∀ (i : ℤ), AcyclicObject F t₁ t₂ (S.X i))
     (ha : ∀ (X : t₁.Heart) (j : ℤ), j ≤ a → IsZero ((t₂.homology j).obj (F.obj X.1)))
-    (hb : ∀ (X : t₁.Heart) (j : ℤ), b ≤ j → IsZero ((t₂.homology j).obj (F.obj X.1))) :
+    (hb : ∀ (X : t₁.Heart) (j : ℤ), b ≤ j → IsZero ((t₂.homology j).obj (F.obj X.1))) (k : ℤ) :
     AcyclicObject F t₁ t₂ (Abelian.image (S.d k (k + 1))) := by
   refine ClosedUnderIsomorphisms.of_iso ?_ (AcyclicKerOfExactComplexAndBoundedFunctor F t₁ t₂
     S hexact hacy ha hb (k + 1))
   set e : S.sc (k + 1) ≅ S.sc' k (k + 1) (k + 1 + 1) :=
     S.isoSc' k (k + 1) (k + 1 + 1) (by simp only [CochainComplex.prev, add_sub_cancel_right])
     (by simp only [CochainComplex.next])
-  have := imageToKernelIsIsoOfExact (IsZero.of_iso (hexact (k + 1))
+  have := ShortComplex.imageToKernelIsIsoOfExact (IsZero.of_iso (hexact (k + 1))
     (ShortComplex.homologyMapIso e).symm)
   exact (asIso (S.sc' k (k + 1) (k + 1 + 1)).abelianImageToKernel).symm
 
-lemma AcyclicCokerOfBoundedExactComplex (S : CochainComplex t₁.Heart ℤ) {a b k : ℤ}
+lemma AcyclicCoimageOfBoundedExactComplex (S : CochainComplex t₁.Heart ℤ) {a b : ℤ}
     (hexact : ∀ (i : ℤ), IsZero (S.homology i))
     (hacy : ∀ (i : ℤ), AcyclicObject F t₁ t₂ (S.X i))
     (ha : ∀ (j : ℤ), j ≤ a → IsZero (S.X j))
-    (hb : ∀ (j : ℤ), b ≤ j → IsZero (S.X j)) :
-    AcyclicObject F t₁ t₂ (Limits.cokernel (S.d k (k + 1))) := by sorry
+    (hb : ∀ (j : ℤ), b ≤ j → IsZero (S.X j)) (k : ℤ) :
+    AcyclicObject F t₁ t₂ (Abelian.coimage (S.d k (k + 1))) :=
+  ClosedUnderIsomorphisms.of_iso (asIso (Abelian.coimageImageComparison (S.d k (k + 1)))).symm
+  (AcyclicImageOfBoundedExactComplex F t₁ t₂ S hexact hacy ha hb k)
 
-
-lemma AcyclicCokerOfExactComplexAndBoundedFunctor (S : CochainComplex t₁.Heart ℤ) {a b k : ℤ}
+lemma AcyclicCoimageOfExactComplexAndBoundedFunctor (S : CochainComplex t₁.Heart ℤ) {a b : ℤ}
     (hexact : ∀ (i : ℤ), IsZero (S.homology i))
     (hacy : ∀ (i : ℤ), AcyclicObject F t₁ t₂ (S.X i))
     (ha : ∀ (X : t₁.Heart) (j : ℤ), j ≤ a → IsZero ((t₂.homology j).obj (F.obj X.1)))
-    (hb : ∀ (X : t₁.Heart) (j : ℤ), b ≤ j → IsZero ((t₂.homology j).obj (F.obj X.1))) :
-    AcyclicObject F t₁ t₂ (Limits.cokernel (S.d k (k + 1))) := by sorry
+    (hb : ∀ (X : t₁.Heart) (j : ℤ), b ≤ j → IsZero ((t₂.homology j).obj (F.obj X.1))) (k : ℤ) :
+    AcyclicObject F t₁ t₂ (Abelian.coimage (S.d k (k + 1))) :=
+  ClosedUnderIsomorphisms.of_iso (asIso (Abelian.coimageImageComparison (S.d k (k + 1)))).symm
+  (AcyclicImageOfExactComplexAndBoundedFunctor F t₁ t₂ S hexact hacy ha hb k)
+
+lemma AcyclicCokerOfBoundedExactComplex (S : CochainComplex t₁.Heart ℤ) {a b : ℤ}
+    (hexact : ∀ (i : ℤ), IsZero (S.homology i))
+    (hacy : ∀ (i : ℤ), AcyclicObject F t₁ t₂ (S.X i))
+    (ha : ∀ (j : ℤ), j ≤ a → IsZero (S.X j))
+    (hb : ∀ (j : ℤ), b ≤ j → IsZero (S.X j)) (k : ℤ) :
+    AcyclicObject F t₁ t₂ (Limits.cokernel (S.d k (k + 1))) := by
+  refine ClosedUnderIsomorphisms.of_iso ?_ (AcyclicCoimageOfBoundedExactComplex F t₁ t₂ S hexact
+    hacy ha hb (k + 1))
+  set e : S.sc (k + 1) ≅ S.sc' k (k + 1) (k + 1 + 1) :=
+    S.isoSc' k (k + 1) (k + 1 + 1) (by simp only [CochainComplex.prev, add_sub_cancel_right])
+    (by simp only [CochainComplex.next])
+  have := ShortComplex.cokernelToAbelianCoimageIsIsoOfExact (IsZero.of_iso (hexact (k + 1))
+    (ShortComplex.homologyMapIso e).symm)
+  exact (asIso (S.sc' k (k + 1) (k + 1 + 1)).cokernelToAbelianCoimage).symm
+
+lemma AcyclicCokerOfExactComplexAndBoundedFunctor (S : CochainComplex t₁.Heart ℤ) {a b: ℤ}
+    (hexact : ∀ (i : ℤ), IsZero (S.homology i))
+    (hacy : ∀ (i : ℤ), AcyclicObject F t₁ t₂ (S.X i))
+    (ha : ∀ (X : t₁.Heart) (j : ℤ), j ≤ a → IsZero ((t₂.homology j).obj (F.obj X.1)))
+    (hb : ∀ (X : t₁.Heart) (j : ℤ), b ≤ j → IsZero ((t₂.homology j).obj (F.obj X.1))) (k : ℤ) :
+    AcyclicObject F t₁ t₂ (Limits.cokernel (S.d k (k + 1))) := by
+  refine ClosedUnderIsomorphisms.of_iso ?_ (AcyclicCoimageOfExactComplexAndBoundedFunctor F t₁ t₂
+    S hexact hacy ha hb (k + 1))
+  set e : S.sc (k + 1) ≅ S.sc' k (k + 1) (k + 1 + 1) :=
+    S.isoSc' k (k + 1) (k + 1 + 1) (by simp only [CochainComplex.prev, add_sub_cancel_right])
+    (by simp only [CochainComplex.next])
+  have := ShortComplex.cokernelToAbelianCoimageIsIsoOfExact (IsZero.of_iso (hexact (k + 1))
+    (ShortComplex.homologyMapIso e).symm)
+  exact (asIso (S.sc' k (k + 1) (k + 1 + 1)).cokernelToAbelianCoimage).symm
+
 
 
 #exit
-abbrev IsCohomologicalBound (a b : ℤ) := ∀ (X : t₁.Heart) (r : ℤ),
-    r < a ∨ b < r → (t₂.homology r).obj (F.obj X.1) = 0
 
 lemma ExactOfExactComplex {a b : ℤ} (hb : IsCohomologicalBound F t₁ t₂ a b)
     {S : CochainComplex t₁.Heart ℤ} (Sexact : ∀ (n : ℤ), S.homology n = 0) :
