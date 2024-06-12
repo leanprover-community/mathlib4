@@ -484,7 +484,7 @@ lemma IsSelfAdjoint.coe_realPart {x : A} (hx : IsSelfAdjoint x) :
 
 nonrec lemma IsSelfAdjoint.imaginaryPart {x : A} (hx : IsSelfAdjoint x) :
     ℑ x = 0 := by
-  rw [imaginaryPart, LinearMap.comp_apply, hx.skewAdjointPart_apply _, map_zero]
+  rw [imaginaryPart, LinearMap.comp_apply, hx.skewAdjointPart_apply ℝ, map_zero]
 
 lemma realPart_comp_subtype_selfAdjoint :
     realPart.comp (selfAdjoint.submodule ℝ A).subtype = LinearMap.id :=
