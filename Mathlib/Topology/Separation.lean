@@ -187,13 +187,15 @@ theorem has_separating_covers_iff_separated_nhds {h k : Set X} :
       exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvgm))
     exact subset_closure (mem_biUnion n_le_m xinun.1)
   · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
-    exact ⟨
-      ⟨fun _ ↦ U, Subset.trans h_sub_U (Eq.subset (Eq.symm (iUnion_const U))),
+    exact ⟨⟨
+      fun _ ↦ U, h_sub_U.trans (iUnion_const U).symm.subset,
       fun _ ↦ ⟨U_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) k_sub_V
-        (Disjoint.closure_left UV_dis V_open)⟩⟩,
-      ⟨fun _ ↦ V, Subset.trans k_sub_V (Eq.subset (Eq.symm (iUnion_const V))),
+        (UV_dis.closure_left V_open)⟩
+      ⟩,⟨
+      fun _ ↦ V, k_sub_V.trans (iUnion_const V).symm.subset,
       fun _ ↦ ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U
-        (Disjoint.symm (Disjoint.closure_right UV_dis U_open))⟩⟩⟩
+        (UV_dis.closure_right U_open).symm⟩
+      ⟩⟩
 
 namespace SeparatedNhds
 
