@@ -1171,7 +1171,7 @@ lemma map_LocalizedModules (g : M₀ →ₗ[R] M₁) (m : M₀) (s : S) :
   simpa [map, lift, iso_localizedModule_eq_refl S M₀]
 
 lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ ↑(iso S f₀) = (iso S f₁) ∘ₗ
-     (map S (LocalizedModule.mkLinearMap S M₀) (LocalizedModule.mkLinearMap S M₁)) g := by
+    (map S (LocalizedModule.mkLinearMap S M₀) (LocalizedModule.mkLinearMap S M₁)) g := by
   ext ⟨m, s⟩
   rw [(show Quot.mk Setoid.r (m, s) = LocalizedModule.mk m s by rfl)]
   have hs : IsUnit ((algebraMap R (Module.End R M₁')) ↑s) := map_units f₁ s
