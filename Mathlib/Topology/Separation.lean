@@ -159,7 +159,7 @@ theorem has_separating_covers_iff_separated_nhds {h k : Set X} :
   · rintro ⟨⟨u, u_cov, u_props⟩, ⟨v, v_cov, v_props⟩⟩
     have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
       IsOpen (⋃ n, u₀ n \ closure (a n)) := fun _ _ u₀i_open ↦
-      isOpen_iUnion (fun i ↦ IsOpen.sdiff (u₀i_open i) (isClosed_closure))
+        isOpen_iUnion fun i ↦ (u₀i_open i).sdiff isClosed_closure
     have cover_lemma : ∀ (h₀ : Set X) (u₀ v₀ : ℕ → Set X),
         (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
         (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) :=
