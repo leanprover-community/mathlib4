@@ -205,10 +205,7 @@ lemma mord_wf_1 {_ : Multiset α} [DecidableEq α] [Preorder α] (a : α) (M0 : 
     | empty =>
       simpa
     | cons h =>
-      rename_i _ _ a0 M
-      have trivial: M0 + a0 ::ₘ M = a0 ::ₘ (M0 + M) := by simp
-      rw [trivial]
-      simp_all
+      simp_all only [Multiset.mem_cons, or_true, implies_true, true_implies, forall_eq_or_imp, Multiset.add_cons]
   case h.intro.inl.intro =>
     simp_all
 
@@ -249,7 +246,7 @@ lemma mred_acc [DecidableEq α] [Preorder α] :
     intro y y_lt
     absurd y_lt
     apply not_MultisetRedLt_0
-  | cons ih =>
+  | cons _ _ ih =>
     apply mord_wf_3
     . assumption
     . apply wf_el
@@ -435,7 +432,7 @@ lemma nat_not_0_not_1 : ∀ (n : ℕ), n ≠ 0 → n ≠ 1 → n ≥ 2 := by
       apply Nat.succ_le_succ
       aesop
 
- lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
+lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
     [DecidableRel (fun (x : α) (y: α) => x < y)] (M N : Multiset α) (LTMN : MultisetLT M N) :
     MultisetLt M N := by
   -- intros M N LTXY
@@ -466,10 +463,7 @@ lemma nat_not_0_not_1 : ∀ (n : ℕ), n ≠ 0 → n ≠ 1 → n ≥ 2 := by
         rcases this with ⟨y,claim⟩
         let newY := Y.erase y
         have newY_nonEmpty : newY ≠ ∅ := by
-          have card_Y_ge_2 : Multiset.card Y ≥ 2 := by
-            apply nat_not_0_not_1
-            exact hyp'
-            exact hyp
+          have card_Y_ge_2 : Multiset.card Y ≥ 2 := nat_not_0_not_1 _ hyp' hyp
           have : Multiset.card (Multiset.erase Y y) ≥ 1 := by
             rw [Multiset.card_erase_eq_ite]
             simp_all
@@ -486,11 +480,11 @@ lemma nat_not_0_not_1 : ∀ (n : ℕ), n ≠ 0 → n ≠ 1 → n ≥ 2 := by
         -- step from N' to M
         · apply IH newY newY_sub_Y newY_nonEmpty
           change M = (Z + f y) + (X - f y) -- new try
-          · have : f y ≤ X := Multiset.filter_le (fun x => x < y) X
-            ext a
-            have count_lt := Multiset.count_le_of_le a this
+          · ext a
+            have count_lt := Multiset.count_le_of_le a (Multiset.filter_le (fun x => x < y) X)
             rw [M_def]
-            simp_all
+            simp_all only [Multiset.empty_eq_zero, ne_eq, Multiset.card_eq_zero, not_false_eq_true,
+              Multiset.count_add, Multiset.count_sub]
             let x := Multiset.count a X
             let z := Multiset.count a Z
             let fx := Multiset.count a (Multiset.filter (fun x => x < y) X)
@@ -507,9 +501,7 @@ lemma nat_not_0_not_1 : ∀ (n : ℕ), n ≠ 0 → n ≠ 1 → n ≥ 2 := by
               simp (config := {zetaDelta := true})
               assumption
             unfold_let N'
-            rw [add_assoc]
-            rw [add_assoc]
-            rw [add_comm newY (f y)]
+            rw [add_assoc, add_assoc, add_comm newY (f y)]
           · intro x x_in
             let X_lt_Y := X_lt_Y x
             have x_in_X : x ∈ X := by
@@ -596,7 +588,7 @@ lemma Lt_LT_equiv [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y:
 -- well-founded.
 lemma equiv_r_wf [DecidableEq α] [LT α] {r1 r2 :  Multiset α → Multiset α → Prop} (h1 : WellFounded r1)
     (h2: r1 = r2): WellFounded r2 := by
-  aesop_subst h2
+  subst h2
   simp_all only
 
 -- The desired theorem. If `LT.lt` is well-founded, then `MultisetLT` is well-founded.
