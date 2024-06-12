@@ -1002,20 +1002,8 @@ theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c}
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
     range (Subtype.map f h) = (↑) ⁻¹' (f '' { x | p x }) := by
   ext ⟨x, hx⟩
-  rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
-  apply Iff.intro
-  · rintro ⟨a, b, hab⟩
-    rw [Subtype.map, Subtype.mk.injEq] at hab
-    use a
-    trivial
-  · rintro ⟨a, b, hab⟩
-    use a
-    use b
-    rw [Subtype.map, Subtype.mk.injEq]
-    exact hab
-  -- Porting note: `simp_rw` fails here
-  -- simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map, Subtype.coe_mk,
-  --   mem_set_of, exists_prop]
+  simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map]
+  simp only [Subtype.mk.injEq, exists_prop, mem_setOf_eq]
 #align set.range_subtype_map Set.range_subtype_map
 
 theorem image_swap_eq_preimage_swap : image (@Prod.swap α β) = preimage Prod.swap :=

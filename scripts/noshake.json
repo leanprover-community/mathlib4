@@ -222,6 +222,7 @@
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
+  "Mathlib.Tactic.ITauto": ["Mathlib.Init.Logic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
