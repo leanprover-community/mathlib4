@@ -365,6 +365,14 @@ lemma imageComparisonIsoOfMonoAndExact (hm : Mono (F.map (Abelian.image.ι f)))
   have := imageComparisonEpiOfExact f F hc he
   exact isIso_of_mono_of_epi _
 
+lemma imageComparisonVsKernelComparison (S : ShortComplex A)
+    (hS : IsIso (cokernelComparison S.f F)) :
+    (imageComparisonOfCokernelComparisonIso S.f F hS) ≫
+    (F.mapShortComplex.obj S).abelianImageToKernel =
+    F.map (S.abelianImageToKernel) ≫ kernelComparison S.g F := by
+  rw [← cancel_mono (kernel.ι (F.map S.g)), assoc]
+  erw [ShortComplex.abelianImageToKernel_comp_kernel_ι, imageComparison_comp_ι]
+  rw [assoc, kernelComparison_comp_ι, ← F.map_comp, S.abelianImageToKernel_comp_kernel_ι]
 
 /-
 variable {ι : Type*} {c : ComplexShape ι}
