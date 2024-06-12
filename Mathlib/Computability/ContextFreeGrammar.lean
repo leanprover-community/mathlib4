@@ -371,7 +371,7 @@ lemma LiftedContextFreeGrammar.sink_produces {G : LiftedContextFreeGrammar T}
   · refine ⟨r₀, hr₀, ?_⟩
     rw [ContextFreeRule.rewrites_iff]
     use Symbol.sinkString G.sinkNT u, Symbol.sinkString G.sinkNT v
-    have correct_inverse : sinkSymbol G.sinkNT ∘ liftSymbol G.liftNT = Option.some := by
+    have correct_inverse : sinkSymbol (T := T) G.sinkNT ∘ liftSymbol G.liftNT = Option.some := by
       ext1 x
       cases x
       · rfl
@@ -379,7 +379,6 @@ lemma LiftedContextFreeGrammar.sink_produces {G : LiftedContextFreeGrammar T}
       simp only [sinkSymbol, liftSymbol, Option.map_eq_some', Symbol.nonterminal.injEq]
       rw [exists_eq_right]
       apply G.sinkNT_liftNT
-      exact T
     constructor
     · have middle :
         List.filterMap (sinkSymbol (T := T) G.sinkNT) [Symbol.nonterminal (G.liftNT r₀.input)] =
