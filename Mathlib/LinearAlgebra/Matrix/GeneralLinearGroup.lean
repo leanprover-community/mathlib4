@@ -146,9 +146,15 @@ theorem toLinear_apply (v : n → R) : (toLinear A).toLinearEquiv v = Matrix.mul
 
 end CoeLemmas
 
+<<<<<<< HEAD
 variable {S T : Type v} [CommRing R] [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
+=======
+variable {S T : Type v} [CommRing S] [CommRing T]
+
+/-- A ring homomorphism ``f : R →+* S`` induces a homomorphism of ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
+>>>>>>> 3f5a1473e54e80a4fb6d5ba55ba9ef4b02e3db17
 def map (n : ℕ) (f : R →+* S) : GL (Fin n) R →* GL (Fin n) S
     where
   toFun g :=
@@ -164,22 +170,36 @@ def map (n : ℕ) (f : R →+* S) : GL (Fin n) R →* GL (Fin n) S
         exact Units.inv_val g }
   map_one' := by
     dsimp only at *
+<<<<<<< HEAD
     simp only [Units.inv_eq_val_inv, inv_one, coe_one, _root_.map_one,
       coe_toLinear] at *
+=======
+    simp only [Units.inv_eq_val_inv, inv_one, coe_one, _root_.map_one, coe_toLinear] at *
+>>>>>>> 3f5a1473e54e80a4fb6d5ba55ba9ef4b02e3db17
     rfl
   map_mul' x y := by
     dsimp only at *
     simp only [Units.inv_eq_val_inv, _root_.mul_inv_rev, coe_mul,
+<<<<<<< HEAD
       coe_units_inv, RingHom.mapMatrix_apply, Matrix.map_mul, coe_toLinear] at *
     rfl
 
 @[simp]
 theorem map_id (n : ℕ) :
     map n (RingHom.id R) = MonoidHom.id (GL (Fin n) R) := by
+=======
+      coe_units_inv, RingHom.mapMatrix_apply, map_mul,
+      coe_toLinear] at *
+    rfl
+
+@[simp]
+theorem map_id (n : ℕ) : map n (RingHom.id R) = MonoidHom.id (GL (Fin n) R) :=
+>>>>>>> 3f5a1473e54e80a4fb6d5ba55ba9ef4b02e3db17
   rfl
 
 @[simp]
 theorem map_comp (n : ℕ) (f : T →+* R) (g : R →+* S) :
+<<<<<<< HEAD
     map n (g.comp f) = (map n g ).comp (map n f) :=
   rfl
 
@@ -188,6 +208,13 @@ theorem map_comp_apply (n : ℕ) (f : T →+* R) (g : R →+* S) (x : GL (Fin n)
     (map n g ).comp (map n f) x =
       map n g (map n f x) :=
   rfl
+=======
+  map n (g.comp f) = (map n g).comp (map n f) := rfl
+
+@[simp]
+theorem map_comp_apply (n : ℕ) (f : T →+* R) (g : R →+* S) (x : GL (Fin n) T) :
+  (map n g).comp (map n f) x = map n g (map n f x) := rfl
+>>>>>>> 3f5a1473e54e80a4fb6d5ba55ba9ef4b02e3db17
 
 end GeneralLinearGroup
 
