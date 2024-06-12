@@ -597,7 +597,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
-@[deprecated countable_setOf_covBy_right]
+@[deprecated countable_setOf_covBy_right (since := "2023-02-05")]
 theorem countable_of_isolated_right' [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, x < y ∧ Ioo x y = ∅ } := by
   simpa only [← covBy_iff_Ioo_eq] using countable_setOf_covBy_right

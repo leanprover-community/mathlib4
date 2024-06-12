@@ -1188,7 +1188,7 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
 #align pseudo_metric_space.to_pseudo_emetric_space PseudoMetricSpace.toPseudoEMetricSpace
 
 /-- Expressing the uniformity in terms of `edist` -/
-@[deprecated _root_.uniformity_basis_edist]
+@[deprecated _root_.uniformity_basis_edist (since := "2023-03-03")]
 protected theorem Metric.uniformity_basis_edist :
     (𝓤 α).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => { p | edist p.1 p.2 < ε } :=
   uniformity_basis_edist
