@@ -43,7 +43,8 @@ theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
   unfold mconv
   rw [MeasureTheory.Measure.dirac_prod, map_map]
   · simp only [Function.comp_def, one_mul, map_id']
-  · exact Measurable.mul measurable_fst measurable_snd
+  · -- NB: `measurability` proves this, but is slow.
+    exact Measurable.mul measurable_fst measurable_snd
   measurability
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/

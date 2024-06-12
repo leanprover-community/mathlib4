@@ -120,7 +120,6 @@ theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
 theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold inner_
-  have := Continuous.const_smul (M := 𝕜) hf I
   fun_prop
 #align inner_product_spaceable.continuous.inner_ Continuous.inner_
 
