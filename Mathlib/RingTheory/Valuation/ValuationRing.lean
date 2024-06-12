@@ -439,7 +439,7 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
         | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
         | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
     · intro a b hab
-      simpa [h.2 hab] using ⟨1, one_mem _⟩
+      exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
 
 instance instIsFractionRingInteger: IsFractionRing v.integer K :=
   ValuationRing.isFractionRing_iff.mpr
