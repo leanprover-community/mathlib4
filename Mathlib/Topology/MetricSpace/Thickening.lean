@@ -122,6 +122,23 @@ theorem frontier_thickening_disjoint (A : Set α) :
   rwa [ENNReal.toReal_ofReal h₁, ENNReal.toReal_ofReal (h₁.trans hr.le)] at h
 #align metric.frontier_thickening_disjoint Metric.frontier_thickening_disjoint
 
+/-- Any set is contained in the complement of the δ-thickening of the complement of its
+δ-thickening. -/
+lemma subset_compl_thickening_compl_thickening_self (δ : ℝ) (E : Set α) :
+    E ⊆ (thickening δ (thickening δ E)ᶜ)ᶜ := by
+  intro x x_in_E
+  simp only [thickening, mem_compl_iff, mem_setOf_eq, not_lt]
+  apply EMetric.le_infEdist.mpr fun y hy ↦ ?_
+  simp only [mem_compl_iff, mem_setOf_eq, not_lt] at hy
+  simpa only [edist_comm] using le_trans hy <| EMetric.infEdist_le_edist_of_mem x_in_E
+
+/-- The δ-thickening of the complement of the δ-thickening of a set is contained in the complement
+of the set. -/
+lemma thickening_compl_thickening_self_subset_compl (δ : ℝ) (E : Set α) :
+    thickening δ (thickening δ E)ᶜ ⊆ Eᶜ := by
+  apply compl_subset_compl.mp
+  simpa only [compl_compl] using subset_compl_thickening_compl_thickening_self δ E
+
 variable {X : Type u} [PseudoMetricSpace X]
 
 -- Porting note (#10756): new lemma
@@ -361,6 +378,9 @@ theorem thickening_iUnion (δ : ℝ) (f : ι → Set α) :
     thickening δ (⋃ i, f i) = ⋃ i, thickening δ (f i) := by
   simp_rw [thickening, infEdist_iUnion, iInf_lt_iff, setOf_exists]
 #align metric.thickening_Union Metric.thickening_iUnion
+
+lemma thickening_biUnion {ι : Type*} (δ : ℝ) (f : ι → Set α) (I : Set ι) :
+    thickening δ (⋃ i ∈ I, f i) = ⋃ i ∈ I, thickening δ (f i) := by simp only [thickening_iUnion]
 
 theorem ediam_cthickening_le (ε : ℝ≥0) :
     EMetric.diam (cthickening ε s) ≤ EMetric.diam s + 2 * ε := by

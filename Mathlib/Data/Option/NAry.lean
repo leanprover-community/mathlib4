@@ -76,7 +76,7 @@ theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) :
 
 -- Porting note: Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal.
 theorem mem_map₂_iff {c : γ} : c ∈ map₂ f a b ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c := by
-  simp [map₂]
+  simp [map₂, bind_eq_some]
 #align option.mem_map₂_iff Option.mem_map₂_iff
 
 @[simp]

@@ -66,7 +66,7 @@ protected theorem symm_image_subset {α β} (e : α ≃ β) (s : Set α) (t : Se
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 #align equiv.subset_image Equiv.symm_image_subset
 
-@[deprecated] alias subset_image := Equiv.symm_image_subset -- deprecated since 2024-01-19
+@[deprecated (since := "2024-01-19")] alias subset_image := Equiv.symm_image_subset
 
 -- Porting note: increased priority so this fires before `image_subset_iff`
 @[simp high]
@@ -77,7 +77,7 @@ protected theorem subset_symm_image {α β} (e : α ≃ β) (s : Set α) (t : Se
     _ ↔ e '' s ⊆ t := by rw [e.symm_symm]
 #align equiv.subset_image' Equiv.subset_symm_image
 
-@[deprecated] alias subset_image' := Equiv.subset_symm_image -- deprecated since 2024-01-19
+@[deprecated (since := "2024-01-19")] alias subset_image' := Equiv.subset_symm_image
 
 @[simp]
 theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' (e '' s) = s :=
@@ -256,13 +256,13 @@ theorem union_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (
 
 @[simp]
 theorem union_symm_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
-    (a : s) : (Equiv.Set.union H).symm (Sum.inl a) = ⟨a, subset_union_left _ _ a.2⟩ :=
+    (a : s) : (Equiv.Set.union H).symm (Sum.inl a) = ⟨a, by simp⟩ :=
   rfl
 #align equiv.set.union_symm_apply_left Equiv.Set.union_symm_apply_left
 
 @[simp]
 theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
-    (a : t) : (Equiv.Set.union H).symm (Sum.inr a) = ⟨a, subset_union_right _ _ a.2⟩ :=
+    (a : t) : (Equiv.Set.union H).symm (Sum.inr a) = ⟨a, by simp⟩ :=
   rfl
 #align equiv.set.union_symm_apply_right Equiv.Set.union_symm_apply_right
 
@@ -379,7 +379,7 @@ theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred
 
 @[simp]
 theorem sumDiffSubset_apply_inr {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
-    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion (diff_subset t s) x :=
+    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion diff_subset x :=
   rfl
 #align equiv.set.sum_diff_subset_apply_inr Equiv.Set.sumDiffSubset_apply_inr
 
@@ -490,7 +490,7 @@ protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H
 /-- If `f` is an injective function, then `s` is equivalent to `f '' s`. -/
 @[simps! apply]
 protected noncomputable def image {α β} (f : α → β) (s : Set α) (H : Injective f) : s ≃ f '' s :=
-  Equiv.Set.imageOfInjOn f s (H.injOn s)
+  Equiv.Set.imageOfInjOn f s H.injOn
 #align equiv.set.image Equiv.Set.image
 #align equiv.set.image_apply Equiv.Set.image_apply
 
@@ -733,7 +733,7 @@ section Swap
 variable {α : Type*} [DecidableEq α] {a b : α} {s : Set α}
 
 theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b) s s := by
-  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn, fun x hx ↦ ?_⟩
   · obtain (rfl | hxa) := eq_or_ne x a; rwa [swap_apply_left, ← hs]
     obtain (rfl | hxb) := eq_or_ne x b; rwa [swap_apply_right, hs]
     rwa [swap_apply_of_ne_of_ne hxa hxb]
@@ -743,7 +743,7 @@ theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b
 
 theorem Equiv.swap_bijOn_exchange (ha : a ∈ s) (hb : b ∉ s) :
     BijOn (Equiv.swap a b) s (insert b (s \ {a})) := by
-  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn, fun x hx ↦ ?_⟩
   · obtain (rfl | hxa) := eq_or_ne x a; simp [swap_apply_left]
     rw [swap_apply_of_ne_of_ne hxa (by rintro rfl; contradiction)]
     exact .inr ⟨hx, hxa⟩
