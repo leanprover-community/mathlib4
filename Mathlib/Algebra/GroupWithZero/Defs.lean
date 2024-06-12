@@ -46,10 +46,12 @@ section MulZeroClass
 
 variable [MulZeroClass M₀] (a : M₀)
 
+@[simp]
 theorem zero_mul : 0 * a = 0 :=
   MulZeroClass.zero_mul a
 #align zero_mul zero_mul
 
+@[simp]
 theorem mul_zero : a * 0 = 0 :=
   MulZeroClass.mul_zero a
 #align mul_zero mul_zero
