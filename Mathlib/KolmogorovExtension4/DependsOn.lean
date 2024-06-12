@@ -38,7 +38,7 @@ variable {f : ((i : ι) → α i) → β}
 
 /-- A function `f` depends on `s` if, whenever `x` and `y` coincide over `s`, `f x = f y`. -/
 def DependsOn (f : ((i : ι) → α i) → β) (s : Set ι) : Prop :=
-  ∀ x y, (∀ i ∈ s, x i = y i) → f x = f y
+  ∀ ⦃x y⦄, (∀ i ∈ s, x i = y i) → f x = f y
 
 theorem dependsOn_univ (f : ((i : ι) → α i) → β) : DependsOn f univ := by
   intro x y hxy
@@ -51,7 +51,7 @@ theorem dependsOn_univ (f : ((i : ι) → α i) → β) : DependsOn f univ := by
 theorem dependsOn_const (b : β) : DependsOn (fun _ : (i : ι) → α i ↦ b) ∅ := by simp [DependsOn]
 
 /-- A function which depends on the empty set is constant. -/
-theorem dependsOn_empty (hf : DependsOn f ∅) (x y : (i : ι) → α i) : f x = f y := hf x y (by simp)
+theorem dependsOn_empty (hf : DependsOn f ∅) (x y : (i : ι) → α i) : f x = f y := hf (by simp)
 
 variable [DecidableEq ι]
 
@@ -60,7 +60,7 @@ these variables. -/
 theorem dependsOn_updateFinset {s : Set ι} (hf : DependsOn f s) (t : Finset ι) (y : (i : t) → α i) :
     DependsOn (fun x ↦ f (Function.updateFinset x t y)) (s \ t) := by
   intro x₁ x₂ h
-  refine hf _ _ (fun i hi ↦ ?_)
+  refine hf (fun i hi ↦ ?_)
   simp only [Function.updateFinset]
   split_ifs with h'
   · rfl
@@ -82,7 +82,7 @@ theorem dependsOn_lmarginal (hf : DependsOn f s) (t : Finset ι) :
     DependsOn (∫⋯∫⁻_t, f ∂μ) (s \ t) := by
   intro x y hxy
   have aux z : f (Function.updateFinset x t z) = f (Function.updateFinset y t z) := by
-    refine hf _ _ (fun i hi ↦ ?_)
+    refine hf (fun i hi ↦ ?_)
     simp only [Function.updateFinset]
     split_ifs with h
     · rfl
@@ -97,7 +97,7 @@ theorem lmarginal_eq_of_disjoint (hf : DependsOn f s) {t : Finset ι} (hst : Dis
     ∫⋯∫⁻_t, f ∂μ = f := by
   ext x
   have aux y : f (Function.updateFinset x t y) = f x := by
-    refine hf _ _ (fun i hi ↦ ?_)
+    refine hf (fun i hi ↦ ?_)
     simp only [Function.updateFinset]
     split_ifs with h
     · exact (Set.not_disjoint_iff.2 ⟨i, hi, h⟩ hst).elim

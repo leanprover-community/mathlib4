@@ -13,32 +13,21 @@ variable {X : ℕ → Type*} [∀ n, Nonempty (X n)] [∀ n, MeasurableSpace (X 
 variable (κ : (k : ℕ) → kernel ((i : Iic k) → X i) ((i : Ioc k (k + 1)) → X i))
 variable [∀ k, IsMarkovKernel (κ k)]
 
+lemma mem_Iic_zero {i : ℕ} (hi : i ∈ Iic 0) : i = 0 := by simpa using hi
+
 def zer : (X 0) ≃ᵐ ((i : Iic 0) → X i) where
-  toFun := fun x₀ i ↦ by
-    have : 0 = i.1 := by
-      have := i.2
-      simp at this
-      exact this.symm
-    exact this ▸ x₀
+  toFun := fun x₀ i ↦ (mem_Iic_zero i.2).symm ▸ x₀
   invFun := fun x ↦ x ⟨0, mem_Iic.2 <| le_refl 0⟩
   left_inv := fun x₀ ↦ by simp
   right_inv := fun x ↦ by
     ext i
-    have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by
-      rw [← Subtype.coe_inj]
-      have := i.2
-      simp at this
-      exact this.symm
+    have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by simp [(mem_Iic_zero i.2).symm]
     cases this; rfl
   measurable_toFun := by
     refine measurable_pi_lambda _ (fun i ↦ ?_)
     simp_rw [eqRec_eq_cast]
     apply measurable_cast
-    have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by
-      rw [← Subtype.coe_inj]
-      have := i.2
-      simp at this
-      exact this.symm
+    have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by simp [(mem_Iic_zero i.2).symm]
     cases this; rfl
   measurable_invFun := measurable_pi_apply _
 
@@ -47,7 +36,7 @@ noncomputable def family (x₀ : X 0) :
   (kerNat κ 0 (S.sup id).1 (zer x₀)).map
   (fun x (i : S) ↦ x ⟨i.1, ⟨i.1.2, Finset.le_sup (f := id) i.2⟩⟩)
 
-theorem markov1 {i j k : ℕ}
+theorem isMarkovKernel_compProd {i j k : ℕ}
     (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x))
     (η : kernel ((x : Iic j) → X x) ((x : Ioc j k) → X x))
     [IsMarkovKernel κ] [IsMarkovKernel η] (hij : i < j) (hjk : j < k) :
@@ -56,12 +45,12 @@ theorem markov1 {i j k : ℕ}
   simp only [hij, hjk, and_self, ↓reduceDite, split]
   infer_instance
 
-theorem markov2 {i j k : ℕ}
+theorem isMarkovKernel_castPath {i j k : ℕ}
     (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x)) [IsMarkovKernel κ] (hjk : j = k)  :
     IsMarkovKernel (castPath κ hjk) := by
   rw [castPath]; infer_instance
 
-theorem markov {i j k : ℕ}
+theorem isMarkovKernel_kerInterval {i j k : ℕ}
     (κ₀ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x)) [h₀ : IsMarkovKernel κ₀]
     (κ : ∀ k, kernel ((x : Iic k) → X x) ((x : Ioc k (k + 1)) → X x)) [∀ k, IsMarkovKernel (κ k)]
     (hij : i < j) (hjk : j ≤ k) :
@@ -71,101 +60,71 @@ theorem markov {i j k : ℕ}
   | succ n hn =>
     rw [kerInterval_succ]
     split_ifs with h
-    · apply markov2
+    · apply isMarkovKernel_castPath
     · have : j ≤ n := Nat.lt_succ.1 <| lt_iff_le_and_ne.2 ⟨hjk, h⟩
       have _ := hn this
-      exact markov1 _ _ (lt_of_lt_of_le hij this) n.lt_succ_self
+      exact isMarkovKernel_compProd _ _ (lt_of_lt_of_le hij this) n.lt_succ_self
 
-theorem markov_kerNat {i j : ℕ}
+theorem isMarkovKernel_kerNat {i j : ℕ}
     (κ : ∀ k, kernel ((x : Iic k) → X x) ((x : Ioc k (k + 1)) → X x))
     [∀ k, IsMarkovKernel (κ k)] (hij : i < j) :
     IsMarkovKernel (kerNat κ i j) := by
   simp only [kerNat, hij, ↓reduceIte]
-  exact markov _ _ i.lt_succ_self (Nat.succ_le.2 hij)
+  exact isMarkovKernel_kerInterval _ _ i.lt_succ_self (Nat.succ_le.2 hij)
 
-theorem test {k l : ℕ} (hk : 0 < k) (hkl : k ≤ l) :
+theorem proj_kerNat {k l : ℕ} (hk : 0 < k) (hkl : k ≤ l) :
     kernel.map (kerNat κ 0 l)
       (fun (x : ((i : Ioc 0 l) → X i)) (i : Ioc 0 k) ↦ x ⟨i.1, Ioc_subset_Ioc_right hkl i.2⟩)
-      (measurable_proj₂ ..) =
-    kerNat κ 0 k := by
+      (measurable_proj₂ ..) = kerNat κ 0 k := by
   by_cases h : k = l
   · cases h
-    apply kernel.map_id
+    exact kernel.map_id _
   · have hkl : k < l := lt_iff_le_and_ne.2 ⟨hkl, h⟩
     ext x s ms
-    rw [kernel.map_apply', ← compProd_kerNat κ hk hkl,
-      compProd_apply' _ _ hk hkl]
+    rw [kernel.map_apply' _ _ _ ms, ← compProd_kerNat κ hk hkl,
+      compProd_apply' _ _ hk hkl _ (measurable_proj₂ _ _ _ ms)]
     simp_rw [preimage_preimage]
-    have aux1 (b : (i : Ioc 0 k) → X i) (c : (i : Ioc k l) → X i) :
-        b ∈ s ↔
-        c ∈ {c | (b, c) ∈ (fun x (i : Ioc 0 k) ↦
-        er 0 k l hk hkl.le x ⟨i.1, _⟩) ⁻¹' s} := by
-      have : (fun (i : Ioc 0 k) ↦ er 0 k l hk hkl.le (b, c)
-          ⟨i.1, Ioc_subset_Ioc_right hkl.le i.2⟩) = b := by
-        ext i
-        simp [er, (mem_Ioc.2 i.2).2]
-      simp [this]
-    have aux2 b (hb : b ∈ s) :
-        {c | (b, c) ∈ (fun x (i : Ioc 0 k) ↦
-        er 0 k l hk hkl.le x ⟨i.1, _⟩) ⁻¹' s} = univ := by
-      ext c
-      simp only [mem_preimage, mem_univ, iff_true]
-      exact (aux1 b c).1 hb
-    have aux3 b (hb : b ∉ s) :
-        {c | (b, c) ∈ (fun x (i : Ioc 0 k) ↦
-        er 0 k l hk hkl.le x ⟨i.1, _⟩) ⁻¹' s} = ∅ := by
-      ext c
-      simp only [mem_preimage, mem_empty_iff_false, iff_false]
-      exact (aux1 b c).not.1 hb
-    have aux4 b : ((kerNat κ k l) (el 0 k hk.le (x, b)))
-        {c | (b, c) ∈ (fun x (i : Ioc 0 k) ↦
-        er 0 k l hk hkl.le x ⟨↑i, _⟩) ⁻¹' s} =
-        s.indicator 1 b := by
-      have := markov_kerNat κ hkl
-      by_cases hb : b ∈ s
-      · simp_rw [indicator, aux2 b hb]
-        simp [hb]
-      · simp_rw [aux3 b hb]
-        simp [hb]
-    simp_rw [aux4]
+    refine Eq.trans (b := ∫⁻ b, s.indicator 1 b ∂kerNat κ 0 k x) ?_ ?_
+    · refine lintegral_congr fun b ↦ ?_
+      simp only [indicator, Pi.one_apply]
+      split_ifs with hb
+      · have := isMarkovKernel_kerNat κ hkl
+        convert measure_univ
+        · ext c
+          simp only [er, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, mem_preimage, mem_setOf_eq,
+            mem_univ, iff_true]
+          convert hb using 1
+          ext i
+          simp [(mem_Ioc.2 i.2).2]
+        · infer_instance
+      · convert measure_empty
+        · ext c
+          simp only [er, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, mem_preimage, mem_setOf_eq,
+            mem_empty_iff_false, iff_false]
+          convert hb using 2
+          ext i
+          simp [(mem_Ioc.2 i.2).2]
+        · infer_instance
     · have : (1 : ((i : Ioc 0 k) → X i) → ℝ≥0∞) = fun _ ↦ 1 := rfl
-      rw [this, lintegral_indicator_const, one_mul]
-      exact ms
-    · exact ms.preimage <| measurable_proj₂ _ _ <| Icc_subset_Icc_right hkl.le
-    · exact ms
+      rw [this, lintegral_indicator_const ms, one_mul]
 
 theorem kernel.map_map {X Y Z T : Type*} [MeasurableSpace X] [MeasurableSpace Y] [MeasurableSpace Z]
     [MeasurableSpace T]
     (κ : kernel X Y) (f : Y → Z) (hf : Measurable f) (g : Z → T) (hg : Measurable g) :
     kernel.map (kernel.map κ f hf) g hg = kernel.map κ (g ∘ f) (hg.comp hf) := by
   ext1 x
-  rw [kernel.map_apply, kernel.map_apply, Measure.map_map, ← kernel.map_apply]
-  · exact hg
-  · exact hf
+  rw [kernel.map_apply, kernel.map_apply, Measure.map_map hg hf, ← kernel.map_apply]
 
 theorem proj_family (x₀ : X 0) :
     IsProjectiveMeasureFamily (α := fun k : ℕ+ ↦ X k) (family κ x₀) := by
   intro S T hTS
-  have aux1 : T.sup id ≤ S.sup id := Finset.sup_mono hTS
-  have aux : Ioc 0 (T.sup id).1 ⊆ Ioc 0 (S.sup id).1 := Ioc_subset_Ioc_right aux1
+  have : T.sup id ≤ S.sup id := Finset.sup_mono hTS
   simp only [family]
-  rw [← kernel.map_apply, ← test _ _ aux1, Measure.map_map, kernel.map_map, kernel.map_apply]
+  rw [← kernel.map_apply, ← proj_kerNat _ _ this, Measure.map_map, kernel.map_map, kernel.map_apply]
   · rfl
-  · simp_all only [Finset.le_eq_subset, add_le_add_iff_right, Finset.sup_le_iff, id_eq]
-    apply measurable_pi_lambda
-    intro a
-    apply Measurable.eval
-    apply measurable_id'
-  · simp_all only [Finset.le_eq_subset, add_le_add_iff_right, Finset.sup_le_iff, id_eq]
-    apply measurable_pi_lambda
-    intro a
-    apply Measurable.eval
-    apply measurable_id'
-  · simp_all only [Finset.le_eq_subset, add_le_add_iff_right, Finset.sup_le_iff, id_eq]
-    apply measurable_pi_lambda
-    intro a
-    apply Measurable.eval
-    apply measurable_id'
+  · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+  · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+  · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
   · exact PNat.pos _
 
 noncomputable def updateSet {ι : Type*} {α : ι → Type*} (x : (i : ι) → α i) (s : Set ι)
@@ -173,24 +132,35 @@ noncomputable def updateSet {ι : Type*} {α : ι → Type*} (x : (i : ι) → �
   classical
   exact if hi : i ∈ s then y ⟨i, hi⟩ else x i
 
-theorem updateSet_empty {ι : Type*} {α : ι → Type*} (x : (i : ι) → α i) (s : Set ι) (hs : s = ∅)
+theorem updateSet_empty {ι : Type*} {α : ι → Type*} (x : (i : ι) → α i) {s : Set ι} (hs : s = ∅)
     (y : (i : s) → α i) : updateSet x s y = x := by
   ext i
   simp [updateSet, hs]
 
+theorem dependsOn_updateSet {ι β : Type*} {α : ι → Type*} {f : ((i : ι) → α i) → β} {s : Set ι}
+    (hf : DependsOn f s) (t : Set ι) (y : (i : t) → α i) :
+    DependsOn (fun x ↦ f (updateSet x t y)) (s \ t) := by
+  refine fun x₁ x₂ h ↦ hf (fun i hi ↦ ?_)
+  simp only [updateSet]
+  split_ifs with h'
+  · rfl
+  · exact h i <| (mem_diff _).2 ⟨hi, h'⟩
+
 theorem measurable_updateSet {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
     (x : (i : ι) → α i) (s : Set ι) :
     Measurable (updateSet x s) := by
-  simp (config := { unfoldPartialApp := true }) only [updateSet, measurable_pi_iff]
+  simp only [updateSet, measurable_pi_iff]
   intro i
   by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 
-def pioc (a b : ℕ) := Ico (⟨a + 1, a.succ_pos⟩ : ℕ+) (⟨b + 1, b.succ_pos⟩ : ℕ+)
+abbrev pioc (a b : ℕ) := Ico (⟨a + 1, a.succ_pos⟩ : ℕ+) (⟨b + 1, b.succ_pos⟩ : ℕ+)
 
-def fpioc (a b : ℕ) : Finset ℕ+ := Finset.Ico (⟨a + 1, a.succ_pos⟩ : ℕ+) (⟨b + 1, b.succ_pos⟩ : ℕ+)
+abbrev fpioc (a b : ℕ) : Finset ℕ+ :=
+  Finset.Ico (⟨a + 1, a.succ_pos⟩ : ℕ+) (⟨b + 1, b.succ_pos⟩ : ℕ+)
 
 theorem mem_ioc_of_mem_pioc {a b : ℕ} (i : pioc a b) : i.1.1 ∈ Ioc a b := by
   rcases mem_Ico.1 i.2 with ⟨h1, h2⟩
+  simp only [mem_Ioc]
   rw [← PNat.coe_le_coe] at h1
   rw [← PNat.coe_lt_coe] at h2
   simp only [PNat.mk_coe] at h1 h2
@@ -198,14 +168,14 @@ theorem mem_ioc_of_mem_pioc {a b : ℕ} (i : pioc a b) : i.1.1 ∈ Ioc a b := by
 
 def ioc_eq {a b : ℕ} (i : pioc a b) : Ioc a b := ⟨i.1.1, mem_ioc_of_mem_pioc i⟩
 
-theorem measurable_ioc_eq (a b : ℕ) : Measurable (@ioc_eq a b) := measurable_discrete _
-
 def pioc_ioc {a b : ℕ} (z : (i : Ioc a b) → X i) (i : pioc a b) : X i := z (ioc_eq i)
+
+theorem measurable_pioc_ioc (a b : ℕ) : Measurable (@pioc_ioc X a b) :=
+  measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
 
 def ioc_fpioc {a b : ℕ} : ((i : Ioc a b) → X i) ≃ᵐ ((i : fpioc a b) → X i) where
   toFun := fun z i ↦ by
     have : i.1.1 ∈ Ioc a b := by
-      simp only [mem_Ioc]
       have := i.2
       simp only [fpioc, Finset.mem_Ico] at this
       rw [← PNat.coe_le_coe, ← PNat.coe_lt_coe, PNat.mk_coe, PNat.mk_coe] at this
@@ -219,17 +189,10 @@ def ioc_fpioc {a b : ℕ} : ((i : Ioc a b) → X i) ≃ᵐ ((i : fpioc a b) → 
       simp only [fpioc, Finset.mem_Ico]
       exact ⟨Nat.succ_le.2 this.1, Nat.lt_succ.2 this.2⟩
     exact z ⟨⟨i.1, i_pos⟩, this⟩
-  left_inv := fun z ↦ by simp
-  right_inv := fun z ↦ by
-    ext i
-    rfl
+  left_inv := fun z ↦ by rfl
+  right_inv := fun z ↦ by rfl
   measurable_toFun := measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
   measurable_invFun := measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
-
-theorem measurable_pioc_ioc (a b : ℕ) : Measurable (@pioc_ioc X a b) := by
-  apply measurable_pi_lambda
-  intro a_1
-  apply measurable_pi_apply
 
 theorem mem_pioc {k : ℕ} (i : Iic k) (hi : ¬i.1 = 0) :
     ⟨i.1, i.1.pos_of_ne_zero hi⟩ ∈ pioc 0 k := by
@@ -242,7 +205,7 @@ def fus {k : ℕ} (x₀ : X 0) (y : (i : pioc 0 k) → X i) (i : Iic k) : X i :=
   if hi : i.1 = 0 then hi ▸ x₀ else y ⟨⟨i.1, i.1.pos_of_ne_zero hi⟩, mem_pioc i hi⟩
 
 theorem measurable_fus (k : ℕ) (x₀ : X 0) : Measurable (fus (k := k) x₀) := by
-  simp (config := { unfoldPartialApp := true }) only [fus, measurable_pi_iff]
+  simp only [fus, measurable_pi_iff]
   intro i
   by_cases h : i.1 = 0 <;> simp [h, measurable_pi_apply]
 
@@ -269,7 +232,7 @@ theorem sup_fpioc {N : ℕ} (hN : 0 < N) : ((fpioc 0 N).sup id).1 = N := by
     simp only [Finset.mem_Ico, Subtype.mk_lt_mk, lt_add_iff_pos_right, zero_lt_one, and_true]
     rw [← PNat.coe_le_coe]
     simp only [PNat.val_ofNat, PNat.mk_coe]
-    linarith
+    omega
 
 theorem fpioc_mem_ioc {N : ℕ} (hN : 0 < N) (i : fpioc 0 N) :
     i.1.1 ∈ Ioc 0 ((fpioc 0 N).sup id).1 := by
@@ -283,11 +246,6 @@ theorem fpioc_mem_ioc {N : ℕ} (hN : 0 < N) (i : fpioc 0 N) :
   · rw [← Nat.lt_succ]
     rw [← PNat.coe_lt_coe] at this
     simpa using this
-
--- theorem cast_fpioc (N : ℕ) : ((i : fpioc 0 N) → X i) =
---     ((i : fpioc 0 N) → X (⟨i.1.1, fpioc_mem_ioc i⟩ : Ioc 0 ((fpioc 0 N).sup id).1).1) := rfl
-
-
 
 theorem lint_eq {α β : Type _} [hα : MeasurableSpace α] [hβ : MeasurableSpace β] (h : α = β)
     (h' : HEq hα hβ) {f : β → ℝ≥0∞} (hf : Measurable f) (μ : Measure α) :
@@ -305,21 +263,15 @@ theorem lint_eq' {α β : Type _} [hα : MeasurableSpace α] (h : α = β)
 theorem lint_eq'' {α β : Type _} [hα : MeasurableSpace α] [hβ : MeasurableSpace β] (h : α = β)
     (h' : HEq hα hβ) {f : α → ℝ≥0∞} (hf : Measurable f) (μ : Measure α) :
     ∫⁻ a : α, f a ∂μ = ∫⁻ b : β, f (cast h.symm b) ∂μ.map (cast h) := by
-  rw [lint_eq', lint_eq (f := fun b : β ↦ f (cast h.symm b))]
-  · exact h'
-  · apply hf.comp
-    exact measurable_cast h.symm h'.symm
-
-theorem eq_pi (s t : Set ℕ) (h : s = t) :
-    ((i : s) → X i) = ((i : t) → X i) := by cases h; rfl
+  rw [lint_eq', lint_eq _ h' (f := fun b : β ↦ f (cast h.symm b))]
+  exact hf.comp <| measurable_cast h.symm h'.symm
 
 theorem eq_pi' {a b : ℕ} (h : a = b) :
     ((i : Ioc 0 a) → X i) = ((i : Ioc 0 b) → X i) := by cases h; rfl
 
 theorem eq_fpioc {N : ℕ} (hN : 0 < N) :
-    ((i : Ioc 0 ((fpioc 0 N).sup id).1) → X i) = ((i : Ioc 0 N) → X i) := by
-  apply eq_pi'
-  exact sup_fpioc hN
+    ((i : Ioc 0 ((fpioc 0 N).sup id).1) → X i) = ((i : Ioc 0 N) → X i) :=
+  eq_pi' <| sup_fpioc hN
 
 theorem heq_meas (s t : Set ℕ) (h : s = t) :
     HEq (inferInstance : MeasurableSpace ((i : s) → X i))
@@ -350,77 +302,55 @@ lemma omg {s t : Set ℕ} {u : Set ℕ+} (h : s = t) (h' : ((i : s) → X i) = (
   subst h
   rfl
 
+theorem indicator_eq_indicator {α : Type*} (s t : Set α) {a b : α} (h : a ∈ s ↔ b ∈ t) :
+    s.indicator (1 : α → ℝ≥0∞) a = t.indicator 1 b := by
+  by_cases h' : a ∈ s
+  · simp [indicator, h', h.1 h']
+  · simp [indicator, h', h.not.1 h']
+
 theorem kolContent_eq_kerint {N : ℕ} (hN : 0 < N) {S : Set ((i : fpioc 0 N) → X i)}
     (mS : MeasurableSet S)
     (x₀ : X 0) (x : (n : ℕ+) → X n) :
     kolContent (α := fun n : ℕ+ ↦ X n) (proj_family κ x₀) (cylinder (fpioc 0 N) S) =
     kerint κ 0 N ((cylinder _ S).indicator 1) x₀ x := by
-  rw [kolContent_congr _
-      (by rw [mem_cylinders]; exact ⟨fpioc 0 N, S, mS, rfl⟩) rfl mS, family]
-  rw [Measure.map_apply, ← lintegral_indicator_one₀, kerint]
+  rw [kolContent_congr _ (by rw [mem_cylinders]; exact ⟨fpioc 0 N, S, mS, rfl⟩) rfl mS, family,
+    Measure.map_apply _ mS, ← lintegral_indicator_one₀, kerint]
   · simp only [cast_eq, hN, ↓reduceIte]
-    rw [lint_eq'' (eq_fpioc hN)]
+    rw [lint_eq'' (eq_fpioc hN) (heq_fpioc hN)]
     congr
     · rw [measure_cast (sup_fpioc hN) (fun n ↦ kerNat κ 0 n (zer x₀))]
       congr
       ext i
-      simp only [zer, fus]
-      have := i.2
-      simp only [mem_Iic, nonpos_iff_eq_zero] at this
-      simp [this]
+      simp [zer, fus, mem_Iic_zero i.2]
     · ext z
       rw [preimage_indicator]
-      simp only [indicator, Pi.one_apply, mem_cylinder]
-      have : (fun i : fpioc 0 N ↦ cast (eq_fpioc hN).symm z ⟨i.1.1, fpioc_mem_ioc hN i⟩) ∈ S ↔
-          updateSet x _ (pioc_ioc z) ∈ cylinder (fpioc 0 N) S := by
-        simp only [mem_cylinder]
-        congrm ?_ ∈ S
-        ext i
-        simp only [updateSet, pioc, zero_add, PNat.mk_ofNat, mem_Ico, PNat.one_le, true_and,
-          pioc_ioc, Nat.reduceAdd, ioc_eq]
-        have := i.2
-        simp only [fpioc, Nat.reduceAdd, PNat.mk_ofNat, zero_add, Finset.mem_Ico, PNat.one_le,
-          true_and] at this
-        simp only [this, ↓reduceDite]
-        rw [omg (h' := (eq_fpioc hN).symm) (i := i)]
-        rw [sup_fpioc hN]
-      by_cases h : updateSet x _ (pioc_ioc z) ∈ cylinder (fpioc 0 N) S
-      · simpa [h] using this.2 h
-      · simpa [h] using this.not.2 h
-    · exact heq_fpioc hN
+      apply indicator_eq_indicator
+      congrm ?_ ∈ S
+      ext i
+      simp only [updateSet, pioc, zero_add, PNat.mk_ofNat, mem_Ico, PNat.one_le, true_and,
+        pioc_ioc, Nat.reduceAdd, ioc_eq]
+      have := i.2
+      simp only [fpioc, Nat.reduceAdd, PNat.mk_ofNat, zero_add, Finset.mem_Ico, PNat.one_le,
+        true_and] at this
+      simp only [this, ↓reduceDite]
+      have : Ioc 0 N = Ioc 0 ((fpioc 0 N).sup id).1 := by rw [sup_fpioc hN]
+      rw [← omg _ (eq_fpioc hN).symm z i]; rfl
+      rw [sup_fpioc hN]
     · have : (1 : ((i : Ioc 0 ((fpioc 0 N).sup id).1) → X i) → ℝ≥0∞) = fun _ ↦ 1 := rfl
       rw [this, measurable_indicator_const_iff]
-      apply mS.preimage
-      apply measurable_pi_lambda
-      intro a
-      simp_all only
-      apply Measurable.eval
-      apply measurable_id'
+      exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) mS
   · apply MeasurableSet.nullMeasurableSet
-    apply mS.preimage
-    apply measurable_pi_lambda
-    intro a
-    simp_all only
-    apply Measurable.eval
-    apply measurable_id'
-  · apply measurable_pi_lambda
-    intro a
-    simp_all only
-    apply Measurable.eval
-    apply measurable_id'
-  · exact mS
+    exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) mS
+  · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
 
-
-theorem kerint_mono (k N : ℕ) (f g : ((n : ℕ+) → X n) → ℝ≥0∞) (hfg : f ≤ g) (x₀ : X 0) :
-    kerint κ k N f x₀ ≤ kerint κ k N g x₀ := by
-  intro x
+theorem kerint_mono (k N : ℕ) {f g : ((n : ℕ+) → X n) → ℝ≥0∞} (hfg : f ≤ g) (x₀ : X 0)
+    (x : (n : ℕ+) → X n) : kerint κ k N f x₀ x ≤ kerint κ k N g x₀ x := by
   simp only [kerint]
   split_ifs
-  · apply lintegral_mono
-    exact fun _ ↦ hfg _
+  · exact lintegral_mono fun _ ↦ hfg _
   · exact hfg _
 
-theorem measurable_kerint (k N : ℕ) (f : ((n : ℕ+) → X n) → ℝ≥0∞) (hf : Measurable f) (x₀ : X 0) :
+theorem measurable_kerint (k N : ℕ) {f : ((n : ℕ+) → X n) → ℝ≥0∞} (hf : Measurable f) (x₀ : X 0) :
     Measurable (kerint κ k N f x₀) := by
   unfold kerint
   split_ifs with h
@@ -428,31 +358,19 @@ theorem measurable_kerint (k N : ℕ) (f : ((n : ℕ+) → X n) → ℝ≥0∞) 
       fun c ↦ f (updateSet c.2 _ (pioc_ioc c.1))
     let η : kernel ((n : ℕ+) → X n) ((i : Ioc k N) → X i) :=
       { val := fun x ↦ kerNat κ k N (fus x₀ (fun i ↦ x i.1))
-        property := by
-          intro s ms
-          apply ms.preimage
-          apply Measurable.comp (kernel.measurable _)
-          apply (measurable_fus _ _).comp
-          measurability }
+        property := (kernel.measurable _).comp <| (measurable_fus _ _).comp <|
+          measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) }
     change Measurable fun x ↦ ∫⁻ z : (i : Ioc k N) → X i, g (z, x) ∂η x
+    have := isMarkovKernel_kerNat κ h
     have : IsMarkovKernel η := by
-      constructor
-      intro x
-      have : IsMarkovKernel (kerNat κ k N) := by
-        apply markov_kerNat
-        exact h
-      apply this.isProbabilityMeasure _
+      constructor; exact fun x ↦ this.isProbabilityMeasure _
     apply Measurable.lintegral_kernel_prod_left'
     apply hf.comp
-    simp (config := { unfoldPartialApp := true }) only [updateSet, measurable_pi_iff]
+    simp only [updateSet, measurable_pi_iff]
     intro i
     by_cases h : i ∈ pioc k N <;> simp [h]
-    · simp_all only [η]
-      apply Measurable.eval
-      apply Measurable.comp'
-      apply measurable_pioc_ioc
-      apply measurable_fst
-    apply measurable_snd.eval
+    · exact (measurable_pi_apply _).comp measurable_fst
+    · exact measurable_snd.eval
   · exact hf
 
 theorem dependsOn_kerint (k N : ℕ) {f : ((n : ℕ+) → X n) → ℝ≥0∞} (hf : DependsOn f (pioc 0 N))
@@ -460,27 +378,25 @@ theorem dependsOn_kerint (k N : ℕ) {f : ((n : ℕ+) → X n) → ℝ≥0∞} (
   intro x y hxy
   simp_rw [kerint]
   split_ifs with h
-  · congrm ∫⁻ _, ?_ ∂(kerNat κ k N ?_)
+  · congrm ∫⁻ z : _, ?_ ∂(kerNat κ k N ?_)
     · ext i
       simp only [fus]
       split_ifs with h'
       · rfl
-      · simp_rw [Nat.ne_zero_iff_zero_lt] at h'
-        apply hxy ⟨i.1, h'⟩
-        simp [pioc]
+      · apply hxy
+        simp only [pioc, zero_add, PNat.mk_ofNat, mem_Ico, PNat.one_le, true_and]
         rw [← PNat.coe_lt_coe, PNat.mk_coe, PNat.mk_coe, Nat.lt_succ]
         exact i.2
-    · apply hf
-      intro i hi
+    · refine hf fun i hi ↦ ?_
       simp only [updateSet, pioc, mem_Ico, pioc_ioc, ioc_eq]
-      split_ifs with h1
+      split_ifs with h
       · rfl
-      · push_neg at h1
+      · push_neg at h
         have : i < k + 1 := by
           by_contra!
-          rw [← PNat.coe_le_coe, PNat.mk_coe] at h1
+          rw [← PNat.coe_le_coe, PNat.mk_coe] at h
           simp only [pioc, zero_add, PNat.mk_ofNat, mem_Ico, PNat.one_le, true_and] at hi
-          exact h1 this hi
+          exact h this hi
         simp only [pioc, zero_add, PNat.mk_ofNat, mem_Ico, PNat.one_le, true_and] at hxy
         apply hxy
         rwa [← PNat.coe_lt_coe]
@@ -494,28 +410,9 @@ theorem dependsOn_kerint (k N : ℕ) {f : ((n : ℕ+) → X n) → ℝ≥0∞} (
     exact lt_of_lt_of_le hi (Nat.succ_le_succ_iff.2 h)
 
 
-theorem kerint_self (k N : ℕ) (hkN : ¬k < N)
+theorem kerint_self {k N : ℕ} (hkN : ¬k < N)
     (f : ((n : ℕ+) → X n) → ℝ≥0∞) (x₀ : X 0) (x : (i : ℕ+) → X i) :
-    kerint κ k N f x₀ x = f x := by
-  rw [kerint]
-  simp [hkN]
-
--- lemma omg (s : Set ι) (x : (i : s) → X i) (i j : s) (h : i = j) (h' : X i = X j) :
---     cast h' (x i) = x j := by
---   subst h
-
--- def eq (k : ℕ) : ((i : Ioc k (k + 1)) → X i) ≃ᵐ X (k + 1) :=
---   { toFun := fun x ↦ x ⟨k + 1, right_mem_Ioc.2 <| Nat.lt_succ_self _⟩
---     invFun := fun x i ↦ by
---       have : i = k + 1 := by
---         rcases mem_Ioc.2 i.2 with ⟨h1, h2⟩
---         exact eq_of_le_of_not_lt h2 (by linarith)
---       exact cast (congrArg X this.symm) x
---     left_inv := by
---       simp only [Function.LeftInverse]
---       intro x
---       ext i
---        }
+    kerint κ k N f x₀ x = f x := by rw [kerint, if_neg hkN]
 
 theorem updateSet_eq {ι : Type*} {α : ι → Type*} (x : (i : ι) → α i) {s : Set ι}
     (y : (i : s) → α i) : y = (fun i : s ↦ updateSet x s y i) := by
@@ -528,44 +425,30 @@ theorem kerint_eq {a b : ℕ} (hab : a + 1 < b) {f : ((n : ℕ+) → X n) → �
   ext x
   simp [kerint, lt_trans a.lt_succ_self hab, hab]
   rw [kerNat_succ_left κ _ _ hab, compProd_eq _ _ (Nat.lt_succ_self _) hab,
-    kernel.map_apply, lintegral_map (f := fun z ↦ f (updateSet x (pioc a b) (pioc_ioc z))),
+    kernel.map_apply,
+    lintegral_map (f := fun z ↦ f (updateSet x (pioc a b) (pioc_ioc z))) _ (er ..).measurable,
     kernel.lintegral_compProd]
-  congrm ∫⁻ _ : ?_, ∫⁻ _ : ?_, ?_ ∂(?_) ∂(?_)
+  congrm ∫⁻ _ : ?_, ∫⁻ _ : ?_, f fun i ↦ ?_ ∂(?_) ∂(?_)
   · rfl
   · rfl
   · rw [split_eq_comap, kernel.comap_apply]
     congr
-    simp only [el, Nat.succ_eq_add_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk]
     ext i
-    simp only [fus, pioc, Nat.reduceAdd, PNat.mk_ofNat, Nat.succ_eq_add_one, updateSet, mem_Ico,
-      pioc_ioc, ioc_eq, PNat.mk_coe]
+    simp only [Nat.succ_eq_add_one, el, pioc, Nat.reduceAdd, PNat.mk_ofNat, MeasurableEquiv.coe_mk,
+      Equiv.coe_fn_mk, fus, updateSet, mem_Ico, pioc_ioc, PNat.mk_coe]
     split_ifs with h1 h2 h3 h4 h5
     · rfl
-    · have := (PNat.coe_le_coe _ _).2 h3.1
-      change a + 1 ≤ i.1 at this
-      exfalso; linarith
+    · rw [← PNat.coe_le_coe, PNat.mk_coe, PNat.mk_coe] at *
+      omega
     · rfl
-    · have : i.1 ≤ a := by
-        rw [h4]
-        exact zero_le _
-      exact (h1 this).elim
+    · omega
     · rfl
     · push_neg at h5
-      rw [← PNat.coe_le_coe] at h5
+      rw [← PNat.coe_le_coe, ← PNat.coe_le_coe, PNat.mk_coe, PNat.mk_coe, PNat.mk_coe] at h5
       have hi := mem_Iic.1 i.2
-      have : i.1 = a + 1 := by
-        rcases Nat.le_succ_iff.1 hi with h | h'
-        · exact (h1 h).elim
-        · exact h'
-      rw [← PNat.coe_le_coe] at h5
-      simp at h5
-      rw [this] at h5 hi
-      exfalso
-      linarith [h5 hi]
+      omega
   · rfl
-  · congr
-    ext i
-    simp only [er, updateSet, pioc, mem_Ico, pioc_ioc, Nat.succ_eq_add_one, ioc_eq,
+  · simp only [er, updateSet, pioc, mem_Ico, pioc_ioc, Nat.succ_eq_add_one, ioc_eq,
       MeasurableEquiv.coe_mk, Equiv.coe_fn_mk]
     split_ifs with h1 h2 h3 h4 h5 h6 h7 h8 <;>
       rw [← PNat.coe_le_coe, ← PNat.coe_lt_coe, PNat.mk_coe] at *
@@ -583,25 +466,19 @@ theorem kerint_eq {a b : ℕ} (hab : a + 1 < b) {f : ((n : ℕ+) → X n) → �
       have := Nat.eq_of_le_of_lt_succ h8.1 h8.2
       rw [this, PNat.mk_coe] at h1
       exfalso; linarith [h1 (le_refl _)]
-  · apply hf.comp
-    apply (measurable_updateSet _ _).comp
-    apply (measurable_pioc_ioc _ _).comp
-    apply (er ..).measurable
-  · apply hf.comp
-    apply (measurable_updateSet _ _).comp
-    apply measurable_pioc_ioc
-  · apply (er ..).measurable
+  · exact hf.comp <| (measurable_updateSet _ _).comp <| (measurable_pioc_ioc _ _).comp
+      (er ..).measurable
+  · exact hf.comp <| (measurable_updateSet _ _).comp <| measurable_pioc_ioc ..
 
 
-theorem auxiliaire (f : ℕ → ((n : ℕ+) → X n) → ℝ≥0∞) (N : ℕ → ℕ)
+theorem auxiliaire {f : ℕ → ((n : ℕ+) → X n) → ℝ≥0∞} {N : ℕ → ℕ}
     (hcte : ∀ n, DependsOn (f n) (pioc 0 (N n))) (mf : ∀ n, Measurable (f n))
-    (bound : ℝ≥0∞) (fin_bound : bound ≠ ∞) (le_bound : ∀ n x, f n x ≤ bound) (k : ℕ)
-    (x₀ : X 0)
+    {bound : ℝ≥0∞} (fin_bound : bound ≠ ∞) (le_bound : ∀ n x, f n x ≤ bound) {k : ℕ}
+    {x₀ : X 0}
     (anti : ∀ x, Antitone (fun n ↦ kerint κ (k + 1) (N n) (f n) x₀ x))
-    (l : ((n : ℕ+) → X n) → ℝ≥0∞)
+    {l : ((n : ℕ+) → X n) → ℝ≥0∞}
     (htendsto : ∀ x, Tendsto (fun n ↦ kerint κ (k + 1) (N n) (f n) x₀ x) atTop (𝓝 (l x)))
-    (ε : ℝ≥0∞)
-    (y : (n : pioc 0 k) → X n)
+    {ε : ℝ≥0∞} {y : (n : pioc 0 k) → X n}
     (hpos : ∀ x, ∀ n, ε ≤ kerint κ k (N n) (f n) x₀ (updateSet x _ y)) :
     ∃ z, ∀ x n,
     ε ≤ kerint κ (k + 1) (N n) (f n) x₀ (Function.update (updateSet x _ y) k.succPNat z) := by
@@ -613,72 +490,54 @@ theorem auxiliaire (f : ℕ → ((n : ℕ+) → X n) → ℝ≥0∞) (N : ℕ �
   -- `Fₙ` over the `k`-th variable.
   have f_eq x n : kerint κ k (N n) (f n) x₀ x = kerint κ k (k + 1) (F n) x₀ x := by
     simp only [F]
-    by_cases h : k + 1 < N n
+    rcases lt_trichotomy (k + 1) (N n) with h | h' | h'
     · rw [kerint_eq κ h (mf n)]
-    · by_cases h' : k + 1 = N n
-      · rw [← h']
-        congr
+    · rw [← h']
+      congr
+      ext x
+      rw [kerint_self κ (by simp)]
+    · have : N n ≤ k := Nat.lt_succ.1 h'
+      rw [kerint_self _ (not_lt.2 this)]
+      have : kerint κ (k + 1) (N n) (f n) x₀ = f n := by
         ext x
-        rw [kerint_self κ (k + 1) (k + 1) (by simp) (f n) x₀]
-      · have : N n ≤ k := by
-          rw [not_lt] at h
-          rcases Nat.le_or_eq_of_le_succ h with a | b
-          · exact a
-          · exact (h' b.symm).elim
-        rw [kerint_self _ _ _ (not_lt.2 this)]
-        have : kerint κ (k + 1) (N n) (f n) x₀ = f n := by
-          ext x
-          rw [kerint_self _ _ _ h]
-        rw [this, kerint]
-        simp [Nat.lt_succ_self]
-        have : IsMarkovKernel (kerNat κ k (k + 1)) := by
-          apply markov_kerNat
-          exact k.lt_succ_self
-        rw [← mul_one (f n x),
-          ← measure_univ (μ := (kerNat κ k (k + 1)) (fus x₀ (fun i ↦ x i.1))),
-          ← lintegral_const]
-        apply lintegral_congr
-        intro z
-        apply hcte
-        intro i hi
-        have : i ∉ pioc k (k + 1) := by
-          simp [pioc] at hi ⊢
-          intro hh
-          have aux := (PNat.coe_lt_coe _ _).2 <| lt_of_le_of_lt hh hi
-          simp_rw [PNat.mk_coe] at aux
-          rw [Nat.lt_succ_iff_lt_or_eq] at aux
-          rcases aux with a | b
-          · exact (h a).elim
-          · exact (h' b).elim
-        simp [updateSet, this]
+        rw [kerint_self _ (not_lt.2 h'.le)]
+      rw [this, kerint]
+      simp only [lt_add_iff_pos_right, zero_lt_one, ↓reduceIte]
+      have : IsMarkovKernel (kerNat κ k (k + 1)) := isMarkovKernel_kerNat κ k.lt_succ_self
+      rw [← mul_one (f n x),
+        ← measure_univ (μ := (kerNat κ k (k + 1)) (fus x₀ (fun i ↦ x i.1))),
+        ← lintegral_const]
+      refine lintegral_congr fun z ↦ hcte n fun i hi ↦ ?_
+      have : i ∉ pioc k (k + 1) := by
+        simp [pioc] at hi ⊢
+        intro hh
+        have aux := (PNat.coe_lt_coe _ _).2 <| lt_of_le_of_lt hh hi
+        simp_rw [PNat.mk_coe] at aux
+        rw [Nat.lt_succ_iff_lt_or_eq] at aux
+        rcases aux with a | b <;> omega
+      simp [updateSet, this]
   -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
     simp only [F, kerint]
     split_ifs with h
-    · have : IsMarkovKernel (kerNat κ (k + 1) (N n)) := by
-          apply markov_kerNat
-          exact h
+    · have : IsMarkovKernel (kerNat κ (k + 1) (N n)) := isMarkovKernel_kerNat κ h
       rw [← mul_one bound,
         ← measure_univ (μ := (kerNat κ (k + 1) (N n)) (fus x₀ (fun i ↦ x i.1))),
         ← lintegral_const]
-      apply lintegral_mono
-      exact fun _ ↦ le_bound _ _
+      exact lintegral_mono fun _ ↦ le_bound _ _
     · exact le_bound _ _
   -- By dominated convergence, the integral of `fₙ` with respect to all the variable except
   -- the `k` first converges to the integral of `l`.
   have tendsto_int x : Tendsto (fun n ↦ kerint κ k (N n) (f n) x₀ x) atTop
       (𝓝 (kerint κ k (k + 1) l x₀ x)) := by
-    simp_rw [f_eq, kerint]
-    simp only [lt_add_iff_pos_right, zero_lt_one, ↓reduceIte]
-    · refine tendsto_lintegral_of_dominated_convergence (fun _ ↦ bound) ?_ ?_ ?_ ?_
-      · intro n
-        apply (measurable_kerint κ (k + 1) (N n) (f n) (mf n) x₀).comp
-        apply (measurable_updateSet _ _).comp
-        apply measurable_pioc_ioc
-      · exact fun n ↦ eventually_of_forall <| fun y ↦ F_le n _
-      · have := markov_kerNat κ k.lt_succ_self
-        simp [fin_bound]
-      · exact eventually_of_forall (fun _ ↦ tendstoF _)
+    simp_rw [f_eq, kerint, if_pos k.lt_succ_self]
+    · refine tendsto_lintegral_of_dominated_convergence (fun _ ↦ bound)
+        (fun n ↦ (measurable_kerint _ _ _ (mf n) _).comp <|
+          (measurable_updateSet _ _).comp <| measurable_pioc_ioc ..)
+        (fun n ↦ eventually_of_forall <| fun y ↦ F_le n _)
+        ?_ (eventually_of_forall (fun _ ↦ tendstoF _))
+      have := isMarkovKernel_kerNat κ k.lt_succ_self
+      simp [fin_bound]
   -- By hypothesis, we have `ε ≤ ∫ F(y, xₖ) ∂μₖ`, so this is also true for `l`.
   have ε_le_lint x : ε ≤ kerint κ k (k + 1) l x₀ (updateSet x _ y) :=
     ge_of_tendsto (tendsto_int _) (by simp [hpos])
@@ -1499,7 +1358,7 @@ theorem kerNat_prod {N : ℕ} (hN : 0 < N) :
               ext x
               simp only [e, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.symm_mk,
                 Equiv.coe_fn_symm_mk, preimage_setOf_eq, mem_setOf_eq, and_iff_right_iff_imp]
-              rintro hx i ⟨hi1, hi2⟩
+              rintro - i ⟨hi1, hi2⟩
               exact h ⟨i, mem_Ioc.2 ⟨hi1, hi2⟩⟩
             · exact (e n).measurable_toFun
             · have : MeasurableSet ((e n).symm ⁻¹' s ⟨n + 1, right_mem_Ioc.2 n.succ_pos⟩) :=
@@ -1514,7 +1373,7 @@ theorem kerNat_prod {N : ℕ} (hN : 0 < N) :
                 simp only [e, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.symm_mk,
                   Equiv.coe_fn_symm_mk, preimage_setOf_eq, mem_setOf_eq, mem_empty_iff_false,
                   iff_false, not_and]
-                intro h1 h2
+                intro h1 _
                 apply h
                 rw [mem_univ_pi]
                 rintro ⟨i, hi⟩
