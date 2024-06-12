@@ -222,6 +222,9 @@ protected class Nonempty (M : Matroid α) : Prop where
 theorem ground_nonempty (M : Matroid α) [M.Nonempty] : M.E.Nonempty :=
   Nonempty.ground_nonempty
 
+theorem ground_nonempty_iff (M : Matroid α) : M.E.Nonempty ↔ M.Nonempty :=
+  ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
+
 theorem ground_finite (M : Matroid α) [M.Finite] : M.E.Finite :=
   Finite.ground_finite
 
