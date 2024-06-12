@@ -50,33 +50,35 @@ open Topology Filter Set
 
 namespace Complex
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sin : Continuous sin := by
   change Continuous fun z => (exp (-z * I) - exp (z * I)) * I / 2
   continuity
 #align complex.continuous_sin Complex.continuous_sin
 
+@[fun_prop]
 theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
   continuous_sin.continuousOn
 #align complex.continuous_on_sin Complex.continuousOn_sin
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_cos : Continuous cos := by
   change Continuous fun z => (exp (z * I) + exp (-z * I)) / 2
   continuity
 #align complex.continuous_cos Complex.continuous_cos
 
+@[fun_prop]
 theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
   continuous_cos.continuousOn
 #align complex.continuous_on_cos Complex.continuousOn_cos
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sinh : Continuous sinh := by
   change Continuous fun z => (exp z - exp (-z)) / 2
   continuity
 #align complex.continuous_sinh Complex.continuous_sinh
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_cosh : Continuous cosh := by
   change Continuous fun z => (exp z + exp (-z)) / 2
   continuity
@@ -88,30 +90,32 @@ namespace Real
 
 variable {x y z : ℝ}
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sin : Continuous sin :=
   Complex.continuous_re.comp (Complex.continuous_sin.comp Complex.continuous_ofReal)
 #align real.continuous_sin Real.continuous_sin
 
+@[fun_prop]
 theorem continuousOn_sin {s} : ContinuousOn sin s :=
   continuous_sin.continuousOn
 #align real.continuous_on_sin Real.continuousOn_sin
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_cos : Continuous cos :=
   Complex.continuous_re.comp (Complex.continuous_cos.comp Complex.continuous_ofReal)
 #align real.continuous_cos Real.continuous_cos
 
+@[fun_prop]
 theorem continuousOn_cos {s} : ContinuousOn cos s :=
   continuous_cos.continuousOn
 #align real.continuous_on_cos Real.continuousOn_cos
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sinh : Continuous sinh :=
   Complex.continuous_re.comp (Complex.continuous_sinh.comp Complex.continuous_ofReal)
 #align real.continuous_sinh Real.continuous_sinh
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_cosh : Continuous cosh :=
   Complex.continuous_re.comp (Complex.continuous_cosh.comp Complex.continuous_ofReal)
 #align real.continuous_cosh Real.continuous_cosh

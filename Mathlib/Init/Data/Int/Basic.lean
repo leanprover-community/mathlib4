@@ -7,7 +7,6 @@ The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Batteries.Data.Int.Order
 
 open Nat
 

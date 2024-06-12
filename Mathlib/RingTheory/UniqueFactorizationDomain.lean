@@ -199,7 +199,9 @@ theorem ufm_of_decomposition_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvd
     [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
   { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime }
 #align ufm_of_gcd_of_wf_dvd_monoid ufm_of_decomposition_of_wfDvdMonoid
-@[deprecated] alias ufm_of_gcd_of_wfDvdMonoid := ufm_of_decomposition_of_wfDvdMonoid
+
+@[deprecated (since := "2024-02-12")]
+alias ufm_of_gcd_of_wfDvdMonoid := ufm_of_decomposition_of_wfDvdMonoid
 
 instance Associates.ufm [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
     UniqueFactorizationMonoid (Associates α) :=
@@ -1060,7 +1062,7 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
 #align unique_factorization_monoid.count_normalized_factors_eq' UniqueFactorizationMonoid.count_normalizedFactors_eq'
 
 /-- Deprecated. Use `WfDvdMonoid.max_power_factor` instead. -/
-@[deprecated WfDvdMonoid.max_power_factor]
+@[deprecated WfDvdMonoid.max_power_factor (since := "2024-03-01")]
 theorem max_power_factor {a₀ x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
     ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := WfDvdMonoid.max_power_factor h hx
 #align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_power_factor
@@ -1189,8 +1191,8 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
     congr
     rw [← (normalizedFactors a).map_id, ← (normalizedFactors b).map_id,
       Finset.prod_multiset_map_count, Finset.prod_multiset_map_count,
-      Finset.prod_subset (Finset.subset_union_left _ (normalizedFactors b).toFinset),
-      Finset.prod_subset (Finset.subset_union_right _ (normalizedFactors b).toFinset), ←
+      Finset.prod_subset (Finset.subset_union_left (s₂:=(normalizedFactors b).toFinset)),
+      Finset.prod_subset (Finset.subset_union_right (s₂:=(normalizedFactors b).toFinset)), ←
       Finset.prod_mul_distrib]
     · simp_rw [id, ← pow_add, this]
     all_goals simp only [Multiset.mem_toFinset]
@@ -1462,7 +1464,7 @@ theorem factors_zero : (0 : Associates α).factors = ⊤ :=
   dif_pos rfl
 #align associates.factors_0 Associates.factors_zero
 
-@[deprecated] alias factors_0 := factors_zero -- 2024-03-16
+@[deprecated (since := "2024-03-16")] alias factors_0 := factors_zero
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
@@ -1496,7 +1498,7 @@ theorem factors_eq_top_iff_zero {a : Associates α} : a.factors = ⊤ ↔ a = 0 
   exact ⟨fun h ↦ by rwa [← factors_prod a, FactorSet.prod_eq_zero_iff], fun h ↦ h ▸ factors_zero⟩
 #align associates.factors_eq_none_iff_zero Associates.factors_eq_top_iff_zero
 
-@[deprecated] alias factors_eq_none_iff_zero := factors_eq_top_iff_zero
+@[deprecated (since := "2024-04-16")] alias factors_eq_none_iff_zero := factors_eq_top_iff_zero
 
 theorem factors_eq_some_iff_ne_zero {a : Associates α} :
     (∃ s : Multiset { p : Associates α // Irreducible p }, a.factors = s) ↔ a ≠ 0 := by

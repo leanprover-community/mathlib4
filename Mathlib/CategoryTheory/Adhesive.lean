@@ -26,7 +26,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
   monomorphisms are stable under pushouts.
 - `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
   regular (this implies that adhesive categories are balanced).
-- `CategoryTHeory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
+- `CategoryTheory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
   has all pullbacks and all pushouts and is adhesive
 
 ## References

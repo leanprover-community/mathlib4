@@ -319,10 +319,7 @@ def lan [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] : (S ⥤ D) �
   Adjunction.leftAdjointOfEquiv (fun F G => Lan.equiv ι F G) (by {
     intros X' X Y f g
     ext
-    simp [Lan.equiv]
-    -- This used to be the end of the proof before leanprover/lean4#2644
-    erw [Equiv.coe_fn_mk, Equiv.coe_fn_mk]
-    simp })
+    simp [Lan.equiv] })
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan CategoryTheory.lan
 
