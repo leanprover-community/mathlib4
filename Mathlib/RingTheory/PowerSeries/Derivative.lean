@@ -128,7 +128,7 @@ theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
     trunc (n-1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
   cases n with
   | zero =>
-    simp
+    simp only [ge_iff_le, _root_.zero_le, tsub_eq_zero_of_le, trunc_zero', map_zero]
   | succ n =>
     rw [succ_sub_one, trunc_derivative]
 
@@ -153,7 +153,7 @@ theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d
 @[simp] theorem derivative_inv {R} [CommRing R] (f : R⟦X⟧ˣ) :
     d⁄dX R ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX R f := by
   apply Derivation.leibniz_of_mul_eq_one
-  simp
+  rw [Units.inv_mul]
 
 @[simp] theorem derivative_invOf {R} [CommRing R] (f : R⟦X⟧) [Invertible f] :
     d⁄dX R ⅟f = - ⅟f ^ 2 * d⁄dX R f := by

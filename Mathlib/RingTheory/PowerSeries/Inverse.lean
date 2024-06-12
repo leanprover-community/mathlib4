@@ -60,7 +60,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
-  simp only [Finsupp.single_eq_zero]
+  simp_rw [Finsupp.single_eq_zero]
   split_ifs; · rfl
   congr 1
   symm
@@ -77,8 +77,8 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
     · rfl
     refine ⟨?_, fun hh ↦ H.not_le ?_⟩
     · rintro ⟨⟩
-      simpa [Finsupp.single_eq_same] using le_of_lt H
-    · simpa [Finsupp.single_eq_same] using hh ()
+      simpa only [Finsupp.single_eq_same] using le_of_lt H
+    · simpa only [Finsupp.single_eq_same] using hh ()
 #align power_series.coeff_inv_aux PowerSeries.coeff_inv_aux
 
 /-- A formal power series is invertible if the constant coefficient is invertible. -/
@@ -278,15 +278,16 @@ theorem Unit_of_divided_by_X_pow_order_nonzero {f : k⟦X⟧} (hf : f ≠ 0) :
 
 @[simp]
 theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 : k⟦X⟧) = 1 := by
-  simp only [Unit_of_divided_by_X_pow_order, dif_pos]
+  rw [Unit_of_divided_by_X_pow_order, dif_pos]
+  exact rfl
 
 theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
   ⟨fun h => by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h => by
     have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
-      simp only [order_zero_of_unit h, PartENat.get_zero]
+      simp_rw [order_zero_of_unit h, PartENat.get_zero]
     convert (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
-    simp only [this, pow_zero, one_mul]⟩
+    rw [this, pow_zero, one_mul]⟩
 
 end Field
 
@@ -319,7 +320,7 @@ theorem hasUnitMulPowIrreducibleFactorization :
         intro f hf
         use f.order.get (order_finite_iff_ne_zero.mpr hf)
         use Unit_of_divided_by_X_pow_order f
-        simp only [Unit_of_divided_by_X_pow_order_nonzero hf]
+        rw [Unit_of_divided_by_X_pow_order_nonzero hf]
         exact self_eq_X_pow_order_mul_divided_by_X_pow_order hf)⟩
 
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
@@ -356,7 +357,7 @@ instance : NormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
   normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]
   normUnit_mul  := fun hf hg => by
-    simp only [← mul_inv, inv_inj]
+    rw [← mul_inv, inv_inj]
     simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
       Units.ext_iff, val_unitOfInvertible, Units.val_mul, divided_by_X_pow_orderMul]
@@ -368,10 +369,11 @@ instance : NormalizationMonoid k⟦X⟧ where
     exact ((eq_divided_by_X_pow_order_Iff_Unit h₀.ne_zero).mpr h₀).symm
 
 theorem normUnit_X : normUnit (X : PowerSeries k) = 1 := by
-  simp [normUnit, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero]
+  simp only [normUnit, inv_eq_one, ← Units.val_eq_one, ne_eq, X_ne_zero, not_false_eq_true,
+    Unit_of_divided_by_X_pow_order_nonzero, divided_by_X_pow_order_of_X_eq_one]
 
 theorem X_eq_normalizeX : (X : PowerSeries k) = normalize X := by
-  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+  rw [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 open LocalRing
 

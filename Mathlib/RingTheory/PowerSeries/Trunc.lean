@@ -43,7 +43,8 @@ def trunc (n : ℕ) (φ : R⟦X⟧) : R[X] :=
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
     (trunc n φ).coeff m = if m < n then coeff R m φ else 0 := by
-  simp [trunc, Polynomial.coeff_sum, Polynomial.coeff_monomial, Nat.lt_succ_iff]
+  simp_rw [trunc, Ico_zero_eq_range, finset_sum_coeff, Polynomial.coeff_monomial, sum_ite_eq',
+    mem_range]
 #align power_series.coeff_trunc PowerSeries.coeff_trunc
 
 @[simp]
@@ -68,7 +69,8 @@ theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C R a) = Polynomial.C a :=
   Polynomial.ext fun m => by
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
-    split_ifs with H <;> first |rfl|try simp_all
+    split_ifs with H <;> first |rfl|try simp_all only [lt_add_iff_pos_left, add_pos_iff,
+      zero_lt_one, or_true, not_true_eq_false]
 set_option linter.uppercaseLean3 false in
 #align power_series.trunc_C PowerSeries.trunc_C
 

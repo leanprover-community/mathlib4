@@ -48,7 +48,7 @@ theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔
   refine not_iff_not.mp ?_
   push_neg
   -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
-  simp [PowerSeries.ext_iff, (coeff R _).map_zero]
+  simp_rw [ext_iff, (coeff R _).map_zero]
 #align power_series.exists_coeff_ne_zero_iff_ne_zero PowerSeries.exists_coeff_ne_zero_iff_ne_zero
 
 /-- The order of a formal power series `φ` is the greatest `n : PartENat`
@@ -66,13 +66,13 @@ theorem order_zero : order (0 : R⟦X⟧) = ⊤ :=
 #align power_series.order_zero PowerSeries.order_zero
 
 theorem order_finite_iff_ne_zero : (order φ).Dom ↔ φ ≠ 0 := by
-  simp only [order]
+  rw [order]
   constructor
   · split_ifs with h <;> intro H
-    · simp only [PartENat.top_eq_none, Part.not_none_dom] at H
+    · simp_rw [PartENat.top_eq_none, Part.not_none_dom] at H
     · exact h
   · intro h
-    simp [h]
+    simp only [h, ↓reduceDite, ne_eq, PartENat.dom_natCast]
 #align power_series.order_finite_iff_ne_zero PowerSeries.order_finite_iff_ne_zero
 
 /-- If the order of a formal power series is finite,
@@ -89,7 +89,7 @@ then the order of the power series is less than or equal to `n`. -/
 theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
   classical
   rw [order, dif_neg]
-  · simp only [PartENat.coe_le_coe]
+  · simp_rw [PartENat.coe_le_coe]
     exact Nat.find_le h
   · exact exists_coeff_ne_zero_iff_ne_zero.mp ⟨n, h⟩
 #align power_series.order_le PowerSeries.order_le
@@ -135,8 +135,9 @@ theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
     order φ = n ↔ coeff R n φ ≠ 0 ∧ ∀ i, i < n → coeff R i φ = 0 := by
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
-  · simpa [(coeff R _).map_zero] using (PartENat.natCast_ne_top _).symm
-  simp [order, dif_neg hφ, Nat.find_eq_iff]
+  · simpa only [order_zero, (coeff R _).map_zero, ne_eq, not_true_eq_false, implies_true, and_true,
+    iff_false] using (PartENat.natCast_ne_top _).symm
+  simp_rw [order, ne_eq, dif_neg hφ, Nat.cast_inj, Nat.find_eq_iff, Decidable.not_not]
 #align power_series.order_eq_nat PowerSeries.order_eq_nat
 
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
@@ -154,14 +155,15 @@ theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
     · rintro ⟨_h₁, h₂⟩
       ext i
       exact h₂ i (PartENat.natCast_lt_top i)
-  · simpa [PartENat.natCast_inj] using order_eq_nat
+  · simpa only [Nat.cast_inj, ne_eq, forall_eq, Nat.cast_lt] using order_eq_nat
 #align power_series.order_eq PowerSeries.order_eq
 
 /-- The order of the sum of two formal power series
  is at least the minimum of their orders. -/
 theorem le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
   refine le_order _ _ ?_
-  simp (config := { contextual := true }) [coeff_of_lt_order]
+  simp (config := { contextual := true }) only [lt_min_iff, map_add, gt_iff_lt, coeff_of_lt_order,
+    add_zero, and_imp, implies_true]
 #align power_series.le_order_add PowerSeries.le_order_add
 
 private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ order ψ)
@@ -244,7 +246,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff R n (φ * (1 - ψ)) = coeff R n φ := by
-  simp [coeff_mul_of_lt_order h, mul_sub]
+  rw [mul_sub, mul_one, map_sub, coeff_mul_of_lt_order h, sub_zero]
 #align power_series.coeff_mul_one_sub_of_lt_order PowerSeries.coeff_mul_one_sub_of_lt_order
 
 theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
@@ -252,9 +254,10 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i ∈ s, (1 - f i)) = coeff R k φ := by
   classical
   induction' s using Finset.induction_on with a s ha ih t
-  · simp
+  · simp_rw [Finset.not_mem_empty, false_implies, implies_true, Finset.prod_empty, mul_one,
+      imp_self]
   · intro t
-    simp only [Finset.mem_insert, forall_eq_or_imp] at t
+    simp_rw [Finset.mem_insert, forall_eq_or_imp] at t
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm, coeff_mul_one_sub_of_lt_order _ t.1]
     exact ih t.2
 #align power_series.coeff_mul_prod_one_sub_of_lt_order PowerSeries.coeff_mul_prod_one_sub_of_lt_order
@@ -263,14 +266,14 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
 theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   refine ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, ?_⟩
   ext n
-  simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
+  simp_rw [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
     Finset.sum_const_zero, add_zero]
   rw [Finset.filter_fst_eq_antidiagonal n (Part.get (order φ) h)]
   split_ifs with hn
-  · simp [tsub_add_cancel_of_le hn]
-  · simp only [Finset.sum_empty]
+  · rw [Finset.sum_singleton, tsub_add_cancel_of_le hn]
+  · rw [Finset.sum_empty]
     refine coeff_of_lt_order _ ?_
-    simpa [PartENat.coe_lt_iff] using fun _ => hn
+    simpa only [PartENat.coe_lt_iff, not_le] using fun _ => hn
 set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd
 
@@ -278,10 +281,11 @@ theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧
     order φ = multiplicity X φ := by
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
-  · simp
+  · rw [order_zero, multiplicity.zero]
   induction' ho : order φ using PartENat.casesOn with n
-  · simp [hφ] at ho
-  have hn : φ.order.get (order_finite_iff_ne_zero.mpr hφ) = n := by simp [ho]
+  · simp_rw [order_eq_top, hφ] at ho
+  have hn : φ.order.get (order_finite_iff_ne_zero.mpr hφ) = n := by
+    simp_rw [ho, PartENat.get_natCast']
   rw [← hn]
   refine
     le_antisymm (le_multiplicity_of_pow_dvd <| X_pow_order_dvd (order_finite_iff_ne_zero.mpr hφ))
@@ -317,7 +321,8 @@ variable [Semiring R] [Nontrivial R]
 /-- The order of the formal power series `1` is `0`. -/
 @[simp]
 theorem order_one : order (1 : R⟦X⟧) = 0 := by
-  simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
+  simpa only [monomial_zero_eq_C, map_one, CharP.cast_eq_zero] using
+    order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 #align power_series.order_one PowerSeries.order_one
 
 /-- The order of an invertible power series is `0`. -/
@@ -382,7 +387,7 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       _ = X ^ (df + dg) * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [pow_add]
       _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
-  simp [← hdfg, this] at H
+  simp_rw [this] at H
   refine (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) ?_).symm
   convert H
 

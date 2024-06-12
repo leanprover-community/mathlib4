@@ -51,14 +51,18 @@ theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 
 @[simp]
 theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
   ext (_ | n)
-  · simp
-  · simp [n.succ_ne_zero, pow_succ']
+  · simp only [coeff_zero_eq_constantCoeff, map_mul, constantCoeff_invUnitsSub, one_divp,
+      constantCoeff_X, mul_zero, map_sub, coeff_mul_C, coeff_invUnitsSub, zero_add, pow_one,
+      Units.inv_mul, coeff_one, ↓reduceIte, sub_self]
+  · simp only [coeff_succ_mul_X, coeff_invUnitsSub, pow_succ', one_divp, mul_inv_rev,
+      Units.val_mul, map_sub, coeff_mul_C, Units.inv_mul_cancel_right, coeff_one, n.succ_ne_zero,
+      ↓reduceIte, sub_zero]
 set_option linter.uppercaseLean3 false in
 #align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_X
 
 @[simp]
 theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C R u - X) = 1 := by
-  simp [mul_sub, sub_sub_cancel]
+  rw [mul_sub, invUnitsSub_mul_X, sub_sub_cancel]
 #align power_series.inv_units_sub_mul_sub PowerSeries.invUnitsSub_mul_sub
 
 theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
@@ -85,8 +89,10 @@ theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
   rw [mul_comm, ext_iff]
   intro n
   cases n with
-  | zero => simp
-  | succ n => simp [sub_mul]
+  | zero => simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one, constantCoeff_X,
+    sub_zero, constantCoeff_mk, Pi.one_apply, mul_one, coeff_one, ↓reduceIte]
+  | succ n => simp only [sub_mul, one_mul, map_sub, coeff_mk, Pi.one_apply, coeff_succ_X_mul,
+    sub_self, coeff_one, add_eq_zero, one_ne_zero, and_false, ↓reduceIte]
 
 /--
 Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
@@ -96,7 +102,9 @@ states that for any `d : ℕ`, `(1 + X + X^2 + ... : S⟦X⟧) ^ (d + 1)` is equ
 theorem mk_one_pow_eq_mk_choose_add :
     (mk 1 : S⟦X⟧) ^ (d + 1) = (mk fun n => Nat.choose (d + n) d : S⟦X⟧) := by
   induction d with
-  | zero => ext; simp
+  | zero =>
+      ext
+      simp_rw [zero_add, pow_one, coeff_mk, Pi.one_apply, Nat.choose_zero_right, Nat.cast_one]
   | succ d hd =>
       ext n
       rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
@@ -122,7 +130,8 @@ theorem invOneSubPow_val_eq_mk_choose_add :
 
 theorem invOneSubPow_val_zero_eq_invUnitSub_one :
     (invOneSubPow 0).val = invUnitsSub (1 : Sˣ) := by
-  simp [invOneSubPow, invUnitsSub]
+  simp only [invOneSubPow, zero_add, Nat.choose_zero_right, Nat.cast_one, pow_one, invUnitsSub,
+    one_pow, divp_one]
 
 /--
 The theorem `PowerSeries.mk_one_mul_one_sub_eq_one` implies that `1 - X` is a unit in `S⟦X⟧`
@@ -173,7 +182,7 @@ theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
 @[simp]
 theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_exp]
-  simp
+  simp only [factorial_zero, cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self, map_one]
 #align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
 
 set_option linter.deprecated false in
@@ -205,19 +214,19 @@ theorem coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
 @[simp]
 theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
   ext
-  simp
+  simp_rw [coeff_map, coeff_exp, one_div, RingHom.map_rat_algebraMap]
 #align power_series.map_exp PowerSeries.map_exp
 
 @[simp]
 theorem map_sin : map f (sin A) = sin A' := by
   ext
-  simp [sin, apply_ite f]
+  simp_rw [sin, coeff_map, coeff_mk, apply_ite f, map_zero, RingHom.map_rat_algebraMap]
 #align power_series.map_sin PowerSeries.map_sin
 
 @[simp]
 theorem map_cos : map f (cos A) = cos A' := by
   ext
-  simp [cos, apply_ite f]
+  simp_rw [cos, coeff_map, coeff_mk, apply_ite f, RingHom.map_rat_algebraMap, map_zero]
 #align power_series.map_cos PowerSeries.map_cos
 
 end Field
@@ -258,7 +267,9 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 
 /-- Shows that $e^{x} * e^{-x} = 1$ -/
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
-  convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
+  convert exp_mul_exp_eq_exp_add (1 : A) (-1)
+  · rw [rescale_one, id_apply]
+  · rw [add_right_neg, rescale_zero, coe_comp, Function.comp_apply, constantCoeff_exp, map_one]
 #align power_series.exp_mul_exp_neg_eq_one PowerSeries.exp_mul_exp_neg_eq_one
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
@@ -276,7 +287,7 @@ theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
     ((Finset.range n).sum fun k => exp A ^ k) =
       PowerSeries.mk fun p => (Finset.range n).sum
         fun k => (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by
-  simp only [exp_pow_eq_rescale_exp, rescale]
+  simp_rw [exp_pow_eq_rescale_exp, rescale]
   ext
   simp only [one_div, coeff_mk, cast_pow, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     coeff_exp, factorial, map_sum]
