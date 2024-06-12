@@ -5,6 +5,7 @@ Authors: Daniel Selsam, Mario Carneiro
 -/
 import Batteries.Data.Option.Lemmas
 import Batteries.Data.Nat.Lemmas
+import Batteries.Data.List.Basic
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Relation.Trans
