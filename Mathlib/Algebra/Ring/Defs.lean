@@ -111,6 +111,7 @@ definition depends on the `Semiring` structure.
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 #align non_unital_non_assoc_semiring NonUnitalNonAssocSemiring
 
+attribute [instance 96] NonUnitalNonAssocSemiring.toAddCommMonoid
 attribute [instance 10] NonUnitalNonAssocSemiring.toMulZeroClass
 attribute [instance 0] NonUnitalNonAssocSemiring.toMul
 
@@ -119,8 +120,9 @@ class NonUnitalSemiring (α : Type u) extends AddCommMonoid α, SemigroupWithZer
     NonUnitalNonAssocSemiring α
 #align non_unital_semiring NonUnitalSemiring
 
-attribute [instance 50] NonUnitalSemiring.toSemigroupWithZero
+attribute [instance 98] NonUnitalSemiring.toAddCommMonoid
 attribute [instance 50] NonUnitalSemiring.toSemigroup
+attribute [instance 50] NonUnitalSemiring.toSemigroupWithZero
 attribute [instance 0] NonUnitalSemiring.toAddCommMonoid
 
 /-- A unital but not-necessarily-associative semiring. -/
@@ -129,7 +131,7 @@ class NonAssocSemiring (α : Type u) extends AddCommMonoid α, MulZeroOneClass �
 #align non_assoc_semiring NonAssocSemiring
 
 attribute [instance 10] NonAssocSemiring.toMulZeroOneClass
-attribute [instance 0] NonAssocSemiring.toAddCommMonoid
+attribute [instance 98] NonAssocSemiring.toAddCommMonoid
 attribute [instance 0] NonAssocSemiring.toMulOneClass
 attribute [instance 0] NonAssocSemiring.toNatCast
 
@@ -137,7 +139,7 @@ attribute [instance 0] NonAssocSemiring.toNatCast
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
-attribute [instance 90] NonUnitalNonAssocRing.toAddCommGroup
+attribute [instance 96] NonUnitalNonAssocRing.toAddCommGroup
 attribute [instance 50] NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring
 attribute [instance 0] NonUnitalNonAssocRing.toMul
 
@@ -147,9 +149,8 @@ class NonUnitalRing (α : Type*) extends AddCommGroup α,
 #align non_unital_ring NonUnitalRing
 
 attribute [instance 50] NonUnitalRing.toNonUnitalSemiring
+attribute [instance 98] NonUnitalRing.toAddCommGroup
 attribute [instance 0] NonUnitalRing.toSemigroup
-attribute [instance 0] NonUnitalRing.toAddCommGroup
-attribute [instance 0] NonUnitalRing.toNonUnitalSemiring
 
 /-- A unital but not-necessarily-associative ring. -/
 class NonAssocRing (α : Type*) extends AddCommGroup α,
@@ -157,7 +158,7 @@ class NonAssocRing (α : Type*) extends AddCommGroup α,
 #align non_assoc_ring NonAssocRing
 
 attribute [instance 50] NonAssocRing.toNonAssocSemiring
-attribute [instance 0] NonAssocRing.toAddCommGroup
+attribute [instance 98] NonAssocRing.toAddCommGroup
 attribute [instance 0] NonAssocRing.toMulOneClass
 attribute [instance 0] NonAssocRing.toNatCast
 attribute [instance 0] NonAssocRing.toIntCast
@@ -182,7 +183,7 @@ class Ring (R : Type u) extends AddCommGroup R,
 attribute [instance 200] Ring.toSemiring
 attribute [instance 100] Ring.toNonAssocRing
 attribute [instance 100] Ring.toNonUnitalRing
-attribute [instance 200] Ring.toAddCommGroup
+attribute [instance 100] Ring.toAddCommGroup
 attribute [instance 0] Ring.toMonoid
 attribute [instance 0] Ring.toNatCast
 attribute [instance 0] Ring.toIntCast
