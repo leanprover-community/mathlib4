@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Composable arrows
@@ -67,6 +68,8 @@ variable (F G : ComposableArrows C n)
 /-- A wrapper for `omega` which prefaces it with some quick and useful attempts -/
 macro "valid" : tactic =>
   `(tactic| first | assumption | apply zero_le | apply le_rfl | transitivity <;> assumption | omega)
+
+suppress_compilation
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
 @[simp]
@@ -913,7 +916,7 @@ def Functor.mapComposableArrows :
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` induced by `G : C ⥤ D`
 commutes with `opEquivalence`. -/
-def Functor.mapComposableArrowsOpIso :
+noncomputable def Functor.mapComposableArrowsOpIso :
     G.mapComposableArrows n ⋙ (opEquivalence D n).functor.rightOp ≅
       (opEquivalence C n).functor.rightOp ⋙ (G.op.mapComposableArrows n).op :=
   Iso.refl _
