@@ -162,19 +162,19 @@ theorem has_separating_covers_iff_separated_nhds {h k : Set X} :
         isOpen_iUnion fun i ↦ (u₀i_open i).sdiff isClosed_closure
     have cover_lemma : ∀ (h₀ : Set X) (u₀ v₀ : ℕ → Set X),
         (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
-        (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) :=
+        (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ≤ n, v₀ m)) :=
         fun h₀ u₀ v₀ h₀_cov dis x xinh ↦ by
       rcases h₀_cov xinh with ⟨un , ⟨n, rfl⟩ , xinun⟩
       simp only [mem_iUnion]
       refine ⟨n, xinun, ?_⟩
-      rw [Set.Finite.closure_biUnion (finite_le_nat n)]
+      rw [closure_iUnion_of_finite']
       simp_all only [disjoint_right, mem_setOf_eq, mem_iUnion, exists_false, exists_const,
         not_false_eq_true]
     refine ⟨
-      ⋃ n : ℕ, u n \ (closure (⋃ m ∈ {m | m ≤ n}, v m)),
-      ⋃ n : ℕ, v n \ (closure (⋃ m ∈ {m | m ≤ n}, u m)),
-      open_lemma u (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v m) (fun n ↦ (u_props n).1),
-      open_lemma v (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u m) (fun n ↦ (v_props n).1),
+      ⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
+      ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
+      open_lemma u (fun n ↦ ⋃ m ≤ n, v m) (fun n ↦ (u_props n).1),
+      open_lemma v (fun n ↦ ⋃ m ≤ n, u m) (fun n ↦ (v_props n).1),
       cover_lemma h u v u_cov (fun n ↦ (v_props n).2),
       cover_lemma k v u v_cov (fun n ↦ (u_props n).2),
       ?_⟩
