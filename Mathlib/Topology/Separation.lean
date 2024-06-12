@@ -2180,8 +2180,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpa
   -- with `IsLindelof.indexed_countable_subcover` momentarily.
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
     wlog ains : a ∈ s
-    · exact ⟨∅, isOpen_empty, SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left t),
-        fun a ↦ ains a⟩
+    · exact ⟨∅, isOpen_empty, SeparatedNhds.empty_left t |>.disjoint_closure_left, fun a ↦ ains a⟩
     obtain ⟨n, nna, ncl, nsubkc⟩ := (((regularSpace_TFAE X).out 0 3).mp r:) a tᶜ
       (t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains))
     exact ⟨interior n, isOpen_interior, disjoint_left.mpr fun ⦃a⦄ ain ↦
