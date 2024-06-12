@@ -30,6 +30,8 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 -/
 
+suppress_compilation
+
 namespace CategoryTheory
 
 open Category Limits
