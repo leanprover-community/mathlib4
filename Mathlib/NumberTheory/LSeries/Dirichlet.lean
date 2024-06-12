@@ -249,8 +249,9 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re :=
   (LSeriesSummable_congr s const_one_eq_zeta).symm.trans <| LSeriesSummable_one_iff
 #align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.LSeriesSummable_zeta_iff
--- deprecated 2024-03-29
-@[deprecated] alias zeta_LSeriesSummable_iff_one_lt_re := LSeriesSummable_zeta_iff
+
+@[deprecated (since := "2024-03-29")]
+alias zeta_LSeriesSummable_iff_one_lt_re := LSeriesSummable_zeta_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by

@@ -742,6 +742,9 @@ protected lemma pow_lt_pow_iff_left (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b := 
   simp only [← Nat.not_le, Nat.pow_le_pow_iff_left hn]
 #align nat.pow_lt_iff_lt_left Nat.pow_lt_pow_iff_left
 
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
+@[deprecated (since := "2023-12-23")] alias pow_le_iff_le_left := Nat.pow_le_pow_iff_left
+
 lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_left hn]
 #align nat.pow_left_injective Nat.pow_left_injective
@@ -1126,6 +1129,13 @@ protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
 
 protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
   rw [Nat.pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
+
+lemma le_iff_ne_zero_of_dvd (ha : a ≠ 0) (hab : a ∣ b) : a ≤ b ↔ b ≠ 0 where
+  mp := by rw [← Nat.pos_iff_ne_zero] at ha ⊢; exact Nat.lt_of_lt_of_le ha
+  mpr hb := Nat.le_of_dvd (Nat.pos_iff_ne_zero.2 hb) hab
+
+lemma div_ne_zero_iff_of_dvd (hba : b ∣ a) : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [Nat.div_ne_zero_iff, Nat.le_iff_ne_zero_of_dvd, *]
 
 @[deprecated div_mul_div_comm (since := "2024-05-29")]
 lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :

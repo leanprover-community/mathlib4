@@ -351,7 +351,7 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this
     rwa [Function.comp.assoc, I.symm_comp_self] at this
-  · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
+  · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm inter_subset_left
 #align model_with_corners.symm_continuous_within_at_comp_right_iff ModelWithCorners.symm_continuousWithinAt_comp_right_iff
 
 protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :
@@ -601,9 +601,9 @@ theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H :
   simp only [contDiffOn_zero]
   constructor
   · refine I.continuous.comp_continuousOn (u.continuousOn.comp I.continuousOn_symm ?_)
-    exact (mapsTo_preimage _ _).mono_left (inter_subset_left _ _)
+    exact (mapsTo_preimage _ _).mono_left inter_subset_left
   · refine I.continuous.comp_continuousOn (u.symm.continuousOn.comp I.continuousOn_symm ?_)
-    exact (mapsTo_preimage _ _).mono_left (inter_subset_left _ _)
+    exact (mapsTo_preimage _ _).mono_left inter_subset_left
 #align cont_diff_groupoid_zero_eq contDiffGroupoid_zero_eq
 
 variable (n)
@@ -699,8 +699,7 @@ def analyticGroupoid : StructureGroupoid H :=
           · have hx'1 : x' ∈ ((v.preimage f).preimage (I.symm)).image (I ∘ f ∘ I.symm) := by
               refine image_subset (I ∘ f ∘ I.symm) ?_ hx'.left
               rw [preimage_inter]
-              refine Subset.trans ?_ (inter_subset_right (u.preimage I.symm)
-                ((v.preimage f).preimage I.symm))
+              refine Subset.trans ?_ (u.preimage I.symm).inter_subset_right
               apply inter_subset_left
             rcases hx'1 with ⟨x'', hx''⟩
             rw [hx''.right.symm]
@@ -995,7 +994,7 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
-  exact image_subset _ (inter_subset_right _ _)
+  exact image_subset _ inter_subset_right
 #align local_homeomorph.maps_to_extend PartialHomeomorph.mapsTo_extend
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
@@ -1050,7 +1049,7 @@ theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp 
 lemma interior_extend_target_subset_interior_range :
     interior (f.extend I).target ⊆ interior (range I) := by
   rw [f.extend_target, interior_inter, (f.open_target.preimage I.continuous_symm).interior_eq]
-  exact inter_subset_right _ _
+  exact inter_subset_right
 
 /-- If `y ∈ f.target` and `I y ∈ interior (range I)`,
   then `I y` is an interior point of `(I ∘ f).target`. -/
@@ -1104,7 +1103,7 @@ theorem map_extend_nhdsWithin_eq_image {y : M} (hy : y ∈ f.source) :
     map e (𝓝[s] y) = map e (𝓝[e.source ∩ s] y) :=
       congr_arg (map e) (nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f I hy)).symm
     _ = 𝓝[e '' (e.source ∩ s)] e y :=
-      ((f.extend I).leftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq
+      ((f.extend I).leftInvOn.mono inter_subset_left).map_nhdsWithin_eq
         ((f.extend I).left_inv <| by rwa [f.extend_source])
         (continuousAt_extend_symm f I hy).continuousWithinAt
         (continuousAt_extend f I hy).continuousWithinAt
