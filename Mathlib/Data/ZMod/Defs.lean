@@ -97,17 +97,21 @@ def ZMod : ℕ → Type
   | n + 1 => Fin (n + 1)
 #align zmod ZMod
 
-instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
+namespace ZMod
+
+instance decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
   | 0 => inferInstanceAs (DecidableEq ℤ)
   | n + 1 => inferInstanceAs (DecidableEq (Fin (n + 1)))
 #align zmod.decidable_eq ZMod.decidableEq
 
-instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
+instance repr : ∀ n : ℕ, Repr (ZMod n)
   | 0 => by dsimp [ZMod]; infer_instance
   | n + 1 => by dsimp [ZMod]; infer_instance
 #align zmod.has_repr ZMod.repr
 
-namespace ZMod
+instance instOfNat: ∀ n m : ℕ, OfNat (ZMod n) m
+  | 0, m => inferInstanceAs (OfNat ℤ m)
+  | n + 1, m => inferInstanceAs (OfNat (Fin (n + 1)) m)
 
 instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
 
