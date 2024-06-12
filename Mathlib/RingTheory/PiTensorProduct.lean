@@ -81,8 +81,8 @@ lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
   simp only [LinearMap.smul_apply, mul_tprod_tprod]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
-  __ := instMul
-  __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  toMul := instMul
+  toAddCommMonoid := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
   left_distrib _ _ _ := (mul _).map_add _ _
   right_distrib _ _ _ := mul.map_add₂ _ _ _
   zero_mul _ := mul.map_zero₂ _
@@ -106,6 +106,8 @@ protected lemma mul_one (x : ⨂[R] i, A i) : mul x (tprod R 1) = x := by
   | add _ _ h1 h2 => simp [h1, h2]
 
 instance instNonAssocSemiring : NonAssocSemiring (⨂[R] i, A i) where
+  toAddCommMonoid := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  toMul := instMul
   __ := instNonUnitalNonAssocSemiring
   one_mul := PiTensorProduct.one_mul
   mul_one := PiTensorProduct.mul_one
@@ -135,8 +137,10 @@ protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul
   simpa only [tprod_mul_tprod] using congr_arg (tprod R) (mul_assoc x y z)
 
 instance instNonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
-  __ := instNonUnitalNonAssocSemiring
+  toAddCommMonoid := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  toMul := instMul
   mul_assoc := PiTensorProduct.mul_assoc
+  __ := instNonUnitalNonAssocSemiring
 
 end NonUnitalSemiring
 
@@ -147,6 +151,8 @@ variable [Algebra R' R] [∀ i, Algebra R (A i)] [∀ i, Algebra R' (A i)]
 variable [∀ i, IsScalarTower R' R (A i)]
 
 instance instSemiring : Semiring (⨂[R] i, A i) where
+  toAddCommMonoid := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  toMul := instMul
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
 
@@ -154,7 +160,7 @@ instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   __ := hasSMul'
   toFun := (· • 1)
   map_one' := by simp
-  map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
+  map_mul' r s := show (r * s) • 1 = mul (r • 1 : ⨂[R] i, A i) (s • 1) by
     rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
       mul_smul]
     congr
