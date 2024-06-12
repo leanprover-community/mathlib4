@@ -121,7 +121,7 @@ theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Con
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold inner_
   have := Continuous.const_smul (M := 𝕜) hf I
-  continuity
+  fun_prop
 #align inner_product_spaceable.continuous.inner_ Continuous.inner_
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
