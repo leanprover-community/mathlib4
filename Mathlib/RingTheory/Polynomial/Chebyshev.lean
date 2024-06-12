@@ -57,7 +57,7 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 -/
 
 namespace Polynomial.Chebyshev
-set_option linter.uppercaseLean3 false -- `T` `U` `C` `S` `X`
+set_option linter.uppercaseLean3 false -- `T` `U` `X`
 
 open Polynomial
 
@@ -242,6 +242,7 @@ theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
+@[local reducible]
 noncomputable def C : ℤ → R[X]
   | 0 => 2
   | 1 => X
@@ -272,6 +273,7 @@ theorem C_zero : C R 0 = 2 := rfl
 @[simp]
 theorem C_one : C R 1 = X := rfl
 
+@[simp]
 theorem C_neg_one : C R (-1) = X := (by ring : X * 2 - X = X)
 
 theorem C_two : C R 2 = X ^ 2 - 2 := by
@@ -322,6 +324,7 @@ theorem T_eq_half_mul_C_comp_two_mul_X [Invertible (2 : R)] (n : ℤ) :
 /-- `S n` is the `n`th rescaled Chebyshev polynomial of the second kind (also known as a
 Vieta–Fibonacci polynomial), given by $S_n(2x) = U_n(x)$. See
 `Polynomial.Chebyshev.S_comp_two_mul_X`. -/
+@[local reducible]
 noncomputable def S : ℤ → R[X]
   | 0 => 1
   | 1 => X
@@ -459,9 +462,9 @@ theorem map_S (f : R →+* R') (n : ℤ) : map f (S R n) = S R' n := by
   | zero => simp
   | one => simp
   | add_two n ih1 ih2 =>
-    simp_rw [S_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
+    simp_rw [S_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2]
   | neg_add_one n ih1 ih2 =>
-    simp_rw [S_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
+    simp_rw [S_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2]
 
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
