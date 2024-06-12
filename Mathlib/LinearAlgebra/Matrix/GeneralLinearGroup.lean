@@ -213,7 +213,7 @@ theorem map_comp_apply (n : ℕ) (f : T →+* R) (g : R →+* S) (x : GL (Fin n)
 
 @[simp]
 theorem map_comp_apply (n : ℕ) (f : T →+* R) (g : R →+* S) (x : GL (Fin n) T) :
-  (map n g).comp (map n f) x = map n g (map n f x) := rfl
+    (map n g).comp (map n f) x = map n g (map n f x) := rfl
 >>>>>>> 3f5a1473e54e80a4fb6d5ba55ba9ef4b02e3db17
 
 end GeneralLinearGroup
