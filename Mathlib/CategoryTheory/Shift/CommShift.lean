@@ -259,11 +259,13 @@ lemma comm_app (a : A) (X : C) :
       τ.app (X⟦a⟧) ≫ (F₂.commShiftIso a).hom.app X :=
   NatTrans.congr_app (comm τ a) X
 
+@[reassoc]
 lemma shift_app (a : A) (X : C) :
     (τ.app X)⟦a⟧' = (F₁.commShiftIso a).inv.app X ≫
       τ.app (X⟦a⟧) ≫ (F₂.commShiftIso a).hom.app X := by
   rw [← comm_app, Iso.inv_hom_id_app_assoc]
 
+@[reassoc]
 lemma app_shift (a : A) (X : C) :
     τ.app (X⟦a⟧) = (F₁.commShiftIso a).hom.app X ≫ (τ.app X)⟦a⟧' ≫
       (F₂.commShiftIso a).inv.app X := by
@@ -287,16 +289,13 @@ lemma of_isIso [IsIso τ] [NatTrans.CommShift τ A] :
   change NatTrans.CommShift (asIso τ).inv A
   infer_instance
 
-variable (F₁)
-
+variable (F₁) in
 instance id : NatTrans.CommShift (𝟙 F₁) A := ⟨by aesop_cat⟩
 
 instance comp [NatTrans.CommShift τ A] [NatTrans.CommShift τ' A] :
     NatTrans.CommShift (τ ≫ τ') A := ⟨fun a => by
   ext X
   simp [comm_app_assoc, comm_app]⟩
-
-variable {F₁}
 
 instance whiskerRight [NatTrans.CommShift τ A] :
     NatTrans.CommShift (whiskerRight τ G) A := ⟨fun a => by

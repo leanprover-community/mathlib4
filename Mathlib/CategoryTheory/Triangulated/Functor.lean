@@ -118,7 +118,7 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
-/-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functor
+/-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functors
 `F₁.mapTriangle` and `F₂.mapTriangle` if the isomorphism `F₁ ≅ F₂` is compatible
 with the shifts. -/
 @[simps!]
