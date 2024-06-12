@@ -58,8 +58,6 @@ end StarMemClass
 
 universe u u' v v' w w' w''
 
-open scoped BigOperators
-
 variable {F : Type v'} {R' : Type u'} {R : Type u}
 variable {A : Type v} {B : Type w} {C : Type w'}
 
@@ -105,8 +103,8 @@ instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalStarSubalgebra R A) A
-    where
+instance instNonUnitalSubsemiringClass :
+    NonUnitalSubsemiringClass (NonUnitalStarSubalgebra R A) A where
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
   zero_mem {s} := s.zero_mem'
@@ -526,8 +524,7 @@ variable [NonUnitalSemiring B] [StarRing B] [Module R B]
 variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 
 /-- The pointwise `star` of a non-unital subalgebra is a non-unital subalgebra. -/
-instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A)
-    where
+instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A) where
   star S :=
     { carrier := star S.carrier
       mul_mem' := @fun x y hx hy => by simpa only [Set.mem_star, NonUnitalSubalgebra.mem_carrier]
@@ -635,10 +632,10 @@ theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
 
 @[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
-  (Set.subset_union_left s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
+  Set.subset_union_left.trans <| NonUnitalAlgebra.subset_adjoin R
 
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
-  (Set.subset_union_right s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
+  Set.subset_union_right.trans <| NonUnitalAlgebra.subset_adjoin R
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   NonUnitalAlgebra.subset_adjoin R <| Set.mem_union_left _ (Set.mem_singleton x)
@@ -646,13 +643,26 @@ theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
 theorem star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set A) :=
   star_mem <| self_mem_adjoin_singleton R x
 
+@[elab_as_elim]
+lemma adjoin_induction' {s : Set A} {p : ∀ x, x ∈ adjoin R s → Prop} {a : A}
+    (ha : a ∈ adjoin R s) (mem : ∀ (x : A) (hx : x ∈ s), p x (subset_adjoin R s hx))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (zero : p 0 (zero_mem _)) (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (smul : ∀ (r : R) x hx, p x hx → p (r • x) (SMulMemClass.smul_mem r hx))
+    (star : ∀ x hx, p x hx → p (star x) (star_mem hx)) : p a ha := by
+  refine NonUnitalAlgebra.adjoin_induction' (fun x hx ↦ ?_) add zero mul smul ha
+  simp only [Set.mem_union, Set.mem_star] at hx
+  obtain (hx | hx) := hx
+  · exact mem x hx
+  · simpa using star _ (NonUnitalAlgebra.subset_adjoin R (by simpa using Or.inl hx)) (mem _ hx)
+
 variable {R}
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalStarSubalgebra R A) (↑) := by
   intro s S
   rw [← toNonUnitalSubalgebra_le_iff, adjoin_toNonUnitalSubalgebra,
     NonUnitalAlgebra.adjoin_le_iff, coe_toNonUnitalSubalgebra]
-  exact ⟨fun h => (Set.subset_union_left s _).trans h,
+  exact ⟨fun h => Set.subset_union_left.trans h,
     fun h => Set.union_subset h fun x hx => star_star x ▸ star_mem (show star x ∈ S from h hx)⟩
 
 /-- Galois insertion between `adjoin` and `Subtype.val`. -/
@@ -667,6 +677,18 @@ theorem adjoin_le {S : NonUnitalStarSubalgebra R A} {s : Set A} (hs : s ⊆ S) :
 
 theorem adjoin_le_iff {S : NonUnitalStarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   NonUnitalStarAlgebra.gc _ _
+
+lemma adjoin_eq (s : NonUnitalStarSubalgebra R A) : adjoin R (s : Set A) = s :=
+  le_antisymm (adjoin_le le_rfl) (subset_adjoin R (s : Set A))
+
+lemma adjoin_eq_span (s : Set A) :
+    (adjoin R s).toSubmodule = Submodule.span R (Subsemigroup.closure (s ∪ star s)) := by
+  rw [adjoin_toNonUnitalSubalgebra, NonUnitalAlgebra.adjoin_eq_span]
+
+@[simp]
+lemma span_eq_toSubmodule (s : NonUnitalStarSubalgebra R A) :
+    Submodule.span R (s : Set A) = s.toSubmodule := by
+  simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
 
 theorem _root_.NonUnitalSubalgebra.starClosure_eq_adjoin (S : NonUnitalSubalgebra R A) :
     S.starClosure = adjoin R (S : Set A) :=
@@ -805,6 +827,16 @@ variable [NonUnitalSemiring B] [StarRing B]
 variable [Module R B] [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 variable (S : NonUnitalStarSubalgebra R A)
+
+lemma _root_.NonUnitalStarAlgHom.map_adjoin (f : F) (s : Set A) :
+    map f (adjoin R s) = adjoin R (f '' s) :=
+  Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) NonUnitalStarAlgebra.gi.gc
+    NonUnitalStarAlgebra.gi.gc fun _t => rfl
+
+@[simp]
+lemma _root_.NonUnitalStarAlgHom.map_adjoin_singleton (f : F) (x : A) :
+    map f (adjoin R {x}) = adjoin R {f x} := by
+  simp [NonUnitalStarAlgHom.map_adjoin]
 
 instance subsingleton_of_subsingleton [Subsingleton A] :
     Subsingleton (NonUnitalStarSubalgebra R A) :=

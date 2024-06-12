@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.GlueData
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Tactic.Generalize
+import Mathlib.CategoryTheory.Elementwise
 
 #align_import topology.gluing from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -131,13 +132,16 @@ set_option linter.uppercaseLean3 false in
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => Or.inl (refl x), by
     rintro a b (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
-    exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, by simp [e₁, e₂]⟩], by
+    exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, e₂, by erw [← e₁, D.t_inv_apply]⟩], by
+     -- previous line now `erw` after #13170
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
     · exact id
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩)
     · exact Or.inr ⟨x, e₁, e₂⟩
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
-    have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by simp [z]
+    have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
+      dsimp only [coe_of, z]
+      erw [pullbackIsoProdSubtype_inv_fst_apply, D.t_inv_apply]-- now `erw` after #13170
     have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     right
@@ -210,14 +214,15 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
+    refine EqvGen.mono ?_ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
-    simp only [forget_map_eq_coe, Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
-      Cofan.mk_ι_app]
-    rw [← comp_apply, colimit.ι_desc, ← comp_apply, colimit.ι_desc]
+    simp only [forget_map_eq_coe]
+    erw [TopCat.comp_app, sigmaIsoSigma_inv_apply, ← comp_apply, ← comp_apply,
+      colimit.ι_desc_assoc, ← comp_apply, ← comp_apply, colimit.ι_desc_assoc]
+      -- previous line now `erw` after #13170
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
@@ -225,7 +230,8 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     dsimp only at *
     -- Porting note: there were `subst e₁` and `subst e₂`, instead of the `rw`
     rw [← e₁, ← e₂] at *
-    simp
+    erw [D.glue_condition_apply] -- now `erw` after #13170
+    rfl -- now `rfl` after #13170
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_eq_iff_rel TopCat.GlueData.ι_eq_iff_rel
 
@@ -263,7 +269,9 @@ theorem image_inter (i j : D.J) :
       substs eq₁
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
-    exact ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), by simp [← hx]⟩⟩
+    refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
+    erw [D.glue_condition_apply] -- now `erw` after #13170
+    exact hx
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.image_inter TopCat.GlueData.image_inter
 
@@ -279,8 +287,11 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
   have : D.f _ _ ⁻¹' (𝖣.ι j ⁻¹' (𝖣.ι i '' U)) = (D.t j i ≫ D.f _ _) ⁻¹' U := by
     ext x
     conv_rhs => rw [← Set.preimage_image_eq U (D.ι_injective _)]
-    generalize 𝖣.ι i '' U = U'
-    simp
+    generalize 𝖣.ι i '' U = U' -- next 4 lines were `simp` before #13170
+    simp only [GlueData.diagram_l, GlueData.diagram_r, Set.mem_preimage, coe_comp,
+      Function.comp_apply]
+    erw [D.glue_condition_apply]
+    rfl
   rw [← this, Set.image_preimage_eq_inter_range]
   symm
   apply Set.inter_eq_self_of_subset_left
@@ -369,9 +380,9 @@ instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     pullback (h.V i j).inclusion (h.V i k).inclusion ⟶
       pullback (h.V j k).inclusion (h.V j i).inclusion := by
-  refine' (pullbackIsoProdSubtype _ _).hom ≫ ⟨_, _⟩ ≫ (pullbackIsoProdSubtype _ _).inv
+  refine (pullbackIsoProdSubtype _ _).hom ≫ ⟨?_, ?_⟩ ≫ (pullbackIsoProdSubtype _ _).inv
   · intro x
-    refine' ⟨⟨⟨(h.t i j x.1.1).1, _⟩, h.t i j x.1.1⟩, rfl⟩
+    refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
   -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
@@ -393,10 +404,10 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   f_id i := by
     -- Porting note (#12129): additional beta reduction needed
     beta_reduce
-    exact (h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
+    exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
-  t_id i := by ext; rw [h.t_id]; rfl
+  t_id i := by ext; erw [h.t_id]; rfl  -- now `erw` after #13170
   t' := h.t'
   t_fac i j k := by
     delta MkCore.t'
@@ -414,7 +425,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     -- The next 9 tactics (up to `convert ...` were a single `rw` before leanprover/lean4#2644
     -- rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
     --   Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
-    rw [comp_app] --, comp_app, id_app]
+    erw [comp_app] --, comp_app, id_app] -- now `erw` after #13170
     -- erw [ContinuousMap.coe_mk]
     conv_lhs => erw [ContinuousMap.coe_mk]
     erw [id_app]
@@ -496,7 +507,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion (TopCat.of α) (U i))
-  use Set.inter_subset_left _ _
+  use Set.inter_subset_left
   constructor
   · erw [← Set.image_preimage_eq_inter_range]
     apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap
@@ -505,7 +516,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
     apply congr_arg
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
-  · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
+  · refine ⟨Set.mem_image_of_mem _ hx, ?_⟩
     -- Porting note: another `rw ↦ erw`
     -- See above.
     erw [ι_fromOpenSubsetsGlue_apply]

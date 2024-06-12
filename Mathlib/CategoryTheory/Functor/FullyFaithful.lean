@@ -11,7 +11,10 @@ import Mathlib.Logic.Equiv.Defs
 /-!
 # Full and faithful functors
 
-We define typeclasses `Full` and `Faithful`, decorating functors.
+We define typeclasses `Full` and `Faithful`, decorating functors. These typeclasses
+carry no data. However, we also introduce a structure `Functor.FullyFaithful` which
+contains the data of the inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of the
+map induced on morphisms by a functor `F`.
 
 ## Main definitions and results
 * Use `F.map_injective` to retrieve the fact that `F.map` is injective when `[Faithful F]`.
@@ -19,7 +22,6 @@ We define typeclasses `Full` and `Faithful`, decorating functors.
 * Use `F.preimage` to obtain preimages of morphisms when `[Full F]`.
 * We prove some basic "cancellation" lemmas for full and/or faithful functors, as well as a
   construction for "dividing" a functor by a faithful functor, see `Faithful.div`.
-* `Full F` carries no data.
 
 See `CategoryTheory.Equivalence.of_fullyFaithful_ess_surj` for the fact that a functor is an
 equivalence if and only if it is fully faithful and essentially surjective.
@@ -44,8 +46,6 @@ class Full (F : C ⥤ D) : Prop where
   map_surjective {X Y : C} : Function.Surjective (F.map (X := X) (Y := Y))
 #align category_theory.full CategoryTheory.Functor.Full
 
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4:
-#[`map_injective'] [] -/
 /-- A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective.
 
 See <https://stacks.math.columbia.edu/tag/001C>.
@@ -79,7 +79,6 @@ theorem map_surjective (F : C ⥤ D) [Full F] :
 #align category_theory.functor.map_surjective CategoryTheory.Functor.map_surjective
 
 /-- The choice of a preimage of a morphism under a full functor. -/
-@[pp_dot]
 noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   (F.map_surjective f).choose
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage
@@ -128,7 +127,96 @@ theorem preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
   simp
 #align category_theory.functor.preimage_iso_map_iso CategoryTheory.Functor.preimageIso_mapIso
 
+/-- Structure containing the data of inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`
+in order to express that `F` is a fully faithful functor. -/
+structure FullyFaithful where
+  /-- The inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`. -/
+  preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : X ⟶ Y
+  map_preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : F.map (preimage f) = f := by aesop_cat
+  preimage_map {X Y : C} (f : X ⟶ Y) : preimage (F.map f) = f := by aesop_cat
+
+namespace FullyFaithful
+
+attribute [simp] map_preimage preimage_map
+
+/-- A `FullyFaithful` structure can be obtained from the assumption the `F` is both
+full and faithful. -/
+noncomputable def ofFullyFaithful [F.Full] [F.Faithful] :
+    F.FullyFaithful where
+  preimage := F.preimage
+
+variable {F}
+variable (hF : F.FullyFaithful)
+
+/-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
+@[simps]
+def homEquiv {X Y : C} : (X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y) where
+  toFun := F.map
+  invFun := hF.preimage
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+lemma map_injective {X Y : C} {f g : X ⟶ Y} (h : F.map f = F.map g) : f = g :=
+  hF.homEquiv.injective h
+
+lemma map_surjective {X Y : C} :
+    Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
+  hF.homEquiv.surjective
+
+lemma map_bijective (X Y : C) :
+    Function.Bijective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
+  hF.homEquiv.bijective
+
+lemma full : F.Full where
+  map_surjective := hF.map_surjective
+
+lemma faithful : F.Faithful where
+  map_injective := hF.map_injective
+
+/-- The unique isomorphism `X ≅ Y` which induces an isomorphism `F.obj X ≅ F.obj Y`
+when `hF : F.FullyFaithful`. -/
+@[simps]
+def preimageIso {X Y : C} (e : F.obj X ≅ F.obj Y) : X ≅ Y where
+  hom := hF.preimage e.hom
+  inv := hF.preimage e.inv
+  hom_inv_id := hF.map_injective (by simp)
+  inv_hom_id := hF.map_injective (by simp)
+
+lemma isIso_of_isIso_map {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] : IsIso f := by
+  simpa using (hF.preimageIso (asIso (F.map f))).isIso_hom
+
+/-- The equivalence `(X ≅ Y) ≃ (F.obj X ≅ F.obj Y)` given by `h : F.FullyFaithful`. -/
+@[simps]
+def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
+  toFun := F.mapIso
+  invFun := hF.preimageIso
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+variable (C) in
+/-- The identity functor is fully faithful. -/
+@[simps]
+def id : (𝟭 C).FullyFaithful where
+  preimage f := f
+
+variable {E : Type*} [Category E]
+
+/-- Fully faithful functors are stable by composition. -/
+@[simps]
+def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
+  preimage f := hF.preimage (hG.preimage f)
+
+/-- If `F ⋙ G` is fully faithful and `G` is faithful, then `F` is fully faithful. -/
+def ofCompFaithful {G : D ⥤ E} [G.Faithful] (hFG : (F ⋙ G).FullyFaithful) :
+    F.FullyFaithful where
+  preimage f := hFG.preimage (G.map f)
+  map_preimage f := G.map_injective (hFG.map_preimage (G.map f))
+  preimage_map f := hFG.preimage_map f
+
+end FullyFaithful
+
 end Functor
+
 
 section
 
@@ -141,100 +229,6 @@ theorem isIso_of_fully_faithful (f : X ⟶ Y) [IsIso (F.map f)] : IsIso f :=
   ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
 #align category_theory.is_iso_of_fully_faithful CategoryTheory.isIso_of_fully_faithful
 
-/-- If `F` is fully faithful, we have an equivalence of hom-sets `X ⟶ Y` and `F X ⟶ F Y`. -/
-@[simps]
-noncomputable def equivOfFullyFaithful :
-    (X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y) where
-  toFun f := F.map f
-  invFun f := F.preimage f
-  left_inv f := by simp
-  right_inv f := by simp
-#align category_theory.equiv_of_fully_faithful CategoryTheory.equivOfFullyFaithful
-#align category_theory.equiv_of_fully_faithful_apply CategoryTheory.equivOfFullyFaithful_apply
-#align category_theory.equiv_of_fully_faithful_symm_apply CategoryTheory.equivOfFullyFaithful_symm_apply
-
-/-- If `F` is fully faithful, we have an equivalence of iso-sets `X ≅ Y` and `F X ≅ F Y`. -/
-@[simps]
-noncomputable def isoEquivOfFullyFaithful :
-    (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
-  toFun f := F.mapIso f
-  invFun f := F.preimageIso f
-  left_inv f := by simp
-  right_inv f := by
-    ext
-    simp
-#align category_theory.iso_equiv_of_fully_faithful CategoryTheory.isoEquivOfFullyFaithful
-#align category_theory.iso_equiv_of_fully_faithful_symm_apply CategoryTheory.isoEquivOfFullyFaithful_symm_apply
-#align category_theory.iso_equiv_of_fully_faithful_apply CategoryTheory.isoEquivOfFullyFaithful_apply
-
-end
-
-section
-
-variable {E : Type*} [Category E] {F G : C ⥤ D} (H : D ⥤ E) [H.Full] [H.Faithful]
-
-/-- We can construct a natural transformation between functors by constructing a
-natural transformation between those functors composed with a fully faithful functor. -/
-@[simps]
-noncomputable def natTransOfCompFullyFaithful (α : F ⋙ H ⟶ G ⋙ H) :
-    F ⟶ G where
-  app X := (equivOfFullyFaithful H).symm (α.app X)
-  naturality X Y f := by
-    dsimp
-    apply H.map_injective
-    simpa using α.naturality f
-#align category_theory.nat_trans_of_comp_fully_faithful CategoryTheory.natTransOfCompFullyFaithful
-#align category_theory.nat_trans_of_comp_fully_faithful_app CategoryTheory.natTransOfCompFullyFaithful_app
-
-/-- We can construct a natural isomorphism between functors by constructing a natural isomorphism
-between those functors composed with a fully faithful functor. -/
-@[simps!]
-noncomputable def natIsoOfCompFullyFaithful (i : F ⋙ H ≅ G ⋙ H) : F ≅ G :=
-  NatIso.ofComponents (fun X => (isoEquivOfFullyFaithful H).symm (i.app X)) fun f => by
-    dsimp
-    apply H.map_injective
-    simpa using i.hom.naturality f
-#align category_theory.nat_iso_of_comp_fully_faithful CategoryTheory.natIsoOfCompFullyFaithful
-#align category_theory.nat_iso_of_comp_fully_faithful_hom_app CategoryTheory.natIsoOfCompFullyFaithful_hom_app
-#align category_theory.nat_iso_of_comp_fully_faithful_inv_app CategoryTheory.natIsoOfCompFullyFaithful_inv_app
-
-theorem natIsoOfCompFullyFaithful_hom (i : F ⋙ H ≅ G ⋙ H) :
-    (natIsoOfCompFullyFaithful H i).hom = natTransOfCompFullyFaithful H i.hom := by
-  ext
-  simp [natIsoOfCompFullyFaithful]
-#align category_theory.nat_iso_of_comp_fully_faithful_hom CategoryTheory.natIsoOfCompFullyFaithful_hom
-
-theorem natIsoOfCompFullyFaithful_inv (i : F ⋙ H ≅ G ⋙ H) :
-    (natIsoOfCompFullyFaithful H i).inv = natTransOfCompFullyFaithful H i.inv := by
-  ext
-  simp [← H.preimage_comp]
-#align category_theory.nat_iso_of_comp_fully_faithful_inv CategoryTheory.natIsoOfCompFullyFaithful_inv
-
-/-- Horizontal composition with a fully faithful functor induces a bijection on
-natural transformations. -/
-@[simps]
-noncomputable def NatTrans.equivOfCompFullyFaithful :
-    (F ⟶ G) ≃ (F ⋙ H ⟶ G ⋙ H) where
-  toFun α := α ◫ 𝟙 H
-  invFun := natTransOfCompFullyFaithful H
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-#align category_theory.nat_trans.equiv_of_comp_fully_faithful CategoryTheory.NatTrans.equivOfCompFullyFaithful
-#align category_theory.nat_trans.equiv_of_comp_fully_faithful_apply CategoryTheory.NatTrans.equivOfCompFullyFaithful_apply
-#align category_theory.nat_trans.equiv_of_comp_fully_faithful_symm_apply CategoryTheory.NatTrans.equivOfCompFullyFaithful_symm_apply
-
-/-- Horizontal composition with a fully faithful functor induces a bijection on
-natural isomorphisms. -/
-@[simps]
-noncomputable def NatIso.equivOfCompFullyFaithful :
-    (F ≅ G) ≃ (F ⋙ H ≅ G ⋙ H) where
-  toFun e := NatIso.hcomp e (Iso.refl H)
-  invFun := natIsoOfCompFullyFaithful H
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-#align category_theory.nat_iso.equiv_of_comp_fully_faithful CategoryTheory.NatIso.equivOfCompFullyFaithful
-#align category_theory.nat_iso.equiv_of_comp_fully_faithful_symm_apply CategoryTheory.NatIso.equivOfCompFullyFaithful_symm_apply
-#align category_theory.nat_iso.equiv_of_comp_fully_faithful_apply CategoryTheory.NatIso.equivOfCompFullyFaithful_apply
 
 end
 

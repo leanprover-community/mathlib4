@@ -174,8 +174,8 @@ noncomputable def skyscraperPresheafStalkOfSpecializes [HasColimits C] {y : X} (
 /-- The cocone at `*` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∉ closure {p₀}`
 -/
 @[simps]
-def skyscraperPresheafCocone (y : X) : Cocone ((OpenNhds.inclusion y).op ⋙ skyscraperPresheaf p₀ A)
-    where
+def skyscraperPresheafCocone (y : X) :
+    Cocone ((OpenNhds.inclusion y).op ⋙ skyscraperPresheaf p₀ A) where
   pt := terminal C
   ι :=
     { app := fun _ => terminal.from _
@@ -197,7 +197,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h :
       simp only [← c.w (homOfLE <| @inf_le_left _ _ h1.choose U.unop).op, ←
         c.w (homOfLE <| @inf_le_right _ _ h1.choose U.unop).op, ← Category.assoc]
       congr 1
-      refine' ((if_neg _).symm.ndrec terminalIsTerminal).hom_ext _ _
+      refine ((if_neg ?_).symm.ndrec terminalIsTerminal).hom_ext _ _
       exact fun h => h1.choose_spec h.1
     uniq := fun c f H => by
       dsimp -- Porting note (#11227):added a `dsimp`
@@ -228,8 +228,8 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
           dsimp [skyscraperPresheaf]
           rw [if_neg]
           · exact terminalIsTerminal
-          · -- Adaptation note: 2024-03-24
-            -- Previously the universe annotation was not needed here.
+          · #adaptation_note /-- 2024-03-24
+            Previously the universe annotation was not needed here. -/
             exact Set.not_mem_empty PUnit.unit.{u+1})))
 #align skyscraper_presheaf_is_sheaf skyscraperPresheaf_isSheaf
 
@@ -322,8 +322,8 @@ theorem fromStalk_to_skyscraper {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p�
 /-- The unit in `Presheaf.stalkFunctor ⊣ skyscraperPresheafFunctor`
 -/
 @[simps]
-protected def unit : 𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ skyscraperPresheafFunctor p₀
-    where
+protected def unit :
+    𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ skyscraperPresheafFunctor p₀ where
   app 𝓕 := toSkyscraperPresheaf _ <| 𝟙 _
   naturality 𝓕 𝓖 f := by
     ext U; dsimp
@@ -390,6 +390,8 @@ instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X)
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
 instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
+  -- Use a classical instance instead of the one from `variable`s
+  have : ∀ U : Opens X, Decidable (p₀ ∈ U) := fun _ ↦ Classical.dec _
   (skyscraperPresheafStalkAdjunction _).isLeftAdjoint
 
 /-- Taking stalks of a sheaf is the left adjoint functor to `skyscraperSheafFunctor`

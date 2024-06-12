@@ -40,8 +40,9 @@ namespace ContinuousMap
 
 section CompactOpen
 
-variable {α X Y Z : Type*}
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {K : Set X} {U : Set Y}
+variable {α X Y Z T : Type*}
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace T]
+variable {K : Set X} {U : Set Y}
 
 #noalign continuous_map.compact_open.gen
 #noalign continuous_map.gen_empty
@@ -109,6 +110,17 @@ theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
 
+/-- Any pair of homeomorphisms `X ≃ₜ Z` and `Y ≃ₜ T` gives rise to a homeomorphism
+`C(X, Y) ≃ₜ C(Z, T)`. -/
+protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
+    C(X, Y) ≃ₜ C(Z, T) where
+  toFun f := .comp ψ <| f.comp φ.symm
+  invFun f := .comp ψ.symm <| f.comp φ
+  left_inv f := ext fun _ ↦ ψ.left_inv (f _) |>.trans <| congrArg f <| φ.left_inv _
+  right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
+  continuous_toFun := continuous_comp _ |>.comp <| continuous_comp_left _
+  continuous_invFun := continuous_comp _ |>.comp <| continuous_comp_left _
+
 variable [LocallyCompactPair Y Z]
 
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
@@ -150,7 +162,7 @@ lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
     Continuous fun x => (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg)
 
-@[deprecated _root_.Continuous.compCM] -- deprecated on 2024-01-30
+@[deprecated _root_.Continuous.compCM (since := "2024-01-30")]
 lemma continuous.comp' (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (g x).comp (f x) :=
   hg.compCM hf
