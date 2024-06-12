@@ -167,7 +167,8 @@ theorem has_separating_covers_iff_separated_nhds {h k : Set X} :
       rcases h₀_cov xinh with ⟨un , ⟨n, rfl⟩ , xinun⟩
       simp only [mem_iUnion]
       refine ⟨n, xinun, ?_⟩
-      simp_all only [closure_iUnion₂_of_finite, mem_iUnion, exists_prop, not_exists, not_and]
+      simp_all only [closure_iUnion₂_of_finite, disjoint_right, mem_setOf_eq, mem_iUnion,
+        exists_false, exists_const, not_false_eq_true]
     refine ⟨
       ⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
       ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
