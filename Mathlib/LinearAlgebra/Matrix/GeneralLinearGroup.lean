@@ -171,7 +171,7 @@ def map (n : ℕ) (f : R →+* S) : GL (Fin n) R →* GL (Fin n) S
   map_mul' x y := by
     dsimp only at *
     simp only [Units.inv_eq_val_inv, _root_.mul_inv_rev, coe_mul,
-      coe_units_inv, RingHom.mapMatrix_apply, Matrix.map_mul,
+      coe_units_inv, RingHom.mapMatrix_apply, map_mul,
       coe_toLinear] at *
     rfl
 
@@ -184,7 +184,7 @@ theorem map_comp (n : ℕ) (f : T →+* R) (g : R →+* S) :
   map n (g.comp f) = (map n g).comp (map n f) := rfl
 
 @[simp]
-theorem GeneralLinearGroup.map_comp_apply (n : ℕ) (f : T →+* R) (g : R →+* S) (x : GL (Fin n) T) :
+theorem map_comp_apply (n : ℕ) (f : T →+* R) (g : R →+* S) (x : GL (Fin n) T) :
   (map n g).comp (map n f) x = map n g (map n f x) := rfl
 
 end GeneralLinearGroup
