@@ -75,6 +75,18 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
   ring
 
+lemma qaryEntropy_eq_log_mul_add_binaryEntropy {q : ℕ} {p : ℝ} :
+    qaryEntropy q p = p * log (q - 1) + binaryEntropy p := by
+  unfold binaryEntropy qaryEntropy
+  rw [show ((2:ℕ) - (1:ℝ)).log = 0 by norm_num]
+  ring
+
+lemma qaryEntropy_eq_log_mul_add_binaryEntropy' {q : ℕ} :
+    qaryEntropy q = (fun p ↦ p * log (q - 1)) + binaryEntropy := by
+  ext
+  simp only [Pi.add_apply]
+  exact qaryEntropy_eq_log_mul_add_binaryEntropy
+
 lemma binaryEntropy_pos {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < binaryEntropy p := by
   simp only [binaryEntropy_eq']
   have pos_sum_pos_pos (a b : ℝ) (ha : 0 ≤ a) (hb : b < 0) : 0 < a - b := by linarith
@@ -201,15 +213,161 @@ This is due to definition of `Real.log` for negative numbers. -/
   simp_rw [this]
   apply differentiableAt_neg_iff.mpr
   apply DifferentiableAt.add_const
-  simp only [differentiableAt_id']
+  exact differentiableAt_id'
 
--- TODO don't need assumptions
-lemma deriv_log_one_sub {x : ℝ} (hh : x ≠ 1): deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻¹ := by
-  rw [deriv.log]
-  simp only [deriv_one_minus]
-  field_simp
-  exact differentiable_const_minus x
-  exact sub_ne_zero.mpr hh.symm
+section general
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₀ f₁ g : E → F}
+variable {x : E}
+
+-- TODO clean up, put somewhere else?
+lemma not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_
+    (hf : ¬ DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x)
+    : ¬ DifferentiableAt 𝕜 (fun y => f y + g y) x := by
+  have f_eq_sum_sub_g: f = (fun y => f y + g y) - g := by
+    ext
+    simp only [Pi.sub_apply, add_sub_cancel_right]
+  by_contra
+  have : DifferentiableAt 𝕜 f x := by
+    rw [f_eq_sum_sub_g]
+    apply DifferentiableAt.sub
+    · simp
+      assumption
+    · assumption
+  contradiction
+
+-- TODO clean up, put somewhere else?
+lemma not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt
+    (hf : DifferentiableAt 𝕜 f x) (hg : ¬ DifferentiableAt 𝕜 g x)
+    : ¬ DifferentiableAt 𝕜 (fun y => f y + g y) x := by
+  rw [show (fun y ↦ f y + g y) = (fun y ↦ g y + f y) by ext; rw [add_comm]]
+  exact not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_ hg hf
+
+lemma differentiableAt_iff_differentiableAt_comp_mul_add
+    {a b m : 𝕜} (hm : m ≠ 0) (f : 𝕜 → E) :
+    DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x => f (m * x + b)) (m⁻¹ * (a - b)):= by
+  constructor <;> intro h
+  · apply DifferentiableAt.comp
+    have : (m * (m⁻¹ * (a - b)) + b) = a := by
+      simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.mul_inv_cancel_left,
+        sub_add_cancel]
+    rw [this]
+    exact h
+    apply DifferentiableAt.add
+    · exact DifferentiableAt.mul (differentiableAt_const m) differentiableAt_id'
+    · exact differentiableAt_const b
+  · have diff_affine : DifferentiableAt 𝕜 (fun x => m⁻¹ * (x - b)) a := by
+      apply DifferentiableAt.mul (differentiableAt_const m⁻¹)
+      apply DifferentiableAt.sub_const differentiableAt_id'
+    have : f = (fun x ↦ f (m * x + b)) ∘ (fun x => m⁻¹ * (x - b)) := by
+        ext
+        simp only [Function.comp_apply]
+        field_simp
+    rw [this]
+    apply DifferentiableAt.comp
+    exact h
+    exact diff_affine
+
+@[simp]
+lemma fderiv_deriv' {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
+  rw [← deriv_fderiv]
+  simp
+  ring
+
+end general
+
+lemma differentiableAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
+    DifferentiableAt ℝ (fun p => -p * log p - (1 - p) * log (1 - p)) x := by
+  apply DifferentiableAt.sub
+  apply DifferentiableAt.mul
+  apply DifferentiableAt.neg
+  exact differentiableAt_id'
+  apply DifferentiableAt.log differentiableAt_id' xne0
+  apply DifferentiableAt.mul
+  apply DifferentiableAt.sub
+  apply differentiableAt_const
+  exact differentiableAt_id'
+  apply DifferentiableAt.log
+  apply DifferentiableAt.sub
+  apply differentiableAt_const
+  exact differentiableAt_id'
+  exact sub_ne_zero.mpr gne1.symm
+
+lemma differentiableAt_binaryEntropy' {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
+    DifferentiableAt ℝ binaryEntropy x := by
+  simp only [binaryEntropy_eq]
+  exact differentiableAt_binaryEntropy xne0 gne1
+
+lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
+    DifferentiableAt ℝ binaryEntropy x ↔ x ≠ 0 ∧ x ≠ 1 := by
+  refine ⟨?_, fun ne0Ne1 ↦ differentiableAt_binaryEntropy' ne0Ne1.1 ne0Ne1.2⟩
+  by_contra h
+  simp_all
+  obtain ⟨is_diff, hx⟩ := h
+  rw [binaryEntropy_eq] at is_diff
+  by_cases is_x0 : x ≠ 0
+  · rw[hx is_x0] at is_diff
+    apply not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt _ _ is_diff
+    · apply DifferentiableAt.mul
+       (DifferentiableAt.neg differentiableAt_id') (DifferentiableAt.log differentiableAt_id' _)
+      simp only [ne_eq, one_ne_zero, not_false_eq_true]
+    · have diff_of_aff := (differentiableAt_iff_differentiableAt_comp_mul_add
+        (a:=(0:ℝ)) (b:=(1 : ℝ)) (m:=(-1:ℝ)) (show (-1 : ℝ) ≠ 0 by norm_num) negMulLog).mpr
+      intro h
+      have : DifferentiableAt ℝ (fun (x : ℝ) ↦ (-1 * x + 1).negMulLog) ((-1)⁻¹ * (0 - 1)) := by
+        convert h using 1
+        · ext
+          simp [negMulLog]
+          ring_nf
+        · ring
+      have := diff_of_aff this
+      have := differentiableAt_negMulLog_iff.mp this
+      contradiction
+  · have : x = 0 := by simp_all only [neg_mul, false_implies, ne_eq, Decidable.not_not]
+    rw [this] at is_diff
+    apply not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_ _ _ is_diff
+    · simp only [neg_mul, differentiableAt_neg_iff, not_DifferentiableAt_log_mul_zero,
+        not_false_eq_true]
+    · apply DifferentiableAt.neg
+      apply DifferentiableAt.mul
+      apply differentiable_const_minus
+      apply DifferentiableAt.log
+      exact differentiable_const_minus 0
+      simp only [sub_zero, ne_eq, one_ne_zero, not_false_eq_true]
+
+open Filter Real Topology Asymptotics
+
+lemma deriv_log_one_sub_at_1 : deriv (fun p ↦ log (1 - p)) 1 = 0 := by
+  have : ¬ DifferentiableAt ℝ (fun p ↦ log (1 - p)) 1 := by
+    by_contra
+    have : ¬ DifferentiableAt ℝ log 0 := by
+      simp_all only [differentiable_const_minus, implies_true, differentiableAt_log_iff, ne_eq,
+        not_true_eq_false, not_false_eq_true]
+    have : DifferentiableAt ℝ log 0 := by
+      have : Real.log = (fun p ↦ log (1 - p)) ∘ (fun x => 1 - x) := by
+        ext
+        simp only [Function.comp_apply, sub_sub_cancel]
+      rw [this]
+      apply DifferentiableAt.comp
+      · simp only [sub_zero, differentiable_const_minus]
+        assumption
+      · exact differentiable_const_minus 0
+    contradiction
+  exact deriv_zero_of_not_differentiableAt this
+
+lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻¹ := by
+  by_cases xis1 : x = 1
+  · rw [xis1]
+    simp only [sub_self, inv_zero, neg_zero]
+    exact deriv_log_one_sub_at_1
+  · rw [deriv.log]
+    simp only [deriv_one_minus]
+    field_simp
+    exact differentiable_const_minus x
+    exact sub_ne_zero_of_ne fun a ↦ xis1 a.symm
 
 @[simp] lemma differentiableAt_log_const_neg {x c : ℝ} (h : x ≠ c) :
     DifferentiableAt ℝ (fun p ↦ log (c - p)) x := by
@@ -217,46 +375,56 @@ lemma deriv_log_one_sub {x : ℝ} (hh : x ≠ 1): deriv (fun p ↦ log (1 - p)) 
   apply DifferentiableAt.sub
   apply differentiableAt_const
   apply differentiableAt_id'
-  exact sub_ne_zero.mpr (id (Ne.symm h))
+  exact sub_ne_zero.mpr h.symm
 
--- TODO don't need assumptions
-lemma deriv_binaryEntropy' {x : ℝ} (h : x ≠ 0) (hh : x ≠ 1) :
+/-- Binary entropy has derivative `log (1 - p) - log p`.
+It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
+lemma deriv_binaryEntropy' {x : ℝ} :
     deriv (fun p ↦ -p * p.log - (1 - p) * (1 - p).log) x = log (1 - x) - log x := by
-  rw [deriv_sub]
-  simp_rw [← neg_mul_eq_neg_mul]
-  rw [deriv.neg, deriv_mul_log h]
-  simp_rw [mul_sub_right_distrib]
-  simp only [one_mul]
-  rw [deriv_sub, deriv_log_one_sub hh]
-  · rw [deriv_mul, deriv_id'']
-    rw [deriv.log]
-    simp only [one_mul, deriv_one_minus]
-    field_simp
-    ring_nf
-    calc -1 + (-log x - x * (1 - x)⁻¹) + (1 - x)⁻¹ + log (1 - x)
-      _ = -1 + (1 - x) * (1 - x)⁻¹ + log (1 - x) - log x := by ring
-      _ = -log x + log (1 - x) := by
-        field_simp [sub_ne_zero.mpr hh.symm]
-        ring
-    exact differentiable_const_minus x
-    exact sub_ne_zero.mpr hh.symm
-    apply differentiableAt_id'
-    exact differentiableAt_log_const_neg hh
-  · exact differentiableAt_log_const_neg hh
-  · apply DifferentiableAt.mul
-    apply differentiableAt_id'
-    apply DifferentiableAt.log
-    exact differentiable_const_minus x
-    exact sub_ne_zero.mpr hh.symm
-  · apply DifferentiableAt.mul
-    apply DifferentiableAt.neg
-    exact differentiableAt_id'
-    exact differentiableAt_log h
-  · apply DifferentiableAt.mul
-    apply differentiable_const_minus
-    exact differentiableAt_log_const_neg hh
+  by_cases is_x_where_nondiff : x ≠ 0 ∧ x ≠ 1
+  · obtain ⟨h, hh⟩ := is_x_where_nondiff
+    rw [deriv_sub]
+    simp_rw [← neg_mul_eq_neg_mul]
+    rw [deriv.neg, deriv_mul_log h]
+    simp_rw [mul_sub_right_distrib]
+    simp only [one_mul]
+    rw [deriv_sub, deriv_log_one_sub]
+    · rw [deriv_mul, deriv_id'']
+      rw [deriv.log]
+      simp only [one_mul, deriv_one_minus]
+      field_simp
+      ring_nf
+      calc -1 + (-log x - x * (1 - x)⁻¹) + (1 - x)⁻¹ + log (1 - x)
+        _ = -log x + log (1 - x) := by
+          field_simp [sub_ne_zero.mpr hh.symm]
+          ring
+      exact differentiable_const_minus x
+      exact sub_ne_zero.mpr hh.symm
+      apply differentiableAt_id'
+      exact differentiableAt_log_const_neg hh
+    · exact differentiableAt_log_const_neg hh
+    · apply DifferentiableAt.mul
+      apply differentiableAt_id'
+      apply DifferentiableAt.log
+      exact differentiable_const_minus x
+      exact sub_ne_zero.mpr hh.symm
+    · apply DifferentiableAt.mul
+      apply DifferentiableAt.neg
+      exact differentiableAt_id'
+      exact differentiableAt_log h
+    · apply DifferentiableAt.mul
+      apply differentiable_const_minus
+      exact differentiableAt_log_const_neg hh
+  · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
+    rw [← binaryEntropy_eq]
+    rw [deriv_zero_of_not_differentiableAt]
+    · cases this with  -- surely this can be shortened?
+        | inl xis0 => simp only [xis0, sub_zero, log_one, log_zero, sub_self]
+        | inr xis1 => simp only [xis1, sub_zero, log_one, log_zero, sub_self]
+    · intro h
+      have := (differentiableAt_binaryEntropy_iff_ne_zero_one x).mp h
+      simp_all only [ne_eq, not_true_eq_false, zero_ne_one, not_false_eq_true, and_true]
 
--- TODO don't need assumptions
 lemma deriv_qaryEntropy' {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
     deriv (fun p => p * log (q - 1) - p * log p - (1 - p) * log (1 - p)) x
        = log (q - 1) + log (1 - x) - log x := by
@@ -268,7 +436,7 @@ lemma deriv_qaryEntropy' {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
     congr! 1
     simp only [differentiableAt_id', differentiableAt_const, deriv_mul, deriv_id'', one_mul,
       deriv_const', mul_zero, add_zero]
-    convert deriv_binaryEntropy' h hh using 2
+    convert deriv_binaryEntropy' using 2
     simp only [neg_mul]
   · simp only [differentiableAt_id', differentiableAt_const, DifferentiableAt.mul]
   · apply DifferentiableAt.sub
@@ -285,36 +453,19 @@ lemma deriv_qaryEntropy {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
   unfold qaryEntropy
   exact deriv_qaryEntropy' h hh
 
--- TODO don't need assumptions
-lemma deriv_binaryEntropy {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
+/-- Binary entropy has derivative `log (1 - p) - log p`.
+It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
+lemma deriv_binaryEntropy {x : ℝ} :
     deriv binaryEntropy x = log (1 - x) - log x := by
-  unfold binaryEntropy
-  rw [deriv_qaryEntropy h hh]
-  simp only [sub_left_inj, add_left_eq_self, log_eq_zero]
-  right
-  norm_num
+  simp only [binaryEntropy_eq]
+  exact deriv_binaryEntropy'
 
 /-- Binary entropy has derivative `log (1 - p) - log p`. -/
-lemma hasDerivAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
+lemma hasDerivAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (xne1 : x ≠ 1) :
     HasDerivAt binaryEntropy (log (1 - x) - log x) x := by
-  have diffAt : DifferentiableAt ℝ (fun p => -p * log p - (1 - p) * log (1 - p)) x := by
-    apply DifferentiableAt.sub
-    apply DifferentiableAt.mul
-    apply DifferentiableAt.neg
-    exact differentiableAt_id'
-    apply DifferentiableAt.log differentiableAt_id' xne0
-    apply DifferentiableAt.mul
-    apply DifferentiableAt.sub
-    apply differentiableAt_const
-    exact differentiableAt_id'
-    apply DifferentiableAt.log
-    apply DifferentiableAt.sub
-    apply differentiableAt_const
-    exact differentiableAt_id'
-    exact sub_ne_zero.mpr gne1.symm
-  convert hasDerivAt_deriv_iff.mpr diffAt using 1
+  convert hasDerivAt_deriv_iff.mpr (differentiableAt_binaryEntropy xne0 xne1) using 1
   exact binaryEntropy_eq
-  exact (deriv_binaryEntropy' xne0 gne1).symm
+  exact (deriv_binaryEntropy').symm
 
 lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (qnot1 : q ≠ 1) (xne0: x ≠ 0) (gne1 : x ≠ 1) :
     HasDerivAt (qaryEntropy q) (log (q - 1) + log (1 - x) - log x) x := by
@@ -342,27 +493,47 @@ open Filter Topology
 
 -- TODO Assumptions not needed (use junk value after proving that ¬DifferentiableAt there)
 /-- Second derivative of q-ary entropy. -/
-lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) :
-    deriv^[2] (qaryEntropy q) x = -1 / (x * (1-x)) := by
-  simp only [Function.iterate_succ]
-  suffices ∀ᶠ y in (𝓝 x),
-      deriv (fun x ↦ (qaryEntropy q) x) y = log (q - 1) + log (1 - y) - log y by
-    refine (Filter.EventuallyEq.deriv_eq this).trans ?_
-    rw [deriv_sub]
-    · repeat rw [deriv_div_const]
-      repeat rw [deriv.log differentiableAt_id' h]
-      simp only [deriv_one_minus, deriv_id'', one_div]
-      · field_simp [sub_ne_zero_of_ne hh]
-        ring
-    · apply DifferentiableAt.add
-      simp_all only [ne_eq, differentiableAt_const]
-      exact differentiableAt_log_const_neg hh.symm
-    · exact differentiableAt_log h
-  filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh.symm]
-    with y h h2 using deriv_qaryEntropy h h2
+lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
+    deriv^[2] (qaryEntropy q) x = -1 / (x * (1 - x)) := by
+  simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, Function.comp_apply]
+  by_cases is_x_where_nondiff : x ≠ 0 ∧ x ≠ 1
+  · obtain ⟨h, hh⟩ := is_x_where_nondiff
+    suffices ∀ᶠ y in (𝓝 x),
+        deriv (fun x ↦ (qaryEntropy q) x) y = log (q - 1) + log (1 - y) - log y by
+      refine (Filter.EventuallyEq.deriv_eq this).trans ?_
+      rw [deriv_sub]
+      · repeat rw [deriv_div_const]
+        repeat rw [deriv.log differentiableAt_id' h]
+        simp only [deriv_one_minus, deriv_id'', one_div]
+        · field_simp [sub_ne_zero_of_ne hh.symm]
+          ring
+      · apply DifferentiableAt.add
+        simp_all only [ne_eq, differentiableAt_const]
+        exact differentiableAt_log_const_neg hh
+      · exact differentiableAt_log h
+    filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh]
+      with y h h2 using deriv_qaryEntropy h h2
+  · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
+    rw [deriv_zero_of_not_differentiableAt]
+    simp_all only [ne_eq, not_and, Decidable.not_not]
+    · cases this with  -- surely this can be shortened?
+      | inl xis0 => simp_all only [zero_ne_one, sub_zero, mul_one, div_zero]
+      | inr xis1 => simp_all only [one_ne_zero, sub_self, mul_zero, div_zero]
+    · sorry
+    --   rw [qaryEntropy_eq_log_mul_add_binaryEntropy']
+    --   have : ((fun p ↦ p * ((q:ℝ) - 1).log) + binaryEntropy)
+    --         = (fun x ↦ (fun p ↦ p * ((q:ℝ) - 1).log) x + binaryEntropy x) := by
+    --     simp only [ne_eq, not_and, Decidable.not_not]; rfl
+    --   rw [this]
+    --   have is_diff : DifferentiableAt ℝ (fun p ↦ p * ((q:ℝ) - 1).log) x := by
+    --     simp only [differentiableAt_id', differentiableAt_const, DifferentiableAt.mul]
+    --   have not_diff : ¬ DifferentiableAt ℝ binaryEntropy x := by
+    --     sorry
+    --   apply not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt (x := x) is_diff not_diff
 
+-- TODO don't need assumptions
 lemma deriv2_binaryEntropy {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) :
-    deriv^[2] binaryEntropy x = -1 / (x * (1-x)) := deriv2_qaryEntropy h hh
+    deriv^[2] binaryEntropy x = -1 / (x * (1-x)) := deriv2_qaryEntropy
 
 /-! ### Strict Monotonicity of binary entropy -/
 
@@ -422,10 +593,6 @@ lemma strictConcave_qaryEntropy {q : ℕ} : StrictConcaveOn ℝ (Icc 0 1) (qaryE
     apply div_neg_of_neg_of_pos
     norm_num [zero_lt_log_two]
     simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hx, zero_lt_log_two]
-  · simp_all only [interior_Icc, mem_Ioo]
-    exact ne_of_gt hx.1
-  · simp_all only [interior_Icc, mem_Ioo]
-    exact (ne_of_lt (hx.2)).symm
 
 lemma strictConcave_binaryEntropy :
     StrictConcaveOn ℝ (Icc 0 1) binaryEntropy := strictConcave_qaryEntropy
