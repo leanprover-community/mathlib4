@@ -292,6 +292,7 @@
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
+  "Mathlib.Init.Logic": ["Batteries.Logic"],
   "Mathlib.Init.Function": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Init.Data.Nat.GCD": ["Batteries.Data.Nat.Gcd"],
