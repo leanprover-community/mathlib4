@@ -114,3 +114,19 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
 
 instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
   IsLocalizedModule.toLocalizedQuotient' _ _ _ _
+
+section Functorial
+
+open IsLocalizedModule
+
+variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M] (p : Submonoid R)
+variable (A B : Submodule R M) (f : A →ₗ[R] B)
+
+noncomputable def LocalizedMap : Submodule.localized p A →ₗ[R] Submodule.localized p B :=
+  ((iso p (f := Submodule.toLocalized p B)).comp
+    (map p (LocalizedModule.mkLinearMap p A) (LocalizedModule.mkLinearMap p B) f)).comp
+    (iso p (f := Submodule.toLocalized p A)).symm.toLinearMap
+
+
+
+end Functorial

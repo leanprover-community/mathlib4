@@ -5,6 +5,7 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.Exact
 
 #align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -637,9 +638,7 @@ noncomputable def lift' (g : M →ₗ[R] M'')
     have : c • s • g m' = c • s' • g m := by
       simp only [Submonoid.smul_def, ← g.map_smul, eq1]
     have : Function.Injective (h c).unit.inv := by
-      rw [Function.injective_iff_hasLeftInverse]
-      refine' ⟨(h c).unit, _⟩
-      intro x
+      refine Function.injective_iff_hasLeftInverse.2 ⟨(h c).unit, fun x ↦ ?_⟩
       change ((h c).unit.1 * (h c).unit.inv) x = x
       simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, LinearMap.one_apply]
     apply_fun (h c).unit.inv
@@ -885,7 +884,7 @@ theorem iso_symm_comp : (iso S f).symm.toLinearMap.comp f = LocalizedModule.mkLi
 #align is_localized_module.iso_symm_comp IsLocalizedModule.iso_symm_comp
 
 /--
-If `M'` is a localized module and `g` is a linear map `M' → M''` such that all scalar multiplication
+If `M'` is a localized module and `g` is a linear map `M → M''` such that all scalar multiplication
 by `s : S` is invertible, then there is a linear map `M' → M''`.
 -/
 noncomputable def lift (g : M →ₗ[R] M'')
@@ -1126,6 +1125,77 @@ lemma map_comp (h : M →ₗ[R] N) : (map S f g h) ∘ₗ f = g ∘ₗ h :=
 @[simp]
 lemma map_apply (h : M →ₗ[R] N) (x) : map S f g h (f x) = g (h x) :=
   lift_apply S f (g ∘ₗ h) (IsLocalizedModule.map_units g) x
+
+variable (M)
+
+/-- The linear map `(LocalizedModule S M) → (LocalizedModule S M)` from `iso` is the identity. -/
+lemma iso_localizedModule_eq_refl :
+    iso S (LocalizedModule.mkLinearMap S M) = LinearEquiv.refl R (LocalizedModule S M) := by
+  let f := LocalizedModule.mkLinearMap S M
+  obtain ⟨e, _, univ⟩ := IsLocalizedModule.is_universal S f f (IsLocalizedModule.map_units f)
+  have eq1 : iso S f = e :=
+    univ (iso S f) <| (LinearEquiv.eq_toLinearMap_symm_comp f f).1 <|
+      (IsLocalizedModule.iso_symm_comp S f).symm
+  have eq2 : LinearEquiv.refl R (LocalizedModule S M) = e :=
+    univ (LinearEquiv.refl R (LocalizedModule S M)) (by simp)
+  ext x
+  calc
+    (iso S f) x = e x            := by rw [← eq1, LinearEquiv.coe_coe, iso_apply]
+              _ = (LinearEquiv.refl R (LocalizedModule S M)) x := by simp [← eq2]
+
+variable {M₀ M₀'} [AddCommGroup M₀] [AddCommGroup M₀'] [Module R M₀] [Module R M₀']
+variable (f₀ : M₀  →ₗ[R] M₀') [IsLocalizedModule S f₀]
+variable {M₁ M₁'} [AddCommGroup M₁] [AddCommGroup M₁'] [Module R M₁] [Module R M₁']
+variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
+variable {M₂ M₂'} [AddCommGroup M₂] [AddCommGroup M₂'] [Module R M₂] [Module R M₂']
+variable (f₂ : M₂ →ₗ[R] M₂') [IsLocalizedModule S f₂]
+
+/-- Formula for `IsLocalizedModule.map` when each localized module is a `LocalizedModule`.-/
+lemma map_LocalizedModules (g : M₀ →ₗ[R] M₁) (m : M₀) (s : S) :
+    ((map S (LocalizedModule.mkLinearMap S M₀) (LocalizedModule.mkLinearMap S M₁)) g)
+    (LocalizedModule.mk m s) = LocalizedModule.mk (g m) s := by
+  let hs := map.proof_4 S (LocalizedModule.mkLinearMap S M₁) s
+  have : hs.unit.inv (LocalizedModule.mk (g m) 1) = LocalizedModule.mk (g m) s := by
+    calc
+      hs.unit.inv (LocalizedModule.mk (g m) 1)
+        = hs.unit.inv ((LocalizedModule.mkLinearMap S M₁) (g m)) := rfl
+      _ = (iso S _) (LocalizedModule.mk (g m) s)                 := by apply iso_apply_mk S
+      _ = LocalizedModule.mk (g m) s                       := by simp [iso_localizedModule_eq_refl]
+  simpa [map, lift, iso_localizedModule_eq_refl S M₀]
+
+/-- Localization of modules is an exact functor, proven here for `LocalizedModule`.
+See `map_exact` for the more general version using `IsLocalizedModule`. -/
+lemma map_exact' (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Function.Exact g h) :
+    Function.Exact
+    (map S (LocalizedModule.mkLinearMap S M₀) (LocalizedModule.mkLinearMap S M₁) g)
+    (map S (LocalizedModule.mkLinearMap S M₁) (LocalizedModule.mkLinearMap S M₂) h) := by
+  intro y
+  refine ⟨fun hy ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
+  · obtain ⟨m, s⟩ := y
+    rw [(show Quot.mk Setoid.r (m, s) = LocalizedModule.mk m s by rfl),
+      map_LocalizedModules, ← LocalizedModule.zero_mk 1, LocalizedModule.mk_eq, one_smul] at hy
+    simp only [smul_zero, Subtype.exists, Submonoid.mk_smul] at hy
+    rcases hy with ⟨a, aS, ha⟩
+    rw [← LinearMap.map_smul, ex (a • m)] at ha
+    rcases ha with ⟨x, hx⟩
+    use LocalizedModule.mk x (⟨a, aS⟩ * s)
+    rw [map_LocalizedModules, hx]
+    exact LocalizedModule.mk_cancel_common_left ⟨a, aS⟩ s m
+  · obtain ⟨m, s⟩ := x
+    rw [← hx, (show Quot.mk Setoid.r (m, s) = LocalizedModule.mk m s by rfl),
+      map_LocalizedModules, map_LocalizedModules, (ex (g m)).2 ⟨m, rfl⟩, LocalizedModule.zero_mk]
+
+theorem map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Function.Exact g h) :
+    Function.Exact (map S f₀ f₁ g) (map S f₁ f₂ h) := by
+  -- intro y
+  -- constructor
+  -- · intro hy
+  --   simp only [map, LinearMap.coe_mk, AddHom.coe_mk] at hy
+  --   sorry
+  -- · sorry
+
+  --refine Function.Exact.of_ladder_linearEquiv_of_exact ?_ ?_ ex
+  --sorry
 
 section Algebra
 
