@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
