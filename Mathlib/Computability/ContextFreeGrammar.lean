@@ -439,6 +439,14 @@ def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGra
 
 section union_aux
 
+/-- The only interesting declaration in this section is the lemma
+    `ContextFreeGrammar.mem_union_language_iff_mem_or_mem` towards which the whole section works.
+    Ignore everything else. -/
+
+private lemma both_empty {u v : List T} {a b : T} (ha : [a] = u ++ [b] ++ v) :
+    u = [] ∧ v = [] := by
+  cases u <;> cases v <;> simp at ha; trivial
+
 variable {g₁ g₂ : ContextFreeGrammar.{uT} T}
 
 private def oN₁_of_N : (ContextFreeGrammar.union g₁ g₂).NT → Option g₁.NT
@@ -577,13 +585,11 @@ private def g₂g : LiftedContextFreeGrammar T :=
             rw [List.mem_map] at hr
             exact hr)⟩
 
-private lemma both_empty {u v : List T} {a b : T} (ha : [a] = u ++ [b] ++ v) :
-    u = [] ∧ v = [] := by
-  cases u <;> cases v <;> simp at ha; trivial
-
 variable {w : List T}
 
-private lemma in_union_of_in_first (hw : w ∈ g₁.language) :
+-- TODO generalize the four blocks starting with `clear hw -- (*)`
+
+private lemma in_union_of_in_left (hw : w ∈ g₁.language) :
     w ∈ (ContextFreeGrammar.union g₁ g₂).language := by
   have deri_start :
     (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal none]
@@ -597,13 +603,13 @@ private lemma in_union_of_in_first (hw : w ∈ g₁.language) :
     (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal (some (Sum.inl g₁.initial))]
       (List.map Symbol.terminal w) := by
     convert g₁g.lift_derives hw
-    clear hw
+    clear hw -- (*)
     induction w with
     | nil => rfl
     | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
   exact deri_start.trans deri_rest
 
-private lemma in_union_of_in_second (hw : w ∈ g₂.language) :
+private lemma in_union_of_in_right (hw : w ∈ g₂.language) :
     w ∈ (ContextFreeGrammar.union g₁ g₂).language := by
   have deri_start :
     (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal none]
@@ -618,13 +624,13 @@ private lemma in_union_of_in_second (hw : w ∈ g₂.language) :
     (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal (some (Sum.inr g₂.initial))]
       (List.map Symbol.terminal w) := by
     convert g₂g.lift_derives hw
-    clear hw
+    clear hw -- (*)
     induction w with
     | nil => rfl
     | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
   exact deri_start.trans deri_rest
 
-private lemma in_language_left_case_of_union (hw :
+private lemma in_left_of_in_union (hw :
     (ContextFreeGrammar.union g₁ g₂).Derives
       [Symbol.nonterminal (some (Sum.inl g₁.initial))]
       (List.map Symbol.terminal w)) :
@@ -634,12 +640,12 @@ private lemma in_language_left_case_of_union (hw :
     apply LiftedContextFreeGrammar.singletonGoodString
     constructor
     rfl)
-  clear hw
+  clear hw -- (*)
   induction w with
   | nil => rfl
   | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
 
-private lemma in_language_right_case_of_union (hw :
+private lemma in_right_of_in_union (hw :
     (ContextFreeGrammar.union g₁ g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial))]
       (List.map Symbol.terminal w)) :
@@ -649,21 +655,19 @@ private lemma in_language_right_case_of_union (hw :
     apply LiftedContextFreeGrammar.singletonGoodString
     constructor
     rfl)
-  clear hw
+  clear hw -- (*)
   induction w with
   | nil => rfl
   | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
 
-private lemma in_language_impossible_case_of_union
-    {r : ContextFreeRule T (ContextFreeGrammar.union g₁ g₂).NT}
+private lemma impossible_rule {r : ContextFreeRule T (ContextFreeGrammar.union g₁ g₂).NT}
     (hg : [Symbol.nonterminal (ContextFreeGrammar.union g₁ g₂).initial] =
       ([] : List (Symbol T (ContextFreeGrammar.union g₁ g₂).NT)) ++ [Symbol.nonterminal r.input] ++
       ([] : List (Symbol T (ContextFreeGrammar.union g₁ g₂).NT)))
     (hr : r ∈
-        List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inl)) g₁.rules ++
-        List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inr)) g₂.rules) :
-    w ∈ g₁.language ∨ w ∈ g₂.language := by
-  exfalso
+      List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inl)) g₁.rules ++
+      List.map (ContextFreeRule.lift · (Option.some ∘ Sum.inr)) g₂.rules) :
+    False := by
   have rule_root : none = r.input := Symbol.nonterminal.inj (List.head_eq_of_cons_eq hg)
   rw [List.mem_append] at hr
   cases hr with
@@ -693,23 +697,27 @@ private lemma in_language_of_in_union (hw : w ∈ (ContextFreeGrammar.union g₁
     cases hr with
     | head =>
       left
-      exact in_language_left_case_of_union hS₁
+      exact in_left_of_in_union hS₁
     | tail _ hr' =>
       cases hr' with
       | head =>
         right
-        exact in_language_right_case_of_union hS₁
+        exact in_right_of_in_union hS₁
       | tail _ hr'' =>
-        exact in_language_impossible_case_of_union huv hr''
+        exfalso
+        exact impossible_rule huv hr''
+
+lemma ContextFreeGrammar.mem_union_language_iff_mem_or_mem :
+    w ∈ (ContextFreeGrammar.union g₁ g₂).language ↔ w ∈ g₁.language ∨ w ∈ g₂.language :=
+  ⟨in_language_of_in_union, fun hw => hw.elim in_union_of_in_left in_union_of_in_right⟩
 
 end union_aux
 
 /-- The class of context-free languages is closed under union. -/
 theorem Language.IsContextFree.union (L₁ L₂ : Language T) :
-    L₁.IsContextFree ∧ L₂.IsContextFree → (L₁ + L₂).IsContextFree := by
-  rintro ⟨⟨g₁, rfl⟩, ⟨g₂, rfl⟩⟩
-  exact ⟨ContextFreeGrammar.union g₁ g₂, Set.eq_of_subset_of_subset
-    (fun _ => in_language_of_in_union)
-    (fun _ hw => hw.elim in_union_of_in_first in_union_of_in_second)⟩
+    L₁.IsContextFree → L₂.IsContextFree → (L₁ + L₂).IsContextFree := by
+  rintro ⟨g₁, rfl⟩ ⟨g₂, rfl⟩
+  exact ⟨ContextFreeGrammar.union g₁ g₂, Set.ext (fun _ =>
+    ContextFreeGrammar.mem_union_language_iff_mem_or_mem)⟩
 
 end closure_union
