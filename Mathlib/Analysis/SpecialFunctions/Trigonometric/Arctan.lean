@@ -108,7 +108,7 @@ def tanOrderIso : Ioo (-(π / 2)) (π / 2) ≃o ℝ :=
 
 /-- Inverse of the `tan` function, returns values in the range `-π / 2 < arctan x` and
 `arctan x < π / 2` -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 noncomputable def arctan (x : ℝ) : ℝ :=
   tanOrderIso.symm x
 #align real.arctan Real.arctan

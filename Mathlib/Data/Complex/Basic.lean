@@ -615,8 +615,7 @@ theorem star_def : (Star.star : ℂ → ℂ) = conj :=
 
 
 /-- The norm squared function. -/
--- Porting note: `@[pp_nodot]` not found
--- @[pp_nodot]
+@[pp_nodot]
 def normSq : ℂ →*₀ ℝ where
   toFun z := z.re * z.re + z.im * z.im
   map_zero' := by simp
