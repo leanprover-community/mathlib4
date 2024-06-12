@@ -20,8 +20,8 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Elliptic divisibility sequences
 
-This file defines elliptic divisibility sequences (EDS) and
-gives a construction of normalised EDSs from initial terms.
+This file defines elliptic divisibility sequences (EDS)
+and constructs normalised EDSs from initial terms.
 
 ## Mathematical background
 
