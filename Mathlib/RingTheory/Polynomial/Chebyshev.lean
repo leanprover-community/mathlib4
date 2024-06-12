@@ -242,8 +242,7 @@ theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
-@[local reducible]
-noncomputable def C : ℤ → R[X]
+@[semireducible] noncomputable def C : ℤ → R[X]
   | 0 => 2
   | 1 => X
   | (n : ℕ) + 2 => X * C (n + 1) - C n
@@ -324,8 +323,7 @@ theorem T_eq_half_mul_C_comp_two_mul_X [Invertible (2 : R)] (n : ℤ) :
 /-- `S n` is the `n`th rescaled Chebyshev polynomial of the second kind (also known as a
 Vieta–Fibonacci polynomial), given by $S_n(2x) = U_n(x)$. See
 `Polynomial.Chebyshev.S_comp_two_mul_X`. -/
-@[local reducible]
-noncomputable def S : ℤ → R[X]
+@[semireducible] noncomputable def S : ℤ → R[X]
   | 0 => 1
   | 1 => X
   | (n : ℕ) + 2 => X * S (n + 1) - S n
