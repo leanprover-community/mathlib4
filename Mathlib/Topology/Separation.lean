@@ -2189,8 +2189,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpa
       fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
   -- By Lindelöf, we may obtain a countable subcover witnessing `HasSeparatingCover`
   choose u u_open u_dis u_nhd using this
-  obtain ⟨f, f_cov⟩ := IsLindelof.indexed_countable_subcover
-    (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ s_cl (subset_univ s))
+  obtain ⟨f, f_cov⟩ := s_cl.isLindelof.indexed_countable_subcover
     u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
   exact ⟨u ∘ f, ⟨f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩⟩
 
