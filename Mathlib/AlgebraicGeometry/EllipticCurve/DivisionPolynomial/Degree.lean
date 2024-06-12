@@ -115,7 +115,7 @@ private lemma coeff_even (habc : n = 2 * da + db + dc) (hdef : n = dd + de + 2 *
 end
 
 private def expectedDegree (n : ℕ) : ℕ := (n ^ 2 - if Even n then 4 else 1) / 2
-private def expectedCoeff (n : ℕ) : ℕ := if Even n then n / 2 else n
+private def expectedCoeff (n : ℕ) : ℤ := if Even n then n / 2 else n
 
 private lemma two_mul_expectedDegree {n : ℕ} (hn : n ≠ 0 := by omega) :
     2 * (expectedDegree n : ℤ) = n ^ 2 - if Even n then 4 else 1 := by
@@ -141,36 +141,36 @@ private lemma natDegree_preΨ'_zero : (W.preΨ' 0).natDegree = expectedDegree 0 
   rw [preΨ'_zero]; rfl
 
 private lemma coeff_preΨ'_zero : (W.preΨ' 0).coeff (expectedDegree 0) = expectedCoeff 0 := by
-  rw [preΨ'_zero, coeff_zero]; exact Nat.cast_zero.symm
+  rw [preΨ'_zero, coeff_zero]; exact Int.cast_zero.symm
 
 private lemma natDegree_preΨ'_one : (W.preΨ' 1).natDegree = expectedDegree 1 := by
   rw [preΨ'_one, natDegree_one]; rfl
 
 private lemma coeff_preΨ'_one : (W.preΨ' 1).coeff (expectedDegree 1) = expectedCoeff 1 := by
-  rw [preΨ'_one]; exact coeff_one_zero.trans Nat.cast_one.symm
+  rw [preΨ'_one]; exact coeff_one_zero.trans Int.cast_one.symm
 
 private lemma natDegree_preΨ'_two : (W.preΨ' 2).natDegree = expectedDegree 2 := by
   rw [preΨ'_two, natDegree_one]; rfl
 
 private lemma coeff_preΨ'_two : (W.preΨ' 2).coeff (expectedDegree 2) = expectedCoeff 2 := by
-  rw [preΨ'_two]; exact coeff_one_zero.trans Nat.cast_one.symm
+  rw [preΨ'_two]; exact coeff_one_zero.trans Int.cast_one.symm
 
 private lemma natDegree_preΨ'_three : (W.preΨ' 3).natDegree ≤ expectedDegree 3 := by
   rw [preΨ'_three]; apply natDegree_Ψ₃
 
 private lemma coeff_preΨ'_three : (W.preΨ' 3).coeff (expectedDegree 3) = expectedCoeff 3 := by
-  rw [preΨ'_three]; apply coeff_Ψ₃
+  rw [preΨ'_three]; exact W.coeff_Ψ₃.trans (Int.cast_ofNat _).symm
 
 private lemma natDegree_preΨ'_four : (W.preΨ' 4).natDegree ≤ expectedDegree 4 := by
   rw [preΨ'_four]; apply natDegree_preΨ₄
 
 private lemma coeff_preΨ'_four : (W.preΨ' 4).coeff (expectedDegree 4) = expectedCoeff 4 := by
-  rw [preΨ'_four]; apply coeff_preΨ₄
+  rw [preΨ'_four]; exact W.coeff_preΨ₄.trans (Int.cast_ofNat _).symm
 
 private lemma expectedDegree_rec (m : ℕ) :
-    (expectedDegree (2 * (m + 2) + 1) =
+    ((expectedDegree (2 * (m + 2) + 1) =
       expectedDegree (m + 4) + 3 * expectedDegree (m + 2) + 2 * if Even m then 3 else 0) ∧
-    (expectedDegree (2 * (m + 2) + 1) =
+    expectedDegree (2 * (m + 2) + 1) =
       expectedDegree (m + 1) + 3 * expectedDegree (m + 3) + 2 * if Even m then 0 else 3) ∧
     (expectedDegree (2 * (m + 3)) =
       2 * expectedDegree (m + 2) + expectedDegree (m + 3) + expectedDegree (m + 5)) ∧
@@ -186,23 +186,49 @@ private lemma expectedDegree_rec (m : ℕ) :
   simp_rw [if_neg (Nat.not_even_two_mul_add_one _), if_pos (even_two_mul _), Nat.even_add,
     Nat.not_even_one, even_two, show ¬ Even 3 by decide, show Even 4 by decide,
     show ¬ Even 5 by decide, iff_false, iff_true]
-  push_cast; refine ⟨?_, ?_, ?_, ?_⟩ <;> split_ifs <;> ring
+  push_cast; refine ⟨⟨?_, ?_⟩, ?_, ?_⟩ <;> split_ifs <;> ring
 
--- private lemma expectedCoeff_rec (m : ℕ) :
+private lemma expectedCoeff_rec (m : ℕ) :
+    (expectedCoeff (2 * (m + 2) + 1) =
+      expectedCoeff (m + 4) * expectedCoeff (m + 2) ^ 3 * (if Even m then 4 else 1) ^ 2 -
+      expectedCoeff (m + 1) * expectedCoeff (m + 3) ^ 3 * (if Even m then 1 else 4) ^ 2) ∧
+    expectedCoeff (2 * (m + 3)) =
+      expectedCoeff (m + 2) ^ 2 * expectedCoeff (m + 3) * expectedCoeff (m + 5) -
+      expectedCoeff (m + 1) * expectedCoeff (m + 3) * expectedCoeff (m + 4) ^ 2 := by
+  sorry
+
+private lemma natDegree_ite_le (P : Prop) [Decidable P] :
+    ((if P then W.Ψ₂Sq else 1).natDegree ≤ if P then 3 else 0) ∧
+      (if P then 1 else W.Ψ₂Sq).natDegree ≤ if P then 0 else 3 := by
+  rw [apply_ite natDegree]; split_ifs
+  on_goal 1 => rw [and_comm]
+  all_goals exact ⟨natDegree_one.le, W.natDegree_Ψ₂Sq⟩
 
 private lemma natDegree_coeff_preΨ' (n : ℕ) :
     (W.preΨ' n).natDegree ≤ expectedDegree n ∧
       (W.preΨ' n).coeff (expectedDegree n) = expectedCoeff n := by
   induction n using normEDSRec with
-  | zero => exact ⟨W.natDegree_preΨ'_zero.le, by erw [coeff_preΨ'_zero, Nat.cast_zero]⟩
-  | one => exact ⟨W.natDegree_preΨ'_one.le, by erw [coeff_preΨ'_one, Nat.cast_one]⟩
-  | two => exact ⟨W.natDegree_preΨ'_two.le, by erw [coeff_preΨ'_two, Nat.cast_one]⟩
+  | zero => exact ⟨W.natDegree_preΨ'_zero.le, W.coeff_preΨ'_zero⟩
+  | one => exact ⟨W.natDegree_preΨ'_one.le, W.coeff_preΨ'_one⟩
+  | two => exact ⟨W.natDegree_preΨ'_two.le, W.coeff_preΨ'_two⟩
   | three => exact ⟨W.natDegree_preΨ'_three, W.coeff_preΨ'_three⟩
   | four => exact ⟨W.natDegree_preΨ'_four, W.coeff_preΨ'_four⟩
   | even m h₁ h₂ h₃ h₄ h₅ =>
-    _
-  | odd m h₁ h₂ =>
-    _
+    rw [preΨ', preNormEDS'_even]
+    have h := (expectedDegree_rec m).2
+    refine ⟨natDegree_even h₂.1 h₃.1 h₅.1 h₁.1 h₃.1 h₄.1 h.1 h.2,
+      (coeff_even h₂.1 h₃.1 h₅.1 h₁.1 h₃.1 h₄.1 h.1 h.2).trans ?_⟩
+    rw [h₁.2, h₂.2, h₃.2, h₄.2, h₅.2, (expectedCoeff_rec m).2]
+    push_cast; rfl
+  | odd m h₁ h₂ h₃ h₄ =>
+    rw [preΨ', preNormEDS'_odd, ← one_pow (M := R[X]) 2]
+    simp_rw [← apply_ite (· ^ 2)]
+    have h := (expectedDegree_rec m).1
+    have h' := W.natDegree_ite_le (Even m)
+    refine ⟨natDegree_odd h₄.1 h₂.1 h'.1 h₁.1 h₃.1 h'.2 h.1 h.2,
+      (coeff_odd h₄.1 h₂.1 h'.1 h₁.1 h₃.1 h'.2 h.1 h.2).trans ?_⟩
+    rw [h₁.2, h₂.2, h₃.2, h₄.2, (expectedCoeff_rec m).1]
+    push_cast; congr <;> split_ifs <;> simp
 
 lemma natDegree_preΨ' (n : ℕ) : (W.preΨ' n).natDegree ≤ (n ^ 2 - if Even n then 4 else 1) / 2 :=
   (W.natDegree_coeff_preΨ' n).1
@@ -214,7 +240,7 @@ lemma coeff_preΨ' (n : ℕ) :
   · exact (imp_of_if_pos (W.natDegree_coeff_preΨ' n) hn).right
   · exact (imp_of_if_neg (W.natDegree_coeff_preΨ' n) hn).right
 
-private lemma natDegree_coeff_Ψ' (n : ℤ) :
+private lemma natDegree_coeff_preΨ (n : ℤ) :
     if Even n then (W.preΨ n).natDegree ≤ (n.natAbs ^ 2 - 4) / 2 ∧
         (W.preΨ n).coeff ((n.natAbs ^ 2 - 4) / 2) = (n / 2 : ℤ)
       else (W.preΨ n).natDegree ≤ (n.natAbs ^ 2 - 1) / 2 ∧
@@ -232,15 +258,15 @@ private lemma natDegree_coeff_Ψ' (n : ℤ) :
 lemma natDegree_Ψ' (n : ℤ) :
     (W.preΨ n).natDegree ≤ if Even n then (n.natAbs ^ 2 - 4) / 2 else (n.natAbs ^ 2 - 1) / 2 := by
   split_ifs with hn
-  · exact (imp_of_if_pos (W.natDegree_coeff_Ψ' n) hn).left
-  · exact (imp_of_if_neg (W.natDegree_coeff_Ψ' n) hn).left
+  · exact (imp_of_if_pos (W.natDegree_coeff_preΨ n) hn).left
+  · exact (imp_of_if_neg (W.natDegree_coeff_preΨ n) hn).left
 
 lemma coeff_Ψ' (n : ℤ) :
     if Even n then (W.preΨ n).coeff ((n.natAbs ^ 2 - 4) / 2) = (n / 2 : ℤ)
       else (W.preΨ n).coeff ((n.natAbs ^ 2 - 1) / 2) = n := by
   split_ifs with hn
-  · exact (imp_of_if_pos (W.natDegree_coeff_Ψ' n) hn).right
-  · exact (imp_of_if_neg (W.natDegree_coeff_Ψ' n) hn).right
+  · exact (imp_of_if_pos (W.natDegree_coeff_preΨ n) hn).right
+  · exact (imp_of_if_neg (W.natDegree_coeff_preΨ n) hn).right
 
 private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
     (W.ΨSq n).natDegree ≤ n ^ 2 - 1 ∧ (W.ΨSq n).coeff (n ^ 2 - 1) = (n ^ 2 : ℕ) := by
