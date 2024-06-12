@@ -65,8 +65,8 @@ noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
   { QuotientAddGroup.measurableSpace _ with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
 #align add_circle.measure_space AddCircle.measureSpace
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma. -/
 @[simp, nolint simpNF]
 protected theorem measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal.ofReal T := by
   dsimp [volume]
@@ -125,7 +125,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
 #align add_circle.volume_closed_ball AddCircle.volume_closedBall
 
 instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
-  refine' ⟨⟨Real.toNNReal 2, Filter.eventually_of_forall fun ε x => _⟩⟩
+  refine ⟨⟨Real.toNNReal 2, Filter.eventually_of_forall fun ε x => ?_⟩⟩
   simp only [volume_closedBall]
   erw [← ENNReal.ofReal_mul zero_le_two]
   apply ENNReal.ofReal_le_ofReal

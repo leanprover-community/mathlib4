@@ -39,11 +39,11 @@ theorem range_list_get : range l.get = { x | x ∈ l } := by
   ext x
   rw [mem_setOf_eq, mem_iff_get, mem_range]
 #align set.range_list_nth_le Set.range_list_get
-@[deprecated] alias range_list_nthLe := range_list_get -- 2024-04-22
+@[deprecated (since := "2024-04-22")] alias range_list_nthLe := range_list_get
 
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
-  refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset_iff.2 ⟨_, _⟩)
+  refine (range_subset_iff.2 fun n => ?_).antisymm (insert_subset_iff.2 ⟨?_, ?_⟩)
   exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
     ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 fun k => ⟨_, get?_eq_get _⟩]
 #align set.range_list_nth Set.range_list_get?

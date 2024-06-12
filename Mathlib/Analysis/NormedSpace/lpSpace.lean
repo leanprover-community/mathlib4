@@ -505,9 +505,9 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
           · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
-          refine' (lp.isLUB_norm (f + g)).2 _
+          refine (lp.isLUB_norm (f + g)).2 ?_
           rintro x ⟨i, rfl⟩
-          refine' le_trans _ (add_mem_upperBounds_add
+          refine le_trans ?_ (add_mem_upperBounds_add
             (lp.isLUB_norm f).1 (lp.isLUB_norm g).1 ⟨_, ⟨i, rfl⟩, _, ⟨i, rfl⟩, rfl⟩)
           exact norm_add_le (f i) (g i)
         · have hp'' : 0 < p.toReal := zero_lt_one.trans_le hp'
@@ -518,9 +518,9 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           -- apply Minkowski's inequality
           obtain ⟨C, hC₁, hC₂, hCfg⟩ :=
             Real.Lp_add_le_hasSum_of_nonneg hp' hf₁ hg₁ (norm_nonneg' _) (norm_nonneg' _) hf₂ hg₂
-          refine' le_trans _ hC₂
+          refine le_trans ?_ hC₂
           rw [← Real.rpow_le_rpow_iff (norm_nonneg' (f + g)) hC₁ hp'']
-          refine' hasSum_le _ (lp.hasSum_norm hp'' (f + g)) hCfg
+          refine hasSum_le ?_ (lp.hasSum_norm hp'' (f + g)) hCfg
           intro i
           gcongr
           apply norm_add_le
@@ -836,12 +836,12 @@ instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
     intro f
     apply le_antisymm
     · rw [← sq]
-      refine' lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => _
+      refine lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => ?_
       simp only [lp.star_apply, CstarRing.norm_star_mul_self, ← sq, infty_coeFn_mul, Pi.mul_apply]
-      refine' sq_le_sq' _ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
+      refine sq_le_sq' ?_ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
       linarith [norm_nonneg (f i), norm_nonneg f]
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _)]
-      refine' lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => _
+      refine lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => ?_
       rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
       exact lp.norm_apply_le_norm ENNReal.top_ne_zero (star f * f) i
 #align lp.infty_cstar_ring lp.inftyCstarRing
@@ -889,9 +889,15 @@ theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
   natCast_mem (lpInftySubring B) n
 #align nat_cast_mem_ℓp_infty natCast_memℓp_infty
 
+@[deprecated (since := "2024-04-17")]
+alias _root_.nat_cast_memℓp_infty := _root_.natCast_memℓp_infty
+
 theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   intCast_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty intCast_memℓp_infty
+
+@[deprecated (since := "2024-04-17")]
+alias _root_.int_cast_memℓp_infty := _root_.intCast_memℓp_infty
 
 @[simp]
 theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
@@ -908,10 +914,16 @@ theorem infty_coeFn_natCast (n : ℕ) : ⇑(n : lp B ∞) = n :=
   rfl
 #align lp.infty_coe_fn_nat_cast lp.infty_coeFn_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias infty_coeFn_nat_cast := infty_coeFn_natCast
+
 @[simp]
 theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
   rfl
 #align lp.infty_coe_fn_int_cast lp.infty_coeFn_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias infty_coeFn_int_cast := infty_coeFn_intCast
 
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
@@ -984,8 +996,8 @@ variable [DecidableEq α]
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
   ⟨fun j => if h : j = i then Eq.ndrec a h.symm else 0, by
-    refine' (memℓp_zero _).of_exponent_ge (zero_le p)
-    refine' (Set.finite_singleton i).subset _
+    refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
+    refine (Set.finite_singleton i).subset ?_
     intro j
     simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]
@@ -1067,8 +1079,8 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
 #align lp.norm_sub_norm_compl_sub_single lp.norm_sub_norm_compl_sub_single
 
 protected theorem norm_compl_sum_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
-    ‖f - ∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ‖f‖ ^ p.toReal - ∑ i ∈ s, ‖f i‖ ^ p.toReal :=
-  by linarith [lp.norm_sub_norm_compl_sub_single hp f s]
+    ‖f - ∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ‖f‖ ^ p.toReal - ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
+  linarith [lp.norm_sub_norm_compl_sub_single hp f s]
 #align lp.norm_compl_sum_single lp.norm_compl_sum_single
 
 /-- The canonical finitely-supported approximations to an element `f` of `lp` converge to it, in the

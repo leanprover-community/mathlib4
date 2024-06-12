@@ -291,8 +291,8 @@ section DivInvMonoid
 variable [DivInvMonoid G]
 
 @[to_additive]
-theorem map_div_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) : map (· / g) μ = μ :=
-  by simp_rw [div_eq_mul_inv, map_mul_right_eq_self μ g⁻¹]
+theorem map_div_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) :
+    map (· / g) μ = μ := by simp_rw [div_eq_mul_inv, map_mul_right_eq_self μ g⁻¹]
 #align measure_theory.map_div_right_eq_self MeasureTheory.map_div_right_eq_self
 #align measure_theory.map_sub_right_eq_self MeasureTheory.map_sub_right_eq_self
 
@@ -334,21 +334,21 @@ theorem measure_preimage_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g 
 
 @[to_additive]
 theorem map_mul_left_ae (μ : Measure G) [IsMulLeftInvariant μ] (x : G) :
-    Filter.map (fun h => x * h) μ.ae = μ.ae :=
+    Filter.map (fun h => x * h) (ae μ) = ae μ :=
   ((MeasurableEquiv.mulLeft x).map_ae μ).trans <| congr_arg ae <| map_mul_left_eq_self μ x
 #align measure_theory.map_mul_left_ae MeasureTheory.map_mul_left_ae
 #align measure_theory.map_add_left_ae MeasureTheory.map_add_left_ae
 
 @[to_additive]
 theorem map_mul_right_ae (μ : Measure G) [IsMulRightInvariant μ] (x : G) :
-    Filter.map (fun h => h * x) μ.ae = μ.ae :=
+    Filter.map (fun h => h * x) (ae μ) = ae μ :=
   ((MeasurableEquiv.mulRight x).map_ae μ).trans <| congr_arg ae <| map_mul_right_eq_self μ x
 #align measure_theory.map_mul_right_ae MeasureTheory.map_mul_right_ae
 #align measure_theory.map_add_right_ae MeasureTheory.map_add_right_ae
 
 @[to_additive]
 theorem map_div_right_ae (μ : Measure G) [IsMulRightInvariant μ] (x : G) :
-    Filter.map (fun t => t / x) μ.ae = μ.ae :=
+    Filter.map (fun t => t / x) (ae μ) = ae μ :=
   ((MeasurableEquiv.divRight x).map_ae μ).trans <| congr_arg ae <| map_div_right_eq_self μ x
 #align measure_theory.map_div_right_ae MeasureTheory.map_div_right_ae
 #align measure_theory.map_sub_right_ae MeasureTheory.map_sub_right_ae
@@ -538,7 +538,7 @@ variable [Group G] [MeasurableMul G] [MeasurableInv G] {μ : Measure G}
 
 @[to_additive]
 theorem map_div_left_ae (μ : Measure G) [IsMulLeftInvariant μ] [IsInvInvariant μ] (x : G) :
-    Filter.map (fun t => x / t) μ.ae = μ.ae :=
+    Filter.map (fun t => x / t) (ae μ) = ae μ :=
   ((MeasurableEquiv.divLeft x).map_ae μ).trans <| congr_arg ae <| map_div_left_eq_self μ x
 #align measure_theory.measure.map_div_left_ae MeasureTheory.Measure.map_div_left_ae
 #align measure_theory.measure.map_sub_left_ae MeasureTheory.Measure.map_sub_left_ae
@@ -783,7 +783,7 @@ lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s)
     simp only [iUnion_smul, h''f]
 
 /-- If a compact set is included in a measurable set, then so is its closure. -/
-@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet)] -- Since 28 Jan 2024
+@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet (since := "2024-01-28"))]
 lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
     (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s :=
   hk.closure_subset_measurableSet hs h
@@ -799,7 +799,7 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
   rw [← t_meas.mul_closure_one_eq]
   exact smul_subset_smul_right kt
 
-@[to_additive (attr := deprecated IsCompact.measure_closure)] -- Since 28 Jan 2024
+@[to_additive (attr := deprecated IsCompact.measure_closure (since := "2024-01-28"))]
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
     μ (closure k) = μ k :=
   hk.measure_closure μ
