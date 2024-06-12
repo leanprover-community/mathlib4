@@ -590,9 +590,7 @@ theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
       i.2 j := by
   rcases i with ⟨n, f⟩
   dsimp [Composition.blocksFun, Composition.blocks, compChangeOfVariables]
-  simp only [map_ofFn, List.get_ofFn, Function.comp_apply]
-  -- Porting note: didn't used to need `rfl`
-  rfl
+  simp only [map_ofFn, List.getElem_ofFn, Function.comp_apply]
 #align formal_multilinear_series.comp_change_of_variables_blocks_fun FormalMultilinearSeries.compChangeOfVariables_blocksFun
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
@@ -1020,6 +1018,7 @@ theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length
     rw [get_map_rev List.length, get_of_eq (map_length_splitWrtComposition _ _)]; rfl
 #align composition.length_sigma_composition_aux Composition.length_sigmaCompositionAux
 
+set_option linter.deprecated false in
 theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) (j : Fin (blocksFun b i)) :
     blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
@@ -1029,6 +1028,7 @@ theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.len
     rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']; rfl
 #align composition.blocks_fun_sigma_composition_aux Composition.blocksFun_sigmaCompositionAux
 
+set_option linter.deprecated false in
 /-- Auxiliary lemma to prove that the composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Grouping together some
@@ -1059,7 +1059,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
           take (sum (take i b.blocks)) (take (sum (take (i + 1) b.blocks)) a.blocks) := by
         rw [take_take, min_eq_left]
         apply monotone_sum_take _ (Nat.le_succ _)
-      rw [this, get_map, get_splitWrtComposition, ←
+      rw [this, getElem_map, getElem_splitWrtComposition, ←
         take_append_drop (sum (take i b.blocks)) (take (sum (take (Nat.succ i) b.blocks)) a.blocks),
         sum_append]
       congr
@@ -1075,7 +1075,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take _ _ C]
+    rw [getElem_of_eq (get_splitWrtComposition _ _ _), getElem_drop', getElem_take _ _ C]
 #align composition.size_up_to_size_up_to_add Composition.sizeUpTo_sizeUpTo_add
 
 /-- Natural equivalence between `(Σ (a : composition n), composition a.length)` and
@@ -1146,9 +1146,8 @@ def sigmaEquivSigmaPi (n : ℕ) :
     · rw [Fin.heq_fun_iff]
       · intro i
         dsimp [Composition.sigmaCompositionAux]
-        rw [get_of_eq (splitWrtComposition_join _ _ _)]
-        · simp only [get_ofFn]
-          rfl
+        rw [getElem_of_eq (splitWrtComposition_join _ _ _)]
+        · simp only [getElem_ofFn]
         · simp only [map_ofFn]
           rfl
         · congr
