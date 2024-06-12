@@ -180,11 +180,11 @@ theorem has_separating_covers_iff_separated_nhds {h k : Set X} :
       ?_⟩
     rw [Set.disjoint_left]
     rintro x ⟨un, ⟨n, rfl⟩, xinun⟩
-    simp only [mem_iUnion, mem_diff, not_exists, not_and, Decidable.not_not]
-    intro m xinvgm
+    suffices ∀ (m : ℕ), x ∈ v m → x ∈ closure (⋃ m' ∈ {m' | m' ≤ m}, u m') by simpa
+    intro m xinvm
     have n_le_m : n ≤ m := by
       by_contra m_gt_n
-      exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvgm))
+      exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvm))
     exact subset_closure (mem_biUnion n_le_m xinun.1)
   · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
     exact ⟨⟨
