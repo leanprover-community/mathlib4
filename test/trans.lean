@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Relation.Trans
-import Batteries.Data.Nat.Lemmas
 import Mathlib.Tactic.GuardGoalNums
 
 set_option autoImplicit true
