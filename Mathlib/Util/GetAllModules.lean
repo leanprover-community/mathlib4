@@ -40,7 +40,10 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
     else do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
-  let files := (allModules.erase ml.lean).qsort (·.toString < ·.toString)
+  -- replace the pathSeparators by `.`, to avoid sorting issues between `\` and `/`
+  let files := allModules.map fun fil => fil.toString.map fun c =>
+    (if c == pathSeparator then '.' else c)
+  let files := (files.erase ml.lean).qsort (·.toString < ·.toString)
   let existingFiles ← files.mapM fun f => do
     -- this check is helpful in case the `git` option is on and a local file has been removed
     if ← pathExists f then
