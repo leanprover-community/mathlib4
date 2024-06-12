@@ -644,8 +644,8 @@ lemma addX_eq_subX_sub :
 assuming that $P_1 + P_2 + P_3 = O$. -/
 lemma cyclic_sum_Y_mul_X_sub_X :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
-    y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.addY' x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
-  simp_rw [slope, if_neg hx, addY', addX]
+    y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
+  simp_rw [slope, if_neg hx, negAddY, addX]
   field_simp [sub_ne_zero.mpr hx]; ring
 
 /-- The formula
@@ -766,49 +766,43 @@ lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y�
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_self_of_Yeq WeierstrassCurve.Affine.Point.add_self_of_Y_eq
 
-lemma some_add_some_of_imp {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (h : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ h) :=
-  dif_neg fun hn ↦ h hn.1 hn.2
-
 @[simp]
 lemma add_of_imp {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) := by
-  by_cases hx : x₁ = x₂
-  · simp only [← add_def, add, dif_pos hx, dif_neg <| hxy hx]
-  · simp only [← add_def, add, dif_neg hx]
+    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) :=
+  dif_neg fun hn ↦ hxy hn.1 hn.2
 
 @[simp]
 lemma add_of_Y_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
-    some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun _ => hy) := by
-  simp only [← add_def, add, dif_pos hx, dif_neg hy]
+    (hy : y₁ ≠ W.negY x₂ y₂) :
+    some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun _ ↦ hy) :=
+  add_of_imp fun _ ↦ hy
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_some_of_Yne WeierstrassCurve.Affine.Point.add_of_Y_ne
 
 lemma add_of_Y_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
-    some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun _ => hy) :=
-  add_of_Y_ne hx hy
+    (hy : y₁ ≠ W.negY x₂ y₂) :
+    some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun _ ↦ hy) :=
+  add_of_Y_ne hy
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_some_of_Yne' WeierstrassCurve.Affine.Point.add_of_Y_ne'
 
 @[simp]
 lemma add_self_of_Y_ne {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
     some h₁ + some h₁ = some (nonsingular_add h₁ h₁ fun _ => hy) :=
-  add_of_Y_ne rfl hy
+  add_of_Y_ne hy
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_self_of_Yne WeierstrassCurve.Affine.Point.add_self_of_Y_ne
 
 lemma add_self_of_Y_ne' {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
     some h₁ + some h₁ = -some (nonsingular_negAdd h₁ h₁ fun _ => hy) :=
-  add_of_Y_ne rfl hy
+  add_of_Y_ne hy
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_self_of_Yne' WeierstrassCurve.Affine.Point.add_self_of_Y_ne'
 
 @[simp]
 lemma add_of_X_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun h => (hx h).elim) := by
-  simp only [← add_def, add, dif_neg hx]
+    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun h => (hx h).elim) :=
+  add_of_imp fun h ↦ (hx h).elim
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_some_of_Xne WeierstrassCurve.Affine.Point.add_of_X_ne
 
@@ -958,10 +952,10 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
     (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
 
-lemma baseChange_eval_polynomial (x : A[X]) (y : A) :
+lemma baseChange_polynomial_eval_eval (x : A[X]) (y : A) :
     ((W.baseChange B).toAffine.polynomial.eval <| x.map f).eval (f y) =
       f (((W.baseChange A).toAffine.polynomial.eval x).eval y) := by
-  erw [← map_eval_polynomial, map_baseChange]
+  erw [← map_polynomial_eval_eval, map_baseChange]
   rfl
 
 variable {g} in
@@ -975,20 +969,20 @@ lemma baseChange_polynomialX : (W.baseChange B).toAffine.polynomialX =
     (W.baseChange A).toAffine.polynomialX.map (mapRingHom f) := by
   rw [← map_polynomialX, map_baseChange]
 
-lemma baseChange_eval_polynomialX (x : A[X]) (y : A) :
+lemma baseChange_polynomialX_eval_eval (x : A[X]) (y : A) :
     ((W.baseChange B).toAffine.polynomialX.eval <| x.map f).eval (f y) =
       f (((W.baseChange A).toAffine.polynomialX.eval x).eval y) := by
-  erw [← map_eval_polynomialX, map_baseChange]
+  erw [← map_polynomialX_eval_eval, map_baseChange]
   rfl
 
 lemma baseChange_polynomialY : (W.baseChange B).toAffine.polynomialY =
     (W.baseChange A).toAffine.polynomialY.map (mapRingHom f) := by
   rw [← map_polynomialY, map_baseChange]
 
-lemma baseChange_eval_polynomialY (x : A[X]) (y : A) :
+lemma baseChange_polynomialY_eval_eval (x : A[X]) (y : A) :
     ((W.baseChange B).toAffine.polynomialY.eval <| x.map f).eval (f y) =
       f (((W.baseChange A).toAffine.polynomialY.eval x).eval y) := by
-  erw [← map_eval_polynomialY, map_baseChange]
+  erw [← map_polynomialY_eval_eval, map_baseChange]
   rfl
 
 variable {f} in
@@ -1069,10 +1063,10 @@ def map : W⟮F⟯ →+ W⟮K⟯ where
   map_add' := by
     rintro (_ | @⟨x₁, y₁, _⟩) (_ | @⟨x₂, y₂, _⟩)
     any_goals rfl
-    have inj : Function.Injective ψ := ψ.injective
+    have inj : Function.Injective f := f.injective
     by_cases h : x₁ = x₂ ∧ y₁ = negY (W.baseChange F) x₂ y₂
     · simp only [add_of_Y_eq h.1 h.2, mapFun]
-      rw [add_of_Y_eq congr(ψ $(h.1))]
+      rw [add_of_Y_eq congr(f $(h.1))]
       rw [baseChange_negY, inj.eq_iff]
       exact h.2
     · simp only [add_of_imp fun hx hy ↦ h ⟨hx, hy⟩, mapFun]
