@@ -197,7 +197,8 @@ theorem row_empty : row (ι := ι) (vecEmpty : Fin 0 → α) = of fun _ => vecEm
 #align matrix.row_empty Matrix.row_empty
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row (ι := ι) (vecCons x u) = of fun _ => vecCons x u := rfl
+theorem row_cons (x : α) (u : Fin m → α) : row (ι := ι) (vecCons x u) = of fun _ => vecCons x u :=
+  rfl
 #align matrix.row_cons Matrix.row_cons
 
 end ColRow
