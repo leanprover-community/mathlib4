@@ -232,7 +232,7 @@ private lemma natDegree_coeff_preΨ' (n : ℕ) :
     refine ⟨natDegree_odd h₄.1 h₂.1 h'.1 h₁.1 h₃.1 h'.2 h.1 h.2,
       (coeff_odd h₄.1 h₂.1 h'.1 h₁.1 h₃.1 h'.2 h.1 h.2).trans ?_⟩
     rw [h₁.2, h₂.2, h₃.2, h₄.2, (expectedCoeff_rec m).1]
-    push_cast; congr <;> split_ifs <;> simp
+    push_cast; split_ifs <;> simp
 
 lemma natDegree_preΨ' (n : ℕ) : (W.preΨ' n).natDegree ≤ (n ^ 2 - if Even n then 4 else 1) / 2 :=
   (W.natDegree_coeff_preΨ' n).1
