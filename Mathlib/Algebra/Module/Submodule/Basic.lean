@@ -55,7 +55,7 @@ instance setLike : SetLike (Submodule R M) M where
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 #align submodule.set_like Submodule.setLike
 
-instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
+instance (priority := 10) addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
   zero_mem _ := AddSubmonoid.zero_mem' _
   add_mem := AddSubsemigroup.add_mem' _
 #align submodule.add_submonoid_class Submodule.addSubmonoidClass
@@ -179,7 +179,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`.  -/
-instance (priority := 75) toModule : Module R S' :=
+instance (priority := 10) toModule : Module R S' :=
   Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SMulMemClass.toModule
 
@@ -361,7 +361,7 @@ variable {α β : Type*}
 instance [VAdd M α] : VAdd p α :=
   p.toAddSubmonoid.vadd
 
-instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
+instance (priority := 10) vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
   ⟨fun a => (vadd_comm (a : M) : _)⟩
 #align submodule.vadd_comm_class Submodule.vaddCommClass
 
@@ -385,7 +385,7 @@ variable {module_M : Module R M}
 variable (p p' : Submodule R M)
 variable {r : R} {x y : M}
 
-instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
+instance (priority := 10) addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
   { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }
 #align submodule.add_subgroup_class Submodule.addSubgroupClass
 
