@@ -438,12 +438,12 @@ variable {R K} in
 lemma clear_local_denominator (v : HeightOneSpectrum R)
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   by_cases ha : a ∈ v.adicCompletionIntegers K
-  ·
-    sorry
+  · use 1
+    simp [ha, Submonoid.one_mem]
   ·
     sorry
 
-lemma exists_integer_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
+lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
     a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v := by
   constructor
   · rintro ⟨c, rfl⟩ v
@@ -455,6 +455,7 @@ lemma exists_integer_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdel
 lemma Submonoid.finprod_mem {G : Type*} [CommMonoid G] {M : Submonoid G} {ι : Type*}
     {S : Set ι}
     {f : ι → G} (hf : ∀ i ∈ S, f i ∈ M) : (∏ᶠ i ∈ S, f i) ∈ M := by
+  -- more annoying than it looks?
   sorry
 
 open scoped DiscreteValuation
@@ -470,12 +471,13 @@ lemma clear_denominator (a : FiniteAdeleRing R K) :
   let p := ∏ᶠ v ∈ S, b v (a v)
   have hp : p ∈ R⁰ := Submonoid.finprod_mem <| fun v hv ↦ hb _ _
   use ⟨p, hp⟩
-  rw [exists_integer_iff]
+  rw [exists_finiteIntegralAdele_iff]
   intro v
   change a v * _ ∈ _
   dsimp
   by_cases hv : a v ∈ adicCompletionIntegers K v
   · apply mul_mem hv
+    --change (p : _) ∈ adicCompletionIntegers K v
     rw [mem_adicCompletionIntegers]
     letI : Valued K ℤₘ₀ := adicValued v
     change Valued.v (p : v.adicCompletion K) ≤ 1
@@ -490,13 +492,21 @@ lemma clear_denominator (a : FiniteAdeleRing R K) :
   · have foo := h v (a v)
     simp at foo
     change a v * p ∈ _
+    change v ∈ S at hv
     dsimp
-    have pprod : p = b v (a v) * ∏ᶠ w ∈ S \ {v}, b w (a w) := sorry
+    have pprod : p = b v (a v) * ∏ᶠ w ∈ S \ {v}, b w (a w) := by
+      rw [show b v (a v) = ∏ᶠ w ∈ ({v} : Set (HeightOneSpectrum R)), b w (a w) by
+        rw [finprod_mem_singleton]]
+      rw [finprod_mem_mul_diff]
+      · simp [hv]
+      · exact a.2
     rw [pprod]
-    push_cast -- how do I make that work
+    push_cast
     rw [← mul_assoc]
     apply mul_mem foo
-    -- product of integers is an integer
+    -- same goal
+    rw [mem_adicCompletionIntegers]
+
     sorry
 
 open scoped Pointwise
