@@ -264,7 +264,7 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
     using h V (leOfHom b)
 
 @[reassoc (attr := simp)]
-lemma pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk
+lemma pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) (V : Opens Y)
     (hV : U ≤ (Opens.map f).obj V) :
     ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
@@ -281,7 +281,7 @@ lemma germToPullbackStalk_stalkPullbackHom
       ((pullback C f).obj F).germ x := by
   ext V hV
   dsimp
-  simp only [pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk_assoc,
+  simp only [pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk_assoc,
     germ_stalkPullbackHom, germ_res]
 
 @[reassoc (attr := simp)]
@@ -289,7 +289,7 @@ lemma pushforwardPullbackAdjunction_unit_app_app_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (V : (Opens Y)ᵒᵖ) (x : (Opens.map f).obj V.unop) :
     ((pushforwardPullbackAdjunction C f).unit.app F).app V ≫ germToPullbackStalk C f F _ x =
       F.germ ⟨f x, x.2⟩ := by
-  simpa using pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk
+  simpa using pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
     C f F ((Opens.map f).obj V.unop) x V.unop (by rfl)
 
 /-- The morphism `(f⁻¹ℱ)ₓ ⟶ ℱ_{f(x)}`. -/
@@ -304,8 +304,8 @@ def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
             ext W hW
             dsimp [OpenNhds.inclusion]
             rw [Category.comp_id, ← Functor.map_comp_assoc,
-              pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk]
-            erw [pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk] } }
+              pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk]
+            erw [pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk] } }
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pullback_inv TopCat.Presheaf.stalkPullbackInv
 
