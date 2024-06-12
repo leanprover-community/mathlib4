@@ -93,7 +93,7 @@ def vComp : TwoSquare H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ :=
 /-- The canonical isomorphism between
 `w.structuredArrowDownwards Y₁ ⋙ w'.structuredArrowDownwards (R₁.obj Y₁)` and
 `(w.vComp w').structuredArrowDownwards Y₁.` -/
-def structuredArrowDownwardsComp (Y₁ : D₁) :
+noncomputable def structuredArrowDownwardsComp (Y₁ : D₁) :
     w.structuredArrowDownwards Y₁ ⋙ w'.structuredArrowDownwards (R₁.obj Y₁) ≅
       (w.vComp w').structuredArrowDownwards Y₁ :=
   NatIso.ofComponents (fun _ => StructuredArrow.isoMk (Iso.refl _))

@@ -146,7 +146,7 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
         apply hx
         simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
 
-def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
+noncomputable def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
     FamilyOfElements (yoneda.obj s.pt) R :=
   fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩
 

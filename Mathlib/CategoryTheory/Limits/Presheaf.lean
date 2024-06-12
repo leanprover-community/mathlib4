@@ -439,7 +439,7 @@ variable {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁)
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
     natural transformation. -/
 @[simps]
-def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
+noncomputable def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
   pt := P
   ι := { app := fun X => X.hom }
 
@@ -447,7 +447,7 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
     representables.
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
-def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
+noncomputable def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
     refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
     intros X Y f

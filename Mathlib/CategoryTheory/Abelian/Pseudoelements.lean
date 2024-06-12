@@ -93,7 +93,7 @@ attribute [local instance] Over.coeFromHom
 
 /-- This is just composition of morphisms in `C`. Another way to express this would be
     `(Over.map f).obj a`, but our definition has nicer definitional properties. -/
-def app {P Q : C} (f : P ⟶ Q) (a : Over P) : Over Q :=
+noncomputable def app {P Q : C} (f : P ⟶ Q) (a : Over P) : Over Q :=
   a.hom ≫ f
 #align category_theory.abelian.app CategoryTheory.Abelian.app
 
@@ -171,12 +171,12 @@ theorem pseudoApply_aux {P Q : C} (f : P ⟶ Q) (a b : Over P) : a ≈ b → app
 #align category_theory.abelian.pseudoelement.pseudo_apply_aux CategoryTheory.Abelian.Pseudoelement.pseudoApply_aux
 
 /-- A morphism `f` induces a function `pseudoApply f` on pseudoelements. -/
-def pseudoApply {P Q : C} (f : P ⟶ Q) : P → Q :=
+noncomputable def pseudoApply {P Q : C} (f : P ⟶ Q) : P → Q :=
   Quotient.map (fun g : Over P => app f g) (pseudoApply_aux f)
 #align category_theory.abelian.pseudoelement.pseudo_apply CategoryTheory.Abelian.Pseudoelement.pseudoApply
 
 /-- A coercion from morphisms to functions on pseudoelements. -/
-def homToFun {P Q : C} : CoeFun (P ⟶ Q) fun _ => P → Q :=
+noncomputable def homToFun {P Q : C} : CoeFun (P ⟶ Q) fun _ => P → Q :=
   ⟨pseudoApply⟩
 #align category_theory.abelian.pseudoelement.hom_to_fun CategoryTheory.Abelian.Pseudoelement.homToFun
 
@@ -230,7 +230,7 @@ theorem zero_eq_zero' {P Q R : C} :
 #align category_theory.abelian.pseudoelement.zero_eq_zero' CategoryTheory.Abelian.Pseudoelement.zero_eq_zero'
 
 /-- The zero pseudoelement is the class of a zero morphism. -/
-def pseudoZero {P : C} : P :=
+noncomputable def pseudoZero {P : C} : P :=
   ⟦(0 : P ⟶ P)⟧
 #align category_theory.abelian.pseudoelement.pseudo_zero CategoryTheory.Abelian.Pseudoelement.pseudoZero
 
@@ -238,11 +238,11 @@ def pseudoZero {P : C} : P :=
 -- as it would have fired on `coe_sort`.
 -- However now that coercions are treated differently, this is a structural instance triggered by
 -- the appearance of `Pseudoelement`.
-instance hasZero {P : C} : Zero P :=
+noncomputable instance hasZero {P : C} : Zero P :=
   ⟨pseudoZero⟩
 #align category_theory.abelian.pseudoelement.has_zero CategoryTheory.Abelian.Pseudoelement.hasZero
 
-instance {P : C} : Inhabited P :=
+noncomputable instance {P : C} : Inhabited P :=
   ⟨0⟩
 
 theorem pseudoZero_def {P : C} : (0 : Pseudoelement P) = ⟦↑(0 : P ⟶ P)⟧ := rfl
