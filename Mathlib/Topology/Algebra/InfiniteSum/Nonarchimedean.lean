@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
 /-!
@@ -100,7 +101,7 @@ and let `g : β → R` be a function that sums to `b : R`. Then `fun (i : α × 
 sums to `a * b`. -/
 theorem HasSum.mul_of_nonarchimedean {f : α → R} {g : β → R} {a b : R} (hf : HasSum f a)
     (hg : HasSum g b) : HasSum (fun (i : α × β) ↦ (f i.1) * (g i.2)) (a * b) := by
-  rw [hasSum_iff_hasSum_compl] at *
+  rw [← hasSum_iff_hasSum_compl] at *
   convert hf.mul_of_complete_nonarchimedean hg <;>
   exact UniformSpace.Completion.coe_mul _ _
 
