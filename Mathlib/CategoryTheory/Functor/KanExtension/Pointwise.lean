@@ -55,7 +55,7 @@ variable {F L} (E : LeftExtension L F)
 /-- The cocone for `CostructuredArrow.proj L Y ⋙ F` attached to `E : LeftExtension L F`.
 The point is this cocone is `E.right.obj Y` -/
 @[simps]
-def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
+noncomputable def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
   pt := E.right.obj Y
   ι :=
     { app := fun g => E.hom.app g.left ≫ E.right.map g.hom
@@ -92,7 +92,7 @@ lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension :
   fun Y => (h Y).hasPointwiseLeftKanExtensionAt
 
 /-- The (unique) morphism from a pointwise left Kan extension. -/
-def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
+noncomputable def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
   StructuredArrow.homMk
     { app := fun Y => (h Y).desc (LeftExtension.coconeAt G Y)
       naturality := fun Y₁ Y₂ φ => (h Y₁).hom_ext (fun X => by
@@ -113,7 +113,7 @@ lemma IsPointwiseLeftKanExtension.hom_ext {G : LeftExtension L F} {f₁ f₂ : E
   rw [reassoc_of% eq₁, reassoc_of% eq₂]
 
 /-- A pointwise left Kan extension is universal, i.e. it is a left Kan extension. -/
-def IsPointwiseLeftKanExtension.isUniversal : E.IsUniversal :=
+noncomputable def IsPointwiseLeftKanExtension.isUniversal : E.IsUniversal :=
   IsInitial.ofUniqueHom h.homFrom (fun _ _ => h.hom_ext)
 
 lemma IsPointwiseLeftKanExtension.isLeftKanExtension :
@@ -134,7 +134,7 @@ variable (L F)
 
 /-- The cocones for `CostructuredArrow.proj L Y ⋙ F`, as a functor from `LeftExtension L F`. -/
 @[simps]
-def coconeAtFunctor (Y : D) :
+noncomputable def coconeAtFunctor (Y : D) :
     LeftExtension L F ⥤ Cocone (CostructuredArrow.proj L Y ⋙ F) where
   obj E := E.coconeAt Y
   map {E E'} φ := CoconeMorphism.mk (φ.right.app Y) (fun G => by
@@ -146,13 +146,13 @@ variable {L F E'}
 
 /-- If two left extensions `E` and `E'` are isomorphic, `E` is a pointwise
 left Kan extension at `Y` iff `E'` is. -/
-def isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
+noncomputable def isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
     E.IsPointwiseLeftKanExtensionAt Y ≃ E'.IsPointwiseLeftKanExtensionAt Y :=
   IsColimit.equivIsoColimit ((coconeAtFunctor L F Y).mapIso e)
 
 /-- If two left extensions `E` and `E'` are isomorphic, `E` is a pointwise
 left Kan extension iff `E'` is. -/
-def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
+noncomputable def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
   toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
   invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)

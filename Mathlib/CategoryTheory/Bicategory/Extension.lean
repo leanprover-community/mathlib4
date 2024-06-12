@@ -59,12 +59,12 @@ abbrev extension (t : LeftExtension f g) : b ⟶ c := t.right
 abbrev unit (t : LeftExtension f g) : g ⟶ f ≫ t.extension := t.hom
 
 /-- Construct a left extension from a 1-morphism and a 2-morphism. -/
-abbrev mk (h : b ⟶ c) (unit : g ⟶ f ≫ h) : LeftExtension f g :=
+noncomputable abbrev mk (h : b ⟶ c) (unit : g ⟶ f ≫ h) : LeftExtension f g :=
   StructuredArrow.mk unit
 
 /-- To construct a morphism between left extensions, we need a 2-morphism between the extensions,
 and to check that it is compatible with the units. -/
-abbrev homMk {s t : LeftExtension f g} (η : s.extension ⟶ t.extension)
+noncomputable abbrev homMk {s t : LeftExtension f g} (η : s.extension ⟶ t.extension)
     (w : s.unit ≫ f ◁ η = t.unit) : s ⟶ t :=
   StructuredArrow.homMk η w
 
@@ -74,9 +74,9 @@ theorem w {s t : LeftExtension f g} (η : s ⟶ t) :
   StructuredArrow.w η
 
 /-- The left extension along the identity. -/
-def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := .mk _ (λ_ g).inv
+noncomputable def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := .mk _ (λ_ g).inv
 
-instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
+noncomputable instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
 
 /-- Whisker a 1-morphism to an extension.
 ```
@@ -89,7 +89,7 @@ f |     \          | unit
       g         h
 ```
 -/
-def whisker (t : LeftExtension f g) {x : B} (h : c ⟶ x) : LeftExtension f (g ≫ h) :=
+noncomputable def whisker (t : LeftExtension f g) {x : B} (h : c ⟶ x) : LeftExtension f (g ≫ h) :=
   .mk _ <| t.unit ▷ h ≫ (α_ _ _ _).hom
 
 @[simp]
@@ -104,6 +104,7 @@ theorem whisker_unit (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
 
 /-- Whiskering a 1-morphism is a functor. -/
 @[simps]
+noncomputable
 def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g ≫ h) where
   obj t := t.whisker h
   map η := LeftExtension.homMk (η.right ▷ h) <| by
@@ -113,6 +114,7 @@ def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g 
 
 /-- Define a morphism between left extensions by cancelling the whiskered identities. -/
 @[simps! right]
+noncomputable
 def whiskerIdCancel {s t : LeftExtension f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
     s ⟶ t :=
   LeftExtension.homMk ((ρ_ _).inv ≫ τ.right ≫ (ρ_ _).hom) <| by
@@ -150,12 +152,13 @@ abbrev lift (t : LeftLift f g) : c ⟶ b := t.right
 abbrev unit (t : LeftLift f g) : g ⟶ t.lift ≫ f := t.hom
 
 /-- Construct a left lift from a 1-morphism and a 2-morphism. -/
-abbrev mk (h : c ⟶ b) (unit : g ⟶ h ≫ f) : LeftLift f g :=
+noncomputable abbrev mk (h : c ⟶ b) (unit : g ⟶ h ≫ f) : LeftLift f g :=
   StructuredArrow.mk unit
 
 /-- To construct a morphism between left lifts, we need a 2-morphism between the lifts,
 and to check that it is compatible with the units. -/
-abbrev homMk {s t : LeftLift f g} (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit) :
+noncomputable abbrev homMk {s t : LeftLift f g}
+    (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit) :
     s ⟶ t :=
   StructuredArrow.homMk η w
 
@@ -165,9 +168,9 @@ theorem w {s t : LeftLift f g} (h : s ⟶ t) :
   StructuredArrow.w h
 
 /-- The left lift along the identity. -/
-def alongId (g : c ⟶ a) : LeftLift (𝟙 a) g := .mk _ (ρ_ g).inv
+noncomputable def alongId (g : c ⟶ a) : LeftLift (𝟙 a) g := .mk _ (ρ_ g).inv
 
-instance : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
+noncomputable instance : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
 
 /-- Whisker a 1-morphism to a lift.
 ```
@@ -180,7 +183,7 @@ x - - - ▷ c - - - ▷ a
      h         g
 ```
 -/
-def whisker (t : LeftLift f g) {x : B} (h : x ⟶ c) : LeftLift f (h ≫ g) :=
+noncomputable def whisker (t : LeftLift f g) {x : B} (h : x ⟶ c) : LeftLift f (h ≫ g) :=
   .mk _ <| h ◁ t.unit ≫ (α_ _ _ _).inv
 
 @[simp]
@@ -195,7 +198,7 @@ theorem whisker_unit (t : LeftLift f g) {x : B} (h : x ⟶ c) :
 
 /-- Whiskering a 1-morphism is a functor. -/
 @[simps]
-def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) where
+noncomputable def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) where
   obj t := t.whisker h
   map η := LeftLift.homMk (h ◁ η.right) <| by
     dsimp only [whisker_lift, whisker_unit]
@@ -204,7 +207,7 @@ def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) whe
 
 /-- Define a morphism between left lifts by cancelling the whiskered identities. -/
 @[simps! right]
-def whiskerIdCancel {s t : LeftLift f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
+noncomputable def whiskerIdCancel {s t : LeftLift f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
     s ⟶ t :=
   LeftLift.homMk ((λ_ _).inv ≫ τ.right ≫ (λ_ _).hom) <| by
     have := LeftLift.w τ
@@ -241,12 +244,12 @@ abbrev extension (t : RightExtension f g) : b ⟶ c := t.left
 abbrev counit (t : RightExtension f g) : f ≫ t.extension ⟶ g := t.hom
 
 /-- Construct a right extension from a 1-morphism and a 2-morphism. -/
-abbrev mk (h : b ⟶ c) (counit : f ≫ h ⟶ g) : RightExtension f g :=
+noncomputable abbrev mk (h : b ⟶ c) (counit : f ≫ h ⟶ g) : RightExtension f g :=
   CostructuredArrow.mk counit
 
 /-- To construct a morphism between right extensions, we need a 2-morphism between the extensions,
 and to check that it is compatible with the counits. -/
-abbrev homMk {s t : RightExtension f g} (η : s.extension ⟶ t.extension)
+noncomputable abbrev homMk {s t : RightExtension f g} (η : s.extension ⟶ t.extension)
     (w : f ◁ η ≫ t.counit = s.counit) : s ⟶ t :=
   CostructuredArrow.homMk η w
 
@@ -256,9 +259,9 @@ theorem w {s t : RightExtension f g} (η : s ⟶ t) :
   CostructuredArrow.w η
 
 /-- The right extension along the identity. -/
-def alongId (g : a ⟶ c) : RightExtension (𝟙 a) g := .mk _ (λ_ g).hom
+noncomputable def alongId (g : a ⟶ c) : RightExtension (𝟙 a) g := .mk _ (λ_ g).hom
 
-instance : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
+noncomputable instance : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
 
 end RightExtension
 
@@ -286,12 +289,13 @@ abbrev lift (t : RightLift f g) : c ⟶ b := t.left
 abbrev counit (t : RightLift f g) : t.lift ≫ f ⟶ g := t.hom
 
 /-- Construct a right lift from a 1-morphism and a 2-morphism. -/
-abbrev mk (h : c ⟶ b) (counit : h ≫ f ⟶ g) : RightLift f g :=
+noncomputable abbrev mk (h : c ⟶ b) (counit : h ≫ f ⟶ g) : RightLift f g :=
   CostructuredArrow.mk counit
 
 /-- To construct a morphism between right lifts, we need a 2-morphism between the lifts,
 and to check that it is compatible with the counits. -/
-abbrev homMk {s t : RightLift f g} (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit) :
+noncomputable abbrev homMk {s t : RightLift f g}
+    (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit) :
     s ⟶ t :=
   CostructuredArrow.homMk η w
 
@@ -301,9 +305,9 @@ theorem w {s t : RightLift f g} (h : s ⟶ t) :
   CostructuredArrow.w h
 
 /-- The right lift along the identity. -/
-def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := .mk _ (ρ_ g).hom
+noncomputable def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := .mk _ (ρ_ g).hom
 
-instance : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
+noncomputable instance : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
 
 end RightLift
 

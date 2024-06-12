@@ -83,13 +83,13 @@ theorem w {A B : Over X} (f : A ⟶ B) : f.left ≫ B.hom = A.hom := by have := 
 
 /-- To give an object in the over category, it suffices to give a morphism with codomain `X`. -/
 @[simps! left hom]
-def mk {X Y : T} (f : Y ⟶ X) : Over X :=
+noncomputable def mk {X Y : T} (f : Y ⟶ X) : Over X :=
   CostructuredArrow.mk f
 #align category_theory.over.mk CategoryTheory.Over.mk
 
 /-- We can set up a coercion from arrows with codomain `X` to `over X`. This most likely should not
     be a global instance, but it is sometimes useful. -/
-def coeFromHom {X Y : T} : CoeOut (Y ⟶ X) (Over X) where coe := mk
+noncomputable def coeFromHom {X Y : T} : CoeOut (Y ⟶ X) (Over X) where coe := mk
 #align category_theory.over.coe_from_hom CategoryTheory.Over.coeFromHom
 
 section
@@ -106,7 +106,7 @@ end
 /-- To give a morphism in the over category, it suffices to give an arrow fitting in a commutative
     triangle. -/
 @[simps!]
-def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
+noncomputable def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
   CostructuredArrow.homMk f w
 #align category_theory.over.hom_mk CategoryTheory.Over.homMk
 
@@ -117,7 +117,7 @@ attribute [-simp, nolint simpNF] homMk_right_down_down
 direction gives a commutative triangle.
 -/
 @[simps!]
-def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom := by aesop_cat) :
+noncomputable def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom := by aesop_cat) :
     f ≅ g :=
   CostructuredArrow.isoMk hl hw
 #align category_theory.over.iso_mk CategoryTheory.Over.isoMk
@@ -186,12 +186,12 @@ theorem map_map_left : ((map f).map g).left = g.left :=
 variable (Y)
 
 /-- Mapping by the identity morphism is just the identity functor. -/
-def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
+noncomputable def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_id CategoryTheory.Over.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
-def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ map g :=
+noncomputable def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ map g :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
@@ -256,21 +256,21 @@ variable (f : Over X)
 
 /-- Given f : Y ⟶ X, this is the obvious functor from (T/X)/f to T/Y -/
 @[simps]
-def iteratedSliceForward : Over f ⥤ Over f.left where
+noncomputable def iteratedSliceForward : Over f ⥤ Over f.left where
   obj α := Over.mk α.hom.left
   map κ := Over.homMk κ.left.left (by dsimp; rw [← Over.w κ]; rfl)
 #align category_theory.over.iterated_slice_forward CategoryTheory.Over.iteratedSliceForward
 
 /-- Given f : Y ⟶ X, this is the obvious functor from T/Y to (T/X)/f -/
 @[simps]
-def iteratedSliceBackward : Over f.left ⥤ Over f where
+noncomputable def iteratedSliceBackward : Over f.left ⥤ Over f where
   obj g := mk (homMk g.hom : mk (g.hom ≫ f.hom) ⟶ f)
   map α := homMk (homMk α.left (w_assoc α f.hom)) (OverMorphism.ext (w α))
 #align category_theory.over.iterated_slice_backward CategoryTheory.Over.iteratedSliceBackward
 
 /-- Given f : Y ⟶ X, we have an equivalence between (T/X)/f and T/Y -/
 @[simps]
-def iteratedSliceEquiv : Over f ≌ Over f.left where
+noncomputable def iteratedSliceEquiv : Over f ≌ Over f.left where
   functor := iteratedSliceForward f
   inverse := iteratedSliceBackward f
   unitIso := NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)))
@@ -295,7 +295,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
 @[simps]
-def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
+noncomputable def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Over.homMk (F.map f.left)
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
@@ -312,7 +312,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 /-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
     `CostructuredArrow F X ⥤ Over X`. -/
 @[simps!]
-def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
+noncomputable def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
   CostructuredArrow.pre F (𝟭 T) X
 
 instance (F : D ⥤ T) (X : T) [F.Faithful] : (toOver F X).Faithful :=
@@ -378,14 +378,14 @@ theorem w {A B : Under X} (f : A ⟶ B) : A.hom ≫ f.right = B.hom := by have :
 
 /-- To give an object in the under category, it suffices to give an arrow with domain `X`. -/
 @[simps! right hom]
-def mk {X Y : T} (f : X ⟶ Y) : Under X :=
+noncomputable def mk {X Y : T} (f : X ⟶ Y) : Under X :=
   StructuredArrow.mk f
 #align category_theory.under.mk CategoryTheory.Under.mk
 
 /-- To give a morphism in the under category, it suffices to give a morphism fitting in a
     commutative triangle. -/
 @[simps!]
-def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by aesop_cat) : U ⟶ V :=
+noncomputable def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by aesop_cat) : U ⟶ V :=
   StructuredArrow.homMk f w
 #align category_theory.under.hom_mk CategoryTheory.Under.homMk
 
@@ -395,7 +395,7 @@ attribute [-simp, nolint simpNF] homMk_left_down_down
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
-def isoMk {f g : Under X} (hr : f.right ≅ g.right)
+noncomputable def isoMk {f g : Under X} (hr : f.right ≅ g.right)
     (hw : f.hom ≫ hr.hom = g.hom := by aesop_cat) : f ≅ g :=
   StructuredArrow.isoMk hr hw
 #align category_theory.under.iso_mk CategoryTheory.Under.isoMk
@@ -465,12 +465,12 @@ theorem map_map_right : ((map f).map g).right = g.right :=
 #align category_theory.under.map_map_right CategoryTheory.Under.map_map_right
 
 /-- Mapping by the identity morphism is just the identity functor. -/
-def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
+noncomputable def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_id CategoryTheory.Under.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
-def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
+noncomputable def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_comp CategoryTheory.Under.mapComp
 
@@ -533,7 +533,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- A functor `F : T ⥤ D` induces a functor `Under X ⥤ Under (F.obj X)` in the obvious way. -/
 @[simps]
-def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
+noncomputable def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Under.homMk (F.map f.right)
     (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
@@ -550,7 +550,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 /-- Reinterpreting an `F`-structured arrow `X ⟶ F.obj d` as an arrow under `X` induces a functor
     `StructuredArrow X F ⥤ Under X`. -/
 @[simps!]
-def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
+noncomputable def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
   StructuredArrow.pre X F (𝟭 T)
 
 instance (X : T) (F : D ⥤ T) [F.Faithful] : (toUnder X F).Faithful :=
@@ -577,13 +577,13 @@ variable {S : Type u₂} [Category.{v₂} S]
     provide maps `F.obj Y ⟶ X` for all `Y` making the obvious triangles involving all `F.map g`
     commute. -/
 @[simps! obj_left map_left]
-def toOver (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
+noncomputable def toOver (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : S ⥤ Over X :=
   F.toCostructuredArrow (𝟭 _) X f h
 
 /-- Upgrading a functor `S ⥤ T` to a functor `S ⥤ Over X` and composing with the forgetful functor
     `Over X ⥤ T` recovers the original functor. -/
-def toOverCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
+noncomputable def toOverCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : F.toOver X f h ⋙ Over.forget _ ≅ F :=
   Iso.refl _
 
@@ -596,13 +596,13 @@ lemma toOver_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
     provide maps `X ⟶ F.obj Y` for all `Y` making the obvious triangles involving all `F.map g`
     commute.  -/
 @[simps! obj_right map_right]
-def toUnder (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
+noncomputable def toUnder (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : S ⥤ Under X :=
   F.toStructuredArrow X (𝟭 _) f h
 
 /-- Upgrading a functor `S ⥤ T` to a functor `S ⥤ Under X` and composing with the forgetful functor
     `Under X ⥤ T` recovers the original functor. -/
-def toUnderCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
+noncomputable def toUnderCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
     (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : F.toUnder X f h ⋙ Under.forget _ ≅ F :=
   Iso.refl _
 

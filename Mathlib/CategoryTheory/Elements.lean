@@ -139,7 +139,7 @@ theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F
 #align category_theory.category_of_elements.map_π CategoryTheory.CategoryOfElements.map_π
 
 /-- The forward direction of the equivalence `F.Elements ≅ (*, F)`. -/
-def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
+noncomputable def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
   obj X := StructuredArrow.mk fun _ => X.2
   map {X Y} f := StructuredArrow.homMk f.val (by funext; simp [f.2])
 #align category_theory.category_of_elements.to_structured_arrow CategoryTheory.CategoryOfElements.toStructuredArrow
@@ -179,7 +179,7 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
     and the comma category `(*, F)`. -/
 @[simps! functor_obj functor_map inverse_obj inverse_map unitIso_hom
   unitIso_inv counitIso_hom counitIso_inv]
-def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F :=
+noncomputable def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F :=
   Equivalence.mk (toStructuredArrow F) (fromStructuredArrow F)
     (NatIso.ofComponents fun X => eqToIso (by aesop_cat))
     (NatIso.ofComponents fun X => StructuredArrow.isoMk (Iso.refl _))
@@ -191,7 +191,7 @@ open Opposite
 given by `CategoryTheory.yonedaEquiv`.
 -/
 @[simps]
-def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F where
+noncomputable def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F where
   obj X := CostructuredArrow.mk (yonedaEquiv.symm (unop X).2)
   map f := by
     fapply CostructuredArrow.homMk
@@ -258,7 +258,7 @@ theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
 
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps! functor_obj functor_map inverse_obj inverse_map unitIso_inv counitIso_hom counitIso_inv]
-def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
+noncomputable def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
     F.Elementsᵒᵖ ≌ CostructuredArrow yoneda F :=
   Equivalence.mk (toCostructuredArrow F) (fromCostructuredArrow F).rightOp
     (NatIso.op (eqToIso (from_toCostructuredArrow_eq F))) (eqToIso <| to_fromCostructuredArrow_eq F)
@@ -285,13 +285,13 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
 
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
 @[simps!]
-def costructuredArrowYonedaEquivalenceFunctorProj (F : Cᵒᵖ ⥤ Type v) :
+noncomputable def costructuredArrowYonedaEquivalenceFunctorProj (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).functor ⋙ CostructuredArrow.proj _ _ ≅ (π F).leftOp :=
   Iso.refl _
 
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
 @[simps!]
-def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
+noncomputable def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
