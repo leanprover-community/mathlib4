@@ -150,7 +150,7 @@ noncomputable instance toPresheafPreservesLimitsOfShape :
 
 end Small
 
-namespace Finite
+section Finite
 
 instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
   ⟨fun _ => inferInstance⟩
@@ -159,7 +159,7 @@ noncomputable instance evaluationPreservesFiniteLimits (X : Cᵒᵖ) :
     PreservesFiniteLimits (evaluation.{v} R X) where
 
 noncomputable instance toPresheafPreservesFiniteLimits :
-    PreservesFiniteLimits (toPresheaf R) where
+    PreservesFiniteLimits (toPresheaf.{v} R) where
 
 end Finite
 

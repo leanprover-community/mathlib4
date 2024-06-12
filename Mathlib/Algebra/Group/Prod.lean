@@ -385,7 +385,7 @@ theorem prod_unique (f : M →ₙ* N × P) : ((fst N P).comp f).prod ((snd N P).
 
 end Prod
 
-section Prod_map
+section prodMap
 
 variable {M' : Type*} {N' : Type*} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f : M →ₙ* M')
   (g : N →ₙ* N')
@@ -416,7 +416,7 @@ theorem prod_comp_prodMap (f : P →ₙ* M) (g : P →ₙ* N) (f' : M →ₙ* M'
 #align mul_hom.prod_comp_prod_map MulHom.prod_comp_prodMap
 #align add_hom.prod_comp_prod_map AddHom.prod_comp_prodMap
 
-end Prod_map
+end prodMap
 
 section Coprod
 
@@ -602,7 +602,7 @@ theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).com
 
 end Prod
 
-section Prod_map
+section prodMap
 
 variable {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] [MulOneClass P]
   (f : M →* M') (g : N →* N')
@@ -633,7 +633,7 @@ theorem prod_comp_prodMap (f : P →* M) (g : P →* N) (f' : M →* M') (g' : N
 #align monoid_hom.prod_comp_prod_map MonoidHom.prod_comp_prodMap
 #align add_monoid_hom.prod_comp_prod_map AddMonoidHom.prod_comp_prodMap
 
-end Prod_map
+end prodMap
 
 section Coprod
 
