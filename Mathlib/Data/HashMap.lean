@@ -47,6 +47,7 @@ end Batteries.HashMap
 namespace Batteries.RBSet
 
 /-- Insert all elements of a list into an `RBSet`. -/
+@[deprecated "Cleaning up unused API additions in Mathlib." (since := "2024-06-12")]
 def insertList {cmp} (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
   L.foldl (fun m a => m.insert a) m
 
