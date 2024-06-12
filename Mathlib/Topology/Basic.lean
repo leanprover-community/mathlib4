@@ -519,7 +519,8 @@ theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set X) :
   rw [← sUnion_range, (finite_range _).closure_sUnion, biUnion_range]
 #align closure_Union closure_iUnion_of_finite
 
-theorem closure_iUnion_of_finite' {n : ℕ} (f : ℕ → Set X) :
+@[simp]
+theorem closure_iUnion₂_of_finite {n : ℕ} (f : ℕ → Set X) :
     closure (⋃ m ≤ n, f m) = ⋃ m ≤ n, closure (f m) := by calc
   closure (⋃ m ≤ n, f m) = closure (⋃ m ∈ {m | m ≤ n}, f m) := by simp only [mem_setOf_eq]
   _ = ⋃ m ∈ {m | m ≤ n}, closure (f m) := Set.Finite.closure_biUnion (finite_le_nat n) f
