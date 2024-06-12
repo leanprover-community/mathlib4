@@ -274,8 +274,6 @@ macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
 
 /- M -/ syntax (name := notationClass) "notation_class" "*"? (ppSpace ident)? : attr
 
-/- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
-
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command

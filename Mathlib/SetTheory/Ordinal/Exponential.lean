@@ -253,7 +253,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
 
 /-- The ordinal logarithm is the solution `u` to the equation `x = b ^ u * v + w` where `v < b` and
     `w < b ^ u`. -/
--- @[pp_nodot] -- Porting note: Unknown attribute.
+@[pp_nodot]
 def log (b : Ordinal) (x : Ordinal) : Ordinal :=
   if _h : 1 < b then pred (sInf { o | x < b ^ o }) else 0
 #align ordinal.log Ordinal.log

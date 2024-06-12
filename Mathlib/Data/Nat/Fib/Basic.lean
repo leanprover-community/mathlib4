@@ -62,8 +62,7 @@ namespace Nat
 implementation.
 -/
 
--- Porting note: Lean cannot find pp_nodot at the time of this port.
--- @[pp_nodot]
+@[pp_nodot]
 def fib (n : ℕ) : ℕ :=
   ((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n] (0, 1)).fst
 #align nat.fib Nat.fib
