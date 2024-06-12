@@ -368,6 +368,43 @@ lemma locallyRingedSpaceAdjunction_counit :
     locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_counit
 
+@[simp]
+lemma locallyRingedSpaceAdjunction_counit_app (R : CommRingCatᵒᵖ) :
+    locallyRingedSpaceAdjunction.counit.app R =
+      (toOpen R.unop ⊤).op := rfl
+
+@[simp]
+lemma locallyRingedSpaceAdjunction_counit_app' (R : Type u) [CommRing R] :
+    locallyRingedSpaceAdjunction.counit.app (op <| CommRingCat.of R) =
+      (toOpen R ⊤).op := rfl
+
+lemma locallyRingedSpaceAdjunction_homEquiv_apply
+    {X : LocallyRingedSpace} {R : CommRingCatᵒᵖ}
+    (f : Γ.rightOp.obj X ⟶ R) :
+    locallyRingedSpaceAdjunction.homEquiv X R f =
+      identityToΓSpec.app X ≫ Spec.locallyRingedSpaceMap f.unop := rfl
+
+lemma locallyRingedSpaceAdjunction_homEquiv_apply'
+    {X : LocallyRingedSpace} {R : Type u} [CommRing R]
+    (f : CommRingCat.of R ⟶ Γ.obj <| op X) :
+    locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) (op f) =
+      identityToΓSpec.app X ≫ Spec.locallyRingedSpaceMap f := rfl
+
+lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
+    {X : LocallyRingedSpace} {R : Type u} [CommRing R]
+    (f : Γ.rightOp.obj X ⟶ op (CommRingCat.of R)) (U) :
+    StructureSheaf.toOpen R U.unop ≫
+      (locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) f).1.c.app U =
+    f.unop ≫ X.presheaf.map (homOfLE le_top).op := by
+  rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
+    NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op,
+    show (toOpen R ⊤) = (toOpen R ⊤).op.unop from rfl,
+    ← locallyRingedSpaceAdjunction_counit_app']
+  simp_rw [← Γ_map_op]
+  rw [← Γ.rightOp_map_unop, ← Category.assoc, ← unop_comp, ← Adjunction.homEquiv_counit,
+    Equiv.symm_apply_apply]
+  rfl
+
 -- Porting Note: Commented
 --attribute [local semireducible] Spec.toLocallyRingedSpace
 

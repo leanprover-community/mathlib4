@@ -165,7 +165,7 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   ext_iff.symm
 #align fin.coe_eq_coe Fin.val_eq_val
 
-@[deprecated ext_iff] -- 2024-02-20
+@[deprecated ext_iff (since := "2024-02-20")]
 theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
   ext_iff
 #align fin.eq_iff_veq Fin.eq_iff_veq
@@ -1443,7 +1443,8 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 #align fin.succ_above_last_apply Fin.succAbove_last_apply
 
-@[deprecated] lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
+@[deprecated (since := "2024-05-30")]
+lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
 #align fin.succ_above_lt_ge Fin.succAbove_lt_ge
 

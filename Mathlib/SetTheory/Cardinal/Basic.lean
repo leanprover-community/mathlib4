@@ -543,12 +543,12 @@ instance commSemiring : CommSemiring Cardinal.{u} where
 section deprecated
 set_option linter.deprecated false
 
-@[deprecated]
+@[deprecated (since := "2023-02-11")]
 theorem power_bit0 (a b : Cardinal) : a ^ bit0 b = a ^ b * a ^ b :=
   power_add
 #align cardinal.power_bit0 Cardinal.power_bit0
 
-@[deprecated]
+@[deprecated (since := "2023-02-11")]
 theorem power_bit1 (a b : Cardinal) : a ^ bit1 b = a ^ b * a ^ b * a := by
   rw [bit1, ← power_bit0, power_add, power_one]
 #align cardinal.power_bit1 Cardinal.power_bit1
@@ -623,12 +623,12 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 section deprecated
 set_option linter.deprecated false
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-02-11")]
 theorem lift_bit0 (a : Cardinal) : lift.{v} (bit0 a) = bit0 (lift.{v} a) :=
   lift_add a a
 #align cardinal.lift_bit0 Cardinal.lift_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-02-11")]
 theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by simp [bit1]
 #align cardinal.lift_bit1 Cardinal.lift_bit1
 

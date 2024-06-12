@@ -56,7 +56,7 @@ theorem opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E 
       exact h₂ z
 #align continuous_linear_map.op_norm_ext ContinuousLinearMap.opNorm_ext
 
-@[deprecated] alias op_norm_ext := opNorm_ext -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_norm_ext := opNorm_ext
 
 variable [RingHomIsometric σ₂₃]
 
@@ -65,14 +65,14 @@ theorem opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ}
   f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (mul_nonneg h0 (norm_nonneg _)) <| hC x
 #align continuous_linear_map.op_norm_le_bound₂ ContinuousLinearMap.opNorm_le_bound₂
 
-@[deprecated] alias op_norm_le_bound₂ := opNorm_le_bound₂ -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_norm_le_bound₂ := opNorm_le_bound₂
 
 theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
     ‖f x y‖ ≤ ‖f‖ * ‖x‖ * ‖y‖ :=
   (f x).le_of_opNorm_le (f.le_opNorm x) y
 #align continuous_linear_map.le_op_norm₂ ContinuousLinearMap.le_opNorm₂
 
-@[deprecated] alias le_op_norm₂ := le_opNorm₂ -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias le_op_norm₂ := le_opNorm₂
 
 -- Porting note (#10756): new theorem
 theorem le_of_opNorm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
@@ -80,7 +80,7 @@ theorem le_of_opNorm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁�
     ‖f x y‖ ≤ a * b * c :=
   (f x).le_of_opNorm_le_of_le (f.le_of_opNorm_le_of_le hf hx) hy
 
-@[deprecated] alias le_of_op_norm₂_le_of_le := le_of_opNorm₂_le_of_le -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias le_of_op_norm₂_le_of_le := le_of_opNorm₂_le_of_le
 
 end OpNorm
 
@@ -184,7 +184,7 @@ theorem opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ =
   le_antisymm (by simpa only [flip_flip] using le_norm_flip f.flip) (le_norm_flip f)
 #align continuous_linear_map.op_norm_flip ContinuousLinearMap.opNorm_flip
 
-@[deprecated] alias op_norm_flip := opNorm_flip -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_norm_flip := opNorm_flip
 
 @[simp]
 theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
