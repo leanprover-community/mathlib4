@@ -29,7 +29,7 @@ theorem Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
   ext (_ | i)
   · simp [swap_apply_of_ne_of_ne]
   · by_cases hx : i = x
-    simp only [hx, optionCongr_apply, Option.map_some', swap_apply_left, Option.mem_def,
+    · simp only [hx, optionCongr_apply, Option.map_some', swap_apply_left, Option.mem_def,
              Option.some.injEq]
     by_cases hy : i = y <;> simp [hx, hy, swap_apply_of_ne_of_ne]
 #align equiv.option_congr_swap Equiv.optionCongr_swap
@@ -62,8 +62,8 @@ theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α
 `Option α` and permuting the remaining with a `Perm α`.
 The fixed `Option α` is swapped with `none`. -/
 @[simps]
-def Equiv.Perm.decomposeOption {α : Type*} [DecidableEq α] : Perm (Option α) ≃ Option α × Perm α
-    where
+def Equiv.Perm.decomposeOption {α : Type*} [DecidableEq α] :
+    Perm (Option α) ≃ Option α × Perm α where
   toFun σ := (σ none, removeNone σ)
   invFun i := swap none i.1 * i.2.optionCongr
   left_inv σ := by simp

@@ -140,23 +140,23 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
     rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
         (eventually_of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
-    have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in (0)..x, r * rexp (-(r * a)) := by
-      rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
-    rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
-    rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
-      (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
-    rw [ENNReal.toReal_ofReal_eq_iff.2
-      (by set_option tactic.skipAssignedInstances false in norm_num; positivity)]
-    · norm_num; ring
-    · simp only [intervalIntegrable_iff, uIoc_of_le h]
-      exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
-    · have : Continuous (fun a ↦ rexp (-(r * a))) := by
-        simp only [← neg_mul]; exact (continuous_mul_left (-r)).exp
-      exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
-    · simp only [neg_mul, one_mul]
-      exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
+    · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in (0)..x, r * rexp (-(r * a)) := by
+        rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
+      rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
+      rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
+        (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
+      · rw [ENNReal.toReal_ofReal_eq_iff.2
+          (by set_option tactic.skipAssignedInstances false in norm_num; positivity)]
+        norm_num; ring
+      · simp only [intervalIntegrable_iff, uIoc_of_le h]
+        exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
+      · have : Continuous (fun a ↦ rexp (-(r * a))) := by
+          simp only [← neg_mul]; exact (continuous_mul_left (-r)).rexp
+        exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
+      · simp only [neg_mul, one_mul]
+        exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
     · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
-      rw [← integrableOn_def, integrableOn_Icc_iff_integrableOn_Ioc]
+      rw [← IntegrableOn, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
     · refine ne_of_lt (IntegrableOn.set_lintegral_lt_top ?_)
       rw [integrableOn_Icc_iff_integrableOn_Ioc]

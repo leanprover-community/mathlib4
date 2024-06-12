@@ -211,8 +211,9 @@ theorem IsTheta.eq_zero_iff (h : f'' =Θ[l] g'') : ∀ᶠ x in l, f'' x = 0 ↔ 
   h.1.eq_zero_imp.mp <| h.2.eq_zero_imp.mono fun _ ↦ Iff.intro
 #align asymptotics.is_Theta.eq_zero_iff Asymptotics.IsTheta.eq_zero_iff
 
-theorem IsTheta.tendsto_zero_iff (h : f'' =Θ[l] g'') : Tendsto f'' l (𝓝 0) ↔ Tendsto g'' l (𝓝 0) :=
-  by simp only [← isLittleO_one_iff ℝ, h.isLittleO_congr_left]
+theorem IsTheta.tendsto_zero_iff (h : f'' =Θ[l] g'') :
+    Tendsto f'' l (𝓝 0) ↔ Tendsto g'' l (𝓝 0) := by
+  simp only [← isLittleO_one_iff ℝ, h.isLittleO_congr_left]
 #align asymptotics.is_Theta.tendsto_zero_iff Asymptotics.IsTheta.tendsto_zero_iff
 
 theorem IsTheta.tendsto_norm_atTop_iff (h : f' =Θ[l] g') :
@@ -260,7 +261,7 @@ theorem IsTheta.pow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : �
 theorem IsTheta.zpow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : ℤ) :
     (fun x ↦ f x ^ n) =Θ[l] fun x ↦ g x ^ n := by
   cases n
-  · simpa only [Int.ofNat_eq_coe, zpow_coe_nat] using h.pow _
+  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using h.pow _
   · simpa only [zpow_negSucc] using (h.pow _).inv
 #align asymptotics.is_Theta.zpow Asymptotics.IsTheta.zpow
 

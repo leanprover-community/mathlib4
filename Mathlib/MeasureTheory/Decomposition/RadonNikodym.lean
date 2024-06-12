@@ -113,7 +113,7 @@ lemma rnDeriv_withDensity_withDensity_rnDeriv_right (μ ν : Measure α) [SigmaF
     (hf_ne_top : ∀ᵐ x ∂ν, f x ≠ ∞) :
     (ν.withDensity (μ.rnDeriv ν)).rnDeriv (ν.withDensity f) =ᵐ[ν] μ.rnDeriv (ν.withDensity f) := by
   conv_rhs => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
-  have hν_ac : ν ≪ ν.withDensity f := withDensity_absolutelyContinuous' hf hf_ne_zero hf_ne_top
+  have hν_ac : ν ≪ ν.withDensity f := withDensity_absolutelyContinuous' hf hf_ne_zero
   refine hν_ac.ae_eq ?_
   have : SigmaFinite (ν.withDensity f) := SigmaFinite.withDensity_of_ne_top hf hf_ne_top
   refine (rnDeriv_add_of_mutuallySingular _ _ _ ?_).symm
@@ -155,7 +155,7 @@ lemma rnDeriv_withDensity_right_of_absolutelyContinuous {ν : Measure α} [Sigma
     (hf_ne_zero : ∀ᵐ x ∂ν, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂ν, f x ≠ ∞) :
     μ.rnDeriv (ν.withDensity f) =ᵐ[ν] fun x ↦ (f x)⁻¹ * μ.rnDeriv ν x := by
   have : SigmaFinite (ν.withDensity f) := SigmaFinite.withDensity_of_ne_top hf hf_ne_top
-  refine (withDensity_absolutelyContinuous' hf hf_ne_zero hf_ne_top).ae_eq ?_
+  refine (withDensity_absolutelyContinuous' hf hf_ne_zero).ae_eq ?_
   refine (Measure.eq_rnDeriv₀ (ν := ν.withDensity f) ?_ Measure.MutuallySingular.zero_left ?_).symm
   · exact (hf.inv.mono_ac (withDensity_absolutelyContinuous _ _)).mul
       (Measure.measurable_rnDeriv _ _).aemeasurable
@@ -188,18 +188,6 @@ lemma rnDeriv_withDensity_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFini
   rw [← hx₁, hx₂, hx_eq]
 
 end rnDeriv_withDensity_leftRight
-
-theorem rnDeriv_restrict (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
-    {s : Set α} (hs : MeasurableSet s) :
-    (μ.restrict s).rnDeriv ν =ᵐ[ν] s.indicator (μ.rnDeriv ν) := by
-  rw [← withDensity_indicator_one hs]
-  refine (rnDeriv_withDensity_left ?_ ?_ ?_).trans (ae_of_all _ (fun x ↦ ?_))
-  · exact measurable_one.aemeasurable.indicator hs
-  · exact measurable_one.aemeasurable.indicator hs
-  · refine ae_of_all _ (fun x ↦ ?_)
-    simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
-    split_ifs <;> simp [ENNReal.zero_ne_top]
-  · simp [Set.indicator_apply]
 
 lemma rnDeriv_eq_zero_of_mutuallySingular [SigmaFinite μ] {ν' : Measure α}
     [SigmaFinite ν'] (h : μ ⟂ₘ ν) (hνν' : ν ≪ ν') :
@@ -267,14 +255,14 @@ lemma rnDeriv_add_right_of_mutuallySingular {ν' : Measure α}
   have h₂ := rnDeriv_add' (μ.singularPart ν') (ν'.withDensity (μ.rnDeriv ν')) ν
   refine (Filter.EventuallyEq.trans (h_ac.ae_le h₁) ?_).trans h₂.symm
   have h₃ := rnDeriv_add_right_of_mutuallySingular' (?_ : μ.singularPart ν' ⟂ₘ ν') hνν'
-  have h₄ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv (ν + ν') =ᵐ[ν] 0 := by
-    refine rnDeriv_eq_zero_of_mutuallySingular ?_ h_ac
-    exact hνν'.symm.withDensity
-  have h₅ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv ν =ᵐ[ν] 0 := by
-    rw [rnDeriv_eq_zero]
-    exact hνν'.symm.withDensity
-  filter_upwards [h₃, h₄, h₅] with x hx₃ hx₄ hx₅
-  rw [Pi.add_apply, Pi.add_apply, hx₃, hx₄, hx₅]
+  · have h₄ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv (ν + ν') =ᵐ[ν] 0 := by
+      refine rnDeriv_eq_zero_of_mutuallySingular ?_ h_ac
+      exact hνν'.symm.withDensity
+    have h₅ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv ν =ᵐ[ν] 0 := by
+      rw [rnDeriv_eq_zero]
+      exact hνν'.symm.withDensity
+    filter_upwards [h₃, h₄, h₅] with x hx₃ hx₄ hx₅
+    rw [Pi.add_apply, Pi.add_apply, hx₃, hx₄, hx₅]
   exact mutuallySingular_singularPart μ ν'
 
 lemma rnDeriv_withDensity_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
@@ -341,7 +329,7 @@ lemma integrableOn_toReal_rnDeriv {s : Set α} (hμs : μ s ≠ ∞) :
   refine integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable ?_
   exact ((set_lintegral_rnDeriv_le _).trans_lt hμs.lt_top).ne
 
-lemma set_integral_toReal_rnDeriv_eq_withDensity' [SigmaFinite μ]
+lemma setIntegral_toReal_rnDeriv_eq_withDensity' [SigmaFinite μ]
     {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
   rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
@@ -349,47 +337,62 @@ lemma set_integral_toReal_rnDeriv_eq_withDensity' [SigmaFinite μ]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
-lemma set_integral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ] [SFinite ν] (s : Set α) :
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv_eq_withDensity' := setIntegral_toReal_rnDeriv_eq_withDensity'
+
+lemma setIntegral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ] [SFinite ν] (s : Set α) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
   rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
   · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply' _ s]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
-lemma set_integral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s ≠ ∞) :
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv_eq_withDensity := setIntegral_toReal_rnDeriv_eq_withDensity
+
+lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s ≠ ∞) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν ≤ (μ s).toReal := by
   set t := toMeasurable μ s with ht
   have ht_m : MeasurableSet t := measurableSet_toMeasurable μ s
   have hμt : μ t ≠ ∞ := by rwa [ht, measure_toMeasurable s]
   calc ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν
     ≤ ∫ x in t, (μ.rnDeriv ν x).toReal ∂ν := by
-        refine set_integral_mono_set ?_ ?_ (HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _))
+        refine setIntegral_mono_set ?_ ?_ (HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _))
         · exact integrableOn_toReal_rnDeriv hμt
         · exact ae_of_all _ (by simp)
-  _ = (withDensity ν (rnDeriv μ ν) t).toReal := set_integral_toReal_rnDeriv_eq_withDensity' ht_m
+  _ = (withDensity ν (rnDeriv μ ν) t).toReal := setIntegral_toReal_rnDeriv_eq_withDensity' ht_m
   _ ≤ (μ t).toReal := by
         gcongr
         · exact hμt
         · apply withDensity_rnDeriv_le
   _ = (μ s).toReal := by rw [measure_toMeasurable s]
 
-lemma set_integral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv_le := setIntegral_toReal_rnDeriv_le
+
+lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
-  rw [set_integral_toReal_rnDeriv_eq_withDensity' hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
-#align measure_theory.measure.with_density_rn_deriv_to_real_eq MeasureTheory.Measure.set_integral_toReal_rnDeriv'
+  rw [setIntegral_toReal_rnDeriv_eq_withDensity' hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
+#align measure_theory.measure.with_density_rn_deriv_to_real_eq MeasureTheory.Measure.setIntegral_toReal_rnDeriv'
 
-lemma set_integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α) :
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv' := setIntegral_toReal_rnDeriv'
+
+lemma setIntegral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
-  rw [set_integral_toReal_rnDeriv_eq_withDensity s, Measure.withDensity_rnDeriv_eq _ _ hμν]
+  rw [setIntegral_toReal_rnDeriv_eq_withDensity s, Measure.withDensity_rnDeriv_eq _ _ hμν]
+
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv := setIntegral_toReal_rnDeriv
 
 lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
-  rw [← integral_univ, set_integral_toReal_rnDeriv hμν Set.univ]
+  rw [← integral_univ, setIntegral_toReal_rnDeriv hμν Set.univ]
 
 end integral
 
-lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
+lemma rnDeriv_mul_rnDeriv {κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
     (hμν : μ ≪ ν) :
     μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
   refine (rnDeriv_withDensity_left ?_ ?_ ?_).symm.trans ?_
@@ -397,6 +400,12 @@ lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite μ] [SigmaFinite 
   · exact (Measure.measurable_rnDeriv _ _).aemeasurable
   · exact rnDeriv_ne_top _ _
   · rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
+
+lemma rnDeriv_le_one_of_le (hμν : μ ≤ ν) [SigmaFinite ν] : μ.rnDeriv ν ≤ᵐ[ν] 1 := by
+  refine ae_le_of_forall_set_lintegral_le_of_sigmaFinite (μ.measurable_rnDeriv ν) measurable_const
+    (fun s _ _ ↦ ?_)
+  simp only [Pi.one_apply, MeasureTheory.set_lintegral_one]
+  exact (Measure.set_lintegral_rnDeriv_le s).trans (hμν s)
 
 end Measure
 
@@ -409,15 +418,15 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
   rw [absolutelyContinuous_ennreal_iff, (_ : μ.toENNRealVectorMeasure.ennrealToMeasure = μ),
     totalVariation_absolutelyContinuous_iff] at h
   · ext1 i hi
-    rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv, integral_sub,
-      set_integral_toReal_rnDeriv h.1 i, set_integral_toReal_rnDeriv h.2 i]
+    rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv_def, integral_sub,
+      setIntegral_toReal_rnDeriv h.1 i, setIntegral_toReal_rnDeriv h.2 i]
     · conv_rhs => rw [← s.toSignedMeasure_toJordanDecomposition]
       erw [VectorMeasure.sub_apply]
       rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi]
     all_goals
       rw [← integrableOn_univ]
-      refine' IntegrableOn.restrict _ MeasurableSet.univ
-      refine' ⟨_, hasFiniteIntegral_toReal_of_lintegral_ne_top _⟩
+      refine IntegrableOn.restrict ?_ MeasurableSet.univ
+      refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩
       · apply Measurable.aestronglyMeasurable
         measurability
       · rw [set_lintegral_univ]
@@ -449,9 +458,8 @@ lemma set_lintegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ �
     (hf : AEMeasurable f ν) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ x in s, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x in s, f x ∂μ := by
   nth_rw 2 [← Measure.withDensity_rnDeriv_eq μ ν hμν]
-  rw [set_lintegral_withDensity_eq_lintegral_mul₀ (Measure.measurable_rnDeriv μ ν).aemeasurable hf
-    hs]
-  rfl
+  rw [set_lintegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf hs]
+  simp only [Pi.mul_apply]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 

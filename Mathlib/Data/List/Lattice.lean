@@ -153,11 +153,11 @@ theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ 
 
 #align list.mem_inter List.mem_inter_iff
 
-theorem inter_subset_left (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₁ :=
+theorem inter_subset_left {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₁ :=
   filter_subset _
 #align list.inter_subset_left List.inter_subset_left
 
-theorem inter_subset_right (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
+theorem inter_subset_right {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
 #align list.inter_subset_right List.inter_subset_right
 
 theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun _ h =>
@@ -181,7 +181,7 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
 
 @[simp]
 theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
-  simp only [List.inter, mem_reverse]
+  simp only [List.inter, elem_eq_mem, mem_reverse]
 #align list.inter_reverse List.inter_reverse
 
 end Inter
@@ -242,7 +242,7 @@ theorem count_bagInter {a : α} :
       by_cases ab : a = b
       · rw [if_pos ab, Nat.sub_add_cancel]
         rwa [succ_le_iff, count_pos_iff_mem, ab]
-      · rw [if_neg ab, Nat.sub_zero, add_zero, add_zero]
+      · rw [if_neg ab, Nat.sub_zero, Nat.add_zero, Nat.add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b
       · rw [← ab] at hb

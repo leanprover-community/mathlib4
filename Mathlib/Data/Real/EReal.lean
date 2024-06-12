@@ -139,11 +139,8 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
 /-- A recursor for `EReal` in terms of the coercion.
 
-A typical invocation looks like `induction x using EReal.rec`. Note that using `induction`
-directly will unfold `EReal` to `Option` which is undesirable.
-
 When working in term mode, note that pattern matching can be used directly. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
     ∀ a : EReal, C a
   | ⊥ => h_bot
@@ -220,7 +217,7 @@ record more basic properties of multiplication.
 -/
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
-  induction' x using EReal.rec with x <;> induction' y using EReal.rec with y <;>
+  induction' x with x <;> induction' y with y <;>
     try { rfl }
   rw [← coe_mul, ← coe_mul, mul_comm]
 #align ereal.mul_comm EReal.mul_comm
@@ -245,7 +242,7 @@ instance : MulZeroOneClass EReal where
 
 instance canLift : CanLift EReal ℝ (↑) fun r => r ≠ ⊤ ∧ r ≠ ⊥ where
   prf x hx := by
-    induction x using EReal.rec
+    induction x
     · simp at hx
     · simp
     · simp at hx
@@ -345,11 +342,11 @@ theorem top_ne_zero : (⊤ : EReal) ≠ 0 :=
 
 theorem range_coe : range Real.toEReal = {⊥, ⊤}ᶜ := by
   ext x
-  induction x using EReal.rec <;> simp
+  induction x <;> simp
 
 theorem range_coe_eq_Ioo : range Real.toEReal = Ioo ⊥ ⊤ := by
   ext x
-  induction x using EReal.rec <;> simp
+  induction x <;> simp
 
 @[simp, norm_cast]
 theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
@@ -450,10 +447,10 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
 
 lemma exists_between_coe_real {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
   obtain ⟨a, ha₁, ha₂⟩ := exists_between h
-  induction' a using EReal.rec with a₀
-  · exact (not_lt_bot ha₁).elim
-  · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
-  · exact (not_top_lt ha₂).elim
+  induction a with
+  | h_bot => exact (not_lt_bot ha₁).elim
+  | h_real a₀ => exact ⟨a₀, ha₁, ha₂⟩
+  | h_top => exact (not_top_lt ha₂).elim
 
 @[simp]
 lemma image_coe_Icc (x y : ℝ) : Real.toEReal '' Icc x y = Icc ↑x ↑y := by
@@ -1218,7 +1215,7 @@ theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
 
 @[simp]
 theorem abs_eq_zero_iff {x : EReal} : x.abs = 0 ↔ x = 0 := by
-  induction x using EReal.rec
+  induction x
   · simp only [abs_bot, ENNReal.top_ne_zero, bot_ne_zero]
   · simp only [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
   · simp only [abs_top, ENNReal.top_ne_zero, top_ne_zero]
@@ -1248,7 +1245,7 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
-    rw [Ne.def, abs_eq_zero_iff, coe_eq_zero]
+    rw [Ne, abs_eq_zero_iff, coe_eq_zero]
     exact h.ne'
   | neg_left h => rwa [neg_mul, EReal.abs_neg, EReal.abs_neg]
 #align ereal.abs_mul EReal.abs_mul

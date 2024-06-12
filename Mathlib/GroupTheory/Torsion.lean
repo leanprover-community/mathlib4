@@ -3,11 +3,11 @@ Copyright (c) 2022 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import group_theory.torsion from "leanprover-community/mathlib"@"1f4705ccdfe1e557fc54a0ce081a05e33d2e6240"
 
@@ -28,7 +28,7 @@ This file defines torsion groups, i.e. groups where all elements have finite ord
 ## Implementation
 
 All torsion monoids are really groups (which is proven here as `Monoid.IsTorsion.group`), but since
-the definition can be stated on monoids it is implemented on `monoid` to match other declarations in
+the definition can be stated on monoids it is implemented on `Monoid` to match other declarations in
 the group theory library.
 
 ## Tags
@@ -75,7 +75,7 @@ noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
     mul_left_inv := fun g => by
-      erw [← pow_succ', tsub_add_cancel_of_le, pow_orderOf_eq_one]
+      erw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
 #align is_torsion.group IsTorsion.group
 #align is_torsion.add_group IsTorsion.addGroup
@@ -365,7 +365,7 @@ variable {G}
 @[to_additive (attr := simp) "An additive monoid is not torsion free if any
   nontrivial element has finite order."]
 theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsOfFinOrder g := by
-  simp_rw [IsTorsionFree, Ne.def, not_forall, Classical.not_not, exists_prop]
+  simp_rw [IsTorsionFree, Ne, not_forall, Classical.not_not, exists_prop]
 #align monoid.not_is_torsion_free_iff Monoid.not_isTorsionFree_iff
 #align add_monoid.not_is_torsion_free_iff AddMonoid.not_isTorsionFree_iff
 
@@ -462,7 +462,7 @@ lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
     noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
   exact forall₂_congr fun _ _ ↦ by tauto
 
-@[deprecated] -- 2024-02-29
+@[deprecated (since := "2024-02-29")]
 alias AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors := isTorsionFree_iff_noZeroSMulDivisors_int
 
 lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :

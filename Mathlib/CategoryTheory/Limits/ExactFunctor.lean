@@ -30,7 +30,7 @@ section
 
 variable (C) (D)
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Bundled left-exact functors. -/
 def LeftExactFunctor :=
   FullSubcategory fun F : C ⥤ D => Nonempty (PreservesFiniteLimits F)
@@ -49,13 +49,13 @@ def LeftExactFunctor.forget : (C ⥤ₗ D) ⥤ C ⥤ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.forget CategoryTheory.LeftExactFunctor.forget
 
-instance : Full (LeftExactFunctor.forget C D) :=
+instance : (LeftExactFunctor.forget C D).Full :=
   FullSubcategory.full _
 
-instance : Faithful (LeftExactFunctor.forget C D) :=
+instance : (LeftExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Bundled right-exact functors. -/
 def RightExactFunctor :=
   FullSubcategory fun F : C ⥤ D => Nonempty (PreservesFiniteColimits F)
@@ -74,13 +74,13 @@ def RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.forget CategoryTheory.RightExactFunctor.forget
 
-instance : Full (RightExactFunctor.forget C D) :=
+instance : (RightExactFunctor.forget C D).Full :=
   FullSubcategory.full _
 
-instance : Faithful (RightExactFunctor.forget C D) :=
+instance : (RightExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Bundled exact functors. -/
 def ExactFunctor :=
   FullSubcategory fun F : C ⥤ D =>
@@ -91,7 +91,6 @@ set_option linter.uppercaseLean3 false in
 instance : Category (ExactFunctor C D) :=
   FullSubcategory.category _
 
--- mathport name: «expr ⥤ₑ »
 /-- `C ⥤ₑ D` denotes exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₑ " => ExactFunctor
 
@@ -101,10 +100,10 @@ def ExactFunctor.forget : (C ⥤ₑ D) ⥤ C ⥤ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor.forget CategoryTheory.ExactFunctor.forget
 
-instance : Full (ExactFunctor.forget C D) :=
+instance : (ExactFunctor.forget C D).Full :=
   FullSubcategory.full _
 
-instance : Faithful (ExactFunctor.forget C D) :=
+instance : (ExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
 /-- Turn an exact functor into a left exact functor. -/
@@ -113,10 +112,10 @@ def LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.of_exact CategoryTheory.LeftExactFunctor.ofExact
 
-instance : Full (LeftExactFunctor.ofExact C D) :=
+instance : (LeftExactFunctor.ofExact C D).Full :=
   FullSubcategory.full_map _
 
-instance : Faithful (LeftExactFunctor.ofExact C D) :=
+instance : (LeftExactFunctor.ofExact C D).Faithful :=
   FullSubcategory.faithful_map _
 
 /-- Turn an exact functor into a left exact functor. -/
@@ -125,10 +124,10 @@ def RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.of_exact CategoryTheory.RightExactFunctor.ofExact
 
-instance : Full (RightExactFunctor.ofExact C D) :=
+instance : (RightExactFunctor.ofExact C D).Full :=
   FullSubcategory.full_map _
 
-instance : Faithful (RightExactFunctor.ofExact C D) :=
+instance : (RightExactFunctor.ofExact C D).Faithful :=
   FullSubcategory.faithful_map _
 
 variable {C D}

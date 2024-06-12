@@ -59,8 +59,7 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
 
 -- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
-@[reducible]
-def subToSupQuotient (p p' : Submodule R M) :
+abbrev subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.inclusion le_sup_left)
 
@@ -91,7 +90,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
-  simp only [mem_comap, map_sub, coeSubtype, coe_inclusion, sub_add_cancel', neg_mem_iff, hz]
+  simp only [mem_comap, map_sub, coeSubtype, coe_inclusion, sub_add_cancel_left, neg_mem_iff, hz]
 
 /--
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
@@ -181,6 +180,12 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
     left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x => by simp
     right_inv := fun x => Quotient.inductionOn' x fun x => by simp }
 #align submodule.quotient_quotient_equiv_quotient Submodule.quotientQuotientEquivQuotient
+
+/-- Essentially the same equivalence as in the third isomorphism theorem,
+except restated in terms of suprema/addition of submodules instead of `≤`. -/
+def quotientQuotientEquivQuotientSup : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ S ⊔ T :=
+  quotEquivOfEq _ _ (by rw [map_sup, mkQ_map_self, bot_sup_eq]) ≪≫ₗ
+    quotientQuotientEquivQuotient S (S ⊔ T) le_sup_left
 
 /-- Corollary of the third isomorphism theorem: `[S : T] [M : S] = [M : T]` -/
 theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
