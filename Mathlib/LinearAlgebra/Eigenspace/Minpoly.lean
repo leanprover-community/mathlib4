@@ -124,7 +124,7 @@ theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommG
 
 variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]
 
-/-- An n x n matrix over a ring has a finite spectrum. -/
+/-- An n x n matrix over a field has a finite spectrum. -/
 theorem Matrix.finite_spectrum (A : Matrix n n R) : Set.Finite (spectrum R A) := by
   rw [← AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv <| Pi.basisFun R n) A]
   exact Module.End.finite_spectrum _
