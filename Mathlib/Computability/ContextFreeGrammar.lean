@@ -291,9 +291,9 @@ def ContextFreeRule.lift {N₀ N : Type*} (r : ContextFreeRule T N₀) (liftN : 
 /-- Lifting `ContextFreeGrammar` to a larger nonterminal type. -/
 structure LiftedContextFreeGrammar (T : Type uT) where
   /-- The smaller grammar. -/
-  g₀: ContextFreeGrammar.{uT} T
+  g₀: ContextFreeGrammar.{uN} T
   /-- The bigger grammar. -/
-  g : ContextFreeGrammar.{uT} T
+  g : ContextFreeGrammar.{uN} T
   /-- Mapping nonterminals from the smaller type to the bigger type. -/
   liftNT : g₀.NT → g.NT
   /-- Mapping nonterminals from the bigger type to the smaller type. -/
