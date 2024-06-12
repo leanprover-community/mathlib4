@@ -264,15 +264,6 @@ protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     fun k hle hi _ ↦ h1 k hle (hi hle)
 #align int.le_induction_down Int.le_induction_down
 
-/-- A strong recursor for `Int` that specifies explicit values for integers below a threshold,
-and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
-def strongRec {P : ℤ → Sort*} (m : ℤ) (h0 : ∀ n < m, P n)
-    (h1 : ∀ n, m ≤ n → (∀ k, k < n → P k) → P n) (n : ℤ) : P n :=
-  (em <| n < m).by_cases (h0 _) fun h ↦ h1 _ (Int.not_lt.mp h) (n.inductionOn' m h0
-    (fun _n _ hn l lt1 ↦ (em <| l < m).by_cases (h0 _) fun nlt ↦ h1 _ (Int.not_lt.mp nlt)
-      fun _k lt ↦ hn _ <| Int.lt_of_lt_of_le lt <| lt_add_one_iff.mp lt1)
-    fun _n _ hn _l lt ↦ hn _ <| Int.lt_trans lt <| pred_self_lt _)
-
 /-! ### nat abs -/
 
 #align int.nat_abs_dvd_iff_dvd Int.natAbs_dvd_natAbs
