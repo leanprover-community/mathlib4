@@ -1,17 +1,17 @@
 /-
-Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
+Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Kurniadi Angdinata, Junyan Xu
+Authors: Junyan Xu
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Universal
-import Mathlib.Data.Int.Parity
+import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 /-!
 # Division polynomials for elliptic curves
 
 This file defines division polynomials for elliptic curves and show they give a formula for
-scalar multiplication on the group of rational points in Jacobian coordinates.
+scalar multiplication by an integer on the group of rational points in Jacobian coordinates.
 
 -/
 
