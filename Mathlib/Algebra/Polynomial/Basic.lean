@@ -1182,14 +1182,10 @@ instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
 
 instance ring : Ring R[X] :=
   --TODO: add reference to library note in PR #7432
-  { Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
-      toFinsupp_one toFinsupp_add
-      toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
-      (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
-    toSemiring := Polynomial.semiring,
-    toNeg := Polynomial.neg'
-    toSub := Polynomial.sub
-    zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
+  Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
+    toFinsupp_one toFinsupp_add
+    toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
+    (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl
 #align polynomial.ring Polynomial.ring
 
 @[simp]
