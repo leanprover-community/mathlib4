@@ -153,7 +153,7 @@ theorem get_insertNth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk 
   simp_all [getElem_insertNth_of_lt]
 
 set_option linter.deprecated false in
-@[deprecated get_insertNth_of_lt] -- 2023-01-05
+@[deprecated get_insertNth_of_lt (since := "2023-01-05")]
 theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n → ∀ (hk : k < l.length)
     (hk' : k < (insertNth n x l).length := hk.trans_le (length_le_length_insertNth _ _ _)),
     (insertNth n x l).nthLe k hk' = l.nthLe k hk := @get_insertNth_of_lt _
@@ -201,7 +201,7 @@ theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
   simp [getElem_insertNth_add_succ, hk, hk']
 
 set_option linter.deprecated false in
-@[deprecated get_insertNth_add_succ] -- 2023-01-05
+@[deprecated get_insertNth_add_succ (since := "2023-01-05")]
 theorem nthLe_insertNth_add_succ : ∀ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
       rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])),

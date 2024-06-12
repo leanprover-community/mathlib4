@@ -272,14 +272,14 @@ theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (
   simp [getElem?_zip_with]
 #align list.nth_zip_with List.get?_zip_with
 
-theorem getElem?_zip_with_eq_some {α β γ} (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+theorem getElem?_zip_with_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂)[i]? = some z ↔
       ∃ x y, l₁[i]? = some x ∧ l₂[i]? = some y ∧ f x y = z := by
   induction l₁ generalizing l₂ i
   · simp
   · cases l₂ <;> cases i <;> simp_all
 
-theorem get?_zip_with_eq_some {α β γ} (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+theorem get?_zip_with_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂).get? i = some z ↔
       ∃ x y, l₁.get? i = some x ∧ l₂.get? i = some y ∧ f x y = z := by
   simp [getElem?_zip_with_eq_some]

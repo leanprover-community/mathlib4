@@ -30,7 +30,7 @@ theorem get?_enumFrom (n) (l : List α) (m) :
   simp
 #align list.enum_from_nth List.get?_enumFrom
 
-@[deprecated] alias enumFrom_get? := get?_enumFrom -- 2024-04-06
+@[deprecated (since := "2024-04-06")] alias enumFrom_get? := get?_enumFrom
 
 @[simp]
 theorem getElem?_enum (l : List α) (n : Nat) : (enum l)[n]? = l[n]?.map fun a => (n, a) := by
@@ -40,7 +40,7 @@ theorem get?_enum (l : List α) (n) : get? (enum l) n = (get? l n).map fun a => 
   simp
 #align list.enum_nth List.get?_enum
 
-@[deprecated] alias enum_get? := get?_enum -- 2024-04-06
+@[deprecated (since := "2024-04-06")] alias enum_get? := get?_enum
 
 @[simp]
 theorem enumFrom_map_snd : ∀ (n) (l : List α), map Prod.snd (enumFrom n l) = l

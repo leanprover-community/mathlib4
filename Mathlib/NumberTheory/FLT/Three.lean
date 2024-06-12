@@ -6,7 +6,6 @@ Authors: Riccardo Brasca
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Cyclotomic.Rat
-import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
