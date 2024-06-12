@@ -224,15 +224,15 @@ theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : L
   simp
 #align list.zip_with_rotate_one List.zipWith_rotate_one
 
-theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
-    (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
+theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
+    (l.rotate n)[m]? = l[(m + n) % l.length]? := by
   rw [rotate_eq_drop_append_take_mod]
   rcases lt_or_le m (l.drop (n % l.length)).length with hm | hm
-  · rw [get?_append hm, get?_drop, ← add_mod_mod]
+  · rw [getElem?_append hm, getElem?_drop, ← add_mod_mod]
     rw [length_drop, Nat.lt_sub_iff_add_lt] at hm
     rw [mod_eq_of_lt hm, Nat.add_comm]
   · have hlt : n % length l < length l := mod_lt _ (m.zero_le.trans_lt hml)
-    rw [get?_append_right hm, get?_take, length_drop]
+    rw [getElem?_append_right hm, getElem?_take, length_drop]
     · congr 1
       rw [length_drop] at hm
       have hm' := Nat.sub_le_iff_le_add'.1 hm
@@ -244,14 +244,23 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
         Nat.add_comm]
       exacts [hm', hlt.le, hm]
     · rwa [Nat.sub_lt_iff_lt_add hm, length_drop, Nat.sub_add_cancel hlt.le]
+
+theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
+    (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
+  simp [getElem?_rotate, hml]
 #align list.nth_rotate List.get?_rotate
+
+theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :
+    (l.rotate n)[k] =
+      l[(k + n) % l.length]'(mod_lt _ (length_rotate l n ▸ k.zero_le.trans_lt h)) := by
+  rw [← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem, getElem?_rotate]
+  exact h.trans_eq (length_rotate _ _)
 
 -- Porting note (#10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k =
       l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.1.zero_le.trans_lt k.2)⟩ := by
-  rw [← Option.some_inj, ← get?_eq_get, ← get?_eq_get, get?_rotate]
-  exact k.2.trans_eq (length_rotate _ _)
+  simp [getElem_rotate]
 
 theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l.get? n := by
   rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h]

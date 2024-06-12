@@ -67,14 +67,18 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by s
 
 /-- The `n`th element of a list -/
 @[simp]
-theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i :=
+theorem getElem?_ofFn {n} (f : Fin n → α) (i) : (ofFn f)[i]? = ofFnNthVal f i :=
   if h : i < (ofFn f).length
   then by
-    rw [get?_eq_get h, get_ofFn]
+    rw [getElem?_eq_getElem h, getElem_ofFn]
     · simp only [length_ofFn] at h; simp [ofFnNthVal, h]
   else by
     rw [ofFnNthVal, dif_neg] <;>
     simpa using h
+
+/-- The `n`th element of a list -/
+theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i := by
+  simp
 #align list.nth_of_fn List.get?_ofFn
 
 set_option linter.deprecated false in
