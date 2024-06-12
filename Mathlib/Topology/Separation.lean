@@ -2173,12 +2173,9 @@ will be used to prove regular Lindelöf spaces are normal. -/
 lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpace X]
     (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : HasSeparatingCover s t := by
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
-  wlog nonempty_X : Nonempty X
-  · have : s = ∅ := subset_eq_empty (fun ⦃_⦄ _ ↦ trivial)
-      (univ_eq_empty_iff.mpr (not_nonempty_iff.mp nonempty_X))
-    rw [this]
-    apply And.left
-    exact has_separating_covers_iff_separated_nhds.mpr (SeparatedNhds.empty_left t)
+  rcases isEmpty_or_nonempty X with empty_X | nonempty_X
+  · rw [subset_eq_empty (t := s) (fun ⦃_⦄ _ ↦ trivial) (univ_eq_empty_iff.mpr empty_X)]
+    exact has_separating_covers_iff_separated_nhds.mpr (SeparatedNhds.empty_left t) |>.1
   -- This is almost `HasSeparatingCover`, but is not countable. We define for all `a : X` for use
   -- with `IsLindelof.indexed_countable_subcover` momentarily.
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
