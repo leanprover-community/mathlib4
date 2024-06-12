@@ -74,7 +74,7 @@ lemma presheafHom_map_app_op_mk_id {X Y : C} (g : Y ⟶ X)
 variable (F G)
 
 /-- The sections of the presheaf `presheafHom F G` identify to morphisms `F ⟶ G`. -/
-def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
+noncomputable def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
   toFun s :=
     { app := fun X => (s.1 X).app ⟨Over.mk (𝟙 _)⟩
       naturality := by
@@ -231,7 +231,7 @@ def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
   cond := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
 
 /-- The sections of the sheaf `sheafHom F G` identify to morphisms `F ⟶ G`. -/
-def sheafHomSectionsEquiv (F G : Sheaf J A) :
+noncomputable def sheafHomSectionsEquiv (F G : Sheaf J A) :
     (sheafHom F G).1.sections ≃ (F ⟶ G) :=
   ((Functor.sectionsFunctor Cᵒᵖ).mapIso (sheafHom'Iso F G)).toEquiv.trans
     ((presheafHomSectionsEquiv F.1 G.1).trans Sheaf.homEquiv.symm)

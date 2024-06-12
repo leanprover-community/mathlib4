@@ -96,7 +96,7 @@ noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A
 /-- The canonical comparison functor between the indexing category of the presentation and the
     comma category `CostructuredArrow yoneda A`. This functor is always final. -/
 @[simps! obj_left obj_right_as obj_hom map_left]
-def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
+noncomputable def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
   P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
 
 instance : P.toCostructuredArrow.Final :=
