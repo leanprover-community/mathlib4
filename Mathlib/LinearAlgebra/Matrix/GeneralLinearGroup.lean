@@ -146,7 +146,7 @@ theorem toLinear_apply (v : n → R) : (toLinear A).toLinearEquiv v = Matrix.mul
 
 end CoeLemmas
 
-variable {S T : Type v} [CommRing S] [CommRing T]
+variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
 def map  (f : R →+* S) : GL n R →* GL n S where
@@ -154,23 +154,13 @@ def map  (f : R →+* S) : GL n R →* GL n S where
     { val := f.mapMatrix g
       inv := f.mapMatrix (Units.inv g)
       val_inv := by
-        rw [← RingHom.map_mul]
-        convert RingHom.map_one _
-        exact Units.val_inv g
+        rw [← RingHom.map_mul, Units.val_inv g, RingHom.map_one _]
       inv_val := by
         rw [← RingHom.map_mul]
         convert RingHom.map_one _
         exact Units.inv_val g }
-  map_one' := by
-    dsimp only at *
-    simp only [Units.inv_eq_val_inv, inv_one, coe_one, _root_.map_one,
-      coe_toLinear] at *
-    rfl
-  map_mul' x y := by
-    dsimp only at *
-    simp only [Units.inv_eq_val_inv, _root_.mul_inv_rev, coe_mul,
-      coe_units_inv, RingHom.mapMatrix_apply, Matrix.map_mul, coe_toLinear] at *
-    rfl
+  map_one' := by aesop
+  map_mul' x y := by aesop
 
 @[simp]
 theorem map_id :
@@ -179,7 +169,7 @@ theorem map_id :
 
 @[simp]
 theorem map_comp (f : T →+* R) (g : R →+* S) :
-    map (g.comp f) = (map g).comp (@map n _  _ _ _ _ _ f) :=
+    map (g.comp f) = (map g).comp (map (n := n) f) :=
   rfl
 
 @[simp]
