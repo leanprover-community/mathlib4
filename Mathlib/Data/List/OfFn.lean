@@ -214,13 +214,13 @@ theorem ofFn_getElem : ∀ l : List α, (ofFn (fun i : Fin l.length => l[(i : Na
     exact ofFn_get l
 
 @[simp]
-theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
-  rw [← Function.comp_def, ← map_ofFn, ofFn_get]
-
-@[simp]
 theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
     ofFn (fun i : Fin l.length => f <| l[(i : Nat)]) = l.map f := by
   rw [← Function.comp_def, ← map_ofFn, ofFn_getElem]
+
+@[deprecated ofFn_getElem_eq_map (since := "2024-06-12")]
+theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
+  simp
 
 set_option linter.deprecated false in
 @[deprecated ofFn_get (since := "2023-01-17")]

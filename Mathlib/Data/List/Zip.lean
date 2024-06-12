@@ -309,6 +309,7 @@ theorem getElem_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i :
     ⟨l[i]'(lt_length_left_of_zipWith h), l'[i]'(lt_length_right_of_zipWith h),
       by rw [getElem?_eq_getElem], by rw [getElem?_eq_getElem]; exact ⟨rfl, rfl⟩⟩
 
+@[deprecated getElem_zipWith (since := "2024-06-12")]
 theorem get_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : Fin (zipWith f l l').length} :
     (zipWith f l l').get i =
       f (l.get ⟨i, lt_length_left_of_zipWith i.isLt⟩)
@@ -325,10 +326,16 @@ theorem nthLe_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : �
 #align list.nth_le_zip_with List.nthLe_zipWith
 
 @[simp]
+theorem getElem_zip {l : List α} {l' : List β} {i : Nat} {h : i < (zip l l').length} :
+    (zip l l')[i] =
+      (l[i]'(lt_length_left_of_zip h), l'[i]'(lt_length_right_of_zip h)) :=
+  getElem_zipWith
+
+@[deprecated getElem_zip (since := "2024-06-12")]
 theorem get_zip {l : List α} {l' : List β} {i : Fin (zip l l').length} :
     (zip l l').get i =
-      (l.get ⟨i, lt_length_left_of_zip i.isLt⟩, l'.get ⟨i, lt_length_right_of_zip i.isLt⟩) :=
-  get_zipWith
+      (l.get ⟨i, lt_length_left_of_zip i.isLt⟩, l'.get ⟨i, lt_length_right_of_zip i.isLt⟩) := by
+  simp
 
 set_option linter.deprecated false in
 @[simp, deprecated get_zip (since := "2024-05-09")]

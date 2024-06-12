@@ -412,8 +412,8 @@ def rowLens (μ : YoungDiagram) : List ℕ :=
 #align young_diagram.row_lens YoungDiagram.rowLens
 
 @[simp]
-theorem get_rowLens {μ : YoungDiagram} {i} :
-    μ.rowLens.get i = μ.rowLen i := by simp only [rowLens, List.get_range, List.get_map]
+theorem get_rowLens {μ : YoungDiagram} {i : Nat} {h : i < μ.rowLens.length} :
+    μ.rowLens[i] = μ.rowLen i := by simp only [rowLens, List.getElem_range, List.getElem_map]
 #align young_diagram.nth_le_row_lens YoungDiagram.get_rowLens
 
 @[simp]

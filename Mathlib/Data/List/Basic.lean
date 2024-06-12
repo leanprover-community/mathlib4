@@ -1233,8 +1233,11 @@ theorem nthLe_get? {l : List α} {n} (h) : get? l n = some (nthLe l n h) := get?
 #align list.nth_len_le List.get?_len_le
 
 @[simp]
+theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_len_le le_rfl
+#align list.nth_length List.getElem?_length
+
+@[deprecated getElem?_length (since := "2024-06-12")]
 theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
-#align list.nth_length List.get?_length
 
 #align list.nth_eq_some List.get?_eq_some
 #align list.nth_eq_none_iff List.get?_eq_none
@@ -1390,22 +1393,32 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 #align list.index_of_inj List.indexOf_inj
 
-theorem get_reverse_aux₂ :
+theorem getElem_reverse_aux₂ :
     ∀ (l r : List α) (i : Nat) (h1) (h2),
-      get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩
+      (reverseAux l r)[length l - 1 - i]'h1 = l[i]'h2
   | [], r, i, h1, h2 => absurd h2 (Nat.not_lt_zero _)
   | a :: l, r, 0, h1, _ => by
     have aux := get_reverse_aux₁ l (a :: r) 0
     rw [Nat.zero_add] at aux
     exact aux _ (zero_lt_succ _)
   | a :: l, r, i + 1, h1, h2 => by
-    have aux := get_reverse_aux₂ l (a :: r) i
+    have aux := getElem_reverse_aux₂ l (a :: r) i
     have heq : length (a :: l) - 1 - (i + 1) = length l - 1 - i := by rw [length]; omega
     rw [← heq] at aux
     apply aux
-#align list.nth_le_reverse_aux2 List.get_reverse_aux₂
+#align list.nth_le_reverse_aux2 List.getElem_reverse_aux₂
 
-@[simp] theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
+@[simp] theorem getElem_reverse (l : List α) (i : Nat) (h1 h2) :
+    (reverse l)[length l - 1 - i]'h1 = l[i]'h2 :=
+  getElem_reverse_aux₂ _ _ _ _ _
+
+@[deprecated getElem_reverse_aux₂ (since := "2024-06-12")]
+theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
+      get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
+  simp [getElem_reverse_aux₂, h1, h2]
+
+@[deprecated getElem_reverse (since := "2024-06-12")]
+theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
     get (reverse l) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ :=
   get_reverse_aux₂ _ _ _ _ _
 
@@ -1504,11 +1517,18 @@ theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = l
 #align list.nth_le_update_nth_eq List.get_set_eq
 
 @[simp]
+theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
+    (hj : j < (l.set i a).length) :
+    (l.set i a)[j] = l[j]'(by simpa using hj) := by
+  rw [← Option.some_inj, ← List.getElem?_eq_getElem, List.getElem?_set_ne _ _ h,
+    List.getElem?_eq_getElem]
+#align list.nth_le_update_nth_of_ne List.getElem_set_of_ne
+
+@[deprecated getElem_set_of_ne (since := "2024-06-12")]
 theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
     (l.set i a).get ⟨j, hj⟩ = l.get ⟨j, by simpa using hj⟩ := by
-  rw [← Option.some_inj, ← List.get?_eq_get, List.get?_set_ne _ _ h, List.get?_eq_get]
-#align list.nth_le_update_nth_of_ne List.get_set_of_ne
+  simp [getElem_set_of_ne, h]
 
 #align list.mem_or_eq_of_mem_update_nth List.mem_or_eq_of_mem_set
 
@@ -2060,17 +2080,25 @@ theorem scanl_cons : scanl f b (a :: l) = [b] ++ scanl f (f b a) l := by
 #align list.scanl_cons List.scanl_cons
 
 @[simp]
-theorem get?_zero_scanl : (scanl f b l).get? 0 = some b := by
+theorem getElem?_scanl_zero : (scanl f b l)[0]? = some b := by
   cases l
-  · simp only [get?, scanl_nil]
-  · simp only [get?, scanl_cons, singleton_append]
-#align list.nth_zero_scanl List.get?_zero_scanl
+  · simp [scanl_nil]
+  · simp [scanl_cons, singleton_append]
+#align list.nth_zero_scanl List.getElem?_scanl_zero
+
+@[deprecated getElem?_scanl_zero (since := "2024-06-12")]
+theorem get?_zero_scanl : (scanl f b l).get? 0 = some b := by
+  simp [getElem?_scanl_zero]
 
 @[simp]
-theorem get_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).get ⟨0, h⟩ = b := by
+theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b := by
   cases l
-  · simp only [get, scanl_nil]
-  · simp only [get, scanl_cons, singleton_append]
+  · simp [scanl_nil]
+  · simp [scanl_cons, singleton_append]
+
+@[deprecated getElem_scanl_zero (since := "2024-06-12")]
+theorem get_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).get ⟨0, h⟩ = b := by
+  simp [getElem_scanl_zero]
 
 set_option linter.deprecated false in
 @[simp, deprecated get_zero_scanl (since := "2023-01-05")]
@@ -2086,7 +2114,7 @@ theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
       scanl_nil, Option.not_mem_none, forall_true_iff]
   · simp only [scanl_cons, singleton_append]
     cases i
-    · simp only [Option.map_some', get?_zero_scanl, get?, Option.some_bind']
+    · simp
     · simp only [hl, get?]
 #align list.nth_succ_scanl List.get?_succ_scanl
 
@@ -3590,13 +3618,8 @@ theorem getElem_attach (L : List α) (i : Nat) (h : i < L.attach.length) :
       rw [getElem_map]
     _ = L[i]'_ := by congr 2; simp
 
-@[simp]
 theorem get_attach (L : List α) (i) :
-    (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ :=
-  calc
-    (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ := by
-      rw [get_map]
-    _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
+    (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ := by simp
 #align list.nth_le_attach List.get_attach
 
 @[simp 1100]
