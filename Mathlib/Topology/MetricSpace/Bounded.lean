@@ -350,7 +350,7 @@ theorem _root_.totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
   (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
 #align totally_bounded_Ioo totallyBounded_Ioo
 
-theorem _root_.isBounded_Icc (a b : α) : IsBounded (Icc a b) :=
+theorem isBounded_Icc (a b : α) : IsBounded (Icc a b) :=
   (totallyBounded_Icc a b).isBounded
 #align metric.bounded_Icc Metric.isBounded_Icc
 
