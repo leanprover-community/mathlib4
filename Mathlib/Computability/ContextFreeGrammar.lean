@@ -279,10 +279,22 @@ def Symbol.liftString {N₀ N : Type*} (liftN : N₀ → N) :
     List (Symbol T N₀) → List (Symbol T N) :=
   List.map (liftSymbol liftN)
 
+lemma Symbol.liftString_all_terminals {N₀ N : Type*} (liftN : N₀ → N) (w : List T) :
+    Symbol.liftString liftN (w.map Symbol.terminal) = w.map Symbol.terminal := by
+  induction w with
+  | nil => rfl
+  | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
+
 /-- Sinking `List Symbol` from a larger nonterminal type; may skip some elements. -/
 def Symbol.sinkString {N₀ N : Type*} (sinkN : N → Option N₀) :
     List (Symbol T N) → List (Symbol T N₀) :=
   List.filterMap (sinkSymbol sinkN)
+
+lemma Symbol.sinkString_all_terminals {N₀ N : Type*} (sinkN : N → Option N₀) (w : List T) :
+    Symbol.sinkString sinkN (w.map Symbol.terminal) = w.map Symbol.terminal := by
+  induction w with
+  | nil => rfl
+  | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
 
 /-- Lifting `ContextFreeRule` to a larger nonterminal type. -/
 def ContextFreeRule.lift {N₀ N : Type*} (r : ContextFreeRule T N₀) (liftN : N₀ → N) :
@@ -587,8 +599,6 @@ private def g₂g : LiftedContextFreeGrammar T :=
 
 variable {w : List T}
 
--- TODO generalize the four blocks starting with `clear hw -- (*)`
-
 private lemma in_union_of_in_left (hw : w ∈ g₁.language) :
     w ∈ (ContextFreeGrammar.union g₁ g₂).language := by
   have deri_start :
@@ -599,15 +609,7 @@ private lemma in_union_of_in_left (hw : w ∈ g₁.language) :
     rw [ContextFreeRule.rewrites_iff]
     use [], []
     simp
-  have deri_rest :
-    (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal (some (Sum.inl g₁.initial))]
-      (List.map Symbol.terminal w) := by
-    convert g₁g.lift_derives hw
-    clear hw -- (*)
-    induction w with
-    | nil => rfl
-    | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
-  exact deri_start.trans deri_rest
+  exact deri_start.trans (Symbol.liftString_all_terminals g₁g.liftNT w ▸ g₁g.lift_derives hw)
 
 private lemma in_union_of_in_right (hw : w ∈ g₂.language) :
     w ∈ (ContextFreeGrammar.union g₁ g₂).language := by
@@ -620,45 +622,27 @@ private lemma in_union_of_in_right (hw : w ∈ g₂.language) :
     rw [ContextFreeRule.rewrites_iff]
     use [], []
     simp
-  have deri_rest :
-    (ContextFreeGrammar.union g₁ g₂).Derives [Symbol.nonterminal (some (Sum.inr g₂.initial))]
-      (List.map Symbol.terminal w) := by
-    convert g₂g.lift_derives hw
-    clear hw -- (*)
-    induction w with
-    | nil => rfl
-    | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
-  exact deri_start.trans deri_rest
+  exact deri_start.trans (Symbol.liftString_all_terminals g₂g.liftNT w ▸ g₂g.lift_derives hw)
 
 private lemma in_left_of_in_union (hw :
     (ContextFreeGrammar.union g₁ g₂).Derives
       [Symbol.nonterminal (some (Sum.inl g₁.initial))]
       (List.map Symbol.terminal w)) :
     w ∈ g₁.language := by
-  rw [g₁.mem_language_iff]
-  convert g₁g.sink_derives hw (by
-    apply LiftedContextFreeGrammar.singletonGoodString
-    constructor
-    rfl)
-  clear hw -- (*)
-  induction w with
-  | nil => rfl
-  | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
+  apply Symbol.sinkString_all_terminals g₁g.sinkNT w ▸ g₁g.sink_derives hw
+  apply LiftedContextFreeGrammar.singletonGoodString
+  constructor
+  rfl
 
 private lemma in_right_of_in_union (hw :
     (ContextFreeGrammar.union g₁ g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial))]
       (List.map Symbol.terminal w)) :
     w ∈ g₂.language := by
-  rw [g₂.mem_language_iff]
-  convert g₂g.sink_derives hw (by
-    apply LiftedContextFreeGrammar.singletonGoodString
-    constructor
-    rfl)
-  clear hw -- (*)
-  induction w with
-  | nil => rfl
-  | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
+  apply Symbol.sinkString_all_terminals g₂g.sinkNT w ▸ g₂g.sink_derives hw
+  apply LiftedContextFreeGrammar.singletonGoodString
+  constructor
+  rfl
 
 private lemma impossible_rule {r : ContextFreeRule T (ContextFreeGrammar.union g₁ g₂).NT}
     (hg : [Symbol.nonterminal (ContextFreeGrammar.union g₁ g₂).initial] =
