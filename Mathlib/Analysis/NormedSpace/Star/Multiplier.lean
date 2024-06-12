@@ -416,8 +416,9 @@ instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
     map_add (algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))) _ _
   commutes' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
     Prod.ext (Algebra.commutes _ _) (Algebra.commutes _ _).symm
-  smul_def' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
-    Prod.ext (Algebra.smul_def _ _) ((Algebra.smul_def _ _).trans <| Algebra.commutes _ _)
+  smul_def' r x := ext (𝕜 := 𝕜) (A := A) _ _ <|
+    Prod.ext (Algebra.smul_def r x.toProd.1)
+      ((Algebra.smul_def r x.toProd.2).trans <| Algebra.commutes _ _)
 
 @[simp]
 theorem algebraMap_toProd (k : 𝕜) : (algebraMap 𝕜 𝓜(𝕜, A) k).toProd = algebraMap 𝕜 _ k :=
