@@ -40,13 +40,13 @@ variable (R : Type w₁) (A : Type w₂) (B : Type w₃)
 
 /-- An algebra over a commutative semiring is `Algebra.FinitePresentation` if it is the quotient of
 a polynomial ring in `n` variables by a finitely generated ideal. -/
-class Algebra.FinitePresentation [CommSemiring R] [Semiring A] [Algebra R A] : Prop where
+class Algebra.FinitePresentation [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] : Prop where
   out : ∃ (n : ℕ) (f : MvPolynomial (Fin n) R →ₐ[R] A), Surjective f ∧ f.toRingHom.ker.FG
 #align algebra.finite_presentation Algebra.FinitePresentation
 
 namespace Algebra
 
-variable [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable [CommRing R] [CommRing A] [SMul R A] [Algebra R A] [CommRing B] [SMul R B] [Algebra R B]
 
 namespace FiniteType
 
@@ -217,7 +217,7 @@ variable (R A B)
 
 /-- If `A` is an `R`-algebra and `S` is an `A`-algebra, both finitely presented, then `S` is
   finitely presented as `R`-algebra. -/
-theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
+theorem trans [SMul A B] [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
     [FinitePresentation A B] : FinitePresentation R B := by
   have hfpB : FinitePresentation A B := inferInstance
   obtain ⟨n, I, e, hfg⟩ := iff.1 hfpB
@@ -230,7 +230,7 @@ open MvPolynomial
 
 -- We follow the proof of https://stacks.math.columbia.edu/tag/0561
 -- TODO: extract out helper lemmas and tidy proof.
-theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A B]
+theorem of_restrict_scalars_finitePresentation [SMul A B] [Algebra A B] [IsScalarTower R A B]
     [FinitePresentation.{w₁, w₃} R B] [FiniteType R A] :
     FinitePresentation.{w₂, w₃} A B := by
   classical
@@ -303,7 +303,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
         · exact Set.mem_range_self _
         · refine' add_mem (Ideal.mul_mem_left _ _ hq₂) (Ideal.mul_mem_right _ _ hq₁)
     obtain ⟨_, ⟨p, rfl⟩, q, hq, rfl⟩ := AddSubmonoid.mem_sup.mp this
-    rw [map_add, aeval_map_algebraMap, ← aeval_unique, show MvPolynomial.aeval (f ∘ X) q = 0
+    rw [map_add, aeval_map_algebraMap, ← aeval_unique, show MvPolynomial.aeval (R := A) (f ∘ X) q = 0
       from leI hq, add_zero] at hx
     suffices Ideal.span (s : Set RX) ≤ (Ideal.span s₀).comap (MvPolynomial.map <| algebraMap R A) by
       refine' add_mem _ hq
@@ -361,7 +361,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         trivial
       refine adjoin_induction this ?_ ?_ ?_ ?_
       · rintro _ ⟨i, rfl⟩
-        rw [← sub_add_cancel (X i) (aeval h (g i)), add_comm]
+        rw [← sub_add_cancel (X i) (aeval (R := R) h (g i)), add_comm]
         apply AddSubmonoid.add_mem_sup
         · exact Set.mem_range_self _
         · apply Submodule.subset_span
@@ -416,13 +416,13 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 /-- A ring morphism `A →+* B` is of `RingHom.FinitePresentation` if `B` is finitely presented as
 `A`-algebra. -/
 def FinitePresentation (f : A →+* B) : Prop :=
-  @Algebra.FinitePresentation A B _ _ f.toAlgebra
+  @Algebra.FinitePresentation A B _ _ f.toSMul f.toAlgebra
 #align ring_hom.finite_presentation RingHom.FinitePresentation
 
 namespace FiniteType
 
 theorem of_finitePresentation {f : A →+* B} (hf : f.FinitePresentation) : f.FiniteType :=
-  @Algebra.FiniteType.of_finitePresentation A B _ _ f.toAlgebra hf
+  @Algebra.FiniteType.of_finitePresentation A B _ _ f.toSMul f.toAlgebra hf
 #align ring_hom.finite_type.of_finite_presentation RingHom.FiniteType.of_finitePresentation
 
 end FiniteType
@@ -439,7 +439,9 @@ variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentation) (hg : Surjective g)
     (hker : g.ker.FG) : (g.comp f).FinitePresentation :=
+  letI := f.toSMul
   letI := f.toAlgebra
+  letI := (g.comp f).toSMul
   letI := (g.comp f).toAlgebra
   letI : Algebra.FinitePresentation A B := hf
   Algebra.FinitePresentation.of_surjective
@@ -457,14 +459,17 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) (hker : f.ker.FG) :
 #align ring_hom.finite_presentation.of_surjective RingHom.FinitePresentation.of_surjective
 
 theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.FinitePresentation :=
-  @Algebra.FinitePresentation.of_finiteType A B _ _ f.toAlgebra _
+  @Algebra.FinitePresentation.of_finiteType A B _ _ f.toSMul f.toAlgebra _
 #align ring_hom.finite_presentation.of_finite_type RingHom.FinitePresentation.of_finiteType
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f.FinitePresentation) :
     (g.comp f).FinitePresentation :=
   -- Porting note: specify `Algebra` instances to get `SMul`
+  letI ins1 := RingHom.toSMul f
   letI ins1 := RingHom.toAlgebra f
+  letI ins2 := RingHom.toSMul g
   letI ins2 := RingHom.toAlgebra g
+  letI ins3 := RingHom.toSMul (g.comp f)
   letI ins3 := RingHom.toAlgebra (g.comp f)
   letI ins4 : IsScalarTower A B C :=
     { smul_assoc := fun a b c => by simp [Algebra.smul_def, mul_assoc]; rfl }
@@ -476,8 +481,11 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f
 theorem of_comp_finiteType (f : A →+* B) {g : B →+* C} (hg : (g.comp f).FinitePresentation)
     (hf : f.FiniteType) : g.FinitePresentation :=
   -- Porting note: need to specify some instances
+  letI ins1 := RingHom.toSMul f
   letI ins1 := RingHom.toAlgebra f
+  letI ins2 := RingHom.toSMul g
   letI ins2 := RingHom.toAlgebra g
+  letI ins3 := RingHom.toSMul (g.comp f)
   letI ins3 := RingHom.toAlgebra (g.comp f)
   letI ins4 : IsScalarTower A B C :=
     { smul_assoc := fun a b c => by simp [Algebra.smul_def, mul_assoc]; rfl }
@@ -494,7 +502,7 @@ namespace AlgHom
 
 variable {R A B C : Type*} [CommRing R]
 variable [CommRing A] [CommRing B] [CommRing C]
-variable [Algebra R A] [Algebra R B] [Algebra R C]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [SMul R C] [Algebra R C]
 
 /-- An algebra morphism `A →ₐ[R] B` is of `AlgHom.FinitePresentation` if it is of finite
 presentation as ring morphism. In other words, if `B` is finitely presented as `A`-algebra. -/

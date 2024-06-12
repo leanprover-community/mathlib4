@@ -13,7 +13,7 @@ import Mathlib.RingTheory.MatrixAlgebra
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
 
-Given `[CommRing R] [Ring A] [Algebra R A]`
+Given `[CommRing R] [Ring A] [SMul R A] [Algebra R A]`
 we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 Combining this with the isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)` proved earlier
 in `RingTheory.MatrixAlgebra`, we obtain the algebra isomorphism
@@ -39,7 +39,7 @@ noncomputable section
 
 variable (R A : Type*)
 variable [CommSemiring R]
-variable [Semiring A] [Algebra R A]
+variable [Semiring A] [SMul R A] [Algebra R A]
 
 namespace PolyEquivTensor
 

@@ -471,27 +471,27 @@ theorem mem_roots_map [CommRing k] [IsDomain k] {f : R →+* k} {x : k} (hp : p 
   rw [mem_roots (map_ne_zero hp), IsRoot, Polynomial.eval_map]
 #align polynomial.mem_roots_map Polynomial.mem_roots_map
 
-theorem rootSet_monomial [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
+theorem rootSet_monomial [CommRing S] [IsDomain S] [SMul R S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : (monomial n a).rootSet S = {0} := by
   classical
   rw [rootSet, aroots_monomial ha,
     Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton, Finset.coe_singleton]
 #align polynomial.root_set_monomial Polynomial.rootSet_monomial
 
-theorem rootSet_C_mul_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
+theorem rootSet_C_mul_X_pow [CommRing S] [IsDomain S] [SMul R S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : rootSet (C a * X ^ n) S = {0} := by
   rw [C_mul_X_pow_eq_monomial, rootSet_monomial hn ha]
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_C_mul_X_pow Polynomial.rootSet_C_mul_X_pow
 
-theorem rootSet_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) :
+theorem rootSet_X_pow [CommRing S] [IsDomain S] [SMul R S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) :
     (X ^ n : R[X]).rootSet S = {0} := by
   rw [← one_mul (X ^ n : R[X]), ← C_1, rootSet_C_mul_X_pow hn]
   exact one_ne_zero
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_X_pow Polynomial.rootSet_X_pow
 
-theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι → R[X])
+theorem rootSet_prod [CommRing S] [IsDomain S] [SMul R S] [Algebra R S] {ι : Type*} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
   classical
   simp only [rootSet, aroots, ← Finset.mem_coe]

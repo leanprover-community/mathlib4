@@ -384,6 +384,7 @@ theorem cyclotomic.dvd_X_pow_sub_one (n : ℕ) (R : Type*) [Ring R] :
 set_option linter.uppercaseLean3 false in
 #align polynomial.cyclotomic.dvd_X_pow_sub_one Polynomial.cyclotomic.dvd_X_pow_sub_one
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [CommRing R] :
     ∏ i in n.divisors.erase 1, cyclotomic i R = ∑ i in Finset.range n, X ^ i := by
   suffices (∏ i in n.divisors.erase 1, cyclotomic i ℤ) = ∑ i in Finset.range n, X ^ i by
@@ -393,6 +394,7 @@ theorem prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [CommRing R] :
     cyclotomic_one, geom_sum_mul, prod_cyclotomic_eq_X_pow_sub_one h]
 #align polynomial.prod_cyclotomic_eq_geom_sum Polynomial.prod_cyclotomic_eq_geom_sum
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- If `p` is prime, then `cyclotomic p R = ∑ i in range p, X ^ i`. -/
 theorem cyclotomic_prime (R : Type*) [Ring R] (p : ℕ) [hp : Fact p.Prime] :
     cyclotomic p R = ∑ i in Finset.range p, X ^ i := by
@@ -417,6 +419,7 @@ theorem cyclotomic_three (R : Type*) [Ring R] : cyclotomic 3 R = X ^ 2 + X + 1 :
   simp [cyclotomic_prime, sum_range_succ']
 #align polynomial.cyclotomic_three Polynomial.cyclotomic_three
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem cyclotomic_dvd_geom_sum_of_dvd (R) [Ring R] {d n : ℕ} (hdn : d ∣ n) (hd : d ≠ 1) :
     cyclotomic d R ∣ ∑ i in Finset.range n, X ^ i := by
   suffices cyclotomic d ℤ ∣ ∑ i in Finset.range n, X ^ i by
@@ -429,6 +432,7 @@ theorem cyclotomic_dvd_geom_sum_of_dvd (R) [Ring R] {d n : ℕ} (hdn : d ∣ n) 
   simp [hd, hdn, hn.ne']
 #align polynomial.cyclotomic_dvd_geom_sum_of_dvd Polynomial.cyclotomic_dvd_geom_sum_of_dvd
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
     (h : d ∈ n.properDivisors) :
     ((X ^ d - 1) * ∏ x in n.divisors \ d.divisors, cyclotomic x R) = X ^ n - 1 := by
@@ -440,6 +444,7 @@ theorem X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd (R) [CommRing 
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd Polynomial.X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
     (h : d ∈ n.properDivisors) : (X ^ d - 1) * cyclotomic n R ∣ X ^ n - 1 := by
   have hdn := (Nat.mem_properDivisors.mp h).2
@@ -460,6 +465,8 @@ open ArithmeticFunction
 
 open scoped ArithmeticFunction
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 /-- `cyclotomic n R` can be expressed as a product in a fraction field of `R[X]`
   using Möbius inversion. -/
 theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [CommRing R]
@@ -482,6 +489,7 @@ set_option linter.uppercaseLean3 false in
 
 end ArithmeticFunction
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- We have
 `cyclotomic n R = (X ^ k - 1) /ₘ (∏ i in Nat.properDivisors k, cyclotomic i K)`. -/
 theorem cyclotomic_eq_X_pow_sub_one_div {R : Type*} [CommRing R] {n : ℕ} (hpos : 0 < n) :
@@ -536,6 +544,7 @@ theorem cyclotomic_eq_prod_X_sub_primitiveRoots {K : Type*} [CommRing K] [IsDoma
 set_option linter.uppercaseLean3 false in
 #align polynomial.cyclotomic_eq_prod_X_sub_primitive_roots Polynomial.cyclotomic_eq_prod_X_sub_primitiveRoots
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem eq_cyclotomic_iff {R : Type*} [CommRing R] {n : ℕ} (hpos : 0 < n) (P : R[X]) :
     P = cyclotomic n R ↔
     (P * ∏ i in Nat.properDivisors n, Polynomial.cyclotomic i R) = X ^ n - 1 := by
@@ -554,6 +563,7 @@ theorem eq_cyclotomic_iff {R : Type*} [CommRing R] {n : ℕ} (hpos : 0 < n) (P :
     exact Monic.ne_zero prod_monic (degree_eq_bot.1 h)
 #align polynomial.eq_cyclotomic_iff Polynomial.eq_cyclotomic_iff
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- If `p ^ k` is a prime power, then
 `cyclotomic (p ^ (n + 1)) R = ∑ i in range p, (X ^ (p ^ n)) ^ i`. -/
 theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (hp : p.Prime) :

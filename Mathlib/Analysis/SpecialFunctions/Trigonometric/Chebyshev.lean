@@ -23,7 +23,7 @@ namespace Polynomial.Chebyshev
 
 open Polynomial
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [SMul R A] [Algebra R A]
 
 @[simp]
 theorem aeval_T (x : A) (n : ℕ) : aeval x (T R n) = (T A n).eval x := by
@@ -50,13 +50,13 @@ theorem algebraMap_eval_U (x : R) (n : ℕ) :
 -- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
 theorem complex_ofReal_eval_T : ∀ (x : ℝ) n, (((T ℝ n).eval x : ℝ) : ℂ) = (T ℂ n).eval (x : ℂ) :=
-  @algebraMap_eval_T ℝ ℂ _ _ _
+  @algebraMap_eval_T ℝ ℂ _ _ _ _
 #align polynomial.chebyshev.complex_of_real_eval_T Polynomial.Chebyshev.complex_ofReal_eval_T
 
 -- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
 theorem complex_ofReal_eval_U : ∀ (x : ℝ) n, (((U ℝ n).eval x : ℝ) : ℂ) = (U ℂ n).eval (x : ℂ) :=
-  @algebraMap_eval_U ℝ ℂ _ _ _
+  @algebraMap_eval_U ℝ ℂ _ _ _ _
 #align polynomial.chebyshev.complex_of_real_eval_U Polynomial.Chebyshev.complex_ofReal_eval_U
 
 /-! ### Complex versions -/

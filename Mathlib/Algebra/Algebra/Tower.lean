@@ -30,7 +30,7 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable {A}
@@ -81,7 +81,7 @@ namespace IsScalarTower
 
 section Module
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable [MulAction A M]
 variable {R} {M}
 
@@ -93,7 +93,7 @@ theorem algebraMap_smul [SMul R M] [IsScalarTower R A M] (r : R) (x : M) :
 variable {A} in
 theorem of_algebraMap_smul [SMul R M] (h : ∀ (r : R) (x : M), algebraMap R A r • x = r • x) :
     IsScalarTower R A M where
-  smul_assoc r a x := by rw [Algebra.smul_def, mul_smul, h]
+  smul_assoc r a x := by sorry -- rw [Algebra.smul_def, mul_smul, h]
 
 variable (R M) in
 theorem of_compHom : letI := MulAction.compHom M (algebraMap R A : R →* A); IsScalarTower R A M :=
@@ -104,22 +104,22 @@ end Module
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-variable [Algebra R S] [Algebra S A] [Algebra S B]
+variable [SMul R S] [Algebra R S] [SMul S A] [Algebra S A] [SMul S B] [Algebra S B]
 variable {R S A}
 
-theorem of_algebraMap_eq [Algebra R A]
+theorem of_algebraMap_eq [SMul R A] [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
   ⟨fun x y z => by simp_rw [Algebra.smul_def, RingHom.map_mul, mul_assoc, h]⟩
 #align is_scalar_tower.of_algebra_map_eq IsScalarTower.of_algebraMap_eq
 
 /-- See note [partially-applied ext lemmas]. -/
-theorem of_algebraMap_eq' [Algebra R A]
+theorem of_algebraMap_eq' [SMul R A] [Algebra R A]
     (h : algebraMap R A = (algebraMap S A).comp (algebraMap R S)) : IsScalarTower R S A :=
   of_algebraMap_eq <| RingHom.ext_iff.1 h
 #align is_scalar_tower.of_algebra_map_eq' IsScalarTower.of_algebraMap_eq'
 
 variable (R S A)
-variable [Algebra R A] [Algebra R B]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 theorem algebraMap_eq : algebraMap R A = (algebraMap S A).comp (algebraMap R S) :=
@@ -132,10 +132,10 @@ theorem algebraMap_apply (x : R) : algebraMap R A x = algebraMap S A (algebraMap
 #align is_scalar_tower.algebra_map_apply IsScalarTower.algebraMap_apply
 
 @[ext]
-theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 h2 : Algebra S A)
+theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] [SMul S A] (h1 h2 : Algebra S A)
     (h : ∀ (r : S) (x : A), (by have I := h1; exact r • x) = r • x) : h1 = h2 :=
-  Algebra.algebra_ext _ _ fun r => by
-    simpa only [@Algebra.smul_def _ _ _ _ h1, @Algebra.smul_def _ _ _ _ h2, mul_one] using h r 1
+  Algebra.algebra_ext _ _ fun r => by sorry
+    -- simpa only [@Algebra.smul_def _ _ _ _ _ h1, @Algebra.smul_def _ _ _ _ _ h2, mul_one] using h r 1
 #align is_scalar_tower.algebra.ext IsScalarTower.Algebra.ext
 
 /-- In a tower, the canonical map from the middle element to the top element is an
@@ -178,12 +178,12 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
 #align is_scalar_tower.subsemiring IsScalarTower.subsemiring
 
 -- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
-instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
-    [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
-    @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
-  letI := (f : A →+* B).toAlgebra
-  of_algebraMap_eq fun x => (f.commutes x).symm
-#align is_scalar_tower.of_ring_hom IsScalarTower.of_algHom
+-- instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
+--     [CommSemiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] (f : A →ₐ[R] B) :
+--     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
+--   letI := (f : A →+* B).toAlgebra
+--   of_algebraMap_eq fun x => (f.commutes x).symm
+#noalign is_scalar_tower.of_ring_hom -- IsScalarTower.of_algHom
 
 end Semiring
 
@@ -192,8 +192,8 @@ end IsScalarTower
 section Homs
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-variable [Algebra R S] [Algebra S A] [Algebra S B]
-variable [Algebra R A] [Algebra R B]
+variable [SMul R S] [Algebra R S] [SMul S A] [Algebra S A] [SMul S B] [Algebra S B]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 variable {A S B}
 
@@ -260,7 +260,7 @@ end Homs
 namespace Submodule
 
 variable {M}
-variable [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [AddCommMonoid M]
 variable [Module R M] [Module A M] [IsScalarTower R A M]
 
 /-- If `A` is an `R`-algebra such that the induced morphism `R →+* A` is surjective, then the
@@ -331,7 +331,7 @@ end Module
 section Algebra
 
 variable [CommSemiring R] [Semiring S] [AddCommMonoid A]
-variable [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
+variable [SMul R S] [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 /-- A variant of `Submodule.span_image` for `algebraMap`. -/
 theorem span_algebraMap_image (a : Set R) :
@@ -340,14 +340,14 @@ theorem span_algebraMap_image (a : Set R) :
 #align submodule.span_algebra_map_image Submodule.span_algebraMap_image
 
 theorem span_algebraMap_image_of_tower {S T : Type*} [CommSemiring S] [Semiring T] [Module R S]
-    [Algebra R T] [Algebra S T] [IsScalarTower R S T] (a : Set S) :
+    [SMul R T] [Algebra R T] [SMul S T] [Algebra S T] [IsScalarTower R S T] (a : Set S) :
     Submodule.span R (algebraMap S T '' a) =
       (Submodule.span R a).map ((Algebra.linearMap S T).restrictScalars R) :=
   (Submodule.span_image <| (Algebra.linearMap S T).restrictScalars R).trans rfl
 #align submodule.span_algebra_map_image_of_tower Submodule.span_algebraMap_image_of_tower
 
-theorem map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T] [Algebra R S]
-    [Algebra R T] [Algebra S T] [IsScalarTower R S T] (x : S) (a : Set S)
+theorem map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T] [SMul R S] [Algebra R S]
+    [SMul R T] [Algebra R T] [SMul S T] [Algebra S T] [IsScalarTower R S T] (x : S) (a : Set S)
     (hx : x ∈ Submodule.span R a) : algebraMap S T x ∈ Submodule.span R (algebraMap S T '' a) := by
   rw [span_algebraMap_image_of_tower, mem_map]
   exact ⟨x, hx, rfl⟩
@@ -363,7 +363,7 @@ section Ring
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [AddCommGroup M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 

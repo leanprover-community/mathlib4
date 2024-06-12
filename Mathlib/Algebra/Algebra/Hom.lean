@@ -30,7 +30,7 @@ universe u v w u₁ v₁
 /-- Defining the homomorphism in the category R-Alg. -/
 -- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends RingHom A B where
+  [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_hom AlgHom
 
@@ -46,7 +46,7 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
-  [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+  [CommSemiring R] [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
   [FunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
@@ -60,7 +60,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 namespace AlgHomClass
 
 variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] [FunLike F A B]
+  [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
@@ -91,6 +91,7 @@ variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+variable [SMul R A] [SMul R B] [SMul R C] [SMul R D]
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
@@ -114,7 +115,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
-    [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
+    [Semiring α] [Semiring β] [SMul R α] [Algebra R α] [SMul R β] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 
 initialize_simps_projections AlgHom (toFun → apply)
 
@@ -451,6 +452,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
+variable [SMul R A] [SMul R B]
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
@@ -472,6 +474,7 @@ end CommSemiring
 section Ring
 
 variable [CommSemiring R] [Ring A] [Ring B]
+variable [SMul R A] [SMul R B]
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_neg (x) : φ (-x) = -φ x :=
@@ -508,12 +511,12 @@ lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
-def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
+def toRatAlgHom [Ring R] [Ring S] [SMul ℚ R] [Algebra ℚ R] [SMul ℚ S] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
   { f with commutes' := f.map_rat_algebraMap }
 #align ring_hom.to_rat_alg_hom RingHom.toRatAlgHom
 
 @[simp]
-theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) :
+theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [SMul ℚ R] [Algebra ℚ R] [SMul ℚ S] [Algebra ℚ S] (f : R →+* S) :
     ↑f.toRatAlgHom = f :=
   RingHom.ext fun _x => rfl
 #align ring_hom.to_rat_alg_hom_to_ring_hom RingHom.toRatAlgHom_toRingHom
@@ -525,14 +528,14 @@ section
 variable {R S : Type*}
 
 @[simp]
-theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
+theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [SMul ℚ R] [Algebra ℚ R] [SMul ℚ S] [Algebra ℚ S]
     (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
   AlgHom.ext fun _x => rfl
 #align alg_hom.to_ring_hom_to_rat_alg_hom AlgHom.toRingHom_toRatAlgHom
 
 /-- The equivalence between `RingHom` and `ℚ`-algebra homomorphisms. -/
 @[simps]
-def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
+def RingHom.equivRatAlgHom [Ring R] [Ring S] [SMul ℚ R] [Algebra ℚ R] [SMul ℚ S] [Algebra ℚ S] :
     (R →+* S) ≃ (R →ₐ[ℚ] S) where
   toFun := RingHom.toRatAlgHom
   invFun := AlgHom.toRingHom
@@ -545,7 +548,7 @@ end
 namespace Algebra
 
 variable (R : Type u) (A : Type v)
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
@@ -584,7 +587,7 @@ end Algebra
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.

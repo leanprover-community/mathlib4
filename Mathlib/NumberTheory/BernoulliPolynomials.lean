@@ -215,7 +215,7 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
 
 open PowerSeries
 
-variable {A : Type*} [CommRing A] [Algebra ℚ A]
+variable {A : Type*} [CommRing A] [SMul ℚ A] [Algebra ℚ A]
 
 -- TODO: define exponential generating functions, and use them here
 -- This name should probably be updated afterwards

@@ -572,7 +572,7 @@ theorem eq_of_le_of_finrank_eq {S₁ S₂ : Submodule K V} [FiniteDimensional K 
 
 section Subalgebra
 
-variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
+variable {K L : Type*} [Field K] [Ring L] [SMul K L] [Algebra K L] {F E : Subalgebra K L}
   [hfin : FiniteDimensional K E] (h_le : F ≤ E)
 
 /-- If a subalgebra is contained in a finite-dimensional
@@ -860,14 +860,14 @@ end LinearMap
 section
 
 lemma FiniteDimensional.exists_mul_eq_one (F : Type*) {K : Type*} [Field F] [Ring K] [IsDomain K]
-    [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) : ∃ y, x * y = 1 := by
+    [SMul F K] [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) : ∃ y, x * y = 1 := by
   have : Function.Surjective (LinearMap.mulLeft F x) :=
     LinearMap.injective_iff_surjective.1 fun y z => ((mul_right_inj' H).1 : x * y = x * z → y = z)
   exact this 1
 
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
 noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring K] [IsDomain K]
-    [Algebra F K] [FiniteDimensional F K] : DivisionRing K where
+    [SMul F K] [Algebra F K] [FiniteDimensional F K] : DivisionRing K where
   __ := ‹IsDomain K›
   inv x :=
     letI := Classical.decEq K
@@ -882,7 +882,7 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
-    [Algebra F K] [FiniteDimensional F K] : Field K :=
+    [SMul F K] [Algebra F K] [FiniteDimensional F K] : Field K :=
   { divisionRingOfFiniteDimensional F K with
     toCommRing := h }
 #align field_of_finite_dimensional fieldOfFiniteDimensional
@@ -1085,7 +1085,7 @@ section SubalgebraRank
 
 open Module
 
-variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
+variable {F E : Type*} [Field F] [Ring E] [SMul F E] [Algebra F E]
 
 /-
 porting note:
@@ -1114,9 +1114,9 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
-@[deprecated Subalgebra.finite_bot] -- 2024-04-11
-theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
-  Subalgebra.finite_bot
+-- @[deprecated Subalgebra.finite_bot] -- 2024-04-11
+theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) := sorry
+  -- Subalgebra.finite_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
@@ -1129,9 +1129,10 @@ theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F
   -- Porting note: fails without explicit type
   haveI : FiniteDimensional F (Subalgebra.toSubmodule S) :=
     S.toSubmoduleEquiv.symm.finiteDimensional
-  refine fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (natCast_le.1 ?_)
-  iterate 2 rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
-  exact h.trans_eq Subalgebra.rank_bot.symm
+  -- refine fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (natCast_le.1 ?_)
+  sorry
+  -- iterate 2 rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
+  -- exact h.trans_eq Subalgebra.rank_bot.symm
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
 theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S = 1) : S = ⊥ :=

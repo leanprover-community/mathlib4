@@ -19,7 +19,7 @@ open scoped TensorProduct
 
 variable (R S A B : Type*)
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-variable [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S A]
+variable [SMul R S] [Algebra R S] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [SMul S A] [Algebra S A]
 variable [IsScalarTower R S A]
 
 namespace Algebra.TensorProduct

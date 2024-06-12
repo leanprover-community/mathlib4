@@ -161,7 +161,7 @@ lemma toMvPolynomial_eval_eq_apply (f : M₁ →ₗ[R] M₂) (i : ι₂) (c : ι
     ← LinearMap.toMatrix_mulVec_repr b₁ b₂, LinearEquiv.apply_symm_apply]
 
 open Algebra.TensorProduct in
-lemma toMvPolynomial_baseChange (f : M₁ →ₗ[R] M₂) (i : ι₂) (A : Type*) [CommRing A] [Algebra R A] :
+lemma toMvPolynomial_baseChange (f : M₁ →ₗ[R] M₂) (i : ι₂) (A : Type*) [CommRing A] [SMul R A] [Algebra R A] :
     (f.baseChange A).toMvPolynomial (basis A b₁) (basis A b₂) i =
       MvPolynomial.map (algebraMap R A) (f.toMvPolynomial b₁ b₂ i) := by
   simp only [toMvPolynomial, toMatrix_baseChange, Matrix.toMvPolynomial_map]
@@ -227,7 +227,7 @@ def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
 
 open Algebra.TensorProduct MvPolynomial in
-lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
+lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [SMul R A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
       (polyCharpolyAux φ b bₘ).map (MvPolynomial.map (algebraMap R A)) := by
   simp only [polyCharpolyAux]
@@ -297,7 +297,7 @@ lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]
 
 open Algebra.TensorProduct TensorProduct in
 lemma polyCharpolyAux_map_aeval
-    (A : Type*) [CommRing A] [Algebra R A] [Module.Finite A (A ⊗[R] M)] [Module.Free A (A ⊗[R] M)]
+    (A : Type*) [CommRing A] [SMul R A] [Algebra R A] [Module.Finite A (A ⊗[R] M)] [Module.Free A (A ⊗[R] M)]
     (x : ι → A) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.aeval x).toRingHom =
       LinearMap.charpoly ((tensorProduct R A M M).comp (baseChange A φ)
@@ -373,7 +373,7 @@ lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M) [
   · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
 
 open Algebra.TensorProduct MvPolynomial in
-lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
+lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [SMul R A] [Algebra R A] :
     polyCharpoly (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) =
       (polyCharpoly φ b).map (MvPolynomial.map (algebraMap R A)) := by
   unfold polyCharpoly

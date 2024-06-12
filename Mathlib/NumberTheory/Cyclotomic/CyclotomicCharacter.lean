@@ -213,7 +213,7 @@ variable {L}
 `ModularCyclotomicCharacter`. Note that `IsPrimitiveRoot.autToPow`
 needs an explicit root of unity, and also an auxiliary "base ring" `R`. -/
 lemma IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter (n : ℕ+)
-    (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : L ≃ₐ[R] L) :
+    (R : Type*) [CommRing R] [SMul R L] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : L ≃ₐ[R] L) :
     hμ.autToPow R g = ModularCyclotomicCharacter L hμ.card_rootsOfUnity g := by
   ext
   apply ZMod.val_injective

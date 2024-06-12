@@ -145,8 +145,8 @@ theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p :=
     one_mul, pow_one, C_1, pow_zero, tsub_self, tsub_zero]
 #align witt_polynomial_one wittPolynomial_one
 
-theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
-    aeval f (W_ R n) = ∑ i in range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
+theorem aeval_wittPolynomial {A : Type*} [CommRing A] [SMul R A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
+    aeval (R := R) f (W_ R n) = ∑ i in range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
   simp [wittPolynomial, AlgHom.map_sum, aeval_monomial, Finsupp.prod_single_index]
 #align aeval_witt_polynomial aeval_wittPolynomial
 
@@ -154,7 +154,7 @@ theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ →
 by expanding the `n`th Witt polynomial by `p`. -/
 @[simp]
 theorem wittPolynomial_zmod_self (n : ℕ) :
-    W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
+    W_ (ZMod (p ^ (n + 1))) (n + 1) = expand (R := ZMod (p ^ (n + 1))) p (W_ (ZMod (p ^ (n + 1))) n) := by
   simp only [wittPolynomial_eq_sum_C_mul_X_pow]
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
     zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]

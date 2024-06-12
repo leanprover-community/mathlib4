@@ -34,7 +34,7 @@ open scoped BigOperators
 
 variable {R A L M ι ιₘ : Type*}
 variable [CommRing R] [Nontrivial R]
-variable [CommRing A] [Algebra R A]
+variable [CommRing A]
 variable [LieRing L] [LieAlgebra R L] [Module.Finite R L] [Module.Free R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite R M] [Module.Free R M]

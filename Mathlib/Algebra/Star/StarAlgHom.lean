@@ -312,8 +312,8 @@ section Unital
 
 /-- A *⋆-algebra homomorphism* is an algebra homomorphism between `R`-algebras `A` and `B`
 equipped with a `star` operation, and this homomorphism is also `star`-preserving. -/
-structure StarAlgHom (R A B : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
-  [Semiring B] [Algebra R B] [Star B] extends AlgHom R A B where
+structure StarAlgHom (R A B : Type*) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Star A]
+  [Semiring B] [SMul R B] [Algebra R B] [Star B] extends AlgHom R A B where
   /-- By definition, a ⋆-algebra homomorphism preserves the `star` operation. -/
   map_star' : ∀ x : A, toFun (star x) = star (toFun x)
 #align star_alg_hom StarAlgHom
@@ -330,7 +330,7 @@ add_decl_doc StarAlgHom.toAlgHom
 
 You should also extend this typeclass when you extend `StarAlgHom`. -/
 class StarAlgHomClass (F : Type*) (R A B : outParam Type*)
-    [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
+    [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Star A] [Semiring B] [SMul R B] [Algebra R B] [Star B]
     [FunLike F A B] [AlgHomClass F R A B] extends StarHomClass F A B : Prop
 #align star_alg_hom_class StarAlgHomClass
 
@@ -344,14 +344,14 @@ variable (F R A B : Type*)
 
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalStarAlgHomClass {_ : CommSemiring R} {_ : Semiring A}
-  [Algebra R A] [Star A] {_ : Semiring B} [Algebra R B] [Star B]
+  [SMul R A] [Algebra R A] [Star A] {_ : Semiring B} [SMul R B] [Algebra R B] [Star B]
   [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] :
   NonUnitalStarAlgHomClass F R A B :=
   { }
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
 
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
-variable [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Star A]
+variable [Semiring B] [SMul R B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
 variable [StarAlgHomClass F R A B]
 
 variable {F R A B} in
@@ -369,8 +369,10 @@ end StarAlgHomClass
 
 namespace StarAlgHom
 
-variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
-  [Algebra R B] [Star B] [Semiring C] [Algebra R C] [Star C] [Semiring D] [Algebra R D] [Star D]
+variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Star A]
+  [Semiring B] [SMul R B] [Algebra R B] [Star B]
+  [Semiring C] [SMul R C] [Algebra R C] [Star C]
+  [Semiring D] [SMul R D] [Algebra R D] [Star D]
 
 instance : FunLike (A →⋆ₐ[R] B) A B where
   coe f := f.toFun
@@ -468,7 +470,7 @@ theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
 /-- `algebraMap R A` as a `StarAlgHom` when `A` is a star algebra over `R`. -/
 @[simps]
 def ofId (R A : Type*) [CommSemiring R] [StarRing R] [Semiring A] [StarMul A]
-    [Algebra R A] [StarModule R A] : R →⋆ₐ[R] A :=
+    [SMul R A] [Algebra R A] [StarModule R A] : R →⋆ₐ[R] A :=
   { Algebra.ofId R A with
     toFun := algebraMap R A
     map_star' := by simp [Algebra.algebraMap_eq_smul_one] }
@@ -640,8 +642,8 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgHom
 
-variable (R A B C : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
-  [Algebra R B] [Star B] [Semiring C] [Algebra R C] [Star C]
+variable (R A B C : Type*) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Star A] [Semiring B]
+  [SMul R B] [Algebra R B] [Star B] [Semiring C] [SMul R C] [Algebra R C] [Star C]
 
 /-- The first projection of a product is a ⋆-algebra homomorphism. -/
 @[simps!]
@@ -767,16 +769,18 @@ instance (priority := 100) {F R A B : Type*} {_ : Monoid R} {_ : NonUnitalNonAss
     NonUnitalStarAlgHomClass F R A B :=
   { }
 
+set_option synthInstance.checkSynthOrder false in
 -- See note [lower instance priority]
 instance (priority := 100) instAlgHomClass (F R A B : Type*) {_ : CommSemiring R}
-    {_ : Semiring A} [Algebra R A] {_ : Semiring B} [Algebra R B]
+    {_ : Semiring A} [SMul R A] [Algebra R A] {_ : Semiring B} [SMul R B] [Algebra R B]
     [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
+set_option synthInstance.checkSynthOrder false in
 -- See note [lower instance priority]
 instance (priority := 100) instStarAlgHomClass (F R A B : Type*) {_ : CommSemiring R}
-    {_ : Semiring A} [Algebra R A] {_ : Star A} {_ : Semiring B} [Algebra R B] {_ : Star B}
+    {_ : Semiring A} [SMul R A] [Algebra R A] {_ : Star A} {_ : Semiring B} [SMul R B] [Algebra R B] {_ : Star B}
     [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B] :
     StarAlgHomClass F R A B :=
   { }

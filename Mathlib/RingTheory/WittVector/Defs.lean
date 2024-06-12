@@ -163,7 +163,7 @@ Evaluates a polynomial whose variables come from the disjoint union of `k` copie
 with a curried evaluation `x`.
 This can be defined more generally but we use only a specific instance here. -/
 def peval {k : ℕ} (φ : MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → ℕ → R) : R :=
-  aeval (Function.uncurry x) φ
+  aeval (R := ℤ) (Function.uncurry x) φ
 #align witt_vector.peval WittVector.peval
 
 /-- Let `φ` be a family of polynomials, indexed by natural numbers, whose variables come from the
@@ -330,17 +330,17 @@ variable (R)
 
 @[simp]
 theorem zero_coeff (n : ℕ) : (0 : 𝕎 R).coeff n = 0 :=
-  show (aeval _ (wittZero p n) : R) = 0 by simp only [wittZero_eq_zero, AlgHom.map_zero]
+  show (aeval (R := ℤ) _ (wittZero p n) : R) = 0 by simp only [wittZero_eq_zero, AlgHom.map_zero]
 #align witt_vector.zero_coeff WittVector.zero_coeff
 
 @[simp]
 theorem one_coeff_zero : (1 : 𝕎 R).coeff 0 = 1 :=
-  show (aeval _ (wittOne p 0) : R) = 1 by simp only [wittOne_zero_eq_one, AlgHom.map_one]
+  show (aeval (R := ℤ) _ (wittOne p 0) : R) = 1 by simp only [wittOne_zero_eq_one, AlgHom.map_one]
 #align witt_vector.one_coeff_zero WittVector.one_coeff_zero
 
 @[simp]
 theorem one_coeff_eq_of_pos (n : ℕ) (hn : 0 < n) : coeff (1 : 𝕎 R) n = 0 :=
-  show (aeval _ (wittOne p n) : R) = 0 by simp only [hn, wittOne_pos_eq_zero, AlgHom.map_zero]
+  show (aeval (R := ℤ) _ (wittOne p n) : R) = 0 by simp only [hn, wittOne_pos_eq_zero, AlgHom.map_zero]
 #align witt_vector.one_coeff_eq_of_pos WittVector.one_coeff_eq_of_pos
 
 variable {p R}

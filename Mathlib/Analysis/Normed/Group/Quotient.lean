@@ -525,7 +525,7 @@ instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (
 
 variable (𝕜 : Type*) [NormedField 𝕜]
 
-instance Ideal.Quotient.normedAlgebra [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) :=
+instance Ideal.Quotient.normedAlgebra [SMul 𝕜 R] [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) :=
   { Submodule.Quotient.normedSpace I 𝕜, Ideal.Quotient.algebra 𝕜 with }
 #align ideal.quotient.normed_algebra Ideal.Quotient.normedAlgebra
 

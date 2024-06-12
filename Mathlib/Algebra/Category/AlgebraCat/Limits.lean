@@ -37,6 +37,9 @@ instance semiringObj (j) : Semiring ((F ⋙ forget (AlgebraCat R)).obj j) :=
   inferInstanceAs <| Semiring (F.obj j)
 #align Algebra.semiring_obj AlgebraCat.semiringObj
 
+instance instSMulObj (j) : SMul R ((F ⋙ forget (AlgebraCat R)).obj j) :=
+  inferInstanceAs <| SMul R (F.obj j)
+
 instance algebraObj (j) :
     Algebra R ((F ⋙ forget (AlgebraCat R)).obj j) :=
   inferInstanceAs <| Algebra R (F.obj j)
@@ -53,6 +56,9 @@ def sectionsSubalgebra : Subalgebra R (∀ j, F.obj j) :=
 instance (F : J ⥤ AlgebraCat.{w} R) : Ring (F ⋙ forget _).sections :=
   inferInstanceAs <| Ring (sectionsSubalgebra F)
 
+instance (F : J ⥤ AlgebraCat.{w} R) : SMul R (F ⋙ forget _).sections :=
+  inferInstanceAs <| SMul R (sectionsSubalgebra F)
+
 instance (F : J ⥤ AlgebraCat.{w} R) : Algebra R (F ⋙ forget _).sections :=
   inferInstanceAs <| Algebra R (sectionsSubalgebra F)
 
@@ -65,6 +71,10 @@ instance limitSemiring :
     Ring.{w} (Types.Small.limitCone.{v, w} (F ⋙ forget (AlgebraCat.{w} R))).pt :=
   inferInstanceAs <| Ring (Shrink (sectionsSubalgebra F))
 #align Algebra.limit_semiring AlgebraCat.limitSemiring
+
+instance instLimitSMul :
+    SMul R (Types.Small.limitCone (F ⋙ forget (AlgebraCat R))).pt :=
+  inferInstanceAs <| SMul R (Shrink (sectionsSubalgebra F))
 
 instance limitAlgebra :
     Algebra R (Types.Small.limitCone (F ⋙ forget (AlgebraCat.{w} R))).pt :=

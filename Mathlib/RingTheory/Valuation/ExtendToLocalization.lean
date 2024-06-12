@@ -21,7 +21,7 @@ extended to the localization `S⁻¹A`.
 
 variable {A : Type*} [CommRing A] {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
   (v : Valuation A Γ) {S : Submonoid A} (hS : S ≤ v.supp.primeCompl) (B : Type*) [CommRing B]
-  [Algebra A B] [IsLocalization S B]
+  [SMul A B] [Algebra A B] [IsLocalization S B]
 
 /-- We can extend a valuation `v` on a ring to a localization at a submonoid of
 the complement of `v.supp`. -/

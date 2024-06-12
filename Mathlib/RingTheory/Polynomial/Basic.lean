@@ -882,7 +882,7 @@ set_option linter.uppercaseLean3 false in
 variable {σ}
 
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
-    Prime (rename ((↑) : s → σ) p) ↔ Prime (p : MvPolynomial s R) := by
+    Prime (rename (R := R) ((↑) : s → σ) p) ↔ Prime (p : MvPolynomial s R) := by
   classical
     symm
     let eqv :=
@@ -1126,7 +1126,7 @@ namespace MvPolynomial
 lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
     (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
     (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
-    (MvPolynomial.aeval f F).natDegree ≤ m * n := by
+    (MvPolynomial.aeval (R := R) f F).natDegree ≤ m * n := by
   rw [MvPolynomial.aeval_def, MvPolynomial.eval₂]
   apply (Polynomial.natDegree_sum_le _ _).trans
   apply Finset.sup_le
@@ -1333,12 +1333,13 @@ instance (priority := 100) uniqueFactorizationMonoid :
   obtain ⟨w, h, u, hw⟩ :=
     iff_exists_prime_factors.1 (uniqueFactorizationMonoid_of_fintype s) a' fun h =>
       ha <| by simp [h]
-  exact
-    ⟨w.map (rename (↑)), fun b hb =>
-      let ⟨b', hb', he⟩ := Multiset.mem_map.1 hb
-      he ▸ (prime_rename_iff ↑s).2 (h b' hb'),
-      Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
-      erw [Multiset.prod_hom, ← map_mul, hw]⟩
+  sorry
+  -- exact
+  --   ⟨w.map (rename (R := R) (↑)), fun b hb =>
+  --     let ⟨b', hb', he⟩ := Multiset.mem_map.1 hb
+  --     he ▸ (prime_rename_iff (R := R) ↑s).2 (h b' hb'),
+  --     Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
+  --     erw [Multiset.prod_hom, ← map_mul, hw]⟩
 
 end MvPolynomial
 

@@ -40,7 +40,7 @@ open FiniteDimensional Polynomial
 
 open BigOperators Polynomial
 
-variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+variable (K L L' : Type*) [Field K] [Field L] [Field L'] [SMul K L] [Algebra K L] [SMul K L'] [Algebra K L']
 
 /-- `S : IntermediateField K L` is a subset of `L` such that there is a field
 tower `L / S / K`. -/
@@ -378,6 +378,8 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 
 #noalign intermediate_field.algebra'
 
+instance smul : SMul K S := inferInstanceAs (SMul K S.toSubsemiring)
+
 instance algebra : Algebra K S :=
   inferInstanceAs (Algebra K S.toSubsemiring)
 #align intermediate_field.algebra IntermediateField.algebra
@@ -388,11 +390,11 @@ instance algebra : Algebra K S :=
 
 @[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
 
-instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
+instance isScalarTower_bot {R : Type*} [Semiring R] [SMul L R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
 #align intermediate_field.is_scalar_tower_bot IntermediateField.isScalarTower_bot
 
-instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
+instance isScalarTower_mid {R : Type*} [Semiring R] [SMul L R] [Algebra L R] [SMul K R] [Algebra K R]
     [IsScalarTower K L R] : IsScalarTower K S R :=
   IsScalarTower.subalgebra' _ _ _ S.toSubalgebra
 #align intermediate_field.is_scalar_tower_mid IntermediateField.isScalarTower_mid
@@ -403,11 +405,11 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
 #align intermediate_field.is_scalar_tower_mid' IntermediateField.isScalarTower_mid'
 
 section shortcut_instances
-variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
-instance : Algebra S T := T.algebra
-instance : Module S T := Algebra.toModule
-instance : SMul S T := Algebra.toSMul
-instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+variable {E} [Field E] [SMul L E] [Algebra L E] (T : IntermediateField S E) {S}
+-- instance : Algebra S T := T.algebra
+-- instance : Module S T := Algebra.toModule
+-- instance : SMul S T := Algebra.toSMul
+-- instance [SMul K E] [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
 end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
@@ -438,8 +440,8 @@ theorem toSubalgebra_map (f : L →ₐ[K] L') : (S.map f).toSubalgebra = S.toSub
 theorem toSubfield_map (f : L →ₐ[K] L') : (S.map f).toSubfield = S.toSubfield.map f :=
   rfl
 
-theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L₁] [Field L₂] [Algebra K L₂]
-    [Field L₃] [Algebra K L₃] (E : IntermediateField K L₁) (f : L₁ →ₐ[K] L₂) (g : L₂ →ₐ[K] L₃) :
+theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [SMul K L₁] [Algebra K L₁] [Field L₂] [SMul K L₂] [Algebra K L₂]
+    [Field L₃] [SMul K L₃] [Algebra K L₃] (E : IntermediateField K L₁) (f : L₁ →ₐ[K] L₂) (g : L₂ →ₐ[K] L₃) :
     (E.map f).map g = E.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 #align intermediate_field.map_map IntermediateField.map_map
@@ -540,7 +542,7 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
   ⟨S.val⟩
 #align intermediate_field.alg_hom.inhabited IntermediateField.AlgHom.inhabited
 
-theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
+theorem aeval_coe {R : Type*} [CommRing R] [SMul R K] [Algebra R K] [SMul R L] [Algebra R L] [IsScalarTower R K L]
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
   refine' Polynomial.induction_on' P (fun f g hf hg => _) fun n r => _
   · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
@@ -549,7 +551,7 @@ theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalar
     rfl
 #align intermediate_field.aeval_coe IntermediateField.aeval_coe
 
-theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
+theorem coe_isIntegral_iff {R : Type*} [CommRing R] [SMul R K] [Algebra R K] [SMul R L] [Algebra R L]
     [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
   refine' ⟨fun h => _, fun h => _⟩
   · obtain ⟨P, hPmo, hProot⟩ := h
@@ -650,7 +652,7 @@ theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :
 section RestrictScalars
 
 variable (K)
-variable [Algebra L' L] [IsScalarTower K L' L]
+variable [SMul L' L] [Algebra L' L] [IsScalarTower K L' L]
 
 /-- Given a tower `L / ↥E / L' / K` of field extensions, where `E` is an `L'`-intermediate field of
 `L`, reinterpret `E` as a `K`-intermediate field of `L`. -/

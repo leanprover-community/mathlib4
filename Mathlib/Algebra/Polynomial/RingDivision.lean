@@ -37,12 +37,12 @@ section
 
 variable [Semiring S]
 
-theorem natDegree_pos_of_aeval_root [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S}
+theorem natDegree_pos_of_aeval_root [SMul R S] [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S}
     (hz : aeval z p = 0) (inj : ∀ x : R, algebraMap R S x = 0 → x = 0) : 0 < p.natDegree :=
   natDegree_pos_of_eval₂_root hp (algebraMap R S) hz inj
 #align polynomial.nat_degree_pos_of_aeval_root Polynomial.natDegree_pos_of_aeval_root
 
-theorem degree_pos_of_aeval_root [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S} (hz : aeval z p = 0)
+theorem degree_pos_of_aeval_root [SMul R S] [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S} (hz : aeval z p = 0)
     (inj : ∀ x : R, algebraMap R S x = 0 → x = 0) : 0 < p.degree :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos_of_aeval_root hp hz inj)
 #align polynomial.degree_pos_of_aeval_root Polynomial.degree_pos_of_aeval_root
@@ -100,7 +100,7 @@ section
 
 variable [Ring S]
 
-theorem aeval_modByMonic_eq_self_of_root [Algebra R S] {p q : R[X]} (hq : q.Monic) {x : S}
+theorem aeval_modByMonic_eq_self_of_root [SMul R S] [Algebra R S] {p q : R[X]} (hq : q.Monic) {x : S}
     (hx : aeval x q = 0) : aeval x (p %ₘ q) = aeval x p := by
     --`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
   rw [modByMonic_eq_sub_mul_div p hq, _root_.map_sub, _root_.map_mul, hx, zero_mul,

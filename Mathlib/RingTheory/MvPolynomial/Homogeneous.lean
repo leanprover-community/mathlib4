@@ -241,9 +241,9 @@ lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ
 lemma map (hφ : φ.IsHomogeneous n) (f : R →+* S) : (map f φ).IsHomogeneous n := by
   simpa only [one_mul] using hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
 
-lemma aeval [Algebra R S] (hφ : φ.IsHomogeneous m)
+lemma aeval [SMul R S] [Algebra R S] (hφ : φ.IsHomogeneous m)
     (g : σ → MvPolynomial τ S) (hg : ∀ i, (g i).IsHomogeneous n) :
-    (aeval g φ).IsHomogeneous (n * m) :=
+    (aeval (R := R) g φ).IsHomogeneous (n * m) :=
   hφ.eval₂ _ _ (fun _ ↦ isHomogeneous_C _ _) hg
 
 section CommRing
@@ -281,7 +281,7 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
 
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
-    (rename f φ).IsHomogeneous n := by
+    (rename (R := R) f φ).IsHomogeneous n := by
   rw [← φ.support_sum_monomial_coeff, map_sum]; simp_rw [rename_monomial]
   apply IsHomogeneous.sum _ _ _ fun d hd ↦ isHomogeneous_monomial _ _
   intro d hd
@@ -290,7 +290,7 @@ theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
   simp only [weightedDegree_apply, AddMonoidHom.id_apply, Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
-    (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
+    (rename (R := R) f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
   refine ⟨fun h d hd ↦ ?_, rename_isHomogeneous⟩
   convert ← @h (d.mapDomain f) _
   · simp only [weightedDegree_apply, Pi.one_apply, smul_eq_mul, mul_one]
@@ -299,7 +299,7 @@ theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
 
 lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) R} {n : ℕ}
     (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
-    ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
+    ((finSuccEquiv R _ φ).coeff i).IsHomogeneous j := by
   intro d hd
   rw [finSuccEquiv_coeff_coeff] at hd
   have h' : (weightedDegree 1) (Finsupp.cons i d) = i + j := by
@@ -392,14 +392,14 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by intros; omega
     obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
       IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; omega) hnR)
-    set φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F) with hφ
+    set φ : R[X] := Polynomial.map (eval r) (finSuccEquiv R _ F) with hφ
     have hφ₀ : φ ≠ 0 := fun hφ₀ ↦ hr <| by
       rw [← coeff_eval_eq_eval_coeff, ← hφ, hφ₀, Polynomial.coeff_zero]
     have hφR : φ.natDegree < #R := by
       refine lt_of_lt_of_le ?_ hnR
       norm_cast
       refine lt_of_le_of_lt (natDegree_map_le _ _) ?_
-      suffices (finSuccEquiv _ _ F).natDegree ≠ n by omega
+      suffices (finSuccEquiv R _ F).natDegree ≠ n by omega
       rintro rfl
       refine leadingCoeff_ne_zero.mpr ?_ hFn
       simpa using (finSuccEquiv R N).injective.ne hF₀

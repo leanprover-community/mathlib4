@@ -93,6 +93,7 @@ theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r 
 
 variable (R)
 
+noncomputable local instance : Module R⟦X⟧ R⟦X⟧ := Algebra.toModule in
 /-- The formal derivative of a formal power series -/
 noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧ where
   toFun             := derivativeFun

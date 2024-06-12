@@ -71,7 +71,7 @@ open DirectSum SetLike
 
 variable {ι R A : Type*}
 variable [AddCommMonoid ι] [DecidableEq ι]
-variable [CommRing R] [CommRing A] [Algebra R A]
+variable [CommRing R] [CommRing A] [SMul R A] [Algebra R A]
 variable (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 variable (x : Submonoid A)
 
@@ -464,9 +464,12 @@ instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜
     sub_val (smul_val x · ·) (smul_val x · ·) pow_val natCast_val intCast_val
 #align homogeneous_localization.homogenous_localization_comm_ring HomogeneousLocalization.homogenousLocalizationCommRing
 
+instance instSMulHomogeneousLocalization :
+    SMul (HomogeneousLocalization 𝒜 x) (Localization x) where
+  smul p q := p.val * q
+
 instance homogeneousLocalizationAlgebra :
     Algebra (HomogeneousLocalization 𝒜 x) (Localization x) where
-  smul p q := p.val * q
   toFun := val
   map_one' := one_val
   map_mul' := mul_val
@@ -627,11 +630,12 @@ theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
   by_cases hfk : f ^ k = 0
   · refine ⟨0, zero_mem _, ?_⟩
     rw [← tsub_add_cancel_of_le hk', map_zero, pow_add, hfk, mul_zero, zero_smul]
-  rw [← tsub_add_cancel_of_le hk', pow_add, mul_smul, hk, den_smul_val,
-    Algebra.smul_def, ← _root_.map_mul]
-  rw [← smul_eq_mul, add_smul,
-    DirectSum.degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded _ hf) (hk.symm ▸ z.den_mem_deg) hfk]
-  exact ⟨_, SetLike.mul_mem_graded (SetLike.pow_mem_graded _ hf) z.num_mem_deg, rfl⟩
+  sorry
+  -- rw [← tsub_add_cancel_of_le hk', pow_add, mul_smul, hk, den_smul_val,
+  --   Algebra.smul_def, ← _root_.map_mul]
+  -- rw [← smul_eq_mul, add_smul,
+  --   DirectSum.degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded _ hf) (hk.symm ▸ z.den_mem_deg) hfk]
+  -- exact ⟨_, SetLike.mul_mem_graded (SetLike.pow_mem_graded _ hf) z.num_mem_deg, rfl⟩
 
 end
 

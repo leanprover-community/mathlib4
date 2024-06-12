@@ -92,7 +92,7 @@ theorem ascPochhammer_eval₂ (f : S →+* T) (n : ℕ) (t : T) :
   rw [← ascPochhammer_map f]
   exact eval_map f t
 
-theorem ascPochhammer_eval_comp {R : Type*} [CommSemiring R] (n : ℕ) (p : R[X]) [Algebra R S]
+theorem ascPochhammer_eval_comp {R : Type*} [CommSemiring R] (n : ℕ) (p : R[X]) [SMul R S] [Algebra R S]
     (x : S) : ((ascPochhammer S n).comp (p.map (algebraMap R S))).eval x =
     (ascPochhammer S n).eval (p.eval₂ (algebraMap R S) x) := by
   rw [ascPochhammer_eval₂ (algebraMap R S), ← eval₂_comp', ← ascPochhammer_map (algebraMap R S),

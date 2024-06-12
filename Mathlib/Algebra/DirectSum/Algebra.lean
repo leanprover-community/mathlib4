@@ -54,7 +54,7 @@ class GAlgebra where
 
 end
 
-variable [Semiring B] [GAlgebra R A] [Algebra R B]
+variable [Semiring B] [GAlgebra R A] [SMul R B] [Algebra R B]
 
 instance _root_.GradedMonoid.smulCommClass_right :
     SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
@@ -159,7 +159,7 @@ end DirectSum
 -/
 @[simps]
 instance Algebra.directSumGAlgebra {R A : Type*} [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
-    [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where
+    [Semiring A] [SMul R A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where
   toFun := (algebraMap R A).toAddMonoidHom
   map_one := (algebraMap R A).map_one
   map_mul a b := Sigma.ext (zero_add _).symm (heq_of_eq <| (algebraMap R A).map_mul a b)

@@ -38,6 +38,7 @@ namespace IsScalarTower
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [SMul R S] [SMul S A] [SMul S B] [SMul R A] [SMul R B]
 variable [Algebra R S] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
@@ -62,7 +63,8 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+variable [SMul R A] [SMul A B] [SMul R B] [IsScalarTower R A B]
+variable [Algebra R A] [Algebra A B] [Algebra R B]
 
 end CommSemiring
 
@@ -71,7 +73,7 @@ end IsScalarTower
 section AlgebraMapCoeffs
 
 variable {R} {ι M : Type*} [CommSemiring R] [Semiring A] [AddCommMonoid M]
-variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
+variable [SMul R A] [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
 variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
 /-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
@@ -176,7 +178,7 @@ end Semiring
 section Ring
 
 variable {R S}
-variable [CommRing R] [Ring S] [Algebra R S]
+variable [CommRing R] [Ring S] [SMul R S] [Algebra R S]
 
 -- Porting note: Needed to add Algebra.toModule below
 theorem Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
@@ -189,10 +191,10 @@ end Ring
 
 section AlgHomTower
 
-variable {A} {C D : Type*} [CommSemiring A] [CommSemiring C] [CommSemiring D] [Algebra A C]
-  [Algebra A D]
+variable {A} {C D : Type*} [CommSemiring A] [CommSemiring C] [CommSemiring D] [SMul A C] [Algebra A C]
+  [SMul A D] [Algebra A D]
 
-variable (f : C →ₐ[A] D) [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C]
+variable (f : C →ₐ[A] D) [CommSemiring B] [SMul A B] [Algebra A B] [SMul B C] [Algebra B C] [IsScalarTower A B C]
 
 
 /-- Restrict the domain of an `AlgHom`. -/
@@ -205,7 +207,8 @@ def AlgHom.restrictDomain : B →ₐ[A] D :=
 -- but it complains about not finding (Algebra B D), despite it being given in the header of the thm
 
 /-- Extend the scalars of an `AlgHom`. -/
-def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.toAlgebra where
+def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ _
+    (f.restrictDomain B).toRingHom.toSMul (f.restrictDomain B).toRingHom.toAlgebra where
   toFun := f.toFun
   map_one' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
     map_one]
@@ -216,6 +219,7 @@ def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.
   map_add' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
     MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_add, RingHom.coe_coe, forall_const]
   commutes' := fun _ ↦ rfl
+  __ := (f.restrictDomain B).toRingHom.toSMul
   __ := (f.restrictDomain B).toRingHom.toAlgebra
 #align alg_hom.extend_scalars AlgHom.extendScalars
 
@@ -223,10 +227,13 @@ variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
 def algHomEquivSigma :
-    (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra where
+    (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ _
+    f.toRingHom.toSMul f.toRingHom.toAlgebra where
   toFun f := ⟨f.restrictDomain B, f.extendScalars B⟩
   invFun fg :=
-    let _ := fg.1.toRingHom.toAlgebra
+    letI := fg.1.toRingHom.toSMul
+    letI := fg.1.toRingHom.toAlgebra
+    haveI : IsScalarTower A B D := sorry
     fg.2.restrictScalars A
   left_inv f := by
     dsimp only

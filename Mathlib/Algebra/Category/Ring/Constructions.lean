@@ -39,7 +39,9 @@ variable {R A B : CommRingCat.{u}} (f : R ⟶ A) (g : R ⟶ B)
 
 /-- The explicit cocone with tensor products as the fibered product in `CommRingCat`. -/
 def pushoutCocone : Limits.PushoutCocone f g := by
+  letI := RingHom.toSMul f
   letI := RingHom.toAlgebra f
+  letI := RingHom.toSMul g
   letI := RingHom.toAlgebra g
   fapply Limits.PushoutCocone.mk
   · show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
@@ -55,7 +57,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem pushoutCocone_inl :
     (pushoutCocone f g).inl = by
+      letI := f.toSMul
       letI := f.toAlgebra
+      letI := g.toSMul
       letI := g.toAlgebra
       exact Algebra.TensorProduct.includeLeftRingHom :=
   rfl
@@ -65,7 +69,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem pushoutCocone_inr :
     (pushoutCocone f g).inr = by
+      letI := f.toSMul
       letI := f.toAlgebra
+      letI := g.toSMul
       letI := g.toAlgebra
       exact Algebra.TensorProduct.includeRight.toRingHom :=
   rfl
@@ -75,7 +81,9 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem pushoutCocone_pt :
     (pushoutCocone f g).pt = by
+      letI := f.toSMul
       letI := f.toAlgebra
+      letI := g.toSMul
       letI := g.toAlgebra
       exact CommRingCat.of (A ⊗[R] B) :=
   rfl
@@ -85,8 +93,11 @@ set_option linter.uppercaseLean3 false in
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
   Limits.PushoutCocone.isColimitAux' _ fun s => by
+    letI := f.toSMul
     letI := RingHom.toAlgebra f
+    letI := g.toSMul
     letI := RingHom.toAlgebra g
+    letI := (f ≫ s.inl).toSMul
     letI := RingHom.toAlgebra (f ≫ s.inl)
     let f' : A →ₐ[R] s.pt :=
       { s.inl with
@@ -100,8 +111,11 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
             (s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
               (s.ι.naturality Limits.WalkingSpan.Hom.fst).symm }
     -- Porting note: Lean has forget why `A ⊗[R] B` makes sense
+    letI := f.toSMul
     letI : Algebra R A := f.toAlgebra
+    letI := g.toSMul
     letI : Algebra R B := g.toAlgebra
+    letI : SMul R (pushoutCocone f g).pt := show SMul R (A ⊗[R] B) by infer_instance
     letI : Algebra R (pushoutCocone f g).pt := show Algebra R (A ⊗[R] B) by infer_instance
     -- The factor map is a ⊗ b ↦ f(a) * g(b).
     use AlgHom.toRingHom (Algebra.TensorProduct.productMap f' g')

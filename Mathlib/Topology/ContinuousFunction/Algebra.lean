@@ -690,7 +690,7 @@ is obtained by requiring that `A` be both a `ContinuousSMul` and a `TopologicalS
 section Subtype
 
 variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Type*}
-  [TopologicalSpace A] [Semiring A] [Algebra R A] [TopologicalSemiring A]
+  [TopologicalSpace A] [Semiring A] [SMul R A] [Algebra R A] [TopologicalSemiring A]
 
 /-- The `R`-subalgebra of continuous maps `α → A`. -/
 def continuousSubalgebra : Subalgebra R (α → A) :=
@@ -704,8 +704,8 @@ end Subtype
 section ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Type*}
-  [TopologicalSpace A] [Semiring A] [Algebra R A] [TopologicalSemiring A] {A₂ : Type*}
-  [TopologicalSpace A₂] [Semiring A₂] [Algebra R A₂] [TopologicalSemiring A₂]
+  [TopologicalSpace A] [Semiring A] [SMul R A] [Algebra R A] [TopologicalSemiring A] {A₂ : Type*}
+  [TopologicalSpace A₂] [Semiring A₂] [SMul R A₂][Algebra R A₂] [TopologicalSemiring A₂]
 
 /-- Continuous constant functions as a `RingHom`. -/
 def ContinuousMap.C : R →+* C(α, A) where
@@ -987,7 +987,7 @@ section Precomposition
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 variable (𝕜 : Type*) [CommSemiring 𝕜]
 variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
-variable [ContinuousStar A] [Algebra 𝕜 A]
+variable [ContinuousStar A] [SMul 𝕜 A] [Algebra 𝕜 A]
 
 /-- The functorial map taking `f : C(X, Y)` to `C(Y, A) →⋆ₐ[𝕜] C(X, A)` given by pre-composition
 with the continuous function `f`. See `ContinuousMap.compMonoidHom'` and
@@ -1023,11 +1023,11 @@ section Postcomposition
 
 variable (X : Type*) {𝕜 A B C : Type*} [TopologicalSpace X] [CommSemiring 𝕜]
 variable [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
-variable [ContinuousStar A] [Algebra 𝕜 A]
+variable [ContinuousStar A] [SMul 𝕜 A] [Algebra 𝕜 A]
 variable [TopologicalSpace B] [Semiring B] [TopologicalSemiring B] [Star B]
-variable [ContinuousStar B] [Algebra 𝕜 B]
+variable [ContinuousStar B] [SMul 𝕜 B] [Algebra 𝕜 B]
 variable [TopologicalSpace C] [Semiring C] [TopologicalSemiring C] [Star C]
-variable [ContinuousStar C] [Algebra 𝕜 C]
+variable [ContinuousStar C] [SMul 𝕜 C] [Algebra 𝕜 C]
 
 /-- Post-composition with a continuous star algebra homomorphism is a star algebra homomorphism
 between spaces of continuous maps. -/
@@ -1090,7 +1090,7 @@ namespace Homeomorph
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable (𝕜 : Type*) [CommSemiring 𝕜]
 variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [StarRing A]
-variable [ContinuousStar A] [Algebra 𝕜 A]
+variable [ContinuousStar A] [SMul 𝕜 A] [Algebra 𝕜 A]
 
 /-- `ContinuousMap.compStarAlgHom'` as a `StarAlgEquiv` when the continuous map `f` is
 actually a homeomorphism. -/

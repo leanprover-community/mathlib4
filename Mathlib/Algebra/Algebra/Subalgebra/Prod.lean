@@ -23,7 +23,7 @@ namespace Subalgebra
 
 open BigOperators Algebra
 
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
 variable (S : Subalgebra R A) (S₁ : Subalgebra R B)
 
 /-- The product of two subalgebras is a subalgebra. -/

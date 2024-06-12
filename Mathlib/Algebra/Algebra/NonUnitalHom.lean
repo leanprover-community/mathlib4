@@ -501,7 +501,7 @@ end NonUnitalAlgHom
 namespace AlgHom
 
 variable {F R : Type*} [CommSemiring R]
-variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A]
+variable {A B : Type*} [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B]
   [Algebra R B]
 
 -- see Note [lower instance priority]

@@ -40,12 +40,12 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-variable [Algebra R P] [loc : IsLocalization S P]
+variable [SMul R P] [Algebra R P] [loc : IsLocalization S P]
 
 section
 
-variable {P' : Type*} [CommRing P'] [Algebra R P'] [loc' : IsLocalization S P']
-variable {P'' : Type*} [CommRing P''] [Algebra R P''] [loc'' : IsLocalization S P'']
+variable {P' : Type*} [CommRing P'] [SMul R P'] [Algebra R P'] [loc' : IsLocalization S P']
+variable {P'' : Type*} [CommRing P''] [SMul R P''] [Algebra R P''] [loc'' : IsLocalization S P'']
 
 theorem _root_.IsFractional.map (g : P →ₐ[R] P') {I : Submodule R P} :
     IsFractional S I → IsFractional S (Submodule.map g.toLinearMap I)
@@ -259,7 +259,7 @@ theorem canonicalEquiv_flip (I) : canonicalEquiv S P P' (canonicalEquiv S P' P I
 #align fractional_ideal.canonical_equiv_flip FractionalIdeal.canonicalEquiv_flip
 
 @[simp]
-theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
+theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [SMul R P''] [Algebra R P'']
     [IsLocalization S P''] (I : FractionalIdeal S P) :
     canonicalEquiv S P' P'' (canonicalEquiv S P P' I) = canonicalEquiv S P P'' I := by
   ext
@@ -267,7 +267,7 @@ theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'
     exists_prop, exists_exists_and_eq_and]
 #align fractional_ideal.canonical_equiv_canonical_equiv FractionalIdeal.canonicalEquiv_canonicalEquiv
 
-theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
+theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [CommRing P''] [SMul R P''] [Algebra R P'']
     [IsLocalization S P''] :
     (canonicalEquiv S P P').trans (canonicalEquiv S P' P'') = canonicalEquiv S P P'' :=
   RingEquiv.ext (canonicalEquiv_canonicalEquiv S P P' P'')
@@ -299,7 +299,7 @@ i.e. the type `FractionalIdeal R⁰ K` where `IsFractionRing R K`.
 
 
 variable {K K' : Type*} [Field K] [Field K']
-variable [Algebra R K] [IsFractionRing R K] [Algebra R K'] [IsFractionRing R K']
+variable [SMul R K] [Algebra R K] [IsFractionRing R K] [SMul R K'] [Algebra R K'] [IsFractionRing R K']
 variable {I J : FractionalIdeal R⁰ K} (h : K →ₐ[R] K')
 
 /-- Nonzero fractional ideals contain a nonzero integer. -/
@@ -378,7 +378,7 @@ is a field because `R` is a domain.
 open scoped Classical
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
-variable [Algebra R₁ K] [frac : IsFractionRing R₁ K]
+variable [SMul R₁ K] [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
 instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
   ⟨⟨0, 1, fun h =>
@@ -518,7 +518,7 @@ theorem mul_div_self_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * (1 / I) = 
   ⟨fun h => ⟨1 / I, h⟩, fun ⟨J, hJ⟩ => by rwa [← eq_one_div_of_mul_eq_one_right I J hJ]⟩
 #align fractional_ideal.mul_div_self_cancel_iff FractionalIdeal.mul_div_self_cancel_iff
 
-variable {K' : Type*} [Field K'] [Algebra R₁ K'] [IsFractionRing R₁ K']
+variable {K' : Type*} [Field K'] [SMul R₁ K'] [Algebra R₁ K'] [IsFractionRing R₁ K']
 
 @[simp]
 theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
@@ -540,7 +540,7 @@ end Quotient
 section Field
 
 variable {R₁ K L : Type*} [CommRing R₁] [Field K] [Field L]
-variable [Algebra R₁ K] [IsFractionRing R₁ K] [Algebra K L] [IsFractionRing K L]
+variable [SMul R₁ K] [Algebra R₁ K] [IsFractionRing R₁ K] [SMul K L] [Algebra K L] [IsFractionRing K L]
 
 theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
   rw [or_iff_not_imp_left]
@@ -568,7 +568,7 @@ end Field
 section PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
-variable [Algebra R₁ K] [IsFractionRing R₁ K]
+variable [SMul R₁ K] [Algebra R₁ K] [IsFractionRing R₁ K]
 
 open scoped Classical
 
@@ -676,7 +676,7 @@ theorem eq_spanSingleton_of_principal (I : FractionalIdeal S P) [IsPrincipal (I 
 
 theorem isPrincipal_iff (I : FractionalIdeal S P) :
     IsPrincipal (I : Submodule R P) ↔ ∃ x, I = spanSingleton S x :=
-  ⟨fun h => ⟨@generator _ _ _ _ _ (↑I) h, @eq_spanSingleton_of_principal _ _ _ _ _ _ _ I h⟩,
+  ⟨fun h => ⟨@generator _ _ _ _ _ (↑I) h, @eq_spanSingleton_of_principal _ _ _ _ _ _ _ _ I h⟩,
     fun ⟨x, hx⟩ => { principal' := ⟨x, Eq.trans (congr_arg _ hx) (coe_spanSingleton _ x)⟩ }⟩
 #align fractional_ideal.is_principal_iff FractionalIdeal.isPrincipal_iff
 
@@ -734,7 +734,7 @@ theorem coeIdeal_span_singleton (x : R) :
 #align fractional_ideal.coe_ideal_span_singleton FractionalIdeal.coeIdeal_span_singleton
 
 @[simp]
-theorem canonicalEquiv_spanSingleton {P'} [CommRing P'] [Algebra R P'] [IsLocalization S P']
+theorem canonicalEquiv_spanSingleton {P'} [CommRing P'] [SMul R P'] [Algebra R P'] [IsLocalization S P']
     (x : P) :
     canonicalEquiv S P P' (spanSingleton S x) =
       spanSingleton S
@@ -851,7 +851,7 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
 
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
 `I = a⁻¹J`, then `J` is nonzero. -/
-theorem ideal_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K]
+theorem ideal_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [SMul R K] [Algebra R K]
     [IsFractionRing R K] {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R} {J : Ideal R}
     (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) : J ≠ 0 := fun h ↦ by
   rw [h, Ideal.zero_eq_bot, coeIdeal_bot, MulZeroClass.mul_zero] at haJ
@@ -859,7 +859,7 @@ theorem ideal_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K
 
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
 `I = a⁻¹J`, then `a` is nonzero. -/
-theorem constant_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K]
+theorem constant_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [SMul R K] [Algebra R K]
     [IsFractionRing R K] {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R} {J : Ideal R}
     (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
     (Ideal.span {a} : Ideal R) ≠ 0 := fun h ↦ by
@@ -867,7 +867,7 @@ theorem constant_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra 
   rw [h, RingHom.map_zero, inv_zero, spanSingleton_zero, MulZeroClass.zero_mul] at haJ
   exact hI haJ
 
-instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Algebra R K]
+instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [SMul R K] [Algebra R K]
     [IsFractionRing R K] (I : FractionalIdeal R⁰ K) : (I : Submodule R K).IsPrincipal := by
   obtain ⟨a, aI, -, ha⟩ := exists_eq_spanSingleton_mul I
   use (algebraMap R K a)⁻¹ * algebraMap R K (generator aI)
@@ -911,7 +911,7 @@ theorem num_le (I : FractionalIdeal S P) :
 end PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁]
-variable {K : Type*} [Field K] [Algebra R₁ K] [frac : IsFractionRing R₁ K]
+variable {K : Type*} [Field K] [SMul R₁ K] [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
 attribute [local instance] Classical.propDecidable
 

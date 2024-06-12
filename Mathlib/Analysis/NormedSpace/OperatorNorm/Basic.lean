@@ -436,7 +436,7 @@ end OpNorm
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [SMul 𝕜' 𝕜] [NormedAlgebra 𝕜' 𝕜]
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E]
 variable [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
 

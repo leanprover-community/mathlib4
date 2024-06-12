@@ -281,13 +281,15 @@ end NatPowAssoc
 
 section Algebra
 
-theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
+theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*}
+    [Semiring S] [SMul R S] [Algebra R S]
     (x : S) (p : R[X]) : aeval x p = p.smeval x := by
   rw [aeval_def, eval₂_def, Algebra.algebraMap_eq_smul_one', smeval_def]
   simp only [Algebra.smul_mul_assoc, one_mul]
   exact rfl
 
-theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
+theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*}
+    [Semiring S] [SMul R S] [Algebra R S]
     (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p
 
 end Algebra

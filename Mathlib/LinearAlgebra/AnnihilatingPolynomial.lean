@@ -40,7 +40,7 @@ namespace Polynomial
 
 section Semiring
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable (R)
 
 /-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
@@ -65,7 +65,7 @@ end Semiring
 
 section Field
 
-variable {𝕜 A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+variable {𝕜 A : Type*} [Field 𝕜] [Ring A] [SMul 𝕜 A] [Algebra 𝕜 A]
 variable (𝕜)
 
 open Submodule

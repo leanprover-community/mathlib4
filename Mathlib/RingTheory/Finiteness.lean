@@ -148,12 +148,12 @@ theorem fg_bot : (⊥ : Submodule R M).FG :=
 #align submodule.fg_bot Submodule.fg_bot
 
 theorem _root_.Subalgebra.fg_bot_toSubmodule {R A : Type*} [CommSemiring R] [Semiring A]
-    [Algebra R A] : (⊥ : Subalgebra R A).toSubmodule.FG :=
+    [SMul R A] [Algebra R A] : (⊥ : Subalgebra R A).toSubmodule.FG :=
   ⟨{1}, by simp [Algebra.toSubmodule_bot, one_eq_span]⟩
 #align subalgebra.fg_bot_to_submodule Subalgebra.fg_bot_toSubmodule
 
-theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
-    (I : Submodule R A).FG := by
+theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
+    (I : (Submodule R A)ˣ) : (I : Submodule R A).FG := by
   have : (1 : A) ∈ (I * ↑I⁻¹ : Submodule R A) := by
     rw [I.mul_inv]
     exact one_le.mp le_rfl
@@ -166,8 +166,8 @@ theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (
   rwa [one_le]
 #align submodule.fg_unit Submodule.fg_unit
 
-theorem fg_of_isUnit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {I : Submodule R A}
-    (hI : IsUnit I) : I.FG :=
+theorem fg_of_isUnit {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
+    {I : Submodule R A} (hI : IsUnit I) : I.FG :=
   fg_unit hI.unit
 #align submodule.fg_of_is_unit Submodule.fg_of_isUnit
 
@@ -360,7 +360,7 @@ theorem fg_ker_comp {R M N P : Type*} [Ring R] [AddCommGroup M] [Module R M] [Ad
       (LinearMap.ker g).comap f from comap_mono bot_le)]
 #align submodule.fg_ker_comp Submodule.fg_ker_comp
 
-theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [SMul R S] [Algebra R S]
     [AddCommGroup M] [Module S M] [Module R M] [IsScalarTower R S M] (N : Submodule S M)
     (hfin : N.FG) (h : Function.Surjective (algebraMap R S)) :
     (Submodule.restrictScalars R N).FG := by
@@ -462,7 +462,7 @@ end Map₂
 
 section Mul
 
-variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable {M N : Submodule R A}
 
 theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
@@ -502,8 +502,11 @@ theorem FG.map {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) 
 theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : R →+* S)
     (g : S →+* A) (hf : f.ker.FG) (hg : g.ker.FG) (hsur : Function.Surjective f) :
     (g.comp f).ker.FG := by
+  letI : SMul R S := RingHom.toSMul f
   letI : Algebra R S := RingHom.toAlgebra f
+  letI : SMul R A := RingHom.toSMul (g.comp f)
   letI : Algebra R A := RingHom.toAlgebra (g.comp f)
+  letI : SMul S A := RingHom.toSMul g
   letI : Algebra S A := RingHom.toAlgebra g
   letI : IsScalarTower R S A := IsScalarTower.of_algebraMap_eq fun _ => rfl
   let f₁ := Algebra.linearMap R S
@@ -612,7 +615,7 @@ instance self : Finite R R :=
 variable (M)
 
 theorem of_restrictScalars_finite (R A M : Type*) [CommSemiring R] [Semiring A] [AddCommMonoid M]
-    [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M] [hM : Finite R M] :
+    [Module R M] [Module A M] [SMul R A] [Algebra R A] [IsScalarTower R A M] [hM : Finite R M] :
     Finite A M := by
   rw [finite_def, Submodule.fg_def] at hM ⊢
   obtain ⟨S, hSfin, hSgen⟩ := hM
@@ -701,10 +704,13 @@ theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
 #align module.finite.trans Module.Finite.trans
 
 lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B₁]
-    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    [CommRing A₂] [CommRing B₂] [SMul A₁ B₁] [Algebra A₁ B₁] [SMul A₂ B₂] [Algebra A₂ B₂]
+    (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
     [Module.Finite A₁ B₁] : Module.Finite A₂ B₂ := by
+  letI := e₁.toRingHom.toSMul
   letI := e₁.toRingHom.toAlgebra
+  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toSMul
   letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
     (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
@@ -723,12 +729,12 @@ end Module
 
 /-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
 noncomputable local instance
-    [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
+    [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [AddCommMonoid M] [Module R M] :
     Module A (TensorProduct R A M) :=
   haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass
   TensorProduct.leftModule
 
-instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
+instance Module.Finite.base_change [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [AddCommMonoid M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
     obtain ⟨s, hs⟩ := h.out
@@ -813,6 +819,7 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is `Finite` if `B` is finitely generated as `A`-module. -/
 def Finite (f : A →+* B) : Prop :=
+  letI := f.toSMul
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 #align ring_hom.finite RingHom.Finite
@@ -828,11 +835,15 @@ theorem id : Finite (RingHom.id A) :=
 variable {A}
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
+  letI := f.toSMul
   letI := f.toAlgebra
   Module.Finite.of_surjective (Algebra.linearMap A B) hf
 #align ring_hom.finite.of_surjective RingHom.Finite.of_surjective
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
+  letI := f.toSMul
+  letI := g.toSMul
+  letI := (g.comp f).toSMul
   letI := f.toAlgebra
   letI := g.toAlgebra
   letI := (g.comp f).toAlgebra
@@ -843,6 +854,9 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (
 #align ring_hom.finite.comp RingHom.Finite.comp
 
 theorem of_comp_finite {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finite) : g.Finite := by
+  letI := f.toSMul
+  letI := g.toSMul
+  letI := (g.comp f).toSMul
   letI := f.toAlgebra
   letI := g.toAlgebra
   letI := (g.comp f).toAlgebra
@@ -859,7 +873,7 @@ namespace AlgHom
 
 variable {R A B C : Type*} [CommRing R]
 variable [CommRing A] [CommRing B] [CommRing C]
-variable [Algebra R A] [Algebra R B] [Algebra R C]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [SMul R C] [Algebra R C]
 
 /-- An algebra morphism `A →ₐ[R] B` is finite if it is finite as ring morphism.
 In other words, if `B` is finitely generated as `A`-module. -/
@@ -893,5 +907,3 @@ end Finite
 
 end AlgHom
 
-instance Subalgebra.finite_bot {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] :
-    Module.Finite F (⊥ : Subalgebra F E) := Module.Finite.range (Algebra.linearMap F E)

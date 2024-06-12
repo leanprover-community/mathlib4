@@ -37,7 +37,7 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 variable {A}
 
@@ -52,16 +52,16 @@ namespace IsScalarTower
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A]
-variable [Algebra R S] [Algebra S A]
+variable [SMul R S] [Algebra R S] [SMul S A] [Algebra S A]
 
 instance subalgebra (S₀ : Subalgebra R S) : IsScalarTower S₀ S A :=
   of_algebraMap_eq fun _ ↦ rfl
 #align is_scalar_tower.subalgebra IsScalarTower.subalgebra
 
-variable [Algebra R A] [IsScalarTower R S A]
+variable [SMul R A] [Algebra R A] [IsScalarTower R S A]
 
 instance subalgebra' (S₀ : Subalgebra R S) : IsScalarTower R S₀ A :=
-  @IsScalarTower.of_algebraMap_eq R S₀ A _ _ _ _ _ _ fun _ ↦
+  @IsScalarTower.of_algebraMap_eq R S₀ A _ _ _ _ _ _ _ _ _ fun _ ↦
     (IsScalarTower.algebraMap_apply R S A _ : _)
 #align is_scalar_tower.subalgebra' IsScalarTower.subalgebra'
 
@@ -76,7 +76,7 @@ open IsScalarTower
 section Semiring
 
 variable {S A B} [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-variable [Algebra R S] [Algebra S A] [Algebra R A] [Algebra S B] [Algebra R B]
+variable [SMul R S] [Algebra R S] [SMul S A] [Algebra S A] [SMul R A] [Algebra R A] [SMul S B] [Algebra S B] [SMul R B] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- Given a tower `A / ↥U / S / R` of algebras, where `U` is an `S`-subalgebra of `A`, reinterpret
@@ -128,7 +128,7 @@ section CommSemiring
 
 @[simp]
 lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) :
+    [SMul R A] [Algebra R A] (S : Subalgebra R A) :
     LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
   ext
   simp only [← Submodule.range_subtype (Subalgebra.toSubmodule S), LinearMap.mem_range,
@@ -144,7 +144,7 @@ namespace IsScalarTower
 open Subalgebra
 
 variable [CommSemiring R] [CommSemiring S] [CommSemiring A]
-variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
+variable [SMul R S] [Algebra R S] [SMul S A] [Algebra S A] [SMul R A] [Algebra R A] [IsScalarTower R S A]
 
 theorem adjoin_range_toAlgHom (t : Set A) :
     (Algebra.adjoin (toAlgHom R S A).range t).restrictScalars R =

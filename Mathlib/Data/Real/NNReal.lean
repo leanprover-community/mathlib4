@@ -264,8 +264,7 @@ instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
 
 -- Porting note (#11215): TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
-instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
-  smul := (· • ·)
+instance {A : Type*} [Semiring A] [SMul ℝ A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)

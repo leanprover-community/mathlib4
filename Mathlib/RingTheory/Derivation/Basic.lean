@@ -42,8 +42,8 @@ assumption from the Leibniz rule when `M` is cancellative.
 
 TODO: update this when bimodules are defined. -/
 structure Derivation (R : Type*) (A : Type*) (M : Type*)
-    [CommSemiring R] [CommSemiring A] [AddCommMonoid M] [Algebra R A] [Module A M] [Module R M]
-    extends A →ₗ[R] M where
+    [CommSemiring R] [CommSemiring A] [AddCommMonoid M] [SMul R A] [Algebra R A]
+    [Module A M] [Module R M] extends A →ₗ[R] M where
   protected map_one_eq_zero' : toLinearMap 1 = 0
   protected leibniz' (a b : A) : toLinearMap (a * b) = a • toLinearMap b + b • toLinearMap a
 #align derivation Derivation
@@ -57,7 +57,7 @@ section
 
 variable {R : Type*} {A : Type*} {B : Type*} {M : Type*}
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B] [AddCommMonoid M]
-variable [Algebra R A] [Algebra R B]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [Module A M] [Module B M] [Module R M]
 
 
@@ -337,7 +337,7 @@ variable (A) in
 /-- For a tower `R → A → B` and an `R`-derivation `B → M`, we may compose with `A → B` to obtain an
 `R`-derivation `A → M`. -/
 @[simps!]
-def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
+def compAlgebraMap [SMul A B] [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
     (d : Derivation R B M) : Derivation R A M where
   map_one_eq_zero' := by simp
   leibniz' a b := by simp
@@ -347,7 +347,7 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
 section RestrictScalars
 
 variable {S : Type*} [CommSemiring S]
-variable [Algebra S A] [Module S M] [LinearMap.CompatibleSMul A M R S]
+variable [SMul S A] [Algebra S A] [Module S M] [LinearMap.CompatibleSMul A M R S]
 variable (R)
 
 /-- If `A` is both an `R`-algebra and an `S`-algebra; `M` is both an `R`-module and an `S`-module,
@@ -364,8 +364,8 @@ end
 
 section Cancel
 
-variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A] {M : Type*}
-  [AddCancelCommMonoid M] [Module R M] [Module A M]
+variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [SMul R A] [Algebra R A]
+  {M : Type*} [AddCancelCommMonoid M] [Module R M] [Module A M]
 
 /-- Define `Derivation R A M` from a linear map when `M` is cancellative by verifying the Leibniz
 rule. -/
@@ -390,7 +390,7 @@ end Cancel
 section
 
 variable {R : Type*} [CommRing R]
-variable {A : Type*} [CommRing A] [Algebra R A]
+variable {A : Type*} [CommRing A] [SMul R A] [Algebra R A]
 
 section
 
@@ -428,8 +428,8 @@ theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 #align derivation.leibniz_inv_of Derivation.leibniz_invOf
 
-theorem leibniz_inv {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
-    (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
+theorem leibniz_inv {K : Type*} [Field K] [Module K M] [SMul R K] [Algebra R K]
+    (D : Derivation R K M) (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
   · exact D.leibniz_of_mul_eq_one (inv_mul_cancel ha)

@@ -143,7 +143,9 @@ end NonUnitalSemiring
 noncomputable section Semiring
 
 variable [CommSemiring R'] [CommSemiring R] [∀ i, Semiring (A i)]
-variable [Algebra R' R] [∀ i, Algebra R (A i)] [∀ i, Algebra R' (A i)]
+variable [SMul R' R] [Algebra R' R]
+variable [∀ i, SMul R (A i)] [∀ i, Algebra R (A i)]
+variable [∀ i, SMul R' (A i)] [∀ i, Algebra R' (A i)]
 variable [∀ i, IsScalarTower R' R (A i)]
 
 instance instSemiring : Semiring (⨂[R] i, A i) where
@@ -151,7 +153,6 @@ instance instSemiring : Semiring (⨂[R] i, A i) where
   __ := instNonAssocSemiring
 
 instance instAlgebra : Algebra R' (⨂[R] i, A i) where
-  __ := hasSMul'
   toFun := (· • 1)
   map_one' := by simp
   map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
@@ -202,7 +203,7 @@ def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
 Lifting a multilinear map to an algebra homomorphism from tensor product
 -/
 @[simps!]
-def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
+def liftAlgHom {S : Type*} [Semiring S] [SMul R S] [Algebra R S]
     (f : MultilinearMap R A S)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : (⨂[R] i, A i) →ₐ[R] S :=
   AlgHom.ofLinearMap (lift f) (show lift f (tprod R 1) = 1 by simp [one]) <|
@@ -216,7 +217,7 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
 /-- To show two algebra morphisms from finite tensor products are equal, it suffices to show that
 they agree on elements of the form $1 ⊗ ⋯ ⊗ a ⊗ 1 ⊗ ⋯$. -/
 @[ext high]
-theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [Algebra R S]
+theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [SMul R S] [Algebra R S]
     ⦃f g : (⨂[R] i, A i) →ₐ[R] S⦄ (h : ∀ i, f.comp (singleAlgHom i) = g.comp (singleAlgHom i)) :
     f = g :=
   AlgHom.toLinearMap_injective <| PiTensorProduct.ext <| MultilinearMap.ext fun x =>
@@ -228,7 +229,7 @@ end Semiring
 
 noncomputable section Ring
 
-variable [CommRing R] [∀ i, Ring (A i)] [∀ i, Algebra R (A i)]
+variable [CommRing R] [∀ i, Ring (A i)] [∀ i, SMul R (A i)] [∀ i, Algebra R (A i)]
 
 instance instRing : Ring (⨂[R] i, A i) where
   __ := instSemiring
@@ -238,7 +239,7 @@ end Ring
 
 noncomputable section CommSemiring
 
-variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
+variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, SMul R (A i)] [∀ i, Algebra R (A i)]
 
 protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
   suffices mul (R := R) (A := A) = mul.flip from
@@ -302,7 +303,7 @@ end CommSemiring
 
 noncomputable section CommRing
 
-variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
+variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, SMul R (A i)] [∀ i, Algebra R (A i)]
 instance instCommRing : CommRing (⨂[R] i, A i) where
   __ := instCommSemiring
   __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)

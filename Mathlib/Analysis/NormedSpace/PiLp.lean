@@ -99,6 +99,7 @@ variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
+set_option synthInstance.maxHeartbeats 0 in
 @[simp]
 theorem zero_apply : (0 : PiLp p β) i = 0 :=
   rfl
@@ -951,6 +952,7 @@ theorem basisFun_repr (x : PiLp p fun _ : ι => 𝕜) (i : ι) : (basisFun p �
   rfl
 #align pi_Lp.basis_fun_repr PiLp.basisFun_repr
 
+set_option synthInstance.maxHeartbeats 0 in
 @[simp]
 theorem basisFun_equivFun : (basisFun p 𝕜 ι).equivFun = WithLp.linearEquiv p 𝕜 (ι → 𝕜) :=
   Basis.equivFun_ofEquivFun _
@@ -961,6 +963,7 @@ theorem basisFun_eq_pi_basisFun :
   rfl
 #align pi_Lp.basis_fun_eq_pi_basis_fun PiLp.basisFun_eq_pi_basisFun
 
+set_option synthInstance.maxHeartbeats 0 in
 @[simp]
 theorem basisFun_map :
     (basisFun p 𝕜 ι).map (WithLp.linearEquiv p 𝕜 (ι → 𝕜)) = Pi.basisFun 𝕜 ι :=

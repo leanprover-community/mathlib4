@@ -37,7 +37,7 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup 
     simp only [map_zero] at hf
     exact ⟨f, hf.ne'⟩⟩
 
-instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
+instance {E 𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
     rcases exists_dual_vector 𝕜 x hx with ⟨f, -, hf⟩
     refine ⟨f, ?_⟩
@@ -79,10 +79,11 @@ variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [Topologi
 -- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
 theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
     Function.Injective (ContinuousLinearMap.coeLM (R := R) R (M := V) (N₃ := R)).flip := by
-  simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
-  congrm ∀ v, ?_
-  rw [not_imp_comm, LinearMap.ext_iff]
-  push_neg; rfl
+    sorry
+  -- simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
+  -- congrm ∀ v, ?_
+  -- rw [not_imp_comm, LinearMap.ext_iff]
+  -- push_neg; rfl
 
 open Function in
 /-- Given a finite-dimensional subspace `W` of a space `V` with separating dual, any

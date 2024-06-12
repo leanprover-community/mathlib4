@@ -45,7 +45,7 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 #align units.chart_at_source Units.chartAt_source
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [SMul 𝕜 R] [NormedAlgebra 𝕜 R]
 
 instance : SmoothManifoldWithCorners 𝓘(𝕜, R) Rˣ :=
   openEmbedding_val.singleton_smoothManifoldWithCorners 𝓘(𝕜, R)

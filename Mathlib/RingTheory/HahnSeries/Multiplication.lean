@@ -591,7 +591,7 @@ end Domain
 
 section Algebra
 
-variable [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
+variable [CommSemiring R] {A : Type*} [Semiring A] [SMul R A] [Algebra R A]
 
 instance : Algebra R (HahnSeries Γ A) where
   toRingHom := C.comp (algebraMap R A)

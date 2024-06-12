@@ -113,7 +113,7 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 #align same_ray.trans SameRay.trans
 
-variable {S : Type*} [OrderedCommSemiring S] [Algebra S R] [Module S M] [SMulPosMono S R]
+variable {S : Type*} [OrderedCommSemiring S] [SMul S R] [Algebra S R] [Module S M] [SMulPosMono S R]
   [IsScalarTower S R M] {a : S}
 
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/

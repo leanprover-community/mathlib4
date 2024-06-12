@@ -78,8 +78,14 @@ instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited
 instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 #align clifford_algebra.ring CliffordAlgebra.instRing
 
+instance (priority := 900) instSMul' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
+    [SMul R A] [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
+    [IsScalarTower R A M] :
+    SMul R (CliffordAlgebra Q) :=
+  RingQuot.instSMul _
+
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
-    [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
+    [SMul R A] [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
   RingQuot.instAlgebra _
@@ -95,13 +101,13 @@ instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
 #align clifford_algebra.algebra CliffordAlgebra.instAlgebra
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
-    [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
+    [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (CliffordAlgebra Q) :=
   RingQuot.instSMulCommClass _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
-    [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
+    [SMul R S] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] (Q : QuadraticForm A M) :
     IsScalarTower R S (CliffordAlgebra Q) :=
   RingQuot.instIsScalarTower _
@@ -119,7 +125,7 @@ theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
   rfl
 #align clifford_algebra.ι_sq_scalar CliffordAlgebra.ι_sq_scalar
 
-variable {Q} {A : Type*} [Semiring A] [Algebra R A]
+variable {Q} {A : Type*} [Semiring A] [SMul R A] [Algebra R A]
 
 @[simp]
 theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :
@@ -188,7 +194,7 @@ theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
+theorem hom_ext {A : Type*} [Semiring A] [SMul R A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
     f.toLinearMap.comp (ι Q) = g.toLinearMap.comp (ι Q) → f = g := by
   intro h
   apply (lift Q).symm.injective
@@ -230,7 +236,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   exact Subtype.prop (lift Q of a)
 #align clifford_algebra.induction CliffordAlgebra.induction
 
-theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
+theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [SMul R A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :
     f a * f b + f b * f a = algebraMap R _ (QuadraticForm.polar Q a b) :=
   calc
@@ -245,7 +251,7 @@ theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebr
 
 To show a function squares to the quadratic form, it suffices to show that
 `f x * f y + f y * f x = algebraMap _ _ (polar Q x y)` -/
-theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (2 : A))
+theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [SMul R A] [Algebra R A] (h2 : IsUnit (2 : A))
     (f : M →ₗ[R] A) :
     (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
       (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =

@@ -305,12 +305,12 @@ theorem sum_smul (n : ℕ) :
   -- We'll work in `MvPolynomial Bool R`.
   let x : MvPolynomial Bool R := MvPolynomial.X true
   let y : MvPolynomial Bool R := MvPolynomial.X false
-  have pderiv_true_x : pderiv true x = 1 := by rw [pderiv_X]; rfl
-  have pderiv_true_y : pderiv true y = 0 := by rw [pderiv_X]; rfl
+  have pderiv_true_x : pderiv (R := R) true x = 1 := by rw [pderiv_X]; rfl
+  have pderiv_true_y : pderiv (R := R) true y = 0 := by rw [pderiv_X]; rfl
   let e : Bool → R[X] := fun i => cond i X (1 - X)
   -- Start with `(x+y)^n = (x+y)^n`,
   -- take the `x`-derivative, evaluate at `x=X, y=1-X`, and multiply by `X`:
-  trans MvPolynomial.aeval e (pderiv true ((x + y) ^ n)) * X
+  trans MvPolynomial.aeval (R := R) e (pderiv (R := R) true ((x + y) ^ n)) * X
   -- On the left hand side we'll use the binomial theorem, then simplify.
   · -- We first prepare a tedious rewrite:
     have w : ∀ k : ℕ, k • bernsteinPolynomial R n k =
@@ -343,12 +343,12 @@ theorem sum_mul_smul (n : ℕ) :
   -- We'll work in `MvPolynomial Bool R`.
   let x : MvPolynomial Bool R := MvPolynomial.X true
   let y : MvPolynomial Bool R := MvPolynomial.X false
-  have pderiv_true_x : pderiv true x = 1 := by rw [pderiv_X]; rfl
-  have pderiv_true_y : pderiv true y = 0 := by rw [pderiv_X]; rfl
+  have pderiv_true_x : pderiv (R := R) true x = 1 := by rw [pderiv_X]; rfl
+  have pderiv_true_y : pderiv (R := R) true y = 0 := by rw [pderiv_X]; rfl
   let e : Bool → R[X] := fun i => cond i X (1 - X)
   -- Start with `(x+y)^n = (x+y)^n`,
   -- take the second `x`-derivative, evaluate at `x=X, y=1-X`, and multiply by `X`:
-  trans MvPolynomial.aeval e (pderiv true (pderiv true ((x + y) ^ n))) * X ^ 2
+  trans MvPolynomial.aeval (R := R) e (pderiv (R := R) true (pderiv (R := R) true ((x + y) ^ n))) * X ^ 2
   -- On the left hand side we'll use the binomial theorem, then simplify.
   · -- We first prepare a tedious rewrite:
     have w : ∀ k : ℕ, (k * (k - 1)) • bernsteinPolynomial R n k =

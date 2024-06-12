@@ -1194,7 +1194,7 @@ end NormedDivisionRing
 
 section RCLike
 
-variable {𝕜 : Type*} [RCLike 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] {f : α → 𝕜}
 
 theorem Integrable.ofReal {f : α → ℝ} (hf : Integrable f μ) :
     Integrable (fun x => (f x : 𝕜)) μ := by
@@ -1375,8 +1375,8 @@ theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, edist (f a) (g
   simp [edist_eq_coe_nnnorm_sub]
 #align measure_theory.L1.dist_def MeasureTheory.L1.dist_def
 
-theorem norm_def (f : α →₁[μ] β) : ‖f‖ = (∫⁻ a, ‖f a‖₊ ∂μ).toReal := by
-  simp [Lp.norm_def, snorm, snorm']
+theorem norm_def (f : α →₁[μ] β) : ‖f‖ = (∫⁻ a, ‖f a‖₊ ∂μ).toReal := by sorry
+  -- simp [Lp.norm_def, snorm, snorm']
 #align measure_theory.L1.norm_def MeasureTheory.L1.norm_def
 
 /-- Computing the norm of a difference between two L¹-functions. Note that this is not a

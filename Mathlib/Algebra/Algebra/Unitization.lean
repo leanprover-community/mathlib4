@@ -594,7 +594,7 @@ end Star
 section Algebra
 
 variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
-  [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
+  [IsScalarTower R A A] [SMulCommClass R A A] [SMul S R] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
 instance instAlgebra : Algebra S (Unitization R A) :=
@@ -668,8 +668,10 @@ end coe
 section AlgHom
 
 variable {S R A : Type*} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A] [Module R A]
-  [SMulCommClass R A A] [IsScalarTower R A A] {B : Type*} [Semiring B] [Algebra S B] [Algebra S R]
-  [DistribMulAction S A] [IsScalarTower S R A] {C : Type*} [Semiring C] [Algebra R C]
+  [SMulCommClass R A A] [IsScalarTower R A A] {B : Type*} [Semiring B] [SMul S B] [Algebra S B]
+  [SMul S R] [Algebra S R]
+  [DistribMulAction S A] [IsScalarTower S R A] {C : Type*} [Semiring C]
+  [SMul R C] [Algebra R C]
 
 theorem algHom_ext {F : Type*}
     [FunLike F (Unitization R A) B] [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
@@ -754,7 +756,7 @@ section StarAlgHom
 
 variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
-variable [Semiring C] [Algebra R C] [StarRing C] [StarModule R C]
+variable [Semiring C] [SMul R C] [Algebra R C] [StarRing C] [StarModule R C]
 
 /-- See note [partially-applied ext lemmas] -/
 @[ext]

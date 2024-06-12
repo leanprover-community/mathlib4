@@ -146,7 +146,7 @@ end invOneSubPow
 
 section Field
 
-variable (A A' : Type*) [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A']
+variable (A A' : Type*) [Ring A] [Ring A'] [SMul ℚ A] [Algebra ℚ A] [SMul ℚ A'] [Algebra ℚ A']
 
 open Nat
 
@@ -165,7 +165,7 @@ def cos : PowerSeries A :=
   mk fun n => if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
 #align power_series.cos PowerSeries.cos
 
-variable {A A'} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (n : ℕ) (f : A →+* A')
+variable {A A'} [Ring A] [Ring A'] [SMul ℚ A] [Algebra ℚ A] [SMul ℚ A'] [Algebra ℚ A'] (n : ℕ) (f : A →+* A')
 
 @[simp]
 theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
@@ -231,7 +231,7 @@ open Finset Nat
 variable {A : Type*} [CommRing A]
 
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
-theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
+theorem exp_mul_exp_eq_exp_add [SMul ℚ A] [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
   ext n
   simp only [coeff_mul, exp, rescale, coeff_mk, MonoidHom.coe_mk, OneHom.coe_mk, coe_mk,
@@ -259,12 +259,12 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 #align power_series.exp_mul_exp_eq_exp_add PowerSeries.exp_mul_exp_eq_exp_add
 
 /-- Shows that $e^{x} * e^{-x} = 1$ -/
-theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
+theorem exp_mul_exp_neg_eq_one [SMul ℚ A] [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
   convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
 #align power_series.exp_mul_exp_neg_eq_one PowerSeries.exp_mul_exp_neg_eq_one
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
-theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
+theorem exp_pow_eq_rescale_exp [SMul ℚ A] [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction' k with k h
   · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero, zero_eq,
       pow_zero (exp A), coe_comp]
@@ -274,7 +274,7 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
 
 /-- Shows that
 $\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p$. -/
-theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
+theorem exp_pow_sum [SMul ℚ A] [Algebra ℚ A] (n : ℕ) :
     ((Finset.range n).sum fun k => exp A ^ k) =
       PowerSeries.mk fun p => (Finset.range n).sum
         fun k => (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by

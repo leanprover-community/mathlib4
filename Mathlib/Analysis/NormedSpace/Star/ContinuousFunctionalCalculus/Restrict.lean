@@ -27,7 +27,7 @@ simply by proving:
 namespace SpectrumRestricts
 
 lemma compactSpace {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
-    [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [TopologicalSpace R]
+    [SMul R S] [Algebra R S] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A] [TopologicalSpace R]
     [TopologicalSpace S] {a : A} (f : C(S, R)) (h : SpectrumRestricts a f)
     [h_cpct : CompactSpace (spectrum S a)] : CompactSpace (spectrum R a) := by
   rw [← isCompact_iff_compactSpace] at h_cpct ⊢
@@ -41,7 +41,7 @@ calculus over the larger scalar ring descends to the smaller one. -/
 def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
     [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Semifield S]
     [StarRing S] [TopologicalSpace S] [TopologicalSemiring S] [ContinuousStar S] [Ring A]
-    [StarRing A] [Algebra R S] [Algebra R A] [Algebra S A]
+    [StarRing A] [SMul R S] [Algebra R S] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
     (φ : C(spectrum S a, S) →⋆ₐ[S] A) {f : C(S, R)} (h : SpectrumRestricts a f) :
     C(spectrum R a, R) →⋆ₐ[R] A :=
@@ -54,8 +54,8 @@ def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
 variable {R S A : Type*} {p q : A → Prop}
 variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
-variable [TopologicalSpace A] [Ring A] [StarRing A] [Algebra S A] [ContinuousFunctionalCalculus S q]
-variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
+variable [TopologicalSpace A] [Ring A] [StarRing A] [SMul S A] [Algebra S A] [ContinuousFunctionalCalculus S q]
+variable [SMul R S] [Algebra R S] [SMul R A] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 variable [CompleteSpace R]
 
 lemma closedEmbedding_starAlgHom {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A}

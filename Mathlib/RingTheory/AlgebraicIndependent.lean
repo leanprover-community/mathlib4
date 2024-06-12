@@ -53,7 +53,7 @@ variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
 variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
 variable (x : ι → A)
 variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-variable [Algebra R A] [Algebra R A'] [Algebra R A'']
+variable [SMul R A] [Algebra R A] [SMul R A'] [Algebra R A'] [SMul R A''] [Algebra R A'']
 variable {a b : R}
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
@@ -73,12 +73,12 @@ theorem algebraicIndependent_iff_ker_eq_bot :
 
 theorem algebraicIndependent_iff :
     AlgebraicIndependent R x ↔
-      ∀ p : MvPolynomial ι R, MvPolynomial.aeval (x : ι → A) p = 0 → p = 0 :=
+      ∀ p : MvPolynomial ι R, MvPolynomial.aeval (R := R) (x : ι → A) p = 0 → p = 0 :=
   injective_iff_map_eq_zero _
 #align algebraic_independent_iff algebraicIndependent_iff
 
 theorem AlgebraicIndependent.eq_zero_of_aeval_eq_zero (h : AlgebraicIndependent R x) :
-    ∀ p : MvPolynomial ι R, MvPolynomial.aeval (x : ι → A) p = 0 → p = 0 :=
+    ∀ p : MvPolynomial ι R, MvPolynomial.aeval (R := R) (x : ι → A) p = 0 → p = 0 :=
   algebraicIndependent_iff.1 h
 #align algebraic_independent.eq_zero_of_aeval_eq_zero AlgebraicIndependent.eq_zero_of_aeval_eq_zero
 
@@ -129,7 +129,7 @@ theorem ne_zero [Nontrivial R] (i : ι) : x i ≠ 0 :=
 
 theorem comp (f : ι' → ι) (hf : Function.Injective f) : AlgebraicIndependent R (x ∘ f) := by
   intro p q
-  simpa [aeval_rename, (rename_injective f hf).eq_iff] using @hx (rename f p) (rename f q)
+  simpa [aeval_rename (R := R), (rename_injective (R := R) f hf).eq_iff] using @hx (rename (R := R) f p) (rename (R := R) f q)
 #align algebraic_independent.comp AlgebraicIndependent.comp
 
 theorem coe_range : AlgebraicIndependent R ((↑) : range x → A) := by
@@ -139,10 +139,10 @@ theorem coe_range : AlgebraicIndependent R ((↑) : range x → A) := by
 theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
     AlgebraicIndependent R (f ∘ x) := by
   have : aeval (f ∘ x) = f.comp (aeval x) := by ext; simp
-  have h : ∀ p : MvPolynomial ι R, aeval x p ∈ (@aeval R _ _ _ _ _ ((↑) : range x → A)).range := by
+  have h : ∀ p : MvPolynomial ι R, aeval (R := R) x p ∈ (@aeval R _ _ _ _ _ _ ((↑) : range x → A)).range := by
     intro p
     rw [AlgHom.mem_range]
-    refine' ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, _⟩
+    refine' ⟨MvPolynomial.rename (R := R) (codRestrict x (range x) mem_range_self) p, _⟩
     simp [Function.comp, aeval_rename]
   intro x y hxy
   rw [this] at hxy
@@ -201,13 +201,13 @@ theorem algebraicIndependent_image {ι} {s : Set ι} {f : ι → A} (hf : Set.In
 
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
-      (fun i : ι => ⟨x i, subset_adjoin (mem_range_self i)⟩) _ _ _ :=
+      (fun i : ι => ⟨x i, subset_adjoin (mem_range_self i)⟩) _ _ _ _ :=
   AlgebraicIndependent.of_comp (adjoin R (range x)).val hs
 #align algebraic_independent_adjoin algebraicIndependent_adjoin
 
 /-- A set of algebraically independent elements in an algebra `A` over a ring `K` is also
 algebraically independent over a subring `R` of `K`. -/
-theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R K] [Algebra K A]
+theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [SMul R K] [Algebra R K] [SMul K A] [Algebra K A]
     [IsScalarTower R K A] (hinj : Function.Injective (algebraMap R K))
     (ai : AlgebraicIndependent K x) : AlgebraicIndependent R x := by
   have : (aeval x : MvPolynomial ι K →ₐ[K] A).toRingHom.comp (MvPolynomial.map (algebraMap R K)) =
@@ -284,9 +284,9 @@ theorem AlgebraicIndependent.to_subtype_range' {ι} {f : ι → A} (hf : Algebra
 
 theorem algebraicIndependent_comp_subtype {s : Set ι} :
     AlgebraicIndependent R (x ∘ (↑) : s → A) ↔
-      ∀ p ∈ MvPolynomial.supported R s, aeval x p = 0 → p = 0 := by
+      ∀ p ∈ MvPolynomial.supported R s, aeval (R := R) x p = 0 → p = 0 := by
   have : (aeval (x ∘ (↑) : s → A) : _ →ₐ[R] _) = (aeval x).comp (rename (↑)) := by ext; simp
-  have : ∀ p : MvPolynomial s R, rename ((↑) : s → ι) p = 0 ↔ p = 0 :=
+  have : ∀ p : MvPolynomial s R, rename (R := R) ((↑) : s → ι) p = 0 ↔ p = 0 :=
     (injective_iff_map_eq_zero' (rename ((↑) : s → ι) : MvPolynomial s R →ₐ[R] _).toRingHom).1
       (rename_injective _ Subtype.val_injective)
   simp [algebraicIndependent_iff, supported_eq_range_rename, *]
@@ -294,7 +294,7 @@ theorem algebraicIndependent_comp_subtype {s : Set ι} :
 
 theorem algebraicIndependent_subtype {s : Set A} :
     AlgebraicIndependent R ((↑) : s → A) ↔
-      ∀ p : MvPolynomial A R, p ∈ MvPolynomial.supported R s → aeval id p = 0 → p = 0 := by
+      ∀ p : MvPolynomial A R, p ∈ MvPolynomial.supported R s → aeval (R := R) id p = 0 → p = 0 := by
   apply @algebraicIndependent_comp_subtype _ _ _ id
 #align algebraic_independent_subtype algebraicIndependent_subtype
 
@@ -367,7 +367,7 @@ variable (hx : AlgebraicIndependent R x)
 def AlgebraicIndependent.aevalEquiv (hx : AlgebraicIndependent R x) :
     MvPolynomial ι R ≃ₐ[R] Algebra.adjoin R (range x) := by
   apply
-    AlgEquiv.ofBijective (AlgHom.codRestrict (@aeval R A ι _ _ _ x) (Algebra.adjoin R (range x)) _)
+    AlgEquiv.ofBijective (AlgHom.codRestrict (@aeval R A ι _ _ _ _ x) (Algebra.adjoin R (range x)) _)
   swap
   · intro x
     rw [adjoin_range_eq_range_aeval]
@@ -385,7 +385,7 @@ def AlgebraicIndependent.aevalEquiv (hx : AlgebraicIndependent R x) :
 --@[simp] Porting note: removing simp because the linter complains about deterministic timeout
 theorem AlgebraicIndependent.algebraMap_aevalEquiv (hx : AlgebraicIndependent R x)
     (p : MvPolynomial ι R) :
-    algebraMap (Algebra.adjoin R (range x)) A (hx.aevalEquiv p) = aeval x p :=
+    algebraMap (Algebra.adjoin R (range x)) A (hx.aevalEquiv p) = aeval (R := R) x p :=
   rfl
 #align algebraic_independent.algebra_map_aeval_equiv AlgebraicIndependent.algebraMap_aevalEquiv
 
@@ -397,7 +397,7 @@ def AlgebraicIndependent.repr (hx : AlgebraicIndependent R x) :
 #align algebraic_independent.repr AlgebraicIndependent.repr
 
 @[simp]
-theorem AlgebraicIndependent.aeval_repr (p) : aeval x (hx.repr p) = p :=
+theorem AlgebraicIndependent.aeval_repr (p) : aeval (R := R) x (hx.repr p) = p :=
   Subtype.ext_iff.1 (AlgEquiv.apply_symm_apply hx.aevalEquiv p)
 #align algebraic_independent.aeval_repr AlgebraicIndependent.aeval_repr
 
@@ -426,7 +426,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
     (hx : AlgebraicIndependent R x) (y) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin y =
       Polynomial.map (hx.aevalEquiv : MvPolynomial ι R →+* adjoin R (range x))
-        (aeval (fun o : Option ι => o.elim Polynomial.X fun s : ι => Polynomial.C (X s)) y) :=
+        (aeval (R := R) (fun o : Option ι => o.elim Polynomial.X fun s : ι => Polynomial.C (X s)) y) :=
   rfl
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_apply AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_apply
 
@@ -511,7 +511,7 @@ theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
 variable {R}
 
 theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u} [CommRing R]
-    [Nontrivial R] {A : Type v} [CommRing A] [Algebra R A] {x : ι → A}
+    [Nontrivial R] {A : Type v} [CommRing A] [SMul R A] [Algebra R A] {x : ι → A}
     (i : AlgebraicIndependent R x) :
     IsTranscendenceBasis R x ↔
       ∀ (κ : Type v) (w : κ → A) (_ : AlgebraicIndependent R w) (j : ι → κ) (_ : w ∘ j = x),
@@ -554,7 +554,7 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
 
 section Field
 
-variable [Field K] [Algebra K A]
+variable [Field K] [SMul K A] [Algebra K A]
 
 /- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
 simp lemma when `f` is a field hom, and then simp would prove this -/

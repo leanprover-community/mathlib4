@@ -80,7 +80,7 @@ In combination with `det_eq_sign_charpoly_coeff` or `trace_eq_neg_charpoly_coeff
 and a bit of rewriting, this will allow us to conclude the
 field norm resp. trace of `x` is the product resp. sum of `x`'s conjugates.
 -/
-theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [Algebra R S] (h : PowerBasis R S) :
+theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [SMul R S] [Algebra R S] (h : PowerBasis R S) :
     (leftMulMatrix h.basis h.gen).charpoly = minpoly R h.gen := by
   cases subsingleton_or_nontrivial R; · apply Subsingleton.elim
   apply minpoly.unique' R h.gen (charpoly_monic _)

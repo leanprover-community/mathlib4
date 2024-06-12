@@ -121,7 +121,7 @@ theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S�
 #align mv_polynomial.map_equiv_trans MvPolynomial.mapEquiv_trans
 
 variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
-variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
+variable [SMul R A₁] [Algebra R A₁] [SMul R A₂] [Algebra R A₂] [SMul R A₃] [Algebra R A₃]
 
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
 @[simps apply]
@@ -396,7 +396,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
         convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   show
-    aeval (Fin.cons y s : Fin (n + 1) → R) f =
+    aeval (R := R) (Fin.cons y s : Fin (n + 1) → R) f =
       (Polynomial.aeval y).comp (φ.comp (finSuccEquiv R n).toAlgHom) f
   congr 2
   apply MvPolynomial.algHom_ext
@@ -526,7 +526,7 @@ Then one may view `φ` as a polynomial over `MvPolynomial (Fin n) R`, by
 
 This lemma shows that both constructions are the same. -/
 lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Option σ) R) :
-    ((finSuccEquiv R n) ((rename ((Equiv.optionCongr e).trans (_root_.finSuccEquiv n).symm)) φ)) =
+    ((finSuccEquiv R n) ((rename (R := R) ((Equiv.optionCongr e).trans (_root_.finSuccEquiv n).symm)) φ)) =
       Polynomial.map (rename e).toRingHom (optionEquivLeft R σ φ) := by
   suffices (finSuccEquiv R n).toRingEquiv.toRingHom.comp (rename ((Equiv.optionCongr e).trans
         (_root_.finSuccEquiv n).symm)).toRingHom =

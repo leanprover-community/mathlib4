@@ -338,12 +338,12 @@ theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :
   f.toRingHom.map_det _
 #align ring_equiv.map_det RingEquiv.map_det
 
-theorem _root_.AlgHom.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R T] (f : S →ₐ[R] T)
+theorem _root_.AlgHom.map_det [SMul R S] [Algebra R S] {T : Type z} [CommRing T] [SMul R T] [Algebra R T] (f : S →ₐ[R] T)
     (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
   f.toRingHom.map_det _
 #align alg_hom.map_det AlgHom.map_det
 
-theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R T]
+theorem _root_.AlgEquiv.map_det [SMul R S] [Algebra R S] {T : Type z} [CommRing T] [SMul R T] [Algebra R T]
     (f : S ≃ₐ[R] T) (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
   f.toAlgHom.map_det _
 #align alg_equiv.map_det AlgEquiv.map_det

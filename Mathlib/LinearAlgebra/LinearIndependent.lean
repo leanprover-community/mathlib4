@@ -1209,7 +1209,8 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
 #align linear_independent_monoid_hom linearIndependent_monoidHom
 
 lemma linearIndependent_algHom_toLinearMap
-    (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
+    (K M L) [CommSemiring K] [Semiring M] [SMul K M] [Algebra K M] [CommRing L] [IsDomain L]
+    [SMul K L] [Algebra K L] :
     LinearIndependent L (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
   apply LinearIndependent.of_comp (LinearMap.ltoFun K M L)
   exact (linearIndependent_monoidHom M L).comp
@@ -1217,7 +1218,8 @@ lemma linearIndependent_algHom_toLinearMap
     (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e : _))
 
 lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
-    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
+    [Semiring M] [SMul K M] [Algebra K M] [CommRing L] [IsDomain L]
+    [SMul K L] [Algebra K L] [NoZeroSMulDivisors K L] :
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
   apply (linearIndependent_algHom_toLinearMap K M L).restrict_scalars
   simp_rw [Algebra.smul_def, mul_one]

@@ -201,7 +201,7 @@ theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
 
 end RingSubgroupsBasis
 
-variable {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable {ι R A : Type*} [CommRing R] [CommRing A] [SMul R A] [Algebra R A]
 
 /-- A family of submodules in a commutative `R`-algebra `A` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `A` which is compatible with the ring structure and

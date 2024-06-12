@@ -181,6 +181,8 @@ theorem memℒp_approxOn_range [BorelSpace E] {f : β → E} {μ : Measure β} (
   memℒp_approxOn fmeas hf (y₀ := 0) (by simp) zero_memℒp n
 #align measure_theory.simple_func.mem_ℒp_approx_on_range MeasureTheory.SimpleFunc.memℒp_approxOn_range
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞)
     {μ : Measure β} (fmeas : Measurable f) [SeparableSpace (range f ∪ {0} : Set E)]
     (hf : Memℒp f p μ) :
@@ -562,6 +564,8 @@ theorem toLp_smul (f : α →ₛ E) (hf : Memℒp f p μ) (c : 𝕜) :
   rfl
 #align measure_theory.Lp.simple_func.to_Lp_smul MeasureTheory.Lp.simpleFunc.toLp_smul
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 nonrec theorem norm_toLp [Fact (1 ≤ p)] (f : α →ₛ E) (hf : Memℒp f p μ) :
     ‖toLp f hf‖ = ENNReal.toReal (snorm f p μ) :=
   norm_toLp f hf
@@ -663,6 +667,8 @@ theorem smul_toSimpleFunc (k : 𝕜) (f : Lp.simpleFunc E p μ) :
   repeat intro h; rw [h]
 #align measure_theory.Lp.simple_func.smul_to_simple_func MeasureTheory.Lp.simpleFunc.smul_toSimpleFunc
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 theorem norm_toSimpleFunc [Fact (1 ≤ p)] (f : Lp.simpleFunc E p μ) :
     ‖f‖ = ENNReal.toReal (snorm (toSimpleFunc f) p μ) := by
   simpa [toLp_toSimpleFunc] using norm_toLp (toSimpleFunc f) (simpleFunc.memℒp f)
@@ -747,6 +753,8 @@ protected theorem uniformInducing : UniformInducing ((↑) : Lp.simpleFunc E p �
   simpleFunc.uniformEmbedding.toUniformInducing
 #align measure_theory.Lp.simple_func.uniform_inducing MeasureTheory.Lp.simpleFunc.uniformInducing
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 protected theorem denseEmbedding (hp_ne_top : p ≠ ∞) :
     DenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
   borelize E
@@ -836,6 +844,8 @@ def coeSimpleFuncNonnegToLpNonneg :
     { g : Lp.simpleFunc G p μ // 0 ≤ g } → { g : Lp G p μ // 0 ≤ g } := fun g => ⟨g, g.2⟩
 #align measure_theory.Lp.simple_func.coe_simple_func_nonneg_to_Lp_nonneg MeasureTheory.Lp.simpleFunc.coeSimpleFuncNonnegToLpNonneg
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) :
     DenseRange (coeSimpleFuncNonnegToLpNonneg p μ G) := fun g ↦ by
   borelize G
@@ -901,6 +911,8 @@ end Lp
 
 variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 /-- To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
 suffices to show that
 * the property holds for (multiples of) characteristic functions;

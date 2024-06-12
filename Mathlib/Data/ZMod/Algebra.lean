@@ -17,6 +17,9 @@ namespace ZMod
 
 variable (R : Type*) [Ring R]
 
+instance smul (p : ℕ) : SMul (ZMod p) R :=
+  { smul := fun a r => cast a * r }
+
 instance (p : ℕ) : Subsingleton (Algebra (ZMod p) R) :=
   ⟨fun _ _ => Algebra.algebra_ext _ _ <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
@@ -28,7 +31,6 @@ variable {n : ℕ} (m : ℕ) [CharP R m]
 See note [reducible non-instances]. -/
 abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
   { ZMod.castHom h R with
-    smul := fun a r => cast a * r
     commutes' := fun a r =>
       show (cast a * r : R) = r * cast a by
         rcases ZMod.intCast_surjective a with ⟨k, rfl⟩

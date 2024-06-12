@@ -48,7 +48,7 @@ with `M` and it is injective as a composition of injective maps (note that
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)
-  [CommRing R] [CommRing S] [Algebra R S]
+  [CommRing R] [CommRing S] [SMul R S] [Algebra R S]
   [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 private noncomputable abbrev auxRightMul (I : Ideal R) : M ⊗[R] I →ₗ[S] M := by
@@ -111,7 +111,7 @@ injective, since `M` is `R`-flat).
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)
-  [CommRing R] [CommRing S] [Algebra R S]
+  [CommRing R] [CommRing S] [SMul R S] [Algebra R S]
   [AddCommGroup M] [Module R M]
 
 private noncomputable abbrev auxRTensorBaseChange (I : Ideal S) :

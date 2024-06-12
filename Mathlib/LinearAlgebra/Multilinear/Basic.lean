@@ -1165,7 +1165,7 @@ theorem map_update_smul [DecidableEq ι] [Fintype ι] (m : ∀ i, M₁ i) (i : �
 section
 
 variable (R ι)
-variable (A : Type*) [CommSemiring A] [Algebra R A] [Fintype ι]
+variable (A : Type*) [CommSemiring A] [SMul R A] [Algebra R A] [Fintype ι]
 
 /-- Given an `R`-algebra `A`, `mkPiAlgebra` is the multilinear map on `A^ι` associating
 to `m` the product of all the `m i`.
@@ -1190,7 +1190,7 @@ end
 section
 
 variable (R n)
-variable (A : Type*) [Semiring A] [Algebra R A]
+variable (A : Type*) [Semiring A] [SMul R A] [Algebra R A]
 
 /-- Given an `R`-algebra `A`, `mkPiAlgebraFin` is the multilinear map on `A^n` associating
 to `m` the product of all the `m i`.

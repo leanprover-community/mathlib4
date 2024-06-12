@@ -408,7 +408,7 @@ instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMu
   exact Module.Free.of_basis b
 #align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
 
-instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
+instance {S : Type*} [CommRing S] [SMul R S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
     [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
   have : Module.Finite R (restrictScalars R I) := hI₁
   have : NoZeroSMulDivisors R (restrictScalars R I) := hI₂
@@ -565,7 +565,7 @@ noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : 
 
 section Ideal
 
-variable {S : Type*} [CommRing S] [IsDomain S] [Algebra R S]
+variable {S : Type*} [CommRing S] [IsDomain S] [SMul R S] [Algebra R S]
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
@@ -683,7 +683,7 @@ end PrincipalIdealDomain
 /-- A set of linearly independent vectors in a module `M` over a semiring `S` is also linearly
 independent over a subring `R` of `K`. -/
 theorem LinearIndependent.restrict_scalars_algebras {R S M ι : Type*} [CommSemiring R] [Semiring S]
-    [AddCommMonoid M] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    [AddCommMonoid M] [SMul R S] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
     (hinj : Function.Injective (algebraMap R S)) {v : ι → M} (li : LinearIndependent S v) :
     LinearIndependent R v :=
   LinearIndependent.restrict_scalars (by rwa [Algebra.algebraMap_eq_smul_one'] at hinj) li

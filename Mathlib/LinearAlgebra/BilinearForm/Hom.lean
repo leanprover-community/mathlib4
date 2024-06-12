@@ -173,7 +173,7 @@ end EquivLin
 
 namespace LinearMap
 
-variable {R' : Type*} [CommSemiring R'] [Algebra R' R] [Module R' M] [IsScalarTower R' R M]
+variable {R' : Type*} [CommSemiring R'] [SMul R' R] [Algebra R' R] [Module R' M] [IsScalarTower R' R M]
 
 /-- Apply a linear map on the output of a bilinear form. -/
 @[simps!]

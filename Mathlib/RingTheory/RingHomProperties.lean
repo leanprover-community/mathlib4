@@ -63,8 +63,8 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
 #align ring_hom.respects_iso.cancel_right_is_iso RingHom.RespectsIso.cancel_right_isIso
 
 theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
-    (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
-    [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
+    (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [SMul R R'] [Algebra R R']
+    [SMul S S'] [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
     P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) := by
   let e₁ : R' ≃+* Localization.Away r :=
     (IsLocalization.algEquiv (Submonoid.powers r) _ _).toRingEquiv
@@ -124,7 +124,8 @@ section StableUnderBaseChange
 `P(B →+* A ⊗[S] B)`. -/
 def StableUnderBaseChange : Prop :=
   ∀ (R S R' S') [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
-    ∀ [Algebra R S] [Algebra R R'] [Algebra R S'] [Algebra S S'] [Algebra R' S'],
+    ∀ [SMul R S] [Algebra R S] [SMul R R'] [Algebra R R'] [SMul R S'] [Algebra R S']
+      [SMul S S'] [Algebra S S'] [SMul R' S'] [Algebra R' S'],
       ∀ [IsScalarTower R S S'] [IsScalarTower R R' S'],
         ∀ [Algebra.IsPushout R S R' S'], P (algebraMap R S) → P (algebraMap R' S')
 #align ring_hom.stable_under_base_change RingHom.StableUnderBaseChange
@@ -132,7 +133,7 @@ def StableUnderBaseChange : Prop :=
 theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
     (h₂ :
       ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
-        ∀ [Algebra R S] [Algebra R T],
+        ∀ [SMul R S] [Algebra R S] [SMul R T] [Algebra R T],
           P (algebraMap R T) →
             P (Algebra.TensorProduct.includeLeftRingHom : S →+* TensorProduct R S T)) :
     StableUnderBaseChange @P := by
@@ -173,7 +174,9 @@ theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P
       colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit f g⟩
         WalkingSpan.left,
     hP'.cancel_right_isIso]
+  letI := f.toSMul
   letI := f.toAlgebra
+  letI := g.toSMul
   letI := g.toAlgebra
   dsimp only [CommRingCat.pushoutCocone_inl, PushoutCocone.ι_app_left]
   apply hP R T S (TensorProduct R S T)

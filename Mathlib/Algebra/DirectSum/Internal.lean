@@ -53,7 +53,7 @@ instance AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass
     ∀ i, AddCommGroup (A i) := fun i => by infer_instance
 #align add_comm_group.of_subgroup_on_ring AddCommGroup.ofSubgroupOnRing
 
-theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [SMul S R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact (A 0).smul_mem s <| SetLike.one_mem_graded _
@@ -283,7 +283,7 @@ end DirectSum
 namespace Submodule
 
 /-- Build a `DirectSum.GAlgebra` instance for a collection of `Submodule`s. -/
-instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A : ι → Submodule S R)
+instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [SMul S R] [Algebra S R] (A : ι → Submodule S R)
     [SetLike.GradedMonoid A] : DirectSum.GAlgebra S fun i => A i where
   toFun :=
     ((Algebra.linearMap S R).codRestrict (A 0) <| SetLike.algebraMap_mem_graded A).toAddMonoidHom
@@ -295,14 +295,14 @@ instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A 
 #align submodule.galgebra Submodule.galgebra
 
 @[simp]
-theorem setLike.coe_galgebra_toFun [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem setLike.coe_galgebra_toFun [AddMonoid ι] [CommSemiring S] [Semiring R] [SMul S R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (s : S) :
     ↑(@DirectSum.GAlgebra.toFun _ S (fun i => A i) _ _ _ _ _ _ _ s) = (algebraMap S R s : R) :=
   rfl
 #align submodule.set_like.coe_galgebra_to_fun Submodule.setLike.coe_galgebra_toFun
 
 /-- A direct sum of powers of a submodule of an algebra has a multiplicative structure. -/
-instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p : Submodule S R) :
+instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [SMul S R] [Algebra S R] (p : Submodule S R) :
     SetLike.GradedMonoid fun i : ℕ => p ^ i where
   one_mem := by
     rw [← one_le, pow_zero]
@@ -314,7 +314,7 @@ instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p :
 end Submodule
 
 /-- The canonical algebra isomorphism between `⨁ i, A i` and `R`. -/
-def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [SMul S R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] : (⨁ i, A i) →ₐ[S] R :=
   DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl)
 #align direct_sum.coe_alg_hom DirectSum.coeAlgHom
@@ -322,13 +322,13 @@ def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S 
 /-- The supremum of submodules that form a graded monoid is a subalgebra, and equal to the range of
 `DirectSum.coeAlgHom`. -/
 theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [CommSemiring S] [Semiring R]
-    [Algebra S R] (A : ι → Submodule S R) [SetLike.GradedMonoid A] :
+    [SMul S R] [Algebra S R] (A : ι → Submodule S R) [SetLike.GradedMonoid A] :
     ⨆ i, A i = Subalgebra.toSubmodule (DirectSum.coeAlgHom A).range :=
   (Submodule.iSup_eq_range_dfinsupp_lsum A).trans <| SetLike.coe_injective rfl
 #align submodule.supr_eq_to_submodule_range Submodule.iSup_eq_toSubmodule_range
 
 @[simp]
-theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
+theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [SMul S R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     DirectSum.coeAlgHom A (DirectSum.of (fun i => A i) i x) = x :=
   DirectSum.toSemiring_of _ (by rfl) (fun _ _ => (by rfl)) _ _
@@ -343,7 +343,7 @@ theorem SetLike.homogeneous_zero_submodule [Zero ι] [Semiring S] [AddCommMonoid
   ⟨0, Submodule.zero_mem _⟩
 #align set_like.is_homogeneous_zero_submodule SetLike.homogeneous_zero_submodule
 
-theorem SetLike.Homogeneous.smul [CommSemiring S] [Semiring R] [Algebra S R] {A : ι → Submodule S R}
+theorem SetLike.Homogeneous.smul [CommSemiring S] [Semiring R] [SMul S R] [Algebra S R] {A : ι → Submodule S R}
     {s : S} {r : R} (hr : SetLike.Homogeneous A r) : SetLike.Homogeneous A (s • r) :=
   let ⟨i, hi⟩ := hr
   ⟨i, Submodule.smul_mem _ _ hi⟩

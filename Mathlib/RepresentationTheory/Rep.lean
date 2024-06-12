@@ -300,7 +300,7 @@ def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k 
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `S`. -/
-@[simp] def ofAlgebraAut (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+@[simp] def ofAlgebraAut (R S : Type) [CommRing R] [CommRing S] [SMul R S] [Algebra R S] :
     Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction ℤ (S ≃ₐ[R] S) S
 
 end
@@ -316,7 +316,7 @@ def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulA
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `Sˣ`. -/
-@[simp] def ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+@[simp] def ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [SMul R S] [Algebra R S] :
     Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
 
 end

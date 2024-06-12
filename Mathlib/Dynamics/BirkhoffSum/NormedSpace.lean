@@ -48,7 +48,7 @@ theorem dist_birkhoffSum_birkhoffSum_le (f : α → α) (g : α → E) (n : ℕ)
       ∑ k in Finset.range n, dist (g (f^[k] x)) (g (f^[k] y)) :=
   dist_sum_sum_le _ _ _
 
-variable (𝕜 : Type*) [RCLike 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable (𝕜 : Type*) [SMul ℝ 𝕜] [RCLike 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem dist_birkhoffAverage_birkhoffAverage (f : α → α) (g : α → E) (n : ℕ) (x y : α) :
     dist (birkhoffAverage 𝕜 f g n x) (birkhoffAverage 𝕜 f g n y) =
@@ -97,7 +97,7 @@ theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
 end
 
 variable (𝕜 : Type*) {X E : Type*}
-  [PseudoEMetricSpace X] [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [PseudoEMetricSpace X] [SMul ℝ 𝕜] [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f : X → X} {g : X → E} {l : X → E}
 
 /-- If `f` is a non-strictly contracting map (i.e., it is Lipschitz with constant `1`)

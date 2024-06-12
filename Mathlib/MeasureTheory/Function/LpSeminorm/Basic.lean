@@ -895,6 +895,7 @@ theorem snorm_le_nnreal_smul_snorm_of_ae_le_mul {f : α → F} {g : α → G} {c
   exact snorm'_le_nnreal_smul_snorm'_of_ae_le_mul h (ENNReal.toReal_pos h0 h_top)
 #align measure_theory.snorm_le_nnreal_smul_snorm_of_ae_le_mul MeasureTheory.snorm_le_nnreal_smul_snorm_of_ae_le_mul
 
+set_option synthInstance.maxHeartbeats 0 in
 -- TODO: add the whole family of lemmas?
 private theorem le_mul_iff_eq_zero_of_nonneg_of_neg_of_nonneg {α} [LinearOrderedSemiring α]
     {a b c : α} (ha : 0 ≤ a) (hb : b < 0) (hc : 0 ≤ c) : a ≤ b * c ↔ a = 0 ∧ c = 0 := by
@@ -988,6 +989,7 @@ section NormedSpace
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [Module 𝕜 F]
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F]
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem snorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
     snorm' (c • f) q μ = ‖c‖₊ • snorm' f q μ := by
   obtain rfl | hc := eq_or_ne c 0
@@ -997,11 +999,13 @@ theorem snorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
   rwa [inv_smul_smul₀ hc, nnnorm_inv, le_inv_smul_iff_of_pos (nnnorm_pos.2 hc)] at this
 #align measure_theory.snorm'_const_smul MeasureTheory.snorm'_const_smul
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem snormEssSup_const_smul (c : 𝕜) (f : α → F) :
     snormEssSup (c • f) μ = (‖c‖₊ : ℝ≥0∞) * snormEssSup f μ := by
   simp_rw [snormEssSup, Pi.smul_apply, nnnorm_smul, ENNReal.coe_mul, ENNReal.essSup_const_mul]
 #align measure_theory.snorm_ess_sup_const_smul MeasureTheory.snormEssSup_const_smul
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem snorm_const_smul (c : 𝕜) (f : α → F) :
     snorm (c • f) p μ = (‖c‖₊ : ℝ≥0∞) * snorm f p μ := by
   obtain rfl | hc := eq_or_ne c 0
@@ -1033,7 +1037,7 @@ theorem snorm_indicator_ge_of_bdd_below (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α
 
 section RCLike
 
-variable {𝕜 : Type*} [RCLike 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] {f : α → 𝕜}
 
 theorem Memℒp.re (hf : Memℒp f p μ) : Memℒp (fun x => RCLike.re (f x)) p μ := by
   have : ∀ x, ‖RCLike.re (f x)‖ ≤ 1 * ‖f x‖ := by

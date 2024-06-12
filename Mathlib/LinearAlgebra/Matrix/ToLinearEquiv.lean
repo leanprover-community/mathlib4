@@ -134,7 +134,7 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
 #align matrix.exists_mul_vec_eq_zero_iff_aux Matrix.exists_mulVec_eq_zero_iff_aux
 
 theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [CommRing A]
-    [Nontrivial A] [Field K] [Algebra A K] [IsFractionRing A K] {M : Matrix n n A} :
+    [Nontrivial A] [Field K] [SMul A K] [Algebra A K] [IsFractionRing A K] {M : Matrix n n A} :
     (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 := by
   have : (∃ v ≠ 0, (algebraMap A K).mapMatrix M *ᵥ v = 0) ↔ _ :=
     exists_mulVec_eq_zero_iff_aux

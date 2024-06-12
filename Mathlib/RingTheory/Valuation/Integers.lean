@@ -43,7 +43,7 @@ section CommRing
 
 variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
 variable (v : Valuation R Γ₀)
-variable (O : Type w) [CommRing O] [Algebra O R]
+variable (O : Type w) [CommRing O] [SMul O R] [Algebra O R]
 
 /-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+* R, we say that O is the integers of v
 if f is injective, and its range is exactly `v.integer`. -/
@@ -65,7 +65,7 @@ theorem integer.integers : v.Integers v.integer :=
 
 namespace Integers
 
-variable {v O} [CommRing O] [Algebra O R]
+variable {v O} [CommRing O] [SMul O R] [Algebra O R]
 
 theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) ≤ 1) :
     v (algebraMap O R x) = 1 :=
@@ -106,7 +106,7 @@ end CommRing
 section Field
 
 variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
-variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F] (hv : Integers v O)
+variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [SMul O F] [Algebra O F] (hv : Integers v O)
 
 namespace Integers
 

@@ -21,7 +21,7 @@ A valuation ring is a domain such that for every pair of elements `a b`, either 
 
 Any valuation ring induces a natural valuation on its fraction field, as we show in this file.
 Namely, given the following instances:
-`[CommRing A] [IsDomain A] [ValuationRing A] [Field K] [Algebra A K] [IsFractionRing A K]`,
+`[CommRing A] [IsDomain A] [ValuationRing A] [Field K] [SMul A K] [Algebra A K] [IsFractionRing A K]`,
 there is a natural valuation `Valuation A K` on `K` with values in `value_group A K` where
 the image of `A` under `algebraMap A K` agrees with `(Valuation A K).integer`.
 
@@ -52,7 +52,7 @@ namespace ValuationRing
 section
 
 variable (A : Type u) [CommRing A]
-variable (K : Type v) [Field K] [Algebra A K]
+variable (K : Type v) [Field K] [SMul A K] [Algebra A K]
 
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
 def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
@@ -277,7 +277,7 @@ end
 section
 
 variable {R : Type*} [CommRing R] [IsDomain R] {K : Type*}
-variable [Field K] [Algebra R K] [IsFractionRing R K]
+variable [Field K] [SMul R K] [Algebra R K] [IsFractionRing R K]
 
 theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
@@ -398,7 +398,8 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsD
 
 section
 
-variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
+variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K]
+  [SMul 𝒪 K] [Algebra 𝒪 K]
   [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (hh : v.Integers 𝒪)
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`

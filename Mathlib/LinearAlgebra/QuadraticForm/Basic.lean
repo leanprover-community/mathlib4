@@ -243,7 +243,7 @@ instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R where
   map_zero := map_zero
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
-theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] (a : S)
+theorem map_smul_of_tower [CommSemiring S] [SMul S R] [Algebra S R] [Module S M] [IsScalarTower S R M] (a : S)
     (x : M) : Q (a • x) = (a * a) • Q x := by
   rw [← IsScalarTower.algebraMap_smul R a x, map_smul, ← RingHom.map_mul, Algebra.smul_def]
 #align quadratic_form.map_smul_of_tower QuadraticForm.map_smul_of_tower
@@ -327,7 +327,7 @@ def polarBilin : BilinForm R M :=
   (polar_smul_right Q)
 #align quadratic_form.polar_bilin QuadraticForm.polarBilin
 
-variable [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+variable [CommSemiring S] [SMul S R] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 @[simp]
 theorem polar_smul_left_of_tower (a : S) (x y : M) : polar Q (a • x) y = a • polar Q x y := by
@@ -560,7 +560,7 @@ theorem comp_apply (Q : QuadraticForm R N) (f : M →ₗ[R] N) (x : M) : (Q.comp
 
 /-- Compose a quadratic form with a linear function on the left. -/
 @[simps (config := { simpRhs := true })]
-def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S M]
+def _root_.LinearMap.compQuadraticForm [CommSemiring S] [SMul S R] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (f : R →ₗ[S] S) (Q : QuadraticForm R M) : QuadraticForm S M where
   toFun x := f (Q x)
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
@@ -779,7 +779,7 @@ theorem  _root_.QuadraticForm.polarBilin_injective (h : IsUnit (2 : R)) :
   fun Q₁ Q₂ h₁₂ => QuadraticForm.ext fun x => h.mul_left_cancel <| by
     simpa using DFunLike.congr_fun (congr_arg toQuadraticForm h₁₂) x
 
-variable [CommRing S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+variable [CommRing S] [SMul S R] [Algebra S R] [Module S M] [IsScalarTower S R M]
 variable [AddCommGroup N] [Module R N]
 
 theorem _root_.QuadraticForm.polarBilin_comp (Q : QuadraticForm R N) (f : M →ₗ[R] N) :
@@ -808,7 +808,7 @@ open LinearMap.BilinForm
 section AssociatedHom
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
-variable (S) [CommSemiring S] [Algebra S R]
+variable (S) [CommSemiring S] [SMul S R] [Algebra S R]
 variable [Invertible (2 : R)] {B₁ : BilinForm R M}
 
 /-- `associatedHom` is the map that sends a quadratic form on a module `M` over `R` to its
@@ -908,7 +908,7 @@ end AssociatedHom
 
 section Associated
 
-variable [CommSemiring S] [CommRing R] [AddCommGroup M] [Algebra S R] [Module R M]
+variable [CommSemiring S] [CommRing R] [AddCommGroup M] [SMul S R] [Algebra S R] [Module R M]
 variable [Invertible (2 : R)]
 
 -- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to

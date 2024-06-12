@@ -32,6 +32,7 @@ variable (R : Type u) [CommRing R]
 structure AlgebraCat where
   carrier : Type v
   [isRing : Ring carrier]
+  [hasSMul : SMul R carrier]
   [isAlgebra : Algebra R carrier]
 #align Algebra AlgebraCat
 
@@ -41,9 +42,9 @@ Since the universe the ring lives in can be inferred, we put that last. -/
 @[nolint checkUnivs]
 abbrev AlgebraCatMax.{v₁, v₂, u₁} (R : Type u₁) [CommRing R] := AlgebraCat.{max v₁ v₂} R
 
-attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
+attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra AlgebraCat.hasSMul
 
-initialize_simps_projections AlgebraCat (-isRing, -isAlgebra)
+initialize_simps_projections AlgebraCat (-isRing, -hasSMul, -isAlgebra)
 
 namespace AlgebraCat
 
@@ -72,6 +73,9 @@ instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
 instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Ring S.carrier)
 
+instance {S : AlgebraCat.{v} R} : SMul R ((forget (AlgebraCat R)).obj S) :=
+  (inferInstance : SMul R S.carrier)
+
 instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Algebra R S.carrier)
 
@@ -99,19 +103,20 @@ lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. -/
-def of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
+def of (X : Type v) [Ring X] [SMul R X] [Algebra R X] : AlgebraCat.{v} R :=
   ⟨X⟩
 #align Algebra.of AlgebraCat.of
 
 /-- Typecheck a `AlgHom` as a morphism in `AlgebraCat R`. -/
-def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
+def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [SMul R X] [Algebra R X] [Ring Y]
+    [SMul R Y] [Algebra R Y]
     (f : X →ₐ[R] Y) : of R X ⟶ of R Y :=
   f
 #align Algebra.of_hom AlgebraCat.ofHom
 
 @[simp]
-theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
-    [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x :=
+theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [SMul R X] [Algebra R X] [Ring Y]
+    [SMul R Y] [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x :=
   rfl
 #align Algebra.of_hom_apply AlgebraCat.ofHom_apply
 
@@ -119,7 +124,7 @@ instance : Inhabited (AlgebraCat R) :=
   ⟨of R R⟩
 
 @[simp]
-theorem coe_of (X : Type u) [Ring X] [Algebra R X] : (of R X : Type u) = X :=
+theorem coe_of (X : Type u) [Ring X] [SMul R X] [Algebra R X] : (of R X : Type u) = X :=
   rfl
 #align Algebra.coe_of AlgebraCat.coe_of
 
@@ -199,7 +204,8 @@ variable {X₁ X₂ : Type u}
 
 /-- Build an isomorphism in the category `AlgebraCat R` from a `AlgEquiv` between `Algebra`s. -/
 @[simps]
-def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
+def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {s₁ : SMul R X₁} {s₂ : SMul R X₂}
+    {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
     (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
   hom := (e : X₁ →ₐ[R] X₂)
   inv := (e.symm : X₂ →ₐ[R] X₁)
@@ -236,14 +242,15 @@ end CategoryTheory.Iso
 /-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
 `AlgebraCat`. -/
 @[simps]
-def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
+def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [SMul R X] [Algebra R X]
+    [SMul R Y] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ AlgebraCat.of R X ≅ AlgebraCat.of R Y where
   hom e := e.toAlgebraIso
   inv i := i.toAlgEquiv
 #align alg_equiv_iso_Algebra_iso algEquivIsoAlgebraIso
 
 -- Porting note: changed to `CoeOut`
-instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraCat R) :=
+instance (X : Type u) [Ring X] [SMul R X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraCat R) :=
   ⟨fun N => AlgebraCat.of R N⟩
 
 instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsIsomorphisms where

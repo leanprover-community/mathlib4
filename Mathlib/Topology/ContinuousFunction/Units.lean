@@ -103,7 +103,7 @@ end NormedRing
 
 section NormedField
 
-variable [NormedField 𝕜] [NormedDivisionRing R] [Algebra 𝕜 R] [CompleteSpace R]
+variable [NormedField 𝕜] [NormedDivisionRing R] [SMul 𝕜 R] [Algebra 𝕜 R] [CompleteSpace R]
 
 theorem isUnit_iff_forall_ne_zero (f : C(X, R)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
   simp_rw [f.isUnit_iff_forall_isUnit, isUnit_iff_ne_zero]

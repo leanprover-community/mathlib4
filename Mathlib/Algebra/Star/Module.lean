@@ -190,7 +190,7 @@ end SelfSkewAdjoint
 section algebraMap
 
 variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A]
-variable [StarMul A] [Algebra R A] [StarModule R A]
+variable [StarMul A] [SMul R A] [Algebra R A] [StarModule R A]
 
 @[simp]
 theorem algebraMap_star_comm (r : R) : algebraMap R A (star r) = star (algebraMap R A r) := by

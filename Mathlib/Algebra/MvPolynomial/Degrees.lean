@@ -197,7 +197,7 @@ theorem degrees_map [CommSemiring S] (p : MvPolynomial σ R) (f : R →+* S) :
 #align mv_polynomial.degrees_map MvPolynomial.degrees_map
 
 theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
-    (rename f φ).degrees ⊆ φ.degrees.map f := by
+    (rename (R := R) f φ).degrees ⊆ φ.degrees.map f := by
   classical
   intro i
   rw [mem_degrees, Multiset.mem_map]
@@ -219,7 +219,7 @@ theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R
 #align mv_polynomial.degrees_map_of_injective MvPolynomial.degrees_map_of_injective
 
 theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f) :
-    degrees (rename f p) = (degrees p).map f := by
+    degrees (rename (R := R) f p) = (degrees p).map f := by
   classical
   simp only [degrees, Multiset.map_finset_sup p.support Finsupp.toMultiset f h,
     support_rename_of_injective h, Finset.sup_image]
@@ -340,7 +340,7 @@ theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
   simp [degrees_C]
 
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)
-    (i : σ) : degreeOf (f i) (rename f p) = degreeOf i p := by
+    (i : σ) : degreeOf (f i) (rename (R := R) f p) = degreeOf i p := by
   classical
   simp only [degreeOf, degrees_rename_of_injective h, Multiset.count_map_eq_count' f p.degrees h]
 #align mv_polynomial.degree_of_rename_of_injective MvPolynomial.degreeOf_rename_of_injective
@@ -535,7 +535,7 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
 #align mv_polynomial.coeff_eq_zero_of_total_degree_lt MvPolynomial.coeff_eq_zero_of_totalDegree_lt
 
 theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
-    (rename f p).totalDegree ≤ p.totalDegree :=
+    (rename (R := R) f p).totalDegree ≤ p.totalDegree :=
   Finset.sup_le fun b => by
     classical
     intro h

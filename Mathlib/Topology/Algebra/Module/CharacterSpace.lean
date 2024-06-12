@@ -139,7 +139,7 @@ end NonUnitalNonAssocSemiring
 section Unital
 
 variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-  [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
+  [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Semiring A] [SMul 𝕜 A] [Algebra 𝕜 A]
 
 /-- In a unital algebra, elements of the character space are algebra homomorphisms. -/
 instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
@@ -190,7 +190,7 @@ end Unital
 section Ring
 
 variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-  [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Ring A] [Algebra 𝕜 A]
+  [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Ring A] [SMul 𝕜 A] [Algebra 𝕜 A]
 
 theorem apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A) : φ a ∈ spectrum 𝕜 a :=
   AlgHom.apply_mem_spectrum φ a
@@ -210,7 +210,7 @@ end CharacterSpace
 section Kernel
 
 variable [Field 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
+variable [Ring A] [TopologicalSpace A] [SMul 𝕜 A] [Algebra 𝕜 A]
 
 /-- The `RingHom.ker` of `φ : characterSpace 𝕜 A` is maximal. -/
 instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal :=
@@ -225,7 +225,7 @@ section GelfandTransform
 open ContinuousMap
 
 variable (𝕜 A) [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
-  [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
+  [TopologicalSpace A] [Semiring A] [SMul 𝕜 A] [Algebra 𝕜 A]
 
 /-- The **Gelfand transform** is an algebra homomorphism (over `𝕜`) from a topological `𝕜`-algebra
 `A` into the `𝕜`-algebra of continuous `𝕜`-valued functions on the `characterSpace 𝕜 A`.

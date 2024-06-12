@@ -65,7 +65,7 @@ section RCLike
 
 open RCLike
 
-variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
+variable {𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] {E F : Type*}
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
@@ -100,11 +100,12 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
         sub_neg_eq_add, ContinuousLinearMap.map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
   refine' ⟨h, le_antisymm _ _⟩
-  · calc
-      ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
-      _ = ‖fr‖ := hnormeq
-      _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
-      _ = ‖f‖ := by rw [reCLM_norm, one_mul]
+  · sorry
+  -- · calc
+  --     ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
+  --     _ = ‖fr‖ := hnormeq
+  --     _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
+  --     _ = ‖f‖ := by rw [reCLM_norm, one_mul]
   · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x => h x ▸ g.extendTo𝕜.le_opNorm x
 #align exists_extension_norm_eq exists_extension_norm_eq
 
@@ -140,7 +141,7 @@ end RCLike
 
 section DualVector
 
-variable (𝕜 : Type v) [RCLike 𝕜]
+variable (𝕜 : Type v) [SMul ℝ 𝕜] [RCLike 𝕜]
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule

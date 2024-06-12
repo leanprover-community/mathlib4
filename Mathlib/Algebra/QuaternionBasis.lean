@@ -34,7 +34,7 @@ namespace QuaternionAlgebra
 
 Note that for definitional convenience, `k` is provided as a field even though `i_mul_j` fully
 determines it. -/
-structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c₁ c₂ : R) where
+structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [SMul R A] [Algebra R A] (c₁ c₂ : R) where
   (i j k : A)
   i_mul_i : i * i = c₁ • (1 : A)
   j_mul_j : j * j = c₂ • (1 : A)
@@ -42,7 +42,7 @@ structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c�
   j_mul_i : j * i = -k
 #align quaternion_algebra.basis QuaternionAlgebra.Basis
 
-variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable {c₁ c₂ : R}
 
 namespace Basis
@@ -189,7 +189,7 @@ theorem hom_ext ⦃f g : ℍ[R,c₁,c₂] →ₐ[R] A⦄
 end QuaternionAlgebra
 
 namespace Quaternion
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
 
 open QuaternionAlgebra (Basis)
 

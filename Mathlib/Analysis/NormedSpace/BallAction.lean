@@ -101,7 +101,7 @@ end Sphere
 
 section IsScalarTower
 
-variable [NormedAlgebra 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E]
+variable [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E]
 
 instance isScalarTower_closedBall_closedBall_closedBall :
     IsScalarTower (closedBall (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (closedBall (0 : E) r) :=
@@ -174,7 +174,7 @@ instance instSMulCommClass_sphere_closedBall_ball :
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
 #align smul_comm_class_sphere_closed_ball_ball instSMulCommClass_sphere_closedBall_ball
 
-instance instSMulCommClass_sphere_ball_ball [NormedAlgebra 𝕜 𝕜'] :
+instance instSMulCommClass_sphere_ball_ball [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜'] :
     SMulCommClass (sphere (0 : 𝕜) 1) (ball (0 : 𝕜') 1) (ball (0 : 𝕜') 1) :=
   ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : 𝕜')⟩
 #align smul_comm_class_sphere_ball_ball instSMulCommClass_sphere_ball_ball

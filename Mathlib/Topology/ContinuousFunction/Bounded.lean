@@ -1404,7 +1404,7 @@ pointwise operations and checking that they are compatible with the uniform dist
 
 variable {𝕜 : Type*} [NormedField 𝕜]
 variable [TopologicalSpace α] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
-variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
+variable [NormedRing γ] [SMul 𝕜 γ] [NormedAlgebra 𝕜 γ]
 variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/

@@ -43,7 +43,7 @@ universe u v
 
 /-- A Hopf algebra over a commutative (semi)ring `R` is a bialgebra over `R` equipped with an
 `R`-linear endomorphism `antipode` satisfying the antipode axioms. -/
-class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
+class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [SMul R A] extends
     Bialgebra R A where
   /-- The antipode of the Hopf algebra. -/
   antipode : A →ₗ[R] A
@@ -56,7 +56,7 @@ class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extend
 
 namespace HopfAlgebra
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
+variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [SMul R A] [HopfAlgebra R A]
 
 @[simp]
 theorem mul_antipode_rTensor_comul_apply (a : A) :

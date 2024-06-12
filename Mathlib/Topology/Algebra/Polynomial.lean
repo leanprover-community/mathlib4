@@ -76,7 +76,7 @@ end TopologicalSemiring
 
 section TopologicalAlgebra
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [TopologicalSpace A]
   [TopologicalSemiring A] (p : R[X])
 
 @[continuity, fun_prop]
@@ -127,7 +127,7 @@ theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [LinearOrderedField k] (abv 
   exact mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h)
 #align polynomial.tendsto_abv_at_top Polynomial.tendsto_abv_atTop
 
-theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [SMul R A] [Algebra R A]
     [LinearOrderedField k] (abv : A → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (h₀ : algebraMap R A p.leadingCoeff ≠ 0) {l : Filter α} {z : α → A}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (aeval (z x) p)) l atTop :=

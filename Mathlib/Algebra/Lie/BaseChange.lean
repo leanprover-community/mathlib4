@@ -37,7 +37,7 @@ namespace LieAlgebra
 
 namespace ExtendScalars
 
-variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
+variable [CommRing R] [CommRing A] [SMul R A] [Algebra R A] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 /-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`. -/
@@ -137,7 +137,7 @@ instance : LieRing (RestrictScalars R A L) :=
 
 variable [CommRing A] [LieAlgebra A L]
 
-instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
+instance lieAlgebra [CommRing R] [SMul R A] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
   lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
     (RestrictScalars.addEquiv R A L y) : _)
 #align lie_algebra.restrict_scalars.lie_algebra LieAlgebra.RestrictScalars.lieAlgebra
@@ -150,7 +150,7 @@ section ExtendScalars
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-  [CommRing A] [Algebra R A]
+  [CommRing A] [SMul R A] [Algebra R A]
 
 @[simp]
 lemma LieModule.toEnd_baseChange (x : L) :

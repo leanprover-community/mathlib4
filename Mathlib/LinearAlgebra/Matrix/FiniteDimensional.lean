@@ -55,7 +55,7 @@ instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
   Module.Finite.linearMap _ _ _ _
 #align linear_map.finite_dimensional LinearMap.finiteDimensional
 
-variable {A : Type*} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [Module A W]
+variable {A : Type*} [Ring A] [SMul K A] [Algebra K A] [Module A V] [IsScalarTower K A V] [Module A W]
   [IsScalarTower K A W]
 
 /-- Linear maps over a `k`-algebra are finite dimensional (over `k`) if both the source and

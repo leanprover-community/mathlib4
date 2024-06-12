@@ -76,7 +76,7 @@ instance : DenselyNormedField ℂ where
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_eq_abs, abs_ofReal, abs_of_pos (h₀.trans_lt h.1)]⟩
 
-instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
+instance {R : Type*} [NormedField R] [SMul R ℝ] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs,
       norm_algebraMap']
@@ -92,7 +92,7 @@ instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E 
 -- see Note [lower instance priority]
 /-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
 instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
-    [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
+    [SMul ℂ A] [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
 theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
@@ -469,7 +469,7 @@ lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z
 /-- The natural isomorphism between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
 @[simps]
-def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
+def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜]
     (h : RCLike.im (RCLike.I : 𝕜) = 1) : 𝕜 ≃+* ℂ where
   toFun x := RCLike.re x + RCLike.im x * I
   invFun x := re x + im x * RCLike.I
@@ -485,7 +485,7 @@ def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
 /-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
 @[simps]
-def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [RCLike 𝕜]
+def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜]
     (h : RCLike.im (RCLike.I : 𝕜) = 1) : 𝕜 ≃ₗᵢ[ℝ] ℂ where
   map_smul' _ _ := by simp [RCLike.smul_re, RCLike.smul_im, ofReal_mul]; ring
   norm_map' _ := by
@@ -520,10 +520,10 @@ namespace RCLike
 
 open ComplexConjugate
 
-local notation "reC" => @RCLike.re ℂ _
-local notation "imC" => @RCLike.im ℂ _
-local notation "IC" => @RCLike.I ℂ _
-local notation "norm_sqC" => @RCLike.normSq ℂ _
+local notation "reC" => @RCLike.re ℂ _ _
+local notation "imC" => @RCLike.im ℂ _ _
+local notation "IC" => @RCLike.I ℂ _ _
+local notation "norm_sqC" => @RCLike.normSq ℂ _ _
 
 @[simp]
 theorem re_to_complex {x : ℂ} : reC x = x.re :=
@@ -548,7 +548,7 @@ theorem normSq_to_complex {x : ℂ} : norm_sqC x = Complex.normSq x :=
 
 section tsum
 
-variable {α : Type*} (𝕜 : Type*) [RCLike 𝕜]
+variable {α : Type*} (𝕜 : Type*) [SMul ℝ 𝕜] [RCLike 𝕜]
 
 @[simp]
 theorem hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=

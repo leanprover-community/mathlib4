@@ -1313,7 +1313,7 @@ end CommSemiring
 section Algebra
 
 variable [Fintype n] [DecidableEq n]
-variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
+variable [CommSemiring R] [Semiring α] [Semiring β] [SMul R α] [Algebra R α] [SMul R β] [Algebra R β]
 
 instance instAlgebra : Algebra R (Matrix n n α) where
   toRingHom := (Matrix.scalar n).comp (algebraMap R α)
@@ -1586,7 +1586,7 @@ namespace AlgHom
 
 variable [Fintype m] [DecidableEq m]
 variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-variable [Algebra R α] [Algebra R β] [Algebra R γ]
+variable [SMul R α] [Algebra R α] [SMul R β] [Algebra R β] [SMul R γ] [Algebra R γ]
 
 /-- The `AlgHom` between spaces of square matrices induced by an `AlgHom` between their
 coefficients. This is `Matrix.map` as an `AlgHom`. -/
@@ -1614,7 +1614,7 @@ namespace AlgEquiv
 
 variable [Fintype m] [DecidableEq m]
 variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-variable [Algebra R α] [Algebra R β] [Algebra R γ]
+variable [SMul R α] [Algebra R α] [SMul R β] [Algebra R β] [SMul R γ] [Algebra R γ]
 
 /-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
 coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
@@ -2190,8 +2190,8 @@ variable (R m α)
 
 /-- `Matrix.transpose` as an `AlgEquiv` to the opposite ring -/
 @[simps]
-def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
-    Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ :=
+def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m]
+    [SMul R α] [Algebra R α] : Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ :=
   { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv,
     transposeRingEquiv m α with
     toFun := fun M => MulOpposite.op Mᵀ

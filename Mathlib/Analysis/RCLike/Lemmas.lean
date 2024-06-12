@@ -11,14 +11,14 @@ import Mathlib.Analysis.RCLike.Basic
 /-! # Further lemmas about `RCLike` -/
 
 
-variable {K E : Type*} [RCLike K]
+variable {K E : Type*} [SMul ℝ K] [RCLike K]
 
 namespace Polynomial
 
 open Polynomial
 
 theorem ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) p :=
-  (@aeval_algebraMap_apply_eq_algebraMap_eval ℝ K _ _ _ x p).symm
+  (@aeval_algebraMap_apply_eq_algebraMap_eval ℝ K _ _ _ _ x p).symm
 #align polynomial.of_real_eval Polynomial.ofReal_eval
 
 end Polynomial
@@ -75,7 +75,7 @@ theorem reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
 #align is_R_or_C.re_clm_norm RCLike.reCLM_norm
 
 @[simp, rclike_simps]
-theorem conjCLE_norm : ‖(@conjCLE K _ : K →L[ℝ] K)‖ = 1 :=
+theorem conjCLE_norm : ‖(@conjCLE K _ _ : K →L[ℝ] K)‖ = 1 :=
   (@conjLIE K _).toLinearIsometry.norm_toContinuousLinearMap
 #align is_R_or_C.conj_cle_norm RCLike.conjCLE_norm
 

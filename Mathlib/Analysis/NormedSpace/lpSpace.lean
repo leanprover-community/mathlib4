@@ -430,6 +430,7 @@ theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
   exact ((lp.memℓp f).summable hp).hasSum
 #align lp.has_sum_norm lp.hasSum_norm
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport f]
@@ -443,6 +444,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
     exact fun i => Real.rpow_nonneg (norm_nonneg _) _
 #align lp.norm_nonneg' lp.norm_nonneg'
 
+set_option synthInstance.maxHeartbeats 0 in
 @[simp]
 theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -453,6 +455,7 @@ theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
     simpa [Real.zero_rpow hp.ne'] using Real.zero_rpow hp'
 #align lp.norm_zero lp.norm_zero
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   refine' ⟨fun h => _, by rintro rfl; exact norm_zero⟩
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -579,6 +582,7 @@ theorem norm_le_of_forall_le' [Nonempty α] {f : lp E ∞} (C : ℝ) (hCf : ∀ 
   exact hCf i
 #align lp.norm_le_of_forall_le' lp.norm_le_of_forall_le'
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem norm_le_of_forall_le {f : lp E ∞} {C : ℝ} (hC : 0 ≤ C) (hCf : ∀ i, ‖f i‖ ≤ C) :
     ‖f‖ ≤ C := by
   cases isEmpty_or_nonempty α
@@ -619,6 +623,7 @@ instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)]
 
 variable [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, BoundedSMul 𝕜' (E i)]
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E p :=
   (lp.memℓp f).const_smul c
 #align lp.mem_lp_const_smul lp.mem_lp_const_smul
@@ -645,15 +650,20 @@ theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align lp.coe_fn_smul lp.coeFn_smul
 
+set_option synthInstance.maxHeartbeats 0 in
 instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (lp E p) :=
   ⟨fun _ _ _ => Subtype.ext <| smul_comm _ _ _⟩
 
+set_option synthInstance.maxHeartbeats 0 in
 instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (lp E p) :=
   ⟨fun _ _ _ => Subtype.ext <| smul_assoc _ _ _⟩
 
+set_option synthInstance.maxHeartbeats 0 in
 instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (lp E p) :=
   ⟨fun _ _ => Subtype.ext <| op_smul_eq_smul _ _⟩
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · exact absurd rfl hp
@@ -688,6 +698,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     apply nnnorm_smul_le
 #align lp.norm_const_smul_le lp.norm_const_smul_le
 
+set_option synthInstance.maxHeartbeats 0 in
 instance [Fact (1 ≤ p)] : BoundedSMul 𝕜 (lp E p) :=
   BoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
 
@@ -698,6 +709,7 @@ section DivisionRing
 variable {𝕜 : Type*}
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp
@@ -712,6 +724,7 @@ section NormedSpace
 
 variable {𝕜 : Type*} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
+set_option synthInstance.maxHeartbeats 0 in
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
 
@@ -755,6 +768,7 @@ instance instInvolutiveStar : InvolutiveStar (lp E p) where
 instance instStarAddMonoid : StarAddMonoid (lp E p) where
   star_add _f _g := ext <| star_add (R := ∀ i, E i) _ _
 
+set_option synthInstance.maxHeartbeats 0 in
 instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
   norm_star f := by
     rcases p.trichotomy with (rfl | rfl | h)
@@ -776,6 +790,7 @@ section NonUnitalNormedRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NonUnitalNormedRing (B i)]
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : Memℓp g ∞) :
     Memℓp (f * g) ∞ := by
   rw [memℓp_infty_iff]
@@ -801,6 +816,7 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
+set_option synthInstance.maxHeartbeats 0 in
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
   { lp.normedAddCommGroup, lp.nonUnitalRing with
     norm_mul := fun f g =>
@@ -811,6 +827,8 @@ instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
             mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
               (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for mathlib3 #13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
@@ -866,6 +884,8 @@ theorem _root_.one_memℓp_infty : Memℓp (1 : ∀ i, B i) ∞ :=
 
 variable (B)
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 /-- The `𝕜`-subring of elements of `∀ i : α, B i` whose `lp` norm is finite. This is `lp E ∞`,
 with extra structure. -/
 def _root_.lpInftySubring : Subring (PreLp B) :=
@@ -926,6 +946,8 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 instance inftyCommRing : CommRing (lp B ∞) :=
   { lp.inftyRing with
     mul_comm := fun f g => by ext; simp only [lp.infty_coeFn_mul, Pi.mul_apply, mul_comm] }
@@ -940,11 +962,14 @@ end NormedCommRing
 section Algebra
 
 variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
-variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
+variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, SMul 𝕜 (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
+
+instance : SMul 𝕜 (∀ i, B i) :=
+  Pi.instSMul
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
 instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
-  @Pi.algebra I 𝕜 B _ _ fun _ => NormedAlgebra.toAlgebra
+  @Pi.algebra I 𝕜 B _ _ _ fun _ => NormedAlgebra.toAlgebra
 #align pi.algebra_of_normed_algebra Pi.algebraOfNormedAlgebra
 
 instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
@@ -970,6 +995,8 @@ def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
 
 variable {𝕜 B}
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
   { (lpInftySubalgebra 𝕜 B).algebra, (lp.instNormedSpace : NormedSpace 𝕜 (lp B ∞)) with }
 #align lp.infty_normed_algebra lp.inftyNormedAlgebra
@@ -1007,6 +1034,8 @@ protected theorem single_apply_ne (p) (i : α) (a : E i) {j : α} (hij : j ≠ i
   rw [lp.single_apply, dif_neg hij]
 #align lp.single_apply_ne lp.single_apply_ne
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 @[simp]
 protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.single p i a := by
   refine ext (funext (fun (j : α) => ?_))
@@ -1104,6 +1133,8 @@ open Filter
 
 open scoped Topology uniformity
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
     UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) := by

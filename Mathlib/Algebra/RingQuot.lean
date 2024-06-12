@@ -28,12 +28,11 @@ universe uR uS uT uA u₄
 variable {R : Type uR} [Semiring R]
 variable {S : Type uS} [CommSemiring S]
 variable {T : Type uT}
-variable {A : Type uA} [Semiring A] [Algebra S A]
+variable {A : Type uA} [Semiring A] [SMul S A] [Algebra S A]
 
 namespace RingCon
 
 instance (c : RingCon A) : Algebra S c.Quotient where
-  smul := (· • ·)
   toRingHom := c.mk'.comp (algebraMap S A)
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
@@ -195,7 +194,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
         a⟩
 
 -- note: this cannot be irreducible, as otherwise diamonds don't commute.
-private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
+private def smul [SMul S R] [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
 
 instance : NatCast (RingQuot r) :=
@@ -222,7 +221,7 @@ instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
 instance {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
   ⟨sub r⟩
 
-instance [Algebra S R] : SMul S (RingQuot r) :=
+instance instSMul [SMul S R] [Algebra S R] : SMul S (RingQuot r) :=
   ⟨smul r⟩
 
 theorem zero_quot : (⟨Quot.mk _ 0⟩ : RingQuot r) = 0 :=
@@ -264,18 +263,18 @@ theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
   rfl
 #align ring_quot.sub_quot RingQuot.sub_quot
 
-theorem smul_quot [Algebra S R] {n : S} {a : R} :
+theorem smul_quot [SMul S R] [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
   show smul r _ _ = _
   rw [smul]
   rfl
 #align ring_quot.smul_quot RingQuot.smul_quot
 
-instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
+instance instIsScalarTower [CommSemiring T] [SMul S T] [SMul S R] [Algebra S R] [SMul T R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
-instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
+instance instSMulCommClass [CommSemiring T] [SMul S R] [Algebra S R] [SMul T R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
@@ -392,8 +391,7 @@ instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot 
 instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
-instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
-  smul := (· • ·)
+instance instAlgebra [SMul S R] [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
   map_one' := by simp [← one_quot]
   map_mul' := by simp [mul_quot]
@@ -630,7 +628,7 @@ theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgH
   use a
 #align ring_quot.mk_alg_hom_surjective RingQuot.mkAlgHom_surjective
 
-variable {B : Type u₄} [Semiring B] [Algebra S B]
+variable {B : Type u₄} [Semiring B] [SMul S B] [Algebra S B]
 
 @[ext 1100]
 theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)

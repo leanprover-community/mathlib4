@@ -330,7 +330,7 @@ end
 
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormedRing γ] [SMul 𝕜 γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
@@ -461,7 +461,7 @@ def compRightHomeomorph {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactS
 
 theorem compRightAlgHom_continuous {X Y : Type*} (R A : Type*) [TopologicalSpace X]
     [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [CommSemiring R] [Semiring A]
-    [MetricSpace A] [TopologicalSemiring A] [Algebra R A] (f : C(X, Y)) :
+    [MetricSpace A] [TopologicalSemiring A] [SMul R A] [Algebra R A] (f : C(X, Y)) :
     Continuous (compRightAlgHom R A f) :=
   map_continuous (compRightContinuousMap A f)
 #align continuous_map.comp_right_alg_hom_continuous ContinuousMap.compRightAlgHom_continuous

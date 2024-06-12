@@ -32,7 +32,7 @@ universe u v w
 `ε_A, ε_B`, an `R`-bialgebra homomorphism `A →ₐc[R] B` is an `R`-algebra map `f` such that
 `ε_B ∘ f = ε_A` and `(f ⊗ f) ∘ Δ_A = Δ_B ∘ f`. -/
 structure BialgHom (R A B : Type*) [CommSemiring R]
-    [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+    [Semiring A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A →* B
 
 /-- Reinterpret a `BialgHom` as a `MonoidHom` -/
@@ -47,7 +47,7 @@ notation:25 A " →ₐc[" R "] " B => BialgHom R A B
 /-- `BialgHomClass F R A B` asserts `F` is a type of bundled bialgebra homomorphisms
 from `A` to `B`.  -/
 class BialgHomClass (F : Type*) (R A B : outParam Type*)
-    [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+    [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
     extends CoalgHomClass F R A B, MonoidHomClass F A B : Prop
 
@@ -57,7 +57,7 @@ variable {R A B F : Type*}
 
 section
 
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
   [BialgHomClass F R A B]
 
@@ -82,7 +82,7 @@ instance instCoeToBialgHom :
 
 end
 section
-variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R B]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Bialgebra R A] [Semiring B] [SMul R B] [Bialgebra R B]
   [FunLike F A B] [BialgHomClass F R A B]
 
 @[simp]
@@ -100,8 +100,8 @@ end BialgHomClass
 
 namespace BialgHom
 
-variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-  [Semiring B] [Algebra R B] [Semiring C] [Algebra R C] [Semiring D] [Algebra R D]
+variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
+  [Semiring B] [SMul R B] [Algebra R B] [Semiring C] [SMul R C] [Algebra R C] [Semiring D] [SMul R D] [Algebra R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
 instance funLike : FunLike (A →ₐc[R] B) A B where
@@ -121,8 +121,8 @@ instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R α β : Type*} [CommSemiring R]
-    [Semiring α] [Algebra R α] [Semiring β]
-    [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
+    [Semiring α] [SMul R α] [Algebra R α] [Semiring β]
+    [SMul R β] [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₐc[R] β) : α → β := f
 
 initialize_simps_projections BialgHom (toFun → apply)
@@ -297,7 +297,7 @@ namespace Bialgebra
 
 variable (R : Type u) (A : Type v)
 
-variable [CommSemiring R] [Semiring A] [Bialgebra R A]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Bialgebra R A]
 
 /-- The counit of a bialgebra as a `BialgHom`. -/
 def counitBialgHom : A →ₐc[R] R :=

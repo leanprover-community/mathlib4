@@ -54,7 +54,7 @@ open scoped TensorProduct
 
 variable {R ι A B : Type*}
 variable [CommSemiring ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
-variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable [CommRing R] [Ring A] [Ring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)
 variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
 
@@ -119,6 +119,8 @@ notation:100 x " ᵍ⊗ₜ" y:100 => tmul _ x y
 @[inherit_doc]
 notation:100 x " ᵍ⊗ₜ[" R "] " y:100 => tmul R x y
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 variable (R) in
 /-- An auxiliary construction to move between the graded tensor product of internally-graded objects
 and the tensor product of direct sums. -/

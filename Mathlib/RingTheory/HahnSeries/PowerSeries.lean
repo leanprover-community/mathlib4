@@ -197,7 +197,7 @@ end Semiring
 
 section Algebra
 
-variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
+variable (R) [CommSemiring R] {A : Type*} [Semiring A] [SMul R A] [Algebra R A]
 
 /-- The `R`-algebra `HahnSeries ℕ A` is isomorphic to `PowerSeries A`. -/
 @[simps!]
@@ -219,13 +219,17 @@ def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=
     (AlgEquiv.toAlgHom (toPowerSeriesAlg R).symm)
 #align hahn_series.of_power_series_alg HahnSeries.ofPowerSeriesAlg
 
-instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)] :
-    Algebra S (HahnSeries Γ R) :=
+instance instSMulPowerSeries {S : Type*} [CommSemiring S] [SMul S (PowerSeries R)]
+    [Algebra S (PowerSeries R)] : SMul S (HahnSeries Γ R) :=
+  RingHom.toSMul <| (ofPowerSeries Γ R).comp (algebraMap S (PowerSeries R))
+
+instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [SMul S (PowerSeries R)]
+    [Algebra S (PowerSeries R)] : Algebra S (HahnSeries Γ R) :=
   RingHom.toAlgebra <| (ofPowerSeries Γ R).comp (algebraMap S (PowerSeries R))
 #align hahn_series.power_series_algebra HahnSeries.powerSeriesAlgebra
 
 variable {R}
-variable {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)]
+variable {S : Type*} [CommSemiring S] [SMul S (PowerSeries R)] [Algebra S (PowerSeries R)]
 
 theorem algebraMap_apply' (x : S) :
     algebraMap S (HahnSeries Γ R) x = ofPowerSeries Γ R (algebraMap S (PowerSeries R) x) :=

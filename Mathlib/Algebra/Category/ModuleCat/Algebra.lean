@@ -40,7 +40,7 @@ open CategoryTheory
 namespace ModuleCat
 
 variable {k : Type u} [Field k]
-variable {A : Type w} [Ring A] [Algebra k A]
+variable {A : Type w} [Ring A] [SMul k A] [Algebra k A]
 
 /-- Type synonym for considering a module over a `k`-algebra as a `k`-module. -/
 def moduleOfAlgebraModule (M : ModuleCat.{v} A) : Module k M :=

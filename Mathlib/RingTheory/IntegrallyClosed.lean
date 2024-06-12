@@ -60,7 +60,7 @@ open Polynomial
 
 /-- `R` is integrally closed in `A` if all integral elements of `A` are also elements of `R`.
 -/
-abbrev IsIntegrallyClosedIn (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :=
+abbrev IsIntegrallyClosedIn (R A : Type*) [CommRing R] [CommRing A] [SMul R A] [Algebra R A] :=
   IsIntegralClosure R R A
 
 /-- `R` is integrally closed if all integral elements of `Frac(R)` are also elements of `R`.
@@ -74,7 +74,7 @@ abbrev IsIntegrallyClosed (R : Type*) [CommRing R] := IsIntegrallyClosedIn R (Fr
 section Iff
 
 variable {R : Type*} [CommRing R]
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {A B : Type*} [CommRing A] [CommRing B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 
 /-- Being integrally closed is preserved under injective algebra homomorphisms. -/
 theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective f) :
@@ -94,7 +94,7 @@ theorem AlgEquiv.isIntegrallyClosedIn (e : A ≃ₐ[R] B) :
     IsIntegrallyClosedIn R A ↔ IsIntegrallyClosedIn R B :=
   ⟨AlgHom.isIntegrallyClosedIn e.symm e.symm.injective, AlgHom.isIntegrallyClosedIn e e.injective⟩
 
-variable (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
+variable (K : Type*) [CommRing K] [SMul R K] [Algebra R K] [IsFractionRing R K]
 
 /-- `R` is integrally closed iff it is the integral closure of itself in its field of fractions. -/
 theorem isIntegrallyClosed_iff_isIntegrallyClosedIn :
@@ -107,7 +107,7 @@ theorem isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIn
 #align is_integrally_closed_iff_is_integral_closure isIntegrallyClosed_iff_isIntegralClosure
 
 /-- `R` is integrally closed in `A` iff all integral elements of `A` are also elements of `R`. -/
-theorem isIntegrallyClosedIn_iff {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
+theorem isIntegrallyClosedIn_iff {R A : Type*} [CommRing R] [CommRing A] [SMul R A] [Algebra R A] :
     IsIntegrallyClosedIn R A ↔
       Function.Injective (algebraMap R A) ∧
         ∀ {x : A}, IsIntegral R x → ∃ y, algebraMap R A y = x := by
@@ -131,7 +131,7 @@ end Iff
 
 namespace IsIntegrallyClosedIn
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [iic : IsIntegrallyClosedIn R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [SMul R A] [Algebra R A] [iic : IsIntegrallyClosedIn R A]
 
 theorem algebraMap_eq_of_integral {x : A} : IsIntegral R x → ∃ y : R, algebraMap R A y = x :=
   IsIntegralClosure.isIntegral_iff.mp
@@ -143,7 +143,7 @@ theorem exists_algebraMap_eq_of_isIntegral_pow {x : A} {n : ℕ} (hn : 0 < n)
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R A y = x :=
   isIntegral_iff.mp <| hx.of_pow hn
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {A : Type*} [CommRing A] [Algebra R A]
+theorem exists_algebraMap_eq_of_pow_mem_subalgebra {A : Type*} [CommRing A] [SMul R A] [Algebra R A]
     {S : Subalgebra R A} [IsIntegrallyClosedIn S A] {x : A} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S A y = x :=
   exists_algebraMap_eq_of_isIntegral_pow hn <| isIntegral_iff.mpr ⟨⟨x ^ n, hx⟩, rfl⟩
@@ -171,7 +171,7 @@ theorem integralClosure_eq_bot [NoZeroSMulDivisors R A] [Nontrivial A] : integra
 variable {A} {B : Type*} [CommRing B]
 
 /-- If `R` is the integral closure of `S` in `A`, then it is integrally closed in `A`. -/
-lemma of_isIntegralClosure [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+lemma of_isIntegralClosure [SMul R B] [Algebra R B] [SMul A B] [Algebra A B] [IsScalarTower R A B]
     [IsIntegralClosure A R B] :
     IsIntegrallyClosedIn A B :=
   have : Algebra.IsIntegral R A := IsIntegralClosure.isIntegral_algebra R B
@@ -180,7 +180,7 @@ lemma of_isIntegralClosure [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 variable {R}
 
 lemma _root_.IsIntegralClosure.of_isIntegrallyClosedIn
-    [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    [SMul R B] [Algebra R B] [SMul A B] [Algebra A B] [IsScalarTower R A B]
     [IsIntegrallyClosedIn A B] [Algebra.IsIntegral R A] :
     IsIntegralClosure A R B := by
   refine ⟨IsIntegralClosure.algebraMap_injective _ A _, fun {x} ↦
@@ -193,7 +193,7 @@ end IsIntegrallyClosedIn
 namespace IsIntegrallyClosed
 
 variable {R S : Type*} [CommRing R] [CommRing S] [id : IsDomain R] [iic : IsIntegrallyClosed R]
-variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
+variable {K : Type*} [CommRing K] [SMul R K] [Algebra R K] [ifr : IsFractionRing R K]
 
 /-- Note that this is not a duplicate instance, since `IsIntegrallyClosed R` is instead defined
 as `IsIntegrallyClosed R R (FractionRing R)`. -/
@@ -212,7 +212,7 @@ theorem exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_isIntegral_pow hn hx
 #align is_integrally_closed.exists_algebra_map_eq_of_is_integral_pow IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
+theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [SMul R K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_pow_mem_subalgebra hn hx
@@ -221,7 +221,7 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
 variable (R S K)
 
 instance _root_.IsIntegralClosure.of_isIntegrallyClosed
-    [Algebra S R] [Algebra S K] [IsScalarTower S R K] [Algebra.IsIntegral S R] :
+    [SMul S R] [Algebra S R] [SMul S K] [Algebra S K] [IsScalarTower S R K] [Algebra.IsIntegral S R] :
     IsIntegralClosure R S K :=
   IsIntegralClosure.of_isIntegrallyClosedIn
 
@@ -267,9 +267,9 @@ namespace integralClosure
 open IsIntegrallyClosed
 
 variable {R : Type*} [CommRing R]
-variable (K : Type*) [Field K] [Algebra R K]
+variable (K : Type*) [Field K] [SMul R K] [Algebra R K]
 variable [IsFractionRing R K]
-variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
+variable {L : Type*} [Field L] [SMul K L] [Algebra K L] [SMul R L] [Algebra R L] [IsScalarTower R K L]
 
 -- Can't be an instance because you need to supply `K`.
 theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L] :

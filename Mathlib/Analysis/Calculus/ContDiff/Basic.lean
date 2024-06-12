@@ -1467,8 +1467,8 @@ theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i 
 
 section MulProd
 
-variable {𝔸 𝔸' ι 𝕜' : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedCommRing 𝔸']
-  [NormedAlgebra 𝕜 𝔸'] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝔸 𝔸' ι 𝕜' : Type*} [NormedRing 𝔸] [SMul 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedCommRing 𝔸']
+  [SMul 𝕜 𝔸'] [NormedAlgebra 𝕜 𝔸'] [NormedField 𝕜'] [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 -- The product is smooth.
 theorem contDiff_mul : ContDiff 𝕜 n fun p : 𝔸 × 𝔸 => p.1 * p.2 :=
@@ -1748,7 +1748,7 @@ section AlgebraInverse
 
 variable (𝕜) {R : Type*} [NormedRing R]
 -- Porting note: this couldn't be on the same line as the binder type update of `𝕜`
-variable [NormedAlgebra 𝕜 R]
+variable [SMul 𝕜 R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 
@@ -1779,7 +1779,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
   · exact contDiffAt_top.mpr Itop
 #align cont_diff_at_ring_inverse contDiffAt_ring_inverse
 
-variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
+variable {𝕜' : Type*} [NormedField 𝕜'] [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
 
 theorem contDiffAt_inv {x : 𝕜'} (hx : x ≠ 0) {n} : ContDiffAt 𝕜 n Inv.inv x := by
   simpa only [Ring.inverse_eq_inv'] using contDiffAt_ring_inverse 𝕜 (Units.mk0 x hx)
@@ -2139,7 +2139,7 @@ over `𝕜`.
 
 variable (𝕜) {𝕜' : Type*} [NontriviallyNormedField 𝕜']
 -- Porting note: this couldn't be on the same line as the binder type update of `𝕜`
-variable [NormedAlgebra 𝕜 𝕜']
+variable [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜']
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}

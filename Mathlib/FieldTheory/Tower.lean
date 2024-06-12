@@ -68,7 +68,7 @@ theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
 #align finite_dimensional.right FiniteDimensional.right
 
 theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDomain A]
-    [Algebra F A] (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=
+    [SMul F A] [Algebra F A] (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=
   { toNontrivial :=
       ⟨⟨⊥, ⊤, fun he =>
           Nat.not_prime_one ((Subalgebra.bot_eq_top_iff_finrank_eq_one.1 he).subst hp)⟩⟩

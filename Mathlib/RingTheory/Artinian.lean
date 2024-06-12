@@ -384,7 +384,7 @@ instance isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [M
 #align is_artinian_of_quotient_of_artinian isArtinian_of_quotient_of_artinian
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is also Artinian. -/
-theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
+theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [SMul R S] [Algebra R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M := by
   rw [isArtinian_iff_wellFounded] at h ⊢
   exact (Submodule.restrictScalarsEmbedding R S M).wellFounded h
@@ -417,7 +417,7 @@ instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R
   isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_artinian_of_fg_of_artinian' isArtinian_of_fg_of_artinian'
 
-theorem IsArtinianRing.of_finite (R S) [CommRing R] [Ring S] [Algebra R S]
+theorem IsArtinianRing.of_finite (R S) [CommRing R] [Ring S] [SMul R S] [Algebra R S]
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
@@ -484,7 +484,7 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
 
 section Localization
 
-variable (S : Submonoid R) (L : Type*) [CommRing L] [Algebra R L] [IsLocalization S L]
+variable (S : Submonoid R) (L : Type*) [CommRing L] [SMul R L] [Algebra R L] [IsLocalization S L]
 
 /-- Localizing an artinian ring can only reduce the amount of elements. -/
 theorem localization_surjective : Function.Surjective (algebraMap R L) := by

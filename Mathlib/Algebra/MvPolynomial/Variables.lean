@@ -276,8 +276,8 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     exact ⟨d, hd, hi⟩
 #align mv_polynomial.eval₂_hom_eq_constant_coeff_of_vars MvPolynomial.eval₂Hom_eq_constantCoeff_of_vars
 
-theorem aeval_eq_constantCoeff_of_vars [Algebra R S] {g : σ → S} {p : MvPolynomial σ R}
-    (hp : ∀ i ∈ p.vars, g i = 0) : aeval g p = algebraMap _ _ (constantCoeff p) :=
+theorem aeval_eq_constantCoeff_of_vars [SMul R S] [Algebra R S] {g : σ → S} {p : MvPolynomial σ R}
+    (hp : ∀ i ∈ p.vars, g i = 0) : aeval (R := R) g p = algebraMap _ _ (constantCoeff p) :=
   eval₂Hom_eq_constantCoeff_of_vars _ hp
 #align mv_polynomial.aeval_eq_constant_coeff_of_vars MvPolynomial.aeval_eq_constantCoeff_of_vars
 
@@ -313,8 +313,8 @@ theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPo
 #align mv_polynomial.hom_congr_vars MvPolynomial.hom_congr_vars
 
 theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ → σ) (hfi : Injective f)
-    (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename f q = p :=
-  ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
+    (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename (R := R) f q = p :=
+  ⟨aeval (R := R) (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
     by
       show (rename f).toRingHom.comp _ p = RingHom.id _ p
       refine' hom_congr_vars _ _ _
@@ -327,14 +327,14 @@ theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ �
 #align mv_polynomial.exists_rename_eq_of_vars_subset_range MvPolynomial.exists_rename_eq_of_vars_subset_range
 
 theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
-    (rename f φ).vars ⊆ φ.vars.image f := by
+    (rename (R := R) f φ).vars ⊆ φ.vars.image f := by
   classical
   intro i hi
   simp only [vars_def, exists_prop, Multiset.mem_toFinset, Finset.mem_image] at hi ⊢
   simpa only [Multiset.mem_map] using degrees_rename _ _ hi
 #align mv_polynomial.vars_rename MvPolynomial.vars_rename
 
-theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j ∈ (rename f φ).vars) :
+theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j ∈ (rename (R := R) f φ).vars) :
     ∃ i : σ, i ∈ φ.vars ∧ f i = j := by
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h

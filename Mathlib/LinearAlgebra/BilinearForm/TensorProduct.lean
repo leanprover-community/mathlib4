@@ -37,7 +37,7 @@ open LinearMap (BilinForm)
 section CommSemiring
 variable [CommSemiring R] [CommSemiring A]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂]
-variable [Algebra R A] [Module R M₁] [Module A M₁]
+variable [SMul R A] [Algebra R A] [Module R M₁] [Module A M₁]
 variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M₁]
 variable [Module R M₂]
 

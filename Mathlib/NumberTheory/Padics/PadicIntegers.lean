@@ -651,6 +651,8 @@ end Dvr
 
 section FractionRing
 
+instance smul : SMul ℤ_[p] ℚ_[p] := ⟨fun x y => x * y⟩
+
 instance algebra : Algebra ℤ_[p] ℚ_[p] :=
   Algebra.ofSubring (subring p)
 #align padic_int.algebra PadicInt.algebra

@@ -161,7 +161,7 @@ instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Finite R M :
   ⟨IsNoetherian.noetherian ⊤⟩
 #align module.is_noetherian.finite Module.IsNoetherian.finite
 
-instance {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S]
+instance {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [SMul R₁ S] [Algebra R₁ S]
     [IsNoetherian R₁ S] (I : Ideal S) : Finite R₁ I :=
   IsNoetherian.finite R₁ ((I : Submodule S S).restrictScalars R₁)
 

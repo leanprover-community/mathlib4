@@ -21,7 +21,7 @@ universe u u' v w w'
 open BigOperators
 
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
-structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
+structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] extends
   Subsemiring A : Type v where
   /-- The image of `algebraMap` is contained in the underlying set of the subalgebra -/
   algebraMap_mem' : ∀ r, algebraMap R A r ∈ carrier
@@ -36,7 +36,9 @@ namespace Subalgebra
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 variable [CommSemiring R]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+variable [Semiring A] [SMul R A] [Algebra R A]
+variable [Semiring B] [SMul R B] [Algebra R B]
+variable [Semiring C] [SMul R C] [Algebra R C]
 
 instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
@@ -100,7 +102,7 @@ instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
   smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
 
 @[aesop safe apply (rule_sets := [SetLike])]
-theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
     [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
     algebraMap R A r ∈ s :=
   Algebra.algebraMap_eq_smul_one (A := A) r ▸ SMulMemClass.smul_mem r (one_mem s)
@@ -170,37 +172,39 @@ protected theorem sum_mem {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ 
 #align subalgebra.sum_mem Subalgebra.sum_mem
 
 protected theorem multiset_prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) {m : Multiset A} (h : ∀ x ∈ m, x ∈ S) : m.prod ∈ S :=
+    [SMul R A] [Algebra R A] (S : Subalgebra R A) {m : Multiset A} (h : ∀ x ∈ m, x ∈ S) : m.prod ∈ S :=
   multiset_prod_mem m h
 #align subalgebra.multiset_prod_mem Subalgebra.multiset_prod_mem
 
-protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A]
+protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A]
+    [SMul R A] [Algebra R A]
     (S : Subalgebra R A) {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
     (∏ x in t, f x) ∈ S :=
   prod_mem h
 #align subalgebra.prod_mem Subalgebra.prod_mem
 
-instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
+instance {R A : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A] :
+    SubringClass (Subalgebra R A) A :=
   { Subalgebra.SubsemiringClass with
     neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }
 
-protected theorem neg_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem neg_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     (S : Subalgebra R A) {x : A} (hx : x ∈ S) : -x ∈ S :=
   neg_mem hx
 #align subalgebra.neg_mem Subalgebra.neg_mem
 
-protected theorem sub_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem sub_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     (S : Subalgebra R A) {x y : A} (hx : x ∈ S) (hy : y ∈ S) : x - y ∈ S :=
   sub_mem hx hy
 #align subalgebra.sub_mem Subalgebra.sub_mem
 
-protected theorem zsmul_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem zsmul_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     (S : Subalgebra R A) {x : A} (hx : x ∈ S) (n : ℤ) : n • x ∈ S :=
   zsmul_mem hx n
 #align subalgebra.zsmul_mem Subalgebra.zsmul_mem
 
-protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
-    (S : Subalgebra R A) (n : ℤ) : (n : A) ∈ S :=
+protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A]
+    [SMul R A] [Algebra R A] (S : Subalgebra R A) (n : ℤ) : (n : A) ∈ S :=
   intCast_mem S n
 #align subalgebra.coe_int_mem Subalgebra.intCast_mem
 
@@ -209,7 +213,7 @@ protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [A
 @[deprecated intCast_mem] alias coe_int_mem := Subalgebra.intCast_mem
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
-def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
+def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
     (S : Subalgebra R A) : AddSubmonoid A :=
   S.toSubsemiring.toAddSubmonoid
 #align subalgebra.to_add_submonoid Subalgebra.toAddSubmonoid
@@ -223,29 +227,29 @@ set_option align.precheck false in
 #align subalgebra.to_submonoid Subalgebra.toSubmonoid
 
 /-- A subalgebra over a ring is also a `Subring`. -/
-def toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
-    Subring A :=
+def toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
+    (S : Subalgebra R A) : Subring A :=
   { S.toSubsemiring with neg_mem' := S.neg_mem }
 #align subalgebra.to_subring Subalgebra.toSubring
 
 @[simp]
-theorem mem_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+theorem mem_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     {S : Subalgebra R A} {x} : x ∈ S.toSubring ↔ x ∈ S :=
   Iff.rfl
 #align subalgebra.mem_to_subring Subalgebra.mem_toSubring
 
 @[simp]
-theorem coe_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+theorem coe_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     (S : Subalgebra R A) : (↑S.toSubring : Set A) = S :=
   rfl
 #align subalgebra.coe_to_subring Subalgebra.coe_toSubring
 
-theorem toSubring_injective {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] :
+theorem toSubring_injective {R : Type u} {A : Type v} [CommRing R] [Ring A]  [SMul R A] [Algebra R A] :
     Function.Injective (toSubring : Subalgebra R A → Subring A) := fun S T h =>
   ext fun x => by rw [← mem_toSubring, ← mem_toSubring, h]
 #align subalgebra.to_subring_injective Subalgebra.toSubring_injective
 
-theorem toSubring_inj {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+theorem toSubring_inj {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     {S U : Subalgebra R A} : S.toSubring = U.toSubring ↔ S = U :=
   toSubring_injective.eq_iff
 #align subalgebra.to_subring_inj Subalgebra.toSubring_inj
@@ -258,21 +262,21 @@ section
 /-! `Subalgebra`s inherit structure from their `Subsemiring` / `Semiring` coercions. -/
 
 
-instance toSemiring {R A} [CommSemiring R] [Semiring A] [Algebra R A] (S : Subalgebra R A) :
+instance toSemiring {R A} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] (S : Subalgebra R A) :
     Semiring S :=
   S.toSubsemiring.toSemiring
 #align subalgebra.to_semiring Subalgebra.toSemiring
 
-instance toCommSemiring {R A} [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A) :
+instance toCommSemiring {R A} [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A] (S : Subalgebra R A) :
     CommSemiring S :=
   S.toSubsemiring.toCommSemiring
 #align subalgebra.to_comm_semiring Subalgebra.toCommSemiring
 
-instance toRing {R A} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) : Ring S :=
+instance toRing {R A} [CommRing R] [Ring A] [SMul R A] [Algebra R A] (S : Subalgebra R A) : Ring S :=
   S.toSubring.toRing
 #align subalgebra.to_ring Subalgebra.toRing
 
-instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebra R A) :
+instance toCommRing {R A} [CommRing R] [CommRing A] [SMul R A] [Algebra R A] (S : Subalgebra R A) :
     CommRing S :=
   S.toSubring.toCommRing
 #align subalgebra.to_comm_ring Subalgebra.toCommRing
@@ -326,7 +330,7 @@ This instance should have low priority since it is slow to fail:
 before failing, it will cause a search through all `SMul R' R` instances,
 which can quickly get expensive.
 -/
-instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
+instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [SMul R' A] [Algebra R' A]
     [IsScalarTower R' R A] :
     Algebra R' S :=
   { (algebraMap R' A).codRestrict S fun x => by
@@ -361,11 +365,11 @@ protected theorem coe_zero : ((0 : S) : A) = 0 := rfl
 protected theorem coe_one : ((1 : S) : A) = 1 := rfl
 #align subalgebra.coe_one Subalgebra.coe_one
 
-protected theorem coe_neg {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem coe_neg {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     {S : Subalgebra R A} (x : S) : (↑(-x) : A) = -↑x := rfl
 #align subalgebra.coe_neg Subalgebra.coe_neg
 
-protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     {S : Subalgebra R A} (x y : S) : (↑(x - y) : A) = ↑x - ↑y := rfl
 #align subalgebra.coe_sub Subalgebra.coe_sub
 
@@ -375,7 +379,7 @@ theorem coe_smul [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] 
 #align subalgebra.coe_smul Subalgebra.coe_smul
 
 @[simp, norm_cast]
-theorem coe_algebraMap [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R' R A]
+theorem coe_algebraMap [CommSemiring R'] [SMul R' R] [SMul R' A] [Algebra R' A] [IsScalarTower R' R A]
     (r : R') : ↑(algebraMap R' S r) = algebraMap R' A r := rfl
 #align subalgebra.coe_algebra_map Subalgebra.coe_algebraMap
 
@@ -415,7 +419,7 @@ theorem toSubsemiring_subtype : S.toSubsemiring.subtype = (S.val : S →+* A) :=
 #align subalgebra.to_subsemiring_subtype Subalgebra.toSubsemiring_subtype
 
 @[simp]
-theorem toSubring_subtype {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
+theorem toSubring_subtype {R A : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A] (S : Subalgebra R A) :
     S.toSubring.subtype = (S.val : S →+* A) := rfl
 #align subalgebra.to_subring_subtype Subalgebra.toSubring_subtype
 
@@ -495,11 +499,11 @@ theorem coe_comap (S : Subalgebra R B) (f : A →ₐ[R] B) : (S.comap f : Set A)
 #align subalgebra.coe_comap Subalgebra.coe_comap
 
 instance noZeroDivisors {R A : Type*} [CommSemiring R] [Semiring A] [NoZeroDivisors A]
-    [Algebra R A] (S : Subalgebra R A) : NoZeroDivisors S :=
+    [SMul R A] [Algebra R A] (S : Subalgebra R A) : NoZeroDivisors S :=
   inferInstanceAs (NoZeroDivisors S.toSubsemiring)
 #align subalgebra.no_zero_divisors Subalgebra.noZeroDivisors
 
-instance isDomain {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
+instance isDomain {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [SMul R A] [Algebra R A]
     (S : Subalgebra R A) : IsDomain S :=
   inferInstanceAs (IsDomain S.toSubring)
 #align subalgebra.is_domain Subalgebra.isDomain
@@ -508,7 +512,7 @@ end Subalgebra
 
 namespace SubalgebraClass
 
-variable {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {S R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable [SetLike S A] [SubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
 
 instance (priority := 75) toAlgebra : Algebra R s where
@@ -537,7 +541,7 @@ end SubalgebraClass
 
 namespace Submodule
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable (p : Submodule R A)
 
 /-- A submodule containing `1` and closed under multiplication is a subalgebra. -/
@@ -588,7 +592,8 @@ namespace AlgHom
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 variable [CommSemiring R]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+variable [Semiring A] [SMul R A] [Algebra R A] [Semiring B]
+  [SMul R B] [Algebra R B] [Semiring C] [SMul R C] [Algebra R C]
 variable (φ : A →ₐ[R] B)
 
 /-- Range of an `AlgHom` as a subalgebra. -/
@@ -683,7 +688,7 @@ end AlgHom
 namespace AlgEquiv
 
 variable {R : Type u} {A : Type v} {B : Type w}
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 
 /-- Restrict an algebra homomorphism with a left inverse to an algebra isomorphism to its range.
 
@@ -724,7 +729,7 @@ theorem ofInjective_apply (f : A →ₐ[R] B) (hf : Function.Injective f) (x : A
 
 /-- Restrict an algebra homomorphism between fields to an algebra isomorphism -/
 noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [Nontrivial F]
-    [Algebra R E] [Algebra R F] (f : E →ₐ[R] F) : E ≃ₐ[R] f.range :=
+    [SMul R E] [Algebra R E] [SMul R F] [Algebra R F] (f : E →ₐ[R] F) : E ≃ₐ[R] f.range :=
   ofInjective f f.toRingHom.injective
 #align alg_equiv.of_injective_field AlgEquiv.ofInjectiveField
 
@@ -743,7 +748,7 @@ end AlgEquiv
 namespace Algebra
 
 variable (R : Type u) {A : Type v} {B : Type w}
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
 def adjoin (s : Set A) : Subalgebra R A :=
@@ -789,7 +794,7 @@ theorem top_toSubsemiring : (⊤ : Subalgebra R A).toSubsemiring = ⊤ := rfl
 #align algebra.top_to_subsemiring Algebra.top_toSubsemiring
 
 @[simp]
-theorem top_toSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] :
+theorem top_toSubring {R A : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A] :
     (⊤ : Subalgebra R A).toSubring = ⊤ := rfl
 #align algebra.top_to_subring Algebra.top_toSubring
 
@@ -804,7 +809,7 @@ theorem toSubsemiring_eq_top {S : Subalgebra R A} : S.toSubsemiring = ⊤ ↔ S 
 #align algebra.to_subsemiring_eq_top Algebra.toSubsemiring_eq_top
 
 @[simp]
-theorem toSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {S : Subalgebra R A} :
+theorem toSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A] {S : Subalgebra R A} :
     S.toSubring = ⊤ ↔ S = ⊤ :=
   Subalgebra.toSubring_injective.eq_iff' top_toSubring
 #align algebra.to_subring_eq_top Algebra.toSubring_eq_top
@@ -939,7 +944,7 @@ theorem surjective_algebraMap_iff :
 #align algebra.surjective_algebra_map_iff Algebra.surjective_algebraMap_iff
 
 theorem bijective_algebraMap_iff {R A : Type*} [Field R] [Semiring A] [Nontrivial A]
-    [Algebra R A] : Function.Bijective (algebraMap R A) ↔ (⊤ : Subalgebra R A) = ⊥ :=
+    [SMul R A] [Algebra R A] : Function.Bijective (algebraMap R A) ↔ (⊤ : Subalgebra R A) = ⊥ :=
   ⟨fun h => surjective_algebraMap_iff.1 h.2, fun h =>
     ⟨(algebraMap R A).injective, surjective_algebraMap_iff.2 h⟩⟩
 #align algebra.bijective_algebra_map_iff Algebra.bijective_algebraMap_iff
@@ -954,7 +959,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
 
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
-noncomputable def botEquiv (F R : Type*) [Field F] [Semiring R] [Nontrivial R] [Algebra F R] :
+noncomputable def botEquiv (F R : Type*) [Field F] [Semiring R] [Nontrivial R] [SMul F R] [Algebra F R] :
     (⊥ : Subalgebra F R) ≃ₐ[F] F :=
   botEquivOfInjective (RingHom.injective _)
 #align algebra.bot_equiv Algebra.botEquiv
@@ -966,7 +971,7 @@ namespace Subalgebra
 open Algebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
 variable (S : Subalgebra R A)
 
 /-- The top subalgebra is isomorphic to the algebra.
@@ -1134,7 +1139,7 @@ instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower 
 #align subalgebra.is_scalar_tower_left Subalgebra.isScalarTower_left
 
 instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
-    [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
+    [SMul R S] [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
     IsScalarTower R S' T :=
   ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
 #align subalgebra.is_scalar_tower_mid Subalgebra.isScalarTower_mid
@@ -1164,25 +1169,25 @@ instance moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Modu
 #align subalgebra.module_left Subalgebra.moduleLeft
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
-    [Algebra A α] (S : Subalgebra R A) : Algebra S α :=
+instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [SMul R A] [Algebra R A]
+    [SMul A α] [Algebra A α] (S : Subalgebra R A) : Algebra S α :=
   Algebra.ofSubsemiring S.toSubsemiring
 #align subalgebra.to_algebra Subalgebra.toAlgebra
 
-theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
-    [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
+theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [SMul R A] [Algebra R A]
+    [SMul A α] [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
   rfl
 #align subalgebra.algebra_map_eq Subalgebra.algebraMap_eq
 
 @[simp]
-theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).rangeS = S.toSubsemiring := by
   rw [algebraMap_eq, Algebra.id.map_eq_id, RingHom.id_comp, ← toSubsemiring_subtype,
     Subsemiring.rangeS_subtype]
 #align subalgebra.srange_algebra_map Subalgebra.rangeS_algebraMap
 
 @[simp]
-theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [SMul R A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).range = S.toSubring := by
   rw [algebraMap_eq, Algebra.id.map_eq_id, RingHom.id_comp, ← toSubring_subtype,
     Subring.range_subtype]
@@ -1220,13 +1225,13 @@ theorem center_toSubsemiring : (center R A).toSubsemiring = Subsemiring.center A
 #align subalgebra.center_to_subsemiring Subalgebra.center_toSubsemiring
 
 @[simp]
-theorem center_toSubring (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
+theorem center_toSubring (R A : Type*) [CommRing R] [Ring A] [SMul R A] [Algebra R A] :
     (center R A).toSubring = Subring.center A :=
   rfl
 #align subalgebra.center_to_subring Subalgebra.center_toSubring
 
 @[simp]
-theorem center_eq_top (A : Type*) [CommSemiring A] [Algebra R A] : center R A = ⊤ :=
+theorem center_eq_top (A : Type*) [CommSemiring A] [SMul R A] [Algebra R A] : center R A = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ A)
 #align subalgebra.center_eq_top Subalgebra.center_eq_top
 
@@ -1235,7 +1240,7 @@ variable {R A}
 instance : CommSemiring (center R A) :=
   inferInstanceAs (CommSemiring (Subsemiring.center A))
 
-instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
+instance {A : Type*} [Ring A] [SMul R A] [Algebra R A] : CommRing (center R A) :=
   inferInstanceAs (CommRing (Subring.center A))
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=

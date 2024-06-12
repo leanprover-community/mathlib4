@@ -677,9 +677,10 @@ section
 variable [CommSemiring R]
 
 /-- Transfer `Algebra` across an `Equiv` -/
-protected abbrev algebra (e : α ≃ β) [Semiring β] :
+protected abbrev algebra (e : α ≃ β) [Semiring β] [SMul R β] [Algebra R β]:
     let semiring := Equiv.semiring e
-    ∀ [Algebra R β], Algebra R α := by
+    let smul := Equiv.smul e R
+    Algebra R α := by
   intros
   letI : Module R α := e.module R
   fapply Algebra.ofModule
@@ -691,16 +692,17 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
     simp only [apply_symm_apply, Algebra.mul_smul_comm]
 #align equiv.algebra Equiv.algebra
 
-lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
+lemma algebraMap_def (e : α ≃ β) [Semiring β] [SMul R β] [Algebra R β] (r : R) :
     let semiring := Equiv.semiring e
-    let algebra := Equiv.algebra R e
+    let smul := Equiv.smul e R
+    let algebra: Algebra R α := Equiv.algebra R e
     (algebraMap R α) r = e.symm ((algebraMap R β) r) := by
   intros
   simp only [Algebra.algebraMap_eq_smul_one]
   show e.symm (r • e 1) = e.symm (r • 1)
   simp only [Equiv.one_def, apply_symm_apply]
 
-noncomputable instance [Small.{v} α] [Semiring α] [Algebra R α] :
+noncomputable instance [Small.{v} α] [Semiring α] [SMul R α] [Algebra R α] :
     Algebra R (Shrink.{v} α) :=
   (equivShrink α).symm.algebra _
 
@@ -708,10 +710,11 @@ noncomputable instance [Small.{v} α] [Semiring α] [Algebra R α] :
 where the `R`-algebra structure on `α` is
 the one obtained by transporting an `R`-algebra structure on `β` back along `e`.
 -/
-def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
+def algEquiv (e : α ≃ β) [Semiring β] [SMul R β] [Algebra R β] :
     let semiring := Equiv.semiring e
-    let algebra := Equiv.algebra R e
-    exact α ≃ₐ[R] β := by
+    let smul := Equiv.smul e R
+    let algebra : Algebra R α := Equiv.algebra R e
+    α ≃ₐ[R] β := by
   intros
   exact
     { Equiv.ringEquiv e with
@@ -722,18 +725,19 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
 #align equiv.alg_equiv Equiv.algEquiv
 
 @[simp]
-theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=
+theorem algEquiv_apply (e : α ≃ β) [Semiring β] [SMul R β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=
   rfl
 
-theorem algEquiv_symm_apply (e : α ≃ β) [Semiring β] [Algebra R β] (b : β) : by
+theorem algEquiv_symm_apply (e : α ≃ β) [Semiring β] [SMul R β] [Algebra R β] (b : β) : by
+    letI := Equiv.smul e R
     letI := Equiv.semiring e
-    letI := Equiv.algebra R e
+    letI : Algebra R α := Equiv.algebra R e
     exact (algEquiv R e).symm b = e.symm b := by intros; rfl
 
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves algebra structure. -/
 @[simps!]
-noncomputable def _root_.Shrink.algEquiv [Small.{v} α] [Semiring α] [Algebra R α] :
+noncomputable def _root_.Shrink.algEquiv [Small.{v} α] [Semiring α] [SMul R α] [Algebra R α] :
     Shrink.{v} α ≃ₐ[R] α :=
   Equiv.algEquiv _ (equivShrink α).symm
 

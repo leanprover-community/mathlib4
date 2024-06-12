@@ -30,8 +30,8 @@ variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAd
   [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
-variable {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {𝕝 : Type*} [NontriviallyNormedField 𝕝] [SMul 𝕜 𝕝] [NormedAlgebra 𝕜 𝕝]
+variable {A : Type*} [NormedRing A] [SMul 𝕜 A] [NormedAlgebra 𝕜 A]
 
 /-!
 ### Cartesian products are analytic
@@ -196,7 +196,7 @@ lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : �
 
 section Geometric
 
-variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [SMul 𝕜 A] [NormedAlgebra 𝕜 A]
   [NormOneClass A]
 
 /-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
@@ -210,7 +210,7 @@ lemma formalMultilinearSeries_geometric_apply_norm (n : ℕ) :
 end Geometric
 
 lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
+    (A : Type*) [NormedRing A] [NormOneClass A] [SMul 𝕜 A] [NormedAlgebra 𝕜 A] :
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
   apply le_antisymm
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
@@ -236,7 +236,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     exact pow_le_one _ (coe_nonneg r) hr.le
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
-    (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
+    (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [SMul 𝕜 𝕝] [NormedAlgebra 𝕜 𝕝] :
     HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 - x)⁻¹) (formalMultilinearSeries_geometric 𝕜 𝕝) 0 1 := by
   constructor
   · exact le_of_eq (formalMultilinearSeries_geometric_radius 𝕜 𝕝).symm
@@ -250,7 +250,7 @@ lemma hasFPowerSeriesOnBall_inv_one_sub
     simpa only [← ofReal_one, Metric.emetric_ball, Metric.ball,
       dist_eq_norm, sub_zero] using hy
 
-lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
+lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [SMul 𝕜 𝕝] [NormedAlgebra 𝕜 𝕝] :
     AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inv_one_sub 𝕜 𝕝⟩⟩
 
@@ -319,7 +319,7 @@ theorem Finset.analyticOn_sum {f : α → E → F} {s : Set E}
   fun z zs ↦ N.analyticAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [SMul 𝕜 A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (fun z ↦ ∏ n in N, f n z) c := by
   induction' N using Finset.induction with a B aB hB
@@ -330,7 +330,7 @@ theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra �
     exact (h a (Or.inl rfl)).mul (hB fun b m ↦ h b (Or.inr m))
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [SMul 𝕜 A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
     AnalyticOn 𝕜 (fun z ↦ ∏ n in N, f n z) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)

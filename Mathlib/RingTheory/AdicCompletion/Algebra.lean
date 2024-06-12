@@ -213,5 +213,5 @@ instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
 Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)
-    (AdicCompletion I R) _ _ (Algebra.id _) := by
+    (AdicCompletion I R) _ _ _ (Algebra.id _) := by
   with_reducible_and_instances rfl

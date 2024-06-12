@@ -55,7 +55,7 @@ open TensorProduct
 section Semiring
 
 variable {R A B M N P : Type*} [CommSemiring R]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [Module R M] [Module R N] [Module R P]
 variable (r : R) (f g : M →ₗ[R] N)
@@ -140,7 +140,7 @@ end Semiring
 section Ring
 
 variable {R A B M N : Type*} [CommRing R]
-variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable [Ring A] [SMul R A] [Algebra R A] [Ring B] [SMul R B] [Algebra R B]
 variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (f g : M →ₗ[R] N)
 
@@ -326,9 +326,9 @@ end NonUnitalSemiring
 
 section Semiring
 variable [CommSemiring R]
-variable [Semiring A] [Algebra R A]
-variable [Semiring B] [Algebra R B]
-variable [Semiring C] [Algebra R C]
+variable [Semiring A] [SMul R A] [Algebra R A]
+variable [Semiring B] [SMul R B] [Algebra R B]
+variable [Semiring C] [SMul R C] [Algebra R C]
 
 instance instSemiring : Semiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
@@ -358,7 +358,7 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
   map_mul' := by simp
 #align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
 
-variable [CommSemiring S] [Algebra S A]
+variable [CommSemiring S] [SMul S A] [Algebra S A]
 
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { commutes' := fun r x => by
@@ -422,7 +422,7 @@ theorem includeLeftRingHom_comp_algebraMap :
 #align algebra.tensor_product.include_left_comp_algebra_map Algebra.TensorProduct.includeLeftRingHom_comp_algebraMapₓ
 
 section ext
-variable [Algebra R S] [Algebra S C] [IsScalarTower R S A] [IsScalarTower R S C]
+variable [SMul R S] [Algebra R S] [SMul S C] [Algebra S C] [IsScalarTower R S A] [IsScalarTower R S C]
 
 /-- A version of `TensorProduct.ext` for `AlgHom`.
 
@@ -502,8 +502,8 @@ end NonUnitalRing
 
 section CommSemiring
 variable [CommSemiring R]
-variable [CommSemiring A] [Algebra R A]
-variable [CommSemiring B] [Algebra R B]
+variable [CommSemiring A] [SMul R A] [Algebra R A]
+variable [CommSemiring B] [SMul R B] [Algebra R B]
 
 instance instCommSemiring : CommSemiring (A ⊗[R] B) where
   toSemiring := inferInstance
@@ -524,8 +524,8 @@ end CommSemiring
 
 section Ring
 variable [CommRing R]
-variable [Ring A] [Algebra R A]
-variable [Ring B] [Algebra R B]
+variable [Ring A] [SMul R A] [Algebra R A]
+variable [Ring B] [SMul R B] [Algebra R B]
 
 instance instRing : Ring (A ⊗[R] B) where
   toSemiring := instSemiring
@@ -545,14 +545,17 @@ end Ring
 
 section CommRing
 variable [CommRing R]
-variable [CommRing A] [Algebra R A]
-variable [CommRing B] [Algebra R B]
+variable [CommRing A] [SMul R A] [Algebra R A]
+variable [CommRing B] [SMul R B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
     mul_comm := mul_comm }
 
 section RightAlgebra
+
+instance rightSMul : SMul B (A ⊗[R] B) := (Algebra.TensorProduct.includeRight.toRingHom : B →+* A ⊗[R] B).toSMul
+  -- smul := fun b x => x * (1 ⊗ₜ b)
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
@@ -588,11 +591,11 @@ section Monoidal
 
 section
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
-variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable [Semiring B] [Algebra R B]
-variable [Semiring C] [Algebra R C] [Algebra S C]
-variable [Semiring D] [Algebra R D]
+variable [CommSemiring R] [CommSemiring S] [SMul R S] [Algebra R S]
+variable [Semiring A] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A]
+variable [Semiring B] [SMul R B] [Algebra R B]
+variable [Semiring C] [SMul R C] [Algebra R C] [SMul S C] [Algebra S C]
+variable [Semiring D] [SMul R D] [Algebra R D]
 
 /-- Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
 tensors, it preserves multiplication and the identity.
@@ -605,6 +608,7 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
     (h_one : f (1 ⊗ₜ[R] 1) = 1) : A ⊗[R] B →ₐ[S] C :=
   AlgHom.ofLinearMap f h_one <| f.map_mul_iff.2 <| by
     -- these instances are needed by the statement of `ext`, but not by the current definition.
+    letI : SMul R C := RestrictScalars.module R S C |>.toSMul
     letI : Algebra R C := RestrictScalars.algebra R S C
     letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
     ext
@@ -718,13 +722,13 @@ end lift
 
 end
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
-variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable [Semiring B] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
-variable [Semiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
-variable [Semiring D] [Algebra R D]
-variable [Semiring E] [Algebra R E]
-variable [Semiring F] [Algebra R F]
+variable [CommSemiring R] [CommSemiring S] [SMul R S] [Algebra R S]
+variable [Semiring A] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A]
+variable [Semiring B] [SMul R B] [Algebra R B] [SMul S B] [Algebra S B] [IsScalarTower R S B]
+variable [Semiring C] [SMul R C] [Algebra R C] [SMul S C] [Algebra S C] [IsScalarTower R S C]
+variable [Semiring D] [SMul R D] [Algebra R D]
+variable [Semiring E] [SMul R E] [Algebra R E]
+variable [Semiring F] [SMul R F] [Algebra R F]
 
 section
 
@@ -946,10 +950,10 @@ end Monoidal
 
 section
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
-variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable [Semiring B] [Algebra R B]
-variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
+variable [CommSemiring R] [CommSemiring S] [SMul R S] [Algebra R S]
+variable [Semiring A] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A]
+variable [Semiring B] [SMul R B] [Algebra R B]
+variable [CommSemiring C] [SMul R C] [Algebra R C] [SMul S C] [Algebra S C] [IsScalarTower R S C]
 
 /-- If `A`, `B`, `C` are `R`-algebras, `A` and `C` are also `S`-algebras (forming a tower as
 `·/S/R`), then the product map of `f : A →ₐ[S] C` and `g : B →ₐ[R] C` is an `S`-algebra
@@ -965,7 +969,7 @@ end
 section
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
-variable [Algebra R A] [Algebra R B] [Algebra R S]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [SMul R S] [Algebra R S]
 variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
 variable (R)
 
@@ -1045,7 +1049,7 @@ section Basis
 
 universe uM uι
 variable {M : Type uM} {ι : Type uι}
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable [AddCommMonoid M] [Module R M] (b : Basis ι R M)
 variable (A)
 
@@ -1103,7 +1107,7 @@ open LinearMap
 
 variable [Fintype ι] [DecidableEq ι]
 variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
-variable (A : Type*) [CommSemiring A] [Algebra R A]
+variable (A : Type*) [CommSemiring A] [SMul R A] [Algebra R A]
 
 lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
     baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
@@ -1123,7 +1127,7 @@ end Basis
 
 instance (R A M : Type*)
     [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
-    [CommSemiring A] [Algebra R A] :
+    [CommSemiring A] [SMul R A] [Algebra R A] :
     Module.Free A (A ⊗[R] M) :=
   Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
 
@@ -1137,7 +1141,7 @@ open Algebra.TensorProduct
 
 variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
   [Fintype ι] [Finite ι₂] [DecidableEq ι] [DecidableEq ι₂]
-  [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A]
   [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
 @[simp]
@@ -1150,7 +1154,7 @@ end LinearMap
 
 namespace LinearMap
 
-variable (R A M N : Type*) [CommRing R] [CommRing A] [Algebra R A]
+variable (R A M N : Type*) [CommRing R] [CommRing A] [SMul R A] [Algebra R A]
 variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 open Module
@@ -1197,7 +1201,7 @@ namespace Module
 
 variable {R S A M N : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
 variable [AddCommMonoid M] [AddCommMonoid N]
-variable [Algebra R S] [Algebra S A] [Algebra R A]
+variable [SMul R S] [Algebra R S] [SMul S A] [Algebra S A] [SMul R A] [Algebra R A]
 variable [Module R M] [Module S M] [Module A M] [Module R N]
 variable [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S M]
 
@@ -1221,14 +1225,14 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
 
 end Module
 
-theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [Algebra K L]
+theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [SMul K L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
     Module.Finite K ↥(E1 ⊔ E2) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
   exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
 
 @[deprecated Subalgebra.finite_sup] -- 2024-04-11
-theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [Algebra K L]
+theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [SMul K L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [FiniteDimensional K E1] [FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := Subalgebra.finite_sup E1 E2
 #align subalgebra.finite_dimensional_sup Subalgebra.finiteDimensional_sup
@@ -1238,7 +1242,7 @@ namespace TensorProduct.Algebra
 variable {R A B M : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable [Semiring A] [Semiring B] [Module A M] [Module B M]
-variable [Algebra R A] [Algebra R B]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [IsScalarTower R A M] [IsScalarTower R B M]
 
 /-- An auxiliary definition, used for constructing the `Module (A ⊗[R] B) M` in

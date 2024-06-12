@@ -140,7 +140,7 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
     DistribMulAction S (AdjoinRoot f) :=
   Submodule.Quotient.distribMulAction' _
 
-instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
+instance [CommSemiring S] [SMul S R] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
 @[simp]
@@ -150,7 +150,7 @@ theorem algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
 
 variable (S)
 
-theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
+theorem algebraMap_eq' [CommSemiring S] [SMul S R] [Algebra S R] :
     algebraMap S (AdjoinRoot f) = (of f).comp (algebraMap S R) :=
   rfl
 #align adjoin_root.algebra_map_eq' AdjoinRoot.algebraMap_eq'
@@ -179,7 +179,7 @@ instance hasCoeT : CoeTC R (AdjoinRoot f) :=
 /-- Two `R`-`AlgHom` from `AdjoinRoot f` to the same `R`-algebra are the same iff
     they agree on `root f`. -/
 @[ext]
-theorem algHom_ext [Semiring S] [Algebra R S] {g₁ g₂ : AdjoinRoot f →ₐ[R] S}
+theorem algHom_ext [Semiring S] [SMul R S] [Algebra R S] {g₁ g₂ : AdjoinRoot f →ₐ[R] S}
     (h : g₁ (root f) = g₂ (root f)) : g₁ = g₂ :=
   Ideal.Quotient.algHom_ext R <| Polynomial.algHom_ext h
 #align adjoin_root.alg_hom_ext AdjoinRoot.algHom_ext
@@ -296,7 +296,7 @@ theorem lift_comp_of : (lift i a h).comp (of f) = i :=
   RingHom.ext fun _ => @lift_of _ _ _ _ _ _ _ h _
 #align adjoin_root.lift_comp_of AdjoinRoot.lift_comp_of
 
-variable (f) [Algebra R S]
+variable (f) [SMul R S] [Algebra R S]
 
 /-- Produce an algebra homomorphism `AdjoinRoot f →ₐ[R] S` sending `root f` to
 a root of `f` in `S`. -/
@@ -352,7 +352,7 @@ theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 #align adjoin_root.root_is_inv AdjoinRoot.root_isInv
 
-theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
+theorem algHom_subsingleton {S : Type*} [CommRing S] [SMul R S] [Algebra R S] {r : R} :
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
   ⟨fun f g =>
     algHom_ext
@@ -608,7 +608,7 @@ section Equiv
 
 section minpoly
 
-variable [CommRing R] [CommRing S] [Algebra R S] (x : S) (R)
+variable [CommRing R] [CommRing S] [SMul R S] [Algebra R S] (x : S) (R)
 
 open Algebra Polynomial
 
@@ -647,7 +647,7 @@ end minpoly
 
 section Equiv'
 
-variable [CommRing R] [CommRing S] [Algebra R S]
+variable [CommRing R] [CommRing S] [SMul R S] [Algebra R S]
 variable (g : R[X]) (pb : PowerBasis R S)
 
 /-- If `S` is an extension of `R` with power basis `pb` and `g` is a monic polynomial over `R`
@@ -688,7 +688,7 @@ end Equiv'
 
 section Field
 
-variable (L F : Type*) [Field F] [CommRing L] [IsDomain L] [Algebra F L]
+variable (L F : Type*) [Field F] [CommRing L] [IsDomain L] [SMul F L] [Algebra F L]
 
 /-- If `L` is a field extension of `F` and `f` is a polynomial over `F` then the set
 of maps from `F[x]/(f)` into `L` is in bijection with the set of roots of `f` in `L`. -/
@@ -833,6 +833,8 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     quotMapOfEquivQuotMapCMapSpanMk_symm_mk]
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot_symm_mk_mk AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk
 
+attribute [instance high] IsScalarTower.right in
+local instance foo : SMul R ((R ⧸ I)[X] ⧸ span {Polynomial.map (Ideal.Quotient.mk I) f}) := Submodule.Quotient.instSMul' (span {Polynomial.map (Ideal.Quotient.mk I) f}) in
 /-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an alg_equiv.  -/
 @[simps!]
 noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
@@ -874,7 +876,7 @@ namespace PowerBasis
 
 open AdjoinRoot AlgEquiv
 
-variable [CommRing R] [CommRing S] [Algebra R S]
+variable [CommRing R] [CommRing S] [SMul R S] [Algebra R S]
 
 /-- Let `α` have minimal polynomial `f` over `R` and `I` be an ideal of `R`,
 then `R[α] / (I) = (R[x] / (f)) / pS = (R/p)[x] / (f mod p)`. -/
@@ -928,7 +930,7 @@ end PowerBasis
 /-- If `L / K` is an integral extension, `K` is a domain, `L` is a field, then any irreducible
 polynomial over `L` divides some monic irreducible polynomial over `K`. -/
 theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
-    [CommRing K] [IsDomain K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] {f : L[X]}
+    [CommRing K] [IsDomain K] [Field L] [SMul K L] [Algebra K L] [Algebra.IsIntegral K L] {f : L[X]}
     (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
   haveI := Fact.mk hf
   have h := hf.ne_zero

@@ -158,7 +158,7 @@ the continuous functional calculus is uniquely determined, and utilizing this ap
 prevents diamonds or problems arising from multiple instances. -/
 class ContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
     [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-    [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
+    [Ring A] [StarRing A] [TopologicalSpace A] [SMul R A] [Algebra R A] : Prop where
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(spectrum R a, R) →⋆ₐ[R] A,
     ClosedEmbedding φ ∧ φ ((ContinuousMap.id R).restrict <| spectrum R a) = a ∧
       (∀ f, spectrum R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
@@ -178,7 +178,7 @@ elements to one over `ℝ` for selfadjoint elements), and proving this additiona
 preserved would be burdensome or impossible. -/
 class UniqueContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
-    [TopologicalSpace A] [Algebra R A] : Prop where
+    [TopologicalSpace A] [SMul R A] [Algebra R A] : Prop where
   eq_of_continuous_of_map_id (s : Set R) [CompactSpace s]
     (φ ψ : C(s, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (.restrict s <| .id R) = ψ (.restrict s <| .id R)) :
@@ -187,7 +187,7 @@ class UniqueContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRin
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
 variable [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
-variable [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [SMul R A] [Algebra R A] [ContinuousFunctionalCalculus R p]
 
 lemma StarAlgHom.ext_continuousMap [UniqueContinuousFunctionalCalculus R A]
     (a : A) (φ ψ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
@@ -549,7 +549,7 @@ section Inv
 
 variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R]
 variable [TopologicalSemiring R] [ContinuousStar R] [HasContinuousInv₀ R] [TopologicalSpace A]
-variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [Ring A] [StarRing A] [SMul R A] [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable (f : R → R) (a : A)
 
 lemma isUnit_cfc_iff (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -653,7 +653,7 @@ section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [StarRing R] [MetricSpace R]
 variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A]
-variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [Ring A] [StarRing A] [SMul R A] [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
@@ -692,7 +692,7 @@ variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R]
 variable [StarOrderedRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-variable [Algebra R A] [StarModule R A] [ContinuousFunctionalCalculus R p]
+variable [SMul R A] [Algebra R A] [StarModule R A] [ContinuousFunctionalCalculus R p]
 variable [NonnegSpectrumClass R A]
 
 lemma cfcHom_mono {a : A} (ha : p a) {f g : C(spectrum R a, R)} (hfg : f ≤ g) :
@@ -760,7 +760,7 @@ variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
 variable [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-variable [Algebra R A] [StarModule R A] [ContinuousFunctionalCalculus R p]
+variable [SMul R A] [Algebra R A] [StarModule R A] [ContinuousFunctionalCalculus R p]
 variable [NonnegSpectrumClass R A]
 
 lemma cfcHom_le_iff {a : A} (ha : p a) {f g : C(spectrum R a, R)} :

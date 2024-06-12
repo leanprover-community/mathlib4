@@ -50,7 +50,7 @@ open Algebra
 
 universe u v
 
-variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [SMul R S] [Algebra R S]
 
 /-- The kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`. -/
 abbrev KaehlerDifferential.ideal : Ideal (S ⊗[R] S) :=
@@ -166,7 +166,7 @@ notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
 instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
 
-instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
+instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [SMul R' S] [Algebra R' S]
   [SMulCommClass R R' S] :
     Module R' (Ω[S⁄R]) :=
   Submodule.Quotient.module' _
@@ -176,7 +176,7 @@ instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
   Ideal.Cotangent.isScalarTower _
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
-    [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
+    [SMul R₁ S] [Algebra R₁ S] [SMul R₂ S] [Algebra R₂ S] [SMul R₁ R₂]
     [SMulCommClass R R₁ S] [SMulCommClass R R₂ S] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ (Ω[S⁄R]) :=
   Submodule.Quotient.isScalarTower _ _

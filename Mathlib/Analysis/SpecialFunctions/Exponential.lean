@@ -59,7 +59,7 @@ open scoped Nat Topology BigOperators ENNReal
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has strict Fréchet derivative
@@ -83,7 +83,7 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
@@ -155,7 +155,7 @@ end deriv
 
 section RCLikeAnyAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [SMul ℝ 𝕂] [RCLike 𝕂] [NormedRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero. -/
@@ -173,7 +173,7 @@ end RCLikeAnyAlgebra
 
 section RCLikeCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [SMul ℝ 𝕂] [RCLike 𝕂] [NormedCommRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict
 Fréchet derivative `exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x`. -/
@@ -191,7 +191,7 @@ end RCLikeCommAlgebra
 
 section DerivRCLike
 
-variable {𝕂 : Type*} [RCLike 𝕂]
+variable {𝕂 : Type*} [SMul ℝ 𝕂] [RCLike 𝕂]
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `exp 𝕂 x` at any point
 `x`. -/
@@ -262,7 +262,7 @@ section MemBall
 
 variable [NontriviallyNormedField 𝕂] [CharZero 𝕂]
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
-variable [NormedSpace 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
+variable [NormedSpace 𝕂 𝕊] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸] [SMul 𝕊 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
 variable [IsScalarTower 𝕂 𝕊 𝔸]
 variable [CompleteSpace 𝔸]
 
@@ -360,9 +360,9 @@ end MemBall
 
 section RCLike
 
-variable [RCLike 𝕂]
+variable [SMul ℝ 𝕂] [RCLike 𝕂]
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
-variable [NormedAlgebra 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
+variable [SMul 𝕂 𝕊] [NormedAlgebra 𝕂 𝕊] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸] [SMul 𝕊 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
 variable [IsScalarTower 𝕂 𝕊 𝔸]
 variable [CompleteSpace 𝔸]
 
@@ -424,7 +424,7 @@ end exp_smul
 
 section tsum_tprod
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [SMul ℝ 𝕂] [RCLike 𝕂] [NormedCommRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
 lemma HasSum.exp {ι : Type*} {f : ι → 𝔸} {a : 𝔸} (h : HasSum f a) :

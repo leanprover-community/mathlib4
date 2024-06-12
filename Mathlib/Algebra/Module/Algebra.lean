@@ -17,7 +17,7 @@ namespace LinearMap
 
 section RestrictScalars
 
-variable (k : Type*) [CommSemiring k] (A : Type*) [Semiring A] [Algebra k A]
+variable (k : Type*) [CommSemiring k] (A : Type*) [Semiring A] [SMul k A] [Algebra k A]
 variable (M : Type*) [AddCommMonoid M] [Module k M] [Module A M] [IsScalarTower k A M]
 variable (N : Type*) [AddCommMonoid N] [Module k N] [Module A N] [IsScalarTower k A N]
 

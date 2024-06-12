@@ -72,7 +72,7 @@ open BigOperators Topology ComplexConjugate
 
 open LinearMap (BilinForm)
 
-variable {𝕜 E F : Type*} [RCLike 𝕜]
+variable {𝕜 E F : Type*} [SMul ℝ 𝕜] [RCLike 𝕜]
 
 /-- Syntactic typeclass for types endowed with an inner product -/
 class Inner (𝕜 E : Type*) where
@@ -102,7 +102,7 @@ spaces.
 
 To construct a norm from an inner product, see `InnerProductSpace.ofCore`.
 -/
-class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [NormedAddCommGroup E] extends
+class InnerProductSpace (𝕜 : Type*) (E : Type*) [SMul ℝ 𝕜] [RCLike 𝕜] [NormedAddCommGroup E] extends
   NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
@@ -136,7 +136,7 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
 /-- A structure requiring that a scalar product is positive definite and symmetric, from which one
 can construct an `InnerProductSpace` instance in `InnerProductSpace.ofCore`. -/
 -- @[nolint HasNonemptyInstance] porting note: I don't think we have this linter anymore
-structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
+structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [SMul ℝ 𝕜] [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends Inner 𝕜 F where
   /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
   conj_symm : ∀ x y, conj (inner y x) = inner x y
@@ -259,7 +259,7 @@ theorem inner_self_eq_zero {x : F} : ⟪x, x⟫ = 0 ↔ x = 0 :=
 theorem normSq_eq_zero {x : F} : normSqF x = 0 ↔ x = 0 :=
   Iff.trans
     (by simp only [normSq, ext_iff, map_zero, inner_self_im, eq_self_iff_true, and_true_iff])
-    (@inner_self_eq_zero 𝕜 _ _ _ _ _ x)
+    (@inner_self_eq_zero 𝕜 _ _ _ _ _ _ x)
 #align inner_product_space.core.norm_sq_eq_zero InnerProductSpace.Core.normSq_eq_zero
 
 theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
@@ -335,21 +335,29 @@ theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ 
 
 /-- Norm constructed from an `InnerProductSpace.Core` structure, defined to be the square root
 of the scalar product. -/
-def toNorm : Norm F where norm x := √(re ⟪x, x⟫)
+def toNorm : Norm F where norm x := √(re (K := 𝕜) ⟪x, x⟫)
 #align inner_product_space.core.to_has_norm InnerProductSpace.Core.toNorm
 
-attribute [local instance] toNorm
-
+set_option synthInstance.checkSynthOrder false in
+attribute [local instance] toNorm in
 theorem norm_eq_sqrt_inner (x : F) : ‖x‖ = √(re ⟪x, x⟫) := rfl
 #align inner_product_space.core.norm_eq_sqrt_inner InnerProductSpace.Core.norm_eq_sqrt_inner
 
+set_option synthInstance.checkSynthOrder false in
+attribute [local instance] toNorm in
 theorem inner_self_eq_norm_mul_norm (x : F) : re ⟪x, x⟫ = ‖x‖ * ‖x‖ := by
   rw [norm_eq_sqrt_inner, ← sqrt_mul inner_self_nonneg (re ⟪x, x⟫), sqrt_mul_self inner_self_nonneg]
 #align inner_product_space.core.inner_self_eq_norm_mul_norm InnerProductSpace.Core.inner_self_eq_norm_mul_norm
 
+set_option synthInstance.checkSynthOrder false in
+attribute [local instance] toNorm in
 theorem sqrt_normSq_eq_norm (x : F) : √(normSqF x) = ‖x‖ := rfl
 #align inner_product_space.core.sqrt_norm_sq_eq_norm InnerProductSpace.Core.sqrt_normSq_eq_norm
 
+-- set_option synthInstance.checkSynthOrder false in
+-- attribute [local instance] toNorm in
+-- set_option synthInstance.maxHeartbeats 0 in
+-- set_option maxHeartbeats 0 in
 /-- Cauchy–Schwarz inequality with norm -/
 theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
   nonneg_le_nonneg_of_sq_le_sq (mul_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) <|

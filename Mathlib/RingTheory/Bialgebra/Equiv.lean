@@ -31,7 +31,7 @@ open Bialgebra
 
 /-- An equivalence of bialgebras is an invertible bialgebra homomorphism. -/
 structure BialgEquiv (R : Type u) [CommSemiring R] (A : Type v) (B : Type w)
-    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A ≃ₗc[R] B, A ≃* B where
 
 attribute [nolint docBlame] BialgEquiv.toMulEquiv
@@ -43,14 +43,14 @@ notation:50 A " ≃ₐc[" R "] " B => BialgEquiv R A B
 /-- `BialgEquivClass F R A B` asserts `F` is a type of bundled bialgebra equivalences
 from `A` to `B`.  -/
 class BialgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
-    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
     extends CoalgEquivClass F R A B, MulEquivClass F A B : Prop
 
 namespace BialgEquivClass
 
 variable {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
+  [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
   [EquivLike F A B] [BialgEquivClass F R A B]
 
 instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
@@ -83,7 +83,7 @@ variable [CommSemiring R]
 
 section
 
-variable [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- The bialgebra morphism underlying a bialgebra equivalence. -/
@@ -142,15 +142,15 @@ end
 
 section
 
-variable [Semiring A] [Semiring B] [Semiring C] [Algebra R A] [Algebra R B]
-  [Algebra R C] [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C]
+variable [Semiring A] [Semiring B] [Semiring C] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
+  [SMul R C] [Algebra R C] [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C]
 
 variable (e e' : A ≃ₐc[R] B)
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} [CommSemiring R] {α : Type v} {β : Type w}
-    [Semiring α] [Semiring β] [Algebra R α]
-    [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
+    [Semiring α] [Semiring β] [SMul R α] [Algebra R α]
+    [SMul R β] [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α ≃ₐc[R] β) : α → β := f
 
 initialize_simps_projections BialgEquiv (toFun → apply)
@@ -236,7 +236,7 @@ theorem symm_toCoalgEquiv (e : A ≃ₐc[R] B) :
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
-    {A : Type*} {B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    {A : Type*} {B : Type*} [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]
     (e : A ≃ₐc[R] B) : B → A :=
   e.symm

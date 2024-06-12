@@ -57,7 +57,7 @@ noncomputable def supportedEquivMvPolynomial (s : Set σ) : supported R s ≃ₐ
 
 @[simp, nolint simpNF]  -- Porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
-    (supportedEquivMvPolynomial s).symm (C x) = algebraMap R (supported R s) x := by
+    (supportedEquivMvPolynomial (R := R) s).symm (C x) = algebraMap R (supported R s) x := by
   ext1
   simp [supportedEquivMvPolynomial, MvPolynomial.algebraMap_eq]
 set_option linter.uppercaseLean3 false in
@@ -65,7 +65,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp, nolint simpNF]  -- Porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
-    (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
+    (↑((supportedEquivMvPolynomial (R := R) s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
   by simp [supportedEquivMvPolynomial]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.supported_equiv_mv_polynomial_symm_X MvPolynomial.supportedEquivMvPolynomial_symm_X
@@ -133,10 +133,10 @@ theorem supported_strictMono [Nontrivial R] :
 #align mv_polynomial.supported_strict_mono MvPolynomial.supported_strictMono
 
 theorem exists_restrict_to_vars (R : Type*) [CommRing R] {F : MvPolynomial σ ℤ}
-    (hF : ↑F.vars ⊆ s) : ∃ f : (s → R) → R, ∀ x : σ → R, f (x ∘ (↑) : s → R) = aeval x F := by
+    (hF : ↑F.vars ⊆ s) : ∃ f : (s → R) → R, ∀ x : σ → R, f (x ∘ (↑) : s → R) = aeval (R := ℤ) x F := by
   rw [← mem_supported, supported_eq_range_rename, AlgHom.mem_range] at hF
   cases' hF with F' hF'
-  use fun z ↦ aeval z F'
+  use fun z ↦ aeval (R := ℤ) z F'
   intro x
   simp only [← hF', aeval_rename]
 #align mv_polynomial.exists_restrict_to_vars MvPolynomial.exists_restrict_to_vars

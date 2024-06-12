@@ -43,7 +43,7 @@ theorem IsLocalization.adjoin_inv (r : R) : IsLocalization.Away r (AdjoinRoot <|
   IsLocalization.isLocalization_of_algEquiv _ (Localization.awayEquivAdjoin r)
 #align is_localization.adjoin_inv IsLocalization.adjoin_inv
 
-theorem IsLocalization.Away.finitePresentation (r : R) {S} [CommRing S] [Algebra R S]
+theorem IsLocalization.Away.finitePresentation (r : R) {S} [CommRing S] [SMul R S] [Algebra R S]
     [IsLocalization.Away r S] : Algebra.FinitePresentation R S :=
   (AdjoinRoot.finitePresentation _).equiv <|
     (Localization.awayEquivAdjoin r).symm.trans <| IsLocalization.algEquiv (Submonoid.powers r) _ _

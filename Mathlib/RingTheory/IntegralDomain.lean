@@ -169,7 +169,7 @@ namespace Polynomial
 
 open Polynomial
 
-variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
+variable (K : Type) [Field K] [SMul R[X] K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
     ∃ q r : R[X], r.degree < g.degree ∧

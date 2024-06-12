@@ -22,7 +22,8 @@ namespace AlgHom
 
 open BigOperators
 
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
+  [Semiring B] [SMul R B] [Algebra R B]
 
 theorem ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
   Ideal.ext fun _ ↦ Subtype.ext_iff
@@ -33,7 +34,7 @@ namespace Subalgebra
 
 open BigOperators Algebra
 
-variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [CommSemiring R] [CommRing S] [SMul R S] [Algebra R S]
 variable (S' : Subalgebra R S)
 
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` in `S`, and `S'` a subalgebra of `S` that contains

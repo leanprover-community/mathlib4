@@ -61,7 +61,7 @@ open Algebra (lsmul)
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable [AddCommMonoid N] [Module R N]
@@ -315,7 +315,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [CommSemiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable [AddCommMonoid N] [Module R N]
@@ -327,7 +327,7 @@ variable (R A B M N P Q)
 attribute [local ext high] TensorProduct.ext
 
 section assoc
-variable [Algebra A B] [IsScalarTower A B M]
+variable [SMul A B] [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
 
@@ -359,7 +359,7 @@ theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
 end assoc
 
 section cancelBaseChange
-variable [Algebra A B] [IsScalarTower A B M]
+variable [SMul A B] [Algebra A B] [IsScalarTower A B M]
 
 /-- `B`-linear equivalence between `M ⊗[A] (A ⊗[R] N)` and `M ⊗[R] N`.
 In particular useful with `B = A`. -/
@@ -469,7 +469,7 @@ namespace Submodule
 
 open TensorProduct
 
-variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
   [AddCommMonoid M] [Module R M] (p : Submodule R M)
 
 /-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to

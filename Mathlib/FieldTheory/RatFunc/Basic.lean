@@ -571,13 +571,12 @@ section IsDomain
 
 variable [IsDomain K]
 
-instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) where
+instance (R : Type*) [CommSemiring R] [SMul R K[X]] [Algebra R K[X]] : Algebra R (RatFunc K) where
   toFun x := RatFunc.mk (algebraMap _ _ x) 1
   map_add' x y := by simp only [mk_one', RingHom.map_add, ofFractionRing_add]
   map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
   map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
   map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero]
-  smul := (· • ·)
   smul_def' c x := by
     induction' x using RatFunc.induction_on' with p q hq
       -- Porting note: the first `rw [...]` was not needed
@@ -617,7 +616,7 @@ theorem div_smul {R} [Monoid R] [DistribMulAction R K[X]] [IsScalarTower R K[X] 
   rw [← mk_eq_div, mk_smul, mk_eq_div]
 #align ratfunc.div_smul RatFunc.div_smul
 
-theorem algebraMap_apply {R : Type*} [CommSemiring R] [Algebra R K[X]] (x : R) :
+theorem algebraMap_apply {R : Type*} [CommSemiring R] [SMul R K[X]] [Algebra R K[X]] (x : R) :
     algebraMap R (RatFunc K) x = algebraMap _ _ (algebraMap R K[X] x) / algebraMap K[X] _ 1 := by
   rw [← mk_eq_div]
   rfl
@@ -700,8 +699,8 @@ theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc 
 
 section LiftAlgHom
 
-variable {L R S : Type*} [Field L] [CommRing R] [IsDomain R] [CommSemiring S] [Algebra S K[X]]
-  [Algebra S L] [Algebra S R[X]] (φ : K[X] →ₐ[S] L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
+variable {L R S : Type*} [Field L] [CommRing R] [IsDomain R] [CommSemiring S] [SMul S K[X]] [Algebra S K[X]]
+  [SMul S L] [Algebra S L] [SMul S R[X]] [Algebra S R[X]] (φ : K[X] →ₐ[S] L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
 
 /-- Lift an algebra homomorphism that maps polynomials `φ : K[X] →ₐ[S] R[X]`
 to a `RatFunc K →ₐ[S] RatFunc R`,
@@ -1132,7 +1131,8 @@ theorem liftRingHom_apply {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]�
   liftMonoidWithZeroHom_apply _ hφ _  -- Porting note: added explicit `hφ`
 #align ratfunc.lift_ring_hom_apply RatFunc.liftRingHom_apply
 
-theorem liftAlgHom_apply {L S : Type*} [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]
+theorem liftAlgHom_apply {L S : Type*} [Field L] [CommSemiring S] [SMul S K[X]] [Algebra S K[X]]
+    [SMul S L] [Algebra S L]
     (φ : K[X] →ₐ[S] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (f : RatFunc K) :
     liftAlgHom φ hφ f = φ f.num / φ f.denom :=
   liftMonoidWithZeroHom_apply _ hφ _  -- Porting note: added explicit `hφ`

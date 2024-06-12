@@ -246,7 +246,7 @@ normed vector space.
 -/
 
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
@@ -361,7 +361,8 @@ section Mul
 /-! ### Derivative of the product of two functions -/
 
 
-variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
+variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [SMul 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸]
+  [SMul 𝕜 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {a b : E → 𝔸} {a' b' : E →L[𝕜] 𝔸} {c d : E → 𝔸'} {c' d' : E →L[𝕜] 𝔸'}
 
 @[fun_prop]
@@ -623,8 +624,8 @@ open BigOperators
 
 /-! ### Derivative of a finite product of functions -/
 
-variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸]
-  [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
+variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [SMul 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸]
+  [SMul 𝕜 𝔸'] [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
   {g' : ι → E →L[𝕜] 𝔸'}
 
 @[fun_prop]
@@ -857,7 +858,7 @@ end Prod
 
 section AlgebraInverse
 
-variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [SMul 𝕜 R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
 
 open NormedRing ContinuousLinearMap Ring
 
@@ -929,7 +930,7 @@ Note these lemmas are primed as they need `CompleteSpace R`, whereas the other l
 
 section DivisionRingInverse
 
-variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedDivisionRing R] [SMul 𝕜 R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
 
 open NormedRing ContinuousLinearMap Ring
 

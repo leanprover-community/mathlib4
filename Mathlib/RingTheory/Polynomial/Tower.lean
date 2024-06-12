@@ -29,7 +29,7 @@ namespace Polynomial
 section Semiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B]
-variable [Algebra R A] [Algebra A B] [Algebra R B]
+variable [SMul R A] [Algebra R A] [SMul A B] [Algebra A B] [SMul R B] [Algebra R B]
 variable [IsScalarTower R A B]
 variable {R B}
 
@@ -48,7 +48,8 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B]
-variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+variable [SMul R A] [Algebra R A] [SMul A B] [Algebra A B] [SMul R B] [Algebra R B]
+variable [IsScalarTower R A B]
 variable {R A}
 
 theorem aeval_algebraMap_apply (x : A) (p : R[X]) :
@@ -80,7 +81,7 @@ open Polynomial
 
 section CommSemiring
 
-variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R A} [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A]
 
 @[simp]
 theorem aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = aeval x p :=

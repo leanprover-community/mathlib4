@@ -1424,7 +1424,7 @@ lemma Basis.mem_center_iff {A}
 section RestrictScalars
 
 variable {S : Type*} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
-variable [Algebra R S] [Module S M] [Module R M]
+variable [SMul R S] [Algebra R S] [Module S M] [Module R M]
 variable [IsScalarTower R S M] [NoZeroSMulDivisors R S] (b : Basis ι S M)
 variable (R)
 

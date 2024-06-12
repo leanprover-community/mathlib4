@@ -24,7 +24,7 @@ open NormedSpace -- For `NormedSpace.exp`.
 
 section Star
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A] [ContinuousStar A]
+variable {A : Type*} [NormedRing A] [SMul ℂ A] [NormedAlgebra ℂ A] [StarRing A] [ContinuousStar A]
   [CompleteSpace A] [StarModule ℂ A]
 
 open Complex

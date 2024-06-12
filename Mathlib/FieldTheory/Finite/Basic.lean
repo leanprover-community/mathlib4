@@ -352,7 +352,7 @@ set_option linter.uppercaseLean3 false in
 
 end
 
-variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) K]
+variable (p : ℕ) [Fact p.Prime] [SMul (ZMod p) K] [Algebra (ZMod p) K]
 
 theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
   classical

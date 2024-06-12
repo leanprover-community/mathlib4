@@ -27,7 +27,7 @@ open Algebra.TensorProduct
 open Matrix
 
 variable {R : Type u} [CommSemiring R]
-variable {A : Type v} [Semiring A] [Algebra R A]
+variable {A : Type v} [Semiring A] [SMul R A] [Algebra R A]
 variable {n : Type w}
 variable (R A n)
 

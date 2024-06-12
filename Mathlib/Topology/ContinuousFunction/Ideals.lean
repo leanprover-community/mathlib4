@@ -174,7 +174,7 @@ section RCLike
 
 open RCLike
 
-variable {X 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace X]
+variable {X 𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] [TopologicalSpace X]
 
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
@@ -427,7 +427,7 @@ theorem continuousMapEval_apply_apply (x : X) (f : C(X, 𝕜)) : continuousMapEv
 
 end ContinuousMapEval
 
-variable [CompactSpace X] [T2Space X] [RCLike 𝕜]
+variable [CompactSpace X] [T2Space X] [SMul ℝ 𝕜] [RCLike 𝕜]
 
 theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine' ⟨fun x y hxy => _, fun φ => _⟩

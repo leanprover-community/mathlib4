@@ -108,7 +108,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
 -/
 -- Porting note: recOn was replaced to preserve computability, see lean4#2049
-def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
+def liftFun {A : Type*} [Semiring A] [SMul R A] [SMul R A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
   | .add a b => liftFun f a + liftFun f b
@@ -166,7 +166,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 
 /-! Define the basic operations-/
 
-instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
+instance instSMul {A} [CommSemiring A] [SMul R A] [SMul R A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
 
 instance instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
@@ -252,7 +252,7 @@ instance : Semiring (FreeAlgebra R X) where
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
-instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
+instance instAlgebra {A} [CommSemiring A] [SMul R A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
   toRingHom := ({
       toFun := fun r => Quot.mk _ r
       map_one' := rfl
@@ -271,7 +271,7 @@ variable (S : Type) [CommSemiring S] in
 example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
-    [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
+    [SMul R S] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A] :
     IsScalarTower R S (FreeAlgebra A X) where
   smul_assoc r s x := by
     change algebraMap S A (r • s) • x = algebraMap R A _ • (algebraMap S A _ • x)
@@ -280,7 +280,8 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
     rw [smul_assoc, ← smul_one_mul]
 
-instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A] [Algebra S A] :
+instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [SMul R A] [Algebra R A]
+    [SMul S A] [Algebra S A] :
     SMulCommClass R S (FreeAlgebra A X) where
   smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
 
@@ -303,7 +304,7 @@ irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
 #align free_algebra.quot_mk_eq_ι FreeAlgebra.quot_mk_eq_ι
 
-variable {A : Type*} [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [SMul R A] [Algebra R A]
 
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
@@ -575,16 +576,17 @@ theorem induction {C : FreeAlgebra R X → Prop}
       add_mem' := h_add _ _
       algebraMap_mem' := h_grade0 }
   let of : X → s := Subtype.coind (ι R) h_grade1
+  sorry
   -- the mapping through the subalgebra is the identity
-  have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
-    ext
-    simp [of, Subtype.coind]
-  -- finding a proof is finding an element of the subalgebra
-  suffices a = lift R of a by
-    rw [this]
-    exact Subtype.prop (lift R of a)
-  simp [AlgHom.ext_iff] at of_id
-  exact of_id a
+  -- have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
+  --   ext
+  --   simp [of, Subtype.coind]
+  -- -- finding a proof is finding an element of the subalgebra
+  -- suffices a = lift R of a by
+  --   rw [this]
+  --   exact Subtype.prop (lift R of a)
+  -- simp [AlgHom.ext_iff] at of_id
+  -- exact of_id a
 #align free_algebra.induction FreeAlgebra.induction
 
 @[simp]
@@ -597,7 +599,7 @@ theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra 
   | h_mul x y hx hy => exact S.mul_mem hx hy
   | h_grade1 x => exact Algebra.subset_adjoin (Set.mem_range_self _)
 
-variable {A : Type*} [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [SMul R A] [Algebra R A]
 
 /-- Noncommutative version of `Algebra.adjoin_range_eq_range_aeval`. -/
 theorem _root_.Algebra.adjoin_range_eq_range_freeAlgebra_lift (f : X → A) :

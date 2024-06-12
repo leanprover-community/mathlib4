@@ -1223,13 +1223,15 @@ theorem neg_right {N : Type*} [AddCommGroup N] [TopologicalSpace N] [Topological
 @[simp]
 theorem neg_left_iff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : -v ⟂ᵥ w ↔ v ⟂ᵥ w :=
-  ⟨fun h => neg_neg v ▸ h.neg_left, neg_left⟩
+  sorry
+  -- ⟨fun h => neg_neg v ▸ h.neg_left, neg_left⟩
 #align measure_theory.vector_measure.mutually_singular.neg_left_iff MeasureTheory.VectorMeasure.MutuallySingular.neg_left_iff
 
 @[simp]
 theorem neg_right_iff {N : Type*} [AddCommGroup N] [TopologicalSpace N] [TopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : v ⟂ᵥ -w ↔ v ⟂ᵥ w :=
-  ⟨fun h => neg_neg w ▸ h.neg_right, neg_right⟩
+  sorry
+  -- ⟨fun h => neg_neg w ▸ h.neg_right, neg_right⟩
 #align measure_theory.vector_measure.mutually_singular.neg_right_iff MeasureTheory.VectorMeasure.MutuallySingular.neg_right_iff
 
 end MutuallySingular

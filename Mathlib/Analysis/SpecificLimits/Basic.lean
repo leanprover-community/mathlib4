@@ -72,7 +72,7 @@ theorem tendsto_one_div_add_atTop_nhds_zero_nat :
 alias tendsto_one_div_add_atTop_nhds_0_nat := tendsto_one_div_add_atTop_nhds_zero_nat
 
 theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
-    [Algebra ℝ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
+    [SMul ℝ≥0 𝕜] [Algebra ℝ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
     Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
   convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp
     tendsto_inverse_atTop_nhds_zero_nat
@@ -81,8 +81,8 @@ theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Se
 alias NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat :=
   NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat
 
-theorem tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
-    [TopologicalSpace 𝕜] [ContinuousSMul ℝ 𝕜] :
+theorem tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
+    [SMul ℝ 𝕜] [Algebra ℝ 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℝ 𝕜] :
     Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
   NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat 𝕜
 @[deprecated] -- 2024-01-31
@@ -95,8 +95,8 @@ algebra over `ℝ`, e.g., `ℂ`).
 TODO: introduce a typeclass saying that `1 / n` tends to 0 at top, making it possible to get this
 statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
 theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
-    [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜] (x : 𝕜) :
-    Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
+    [CharZero 𝕜] [SMul ℝ 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜]
+    (x : 𝕜) : Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
   refine' Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
   · field_simp [Nat.cast_ne_zero.mpr hn]

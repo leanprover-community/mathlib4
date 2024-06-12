@@ -144,8 +144,8 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
     _ = 0 := by rw [hz, mul_zero]
 #align polynomial.integral_normalization_eval₂_eq_zero Polynomial.integralNormalization_eval₂_eq_zero
 
-theorem integralNormalization_aeval_eq_zero [Algebra R S] {f : R[X]} {z : S} (hz : aeval z f = 0)
-    (inj : ∀ x : R, algebraMap R S x = 0 → x = 0) :
+theorem integralNormalization_aeval_eq_zero [SMul R S] [Algebra R S] {f : R[X]} {z : S}
+    (hz : aeval z f = 0) (inj : ∀ x : R, algebraMap R S x = 0 → x = 0) :
     aeval (z * algebraMap R S f.leadingCoeff) (integralNormalization f) = 0 :=
   integralNormalization_eval₂_eq_zero (algebraMap R S) hz inj
 #align polynomial.integral_normalization_aeval_eq_zero Polynomial.integralNormalization_aeval_eq_zero

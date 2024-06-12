@@ -364,7 +364,7 @@ def map : WeierstrassCurve A :=
 variable (A)
 
 /-- The Weierstrass curve base changed to an algebra `A` over `R`. -/
-abbrev baseChange [Algebra R A] : WeierstrassCurve A :=
+abbrev baseChange [SMul R A] [Algebra R A] : WeierstrassCurve A :=
   W.map <| algebraMap R A
 
 variable {A}
@@ -420,8 +420,10 @@ lemma map_map {B : Type w} [CommRing B] (ψ : A →+* B) : (W.map φ).map ψ = W
   rfl
 
 @[simp]
-lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
-    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
+lemma map_baseChange {S : Type s} [CommRing S] [SMul R S] [Algebra R S] {A : Type v} [CommRing A]
+    [SMul R A] [Algebra R A] [SMul S A]
+    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B]
+    [SMul R B] [Algebra R B] [SMul S B] [Algebra S B]
     [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (W.baseChange A).map ψ = W.baseChange B :=
   congr_arg W.map <| ψ.comp_algebraMap_of_tower R
 #align weierstrass_curve.base_change_base_change WeierstrassCurve.map_baseChange
@@ -443,7 +445,7 @@ def map : VariableChange A :=
 variable (A)
 
 /-- The change of variables base changed to an algebra `A` over `R`. -/
-abbrev baseChange [Algebra R A] : VariableChange A :=
+abbrev baseChange [SMul R A] [Algebra R A] : VariableChange A :=
   C.map <| algebraMap R A
 
 variable {A}
@@ -457,8 +459,9 @@ lemma map_map {A : Type v} [CommRing A] (φ : R →+* A) {B : Type w} [CommRing 
   rfl
 
 @[simp]
-lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
-    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
+lemma map_baseChange {S : Type s} [CommRing S] [SMul R S] [Algebra R S] {A : Type v} [CommRing A]
+    [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A]
+    {B : Type w} [CommRing B] [SMul R B] [Algebra R B] [SMul S B] [Algebra S B]
     [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (C.baseChange A).map ψ = C.baseChange B :=
   congr_arg C.map <| ψ.comp_algebraMap_of_tower R
 
@@ -665,7 +668,7 @@ def map : EllipticCurve A :=
 variable (A)
 
 /-- The elliptic curve base changed to an algebra `A` over `R`. -/
-abbrev baseChange [Algebra R A] : EllipticCurve A :=
+abbrev baseChange [SMul R A] [Algebra R A] : EllipticCurve A :=
   E.map <| algebraMap R A
 
 variable {A}

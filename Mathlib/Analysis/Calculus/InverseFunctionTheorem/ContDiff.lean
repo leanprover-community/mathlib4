@@ -17,7 +17,7 @@ noncomputable section
 
 namespace ContDiffAt
 
-variable {𝕂 : Type*} [RCLike 𝕂]
+variable {𝕂 : Type*} [SMul ℝ 𝕂] [RCLike 𝕂]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕂 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕂 F]
 variable [CompleteSpace E] (f : E → F) {f' : E ≃L[𝕂] F} {a : E}

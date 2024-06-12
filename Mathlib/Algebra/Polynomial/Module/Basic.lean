@@ -36,14 +36,14 @@ More precisely, `Module.AEval R M a` has elements `Module.AEval.of R M a m` for 
 and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
 -/
 @[nolint unusedArguments]
-def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
 
-instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A]
+instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [SMul R A] [Algebra R A]
     [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M] :
     AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
 
-variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
+variable {R A M} [CommSemiring R] [Semiring A] (a : A) [SMul R A] [Algebra R A] [AddCommMonoid M] [Module A M]
   [Module R M] [IsScalarTower R A M]
 
 namespace AEval
@@ -231,7 +231,7 @@ noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabit
 noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
 
 variable {M}
-variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+variable {S : Type*} [CommSemiring S] [SMul S R] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
 
@@ -408,13 +408,13 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
 #align polynomial_module.equiv_polynomial_self PolynomialModule.equivPolynomialSelf
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
-noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
+noncomputable def equivPolynomial {S : Type*} [CommRing S] [SMul R S] [Algebra R S] :
     PolynomialModule R S ≃ₗ[R] S[X] :=
   { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
 #align polynomial_module.equiv_polynomial PolynomialModule.equivPolynomial
 
 variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
-variable [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
+variable [SMul R R'] [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
 
 /-- The image of a polynomial under a linear map. -/
 noncomputable def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] PolynomialModule R' M' :=

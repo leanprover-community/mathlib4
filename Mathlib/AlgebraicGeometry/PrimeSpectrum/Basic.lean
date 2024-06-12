@@ -637,7 +637,7 @@ theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective 
 
 variable (S)
 
-theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+theorem localization_comap_inducing [SMul R S] [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Inducing (comap (algebraMap R S)) := by
   refine ⟨TopologicalSpace.ext_isClosed fun Z ↦ ?_⟩
   simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus, @eq_comm _ _ (zeroLocus _),
@@ -650,7 +650,7 @@ theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalizat
     exact ⟨_, rfl⟩
 #align prime_spectrum.localization_comap_inducing PrimeSpectrum.localization_comap_inducing
 
-theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+theorem localization_comap_injective [SMul R S] [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Function.Injective (comap (algebraMap R S)) := by
   intro p q h
   replace h := congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
@@ -660,12 +660,12 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
   exact h
 #align prime_spectrum.localization_comap_injective PrimeSpectrum.localization_comap_injective
 
-theorem localization_comap_embedding [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+theorem localization_comap_embedding [SMul R S] [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Embedding (comap (algebraMap R S)) :=
   ⟨localization_comap_inducing S M, localization_comap_injective S M⟩
 #align prime_spectrum.localization_comap_embedding PrimeSpectrum.localization_comap_embedding
 
-theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+theorem localization_comap_range [SMul R S] [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } := by
   ext x
   constructor
@@ -859,7 +859,7 @@ theorem basicOpen_eq_bot_iff (f : R) : basicOpen f = ⊥ ↔ IsNilpotent f := by
   exact ⟨fun h I hI => h ⟨I, hI⟩, fun h ⟨I, hI⟩ => h I hI⟩
 #align prime_spectrum.basic_open_eq_bot_iff PrimeSpectrum.basicOpen_eq_bot_iff
 
-theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
+theorem localization_away_comap_range (S : Type v) [CommSemiring S] [SMul R S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : Set.range (comap (algebraMap R S)) = basicOpen r := by
   rw [localization_comap_range S (Submonoid.powers r)]
   ext x
@@ -872,7 +872,7 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 #align prime_spectrum.localization_away_comap_range PrimeSpectrum.localization_away_comap_range
 
-theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
+theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [SMul R S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : OpenEmbedding (comap (algebraMap R S)) :=
   { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
     isOpen_range := by
@@ -942,7 +942,7 @@ end Order
 localization of `x`. -/
 def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
     Localization.AtPrime y.asIdeal →+* Localization.AtPrime x.asIdeal :=
-  @IsLocalization.lift _ _ _ _ _ _ _ _ Localization.isLocalization
+  @IsLocalization.lift _ _ _ _ _ _ _ _ _ Localization.isLocalization
     (algebraMap R (Localization.AtPrime x.asIdeal))
     (by
       rintro ⟨a, ha⟩

@@ -127,7 +127,7 @@ instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module 
     [IsScalarTower R S A] : IsScalarTower R S A⟦X⟧ :=
   Pi.isScalarTower
 
-instance {A} [Semiring A] [CommSemiring R] [Algebra R A] : Algebra R A⟦X⟧ := by
+instance {A} [Semiring A] [CommSemiring R] [SMul R A] [Algebra R A] : Algebra R A⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
@@ -812,7 +812,7 @@ end IsDomain
 
 section Algebra
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 
 theorem C_eq_algebraMap {r : R} : C R r = (algebraMap R R⟦X⟧) r :=
   rfl
@@ -970,7 +970,7 @@ theorem eval₂_C_X_eq_coe : φ.eval₂ (PowerSeries.C R) PowerSeries.X = ↑φ 
   rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
     coeToPowerSeries.ringHom_apply, coe_C, coe_X]
 
-variable (A : Type*) [Semiring A] [Algebra R A]
+variable (A : Type*) [Semiring A] [SMul R A] [Algebra R A]
 
 /-- The coercion from polynomials to power series
 as an algebra homomorphism.
@@ -994,19 +994,29 @@ section Algebra
 
 open Polynomial
 
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : R⟦X⟧)
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A] (f : R⟦X⟧)
+
+instance instSMulPolynomial : SMul R[X] A⟦X⟧ :=
+  RingHom.toSMul (coeToPowerSeries.algHom A).toRingHom
 
 instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
   RingHom.toAlgebra (Polynomial.coeToPowerSeries.algHom A).toRingHom
 #align power_series.algebra_polynomial PowerSeries.algebraPolynomial
 
+instance instSMulPowerSeries : SMul R⟦X⟧ A⟦X⟧ :=
+  (map (algebraMap R A)).toSMul
+
 instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
   (map (algebraMap R A)).toAlgebra
 #align power_series.algebra_power_series PowerSeries.algebraPowerSeries
 
+instance (priority := 100) instSMulPolynomial' {A : Type*} [CommSemiring A]
+    [SMul R A[X]] [Algebra R A[X]] : SMul R A⟦X⟧ :=
+  RingHom.toSMul <| Polynomial.coeToPowerSeries.ringHom.comp (algebraMap R A[X])
+
 -- see Note [lower instance priority]
-instance (priority := 100) algebraPolynomial' {A : Type*} [CommSemiring A] [Algebra R A[X]] :
-    Algebra R A⟦X⟧ :=
+instance (priority := 100) algebraPolynomial' {A : Type*} [CommSemiring A]
+    [SMul R A[X]] [Algebra R A[X]] : Algebra R A⟦X⟧ :=
   RingHom.toAlgebra <| Polynomial.coeToPowerSeries.ringHom.comp (algebraMap R A[X])
 #align power_series.algebra_polynomial' PowerSeries.algebraPolynomial'
 

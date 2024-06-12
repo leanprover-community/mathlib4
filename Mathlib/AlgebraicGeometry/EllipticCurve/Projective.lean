@@ -157,7 +157,7 @@ lemma equation_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.Equation (u • P) ↔ W
 
 /-- The partial derivative $W_X(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $X$. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
-  pderiv x W.polynomial
+  pderiv (R := R) x W.polynomial
 
 lemma polynomialX_eq : W.polynomialX =
     C W.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W.a₂) * X 0 * X 2 + C W.a₄ * X 2 ^ 2) := by
@@ -172,7 +172,7 @@ lemma eval_polynomialX (P : Fin 3 → R) : eval P W.polynomialX =
 
 /-- The partial derivative $W_Y(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Y$. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
-  pderiv y W.polynomial
+  pderiv (R := R) y W.polynomial
 
 lemma polynomialY_eq : W.polynomialY =
     C 2 * X 1 * X 2 + C W.a₁ * X 0 * X 2 + C W.a₃ * X 2 ^ 2 := by
@@ -187,7 +187,7 @@ lemma eval_polynomialY (P : Fin 3 → R) :
 
 /-- The partial derivative $W_Z(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Z$. -/
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
-  pderiv z W.polynomial
+  pderiv (R := R) z W.polynomial
 
 lemma polynomialZ_eq : W.polynomialZ =
     X 1 ^ 2 + C W.a₁ * X 0 * X 1 + C (2 * W.a₃) * X 1 * X 2

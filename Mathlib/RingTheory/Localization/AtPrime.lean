@@ -33,7 +33,7 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-variable [Algebra R S] {P : Type*} [CommSemiring P]
+variable [SMul R S] [Algebra R S] {P : Type*} [CommSemiring P]
 
 section AtPrime
 

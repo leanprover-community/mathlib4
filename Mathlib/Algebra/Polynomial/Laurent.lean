@@ -142,7 +142,7 @@ def C : R →+* R[T;T⁻¹] :=
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.C LaurentPolynomial.C
 
-theorem algebraMap_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (r : R) :
+theorem algebraMap_apply {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] (r : R) :
     algebraMap R (LaurentPolynomial A) r = C (algebraMap R A r) :=
   rfl
 #align laurent_polynomial.algebra_map_apply LaurentPolynomial.algebraMap_apply

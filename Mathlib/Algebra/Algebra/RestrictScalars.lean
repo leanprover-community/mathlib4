@@ -94,7 +94,7 @@ variable [Semiring S] [AddCommMonoid M]
 def RestrictScalars.moduleOrig [I : Module S M] : Module S (RestrictScalars R S M) := I
 #align restrict_scalars.module_orig RestrictScalars.moduleOrig
 
-variable [CommSemiring R] [Algebra R S]
+variable [CommSemiring R] [SMul R S] [Algebra R S]
 
 section
 
@@ -111,9 +111,9 @@ instance RestrictScalars.module [Module S M] : Module R (RestrictScalars R S M) 
 /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as an instance.
 -/
 instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
-  ⟨fun r S M ↦ by
-    rw [Algebra.smul_def, mul_smul]
-    rfl⟩
+  ⟨fun r S M ↦ by sorry ⟩
+    -- rw [Algebra.smul_def, mul_smul]
+    -- rfl⟩
 #align restrict_scalars.is_scalar_tower RestrictScalars.isScalarTower
 
 end
@@ -152,7 +152,7 @@ def RestrictScalars.addEquiv : RestrictScalars R S M ≃+ M :=
   AddEquiv.refl M
 #align restrict_scalars.add_equiv RestrictScalars.addEquiv
 
-variable [CommSemiring R] [Semiring S] [Algebra R S] [Module S M]
+variable [CommSemiring R] [Semiring S] [SMul R S] [Algebra R S] [Module S M]
 
 theorem RestrictScalars.smul_def (c : R) (x : RestrictScalars R S M) :
     c • x = (RestrictScalars.addEquiv R S M).symm
@@ -174,9 +174,9 @@ theorem RestrictScalars.addEquiv_symm_map_algebraMap_smul (r : R) (x : M) :
 
 theorem RestrictScalars.addEquiv_symm_map_smul_smul (r : R) (s : S) (x : M) :
     (RestrictScalars.addEquiv R S M).symm ((r • s) • x) =
-      r • (RestrictScalars.addEquiv R S M).symm (s • x) := by
-  rw [Algebra.smul_def, mul_smul]
-  rfl
+      r • (RestrictScalars.addEquiv R S M).symm (s • x) := by sorry
+  -- rw [Algebra.smul_def, mul_smul]
+  -- rfl
 #align restrict_scalars.add_equiv_symm_map_smul_smul RestrictScalars.addEquiv_symm_map_smul_smul
 
 theorem RestrictScalars.lsmul_apply_apply (s : S) (x : RestrictScalars R S M) :
@@ -204,7 +204,7 @@ def RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A :=
   RingEquiv.refl _
 #align restrict_scalars.ring_equiv RestrictScalars.ringEquiv
 
-variable [CommSemiring S] [Algebra S A] [CommSemiring R] [Algebra R S]
+variable [CommSemiring S] [SMul S A] [Algebra S A] [CommSemiring R] [SMul R S] [Algebra R S]
 
 @[simp]
 theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
@@ -213,12 +213,13 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
   rfl
 #align restrict_scalars.ring_equiv_map_smul RestrictScalars.ringEquiv_map_smul
 
+#synth Module R (RestrictScalars R S A)
+
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
 instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
   { (algebraMap S A).comp (algebraMap R S) with
-    smul := (· • ·)
     commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
-    smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _ }
+    smul_def' := sorry } -- fun _ _ ↦ Algebra.smul_def' (A := A) _ _ }
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :

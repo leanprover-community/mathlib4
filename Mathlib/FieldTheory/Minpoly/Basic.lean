@@ -24,7 +24,7 @@ variable {A B B' : Type*}
 
 section MinPolyDef
 
-variable (A) [CommRing A] [Ring B] [Algebra A B]
+variable (A) [CommRing A] [Ring B] [SMul A B] [Algebra A B]
 
 /-- Suppose `x : B`, where `B` is an `A`-algebra.
 
@@ -45,7 +45,7 @@ namespace minpoly
 
 section Ring
 
-variable [CommRing A] [Ring B] [Ring B'] [Algebra A B] [Algebra A B']
+variable [CommRing A] [Ring B] [Ring B'] [SMul A B] [Algebra A B] [SMul A B'] [Algebra A B']
 variable {x : B}
 
 /-- A minimal polynomial is monic. -/
@@ -70,7 +70,7 @@ theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
   simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 #align minpoly.minpoly_alg_hom minpoly.algHom_eq
 
-theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
+theorem algebraMap_eq {B} [CommRing B] [SMul A B] [Algebra A B] [SMul B B'] [Algebra B B'] [IsScalarTower A B B']
     (h : Function.Injective (algebraMap B B')) (x : B) :
     minpoly A (algebraMap B B' x) = minpoly A x :=
   algHom_eq (IsScalarTower.toAlgHom A B B') h x
@@ -180,7 +180,7 @@ variable [CommRing A]
 
 section Ring
 
-variable [Ring B] [Algebra A B]
+variable [Ring B] [SMul A B] [Algebra A B]
 variable {x : B}
 
 /-- The degree of a minimal polynomial, as a natural number, is positive. -/
@@ -220,7 +220,7 @@ theorem two_le_natDegree_iff (int : IsIntegral A x) :
   rw [iff_not_comm, ← natDegree_eq_one_iff, not_le]
   exact ⟨fun h ↦ h.trans_lt one_lt_two, fun h ↦ by linarith only [minpoly.natDegree_pos int, h]⟩
 
-theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
+theorem two_le_natDegree_subalgebra {B} [CommRing B] [SMul A B] [Algebra A B] [Nontrivial B]
     {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
   rw [two_le_natDegree_iff int, Iff.not]
   apply Set.ext_iff.mp Subtype.range_val_subtype
@@ -246,7 +246,7 @@ end Ring
 
 section IsDomain
 
-variable [Ring B] [Algebra A B]
+variable [Ring B] [SMul A B] [Algebra A B]
 variable {x : B}
 
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/

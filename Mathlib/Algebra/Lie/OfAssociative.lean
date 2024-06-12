@@ -94,7 +94,7 @@ end AssociativeModule
 
 section LieAlgebra
 
-variable {R : Type u} [CommRing R] [Algebra R A]
+variable {R : Type u} [CommRing R] [SMul R A] [Algebra R A]
 
 /-- An associative algebra gives rise to a Lie algebra by taking the bracket to be the ring
 commutator. -/
@@ -134,7 +134,7 @@ end AssociativeRepresentation
 
 namespace AlgHom
 
-variable {B : Type w} {C : Type w₁} [Ring B] [Ring C] [Algebra R B] [Algebra R C]
+variable {B : Type w} {C : Type w₁} [Ring B] [Ring C] [SMul R B] [Algebra R B] [SMul R C] [Algebra R C]
 variable (f : A →ₐ[R] B) (g : B →ₐ[R] C)
 
 /-- The map `ofAssociativeAlgebra` associating a Lie algebra to an associative algebra is
@@ -338,7 +338,7 @@ end LieSubmodule
 
 open LieAlgebra
 
-theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra R A] :
+theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [SMul R A] [Algebra R A] :
     (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
   ext a b; simp [LieRing.of_associative_ring_bracket]
 #align lie_algebra.ad_eq_lmul_left_sub_lmul_right LieAlgebra.ad_eq_lmul_left_sub_lmul_right
@@ -353,7 +353,7 @@ theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
 end AdjointAction
 
 /-- A subalgebra of an associative algebra is a Lie subalgebra of the associated Lie algebra. -/
-def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [Algebra R A]
+def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [SMul R A] [Algebra R A]
     (A' : Subalgebra R A) : LieSubalgebra R A :=
   { Subalgebra.toSubmodule A' with
     lie_mem' := fun {x y} hx hy => by
@@ -394,7 +394,7 @@ end LinearEquiv
 namespace AlgEquiv
 
 variable {R : Type u} {A₁ : Type v} {A₂ : Type w}
-variable [CommRing R] [Ring A₁] [Ring A₂] [Algebra R A₁] [Algebra R A₂]
+variable [CommRing R] [Ring A₁] [Ring A₂] [SMul R A₁] [Algebra R A₁] [SMul R A₂] [Algebra R A₂]
 variable (e : A₁ ≃ₐ[R] A₂)
 
 /-- An equivalence of associative algebras is an equivalence of associated Lie algebras. -/

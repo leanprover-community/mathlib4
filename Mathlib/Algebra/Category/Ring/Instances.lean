@@ -28,8 +28,8 @@ instance localization_unit_isIso' (R : CommRingCat) :
 #align localization_unit_is_iso' localization_unit_isIso'
 
 theorem IsLocalization.epi {R : Type*} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
-    [Algebra R S] [IsLocalization M S] : Epi (CommRingCat.ofHom <| algebraMap R S) :=
-  ⟨fun {T} _ _ => @IsLocalization.ringHom_ext R _ M S _ _ T _ _ _ _⟩
+    [SMul R S] [Algebra R S] [IsLocalization M S] : Epi (CommRingCat.ofHom <| algebraMap R S) :=
+  ⟨fun {T} _ _ => @IsLocalization.ringHom_ext R _ M S _ _ _ T _ _ _ _⟩
 #align is_localization.epi IsLocalization.epi
 
 instance Localization.epi {R : Type*} [CommRing R] (M : Submonoid R) :

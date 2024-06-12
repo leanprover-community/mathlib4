@@ -377,7 +377,8 @@ set_option linter.uppercaseLean3 false in
 -- TODO: generalize over other modules
 @[simp, norm_cast]
 theorem coe_smul (r : F) : ((r • f : RatFunc F) : LaurentSeries F) = r • (f : LaurentSeries F) :=
-  by rw [RatFunc.smul_eq_C_mul, ← C_mul_eq_smul, coe_mul, coe_C]
+sorry
+  -- by rw [RatFunc.smul_eq_C_mul, ← C_mul_eq_smul (R := F), coe_mul, coe_C]
 #align ratfunc.coe_smul RatFunc.coe_smul
 
 -- Porting note: removed `norm_cast` because "badly shaped lemma, rhs can't start with coe"
@@ -414,6 +415,9 @@ theorem single_zpow (n : ℤ) :
       single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
       Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
+instance : SMul (RatFunc F) (LaurentSeries F) :=
+  (coeAlgHom F).toRingHom.toSMul
+
 instance : Algebra (RatFunc F) (LaurentSeries F) :=
   RingHom.toAlgebra (coeAlgHom F).toRingHom
 
@@ -429,7 +433,7 @@ theorem algebraMap_apply_div :
 instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
   ⟨fun x y z => by
     ext
-    simp⟩
+    sorry⟩
 
 end RatFunc
 

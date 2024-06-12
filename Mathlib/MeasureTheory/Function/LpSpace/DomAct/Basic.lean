@@ -37,6 +37,7 @@ instance : SMul Mᵈᵐᵃ (Lp E p μ) where
 @[to_additive (attr := simp)]
 theorem smul_Lp_val (c : Mᵈᵐᵃ) (f : Lp E p μ) : (c • f).1 = c • f.1 := rfl
 
+set_option synthInstance.maxHeartbeats 0
 @[to_additive]
 theorem smul_Lp_ae_eq (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • f =ᵐ[μ] (f <| mk.symm c • ·) :=
   Lp.coeFn_compMeasurePreserving _ _

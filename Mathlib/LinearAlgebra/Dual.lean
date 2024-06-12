@@ -1782,7 +1782,7 @@ theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
 end
 
 namespace AlgebraTensorModule
-variable [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [AddCommMonoid N]
+variable [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A] [AddCommMonoid M] [AddCommMonoid N]
 variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
 
 /-- Heterobasic version of `TensorProduct.dualDistrib` -/

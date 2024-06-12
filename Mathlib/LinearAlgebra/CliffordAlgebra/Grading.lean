@@ -82,8 +82,11 @@ theorem GradedAlgebra.ι_apply (m : M) :
   rfl
 #align clifford_algebra.graded_algebra.ι_apply CliffordAlgebra.GradedAlgebra.ι_apply
 
+-- set_option maxHeartbeats 0 in
+local instance : Algebra R (⨁ (i : ZMod 2), ↥(evenOdd Q i)) := DirectSum.instAlgebra R (fun i => (evenOdd Q i)) in
+
 nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
-    GradedAlgebra.ι Q m * GradedAlgebra.ι Q m = algebraMap R _ (Q m) := by
+    GradedAlgebra.ι Q m * GradedAlgebra.ι Q m = algebraMap R (⨁ (i : ZMod 2), ↥(evenOdd Q i)) (Q m) := by
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 #align clifford_algebra.graded_algebra.ι_sq_scalar CliffordAlgebra.GradedAlgebra.ι_sq_scalar

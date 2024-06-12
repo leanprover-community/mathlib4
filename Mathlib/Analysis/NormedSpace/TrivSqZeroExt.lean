@@ -62,7 +62,7 @@ section Topology
 
 section not_charZero
 variable [Field 𝕜] [Ring R] [AddCommGroup M]
-  [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+  [SMul 𝕜 R] [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
   [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
@@ -75,11 +75,12 @@ end not_charZero
 
 section Ring
 variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
-  [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+  [SMul 𝕜 R] [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
   [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
+set_option maxHeartbeats 0 in
 theorem snd_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
     snd (expSeries 𝕜 (tsze R M) (n + 1) fun _ => x) = (expSeries 𝕜 R n fun _ => x.fst) • x.snd := by
@@ -87,6 +88,7 @@ theorem snd_expSeries_of_smul_comm
     smul_smul, smul_assoc, Nat.factorial_succ, Nat.pred_succ, Nat.cast_mul, mul_inv_rev,
     inv_mul_cancel_right₀ ((Nat.cast_ne_zero (R := 𝕜)).mpr <| Nat.succ_ne_zero n)]
 
+set_option maxHeartbeats 0 in
 /-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
 theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
     (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) {e : R}
@@ -113,6 +115,7 @@ theorem hasSum_expSeries_of_smul_comm
 
 variable [T2Space R] [T2Space M]
 
+set_option maxHeartbeats 0 in
 theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) := by
   simp_rw [exp, FormalMultilinearSeries.sum]
@@ -141,7 +144,7 @@ end Ring
 
 section CommRing
 variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [AddCommGroup M]
-  [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+  [SMul 𝕜 R] [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M] [IsScalarTower 𝕜 R M]
   [TopologicalSpace R] [TopologicalSpace M]
   [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
@@ -162,6 +165,7 @@ theorem snd_exp (x : tsze R M) : snd (exp 𝕜 x) = exp 𝕜 x.fst • x.snd := 
   rw [exp_def, snd_add, snd_inl, snd_inr, zero_add]
 #align triv_sq_zero_ext.snd_exp TrivSqZeroExt.snd_exp
 
+set_option maxHeartbeats 0 in
 /-- Polar form of trivial-square-zero extension. -/
 theorem eq_smul_exp_of_invertible (x : tsze R M) [Invertible x.fst] :
     x = x.fst • exp 𝕜 (⅟ x.fst • inr x.snd) := by
@@ -173,7 +177,7 @@ end CommRing
 
 section Field
 variable [Field 𝕜] [CharZero 𝕜] [Field R] [AddCommGroup M]
-  [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+  [SMul 𝕜 R] [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M] [IsScalarTower 𝕜 R M]
   [TopologicalSpace R] [TopologicalSpace M]
   [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
@@ -200,22 +204,27 @@ noncomputable section Seminormed
 
 section Ring
 variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
-variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [SMul S R] [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
+set_option maxHeartbeats 0 in
 variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 
 instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
 
-example :
-    (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
-    PseudoMetricSpace.toUniformSpace := rfl
+-- example :
+--     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
+--     PseudoMetricSpace.toUniformSpace := rfl
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   rw [WithLp.prod_norm_eq_add (by norm_num)]
   simp only [ENNReal.one_toReal, Real.rpow_one, div_one]
   rfl
 
+set_option synthInstance.maxHeartbeats 0
+set_option maxHeartbeats 0
 theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
   ext; simp [norm_def]
 

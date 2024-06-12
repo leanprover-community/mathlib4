@@ -1072,7 +1072,7 @@ end
 
 section Algebra
 
-variable [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
+variable [CommSemiring R] [Semiring S] [SMul R S] [Algebra R S] (x : S) (p q : R[X])
 
 @[simp]
 theorem eval₂_mul' :

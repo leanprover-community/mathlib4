@@ -830,14 +830,13 @@ section Algebra
 
 variable (S : Type*) (R R' : Type u) (M : Type v)
 variable [CommSemiring S] [Semiring R] [CommSemiring R'] [AddCommMonoid M]
-variable [Algebra S R] [Algebra S R'] [Module S M]
+variable [SMul S R] [Algebra S R] [SMul S R'] [Algebra S R'] [Module S M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M] [IsScalarTower S R' M]
 
 instance algebra' : Algebra S (tsze R M) :=
   { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with
-    smul := (· • ·)
     commutes' := fun s x =>
       ext (Algebra.commutes _ _) <|
         show algebraMap S R s •> x.snd + (0 : M) <• x.fst
@@ -890,14 +889,14 @@ def inlAlgHom : R →ₐ[S] tsze R M where
 
 variable {R R' S M}
 
-theorem algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
+theorem algHom_ext {A} [Semiring A] [SMul R' A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
     (h : ∀ m, f (inr m) = g (inr m)) : f = g :=
   AlgHom.toLinearMap_injective <|
     linearMap_ext (fun _r => (f.commutes _).trans (g.commutes _).symm) h
 #align triv_sq_zero_ext.alg_hom_ext TrivSqZeroExt.algHom_ext
 
 @[ext]
-theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A⦄
+theorem algHom_ext' {A} [Semiring A] [SMul S A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A⦄
     (hinl : f.comp (inlAlgHom S R M) = g.comp (inlAlgHom S R M))
     (hinr : f.toLinearMap.comp (inrHom R M |>.restrictScalars S) =
       g.toLinearMap.comp (inrHom R M |>.restrictScalars S)) : f = g :=
@@ -905,7 +904,7 @@ theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A
     linearMap_ext (AlgHom.congr_fun hinl) (LinearMap.congr_fun hinr)
 #align triv_sq_zero_ext.alg_hom_ext' TrivSqZeroExt.algHom_ext'
 
-variable {A : Type*} [Semiring A] [Algebra S A] [Algebra R' A]
+variable {A : Type*} [Semiring A] [SMul S A] [Algebra S A] [SMul R' A] [Algebra R' A]
 
 /--
 Assemble an algebra morphism `TrivSqZeroExt R M →ₐ[S] A` from separate morphisms on `R` and `M`.

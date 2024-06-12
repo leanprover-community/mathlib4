@@ -22,10 +22,10 @@ def linearEquivShrink (α β) [Semiring α] [AddCommMonoid β] [Module α β] [S
     β ≃ₗ[α] Shrink β :=
   ((equivShrink β).symm.linearEquiv α).symm
 
-instance [CommSemiring α] [Semiring β] [Algebra α β] [Small β] : Algebra α (Shrink β) :=
+instance [CommSemiring α] [Semiring β] [SMul α β] [Algebra α β] [Small β] : Algebra α (Shrink β) :=
   (equivShrink _).symm.algebra α
 
 /-- A small algebra is algebra equivalent to its small model. -/
-def algEquivShrink (α β) [CommSemiring α] [Semiring β] [Algebra α β] [Small β] :
+def algEquivShrink (α β) [CommSemiring α] [Semiring β] [SMul α β] [Algebra α β] [Small β] :
     β ≃ₐ[α] Shrink β :=
   ((equivShrink β).symm.algEquiv α).symm

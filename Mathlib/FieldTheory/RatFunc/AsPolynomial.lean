@@ -144,7 +144,7 @@ theorem eval_one : eval f a 1 = 1 := by simp [eval]
 #align ratfunc.eval_one RatFunc.eval_one
 
 @[simp]
-theorem eval_algebraMap {S : Type*} [CommSemiring S] [Algebra S K[X]] (p : S) :
+theorem eval_algebraMap {S : Type*} [CommSemiring S] [SMul S K[X]] [Algebra S K[X]] (p : S) :
     eval f a (algebraMap _ _ p) = (algebraMap _ K[X] p).eval₂ f a := by
   simp [eval, IsScalarTower.algebraMap_apply S K[X] (RatFunc K)]
 #align ratfunc.eval_algebra_map RatFunc.eval_algebraMap

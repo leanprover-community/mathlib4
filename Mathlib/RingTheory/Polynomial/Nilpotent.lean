@@ -188,7 +188,7 @@ end CommRing
 
 section CommAlgebra
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : R[X]) {a b : S}
+variable {R S : Type*} [CommRing R] [CommRing S] [SMul R S] [Algebra R S] (P : R[X]) {a b : S}
 
 lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (a - b)) :
     IsNilpotent (aeval a P - aeval b P) := by

@@ -89,6 +89,9 @@ instance localRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localiz
 instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) :=
   ⟨1⟩
 
+instance (U : Opens (PrimeSpectrum.Top R)) (x : U) : SMul R (Localizations R x) :=
+  inferInstanceAs <| SMul R (Localization.AtPrime x.1.asIdeal)
+
 instance (U : Opens (PrimeSpectrum.Top R)) (x : U) : Algebra R (Localizations R x) :=
   inferInstanceAs <| Algebra R (Localization.AtPrime x.1.asIdeal)
 

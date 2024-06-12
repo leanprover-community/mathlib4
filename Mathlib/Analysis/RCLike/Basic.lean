@@ -51,7 +51,7 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class RCLike (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K,
+class RCLike (K : semiOutParam (Type*)) [SMul ℝ K] extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
@@ -81,7 +81,7 @@ attribute [instance 100] RCLike.toDecidableEq
 
 end
 
-variable {K E : Type*} [RCLike K]
+variable {K E : Type*} [SMul ℝ K] [RCLike K]
 
 namespace RCLike
 
@@ -936,10 +936,10 @@ open ComplexConjugate
 
 section CleanupLemmas
 
-local notation "reR" => @RCLike.re ℝ _
-local notation "imR" => @RCLike.im ℝ _
-local notation "IR" => @RCLike.I ℝ _
-local notation "normSqR" => @RCLike.normSq ℝ _
+local notation "reR" => @RCLike.re ℝ _ _
+local notation "imR" => @RCLike.im ℝ _ _
+local notation "IR" => @RCLike.I ℝ _ _
+local notation "normSqR" => @RCLike.normSq ℝ _ _
 
 @[simp, rclike_simps]
 theorem re_to_real {x : ℝ} : reR x = x :=
@@ -967,7 +967,7 @@ theorem normSq_to_real {x : ℝ} : normSq x = x * x := by simp [RCLike.normSq]
 #align is_R_or_C.norm_sq_to_real RCLike.normSq_to_real
 
 @[simp]
-theorem ofReal_real_eq_id : @ofReal ℝ _ = id :=
+theorem ofReal_real_eq_id : @ofReal ℝ _ _ = id :=
   rfl
 #align is_R_or_C.coe_real_eq_id RCLike.ofReal_real_eq_id
 
@@ -981,7 +981,7 @@ def reLm : K →ₗ[ℝ] ℝ :=
 #align is_R_or_C.re_lm RCLike.reLm
 
 @[simp, rclike_simps]
-theorem reLm_coe : (reLm : K → ℝ) = re :=
+theorem reLm_coe : (reLm : K → ℝ) = re (K := K) :=
   rfl
 #align is_R_or_C.re_lm_coe RCLike.reLm_coe
 
@@ -998,7 +998,7 @@ theorem reCLM_coe : ((reCLM : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = reLm :=
 #align is_R_or_C.re_clm_coe RCLike.reCLM_coe
 
 @[simp, rclike_simps]
-theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re :=
+theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re (K := K) :=
   rfl
 #align is_R_or_C.re_clm_apply RCLike.reCLM_apply
 
@@ -1013,7 +1013,7 @@ def imLm : K →ₗ[ℝ] ℝ :=
 #align is_R_or_C.im_lm RCLike.imLm
 
 @[simp, rclike_simps]
-theorem imLm_coe : (imLm : K → ℝ) = im :=
+theorem imLm_coe : (imLm : K → ℝ) = im (K := K) :=
   rfl
 #align is_R_or_C.im_lm_coe RCLike.imLm_coe
 
@@ -1030,7 +1030,7 @@ theorem imCLM_coe : ((imCLM : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = imLm :=
 #align is_R_or_C.im_clm_coe RCLike.imCLM_coe
 
 @[simp, rclike_simps]
-theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im :=
+theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im (K := K) :=
   rfl
 #align is_R_or_C.im_clm_apply RCLike.imCLM_apply
 
@@ -1065,7 +1065,7 @@ theorem conjLIE_apply : (conjLIE : K → K) = conj :=
 
 /-- Conjugate as a continuous linear equivalence -/
 noncomputable def conjCLE : K ≃L[ℝ] K :=
-  @conjLIE K _
+  conjLIE (K := K)
 #align is_R_or_C.conj_cle RCLike.conjCLE
 
 @[simp, rclike_simps]
@@ -1113,7 +1113,7 @@ noncomputable def ofRealCLM : ℝ →L[ℝ] K :=
 #align is_R_or_C.of_real_clm RCLike.ofRealCLM
 
 @[simp, rclike_simps]
-theorem ofRealCLM_coe : (@ofRealCLM K _ : ℝ →ₗ[ℝ] K) = ofRealAm.toLinearMap :=
+theorem ofRealCLM_coe : (ofRealCLM (K := K) : ℝ →ₗ[ℝ] K) = ofRealAm.toLinearMap :=
   rfl
 #align is_R_or_C.of_real_clm_coe RCLike.ofRealCLM_coe
 

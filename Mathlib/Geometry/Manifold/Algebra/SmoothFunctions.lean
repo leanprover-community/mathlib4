@@ -312,7 +312,7 @@ inherit an algebra structure.
 -/
 
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [SmoothRing 𝓘(𝕜, A) A]
+variable {A : Type*} [NormedRing A] [SMul 𝕜 A] [NormedAlgebra 𝕜 A] [SmoothRing 𝓘(𝕜, A) A]
 
 /-- Smooth constant functions as a `RingHom`. -/
 def C : 𝕜 →+* C^∞⟮I, N; 𝓘(𝕜, A), A⟯ where
@@ -326,7 +326,6 @@ set_option linter.uppercaseLean3 false in
 
 instance algebra : Algebra 𝕜 C^∞⟮I, N; 𝓘(𝕜, A), A⟯ :=
   { --SmoothMap.semiring with -- Porting note: Commented this out.
-    smul := fun r f => ⟨r • f, smooth_const.smul f.smooth⟩
     toRingHom := SmoothMap.C
     commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
     smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _ }

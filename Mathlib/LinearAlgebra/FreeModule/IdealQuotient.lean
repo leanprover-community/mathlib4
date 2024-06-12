@@ -24,7 +24,7 @@ namespace Ideal
 
 open scoped BigOperators DirectSum
 
-variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {ι R S : Type*} [CommRing R] [CommRing S] [SMul R S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
 
 /-- We can write the quotient of an ideal over a PID as a product of quotients by principal ideals.
@@ -107,7 +107,7 @@ noncomputable def fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finit
   classical exact Fintype.ofEquiv (∀ i, ZMod (a i).natAbs) e.symm
 #align ideal.fintype_quotient_of_free_of_ne_bot Ideal.fintypeQuotientOfFreeOfNeBot
 
-variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
+variable (F : Type*) [CommRing F] [SMul F R] [Algebra F R] [SMul F S] [Algebra F S] [IsScalarTower F R S]
   (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥)
 
 /-- Decompose `S⧸I` as a direct sum of cyclic `R`-modules

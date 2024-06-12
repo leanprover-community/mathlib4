@@ -726,7 +726,7 @@ end CommSemiring
 
 section Algebra
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 
 instance : Algebra R (MvPowerSeries σ A) :=
   {
@@ -900,7 +900,7 @@ theorem coeToMvPowerSeries.ringHom_apply : coeToMvPowerSeries.ringHom φ = φ :=
 
 section Algebra
 
-variable (A : Type*) [CommSemiring A] [Algebra R A]
+variable (A : Type*) [CommSemiring A] [SMul R A] [Algebra R A]
 
 /-- The coercion from multivariate polynomials to multivariate power series
 as an algebra homomorphism.
@@ -912,7 +912,7 @@ def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :
 
 @[simp]
 theorem coeToMvPowerSeries.algHom_apply :
-    coeToMvPowerSeries.algHom A φ = MvPowerSeries.map σ (algebraMap R A) ↑φ :=
+    coeToMvPowerSeries.algHom (R := R) A φ = MvPowerSeries.map σ (algebraMap R A) ↑φ :=
   rfl
 #align mv_polynomial.coe_to_mv_power_series.alg_hom_apply MvPolynomial.coeToMvPowerSeries.algHom_apply
 
@@ -922,11 +922,17 @@ end MvPolynomial
 
 namespace MvPowerSeries
 
-variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : MvPowerSeries σ R)
+variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A] (f : MvPowerSeries σ R)
+
+instance instSMulMvPolynomial : SMul (MvPolynomial σ R) (MvPowerSeries σ A) :=
+  (MvPolynomial.coeToMvPowerSeries.algHom A).toRingHom.toSMul
 
 instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) :=
   RingHom.toAlgebra (MvPolynomial.coeToMvPowerSeries.algHom A).toRingHom
 #align mv_power_series.algebra_mv_polynomial MvPowerSeries.algebraMvPolynomial
+
+instance instSMulMvPowerSeries : SMul (MvPowerSeries σ R) (MvPowerSeries σ A) :=
+  (map σ (algebraMap R A)).toSMul
 
 instance algebraMvPowerSeries : Algebra (MvPowerSeries σ R) (MvPowerSeries σ A) :=
   (map σ (algebraMap R A)).toAlgebra

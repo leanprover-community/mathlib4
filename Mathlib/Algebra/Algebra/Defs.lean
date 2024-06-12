@@ -97,7 +97,7 @@ section Prio
 See the implementation notes in this file for discussion of the details of this definition.
 -/
 -- Porting note(#5171): unsupported @[nolint has_nonempty_instance]
-class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A,
+class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [SMul R A] extends
   R →+* A where
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
   smul_def' : ∀ r x, r • x = toRingHom r * x
@@ -106,24 +106,25 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
 end Prio
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
-def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
+def algebraMap (R : Type u) (A : Type v)
+    [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] : R →+* A :=
   Algebra.toRingHom
 #align algebra_map algebraMap
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
-@[coe] def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
+@[coe] def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] : R → A :=
   algebraMap R A
 
 namespace algebraMap
 
-scoped instance coeHTCT (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+scoped instance coeHTCT (R A : Type*) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] :
     CoeHTCT R A :=
   ⟨Algebra.cast⟩
 #align algebra_map.has_lift_t algebraMap.coeHTCT
 
 section CommSemiringSemiring
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 
 @[simp, norm_cast]
 theorem coe_zero : (↑(0 : R) : A) = 0 :=
@@ -154,7 +155,7 @@ end CommSemiringSemiring
 
 section CommRingRing
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [Ring A] [SMul R A]  [Algebra R A]
 
 @[norm_cast]
 theorem coe_neg (x : R) : (↑(-x : R) : A) = -↑x :=
@@ -165,7 +166,7 @@ end CommRingRing
 
 section CommSemiringCommSemiring
 
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A]
 
 open BigOperators
 
@@ -189,7 +190,7 @@ end CommSemiringCommSemiring
 
 section FieldNontrivial
 
-variable {R A : Type*} [Field R] [CommSemiring A] [Nontrivial A] [Algebra R A]
+variable {R A : Type*} [Field R] [CommSemiring A] [Nontrivial A] [SMul R A]  [Algebra R A]
 
 @[norm_cast, simp]
 theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
@@ -205,7 +206,7 @@ end FieldNontrivial
 
 section SemifieldSemidivisionRing
 
-variable {R : Type*} (A : Type*) [Semifield R] [DivisionSemiring A] [Algebra R A]
+variable {R : Type*} (A : Type*) [Semifield R] [DivisionSemiring A] [SMul R A] [Algebra R A]
 
 @[norm_cast]
 theorem coe_inv (r : R) : ↑r⁻¹ = ((↑r)⁻¹ : A) :=
@@ -226,7 +227,7 @@ end SemifieldSemidivisionRing
 
 section FieldDivisionRing
 
-variable (R A : Type*) [Field R] [DivisionRing A] [Algebra R A]
+variable (R A : Type*) [Field R] [DivisionRing A] [SMul R A] [Algebra R A]
 
 @[norm_cast]
 theorem coe_ratCast (q : ℚ) : ↑(q : R) = (q : A) := map_ratCast (algebraMap R A) q
@@ -236,22 +237,29 @@ end FieldDivisionRing
 
 end algebraMap
 
-/-- Creating an algebra from a morphism to the center of a semiring. -/
-def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
-    (h : ∀ c x, i c * x = x * i c) : Algebra R S where
-  smul c x := i c * x
-  commutes' := h
-  smul_def' _ _ := rfl
-  toRingHom := i
+abbrev RingHom.toSMul {R S : Type*} [CommSemiring R] [Semiring S] (f : R →+* S) :
+    SMul R S := ⟨ fun c x => f c * x ⟩
+
+def RingHom.toAlgebra' {R S : Type*} [CommSemiring R] [Semiring S] (i : R →+* S)
+    (h : ∀ c x, i c * x = x * i c) :
+    letI := i.toSMul
+    Algebra R S where
+    __ := (⟨fun c x => i c * x ⟩ : SMul R S)
+    commutes' := h
+    smul_def' _ _ := rfl
+    toRingHom := i
 #align ring_hom.to_algebra' RingHom.toAlgebra'
 
 /-- Creating an algebra from a morphism to a commutative semiring. -/
-def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
+def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) :
+    letI : SMul R S := ⟨ fun c x => i c * x ⟩
+    Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 #align ring_hom.to_algebra RingHom.toAlgebra
 
 theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) :
-    @algebraMap R S _ _ i.toAlgebra = i :=
+    letI := i.toSMul
+    @algebraMap R S _ _ _ i.toAlgebra = i :=
   rfl
 #align ring_hom.algebra_map_to_algebra RingHom.algebraMap_toAlgebra
 
@@ -290,7 +298,7 @@ abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
 
 -- Porting note: deleted a private lemma
 
@@ -299,13 +307,10 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 it suffices to check the `algebraMap`s agree.
 -/
 @[ext]
-theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q : Algebra R A)
+theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [SMul R A] (P Q : Algebra R A)
     (h : ∀ r : R, (haveI := P; algebraMap R A r) = haveI := Q; algebraMap R A r) :
     P = Q := by
-  replace h : P.toRingHom = Q.toRingHom := DFunLike.ext _ _ h
-  have h' : (haveI := P; (· • ·) : R → A → A) = (haveI := Q; (· • ·) : R → A → A) := by
-    funext r a
-    rw [P.smul_def', Q.smul_def', h]
+  replace h : P.toMonoidHom = Q.toMonoidHom := DFunLike.ext _ _ h
   rcases P with @⟨⟨P⟩⟩
   rcases Q with @⟨⟨Q⟩⟩
   congr
@@ -429,7 +434,6 @@ instance (priority := 1100) id : Algebra R R where
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
   toFun x := x
-  toSMul := Mul.toSMul _
   __ := (RingHom.id R).toAlgebra
 #align algebra.id Algebra.id
 

@@ -40,6 +40,9 @@ theorem GradedAlgebra.ι_apply (m : M) :
 
 variable {R M}
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
+-- set_option diagnostics true in
 /-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra ((LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) : ℕ → Submodule R _) :=

@@ -521,7 +521,7 @@ section SubalgebraRank
 
 open Module
 
-variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
+variable {F E : Type*} [CommRing F] [Ring E] [SMul F E] [Algebra F E]
 
 @[simp]
 theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :

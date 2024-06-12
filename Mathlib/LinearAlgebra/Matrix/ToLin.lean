@@ -484,52 +484,52 @@ theorem Matrix.toLinAlgEquiv'_symm :
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_toLinAlgEquiv' (M : Matrix n n R) :
-    LinearMap.toMatrixAlgEquiv' (Matrix.toLinAlgEquiv' M) = M :=
+    LinearMap.toMatrixAlgEquiv' (R := R) (Matrix.toLinAlgEquiv' (R := R) M) = M :=
   LinearMap.toMatrixAlgEquiv'.apply_symm_apply M
 #align linear_map.to_matrix_alg_equiv'_to_lin_alg_equiv' LinearMap.toMatrixAlgEquiv'_toLinAlgEquiv'
 
 @[simp]
 theorem Matrix.toLinAlgEquiv'_toMatrixAlgEquiv' (f : (n → R) →ₗ[R] n → R) :
-    Matrix.toLinAlgEquiv' (LinearMap.toMatrixAlgEquiv' f) = f :=
+    Matrix.toLinAlgEquiv' (R := R) (LinearMap.toMatrixAlgEquiv' (R := R) f) = f :=
   Matrix.toLinAlgEquiv'.apply_symm_apply f
 #align matrix.to_lin_alg_equiv'_to_matrix_alg_equiv' Matrix.toLinAlgEquiv'_toMatrixAlgEquiv'
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_apply (f : (n → R) →ₗ[R] n → R) (i j) :
-    LinearMap.toMatrixAlgEquiv' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
+    LinearMap.toMatrixAlgEquiv' (R := R) f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
   simp [LinearMap.toMatrixAlgEquiv']
 #align linear_map.to_matrix_alg_equiv'_apply LinearMap.toMatrixAlgEquiv'_apply
 
 @[simp]
 theorem Matrix.toLinAlgEquiv'_apply (M : Matrix n n R) (v : n → R) :
-    Matrix.toLinAlgEquiv' M v = M *ᵥ v :=
+    Matrix.toLinAlgEquiv' (R := R) M v = M *ᵥ v :=
   rfl
 #align matrix.to_lin_alg_equiv'_apply Matrix.toLinAlgEquiv'_apply
 
 -- Porting note: the simpNF linter rejects this, as `simp` already simplifies the lhs
 -- to `(1 : (n → R) →ₗ[R] n → R)`.
 -- @[simp]
-theorem Matrix.toLinAlgEquiv'_one : Matrix.toLinAlgEquiv' (1 : Matrix n n R) = LinearMap.id :=
+theorem Matrix.toLinAlgEquiv'_one : Matrix.toLinAlgEquiv' (R := R) (1 : Matrix n n R) = LinearMap.id :=
   Matrix.toLin'_one
 #align matrix.to_lin_alg_equiv'_one Matrix.toLinAlgEquiv'_one
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_id :
-    LinearMap.toMatrixAlgEquiv' (LinearMap.id : (n → R) →ₗ[R] n → R) = 1 :=
+    LinearMap.toMatrixAlgEquiv' (R := R) (LinearMap.id : (n → R) →ₗ[R] n → R) = 1 :=
   LinearMap.toMatrix'_id
 #align linear_map.to_matrix_alg_equiv'_id LinearMap.toMatrixAlgEquiv'_id
 
 #align matrix.to_lin_alg_equiv'_mul map_mulₓ
 
 theorem LinearMap.toMatrixAlgEquiv'_comp (f g : (n → R) →ₗ[R] n → R) :
-    LinearMap.toMatrixAlgEquiv' (f.comp g) =
-      LinearMap.toMatrixAlgEquiv' f * LinearMap.toMatrixAlgEquiv' g :=
+    LinearMap.toMatrixAlgEquiv' (R := R) (f.comp g) =
+      LinearMap.toMatrixAlgEquiv' (R := R) f * LinearMap.toMatrixAlgEquiv' (R := R) g :=
   LinearMap.toMatrix'_comp _ _
 #align linear_map.to_matrix_alg_equiv'_comp LinearMap.toMatrixAlgEquiv'_comp
 
 theorem LinearMap.toMatrixAlgEquiv'_mul (f g : (n → R) →ₗ[R] n → R) :
-    LinearMap.toMatrixAlgEquiv' (f * g) =
-      LinearMap.toMatrixAlgEquiv' f * LinearMap.toMatrixAlgEquiv' g :=
+    LinearMap.toMatrixAlgEquiv' (R := R) (f * g) =
+      LinearMap.toMatrixAlgEquiv' (R := R) f * LinearMap.toMatrixAlgEquiv' (R := R) g :=
   LinearMap.toMatrixAlgEquiv'_comp f g
 #align linear_map.to_matrix_alg_equiv'_mul LinearMap.toMatrixAlgEquiv'_mul
 
@@ -797,7 +797,7 @@ theorem LinearMap.toMatrixAlgEquiv_transpose_apply' (f : M₁ →ₗ[R] M₁) (j
 
 theorem Matrix.toLinAlgEquiv_apply (M : Matrix n n R) (v : M₁) :
     Matrix.toLinAlgEquiv v₁ M v = ∑ j, (M *ᵥ v₁.repr v) j • v₁ j :=
-  show v₁.equivFun.symm (Matrix.toLinAlgEquiv' M (v₁.repr v)) = _ by
+  show v₁.equivFun.symm (Matrix.toLinAlgEquiv' (R := R) M (v₁.repr v)) = _ by
     rw [Matrix.toLinAlgEquiv'_apply, v₁.equivFun_symm_apply]
 #align matrix.to_lin_alg_equiv_apply Matrix.toLinAlgEquiv_apply
 
@@ -879,7 +879,7 @@ namespace Algebra
 
 section Lmul
 
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {R S : Type*} [CommRing R] [Ring S] [SMul R S] [Algebra R S]
 variable {m : Type*} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
 theorem toMatrix_lmul' (x : S) (i j) :
@@ -954,7 +954,7 @@ end Lmul
 section LmulTower
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [Ring T]
-variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+variable [SMul R S] [Algebra R S] [SMul S T] [Algebra S T] [SMul R T] [Algebra R T] [IsScalarTower R S T]
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
 

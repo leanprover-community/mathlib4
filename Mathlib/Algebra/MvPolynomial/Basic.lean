@@ -134,7 +134,7 @@ instance isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroCla
     [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.isCentralScalar
 
-instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
+instance algebra [CommSemiring R] [CommSemiring S₁] [SMul R S₁] [Algebra R S₁] :
     Algebra R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.algebra
 
@@ -487,8 +487,8 @@ theorem is_id (f : MvPolynomial σ R →+* MvPolynomial σ R) (hC : f.comp C = C
 #align mv_polynomial.is_id MvPolynomial.is_id
 
 @[ext 1100]
-theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
-    {f g : MvPolynomial σ A →ₐ[R] B}
+theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [SMul R A] [Algebra R A]
+    [SMul R B] [Algebra R B] {f g : MvPolynomial σ A →ₐ[R] B}
     (h₁ :
       f.comp (IsScalarTower.toAlgHom R A (MvPolynomial σ A)) =
         g.comp (IsScalarTower.toAlgHom R A (MvPolynomial σ A)))
@@ -497,8 +497,8 @@ theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A
 #align mv_polynomial.alg_hom_ext' MvPolynomial.algHom_ext'
 
 @[ext 1200]
-theorem algHom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : MvPolynomial σ R →ₐ[R] A}
-    (hf : ∀ i : σ, f (X i) = g (X i)) : f = g :=
+theorem algHom_ext {A : Type*} [Semiring A] [SMul R A] [Algebra R A]
+    {f g : MvPolynomial σ R →ₐ[R] A} (hf : ∀ i : σ, f (X i) = g (X i)) : f = g :=
   AddMonoidAlgebra.algHom_ext' (mulHom_ext' fun X : σ => MonoidHom.ext_mnat (hf X))
 #align mv_polynomial.alg_hom_ext MvPolynomial.algHom_ext
 
@@ -1420,8 +1420,8 @@ theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (
 
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
 @[simps!]
-def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
-    MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ :=
+def mapAlgHom [CommSemiring S₂] [SMul R S₁] [Algebra R S₁] [SMul R S₂] [Algebra R S₂]
+    (f : S₁ →ₐ[R] S₂) : MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ :=
   { map (↑f : S₁ →+* S₂) with
     commutes' := fun r => by
       have h₁ : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
@@ -1433,13 +1433,14 @@ def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ �
 #align mv_polynomial.map_alg_hom MvPolynomial.mapAlgHom
 
 @[simp]
-theorem mapAlgHom_id [Algebra R S₁] :
+theorem mapAlgHom_id [SMul R S₁] [Algebra R S₁] :
     mapAlgHom (AlgHom.id R S₁) = AlgHom.id R (MvPolynomial σ S₁) :=
   AlgHom.ext map_id
 #align mv_polynomial.map_alg_hom_id MvPolynomial.mapAlgHom_id
 
 @[simp]
-theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [SMul R S₁] [Algebra R S₁]
+    [SMul R S₂] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     ↑(mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
       (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
@@ -1452,7 +1453,7 @@ section Aeval
 /-! ### The algebra of multivariate polynomials -/
 
 
-variable [Algebra R S₁] [CommSemiring S₂]
+variable [SMul R S₁] [Algebra R S₁] [CommSemiring S₂]
 variable (f : σ → S₁)
 
 @[simp]
@@ -1465,25 +1466,25 @@ def aeval : MvPolynomial σ R →ₐ[R] S₁ :=
   { eval₂Hom (algebraMap R S₁) f with commutes' := fun _r => eval₂_C _ _ _ }
 #align mv_polynomial.aeval MvPolynomial.aeval
 
-theorem aeval_def (p : MvPolynomial σ R) : aeval f p = eval₂ (algebraMap R S₁) f p :=
+theorem aeval_def (p : MvPolynomial σ R) : aeval (R := R) f p = eval₂ (algebraMap R S₁) f p :=
   rfl
 #align mv_polynomial.aeval_def MvPolynomial.aeval_def
 
-theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval f p = eval₂Hom (algebraMap R S₁) f p :=
+theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval (R := R) f p = eval₂Hom (algebraMap R S₁) f p :=
   rfl
 #align mv_polynomial.aeval_eq_eval₂_hom MvPolynomial.aeval_eq_eval₂Hom
 
 @[simp]
-lemma coe_aeval_eq_eval : RingHomClass.toRingHom (MvPolynomial.aeval f) = MvPolynomial.eval f :=
+lemma coe_aeval_eq_eval : RingHomClass.toRingHom (MvPolynomial.aeval (R := S₁) f) = MvPolynomial.eval f :=
   rfl
 
 @[simp]
-theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
+theorem aeval_X (s : σ) : aeval (R := R) f (X s : MvPolynomial _ R) = f s :=
   eval₂_X _ _ _
 #align mv_polynomial.aeval_X MvPolynomial.aeval_X
 
 @[simp]
-theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=
+theorem aeval_C (r : R) : aeval (R := R) f (C r) = algebraMap R S₁ r :=
   eval₂_C _ _ _
 #align mv_polynomial.aeval_C MvPolynomial.aeval_C
 
@@ -1496,11 +1497,11 @@ theorem aeval_X_left : aeval X = AlgHom.id R (MvPolynomial σ R) :=
   (aeval_unique (AlgHom.id R _)).symm
 #align mv_polynomial.aeval_X_left MvPolynomial.aeval_X_left
 
-theorem aeval_X_left_apply (p : MvPolynomial σ R) : aeval X p = p :=
+theorem aeval_X_left_apply (p : MvPolynomial σ R) : aeval (R := R) X p = p :=
   AlgHom.congr_fun aeval_X_left p
 #align mv_polynomial.aeval_X_left_apply MvPolynomial.aeval_X_left_apply
 
-theorem comp_aeval {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[R] B) :
+theorem comp_aeval {B : Type*} [CommSemiring B] [SMul R B] [Algebra R B] (φ : S₁ →ₐ[R] B) :
     φ.comp (aeval f) = aeval fun i => φ (f i) := by
   ext i
   simp
@@ -1508,7 +1509,7 @@ theorem comp_aeval {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[
 
 @[simp]
 theorem map_aeval {B : Type*} [CommSemiring B] (g : σ → S₁) (φ : S₁ →+* B) (p : MvPolynomial σ R) :
-    φ (aeval g p) = eval₂Hom (φ.comp (algebraMap R S₁)) (fun i => φ (g i)) p := by
+    φ (aeval (R := R) g p) = eval₂Hom (φ.comp (algebraMap R S₁)) (fun i => φ (g i)) p := by
   rw [← comp_eval₂Hom]
   rfl
 #align mv_polynomial.map_aeval MvPolynomial.map_aeval
@@ -1547,13 +1548,13 @@ theorem eval₂_zero'_apply (f : R →+* S₂) (p : MvPolynomial σ R) :
 
 @[simp]
 theorem aeval_zero (p : MvPolynomial σ R) :
-    aeval (0 : σ → S₁) p = algebraMap _ _ (constantCoeff p) :=
+    aeval (R := R) (0 : σ → S₁) p = algebraMap _ _ (constantCoeff p) :=
   eval₂Hom_zero_apply (algebraMap R S₁) p
 #align mv_polynomial.aeval_zero MvPolynomial.aeval_zero
 
 @[simp]
 theorem aeval_zero' (p : MvPolynomial σ R) :
-    aeval (fun _ => 0 : σ → S₁) p = algebraMap _ _ (constantCoeff p) :=
+    aeval (R := R) (fun _ => 0 : σ → S₁) p = algebraMap _ _ (constantCoeff p) :=
   aeval_zero p
 #align mv_polynomial.aeval_zero' MvPolynomial.aeval_zero'
 
@@ -1568,7 +1569,7 @@ theorem eval_zero' : eval (fun _ => 0 : σ → R) = constantCoeff :=
 #align mv_polynomial.eval_zero' MvPolynomial.eval_zero'
 
 theorem aeval_monomial (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
-    aeval g (monomial d r) = algebraMap _ _ r * d.prod fun i k => g i ^ k :=
+    aeval (R := R) g (monomial d r) = algebraMap _ _ r * d.prod fun i k => g i ^ k :=
   eval₂Hom_monomial _ _ _ _
 #align mv_polynomial.aeval_monomial MvPolynomial.aeval_monomial
 
@@ -1582,19 +1583,19 @@ theorem eval₂Hom_eq_zero (f : R →+* S₂) (g : σ → S₂) (φ : MvPolynomi
   rwa [← Finsupp.mem_support_iff]
 #align mv_polynomial.eval₂_hom_eq_zero MvPolynomial.eval₂Hom_eq_zero
 
-theorem aeval_eq_zero [Algebra R S₂] (f : σ → S₂) (φ : MvPolynomial σ R)
-    (h : ∀ d, φ.coeff d ≠ 0 → ∃ i ∈ d.support, f i = 0) : aeval f φ = 0 :=
+theorem aeval_eq_zero [SMul R S₂] [Algebra R S₂] (f : σ → S₂) (φ : MvPolynomial σ R)
+    (h : ∀ d, φ.coeff d ≠ 0 → ∃ i ∈ d.support, f i = 0) : aeval (R := R) f φ = 0 :=
   eval₂Hom_eq_zero _ _ _ h
 #align mv_polynomial.aeval_eq_zero MvPolynomial.aeval_eq_zero
 
 theorem aeval_sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
-    aeval f (∑ i in s, φ i) = ∑ i in s, aeval f (φ i) :=
+    aeval (R := R) f (∑ i in s, φ i) = ∑ i in s, aeval (R := R) f (φ i) :=
   (MvPolynomial.aeval f).map_sum _ _
 #align mv_polynomial.aeval_sum MvPolynomial.aeval_sum
 
 @[to_additive existing]
 theorem aeval_prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
-    aeval f (∏ i in s, φ i) = ∏ i in s, aeval f (φ i) :=
+    aeval (R := R) f (∏ i in s, φ i) = ∏ i in s, aeval (R := R) f (φ i) :=
   (MvPolynomial.aeval f).map_prod _ _
 #align mv_polynomial.aeval_prod MvPolynomial.aeval_prod
 
@@ -1616,7 +1617,7 @@ end Aeval
 section AevalTower
 
 variable {S A B : Type*} [CommSemiring S] [CommSemiring A] [CommSemiring B]
-variable [Algebra S R] [Algebra S A] [Algebra S B]
+variable [SMul S R] [Algebra S R] [SMul S A] [Algebra S A] [SMul S B] [Algebra S B]
 
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
   than `R`. -/

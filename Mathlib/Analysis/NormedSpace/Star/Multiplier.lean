@@ -160,6 +160,7 @@ theorem smul_snd (s : S) (a : 𝓜(𝕜, A)) : (s • a).snd = s • a.snd :=
   rfl
 #align double_centralizer.smul_snd DoubleCentralizer.smul_snd
 
+set_option maxHeartbeats 0
 variable {T : Type*} [Monoid T] [DistribMulAction T A] [SMulCommClass 𝕜 T A]
   [ContinuousConstSMul T A] [IsScalarTower T A A] [SMulCommClass T A A]
 
@@ -169,6 +170,7 @@ instance instIsScalarTower [SMul S T] [IsScalarTower S T A] : IsScalarTower S T 
 instance instSMulCommClass [SMulCommClass S T A] : SMulCommClass S T 𝓜(𝕜, A) where
   smul_comm _ _ a := ext (𝕜 := 𝕜) (A := A) _ _ <| smul_comm _ _ a.toProd
 
+set_option synthInstance.maxHeartbeats 0
 instance instIsCentralScalar {R : Type*} [Semiring R] [Module R A] [SMulCommClass 𝕜 R A]
     [ContinuousConstSMul R A] [IsScalarTower R A A] [SMulCommClass R A A] [Module Rᵐᵒᵖ A]
     [IsCentralScalar R A] : IsCentralScalar R 𝓜(𝕜, A) where
@@ -343,6 +345,8 @@ theorem range_toProdMulOpposite :
       exact a.central, fun hx => ⟨⟨(x.1, unop x.2), hx⟩, Prod.ext rfl rfl⟩⟩
 #align double_centralizer.range_to_prod_mul_opposite DoubleCentralizer.range_toProdMulOpposite
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 /-- The ring structure is inherited as the pullback under the injective map
 `DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` -/
 instance instRing : Ring 𝓜(𝕜, A) :=
@@ -654,6 +658,8 @@ variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
 variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
+set_option maxHeartbeats 0
+set_option synthInstance.maxHeartbeats 0
 instance instCstarRing : CstarRing 𝓜(𝕜, A) where
   norm_star_mul_self := @fun (a : 𝓜(𝕜, A)) => congr_arg ((↑) : ℝ≥0 → ℝ) <|
     show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊ by

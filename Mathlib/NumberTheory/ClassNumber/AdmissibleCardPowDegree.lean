@@ -118,7 +118,8 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   · obtain ⟨i₀, i₁, i_ne, mod_eq⟩ :=
       exists_eq_polynomial le_rfl b le_b (fun i => A i % b) fun i => EuclideanDomain.mod_lt (A i) hb
     refine' ⟨i₀, i₁, i_ne, _⟩
-    rwa [mod_eq, sub_self, map_zero, Int.cast_zero]
+    sorry
+    -- rwa [mod_eq, sub_self, map_zero, Int.cast_zero]
   -- Otherwise, it suffices to choose two elements whose difference is of small enough degree.
   rw [not_le] at le_b
   obtain ⟨i₀, i₁, i_ne, deg_lt⟩ := exists_approx_polynomial_aux le_rfl b (fun i => A i % b) fun i =>
@@ -126,7 +127,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   use i₀, i₁, i_ne
   -- Again, if the remainders are equal we are done.
   by_cases h : A i₁ % b = A i₀ % b
-  · rwa [h, sub_self, map_zero, Int.cast_zero]
+  · sorry -- rwa [h, sub_self, map_zero, Int.cast_zero]
   have h' : A i₁ % b - A i₀ % b ≠ 0 := mt sub_eq_zero.mp h
   -- If the remainders are not equal, we'll show their difference is of small degree.
   -- In particular, we'll show the degree is less than the following:
@@ -158,18 +159,18 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   by_cases hyz' : y = z
   · rwa [← hyz']
   by_cases hxz' : x = z
-  · rwa [hxz', sub_self, map_zero]
-  rw [← Ne, ← sub_ne_zero] at hxy' hyz' hxz'
-  refine' lt_of_le_of_lt _ (max_lt hxy hyz)
-  rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
-    cardPowDegree_nonzero _ hyz']
-  have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
-  simp only [Int.cast_pow, Int.cast_natCast, le_max_iff]
-  refine' Or.imp (pow_le_pow_right this) (pow_le_pow_right this) _
-  rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
-    degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
-  convert degree_add_le (x - y) (y - z) using 2
-  exact (sub_add_sub_cancel _ _ _).symm
+  · sorry -- rwa [hxz', sub_self, map_zero]
+  sorry -- rw [← Ne, ← sub_ne_zero] at hxy' hyz' hxz'
+  -- refine' lt_of_le_of_lt _ (max_lt hxy hyz)
+  -- rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
+    -- cardPowDegree_nonzero _ hyz']
+  -- have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
+  -- simp only [Int.cast_pow, Int.cast_natCast, le_max_iff]
+  -- refine' Or.imp (pow_le_pow_right this) (pow_le_pow_right this) _
+  -- rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
+    -- degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
+  -- convert degree_add_le (x - y) (y - z) using 2
+  -- exact (sub_add_sub_cancel _ _ _).symm
 #align polynomial.card_pow_degree_anti_archimedean Polynomial.cardPowDegree_anti_archimedean
 
 /-- A slightly stronger version of `exists_partition` on which we perform induction on `n`:

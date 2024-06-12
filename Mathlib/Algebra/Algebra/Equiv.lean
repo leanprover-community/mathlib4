@@ -27,7 +27,7 @@ universe u v w u₁ v₁
 
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
+  [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   protected commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_equiv AlgEquiv
@@ -43,7 +43,7 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
 class AlgEquivClass (F : Type*) (R A B : outParam (Type*)) [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B]
+    [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [EquivLike F A B]
     extends RingEquivClass F A B : Prop where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
@@ -55,13 +55,13 @@ namespace AlgEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [h : AlgEquivClass F R A B] :
+    [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [EquivLike F A B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
   { h with }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
 
 instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
-    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
     [EquivLike F A B] [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass
@@ -69,12 +69,12 @@ instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
-def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
+def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [SMul R A] [Algebra R A]
+    [SMul R B] [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
 
-instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [EquivLike F A B] [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
+instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [SMul R A] [SMul R B]
+    [Algebra R A] [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
   ⟨toAlgEquiv⟩
 end AlgEquivClass
 
@@ -89,8 +89,12 @@ section Semiring
 
 variable [CommSemiring R] [Semiring A₁] [Semiring A₂] [Semiring A₃]
 variable [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
-variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
-variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
+variable [SMul R A₁] [Algebra R A₁]
+variable [SMul R A₂] [Algebra R A₂]
+variable [SMul R A₃] [Algebra R A₃]
+variable [SMul R A₁'] [Algebra R A₁']
+variable [SMul R A₂'] [Algebra R A₂']
+variable [SMul R A₃'] [Algebra R A₃']
 variable (e : A₁ ≃ₐ[R] A₂)
 
 instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
@@ -287,7 +291,7 @@ protected theorem bijective : Function.Bijective e :=
 #align alg_equiv.bijective AlgEquiv.bijective
 
 /-- Algebra equivalences are reflexive. -/
-@[refl]
+-- @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
   { (1 : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
 #align alg_equiv.refl AlgEquiv.refl
@@ -783,7 +787,7 @@ theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
 
 /-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
 @[simps]
-def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
+def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] :
     (A ≃ₐ[R] A) →* A →ₗ[R] A where
   toFun := AlgEquiv.toLinearMap
   map_one' := rfl
@@ -800,7 +804,7 @@ lemma one_toLinearMap :
 /-- The units group of `S →ₐ[R] S` is `S ≃ₐ[R] S`.
 See `LinearMap.GeneralLinearGroup.generalLinearEquiv` for the linear map version. -/
 @[simps]
-def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
+def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [SMul R S] [Algebra R S] :
     (S →ₐ[R] S)ˣ ≃* (S ≃ₐ[R] S) where
   toFun := fun f ↦
     { (f : S →ₐ[R] S) with
@@ -817,7 +821,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
+variable [SMul R A₁] [Algebra R A₁] [SMul R A₂] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 -- Porting note: Added nonrec
 nonrec theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
@@ -836,7 +840,7 @@ end CommSemiring
 section Ring
 
 variable [CommSemiring R] [Ring A₁] [Ring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
+variable [SMul R A₁] [Algebra R A₁] [SMul R A₂] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 protected theorem map_neg (x) : e (-x) = -e x :=
   map_neg e x
@@ -852,7 +856,7 @@ end AlgEquiv
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 
 section
 

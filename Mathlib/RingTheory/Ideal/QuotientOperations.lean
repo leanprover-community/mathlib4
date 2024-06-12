@@ -295,7 +295,7 @@ section QuotientAlgebra
 
 variable (R₁ R₂ : Type*) {A B : Type*}
 variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A]
-variable [Algebra R₁ A] [Algebra R₂ A]
+variable [SMul R₁ A] [Algebra R₁ A] [SMul R₂ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
 instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
@@ -319,8 +319,8 @@ def Quotient.mkₐ (I : Ideal A) : A →ₐ[R₁] A ⧸ I :=
   ⟨⟨⟨⟨fun a => Submodule.Quotient.mk a, rfl⟩, fun _ _ => rfl⟩, rfl, fun _ _ => rfl⟩, fun _ => rfl⟩
 #align ideal.quotient.mkₐ Ideal.Quotient.mkₐ
 
-theorem Quotient.algHom_ext {I : Ideal A} {S} [Semiring S] [Algebra R₁ S] ⦃f g : A ⧸ I →ₐ[R₁] S⦄
-    (h : f.comp (Quotient.mkₐ R₁ I) = g.comp (Quotient.mkₐ R₁ I)) : f = g :=
+theorem Quotient.algHom_ext {I : Ideal A} {S} [Semiring S] [SMul R₁ S] [Algebra R₁ S]
+    ⦃f g : A ⧸ I →ₐ[R₁] S⦄ (h : f.comp (Quotient.mkₐ R₁ I) = g.comp (Quotient.mkₐ R₁ I)) : f = g :=
   AlgHom.ext fun x => Quotient.inductionOn' x <| AlgHom.congr_fun h
 #align ideal.quotient.alg_hom_ext Ideal.Quotient.algHom_ext
 
@@ -371,7 +371,7 @@ variable {R₁}
 
 section
 
-variable [Semiring B] [Algebra R₁ B]
+variable [Semiring B] [SMul R₁ B] [Algebra R₁ B]
 
 /-- `Ideal.quotient.lift` as an `AlgHom`. -/
 def Quotient.liftₐ (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
@@ -561,7 +561,7 @@ end CommRing_CommRing
 
 section
 
-variable [CommRing B] [Algebra R₁ B]
+variable [CommRing B] [SMul R₁ B] [Algebra R₁ B]
 
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
@@ -597,12 +597,16 @@ def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J
 
 end
 
-instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
+instance (priority := 100) instSMul {I : Ideal A} [SMul R A] [Algebra R A] :
+    SMul (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) where
+  smul := fun c x ↦ (quotientMap I (algebraMap R A) (le_of_eq rfl)) c * x
+
+instance (priority := 100) quotientAlgebra {I : Ideal A} [SMul R A] [Algebra R A] :
     Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=
   (quotientMap I (algebraMap R A) (le_of_eq rfl)).toAlgebra
 #align ideal.quotient_algebra Ideal.quotientAlgebra
 
-theorem algebraMap_quotient_injective {I : Ideal A} [Algebra R A] :
+theorem algebraMap_quotient_injective {I : Ideal A} [SMul R A] [Algebra R A] :
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
@@ -636,7 +640,7 @@ lemma comap_map_mk {I J : Ideal R} (h : I ≤ J) :
 
 /-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
 noncomputable def quotientKerEquivRange
-  {A B : Type*} [CommRing A] [Algebra R A] [Semiring B] [Algebra R B]
+  {A B : Type*} [CommRing A] [SMul R A] [Algebra R A] [Semiring B] [SMul R B] [Algebra R B]
   (f : A →ₐ[R] B) :
   (A ⧸ RingHom.ker f) ≃ₐ[R] f.range :=
   (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
@@ -794,7 +798,7 @@ theorem quotQuotEquivComm_mk_mk [CommRing R] (I J : Ideal R) (x : R) :
   rfl
 #align double_quot.quot_quot_equiv_comm_mk_mk DoubleQuot.quotQuotEquivComm_mk_mk
 
-variable [CommSemiring R] {A : Type v} [CommRing A] [Algebra R A] (I J : Ideal A)
+variable [CommSemiring R] {A : Type v} [CommRing A] [SMul R A] [Algebra R A] (I J : Ideal A)
 
 @[simp]
 theorem quotQuotEquivQuotSup_quot_quot_algebraMap (x : R) :
@@ -812,7 +816,7 @@ end Algebra
 
 section AlgebraQuotient
 
-variable (R) {A : Type*} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
+variable (R) {A : Type*} [CommSemiring R] [CommRing A] [SMul R A] [Algebra R A] (I J : Ideal A)
 
 /-- The natural algebra homomorphism `A / I → A / (I ⊔ J)`. -/
 def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=
@@ -885,7 +889,7 @@ theorem coe_liftSupQuotQuotMkₐ : ⇑(liftSupQuotQuotMkₐ R I J) = liftSupQuot
 /-- `quotQuotToQuotSup` and `liftSupQuotQuotMk` are inverse isomorphisms. In the case where
 `I ≤ J`, this is the Third Isomorphism Theorem (see `DoubleQuot.quotQuotEquivQuotOfLE`). -/
 def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ I ⊔ J :=
-  @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ (quotQuotEquivQuotSup I J) fun _ => rfl
+  @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ _ _ (quotQuotEquivQuotSup I J) fun _ => rfl
 #align double_quot.quot_quot_equiv_quot_supₐ DoubleQuot.quotQuotEquivQuotSupₐ
 
 @[simp]
@@ -918,7 +922,7 @@ theorem coe_quotQuotEquivQuotSupₐ_symm :
   where `J'` (resp. `I'`) is the projection of `J` in `A / I` (resp. `I` in `A / J`). -/
 def quotQuotEquivCommₐ :
     ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] (A ⧸ J) ⧸ I.map (Quotient.mkₐ R J) :=
-  @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ (quotQuotEquivComm I J) fun _ => rfl
+  @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ _ _ (quotQuotEquivComm I J) fun _ => rfl
 #align double_quot.quot_quot_equiv_commₐ DoubleQuot.quotQuotEquivCommₐ
 
 @[simp]
@@ -957,7 +961,7 @@ variable {I J}
 /-- The **third isomorphism theorem** for algebras. See `quotQuotEquivQuotSupₐ` for version
     that does not assume an inclusion of ideals. -/
 def quotQuotEquivQuotOfLEₐ (h : I ≤ J) : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[R] A ⧸ J :=
-  @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ (quotQuotEquivQuotOfLE h) fun _ => rfl
+  @AlgEquiv.ofRingEquiv R _ _ _ _ _ _ _ _ _ (quotQuotEquivQuotOfLE h) fun _ => rfl
 #align double_quot.quot_quot_equiv_quot_of_leₐ DoubleQuot.quotQuotEquivQuotOfLEₐ
 
 @[simp]

@@ -36,7 +36,7 @@ variable {R A : Type*} {a b : A} {r : R}
 
 
 
-variable [OrderedCommRing R] [OrderedRing A] [Algebra R A]
+variable [OrderedCommRing R] [OrderedRing A] [SMul R A] [Algebra R A]
 
 
 variable [OrderedSMul R A]

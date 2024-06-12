@@ -74,6 +74,9 @@ instance instRing : Ring (UniversalEnvelopingAlgebra R L) :=
   inferInstanceAs (Ring (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
 #align universal_enveloping_algebra.ring UniversalEnvelopingAlgebra.instRing
 
+instance instSMul : SMul R (UniversalEnvelopingAlgebra R L) :=
+  inferInstanceAs (SMul R (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
+
 instance instAlgebra : Algebra R (UniversalEnvelopingAlgebra R L) :=
   inferInstanceAs (Algebra R (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
 #align universal_enveloping_algebra.algebra UniversalEnvelopingAlgebra.instAlgebra
@@ -97,7 +100,7 @@ def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
       exact RingQuot.mkAlgHom_rel _ (Rel.lie_compat x y) }
 #align universal_enveloping_algebra.ι UniversalEnvelopingAlgebra.ι
 
-variable {A : Type u₃} [Ring A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
+variable {A : Type u₃} [Ring A] [SMul R A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
 
 /-- The universal property of the universal enveloping algebra: Lie algebra morphisms into
 associative algebras lift to associative algebra morphisms from the universal enveloping algebra. -/

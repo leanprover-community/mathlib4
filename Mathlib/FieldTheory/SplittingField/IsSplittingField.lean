@@ -40,7 +40,7 @@ variable {F : Type u} (K : Type v) (L : Type w)
 
 namespace Polynomial
 
-variable [Field K] [Field L] [Field F] [Algebra K L]
+variable [Field K] [Field L] [Field F] [SMul K L] [Algebra K L]
 
 /-- Typeclass characterising splitting fields. -/
 class IsSplittingField (f : K[X]) : Prop where
@@ -67,14 +67,14 @@ theorem adjoin_rootSet (f : K[X]) [IsSplittingField K L f] :
 
 section ScalarTower
 
-variable [Algebra F K] [Algebra F L] [IsScalarTower F K L]
+variable [SMul F K] [Algebra F K] [SMul F L] [Algebra F L] [IsScalarTower F K L]
 
 instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <| algebraMap F K) :=
   ⟨by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact splits L f,
     Subalgebra.restrictScalars_injective F <| by
       rw [rootSet, aroots, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
-      exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
+      exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ _ hx⟩
 #align polynomial.is_splitting_field.map Polynomial.IsSplittingField.map
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
@@ -110,7 +110,7 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
 end ScalarTower
 
 /-- Splitting field of `f` embeds into any field that splits `f`. -/
-def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
+def lift [SMul K F] [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     (hf : Splits (algebraMap K F) f) : L →ₐ[K] F :=
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
@@ -127,13 +127,13 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
 #align polynomial.is_splitting_field.lift Polynomial.IsSplittingField.lift
 
 theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L :=
-  ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
+  ⟨@Algebra.top_toSubmodule K L _ _ _ _ ▸
     adjoin_rootSet L f ▸ fg_adjoin_of_finite (Finset.finite_toSet _) fun y hy ↦
       if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
       else IsAlgebraic.isIntegral ⟨f, hf, (mem_rootSet'.mp hy).2⟩⟩
 #align polynomial.is_splitting_field.finite_dimensional Polynomial.IsSplittingField.finiteDimensional
 
-theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
+theorem of_algEquiv [SMul K F] [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
     IsSplittingField K L p := by
   constructor
   · rw [← f.toAlgHom.comp_algebraMap]
@@ -142,7 +142,7 @@ theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingFie
       adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
 #align polynomial.is_splitting_field.of_alg_equiv Polynomial.IsSplittingField.of_algEquiv
 
-theorem adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
+theorem adjoin_rootSet_eq_range [SMul K F] [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
     Algebra.adjoin K (rootSet f F) = i.range :=
   (Polynomial.adjoin_rootSet_eq_range (splits L f) i).mpr (adjoin_rootSet L f)
 
@@ -152,7 +152,7 @@ end Polynomial
 
 open Polynomial
 
-variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateField K L}
+variable {K L} [Field K] [Field L] [SMul K L] [Algebra K L] {p : K[X]} {F : IntermediateField K L}
 
 theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by

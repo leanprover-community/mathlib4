@@ -46,7 +46,7 @@ variable (R : Type) [CommRing R] [IsDomain R]
 
 open Polynomial
 
-variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
+variable (K : Type) [Field K] [SMul R[X] K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
 

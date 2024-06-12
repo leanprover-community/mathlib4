@@ -17,7 +17,7 @@ where `x` is an integral element over `R`.
 -/
 
 
-variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
+variable {K S : Type*} [Field K] [CommRing S] [SMul K S] [Algebra K S]
 
 namespace Algebra
 
@@ -86,8 +86,8 @@ open Polynomial
 
 open Polynomial
 
-variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
-variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
+variable {R : Type*} [CommRing R] [SMul R S] [Algebra R S] [SMul R K] [Algebra R K] [IsScalarTower R K S]
+variable {A : Type*} [CommRing A] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A]
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 
 /-- If `B : PowerBasis S A` is such that `IsIntegral R B.gen`, then
@@ -100,7 +100,7 @@ theorem repr_gen_pow_isIntegral [IsDomain S]
   intro i
   let Q := X ^ n %ₘ minpoly R B.gen
   have : B.gen ^ n = aeval B.gen Q := by
-    rw [← @aeval_X_pow R _ _ _ _ B.gen, ← modByMonic_add_div (X ^ n) (minpoly.monic hB)]
+    rw [← @aeval_X_pow R _ _ _ _ _ B.gen, ← modByMonic_add_div (X ^ n) (minpoly.monic hB)]
     simp
   by_cases hQ : Q = 0
   · simp [this, hQ, isIntegral_zero]

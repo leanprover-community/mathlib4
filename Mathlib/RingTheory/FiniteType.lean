@@ -38,7 +38,7 @@ variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB) (M : Type uM) (
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/
-class Algebra.FiniteType [CommSemiring R] [Semiring A] [Algebra R A] : Prop where
+class Algebra.FiniteType [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] : Prop where
   out : (⊤ : Subalgebra R A).FG
 #align algebra.finite_type Algebra.FiniteType
 
@@ -56,7 +56,7 @@ section Algebra
 
 -- see Note [lower instance priority]
 instance (priority := 100) finiteType {R : Type*} (A : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [hRA : Finite R A] : Algebra.FiniteType R A :=
+    [SMul R A] [Algebra R A] [hRA : Finite R A] : Algebra.FiniteType R A :=
   ⟨Subalgebra.fg_of_submodule_fg hRA.1⟩
 #align module.finite.finite_type Module.Finite.finiteType
 
@@ -69,7 +69,7 @@ end Module
 namespace Algebra
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-variable [Algebra R S] [Algebra R A] [Algebra R B]
+variable [SMul R S] [Algebra R S] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 
@@ -102,7 +102,7 @@ protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolyno
         exact MvPolynomial.adjoin_range_X⟩⟩
 #align algebra.finite_type.mv_polynomial Algebra.FiniteType.mvPolynomial
 
-theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
+theorem of_restrictScalars_finiteType [SMul S A] [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
   refine' ⟨⟨s, eq_top_iff.2 fun b => _⟩⟩
@@ -125,7 +125,7 @@ theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
   hRA.of_surjective e e.surjective
 #align algebra.finite_type.equiv Algebra.FiniteType.equiv
 
-theorem trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : FiniteType S A) :
+theorem trans [SMul S A] [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : FiniteType S A) :
     FiniteType R A :=
   ⟨fg_trans' hRS.1 hSA.1⟩
 #align algebra.finite_type.trans Algebra.FiniteType.trans
@@ -204,7 +204,7 @@ instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B
   ⟨by rw [← Subalgebra.prod_top]; exact hA.1.prod hB.1⟩
 #align algebra.finite_type.prod Algebra.FiniteType.prod
 
-theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [SMul R S] [Algebra R S]
     [h : Algebra.FiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
   obtain ⟨s, hs⟩ := h.1
   apply
@@ -231,13 +231,13 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is of `FiniteType` if `B` is finitely generated as `A`-algebra. -/
 def FiniteType (f : A →+* B) : Prop :=
-  @Algebra.FiniteType A B _ _ f.toAlgebra
+  @Algebra.FiniteType A B _ _ f.toSMul f.toAlgebra
 #align ring_hom.finite_type RingHom.FiniteType
 
 namespace Finite
 
 theorem finiteType {f : A →+* B} (hf : f.Finite) : FiniteType f :=
-  @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
+  @Module.Finite.finiteType _ _ _ _ f.toSMul f.toAlgebra hf
 #align ring_hom.finite.finite_type RingHom.Finite.finiteType
 
 end Finite
@@ -254,8 +254,10 @@ variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
-  let _ : Algebra A B := f.toAlgebra
-  let _ : Algebra A C := (g.comp f).toAlgebra
+  letI : SMul A B := f.toSMul
+  letI : Algebra A B := f.toAlgebra
+  letI : SMul A C := (g.comp f).toSMul
+  letI : Algebra A C := (g.comp f).toAlgebra
   exact Algebra.FiniteType.of_surjective hf
     { g with
       toFun := g
@@ -270,10 +272,13 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteType) :
     (g.comp f).FiniteType := by
-  let _ : Algebra A B := f.toAlgebra
-  let _ : Algebra A C := (g.comp f).toAlgebra
-  let _ : Algebra B C := g.toAlgebra
-  exact @Algebra.FiniteType.trans A B C _ _ _ f.toAlgebra (g.comp f).toAlgebra g.toAlgebra
+  letI : SMul A B := f.toSMul
+  letI : Algebra A B := f.toAlgebra
+  letI : SMul A C:= (g.comp f).toSMul
+  letI : Algebra A C := (g.comp f).toAlgebra
+  letI : SMul B C := g.toSMul
+  letI : Algebra B C := g.toAlgebra
+  exact @Algebra.FiniteType.trans A B C _ _ _ _ f.toAlgebra _ (g.comp f).toAlgebra _ g.toAlgebra
     ⟨by
       intro a b c
       simp [Algebra.smul_def, RingHom.map_mul, mul_assoc]
@@ -282,7 +287,7 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteT
 #align ring_hom.finite_type.comp RingHom.FiniteType.comp
 
 theorem of_finite {f : A →+* B} (hf : f.Finite) : f.FiniteType :=
-  @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
+  @Module.Finite.finiteType _ _ _ _ f.toSMul f.toAlgebra hf
 #align ring_hom.finite_type.of_finite RingHom.FiniteType.of_finite
 
 alias _root_.RingHom.Finite.to_finiteType := of_finite
@@ -290,8 +295,11 @@ alias _root_.RingHom.Finite.to_finiteType := of_finite
 
 theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
     g.FiniteType := by
+  letI := f.toSMul
   let _ := f.toAlgebra
+  letI := g.toSMul
   let _ := g.toAlgebra
+  letI := (g.comp f).toSMul
   let _ := (g.comp f).toAlgebra
   let _ : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
   let _ : Algebra.FiniteType A C := h
@@ -306,7 +314,7 @@ namespace AlgHom
 
 variable {R A B C : Type*} [CommRing R]
 variable [CommRing A] [CommRing B] [CommRing C]
-variable [Algebra R A] [Algebra R B] [Algebra R C]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [SMul R C] [Algebra R C]
 
 /-- An algebra morphism `A →ₐ[R] B` is of `FiniteType` if it is of finite type as ring morphism.
 In other words, if `B` is finitely generated as `A`-algebra. -/
@@ -455,7 +463,7 @@ end Span
 theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemiring R] {S : Set M}
     (hS : closure S = ⊤) :
     Function.Surjective
-      (MvPolynomial.aeval fun s : S => of' R M ↑s : MvPolynomial S R → R[M]) := by
+      (MvPolynomial.aeval (R := R) fun s : S => of' R M ↑s : MvPolynomial S R → R[M]) := by
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
@@ -634,7 +642,7 @@ end Span
 theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring R] {S : Set M}
     (hS : closure S = ⊤) :
     Function.Surjective
-      (MvPolynomial.aeval fun s : S => of R M ↑s : MvPolynomial S R → MonoidAlgebra R M) := by
+      (MvPolynomial.aeval (R := R) fun s : S => of R M ↑s : MvPolynomial S R → MonoidAlgebra R M) := by
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _

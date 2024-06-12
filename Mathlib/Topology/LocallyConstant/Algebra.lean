@@ -274,7 +274,7 @@ instance [Semiring R] [AddCommMonoid Y] [Module R Y] : Module R (LocallyConstant
 
 section Algebra
 
-variable [CommSemiring R] [Semiring Y] [Algebra R Y]
+variable [CommSemiring R] [Semiring Y] [SMul R Y] [Algebra R Y]
 
 instance : Algebra R (LocallyConstant X Y) where
   toRingHom := constRingHom.comp <| algebraMap R Y
@@ -308,7 +308,7 @@ section coeFn
   map_smul' _ _ := rfl
 
 /-- `DFunLike.coe` as an `AlgHom`. -/
-@[simps!] def coeFnAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] :
+@[simps!] def coeFnAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [SMul R Y] [Algebra R Y] :
     LocallyConstant X Y →ₐ[R] X → Y where
   toRingHom := coeFnRingHom
   commutes' _ := rfl
@@ -333,7 +333,7 @@ def evalMonoidHom [MulOneClass Y] (x : X) : LocallyConstant X Y →* Y :=
 
 /-- Evaluation as an `AlgHom` -/
 @[simps!]
-def evalₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] (x : X) :
+def evalₐ (R : Type*) [CommSemiring R] [Semiring Y] [SMul R Y] [Algebra R Y] (x : X) :
     LocallyConstant X Y →ₐ[R] Y :=
   (Pi.evalAlgHom _ _ x).comp (coeFnAlgHom R)
 
@@ -380,7 +380,7 @@ def comapRingHom [Semiring Z] (f : C(X, Y)) :
 /-- `LocallyConstant.comap` as an `AlgHom` -/
 @[simps!]
 noncomputable
-def comapₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z]
+def comapₐ (R : Type*) [CommSemiring R] [Semiring Z] [SMul R Z] [Algebra R Z]
     (f : C(X, Y)) : LocallyConstant Y Z →ₐ[R] LocallyConstant X Z where
   toRingHom := comapRingHom f
   commutes' _ := rfl
@@ -418,7 +418,7 @@ def congrLeftRingEquiv [Semiring Z] (e : X ≃ₜ Y) :
 /-- `LocallyConstant.congrLeft` as an `AlgEquiv`. -/
 @[simps!]
 noncomputable
-def congrLeftₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
+def congrLeftₐ (R : Type*) [CommSemiring R] [Semiring Z] [SMul R Z] [Algebra R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
   toEquiv := congrLeft e
   __ := comapₐ R ⟨_, e.symm.continuous⟩

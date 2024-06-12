@@ -14,7 +14,7 @@ import Mathlib.Analysis.RCLike.Basic
 open Set Algebra Filter
 open scoped Topology
 
-variable (𝕜 : Type*) [RCLike 𝕜]
+variable (𝕜 : Type*) [SMul ℝ 𝕜] [RCLike 𝕜]
 
 theorem RCLike.tendsto_inverse_atTop_nhds_zero_nat :
     Tendsto (fun n : ℕ => (n : 𝕜)⁻¹) atTop (𝓝 0) := by

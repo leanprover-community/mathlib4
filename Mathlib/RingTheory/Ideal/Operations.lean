@@ -798,7 +798,7 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
 instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
-instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
+instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [SMul R S] [Algebra R S]
     [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 

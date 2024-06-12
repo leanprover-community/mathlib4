@@ -31,7 +31,7 @@ variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B : Type*} {a b
 
 section CommSemiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [Semiring B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable {p q r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
@@ -121,14 +121,14 @@ instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
 
 @[simp]
 theorem algHom_eval₂_algebraMap {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
+    [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
     f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
   simp only [eval₂_eq_sum, sum_def]
   simp only [f.map_sum, f.map_mul, f.map_pow, eq_intCast, map_intCast, AlgHom.commutes]
 #align polynomial.alg_hom_eval₂_algebra_map Polynomial.algHom_eval₂_algebraMap
 
 @[simp]
-theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
+theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] (p : R[X])
     (f : R[X] →ₐ[R] A) : eval₂ (algebraMap R A) (f X) p = f p := by
   conv_rhs => rw [← Polynomial.sum_C_mul_X_pow_eq p]
   simp only [eval₂_eq_sum, sum_def]
@@ -156,7 +156,7 @@ end CommSemiring
 section aeval
 
 variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
-variable [Algebra R A] [Algebra R A'] [Algebra R B]
+variable [SMul R A] [Algebra R A] [SMul R A'] [Algebra R A'] [SMul R B] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
 /-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
@@ -260,7 +260,7 @@ theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
 
 theorem comp_eq_aeval : p.comp q = aeval q p := rfl
 
-theorem aeval_comp {A : Type*} [Semiring A] [Algebra R A] (x : A) :
+theorem aeval_comp {A : Type*} [Semiring A] [SMul R A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp' x p q
 #align polynomial.aeval_comp Polynomial.aeval_comp
@@ -337,7 +337,7 @@ theorem aeval_fn_apply {X : Type*} (g : R[X]) (f : X → R) (x : X) :
 #align polynomial.aeval_fn_apply Polynomial.aeval_fn_apply
 
 @[norm_cast]
-theorem aeval_subalgebra_coe (g : R[X]) {A : Type*} [Semiring A] [Algebra R A] (s : Subalgebra R A)
+theorem aeval_subalgebra_coe (g : R[X]) {A : Type*} [Semiring A] [SMul R A] [Algebra R A] (s : Subalgebra R A)
     (f : s) : (aeval f g : A) = aeval (f : A) g :=
   (aeval_algHom_apply s.val f g).symm
 #align polynomial.aeval_subalgebra_coe Polynomial.aeval_subalgebra_coe
@@ -351,14 +351,14 @@ theorem coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeva
 #align polynomial.coeff_zero_eq_aeval_zero' Polynomial.coeff_zero_eq_aeval_zero'
 
 theorem map_aeval_eq_aeval_map {S T U : Type*} [CommSemiring S] [CommSemiring T] [Semiring U]
-    [Algebra R S] [Algebra T U] {φ : R →+* T} {ψ : S →+* U}
+    [SMul R S] [Algebra R S] [SMul T U] [Algebra T U] {φ : R →+* T} {ψ : S →+* U}
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) (p : R[X]) (a : S) :
     ψ (aeval a p) = aeval (ψ a) (p.map φ) := by
   conv_rhs => rw [aeval_def, ← eval_map]
   rw [map_map, h, ← map_map, eval_map, eval₂_at_apply, aeval_def, eval_map]
 #align polynomial.map_aeval_eq_aeval_map Polynomial.map_aeval_eq_aeval_map
 
-theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
+theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [SMul S T] [Algebra S T]
     {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
   rw [aeval_def, ← eval_map] at h₂ ⊢
   exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
@@ -384,7 +384,7 @@ instance instCommSemiringAdjoinSingleton :
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Submonoid.mk_mul_mk, ← AlgHom.map_mul,
         mul_comm p' q'] }
 
-instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
+instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A] (x : A) :
     CommRing <| Algebra.adjoin R {x} :=
   { mul_comm := mul_comm }
 
@@ -394,13 +394,13 @@ section Semiring
 
 variable [Semiring S] {f : R →+* S}
 
-theorem aeval_eq_sum_range [Algebra R S] {p : R[X]} (x : S) :
+theorem aeval_eq_sum_range [SMul R S] [Algebra R S] {p : R[X]} (x : S) :
     aeval x p = ∑ i in Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range (algebraMap R S) x
 #align polynomial.aeval_eq_sum_range Polynomial.aeval_eq_sum_range
 
-theorem aeval_eq_sum_range' [Algebra R S] {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
+theorem aeval_eq_sum_range' [SMul R S] [Algebra R S] {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
     aeval x p = ∑ i in Finset.range n, p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range' (algebraMap R S) hn x
@@ -413,7 +413,7 @@ theorem isRoot_of_eval₂_map_eq_zero (hf : Function.Injective f) {r : R} :
   rw [← eval₂_hom, h, f.map_zero]
 #align polynomial.is_root_of_eval₂_map_eq_zero Polynomial.isRoot_of_eval₂_map_eq_zero
 
-theorem isRoot_of_aeval_algebraMap_eq_zero [Algebra R S] {p : R[X]}
+theorem isRoot_of_aeval_algebraMap_eq_zero [SMul R S] [Algebra R S] {p : R[X]}
     (inj : Function.Injective (algebraMap R S)) {r : R} (hr : aeval (algebraMap R S r) p = 0) :
     p.IsRoot r :=
   isRoot_of_eval₂_map_eq_zero inj hr
@@ -425,7 +425,8 @@ section CommSemiring
 
 section aevalTower
 
-variable [CommSemiring S] [Algebra S R] [Algebra S A'] [Algebra S B]
+variable [CommSemiring S] [SMul S R] [Algebra S R] [SMul S A'] [Algebra S A'] [SMul S B] [Algebra S B]
+
 
 /-- Version of `aeval` for defining algebra homs out of `R[X]` over a smaller base ring
   than `R`. -/
@@ -562,7 +563,7 @@ variable {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   {q : Submodule R M} {m : M} (hm : m ∈ q) (p : R[X])
 
 lemma aeval_apply_smul_mem_of_le_comap'
-    [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (a : A)
+    [Semiring A] [SMul R A] [Algebra R A] [Module A M] [IsScalarTower R A M] (a : A)
     (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
     aeval a p • m ∈ q := by
   refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)

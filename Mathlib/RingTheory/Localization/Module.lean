@@ -41,7 +41,7 @@ section AddCommMonoid
 
 open Submodule
 
-variable [CommSemiring Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
+variable [CommSemiring Rₛ] [SMul R Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
 variable {M M' : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTower R Rₛ M]
   [AddCommMonoid M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
   [IsLocalizedModule S f]
@@ -82,7 +82,7 @@ end AddCommMonoid
 
 section Basis
 
-variable [CommRing Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
+variable [CommRing Rₛ] [SMul R Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
 
 open Submodule
 
@@ -124,11 +124,11 @@ end IsLocalizedModule
 
 section LocalizationLocalization
 
-variable {R : Type*} (Rₛ : Type*) [CommSemiring R] [CommRing Rₛ] [Algebra R Rₛ]
+variable {R : Type*} (Rₛ : Type*) [CommSemiring R] [CommRing Rₛ] [SMul R Rₛ] [Algebra R Rₛ]
 variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
-variable {A : Type*} [CommRing A] [Algebra R A]
-variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
-variable [Algebra Rₛ Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ]
+variable {A : Type*} [CommRing A] [SMul R A] [Algebra R A]
+variable (Aₛ : Type*) [CommRing Aₛ] [SMul A Aₛ] [Algebra A Aₛ]
+variable [SMul Rₛ Aₛ] [Algebra Rₛ Aₛ] [SMul R Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ]
 variable [hA : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
 
 open Submodule
@@ -172,7 +172,7 @@ end LocalizationLocalization
 
 section FractionRing
 
-variable (R K : Type*) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R K : Type*) [CommRing R] [Field K] [SMul R K] [Algebra R K] [IsFractionRing R K]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
@@ -186,7 +186,7 @@ end FractionRing
 section
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-variable (A : Type*) [CommSemiring A] [Algebra R A] [IsLocalization S A]
+variable (A : Type*) [CommSemiring A] [SMul R A] [Algebra R A] [IsLocalization S A]
 variable {M N : Type*}
   [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
   [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]

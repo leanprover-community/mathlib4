@@ -37,7 +37,7 @@ respectively by `𝕜'` and `𝕜` where `𝕜'` is a normed algebra over `𝕜`
 
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜']
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E]
 variable [IsScalarTower 𝕜 𝕜' E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]

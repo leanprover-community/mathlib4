@@ -481,8 +481,7 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
 -- for `ℍ[R]`)
-instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
-  smul := (· • ·)
+instance [CommSemiring S] [SMul S R] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
   toFun s := coe (algebraMap S R s)
   map_one' := by simp only [map_one, coe_one]
   map_zero' := by simp only [map_zero, coe_zero]
@@ -808,7 +807,7 @@ instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower 
 instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
   inferInstanceAs <| SMulCommClass S T ℍ[R,-1,-1]
 
-protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
+protected instance algebra [CommSemiring S] [SMul S R] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,-1]
 
 -- Porting note: added shortcut

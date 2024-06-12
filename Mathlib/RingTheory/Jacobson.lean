@@ -129,7 +129,7 @@ theorem isJacobson_iso (e : R ≃+* S) : IsJacobson R ↔ IsJacobson S :=
     @isJacobson_of_surjective _ _ _ _ h ⟨(e.symm : S →+* R), e.symm.surjective⟩⟩
 #align ideal.is_jacobson_iso Ideal.isJacobson_iso
 
-theorem isJacobson_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] (hR : IsJacobson R) :
+theorem isJacobson_of_isIntegral [SMul R S] [Algebra R S] [Algebra.IsIntegral R S] (hR : IsJacobson R) :
     IsJacobson S := by
   rw [isJacobson_iff_prime_eq]
   intro P hP
@@ -150,6 +150,7 @@ theorem isJacobson_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] (hR : Is
 
 theorem isJacobson_of_isIntegral' (f : R →+* S) (hf : f.IsIntegral) (hR : IsJacobson R) :
     IsJacobson S :=
+  let _ : SMul R S := f.toSMul
   let _ : Algebra R S := f.toAlgebra
   have : Algebra.IsIntegral R S := ⟨hf⟩
   isJacobson_of_isIntegral hR
@@ -162,7 +163,7 @@ section Localization
 open IsLocalization Submonoid
 
 variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R}
-variable (y : R) [Algebra R S] [IsLocalization.Away y S]
+variable (y : R) [SMul R S] [Algebra R S] [IsLocalization.Away y S]
 
 variable (S)
 
@@ -301,8 +302,10 @@ variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
   In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
   so integrality of the entire extension follows by closure under addition and multiplication. -/
 theorem isIntegral_isLocalization_polynomial_quotient
-    (P : Ideal R[X]) (pX : R[X]) (hpX : pX ∈ P) [Algebra (R ⧸ P.comap (C : R →+* R[X])) Rₘ]
+    (P : Ideal R[X]) (pX : R[X]) (hpX : pX ∈ P) [SMul (R ⧸ P.comap (C : R →+* R[X])) Rₘ]
+    [Algebra (R ⧸ P.comap (C : R →+* R[X])) Rₘ]
     [IsLocalization.Away (pX.map (Quotient.mk (P.comap (C : R →+* R[X])))).leadingCoeff Rₘ]
+    [SMul (R[X] ⧸ P) Sₘ]
     [Algebra (R[X] ⧸ P) Sₘ] [IsLocalization ((Submonoid.powers (pX.map (Quotient.mk (P.comap
       (C : R →+* R[X])))).leadingCoeff).map (quotientMap P C le_rfl) : Submonoid (R[X] ⧸ P)) Sₘ] :
     (IsLocalization.map Sₘ (quotientMap P C le_rfl) (Submonoid.powers (pX.map (Quotient.mk (P.comap
@@ -359,7 +362,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
   and `R` is a Jacobson ring, then the intersection of all maximal ideals in `S` is trivial -/
 theorem jacobson_bot_of_integral_localization {R : Type*} [CommRing R] [IsDomain R] [IsJacobson R]
     (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] (φ : R →+* S) (hφ : Function.Injective ↑φ) (x : R)
-    (hx : x ≠ 0) [Algebra R Rₘ] [IsLocalization.Away x Rₘ] [Algebra S Sₘ]
+    (hx : x ≠ 0) [SMul R Rₘ] [Algebra R Rₘ] [IsLocalization.Away x Rₘ] [SMul S Sₘ] [Algebra S Sₘ]
     [IsLocalization ((Submonoid.powers x).map φ : Submonoid S) Sₘ]
     (hφ' :
       RingHom.IsIntegral (IsLocalization.map Sₘ φ (Submonoid.powers x).le_comap_map : Rₘ →+* Sₘ)) :
@@ -421,7 +424,7 @@ private theorem isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDoma
     let Sₘ := (Localization ((Submonoid.powers x).map φ : Submonoid (R[X] ⧸ P)))
     refine jacobson_bot_of_integral_localization (S := R[X] ⧸ P) (R := R ⧸ P') Rₘ Sₘ _ hφ _ hx ?_
     haveI islocSₘ : IsLocalization (Submonoid.map φ (Submonoid.powers x)) Sₘ := by infer_instance
-    exact @isIntegral_isLocalization_polynomial_quotient R _ Rₘ Sₘ _ _ P p pP _ _ _ islocSₘ
+    exact @isIntegral_isLocalization_polynomial_quotient R _ Rₘ Sₘ _ _ P p pP _ _ _ _ _ islocSₘ
 
 theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X] := by
   rw [isJacobson_iff_prime_eq]
@@ -504,7 +507,7 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
     refine isMaximal_comap_of_isIntegral_of_isMaximal' _ ?_ ⊥
     have isloc : IsLocalization (Submonoid.map φ M) (Localization M') := by infer_instance
     exact @isIntegral_isLocalization_polynomial_quotient R _
-      (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc
+      (Localization M) (Localization M') _ _ P m hmem_P _ _ _ _ _ isloc
   rw [(map_bot.symm :
     (⊥ : Ideal (Localization M')) = map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
   let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP
@@ -546,7 +549,7 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
         -- convert isIntegral_isLocalization_polynomial_quotient P pX hpX
         have isloc : IsLocalization M' (Localization M') := by infer_instance
         exact @isIntegral_isLocalization_polynomial_quotient R _
-          (Localization M) (Localization M') _ _ P pX hpX _ _ _ isloc
+          (Localization M) (Localization M') _ _ P pX hpX _ _ _ _ _ isloc
     rw [IsLocalization.map_comp M.le_comap_map]
 
 /-- If `R` is a Jacobson ring, and `P` is a maximal ideal of `R[X]`,
@@ -639,11 +642,11 @@ variable {n : ℕ}
 
 /-- The constant coefficient as an R-linear morphism -/
 private noncomputable def Cₐ (R : Type u) (S : Type v)
-    [CommRing R] [CommRing S] [Algebra R S] : S →ₐ[R] S[X] :=
+    [CommRing R] [CommRing S] [SMul R S] [Algebra R S] : S →ₐ[R] S[X] :=
   { Polynomial.C with commutes' := fun r => by rfl }
 
 private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
-  [CommRing R] [CommRing S] [CommRing T] [IsJacobson S] [Algebra R S] [Algebra R T]
+  [CommRing R] [CommRing S] [CommRing T] [IsJacobson S] [SMul R S] [Algebra R S] [SMul R T] [Algebra R T]
   (IH : ∀ (Q : Ideal S), (IsMaximal Q) → RingHom.IsIntegral (algebraMap R (S ⧸ Q)))
   (v : S[X] ≃ₐ[R] T) (P : Ideal T) (hP : P.IsMaximal) :
   RingHom.IsIntegral (algebraMap R (T ⧸ P)) := by

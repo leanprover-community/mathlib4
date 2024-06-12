@@ -47,7 +47,7 @@ open scoped TensorProduct
 
 /-- A bialgebra over a commutative (semi)ring `R` is both an algebra and a coalgebra over `R`, such
 that the counit and comultiplication are algebra morphisms. -/
-class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
+class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [SMul R A] extends
     Algebra R A, Coalgebra R A where
   -- The counit is an algebra morphism
   /-- The counit on a bialgebra preserves 1. -/
@@ -81,7 +81,7 @@ namespace Bialgebra
 open Coalgebra
 
 variable {R : Type u} {A : Type v}
-variable [CommSemiring R] [Semiring A] [Bialgebra R A]
+variable [CommSemiring R] [Semiring A] [SMul R A] [Bialgebra R A]
 
 lemma counit_mul (a b : A) : counit (R := R) (a * b) = counit a * counit b :=
   DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_counit a) b
@@ -97,7 +97,7 @@ consumes proofs that the counit and comultiplication preserve
 the identity and multiplication, and produces a bialgebra
 structure on `A`. -/
 def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
-    [Algebra R A] [C : Coalgebra R A] (counit_one : C.counit 1 = 1)
+    [SMul R A] [Algebra R A] [C : Coalgebra R A] (counit_one : C.counit 1 = 1)
     (counit_mul : ∀ {a b}, C.counit (a * b) = C.counit a * C.counit b)
     (comul_one : C.comul 1 = 1)
     (comul_mul : ∀ {a b}, C.comul (a * b) = C.comul a * C.comul b) :

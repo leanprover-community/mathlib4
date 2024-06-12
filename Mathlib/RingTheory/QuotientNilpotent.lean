@@ -18,7 +18,7 @@ theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal
   exact RingHom.ker_isRadical_iff_reduced_of_surjective (@Ideal.Quotient.mk_surjective R _ I)
 #align ideal.is_radical_iff_quotient_reduced Ideal.isRadical_iff_quotient_reduced
 
-variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
+variable {R S : Type*} [CommSemiring R] [CommRing S] [SMul R S] [Algebra R S] (I : Ideal S)
 
 
 /-- Let `P` be a property on ideals. If `P` holds for square-zero ideals, and if

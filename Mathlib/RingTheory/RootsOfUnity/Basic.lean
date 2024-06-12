@@ -1019,7 +1019,7 @@ end IsDomain
 section Automorphisms
 
 variable [CommRing S] [IsDomain S] {μ : S} {n : ℕ+} (hμ : IsPrimitiveRoot μ n) (R) [CommRing R]
-  [Algebra R S]
+  [SMul R S] [Algebra R S]
 
 /-- The `MonoidHom` that takes an automorphism to the power of μ that μ gets mapped to under it. -/
 noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=

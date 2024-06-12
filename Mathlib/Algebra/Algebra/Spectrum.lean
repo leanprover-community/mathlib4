@@ -48,7 +48,7 @@ universe u v
 section Defs
 
 variable (R : Type u) {A : Type v}
-variable [CommSemiring R] [Ring A] [Algebra R A]
+variable [CommSemiring R] [Ring A] [SMul R A] [Algebra R A]
 
 local notation "↑ₐ" => algebraMap R A
 
@@ -96,7 +96,7 @@ namespace spectrum
 section ScalarSemiring
 
 variable {R : Type u} {A : Type v}
-variable [CommSemiring R] [Ring A] [Algebra R A]
+variable [CommSemiring R] [Ring A] [SMul R A] [Algebra R A]
 
 local notation "σ" => spectrum R
 
@@ -141,7 +141,7 @@ theorem mem_resolventSet_iff {r : R} {a : A} : r ∈ resolventSet R a ↔ IsUnit
 
 @[simp]
 theorem algebraMap_mem_iff (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
-    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} {r : R} :
+    [Ring A] [SMul R S] [Algebra R S] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A] {a : A} {r : R} :
     algebraMap R S r ∈ spectrum S a ↔ r ∈ spectrum R a := by
   simp only [spectrum.mem_iff, Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
 
@@ -149,7 +149,7 @@ protected alias ⟨of_algebraMap_mem, algebraMap_mem⟩ := spectrum.algebraMap_m
 
 @[simp]
 theorem preimage_algebraMap (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
-    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} :
+    [Ring A] [SMul R S] [Algebra R S] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A] {a : A} :
     algebraMap R S ⁻¹' spectrum S a = spectrum R a :=
   Set.ext fun _ => spectrum.algebraMap_mem_iff _
 
@@ -187,7 +187,7 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
 theorem units_smul_resolvent_self {r : Rˣ} {a : A} :
     r • resolvent a (r : R) = resolvent (r⁻¹ • a) (1 : R) := by
   simpa only [Units.smul_def, Algebra.id.smul_eq_mul, Units.inv_mul] using
-    @units_smul_resolvent _ _ _ _ _ r r a
+    @units_smul_resolvent _ _ _ _ _ _ r r a
 #align spectrum.units_smul_resolvent_self spectrum.units_smul_resolvent_self
 
 /-- The resolvent is a unit when the argument is in the resolvent set. -/
@@ -289,7 +289,7 @@ end ScalarSemiring
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
-variable [CommRing R] [Ring A] [Algebra R A]
+variable [CommRing R] [Ring A] [SMul R A] [Algebra R A]
 
 local notation "σ" => spectrum R
 
@@ -337,7 +337,7 @@ end ScalarRing
 section ScalarField
 
 variable {𝕜 : Type u} {A : Type v}
-variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+variable [Field 𝕜] [Ring A] [SMul 𝕜 A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜
 
@@ -403,7 +403,7 @@ namespace AlgHom
 
 section CommSemiring
 
-variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [CommSemiring R] [Ring A] [SMul R A] [Algebra R A] [Ring B] [SMul R B] [Algebra R B]
 variable [FunLike F A B] [AlgHomClass F R A B]
 
 local notation "σ" => spectrum R
@@ -423,7 +423,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A] [Ring B] [SMul R B] [Algebra R B]
 variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R
@@ -443,8 +443,8 @@ end CommRing
 end AlgHom
 
 @[simp]
-theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
-    [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) (a : A) :
+theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B] [SMul R A] [Algebra R A]
+    [SMul R B] [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
     simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using

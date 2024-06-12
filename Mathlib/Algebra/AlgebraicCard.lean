@@ -27,19 +27,19 @@ open Cardinal Polynomial
 
 namespace Algebraic
 
-theorem infinite_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
+theorem infinite_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A] [SMul R A] [Algebra R A]
     [CharZero A] : { x : A | IsAlgebraic R x }.Infinite :=
   infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
 #align algebraic.infinite_of_char_zero Algebraic.infinite_of_charZero
 
 theorem aleph0_le_cardinal_mk_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A]
-    [Algebra R A] [CharZero A] : ℵ₀ ≤ #{ x : A // IsAlgebraic R x } :=
+    [SMul R A] [Algebra R A] [CharZero A] : ℵ₀ ≤ #{ x : A // IsAlgebraic R x } :=
   infinite_iff.1 (Set.infinite_coe_iff.2 <| infinite_of_charZero R A)
 #align algebraic.aleph_0_le_cardinal_mk_of_char_zero Algebraic.aleph0_le_cardinal_mk_of_charZero
 
 section lift
 
-variable (R : Type u) (A : Type v) [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
+variable (R : Type u) (A : Type v) [CommRing R] [CommRing A] [IsDomain A] [SMul R A] [Algebra R A]
   [NoZeroSMulDivisors R A]
 
 theorem cardinal_mk_lift_le_mul :
@@ -87,7 +87,7 @@ end lift
 
 section NonLift
 
-variable (R A : Type u) [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
+variable (R A : Type u) [CommRing R] [CommRing A] [IsDomain A] [SMul R A] [Algebra R A]
   [NoZeroSMulDivisors R A]
 
 theorem cardinal_mk_le_mul : #{ x : A // IsAlgebraic R x } ≤ #R[X] * ℵ₀ := by

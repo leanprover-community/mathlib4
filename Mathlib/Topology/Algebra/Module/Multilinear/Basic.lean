@@ -588,7 +588,7 @@ end Module
 
 section CommAlgebra
 
-variable (R ι) (A : Type*) [Fintype ι] [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable (R ι) (A : Type*) [Fintype ι] [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A]
   [TopologicalSpace A] [ContinuousMul A]
 
 /-- The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
@@ -609,7 +609,7 @@ end CommAlgebra
 
 section Algebra
 
-variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
+variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] [TopologicalSpace A]
   [ContinuousMul A]
 
 /-- The continuous multilinear map on `A^n`, where `A` is a normed algebra over `𝕜`, associating to

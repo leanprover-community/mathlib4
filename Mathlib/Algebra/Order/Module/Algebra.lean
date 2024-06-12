@@ -20,7 +20,7 @@ variable {α β : Type*} [OrderedCommSemiring α]
 
 section OrderedSemiring
 variable (β)
-variable [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α}
+variable [OrderedSemiring β] [SMul α β] [Algebra α β] [SMulPosMono α β] {a : α}
 
 @[mono] lemma algebraMap_mono : Monotone (algebraMap α β) :=
   fun a₁ a₂ ha ↦ by
@@ -36,7 +36,7 @@ lemma algebraMap_nonneg (ha : 0 ≤ a) : 0 ≤ algebraMap α β a := by simpa us
 end OrderedSemiring
 
 section StrictOrderedSemiring
-variable [StrictOrderedSemiring β] [Algebra α β]
+variable [StrictOrderedSemiring β] [SMul α β] [Algebra α β]
 
 section SMulPosMono
 variable [SMulPosMono α β] [SMulPosReflectLE α β] {a₁ a₂ : α}
@@ -77,7 +77,7 @@ open Lean Meta Qq Function
 /-- Extension for `algebraMap`. -/
 @[positivity algebraMap _ _ _]
 def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
-  let ~q(@algebraMap $α _ $instα $instβ $instαβ $a) := e | throwError "not `algebraMap`"
+  let ~q(@algebraMap $α _ $instα $instβ $instSMul $instαβ $a) := e | throwError "not `algebraMap`"
   let pα ← synthInstanceQ (q(PartialOrder $α) : Q(Type u_1))
   match ← core q(inferInstance) pα a with
   | .positive pa =>
@@ -100,13 +100,13 @@ def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
     return .nonnegative q(algebraMap_nonneg $β $pa)
   | _ => pure .none
 
-example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 ≤ a) :
+example [OrderedSemiring β] [SMul α β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 ≤ a) :
     0 ≤ algebraMap α β a := by positivity
 
-example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 < a) :
+example [OrderedSemiring β] [SMul α β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 < a) :
     0 ≤ algebraMap α β a := by positivity
 
-example [StrictOrderedSemiring β] [Algebra α β] [SMulPosStrictMono α β] {a : α} (ha : 0 < a) :
+example [StrictOrderedSemiring β] [SMul α β] [Algebra α β] [SMulPosStrictMono α β] {a : α} (ha : 0 < a) :
     0 < algebraMap α β a := by positivity
 
 end Mathlib.Meta.Positivity

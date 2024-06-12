@@ -23,8 +23,8 @@ open Set LinearMap Submodule
 section CommSemiring
 
 variable {R : Type*} {S : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type*}
-  [CommSemiring R] [CommSemiring S] [Algebra R S] [AddCommMonoid M] [Module R M] [Module S M]
-  [IsScalarTower R S M] [AddCommMonoid N] [Module R N]
+  [CommSemiring R] [CommSemiring S] [SMul R S] [Algebra R S]
+  [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] [AddCommMonoid N] [Module R N]
 
 /-- If `b : ι → M` and `c : κ → N` are bases then so is `fun i ↦ b i.1 ⊗ₜ c i.2 : ι × κ → M ⊗ N`. -/
 def Basis.tensorProduct (b : Basis ι S M) (c : Basis κ R N) :

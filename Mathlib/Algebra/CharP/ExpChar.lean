@@ -205,7 +205,7 @@ theorem RingHom.expChar_iff {R A : Type*} [Semiring R] [Semiring A] (f : R →+*
 /-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
 theorem expChar_of_injective_algebraMap {R A : Type*}
-    [CommSemiring R] [Semiring A] [Algebra R A] (h : Function.Injective (algebraMap R A))
+    [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A] (h : Function.Injective (algebraMap R A))
     (q : ℕ) [ExpChar R q] : ExpChar A q := expChar_of_injective_ringHom h q
 
 theorem add_pow_expChar_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
@@ -373,20 +373,20 @@ theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [ExpChar R p] (n
 variable (R S)
 
 /-- The frobenius map of an algebra as a frobenius-semilinear map. -/
-nonrec def LinearMap.frobenius [Algebra R S] : S →ₛₗ[frobenius R p] S where
+nonrec def LinearMap.frobenius [SMul R S] [Algebra R S] : S →ₛₗ[frobenius R p] S where
   __ := frobenius S p
   map_smul' r s := show frobenius S p _ = _ by
     simp_rw [Algebra.smul_def, map_mul, ← (algebraMap R S).map_frobenius]; rfl
 
 /-- The iterated frobenius map of an algebra as a iterated-frobenius-semilinear map. -/
-nonrec def LinearMap.iterateFrobenius [Algebra R S] : S →ₛₗ[iterateFrobenius R p n] S where
+nonrec def LinearMap.iterateFrobenius [SMul R S] [Algebra R S] : S →ₛₗ[iterateFrobenius R p n] S where
   __ := iterateFrobenius S p n
   map_smul' f s := show iterateFrobenius S p n _ = _ by
     simp_rw [iterateFrobenius_def, Algebra.smul_def, mul_pow, ← map_pow]; rfl
 
-theorem LinearMap.frobenius_def [Algebra R S] (x : S) : frobenius R S p x = x ^ p := rfl
+theorem LinearMap.frobenius_def [SMul R S] [Algebra R S] (x : S) : frobenius R S p x = x ^ p := rfl
 
-theorem LinearMap.iterateFrobenius_def [Algebra R S] (n : ℕ) (x : S) :
+theorem LinearMap.iterateFrobenius_def [SMul R S] [Algebra R S] (n : ℕ) (x : S) :
     iterateFrobenius R S p n x = x ^ p ^ n := rfl
 
 theorem frobenius_zero : frobenius R p 0 = 0 :=

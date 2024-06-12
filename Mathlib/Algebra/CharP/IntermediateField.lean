@@ -16,7 +16,7 @@ covered by `SubsemiringClass.instCharZero`.
 
 -/
 
-variable {F E : Type*} [Field F] [Field E] [Algebra F E]
+variable {F E : Type*} [Field F] [Field E] [SMul F E] [Algebra F E]
 
 namespace Subfield
 

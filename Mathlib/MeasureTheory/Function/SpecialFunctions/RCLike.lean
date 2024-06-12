@@ -20,7 +20,7 @@ open NNReal ENNReal
 
 namespace RCLike
 
-variable {𝕜 : Type*} [RCLike 𝕜]
+variable {𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜]
 
 @[measurability]
 theorem measurable_re : Measurable (re : 𝕜 → ℝ) :=
@@ -36,7 +36,7 @@ end RCLike
 
 section RCLikeComposition
 
-variable {α 𝕜 : Type*} [RCLike 𝕜] {m : MeasurableSpace α} {f : α → 𝕜}
+variable {α 𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] {m : MeasurableSpace α} {f : α → 𝕜}
   {μ : MeasureTheory.Measure α}
 
 @[measurability]
@@ -63,7 +63,7 @@ end RCLikeComposition
 
 section
 
-variable {α 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
+variable {α 𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
 @[measurability]
 theorem RCLike.measurable_ofReal : Measurable ((↑) : ℝ → 𝕜) :=

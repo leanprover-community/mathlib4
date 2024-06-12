@@ -832,9 +832,9 @@ lemma map_slope {F : Type u} [Field F] (W : Affine F) {K : Type v} [Field K] (φ
       exact φ.injective hx
 #align weierstrass_curve.base_change_slope WeierstrassCurve.Affine.map_slope
 
-variable {R : Type r} [CommRing R] (W : Affine R) {S : Type s} [CommRing S] [Algebra R S]
-  {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (ψ : A →ₐ[S] B)
+variable {R : Type r} [CommRing R] (W : Affine R) {S : Type s} [CommRing S] [SMul R S] [Algebra R S]
+  {A : Type u} [CommRing A] [SMul R A] [Algebra R A] [SMul S A] [Algebra S A] [IsScalarTower R S A]
+  {B : Type v} [CommRing B] [SMul R B] [Algebra R B] [SMul S B] [Algebra S B] [IsScalarTower R S B] (ψ : A →ₐ[S] B)
 
 lemma baseChange_equation {ψ : A →ₐ[S] B} (hψ : Function.Injective ψ) (x y : A) :
     (W.baseChange B).toAffine.Equation (ψ x) (ψ y) ↔ (W.baseChange A).toAffine.Equation x y := by
@@ -880,9 +880,9 @@ lemma baseChange_addY (x₁ x₂ y₁ L : A) :
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_Y_of_base_change WeierstrassCurve.Affine.baseChange_addY
 
-variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F]
-  {K : Type v} [Field K] [Algebra R K] [Algebra S K] [IsScalarTower R S K] (ψ : F →ₐ[S] K)
-  {L : Type w} [Field L] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (χ : K →ₐ[S] L)
+variable {F : Type u} [Field F] [SMul R F] [Algebra R F] [SMul S F] [Algebra S F] [IsScalarTower R S F]
+  {K : Type v} [Field K] [SMul R K] [Algebra R K] [SMul S K] [Algebra S K] [IsScalarTower R S K] (ψ : F →ₐ[S] K)
+  {L : Type w} [Field L] [SMul R L] [Algebra R L] [SMul S L] [Algebra S L] [IsScalarTower R S L] (χ : K →ₐ[S] L)
 
 lemma baseChange_slope (x₁ x₂ y₁ y₂ : F) :
     (W.baseChange K).toAffine.slope (ψ x₁) (ψ x₂) (ψ y₁) (ψ y₂) =
@@ -950,12 +950,12 @@ variable (F K)
 
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by the base change from `F` to `K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W⟮F⟯ →+ W⟮K⟯ :=
+abbrev baseChange [SMul F K] [Algebra F K] [IsScalarTower R F K] : W⟮F⟯ →+ W⟮K⟯ :=
   map W <| Algebra.ofId F K
 
 variable {F K}
 
-lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]
+lemma map_baseChange [SMul F K] [Algebra F K] [IsScalarTower R F K] [SMul F L] [Algebra F L] [IsScalarTower R F L]
     (χ : K →ₐ[F] L) (P : W⟮F⟯) : map W χ (baseChange W F K P) = baseChange W F L P := by
   have : Subsingleton (F →ₐ[F] L) := inferInstance
   convert map_map W (Algebra.ofId F K) χ P

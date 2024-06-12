@@ -176,8 +176,8 @@ end Module
 
 namespace Algebra
 
-variable {R : Type w} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
-  {R' : Type w'} {S' : Type v'} [CommRing R'] [Ring S'] [Algebra R' S']
+variable {R : Type w} {S : Type v} [CommRing R] [Ring S] [SMul R S] [Algebra R S]
+  {R' : Type w'} {S' : Type v'} [CommRing R'] [Ring S'] [SMul R' S'] [Algebra R' S']
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R' →+* R` and `j : S →+* S'` are injective ring
 homomorphisms, such that `R' → R → S → S'` and `R' → S'` commute, then the rank of `S / R` is
@@ -215,7 +215,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
   simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
 
-variable {S' : Type v} [CommRing R'] [Ring S'] [Algebra R' S']
+variable {S' : Type v} [CommRing R'] [Ring S'] [SMul R' S'] [Algebra R' S']
 
 /-- The same-universe version of `Algebra.lift_rank_le_of_injective_injective`. -/
 theorem rank_le_of_injective_injective

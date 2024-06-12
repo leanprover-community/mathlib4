@@ -320,7 +320,7 @@ end LinearOrderedField
 
 section RCLike
 
-variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable [SMul ℝ 𝕜] [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 theorem gauge_norm_smul (hs : Balanced 𝕜 s) (r : 𝕜) (x : E) :
     gauge s (‖r‖ • x) = gauge s (r • x) := by
@@ -506,7 +506,7 @@ end TopologicalVectorSpace
 
 section RCLike
 
-variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable [SMul ℝ 𝕜] [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /-- `gauge s` as a seminorm when `s` is balanced, convex and absorbent. -/
 @[simps!]

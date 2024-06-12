@@ -96,7 +96,7 @@ end Polynomial
 
 namespace Derivation
 
-variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
+variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [SMul R A] [Algebra R A] [AddCommMonoid M]
   [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
 
 open Polynomial Module

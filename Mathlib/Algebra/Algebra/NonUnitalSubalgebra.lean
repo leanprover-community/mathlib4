@@ -277,11 +277,11 @@ protected theorem coe_mul (x y : S) : (↑(x * y) : A) = ↑x * ↑y :=
 protected theorem coe_zero : ((0 : S) : A) = 0 :=
   rfl
 
-protected theorem coe_neg {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem coe_neg {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     {S : NonUnitalSubalgebra R A} (x : S) : (↑(-x) : A) = -↑x :=
   rfl
 
-protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     {S : NonUnitalSubalgebra R A} (x y : S) : (↑(x - y) : A) = ↑x - ↑y :=
   rfl
 
@@ -299,7 +299,7 @@ theorem toNonUnitalSubsemiring_subtype :
   rfl
 
 @[simp]
-theorem toSubring_subtype {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+theorem toSubring_subtype {R A : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     (S : NonUnitalSubalgebra R A) :
     NonUnitalSubringClass.subtype S = NonUnitalSubalgebraClass.subtype (R := R) S :=
   rfl
@@ -704,7 +704,7 @@ theorem toNonUnitalSubsemiring_eq_top {S : NonUnitalSubalgebra R A} :
   NonUnitalSubalgebra.toNonUnitalSubsemiring_injective.eq_iff' top_toNonUnitalSubsemiring
 
 @[simp]
-theorem to_subring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+theorem to_subring_eq_top {R A : Type*} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
     {S : NonUnitalSubalgebra R A} : S.toNonUnitalSubring = ⊤ ↔ S = ⊤ :=
   NonUnitalSubalgebra.toNonUnitalSubring_injective.eq_iff' top_toSubring
 

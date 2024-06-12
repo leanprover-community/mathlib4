@@ -28,7 +28,7 @@ open Set Metric TopologicalSpace Function Asymptotics Filter
 
 open scoped Topology NNReal BigOperators
 
-variable {α β 𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {α β 𝕜 E F : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 /-! ### Differentiability -/

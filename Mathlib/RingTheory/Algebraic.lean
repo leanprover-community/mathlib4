@@ -26,7 +26,7 @@ open Polynomial
 
 section
 
-variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
 
 /-- An element of an R-algebra is algebraic over R if it is a root of a nonzero polynomial
 with coefficients in R. -/
@@ -65,7 +65,7 @@ lemma Algebra.isAlgebraic_def : Algebra.IsAlgebraic R A ↔ ∀ x : A, IsAlgebra
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
-    S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
+    S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ _ S.algebra := by
   delta Subalgebra.IsAlgebraic
   rw [Subtype.forall', Algebra.isAlgebraic_def]
   refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
@@ -90,7 +90,7 @@ end
 section zero_ne_one
 
 variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
-variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
+variable [CommRing S] [Ring A] [SMul R A] [Algebra R A] [SMul R S] [Algebra R S] [SMul S A] [Algebra S A]
 variable [IsScalarTower R S A]
 
 /-- An integral element of an algebra is algebraic. -/
@@ -125,13 +125,13 @@ theorem isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
   exact isAlgebraic_algebraMap (Int.cast n)
 #align is_algebraic_int isAlgebraic_int
 
-theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
+theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [SMul R A] [Algebra R A] (n : ℚ) :
     IsAlgebraic R (n : A) := by
   rw [← map_ratCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Rat.cast n)
 #align is_algebraic_rat isAlgebraic_rat
 
-theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A] [Algebra R A]
+theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A] [SMul R A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
   ⟨p, ne_zero_of_mem_rootSet hx, aeval_eq_zero_of_mem_rootSet hx⟩
 #align is_algebraic_of_mem_root_set isAlgebraic_of_mem_rootSet
@@ -145,7 +145,7 @@ protected theorem IsAlgebraic.algebraMap {a : S} :
 
 section
 
-variable {B} [Ring B] [Algebra R B]
+variable {B} [Ring B] [SMul R B] [Algebra R B]
 
 /-- This is slightly more general than `IsAlgebraic.algebraMap` in that it
   allows noncommutative intermediate rings `A`. -/
@@ -203,7 +203,7 @@ lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
     IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
   ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
 
-lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
+lemma IsAlgebraic.inv_iff {K} [Field K] [SMul R K] [Algebra R K] {x : K} :
     IsAlgebraic R (x⁻¹) ↔ IsAlgebraic R x := by
   by_cases hx : x = 0
   · simp [hx]
@@ -216,7 +216,7 @@ end zero_ne_one
 
 section Field
 
-variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
+variable {K : Type u} {A : Type v} [Field K] [Ring A] [SMul K A] [Algebra K A]
 
 /-- An element of an algebra over a field is algebraic if and only if it is integral. -/
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
@@ -250,7 +250,7 @@ section Ring
 section CommRing
 
 variable [CommRing R] [CommRing S] [Ring A]
-variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
+variable [SMul R S] [Algebra R S] [SMul S A] [Algebra S A] [SMul R A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If x is algebraic over R, then x is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
@@ -274,7 +274,7 @@ end CommRing
 section Field
 
 variable [Field K] [Field L] [Ring A]
-variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
+variable [SMul K L] [Algebra K L] [SMul L A] [Algebra L A] [SMul K A] [Algebra K A] [IsScalarTower K L A]
 variable (L)
 
 /-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
@@ -307,7 +307,7 @@ end Ring
 section CommRing
 
 variable [Field K] [Field L] [Ring A]
-variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
+variable [SMul K L] [Algebra K L] [SMul L A] [Algebra L A] [SMul K A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
 then A is algebraic over K. -/
@@ -325,7 +325,7 @@ section NoZeroSMulDivisors
 namespace Algebra.IsAlgebraic
 
 variable [CommRing K] [Field L]
-variable [Algebra K L] [NoZeroSMulDivisors K L]
+variable [SMul K L] [Algebra K L] [NoZeroSMulDivisors K L]
 
 theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
@@ -338,19 +338,19 @@ theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 #align algebra.is_algebraic.alg_hom_bijective Algebra.IsAlgebraic.algHom_bijective
 
-theorem algHom_bijective₂ [Field R] [Algebra K R]
+theorem algHom_bijective₂ [Field R] [SMul K R] [Algebra K R]
     [Algebra.IsAlgebraic K L] (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (algHom_bijective <| g.comp f).2).symm
 
 theorem bijective_of_isScalarTower [Algebra.IsAlgebraic K L]
-    [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    [Field R] [SMul K R] [Algebra K R] [SMul L R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
 
-theorem bijective_of_isScalarTower' [Field R] [Algebra K R]
+theorem bijective_of_isScalarTower' [Field R] [SMul K R] [Algebra K R]
     [NoZeroSMulDivisors K R]
-    [Algebra.IsAlgebraic K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    [Algebra.IsAlgebraic K R] [SMul L R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ f (IsScalarTower.toAlgHom K L R)).1
 
@@ -374,7 +374,7 @@ end NoZeroSMulDivisors
 section Field
 
 variable [Field K] [Field L]
-variable [Algebra K L]
+variable [SMul K L] [Algebra K L]
 
 theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
   (Algebra.IsAlgebraic.of_finite K L).algHom_bijective ϕ
@@ -394,7 +394,7 @@ end
 
 variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
-theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
+theorem exists_integral_multiple [SMul R S] [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
     ∃ᵉ (x : integralClosure R S) (y ≠ (0 : R)), z * algebraMap R S y = x := by
   rcases hz with ⟨p, p_ne_zero, px⟩
@@ -408,8 +408,8 @@ theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
-theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S] [Algebra S L]
-    [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L] [Algebra.IsAlgebraic R L]
+theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [SMul R S] [Algebra R S] [SMul S L] [Algebra S L]
+    [SMul R L] [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L] [Algebra.IsAlgebraic R L]
     (inj : Function.Injective (algebraMap R L)) (a : S) {b : S} (hb : b ≠ 0) :
     ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
   obtain ⟨c, d, d_ne, hx⟩ :=
@@ -425,7 +425,7 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S]
 
 section Field
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L] (A : Subalgebra K L)
+variable {K L : Type*} [Field K] [Field L] [SMul K L] [Algebra K L] (A : Subalgebra K L)
 
 theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (divX p) ≠ 0) :
     x⁻¹ = aeval x (divX p) / (aeval x p - algebraMap _ _ (p.coeff 0)) := by
@@ -503,7 +503,7 @@ def Polynomial.hasSMulPi [Semiring R'] [SMul R' S'] : SMul R'[X] (R' → S') :=
 /-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
-noncomputable def Polynomial.hasSMulPi' [CommSemiring R'] [Semiring S'] [Algebra R' S']
+noncomputable def Polynomial.hasSMulPi' [CommSemiring R'] [Semiring S'] [SMul R' S'] [Algebra R' S']
     [SMul S' T'] : SMul R'[X] (S' → T') :=
   ⟨fun p f x => aeval x p • f x⟩
 #align polynomial.has_smul_pi' Polynomial.hasSMulPi'
@@ -517,12 +517,12 @@ theorem polynomial_smul_apply [Semiring R'] [SMul R' S'] (p : R'[X]) (f : R' →
 #align polynomial_smul_apply polynomial_smul_apply
 
 @[simp]
-theorem polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [Algebra R' S'] [SMul S' T']
+theorem polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [SMul R' S'] [Algebra R' S'] [SMul S' T']
     (p : R'[X]) (f : S' → T') (x : S') : (p • f) x = aeval x p • f x :=
   rfl
 #align polynomial_smul_apply' polynomial_smul_apply'
 
-variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [Algebra S' T']
+variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [SMul R' S'] [Algebra R' S'] [SMul S' T'] [Algebra S' T']
 
 -- Porting note: the proofs in this definition used `funext` in term-mode, but I was not able
 -- to get them to work anymore.

@@ -89,8 +89,8 @@ section RCLike
 open TopologicalSpace Bornology
 
 variable [FirstCountableTopology E]
-variable [RCLike 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-variable [RCLike 𝕜'] [Module 𝕜' F] [ContinuousSMul 𝕜' F]
+variable [SMul ℝ 𝕜] [RCLike 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+variable [SMul ℝ 𝕜'] [RCLike 𝕜'] [Module 𝕜' F] [ContinuousSMul 𝕜' F]
 variable {σ : 𝕜 →+* 𝕜'}
 
 theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)

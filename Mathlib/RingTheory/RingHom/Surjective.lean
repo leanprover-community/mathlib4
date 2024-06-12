@@ -49,6 +49,7 @@ open scoped BigOperators
 
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H
+  letI := f.toSMul
   letI := f.toAlgebra
   show Function.Surjective (Algebra.ofId R S)
   rw [← Algebra.range_top_iff_surjective, eq_top_iff]

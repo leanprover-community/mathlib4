@@ -821,7 +821,7 @@ end LieIdeal
 
 section OfAssociative
 
-variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [SMul R A] [Algebra R A]
 
 theorem _root_.LieAlgebra.ad_nilpotent_of_nilpotent {a : A} (h : IsNilpotent a) :
     IsNilpotent (LieAlgebra.ad R A a) := by
@@ -855,7 +855,7 @@ open LieModule TensorProduct
 
 variable (R A L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-  [CommRing A] [Algebra R A]
+  [CommRing A] [SMul R A] [Algebra R A]
 
 @[simp]
 lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :

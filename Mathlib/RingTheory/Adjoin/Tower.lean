@@ -28,7 +28,7 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁)
 namespace Algebra
 
 theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D] [CommSemiring E]
-    [Algebra C D] [Algebra C E] [Algebra D E] [IsScalarTower C D E] (S : Set E) :
+    [SMul C D] [Algebra C D] [SMul C E] [Algebra C E] [SMul D E] [Algebra D E] [IsScalarTower C D E] (S : Set E) :
     (Algebra.adjoin D S).restrictScalars C =
       (Algebra.adjoin ((⊤ : Subalgebra C D).map (IsScalarTower.toAlgHom C D E)) S).restrictScalars
         C := by
@@ -47,8 +47,8 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
 #align algebra.adjoin_restrict_scalars Algebra.adjoin_restrictScalars
 
 theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
-    [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
-    [Algebra E F] [IsScalarTower C D F] [IsScalarTower C E F] {S : Set D} {T : Set E}
+    [CommSemiring E] [CommSemiring F] [SMul C D] [Algebra C D] [SMul C E] [Algebra C E] [SMul C F] [Algebra C F] [SMul D F] [Algebra D F]
+    [SMul E F] [Algebra E F] [IsScalarTower C D F] [IsScalarTower C E F] {S : Set D} {T : Set E}
     (hS : Algebra.adjoin C S = ⊤) (hT : Algebra.adjoin C T = ⊤) :
     (Algebra.adjoin E (algebraMap D F '' S)).restrictScalars C =
       (Algebra.adjoin D (algebraMap E F '' T)).restrictScalars C := by
@@ -65,7 +65,7 @@ section
 open scoped Classical
 
 theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
-    [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
+    [SMul R S] [Algebra R S] [SMul S A] [Algebra S A] [SMul R A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
     (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG :=
   let ⟨s, hs⟩ := hRS
   let ⟨t, ht⟩ := hSA
@@ -83,7 +83,7 @@ variable (C : Type*)
 section Semiring
 
 variable [CommSemiring A] [CommSemiring B] [Semiring C]
-variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+variable [SMul A B] [Algebra A B] [SMul B C] [Algebra B C] [SMul A C] [Algebra A C] [IsScalarTower A B C]
 
 open Finset Submodule
 
@@ -140,7 +140,7 @@ end Semiring
 section Ring
 
 variable [CommRing A] [CommRing B] [CommRing C]
-variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+variable [SMul A B] [Algebra A B] [SMul B C] [Algebra B C] [SMul A C] [Algebra A C] [IsScalarTower A B C]
 
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
 A is noetherian, and C is algebra-finite over A, and C is module-finite over B,

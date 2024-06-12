@@ -24,7 +24,9 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 
 variable {R A B C : Type*}
 variable [CommSemiring R]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+variable [Semiring A] [Semiring B] [Semiring C]
+variable [SMul R A] [Semiring B] [SMul R B] [SMul R C]
+variable [Algebra R A] [Algebra R B] [Algebra R C]
 
 namespace Prod
 
@@ -33,8 +35,7 @@ variable (R A B)
 open Algebra
 
 instance algebra : Algebra R (A × B) :=
-  { Prod.instModule,
-    RingHom.prod (algebraMap R A) (algebraMap R B) with
+  { RingHom.prod (algebraMap R A) (algebraMap R B) with
     commutes' := by
       rintro r ⟨a, b⟩
       dsimp

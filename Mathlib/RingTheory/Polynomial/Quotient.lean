@@ -25,12 +25,12 @@ variable {R : Type*} [CommRing R]
 noncomputable def quotientSpanXSubCAlgEquivAux2 (x : R) :
     (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) ≃ₐ[R] R :=
   let e := RingHom.quotientKerEquivOfRightInverse (fun x => by
-    exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ x))
+    exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ _ x))
   { e with commutes' := fun r => e.apply_symm_apply r }
 
 noncomputable def quotientSpanXSubCAlgEquivAux1 (x : R) :
     (R[X] ⧸ Ideal.span {X - C x}) ≃ₐ[R] (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) :=
-  @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ (ker_evalRingHom x).symm
+  @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ _ (ker_evalRingHom x).symm
 
 -- Porting note: need to split this definition into two sub-definitions to prevent time out
 /-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
@@ -66,8 +66,8 @@ noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
 /-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
 induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
 noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
-    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _
-      (Ideal.Quotient.algebra R) _ :=
+    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _ _
+      (Ideal.Quotient.algebra R) _ _ :=
 ((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <| quotientSpanXSubCAlgEquiv x
 
 end Polynomial

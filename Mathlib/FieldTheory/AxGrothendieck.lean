@@ -31,7 +31,7 @@ open MvPolynomial Finset Function
 
 /-- Any injective polynomial map over an algebraic extension of a finite field is surjective. -/
 theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] [CommRing R]
-    [Finite ι] [Algebra K R] [Algebra.IsAlgebraic K R] (ps : ι → MvPolynomial ι R)
+    [Finite ι] [SMul K R] [Algebra K R] [Algebra.IsAlgebraic K R] (ps : ι → MvPolynomial ι R)
     (hinj : Injective fun v i => MvPolynomial.eval v (ps i)) :
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
   classical

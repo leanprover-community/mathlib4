@@ -67,7 +67,7 @@ section Algebra
 variable {R A B M : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable [Semiring A] [Semiring B] [Module A M] [Module B M]
-variable [Algebra R A] [Algebra R B]
+variable [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 variable [IsScalarTower R A M] [IsScalarTower R B M]
 variable [SMulCommClass A B M]
 
@@ -100,7 +100,7 @@ theorem smul_mem' (p : Submodule (A ⊗[R] B) M) (b : B) {m : M} (hm : m ∈ p) 
 /-- If `A` and `B` are also `Algebra`s over yet another set of scalars `S` then we may "base change"
 from `R` to `S`. -/
 @[simps!]
-def baseChange (S : Type*) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
+def baseChange (S : Type*) [CommSemiring S] [Module S M] [SMul S A] [Algebra S A] [SMul S B] [Algebra S B]
     [IsScalarTower S A M] [IsScalarTower S B M] (p : Submodule (A ⊗[R] B) M) :
     Submodule (A ⊗[S] B) M :=
   mk p.toAddSubmonoid (smul_mem p) (smul_mem' p)

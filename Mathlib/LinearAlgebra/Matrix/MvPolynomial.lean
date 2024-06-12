@@ -64,7 +64,7 @@ variable (R)
 
 /-- A variant of `Matrix.mvPolynomialX_map_eval₂` with a bundled `AlgHom` on the LHS. -/
 theorem mvPolynomialX_mapMatrix_aeval [Fintype m] [DecidableEq m] [CommSemiring R] [CommSemiring S]
-    [Algebra R S] (A : Matrix m m S) :
+    [SMul R S] [Algebra R S] (A : Matrix m m S) :
     (MvPolynomial.aeval fun p : m × m => A p.1 p.2).mapMatrix (mvPolynomialX m m R) = A :=
   mvPolynomialX_map_eval₂ _ A
 #align matrix.mv_polynomial_X_map_matrix_aeval Matrix.mvPolynomialX_mapMatrix_aeval

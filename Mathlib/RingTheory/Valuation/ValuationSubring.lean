@@ -298,6 +298,9 @@ def ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : ValuationSubrin
         (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors) (⟨a, ha⟩ : A)
 #align valuation_subring.of_prime ValuationSubring.ofPrime
 
+instance ofPrime_is_prime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
+    SMul A (A.ofPrime P) := ⟨fun a b => a * b⟩
+
 instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     Algebra A (A.ofPrime P) :=
   -- Porting note: filled in the argument

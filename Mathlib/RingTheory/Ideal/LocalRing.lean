@@ -366,6 +366,9 @@ def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 #align local_ring.residue LocalRing.residue
 
+instance ResidueField.smul : SMul R (ResidueField R) :=
+  Submodule.Quotient.instSMul' _
+
 instance ResidueField.algebra : Algebra R (ResidueField R) :=
   Ideal.Quotient.algebra _
 #align local_ring.residue_field.algebra LocalRing.ResidueField.algebra

@@ -280,7 +280,7 @@ theorem kronecker_apply [Mul α] (A : Matrix l m α) (B : Matrix n p α) (i₁ i
 #align matrix.kronecker_apply Matrix.kronecker_apply
 
 /-- `Matrix.kronecker` as a bilinear map. -/
-def kroneckerBilinear [CommSemiring R] [Semiring α] [Algebra R α] :
+def kroneckerBilinear [CommSemiring R] [Semiring α] [SMul R α] [Algebra R α] :
     Matrix l m α →ₗ[R] Matrix n p α →ₗ[R] Matrix (l × n) (m × p) α :=
   kroneckerMapBilinear (Algebra.lmul R α)
 #align matrix.kronecker_bilinear Matrix.kroneckerBilinear
@@ -569,7 +569,7 @@ open Algebra.TensorProduct
 
 section Semiring
 
-variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
+variable [CommSemiring R] [Semiring α] [Semiring β] [SMul R α] [Algebra R α] [SMul R β] [Algebra R β]
 
 @[simp]
 theorem one_kroneckerTMul_one [DecidableEq m] [DecidableEq n] :
@@ -587,7 +587,7 @@ end Semiring
 
 section CommRing
 
-variable [CommRing R] [CommRing α] [CommRing β] [Algebra R α] [Algebra R β]
+variable [CommRing R] [CommRing α] [CommRing β] [SMul R α] [Algebra R α] [SMul R β] [Algebra R β]
 
 theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
     (A : Matrix m m α) (B : Matrix n n β) :

@@ -160,8 +160,8 @@ theorem scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (h
     eval₂ f (f s * r) (scaleRoots p s) = 0 := by rw [scaleRoots_eval₂_mul, hr, mul_zero]
 #align polynomial.scale_roots_eval₂_eq_zero Polynomial.scaleRoots_eval₂_eq_zero
 
-theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
-    aeval (algebraMap R A r * a) (scaleRoots p r) = 0 := by
+theorem scaleRoots_aeval_eq_zero [SMul R A] [Algebra R A] {p : R[X]} {a : A} {r : R}
+    (ha : aeval a p = 0) : aeval (algebraMap R A r * a) (scaleRoots p r) = 0 := by
   rw [aeval_def, scaleRoots_eval₂_mul_of_commute, ← aeval_def, ha, mul_zero]
   · apply Algebra.commutes
   · intros; rw [Commute, SemiconjBy, ← map_mul, ← map_mul, mul_comm]
@@ -177,7 +177,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 #align polynomial.scale_roots_eval₂_eq_zero_of_eval₂_div_eq_zero Polynomial.scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero
 
-theorem scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero [Algebra R K]
+theorem scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero [SMul R K] [Algebra R K]
     (inj : Function.Injective (algebraMap R K)) {p : R[X]} {r s : R}
     (hr : aeval (algebraMap R K r / algebraMap R K s) p = 0) (hs : s ∈ nonZeroDivisors R) :
     aeval (algebraMap R K r) (scaleRoots p s) = 0 :=

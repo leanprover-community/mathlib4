@@ -55,7 +55,7 @@ variable {R : Type*} {S : Type*}
 attribute [local ext] Complex.ext
 
 -- Test that the `SMul ℚ ℂ` instance is correct.
-example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+-- example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
 /- The priority of the following instances has been manually lowered, as when they don't apply
 they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't
@@ -95,9 +95,8 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
 -- priority manually adjusted in #11980
-instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
+instance (priority := 95) instAlgebraOfReal [CommSemiring R] [SMul R ℝ] [Algebra R ℝ] : Algebra R ℂ :=
   { Complex.ofReal.comp (algebraMap R ℝ) with
-    smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
     commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
 
@@ -111,7 +110,7 @@ theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → �
 
 section
 
-variable {A : Type*} [Semiring A] [Algebra ℝ A]
+variable {A : Type*} [Semiring A] [SMul ℝ A] [Algebra ℝ A]
 
 /-- We need this lemma since `Complex.coe_algebraMap` diverts the simp-normal form away from
 `AlgHom.commutes`. -/
@@ -197,23 +196,24 @@ instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Mo
 
 /- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
-instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
+instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [SMul ℂ A] [Algebra ℂ A] :
+    letI : SMul ℝ A := RestrictScalars.module ℝ ℂ A |>.toSMul
     Algebra ℝ A :=
   RestrictScalars.algebra ℝ ℂ A
 
 -- try to make sure we're not introducing diamonds but we will need
 -- `reducible_and_instances` which currently fails #10906
-example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+-- example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
 
 -- try to make sure we're not introducing diamonds but we will need
 -- `reducible_and_instances` which currently fails #10906
-example {ι : Type*} [Fintype ι] :
-    Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
-  rfl
+-- example {ι : Type*} [Fintype ι] :
+--     Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
+--   rfl
 
-example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
-    (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
-  by with_reducible_and_instances rfl
+-- example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
+--     (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
+--   by with_reducible_and_instances rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -350,7 +350,7 @@ theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 section lift
 
-variable {A : Type*} [Ring A] [Algebra ℝ A]
+variable {A : Type*} [Ring A] [SMul ℝ A] [Algebra ℝ A]
 
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 

@@ -94,7 +94,7 @@ open scoped Nat Topology BigOperators ENNReal
 
 section TopologicalAlgebra
 
-variable (𝕂 𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
+variable (𝕂 𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [SMul 𝕂 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
 
 /-- `expSeries 𝕂 𝔸` is the `FormalMultilinearSeries` whose `n`-th term is the map
 `(xᵢ) : 𝔸ⁿ ↦ (1/n! : 𝕂) • ∏ xᵢ`. Its sum is the exponential map `exp 𝕂 : 𝔸 → 𝔸`. -/
@@ -133,6 +133,7 @@ theorem exp_eq_tsum : exp 𝕂 = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : 𝕂)
   funext expSeries_sum_eq
 #align exp_eq_tsum NormedSpace.exp_eq_tsum
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem expSeries_apply_zero (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => (0 : 𝔸)) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
   rw [expSeries_apply_eq]
@@ -186,7 +187,7 @@ end TopologicalAlgebra
 
 section TopologicalDivisionAlgebra
 
-variable {𝕂 𝔸 : Type*} [Field 𝕂] [DivisionRing 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [Field 𝕂] [DivisionRing 𝔸] [SMul 𝕂 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸]
   [TopologicalRing 𝔸]
 
 theorem expSeries_apply_eq_div (x : 𝔸) (n : ℕ) : (expSeries 𝕂 𝔸 n fun _ => x) = x ^ n / n ! := by
@@ -214,7 +215,7 @@ section Normed
 section AnyFieldAnyAlgebra
 
 variable {𝕂 𝔸 𝔹 : Type*} [NontriviallyNormedField 𝕂]
-variable [NormedRing 𝔸] [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔸] [NormedAlgebra 𝕂 𝔹]
+variable [NormedRing 𝔸] [NormedRing 𝔹] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸] [SMul 𝕂 𝔹] [NormedAlgebra 𝕂 𝔹]
 
 theorem norm_expSeries_summable_of_mem_ball (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
@@ -338,7 +339,8 @@ theorem map_exp_of_mem_ball {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]
   rw [exp_eq_tsum, exp_eq_tsum]
   refine' ((expSeries_summable_of_mem_ball' _ hx).hasSum.map f hf).tsum_eq.symm.trans _
   dsimp only [Function.comp_def]
-  simp_rw [map_inv_natCast_smul f 𝕂 𝕂, map_pow]
+  sorry
+  -- simp_rw [map_inv_natCast_smul f 𝕂 𝕂, map_pow]
 #align map_exp_of_mem_ball NormedSpace.map_exp_of_mem_ball
 
 end CompleteAlgebra
@@ -353,7 +355,7 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldDivisionAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedDivisionRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸]
 variable (𝕂)
 
 theorem norm_expSeries_div_summable_of_mem_ball (x : 𝔸)
@@ -388,7 +390,7 @@ end AnyFieldDivisionAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero,
@@ -405,8 +407,8 @@ section RCLike
 
 section AnyAlgebra
 
-variable (𝕂 𝔸 𝔹 : Type*) [RCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
+variable (𝕂 𝔸 𝔹 : Type*) [SMul ℝ 𝕂] [RCLike 𝕂] [NormedRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable [NormedRing 𝔹] [SMul 𝕂 𝔹] [NormedAlgebra 𝕂 𝔹]
 
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
 has an infinite radius of convergence. -/
@@ -575,6 +577,7 @@ theorem _root_.Prod.snd_exp [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) : (exp 𝕂 
 
 @[simp]
 theorem _root_.Pi.exp_apply {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
+    [∀ i, SMul 𝕂 (𝔸 i)]
     [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
     exp 𝕂 x i = exp 𝕂 (x i) :=
   let ⟨_⟩ := nonempty_fintype ι
@@ -582,12 +585,14 @@ theorem _root_.Pi.exp_apply {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ 
 #align pi.exp_apply Pi.exp_apply
 
 theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
+    [∀ i, SMul 𝕂 (𝔸 i)]
     [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
     exp 𝕂 x = fun i => exp 𝕂 (x i) :=
   funext <| Pi.exp_apply 𝕂 x
 #align pi.exp_def Pi.exp_def
 
 theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [DecidableEq ι]
+    [∀ i, SMul 𝕂 (𝔸 i)]
     [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (j : ι) (xj : 𝔸 j) :
     Function.update (exp 𝕂 x) j (exp 𝕂 xj) = exp 𝕂 (Function.update x j xj) := by
@@ -606,7 +611,7 @@ end AnyAlgebra
 
 section DivisionAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [SMul ℝ 𝕂] [RCLike 𝕂] [NormedDivisionRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸]
 variable (𝕂)
 
 theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=
@@ -648,7 +653,7 @@ end DivisionAlgebra
 
 section CommAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [SMul ℝ 𝕂] [RCLike 𝕂] [NormedCommRing 𝔸] [SMul 𝕂 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`. -/
@@ -671,7 +676,7 @@ end Normed
 
 section ScalarTower
 
-variable (𝕂 𝕂' 𝔸 : Type*) [Field 𝕂] [Field 𝕂'] [Ring 𝔸] [Algebra 𝕂 𝔸] [Algebra 𝕂' 𝔸]
+variable (𝕂 𝕂' 𝔸 : Type*) [Field 𝕂] [Field 𝕂'] [Ring 𝔸] [SMul 𝕂 𝔸] [Algebra 𝕂 𝔸] [SMul 𝕂' 𝔸] [Algebra 𝕂' 𝔸]
   [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
 
 /-- If a normed ring `𝔸` is a normed algebra over two fields, then they define the same

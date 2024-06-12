@@ -28,7 +28,7 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
+variable [SMul R S] [Algebra R S] {P : Type*} [CommRing P]
 
 open BigOperators Polynomial
 
@@ -109,7 +109,7 @@ theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'
     (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, mul_zero])
 #align is_localization.integer_normalization_eval₂_eq_zero IsLocalization.integerNormalization_eval₂_eq_zero
 
-theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
+theorem integerNormalization_aeval_eq_zero [SMul R R'] [Algebra R R'] [SMul S R'] [Algebra S R'] [IsScalarTower R S R']
     (p : S[X]) {x : R'} (hx : aeval x p = 0) : aeval x (integerNormalization M p) = 0 := by
   rw [aeval_def, IsScalarTower.algebraMap_eq R S R',
     integerNormalization_eval₂_eq_zero _ (algebraMap _ _) _ hx]
@@ -123,7 +123,7 @@ namespace IsFractionRing
 
 open IsLocalization
 
-variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFractionRing A K]
+variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [SMul A K] [Algebra A K] [IsFractionRing A K]
 variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
@@ -146,7 +146,7 @@ variable (A K C)
 /-- An element of a ring is algebraic over the ring `A` iff it is algebraic
 over the field of fractions of `A`.
 -/
-theorem isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] {x : C} :
+theorem isAlgebraic_iff [SMul A C] [Algebra A C] [SMul K C] [Algebra K C] [IsScalarTower A K C] {x : C} :
     IsAlgebraic A x ↔ IsAlgebraic K x := by
   constructor <;> rintro ⟨p, hp, px⟩
   · refine' ⟨p.map (algebraMap A K), fun h => hp (Polynomial.ext fun i => _), _⟩
@@ -163,7 +163,7 @@ variable {A K C}
 
 /-- A ring is algebraic over the ring `A` iff it is algebraic over the field of fractions of `A`.
 -/
-theorem comap_isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] :
+theorem comap_isAlgebraic_iff [SMul A C] [Algebra A C] [SMul K C] [Algebra K C] [IsScalarTower A K C] :
     Algebra.IsAlgebraic A C ↔ Algebra.IsAlgebraic K C :=
   ⟨fun h => ⟨fun x => (isAlgebraic_iff A K C).mp (h.isAlgebraic x)⟩,
    fun h => ⟨fun x => (isAlgebraic_iff A K C).mpr (h.isAlgebraic x)⟩⟩
@@ -176,16 +176,16 @@ open IsLocalization
 section IsIntegral
 
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
-variable [Algebra R Rₘ] [IsLocalization M Rₘ]
-variable [Algebra S Sₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
+variable [SMul R Rₘ] [Algebra R Rₘ] [IsLocalization M Rₘ]
+variable [SMul S Sₘ] [Algebra S Sₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 variable {M}
 
 open Polynomial
 
 theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
-    (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ]
-    [IsLocalization M Rₘ] [Algebra S Sₘ] [IsLocalization (M.map f : Submonoid S) Sₘ] :
+    (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ] [SMul R Rₘ] [Algebra R Rₘ]
+    [IsLocalization M Rₘ] [SMul S Sₘ] [Algebra S Sₘ] [IsLocalization (M.map f : Submonoid S) Sₘ] :
     (map Sₘ f M.le_comap_map : Rₘ →+* _).IsIntegralElem (algebraMap S Sₘ x) := by
   by_cases triv : (1 : Rₘ) = 0
   · exact ⟨0, ⟨_root_.trans leadingCoeff_zero triv.symm, eval₂_zero _ _⟩⟩
@@ -228,8 +228,8 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
   obtain ⟨⟨s, ⟨u, hu⟩⟩, hx⟩ := surj (Algebra.algebraMapSubmonoid S M) x
   obtain ⟨v, hv⟩ := hu
   obtain ⟨v', hv'⟩ := isUnit_iff_exists_inv'.1 (map_units Rₘ ⟨v, hv.1⟩)
-  refine @IsIntegral.of_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' ?_ ?_
-  · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) hv'
+  refine @IsIntegral.of_mul_unit Rₘ _ _ _ (localizationSMul M S) (localizationAlgebra M S) x (algebraMap S Sₘ u) v' ?_ ?_
+  · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationSMul M S) (localizationAlgebra M S)) hv'
     rw [RingHom.map_mul, RingHom.map_one, ← RingHom.comp_apply _ (algebraMap R Rₘ)] at hv'
     -- Porting note: added argument
     erw [IsLocalization.map_comp
@@ -247,6 +247,7 @@ theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R 
           (M.le_comap_map : _ ≤ Submonoid.comap (f : R →* S) _) :
         Localization M →+* _).IsIntegral :=
   -- Porting note: added
+  let _ := f.toSMul
   let _ := f.toAlgebra
   have : Algebra.IsIntegral R S := ⟨hf⟩
   have : IsLocalization (Algebra.algebraMapSubmonoid S M)
@@ -279,7 +280,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
     exact zero_mem (algebraMap R Rₘ).range
 #align is_localization.scale_roots_common_denom_mem_lifts IsLocalization.scaleRoots_commonDenom_mem_lifts
 
-theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
+theorem IsIntegral.exists_multiple_integral_of_isLocalization [SMul Rₘ S] [Algebra Rₘ S] [IsScalarTower R Rₘ S]
     (x : S) (hx : IsIntegral Rₘ x) : ∃ m : M, IsIntegral R (m • x) := by
   cases' subsingleton_or_nontrivial Rₘ with _ nontriv
   · haveI := (_root_.algebraMap Rₘ S).codomain_trivial
@@ -305,9 +306,9 @@ variable {A K : Type*} [CommRing A] [IsDomain A]
 namespace IsIntegralClosure
 
 variable (A)
-variable {L : Type*} [Field K] [Field L] [Algebra A K] [Algebra A L] [IsFractionRing A K]
-variable (C : Type*) [CommRing C] [IsDomain C] [Algebra C L] [IsIntegralClosure C A L]
-variable [Algebra A C] [IsScalarTower A C L]
+variable {L : Type*} [Field K] [Field L] [SMul A K] [Algebra A K] [SMul A L] [Algebra A L] [IsFractionRing A K]
+variable (C : Type*) [CommRing C] [IsDomain C] [SMul C L] [Algebra C L] [IsIntegralClosure C A L]
+variable [SMul A C] [Algebra A C] [IsScalarTower A C L]
 
 open Algebra
 
@@ -335,7 +336,7 @@ variable (K L)
 
 /-- If the field `L` is a finite extension of the fraction field of the integral domain `A`,
 the integral closure `C` of `A` in `L` has fraction field `L`. -/
-theorem isFractionRing_of_finite_extension [Algebra K L] [IsScalarTower A K L]
+theorem isFractionRing_of_finite_extension [SMul K L] [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing C L :=
   have : Algebra.IsAlgebraic A L := IsFractionRing.comap_isAlgebraic_iff.mpr
     (inferInstanceAs (Algebra.IsAlgebraic K L))
@@ -350,13 +351,13 @@ end IsIntegralClosure
 
 namespace integralClosure
 
-variable {L : Type*} [Field K] [Field L] [Algebra A K] [IsFractionRing A K]
+variable {L : Type*} [Field K] [Field L] [SMul A K] [Algebra A K] [IsFractionRing A K]
 
 open Algebra
 
 /-- If the field `L` is an algebraic extension of the integral domain `A`,
 the integral closure of `A` in `L` has fraction field `L`. -/
-theorem isFractionRing_of_algebraic [Algebra A L] [Algebra.IsAlgebraic A L]
+theorem isFractionRing_of_algebraic [SMul A L] [Algebra A L] [Algebra.IsAlgebraic A L]
     (inj : ∀ x, algebraMap A L x = 0 → x = 0) : IsFractionRing (integralClosure A L) L :=
   IsIntegralClosure.isFractionRing_of_algebraic A (integralClosure A L) inj
 #align integral_closure.is_fraction_ring_of_algebraic integralClosure.isFractionRing_of_algebraic
@@ -365,7 +366,7 @@ variable (K L)
 
 /-- If the field `L` is a finite extension of the fraction field of the integral domain `A`,
 the integral closure of `A` in `L` has fraction field `L`. -/
-theorem isFractionRing_of_finite_extension [Algebra A L] [Algebra K L] [IsScalarTower A K L]
+theorem isFractionRing_of_finite_extension [SMul A L] [Algebra A L] [SMul K L] [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing (integralClosure A L) L :=
   IsIntegralClosure.isFractionRing_of_finite_extension A K L (integralClosure A L)
 #align integral_closure.is_fraction_ring_of_finite_extension integralClosure.isFractionRing_of_finite_extension
@@ -377,16 +378,17 @@ namespace IsFractionRing
 variable (R S K)
 
 /-- `S` is algebraic over `R` iff a fraction ring of `S` is algebraic over `R` -/
-theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Algebra S K]
+theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [SMul R K] [Algebra R K] [SMul S K] [Algebra S K]
     [NoZeroSMulDivisors R K] [IsFractionRing S K] [IsScalarTower R S K] :
     Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R K := by
   simp only [Algebra.isAlgebraic_def]
   constructor
   · intro h x
+    letI := FractionRing.liftSMul R K
     letI := FractionRing.liftAlgebra R K
     have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]
-    obtain ⟨a : S, b, ha, rfl⟩ := @div_surjective S _ _ _ _ _ _ x
+    obtain ⟨a : S, b, ha, rfl⟩ := @div_surjective S _ _ _ _ _ _ _ x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
     refine IsIntegral.mul ?_ ?_
@@ -427,8 +429,8 @@ variable {S K}
 /-- If the `S`-multiples of `a` are contained in some `R`-span, then `Frac(S)`-multiples of `a`
 are contained in the equivalent `Frac(R)`-span. -/
 theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [Field K] [Field L]
-    [Algebra R K] [Algebra R L] [Algebra S L] [IsIntegralClosure S R L] [IsFractionRing S L]
-    [Algebra K L] [IsScalarTower R S L] [IsScalarTower R K L] {a : S} {b : Set S}
+    [SMul R K] [Algebra R K] [SMul R L] [Algebra R L] [SMul S L] [Algebra S L] [IsIntegralClosure S R L] [IsFractionRing S L]
+    [SMul K L] [Algebra K L] [IsScalarTower R S L] [IsScalarTower R K L] {a : S} {b : Set S}
     [Algebra.IsAlgebraic R L] (inj : Function.Injective (algebraMap R L))
     (h : (Ideal.span ({a} : Set S) : Set S) ⊆ Submodule.span R b) :
     (Ideal.span ({algebraMap S L a} : Set L) : Set L) ⊆ Submodule.span K (algebraMap S L '' b) := by
@@ -461,7 +463,7 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
 end IsFractionRing
 
 lemma isAlgebraic_of_isLocalization {R} [CommRing R] (M : Submonoid R) (S) [CommRing S]
-    [Nontrivial R] [Algebra R S] [IsLocalization M S] : Algebra.IsAlgebraic R S := by
+    [Nontrivial R] [SMul R S] [Algebra R S] [IsLocalization M S] : Algebra.IsAlgebraic R S := by
   constructor
   intro x
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
@@ -479,7 +481,7 @@ lemma isAlgebraic_of_isLocalization {R} [CommRing R] (M : Submonoid R) (S) [Comm
 
 open nonZeroDivisors in
 lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field K] [CommRing L]
-    [Algebra R S] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R S L]
+    [SMul R S] [Algebra R S] [SMul R K] [Algebra R K] [SMul R L] [Algebra R L] [SMul S L] [Algebra S L] [SMul K L] [Algebra K L] [IsScalarTower R S L]
     [IsScalarTower R K L] [IsFractionRing S L]
     [Algebra.IsIntegral R S] : Algebra.IsAlgebraic K L := by
   constructor

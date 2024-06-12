@@ -28,7 +28,7 @@ lemma starOrderedRing_of_sqrt {R : Type*} [PartialOrder R] [NonUnitalRing R] [St
 
 open scoped ComplexOrder in
 open RCLike in
-instance (priority := 100) instStarOrderedRingRCLike {𝕜 : Type*} [RCLike 𝕜] :
+instance (priority := 100) instStarOrderedRingRCLike {𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] :
     StarOrderedRing C(α, 𝕜) :=
   starOrderedRing_of_sqrt ((↑) ∘ Real.sqrt ∘ re) (by fun_prop) fun x hx ↦ by
     simp only [Function.comp_apply,star_def]

@@ -47,7 +47,7 @@ variable {ι R A σ : Type*}
 
 section GradedRing
 
-variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
+variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
 
 open DirectSum
@@ -163,7 +163,7 @@ end AddCancelMonoid
 
 section GradedAlgebra
 
-variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
+variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [SMul R A] [Algebra R A]
 variable (𝒜 : ι → Submodule R A)
 
 /-- A special case of `GradedRing` with `σ = Submodule R A`. This is useful both because it

@@ -78,7 +78,7 @@ variable {τ : Type*} {S : Type*}
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
 permutations of its variables by the `rename` operation -/
 def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
-  ∀ e : Perm σ, rename e φ = φ
+  ∀ e : Perm σ, rename (R := R) e φ = φ
 #align mv_polynomial.is_symmetric MvPolynomial.IsSymmetric
 
 variable (σ R)
@@ -138,14 +138,14 @@ theorem map (hφ : IsSymmetric φ) (f : R →+* S) : IsSymmetric (map f φ) := f
   rw [← map_rename, hφ]
 #align mv_polynomial.is_symmetric.map MvPolynomial.IsSymmetric.map
 
-protected theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).IsSymmetric := fun _ => by
+protected theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename (R := R) e φ).IsSymmetric := fun _ => by
   apply rename_injective _ e.symm.injective
   simp_rw [rename_rename, ← Equiv.coe_trans, Equiv.self_trans_symm, Equiv.coe_refl, rename_id]
   rw [hφ]
 
 @[simp]
 theorem _root_.MvPolynomial.isSymmetric_rename {e : σ ≃ τ} :
-    (MvPolynomial.rename e φ).IsSymmetric ↔ φ.IsSymmetric :=
+    (MvPolynomial.rename (R := R) e φ).IsSymmetric ↔ φ.IsSymmetric :=
   ⟨fun h => by simpa using (IsSymmetric.rename (R := R) h e.symm), (IsSymmetric.rename · e)⟩
 
 end CommSemiring
@@ -193,8 +193,8 @@ theorem esymm_eq_multiset_esymm : esymm σ R = (univ.val.map X).esymm := by
   exact funext fun n => (esymm_map_val X _ n).symm
 #align mv_polynomial.esymm_eq_multiset_esymm MvPolynomial.esymm_eq_multiset_esymm
 
-theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
-    aeval f (esymm σ R n) = (univ.val.map f).esymm n := by
+theorem aeval_esymm_eq_multiset_esymm [SMul R S] [Algebra R S] (f : σ → S) (n : ℕ) :
+    aeval (R := R) f (esymm σ R n) = (univ.val.map f).esymm n := by
   simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, esymm_map_val]
 #align mv_polynomial.aeval_esymm_eq_multiset_esymm MvPolynomial.aeval_esymm_eq_multiset_esymm
 
@@ -220,9 +220,9 @@ theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S 
   simp_rw [esymm, map_sum, map_prod, map_X]
 #align mv_polynomial.map_esymm MvPolynomial.map_esymm
 
-theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm τ R n :=
+theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename (R := R) e (esymm σ R n) = esymm τ R n :=
   calc
-    rename e (esymm σ R n) = ∑ x in powersetCard n univ, ∏ i in x, X (e i) := by
+    rename (R := R) e (esymm σ R n) = ∑ x in powersetCard n univ, ∏ i in x, X (e i) := by
       simp_rw [esymm, map_sum, map_prod, rename_X]
     _ = ∑ t in powersetCard n (univ.map e.toEmbedding), ∏ i in t, X i := by
       simp [powersetCard_map, -map_univ_equiv]
@@ -321,7 +321,7 @@ theorem psum_one : psum σ R 1 = ∑ i, X i := by
   simp only [psum, _root_.pow_one]
 
 @[simp]
-theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
+theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename (R := R) e (psum σ R n) = psum τ R n := by
   simp_rw [psum, map_sum, map_pow, rename_X, e.sum_comp (X · ^ n)]
 
 theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ _ n

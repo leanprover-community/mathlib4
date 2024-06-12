@@ -292,7 +292,7 @@ def obj' : ModuleCat S :=
 -/
 def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
   by-- The "by apply" part makes this require 75% fewer heartbeats to process (#16371).
-  apply @LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toAlgebra _ _ _ _ l
+  apply @LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toSMul ((algebraMap S _).comp f).toAlgebra _ _ _ _ l
 #align category_theory.Module.extend_scalars.map' ModuleCat.ExtendScalars.map'
 
 theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ :=

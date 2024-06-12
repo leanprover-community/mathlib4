@@ -70,14 +70,14 @@ instance DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing 
 #align ring.dimension_le_one.principal_ideal_ring Ring.DimensionLEOne.principal_ideal_ring
 
 theorem DimensionLEOne.isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
-    [Algebra R A] [Algebra R B] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A]
+    [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] [SMul B A] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A]
     [DimensionLEOne R] : DimensionLEOne B where
   maximalOfPrime := fun {p} ne_bot _ =>
     IsIntegralClosure.isMaximal_of_isMaximal_comap (R := R) A p
       (Ideal.IsPrime.isMaximal inferInstance (IsIntegralClosure.comap_ne_bot A ne_bot))
 #align ring.dimension_le_one.is_integral_closure Ring.DimensionLEOne.isIntegralClosure
 
-nonrec instance DimensionLEOne.integralClosure [Nontrivial R] [IsDomain A] [Algebra R A]
+nonrec instance DimensionLEOne.integralClosure [Nontrivial R] [IsDomain A] [SMul R A] [Algebra R A]
     [DimensionLEOne R] : DimensionLEOne (integralClosure R A) :=
   DimensionLEOne.isIntegralClosure R A (integralClosure R A)
 #align ring.dimension_le_one.integral_closure Ring.DimensionLEOne.integralClosure
@@ -110,7 +110,7 @@ class IsDedekindRing
 /-- An integral domain is a Dedekind domain if and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
-theorem isDedekindRing_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] :
+theorem isDedekindRing_iff (K : Type*) [CommRing K] [SMul A K] [Algebra A K] [IsFractionRing A K] :
     IsDedekindRing A ↔
       IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=
@@ -148,7 +148,7 @@ instance [IsDomain A] [IsDedekindRing A] : IsDedekindDomain A where
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
-theorem isDedekindDomain_iff (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K] :
+theorem isDedekindDomain_iff (K : Type*) [Field K] [SMul A K] [Algebra A K] [IsFractionRing A K] :
     IsDedekindDomain A ↔
       IsDomain A ∧ IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=

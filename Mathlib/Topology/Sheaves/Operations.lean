@@ -63,6 +63,9 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
     rw [IsLocalization.map_comp_map]
 #align Top.presheaf.submonoid_presheaf.localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.localizationPresheaf
 
+instance (U) : SMul ((forget CommRingCat).obj (F.obj U)) (G.localizationPresheaf.obj U) :=
+  show SMul _ (Localization (G.obj U)) from inferInstance
+
 -- Porting note: this instance can't be synthesized
 instance (U) : Algebra ((forget CommRingCat).obj (F.obj U)) (G.localizationPresheaf.obj U) :=
   show Algebra _ (Localization (G.obj U)) from inferInstance

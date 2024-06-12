@@ -31,7 +31,7 @@ This file exists mainly to avoid importing `RCLike` in the main normed space the
 
 open Metric
 
-variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [SMul ℝ 𝕜] [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
 
 theorem RCLike.norm_coe_norm {z : E} : ‖(‖z‖ : 𝕜)‖ = ‖z‖ := by simp
 #align is_R_or_C.norm_coe_norm RCLike.norm_coe_norm

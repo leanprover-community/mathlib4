@@ -327,7 +327,7 @@ theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots =
       rw [map_id]).symm
 #align polynomial.roots_map Polynomial.roots_map
 
-theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : p.Splits (algebraMap R K))
+theorem image_rootSet [SMul R K] [Algebra R K] [SMul R L] [Algebra R L] {p : R[X]} (h : p.Splits (algebraMap R K))
     (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by
   classical
     rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← f.coe_toRingHom,
@@ -335,7 +335,7 @@ theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : p.Splits (alge
       ← rootSet]
 #align polynomial.image_root_set Polynomial.image_rootSet
 
-theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}
+theorem adjoin_rootSet_eq_range [SMul R K] [Algebra R K] [SMul R L] [Algebra R L] {p : R[X]}
     (h : p.Splits (algebraMap R K)) (f : K →ₐ[R] L) :
     Algebra.adjoin R (p.rootSet L) = f.range ↔ Algebra.adjoin R (p.rootSet K) = ⊤ := by
   rw [← image_rootSet h f, Algebra.adjoin_image, ← Algebra.map_top]
@@ -369,7 +369,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.eq_X_sub_C_of_splits_of_single_root Polynomial.eq_X_sub_C_of_splits_of_single_root
 
 variable (R) in
-theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
+theorem mem_lift_of_splits_of_roots_mem_range [SMul R K] [Algebra R K] {f : K[X]}
     (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
     f ∈ Polynomial.lifts (algebraMap R K) := by
   rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
@@ -442,14 +442,14 @@ theorem splits_comp_of_splits (i : R →+* K) (j : K →+* L) {f : R[X]} (h : Sp
   (splits_map_iff i j).mp (splits_of_splits_id _ <| (splits_map_iff i <| .id K).mpr h)
 #align polynomial.splits_comp_of_splits Polynomial.splits_comp_of_splits
 
-variable [Algebra R K] [Algebra R L]
+variable [SMul R K] [Algebra R K] [SMul R L] [Algebra R L]
 
 theorem splits_of_algHom {f : R[X]} (h : Splits (algebraMap R K) f) (e : K →ₐ[R] L) :
     Splits (algebraMap R L) f := by
   rw [← e.comp_algebraMap_of_tower R]; exact splits_comp_of_splits _ _ h
 
 variable (L) in
-theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]
+theorem splits_of_isScalarTower {f : R[X]} [SMul K L] [Algebra K L] [IsScalarTower R K L]
     (h : Splits (algebraMap R K) f) : Splits (algebraMap R L) f :=
   splits_of_algHom h (IsScalarTower.toAlgHom R K L)
 
@@ -466,7 +466,7 @@ theorem splits_iff_card_roots {p : K[X]} :
     exact (C_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
 #align polynomial.splits_iff_card_roots Polynomial.splits_iff_card_roots
 
-theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]} (hmo : P.Monic)
+theorem aeval_root_derivative_of_splits [SMul K L] [Algebra K L] [DecidableEq L] {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ P.aroots L) :
     aeval r (Polynomial.derivative P) =
     (((P.aroots L).erase r).map fun a => r - a).prod := by

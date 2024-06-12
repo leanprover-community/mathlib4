@@ -29,7 +29,7 @@ variable (A) [Field A]
 
 section Ring
 
-variable [Ring B] [Algebra A B] (x : B)
+variable [Ring B] [SMul A B] [Algebra A B] (x : B)
 
 /-- If an element `x` is a root of a nonzero polynomial `p`, then the degree of `p` is at least the
 degree of the minimal polynomial of `x`. See also `minpoly.IsIntegrallyClosed.degree_le_of_ne_zero`
@@ -84,14 +84,15 @@ theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
   rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
 theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
-    [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
+    [SMul A K] [Algebra A K] [SMul A R] [Algebra A R] [SMul K R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine minpoly.dvd K x ?_
   rw [aeval_map_algebraMap, minpoly.aeval]
 #align minpoly.dvd_map_of_is_scalar_tower minpoly.dvd_map_of_isScalarTower
 
 theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
-    [CommRing S] [Field K] [CommRing L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
+    [CommRing S] [Field K] [CommRing L] [SMul R S] [Algebra R S]
+    [SMul R K] [Algebra R K] [SMul S L] [Algebra S L] [SMul K L] [Algebra K L] [SMul R L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
   apply minpoly.dvd K (algebraMap S L s)
@@ -101,8 +102,8 @@ theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRin
 
 /-- If `y` is a conjugate of `x` over a field `K`, then it is a conjugate over a subring `R`. -/
 theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K] [CommRing T]
-    [Algebra R K] [Algebra K T] [Algebra R T] [IsScalarTower R K T] [CommSemiring U] [Algebra K U]
-    [Algebra R U] [IsScalarTower R K U] (x : T) (y : U)
+    [SMul R K] [Algebra R K] [SMul K T] [Algebra K T] [SMul R T] [Algebra R T] [IsScalarTower R K T] [CommSemiring U] [SMul K U] [Algebra K U]
+    [SMul R U] [Algebra R U] [IsScalarTower R K U] (x : T) (y : U)
     (hy : Polynomial.aeval y (minpoly K x) = 0) : Polynomial.aeval y (minpoly R x) = 0 :=
   aeval_map_algebraMap K y (minpoly R x) ▸
     eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (algebraMap K U) y
@@ -138,7 +139,7 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel]
 #align minpoly.eq_of_irreducible minpoly.eq_of_irreducible
 
-theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+theorem add_algebraMap {B : Type*} [CommRing B] [SMul A B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   refine' (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) _ fun q qmo hq => _).symm
   · simp [aeval_comp]
@@ -152,7 +153,7 @@ theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIn
       natDegree_X_add_C, mul_one] at H
 #align minpoly.add_algebra_map minpoly.add_algebraMap
 
-theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+theorem sub_algebraMap {B : Type*} [CommRing B] [SMul A B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap hx (-a)
 #align minpoly.sub_algebra_map minpoly.sub_algebraMap
@@ -165,7 +166,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
   @Pi.fintype _ _ _ (Finite.fintype hX) _
 #align minpoly.fintype.subtype_prod minpoly.Fintype.subtypeProd
 
-variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
+variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [SMul F E] [Algebra F E] [SMul F K] [Algebra F K]
   [FiniteDimensional F E]
 
 -- Porting note (#11083): removed `noncomputable!` since it seems not to be slow in lean 4,
@@ -231,7 +232,7 @@ end Ring
 
 section IsDomain
 
-variable [Ring B] [IsDomain B] [Algebra A B]
+variable [Ring B] [IsDomain B] [SMul A B] [Algebra A B]
 variable {A} {x : B}
 
 /-- A minimal polynomial is prime. -/
@@ -278,7 +279,7 @@ end minpoly
 
 section AlgHom
 
-variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
+variable {K L} [Field K] [CommRing L] [IsDomain L] [SMul K L] [Algebra K L]
 
 /-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :

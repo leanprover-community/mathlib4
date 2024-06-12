@@ -310,12 +310,12 @@ end starₗᵢ
 namespace StarSubalgebra
 
 instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
-    [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
+    [SMul 𝕜 A] [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.subtype
 #align star_subalgebra.to_normed_algebra StarSubalgebra.toNormedAlgebra
 
 instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CstarRing A]
-    [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CstarRing S where
+    [SMul R A] [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CstarRing S where
   norm_star_mul_self {x} := @CstarRing.norm_star_mul_self A _ _ _ x
 #align star_subalgebra.to_cstar_ring StarSubalgebra.to_cstarRing
 

@@ -262,12 +262,12 @@ end Ring
 
 section Algebra
 
-variable {R : Type u} [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
+variable {R : Type u} [CommSemiring R] {S : Type v} [Semiring S] [SMul R S] [Algebra R S]
 
 /-- The map `R[X] → S[X]` as an algebra homomorphism. -/
-def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
+def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [SMul R S] [Algebra R S] :
     R[X] →ₐ[R] S[X] :=
-  @aeval _ S[X] _ _ _ (X : S[X])
+  @aeval _ S[X] _ _ _ _ (X : S[X])
 #align polynomial.map_alg Polynomial.mapAlg
 
 /-- `mapAlg` is the morphism induced by `R → S`. -/
@@ -277,8 +277,9 @@ theorem mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
 #align polynomial.map_alg_eq_map Polynomial.mapAlg_eq_map
 
 /-- A polynomial `p` lifts if and only if it is in the image of `mapAlg`. -/
-theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
-    (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _) := by
+theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S]
+    [SMul R S] [Algebra R S] (p : S[X]) :
+    p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _ _) := by
   simp only [coe_mapRingHom, lifts, mapAlg_eq_map, AlgHom.mem_range, RingHom.mem_rangeS]
 #align polynomial.mem_lifts_iff_mem_alg Polynomial.mem_lifts_iff_mem_alg
 

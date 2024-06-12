@@ -130,7 +130,7 @@ class _root_.RegularNormedAlgebra : Prop :=
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
 instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
-    [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] : RegularNormedAlgebra 𝕜 𝕜' where
+    [SeminormedRing 𝕜'] [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] : RegularNormedAlgebra 𝕜 𝕜' where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 𝕜') <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
       convert ratio_le_opNorm ((mul 𝕜 𝕜') x) (1 : 𝕜')
@@ -200,7 +200,7 @@ end MultiplicationLinear
 section SMulLinear
 
 variable (𝕜) (𝕜' : Type*) [NormedField 𝕜']
-variable [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
+variable [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : 𝕜' →L[𝕜] E →L[𝕜] E :=
@@ -278,7 +278,7 @@ end
 
 This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/
 @[simp]
-theorem opNorm_lsmul [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E]
+theorem opNorm_lsmul [NormedField 𝕜'] [SMul 𝕜 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E]
     [IsScalarTower 𝕜 𝕜' E] [Nontrivial E] : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ = 1 := by
   refine' ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => _) fun N _ h => _
   · rw [one_mul]

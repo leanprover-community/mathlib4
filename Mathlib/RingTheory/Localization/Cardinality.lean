@@ -31,7 +31,7 @@ universe u v
 
 namespace IsLocalization
 
-variable {R : Type u} [CommRing R] (S : Submonoid R) {L : Type u} [CommRing L] [Algebra R L]
+variable {R : Type u} [CommRing R] (S : Submonoid R) {L : Type u} [CommRing L] [SMul R L] [Algebra R L]
   [IsLocalization S L]
 
 /-- A localization always has cardinality less than or equal to the base ring. -/

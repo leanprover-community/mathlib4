@@ -244,7 +244,7 @@ theorem le_comap_sup : comap f K ⊔ comap f L ≤ comap f (K ⊔ L) :=
 #align ideal.le_comap_sup Ideal.le_comap_sup
 
 @[simp]
-theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [SMul R S] [Algebra R S]
     (I : Ideal R) : I • (⊤ : Submodule R S) = (I.map (algebraMap R S)).restrictScalars R := by
   refine'
     le_antisymm (Submodule.smul_le.mpr fun r hr y _ => _) fun x hx =>
@@ -268,7 +268,7 @@ theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra
 #align ideal.smul_top_eq_map Ideal.smul_top_eq_map
 
 @[simp]
-theorem coe_restrictScalars {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+theorem coe_restrictScalars {R S : Type*} [CommSemiring R] [Semiring S] [SMul R S] [Algebra R S]
     (I : Ideal S) : (I.restrictScalars R : Set S) = ↑I :=
   rfl
 #align ideal.coe_restrict_scalars Ideal.coe_restrictScalars
@@ -276,7 +276,7 @@ theorem coe_restrictScalars {R S : Type*} [CommSemiring R] [Semiring S] [Algebra
 /-- The smallest `S`-submodule that contains all `x ∈ I * y ∈ J`
 is also the smallest `R`-submodule that does so. -/
 @[simp]
-theorem restrictScalars_mul {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+theorem restrictScalars_mul {R S : Type*} [CommSemiring R] [CommSemiring S] [SMul R S] [Algebra R S]
     (I J : Ideal S) : (I * J).restrictScalars R = I.restrictScalars R * J.restrictScalars R :=
   le_antisymm
     (fun _ hx =>
@@ -902,7 +902,7 @@ end RingHom
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
+    [SMul R A] [Algebra R A] [SMul R B] [Algebra R B] (f : A →ₐ[R] B)
 
 lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
 

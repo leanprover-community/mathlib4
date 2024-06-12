@@ -31,8 +31,8 @@ namespace Ideal
 -- Porting note: universes need to be explicit to avoid bad universe levels in `quotCotangent`
 universe u v w
 
-variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
-variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
+variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [SMul S R] [Algebra S R]
+variable [CommSemiring S'] [SMul S' R] [Algebra S' R] [SMul S S'] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
 -- Porting note: instances that were derived automatically need to be proved by hand (see below)
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
@@ -171,7 +171,7 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
   rfl
 #align ideal.cotangent_equiv_ideal_symm_apply Ideal.cotangentEquivIdeal_symm_apply
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {A B : Type*} [CommRing A] [CommRing B] [SMul R A] [Algebra R A] [SMul R B] [Algebra R B]
 
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
 def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by

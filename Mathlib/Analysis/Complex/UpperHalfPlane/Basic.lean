@@ -299,7 +299,7 @@ instance : MulAction GL(2, ℝ)⁺ ℍ where
 
 section ModularScalarTowers
 
-instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+instance SLAction {R : Type*} [CommRing R] [SMul R ℝ] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.toGLPos.comp <| map (algebraMap R ℝ)
 #align upper_half_plane.SL_action UpperHalfPlane.SLAction
 
@@ -376,7 +376,7 @@ end ModularScalarTowers
 
 -- Porting note: in the statement, we used to have coercions `↑· : ℝ`
 -- rather than `algebraMap R ℝ ·`.
-theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
+theorem specialLinearGroup_apply {R : Type*} [CommRing R] [SMul R ℝ] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     g • z =
       mk
         (((algebraMap R ℝ (↑ₘ[R] g 0 0) : ℂ) * z + (algebraMap R ℝ (↑ₘ[R] g 0 1) : ℂ)) /
