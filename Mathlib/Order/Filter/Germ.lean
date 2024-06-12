@@ -614,11 +614,8 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
   __ := instDistrib
   __ := instMulZeroClass
 
-instance instNonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring (Germ l R) where
-  zero_mul := zero_mul
-  mul_zero := mul_zero
-  left_distrib := left_distrib
-  right_distrib := right_distrib
+instance instNonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring (Germ l R) :=
+  { mul_assoc := mul_assoc }
 
 instance instNonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring (Germ l R) where
   __ := instNonUnitalNonAssocSemiring
@@ -630,11 +627,8 @@ instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] :
   __ := instAddCommGroup
   __ := instNonUnitalNonAssocSemiring
 
-instance instNonUnitalRing [NonUnitalRing R] : NonUnitalRing (Germ l R) where
-  zero_mul := zero_mul
-  mul_zero := mul_zero
-  left_distrib := left_distrib
-  right_distrib := right_distrib
+instance instNonUnitalRing [NonUnitalRing R] : NonUnitalRing (Germ l R) :=
+  { mul_assoc := mul_assoc }
 
 instance instNonAssocRing [NonAssocRing R] : NonAssocRing (Germ l R) where
   __ := instNonUnitalNonAssocRing

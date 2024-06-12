@@ -279,7 +279,7 @@ instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCom
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
-instance instAddMonoid (r : R → R → Prop) : AddMonoid (RingQuot r) where
+instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
   add := (· + ·)
   zero := 0
   add_assoc := by
@@ -291,6 +291,9 @@ instance instAddMonoid (r : R → R → Prop) : AddMonoid (RingQuot r) where
   add_zero := by
     rintro ⟨⟨⟩⟩
     simp only [add_quot, ← zero_quot, add_zero]
+  add_comm := by
+    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+    simp only [add_quot, add_comm]
   nsmul := (· • ·)
   nsmul_zero := by
     rintro ⟨⟨⟩⟩
@@ -300,13 +303,7 @@ instance instAddMonoid (r : R → R → Prop) : AddMonoid (RingQuot r) where
     simp only [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
                add_comm, add_quot]
 
-instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
-  toAddMonoid := instAddMonoid r
-  add_comm := by
-    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp only [add_quot, add_comm]
-
-instance instMonoid (r : R → R → Prop) : Monoid (RingQuot r) where
+instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r) where
   mul_assoc := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, mul_assoc]
@@ -316,6 +313,12 @@ instance instMonoid (r : R → R → Prop) : Monoid (RingQuot r) where
   mul_one := by
     rintro ⟨⟨⟩⟩
     simp only [mul_quot, ← one_quot, mul_one]
+  zero_mul := by
+    rintro ⟨⟨⟩⟩
+    simp only [mul_quot, ← zero_quot, zero_mul]
+  mul_zero := by
+    rintro ⟨⟨⟩⟩
+    simp only [mul_quot, ← zero_quot, mul_zero]
   npow n x := x ^ n
   npow_zero := by
     rintro ⟨⟨⟩⟩
@@ -324,18 +327,7 @@ instance instMonoid (r : R → R → Prop) : Monoid (RingQuot r) where
     rintro n ⟨⟨⟩⟩
     simp only [pow_quot, mul_quot, pow_succ]
 
-instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r) where
-  toMonoid := instMonoid r
-  zero_mul := by
-    rintro ⟨⟨⟩⟩
-    simp only [mul_quot, ← zero_quot, zero_mul]
-  mul_zero := by
-    rintro ⟨⟨⟩⟩
-    simp only [mul_quot, ← zero_quot, mul_zero]
-
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
-  toAddCommMonoid := instAddCommMonoid r
-  toMonoid := instMonoid r
   natCast := natCast r
   natCast_zero := by simp [Nat.cast, natCast, ← zero_quot]
   natCast_succ := by simp [Nat.cast, natCast, ← one_quot, add_quot]
@@ -345,41 +337,47 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   right_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, add_quot, right_distrib]
-  zero_mul := zero_mul
-  mul_zero := mul_zero
+  nsmul := (· • ·)
+  nsmul_zero := by
+    rintro ⟨⟨⟩⟩
+    simp only [smul_quot, zero_smul, zero_quot]
+  nsmul_succ := by
+    rintro n ⟨⟨⟩⟩
+    simp only [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
+               add_comm, add_quot]
+  __ := instAddCommMonoid r
+  __ := instMonoidWithZero r
 
 -- can't be irreducible, causes diamonds in ℤ-algebras
 private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) where
-  toAddMonoid := instAddMonoid r
-  toMonoid := instMonoid r
-  neg := Neg.neg
-  add_left_neg := by
-    rintro ⟨⟨⟩⟩
-    simp [neg_quot, add_quot, ← zero_quot]
-  sub := Sub.sub
-  sub_eq_add_neg := by
-    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]
-  zsmul := (· • ·)
-  zsmul_zero' := by
-    rintro ⟨⟨⟩⟩
-    simp [smul_quot, ← zero_quot]
-  zsmul_succ' := by
-    rintro n ⟨⟨⟩⟩
-    simp [smul_quot, add_quot, add_mul, add_comm]
-  zsmul_neg' := by
-    rintro n ⟨⟨⟩⟩
-    simp [smul_quot, neg_quot, add_mul]
-  intCast := intCast r
-  intCast_ofNat := fun n => congrArg RingQuot.mk <| by
-    exact congrArg (Quot.mk _) (Int.cast_natCast _)
-  intCast_negSucc := fun n => congrArg RingQuot.mk <| by
-    simp_rw [neg_def]
-    exact congrArg (Quot.mk _) (Int.cast_negSucc n)
-  __ := RingQuot.instSemiring r
+instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
+  { RingQuot.instSemiring r with
+    neg := Neg.neg
+    add_left_neg := by
+      rintro ⟨⟨⟩⟩
+      simp [neg_quot, add_quot, ← zero_quot]
+    sub := Sub.sub
+    sub_eq_add_neg := by
+      rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+      simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]
+    zsmul := (· • ·)
+    zsmul_zero' := by
+      rintro ⟨⟨⟩⟩
+      simp [smul_quot, ← zero_quot]
+    zsmul_succ' := by
+      rintro n ⟨⟨⟩⟩
+      simp [smul_quot, add_quot, add_mul, add_comm]
+    zsmul_neg' := by
+      rintro n ⟨⟨⟩⟩
+      simp [smul_quot, neg_quot, add_mul]
+    intCast := intCast r
+    intCast_ofNat := fun n => congrArg RingQuot.mk <| by
+      exact congrArg (Quot.mk _) (Int.cast_natCast _)
+    intCast_negSucc := fun n => congrArg RingQuot.mk <| by
+      simp_rw [neg_def]
+      exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
   CommSemiring (RingQuot r) :=

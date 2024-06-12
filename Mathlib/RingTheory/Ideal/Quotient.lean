@@ -217,9 +217,7 @@ protected noncomputable abbrev groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
-    inv_zero := dif_pos rfl,
-    zero_mul := zero_mul,
-    mul_zero := mul_zero }
+    inv_zero := dif_pos rfl }
 #align ideal.quotient.group_with_zero Ideal.Quotient.groupWithZero
 
 /-- The quotient by a maximal ideal is a field. This is a `def` rather than `instance`, since users

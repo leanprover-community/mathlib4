@@ -41,7 +41,8 @@ class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddC
 
 -- use `CanonicallyOrderedCommSemiring.toOrderedCommSemiring`
 attribute [instance 0] CanonicallyOrderedCommSemiring.toCommSemiring
-attribute [instance 0] CanonicallyOrderedCommSemiring.toMonoid
+attribute [instance 0] CanonicallyOrderedCommSemiring.toMul
+attribute [instance 0] CanonicallyOrderedCommSemiring.toOne
 attribute [instance 0] CanonicallyOrderedCommSemiring.toNatCast
 
 section CanonicallyOrderedCommSemiring

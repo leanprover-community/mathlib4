@@ -89,9 +89,7 @@ namespace NonUnitalSemiring
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ h
-  injection h
-  congr; ext; simp only [*]
+  rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -154,7 +152,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     inst₁ = inst₂ := by
   have h : inst₁.toNonUnitalNonAssocSemiring = inst₂.toNonUnitalNonAssocSemiring := by
     ext : 1 <;> assumption
-  have h_zero : inst₁.toZero.zero = inst₂.toZero.zero :=
+  have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
                 = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
@@ -168,7 +166,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     congrArg (·.toNatCast) this
   -- Split into `NonUnitalNonAssocSemiring`, `One` and `natCast` instances.
   cases inst₁; cases inst₂
-  congr <;> (ext1; assumption)
+  congr
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
@@ -219,9 +217,11 @@ namespace NonUnitalRing
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
+  have : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
+    ext : 1 <;> assumption
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> (ext1; assumption)
+  congr
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
@@ -284,6 +284,8 @@ namespace NonAssocRing
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
+  have h₁ : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
+    ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext : 1 <;> assumption
   -- Mathematically non-trivial fact: `intCast` is determined by the rest.
@@ -291,7 +293,7 @@ namespace NonAssocRing
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   injection h₃ with h₃
   cases inst₁; cases inst₂
-  congr <;> solve | ext1; assumption | injection h₃
+  congr <;> solve| injection h₂ | injection h₃
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -325,9 +327,11 @@ namespace Semiring
   -- Show that enough substructures are equal.
   have h₁ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext : 1 <;> assumption
+  have h₂ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
+    ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | ext1; assumption | injection h₁
+  congr; injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
@@ -359,6 +363,8 @@ namespace Ring
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
+  have h₁ : inst₁.toSemiring = inst₂.toSemiring := by
+    ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocRing = inst₂.toNonAssocRing := by
     ext : 1 <;> assumption
   /- We prove that the `SubNegMonoid`s are equal because they are one
@@ -368,7 +374,7 @@ namespace Ring
     congrArg (@AddGroup.toSubNegMonoid R) <| by ext : 1; exact h_add
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | ext1; assumption | injection h₂
+  congr <;> solve | injection h₂ | injection h₃
 
 theorem toNonUnitalRing_injective :
     Function.Injective (@toNonUnitalRing R) := by
