@@ -753,8 +753,8 @@ theorem coe_sSup {s : Set ℝ≥0} : BddAbove s → (↑(sSup s) : ℝ≥0∞) =
   WithTop.coe_sSup
 #align ennreal.coe_Sup ENNReal.coe_sSup
 
-theorem coe_sInf {s : Set ℝ≥0} : s.Nonempty → (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
-  WithTop.coe_sInf
+theorem coe_sInf {s : Set ℝ≥0} (hs : s.Nonempty) : (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
+  WithTop.coe_sInf hs (OrderBot.bddBelow s)
 #align ennreal.coe_Inf ENNReal.coe_sInf
 
 theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
@@ -764,7 +764,7 @@ theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
 
 @[norm_cast]
 theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
-  WithTop.coe_iInf f
+  WithTop.coe_iInf (OrderBot.bddBelow _)
 #align ennreal.coe_infi ENNReal.coe_iInf
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
