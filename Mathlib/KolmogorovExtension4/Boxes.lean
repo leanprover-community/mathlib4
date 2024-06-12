@@ -19,6 +19,9 @@ variable [∀ i, MeasurableSpace (α i)]
 theorem measurable_proj (I : Set ι) : Measurable fun (f : (i : ι) → α i) (i : I) ↦ f i := by
   rw [measurable_pi_iff]; exact fun i ↦ measurable_pi_apply _
 
+theorem measurable_proj' (I : Finset ι) : Measurable fun (f : (i : ι) → α i) (i : I) ↦ f i := by
+  rw [measurable_pi_iff]; exact fun i ↦ measurable_pi_apply _
+
 theorem measurable_proj₂ (I J : Set ι) (hIJ : J ⊆ I) :
     Measurable fun (f : (i : I) → α i) (i : J) ↦ f ⟨i, hIJ i.prop⟩ := by
   rw [measurable_pi_iff]; exact fun i ↦ measurable_pi_apply _
@@ -447,6 +450,11 @@ theorem cylinders.measurableSet {t : Set ((i : ι) → α i)} (ht : t ∈ cylind
 theorem cylinders.eq_cylinder {t : Set ((i : ι) → α i)} (ht : t ∈ cylinders α) :
     t = cylinder (cylinders.finset ht) (cylinders.set ht) :=
   ((mem_cylinders t).mp ht).choose_spec.choose_spec.choose_spec
+
+theorem cylinders_measurableSet {t : Set ((i : ι) → α i)} (ht : t ∈ cylinders α) :
+    MeasurableSet t := by
+  rw [cylinders.eq_cylinder ht, cylinder]
+  exact measurable_proj' _ (cylinders.measurableSet ht)
 
 theorem cylinder_mem_cylinders (s : Finset ι) (S : Set (∀ i : s, α i)) (hS : MeasurableSet S) :
     cylinder s S ∈ cylinders α := by rw [mem_cylinders]; exact ⟨s, S, hS, rfl⟩

@@ -671,7 +671,7 @@ theorem integral_dependsOn [DecidableEq ι] {E : Type*} [NormedAddCommGroup E] [
     exact fun h ↦ (h hi).elim
   rw [← integral_congr_ae <| eventually_of_forall this]
   rw [integral_dep]
-  · sorry
+  · exact mf.comp_measurable measurable_updateFinset
 
 theorem lintegral_dep {s : Finset ι} {f : ((i : s) → X i) → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ y, f ((fun x (i : s) ↦ x i) y) ∂measure_produit μ =
