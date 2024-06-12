@@ -499,9 +499,8 @@ instance instIntCast [IntCast M] : IntCast (Germ l M) where intCast n := (n : α
 @[simp]
 theorem intCast_def [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
 
--- 2024-04-05
-@[deprecated] alias coe_nat := natCast_def
-@[deprecated] alias coe_int := intCast_def
+@[deprecated (since := "2024-04-05")] alias coe_nat := natCast_def
+@[deprecated (since := "2024-04-05")] alias coe_int := intCast_def
 
 instance instAddMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) where
   natCast_zero := congrArg ofFun <| by simp; rfl
