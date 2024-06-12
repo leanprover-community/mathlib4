@@ -71,7 +71,6 @@ theorem forget₂_map_associator_inv (X Y Z : AlgebraCat.{u} R) :
         (forget₂ _ (ModuleCat R) |>.obj Z)).inv := by
   rfl
 
-set_option maxHeartbeats 800000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
