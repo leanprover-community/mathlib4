@@ -146,7 +146,7 @@ theorem toLinear_apply (v : n → R) : (toLinear A).toLinearEquiv v = Matrix.mul
 
 end CoeLemmas
 
-variable {S T : Type v} [CommRing R] [CommRing S] [CommRing T]
+variable {S T : Type v} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
 def map (n : ℕ) (f : R →+* S) : GL (Fin n) R →* GL (Fin n) S
