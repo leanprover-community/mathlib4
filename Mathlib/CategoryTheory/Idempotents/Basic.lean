@@ -84,8 +84,8 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     refine ⟨?_⟩
     intro X p hp
     haveI : HasEqualizer (𝟙 X) p := h X p hp
-    refine' ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
-      equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), _, equalizer.lift_ι _ _⟩
+    refine ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
+      equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), ?_, equalizer.lift_ι _ _⟩
     ext
     simp only [assoc, limit.lift_π, Eq.ndrec, id_eq, eq_mpr_eq_cast, Fork.ofι_pt,
       Fork.ofι_π_app, id_comp]

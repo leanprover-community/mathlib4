@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Nat.EvenOddRec
-import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Polynomial.Basic
@@ -22,7 +21,8 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Elliptic divisibility sequences
 
-This file defines the type of an elliptic divisibility sequence (EDS) and a few examples.
+This file defines elliptic divisibility sequences (EDS)
+and constructs normalised EDSs from initial terms.
 
 ## Mathematical background
 
@@ -127,8 +127,8 @@ def Rel₃ (m n r : ℤ) : Prop :=
 def _root_.IsEllSequence : Prop :=
   ∀ m n r : ℤ, Rel₃ W m n r
 
-/-- The numerator of an invariant of an elliptic sequence,
-such that `invarNum n / invarDenom n` is a constant independent of `n`. -/
+/-- The numerator of an invariant of an elliptic sequence, such that for each `s`,
+`invarNum s n / invarDenom s n` is a constant independent of `n`. -/
 def invarNum (s n : ℤ) : R :=
   (W (n + 2 * s) * W (n - s) ^ 2 + W (n + s) ^ 2 * W (n - 2 * s)) * W s ^ 2
     + W n ^ 3 * W (2 * s) ^ 2
@@ -136,10 +136,10 @@ def invarNum (s n : ℤ) : R :=
 /-- The denominator of an invariant of an elliptic sequence. -/
 def invarDenom (s n : ℤ) : R := W (n + s) * W n * W (n - s)
 
-theorem invar_of_net (net_eq_zero : ∀ p q r s, EllSequence.net W p q r s = 0)
-    (s m n : ℤ) : invarNum W s m * invarDenom W s n = invarNum W s n * invarDenom W s m := by
+theorem invar_of_net (net_eq_zero : ∀ p q r s, net W p q r s = 0) (s m n : ℤ) :
+    invarNum W s m * invarDenom W s n = invarNum W s n * invarDenom W s m := by
   simp_rw [invarNum, invarDenom]
-  linear_combination (norm := (simp_rw [EllSequence.net]; ring_nf))
+  linear_combination (norm := (simp_rw [net]; ring_nf))
     net_eq_zero m n s 0 * W m * W n * W (2 * s) ^ 2
       - (net_eq_zero m n s s * W (m - s) * W (n - s)
         + net_eq_zero (m - s) (n - s) s s * W (m + s) * W (n + s)
@@ -201,9 +201,8 @@ def avg₄ : ℤ := (a + b + c + d) / 2
 namespace HaveSameParity₄
 open Int Equiv
 
-variable {a b c d} (same : HaveSameParity₄ a b c d)
+variable {W a b c d} (same : HaveSameParity₄ a b c d)
 
-variable {W} in
 lemma rel₄_eq_net : rel₄ W a b c d = net W ((a - d) / 2) ((b - d) / 2) ((c - d) / 2) d := by
   have h := @Int.two_mul_ediv_two_of_even
   rw [net_eq_rel₄, h, h, h]; · simp_rw [sub_add_cancel]
@@ -224,7 +223,7 @@ protected lemma abs : HaveSameParity₄ |a| |b| |c| |d| := by
 lemma perm (σ : Perm (Fin 4)) :
     ∀ t : Fin 4 → ℤ, HaveSameParity₄ (t 0) (t 1) (t 2) (t 3) →
       HaveSameParity₄ (t (σ 0)) (t (σ 1)) (t (σ 2)) (t (σ 3)) := by
-  have := (Perm.mclosure_isSwap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
+  have := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
   refine Submonoid.closure_induction this ?_ (fun _ ↦ id) fun σ τ hσ hτ t same ↦ ?_
   on_goal 2 => simp_rw [Perm.mul_apply]; exact hτ (t ∘ σ) (hσ _ same)
   rintro _ ⟨i, rfl⟩ t ⟨h₀₁, h₁₂, h₂₃⟩; fin_cases i
@@ -233,11 +232,12 @@ lemma perm (σ : Perm (Fin 4)) :
 lemma six_le_of_strictAnti₄ (anti : StrictAnti₄ a b c d) : 6 ≤ a := by
   simp_rw [HaveSameParity₄, negOnePow_eq_iff] at same
   obtain ⟨hd, hdc, hcb, hba⟩ := anti
-  rw [lt_iff_add_two_le_of_even_sub] at hdc hcb hba
+  rw [← add_two_le_iff_lt_of_even_sub] at hdc hcb hba
   · linarith
   exacts [same.1, same.2.1, same.2.2]
 
-/-- A hybrid product formed by one factor of a `addMulSub` and one from another `addMulSub`. -/
+variable (W) in
+/-- A hybrid product formed by one factor from an `addMulSub` and one from another `addMulSub`. -/
 def addMulSub₄ (a b c d : ℤ) : R := W ((a + b).div 2) * W ((c - d).div 2)
 
 lemma addMulSub₄_mul_addMulSub₄ :
@@ -257,7 +257,7 @@ lemma addMulSub_transf :
 theorem rel₄_transf :
     rel₄ W (avg₄ a b c d - d) (avg₄ a b c d - c) (avg₄ a b c d - b) |avg₄ a b c d - a| =
       rel₄ W a b c d := by
-  obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆⟩ := same.addMulSub_transf W
+  obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆⟩ := same.addMulSub_transf (W := W)
   simp_rw [rel₄, h₁, h₂, h₃, h₄, h₅, h₆, addMulSub₄_mul_addMulSub₄, mul_comm]
 
 theorem transf : HaveSameParity₄
@@ -284,20 +284,29 @@ lemma rel₃_iff₄ (m n r : ℤ) :
   simp_rw [addMulSub_even, add_zero, sub_zero]
   convert sub_eq_zero.symm using 2; ring
 
-/-- Express a `rel₄` with the last index fixed (call it `c`) in terms of
-three `rel₄`s with the last two indices fixed, with the second to last index equal to `c`. -/
+/-! In the following three key lemmas we use `m`, `n`, `r`, `s` to denote "free" indices and
+`c`, `d` to denote "fixed" indices. -/
+
+/-- A `rel₄` with a fixed index and three free indices can be expressed in terms of
+three `rel₄`s with two fixed indices and two free indices that share one fixed index
+(the larger one) and two free indices with the first `rel₄`.
+The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
 lemma rel₆_eq₃ (c d m n r : ℤ) :
     rel₆ W c d m n r c = rel₆ W m c n r c d - rel₆ W n c m r c d + rel₆ W r c m n c d := by
   simp_rw [rel₆, rel₄]; ring
 
-/-- Express a `rel₄` with the last index fixed (call it `d`) in terms of
-three `rel₄`s with the last two indices fixed, with the last index equal to `d`. -/
+/-- A `rel₄` with a fixed index and three free indices can be expressed in terms of
+three `rel₄`s with two fixed indices and two free indices that share one fixed index
+(the smaller one) and two free indices with the first `rel₄`.
+The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
 lemma rel₆_eq₃' (c d m n r : ℤ) :
     rel₆ W c d m n r d = rel₆ W m d n r c d - rel₆ W n d m r c d + rel₆ W r d m n c d := by
   simp_rw [rel₆, rel₄]; ring
 
-/-- Express an arbitrary `rel₄` in terms of ten `rel₄`s either with the last index fixed,
-or with the last two indices fixed. -/
+/-- A `rel₄` with four free indices can be expressed in terms of ten `rel₄`s
+with at least one index chosen from two possibilities (fixed indices) and
+the other indices chosen from the indices of the first `rel₄`.
+The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
 theorem rel₆_eq₁₀ (c d m n r s : ℤ) :
     rel₆ W c d m n r s =
       rel₆ W n d m r s c - rel₆ W r d m n s c + rel₆ W s d m n r c
@@ -359,9 +368,7 @@ lemma addMulSub_mem_nonZeroDivisors (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰) (a
     addMulSub W (cMin a) (dMin a) ∈ R⁰ := by
   rw [cMin, dMin]; split_ifs; exacts [mul_mem one one, mul_mem two one]
 
-variable {a b : ℤ} (same : a.negOnePow = b.negOnePow)
-
-lemma dMin_le (h : 0 ≤ b) : dMin a ≤ b := by
+lemma dMin_le {a b : ℤ} (same : a.negOnePow = b.negOnePow) (h : 0 ≤ b) : dMin a ≤ b := by
   rw [dMin]; split_ifs with odd
   exacts [h, h.lt_of_ne (by rintro rfl; exact odd (a.negOnePow_eq_one_iff.mp same))]
 
@@ -378,6 +385,9 @@ def Rel₄OfValid (a b c d : ℤ) : Prop :=
 variable {a c₀ d₀ : ℤ} (par : c₀.negOnePow = d₀.negOnePow) (le : 0 ≤ d₀) (lt : d₀ < c₀)
   (rel : ∀ {a' b}, a' ≤ a → Rel₄OfValid W a' b c₀ d₀) (mem : addMulSub W c₀ d₀ ∈ R⁰)
 
+/-- If `rel₄` holds for all quadruples of the form `(a', b, c₀, d₀)` for arbitrary `b` and
+`a' < a`, then it holds for `(a, b, c, c₀)` and `(a, b, c, d₀)` for arbitrary `b` and `c`
+(subject to some technical conditions). -/
 lemma rel₄_fix₁_of_fix₂ (b c : ℤ) :
     Rel₄OfValid W a b c c₀ ∧ (c₀ < c → Rel₄OfValid W a b c d₀) := by
   refine ⟨fun same anti ↦ mem _ ?_, fun _hc same anti ↦ mem _ ?_⟩ <;> rw [mul_comm, ← rel₆]
@@ -390,6 +400,9 @@ lemma rel₄_fix₁_of_fix₂ (b c : ℤ) :
       simp only [HaveSameParity₄, par, same.1, same.2.1, same.2.2, true_and]
       refine ⟨le, lt, ?_, ?_⟩ <;> linarith only [_hc, anti.2.1, anti.2.2.1, anti.2.2.2]
 
+/-- If `rel₄` holds for all quadruples of the form `(a', b, c₀, d₀)` for arbitrary `b` and
+`a' < a`, then it holds for `(a, b, c, d)` for arbitrary `b`, `c` and `d`
+(subject to some technical conditions). -/
 lemma rel₄_of_fix₂ (b c d : ℤ) (hc : c₀ < d) (par' : d.negOnePow = d₀.negOnePow) :
     Rel₄OfValid W a b c d := fun same ⟨_, hdc, hcb, hba⟩ ↦ mem _ <| by
   rw [mul_comm, ← rel₆, rel₆_eq₁₀]; simp_rw [rel₆]
@@ -402,9 +415,11 @@ lemma rel₄_of_fix₂ (b c d : ℤ) (hc : c₀ < d) (par' : d.negOnePow = d₀.
     simp only [HaveSameParity₄, par, par', same.1, same.2.1, same.2.2, true_and]
     refine ⟨?_, ?_, ?_, ?_⟩ <;> linarith only [hc, le, lt, hdc, hcb, hba]
 
+/-- Specialize previous lemmas to the case `c₀ = cMin a` and `d₀ = dMin a`,
+and combine them to remove technical conditions about the relative order of the indices. -/
 theorem rel₄_of_min₂ (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
-    (rel : ∀ {a' b}, a' ≤ a → Rel₄OfValid W a' b (cMin a) (dMin a))
-    (b c d : ℤ) : Rel₄OfValid W a b c d := fun same anti ↦ by
+    (rel : ∀ {a' b}, a' ≤ a → Rel₄OfValid W a' b (cMin a) (dMin a)) (b c d : ℤ) :
+    Rel₄OfValid W a b c d := fun same anti ↦ by
   obtain hc|hc := lt_or_le (cMin a) d
   · refine rel₄_of_fix₂ (negOnePow_cMin_eq_dMin a) (dMin_nonneg a) (dMin_lt_cMin a) rel
       (addMulSub_mem_nonZeroDivisors one two a) _ _ _ hc ?_ same anti
@@ -414,10 +429,10 @@ theorem rel₄_of_min₂ (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   obtain rfl|hc := hc.eq_or_lt
   · exact fix.1 same anti
   obtain rfl : dMin a = d := (dMin_le same.same₀₃ anti.1).antisymm <| by
-    rwa [lt_iff_add_two_le_of_even_sub, cMin, add_le_add_iff_right] at hc
+    rwa [← add_two_le_iff_lt_of_even_sub, cMin, add_le_add_iff_right] at hc
     rw [← negOnePow_eq_iff, negOnePow_cMin, same.same₀₃]
-  obtain rfl|hc : cMin a = c ∨ _ := ((lt_iff_add_two_le_of_even_sub <| by
-    rw [← negOnePow_eq_iff, negOnePow_dMin, same.1, same.2.1]).mp anti.2.1).eq_or_lt
+  obtain rfl|hc : cMin a = c ∨ _ := ((add_two_le_iff_lt_of_even_sub <| by
+    rw [← negOnePow_eq_iff, negOnePow_dMin, same.1, same.2.1]).mpr anti.2.1).eq_or_lt
   exacts [rel le_rfl same anti, fix.2 hc same anti]
 
 -- The main inductive argument.
@@ -425,7 +440,7 @@ theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (oddRec : ∀ m ≥ 2, OddRec W m) (evenRec : ∀ m ≥ 3, EvenRec W m) :
     ∀ ⦃a b c d : ℤ⦄, Rel₄OfValid W a b c d :=
   -- apply induction on `a`
-  strong_induction 6 -- if a < 6 the conclusion holds vacuously
+  Int.strongRec (m := 6) -- if `a < 6` the conclusion holds vacuously
     (fun a ha b c d same anti ↦ ((same.six_le_of_strictAnti₄ anti).not_lt ha).elim)
     -- otherwise, it suffices to deal with the "minimal" case `c = cMin a` and `d = dMin a`
     fun a h6 ih ↦ rel₄_of_min₂ one two fun {a' b} haa same anti ↦ by
@@ -433,7 +448,7 @@ theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   · -- if a' < a, apply the inductive hypothesis
     exact ih _ ha' same anti
   obtain hba|rfl := lt_or_eq_of_le <| show b + 2 ≤ a' from
-    (lt_iff_add_two_le_of_even_sub <| (negOnePow_eq_iff _ _).1 same.1).1 anti.2.2.2
+    (add_two_le_iff_lt_of_even_sub <| (negOnePow_eq_iff _ _).1 same.1).mpr anti.2.2.2
   · -- if b + 2 < a', apply `transf` and then the inductive hypothesis is applicable
     rw [← same.rel₄_transf]
     refine ih _ ?_ same.transf (same.strictAnti₄_transf anti)
@@ -477,8 +492,9 @@ variable (W) in
 /-- The four-index elliptic relation with a tuple as input. -/
 def relFin4 (t : Fin 4 → ℤ) : R := rel₄ W (t 0) (t 1) (t 2) (t 3)
 
+/-- `rel₄` is invariant (up to sign) under permutation of the four indices. -/
 theorem relFin4_perm (σ : Perm (Fin 4)) : ∀ t, relFin4 W (t ∘ σ) = Perm.sign σ • relFin4 W t := by
-  have := (Perm.mclosure_isSwap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
+  have := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
   refine Submonoid.closure_induction this ?_ (by simp) fun σ τ hσ hτ t ↦ ?_
   · rintro _ ⟨i, rfl⟩ t; fin_cases i <;>
       rw [Perm.sign_swap (Fin.castSucc_lt_succ _).ne, Units.neg_smul, one_smul]
@@ -489,6 +505,8 @@ lemma relFin4_perm' (σ : Perm (Fin 4)) (t) : Perm.sign σ • relFin4 W (t ∘ 
   rw [relFin4_perm neg, ← mul_smul, Int.units_mul_self, one_smul]
 
 variable (zero : W 0 = 0)
+
+/-! `rel₄` is trivial when two indices are equal. -/
 
 lemma rel₄_same₀₁ (m r s : ℤ) : rel₄ W m m r s = 0 := by
   simp_rw [rel₄, addMulSub_same W zero]; ring
@@ -502,6 +520,8 @@ lemma rel₄_same₂₃ (m n r : ℤ) : rel₄ W m n r r = 0 := by
 variable (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   (oddRec : ∀ m ≥ 2, OddRec W m) (evenRec : ∀ m ≥ 3, EvenRec W m)
 
+/-- The four-index `rel₄` relations follow from
+the single-index `oddRec` and `evenRec` recursive relations. -/
 theorem rel₄_of_oddRec_evenRec {a b c d : ℤ} (same : HaveSameParity₄ a b c d) :
     rel₄ W a b c d = 0 := by
   let t := ![|a|, |b|, |c|, |d|]
@@ -624,8 +644,6 @@ lemma invar (s m n : ℤ) : invarNum W s m * invarDenom W s n = invarNum W s n *
   invar_of_net _ (ell.net one two) _ _ _
 
 end IsEllSequence
-
-section normEDS
 
 /-- The auxiliary sequence for a normalised EDS `W : ℕ → R`,
 with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d`. -/
@@ -772,21 +790,19 @@ lemma normEDS_odd (m : ℕ) : normEDS b c d (2 * (m + 2) + 1) =
     normEDS b c d (m + 4) * normEDS b c d (m + 2) ^ 3 -
       normEDS b c d (m + 1) * normEDS b c d (m + 3) ^ 3 := by
   repeat erw [normEDS_ofNat]
-  simp_rw [preNormEDS'_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add, Nat.not_even_one,
-    even_two, show ¬ Even 3 by decide, show Even 4 by decide, iff_false, iff_true]
+  simp_rw [preNormEDS'_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add_one, ite_not]
   split_ifs <;> ring1
 
 lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
     normEDS b c d (m + 2) ^ 2 * normEDS b c d (m + 3) * normEDS b c d (m + 5) -
       normEDS b c d (m + 1) * normEDS b c d (m + 3) * normEDS b c d (m + 4) ^ 2 := by
   repeat erw [normEDS_ofNat]
-  simp_rw [preNormEDS'_even, if_pos <| even_two_mul _, Nat.even_add, Nat.not_even_one, even_two,
-    show ¬ Even 3 by decide, show Even 4 by decide, show ¬ Even 5 by decide, iff_false, iff_true]
+  simp only [preNormEDS'_even, if_pos <| even_two_mul _, Nat.even_add_one, ite_not]
   split_ifs <;> ring1
 
 @[simp]
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
-  simp_rw [normEDS, preNormEDS_neg, even_neg, neg_mul]
+  rw [normEDS, preNormEDS_neg, Int.natAbs_neg, neg_mul, normEDS]
 
 /- superseded by `IsEllSequence.normEDS` which doesn't require `hb`. -/
 private theorem IsEllSequence.normEDS_of_mem_nonZeroDivisors (hb : b ∈ R⁰) :
@@ -817,13 +833,11 @@ lemma invarDenom_normEDS_two : invarDenom (normEDS b c d) 1 2 = c * b := by simp
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
-    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
-  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [base0, base2, base4, even _ h])
-    (by rintro (_ | _ | _) h; exacts [base1, base3, odd _ h])
-
-end normEDS
+  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [zero, two, four, even _ h])
+    (by rintro (_ | _ | _) h; exacts [one, three, odd _ h])
 
 /-- Recursion principle for a normalised EDS: if we have
  * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
@@ -834,11 +848,11 @@ end normEDS
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort u}
-    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
     P n :=
-  normEDSRec' base0 base1 base2 base3 base4
+  normEDSRec' zero one two three four
     (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
     (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n
 

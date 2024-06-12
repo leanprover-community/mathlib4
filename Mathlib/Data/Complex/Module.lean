@@ -212,8 +212,8 @@ example {ι : Type*} [Fintype ι] :
   rfl
 
 example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
-    (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
-  by with_reducible_and_instances rfl
+    (inst.complexToReal).toModule = (inst.toModule).complexToReal := by
+  with_reducible_and_instances rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -323,20 +323,11 @@ theorem toMatrix_conjAe :
 
 /-- The identity and the complex conjugation are the only two `ℝ`-algebra homomorphisms of `ℂ`. -/
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
-  refine'
-      (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
+  refine
+      (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp ?_ ?_ <;>
     refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
-
-/-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
-def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
-  { equivRealProd with map_add' := by simp }
-#align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
-
-theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
-    Complex.equivRealProdAddHom.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]

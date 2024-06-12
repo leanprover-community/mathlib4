@@ -20,6 +20,8 @@ In this file we define `MonoidWithZero`, `GroupWithZero`, etc... instances for `
 * `divMonoidWithZeroHom`: Division bundled as a monoid with zero homomorphism.
 -/
 
+assert_not_exists DenselyOrdered
+
 variable {M₀ N₀ : Type*}
 
 namespace Prod

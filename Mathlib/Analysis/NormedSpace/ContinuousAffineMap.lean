@@ -102,12 +102,12 @@ theorem const_contLinear (q : Q) : (const R P q).contLinear = 0 :=
 theorem contLinear_eq_zero_iff_exists_const (f : P →ᴬ[R] Q) :
     f.contLinear = 0 ↔ ∃ q, f = const R P q := by
   have h₁ : f.contLinear = 0 ↔ (f : P →ᵃ[R] Q).linear = 0 := by
-    refine' ⟨fun h => _, fun h => _⟩ <;> ext
+    refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
     · rw [← coe_contLinear_eq_linear, h]; rfl
     · rw [← coe_linear_eq_coe_contLinear, h]; rfl
   have h₂ : ∀ q : Q, f = const R P q ↔ (f : P →ᵃ[R] Q) = AffineMap.const R P q := by
     intro q
-    refine' ⟨fun h => _, fun h => _⟩ <;> ext
+    refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
     · rw [h]; rfl
     · rw [← coe_to_affineMap, h]; rfl
   simp_rw [h₁, h₂]

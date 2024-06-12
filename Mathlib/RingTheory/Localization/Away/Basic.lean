@@ -226,10 +226,9 @@ theorem selfZPow_sub_natCast {n m : ℕ} :
     simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_le h)]
 #align self_zpow_sub_cast_nat selfZPow_sub_natCast
 
--- 2024-04-05
-@[deprecated] alias selfZPow_coe_nat := selfZPow_natCast
-@[deprecated] alias selfZPow_neg_coe_nat := selfZPow_neg_natCast
-@[deprecated] alias selfZPow_sub_cast_nat := selfZPow_sub_natCast
+@[deprecated (since := "2024-04-05")] alias selfZPow_coe_nat := selfZPow_natCast
+@[deprecated (since := "2024-04-05")] alias selfZPow_neg_coe_nat := selfZPow_neg_natCast
+@[deprecated (since := "2024-04-05")] alias selfZPow_sub_cast_nat := selfZPow_sub_natCast
 
 @[simp]
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
@@ -260,7 +259,7 @@ theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := b
   · erw [selfZPow_of_nonneg x B (le_of_not_le hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
       @IsLocalization.mk'_spec' R _ (Submonoid.powers x) B _ _ _ 1 (Submonoid.pow x d.natAbs),
       map_one]
-    refine' nonpos_of_neg_nonneg (le_of_lt _)
+    refine nonpos_of_neg_nonneg (le_of_lt ?_)
     rwa [neg_neg, ← not_le]
 #align self_zpow_mul_neg selfZPow_mul_neg
 

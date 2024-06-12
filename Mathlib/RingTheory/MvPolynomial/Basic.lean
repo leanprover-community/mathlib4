@@ -41,7 +41,7 @@ noncomputable section
 
 open Set LinearMap Submodule
 
-open BigOperators Polynomial
+open Polynomial
 
 universe u v
 
@@ -68,7 +68,7 @@ section Homomorphism
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
-  refine' Finset.sum_congr rfl fun n _ => _
+  refine Finset.sum_congr rfl fun n _ => ?_
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
 #align mv_polynomial.map_range_eq_map MvPolynomial.mapRange_eq_map
 
@@ -152,8 +152,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.linear_independent_X MvPolynomial.linearIndependent_X
 
 private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
-  ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage <|
-    DFunLike.coe_injective.injOn _).to_subtype
+  ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage DFunLike.coe_injective.injOn).to_subtype
 
 instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
   have := finite_setOf_bounded σ N

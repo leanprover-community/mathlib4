@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Endomorphism
 
 #align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"
@@ -50,7 +51,7 @@ instance concreteCategory : ConcreteCategory GroupCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort GroupCat (Type*) where
+instance : CoeSort GroupCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -174,6 +175,16 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 example {R S : GroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
 
+/-- Universe lift functor for groups. -/
+@[to_additive (attr := simps)
+  "Universe lift functor for additive groups."]
+def uliftFunctor : GroupCat.{u} ⥤ GroupCat.{max u v} where
+  obj X := GroupCat.of (ULift.{v, u} X)
+  map {X Y} f := GroupCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
+
 end GroupCat
 
 /-- The category of commutative groups and group morphisms. -/
@@ -207,7 +218,7 @@ instance concreteCategory : ConcreteCategory CommGroupCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommGroupCat (Type*) where
+instance : CoeSort CommGroupCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -350,6 +361,16 @@ set_option linter.uppercaseLean3 false in
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : CommGroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+
+/-- Universe lift functor for commutative groups. -/
+@[to_additive (attr := simps)
+  "Universe lift functor for additive commutative groups."]
+def uliftFunctor : CommGroupCat.{u} ⥤ CommGroupCat.{max u v} where
+  obj X := CommGroupCat.of (ULift.{v, u} X)
+  map {X Y} f := CommGroupCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
 
 end CommGroupCat
 
@@ -512,7 +533,7 @@ instance GroupCat.forget_reflects_isos : (forget GroupCat.{u}).ReflectsIsomorphi
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
-    exact IsIso.of_iso e.toGroupCatIso
+    exact e.toGroupCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -523,7 +544,7 @@ instance CommGroupCat.forget_reflects_isos : (forget CommGroupCat.{u}).ReflectsI
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
-    exact IsIso.of_iso e.toCommGroupCatIso
+    exact e.toCommGroupCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -548,3 +569,21 @@ abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
 /-- An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGroupCatMax.{u1, u2} := AddCommGroupCat.{max u1 u2}
+
+/-!
+`@[simp]` lemmas for `MonoidHom.comp` and categorical identities.
+-/
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_groupCat
+    {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (GroupCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_groupCat_comp
+    {G : Type u} [Group G] {H : GroupCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (GroupCat.ofHom f)
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_commGroupCat
+    {G : CommGroupCat.{u}} {H : Type u} [CommGroup H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommGroupCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_commGroupCat_comp
+    {G : Type u} [CommGroup G] {H : CommGroupCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommGroupCat.ofHom f)

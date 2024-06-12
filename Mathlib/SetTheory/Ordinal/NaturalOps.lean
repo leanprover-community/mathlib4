@@ -536,7 +536,7 @@ theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
 #align ordinal.nmul_nadd_le Ordinal.nmul_nadd_le
 
 theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · rw [nmul] at h
     simpa using not_mem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
   · rintro ⟨a', ha, b', hb, h⟩
@@ -580,7 +580,7 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   -- Porting note: added this `simp` line, as the result from `convert`
   -- is slightly different.
   simp only [Set.mem_setOf_eq, Set.mem_Ici]
-  refine' ⟨fun H => le_of_forall_lt fun c hc => _, fun ha c hc => _⟩
+  refine ⟨fun H => le_of_forall_lt fun c hc => ?_, fun ha c hc => ?_⟩
   -- Porting note: had to add arguments to `nmul_one` in the next two lines
   -- for the termination checker.
   · simpa only [nmul_one c] using H c hc
@@ -691,10 +691,8 @@ theorem lt_nmul_iff₃ :
       ∃ a' < a, ∃ b' < b, ∃ c' < c,
         d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' ≤
           a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' := by
-  -- Porting note: was `refine' ⟨fun h => _, _⟩`, but can't get that to work?
-  constructor
-  · intro h
-    rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
+  refine ⟨fun h => ?_, ?_⟩
+  · rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
     rcases lt_nmul_iff.1 he with ⟨a', ha, b', hb, H₂⟩
     refine ⟨a', ha, b', hb, c', hc, ?_⟩
     have := nadd_le_nadd H₁ (nmul_nadd_le H₂ hc.le)

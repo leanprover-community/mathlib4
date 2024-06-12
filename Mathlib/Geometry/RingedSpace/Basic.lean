@@ -48,7 +48,7 @@ open SheafedSpace
 variable (X : RingedSpace)
 
 -- Porting note (#10670): this was not necessary in mathlib3
-instance : CoeSort RingedSpace (Type*) where
+instance : CoeSort RingedSpace Type* where
   coe X := X.carrier
 
 /--
@@ -190,7 +190,7 @@ theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj 
     erw [X.presheaf.germ_res_apply _ _ _] at hx
     exact ⟨x.2, g x, hx, rfl⟩
   · rintro ⟨hxV, x, hx, rfl⟩
-    refine' ⟨⟨x, hxV⟩, (_ : IsUnit _), rfl⟩
+    refine ⟨⟨x, hxV⟩, (?_ : IsUnit _), rfl⟩
     erw [X.presheaf.germ_res_apply _ _ _]
     exact hx
 set_option linter.uppercaseLean3 false in

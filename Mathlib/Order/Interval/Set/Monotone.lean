@@ -203,16 +203,16 @@ variable {α β : Type*} [PartialOrder α]
 theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot α] {n : α} {φ : α → α}
     (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m := by
   revert hφ
-  refine'
+  refine
     Succ.rec_bot (fun n => StrictMonoOn φ (Set.Iic n) → ∀ m ≤ n, m ≤ φ m)
-      (fun _ _ hm => hm.trans bot_le) _ _
+      (fun _ _ hm => hm.trans bot_le) ?_ _
   rintro k ih hφ m hm
   by_cases hk : IsMax k
   · rw [succ_eq_iff_isMax.2 hk] at hm
     exact ih (hφ.mono <| Iic_subset_Iic.2 (le_succ _)) _ hm
   obtain rfl | h := le_succ_iff_eq_or_le.1 hm
   · specialize ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) k le_rfl
-    refine' le_trans (succ_mono ih) (succ_le_of_lt (hφ (le_succ _) le_rfl _))
+    refine le_trans (succ_mono ih) (succ_le_of_lt (hφ (le_succ _) le_rfl ?_))
     rw [lt_succ_iff_eq_or_lt_of_not_isMax hk]
     exact Or.inl rfl
   · exact ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) _ h
@@ -243,13 +243,13 @@ theorem strictMonoOn_Iic_of_lt_succ [SuccOrder α] [IsSuccArchimedean α] {n : �
   by_cases hmax' : IsMax (succ (succ^[k] x))
   · rw [succ_eq_iff_isMax.2 hmax'] at hxy ⊢
     exact ih (le_trans (le_succ _) hy) hxy
-  refine'
+  refine
     lt_trans
       (ih (le_trans (le_succ _) hy)
         (lt_of_le_of_lt (le_succ_iterate k _) (lt_succ_iff_not_isMax.2 hmax)))
-      _
+      ?_
   rw [← Function.comp_apply (f := succ), ← Function.iterate_succ']
-  refine' hψ _ (lt_of_lt_of_le _ hy)
+  refine hψ _ (lt_of_lt_of_le ?_ hy)
   rwa [Function.iterate_succ', Function.comp_apply, lt_succ_iff_not_isMax]
 #align strict_mono_on_Iic_of_lt_succ strictMonoOn_Iic_of_lt_succ
 

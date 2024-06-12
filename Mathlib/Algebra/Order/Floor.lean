@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.GaloisConnection
@@ -164,19 +163,26 @@ theorem lt_floor_add_one (a : α) : a < ⌊a⌋₊ + 1 := by simpa using lt_succ
 #align nat.lt_floor_add_one Nat.lt_floor_add_one
 
 @[simp]
-theorem floor_coe (n : ℕ) : ⌊(n : α)⌋₊ = n :=
+theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋₊ = n :=
   eq_of_forall_le_iff fun a => by
     rw [le_floor_iff, Nat.cast_le]
     exact n.cast_nonneg
-#align nat.floor_coe Nat.floor_coe
+#align nat.floor_coe Nat.floor_natCast
+
+@[deprecated (since := "2024-06-08")] alias floor_coe := floor_natCast
 
 @[simp]
-theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_coe]
+theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_natCast]
 #align nat.floor_zero Nat.floor_zero
 
 @[simp]
-theorem floor_one : ⌊(1 : α)⌋₊ = 1 := by rw [← Nat.cast_one, floor_coe]
+theorem floor_one : ⌊(1 : α)⌋₊ = 1 := by rw [← Nat.cast_one, floor_natCast]
 #align nat.floor_one Nat.floor_one
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem floor_ofNat (n : ℕ) [n.AtLeastTwo] : ⌊no_index (OfNat.ofNat n : α)⌋₊ = n :=
+  Nat.floor_natCast _
 
 theorem floor_of_nonpos (ha : a ≤ 0) : ⌊a⌋₊ = 0 :=
   ha.lt_or_eq.elim FloorSemiring.floor_of_neg <| by
@@ -333,6 +339,10 @@ theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_natC
 theorem ceil_one : ⌈(1 : α)⌉₊ = 1 := by rw [← Nat.cast_one, ceil_natCast]
 #align nat.ceil_one Nat.ceil_one
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈no_index (OfNat.ofNat n : α)⌉₊ = n := ceil_natCast n
+
 @[simp]
 theorem ceil_eq_zero : ⌈a⌉₊ = 0 ↔ a ≤ 0 := by rw [← Nat.le_zero, ceil_le, Nat.cast_zero]
 #align nat.ceil_eq_zero Nat.ceil_eq_zero
@@ -449,7 +459,7 @@ theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n
         le_floor_iff ha]
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
       rw [Nat.cast_add, add_left_comm _ b, add_left_comm _ (b : α)]
-      refine' iff_of_true _ le_self_add
+      refine iff_of_true ?_ le_self_add
       exact le_add_of_nonneg_right <| ha.trans <| le_add_of_nonneg_right d.cast_nonneg
 #align nat.floor_add_nat Nat.floor_add_nat
 
@@ -539,7 +549,7 @@ theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
     apply div_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
   obtain rfl | hn := n.eq_zero_or_pos
   · rw [cast_zero, div_zero, Nat.div_zero, floor_zero]
-  refine' (floor_eq_iff _).2 _
+  refine (floor_eq_iff ?_).2 ?_
   · exact div_nonneg ha n.cast_nonneg
   constructor
   · exact cast_div_le.trans (div_le_div_of_nonneg_right (floor_le ha) n.cast_nonneg)
@@ -556,7 +566,7 @@ theorem floor_div_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
 /-- Natural division is the floor of field division. -/
 theorem floor_div_eq_div (m n : ℕ) : ⌊(m : α) / n⌋₊ = m / n := by
   convert floor_div_nat (m : α) n
-  rw [m.floor_coe]
+  rw [m.floor_natCast]
 #align nat.floor_div_eq_div Nat.floor_div_eq_div
 
 end LinearOrderedSemifield
@@ -572,7 +582,7 @@ theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
     ext a
     cases' lt_or_le a 0 with h h
     · rw [H₁.floor_of_neg, H₂.floor_of_neg] <;> exact h
-    · refine' eq_of_forall_le_iff fun n => _
+    · refine eq_of_forall_le_iff fun n => ?_
       rw [H₁.gc_floor, H₂.gc_floor] <;> exact h
   cases H₁
   cases H₂
@@ -778,7 +788,7 @@ theorem le_floor_add (a b : α) : ⌊a⌋ + ⌊b⌋ ≤ ⌊a + b⌋ := by
 
 theorem le_floor_add_floor (a b : α) : ⌊a + b⌋ - 1 ≤ ⌊a⌋ + ⌊b⌋ := by
   rw [← sub_le_iff_le_add, le_floor, Int.cast_sub, sub_le_comm, Int.cast_sub, Int.cast_one]
-  refine' le_trans _ (sub_one_lt_floor _).le
+  refine le_trans ?_ (sub_one_lt_floor _).le
   rw [sub_le_iff_le_add', ← add_sub_assoc, sub_le_sub_iff_right]
   exact floor_le _
 #align int.le_floor_add_floor Int.le_floor_add_floor
@@ -1034,7 +1044,7 @@ theorem fract_eq_fract {a b : α} : fract a = fract b ↔ ∃ z : ℤ, a - b = z
   ⟨fun h => ⟨⌊a⌋ - ⌊b⌋, by unfold fract at h; rw [Int.cast_sub, sub_eq_sub_iff_sub_eq_sub.1 h]⟩,
    by
     rintro ⟨z, hz⟩
-    refine' fract_eq_iff.2 ⟨fract_nonneg _, fract_lt_one _, z + ⌊b⌋, _⟩
+    refine fract_eq_iff.2 ⟨fract_nonneg _, fract_lt_one _, z + ⌊b⌋, ?_⟩
     rw [eq_add_of_sub_eq hz, add_comm, Int.cast_add]
     exact add_sub_sub_cancel _ _ _⟩
 #align int.fract_eq_fract Int.fract_eq_fract
@@ -1061,7 +1071,7 @@ theorem fract_neg {x : α} (hx : fract x ≠ 0) : fract (-x) = 1 - fract x := by
   constructor
   · rw [le_sub_iff_add_le, zero_add]
     exact (fract_lt_one x).le
-  refine' ⟨sub_lt_self _ (lt_of_le_of_ne' (fract_nonneg x) hx), -⌊x⌋ - 1, _⟩
+  refine ⟨sub_lt_self _ (lt_of_le_of_ne' (fract_nonneg x) hx), -⌊x⌋ - 1, ?_⟩
   simp only [sub_sub_eq_add_sub, cast_sub, cast_neg, cast_one, sub_left_inj]
   conv in -x => rw [← floor_add_fract x]
   simp [-floor_add_fract]
@@ -1089,7 +1099,7 @@ theorem preimage_fract (s : Set α) :
     fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m:α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
   simp only [mem_preimage, mem_iUnion, mem_inter_iff]
-  refine' ⟨fun h => ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, _⟩
+  refine ⟨fun h => ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, ?_⟩
   rintro ⟨m, hms, hm0, hm1⟩
   obtain rfl : ⌊x⌋ = m := floor_eq_iff.2 ⟨sub_nonneg.1 hm0, sub_lt_iff_lt_add'.1 hm1⟩
   exact hms
@@ -1296,7 +1306,7 @@ theorem ceil_add_le (a b : α) : ⌈a + b⌉ ≤ ⌈a⌉ + ⌈b⌉ := by
 
 theorem ceil_add_ceil_le (a b : α) : ⌈a⌉ + ⌈b⌉ ≤ ⌈a + b⌉ + 1 := by
   rw [← le_sub_iff_add_le, ceil_le, Int.cast_sub, Int.cast_add, Int.cast_one, le_sub_comm]
-  refine' (ceil_lt_add_one _).le.trans _
+  refine (ceil_lt_add_one _).le.trans ?_
   rw [le_sub_iff_add_le', ← add_assoc, add_le_add_iff_right]
   exact le_ceil _
 #align int.ceil_add_ceil_le Int.ceil_add_ceil_le
@@ -1356,7 +1366,7 @@ theorem fract_eq_zero_or_add_one_sub_ceil (a : α) : fract a = 0 ∨ fract a = a
     abel
   norm_cast
   rw [ceil_eq_iff]
-  refine' ⟨_, _root_.le_of_lt <| by simp⟩
+  refine ⟨?_, _root_.le_of_lt <| by simp⟩
   rw [cast_add, cast_one, add_tsub_cancel_right, ← self_sub_fract a, sub_lt_self_iff]
   exact ha.symm.lt_of_le (fract_nonneg a)
 #align int.fract_eq_zero_or_add_one_sub_ceil Int.fract_eq_zero_or_add_one_sub_ceil
