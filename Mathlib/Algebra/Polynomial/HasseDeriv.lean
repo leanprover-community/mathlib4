@@ -49,8 +49,6 @@ open Nat Polynomial
 
 open Function
 
-open Nat hiding nsmul_eq_mul
-
 variable {R : Type*} [Semiring R] (k : ℕ) (f : R[X])
 
 /-- The `k`th Hasse derivative of a polynomial `∑ a_i X^i` is `∑ (i.choose k) a_i X^(i-k)`.

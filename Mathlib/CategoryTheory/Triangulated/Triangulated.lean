@@ -109,20 +109,21 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
 variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 
 /-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/
-def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃')
-    (e₁ : X₁ ≅ X₁') (e₂ : X₂ ≅ X₂')(e₃ : X₃ ≅ X₃')
+def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃') (u₁₃' : X₁' ⟶ X₃')
+    (comm' : u₁₂' ≫ u₂₃' = u₁₃')
+    (e₁ : X₁ ≅ X₁') (e₂ : X₂ ≅ X₂') (e₃ : X₃ ≅ X₃')
     (comm₁₂ : u₁₂ ≫ e₂.hom = e₁.hom ≫ u₁₂') (comm₂₃ : u₂₃ ≫ e₃.hom = e₂.hom ≫ u₂₃')
     (v₁₂' : X₂' ⟶ Z₁₂') (w₁₂' : Z₁₂' ⟶ X₁'⟦(1 : ℤ)⟧)
     (h₁₂' : Triangle.mk u₁₂' v₁₂' w₁₂' ∈ distTriang C)
     (v₂₃' : X₃' ⟶ Z₂₃') (w₂₃' : Z₂₃' ⟶ X₂'⟦(1 : ℤ)⟧)
     (h₂₃' : Triangle.mk u₂₃' v₂₃' w₂₃' ∈ distTriang C)
     (v₁₃' : X₃' ⟶ Z₁₃') (w₁₃' : Z₁₃' ⟶ X₁'⟦(1 : ℤ)⟧)
-    (h₁₃' : Triangle.mk (u₁₂' ≫ u₂₃') v₁₃' w₁₃' ∈ distTriang C)
-    (H : Octahedron rfl h₁₂' h₂₃' h₁₃') : Octahedron comm h₁₂ h₂₃ h₁₃ := by
+    (h₁₃' : Triangle.mk (u₁₃') v₁₃' w₁₃' ∈ distTriang C)
+    (H : Octahedron comm' h₁₂' h₂₃' h₁₃') : Octahedron comm h₁₂ h₂₃ h₁₃ := by
   let iso₁₂ := isoTriangleOfIso₁₂ _ _ h₁₂ h₁₂' e₁ e₂ comm₁₂
   let iso₂₃ := isoTriangleOfIso₁₂ _ _ h₂₃ h₂₃' e₂ e₃ comm₂₃
   let iso₁₃ := isoTriangleOfIso₁₂ _ _ h₁₃ h₁₃' e₁ e₃ (by
-    dsimp; rw [← comm, assoc, ← reassoc_of% comm₁₂, comm₂₃])
+    dsimp; rw [← comm, assoc, ← comm', ← reassoc_of% comm₁₂, comm₂₃])
   have eq₁₂ := iso₁₂.hom.comm₂
   have eq₁₂' := iso₁₂.hom.comm₃
   have eq₁₃ := iso₁₃.hom.comm₂
@@ -222,6 +223,6 @@ lemma IsTriangulated.mk' (h : ∀ ⦃X₁' X₂' X₃' : C⦄ (u₁₂' : X₁' 
     obtain ⟨X₁, X₂, X₃, Z₁₂, Z₂₃, Z₁₃, u₁₂, u₂₃, e₁, e₂, e₃, comm₁₂, comm₂₃,
       v₁₂, w₁₂, h₁₂, v₂₃, w₂₃, h₂₃, v₁₃, w₁₃, h₁₃, H⟩ := h u₁₂' u₂₃'
     exact ⟨Octahedron.ofIso u₁₂' u₂₃' u₁₃' comm' h₁₂' h₂₃' h₁₃'
-      u₁₂ u₂₃ e₁ e₂ e₃ comm₁₂ comm₂₃ v₁₂ w₁₂ h₁₂ v₂₃ w₂₃ h₂₃ v₁₃ w₁₃ h₁₃ H.some⟩
+      u₁₂ u₂₃ _ rfl e₁ e₂ e₃ comm₁₂ comm₂₃ v₁₂ w₁₂ h₁₂ v₂₃ w₂₃ h₂₃ v₁₃ w₁₃ h₁₃ H.some⟩
 
 end CategoryTheory

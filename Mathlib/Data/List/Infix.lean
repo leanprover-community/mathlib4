@@ -325,7 +325,7 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
       exact hl h.right
 #align list.is_prefix.filter_map List.IsPrefix.filterMap
 
-@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap -- 2024-03-26
+@[deprecated (since := "2024-03-26")] alias IsPrefix.filter_map := IsPrefix.filterMap
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
@@ -481,12 +481,12 @@ theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n =
 section deprecated
 set_option linter.deprecated false
 
-@[simp, deprecated get_tails] -- 2024-04-16
+@[simp, deprecated get_tails (since := "2024-04-16")]
 theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
     nthLe (tails l) n hn = l.drop n :=
   get_tails l _
 
-@[simp, deprecated get_inits] -- 2024-04-16
+@[simp, deprecated get_inits (since := "2024-04-16")]
 theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
     nthLe (inits l) n hn = l.take n :=
   get_inits l _
