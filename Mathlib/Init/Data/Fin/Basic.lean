@@ -13,8 +13,11 @@ namespace Fin
 
 variable {n : ℕ} {i j : Fin n}
 
-@[deprecated eq_of_val_eq] theorem eq_of_veq : i.val = j.val → i = j := eq_of_val_eq -- 2024-02-15
-@[deprecated val_eq_of_eq] theorem veq_of_eq : i = j → i.val = j.val := val_eq_of_eq -- 2024-02-15
+@[deprecated eq_of_val_eq (since := "2024-02-15")]
+theorem eq_of_veq : i.val = j.val → i = j := eq_of_val_eq
+
+@[deprecated val_eq_of_eq (since := "2024-02-15")]
+theorem veq_of_eq : i = j → i.val = j.val := val_eq_of_eq
 
 -- These two aren't deprecated because `ne_of_val_ne` and `val_ne_of_ne`
 -- use `¬a = b` instead of `a ≠ b`. TODO: fix or rename in Lean core.
