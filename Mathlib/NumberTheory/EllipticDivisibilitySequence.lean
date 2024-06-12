@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Init.Data.Int.DivModLemmas
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
