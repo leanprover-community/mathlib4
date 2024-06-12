@@ -817,16 +817,14 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
--- Porting note: Added nonrec
-nonrec theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
+theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
     e (∏ x ∈ s, f x) = ∏ x ∈ s, e (f x) :=
-  map_prod _ f s
+  _root_.map_prod _ f s
 #align alg_equiv.map_prod AlgEquiv.map_prod
 
--- Porting note: Added nonrec
-nonrec theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
+theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.prod g) = f.prod fun i a => e (g i a) :=
-  map_finsupp_prod _ f g
+  _root_.map_finsupp_prod _ f g
 #align alg_equiv.map_finsupp_prod AlgEquiv.map_finsupp_prod
 
 end CommSemiring
