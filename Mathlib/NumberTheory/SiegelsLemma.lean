@@ -27,7 +27,7 @@ system it determines has a non-zero integer solution `t` with
 
 ## References
 
-See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysilverman00] .
+See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysilverman00].
 -/
 
 /- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
@@ -55,16 +55,12 @@ lemma one_le_natNorm_of_ne_zero (A : Matrix m n ℤ) (hA_ne_zero : A ≠ 0) : 1 
   simp only [← norm_pos_iff', norm_eq_natNorm A, Nat.cast_pos] at hA_ne_zero
   linarith
 
-end Matrix
-
-open Finset Matrix
-
 variable (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) (v : Fin n → ℤ) (hn : m < n)
 (hm : 0 < m)
 
 --Some definitions and relative properties
 
-local notation3 "e" => m / ((n : ℝ ) - m) --exponent
+local notation3 "e" => m / ((n : ℝ) - m) --exponent
 local notation3 "B" => Nat.floor (((n : ℝ) * ‖A‖) ^ e)
 -- B' is the vector with all components = B
 local notation3 "B'" => fun _ : Fin n => (B : ℤ)
@@ -226,17 +222,20 @@ theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0)  : ∃ (t : Fin n 
   rw [Finset.mem_Icc] at hxT
   simp only [col_apply, Pi.sub_apply, ge_iff_le]
   rw [Int.norm_eq_abs, ← Int.cast_abs]
-  have : |x i - y i| ≤ ((B' i) : ℝ ) := by
-    rw [Int.cast_abs, Int.cast_sub, abs_le]
-    constructor
-    · simp only [neg_le_sub_iff_le_add]
-      rw [← Int.cast_add, Int.cast_le]
-      apply le_trans (hyT.2 i)
-      simp only [le_add_iff_nonneg_left]
-      exact hxT.1 i
-    · simp only [ tsub_le_iff_right]
-      rw [← Int.cast_add,Int.cast_le]
-      apply le_trans (hxT.2 i)
-      simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
-      exact hyT.1 i
-  exact le_trans this (Nat.floor_le n_mul_norm_A_pow_e_nonneg)
+  refine le_trans ?_ (Nat.floor_le n_mul_norm_A_pow_e_nonneg)
+  rw [Int.cast_abs, Int.cast_sub, abs_le]
+  constructor
+  · simp only [neg_le_sub_iff_le_add]
+    norm_cast
+    apply le_trans (hyT.2 i)
+    norm_cast
+    simp only [le_add_iff_nonneg_left]
+    exact hxT.1 i
+  · simp only [ tsub_le_iff_right]
+    norm_cast
+    apply le_trans (hxT.2 i)
+    norm_cast
+    simp only [le_add_iff_nonneg_right]
+    exact hyT.1 i
+
+    end Matrix
