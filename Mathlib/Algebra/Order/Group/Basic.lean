@@ -177,7 +177,7 @@ lemma add_eq_top_iff (a b : α) :
   · intro h
     cases h <;> simp_all
 
-instance : SubtractionMonoid α where
+instance (priority := 100) : SubtractionMonoid α where
   neg_neg (a) := by
     by_cases h : a = ⊤
     · simp [h]
