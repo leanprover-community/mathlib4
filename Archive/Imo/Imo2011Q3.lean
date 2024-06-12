@@ -28,7 +28,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
   have hxt : ∀ x t, f t ≤ t * f x - x * f x + f (f x) := fun x t =>
     calc
       f t = f (x + (t - x)) := by rw [add_eq_of_eq_sub' rfl]
-      _ ≤ (t - x) * f x + f (f x) := (hf x (t - x))
+      _ ≤ (t - x) * f x + f (f x) := hf x (t - x)
       _ = t * f x - x * f x + f (f x) := by rw [sub_mul]
   have h_ab_combined : ∀ a b, a * f a + b * f b ≤ 2 * f a * f b := fun a b => by
     linarith [hxt b (f a), hxt a (f b)]

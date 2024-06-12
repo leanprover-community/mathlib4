@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The category of additive commutative groups has all colimits.
 
-This file uses a "pre-automated" approach, just as for `Mon/Colimits.lean`.
+This file uses a "pre-automated" approach, just as for `Algebra.Category.MonCat.Colimits`.
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `AddCommGroup` and `MonoidHom`.
 
@@ -63,7 +63,7 @@ instance : Inhabited (Prequotient.{w} F) :=
 
 open Prequotient
 
-/-- The relation on `prequotient` saying when two expressions are equal
+/-- The relation on `Prequotient` saying when two expressions are equal
 because of the abelian group laws, or
 because one element is mapped to another by a morphism in the diagram.
 -/
@@ -296,8 +296,8 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
         apply Quotient.sound
         apply leftRel_apply.mpr
         fconstructor
-        exact -x
-        simp only [add_zero, AddMonoidHom.map_neg]
+        · exact -x
+        · simp only [add_zero, AddMonoidHom.map_neg]
   inv :=
     QuotientAddGroup.lift _ (cokernel.π f) <| by
       rintro _ ⟨x, rfl⟩

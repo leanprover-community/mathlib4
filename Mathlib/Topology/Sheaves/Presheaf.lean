@@ -5,9 +5,9 @@ Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.Topology.Sheaves.Init
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import topology.sheaves.presheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
@@ -42,7 +42,7 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 set_option linter.uppercaseLean3 false in
@@ -103,8 +103,8 @@ attribute[aesop safe destruct (rule_sets := [Restrict])] Eq.trans_le
 attribute[aesop safe -50 (rule_sets := [Restrict])] Aesop.BuiltinRules.assumption
 
 example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_ : v 1 = v 2)
-    (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y :=
-  by restrict_tac
+    (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y := by
+  restrict_tac
 
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
@@ -202,8 +202,8 @@ set_option linter.uppercaseLean3 false in
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
     (h : f = g) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq h ℱ).hom.app U =
-      ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) :=
-  by simp [pushforwardEq]
+      ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) := by
+  simp [pushforwardEq]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq_hom_app TopCat.Presheaf.pushforwardEq_hom_app
 
@@ -346,8 +346,8 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
   have hx : IsTerminal x :=
     { lift := fun s ↦ by
         fapply CostructuredArrow.homMk
-        change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
-        · refine' (homOfLE _).op
+        · change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
+          refine (homOfLE ?_).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [autoParam, eq_iff_true_of_subsingleton]
@@ -419,8 +419,8 @@ theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presh
   · intros a b f
     ext U
     · erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
-      simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
-        Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
+      · simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
+          Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
       apply Pushforward.id_eq
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward

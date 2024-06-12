@@ -72,7 +72,7 @@ class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
 #align is_symm_op IsSymmOp
 
 /-- A commutative binary operation. -/
-@[deprecated Std.Commutative] -- 2024-02-02
+@[deprecated Std.Commutative (since := "2024-02-02")]
 abbrev IsCommutative (α : Sort u) (op : α → α → α) := Std.Commutative op
 #align is_commutative Std.Commutative
 
@@ -81,17 +81,17 @@ instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → 
 #align is_symm_op_of_is_commutative isSymmOp_of_isCommutative
 
 /-- An associative binary operation. -/
-@[deprecated Std.Associative] -- 2024-02-02
+@[deprecated Std.Associative (since := "2024-02-02")]
 abbrev IsAssociative (α : Sort u) (op : α → α → α) := Std.Associative op
 #align is_associative Std.Associative
 
 /-- A binary operation with a left identity. -/
-@[deprecated Std.LawfulLeftIdentity] -- 2024-02-02
+@[deprecated Std.LawfulLeftIdentity (since := "2024-02-02")]
 abbrev IsLeftId (α : Sort u) (op : α → α → α) (o : outParam α) := Std.LawfulLeftIdentity op o
 #align is_left_id Std.LawfulLeftIdentity
 
 /-- A binary operation with a right identity. -/
-@[deprecated Std.LawfulRightIdentity] -- 2024-02-02
+@[deprecated Std.LawfulRightIdentity (since := "2024-02-02")]
 abbrev IsRightId (α : Sort u) (op : α → α → α) (o : outParam α) := Std.LawfulRightIdentity op o
 #align is_right_id Std.LawfulRightIdentity
 
@@ -111,7 +111,7 @@ class IsRightCancel (α : Sort u) (op : α → α → α) : Prop where
   right_cancel : ∀ a b c, op a b = op c b → a = c
 #align is_right_cancel IsRightCancel
 
-@[deprecated Std.IdempotentOp] -- 2024-02-02
+@[deprecated Std.IdempotentOp (since := "2024-02-02")]
 abbrev IsIdempotent (α : Sort u) (op : α → α → α) := Std.IdempotentOp op
 #align is_idempotent Std.IdempotentOp
 
@@ -205,7 +205,7 @@ instance (priority := 100) {α : Sort u} {r : α → α → Prop} [Trans r r r] 
   ⟨fun _ _ _ => Trans.trans⟩
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
-`x y : X` we have `r x y` or `r y x`.-/
+`x y : X` we have `r x y` or `r y x`. -/
 class IsTotal (α : Sort u) (r : α → α → Prop) : Prop where
   total : ∀ a b, r a b ∨ r b a
 #align is_total IsTotal
@@ -416,8 +416,8 @@ instance isEquiv : IsEquiv α (@Equiv _ r) where
 
 end
 
-notation:50 -- Notation for the equivalence relation induced by lt
-a " ≈[" lt "]" b:50 => @Equiv _ lt a b
+/-- The equivalence relation induced by `lt` -/
+notation:50 a " ≈[" lt "]" b:50 => @Equiv _ lt a b--Equiv (r := lt) a b
 
 end StrictWeakOrder
 

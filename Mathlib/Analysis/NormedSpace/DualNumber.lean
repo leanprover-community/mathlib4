@@ -19,7 +19,7 @@ These are just restatements of similar statements about `TrivSqZeroExt R M`.
 
 -/
 
-open NormedSpace -- For `exp`.
+open NormedSpace -- For `NormedSpace.exp`.
 
 namespace DualNumber
 

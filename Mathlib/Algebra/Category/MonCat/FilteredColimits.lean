@@ -6,7 +6,7 @@ Authors: Justus Springer
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 
 #align_import algebra.category.Mon.filtered_colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -94,7 +94,7 @@ object `j`.
       a custom chosen object `j`."]
 theorem colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
   apply M.mk_eq
-  refine' ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, _⟩
+  refine ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, ?_⟩
   simp
 #align Mon.filtered_colimits.colimit_one_eq MonCat.FilteredColimits.colimit_one_eq
 #align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
@@ -167,7 +167,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
 @[to_additive "Addition in the colimit. See also `colimitAddAux`."]
 noncomputable instance colimitMul : Mul (M.{v, u} F) :=
 { mul := fun x y => by
-    refine' Quot.lift₂ (colimitMulAux F) _ _ x y
+    refine Quot.lift₂ (colimitMulAux F) ?_ ?_ x y
     · intro x y y' h
       apply colimitMulAux_eq_of_rel_right
       apply Types.FilteredColimit.rel_of_quot_rel
@@ -324,7 +324,7 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
 #align AddMon.filtered_colimits.colimit_desc AddMonCat.FilteredColimits.colimitDesc
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
-@[to_additive "The proposed colimit cocone is a colimit in `AddMon`."]
+@[to_additive "The proposed colimit cocone is a colimit in `AddMonCat`."]
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
   fac t j := MonoidHom.ext fun x => congr_fun ((Types.TypeMax.colimitCoconeIsColimit.{v, u}
@@ -401,7 +401,7 @@ noncomputable def colimitCocone : Cocone F where
 #align AddCommMon.filtered_colimits.colimit_cocone AddCommMonCat.FilteredColimits.colimitCocone
 
 /-- The proposed colimit cocone is a colimit in `CommMonCat`. -/
-@[to_additive "The proposed colimit cocone is a colimit in `AddCommMon`."]
+@[to_additive "The proposed colimit cocone is a colimit in `AddCommMonCat`."]
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc t :=
     MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})

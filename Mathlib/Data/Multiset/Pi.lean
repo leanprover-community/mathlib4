@@ -52,9 +52,9 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro a'' _ rfl
-  refine' hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ => _
+  refine hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ => ?_
   rcases ne_or_eq a'' a with (h₁ | rfl)
-  rcases eq_or_ne a'' a' with (rfl | h₂)
+  on_goal 1 => rcases eq_or_ne a'' a' with (rfl | h₂)
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 #align multiset.pi.cons_swap Multiset.Pi.cons_swap
 
@@ -125,10 +125,10 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
       have has : a ∉ s := by simp only [nodup_cons] at hs; exact hs.1
       have hs : Nodup s := by simp only [nodup_cons] at hs; exact hs.2
       simp only [pi_cons, nodup_bind]
-      refine'
+      refine
         ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (Pi.cons_injective has),
-          _⟩
-      refine' (ht a <| mem_cons_self _ _).pairwise _
+          ?_⟩
+      refine (ht a <| mem_cons_self _ _).pairwise ?_
       exact fun b₁ _ b₂ _ neb =>
         disjoint_map_map.2 fun f _ g _ eq =>
           have : Pi.cons s a b₁ f a (mem_cons_self _ _) = Pi.cons s a b₂ g a (mem_cons_self _ _) :=
@@ -152,7 +152,7 @@ theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     · rw [Pi.cons_ne _ h]
       apply hf'
   · intro hf
-    refine' ⟨_, hf a (mem_cons_self _ _), _, fun a ha => hf a (mem_cons_of_mem ha), _⟩
+    refine ⟨_, hf a (mem_cons_self _ _), _, fun a ha => hf a (mem_cons_of_mem ha), ?_⟩
     rw [pi.cons_eta]
 #align multiset.mem_pi Multiset.mem_pi
 

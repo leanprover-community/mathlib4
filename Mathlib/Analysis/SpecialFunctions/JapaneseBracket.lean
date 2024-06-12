@@ -3,6 +3,7 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.Layercake
 
@@ -26,19 +27,19 @@ than the dimension.
 
 noncomputable section
 
-open scoped BigOperators NNReal Filter Topology ENNReal
+open scoped NNReal Filter Topology ENNReal
 
 open Asymptotics Filter Set Real MeasureTheory FiniteDimensional
 
 variable {E : Type*} [NormedAddCommGroup E]
 
-theorem sqrt_one_add_norm_sq_le (x : E) : Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
+theorem sqrt_one_add_norm_sq_le (x : E) : √((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
   rw [sqrt_le_left (by positivity)]
   simp [add_sq]
 #align sqrt_one_add_norm_sq_le sqrt_one_add_norm_sq_le
 
 theorem one_add_norm_le_sqrt_two_mul_sqrt (x : E) :
-    (1 : ℝ) + ‖x‖ ≤ Real.sqrt 2 * sqrt ((1 : ℝ) + ‖x‖ ^ 2) := by
+    (1 : ℝ) + ‖x‖ ≤ √2 * √(1 + ‖x‖ ^ 2) := by
   rw [← sqrt_mul zero_le_two]
   have := sq_nonneg (‖x‖ - 1)
   apply le_sqrt_of_sq_le
@@ -49,7 +50,7 @@ theorem rpow_neg_one_add_norm_sq_le {r : ℝ} (x : E) (hr : 0 < r) :
     ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2) ≤ (2 : ℝ) ^ (r / 2) * (1 + ‖x‖) ^ (-r) :=
   calc
     ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)
-      = (2 : ℝ) ^ (r / 2) * ((Real.sqrt 2 * Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2)) ^ r)⁻¹ := by
+      = (2 : ℝ) ^ (r / 2) * ((√2 * √((1 : ℝ) + ‖x‖ ^ 2)) ^ r)⁻¹ := by
       rw [rpow_div_two_eq_sqrt, rpow_div_two_eq_sqrt, mul_rpow, mul_inv, rpow_neg,
         mul_inv_cancel_left₀] <;> positivity
     _ ≤ (2 : ℝ) ^ (r / 2) * ((1 + ‖x‖) ^ r)⁻¹ := by
@@ -81,14 +82,14 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   have h_int : ∀ x : ℝ, x ∈ Ioc (0 : ℝ) 1 →
       ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ ENNReal.ofReal (x ^ (-(r⁻¹ * n))) := fun x hx ↦ by
     apply ENNReal.ofReal_le_ofReal
-    rw [← neg_mul, rpow_mul hx.1.le, rpow_nat_cast]
-    refine' pow_le_pow_left _ (by simp only [sub_le_self_iff, zero_le_one]) n
+    rw [← neg_mul, rpow_mul hx.1.le, rpow_natCast]
+    refine pow_le_pow_left ?_ (by simp only [sub_le_self_iff, zero_le_one]) n
     rw [le_sub_iff_add_le', add_zero]
-    refine' Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 _
+    refine Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 ?_
     rw [Right.neg_nonpos_iff, inv_nonneg]
     exact hr.le
-  refine' lt_of_le_of_lt (set_lintegral_mono' measurableSet_Ioc h_int) _
-  refine' IntegrableOn.set_lintegral_lt_top _
+  refine lt_of_le_of_lt (set_lintegral_mono' measurableSet_Ioc h_int) ?_
+  refine IntegrableOn.set_lintegral_lt_top ?_
   rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   apply intervalIntegral.intervalIntegrable_rpow'
   rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
@@ -122,7 +123,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
   · -- We use estimates from auxiliary lemmas to deal with integral from `0` to `1`
     have h_int' : ∀ t ∈ Ioc (0 : ℝ) 1,
         f t = ENNReal.ofReal ((t ^ (-r⁻¹) - 1) ^ finrank ℝ E) * mB := fun t ht ↦ by
-      refine' μ.addHaar_closedBall (0 : E) _
+      refine μ.addHaar_closedBall (0 : E) ?_
       rw [sub_nonneg]
       exact Real.one_le_rpow_of_pos_of_le_one_of_nonpos ht.1 ht.2 (by simp [hr.le])
     rw [set_lintegral_congr_fun measurableSet_Ioc (ae_of_all _ h_int'),
@@ -154,7 +155,8 @@ theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : �
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
     ?_ (eventually_of_forall fun x => ?_)
-  · measurability
+  · -- Note: `measurability` proves this, but very slowly.
+    exact measurable_norm.pow_const 2 |>.const_add 1 |>.pow_const (-r / 2) |>.aestronglyMeasurable
   refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq

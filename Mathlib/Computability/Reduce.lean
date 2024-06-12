@@ -40,7 +40,6 @@ def ManyOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop)
   ∃ f, Computable f ∧ ∀ a, p a ↔ q (f a)
 #align many_one_reducible ManyOneReducible
 
--- mathport name: «expr ≤₀ »
 @[inherit_doc ManyOneReducible]
 infixl:1000 " ≤₀ " => ManyOneReducible
 
@@ -78,7 +77,6 @@ def OneOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop) 
   ∃ f, Computable f ∧ Injective f ∧ ∀ a, p a ↔ q (f a)
 #align one_one_reducible OneOneReducible
 
--- mathport name: «expr ≤₁ »
 @[inherit_doc OneOneReducible]
 infixl:1000 " ≤₁ " => OneOneReducible
 
@@ -289,7 +287,6 @@ theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (
   ManyOneEquiv.of_equiv ULower.down_computable.symm
 #align many_one_equiv_up manyOneEquiv_up
 
--- mathport name: «expr ⊕' »
 local infixl:1001 " ⊕' " => Sum.elim
 
 open Nat.Primrec
@@ -376,8 +373,8 @@ protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
 
 /-- Lifts a function on sets of natural numbers to many-one degrees.
 -/
-@[reducible] -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
-protected def liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
+-- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
   Quotient.liftOn' d f h
 #align many_one_degree.lift_on ManyOneDegree.liftOn
@@ -398,8 +395,8 @@ protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set �
       intro p₁ p₂ hp
       induction d₂ using ManyOneDegree.ind_on
       apply h
-      assumption
-      rfl)
+      · assumption
+      · rfl)
 #align many_one_degree.lift_on₂ ManyOneDegree.liftOn₂
 
 @[simp]

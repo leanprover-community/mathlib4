@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Archive.Examples.IfNormalization.Statement
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Data.List.AList
 import Mathlib.Tactic.Recall
 
@@ -93,7 +95,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         · -- normalized
           have := ht₃ v
           have := he₃ v
-          ◾
+          split <;> ◾
         · -- lookup = none
           have := ht₃ w
           have := he₃ w

@@ -5,9 +5,9 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import algebra.category.Mon.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
@@ -20,7 +20,7 @@ the underlying types are just the limits in the category of types.
 
 -/
 
-set_option linter.uppercaseLean3 false -- `Mon`
+set_option linter.uppercaseLean3 false
 
 noncomputable section
 
@@ -102,8 +102,7 @@ noncomputable def limitCone : Cone F :=
     π :=
     { app := limitπMonoidHom F
       naturality := fun _ _ f =>
-        set_option linter.deprecated false in
-        MonoidHom.coe_inj ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
+        DFunLike.coe_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
 #align Mon.has_limits.limit_cone MonCat.HasLimits.limitCone
 #align AddMon.has_limits.limit_cone AddMonCat.HasLimits.limitCone
 
@@ -141,7 +140,8 @@ end HasLimits
 open HasLimits
 
 /-- The category of monoids has all limits. -/
-@[to_additive "The category of additive monoids has all limits."]
+@[to_additive "The category of additive monoids has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} MonCat.{u} where
   has_limits_of_shape _ _ := { }
 #align Mon.has_limits_of_size MonCat.hasLimitsOfSize
@@ -270,7 +270,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommMonCat.{u} wher
   has_limit _ := inferInstance
 
 /-- The category of commutative monoids has all limits. -/
-@[to_additive "The category of additive commutative monoids has all limits."]
+@[to_additive "The category of additive commutative monoids has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommMonCat.{u} where
   has_limits_of_shape _ _ := { }
 #align CommMon.has_limits_of_size CommMonCat.hasLimitsOfSize
