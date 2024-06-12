@@ -109,7 +109,7 @@ instance repr : ∀ n : ℕ, Repr (ZMod n)
   | n + 1 => by dsimp [ZMod]; infer_instance
 #align zmod.has_repr ZMod.repr
 
-instance instOfNat: ∀ n m : ℕ, OfNat (ZMod n) m
+instance instOfNat: ∀ (n m : ℕ) [Nat.AtLeastTwo m], OfNat (ZMod n) m
   | 0, m => inferInstanceAs (OfNat ℤ m)
   | n + 1, m => inferInstanceAs (OfNat (Fin (n + 1)) m)
 
