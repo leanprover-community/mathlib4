@@ -327,6 +327,8 @@ namespace FiniteAdeleRing
 
 instance : CommRing (FiniteAdeleRing R K) := Subalgebra.toCommRing _
 
+instance : Algebra (FiniteAdeleRing R K) (K_hat R K) := Algebra.ofSubsemiring _
+
 instance : Algebra K (FiniteAdeleRing R K) := Subalgebra.algebra _
 
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
@@ -336,7 +338,6 @@ instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
   Subtype.ext h
 
-instance : Algebra (FiniteAdeleRing R K) (K_hat R K) := Algebra.ofSubsemiring _
 
 instance : Algebra R (FiniteAdeleRing R K) :=
   RingHom.toAlgebra ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K))
@@ -384,31 +385,122 @@ open nonZeroDivisors
 
 open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
 
-example (α : Type) [CommMonoid α] (P : α → Prop) (h0 : P 1) (h1 : ∀ x y, P x → P y → P (x * y))
-    (s : Finset α) (hs : ∀ a ∈ s, P a) : P (∏ a ∈ s, a) := by
+-- theorem foo (α : Type) [CommMonoid α] (P : α → Prop) (h0 : P 1) (h1 : ∀ x y, P x → P y → P (x * y))
+--     (s : Finset α) (hs : ∀ a ∈ s, P a) : P (∏ a ∈ s, a) := --by exact?
+--   Finset.prod_induction _ _ h1 h0 hs
+
+lemma foo (a b : FiniteAdeleRing R K) (v : HeightOneSpectrum R) :
+    ((a * b : FiniteAdeleRing R K) : K_hat R K) v = (a : K_hat R K) v * (b : K_hat R K) v := rfl
+
+-- variable {R K} in
+-- abbrev local_inclusion (v : HeightOneSpectrum R) : v.adicCompletion K →* FiniteAdeleRing R K where
+--   toFun a := ⟨fun w ↦ if h : w = v then h ▸ a else 1, by
+--     apply Finite.subset (Set.finite_singleton v)
+--     simp only [subset_singleton_iff, mem_compl_iff, mem_setOf_eq]
+--     rintro w hw
+--     split at hw
+--     · assumption
+--     · exact False.elim <| hw <| ValuationSubring.one_mem (adicCompletionIntegers K w)⟩
+--   map_one' := ext R K <| funext (fun w ↦ (by aesop))
+--   map_mul' x y := ext R K <| funext (fun w ↦ (by
+--     simp only
+--     obtain (rfl | hw) := Classical.em (w = v)
+--     · simp only [↓reduceDite]
+--       congr <;> simp
+--     · rw [dif_neg hw]
+--       change _ = _ * _
+--       convert (one_mul (1 : adicCompletion K w)).symm <;> simp_all
+--  ))
+
+-- lemma local_inclusion_self {v : HeightOneSpectrum R} (a : v.adicCompletion K) :
+--   local_inclusion v a v = a := by simp
+
+-- lemma local_inclusion_ne_self {v w : HeightOneSpectrum R} (h : w ≠ v) (a : v.adicCompletion K) :
+--   local_inclusion v a w = 1 := by simp_all
+
+-- variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
+--     [IsFractionRing R K] in
+-- @[elab_as_elim]
+-- lemma mul_induction_on {P : FiniteAdeleRing R K → Prop}
+--     (h0 : ∀ (a : FiniteIntegralAdeles R K), P a)
+--     (h1 : ∀ x y, P x → P y → P (x * y))
+--     (h2 : ∀ (a : FiniteAdeleRing R K) (v :IsDedekindDomain.HeightOneSpectrum R),
+--       Valued.v (a v) = Multiplicative.ofAdd (-1 : ℤ) ∧
+--       ∀ w ≠ v, a v ∈ v.adicCompletionIntegers K) : ∀ x, P x := fun x ↦ by
+--   have foo := x.2
+--   rw [mem_FiniteAdeleRing] at foo
+--   have foo : x = ∏ᶠ v ∈ {v | x v ∉ adicCompletionIntegers K v}, local_inclusion v (x v) := by
+--     sorry
+--   sorry
+
+-- local version
+
+variable {R K} in
+lemma clear_local_denominator (v : HeightOneSpectrum R)
+    (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   sorry
 
-variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
-    [IsFractionRing R K] in
-@[elab_as_elim]
-lemma mul_induction_on {P : FiniteAdeleRing R K → Prop}
-    (h0 : ∀ (a : FiniteIntegralAdeles R K), P a)
-    (h1 : ∀ x y, P x → P y → P (x * y))
-    (h2 : ∀ (a : FiniteAdeleRing R K) (v :IsDedekindDomain.HeightOneSpectrum R),
-      Valued.v (a v) = Multiplicative.ofAdd (-1 : ℤ) ∧
-      ∀ w ≠ v, a v ∈ v.adicCompletionIntegers K) : ∀ x, P x := fun x ↦ by
+lemma exists_integer_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
+    a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v := by
+  constructor
+  · rintro ⟨c, rfl⟩ v
+    exact (c v).2
+  · intro h
+    use fun v ↦ ⟨a v, h v⟩
+    rfl
 
+lemma Submonoid.finprod_mem {G : Type*} [CommMonoid G] {M : Submonoid G} {ι : Type*}
+    {S : Set ι}
+    {f : ι → G} (hf : ∀ i ∈ S, f i ∈ M) : (∏ᶠ i ∈ S, f i) ∈ M := by
   sorry
 
+open scoped DiscreteValuation
 
-
+#check Valued.valuedCompletion_apply
+--set_option pp.all true in
 variable {R K} in
 lemma clear_denominator (a : FiniteAdeleRing R K) :
     ∃ (b : R⁰) (c : R_hat R K), a * (b : R) = c := by
-  sorry
+  let S := {v | a v ∉ adicCompletionIntegers K v}
+  -- (a.2 : S.finite)
+  choose b hb h using clear_local_denominator (R := R) (K := K)
+  let p := ∏ᶠ v ∈ S, b v (a v)
+  have hp : p ∈ R⁰ := Submonoid.finprod_mem <| fun v hv ↦ hb _ _
+  use ⟨p, hp⟩
+  rw [exists_integer_iff]
+  intro v
+  change a v * _ ∈ _
+  dsimp
+  by_cases hv : a v ∈ adicCompletionIntegers K v
+  · apply mul_mem hv
+    rw [mem_adicCompletionIntegers]
+    letI : Valued K ℤₘ₀ := adicValued v
+    change Valued.v (p : v.adicCompletion K) ≤ 1
+    suffices Valued.v (p : K) ≤ 1 by
+      rw [← Valued.valuedCompletion_apply] at this
+      convert this
+    sorry
+      --v.valuation_le_one
+    -- product of 1s
+    -- this says "valuation of global element is integral"
+  · have foo := h v (a v)
+    simp at foo
+    change a v * p ∈ _
+    dsimp
+    have pprod : p = b v (a v) * ∏ᶠ w ∈ S \ {v}, b w (a w) := sorry
+    rw [pprod]
+    push_cast -- how do I make that work
+    rw [← mul_assoc]
+    apply mul_mem foo
+    -- product of integers is an integer
+    sorry
 
 #check Submodule.pointwiseMulActionWithZero
 
+#check IsDedekindDomain.HeightOneSpectrum.AdicCompletion.algebra'
+
+example (a b : R) : (a : v.adicCompletion K) * b = (a * b : R) := by
+  norm_cast
 open scoped Pointwise
 
 theorem submodulesRingBasis : SubmodulesRingBasis
