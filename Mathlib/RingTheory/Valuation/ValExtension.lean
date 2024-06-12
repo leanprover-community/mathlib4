@@ -33,13 +33,16 @@ Valuation, Extension of Valuation
 -/
 open Valuation
 
+variable {R K A ΓR ΓK ΓA : Type*} [CommRing R] [Field K] [Ring A]
+    [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓK]
+    [LinearOrderedCommMonoidWithZero ΓA] [Algebra R A] [Algebra K A]
+    (vR : Valuation R ΓR) (vK : Valuation K ΓK) (vA : Valuation A ΓA)
+
 /--
 The class `IsValExtension R A` states that the valuation of `A` is an extension of the valuation
 on `R`. More precisely, the valuation on `R` is equivlent to the comap of the valuation on `A`.
 -/
-class IsValExtension {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
-  [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA]
-  [Algebra R A] (vR : Valuation R ΓR) (vA : Valuation A ΓA) : Prop where
+class IsValExtension : Prop where
   /-- The valuation on `R` is equivlent to the comap of the valuation on `A` -/
   val_isEquiv_comap : vR.IsEquiv <| vA.comap (algebraMap R A)
 
@@ -47,9 +50,7 @@ namespace IsValExtension
 
 section CoeLemma
 
-variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
-    [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA]
-    [Algebra R A] (vR : Valuation R ΓR) (vA : Valuation A ΓA) [IsValExtension vR vA]
+variable [IsValExtension vR vA]
 
 -- @[simp] does not work because `vR` cannot be inferred from `R`.
 theorem val_map_le_iff (x y : R) : vA (algebraMap R A x) ≤ vA (algebraMap R A y) ↔ vR x ≤ vR y :=
@@ -77,16 +78,18 @@ instance id : IsValExtension vR vR where
 
 end CoeLemma
 
+variable {ΓR ΓA ΓK: Type*} [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓK]
+    [LinearOrderedCommGroupWithZero ΓA] {vR : Valuation R ΓR} {vK : Valuation K ΓK}
+    {vA : Valuation A ΓA} [IsValExtension vR vA] [IsValExtension vK vA]
+
 section mk'
 
 /--
 When `K` is a field, if the preimage of the valuation integers of `A` equals to the valuation
 integers of `K`, then the valuation on `A` is an extension of valuation on `K`.
 -/
-theorem ofComapInteger {K A ΓK ΓA : Type*} [Field K] [Ring A]
-    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
-  [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA)
-    (h : vA.integer.comap (algebraMap K A) = vK.integer) : IsValExtension vK vA where
+theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
+    IsValExtension vK vA where
   val_isEquiv_comap := by
     rw [isEquiv_iff_val_le_one]
     intro x
@@ -96,10 +99,6 @@ theorem ofComapInteger {K A ΓK ΓA : Type*} [Field K] [Ring A]
 end mk'
 
 section integer
-
-variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
-    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-    [Algebra R A] {vR : Valuation R ΓR} {vA : Valuation A ΓA} [IsValExtension vR vA]
 
 instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul r a := ⟨r • a,
@@ -123,33 +122,28 @@ instance instIsScalarTowerInteger : IsScalarTower vR.integer vA.integer A where
     simp only [Algebra.smul_def]
     exact mul_assoc _ _ _
 
-instance instNoZeroSMulDivisorsInteger {K A ΓK ΓA : Type*} [CommRing K] [Ring A]
-    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
-    [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA) [IsValExtension vK vA]
-    [NoZeroSMulDivisors K A] :
-    NoZeroSMulDivisors vK.integer vA.integer := by
+instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
+    NoZeroSMulDivisors vR.integer vA.integer := by
   refine ⟨fun {x y} e ↦ ?_⟩
-  have : (x : K) • (y : A) = 0 := by simpa [Subtype.ext_iff, Algebra.smul_def] using e
+  have : (x : R) • (y : A) = 0 := by simpa [Subtype.ext_iff, Algebra.smul_def] using e
   simpa only [Subtype.ext_iff, smul_eq_zero] using this
 
-theorem algebraMap_injective {K A ΓK ΓA : Type*} [Field K] [Ring A] [Nontrivial A]
-    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
-    [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA) [IsValExtension vK vA] :
+theorem algebraMap_injective [Nontrivial A] :
     Function.Injective (algebraMap vK.integer vA.integer) := by
   intro x y h
   simp only [Subtype.ext_iff, val_algebraMap] at h
   ext
   apply RingHom.injective (algebraMap K A) h
 
-instance instIsLocalRingHomValuationInteger {R A ΓR ΓA : Type*} [CommRing R] [CommRing A]
-    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-    [Algebra R A] [IsLocalRingHom (algebraMap R A)] {vR : Valuation R ΓR} {vA : Valuation A ΓA}
-    [IsValExtension vR vA] : IsLocalRingHom (algebraMap vR.integer vA.integer) where
+instance instIsLocalRingHomValuationInteger {S ΓS: Type*} [CommRing S]
+    [LinearOrderedCommGroupWithZero ΓS]
+    [Algebra R S] [IsLocalRingHom (algebraMap R S)] {vS : Valuation S ΓS}
+    [IsValExtension vR vS] : IsLocalRingHom (algebraMap vR.integer vS.integer) where
   map_nonunit r hr := by
     apply (Valuation.integer.integers (v := vR)).isUnit_of_one
-    · exact (isUnit_map_iff (algebraMap R A) _).mp (hr.map (algebraMap _ A))
-    · apply (Valuation.integer.integers (v := vA)).one_of_isUnit at hr
-      exact (val_map_eq_one_iff vR vA _).mp hr
+    · exact (isUnit_map_iff (algebraMap R S) _).mp (hr.map (algebraMap _ S))
+    · apply (Valuation.integer.integers (v := vS)).one_of_isUnit at hr
+      exact (val_map_eq_one_iff vR vS _).mp hr
 
 end integer
 
