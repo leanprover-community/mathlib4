@@ -1764,7 +1764,7 @@ theorem coe_piCongrLeft (f : δ ≃ δ') :
 
 lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Type*}
     [∀ i', MeasurableSpace (β i')] (x : (i : ι) → β (e i)) (i : ι) :
-    (piCongrLeft (fun i' ↦ β i') e) x (e i) = x i := by
+    piCongrLeft (fun i' ↦ β i') e x (e i) = x i := by
   rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
 
 /-- Pi-types are measurably equivalent to iterated products. -/

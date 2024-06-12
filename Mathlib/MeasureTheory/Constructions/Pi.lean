@@ -511,7 +511,7 @@ theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s 
 lemma pi_map_piCongrLeft [hι' : Fintype ι'] (e : ι ≃ ι') {β : ι' → Type*}
     [∀ i, MeasurableSpace (β i)] (μ : (i : ι') → Measure (β i)) [∀ i, SigmaFinite (μ i)] :
     (Measure.pi fun i ↦ μ (e i)).map (MeasurableEquiv.piCongrLeft (fun i ↦ β i) e)
-    = Measure.pi μ := by
+      = Measure.pi μ := by
   let e_meas : ((b : ι) → β (e b)) ≃ᵐ ((a : ι') → β a) :=
     MeasurableEquiv.piCongrLeft (fun i ↦ β i) e
   refine Measure.pi_eq (fun s _ ↦ ?_) |>.symm
@@ -536,14 +536,12 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
       (MeasurableEquiv.piOptionEquivProd β).symm = Measure.pi μ := by
   refine pi_eq (fun s _ ↦ ?_) |>.symm
   let e_meas : ((i : ι) → β (some i)) × β none ≃ᵐ ((i : Option ι) → β i) :=
-        MeasurableEquiv.piOptionEquivProd β |>.symm
+    MeasurableEquiv.piOptionEquivProd β |>.symm
   have me := MeasurableEquiv.measurableEmbedding e_meas
-  have : e_meas ⁻¹' pi univ s
-      = (pi univ (fun i ↦ s (some i))) ×ˢ (s none) := by
+  have : e_meas ⁻¹' pi univ s = (pi univ (fun i ↦ s (some i))) ×ˢ (s none) := by
     ext x
     simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, mem_prod]
-    constructor; tauto
-    intro h i
+    refine ⟨by tauto, fun _ i ↦ ?_⟩
     rcases i <;> tauto
   simp only [me.map_apply, univ_option, le_eq_subset, Finset.prod_insertNone, this, prod_prod,
     pi_pi, mul_comm]
