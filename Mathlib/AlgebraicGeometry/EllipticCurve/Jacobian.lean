@@ -1042,16 +1042,16 @@ lemma addXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
 
 lemma addZ_self {P : Fin 3 → R} : addZ P P = 0 := sub_self _
 
-lemma addX_self {P : Fin 3 → R} (hP : V.Equation P) : V.addX P P = 0 := by
+lemma addX_self {P : Fin 3 → R} (hP : W'.Equation P) : W'.addX P P = 0 := by
   rw [addX]; rw [equation_iff] at hP
   linear_combination -2 * P z ^ 2 * hP
 
-lemma addY'_self {P : Fin 3 → R} : V.addY' P P = 0 := by rw [addY']; ring
+lemma negAddY_self {P : Fin 3 → R} : W'.negAddY P P = 0 := by rw [negAddY]; ring
 
-lemma addY_self {P : Fin 3 → R} (hP : V.Equation P) : V.addY P P = 0 := by
-  rw [addY, addX_self hP, addY'_self, addZ_self, negY]; simp
+lemma addY_self {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P P = 0 := by
+  rw [addY, addX_self hP, negAddY_self, addZ_self, negY]; simp
 
-lemma addXYZ_self {P : Fin 3 → R} (hP : V.Equation P) : V.addXYZ P P = ![0, 0, 0] := by
+lemma addXYZ_self {P : Fin 3 → R} (hP : W'.Equation P) : W'.addXYZ P P = ![0, 0, 0] := by
   rw [addXYZ, addX_self hP, addY_self hP, addZ_self]
 
 end Addition
@@ -1102,23 +1102,24 @@ lemma nonsingular_neg {P : Fin 3 → F} (hP : W.Nonsingular P) : W.Nonsingular <
   · simp only [neg_of_Z_ne_zero hPz, nonsingular_smul _ <| Ne.isUnit hPz,
       nonsingular_neg_of_Z_ne_zero hP hPz]
 
-lemma addZ_neg {P : Fin 3 → R} : addZ P (V.neg P) = 0 := by
+lemma addZ_neg {P : Fin 3 → R} : addZ P (W'.neg P) = 0 := by
   simp_rw [addZ, neg, fin3_def_ext, sub_self]
 
-lemma addX_neg {P : Fin 3 → R} (hP : V.Equation P) : V.addX P (V.neg P) = V.dblZ P ^ 2 := by
+lemma addX_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addX P (W'.neg P) = W'.dblZ P ^ 2 := by
   simp only [addX, neg, dblZ, negY, fin3_def_ext]
   linear_combination -2 * P z ^ 2 * ((equation_iff _).mp hP)
 
-lemma addY'_neg {P : Fin 3 → R} (hP : V.Equation P) : V.addY' P (V.neg P) = V.dblZ P ^ 3 := by
-  simp only [addY', neg, dblZ, negY, fin3_def_ext]
-  linear_combination -2 * (2 * P y * P z ^ 3 + V.a₁ * P x * P z ^ 4 + V.a₃ * P z ^ 6)
+lemma negAddY_neg {P : Fin 3 → R} (hP : W'.Equation P) :
+    W'.negAddY P (W'.neg P) = W'.dblZ P ^ 3 := by
+  simp only [negAddY, neg, dblZ, negY, fin3_def_ext]
+  linear_combination -2 * (2 * P y * P z ^ 3 + W'.a₁ * P x * P z ^ 4 + W'.a₃ * P z ^ 6)
     * ((equation_iff _).mp hP)
 
-lemma addY_neg {P : Fin 3 → R} (hP : V.Equation P) : V.addY P (V.neg P) = -V.dblZ P ^ 3 := by
-  simp [addY, addX_neg hP, addY'_neg hP, addZ_neg, negY, fin3_def_ext]
+lemma addY_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P (W'.neg P) = -W'.dblZ P ^ 3 := by
+  simp [addY, addX_neg hP, negAddY_neg hP, addZ_neg, negY, fin3_def_ext]
 
-lemma addXYZ_neg {P : Fin 3 → R} (hP : V.Equation P) :
-    V.addXYZ P (V.neg P) = -V.dblZ P • ![1, 1, 0] := by
+lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
+    W'.addXYZ P (W'.neg P) = -W'.dblZ P • ![1, 1, 0] := by
   simp_rw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3']
   simp [(show Odd 3 by decide).neg_pow]
 
@@ -1372,8 +1373,8 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y)
     fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
-lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : V.toAffine.Nonsingular X Y) :
-    fromAffine (Affine.Point.some h) ≠ 0 := fun h0 ↦ by
+lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+    fromAffine (.some h) ≠ 0 := fun h0 ↦ by
   erw [Point.ext_iff, Quotient.eq] at h0
   obtain ⟨u, eq⟩ := h0
   simpa [Units.smul_def, smul_fin3'] using congr_fun eq z
@@ -1574,25 +1575,45 @@ protected lemma map_smul (u : R) : f ∘ (u • P) = f u • (f ∘ P) := by
   ext i; fin_cases i <;> simp [smul_fin3]
 
 @[simp] lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by simp [addZ]
-@[simp] lemma map_addX : addX (V.map f) (f ∘ P) (f ∘ Q) = f (V.addX P Q) := by simp [addX]
-@[simp] lemma map_addY' : addY' (V.map f) (f ∘ P) (f ∘ Q) = f (V.addY' P Q) := by simp [addY']
-@[simp] lemma map_negY : negY (V.map f) (f ∘ P) = f (V.negY P) := by simp [negY]
+@[simp] lemma map_addX : addX (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by simp [addX]
+@[simp] lemma map_negAddY : negAddY (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+  simp [negAddY]
+@[simp] lemma map_negY : negY (W'.map f) (f ∘ P) = f (W'.negY P) := by simp [negY]
 
-@[simp] protected lemma map_neg : neg (V.map f) (f ∘ P) = f ∘ V.neg P := by
+@[simp] protected lemma map_neg : neg (W'.map f) (f ∘ P) = f ∘ W'.neg P := by
   ext i; fin_cases i <;> simp [neg]
 
-@[simp] lemma map_addY : addY (V.map f) (f ∘ P) (f ∘ Q) = f (V.addY P Q) := by
+@[simp] lemma map_addY : addY (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
   simp [addY, ← comp_fin3]
 
-@[simp] lemma map_addXYZ : addXYZ (V.map f) (f ∘ P) (f ∘ Q) = f ∘ addXYZ V P Q := by
+@[simp] lemma map_addXYZ : addXYZ (W'.map f) (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
   simp_rw [addXYZ, comp_fin3, map_addX, map_addY, map_addZ]
 
-@[simp] lemma map_dblZ : dblZ (V.map f) (f ∘ P) = f (V.dblZ P) := by simp [dblZ]
-@[simp] lemma map_dblX : dblX (V.map f) (f ∘ P) = f (V.dblX P) := by simp [dblX]
-@[simp] lemma map_dblY' : dblY' (V.map f) (f ∘ P) = f (V.dblY' P) := by simp [dblY']
-@[simp] lemma map_dblY : dblY (V.map f) (f ∘ P) = f (V.dblY P) := by simp [dblY, ← comp_fin3]
+@[simp] lemma map_polynomial :
+    (W'.map f).toJacobian.polynomial = MvPolynomial.map f W'.polynomial := by
+  simp [polynomial]
 
-@[simp] lemma map_dblXYZ : dblXYZ (V.map f) (f ∘ P) = f ∘ dblXYZ V P := by
+@[simp] lemma map_polynomialX :
+    (W'.map f).toJacobian.polynomialX = MvPolynomial.map f W'.polynomialX := by
+  simp [polynomialX, pderiv_map]
+
+@[simp] lemma map_polynomialY :
+    (W'.map f).toJacobian.polynomialY = MvPolynomial.map f W'.polynomialY := by
+  simp [polynomialY, pderiv_map]
+
+@[simp] lemma map_polynomialZ :
+    (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
+  simp [polynomialZ, pderiv_map]
+
+@[simp] lemma map_dblZ : dblZ (W'.map f) (f ∘ P) = f (W'.dblZ P) := by simp [dblZ]
+@[simp] lemma map_dblU : dblU (W'.map f) (f ∘ P) = f (W'.dblU P) := by
+  simp [dblU, map_polynomialX, ← eval₂_id, eval₂_comp_left]
+  
+@[simp] lemma map_dblX : dblX (W'.map f) (f ∘ P) = f (W'.dblX P) := by simp [dblX]
+@[simp] lemma map_negDblY : negDblY (W'.map f) (f ∘ P) = f (W'.negDblY P) := by simp [negDblY]
+@[simp] lemma map_dblY : dblY (W'.map f) (f ∘ P) = f (W'.dblY P) := by simp [dblY, ← comp_fin3]
+
+@[simp] lemma map_dblXYZ : dblXYZ (W'.map f) (f ∘ P) = f ∘ dblXYZ W' P := by
   simp_rw [dblXYZ, comp_fin3, map_dblX, map_dblY, map_dblZ]
 
 end Map
