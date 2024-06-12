@@ -66,7 +66,7 @@ abbrev mk (desc : ∀ s, t ⟶ s) (w : ∀ s τ, τ = desc s) :
   .ofUniqueHom desc w
 
 /-- The family of 2-morphisms out of a left Kan extension. -/
-abbrev desc (H : IsKan t) (s : LeftExtension f g) : t.extension ⟶ s.extension :=
+noncomputable abbrev desc (H : IsKan t) (s : LeftExtension f g) : t.extension ⟶ s.extension :=
   StructuredArrow.IsUniversal.desc H s
 
 @[reassoc (attr := simp)]
@@ -87,14 +87,14 @@ namespace IsAbsKan
 variable {t : LeftExtension f g}
 
 /-- The family of 2-morphisms out of an absolute left Kan extension. -/
-abbrev desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h)) :
+noncomputable abbrev desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h)) :
     t.extension ≫ h ⟶ s.extension :=
   (H h).desc s
 
 variable {x : B} {h : c ⟶ x} {s : LeftExtension f (g ≫ h)}
 
 /-- An absolute left Kan extension is a left Kan extension. -/
-def isKan (H : IsAbsKan t) : IsKan t :=
+noncomputable def isKan (H : IsAbsKan t) : IsKan t :=
   .mk (fun s ↦ LeftExtension.whiskerIdCancel <| (H (𝟙 _)).to _) <| by
     intro s τ
     ext
@@ -128,7 +128,7 @@ abbrev mk (desc : ∀ s, t ⟶ s) (w : ∀ s τ, τ = desc s) :
   .ofUniqueHom desc w
 
 /-- The family of 2-morphisms out of a left Kan lift. -/
-abbrev desc (H : IsKan t) (s : LeftLift f g) : t.lift ⟶ s.lift :=
+noncomputable abbrev desc (H : IsKan t) (s : LeftLift f g) : t.lift ⟶ s.lift :=
   StructuredArrow.IsUniversal.desc H s
 
 @[reassoc (attr := simp)]
@@ -149,14 +149,14 @@ namespace IsAbsKan
 variable {t : LeftLift f g}
 
 /-- The family of 2-morphisms out of an absolute left Kan lift. -/
-abbrev desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : LeftLift f (h ≫ g)) :
+noncomputable abbrev desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : LeftLift f (h ≫ g)) :
     h ≫ t.lift ⟶ s.lift :=
   (H h).desc s
 
 variable {x : B} {h : x ⟶ c} {s : LeftLift f (h ≫ g)}
 
 /-- An absolute left Kan lift is a left Kan lift. -/
-def isKan (H : IsAbsKan t) : IsKan t :=
+noncomputable def isKan (H : IsAbsKan t) : IsKan t :=
   .mk (fun s ↦ LeftLift.whiskerIdCancel <| (H (𝟙 _)).to _) <| by
     intro s τ
     ext

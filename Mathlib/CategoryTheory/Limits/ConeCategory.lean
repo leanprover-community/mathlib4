@@ -37,7 +37,7 @@ variable {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 /-- Given a cone `c` over `F`, we can interpret the legs of `c` as structured arrows
     `c.pt ⟶ F.obj -`. -/
 @[simps]
-def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.pt F where
+noncomputable def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.pt F where
   obj j := StructuredArrow.mk (c.π.app j)
   map f := StructuredArrow.homMk f
 
@@ -50,12 +50,12 @@ noncomputable def limit.toStructuredArrow (F : J ⥤ C) [HasLimit F] :
   map f := StructuredArrow.homMk f
 
 /-- `Cone.toStructuredArrow` can be expressed in terms of `Functor.toStructuredArrow`. -/
-def Cone.toStructuredArrowIsoToStructuredArrow {F : J ⥤ C} (c : Cone F) :
+noncomputable def Cone.toStructuredArrowIsoToStructuredArrow {F : J ⥤ C} (c : Cone F) :
     c.toStructuredArrow ≅ (𝟭 J).toStructuredArrow c.pt F c.π.app (by simp) :=
   Iso.refl _
 
 /-- `Functor.toStructuredArrow` can be expressed in terms of `Cone.toStructuredArrow`. -/
-def _root_.CategoryTheory.Functor.toStructuredArrowIsoToStructuredArrow (G : J ⥤ K) (X : C)
+noncomputable def _root_.CategoryTheory.Functor.toStructuredArrowIsoToStructuredArrow (G : J ⥤ K) (X : C)
     (F : K ⥤ C) (f : (Y : J) → X ⟶ F.obj (G.obj Y))
     (h : ∀ {Y Z : J} (g : Y ⟶ Z), f Y ≫ F.map (G.map g) = f Z) :
     G.toStructuredArrow X F f h ≅
@@ -65,7 +65,7 @@ def _root_.CategoryTheory.Functor.toStructuredArrowIsoToStructuredArrow (G : J �
 /-- Interpreting the legs of a cone as a structured arrow and then forgetting the arrow again does
     nothing. -/
 @[simps!]
-def Cone.toStructuredArrowCompProj {F : J ⥤ C} (c : Cone F) :
+noncomputable def Cone.toStructuredArrowCompProj {F : J ⥤ C} (c : Cone F) :
     c.toStructuredArrow ⋙ StructuredArrow.proj _ _ ≅ 𝟭 J :=
   Iso.refl _
 
@@ -78,7 +78,7 @@ lemma Cone.toStructuredArrow_comp_proj {F : J ⥤ C} (c : Cone F) :
     the cone point, and finally forgetting the arrow is the same as just applying the functor the
     cone was over. -/
 @[simps!]
-def Cone.toStructuredArrowCompToUnderCompForget {F : J ⥤ C} (c : Cone F) :
+noncomputable def Cone.toStructuredArrowCompToUnderCompForget {F : J ⥤ C} (c : Cone F) :
     c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _ ⋙ Under.forget _ ≅ F :=
   Iso.refl _
 
@@ -89,7 +89,7 @@ lemma Cone.toStructuredArrow_comp_toUnder_comp_forget {F : J ⥤ C} (c : Cone F)
 
 /-- A cone `c` on `F : J ⥤ C` lifts to a cone in `Over c.pt` with cone point `𝟙 c.pt`. -/
 @[simps]
-def Cone.toUnder {F : J ⥤ C} (c : Cone F) :
+noncomputable def Cone.toUnder {F : J ⥤ C} (c : Cone F) :
     Cone (c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _) where
   pt := Under.mk (𝟙 c.pt)
   π := { app := fun j => Under.homMk (c.π.app j) (by simp) }
@@ -103,7 +103,7 @@ noncomputable def limit.toUnder (F : J ⥤ C) [HasLimit F] :
 
 /-- `c.toUnder` is a lift of `c` under the forgetful functor. -/
 @[simps!]
-def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone c.toUnder ≅ c :=
+noncomputable def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone c.toUnder ≅ c :=
   Iso.refl _
 
 /-- Given a diagram of `StructuredArrow X F`s, we may obtain a cone with cone point `X`. -/
@@ -117,7 +117,7 @@ def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X 
 arrows over `X` with `f` as the cone point.
 -/
 @[simps]
-def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} (f : X ⟶ F.obj c.pt) :
+noncomputable def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} (f : X ⟶ F.obj c.pt) :
     Cone ((F.mapCone c).toStructuredArrow ⋙ StructuredArrow.map f ⋙ StructuredArrow.pre _ K F) where
   pt := StructuredArrow.mk f
   π := { app := fun j => StructuredArrow.homMk (c.π.app j) rfl }
@@ -126,7 +126,7 @@ def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} 
 /-- Construct an object of the category `(Δ ↓ F)` from a cone on `F`. This is part of an
     equivalence, see `Cone.equivCostructuredArrow`. -/
 @[simps]
-def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const J) F where
+noncomputable def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const J) F where
   obj c := CostructuredArrow.mk c.π
   map f := CostructuredArrow.homMk f.hom
 #align category_theory.limits.cone.to_costructured_arrow CategoryTheory.Limits.Cone.toCostructuredArrow
@@ -154,7 +154,7 @@ Similarly for `Cocone.equivStructuredArrow`.
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
     functor. -/
 @[simps! (config := { notRecursive := [`PLift, `ULift] })]
-def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F :=
+noncomputable def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F :=
   Equivalence.mk (Cone.toCostructuredArrow F) (Cone.fromCostructuredArrow F)
     (NatIso.ofComponents Cones.eta)
     (NatIso.ofComponents fun c => (CostructuredArrow.eta _).symm)
@@ -213,7 +213,7 @@ def IsLimit.ofReflectsConeTerminal {F : J ⥤ C} {F' : K ⥤ D} (G : Cone F ⥤ 
 /-- Given a cocone `c` over `F`, we can interpret the legs of `c` as costructured arrows
     `F.obj - ⟶ c.pt`. -/
 @[simps]
-def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ CostructuredArrow F c.pt where
+noncomputable def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ CostructuredArrow F c.pt where
   obj j := CostructuredArrow.mk (c.ι.app j)
   map f := CostructuredArrow.homMk f
 
@@ -226,12 +226,12 @@ noncomputable def colimit.toCostructuredArrow (F : J ⥤ C) [HasColimit F] :
   map f := CostructuredArrow.homMk f
 
 /-- `Cocone.toCostructuredArrow` can be expressed in terms of `Functor.toCostructuredArrow`. -/
-def Cocone.toCostructuredArrowIsoToCostructuredArrow {F : J ⥤ C} (c : Cocone F) :
+noncomputable def Cocone.toCostructuredArrowIsoToCostructuredArrow {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ≅ (𝟭 J).toCostructuredArrow F c.pt c.ι.app (by simp) :=
   Iso.refl _
 
 /-- `Functor.toCostructuredArrow` can be expressed in terms of `Cocone.toCostructuredArrow`. -/
-def _root_.CategoryTheory.Functor.toCostructuredArrowIsoToCostructuredArrow (G : J ⥤ K)
+noncomputable def _root_.CategoryTheory.Functor.toCostructuredArrowIsoToCostructuredArrow (G : J ⥤ K)
     (F : K ⥤ C) (X : C) (f : (Y : J) → F.obj (G.obj Y) ⟶ X)
     (h : ∀ {Y Z : J} (g : Y ⟶ Z), F.map (G.map g) ≫ f Z = f Y) :
     G.toCostructuredArrow F X f h ≅
@@ -241,7 +241,7 @@ def _root_.CategoryTheory.Functor.toCostructuredArrowIsoToCostructuredArrow (G :
 /-- Interpreting the legs of a cocone as a costructured arrow and then forgetting the arrow again
     does nothing. -/
 @[simps!]
-def Cocone.toCostructuredArrowCompProj {F : J ⥤ C} (c : Cocone F) :
+noncomputable def Cocone.toCostructuredArrowCompProj {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ⋙ CostructuredArrow.proj _ _ ≅ 𝟭 J :=
   Iso.refl _
 
@@ -254,7 +254,7 @@ lemma Cocone.toCostructuredArrow_comp_proj {F : J ⥤ C} (c : Cocone F) :
     over the cocone point, and finally forgetting the arrow is the same as just applying the
     functor the cocone was over. -/
 @[simps!]
-def Cocone.toCostructuredArrowCompToOverCompForget {F : J ⥤ C} (c : Cocone F) :
+noncomputable def Cocone.toCostructuredArrowCompToOverCompForget {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ Over.forget _ ≅ F :=
   Iso.refl _
 
@@ -265,7 +265,7 @@ lemma Cocone.toCostructuredArrow_comp_toOver_comp_forget {F : J ⥤ C} (c : Coco
 
 /-- A cocone `c` on `F : J ⥤ C` lifts to a cocone in `Over c.pt` with cone point `𝟙 c.pt`. -/
 @[simps]
-def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
+noncomputable def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
     Cocone (c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _) where
   pt := Over.mk (𝟙 c.pt)
   ι := { app := fun j => Over.homMk (c.ι.app j) (by simp) }
@@ -280,7 +280,7 @@ noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
 
 /-- `c.toOver` is a lift of `c` under the forgetful functor. -/
 @[simps!]
-def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
+noncomputable def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
   Iso.refl _
 
 /-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
@@ -292,7 +292,7 @@ def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredAr
 /-- Given a cocone `c : Cocone K` and a map `f : F.obj c.X ⟶ X`, we can construct a cocone of
     costructured arrows over `X` with `f` as the cone point. -/
 @[simps]
-def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) {X : D}
+noncomputable def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) {X : D}
     (f : F.obj c.pt ⟶ X) : Cocone ((F.mapCocone c).toCostructuredArrow ⋙
       CostructuredArrow.map f ⋙ CostructuredArrow.pre _ _ _) where
   pt := CostructuredArrow.mk f
@@ -301,7 +301,7 @@ def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) 
 /-- Construct an object of the category `(F ↓ Δ)` from a cocone on `F`. This is part of an
     equivalence, see `Cocone.equivStructuredArrow`. -/
 @[simps]
-def Cocone.toStructuredArrow (F : J ⥤ C) : Cocone F ⥤ StructuredArrow F (const J) where
+noncomputable def Cocone.toStructuredArrow (F : J ⥤ C) : Cocone F ⥤ StructuredArrow F (const J) where
   obj c := StructuredArrow.mk c.ι
   map f := StructuredArrow.homMk f.hom
 #align category_theory.limits.cocone.to_structured_arrow CategoryTheory.Limits.Cocone.toStructuredArrow
@@ -322,7 +322,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/
 @[simps! (config := { notRecursive := [`PLift, `ULift] })]
-def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) :=
+noncomputable def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) :=
   Equivalence.mk (Cocone.toStructuredArrow F) (Cocone.fromStructuredArrow F)
     (NatIso.ofComponents Cocones.eta)
     (NatIso.ofComponents fun c => (StructuredArrow.eta _).symm)

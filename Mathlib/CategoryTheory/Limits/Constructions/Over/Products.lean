@@ -76,7 +76,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
-def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
+noncomputable def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     Cone (widePullbackDiagramOfDiagramOver B F) ⥤ Cone F where
   obj c :=
     { pt := Over.mk (c.π.app none)
@@ -94,7 +94,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simp]
-def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
+noncomputable def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
   NatIso.ofComponents fun _ => Cones.ext
@@ -107,7 +107,7 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
 --       `Cones.ext`?
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simp]
-def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
+noncomputable def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
   NatIso.ofComponents fun _ => Cones.ext
     { hom := Over.homMk (𝟙 _)
@@ -117,7 +117,7 @@ def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
 /-- (Impl) Establish an equivalence between the category of cones for `F` and for the "grown" `F`.
 -/
 @[simps]
-def conesEquiv (B : C) (F : Discrete J ⥤ Over B) :
+noncomputable def conesEquiv (B : C) (F : Discrete J ⥤ Over B) :
     Cone (widePullbackDiagramOfDiagramOver B F) ≌ Cone F where
   functor := conesEquivFunctor B F
   inverse := conesEquivInverse B F

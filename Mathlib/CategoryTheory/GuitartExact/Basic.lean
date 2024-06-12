@@ -75,7 +75,7 @@ variable (w : TwoSquare T L R B)
 /-- Given `w : TwoSquare T L R B` and `X₃ : C₃`, this is the obvious functor
 `CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃)`. -/
 @[simps! obj map]
-def costructuredArrowRightwards (X₃ : C₃) :
+noncomputable def costructuredArrowRightwards (X₃ : C₃) :
     CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃) :=
   CostructuredArrow.post L B X₃ ⋙ Comma.mapLeft _ w ⋙
     CostructuredArrow.pre T R (B.obj X₃)
@@ -83,7 +83,7 @@ def costructuredArrowRightwards (X₃ : C₃) :
 /-- Given `w : TwoSquare T L R B` and `X₂ : C₂`, this is the obvious functor
 `StructuredArrow X₂ T ⥤ StructuredArrow (R.obj X₂) B`. -/
 @[simps! obj map]
-def structuredArrowDownwards (X₂ : C₂) :
+noncomputable def structuredArrowDownwards (X₂ : C₂) :
     StructuredArrow X₂ T ⥤ StructuredArrow (R.obj X₂) B :=
   StructuredArrow.post X₂ T R ⋙ Comma.mapRight _ w ⋙
     StructuredArrow.pre (R.obj X₂) L B
@@ -117,11 +117,11 @@ variable (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
   (comm : R.map a ≫ w.app X₁ ≫ B.map b = g)
 
 /-- Constructor for objects in `w.StructuredArrowRightwards g`. -/
-abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
+noncomputable abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
-abbrev CoStructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
+noncomputable abbrev CoStructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
 
@@ -132,7 +132,7 @@ namespace EquivalenceJ
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious functor `w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g`. -/
 @[simps]
-def functor : w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g where
+noncomputable def functor : w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g where
   obj f := CostructuredArrow.mk (Y := StructuredArrow.mk f.hom.left)
       (StructuredArrow.homMk f.right.hom (by simpa using CostructuredArrow.w f.hom))
   map {f₁ f₂} φ :=
@@ -145,7 +145,7 @@ def functor : w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g w
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious functor `w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g`. -/
 @[simps]
-def inverse : w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g where
+noncomputable def inverse : w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g where
   obj f := StructuredArrow.mk (Y := CostructuredArrow.mk f.hom.right)
       (CostructuredArrow.homMk f.left.hom (by simpa using StructuredArrow.w f.hom))
   map {f₁ f₂} φ :=
@@ -161,7 +161,7 @@ end EquivalenceJ
 the obvious equivalence of categories
 `w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g`. -/
 @[simps functor inverse unitIso counitIso]
-def equivalenceJ : w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g where
+noncomputable def equivalenceJ : w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g where
   functor := EquivalenceJ.functor w g
   inverse := EquivalenceJ.inverse w g
   unitIso := Iso.refl _
