@@ -158,7 +158,7 @@ instance comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : IsOpenImmersion f] (g 
   c_iso U := by
     generalize_proofs h
     dsimp only [AlgebraicGeometry.PresheafedSpace.comp_c_app, unop_op, Functor.op, comp_base,
-      TopCat.Presheaf.pushforwardObj_obj, Opens.map_comp_obj]
+      Opens.map_comp_obj]
     -- Porting note: was `apply (config := { instances := False }) ...`
     -- See https://github.com/leanprover/lean4/issues/2273
     have : IsIso (g.c.app (op <| (h.functor).obj U)) := by
@@ -392,7 +392,7 @@ def pullbackConeOfLeftFst :
         rw [inv_naturality_assoc]
         -- Porting note: the following lemmas are not picked up by `simp`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
-        erw [g.c.naturality_assoc, TopCat.Presheaf.pushforwardObj_map, ← Y.presheaf.map_comp,
+        erw [g.c.naturality_assoc, ← Y.presheaf.map_comp,
           ← Y.presheaf.map_comp]
         congr 1 }
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_fst AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftFst
@@ -407,8 +407,8 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
     rw [NatTrans.comp_app]
     dsimp only [comp_c_app, unop_op, whiskerRight_app, pullbackConeOfLeftFst]
     -- simp only [ofRestrict_c_app, NatTrans.comp_app]
-    simp only [Quiver.Hom.unop_op, TopCat.Presheaf.pushforwardObj_map, app_invApp_assoc,
-      eqToHom_app, eqToHom_unop, Category.assoc, NatTrans.naturality_assoc, Functor.op_map]
+    simp only [app_invApp_assoc,
+      eqToHom_app, Category.assoc, NatTrans.naturality_assoc]
     erw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
     congr 1
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_condition AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition
