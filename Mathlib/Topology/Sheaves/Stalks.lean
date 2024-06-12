@@ -229,6 +229,14 @@ def stalkPullbackHom (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pullback_hom TopCat.Presheaf.stalkPullbackHom
 
+@[reassoc (attr := simp)]
+lemma germ_stalkPullbackHom
+    (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) (U : Opens Y) (hU : f x ∈ U) :
+    F.germ ⟨f x, hU⟩ ≫ stalkPullbackHom C f F x =
+      ((pushforwardPullbackAdjunction C f).unit.app F).app _ ≫
+        ((pullback C f).obj F).germ ⟨x, show x ∈ (Opens.map f).obj U from hU⟩ := by
+  simp [stalkPullbackHom, germ, stalkFunctor, stalkPushforward]
+
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
     ((pullback C f).obj F).obj (op U) ⟶ F.stalk ((f : X → Y) (x : X)) :=
@@ -240,12 +248,42 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_to_pullback_stalk TopCat.Presheaf.germToPullbackStalk
 
--- is this useful?
+variable {C} in
+lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens X)ᵒᵖ)
+    {φ ψ : ((pullback C f).obj F).obj U ⟶ Z}
+    (h : ∀ (V : Opens Y) (hV : U.unop ≤ (Opens.map f).obj V),
+      ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
+        ((pullback C f).obj F).map (homOfLE hV).op ≫ φ =
+      ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
+        ((pullback C f).obj F).map (homOfLE hV).op ≫ ψ): φ = ψ := by
+  obtain ⟨U⟩ := U
+  apply ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F _).hom_ext
+  rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
+  simpa [pushforwardPullbackAdjunction, Functor.lanAdjunction_unit]
+    using h V (leOfHom b)
+
+@[reassoc (attr := simp)]
+lemma germToPullbackStalk_stalkPullbackHom
+    (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
+    germToPullbackStalk C f F U x ≫ stalkPullbackHom C f F x =
+      ((pullback C f).obj F).germ x := sorry
+
+@[reassoc (attr := simp)]
+lemma pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk
+    (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) (V : Opens Y)
+    (hV : U ≤ (Opens.map f).obj V) :
+    ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
+      ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x =
+        F.germ ⟨f x, hV x.2⟩ := by
+  sorry
+
+@[reassoc (attr := simp)]
 lemma pushforwardPullbackAdjunction_unit_app_app_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (V : (Opens Y)ᵒᵖ) (x : (Opens.map f).obj V.unop) :
     ((pushforwardPullbackAdjunction C f).unit.app F).app V ≫ germToPullbackStalk C f F _ x =
       F.germ ⟨f x, x.2⟩ := by
-  sorry
+  simpa using pushforwardPullbackAdjunction_unit_app_app_pullback_obj_map_germToPullbackStalk
+    C f F ((Opens.map f).obj V.unop) x V.unop (by rfl)
 
 /-- The morphism `(f⁻¹ℱ)ₓ ⟶ ℱ_{f(x)}`. -/
 def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
@@ -262,45 +300,26 @@ def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pullback_inv TopCat.Presheaf.stalkPullbackInv
 
+@[reassoc (attr := simp)]
+lemma germ_stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) (V : Opens X) (hV : x ∈ V) :
+    ((pullback C f).obj F).germ ⟨x, hV⟩ ≫ stalkPullbackInv C f F x =
+    F.germToPullbackStalk _ f V ⟨x, hV⟩ := by
+  apply colimit.ι_desc
+
 /-- The isomorphism `ℱ_{f(x)} ≅ (f⁻¹ℱ)ₓ`. -/
 def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     F.stalk (f x) ≅ ((pullback C f).obj F).stalk x where
   hom := stalkPullbackHom _ _ _ _
   inv := stalkPullbackInv _ _ _ _
   hom_inv_id := by
-    sorry
-    /-delta
-      stalkPullbackHom stalkPullbackInv stalkFunctor Presheaf.pullback stalkPushforward
-      germToPullbackStalk germ
-    change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-    ext j
-    induction' j with j
-    cases j
-    simp only [TopologicalSpace.OpenNhds.inclusionMapIso_inv, whiskerRight_app, whiskerLeft_app,
-      whiskeringLeft_obj_map, Functor.comp_map, colimit.ι_map_assoc, NatTrans.op_id, lan_obj_map,
-      pushforwardPullbackAdjunction_unit_app_app, Category.assoc, colimit.ι_pre_assoc]
-    erw [colimit.ι_desc, colimit.pre_desc, colimit.ι_desc, Category.comp_id]
-    simp-/
+    ext U hU
+    dsimp
+    rw [germ_stalkPullbackHom_assoc, germ_stalkPullbackInv, Category.comp_id,
+      pushforwardPullbackAdjunction_unit_app_app_germToPullbackStalk]
   inv_hom_id := by
-    sorry
-    /-delta stalkPullbackHom stalkPullbackInv stalkFunctor Presheaf.pullback stalkPushforward
-    change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-    ext ⟨U_obj, U_property⟩
-    change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-    ext ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
-    erw [colimit.map_desc, colimit.map_desc, colimit.ι_desc_assoc, colimit.ι_desc_assoc,
-      colimit.ι_desc, Category.comp_id]
-    simp only [Cocone.whisker_ι, colimit.cocone_ι, OpenNhds.inclusionMapIso_inv,
-      Cocones.precompose_obj_ι, whiskerRight_app, whiskerLeft_app, NatTrans.comp_app,
-      whiskeringLeft_obj_map, NatTrans.op_id, lan_obj_map,
-      pushforwardPullbackAdjunction_unit_app_app]
-    erw [←
-      colimit.w _
-        (@homOfLE (OpenNhds x) _ ⟨_, U_property⟩
-            ⟨(Opens.map f).obj (unop j_left), j_hom.unop.le U_property⟩ j_hom.unop.le).op]
-    erw [colimit.ι_pre_assoc (Lan.diagram _ F _) (CostructuredArrow.map _)]
-    erw [colimit.ι_pre_assoc (Lan.diagram _ F (op U_obj)) (CostructuredArrow.map _)]
-    rfl-/
+    ext V hV
+    dsimp
+    rw [germ_stalkPullbackInv_assoc, Category.comp_id, germToPullbackStalk_stalkPullbackHom]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pullback_iso TopCat.Presheaf.stalkPullbackIso
 
