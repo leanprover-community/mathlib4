@@ -156,7 +156,9 @@ jobs:
           lake --version
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run: |  lake update UpdateDeprecations ; lake exe mk_all
+        run: |
+          lake update UpdateDeprecations
+          lake exe mk_all
 
       - name: check_imported
         run: git diff --exit-code
