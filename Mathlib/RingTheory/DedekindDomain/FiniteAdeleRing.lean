@@ -432,13 +432,16 @@ lemma foo (a b : FiniteAdeleRing R K) (v : HeightOneSpectrum R) :
 --   have foo : x = ∏ᶠ v ∈ {v | x v ∉ adicCompletionIntegers K v}, local_inclusion v (x v) := by
 --     sorry
 --   sorry
-
 -- local version
 
 variable {R K} in
 lemma clear_local_denominator (v : HeightOneSpectrum R)
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
-  sorry
+  by_cases ha : a ∈ v.adicCompletionIntegers K
+  ·
+    sorry
+  ·
+    sorry
 
 lemma exists_integer_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
     a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v := by
@@ -479,6 +482,7 @@ lemma clear_denominator (a : FiniteAdeleRing R K) :
     suffices Valued.v (p : K) ≤ 1 by
       rw [← Valued.valuedCompletion_apply] at this
       convert this
+    -- I'm sure I've seen this somewhere
     sorry
       --v.valuation_le_one
     -- product of 1s
@@ -495,12 +499,6 @@ lemma clear_denominator (a : FiniteAdeleRing R K) :
     -- product of integers is an integer
     sorry
 
-#check Submodule.pointwiseMulActionWithZero
-
-#check IsDedekindDomain.HeightOneSpectrum.AdicCompletion.algebra'
-
-example (a b : R) : (a : v.adicCompletion K) * b = (a * b : R) := by
-  norm_cast
 open scoped Pointwise
 
 theorem submodulesRingBasis : SubmodulesRingBasis
