@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.Logic.Small.Set
+import Mathlib.Tactic.SuppressCompilation
 
 #align_import category_theory.structured_arrow from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
@@ -22,6 +23,7 @@ These form a category with morphisms `g : Y ⟶ Y'` making the obvious diagram c
 We prove that `𝟙 (T.obj Y)` is the initial object in `T`-structured objects with source `T.obj Y`.
 -/
 
+suppress_compilation
 
 namespace CategoryTheory
 
