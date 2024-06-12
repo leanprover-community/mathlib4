@@ -264,15 +264,6 @@ protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     fun k hle hi _ ↦ h1 k hle (hi hle)
 #align int.le_induction_down Int.le_induction_down
 
-theorem strong_induction {P : ℤ → Prop} (m : ℤ) (h0 : ∀ n < m, P n)
-    (h1 : ∀ n, m ≤ n → (∀ k, k < n → P k) → P n) (n : ℤ) : P n := by
-  by_cases h : n < m
-  · exact h0 _ h
-  exact h1 _ (Int.not_lt.mp h) (n.inductionOn' m h0
-    (fun n _ hn l lt1 ↦ (em <| l < m).elim (h0 _) fun nlt ↦ h1 _ (Int.not_lt.mp nlt)
-      fun k lt ↦ hn _ <| Int.lt_of_lt_of_le lt <| lt_add_one_iff.mp lt1)
-    fun n _ hn l lt ↦ hn _ <| Int.lt_trans lt <| pred_self_lt _)
-
 /-! ### nat abs -/
 
 #align int.nat_abs_dvd_iff_dvd Int.natAbs_dvd_natAbs
