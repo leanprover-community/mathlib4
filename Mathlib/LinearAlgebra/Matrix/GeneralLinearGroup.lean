@@ -150,7 +150,7 @@ end CoeLemmas
 
 variable {S T : Type v} [CommRing S] [CommRing T]
 
-/-- A ring homomorphism ``f : R → S`` induces ``GLₙ(f) : GLₙ(R) → GLₙ(S)``. -/
+/-- A ring homomorphism ``f : R →+* S`` induces a homomorphism of ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
 def map (n : ℕ) (f : R →+* S) : GL (Fin n) R →* GL (Fin n) S
     where
   toFun g :=
