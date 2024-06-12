@@ -206,7 +206,7 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
 end preparation
 
 theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0)  : ∃ (t : Fin n → ℤ), t ≠ 0 ∧
-      A.mulVec t = 0 ∧ ‖t‖ ≤ ((n * ‖A‖)^((m : ℝ ) / (n - m))) := by
+    A.mulVec t = 0 ∧ ‖t‖ ≤ ((n * ‖A‖)^((m : ℝ ) / (n - m))) := by
   --Pigeonhole
   rcases Finset.exists_ne_map_eq_of_card_lt_of_maps_to
     (card_S_lt_card_T m n A hn hA_nezero) (image_T_subset_S m n A) with ⟨ x, hxT,y, hyT ,hneq, hfeq⟩
