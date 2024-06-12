@@ -471,6 +471,6 @@ lemma spectrum.units_conjugate {a : A} {u : Aˣ} :
 @[simp]
 lemma spectrum.units_conjugate' {a : A} {u : Aˣ} :
     spectrum R (u⁻¹ * a * u) = spectrum R a := by
-  simpa using spectrum.conjugate_units (u := u⁻¹)
+  simpa using spectrum.units_conjugate (u := u⁻¹)
 
 end ConjugateUnits

@@ -250,7 +250,7 @@ variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
 @[simp]
 lemma spectrum.unitary_conjugate {a : A} {u : unitary A} :
     spectrum R (u * a * (star u : A)) = spectrum R a :=
-  spectrum.conjugate_units (u := unitary.toUnits u)
+  spectrum.units_conjugate (u := unitary.toUnits u)
 
 /-- Unitary conjugation preserves the spectrum, star on right. -/
 @[simp]
