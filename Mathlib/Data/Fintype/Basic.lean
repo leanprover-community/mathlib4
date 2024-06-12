@@ -345,8 +345,7 @@ lemma univ_val_map_subtype_val [Fintype α] (p : α → Prop) [DecidablePred p] 
 lemma univ_val_map_subtype_restrict [Fintype α] (f : α → β)
     (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.val.map (Subtype.restrict p f) = (univ.filter p).val.map f := by
-  rewrite [← univ_val_map_subtype_val, Multiset.map_map, comp_def]
-  rfl
+  rw [← univ_val_map_subtype_val, Multiset.map_map, Subtype.restrict_def]
 
 end Finset
 
