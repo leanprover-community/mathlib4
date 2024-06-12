@@ -7,7 +7,6 @@ import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
 import Batteries.Data.RBMap.Basic
-import Mathlib.Data.HashMap
 import Mathlib.Control.Basic
 
 /-!
