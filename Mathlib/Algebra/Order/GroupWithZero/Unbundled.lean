@@ -20,7 +20,7 @@ We use eight typeclasses to encode the various properties we care about for thos
 These typeclasses are meant to be mostly internal to this file, to set up each lemma in the
 appropriate generality.
 
-Less granular typeclasses like `OrderedAddCommMonoid`, `LinearOrderedField`` should be enough for
+Less granular typeclasses like `OrderedAddCommMonoid`, `LinearOrderedField` should be enough for
 most purposes, and the system is set up so that they imply the correct granular typeclasses here.
 If those are enough for you, you may stop reading here! Else, beware that what follows is a bit
 technical.
