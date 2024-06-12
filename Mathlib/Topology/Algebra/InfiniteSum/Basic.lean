@@ -207,9 +207,9 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
 @[to_additive]
 protected theorem Inducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
     [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) (a : α) :
-    HasProd f a ↔ HasProd (g ∘ f) (g a) := by
+    HasProd (g ∘ f) (g a) ↔ HasProd f a := by
   simp_rw [HasProd, comp_apply, ← map_prod]
-  exact hg.tendsto_nhds_iff
+  exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
 protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ] (hf : Multipliable f) {G}
@@ -234,7 +234,7 @@ theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ
 
 @[to_additive]
 theorem Inducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
-    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α):
+    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) :
     Multipliable f ↔ Multipliable (g ∘ f) ∧ ∏' i, g (f i) ∈ Set.range g := by
   constructor
   · intro hf
@@ -246,7 +246,7 @@ theorem Inducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [Topologi
     use a
     have := hgf.hasProd
     simp_rw [comp_apply, ← ha] at this
-    exact (hg.hasProd_iff f a).mpr this
+    exact (hg.hasProd_iff f a).mp this
 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive "A special case of `Summable.map_iff_of_leftInverse` for convenience"]
@@ -389,7 +389,7 @@ theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
 #align tsum_congr_subtype tsum_congr_set_coe
 
 @[to_additive]
-theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x):
+theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x) :
     ∏' x : {x // P x}, f x = ∏' x : {x // Q x}, f x :=
   tprod_congr_set_coe f <| Set.ext h
 
@@ -490,14 +490,14 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
     rw [mulSupport_comp_eq_preimage, Set.image_preimage_eq_iff.2 hf]
   rw [← Function.comp_def]
   by_cases hf_fin : (mulSupport f).Finite
-  · have hfg_fin : (mulSupport (f ∘ g)).Finite := hf_fin.preimage (hg.injOn _)
+  · have hfg_fin : (mulSupport (f ∘ g)).Finite := hf_fin.preimage hg.injOn
     lift g to γ ↪ β using hg
     simp_rw [tprod_eq_prod' hf_fin.coe_toFinset.ge, tprod_eq_prod' hfg_fin.coe_toFinset.ge,
       comp_apply, ← Finset.prod_map]
     refine Finset.prod_congr (Finset.coe_injective ?_) fun _ _ ↦ rfl
     simp [this]
   · have hf_fin' : ¬ Set.Finite (mulSupport (f ∘ g)) := by
-      rwa [this, Set.finite_image_iff (hg.injOn _)] at hf_fin
+      rwa [this, Set.finite_image_iff hg.injOn] at hf_fin
     simp_rw [tprod_def, if_neg hf_fin, if_neg hf_fin', Multipliable,
       hg.hasProd_iff (mulSupport_subset_iff'.1 hf)]
 
@@ -539,7 +539,7 @@ theorem tprod_image {g : γ → β} (f : β → α) {s : Set γ} (hg : Set.InjOn
 @[to_additive]
 theorem tprod_range {g : γ → β} (f : β → α) (hg : Injective g) :
     ∏' x : Set.range g, f x = ∏' x, f (g x) := by
-  rw [← Set.image_univ, tprod_image f (hg.injOn _)]
+  rw [← Set.image_univ, tprod_image f hg.injOn]
   simp_rw [← comp_apply (g := g), tprod_univ (f ∘ g)]
 #align tsum_range tsum_range
 
@@ -550,7 +550,7 @@ sum of `f a` with `a ∈ s ∖ t`."]
 lemma tprod_setElem_eq_tprod_setElem_diff {f : β → α} (s t : Set β)
     (hf₀ : ∀ b ∈ t, f b = 1) :
     ∏' a : s, f a = ∏' a : (s \ t : Set β), f a :=
-  .symm <| (Set.inclusion_injective (Set.diff_subset s t)).tprod_eq (f := f ∘ (↑)) <|
+  .symm <| (Set.inclusion_injective (t := s) Set.diff_subset).tprod_eq (f := f ∘ (↑)) <|
     mulSupport_subset_iff'.2 fun b hb ↦ hf₀ b <| by simpa using hb
 
 /-- If `f b = 1`, then the product of `f a` with `a ∈ s` is the same as the product of `f a` for

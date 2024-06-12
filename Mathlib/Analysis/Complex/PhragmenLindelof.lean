@@ -206,7 +206,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     ((((differentiable_id.sub_const _).const_mul _).cexp.add
             ((differentiable_id.sub_const _).const_mul _).neg.cexp).const_mul _).cexp
   replace hd : DiffContOnCl ℂ (fun w => g ε w • f w) (Ioo (-R) R ×ℂ Ioo (a - b) (a + b)) :=
-    (hgd.diffContOnCl.smul hfd).mono (inter_subset_right _ _)
+    (hgd.diffContOnCl.smul hfd).mono inter_subset_right
   convert norm_le_of_forall_mem_frontier_norm_le ((isBounded_Ioo _ _).reProdIm (isBounded_Ioo _ _))
     hd (fun w hw => _) _
   · rw [frontier_reProdIm, closure_Ioo (neg_lt_self hR₀).ne, frontier_Ioo hab, closure_Ioo hab.ne,
