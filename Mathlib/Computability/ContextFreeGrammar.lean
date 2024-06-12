@@ -9,7 +9,7 @@ import Mathlib.Computability.Language
 # Context-Free Grammars
 
 This file contains the definition of a context-free grammar, which is a grammar that has a single
-nonterminal symbol on the left-hand side of each rule.
+nonterminal symbol on the left-hand side of each rule. Then we prove some closure properties.
 
 ## Main definitions
 * `ContextFreeGrammar`: A context-free grammar.
@@ -418,8 +418,8 @@ lemma LiftedContextFreeGrammar.sink_derives_aux {G : LiftedContextFreeGrammar T}
     have both := sink_produces orig ih.right
     exact ⟨ContextFreeGrammar.Derives.trans_produces ih.left both.left, both.right⟩
 
-/-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if that the starting word does not
-contain any nonterminals that `G.g₀` lacks. -/
+/-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
+any nonterminals that `G.g₀` lacks. -/
 lemma LiftedContextFreeGrammar.sink_derives (G : LiftedContextFreeGrammar T)
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Derives (Symbol.sinkString G.sinkNT w₁) (Symbol.sinkString G.sinkNT w₂) :=
@@ -439,9 +439,9 @@ def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGra
 
 section union_aux
 
-/-- The only interesting declaration in this section is the lemma
-    `ContextFreeGrammar.mem_union_language_iff_mem_or_mem` towards which the whole section works.
-    Ignore everything else. -/
+/-- The only interesting declaration in this subsection is the lemma
+`ContextFreeGrammar.mem_union_language_iff_mem_or_mem` towards which the whole section builds.
+Ignore everything else. -/
 
 private lemma both_empty {u v : List T} {a b : T} (ha : [a] = u ++ [b] ++ v) :
     u = [] ∧ v = [] := by
@@ -691,18 +691,18 @@ private lemma in_language_of_in_union (hw : w ∈ (ContextFreeGrammar.union g₁
     | none => exact Option.noConfusion (hw0 ▸ h0)
     | some => exact Symbol.noConfusion (Option.some.inj (hw0 ▸ h0))
   | inr hv =>
-    rcases hv with ⟨S₁, ⟨r, hr, hrr⟩, hS₁⟩
+    rcases hv with ⟨_, ⟨r, hr, hrr⟩, hg⟩
     rcases hrr.exists_parts with ⟨u, v, huv, rfl⟩
     rcases both_empty huv with ⟨rfl, rfl⟩
     cases hr with
     | head =>
       left
-      exact in_left_of_in_union hS₁
+      exact in_left_of_in_union hg
     | tail _ hr' =>
       cases hr' with
       | head =>
         right
-        exact in_right_of_in_union hS₁
+        exact in_right_of_in_union hg
       | tail _ hr'' =>
         exfalso
         exact impossible_rule huv hr''
