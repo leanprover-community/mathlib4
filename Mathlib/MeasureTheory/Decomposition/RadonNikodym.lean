@@ -409,55 +409,61 @@ lemma rnDeriv_le_one_of_le (hμν : μ ≤ ν) [SigmaFinite ν] : μ.rnDeriv ν 
 
 section MeasurableEmbedding
 
-variable {mβ : MeasurableSpace β} {g : α → β}
+variable {mβ : MeasurableSpace β} {f : α → β}
 
-lemma _root_.MeasurableEmbedding.rnDeriv_map_aux (hg : MeasurableEmbedding g)
+/-! The results in this section are stated for finite measures, because we need the pushforwards of
+some measures to have a Lebesgue decomposition with respect to the pushforward of other measures
+(for example `(μ.singularPart ν).map f` w.r.t. `ν.map f`). It would be sufficient to know that all
+those pushforwards are σ-finite, but `μ.map f` may not be σ-finite even if `μ` is. However, if `μ`
+and `ν` are finite, then all the pushforwards are also finite and have Lebesgue decompositions. -/
+
+lemma _root_.MeasurableEmbedding.rnDeriv_map_aux (hf : MeasurableEmbedding f)
     (hμν : μ ≪ ν) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    (fun x ↦ (μ.map g).rnDeriv (ν.map g) (g x)) =ᵐ[ν] μ.rnDeriv ν := by
+    (fun x ↦ (μ.map f).rnDeriv (ν.map f) (f x)) =ᵐ[ν] μ.rnDeriv ν := by
   refine ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite ?_ ?_ (fun s _ _ ↦ ?_)
-  · exact (Measure.measurable_rnDeriv _ _).comp hg.measurable
+  · exact (Measure.measurable_rnDeriv _ _).comp hf.measurable
   · exact Measure.measurable_rnDeriv _ _
-  rw [← hg.lintegral_map, Measure.set_lintegral_rnDeriv hμν]
-  have hs_eq : s = g ⁻¹' (g '' s) := by rw [hg.injective.preimage_image]
-  rw [hs_eq, ← hg.restrict_map, Measure.set_lintegral_rnDeriv (hg.absolutelyContinuous_map hμν),
-    hg.map_apply]
+  rw [← hf.lintegral_map, Measure.set_lintegral_rnDeriv hμν]
+  have hs_eq : s = f ⁻¹' (f '' s) := by rw [hf.injective.preimage_image]
+  rw [hs_eq, ← hf.restrict_map, Measure.set_lintegral_rnDeriv (hf.absolutelyContinuous_map hμν),
+    hf.map_apply]
 
-lemma _root_.MeasurableEmbedding.rnDeriv_map (hg : MeasurableEmbedding g)
+lemma _root_.MeasurableEmbedding.rnDeriv_map (hf : MeasurableEmbedding f)
     (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    (fun x ↦ (μ.map g).rnDeriv (ν.map g) (g x)) =ᵐ[ν] μ.rnDeriv ν := by
-  rw [μ.haveLebesgueDecomposition_add ν, Measure.map_add _ _ hg.measurable]
-  have h_add := Measure.rnDeriv_add ((μ.singularPart ν).map g) ((ν.withDensity (μ.rnDeriv ν)).map g)
-    (ν.map g)
-  rw [Filter.EventuallyEq, hg.ae_map_iff, ← Filter.EventuallyEq] at h_add
+    (fun x ↦ (μ.map f).rnDeriv (ν.map f) (f x)) =ᵐ[ν] μ.rnDeriv ν := by
+  rw [μ.haveLebesgueDecomposition_add ν, Measure.map_add _ _ hf.measurable]
+  have h_add := Measure.rnDeriv_add ((μ.singularPart ν).map f) ((ν.withDensity (μ.rnDeriv ν)).map f)
+    (ν.map f)
+  rw [Filter.EventuallyEq, hf.ae_map_iff, ← Filter.EventuallyEq] at h_add
   refine h_add.trans ((Measure.rnDeriv_add _ _ _).trans ?_).symm
   refine Filter.EventuallyEq.add ?_ ?_
   · refine (Measure.rnDeriv_singularPart μ ν).trans ?_
     symm
-    suffices (fun x ↦ ((μ.singularPart ν).map g).rnDeriv (ν.map g) x) =ᵐ[ν.map g] 0 by
-      rw [Filter.EventuallyEq, hg.ae_map_iff] at this
+    suffices (fun x ↦ ((μ.singularPart ν).map f).rnDeriv (ν.map f) x) =ᵐ[ν.map f] 0 by
+      rw [Filter.EventuallyEq, hf.ae_map_iff] at this
       exact this
     refine Measure.rnDeriv_eq_zero_of_mutuallySingular ?_ Measure.AbsolutelyContinuous.rfl
-    exact hg.mutuallySingular_map (μ.mutuallySingular_singularPart ν)
-  · exact (hg.rnDeriv_map_aux (withDensity_absolutelyContinuous _ _)).symm
+    exact hf.mutuallySingular_map (μ.mutuallySingular_singularPart ν)
+  · exact (hf.rnDeriv_map_aux (withDensity_absolutelyContinuous _ _)).symm
 
-lemma _root_.MeasurableEmbedding.map_withDensity_rnDeriv (hg : MeasurableEmbedding g)
+lemma _root_.MeasurableEmbedding.map_withDensity_rnDeriv (hf : MeasurableEmbedding f)
     (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    (ν.withDensity (μ.rnDeriv ν)).map g = (ν.map g).withDensity ((μ.map g).rnDeriv (ν.map g)) := by
+    (ν.withDensity (μ.rnDeriv ν)).map f = (ν.map f).withDensity ((μ.map f).rnDeriv (ν.map f)) := by
   ext s hs
-  rw [hg.map_apply, withDensity_apply _ (hg.measurable hs), withDensity_apply _ hs,
-    set_lintegral_map hs (Measure.measurable_rnDeriv _ _) hg.measurable]
-  refine set_lintegral_congr_fun (hg.measurable hs) ?_
-  filter_upwards [hg.rnDeriv_map μ ν] with a ha _ using ha.symm
+  rw [hf.map_apply, withDensity_apply _ (hf.measurable hs), withDensity_apply _ hs,
+    set_lintegral_map hs (Measure.measurable_rnDeriv _ _) hf.measurable]
+  refine set_lintegral_congr_fun (hf.measurable hs) ?_
+  filter_upwards [hf.rnDeriv_map μ ν] with a ha _ using ha.symm
 
-lemma _root_.MeasurableEmbedding.singularPart_map (hg : MeasurableEmbedding g)
+lemma _root_.MeasurableEmbedding.singularPart_map (hf : MeasurableEmbedding f)
     (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    (μ.map g).singularPart (ν.map g) = (μ.singularPart ν).map g := by
-  have h_add : μ.map g = (μ.singularPart ν).map g
-      + (ν.map g).withDensity ((μ.map g).rnDeriv (ν.map g)) := by
+    (μ.map f).singularPart (ν.map f) = (μ.singularPart ν).map f := by
+  have h_add : μ.map f = (μ.singularPart ν).map f
+      + (ν.map f).withDensity ((μ.map f).rnDeriv (ν.map f)) := by
     conv_lhs => rw [μ.haveLebesgueDecomposition_add ν]
-    rw [Measure.map_add _ _ hg.measurable, ← hg.map_withDensity_rnDeriv μ ν]
+    rw [Measure.map_add _ _ hf.measurable, ← hf.map_withDensity_rnDeriv μ ν]
   refine (Measure.eq_singularPart (Measure.measurable_rnDeriv _ _) ?_ h_add).symm
-  exact hg.mutuallySingular_map (μ.mutuallySingular_singularPart ν)
+  exact hf.mutuallySingular_map (μ.mutuallySingular_singularPart ν)
 
 end MeasurableEmbedding
 
