@@ -304,7 +304,7 @@ lemma rel₆_eq₃' (c d m n r : ℤ) :
   simp_rw [rel₆, rel₄]; ring
 
 /-- A `rel₄` with four free indices can be expressed in terms of ten `rel₄`s
-with at least one index chosen from two possibilities (fixed indices) and
+with one or two indices chosen from two possibilities (fixed indices) and
 the other indices chosen from the indices of the first `rel₄`.
 The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
 theorem rel₆_eq₁₀ (c d m n r s : ℤ) :
@@ -313,6 +313,17 @@ theorem rel₆_eq₁₀ (c d m n r s : ℤ) :
       + rel₆ W n c m r s d - rel₆ W r c m n s d + rel₆ W s c m n r d
       + rel₆ W n r m s c d - rel₆ W n s m r c d + rel₆ W r s m n c d
       - 2 * rel₆ W m d n r s c := by
+  simp_rw [rel₆, rel₄]; ring
+
+/-- It is also possible to directly express an arbitrary `rel₄`
+in terms of `rel₄`s with the last two indices fixed. -/
+theorem addMulSub_sq_mul_rel₄_eq₉ (c d m n r s : ℤ) :
+    (addMulSub W c d) ^ 2 * rel₄ W m n r s =
+      addMulSub W m c * (rel₆ W n d r s c d - rel₆ W r d n s c d + rel₆ W s d n r c d)
+                    -- = rel₆ W c d n r s d ↑ by rel₆_eq₃'   = rel₆ W c d n r s c ↓ by rel₆_eq₃
+      - addMulSub W m d * (rel₆ W n c r s c d - rel₆ W r c n s c d + rel₆ W s c n r c d)
+      + addMulSub W c d * (rel₆ W n r m s c d - rel₆ W n s m r c d + rel₆ W r s m n c d) := by
+                         -- the third row in RHS of rel₆_eq₁₀
   simp_rw [rel₆, rel₄]; ring
 
 /-- The recurrence defining odd terms of an elliptic sequence,
