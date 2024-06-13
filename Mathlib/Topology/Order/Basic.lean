@@ -198,7 +198,6 @@ instance tendstoIccClassNhdsPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder
   filter_upwards [] using fun ⟨f, g⟩ ↦ image_subset_iff.mpr fun p hp ↦ ⟨hp.1 i, hp.2 i⟩
 #align tendsto_Icc_class_nhds_pi tendstoIccClassNhdsPi
 
--- Porting note (#10756): new lemma
 theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y) :
     induced f ‹TopologicalSpace β› ≤ Preorder.topology α := by
@@ -208,7 +207,6 @@ theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpa
   refine inf_le_inf (le_iInf₂ fun a ha => ?_) (le_iInf₂ fun a ha => ?_)
   exacts [iInf₂_le (f a) ha, iInf₂_le (f a) ha]
 
--- Porting note (#10756): new lemma
 theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H₁ : ∀ {a b x}, b < f a → ¬(b < f x) → ∃ y, y < a ∧ b ≤ f y)
@@ -552,7 +550,6 @@ theorem SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered 
 
 variable {α}
 
--- Porting note (#10756): new lemma
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
 theorem countable_setOf_covBy_right [SecondCountableTopology α] :

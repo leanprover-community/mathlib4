@@ -58,9 +58,6 @@ namespace Presheaf
 @[simp] theorem comp_app {P Q R : Presheaf C X} (f : P ⟶ Q) (g : Q ⟶ R) :
     (f ≫ g).app U = f.app U ≫ g.app U := rfl
 
--- Porting note (#10756): added an `ext` lemma,
--- since `NatTrans.ext` can not see through the definition of `Presheaf`.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
     f = g := by

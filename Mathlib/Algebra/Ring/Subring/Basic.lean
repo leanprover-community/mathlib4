@@ -456,7 +456,6 @@ theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
 
 /-! ## Partial order -/
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl

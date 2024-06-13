@@ -60,7 +60,6 @@ theorem Set.Subsingleton.isPreirreducible (hs : s.Subsingleton) : IsPreirreducib
   fun _u _v _ _ ⟨_x, hxs, hxu⟩ ⟨y, hys, hyv⟩ => ⟨y, hys, hs hxs hys ▸ hxu, hyv⟩
 #align set.subsingleton.is_preirreducible Set.Subsingleton.isPreirreducible
 
--- Porting note (#10756): new lemma
 theorem isPreirreducible_singleton {x} : IsPreirreducible ({x} : Set X) :=
   subsingleton_singleton.isPreirreducible
 

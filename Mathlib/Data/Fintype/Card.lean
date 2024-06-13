@@ -638,7 +638,6 @@ namespace Finite
 
 variable [Finite α]
 
--- Porting note (#10756): new theorem
 theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
   intro x
   have := Classical.propDecidable

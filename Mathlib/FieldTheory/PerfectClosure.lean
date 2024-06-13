@@ -502,7 +502,6 @@ instance instInv : Inv (PerfectClosure K p) :=
           rw [← inv_pow]
           apply R.intro⟩
 
--- Porting note (#10756): added theorem
 @[simp]
 theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl

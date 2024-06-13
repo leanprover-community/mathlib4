@@ -53,7 +53,6 @@ theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
   cases k <;> simp [ofFn.go, get_ofFn_go (i := i)]
   congr 2; omega
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   cases i; simp [ofFn, get_ofFn_go]

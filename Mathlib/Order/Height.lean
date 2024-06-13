@@ -73,7 +73,7 @@ theorem cons_mem_subchain_iff :
     and_assoc]
 #align set.cons_mem_subchain_iff Set.cons_mem_subchain_iff
 
-@[simp] -- Porting note (#10756): new lemma + `simp`
+@[simp]
 theorem singleton_mem_subchain_iff : [a] ∈ s.subchain ↔ a ∈ s := by simp [cons_mem_subchain_iff]
 
 instance : Nonempty s.subchain :=

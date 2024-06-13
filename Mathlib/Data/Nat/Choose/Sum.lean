@@ -187,7 +187,6 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
 
 variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
 
--- Porting note (#10756): new lemma
 @[to_additive sum_choose_succ_nsmul]
 theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ i ∈ range (n + 2), f i (n + 1 - i) ^ (n + 1).choose i) =
@@ -200,7 +199,6 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
   rw [prod_range_succ']
   simpa [Nat.choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _
 
--- Porting note (#10756): new lemma
 @[to_additive sum_antidiagonal_choose_succ_nsmul]
 theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ ij ∈ antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =

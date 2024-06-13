@@ -205,7 +205,6 @@ theorem coe_mk (I : Submodule R P) (hI : IsFractional S I) :
   rfl
 #align fractional_ideal.coe_mk FractionalIdeal.coe_mk
 
--- Porting note (#10756): added lemma because Lean can't see through the composition of coercions.
 theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
     ((I : Submodule R P) : Set P) = I :=
   rfl
