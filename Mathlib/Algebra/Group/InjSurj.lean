@@ -289,7 +289,7 @@ protected abbrev cancelCommMonoid [CancelCommMonoid M₂] (f : M₁ → M₂) (h
   { hf.leftCancelSemigroup f mul, hf.commMonoid f one mul npow with }
 #align function.injective.cancel_comm_monoid Function.Injective.cancelCommMonoid
 
-/-- A type has an involutive negation if it admits a surjective map that
+/-- A type has an involutive negation if it admits an injective map that
 preserves `-` to a type which has an involutive negation. -/
 protected abbrev involutiveNeg {M₁ : Type*} [Neg M₁] [InvolutiveNeg M₂] (f : M₁ → M₂)
     (hf : Injective f) (neg : ∀ x, f (-x) = -(f x)) : InvolutiveNeg M₁ where
@@ -297,7 +297,7 @@ protected abbrev involutiveNeg {M₁ : Type*} [Neg M₁] [InvolutiveNeg M₂] (f
   neg_neg x := hf <| by rw [neg, neg, neg_neg]
 #align function.injective.has_involutive_neg Function.Injective.involutiveNeg
 
-/-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
+/-- A type has an involutive inversion if it admits an injective map that preserves `⁻¹` to a type
 which has an involutive inversion. See note [reducible non-instances] -/
 @[to_additive existing]
 protected abbrev involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
