@@ -28,6 +28,8 @@ universe v u
 
 namespace CategoryTheory
 
+open Bicategory
+
 -- intended to be used with explicit universe parameters
 /-- Category of categories. -/
 @[nolint checkUnivs]
@@ -107,14 +109,12 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
-    (Bicategory.whiskerLeft F η).app X = η.app (F.obj X) :=
-    -- (F ◁ η).app X = η.app (F.obj X) :=
+    (F ◁ η).app X = η.app (F.obj X) :=
   CategoryTheory.whiskerLeft_app F η X
 
 @[simp]
 lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
-    (Bicategory.whiskerRight η H).app X = H.map (η.app X) :=
-    -- (η ▷ H).app X = H.map (η.app X) :=
+    (η ▷ H).app X = H.map (η.app X) :=
   CategoryTheory.whiskerRight_app η H X
 
 /-- Functor that gets the set of objects of a category. It is not
