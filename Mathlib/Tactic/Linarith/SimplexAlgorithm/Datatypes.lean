@@ -20,14 +20,15 @@ class UsableInSimplexAlgorithm (α : Nat → Nat → Type) where
   getElem {n m : Nat} (mat : α n m) (i j : Nat) : Rat
   /-- Sets `mat[i, j]`. -/
   setElem {n m : Nat} (mat : α n m) (i j : Nat) (v : Rat) : α n m
+  /-- Returns the list of elements of `mat` in the form `(i, j, mat[i, j])`. -/
   getValues {n m : Nat} (mat : α n m) : List (Nat × Nat × Rat)
-  /-- Creates a matrix from the list of elements of the form `(i, j, mat[i, j])`. -/
+  /-- Creates a matrix from a list of elements in the form `(i, j, mat[i, j])`. -/
   ofValues {n m : Nat} (values : List (Nat × Nat × Rat)) : α n m
   /-- Swaps two rows. -/
   swapRows {n m : Nat} (mat : α n m) (i j : Nat) : α n m
-  /-- Subtracts `i`-th row * `coef` from `j`-th row. -/
+  /-- Subtracts `i`-th row multiplied by `coef` from `j`-th row. -/
   subtractRow {n m : Nat} (mat : α n m) (i j : Nat) (coef : Rat) : α n m
-  /-- Divides `i`-th row by `coef`. -/
+  /-- Divides the `i`-th row by `coef`. -/
   divideRow {n m : Nat} (mat : α n m) (i : Nat) (coef : Rat) : α n m
 
 export UsableInSimplexAlgorithm (setElem getValues ofValues swapRows subtractRow divideRow)

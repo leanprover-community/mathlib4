@@ -14,6 +14,7 @@ open Batteries
 
 namespace Linarith.SimplexAlgorithm
 
+/-- Preprocess the goal to pass it to `findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
     (maxVar : ℕ) : matType (maxVar + 1) (hyps.length) × List Nat :=
   let values : List (ℕ × ℕ × ℚ) := hyps.foldlIdx (init := []) fun idx cur comp =>
