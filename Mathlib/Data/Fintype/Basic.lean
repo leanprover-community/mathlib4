@@ -121,11 +121,6 @@ theorem univ_nontrivial [Fintype α] [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=
   univ_nontrivial_iff.mpr h
 
-theorem Nontrivial.univ [Fintype α] [Nontrivial α] :
-    Finset.Nontrivial (Finset.univ : Finset α) := by
-  let ⟨a, b, h⟩ := exists_pair_ne α
-  exact ⟨a, mem_univ _, b, mem_univ _, h⟩
-
 @[simp]
 theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
   univ_eq_empty_iff.2 ‹_›
