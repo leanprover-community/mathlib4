@@ -42,19 +42,16 @@ after them. We place `z` between `f` and `x` because in this case `z` will be ba
 `Gauss.getTableau` produce tableau with non-negative last column, meaning that we are starting from
 a feasible point.
 -/
-def stateLP {n m : Nat} (A : matType n m) (strictIndexes : List Nat) :
-    matType (n + 2) (m + 3) := Id.run do
-  let mut values : List (Nat × Nat × Rat) := []
-  /- Objective row. +2 due to shifting by `f` and `z` -/
-  values := (0, 0, -1) :: strictIndexes.map fun idx => (0, idx + 2, 1)
-  /- Constraint row -/
-  values := [(1, 1, 1), (1, m + 2, -1)] ++ (List.range m).map (fun i => (1, i + 2, 1)) ++ values
+def stateLP {n m : Nat} (A : matType n m) (strictIndexes : List Nat) : matType (n + 2) (m + 3) :=
+  /- +2 due to shifting by `f` and `z` -/
+  let objectiveRow : List (Nat × Nat × Rat) :=
+    (0, 0, -1) :: strictIndexes.map fun idx => (0, idx + 2, 1)
+  let constraintRow : List (Nat × Nat × Rat) :=
+    [(1, 1, 1), (1, m + 2, -1)] ++ (List.range m).map (fun i => (1, i + 2, 1))
 
-  for i in [:n] do
-    for j in [:m] do
-      values := (i + 2, j + 2, A[(i, j)]!) :: values
+  let valuesA := getValues A |>.map fun (i, j, v) => (i + 2, j + 2, v)
 
-  return ofValues values
+  ofValues (objectiveRow ++ constraintRow ++ valuesA)
 
 /-- Extracts target vector from the tableau, putting auxilary variables aside (see `stateLP`). -/
 def extractSolution (tableau : Tableau matType) : Array Rat := Id.run do
