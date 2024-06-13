@@ -275,7 +275,8 @@ map that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvOneMonoid`. See note
 `SubNegZeroMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`, and binary
 `-` to a `SubNegZeroMonoid`. This version takes custom `nsmul` and `zsmul` as `[SMul ℕ M₁]` and
 `[SMul ℤ M₁]` arguments."]
-protected abbrev divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
+protected abbrev divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
+    (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvOneMonoid M₁ :=
