@@ -53,8 +53,7 @@ theorem sqrt_natCast (n : ℕ) : Rat.sqrt (n : ℚ) = Nat.sqrt n := by
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem sqrt_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Rat.sqrt (no_index (OfNat.ofNat n) : ℚ) = Nat.sqrt (OfNat.ofNat n) :=
+theorem sqrt_ofNat (n : ℕ) : Rat.sqrt (no_index (OfNat.ofNat n) : ℚ) = Nat.sqrt (OfNat.ofNat n) :=
   sqrt_natCast _
 
 end Rat

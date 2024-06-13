@@ -44,8 +44,7 @@ theorem sqrt_natCast (n : ℕ) : Int.sqrt (n : ℤ) = Nat.sqrt n := by rw [sqrt,
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem sqrt_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Int.sqrt (no_index (OfNat.ofNat n) : ℤ) = Nat.sqrt (OfNat.ofNat n) :=
+theorem sqrt_ofNat (n : ℕ) : Int.sqrt (no_index (OfNat.ofNat n) : ℤ) = Nat.sqrt (OfNat.ofNat n) :=
   sqrt_natCast _
 
 end Int

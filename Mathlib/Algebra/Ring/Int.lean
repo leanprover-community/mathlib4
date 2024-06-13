@@ -263,7 +263,7 @@ theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℤ) ↔ IsSquare n := by
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem isSquare_ofNat_iff {n : ℕ} [n.AtLeastTwo] :
+theorem isSquare_ofNat_iff {n : ℕ} :
     IsSquare (no_index (OfNat.ofNat n) : ℤ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
   isSquare_natCast_iff
 
