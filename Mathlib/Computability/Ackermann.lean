@@ -388,5 +388,5 @@ theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
 
 /-- The Ackermann function is not primitive recursive. -/
 theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
-  not_primrec_ack_self <| h.comp Primrec.id Primrec.id
+  not_primrec_ack_self <| h.comp₂ Primrec.id Primrec.id
 #align not_primrec₂_ack not_primrec₂_ack

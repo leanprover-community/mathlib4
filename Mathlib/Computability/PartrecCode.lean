@@ -666,8 +666,8 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
     induction c generalizing x n with
-      simp [eval, evaln, Option.bind_eq_some, Seq.seq] at h ⊢ <;>
-      cases' h with _ h
+      (simp [eval, evaln, Option.bind_eq_some, Seq.seq] at h ⊢
+       cases' h with _ h)
     | pair cf cg hf hg =>
       rcases h with ⟨y, ef, z, eg, rfl⟩
       exact ⟨_, hf _ _ ef, _, hg _ _ eg, rfl⟩
