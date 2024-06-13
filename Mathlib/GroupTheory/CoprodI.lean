@@ -5,7 +5,7 @@ Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic

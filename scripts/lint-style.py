@@ -53,6 +53,7 @@ ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
+ERR_ADN = 25 # the string "Adaptation note"
 
 exceptions = []
 
@@ -74,6 +75,8 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_OPT, path, None)]
         elif errno == "ERR_AUT":
             exceptions += [(ERR_AUT, path, None)]
+        elif errno == "ERR_ADN":
+            exceptions += [(ERR_ADN, path, None)]
         elif errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path, None)]
         elif errno == "ERR_NUM_LIN":
@@ -350,6 +353,14 @@ def left_arrow_check(lines, path):
         newlines.append((line_nr, new_line))
     return errors, newlines
 
+def adaptation_note_check(lines, path):
+    errors = []
+    for line_nr, line in lines:
+        # We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
+        if "daptation note" in line:
+            errors += [(ERR_ADN, line_nr, path)]
+    return errors, lines
+
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -400,6 +411,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
         if errno == ERR_NSP:
             output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
+        if errno == ERR_ADN:
+            output_message(path, line_nr, "ERR_ADN", 'Found the string "Adaptation note:", please use the #adaptation_note command instead')
 
 def lint(path, fix=False):
     global new_exceptions
@@ -415,6 +428,7 @@ def lint(path, fix=False):
                             isolated_by_dot_semicolon_check,
                             set_option_check,
                             left_arrow_check,
+                            adaptation_note_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)

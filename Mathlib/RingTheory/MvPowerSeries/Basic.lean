@@ -688,16 +688,16 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 theorem coeff_prod [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
     coeff R d (∏ j ∈ s, f j) =
-      ∑ l ∈ piAntidiagonal s d,
+      ∑ l ∈ finsuppAntidiag s d,
         ∏ i ∈ s, coeff R (l i) (f i) := by
   induction s using Finset.induction_on generalizing d with
   | empty =>
-    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, piAntidiagonal_empty]
+    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, finsuppAntidiag_empty]
     split_ifs
     · simp only [card_singleton, Nat.cast_one]
     · simp only [card_empty, Nat.cast_zero]
   | @insert a s ha ih =>
-    rw [piAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
+    rw [finsuppAntidiag_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
       simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
       rintro u v rfl
