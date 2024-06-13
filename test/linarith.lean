@@ -431,6 +431,14 @@ example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
 example (a : E) (h : a = a) : 1 ≤ 2 := by nlinarith
 end
 
+-- Note: This takes a huge amount of time with the Fourier-Motzkin oracle
+example (a1 a2 a3 b1 b2 b3 c1 c2 c3 d1 d2 d3 : ℕ)
+    (h1 : a1 + a2 + a3 = b1 + b2 + b3)
+    (h2 : c1 + c2 + c3 = d1 + d2 + d3) :
+    a1 * c1 + a2 * c1 + a3 * c1 + a1 * c2 + a2 * c2 + a3 * c2 + a1 * c3 + a2 * c3 + a3 * c3 =
+    b1 * d1 + b2 * d1 + b3 * d1 + b1 * d2 + b2 * d2 + b3 * d2 + b1 * d3 + b2 * d3 + b3 * d3 := by
+  nlinarith --(config := { oracle := some .fourierMotzkin })
+
 -- This should not be slower than the example below with the Fourier-Motzkin oracle
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
