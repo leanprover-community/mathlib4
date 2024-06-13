@@ -153,10 +153,10 @@ structure LinarithConfig : Type where
   /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
   splitNe : Bool := false
   /-- Override the list of preprocessors. -/
-  preprocessors : List GlobalBranchingPreprocessor := defaultPreprocessors
+  preprocessors : Option (List GlobalBranchingPreprocessor) := none
   /-- Specify an oracle for identifying candidate contradictions.
-  `.simplexAlgorithm` and `.fourierMotzkin` are both available. -/
-  oracle : CertificateOracle := .simplexAlgorithm
+  `.simplexAlgorithmSparse`, `.simplexAlgorithmSparse`, and `.fourierMotzkin` are available. -/
+  oracle : Option CertificateOracle := none
 
 /--
 `cfg.updateReducibility reduce_default` will change the transparency setting of `cfg` to
