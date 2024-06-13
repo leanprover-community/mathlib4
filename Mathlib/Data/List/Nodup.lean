@@ -88,17 +88,23 @@ theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
         h a <| (singleton_sublist.2 al).cons_cons _⟩
 #align list.nodup_iff_sublist List.nodup_iff_sublist
 
--- Porting note (#10756): new theorem
-theorem nodup_iff_injective_get {l : List α} :
-    Nodup l ↔ Function.Injective l.get :=
-  pairwise_iff_get.trans
+theorem nodup_iff_injective_getElem {l : List α} :
+    Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.1]) :=
+  pairwise_iff_getElem.trans
     ⟨fun h i j hg => by
       cases' i with i hi; cases' j with j hj
       rcases lt_trichotomy i j with (hij | rfl | hji)
-      · exact (h ⟨i, hi⟩ ⟨j, hj⟩ hij hg).elim
+      · exact (h i j hi hj hij hg).elim
       · rfl
-      · exact (h ⟨j, hj⟩ ⟨i, hi⟩ hji hg.symm).elim,
-      fun hinj i j hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (hinj h))⟩
+      · exact (h j i hj hi hji hg.symm).elim,
+      fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
+
+-- Porting note (#10756): new theorem
+theorem nodup_iff_injective_get {l : List α} :
+    Nodup l ↔ Function.Injective l.get := by
+  rw [nodup_iff_injective_getElem]
+  change _ ↔ Injective (fun i => l.get i)
+  simp
 
 set_option linter.deprecated false in
 @[deprecated nodup_iff_injective_get (since := "2023-01-10")]
