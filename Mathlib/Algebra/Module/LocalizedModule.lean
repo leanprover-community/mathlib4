@@ -1154,8 +1154,6 @@ variable {M₀ M₀'} [AddCommGroup M₀] [AddCommGroup M₀'] [Module R M₀] [
 variable (f₀ : M₀  →ₗ[R] M₀') [IsLocalizedModule S f₀]
 variable {M₁ M₁'} [AddCommGroup M₁] [AddCommGroup M₁'] [Module R M₁] [Module R M₁']
 variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
-variable {M₂ M₂'} [AddCommGroup M₂] [AddCommGroup M₂'] [Module R M₂] [Module R M₂']
-variable (f₂ : M₂ →ₗ[R] M₂') [IsLocalizedModule S f₂]
 
 /-- Formula for `IsLocalizedModule.map` when each localized module is a `LocalizedModule`.-/
 lemma map_LocalizedModules (g : M₀ →ₗ[R] M₁) (m : M₀) (s : S) :
@@ -1170,8 +1168,8 @@ lemma map_LocalizedModules (g : M₀ →ₗ[R] M₁) (m : M₀) (s : S) :
       _ = LocalizedModule.mk (g m) s             := by simp [iso_localizedModule_eq_refl]
   simpa [map, lift, iso_localizedModule_eq_refl S M₀]
 
-lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ ↑(iso S f₀) = (iso S f₁) ∘ₗ
-    (map S (LocalizedModule.mkLinearMap S M₀) (LocalizedModule.mkLinearMap S M₁)) g := by
+lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ ↑(iso S f₀) =
+    (iso S f₁) ∘ₗ (map S (mkLinearMap S M₀) (mkLinearMap S M₁)) g := by
   ext ⟨m, s⟩
   rw [(show Quot.mk Setoid.r (m, s) = LocalizedModule.mk m s by rfl)]
   have hs : IsUnit ((algebraMap R (Module.End R M₁')) ↑s) := map_units f₁ s
@@ -1189,9 +1187,19 @@ lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ ↑
     map_units (mkLinearMap S M₁) (1 : S)).unit = 1 := by ext; simp
   simp [lift_mk, this, fromLocalizedModule'_mk_one, -fromLocalizedModule'_mk]
 
+end IsLocalizedModule
+
+namespace LocalizedModule
+
+open IsLocalizedModule
+
+variable {M₀ M₀'} [AddCommGroup M₀] [Module R M₀]
+variable {M₁ M₁'} [AddCommGroup M₁] [Module R M₁]
+variable {M₂ M₂'} [AddCommGroup M₂] [Module R M₂]
+
 /-- Localization of modules is an exact functor, proven here for `LocalizedModule`.
-See `map_exact` for the more general version using `IsLocalizedModule`. -/
-lemma map_exact' (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Function.Exact g h) :
+See `IsLocalizedModule.map_exact` for the more general version. -/
+lemma map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Function.Exact g h) :
     Function.Exact
     (map S (LocalizedModule.mkLinearMap S M₀) (LocalizedModule.mkLinearMap S M₁) g)
     (map S (LocalizedModule.mkLinearMap S M₁) (LocalizedModule.mkLinearMap S M₂) h) := by
@@ -1211,11 +1219,22 @@ lemma map_exact' (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Funct
     rw [← hx, (show Quot.mk Setoid.r (m, s) = LocalizedModule.mk m s by rfl),
       map_LocalizedModules, map_LocalizedModules, (ex (g m)).2 ⟨m, rfl⟩, zero_mk]
 
+end LocalizedModule
+
+namespace IsLocalizedModule
+
+variable {M₀ M₀'} [AddCommGroup M₀] [AddCommGroup M₀'] [Module R M₀] [Module R M₀']
+variable (f₀ : M₀  →ₗ[R] M₀') [IsLocalizedModule S f₀]
+variable {M₁ M₁'} [AddCommGroup M₁] [AddCommGroup M₁'] [Module R M₁] [Module R M₁']
+variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
+variable {M₂ M₂'} [AddCommGroup M₂] [AddCommGroup M₂'] [Module R M₂] [Module R M₂']
+variable (f₂ : M₂ →ₗ[R] M₂') [IsLocalizedModule S f₂]
+
 /-- Localization of modules is an exact functor. -/
 theorem map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Function.Exact g h) :
     Function.Exact (map S f₀ f₁ g) (map S f₁ f₂ h) :=
   Function.Exact.of_ladder_linearEquiv_of_exact
-    (map_iso_commute S f₀ f₁ g) (map_iso_commute S f₁ f₂ h) (map_exact' S g h ex)
+    (map_iso_commute S f₀ f₁ g) (map_iso_commute S f₁ f₂ h) (LocalizedModule.map_exact S g h ex)
 
 section Algebra
 
@@ -1247,5 +1266,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
+
+end IsLocalizedModule
 
 end IsLocalizedModule
