@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Geoffrey Irving. All rights reserved.
+Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Geoffrey Irving
+Authors: Michael Lee
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
