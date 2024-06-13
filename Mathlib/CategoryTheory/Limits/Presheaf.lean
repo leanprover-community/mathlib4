@@ -184,6 +184,9 @@ noncomputable def restrictedYonedaHomEquiv (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ)
   ((Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv E).trans
     (restrictedYonedaHomEquiv' A P E)
 
+/-- If `L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ` is a pointwise left Kan extension
+of a functor `A : C ⥤ ℰ` along the Yoneda embedding,
+then `L` is a left adjoint of `restrictedYoneda A : ℰ ⥤ Cᵒᵖ ⥤ Type v₁` -/
 noncomputable def yonedaAdjunction : L ⊣ restrictedYoneda A :=
   Adjunction.mkOfHomEquiv
     { homEquiv := restrictedYonedaHomEquiv L α
@@ -586,6 +589,7 @@ section
 
 variable {X : C} {G : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁} (φ : F ⋙ yoneda ⟶ yoneda ⋙ G)
 
+/-- Auxiliary definition for `presheafHom`. -/
 def coconeApp {P : Cᵒᵖ ⥤ Type v₁} (x : P.Elements) :
     yoneda.obj x.1.unop ⟶ F.op ⋙ G.obj P := yonedaEquiv.symm
       ((G.map (yonedaEquiv.symm x.2)).app _ ((φ.app x.1.unop).app _ (𝟙 _)))
@@ -607,8 +611,8 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type v₁} {x y : P.Elements} (f : x
   simp [← eq₁, ← eq₂, ← eq₃, ← eq₄, Functor.map_comp, FunctorToTypes.comp, id_comp, comp_id]
 
 noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type v₁) : P ⟶ F.op ⋙ G.obj P :=
-  (colimitOfRepresentable P).desc (Cocone.mk _
-    { app := fun x => coconeApp φ x.unop })
+  (colimitOfRepresentable P).desc
+    (Cocone.mk _ { app := fun x => coconeApp φ x.unop })
 
 lemma yonedaEquiv_ι_presheafHom (P : Cᵒᵖ ⥤ Type v₁) {X : C} (f : yoneda.obj X ⟶ P) :
     yonedaEquiv (f ≫ presheafHom φ P) =
@@ -697,7 +701,9 @@ noncomputable instance (Φ : StructuredArrow (F ⋙ yoneda)
   default := compYonedaIsoYonedaCompLan.extensionHom Φ
   uniq _ := compYonedaIsoYonedaCompLan.hom_ext _ _
 
-example : F.op.lan.IsLeftKanExtension (compYonedaIsoYonedaCompLan F).hom :=
+/--  `F.op.lan : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁` is the left Kan extension
+of `F ⋙ yoneda : C ⥤ Dᵒᵖ ⥤ Type v₁` along `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`. -/
+instance : F.op.lan.IsLeftKanExtension (compYonedaIsoYonedaCompLan F).hom :=
   ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
 
 end
@@ -853,5 +859,3 @@ end
 end Presheaf
 
 end CategoryTheory
-
-#lint
