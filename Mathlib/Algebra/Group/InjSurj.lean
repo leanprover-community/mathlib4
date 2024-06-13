@@ -39,30 +39,6 @@ non-additivised ones.
 -/
 
 
-namespace Lean.Elab.Command
-
-open Term Meta
-
-/-- `zeta% t` elaborates to a head-zeta reduced version of `t`. -/
-elab "zeta% " t:term : term <= expectedType => do
-  let t ← elabTerm t expectedType
-  synthesizeSyntheticMVars
-  let t ← instantiateMVars t
-  let t ← zetaReduce t
-  pure t
-
-/-- `reduceProj% t` apply `Expr.reduceProjStruct?` to all subexpressions of `t`. -/
-elab "reduceProj% " t:term : term <= expectedType => do
-  let t ← withSynthesize do
-    elabTermEnsuringType t expectedType
-  synthesizeSyntheticMVars
-  let t ← instantiateMVars t
-  let t ← Lean.Core.transform t (post := fun e ↦ do
-    return .continue (← Expr.reduceProjStruct? e))
-  pure t
-
-end Lean.Elab.Command
-
 namespace Function
 
 /-!
