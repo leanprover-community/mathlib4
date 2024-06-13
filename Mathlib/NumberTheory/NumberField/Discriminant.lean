@@ -363,7 +363,8 @@ theorem finite_of_discr_bdd_of_isReal :
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
-      convert hx₁ <;> simp
+      convert hx₁ <;> simp only [IntermediateField.lift_top, IntermediateField.lift_adjoin,
+        Set.image_singleton]
   have := one_le_convexBodyLTFactor K
   convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
@@ -407,7 +408,8 @@ theorem finite_of_discr_bdd_of_isComplex :
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
-      convert hx₁ <;> simp
+      convert hx₁ <;> simp only [IntermediateField.lift_top, IntermediateField.lift_adjoin,
+        Set.image_singleton]
   have := one_le_convexBodyLT'Factor K
   convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
