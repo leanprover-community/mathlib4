@@ -19,7 +19,8 @@ class UsableInSimplexAlgorithm (α : Nat → Nat → Type) where
   /-- Returns `mat[i, j]`. -/
   getElem {n m : Nat} (mat : α n m) (i j : Nat) : Rat
   /-- Sets `mat[i, j]`. -/
-  setElem {n m : Nat}  (mat : α n m) (i j : Nat) (v : Rat) : α n m
+  setElem {n m : Nat} (mat : α n m) (i j : Nat) (v : Rat) : α n m
+  getValues {n m : Nat} (mat : α n m) : List (Nat × Nat × Rat)
   /-- Creates a matrix from the list of elements of the form `(i, j, mat[i, j])`. -/
   ofValues {n m : Nat} (values : List (Nat × Nat × Rat)) : α n m
   /-- Swaps two rows. -/
@@ -29,7 +30,7 @@ class UsableInSimplexAlgorithm (α : Nat → Nat → Type) where
   /-- Divides `i`-th row by `coef`. -/
   divideRow {n m : Nat} (mat : α n m) (i : Nat) (coef : Rat) : α n m
 
-export UsableInSimplexAlgorithm (setElem ofValues swapRows subtractRow divideRow)
+export UsableInSimplexAlgorithm (setElem getValues ofValues swapRows subtractRow divideRow)
 
 instance (n m : Nat) (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] :
     GetElem (matType n m) (Nat × Nat) Rat fun _ p => p.1 < n ∧ p.2 < m where
@@ -51,11 +52,19 @@ structure DenseMatrix (n m : Nat) where
 
 instance : UsableInSimplexAlgorithm DenseMatrix where
   getElem mat i j := mat.data[i]![j]!
-  setElem mat i j v := ⟨mat.data.set! i <| mat.data[i]!.set! j v⟩
+  setElem mat i j v := ⟨mat.data.modify i fun row => row.set! j v⟩
+  getValues mat :=
+    mat.data.zipWithIndex.foldl (init := []) fun acc (row, i) =>
+      let rowVals := Array.toList <| row.zipWithIndex.filterMap fun (v, j) =>
+        if v != 0 then
+          .some (i, j, v)
+        else
+          .none
+      rowVals ++ acc
   ofValues {n m : Nat} vals : DenseMatrix _ _ := Id.run do
     let mut data : Array (Array Rat) := Array.mkArray n <| Array.mkArray m 0
     for ⟨i, j, v⟩ in vals do
-      data := data.set! i <| data[i]!.set! j v
+      data := data.modify i fun row => row.set! j v
     return ⟨data⟩
   swapRows mat i j := ⟨mat.data.swap! i j⟩
   subtractRow mat i j coef :=
@@ -76,14 +85,18 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
   getElem mat i j := mat.data[i]!.findD j 0
   setElem mat i j v :=
     if v == 0 then
-      ⟨mat.data.set! i <| mat.data[i]!.erase j⟩
+      ⟨mat.data.modify i fun row => row.erase j⟩
     else
-      ⟨mat.data.set! i <| mat.data[i]!.insert j v⟩
+      ⟨mat.data.modify i fun row => row.insert j v⟩
+  getValues mat :=
+    mat.data.zipWithIndex.foldl (init := []) fun acc (row, i) =>
+      let rowVals := row.toList.map fun (j, v) => (i, j, v)
+      rowVals ++ acc
   ofValues {n _ : Nat} vals := Id.run do
-    let mut data : Array (Lean.HashMap Nat Rat) := Array.mkArray n Lean.HashMap.empty
+    let mut data : Array (Lean.HashMap Nat Rat) := Array.mkArray n .empty
     for ⟨i, j, v⟩ in vals do
       if v != 0 then
-        data := data.set! i <| data[i]!.insert j v
+        data := data.modify i fun row => row.insert j v
     return ⟨data⟩
   swapRows mat i j := ⟨mat.data.swap! i j⟩
   subtractRow mat i j coef :=

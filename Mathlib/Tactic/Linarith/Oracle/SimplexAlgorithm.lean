@@ -14,26 +14,13 @@ open Batteries
 
 namespace Linarith.SimplexAlgorithm
 
-/-- Preprocess the goal to pass it to `findPositiveVector`. Version for sparse matrices. -/
-def preprocessSparse (hyps : List Comp) (maxVar : ℕ) :
-    SparseMatrix (maxVar + 1) (hyps.length) × List Nat :=
-  let mdata : Array (Lean.HashMap ℕ ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
-    Lean.HashMap.ofList <| (hyps.zip <| List.range hyps.length).filterMap fun ⟨h, idx⟩ =>
-      if h.coeffOf i == 0 then
-        .none
-      else
-        .some ⟨idx, h.coeffOf i⟩
+def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
+    (maxVar : ℕ) : matType (maxVar + 1) (hyps.length) × List Nat :=
+  let values : List (ℕ × ℕ × ℚ) := hyps.foldlIdx (init := []) fun idx cur comp =>
+    cur ++ comp.coeffs.map fun (var, c) => (var, idx, c)
 
   let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
-  ⟨⟨mdata⟩, strictIndexes⟩
-
-/-- Preprocess the goal to pass it to `findPositiveVector`. Version for dense matrices.  -/
-def preprocessDense (hyps : List Comp) (maxVar : ℕ) :
-    DenseMatrix (maxVar + 1) (hyps.length) × List Nat :=
-  let mdata : Array (Array ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
-    Array.mk <| hyps.map (·.coeffOf i)
-  let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
-  ⟨⟨mdata⟩, strictIndexes⟩
+  (ofValues values, strictIndexes)
 
 /-- Extract the certificate from the `vec` found by `findPositiveVector`. -/
 def postprocess (vec : Array ℚ) : HashMap ℕ ℕ :=
@@ -49,7 +36,7 @@ open SimplexAlgorithm
 /-- An oracle that uses the simplex algorithm. -/
 def CertificateOracle.simplexAlgorithmSparse : CertificateOracle where
   produceCertificate hyps maxVar := do
-    let ⟨A, strictIndexes⟩ := preprocessSparse hyps maxVar
+    let (A, strictIndexes) := preprocess SparseMatrix hyps maxVar
     let vec ← findPositiveVector A strictIndexes
     return postprocess vec
 
@@ -59,7 +46,7 @@ on dense states.
 -/
 def CertificateOracle.simplexAlgorithmDense : CertificateOracle where
   produceCertificate hyps maxVar := do
-    let ⟨A, strictIndexes⟩ := preprocessDense hyps maxVar
+    let (A, strictIndexes) := preprocess DenseMatrix hyps maxVar
     let vec ← findPositiveVector A strictIndexes
     return postprocess vec
 

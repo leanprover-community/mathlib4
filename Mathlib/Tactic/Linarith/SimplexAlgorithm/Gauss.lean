@@ -19,9 +19,9 @@ abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) := StateM <| matType 
 
 variable {n m : Nat} {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
-/-- Finds the first row starting from the current row with nonzero element in current column. -/
-def findNonzeroRow (row col : Nat) : GaussM n m matType <| Option Nat := do
-  for i in [row:n] do
+/-- Finds the first row starting from the `rowStart` with nonzero element in the column `col`. -/
+def findNonzeroRow (rowStart col : Nat) : GaussM n m matType <| Option Nat := do
+  for i in [rowStart:n] do
     if (← get)[(i, col)]! != 0 then
       return i
   return .none
@@ -60,11 +60,12 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
     free := free.push i
 
   let ansMatrix : matType basic.size free.size := ← do
-    let mat := (← get)
-    let arr : Array (Array (Nat × Nat × Rat)) := Array.ofFn fun bIdx : Fin row =>
-      free.mapIdx fun fIdx f =>
-        ((bIdx : Nat), (fIdx : Nat), -mat[((bIdx : Nat), f)]!)
-    return ofValues arr.flatten.toList
+    let vals := getValues (← get) |>.filterMap fun (i, j, v) =>
+      if j == basic[i]! then
+        .none
+      else
+        .some (i, free.findIdx? (· == j) |>.get!, -v)
+    return ofValues vals
 
   return ⟨basic, free, ansMatrix⟩
 
