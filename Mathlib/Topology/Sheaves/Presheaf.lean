@@ -350,6 +350,30 @@ def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback_inv_iso_pushforward_hom TopCat.Presheaf.pullbackInvIsoPushforwardHom
 
+variable {C}
+
+/-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`.  -/
+def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
+    (H : IsOpen (f '' SetLike.coe U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
+  let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk
+    (@homOfLE _ _ _ ((Opens.map f).obj ⟨_, H⟩) (Set.image_preimage.le_u_l _)).op
+  have hx : IsTerminal x :=
+    { lift := fun s ↦ by
+        fapply CostructuredArrow.homMk
+        · change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
+          refine (homOfLE ?_).op
+          apply (Set.image_subset f s.pt.hom.unop.le).trans
+          exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
+        · simp [autoParam, eq_iff_true_of_subsingleton]
+      -- Porting note: add `fac`, `uniq` manually
+      fac := fun _ _ => by ext; simp [eq_iff_true_of_subsingleton]
+      uniq := fun _ _ _ => by ext; simp [eq_iff_true_of_subsingleton] }
+  exact IsColimit.coconePointUniqueUpToIso
+    ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit ℱ (op U))
+    (colimitOfDiagramTerminal hx _)
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pullback_obj_obj_of_image_open TopCat.Presheaf.pullbackObjObjOfImageOpen
+
 end
 
 end Presheaf
