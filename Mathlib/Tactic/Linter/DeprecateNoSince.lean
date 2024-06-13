@@ -1,7 +1,16 @@
+/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
 import Lean
 import Lean.Elab.Command
 import Lean.Linter.Util
 
+/-!
+The "deprecateNoSince" linter emits a warning when there is a `deprecated`
+without `(since := "YYYY-MM-DD")`.
+-/
 open Lean Elab Command
 
 namespace Mathlib.Linter
