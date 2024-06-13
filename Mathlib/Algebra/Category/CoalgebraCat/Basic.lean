@@ -24,11 +24,9 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-coalgebras. -/
 structure CoalgebraCat extends ModuleCat.{v} R where
-  [isCoalgebra : Coalgebra R carrier]
+  instCoalgebra : Coalgebra R carrier
 
-attribute [instance] CoalgebraCat.isCoalgebra
-
-initialize_simps_projections CoalgebraCat (-isCoalgebra)
+attribute [instance] CoalgebraCat.instCoalgebra
 
 variable {R}
 
@@ -49,7 +47,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
     CoalgebraCat R where
-  isCoalgebra := (inferInstance : Coalgebra R X)
+  instCoalgebra := (inferInstance : Coalgebra R X)
 
 variable {R}
 
@@ -132,20 +130,22 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 /-- Build an isomorphism in the category `CoalgebraCat R` from a
 `CoalgEquiv`. -/
 @[simps]
-def toIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
+def toCoalgebraCatIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
   hom := CoalgebraCat.ofHom e
   inv := CoalgebraCat.ofHom e.symm
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
-@[simp] theorem toIso_refl : toIso (CoalgEquiv.refl R X) = .refl _ :=
+@[simp] theorem toCoalgebraCatIso_refl :
+    toCoalgebraCatIso (CoalgEquiv.refl R X) = .refl _ :=
   rfl
 
-@[simp] theorem toIso_symm (e : X ≃ₗc[R] Y) : toIso e.symm = (toIso e).symm :=
+@[simp] theorem toCoalgebraCatIso_symm (e : X ≃ₗc[R] Y) :
+    toCoalgebraCatIso e.symm = (toCoalgebraCatIso e).symm :=
   rfl
 
-@[simp] theorem toIso_trans (e : X ≃ₗc[R] Y) (f : Y ≃ₗc[R] Z) :
-    toIso (e.trans f) = toIso e ≪≫ toIso f :=
+@[simp] theorem toCoalgebraCatIso_trans (e : X ≃ₗc[R] Y) (f : Y ≃ₗc[R] Z) :
+    toCoalgebraCatIso (e.trans f) = toCoalgebraCatIso e ≪≫ toCoalgebraCatIso f :=
   rfl
 
 end CoalgEquiv
@@ -181,8 +181,8 @@ def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
 end CategoryTheory.Iso
 
 instance CoalgebraCat.forget_reflects_isos :
-    (forget (CoalgebraCat.{u} R)).ReflectsIsomorphisms where
+    (forget (CoalgebraCat.{v} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
-    let i := asIso ((forget (CoalgebraCat.{u} R)).map f)
+    let i := asIso ((forget (CoalgebraCat.{v} R)).map f)
     let e : X ≃ₗc[R] Y := { f.toCoalgHom, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toIso).1⟩
+    exact ⟨e.toCoalgebraCatIso.isIso_hom.1⟩

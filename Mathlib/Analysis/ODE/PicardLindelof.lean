@@ -245,10 +245,10 @@ theorem dist_le_of_forall {f₁ f₂ : FunSpace v} {d : ℝ} (h : ∀ t, dist (f
 #align picard_lindelof.fun_space.dist_le_of_forall PicardLindelof.FunSpace.dist_le_of_forall
 
 instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
-  refine' (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
-      (IsClosed.isComplete _)
+  refine (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
+      (IsClosed.isComplete ?_)
   rw [range_toContinuousMap, setOf_and]
-  refine' (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter _
+  refine (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter ?_
   have : IsClosed {f : Icc v.tMin v.tMax → E | LipschitzWith v.C f} :=
     isClosed_setOf_lipschitzWith v.C
   exact this.preimage ContinuousMap.continuous_coe

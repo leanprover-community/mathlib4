@@ -104,8 +104,8 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
     of (grading R ·) 0 ⟨(zz.1, zz.1), rfl⟩ +
     of (grading R ·) 1 ⟨(0, zz.2 - zz.1), rfl⟩
   map_zero' := by
-    refine' DFinsupp.ext (fun (i : Two) =>
-        Option.casesOn i _ (fun (i_1 : Unit) => PUnit.casesOn i_1 _)) <;> rfl
+    refine DFinsupp.ext (fun (i : Two) =>
+        Option.casesOn i ?_ (fun (i_1 : Unit) => PUnit.casesOn i_1 ?_)) <;> rfl
   map_add' := by
     rintro ⟨a1, b1⟩ ⟨a2, b2⟩
     rw [add_add_add_comm, ← map_add, ← map_add]

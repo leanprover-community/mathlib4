@@ -56,9 +56,7 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
   · intro h
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
-    refine ⟨u, au, fun x hx => ?_⟩
-    refine' hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, _⟩
-    exact hx.1
+    exact ⟨u, au, fun x hx => hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
   tfae_finish
 #align tfae_mem_nhds_within_Ioi TFAE_mem_nhdsWithin_Ioi
 
@@ -406,12 +404,12 @@ theorem nhds_basis_Ioo_pos_of_pos [NoMaxOrder α] {a : α} (ha : 0 < a) :
 
 end LinearOrderedAddCommGroup
 
-@[deprecated image_neg]
+@[deprecated image_neg (since := "2023-02-05")]
 theorem preimage_neg [AddGroup α] : preimage (Neg.neg : α → α) = image (Neg.neg : α → α) :=
   funext fun _ => image_neg.symm
 #align preimage_neg preimage_neg
 
-@[deprecated] -- use `Filter.map_neg` from `Mathlib.Order.Filter.Pointwise`
+@[deprecated "use `Filter.map_neg` from `Mathlib.Order.Filter.Pointwise`" (since :="2023-02-05")]
 theorem Filter.map_neg_eq_comap_neg [AddGroup α] :
     map (Neg.neg : α → α) = comap (Neg.neg : α → α) :=
   funext fun _ => map_eq_comap_of_inverse (funext neg_neg) (funext neg_neg)

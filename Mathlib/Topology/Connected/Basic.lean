@@ -593,8 +593,9 @@ theorem mem_connectedComponent {x : α} : x ∈ connectedComponent x :=
   mem_sUnion_of_mem (mem_singleton x) ⟨isPreconnected_singleton, mem_singleton x⟩
 #align mem_connected_component mem_connectedComponent
 
-theorem mem_connectedComponentIn {x : α} {F : Set α} (hx : x ∈ F) : x ∈ connectedComponentIn F x :=
-  by simp [connectedComponentIn_eq_image hx, mem_connectedComponent, hx]
+theorem mem_connectedComponentIn {x : α} {F : Set α} (hx : x ∈ F) :
+    x ∈ connectedComponentIn F x := by
+  simp [connectedComponentIn_eq_image hx, mem_connectedComponent, hx]
 #align mem_connected_component_in mem_connectedComponentIn
 
 theorem connectedComponent_nonempty {x : α} : (connectedComponent x).Nonempty :=
@@ -1212,12 +1213,12 @@ theorem preimage_connectedComponent_connected [TopologicalSpace β] {f : α → 
   · left
     rw [Subset.antisymm_iff] at T₁_u
     suffices f ⁻¹' connectedComponent t ⊆ f ⁻¹' T₁
-      from (this.trans T₁_u.1).trans (inter_subset_right _ _)
+      from (this.trans T₁_u.1).trans inter_subset_right
     exact preimage_mono h
   · right
     rw [Subset.antisymm_iff] at T₂_v
     suffices f ⁻¹' connectedComponent t ⊆ f ⁻¹' T₂
-      from (this.trans T₂_v.1).trans (inter_subset_right _ _)
+      from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
 #align preimage_connected_component_connected preimage_connectedComponent_connected
 

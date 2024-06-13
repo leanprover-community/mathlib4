@@ -282,6 +282,9 @@ theorem natTrailingDegree_natCast (n : ℕ) : natTrailingDegree (n : R[X]) = 0 :
   simp only [← C_eq_natCast, natTrailingDegree_C]
 #align polynomial.nat_trailing_degree_nat_cast Polynomial.natTrailingDegree_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias natTrailingDegree_nat_cast := natTrailingDegree_natCast
+
 @[simp]
 theorem trailingDegree_C_mul_X_pow (n : ℕ) (ha : a ≠ 0) : trailingDegree (C a * X ^ n) = n := by
   rw [C_mul_X_pow_eq_monomial, trailingDegree_monomial ha]
@@ -516,6 +519,9 @@ theorem natTrailingDegree_intCast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 :
   simp only [← C_eq_intCast, natTrailingDegree_C]
 #align polynomial.nat_trailing_degree_int_cast Polynomial.natTrailingDegree_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias natTrailingDegree_int_cast := natTrailingDegree_intCast
+
 end Ring
 
 section Semiring
@@ -580,7 +586,7 @@ lemma eq_X_pow_iff_natTrailingDegree_eq_natDegree (h₁ : p.Monic) :
     p = X ^ p.natDegree ↔ p.natTrailingDegree = p.natDegree :=
   h₁.eq_X_pow_iff_natDegree_le_natTrailingDegree.trans (natTrailingDegree_le_natDegree p).ge_iff_eq
 
-@[deprecated] -- 2024-04-26
+@[deprecated (since := "2024-04-26")]
 alias ⟨_, eq_X_pow_of_natTrailingDegree_eq_natDegree⟩ := eq_X_pow_iff_natTrailingDegree_eq_natDegree
 
 end Monic
