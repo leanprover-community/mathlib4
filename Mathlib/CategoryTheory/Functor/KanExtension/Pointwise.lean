@@ -65,8 +65,7 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
         simp only [assoc, NatTrans.naturality_assoc, Functor.comp_map,
           Functor.map_comp, comp_id] }
 
-variable (L F)
-
+variable (L F) in
 /-- The cocones for `CostructuredArrow.proj L Y ⋙ F`, as a functor from `LeftExtension L F`. -/
 @[simps]
 def coconeAtFunctor (Y : D) :
@@ -77,8 +76,6 @@ def coconeAtFunctor (Y : D) :
     rw [← StructuredArrow.w φ]
     simp)
 
-variable {L F}
-
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension at `Y` when
 `E.coconeAt Y` is a colimit cocone. -/
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
@@ -86,7 +83,7 @@ def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
 variable {E} in
 lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
     {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y) :
-  HasPointwiseLeftKanExtensionAt L F Y := ⟨_, h⟩
+    HasPointwiseLeftKanExtensionAt L F Y := ⟨_, h⟩
 
 lemma IsPointwiseLeftKanExtensionAt.isIso_hom_app
     {X : C} (h : E.IsPointwiseLeftKanExtensionAt (L.obj X)) [L.Full] [L.Faithful] :

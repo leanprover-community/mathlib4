@@ -229,9 +229,8 @@ section SmallCategory
 variable {C D : Type u₁} [SmallCategory C] [SmallCategory D] (E : Type u₂) [Category.{u₁} E]
 
 
--- this should be moved to `CategoryTheory.Functor.KanExtension.Adjunction`
 /-- (Implementation)
-The evaluation of `Lan F` at `X` is the colimit over the costructured arrows over `X`.
+The evaluation of `F.lan` at `X` is the colimit over the costructured arrows over `X`.
 -/
 noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     [∀ X : D, HasColimitsOfShape (CostructuredArrow F X) E] :

@@ -488,8 +488,6 @@ namespace CategoryTheory
 
 variable {D : Type*} [Category D]
 
---attribute [local simp] Presheaf.pushforwardObj
-
 namespace Functor
 
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
