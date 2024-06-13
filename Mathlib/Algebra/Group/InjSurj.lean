@@ -51,7 +51,7 @@ elab "zeta% " t:term : term <= expectedType => do
   let t ← zetaReduce t
   pure t
 
-/-- `reduceProj% t` apply `Expr.reduceProjStruct?` to every subexpressions. -/
+/-- `reduceProj% t` apply `Expr.reduceProjStruct?` to all subexpressions of `t`. -/
 elab "reduceProj% " t:term : term <= expectedType => do
   let t ← withSynthesize do
     elabTermEnsuringType t expectedType
