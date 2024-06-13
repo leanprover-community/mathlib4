@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.Topology.Sheaves.Init
