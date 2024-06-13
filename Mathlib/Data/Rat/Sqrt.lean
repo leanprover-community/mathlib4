@@ -49,7 +49,7 @@ theorem sqrt_intCast (z : ℤ) : Rat.sqrt (z : ℚ) = Int.sqrt z := by
 
 @[simp, norm_cast]
 theorem sqrt_natCast (n : ℕ) : Rat.sqrt (n : ℚ) = Nat.sqrt n := by
-  rw [← Int.cast_natCast, sqrt_intCast, Int.sqrt_natCast]
+  rw [← Int.cast_natCast, sqrt_intCast, Int.sqrt_natCast, Int.cast_natCast]
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
