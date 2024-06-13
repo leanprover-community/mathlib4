@@ -2464,54 +2464,58 @@ def IsGδ₂ (s : Set X) : Prop :=
     ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
 
 /-- TODO use version merged from other PR soon hopefully
- `SeparatingCover`s can be useful witnesses for `SeparatedNhds`. -/
-def SeparatingCover : Set X → Set X → Prop := fun s t : Set X =>
+ `HasSeparatingCover`s can be useful witnesses for `SeparatedNhds`. -/
+def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
-theorem separating_covers_iff_separated_nhds {h k : Set X} :
-    SeparatingCover h k ∧ SeparatingCover k h ↔ SeparatedNhds h k := sorry
+theorem has_separating_covers_iff_separated_nhds {h k : Set X} :
+    HasSeparatingCover h k ∧ HasSeparatingCover k h ↔ SeparatedNhds h k := sorry
 
-theorem separating_cover_mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : SeparatingCover s₂ t₂)
-    (s_sub : s₁ ⊆ s₂) (t_sub : t₁ ⊆ t₂) : SeparatingCover s₁ t₁ := by
+theorem Set.has_separating_cover_empty_left (s : Set X) : HasSeparatingCover ∅ s := by
+  refine ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
+    fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩
+
+theorem Set.has_separating_cover_empty_right (s : Set X) : HasSeparatingCover s ∅ := by
+  refine ⟨fun _ ↦ univ, (subset_univ s).trans univ.iUnion_const.symm.subset,
+    fun _ ↦ ⟨isOpen_univ, by apply disjoint_empty⟩⟩
+
+theorem separating_cover_mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : HasSeparatingCover s₂ t₂)
+    (s_sub : s₁ ⊆ s₂) (t_sub : t₁ ⊆ t₂) : HasSeparatingCover s₁ t₁ := by
   obtain ⟨u, u_cov, u_props⟩ := sc_st
-  refine ⟨u, Subset.trans s_sub u_cov,
+  refine ⟨u, s_sub.trans u_cov,
     fun n ↦ ⟨(u_props n).1, disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
 
-theorem closed_gdelta_separating_cover {s t : Set X} [NormalSpace X] (st_dis : Disjoint s t)
-    (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : SeparatingCover s t := by
+theorem closed_gdelta_has_separating_cover {s t : Set X} [NormalSpace X] (st_dis : Disjoint s t)
+    (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : HasSeparatingCover s t := by
   obtain ⟨T, T_open, T_count, T_int⟩ := t_gd
-  wlog T_nonempty : T.Nonempty
+  rcases T.eq_empty_or_nonempty with rfl | T_nonempty
   · have : s = ∅ := by
-      rw [← disjoint_univ, ← sInter_empty, ← not_nonempty_iff_eq_empty.mp T_nonempty, ← T_int]
+      rw [← disjoint_univ, ← sInter_empty, ← T_int]
       exact st_dis
     rw [this]
-    refine ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅), fun _ ↦ ⟨isOpen_empty, ?_⟩⟩
-    simp only [closure_empty, empty_disjoint]
-  obtain ⟨g, g_surj⟩ := Countable.exists_surjective T_nonempty T_count
+    exact t.has_separating_cover_empty_left
+  obtain ⟨g, g_surj⟩ := T_count.exists_surjective T_nonempty
   choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
     apply normal_exists_closure_subset t_cl (T_open (g n).1 (g n).2)
     rw [T_int]
     exact sInter_subset_of_mem (g n).2
-  have clg'_int : ⋂ i, closure (g' i) = t := by
-    apply Subset.antisymm ?_
-      (subset_iInter fun n ↦ Subset.trans (clt_sub_g' n) subset_closure)
+  have clg'_int : t = ⋂ i, closure (g' i) := by
+    apply (subset_iInter fun n ↦ (clt_sub_g' n).trans subset_closure).antisymm
     rw [T_int]
     apply subset_sInter
     intro t tinT
     obtain ⟨n, gn⟩ := g_surj ⟨t, tinT⟩
-    apply (iInter_subset_of_subset n) (Subset.trans (clg'_sub_g n) ?_)
+    apply (iInter_subset_of_subset n)
+    apply (clg'_sub_g n).trans
     rw [gn]
   use fun n ↦ (closure (g' n))ᶜ
   constructor
-  · rw [← compl_iInter, subset_compl_comm, clg'_int]
+  · rw [← compl_iInter, subset_compl_comm, ← clg'_int]
     exact Disjoint.subset_compl_left st_dis
-  intro n
-  constructor
-  · simp only [isOpen_compl_iff, isClosed_closure]
-  · simp only [closure_compl, disjoint_compl_left_iff_subset]
+  · refine fun n ↦ ⟨isOpen_compl_iff.mpr isClosed_closure, ?_⟩
+    simp only [closure_compl, disjoint_compl_left_iff_subset]
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
-    exact Subset.trans subset_closure
-      (Subset.trans (clt_sub_g' n) (subset_interior_closure (g'_open n)))
+    exact subset_closure.trans <| (clt_sub_g' n).trans <| subset_interior_closure <| g'_open n
 
 section PerfectlyNormal
 
@@ -2522,12 +2526,12 @@ class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
-  completely_normal _ _ hd₁ hd₂ := separatedNhds_iff_disjoint.mp
-    (separating_covers_iff_separated_nhds.mp ⟨
-      separating_cover_mono (closed_gdelta_separating_cover hd₂
-        isClosed_closure (closed_gdelta isClosed_closure)) (fun ⦃_⦄ a ↦ a) subset_closure,
-      separating_cover_mono (closed_gdelta_separating_cover (Disjoint.symm hd₁)
-        isClosed_closure (closed_gdelta isClosed_closure)) (fun ⦃_⦄ a ↦ a) subset_closure⟩)
+  completely_normal _ _ hd₁ hd₂ := separatedNhds_iff_disjoint.mp <|
+    has_separating_covers_iff_separated_nhds.mp ⟨
+      separating_cover_mono (closed_gdelta_has_separating_cover hd₂
+        isClosed_closure <| closed_gdelta isClosed_closure) (fun ⦃_⦄ a ↦ a) subset_closure,
+      separating_cover_mono (closed_gdelta_has_separating_cover (Disjoint.symm hd₁)
+        isClosed_closure <| closed_gdelta isClosed_closure) (fun ⦃_⦄ a ↦ a) subset_closure⟩
 
 /-- A T₆ space is a perfectly normal T₁ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
