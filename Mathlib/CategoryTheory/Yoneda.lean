@@ -599,6 +599,8 @@ section
 variable {C}
 variable {D : Type*} [Category.{v₁} D] (F : C ⥤ D)
 
+/-- The natural transformation `yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X)`
+when `F : C ⥤ D` and `X : C`. -/
 def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) :=
   yonedaEquiv.symm (𝟙 _)
 
