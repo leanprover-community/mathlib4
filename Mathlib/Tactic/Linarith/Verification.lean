@@ -187,7 +187,7 @@ tactic, which is typically `ring`. We prove (2) by folding over the set of hypot
 `transparency : TransparencyMode` controls the transparency level with which atoms are identified.
 -/
 def proveFalseByLinarith (transparency : TransparencyMode) (oracle : CertificateOracle)
-  (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
+    (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
       trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
