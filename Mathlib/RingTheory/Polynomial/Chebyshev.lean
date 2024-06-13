@@ -272,7 +272,6 @@ theorem C_zero : C R 0 = 2 := rfl
 @[simp]
 theorem C_one : C R 1 = X := rfl
 
-@[simp]
 theorem C_neg_one : C R (-1) = X := (by ring : X * 2 - X = X)
 
 theorem C_two : C R 2 = X ^ 2 - 2 := by
