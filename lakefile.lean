@@ -68,6 +68,12 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
+/-- `lake exe update_deprecations` adds `(since := "YYYY-MM-DD")` to `deprecated`. -/
+lean_exe update_deprecations where
+  srcDir := "scripts"
+  --root := `Mathlib.Tactic.DeprSinceAction
+  supportInterpreter := true
+
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
 and then calculates the longest pole
