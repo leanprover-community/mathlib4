@@ -1161,7 +1161,7 @@ theorem noyau_proj (N : ℕ) :
     kernel.map (noyau κ) (fun x (i : Iic N) ↦ x i) (measurable_proj _) =
     noyau_partiel κ N := ionescu_ker_proj _ _
 
-theorem noyau_proj_zero : kernel.map (noyau κ) (fun x ↦ x 0) measurable_eval =
+theorem noyau_proj_zero : kernel.map (noyau κ) (fun x ↦ x 0) (measurable_pi_apply _) =
     kernel.deterministic id measurable_id := by
   rw [noyau, ionescu_ker_proj_zero]
 
