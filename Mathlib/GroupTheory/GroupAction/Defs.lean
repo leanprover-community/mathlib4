@@ -158,7 +158,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
-  { hf.smulZeroClass f.toZeroHom smul with
+  { delta% hf.smulZeroClass f.toZeroHom smul with
     smul_add := fun c x y => hf <| by simp only [smul, map_add, smul_add] }
 #align function.injective.distrib_smul Function.Injective.distribSMul
 
@@ -167,7 +167,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
-  { f.toZeroHom.smulZeroClass smul with
+  { delta% f.toZeroHom.smulZeroClass smul with
     smul_add := fun c x y => by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
@@ -245,7 +245,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with }
+  { delta% hf.distribSMul f smul, delta% hf.mulAction f smul with }
 #align function.surjective.distrib_mul_action Function.Surjective.distribMulAction
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
@@ -255,7 +255,7 @@ See also `Function.Surjective.mulActionLeft` and `Function.Surjective.moduleLeft
 abbrev Function.Surjective.distribMulActionLeft {R S M : Type*} [Monoid R] [AddMonoid M]
     [DistribMulAction R M] [Monoid S] [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribMulAction S M :=
-  { hf.distribSMulLeft f hsmul, hf.mulActionLeft f hsmul with }
+  { delta% hf.distribSMulLeft f hsmul, delta% hf.mulActionLeft f hsmul with }
 #align function.surjective.distrib_mul_action_left Function.Surjective.distribMulActionLeft
 
 variable (A)
@@ -349,7 +349,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
-  { hf.mulAction f smul with
+  { delta% hf.mulAction f smul with
     smul_mul := fun c x y => hf <| by simp only [smul, f.map_mul, smul_mul'],
     smul_one := fun c => hf <| by simp only [smul, f.map_one, smul_one] }
 #align function.injective.mul_distrib_mul_action Function.Injective.mulDistribMulAction
@@ -359,7 +359,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
-  { hf.mulAction f smul with
+  { delta% hf.mulAction f smul with
     smul_mul := fun c x y => by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
