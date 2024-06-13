@@ -557,10 +557,14 @@ theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
 theorem IsPrefix.ne_nil {x y : List α} (h : x <+: y) (hx : x ≠ []) : y ≠ [] := by
   rintro rfl; exact hx <| List.prefix_nil.mp h
 
+theorem IsPrefix.getElem {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
+    x[n] = y[n]'(hn.trans_le h.length_le) := by
+  obtain ⟨_, rfl⟩ := h
+  exact (List.getElem_append n hn).symm
+
 theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
     x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
-  obtain ⟨_, rfl⟩ := h
-  exact (List.get_append n hn).symm
+  simp only [get_eq_getElem, IsPrefix.getElem h hn]
 
 theorem IsPrefix.head_eq {x y : List α} (h : x <+: y) (hx : x ≠ []) :
     x.head hx = y.head (h.ne_nil hx) := by

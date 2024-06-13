@@ -609,7 +609,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     exact fun a => c.one_le_blocks' _
   · dsimp [compChangeOfVariables]
     rw [Composition.sigma_eq_iff_blocks_eq]
-    simp only [Composition.blocksFun, Composition.blocks, Subtype.coe_eta, List.get_map]
+    simp only [Composition.blocksFun, Composition.blocks, Subtype.coe_eta]
     conv_rhs => rw [← List.ofFn_get c.blocks]
 #align formal_multilinear_series.comp_partial_sum_target_subset_image_comp_partial_sum_source FormalMultilinearSeries.compPartialSumTargetSet_image_compPartialSumSource
 
@@ -1000,14 +1000,14 @@ two compositions `a` of `n` and `b` of `a.length`, and an index `i` bounded by t
 def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin (a.gather b).length) : Composition ((a.gather b).blocksFun i) where
   blocks :=
-    List.get (a.blocks.splitWrtComposition b)
-      ⟨i.val, (by rw [length_splitWrtComposition, ← length_gather]; exact i.2)⟩
+    (a.blocks.splitWrtComposition b)[i.val]'(by
+      rw [length_splitWrtComposition, ← length_gather]; exact i.2)
   blocks_pos {i} hi :=
     a.blocks_pos
       (by
         rw [← a.blocks.join_splitWrtComposition b]
-        exact mem_join_of_mem (List.get_mem _ _ _) hi)
-  blocks_sum := by simp only [Composition.blocksFun, get_map, Composition.gather]
+        exact mem_join_of_mem (List.getElem_mem _ _ _) hi)
+  blocks_sum := by simp [Composition.blocksFun, getElem_map, Composition.gather]
 #align composition.sigma_composition_aux Composition.sigmaCompositionAux
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
@@ -1075,7 +1075,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    rw [getElem_of_eq (get_splitWrtComposition _ _ _), getElem_drop', getElem_take _ _ C]
+    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop', getElem_take _ _ C]
 #align composition.size_up_to_size_up_to_add Composition.sizeUpTo_sizeUpTo_add
 
 /-- Natural equivalence between `(Σ (a : composition n), composition a.length)` and
@@ -1123,11 +1123,11 @@ def sigmaEquivSigmaPi (n : ℕ) :
       exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
-      conv_rhs => rw [← ofFn_get b.blocks]
+      conv_rhs => rw [← ofFn_getElem b.blocks]
       congr 1
       refine (Fin.heq_fun_iff B).2 fun i => ?_
-      rw [sigmaCompositionAux, Composition.length, List.get_map_rev List.length,
-        List.get_of_eq (map_length_splitWrtComposition _ _)]
+      rw [sigmaCompositionAux, Composition.length, List.getElem_map_rev List.length,
+        List.getElem_of_eq (map_length_splitWrtComposition _ _)]
   right_inv := by
     -- the fact that we have a right inverse is essentially `splitWrtComposition_join`,
     -- but we need to massage it to take care of the dependent setting.

@@ -487,7 +487,7 @@ theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
 
 @[simp]
 theorem ones_blocksFun (n : ℕ) (i : Fin (ones n).length) : (ones n).blocksFun i = 1 := by
-  simp only [blocksFun, ones, blocks, i.2, List.get_replicate]
+  simp only [blocksFun, ones, get_eq_getElem, getElem_replicate]
 #align composition.ones_blocks_fun Composition.ones_blocksFun
 
 @[simp]

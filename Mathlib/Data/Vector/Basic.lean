@@ -122,7 +122,7 @@ theorem get_eq_get (v : Vector α n) (i : Fin n) :
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
-  apply List.get_replicate
+  apply List.getElem_replicate
 #align vector.nth_repeat Vector.get_replicate
 
 @[simp]

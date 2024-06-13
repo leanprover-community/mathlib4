@@ -160,8 +160,8 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       simp only [List.get]
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
-      rw [zipWith_distrib_take, take, take_succ, get?_append hMl, get?_eq_get hMl, ← Option.coe_def,
-        Option.toList_some, take_append_of_le_length hMl.le]
+      rw [zipWith_distrib_take, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
+        ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, get_eq_getElem]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
     · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]

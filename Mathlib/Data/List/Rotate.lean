@@ -262,8 +262,9 @@ theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
       l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.1.zero_le.trans_lt k.2)⟩ := by
   simp [getElem_rotate]
 
-theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l.get? n := by
-  rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h]
+theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l[n]? := by
+  rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h,
+    get?_eq_getElem?]
 #align list.head'_rotate List.head?_rotate
 
 -- Porting note: moved down from its original location below `get_rotate` so that the
@@ -309,8 +310,8 @@ theorem nthLe_rotate' (l : List α) (n k : ℕ) (hk : k < l.length) :
 theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
     ∀ {l : List α}, (∀ n, l.rotate n = l) ↔ ∃ a, l = replicate l.length a
   | [] => by simp
-  | a :: l => ⟨fun h => ⟨a, ext_get (length_replicate _ _).symm fun n h₁ h₂ => by
-      rw [get_replicate, ← Option.some_inj, ← get?_eq_get, ← head?_rotate h₁, h, head?_cons]⟩,
+  | a :: l => ⟨fun h => ⟨a, ext_getElem (length_replicate _ _).symm fun n h₁ h₂ => by
+      rw [getElem_replicate, ← Option.some_inj, ← getElem?_eq_getElem, ← head?_rotate h₁, h, head?_cons]⟩,
     fun ⟨b, hb⟩ n => by rw [hb, rotate_replicate]⟩
 #align list.rotate_eq_self_iff_eq_replicate List.rotate_eq_self_iff_eq_replicate
 
@@ -395,8 +396,8 @@ theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :
 theorem Nodup.rotate_congr {l : List α} (hl : l.Nodup) (hn : l ≠ []) (i j : ℕ)
     (h : l.rotate i = l.rotate j) : i % l.length = j % l.length := by
   rw [← rotate_mod l i, ← rotate_mod l j] at h
-  simpa only [head?_rotate, mod_lt, length_pos_of_ne_nil hn, get?_eq_get, Option.some_inj,
-    hl.get_inj_iff, Fin.ext_iff] using congr_arg head? h
+  simpa only [head?_rotate, mod_lt, length_pos_of_ne_nil hn, getElem?_eq_getElem, Option.some_inj,
+    hl.getElem_inj_iff, Fin.ext_iff] using congr_arg head? h
 #align list.nodup.rotate_congr List.Nodup.rotate_congr
 
 theorem Nodup.rotate_congr_iff {l : List α} (hl : l.Nodup) {i j : ℕ} :

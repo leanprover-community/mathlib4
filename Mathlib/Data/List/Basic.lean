@@ -1266,7 +1266,12 @@ theorem mem_iff_nthLe {a} {l : List α} : a ∈ l ↔ ∃ n h, nthLe l n h = a :
 theorem nthLe_map (f : α → β) {l n} (H1 H2) : nthLe (map f l) n H1 = f (nthLe l n H2) := get_map ..
 #align list.nth_le_map List.nthLe_map
 
+/-- A version of `getElem_map` that can be used for rewriting. -/
+theorem getElem_map_rev (f : α → β) {l} {n : Nat} {h : n < l.length} :
+    f l[n] = (map f l)[n]'((l.length_map f).symm ▸ h) := Eq.symm (getElem_map _)
+
 /-- A version of `get_map` that can be used for rewriting. -/
+@[deprecated getElem_map_rev (since := "2024-06-12")]
 theorem get_map_rev (f : α → β) {l n} :
     f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (get_map _)
 
@@ -1549,8 +1554,8 @@ theorem map_congr {f g : α → β} : ∀ {l : List α}, (∀ x ∈ l, f x = g x
 
 theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ ∀ x ∈ l, f x = g x := by
   refine ⟨?_, map_congr⟩; intro h x hx
-  rw [mem_iff_get] at hx; rcases hx with ⟨n, hn, rfl⟩
-  rw [get_map_rev f, get_map_rev g]
+  rw [mem_iff_getElem] at hx; rcases hx with ⟨n, hn, rfl⟩
+  rw [getElem_map_rev f, getElem_map_rev g]
   congr!
 #align list.map_eq_map_iff List.map_eq_map_iff
 

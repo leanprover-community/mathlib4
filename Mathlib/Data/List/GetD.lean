@@ -79,6 +79,7 @@ theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.get
 @[deprecated (since := "2024-06-12")]
 alias getD_replicate_default_eq := getElem?_getD_replicate_default_eq
 
+set_option linter.deprecated false in
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getD n d = l.getD n d := by
   rw [getD_eq_get _ _ (Nat.lt_of_lt_of_le h (length_append _ _ ▸ Nat.le_add_right _ _)),

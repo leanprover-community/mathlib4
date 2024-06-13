@@ -231,6 +231,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
   | _ => ⟨default, [], le_max_left _ _⟩
 #align first_order.language.bounded_formula.list_decode FirstOrder.Language.BoundedFormula.listDecode
 
+set_option linter.deprecated false in
 @[simp]
 theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     (listDecode (l.bind fun φ => φ.2.listEncode)).1 = l.headI := by
