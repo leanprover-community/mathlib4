@@ -38,9 +38,9 @@ structure IsField (R : Type u) [Semiring R] : Prop where
 #align is_field IsField
 
 /-- Transferring from `Semifield` to `IsField`. -/
-theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
-  { ‹Semifield R› with
-    mul_inv_cancel := @fun a ha => ⟨a⁻¹, mul_inv_cancel a ha⟩ }
+theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R where
+  __ := ‹Semifield R›
+  mul_inv_cancel {a} ha := ⟨a⁻¹, mul_inv_cancel ha⟩
 #align semifield.to_is_field Semifield.toIsField
 
 /-- Transferring from `Field` to `IsField`. -/
@@ -63,18 +63,18 @@ theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] :
 open scoped Classical
 
 /-- Transferring from `IsField` to `Semifield`. -/
-noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R :=
-  { ‹Semiring R›, h with
-    inv := fun a => if ha : a = 0 then 0 else Classical.choose (IsField.mul_inv_cancel h ha),
-    inv_zero := dif_pos rfl,
-    mul_inv_cancel := fun a ha => by
-      convert Classical.choose_spec (IsField.mul_inv_cancel h ha)
-      exact dif_neg ha }
+noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R where
+  __ := ‹Semiring R›
+  __ := h
+  inv a := if ha : a = 0 then 0 else Classical.choose (h.mul_inv_cancel ha)
+  inv_zero := dif_pos rfl
+  mul_inv_cancel a ha := by convert Classical.choose_spec (h.mul_inv_cancel ha); exact dif_neg ha
+  nnqsmul := _
 #align is_field.to_semifield IsField.toSemifield
 
 /-- Transferring from `IsField` to `Field`. -/
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
-  { ‹Ring R›, IsField.toSemifield h with qsmul := qsmulRec _ }
+  { ‹Ring R›, IsField.toSemifield h with qsmul := _ }
 #align is_field.to_field IsField.toField
 
 /-- For each field, and for each nonzero element of said field, there is a unique inverse.

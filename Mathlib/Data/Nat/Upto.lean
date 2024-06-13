@@ -3,7 +3,7 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.nat.upto from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
@@ -31,8 +31,7 @@ natural numbers, up to and including the first value satisfying `p`.
 
 We will be particularly interested in the case where there exists a value
 satisfying `p`, because in this case the `>` relation is well-founded.  -/
-@[reducible]
-def Upto (p : ℕ → Prop) : Type :=
+abbrev Upto (p : ℕ → Prop) : Type :=
   { i : ℕ // ∀ j < i, ¬p j }
 #align nat.upto Nat.Upto
 

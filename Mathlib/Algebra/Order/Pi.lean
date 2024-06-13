@@ -62,15 +62,6 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
   __ := Pi.commMonoid
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
   mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
--- Porting note: Old proof was
-  -- refine_struct
-  --     { Pi.partialOrder, Pi.monoid with
-  --       mul := (· * ·)
-  --       one := (1 : ∀ i, f i)
-  --       le := (· ≤ ·)
-  --       lt := (· < ·)
-  --       npow := Monoid.npow } <;>
-  --   pi_instance_derive_field
 #align pi.ordered_cancel_comm_monoid Pi.orderedCancelCommMonoid
 #align pi.ordered_cancel_add_comm_monoid Pi.orderedAddCancelCommMonoid
 

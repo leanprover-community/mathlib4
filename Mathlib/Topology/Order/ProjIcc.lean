@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Intervals.ProjIcc
+import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Topology.Order.Basic
 
 #align_import topology.algebra.order.proj_Icc from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
@@ -26,7 +26,7 @@ protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Fil
     Tendsto (↿(IccExtend h ∘ f)) (lc ×ˢ la) lb :=
   hf.comp <| tendsto_id.prod_map tendsto_map
 
-@[deprecated Filter.Tendsto.IccExtend]
+@[deprecated Filter.Tendsto.IccExtend (since := "2023-02-06")]
 theorem Filter.Tendsto.IccExtend' (f : γ → Icc a b → β) {z : γ} {l : Filter α} {l' : Filter β}
     (hf : Tendsto (↿f) (𝓝 z ×ˢ l.map (projIcc a b h)) l') :
     Tendsto (↿(IccExtend h ∘ f)) (𝓝 z ×ˢ l) l' :=

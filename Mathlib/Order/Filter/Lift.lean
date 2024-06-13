@@ -46,9 +46,9 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
     (hf : f.HasBasis p s) {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
     {g : Set α → Filter γ} (hg : ∀ i, (g <| s i).HasBasis (pg i) (sg i)) (gm : Monotone g)
     {s : Set γ} : s ∈ f.lift g ↔ ∃ i, p i ∧ ∃ x, pg i x ∧ sg i x ⊆ s := by
-  refine' (mem_biInf_of_directed _ ⟨univ, univ_sets _⟩).trans _
+  refine (mem_biInf_of_directed ?_ ⟨univ, univ_sets _⟩).trans ?_
   · intro t₁ ht₁ t₂ ht₂
-    exact ⟨t₁ ∩ t₂, inter_mem ht₁ ht₂, gm <| inter_subset_left _ _, gm <| inter_subset_right _ _⟩
+    exact ⟨t₁ ∩ t₂, inter_mem ht₁ ht₂, gm inter_subset_left, gm inter_subset_right⟩
   · simp only [← (hg _).mem_iff]
     exact hf.exists_iff fun t₁ t₂ ht H => gm ht H
 #align filter.has_basis.mem_lift_iff Filter.HasBasis.mem_lift_iffₓ
@@ -66,7 +66,7 @@ theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α}
     {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
     (hg : ∀ i, (g (s i)).HasBasis (pg i) (sg i)) (gm : Monotone g) :
     (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 := by
-  refine' ⟨fun t => (hf.mem_lift_iff hg gm).trans _⟩
+  refine ⟨fun t => (hf.mem_lift_iff hg gm).trans ?_⟩
   simp [Sigma.exists, and_assoc, exists_and_left]
 #align filter.has_basis.lift Filter.HasBasis.lift
 
@@ -162,8 +162,8 @@ theorem lift_lift_same_eq_lift {g : Set α → Set α → Filter β} (hg₁ : �
   lift_lift_same_le_lift.antisymm <|
     le_lift.2 fun s hs => le_lift.2 fun t ht => lift_le (inter_mem hs ht) <|
       calc
-        g (s ∩ t) (s ∩ t) ≤ g s (s ∩ t) := hg₂ (s ∩ t) (inter_subset_left _ _)
-        _ ≤ g s t := hg₁ s (inter_subset_right _ _)
+        g (s ∩ t) (s ∩ t) ≤ g s (s ∩ t) := hg₂ (s ∩ t) inter_subset_left
+        _ ≤ g s t := hg₁ s inter_subset_right
 #align filter.lift_lift_same_eq_lift Filter.lift_lift_same_eq_lift
 
 theorem lift_principal {s : Set α} (hg : Monotone g) : (𝓟 s).lift g = g s :=
@@ -201,10 +201,10 @@ theorem lift_iInf_le {f : ι → Filter α} {g : Set α → Filter β} :
 
 theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) : (iInf f).lift g = ⨅ i, (f i).lift g := by
-  refine' lift_iInf_le.antisymm fun s => _
+  refine lift_iInf_le.antisymm fun s => ?_
   have H : ∀ t ∈ iInf f, ⨅ i, (f i).lift g ≤ g t := by
     intro t ht
-    refine' iInf_sets_induct ht _ fun hs ht => _
+    refine iInf_sets_induct ht ?_ fun hs ht => ?_
     · inhabit ι
       exact iInf₂_le_of_le default univ (iInf_le _ univ_mem)
     · rw [hg]

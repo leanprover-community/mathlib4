@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Michael Stoll
 -/
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Data.Complex.FiniteDimensional
 
 #align_import number_theory.l_series from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
@@ -46,8 +47,6 @@ to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
 
 L-series
 -/
-
-open scoped BigOperators
 
 open Complex
 
@@ -294,7 +293,7 @@ lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeries
   exact (this.trans_lt hn).false.elim
 
 open Filter in
-/-- If the `LSeries` of `f` is summable at `s`, then `f = O(n^(re s))`.-/
+/-- If the `LSeries` of `f` is summable at `s`, then `f = O(n^(re s))`. -/
 lemma LSeriesSummable.isBigO_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummable f s) :
     f =O[atTop] fun n ↦ (n : ℝ) ^ s.re := by
   obtain ⟨C, hC⟩ := h.le_const_mul_rpow

@@ -16,6 +16,7 @@ Lemmas about divisibility in groups and monoids with zero.
 
 -/
 
+assert_not_exists DenselyOrdered
 
 variable {α : Type*}
 
@@ -72,7 +73,7 @@ theorem dvdNotUnit_of_dvd_of_not_dvd {a b : α} (hd : a ∣ b) (hnd : ¬b ∣ a)
   · rintro rfl
     exact hnd (dvd_zero _)
   · rcases hd with ⟨c, rfl⟩
-    refine' ⟨c, _, rfl⟩
+    refine ⟨c, ?_, rfl⟩
     rintro ⟨u, rfl⟩
     simp at hnd
 #align dvd_not_unit_of_dvd_of_not_dvd dvdNotUnit_of_dvd_of_not_dvd
@@ -139,7 +140,7 @@ end MonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero α] [Subsingleton αˣ] {a b : α}
+variable [CancelCommMonoidWithZero α] [Subsingleton αˣ] {a b : α} {m n : ℕ}
 
 theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   rintro ⟨c, rfl⟩ ⟨d, hcd⟩
@@ -167,5 +168,19 @@ theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
 theorem eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
   ((h _).1 dvd_rfl).antisymm <| (h _).2 dvd_rfl
 #align eq_of_forall_dvd' eq_of_forall_dvd'
+
+lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ n ≤ m := by
+  constructor
+  · intro h
+    rw [← not_lt]
+    intro hmn
+    apply ha
+    have : a ^ m * a ∣ a ^ m * 1 := by
+      rw [← pow_succ, mul_one]
+      exact (pow_dvd_pow _ (Nat.succ_le_of_lt hmn)).trans h
+    rwa [mul_dvd_mul_iff_left, ← isUnit_iff_dvd_one] at this
+    apply pow_ne_zero m ha₀
+  · apply pow_dvd_pow
+#align pow_dvd_pow_iff pow_dvd_pow_iff
 
 end CancelCommMonoidWithZero
