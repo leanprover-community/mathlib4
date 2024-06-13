@@ -191,34 +191,34 @@ lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 #align real.cauchy_int_cast Real.cauchy_intCast
 #align real.cauchy_rat_cast Real.cauchy_ratCast
 
-instance commRing : CommRing ℝ := by
-  refine' { natCast := fun n => ⟨n⟩
-            intCast := fun z => ⟨z⟩
-            zero := (0 : ℝ)
-            one := (1 : ℝ)
-            mul := (· * ·)
-            add := (· + ·)
-            neg := @Neg.neg ℝ _
-            sub := @Sub.sub ℝ _
-            npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
-            nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
-            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩),
-            .. }
-  all_goals
-    intros
-    first
-    | rfl
-    | apply ext_cauchy
-      simp [cauchy_add, cauchy_zero, cauchy_one, cauchy_neg, cauchy_mul,
-        cauchy_natCast, cauchy_intCast]
-      first
-        | done
-        | apply add_assoc
-        | apply add_comm
-        | apply left_distrib
-        | apply right_distrib
-        | apply mul_assoc
-        | apply mul_comm
+instance commRing : CommRing ℝ where
+  natCast n := ⟨n⟩
+  intCast z := ⟨z⟩
+  zero := (0 : ℝ)
+  one := (1 : ℝ)
+  mul := (· * ·)
+  add := (· + ·)
+  neg := @Neg.neg ℝ _
+  sub := @Sub.sub ℝ _
+  npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
+  nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
+  zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩)
+  add_zero a := by apply ext_cauchy; simp [cauchy_add, cauchy_zero]
+  zero_add a := by apply ext_cauchy; simp [cauchy_add, cauchy_zero]
+  add_comm a b := by apply ext_cauchy; simp only [cauchy_add, add_comm]
+  add_assoc a b c := by apply ext_cauchy; simp only [cauchy_add, add_assoc]
+  mul_zero a := by apply ext_cauchy; simp [cauchy_mul, cauchy_zero]
+  zero_mul a := by apply ext_cauchy; simp [cauchy_mul, cauchy_zero]
+  mul_one a := by apply ext_cauchy; simp [cauchy_mul, cauchy_one]
+  one_mul a := by apply ext_cauchy; simp [cauchy_mul, cauchy_one]
+  mul_comm a b := by apply ext_cauchy; simp only [cauchy_mul, mul_comm]
+  mul_assoc a b c := by apply ext_cauchy; simp only [cauchy_mul, mul_assoc]
+  left_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, mul_add]
+  right_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, add_mul]
+  add_left_neg a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
+  natCast_zero := by apply ext_cauchy; simp [cauchy_zero]
+  natCast_succ n := by apply ext_cauchy; simp [cauchy_one, cauchy_add]
+  intCast_negSucc z := by apply ext_cauchy; simp [cauchy_neg, cauchy_natCast]
 
 /-- `Real.equivCauchy` as a ring equivalence. -/
 @[simps]
@@ -616,7 +616,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
   apply not_lt_of_le (H _ le_rfl).1
   erw [mk_lt]
-  refine' ⟨_, half_pos K0, i, fun j ij => _⟩
+  refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 #align real.le_mk_of_forall_le Real.le_mk_of_forall_le
@@ -639,3 +639,8 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
 #align real.mk_near_of_forall_near Real.mk_near_of_forall_near
 
 end Real
+
+/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
+  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
+def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
+  ∀ r s, f (r + s) ≤ max (f r) (f s)

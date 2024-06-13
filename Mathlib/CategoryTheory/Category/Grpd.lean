@@ -50,7 +50,7 @@ instance str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.str CategoryTheory.Grpd.str'
 
-instance : CoeSort Grpd (Type*) :=
+instance : CoeSort Grpd Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `Grpd` from the underlying type and the typeclass `Groupoid`. -/
@@ -142,7 +142,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The product of a family of groupoids is isomorphic
 to the product object in the category of Groupoids -/
-noncomputable def piIsoPi (J : Type u) (f : J → Grpd.{u, u}) : @of (∀ j, f j) _ ≅ ∏ f :=
+noncomputable def piIsoPi (J : Type u) (f : J → Grpd.{u, u}) : @of (∀ j, f j) _ ≅ ∏ᶜ f :=
   Limits.IsLimit.conePointUniqueUpToIso (piLimitFanIsLimit f)
     (Limits.limit.isLimit (Discrete.functor f))
 set_option linter.uppercaseLean3 false in

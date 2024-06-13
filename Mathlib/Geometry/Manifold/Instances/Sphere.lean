@@ -97,8 +97,8 @@ theorem stereoToFun_apply (x : E) :
 
 theorem contDiffOn_stereoToFun :
     ContDiffOn ℝ ⊤ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
-  refine' ContDiffOn.smul _ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
-  refine' contDiff_const.contDiffOn.div _ _
+  refine ContDiffOn.smul ?_ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
+  refine contDiff_const.contDiffOn.div ?_ ?_
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
   · intro x h h'
     exact h (sub_eq_zero.mp h').symm
@@ -170,11 +170,11 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
 theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
   have h₀ : ContDiff ℝ ⊤ fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
   have h₁ : ContDiff ℝ ⊤ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
-    refine' (h₀.add contDiff_const).inv _
+    refine (h₀.add contDiff_const).inv ?_
     intro x
     nlinarith
   have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
-    refine' (contDiff_const.smul contDiff_id).add _
+    refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
   exact h₁.smul h₂
 #align cont_diff_stereo_inv_fun_aux contDiff_stereoInvFunAux
@@ -193,11 +193,11 @@ theorem stereoInvFun_apply (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
 
 theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     stereoInvFun hv w ≠ (⟨v, by simp [hv]⟩ : sphere (0 : E) 1) := by
-  refine' Subtype.coe_ne_coe.1 _
+  refine Subtype.coe_ne_coe.1 ?_
   rw [← inner_lt_one_iff_real_of_norm_one _ hv]
   · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by
-      refine' (inv_mul_lt_iff' _).mpr _
+      refine (inv_mul_lt_iff' ?_).mpr ?_
       · nlinarith
       linarith
     simpa [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm, hw,
@@ -392,8 +392,8 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
       let U : (ℝ ∙ (v : E))ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n) :=
         (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr
       (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (4 : ℝ) • (U.symm x : E) +
-        (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (‖(U.symm x : E)‖ ^ 2 - 4) • v.val :=
-  by simp [real_inner_comm, stereographic, stereographic', ← Submodule.coe_norm]
+        (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (‖(U.symm x : E)‖ ^ 2 - 4) • v.val := by
+  simp [real_inner_comm, stereographic, stereographic', ← Submodule.coe_norm]
 #align stereographic'_symm_apply stereographic'_symm_apply
 
 /-! ### Smooth manifold structure on the sphere -/
@@ -456,7 +456,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
     (hf : ContMDiff I 𝓘(ℝ, E) m f) (hf' : ∀ x, f x ∈ sphere (0 : E) 1) :
     ContMDiff I (𝓡 n) m (Set.codRestrict _ _ hf' : M → sphere (0 : E) 1) := by
   rw [contMDiff_iff_target]
-  refine' ⟨continuous_induced_rng.2 hf.continuous, _⟩
+  refine ⟨continuous_induced_rng.2 hf.continuous, ?_⟩
   intro v
   let U : _ ≃ₗᵢ[ℝ] _ :=
     (-- Again, partially removing type ascription... Weird that this helps!

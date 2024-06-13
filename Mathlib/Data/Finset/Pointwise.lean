@@ -58,7 +58,7 @@ pointwise subtraction
 
 open Function MulOpposite
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 
@@ -330,13 +330,16 @@ theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injecti
 #align finset.card_neg Finset.card_neg
 
 @[to_additive (attr := simp)]
-theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) (inv_injective.injOn _) = s⁻¹ :=
+theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) inv_injective.injOn = s⁻¹ :=
   coe_injective <| by rw [coe_preimage, Set.inv_preimage, coe_inv]
 #align finset.preimage_inv Finset.preimage_inv
 #align finset.preimage_neg Finset.preimage_neg
 
 @[to_additive (attr := simp)]
 lemma inv_univ [Fintype α] : (univ : Finset α)⁻¹ = univ := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_injective <| by simp
 
 end InvolutiveInv
 
@@ -1091,7 +1094,7 @@ scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_prod {ι : Type*} (s : Finset ι) (f : ι → Finset α) :
-    ↑(∏ i in s, f i) = ∏ i in s, (f i : Set α) :=
+    ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
   map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
 #align finset.coe_prod Finset.coe_prod
 #align finset.coe_sum Finset.coe_sum
@@ -1108,7 +1111,7 @@ variable [DivisionMonoid α] {s t : Finset α}
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
-    refine' (coe_inv _).trans _
+    refine (coe_inv _).trans ?_
     exact congr_arg Inv.inv (coe_pow _ _)
 #align finset.coe_zpow Finset.coe_zpow
 #align finset.coe_zsmul Finset.coe_zsmul
@@ -1134,7 +1137,7 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Finset.mul_eq_one_iff.1 u.mul_inv
-    refine' ⟨a, ha, ⟨a, b, h, singleton_injective _⟩, rfl⟩
+    refine ⟨a, ha, ⟨a, b, h, singleton_injective ?_⟩, rfl⟩
     rw [← singleton_mul_singleton, ← ha, ← hb]
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩
@@ -1269,27 +1272,27 @@ theorem isUnit_iff_singleton_aux : (∃ a, s = {a} ∧ IsUnit a) ↔ ∃ a, s = 
 
 @[to_additive (attr := simp)]
 theorem image_mul_left :
-    image (fun b => a * b) t = preimage t (fun b => a⁻¹ * b) ((mul_right_injective _).injOn _) :=
+    image (fun b => a * b) t = preimage t (fun b => a⁻¹ * b) (mul_right_injective _).injOn :=
   coe_injective <| by simp
 #align finset.image_mul_left Finset.image_mul_left
 #align finset.image_add_left Finset.image_add_left
 
 @[to_additive (attr := simp)]
-theorem image_mul_right : image (· * b) t = preimage t (· * b⁻¹) ((mul_left_injective _).injOn _) :=
+theorem image_mul_right : image (· * b) t = preimage t (· * b⁻¹) (mul_left_injective _).injOn :=
   coe_injective <| by simp
 #align finset.image_mul_right Finset.image_mul_right
 #align finset.image_add_right Finset.image_add_right
 
 @[to_additive]
 theorem image_mul_left' :
-    image (fun b => a⁻¹ * b) t = preimage t (fun b => a * b) ((mul_right_injective _).injOn _) := by
+    image (fun b => a⁻¹ * b) t = preimage t (fun b => a * b) (mul_right_injective _).injOn := by
   simp
 #align finset.image_mul_left' Finset.image_mul_left'
 #align finset.image_add_left' Finset.image_add_left'
 
 @[to_additive]
 theorem image_mul_right' :
-    image (· * b⁻¹) t = preimage t (· * b) ((mul_left_injective _).injOn _) := by simp
+    image (· * b⁻¹) t = preimage t (· * b) (mul_left_injective _).injOn := by simp
 #align finset.image_mul_right' Finset.image_mul_right'
 #align finset.image_add_right' Finset.image_add_right'
 
@@ -1327,38 +1330,38 @@ variable [Group α] {s t : Finset α} {a b : α}
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_singleton :
-    preimage {b} (a * ·) ((mul_right_injective _).injOn _) = {a⁻¹ * b} := by
+    preimage {b} (a * ·) (mul_right_injective _).injOn = {a⁻¹ * b} := by
   classical rw [← image_mul_left', image_singleton]
 #align finset.preimage_mul_left_singleton Finset.preimage_mul_left_singleton
 #align finset.preimage_add_left_singleton Finset.preimage_add_left_singleton
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_singleton :
-    preimage {b} (· * a) ((mul_left_injective _).injOn _) = {b * a⁻¹} := by
+    preimage {b} (· * a) (mul_left_injective _).injOn = {b * a⁻¹} := by
   classical rw [← image_mul_right', image_singleton]
 #align finset.preimage_mul_right_singleton Finset.preimage_mul_right_singleton
 #align finset.preimage_add_right_singleton Finset.preimage_add_right_singleton
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_one : preimage 1 (a * ·) ((mul_right_injective _).injOn _) = {a⁻¹} :=
-  by classical rw [← image_mul_left', image_one, mul_one]
+theorem preimage_mul_left_one : preimage 1 (a * ·) (mul_right_injective _).injOn = {a⁻¹} := by
+  classical rw [← image_mul_left', image_one, mul_one]
 #align finset.preimage_mul_left_one Finset.preimage_mul_left_one
 #align finset.preimage_add_left_zero Finset.preimage_add_left_zero
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_right_one : preimage 1 (· * b) ((mul_left_injective _).injOn _) = {b⁻¹} := by
+theorem preimage_mul_right_one : preimage 1 (· * b) (mul_left_injective _).injOn = {b⁻¹} := by
   classical rw [← image_mul_right', image_one, one_mul]
 #align finset.preimage_mul_right_one Finset.preimage_mul_right_one
 #align finset.preimage_add_right_zero Finset.preimage_add_right_zero
 
 @[to_additive]
-theorem preimage_mul_left_one' : preimage 1 (a⁻¹ * ·) ((mul_right_injective _).injOn _) = {a} :=
-  by rw [preimage_mul_left_one, inv_inv]
+theorem preimage_mul_left_one' : preimage 1 (a⁻¹ * ·) (mul_right_injective _).injOn = {a} := by
+  rw [preimage_mul_left_one, inv_inv]
 #align finset.preimage_mul_left_one' Finset.preimage_mul_left_one'
 #align finset.preimage_add_left_zero' Finset.preimage_add_left_zero'
 
 @[to_additive]
-theorem preimage_mul_right_one' : preimage 1 (· * b⁻¹) ((mul_left_injective _).injOn _) = {b} := by
+theorem preimage_mul_right_one' : preimage 1 (· * b⁻¹) (mul_left_injective _).injOn = {b} := by
   rw [preimage_mul_right_one, inv_inv]
 #align finset.preimage_mul_right_one' Finset.preimage_mul_right_one'
 #align finset.preimage_add_right_zero' Finset.preimage_add_right_zero'
@@ -1871,8 +1874,8 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 @[to_additive
       "An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β`"]
-protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] : MulAction (Finset α) (Finset β)
-    where
+protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
+    MulAction (Finset α) (Finset β) where
   mul_smul _ _ _ := image₂_assoc mul_smul
   one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']
 #align finset.mul_action Finset.mulAction
@@ -2051,6 +2054,17 @@ theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s
 #align finset.card_le_card_add_right Finset.card_le_card_add_right
 
 end
+
+section Group
+variable [Group α] [DecidableEq α] {s t : Finset α}
+
+@[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : t.card ≤ (s / t).card :=
+  card_le_card_image₂_left _ hs fun _ ↦ div_right_injective
+
+@[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
+  card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
+
+end Group
 
 open Pointwise
 
@@ -2363,10 +2377,10 @@ section CommMonoid
 variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image <| inv_injective.injOn _
+    ∏ i ∈ s⁻¹, f i = ∏ i ∈ s, f i⁻¹ := prod_image inv_injective.injOn
 
 @[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image <| neg_injective.injOn _
+    ∏ i ∈ -s, f i = ∏ i ∈ s, f (-i) := prod_image neg_injective.injOn
 
 end CommMonoid
 
@@ -2374,7 +2388,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image <| inv_injective.injOn _
+    ∑ i ∈ s⁻¹, f i = ∑ i ∈ s, f i⁻¹ := sum_image inv_injective.injOn
 
 end AddCommMonoid
 end BigOps
