@@ -5,6 +5,7 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Algebra.Spectrum
 
 #align_import algebra.star.unitary from "leanprover-community/mathlib"@"247a102b14f3cebfee126293341af5f6bed00237"
 
@@ -238,5 +239,25 @@ instance : HasDistribNeg (unitary R) :=
   Subtype.coe_injective.hasDistribNeg _ coe_neg (unitary R).coe_mul
 
 end Ring
+
+section UnitaryConjugate
+
+universe u
+
+variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
+
+/-- Unitary conjugation preserves the spectrum, star on left. -/
+@[simp]
+lemma spectrum.unitary_conjugate {a : A} {u : unitary A} :
+    spectrum R (u * a * (star u : A)) = spectrum R a :=
+  spectrum.units_conjugate (u := unitary.toUnits u)
+
+/-- Unitary conjugation preserves the spectrum, star on right. -/
+@[simp]
+lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
+    spectrum R ((star u : A) * a * u) = spectrum R a := by
+  simpa using spectrum.unitary_conjugate (u := star u)
+
+end UnitaryConjugate
 
 end unitary

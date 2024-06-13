@@ -3,6 +3,7 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker
 -/
+import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.MetricSpace.Equicontinuity
