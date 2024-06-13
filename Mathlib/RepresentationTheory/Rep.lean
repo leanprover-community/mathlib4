@@ -35,8 +35,12 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-theorem ModuleCat.end_of (R : Type u) [Ring R] (M : Type v) [AddCommGroup M] [Module R M] :
-    End (ModuleCat.of R M) = (M →ₗ[R] M) :=
+@[simp high]
+lemma LinearMap.mul_apply'' {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+  (f g : M →ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
+
+theorem ModuleCat.end_def {R : Type u} [Ring R] (M : ModuleCat R) :
+    End M = (M →ₗ[R] M) :=
   rfl
 
 @[simp]
@@ -103,7 +107,8 @@ theorem of_V {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →
 
 @[simp]
 theorem coe_of_ρ {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
-  @DFunLike.coe (no_index (G →* End (of ρ : ModuleCat k))) G _ _ (of ρ).ρ
+  @DFunLike.coe (no_index (G →* (V →ₗ[k] V))) G (no_index (fun _ => V →ₗ[k] V))
+    (no_index MonoidHom.instFunLike) (of ρ).ρ
     = @DFunLike.coe (G →* (V →ₗ[k] V)) _ _ _ ρ :=
   rfl
 
@@ -255,7 +260,7 @@ set_option linter.uppercaseLean3 false in
 #align Rep.linearization_of Rep.linearization_of
 
 -- Porting note: helps fixing `linearizationTrivialIso` since change in behaviour of ext
-theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
+theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 
@@ -388,7 +393,18 @@ variable {k G}
 noncomputable def leftRegularHom (A : Rep k G) (x : ↑A) : Rep.ofMulAction k G G ⟶ A where
   hom := Finsupp.lift ↑A _ _ fun g => A.ρ g x
   comm g := Finsupp.lhom_ext' fun y => LinearMap.ext_ring <| by
-    simp
+    simp_rw [ρ_def]
+    rw [coe_of_ρ]
+    simp_rw [Representation.ofMulAction_def]
+    simp_rw [smul_eq_mul, LinearMap.coe_comp,
+      ModuleCat.coe_comp_of, Function.comp_apply, Finsupp.lsingle_apply]
+    simp_rw [LinearMap.coe_comp, Function.comp_apply, Finsupp.lmapDomain_apply,
+      Finsupp.mapDomain_single, Finsupp.lift_apply]
+    simp only [zero_smul, Finsupp.sum_single_index, one_smul]
+    rw [map_mul]
+    rw [LinearMap.mul_apply'']
+    rw [LinearMap.mul_apply]
+    simp only [map_mul, LinearMap.mul_apply, zero_smul, Finsupp.sum_single_index, one_smul]
     rfl -- >:( I want to remove u
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom Rep.leftRegularHom
