@@ -39,7 +39,7 @@ protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
 
 /-- An `AddGroupWithOne` is an `AddGroup` with a 1. It also contains data for the unique
 homomorphisms `ℕ → R` and `ℤ → R`. -/
-class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
+class AddGroupWithOne (R : Type u) extends AddGroup R, AddMonoidWithOne R, IntCast R where
   /-- The canonical homomorphism `ℤ → R`. -/
   intCast := Int.castDef
   /-- The canonical homomorphism `ℤ → R` agrees with the one from `ℕ → R` on `ℕ`. -/
@@ -54,9 +54,13 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
 #align add_group_with_one.int_cast_of_nat AddGroupWithOne.intCast_ofNat
 #align add_group_with_one.int_cast_neg_succ_of_nat AddGroupWithOne.intCast_negSucc
 
+attribute [instance 50] AddGroupWithOne.toAddGroup
+attribute [instance 0] AddGroupWithOne.toNatCast
+attribute [instance 0] AddGroupWithOne.toOne
+
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u)
-  extends AddCommGroup R, AddGroupWithOne R, AddCommMonoidWithOne R
+  extends AddGroupWithOne R, AddCommGroup R, AddCommMonoidWithOne R
 #align add_comm_group_with_one AddCommGroupWithOne
 #align add_comm_group_with_one.to_add_comm_group AddCommGroupWithOne.toAddCommGroup
 #align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne

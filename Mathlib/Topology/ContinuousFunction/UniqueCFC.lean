@@ -105,6 +105,8 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
   map_one' := by simp
   map_zero' := by simp
   map_mul' f g := by
+    -- Without this, Lean fails to find the instance in time
+    haveI : LinearMapClass (C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A) ℝ≥0 C(X, ℝ≥0) A := inferInstance
     have := congr(φ $(f.toNNReal_mul_add_neg_mul_add_mul_neg_eq g))
     simp only [map_add, map_mul, sub_mul, mul_sub] at this ⊢
     rw [← sub_eq_zero] at this ⊢
@@ -265,8 +267,8 @@ lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)₀) :
     ((f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal) =
     ((-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal) := by
   -- Without this, Lean fails to find the instance in time
-  have : AddHomClass (C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] C(X, ℝ≥0)) C(X, ℝ≥0)₀ C(X, ℝ≥0) :=
-    SemilinearMapClass.toAddHomClass
+  haveI : LinearMapClass (C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] C(X, ℝ≥0)) ℝ≥0 C(X, ℝ≥0)₀ C(X, ℝ≥0) :=
+    NonUnitalAlgHomClass.instLinearMapClass
   apply toContinuousMap_injective
   simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
     using (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
@@ -275,8 +277,8 @@ lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
     ((f + g).toNNReal + (-f).toNNReal + (-g).toNNReal) =
       ((-(f + g)).toNNReal + f.toNNReal + g.toNNReal) := by
   -- Without this, Lean fails to find the instance in time
-  have : AddHomClass (C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] C(X, ℝ≥0)) C(X, ℝ≥0)₀ C(X, ℝ≥0) :=
-    SemilinearMapClass.toAddHomClass
+  haveI : LinearMapClass (C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] C(X, ℝ≥0)) ℝ≥0 C(X, ℝ≥0)₀ C(X, ℝ≥0) :=
+    NonUnitalAlgHomClass.instLinearMapClass
   apply toContinuousMap_injective
   simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
     using (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g

@@ -214,6 +214,7 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
   { delta% hf.monoidWithZero f zero one mul npow,
     delta% hf.divInvMonoid f one mul inv div npow zpow,
     pullback_nonzero f zero one with
+    toMonoidWithZero := hf.monoidWithZero f zero one mul npow
     inv_zero := hf <| by erw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
       erw [one, mul, inv, mul_inv_cancel ((hf.ne_iff' zero).2 hx)] }

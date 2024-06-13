@@ -267,6 +267,7 @@ section NoncomputableDefs
 
 variable {R : Type*} [Nontrivial R]
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
 -- See note [reducible non-instances]
 noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
@@ -277,6 +278,7 @@ noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUn
   qsmul := _
 #align division_ring_of_is_unit_or_eq_zero DivisionRing.ofIsUnitOrEqZero
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
 -- See note [reducible non-instances]
 noncomputable abbrev Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :

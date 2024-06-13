@@ -475,7 +475,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     exacts [le_rfl, h_c_spec₁ x hx]
   rw [h_c_spec₂.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero] at h_eq_a_neg
   simp only [a_neg] at h_eq_a_neg
-  rw [← cfc_pow _ _ (ha := by aesop (add simp a)), ← cfc_zero a (R := ℝ)] at h_eq_a_neg
+  rw [← cfc_pow _ _ (ha := by simp [a]), ← cfc_zero a (R := ℝ)] at h_eq_a_neg
   intro x hx
   by_contra! hx'
   rw [← neg_pos] at hx'

@@ -508,7 +508,7 @@ protected abbrev addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul
     (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
   reduceProj% zeta%
   { delta% hf.addMonoid f zero add (swap nsmul) with
-    natCast := Nat.cast,
+    toNatCast := ‹NatCast M₂›,
     natCast_zero := by rw [← Nat.cast, ← natCast, Nat.cast_zero, zero]
     natCast_succ := fun n => by rw [← Nat.cast, ← natCast, Nat.cast_succ, add, one, natCast] }
 #align function.surjective.add_monoid_with_one Function.Surjective.addMonoidWithOne
@@ -603,7 +603,7 @@ protected abbrev addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M
   reduceProj% zeta%
   { delta% hf.addMonoidWithOne f zero one add nsmul natCast,
     delta% hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
-    intCast := Int.cast,
+    toIntCast := ‹IntCast M₂›,
     intCast_ofNat := fun n => by rw [← Int.cast, ← intCast, Int.cast_natCast, natCast],
     intCast_negSucc := fun n => by
       rw [← Int.cast, ← intCast, Int.cast_negSucc, neg, natCast] }

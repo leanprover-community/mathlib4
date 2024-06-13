@@ -741,6 +741,7 @@ theorem Monic.irreducible_iff_degree_lt {p : R[X]} (p_monic : Monic p) (p_1 : p 
     · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
     · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
     · rw [Units.smul_def, Polynomial.smul_eq_C_mul, (isUnit_C.mpr (Units.isUnit _)).mul_left_dvd]
+      rfl
   · rintro h q _ deg_pos deg_le dvd
     exact deg_pos.ne' <| degree_eq_zero_of_isUnit (h q deg_le dvd)
 

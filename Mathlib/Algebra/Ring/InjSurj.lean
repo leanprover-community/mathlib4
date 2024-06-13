@@ -90,7 +90,7 @@ protected abbrev semiring [Semiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : Semiring β :=
   reduceProj% zeta%
-  { toNonUnitalSemiring := delta% hf.nonUnitalSemiring f zero add mul nsmul
+  { __ := delta% hf.nonUnitalSemiring f zero add mul nsmul
     __ := delta% hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := delta% hf.monoidWithZero f zero one mul npow }
 #align function.injective.semiring Function.Injective.semiring
@@ -293,7 +293,7 @@ protected abbrev semiring [Semiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n) : Semiring β :=
   reduceProj% zeta%
-  { toNonUnitalSemiring := delta% hf.nonUnitalSemiring f zero add mul nsmul
+  { __ := delta% hf.nonUnitalSemiring f zero add mul nsmul
     __ := delta% hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := delta% hf.monoidWithZero f zero one mul npow }
 #align function.surjective.semiring Function.Surjective.semiring

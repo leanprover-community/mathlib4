@@ -41,10 +41,15 @@ class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMono
   zero_le_one : (0 : α) ≤ 1
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
 
+attribute [instance 0] LinearOrderedCommMonoidWithZero.toZero
+
 /-- A linearly ordered commutative group with a zero element. -/
 class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
+
+attribute [instance 0] LinearOrderedCommGroupWithZero.toInv
+attribute [instance 0] LinearOrderedCommGroupWithZero.toDiv
 
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
     [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
