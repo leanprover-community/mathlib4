@@ -495,6 +495,7 @@ noncomputable def ringEquiv [Fintype R] (h : Fintype.card R = n) : ZMod n ≃+* 
 noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fintype.card R = p) :
     ZMod p ≃+* R :=
   have : Nontrivial R := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.one_lt)
+  -- The following line exists as `charP_of_card_eq_prime` in `Mathlib.Algebra.CharP.CharAndCard`.
   have : CharP R p := (CharP.charP_iff_prime_eq_zero hp).2 (hR ▸ Nat.cast_card_eq_zero R)
   ZMod.ringEquiv R hR
 
