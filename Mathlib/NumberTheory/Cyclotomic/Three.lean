@@ -7,6 +7,7 @@ Authors: Riccardo Brasca, Pietro Monticone
 import Mathlib.NumberTheory.Cyclotomic.Embeddings
 import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+import Mathlib.RingTheory.Fintype
 
 /-!
 # Third Cyclotomic Field
@@ -33,7 +34,9 @@ namespace IsCyclotomicExtension.Rat.Three
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
-local notation3 "λ" => (η : 𝓞 K) - 1
+local notation3 "λ" => hζ.toInteger - 1
+
+lemma coe_eta : (η : 𝓞 K) = hζ.toInteger := rfl
 
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ [1, -1, η, -η, η^2, -η^2]`. -/
 -- Here `List` is more convenient than `Finset`, even if further from the informal statement.
@@ -70,7 +73,8 @@ theorem Units.mem : u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
 /-- We have that `λ ^ 2 = -3 * η`. -/
 private lemma lambda_sq : λ ^ 2 = -3 * η := by
   ext
-  calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by ring
+  calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by
+        simp only [RingOfIntegers.map_mk, IsUnit.unit_spec]; ring
   _ = 0 - 3 * η := by simpa using hζ.isRoot_cyclotomic (by decide)
   _ = -3 * η := by ring
 
@@ -109,3 +113,79 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
     have : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
     simp only [this, PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add, ←
       sub_eq_iff_eq_add.1 hx, Units.val_neg, val_pow_eq_pow_val, IsUnit.unit_spec, neg_neg]
+
+variable (x : 𝓞 K)
+
+/-- Let `(x : 𝓞 K)`. Then we have that `λ` divides one amongst `x`, `x - 1` and `x + 1`. -/
+lemma dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
+  classical
+  let _ := hζ.fintypeQuotienttoIntegerSubOne (by decide)
+  have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
+  rw [Finset.univ_of_card_eq_three] at this
+  · simp only [Finset.mem_insert, Finset.mem_singleton] at this
+    rcases this with (h | h | h)
+    · left
+      exact Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 h
+    · right; left
+      refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
+      rw [RingHom.map_sub, h, RingHom.map_one, sub_self]
+    · right; right
+      refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
+      rw [RingHom.map_add, h, RingHom.map_one, add_left_neg]
+  · rw [hζ.card_quotient_toInteger_sub_one, hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
+    simp
+
+/-- We have that `η ^ 2 + η + 1 = 0`. -/
+lemma eta_eq_add_eta_add_one : (η : 𝓞 K) ^ 2 + η + 1 = 0 := by
+  ext; simpa using hζ.isRoot_cyclotomic (by decide)
+
+/-- We have that `x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2)`. -/
+lemma cube_sub_one_eq_mul : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
+  symm
+  calc _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + η ^ 3) - η ^ 3 := by ring
+  _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + 1) - 1 := by
+    simp [show hζ.toInteger ^ 3 = 1 from hζ.toInteger_isPrimitiveRoot.pow_eq_one]
+  _ = x ^ 3 - 1 := by rw [eta_eq_add_eta_add_one hζ]; ring
+
+/-- We have that `λ` divides `x * (x - 1) * (x - (η + 1))`. -/
+lemma lambda_dvd_mul_sub_one_mul_sub_eta_add_one : λ ∣ x * (x - 1) * (x - (η + 1)) := by
+  rcases dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (h | h | h)
+  · exact dvd_mul_of_dvd_left (dvd_mul_of_dvd_left h _) _
+  · exact dvd_mul_of_dvd_left (dvd_mul_of_dvd_right h _) _
+  · refine dvd_mul_of_dvd_right ?_ _
+    rw [show x - (η + 1) = x + 1 - (η - 1 + 3) by ring]
+    exact dvd_sub h <| dvd_add dvd_rfl hζ.toInteger_sub_one_dvd_prime'
+
+/-- If `λ` divides `x - 1`, then `λ ^ 4` divides `x ^ 3 - 1`. -/
+lemma lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one {x : 𝓞 K} (h : λ ∣ x - 1) :
+    λ ^ 4 ∣ x ^ 3 - 1 := by
+  obtain ⟨y, hy⟩ := h
+  have : x ^ 3 - 1 = λ ^ 3 * (y * (y - 1) * (y - (η + 1))) := by
+    calc _ =  (x - 1) * (x - 1 - λ) * (x - 1 - λ * (η + 1)) := by
+          simp only [coe_eta, cube_sub_one_eq_mul hζ x]; ring
+    _ = _ := by rw [hy]; ring
+  rw [this, show λ ^ 4 = λ ^ 3 * λ by ring]
+  exact mul_dvd_mul dvd_rfl (lambda_dvd_mul_sub_one_mul_sub_eta_add_one hζ y)
+
+/-- If `λ` divides `x + 1`, then `λ ^ 4` divides `x ^ 3 + 1`. -/
+lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x + 1) :
+    λ ^ 4 ∣ x ^ 3 + 1 := by
+  replace h : λ ∣ -x - 1 := by
+    obtain ⟨y, hy⟩ := h
+    refine ⟨-y, ?_⟩
+    rw [mul_neg, ← hy]
+    ring
+  obtain ⟨y, hy⟩ := lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h
+  refine ⟨-y, ?_⟩
+  rw [mul_neg, ← hy]
+  ring
+
+/-- If `λ` does not divide `x`, then `λ ^ 4` divides `x ^ 3 - 1` or `x ^ 3 + 1`. -/
+lemma lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd {x : 𝓞 K} (h : ¬ λ ∣ x) :
+    λ ^ 4 ∣ x ^ 3 - 1 ∨ λ ^ 4 ∣ x ^ 3 + 1 := by
+  rcases dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (H | H | H)
+  · contradiction
+  · left
+    exact lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ H
+  · right
+    exact lambda_pow_four_dvd_cube_add_one_of_dvd_add_one hζ H
