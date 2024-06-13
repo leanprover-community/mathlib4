@@ -1036,6 +1036,10 @@ theorem fst_univ : ρ.fst univ = ρ univ := by rw [fst_apply MeasurableSet.univ,
 
 @[simp] theorem fst_zero : fst (0 : Measure (α × β)) = 0 := by simp [fst]
 
+instance [SFinite ρ] : SFinite ρ.fst := by
+  rw [fst]
+  infer_instance
+
 instance fst.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.fst := by
   rw [fst]
   infer_instance
@@ -1082,6 +1086,10 @@ theorem snd_univ : ρ.snd univ = ρ univ := by rw [snd_apply MeasurableSet.univ,
 #align measure_theory.measure.snd_univ MeasureTheory.Measure.snd_univ
 
 @[simp] theorem snd_zero : snd (0 : Measure (α × β)) = 0 := by simp [snd]
+
+instance [SFinite ρ] : SFinite ρ.snd := by
+  rw [snd]
+  infer_instance
 
 instance snd.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.snd := by
   rw [snd]
