@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 
 import Mathlib.Topology.Order.Basic
-import Mathlib.Data.Set.Pointwise.Basic
 
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`
