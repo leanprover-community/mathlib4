@@ -189,13 +189,12 @@ theorem affineLocally_iff_affineOpens_le
     · dsimp; convert this using 1
       congr 1
       rw [X.presheaf.map_comp]
-      swap
-      · dsimp only [Functor.op, unop_op]
-        rw [Opens.openEmbedding_obj_top]
-        congr 1
-        exact e''.symm
       · simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
         congr 1
+    · dsimp only [Functor.op, unop_op]
+      rw [Opens.openEmbedding_obj_top]
+      congr 1
+      exact e''.symm
   · intro H V
     specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc]
@@ -236,13 +235,13 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
     · rwa [h₁.ofRestrict_morphismRestrict_iff] at this
       · exact U.2
       · rfl
-      · suffices ∀ (V) (_ : V = (Opens.map f.val.base).obj (Y.basicOpen r.val)),
-            IsAffineOpen ((Opens.map (X.ofRestrict V.openEmbedding).1.base).obj U.1) by
-          exact this _ rfl
-        intro V hV
-        rw [Scheme.preimage_basicOpen] at hV
-        subst hV
-        exact U.2.mapRestrictBasicOpen (Scheme.Γ.map f.op r.1)
+    · suffices ∀ (V) (_ : V = (Opens.map f.val.base).obj (Y.basicOpen r.val)),
+          IsAffineOpen ((Opens.map (X.ofRestrict V.openEmbedding).1.base).obj U.1) by
+        exact this _ rfl
+      intro V hV
+      rw [Scheme.preimage_basicOpen] at hV
+      subst hV
+      exact U.2.mapRestrictBasicOpen (Scheme.Γ.map f.op r.1)
 #align algebraic_geometry.source_affine_locally_is_local AlgebraicGeometry.sourceAffineLocally_isLocal
 
 variable (hP : RingHom.PropertyIsLocal @P)

@@ -88,8 +88,7 @@ theorem memℓp_zero {f : ∀ i, E i} (hf : Set.Finite { i | f i ≠ 0 }) : Mem�
 #align mem_ℓp_zero memℓp_zero
 
 theorem memℓp_infty_iff {f : ∀ i, E i} : Memℓp f ∞ ↔ BddAbove (Set.range fun i => ‖f i‖) := by
-  dsimp [Memℓp]
-  rw [if_neg ENNReal.top_ne_zero, if_pos rfl]
+  simp [Memℓp]
 #align mem_ℓp_infty_iff memℓp_infty_iff
 
 theorem memℓp_infty {f : ∀ i, E i} (hf : BddAbove (Set.range fun i => ‖f i‖)) : Memℓp f ∞ :=
@@ -396,9 +395,7 @@ theorem norm_eq_card_dsupport (f : lp E 0) : ‖f‖ = (lp.memℓp f).finite_dsu
   dif_pos rfl
 #align lp.norm_eq_card_dsupport lp.norm_eq_card_dsupport
 
-theorem norm_eq_ciSup (f : lp E ∞) : ‖f‖ = ⨆ i, ‖f i‖ := by
-  dsimp [norm]
-  rw [dif_neg ENNReal.top_ne_zero, if_pos rfl]
+theorem norm_eq_ciSup (f : lp E ∞) : ‖f‖ = ⨆ i, ‖f i‖ := rfl
 #align lp.norm_eq_csupr lp.norm_eq_ciSup
 
 theorem isLUB_norm [Nonempty α] (f : lp E ∞) : IsLUB (Set.range fun i => ‖f i‖) ‖f‖ := by

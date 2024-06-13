@@ -364,7 +364,7 @@ noncomputable def homology'FunctorIso (i : ι) :
       · conv_lhs => erw [← F.map_comp_assoc]
         rw [← kernel_map_comp_kernelSubobjectIso_inv]
         · simp
-        · simp)
+      · simp)
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homology'FunctorIso
 
 end CategoryTheory.Functor

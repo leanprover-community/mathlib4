@@ -421,7 +421,7 @@ theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presh
     · erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
       · simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
           Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
-      apply Pushforward.id_eq
+  · apply Pushforward.id_eq
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward
 
