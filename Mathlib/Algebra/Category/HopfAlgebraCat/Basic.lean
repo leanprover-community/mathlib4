@@ -7,7 +7,10 @@ import Mathlib.Algebra.Category.BialgebraCat.Basic
 import Mathlib.RingTheory.HopfAlgebra
 
 /-!
-# The category of Hopf algebras
+# The category of Hopf algebras over a commutative ring
+
+We introduce the bundled category `HopfAlgebraCat` of Hopf algebras over a fixed commutative ring
+`R` along with the forgetful functor to `BialgebraCat`.
 
 This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
 
@@ -21,9 +24,9 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-Hopf algebras. -/
 structure HopfAlgebraCat extends Bundled Ring.{v} where
-  isHopfAlgebra : HopfAlgebra R α
+  [instHopfAlgebra : HopfAlgebra R α]
 
-attribute [instance] HopfAlgebraCat.isHopfAlgebra
+attribute [instance] HopfAlgebraCat.instHopfAlgebra
 
 variable {R}
 
@@ -34,21 +37,13 @@ open HopfAlgebra
 instance : CoeSort (HopfAlgebraCat.{v} R) (Type v) :=
   ⟨(·.α)⟩
 
--- I guess I'm only making this because I wanted to extend `RingCat` but can't.
-/-- The object in `RingCat` underlying an object in `HopfAlgebraCat R`. -/
-def toRingCat (X : HopfAlgebraCat.{v} R) : RingCat := toBundled X
-
-@[simp] theorem ringCat_of_toRingCat (X : HopfAlgebraCat.{v} R) :
-    RingCat.of X.toRingCat = X.toRingCat :=
-  rfl
-
 variable (R)
 
-/-- The object in the category of `R`-Hopf algebrass associated to an `R`-Hopf algebras. -/
+/-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebras. -/
 @[simps]
 def of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
-  isHopfAlgebra := (inferInstance : HopfAlgebra R X)
+  instHopfAlgebra := (inferInstance : HopfAlgebra R X)
 
 variable {R}
 
@@ -75,9 +70,6 @@ instance category : Category (HopfAlgebraCat.{v} R) where
   Hom X Y := Hom X Y
   id X := ⟨BialgHom.id R X⟩
   comp f g := ⟨BialgHom.comp g.toBialgHom f.toBialgHom⟩
-  id_comp g := Hom.ext _ _ <| BialgHom.id_comp g.toBialgHom
-  comp_id f := Hom.ext _ _ <| BialgHom.comp_id f.toBialgHom
-  assoc f g h := Hom.ext _ _ <| BialgHom.comp_assoc h.toBialgHom g.toBialgHom f.toBialgHom
 
 -- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
 @[ext]
@@ -102,9 +94,9 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
 instance concreteCategory : ConcreteCategory.{v} (HopfAlgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
-      map := @fun M N f => f.toBialgHom }
+      map := fun f => f.toBialgHom }
   forget_faithful :=
-    { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
+    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgebraCat R) (BialgebraCat R) where
   forget₂ :=
@@ -135,20 +127,21 @@ variable [HopfAlgebra R X] [HopfAlgebra R Y] [HopfAlgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toHopfAlgebraCatIso (e : X ≃ₐc[R] Y) : HopfAlgebraCat.of R X ≅ HopfAlgebraCat.of R Y where
-  hom := ⟨e.toBialgHom⟩
-  inv := ⟨e.symm.toBialgHom⟩
+  hom := HopfAlgebraCat.ofHom e
+  inv := HopfAlgebraCat.ofHom e.symm
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
-@[simp] theorem toHopfAlgebraCatIso_refl : toIso (BialgEquiv.refl R X) = .refl _ :=
+@[simp] theorem toHopfAlgebraCatIso_refl :
+    toHopfAlgebraCatIso (BialgEquiv.refl R X) = .refl _ :=
   rfl
 
 @[simp] theorem toHopfAlgebraCatIso_symm (e : X ≃ₐc[R] Y) :
-    toIso e.symm = (toIso e).symm :=
+    toHopfAlgebraCatIso e.symm = (toHopfAlgebraCatIso e).symm :=
   rfl
 
 @[simp] theorem toHopfAlgebraCatIso_trans (e : X ≃ₐc[R] Y) (f : Y ≃ₐc[R] Z) :
-    toIso (e.trans f) = toIso e ≪≫ toIso f :=
+    toHopfAlgebraCatIso (e.trans f) = toHopfAlgebraCatIso e ≪≫ toHopfAlgebraCatIso f :=
   rfl
 
 end BialgEquiv
@@ -182,3 +175,10 @@ def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   rfl
 
 end CategoryTheory.Iso
+
+instance HopfAlgebraCat.forget_reflects_isos :
+    (forget (HopfAlgebraCat.{v} R)).ReflectsIsomorphisms where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget (HopfAlgebraCat.{v} R)).map f)
+    let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
+    exact ⟨e.toHopfAlgebraCatIso.isIso_hom.1⟩
