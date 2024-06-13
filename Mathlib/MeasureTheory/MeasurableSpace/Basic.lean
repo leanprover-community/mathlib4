@@ -1763,6 +1763,11 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a where
 theorem coe_piCongrLeft (f : δ ≃ δ') :
     ⇑(MeasurableEquiv.piCongrLeft π f) = f.piCongrLeft π := by rfl
 
+lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Type*}
+    [∀ i', MeasurableSpace (β i')] (x : (i : ι) → β (e i)) (i : ι) :
+    piCongrLeft (fun i' ↦ β i') e x (e i) = x i := by
+  rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
+
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := .asFn)]
 def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h : ∀ i, i ∈ l) :
