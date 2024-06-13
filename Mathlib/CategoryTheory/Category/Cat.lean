@@ -105,6 +105,18 @@ theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.comp_map CategoryTheory.Cat.comp_map
 
+@[simp]
+lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
+    (Bicategory.whiskerLeft F η).app X = η.app (F.obj X) :=
+    -- (F ◁ η).app X = η.app (F.obj X) :=
+  CategoryTheory.whiskerLeft_app F η X
+
+@[simp]
+lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
+    (Bicategory.whiskerRight η H).app X = H.map (η.app X) :=
+    -- (η ▷ H).app X = H.map (η.app X) :=
+  CategoryTheory.whiskerRight_app η H X
+
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ Type u where
