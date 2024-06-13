@@ -115,8 +115,6 @@ protected theorem prop (a : Fin n) : a.val < n :=
 section Order
 variable {a b c : Fin n}
 
-protected lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Nat.le_trans
-protected lemma lt_trans : a < b → b < c → a < c := Nat.lt_trans
 protected lemma lt_of_le_of_lt : a ≤ b → b < c → a < c := Nat.lt_of_le_of_lt
 protected lemma lt_of_lt_of_le : a < b → b ≤ c → a < c := Nat.lt_of_lt_of_le
 protected lemma le_rfl : a ≤ a := Nat.le_refl _
@@ -125,7 +123,6 @@ protected lemma lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b := by
 protected lemma lt_or_lt_of_ne (h : a ≠ b) : a < b ∨ b < a := Nat.lt_or_lt_of_ne $ val_ne_iff.2 h
 protected lemma lt_or_le (a b : Fin n) : a < b ∨ b ≤ a := Nat.lt_or_ge _ _
 protected lemma le_or_lt (a b : Fin n) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
-protected lemma lt_asymm : a < b → ¬ b < a := Nat.lt_asymm
 protected lemma le_of_eq (hab : a = b) : a ≤ b := Nat.le_of_eq $ congr_arg val hab
 protected lemma ge_of_eq (hab : a = b) : b ≤ a := Fin.le_of_eq hab.symm
 protected lemma eq_or_lt_of_le : a ≤ b → a = b ∨ a < b := by rw [ext_iff]; exact Nat.eq_or_lt_of_le
@@ -168,7 +165,7 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   ext_iff.symm
 #align fin.coe_eq_coe Fin.val_eq_val
 
-@[deprecated ext_iff] -- 2024-02-20
+@[deprecated ext_iff (since := "2024-02-20")]
 theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
   ext_iff
 #align fin.eq_iff_veq Fin.eq_iff_veq
@@ -1446,7 +1443,8 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 #align fin.succ_above_last_apply Fin.succAbove_last_apply
 
-@[deprecated] lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
+@[deprecated (since := "2024-05-30")]
+lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
 #align fin.succ_above_lt_ge Fin.succAbove_lt_ge
 

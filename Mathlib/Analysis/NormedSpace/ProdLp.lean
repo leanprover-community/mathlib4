@@ -32,7 +32,7 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`.
+This file is a straight-forward adaptation of `Mathlib.Analysis.NormedSpace.PiLp`.
 
 -/
 
@@ -368,7 +368,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [prod_edist_eq_sup, prod_dist_eq_sup]
-      refine' le_antisymm (sup_le _ _) _
+      refine le_antisymm (sup_le ?_ ?_) ?_
       · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
           ← PseudoMetricSpace.edist_dist]
         exact le_sup_left

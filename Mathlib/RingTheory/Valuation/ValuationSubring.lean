@@ -782,8 +782,8 @@ the action is by a group. Notably this provides an instances when `G` is `K ≃+
 
 These instances are in the `Pointwise` locale.
 
-The lemmas in this section are copied from `RingTheory/Subring/Pointwise.lean`; try to keep these
-in sync.
+The lemmas in this section are copied from the file `Mathlib.Algebra.Ring.Subring.Pointwise`; try
+to keep these in sync.
 -/
 
 

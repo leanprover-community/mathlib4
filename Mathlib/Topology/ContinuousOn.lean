@@ -181,7 +181,7 @@ theorem tendsto_const_nhdsWithin {l : Filter β} {s : Set α} {a : α} (ha : a �
 theorem nhdsWithin_restrict'' {a : α} (s : Set α) {t : Set α} (h : t ∈ 𝓝[s] a) :
     𝓝[s] a = 𝓝[s ∩ t] a :=
   le_antisymm (le_inf inf_le_left (le_principal_iff.mpr (inter_mem self_mem_nhdsWithin h)))
-    (inf_le_inf_left _ (principal_mono.mpr (Set.inter_subset_left _ _)))
+    (inf_le_inf_left _ (principal_mono.mpr Set.inter_subset_left))
 #align nhds_within_restrict'' nhdsWithin_restrict''
 
 theorem nhdsWithin_restrict' {a : α} (s : Set α) {t : Set α} (h : t ∈ 𝓝 a) : 𝓝[s] a = 𝓝[s ∩ t] a :=
@@ -817,7 +817,7 @@ alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
 theorem ContinuousWithinAt.diff_iff {f : α → β} {s t : Set α} {x : α}
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
   ⟨fun h => (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
-    h.mono (diff_subset _ _)⟩
+    h.mono diff_subset⟩
 #align continuous_within_at.diff_iff ContinuousWithinAt.diff_iff
 
 @[simp]
@@ -855,7 +855,7 @@ theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
   refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_restrict]
     exact h _ (ht.preimage continuous_subtype_val)
-  · rw [inter_eq_self_of_subset_left (image_subset f (inter_subset_right t s)), hleft.image_inter']
+  · rw [inter_eq_self_of_subset_left (image_subset f inter_subset_right), hleft.image_inter']
 #align is_open_map.continuous_on_image_of_left_inv_on IsOpenMap.continuousOn_image_of_leftInvOn
 
 theorem IsOpenMap.continuousOn_range_of_leftInverse {f : α → β} (hf : IsOpenMap f) {finv : β → α}
@@ -922,7 +922,7 @@ theorem ContinuousWithinAt.comp {g : β → γ} {f : α → β} {s : Set α} {t 
 theorem ContinuousWithinAt.comp' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} {x : α}
     (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp (hf.mono inter_subset_left) inter_subset_right
 #align continuous_within_at.comp' ContinuousWithinAt.comp'
 
 theorem ContinuousAt.comp_continuousWithinAt {g : β → γ} {f : α → β} {s : Set α} {x : α}
@@ -951,7 +951,7 @@ theorem antitone_continuousOn {f : α → β} : Antitone (ContinuousOn f) := fun
 @[fun_prop]
 theorem ContinuousOn.comp' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} (hg : ContinuousOn g t)
     (hf : ContinuousOn f s) : ContinuousOn (g ∘ f) (s ∩ f ⁻¹' t) :=
-  hg.comp (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp (hf.mono inter_subset_left) inter_subset_right
 #align continuous_on.comp' ContinuousOn.comp'
 
 @[fun_prop]
@@ -1354,7 +1354,7 @@ theorem continuousOn_piecewise_ite' {s s' t : Set α} {f f' : α → β} [∀ x,
 theorem continuousOn_piecewise_ite {s s' t : Set α} {f f' : α → β} [∀ x, Decidable (x ∈ t)]
     (h : ContinuousOn f s) (h' : ContinuousOn f' s') (H : s ∩ frontier t = s' ∩ frontier t)
     (Heq : EqOn f f' (s ∩ frontier t)) : ContinuousOn (t.piecewise f f') (t.ite s s') :=
-  continuousOn_piecewise_ite' (h.mono (inter_subset_left _ _)) (h'.mono (inter_subset_left _ _)) H
+  continuousOn_piecewise_ite' (h.mono inter_subset_left) (h'.mono inter_subset_left) H
     Heq
 #align continuous_on_piecewise_ite continuousOn_piecewise_ite
 
