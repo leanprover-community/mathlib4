@@ -1758,7 +1758,7 @@ theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: tak
 #align list.nth_le_take List.get_take
 #align list.nth_le_take' List.get_take'
 #align list.nth_take List.get?_take
-#align list.nth_take_of_succ List.nth_take_of_succ
+#align list.nth_take_of_succ List.get?_take_of_succ
 #align list.take_succ List.take_succ
 #align list.take_eq_nil_iff List.take_eq_nil_iff
 #align list.take_eq_take List.take_eq_take
@@ -1777,11 +1777,11 @@ theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
 
 theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
     l[n] :: l.drop (n + 1) = l.drop n :=
-  (drop_eq_get_cons h).symm
+  (drop_eq_getElem_cons h).symm
 
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
-  (drop_eq_get_cons n.2).symm
+  (drop_eq_getElem_cons n.2).symm
 
 #align list.cons_nth_le_drop_succ List.cons_get_drop_succ
 #align list.drop_nil List.drop_nil
