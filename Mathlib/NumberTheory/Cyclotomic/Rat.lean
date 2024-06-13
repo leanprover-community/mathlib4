@@ -189,6 +189,16 @@ def fintypeQuotienttoIntegerSubOne [NumberField K] {k : ℕ+} (hk : 1 < k)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
   exact hζ.ne_one hk (RingOfIntegers.ext_iff.1 h)
 
+/-- We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
+
+See the results below to compute this norm in various cases. -/
+lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
+  (hζ : IsPrimitiveRoot ζ k) :
+    letI _ := hζ.fintypeQuotienttoIntegerSubOne hk
+    Fintype.card (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) =
+      (Algebra.norm ℤ (hζ.toInteger - 1)).natAbs := by
+  rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
+
 lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
     IsPrimitiveRoot hζ.toInteger k :=
   IsPrimitiveRoot.of_map_of_injective (by exact hζ) RingOfIntegers.coe_injective
