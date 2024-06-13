@@ -1035,7 +1035,7 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     exact (ContinuousMultilinearMap.uncurry_curryLeft _).symm
 #align has_ftaylor_series_up_to_on.eq_ftaylor_series_of_unique_diff_on HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 
-@[deprecated] alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
+@[deprecated (since := "2024-06-12")] alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
   HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn -- 2024-03-28
 
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits

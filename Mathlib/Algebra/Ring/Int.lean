@@ -140,7 +140,7 @@ lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
 
 set_option linter.deprecated false in
 
-@[simp, deprecated] lemma not_even_bit1 (n : ℤ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
+@[simp, deprecated (since := "2024-06-12")] lemma not_even_bit1 (n : ℤ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
 #align int.not_even_bit1 Int.not_even_bit1
 
 lemma even_sub' : Even (m - n) ↔ (Odd m ↔ Odd n) := by
