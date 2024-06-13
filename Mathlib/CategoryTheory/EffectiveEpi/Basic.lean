@@ -154,30 +154,6 @@ lemma EffectiveEpiFamily.fac {B W : C} {α : Type*} (X : α → C) (π : (a : α
     π a ≫ EffectiveEpiFamily.desc X π e h = e a :=
   (EffectiveEpiFamily.getStruct X π).fac e h a
 
-/-
-NOTE: The `simpNF` linter complains for some reason. See the two examples below.
-Zulip discussion:
-https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simpNF.20bug.3F
--/
--- attribute [nolint simpNF]
---   EffectiveEpiFamily.fac
---   EffectiveEpiFamily.fac_assoc
-
-example {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
-    (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
-      g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) (a : α) :
-    π a ≫ EffectiveEpiFamily.desc X π e h = e a := by
-  simp
-
-example {B W Q : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
-    (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
-      g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) (a : α)
-    (q : W ⟶ Q) :
-    π a ≫ EffectiveEpiFamily.desc X π e h ≫ q = e a ≫ q := by
-  simp
-
 lemma EffectiveEpiFamily.uniq {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
