@@ -302,8 +302,9 @@ A `CertificateOracle` provides a function
 `produceCertificate : List Comp → Nat → MetaM (HashMap Nat Nat)`.
 
 The default `CertificateOracle` used by `linarith` is
-`Linarith.CertificateOracle.simplexAlgorithm`.
-`Linarith.CertificateOracle.fourierMotzkin` is also available (though has some bugs).
+`Linarith.CertificateOracle.simplexAlgorithmSparse`.
+`Linarith.CertificateOracle.simplexAlgorithmDense` and `Linarith.CertificateOracle.fourierMotzkin`
+are also available (though the Fourier-Motzkin oracle has some bugs).
 -/
 structure CertificateOracle : Type where
   /-- `produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in
