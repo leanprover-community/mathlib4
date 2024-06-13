@@ -2049,7 +2049,7 @@ theorem reachable_is_equivalence : Equivalence G.Reachable :=
 /-- Distinct vertices are not reachable in the empty graph. -/
 @[simp]
 lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v := by
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · apply h.elim
     intro p
     match p with
