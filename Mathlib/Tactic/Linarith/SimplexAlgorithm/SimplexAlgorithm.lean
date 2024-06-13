@@ -39,7 +39,8 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
       if i == exitIdx then
         continue
       let coef := mat[(i, enterIdx)]! / intersectCoef
-      mat := subtractRow mat exitIdx i coef
+      if coef != 0 then
+        mat := subtractRow mat exitIdx i coef
       mat := setElem mat i enterIdx coef
     mat := setElem mat exitIdx enterIdx (-1)
     mat := divideRow mat exitIdx (-intersectCoef)
