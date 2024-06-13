@@ -70,17 +70,6 @@ lemma sqrt_eq_iff_eq_mul_self {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) : sqrt a =
   case mp => rw [← h]; exact (mul_self_sqrt ha).symm
   case mpr => rw [h]; exact sqrt_mul_self hb
 
-lemma sqrt_smul {r : ℝ≥0} {a : A} (ha : 0 ≤ a) : sqrt (r • a) = (NNReal.sqrt r) • sqrt a := by
-  simp only [sqrt]
-  have h₁ : r • a = cfcₙ (fun x : ℝ≥0 => r • x) a := by rw [← cfcₙ_smul_id (R := ℝ≥0) r a]
-  have hmain : NNReal.sqrt ∘ (fun x : ℝ≥0 => r • x) = (fun x ↦ NNReal.sqrt r • NNReal.sqrt x) := by
-    ext; simp
-  rw [← cfcₙ_smul (NNReal.sqrt r) NNReal.sqrt a, h₁,
-    ← cfcₙ_comp NNReal.sqrt (fun (x : ℝ≥0) => r • x) (ha := ha)]
-  apply cfcₙ_congr
-  rw [hmain]
-  exact fun ⦃x⦄ ↦ congrFun rfl
-
 end NNReal
 
 section Real
@@ -93,6 +82,25 @@ variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [StarRing A] [StarOrdere
 @[simp] lemma sqrt_zero : sqrt (0 : A) = 0 := by
   rw [sqrt]
   exact cfcₙ_apply_zero ℝ≥0 ℝ
+
+@[simp]
+lemma sqrt_smul {r : ℝ≥0} {a : A} : sqrt (r • a) = (NNReal.sqrt r) • sqrt a := by
+  by_cases ha : 0 ≤ a
+  · simp only [sqrt]
+    have h₁ : r • a = cfcₙ (fun x : ℝ≥0 => r • x) a := by rw [← cfcₙ_smul_id (R := ℝ≥0) r a]
+    have hmain : NNReal.sqrt ∘ (fun x : ℝ≥0 => r • x) = (fun x ↦ NNReal.sqrt r • NNReal.sqrt x) := by
+      ext; simp
+    rw [← cfcₙ_smul (NNReal.sqrt r) NNReal.sqrt a, h₁,
+      ← cfcₙ_comp NNReal.sqrt (fun (x : ℝ≥0) => r • x) (ha := ha)]
+    apply cfcₙ_congr
+    rw [hmain]
+    exact fun ⦃x⦄ ↦ congrFun rfl
+  · by_cases hr : r = 0
+    · simp [hr]
+    · have ha' : ¬ 0 ≤ (r • a) := by
+        sorry
+      simp [sqrt, cfcₙ_apply_of_not_predicate _ ha', cfcₙ_apply_of_not_predicate _ ha]
+
 
 end Real
 
