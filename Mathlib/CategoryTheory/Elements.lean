@@ -306,4 +306,27 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
 
 end CategoryOfElements
 
+namespace Functor
+
+/--
+The initial object in the category of elements for a representable functor. In `isInitial` it is
+shown that this is initial.
+-/
+def Elements.initial (A : C) : (yoneda.obj A).Elements :=
+  ⟨Opposite.op A, 𝟙 _⟩
+#align category_theory.colimit_adj.elements.initial CategoryTheory.Functor.Elements.initial
+
+/-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
+-/
+def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) where
+  desc s := ⟨s.pt.2.op, Category.comp_id _⟩
+  uniq s m _ := by
+    simp_rw [← m.2]
+    dsimp [Elements.initial]
+    simp
+  fac := by rintro s ⟨⟨⟩⟩
+#align category_theory.colimit_adj.is_initial CategoryTheory.Functor.Elements.isInitial
+
+end Functor
+
 end CategoryTheory
