@@ -125,7 +125,8 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type v₂) (E₁ E₂ : 
   apply (assoc _ _ _).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural-/
 
-def homEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
+/-- Auxiliary definition for `restrictedYonedaHomEquiv`. -/
+def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
     (CostructuredArrow.proj yoneda P ⋙ A ⟶
       (Functor.const (CostructuredArrow yoneda P)).obj E) ≃
       (P ⟶ (restrictedYoneda A).obj E) where
@@ -177,28 +178,29 @@ variable [yoneda.HasPointwiseLeftKanExtension A]
 variable {A}
 variable (L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ) (α : A ⟶ yoneda ⋙ L) [L.IsLeftKanExtension α]
 
-noncomputable def homEquiv (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
+/-- Auxiliary definition for `yonedaAdjunction`. -/
+noncomputable def restrictedYonedaHomEquiv (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
     (L.obj P ⟶ E) ≃ (P ⟶ (restrictedYoneda A).obj E) :=
   ((Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv E).trans
-    (homEquiv' A P E)
+    (restrictedYonedaHomEquiv' A P E)
 
 noncomputable def yonedaAdjunction : L ⊣ restrictedYoneda A :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := homEquiv L α
+    { homEquiv := restrictedYonedaHomEquiv L α
       homEquiv_naturality_left_symm := fun {P Q X} f g => by
-        obtain ⟨g, rfl⟩ := (homEquiv L α Q X).surjective g
-        apply (homEquiv L α P X).injective
+        obtain ⟨g, rfl⟩ := (restrictedYonedaHomEquiv L α Q X).surjective g
+        apply (restrictedYonedaHomEquiv L α P X).injective
         simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
         ext Y y
-        dsimp [homEquiv, homEquiv', IsColimit.homEquiv]
+        dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
         rw [assoc, assoc, ← L.map_comp_assoc]
         congr 3
         apply yonedaEquiv.injective
         simp [yonedaEquiv]
       homEquiv_naturality_right := fun {P X Y} f g => by
-        apply (homEquiv L α P Y).symm.injective
+        apply (restrictedYonedaHomEquiv L α P Y).symm.injective
         simp only [Equiv.symm_apply_apply]
-        dsimp [homEquiv, homEquiv', IsColimit.homEquiv]
+        dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
         apply (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
         rintro p
         rw [IsColimit.fac]
@@ -851,3 +853,5 @@ end
 end Presheaf
 
 end CategoryTheory
+
+#lint
