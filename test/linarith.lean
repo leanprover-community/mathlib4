@@ -440,7 +440,7 @@ example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
 -- `nlinarith` because it passes large and sparse matrices to the oracle.
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
-  nlinarith (config := { oracle := some .fourierMotzkin })
+  nlinarith (config := { oracle := .fourierMotzkin })
 
 section
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
@@ -663,7 +663,7 @@ example (a b c d e : ℚ)
     (hd : a + b + c + 2 * d + e = 7)
     (he : a + b + c + d + 2 * e = 8) :
     e = 3 := by
-  linarith (config := { oracle := some .fourierMotzkin })
+  linarith (config := { oracle := .fourierMotzkin })
 
 -- TODO: still broken with Fourier-Motzkin
 /--
@@ -696,4 +696,4 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     -x8 + x7 - x5 + x1 < 0 →
     x7 - x5 < 0 → False := by
   intros
-  linarith (config := { oracle := some .fourierMotzkin })
+  linarith (config := { oracle := .fourierMotzkin })
