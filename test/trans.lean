@@ -83,7 +83,7 @@ example {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
   trans <;> assumption
 
 /-- `trans` for implications. -/
-example {A B C: Prop} (h : A → B) (g : B → C) : A → C := by
+example {A B C : Prop} (h : A → B) (g : B → C) : A → C := by
   trans B
   · guard_target =ₛ A → B -- ensure we have `B` and not a free metavariable.
     exact h
@@ -91,7 +91,7 @@ example {A B C: Prop} (h : A → B) (g : B → C) : A → C := by
     exact g
 
 /-- `trans` for arrows between types. -/
-example {A B C: Type} (h : A → B) (g : B → C) : A → C := by
+example {A B C : Type} (h : A → B) (g : B → C) : A → C := by
   trans
   guard_goal_nums 3 -- 3rd goal is the middle term
   · exact h
