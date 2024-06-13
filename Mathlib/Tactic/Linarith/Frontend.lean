@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Control.Basic
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -123,6 +124,53 @@ open Batteries
 
 namespace Linarith
 
+/-! ### Config objects
+
+The config object is defined in the frontend, instead of in `Datatypes.lean`, since the oracles must
+be in context to choose a default.
+
+-/
+
+section
+open Meta
+
+/-- A configuration object for `linarith`. -/
+structure LinarithConfig : Type where
+  /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
+  -- TODO There should be a def for this, rather than calling `evalTactic`?
+  discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
+  -- We can't actually store a `Type` here,
+  -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
+  -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
+  -- For now, we simply don't support restricting the type.
+  -- (restrict_type : Option Type := none)
+  /-- Prove goals which are not linear comparisons by first calling `exfalso`. -/
+  exfalso : Bool := true
+  /-- Transparency mode for identifying atomic expressions in comparisons. -/
+  transparency : TransparencyMode := .reducible
+  /-- Split conjunctions in hypotheses. -/
+  splitHypotheses : Bool := true
+  /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
+  splitNe : Bool := false
+  /-- Override the list of preprocessors. -/
+  preprocessors : List GlobalBranchingPreprocessor := defaultPreprocessors
+  /-- Specify an oracle for identifying candidate contradictions.
+  `.simplexAlgorithmSparse`, `.simplexAlgorithmSparse`, and `.fourierMotzkin` are available. -/
+  oracle : CertificateOracle := .simplexAlgorithmSparse
+
+/--
+`cfg.updateReducibility reduce_default` will change the transparency setting of `cfg` to
+`default` if `reduce_default` is true. In this case, it also sets the discharger to `ring!`,
+since this is typically needed when using stronger unification.
+-/
+def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
+    LinarithConfig :=
+  if reduce_default then
+    { cfg with transparency := .default, discharger := do evalTactic (← `(tactic| ring1!)) }
+  else cfg
+
+end
+
 /-! ### Control -/
 
 /--
@@ -202,7 +250,7 @@ prove `False` by calling `linarith` on each list in succession. It will stop at 
 def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
     MetaM Expr :=
   try
-    ls.firstM (fun L => proveFalseByLinarith cfg g L)
+    ls.firstM (fun L => proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g L)
   catch e => throwError "linarith failed to find a contradiction\n{g}\n{e.toMessageData}"
 
 
@@ -225,10 +273,10 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     trace[linarith] "hypotheses appear in {hyp_set.size} different types"
       if let some t := prefType then
         let (i, vs) ← hyp_set.find t
-        proveFalseByLinarith cfg g vs <|>
+        proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs <|>
         findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
       else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
-  let mut preprocessors := cfg.preprocessors.getD defaultPreprocessors
+  let mut preprocessors := cfg.preprocessors
   if cfg.splitNe then
     preprocessors := Linarith.removeNe :: preprocessors
   if cfg.splitHypotheses then
@@ -420,8 +468,7 @@ elab_rules : tactic
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
     let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
     let cfg := { cfg with
-      preprocessors := some (cfg.preprocessors.getD defaultPreprocessors ++
-        [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
+      preprocessors := cfg.preprocessors.concat nlinarithExtras }
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
