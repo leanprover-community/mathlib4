@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Types
-import Mathlib.CategoryTheory.Functor.EpiMono
 
 #align_import category_theory.concrete_category.basic from "leanprover-community/mathlib"@"311ef8c4b4ae2804ea76b8a611bc5ea1d9c16872"
 
@@ -38,6 +37,9 @@ related work.
 
 
 universe w w' v v' v'' u u' u''
+
+assert_not_exists CategoryTheory.CommSq
+assert_not_exists CategoryTheory.Adjunction
 
 namespace CategoryTheory
 
@@ -144,12 +146,6 @@ theorem ConcreteCategory.congr_arg {X Y : C} (f : X ⟶ Y) {x x' : X} (h : x = x
   congrArg (f : X → Y) h
 #align category_theory.concrete_category.congr_arg CategoryTheory.ConcreteCategory.congr_arg
 
-/-- In any concrete category, injective morphisms are monomorphisms. -/
-theorem ConcreteCategory.mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
-    Mono f :=
-  (forget C).mono_of_mono_map ((mono_iff_injective f).2 i)
-#align category_theory.concrete_category.mono_of_injective CategoryTheory.ConcreteCategory.mono_of_injective
-
 @[simp]
 theorem ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶ Y) : CoeFun.coe f = f := rfl
 #align category_theory.concrete_category.has_coe_to_fun_Type CategoryTheory.ConcreteCategory.hasCoeToFun_Type
@@ -187,26 +183,6 @@ instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [Concret
     [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : (forget₂ C D).Faithful :=
   HasForget₂.forget_comp.faithful_of_comp
 #align category_theory.forget₂_faithful CategoryTheory.forget₂_faithful
-
-instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
-    [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
-    (forget₂ C D).PreservesMonomorphisms :=
-  have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
-    simp only [HasForget₂.forget_comp]
-    infer_instance
-  Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
-#align category_theory.forget₂_preserves_monomorphisms CategoryTheory.forget₂_preservesMonomorphisms
-
-instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
-    [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
-    (forget₂ C D).PreservesEpimorphisms :=
-  have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by
-    simp only [HasForget₂.forget_comp]
-    infer_instance
-  Functor.preservesEpimorphisms_of_preserves_of_reflects _ (forget D)
-#align category_theory.forget₂_preserves_epimorphisms CategoryTheory.forget₂_preservesEpimorphisms
 
 instance InducedCategory.concreteCategory {C : Type u} {D : Type u'}
     [Category.{v'} D] [ConcreteCategory.{w} D] (f : C → D) :

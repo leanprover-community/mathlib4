@@ -21,17 +21,46 @@ by an injective morphism.
 
 -/
 
-universe w v u
+universe w v v' u u'
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C]
+variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 
 open Limits MorphismProperty
 
 namespace ConcreteCategory
 
 section
+
+attribute [local instance] ConcreteCategory.instFunLike in
+/-- In any concrete category, injective morphisms are monomorphisms. -/
+theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
+    Mono f :=
+  (forget C).mono_of_mono_map ((mono_iff_injective f).2 i)
+#align category_theory.concrete_category.mono_of_injective CategoryTheory.ConcreteCategory.mono_of_injective
+
+instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
+    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
+    [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
+    (forget₂ C D).PreservesMonomorphisms :=
+  have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
+    simp only [HasForget₂.forget_comp]
+    infer_instance
+  Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
+#align category_theory.forget₂_preserves_monomorphisms CategoryTheory.ConcreteCategory.forget₂_preservesMonomorphisms
+
+instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
+    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
+    [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
+    (forget₂ C D).PreservesEpimorphisms :=
+  have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by
+    simp only [HasForget₂.forget_comp]
+    infer_instance
+  Functor.preservesEpimorphisms_of_preserves_of_reflects _ (forget D)
+#align category_theory.forget₂_preserves_epimorphisms CategoryTheory.ConcreteCategory.forget₂_preservesEpimorphisms
+
+variable (C)
 
 lemma surjective_le_epimorphisms :
     MorphismProperty.surjective C ≤ epimorphisms C :=
@@ -106,8 +135,6 @@ end
 section
 
 open CategoryTheory.Limits
-
-variable {C}
 
 attribute [local instance] ConcreteCategory.hasCoeToSort
 attribute [local instance] ConcreteCategory.instFunLike
