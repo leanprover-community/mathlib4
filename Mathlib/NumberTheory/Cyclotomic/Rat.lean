@@ -184,6 +184,7 @@ abbrev toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : 𝓞 K := ⟨ζ, hζ.
 
 lemma coe_toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
 
+/-- `𝓞 K ⧸ Ideal.span {ζ - 1}` is finite. -/
 noncomputable
 def fintypeQuotienttoIntegerSubOne [NumberField K] {k : ℕ+} (hk : 1 < k)
     (hζ : IsPrimitiveRoot ζ k) : Fintype (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
