@@ -223,6 +223,23 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
 
 variable (F B IB)
 
+variable {F B IB} in
+-- Having this private lemma speeds up `simp` calls below a lot.
+-- TODO: understand why and fix the underlying issue (relatedly, the `simp` calls
+-- in `smoothFiberwiseLinear` are quite slow, even with this change)
+private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} :
+    (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
+      (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)
+      (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
+        {e | e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn
+          h2φ.continuousOn)}) ↔
+      ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
+        (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)
+        (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
+          e.EqOnSource
+            (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
+  simp only [mem_iUnion, mem_setOf_eq]
+
 /-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
 homeomorphisms which are bi-smooth and fiberwise linear, and induce the identity on `B`.
 When a (topological) vector bundle is smooth, then the composition of charts associated
@@ -234,7 +251,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
       (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
         {e | e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn)}
   trans' := by
-    simp only [mem_iUnion]
+    simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
     refine ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', ?_, ?_,
       Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨?_, ?_⟩⟩
@@ -251,43 +268,28 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     · rintro ⟨b, v⟩ -; apply FiberwiseLinear.trans_partialHomeomorph_apply
   -- Porting note: without introducing `e` first, the first `simp only` fails
   symm' := fun e ↦ by
-    simp only [mem_iUnion]
+    simp only [mem_aux]
     rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
     refine ⟨fun b => (φ b).symm, U, hU, h2φ, ?_, PartialHomeomorph.EqOnSource.symm' heφ⟩
     simp_rw [ContinuousLinearEquiv.symm_symm]
     exact hφ
   id_mem' := by
-    simp_rw [mem_iUnion]
+    simp_rw [mem_aux]
     refine ⟨fun _ ↦ ContinuousLinearEquiv.refl 𝕜 F, univ, isOpen_univ, smoothOn_const,
       smoothOn_const, ⟨?_, fun b _hb ↦ rfl⟩⟩
     simp only [FiberwiseLinear.partialHomeomorph, PartialHomeomorph.refl_partialEquiv,
       PartialEquiv.refl_source, univ_prod_univ]
   locality' := by
     -- the hard work has been extracted to `locality_aux₁` and `locality_aux₂`
-    simp only [mem_iUnion]
+    simp only [mem_aux]
     intro e he
     obtain ⟨U, hU, h⟩ := SmoothFiberwiseLinear.locality_aux₁ e he
     exact SmoothFiberwiseLinear.locality_aux₂ e U hU h
   mem_of_eqOnSource' := by
-    simp only [mem_iUnion]
+    simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩
 #align smooth_fiberwise_linear smoothFiberwiseLinear
-
-variable {F B IB} in
--- TODO: can this be inlined into the next lemma?
-private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} :
-    (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
-      (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)
-      (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
-        {e | e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn
-          h2φ.continuousOn)}) ↔
-      ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
-        (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)
-        (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
-          e.EqOnSource
-            (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
-  simp only [mem_iUnion, mem_setOf_eq]
 
 @[simp]
 theorem mem_smoothFiberwiseLinear_iff (e : PartialHomeomorph (B × F) (B × F)) :

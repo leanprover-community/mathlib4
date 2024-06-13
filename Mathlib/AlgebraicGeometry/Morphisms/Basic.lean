@@ -321,6 +321,19 @@ structure PropertyIsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
       (∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) → P f
 #align algebraic_geometry.property_is_local_at_target AlgebraicGeometry.PropertyIsLocalAtTarget
 
+lemma propertyIsLocalAtTarget_of_morphismRestrict (P : MorphismProperty Scheme)
+    (hP₁ : P.RespectsIso)
+    (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y.carrier), P f → P (f ∣_ U))
+    (hP₃ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y.carrier)
+      (_ : iSup U = ⊤), (∀ i, P (f ∣_ U i)) → P f) :
+    PropertyIsLocalAtTarget P where
+  RespectsIso := hP₁
+  restrict := hP₂
+  of_openCover {X Y} f 𝒰 h𝒰 := by
+    apply hP₃ f (fun i : 𝒰.J => Scheme.Hom.opensRange (𝒰.map i)) 𝒰.iSup_opensRange
+    simp_rw [hP₁.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
+    exact h𝒰
+
 theorem AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) :
     PropertyIsLocalAtTarget (targetAffineLocally P) := by
@@ -602,10 +615,69 @@ theorem universallyIsLocalAtTargetOfMorphismRestrict (P : MorphismProperty Schem
     exact h𝒰)
 #align algebraic_geometry.universally_is_local_at_target_of_morphism_restrict AlgebraicGeometry.universallyIsLocalAtTargetOfMorphismRestrict
 
+theorem morphismRestrict_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) :
+    ⇑(f ∣_ U).1.base = U.1.restrictPreimage f.1.1 :=
+  funext fun x => Subtype.ext <| morphismRestrict_base_coe f U x
+#align algebraic_geometry.morphism_restrict_base AlgebraicGeometry.morphismRestrict_base
+
 /-- `topologically P` holds for a morphism if the underlying topological map satisfies `P`. -/
 def MorphismProperty.topologically
     (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop) :
     MorphismProperty Scheme.{u} := fun _ _ f => P f.1.base
 #align algebraic_geometry.morphism_property.topologically AlgebraicGeometry.MorphismProperty.topologically
+
+variable (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop)
+
+/-- If a property of maps of topological spaces is stable under composition, the induced
+morphism property of schemes is stable under composition. -/
+lemma MorphismProperty.topologically_isStableUnderComposition
+    (hP : ∀ {α β γ : Type u} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+      (f : α → β) (g : β → γ) (_ : P f) (_ : P g), P (g ∘ f)) :
+    (MorphismProperty.topologically P).IsStableUnderComposition where
+  comp_mem {X Y Z} f g hf hg := by
+    simp only [MorphismProperty.topologically, Scheme.comp_coeBase, TopCat.coe_comp]
+    exact hP _ _ hf hg
+
+/-- If a property of maps of topological spaces is satisfied by all homeomorphisms,
+every isomorphism of schemes satisfies the induced property. -/
+lemma MorphismProperty.topologically_iso_le
+    (hP : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α ≃ₜ β), P f) :
+    MorphismProperty.isomorphisms Scheme ≤ (MorphismProperty.topologically P) := by
+  intro X Y e (he : IsIso e)
+  have : IsIso e := he
+  exact hP (TopCat.homeoOfIso (asIso e.val.base))
+
+/-- If a property of maps of topological spaces is satisfied by homeomorphisms and is stable
+under composition, the induced property on schemes respects isomorphisms. -/
+lemma MorphismProperty.topologically_respectsIso
+    (hP₁ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α ≃ₜ β), P f)
+    (hP₂ : ∀ {α β γ : Type u} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+      (f : α → β) (g : β → γ) (_ : P f) (_ : P g), P (g ∘ f)) :
+      (MorphismProperty.topologically P).RespectsIso :=
+  have : (MorphismProperty.topologically P).IsStableUnderComposition :=
+    topologically_isStableUnderComposition P hP₂
+  MorphismProperty.respectsIso_of_isStableUnderComposition (topologically_iso_le P hP₁)
+
+/-- To check that a topologically defined morphism property is local at the target,
+we may check the corresponding properties on topological spaces. -/
+lemma MorphismProperty.topologically_propertyIsLocalAtTarget
+    (hP₁ : (MorphismProperty.topologically P).RespectsIso)
+    (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β),
+      P f → P (s.restrictPreimage f))
+    (hP₃ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
+      (U : ι → TopologicalSpace.Opens β) (_ : iSup U = ⊤) (_ : Continuous f),
+      (∀ i, P ((U i).carrier.restrictPreimage f)) → P f) :
+    PropertyIsLocalAtTarget (MorphismProperty.topologically P) := by
+  apply propertyIsLocalAtTarget_of_morphismRestrict
+  · exact hP₁
+  · intro X Y f U hf
+    simp_rw [MorphismProperty.topologically, morphismRestrict_base]
+    exact hP₂ f.val.base U.carrier hf
+  · intro X Y f ι U hU hf
+    apply hP₃ f.val.base U hU
+    · exact f.val.base.continuous
+    · intro i
+      rw [← morphismRestrict_base]
+      exact hf i
 
 end AlgebraicGeometry

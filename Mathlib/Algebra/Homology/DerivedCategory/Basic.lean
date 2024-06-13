@@ -46,7 +46,6 @@ instance should be obtained at the beginning of the proof, using the term
 
 ## TODO (@joelriou)
 
-- define the induced homological functor `DerivedCategory C ⥤ C`.
 - construct the distinguished triangle associated to a short exact sequence
 of cochain complexes, and compare the associated connecting homomorphism
 with the one defined in `Algebra.Homology.HomologySequence`.
@@ -184,5 +183,16 @@ instance : (Qh (C := C)).IsTriangulated :=
 noncomputable instance : IsTriangulated (DerivedCategory C) :=
   Triangulated.Localization.isTriangulated
     Qh (HomotopyCategory.subcategoryAcyclic C).W
+
+instance : (Qh (C := C)).mapArrow.EssSurj :=
+  Localization.essSurj_mapArrow _ (HomotopyCategory.subcategoryAcyclic C).W
+
+instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).Full :=
+  inferInstanceAs
+    (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Full
+
+instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
+  inferInstanceAs
+    (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
 
 end DerivedCategory

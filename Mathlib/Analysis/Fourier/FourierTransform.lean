@@ -455,7 +455,7 @@ theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_real_eq
 
-@[deprecated] alias fourierIntegral_def := fourierIntegral_real_eq -- deprecated on 2024-02-21
+@[deprecated (since := "2024-02-21")] alias fourierIntegral_def := fourierIntegral_real_eq
 
 theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
@@ -463,7 +463,7 @@ theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     mul_assoc]
 #align real.fourier_integral_eq_integral_exp_smul Real.fourierIntegral_real_eq_integral_exp_smul
 
-@[deprecated] -- deprecated on 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias fourierIntegral_eq_integral_exp_smul := fourierIntegral_real_eq_integral_exp_smul
 
 @[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} {f : V → E} (w : V) :
