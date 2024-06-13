@@ -96,3 +96,12 @@ example {A B C: Type} (h : A → B) (g : B → C) : A → C := by
   guard_goal_nums 3 -- 3rd goal is the middle term
   · exact h
   · exact g
+
+universe u v w
+
+/-- `trans` for arrows between types. -/
+example {A : Type u} {B : Type v} {C : Type w} (h : A → B) (g : B → C) : A → C := by
+  trans
+  guard_goal_nums 3 -- 3rd goal is the middle term
+  · exact h
+  · exact g
