@@ -3,9 +3,6 @@ Copyright (c) 2020 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Init.Data.Bool.Lemmas
-import Mathlib.Tactic.Cases
-import Mathlib.Tactic.TypeStar
 import Mathlib.Data.List.Basic
 
 /-!

@@ -10,8 +10,9 @@ import Mathlib.Condensed.Basic
 
 # Discrete-underlying adjunction
 
-Given a well-behaved category `C`, we define a functor `C ⥤ Condensed C` which associates
-to an object of `C` the corresponding "discrete" condensed object (see `Condensed.discrete`).
+Given a category `C` with sheafification with respect to the coherent topology on compact Hausdorff
+spaces, we define a functor `C ⥤ Condensed C` which associates to an object of `C` the
+corresponding "discrete" condensed object (see `Condensed.discrete`).
 
 In `Condensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the forgetful
 functor from `Condensed C` to `C`.

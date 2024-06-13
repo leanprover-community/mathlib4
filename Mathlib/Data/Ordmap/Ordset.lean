@@ -713,7 +713,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         cases sl.2.2.2.1.size_eq_zero.1 this.1
         cases sl.2.2.2.2.size_eq_zero.1 this.2
         obtain rfl : lrs = 1 := sl.2.2.1
-        rw [if_neg, if_neg, if_pos, rotateR_node, if_neg]; · rfl
+        rw [if_neg, if_pos, rotateR_node, if_neg]; · rfl
         all_goals dsimp only [size]; decide
       · have : size lll = 0 ∧ size llr = 0 := by
           have := balancedSz_zero.1 hl.1
@@ -721,14 +721,13 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         cases sl.2.1.2.1.size_eq_zero.1 this.1
         cases sl.2.1.2.2.size_eq_zero.1 this.2
         obtain rfl : lls = 1 := sl.2.1.1
-        rw [if_neg, if_neg, if_pos, rotateR_node, if_pos]; · rfl
+        rw [if_neg, if_pos, rotateR_node, if_pos]; · rfl
         all_goals dsimp only [size]; decide
-      · symm; rw [if_neg, if_neg, if_pos, rotateR]
+      · symm; rw [if_neg, if_pos, rotateR]
         · dsimp only [size_node]; split_ifs
           · simp [node3R, node']; abel
           · simp [node4R, node', sl.2.2.1]; abel
         · apply Nat.zero_lt_succ
-        · apply Nat.not_lt_zero
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sl.2.1.pos sl.2.2.pos))
     · simp [balance, balance']
       symm; rw [if_neg]

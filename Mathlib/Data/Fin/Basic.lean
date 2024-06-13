@@ -1443,7 +1443,8 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 #align fin.succ_above_last_apply Fin.succAbove_last_apply
 
-@[deprecated] lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
+@[deprecated (since := "2024-05-30")]
+lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
 #align fin.succ_above_lt_ge Fin.succAbove_lt_ge
 
@@ -1848,6 +1849,8 @@ open Nat Int
 /-- Negation on `Fin n` -/
 instance neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
+
+theorem neg_def (a : Fin n) : -a = ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩ := rfl
 
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl

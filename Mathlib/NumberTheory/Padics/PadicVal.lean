@@ -141,7 +141,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
       interval_cases p
       · simp [Classical.em]
       · dsimp [padicValNat, maxPowDiv]
-        rw [go, if_neg, dif_neg] <;> simp
+        rw [go, if_neg]; simp
     · intro h
       simp [h]
 
