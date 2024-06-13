@@ -67,7 +67,7 @@ protected abbrev nonUnitalSemiring [NonUnitalSemiring α]
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) :
     NonUnitalSemiring β :=
   reduceProj% zeta%
-  { toNonUnitalNonAssocSemiring := delta% hf.nonUnitalNonAssocSemiring f zero add mul nsmul
+  { __ := delta% hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := delta% hf.semigroupWithZero f zero mul }
 #align function.injective.non_unital_semiring Function.Injective.nonUnitalSemiring
 
@@ -78,7 +78,7 @@ protected abbrev nonAssocSemiring [NonAssocSemiring α]
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : NonAssocSemiring β :=
   reduceProj% zeta%
-  { toNonUnitalNonAssocSemiring := delta% hf.nonUnitalNonAssocSemiring f zero add mul nsmul
+  { __ := delta% hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := delta% hf.mulZeroOneClass f zero one mul
     __ := delta% hf.addMonoidWithOne f zero one add nsmul natCast }
 #align function.injective.non_assoc_semiring Function.Injective.nonAssocSemiring
@@ -115,7 +115,7 @@ protected abbrev nonUnitalRing [NonUnitalRing α]
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalRing β :=
   reduceProj% zeta%
-  { toNonUnitalNonAssocRing := delta% hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
+  { __ := delta% hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := delta% hf.nonUnitalSemiring f zero add mul nsmul }
 #align function.injective.non_unital_ring Function.Injective.nonUnitalRing
 
@@ -128,7 +128,7 @@ protected abbrev nonAssocRing [NonAssocRing α]
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : NonAssocRing β :=
   reduceProj% zeta%
-  { toNonUnitalNonAssocRing := delta% hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
+  { __ := delta% hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := delta% hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := delta% hf.addCommGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast }
 #align function.injective.non_assoc_ring Function.Injective.nonAssocRing
@@ -142,7 +142,7 @@ protected abbrev ring [Ring α] (zero : f 0 = 0)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : Ring β :=
   reduceProj% zeta%
-  { toSemiring := delta% hf.semiring f zero one add mul nsmul npow natCast
+  { __ := delta% hf.semiring f zero one add mul nsmul npow natCast
     __ := delta% hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
     __ := delta% hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul) }
 #align function.injective.ring Function.Injective.ring
@@ -270,7 +270,7 @@ protected abbrev nonUnitalSemiring [NonUnitalSemiring α] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalSemiring β :=
   reduceProj% zeta%
-  { toNonUnitalNonAssocSemiring := delta% hf.nonUnitalNonAssocSemiring f zero add mul nsmul
+  { __ := delta% hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := delta% hf.semigroupWithZero f zero mul }
 #align function.surjective.non_unital_semiring Function.Surjective.nonUnitalSemiring
 
@@ -281,7 +281,7 @@ protected abbrev nonAssocSemiring [NonAssocSemiring α] (zero : f 0 = 0) (one : 
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : NonAssocSemiring β :=
   reduceProj% zeta%
-  { toNonUnitalNonAssocSemiring := delta% hf.nonUnitalNonAssocSemiring f zero add mul nsmul
+  { __ := delta% hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := delta% hf.mulZeroOneClass f zero one mul
     __ := delta% hf.addMonoidWithOne f zero one add nsmul natCast }
 #align function.surjective.non_assoc_semiring Function.Surjective.nonAssocSemiring
@@ -318,7 +318,7 @@ protected abbrev nonUnitalRing [NonUnitalRing α] (zero : f 0 = 0)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalRing β :=
   reduceProj% zeta%
-  { toNonUnitalNonAssocRing := delta% hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
+  { __ := delta% hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := delta% hf.nonUnitalSemiring f zero add mul nsmul }
 #align function.surjective.non_unital_ring Function.Surjective.nonUnitalRing
 
@@ -330,7 +330,7 @@ protected abbrev nonAssocRing [NonAssocRing α] (zero : f 0 = 0) (one : f 1 = 1)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : NonAssocRing β :=
   reduceProj% zeta%
-  { toNonUnitalNonAssocRing := delta% hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
+  { __ := delta% hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := delta% hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := delta% hf.addCommGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast }
 #align function.surjective.non_assoc_ring Function.Surjective.nonAssocRing
@@ -344,7 +344,7 @@ protected abbrev ring [Ring α] (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y,
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : Ring β :=
   reduceProj% zeta%
-  { toSemiring := delta% hf.semiring f zero one add mul nsmul npow natCast
+  { __ := delta% hf.semiring f zero one add mul nsmul npow natCast
     __ := delta% hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
     __ := delta% hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul) }
 #align function.surjective.ring Function.Surjective.ring
