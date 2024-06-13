@@ -117,7 +117,7 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
 
 /--Definition of the StarAlgHom for the continuous functional calculus of a Hermitian matrix. -/
 @[simps]
-noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
+noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
     diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
     * star (eigenvectorUnitary hA : Matrix n n 𝕜)
@@ -171,19 +171,19 @@ theorem compact_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : CompactSpa
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
   exists_cfc_of_predicate a ha := by
-    refine ⟨φ ha, ?closedEmbedding, ?mapId, ?map_spec, ?hermitian⟩
+    refine ⟨cfc ha, ?closedEmbedding, ?mapId, ?map_spec, ?hermitian⟩
     case closedEmbedding =>
       have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
         have : Finite (spectrum ℝ a) := by refine finite_spectrum ha
         apply FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ))
         exact DFunLike.coe_injective
-      have hφ : LinearMap.ker ha.φ = ⊥ := by
+      have hcfc : LinearMap.ker ha.cfc = ⊥ := by
         refine LinearMap.ker_eq_bot'.mpr ?_
         intro f hf
         have h2 : diagonal
              (RCLike.ofReal ∘ ⇑f ∘ fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩)
              = (0 : Matrix n n 𝕜) := by
-           rw [φ_apply] at hf
+           rw [cfc_apply] at hf
            have hlr : (star ha.eigenvectorUnitary : Matrix n n 𝕜) *
               ((eigenvectorUnitary ha : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ f ∘
                 (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩)) *
@@ -204,7 +204,7 @@ instance instContinuousFunctionalCalculus :
         exact RCLike.ofReal_eq_zero.mp (this i)
       have H := ha.compact_spectrum
       apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
-        (F := Matrix n n 𝕜) (f := ha.φ) hφ
+        (F := Matrix n n 𝕜) (f := ha.cfc) hcfc
     case mapId =>
       conv_rhs => rw [ha.spectral_theorem]
       congr!
@@ -213,7 +213,7 @@ instance instContinuousFunctionalCalculus :
       apply Set.eq_of_subset_of_subset
       · rw [← ContinuousMap.spectrum_eq_range f]
         apply AlgHom.spectrum_apply_subset
-      · rw [φ_apply ,spectrum.unitary_conjugate]
+      · rw [cfc_apply, unitary.spectrum.unitary_conjugate]
         rintro - ⟨x , rfl⟩
         apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
         simp only [spectrum_diagonal (R := 𝕜)
@@ -224,7 +224,7 @@ instance instContinuousFunctionalCalculus :
         exact ⟨i, rfl⟩
     case hermitian =>
       intro f
-      simp only [φ_apply, mul_assoc, IsHermitian, ← star_eq_conjTranspose, star_mul, star_star]
+      simp only [cfc_apply, mul_assoc, IsHermitian, ← star_eq_conjTranspose, star_mul, star_star]
       congr!
       rw [star_eq_conjTranspose, diagonal_conjTranspose]
       congr!
