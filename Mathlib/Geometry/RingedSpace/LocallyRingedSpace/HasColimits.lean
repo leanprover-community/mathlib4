@@ -245,8 +245,7 @@ instance coequalizer_π_stalk_isLocalRingHom (x : Y) :
       ⟨_, @Set.mem_image_of_mem _ _ (coequalizer.π f.val g.val).base x V.1 hxV⟩ s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.val g.val : _).c.app _), ← comp_apply,
-    NatTrans.naturality, comp_apply, TopCat.Presheaf.pushforwardObj_map, ←
-    isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
+    NatTrans.naturality, comp_apply, ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
   -- Porting note (#11224): change `rw` to `erw`
   erw [← comp_apply, ← comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)

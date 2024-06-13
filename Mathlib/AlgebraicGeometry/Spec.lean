@@ -486,8 +486,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         U.2
     change PrimeSpectrum.basicOpen r ≤ U at hrU
     apply_fun (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).map (homOfLE hrU).op at e
-    simp only [TopCat.Presheaf.pushforwardObj_map, Functor.op_map, map_zero, ← comp_apply,
-      toOpen_res] at e
+    simp only [Functor.op_map, map_zero, ← comp_apply, toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=
