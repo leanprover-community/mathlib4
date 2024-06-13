@@ -33,7 +33,8 @@ open Finset
 
 namespace Imo1994Q1
 
-theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - (m + (m + 1 - ↑k)) % (m + 1) = ↑k := by
+theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - ((m + 1 - ↑k) + m) % (m + 1) = ↑k := by
+  rw [Nat.add_comm _ m]
   cases' k with k hk
   rw [Nat.lt_succ_iff, le_iff_exists_add] at hk
   rcases hk with ⟨c, rfl⟩
