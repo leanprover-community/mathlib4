@@ -491,6 +491,13 @@ noncomputable def ringEquiv [Fintype R] (h : Fintype.card R = n) : ZMod n ≃+* 
   RingEquiv.ofBijective _ (ZMod.castHom_bijective R h)
 #align zmod.ring_equiv ZMod.ringEquiv
 
+/-- The unique ring isomorphism between `ZMod p` and a ring `R` cardinality a prime `p`. -/
+noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fintype.card R = p) :
+    ZMod p ≃+* R :=
+  have : Nontrivial R := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.one_lt)
+  have : CharP R p := (CharP.charP_iff_prime_eq_zero hp).2 (hR ▸ Nat.cast_card_eq_zero R)
+  ZMod.ringEquiv R hR
+
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
   cases' m with m <;> cases' n with n
