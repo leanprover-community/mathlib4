@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
 import Mathlib.Analysis.NormedSpace.Star.Matrix
+import Mathlib.Algebra.Star.Unitary
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
@@ -26,75 +27,6 @@ RCLike field 𝕜.
 
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
-
-section ConjugateUnits
-
-variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
-
-/-- Conjugation by a unit preserves the spectrum, inverse on right. -/
-@[simp]
-lemma spectrum.units_conjugate {a : A} {u : Aˣ} :
-    spectrum R (u * a * u⁻¹) = spectrum R a := by
-  suffices ∀ (b : A) (v : Aˣ), spectrum R (v * b * v⁻¹) ⊆ spectrum R b by
-    refine le_antisymm (this a u) ?_
-    apply le_of_eq_of_le ?_ <| this (u * a * u⁻¹) u⁻¹
-    simp [mul_assoc]
-  intro a u μ hμ
-  rw [spectrum.mem_iff] at hμ ⊢
-  contrapose! hμ
-  simpa [mul_sub, sub_mul, Algebra.right_comm] using u.isUnit.mul hμ |>.mul u⁻¹.isUnit
-
-/-- Conjugation by a unit preserves the spectrum, inverse on left. -/
-@[simp]
-lemma spectrum.units_conjugate' {a : A} {u : Aˣ} :
-    spectrum R (u⁻¹ * a * u) = spectrum R a := by
-  simpa using spectrum.units_conjugate (u := u⁻¹)
-
-end ConjugateUnits
-
-section UnitaryConjugate
-
-universe u
-
-variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
-
-/-- Unitary conjugation preserves the spectrum, star on left. -/
-@[simp]
-lemma spectrum.unitary_conjugate {a : A} {u : unitary A} :
-    spectrum R (u * a * (star u : A)) = spectrum R a :=
-  spectrum.units_conjugate (u := unitary.toUnits u)
-
-/-- Unitary conjugation preserves the spectrum, star on right. -/
-@[simp]
-lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
-    spectrum R ((star u : A) * a * u) = spectrum R a := by
-  simpa using spectrum.unitary_conjugate (u := star u)
-
-end UnitaryConjugate
-
-section FiniteSpectrum
-
-universe u v w
-
-/-- An endomorphism of a finite-dimensional vector space has a finite spectrum. -/
-theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
-    [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
-    Set.Finite (spectrum K f) := by
-  convert f.finite_hasEigenvalue
-  ext f x
-  exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
-
-variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]
-
-/-- An n x n matrix over a ring has a finite spectrum. -/
-theorem Matrix.finite_spectrum (A : Matrix n n R) : Set.Finite (spectrum R A) := by
-  rw [← AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv <| Pi.basisFun R n) A]
-  exact Module.End.finite_spectrum _
-
-instance Matrix.instFiniteSpectrum (A : Matrix n n R) : Finite (spectrum R A) :=
-  Set.finite_coe_iff.mpr (Matrix.finite_spectrum A)
-
-end FiniteSpectrum
 
 section SpectrumDiagonal
 
@@ -219,7 +151,7 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
 theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
     (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
   ext x
-  conv_lhs => rw [ha.spectral_theorem, spectrum.unitary_conjugate,
+  conv_lhs => rw [ha.spectral_theorem, unitary.spectrum.unitary_conjugate,
   ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
   simp
 
