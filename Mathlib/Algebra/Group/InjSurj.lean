@@ -51,7 +51,7 @@ elab "zeta% " t:term : term <= expectedType => do
   let t ← zetaReduce t
   pure t
 
-/-- `reduceProj% t` elaborates to a head-zeta reduced version of `t`. -/
+/-- `reduceProj% t` apply `Expr.reduceProjStruct?` to every subexpressions. -/
 elab "reduceProj% " t:term : term <= expectedType => do
   let t ← withSynthesize do
     elabTermEnsuringType t expectedType
