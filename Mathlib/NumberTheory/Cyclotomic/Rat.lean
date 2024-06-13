@@ -182,6 +182,8 @@ noncomputable def integralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
 /-- Abbreviation to see a primitive root of unity as a member of the ring of integers. -/
 abbrev toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : 𝓞 K := ⟨ζ, hζ.isIntegral k.pos⟩
 
+lemma coe_toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
+
 noncomputable
 def fintypeQuotienttoIntegerSubOne [NumberField K] {k : ℕ+} (hk : 1 < k)
     (hζ : IsPrimitiveRoot ζ k) : Fintype (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
