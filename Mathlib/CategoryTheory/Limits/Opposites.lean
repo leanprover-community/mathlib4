@@ -18,8 +18,9 @@ We also give special cases for (co)products,
 
 -/
 
-
 universe v₁ v₂ u₁ u₂
+
+suppress_compilation
 
 noncomputable section
 
