@@ -49,7 +49,7 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class RCLike (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K,
+class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
@@ -891,12 +891,16 @@ lemma ofReal_nonneg {x : ℝ} : 0 ≤ (x : K) ↔ 0 ≤ x := by
   rw [← ofReal_zero, ofReal_le_ofReal]
 
 @[simp, norm_cast]
+lemma ofReal_nonpos {x : ℝ} : (x : K) ≤ 0 ↔ x ≤ 0 := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
+
+@[simp, norm_cast]
 lemma ofReal_pos {x : ℝ} : 0 < (x : K) ↔ 0 < x := by
   rw [← ofReal_zero, ofReal_lt_ofReal]
 
 @[simp, norm_cast]
-lemma ofReal_nonpos {x : ℝ} : (x : K) ≤ 0 ↔ x ≤ 0 := by
-  rw [← ofReal_zero, ofReal_le_ofReal]
+lemma ofReal_lt_zero {x : ℝ} : (x : K) < 0 ↔ x < 0 := by
+  rw [← ofReal_zero, ofReal_lt_ofReal]
 
 lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
   rw [pos_iff_exists_ofReal] at hz
