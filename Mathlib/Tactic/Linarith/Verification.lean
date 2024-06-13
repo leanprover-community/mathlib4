@@ -201,10 +201,6 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       let (comps, max_var) ← linearFormsAndMaxVar transparency inputs
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
-<<<<<<< robertylewis/linarith-oracle-default -- Incoming Change
-=======
-      let oracle := cfg.oracle.getD (.simplexAlgorithmSparse)
->>>>>>> master -- Current Change
       -- perform the elimination and fail if no contradiction is found.
       let certificate : Batteries.HashMap Nat Nat ← try
         oracle.produceCertificate comps max_var
