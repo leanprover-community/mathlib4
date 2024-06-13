@@ -162,7 +162,7 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
       Y.presheaf.map (eqToHom e.symm).op ≫
         f.val.c.app (op V) ≫
           X.presheaf.map (eqToHom (congr_arg (Opens.map f.val.base).obj e)).op := by
-  rw [← IsIso.inv_comp_eq, ← Functor.map_inv, f.val.c.naturality, Presheaf.pushforwardObj_map]
+  rw [← IsIso.inv_comp_eq, ← Functor.map_inv, f.val.c.naturality]
   cases e
   rfl
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
