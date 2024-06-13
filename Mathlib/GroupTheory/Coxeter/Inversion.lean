@@ -405,7 +405,8 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
       Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
     show get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
-    rw [get?_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j'), get?_drop]
+    rw [get?_eq_getElem?, get?_eq_getElem?,
+      getElem?_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j'), getElem?_drop]
     congr
     show j + 1 + (j' - 1 - List.length (take j ω)) = j'
     rw [length_take]

@@ -150,26 +150,25 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]
   have hM_ltx : M < length (x::l) := lt_length_left_of_zipWith hM_lt
   have hM_lty : M < length (l ++ [y]) := lt_length_right_of_zipWith hM_lt
-  refine ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, ?_, ?_, ?_⟩
+  refine ⟨(x::l)[M], (l ++ [y])[M], ?_, ?_, ?_⟩
   · cases M with
     | zero =>
       simp [dist_self, List.get]
     | succ M =>
       rw [Nat.succ_le_iff] at hMl
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
-      simp only [List.get]
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
       rw [zipWith_distrib_take, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
-        ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, get_eq_getElem]
+        ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
-    · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
-    rw [get_append _ hMl]
+    · simp only [getElem_append_right' le_rfl, sub_self, getElem_singleton, dist_self, zero_le]
+    rw [getElem_append _ hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine (ihn _ hlen_lt _ y _ hlen).trans ?_
-    rw [cons_get_drop_succ]
+    rw [cons_getElem_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
       not_lt.1 fun h => (hMs.2 h.le).not_lt M.lt_succ_self
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,

@@ -1776,6 +1776,10 @@ theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: tak
 theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
   rw [drop_add, drop_one]
 
+theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
+    l[n] :: l.drop (n + 1) = l.drop n :=
+  (drop_eq_get_cons h).symm
+
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_get_cons n.2).symm
