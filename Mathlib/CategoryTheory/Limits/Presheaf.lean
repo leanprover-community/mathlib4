@@ -438,14 +438,6 @@ lemma yonedaEquiv_presheafHom_yoneda_obj (X : C) :
       ((φ.app X).app (F.op.obj (Opposite.op X)) (𝟙 _)) := by
   simpa using yonedaEquiv_ι_presheafHom φ (yoneda.obj X) (𝟙 _)
 
--- should be moved
-lemma hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v₁} {f g : P ⟶ Q}
-    (h : ∀ (X : C) (p : yoneda.obj X ⟶ P), p ≫ f = p ≫ g) :
-    f = g := by
-  ext X x
-  simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
-
 @[reassoc (attr := simp)]
 lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type v₁} (f : P ⟶ Q) :
     presheafHom φ P ≫ whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
