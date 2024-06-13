@@ -335,7 +335,7 @@ structure LinarithConfig : Type where
   /-- Override the list of preprocessors. -/
   preprocessors : Option (List GlobalBranchingPreprocessor) := none
   /-- Specify an oracle for identifying candidate contradictions.
-  `.simplexAlgorithm` and `.fourierMotzkin` are both available. -/
+  `.simplexAlgorithmSparse`, `.simplexAlgorithmSparse`, and `.fourierMotzkin` are available. -/
   oracle : Option CertificateOracle := none
 
 /--
