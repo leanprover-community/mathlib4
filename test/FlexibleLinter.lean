@@ -1,20 +1,18 @@
-import Std.Tactic.PermuteGoals
-import Mathlib.Tactic.FlexibleLinter
+import Batteries.Tactic.PermuteGoals
+import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 
-set_option warningAsError true
+set_option linter.flexible false
 
--- for some reason, disabling and re-enabling the linter means that
--- `#guard_msgs` actually catches the output!
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp at h' stains 'h'... [linter.flexible]
+warning: 'simp at h' stains 'h'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'exact h' uses 'h'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 example (h : 0 + 0 = 0) : True := by
   simp at h
   try exact h
@@ -34,32 +32,33 @@ example {a b : Nat} (h : a = b) : a + 0 = b := by
   subst h; rfl
   subst h; rfl
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 -- `induction` does not use the goal
 /--
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'assumption' uses '⊢'!
 ---
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'assumption' uses '⊢'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 example {a b : Nat} (h : a = b) : a + 0 = b := by
   simp
   induction a <;> assumption
 
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp at h' stains 'h'... [linter.flexible]
+warning: 'simp at h' stains 'h'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'exact h' uses 'h'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 example (h : 0 = 0 ∨ 0 = 0) : True := by
   cases h <;>
     rename_i h <;>
@@ -67,18 +66,19 @@ example (h : 0 = 0 ∨ 0 = 0) : True := by
   · exact h
   · assumption --exact h
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
-info: ... and 'contradiction' uses '⊢'!
+info: ... and 'on_goal 2 => · contradiction' uses '⊢'!
 ---
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'contradiction' uses '⊢'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
   cases h <;> simp
   on_goal 2 => · contradiction
@@ -88,36 +88,38 @@ example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
 #guard_msgs in
 example {a : Nat} : a + 1 + 0 = 1 + a := by simp; all_goals omega
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'contradiction' uses '⊢'!
 ---
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'contradiction' uses '⊢'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
   cases h <;> simp
   · contradiction
   · contradiction
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp at h k' stains 'k'... [linter.flexible]
+warning: 'simp at h k' stains 'k'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rw [← Classical.not_not (a := True)] at k' uses 'k'!
 ---
-error: 'simp at h k' stains 'h'... [linter.flexible]
+warning: 'simp at h k' stains 'h'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
 #guard_msgs in
 -- `simp at h` stains `h` but not other locations
+set_option linter.flexible true in
 example {h : 0 = 0} {k : 1 = 1} : True := by
   simp at h k;
   rw [← Classical.not_not (a := True)]
@@ -139,30 +141,30 @@ example : (0 + 2 : Rat) < 3 := by
   simp
   norm_num
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rw [add_comm]' uses '⊢'!
 -/
 #guard_msgs in
 -- `norm_num` is allowed after `simp`, but "passes along the stain".
+set_option linter.flexible true in
 example {a : Rat} : a + (0 + 2 : Rat) < 3 + a := by
   simp
   norm_num
   rw [add_comm]
   norm_num
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'exact h.symm' uses '⊢'!
 -/
 #guard_msgs in
 -- `congr` is allowed after `simp`, but "passes along the stain".
+set_option linter.flexible true in
 example {a b : Nat} (h : a = b) : a + b + 0 = b + a := by
   simp
   congr
@@ -200,14 +202,14 @@ example {a b : Nat} : a + b = b + a + 0 := by
   simp
   ring
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'contradiction' uses '⊢'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
   cases h <;> simp
   · simp_all
@@ -226,14 +228,14 @@ example (n : Nat) : n + 1 = 1 + n := by
     -- should not flag `exact`!
     exact Nat.add_comm ..
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp at h' stains 'h'... [linter.flexible]
+warning: 'simp at h' stains 'h'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 -- `simp at h` stains `h` but not other locations
 example {h : 0 = 0} {k : 1 = 1} : ¬ ¬ True := by
   simp at h
@@ -243,19 +245,19 @@ example {h : 0 = 0} {k : 1 = 1} : ¬ ¬ True := by
   --exact h -- <-- flagged
   assumption
 
-
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp at h k' stains 'k'... [linter.flexible]
+warning: 'simp at h k' stains 'k'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rw [← Classical.not_not (a := True)] at k' uses 'k'!
 ---
-error: 'simp at h k' stains 'h'... [linter.flexible]
+warning: 'simp at h k' stains 'h'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 -- `simp at h` stains `h` but not other locations
 example {h : 0 = 0} {k : 1 = 1} : True := by
   simp at h k
@@ -265,15 +267,15 @@ example {h : 0 = 0} {k : 1 = 1} : True := by
   rw [← Classical.not_not (a := True)] at h
   assumption
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp at h' stains 'h'... [linter.flexible]
+warning: 'simp at h' stains 'h'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
 #guard_msgs in
 -- `simp at h` stains `h` but not other locations
+set_option linter.flexible true in
 example {h : 0 = 0} : True := by
   simp at h
   rw [← Classical.not_not (a := True)]
@@ -281,28 +283,28 @@ example {h : 0 = 0} : True := by
   rw [← Classical.not_not (a := True)] at h
   assumption
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rwa [← Classical.not_not (a := False)]' uses '⊢'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 example {h : False} : 0 = 1 := by
   simp
   rw [← Classical.not_not (a := False)] at h
   -- flag below vvv do not flag above ^^^
   rwa [← Classical.not_not (a := False)]
 
-set_option linter.flexible false in
-set_option linter.flexible true in
 /--
-error: 'simp' stains '⊢'... [linter.flexible]
+warning: 'simp' stains '⊢'...
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: ... and 'rwa [← Classical.not_not (a := False)]' uses '⊢'!
 -/
 #guard_msgs in
+set_option linter.flexible true in
 example {h : False} : 0 = 1 ∧ 0 = 1 := by
   constructor
   · simpa
@@ -326,9 +328,9 @@ flex? done
 flex? simp only
 /-- info: false -/#guard_msgs in
 flex? simp_all only
-/-- error: true -/#guard_msgs in
+/-- warning: true -/#guard_msgs in
 flex? simp
-/-- error: true -/#guard_msgs in
+/-- warning: true -/#guard_msgs in
 flex? simp_all
 end
 
