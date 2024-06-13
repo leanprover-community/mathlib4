@@ -311,7 +311,7 @@ to prove:
 - for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
 - `P 0`.
 
-To invoke this induction principal, use `induction x, hx using Submodule.set_smul_inductionOn` where
+To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`
 
 When we consider subset of `R` acting on `M`
@@ -408,14 +408,14 @@ theorem span_set_smul [SMulCommClass S R M] (s : Set S) (t : Set M) :
 
 variable {s N} in
 /--
-Induction principal for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
+Induction principle for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
 to prove:
 - for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
 - for all `r` and `m ∈ s • N`, `P (r • n)`;
 - for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
 - `P 0`.
 
-To invoke this induction principal, use `induction x, hx using Submodule.set_smul_inductionOn` where
+To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`
 -/
 @[elab_as_elim]
