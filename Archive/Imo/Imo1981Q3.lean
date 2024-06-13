@@ -123,7 +123,7 @@ set_option linter.uppercaseLean3 false in
 Now we can use induction to show that solutions must be Fibonacci numbers.
 -/
 theorem imp_fib {n : ℕ} : ∀ m : ℕ, NatPredicate N m n → ∃ k : ℕ, m = fib k ∧ n = fib (k + 1) := by
-  refine' Nat.strong_induction_on n _
+  refine Nat.strong_induction_on n ?_
   intro n h1 m h2
   have h3 : m ≤ n := h2.m_le_n
   obtain (rfl : 1 = n) | (h4 : 1 < n) := (succ_le_iff.mpr h2.n_pos).eq_or_lt
@@ -163,7 +163,7 @@ theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤
       rw [← fib_add_two] at HK
       calc
         N < fib (K + 2) := HK
-        _ ≤ fib (k + 1) := (fib_mono h8)
+        _ ≤ fib (k + 1) := fib_mono h8
         _ = n := hn.symm
     have h9 : n ≤ N := h1.n_le_N
     exact absurd h7 h9.not_lt

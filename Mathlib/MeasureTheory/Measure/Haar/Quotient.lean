@@ -83,9 +83,9 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
   measure_preimage_smul g A hA := by
     have meas_π : Measurable π := continuous_quotient_mk'.measurable
     obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
-    have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) ν :=
-      h𝓕.smul_of_comm g
-    rw [h𝓕.projection_respects_measure_apply (μ := μ)
+    have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) ν := h𝓕.smul_of_comm g
+    -- TODO: why `rw` fails with both of these rewrites?
+    erw [h𝓕.projection_respects_measure_apply (μ := μ)
       (meas_π (measurableSet_preimage (measurable_const_smul g) hA)),
       h𝓕_translate_fundom.projection_respects_measure_apply (μ := μ) hA]
     change ν ((π ⁻¹' _) ∩ _) = ν ((π ⁻¹' _) ∩ _)
@@ -135,12 +135,11 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
     [hasFun : HasFundamentalDomain Γ.op G ν] [QuotientMeasureEqMeasurePreimage ν μ] :
     μ.IsMulLeftInvariant where
   map_mul_left_eq_self x := by
-    apply Measure.ext
-    intro A hA
+    ext A hA
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
     convert measure_preimage_smul x₁ μ A using 1
     · rw [← h, Measure.map_apply (measurable_const_mul _) hA]
-      rfl
+      simp [← MulAction.Quotient.coe_smul_out', ← Quotient.mk''_eq_mk]
     exact smulInvariantMeasure_quotient ν
 
 variable [IsMulLeftInvariant μ] [SigmaFinite μ]
@@ -236,7 +235,8 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     ne_top_of_lt $ QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
-  rw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
+  -- TODO: why `rw` fails?
+  erw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
   apply IsHaarMeasure.smul
   · intro h
     haveI i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
@@ -247,15 +247,16 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
       ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h]
     apply measure_mono
     refine interior_subset.trans ?_
+    rw [QuotientGroup.coe_mk']
     show (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K
   · show ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
     apply ne_of_lt
     refine lt_of_le_of_lt ?_ finiteCovol.lt_top
     apply measure_mono
-    exact inter_subset_right _ s
+    exact inter_subset_right
 
-/- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
+/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive "Given a normal
@@ -284,7 +285,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_HaarMeasure {𝓕 :
 
 variable (K : PositiveCompacts (G ⧸ Γ))
 
-/- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
+/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive "Given a
@@ -298,7 +299,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
   set c := ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
   have c_ne_top : c ≠ ∞ := by
     contrapose! h𝓕_finite
-    have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right _ _)
+    have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right)
     rw [h𝓕_finite] at this
     exact top_unique this
   set μ := c • haarMeasure K
@@ -365,8 +366,8 @@ lemma _root_.MeasureTheory.IsFundamentalDomain.absolutelyContinuous_map
   intro s s_meas hs
   rw [map_apply meas_π s_meas] at hs ⊢
   rw [Measure.restrict_apply] at hs
-  apply h𝓕.measure_zero_of_invariant _ _ hs
-  · intro γ
+  · apply h𝓕.measure_zero_of_invariant _ _ hs
+    intro γ
     ext g
     rw [Set.mem_smul_set_iff_inv_smul_mem, mem_preimage, mem_preimage]
     congr! 1

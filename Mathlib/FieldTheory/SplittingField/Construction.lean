@@ -33,7 +33,7 @@ actual `SplittingField` will be a quotient of a `MvPolynomial`, it has nice inst
 
 noncomputable section
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 universe u v w
 
@@ -90,7 +90,7 @@ theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
   apply (mul_divByMonic_eq_iff_isRoot
     (R := AdjoinRoot f.factor) (a := AdjoinRoot.root f.factor)).mpr
-  rw [IsRoot.definition, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
+  rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
@@ -277,10 +277,15 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
 instance instField : Field (SplittingField f) where
   __ := commRing _
   __ := instGroupWithZero _
+  nnratCast q := algebraMap K _ q
   ratCast q := algebraMap K _ q
+  nnqsmul := (· • ·)
+  qsmul := (· • ·)
+  nnratCast_def q := by change algebraMap K _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
   ratCast_def q := by
     change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  qsmul := (· • ·)
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
   qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 

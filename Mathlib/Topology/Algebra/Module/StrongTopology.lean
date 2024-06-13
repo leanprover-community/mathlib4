@@ -3,7 +3,7 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.UniformConvergence
+import Mathlib.Topology.Algebra.Module.UniformConvergence
 
 #align_import topology.algebra.module.strong_topology from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
@@ -83,14 +83,22 @@ instance instFunLike [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
   ContinuousLinearMap.funLike
 
-instance continuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
+instance instContinuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) : ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
   ContinuousLinearMap.continuousSemilinearMapClass
-instance instTopologicalSpace [TopologicalSpace F]
-    [TopologicalAddGroup F] (𝔖 : Set (Set E)) : TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
+
+instance instTopologicalSpace [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
   (@UniformOnFun.topologicalSpace E F (TopologicalAddGroup.toUniformSpace F) 𝔖).induced
     (DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → (E →ᵤ[𝔖] F))
 #align continuous_linear_map.strong_topology UniformConvergenceCLM.instTopologicalSpace
+
+theorem topologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    instTopologicalSpace σ F 𝔖 = TopologicalSpace.induced DFunLike.coe
+      (UniformOnFun.topologicalSpace E F 𝔖) := by
+  rw [instTopologicalSpace]
+  congr
+  exact UniformAddGroup.toUniformSpace_eq
 
 /-- The uniform structure associated with `ContinuousLinearMap.strongTopology`. We make sure
 that this has nice definitional properties. -/
@@ -102,6 +110,10 @@ instance instUniformSpace [UniformSpace F] [UniformAddGroup F]
     (by rw [UniformConvergenceCLM.instTopologicalSpace, UniformAddGroup.toUniformSpace_eq]; rfl)
 #align continuous_linear_map.strong_uniformity UniformConvergenceCLM.instUniformSpace
 
+theorem uniformSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    instUniformSpace σ F 𝔖 = UniformSpace.comap DFunLike.coe (UniformOnFun.uniformSpace E F 𝔖) := by
+  rw [instUniformSpace, UniformSpace.replaceTopology_eq]
+
 @[simp]
 theorem uniformity_toTopologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     (UniformConvergenceCLM.instUniformSpace σ F 𝔖).toTopologicalSpace =
@@ -109,8 +121,7 @@ theorem uniformity_toTopologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (�
   rfl
 #align continuous_linear_map.strong_uniformity_topology_eq UniformConvergenceCLM.uniformity_toTopologicalSpace_eq
 
-theorem uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F]
-    (𝔖 : Set (Set E)) :
+theorem uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     UniformEmbedding (α := UniformConvergenceCLM σ F 𝔖) (β := E →ᵤ[𝔖] F) DFunLike.coe :=
   ⟨⟨rfl⟩, DFunLike.coe_injective⟩
 #align continuous_linear_map.strong_uniformity.uniform_embedding_coe_fn UniformConvergenceCLM.uniformEmbedding_coeFn
@@ -208,6 +219,20 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
   rw [(embedding_coeFn σ F 𝔖).tendsto_nhds_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
   rfl
 
+variable {𝔖₁ 𝔖₂ : Set (Set E)}
+
+theorem uniformSpace_mono [UniformSpace F] [UniformAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
+    instUniformSpace σ F 𝔖₁ ≤ instUniformSpace σ F 𝔖₂ := by
+  simp_rw [uniformSpace_eq]
+  exact UniformSpace.comap_mono (UniformOnFun.mono (le_refl _) h)
+
+theorem topologicalSpace_mono [TopologicalSpace F] [TopologicalAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
+    instTopologicalSpace σ F 𝔖₁ ≤ instTopologicalSpace σ F 𝔖₂ := by
+  letI := TopologicalAddGroup.toUniformSpace F
+  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  simp_rw [← uniformity_toTopologicalSpace_eq]
+  exact UniformSpace.toTopologicalSpace_mono (uniformSpace_mono σ F h)
+
 end UniformConvergenceCLM
 
 end General
@@ -283,8 +308,7 @@ Note that in non-normed space it is not always true that composition is continuo
 in both variables, so we have to fix one of them. -/
 @[simps]
 def precomp [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
-    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G
-    where
+    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G where
   toFun f := f.comp L
   map_add' f g := add_comp f g L
   map_smul' a f := smul_comp a f L
@@ -305,8 +329,7 @@ Note that in non-normed space it is not always true that composition is continuo
 in both variables, so we have to fix one of them. -/
 @[simps]
 def postcomp [TopologicalAddGroup F] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
-    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G
-    where
+    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
   toFun f := L.comp f
   map_add' := comp_add L
   map_smul' := comp_smulₛₗ L
@@ -418,6 +441,12 @@ the spaces of continuous linear maps. -/
 def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H) ≃L[𝕜] F →L[𝕜] G :=
   e₁.arrowCongrSL e₂
 #align continuous_linear_equiv.arrow_congr ContinuousLinearEquiv.arrowCongr
+
+@[simp] lemma arrowCongr_apply (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) (f : E →L[𝕜] H) (x : F) :
+    e₁.arrowCongr e₂ f x = e₂ (f (e₁.symm x)) := rfl
+
+@[simp] lemma arrowCongr_symm (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
+    (e₁.arrowCongr e₂).symm = e₁.symm.arrowCongr e₂.symm := rfl
 
 end Linear
 

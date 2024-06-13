@@ -3,7 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
@@ -72,7 +72,7 @@ theorem antidiagonal_succ (n : ℕ) :
         (by simp) := by
   apply eq_of_veq
   rw [cons_val, map_val]
-  · apply Multiset.Nat.antidiagonal_succ
+  apply Multiset.Nat.antidiagonal_succ
 #align finset.nat.antidiagonal_succ Finset.Nat.antidiagonal_succ
 
 theorem antidiagonal_succ' (n : ℕ) :
@@ -110,11 +110,11 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
       (Embedding.prodMap ⟨_, add_left_injective (n - k)⟩ (Embedding.refl ℕ)) := by
   ext ⟨i, j⟩
   suffices i + j = n ∧ j ≤ k ↔ ∃ a, a + j = k ∧ a + (n - k) = i by simpa
-  refine' ⟨fun hi ↦ ⟨k - j, tsub_add_cancel_of_le hi.2, _⟩, _⟩
+  refine ⟨fun hi ↦ ⟨k - j, tsub_add_cancel_of_le hi.2, ?_⟩, ?_⟩
   · rw [add_comm, tsub_add_eq_add_tsub h, ← hi.1, add_assoc, Nat.add_sub_of_le hi.2,
       add_tsub_cancel_right]
   · rintro ⟨l, hl, rfl⟩
-    refine' ⟨_, hl ▸ Nat.le_add_left j l⟩
+    refine ⟨?_, hl ▸ Nat.le_add_left j l⟩
     rw [add_assoc, add_comm, add_assoc, add_comm j l, hl]
     exact Nat.sub_add_cancel h
 
@@ -135,10 +135,10 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
       (Embedding.prodMap ⟨_, add_left_injective k⟩ (Embedding.refl ℕ)) := by
   ext ⟨i, j⟩
   suffices i + j = n ∧ k ≤ i ↔ ∃ a, a + j = n - k ∧ a + k = i by simpa
-  refine' ⟨fun hi ↦ ⟨i - k, _, tsub_add_cancel_of_le hi.2⟩, _⟩
+  refine ⟨fun hi ↦ ⟨i - k, ?_, tsub_add_cancel_of_le hi.2⟩, ?_⟩
   · rw [← Nat.sub_add_comm hi.2, hi.1]
   · rintro ⟨l, hl, rfl⟩
-    refine' ⟨_, Nat.le_add_left k l⟩
+    refine ⟨?_, Nat.le_add_left k l⟩
     rw [add_right_comm, hl]
     exact tsub_add_cancel_of_le h
 

@@ -5,8 +5,7 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Bool.Basic
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
@@ -74,7 +73,9 @@ lemma bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 
 @[simp]
 lemma bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
-  induction n <;> simp_all [add_succ, Bool.xor_not]
+  induction n
+  case zero => simp
+  case succ n ih => simp [← Nat.add_assoc, Bool.xor_not, ih]
 #align nat.bodd_add Nat.bodd_add
 
 @[simp]
@@ -87,9 +88,9 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
 
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
-  simp? [not]  at this
-       says simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and,
-      Bool.xor_false] at this
+  simp? [not] at this says
+    simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and, Bool.bne_false]
+      at this
   have _ : ∀ b, and false b = false := by
     intro b
     cases b <;> rfl
@@ -121,10 +122,10 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
-    refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
-    cases bodd n <;> simp [cond, not]
-    · rw [Nat.add_comm]
-    · rw [succ_mul, Nat.add_comm 1]
+    refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
+    cases bodd n
+    · simp
+    · simp; omega
 #align nat.bodd_add_div2 Nat.bodd_add_div2
 
 lemma div2_val (n) : div2 n = n / 2 := by
@@ -149,8 +150,8 @@ lemma bit1_val (n : Nat) : bit1 n = 2 * n + 1 := congr_arg succ (bit0_val _)
 
 lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  apply bit0_val
-  apply bit1_val
+  · apply bit0_val
+  · apply bit1_val
 #align nat.bit_val Nat.bit_val
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
@@ -167,7 +168,7 @@ lemma bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
-/--`shiftLeft' b m n` performs a left shift of `m` `n` times
+/-- `shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
  Returns the corresponding natural number-/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
@@ -183,7 +184,7 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
       rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
-/-- Std4 takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
+/-- Lean takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
 @[simp] lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
@@ -232,7 +233,7 @@ def bits : ℕ → List Bool :=
 #align nat.land Nat.land
 #align nat.lxor Nat.xor
 
-/--`ldiff a b` performs bitwise set difference. For each corresponding
+/-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
@@ -258,16 +259,13 @@ lemma bodd_bit (b n) : bodd (bit b n) = b := by
 lemma div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   <;> cases b
-  <;> exact by decide
+  <;> decide
 #align nat.div2_bit Nat.div2_bit
 
 lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shiftLeft' b m n) k
   | 0 => rfl
   | k + 1 => congr_arg (bit b) (shiftLeft'_add b m n k)
 #align nat.shiftl'_add Nat.shiftLeft'_add
-
-lemma shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
-  intro k; simp only [← shiftLeft'_false, shiftLeft'_add]
 
 lemma shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (shiftLeft' b m n) >>> k
   | n, 0, _ => rfl
@@ -285,31 +283,28 @@ lemma testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b
   · simp [bit0, ← Nat.mul_two]
-  · simp only [cond_true, bit1, bit0, shiftRight_zero, and_one_is_mod, bne_iff_ne]
-    simp only [← Nat.mul_two]
-    rw [Nat.add_mod]
-    simp
+  · simp [bit0, bit1, ← Nat.mul_two]
 
 #align nat.test_bit_zero Nat.testBit_zero
 
-lemma bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
+lemma bodd_eq_one_and_ne_zero : ∀ n, bodd n = (1 &&& n != 0)
   | 0 => rfl
   | 1 => rfl
-  | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
+  | n + 2 => by simpa using bodd_eq_one_and_ne_zero n
 
 lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
     simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
-  simp only [bodd_eq_and_one_ne_zero] at this
+  simp only [bodd_eq_one_and_ne_zero] at this
   exact this
 #align nat.test_bit_succ Nat.testBit_succ
 
 lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
-  split <;> rename_i h'
+  split_ifs with h'
   · generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
@@ -319,12 +314,11 @@ lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b
     subst bf n0
     rw [binaryRec_zero]
     intros
-    rw [h]
-    rfl
+    rw [h, eq_mpr_eq_cast, cast_eq]
   · simp only; generalize_proofs h
     revert h
     rw [bodd_bit, div2_bit]
-    intros; rfl
+    intros; simp only [eq_mpr_eq_cast, cast_eq]
 #align nat.binary_rec_eq Nat.binaryRec_eq
 #noalign nat.bitwise_bit_aux
 

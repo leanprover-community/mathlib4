@@ -41,8 +41,7 @@ Some functions on `Linexp` assume that `n : Nat` occurs at most once as the firs
 and that the list is sorted in decreasing order of the first argument.
 This is not enforced by the type but the operations here preserve it.
 -/
-@[reducible]
-def Linexp : Type := List (Nat × Int)
+abbrev Linexp : Type := List (Nat × Int)
 
 namespace Linexp
 /--
@@ -299,18 +298,20 @@ instance GlobalPreprocessorToGlobalBranchingPreprocessor :
   ⟨GlobalPreprocessor.branching⟩
 
 /--
-A `CertificateOracle` is a function
+A `CertificateOracle` provides a function
 `produceCertificate : List Comp → Nat → MetaM (HashMap Nat Nat)`.
-`produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in `hyps`
-by eliminating all variables ≤ `max_var`.
-If successful, it returns a map `coeff : Nat → Nat` as a certificate.
-This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 
 The default `CertificateOracle` used by `linarith` is
-`Linarith.FourierMotzkin.produceCertificate`.
+`Linarith.CertificateOracle.simplexAlgorithmSparse`.
+`Linarith.CertificateOracle.simplexAlgorithmDense` and `Linarith.CertificateOracle.fourierMotzkin`
+are also available (though the Fourier-Motzkin oracle has some bugs).
 -/
-def CertificateOracle : Type :=
-  List Comp → Nat → MetaM (Std.HashMap Nat Nat)
+structure CertificateOracle : Type where
+  /-- `produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in
+  `hyps` by eliminating all variables ≤ `max_var`.
+  If successful, it returns a map `coeff : Nat → Nat` as a certificate.
+  This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`. -/
+  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Batteries.HashMap Nat Nat)
 
 open Meta
 
@@ -335,7 +336,7 @@ structure LinarithConfig : Type where
   /-- Override the list of preprocessors. -/
   preprocessors : Option (List GlobalBranchingPreprocessor) := none
   /-- Specify an oracle for identifying candidate contradictions.
-  The only implementation here is Fourier-Motzkin elimination. -/
+  `.simplexAlgorithmSparse`, `.simplexAlgorithmSparse`, and `.fourierMotzkin` are available. -/
   oracle : Option CertificateOracle := none
 
 /--

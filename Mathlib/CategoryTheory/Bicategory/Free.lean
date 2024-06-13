@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor
+import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 #align_import category_theory.bicategory.free from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -64,7 +64,7 @@ instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/
--- Porting note: no such linter
+-- Porting note(#5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Type max u v
   | id {a b} (f : a ⟶ b) : Hom₂ f f
@@ -83,9 +83,6 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
 #align category_theory.free_bicategory.hom₂ CategoryTheory.FreeBicategory.Hom₂
 
 section
-
--- Porting note: commenting out redundant binder annotation update
--- variable {B}
 
 -- The following notations are only used in the definition of `Rel` to simplify the notation.
 local infixr:0 " ≫ " => Hom₂.vcomp
@@ -153,9 +150,6 @@ inductive Rel : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → Hom
 #align category_theory.free_bicategory.rel CategoryTheory.FreeBicategory.Rel
 
 end
-
--- Porting note: commenting out redundant binder annotation update
--- variable {B}
 
 instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
   Hom f g := Quot (@Rel _ _ a b f g)

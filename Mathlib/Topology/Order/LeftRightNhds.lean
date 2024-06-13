@@ -56,9 +56,7 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
   · intro h
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
-    refine' ⟨u, au, fun x hx => _⟩
-    refine' hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, _⟩
-    exact hx.1
+    exact ⟨u, au, fun x hx => hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
   tfae_finish
 #align tfae_mem_nhds_within_Ioi TFAE_mem_nhdsWithin_Ioi
 
@@ -318,7 +316,7 @@ theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| <
 
 theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
-  refine' ⟨TopologicalSpace.ext_nhds fun a => _⟩
+  refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
   rw [h_nhds]
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_abs_sub a).symm
@@ -340,7 +338,7 @@ theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tend
     Tendsto (fun x => f x + g x) l atTop := by
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
-  refine' tendsto_atTop_add_left_of_le' _ C' _ hg
+  refine tendsto_atTop_add_left_of_le' _ C' ?_ hg
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
 #align filter.tendsto.add_at_top Filter.Tendsto.add_atTop
 
@@ -406,13 +404,47 @@ theorem nhds_basis_Ioo_pos_of_pos [NoMaxOrder α] {a : α} (ha : 0 < a) :
 
 end LinearOrderedAddCommGroup
 
-@[deprecated image_neg]
+@[deprecated image_neg (since := "2023-02-05")]
 theorem preimage_neg [AddGroup α] : preimage (Neg.neg : α → α) = image (Neg.neg : α → α) :=
   funext fun _ => image_neg.symm
 #align preimage_neg preimage_neg
 
-@[deprecated] -- use `Filter.map_neg` from `Mathlib.Order.Filter.Pointwise`
+@[deprecated "use `Filter.map_neg` from `Mathlib.Order.Filter.Pointwise`" (since :="2023-02-05")]
 theorem Filter.map_neg_eq_comap_neg [AddGroup α] :
     map (Neg.neg : α → α) = comap (Neg.neg : α → α) :=
   funext fun _ => map_eq_comap_of_inverse (funext neg_neg) (funext neg_neg)
 #align filter.map_neg_eq_comap_neg Filter.map_neg_eq_comap_neg
+
+namespace Set.OrdConnected
+
+variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrdered α]
+
+/-- If `S` is order-connected and contains two points `x < y`, then `S` is a right neighbourhood
+of `x`. -/
+lemma mem_nhdsWithin_Ici [NoMaxOrder α] {S : Set α} (hS : OrdConnected S)
+    {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[≥] x :=
+  mem_nhdsWithin_Ici_iff_exists_Icc_subset.2 ⟨y, hxy, hS.out hx hy⟩
+
+/-- If `S` is order-connected and contains two points `x < y`, then `S` is a punctured right
+neighbourhood of `x`. -/
+lemma mem_nhdsWithin_Ioi [NoMaxOrder α] {S : Set α} (hS : OrdConnected S)
+    {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[>] x :=
+  nhdsWithin_mono _ Ioi_subset_Ici_self <| hS.mem_nhdsWithin_Ici hx hy hxy
+
+/-- If `S` is order-connected and contains two points `x < y`, then `S` is a left neighbourhood
+of `y`. -/
+lemma mem_nhdsWithin_Iic [NoMinOrder α] {S : Set α} (hS : OrdConnected S)
+    {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[≤] y :=
+  mem_nhdsWithin_Iic_iff_exists_Icc_subset.2 ⟨x, hxy, hS.out hx hy⟩
+
+/-- If `S` is order-connected and contains two points `x < y`, then `S` is a punctured left
+neighbourhood of `y`. -/
+lemma mem_nhdsWithin_Iio [NoMinOrder α] {S : Set α} (hS : OrdConnected S)
+    {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[<] y :=
+  nhdsWithin_mono _ Iio_subset_Iic_self <| hS.mem_nhdsWithin_Iic hx hy hxy
+
+end OrdConnected
