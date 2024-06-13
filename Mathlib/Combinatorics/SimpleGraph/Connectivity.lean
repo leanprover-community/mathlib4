@@ -2612,6 +2612,19 @@ instance : Decidable G.Connected := by
   rw [connected_iff, ← Finset.univ_nonempty_iff]
   infer_instance
 
+open Finset in
+instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
+  elems := (range (Fintype.card V)).biUnion
+    fun n ↦ (univ (α := {p : G.Walk u v | p.IsPath ∧ p.length = n})).image
+      fun p ↦ { val := p.val, property := p.prop.left }
+  complete p := by
+    simp only [mem_biUnion, mem_range, mem_image, mem_univ, Subtype.exists]
+    use p.val.length
+    constructor
+    · exact p.prop.length_lt
+    · use p.val
+      use ⟨p.prop, rfl⟩
+
 end Finite
 
 end WalkCounting
