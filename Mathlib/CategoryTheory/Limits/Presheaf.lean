@@ -208,8 +208,7 @@ noncomputable def yonedaAdjunction : L ⊣ restrictedYoneda A :=
         simp only [assoc]
         congr 3
         apply yonedaEquiv.injective
-        dsimp [yonedaEquiv]
-        simp }
+        simp [yonedaEquiv] }
 
 /-- Any left Kan extension along the Yoneda embedding preserves colimits. -/
 noncomputable def preservesColimitsOfSizeOfIsLeftKanExtension :
@@ -229,6 +228,7 @@ noncomputable instance preservesColimitsOfSizeLeftKanExtension :
 instance : IsIso (yoneda.leftKanExtensionUnit A) :=
   isIso_of_isLeftKanExtension _ (yoneda.leftKanExtensionUnit A)
 
+/-- A pointwise left Kan extension along the Yoneda embedding is an extension. -/
 noncomputable def isExtensionAlongYoneda :
     yoneda ⋙ yoneda.leftKanExtension A ≅ A :=
   (asIso (yoneda.leftKanExtensionUnit A)).symm
