@@ -193,7 +193,7 @@ def fintypeQuotienttoIntegerSubOne [NumberField K] {k : ℕ+} (hk : 1 < k)
 
 See the results below to compute this norm in various cases. -/
 lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
-  (hζ : IsPrimitiveRoot ζ k) :
+    (hζ : IsPrimitiveRoot ζ k) :
     letI _ := hζ.fintypeQuotienttoIntegerSubOne hk
     Fintype.card (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) =
       (Algebra.norm ℤ (hζ.toInteger - 1)).natAbs := by
