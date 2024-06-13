@@ -126,16 +126,20 @@ theorem Nodup.nthLe_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.
   ⟨nodup_iff_nthLe_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
 #align list.nodup.nth_le_inj_iff List.Nodup.nthLe_inj_iff
 
-theorem nodup_iff_get?_ne_get? {l : List α} :
-    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
-  rw [Nodup, pairwise_iff_get]
+theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
+    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l[i]? ≠ l[j]? := by
+  rw [Nodup, pairwise_iff_getElem]
   constructor
   · intro h i j hij hj
-    rw [get?_eq_get (lt_trans hij hj), get?_eq_get hj, Ne, Option.some_inj]
-    exact h _ _ hij
-  · intro h i j hij
-    rw [Ne, ← Option.some_inj, ← get?_eq_get, ← get?_eq_get]
-    exact h i j hij j.2
+    rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
+    exact h _ _ _ _ hij
+  · intro h i j hi hj hij
+    rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
+    exact h i j hij hj
+
+theorem nodup_iff_get?_ne_get? {l : List α} :
+    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
+  simp [nodup_iff_getElem?_ne_getElem?]
 #align list.nodup_iff_nth_ne_nth List.nodup_iff_get?_ne_get?
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
