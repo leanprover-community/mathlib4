@@ -41,7 +41,7 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
   -- sort after replacing the `pathSeparators` by `/`, to avoid sorting issues between `\` and `/`
-  let files := (allModules.erase ml.lean).qsort fun f1 f2 =>
+  let files := (allModules.erase ml.lean).qsort fun f1 f2 ↦
     let f1 := f1.toString.replace ("".push pathSeparator) "/"
     let f2 := f2.toString.replace ("".push pathSeparator) "/"
     (f1 < f2)
