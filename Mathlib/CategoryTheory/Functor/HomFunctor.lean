@@ -122,15 +122,6 @@ lemma _root_.Functor.comp_app_apply {A A' A'' : C ⥤ Type v} (f : A ⟶ A') (g 
 lemma _root_.Functor.id_app_apply (A : C ⥤ Type v) {X : C} (x : A.obj X) :
     NatTrans.app (𝟙 A) X x = x := rfl
 
-/-
-@[simp]
-lemma unitHomEquiv_symm_simplicialHomEquiv₀_symm_app_app {K L : C ⥤ D} (φ : K ⟶ L)
-    (X : C) (Y : C) (f : X ⟶ Y) :
-    (((functorHom K L).unitHomEquiv.symm ((simplicialHomEquiv₀ K L).symm φ)).app X PUnit.unit).app Y f =
-      φ.app Y := by
-  rfl
--/
-
 open MonoidalCategory
 
 def prodhomequiv (F G H : C ⥤ Type max u v v') : (F.HomObj H G) ≃ (F ⊗ G ⟶ H) where
@@ -161,17 +152,33 @@ lemma auxlemma' (K L : C ⥤ D) (X Y : C) (a : (K.functorHom L).obj X) (φ : X �
 
 @[simp]
 lemma auxlemma'' (K L: C ⥤ D) (X Y : C) (a : (K.functorHom L).obj X) (φ : X ⟶ Y) :
-    ((K.functorHom L ◁ L.aux).app X (a, PUnit.unit)).2.app Y φ = 𝟙 (_) := rfl
+    ((K.functorHom L ◁ L.aux).app X (a, PUnit.unit)).2.app Y φ = 𝟙 _ := rfl
 
 @[simp]
 lemma auxlemma''' (K L: C ⥤ D) (X Y : C) (a : (K.functorHom L).obj X) (φ : X ⟶ Y) :
     ((K.functorHom L ◁ L.aux).app X (a, PUnit.unit)).1.app Y φ = a.app Y φ := rfl
 
 @[simp]
+lemma whiskerLeft_app_apply (K L M N : C ⥤ D) (g : L.functorHom M ⊗ M.functorHom N ⟶ L.functorHom N)
+    {X : C} (a : (K.functorHom L ⊗ L.functorHom M ⊗ M.functorHom N).obj X) :
+    (K.functorHom L ◁ g).app X a = ⟨a.1, g.app X a.2⟩ := rfl
+
+@[simp]
+lemma whiskerRight_app_apply (K L M N : C ⥤ D) (f : K.functorHom L ⊗ L.functorHom M ⟶ K.functorHom M)
+    {X : C} (a : ((K.functorHom L ⊗ L.functorHom M) ⊗ M.functorHom N).obj X) :
+    (f ▷  M.functorHom N).app X a = ⟨f.app X a.1, a.2⟩ := rfl
+
+@[simp]
 lemma associator_inv_app_apply (K L M N : C ⥤ D) {X : C}
     (x : ((K.functorHom L) ⊗ (L.functorHom M) ⊗ (M.functorHom N)).obj X) :
     (α_ ((K.functorHom L).obj X) ((L.functorHom M).obj X) ((M.functorHom N).obj X)).inv x =
     ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
+
+@[simp]
+lemma associator_hom_app_apply (K L M N : C ⥤ D) {X : C}
+    (x : ( ((K.functorHom L) ⊗ (L.functorHom M)) ⊗ (M.functorHom N)).obj X) :
+    (α_ ((K.functorHom L).obj X) ((L.functorHom M).obj X) ((M.functorHom N).obj X)).hom x =
+    ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
 noncomputable instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) where
   Hom := functorHom
@@ -187,9 +194,7 @@ noncomputable instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) wher
     aesop
   assoc K L M N := by
     ext X a Y φ
-    simp
-    sorry
-
-
+    dsimp only [aux']
+    aesop
 
 end Functor
