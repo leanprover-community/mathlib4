@@ -611,6 +611,12 @@ lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (
     Nat.mul_left_comm x, ← Nat.mul_assoc b, Nat.mul_div_cancel_left _ (Nat.mul_pos hb hd)]
 #align nat.div_mul_div_comm Nat.div_mul_div_comm
 
+protected lemma mul_div_mul_comm (hba : b ∣ a) (hdc : d ∣ c) : a * c / (b * d) = a / b * (c / d) :=
+  (div_mul_div_comm hba hdc).symm
+#align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm
+
+@[deprecated (since := "2024-05-29")] alias mul_div_mul_comm_of_dvd_dvd := Nat.mul_div_mul_comm
+
 lemma eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
   eq_zero_of_mul_le hn <| by
     rw [Nat.mul_comm]; exact (Nat.le_div_iff_mul_le' (Nat.lt_of_lt_of_le (by decide) hn)).1 h
@@ -1143,12 +1149,6 @@ lemma le_iff_ne_zero_of_dvd (ha : a ≠ 0) (hab : a ∣ b) : a ≤ b ↔ b ≠ 0
 lemma div_ne_zero_iff_of_dvd (hba : b ∣ a) : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 := by
   obtain rfl | hb := eq_or_ne b 0 <;> simp [Nat.div_ne_zero_iff, Nat.le_iff_ne_zero_of_dvd, *]
 
-@[deprecated div_mul_div_comm (since := "2024-05-29")]
-lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :
-    a * c / (b * d) = a / b * (c / d) :=
-  (div_mul_div_comm hba hdc).symm
-#align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
-
 @[simp] lemma mul_mod_mod (a b c : ℕ) : (a * (b % c)) % c = a * b % c := by
   rw [mul_mod, mod_mod, ← mul_mod]
 
@@ -1193,6 +1193,13 @@ lemma not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
   · exact Nat.lt_irrefl 0 h1
   · exact Nat.not_lt.2 (Nat.le_mul_of_pos_right _ hk) h2
 #align nat.not_dvd_of_pos_of_lt Nat.not_dvd_of_pos_of_lt
+
+lemma eq_of_dvd_of_lt_two_mul (ha : a ≠ 0) (hdvd : b ∣ a) (hlt : a < 2 * b) : a = b := by
+  obtain ⟨_ | _ | c, rfl⟩ := hdvd
+  · simp at ha
+  · exact Nat.mul_one _
+  · rw [Nat.mul_comm] at hlt
+    cases Nat.not_le_of_lt hlt (Nat.mul_le_mul_right _ (by omega))
 
 lemma mod_eq_iff_lt (hn : n ≠ 0) : m % n = m ↔ m < n :=
   ⟨fun h ↦ by rw [← h]; exact mod_lt _ $ Nat.pos_iff_ne_zero.2 hn, mod_eq_of_lt⟩
