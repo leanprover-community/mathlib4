@@ -155,6 +155,7 @@ def toAddMonoidHom (φ : AddChar A M) : A →+ Additive M where
   map_add' := φ.map_add_eq_mul'
 
 @[simp] lemma coe_toAddMonoidHom (ψ : AddChar A M) : ⇑ψ.toAddMonoidHom = Additive.ofMul ∘ ψ := rfl
+
 @[simp] lemma toAddMonoidHom_apply (ψ : AddChar A M) (a : A) :
     ψ.toAddMonoidHom a = Additive.ofMul (ψ a) := rfl
 
@@ -213,7 +214,7 @@ lemma _root_.MonoidHom.compAddChar_injective_right (f : M →* N) (hf : Injectiv
 
 /-- Composing an `AddChar` with an `AddMonoidHom` yields another `AddChar`. -/
 def compAddMonoidHom (φ : AddChar B M) (f : A →+ B) : AddChar A M :=
-  (toAddMonoidHomEquiv).symm (φ.toAddMonoidHom.comp f)
+  toAddMonoidHomEquiv.symm (φ.toAddMonoidHom.comp f)
 
 @[simp, norm_cast]
 lemma coe_compAddMonoidHom (φ : AddChar B M) (f : A →+ B) : φ.compAddMonoidHom f = φ ∘ f := rfl
@@ -227,7 +228,8 @@ lemma compAddMonoidHom_injective_left (f : A →+ B) (hf : Surjective f) :
 
 lemma compAddMonoidHom_injective_right (ψ : AddChar B M) (hψ : Injective ψ) :
     Injective fun f : A →+ B ↦ ψ.compAddMonoidHom f := by
-  rintro f g h; rw [DFunLike.ext'_iff] at h ⊢; exact hψ.comp_left h
+  rintro f g h
+  rw [DFunLike.ext'_iff] at h ⊢; exact hψ.comp_left h
 
 lemma eq_one_iff : ψ = 1 ↔ ∀ x, ψ x = 1 := DFunLike.ext_iff
 lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
