@@ -28,15 +28,12 @@ register_option linter.refine : Bool := {
   descr := "enable the refine linter"
 }
 
-/-- `refine_tree t` returns all usages of `refine'` is the input infotree. -/
+/-- `refine_tree t` returns all usages of `refine'` in the input syntax. -/
 partial
-def refine_tree : InfoTree → Array Syntax
-  | .node k args =>
-    let rargs := (args.map refine_tree).toArray.flatten
-    if let .ofTacticInfo i := k then
-      if i.stx.isOfKind ``Lean.Parser.Tactic.refine' then rargs.push i.stx else rargs
-    else rargs
-  | .context _ t => refine_tree t
+def refine_tree : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let rargs := (args.map refine_tree).flatten
+    if kind == ``Lean.Parser.Tactic.refine' then rargs.push stx else rargs
   | _ => default
 
 /-- Gets the value of the `linter.refine` option. -/
@@ -48,9 +45,7 @@ def refineLinter : Linter where run := withSetOptionIn fun _stx => do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  let trees ← getInfoTrees
-  for t in trees.toArray do
-    for stx in (refine_tree t) do
-      Linter.logLint linter.refine stx "Please, use `refine` or `apply` instead of `refine'`!"
+  for stx in (refine_tree _stx) do
+    Linter.logLint linter.refine stx "Please, use `refine` or `apply` instead of `refine'`!"
 
 initialize addLinter refineLinter
