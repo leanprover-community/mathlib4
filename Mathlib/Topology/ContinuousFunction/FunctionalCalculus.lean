@@ -242,6 +242,10 @@ lemma cfcHom_closedEmbedding :
     ClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
 
+lemma cfcHom_continuous :
+    Continuous <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+  (cfcHom_closedEmbedding ha).continuous
+
 lemma cfcHom_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
@@ -442,7 +446,7 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
 
 open Finset in
 lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R)
-    (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    (hf : ∀ i, ContinuousOn (f i) (spectrum R a)) :
     cfc (∑ i, f i) a = ∑ i, cfc (f i) a := by
   by_cases ha : p a
   · simp only [cfc_apply' a, ← map_sum]
@@ -459,11 +463,36 @@ lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R)
   · simp [cfc_apply_of_not_predicate a ha]
 
 lemma cfc_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
-    (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a)) :
     cfc (∑ i in s, f i)  a = ∑ i in s, cfc (f i) a := by
   rw [← Finset.sum_coe_sort s, ← Finset.sum_coe_sort s]
   have hf' : ∀ i : {x : ι // x ∈ s}, ContinuousOn (f i) (spectrum R a) := fun ⟨i, hi⟩ => hf i hi
   exact cfc_sum_univ a _ hf'
+
+lemma cfc_tsum [T2Space A] {ι : Type*} (f : ι → R → R)
+    (hf : ∀ i, ContinuousOn (f i) (spectrum R a)) (hsum₁ : Summable f)
+    (hsum₂ : ∀ x ∈ spectrum R a, Summable (f · x)) :
+    cfc (∑' i, f i) a = ∑' i, cfc (f i) a := by
+  by_cases ha : p a
+  · simp only [cfc_apply' a]
+    have hcont : Continuous (cfcHom (R := R) ha) := cfcHom_continuous ha
+    have hsum₂' : ∀ x ∈ spectrum R a, Summable (f · x) := by
+      rw [Pi.summable] at hsum₁
+      sorry
+    have hsum₃ : Summable (fun i => (spectrum R a).restrictContinuous (f i)) := by
+      sorry
+    rw [← Summable.map_tsum hsum₃ _ hcont]
+    congr
+    ext z
+    have h₁ : (fun i => (spectrum R a).restrictContinuous (f i)) = fun i => ⟨_, (hf i).restrict⟩ := by
+      ext i
+      rw [Set.restrictContinuous_of_continuous (hf i)]
+    have hcont₂ : ContinuousOn (∑' i, f i) (spectrum R a) := by
+      sorry
+    rw [h₁, Set.restrictContinuous_of_continuous hcont₂]
+    simp [tsum_apply]
+    sorry
+  · simp [cfc_apply_of_not_predicate a ha]
 
 lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
