@@ -450,14 +450,36 @@ variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
 
 #check preimage
 
-lemma test1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T ∩ Ici a = S } := by
-  --have e1 : { S : Set T | ∃ (a : α), T ∩ Ici a = S } = preimage Subtype.val '' IsLower.lowerBasis α := sorry
+#check Function.Injective
+
+#check Subtype.val.Injective
+
+#check Function.Injective.preimage_image (f := Subtype.val)
+
+#check Subtype.val
+
+lemma t : Function.Injective (Subtype.val (α := α) (p := T)) := by exact Subtype.val_injective
+
+
+lemma test1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
-  rw [le_antisymm_iff]
+  rw [IsLower.lowerBasis]
+  ext R
+  simp only [mem_setOf_eq, mem_image, exists_exists_and_eq_and, preimage_compl]
   constructor
-  · simp only [le_eq_subset]
-    intro S
-    simp only [mem_setOf_eq, mem_image, forall_exists_index]
+  · intro ha
+    cases' ha with a ha'
+    use {a}
+    simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, true_and]
+    rw [← (Function.Injective.preimage_image Subtype.val_injective R)]
+    rw [← ha']
+    rw [← preimage_compl]
+    simp only [preimage_compl, preimage_diff, Subtype.coe_preimage_self]
+    exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
+  · sorry
+/-
+  · intro S
+
     intro a ha
     use Ici a
     constructor
@@ -466,13 +488,14 @@ lemma test1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T ∩ Ici a = S } :
       constructor
       · simp only [mem_preimage]
         intro hb
+
         have e2 : ↑b ∈ T := by exact Subtype.coe_prop b
 
       · intro bS
         simp only [mem_preimage, mem_Ici]
   · simp only [le_eq_subset, image_subset_iff]
     sorry
-
+-/
 
   -- isTopologicalBasis_subtype _
 
