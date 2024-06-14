@@ -499,13 +499,13 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
 section deprecated
 set_option linter.deprecated false
 
-@[deprecated]
+@[deprecated (since := "2023-01-12")]
 theorem val_bit0 {n : ℕ} (k : Fin n) : ((bit0 k : Fin n) : ℕ) = bit0 (k : ℕ) % n := by
   cases k
   rfl
 #align fin.coe_bit0 Fin.val_bit0
 
-@[deprecated]
+@[deprecated (since := "2023-01-12")]
 theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
     ((bit1 k : Fin n) : ℕ) = bit1 (k : ℕ) % n := by
   cases n;
@@ -526,13 +526,13 @@ end deprecated
 section Bit
 set_option linter.deprecated false
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-01-12")]
 theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
     (⟨bit0 m, h⟩ : Fin n) = (bit0 ⟨m, (Nat.le_add_right m m).trans_lt h⟩ : Fin _) :=
   eq_of_val_eq (Nat.mod_eq_of_lt h).symm
 #align fin.mk_bit0 Fin.mk_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-01-12")]
 theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
     (⟨bit1 m, h⟩ : Fin n) =
       (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) := by
