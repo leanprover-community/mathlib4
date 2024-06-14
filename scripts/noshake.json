@@ -186,6 +186,7 @@
  ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
  "ignore":
  {"Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Order.LeftRightNhds": ["Mathlib.Data.Set.Pointwise.Basic"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.NormedSpace.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.ContinuousFunction.NonUnitalFunctionalCalculus":
