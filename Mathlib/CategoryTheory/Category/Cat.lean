@@ -107,48 +107,48 @@ theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.comp_map CategoryTheory.Cat.comp_map
 
-@[simp]
+@[simp, nolint simpNF]
 lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).app X = η.app (F.obj X) :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF]
 lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).app X = H.map (η.app X) :=
   rfl
 
-@[simp]
-lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = 𝟙 (F.obj X) :=
+@[simp, nolint simpNF]
+lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = 𝟙 (F.obj X) := by
   rfl
 
-@[simp]
+@[simp, nolint simpNF]
 lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).inv.app X = 𝟙 (F.obj X) :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF]
 lemma rightUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).hom.app X = 𝟙 (F.obj X) :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF]
 lemma rightUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).inv.app X = 𝟙 (F.obj X) :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF]
 lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).hom.app X = 𝟙 ((F ≫ G) ≫ H).obj X :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF]
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).inv.app X = 𝟙 (F ≫ G ≫ H).obj X :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF]
 lemma whiskerLeft_twice {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) {H K : D ⟶ E} (α : H ⟶ K) :
     F ◁ (G ◁ α) = (F ≫ G) ◁ α :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF]
 theorem whiskerRight_twice {B C D E : Cat} {H K : B ⟶ C} (F : C ⟶ D) (G : D ⟶ E) (α : H ⟶ K) :
     (α ▷ F) ▷ G = α ▷ (F ≫ G) :=
   rfl
