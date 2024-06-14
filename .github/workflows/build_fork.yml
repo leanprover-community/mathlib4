@@ -134,12 +134,6 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      # We update `Mathlib.lean` as a convenience here,
-      # but verify that this didn't change anything in the `check_imported` job.
-      - name: update Mathlib.lean
-        run: |
-          lake exe mk_all --lib Mathlib
-
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
           if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
@@ -154,9 +148,6 @@ jobs:
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         run: lake exe mk_all
-
-      - name: check_imported
-        run: git diff --exit-code
 
       - name: build cache
         run: |

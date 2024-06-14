@@ -116,20 +116,8 @@ instance add : Add (WithTop α) :=
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 #align with_top.coe_add WithTop.coe_add
 
-section deprecated
-set_option linter.deprecated false
-
-@[norm_cast, deprecated]
-theorem coe_bit0 : ((bit0 x : α) : WithTop α) = (bit0 x : WithTop α) :=
-  rfl
-#align with_top.coe_bit0 WithTop.coe_bit0
-
-@[norm_cast, deprecated]
-theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = (bit1 a : WithTop α) :=
-  rfl
-#align with_top.coe_bit1 WithTop.coe_bit1
-
-end deprecated
+#noalign with_top.coe_bit0
+#noalign with_top.coe_bit1
 
 @[simp]
 theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
@@ -604,22 +592,8 @@ theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 #align with_bot.coe_add WithBot.coe_add
 
-section deprecated
-set_option linter.deprecated false
-
--- Porting note: added norm_cast
-@[norm_cast, deprecated]
-theorem coe_bit0 : ((bit0 x : α) : WithBot α) = (bit0 x : WithBot α) :=
-  rfl
-#align with_bot.coe_bit0 WithBot.coe_bit0
-
--- Porting note: added norm_cast
-@[norm_cast, deprecated]
-theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = (bit1 a : WithBot α) :=
-  rfl
-#align with_bot.coe_bit1 WithBot.coe_bit1
-
-end deprecated
+#noalign with_bot.coe_bit0
+#noalign with_bot.coe_bit1
 
 @[simp]
 theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=

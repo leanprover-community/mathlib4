@@ -137,7 +137,7 @@ theorem Subgroup.eq_bot_or_eq_top_of_prime_card {G : Type*} [Group G] {_ : Finty
     (H : Subgroup G) [hp : Fact (Fintype.card G).Prime] : H = ⊥ ∨ H = ⊤ := by
   classical
   have := card_subgroup_dvd_card H
-  rwa [Nat.dvd_prime hp.1, ← Nat.card_eq_fintype_card, ← Nat.card_eq_fintype_card,
+  rwa [Nat.card_eq_fintype_card (α := G), Nat.dvd_prime hp.1, ← Nat.card_eq_fintype_card,
     ← eq_bot_iff_card, card_eq_iff_eq_top] at this
 
 /-- Any non-identity element of a finite group of prime order generates the group. -/
