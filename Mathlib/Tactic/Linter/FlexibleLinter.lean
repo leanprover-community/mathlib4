@@ -56,7 +56,7 @@ namespace Mathlib.Linter
 
 /-- The flexible linter makes sure that "rigid" tactics do not follow "flexible" tactics. -/
 register_option linter.flexible : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the flexible linter"
 }
 
