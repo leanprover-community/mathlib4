@@ -34,7 +34,7 @@ namespace Matrix
 
 open FiniteDimensional
 
-variable {l m n o R : Type*} [m_fin : Fintype m] [Fintype n] [Fintype o]
+variable {l m n o R : Type*} [Fintype n] [Fintype o]
 
 section CommRing
 
@@ -74,11 +74,11 @@ theorem rank_mul_le_left [StrongRankCondition R] (A : Matrix m n R) (B : Matrix 
   exact Cardinal.toNat_le_toNat (LinearMap.rank_comp_le_left _ _) (rank_lt_aleph0 _ _)
 #align matrix.rank_mul_le_left Matrix.rank_mul_le_left
 
-theorem rank_mul_le_right [StrongRankCondition R] (A : Matrix l m R) (B : Matrix m n R) :
+theorem rank_mul_le_right [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R) :
     (A * B).rank ≤ B.rank := by
   rw [rank, rank, mulVecLin_mul]
-  exact
-    finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_comp_le_right _ _) (rank_lt_aleph0 _ _)
+  exact finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_comp_le_right _ _)
+    (rank_lt_aleph0 _ _)
 #align matrix.rank_mul_le_right Matrix.rank_mul_le_right
 
 theorem rank_mul_le [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R) :
@@ -88,7 +88,7 @@ theorem rank_mul_le [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R
 
 theorem rank_unit [StrongRankCondition R] [DecidableEq n] (A : (Matrix n n R)ˣ) :
     (A : Matrix n n R).rank = Fintype.card n := by
-  refine' le_antisymm (rank_le_card_width A) _
+  apply le_antisymm (rank_le_card_width (A : Matrix n n R)) _
   have := rank_mul_le_left (A : Matrix n n R) (↑A⁻¹ : Matrix n n R)
   rwa [← Units.val_mul, mul_inv_self, Units.val_one, rank_one] at this
 #align matrix.rank_unit Matrix.rank_unit
@@ -100,6 +100,7 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
 #align matrix.rank_of_is_unit Matrix.rank_of_isUnit
 
 /-- Right multiplying by an invertible matrix does not change the rank -/
+@[simp]
 lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B * A).rank = B.rank := by
@@ -110,7 +111,8 @@ lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
 /-- Left multiplying by an invertible matrix does not change the rank -/
-lemma rank_mul_eq_right_of_isUnit_det [DecidableEq m]
+@[simp]
+lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
     (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (A * B).rank = B.rank := by
   let b : Basis m R (m → R) := Pi.basisFun R m
@@ -140,15 +142,16 @@ theorem rank_submatrix [Fintype m] (A : Matrix m m R) (e₁ e₂ : n ≃ m) :
   simpa only [reindex_apply] using rank_reindex e₁.symm e₂.symm A
 #align matrix.rank_submatrix Matrix.rank_submatrix
 
-theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type*} [AddCommGroup M₁]
+theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [AddCommGroup M₁]
     [AddCommGroup M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R) (v₁ : Basis m R M₁)
     (v₂ : Basis n R M₂) : A.rank = finrank R (LinearMap.range (toLin v₂ v₁ A)) := by
+  cases nonempty_fintype m
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)
   let e₂ := (Pi.basisFun R n).equiv v₂ (Equiv.refl _)
   have range_e₂ : LinearMap.range e₂ = ⊤ := by
     rw [LinearMap.range_eq_top]
     exact e₂.surjective
-  refine' LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ _)
+  refine LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ ?_)
   rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) range_e₂]
   congr 1
   apply LinearMap.pi_ext'
@@ -162,7 +165,7 @@ theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type*} [AddComm
     LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 #align matrix.rank_eq_finrank_range_to_lin Matrix.rank_eq_finrank_range_toLin
 
-theorem rank_le_card_height [StrongRankCondition R] (A : Matrix m n R) :
+theorem rank_le_card_height [Fintype m] [StrongRankCondition R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card m := by
   haveI : Module.Finite R (m → R) := Module.Finite.pi
   haveI : Module.Free R (m → R) := Module.Free.pi _ _
@@ -186,7 +189,7 @@ section Field
 variable [Field R]
 
 /-- The rank of a diagnonal matrix is the count of non-zero elements on its main diagonal -/
-theorem rank_diagonal [DecidableEq m] [DecidableEq R] (w : m → R) :
+theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
   rw [Matrix.rank, ← Matrix.toLin'_apply', FiniteDimensional.finrank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
@@ -209,7 +212,7 @@ be replaced with a proof that uses Gaussian reduction or argues via linear combi
 
 section StarOrderedField
 
-variable [Fintype m] [Field R] [PartialOrder R] [StarOrderedRing R]
+variable [Fintype m] [Field R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
 theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     LinearMap.ker (Aᴴ * A).mulVecLin = LinearMap.ker (mulVecLin A) := by
@@ -219,7 +222,7 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
 
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ * A).rank = A.rank := by
   dsimp only [rank]
-  refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
+  refine add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) ?_
   dsimp only
   trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ * A)) } +
     finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ * A)) }
@@ -263,7 +266,7 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
 
 theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank := by
   dsimp only [rank]
-  refine' add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) _
+  refine add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) ?_
   dsimp only
   trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᵀ * A)) } +
     finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᵀ * A)) }

@@ -47,7 +47,7 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
   -- change `a` and `b` to `tprod R a` and `tprod R b`
   rw [TensorPower.gMul_eq_coe_linearMap, ← LinearMap.compr₂_apply, ← @LinearMap.mul_apply' R, ←
     LinearMap.compl₂_apply, ← LinearMap.comp_apply]
-  refine' LinearMap.congr_fun (LinearMap.congr_fun _ a) b
+  refine LinearMap.congr_fun (LinearMap.congr_fun ?_ a) b
   clear! a b
   ext (a b)
   -- Porting note: pulled the next two lines out of the long `simp only` below.
@@ -57,9 +57,8 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
     LinearMap.comp_apply, LinearMap.compMultilinearMap_apply, PiTensorProduct.lift.tprod,
     TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply, ←
     gMul_eq_coe_linearMap]
-  refine' Eq.trans _ List.prod_append
-  -- Porting note: was `congr`
-  apply congr_arg
+  refine Eq.trans ?_ List.prod_append
+  congr
   -- Porting note: `erw` for `Function.comp`
   erw [← List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_ofFn _ (TensorAlgebra.ι R), ←
     List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]
@@ -128,8 +127,8 @@ theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
 @[simp]
 theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
-    (PiTensorProduct.reindex R (fun _ ↦ M) (Fin.castIso h).toEquiv x) = GradedMonoid.mk n x := by
-  rw [Fin.castIso_to_equiv, mk_reindex_cast h]
+    (PiTensorProduct.reindex R (fun _ ↦ M) (finCongr h) x) = GradedMonoid.mk n x := by
+  rw [finCongr_eq_equivCast, mk_reindex_cast h]
 #align tensor_algebra.mk_reindex_fin_cast TensorAlgebra.mk_reindex_fin_cast
 
 /-- The product of tensor products made of a single vector is the same as a single product of
@@ -139,14 +138,14 @@ theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n
           (GradedMonoid.mk _ (PiTensorProduct.tprod R fun _ : Fin 1 => x a) :
             GradedMonoid fun n => ⨂[R]^n M)).prod =
       GradedMonoid.mk n (PiTensorProduct.tprod R x) := by
-  refine' Fin.consInduction _ _ x <;> clear x
+  refine Fin.consInduction ?_ ?_ x <;> clear x
   · rw [List.finRange_zero, List.map_nil, List.prod_nil]
     rfl
   · intro n x₀ x ih
     rw [List.finRange_succ_eq_map, List.map_cons, List.prod_cons, List.map_map]
     simp_rw [Function.comp, Fin.cons_zero, Fin.cons_succ]
     rw [ih, GradedMonoid.mk_mul_mk, TensorPower.tprod_mul_tprod]
-    refine' TensorPower.gradedMonoid_eq_of_cast (add_comm _ _) _
+    refine TensorPower.gradedMonoid_eq_of_cast (add_comm _ _) ?_
     dsimp only [GradedMonoid.mk]
     rw [TensorPower.cast_tprod]
     simp_rw [Fin.append_left_eq_cons, Function.comp]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
-import Mathlib.NumberTheory.LegendreSymbol.GaussSum
+import Mathlib.NumberTheory.GaussSum
 
 #align_import number_theory.legendre_symbol.quadratic_char.gauss_sum from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
@@ -65,7 +65,7 @@ theorem FiniteField.isSquare_two_iff :
 theorem quadraticChar_neg_two [DecidableEq F] (hF : ringChar F ≠ 2) :
     quadraticChar F (-2) = χ₈' (Fintype.card F) := by
   rw [(by norm_num : (-2 : F) = -1 * 2), map_mul, χ₈'_eq_χ₄_mul_χ₈, quadraticChar_neg_one hF,
-    quadraticChar_two hF, @cast_nat_cast _ (ZMod 4) _ _ _ (by decide : 4 ∣ 8)]
+    quadraticChar_two hF, @cast_natCast _ (ZMod 4) _ _ _ (by decide : 4 ∣ 8)]
 #align quadratic_char_neg_two quadraticChar_neg_two
 
 /-- `-2` is a square in `F` iff `#F` is not congruent to `5` or `7` mod `8`. -/

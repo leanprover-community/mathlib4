@@ -37,7 +37,7 @@ variable {ι : Type*} {α : ι → Type*}
 namespace PSigma
 
 /-- The notation `Σₗ' i, α i` refers to a sigma type which is locally equipped with the
-lexicographic order.-/
+lexicographic order. -/
 -- TODO: make `Lex` be `Sort u -> Sort u` so we can remove `.{_+1, _+1}`
 notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma.{_+1, _+1} p)) => r
 
@@ -69,7 +69,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
         apply le_trans
         repeat' assumption,
     lt_iff_le_not_le := by
-      refine' fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, _⟩, _⟩
+      refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨i, a, hji⟩ | ⟨i, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, hab⟩ := hab
         · exact hij.not_lt hji
         · exact lt_irrefl _ hji

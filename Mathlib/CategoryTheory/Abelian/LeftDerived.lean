@@ -37,6 +37,16 @@ and show how to compute the components.
 * `Functor.fromLeftDerivedZero`: the natural transformation `F.leftDerived 0 ⟶ F`,
   which is an isomorphism when `F` is right exact (i.e. preserves finite colimits),
   see also `Functor.leftDerivedZeroIsoSelf`.
+
+## TODO
+
+* refactor `Functor.leftDerived` (and `Functor.rightDerived`) when the necessary
+material enters mathlib: derived categories, injective/projective derivability
+structures, existence of derived functors from derivability structures.
+Eventually, we shall get a right derived functor
+`F.leftDerivedFunctorMinus : DerivedCategory.Minus C ⥤ DerivedCategory.Minus D`,
+and `F.leftDerived` shall be redefined using `F.leftDerivedFunctorMinus`.
+
 -/
 
 universe v u
@@ -196,7 +206,7 @@ lemma NatTrans.leftDerivedToHomotopyCategory_comp {F G H : C ⥤ D} (α : F ⟶ 
       NatTrans.leftDerivedToHomotopyCategory α ≫
         NatTrans.leftDerivedToHomotopyCategory β := rfl
 
-/-- The natural transformation between left-derived functors induced by a natural transformation.-/
+/-- The natural transformation between left-derived functors induced by a natural transformation. -/
 noncomputable def NatTrans.leftDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.leftDerived n ⟶ G.leftDerived n :=
@@ -267,7 +277,7 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
     IsIso ((ProjectiveResolution.self X).fromLeftDerivedZero' F) := by
   dsimp [ProjectiveResolution.fromLeftDerivedZero']
   rw [ChainComplex.isIso_descOpcycles_iff]
-  refine' ⟨ShortComplex.Splitting.exact _, inferInstance⟩
+  refine ⟨ShortComplex.Splitting.exact ?_, inferInstance⟩
   exact
     { r := 0
       s := 𝟙 _

@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.11"
+  "0.1.12"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -130,11 +130,10 @@ private def CacheM.getContext : IO CacheM.Context := do
   let root ← CacheM.mathlibDepPath
   return ⟨root, .ofList [
     ("Mathlib", root),
-    ("MathlibExtras", root),
     ("Archive", root),
     ("Counterexamples", root),
     ("Aesop", LAKEPACKAGESDIR / "aesop"),
-    ("Std", LAKEPACKAGESDIR / "std"),
+    ("Batteries", LAKEPACKAGESDIR / "batteries"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
@@ -344,8 +343,6 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
   | ["Mathlib.lean"] => true
-  | "MathlibExtras" :: _ => true
-  | ["MathlibExtras.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
@@ -369,7 +366,8 @@ def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
+    IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
+    IO.println "Completed successfully!"
   else IO.println "No cache files to decompress"
 
 instance : Ord FilePath where

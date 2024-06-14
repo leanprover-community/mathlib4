@@ -20,7 +20,7 @@ This file contains results on the `R`-module structure on functions of finite su
 noncomputable section
 
 open Set LinearMap Submodule
-open scoped Cardinal BigOperators
+open scoped Cardinal
 
 universe u v w
 
@@ -41,12 +41,12 @@ theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
       exact disjoint_bot_right
     apply (hf i).map h_disjoint
   · intro i t _ hit
-    refine' (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono _ _
+    refine (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono ?_ ?_
     · rw [span_le]
       simp only [iSup_singleton]
       rw [range_coe]
       apply range_comp_subset_range _ (lsingle i)
-    · refine' iSup₂_mono fun i hi => _
+    · refine iSup₂_mono fun i hi => ?_
       rw [span_le, range_coe]
       apply range_comp_subset_range _ (lsingle i)
 #align finsupp.linear_independent_single Finsupp.linearIndependent_single
@@ -72,8 +72,7 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
             intro b hg
             simp [hg] at b }
       invFun := fun g =>
-        { toFun := fun i =>
-            (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
+        { toFun := fun i => (b i).repr.symm (g.comapDomain _ sigma_mk_injective.injOn)
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
             rw [Ne, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,
