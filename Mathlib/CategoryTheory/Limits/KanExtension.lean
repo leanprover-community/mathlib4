@@ -25,7 +25,7 @@ To access the adjunction associated to this, use `Ran.adjunction`.
 
 - refactor `Ran` so that it relies on the general API for Kan
 extensions of functors, similarly as the left Kan extension
-adjunction is defined in `CategoryTheory.Functor.KanExtension.Adjuncion`.
+adjunction is defined in `CategoryTheory.Functor.KanExtension.Adjunction`.
 
 
 ## Projects
