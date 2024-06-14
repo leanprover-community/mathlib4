@@ -197,6 +197,10 @@ def IsFiniteAdele (x : K_hat R K) :=
   ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, x v ∈ v.adicCompletionIntegers K
 #align dedekind_domain.prod_adic_completions.is_finite_adele DedekindDomain.ProdAdicCompletions.IsFiniteAdele
 
+@[simp]
+lemma isFiniteAdele_iff (x : K_hat R K) :
+    x.IsFiniteAdele ↔ {v | x v ∉ adicCompletionIntegers K v}.Finite := Iff.rfl
+
 namespace IsFiniteAdele
 
 /-- The sum of two finite adèles is a finite adèle. -/
@@ -346,10 +350,6 @@ instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
   Subtype.ext h
-
-@[simp]
-lemma _root_.isFiniteAdele_iff (x : K_hat R K) :
-  x.IsFiniteAdele ↔ {v | x v ∉ adicCompletionIntegers K v}.Finite := Iff.rfl
 
 /-- The finite adele ring is an algebra over the finite integral adeles. -/
 instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
