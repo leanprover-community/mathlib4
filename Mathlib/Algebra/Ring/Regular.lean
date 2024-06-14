@@ -19,7 +19,7 @@ variable {α : Type*}
 The typeclass that restricts all terms of `α` to have this property is `NoZeroDivisors`. -/
 theorem isLeftRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
     (h : ∀ x : α, k * x = 0 → x = 0) : IsLeftRegular k := by
-  refine' fun x y (h' : k * x = k * y) => sub_eq_zero.mp (h _ _)
+  refine fun x y (h' : k * x = k * y) => sub_eq_zero.mp (h _ ?_)
   rw [mul_sub, sub_eq_zero, h']
 #align is_left_regular_of_non_zero_divisor isLeftRegular_of_non_zero_divisor
 
@@ -27,7 +27,7 @@ theorem isLeftRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
 The typeclass that restricts all terms of `α` to have this property is `NoZeroDivisors`. -/
 theorem isRightRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
     (h : ∀ x : α, x * k = 0 → x = 0) : IsRightRegular k := by
-  refine' fun x y (h' : x * k = y * k) => sub_eq_zero.mp (h _ _)
+  refine fun x y (h' : x * k = y * k) => sub_eq_zero.mp (h _ ?_)
   rw [sub_mul, sub_eq_zero, h']
 #align is_right_regular_of_non_zero_divisor isRightRegular_of_non_zero_divisor
 

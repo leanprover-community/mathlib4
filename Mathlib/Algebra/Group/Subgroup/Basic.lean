@@ -206,7 +206,7 @@ end InvMemClass
 
 namespace SubgroupClass
 
-@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv -- 2024-01-15
+@[to_additive (attr := deprecated (since := "2024-01-15"))] alias coe_inv := InvMemClass.coe_inv
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
@@ -406,7 +406,7 @@ theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) :
 #align subgroup.mem_mk Subgroup.mem_mk
 #align add_subgroup.mem_mk AddSubgroup.mem_mk
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
     (mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv : Set G) = s :=
   rfl
@@ -2261,6 +2261,53 @@ instance subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommuta
 
 end Subgroup
 
+namespace MulEquiv
+variable {H : Type*} [Group H]
+
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their inverse images.
+
+See also `MulEquiv.mapSubgroup` which maps subgroups to their forward images.
+-/
+@[simps]
+def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
+  toFun := Subgroup.comap f
+  invFun := Subgroup.comap f.symm
+  left_inv sg := by simp [Subgroup.comap_comap]
+  right_inv sh := by simp [Subgroup.comap_comap]
+  map_rel_iff' {sg1 sg2} :=
+    ⟨fun h => by simpa [Subgroup.comap_comap] using
+      Subgroup.comap_mono (f := (f.symm : H →* G)) h, Subgroup.comap_mono⟩
+
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their forward images.
+
+See also `MulEquiv.comapSubgroup` which maps subgroups to their inverse images.
+-/
+@[simps]
+def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup H where
+  toFun := Subgroup.map f
+  invFun := Subgroup.map f.symm
+  left_inv sg := by simp [Subgroup.map_map]
+  right_inv sh := by simp [Subgroup.map_map]
+  map_rel_iff' {sg1 sg2} :=
+    ⟨fun h => by simpa [Subgroup.map_map] using
+      Subgroup.map_mono (f := (f.symm : H →* G)) h, Subgroup.map_mono⟩
+
+@[simp]
+theorem isCoatom_comap {H : Type*} [Group H] (f : G ≃* H) {K : Subgroup H} :
+    IsCoatom (Subgroup.comap (f : G →* H) K) ↔ IsCoatom K :=
+  OrderIso.isCoatom_iff (f.comapSubgroup) K
+
+@[simp]
+theorem isCoatom_map (f : G ≃* H) {K : Subgroup G} :
+    IsCoatom (Subgroup.map (f : G →* H) K) ↔ IsCoatom K :=
+  OrderIso.isCoatom_iff (f.mapSubgroup) K
+
+end MulEquiv
+
 namespace Group
 
 variable {s : Set G}
@@ -3163,6 +3210,17 @@ theorem map_normalizer_eq_of_bijective (H : Subgroup G) {f : G →* N} (hf : Fun
 #align subgroup.map_normalizer_eq_of_bijective Subgroup.map_normalizer_eq_of_bijective
 #align add_subgroup.map_normalizer_eq_of_bijective AddSubgroup.map_normalizer_eq_of_bijective
 
+lemma isCoatom_comap_of_surjective
+    {H : Type*} [Group H] {φ : G →* H} (hφ : Function.Surjective φ)
+    {M : Subgroup H} (hM : IsCoatom M) : IsCoatom (M.comap φ) := by
+  refine And.imp (fun hM ↦ ?_) (fun hM ↦ ?_) hM
+  · rwa [← (comap_injective hφ).ne_iff, comap_top] at hM
+  · intro K hK
+    specialize hM (K.map φ)
+    rw [← comap_lt_comap_of_surjective hφ, ← (comap_injective hφ).eq_iff] at hM
+    rw [comap_map_eq_self ((M.ker_le_comap φ).trans hK.le), comap_top] at hM
+    exact hM hK
+
 end Subgroup
 
 namespace MonoidHom
@@ -3281,15 +3339,17 @@ end MonoidHom
 
 variable {N : Type*} [Group N]
 
+namespace Subgroup
+
 -- Here `H.Normal` is an explicit argument so we can use dot notation with `comap`.
 @[to_additive]
-theorem Subgroup.Normal.comap {H : Subgroup N} (hH : H.Normal) (f : G →* N) : (H.comap f).Normal :=
+theorem Normal.comap {H : Subgroup N} (hH : H.Normal) (f : G →* N) : (H.comap f).Normal :=
   ⟨fun _ => by simp (config := { contextual := true }) [Subgroup.mem_comap, hH.conj_mem]⟩
 #align subgroup.normal.comap Subgroup.Normal.comap
 #align add_subgroup.normal.comap AddSubgroup.Normal.comap
 
 @[to_additive]
-instance (priority := 100) Subgroup.normal_comap {H : Subgroup N} [nH : H.Normal] (f : G →* N) :
+instance (priority := 100) normal_comap {H : Subgroup N} [nH : H.Normal] (f : G →* N) :
     (H.comap f).Normal :=
   nH.comap _
 #align subgroup.normal_comap Subgroup.normal_comap
@@ -3297,20 +3357,20 @@ instance (priority := 100) Subgroup.normal_comap {H : Subgroup N} [nH : H.Normal
 
 -- Here `H.Normal` is an explicit argument so we can use dot notation with `subgroupOf`.
 @[to_additive]
-theorem Subgroup.Normal.subgroupOf {H : Subgroup G} (hH : H.Normal) (K : Subgroup G) :
+theorem Normal.subgroupOf {H : Subgroup G} (hH : H.Normal) (K : Subgroup G) :
     (H.subgroupOf K).Normal :=
   hH.comap _
 #align subgroup.normal.subgroup_of Subgroup.Normal.subgroupOf
 #align add_subgroup.normal.add_subgroup_of AddSubgroup.Normal.addSubgroupOf
 
 @[to_additive]
-instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Normal] :
+instance (priority := 100) normal_subgroupOf {H N : Subgroup G} [N.Normal] :
     (N.subgroupOf H).Normal :=
   Subgroup.normal_comap _
 #align subgroup.normal_subgroup_of Subgroup.normal_subgroupOf
 #align add_subgroup.normal_add_subgroup_of AddSubgroup.normal_addSubgroupOf
 
-theorem Subgroup.map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
+theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (map f (normalClosure s)) := Normal.map inferInstance f hf
   apply le_antisymm
@@ -3318,10 +3378,20 @@ theorem Subgroup.map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f
       ← Set.image_subset_iff, subset_normalClosure]
   · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
 
-theorem Subgroup.comap_normalClosure (s : Set N) (f : G ≃* N) :
+theorem comap_normalClosure (s : Set N) (f : G ≃* N) :
     normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by
   have := Set.preimage_equiv_eq_image_symm s f.toEquiv
   simp_all [comap_equiv_eq_map_symm, map_normalClosure s f.symm f.symm.surjective]
+
+lemma Normal.of_map_injective {G H : Type*} [Group G] [Group H] {φ : G →* H}
+    (hφ : Function.Injective φ) {L : Subgroup G} (n : (L.map φ).Normal) : L.Normal :=
+  L.comap_map_eq_self_of_injective hφ ▸ n.comap φ
+
+theorem Normal.of_map_subtype {K : Subgroup G} {L : Subgroup K}
+    (n : (Subgroup.map K.subtype L).Normal) : L.Normal :=
+  n.of_map_injective K.subtype_injective
+
+end Subgroup
 
 namespace MonoidHom
 
