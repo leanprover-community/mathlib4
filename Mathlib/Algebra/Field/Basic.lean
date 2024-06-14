@@ -299,12 +299,13 @@ protected abbrev divisionSemiring [DivisionSemiring β] (zero : f 0 = 0) (one : 
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : DivisionSemiring α where
-  toSemiring := hf.semiring f zero one add mul nsmul npow natCast
-  __ := hf.groupWithZero f zero one mul inv div npow zpow
-  nnratCast_def q := hf $ by rw [nnratCast, NNRat.cast_def, div, natCast, natCast]
-  nnqsmul := (· • ·)
-  nnqsmul_def q a := hf $ by rw [nnqsmul, NNRat.smul_def, mul, nnratCast]
+    (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : DivisionSemiring α :=
+  reduceProj% zeta%
+  { toSemiring := delta% hf.semiring f zero one add mul nsmul npow natCast
+    __ := delta% hf.groupWithZero f zero one mul inv div npow zpow
+    nnratCast_def := fun q ↦ hf $ by rw [nnratCast, NNRat.cast_def, div, natCast, natCast]
+    nnqsmul := (· • ·)
+    nnqsmul_def := fun q a ↦ hf $ by rw [nnqsmul, NNRat.smul_def, mul, nnratCast] }
 #align function.injective.division_semiring Function.Injective.divisionSemiring
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
@@ -317,13 +318,14 @@ protected abbrev divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
     (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
-    (ratCast : ∀ q : ℚ, f q = q) : DivisionRing α where
-  toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
-  __ := hf.groupWithZero f zero one mul inv div npow zpow
-  __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
-  ratCast_def q := hf $ by erw [ratCast, div, intCast, natCast, Rat.cast_def]
-  qsmul := (· • ·)
-  qsmul_def q a := hf $ by erw [qsmul, mul, Rat.smul_def, ratCast]
+    (ratCast : ∀ q : ℚ, f q = q) : DivisionRing α :=
+  reduceProj% zeta%
+  { toRing := delta% hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
+    __ := delta% hf.groupWithZero f zero one mul inv div npow zpow
+    __ := delta% hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
+    ratCast_def := fun q ↦ hf $ by erw [ratCast, div, intCast, natCast, Rat.cast_def]
+    qsmul := (· • ·)
+    qsmul_def := fun q a ↦ hf $ by erw [qsmul, mul, Rat.smul_def, ratCast] }
 #align function.injective.division_ring Function.Injective.divisionRing
 
 /-- Pullback a `Field` along an injective function. -/
@@ -333,10 +335,12 @@ protected abbrev semifield [Semifield β] (zero : f 0 = 0) (one : f 1 = 1)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : Semifield α where
-  toCommSemiring := hf.commSemiring f zero one add mul nsmul npow natCast
-  __ := hf.commGroupWithZero f zero one mul inv div npow zpow
-  __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
+    (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : Semifield α :=
+  reduceProj% zeta%
+  { toCommSemiring := delta% hf.commSemiring f zero one add mul nsmul npow natCast
+    __ := delta% hf.commGroupWithZero f zero one mul inv div npow zpow
+    __ := delta% hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast
+      nnratCast }
 #align function.injective.semifield Function.Injective.semifield
 
 /-- Pullback a `Field` along an injective function. -/
@@ -350,10 +354,11 @@ protected abbrev field [Field β] (zero : f 0 = 0) (one : f 1 = 1)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) :
-    Field α where
-  toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
-  __ := hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow zpow
-    natCast intCast nnratCast ratCast
+    Field α :=
+  reduceProj% zeta%
+  { toCommRing := delta% hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
+    __ := delta% hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow
+      zpow natCast intCast nnratCast ratCast }
 #align function.injective.field Function.Injective.field
 
 end Function.Injective

@@ -31,9 +31,10 @@ abbrev linearOrderedSemifield [LinearOrderedSemifield α] (zero : f 0 = 0) (one 
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    LinearOrderedSemifield β where
-  __ := hf.linearOrderedCommSemiring f zero one add mul nsmul npow natCast hsup hinf
-  __ := hf.semifield f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
+    LinearOrderedSemifield β :=
+  reduceProj% zeta%
+  { __ := delta% hf.linearOrderedCommSemiring f zero one add mul nsmul npow natCast hsup hinf
+    __ := delta% hf.semifield f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast }
 #align function.injective.linear_ordered_semifield Function.Injective.linearOrderedSemifield
 
 /-- Pullback a `LinearOrderedField` under an injective map. -/
@@ -47,11 +48,12 @@ abbrev linearOrderedField [LinearOrderedField α] (zero : f 0 = 0) (one : f 1 = 
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
-    (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) : LinearOrderedField β where
-  __ := hf.linearOrderedCommRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
-    hsup hinf
-  __ := hf.field f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow zpow natCast
-    intCast nnratCast ratCast
+    (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) : LinearOrderedField β :=
+  reduceProj% zeta%
+  { __ := delta% hf.linearOrderedCommRing f zero one add mul neg sub nsmul zsmul npow natCast
+      intCast hsup hinf
+    __ := delta% hf.field f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow zpow
+      natCast intCast nnratCast ratCast }
 #align function.injective.linear_ordered_field Function.Injective.linearOrderedField
 
 end Function.Injective
