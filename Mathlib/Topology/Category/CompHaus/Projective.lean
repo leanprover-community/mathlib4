@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 #align_import topology.category.CompHaus.projective from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 

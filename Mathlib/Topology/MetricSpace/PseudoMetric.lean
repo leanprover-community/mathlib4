@@ -3,7 +3,6 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Data.Set.Pointwise.Interval
@@ -1189,7 +1188,7 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
 #align pseudo_metric_space.to_pseudo_emetric_space PseudoMetricSpace.toPseudoEMetricSpace
 
 /-- Expressing the uniformity in terms of `edist` -/
-@[deprecated _root_.uniformity_basis_edist]
+@[deprecated _root_.uniformity_basis_edist (since := "2023-03-03")]
 protected theorem Metric.uniformity_basis_edist :
     (𝓤 α).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => { p | edist p.1 p.2 < ε } :=
   uniformity_basis_edist
@@ -1406,28 +1405,6 @@ theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) 
   rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
     ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Icc_eq_closed_ball Real.Icc_eq_closedBall
-
-section MetricOrdered
-
-variable [Preorder α] [CompactIccSpace α]
-
-theorem totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
-  isCompact_Icc.totallyBounded
-#align totally_bounded_Icc totallyBounded_Icc
-
-theorem totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
-  totallyBounded_subset Ico_subset_Icc_self (totallyBounded_Icc a b)
-#align totally_bounded_Ico totallyBounded_Ico
-
-theorem totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
-  totallyBounded_subset Ioc_subset_Icc_self (totallyBounded_Icc a b)
-#align totally_bounded_Ioc totallyBounded_Ioc
-
-theorem totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
-  totallyBounded_subset Ioo_subset_Icc_self (totallyBounded_Icc a b)
-#align totally_bounded_Ioo totallyBounded_Ioo
-
-end MetricOrdered
 
 /-- Special case of the sandwich theorem; see `tendsto_of_tendsto_of_tendsto_of_le_of_le'` for the
 general case. -/
@@ -2122,3 +2099,7 @@ theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
 #align lebesgue_number_lemma_of_metric_sUnion lebesgue_number_lemma_of_metric_sUnion
+
+instance [PseudoMetricSpace X] : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
+instance [PseudoMetricSpace X] : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
+instance [PseudoMetricSpace X] : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
