@@ -32,7 +32,7 @@ def formatTable (headers : Array String) (table : Array (Array String))
   for row in table do
     for i in [0:widths.size] do
       widths := widths.set! i (max widths[i]! ((row[i]?.map (·.length)).getD 0))
-  -- Pad each cell with spaces to match the column width
+  -- Pad each cell with spaces to match the column width.
   let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!
   let paddedTable := table.map fun row => row.mapIdx fun i cell =>
     if alignments[i]! == Alignment.left then cell.rightpad widths[i]!
