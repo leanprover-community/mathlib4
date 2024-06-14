@@ -923,7 +923,7 @@ theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p �
   simp [Fin.lt_def, -val_fin_lt]; omega
 #align fin.succ_above_lt_gt Fin.castSucc_lt_or_lt_succ
 
-@[deprecated] alias succAbove_lt_gt := castSucc_lt_or_lt_succ
+@[deprecated (since := "2024-05-30")] alias succAbove_lt_gt := castSucc_lt_or_lt_succ
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
