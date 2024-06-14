@@ -55,6 +55,9 @@ variable {R : Type*} {A : Type*} [CommSemiring R] [NonUnitalRing A] [Module R A]
   [TopologicalSpace A] [Nontrivial R] [TopologicalSpace R] [TopologicalSemiring R]
 
 open Classical in
+/-- The function `f : R → R` reinterpreted as a `C(σₙ R a, β)₀`, where `a` is some element in a
+non-unital algebra. If `f` is not continuous on the quasispectrum or does not map zero
+zero, then output 0 as the junk value.  -/
 noncomputable def restrictCMZ (f : R → R) (a : A) : C(σₙ R a, R)₀ :=
   if h : ContinuousOn f (σₙ R a) ∧ f 0 = 0 then
     { toFun := (σₙ R a).restrict f

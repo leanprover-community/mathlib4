@@ -511,6 +511,8 @@ section restrictContinuous
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 open Classical in
+/-- The function `f : α → β` reinterpreted as a `C(s, β)`, where `s : Set α`. If `f` is not
+actually continuous on `s`, then output a constant function as the junk value.  -/
 noncomputable def Set.restrictContinuous (s : Set α) (f : α → β) (b : β) : C(s, β) :=
   if h : ContinuousOn f s then ⟨s.restrict f, h.restrict⟩
   else ContinuousMap.const s b
