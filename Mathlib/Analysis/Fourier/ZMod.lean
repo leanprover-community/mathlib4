@@ -53,8 +53,8 @@ lemma toAddCircle_injective : Function.Injective (toAddCircle : ZMod N → _) :=
 `exp (2 * π * I * j / N)`. -/
 noncomputable def toCircle : AddChar (ZMod N) circle where
   toFun := fun j ↦ (toAddCircle j).toCircle
-  map_add_mul' a b := by simp_rw [map_add, AddCircle.toCircle_add]
-  map_zero_one' := by simp_rw [map_zero, AddCircle.toCircle, ← QuotientAddGroup.mk_zero,
+  map_add_eq_mul' a b := by simp_rw [map_add, AddCircle.toCircle_add]
+  map_zero_eq_one' := by simp_rw [map_zero, AddCircle.toCircle, ← QuotientAddGroup.mk_zero,
     Function.Periodic.lift_coe, mul_zero, expMapCircle_zero]
 
 lemma toCircle_coe (j : ℤ) :
