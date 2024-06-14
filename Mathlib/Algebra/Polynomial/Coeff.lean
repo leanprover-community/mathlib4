@@ -44,10 +44,7 @@ theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q
   exact Finsupp.add_apply _ _ _
 #align polynomial.coeff_add Polynomial.coeff_add
 
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_bit0 (p : R[X]) (n : ℕ) : coeff (bit0 p) n = bit0 (coeff p n) := by simp [bit0]
-#align polynomial.coeff_bit0 Polynomial.coeff_bit0
+#noalign polynomial.coeff_bit0
 
 @[simp]
 theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
@@ -374,17 +371,8 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
         rwa [mul_zero]
 #align polynomial.C_dvd_iff_dvd_coeff Polynomial.C_dvd_iff_dvd_coeff
 
-set_option linter.deprecated false in
-theorem coeff_bit0_mul (P Q : R[X]) (n : ℕ) : coeff (bit0 P * Q) n = 2 * coeff (P * Q) n := by
-  -- Porting note: `two_mul` is required.
-  simp [bit0, add_mul, two_mul]
-#align polynomial.coeff_bit0_mul Polynomial.coeff_bit0_mul
-
-set_option linter.deprecated false in
-theorem coeff_bit1_mul (P Q : R[X]) (n : ℕ) :
-    coeff (bit1 P * Q) n = 2 * coeff (P * Q) n + coeff Q n := by
-  simp [bit1, add_mul, coeff_bit0_mul]
-#align polynomial.coeff_bit1_mul Polynomial.coeff_bit1_mul
+#noalign polynomial.coeff_bit0_mul
+#noalign polynomial.coeff_bit1_mul
 
 theorem smul_eq_C_mul (a : R) : a • p = C a * p := by simp [ext_iff]
 #align polynomial.smul_eq_C_mul Polynomial.smul_eq_C_mul
