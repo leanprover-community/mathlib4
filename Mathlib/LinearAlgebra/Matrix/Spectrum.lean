@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Analysis.NormedSpace.Star.Matrix
 
 #align_import linear_algebra.matrix.spectrum from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -54,6 +55,33 @@ lemma mulVec_eigenvectorBasis (j : n) :
     RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
+
+/--Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc.toEuclideanLin -/
+theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
+    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
+  LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
+
+/-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dim module.-/
+def AlgEquivFiniteDimNormedLinearCLM.{v} (E : Type v) [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E][FiniteDimensional 𝕜 E] :
+    AlgEquiv (R := 𝕜) (A := E →ₗ[𝕜] E) (B := E →L[𝕜] E) :=
+    {LinearMap.toContinuousLinearMap with
+    map_mul' := fun _ _ ↦ rfl
+    commutes' := fun _ ↦ rfl}
+
+/--Spectrum of a Hermitian matrix equals the spectrum as a EuclideanLin. -/
+theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
+  AlgEquiv.spectrum_eq ((AlgEquiv.trans ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜]
+  EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) : Matrix n n 𝕜 ≃ₐ[𝕜]
+  EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
+  (AlgEquivFiniteDimNormedLinearCLM (EuclideanSpace 𝕜 n)).symm) _
+
+/--Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
+theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A := by
+  intro i
+  apply spectrum.of_algebraMap_mem (S := 𝕜) (R := ℝ) (A := Matrix n n 𝕜)
+  rw [← spec_toEuclideanLin_eq_spec]
+  apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
 
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
