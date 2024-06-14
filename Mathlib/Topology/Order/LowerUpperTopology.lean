@@ -456,10 +456,13 @@ variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
 
 #check Function.Injective.preimage_image (f := Subtype.val)
 
+#check Subtype.image_preimage_coe
+
 #check Subtype.val
 
 lemma t : Function.Injective (Subtype.val (α := α) (p := T)) := by exact Subtype.val_injective
 
+--#check Subtype.val_surjective
 
 lemma test1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
@@ -476,28 +479,21 @@ lemma test1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := 
     rw [← preimage_compl]
     simp only [preimage_compl, preimage_diff, Subtype.coe_preimage_self]
     exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
-  · sorry
-/-
-  · intro S
-
-    intro a ha
-    use Ici a
-    constructor
-    · sorry
-    · ext b
-      constructor
-      · simp only [mem_preimage]
-        intro hb
-
-        have e2 : ↑b ∈ T := by exact Subtype.coe_prop b
-
-      · intro bS
-        simp only [mem_preimage, mem_Ici]
-  · simp only [le_eq_subset, image_subset_iff]
-    sorry
--/
-
-  -- isTopologicalBasis_subtype _
+  · intro ha
+    cases' ha with F hF
+    use sInf F -- As F is finite, do we need complete?
+    rw [← hF.2]
+    rw [← preimage_compl]
+    -- theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' (((↑) : s → α) ⁻¹' t) = s ∩ t :=
+    -- image_preimage_eq_range_inter.trans <| congr_arg (· ∩ t) range_coe
+    --rw [image_preimage_eq_range_inter]
+    have e1 : Subtype.val '' (Subtype.val (p := T) ⁻¹' (↑(upperClosure F))ᶜ) = T ∩ (upperClosure F)ᶜ := by
+      rw [← (Subtype.image_preimage_coe T (↑(upperClosure F : Set α))ᶜ)]
+      rfl
+    have e2 : T ∩ (↑(upperClosure F))ᶜ = T \ Ici (sInf F) := sorry
+    rw [← e2]
+    rw [← e1]
+    rfl
 
 lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ∩ Ici a := by
   constructor
