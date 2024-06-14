@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
+import Mathlib.Order.Irreducible
 
 #align_import topology.order.lower_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -415,10 +416,77 @@ instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
     suffices IsLower (α × β)ᵒᵈ from IsLower.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
     exact instIsLowerProd (α := αᵒᵈ) (β := βᵒᵈ)
 
+/-
+section SemilatticeInf
+
+variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
+
+variable (T : Set α)
+
+instance : TopologicalSpace T := inferInstance
+
+#check { p // InfPrime p}
+
+variable (q : { p // InfPrime (α := α) p})
+
+--variable (T : (Set { p // InfPrime (α := α) p}))
+
+end SemilatticeInf
+-/
+
 section CompleteLattice_IsLower
 
-variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLower α]
-  [TopologicalSpace β] [IsLower β]
+variable [CompleteLattice α] [TopologicalSpace α] [IsLower α]
+
+section PrimativeSpectrum
+
+variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
+
+#check (T : α → Prop)
+
+#check isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
+
+#check Topology.IsLower.isTopologicalBasis
+
+#check preimage
+
+lemma test1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T ∩ Ici a = S } := by
+  --have e1 : { S : Set T | ∃ (a : α), T ∩ Ici a = S } = preimage Subtype.val '' IsLower.lowerBasis α := sorry
+  convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
+  rw [le_antisymm_iff]
+  constructor
+  · simp only [le_eq_subset]
+    intro S
+    simp only [mem_setOf_eq, mem_image, forall_exists_index]
+    intro a ha
+    use Ici a
+    constructor
+    · sorry
+    · ext b
+      constructor
+      · simp only [mem_preimage]
+        intro hb
+        have e2 : ↑b ∈ T := by exact Subtype.coe_prop b
+
+      · intro bS
+        simp only [mem_preimage, mem_Ici]
+  · simp only [le_eq_subset, image_subset_iff]
+    sorry
+
+
+  -- isTopologicalBasis_subtype _
+
+lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ∩ Ici a := by
+  constructor
+  · intro h
+    sorry
+  · --intro h
+    --cases' h with a ha
+    exact False.elim β
+
+end PrimativeSpectrum
+
+variable [CompleteLattice β] [TopologicalSpace β] [IsLower β]
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine IsLower.continuous_iff_Ici.2 fun b => ?_
