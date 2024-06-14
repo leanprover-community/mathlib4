@@ -27,7 +27,7 @@ def formatTable (headers : Array String) (table : Array (Array String))
     String := Id.run do
   -- If no alignments are provided, default to left alignment for all columns.
   let alignments := alignments.getD (Array.mkArray headers.size Alignment.left)
-  -- Get the maximum widths of each column
+  -- Compute the maximum width of each column.
   let mut widths := headers.map (·.length)
   for row in table do
     for i in [0:widths.size] do
