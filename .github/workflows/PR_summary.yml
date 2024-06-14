@@ -1,0 +1,77 @@
+name: Post PR summary comment
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        sudo apt-get install -y jq
+        # If you have additional dependencies, install them here
+
+    - name: Get changed files
+      run: |
+        git fetch origin ${{ github.base_ref }}  # fetch the base branch
+        git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt  # get the list of changed files
+
+    - name: Compute transitive imports
+      run: |
+        # the checkout dance, to avoid a detached head
+        git checkout master
+        git checkout -
+        currentHash="$(git rev-parse HEAD)"
+
+        # Compute the counts for the HEAD of the PR
+        python ./scripts/count-trans-deps.py "Mathlib/" > head.json
+
+        # Checkout the merge base
+        git checkout "$(git merge-base master ${{ github.sha }})"
+
+        # Compute the counts for the merge base
+        python ./scripts/count-trans-deps.py "Mathlib/" > base.json
+
+        # switch back to the current branch: the `no_lost_declarations` script should be here
+        git checkout "${currentHash}"
+    - name: Post or update the summary comment
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        PR="${{ github.event.pull_request.number }}"
+        title="### PR summary"
+
+        ## Import count comment
+        importCount=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
+        if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
+        then
+          importCount="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Import changes" "${importCount}")"
+        else
+          importCount="$(printf '#### Import changes\n\n%s\n' "${importCount}")"
+        fi
+
+        ## Declarations' diff comment
+        declDiff=$(./scripts/no_lost_declarations.sh short)
+        if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
+        then
+          declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
+        else
+          declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
+        fi
+
+        message="$(printf '%s\n\n%s\n\n---\n\n%s\n' "${title}" "${importCount}" "${declDiff}")"
+
+        ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"

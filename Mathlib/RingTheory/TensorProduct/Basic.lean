@@ -603,7 +603,12 @@ tensors can be directly applied by the caller (without needing `TensorProduct.on
 def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
     (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
     (h_one : f (1 ⊗ₜ[R] 1) = 1) : A ⊗[R] B →ₐ[S] C :=
-  AlgHom.ofLinearMap f h_one <| f.map_mul_iff.2 <| by
+  #adaptation_note
+  /--
+  After https://github.com/leanprover/lean4/pull/4119 we either need to specify
+  the `(R := S) (A := A ⊗[R] B)` arguments, or use `set_option maxSynthPendingDepth 2 in`.
+  -/
+  AlgHom.ofLinearMap f h_one <| (f.map_mul_iff (R := S) (A := A ⊗[R] B)).2 <| by
     -- these instances are needed by the statement of `ext`, but not by the current definition.
     letI : Algebra R C := RestrictScalars.algebra R S C
     letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
@@ -1229,7 +1234,7 @@ theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [A
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
   exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
 
-@[deprecated Subalgebra.finite_sup] -- 2024-04-11
+@[deprecated Subalgebra.finite_sup (since := "2024-04-11")]
 theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [FiniteDimensional K E1] [FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := Subalgebra.finite_sup E1 E2

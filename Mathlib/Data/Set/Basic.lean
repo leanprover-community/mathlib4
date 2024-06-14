@@ -613,7 +613,7 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
 theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
 #align set.ball_empty_iff Set.forall_mem_empty
-@[deprecated] alias ball_empty_iff := forall_mem_empty -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias ball_empty_iff := forall_mem_empty
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
@@ -1207,18 +1207,18 @@ theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
 #align set.bex_insert_iff Set.exists_mem_insert
-@[deprecated] alias bex_insert_iff := exists_mem_insert -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias bex_insert_iff := exists_mem_insert
 
 theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
   forall₂_or_left.trans <| and_congr_left' forall_eq
 #align set.ball_insert_iff Set.forall_mem_insert
-@[deprecated] alias ball_insert_iff := forall_mem_insert -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias ball_insert_iff := forall_mem_insert
 
 /-! ### Lemmas about singletons -/
 
 /- porting note: instance was in core in Lean3 -/
-instance : IsLawfulSingleton α (Set α) :=
+instance : LawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
     exact Iff.rfl⟩

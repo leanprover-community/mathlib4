@@ -195,8 +195,8 @@ theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R
   ext m
   rw [coeff_coe, coeff_trunc]
   split
-  case inl h => rfl
-  case inr h =>
+  case isTrue h => rfl
+  case isFalse h =>
     rw [not_lt] at h
     rw [coeff_coe]; symm
     exact coeff_eq_zero_of_natDegree_lt <| lt_of_lt_of_le hn h

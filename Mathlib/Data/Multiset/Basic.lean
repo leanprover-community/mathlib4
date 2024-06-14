@@ -329,7 +329,7 @@ end Mem
 instance : Singleton α (Multiset α) :=
   ⟨fun a => a ::ₘ 0⟩
 
-instance : IsLawfulSingleton α (Multiset α) :=
+instance : LawfulSingleton α (Multiset α) :=
   ⟨fun _ => rfl⟩
 
 @[simp]
@@ -3208,7 +3208,7 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
   rfl
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingletonEquiv
 
-@[deprecated] alias card_le_of_le := card_le_card -- 2023-12-27
-@[deprecated] alias card_lt_of_lt := card_lt_card -- 2023-12-27
+@[deprecated (since := "2023-12-27")] alias card_le_of_le := card_le_card
+@[deprecated (since := "2023-12-27")] alias card_lt_of_lt := card_lt_card
 
 end Multiset
