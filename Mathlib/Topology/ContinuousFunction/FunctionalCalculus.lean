@@ -440,35 +440,30 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
     congr
   · simp [cfc_apply_of_not_predicate a ha]
 
-open Classical Finset in
-lemma cfc_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
-    (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    cfc (s.sum f) a = s.sum (fun i => cfc (f i) a) := by
+open Finset in
+lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R)
+    (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    cfc (univ.sum f) a = univ.sum (fun i => cfc (f i) a) := by
   by_cases ha : p a
   · simp only [cfc_apply' a, ← map_sum]
     congr
     ext x
-
-    --have h₁ : s.sum (fun i => cfc (f i) a) = ∑ i in (univ : Finset s), cfc (f i) a := by sorry
-    --rw [h₁]
-    --have h₂ : (fun (i : s) => cfc (f i) a) = fun (i : s) => cfcHom ha ⟨_, (hf i.1 i.2).restrict⟩ := by sorry
-    --rw [h₂, ← map_sum]
-    have hsum : s.sum f = fun x => ∑ i ∈ s, f i x := by ext; simp
-    have hf' : ContinuousOn (s.sum f) (spectrum R a) := by
+    have hsum : univ.sum f = fun z => ∑ i, f i z := by ext; simp
+    have hf' : ContinuousOn (univ.sum f) (spectrum R a) := by
       rw [hsum]
-      exact continuousOn_finset_sum s hf
-    --rw [cfc_apply (s.sum f) a ha hf']
-    --congr 1
-    --ext x
-    --simp only [ContinuousMap.coe_mk, Set.restrict_apply, sum_apply, univ_eq_attach,
-    --  ContinuousMap.coe_sum, Finset.sum_attach]
-    -- use Finset.sum_attach
-    simp [Set.restrictContinuous_of_continuous]
-    --split
-    --case _ h => sorry
-    --case _ h => exact False.elim <| h hf'
-    sorry
+      refine continuousOn_finset_sum univ fun i _ => hf i
+    conv =>
+      enter [2, 1, 2, x]
+      simp only [Set.restrictContinuous_of_continuous (hf x)]
+    simp [Set.restrictContinuous_of_continuous hf']
   · simp [cfc_apply_of_not_predicate a ha]
+
+lemma cfc_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    cfc (s.sum f) a = s.sum (fun i => cfc (f i) a) := by
+  rw [← Finset.sum_coe_sort s, ← Finset.sum_coe_sort s]
+  have hf' : ∀ i : {x : ι // x ∈ s}, ContinuousOn (f i) (spectrum R a) := fun ⟨i, hi⟩ => hf i hi
+  exact cfc_sum_univ a _ hf'
 
 lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
