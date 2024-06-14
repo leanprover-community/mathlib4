@@ -5,6 +5,6 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 
 import Lean.Util.Path
-import Lake.CLI.Main
+-- import Lake.CLI.Main
 
 
