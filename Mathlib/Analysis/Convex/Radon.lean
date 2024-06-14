@@ -87,7 +87,7 @@ theorem helly_theorem (F : ι → Set E) [Fintype ι]
     induction' n, h_card using Nat.le_induction with k h_card hk generalizing ι
     · exact helly_theorem_corner (le_of_eq hn) h_inter
     · /- Construct a family of vectors indexed by `ι` such that the vector corresponding to `i : ι`
-      is an arbitrary element of the intersection `⋂ i : ι, F i` which *does not* lie in `F i`. -/
+      is an arbitrary element of the intersection of all `F j` except `F i`. -/
       let a (i : ι) : E := Set.Nonempty.some (s := ⋂₀ (F '' (Finset.univ.erase i))) <| by
         let ι' :=  Finset.univ.erase i
         let F' : ι' → Set E := fun i ↦ F i
