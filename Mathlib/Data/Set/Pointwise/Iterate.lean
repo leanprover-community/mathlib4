@@ -31,7 +31,7 @@ the map `x ↦ x^n`. Then `s` is invariant under the pointwise action of the sub
 theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ} {s : Set G}
     (hs : (fun x => x ^ n) ⁻¹' s = s) {g : G} {j : ℕ} (hg : g ^ n ^ j = 1) : g • s = s := by
   suffices ∀ {g' : G} (_ : g' ^ n ^ j = 1), g' • s ⊆ s by
-    refine' le_antisymm (this hg) _
+    refine le_antisymm (this hg) ?_
     conv_lhs => rw [← smul_inv_smul g s]
     replace hg : g⁻¹ ^ n ^ j = 1 := by rw [inv_zpow, hg, inv_one]
     simpa only [le_eq_subset, set_smul_subset_set_smul_iff] using this hg

@@ -107,9 +107,8 @@ lemma setIntegral_condKernel (a : α) {s : Set β} (hs : MeasurableSet s)
   rw [← kernel.compProd_fst_condKernel κ] at hf
   rw [setIntegral_compProd hs ht hf]
 
-@[deprecated]
-alias set_integral_condKernel :=
-  setIntegral_condKernel -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel := setIntegral_condKernel
 
 lemma setIntegral_condKernel_univ_right (a : α) {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ Set.univ) (κ a)) :
@@ -117,9 +116,8 @@ lemma setIntegral_condKernel_univ_right (a : α) {s : Set β} (hs : MeasurableSe
       = ∫ x in s ×ˢ Set.univ, f x ∂(κ a) := by
   rw [← setIntegral_condKernel a hs MeasurableSet.univ hf]; simp_rw [Measure.restrict_univ]
 
-@[deprecated]
-alias set_integral_condKernel_univ_right :=
-  setIntegral_condKernel_univ_right -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel_univ_right := setIntegral_condKernel_univ_right
 
 lemma setIntegral_condKernel_univ_left (a : α) {t : Set Ω} (ht : MeasurableSet t)
     (hf : IntegrableOn f (Set.univ ×ˢ t) (κ a)) :
@@ -127,9 +125,8 @@ lemma setIntegral_condKernel_univ_left (a : α) {t : Set Ω} (ht : MeasurableSet
       = ∫ x in Set.univ ×ˢ t, f x ∂(κ a) := by
   rw [← setIntegral_condKernel a MeasurableSet.univ ht hf]; simp_rw [Measure.restrict_univ]
 
-@[deprecated]
-alias set_integral_condKernel_univ_left :=
-  setIntegral_condKernel_univ_left -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel_univ_left := setIntegral_condKernel_univ_left
 
 end Integral
 
@@ -224,9 +221,8 @@ lemma setIntegral_condKernel {s : Set β} (hs : MeasurableSet s)
   rw [setIntegral_compProd hs ht hf]
 #align probability_theory.set_integral_cond_kernel MeasureTheory.Measure.setIntegral_condKernel
 
-@[deprecated]
-alias set_integral_condKernel :=
-  setIntegral_condKernel -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel := setIntegral_condKernel
 
 lemma setIntegral_condKernel_univ_right {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ Set.univ) ρ) :
@@ -234,9 +230,8 @@ lemma setIntegral_condKernel_univ_right {s : Set β} (hs : MeasurableSet s)
   rw [← setIntegral_condKernel hs MeasurableSet.univ hf]; simp_rw [Measure.restrict_univ]
 #align probability_theory.set_integral_cond_kernel_univ_right MeasureTheory.Measure.setIntegral_condKernel_univ_right
 
-@[deprecated]
-alias set_integral_condKernel_univ_right :=
-  setIntegral_condKernel_univ_right -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel_univ_right := setIntegral_condKernel_univ_right
 
 lemma setIntegral_condKernel_univ_left {t : Set Ω} (ht : MeasurableSet t)
     (hf : IntegrableOn f (Set.univ ×ˢ t) ρ) :
@@ -244,9 +239,8 @@ lemma setIntegral_condKernel_univ_left {t : Set Ω} (ht : MeasurableSet t)
   rw [← setIntegral_condKernel MeasurableSet.univ ht hf]; simp_rw [Measure.restrict_univ]
 #align probability_theory.set_integral_cond_kernel_univ_left MeasureTheory.Measure.setIntegral_condKernel_univ_left
 
-@[deprecated]
-alias set_integral_condKernel_univ_left :=
-  setIntegral_condKernel_univ_left -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel_univ_left := setIntegral_condKernel_univ_left
 
 end Integral
 

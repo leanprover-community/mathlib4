@@ -3,11 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Hom.Defs
-import Batteries.Data.Option.Lemmas
 
 #align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -64,7 +63,7 @@ lemma top_mul' : ∀ (b : WithTop α), ⊤ * b = if b = 0 then 0 else ⊤
 
 lemma mul_def (a b : WithTop α) :
     a * b = if a = 0 ∨ b = 0 then 0 else WithTop.map₂ (· * ·) a b := by
-  cases a <;> cases b <;> aesop (add simp [none_eq_top, some_eq_coe])
+  cases a <;> cases b <;> aesop
 #align with_top.mul_def WithTop.mul_def
 
 lemma mul_eq_top_iff : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by rw [mul_def]; aesop
@@ -164,7 +163,7 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
     | ⊤, 0 => 1
     | ⊤, _n + 1 => ⊤
   npow_zero a := by cases a <;> simp
-  npow_succ n a := by cases n <;> cases a <;> simp [none_eq_top, some_eq_coe, pow_succ]
+  npow_succ n a := by cases n <;> cases a <;> simp [pow_succ]
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithTop α) = a ^ n := rfl
 
@@ -243,7 +242,7 @@ lemma bot_mul' : ∀ (b : WithBot α), ⊥ * b = if b = 0 then 0 else ⊥
 
 lemma mul_def (a b : WithBot α) :
     a * b = if a = 0 ∨ b = 0 then 0 else WithBot.map₂ (· * ·) a b := by
-  cases a <;> cases b <;> aesop (add simp [none_eq_bot, some_eq_coe])
+  cases a <;> cases b <;> aesop
 #align with_bot.mul_def WithBot.mul_def
 
 lemma mul_eq_bot_iff : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠ 0 := by rw [mul_def]; aesop

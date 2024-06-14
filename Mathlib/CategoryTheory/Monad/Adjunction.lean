@@ -276,7 +276,7 @@ instance comparison_essSurj [Reflective R] :
     (Monad.comparison (reflectorAdjunction R)).EssSurj := by
   refine ⟨fun X => ⟨(reflector R).obj X.A, ⟨?_⟩⟩⟩
   symm
-  refine' Monad.Algebra.isoMk _ _
+  refine Monad.Algebra.isoMk ?_ ?_
   · exact asIso ((reflectorAdjunction R).unit.app X.A)
   dsimp only [Functor.comp_map, Monad.comparison_obj_a, asIso_hom, Functor.comp_obj,
     Monad.comparison_obj_A, Adjunction.toMonad_coe]

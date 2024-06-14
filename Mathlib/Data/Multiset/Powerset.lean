@@ -124,7 +124,7 @@ theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
 
 theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux l)) : x.1 + x.2 = ↑l := by
   rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, List.mem_map] at h
-  simp only [Prod_map, Prod.exists] at h
+  simp only [Prod.map_apply, Prod.exists] at h
   rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists _ _ _ h)
 #align multiset.revzip_powerset_aux Multiset.revzip_powersetAux
@@ -132,7 +132,7 @@ theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux 
 theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux' l)) :
     x.1 + x.2 = ↑l := by
   rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip, List.mem_map] at h
-  simp only [Prod_map, Prod.exists] at h
+  simp only [Prod.map_apply, Prod.exists] at h
   rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists' _ _ _ h)
 #align multiset.revzip_powerset_aux' Multiset.revzip_powersetAux'
@@ -323,7 +323,7 @@ theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
   ⟨fun h => (nodup_of_le (map_single_le_powerset _) h).of_map _,
     Quotient.inductionOn s fun l h => by
       simp only [quot_mk_to_coe, powerset_coe', coe_nodup]
-      refine' (nodup_sublists'.2 h).map_on _
+      refine (nodup_sublists'.2 h).map_on ?_
       exact fun x sx y sy e =>
         (h.perm_iff_eq_of_sublist (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
 #align multiset.nodup_powerset Multiset.nodup_powerset
