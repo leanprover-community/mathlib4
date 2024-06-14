@@ -344,7 +344,8 @@ example (A B : Type) [CommRing A] [CommRing B] (φ : A →+* B) : Algebra A B :=
 example : R →+* K := algebraMap R K
 example : K →+* (FiniteAdeleRing R K) := RingHom.smulOneHom
 
-instance : Algebra R (FiniteAdeleRing R K) := ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K)).toAlgebra
+instance : Algebra R (FiniteAdeleRing R K) :=
+  ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K)).toAlgebra
 
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
   coe := fun x ↦ x.1
