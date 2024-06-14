@@ -430,6 +430,12 @@ lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right $ 
 protected lemma le_of_mul_le_mul_right (h : a * c ≤ b * c) (hc : 0 < c) : a ≤ b :=
   Nat.le_of_mul_le_mul_left (by simpa [Nat.mul_comm]) hc
 
+protected alias mul_sub := Nat.mul_sub_left_distrib
+protected alias sub_mul := Nat.mul_sub_right_distrib
+
+protected lemma mul_sub_one (a b : ℕ) : a * (b - 1) = a * b - a := by rw [Nat.mul_sub, Nat.mul_one]
+protected lemma sub_one_mul (a b : ℕ) : (a - 1) * b = a * b - b := by rw [Nat.sub_mul, Nat.one_mul]
+
 set_option push_neg.use_distrib true in
 /-- The product of two natural numbers is greater than 1 if and only if
   at least one of them is greater than 1 and both are positive. -/
@@ -625,13 +631,13 @@ lemma eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 := eq_zero_of_le_div (Nat.le_
 
 lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := by
   rw [Nat.le_div_iff_mul_le Nat.two_pos]
-  rw [Nat.div_lt_iff_lt_mul Nat.two_pos, Nat.mul_sub_right_distrib, Nat.lt_sub_iff_add_lt,
+  rw [Nat.div_lt_iff_lt_mul Nat.two_pos, Nat.sub_mul, Nat.lt_sub_iff_add_lt,
     Nat.mul_two a] at h
   exact Nat.le_of_lt (Nat.lt_of_add_lt_add_left h)
 #align nat.le_half_of_half_lt_sub Nat.le_half_of_half_lt_sub
 
 lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := by
-  rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
+  rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.sub_mul, Nat.sub_le_iff_le_add,
     Nat.mul_two, Nat.add_le_add_iff_left] at h
   rw [← Nat.mul_div_left b Nat.two_pos]
   exact Nat.div_le_div_right h
@@ -1217,7 +1223,7 @@ protected lemma div_mod_unique (h : 0 < b) :
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/
 lemma sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
   rw [← Nat.mod_add_div m k, ← Nat.mod_add_div n k, ← h, ← Nat.sub_sub,
-    Nat.add_sub_cancel_left, ← Nat.mul_sub_left_distrib k, Nat.mul_mod_right]
+    Nat.add_sub_cancel_left, ← k.mul_sub, Nat.mul_mod_right]
 #align nat.sub_mod_eq_zero_of_mod_eq Nat.sub_mod_eq_zero_of_mod_eq
 
 @[simp] lemma one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
