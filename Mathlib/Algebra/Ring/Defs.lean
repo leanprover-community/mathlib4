@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Data.Bracket
 
 #align_import algebra.ring.defs from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
@@ -123,7 +124,10 @@ class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZe
 #align non_assoc_semiring NonAssocSemiring
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
-class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
+class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α,
+    Bracket α α where
+  bracket a b := a * b - b * a
+  bracket_eq (a b : α) : ⁅a, b⁆ = a * b - b * a := by rfl
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
 /-- An associative but not-necessarily unital ring. -/
@@ -142,7 +146,10 @@ class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, 
 #align semiring Semiring
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R,
+    Bracket R R where
+  bracket a b := a * b - b * a
+  bracket_eq (a b : R) : ⁅a, b⁆ = a * b - b * a := by rfl
 #align ring Ring
 
 /-!
