@@ -137,7 +137,7 @@ theorem helly_theorem_set {F : Finset (Set E)}
     (h_convex : ∀ X ∈ F, Convex 𝕜 X)
     (h_inter : ∀ G : Finset (Set E), G ⊆ F → G.card ≤ finrank 𝕜 E + 1 → (⋂₀ G : Set E).Nonempty) :
     (⋂₀ (F : Set (Set E))).Nonempty := by
-  classical! -- for DecidableEq, required by family version
+  classical -- for DecidableEq, required for the family version
   rw [show ⋂₀ F = ⋂ X : F, (X : Set E) by ext; simp]
   apply Convex.helly_theorem (F := fun x : F ↦ x.val) (𝕜 := 𝕜)
   · exact fun X ↦ h_convex X (by simp)
@@ -172,7 +172,7 @@ theorem helly_theorem_infinite [TopologicalSpace E] [T2Space E] (F : ι → Set 
   /- The following is a clumsy proof that family of compact sets with the finite intersection
   property has a nonempty intersection -/
   have i0 : ι := Nonempty.some h_nonempty
-  rw [show ⋂ i, F i = (F i0) ∩ ⋂ i, F i by aesop]
+  rw [show ⋂ i, F i = (F i0) ∩ ⋂ i, F i by simp [Set.iInter_subset]]
   apply IsCompact.inter_iInter_nonempty
   · exact h_compact i0
   · intro i
