@@ -282,8 +282,8 @@ lemma isLeftKanExtension_along_yoneda_iff :
     exact ⟨inferInstance, ⟨preservesColimitsOfNatIso
       (Functor.leftKanExtensionUnique _ (yoneda.leftKanExtensionUnit A) _ α)⟩⟩
   · rintro ⟨_, ⟨_⟩⟩
-    let E := Functor.LeftExtension.mk _ α
-    apply Functor.LeftExtension.IsPointwiseLeftKanExtension.isLeftKanExtension (E := E)
+    apply Functor.LeftExtension.IsPointwiseLeftKanExtension.isLeftKanExtension
+      (E := Functor.LeftExtension.mk _ α)
     intro P
     dsimp [Functor.LeftExtension.IsPointwiseLeftKanExtensionAt]
     apply IsColimit.ofWhiskerEquivalence (CategoryOfElements.costructuredArrowYonedaEquivalence _)

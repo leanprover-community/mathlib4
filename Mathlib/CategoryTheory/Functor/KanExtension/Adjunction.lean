@@ -18,8 +18,8 @@ with `L` (see `Functor.lanAdjunction`).
 - dualize the results for right Kan extensions
 - refactor the file `CategoryTheory.Limits.KanExtension` so that
 the definitions of `Ran` in that file (which rely on the
-existence of limits) are replaced by the a definition
-`Functor.ran` bases on Kan extensions API, similarly as
+existence of limits) are replaced by a definition
+`Functor.ran` based on the Kan extension API, similarly as
 left Kan extensions have been refactored in #10425.
 
 -/
