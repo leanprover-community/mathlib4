@@ -34,6 +34,7 @@ namespace TopologicalSpace
 
 /-- The type of compact sets of a topological space. -/
 structure Compacts (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   isCompact' : IsCompact carrier
 #align topological_space.compacts TopologicalSpace.Compacts
@@ -250,11 +251,11 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
   rfl
 #align topological_space.nonempty_compacts.carrier_eq_coe TopologicalSpace.NonemptyCompacts.carrier_eq_coe
 
-@[simp] -- Porting note: new lemma
+@[simp] -- Porting note (#10756): new lemma
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
 instance : Sup (NonemptyCompacts α) :=
-  ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono <| subset_union_left _ _⟩⟩
+  ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
 
 instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
   ⟨⟨⊤, univ_nonempty⟩⟩
@@ -365,7 +366,7 @@ theorem coe_toCompacts (s : PositiveCompacts α) : (s.toCompacts : Set α) = s :
 instance : Sup (PositiveCompacts α) :=
   ⟨fun s t =>
     ⟨s.toCompacts ⊔ t.toCompacts,
-      s.interior_nonempty.mono <| interior_mono <| subset_union_left _ _⟩⟩
+      s.interior_nonempty.mono <| interior_mono subset_union_left⟩⟩
 
 instance [CompactSpace α] [Nonempty α] : Top (PositiveCompacts α) :=
   ⟨⟨⊤, interior_univ.symm.subst univ_nonempty⟩⟩

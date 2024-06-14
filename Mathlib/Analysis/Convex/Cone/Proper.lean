@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Apurva Nakade All rights reserved.
+Copyright (c) 2022 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
@@ -46,7 +46,6 @@ namespace ProperCone
 section Module
 
 variable {𝕜 : Type*} [OrderedSemiring 𝕜]
-
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
 /-- A `PointedCone` is defined as an alias of submodule. We replicate the abbreviation here and
@@ -120,7 +119,6 @@ end PositiveCone
 section Module
 
 variable {𝕜 : Type*} [OrderedSemiring 𝕜]
-
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
 
 instance : Zero (ProperCone 𝕜 E) :=
@@ -149,9 +147,7 @@ end Module
 section InnerProductSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-
 variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
 
 protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
@@ -231,7 +227,6 @@ end InnerProductSpace
 section CompleteSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
 
 /-- The dual of the dual of a proper cone is itself. -/
@@ -277,7 +272,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
         _ _ _ _ C (K.map f).nonempty (K.map f).isClosed b h
 
       -- the rest of the proof is a straightforward algebraic manipulation
-      refine' ⟨y, _, hyb⟩
+      refine ⟨y, ?_, hyb⟩
       simp_rw [ProperCone.mem_dual, adjoint_inner_right]
       intro x hxK
       apply hxy (f x)

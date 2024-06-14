@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 #align_import topology.category.Profinite.projective from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
@@ -31,6 +32,9 @@ universe u v w
 
 open CategoryTheory Function
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 namespace Profinite
 
 set_option linter.uppercaseLean3 false
@@ -43,7 +47,7 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     let h : Ultrafilter X → Y := Ultrafilter.extend t
     have hh : Continuous h := continuous_ultrafilter_extend _
     use ⟨h, hh⟩
-    apply Faithful.map_injective (F := forget Profinite)
+    apply (forget Profinite).map_injective
     simp only [h, ContinuousMap.coe_mk, coe_comp]
     convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
      -- Porting note: same fix as in `Topology.Category.CompHaus.Projective`

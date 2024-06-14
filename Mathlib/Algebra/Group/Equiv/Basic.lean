@@ -75,8 +75,8 @@ structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
-class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] : Prop
-    where
+class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] :
+    Prop where
   /-- Preserves addition. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align add_equiv_class AddEquivClass
@@ -109,8 +109,8 @@ add_decl_doc MulEquiv.toMulHom
 You should extend this class when you extend `MulEquiv`. -/
 -- TODO: make this a synonym for MulHomClass?
 @[to_additive]
-class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] : Prop
-    where
+class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
+    Prop where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
@@ -124,7 +124,6 @@ infixl:25 " ≃+ " => AddEquiv
 namespace MulEquivClass
 
 variable (F)
-
 variable [EquivLike F M N]
 
 -- See note [lower instance priority]
@@ -148,23 +147,6 @@ instance (priority := 100) instMonoidHomClass
         _ = 1 := EquivLike.right_inv e 1 }
 
 variable [EquivLike F α β]
-
--- See note [lower instance priority]
-instance (priority := 100) toZeroHomClass
-    [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
-    ZeroHomClass F α β where
-  map_zero := fun e =>
-    calc
-      e 0 = e 0 * e (EquivLike.inv e 0) := by rw [← map_mul, zero_mul]
-        _ = 0 := by simp
-
--- See note [lower instance priority]
-instance (priority := 100) toMonoidWithZeroHomClass
-    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
-    MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass F with }
-#align mul_equiv_class.to_monoid_with_zero_hom_class MulEquivClass.toMonoidWithZeroHomClass
-
 variable {F}
 
 @[to_additive (attr := simp)]
@@ -249,7 +231,7 @@ theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
--- Porting note: todo: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
+-- Porting note (#11215): TODO: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
 -- not `f.toEquiv.toFun`; use higher priority as a workaround
 @[to_additive (attr := simp 1100)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
@@ -624,7 +606,7 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
 #align mul_equiv.of_bijective_apply MulEquiv.ofBijective_apply
 #align add_equiv.of_bijective_apply AddEquiv.ofBijective_apply
 
--- Porting note: todo: simplify `symm_apply` to `surjInv`?
+-- Porting note (#11215): TODO: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n
@@ -646,10 +628,13 @@ theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
 #align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
 #align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
 
-set_option linter.deprecated false in
+@[to_additive (attr := simp)]
+theorem toMonoidHom_eq_coe (f : M ≃* N) : f.toMonoidHom = (f : M →* N) :=
+  rfl
+
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) :=
-  fun _ _ h => MulEquiv.ext (MonoidHom.ext_iff.1 h)
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align mul_equiv.to_monoid_hom_injective MulEquiv.toMonoidHom_injective
 #align add_equiv.to_add_monoid_hom_injective AddEquiv.toAddMonoidHom_injective
 

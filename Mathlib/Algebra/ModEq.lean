@@ -151,7 +151,7 @@ protected theorem of_zsmul : a ≡ b [PMOD z • p] → a ≡ b [PMOD p] := fun 
 #align add_comm_group.modeq.of_zsmul AddCommGroup.ModEq.of_zsmul
 
 protected theorem of_nsmul : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
-  ⟨m * n, by rwa [mul_smul, coe_nat_zsmul]⟩
+  ⟨m * n, by rwa [mul_smul, natCast_zsmul]⟩
 #align add_comm_group.modeq.of_nsmul AddCommGroup.ModEq.of_nsmul
 
 protected theorem zsmul : a ≡ b [PMOD p] → z • a ≡ z • b [PMOD z • p] :=
@@ -328,8 +328,8 @@ lemma intCast_modEq_intCast' {a b : ℤ} {n : ℕ} : a ≡ b [PMOD (n : α)] ↔
 
 @[simp, norm_cast]
 theorem natCast_modEq_natCast {a b n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [MOD n] := by
-  simp_rw [← Int.coe_nat_modEq_iff, ← modEq_iff_int_modEq, ← @intCast_modEq_intCast α,
-    Int.cast_ofNat]
+  simp_rw [← Int.natCast_modEq_iff, ← modEq_iff_int_modEq, ← @intCast_modEq_intCast α,
+    Int.cast_natCast]
 #align add_comm_group.nat_cast_modeq_nat_cast AddCommGroup.natCast_modEq_natCast
 
 alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast

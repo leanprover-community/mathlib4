@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
-import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.FunLike.Fintype
 
 /-!
@@ -91,7 +90,7 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 adjacency relation.
 This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for a wrapper.
 
-This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`).-/
+This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -/
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
   symm _ _ h := h.symm
@@ -197,8 +196,7 @@ adjacency relation. This gives a map between `SimpleGraph V` and `SimpleGraph s`
 There is also a notion of induced subgraphs (see `SimpleGraph.subgraph.induce`). -/
 /-- Restrict a graph to the vertices in the set `s`, deleting all edges incident to vertices
 outside the set. This is a wrapper around `SimpleGraph.comap`. -/
-@[reducible]
-def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
+abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
 #align simple_graph.induce SimpleGraph.induce
 
@@ -208,8 +206,7 @@ def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
 /-- Given a graph on a set of vertices, we can make it be a `SimpleGraph V` by
 adding in the remaining vertices without adding in any additional edges.
 This is a wrapper around `SimpleGraph.map`. -/
-@[reducible]
-def spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
+abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
   G.map (Function.Embedding.subtype _)
 #align simple_graph.spanning_coe SimpleGraph.spanningCoe
 
@@ -322,7 +319,7 @@ def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
   dsimp [Hom.mapEdgeSet]
-  repeat' rw [Subtype.mk_eq_mk]
+  repeat rw [Subtype.mk_eq_mk]
   apply Sym2.map.injective hinj
 #align simple_graph.hom.map_edge_set.injective SimpleGraph.Hom.mapEdgeSet.injective
 
@@ -400,8 +397,7 @@ def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
-def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v)
-    where
+def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
@@ -438,14 +434,12 @@ theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) :
 
 Note that if `G.induce s = ⊤` (i.e., if `s` is a clique) then this gives the embedding of a
 complete graph. -/
-@[reducible]
-protected def induce (s : Set V) : G.induce s ↪g G :=
+protected abbrev induce (s : Set V) : G.induce s ↪g G :=
   SimpleGraph.Embedding.comap (Function.Embedding.subtype _) G
 #align simple_graph.embedding.induce SimpleGraph.Embedding.induce
 
 /-- Graphs on a set of vertices embed in their `spanningCoe`. -/
-@[reducible]
-protected def spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
+protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
   SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
 #align simple_graph.embedding.spanning_coe SimpleGraph.Embedding.spanningCoe
 
@@ -454,6 +448,8 @@ protected def completeGraph {α β : Type*} (f : α ↪ β) :
     (⊤ : SimpleGraph α) ↪g (⊤ : SimpleGraph β) :=
   { f with map_rel_iff' := by simp }
 #align simple_graph.embedding.complete_graph SimpleGraph.Embedding.completeGraph
+
+@[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
 
 variable {G'' : SimpleGraph X}
 
@@ -557,8 +553,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]
-def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
-    where
+def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
   toFun := Hom.mapEdgeSet f
   invFun := Hom.mapEdgeSet f.symm
   left_inv := by
@@ -579,8 +574,7 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
 @[simps]
-def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v)
-    where
+def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   invFun w :=
     ⟨f.symm w, by
@@ -593,12 +587,6 @@ theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
   convert rfl
 #align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq
-
-theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
-    G.edgeFinset.card = G'.edgeFinset.card := by
-  apply Finset.card_eq_of_equiv
-  simp only [Set.mem_toFinset]
-  exact f.mapEdgeSet
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/

@@ -3,8 +3,6 @@ Copyright (c) 2023 Koundinya Vajjha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Koundinya Vajjha, Thomas Browning
 -/
-
-import Mathlib.Algebra.CharP.Basic
 import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Padics.PadicNumbers
 
@@ -38,11 +36,11 @@ theorem padicValRat_two_harmonic (n : ℕ) : padicValRat 2 (harmonic n) = -Nat.l
 lemma padicNorm_two_harmonic {n : ℕ} (hn : n ≠ 0) :
     ‖(harmonic n : ℚ_[2])‖ = 2 ^ (Nat.log 2 n) := by
   rw [padicNormE.eq_padicNorm, padicNorm.eq_zpow_of_nonzero (harmonic_pos hn).ne',
-    padicValRat_two_harmonic, neg_neg, zpow_coe_nat, Rat.cast_pow, Rat.cast_coe_nat, Nat.cast_ofNat]
+    padicValRat_two_harmonic, neg_neg, zpow_natCast, Rat.cast_pow, Rat.cast_natCast, Nat.cast_ofNat]
 
 /-- The n-th harmonic number is not an integer for n ≥ 2. -/
 theorem harmonic_not_int {n : ℕ} (h : 2 ≤ n) : ¬ (harmonic n).isInt := by
   apply padicNorm.not_int_of_not_padic_int 2
   rw [padicNorm.eq_zpow_of_nonzero (harmonic_pos (ne_zero_of_lt h)).ne',
-      padicValRat_two_harmonic, neg_neg, zpow_coe_nat]
+      padicValRat_two_harmonic, neg_neg, zpow_natCast]
   exact one_lt_pow one_lt_two (Nat.log_pos one_lt_two h).ne'

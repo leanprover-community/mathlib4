@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import category_theory.preadditive.hom_orthogonal from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
@@ -73,7 +73,7 @@ are equivalent to block diagonal matrices,
 with blocks indexed by `ι`,
 and matrix entries in `i`-th block living in the endomorphisms of `s i`. -/
 @[simps]
-noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fintype α] [Fintype β]
+noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Finite α] [Finite β]
     {f : α → ι} {g : β → ι} :
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) where
@@ -115,8 +115,8 @@ variable [Preadditive C] [HasFiniteBiproducts C]
 
 /-- `HomOrthogonal.matrixDecomposition` as an additive equivalence. -/
 @[simps!]
-noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Type} [Fintype α]
-    [Fintype β] {f : α → ι} {g : β → ι} :
+noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Type} [Finite α]
+    [Finite β] {f : α → ι} {g : β → ι} :
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃+
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) :=
   { o.matrixDecomposition with
@@ -127,7 +127,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
 #align category_theory.hom_orthogonal.matrix_decomposition_add_equiv CategoryTheory.HomOrthogonal.matrixDecompositionAddEquiv
 
 @[simp]
-theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f : α → ι} (i : ι) :
+theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f : α → ι} (i : ι) :
     o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
   ext ⟨b, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
@@ -143,8 +143,8 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f
     rw [this, comp_zero]
 #align category_theory.hom_orthogonal.matrix_decomposition_id CategoryTheory.HomOrthogonal.matrixDecomposition_id
 
-theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintype α] [Fintype β]
-    [Fintype γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
+theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite α] [Fintype β]
+    [Finite γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
     (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
     o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i * o.matrixDecomposition z i := by
   ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
@@ -172,8 +172,8 @@ variable {R : Type*} [Semiring R] [Linear R C]
 
 /-- `HomOrthogonal.MatrixDecomposition` as an `R`-linear equivalence. -/
 @[simps]
-noncomputable def matrixDecompositionLinearEquiv (o : HomOrthogonal s) {α β : Type} [Fintype α]
-    [Fintype β] {f : α → ι} {g : β → ι} :
+noncomputable def matrixDecompositionLinearEquiv (o : HomOrthogonal s) {α β : Type} [Finite α]
+    [Finite β] {f : α → ι} {g : β → ι} :
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃ₗ[R]
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) :=
   { o.matrixDecompositionAddEquiv with
@@ -197,13 +197,14 @@ variable [∀ i, InvariantBasisNumber (End (s i))]
 for which each `End (s i)` is a ring with invariant basis number (e.g. if each `s i` is simple),
 if two direct sums over `s` are isomorphic, then they have the same multiplicities.
 -/
-theorem equiv_of_iso (o : HomOrthogonal s) {α β : Type} [Fintype α] [Fintype β] {f : α → ι}
+theorem equiv_of_iso (o : HomOrthogonal s) {α β : Type} [Finite α] [Finite β] {f : α → ι}
     {g : β → ι} (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) :
     ∃ e : α ≃ β, ∀ a, g (e a) = f a := by
-  refine' ⟨Equiv.ofPreimageEquiv _, fun a => Equiv.ofPreimageEquiv_map _ _⟩
+  refine ⟨Equiv.ofPreimageEquiv ?_, fun a => Equiv.ofPreimageEquiv_map _ _⟩
   intro c
   apply Nonempty.some
   apply Cardinal.eq.1
+  cases nonempty_fintype α; cases nonempty_fintype β
   simp only [Cardinal.mk_fintype, Nat.cast_inj]
   exact
     Matrix.square_of_invertible (o.matrixDecomposition i.inv c) (o.matrixDecomposition i.hom c)

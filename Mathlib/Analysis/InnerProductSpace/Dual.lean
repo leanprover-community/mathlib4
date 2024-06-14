@@ -46,11 +46,10 @@ universe u v
 
 namespace InnerProductSpace
 
-open IsROrC ContinuousLinearMap
+open RCLike ContinuousLinearMap
 
 variable (𝕜 : Type*)
-
-variable (E : Type*) [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (E : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
@@ -83,7 +82,7 @@ variable {𝕜}
 theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
   apply (toDualMap 𝕜 E).map_eq_iff.mp
-  refine' (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (Basis.ext b _)
+  refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (Basis.ext b ?_)
   intro i
   simp only [ContinuousLinearMap.coe_coe]
   rw [toDualMap_apply, toDualMap_apply]
@@ -94,14 +93,13 @@ theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
 
 theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪x, b i⟫ = ⟪y, b i⟫) : x = y := by
-  refine' ext_inner_left_basis b fun i => _
+  refine ext_inner_left_basis b fun i => ?_
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
 #align inner_product_space.ext_inner_right_basis InnerProductSpace.ext_inner_right_basis
 
 variable (𝕜) (E)
-
 variable [CompleteSpace E]
 
 /-- Fréchet-Riesz representation: any `ℓ` in the dual of a Hilbert space `E` is of the form
@@ -123,7 +121,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
         change Yᗮ ≠ ⊥ at htriv
         rw [Submodule.ne_bot_iff] at htriv
         obtain ⟨z : E, hz : z ∈ Yᗮ, z_ne_0 : z ≠ 0⟩ := htriv
-        refine' ⟨(starRingEnd (R := 𝕜) (ℓ z) / ⟪z, z⟫) • z, _⟩
+        refine ⟨(starRingEnd (R := 𝕜) (ℓ z) / ⟪z, z⟫) • z, ?_⟩
         apply ContinuousLinearMap.ext
         intro x
         have h₁ : ℓ z • x - ℓ x • z ∈ Y := by
@@ -181,7 +179,7 @@ theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := 
 
 theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
     f = B♯ v := by
-  refine' ext_inner_right 𝕜 _
+  refine ext_inner_right 𝕜 ?_
   intro w
   rw [continuousLinearMapOfBilin_apply]
   exact is_lax_milgram w

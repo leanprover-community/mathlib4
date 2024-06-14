@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.CategoryTheory.Elementwise
 
 #align_import algebraic_geometry.Scheme from "leanprover-community/mathlib"@"88474d1b5af6d37c2ab728b757771bced7f5194c"
 
@@ -19,7 +20,12 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
+
+universe u
+
 noncomputable section
 
 open TopologicalSpace
@@ -34,7 +40,7 @@ namespace AlgebraicGeometry
 
 /-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
-so that that the restriction of `X` to `U` is isomorphic,
+so that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
 for some `R : CommRingCat`.
 -/
@@ -49,7 +55,7 @@ structure Scheme extends LocallyRingedSpace where
 namespace Scheme
 
 /-- A morphism between schemes is a morphism between the underlying locally ringed spaces. -/
--- @[nolint has_nonempty_instance] -- Porting note: no such linter.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
 def Hom (X Y : Scheme) : Type* :=
   X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace
 #align algebraic_geometry.Scheme.hom AlgebraicGeometry.Scheme.Hom
@@ -68,7 +74,7 @@ protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
 #align algebraic_geometry.Scheme.sheaf AlgebraicGeometry.Scheme.sheaf
 
-instance : CoeSort Scheme (Type*) where
+instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
@@ -78,17 +84,17 @@ def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
 -- deriving Full, Faithful -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace
 
-instance : Full forgetToLocallyRingedSpace :=
+/-- The forget functor `Scheme ⥤ LocallyRingedSpace` is fully faithful. -/
+@[simps!]
+def fullyFaithfulForgetToLocallyRingedSpace :
+    forgetToLocallyRingedSpace.FullyFaithful :=
+  fullyFaithfulInducedFunctor _
+
+instance : forgetToLocallyRingedSpace.Full :=
   InducedCategory.full _
 
-instance : Faithful forgetToLocallyRingedSpace :=
+instance : forgetToLocallyRingedSpace.Faithful :=
   InducedCategory.faithful _
-
-@[simp]
-theorem forgetToLocallyRingedSpace_preimage {X Y : Scheme} (f : X ⟶ Y) :
-    Scheme.forgetToLocallyRingedSpace.preimage f = f :=
-  rfl
-#align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace_preimage AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace_preimage
 
 /-- The forgetful functor from `Scheme` to `TopCat`. -/
 @[simps!]
@@ -245,7 +251,7 @@ def Spec : CommRingCatᵒᵖ ⥤ Scheme where
 /-- The empty scheme.
 -/
 @[simps]
-def empty.{u} : Scheme.{u} where
+def empty : Scheme where
   carrier := TopCat.of PEmpty
   presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
@@ -292,7 +298,6 @@ section BasicOpen
 variable (X : Scheme) {V U : Opens X.carrier} (f g : X.presheaf.obj (op U))
 
 /-- The subset of the underlying space where the given section does not vanish. -/
-@[pp_dot]
 def basicOpen : Opens X.carrier :=
   X.toLocallyRingedSpace.toRingedSpace.basicOpen f
 #align algebraic_geometry.Scheme.basic_open AlgebraicGeometry.Scheme.basicOpen
@@ -397,7 +402,7 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h
-  refine' (Scheme.congr_app this _).trans _
+  refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 #align algebraic_geometry.Scheme.Spec_map_presheaf_map_eqToHom AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
 

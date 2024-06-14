@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Set.Intervals.OrdConnected
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Data.Set.Lattice
 
 #align_import order.upper_lower.basic from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
@@ -126,11 +126,11 @@ theorem isLowerSet_sUnion {S : Set (Set α)} (hf : ∀ s ∈ S, IsLowerSet s) : 
 #align is_lower_set_sUnion isLowerSet_sUnion
 
 theorem isUpperSet_iUnion {f : ι → Set α} (hf : ∀ i, IsUpperSet (f i)) : IsUpperSet (⋃ i, f i) :=
-  isUpperSet_sUnion <| forall_range_iff.2 hf
+  isUpperSet_sUnion <| forall_mem_range.2 hf
 #align is_upper_set_Union isUpperSet_iUnion
 
 theorem isLowerSet_iUnion {f : ι → Set α} (hf : ∀ i, IsLowerSet (f i)) : IsLowerSet (⋃ i, f i) :=
-  isLowerSet_sUnion <| forall_range_iff.2 hf
+  isLowerSet_sUnion <| forall_mem_range.2 hf
 #align is_lower_set_Union isLowerSet_iUnion
 
 theorem isUpperSet_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsUpperSet (f i j)) :
@@ -152,11 +152,11 @@ theorem isLowerSet_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsLowerSet s) : 
 #align is_lower_set_sInter isLowerSet_sInter
 
 theorem isUpperSet_iInter {f : ι → Set α} (hf : ∀ i, IsUpperSet (f i)) : IsUpperSet (⋂ i, f i) :=
-  isUpperSet_sInter <| forall_range_iff.2 hf
+  isUpperSet_sInter <| forall_mem_range.2 hf
 #align is_upper_set_Inter isUpperSet_iInter
 
 theorem isLowerSet_iInter {f : ι → Set α} (hf : ∀ i, IsLowerSet (f i)) : IsLowerSet (⋂ i, f i) :=
-  isLowerSet_sInter <| forall_range_iff.2 hf
+  isLowerSet_sInter <| forall_mem_range.2 hf
 #align is_lower_set_Inter isLowerSet_iInter
 
 theorem isUpperSet_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsUpperSet (f i j)) :
@@ -628,13 +628,13 @@ theorem coe_iInf (f : ι → UpperSet α) : (↑(⨅ i, f i) : Set α) = ⋃ i, 
 #align upper_set.coe_infi UpperSet.coe_iInf
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) : (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j :=
-  by simp_rw [coe_iSup]
+theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) :
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iSup]
 #align upper_set.coe_supr₂ UpperSet.coe_iSup₂
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) : (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j :=
-  by simp_rw [coe_iInf]
+theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iInf]
 #align upper_set.coe_infi₂ UpperSet.coe_iInf₂
 
 @[simp]
@@ -782,13 +782,13 @@ theorem coe_iInf (f : ι → LowerSet α) : (↑(⨅ i, f i) : Set α) = ⋂ i, 
 #align lower_set.coe_infi LowerSet.coe_iInf
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) : (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j :=
-  by simp_rw [coe_iSup]
+theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) :
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iSup]
 #align lower_set.coe_supr₂ LowerSet.coe_iSup₂
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) : (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j :=
-  by simp_rw [coe_iInf]
+theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) :
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iInf]
 #align lower_set.coe_infi₂ LowerSet.coe_iInf₂
 
 @[simp]
@@ -1008,8 +1008,7 @@ end LowerSet
 
 /-- Upper sets are order-isomorphic to lower sets under complementation. -/
 @[simps]
-def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α
-    where
+def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α where
   toFun := UpperSet.compl
   invFun := LowerSet.compl
   left_inv := UpperSet.compl_compl
@@ -1395,7 +1394,7 @@ def lowerClosure (s : Set α) : LowerSet α :=
   ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hle.trans hx.2⟩⟩
 #align lower_closure lowerClosure
 
--- Porting note: todo: move `GaloisInsertion`s up, use them to prove lemmas
+-- Porting note (#11215): TODO: move `GaloisInsertion`s up, use them to prove lemmas
 
 @[simp]
 theorem mem_upperClosure : x ∈ upperClosure s ↔ ∃ a ∈ s, a ≤ x :=
@@ -1608,19 +1607,21 @@ theorem Set.OrdConnected.upperClosure_inter_lowerClosure (h : s.OrdConnected) :
 
 theorem ordConnected_iff_upperClosure_inter_lowerClosure :
     s.OrdConnected ↔ ↑(upperClosure s) ∩ ↑(lowerClosure s) = s := by
-  refine' ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => _⟩
+  refine ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => ?_⟩
   rw [← h]
   exact (UpperSet.upper _).ordConnected.inter (LowerSet.lower _).ordConnected
 #align ord_connected_iff_upper_closure_inter_lower_closure ordConnected_iff_upperClosure_inter_lowerClosure
 
 @[simp]
 theorem upperBounds_lowerClosure : upperBounds (lowerClosure s : Set α) = upperBounds s :=
-  (upperBounds_mono_set subset_lowerClosure).antisymm λ _a ha _b ⟨_c, hc, hcb⟩ => hcb.trans <| ha hc
+  (upperBounds_mono_set subset_lowerClosure).antisymm
+    fun _a ha _b ⟨_c, hc, hcb⟩ ↦ hcb.trans <| ha hc
 #align upper_bounds_lower_closure upperBounds_lowerClosure
 
 @[simp]
 theorem lowerBounds_upperClosure : lowerBounds (upperClosure s : Set α) = lowerBounds s :=
-  (lowerBounds_mono_set subset_upperClosure).antisymm λ _a ha _b ⟨_c, hc, hcb⟩ => (ha hc).trans hcb
+  (lowerBounds_mono_set subset_upperClosure).antisymm
+    fun _a ha _b ⟨_c, hc, hcb⟩ ↦ (ha hc).trans hcb
 #align lower_bounds_upper_closure lowerBounds_upperClosure
 
 @[simp]
@@ -1683,8 +1684,8 @@ lemma coe_erase (s : LowerSet α) (a : α) : s.erase a = (s : Set α) \ UpperSet
 @[simp] lemma sdiff_singleton (s : LowerSet α) (a : α) : s.sdiff {a} = s.erase a := by
   simp [sdiff, erase]
 
-lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset _ _
-lemma erase_le : s.erase a ≤ s := diff_subset _ _
+lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset
+lemma erase_le : s.erase a ≤ s := diff_subset
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
@@ -1704,10 +1705,10 @@ lemma erase_le : s.erase a ≤ s := diff_subset _ _
 
 lemma sdiff_sup_lowerClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     s.sdiff t ⊔ lowerClosure t = s := by
-  refine' le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ _
+  refine le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
-  · exact subset_union_right _ _ (subset_lowerClosure hat)
-  · refine subset_union_left _ _ ⟨ha, ?_⟩
+  · exact subset_union_right (subset_lowerClosure hat)
+  · refine subset_union_left ⟨ha, ?_⟩
     rintro ⟨b, hb, hba⟩
     exact hat <| hst _ ha _ hb hba
 
@@ -1744,8 +1745,8 @@ lemma coe_erase (s : UpperSet α) (a : α) : s.erase a = (s : Set α) \ LowerSet
 @[simp] lemma sdiff_singleton (s : UpperSet α) (a : α) : s.sdiff {a} = s.erase a := by
   simp [sdiff, erase]
 
-lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset _ _
-lemma le_erase : s ≤ s.erase a := diff_subset _ _
+lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset
+lemma le_erase : s ≤ s.erase a := diff_subset
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
@@ -1765,10 +1766,10 @@ lemma le_erase : s ≤ s.erase a := diff_subset _ _
 
 lemma sdiff_inf_upperClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     s.sdiff t ⊓ upperClosure t = s := by
-  refine' ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ _
+  refine ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
-  · exact subset_union_right _ _ (subset_upperClosure hat)
-  · refine subset_union_left _ _ ⟨ha, ?_⟩
+  · exact subset_union_right (subset_upperClosure hat)
+  · refine subset_union_left ⟨ha, ?_⟩
     rintro ⟨b, hb, hab⟩
     exact hat <| hst _ ha _ hb hab
 

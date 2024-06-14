@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -479,7 +479,7 @@ pairwise on intersections, can be glued to construct a continuous map in `C(α, 
 noncomputable def liftCover' : C(α, β) := by
   let S : A → Set α := (↑)
   let F : ∀ i : A, C(i, β) := fun i => F i i.prop
-  refine' liftCover S F (fun i j => hF i i.prop j j.prop) _
+  refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
   intro x
   obtain ⟨s, hs, hsx⟩ := hA x
   exact ⟨⟨s, hs⟩, hsx⟩
@@ -580,7 +580,6 @@ end Lift
 namespace Homeomorph
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
-
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
 /-- The forward direction of a homeomorphism, as a bundled continuous map. -/
@@ -595,7 +594,7 @@ instance : Coe (α ≃ₜ β) C(α, β) :=
   ⟨Homeomorph.toContinuousMap⟩
 
 -- Porting note: Syntactic tautology
-/-theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
+/- theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
   rfl
 -/
 #noalign homeomorph.to_continuous_map_as_coe

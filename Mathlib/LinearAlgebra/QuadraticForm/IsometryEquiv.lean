@@ -28,14 +28,12 @@ variable {ι R K M M₁ M₂ M₃ V : Type*}
 namespace QuadraticForm
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
 
 /-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the quadratic forms. -/
--- Porting note: not implemented @[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet @[nolint has_nonempty_instance]
 structure IsometryEquiv (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
     extends M₁ ≃ₗ[R] M₂ where
   map_app' : ∀ m, Q₂ (toFun m) = Q₁ m
@@ -156,7 +154,7 @@ noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (hv₁ : (associated (R := K) Q).IsOrthoᵢ v) :
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
-  refine' ⟨iso, fun m => _⟩
+  refine ⟨iso, fun m => ?_⟩
   convert iso.map_app m
   rw [basisRepr_eq_of_iIsOrtho _ _ hv₁]
 #align quadratic_form.isometry_weighted_sum_squares QuadraticForm.isometryEquivWeightedSumSquares

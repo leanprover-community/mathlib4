@@ -3,7 +3,7 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
@@ -59,7 +59,6 @@ noncomputable section
 universe u v w x
 
 variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 open unitInterval
@@ -85,7 +84,7 @@ section
 `f₁`.
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
-class HomotopyLike {X Y : outParam (Type*)} [TopologicalSpace X] [TopologicalSpace Y]
+class HomotopyLike {X Y : outParam Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y]
     extends ContinuousMapClass F (I × X) Y : Prop where
   /-- value of the homotopy at 0 -/
@@ -236,10 +235,10 @@ homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
   continuous_toFun := by
-    refine'
+    refine
       continuous_if_le (continuous_induced_dom.comp continuous_fst) continuous_const
         (F.continuous.comp (by continuity)).continuousOn
-        (G.continuous.comp (by continuity)).continuousOn _
+        (G.continuous.comp (by continuity)).continuousOn ?_
     rintro x hx
     norm_num [hx]
   map_zero_left x := by set_option tactic.skipAssignedInstances false in norm_num
@@ -404,7 +403,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
-  -- Porting note: todo: use `toHomotopy.curry t`
+  -- Porting note (#11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩

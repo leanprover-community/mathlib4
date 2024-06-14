@@ -87,7 +87,7 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
   map_bot' : toFun ⊥ = ⊥
 #align bounded_lattice_hom BoundedLatticeHom
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections SupBotHom (+toSupHom, -toFun)
 initialize_simps_projections InfTopHom (+toInfHom, -toFun)
@@ -464,8 +464,7 @@ end Sup
 variable (α) [SemilatticeSup β]
 
 /-- The constant function as a `SupHom`. -/
-def const (b : β) : SupHom α β :=
-  ⟨fun _ => b, fun _ _ => sup_idem.symm⟩
+def const (b : β) : SupHom α β := ⟨fun _ ↦ b, fun _ _ ↦ (sup_idem _).symm⟩
 #align sup_hom.const SupHom.const
 
 @[simp]
@@ -566,8 +565,7 @@ theorem ext {f g : InfHom α β} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of an `InfHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : InfHom α β) (f' : α → β) (h : f' = f) : InfHom α β
-    where
+protected def copy (f : InfHom α β) (f' : α → β) (h : f' = f) : InfHom α β where
   toFun := f'
   map_inf' := h.symm ▸ f.map_inf'
 #align inf_hom.copy InfHom.copy
@@ -649,8 +647,7 @@ end Inf
 variable (α) [SemilatticeInf β]
 
 /-- The constant function as an `InfHom`. -/
-def const (b : β) : InfHom α β :=
-  ⟨fun _ => b, fun _ _ => inf_idem.symm⟩
+def const (b : β) : InfHom α β := ⟨fun _ ↦ b, fun _ _ ↦ (inf_idem _).symm⟩
 #align inf_hom.const InfHom.const
 
 @[simp]
@@ -736,16 +733,14 @@ def toBotHom (f : SupBotHom α β) : BotHom α β :=
   { f with }
 #align sup_bot_hom.to_bot_hom SupBotHom.toBotHom
 
-instance : FunLike (SupBotHom α β) α β
-    where
+instance : FunLike (SupBotHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : SupBotHomClass (SupBotHom α β) α β
-    where
+instance : SupBotHomClass (SupBotHom α β) α β where
   map_sup f := f.map_sup'
   map_bot f := f.map_bot'
 
@@ -1482,8 +1477,7 @@ variable [Inf α] [Top α] [Inf β] [Top β] [Inf γ] [Top γ]
 /-- Reinterpret a finitary infimum homomorphism as a finitary supremum homomorphism between the dual
 lattices. -/
 @[simps]
-protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ
-    where
+protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_top'⟩
   invFun f := ⟨InfHom.dual.symm f.toSupHom, f.map_bot'⟩
   left_inv _ := rfl
@@ -1651,9 +1645,9 @@ def withTop' [OrderTop β] (f : SupHom α β) : SupHom (WithTop α) β where
   toFun a := a.elim ⊤ f
   map_sup' a b :=
     match a, b with
-    | ⊤, ⊤ => top_sup_eq.symm
-    | ⊤, (b : α) => top_sup_eq.symm
-    | (a : α), ⊤ => sup_top_eq.symm
+    | ⊤, ⊤ => (top_sup_eq _).symm
+    | ⊤, (b : α) => (top_sup_eq _).symm
+    | (a : α), ⊤ => (sup_top_eq _).symm
     | (a : α), (b : α) => f.map_sup' _ _
 #align sup_hom.with_top' SupHom.withTop'
 
@@ -1663,9 +1657,9 @@ def withBot' [OrderBot β] (f : SupHom α β) : SupBotHom (WithBot α) β where
   toFun a := a.elim ⊥ f
   map_sup' a b :=
     match a, b with
-    | ⊥, ⊥ => bot_sup_eq.symm
-    | ⊥, (b : α) => bot_sup_eq.symm
-    | (a : α), ⊥ => sup_bot_eq.symm
+    | ⊥, ⊥ => (bot_sup_eq _).symm
+    | ⊥, (b : α) => (bot_sup_eq _).symm
+    | (a : α), ⊥ => (sup_bot_eq _).symm
     | (a : α), (b : α) => f.map_sup' _ _
   map_bot' := rfl
 #align sup_hom.with_bot' SupHom.withBot'
@@ -1729,9 +1723,9 @@ def withTop' [OrderTop β] (f : InfHom α β) : InfTopHom (WithTop α) β where
   toFun a := a.elim ⊤ f
   map_inf' a b :=
     match a, b with
-    | ⊤, ⊤ => top_inf_eq.symm
-    | ⊤, (b : α) => top_inf_eq.symm
-    | (a : α), ⊤ => inf_top_eq.symm
+    | ⊤, ⊤ => (top_inf_eq _).symm
+    | ⊤, (b : α) => (top_inf_eq _).symm
+    | (a : α), ⊤ => (inf_top_eq _).symm
     | (a : α), (b : α) => f.map_inf' _ _
   map_top' := rfl
 #align inf_hom.with_top' InfHom.withTop'
@@ -1742,9 +1736,9 @@ def withBot' [OrderBot β] (f : InfHom α β) : InfHom (WithBot α) β where
   toFun a := a.elim ⊥ f
   map_inf' a b :=
     match a, b with
-    | ⊥, ⊥ => bot_inf_eq.symm
-    | ⊥, (b : α) => bot_inf_eq.symm
-    | (a : α), ⊥ => inf_bot_eq.symm
+    | ⊥, ⊥ => (bot_inf_eq _).symm
+    | ⊥, (b : α) => (bot_inf_eq _).symm
+    | (a : α), ⊥ => (inf_bot_eq _).symm
     | (a : α), (b : α) => f.map_inf' _ _
 #align inf_hom.with_bot' InfHom.withBot'
 
@@ -1819,7 +1813,7 @@ lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
   DFunLike.coe_injective <| by
-    refine' (congr_arg Option.map _).trans Option.map_id
+    refine (congr_arg Option.map ?_).trans Option.map_id
     rw [withBot_id]
     rfl
 #align lattice_hom.with_top_with_bot_id LatticeHom.withTopWithBot_id

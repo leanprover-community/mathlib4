@@ -67,6 +67,10 @@ theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 #align linear_map.coe_mul LinearMap.coe_mul
 
+instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
+  obtain ⟨m, ne⟩ := exists_ne (0 : M)
+  exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
+
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
@@ -83,7 +87,7 @@ instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
     right_distrib := fun _ _ _ ↦ add_comp _ _ _
     natCast := fun n ↦ n • (1 : M →ₗ[R] M)
     natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
-    natCast_succ := fun n ↦ (AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)).trans (add_comm _ _) }
+    natCast_succ := fun n ↦ AddMonoid.nsmul_succ n (1 : M →ₗ[R] M) }
 #align module.End.semiring Module.End.semiring
 
 /-- See also `Module.End.natCast_def`. -/
@@ -98,7 +102,7 @@ theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
-    intCast_ofNat := coe_nat_zsmul _
+    intCast_ofNat := natCast_zsmul _
     intCast_negSucc := negSucc_zsmul _ }
 #align module.End.ring Module.End.ring
 
@@ -156,8 +160,8 @@ theorem commute_pow_left_of_commute
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction' k with k ih
   · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
-  · rw [pow_succ, pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
-      h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
+  · rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
+    ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 #align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
 
 @[simp]
@@ -167,7 +171,7 @@ theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
 
 variable {f' : M →ₗ[R] M}
 
-theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ', mul_eq_comp]
+theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
 #align linear_map.iterate_succ LinearMap.iterate_succ
 
 theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
@@ -199,7 +203,7 @@ theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
     Surjective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ, coe_mul] at h
+  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
   exact Surjective.of_comp h
 #align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
 
@@ -369,7 +373,8 @@ lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext;
 @[simp]
 lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
     f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
-  rcases eq_or_ne x 0 with rfl | hx; simp
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
   ext v
   replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
@@ -384,7 +389,6 @@ section Module
 
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂] [Module S M₂] [SMulCommClass R S M₂]
-
 variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.

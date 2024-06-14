@@ -41,7 +41,7 @@ Usage matches `contrapose`
 -/
 syntax (name := contrapose!) "contrapose!" (ppSpace colGt ident (" with " ident)?)? : tactic
 macro_rules
-  | `(tactic| contrapose!) => `(tactic| (contrapose; push_neg))
+  | `(tactic| contrapose!) => `(tactic| (contrapose; try push_neg))
   | `(tactic| contrapose! $e) => `(tactic| (revert $e:ident; contrapose!; intro $e:ident))
   | `(tactic| contrapose! $e with $e') => `(tactic| (revert $e:ident; contrapose!; intro $e':ident))
 

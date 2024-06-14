@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The base change of a clifford algebra
@@ -122,7 +122,7 @@ open MulOpposite
 
 /-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
 theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
-    (toBaseChange A Q).op.comp (reverseOp) =
+    (toBaseChange A Q).op.comp reverseOp =
       ((Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)).toAlgHom.comp <|
         (Algebra.TensorProduct.map
           (AlgEquiv.toOpposite A A).toAlgHom (reverseOp (Q := Q))).comp

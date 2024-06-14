@@ -8,7 +8,7 @@
   author : Chris Hughes
 3:
   title  : The Denumerability of the Rational Numbers
-  decl   : Rat.instDenumerableRat
+  decl   : Rat.instDenumerable
   author : Chris Hughes
 4:
   title  : Pythagorean Theorem
@@ -28,8 +28,7 @@
   title  : The Impossibility of Trisecting the Angle and Doubling the Cube
 9:
   title  : The Area of a Circle
-  links  :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/AreaOfACircle.lean
+  decl   : Theorems100.area_disc
   author : James Arthur, Benjamin Davidson, and Andrew Souther
 10:
   title  : Euler’s Generalization of Fermat’s Little Theorem
@@ -55,9 +54,8 @@
   author : Yury G. Kudryashov (first) and Benjamin Davidson (second)
 16:
   title  : Insolvability of General Higher Degree Equations (Abel-Ruffini Theorem)
-  author: Thomas Browning
-  links :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/AbelRuffini.lean
+  author : Thomas Browning
+  decl   : AbelRuffini.exists_not_solvable_by_rad
 17:
   title  : De Moivre’s Formula
   decl   : Complex.cos_add_sin_mul_I_pow
@@ -110,8 +108,7 @@
 30:
   title  : The Ballot Problem
   author : Bhavik Mehta, Kexing Ying
-  links  :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/BallotProblem.lean
+  decl   : Ballot.ballot_problem
 31:
   title  : Ramsey’s Theorem
   author : Bhavik Mehta
@@ -139,8 +136,7 @@
 37:
   title  : The Solution of a Cubic
   author : Jeoff Lee
-  links  :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/SolutionOfCubic.lean
+  decl   : Theorems100.cubic_eq_zero_iff
 38:
   title  : Arithmetic Mean/Geometric Mean
   decl   : Real.geom_mean_le_arith_mean_weighted
@@ -161,8 +157,7 @@
 42:
   title  : Sum of the Reciprocals of the Triangular Numbers
   author : Jalex Stark, Yury Kudryashov
-  links :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/InverseTriangleSum.lean
+  decl   : Theorems100.inverse_triangle_sum
 43:
   title  : The Isoperimetric Theorem
 44:
@@ -172,8 +167,7 @@
 45:
   title  : The Partition Theorem
   author : Bhavik Mehta, Aaron Anderson
-  links:
-    mathlib archive: https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/Partition.lean
+  decl   : Theorems100.partition_theorem
 46:
   title  : The Solution of the General Quartic Equation
 47:
@@ -198,8 +192,7 @@
   title  : Pi is Transcendental
 54:
   title  : Königsberg Bridges Problem
-  links:
-    mathlib archive: https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/Konigsberg.lean
+  decl   : Konigsberg.not_isEulerian
   author : Kyle Miller
 55:
   title  : Product of Segments of Chords
@@ -209,8 +202,7 @@
   title  : The Hermite-Lindemann Transcendence Theorem
 57:
   title  : Heron’s Formula
-  links :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/HeronsFormula.lean
+  decl   : Theorems100.heron
   author : Matt Kempster
 58:
   title  : Formula for the Number of Combinations
@@ -269,8 +261,7 @@
   author : mathlib
 70:
   title  : The Perfect Number Theorem
-  links  :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/PerfectNumbers.lean
+  decl   : Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect
   author : Aaron Anderson
 71:
   title  : Order of a Subgroup
@@ -287,8 +278,7 @@
   author : Chris Hughes
 73:
   title  : Ascending or Descending Sequences (Erdős–Szekeres Theorem)
-  links  :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/AscendingDescendingSequences.lean
+  decl   : Theorems100.erdos_szekeres
   author : Bhavik Mehta
 74:
   title  : The Principle of Mathematical Induction
@@ -301,7 +291,7 @@
   author : Yury G. Kudryashov
 76:
   title  : Fourier Series
-  decls   :
+  decls  :
     - fourierCoeff
     - hasSum_fourier_series_L2
   author : Heather Macbeth
@@ -333,19 +323,17 @@
   note   : "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 81:
   title  : Divergence of the Prime Reciprocal Series
-  links  :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/SumOfPrimeReciprocalsDiverges.lean
-  decl   : not_summable_one_div_on_primes
+  decls  :
+    - Theorems100.Real.tendsto_sum_one_div_prime_atTop
+    - not_summable_one_div_on_primes
   author : Manuel Candales (archive), Michael Stoll (Mathlib)
 82:
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
-  links :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/CubingACube.lean
+  decl   : Theorems100.«82».cannot_cube_a_cube
   author : Floris van Doorn
 83:
   title  : The Friendship Theorem
-  links  :
-    mathlib archive: https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/FriendshipGraphs.lean
+  decl   : Theorems100.friendship_theorem
   author : Aaron Anderson, Jalex Stark, Kyle Miller
 84:
   title  : Morley’s Theorem
@@ -385,8 +373,9 @@
   title  : Pick’s Theorem
 93:
   title  : The Birthday Problem
-  links  :
-    mathlib archive: https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/BirthdayProblem.lean
+  decls  :
+    - Theorems100.birthday
+    - Theorems100.birthday_measure
   author : Eric Rodriguez
 94:
   title  : The Law of Cosines
@@ -411,6 +400,11 @@
   author : Bolton Bailey, Patrick Stevens
 99:
   title  : Buffon Needle Problem
+  links  :
+  decls  :
+    - BuffonsNeedle.buffon_short
+    - BuffonsNeedle.buffon_long
+  author : Enrico Z. Borba
 100:
   title  : Descartes Rule of Signs
   links  :

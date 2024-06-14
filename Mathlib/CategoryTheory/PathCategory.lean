@@ -181,7 +181,7 @@ theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
 #align category_theory.compose_path_comp CategoryTheory.composePath_comp
 
 @[simp]
--- Porting note: TODO get rid of `(id X : C)` somehow?
+-- Porting note (#11215): TODO get rid of `(id X : C)` somehow?
 theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) := rfl
 #align category_theory.compose_path_id CategoryTheory.composePath_id
 

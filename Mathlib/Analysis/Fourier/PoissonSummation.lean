@@ -47,9 +47,7 @@ open Real
 
 open TopologicalSpace Filter MeasureTheory Asymptotics
 
-open scoped Real BigOperators Filter FourierTransform
-
-attribute [local instance] Real.fact_zero_lt_one
+open scoped Real Filter FourierTransform
 
 open ContinuousMap
 
@@ -62,7 +60,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨((↑) : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
   have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
-    have : ∀ x : ℝ, ‖e x‖ = 1 := fun x => abs_coe_circle (AddCircle.toCircle (-m • x))
+    have (x : ℝ) : ‖e x‖ = 1 := abs_coe_circle (AddCircle.toCircle (-m • x))
     intro K g
     simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
@@ -81,7 +79,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
         ← ContinuousMap.tsum_apply (summable_of_locally_summable_norm hf), tsum_mul_left]
     -- Swap sum and integral.
     _ = ∑' n : ℤ, ∫ x in (0:ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
-      refine' (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm _).symm
+      refine (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm ?_).symm
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
     _ = ∑' n : ℤ, ∫ x in (0:ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
@@ -146,12 +144,12 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
-  refine' ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => _⟩⟩
+  refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => ?_⟩⟩
   rw [ge_iff_le, max_le_iff] at hx
   have hx' : max 0 (-2 * R) < x := by linarith
   rw [max_lt_iff] at hx'
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
-  refine' fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans _
+  refine fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
   rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
   convert claim x (by linarith only [hx.1]) y.1 y.2.1
@@ -170,15 +168,15 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by
     ext1 x; simp only [Function.comp_apply, abs_neg]
   rw [this] at h2
-  refine' (isBigO_of_le _ fun x => _).trans h2
+  refine (isBigO_of_le _ fun x => ?_).trans h2
   -- equality holds, but less work to prove `≤` alone
   rw [norm_norm, Function.comp_apply, norm_norm, ContinuousMap.norm_le _ (norm_nonneg _)]
   rintro ⟨x, hx⟩
   rw [ContinuousMap.restrict_apply_mk]
-  refine' (le_of_eq _).trans (ContinuousMap.norm_coe_le_norm _ ⟨-x, _⟩)
-  rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
-    ContinuousMap.coe_mk, neg_neg]
-  exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
+  refine (le_of_eq ?_).trans (ContinuousMap.norm_coe_le_norm _ ⟨-x, ?_⟩)
+  · rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
+      ContinuousMap.coe_mk, neg_neg]
+    exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
@@ -192,14 +190,14 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     intro x
     rw [ContinuousMap.norm_le _ (norm_nonneg _)]
     rintro ⟨y, hy⟩
-    refine' (le_of_eq _).trans (ContinuousMap.norm_coe_le_norm _ ⟨y + x, _⟩)
+    refine (le_of_eq ?_).trans (ContinuousMap.norm_coe_le_norm _ ⟨y + x, ?_⟩)
     · simp_rw [ContinuousMap.restrict_apply, ContinuousMap.comp_apply, ContinuousMap.coe_addRight]
     · exact ⟨by linarith [(hr hy).1], by linarith [(hr hy).2]⟩
   simp_rw [cocompact_eq_atBot_atTop, isBigO_sup] at hf ⊢
   constructor
-  · refine' (isBigO_of_le atBot _).trans (isBigO_norm_Icc_restrict_atBot hb hf.1 (-r) r)
+  · refine (isBigO_of_le atBot ?_).trans (isBigO_norm_Icc_restrict_atBot hb hf.1 (-r) r)
     simp_rw [norm_norm]; exact this
-  · refine' (isBigO_of_le atTop _).trans (isBigO_norm_Icc_restrict_atTop hb hf.2 (-r) r)
+  · refine (isBigO_of_le atTop ?_).trans (isBigO_norm_Icc_restrict_atTop hb hf.2 (-r) r)
     simp_rw [norm_norm]; exact this
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_restrict_cocompact isBigO_norm_restrict_cocompact

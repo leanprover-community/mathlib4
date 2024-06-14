@@ -3,9 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.CommRing
 
 #align_import field_theory.mv_polynomial from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
@@ -24,21 +24,18 @@ open scoped Classical
 
 open Set LinearMap Submodule
 
-open BigOperators
-
 namespace MvPolynomial
 
 universe u v
 
 variable {σ : Type u} {K : Type v}
-
 variable (σ K) [Field K]
 
 theorem quotient_mk_comp_C_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
     Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) := by
-  refine' (injective_iff_map_eq_zero _).2 fun x hx => _
+  refine (injective_iff_map_eq_zero _).2 fun x hx => ?_
   rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem] at hx
-  refine' _root_.by_contradiction fun hx0 => absurd (I.eq_top_iff_one.2 _) hI
+  refine _root_.by_contradiction fun hx0 => absurd (I.eq_top_iff_one.2 ?_) hI
   have := I.mul_mem_left (MvPolynomial.C x⁻¹) hx
   rwa [← MvPolynomial.C.map_mul, inv_mul_cancel hx0, MvPolynomial.C_1] at this
 set_option linter.uppercaseLean3 false in

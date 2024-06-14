@@ -3,19 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Monoid.WithZero.Defs
-import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Tauto
 
+#align_import algebra.order.ring.char_zero from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
 /-!
@@ -246,13 +246,13 @@ theorem pow_nonneg (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
     exact zero_le_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_nonneg H (pow_nonneg H _)
+    exact mul_nonneg (pow_nonneg H _) H
 #align pow_nonneg pow_nonneg
 
 lemma pow_le_pow_of_le_one (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : ∀ {m n : ℕ}, m ≤ n → a ^ n ≤ a ^ m
   | _, _, Nat.le.refl => le_rfl
   | _, _, Nat.le.step h => by
-    rw [pow_succ]
+    rw [pow_succ']
     exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans $ pow_le_pow_of_le_one ha₀ ha₁ h
 #align pow_le_pow_of_le_one pow_le_pow_of_le_one
 
@@ -519,8 +519,7 @@ instance (priority := 200) StrictOrderedSemiring.toMulPosStrictMono : MulPosStri
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedSemiring.toOrderedSemiring` to avoid using choice in
 basic `Nat` lemmas. -/
-@[reducible]
-def StrictOrderedSemiring.toOrderedSemiring' [@DecidableRel α (· ≤ ·)] : OrderedSemiring α :=
+abbrev StrictOrderedSemiring.toOrderedSemiring' [@DecidableRel α (· ≤ ·)] : OrderedSemiring α :=
   { ‹StrictOrderedSemiring α› with
     mul_le_mul_of_nonneg_left := fun a b c hab hc => by
       obtain rfl | hab := Decidable.eq_or_lt_of_le hab
@@ -547,6 +546,13 @@ instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemi
       mul_le_mul_of_nonneg_right }
 #align strict_ordered_semiring.to_ordered_semiring StrictOrderedSemiring.toOrderedSemiring
 
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedSemiring.toCharZero [StrictOrderedSemiring α] :
+    CharZero α where
+  cast_injective :=
+    (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
+#align strict_ordered_semiring.to_char_zero StrictOrderedSemiring.toCharZero
+
 theorem mul_lt_mul (hac : a < c) (hbd : b ≤ d) (hb : 0 < b) (hc : 0 ≤ c) : a * b < c * d :=
   (mul_lt_mul_of_pos_right hac hb).trans_le <| mul_le_mul_of_nonneg_left hbd hc
 #align mul_lt_mul mul_lt_mul
@@ -563,7 +569,7 @@ theorem pow_pos (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
     exact zero_lt_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_pos H (pow_pos H _)
+    exact mul_pos (pow_pos H _) H
 #align pow_pos pow_pos
 
 theorem mul_self_lt_mul_self (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
@@ -771,8 +777,7 @@ variable [StrictOrderedCommSemiring α]
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedCommSemiring.toOrderedCommSemiring'` to avoid using
 choice in basic `Nat` lemmas. -/
-@[reducible]
-def StrictOrderedCommSemiring.toOrderedCommSemiring' [@DecidableRel α (· ≤ ·)] :
+abbrev StrictOrderedCommSemiring.toOrderedCommSemiring' [@DecidableRel α (· ≤ ·)] :
     OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring' with }
 #align strict_ordered_comm_semiring.to_ordered_comm_semiring' StrictOrderedCommSemiring.toOrderedCommSemiring'
@@ -801,8 +806,7 @@ instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrd
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedRing.toOrderedRing` to avoid using choice in basic
 `Int` lemmas. -/
-@[reducible]
-def StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : OrderedRing α :=
+abbrev StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : OrderedRing α :=
   { ‹StrictOrderedRing α›, (Ring.toSemiring : Semiring α) with
     mul_nonneg := fun a b ha hb => by
       obtain ha | ha := Decidable.eq_or_lt_of_le ha
@@ -827,8 +831,7 @@ variable [StrictOrderedCommRing α]
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedCommRing.toOrderedCommRing` to avoid using
 choice in basic `Int` lemmas. -/
-@[reducible]
-def StrictOrderedCommRing.toOrderedCommRing' [@DecidableRel α (· ≤ ·)] : OrderedCommRing α :=
+abbrev StrictOrderedCommRing.toOrderedCommRing' [@DecidableRel α (· ≤ ·)] : OrderedCommRing α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toOrderedRing' with }
 #align strict_ordered_comm_ring.to_ordered_comm_ring' StrictOrderedCommRing.toOrderedCommRing'
 
@@ -863,7 +866,7 @@ attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiri
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
-  refine' Decidable.or_iff_not_and_not.2 _
+  refine Decidable.or_iff_not_and_not.2 ?_
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
   rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
@@ -1214,12 +1217,17 @@ lemma sq_nonneg (a : α) : 0 ≤ a ^ 2 := by
     b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
     _ = a * (a + b) := by simp [← hab]
     _ = a ^ 2 + a * b := by rw [sq, mul_add]
+#align sq_nonneg sq_nonneg
+
+alias pow_two_nonneg := sq_nonneg
+#align pow_two_nonneg pow_two_nonneg
 
 lemma mul_self_nonneg (a : α) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
 /-- The sum of two squares is zero iff both elements are zero. -/
 lemma mul_self_add_mul_self_eq_zero : a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
-  rw [add_eq_zero_iff', mul_self_eq_zero, mul_self_eq_zero] <;> apply mul_self_nonneg
+  rw [add_eq_zero_iff', mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
+    apply mul_self_nonneg
 #align mul_self_add_mul_self_eq_zero mul_self_add_mul_self_eq_zero
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0 :=
@@ -1278,21 +1286,23 @@ instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
 -- `[LinearOrderedSemiring α] [ExistsAddOfLE α]`?
 
 lemma mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
-  rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff, neg_pos, neg_lt_zero]
+  rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff (α := α), neg_pos, neg_lt_zero]
 #align mul_neg_iff mul_neg_iff
 
 lemma mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
-  rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg, neg_nonpos]
+  rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff (α := α), neg_nonneg, neg_nonpos]
 #align mul_nonpos_iff mul_nonpos_iff
 
 lemma mul_nonneg_iff_neg_imp_nonpos : 0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
-  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg (α := α)]; simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_pos_imp_nonpos : a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
-  rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg (α := α)]
+  simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_neg_imp_nonneg : a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
-  rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg (α := α)]
+  simp only [neg_pos, neg_nonneg]
 
 lemma neg_one_lt_zero : -1 < (0 : α) := neg_lt_zero.2 zero_lt_one
 #align neg_one_lt_zero neg_one_lt_zero
@@ -1320,12 +1330,7 @@ instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
 #align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023/12/23
--/
-
+-- 2023-12-23
 @[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
 @[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
 @[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left

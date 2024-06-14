@@ -40,9 +40,13 @@ variable {V : Type*}
 it is convex, compact, and nonempty.
 -/
 structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
+  /-- The **carrier set** underlying a convex body: the set of points contained in it -/
   carrier : Set V
+  /-- A convex body has convex carrier set -/
   convex' : Convex ℝ carrier
+  /-- A convex body has compact carrier set -/
   isCompact' : IsCompact carrier
+  /-- A convex body has non-empty carrier set -/
   nonempty' : carrier.Nonempty
 #align convex_body ConvexBody
 
@@ -67,7 +71,7 @@ protected theorem isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
   K.isCompact'
 #align convex_body.is_compact ConvexBody.isCompact
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 protected theorem isClosed [T2Space V] (K : ConvexBody V) : IsClosed (K : Set V) :=
   K.isCompact.isClosed
 
@@ -110,7 +114,7 @@ instance : SMul ℕ (ConvexBody V) where
 -- Porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
-  | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) rfl (coe_nsmul n K)
+  | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
 
 instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
@@ -223,7 +227,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     obtain ⟨n, hn⟩ := hu (ε / C) (div_pos hε hC_pos)
     obtain ⟨y, hyK, rfl⟩ := Set.mem_smul_set.mp (Set.mem_iInter.mp h n)
     refine ⟨y, hyK, ?_⟩
-    rw [show (1 + u n : ℝ) • y - y = (u n : ℝ) • y by rw [add_smul, one_smul, add_sub_cancel'],
+    rw [show (1 + u n : ℝ) • y - y = (u n : ℝ) • y by rw [add_smul, one_smul, add_sub_cancel_left],
       norm_smul, Real.norm_eq_abs]
     specialize hn n le_rfl
     rw [_root_.lt_div_iff' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn

@@ -121,17 +121,20 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     ext y
     simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
       LinearMap.id_coe, LinearEquiv.coe_coe, LinearMap.mul_apply, LinearMap.add_apply, id_eq,
-      LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel', smul_neg,
-      sub_neg_eq_add, sub_smul]
+      LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel_left,
+      smul_neg, sub_neg_eq_add, sub_smul]
     abel
   replace hu : ∀ (n : ℕ),
       ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
     intros n
-    induction' n with n ih; simp
-    have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by ext; simp [hf₁, hg₁]
-    rw [pow_succ, LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
-    simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero, add_assoc,
-      Nat.cast_succ, add_smul, one_smul]
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by
+        ext; simp [hf₁, hg₁]
+      rw [pow_succ', LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
+      simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
+        add_assoc, Nat.cast_succ, add_smul, one_smul]
   suffices IsOfFinOrder u by
     obtain ⟨n, hn₀, hn₁⟩ := isOfFinOrder_iff_pow_eq_one.mp this
     replace hn₁ : (↑(u ^ n) : M →ₗ[R] M) = LinearMap.id := LinearEquiv.toLinearMap_inj.mpr hn₁
@@ -151,7 +154,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
   have hΦ'₁ : Φ'.Finite := finite_range (inclusion Submodule.subset_span)
   have hΦ'₂ : span R Φ' = ⊤ := by simp [Φ']
   let x' : span R Φ := ⟨x, hx'⟩
-  have hx' : x' ≠ 0 := Subtype.ne_of_val_ne hx
+  have hx' : x' ≠ 0 := Subtype.coe_ne_coe.1 hx
   have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'

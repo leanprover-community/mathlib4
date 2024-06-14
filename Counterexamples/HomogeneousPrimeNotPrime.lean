@@ -104,8 +104,8 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
     of (grading R ·) 0 ⟨(zz.1, zz.1), rfl⟩ +
     of (grading R ·) 1 ⟨(0, zz.2 - zz.1), rfl⟩
   map_zero' := by
-    refine' DFinsupp.ext (fun (i : Two) =>
-        Option.casesOn i _ (fun (i_1 : Unit) => PUnit.casesOn i_1 _)) <;> rfl
+    refine DFinsupp.ext (fun (i : Two) =>
+        Option.casesOn i ?_ (fun (i_1 : Unit) => PUnit.casesOn i_1 ?_)) <;> rfl
   map_add' := by
     rintro ⟨a1, b1⟩ ⟨a2, b2⟩
     rw [add_add_add_comm, ← map_add, ← map_add]
@@ -134,7 +134,7 @@ theorem grading.left_inv : Function.LeftInverse (coeLinearMap (grading R)) gradi
   cases' zz with a b
   unfold grading.decompose
   simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, map_add, coeLinearMap_of, Prod.mk_add_mk,
-    add_zero, add_sub_cancel'_right]
+    add_zero, add_sub_cancel]
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.left_inv Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.left_inv
 
 instance : GradedAlgebra (grading R) where
@@ -165,7 +165,7 @@ theorem I_not_prime : ¬I.IsPrime := by
 
 theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Ideal.IsHomogeneous.iff_exists]
-  refine' ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, _⟩
+  refine ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, ?_⟩
   rw [Set.image_singleton]
   rfl
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.I_is_homogeneous Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I_isHomogeneous

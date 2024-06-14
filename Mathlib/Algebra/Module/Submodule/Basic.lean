@@ -3,8 +3,8 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.Submonoid.Membership
 
 #align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
 
@@ -26,8 +26,6 @@ submodule, subspace, linear map
 
 
 open Function
-
-open BigOperators
 
 universe u'' u' u v w
 
@@ -205,11 +203,8 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-
 variable {p q : Submodule R M}
-
 variable {r : R} {x y : M}
-
 variable (p)
 
 -- Porting note: removing `@[simp]` since it can already be proven
@@ -235,12 +230,12 @@ theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h
   p.toSubMulAction.smul_of_tower_mem r h
 #align submodule.smul_of_tower_mem Submodule.smul_of_tower_mem
 
-protected theorem sum_mem {t : Finset ι} {f : ι → M} : (∀ c ∈ t, f c ∈ p) → (∑ i in t, f i) ∈ p :=
+protected theorem sum_mem {t : Finset ι} {f : ι → M} : (∀ c ∈ t, f c ∈ p) → (∑ i ∈ t, f i) ∈ p :=
   sum_mem
 #align submodule.sum_mem Submodule.sum_mem
 
 theorem sum_smul_mem {t : Finset ι} {f : ι → M} (r : ι → R) (hyp : ∀ c ∈ t, f c ∈ p) :
-    (∑ i in t, r i • f i) ∈ p :=
+    (∑ i ∈ t, r i • f i) ∈ p :=
   sum_mem fun i hi => smul_mem _ _ (hyp i hi)
 #align submodule.sum_smul_mem Submodule.sum_smul_mem
 
@@ -386,11 +381,8 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M]
-
 variable {module_M : Module R M}
-
 variable (p p' : Submodule R M)
-
 variable {r : R} {x y : M}
 
 instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
@@ -485,7 +477,6 @@ end AddCommGroup
 section IsDomain
 
 variable [Ring R] [IsDomain R]
-
 variable [AddCommGroup M] [Module R M] {b : ι → M}
 
 theorem not_mem_of_ortho {x : M} {N : Submodule R M}
@@ -503,12 +494,28 @@ end IsDomain
 
 end Submodule
 
+namespace SubmoduleClass
+
+instance (priority := 75) module' {T : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
+    [Module R M] [SMul S R] [Module S M] [IsScalarTower S R M] [SetLike T M] [AddSubmonoidClass T M]
+    [SMulMemClass T R M] (t : T) : Module S t where
+  one_smul _ := by ext; simp
+  mul_smul _ _ _ := by ext; simp [mul_smul]
+  smul_zero _ := by ext; simp
+  zero_smul _ := by ext; simp
+  add_smul _ _ _ := by ext; simp [add_smul]
+  smul_add _ _ _ := by ext; simp [smul_add]
+
+instance (priority := 75) module [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+    [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Module R s :=
+  module' s
+
+end SubmoduleClass
+
 namespace Submodule
 
 variable [DivisionSemiring S] [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable [SMul S R] [Module S M] [IsScalarTower S R M]
-
 variable (p : Submodule R M) {s : S} {x y : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=

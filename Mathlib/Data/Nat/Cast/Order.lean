@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Nat.Cast.NeZero
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -34,7 +34,7 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
-@[deprecated mono_cast] -- Since 2024-02-10
+@[deprecated mono_cast (since := "2024-02-10")]
 theorem cast_le_cast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
 @[gcongr]

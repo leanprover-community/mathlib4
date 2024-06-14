@@ -27,7 +27,6 @@ set_option linter.uppercaseLean3 false
 open Finset Function
 
 open scoped Classical
-open BigOperators
 
 noncomputable section
 
@@ -51,6 +50,7 @@ instance : Add (HahnSeries Γ R) where
 instance : AddMonoid (HahnSeries Γ R) where
   zero := 0
   add := (· + ·)
+  nsmul := nsmulRec
   add_assoc x y z := by
     ext
     apply add_assoc
@@ -83,8 +83,10 @@ theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
-  refine' le_of_eq_of_le _ (Set.IsWF.min_le_min_of_subset (support_add_subset (x := x) (y := y)))
-  exact (Set.IsWF.min_union _ _ _ _).symm
+  apply le_of_eq_of_le _ (Set.IsWF.min_le_min_of_subset (support_add_subset (x := x) (y := y)))
+  · simp
+  · simp [hy]
+  · exact (Set.IsWF.min_union _ _ _ _).symm
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 /-- `single` as an additive monoid/group homomorphism -/
@@ -131,13 +133,16 @@ section AddGroup
 
 variable [AddGroup R]
 
+instance : Neg (HahnSeries Γ R) where
+  neg x :=
+    { coeff := fun a => -x.coeff a
+      isPWO_support' := by
+        rw [Function.support_neg]
+        exact x.isPWO_support }
+
 instance : AddGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
-    neg := fun x =>
-      { coeff := fun a => -x.coeff a
-        isPWO_support' := by
-          rw [Function.support_neg]
-          exact x.isPWO_support }
+    zsmul := zsmulRec
     add_left_neg := fun x => by
       ext
       apply add_left_neg }

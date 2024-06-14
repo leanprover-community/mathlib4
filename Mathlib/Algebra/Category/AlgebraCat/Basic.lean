@@ -190,13 +190,11 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
         rfl }
 #align Algebra.adj AlgebraCat.adj
 
-instance : IsRightAdjoint (forget (AlgebraCat.{u} R)) :=
-  ⟨_, adj R⟩
+instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
 end AlgebraCat
 
 variable {R}
-
 variable {X₁ X₂ : Type u}
 
 /-- Build an isomorphism in the category `AlgebraCat R` from a `AlgEquiv` between `Algebra`s. -/
@@ -248,9 +246,22 @@ def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebr
 instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraCat R) :=
   ⟨fun N => AlgebraCat.of R N⟩
 
-instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R)) where
+instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩
+    exact e.toAlgebraIso.isIso_hom
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos
+
+/-!
+`@[simp]` lemmas for `AlgHom.comp` and categorical identities.
+-/
+
+@[simp] theorem AlgHom.comp_id_algebraCat
+    {R} [CommRing R] {G : AlgebraCat.{u} R} {H : Type u} [Ring H] [Algebra R H] (f : G →ₐ[R] H) :
+    f.comp (𝟙 G) = f :=
+  Category.id_comp (AlgebraCat.ofHom f)
+@[simp] theorem AlgHom.id_algebraCat_comp
+    {R} [CommRing R] {G : Type u} [Ring G] [Algebra R G] {H : AlgebraCat.{u} R} (f : G →ₐ[R] H) :
+    AlgHom.comp (𝟙 H) f = f :=
+  Category.comp_id (AlgebraCat.ofHom f)

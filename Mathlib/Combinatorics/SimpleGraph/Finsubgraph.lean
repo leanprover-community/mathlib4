@@ -61,7 +61,7 @@ instance : Sup G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
 
 instance : Inf G.Finsubgraph :=
-  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset <| inter_subset_left _ _⟩⟩
+  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
 
 instance : DistribLattice G.Finsubgraph :=
   Subtype.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
@@ -102,14 +102,14 @@ theorem singletonFinsubgraph_le_adj_right {u v : V} {e : G.Adj u v} :
 
 /-- Given a homomorphism from a subgraph to `F`, construct its restriction to a sub-subgraph. -/
 def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' →fg F) : G'' →fg F := by
-  refine' ⟨fun ⟨v, hv⟩ => f.toFun ⟨v, h.1 hv⟩, _⟩
+  refine ⟨fun ⟨v, hv⟩ => f.toFun ⟨v, h.1 hv⟩, ?_⟩
   rintro ⟨u, hu⟩ ⟨v, hv⟩ huv
   exact f.map_rel' (h.2 huv)
 #align simple_graph.finsubgraph_hom.restrict SimpleGraph.FinsubgraphHom.restrict
 
 /-- The inverse system of finite homomorphisms. -/
-def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) : G.Finsubgraphᵒᵖ ⥤ Type max u v
-    where
+def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
+    G.Finsubgraphᵒᵖ ⥤ Type max u v where
   obj G' := G'.unop →fg F
   map g f := f.restrict (CategoryTheory.leOfHom g.unop)
 #align simple_graph.finsubgraph_hom_functor SimpleGraph.finsubgraphHomFunctor
@@ -130,7 +130,7 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
     exact Fintype.ofInjective (fun f => f.toFun) RelHom.coe_fn_injective
   -- Use compactness to obtain a section.
   obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (finsubgraphHomFunctor G F)
-  refine' ⟨⟨fun v => _, _⟩⟩
+  refine ⟨⟨fun v => ?_, ?_⟩⟩
   · -- Map each vertex using the homomorphism provided for its singleton subgraph.
     exact
       (u (Opposite.op (singletonFinsubgraph v))).toFun
@@ -148,7 +148,7 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
       Quiver.Hom.op (CategoryTheory.homOfLE singletonFinsubgraph_le_adj_right)
     rw [← hu hv, ← hu hv']
     -- Porting note: was `apply Hom.map_adj`
-    refine' Hom.map_adj (u (Opposite.op (finsubgraphOfAdj e))) _
+    refine Hom.map_adj (u (Opposite.op (finsubgraphOfAdj e))) ?_
     -- `v` and `v'` are definitionally adjacent in `finsubgraphOfAdj e`
     simp [finsubgraphOfAdj]
 #align simple_graph.nonempty_hom_of_forall_finite_subgraph_hom SimpleGraph.nonempty_hom_of_forall_finite_subgraph_hom

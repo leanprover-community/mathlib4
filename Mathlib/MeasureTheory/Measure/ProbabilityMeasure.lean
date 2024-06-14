@@ -126,14 +126,8 @@ def toMeasure : ProbabilityMeasure Ω → Measure Ω := Subtype.val
 instance : Coe (ProbabilityMeasure Ω) (MeasureTheory.Measure Ω) where
   coe := toMeasure
 
-instance : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
-  ⟨fun μ s => ((μ : Measure Ω) s).toNNReal⟩
-
 instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :=
   μ.prop
-
--- Porting note: syntactic tautology because of the way coercions work in Lean 4
-#noalign measure_theory.probability_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure
 
 @[simp, norm_cast] lemma coe_mk (μ : Measure Ω) (hμ) : toMeasure ⟨μ, hμ⟩ = μ := rfl
 
@@ -146,19 +140,38 @@ theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω 
   Subtype.coe_injective
 #align measure_theory.probability_measure.coe_injective MeasureTheory.ProbabilityMeasure.toMeasure_injective
 
--- Porting note: removed `@[simp]` because `simp` can prove it
+instance instFunLike : FunLike (ProbabilityMeasure Ω) (Set Ω) ℝ≥0 where
+  coe μ s := ((μ : Measure Ω) s).toNNReal
+  coe_injective' μ ν h := toMeasure_injective $ Measure.ext fun s _ ↦ by
+    simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
+
+lemma coeFn_def (μ : ProbabilityMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
+#align measure_theory.probability_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure MeasureTheory.ProbabilityMeasure.coeFn_def
+
+lemma coeFn_mk (μ : Measure Ω) (hμ) :
+    DFunLike.coe (F := ProbabilityMeasure Ω) ⟨μ, hμ⟩ = fun s ↦ (μ s).toNNReal := rfl
+
+@[simp, norm_cast]
+lemma mk_apply (μ : Measure Ω) (hμ) (s : Set Ω) :
+    DFunLike.coe (F := ProbabilityMeasure Ω) ⟨μ, hμ⟩ s = (μ s).toNNReal := rfl
+
+@[simp, norm_cast]
 theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
   congr_arg ENNReal.toNNReal ν.prop.measure_univ
 #align measure_theory.probability_measure.coe_fn_univ MeasureTheory.ProbabilityMeasure.coeFn_univ
 
 theorem coeFn_univ_ne_zero (ν : ProbabilityMeasure Ω) : ν univ ≠ 0 := by
-  simp only [coeFn_univ, Ne.def, one_ne_zero, not_false_iff]
+  simp only [coeFn_univ, Ne, one_ne_zero, not_false_iff]
 #align measure_theory.probability_measure.coe_fn_univ_ne_zero MeasureTheory.ProbabilityMeasure.coeFn_univ_ne_zero
 
 /-- A probability measure can be interpreted as a finite measure. -/
 def toFiniteMeasure (μ : ProbabilityMeasure Ω) : FiniteMeasure Ω :=
   ⟨μ, inferInstance⟩
 #align measure_theory.probability_measure.to_finite_measure MeasureTheory.ProbabilityMeasure.toFiniteMeasure
+
+@[simp] lemma coeFn_toFiniteMeasure (μ : ProbabilityMeasure Ω) : ⇑μ.toFiniteMeasure = μ := rfl
+lemma toFiniteMeasure_apply (μ : ProbabilityMeasure Ω) (s : Set Ω) :
+    μ.toFiniteMeasure s = μ s := rfl
 
 @[simp]
 theorem toMeasure_comp_toFiniteMeasure_eq_toMeasure (ν : ProbabilityMeasure Ω) :
@@ -171,6 +184,10 @@ theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Set Ω → ℝ≥0) = (ν : Set Ω → ℝ≥0) :=
   rfl
 #align measure_theory.probability_measure.coe_fn_comp_to_finite_measure_eq_coe_fn MeasureTheory.ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn
+
+@[simp]
+theorem toFiniteMeasure_apply_eq_apply (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    ν.toFiniteMeasure s = ν s := rfl
 
 @[simp]
 theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
@@ -312,7 +329,6 @@ end convergence_in_distribution -- section
 section Hausdorff
 
 variable [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [BorelSpace Ω]
-
 variable (Ω)
 
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
@@ -351,46 +367,41 @@ def normalize : ProbabilityMeasure Ω :=
   else
     { val := ↑(μ.mass⁻¹ • μ)
       property := by
-        refine' ⟨_⟩
+        refine ⟨?_⟩
         -- Porting note: paying the price that this isn't `simp` lemma now.
         rw [FiniteMeasure.toMeasure_smul]
-        simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-          Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
-        rw [← Ne.def, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
+        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply, ne_eq,
+          mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
+        rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 #align measure_theory.finite_measure.normalize MeasureTheory.FiniteMeasure.normalize
 
 @[simp]
 theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
   obtain rfl | h := eq_or_ne μ 0
-  · simp only [zero_mass, coeFn_zero, Pi.zero_apply, zero_mul]
-    rfl
+  · simp
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
   simp only [normalize, dif_neg mass_nonzero]
-  change μ s = mass μ * ((mass μ)⁻¹ • μ) s
-  -- Porting note: this `change` is a hack, but I had trouble coming up with something better
-  simp only [toMeasure_smul, Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-    Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.toNNReal_mul, ENNReal.toNNReal_coe,
-    mul_inv_cancel_left₀ mass_nonzero]
+  simp [ProbabilityMeasure.coe_mk, toMeasure_smul, mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
 #align measure_theory.finite_measure.self_eq_mass_mul_normalize MeasureTheory.FiniteMeasure.self_eq_mass_mul_normalize
 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
   apply eq_of_forall_apply_eq
   intro s _s_mble
-  rw [μ.self_eq_mass_mul_normalize s, coeFn_smul_apply, smul_eq_mul,
+  rw [μ.self_eq_mass_mul_normalize s, smul_apply, smul_eq_mul,
     ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
 #align measure_theory.finite_measure.self_eq_mass_smul_normalize MeasureTheory.FiniteMeasure.self_eq_mass_smul_normalize
 
 theorem normalize_eq_of_nonzero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
   simp only [μ.self_eq_mass_mul_normalize, μ.mass_nonzero_iff.mpr nonzero, inv_mul_cancel_left₀,
-    Ne.def, not_false_iff]
+    Ne, not_false_iff]
 #align measure_theory.finite_measure.normalize_eq_of_nonzero MeasureTheory.FiniteMeasure.normalize_eq_of_nonzero
 
 theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
     μ.normalize.toFiniteMeasure = μ.mass⁻¹ • μ := by
   nth_rw 3 [μ.self_eq_mass_smul_normalize]
   rw [← smul_assoc]
-  simp only [μ.mass_nonzero_iff.mpr nonzero, Algebra.id.smul_eq_mul, inv_mul_cancel, Ne.def,
+  simp only [μ.mass_nonzero_iff.mpr nonzero, Algebra.id.smul_eq_mul, inv_mul_cancel, Ne,
     not_false_iff, one_smul]
 #align measure_theory.finite_measure.normalize_eq_inv_mass_smul_of_nonzero MeasureTheory.FiniteMeasure.normalize_eq_inv_mass_smul_of_nonzero
 
@@ -408,8 +419,7 @@ theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : Measur
   apply ProbabilityMeasure.eq_of_forall_apply_eq
   intro s _s_mble
   rw [μ.toFiniteMeasure.normalize_eq_of_nonzero μ.toFiniteMeasure_nonzero s]
-  simp only [ProbabilityMeasure.mass_toFiniteMeasure, inv_one, one_mul]
-  congr
+  simp only [ProbabilityMeasure.mass_toFiniteMeasure, inv_one, one_mul, μ.coeFn_toFiniteMeasure]
 #align probability_measure.to_finite_measure_normalize_eq_self ProbabilityMeasure.toFiniteMeasure_normalize_eq_self
 
 /-- Averaging with respect to a finite measure is the same as integrating against
@@ -436,7 +446,6 @@ theorem normalize_testAgainstNN (nonzero : μ ≠ 0) (f : Ω →ᵇ ℝ≥0) :
 #align measure_theory.finite_measure.normalize_test_against_nn MeasureTheory.FiniteMeasure.normalize_testAgainstNN
 
 variable [OpensMeasurableSpace Ω]
-
 variable {μ}
 
 theorem tendsto_testAgainstNN_of_tendsto_normalize_testAgainstNN_of_tendsto_mass {γ : Type*}
@@ -478,7 +487,7 @@ theorem tendsto_normalize_testAgainstNN_of_tendsto {γ : Type*} {F : Filter γ}
   have lim_pair :
     Tendsto (fun i => (⟨(μs i).mass⁻¹, (μs i).testAgainstNN f⟩ : ℝ≥0 × ℝ≥0)) F
       (𝓝 ⟨μ.mass⁻¹, μ.testAgainstNN f⟩) := by
-    refine' (Prod.tendsto_iff _ _).mpr ⟨_, _⟩
+    refine (Prod.tendsto_iff _ _).mpr ⟨?_, ?_⟩
     · exact (continuousOn_inv₀.continuousAt aux).tendsto.comp lim_mass
     · exact tendsto_iff_forall_testAgainstNN_tendsto.mp μs_lim f
   exact tendsto_mul.comp lim_pair
