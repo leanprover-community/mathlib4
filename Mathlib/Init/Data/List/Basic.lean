@@ -65,4 +65,6 @@ protected def ret {α : Type u} (a : α) : List α := [a]
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt
 
+@[deprecated (since := "2024-06-07")] alias toArray_data := Array.data_toArray
+
 end List

@@ -253,7 +253,7 @@ end ToMLListultiset
 
 namespace Finset
 
-variable {s t : Finset α} {f : α → β} {n : ℕ}
+variable {s t u : Finset α} {f : α → β} {n : ℕ}
 
 @[simp]
 theorem length_toList (s : Finset α) : s.toList.length = s.card := by
@@ -441,15 +441,16 @@ See `Fintype.card_bijective` for the version where `s` and `t` are `univ`. -/
 lemma card_bijective (e : α → β) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t) :
     s.card = t.card := card_equiv (.ofBijective e he) hst
 
-end bij
-
-theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t)
-    (f_inj : ∀ a₁ ∈ s, ∀ a₂ ∈ s, f a₁ = f a₂ → a₁ = a₂) : s.card ≤ t.card := by
+lemma card_le_card_of_injOn (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : (s : Set α).InjOn f) :
+    s.card ≤ t.card := by
   classical
   calc
     s.card = (s.image f).card := (card_image_of_injOn f_inj).symm
     _      ≤ t.card           := card_le_card <| image_subset_iff.2 hf
-#align finset.card_le_card_of_inj_on Finset.card_le_card_of_inj_on
+@[deprecated (since := "2024-06-01")] alias card_le_card_of_inj_on := card_le_card_of_injOn
+
+lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : t.card ≤ s.card := by
+  classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
 -/
@@ -457,41 +458,34 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : t.card < s.
     (hf : ∀ a ∈ s, f a ∈ t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
   by_contra! hz
-  refine hc.not_le (card_le_card_of_inj_on f hf ?_)
+  refine hc.not_le (card_le_card_of_injOn f hf ?_)
   intro x hx y hy
   contrapose
   exact hz x hx y hy
 #align finset.exists_ne_map_eq_of_card_lt_of_maps_to Finset.exists_ne_map_eq_of_card_lt_of_maps_to
 
-theorem le_card_of_inj_on_range (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
+lemma le_card_of_inj_on_range (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
     (f_inj : ∀ i < n, ∀ j < n, f i = f j → i = j) : n ≤ s.card :=
   calc
     n = card (range n) := (card_range n).symm
-    _ ≤ s.card := card_le_card_of_inj_on f (by simpa only [mem_range]) (by simpa only [mem_range])
+    _ ≤ s.card := card_le_card_of_injOn f (by simpa only [mem_range]) (by simpa)
 #align finset.le_card_of_inj_on_range Finset.le_card_of_inj_on_range
 
-theorem surj_on_of_inj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
+lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : t.card ≤ s.card) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   classical
-  intro b hb
   have h : (s.attach.image fun a : { a // a ∈ s } => f a a.prop).card = s.card := by
-    rw [← @card_attach _ s]
-    apply card_image_of_injective
+    rw [← @card_attach _ s, card_image_of_injective]
     intro ⟨_, _⟩ ⟨_, _⟩ h
     exact Subtype.eq <| hinj _ _ _ _ h
-  have h' : image (fun a : { a // a ∈ s } => f a a.prop) s.attach = t := by
-    apply eq_of_subset_of_card_le
-    · intro b h
-      obtain ⟨_, _, rfl⟩ := mem_image.1 h
-      apply hf
-    · simp [hst, h]
-  rw [← h'] at hb
-  obtain ⟨a, _, rfl⟩ := mem_image.1 hb
-  use a, a.2
+  obtain rfl : image (fun a : { a // a ∈ s } => f a a.prop) s.attach = t :=
+    eq_of_subset_of_card_le (image_subset_iff.2 $ by simpa) (by simp [hst, h])
+  simp only [mem_image, mem_attach, true_and, Subtype.exists, forall_exists_index]
+  exact fun b a ha hb ↦ ⟨a, ha, hb.symm⟩
 #align finset.surj_on_of_inj_on_of_card_le Finset.surj_on_of_inj_on_of_card_le
 
-theorem inj_on_of_surj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
+theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : s.card ≤ t.card) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) : a₁ = a₂ :=
   haveI : Inhabited { x // x ∈ s } := ⟨⟨a₁, ha₁⟩⟩
@@ -511,6 +505,8 @@ theorem inj_on_of_surj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf :
     (leftInverse_of_surjective_of_rightInverse hsg (rightInverse_surjInv _)).injective
   Subtype.ext_iff_val.1 (@hif ⟨a₁, ha₁⟩ ⟨a₂, ha₂⟩ (Subtype.eq ha₁a₂))
 #align finset.inj_on_of_surj_on_of_card_le Finset.inj_on_of_surj_on_of_card_le
+
+end bij
 
 @[simp]
 theorem card_disjUnion (s t : Finset α) (h) : (s.disjUnion t h).card = s.card + t.card :=
@@ -603,6 +599,14 @@ lemma card_sdiff_add_card_inter (s t : Finset α) :
 lemma card_inter_add_card_sdiff (s t : Finset α) :
     (s ∩ t).card + (s \ t).card = s.card := by
   rw [add_comm, card_sdiff_add_card_inter]
+
+/-- **Pigeonhole principle** for two finsets inside an ambient finset. -/
+theorem inter_nonempty_of_card_lt_card_add_card (hts : t ⊆ s) (hus : u ⊆ s)
+    (hstu : s.card < t.card + u.card) : (t ∩ u).Nonempty := by
+  contrapose! hstu
+  calc
+    _ = (t ∪ u).card := by simp [← card_union_add_card_inter, not_nonempty_iff_eq_empty.1 hstu]
+    _ ≤ s.card := by gcongr; exact union_subset hts hus
 
 end Lattice
 
