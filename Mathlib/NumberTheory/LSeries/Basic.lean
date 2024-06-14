@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Michael Stoll
 -/
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Data.Complex.FiniteDimensional
 
 #align_import number_theory.l_series from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
