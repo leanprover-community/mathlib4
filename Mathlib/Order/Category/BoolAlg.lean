@@ -118,6 +118,7 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
 #align BoolAlg_dual_comp_forget_to_BddDistLat boolAlg_dual_comp_forget_to_bddDistLat
 
 /-- The powerset functor. `Set` as a contravariant functor. -/
+@[simps]
 def typeToBoolAlgOp : Type u ⥤ BoolAlgᵒᵖ where
   obj X := op $ BoolAlg.of (Set X)
   map {X Y} f := Quiver.Hom.op
