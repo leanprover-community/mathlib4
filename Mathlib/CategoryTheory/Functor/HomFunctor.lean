@@ -4,6 +4,7 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Enriched.Basic
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 
 universe w v' v u u'
 
@@ -87,7 +88,7 @@ def HomEquiv (A : C ⥤ Type max u v v') :
   toFun φ :=
     { app := fun X a => (φ.app X a).app X (𝟙 _)
       naturality := fun {X Y} f a => by
-        erw [← (φ.app X a).naturality f (𝟙 _),]
+        erw [← (φ.app X a).naturality f (𝟙 _)]
         have := HomObj.congr_app (congr_fun (φ.naturality f) a) Y (𝟙 _)
         dsimp [functorHom] at this
         aesop }
@@ -117,34 +118,78 @@ lemma _root_.Functor.comp_app_apply {A A' A'' : C ⥤ Type v} (f : A ⟶ A') (g 
     {X : C} (x : A.obj X) :
     (f ≫ g).app X x = g.app X (f.app X x) := rfl
 
+@[simp]
+lemma _root_.Functor.id_app_apply (A : C ⥤ Type v) {X : C} (x : A.obj X) :
+    NatTrans.app (𝟙 A) X x = x := rfl
+
 /-
 @[simp]
-lemma unitHomEquiv_symm_equivNatTrans_symm_app_app {F G : C ⥤ D} (φ : F ⟶ G)
+lemma unitHomEquiv_symm_simplicialHomEquiv₀_symm_app_app {K L : C ⥤ D} (φ : K ⟶ L)
     (X : C) (Y : C) (f : X ⟶ Y) :
-    (((functorHom F G).unitHomEquiv.symm ((simplicialHomEquiv₀ K L).symm φ)).app X PUnit.unit).app Y f =
+    (((functorHom K L).unitHomEquiv.symm ((simplicialHomEquiv₀ K L).symm φ)).app X PUnit.unit).app Y f =
       φ.app Y := by
   rfl
 -/
 
 open MonoidalCategory
 
--- idk if this is true
+def prodhomequiv (F G H : C ⥤ Type max u v v') : (F.HomObj H G) ≃ (F ⊗ G ⟶ H) where
+  toFun a := ⟨fun X ⟨x, y⟩ ↦ a.app X y x, fun X Y f ↦ by
+    ext ⟨x, y⟩
+    erw [congr_fun (a.naturality f y) x]
+    rfl ⟩
+  invFun a := ⟨fun X y x ↦ a.app X (x, y), fun φ y ↦ by
+    ext x
+    erw [congr_fun (a.naturality φ) (x, y)]
+    rfl ⟩
+  left_inv a := by aesop
+  right_inv a := by aesop
+
+def aux (P : C ⥤ D) : 𝟙_ (C ⥤ Type (max v' v u)) ⟶ P.functorHom P where
+  app X _ := ((NatTransEquiv P P).symm (𝟙 _)).1 X
+
+def aux' (K L M : C ⥤ D) : K.functorHom L ⊗ L.functorHom M ⟶ K.functorHom M where
+  app := fun X ⟨f, g⟩ => f.comp g
+
+@[simp]
+lemma auxlemma (K L : C ⥤ D) (X Y : C) (a : (K.functorHom L).obj X) (φ : X ⟶ Y) :
+    ((K.aux ▷ K.functorHom L).app X (PUnit.unit, a)).1.app Y φ = (𝟙 _) := rfl
+
+@[simp]
+lemma auxlemma' (K L : C ⥤ D) (X Y : C) (a : (K.functorHom L).obj X) (φ : X ⟶ Y) :
+    ((K.aux ▷ K.functorHom L).app X (PUnit.unit, a)).2.app Y φ = a.app Y φ := rfl
+
+@[simp]
+lemma auxlemma'' (K L: C ⥤ D) (X Y : C) (a : (K.functorHom L).obj X) (φ : X ⟶ Y) :
+    ((K.functorHom L ◁ L.aux).app X (a, PUnit.unit)).2.app Y φ = 𝟙 (_) := rfl
+
+@[simp]
+lemma auxlemma''' (K L: C ⥤ D) (X Y : C) (a : (K.functorHom L).obj X) (φ : X ⟶ Y) :
+    ((K.functorHom L ◁ L.aux).app X (a, PUnit.unit)).1.app Y φ = a.app Y φ := rfl
+
+@[simp]
+lemma associator_inv_app_apply (K L M N : C ⥤ D) {X : C}
+    (x : ((K.functorHom L) ⊗ (L.functorHom M) ⊗ (M.functorHom N)).obj X) :
+    (α_ ((K.functorHom L).obj X) ((L.functorHom M).obj X) ((M.functorHom N).obj X)).inv x =
+    ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
+
 noncomputable instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) where
   Hom := functorHom
-  id _ := { app := fun X h ↦ ⟨fun Y φ ↦ (𝟙 _), by aesop⟩ }
-  comp K L M := { app := fun X ⟨f, g⟩ => f.comp g }
-  id_comp := sorry
-  comp_id := sorry
-  assoc := sorry
+  id := aux
+  comp := aux'
+  id_comp K L := by
+    ext X a Y φ
+    change (HomObj.comp ((K.aux ▷ K.functorHom L).app X (PUnit.unit, a)).1 ((K.aux ▷ K.functorHom L).app X (PUnit.unit, a)).2).app Y φ = _
+    aesop
+  comp_id K L := by
+    ext X a Y φ
+    change (HomObj.comp ((K.functorHom L ◁ L.aux).app X (a, PUnit.unit)).1 ((K.functorHom L ◁ L.aux).app X (a, PUnit.unit)).2).app Y φ = _
+    aesop
+  assoc K L M N := by
+    ext X a Y φ
+    simp
+    sorry
 
-/-
-noncomputable instance : SimplicialCategory (SimplicialObject C) where
-  homEquiv K L := by
-    exact (simplicialHomEquiv₀ K L).symm.trans (simplicialHom K L).unitHomEquiv.symm
 
-noncomputable instance : SimplicialCategory SSet.{v} := by
-  dsimp [SSet]
-  infer_instance
--/
 
 end Functor
