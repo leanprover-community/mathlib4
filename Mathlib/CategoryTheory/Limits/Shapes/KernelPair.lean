@@ -184,8 +184,8 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
   · ext
     · simp [s.condition]
     · simp
-  · -- Adaptation note: nightly-2024-04-01
-    -- This `symm` (or the following ones that undo it) wasn't previously necessary.
+  · #adaptation_note /-- nightly-2024-04-01
+    This `symm` (or the following ones that undo it) wasn't previously necessary. -/
     symm
     apply pullback.hom_ext
     · symm
