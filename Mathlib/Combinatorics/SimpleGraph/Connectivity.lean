@@ -2554,6 +2554,29 @@ theorem Walk.mem_finsetWalkLength_iff_length_eq {n : ℕ} {u v : V} (p : G.Walk 
 
 variable (G)
 
+/-- The `Finset` of walks from `u` to `v` with length less than `n`. See `finsetWalkLength`. --/
+def finsetWalkLengthLt (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
+  (Finset.range n).disjiUnion
+    (fun l ↦ G.finsetWalkLength l u v)
+    (fun l _ l' _ hne _ hsl hsl' p hp ↦
+      have hl : p.length = l := (Walk.mem_finsetWalkLength_iff_length_eq p).mp (hsl hp)
+      have hl' : p.length = l' := (Walk.mem_finsetWalkLength_iff_length_eq p).mp (hsl' hp)
+      False.elim <| hne <| hl.symm.trans hl')
+
+open Finset in
+theorem coe_finsetWalkLengthLt_eq (n : ℕ) (u v : V) :
+    (G.finsetWalkLengthLt n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
+  ext p
+  simp[finsetWalkLengthLt, mem_coe, mem_disjiUnion, Walk.mem_finsetWalkLength_iff_length_eq]
+
+variable {G}
+
+theorem Walk.mem_finsetWalkLengthLt_iff_length_lt {n : ℕ} {u v : V} (p : G.Walk u v) :
+    p ∈ G.finsetWalkLengthLt n u v ↔ p.length < n :=
+  Set.ext_iff.mp (G.coe_finsetWalkLengthLt_eq n u v) p
+
+variable (G)
+
 instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} :=
   Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
@@ -2576,11 +2599,31 @@ theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 #align simple_graph.card_set_walk_length_eq SimpleGraph.card_set_walk_length_eq
 
+instance fintypeSetWalkLengthLt (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length < n} :=
+  Fintype.ofFinset (G.finsetWalkLengthLt n u v) fun p ↦ by
+    rw[← Finset.mem_coe, coe_finsetWalkLengthLt_eq]
+
+instance fintypeSubtypeWalkLengthLt (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length < n} :=
+  fintypeSetWalkLengthLt G u v n
+
 instance fintypeSetPathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n} :=
   Fintype.ofFinset ((G.finsetWalkLength n u v).filter Walk.IsPath) <| by
     simp [Walk.mem_finsetWalkLength_iff_length_eq, and_comm]
 #align simple_graph.fintype_set_path_length SimpleGraph.fintypeSetPathLength
+
+instance fintypeSubtypePathLength (u v : V) (n : ℕ) :
+    Fintype {p : G.Walk u v // p.IsPath ∧ p.length = n} :=
+  fintypeSetPathLength G u v n
+
+instance fintypeSetPathLengthLt (u v : V) (n : ℕ) :
+    Fintype {p : G.Walk u v | p.IsPath ∧ p.length < n} :=
+  Fintype.ofFinset ((G.finsetWalkLengthLt n u v).filter Walk.IsPath) <| by
+    simp [Walk.mem_finsetWalkLengthLt_iff_length_lt, and_comm]
+
+instance fintypeSubtypePathLengthLt (u v : V) (n : ℕ) :
+    Fintype {p : G.Walk u v // p.IsPath ∧ p.length < n} :=
+  fintypeSetPathLengthLt G u v n
 
 end LocallyFinite
 
@@ -2614,16 +2657,12 @@ instance : Decidable G.Connected := by
 
 open Finset in
 instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
-  elems := (range (Fintype.card V)).biUnion
-    fun n ↦ (univ (α := {p : G.Walk u v | p.IsPath ∧ p.length = n})).image
-      fun p ↦ { val := p.val, property := p.prop.left }
-  complete p := by
-    simp only [mem_biUnion, mem_range, mem_image, mem_univ, Subtype.exists]
-    use p.val.length
-    constructor
-    · exact p.prop.length_lt
-    · use p.val
-      use ⟨p.prop, rfl⟩
+  elems := (univ (α := { p : G.Walk u v // p.IsPath ∧ p.length < Fintype.card V })).map
+    ⟨fun p ↦ { val := p.val, property := p.prop.left },
+     fun _ _ h ↦ SetCoe.ext <| Subtype.mk.injEq .. ▸ h⟩
+  complete p := mem_map.mpr ⟨
+    ⟨p.val, ⟨p.prop, p.prop.length_lt⟩⟩,
+    ⟨@mem_univ _ (fintypeSubtypePathLengthLt ..) _, rfl⟩⟩
 
 end Finite
 
