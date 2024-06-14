@@ -103,6 +103,23 @@ def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
       getExplicitRelArgCore tgt rel' x z
   | _ => return (rel ,x)
 
+inductive TransRelation
+  | app (rel : Expr)
+  | implies (name : Name) (bi : BinderInfo)
+
+/-- finds an explicit binary relation in the argument, if possible. -/
+def getRel (tgt : Expr) : MetaM (Option (TransRelation × Expr × Expr)) := do
+  match tgt with
+  | .forallE name binderType body info => return .some (.implies name info, binderType, body)
+  | .app f z =>
+    match (← getExplicitRelArg? tgt f z) with
+    | some (rel, x) =>
+      let (rel, x) ← getExplicitRelArgCore tgt rel x z
+      return some (.app rel, x, z)
+    | none =>
+      return none
+  | _ => return none
+
 /--
 `trans` applies to a goal whose target has the form `t ~ u` where `~` is a transitive relation,
 that is, a relation which has a transitivity lemma tagged with the attribute [trans].
@@ -115,10 +132,13 @@ in which case it replaces the goal with `t → s` and `s → u`.
 -/
 elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   let tgt ← getMainTarget''
-  match tgt with
-  | .forallE name binderType body info =>
+  let .some (rel, x, z) ← getRel tgt |
+    throwError (m!"transitivity lemmas only apply to binary relations and " ++
+                m!"non-dependent arrows, not {indentExpr tgt}")
+  match rel with
+  | .implies name info =>
     -- only consider non-dependent arrows
-    if body.hasLooseBVars then
+    if z.hasLooseBVars then
       throwError "`trans` is not implemented for dependent arrows{indentExpr tgt}"
     -- parse the intermeditate term
     let middleType ← mkFreshExprMVar none
@@ -126,20 +146,13 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
     let middle ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar middleType)
     liftMetaTactic fun goal => do
       -- create two new goals
-      let g₁ ← mkFreshExprMVar (some <| .forallE name binderType middle info) .synthetic
-      let g₂ ← mkFreshExprMVar (some <| .forallE name middle body info) .synthetic
+      let g₁ ← mkFreshExprMVar (some <| .forallE name x middle info) .synthetic
+      let g₂ ← mkFreshExprMVar (some <| .forallE name middle z info) .synthetic
       -- close the original goal with `fun x => g₂ (g₁ x)`
-      goal.assign (.lam name binderType (.app g₂ (.app g₁ (.bvar 0))) .default)
+      goal.assign (.lam name x (.app g₂ (.app g₁ (.bvar 0))) .default)
       pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [middle.mvarId!]
     return
-  | Expr.app f z =>
-    let (rel, x, z) ←
-      match (← getExplicitRelArg? tgt f z) with
-      | some (rel, x) =>
-        let (rel, x) ← getExplicitRelArgCore tgt rel x z
-        pure (rel, x, z)
-      | none => throwError "transitivity lemmas only apply to
-        binary relations, not {indentExpr tgt}"
+  | .app rel =>
     trace[Tactic.trans]"goal decomposed"
     trace[Tactic.trans]"rel: {indentExpr rel}"
     trace[Tactic.trans]"x: {indentExpr x}"
@@ -196,8 +209,6 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
         trace[Tactic.trans]"failed: {e.toMessageData}"
         s.restore
     throwError m!"no applicable transitivity lemma found for {indentExpr tgt}"
-  | _ => throwError (m!"transitivity lemmas only apply to binary relations and " ++
-    m!"non-dependent arrows, not {indentExpr tgt}")
 
 syntax "transitivity" (ppSpace colGt term)? : tactic
 set_option hygiene false in
