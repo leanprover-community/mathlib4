@@ -14,7 +14,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 -/
 
 variable {α β : Type*} [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [SMul ℕ β] [SMul ℤ β]
-  [Pow β ℕ] [NatCast β] [IntCast β]
+  [Pow β ℕ] [NatCast β] [IntCast β] [Bracket β]
 
 namespace Function.Injective
 variable (f : β → α) (hf : Injective f)
@@ -95,7 +95,8 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing α] (f : β → α
     (hf : Injective f) (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) : NonUnitalNonAssocRing β where
+    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
+    (bracket : ∀ x y, f ⁅x, y⁆ = ⁅f x, f y⁆) : NonUnitalNonAssocRing β where
   toAddCommGroup := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
   __ := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
 #align function.injective.non_unital_non_assoc_ring Function.Injective.nonUnitalNonAssocRing
