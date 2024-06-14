@@ -990,15 +990,7 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x 
     disjoint_iff_inter_eq_empty.mpr (by rw [inter_assoc, h', compl_inter_self])⟩
 #align disjoint_nhds_within_of_mem_discrete disjoint_nhdsWithin_of_mem_discrete
 
-/-- Let `X` be a topological space and let `s, t ⊆ X` be two subsets.  If there is an inclusion
-`t ⊆ s`, then the topological space structure on `t` induced by `X` is the same as the one
-obtained by the induced topological space structure on `s`. Use `embedding_inclusion` instead. -/
-@[deprecated embedding_inclusion (since := "2023-02-02")]
-theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
-    (instTopologicalSpaceSubtype : TopologicalSpace t) =
-      (instTopologicalSpaceSubtype : TopologicalSpace s).induced (Set.inclusion ts) :=
-  (embedding_inclusion ts).induced
-#align topological_space.subset_trans TopologicalSpace.subset_trans
+#align topological_space.subset_trans embedding_inclusionₓ
 
 /-! ### R₁ (preregular) spaces -/
 
