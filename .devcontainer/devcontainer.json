@@ -7,6 +7,10 @@
 
   "onCreateCommand": "lake exe cache get!",
 
+  "hostRequirements": {
+     "cpus": 4
+  },
+
   "customizations": {
     "vscode" : {
       "extensions" : [ "leanprover.lean4" ]
