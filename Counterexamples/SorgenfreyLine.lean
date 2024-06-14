@@ -190,7 +190,7 @@ instance : FirstCountableTopology ℝₗ :=
 
 /-- Sorgenfrey line is a completely normal topological space.
     (Hausdorff follows as TotallyDisconnectedSpace → T₁) -/
-instance : CompletelyNormalSpace ℝₗ := by
+instance : CompletelyNormalSpace ℝₗ where completely_normal s t hd₁ hd₂ := by
   /-
   Let `s` and `t` be disjoint closed sets.
   For each `x ∈ s` we choose `X x` such that `Set.Ico x (X x)` is disjoint with `t`.
@@ -198,7 +198,6 @@ instance : CompletelyNormalSpace ℝₗ := by
   Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
   disjoint open sets that include `s` and `t`.
   -/
-  refine ⟨fun s t hd₁ hd₂ => ?_⟩
   choose! X hX hXd using fun x (hx : x ∈ s) =>
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
   choose! Y hY hYd using fun y (hy : y ∈ t) =>
