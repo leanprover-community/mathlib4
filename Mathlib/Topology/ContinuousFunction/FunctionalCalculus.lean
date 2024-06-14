@@ -443,7 +443,7 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
 open Finset in
 lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R)
     (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    cfc (univ.sum f) a = univ.sum (fun i => cfc (f i) a) := by
+    cfc (∑ i, f i) a = ∑ i, cfc (f i) a := by
   by_cases ha : p a
   · simp only [cfc_apply' a, ← map_sum]
     congr
@@ -460,7 +460,7 @@ lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R)
 
 lemma cfc_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    cfc (s.sum f) a = s.sum (fun i => cfc (f i) a) := by
+    cfc (∑ i in s, f i)  a = ∑ i in s, cfc (f i) a := by
   rw [← Finset.sum_coe_sort s, ← Finset.sum_coe_sort s]
   have hf' : ∀ i : {x : ι // x ∈ s}, ContinuousOn (f i) (spectrum R a) := fun ⟨i, hi⟩ => hf i hi
   exact cfc_sum_univ a _ hf'
