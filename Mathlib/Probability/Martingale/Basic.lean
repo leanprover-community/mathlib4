@@ -113,9 +113,8 @@ theorem setIntegral_eq [SigmaFiniteFiltration μ ℱ] (hf : Martingale f ℱ μ)
   filter_upwards [hf.2 i j hij] with _ heq _ using heq.symm
 #align measure_theory.martingale.set_integral_eq MeasureTheory.Martingale.setIntegral_eq
 
-@[deprecated]
-alias set_integral_eq :=
-  setIntegral_eq -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_eq := setIntegral_eq
 
 theorem add (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f + g) ℱ μ := by
   refine ⟨hf.adapted.add hg.adapted, fun i j hij => ?_⟩
@@ -185,9 +184,8 @@ theorem setIntegral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (h
   filter_upwards [hf.2.1 i j hij] with _ heq using heq
 #align measure_theory.supermartingale.set_integral_le MeasureTheory.Supermartingale.setIntegral_le
 
-@[deprecated]
-alias set_integral_le :=
-  setIntegral_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_le := setIntegral_le
 
 theorem add [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Supermartingale f ℱ μ)
     (hg : Supermartingale g ℱ μ) : Supermartingale (f + g) ℱ μ := by
@@ -262,9 +260,8 @@ theorem setIntegral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (h
   exact Supermartingale.setIntegral_le hf.neg hij hs
 #align measure_theory.submartingale.set_integral_le MeasureTheory.Submartingale.setIntegral_le
 
-@[deprecated]
-alias set_integral_le :=
-  setIntegral_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_le := setIntegral_le
 
 theorem sub_supermartingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)]
     (hf : Submartingale f ℱ μ) (hg : Supermartingale g ℱ μ) : Submartingale (f - g) ℱ μ := by
@@ -315,9 +312,8 @@ theorem submartingale_of_setIntegral_le [IsFiniteMeasure μ] {f : ι → Ω → 
     setIntegral_condexp (ℱ.le i) (hint j) hs]
 #align measure_theory.submartingale_of_set_integral_le MeasureTheory.submartingale_of_setIntegral_le
 
-@[deprecated]
-alias submartingale_of_set_integral_le :=
-  submartingale_of_setIntegral_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias submartingale_of_set_integral_le := submartingale_of_setIntegral_le
 
 theorem submartingale_of_condexp_sub_nonneg [IsFiniteMeasure μ] {f : ι → Ω → ℝ} (hadp : Adapted ℱ f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j, i ≤ j → 0 ≤ᵐ[μ] μ[f j - f i|ℱ i]) :
@@ -419,9 +415,8 @@ theorem submartingale_of_setIntegral_le_succ [IsFiniteMeasure μ] {f : ℕ → �
   · exact le_trans hk₂ (hf k s (𝒢.mono hk₁ _ hs))
 #align measure_theory.submartingale_of_set_integral_le_succ MeasureTheory.submartingale_of_setIntegral_le_succ
 
-@[deprecated]
-alias submartingale_of_set_integral_le_succ :=
-  submartingale_of_setIntegral_le_succ -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias submartingale_of_set_integral_le_succ := submartingale_of_setIntegral_le_succ
 
 theorem supermartingale_of_setIntegral_succ_le [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ}
     (hadp : Adapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ)
@@ -432,9 +427,8 @@ theorem supermartingale_of_setIntegral_succ_le [IsFiniteMeasure μ] {f : ℕ →
   simpa only [integral_neg, Pi.neg_apply, neg_le_neg_iff]
 #align measure_theory.supermartingale_of_set_integral_succ_le MeasureTheory.supermartingale_of_setIntegral_succ_le
 
-@[deprecated]
-alias supermartingale_of_set_integral_succ_le :=
-  supermartingale_of_setIntegral_succ_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias supermartingale_of_set_integral_succ_le := supermartingale_of_setIntegral_succ_le
 
 theorem martingale_of_setIntegral_eq_succ [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ} (hadp : Adapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ)
@@ -444,9 +438,8 @@ theorem martingale_of_setIntegral_eq_succ [IsFiniteMeasure μ] {f : ℕ → Ω �
     submartingale_of_setIntegral_le_succ hadp hint fun i s hs => (hf i s hs).le⟩
 #align measure_theory.martingale_of_set_integral_eq_succ MeasureTheory.martingale_of_setIntegral_eq_succ
 
-@[deprecated]
-alias martingale_of_set_integral_eq_succ :=
-  martingale_of_setIntegral_eq_succ -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias martingale_of_set_integral_eq_succ := martingale_of_setIntegral_eq_succ
 
 theorem submartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ} (hadp : Adapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, f i ≤ᵐ[μ] μ[f (i + 1)|𝒢 i]) :
