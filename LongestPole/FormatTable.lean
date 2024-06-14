@@ -12,6 +12,7 @@ import Mathlib.Data.String.Defs
 This file provides a simple function for formatting a 2d array of strings into a markdown-compliant table.
 -/
 
+/-- Possible alignment modes for each table item: left-aligned, right-aligned and centered. -/
 inductive Alignment where
   | left
   | right
