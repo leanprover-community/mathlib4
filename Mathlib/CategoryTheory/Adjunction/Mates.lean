@@ -407,7 +407,7 @@ theorem Mates_square
   rw [hcomp1, hcomp2] at vcomp
   exact vcomp
 
-
+end MatesSquareComp
 
 section Self
 
