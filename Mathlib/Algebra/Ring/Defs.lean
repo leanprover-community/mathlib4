@@ -123,7 +123,6 @@ class NonUnitalSemiring (α : Type u) extends AddCommMonoid α, SemigroupWithZer
 attribute [instance 98] NonUnitalSemiring.toAddCommMonoid
 attribute [instance 50] NonUnitalSemiring.toSemigroup
 attribute [instance 50] NonUnitalSemiring.toSemigroupWithZero
-attribute [instance 0] NonUnitalSemiring.toAddCommMonoid
 
 /-- A unital but not-necessarily-associative semiring. -/
 class NonAssocSemiring (α : Type u) extends AddCommMonoid α, MulZeroOneClass α,
