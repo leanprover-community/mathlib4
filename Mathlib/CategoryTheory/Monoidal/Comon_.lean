@@ -79,7 +79,7 @@ theorem comul_counit_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) 
 
 @[reassoc] theorem comul_assoc_flip :
     M.comul ≫ (M.comul ▷ M.X) = M.comul ≫ (M.X ◁ M.comul) ≫ (α_ M.X M.X M.X).inv := by
-  simp [← comul_assoc_assoc]
+  simp
 
 /-- A morphism of comonoid objects. -/
 @[ext]
