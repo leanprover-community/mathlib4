@@ -190,7 +190,7 @@ instance : FirstCountableTopology ℝₗ :=
 
 /-- Sorgenfrey line is a completely normal topological space.
     (Hausdorff follows as TotallyDisconnectedSpace → T₁) -/
-instance : CompletelyNormalSpace ℝₗ where completely_normal s t hd₁ hd₂ := by
+instance : CompletelyNormalSpace ℝₗ := by
   /-
   Let `s` and `t` be disjoint closed sets.
   For each `x ∈ s` we choose `X x` such that `Set.Ico x (X x)` is disjoint with `t`.
@@ -198,23 +198,24 @@ instance : CompletelyNormalSpace ℝₗ where completely_normal s t hd₁ hd₂ 
   Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
   disjoint open sets that include `s` and `t`.
   -/
-  choose! X hX hXd using fun x (hx : x ∈ s) =>
+  refine ⟨fun s t hd₁ hd₂ ↦ ?_⟩
+  choose! X hX hXd using fun x (hx : x ∈ s) ↦
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
-  choose! Y hY hYd using fun y (hy : y ∈ t) =>
+  choose! Y hY hYd using fun y (hy : y ∈ t) ↦
     exists_Ico_disjoint_closed isClosed_closure (disjoint_right.1 hd₁ hy)
   refine separatedNhds_iff_disjoint.mpr <| disjoint_of_disjoint_of_mem ?_
-    (bUnion_mem_nhdsSet fun x hx => (isOpen_Ico x (X x)).mem_nhds <| left_mem_Ico.2 (hX x hx))
-    (bUnion_mem_nhdsSet fun y hy => (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
+    (bUnion_mem_nhdsSet fun x hx ↦ (isOpen_Ico x (X x)).mem_nhds <| left_mem_Ico.2 (hX x hx))
+    (bUnion_mem_nhdsSet fun y hy ↦ (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
   simp only [disjoint_iUnion_left, disjoint_iUnion_right, Ico_disjoint_Ico]
   intro y hy x hx
   rcases le_total x y with hle | hle
   · calc
       min (X x) (Y y) ≤ X x := min_le_left _ _
-      _ ≤ y := (not_lt.1 fun hyx => (hXd x hx).le_bot ⟨⟨hle, hyx⟩, subset_closure hy⟩)
+      _ ≤ y := (not_lt.1 fun hyx ↦ (hXd x hx).le_bot ⟨⟨hle, hyx⟩, subset_closure hy⟩)
       _ ≤ max x y := le_max_right _ _
   · calc
       min (X x) (Y y) ≤ Y y := min_le_right _ _
-      _ ≤ x := (not_lt.1 fun hxy => (hYd y hy).le_bot ⟨⟨hle, hxy⟩, subset_closure hx⟩)
+      _ ≤ x := (not_lt.1 fun hxy ↦ (hYd y hy).le_bot ⟨⟨hle, hxy⟩, subset_closure hx⟩)
       _ ≤ max x y := le_max_left _ _
 
 theorem denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
