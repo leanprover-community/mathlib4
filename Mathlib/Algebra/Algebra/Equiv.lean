@@ -373,14 +373,6 @@ theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
   rfl
 #align alg_equiv.symm_mk AlgEquiv.symm_mk
 
--- remove before merging
-theorem symm_mk_test (f f') (h₁ h₂ h₃ h₄ h₅) :
-    (⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm =
-      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ with
-        toFun := f'
-        invFun := f } := by
-  dsimp
-
 @[simp]
 theorem refl_symm : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).symm = AlgEquiv.refl :=
   rfl
