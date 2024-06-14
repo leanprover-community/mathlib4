@@ -18,6 +18,9 @@ a few equivalent versions.
 
 ## Main results
 
+The results below all work even if the colours are in `Sort` rather than `Type`, since
+'colour according to whether X is true' is a common application of Ramsey results.
+
 - `Ramsey.exists_monochromatic_infinite_subset`: the infinite hypergraph Ramsey theorem;
   if we colour every `s : Finset α` with `s.card = k` in an `Infinite` type `α`, then there is an
   infinite `y : Set α` whose `k`-element subsets qll have the same colour.
@@ -266,19 +269,28 @@ theorem lim_rightMonochromatic (c : (Fin (k+2) ↪o ℕ) → κ) (ss : ℕ ↪ (
   rw [refs_eq_lim c hss]
   exact le_max_of_le_right ((ub_fn ss).monotone (hy i).le)
 
+section statements
+
+variable {κ : Sort*} [Finite κ]
+
 /-- Ramsey's theorem for infinite hypergraphs :
   for every colouring `c` of the `k`-subsets of `ℕ` with a finite set of colours,
   there is a subsequence of `ℕ` on which the sets all have the same colour. -/
 theorem exists_monochromatic_subsequence_tuple (c : (Fin k ↪o ℕ) → κ) :
     ∃ (c₀ : κ) (g : ℕ ↪o ℕ), ∀ (s : Fin k ↪o ℕ), c (s.trans g) = c₀ := by
-
+  suffices h : ∀ (c : (Fin k ↪o ℕ) → PLift κ),
+      ∃ (c₀ : PLift κ) (g : ℕ ↪o ℕ), ∀ (s : Fin k ↪o ℕ), c (s.trans g) = c₀ by
+    obtain ⟨⟨c₀⟩, g, h'⟩ := h (fun s ↦ ⟨c s⟩); exact ⟨c₀, g, by simpa using h'⟩
+  clear c
+  intro c
   induction' k using Nat.recAux with k ih
   · exact ⟨c <| Fin.valOrderEmb 0, RelEmbedding.refl _,
       fun s ↦ congr_arg _ <| RelEmbedding.ext finZeroElim⟩
 
   have hg₁ : ∃ (g₁ : ℕ ↪o ℕ), ∀ s, RightMonochromatic (fun x ↦ c <| RelEmbedding.trans x g₁) s := by
     induction' k using Nat.recAux with k
-    · refine ⟨refineAt c default, fun s ↦ ?_⟩
+    ·
+      refine ⟨refineAt c default, fun s ↦ ?_⟩
       rw [Subsingleton.elim s default]
       exact refineAt_rightMonochromatic c default
     have aux : ∃ (e : ℕ ≃ ((Fin (k+1)) ↪o ℕ)), Monotone (e · ⊤) := exists_enum_set_card k
@@ -298,9 +310,10 @@ theorem exists_monochromatic_subsequence_tuple (c : (Fin k ↪o ℕ) → κ) :
   rather than the equivalent type `Fin k ↪o ℕ`. -/
 theorem exists_monochromatic_subsequence_finset {k : ℕ} (c : (s : Finset ℕ) → s.card = k → κ) :
     ∃ (c₀ : κ) (g : ℕ ↪o ℕ), ∀ (s : Finset ℕ) hs, c (s.map g.toEmbedding) (by simpa) = c₀ := by
-  set c' := fun (s' : Fin k ↪o ℕ) ↦ c (Finset.univ.map s'.toEmbedding) (by simp)
-  obtain ⟨c₀, g, h⟩ := exists_monochromatic_subsequence_tuple c'
+  set c' : (Fin k ↪o ℕ) → PLift κ := fun s' ↦ ⟨c (Finset.univ.map s'.toEmbedding) (by simp)⟩
+  obtain ⟨⟨c₀⟩, g, h⟩ := exists_monochromatic_subsequence_tuple c'
   refine ⟨c₀, g, fun s hs ↦ ?_⟩
+  simp only [PLift.up_inj, c'] at h
   convert h (s.orderEmbOfFin hs)
   rw [← Finset.coe_inj, Finset.coe_map, Finset.coe_map]
   simp only [RelEmbedding.coe_toEmbedding, RelEmbedding.coe_trans, Finset.coe_univ, image_univ]
@@ -310,7 +323,7 @@ theorem exists_monochromatic_subsequence_finset {k : ℕ} (c : (s : Finset ℕ) 
   size less than `k` with a colour from a finite type that can depend on the size.
   The conclusion is that we can find a subsequence on which the sets of each given size are all
   the same colour. -/
-theorem exists_strong_monochromatic_subsequence_finset {κ : Fin k → Type*} [∀ i, Finite (κ i)]
+theorem exists_strong_monochromatic_subsequence_finset {κ : Fin k → Sort*} [∀ i, Finite (κ i)]
     (cs : (i : Fin k) → (s : Finset ℕ) → (hs : s.card = i) → κ i) :
     ∃ (c₀s : (i : Fin k) → κ i) (g : ℕ ↪o ℕ), ∀ (i : Fin k) (s : Finset ℕ) (hs : s.card = i),
       cs i (s.map g.toEmbedding) (by simpa) = c₀s i := by
@@ -356,5 +369,7 @@ theorem exists_monochromatic_infinite_subset {α : Type*} [Infinite α]
   rw [← h s' (by simpa [← Finset.map_eq_image] using hs)]
   simp only [Finset.map_eq_image, RelEmbedding.coe_toEmbedding, Finset.image_image]
   rfl
+
+end statements
 
 end Ramsey
