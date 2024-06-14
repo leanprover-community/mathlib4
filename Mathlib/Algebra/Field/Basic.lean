@@ -322,8 +322,7 @@ protected abbrev divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
   reduceProj% zeta%
   { toRing := delta% hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
     __ := delta% hf.groupWithZero f zero one mul inv div npow zpow
-    __ := delta% hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast
-      nnratCast
+    __ := delta% hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
     ratCast_def := fun q ↦ hf $ by erw [ratCast, div, intCast, natCast, Rat.cast_def]
     qsmul := (· • ·)
     qsmul_def := fun q a ↦ hf $ by erw [qsmul, mul, Rat.smul_def, ratCast] }
