@@ -137,27 +137,6 @@ the predicate `p`, it should be noted that these will only ever be of the form `
 goals, but it can be modified to become more sophisticated as the need arises.
 -/
 
-
--- MOVEME
-open Classical in
-noncomputable def Set.restrictContinuous {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Zero β]
-    (s : Set α) (f : α → β) : C(s, β) :=
-  if h : ContinuousOn f s then ⟨s.restrict f, h.restrict⟩ else 0
-
-lemma Set.restrictContinuous_of_continuous {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Zero β]
-    {s : Set α} {f : α → β} (hf : ContinuousOn f s) :
-    s.restrictContinuous f = ⟨s.restrict f, hf.restrict⟩ := by
-  simp only [Set.restrictContinuous]
-  split <;> simp
-
-lemma Set.restrictContinuous_of_not_continuous {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Zero β]
-    {s : Set α} {f : α → β} (hf : ¬ ContinuousOn f s) :
-    s.restrictContinuous f = 0 := by
-  simp only [Set.restrictContinuous]
-  split
-  case isTrue h => exact False.elim (hf h)
-  case isFalse h => simp
-
 section Basic
 
 /-- A star `R`-algebra `A` has a *continuous functional calculus* for elements satisfying the
@@ -331,13 +310,18 @@ lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn 
     cfc f a = 0 := by
   rw [cfc_def, dif_neg (not_and_of_not_right _ hf)]
 
-lemma cfc_apply' (f : R → R) : cfc f a = cfcHom (a := a) ha ((spectrum R a).restrictContinuous f) := by
+lemma cfc_apply' (f : R → R) :
+    cfc f a = cfcHom (a := a) ha ((spectrum R a).restrictContinuous f 0) := by
   rw [cfc_def]
   split
   case isTrue h =>
     simp [Set.restrictContinuous_of_continuous h.2]
   case isFalse h =>
     push_neg at h
+    have : (cfcHom (R := R) (A := A) ha) 0 = 0 := by simp
+    rw [← this]
+    congr
+    ext
     simp [Set.restrictContinuous_of_not_continuous (h ha)]
 
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
@@ -470,28 +454,29 @@ lemma cfc_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
   exact cfc_sum_univ a _ hf'
 
 lemma cfc_tsum [T2Space A] {ι : Type*} (f : ι → R → R)
-    (hf : ∀ i, ContinuousOn (f i) (spectrum R a)) (hsum₁ : Summable f)
-    (hsum₂ : ∀ x ∈ spectrum R a, Summable (f · x)) :
+    (hf₁ : ∀ i, ContinuousOn (f i) (spectrum R a))
+    (hf₂ : ContinuousOn (∑' i, f i) (spectrum R a))
+    (hsum : Summable (fun i => (spectrum R a).restrictContinuous (f i) 0))
+    (hsum₂ : Summable f) :
     cfc (∑' i, f i) a = ∑' i, cfc (f i) a := by
   by_cases ha : p a
-  · simp only [cfc_apply' a]
-    have hcont : Continuous (cfcHom (R := R) ha) := cfcHom_continuous ha
-    have hsum₂' : ∀ x ∈ spectrum R a, Summable (f · x) := by
-      rw [Pi.summable] at hsum₁
-      sorry
-    have hsum₃ : Summable (fun i => (spectrum R a).restrictContinuous (f i)) := by
-      sorry
-    rw [← Summable.map_tsum hsum₃ _ hcont]
+  · have h₀ : (fun i => (spectrum R a).restrictContinuous (f i) 0) =
+        (fun i => (⟨_, (hf₁ i).restrict⟩ : C(spectrum R a, R))) := by
+      ext i
+      rw [Set.restrictContinuous_of_continuous (hf₁ i)]
+    have hsum₃ : Summable (fun i => (⟨_, (hf₁ i).restrict⟩ : C(spectrum R a, R))) := by
+      rwa [h₀] at hsum
+    have h₁ : (fun i => (spectrum R a).restrictContinuous (f i) 0) =
+        fun i => ⟨_, (hf₁ i).restrict⟩ := by
+      ext i
+      rw [Set.restrictContinuous_of_continuous (hf₁ i)]
+    simp only [cfc_apply' a]
+    rw [← Summable.map_tsum hsum _ (cfcHom_continuous ha)]
     congr
     ext z
-    have h₁ : (fun i => (spectrum R a).restrictContinuous (f i)) = fun i => ⟨_, (hf i).restrict⟩ := by
-      ext i
-      rw [Set.restrictContinuous_of_continuous (hf i)]
-    have hcont₂ : ContinuousOn (∑' i, f i) (spectrum R a) := by
-      sorry
-    rw [h₁, Set.restrictContinuous_of_continuous hcont₂]
-    simp [tsum_apply]
-    sorry
+    rw [h₁, Set.restrictContinuous_of_continuous hf₂]
+    simp only [ContinuousMap.coe_mk, Set.restrict_apply, ← ContinuousMap.tsum_apply hsum₃ z,
+      tsum_apply hsum₂]
   · simp [cfc_apply_of_not_predicate a ha]
 
 lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]

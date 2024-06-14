@@ -44,7 +44,41 @@ encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
 + `cfcₙ_comp : cfcₙ (x ↦ g (f x)) a = cfcₙ g (cfcₙ f a)`
 
 -/
+
 local notation "σₙ" => quasispectrum
+
+namespace quasispectrum
+
+open scoped ContinuousMapZero
+
+variable {R : Type*} {A : Type*} [CommSemiring R] [NonUnitalRing A] [Module R A]
+  [TopologicalSpace A] [Nontrivial R] [TopologicalSpace R] [TopologicalSemiring R]
+
+open Classical in
+noncomputable def restrictCMZ (f : R → R) (a : A) : C(σₙ R a, R)₀ :=
+  if h : ContinuousOn f (σₙ R a) ∧ f 0 = 0 then
+    { toFun := (σₙ R a).restrict f
+      continuous_toFun := h.1.restrict
+      map_zero' := by simp [h.2] }
+  else 0
+
+lemma restrictCMZ_of_continuous {f : R → R} {a : A} (hf : ContinuousOn f (σₙ R a) ∧ f 0 = 0) :
+    restrictCMZ f a =
+      { toFun := (σₙ R a).restrict f
+        continuous_toFun := hf.1.restrict
+        map_zero' := by simp [hf] } := by
+  simp only [restrictCMZ]
+  split <;> simp
+
+lemma restrictCMZ_of_not_continuous {f : R → R} {a : A}
+    (hf : ¬ (ContinuousOn f (σₙ R a) ∧ f 0 = 0)) :
+    restrictCMZ f a = 0 := by
+  simp only [restrictCMZ]
+  split
+  case isTrue h => exact False.elim (hf h)
+  case isFalse h => simp
+
+end quasispectrum
 
 open scoped ContinuousMapZero
 
@@ -217,6 +251,21 @@ lemma cfcₙ_apply_of_not_map_zero {f : R → R} (a : A) (hf : ¬ f 0 = 0) :
     cfcₙ f a = 0 := by
   rw [cfcₙ_def, dif_neg (not_and_of_not_right _ (not_and_of_not_right _ hf))]
 
+open quasispectrum in
+lemma cfcₙ_apply' (f : R → R) :
+    cfcₙ f a = cfcₙHom (a := a) ha (restrictCMZ f a) := by
+  rw [cfcₙ_def]
+  split
+  case isTrue h =>
+    simp [restrictCMZ_of_continuous h.2]
+  case isFalse h =>
+    have h' : ¬(ContinuousOn f (quasispectrum R a) ∧ f 0 = 0) := by aesop
+    have : (cfcₙHom (R := R) (A := A) ha) 0 = 0 := by simp
+    rw [← this]
+    congr
+    ext x
+    simp [restrictCMZ_of_not_continuous h']
+
 lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R a, R)₀) :
     cfcₙHom ha f = cfcₙ (Function.extend Subtype.val f g) a := by
   have h : f = (σₙ R a).restrict (Function.extend Subtype.val f g) := by
@@ -310,6 +359,38 @@ lemma cfcₙ_add : cfcₙ (fun x ↦ f x + g x) a = cfcₙ f a + cfcₙ g a := b
     simp_rw [← map_add]
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
+
+open Finset quasispectrum in
+lemma cfcₙ_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R) (hf : ∀ i, ContinuousOn (f i) (σₙ R a))
+    (hf_zero : ∀ i, f i 0 = 0) :
+    cfcₙ (∑ i, f i) a = ∑ i, cfcₙ (f i) a := by
+  by_cases ha : p a
+  · simp only [cfcₙ_apply' a, ← map_sum]
+    congr
+    ext x
+    have hsum : univ.sum f = fun z => ∑ i, f i z := by ext; simp
+    have hf' : ContinuousOn (univ.sum f) (σₙ R a) ∧ (univ.sum f) 0 = 0 := by
+      refine ⟨?_, ?_⟩
+      · rw [hsum]
+        exact continuousOn_finset_sum univ fun i _ => hf i
+      · rw [Finset.sum_apply]
+        exact Fintype.sum_eq_zero _ hf_zero
+    have hf'' : ∀ x, ContinuousOn (f x) (σₙ R a) ∧ f x 0 = 0 := by aesop
+    conv =>
+      enter [2, 1, 2, x]
+      simp only [restrictCMZ_of_continuous (hf'' x)]
+    simp only [restrictCMZ_of_continuous hf', ContinuousMapZero.coe_mk, ContinuousMap.coe_mk,
+      Set.restrict_apply, sum_apply, ContinuousMapZero.coe_sum]
+  · simp [cfcₙ_apply_of_not_predicate a ha]
+
+lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a))
+    (hf_zero : ∀ i ∈ s, f i 0 = 0) :
+    cfcₙ (∑ i in s, f i)  a = ∑ i in s, cfcₙ (f i) a := by
+  rw [← Finset.sum_coe_sort s, ← Finset.sum_coe_sort s]
+  have hf' : ∀ i : {x : ι // x ∈ s}, ContinuousOn (f i) (σₙ R a) := fun ⟨i, hi⟩ => hf i hi
+  have hf_zero' : ∀ i : {x : ι // x ∈ s}, f i 0 = 0 := fun ⟨i, hi⟩ => hf_zero i hi
+  exact cfcₙ_sum_univ a _ hf' hf_zero'
 
 lemma cfcₙ_smul {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]

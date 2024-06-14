@@ -506,6 +506,30 @@ end Gluing
 
 end ContinuousMap
 
+section restrictContinuous
+
+variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+
+open Classical in
+noncomputable def Set.restrictContinuous (s : Set α) (f : α → β) (b : β) : C(s, β) :=
+  if h : ContinuousOn f s then ⟨s.restrict f, h.restrict⟩
+  else ContinuousMap.const s b
+
+lemma Set.restrictContinuous_of_continuous {s : Set α} {f : α → β} {b : β} (hf : ContinuousOn f s) :
+    s.restrictContinuous f b = ⟨s.restrict f, hf.restrict⟩ := by
+  simp only [Set.restrictContinuous]
+  split <;> simp
+
+lemma Set.restrictContinuous_of_not_continuous {s : Set α} {f : α → β} {b : β}
+    (hf : ¬ ContinuousOn f s) :
+    s.restrictContinuous f b = (ContinuousMap.const s b) := by
+  simp only [Set.restrictContinuous]
+  split
+  case isTrue h => exact False.elim (hf h)
+  case isFalse h => simp
+
+end restrictContinuous
+
 section Lift
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
