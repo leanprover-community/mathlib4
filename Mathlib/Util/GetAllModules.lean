@@ -41,9 +41,11 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
       return all.filter (·.extension == some "lean"))
   -- sort after replacing the `pathSeparators` by `/`, to avoid sorting issues between `\` and `/`
   let files := (allModules.erase ml.lean).qsort fun f1 f2 ↦
-    let f1 := f1.toString.replace ("".push pathSeparator) "/"
-    let f2 := f2.toString.replace ("".push pathSeparator) "/"
-    (f1 < f2)
+    Id.run do
+    let mut (f1, f2) := (f1.toString, f2.toString)
+    for sep in pathSeparators do
+      (f1, f2) := (f1.replace ("".push sep) "/", f2.replace ("".push sep) "/")
+    return f1 < f2
   let existingFiles ← files.mapM fun f => do
     -- this check is helpful in case the `git` option is on and a local file has been removed
     if ← pathExists f then
@@ -57,4 +59,3 @@ def getAllModules (git : Bool) (ml : String) : IO (Array String) := do
   let files ← getAllFiles git ml
   return ← files.mapM fun f => do
      return (← moduleNameOfFileName f none).toString
-
