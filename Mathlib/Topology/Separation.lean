@@ -2388,7 +2388,7 @@ class CompletelyNormalSpace (X : Type u) [TopologicalSpace X] : Prop where
   /-- If `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`, then `s` and `t`
   admit disjoint neighbourhoods. -/
   completely_normal :
-    ∀ ⦃s t : Set X⦄, Disjoint (closure s) t → Disjoint s (closure t) → Disjoint (𝓝ˢ s) (𝓝ˢ t)
+    ∀ ⦃s t : Set X⦄, Disjoint (closure s) t → Disjoint s (closure t) → SeparatedNhds s t
 
 export CompletelyNormalSpace (completely_normal)
 
@@ -2396,14 +2396,14 @@ export CompletelyNormalSpace (completely_normal)
 /-- A completely normal space is a normal space. -/
 instance (priority := 100) CompletelyNormalSpace.toNormalSpace
     [CompletelyNormalSpace X] : NormalSpace X where
-  normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
-    completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
+  normal s t hs ht hd := completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
 
 theorem Embedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y] {e : X → Y}
     (he : Embedding e) : CompletelyNormalSpace X := by
   refine ⟨fun s t hd₁ hd₂ => ?_⟩
+  rw [separatedNhds_iff_disjoint]
   simp only [he.toInducing.nhdsSet_eq_comap]
-  refine disjoint_comap (completely_normal ?_ ?_)
+  refine disjoint_comap <| separatedNhds_iff_disjoint.1 <| completely_normal ?_ ?_
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
   · rwa [← subset_compl_iff_disjoint_right, image_subset_iff, preimage_compl,
@@ -2449,7 +2449,8 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
   t1 := by
     rwa [((t1Space_TFAE (SeparationQuotient X)).out 1 0 :), SeparationQuotient.t1Space_iff]
   completely_normal s t hd₁ hd₂ := by
-    rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
+    rw [separatedNhds_iff_disjoint, ← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
+    apply separatedNhds_iff_disjoint.1
     apply completely_normal <;> rw [← preimage_mk_closure]
     exacts [hd₁.preimage mk, hd₂.preimage mk]
 

@@ -203,7 +203,7 @@ instance : CompletelyNormalSpace ℝₗ := by
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
   choose! Y hY hYd using fun y (hy : y ∈ t) =>
     exists_Ico_disjoint_closed isClosed_closure (disjoint_right.1 hd₁ hy)
-  refine disjoint_of_disjoint_of_mem ?_
+  refine separatedNhds_iff_disjoint.mpr <| disjoint_of_disjoint_of_mem ?_
     (bUnion_mem_nhdsSet fun x hx => (isOpen_Ico x (X x)).mem_nhds <| left_mem_Ico.2 (hX x hx))
     (bUnion_mem_nhdsSet fun y hy => (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
   simp only [disjoint_iUnion_left, disjoint_iUnion_right, Ico_disjoint_Ico]

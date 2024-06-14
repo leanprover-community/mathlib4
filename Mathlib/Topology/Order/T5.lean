@@ -93,7 +93,7 @@ open Set
 
 /-- A linear order with order topology is a completely normal Hausdorff topological space. -/
 instance (priority := 100) OrderTopology.completelyNormalSpace : CompletelyNormalSpace X :=
-  ⟨fun s t h₁ h₂ => Filter.disjoint_iff.2
+  ⟨fun s t h₁ h₂ => separatedNhds_iff_disjoint.2 <| Filter.disjoint_iff.2
     ⟨ordT5Nhd s t, ordT5Nhd_mem_nhdsSet h₂, ordT5Nhd t s, ordT5Nhd_mem_nhdsSet h₁.symm,
       disjoint_ordT5Nhd⟩⟩
 
