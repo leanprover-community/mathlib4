@@ -45,7 +45,7 @@ The results below all work even if the colours are in `Sort` rather than `Type`,
 ## Implementation Details
 
 The theorem is often stated and thought of in terms of arbitrary sets and their subsets,
-but to make the inductive proof work smoothly, it is more convenient to work in the type `ℕ`,
+but to make the inductive proof work smoothly, it is convenient to work in the type `ℕ`,
 and to think of everything as a function. This way, instead of considering with images of sets
 and the relevant coercions, we can deal with compositions of functions.
 
@@ -290,8 +290,7 @@ theorem exists_monochromatic_subsequence_tuple (c : (Fin k ↪o ℕ) → κ) :
 
   have hg₁ : ∃ (g₁ : ℕ ↪o ℕ), ∀ s, RightMonochromatic (fun x ↦ c <| RelEmbedding.trans x g₁) s := by
     induction' k using Nat.recAux with k
-    ·
-      refine ⟨refineAt c default, fun s ↦ ?_⟩
+    · refine ⟨refineAt c default, fun s ↦ ?_⟩
       rw [Subsingleton.elim s default]
       exact refineAt_rightMonochromatic c default
     have aux : ∃ (e : ℕ ≃ ((Fin (k+1)) ↪o ℕ)), Monotone (e · ⊤) := exists_enum_set_card k
@@ -345,7 +344,7 @@ theorem exists_strong_monochromatic_subsequence_finset {κ : Fin k → Sort*} [�
   simp_rw [Finset.image_image] at hg'
   exact hg'
 
-/-- An alternative version of `Ramsey.strong_finset` where the colour type doesn't depend on size.-/
+/-- A specialization of `Ramsey.strong_finset` where the colour type doesn't depend on size.-/
 theorem exists_strong_monochromatic_subsequence_finset'
     (cs : (s : Finset ℕ) → (hs : s.card < k) → κ) : ∃ (c₀s : Fin k → κ) (g : ℕ ↪o ℕ),
     ∀ (s : Finset ℕ) (hs : s.card < k), cs (s.map g.toEmbedding) (by simpa) = c₀s ⟨s.card, hs⟩ := by
