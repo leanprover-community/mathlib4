@@ -137,6 +137,27 @@ the predicate `p`, it should be noted that these will only ever be of the form `
 goals, but it can be modified to become more sophisticated as the need arises.
 -/
 
+
+-- MOVEME
+open Classical in
+noncomputable def Set.restrictContinuous {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Zero β]
+    (s : Set α) (f : α → β) : C(s, β) :=
+  if h : ContinuousOn f s then ⟨s.restrict f, h.restrict⟩ else 0
+
+lemma Set.restrictContinuous_of_continuous {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Zero β]
+    {s : Set α} {f : α → β} (hf : ContinuousOn f s) :
+    s.restrictContinuous f = ⟨s.restrict f, hf.restrict⟩ := by
+  simp only [Set.restrictContinuous]
+  split <;> simp
+
+lemma Set.restrictContinuous_of_not_continuous {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Zero β]
+    {s : Set α} {f : α → β} (hf : ¬ ContinuousOn f s) :
+    s.restrictContinuous f = 0 := by
+  simp only [Set.restrictContinuous]
+  split
+  case isTrue h => exact False.elim (hf h)
+  case isFalse h => simp
+
 section Basic
 
 /-- A star `R`-algebra `A` has a *continuous functional calculus* for elements satisfying the
@@ -306,6 +327,15 @@ lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn 
     cfc f a = 0 := by
   rw [cfc_def, dif_neg (not_and_of_not_right _ hf)]
 
+lemma cfc_apply' (f : R → R) : cfc f a = cfcHom (a := a) ha ((spectrum R a).restrictContinuous f) := by
+  rw [cfc_def]
+  split
+  case isTrue h =>
+    simp [Set.restrictContinuous_of_continuous h.2]
+  case isFalse h =>
+    push_neg at h
+    simp [Set.restrictContinuous_of_not_continuous (h ha)]
+
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
     cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
   have h : f = (spectrum R a).restrict (Function.extend Subtype.val f g) := by
@@ -408,6 +438,36 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
   by_cases ha : p a
   · rw [cfc_apply f a, cfc_apply g a, ← map_add, cfc_apply _ a]
     congr
+  · simp [cfc_apply_of_not_predicate a ha]
+
+open Classical Finset in
+lemma cfc_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    cfc (s.sum f) a = s.sum (fun i => cfc (f i) a) := by
+  by_cases ha : p a
+  · simp only [cfc_apply' a, ← map_sum]
+    congr
+    ext x
+
+    --have h₁ : s.sum (fun i => cfc (f i) a) = ∑ i in (univ : Finset s), cfc (f i) a := by sorry
+    --rw [h₁]
+    --have h₂ : (fun (i : s) => cfc (f i) a) = fun (i : s) => cfcHom ha ⟨_, (hf i.1 i.2).restrict⟩ := by sorry
+    --rw [h₂, ← map_sum]
+    have hsum : s.sum f = fun x => ∑ i ∈ s, f i x := by ext; simp
+    have hf' : ContinuousOn (s.sum f) (spectrum R a) := by
+      rw [hsum]
+      exact continuousOn_finset_sum s hf
+    --rw [cfc_apply (s.sum f) a ha hf']
+    --congr 1
+    --ext x
+    --simp only [ContinuousMap.coe_mk, Set.restrict_apply, sum_apply, univ_eq_attach,
+    --  ContinuousMap.coe_sum, Finset.sum_attach]
+    -- use Finset.sum_attach
+    simp [Set.restrictContinuous_of_continuous]
+    --split
+    --case _ h => sorry
+    --case _ h => exact False.elim <| h hf'
+    sorry
   · simp [cfc_apply_of_not_predicate a ha]
 
 lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
