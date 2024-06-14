@@ -401,10 +401,14 @@ end Functor
 @[deprecated (since := "2024-06-12")] alias Faithful.div_comp := Functor.Faithful.div_comp
 @[deprecated (since := "2024-06-12")] alias Faithful.div_faithful := Functor.Faithful.div_faithful
 @[deprecated (since := "2024-06-12")] alias Full.ofCompFaithful := Functor.Full.of_comp_faithful
-@[deprecated (since := "2024-06-12")] alias Full.ofCompFaithfulIso := Functor.Full.of_comp_faithful_iso
-@[deprecated (since := "2024-06-12")] alias fullyFaithfulCancelRight := Functor.fullyFaithfulCancelRight
-@[deprecated (since := "2024-06-12")] alias fullyFaithfulCancelRight_hom_app := Functor.fullyFaithfulCancelRight_hom_app
-@[deprecated (since := "2024-06-12")] alias fullyFaithfulCancelRight_inv_app := Functor.fullyFaithfulCancelRight_inv_app
+@[deprecated (since := "2024-06-12")] 
+alias Full.ofCompFaithfulIso := Functor.Full.of_comp_faithful_iso
+@[deprecated (since := "2024-06-12")] 
+alias fullyFaithfulCancelRight := Functor.fullyFaithfulCancelRight
+@[deprecated (since := "2024-06-12")] 
+alias fullyFaithfulCancelRight_hom_app := Functor.fullyFaithfulCancelRight_hom_app
+@[deprecated (since := "2024-06-12")] 
+alias fullyFaithfulCancelRight_inv_app := Functor.fullyFaithfulCancelRight_inv_app
 
 -- deprecated on 2024-04-26
 @[deprecated (since := "2024-06-12")] alias Functor.image_preimage := Functor.map_preimage

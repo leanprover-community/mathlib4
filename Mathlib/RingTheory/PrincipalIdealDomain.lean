@@ -328,7 +328,8 @@ theorem isMaximal_of_irreducible [CommRing R] [IsPrincipalIdealRing R] {p : R}
 
 @[deprecated (since := "2024-06-12")] protected alias irreducible_iff_prime := irreducible_iff_prime
 #align principal_ideal_ring.irreducible_iff_prime irreducible_iff_prime
-@[deprecated (since := "2024-06-12")] protected alias associates_irreducible_iff_prime := associates_irreducible_iff_prime
+@[deprecated (since := "2024-06-12")] 
+protected alias associates_irreducible_iff_prime := associates_irreducible_iff_prime
 #align principal_ideal_ring.associates_irreducible_iff_prime associates_irreducible_iff_prime
 
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
