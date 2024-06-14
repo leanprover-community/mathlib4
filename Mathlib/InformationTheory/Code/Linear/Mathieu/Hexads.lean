@@ -203,7 +203,6 @@ lemma card_weight_le_three :
   rw [Fintype.card_subtype]
   rw [finset_filter_weight_le 3]
   dsimp [Finset.Iic, LocallyFiniteOrderBot.finsetIic]
-  simp only [bot_eq_zero']
   dsimp [Finset.Icc, LocallyFiniteOrder.finsetIcc]
   simp only [Multiset.sum_coe]
   dsimp [List.range']
