@@ -1397,8 +1397,9 @@ theorem eventually_ne_of_tendsto_norm_atTop' {l : Filter α} {f : α → E}
 #align eventually_ne_of_tendsto_norm_at_top eventually_ne_of_tendsto_norm_atTop
 
 @[to_additive]
-theorem SeminormedCommGroup.mem_closure_iff : a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε :=
-  by simp [Metric.mem_closure_iff, dist_eq_norm_div]
+theorem SeminormedCommGroup.mem_closure_iff :
+    a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
+  simp [Metric.mem_closure_iff, dist_eq_norm_div]
 #align seminormed_comm_group.mem_closure_iff SeminormedCommGroup.mem_closure_iff
 #align seminormed_add_comm_group.mem_closure_iff SeminormedAddCommGroup.mem_closure_iff
 
@@ -1425,9 +1426,9 @@ theorem norm_pos_iff''' [T0Space E] {a : E} : 0 < ‖a‖ ↔ a ≠ 1 := by
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
-  -- Adaptation note: nightly-2024-03-11.
-  -- Originally this was `simp_rw` instead of `simp only`,
-  -- but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`.
+  #adaptation_note /-- nightly-2024-03-11.
+  Originally this was `simp_rw` instead of `simp only`,
+  but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`. -/
   simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
 #align seminormed_group.tendsto_uniformly_on_one SeminormedGroup.tendstoUniformlyOn_one
 #align seminormed_add_group.tendsto_uniformly_on_zero SeminormedAddGroup.tendstoUniformlyOn_zero
@@ -1946,7 +1947,7 @@ theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
 theorem norm_natCast (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
 #align int.norm_coe_nat Int.norm_natCast
 
-@[deprecated] alias norm_coe_nat := norm_natCast -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
 
 theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|

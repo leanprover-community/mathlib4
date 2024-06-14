@@ -376,12 +376,12 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
     · rw [edist_eq_iSup, dist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp only [Real.iSup_of_isEmpty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
-      · refine' le_antisymm (ciSup_le fun i => _) _
+      · refine le_antisymm (ciSup_le fun i => ?_) ?_
         · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
             PseudoMetricSpace.edist_dist]
           -- Porting note: `le_iSup` needed some help
           exact le_iSup (fun k => edist (f k) (g k)) i
-        · refine' ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg _ _) (iSup_le fun i => _)
+        · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg _ ?_) (iSup_le fun i => ?_)
           · rintro - ⟨i, rfl⟩
             exact dist_nonneg
           · change PseudoMetricSpace.edist _ _ ≤ _

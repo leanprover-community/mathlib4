@@ -277,8 +277,8 @@ theorem mfderiv_fst {x : M × M'} :
 theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
     (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
     mfderivWithin (I.prod I') I Prod.fst s x =
-      ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) :=
-  by rw [MDifferentiable.mfderivWithin (mdifferentiableAt_fst I I') hxs]; exact mfderiv_fst I I'
+      ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
+  rw [MDifferentiable.mfderivWithin (mdifferentiableAt_fst I I') hxs]; exact mfderiv_fst I I'
 #align mfderiv_within_fst mfderivWithin_fst
 
 @[simp, mfld_simps]
@@ -349,8 +349,8 @@ theorem mfderiv_snd {x : M × M'} :
 theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
     (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
     mfderivWithin (I.prod I') I' Prod.snd s x =
-      ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) :=
-  by rw [MDifferentiable.mfderivWithin (mdifferentiableAt_snd I I') hxs]; exact mfderiv_snd I I'
+      ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
+  rw [MDifferentiable.mfderivWithin (mdifferentiableAt_snd I I') hxs]; exact mfderiv_snd I I'
 #align mfderiv_within_snd mfderivWithin_snd
 
 @[simp, mfld_simps]

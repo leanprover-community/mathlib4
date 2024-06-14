@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
 import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.pythagorean_triples from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -501,8 +502,8 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hm2n2 : 0 < m ^ 2 + n ^ 2 := by positivity
   have hm2n20 : (m ^ 2 + n ^ 2 : ℚ) ≠ 0 := by positivity
   have hx1 {j k : ℚ} (h₁ : k ≠ 0) (h₂ : k ^ 2 + j ^ 2 ≠ 0) :
-      (1 - (j / k) ^ 2) / (1 + (j / k) ^ 2) = (k ^ 2 - j ^ 2) / (k ^ 2 + j ^ 2) :=
-    by field_simp
+      (1 - (j / k) ^ 2) / (1 + (j / k) ^ 2) = (k ^ 2 - j ^ 2) / (k ^ 2 + j ^ 2) := by
+    field_simp
   have hw2 : w = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
     calc
       w = (1 - q ^ 2) / (1 + q ^ 2) := by apply ht4.2
