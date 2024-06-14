@@ -420,14 +420,13 @@ theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
   exact (reverse_reverse l).symm
 #align list.next_reverse_eq_prev List.next_reverse_eq_prev
 
-set_option linter.deprecated false in
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
     l.next x hx = l'.next x (h.mem_iff.mp hx) := by
-  obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
+  obtain ⟨k, hk, rfl⟩ := get_of_mem hx
   obtain ⟨n, rfl⟩ := id h
-  rw [next_nthLe _ hn]
-  simp_rw [← nthLe_rotate' _ n k]
-  rw [next_nthLe _ (h.nodup_iff.mp hn), ← nthLe_rotate' _ n]
+  rw [next_get _ hn]
+  simp_rw [get_eq_get_rotate _ n k]
+  rw [next_get _ (h.nodup_iff.mp hn), get_eq_get_rotate _ n]
   simp [add_assoc]
 #align list.is_rotated_next_eq List.isRotated_next_eq
 
