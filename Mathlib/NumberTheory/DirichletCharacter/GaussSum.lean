@@ -9,7 +9,7 @@ import Mathlib.NumberTheory.GaussSum
 /-!
 # Gauss sums for Dirichlet characters
 -/
-variable {N : ℕ+} {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
+variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
 open AddChar
 
