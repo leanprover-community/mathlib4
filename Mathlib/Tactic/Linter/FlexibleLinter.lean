@@ -66,7 +66,8 @@ namespace flexible
 them in possibly unpredictable ways.
 
 The prototypical flexible tactic is `simp`
-The prototypical non-flexible tactic `rw`.  `simp only` is also non-flexible. -/
+The prototypical non-flexible tactic `rw`.
+`simp only` is also non-flexible. -/
 def flexible? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
   | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
