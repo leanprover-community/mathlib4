@@ -1418,7 +1418,7 @@ theorem getElem_reverse_aux₂ :
 
 @[deprecated getElem_reverse_aux₂ (since := "2024-06-12")]
 theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
-      get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
+    get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
   simp [getElem_reverse_aux₂, h1, h2]
 
 @[deprecated getElem_reverse (since := "2024-06-12")]
