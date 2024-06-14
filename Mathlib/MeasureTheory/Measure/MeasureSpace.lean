@@ -1673,6 +1673,9 @@ lemma add_left_iff {μ₁ μ₂ ν : Measure α} :
     rw [this]
     exact AbsolutelyContinuous.rfl.smul 2
 
+lemma add_left {μ₁ μ₂ ν : Measure α} (h₁ : μ₁ ≪ ν) (h₂ : μ₂ ≪ ν) : μ₁ + μ₂ ≪ ν :=
+  Measure.AbsolutelyContinuous.add_left_iff.mpr ⟨h₁, h₂⟩
+
 lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   intro s hs
   simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
