@@ -22,11 +22,10 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One 
     [Div β] [Pow β ℕ] [Pow β ℤ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : OrderedCommGroup β :=
-  reduceProj% zeta%
-  { toCommGroup := delta% hf.commGroup f one mul inv div npow zpow
-    toPartialOrder := PartialOrder.lift f hf
-    __ := hf.orderedCommMonoid f one mul npow }
+    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : OrderedCommGroup β where
+  toCommGroup := hf.commGroup f one mul inv div npow zpow
+  toPartialOrder := PartialOrder.lift f hf
+  __ := hf.orderedCommMonoid f one mul npow
 
 #align function.injective.ordered_comm_group Function.Injective.orderedCommGroup
 #align function.injective.ordered_add_comm_group Function.Injective.orderedAddCommGroup
@@ -40,9 +39,8 @@ def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : 
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (sup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (inf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    LinearOrderedCommGroup β :=
-  reduceProj% zeta%
-  { toOrderedCommGroup := delta% hf.orderedCommGroup f one mul inv div npow zpow
-    __ := delta% LinearOrder.lift f hf sup inf }
+    LinearOrderedCommGroup β where
+  toOrderedCommGroup := hf.orderedCommGroup f one mul inv div npow zpow
+  __ := LinearOrder.lift f hf sup inf
 #align function.injective.linear_ordered_comm_group Function.Injective.linearOrderedCommGroup
 #align function.injective.linear_ordered_add_comm_group Function.Injective.linearOrderedAddCommGroup
