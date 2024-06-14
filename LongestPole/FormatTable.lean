@@ -25,7 +25,7 @@ Takes a 2d array of string data and renders it into a table.
 def formatTable (headers : Array String) (table : Array (Array String))
     (alignments : Option (Array Alignment) := none) :
     String := Id.run do
-  -- If no alignments are provided, default to left alignment for all columns
+  -- If no alignments are provided, default to left alignment for all columns.
   let alignments := alignments.getD (Array.mkArray headers.size Alignment.left)
   -- Get the maximum widths of each column
   let mut widths := headers.map (·.length)
