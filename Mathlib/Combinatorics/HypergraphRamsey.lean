@@ -22,8 +22,9 @@ The results below all work even if the colours are in `Sort` rather than `Type`,
 'colour according to whether X is true' is a common application of Ramsey results.
 
 - `Ramsey.exists_monochromatic_infinite_subset`: the infinite hypergraph Ramsey theorem;
-  if we colour every `s : Finset α` with `s.card = k` in an `Infinite` type `α`, then there is an
-  infinite `y : Set α` whose `k`-element subsets qll have the same colour.
+  if we colour every `s : Finset α` with `s.card = k` in an `Infinite` type `α`
+  with a colour from a finite set of colours, then there is an
+  infinite `y : Set α` whose `k`-element subsets all have the same colour.
 
 - `Ramsey.exists_monochromatic_subsequence_tuple`: the infinite hypergraph Ramsey theorem where the
   objects being coloured are embeddings `Fin k ↪o ℕ`, and the infinite monochromatic subset is
