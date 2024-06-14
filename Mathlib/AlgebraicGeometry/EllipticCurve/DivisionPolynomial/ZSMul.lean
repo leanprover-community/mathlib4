@@ -3,7 +3,6 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Universal
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
@@ -17,29 +16,6 @@ scalar multiplication by an integer on the group of rational points in Jacobian 
 
 open scoped PolynomialPolynomial
 
-namespace Polynomial -- move this to Affine?
-
-variable {R : Type*}
-
-noncomputable section
-
-/-- `evalEval x y p` is the evaluation `p(x,y)` of a two-variable polynomial `p : R[X][Y]`. -/
-abbrev evalEval [Semiring R] (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
-
-/-- `evalEval x y` as a ring homomorphism. -/
-@[simps!] abbrev evalEvalRingHom [CommSemiring R] (x y : R) : R[X][Y] →+* R :=
-  (evalRingHom x).comp (evalRingHom <| C y)
-
-/-- A constant viewed as a polynomial in two variables. -/
-abbrev CC [Semiring R] (r : R) : R[X][Y] := C (C r)
-
-lemma coe_algebraMap_eq_CC [CommSemiring R] : algebraMap R R[X][Y] = CC (R := R) := rfl
-lemma coe_evalEvalRingHom [CommSemiring R] (x y : R) : evalEvalRingHom x y = evalEval x y := rfl
-
-end
-
-end Polynomial
-
 namespace WeierstrassCurve
 
 open Polynomial
@@ -50,131 +26,6 @@ local macro "C_simp" : tactic =>
 variable {R S : Type*} [CommRing R] [CommRing S] (W : WeierstrassCurve R) (f : R →+* S)
 
 noncomputable section
-
-/-- The second division polynomial is simply the derivative of the Weierstrass polynomial
-with respect to `Y`. -/
-protected abbrev ψ₂ : R[X][Y] := Affine.polynomialY W
-/- Implementation note: protect to force the use of dot notation,
-   since ψ etc. are common variable names. -/
-
-/-- A single variable polynomial congruent to the square of the second division polynomial
-modulo the Weierstrass polynomial. -/
-protected def ψ₂Sq : R[X] := 4 * X ^ 3 + C W.b₂ * X ^ 2 + 2 * C W.b₄ * X + C W.b₆
-
-/-- The third division polynomial, in a single variable. -/
-protected def ψ₃ : R[X] := 3 * X ^ 4 + C W.b₂ * X ^ 3 + 3 * C W.b₄ * X ^ 2 + 3 * C W.b₆ * X + C W.b₈
-
-/-- The complement of the second division polynomial in the fourth, in a single variable. -/
-protected def ψc₂ : R[X] := 2 * X ^ 6 + C W.b₂ * X ^ 5 + 5 * C W.b₄ * X ^ 4 + 10 * C W.b₆ * X ^ 3
-  + 10 * C W.b₈ * X ^ 2 + C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2)
-
-/-- The "invariant" that is equal to the quotient
-`(ψ(n-1)²ψ(n+2)+ψ(n-2)ψ(n+1)²+ψ₂²ψ(n)³)/ψ(n+1)ψ(n)ψ(n-1)` for arbitary `n`
-modulo the Weierstrass polynomial. -/
-def invar : R[X] := 6 * X ^ 2 + C W.b₂ * X + C W.b₄
-
-/-- The `ψ` family of division polynomials is the normalised EDS given by the initial values
-ψ₂, ψ₃, and ψc₂. `ψ n` gives the last (`Z`) coordinate in Jacobian coordinates of the scalar
-multiplication by the integer `n` of a point on a Weierstrass curve. -/
-protected def ψ : ℤ → R[X][Y] := normEDS W.ψ₂ (C W.ψ₃) (C W.ψc₂)
-
-/-- The `φ` family of division polynomials; `φ n` gives the first (`X`) coordinate in
-Jacobian coordinates of the scalar multiplication by `n`. -/
-protected def φ (n : ℤ) : R[X][Y] := C X * W.ψ n ^ 2 - W.ψ (n + 1) * W.ψ (n - 1)
-
-/-- The complement of ψ(n) in ψ(2n). -/
-def ψc : ℤ → R[X][Y] := compl₂EDS W.ψ₂ (C W.ψ₃) (C W.ψc₂)
-
-lemma isEllSequence_ψ : IsEllSequence W.ψ := IsEllSequence.normEDS
-
-open Affine (polynomial polynomialX polynomialY negPolynomial)
-open EllSequence
-
-open WeierstrassCurve (ψc₂ ψ₂ ψ₂Sq ψ₃ ψ φ ψc)
-
-lemma C_ψ₃_eq :
-    C W.ψ₃ = (3 * C X + CC W.a₂) * C W.ψ₂Sq - polynomialX W ^ 2
-      + CC W.a₁ * W.ψ₂ * polynomialX W - CC W.a₁ ^ 2 * polynomial W := by
-  simp_rw [ψ₃, ψ₂Sq, polynomial, polynomialX, polynomialY, b₂, b₄, b₆, b₈, CC]; C_simp; ring
-
-lemma ψ₂_sq : W.ψ₂ ^ 2 = C W.ψ₂Sq + 4 * polynomial W := by
-  rw [Affine.polynomial, ψ₂, polynomialY, ψ₂Sq, b₂, b₄, b₆]; C_simp; ring
-
-lemma ψc₂_add_ψ₂Sq_sq : W.ψc₂ + W.ψ₂Sq ^ 2 = W.invar * W.ψ₃ := by
-  rw [ψc₂, ψ₂Sq, invar, ψ₃]
-  linear_combination (norm := (C_simp; ring_nf)) congr(C $W.b_relation) * (@X R _) ^ 2
-
-lemma ψc₂_add_ψ₂_pow_four :
-    C W.ψc₂ + W.ψ₂ ^ 4 = C (W.invar * W.ψ₃) + 8 * polynomial W * (2 * polynomial W + C W.ψ₂Sq) := by
-  simp_rw [show 4 = 2 * 2 by rfl, pow_mul, ψ₂_sq, add_sq,
-    ← add_assoc, ← C_pow, ← C_add, ψc₂_add_ψ₂Sq_sq]; C_simp; ring
-
-lemma φ_mul_ψ (n : ℤ) : W.φ n * W.ψ n = C X * W.ψ n ^ 3 - invarDenom W.ψ 1 n := by
-  rw [φ, invarDenom]; ring
-
-suppress_compilation in
-/-- The `ω` family of division polynomials: `ω n` gives the second (`Y`) coordinate in
-Jacobian coordinates of the scalar multiplication by `n`. -/
-protected def ω (n : ℤ) : R[X][Y] :=
-  redInvarDenom W.ψ₂ (C W.ψ₃) (C W.ψc₂) n *
-    ((CC W.a₁ * polynomialY W - polynomialX W) * C W.ψ₃
-      + 4 * polynomial W * (2 * polynomial W + C W.ψ₂Sq))
-  - compl₂EDSAux W.ψ₂ (C W.ψ₃) (C W.ψc₂) n + negPolynomial W * W.ψ n ^ 3
-
-open WeierstrassCurve (ω)
-lemma ω_spec (n : ℤ) :
-    2 * W.ω n + CC W.a₁ * W.φ n * W.ψ n + CC W.a₃ * W.ψ n ^ 3 = W.ψc n := by
-  rw [ψc, compl₂EDS_eq_redInvarNum_sub, redInvar_normEDS, ψc₂_add_ψ₂_pow_four, mul_assoc (C _),
-    φ_mul_ψ, ψ, invarDenom_eq_redInvarDenom_mul, ω, ← ψ, invar, b₂, b₄, ψ₂,
-    polynomialY, polynomialX, negPolynomial]
-  C_simp; ring
-
-lemma two_mul_ω (n : ℤ) :
-    2 * W.ω n = W.ψc n - CC W.a₁ * W.φ n * W.ψ n - CC W.a₃ * W.ψ n ^ 3 := by
-  rw [← ω_spec]; abel
-
-lemma ψc_spec (n : ℤ) : W.ψ n * W.ψc n = W.ψ (2 * n) := normEDS_mul_compl₂EDS _ _ _ _
-
-@[simp] lemma ψ_zero : W.ψ 0 = 0 := by simp [ψ]
-@[simp] lemma ψ_one : W.ψ 1 = 1 := by simp [ψ]
-@[simp] lemma ψ_two : W.ψ 2 = W.ψ₂ := by simp [ψ]
-@[simp] lemma ψ_three : W.ψ 3 = C W.ψ₃ := by simp [ψ]
-@[simp] lemma ψ_four : W.ψ 4 = C W.ψc₂ * W.ψ₂ := by simp [ψ]
-@[simp] lemma φ_zero : W.φ 0 = 1 := by simp [φ, ψ]
-@[simp] lemma φ_one : W.φ 1 = C X := by simp [φ, ψ]
-@[simp] lemma φ_two : W.φ 2 = C X * W.ψ₂ ^ 2 - C W.ψ₃ := by simp [φ]
-@[simp] lemma ω_zero : W.ω 0 = 1 := by simp [ω]
-@[simp] lemma ω_one : W.ω 1 = Y := by simp [ω, ← Affine.Y_sub_polynomialY]
-
-@[simp] lemma ψ_neg (n : ℤ) : W.ψ (-n) = -W.ψ n := by simp [ψ]
-@[simp] lemma ψc_neg (n : ℤ) : W.ψc (-n) = W.ψc n := by simp [ψc]
-
-@[simp] lemma φ_neg (n : ℤ) : W.φ (-n) = W.φ n := by
-  rw [φ, φ, neg_add_eq_sub, ← neg_sub n, ← neg_add', ψ_neg, ψ_neg, ψ_neg]; ring
-
-@[simp] lemma map_ψ₂ : (W.map f).ψ₂ = W.ψ₂.map (mapRingHom f) := by simp [ψ₂, polynomialY]
-@[simp] lemma map_ψ₃ : (W.map f).ψ₃ = W.ψ₃.map f := by simp [ψ₃]
-@[simp] lemma map_ψc₂ : (W.map f).ψc₂ = W.ψc₂.map f := by simp [ψc₂]
-@[simp] lemma map_ψ₂Sq : (W.map f).ψ₂Sq = W.ψ₂Sq.map f := by simp [ψ₂Sq]
-
-@[simp] lemma map_ψ (n : ℤ) : (W.map f).ψ n = (W.ψ n).map (mapRingHom f) := by
-  simp_rw [ψ, ← coe_mapRingHom, map_normEDS]; simp
-
-@[simp] lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by simp [φ]
-
-open Affine in
-@[simp] lemma map_ω (n : ℤ) : (W.map f).ω n = (W.ω n).map (mapRingHom f) := by
-  simp_rw [ω, ← coe_mapRingHom, map_add, map_sub, map_mul, map_redInvarDenom, map_compl₂EDSAux,
-    map_polynomial, map_polynomialX, map_polynomialY, map_negPolynomial]; simp
-
-private lemma universal_ω_neg (n : ℤ) : letI W := Universal.curve
-    W.ω (-n) = W.ω n + CC W.a₁ * W.φ n * W.ψ n + CC W.a₃ * W.ψ n ^ 3 := by
-  rw [← mul_cancel_left_mem_nonZeroDivisors
-    (mem_nonZeroDivisors_of_ne_zero Universal.Poly.two_ne_zero)]
-  simp_rw [left_distrib, two_mul_ω, ψc_neg, ψ_neg, φ_neg]; ring
-
-lemma ω_neg (n : ℤ) : W.ω (-n) = W.ω n + CC W.a₁ * W.φ n * W.ψ n + CC W.a₃ * W.ψ n ^ 3 := by
-  rw [← W.map_specialize, map_ω, universal_ω_neg]; simp
 
 variable {x y : R}
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Universal
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 /-!
@@ -97,25 +97,54 @@ open Polynomial PolynomialPolynomial
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
 
-universe u
+local macro "map_simp" : tactic =>
+  `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow, map_div₀,
+    Polynomial.map_ofNat, Polynomial.map_one, map_C, map_X, Polynomial.map_neg, Polynomial.map_add,
+    Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_div, coe_mapRingHom,
+    apply_ite <| mapRingHom _, WeierstrassCurve.map])
+
+universe r s u v
+
+namespace Polynomial -- move this to Affine?
+
+variable {R : Type*}
+
+noncomputable section
+
+/-- `evalEval x y p` is the evaluation `p(x,y)` of a two-variable polynomial `p : R[X][Y]`. -/
+abbrev evalEval [Semiring R] (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
+
+/-- `evalEval x y` as a ring homomorphism. -/
+@[simps!] abbrev evalEvalRingHom [CommSemiring R] (x y : R) : R[X][Y] →+* R :=
+  (evalRingHom x).comp (evalRingHom <| C y)
+
+/-- A constant viewed as a polynomial in two variables. -/
+abbrev CC [Semiring R] (r : R) : R[X][Y] := C (C r)
+
+lemma coe_algebraMap_eq_CC [CommSemiring R] : algebraMap R R[X][Y] = CC (R := R) := rfl
+lemma coe_evalEvalRingHom [CommSemiring R] (x y : R) : evalEvalRingHom x y = evalEval x y := rfl
+
+end
+
+end Polynomial
 
 namespace WeierstrassCurve
 
-variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
+noncomputable section
 
-section Ψ₂Sq
+variable {R : Type r} {S : Type s} [CommRing R] [CommRing S] (W : WeierstrassCurve R)
 
-/-! ### The univariate polynomial $\Psi_2^{[2]}$ -/
+/-! ### The initial data for recursive definition of division polynomials -/
 
 /-- The $2$-division polynomial $\psi_2 = \Psi_2$. -/
-noncomputable def ψ₂ : R[X][Y] :=
+def ψ₂ : R[X][Y] :=
   W.toAffine.polynomialY
 
 /-- The univariate polynomial $\Psi_2^{[2]}$ congruent to $\psi_2^2$. -/
-noncomputable def Ψ₂Sq : R[X] :=
+def Ψ₂Sq : R[X] :=
   C 4 * X ^ 3 + C W.b₂ * X ^ 2 + C (2 * W.b₄) * X + C W.b₆
 
-lemma C_Ψ₂Sq_eq : C W.Ψ₂Sq = W.ψ₂ ^ 2 - 4 * W.toAffine.polynomial := by
+lemma C_Ψ₂Sq : C W.Ψ₂Sq = W.ψ₂ ^ 2 - 4 * W.toAffine.polynomial := by
   rw [Ψ₂Sq, ψ₂, b₂, b₄, b₆, Affine.polynomialY, Affine.polynomial]
   C_simp
   ring1
@@ -124,25 +153,28 @@ lemma C_Ψ₂Sq_eq : C W.Ψ₂Sq = W.ψ₂ ^ 2 - 4 * W.toAffine.polynomial := by
 lemma Ψ₂Sq_eq : W.Ψ₂Sq = W.twoTorsionPolynomial.toPoly :=
   rfl
 
-end Ψ₂Sq
+/-- The $3$-division polynomial $\psi_3 = \Psi_3$. -/
+def Ψ₃ : R[X] :=
+  3 * X ^ 4 + C W.b₂ * X ^ 3 + 3 * C W.b₄ * X ^ 2 + 3 * C W.b₆ * X + C W.b₈
+
+/-- The univariate polynomial $\tilde{\Psi}_4$, which is auxiliary to the $4$-division polynomial
+$\psi_4 = \Psi_4 = \tilde{\Psi}_4\psi_2$. -/
+def preΨ₄ : R[X] :=
+  2 * X ^ 6 + C W.b₂ * X ^ 5 + 5 * C W.b₄ * X ^ 4 + 10 * C W.b₆ * X ^ 3 + 10 * C W.b₈ * X ^ 2 +
+    C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2)
+
+/-- The "invariant" that is equal to the quotient
+`(ψ(n-1)²ψ(n+2)+ψ(n-2)ψ(n+1)²+ψ₂²ψ(n)³)/ψ(n+1)ψ(n)ψ(n-1)` for arbitary `n`
+modulo the Weierstrass polynomial. -/
+def invar : R[X] := 6 * X ^ 2 + C W.b₂ * X + C W.b₄
 
 section preΨ'
 
 /-! ### The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{N}$ -/
 
-/-- The $3$-division polynomial $\psi_3 = \Psi_3$. -/
-noncomputable def Ψ₃ : R[X] :=
-  3 * X ^ 4 + C W.b₂ * X ^ 3 + 3 * C W.b₄ * X ^ 2 + 3 * C W.b₆ * X + C W.b₈
-
-/-- The univariate polynomial $\tilde{\Psi}_4$, which is auxiliary to the $4$-division polynomial
-$\psi_4 = \Psi_4 = \tilde{\Psi}_4\psi_2$. -/
-noncomputable def preΨ₄ : R[X] :=
-  2 * X ^ 6 + C W.b₂ * X ^ 5 + 5 * C W.b₄ * X ^ 4 + 10 * C W.b₆ * X ^ 3 + 10 * C W.b₈ * X ^ 2 +
-    C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2)
-
 /-- The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{N}$, which are auxiliary to the
 bivariate polynomials $\Psi_n$ congruent to the bivariate $n$-division polynomials $\psi_n$. -/
-noncomputable def preΨ' (n : ℕ) : R[X] :=
+def preΨ' (n : ℕ) : R[X] :=
   preNormEDS' (W.Ψ₂Sq ^ 2) W.Ψ₃ W.preΨ₄ n
 
 @[simp]
@@ -183,7 +215,7 @@ section preΨ
 
 /-- The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{Z}$, which are auxiliary to the
 bivariate polynomials $\Psi_n$ congruent to the bivariate $n$-division polynomials $\psi_n$. -/
-noncomputable def preΨ (n : ℤ) : R[X] :=
+def preΨ (n : ℤ) : R[X] :=
   preNormEDS (W.Ψ₂Sq ^ 2) W.Ψ₃ W.preΨ₄ n
 
 @[simp]
@@ -231,7 +263,7 @@ section ΨSq
 /-! ### The univariate polynomials $\Psi_n^{[2]}$ -/
 
 /-- The univariate polynomials $\Psi_n^{[2]}$ congruent to $\psi_n^2$. -/
-noncomputable def ΨSq (n : ℤ) : R[X] :=
+def ΨSq (n : ℤ) : R[X] :=
   W.preΨ n ^ 2 * if Even n then W.Ψ₂Sq else 1
 
 @[simp]
@@ -279,7 +311,7 @@ section Ψ
 /-! ### The bivariate polynomials $\Psi_n$ -/
 
 /-- The bivariate polynomials $\Psi_n$ congruent to the $n$-division polynomials $\psi_n$. -/
-protected noncomputable def Ψ (n : ℤ) : R[X][Y] :=
+protected def Ψ (n : ℤ) : R[X][Y] :=
   C (W.preΨ n) * if Even n then W.ψ₂ else 1
 
 open WeierstrassCurve (Ψ)
@@ -315,7 +347,7 @@ lemma Ψ_odd (m : ℕ) : W.Ψ (2 * (m + 2) + 1) =
           else -W.preΨ' (m + 1) * W.preΨ' (m + 3) ^ 3) := by
   repeat erw [Ψ_ofNat]
   simp_rw [preΨ'_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add_one, ite_not]
-  split_ifs <;> C_simp <;> rw [C_Ψ₂Sq_eq] <;> ring1
+  split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
 
 lemma Ψ_even (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
     W.Ψ (m + 2) ^ 2 * W.Ψ (m + 3) * W.Ψ (m + 5) - W.Ψ (m + 1) * W.Ψ (m + 3) * W.Ψ (m + 4) ^ 2 := by
@@ -334,7 +366,7 @@ section Φ
 /-! ### The univariate polynomials $\Phi_n$ -/
 
 /-- The univariate polynomials $\Phi_n$ congruent to $\phi_n$. -/
-protected noncomputable def Φ (n : ℤ) : R[X] :=
+protected def Φ (n : ℤ) : R[X] :=
   X * W.ΨSq n - W.preΨ (n + 1) * W.preΨ (n - 1) * if Even n then 1 else W.Ψ₂Sq
 
 open WeierstrassCurve (Φ)
@@ -382,9 +414,11 @@ section ψ
 
 /-! ### The bivariate polynomials $\psi_n$ -/
 
-/-- The bivariate $n$-division polynomials $\psi_n$. -/
-protected noncomputable def ψ (n : ℤ) : R[X][Y] :=
-  normEDS W.ψ₂ (C W.Ψ₃) (C W.preΨ₄) n
+/-- The `ψ` family of bivariate division polynomials is the normalised EDS given by the initial
+values ψ₂, Ψ₃, and ψ₄ = ψ₂ * preΨ₄. `ψ n` gives the last (`Z`) coordinate in Jacobian coordinates
+of the `n`th multiple of a nonsingular point on a Weierstrass curve. -/
+protected def ψ : ℤ → R[X][Y] :=
+  normEDS W.ψ₂ (C W.Ψ₃) (C W.preΨ₄)
 
 @[simp]
 lemma ψ_zero : W.ψ 0 = 0 :=
@@ -424,8 +458,9 @@ section φ
 
 /-! ### The bivariate polynomials $\phi_n$ -/
 
-/-- The bivariate polynomials $\phi_n$. -/
-protected noncomputable def φ (n : ℤ) : R[X][Y] :=
+/-- The `φ` family of division polynomials; `φ n` gives the first (`X`) coordinate in
+Jacobian coordinates of the scalar multiplication by `n`. -/
+protected def φ (n : ℤ) : R[X][Y] :=
   C X * W.ψ n ^ 2 - W.ψ (n + 1) * W.ψ (n - 1)
 
 open WeierstrassCurve (φ)
@@ -459,5 +494,173 @@ lemma φ_neg (n : ℤ) : W.φ (-n) = W.φ n := by
     neg_mul_neg (α := R[X][Y]), mul_comm <| W.ψ _, φ]
 
 end φ
+
+/-- The complement of ψ(n) in ψ(2n). -/
+def ψc : ℤ → R[X][Y] := compl₂EDS W.ψ₂ (C W.Ψ₃) (C W.preΨ₄)
+
+lemma isEllSequence_ψ : IsEllSequence W.ψ := IsEllSequence.normEDS
+
+open Affine (polynomial polynomialX polynomialY negPolynomial)
+open EllSequence
+
+open WeierstrassCurve (ψ₂ ψ φ)
+
+lemma C_Ψ₃_eq :
+    C W.Ψ₃ = (3 * C X + CC W.a₂) * C W.Ψ₂Sq - polynomialX W ^ 2
+      + CC W.a₁ * W.ψ₂ * polynomialX W - CC W.a₁ ^ 2 * polynomial W := by
+  simp_rw [Ψ₃, Ψ₂Sq, polynomial, polynomialX, ψ₂, polynomialY, b₂, b₄, b₆, b₈, CC]; C_simp; ring
+
+lemma ψ₂_sq : W.ψ₂ ^ 2 = C W.Ψ₂Sq + 4 * polynomial W := by
+  rw [Affine.polynomial, ψ₂, polynomialY, Ψ₂Sq, b₂, b₄, b₆]; C_simp; ring
+
+lemma preΨ₄_add_Ψ₂Sq_sq : W.preΨ₄ + W.Ψ₂Sq ^ 2 = W.invar * W.Ψ₃ := by
+  rw [preΨ₄, Ψ₂Sq, invar, Ψ₃]
+  linear_combination (norm := (C_simp; ring_nf)) congr(C $W.b_relation) * (@X R _) ^ 2
+
+lemma preΨ₄_add_ψ₂_pow_four : C W.preΨ₄ + W.ψ₂ ^ 4 =
+    C (W.invar * W.Ψ₃) + 8 * polynomial W * (2 * polynomial W + C W.Ψ₂Sq) := by
+  simp_rw [show 4 = 2 * 2 by rfl, pow_mul, ψ₂_sq, add_sq,
+    ← add_assoc, ← C_pow, ← C_add, preΨ₄_add_Ψ₂Sq_sq]; C_simp; ring
+
+lemma φ_mul_ψ (n : ℤ) : W.φ n * W.ψ n = C X * W.ψ n ^ 3 - invarDenom W.ψ 1 n := by
+  rw [φ, invarDenom]; ring
+
+suppress_compilation in
+/-- The `ω` family of division polynomials: `ω n` gives the second (`Y`) coordinate in
+Jacobian coordinates of the scalar multiplication by `n`. -/
+protected def ω (n : ℤ) : R[X][Y] :=
+  redInvarDenom W.ψ₂ (C W.Ψ₃) (C W.preΨ₄) n *
+    ((CC W.a₁ * polynomialY W - polynomialX W) * C W.Ψ₃
+      + 4 * polynomial W * (2 * polynomial W + C W.Ψ₂Sq))
+  - compl₂EDSAux W.ψ₂ (C W.Ψ₃) (C W.preΨ₄) n + negPolynomial W * W.ψ n ^ 3
+
+open WeierstrassCurve (ω)
+lemma ω_spec (n : ℤ) :
+    2 * W.ω n + CC W.a₁ * W.φ n * W.ψ n + CC W.a₃ * W.ψ n ^ 3 = W.ψc n := by
+  rw [ψc, compl₂EDS_eq_redInvarNum_sub, redInvar_normEDS, preΨ₄_add_ψ₂_pow_four, mul_assoc (C _),
+    φ_mul_ψ, ψ, invarDenom_eq_redInvarDenom_mul, ω, ← ψ, invar, b₂, b₄, ψ₂,
+    polynomialY, polynomialX, negPolynomial]
+  C_simp; ring
+
+lemma two_mul_ω (n : ℤ) :
+    2 * W.ω n = W.ψc n - CC W.a₁ * W.φ n * W.ψ n - CC W.a₃ * W.ψ n ^ 3 := by
+  rw [← ω_spec]; abel
+
+lemma ψc_spec (n : ℤ) : W.ψ n * W.ψc n = W.ψ (2 * n) := normEDS_mul_compl₂EDS _ _ _ _
+
+@[simp] lemma ω_zero : W.ω 0 = 1 := by simp [ω]
+@[simp] lemma ω_one : W.ω 1 = Y := by simp [ω, ψ₂, ← Affine.Y_sub_polynomialY]
+@[simp] lemma ψc_neg (n : ℤ) : W.ψc (-n) = W.ψc n := by simp [ψc]
+
+end
+
+section Map
+
+/-! ### Maps across ring homomorphisms -/
+
+open WeierstrassCurve (Ψ Φ ψ φ)
+
+variable (f : R →+* S)
+
+lemma map_ψ₂ : (W.map f).ψ₂ = W.ψ₂.map (mapRingHom f) := by
+  simp only [ψ₂, Affine.map_polynomialY]
+
+lemma map_Ψ₂Sq : (W.map f).Ψ₂Sq = W.Ψ₂Sq.map f := by
+  simp only [Ψ₂Sq, map_b₂, map_b₄, map_b₆]
+  map_simp
+
+lemma map_Ψ₃ : (W.map f).Ψ₃ = W.Ψ₃.map f := by
+  simp only [Ψ₃, map_b₂, map_b₄, map_b₆, map_b₈]
+  map_simp
+
+lemma map_preΨ₄ : (W.map f).preΨ₄ = W.preΨ₄.map f := by
+  simp only [preΨ₄, map_b₂, map_b₄, map_b₆, map_b₈]
+  map_simp
+
+lemma map_preΨ' (n : ℕ) : (W.map f).preΨ' n = (W.preΨ' n).map f := by
+  simp only [preΨ', map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS']
+  map_simp
+
+lemma map_preΨ (n : ℤ) : (W.map f).preΨ n = (W.preΨ n).map f := by
+  simp only [preΨ, map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS]
+  map_simp
+
+lemma map_ΨSq (n : ℤ) : (W.map f).ΨSq n = (W.ΨSq n).map f := by
+  simp only [ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
+  map_simp
+
+lemma map_Ψ (n : ℤ) : (W.map f).Ψ n = (W.Ψ n).map (mapRingHom f) := by
+  simp only [Ψ, map_preΨ, map_ψ₂, ← coe_mapRingHom]
+  map_simp
+
+lemma map_Φ (n : ℤ) : (W.map f).Φ n = (W.Φ n).map f := by
+  simp only [Φ, map_ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
+  map_simp
+
+lemma map_ψ (n : ℤ) : (W.map f).ψ n = (W.ψ n).map (mapRingHom f) := by
+  simp only [ψ, map_ψ₂, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_normEDS]
+  map_simp
+
+lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by
+  simp only [φ, map_ψ]
+  map_simp
+
+open Affine in
+@[simp] lemma map_ω (n : ℤ) : (W.map f).ω n = (W.ω n).map (mapRingHom f) := by
+  simp_rw [ω, ← coe_mapRingHom, map_add, map_sub, map_mul, map_redInvarDenom, map_compl₂EDSAux,
+    map_polynomial, map_polynomialX, map_polynomialY, map_negPolynomial]; simp
+
+private lemma universal_ω_neg (n : ℤ) : letI W := Universal.curve
+    W.ω (-n) = W.ω n + CC W.a₁ * W.φ n * W.ψ n + CC W.a₃ * W.ψ n ^ 3 := by
+  rw [← mul_cancel_left_mem_nonZeroDivisors
+    (mem_nonZeroDivisors_of_ne_zero Universal.Poly.two_ne_zero)]
+  simp_rw [left_distrib, two_mul_ω, ψc_neg, ψ_neg, φ_neg]; ring
+
+lemma ω_neg (n : ℤ) : W.ω (-n) = W.ω n + CC W.a₁ * W.φ n * W.ψ n + CC W.a₃ * W.ψ n ^ 3 := by
+  rw [← W.map_specialize, map_ω, universal_ω_neg]; simp
+
+end Map
+
+section BaseChange
+
+/-! ### Base changes across algebra homomorphisms -/
+
+variable [Algebra R S] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
+
+lemma baseChange_ψ₂ : (W.baseChange B).ψ₂ = (W.baseChange A).ψ₂.map (mapRingHom f) := by
+  rw [← map_ψ₂, map_baseChange]
+
+lemma baseChange_Ψ₂Sq : (W.baseChange B).Ψ₂Sq = (W.baseChange A).Ψ₂Sq.map f := by
+  rw [← map_Ψ₂Sq, map_baseChange]
+
+lemma baseChange_Ψ₃ : (W.baseChange B).Ψ₃ = (W.baseChange A).Ψ₃.map f := by
+  rw [← map_Ψ₃, map_baseChange]
+
+lemma baseChange_preΨ₄ : (W.baseChange B).preΨ₄ = (W.baseChange A).preΨ₄.map f := by
+  rw [← map_preΨ₄, map_baseChange]
+
+lemma baseChange_preΨ' (n : ℕ) : (W.baseChange B).preΨ' n = ((W.baseChange A).preΨ' n).map f := by
+  rw [← map_preΨ', map_baseChange]
+
+lemma baseChange_preΨ (n : ℤ) : (W.baseChange B).preΨ n = ((W.baseChange A).preΨ n).map f := by
+  rw [← map_preΨ, map_baseChange]
+
+lemma baseChange_ΨSq (n : ℤ) : (W.baseChange B).ΨSq n = ((W.baseChange A).ΨSq n).map f := by
+  rw [← map_ΨSq, map_baseChange]
+
+lemma baseChange_Ψ (n : ℤ) : (W.baseChange B).Ψ n = ((W.baseChange A).Ψ n).map (mapRingHom f) := by
+  rw [← map_Ψ, map_baseChange]
+
+lemma baseChange_Φ (n : ℤ) : (W.baseChange B).Φ n = ((W.baseChange A).Φ n).map f := by
+  rw [← map_Φ, map_baseChange]
+
+lemma baseChange_ψ (n : ℤ) : (W.baseChange B).ψ n = ((W.baseChange A).ψ n).map (mapRingHom f) := by
+  rw [← map_ψ, map_baseChange]
+
+lemma baseChange_φ (n : ℤ) : (W.baseChange B).φ n = ((W.baseChange A).φ n).map (mapRingHom f) := by
+  rw [← map_φ, map_baseChange]
+
+end BaseChange
 
 end WeierstrassCurve

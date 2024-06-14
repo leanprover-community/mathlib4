@@ -110,7 +110,7 @@ lemma equation_point : pointedCurve.toAffine.Equation (polyToField (C X)) (polyT
     algebraMap_field_eq_comp, ← map_map, Affine.map_polynomial_eval_C_eval, Affine.map_polynomial,
     eval_map, eval_C_X_eval₂_map_C_X, polyToField_polynomial]
 
-open Polynomial in
+open Polynomial Affine in
 /-- The distinguished point on the universal pointed Weierstrass curve. -/
 def point : curve⟮Universal.Field⟯ :=
   .some (EllipticCurve.Affine.nonsingular pointedCurve equation_point)
