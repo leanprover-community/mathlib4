@@ -2143,9 +2143,9 @@ theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
 #align asymptotics.is_O_with.right_le_add_of_lt_1 Asymptotics.IsBigOWith.right_le_add_of_lt_one
 
 -- 2024-01-31
-@[deprecated (since := "2024-06-12")] 
+@[deprecated (since := "2024-06-12")]
 alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
-@[deprecated (since := "2024-06-12")] 
+@[deprecated (since := "2024-06-12")]
 alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
 
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :

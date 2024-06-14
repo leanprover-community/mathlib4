@@ -449,14 +449,14 @@ Those lemmas have been deprecated on 2023-12-23.
 @[deprecated (since := "2024-06-12")] alias pow_le_pow_iff := pow_le_pow_iff_right
 @[deprecated (since := "2024-06-12")] alias self_lt_pow := lt_self_pow
 @[deprecated (since := "2024-06-12")] alias strictAnti_pow := pow_right_strictAnti
-@[deprecated (since := "2024-06-12")] 
+@[deprecated (since := "2024-06-12")]
 alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
 @[deprecated (since := "2024-06-12")] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
 @[deprecated (since := "2024-06-12")] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
 @[deprecated (since := "2024-06-12")] alias le_of_pow_le_pow := le_of_pow_le_pow_left
 @[deprecated (since := "2024-06-12")] alias self_le_pow := le_self_pow
 @[deprecated (since := "2024-06-12")] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
-@[deprecated (since := "2024-06-12")] 
+@[deprecated (since := "2024-06-12")]
 protected alias Nat.pow_right_strictMono := pow_right_strictMono
 @[deprecated (since := "2024-06-12")] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
 @[deprecated (since := "2024-06-12")] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right

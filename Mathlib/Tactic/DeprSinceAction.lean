@@ -353,3 +353,11 @@ def updateDeprecations : Cli.Cmd := `[Cli|
 ]
 
 end UpdateDeprecations
+
+
+/-
+awk '{print $2}' mwe_outputs/longLines_auto_since.txt |
+  awk -F: -v ti="'" '{
+    printf("sed -i %s%s{s=[^]]*] =&\\n=}%s %s\n", ti, $2, ti, $1)
+  }' | sort -k5 -k3r
+-/
