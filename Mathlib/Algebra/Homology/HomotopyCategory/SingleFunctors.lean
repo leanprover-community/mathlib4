@@ -49,10 +49,14 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
       simp [single])
   shiftIso_zero a := by
     ext
-    simp [single, shiftFunctorZero_eq, XIsoOfEq]
+    dsimp
+    simp only [single, shiftFunctorZero_eq, shiftFunctorZero'_hom_app_f,
+      XIsoOfEq, eqToIso.hom]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext
-    simp [shiftFunctorAdd_eq, XIsoOfEq]
+    dsimp
+    simp only [shiftFunctorAdd_eq, shiftFunctorAdd'_hom_app_f, XIsoOfEq,
+      eqToIso.hom, eqToHom_trans, id_comp]
 
 instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
