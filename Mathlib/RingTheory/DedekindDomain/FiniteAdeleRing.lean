@@ -405,7 +405,22 @@ open scoped DiscreteValuation
 
 lemma boundthing (r : R) :
     (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
-  sorry
+  rw [mem_adicCompletionIntegers]
+  letI : Valued K ℤₘ₀ := adicValued v
+  change Valued.v (r : v.adicCompletion K) ≤ 1
+  suffices Valued.v (r : K) ≤ 1 by
+    rw [← Valued.valuedCompletion_apply] at this
+    convert this
+  change v.valuation (r : K) ≤ 1
+  suffices v.valuation (r : K) = v.intValuation r by
+    rw [this]
+    exact v.int_valuation_le_one r
+  apply valuation_of_algebraMap
+
+--  refine (Valuation.mem_valuationSubring_iff v.valuation (r : K)).mp ?_
+
+    -- I'm sure I've seen this
+
 
 --#check Valued.valuedCompletion_apply
 variable {R K} in
