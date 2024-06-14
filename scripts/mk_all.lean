@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Damiano Testa
 -/
 import Cli.Basic
-import Mathlib.Util.GetAllModules
 import Lake.CLI.Main
+import Mathlib.Util.GetAllModules
 
 /-!
 # Script to create a file importing all files from a folder
