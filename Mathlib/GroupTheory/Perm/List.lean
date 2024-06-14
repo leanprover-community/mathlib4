@@ -251,7 +251,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
     specialize h H
     rcases (Nat.succ_le_of_lt hn).eq_or_lt with hn' | hn'
     · simp only [← hn', Nat.mod_self] at h
-      refine' not_exists.mpr h' _
+      refine not_exists.mpr h' ?_
       rw [← length_eq_one, ← hn', (Fin.mk.inj_iff.mp h).symm]
     · simp [Nat.mod_eq_of_lt hn'] at h
 #align list.support_form_perm_of_nodup' List.support_formPerm_of_nodup'
