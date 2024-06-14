@@ -300,7 +300,8 @@ theorem get?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : �
 #align list.nth_zip_eq_some List.get?_zip_eq_some
 
 @[simp]
-theorem getElem_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : Nat} {h : i < (zipWith f l l').length} :
+theorem getElem_zipWith {f : α → β → γ} {l : List α} {l' : List β}
+    {i : Nat} {h : i < (zipWith f l l').length} :
     (zipWith f l l')[i] =
       f (l[i]'(lt_length_left_of_zipWith h))
         (l'[i]'(lt_length_right_of_zipWith h)) := by

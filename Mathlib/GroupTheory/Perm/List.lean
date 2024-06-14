@@ -324,7 +324,8 @@ theorem formPerm_pow_apply_getElem (l : List α) (w : Nodup l) (n : ℕ) (i : Na
       l[(i + n) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt h)) := by
   induction' n with n hn
   · simp [Nat.mod_eq_of_lt h]
-  · simp [pow_succ', mul_apply, hn, formPerm_apply_getElem _ w, Nat.succ_eq_add_one, ← Nat.add_assoc]
+  · simp [pow_succ', mul_apply, hn, formPerm_apply_getElem _ w, Nat.succ_eq_add_one,
+      ← Nat.add_assoc]
 
 theorem formPerm_pow_apply_get (l : List α) (h : Nodup l) (n : ℕ) (i : Fin l.length) :
     (formPerm l ^ n) (l.get i) =

@@ -14,12 +14,6 @@ import Mathlib.Tactic.ApplyFun
 
 #align_import computability.turing_machine from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
--- After https://github.com/leanprover/lean4/pull/4400
--- the simp normal forms for `List` lookup use the `GetElem` typeclass, rather than `List.get?`.
--- This file has not been updated to reflect that change, so uses a number of deprecated lemmas.
--- Updating this file to allow restoring the deprecation linter would be much appreciated.
-set_option linter.deprecated false
-
 /-!
 # Turing machines
 
@@ -64,6 +58,12 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+
+-- After https://github.com/leanprover/lean4/pull/4400
+-- the simp normal forms for `List` lookup use the `GetElem` typeclass, rather than `List.get?`.
+-- This file has not been updated to reflect that change, so uses a number of deprecated lemmas.
+-- Updating this file to allow restoring the deprecation linter would be much appreciated.
+set_option linter.deprecated false
 
 assert_not_exists MonoidWithZero
 

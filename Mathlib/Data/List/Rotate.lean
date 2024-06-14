@@ -311,7 +311,8 @@ theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
     ∀ {l : List α}, (∀ n, l.rotate n = l) ↔ ∃ a, l = replicate l.length a
   | [] => by simp
   | a :: l => ⟨fun h => ⟨a, ext_getElem (length_replicate _ _).symm fun n h₁ h₂ => by
-      rw [getElem_replicate, ← Option.some_inj, ← getElem?_eq_getElem, ← head?_rotate h₁, h, head?_cons]⟩,
+      rw [getElem_replicate, ← Option.some_inj, ← getElem?_eq_getElem, ← head?_rotate h₁, h,
+        head?_cons]⟩,
     fun ⟨b, hb⟩ n => by rw [hb, rotate_replicate]⟩
 #align list.rotate_eq_self_iff_eq_replicate List.rotate_eq_self_iff_eq_replicate
 
