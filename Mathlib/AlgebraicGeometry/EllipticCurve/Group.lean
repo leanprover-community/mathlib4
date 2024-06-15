@@ -679,6 +679,20 @@ noncomputable instance : AddCommGroup W.Point where
   add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
   add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
 
+variable {P Q : W.Point} {P' Q' : Fin 3 → F} (hP : P.point = ⟦P'⟧) (hQ : Q.point = ⟦Q'⟧)
+
+lemma add_point_of_point_eq : (P + Q).point = ⟦W.add P' Q'⟧ := by
+  simp_rw [add_point, hP, hQ]; rfl
+
+lemma two_smul_point : (2 • P).point = ⟦W.dblXYZ P'⟧ := by
+  rw [two_smul, add_point_of_point_eq hP hP, Jacobian.add, if_pos (Setoid.refl _)]
+
+lemma add_point_of_ne (ne : P ≠ Q) :
+    (P + Q).point = ⟦W.addXYZ P' Q'⟧ := by
+  rw [add_point_of_point_eq hP hQ, Jacobian.add, if_neg]
+  erw [← Quotient.eq, ← hP, ← hQ, ← Jacobian.Point.ext_iff]
+  exact ne
+
 end WeierstrassCurve.Jacobian.Point
 
 namespace EllipticCurve.Affine.Point

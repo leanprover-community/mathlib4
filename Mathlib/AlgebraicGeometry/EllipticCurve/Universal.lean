@@ -7,6 +7,17 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 
 /-!
 # The universal elliptic curve
+
+This file defines the universal Weierstrass curve over the polynomial ring
+`ℤ[A₁,A₂,A₃,A₄,A₆]`, the universal pointed Weierstrass curve over the ring
+`R := ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩` (where `P` is the Weierstrass polynomial) with
+distinguished point `(X,Y)`, and the universal pointed elliptic curve over the
+field of fractions of `R`.
+
+We also introduce the cusp curve $Y^2 = X^3$, on which is the rational point $(1,1)$,
+with the nice property that $ψₙ(1,1) = n$, making it easy to prove nonvanishing of
+the universal $ψₙ$ when $n ≠ 0$ by specializing to the cusp curve, which shows that
+`(X,Y)` is a point of infinite order on the universal pointed elliptic curve.
 -/
 
 noncomputable section
@@ -19,7 +30,8 @@ variable {R S} [CommSemiring R] [CommSemiring S]
 
 lemma eval_C_X_comp_eval₂_map_C_X :
     (evalRingHom (C X : R[X][Y])).comp (eval₂RingHom (mapRingHom <| algebraMap R R[X][Y]) (C X)) =
-    .id _ := by ext <;> simp
+      .id _ := by
+  ext <;> simp
 
 lemma eval_C_X_eval₂_map_C_X {p : R[X][Y]} :
     eval (C X) (eval₂ (mapRingHom <| algebraMap R R[X][Y]) (C X) p) = p :=
@@ -27,12 +39,11 @@ lemma eval_C_X_eval₂_map_C_X {p : R[X][Y]} :
 
 lemma eval₂RingHom_eq_evalRingHom_comp_mapRingHom (f : R →+* S) (x y : S) :
     eval₂RingHom (eval₂RingHom f x) y =
-      .comp (evalRingHom x) (.comp (evalRingHom <| C y) <| mapRingHom <| mapRingHom f) := by
+      (evalRingHom x).comp ((evalRingHom <| C y).comp <| mapRingHom <| mapRingHom f) := by
   ext <;> simp
 
 lemma eval₂RingHom_eval₂RingHom_apply (f : R →+* S) (x y : S) (p : R[X][Y]) :
-    eval₂RingHom (eval₂RingHom f x) y p =
-      ((p.map <| mapRingHom f).eval <| C y).eval x :=
+    eval₂RingHom (eval₂RingHom f x) y p = ((p.map <| mapRingHom f).eval <| C y).eval x :=
   congr($(eval₂RingHom_eq_evalRingHom_comp_mapRingHom f x y) p)
 
 end Polynomial

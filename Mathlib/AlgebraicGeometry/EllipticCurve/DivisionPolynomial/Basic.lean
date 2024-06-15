@@ -130,9 +130,9 @@ end Polynomial
 
 namespace WeierstrassCurve
 
-noncomputable section
-
 variable {R : Type r} {S : Type s} [CommRing R] [CommRing S] (W : WeierstrassCurve R)
+
+noncomputable section
 
 /-! ### The initial data for recursive definition of division polynomials -/
 
@@ -558,7 +558,7 @@ section Map
 
 /-! ### Maps across ring homomorphisms -/
 
-open WeierstrassCurve (Ψ Φ ψ φ)
+open WeierstrassCurve (Ψ Φ ψ φ ω)
 
 variable (f : R →+* S)
 
@@ -605,10 +605,11 @@ lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by
   simp only [φ, map_ψ]
   map_simp
 
-open Affine in
-@[simp] lemma map_ω (n : ℤ) : (W.map f).ω n = (W.ω n).map (mapRingHom f) := by
+open Affine EllSequence in
+lemma map_ω (n : ℤ) : (W.map f).ω n = (W.ω n).map (mapRingHom f) := by
   simp_rw [ω, ← coe_mapRingHom, map_add, map_sub, map_mul, map_redInvarDenom, map_compl₂EDSAux,
-    map_polynomial, map_polynomialX, map_polynomialY, map_negPolynomial]; simp
+    map_polynomial, map_polynomialX, map_polynomialY, map_negPolynomial, map_ψ₂, map_Ψ₃, map_preΨ₄,
+    map_Ψ₂Sq, map_ψ]; simp
 
 private lemma universal_ω_neg (n : ℤ) : letI W := Universal.curve
     W.ω (-n) = W.ω n + CC W.a₁ * W.φ n * W.ψ n + CC W.a₃ * W.ψ n ^ 3 := by
@@ -617,7 +618,7 @@ private lemma universal_ω_neg (n : ℤ) : letI W := Universal.curve
   simp_rw [left_distrib, two_mul_ω, ψc_neg, ψ_neg, φ_neg]; ring
 
 lemma ω_neg (n : ℤ) : W.ω (-n) = W.ω n + CC W.a₁ * W.φ n * W.ψ n + CC W.a₃ * W.ψ n ^ 3 := by
-  rw [← W.map_specialize, map_ω, universal_ω_neg]; simp
+  rw [← W.map_specialize, map_ω, universal_ω_neg, map_φ, map_ω, map_ψ]; simp
 
 end Map
 

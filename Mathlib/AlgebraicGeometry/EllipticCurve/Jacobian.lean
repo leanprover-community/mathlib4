@@ -1608,7 +1608,7 @@ protected lemma map_smul (u : R) : f ∘ (u • P) = f u • (f ∘ P) := by
 @[simp] lemma map_dblZ : dblZ (W'.map f) (f ∘ P) = f (W'.dblZ P) := by simp [dblZ]
 @[simp] lemma map_dblU : dblU (W'.map f) (f ∘ P) = f (W'.dblU P) := by
   simp [dblU, map_polynomialX, ← eval₂_id, eval₂_comp_left]
-  
+
 @[simp] lemma map_dblX : dblX (W'.map f) (f ∘ P) = f (W'.dblX P) := by simp [dblX]
 @[simp] lemma map_negDblY : negDblY (W'.map f) (f ∘ P) = f (W'.negDblY P) := by simp [negDblY]
 @[simp] lemma map_dblY : dblY (W'.map f) (f ∘ P) = f (W'.dblY P) := by simp [dblY, ← comp_fin3]
