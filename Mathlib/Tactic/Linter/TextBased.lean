@@ -196,7 +196,7 @@ inductive OutputSetting : Type
 
 /-- Append a given string at the end of an existing file. -/
 -- XXX: move this to `Init.System.IO.lean` in Lean core
-def IO.FS.appendToFile (fname : System.FilePath) (content : String) : IO Unit := do
+def IO.FS.appendToFile (fname : FilePath) (content : String) : IO Unit := do
   let previous_content ← IO.FS.readFile fname
   IO.FS.writeFile fname (previous_content ++ content)
 
@@ -218,7 +218,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (mode : OutputSetting) :
     | OutputSetting.print style => formatErrors (Array.mkArray1 err) style
     -- XXX: should these also print the errors? if yes, only for humans, I guess!
     | OutputSetting.append =>
-      let path := System.mkFilePath ["scripts/style-exceptions.txt"]
+      let path := mkFilePath ["scripts/style-exceptions.txt"]
       IO.FS.appendToFile path (s!"{outputMessage err ErrorFormat.exceptionsFile}\n")
     | OutputSetting.regenerate =>
       -- FIXME: implement this!
@@ -230,7 +230,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (mode : OutputSetting) :
 
 /-- Lint a list of files referenced and return the number of files which had new style errors.
 `mode` specifies what kind of output this script should produce. -/
-def lintFiles (files : Array System.FilePath) (mode : OutputSetting) : IO UInt32 := do
+def lintFiles (files : Array FilePath) (mode : OutputSetting) : IO UInt32 := do
   -- Read the style exceptions file.
   let exceptions_file ← IO.FS.lines (mkFilePath ["scripts/style-exceptions.txt"])
   let style_exceptions := parseStyleExceptions exceptions_file
@@ -248,11 +248,11 @@ def lintFiles (files : Array System.FilePath) (mode : OutputSetting) : IO UInt32
 /-- Lint all files referenced in a given import-only file.
 Return the number of files which had new style errors.
 `mode` specifies what kind of output this script should produce. -/
-def lintAllFiles (path : System.FilePath) (mode : OutputSetting) : IO UInt32 := do
+def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
   -- Read all module names from the file at `path` and convert to file paths.
   let allModules ← IO.FS.lines path
   let paths := allModules.map (fun mod ↦
-    (System.mkFilePath ((mod.stripPrefix "import ").split fun c ↦ (c == '.'))).addExtension "lean"
+    (mkFilePath ((mod.stripPrefix "import ").split fun c ↦ (c == '.'))).addExtension "lean"
   )
   let n ← lintFiles paths mode
   if n > 0 && mode matches OutputSetting.print _ then
@@ -278,10 +278,10 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   if files.size > 0 then
     -- Only lint the specified files.
     for filename in files do
-      if !(← System.FilePath.pathExists filename) then
+      if !(← FilePath.pathExists filename) then
         IO.println s!"invalid input: file {filename} does not exist"
         return 2
-    let paths := files.map (fun fname ↦ System.mkFilePath [fname])
+    let paths := files.map (fun fname ↦ mkFilePath [fname])
     number_error_files := number_error_files + (← lintFiles paths mode)
   else
     for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
