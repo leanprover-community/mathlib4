@@ -74,26 +74,19 @@ instance TopologicalSpace.Clopens.finite_prod [Finite (Clopens X)] [Finite (Clop
   cases nonempty_fintype (Clopens Y)
   exact .of_surjective _ surjective_finset_sup_prod
 
-instance TopologicalSpace.Clopens.countable_iff_second_countable [T2Space X]
+lemma TopologicalSpace.Clopens.countable_iff_second_countable [T2Space X]
     [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
-  refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ ?_⟩
-  · refine ⟨{s : Set X | IsClopen s}, ?_, ?_⟩
-    · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
-      have hf : f.Injective := injective_of_le_imp_le f fun a ↦ a
-      exact hf.countable
-    · apply IsTopologicalBasis.eq_generateFrom
-      exact loc_compact_Haus_tot_disc_of_zero_dim
-  · let b := countableBasis X
-    have hb : IsTopologicalBasis b := isBasis_countableBasis X
-    have : ∀ (U : Set X) (_ : IsClopen U), ∃ (t : Finset b), U = t.toSet.sUnion := by
-      intro U hU
-      exact eq_sUnion_finset_of_isTopologicalBasis__of_isCompact_open b hb U
-        hU.1.isCompact hU.2
-    let f : Clopens X → Finset b := fun s ↦ (this s.1 s.2).choose
+  refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
+  · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
+    exact (injective_of_le_imp_le f fun a ↦ a).countable
+  · apply IsTopologicalBasis.eq_generateFrom
+    exact loc_compact_Haus_tot_disc_of_zero_dim
+  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = t.toSet.sUnion :=
+      fun s ↦ eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
+        (isBasis_countableBasis X) s.1 s.2.1.isCompact s.2.2
+    let f : Clopens X → Finset (countableBasis X) := fun s ↦ (this s).choose
     have hf : f.Injective := by
-      intro s t h
-      suffices s.carrier = t.carrier by exact Clopens.ext this
-      rw [(this s.1 s.2).choose_spec, (this t.1 t.2).choose_spec]
-      simp only [f] at h
-      rw [h]
+      intro s t (h : Exists.choose _ = Exists.choose _)
+      ext1; change s.carrier = t.carrier
+      rw [(this s).choose_spec, (this t).choose_spec, h]
     exact hf.countable

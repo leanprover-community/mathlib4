@@ -37,6 +37,9 @@ universe u
 open CategoryTheory
 open scoped Topology
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
 abbrev Stonean := CompHausLike (fun X ↦ ExtremallyDisconnected X)
 
@@ -75,8 +78,13 @@ namespace Stonean
 --   show Category (InducedCategory CompHaus (·.compHaus)) from inferInstance
 
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
-abbrev toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
-  compHausLikeToCompHaus _
+@[simps!]
+def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
+  inducedFunctor _
+
+/-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
+def fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
+  fullyFaithfulInducedFunctor _
 
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
@@ -86,11 +94,10 @@ abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
   CompHausLike.of _ X (inferInstance : ExtremallyDisconnected X)
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
-instance : toCompHaus.Full where
-  map_surjective f := ⟨f, rfl⟩
+instance : toCompHaus.Full := fullyFaithfulToCompHaus.full
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : toCompHaus.Faithful := {}
+instance : toCompHaus.Faithful := fullyFaithfulToCompHaus.faithful
 
 /-- Stonean spaces are a concrete category. -/
 instance : ConcreteCategory Stonean where
@@ -137,8 +144,11 @@ example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
   rfl
 
 /-- Construct an isomorphism from a homeomorphism. -/
-abbrev isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
-  CompHausLike.isoOfHomeo f
+@[simps! hom inv]
+noncomputable
+def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
+  @asIso _ _ _ _ ⟨f, f.continuous⟩
+  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHaus.isoOfHomeo f).isIso_hom _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 abbrev homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso f
@@ -241,14 +251,14 @@ namespace CompHaus
   "constructive" witness to the fact that `CompHaus` has enough projectives. -/
 noncomputable
 def presentation (X : CompHaus) : Stonean where
-  toTop := (projectivePresentation X).p.toTop
-  prop := by
-    refine' CompactT2.Projective.extremallyDisconnected
-      (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => _)
+  compHaus := (projectivePresentation X).p
+  extrDisc := by
+    refine CompactT2.Projective.extremallyDisconnected
+      (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => ?_)
     let g₁ : (CompHaus.of Y) ⟶ (CompHaus.of Z) := ⟨g, hgcont⟩
     let f₁ : (projectivePresentation X).p ⟶ (CompHaus.of Z) := ⟨f, hfcont⟩
     have hg₁ : Epi g₁ := (epi_iff_surjective _).2 hgsurj
-    refine' ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).2, funext (fun _ => _)⟩
+    refine ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).2, funext (fun _ => ?_)⟩
     change (Projective.factorThru f₁ g₁ ≫ g₁) _ = f _
     rw [Projective.factorThru_comp]
     rfl

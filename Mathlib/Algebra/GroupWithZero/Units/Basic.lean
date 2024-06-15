@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Util.AssertExists
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Spread
+import Mathlib.Util.AssertExists
 
 #align_import algebra.group_with_zero.units.basic from "leanprover-community/mathlib"@"df5e9937a06fdd349fc60106f54b84d47b1434f0"
 
@@ -18,6 +20,9 @@ We also define `Ring.inverse`, a globally defined function on any ring
 (in fact any `MonoidWithZero`), which inverts units and sends non-units to zero.
 -/
 
+-- Guard against import creep
+assert_not_exists Multiplicative
+assert_not_exists DenselyOrdered
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
@@ -372,7 +377,7 @@ lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :
   hb.isUnit.div_mul_cancel_right _
 
 set_option linter.deprecated false in
-@[deprecated div_mul_cancel_right₀] -- 2024-03-20
+@[deprecated div_mul_cancel_right₀ (since := "2024-03-20")]
 lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
 #align div_mul_left div_mul_left
 
@@ -411,8 +416,8 @@ lemma pow_sub₀ (a : G₀) (ha : a ≠ 0) (h : n ≤ m) : a ^ (m - n) = a ^ m *
 
 lemma pow_sub_of_lt (a : G₀) (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
-  · rw [zero_pow (Nat.sub_pos_of_lt h).ne', zero_pow (by omega), zero_mul]
-  · exact pow_sub₀ _ ha h.le
+  · rw [zero_pow (Nat.ne_of_gt <| Nat.sub_pos_of_lt h), zero_pow (by omega), zero_mul]
+  · exact pow_sub₀ _ ha <| Nat.le_of_lt h
 #align pow_sub_of_lt pow_sub_of_lt
 
 lemma inv_pow_sub₀ (ha : a ≠ 0) (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
@@ -460,6 +465,17 @@ theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
 #align ring.inverse_eq_inv' Ring.inverse_eq_inv'
 
+/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
+elements. -/
+@[simps] def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ {a : α // a ≠ 0} where
+  toFun a := ⟨a, a.ne_zero⟩
+  invFun a := Units.mk0 _ a.prop
+  left_inv _ := Units.ext rfl
+  right_inv _ := rfl
+#align units_equiv_ne_zero unitsEquivNeZero
+#align units_equiv_ne_zero_apply_coe unitsEquivNeZero_apply_coe
+#align units_equiv_ne_zero_symm_apply unitsEquivNeZero_symm_apply
+
 end GroupWithZero
 
 section CommGroupWithZero
@@ -485,7 +501,7 @@ lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
 set_option linter.deprecated false in
-@[deprecated div_mul_cancel_left₀] -- 2024-03-22
+@[deprecated div_mul_cancel_left₀ (since := "2024-03-22")]
 lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
 #align div_mul_right div_mul_right
 
@@ -563,12 +579,4 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 
 end NoncomputableDefs
 
--- Guard against import creep
-assert_not_exists Multiplicative
-
--- 2024-03-20
--- The names `div_mul_cancel`, `mul_div_cancel` and `mul_div_cancel_left` have been reused
--- @[deprecated] alias div_mul_cancel := div_mul_cancel₀
--- @[deprecated] alias mul_div_cancel := mul_div_cancel_right₀
--- @[deprecated] alias mul_div_cancel_left := mul_div_cancel_left₀
-@[deprecated] alias mul_div_cancel' := mul_div_cancel₀
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel' := mul_div_cancel₀

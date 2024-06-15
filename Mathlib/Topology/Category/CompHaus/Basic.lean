@@ -10,6 +10,7 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.CategoryTheory.Elementwise
 
 #align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -33,6 +34,9 @@ introduced.
 
 universe v u
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 open CategoryTheory
 
 abbrev CompHaus := CompHausLike (fun _ ↦ True)
@@ -42,8 +46,26 @@ set_option linter.uppercaseLean3 false in
 namespace CompHaus
 
 instance : Inhabited CompHaus :=
-  ⟨{ toTop := { α := PEmpty }
-     prop := trivial }⟩
+  ⟨{ toTop := { α := PEmpty } }⟩
+
+instance : CoeSort CompHaus Type* :=
+  ⟨fun X => X.toTop⟩
+
+instance {X : CompHaus} : CompactSpace X :=
+  X.is_compact
+
+instance {X : CompHaus} : T2Space X :=
+  X.is_hausdorff
+
+instance category : Category CompHaus :=
+  InducedCategory.category toTop
+set_option linter.uppercaseLean3 false in
+#align CompHaus.category CompHaus.category
+
+instance concreteCategory : ConcreteCategory CompHaus :=
+  InducedCategory.concreteCategory _
+set_option linter.uppercaseLean3 false in
+#align CompHaus.concrete_category CompHaus.concreteCategory
 
 /-
 -- Porting note: This is now a syntactic tautology.
@@ -62,6 +84,90 @@ found by typeclass inference. -/
 abbrev of : CompHaus := CompHausLike.of _ X trivial
 set_option linter.uppercaseLean3 false in
 #align CompHaus.of CompHaus.of
+
+@[simp]
+theorem coe_of : (CompHaus.of X : Type _) = X :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align CompHaus.coe_of CompHaus.coe_of
+
+-- Porting note (#10754): Adding instance
+instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
+  show TopologicalSpace X.toTop from inferInstance
+
+-- Porting note (#10754): Adding instance
+instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
+  show CompactSpace X.toTop from inferInstance
+
+-- Porting note (#10754): Adding instance
+instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
+  show T2Space X.toTop from inferInstance
+
+/-- Any continuous function on compact Hausdorff spaces is a closed map. -/
+theorem isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
+  (hC.isCompact.image f.continuous).isClosed
+set_option linter.uppercaseLean3 false in
+#align CompHaus.is_closed_map CompHaus.isClosedMap
+
+/-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
+theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
+    IsIso f := by
+  let E := Equiv.ofBijective _ bij
+  have hE : Continuous E.symm := by
+    rw [continuous_iff_isClosed]
+    intro S hS
+    rw [← E.image_eq_preimage]
+    exact isClosedMap f S hS
+  refine ⟨⟨⟨E.symm, hE⟩, ?_, ?_⟩⟩
+  · ext x
+    apply E.symm_apply_apply
+  · ext x
+    apply E.apply_symm_apply
+set_option linter.uppercaseLean3 false in
+#align CompHaus.is_iso_of_bijective CompHaus.isIso_of_bijective
+
+/-- Any continuous bijection of compact Hausdorff spaces induces an isomorphism. -/
+noncomputable def isoOfBijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
+    X ≅ Y :=
+  letI := isIso_of_bijective _ bij
+  asIso f
+set_option linter.uppercaseLean3 false in
+#align CompHaus.iso_of_bijective CompHaus.isoOfBijective
+
+/-- Construct an isomorphism from a homeomorphism. -/
+@[simps hom inv]
+def isoOfHomeo {X Y : CompHaus.{u}} (f : X ≃ₜ Y) : X ≅ Y where
+  hom := ⟨f, f.continuous⟩
+  inv := ⟨f.symm, f.symm.continuous⟩
+  hom_inv_id := by
+    ext x
+    exact f.symm_apply_apply x
+  inv_hom_id := by
+    ext x
+    exact f.apply_symm_apply x
+
+/-- Construct a homeomorphism from an isomorphism. -/
+@[simps]
+def homeoOfIso {X Y : CompHaus.{u}} (f : X ≅ Y) : X ≃ₜ Y where
+  toFun := f.hom
+  invFun := f.inv
+  left_inv x := by simp
+  right_inv x := by simp
+  continuous_toFun := f.hom.continuous
+  continuous_invFun := f.inv.continuous
+
+/-- The equivalence between isomorphisms in `CompHaus` and homeomorphisms
+of topological spaces. -/
+@[simps]
+def isoEquivHomeo {X Y : CompHaus.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
+  toFun := homeoOfIso
+  invFun := isoOfHomeo
+  left_inv f := by
+    ext
+    rfl
+  right_inv f := by
+    ext
+    rfl
 
 end CompHaus
 
@@ -98,7 +204,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     -- Porting note: `ext` fails.
     apply ContinuousMap.ext
     intro (x : StoneCech X)
-    refine' congr_fun _ x
+    refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
     · rintro _ ⟨y, rfl⟩
       apply congr_fun (stoneCechExtend_extends (hf.comp _)) y

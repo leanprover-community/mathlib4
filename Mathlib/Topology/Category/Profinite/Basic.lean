@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Calle Sönne
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import topology.category.Profinite.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
@@ -35,6 +36,9 @@ profinite
 
 -/
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 set_option linter.uppercaseLean3 false
 
 universe v u
@@ -63,6 +67,15 @@ instance : Inhabited Profinite :=
 instance hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
+
+instance : CoeSort Profinite Type* :=
+  ⟨fun X => X.toCompHaus⟩
+
+-- Porting note (#10688): This lemma was not needed in mathlib3
+@[simp]
+lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f) :
+    (forget Profinite).map (ContinuousMap.mk f hf) = f :=
+  rfl
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.prop
@@ -258,6 +271,55 @@ noncomputable instance forgetPreservesLimits : Limits.PreservesLimits (forget Pr
   apply Limits.compPreservesLimits Profinite.toTopCat (forget TopCat)
 #align Profinite.forget_preserves_limits Profinite.forgetPreservesLimits
 
+variable {X Y : Profinite.{u}} (f : X ⟶ Y)
+
+/-- Any morphism of profinite spaces is a closed map. -/
+theorem isClosedMap : IsClosedMap f :=
+  CompHaus.isClosedMap _
+#align Profinite.is_closed_map Profinite.isClosedMap
+
+/-- Any continuous bijection of profinite spaces induces an isomorphism. -/
+theorem isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
+  haveI := CompHaus.isIso_of_bijective (profiniteToCompHaus.map f) bij
+  isIso_of_fully_faithful profiniteToCompHaus _
+#align Profinite.is_iso_of_bijective Profinite.isIso_of_bijective
+
+/-- Any continuous bijection of profinite spaces induces an isomorphism. -/
+noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
+  letI := Profinite.isIso_of_bijective f bij
+  asIso f
+#align Profinite.iso_of_bijective Profinite.isoOfBijective
+
+instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms := by
+  constructor
+  intro A B f hf
+  exact Profinite.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)
+#align Profinite.forget_reflects_isomorphisms Profinite.forget_reflectsIsomorphisms
+
+/-- Construct an isomorphism from a homeomorphism. -/
+@[simps! hom inv]
+noncomputable
+def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
+  @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
+    (CompHaus.isoOfHomeo f).isIso_hom _)
+#align Profinite.iso_of_homeo Profinite.isoOfHomeo
+
+/-- Construct a homeomorphism from an isomorphism. -/
+@[simps!]
+def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (profiniteToCompHaus.mapIso f)
+#align Profinite.homeo_of_iso Profinite.homeoOfIso
+
+/-- The equivalence between isomorphisms in `Profinite` and homeomorphisms
+of topological spaces. -/
+@[simps!]
+noncomputable
+def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
+  toFun := homeoOfIso
+  invFun := isoOfHomeo
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
+#align Profinite.iso_equiv_homeo Profinite.isoEquivHomeo
+
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · -- Porting note: in mathlib3 `contrapose` saw through `Function.Surjective`.
@@ -268,7 +330,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
-      refine' Set.mem_compl _
+      refine Set.mem_compl ?_
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : U ∈ 𝓝 y := hC.compl_mem_nhds hyU
