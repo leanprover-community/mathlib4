@@ -245,7 +245,7 @@ attribute [simp] nil_subperm
 
 @[simp]
 theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
-  ⟨fun h ↦ length_eq_zero.1 $ Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
+  ⟨fun h ↦ length_eq_zero.1 <| Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
 
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons _ _⟩
 
