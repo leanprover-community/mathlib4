@@ -142,7 +142,7 @@ protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
   MeasurableSet.iUnion h
 #align measure_theory.null_measurable_set.Union MeasureTheory.NullMeasurableSet.iUnion
 
-@[deprecated iUnion]
+@[deprecated iUnion (since := "2023-05-06")]
 protected theorem biUnion_decode₂ [Encodable ι] ⦃f : ι → Set α⦄ (h : ∀ i, NullMeasurableSet (f i) μ)
     (n : ℕ) : NullMeasurableSet (⋃ b ∈ Encodable.decode₂ ι n, f b) μ :=
   .iUnion fun _ => .iUnion fun _ => h _

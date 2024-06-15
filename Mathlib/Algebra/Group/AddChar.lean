@@ -34,7 +34,7 @@ additive character
 ### Definitions related to and results on additive characters
 -/
 
-open Multiplicative
+open Function Multiplicative
 
 section AddCharDef
 
@@ -74,7 +74,7 @@ namespace AddChar
 section Basic
 -- results which don't require commutativity or inverses
 
-variable {A M : Type*} [AddMonoid A] [Monoid M]
+variable {A B M N : Type*} [AddMonoid A] [AddMonoid B] [Monoid M] [Monoid N] {ψ : AddChar A M}
 
 /-- Define coercion to a function. -/
 instance instFunLike : FunLike (AddChar A M) A M where
@@ -125,7 +125,6 @@ lemma map_nsmul_eq_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ 
 
 @[deprecated (since := "2024-06-06")] alias map_nsmul_pow := map_nsmul_eq_pow
 
-variable (A M) in
 /-- Additive characters `A → M` are the same thing as monoid homomorphisms from `Multiplicative A`
 to `M`. -/
 def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
@@ -137,15 +136,29 @@ def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
   left_inv _ := rfl
   right_inv _ := rfl
 
+@[simp, norm_cast] lemma coe_toMonoidHomEquiv (ψ : AddChar A M) :
+    ⇑(toMonoidHomEquiv ψ) = ψ ∘ Multiplicative.toAdd := rfl
+
+@[simp, norm_cast] lemma coe_toMonoidHomEquiv_symm (ψ : Multiplicative A →* M) :
+    ⇑(toMonoidHomEquiv.symm ψ) = ψ ∘ Multiplicative.ofAdd := rfl
+
+@[simp] lemma toMonoidHomEquiv_apply (ψ : AddChar A M) (a : Multiplicative A) :
+    toMonoidHomEquiv ψ a = ψ (Multiplicative.toAdd a) := rfl
+
+@[simp] lemma toMonoidHomEquiv_symm_apply (ψ : Multiplicative A →* M) (a : A) :
+    toMonoidHomEquiv.symm ψ a = ψ (Multiplicative.ofAdd a) := rfl
+
 /-- Interpret an additive character as a monoid homomorphism. -/
 def toAddMonoidHom (φ : AddChar A M) : A →+ Additive M where
   toFun := φ.toFun
   map_zero' := φ.map_zero_eq_one'
   map_add' := φ.map_add_eq_mul'
 
-@[simp] lemma toAddMonoidHom_apply (ψ : AddChar A M) (a : A) : ψ.toAddMonoidHom a = ψ a := rfl
+@[simp] lemma coe_toAddMonoidHom (ψ : AddChar A M) : ⇑ψ.toAddMonoidHom = Additive.ofMul ∘ ψ := rfl
 
-variable (A M) in
+@[simp] lemma toAddMonoidHom_apply (ψ : AddChar A M) (a : A) :
+    ψ.toAddMonoidHom a = Additive.ofMul (ψ a) := rfl
+
 /-- Additive characters `A → M` are the same thing as additive homomorphisms from `A` to
 `Additive M`. -/
 def toAddMonoidHomEquiv : AddChar A M ≃ (A →+ Additive M) where
@@ -157,36 +170,78 @@ def toAddMonoidHomEquiv : AddChar A M ≃ (A →+ Additive M) where
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- The trivial additive character (sending everything to `1`) is `(1 : AddChar A M).` -/
-instance instOne : One (AddChar A M) := (toMonoidHomEquiv A M).one
+@[simp, norm_cast]
+lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
+    ⇑(toAddMonoidHomEquiv ψ) = Additive.ofMul ∘ ψ := rfl
 
--- Porting note: added
+@[simp, norm_cast] lemma coe_toAddMonoidHomEquiv_symm (ψ : A →+ Additive M) :
+    ⇑(toAddMonoidHomEquiv.symm ψ) = Additive.toMul ∘ ψ := rfl
+
+@[simp] lemma toAddMonoidHomEquiv_apply (ψ : AddChar A M) (a : A) :
+    toAddMonoidHomEquiv ψ a = Additive.ofMul (ψ a) := rfl
+
+@[simp] lemma toAddMonoidHomEquiv_symm_apply (ψ : A →+ Additive M) (a : A) :
+    toAddMonoidHomEquiv.symm ψ a = Additive.toMul (ψ a) := rfl
+
+/-- The trivial additive character (sending everything to `1`) is `(1 : AddChar A M).` -/
+instance instOne : One (AddChar A M) := toMonoidHomEquiv.one
+
+@[simp, norm_cast] lemma coe_one : ⇑(1 : AddChar A M) = 1 := rfl
 @[simp] lemma one_apply (a : A) : (1 : AddChar A M) a = 1 := rfl
 
 instance instInhabited : Inhabited (AddChar A M) := ⟨1⟩
 
 /-- Composing a `MonoidHom` with an `AddChar` yields another `AddChar`. -/
 def _root_.MonoidHom.compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
-    AddChar A N :=
-  (toMonoidHomEquiv A N).symm (f.comp φ.toMonoidHom)
+    AddChar A N := toMonoidHomEquiv.symm (f.comp φ.toMonoidHom)
 
-@[simp]
+@[simp, norm_cast]
 lemma _root_.MonoidHom.coe_compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
     f.compAddChar φ = f ∘ φ :=
   rfl
 
-/-- Composing an `AddChar` with an `AddMonoidHom` yields another `AddChar`. -/
-def compAddMonoidHom {B : Type*} [AddMonoid B] (φ : AddChar B M) (f : A →+ B) : AddChar A M :=
-  (toAddMonoidHomEquiv A M).symm (φ.toAddMonoidHom.comp f)
+@[simp, norm_cast]
+lemma _root_.MonoidHom.compAddChar_apply (f : M →* N) (φ : AddChar A M) : f.compAddChar φ = f ∘ φ :=
+  rfl
 
-@[simp] lemma coe_compAddMonoidHom {B : Type*} [AddMonoid B] (φ : AddChar B M) (f : A →+ B) :
-    φ.compAddMonoidHom f = φ ∘ f := rfl
+lemma _root_.MonoidHom.compAddChar_injective_left (ψ : AddChar A M) (hψ : Surjective ψ) :
+    Injective fun f : M →* N ↦ f.compAddChar ψ := by
+  rintro f g h; rw [DFunLike.ext'_iff] at h ⊢; exact hψ.injective_comp_right h
+
+lemma _root_.MonoidHom.compAddChar_injective_right (f : M →* N) (hf : Injective f) :
+    Injective fun ψ : AddChar B M ↦ f.compAddChar ψ := by
+  rintro ψ χ h; rw [DFunLike.ext'_iff] at h ⊢; exact hf.comp_left h
+
+/-- Composing an `AddChar` with an `AddMonoidHom` yields another `AddChar`. -/
+def compAddMonoidHom (φ : AddChar B M) (f : A →+ B) : AddChar A M :=
+  toAddMonoidHomEquiv.symm (φ.toAddMonoidHom.comp f)
+
+@[simp, norm_cast]
+lemma coe_compAddMonoidHom (φ : AddChar B M) (f : A →+ B) : φ.compAddMonoidHom f = φ ∘ f := rfl
+
+@[simp] lemma compAddMonoidHom_apply (ψ : AddChar B M) (f : A →+ B)
+    (a : A) : ψ.compAddMonoidHom f a = ψ (f a) := rfl
+
+lemma compAddMonoidHom_injective_left (f : A →+ B) (hf : Surjective f) :
+    Injective fun ψ : AddChar B M ↦ ψ.compAddMonoidHom f := by
+  rintro ψ χ h; rw [DFunLike.ext'_iff] at h ⊢; exact hf.injective_comp_right h
+
+lemma compAddMonoidHom_injective_right (ψ : AddChar B M) (hψ : Injective ψ) :
+    Injective fun f : A →+ B ↦ ψ.compAddMonoidHom f := by
+  rintro f g h
+  rw [DFunLike.ext'_iff] at h ⊢; exact hψ.comp_left h
+
+lemma eq_one_iff : ψ = 1 ↔ ∀ x, ψ x = 1 := DFunLike.ext_iff
+lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 
 /-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
+@[deprecated (since := "2024-06-06")]
 def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
 #align add_char.is_nontrivial AddChar.IsNontrivial
 
+set_option linter.deprecated false in
 /-- An additive character is nontrivial iff it is not the trivial character. -/
+@[deprecated ne_one_iff (since := "2024-06-06")]
 lemma isNontrivial_iff_ne_trivial (ψ : AddChar A M) : IsNontrivial ψ ↔ ψ ≠ 1 :=
   not_forall.symm.trans (DFunLike.ext_iff (f := ψ) (g := 1)).symm.not
 
@@ -199,23 +254,21 @@ section toCommMonoid
 variable {A M : Type*} [AddMonoid A] [CommMonoid M]
 
 /-- When `M` is commutative, `AddChar A M` is a commutative monoid. -/
-instance instCommMonoid : CommMonoid (AddChar A M) := (toMonoidHomEquiv A M).commMonoid
+instance instCommMonoid : CommMonoid (AddChar A M) := toMonoidHomEquiv.commMonoid
 
--- Porting note: added
-@[simp] lemma mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
-
-@[simp] lemma pow_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (ψ ^ n) a = (ψ a) ^ n := rfl
-
-variable (A M)
+@[simp, norm_cast] lemma coe_mul (ψ χ : AddChar A M) : ⇑(ψ * χ) = ψ * χ := rfl
+@[simp, norm_cast] lemma coe_pow (ψ : AddChar A M) (n : ℕ) : ⇑(ψ ^ n) = ψ ^ n := rfl
+@[simp, norm_cast] lemma mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
+@[simp, norm_cast] lemma pow_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (ψ ^ n) a = (ψ a) ^ n := rfl
 
 /-- The natural equivalence to `(Multiplicative A →* M)` is a monoid isomorphism. -/
 def toMonoidHomMulEquiv : AddChar A M ≃* (Multiplicative A →* M) :=
-  { toMonoidHomEquiv A M with map_mul' := fun φ ψ ↦ by rfl }
+  { toMonoidHomEquiv with map_mul' := fun φ ψ ↦ by rfl }
 
 /-- Additive characters `A → M` are the same thing as additive homomorphisms from `A` to
 `Additive M`. -/
 def toAddMonoidAddEquiv : Additive (AddChar A M) ≃+ (A →+ Additive M) :=
-  { toAddMonoidHomEquiv A M with map_add' := fun φ ψ ↦ by rfl }
+  { toAddMonoidHomEquiv with map_add' := fun φ ψ ↦ by rfl }
 
 end toCommMonoid
 
@@ -274,6 +327,12 @@ section fromAddGrouptoDivisionCommMonoid
 variable {A M : Type*} [AddCommGroup A] [DivisionCommMonoid M]
 
 lemma inv_apply' (ψ : AddChar A M) (x : A) : ψ⁻¹ x = (ψ x)⁻¹ := by rw [inv_apply, map_neg_eq_inv]
+
+lemma map_sub_eq_div (ψ : AddChar A M) (a b : A) : ψ (a - b) = ψ a / ψ b :=
+  ψ.toMonoidHom.map_div _ _
+
+lemma injective_iff {ψ : AddChar A M} : Injective ψ ↔ ∀ ⦃x⦄, ψ x = 1 → x = 0 :=
+  ψ.toMonoidHom.ker_eq_bot_iff.symm.trans eq_bot_iff
 
 end fromAddGrouptoDivisionCommMonoid
 
