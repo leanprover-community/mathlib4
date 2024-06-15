@@ -2081,13 +2081,8 @@ theorem reachable_is_equivalence : Equivalence G.Reachable :=
 
 /-- Distinct vertices are not reachable in the empty graph. -/
 @[simp]
-lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · apply h.elim
-    intro p
-    match p with
-    | .nil => rfl
-  · rw [h]
+lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
+  ⟨fun h ↦ h.elim fun p ↦ match p with | .nil => rfl, fun h ↦ h ▸ .rfl⟩
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
