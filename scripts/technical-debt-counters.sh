@@ -5,6 +5,7 @@
 titlesAndRegexes=(
   "porting notes"                  "Porting note"
   "backwards compatibility flags"  "set_option.*backward"
+  "skipAssignedInstances flags"    "set_option tactic.skipAssignedInstances"
   "adaptation notes"               "adaptation_note"
   "disabled simpNF lints"          "nolint simpNF"
   "disabled deprecation lints"     "set_option linter.deprecated false"
