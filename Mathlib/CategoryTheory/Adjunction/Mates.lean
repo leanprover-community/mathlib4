@@ -236,7 +236,7 @@ theorem Mates_vcomp
       rw [← R₃.map_comp, ← H₂.map_comp, ← Functor.comp_map _ L₂]
       rw [adj₂.counit.naturality]
     }
-  simp
+  simp?
   slice_rhs 3 4 =>
     {
       rw [← R₃.map_comp, ← H₂.map_comp]
