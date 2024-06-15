@@ -17,6 +17,8 @@ universe u
 
 open CategoryTheory Limits
 
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 namespace CompHausLike
 
 variable {P : TopCat.{u} → Prop}

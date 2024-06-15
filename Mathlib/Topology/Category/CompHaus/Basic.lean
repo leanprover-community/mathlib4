@@ -37,7 +37,7 @@ universe v u
 -- This was a global instance prior to #13170. We may experiment with removing it.
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
-open CategoryTheory
+open CategoryTheory CompHausLike
 
 abbrev CompHaus := CompHausLike (fun _ ↦ True)
 set_option linter.uppercaseLean3 false in
@@ -46,7 +46,7 @@ set_option linter.uppercaseLean3 false in
 namespace CompHaus
 
 instance : Inhabited CompHaus :=
-  ⟨{ toTop := { α := PEmpty } }⟩
+  ⟨{ toTop := { α := PEmpty }, prop := trivial}, ⟩
 
 instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩

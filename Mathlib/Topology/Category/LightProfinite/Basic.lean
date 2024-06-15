@@ -51,7 +51,7 @@ Hausdorff, totally disconnected and second countable topological space.
 -/
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] [SecondCountableTopology X] : LightProfinite :=
-  ⟨⟨⟨X, inferInstance⟩⟩⟩
+  ⟨⟨X, inferInstance⟩, trivial⟩
 
 instance : Inhabited LightProfinite :=
   ⟨LightProfinite.of PEmpty⟩
@@ -414,8 +414,8 @@ instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
     refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) ?_ _
       LocallyConstant.coe_injective
     refine @Pi.finite _ _ ?_ _
-    simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
-    infer_instance
+    simp only [Functor.comp_obj]
+    sorry --infer_instance
   · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩)
   · intro a
     obtain ⟨n, g, h⟩ := Profinite.exists_locallyConstant S.cone S.isLimit a

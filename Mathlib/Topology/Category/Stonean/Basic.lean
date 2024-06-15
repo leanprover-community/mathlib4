@@ -80,7 +80,7 @@ namespace Stonean
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
 @[simps!]
 def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
-  inducedFunctor _
+  compHausLikeToCompHaus _
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
 def fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
@@ -144,11 +144,11 @@ example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
   rfl
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps! hom inv]
+-- @[simps! hom inv]
 noncomputable
-def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
-  @asIso _ _ _ _ ⟨f, f.continuous⟩
-  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHaus.isoOfHomeo f).isIso_hom _)
+def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y := sorry
+  -- @asIso _ _ _ _ ⟨f, f.continuous⟩
+  -- (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHaus.isoOfHomeo f).isIso_hom _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 abbrev homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso f
@@ -251,8 +251,8 @@ namespace CompHaus
   "constructive" witness to the fact that `CompHaus` has enough projectives. -/
 noncomputable
 def presentation (X : CompHaus) : Stonean where
-  compHaus := (projectivePresentation X).p
-  extrDisc := by
+  toTop := (projectivePresentation X).p.1
+  prop := by
     refine CompactT2.Projective.extremallyDisconnected
       (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => ?_)
     let g₁ : (CompHaus.of Y) ⟶ (CompHaus.of Z) := ⟨g, hgcont⟩

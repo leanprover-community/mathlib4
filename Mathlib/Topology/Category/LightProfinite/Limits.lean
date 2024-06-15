@@ -237,7 +237,8 @@ instance : PreservesFiniteCoproducts lightToProfinite := by
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (finiteCoproduct.isColimit _)
   have : Finite J := Finite.of_fintype _
-  exact Profinite.finiteCoproduct.isColimit (X := fun (j : J) ↦ (Profinite.of (F.obj ⟨j⟩)))
+  sorry
+  -- exact Profinite.finiteCoproduct.isColimit (X := fun (j : J) ↦ (Profinite.of (F.obj ⟨j⟩)))
 
 noncomputable
 instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
@@ -245,8 +246,9 @@ instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
     ⟨fun {F} ↦ preservesLimitOfIsoDiagram _ (diagramIsoCospan F).symm⟩
   intro _ _ _ f g
   apply preservesLimitOfPreservesLimitCone (pullback.isLimit f g)
-  exact (isLimitMapConePullbackConeEquiv lightToProfinite (pullback.condition f g)).symm
-    (Profinite.pullback.isLimit _ _)
+  sorry
+  -- exact (isLimitMapConePullbackConeEquiv lightToProfinite (pullback.condition f g)).symm
+  --   (Profinite.pullback.isLimit _ _)
 
 instance (X : LightProfinite) :
     Unique (X ⟶ LightProfinite.of PUnit.{u+1}) :=
@@ -263,8 +265,8 @@ noncomputable def terminalIsoPUnit : ⊤_ LightProfinite.{u} ≅ LightProfinite.
   terminalIsTerminal.uniqueUpToIso LightProfinite.isTerminalPUnit
 
 noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} where
-  preserves _ _ := (inferInstance :
-    PreservesColimitsOfShape _ (lightToProfinite.{u} ⋙ Profinite.toTopCat.{u}))
+  preserves _ _ := sorry --(inferInstance :
+    -- PreservesColimitsOfShape _ (lightToProfinite.{u} ⋙ Profinite.toTopCat.{u}))
 
 noncomputable instance : PreservesLimitsOfShape WalkingCospan LightProfinite.toTopCat.{u} :=
   (inferInstance : PreservesLimitsOfShape WalkingCospan

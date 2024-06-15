@@ -1,3 +1,4 @@
+import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Topology.Category.TopCat.Basic
 -- import Mathlib.Topology.ExtremallyDisconnected
 -- import Mathlib.Topology.Sets.Closeds
@@ -5,6 +6,8 @@ import Mathlib.Topology.Category.TopCat.Basic
 universe u
 
 open CategoryTheory
+
+attribute [local instance] ConcreteCategory.instFunLike
 
 variable (P : TopCat.{u} → Prop)
 
@@ -123,8 +126,8 @@ def isoOfHomeo {X Y : CompHausLike.{u} P} (f : X ≃ₜ Y) : X ≅ Y where
 def homeoOfIso {X Y : CompHausLike.{u} P} (f : X ≅ Y) : X ≃ₜ Y where
   toFun := f.hom
   invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
+  left_inv x := by sorry
+  right_inv x := by sorry
   continuous_toFun := f.hom.continuous
   continuous_invFun := f.inv.continuous
 

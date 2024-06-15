@@ -28,6 +28,8 @@ universe u w
 
 open CategoryTheory Limits
 
+attribute [local instance] ConcreteCategory.instFunLike
+
 section Pullbacks
 
 variable {P : TopCat.{u} → Prop} {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y ⟶ B)

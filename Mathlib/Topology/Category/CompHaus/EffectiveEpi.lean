@@ -42,7 +42,7 @@ and we now turn it on locally when convenient.
 -/
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
 namespace CompHaus
 

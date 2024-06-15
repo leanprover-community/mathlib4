@@ -69,7 +69,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
 instance : CoeSort Profinite Type* :=
-  ⟨fun X => X.toCompHaus⟩
+  ⟨fun X => X.toTop⟩
 
 -- Porting note (#10688): This lemma was not needed in mathlib3
 @[simp]
@@ -275,7 +275,7 @@ variable {X Y : Profinite.{u}} (f : X ⟶ Y)
 
 /-- Any morphism of profinite spaces is a closed map. -/
 theorem isClosedMap : IsClosedMap f :=
-  CompHaus.isClosedMap _
+  CompHausLike.isClosedMap _
 #align Profinite.is_closed_map Profinite.isClosedMap
 
 /-- Any continuous bijection of profinite spaces induces an isomorphism. -/
@@ -297,11 +297,11 @@ instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms :
 #align Profinite.forget_reflects_isomorphisms Profinite.forget_reflectsIsomorphisms
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps! hom inv]
+-- @[simps! hom inv]
 noncomputable
-def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
-  @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
-    (CompHaus.isoOfHomeo f).isIso_hom _)
+def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y := sorry
+  -- @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
+  --   (CompHaus.isoOfHomeo f).isIso_hom _)
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
@@ -316,8 +316,8 @@ noncomputable
 def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
+  left_inv f := by ext; sorry --rfl
+  right_inv f := by ext; sorry --rfl
 #align Profinite.iso_equiv_homeo Profinite.isoEquivHomeo
 
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
