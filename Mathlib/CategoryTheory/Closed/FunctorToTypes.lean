@@ -7,8 +7,10 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.CategoryTheory.Functor.HomFunctor
+import Mathlib.CategoryTheory.Functor.FunctorHom
 import Mathlib.Tactic.ApplyFun
+import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 
 /-!
 # Functors to Type are closed.
@@ -56,7 +58,7 @@ variable {F G H : C ⥤ Type max w v u}
 
 /-- The bijection between morphisms `F ⊗ G ⟶ H` and morphisms `G ⟶ F.ihom H`. -/
 def homEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (G ⟶ F.ihom H) :=
-  ((Functor.HomEquiv F _ _).trans (Functor.prodhomequiv F _ _)).symm
+  ((Functor.functorHomEquiv F _ _).trans (Functor.HomObjEquiv F _ _)).symm
 
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
 def adj (F : C ⥤ Type max w v u) : tensorLeft F ⊣ rightAdj F where
@@ -65,7 +67,7 @@ def adj (F : C ⥤ Type max w v u) : tensorLeft F ⊣ rightAdj F where
     app := fun G ↦ (homEquiv _ _ _).toFun (𝟙 _)
     naturality := fun G H f ↦ by
       ext c y
-      dsimp [rightAdj, homEquiv, Functor.HomEquiv]
+      dsimp [rightAdj, homEquiv, Functor.functorHomEquiv]
       ext d
       dsimp only [Monoidal.tensorObj_obj, comp, Monoidal.whiskerLeft_app, whiskerLeft_apply]
       rw [Eq.symm (FunctorToTypes.naturality G H f _ y)]
@@ -79,5 +81,11 @@ instance closed (F : C ⥤ Type max w v u) : Closed F where
 instance monoidalClosed : MonoidalClosed (C ⥤ Type max w v u) where
 
 end FunctorToTypes
+
+open SimplicialCategory
+
+variable (K X Y : SSet.{v})
+
+example : (K ⊗ Y ⟶ X) ≃ (Y ⟶ sHom K X) := FunctorToTypes.homEquiv _ _ _
 
 end CategoryTheory
