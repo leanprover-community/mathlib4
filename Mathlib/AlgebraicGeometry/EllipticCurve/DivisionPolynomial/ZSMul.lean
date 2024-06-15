@@ -35,7 +35,9 @@ modulo the Weierstrass polynomial. It is crucial that two formulas (`dblXYZ` for
 `addXYZ` for addition of two different points) suffice to cover all cases of the group law
 in Jacobian coordinates. Since `P = (x,y) ≠ O`, `m • P` is never equal to `(m + 1) • P`, so
 `addXYZ` always apply in the `2 * m + 1` case (it gives `(0,0,0)` when applied to two equal points),
-and `dblXYZ` always applies in the `2 * m` case.
+and `dblXYZ` always applies in the `2 * m` case. This already implies the existence of
+division polynomials that are the same polynomials in `a₁, ⋯, a₆, x, y` no matter what the
+field is, but not their explicit forms, which are needed to compute their degrees.
 
 Since the ring homomorphism from the universal ring to the universal field
 is injective, it suffices to prove these identities in the universal field
@@ -62,6 +64,12 @@ expressing the affine coordinates of `(n+1) • P` in terms of those of `P`, `n 
 We only need to verify the base cases `n = 1` and `n = 2`, and the induction step is handled
 by fancy identities of division polynomials and elliptic divisibility sequences
 (`smulX_sub_sub_smulX_add`, `smulX_add` and `smulY_add_sub_negY`).
+
+Note: it appears that if the field `F` (of which `x` and `y` are elements) is not of
+characteristic 2, then we can work in the "less universal" field `Frac(F[W]) = Frac(F[X,Y]/⟨P⟩)`
+instead of `Frac(Universal.Ring) = Frac(ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩)`, but our argument via
+`smulY_add_sub_negY` requires 2 to be invertible, so we do need to obtain the characteristic 2
+result by specializing the characteristic 0, universal result.
 -/
 
 open scoped PolynomialPolynomial

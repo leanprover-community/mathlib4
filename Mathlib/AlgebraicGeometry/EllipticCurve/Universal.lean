@@ -10,8 +10,8 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 
 This file defines the universal Weierstrass curve (`Universal.curve`) over the
 polynomial ring `ℤ[A₁,A₂,A₃,A₄,A₆]`, and the universal pointed elliptic curve
-(`Universal.pointedCurve`) over the field of fractions (`Universal.Field`) of the universal ring
-`ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩ = Universal.Poly/⟨P⟩` (`Universal.Ring`, where `P` is the Weierstrass
+(`Universal.pointedCurve`) over the field of fractions (`Universal.Field`) of
+`Universal.Ring = Universal.Poly/⟨P⟩ = ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩` (where `P` is the Weierstrass
 polynomial) with distinguished point `(X,Y)`.
 
 Given a Weierstrass curve `W` over a commutative ring `R`, we define the specialization
