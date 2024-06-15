@@ -60,7 +60,7 @@ https://drops.dagstuhl.de/storage/00lipics/lipics-vol268-itp2023/LIPIcs.ITP.2023
 elliptic curve, group law, class group
 -/
 
-open Ideal nonZeroDivisors Polynomial PolynomialPolynomial
+open Ideal nonZeroDivisors Polynomial Polynomial2
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])

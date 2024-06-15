@@ -81,7 +81,7 @@ The group law on this set is then uniquely determined by these constructions.
 elliptic curve, rational point, affine coordinates
 -/
 
-open Polynomial PolynomialPolynomial
+open Polynomial Polynomial2
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
@@ -122,7 +122,7 @@ section Equation
 /-- The polynomial $W(X, Y) := Y^2 + a_1XY + a_3Y - (X^3 + a_2X^2 + a_4X + a_6)$ associated to a
 Weierstrass curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term
 of type `R[X][X]`, where the inner variable represents $X$ and the outer variable represents $Y$.
-For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `PolynomialPolynomial`
+For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `Polynomial2`
 scope to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
