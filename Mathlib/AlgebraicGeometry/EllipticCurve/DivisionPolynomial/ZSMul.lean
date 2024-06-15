@@ -49,9 +49,9 @@ which are true by the validity of the doubling and addition formulas.
 
 Equivalently, we aim to prove the formula in affine coordinates: `n • (X,Y) = (φₘ/ψₙ², ωₙ/ψₙ³)`
 for `n ≠ 0` (`Universal.Affine.zsmul_point_eq_smulX_smulY`), but this time it is easier to use
-vanilla induction on `n` rather than the even-odd induction, because we have formulas expressing
-the affine coordinates of `(n+1) • P` in terms of those of `P`, `n • P` and `(n-1) • P`
-(`Affine.addX_eq_subX_sub`, `Affine.addY_sub_negY`).
+the usual strong induction on `n` rather than the even-odd induction, because we have formulas
+expressing the affine coordinates of `(n+1) • P` in terms of those of `P`, `n • P` and
+`(n-1) • P` (`Affine.addX_eq_subX_sub`, `Affine.addY_sub_negY`).
 We only need to verify the base cases `n = 1` and `n = 2`, and the induction step is handled
 by fancy identities of division polynomials and elliptic divisibility sequences
 (`smulX_sub_sub_smulX_add`, `smulX_add` and `smulY_add_sub_negY`).
