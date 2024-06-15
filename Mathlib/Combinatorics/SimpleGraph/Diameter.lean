@@ -88,9 +88,7 @@ lemma diam_le (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
   intros
   apply le_csSup
   rw [ne_eq, diam_eq_zero] at h
-  push_neg at h
-  exact h.1
-  tauto
+  repeat tauto
 
 lemma diam_le_subgraph_diam [Nonempty α] (hg: G.Connected) (hz : G.diam ≠ 0) (h : G ≤ G') :
     G'.diam ≤ G.diam :=
