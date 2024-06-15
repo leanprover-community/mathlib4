@@ -41,9 +41,8 @@ scoped[MeasureTheory] infix:80 " ∗ " => MeasureTheory.Measure.conv
 theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
     (Measure.dirac 1) ∗ μ = μ := by
   unfold mconv
-  rw [MeasureTheory.Measure.dirac_prod, map_map]
+  rw [MeasureTheory.Measure.dirac_prod, map_map (by fun_prop)]
   · simp only [Function.comp_def, one_mul, map_id']
-  · fun_prop
   fun_prop
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
