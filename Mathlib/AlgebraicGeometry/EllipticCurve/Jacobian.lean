@@ -1571,46 +1571,46 @@ variable {S : Type*} [CommRing S] (f : R →+* S) (P Q : Fin 3 → R)
 protected lemma map_smul (u : R) : f ∘ (u • P) = f u • (f ∘ P) := by
   ext i; fin_cases i <;> simp [smul_fin3]
 
-@[simp] lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by simp [addZ]
-@[simp] lemma map_addX : addX (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by simp [addX]
-@[simp] lemma map_negAddY : negAddY (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+@[simp] lemma map_addZ : f (addZ P Q) = addZ (f ∘ P) (f ∘ Q) := by simp [addZ]
+@[simp] lemma map_addX : f (W'.addX P Q) = addX (W'.map f) (f ∘ P) (f ∘ Q) := by simp [addX]
+@[simp] lemma map_negAddY : f (W'.negAddY P Q) = negAddY (W'.map f) (f ∘ P) (f ∘ Q) := by
   simp [negAddY]
-@[simp] lemma map_negY : negY (W'.map f) (f ∘ P) = f (W'.negY P) := by simp [negY]
+@[simp] lemma map_negY : f (W'.negY P) = negY (W'.map f) (f ∘ P) := by simp [negY]
 
-@[simp] protected lemma map_neg : neg (W'.map f) (f ∘ P) = f ∘ W'.neg P := by
+@[simp] protected lemma map_neg : f ∘ W'.neg P = neg (W'.map f) (f ∘ P) := by
   ext i; fin_cases i <;> simp [neg]
 
-@[simp] lemma map_addY : addY (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
-  simp [addY, ← comp_fin3]
+@[simp] lemma map_addY : f (W'.addY P Q) = addY (W'.map f) (f ∘ P) (f ∘ Q) := by
+  simp [addY, comp_fin3]
 
-@[simp] lemma map_addXYZ : addXYZ (W'.map f) (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+@[simp] lemma map_addXYZ : f ∘ addXYZ W' P Q = addXYZ (W'.map f) (f ∘ P) (f ∘ Q) := by
   simp_rw [addXYZ, comp_fin3, map_addX, map_addY, map_addZ]
 
-@[simp] lemma map_polynomial :
+lemma map_polynomial :
     (W'.map f).toJacobian.polynomial = MvPolynomial.map f W'.polynomial := by
   simp [polynomial]
 
-@[simp] lemma map_polynomialX :
+lemma map_polynomialX :
     (W'.map f).toJacobian.polynomialX = MvPolynomial.map f W'.polynomialX := by
-  simp [polynomialX, pderiv_map]
+  simp [polynomialX, pderiv_map, map_polynomial]
 
-@[simp] lemma map_polynomialY :
+lemma map_polynomialY :
     (W'.map f).toJacobian.polynomialY = MvPolynomial.map f W'.polynomialY := by
-  simp [polynomialY, pderiv_map]
+  simp [polynomialY, pderiv_map, map_polynomial]
 
-@[simp] lemma map_polynomialZ :
+lemma map_polynomialZ :
     (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
-  simp [polynomialZ, pderiv_map]
+  simp [polynomialZ, pderiv_map, map_polynomial]
 
-@[simp] lemma map_dblZ : dblZ (W'.map f) (f ∘ P) = f (W'.dblZ P) := by simp [dblZ]
-@[simp] lemma map_dblU : dblU (W'.map f) (f ∘ P) = f (W'.dblU P) := by
+@[simp] lemma map_dblZ : f (W'.dblZ P) = dblZ (W'.map f) (f ∘ P) := by simp [dblZ]
+@[simp] lemma map_dblU : f (W'.dblU P) = dblU (W'.map f) (f ∘ P) := by
   simp [dblU, map_polynomialX, ← eval₂_id, eval₂_comp_left]
 
-@[simp] lemma map_dblX : dblX (W'.map f) (f ∘ P) = f (W'.dblX P) := by simp [dblX]
-@[simp] lemma map_negDblY : negDblY (W'.map f) (f ∘ P) = f (W'.negDblY P) := by simp [negDblY]
-@[simp] lemma map_dblY : dblY (W'.map f) (f ∘ P) = f (W'.dblY P) := by simp [dblY, ← comp_fin3]
+@[simp] lemma map_dblX : f (W'.dblX P) = dblX (W'.map f) (f ∘ P) := by simp [dblX]
+@[simp] lemma map_negDblY : f (W'.negDblY P) = negDblY (W'.map f) (f ∘ P) := by simp [negDblY]
+@[simp] lemma map_dblY : f (W'.dblY P) = dblY (W'.map f) (f ∘ P) := by simp [dblY, comp_fin3]
 
-@[simp] lemma map_dblXYZ : dblXYZ (W'.map f) (f ∘ P) = f ∘ dblXYZ W' P := by
+@[simp] lemma map_dblXYZ : f ∘ dblXYZ W' P = dblXYZ (W'.map f) (f ∘ P) := by
   simp_rw [dblXYZ, comp_fin3, map_dblX, map_dblY, map_dblZ]
 
 end Map
