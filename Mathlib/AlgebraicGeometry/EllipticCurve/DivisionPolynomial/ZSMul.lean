@@ -382,7 +382,7 @@ theorem zsmul_point_eq_smulField : (n • Jacobian.point).point = ⟦smulField n
   rw [← map_zsmul, eq]
   have := ψᵤ_ne_zero hn
   refine Quotient.sound ⟨.mk0 _ (inv_ne_zero this), ?_⟩
-  simp_rw [Units.smul_def, Jacobian.smul_fin3']
+  simp_rw [Units.smul_def, Jacobian.smul_fin3]
   ext i; fin_cases i <;> field_simp [Affine.smulX, Affine.smulY, this]
 
 lemma dblZ_smulPoly : dblZ curvePoly (smulPoly n) = curve.ψ (2 * n) := by
@@ -417,7 +417,7 @@ lemma ω_neg_eq_neg_negY : curve.ω (-n) = -negY curvePoly (smulPoly n) := by
   ring
 
 lemma smulPoly_neg : smulPoly (-n) = (-1 : Poly) • neg curvePoly (smulPoly n) := by
-  simp [smulPoly, ω_neg_eq_neg_negY, neg, smul_fin3', (show Odd 3 by decide).neg_pow]
+  simp [smulPoly, ω_neg_eq_neg_negY, neg, smul_fin3, (show Odd 3 by decide).neg_pow]
 
 lemma smulRing_neg : smulRing (-n) = (-1 : Universal.Ring) • neg curveRing (smulRing n) := by
   simp_rw [smulRing, smulPoly_neg, Jacobian.map_smul, ← Jacobian.map_neg, map_neg, map_one]; rfl
@@ -444,7 +444,7 @@ lemma addXYZ_smulField :
     sub_ne_zero_of_ne h.symm).isUnit, ← zsmul_point_eq_smulField, add_comm, add_zsmul,
     Point.add_point_of_ne zsmul_point_eq_smulField zsmul_point_eq_smulField (zsmul_point_ne h)]
   · rfl
-  · conv_rhs => rw [smulField, comp_fin3, smul_fin3', (fin3_def_ext _ _ _).2.2, mul_comm]
+  · conv_rhs => rw [smulField, comp_fin3, smul_fin3, (fin3_def_ext _ _ _).2.2, mul_comm]
     simp_rw [addXYZ, fin3_def_ext, ← map_mul, ← addZ_smulPoly, ← map_addZ]
   · apply mul_ne_zero <;> apply ψᵤ_ne_zero <;> omega
 

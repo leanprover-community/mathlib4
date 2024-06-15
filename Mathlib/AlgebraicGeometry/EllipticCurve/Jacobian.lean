@@ -130,9 +130,6 @@ scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
   rfl
 
-lemma smul_fin3' (X Y Z : R) (u : R) : u • ![X, Y, Z] = ![u ^ 2 * X, u ^ 3 * Y, u * Z] :=
-  rfl
-
 lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
   ⟨rfl, rfl, rfl⟩
@@ -1120,7 +1117,7 @@ lemma addY_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P (W'.neg P) = -
 
 lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     W'.addXYZ P (W'.neg P) = -W'.dblZ P • ![1, 1, 0] := by
-  simp_rw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3']
+  simp_rw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3]
   simp [(show Odd 3 by decide).neg_pow]
 
 variable (W') in
@@ -1377,7 +1374,7 @@ lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X
     fromAffine (.some h) ≠ 0 := fun h0 ↦ by
   erw [Point.ext_iff, Quotient.eq] at h0
   obtain ⟨u, eq⟩ := h0
-  simpa [Units.smul_def, smul_fin3'] using congr_fun eq z
+  simpa [Units.smul_def, smul_fin3] using congr_fun eq z
 
 /-- The negation of a nonsingular rational point on `W`.
 Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
