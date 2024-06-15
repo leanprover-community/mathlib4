@@ -107,6 +107,7 @@ class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid
 #align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
 
 attribute [instance 90] AddCommMonoidWithOne.toAddMonoidWithOne
+attribute [instance 50] AddCommMonoidWithOne.toAddCommMonoid
 
 library_note "coercion into rings"
 /--
