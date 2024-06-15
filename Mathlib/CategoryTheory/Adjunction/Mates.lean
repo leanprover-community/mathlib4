@@ -114,12 +114,7 @@ def transferNatTrans : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R�
 -- ER: A new construction with a new name.
 def Mates :
     (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) where
-      toFun := by
-        intro α
-        have R₁Gη₂ := whiskerLeft (R₁ ⋙ G) adj₂.unit
-        have R₁αR₂ := whiskerRight (whiskerLeft R₁ α) R₂
-        have ε₁HR₂ := whiskerRight adj₁.counit (H ⋙ R₂)
-        exact R₁Gη₂ ≫ R₁αR₂ ≫ ε₁HR₂
+      toFun := fun α => whiskerLeft (R₁ ⋙ G) adj₂.unit ≫ whiskerRight (whiskerLeft R₁ α) R₂ ≫ whiskerRight adj₁.counit (H ⋙ R₂)
       invFun := by
         intro β
         have η₁GL₂ := whiskerRight adj₁.unit (G ⋙ L₂)
