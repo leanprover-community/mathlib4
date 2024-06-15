@@ -429,7 +429,7 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
       refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩
       · apply Measurable.aestronglyMeasurable
         -- NB. `measurability` proves this, but is quite slow
-        -- TODO(#13864): re-instate faster automation, e.g. by making `fun_prop` work here
+        -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
         apply (Measure.measurable_rnDeriv _ μ).ennreal_toNNReal.coe_nnreal_real
       · rw [set_lintegral_univ]
         exact (lintegral_rnDeriv_lt_top _ _).ne

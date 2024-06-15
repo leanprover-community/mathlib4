@@ -712,7 +712,7 @@ lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun m f μ) (hf : ∀ 
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by
     -- NB: `measurability proves this, but is slow
-    -- TODO(#13864): re-instate faster automation, e.g. by making `fun_prop` work here
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
     simp only [ne_eq, g]
     apply Measurable.prod
     · exact measurable_pi_apply _
