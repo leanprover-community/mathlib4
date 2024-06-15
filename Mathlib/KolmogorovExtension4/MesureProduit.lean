@@ -352,16 +352,15 @@ theorem secondLemma
   -- Taking the preimage of a product indexed by `sₙ` by `gₙ` yields a product indexed by `uₙ`,
   -- again we have to play with `cast`.
   have imp n (u : (i : s n) → Set (X i)) : (g n) ⁻¹' (Set.univ.pi u) =
-      Set.univ.pi (fun k : t n ↦ u ⟨φ k, e' n k.1 k.2⟩) := by
+      Set.univ.pi (fun k : t n ↦ u ((aux n).symm k)) := by
     ext x
-    simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies, Subtype.forall, g]
+    simp only [Equiv.coe_fn_mk, Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies,
+      Subtype.forall, Equiv.coe_fn_symm_mk, g, aux]
     refine ⟨fun h' k hk ↦ ?_, fun h' i hi ↦ ?_⟩
     · convert h' (φ k) (e' n k hk)
-      simp only [Equiv.coe_fn_mk, aux]
       rw [@omg_ ℕ (fun k ↦ X (φ k)) (t n) x ⟨φ.symm (φ k), by simp [hk]⟩ ⟨k, hk⟩]
       simp
     · convert h' (φ.symm i) (e n i hi)
-      simp only [Equiv.coe_fn_mk, aux]
       rw [← @omg_ ι (fun i ↦ Set (X i)) (s n) u ⟨φ (φ.symm i), by simp [hi]⟩ ⟨i, hi⟩ (by simp) _,
         omg'_ (X (φ (φ.symm i))) (X i) (by simp) (x ⟨φ.symm i, e n i hi⟩)
           (u ⟨φ (φ.symm i), by simp [hi]⟩) (by simp)]
