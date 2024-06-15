@@ -44,6 +44,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.DeprSinceAction
 import Mathlib.Tactic.DeprecateMe
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveToExpr
@@ -114,6 +115,7 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.DeprecateNoSince
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint

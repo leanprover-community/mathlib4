@@ -122,8 +122,8 @@ theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
 #align rat.cast_coe_nat Rat.cast_natCast
 
 -- 2024-03-21
-@[deprecated] alias cast_coe_int := cast_intCast
-@[deprecated] alias cast_coe_nat := cast_natCast
+@[deprecated (since := "2024-06-12")] alias cast_coe_int := cast_intCast
+@[deprecated (since := "2024-06-12")] alias cast_coe_nat := cast_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :

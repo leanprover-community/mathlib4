@@ -375,8 +375,8 @@ instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
 #align category_theory.is_iso.id CategoryTheory.IsIso.id
 
 -- deprecated on 2024-05-15
-@[deprecated] alias of_iso := CategoryTheory.Iso.isIso_hom
-@[deprecated] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
+@[deprecated (since := "2024-06-12")] alias of_iso := CategoryTheory.Iso.isIso_hom
+@[deprecated (since := "2024-06-12")] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
 
 variable {f g : X ⟶ Y} {h : Y ⟶ Z}
 

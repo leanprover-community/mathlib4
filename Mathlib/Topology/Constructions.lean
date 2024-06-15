@@ -534,8 +534,8 @@ theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (un
 #align continuous_uncurry_right Continuous.uncurry_right
 
 -- 2024-03-09
-@[deprecated] alias continuous_uncurry_left := Continuous.uncurry_left
-@[deprecated] alias continuous_uncurry_right := Continuous.uncurry_right
+@[deprecated (since := "2024-06-12")] alias continuous_uncurry_left := Continuous.uncurry_left
+@[deprecated (since := "2024-06-12")] alias continuous_uncurry_right := Continuous.uncurry_right
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
   Continuous.uncurry_left x h
