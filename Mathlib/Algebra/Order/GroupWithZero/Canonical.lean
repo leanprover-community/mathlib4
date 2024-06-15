@@ -198,6 +198,12 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
   exact le_of_le_mul_right hc h
 #align mul_lt_right₀ mul_lt_right₀
 
+theorem inv_lt_one₀ (ha : a ≠ 0) : a⁻¹ < 1 ↔ 1 < a :=
+  @inv_lt_one' _ _ _ _ <| Units.mk0 a ha
+
+theorem one_lt_inv₀ (ha : a ≠ 0) : 1 < a⁻¹ ↔ a < 1 :=
+  @one_lt_inv' _ _ _ _ <| Units.mk0 a ha
+
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
     have : CovariantClass αˣ αˣ (· * ·) (· < ·) :=
@@ -274,14 +280,14 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
+#adaptation_note /-- 2024-04-23
+After https://github.com/leanprover/lean4/pull/3965,
+we need to either write `@inv_zero (G₀ := α) (_)` in `neg_top`,
+or use `set_option backward.isDefEq.lazyProjDelta false`.
+See https://github.com/leanprover-community/mathlib4/issues/12535 -/
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
-    -- Adaptation note: 2024-04-23
-    -- After https://github.com/leanprover/lean4/pull/3965,
-    -- we need to either write `@inv_zero (G₀ := α) (_)` here,
-    -- or use `set_option backward.isDefEq.lazyProjDelta false`.
-    -- See https://github.com/leanprover-community/mathlib4/issues/12535
     neg_top := set_option backward.isDefEq.lazyProjDelta false in @inv_zero _ (_)
     add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
@@ -294,7 +300,7 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 #align pow_lt_pow₀ pow_lt_pow_right₀
 
-@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀ -- 2023-12-23
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow₀ := pow_lt_pow_right₀
 
 end LinearOrderedCommGroupWithZero
 
