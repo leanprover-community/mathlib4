@@ -195,6 +195,16 @@ lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W.CoordinateRing) + q • mk W
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.smul_basis_mul_Y WeierstrassCurve.Affine.CoordinateRing.smul_basis_mul_Y
 
+lemma algebraMap_injective : Function.Injective (algebraMap R[X] W.CoordinateRing) :=
+  (injective_iff_map_eq_zero _).mpr fun p hp ↦ And.left <|
+    smul_basis_eq_zero (W := W) (q := 0) <| by rwa [Algebra.smul_def, mul_one, zero_smul, add_zero]
+/- cf. AdjoinRoot.of.injective_of_degree_ne_zero (for domains)
+and AdjoinRoot.coe_injective (for fields);
+there isn't a general monic version, no PowerBasis.injective when dim > 0 -/
+
+lemma algebraMap_injective' : Function.Injective (algebraMap R W.CoordinateRing) :=
+  (algebraMap_injective W).comp C_injective
+
 /-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
 noncomputable def map : W.CoordinateRing →+* (W.map f).toAffine.CoordinateRing :=
   AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f) _ <| by
