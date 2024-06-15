@@ -5,6 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.SignedLebesgue
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
+import Mathlib.Tactic.FunProp.Measurable
 
 #align_import measure_theory.decomposition.radon_nikodym from "leanprover-community/mathlib"@"fc75855907eaa8ff39791039710f567f37d4556f"
 
@@ -427,10 +428,7 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
       rw [← integrableOn_univ]
       refine IntegrableOn.restrict ?_ MeasurableSet.univ
       refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩
-      · apply Measurable.aestronglyMeasurable
-        -- NB. `measurability` proves this, but is quite slow
-        -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
-        apply (Measure.measurable_rnDeriv _ μ).ennreal_toNNReal.coe_nnreal_real
+      · apply Measurable.aestronglyMeasurable (by fun_prop)
       · rw [set_lintegral_univ]
         exact (lintegral_rnDeriv_lt_top _ _).ne
   · exact equivMeasure.right_inv μ
