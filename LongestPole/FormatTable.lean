@@ -20,6 +20,14 @@ inductive Alignment where
   | center
 deriving Inhabited, BEq
 
+def Alignment.align (a : Alignment) (s : String) (width : Nat) : String :=
+  match a with
+  | Alignment.left => s.rightpad width
+  | Alignment.right => s.leftpad width
+  | Alignment.center =>
+    let pad := (width - s.length) / 2
+    String.replicate pad ' ' ++ s ++ String.replicate (width - s.length - pad) ' '
+
 /--
 Takes a two-dimensional array of `String`s` into a markdown-compliant table.
 `headers` is a list of column headers,
@@ -38,12 +46,7 @@ def formatTable (headers : Array String) (table : Array (Array String))
   -- Pad each cell with spaces to match the column width.
   let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!
   let paddedTable := table.map fun row => row.mapIdx fun i cell =>
-    if alignments[i]! == Alignment.left then cell.rightpad widths[i]!
-    else if alignments[i]! == Alignment.right then cell.leftpad widths[i]!
-    else
-      String.replicate ((widths[i]! - cell.length) / 2) ' '
-      ++ cell
-      ++ String.replicate ((widths[i]! - cell.length + 1) / 2) ' '
+    alignments[i]!.align cell widths[i]!
   -- Construct the lines of the table
   let headerLine := "| " ++ String.intercalate " | " (paddedHeaders.toList) ++ " |"
   -- Construct the separator line, with colons to indicate alignment
@@ -51,9 +54,10 @@ def formatTable (headers : Array String) (table : Array (Array String))
     "| "
     ++ String.intercalate " | "
         (((widths.zip alignments).map fun ⟨w, a⟩ =>
-              if a == Alignment.left then ":" ++ String.replicate (w-1) '-'
-              else if a == Alignment.right then String.replicate (w-1) '-' ++ ":"
-              else ":" ++ String.replicate (w-2) '-' ++ ":"
+              match a with
+              | Alignment.left => ":" ++ String.replicate (w-1) '-'
+              | Alignment.right => String.replicate (w-1) '-' ++ ":"
+              | Alignment.center => ":" ++ String.replicate (w-2) '-' ++ ":"
               ).toList)
     ++ " |"
   let rowLines := paddedTable.map (fun row => "| " ++ String.intercalate " | " (row.toList) ++ " |")
