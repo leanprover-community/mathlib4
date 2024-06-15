@@ -466,6 +466,9 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.Antidiag.Finsupp
+import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.List
@@ -1834,7 +1837,6 @@ import Mathlib.Control.ULift
 import Mathlib.Control.ULiftable
 import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
-import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Array.ExtractLemmas
 import Mathlib.Data.Array.Lemmas
@@ -1856,6 +1858,7 @@ import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Determinant
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Complex.ExponentialBounds
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Orientation
@@ -1902,7 +1905,6 @@ import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finmap
-import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
@@ -1924,7 +1926,6 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.PImage
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Pointwise
@@ -2439,6 +2440,7 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Algebra.Monoid
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 import Mathlib.Geometry.Manifold.Algebra.Structures
+import Mathlib.Geometry.Manifold.AnalyticManifold
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Geometry.Manifold.Complex
@@ -2968,6 +2970,7 @@ import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.MeasureTheory.Function.SpecialFunctions.RCLike
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.MeasureTheory.Group.Action
@@ -3848,6 +3851,7 @@ import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
+import Mathlib.Tactic.ITauto
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
@@ -4019,6 +4023,7 @@ import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
 import Mathlib.Topology.Algebra.Module.StrongTopology
+import Mathlib.Topology.Algebra.Module.UniformConvergence
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
