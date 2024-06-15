@@ -93,10 +93,33 @@ theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp
     (sq_sqrt (Int.cast_nonneg.2 <| le_of_lt hm)) (by rw [Hpv]; exact one_ne_zero)
 #align irrational_sqrt_of_multiplicity_odd irrational_sqrt_of_multiplicity_odd
 
+theorem irrational_sqrt_ratCast_iff {q : ℚ} (hq : 0 ≤ q) : Irrational (√q) ↔ ¬IsSquare q := by
+  refine Iff.not ?_
+  change Exists _ ↔ Exists _
+  simp_rw [← sq]
+  constructor
+  · rintro ⟨y, hy⟩
+    refine ⟨y, Rat.cast_injective (α := ℝ) ?_⟩
+    rw [Rat.cast_pow, hy, sq_sqrt (mod_cast hq)]
+  · rintro ⟨q', rfl⟩
+    refine ⟨|q'|, ?_⟩
+    rw [Rat.cast_pow, sqrt_sq_eq_abs, cast_abs]
+
+theorem irrational_sqrt_intCast_iff {z : ℤ} (hz : 0 ≤ z) :
+    Irrational (√z) ↔ ¬IsSquare z := by
+  rw [← Rat.isSquare_intCast_iff, ← irrational_sqrt_ratCast_iff (mod_cast hz), Rat.cast_intCast]
+
+theorem irrational_sqrt_natCast_iff {n : ℕ} : Irrational (√n) ↔ ¬IsSquare n := by
+  rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff (mod_cast Nat.zero_le n),
+    Rat.cast_natCast]
+
+-- See note [no_index around OfNat.ofNat]
+theorem irrational_sqrt_ofNat_iff {n : ℕ} [n.AtLeastTwo] :
+    Irrational (√(no_index (OfNat.ofNat n))) ↔ ¬IsSquare (OfNat.ofNat n) :=
+  irrational_sqrt_natCast_iff
+
 theorem Nat.Prime.irrational_sqrt {p : ℕ} (hp : Nat.Prime p) : Irrational (√p) :=
-  @irrational_sqrt_of_multiplicity_odd p (Int.natCast_pos.2 hp.pos) p ⟨hp⟩ <| by
-    simp [multiplicity.multiplicity_self
-      (mt isUnit_iff_dvd_one.1 (mt Int.natCast_dvd_natCast.1 hp.not_dvd_one))]
+  irrational_sqrt_natCast_iff.mpr hp.not_square
 #align nat.prime.irrational_sqrt Nat.Prime.irrational_sqrt
 
 /-- **Irrationality of the Square Root of 2** -/
