@@ -128,11 +128,8 @@ lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u
 
 lemma zero_lt_ediam_iff [Nonempty α] (ht : G.ediam ≠ ⊤) :
     0 < G.ediam ↔ ∃ (u v : α), G.ediam = G.dist u v ∧ G.Reachable u v ∧ u ≠ v := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨u, v, huv⟩ := ediam_exists.mp ht
-    rw [← huv, Nat.cast_pos, pos_iff_ne_zero, ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not] at h
-    push_neg at h
-    use u, v, huv.symm, h.2, h.1
-  · have ⟨u, v, h⟩ := h
-    rw [h.1, Nat.cast_pos]
-    exact LT.lt.nat_succ_le (Reachable.pos_dist_of_ne h.2.1 h.2.2)
+  refine ⟨fun h ↦ ?_, fun ⟨u, v, h⟩ ↦ h.1 ▸ Nat.cast_pos.mpr (h.2.1.pos_dist_of_ne h.2.2)⟩
+  obtain ⟨u, v, huv⟩ := ediam_exists.mp ht
+  rw [← huv, Nat.cast_pos, pos_iff_ne_zero, ne_eq, dist_eq_zero_iff_eq_or_not_reachable] at h
+  push_neg at h
+  use u, v, huv.symm, h.2, h.1
