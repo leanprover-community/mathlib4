@@ -200,6 +200,12 @@ variable (ha : p a := by cfc_tac)
 lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.restrict⟩, hf0⟩ := by
   rw [cfcₙ_def, dif_pos ⟨ha, hf, hf0⟩]
 
+lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (hf : ∀ i, ContinuousOn (f i) (σₙ R a))
+    (hf0 : ∀ i, f i 0 = 0) :
+    (fun i => cfcₙ (f i) a) = (fun i => cfcₙHom (a := a) ha ⟨⟨_, (hf i).restrict⟩, hf0 i⟩) := by
+  ext i
+  simp only [cfcₙ_apply (f i) a]
+
 lemma cfcₙ_apply_of_not_and_and {f : R → R} (a : A)
     (ha : ¬ (p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0)) :
     cfcₙ f a = 0 := by
@@ -310,6 +316,34 @@ lemma cfcₙ_add : cfcₙ (fun x ↦ f x + g x) a = cfcₙ f a + cfcₙ g a := b
     simp_rw [← map_add]
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
+
+open Finset in
+lemma cfcₙ_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R) (hf : ∀ i, ContinuousOn (f i) (σₙ R a))
+    (hf0 : ∀ i, f i 0 = 0) :
+    cfcₙ (∑ i, f i) a = ∑ i, cfcₙ (f i) a := by
+  by_cases ha : p a
+  · have hsum : univ.sum f = fun z => ∑ i, f i z := by ext; simp
+    have hf' : ContinuousOn (univ.sum f) (σₙ R a) := by
+      rw [hsum]
+      exact continuousOn_finset_sum univ fun i _ => hf i
+    have hf0' : (univ.sum f) 0 = 0 := by
+      rw [sum_apply]
+      exact sum_eq_zero fun i _ => hf0 i
+    rw [cfcₙ_apply_pi a ha f hf hf0, ← map_sum, cfcₙ_apply _ a hf' hf0']
+    congr 1
+    ext
+    simp
+  · simp [cfcₙ_apply_of_not_predicate a ha]
+
+open Finset in
+lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a))
+    (hf_zero : ∀ i ∈ s, f i 0 = 0) :
+    cfcₙ (∑ i in s, f i)  a = ∑ i in s, cfcₙ (f i) a := by
+  rw [← sum_coe_sort s, ← sum_coe_sort s]
+  have hf' : ∀ i : {x : ι // x ∈ s}, ContinuousOn (f i) (σₙ R a) := fun ⟨i, hi⟩ => hf i hi
+  have hf_zero' : ∀ i : {x : ι // x ∈ s}, f i 0 = 0 := fun ⟨i, hi⟩ => hf_zero i hi
+  exact cfcₙ_sum_univ a _ hf' hf_zero'
 
 lemma cfcₙ_smul {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]

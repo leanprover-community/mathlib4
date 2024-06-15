@@ -294,6 +294,11 @@ variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.restrict⟩ := by
   rw [cfc_def, dif_pos ⟨ha, hf⟩]
 
+lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (hf : ∀ i, ContinuousOn (f i) (spectrum R a)) :
+    (fun i => cfc (f i) a) = (fun i => cfcHom (a := a) ha ⟨_, (hf i).restrict⟩) := by
+  ext i
+  simp only [cfc_apply (f i) a]
+
 lemma cfc_apply_of_not_and {f : R → R} (a : A) (ha : ¬ (p a ∧ ContinuousOn f (spectrum R a))) :
     cfc f a = 0 := by
   rw [cfc_def, dif_neg ha]
