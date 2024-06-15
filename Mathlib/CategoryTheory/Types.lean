@@ -41,8 +41,7 @@ universe v v' w u u'
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
   still be additivized. -/
 @[to_additive existing CategoryTheory.types]
-instance types : LargeCategory (Type u)
-    where
+instance types : LargeCategory (Type u) where
   Hom a b := a → b
   id a := id
   comp f g := g ∘ f
@@ -213,8 +212,7 @@ def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
 Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
 @[pp_with_univ]
-def uliftFunctor : Type u ⥤ Type max u v
-    where
+def uliftFunctor : Type u ⥤ Type max u v where
   obj X := ULift.{v} X
   map {X} {Y} f := fun x : ULift.{v} X => ULift.up (f x.down)
 #align category_theory.ulift_functor CategoryTheory.uliftFunctor
@@ -274,7 +272,7 @@ See <https://stacks.math.columbia.edu/tag/003C>.
 theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩
-    refine' Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => _
+    refine Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => ?_
     rw [← Equiv.ulift.symm.injective.comp_left.eq_iff]
     apply H
     change ULift.up ∘ g₁ ∘ f = ULift.up ∘ g₂ ∘ f
@@ -290,8 +288,7 @@ section
 
 /-- `ofTypeFunctor m` converts from Lean's `Type`-based `Category` to `CategoryTheory`. This
 allows us to use these functors in category theory. -/
-def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v
-    where
+def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v where
   obj := m
   map f := Functor.map f
   map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via
@@ -355,7 +352,6 @@ open CategoryTheory
 variable {X Y : Type u}
 
 /-- Any isomorphism between types gives an equivalence. -/
-@[pp_dot]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
@@ -391,7 +387,7 @@ namespace CategoryTheory
 /-- A morphism in `Type u` is an isomorphism if and only if it is bijective. -/
 theorem isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f :=
   Iff.intro (fun _ => (asIso f : X ≅ Y).toEquiv.bijective) fun b =>
-    IsIso.of_iso (Equiv.ofBijective f b).toIso
+    (Equiv.ofBijective f b).toIso.isIso_hom
 #align category_theory.is_iso_iff_bijective CategoryTheory.isIso_iff_bijective
 
 instance : SplitEpiCategory (Type u) where
@@ -407,8 +403,7 @@ end CategoryTheory
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]
-def equivIsoIso {X Y : Type u} : X ≃ Y ≅ X ≅ Y
-    where
+def equivIsoIso {X Y : Type u} : X ≃ Y ≅ X ≅ Y where
   hom e := e.toIso
   inv i := i.toEquiv
 #align equiv_iso_iso equivIsoIso

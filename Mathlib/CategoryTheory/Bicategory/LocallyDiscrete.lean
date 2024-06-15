@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.DiscreteCategory
-import Mathlib.CategoryTheory.Bicategory.Functor
+import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.Strict
 
 #align_import category_theory.bicategory.locally_discrete from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
@@ -25,8 +25,9 @@ open Bicategory Discrete
 
 open Bicategory
 
+universe w₂ w₁ v₂ v₁ v u₂ u₁ u
 
-universe w₂ v v₁ v₂ u u₁ u₂
+section
 
 variable {C : Type u}
 
@@ -59,8 +60,7 @@ instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
 instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
   ⟨⟨default⟩⟩
 
-instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
-    where
+instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C) where
   Hom := fun a b => Discrete (a.as ⟶ b.as)
   id := fun a => ⟨𝟙 a.as⟩
   comp f g := ⟨f.as ≫ g.as⟩
@@ -97,8 +97,7 @@ variable [Category.{v} C]
 1-morphisms are the same as those in the underlying category, and the 2-morphisms are the
 equalities between 1-morphisms.
 -/
-instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C)
-    where
+instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C) where
   whiskerLeft f g h η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
   whiskerRight η h := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
   associator f g h := eqToIso <| by apply Discrete.ext; simp
@@ -120,8 +119,7 @@ If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categ
 be promoted to a pseudofunctor from `LocallyDiscrete I` to `B`.
 -/
 @[simps]
-def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B
-    where
+def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B where
   obj i := F.obj i.as
   map f := F.map f.as
   map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
@@ -133,8 +131,7 @@ If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categ
 be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
 -/
 @[simps]
-def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
-    where
+def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B where
   obj i := F.obj i.as
   map f := F.map f.as
   map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
@@ -142,28 +139,49 @@ def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
   mapComp f g := eqToHom (F.map_comp f.as g.as)
 #align category_theory.functor.to_oplax_functor CategoryTheory.Functor.toOplaxFunctor
 
+end
+
+section
+
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
+
+@[simp]
+lemma OplaxFunctor.map₂_eqToHom (F : OplaxFunctor B C) {a b : B} {f g : a ⟶ b} (h : f = g) :
+    F.map₂ (eqToHom h) = eqToHom (F.congr_map h) := by
+  subst h; simp only [eqToHom_refl, OplaxFunctor.map₂_id]
+
+end
+
 end CategoryTheory
 
-section Quiver
+section
 
 open CategoryTheory LocallyDiscrete
 
 universe v u
 
+namespace Quiver.Hom
+
 variable {C : Type u} [CategoryStruct.{v} C]
 
 /-- The 1-morphism in `LocallyDiscrete C` associated to a given morphism `f : a ⟶ b` in `C` -/
 @[simps]
-def Quiver.Hom.toLoc {a b : C} (f : a ⟶ b) : LocallyDiscrete.mk a ⟶ LocallyDiscrete.mk b :=
+def toLoc {a b : C} (f : a ⟶ b) : LocallyDiscrete.mk a ⟶ LocallyDiscrete.mk b :=
   ⟨f⟩
 
 @[simp]
-lemma Quiver.Hom.id_toLoc (a : C) : (𝟙 a).toLoc = 𝟙 (LocallyDiscrete.mk a) :=
+lemma id_toLoc (a : C) : (𝟙 a).toLoc = 𝟙 (LocallyDiscrete.mk a) :=
   rfl
 
 @[simp]
-lemma Quiver.Hom.comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
-    (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
+lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
   rfl
 
-end Quiver
+end Quiver.Hom
+
+@[simp]
+lemma CategoryTheory.LocallyDiscrete.eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C}
+    (h : a = b) : (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
+  subst h; rfl
+
+end

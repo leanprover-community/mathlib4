@@ -120,8 +120,7 @@ theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
 theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold inner_
-  have := Continuous.const_smul (M := 𝕜) hf I
-  continuity
+  fun_prop
 #align inner_product_spaceable.continuous.inner_ Continuous.inner_
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
@@ -280,7 +279,7 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   intro x y
   revert r
   rw [← Function.funext_iff]
-  refine' Rat.denseEmbedding_coe_real.dense.equalizer _ _ (funext fun X => _)
+  refine Rat.denseEmbedding_coe_real.dense.equalizer ?_ ?_ (funext fun X => ?_)
   · exact (continuous_ofReal.smul continuous_const).inner_ continuous_const
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const
   · simp only [Function.comp_apply, RCLike.ofReal_ratCast, rat_prop _ _]

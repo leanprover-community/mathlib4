@@ -1,9 +1,8 @@
 /-
-Copyright (c) 2020 Kyle Miller All rights reserved.
+Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
@@ -44,6 +43,8 @@ The element `Sym2.mk (a, b)` can be written as `s(a, b)` for short.
 
 symmetric square, unordered pairs, symmetric powers
 -/
+
+assert_not_exists MonoidWithZero
 
 open Finset Function Sym
 
@@ -184,8 +185,8 @@ theorem congr_left {a b c : α} : s(b, a) = s(c, a) ↔ b = c := by
   simp (config := {contextual := true})
 #align sym2.congr_left Sym2.congr_left
 
-theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
-  by simp
+theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
+  simp
 #align sym2.eq_iff Sym2.eq_iff
 
 theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = q.swap := by
@@ -197,8 +198,7 @@ theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = 
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
 `Sym2.fromRel` instead. -/
-def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β)
-    where
+def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β) where
   toFun f :=
     Quot.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
@@ -224,8 +224,7 @@ theorem coe_lift_symm_apply (F : Sym2 α → β) (a₁ a₂ : α) :
 def lift₂ :
     { f : α → α → β → β → γ //
         ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ } ≃
-      (Sym2 α → Sym2 β → γ)
-    where
+      (Sym2 α → Sym2 β → γ) where
   toFun f :=
     Quotient.lift₂ (s₁ := Sym2.Rel.setoid α) (s₂ := Sym2.Rel.setoid β)
       (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
@@ -361,7 +360,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine' ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => _⟩
+  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
   obtain rfl | rfl := Sym2.mem_iff.1 hc
   · exact h.1
   · exact h.2
@@ -587,8 +586,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
           first | done | apply List.Perm.swap'; rfl }
 
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
-def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
-    where
+def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   toFun :=
     Quot.map (fun x : α × α => ⟨[x.1, x.2], rfl⟩)
       (by
@@ -615,7 +613,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
         apply Sym2.Rel.swap)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
-    refine' x.recOnSubsingleton fun x => _
+    refine x.recOnSubsingleton fun x => ?_
     cases' x with x hx
     cases' x with _ x
     · simp at hx
@@ -715,8 +713,9 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
   aesop (rule_sets := [Sym2]) (add norm unfold [Sym2.rec, Quot.rec])
 #align sym2.other_invol' Sym2.other_invol'
 
-theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
-  by classical
+theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) :
+    Mem.other hb = a := by
+  classical
     rw [other_eq_other'] at hb ⊢
     convert other_invol' ha hb using 2
     apply other_eq_other'

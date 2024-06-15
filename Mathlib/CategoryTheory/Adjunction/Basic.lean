@@ -134,6 +134,12 @@ lemma isLeftAdjoint : F.IsLeftAdjoint := ⟨_, ⟨adj⟩⟩
 
 lemma isRightAdjoint : G.IsRightAdjoint := ⟨_, ⟨adj⟩⟩
 
+instance (R : D ⥤ C) [R.IsRightAdjoint] : R.leftAdjoint.IsLeftAdjoint :=
+  (ofIsRightAdjoint R).isLeftAdjoint
+
+instance (L : C ⥤ D) [L.IsLeftAdjoint] : L.rightAdjoint.IsRightAdjoint :=
+  (ofIsLeftAdjoint L).isRightAdjoint
+
 variable {X' X : C} {Y Y' : D}
 
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
@@ -175,6 +181,34 @@ theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
   rw [Equiv.symm_apply_eq]
   simp only [homEquiv_naturality_right,eq_self_iff_true,Equiv.apply_symm_apply]
 #align category_theory.adjunction.hom_equiv_naturality_right_symm CategoryTheory.Adjunction.homEquiv_naturality_right_symm
+
+@[reassoc]
+theorem homEquiv_naturality_left_square (f : X' ⟶ X) (g : F.obj X ⟶ Y')
+    (h : F.obj X' ⟶ Y) (k : Y ⟶ Y') (w : F.map f ≫ g = h ≫ k) :
+    f ≫ (adj.homEquiv X Y') g = (adj.homEquiv X' Y) h ≫ G.map k := by
+  rw [← homEquiv_naturality_left, ← homEquiv_naturality_right, w]
+
+@[reassoc]
+theorem homEquiv_naturality_right_square (f : X' ⟶ X) (g : X ⟶ G.obj Y')
+    (h : X' ⟶ G.obj Y) (k : Y ⟶ Y') (w : f ≫ g = h ≫ G.map k) :
+    F.map f ≫ (adj.homEquiv X Y').symm g = (adj.homEquiv X' Y).symm h ≫ k := by
+  rw [← homEquiv_naturality_left_symm, ← homEquiv_naturality_right_symm, w]
+
+theorem homEquiv_naturality_left_square_iff (f : X' ⟶ X) (g : F.obj X ⟶ Y')
+    (h : F.obj X' ⟶ Y) (k : Y ⟶ Y') :
+    (f ≫ (adj.homEquiv X Y') g = (adj.homEquiv X' Y) h ≫ G.map k) ↔
+      (F.map f ≫ g = h ≫ k) :=
+  ⟨fun w ↦ by simpa only [Equiv.symm_apply_apply]
+      using homEquiv_naturality_right_square adj _ _ _ _ w,
+    homEquiv_naturality_left_square adj f g h k⟩
+
+theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
+    (h : X' ⟶ G.obj Y) (k : Y ⟶ Y') :
+    (F.map f ≫ (adj.homEquiv X Y').symm g = (adj.homEquiv X' Y).symm h ≫ k) ↔
+      (f ≫ g = h ≫ G.map k) :=
+  ⟨fun w ↦ by simpa only [Equiv.apply_symm_apply]
+      using homEquiv_naturality_left_square adj _ _ _ _ w,
+    homEquiv_naturality_right_square adj f g h k⟩
 
 @[simp]
 theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
@@ -410,8 +444,7 @@ instance : Inhabited (Adjunction (𝟭 C) (𝟭 C)) :=
 /-- If F and G are naturally isomorphic functors, establish an equivalence of hom-sets. -/
 @[simps]
 def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
-    (F.obj X ⟶ Y) ≃ (F'.obj X ⟶ Y)
-    where
+    (F.obj X ⟶ Y) ≃ (F'.obj X ⟶ Y) where
   toFun f := iso.inv.app _ ≫ f
   invFun g := iso.hom.app _ ≫ g
   left_inv f := by simp
@@ -421,8 +454,7 @@ def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
 /-- If G and H are naturally isomorphic functors, establish an equivalence of hom-sets. -/
 @[simps]
 def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
-    (X ⟶ G.obj Y) ≃ (X ⟶ G'.obj Y)
-    where
+    (X ⟶ G.obj Y) ≃ (X ⟶ G'.obj Y) where
   toFun f := f ≫ iso.hom.app _
   invFun g := g ≫ iso.inv.app _
   left_inv f := by simp
@@ -449,8 +481,7 @@ variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
 
 See <https://stacks.math.columbia.edu/tag/0DV0>.
 -/
-def comp (adj₁ : F ⊣ G) (adj₂ : H ⊣ I) : F ⋙ H ⊣ I ⋙ G
-    where
+def comp (adj₁ : F ⊣ G) (adj₂ : H ⊣ I) : F ⋙ H ⊣ I ⋙ G where
   homEquiv X Z := Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
   unit := adj₁.unit ≫ (whiskerLeft F <| whiskerRight adj₂.unit G) ≫ (Functor.associator _ _ _).inv
   counit :=
@@ -556,8 +587,7 @@ adjunction to an equivalence.
 -/
 @[simps!]
 noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
-    [∀ Y, IsIso (adj.counit.app Y)] : C ≌ D
-    where
+    [∀ Y, IsIso (adj.counit.app Y)] : C ≌ D where
   functor := F
   inverse := G
   unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
@@ -584,7 +614,7 @@ variable (e : C ≌ D)
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`. -/
-@[pp_dot, simps! unit counit]
+@[simps! unit counit]
 def toAdjunction : e.functor ⊣ e.inverse :=
   mkOfUnitCounit
     ⟨e.unit, e.counit, by

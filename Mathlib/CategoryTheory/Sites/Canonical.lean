@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
+import Mathlib.CategoryTheory.Sites.Sheaf
 
 #align_import category_theory.sites.canonical from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
@@ -100,7 +100,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       conv_lhs at h => congr; rw [assoc, assoc]
       rw [h]
       simp only [op_comp, assoc, FunctorToTypes.map_comp_apply]
-  refine' ⟨hU.amalgamate t hT, _, _⟩
+  refine ⟨hU.amalgamate t hT, ?_, ?_⟩
   · rintro Z _ ⟨Y, f, g, hg, hf, rfl⟩
     rw [op_comp, FunctorToTypes.map_comp_apply, Presieve.IsSheafFor.valid_glue _ _ _ hg]
     apply ht hg _ hf
@@ -144,7 +144,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
         rw [pullback_apply, ← comm]
         simp [hl]
       · intro a
-        refine' ⟨Z, 𝟙 Z, _, a, _⟩
+        refine ⟨Z, 𝟙 Z, _, a, ?_⟩
         simp [hf]
     rw [this]
     apply hR' hf
@@ -166,7 +166,7 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   transitive' X S hS R hR Z g := by
     -- This is the hard part of the construction, showing that the given set of sieves satisfies
     -- the transitivity axiom.
-    refine' isSheafFor_trans P (pullback g S) _ (hS Z g) _ _
+    refine isSheafFor_trans P (pullback g S) _ (hS Z g) ?_ ?_
     · intro Y f _
       rw [← pullback_comp]
       apply (hS _ _).isSeparatedFor
@@ -245,6 +245,36 @@ theorem isSheaf_of_representable {J : GrothendieckTopology C} (hJ : Subcanonical
     (P : Cᵒᵖ ⥤ Type v) [P.Representable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ hJ (Sheaf.isSheaf_of_representable P)
 #align category_theory.sheaf.subcanonical.is_sheaf_of_representable CategoryTheory.Sheaf.Subcanonical.isSheaf_of_representable
+
+variable {J}
+variable (hJ : Subcanonical J)
+
+/--
+If `J` is subcanonical, we obtain a "Yoneda" functor from the defining site
+into the sheaf category.
+-/
+@[simps]
+def yoneda : C ⥤ Sheaf J (Type v) where
+  obj X := ⟨yoneda.obj X, by
+    rw [isSheaf_iff_isSheaf_of_type]
+    apply hJ.isSheaf_of_representable⟩
+  map f := ⟨yoneda.map f⟩
+
+/--
+The yoneda embedding into the presheaf category factors through the one
+to the sheaf category.
+-/
+def yonedaCompSheafToPresheaf :
+    hJ.yoneda ⋙ sheafToPresheaf J (Type v) ≅ CategoryTheory.yoneda :=
+  Iso.refl _
+
+/-- The yoneda functor into the sheaf category is fully faithful -/
+def yonedaFullyFaithful : hJ.yoneda.FullyFaithful :=
+  Functor.FullyFaithful.ofCompFaithful (G := sheafToPresheaf J (Type v)) Yoneda.fullyFaithful
+
+instance : hJ.yoneda.Full := hJ.yonedaFullyFaithful.full
+
+instance : hJ.yoneda.Faithful := hJ.yonedaFullyFaithful.faithful
 
 end Subcanonical
 

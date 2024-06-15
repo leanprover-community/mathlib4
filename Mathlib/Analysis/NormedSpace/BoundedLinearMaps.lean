@@ -56,7 +56,7 @@ artifact, really.
 
 noncomputable section
 
-open BigOperators Topology
+open Topology
 
 open Filter (Tendsto)
 
@@ -113,13 +113,13 @@ theorem id : IsBoundedLinearMap 𝕜 fun x : E => x :=
 #align is_bounded_linear_map.id IsBoundedLinearMap.id
 
 theorem fst : IsBoundedLinearMap 𝕜 fun x : E × F => x.1 := by
-  refine' (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => _
+  refine (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => ?_
   rw [one_mul]
   exact le_max_left _ _
 #align is_bounded_linear_map.fst IsBoundedLinearMap.fst
 
 theorem snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
-  refine' (LinearMap.snd 𝕜 E F).isLinear.with_bound 1 fun x => _
+  refine (LinearMap.snd 𝕜 E F).isLinear.with_bound 1 fun x => ?_
   rw [one_mul]
   exact le_max_right _ _
 #align is_bounded_linear_map.snd IsBoundedLinearMap.snd
@@ -236,11 +236,11 @@ continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operati
 theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
     IsBoundedLinearMap 𝕜 fun f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F =>
       f.compContinuousLinearMap fun _ => g := by
-  refine'
+  refine
     IsLinearMap.with_bound
       ⟨fun f₁ f₂ => by ext; rfl,
         fun c f => by ext; rfl⟩
-      (‖g‖ ^ Fintype.card ι) fun f => _
+      (‖g‖ ^ Fintype.card ι) fun f => ?_
   apply ContinuousMultilinearMap.opNorm_le_bound _ _ _
   · apply_rules [mul_nonneg, pow_nonneg, norm_nonneg]
   intro m
@@ -552,7 +552,7 @@ spaces is an open subset of the space of linear maps between them.
 
 protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F)) := by
   rw [isOpen_iff_mem_nhds, forall_mem_range]
-  refine' fun e => IsOpen.mem_nhds _ (mem_range_self _)
+  refine fun e => IsOpen.mem_nhds ?_ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
   have h_O : Continuous O := isBoundedBilinearMap_comp.continuous_right
   convert show IsOpen (O ⁻¹' { x | IsUnit x }) from Units.isOpen.preimage h_O using 1
