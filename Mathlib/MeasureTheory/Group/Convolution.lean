@@ -81,6 +81,8 @@ theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : M
   rw [add_prod, map_add]
   fun_prop
 
+attribute [fun_prop] measurable_swap
+
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
 @[to_additive conv_comm]
 theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M] (μ : Measure M)
@@ -88,7 +90,7 @@ theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul
   unfold mconv
   rw [← prod_swap, map_map (by fun_prop)]
   · simp [Function.comp_def, mul_comm]
-  measurability
+  fun_prop
 
 /-- Convolution of SFinite maps is SFinite. -/
 @[to_additive sfinite_conv_of_sfinite]
