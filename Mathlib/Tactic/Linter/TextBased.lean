@@ -276,8 +276,11 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   if args.hasFlag "update" && args.hasFlag "regenerate" then
     IO.println "invalid options: the --update and --regenerate flags are mutually exclusive"
     return 2
-  if args.variableArgs.size > 0 && args.hasFlag "regenerate" then
+  else if args.variableArgs.size > 0 && args.hasFlag "regenerate" then
     IO.println "invalid options: the --regenerate flag can only be used when linting all files"
+  else if args.variableArgs.size > 0 && args.hasFlag "libraries" then
+    IO.println "invalid options: the libraries argument cannot be combined with linting individual files"
+
   let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
   let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "regenerate") with
   | (true, false) => OutputSetting.append
@@ -294,12 +297,15 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     let paths := files.map (fun fname ↦ mkFilePath [fname])
     number_error_files := number_error_files + (← lintFiles paths mode)
   else
+    let mut libraries := (args.flags.filter (·.flag.longName == "libraries")).map (·.value)
+    if libraries.size == 0 then
+      libraries := #["Mathlib", "Archive", "Counterexamples"]
     -- When regenerating the exceptions, we have to be careful to not over-write one collection
     -- of errors in the first turn: down-grade all but the first output setting to `append`.
-    number_error_files ← lintAllFiles (mkFilePath ["Mathlib.lean"]) mode
+    number_error_files ← lintAllFiles (mkFilePath [s!"{libraries.get! 0}.lean"]) mode
     let mode' := if mode == OutputSetting.regenerate then OutputSetting.append else mode
-    for s in ["Archive.lean", "Counterexamples.lean"] do
-      let n ← lintAllFiles (mkFilePath [s]) mode'
+    for libname in libraries.extract 1 libraries.size do
+      let n ← lintAllFiles (mkFilePath [s!"{libname}.lean"]) mode'
       number_error_files := number_error_files + n
   return number_error_files
 
@@ -318,6 +324,8 @@ def lint_style : Cmd := `[Cli|
                  (leaving existing entries untouched)"
     regenerate; "Regenerate the file of style exceptions: \
                  add entries for all current errors and update or remove all obsolete ones"
+    libraries : Array String; "Audit all files in precisely these libraries\
+      If no value is provided, we use the libraries Mathlib, Archive and Counterexamples"
 
   ARGS:
     ...files : String; "Only lint these file(s)"
