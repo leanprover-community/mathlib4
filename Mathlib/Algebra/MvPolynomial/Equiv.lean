@@ -525,15 +525,13 @@ lemma optionEquivLeft_support [DecidableEq σ] (p : MvPolynomial (Option σ) R) 
   rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
   · rintro ⟨m', hm'⟩
-    -- sorry
-
-    refine' ⟨cons m m', _, cons_zero _ _⟩
+    -- refine' ⟨cons m m', _, cons_zero _ _⟩
     -- rw [← support_coeff_finSuccEquiv]
     -- simpa using hm
+    sorry
   · rintro ⟨m, h, rfl⟩
     sorry
-    -- refine' ⟨m.insert_none, _⟩
-    -- rwa [← coeff, none_apply, ← mem_support_iff, support_coeff_finSuccEquiv, insert_none]
+
 
 lemma natDegree_OptionEquivLeft [DecidableEq σ]
     (p : MvPolynomial (Option σ) R) :
