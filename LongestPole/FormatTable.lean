@@ -9,7 +9,8 @@ import Mathlib.Data.String.Defs
 /-!
 # Format Table
 
-This file provides a simple function for formatting a 2d array of strings into a markdown-compliant table.
+This file provides a simple function for formatting a two-dimensional array of `String`s
+into a markdown-compliant table.
 -/
 
 inductive Alignment where
@@ -19,8 +20,10 @@ inductive Alignment where
 deriving Inhabited, BEq
 
 /--
-Takes a 2d array of string data and renders it into a table.
- -/
+Takes a two-dimensional array of `String`s` into a markdown-compliant table.
+`headers` is a list of column headers,
+`table` is a 2D array of cell contents,
+`alignments` describes how to align each table column (default: left-aligned) -/
 def formatTable (headers : Array String) (table : Array (Array String))
     (alignments : Option (Array Alignment) := none) :
     String := Id.run do
