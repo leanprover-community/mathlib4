@@ -2654,6 +2654,7 @@ import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Meta.Simp
+import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
