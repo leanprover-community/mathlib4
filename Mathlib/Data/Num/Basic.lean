@@ -683,7 +683,7 @@ def castZNum : ZNum → α
 #align cast_znum castZNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
+@[deprecated (since := "2023-03-31")] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
   ⟨castZNum⟩
 #align znum_coe znumCoe
 
