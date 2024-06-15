@@ -21,7 +21,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 * `SeparatedNhds`: Two `Set`s are separated by neighbourhoods if they are contained in disjoint
   open sets.
 * `HasSeparatingCover`: A set has a countable cover that can be used with
-  `has_separating_covers_iff_separated_nhds` to witness when two `Set`s have `SeparatedNhds`.
+  `hasSeparatingCovers_iff_separatedNhds` to witness when two `Set`s have `SeparatedNhds`.
 * `T0Space`: A T₀/Kolmogorov space is a space where, for every two points `x ≠ y`,
   there is an open set that contains one, but not the other.
 * `R0Space`: An R₀ space (sometimes called a *symmetric space*) is a topological space
@@ -58,7 +58,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 ### TODOs
 
 * Add perfectly normal and T6 spaces.
-* Use `has_separating_covers_iff_separated_nhds` to prove that perfectly normal spaces
+* Use `hasSeparatingCovers_iff_separatedNhds` to prove that perfectly normal spaces
   are completely normal.
 
 ## Main results
@@ -153,7 +153,7 @@ def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
 
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
 and (todo) a perfectly normal space is a completely normal space. -/
-theorem has_separating_covers_iff_separated_nhds {h k : Set X} :
+theorem hasSeparatingCovers_iff_separatedNhds {h k : Set X} :
     HasSeparatingCover h k ∧ HasSeparatingCover k h ↔ SeparatedNhds h k := by
   constructor
   · rintro ⟨⟨u, u_cov, u_props⟩, ⟨v, v_cov, v_props⟩⟩
@@ -2174,7 +2174,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpa
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
   rcases isEmpty_or_nonempty X with empty_X | nonempty_X
   · rw [subset_eq_empty (t := s) (fun ⦃_⦄ _ ↦ trivial) (univ_eq_empty_iff.mpr empty_X)]
-    exact has_separating_covers_iff_separated_nhds.mpr (SeparatedNhds.empty_left t) |>.1
+    exact hasSeparatingCovers_iff_separatedNhds.mpr (SeparatedNhds.empty_left t) |>.1
   -- This is almost `HasSeparatingCover`, but is not countable. We define for all `a : X` for use
   -- with `IsLindelof.indexed_countable_subcover` momentarily.
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
@@ -2383,7 +2383,7 @@ Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (wi
 assumption of Hausdorff). -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [RegularSpace X] [LindelofSpace X] : NormalSpace X where
-  normal _ _ hcl kcl hkdis := has_separating_covers_iff_separated_nhds.mp ⟨
+  normal _ _ hcl kcl hkdis := hasSeparatingCovers_iff_separatedNhds.mp ⟨
     hcl.HasSeparatingCover kcl hkdis,
     kcl.HasSeparatingCover hcl (Disjoint.symm hkdis)⟩
 
