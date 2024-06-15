@@ -411,21 +411,6 @@ lemma clear_local_denominator (v : HeightOneSpectrum R)
     -- and now it's easy
     linarith
 
--- move to another file
-lemma Submonoid.finprod_mem {G : Type*} [CommMonoid G] {M : Submonoid G} {ι : Type*}
-    {S : Set ι}
-    {f : ι → G} (hf : ∀ i ∈ S, f i ∈ M) : (∏ᶠ i ∈ S, f i) ∈ M := by
-  by_cases hS : (S ∩ mulSupport f).Finite
-  · rw [finprod_mem_eq_prod _ hS]
-    apply Submonoid.prod_mem M <| fun i hi ↦ hf _ ?_
-    exact mem_of_mem_diff ((Finite.mem_toFinset hS).mp hi)
-  · exact finprod_mem_eq_one_of_infinite hS ▸ M.one_mem
-
-/-
-#find_home! Submonoid.finprod_mem
-[Mathlib.LinearAlgebra.Basis, Mathlib.Topology.Algebra.Group.Basic]
--/
-
 open scoped DiscreteValuation
 
 variable {R K} in
@@ -434,24 +419,22 @@ lemma clear_denominator (a : FiniteAdeleRing R K) :
   let S := {v | a v ∉ adicCompletionIntegers K v}
   choose b hb h using clear_local_denominator (R := R) (K := K)
   let p := ∏ᶠ v ∈ S, b v (a v)
-  have hp : p ∈ R⁰ := Submonoid.finprod_mem <| fun v _ ↦ hb _ _
+  have hp : p ∈ R⁰ := finprod_mem_induction (· ∈ R⁰) (one_mem _) (fun _ _ => mul_mem) <|
+    fun _ _ ↦ hb _ _
   use ⟨p, hp⟩
   rw [exists_finiteIntegralAdele_iff]
   intro v
   by_cases hv : a v ∈ adicCompletionIntegers K v
-  · apply mul_mem hv
-    apply coe_mem_adicCompletionIntegers
+  · exact mul_mem hv <| coe_mem_adicCompletionIntegers _ _
   · change v ∈ S at hv
     dsimp only
     have pprod : p = b v (a v) * ∏ᶠ w ∈ S \ {v}, b w (a w) := by
       rw [← finprod_mem_singleton (a := v) (f := fun v ↦ b v (a v)),
-        finprod_mem_mul_diff <| singleton_subset_iff.2 hv]
-      exact a.2
+        finprod_mem_mul_diff (singleton_subset_iff.2 hv) a.2]
     rw [pprod]
     push_cast
     rw [← mul_assoc]
-    apply mul_mem (h v (a v))
-    apply coe_mem_adicCompletionIntegers
+    exact mul_mem (h v (a v)) <| coe_mem_adicCompletionIntegers _ _
 
 open scoped Pointwise
 

@@ -463,6 +463,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl
 
+variable {R K} in
 open scoped algebraMap in -- to make the coercions from `R` fire
 /-- The valuation on the completion agrees with the global valuation on elements of the
 integer ring. -/
@@ -470,11 +471,13 @@ theorem valuedAdicCompletion_eq_valuation (r : R) :
     Valued.v (r : v.adicCompletion K) = v.valuation (r : K) := by
   convert Valued.valuedCompletion_apply (r : K)
 
+variable {R K} in
 /-- The valuation on the completion agrees with the global valuation on elements of the field. -/
 theorem valuedAdicCompletion_eq_valuation' (k : K) :
     Valued.v (k : v.adicCompletion K) = v.valuation k := by
   convert Valued.valuedCompletion_apply k
 
+variable {R K} in
 open scoped algebraMap in -- to make the coercion from `R` fire
 /-- A global integer is in the local integers. -/
 lemma coe_mem_adicCompletionIntegers (r : R) :
