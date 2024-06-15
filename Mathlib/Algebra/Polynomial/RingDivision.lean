@@ -345,6 +345,15 @@ theorem Monic.C_dvd_iff_isUnit {p : R[X]} (hp : Monic p) {a : R} :
       hp.coeff_natDegree ▸ (C_dvd_iff_dvd_coeff _ _).mp h p.natDegree,
    fun ha => (ha.map C).dvd⟩
 
+theorem natDegree_pos_of_monic_of_ne_one {a : R[X]} (hu : a ≠ 1) (ha : Monic a) :
+    0 < natDegree a := by
+  by_contra! ha'
+  exact hu <| eq_one_of_monic_natDegree_zero ha (by omega)
+
+theorem degree_pos_of_monic_of_ne_one {a : R[X]} (hu : a ≠ 1) (ha : Monic a) :
+    0 < degree a :=
+  natDegree_pos_iff_degree_pos.mp <| natDegree_pos_of_monic_of_ne_one hu ha
+
 theorem degree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
     (hap : a ∣ p) (hp : Monic p) :
     0 < degree a :=
@@ -353,17 +362,17 @@ theorem degree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
     simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
 
 theorem natDegree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p) :
+      (hap : a ∣ p) (hp : Monic p) :
     0 < natDegree a :=
   natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic ha hap hp
 
 theorem degree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
     0 < degree a :=
-  degree_pos_of_not_isUnit_of_dvd_monic hu dvd_rfl ha
+  degree_pos_of_monic_of_ne_one (fun ha' ↦ (ha' ▸ hu) isUnit_one) ha
 
 theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
     0 < natDegree a :=
-  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
+  natDegree_pos_of_monic_of_ne_one (fun ha' ↦ (ha' ▸ hu) isUnit_one) ha
 
 theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
     ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
