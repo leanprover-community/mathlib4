@@ -168,7 +168,7 @@ theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
       simpa using IH _ hn
 
 set_option linter.deprecated false in
-@[simp, deprecated get_insertNth_self]
+@[simp, deprecated get_insertNth_self (since := "2023-01-05")]
 theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).nthLe n hn' = x := get_insertNth_self _ _ _ hn
