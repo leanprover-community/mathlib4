@@ -19,10 +19,10 @@ homomorphism `W.specialize : ℤ[A₁,A₂,A₃,A₄,A₆] →+* R`. If `(x,y)` 
 we define `W.polyEval x y : Universal.Poly →+* R`, which factors through
 `W.ringEval x y : Universal.Ring →+* R` if `(x,y)` is on `W`.
 
-We also introduce the cusp curve $Y^2 = X^3$, on which is the rational point $(1,1)$,
-with the nice property that $ψₙ(1,1) = n$, making it easy to prove nonvanishing of
-the universal $ψₙ$ when $n ≠ 0$ by specializing to the cusp curve, which shows that
-`(X,Y)` is a point of infinite order on the universal pointed elliptic curve.
+We also introduce the cusp curve `Y² = X³`, on which lies the rational point `(1,1)`, with
+the nice property that `ψₙ(1,1) = n`, making it easy to prove nonvanishing of the universal `ψₙ`
+when `n ≠ 0` by specializing to the cusp curve, which shows that `(X,Y)` is a point of infinite
+order on the universal pointed elliptic curve.
 -/
 
 noncomputable section
