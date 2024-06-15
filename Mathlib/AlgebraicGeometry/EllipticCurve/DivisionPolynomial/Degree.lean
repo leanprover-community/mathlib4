@@ -70,447 +70,184 @@ lemma coeff_preΨ₄ : W.preΨ₄.coeff 6 = 2 := by
   rw [preΨ₄]
   compute_degree!
 
-variable {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
-  (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
-  (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
-
-private lemma natDegree_odd (habc : n = da + 3 * db + 2 * dc) (hdef : n = dd + 3 * de + 2 * df) :
-    (a * b ^ 3 * c ^ 2 - d * e ^ 3 * f ^ 2).natDegree ≤ n := by
-  nth_rw 1 [← max_self n, habc, hdef]
-  convert natDegree_sub_le_of_le .. using 1
-  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le ha <| natDegree_pow_le_of_le 3 hb) <|
-      natDegree_pow_le_of_le 2 hc
-  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le hd <| natDegree_pow_le_of_le 3 he) <|
-      natDegree_pow_le_of_le 2 hf
-
-private lemma coeff_odd (habc : n = da + 3 * db + 2 * dc) (hdef : n = dd + 3 * de + 2 * df) :
-    (a * b ^ 3 * c ^ 2 - d * e ^ 3 * f ^ 2).coeff n = a.coeff da * b.coeff db ^ 3 * c.coeff dc ^ 2 -
-      d.coeff dd * e.coeff de ^ 3 * f.coeff df ^ 2 := by
-  rw [coeff_sub, habc, coeff_mul_of_natDegree_le
-      (natDegree_mul_le_of_le ha <| natDegree_pow_le_of_le 3 hb) <| natDegree_pow_le_of_le 2 hc,
-    coeff_pow_of_natDegree_le hc, coeff_mul_of_natDegree_le ha <| natDegree_pow_le_of_le 3 hb,
-    coeff_pow_of_natDegree_le hb, ← habc, hdef, coeff_mul_of_natDegree_le
-      (natDegree_mul_le_of_le hd <| natDegree_pow_le_of_le 3 he) <| natDegree_pow_le_of_le 2 hf,
-    coeff_mul_of_natDegree_le hd <| natDegree_pow_le_of_le 3 he, coeff_pow_of_natDegree_le he,
-    coeff_pow_of_natDegree_le hf]
-
-private lemma natDegree_even (habc : n = 2 * da + db + dc) (hdef : n = dd + de + 2 * df) :
-    (a ^ 2 * b * c - d * e * f ^ 2).natDegree ≤ n := by
-  nth_rw 1 [← max_self n, habc, hdef]
-  convert natDegree_sub_le_of_le .. using 1
-  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le (natDegree_pow_le_of_le 2 ha) hb) hc
-  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le hd he) <| natDegree_pow_le_of_le 2 hf
-
-private lemma coeff_even (habc : n = 2 * da + db + dc) (hdef : n = dd + de + 2 * df) :
-    (a ^ 2 * b * c - d * e * f ^ 2).coeff n =
-      a.coeff da ^ 2 * b.coeff db * c.coeff dc - d.coeff dd * e.coeff de * f.coeff df ^ 2 := by
-  rw [coeff_sub, habc, coeff_mul_of_natDegree_le
-      (natDegree_mul_le_of_le (natDegree_pow_le_of_le 2 ha) hb) hc,
-    coeff_mul_of_natDegree_le (natDegree_pow_le_of_le 2 ha) hb, coeff_pow_of_natDegree_le ha,
-    ← habc, hdef, coeff_mul_of_natDegree_le (natDegree_mul_le_of_le hd he) <|
-      natDegree_pow_le_of_le 2 hf, coeff_mul_of_natDegree_le hd he, coeff_pow_of_natDegree_le hf]
-
-private abbrev expNatDegree (n : ℕ) : ℕ :=
+private def expDegree (n : ℕ) : ℕ :=
   (n ^ 2 - if Even n then 4 else 1) / 2
 
-private abbrev expCoeff (n : ℕ) : ℕ :=
+private lemma expDegree_cast {n : ℕ} (hn : n ≠ 0) :
+    2 * (expDegree n : ℤ) = n ^ 2 - if Even n then 4 else 1 := by
+  rcases n.even_or_odd' with ⟨n, rfl | rfl⟩
+  · rcases n with _ | n; contradiction
+    push_cast [expDegree, show (2 * (n + 1)) ^ 2 = 2 * (2 * n * (n + 2)) + 4 by ring1, even_two_mul,
+      Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos]
+    ring1
+  · push_cast [expDegree, show (2 * n + 1) ^ 2 = 2 * (2 * n * (n + 1)) + 1 by ring1,
+      n.not_even_two_mul_add_one, Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos]
+    ring1
+
+private lemma expDegree_rec (m : ℕ) :
+    (expDegree (2 * (m + 3)) = 2 * expDegree (m + 2) + expDegree (m + 3) + expDegree (m + 5) ∧
+    expDegree (2 * (m + 3)) = expDegree (m + 1) + expDegree (m + 3) + 2 * expDegree (m + 4)) ∧
+    (expDegree (2 * (m + 2) + 1) =
+      expDegree (m + 4) + 3 * expDegree (m + 2) + (if Even m then 2 * 3 else 0) ∧
+    expDegree (2 * (m + 2) + 1) =
+      expDegree (m + 1) + 3 * expDegree (m + 3) + (if Even m then 0 else 2 * 3)) := by
+  push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (expDegree _ : ℤ)) two_pos,
+    mul_add, mul_left_comm (2 : ℤ)]
+  repeat rw [expDegree_cast <| by omega]
+  push_cast [Nat.even_add_one, ite_not, even_two_mul]
+  constructor <;> constructor <;> split_ifs <;> ring1
+
+private def expCoeff (n : ℕ) : ℤ :=
   if Even n then n / 2 else n
 
-private lemma natDegree_preΨ'_zero : (W.preΨ' 0).natDegree = expNatDegree 0 := by
-  simpa only [preΨ'_zero] using by rfl
+private lemma expCoeff_cast (n : ℕ) : (expCoeff n : ℚ) = if Even n then (n / 2 : ℚ) else n := by
+  rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;> simp [expCoeff, n.not_even_two_mul_add_one]
 
-private lemma coeff_preΨ'_zero : (W.preΨ' 0).coeff (expNatDegree 0) = expCoeff 0 := by
-  simpa only [preΨ'_zero] using Nat.cast_zero.symm
-
-private lemma natDegree_preΨ'_one : (W.preΨ' 1).natDegree = expNatDegree 1 := by
-  simpa only [preΨ'_one] using natDegree_one
-
-private lemma coeff_preΨ'_one : (W.preΨ' 1).coeff (expNatDegree 1) = expCoeff 1 := by
-  simpa only [preΨ'_one] using coeff_one_zero.trans Nat.cast_one.symm
-
-private lemma natDegree_preΨ'_two : (W.preΨ' 2).natDegree = expNatDegree 2 := by
-  simpa only [preΨ'_two] using natDegree_one
-
-private lemma coeff_preΨ'_two : (W.preΨ' 2).coeff (expNatDegree 2) = expCoeff 2 := by
-  simpa only [preΨ'_two] using coeff_one_zero.trans Nat.cast_one.symm
-
-private lemma natDegree_preΨ'_three : (W.preΨ' 3).natDegree ≤ expNatDegree 3 := by
-  simpa only [preΨ'_three] using W.natDegree_Ψ₃
-
-private lemma coeff_preΨ'_three : (W.preΨ' 3).coeff (expNatDegree 3) = expCoeff 3 := by
-  simpa only [preΨ'_three] using W.coeff_Ψ₃
-
-private lemma natDegree_preΨ'_four : (W.preΨ' 4).natDegree ≤ expNatDegree 4 := by
-  simpa only [preΨ'_four] using W.natDegree_preΨ₄
-
-private lemma coeff_preΨ'_four : (W.preΨ' 4).coeff (expNatDegree 4) = expCoeff 4 := by
-  simpa only [preΨ'_four] using W.coeff_preΨ₄
-
-private lemma natDegree_preΨ'_five : (W.preΨ' 5).natDegree ≤ expNatDegree 5 := by
-  rw [show 5 = 2 * 2 + 1 by rfl, preΨ'_odd, if_pos even_zero, if_pos even_zero, ← @one_pow R[X]]
-  exact natDegree_odd W.natDegree_preΨ'_four W.natDegree_preΨ'_two.le W.natDegree_Ψ₂Sq
-    W.natDegree_preΨ'_one.le W.natDegree_preΨ'_three natDegree_one.le rfl rfl
-
-private lemma coeff_preΨ'_five : (W.preΨ' 5).coeff (expNatDegree 5) = expCoeff 5 := by
-  rw [show 5 = 2 * 2 + 1 by rfl, preΨ'_odd, if_pos even_zero, if_pos even_zero, ← @one_pow R[X],
-    coeff_odd W.natDegree_preΨ'_four W.natDegree_preΨ'_two.le W.natDegree_Ψ₂Sq
-      W.natDegree_preΨ'_one.le W.natDegree_preΨ'_three natDegree_one.le, coeff_preΨ'_four,
-    coeff_preΨ'_two, coeff_Ψ₂Sq, coeff_preΨ'_one, coeff_preΨ'_three, coeff_one_zero]
-  all_goals norm_num [expNatDegree, parity_simps]
-
-private lemma natDegree_preΨ'_six : (W.preΨ' 6).natDegree ≤ expNatDegree 6 := by
-  rw [show 6 = 2 * 3 by rfl, preΨ'_even]
-  exact natDegree_even W.natDegree_preΨ'_two.le W.natDegree_preΨ'_three W.natDegree_preΨ'_five
-    W.natDegree_preΨ'_one.le W.natDegree_preΨ'_three W.natDegree_preΨ'_four rfl rfl
-
-private lemma coeff_preΨ'_six : (W.preΨ' 6).coeff (expNatDegree 6) = expCoeff 6 := by
-  rw [show 6 = 2 * 3 by rfl, preΨ'_even, coeff_even W.natDegree_preΨ'_two.le W.natDegree_preΨ'_three
-      W.natDegree_preΨ'_five W.natDegree_preΨ'_one.le W.natDegree_preΨ'_three
-      W.natDegree_preΨ'_four, coeff_preΨ'_two, coeff_preΨ'_three, coeff_preΨ'_five, coeff_preΨ'_one,
-    coeff_preΨ'_four]
-  all_goals norm_num [expNatDegree, parity_simps]
-
-private lemma natDegree_preΨ'_eight : (W.preΨ' 8).natDegree ≤ expNatDegree 8 := by
-  rw [show 8 = 2 * 4 by rfl, preΨ'_even]
-  exact natDegree_even W.natDegree_preΨ'_three W.natDegree_preΨ'_four W.natDegree_preΨ'_six
-    W.natDegree_preΨ'_two.le W.natDegree_preΨ'_four W.natDegree_preΨ'_five rfl rfl
-
-private lemma coeff_preΨ'_eight : (W.preΨ' 8).coeff (expNatDegree 8) = expCoeff 8 := by
-  rw [show 8 = 2 * 4 by rfl, preΨ'_even, coeff_even W.natDegree_preΨ'_three W.natDegree_preΨ'_four
-      W.natDegree_preΨ'_six W.natDegree_preΨ'_two.le W.natDegree_preΨ'_four W.natDegree_preΨ'_five,
-      coeff_preΨ'_three, coeff_preΨ'_four, coeff_preΨ'_six, coeff_preΨ'_two, coeff_preΨ'_five]
-  all_goals norm_num [expNatDegree, parity_simps]
-
-variable {W} (m : ℕ) (ih : ∀ k < 2 * m + 2,
-  ((W.preΨ' <| 2 * k).natDegree ≤ 2 * k ^ 2 - 2 ∧ (W.preΨ' <| 2 * k).coeff (2 * k ^ 2 - 2) = k) ∧
-  ((W.preΨ' <| 2 * k + 1).natDegree ≤ 2 * k ^ 2 + 2 * k ∧
-    (W.preΨ' <| 2 * k + 1).coeff (2 * k ^ 2 + 2 * k) = (2 * k + 1 : ℕ)))
-
-private lemma natDegree_preΨ'_add_one : (W.preΨ' <| 2 * m + 1).natDegree ≤ 2 * m * (m + 1) := by
-  convert (ih m <| by linarith only).right.left using 1
-  ring1
-
-private lemma coeff_preΨ'_add_one :
-    (W.preΨ' <| 2 * m + 1).coeff (2 * m * (m + 1)) = (2 * m + 1 : ℕ) := by
-  convert (ih m <| by linarith only).right.right using 2
-  ring1
-
-private lemma natDegree_preΨ'_add_two : (W.preΨ' <| 2 * m + 2).natDegree ≤ 2 * m * (m + 2) := by
-  convert (ih (m + 1) <| by linarith only).left.left using 1
-  rw [show 2 * (m + 1) ^ 2 = 2 * m * (m + 2) + 2 by ring1, Nat.add_sub_cancel]
-
-private lemma coeff_preΨ'_add_two :
-    (W.preΨ' <| 2 * m + 2).coeff (2 * m * (m + 2)) = (m + 1 : ℕ) := by
-  convert (ih (m + 1) <| by linarith only).left.right using 2
-  rw [show 2 * (m + 1) ^ 2 = 2 * m * (m + 2) + 2 by ring1, Nat.add_sub_cancel]
-
-private lemma natDegree_preΨ'_add_three :
-    (W.preΨ' <| 2 * m + 3).natDegree ≤ 2 * (m + 1) * (m + 2) := by
-  convert (ih (m + 1) <| by linarith only).right.left using 1
-  ring1
-
-private lemma coeff_preΨ'_add_three :
-    (W.preΨ' <| 2 * m + 3).coeff (2 * (m + 1) * (m + 2)) = (2 * m + 3 : ℕ) := by
-  convert (ih (m + 1) <| by linarith only).right.right using 2
-  ring1
-
-private lemma natDegree_preΨ'_add_four :
-    (W.preΨ' <| 2 * m + 4).natDegree ≤ 2 * (m + 1) * (m + 3) := by
-  rcases m with _ | m
-  · exact W.natDegree_preΨ'_four
-  · convert (ih (m + 3) <| by linarith only).left.left using 1
-    rw [show 2 * (m + 3) ^ 2 = 2 * (m + 2) * (m + 4) + 2 by ring1, Nat.add_sub_cancel]
-
-private lemma coeff_preΨ'_add_four :
-    (W.preΨ' <| 2 * m + 4).coeff (2 * (m + 1) * (m + 3)) = (m + 2 : ℕ) := by
-  rcases m with _ | m
-  · exact W.coeff_preΨ'_four
-  · convert (ih (m + 3) <| by linarith only).left.right using 2
-    rw [show 2 * (m + 3) ^ 2 = 2 * (m + 2) * (m + 4) + 2 by ring1, Nat.add_sub_cancel]
-
-private lemma natDegree_preΨ'_add_five :
-    (W.preΨ' <| 2 * m + 5).natDegree ≤ 2 * (m + 2) * (m + 3) := by
-  rcases m with _ | m
-  · exact W.natDegree_preΨ'_five
-  · convert (ih (m + 3) <| by linarith only).right.left using 1
-    ring1
-
-private lemma coeff_preΨ'_add_five :
-    (W.preΨ' <| 2 * m + 5).coeff (2 * (m + 2) * (m + 3)) = (2 * m + 5 : ℕ) := by
-  rcases m with _ | m
-  · exact W.coeff_preΨ'_five
-  · convert (ih (m + 3) <| by linarith only).right.right using 2
-    ring1
-
-private lemma natDegree_preΨ'_add_six :
-    (W.preΨ' <| 2 * m + 6).natDegree ≤ 2 * (m + 2) * (m + 4) := by
-  rcases m with _ | _ | m
-  · exact W.natDegree_preΨ'_six
-  · exact W.natDegree_preΨ'_eight
-  · convert (ih (m + 5) <| by linarith only).left.left using 1
-    rw [show 2 * (m + 5) ^ 2 = 2 * (m + 4) * (m + 6) + 2 by ring1, Nat.add_sub_cancel]
-
-private lemma coeff_preΨ'_add_six :
-    (W.preΨ' <| 2 * m + 6).coeff (2 * (m + 2) * (m + 4)) = (m + 3 : ℕ) := by
-  rcases m with _ | _ | m
-  · exact W.coeff_preΨ'_six
-  · exact W.coeff_preΨ'_eight
-  · convert (ih (m + 5) <| by linarith only).left.right using 2
-    rw [show 2 * (m + 5) ^ 2 = 2 * (m + 4) * (m + 6) + 2 by ring1, Nat.add_sub_cancel]
-
-private lemma natDegree_odd_preΨ'_even :
-    (W.preΨ' <| 2 * (2 * m + 2) + 1).natDegree ≤ 2 * (2 * m + 2) * (2 * m + 3) := by
-  rw [preΨ'_odd, if_pos <| even_two_mul m, if_pos <| even_two_mul m, ← @one_pow R[X]]
-  exact natDegree_odd (natDegree_preΨ'_add_four m ih) (natDegree_preΨ'_add_two m ih)
-    W.natDegree_Ψ₂Sq (natDegree_preΨ'_add_one m ih) (natDegree_preΨ'_add_three m ih)
-    natDegree_one.le (by ring1) (by ring1)
-
-private lemma coeff_odd_preΨ'_even :
-    (W.preΨ' <| 2 * (2 * m + 2) + 1).coeff (2 * (2 * m + 2) * (2 * m + 3)) =
-      (2 * (2 * m + 2) + 1 : ℕ) := by
-  rw [preΨ'_odd, if_pos <| even_two_mul m, if_pos <| even_two_mul m, ← @one_pow R[X],
-    coeff_odd (natDegree_preΨ'_add_four m ih) (natDegree_preΨ'_add_two m ih) W.natDegree_Ψ₂Sq
-      (natDegree_preΨ'_add_one m ih) (natDegree_preΨ'_add_three m ih) natDegree_one.le (by ring1)
-      (by ring1), coeff_preΨ'_add_four m ih, coeff_preΨ'_add_two m ih, coeff_Ψ₂Sq,
-    coeff_preΨ'_add_one m ih, coeff_preΨ'_add_three m ih, coeff_one_zero]
-  push_cast
-  ring1
-
-private lemma natDegree_odd_preΨ'_odd :
-    (W.preΨ' <| 2 * (2 * m + 3) + 1).natDegree ≤ 2 * (2 * m + 3) * (2 * m + 4) := by
-  rw [preΨ'_odd, if_neg m.not_even_two_mul_add_one, ← @one_pow R[X],
-    if_neg m.not_even_two_mul_add_one]
-  exact natDegree_odd (natDegree_preΨ'_add_five m ih) (natDegree_preΨ'_add_three m ih)
-    natDegree_one.le (natDegree_preΨ'_add_two m ih) (natDegree_preΨ'_add_four m ih) W.natDegree_Ψ₂Sq
-    (by ring1) (by ring1)
-
-private lemma coeff_odd_preΨ'_odd :
-    (W.preΨ' <| 2 * (2 * m + 3) + 1).coeff (2 * (2 * m + 3) * (2 * m + 4)) =
-      (2 * (2 * m + 3) + 1 : ℕ) := by
-  rw [preΨ'_odd, if_neg m.not_even_two_mul_add_one, ← @one_pow R[X],
-    if_neg m.not_even_two_mul_add_one, coeff_odd (natDegree_preΨ'_add_five m ih)
-      (natDegree_preΨ'_add_three m ih) natDegree_one.le (natDegree_preΨ'_add_two m ih)
-      (natDegree_preΨ'_add_four m ih) W.natDegree_Ψ₂Sq (by ring1) (by ring1),
-    coeff_preΨ'_add_five m ih, coeff_preΨ'_add_three m ih, coeff_one_zero, coeff_preΨ'_add_two m ih,
-    coeff_preΨ'_add_four m ih, coeff_Ψ₂Sq]
-  push_cast
-  ring1
-
-private lemma natDegree_even_preΨ'_even :
-    (W.preΨ' <| 2 * (2 * m + 3)).natDegree ≤ 2 * (2 * m + 2) * (2 * m + 4) := by
-  rw [preΨ'_even]
-  exact natDegree_even (natDegree_preΨ'_add_two m ih) (natDegree_preΨ'_add_three m ih)
-    (natDegree_preΨ'_add_five m ih) (natDegree_preΨ'_add_one m ih) (natDegree_preΨ'_add_three m ih)
-    (natDegree_preΨ'_add_four m ih) (by ring1) (by ring1)
-
-private lemma coeff_even_preΨ'_even :
-    (W.preΨ' <| 2 * (2 * m + 3)).coeff (2 * (2 * m + 2) * (2 * m + 4)) = (2 * m + 3 : ℕ) := by
-  rw [preΨ'_even, coeff_even (natDegree_preΨ'_add_two m ih) (natDegree_preΨ'_add_three m ih)
-      (natDegree_preΨ'_add_five m ih) (natDegree_preΨ'_add_one m ih)
-      (natDegree_preΨ'_add_three m ih) (natDegree_preΨ'_add_four m ih) (by ring1) (by ring1),
-    coeff_preΨ'_add_two m ih, coeff_preΨ'_add_three m ih, coeff_preΨ'_add_five m ih,
-    coeff_preΨ'_add_one m ih, coeff_preΨ'_add_four m ih]
-  push_cast
-  ring1
-
-private lemma natDegree_even_preΨ'_odd :
-    (W.preΨ' <| 2 * (2 * m + 4)).natDegree ≤ 2 * (2 * m + 3) * (2 * m + 5) := by
-  rw [preΨ'_even]
-  exact natDegree_even (natDegree_preΨ'_add_three m ih) (natDegree_preΨ'_add_four m ih)
-    (natDegree_preΨ'_add_six m ih) (natDegree_preΨ'_add_two m ih) (natDegree_preΨ'_add_four m ih)
-    (natDegree_preΨ'_add_five m ih) (by ring1) (by ring1)
-
-private lemma coeff_even_preΨ'_odd :
-    (W.preΨ' <| 2 * (2 * m + 4)).coeff (2 * (2 * m + 3) * (2 * m + 5)) = (2 * m + 4 : ℕ) := by
-  rw [preΨ'_even, coeff_even (natDegree_preΨ'_add_three m ih) (natDegree_preΨ'_add_four m ih)
-      (natDegree_preΨ'_add_six m ih) (natDegree_preΨ'_add_two m ih) (natDegree_preΨ'_add_four m ih)
-      (natDegree_preΨ'_add_five m ih) (by ring1) (by ring1), coeff_preΨ'_add_three m ih,
-    coeff_preΨ'_add_four m ih, coeff_preΨ'_add_six m ih, coeff_preΨ'_add_two m ih,
-    coeff_preΨ'_add_five m ih]
-  push_cast
-  ring1
+private lemma expCoeff_rec (m : ℕ) :
+    (expCoeff (2 * (m + 3)) =
+      expCoeff (m + 2) ^ 2 * expCoeff (m + 3) * expCoeff (m + 5) -
+        expCoeff (m + 1) * expCoeff (m + 3) * expCoeff (m + 4) ^ 2) ∧
+    (expCoeff (2 * (m + 2) + 1) =
+      expCoeff (m + 4) * expCoeff (m + 2) ^ 3 * (if Even m then 4 ^ 2 else 1) -
+        expCoeff (m + 1) * expCoeff (m + 3) ^ 3 * (if Even m then 1 else 4 ^ 2)) := by
+  push_cast [← @Int.cast_inj ℚ, expCoeff_cast, even_two_mul, m.not_even_two_mul_add_one,
+    Nat.even_add_one, ite_not]
+  constructor <;> split_ifs <;> ring1
 
 private lemma natDegree_coeff_preΨ' (n : ℕ) :
-    if Even n then (W.preΨ' n).natDegree ≤ (n ^ 2 - 4) / 2 ∧
-        (W.preΨ' n).coeff ((n ^ 2 - 4) / 2) = (n / 2 : ℕ)
-      else (W.preΨ' n).natDegree ≤ (n ^ 2 - 1) / 2 ∧ (W.preΨ' n).coeff ((n ^ 2 - 1) / 2) = n := by
-  induction n using normEDSRec' with
-  | zero => exact ⟨W.natDegree_preΨ'_zero.le, W.coeff_preΨ'_zero⟩
-  | one => exact ⟨W.natDegree_preΨ'_one.le, W.coeff_preΨ'_one⟩
-  | two => exact ⟨W.natDegree_preΨ'_two.le, W.coeff_preΨ'_two⟩
-  | three => exact ⟨W.natDegree_preΨ'_three, W.coeff_preΨ'_three⟩
-  | four => exact ⟨W.natDegree_preΨ'_four, W.coeff_preΨ'_four⟩
-  | _ m ih =>
-    replace ih (k : ℕ) (hk : k < m + 2) :
-        ((W.preΨ' <| 2 * k).natDegree ≤ 2 * k ^ 2 - 2 ∧
-          (W.preΨ' <| 2 * k).coeff (2 * k ^ 2 - 2) = k) ∧
-        ((W.preΨ' <| 2 * k + 1).natDegree ≤ 2 * k ^ 2 + 2 * k ∧
-          (W.preΨ' <| 2 * k + 1).coeff (2 * k ^ 2 + 2 * k) = (2 * k + 1 : ℕ)) := by
-      rw [← show ((2 * k) ^ 2 - 4) / 2 = 2 * k ^ 2 - 2 by
-          exact Nat.div_eq_of_eq_mul_right two_pos <| by rw [Nat.mul_sub_left_distrib]; ring_nf,
-        ← show ((2 * k + 1) ^ 2 - 1) / 2 = 2 * k ^ 2 + 2 * k by
-          exact Nat.div_eq_of_eq_mul_right two_pos <| by erw [add_sq, Nat.add_sub_cancel]; ring1]
-      nth_rw 5 [← k.mul_div_cancel_left two_pos]
-      exact ⟨imp_of_if_pos (ih (2 * k) <| by linarith only [hk]) <| even_two_mul k,
-        imp_of_if_neg (ih (2 * k + 1) <| by linarith only [hk]) k.not_even_two_mul_add_one⟩
-    simp only [if_pos <| even_two_mul _, if_neg (m + 2).not_even_two_mul_add_one,
-      show (2 * (m + 3)) ^ 2 = 2 * (2 * (m + 2) * (m + 4)) + 4 by ring1,
-      show (2 * (m + 2) + 1) ^ 2 = 2 * (2 * (m + 2) * (m + 3)) + 1 by ring1, Nat.add_sub_cancel,
-      Nat.mul_div_cancel_left _ two_pos]
-    by_cases hm : Even m
-    · rcases even_iff_exists_two_mul.mp hm with ⟨m, rfl⟩
-      simp only [natDegree_odd_preΨ'_even m ih, coeff_odd_preΨ'_even m ih,
-        natDegree_even_preΨ'_even m ih, coeff_even_preΨ'_even m ih, and_self]
-    · replace ih (k : ℕ) (hk : k < m + 1) := ih k <| Nat.lt.step hk
-      rcases Nat.odd_iff_not_even.mpr hm with ⟨m, rfl⟩
-      simp only [natDegree_odd_preΨ'_odd m ih, coeff_odd_preΨ'_odd m ih,
-        natDegree_even_preΨ'_odd m ih, coeff_even_preΨ'_odd m ih, and_self]
+    (W.preΨ' n).natDegree ≤ expDegree n ∧ (W.preΨ' n).coeff (expDegree n) = expCoeff n := by
+  induction n using normEDSRec with
+  | zero => simpa only [preΨ'_zero] using ⟨by rfl, Int.cast_zero.symm⟩
+  | one => simpa only [preΨ'_one] using ⟨natDegree_one.le, coeff_one_zero.trans Int.cast_one.symm⟩
+  | two => simpa only [preΨ'_two] using ⟨natDegree_one.le, coeff_one_zero.trans Int.cast_one.symm⟩
+  | three => simpa only [preΨ'_three] using ⟨W.natDegree_Ψ₃, W.coeff_Ψ₃ ▸ (Int.cast_ofNat 3).symm⟩
+  | four =>
+    simpa only [preΨ'_four] using ⟨W.natDegree_preΨ₄, W.coeff_preΨ₄ ▸ (Int.cast_ofNat 2).symm⟩
+  | even m h₁ h₂ h₃ h₄ h₅ =>
+    let dm {m n p q} : _ → _ → (p * q : R[X]).natDegree ≤ m + n := natDegree_mul_le_of_le
+    let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
+    let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_of_natDegree_le
+    let cp {m n p} : _ → (p ^ m : R[X]).coeff (m * n) = _ := coeff_pow_of_natDegree_le
+    constructor
+    · nth_rw 1 [preΨ'_even, ← max_self <| expDegree _, (expDegree_rec m).1.1, (expDegree_rec m).1.2]
+      exact natDegree_sub_le_of_le (dm (dm (dp h₂.1) h₃.1) h₅.1) (dm (dm h₁.1 h₃.1) (dp h₄.1))
+    · nth_rw 1 [preΨ'_even, coeff_sub, (expDegree_rec m).1.1, cm (dm (dp h₂.1) h₃.1) h₅.1,
+        cm (dp h₂.1) h₃.1, cp h₂.1, h₂.2, h₃.2, h₅.2, (expDegree_rec m).1.2,
+        cm (dm h₁.1 h₃.1) (dp h₄.1), cm h₁.1 h₃.1, h₁.2, cp h₄.1, h₃.2, h₄.2, (expCoeff_rec m).1]
+      norm_cast
+  | odd m h₁ h₂ h₃ h₄ =>
+    let dm {m n p q} : _ → _ → (p * q : R[X]).natDegree ≤ m + n := natDegree_mul_le_of_le
+    let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
+    let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_of_natDegree_le
+    let cp {m n p} : _ → (p ^ m : R[X]).coeff (m * n) = _ := coeff_pow_of_natDegree_le
+    rw [preΨ'_odd]
+    constructor
+    · nth_rw 1 [← max_self <| expDegree _, (expDegree_rec m).2.1, (expDegree_rec m).2.2]
+      refine natDegree_sub_le_of_le (dm (dm h₄.1 (dp h₂.1)) ?_) (dm (dm h₁.1 (dp h₃.1)) ?_)
+      all_goals split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, dp W.natDegree_Ψ₂Sq]
+    · nth_rw 1 [coeff_sub, (expDegree_rec m).2.1, cm (dm h₄.1 (dp h₂.1)), cm h₄.1 (dp h₂.1),
+        h₄.2, cp h₂.1, h₂.2, apply_ite₂ coeff, cp W.natDegree_Ψ₂Sq, coeff_Ψ₂Sq, coeff_one_zero,
+        (expDegree_rec m).2.2, cm (dm h₁.1 (dp h₃.1)), cm h₁.1 (dp h₃.1), h₁.2, cp h₃.1, h₃.2,
+        apply_ite₂ coeff, cp W.natDegree_Ψ₂Sq, coeff_one_zero, coeff_Ψ₂Sq, (expCoeff_rec m).2]
+      norm_cast
+      all_goals split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, dp W.natDegree_Ψ₂Sq]
 
-lemma natDegree_preΨ' (n : ℕ) :
-    (W.preΨ' n).natDegree ≤ if Even n then (n ^ 2 - 4) / 2 else (n ^ 2 - 1) / 2 := by
-  by_cases hn : Even n
-  · simpa only [if_pos hn] using (imp_of_if_pos (W.natDegree_coeff_preΨ' n) hn).left
-  · simpa only [if_neg hn] using (imp_of_if_neg (W.natDegree_coeff_preΨ' n) hn).left
+lemma natDegree_preΨ' (n : ℕ) : (W.preΨ' n).natDegree ≤ (n ^ 2 - if Even n then 4 else 1) / 2 :=
+  (W.natDegree_coeff_preΨ' n).left
 
-lemma coeff_preΨ' (n : ℕ) :
-    if Even n then (W.preΨ' n).coeff ((n ^ 2 - 4) / 2) = (n / 2 : ℕ)
-      else (W.preΨ' n).coeff ((n ^ 2 - 1) / 2) = n := by
-  by_cases hn : Even n
-  · rw [if_pos hn, (imp_of_if_pos (W.natDegree_coeff_preΨ' n) hn).right]
-  · rw [if_neg hn, (imp_of_if_neg (W.natDegree_coeff_preΨ' n) hn).right]
+lemma coeff_preΨ' (n : ℕ) : (W.preΨ' n).coeff ((n ^ 2 - if Even n then 4 else 1) / 2) =
+    if Even n then n / 2 else n := by
+  convert (W.natDegree_coeff_preΨ' n).right using 1
+  rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;> simp [expCoeff, n.not_even_two_mul_add_one]
 
-private lemma natDegree_coeff_Ψ' (n : ℤ) :
-    if Even n then (W.preΨ n).natDegree ≤ (n.natAbs ^ 2 - 4) / 2 ∧
-        (W.preΨ n).coeff ((n.natAbs ^ 2 - 4) / 2) = (n / 2 : ℤ)
-      else (W.preΨ n).natDegree ≤ (n.natAbs ^ 2 - 1) / 2 ∧
-          (W.preΨ n).coeff ((n.natAbs ^ 2 - 1) / 2) = n := by
-  rcases n.eq_nat_or_neg with ⟨n, rfl | rfl⟩
-  · norm_cast
-    exact W.preΨ_ofNat n ▸ W.natDegree_coeff_preΨ' n
-  · simp only [even_neg, Int.even_coe_nat, preΨ_neg, natDegree_neg, preΨ_ofNat, Int.natAbs_neg,
-      Int.natAbs_cast, coeff_neg, neg_eq_iff_eq_neg, Int.cast_neg, Int.cast_natCast, neg_neg]
-    convert W.natDegree_coeff_preΨ' n using 3 with hn
-    rcases even_iff_exists_two_mul.mp hn with ⟨_, rfl⟩
-    rw [Nat.cast_mul, neg_mul_eq_mul_neg, Nat.cast_ofNat, Int.mul_ediv_cancel_left _ two_ne_zero,
-      Int.cast_neg, neg_neg, Int.cast_natCast, Nat.mul_div_cancel_left _ two_pos]
+lemma natDegree_preΨ (n : ℤ) : (W.preΨ n).natDegree ≤
+    (n.natAbs ^ 2 - if Even n then 4 else 1) / 2 := by
+  induction n using Int.negInduction with
+  | nat n => exact_mod_cast W.preΨ_ofNat n ▸ W.natDegree_preΨ' n
+  | neg => simpa only [preΨ_neg, natDegree_neg, Int.natAbs_neg, even_neg]
 
-lemma natDegree_Ψ' (n : ℤ) :
-    (W.preΨ n).natDegree ≤ if Even n then (n.natAbs ^ 2 - 4) / 2 else (n.natAbs ^ 2 - 1) / 2 := by
-  by_cases hn : Even n
-  · simpa only [if_pos hn] using (imp_of_if_pos (W.natDegree_coeff_Ψ' n) hn).left
-  · simpa only [if_neg hn] using (imp_of_if_neg (W.natDegree_coeff_Ψ' n) hn).left
-
-lemma coeff_Ψ' (n : ℤ) :
-    if Even n then (W.preΨ n).coeff ((n.natAbs ^ 2 - 4) / 2) = (n / 2 : ℤ)
-      else (W.preΨ n).coeff ((n.natAbs ^ 2 - 1) / 2) = n := by
-  by_cases hn : Even n
-  · rw [if_pos hn, (imp_of_if_pos (W.natDegree_coeff_Ψ' n) hn).right]
-  · rw [if_neg hn, (imp_of_if_neg (W.natDegree_coeff_Ψ' n) hn).right]
+lemma coeff_preΨ (n : ℤ) : (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 4 else 1) / 2) =
+    if Even n then n / 2 else n := by
+  induction n using Int.negInduction with
+  | nat n => exact_mod_cast W.preΨ_ofNat n ▸ W.coeff_preΨ' n
+  | neg n hn =>
+    simp only [preΨ_neg, coeff_neg, Int.natAbs_neg, even_neg]
+    rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;>
+      push_cast [even_two_mul, Int.not_even_two_mul_add_one, Int.neg_ediv_of_dvd ⟨n, rfl⟩] at * <;>
+      rw [hn]
 
 private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
-    (W.ΨSq n).natDegree ≤ n ^ 2 - 1 ∧ (W.ΨSq n).coeff (n ^ 2 - 1) = (n ^ 2 : ℕ) := by
-  rcases n with _ | n
-  · erw [ΨSq_zero]
-    exact ⟨natDegree_zero.le, Nat.cast_zero.symm⟩
-  · have h := W.natDegree_coeff_preΨ' <| n + 1
-    simp only [ΨSq, preΨ_ofNat, Int.even_coe_nat, Nat.even_add_one, ite_not] at h ⊢
-    by_cases hn : Even n
-    · rcases even_iff_exists_two_mul.mp hn with ⟨m, rfl⟩
-      rw [if_pos hn, show (2 * m + 1) ^ 2 = 2 * (2 * m * (m + 1)) + 1 by ring1, Nat.add_sub_cancel,
-        Nat.mul_div_cancel_left _ two_pos] at h
-      rw [if_pos hn, mul_one, show (2 * m + 1) ^ 2 = 2 * (2 * m * (m + 1)) + 1 by ring1,
-        Nat.add_sub_cancel]
-      constructor
-      · exact natDegree_pow_le_of_le 2 h.left
-      · rw [coeff_pow_of_natDegree_le h.left, h.right]
-        push_cast
-        ring1
-    · rcases Nat.odd_iff_not_even.mpr hn with ⟨m, rfl⟩
-      rw [if_neg hn, show (2 * m + 2) ^ 2 = 2 * (2 * m * (m + 2)) + 4 by ring1, Nat.add_sub_cancel,
-        Nat.mul_div_cancel_left _ two_pos, show (2 * m + 2) / 2 = 2 * (m + 1) / 2 by rfl,
-        Nat.mul_div_cancel_left _ two_pos] at h
-      rw [if_neg hn, show (2 * m + 2) ^ 2 = 2 * (2 * m * (m + 2)) + 4 by ring1, Nat.succ_sub_one]
-      constructor
-      · exact natDegree_mul_le_of_le (natDegree_pow_le_of_le 2 h.left) W.natDegree_Ψ₂Sq
-      · rw [coeff_mul_of_natDegree_le (natDegree_pow_le_of_le 2 h.left) W.natDegree_Ψ₂Sq,
-          coeff_pow_of_natDegree_le h.left, h.right, coeff_Ψ₂Sq]
-        push_cast
-        ring1
+    (W.ΨSq n).natDegree ≤ n ^ 2 - 1 ∧ (W.ΨSq n).coeff (n ^ 2 - 1) = (n ^ 2 : ℤ) := by
+  let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
+  let h {n} := W.natDegree_coeff_preΨ' n
+  rcases n with _ | n; simp
+  have hd : (n + 1) ^ 2 - 1 = 2 * expDegree (n + 1) + if Even (n + 1) then 3 else 0 := by
+    push_cast [← @Nat.cast_inj ℤ, show (n + 1) ^ 2 = n ^ 2 + 2 * n + 1 by ring1,
+      expDegree_cast (by omega : n + 1 ≠ 0)]
+    split_ifs <;> ring1
+  have hc : (n + 1) ^ 2 = expCoeff (n + 1) ^ 2 * if Even (n + 1) then 4 else 1 := by
+    push_cast [← @Int.cast_inj ℚ, expCoeff_cast]
+    split_ifs <;> ring1
+  rw [ΨSq_ofNat, hd]
+  constructor
+  · refine natDegree_mul_le_of_le (dp h.1) ?_
+    all_goals split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq]
+  · erw [coeff_mul_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff,
+      coeff_Ψ₂Sq, coeff_one_zero, hc]
+    norm_cast
+    all_goals split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq]
 
-private lemma natDegree_coeff_ΨSq (n : ℤ) :
-    (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 ∧
-      (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = (n.natAbs ^ 2 : ℕ) := by
-  rcases n.eq_nat_or_neg with ⟨n, rfl | rfl⟩
-  · exact W.natDegree_coeff_ΨSq_ofNat n
-  · simpa only [ΨSq_neg, Int.natAbs_neg] using W.natDegree_coeff_ΨSq_ofNat n
+lemma natDegree_ΨSq (n : ℤ) : (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 := by
+  induction n using Int.negInduction with
+  | nat n => exact (W.natDegree_coeff_ΨSq_ofNat n).left
+  | neg n => rwa [ΨSq_neg, Int.natAbs_neg]
 
-lemma natDegree_ΨSq (n : ℤ) : (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 :=
-  (W.natDegree_coeff_ΨSq n).left
-
-lemma coeff_ΨSq (n : ℤ) : (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = (n.natAbs ^ 2 : ℕ) :=
-  (W.natDegree_coeff_ΨSq n).right
+lemma coeff_ΨSq (n : ℤ) : (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = n ^ 2 := by
+  induction n using Int.negInduction with
+  | nat n => exact_mod_cast (W.natDegree_coeff_ΨSq_ofNat n).right
+  | neg => rwa [ΨSq_neg, Int.natAbs_neg, ← Int.cast_pow, neg_sq, Int.cast_pow]
 
 private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
     (W.Φ n).natDegree ≤ n ^ 2 ∧ (W.Φ n).coeff (n ^ 2) = 1 := by
-  rcases n with _ | _ | n
-  · erw [Φ_zero]
-    exact ⟨natDegree_one.le, coeff_one_zero⟩
-  · erw [Φ_one]
-    exact ⟨natDegree_X_le, coeff_X⟩
-  · have h1 := W.natDegree_coeff_preΨ' <| n + 1
-    have h2 := W.natDegree_coeff_ΨSq (n + 2 : ℕ)
-    have h3 := W.natDegree_coeff_preΨ' <| n + 3
-    simp only [WeierstrassCurve.Φ, Int.even_coe_nat, Nat.even_add_one, ite_not] at h1 h3 ⊢
-    erw [preΨ_ofNat, ← Nat.cast_sub <| by linarith only, preΨ_ofNat, Nat.add_sub_cancel]
-    by_cases hn : Even n
-    · rcases even_iff_exists_two_mul.mp hn with ⟨m, rfl⟩
-      rw [if_pos hn, show (2 * m + 1) ^ 2 = 2 * (2 * m * (m + 1)) + 1 by ring1, Nat.add_sub_cancel,
-        Nat.mul_div_cancel_left _ two_pos] at h1
-      rw [Int.natAbs_cast, show (2 * m + 2) ^ 2 = 4 * m * (m + 2) + 4 by ring1, Nat.succ_sub_one]
-        at h2
-      rw [if_pos hn, show (2 * m + 3) ^ 2 = 2 * (2 * (m + 1) * (m + 2)) + 1 by ring1,
-        Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos] at h3
-      rw [if_pos hn, mul_one]
-      constructor
-      · convert natDegree_sub_le_of_le (natDegree_mul_le_of_le natDegree_X_le h2.left) <|
-          natDegree_mul_le_of_le h3.left h1.left using 1
-        convert (max_self _).symm using 2 <;> ring1
-      · rw [coeff_sub, show (2 * m + 2) ^ 2 = 4 * m * (m + 2) + 4 by ring1, coeff_X_mul, h2.right,
-          show _ + _ = (2 * (m + 1) * (m + 2)) + (2 * m * (m + 1)) by ring1,
-          coeff_mul_of_natDegree_le h3.left h1.left, h3.right, h1.right]
-        push_cast
-        ring1
-    · rcases Nat.odd_iff_not_even.mpr hn with ⟨m, rfl⟩
-      rw [if_neg hn, show (2 * m + 2) ^ 2 = 2 * (2 * m * (m + 2)) + 4 by ring1, Nat.add_sub_cancel,
-        Nat.mul_div_cancel_left _ two_pos, show (2 * m + 2) / 2 = 2 * (m + 1) / 2 by rfl,
-        Nat.mul_div_cancel_left _ two_pos] at h1
-      rw [Int.natAbs_cast, show (2 * m + 3) ^ 2 = 4 * (m + 1) * (m + 2) + 1 by ring1,
-        Nat.add_sub_cancel] at h2
-      rw [if_neg hn, show (2 * m + 4) ^ 2 = 2 * (2 * (m + 1) * (m + 3)) + 4 by ring1,
-        Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos,
-        show (2 * m + 4) / 2 = 2 * (m + 2) / 2 by rfl, Nat.mul_div_cancel_left _ two_pos] at h3
-      rw [if_neg hn]
-      constructor
-      · convert natDegree_sub_le_of_le (natDegree_mul_le_of_le natDegree_X_le h2.left) <|
-          natDegree_mul_le_of_le (natDegree_mul_le_of_le h3.left h1.left) W.natDegree_Ψ₂Sq using 1
-        convert (max_self _).symm using 2 <;> ring1
-      · rw [coeff_sub, show (2 * m + 3) ^ 2 = 4 * (m + 1) * (m + 2) + 1 by ring1, coeff_X_mul,
-          h2.right, show _ + _ = (2 * (m + 1) * (m + 3)) + (2 * m * (m + 2)) + 3 by ring1,
-          coeff_mul_of_natDegree_le (natDegree_mul_le_of_le h3.left h1.left) W.natDegree_Ψ₂Sq,
-          coeff_mul_of_natDegree_le h3.left h1.left, h3.right, h1.right, coeff_Ψ₂Sq]
-        push_cast
-        ring1
+  let dm {m n p q} : _ → _ → (p * q : R[X]).natDegree ≤ m + n := natDegree_mul_le_of_le
+  let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
+  let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_of_natDegree_le
+  let h {n} := W.natDegree_coeff_preΨ' n
+  rcases n with _ | _ | _ | n; simp; simp [natDegree_X_le]; simp; compute_degree
+  have hd :
+      (n + 1 + 1 + 1) ^ 2 = 1 + 2 * expDegree (n + 3) + if Even (n + 2) then 0 else 3 := by
+    push_cast [← @Nat.cast_inj ℤ, expDegree_cast (by omega : n + 3 ≠ 0), Nat.even_add_one, ite_not]
+    split_ifs <;> ring1
+  have hd' : (n + 1 + 1 + 1) ^ 2 =
+    expDegree (n + 4) + expDegree (n + 2) + if Even (n + 2) then 3 else 0 := by
+    push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (_ ^ 2 : ℤ)) two_pos, mul_add,
+      expDegree_cast (by omega : n + 4 ≠ 0), expDegree_cast (by omega : n + 2 ≠ 0),
+      Nat.even_add_one, ite_not]
+    split_ifs <;> ring1
+  have hc : (1 : ℤ) = 1 * expCoeff (n + 3) ^ 2 * (if Even (n + 2) then 1 else 4) -
+    expCoeff (n + 4) * expCoeff (n + 2) * (if Even (n + 2) then 4 else 1) := by
+    push_cast [← @Int.cast_inj ℚ, expCoeff_cast, Nat.even_add_one, ite_not]
+    split_ifs <;> ring1
+  erw [Φ_ofNat]
+  constructor
+  · nth_rw 1 [← max_self <| (_ + _) ^ 2, hd, hd']
+    refine natDegree_sub_le_of_le (dm (dm natDegree_X_le (dp h.1)) ?_) (dm (dm h.1 h.1) ?_)
+    all_goals split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq]
+  · nth_rw 1 [coeff_sub, hd, hd', cm (dm natDegree_X_le (dp h.1)), cm natDegree_X_le (dp h.1),
+      coeff_X_one, coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff, coeff_one_zero, coeff_Ψ₂Sq,
+      cm (dm h.1 h.1), cm h.1 h.1, h.2, h.2, apply_ite₂ coeff, coeff_one_zero, coeff_Ψ₂Sq]
+    conv_rhs => rw [← Int.cast_one, hc]
+    norm_cast
+    all_goals split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq]
 
-private lemma natDegree_coeff_Φ (n : ℤ) :
-    (W.Φ n).natDegree ≤ n.natAbs ^ 2 ∧ (W.Φ n).coeff (n.natAbs ^ 2) = 1 := by
-  rcases n.eq_nat_or_neg with ⟨n, rfl | rfl⟩
-  · exact W.natDegree_coeff_Φ_ofNat n
-  · simpa only [Φ_neg, Int.natAbs_neg] using W.natDegree_coeff_Φ_ofNat n
+lemma natDegree_Φ (n : ℤ) : (W.Φ n).natDegree ≤ n.natAbs ^ 2 := by
+  induction n using Int.negInduction with
+  | nat n => exact (W.natDegree_coeff_Φ_ofNat n).left
+  | neg n => rwa [Φ_neg, Int.natAbs_neg]
 
-lemma natDegree_Φ (n : ℤ) : (W.Φ n).natDegree ≤ n.natAbs ^ 2 :=
-  (W.natDegree_coeff_Φ n).left
-
-lemma coeff_Φ (n : ℤ) : (W.Φ n).coeff (n.natAbs ^ 2) = 1 :=
-  (W.natDegree_coeff_Φ n).right
+lemma coeff_Φ (n : ℤ) : (W.Φ n).coeff (n.natAbs ^ 2) = 1 := by
+  induction n using Int.negInduction with
+  | nat n => exact (W.natDegree_coeff_Φ_ofNat n).right
+  | neg n => rwa [Φ_neg, Int.natAbs_neg]
 
 end WeierstrassCurve
