@@ -857,9 +857,8 @@ instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (
     rw [dif_pos hx, hc]
 
 @[to_additive]
-instance instCanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
-    CanonicallyOrderedCommMonoid (Germ l β) where
-  __ := instExistsMulOfLE
+instance instCanonicallyOrderedMul [MulOneClass β] [LE β] [CanonicallyOrderedMul β] :
+    CanonicallyOrderedMul (Germ l β) where
   le_self_mul x y := inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul
 
 instance instOrderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) where

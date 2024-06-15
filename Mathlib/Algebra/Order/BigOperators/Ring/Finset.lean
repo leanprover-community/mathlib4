@@ -147,17 +147,18 @@ lemma abs_prod [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
   map_prod absHom _ _
 #align finset.abs_prod Finset.abs_prod
 
-section CanonicallyOrderedCommSemiring
-variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
+section CanonicallyOrderedAdd
+variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+  {f g h : ι → R} {s : Finset ι} {i : ι}
 
-/-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
+/-- Note that the name is to match `CanonicallyOrderedAdd.mul_pos`. -/
+@[simp] lemma _root_.CanonicallyOrderedAdd.prod_pos [NoZeroDivisors R] [Nontrivial R] :
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
-  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
-#align canonically_ordered_comm_semiring.prod_pos CanonicallyOrderedCommSemiring.prod_pos
+  CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
+#align canonically_ordered_comm_semiring.prod_pos CanonicallyOrderedAdd.prod_pos
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
+  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
 -/
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
@@ -172,7 +173,7 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
       assumption
 #align finset.prod_add_prod_le' Finset.prod_add_prod_le'
 
-end CanonicallyOrderedCommSemiring
+end CanonicallyOrderedAdd
 end Finset
 
 section AbsoluteValue

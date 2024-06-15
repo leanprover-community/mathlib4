@@ -21,7 +21,7 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 The following instances are defined:
 
 * `OrderedAddCommMonoid PartENat`
-* `CanonicallyOrderedAddCommMonoid PartENat`
+* `CanonicallyOrderedAdd PartENat`
 * `CompleteLinearOrder PartENat`
 
 There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
@@ -464,10 +464,8 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
-  { PartENat.semilatticeSup, PartENat.orderBot,
-    PartENat.orderedAddCommMonoid with
-    le_self_add := fun a b =>
+instance : CanonicallyOrderedAdd PartENat :=
+  { le_self_add := fun a b =>
       PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun b =>
         PartENat.casesOn a (top_add _).ge fun a =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)

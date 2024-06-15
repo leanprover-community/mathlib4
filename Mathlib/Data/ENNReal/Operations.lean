@@ -120,7 +120,7 @@ end Mul
 section OperationsAndOrder
 
 protected theorem pow_pos : 0 < a → ∀ n : ℕ, 0 < a ^ n :=
-  CanonicallyOrderedCommSemiring.pow_pos
+  CanonicallyOrderedAdd.pow_pos
 #align ennreal.pow_pos ENNReal.pow_pos
 
 protected theorem pow_ne_zero : a ≠ 0 → ∀ n : ℕ, a ^ n ≠ 0 := by
@@ -259,7 +259,7 @@ theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
 #align ennreal.mul_self_lt_top_iff ENNReal.mul_self_lt_top_iff
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
-  CanonicallyOrderedCommSemiring.mul_pos
+  CanonicallyOrderedAdd.mul_pos
 #align ennreal.mul_pos_iff ENNReal.mul_pos_iff
 
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=

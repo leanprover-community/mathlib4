@@ -109,9 +109,8 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
-instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit where
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd PUnit where
   exists_add_of_le {_ _} _ := ⟨unit, Subsingleton.elim _ _⟩
-  add_le_add_left _ _ _ _ := trivial
   le_self_add _ _ := trivial
 
 instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where

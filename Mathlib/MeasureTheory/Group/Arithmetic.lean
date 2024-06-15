@@ -384,7 +384,8 @@ theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [A
 #align measurable_set_eq_fun measurableSet_eq_fun
 
 @[measurability]
-lemma measurableSet_eq_fun' {β : Type*} [CanonicallyOrderedAddCommMonoid β] [Sub β] [OrderedSub β]
+lemma measurableSet_eq_fun' {β : Type*} [AddMonoid β] [PartialOrder β]
+    [CanonicallyOrderedAdd β] [Sub β] [OrderedSub β]
     {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β]
     {f g : α → β} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet {x | f x = g x} := by

@@ -162,8 +162,8 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 
 end OrderedCancelCommMonoid
 
-section CanonicallyOrderedCommMonoid
-variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
+section CanonicallyOrderedMul
+variable [OrderedCommMonoid α] [CanonicallyOrderedMul α] {m : Multiset α} {a : α}
 
 @[to_additive] lemma prod_eq_one_iff : m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l ↦ by simpa using List.prod_eq_one_iff
@@ -177,7 +177,7 @@ variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
 #align multiset.le_prod_of_mem Multiset.le_prod_of_mem
 #align multiset.le_sum_of_mem Multiset.le_sum_of_mem
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 lemma max_le_of_forall_le {α : Type*} [LinearOrder α] [OrderBot α] (l : Multiset α)
     (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by

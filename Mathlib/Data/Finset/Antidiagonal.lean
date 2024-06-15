@@ -124,8 +124,8 @@ lemma antidiagonal_congr' (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n
 
 end AddCancelCommMonoid
 
-section CanonicallyOrderedAddCommMonoid
-variable [CanonicallyOrderedAddCommMonoid A] [HasAntidiagonal A]
+section CanonicallyOrderedAdd
+variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [HasAntidiagonal A]
 
 @[simp]
 theorem antidiagonal_zero : antidiagonal (0 : A) = {(0, 0)} := by
@@ -144,10 +144,10 @@ theorem antidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) 
   rwa [mem_antidiagonal, eq_comm, add_comm] at hlk
 #align finset.nat.antidiagonal.snd_le Finset.antidiagonal.snd_le
 
-end CanonicallyOrderedAddCommMonoid
+end CanonicallyOrderedAdd
 
 section OrderedSub
-variable [CanonicallyOrderedAddCommMonoid A] [Sub A] [OrderedSub A]
+variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
 variable [ContravariantClass A A (· + ·) (· ≤ ·)]
 variable [HasAntidiagonal A]
 
@@ -194,7 +194,7 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
 #align finset.nat.sigma_antidiagonal_equiv_prod_apply Finset.sigmaAntidiagonalEquivProd_apply
 
 variable {A : Type*}
-  [CanonicallyOrderedAddCommMonoid A]
+  [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A]
   [LocallyFiniteOrder A] [DecidableEq A]
 
 /-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.

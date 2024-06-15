@@ -187,8 +187,8 @@ lemma all_one_of_le_one_le_of_prod_eq_one [OrderedCommMonoid M] {l : List M}
 #align list.all_one_of_le_one_le_of_prod_eq_one List.all_one_of_le_one_le_of_prod_eq_one
 #align list.all_zero_of_le_zero_le_of_sum_eq_zero List.all_zero_of_le_zero_le_of_sum_eq_zero
 
-section CanonicallyOrderedCommMonoid
-variable [CanonicallyOrderedCommMonoid M] {l : List M}
+section CanonicallyOrderedMul
+variable [OrderedCommMonoid M] [CanonicallyOrderedMul M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
@@ -207,5 +207,6 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
 #align list.monotone_prod_take List.monotone_prod_take
 #align list.monotone_sum_take List.monotone_sum_take
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
+
 end List

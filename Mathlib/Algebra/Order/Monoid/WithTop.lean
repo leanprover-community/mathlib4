@@ -401,19 +401,14 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
-    CanonicallyOrderedAddCommMonoid (WithTop α) :=
-  { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
-    le_self_add := fun a b =>
-      match a, b with
-      | ⊤, ⊤ => le_rfl
-      | (a : α), ⊤ => le_top
-      | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
-      | ⊤, (b : α) => le_rfl }
-
-instance [CanonicallyLinearOrderedAddCommMonoid α] :
-    CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
-  { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
+instance canonicallyOrderedAdd [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α] :
+    CanonicallyOrderedAdd (WithTop α) where
+  le_self_add a b :=
+    match a, b with
+    | ⊤, ⊤ => le_top
+    | (a : α), ⊤ => le_top
+    | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
+    | ⊤, (b : α) => le_top
 
 @[simp]
 theorem zero_lt_top [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=

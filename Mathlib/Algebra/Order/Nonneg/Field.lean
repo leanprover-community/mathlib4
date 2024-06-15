@@ -3,7 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Field.Canonical.Defs
+import Mathlib.Algebra.Order.Field.Canonical
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Nonneg.Ring
 
@@ -111,14 +111,9 @@ instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } :
 
 end LinearOrderedSemifield
 
-instance canonicallyLinearOrderedSemifield [LinearOrderedField α] :
-    CanonicallyLinearOrderedSemifield { x : α // 0 ≤ x } :=
-  { Nonneg.linearOrderedSemifield, Nonneg.canonicallyOrderedCommSemiring with }
-#align nonneg.canonically_linear_ordered_semifield Nonneg.canonicallyLinearOrderedSemifield
-
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  inferInstance
+  CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
 #align nonneg.linear_ordered_comm_group_with_zero Nonneg.linearOrderedCommGroupWithZero
 
 end Nonneg

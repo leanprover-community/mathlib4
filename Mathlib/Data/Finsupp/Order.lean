@@ -181,9 +181,9 @@ instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι
 
 end SMulWithZero
 
-section CanonicallyOrderedAddCommMonoid
+section PartialOrder
 
-variable [CanonicallyOrderedAddCommMonoid α] {f g : ι →₀ α}
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -236,11 +236,9 @@ instance tsub : Sub (ι →₀ α) :=
 instance orderedSub : OrderedSub (ι →₀ α) :=
   ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.orderBot,
-    Finsupp.orderedAddCommMonoid with
-    exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
-    le_self_add := fun _f _g _x => le_self_add }
+instance [CovariantClass α α (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (ι →₀ α) where
+  exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
+  le_self_add := fun _f _g _x => le_self_add
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
 #align finsupp.coe_tsub Finsupp.coe_tsub
@@ -267,11 +265,11 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
   simp (config := { contextual := true }) [subset_iff]
 #align finsupp.subset_support_tsub Finsupp.subset_support_tsub
 
-end CanonicallyOrderedAddCommMonoid
+end PartialOrder
 
-section CanonicallyLinearOrderedAddCommMonoid
+section LinearOrder
 
-variable [CanonicallyLinearOrderedAddCommMonoid α]
+variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
@@ -295,7 +293,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
     rfl
 #align finsupp.disjoint_iff Finsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddCommMonoid
+end LinearOrder
 
 /-! ### Some lemmas about `ℕ` -/
 

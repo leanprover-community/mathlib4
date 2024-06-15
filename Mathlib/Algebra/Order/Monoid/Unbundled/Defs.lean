@@ -325,21 +325,21 @@ theorem contravariant_flip_iff [IsSymmOp N N mu] :
 #noalign contravariant_flip_mul_iff
 #noalign contravariant_flip_add_iff
 
-instance contravariant_lt_of_covariant_le [LinearOrder N]
+instance (priority := 100) contravariant_lt_of_covariant_le [LinearOrder N]
     [CovariantClass N N mu (· ≤ ·)] : ContravariantClass N N mu (· < ·) where
   elim := (covariant_le_iff_contravariant_lt N N mu).mp CovariantClass.elim
 
-instance covariant_lt_of_contravariant_le [LinearOrder N]
+instance (priority := 100) covariant_lt_of_contravariant_le [LinearOrder N]
     [ContravariantClass N N mu (· ≤ ·)] : CovariantClass N N mu (· < ·) where
   elim := (covariant_lt_iff_contravariant_le N N mu).mpr ContravariantClass.elim
 
 @[to_additive]
-instance covariant_swap_mul_of_covariant_mul [CommSemigroup N]
+instance (priority := 100) covariant_swap_mul_of_covariant_mul [CommSemigroup N]
     [CovariantClass N N (· * ·) r] : CovariantClass N N (swap (· * ·)) r where
   elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
 
 @[to_additive]
-instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
+instance (priority := 100) contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
     [ContravariantClass N N (· * ·) r] : ContravariantClass N N (swap (· * ·)) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
 
@@ -360,26 +360,26 @@ theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
   then the following four instances (actually eight) can be removed in favor of the above two. -/
 
 @[to_additive]
-instance IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le [Mul N] [IsLeftCancelMul N]
-    [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
+instance (priority := 100) IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le
+    [Mul N] [IsLeftCancelMul N] [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
     CovariantClass N N (· * ·) (· < ·) where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_right a).mpr bc.ne)
 
 @[to_additive]
-instance IsRightCancelMul.covariant_swap_mul_lt_of_covariant_swap_mul_le
+instance (priority := 100) IsRightCancelMul.covariant_swap_mul_lt_of_covariant_swap_mul_le
     [Mul N] [IsRightCancelMul N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
     CovariantClass N N (swap (· * ·)) (· < ·) where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_left a).mpr bc.ne)
 
 @[to_additive]
-instance IsLeftCancelMul.contravariant_mul_le_of_contravariant_mul_lt [Mul N] [IsLeftCancelMul N]
-    [PartialOrder N] [ContravariantClass N N (· * ·) (· < ·)] :
+instance (priority := 100) IsLeftCancelMul.contravariant_mul_le_of_contravariant_mul_lt
+    [Mul N] [IsLeftCancelMul N] [PartialOrder N] [ContravariantClass N N (· * ·) (· < ·)] :
     ContravariantClass N N (· * ·) (· ≤ ·) where
   elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_left_cancel⟩
 
 @[to_additive]
-instance IsRightCancelMul.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
+instance (priority := 100) IsRightCancelMul.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
     [Mul N] [IsRightCancelMul N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
     ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
   elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
