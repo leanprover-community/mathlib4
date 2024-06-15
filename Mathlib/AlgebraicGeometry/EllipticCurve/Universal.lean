@@ -189,7 +189,7 @@ lemma ringEval_comp_eq_specialize : (ringEval eqn).comp (algebraMap _ _) = W.spe
 
 protected lemma Field.two_ne_zero : (2 : Universal.Field) ≠ 0 := by
   rw [← map_ofNat (algebraMap Universal.Ring _), map_ne_zero_iff _ (IsFractionRing.injective _ _)]
-  intro h; replace h := congr(ringEval cusp_equation_one_one $h)
+  intro h; replace h := congr(ringEval (cusp_equation_one_one ℤ) $h)
   rw [map_ofNat, map_zero] at h; cases h
 
 lemma curveRing_map_ringEval : curveRing.map (ringEval eqn) = W := by
