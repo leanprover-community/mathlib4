@@ -50,7 +50,7 @@ Note that most computational proofs follow from their analogous proofs for affin
  * `WeierstrassCurve.Jacobian.Point.neg`: the negation operation on a nonsingular rational point.
  * `WeierstrassCurve.Jacobian.Point.add`: the addition operation on a nonsingular rational point.
  * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the nonsingular
-    rational points on a Jacobian Weierstrass curve with those on an affine Weierstrass curve.
+    rational points on a Weierstrass curve in Jacobian coordinates with those in affine coordinates.
 
 ## Main statements
 
@@ -63,8 +63,8 @@ A point representative is implemented as a term `P` of type `Fin 3 → R`, which
 notation `![x, y, z]`. However, `P` is not syntactically equivalent to the expanded vector
 `![P x, P y, P z]`, so the lemmas `fin3_def` and `fin3_def_ext` can be used to convert between the
 two forms. The equivalence of two point representatives `P` and `Q` is implemented as an equivalence
-of orbits of the action of `R`, or equivalently that there is some unit `u` of `R` such that
-`P = u • Q`. However, `u • Q` is not syntactically equal to `![u ^ 2 * Q x, u ^ 3 * Q y, u * Q z]`,
+of orbits of the action of `Rˣ`, or equivalently that there is some unit `u` of `R` such that
+`P = u • Q`. However, `u • Q` is not syntactically equal to `![u² * Q x, u³ * Q y, u * Q z]`,
 so the lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms.
 
 ## References
@@ -136,8 +136,8 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
 
 /-- The multiplicative action on a point representative. -/
 scoped instance instMulActionPoint : MulAction R <| Fin 3 → R where
-  one_smul _ := by simp only [smul_fin3, one_pow, one_mul, fin3_def]
-  mul_smul _ _ _ := by simp only [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
+  one_smul _ := by simp_rw [smul_fin3, one_pow, one_mul, fin3_def]
+  mul_smul _ _ _ := by simp_rw [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
 /-- The equivalence setoid for a point representative. -/
 scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
@@ -159,6 +159,17 @@ variable (W') in
 /-- The coercion to a Weierstrass curve in affine coordinates. -/
 abbrev toAffine : Affine R :=
   W'
+
+lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (mem : Q z ∈ nonZeroDivisors R) :
+    P ≈ Q ↔ P = Q := by
+  refine ⟨?_, by rintro rfl; exact Setoid.refl _⟩
+  rintro ⟨u, rfl⟩
+  rw [← one_mul (Q z)] at hz
+  simp [Units.smul_def, smul_fin3, (mul_cancel_right_mem_nonZeroDivisors mem).mp hz, fin3_def]
+
+lemma equiv_iff_eq_of_Z_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hz : P z = Q z) (ne : Q z ≠ 0) :
+    P ≈ Q ↔ P = Q :=
+  equiv_iff_eq_of_Z_eq' hz (mem_nonZeroDivisors_of_ne_zero ne)
 
 lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
   rcases h with ⟨_, rfl⟩
@@ -389,6 +400,12 @@ lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Non
 lemma nonsingular_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z ^ 2) (P y / P z ^ 3) :=
   (nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| nonsingular_some ..
+
+lemma nonsingular_iff_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
+    W.Nonsingular P ↔ W.Equation P ∧ (eval P W.polynomialX ≠ 0 ∨ eval P W.polynomialY ≠ 0) := by
+  rw [nonsingular_of_Z_ne_zero hPz, Affine.Nonsingular, ← equation_of_Z_ne_zero hPz,
+    ← eval_polynomialX_of_Z_ne_zero hPz, div_ne_zero_iff, and_iff_left <| pow_ne_zero 4 hPz,
+    ← eval_polynomialY_of_Z_ne_zero hPz, div_ne_zero_iff, and_iff_left <| pow_ne_zero 3 hPz]
 
 lemma X_ne_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Nonsingular P)
     (hPz : P z = 0) : P x ≠ 0 := by
@@ -1020,6 +1037,20 @@ lemma addXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
   erw [addXYZ, smul_fin3, ← addX_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel,
     ← addY_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel, mul_one]
 
+lemma addZ_self {P : Fin 3 → R} : addZ P P = 0 := sub_self _
+
+lemma addX_self {P : Fin 3 → R} (hP : W'.Equation P) : W'.addX P P = 0 := by
+  rw [addX]; rw [equation_iff] at hP
+  linear_combination -2 * P z ^ 2 * hP
+
+lemma negAddY_self {P : Fin 3 → R} : W'.negAddY P P = 0 := by rw [negAddY]; ring
+
+lemma addY_self {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P P = 0 := by
+  rw [addY, addX_self hP, negAddY_self, addZ_self, negY]; simp
+
+lemma addXYZ_self {P : Fin 3 → R} (hP : W'.Equation P) : W'.addXYZ P P = ![0, 0, 0] := by
+  rw [addXYZ, addX_self hP, addY_self hP, addZ_self]
+
 end Addition
 
 section Negation
@@ -1067,6 +1098,27 @@ lemma nonsingular_neg {P : Fin 3 → F} (hP : W.Nonsingular P) : W.Nonsingular <
         ((isUnit_Y_of_Z_eq_zero hP hPz).div <| isUnit_X_of_Z_eq_zero hP hPz).neg, nonsingular_zero]
   · simp only [neg_of_Z_ne_zero hPz, nonsingular_smul _ <| Ne.isUnit hPz,
       nonsingular_neg_of_Z_ne_zero hP hPz]
+
+lemma addZ_neg {P : Fin 3 → R} : addZ P (W'.neg P) = 0 := by
+  simp_rw [addZ, neg, fin3_def_ext, sub_self]
+
+lemma addX_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addX P (W'.neg P) = W'.dblZ P ^ 2 := by
+  simp only [addX, neg, dblZ, negY, fin3_def_ext]
+  linear_combination -2 * P z ^ 2 * ((equation_iff _).mp hP)
+
+lemma negAddY_neg {P : Fin 3 → R} (hP : W'.Equation P) :
+    W'.negAddY P (W'.neg P) = W'.dblZ P ^ 3 := by
+  simp only [negAddY, neg, dblZ, negY, fin3_def_ext]
+  linear_combination -2 * (2 * P y * P z ^ 3 + W'.a₁ * P x * P z ^ 4 + W'.a₃ * P z ^ 6)
+    * ((equation_iff _).mp hP)
+
+lemma addY_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P (W'.neg P) = -W'.dblZ P ^ 3 := by
+  simp [addY, addX_neg hP, negAddY_neg hP, addZ_neg, negY, fin3_def_ext]
+
+lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
+    W'.addXYZ P (W'.neg P) = -W'.dblZ P • ![1, 1, 0] := by
+  simp_rw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3]
+  simp [(show Odd 3 by decide).neg_pow]
 
 variable (W') in
 /-- The negation of a point class. If `P` is a point representative,
@@ -1318,6 +1370,12 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y)
     fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
+lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+    fromAffine (.some h) ≠ 0 := fun h0 ↦ by
+  erw [Point.ext_iff, Quotient.eq] at h0
+  obtain ⟨u, eq⟩ := h0
+  simpa [Units.smul_def, smul_fin3] using congr_fun eq z
+
 /-- The negation of a nonsingular rational point on `W`.
 Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
@@ -1502,6 +1560,60 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
 end Point
 
 end Affine
+
+section Map
+
+lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] := by
+  ext i; fin_cases i <;> rfl
+
+variable {S : Type*} [CommRing S] (f : R →+* S) (P Q : Fin 3 → R)
+
+protected lemma map_smul (u : R) : f ∘ (u • P) = f u • (f ∘ P) := by
+  ext i; fin_cases i <;> simp [smul_fin3]
+
+@[simp] lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by simp [addZ]
+@[simp] lemma map_addX : addX (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by simp [addX]
+@[simp] lemma map_negAddY : negAddY (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+  simp [negAddY]
+@[simp] lemma map_negY : negY (W'.map f) (f ∘ P) = f (W'.negY P) := by simp [negY]
+
+@[simp] protected lemma map_neg : neg (W'.map f) (f ∘ P) = f ∘ W'.neg P := by
+  ext i; fin_cases i <;> simp [neg]
+
+@[simp] lemma map_addY : addY (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
+  simp [addY, ← comp_fin3]
+
+@[simp] lemma map_addXYZ : addXYZ (W'.map f) (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+  simp_rw [addXYZ, comp_fin3, map_addX, map_addY, map_addZ]
+
+@[simp] lemma map_polynomial :
+    (W'.map f).toJacobian.polynomial = MvPolynomial.map f W'.polynomial := by
+  simp [polynomial]
+
+@[simp] lemma map_polynomialX :
+    (W'.map f).toJacobian.polynomialX = MvPolynomial.map f W'.polynomialX := by
+  simp [polynomialX, pderiv_map]
+
+@[simp] lemma map_polynomialY :
+    (W'.map f).toJacobian.polynomialY = MvPolynomial.map f W'.polynomialY := by
+  simp [polynomialY, pderiv_map]
+
+@[simp] lemma map_polynomialZ :
+    (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
+  simp [polynomialZ, pderiv_map]
+
+@[simp] lemma map_dblZ : dblZ (W'.map f) (f ∘ P) = f (W'.dblZ P) := by simp [dblZ]
+@[simp] lemma map_dblU : dblU (W'.map f) (f ∘ P) = f (W'.dblU P) := by
+  simp [dblU, map_polynomialX, ← eval₂_id, eval₂_comp_left]
+
+@[simp] lemma map_dblX : dblX (W'.map f) (f ∘ P) = f (W'.dblX P) := by simp [dblX]
+@[simp] lemma map_negDblY : negDblY (W'.map f) (f ∘ P) = f (W'.negDblY P) := by simp [negDblY]
+@[simp] lemma map_dblY : dblY (W'.map f) (f ∘ P) = f (W'.dblY P) := by simp [dblY, ← comp_fin3]
+
+@[simp] lemma map_dblXYZ : dblXYZ (W'.map f) (f ∘ P) = f ∘ dblXYZ W' P := by
+  simp_rw [dblXYZ, comp_fin3, map_dblX, map_dblY, map_dblZ]
+
+end Map
 
 end WeierstrassCurve.Jacobian
 
