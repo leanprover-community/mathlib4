@@ -233,6 +233,8 @@ monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 #align linear_ordered_comm_ring LinearOrderedCommRing
 
+attribute [instance 10] LinearOrderedCommRing.toCommMonoid
+
 section OrderedSemiring
 
 variable [OrderedSemiring α] {a b c d : α}
