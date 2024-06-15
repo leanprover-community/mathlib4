@@ -78,16 +78,13 @@ def outputMessage (errctx : ErrorContext) : String :=
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
-  -- Lines starting with "-- " are treated as a comment and ignored.
-  if line.startsWith "-- " then
-    return none
   let parts := line.split (· == ' ')
   match parts with
     | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
-      let path : FilePath := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
+      let path := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
       let err : Option StyleError := match error_code with
@@ -112,7 +109,8 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
 /-- Parse all style exceptions for a line of input.
 Return an array of all exceptions which could be parsed: invalid input is ignored. -/
 def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run do
-  Array.filterMap (parse?_errorContext ·) lines
+  -- We treat all lines starting with "--" as a comment and ignore them.
+  Array.filterMap (parse?_errorContext ·) (lines.filter (fun line ↦ !line.startsWith "--"))
 
 /-- Print information about all errors encountered to standard output. -/
 def formatErrors (errors : Array ErrorContext) : IO Unit := do
