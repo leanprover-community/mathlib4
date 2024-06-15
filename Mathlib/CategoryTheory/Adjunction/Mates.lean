@@ -198,7 +198,7 @@ def RightAdjointSquare.vcomp :
   (whiskerRight α G₂) ≫ (whiskerLeft H₁ β)
 
 theorem Mates_vcomp
-  (α : G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁)
+    (α : G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁)
   (β : G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) :
   (Mates (G := G₁ ⋙ G₂) (H := H₁ ⋙ H₂) adj₁ adj₃) (LeftAdjointSquare.vcomp α β)
     =
