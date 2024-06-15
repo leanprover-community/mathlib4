@@ -319,6 +319,12 @@ def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomi
   (renameEquiv R (_root_.finSuccEquiv n)).trans (optionEquivLeft R (Fin n))
 #align mv_polynomial.fin_succ_equiv MvPolynomial.finSuccEquiv
 
+theorem optionEquivLeft_eq_renameEquiv_finSuccEquiv : optionEquivLeft R (Fin n) =
+  (renameEquiv R (_root_.finSuccEquiv n)).symm.trans (finSuccEquiv R n) := by
+  rw [finSuccEquiv]
+  ext i : 1
+  simp_rw [AlgEquiv.trans_apply,AlgEquiv.apply_symm_apply]
+
 theorem finSuccEquiv_eq :
     (finSuccEquiv R n : MvPolynomial (Fin (n + 1)) R →+* Polynomial (MvPolynomial (Fin n) R)) =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) =>
@@ -510,14 +516,18 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
 lemma optionEquivLeft_support [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support
       = Finset.image (fun m => m none) p.support := by
+  -- Note: We cannot use `finSuccEquiv_support` to prove this because `σ` is not necessarily finite
+  -- We might prove that from this though
+  -- What needs to happen now is that we replicate the proof of `finSuccEquiv_support` here,
+  -- suitably modified
+  -- to do this, we need an analogue of `Finsupp.cons` for `Option`
   ext m
   rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
   · rintro ⟨m', hm'⟩
-    sorry
+    -- sorry
 
-    -- aesop
-    -- refine' ⟨m.erase_none, _, Finsupp.erase_none _⟩
+    refine' ⟨cons m m', _, cons_zero _ _⟩
     -- rw [← support_coeff_finSuccEquiv]
     -- simpa using hm
   · rintro ⟨m, h, rfl⟩
