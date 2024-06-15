@@ -56,7 +56,6 @@ lean_exe cache where
 /-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe checkYaml where
   srcDir := "scripts"
-  supportInterpreter := true
 
 /-- `lake exe mk_all` constructs the files containing all imports for a project. -/
 lean_exe mk_all where
