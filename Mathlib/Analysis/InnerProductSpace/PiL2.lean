@@ -527,6 +527,47 @@ theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonor
     _ = (v : ι → E) := by simp
 #align basis.coe_to_orthonormal_basis Basis.coe_toOrthonormalBasis
 
+/-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
+`Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
+protected def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
+    OrthonormalBasis ((i : η) × ι i) 𝕜 (PiLp 2 E) where
+  repr := .trans
+      (.piLpCongrRight 2 fun i => (B i).repr)
+      (.symm <| .piLpCurry 𝕜 2 fun _ _ => 𝕜)
+
+theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
+    (Pi.orthonormalBasis B).toBasis =
+      ((Pi.basis fun i : η ↦ (B i).toBasis).map (WithLp.linearEquiv 2 _ _).symm) := by ext; rfl
+
+@[simp]
+theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
+    (j : (i : η) × (ι i)) :
+    Pi.orthonormalBasis B j = (WithLp.equiv _ _).symm (Pi.single _ (B j.fst j.snd)) := by
+  classical
+  ext k
+  obtain ⟨i, j⟩ := j
+  simp only [Pi.orthonormalBasis, coe_ofRepr, LinearIsometryEquiv.symm_trans,
+    LinearIsometryEquiv.symm_symm, LinearIsometryEquiv.piLpCongrRight_symm,
+    LinearIsometryEquiv.trans_apply, LinearIsometryEquiv.piLpCongrRight_apply,
+    LinearIsometryEquiv.piLpCurry_apply, WithLp.equiv_single, WithLp.equiv_symm_pi_apply,
+    Sigma.curry_single (γ := fun _ _ => 𝕜)]
+  obtain rfl | hi := Decidable.eq_or_ne i k
+  · simp only [Pi.single_eq_same, WithLp.equiv_symm_single, OrthonormalBasis.repr_symm_single]
+  · simp only [Pi.single_eq_of_ne' hi, WithLp.equiv_symm_zero, _root_.map_zero]
+
+@[simp]
+theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) (x : (i : η ) → E i)
+    (j : (i : η) × (ι i)) :
+    (Pi.orthonormalBasis B).repr x j = (B j.fst).repr (x j.fst) j.snd := rfl
+
 variable {v : ι → E}
 
 /-- A finite orthonormal set that spans is an orthonormal basis -/
@@ -605,6 +646,10 @@ protected theorem reindex_apply (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι'
     rw [← b.repr_symm_single, LinearIsometryEquiv.piLpCongrLeft_symm,
       EuclideanSpace.piLpCongrLeft_single]
 #align orthonormal_basis.reindex_apply OrthonormalBasis.reindex_apply
+
+@[simp]
+theorem reindex_toBasis (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
+    (b.reindex e).toBasis = b.toBasis.reindex e := Basis.eq_ofRepr_eq_repr fun _ ↦ congr_fun rfl
 
 @[simp]
 protected theorem coe_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
