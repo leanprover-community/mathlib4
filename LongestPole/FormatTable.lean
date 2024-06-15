@@ -21,7 +21,7 @@ inductive Alignment where
 deriving Inhabited, BEq
 
 /-- Align a `String` `s` to the left, right, or center within a field of width `width`. -/
-def Alignment.align (a : Alignment) (s : String) (width : Nat) : String :=
+def String.justify (s : String) (a : Alignment) (width : Nat) : String :=
   match a with
   | Alignment.left => s.rightpad width
   | Alignment.right => s.leftpad width
@@ -47,7 +47,7 @@ def formatTable (headers : Array String) (table : Array (Array String))
   -- Pad each cell with spaces to match the column width.
   let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!
   let paddedTable := table.map fun row => row.mapIdx fun i cell =>
-    alignments[i]!.align cell widths[i]!
+    cell.justify alignments[i]! widths[i]!
   -- Construct the lines of the table
   let headerLine := "| " ++ String.intercalate " | " (paddedHeaders.toList) ++ " |"
   -- Construct the separator line, with colons to indicate alignment
