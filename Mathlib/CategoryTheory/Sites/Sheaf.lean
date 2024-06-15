@@ -56,6 +56,8 @@ inequalities this can be changed.
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
+suppress_compilation
+
 noncomputable section
 
 namespace CategoryTheory
