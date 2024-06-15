@@ -89,14 +89,14 @@ variable [DecidableEq n]
 variable {A : Matrix n n 𝕜} (hA : IsHermitian A)
 
 /--Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc.toEuclideanLin -/
-theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
+theorem ofReal_eigenvalue_mem_spectrum_toEuclideanLin (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
-/-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dim module.-/
-def AlgEquivFiniteDimNormedLinearCLM.{v} (E : Type v) [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E][FiniteDimensional 𝕜 E] :
-    AlgEquiv (R := 𝕜) (A := E →ₗ[𝕜] E) (B := E →L[𝕜] E) :=
+/-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dim module.
+Compare with `LinearMap.toContinuousLinearMap`, the linear equivalence version of this result.-/
+def Module.End.toContinuousLinearMap.{v} (E : Type v) [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E][FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
     {LinearMap.toContinuousLinearMap with
     map_mul' := fun _ _ ↦ rfl
     commutes' := fun _ ↦ rfl}
@@ -106,20 +106,19 @@ theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectru
   AlgEquiv.spectrum_eq ((AlgEquiv.trans ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜]
   EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) : Matrix n n 𝕜 ≃ₐ[𝕜]
   EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
-  (AlgEquivFiniteDimNormedLinearCLM (EuclideanSpace 𝕜 n)).symm) _
+  (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm) _
 
 /--Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
-theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A := by
-  intro i
+theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
   apply spectrum.of_algebraMap_mem (S := 𝕜) (R := ℝ) (A := Matrix n n 𝕜)
   rw [← spec_toEuclideanLin_eq_spec]
-  apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
+  apply hA.ofReal_eigenvalue_mem_spectrum_toEuclideanLin
 
 /--Definition of the StarAlgHom for the continuous functional calculus of a Hermitian matrix. -/
 @[simps]
 noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-    diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
+    diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩))
     * star (eigenvectorUnitary hA : Matrix n n 𝕜)
   map_one' := by simp [Pi.one_def (f := fun _ : n ↦ 𝕜)]
   map_mul' f g := by
@@ -181,12 +180,12 @@ instance instContinuousFunctionalCalculus :
         refine LinearMap.ker_eq_bot'.mpr ?_
         intro f hf
         have h2 : diagonal
-             (RCLike.ofReal ∘ ⇑f ∘ fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩)
+             (RCLike.ofReal ∘ ⇑f ∘ fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalues_mem_spectrum_real i⟩)
              = (0 : Matrix n n 𝕜) := by
            rw [cfc_apply] at hf
            have hlr : (star ha.eigenvectorUnitary : Matrix n n 𝕜) *
               ((eigenvectorUnitary ha : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ f ∘
-                (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩)) *
+                (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalues_mem_spectrum_real i⟩)) *
                 star (eigenvectorUnitary ha : Matrix n n 𝕜)) *
                 (ha.eigenvectorUnitary : Matrix n n 𝕜) =
                 (star ha.eigenvectorUnitary : Matrix n n 𝕜) *
@@ -217,7 +216,7 @@ instance instContinuousFunctionalCalculus :
         rintro - ⟨x , rfl⟩
         apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
         simp only [spectrum_diagonal (R := 𝕜)
-            (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
+            (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalues_mem_spectrum_real i⟩))
             , Function.comp_apply, Set.mem_range]
         obtain ⟨x, hx⟩ := x
         obtain ⟨i, rfl⟩ := ha.eigenvalues_eq_spectrum ▸ hx
