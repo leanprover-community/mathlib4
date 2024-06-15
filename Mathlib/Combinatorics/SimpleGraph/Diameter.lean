@@ -108,12 +108,6 @@ lemma le_ediam {u v : α} : G.dist u v ≤ G.ediam := by
   apply le_sSup
   tauto
 
-private lemma top_not_mem_of_sup_ne_top {s : Set ℕ∞} (h : sSup s ≠ ⊤) : ⊤ ∉ s := by
-  contrapose! h
-  rw [sSup_eq_top]
-  intros
-  use ⊤
-
 /-- The extended diameter is equal to the distance of some vertices iff it is not infinite. -/
 lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u v = G.ediam := by
   refine ⟨fun h => ?_, by aesop⟩
@@ -132,9 +126,8 @@ lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u
     rw [WithTop.le_untop_iff]
     exact hub a ha
   obtain ⟨u, v, huv⟩ := Nat.sSup_mem nonempty_s' bddAbove_s'
-  rw [WithTop.sSup_eq (top_not_mem_of_sup_ne_top h) bddAbove_s']
+  rw [WithTop.sSup_eq (sup_eq_top_of_top_mem.mt h) bddAbove_s']
   use u, v, huv.symm
-
 
 lemma zero_lt_ediam_iff [Nonempty α] (ht : G.ediam ≠ ⊤) :
     0 < G.ediam ↔ ∃ (u v : α), G.ediam = G.dist u v ∧ G.Reachable u v ∧ u ≠ v := by
