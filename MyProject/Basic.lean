@@ -1,6 +1,7 @@
 
 import Mathlib.Topology.Instances.Real
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+
 import Mathlib.Analysis.Convolution
 import Mathlib.MeasureTheory.Function.Jacobian
 import Mathlib.MeasureTheory.Integral.Bochner
@@ -14,13 +15,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Algebra.BigOperators.Ring
-
-
-
-
-
-
-
 
 open MeasureTheory
 open ENNReal
@@ -45,9 +39,7 @@ structure finpart {α : Type*} (m : MeasurableSpace α) (μ : Measure α) [IsPro
   (cover : (⋃ i, f i) = Set.univ)  -- The union of all sets covers the entire space
 
 
-#check partition
-#check Set.mem_union
-#check mem_iUnion
+
 
 --defining a function which given a finite partition give back
 --the countable partition whit tail of empty sets
@@ -104,8 +96,6 @@ theorem stupid': RightInverse (inverse_pairing_function) pairing_function := by
 --defining functin that takes two partitions and gives the refinement partition
 
 
-
-
 def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p1 p2 : partition m μ) : partition m μ :=
 { f := λ k ↦ let (i, j) := inverse_pairing_function k
@@ -155,18 +145,24 @@ def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [Is
       rw[stupid]; exact hj
 }
 
-
-
-
 noncomputable section
+
+
 
 --defining entropy and conditional entropy
 
  def met_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ) : ℝ :=
   -∑' (n : ℕ),
-    let mass := (μ (p.f n)).toReal
-    if mass = 0 then 0 else mass * Real.log mass
+    (μ (p.f n)).toReal* Real.log ((μ (p.f n)).toReal)
+
+-- entropy of a finite partition
+
+ def met_entropy' {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (n : ℕ) (fp : finpart m μ n): ℝ :=
+-∑ i in Finset.univ,
+   (μ (fp.f i)).toReal* Real.log ((μ (fp.f i)).toReal)
+
 
 
 
@@ -178,6 +174,8 @@ def conmet_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsPr
 
 
 end section
+
+
 --In this section we prove the max_entropy theorem relying on
 -- the exiting definitions of convexity and the Jensen inequality in mathlib
 --theorem ConvexOn.map_integral_le
@@ -187,12 +185,22 @@ end section
 
 --maximal entropy theorem
 
+
+
 theorem max_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
-(n : ℕ) (fp : finpart m μ n) :(met_entropy (finpart_to_partition n fp) ≤ Real.log (n)) ∧ met_entropy (finpart_to_partition n fp)=Real.log (n) ↔
-∀ i : Fin n, μ ((finpart_to_partition n fp).f i)=1/n := by
-  sorry
-
-
+(n : ℕ) (fp : finpart m μ n) :(met_entropy' n fp  ≤ Real.log n) ∧ (met_entropy' n fp = Real.log (n) ↔
+∀ i : Fin n, (μ (fp.f i)).toReal=1/n) :=
+by
+  constructor
+  · by_cases h : ∀ i : Fin n, μ (fp.f i)=1/n
+    · simp [met_entropy',h]
+      rw[← mul_assoc]
+      sorry
+    · push_neg at h
+      sorry
+  · constructor
+    · sorry
+    · sorry
 
 
 
@@ -201,26 +209,66 @@ theorem max_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsP
 
 --function extracting the set in the partition containing desired point
 noncomputable section
-def extract {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
-  (p : partition m μ) (x : α) : ℕ:= by
-  have h: (⋃ n, p.f n) = Set.univ := by
-    exact p.cover
-  symm at h
-  have h': x ∈ univ := by tauto
-  rw[h] at h'
-  choose a b using h'
-  choose n hn using (b).1
-  exact n
 
 --information funciton
-def inf_entr {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+def info {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ) (x : α) :ℝ := by
     have h: x ∈ univ := by tauto
     rw[← p.cover] at h; rw[mem_iUnion] at h
     choose a b using h
     exact (-Real.log (μ (p.f (a))).toReal)
 
+
+def cond_info {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) (s : partition m μ) (x : α) :ℝ := by
+  have h: x ∈ univ := by tauto
+  have h': x ∈ univ := by tauto
+  rw[← p.cover] at h; rw[mem_iUnion] at h
+  rw[← s.cover] at h'; rw[mem_iUnion] at h'
+  choose a b using h
+  choose c d using h'
+  exact (-Real.log (μ ((p.f (a)) ∩ s.f (c))).toReal/(μ (s.f (c))).toReal)
+
+-- should introduce a conditional in case the measure in denominator is zero
+
 end section
+
+theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ): met_entropy p = ∫ x, info p x ∂μ := by
+  sorry
+
+theorem info_add {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) (s : partition m μ) (t : partition m μ) :
+  cond_info (refine_partition p s) (t) = (cond_info s t) + cond_info (p) (refine_partition s t) := by
+    sorry
+theorem ent_add {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) (s : partition m μ) (t : partition m μ) :
+  conmet_entropy (refine_partition p s) (t) = (conmet_entropy s t) + conmet_entropy (p) (refine_partition s t) := by
+    sorry
+
+theorem  inf_mono {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) (s : partition m μ) (t : partition m μ) :
+  cond_info s t ≤ cond_info (refine_partition p s) (t):= by
+    sorry
+theorem  ent_mono {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) (s : partition m μ) (t : partition m μ) :
+  conmet_entropy s t ≤ conmet_entropy (refine_partition p s) (t):= by
+    sorry
+
+theorem ent_monod {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) (s : partition m μ) (t : partition m μ) :
+  conmet_entropy (p) (refine_partition s t) ≤ conmet_entropy p t := by
+    sorry
+theorem ent_subadd {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  (p : partition m μ) (s : partition m μ) (t : partition m μ) :
+  conmet_entropy (refine_partition p s) (t) ≤ conmet_entropy p t +  conmet_entropy s t := by
+    sorry
+
+
+
+
+
+
 
 
 
@@ -264,7 +312,7 @@ theorem convex_combination_inequality
         simp only [Fin.sum_univ_zero, Finset.sum_empty, MulZeroClass.mul_zero]
       rw[ht_sum] at h'; have: (1 : ℝ) ≠ 0 := by norm_num
       exact this h'
-    · sorry 
+    · sorry
 end
 
 
