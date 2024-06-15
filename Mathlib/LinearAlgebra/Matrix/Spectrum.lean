@@ -58,16 +58,16 @@ lemma mulVec_eigenvectorBasis (j : n) :
 
 /--Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc.toEuclideanLin -/
 theorem ofReal_eigenvalue_mem_spectrum_toEuclideanLin (i : n) :
-    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
+    (hA.eigenvalues i : 𝕜) ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
 /-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dim module.
 Compare with `LinearMap.toContinuousLinearMap`, the linear equivalence version of this result.-/
 def Module.End.toContinuousLinearMap.{v} (E : Type v) [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E][FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
-    {LinearMap.toContinuousLinearMap with
-    map_mul' := fun _ _ ↦ rfl
-    commutes' := fun _ ↦ rfl}
+    [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) where
+  __ := LinearMap.toContinuousLinearMap
+  map_mul' _ _ := rfl
+  commutes' _ := rfl
 
 /--Spectrum of a Hermitian matrix equals the spectrum as a EuclideanLin. -/
 theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
