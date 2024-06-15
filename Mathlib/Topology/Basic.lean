@@ -339,6 +339,16 @@ theorem interior_iInter_of_finite [Finite ι] (f : ι → Set X) :
   rw [← sInter_range, (finite_range f).interior_sInter, biInter_range]
 #align interior_Inter interior_iInter_of_finite
 
+@[simp]
+theorem interior_iInter₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m < n, f m) = ⋂ m < n, interior (f m) :=
+  (finite_lt_nat n).interior_biInter f
+
+@[simp]
+theorem interior_iInter₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m ≤ n, f m) = ⋂ m ≤ n, interior (f m) :=
+  (finite_le_nat n).interior_biInter f
+
 theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
   have : interior (s ∪ t) ⊆ s := fun x ⟨u, ⟨(hu₁ : IsOpen u), (hu₂ : u ⊆ s ∪ t)⟩, (hx₁ : x ∈ u)⟩ =>
@@ -520,11 +530,14 @@ theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set X) :
 #align closure_Union closure_iUnion_of_finite
 
 @[simp]
-theorem closure_iUnion₂_of_finite {n : ℕ} (f : ℕ → Set X) :
-    closure (⋃ m ≤ n, f m) = ⋃ m ≤ n, closure (f m) := by calc
-  closure (⋃ m ≤ n, f m) = closure (⋃ m ∈ {m | m ≤ n}, f m) := by simp only [mem_setOf_eq]
-  _ = ⋃ m ∈ {m | m ≤ n}, closure (f m) := Set.Finite.closure_biUnion (finite_le_nat n) f
-  _ = ⋃ m ≤ n, closure (f m) := by simp only [mem_setOf_eq]
+theorem closure_iUnion₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m < n, f m) = ⋃ m < n, closure (f m) :=
+  (finite_lt_nat n).closure_biUnion f
+
+@[simp]
+theorem closure_iUnion₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m ≤ n, f m) = ⋃ m ≤ n, closure (f m) :=
+  (finite_le_nat n).closure_biUnion f
 
 theorem interior_subset_closure : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
