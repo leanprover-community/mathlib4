@@ -403,15 +403,12 @@ lemma clear_local_denominator (v : HeightOneSpectrum R)
     obtain ⟨ϖ, hϖ⟩ := int_valuation_exists_uniformizer v
     have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
     refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
+    -- now manually translate an equality in ℤₘ₀ to an equality in ℤ
     rw [algebraMap.coe_pow, mem_adicCompletionIntegers, map_mul, hd, map_pow, local_eq_global,
       valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow, ← WithZero.coe_mul,
-      WithZero.coe_le_one] -- this exists after #13853
-    norm_cast -- might no longer be needed
-    -- manual rewrites to get us into ℤ
-    rw [ ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow, toAdd_ofAdd, toAdd_one]
-    rw [show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
-      Int.natCast_natAbs, smul_eq_mul]]
-    rw [← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+      WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow, toAdd_ofAdd, toAdd_one,
+      show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
+      Int.natCast_natAbs, smul_eq_mul], ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
     linarith
 
 -- move to nearer definition
@@ -446,12 +443,7 @@ lemma boundthing (r : R) :
     exact v.int_valuation_le_one r
   apply valuation_of_algebraMap
 
---  refine (Valuation.mem_valuationSubring_iff v.valuation (r : K)).mp ?_
-
-    -- I'm sure I've seen this
-
-
---#check Valued.valuedCompletion_apply
+-- this needs tidying
 variable {R K} in
 lemma clear_denominator (a : FiniteAdeleRing R K) :
     ∃ (b : R⁰) (c : R_hat R K), a * ((b : R) : FiniteAdeleRing R K) = c := by
