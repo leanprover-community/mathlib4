@@ -557,15 +557,12 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
     any_goals simp only [zero_def, toClassFun, zero_add, add_zero]
-    by_cases hx : x₁ = x₂
-    · by_cases hy : y₁ = W.negY x₂ y₂
-      · substs hx hy
-        rw [add_of_Y_eq rfl rfl]
-        exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
-      · rw [add_of_Y_ne hx hy]
-        exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun _ => hy).symm
-    · rw [add_of_X_ne hx]
-      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun h => (hx h).elim).symm
+    obtain ⟨rfl, rfl⟩ | h := em (x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)
+    · rw [add_of_Y_eq rfl rfl]
+      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
+    · have h hx hy := h ⟨hx, hy⟩
+      rw [add_of_imp h]
+      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ h).symm
 #align weierstrass_curve.point.to_class WeierstrassCurve.Affine.Point.toClass
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
@@ -584,15 +581,8 @@ private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   · rw [zero_def, zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
   · rw [neg_some, some.injEq]
     constructor
-    · intro h
-      by_cases hx : x₁ = x₂
-      · by_cases hy : y₁ = W.negY x₂ y₂
-        · exact ⟨hx, hy⟩
-        · rw [add_of_Y_ne hx hy] at h
-          contradiction
-      · rw [add_of_X_ne hx] at h
-        contradiction
-    · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
+    · contrapose!; intro h; rw [add_of_imp h]; exact some_ne_zero _
+    · exact fun ⟨hx, hy⟩ ↦ add_of_Y_eq hx hy
 
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
