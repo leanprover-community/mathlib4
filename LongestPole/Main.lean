@@ -5,9 +5,9 @@ Authors: Scott Morrison
 -/
 import ImportGraph
 import Mathlib.Data.String.Defs
+import Mathlib.Util.FormatTable
 import Batteries.Lean.Util.Path
 import Cli
-import LongestPole.FormatTable
 import LongestPole.SpeedCenterJson
 
 /-!
