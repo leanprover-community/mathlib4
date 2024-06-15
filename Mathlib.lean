@@ -589,6 +589,7 @@ import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.Algebra.Polynomial.CancelLeads
 import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.Algebra.Polynomial.Coeff
