@@ -8,6 +8,7 @@ import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Tactic.Generalize
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 #align_import topology.gluing from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 

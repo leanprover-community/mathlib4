@@ -193,8 +193,7 @@ theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
   norm_cast
 #align padic_int.coe_int_eq PadicInt.intCast_eq
 
--- 2024-04-05
-@[deprecated] alias coe_int_eq := intCast_eq
+@[deprecated (since := "2024-04-05")] alias coe_int_eq := intCast_eq
 
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
