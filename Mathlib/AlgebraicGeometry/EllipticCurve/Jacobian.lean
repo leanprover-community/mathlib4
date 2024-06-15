@@ -123,6 +123,9 @@ lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
 lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, Y, Z] z = Z :=
   ⟨rfl, rfl, rfl⟩
 
+lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] := by
+  ext i; fin_cases i <;> rfl
+
 /-- The scalar multiplication on a point representative. -/
 scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
   ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
@@ -1562,9 +1565,6 @@ end Point
 end Affine
 
 section Map
-
-lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] := by
-  ext i; fin_cases i <;> rfl
 
 variable {S : Type*} [CommRing S] (f : R →+* S) (P Q : Fin 3 → R)
 
