@@ -338,12 +338,6 @@ instance : CommRing (FiniteAdeleRing R K) :=
 instance : Algebra K (FiniteAdeleRing R K) :=
   Subalgebra.algebra (subalgebra R K)
 
-example (A B : Type) [CommRing A] [CommRing B] (φ : A →+* B) : Algebra A B := by
-  exact φ.toAlgebra
-
-example : R →+* K := algebraMap R K
-example : K →+* (FiniteAdeleRing R K) := RingHom.smulOneHom
-
 instance : Algebra R (FiniteAdeleRing R K) :=
   ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K)).toAlgebra
 
@@ -380,12 +374,19 @@ open nonZeroDivisors
 
 open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
 
-lemma foo (a b : FiniteAdeleRing R K) (v : HeightOneSpectrum R) :
-    ((a * b : FiniteAdeleRing R K) : K_hat R K) v = (a : K_hat R K) v * (b : K_hat R K) v := rfl
-
 open scoped DiscreteValuation
 
-open Multiplicative
+open Multiplicative Additive
+
+lemma local_eq_global (r : R) : Valued.v (r : v.adicCompletion K) = v.valuation (r : K) := by
+  convert Valued.valuedCompletion_apply (r : K)
+
+lemma valuation_eq_intValuationDef (r : R) : v.valuation (r : K) = v.intValuationDef r :=
+  Valuation.extendToLocalization_apply_map_apply _ _ _ _
+
+lemma WithZero.one_lt_coe {a : Multiplicative ℤ} : 1 < (a : ℤₘ₀) ↔ 1 < a :=
+  WithBot.one_lt_coe
+
 
 variable {R K} in
 lemma clear_local_denominator (v : HeightOneSpectrum R)
@@ -393,65 +394,30 @@ lemma clear_local_denominator (v : HeightOneSpectrum R)
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
     simp [ha, Submonoid.one_mem]
-  · have xfoo : Valued.v a ≠ 0 := by
-     intro h
-     apply ha
-     simp only [map_eq_zero] at h
-     rw [h]
-     exact ValuationSubring.zero_mem (adicCompletionIntegers K v)
-    obtain ⟨n, hn⟩ : ∃ n : Multiplicative ℤ, Valued.v a = n := Option.ne_none_iff_exists'.mp xfoo
-    -- n>1
-    have foo : n > 1 := by
-      by_contra! h2
-      apply ha
-      unfold adicCompletionIntegers
-      simp only [Valuation.mem_valuationSubring_iff]
-      rw [hn]
-      exact_mod_cast h2
-    let d : ℤ := Multiplicative.toAdd n
-    have hd : 0 < d := by
-      change 1 < n at foo
-      rw [← Multiplicative.toAdd_lt] at foo
-      exact foo
-    have := v.ne_bot
-    rw [Submodule.ne_bot_iff] at this
-    obtain ⟨r, hrv, hr0⟩ := this
-    have moo : v.asIdeal ∣ Ideal.span {r} := by
-      simp only [Ideal.dvd_span_singleton, hrv]
-    rw [← valuation_lt_one_iff_dvd (K := K) v r, valuation_of_algebraMap] at moo
-    obtain ⟨m, hm⟩ : ∃ m : Multiplicative ℤ, v.intValuation r = m :=
-      Option.ne_none_iff_exists'.mp <| int_valuation_ne_zero _ _ hr0
-    let e : ℤ := Multiplicative.toAdd m
-    have moo2 := hm ▸ moo
-    norm_cast at moo2
-    rw [← Multiplicative.toAdd_lt] at moo2
-    simp at moo2
-    refine ⟨r^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hr0) _, ?_⟩
+  · rw [not_mem_adicCompletionIntegers] at ha
+    obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
+      Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
+    rw [hd] at ha
+    -- next line doesn't work
+    -- have foobb : (1 : Multiplicative ℤ) < ofAdd d := by exact WithBot.one_lt_coe.mp ha
+    norm_cast at ha -- would like to do this with a `rw` but can't get `WithBot.one_lt_coe`
+    -- to fire presumably because WithZero and WithBot are different
+    rw [← ofAdd_zero, ofAdd_lt] at ha
+    obtain ⟨ϖ, hϖ⟩ := int_valuation_exists_uniformizer v
+    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ;
+    refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
     push_cast
-    rw [mem_adicCompletionIntegers, map_mul, hn, map_pow]
-    suffices (n : ℤₘ₀) * m ^ d.natAbs  ≤ 1 by
-      convert this
-      rw [← hm]
-      simp only [intValuation_toFun]
-      convert Valued.valuedCompletion_apply (r : K)
-      -- question now purely global
-      symm
-      apply Valuation.extendToLocalization_apply_map_apply
-      intro r hr hr2
-      simp only [SetLike.mem_coe, Valuation.mem_supp_iff, intValuation_toFun] at hr2
-      have := int_valuation_zero_le v ⟨r, hr⟩
-      simp [← hr2] at this
+    rw [mem_adicCompletionIntegers, map_mul, hd, map_pow]
+    -- ⊢ n * v(r)^d < 1 in ℤₘ₀
+    rw [local_eq_global, valuation_eq_intValuationDef, hϖ]
     norm_cast
-    rw [← toAdd_le, toAdd_mul, toAdd_pow, toAdd_one]
-    change d + _ • e ≤ 0
-    change e < 0 at moo2
-    rw [show d.natAbs • e = (d.natAbs : ℤ) • e by simp only [nsmul_eq_mul,
+    -- manual rewrites to get us into ℤ
+    rw [ ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow, toAdd_ofAdd, toAdd_one]
+    change d + _ • (-1) ≤ _
+    rw [show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
       Int.natCast_natAbs, smul_eq_mul]]
-    rw [← Int.eq_natAbs_of_zero_le hd.le, smul_eq_mul]
-    suffices d * 1 + d * e ≤ 0 by simpa
-    rw [← mul_add]
-    have moo : 1 + e ≤ 0 := by omega
-    exact Linarith.mul_nonpos moo foo
+    rw [← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+    linarith
 
 lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
     a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
