@@ -182,12 +182,11 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
-  fun _ _ h => ext <| DFunLike.congr_fun (F := α →+ β) h
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
-set_option linter.deprecated false in
-theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) := fun _ _ h =>
-  ext <| MulHom.congr_fun h
+theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) :=
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align non_unital_ring_hom.coe_mul_hom_injective NonUnitalRingHom.coe_mulHom_injective
 
 end
@@ -380,11 +379,7 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
-set_option linter.deprecated false in
-/-- Ring homomorphisms preserve `bit1`. -/
-@[simp] lemma map_bit1 [NonAssocSemiring α] [NonAssocSemiring β] [RingHomClass F α β]
-    (f : F) (a : α) : (f (bit1 a) : β) = bit1 (f a) := by simp [bit1]
-#align map_bit1 map_bit1
+#noalign map_bit1
 
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
@@ -543,9 +538,8 @@ theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α �
   ext <| DFunLike.congr_fun (F := α →+ β) h
 #align ring_hom.coe_add_monoid_hom_injective RingHom.coe_addMonoidHom_injective
 
-set_option linter.deprecated false in
-theorem coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) := fun _ _ h =>
-  ext <| MonoidHom.congr_fun h
+theorem coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align ring_hom.coe_monoid_hom_injective RingHom.coe_monoidHom_injective
 
 /-- Ring homomorphisms map zero to zero. -/

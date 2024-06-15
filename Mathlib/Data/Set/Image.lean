@@ -1002,20 +1002,8 @@ theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c}
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
     range (Subtype.map f h) = (↑) ⁻¹' (f '' { x | p x }) := by
   ext ⟨x, hx⟩
-  rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
-  apply Iff.intro
-  · rintro ⟨a, b, hab⟩
-    rw [Subtype.map, Subtype.mk.injEq] at hab
-    use a
-    trivial
-  · rintro ⟨a, b, hab⟩
-    use a
-    use b
-    rw [Subtype.map, Subtype.mk.injEq]
-    exact hab
-  -- Porting note: `simp_rw` fails here
-  -- simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map, Subtype.coe_mk,
-  --   mem_set_of, exists_prop]
+  simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map]
+  simp only [Subtype.mk.injEq, exists_prop, mem_setOf_eq]
 #align set.range_subtype_map Set.range_subtype_map
 
 theorem image_swap_eq_preimage_swap : image (@Prod.swap α β) = preimage Prod.swap :=
@@ -1237,6 +1225,10 @@ theorem nontrivial_of_image (f : α → β) (s : Set α) (hs : (f '' s).Nontrivi
   let ⟨_, ⟨x, hx, rfl⟩, _, ⟨y, hy, rfl⟩, hxy⟩ := hs
   ⟨x, hx, y, hy, mt (congr_arg f) hxy⟩
 #align set.nontrivial_of_image Set.nontrivial_of_image
+
+@[simp]
+theorem image_nontrivial {f : α → β} (hf : f.Injective) : (f '' s).Nontrivial ↔ s.Nontrivial :=
+  ⟨nontrivial_of_image f s, fun h ↦ h.image hf⟩
 
 /-- If the preimage of a set under an injective map is nontrivial, the set is nontrivial. -/
 theorem nontrivial_of_preimage {f : α → β} (hf : Function.Injective f) (s : Set β)

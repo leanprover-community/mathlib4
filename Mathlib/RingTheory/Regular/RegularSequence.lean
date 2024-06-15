@@ -579,13 +579,12 @@ private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
   obtain ⟨ha, hb⟩ := h1
   rw [← isSMulRegular_iff_torsionBy_eq_bot] at h2
   specialize h2 (le_antisymm ?_ (smul_le_self_of_tower a (torsionBy R M b)))
-  · refine le_of_eq_of_le ?_ <|
-      IsSMulRegular.smul_top_inf_eq_smul_of_isSMulRegular_on_quot <|
-        ha.of_injective _ <| ker_eq_bot.mp <| ker_liftQ_eq_bot' _ (lsmul R M b) rfl
-    rw [← (IsSMulRegular.isSMulRegular_on_quot_iff_lsmul_comap_eq _ _).mp hb]
+  · refine le_of_eq_of_le ?_ <| smul_top_inf_eq_smul_of_isSMulRegular_on_quot <|
+      ha.of_injective _ <| ker_eq_bot.mp <| ker_liftQ_eq_bot' _ (lsmul R M b) rfl
+    rw [← (isSMulRegular_on_quot_iff_lsmul_comap_eq _ _).mp hb]
     exact (inf_eq_right.mpr (ker_le_comap _)).symm
-  · rwa [ha.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul_of_isSMulRegular, inf_comm, smul_comm,
-      ← h2.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul_of_isSMulRegular, and_iff_left hb]
+  · rwa [ha.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul, inf_comm, smul_comm,
+      ← h2.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul, and_iff_left hb]
 
 -- TODO: Equivalence of permutability of regular sequences to regularity of
 -- subsequences and regularity on poly ring. See [07DW] in stacks project
