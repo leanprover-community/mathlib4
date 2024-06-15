@@ -39,12 +39,11 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
     else do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
-  let existingFiles ← (allModules.erase ml.lean).mapM fun f => do
-    -- this check is helpful in case the `git` option is on and a local file has been removed
-    if ← pathExists f then
-      return f
-    else return ""
-  return existingFiles.filter (· != "")
+  -- Filter out all files which do not exist.
+  -- This check is helpful in case the `git` option is on and a local file has been removed.
+  return ← (allModules.erase ml.lean).filterMapM (fun f ↦ do
+    if ← pathExists f then pure (some f) else pure none
+  )
 
 /-- Like `getAllFiles`, but return an array of *module* names instead,
 i.e. names of the form `Mathlib.Algebra.Algebra.Basic`.
