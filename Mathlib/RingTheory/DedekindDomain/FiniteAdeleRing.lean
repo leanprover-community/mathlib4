@@ -378,15 +378,17 @@ open scoped DiscreteValuation
 
 open Multiplicative Additive
 
+-- this needs moving
 lemma local_eq_global (r : R) : Valued.v (r : v.adicCompletion K) = v.valuation (r : K) := by
   convert Valued.valuedCompletion_apply (r : K)
 
+-- this needs moving too
 lemma valuation_eq_intValuationDef (r : R) : v.valuation (r : K) = v.intValuationDef r :=
   Valuation.extendToLocalization_apply_map_apply _ _ _ _
 
+-- this is in #13853
 lemma WithZero.one_lt_coe {a : Multiplicative ℤ} : 1 < (a : ℤₘ₀) ↔ 1 < a :=
   WithBot.one_lt_coe
-
 
 variable {R K} in
 lemma clear_local_denominator (v : HeightOneSpectrum R)
@@ -397,32 +399,27 @@ lemma clear_local_denominator (v : HeightOneSpectrum R)
   · rw [not_mem_adicCompletionIntegers] at ha
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
       Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
-    rw [hd] at ha
-    -- next line doesn't work
-    -- have foobb : (1 : Multiplicative ℤ) < ofAdd d := by exact WithBot.one_lt_coe.mp ha
-    norm_cast at ha -- would like to do this with a `rw` but can't get `WithBot.one_lt_coe`
-    -- to fire presumably because WithZero and WithBot are different
-    rw [← ofAdd_zero, ofAdd_lt] at ha
+    rw [hd, WithZero.one_lt_coe, ← ofAdd_zero, ofAdd_lt] at ha
     obtain ⟨ϖ, hϖ⟩ := int_valuation_exists_uniformizer v
-    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ;
+    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
     refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
-    push_cast
-    rw [mem_adicCompletionIntegers, map_mul, hd, map_pow]
-    -- ⊢ n * v(r)^d < 1 in ℤₘ₀
-    rw [local_eq_global, valuation_eq_intValuationDef, hϖ]
-    norm_cast
+    rw [algebraMap.coe_pow, mem_adicCompletionIntegers, map_mul, hd, map_pow, local_eq_global,
+      valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow, ← WithZero.coe_mul,
+      WithZero.coe_le_one] -- this exists after #13853
+    norm_cast -- might no longer be needed
     -- manual rewrites to get us into ℤ
     rw [ ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow, toAdd_ofAdd, toAdd_one]
-    change d + _ • (-1) ≤ _
     rw [show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
       Int.natCast_natAbs, smul_eq_mul]]
     rw [← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
     linarith
 
+-- move to nearer definition
 lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
     a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
   ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
 
+-- move to another file
 lemma Submonoid.finprod_mem {G : Type*} [CommMonoid G] {M : Submonoid G} {ι : Type*}
     {S : Set ι}
     {f : ι → G} (hf : ∀ i ∈ S, f i ∈ M) : (∏ᶠ i ∈ S, f i) ∈ M := by
@@ -434,6 +431,7 @@ lemma Submonoid.finprod_mem {G : Type*} [CommMonoid G] {M : Submonoid G} {ι : T
 
 open scoped DiscreteValuation
 
+-- this should now be trivial
 lemma boundthing (r : R) :
     (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
   rw [mem_adicCompletionIntegers]
