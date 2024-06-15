@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Batteries.Data.HashMap.Basic
 import Batteries.Lean.SMap
-import Batteries.Lean.Name
 import Lean.Meta.Match.MatcherInfo
 
 /-!
