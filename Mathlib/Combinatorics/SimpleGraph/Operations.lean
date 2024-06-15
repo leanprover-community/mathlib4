@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
 # Local graph operations
@@ -26,6 +27,18 @@ open Finset
 namespace SimpleGraph
 
 variable {V : Type*} [DecidableEq V] (G : SimpleGraph V) (s t : V)
+
+namespace Iso
+
+variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
+
+theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+    G.edgeFinset.card = G'.edgeFinset.card := by
+  apply Finset.card_eq_of_equiv
+  simp only [Set.mem_toFinset]
+  exact f.mapEdgeSet
+
+end Iso
 
 section ReplaceVertex
 
@@ -62,13 +75,13 @@ variable {s}
 
 theorem edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeSet =
     G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s) := by
-  ext e; refine' e.inductionOn _
+  ext e; refine e.inductionOn ?_
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
 theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
     (G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s)) \ {s(t, t)} := by
-  ext e; refine' e.inductionOn _
+  ext e; refine e.inductionOn ?_
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
@@ -104,7 +117,7 @@ theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_not_adj hn,
     card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
-    tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
+    ← Nat.sub_add_comm <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]
   unfold Function.Injective
@@ -115,7 +128,7 @@ theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]),
     card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
-    tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
+    ← Nat.sub_add_comm <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]
   unfold Function.Injective

@@ -110,7 +110,7 @@ theorem condCount_self (hs : s.Finite) (hs' : s.Nonempty) : condCount s s = 1 :=
 theorem condCount_eq_one_of (hs : s.Finite) (hs' : s.Nonempty) (ht : s ⊆ t) :
     condCount s t = 1 := by
   haveI := condCount_isProbabilityMeasure hs hs'
-  refine' eq_of_le_of_not_lt prob_le_one _
+  refine eq_of_le_of_not_lt prob_le_one ?_
   rw [not_lt, ← condCount_self hs hs']
   exact measure_mono ht
 #align probability_theory.cond_count_eq_one_of ProbabilityTheory.condCount_eq_one_of
@@ -123,7 +123,7 @@ theorem pred_true_of_condCount_eq_one (h : condCount s t = 1) : s ⊆ t := by
     Nat.cast_inj] at h
   suffices s ∩ t = s by exact this ▸ fun x hx => hx.2
   rw [← @Set.Finite.toFinset_inj _ _ _ (hsf.inter_of_left _) hsf]
-  exact Finset.eq_of_subset_of_card_le (Set.Finite.toFinset_mono <| s.inter_subset_left t) h.ge
+  exact Finset.eq_of_subset_of_card_le (Set.Finite.toFinset_mono s.inter_subset_left) h.ge
 #align probability_theory.pred_true_of_cond_count_eq_one ProbabilityTheory.pred_true_of_condCount_eq_one
 
 theorem condCount_eq_zero_iff (hs : s.Finite) : condCount s t = 0 ↔ s ∩ t = ∅ := by

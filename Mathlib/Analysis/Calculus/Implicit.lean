@@ -96,7 +96,7 @@ needs to have a complete control over the choice of the implicit function.
 * both functions are strictly differentiable at `a`;
 * the derivatives are surjective;
 * the kernels of the derivatives are complementary subspaces of `E`. -/
--- Porting note: not yet supported @[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not yet ported @[nolint has_nonempty_instance]
 structure ImplicitFunctionData (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] (F : Type*) [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (G : Type*) [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -356,8 +356,8 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
   · ext
     -- Porting note: added parentheses to help `simp`
     simp only [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
-      (ContinuousLinearMap.comp_apply), Submodule.coe_subtypeL', Submodule.coeSubtype,
-      (ContinuousLinearMap.id_apply)]
+      ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coeSubtype,
+      ContinuousLinearMap.id_apply]
   swap
   · ext
     -- Porting note: added parentheses to help `simp`
@@ -444,8 +444,8 @@ theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f'
     {l : Filter α} {g₁ : α → F} {g₂ : α → ker f'} (h₁ : Tendsto g₁ l (𝓝 <| f a))
     (h₂ : Tendsto g₂ l (𝓝 0)) :
     Tendsto (fun t => hf.implicitFunction f f' hf' (g₁ t) (g₂ t)) l (𝓝 a) := by
-  refine' ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
-    (hf.mem_implicitToPartialHomeomorph_source hf')).comp _
+  refine ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
+    (hf.mem_implicitToPartialHomeomorph_source hf')).comp ?_
   rw [implicitToPartialHomeomorph_self]
   exact h₁.prod_mk_nhds h₂
 #align has_strict_fderiv_at.tendsto_implicit_function HasStrictFDerivAt.tendsto_implicitFunction

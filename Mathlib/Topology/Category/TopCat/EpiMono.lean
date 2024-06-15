@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
 import Mathlib.Topology.Category.TopCat.Adjunctions
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 #align_import topology.category.Top.epi_mono from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

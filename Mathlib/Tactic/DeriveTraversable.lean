@@ -430,12 +430,12 @@ initialize registerDerivingHandler ``Traversable traversableDeriveHandler
 def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArray := {})
     (discharge? : Option Simp.Discharge := none)
     (simplifyTarget : Bool := true) (fvarIdsToSimp : Array FVarId := #[])
-    (usedSimps : Simp.UsedSimps := {}) :
-    MetaM (Option (Array FVarId × MVarId) × Simp.UsedSimps) := do
+    (stats : Simp.Stats := {}) :
+    MetaM (Option (Array FVarId × MVarId) × Simp.Stats) := do
   let some e ← getSimpExtension? `functor_norm | failure
   let s' ← e.getTheorems
   simpGoal m { s with simpTheorems := s.simpTheorems.push s' } simprocs discharge? simplifyTarget
-    fvarIdsToSimp usedSimps
+    fvarIdsToSimp stats
 /--
 Run the following tactic:
 ```lean

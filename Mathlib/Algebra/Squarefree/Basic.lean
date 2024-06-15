@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 #align_import algebra.squarefree from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
@@ -118,7 +119,7 @@ variable [CommMonoid R] [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 theorem squarefree_iff_multiplicity_le_one (r : R) :
     Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
-  refine' forall_congr' fun a => _
+  refine forall_congr' fun a => ?_
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   norm_cast
   rw [← one_add_one_eq_two]
@@ -189,7 +190,8 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
 theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
     x ∣ y ^ n ↔ x ∣ y := ⟨hsq.isRadical n y, (·.pow h0)⟩
 #align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree Squarefree.dvd_pow_iff_dvd
-@[deprecated]
+
+@[deprecated (since := "2024-02-12")]
 alias UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree := Squarefree.dvd_pow_iff_dvd
 
 end
@@ -315,8 +317,10 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 #align int.squarefree_nat_abs Int.squarefree_natAbs
 
 @[simp]
-theorem squarefree_coe_nat {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
+theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
   rw [← squarefree_natAbs, natAbs_ofNat]
-#align int.squarefree_coe_nat Int.squarefree_coe_nat
+#align int.squarefree_coe_nat Int.squarefree_natCast
+
+@[deprecated (since := "2024-04-05")] alias squarefree_coe_nat := squarefree_natCast
 
 end Int

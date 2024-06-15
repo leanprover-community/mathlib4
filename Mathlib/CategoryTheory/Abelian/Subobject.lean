@@ -30,13 +30,14 @@ variable {C : Type u} [Category.{v} C]
     since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps!]
 def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
-  refine' OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) _ _
+  refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_
   · change (cokernelOrderHom X).comp (kernelOrderHom X) = _
-    refine' OrderHom.ext _ _ (funext (Subobject.ind _ _))
+    refine OrderHom.ext _ _ (funext (Subobject.ind _ ?_))
     intro A f hf
     dsimp only [OrderHom.comp_coe, Function.comp_apply, kernelOrderHom_coe, Subobject.lift_mk,
-      cokernelOrderHom_coe, OrderHom.id_coe, id.def]
-    refine' Subobject.mk_eq_mk_of_comm _ _ ⟨_, _, Quiver.Hom.unop_inj _, Quiver.Hom.unop_inj _⟩ _
+      cokernelOrderHom_coe, OrderHom.id_coe, id]
+    refine Subobject.mk_eq_mk_of_comm _ _
+        ⟨?_, ?_, Quiver.Hom.unop_inj ?_, Quiver.Hom.unop_inj ?_⟩ ?_
     · exact (Abelian.epiDesc f.unop _ (cokernel.condition (kernel.ι f.unop))).op
     · exact (cokernel.desc _ _ (kernel.condition f.unop)).op
     · rw [← cancel_epi (cokernel.π (kernel.ι f.unop))]
@@ -46,11 +47,11 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
         cokernel.π_desc, Category.comp_id]
     · exact Quiver.Hom.unop_inj (by simp only [unop_comp, Quiver.Hom.unop_op, comp_epiDesc])
   · change (kernelOrderHom X).comp (cokernelOrderHom X) = _
-    refine' OrderHom.ext _ _ (funext (Subobject.ind _ _))
+    refine OrderHom.ext _ _ (funext (Subobject.ind _ ?_))
     intro A f hf
     dsimp only [OrderHom.comp_coe, Function.comp_apply, cokernelOrderHom_coe, Subobject.lift_mk,
-      kernelOrderHom_coe, OrderHom.id_coe, id.def, unop_op, Quiver.Hom.unop_op]
-    refine' Subobject.mk_eq_mk_of_comm _ _ ⟨_, _, _, _⟩ _
+      kernelOrderHom_coe, OrderHom.id_coe, id, unop_op, Quiver.Hom.unop_op]
+    refine Subobject.mk_eq_mk_of_comm _ _ ⟨?_, ?_, ?_, ?_⟩ ?_
     · exact Abelian.monoLift f _ (kernel.condition (cokernel.π f))
     · exact kernel.lift _ _ (cokernel.condition f)
     · simp only [← cancel_mono (kernel.ι (cokernel.π f)), Category.assoc, image.fac, monoLift_comp,

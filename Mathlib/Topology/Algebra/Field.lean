@@ -3,11 +3,11 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
-import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Topology.Algebra.GroupWithZero
+import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Order.LocalExtr
-import Mathlib.FieldTheory.Subfield
 
 #align_import topology.algebra.field from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
