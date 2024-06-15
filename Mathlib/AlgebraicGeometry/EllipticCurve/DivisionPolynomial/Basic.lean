@@ -69,7 +69,7 @@ $\Psi_2^{[2]} \in R[X]$ and $\tilde{\Psi}_n \in R[X]$.
  * `WeierstrassCurve.Φ`: the univariate polynomials $\Phi_n$.
  * `WeierstrassCurve.ψ`: the bivariate $n$-division polynomials $\psi_n$.
  * `WeierstrassCurve.φ`: the bivariate polynomials $\phi_n$.
- * TODO: the bivariate polynomials $\omega_n$.
+ * `WeierstrassCurve.ω`: the bivariate polynomials $\omega_n$.
 
 ## Implementation notes
 
@@ -81,7 +81,11 @@ allow the computation of their leading terms without ambiguity. Furthermore, eva
 polynomials at a rational point on $W$ recovers their original definition up to linear combinations
 of the Weierstrass equation of $W$, hence also avoiding the need to work under the coordinate ring.
 
-TODO: implementation notes for the definition of $\omega_n$.
+For the definition of $\omega_n$, we came up with a direct formula in terms of two sequences
+(`EllSequence.redInvarDenom` and `EllSequence.compl₂EDSAux`) associated to the elliptic
+divisibility sequence $\psi_n$, as well as the Weierstrass polynomial and its derivatives.
+It is easy to show the formula is compatible with ring homomorphisms and therefore the adopted
+definition agrees with the specialization of the universal $\omega_n$.
 
 ## References
 
@@ -104,29 +108,6 @@ local macro "map_simp" : tactic =>
     apply_ite <| mapRingHom _, WeierstrassCurve.map])
 
 universe r s u v
-
-namespace Polynomial -- move this to Affine?
-
-variable {R : Type*}
-
-noncomputable section
-
-/-- `evalEval x y p` is the evaluation `p(x,y)` of a two-variable polynomial `p : R[X][Y]`. -/
-abbrev evalEval [Semiring R] (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
-
-/-- `evalEval x y` as a ring homomorphism. -/
-@[simps!] abbrev evalEvalRingHom [CommSemiring R] (x y : R) : R[X][Y] →+* R :=
-  (evalRingHom x).comp (evalRingHom <| C y)
-
-/-- A constant viewed as a polynomial in two variables. -/
-abbrev CC [Semiring R] (r : R) : R[X][Y] := C (C r)
-
-lemma coe_algebraMap_eq_CC [CommSemiring R] : algebraMap R R[X][Y] = CC (R := R) := rfl
-lemma coe_evalEvalRingHom [CommSemiring R] (x y : R) : evalEvalRingHom x y = evalEval x y := rfl
-
-end
-
-end Polynomial
 
 namespace WeierstrassCurve
 

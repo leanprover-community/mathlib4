@@ -684,7 +684,7 @@ variable {P Q : W.Point} {P' Q' : Fin 3 → F} (hP : P.point = ⟦P'⟧) (hQ : Q
 lemma add_point_of_point_eq : (P + Q).point = ⟦W.add P' Q'⟧ := by
   simp_rw [add_point, hP, hQ]; rfl
 
-lemma two_smul_point : (2 • P).point = ⟦W.dblXYZ P'⟧ := by
+lemma two_zsmul_point : (2 • P).point = ⟦W.dblXYZ P'⟧ := by
   rw [two_smul, add_point_of_point_eq hP hP, Jacobian.add, if_pos (Setoid.refl _)]
 
 lemma add_point_of_ne (ne : P ≠ Q) :

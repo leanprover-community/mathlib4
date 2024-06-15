@@ -8,11 +8,16 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 /-!
 # The universal elliptic curve
 
-This file defines the universal Weierstrass curve over the polynomial ring
-`ℤ[A₁,A₂,A₃,A₄,A₆]`, the universal pointed Weierstrass curve over the ring
-`R := ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩` (where `P` is the Weierstrass polynomial) with
-distinguished point `(X,Y)`, and the universal pointed elliptic curve over the
-field of fractions of `R`.
+This file defines the universal Weierstrass curve (`Universal.curve`) over the
+polynomial ring `ℤ[A₁,A₂,A₃,A₄,A₆]`, and the universal pointed elliptic curve
+(`Universal.pointedCurve`) over the field of fractions (`Universal.Field`) of the universal ring
+`ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩ = Universal.Poly/⟨P⟩` (`Universal.Ring`, where `P` is the Weierstrass
+polynomial) with distinguished point `(X,Y)`.
+
+Given a Weierstrass curve `W` over a commutative ring `R`, we define the specialization
+homomorphism `W.specialize : ℤ[A₁,A₂,A₃,A₄,A₆] →+* R`. If `(x,y)` is a point on the affine plane,
+we define `W.polyEval x y : Universal.Poly →+* R`, which factors through
+`W.ringEval x y : Universal.Ring →+* R` if `(x,y)` is on `W`.
 
 We also introduce the cusp curve $Y^2 = X^3$, on which is the rational point $(1,1)$,
 with the nice property that $ψₙ(1,1) = n$, making it easy to prove nonvanishing of
@@ -23,30 +28,6 @@ the universal $ψₙ$ when $n ≠ 0$ by specializing to the cusp curve, which sh
 noncomputable section
 
 open scoped PolynomialPolynomial
-
-namespace Polynomial /- move this -/
-
-variable {R S} [CommSemiring R] [CommSemiring S]
-
-lemma eval_C_X_comp_eval₂_map_C_X :
-    (evalRingHom (C X : R[X][Y])).comp (eval₂RingHom (mapRingHom <| algebraMap R R[X][Y]) (C X)) =
-      .id _ := by
-  ext <;> simp
-
-lemma eval_C_X_eval₂_map_C_X {p : R[X][Y]} :
-    eval (C X) (eval₂ (mapRingHom <| algebraMap R R[X][Y]) (C X) p) = p :=
-  congr($eval_C_X_comp_eval₂_map_C_X p)
-
-lemma eval₂RingHom_eq_evalRingHom_comp_mapRingHom (f : R →+* S) (x y : S) :
-    eval₂RingHom (eval₂RingHom f x) y =
-      (evalRingHom x).comp ((evalRingHom <| C y).comp <| mapRingHom <| mapRingHom f) := by
-  ext <;> simp
-
-lemma eval₂RingHom_eval₂RingHom_apply (f : R →+* S) (x y : S) (p : R[X][Y]) :
-    eval₂RingHom (eval₂RingHom f x) y p = ((p.map <| mapRingHom f).eval <| C y).eval x :=
-  congr($(eval₂RingHom_eq_evalRingHom_comp_mapRingHom f x y) p)
-
-end Polynomial
 
 namespace WeierstrassCurve
 
@@ -92,6 +73,13 @@ def polyToField : Poly →+* Universal.Field := (algebraMap Universal.Ring _).co
 lemma polyToField_apply (p : Poly) :
     polyToField p = algebraMap Universal.Ring _ (AdjoinRoot.mk _ p) := rfl
 
+lemma algebraMap_field_eq_comp :
+    algebraMap (MvPolynomial Coeff ℤ) Universal.Field = polyToField.comp (algebraMap _ _) := rfl
+
+lemma algebraMap_ring_eq_comp :
+    algebraMap (MvPolynomial Coeff ℤ) Universal.Ring = (AdjoinRoot.mk _).comp (algebraMap _ _) :=
+  rfl
+
 @[simp] lemma polyToField_polynomial : polyToField curve.polynomial = 0 := by
   rw [polyToField_apply, AdjoinRoot.mk_self, map_zero]
 
@@ -108,12 +96,6 @@ def pointedCurve : EllipticCurve Universal.Field where
     simpa only [map_Δ, map_ne_zero_iff _ algebraMap_field_injective] using Δ_curve_ne_zero
   coe_Δ' := rfl
 
-lemma algebraMap_field_eq_comp :
-    algebraMap (MvPolynomial Coeff ℤ) Universal.Field = polyToField.comp (algebraMap _ _) := rfl
-
-lemma algebraMap_ring_eq_comp :
-    algebraMap (MvPolynomial Coeff ℤ) Universal.Ring = (AdjoinRoot.mk _).comp (algebraMap _ _) :=
-  rfl
 
 open Polynomial in
 lemma equation_point : pointedCurve.toAffine.Equation (polyToField (C X)) (polyToField Y) := by
@@ -123,10 +105,39 @@ lemma equation_point : pointedCurve.toAffine.Equation (polyToField (C X)) (polyT
 
 open Polynomial Affine in
 /-- The distinguished point on the universal pointed Weierstrass curve. -/
-def point : curve⟮Universal.Field⟯ :=
+def Affine.point : curve⟮Universal.Field⟯ :=
   .some (EllipticCurve.Affine.nonsingular pointedCurve equation_point)
 
+/-- The distinguished point on the universal curve in Jacobian coordinates. -/
+def Jacobian.point : Jacobian.Point (curve.baseChange Universal.Field) :=
+  Jacobian.Point.fromAffine Affine.point
+
+open Polynomial (CC)
+
+@[simp] lemma pointedCurve_a₁ : pointedCurve.a₁ = polyToField (CC curve.a₁) := rfl
+@[simp] lemma pointedCurve_a₂ : pointedCurve.a₂ = polyToField (CC curve.a₂) := rfl
+@[simp] lemma pointedCurve_a₃ : pointedCurve.a₃ = polyToField (CC curve.a₃) := rfl
+@[simp] lemma pointedCurve_a₄ : pointedCurve.a₄ = polyToField (CC curve.a₄) := rfl
+@[simp] lemma pointedCurve_a₆ : pointedCurve.a₆ = polyToField (CC curve.a₆) := rfl
+
+/-- The base change of the universal curve from `ℤ[A₁,⋯,A₆]` to `ℤ[A₁,⋯,A₆,X,Y]`. -/
+abbrev curvePoly : WeierstrassCurve Poly := curve.baseChange Poly
+/-- The base change of the universal curve from `ℤ[A₁,⋯,A₆]` to `ℤ[A₁,⋯,A₆,X,Y]/⟨P⟩`
+(the universal ring), where `P` is the Weierstrass polynomial. -/
+abbrev curveRing : WeierstrassCurve Universal.Ring := curve.baseChange Universal.Ring
+/-- The base change of the universal curve from `ℤ[A₁,⋯,A₆]` to `Frac(ℤ[A₁,⋯,A₆,X,Y]/⟨P⟩)`
+(the universal field), where `P` is the Weierstrass polynomial. -/
+abbrev curveField : WeierstrassCurve Universal.Field := curve.baseChange Universal.Field
+
+lemma curveField_eq : curveField = pointedCurve.toWeierstrassCurve := rfl
+
 end Universal
+
+/-- The cusp curve $Y^2 = X^3$ over ℤ. -/
+def cusp : Affine ℤ := { a₁ := 0, a₂ := 0, a₃ := 0, a₄ := 0, a₆ := 0 }
+
+lemma cusp_equation_one_one : cusp.Equation 1 1 := by
+  simp [Affine.Equation, Affine.polynomial, cusp]
 
 open Universal
 variable {R} [CommRing R] (W : WeierstrassCurve R)
@@ -139,6 +150,8 @@ def specialize : MvPolynomial Coeff ℤ →+* R :=
 /-- Every Weierstrass curve is a specialization of the universal Weierstrass curve. -/
 lemma map_specialize : Universal.curve.map W.specialize = W := by simp [specialize, curve, map]
 
+namespace Universal
+
 variable (x y : R)
 
 open Polynomial (eval₂RingHom) in
@@ -146,26 +159,41 @@ open Polynomial (eval₂RingHom) in
 from `ℤ[A₁, ⋯, A₆, X, Y]` to `R`. -/
 def polyEval : Poly →+* R := eval₂RingHom (eval₂RingHom W.specialize x) y
 
-variable {W x y} (h : Affine.Equation W x y)
+open Polynomial in
+lemma polyEval_apply (p : Poly) :
+    polyEval W x y p = (p.map <| mapRingHom W.specialize).evalEval x y :=
+  eval₂_eval₂RingHom_apply _ _ _ _
+
+variable {W x y} (eqn : Affine.Equation W x y)
 
 open Polynomial in
 /-- A point on a Weierstrass curve over `R` induces a specialization homomorphism
 from the universal ring to `R`. -/
 def ringEval : Universal.Ring →+* R :=
   AdjoinRoot.lift (eval₂RingHom W.specialize x) y <| by
-    simp_rw [← coe_eval₂RingHom, eval₂RingHom_eq_evalRingHom_comp_mapRingHom, RingHom.comp_apply]
-    rwa [coe_mapRingHom, ← Affine.map_polynomial, map_specialize]
+    simp_rw [← coe_eval₂RingHom, eval₂RingHom_eval₂RingHom, RingHom.comp_apply, coe_mapRingHom]
+    rwa [← Affine.map_polynomial, map_specialize]
 
-lemma ringEval_mk (p : Poly) : ringEval h (AdjoinRoot.mk _ p) = W.polyEval x y p :=
+lemma ringEval_mk (p : Poly) : ringEval eqn (AdjoinRoot.mk _ p) = polyEval W x y p :=
   AdjoinRoot.lift_mk _ p
 
-lemma ringEval_comp_mk : (ringEval h).comp (AdjoinRoot.mk _) = W.polyEval x y :=
-  RingHom.ext (ringEval_mk h)
+lemma ringEval_comp_mk : (ringEval eqn).comp (AdjoinRoot.mk _) = polyEval W x y :=
+  RingHom.ext (ringEval_mk eqn)
 
-lemma polyEval_comp_eq_specialize : (W.polyEval x y).comp (algebraMap _ _) = W.specialize := by
+lemma polyEval_comp_eq_specialize : (polyEval W x y).comp (algebraMap _ _) = W.specialize := by
   ext <;> simp [polyEval]
 
-lemma ringEval_comp_eq_specialize : (ringEval h).comp (algebraMap _ _) = W.specialize := by
+lemma ringEval_comp_eq_specialize : (ringEval eqn).comp (algebraMap _ _) = W.specialize := by
   rw [algebraMap_ring_eq_comp, ← RingHom.comp_assoc, ringEval_comp_mk, polyEval_comp_eq_specialize]
+
+protected lemma Field.two_ne_zero : (2 : Universal.Field) ≠ 0 := by
+  rw [← map_ofNat (algebraMap Universal.Ring _), map_ne_zero_iff _ (IsFractionRing.injective _ _)]
+  intro h; replace h := congr(ringEval cusp_equation_one_one $h)
+  rw [map_ofNat, map_zero] at h; cases h
+
+lemma curveRing_map_ringEval : curveRing.map (ringEval eqn) = W := by
+  rw [curveRing, baseChange, map_map, ringEval_comp_eq_specialize, map_specialize]
+
+end Universal
 
 end WeierstrassCurve

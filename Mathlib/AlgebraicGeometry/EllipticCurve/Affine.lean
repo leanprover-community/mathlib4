@@ -3,6 +3,7 @@ Copyright (c) 2023 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
+import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 
 #align_import algebraic_geometry.elliptic_curve.point from "leanprover-community/mathlib"@"e2e7f2ac359e7514e4d40061d7c08bb69487ba4e"
@@ -79,12 +80,6 @@ The group law on this set is then uniquely determined by these constructions.
 
 elliptic curve, rational point, affine coordinates
 -/
-
-/-- The notation `Y` for `X` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation3:max "Y" => Polynomial.X (R := Polynomial _)
-
-/-- The notation `R[X][Y]` for `R[X][X]` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
 
 open Polynomial PolynomialPolynomial
 

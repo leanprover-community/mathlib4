@@ -7,11 +7,49 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 /-!
-# Division polynomials for elliptic curves
+# Integer multiples of a rational point on a elliptic curve in terms of division polynomials
 
-This file defines division polynomials for elliptic curves and show they give a formula for
-scalar multiplication by an integer on the group of rational points in Jacobian coordinates.
+This file proves the formula `WeierstrassCurve.zsmul_eq_smulEval`, which says that
+`n • P = (φₙ(x,y) : ωₙ(x,y), ψₙ(x,y))` in Jacobian coordinates for any integer `n`
+and any nonsingular rational point `P : W.Point` in affine coordinates `(x,y)`
+on a Weierstrass curve `W` over a field.
 
+It is easy to deduce the formula for `(-n) • P` from the formula for `n • P`, and the
+`n = 0` and `n = 1` cases are trivially verified. The formula for `n > 1` is proved by
+even-odd induction on `n`. If `n = 2 * m`, we use the doubling formula to write `n • P`
+as `Jacobian.dblXYZ (m • P)`, while if `n = 2 * m + 1`, we use the addition formula to write it
+as `Jacobian.addXYZ (m • P) ((m + 1) • P)`. By induction hypothesis, `m • P` and `(m + 1) • P` are
+given by evaluation of division polynomials, so our task reduces to proving certain polynomial
+identities (`dblXYZ_smulEval` and `addXYZ_smulEval₁`), namely that the polynomials
+`dblXYZ` and `addXYZ`, when applied to `(φₘ, ωₘ, ψₘ)` and `(φₘ₊₁, ωₘ₊₁, ψₘ₊₁)`, yields
+`(φ₂ₘ, ω₂ₘ, ψ₂ₘ)` and `(φ₂ₘ₊₁, ω₂ₘ₊₁, ψ₂ₘ₊₁)`, modulo the Weierstrass polynomial.
+
+Since `dblXYZ`, `addXYZ` and the division polynomials are all compatible with ring homomorphisms,
+it suffices to prove the universal division polynomials satisfy these identities
+(`dblXYZ_smulRing` and `addXYZ_smulRing`). Since the ring homomorphism from the universal ring
+to the universal field is injective, it suffices to prove these identities in the universal field
+(`dblXYZ_smulField` and `addXYZ_smulField`), which amounts to the universal case of the identities
+`dblXYZ (φₘ, ωₘ, ψₘ) = (φ₂ₘ, ω₂ₘ, ψ₂ₘ)` and
+`addXYZ (φₘ, ωₘ, ψₘ) (φₘ₊₁, ωₘ₊₁, ψₘ₊₁) = (φ₂ₘ₊₁, ω₂ₘ₊₁, ψ₂ₘ₊₁)`, with `P = (X,Y)` the
+universal point on the universal curve. It is easy to show the Z-coordinates are equal
+even in the polynomial ring (`dblZ_smulPoly` and `addZ_smulPoly`), without passing to the quotient.
+
+Since `ψₙ` is nonzero when `n` is, to show that the other coordinates are also equal, it suffices
+to show the two sides, when interpreted as Jacobian coordinates, represent the same point on the
+universal curve, according to `Jacobian.equiv_iff_eq_of_Z_eq`. If we can show the universal
+case of the multiplication formula `n • P = ⟦(φₘ, ωₙ, ψₙ)⟧` with `P = (X,Y) = ⟦(X, Y, 1)⟧`
+(`Universal.Jacobian.zsmul_point_eq_smulField`), then the two desired identities become
+`dblXYZ (m • P) = (2 * m) • P` and `addXYZ (m • P) ((m + 1) • P) = (2 * m + 1) • P`,
+which are true by the validity of the doubling and addition formulas.
+
+Equivalently, we aim to prove the formula in affine coordinates: `n • (X,Y) = (φₘ/ψₙ², ωₙ/ψₙ³)`
+for `n ≠ 0` (`Universal.Affine.zsmul_point_eq_smulX_smulY`), but this time it is easier to use
+vanilla induction on `n` rather than the even-odd induction, because we have formulas expressing
+the affine coordinates of `(n+1) • P` in terms of those of `P`, `n • P` and `(n-1) • P`
+(`Affine.addX_eq_subX_sub`, `Affine.addY_sub_negY`).
+We only need to verify the base cases `n = 1` and `n = 2`, and the induction step is handled
+by fancy identities of division polynomials and elliptic divisibility sequences
+(`smulX_sub_sub_smulX_add`, `smulX_add` and `smulY_add_sub_negY`).
 -/
 
 open scoped PolynomialPolynomial
@@ -19,9 +57,6 @@ open scoped PolynomialPolynomial
 namespace WeierstrassCurve
 
 open Polynomial
-
-local macro "C_simp" : tactic =>
-  `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
 
 variable {R S : Type*} [CommRing R] [CommRing S] (W : WeierstrassCurve R) (f : R →+* S)
 
@@ -31,67 +66,48 @@ variable {x y : R}
 
 namespace Universal
 
-lemma evalEval_ψ₂ : W.ψ₂.evalEval x y = W.polyEval x y curve.ψ₂ := by
-  simp_rw [polyEval, eval₂RingHom_eval₂RingHom_apply, ← map_ψ₂, map_specialize]
+lemma evalEval_ψ₂ : W.ψ₂.evalEval x y = polyEval W x y curve.ψ₂ := by
+  simp_rw [polyEval_apply, ← map_ψ₂, map_specialize]
 
-lemma evalEval_Ψ₃ : (C W.Ψ₃).evalEval x y = W.polyEval x y (C curve.Ψ₃) := by
-  simp_rw [polyEval, eval₂RingHom_eval₂RingHom_apply,
-    map_C, coe_mapRingHom, ← map_Ψ₃, map_specialize]
+lemma evalEval_Ψ₃ : (C W.Ψ₃).evalEval x y = polyEval W x y (C curve.Ψ₃) := by
+  simp_rw [polyEval_apply, map_C, coe_mapRingHom, ← map_Ψ₃, map_specialize]
 
-lemma evalEval_preΨ₄ : (C W.preΨ₄).evalEval x y = W.polyEval x y (C curve.preΨ₄) := by
-  simp_rw [polyEval, eval₂RingHom_eval₂RingHom_apply,
-    map_C, coe_mapRingHom, ← map_preΨ₄, map_specialize]
+lemma evalEval_preΨ₄ : (C W.preΨ₄).evalEval x y = polyEval W x y (C curve.preΨ₄) := by
+  simp_rw [polyEval_apply, map_C, coe_mapRingHom, ← map_preΨ₄, map_specialize]
 
 variable {m n : ℤ}
 
-lemma evalEval_ψ : (W.ψ n).evalEval x y = W.polyEval x y (curve.ψ n) := by
-  simp_rw [polyEval, eval₂RingHom_eval₂RingHom_apply, ← map_ψ, map_specialize]
+lemma evalEval_ψ : (W.ψ n).evalEval x y = polyEval W x y (curve.ψ n) := by
+  simp_rw [polyEval_apply, ← map_ψ, map_specialize]
 
-lemma evalEval_φ : (W.φ n).evalEval x y = W.polyEval x y (curve.φ n) := by
-  simp_rw [polyEval, eval₂RingHom_eval₂RingHom_apply, ← map_φ, map_specialize]
+lemma evalEval_φ : (W.φ n).evalEval x y = polyEval W x y (curve.φ n) := by
+  simp_rw [polyEval_apply, ← map_φ, map_specialize]
 
-lemma evalEval_ω : (W.ω n).evalEval x y = W.polyEval x y (curve.ω n) := by
-  simp_rw [polyEval, eval₂RingHom_eval₂RingHom_apply, ← map_ω, map_specialize]
-
-@[simp] lemma pointedCurve_a₁ : pointedCurve.a₁ = polyToField (CC curve.a₁) := rfl
-@[simp] lemma pointedCurve_a₂ : pointedCurve.a₂ = polyToField (CC curve.a₂) := rfl
-@[simp] lemma pointedCurve_a₃ : pointedCurve.a₃ = polyToField (CC curve.a₃) := rfl
-@[simp] lemma pointedCurve_a₄ : pointedCurve.a₄ = polyToField (CC curve.a₄) := rfl
-@[simp] lemma pointedCurve_a₆ : pointedCurve.a₆ = polyToField (CC curve.a₆) := rfl
-
-/-- The cusp curve $Y^2 = X^3$ over ℤ. -/
-def cusp : Affine ℤ := { a₁ := 0, a₂ := 0, a₃ := 0, a₄ := 0, a₆ := 0 }
+lemma evalEval_ω : (W.ω n).evalEval x y =  polyEval W x y (curve.ω n) := by
+  simp_rw [polyEval_apply, ← map_ω, map_specialize]
 
 open WeierstrassCurve (ψ φ ω)
-
-lemma cusp_equation_one_one : cusp.Equation 1 1 := by
-  simp [Affine.Equation, Affine.polynomial, cusp]
 
 lemma cusp_ψ₂ : cusp.ψ₂ = 2 * Y := by simp [cusp, ψ₂, Affine.polynomialY]
 lemma cusp_Ψ₃ : cusp.Ψ₃ = 3 * X ^ 4 := by simp [cusp, Ψ₃, b₂, b₄, b₆, b₈]
 lemma cusp_preΨ₄ : cusp.preΨ₄ = 2 * X ^ 6 := by simp [cusp, preΨ₄, b₂, b₄, b₆, b₈]
 
-lemma polyEval_cusp_ψ : cusp.polyEval 1 1 (curve.ψ n) = n := by
+lemma polyEval_cusp_ψ : polyEval cusp 1 1 (curve.ψ n) = n := by
   rw [ψ, map_normEDS, ← evalEval_ψ₂, ← evalEval_Ψ₃, ← evalEval_preΨ₄, cusp_ψ₂, cusp_Ψ₃, cusp_preΨ₄]
   simp [evalEval, normEDS_two_three_two]
 
-lemma polyEval_cusp_φ : cusp.polyEval 1 1 (curve.φ n) = 1 := by
+lemma polyEval_cusp_φ : polyEval cusp 1 1 (curve.φ n) = 1 := by
   simp_rw [φ, map_sub, map_mul, map_pow, polyEval_cusp_ψ, polyEval]
   simp only [coe_eval₂RingHom, eval₂_C, eval₂_X]; ring
 
-lemma polyEval_cusp_ψc : cusp.polyEval 1 1 (curve.ψc n) = 2 := by
+lemma polyEval_cusp_ψc : polyEval cusp 1 1 (curve.ψc n) = 2 := by
   rw [ψc, map_compl₂EDS, ← evalEval_ψ₂, ← evalEval_Ψ₃, ← evalEval_preΨ₄]
   simp [cusp_ψ₂, cusp_Ψ₃, cusp_preΨ₄, evalEval, compl₂EDS_two_three_two]
 
-lemma polyEval_cusp_ω : cusp.polyEval 1 1 (curve.ω n) = 1 := by
-  have := congr(cusp.polyEval 1 1 $(curve.two_mul_ω n))
+lemma polyEval_cusp_ω : polyEval cusp 1 1 (curve.ω n) = 1 := by
+  have := congr(polyEval cusp 1 1 $(curve.two_mul_ω n))
   simp_rw [map_sub, map_mul, map_ofNat, polyEval_cusp_ψc] at this
   simpa [cusp, polyEval, specialize, curve] using this
-
-protected lemma Field.two_ne_zero : (2 : Universal.Field) ≠ 0 := by
-  rw [← map_ofNat (algebraMap Universal.Ring _), map_ne_zero_iff _ (IsFractionRing.injective _ _)]
-  intro h; replace h := congr(cusp.ringEval cusp_equation_one_one $h)
-  rw [map_ofNat, map_zero] at h; cases h
 
 /-- The `ψ` family of division polynomials as elements in the universal field. -/
 abbrev ψᵤ (n : ℤ) : Universal.Field := polyToField (curve.ψ n)
@@ -106,13 +122,13 @@ lemma net_ψᵤ (p q r s) : EllSequence.net ψᵤ p q r s = 0 := by rw [ψᵤ_eq
 
 lemma ψᵤ_ne_zero (h0 : n ≠ 0) : ψᵤ n ≠ 0 := fun h ↦ by
   rw [ψᵤ, polyToField_apply, map_eq_zero_iff _ (IsFractionRing.injective _ _)] at h
-  replace h := congr(cusp.ringEval cusp_equation_one_one $h)
+  replace h := congr(ringEval cusp_equation_one_one $h)
   rw [ringEval_mk, polyEval_cusp_ψ, map_zero] at h
   exact h0 h
 
 lemma polyToField_φ_ne_zero : polyToField (curve.φ n) ≠ 0 := fun h ↦ by
   rw [polyToField_apply, map_eq_zero_iff _ (IsFractionRing.injective _ _)] at h
-  replace h := congr(cusp.ringEval cusp_equation_one_one $h)
+  replace h := congr(ringEval cusp_equation_one_one $h)
   rw [ringEval_mk, polyEval_cusp_φ, map_zero] at h
   exact one_ne_zero h
 
@@ -199,14 +215,13 @@ lemma smulY_one_ne_negY : smulY 1 ≠ pointedCurve.toAffine.negY (smulX 1) (smul
 def slopeOne : Universal.Field :=
   pointedCurve.toAffine.slope (smulX 1) (smulX 1) (smulY 1) (smulY 1)
 
-lemma slopeOne_eq_neg_div :
-    slopeOne = -polyToField curve.polynomialX / ψᵤ 2 := by
+lemma slopeOne_eq_neg_div : slopeOne = -polyToField curve.polynomialX / ψᵤ 2 := by
   rw [slopeOne, Affine.slope_of_Y_ne rfl smulY_one_ne_negY, smulY_one_sub_negY, Affine.polynomialX]
   congr; simp
 
 private lemma addX_smul_one_smul_one_aux {F} [Field F] {a₁ a₂ x dx dy : F} (h0 : dy ≠ 0) :
-  (-dx / dy) ^ 2 + a₁ * (-dx / dy) - a₂ - x - x - x =
-    (dx ^ 2 - a₁ * dx * dy - (3 * x + a₂) * dy ^ 2) / dy ^ 2 := by
+    (-dx / dy) ^ 2 + a₁ * (-dx / dy) - a₂ - x - x - x =
+      (dx ^ 2 - a₁ * dx * dy - (3 * x + a₂) * dy ^ 2) / dy ^ 2 := by
   -- extracted lemma to make field_simp faster
   field_simp; ring
 
@@ -278,8 +293,10 @@ open Affine.Point
 
 open WeierstrassCurve.Affine in
 instance : AddGroup (curve⟮Universal.Field⟯) := inferInstance -- Lean needs a reminder at add_zsmul
-theorem zsmul_eq_quotient_divisionPolynomial : n ≠ 0 →
-    ∃ h : Affine.Nonsingular _ (smulX n) (smulY n), n • Universal.point = .some h := by
+
+/-- The affine coordinates of `n • Universal.Affine.point` is given by `(smulX n, smulY n)`. -/
+theorem zsmul_point_eq_smulX_smulY : n ≠ 0 →
+    ∃ h : Affine.Nonsingular _ (smulX n) (smulY n), n • Affine.point = .some h := by
   induction n using Int.negInduction with
   | nat n =>
     refine n.strong_induction_on fun n ih h0 ↦ ?_
@@ -318,8 +335,12 @@ theorem zsmul_eq_quotient_divisionPolynomial : n ≠ 0 →
     simp_rw [smulX_neg, smulY_neg h0, neg_smul, eq, neg_some]
     exact ⟨Affine.nonsingular_neg ns, trivial⟩
 
-lemma smul_point_ne_zero (h0 : n ≠ 0) : n • Universal.point ≠ 0 := by
-  obtain ⟨ns, eq⟩ := zsmul_eq_quotient_divisionPolynomial h0
+lemma nonsingular_smulX_smulY (hn : n ≠ 0) : Affine.Nonsingular curveField (smulX n) (smulY n) :=
+  (zsmul_point_eq_smulX_smulY hn).1
+
+/-- The distinguished point `(X,Y)` on the universal curve is not torsion. -/
+lemma zsmul_point_ne_zero (h0 : n ≠ 0) : n • Affine.point ≠ 0 := by
+  obtain ⟨ns, eq⟩ := zsmul_point_eq_smulX_smulY h0
   rw [eq]; exact Affine.Point.some_ne_zero ns
 
 end Affine
@@ -328,31 +349,19 @@ namespace Jacobian
 
 open WeierstrassCurve.Jacobian
 
-/-- The distinguished point on the universal curve in Jacobian coordinates. -/
-protected def point : Jacobian.Point (curve.baseChange Universal.Field) :=
-  Jacobian.Point.fromAffine Universal.point
+open Point in
+lemma zsmul_point_ne_zero (h0 : n ≠ 0) : n • Jacobian.point ≠ 0 := by
+  rw [Jacobian.point, ← toAffineAddEquiv_symm_apply, ← map_zsmul (toAffineAddEquiv _).symm,
+    Ne, map_eq_zero_iff _ (toAffineAddEquiv _).symm.injective]
+  exact Affine.zsmul_point_ne_zero h0
 
-lemma smul_point_ne_zero (h0 : n ≠ 0) : n • Jacobian.point ≠ 0 := by
-  rw [Jacobian.point, ← Point.toAffineAddEquiv_symm_apply,
-    ← map_zsmul (Point.toAffineAddEquiv _).symm, Ne,
-    map_eq_zero_iff _ (Point.toAffineAddEquiv _).symm.injective]
-  exact Affine.smul_point_ne_zero h0
-
-lemma smul_point_ne (h : m ≠ n) : m • Jacobian.point ≠ n • Jacobian.point := by
+lemma zsmul_point_ne (h : m ≠ n) : m • Jacobian.point ≠ n • Jacobian.point := by
   rw [← sub_ne_zero, sub_eq_add_neg, ← sub_zsmul]
-  exact smul_point_ne_zero (sub_ne_zero.mpr h)
+  exact zsmul_point_ne_zero (sub_ne_zero.mpr h)
 
 lemma point_point : Jacobian.point.point = ⟦![polyToField (C X), polyToField Y, 1]⟧ := rfl
 
-/-- The base change of the universal curve from `ℤ[a₁,⋯,a₆]` to `ℤ[a₁,⋯,a₆,X,Y]`. -/
-abbrev curvePoly : WeierstrassCurve Poly := curve.baseChange Poly
-/-- The base change of the universal curve from `ℤ[a₁,⋯,a₆]` to `ℤ[a₁,⋯,a₆,X,Y]/⟨P⟩`
-(the universal ring), where `P` is the Weierstrass polynomial. -/
-abbrev curveRing : WeierstrassCurve Universal.Ring := curve.baseChange Universal.Ring
-/-- The base change of the universal curve from `ℤ[a₁,⋯,a₆]` to `Frac(ℤ[a₁,⋯,a₆,X,Y]/⟨P⟩)`
-(the universal field), where `P` is the Weierstrass polynomial. -/
-abbrev curveField : WeierstrassCurve Universal.Field := curve.baseChange Universal.Field
-/-- The three families of division polynomials as a 3-tuple. -/
+/-- The three families of universal division polynomials as a 3-tuple. -/
 abbrev smulPoly (n : ℤ) : Fin 3 → Poly := ![curve.φ n, curve.ω n, curve.ψ n]
 /-- The three families of division polynomials as elements in the universal ring. -/
 abbrev smulRing (n : ℤ) : Fin 3 → Universal.Ring := AdjoinRoot.mk _ ∘ smulPoly n
@@ -362,15 +371,14 @@ abbrev smulField (n : ℤ) : Fin 3 → Universal.Field := polyToField ∘ smulPo
 lemma algebraMap_comp_smulRing (n : ℤ) : algebraMap _ _ ∘ smulRing n = smulField n := by
   ext i; fin_cases i <;> rfl
 
-lemma curveField_eq : curveField = pointedCurve.toWeierstrassCurve := rfl
-
-theorem zsmul_eq_divisionPolynomial : (n • Jacobian.point).point = ⟦smulField n⟧ := by
+/-- The Jacobian coordinates of `n • Universal.Jacobian.point` is given by `smulField n`. -/
+theorem zsmul_point_eq_smulField : (n • Jacobian.point).point = ⟦smulField n⟧ := by
   rw [← fin3_def (smulField n), smulField, smulPoly]
   simp_rw [Function.comp, fin3_def_ext]
   obtain rfl | hn := eq_or_ne n 0
   · simp_rw [zero_zsmul, φ_zero, ω_zero, ψ_zero, map_zero, map_one]; rfl
-  obtain ⟨ns, eq⟩ := Affine.zsmul_eq_quotient_divisionPolynomial hn
-  change (n • (Jacobian.Point.toAffineAddEquiv _).symm Universal.point).point = _
+  obtain ⟨ns, eq⟩ := Affine.zsmul_point_eq_smulX_smulY hn
+  change (n • (Point.toAffineAddEquiv _).symm Affine.point).point = _
   rw [← map_zsmul, eq]
   have := ψᵤ_ne_zero hn
   refine Quotient.sound ⟨.mk0 _ (inv_ne_zero this), ?_⟩
@@ -382,16 +390,16 @@ lemma dblZ_smulPoly : dblZ curvePoly (smulPoly n) = curve.ψ (2 * n) := by
   rw [← ψc_spec _ n]; congr; convert curve.ω_spec n using 1; ring
 
 lemma nonsingular_smulField : Nonsingular curveField (smulField n) := by
-  simpa only [zsmul_eq_divisionPolynomial] using (n • Jacobian.point).nonsingular
+  simpa only [zsmul_point_eq_smulField] using (n • Jacobian.point).nonsingular
 
 lemma dblXYZ_smulField : dblXYZ curveField (smulField n) = smulField (2 * n) := by
   obtain rfl | hn := eq_or_ne n 0
   · norm_num [dblXYZ, dblX, dblY, dblZ, dblU_eq, negY, negDblY,
       smulField, smulPoly, curveField, ← fin3_def]
   erw [← equiv_iff_eq_of_Z_eq _ (ψᵤ_ne_zero <| mul_ne_zero two_ne_zero hn),
-    ← Quotient.eq, ← zsmul_eq_divisionPolynomial,
+    ← Quotient.eq, ← zsmul_point_eq_smulField,
     mul_zsmul (α := Point <| baseChange curve Universal.Field),
-    Point.two_smul_point zsmul_eq_divisionPolynomial]
+    Point.two_zsmul_point zsmul_point_eq_smulField]
   · rfl
   simp only [smulField, smulPoly, fin3_def_ext, Function.comp, ← dblZ_smulPoly, ← map_dblZ]; rfl
 
@@ -433,8 +441,8 @@ lemma addXYZ_smulField :
       one_smul, ← neg_add', ← two_mul, ψ_neg, map_neg, ← dblZ_smulPoly, ← map_dblZ, smulField_zero]
     rfl
   erw [← equiv_iff_eq_of_Z_eq, ← Quotient.eq, smul_eq _ (ψᵤ_ne_zero <|
-    sub_ne_zero_of_ne h.symm).isUnit, ← zsmul_eq_divisionPolynomial, add_comm, add_zsmul,
-    Point.add_point_of_ne zsmul_eq_divisionPolynomial zsmul_eq_divisionPolynomial (smul_point_ne h)]
+    sub_ne_zero_of_ne h.symm).isUnit, ← zsmul_point_eq_smulField, add_comm, add_zsmul,
+    Point.add_point_of_ne zsmul_point_eq_smulField zsmul_point_eq_smulField (zsmul_point_ne h)]
   · rfl
   · conv_rhs => rw [smulField, comp_fin3, smul_fin3', (fin3_def_ext _ _ _).2.2, mul_comm]
     simp_rw [addXYZ, fin3_def_ext, ← map_mul, ← addZ_smulPoly, ← map_addZ]
@@ -465,46 +473,38 @@ abbrev smulEval (n : ℤ) : Fin 3 → R := evalEval x y ∘ ![W.φ n, W.ω n, W.
 
 variable {W} (eqn : W.toAffine.Equation x y)
 
-open Universal.Jacobian
+open Universal Jacobian
 
 lemma ringEval_comp_smulRing (n : ℤ) : ringEval eqn ∘ smulRing n = smulEval W x y n := by
   conv_rhs => rw [smulEval, ← W.map_specialize, map_φ, map_ω, map_ψ, ← coe_mapRingHom,
-    ← Jacobian.comp_fin3, ← Function.comp.assoc, ← smulPoly, ← coe_evalEvalRingHom]
-  simp_rw [smulRing, ← Function.comp.assoc, ← RingHom.coe_comp, ringEval_comp_mk]
-  congr!; ext <;> simp [polyEval]
+    ← Jacobian.comp_fin3, ← Function.comp.assoc, ← smulPoly, ← coe_evalEvalRingHom,
+    ← RingHom.coe_comp, ← eval₂RingHom_eval₂RingHom]
+  rw [smulRing, ← Function.comp.assoc, ← RingHom.coe_comp, ringEval_comp_mk, polyEval]
 
 lemma ringEval_ψ (n : ℤ) :
-    ringEval eqn (AdjoinRoot.mk _ <| Universal.curve.ψ n) = evalEval x y (W.ψ n) :=
+    ringEval eqn (AdjoinRoot.mk _ <| curve.ψ n) = evalEval x y (W.ψ n) :=
   congr_fun (ringEval_comp_smulRing eqn n) 2
 
-lemma curveRing_map_ringEval : curveRing.map (ringEval eqn) = W := by
-  rw [curveRing, baseChange, map_map, ringEval_comp_eq_specialize, map_specialize]
-
-open Jacobian
-
-lemma dblXYZ_smul (n : ℤ) : dblXYZ W (smulEval W x y n) = smulEval W x y (2 * n) := by
+lemma dblXYZ_smulEval (n : ℤ) : dblXYZ W (smulEval W x y n) = smulEval W x y (2 * n) := by
   simp_rw [← ringEval_comp_smulRing eqn, ← dblXYZ_smulRing, ← map_dblXYZ, curveRing_map_ringEval]
 
-lemma addXYZ_smul (m n : ℤ) :
+lemma addXYZ_smulEval (m n : ℤ) :
     addXYZ W (smulEval W x y m) (smulEval W x y n) =
       evalEval x y (W.ψ (n - m)) • smulEval W x y (n + m) := by
   simp_rw [← ringEval_comp_smulRing eqn, ← ringEval_ψ eqn]
   rw [← Jacobian.map_smul, ← addXYZ_smulRing, ← map_addXYZ, curveRing_map_ringEval]
 
-lemma addXYZ_smul₁ (n : ℤ) :
-    addXYZ W (smulEval W x y n) (smulEval W x y (n + 1)) =
-      smulEval W x y (2 * n + 1) := by
+lemma addXYZ_smulEval₁ (n : ℤ) :
+    addXYZ W (smulEval W x y n) (smulEval W x y (n + 1)) = smulEval W x y (2 * n + 1) := by
   simp_rw [← ringEval_comp_smulRing eqn, ← addXYZ_smulRing₁, ← map_addXYZ, curveRing_map_ringEval]
 
 variable {F : Type*} [Field F] (W : WeierstrassCurve F)
 
 open Universal
 
--- move this
-local macro "eval_simp" : tactic =>
-  `(tactic| simp only [eval_C, eval_X, eval_neg, eval_add, eval_sub, eval_mul, eval_pow])
-
-theorem smul_eq_divisionPolynomial_eval {x y : F} (h : Affine.Nonsingular W x y) (n : ℤ) :
+/-- The integer multiples of a nonsingular rational point `(x,y)` on a Weierstrass curve
+is given by `smulEval` in Jacobian coordinates. -/
+theorem zsmul_eq_smulEval {x y : F} (h : Affine.Nonsingular W x y) (n : ℤ) :
     (n • Point.fromAffine (Affine.Point.some h)).point = ⟦smulEval W x y n⟧ := by
   induction n using Int.negInduction with
   | nat n =>
@@ -514,10 +514,10 @@ theorem smul_eq_divisionPolynomial_eval {x y : F} (h : Affine.Nonsingular W x y)
     · rw [Nat.cast_one, one_smul, smulEval, comp_fin3]; congrm(⟦?_⟧); simp [evalEval]
     obtain ⟨n, rfl|rfl⟩ := n.even_or_odd'
     · rw [add_assoc, ← two_mul, ← left_distrib, Nat.cast_mul, mul_smul, natCast_zsmul,
-        Point.two_smul_point (ih _ <| by omega), dblXYZ_smul h.1]; rfl
+        Point.two_zsmul_point (ih _ <| by omega), dblXYZ_smulEval h.1]; rfl
     · rw [show 2 * n + 1 + 1 + 1 = (n + 1) + (n + 1 + 1) by omega, Nat.cast_add, add_smul,
         Point.add_point_of_ne (ih _ <| by omega) (ih _ <| by omega), Nat.cast_add (n + 1),
-        Nat.cast_one, addXYZ_smul₁ h.1, ← add_assoc, two_mul]
+        Nat.cast_one, addXYZ_smulEval₁ h.1, ← add_assoc, two_mul]
       simp_rw [Nat.cast_add]
       rw [ne_comm, ← sub_ne_zero, ← sub_smul, add_sub_cancel_left, Nat.cast_one, one_smul]
       apply Point.fromAffine_ne_zero
