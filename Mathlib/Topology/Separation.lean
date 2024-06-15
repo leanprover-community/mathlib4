@@ -2384,9 +2384,9 @@ Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (wi
 assumption of Hausdorff). -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [RegularSpace X] [LindelofSpace X] : NormalSpace X where
-  normal _ _ hcl kcl hkdis := hasSeparatingCovers_iff_separatedNhds.mp ⟨
-    hcl.HasSeparatingCover kcl hkdis,
-    kcl.HasSeparatingCover hcl (Disjoint.symm hkdis)⟩
+  normal _ _ hcl kcl hkdis :=
+    hasSeparatingCovers_iff_separatedNhds.mp
+    ⟨hcl.HasSeparatingCover kcl hkdis, kcl.HasSeparatingCover hcl (Disjoint.symm hkdis)⟩
 
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     [RegularSpace X] [SecondCountableTopology X] : NormalSpace X :=
