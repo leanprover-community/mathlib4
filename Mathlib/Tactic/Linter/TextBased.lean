@@ -19,7 +19,7 @@ further linters will be ported in subsequent PRs.
 
 -/
 
-open Lean Elab
+open System
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
@@ -49,7 +49,7 @@ structure ErrorContext where
   /-- The line number of the error -/
   lineNumber : ℕ
   /-- The path to the file which was linted -/
-  path : System.FilePath
+  path : FilePath
 
 /-- The parts of a `StyleError` which are considered when matching against the existing
   style exceptions: for example, we ignore the particular line length of a "line too long" error. -/
@@ -88,7 +88,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
       -- Invariant: `style-exceptions.txt` always contains Unix paths
       -- (because, for example, in practice it is updated by CI, which runs on unix).
       -- Hence, splitting and joining on "/" is actually somewhat safe.
-      let path : System.FilePath := System.mkFilePath (filename.split (fun c ↦ c == '/'))
+      let path : FilePath := mkFilePath (filename.split (fun c ↦ c == '/'))
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
       let err : Option StyleError := match error_code with
@@ -160,7 +160,7 @@ def allLinters : Array TextbasedLinter := Array.mk
 /-- Read a file, apply all text-based linters and print formatted errors.
 Return `true` if there were new errors (and `false` otherwise).
 `sizeLimit` is any pre-existing limit on this file's size. -/
-def lintFile (path : System.FilePath) (sizeLimit : Option ℕ) : IO Bool := do
+def lintFile (path : FilePath) (sizeLimit : Option ℕ) : IO Bool := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
@@ -174,17 +174,17 @@ def lintFile (path : System.FilePath) (sizeLimit : Option ℕ) : IO Bool := do
 
 /-- Lint all files referenced in a given import-only file.
 Return the number of files which had new style errors. -/
-def lintAllFiles (path : System.FilePath) : IO UInt32 := do
+def lintAllFiles (path : FilePath) : IO UInt32 := do
   -- Read all module names from the file at `path`.
   let allModules ← IO.FS.lines path
   -- Read the style exceptions file.
-  let exceptions_file ← IO.FS.lines (System.mkFilePath ["scripts/style-exceptions.txt"])
+  let exceptions_file ← IO.FS.lines (mkFilePath ["scripts/style-exceptions.txt"])
   let mut style_exceptions := parseStyleExceptions exceptions_file
   let mut number_error_files := 0
   for module in allModules do
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
-    let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
+    let path := (mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
     -- Find the size limit for this given file.
     -- If several size limits are given (unlikely in practice), we use the first one.
     let size_limits := (style_exceptions.filter (fun e ↦ e.path == path)).filterMap (fun errctx ↦
@@ -198,6 +198,6 @@ def lintAllFiles (path : System.FilePath) : IO UInt32 := do
 def main : IO UInt32 := do
   let mut number_error_files := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (System.mkFilePath [s])
+    let n ← lintAllFiles (mkFilePath [s])
     number_error_files := number_error_files + n
   return number_error_files
