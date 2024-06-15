@@ -853,9 +853,9 @@ theorem proj_zero_er''_eq : (fun x ↦ x 0) ∘ (er'' (X := X)) = Prod.fst := by
 
 theorem proj_er''_eq_er'_prod (N : ℕ) :
     (fun (x : (n : ℕ) → X n) (i : Iic N) ↦ x i) ∘ er'' =
-    (er' N) ∘ (Prod.map id (fun x (i : Ioc 0 N) ↦ x ⟨i.1, (mem_Ioc.1 i.2).1⟩)) := by
+    (er' N) ∘ (Prod.map id (Ioc_PIoc_pi.symm ∘ (fun x (i : PIoc 0 N) ↦ x i))) := by
   ext x i
-  simp [er'', er']
+  simp [er'', er', Ioc_PIoc_pi]
 
 variable (κ : (n : ℕ) → kernel ((i : Iic n) → X i) (X (n + 1)))
 variable [∀ n, IsMarkovKernel (κ n)]
@@ -870,9 +870,9 @@ noncomputable def my_ker (N : ℕ) :
     kernel (X 0) ((i : Iic N) → X i) :=
   if h : N = 0
     then
-      by cases h; exact kernel.map (kernel.deterministic id measurable_id) zer zer.measurable_toFun
+      by cases h; exact kernel.map (kernel.deterministic id measurable_id) zer zer.measurable
     else kernel.map ((kernel.deterministic id measurable_id) ×ₖ
-      (kernel.comap (kerNat (fun n ↦ kernel.map (κ n) (e n) (e n).measurable_toFun) 0 N)
+      (kernel.comap (kerNat (fun n ↦ kernel.map (κ n) (e n) (e n).measurable) 0 N)
         zer zer.measurable))
       (er' N) (er' N).measurable
 
@@ -888,8 +888,8 @@ theorem my_ker_zero : my_ker κ 0 =
 
 theorem my_ker_pos {N : ℕ} (hN : 0 < N) :
     my_ker κ N = kernel.map ((kernel.deterministic id measurable_id) ×ₖ
-      (kernel.comap (kerNat (fun n ↦ kernel.map (κ n) (e n) (e n).measurable_toFun) 0 N)
-        zer zer.measurable_toFun)) (er' N) (er' N).measurable := by
+      (kernel.comap (kerNat (fun n ↦ kernel.map (κ n) (e n) (e n).measurable) 0 N)
+        zer zer.measurable)) (er' N) (er' N).measurable := by
   rw [my_ker, dif_neg hN.ne.symm]
 
 theorem Measure.map_prod {X Y Z T : Type*} [MeasurableSpace X] [MeasurableSpace Y]
@@ -913,8 +913,8 @@ theorem kernel.map_prod {X Y Z T U : Type*} [MeasurableSpace X] [MeasurableSpace
     kernel.map_apply, kernel.map_apply]
 
 lemma omg' {s t : Set ℕ} (h : s = t) (h' : ((i : s) → X i) = ((i : t) → X i))
-    (x : (i : s) → X i) (i : s) (hi : i.1 ∈ t) :
-    cast h' x ⟨i.1, hi⟩ = x i := by
+    (x : (i : t) → X i) (i : s) (hi : i.1 ∈ t) :
+    x ⟨i.1, hi⟩ = cast h'.symm x i := by
   subst h
   rfl
 
@@ -929,64 +929,26 @@ theorem ionescu_ker_proj (N : ℕ) :
     rw [my_ker_zero, kernel.map_eq _ _ proj_zero_eq_zer_proj_zero,
       ← kernel.map_map _ (measurable_pi_apply _) zer.measurable, ionescu_ker_proj_zero]
   · rw [ionescu_ker, kernel.map_map, my_ker_pos _ hN, kernel.map_eq _ _ (proj_er''_eq_er'_prod N),
-      ← kernel.map_map _ _ (er' N).measurable]
-    · congr
-      rw [kernel.map_prod, kernel.map_id]
-      · congr
-        ext1 x₀
-        rw [kernel.map_apply, ionescu_tulcea_kernel_apply,
-          ← Function.id_comp
-            (fun (x : (n : ℕ+) → X n) (i : Ioc 0 N) ↦ x ⟨i.1, (mem_Ioc.1 i.2).1⟩),
-          ← (@Ioc_PIoc_pi _ _ 0 N).symm_comp_self, Function.comp.assoc, ← Measure.map_map]
-        · have : ⇑Ioc_PIoc_pi ∘ (fun (x : (n : ℕ+) → X n) (i : Ioc 0 N) ↦
-              x ⟨i.1, (mem_Ioc.1 i.2).1⟩) =
-              fun (x : (n : ℕ+) → X n) (i : PIoc 0 N) ↦ x i := by ext; rfl
-          rw [this, isProjectiveLimit_ionescu_tulcea_fun, family,
-            ← measure_cast (sup_PIoc hN).symm (fun n ↦ kerNat _ 0 n (zer x₀)),
-            Measure.map_map, Measure.map_map]
-          · rw [kernel.comap_apply]
-            nth_rw 2 [← kernel.map_id (kerNat _ 0 N)]
-            rw [kernel.map_apply]
-            congr
-            ext x i
-            simp only [Ioc_PIoc_pi, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
-              Equiv.coe_fn_symm_mk, Function.comp_apply, PNat.mk_coe, id_eq]
-            apply omg'
-            rw [sup_PIoc hN]
-          · exact Ioc_PIoc_pi.measurable_invFun.comp <|
-              measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
-          · refine measurable_cast _ (HEq_measurableSpace_Ioc_zero_pi ?_)
-            rw [sup_PIoc hN]
-          · exact Ioc_PIoc_pi.measurable_invFun
-          · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
-        · exact Ioc_PIoc_pi.measurable_invFun
-        · exact Ioc_PIoc_pi.measurable_toFun.comp <|
-            measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
-        · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+      ← kernel.map_map _ _ (er' N).measurable, kernel.map_prod, kernel.map_id]
+    congr
+    ext1 x₀
+    rw [kernel.map_apply, ionescu_tulcea_kernel_apply, ← Measure.map_map,
+      isProjectiveLimit_ionescu_tulcea_fun, family, kernel.comap_apply,
+      ← measure_cast (sup_PIoc hN) (fun n ↦ kerNat _ 0 n (zer x₀)), Measure.map_map]
+    · congr with x i
+      simp only [Ioc_PIoc_pi, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
+        Equiv.coe_fn_symm_mk, comp_apply, PNat.mk_coe]
+      apply omg' _ _ x <;> rw [sup_PIoc hN]
+    · exact Ioc_PIoc_pi.measurable_invFun
+    · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+    · exact Ioc_PIoc_pi.measurable_invFun
+    · exact measurable_proj _
+    · exact Ioc_PIoc_pi.measurable_invFun.comp (measurable_proj _)
 
--- theorem integral_dep {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
---     {N : ℕ} (x₀ : X 0) {f : ((i : Iic N) → X i) → E} (hf : AEStronglyMeasurable f (my_ker κ N x₀)) :
---     ∫ y, f ((fun x (i : Iic N) ↦ x i) y) ∂ionescu_ker κ x₀ =
---     ∫ y, f y ∂my_ker κ N x₀ := by
---   rw [← ionescu_ker_proj, kernel.map_apply, integral_map]
---   · exact (measurable_proj _).aemeasurable
---   · rw [← kernel.map_apply, ionescu_ker_proj]
---     exact hf
-
--- noncomputable def noyau : kernel (X 0) ((n : ℕ) → X n) :=
---   ionescu_ker (fun n ↦ kernel.map (κ n) (e n) (e n).measurable_toFun)
-
--- instance : IsMarkovKernel (noyau κ) := by
---   apply kernel.IsMarkovKernel.map
---   exact er''.measurable
-
--- noncomputable def noyau_partiel (N : ℕ) : kernel (X 0) ((i : Iic N) → X i) :=
---   my_ker (fun n ↦ kernel.map (κ n) (e n) (e n).measurable_toFun) N
-
--- theorem noyau_proj (N : ℕ) :
---     kernel.map (noyau κ) (fun x (i : Iic N) ↦ x i) (measurable_proj _) =
---     noyau_partiel κ N := ionescu_ker_proj _ _
-
--- theorem noyau_proj_zero : kernel.map (noyau κ) (fun x ↦ x 0) (measurable_pi_apply 0) =
---     kernel.deterministic id measurable_id := by
---   rw [noyau, ionescu_ker_proj_zero]
+theorem integral_dep {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {N : ℕ} (x₀ : X 0) {f : ((i : Iic N) → X i) → E} (hf : AEStronglyMeasurable f (my_ker κ N x₀)) :
+    ∫ y, f ((fun x (i : Iic N) ↦ x i) y) ∂ionescu_ker κ x₀ =
+    ∫ y, f y ∂my_ker κ N x₀ := by
+  rw [← ionescu_ker_proj, kernel.map_apply, integral_map]
+  · exact (measurable_proj _).aemeasurable
+  · rwa [← kernel.map_apply, ionescu_ker_proj]
