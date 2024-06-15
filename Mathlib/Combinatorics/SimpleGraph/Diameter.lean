@@ -108,8 +108,7 @@ lemma le_ediam {u v : α} : G.dist u v ≤ G.ediam := by
 
 /-- The extended diameter is equal to the distance of some vertices iff it is not infinite. -/
 lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u v = G.ediam := by
-  refine ⟨fun h => ?_, by aesop⟩
-  unfold ediam at h ⊢
+  refine ⟨fun h ↦ ?_, by aesop⟩
   let s' := WithTop.some ⁻¹' {d : ℕ∞ | ∃ u v : α, d = G.dist u v}
   have nonempty_s' : s'.Nonempty := by
     let v := Classical.arbitrary α
@@ -124,7 +123,7 @@ lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u
     rw [WithTop.le_untop_iff]
     exact hub a ha
   obtain ⟨u, v, huv⟩ := Nat.sSup_mem nonempty_s' bddAbove_s'
-  rw [WithTop.sSup_eq (sup_eq_top_of_top_mem.mt h) bddAbove_s']
+  rw [ediam, WithTop.sSup_eq (sup_eq_top_of_top_mem.mt h) bddAbove_s']
   use u, v, huv.symm
 
 lemma zero_lt_ediam_iff [Nonempty α] (ht : G.ediam ≠ ⊤) :
