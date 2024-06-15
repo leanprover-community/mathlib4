@@ -411,31 +411,30 @@ section MeasurableEmbedding
 
 variable {mβ : MeasurableSpace β} {f : α → β}
 
-/-! The results in this section are stated for finite measures, because we need the pushforwards of
-some measures to have a Lebesgue decomposition with respect to the pushforward of other measures
-(for example `(μ.singularPart ν).map f` w.r.t. `ν.map f`). It would be sufficient to know that all
-those pushforwards are σ-finite, but `μ.map f` may not be σ-finite even if `μ` is. However, if `μ`
-and `ν` are finite, then all the pushforwards are also finite and have Lebesgue decompositions. -/
-
 lemma _root_.MeasurableEmbedding.rnDeriv_map_aux (hf : MeasurableEmbedding f)
-    (hμν : μ ≪ ν) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    (hμν : μ ≪ ν) [SigmaFinite μ] [SigmaFinite ν] :
     (fun x ↦ (μ.map f).rnDeriv (ν.map f) (f x)) =ᵐ[ν] μ.rnDeriv ν := by
   refine ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite ?_ ?_ (fun s _ _ ↦ ?_)
   · exact (Measure.measurable_rnDeriv _ _).comp hf.measurable
   · exact Measure.measurable_rnDeriv _ _
   rw [← hf.lintegral_map, Measure.set_lintegral_rnDeriv hμν]
   have hs_eq : s = f ⁻¹' (f '' s) := by rw [hf.injective.preimage_image]
+  have : SigmaFinite (μ.map f) := hf.sigmaFinite_map
+  have : SigmaFinite (ν.map f) := hf.sigmaFinite_map
   rw [hs_eq, ← hf.restrict_map, Measure.set_lintegral_rnDeriv (hf.absolutelyContinuous_map hμν),
     hf.map_apply]
 
 lemma _root_.MeasurableEmbedding.rnDeriv_map (hf : MeasurableEmbedding f)
-    (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     (fun x ↦ (μ.map f).rnDeriv (ν.map f) (f x)) =ᵐ[ν] μ.rnDeriv ν := by
   rw [μ.haveLebesgueDecomposition_add ν, Measure.map_add _ _ hf.measurable]
-  have h_add := Measure.rnDeriv_add ((μ.singularPart ν).map f) ((ν.withDensity (μ.rnDeriv ν)).map f)
+  have : SigmaFinite (map f ν) := hf.sigmaFinite_map
+  have : SigmaFinite (map f (μ.singularPart ν)) := hf.sigmaFinite_map
+  have : SigmaFinite (map f (ν.withDensity (μ.rnDeriv ν))) := hf.sigmaFinite_map
+  have h_add := Measure.rnDeriv_add' ((μ.singularPart ν).map f) ((ν.withDensity (μ.rnDeriv ν)).map f)
     (ν.map f)
   rw [Filter.EventuallyEq, hf.ae_map_iff, ← Filter.EventuallyEq] at h_add
-  refine h_add.trans ((Measure.rnDeriv_add _ _ _).trans ?_).symm
+  refine h_add.trans ((Measure.rnDeriv_add' _ _ _).trans ?_).symm
   refine Filter.EventuallyEq.add ?_ ?_
   · refine (Measure.rnDeriv_singularPart μ ν).trans ?_
     symm
@@ -447,7 +446,7 @@ lemma _root_.MeasurableEmbedding.rnDeriv_map (hf : MeasurableEmbedding f)
   · exact (hf.rnDeriv_map_aux (withDensity_absolutelyContinuous _ _)).symm
 
 lemma _root_.MeasurableEmbedding.map_withDensity_rnDeriv (hf : MeasurableEmbedding f)
-    (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     (ν.withDensity (μ.rnDeriv ν)).map f = (ν.map f).withDensity ((μ.map f).rnDeriv (ν.map f)) := by
   ext s hs
   rw [hf.map_apply, withDensity_apply _ (hf.measurable hs), withDensity_apply _ hs,
@@ -456,7 +455,7 @@ lemma _root_.MeasurableEmbedding.map_withDensity_rnDeriv (hf : MeasurableEmbeddi
   filter_upwards [hf.rnDeriv_map μ ν] with a ha _ using ha.symm
 
 lemma _root_.MeasurableEmbedding.singularPart_map (hf : MeasurableEmbedding f)
-    (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     (μ.map f).singularPart (ν.map f) = (μ.singularPart ν).map f := by
   have h_add : μ.map f = (μ.singularPart ν).map f
       + (ν.map f).withDensity ((μ.map f).rnDeriv (ν.map f)) := by
