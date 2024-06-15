@@ -1104,7 +1104,7 @@ lemma addZ_neg {P : Fin 3 → R} : addZ P (W'.neg P) = 0 := by
 
 lemma addX_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addX P (W'.neg P) = W'.dblZ P ^ 2 := by
   simp only [addX, neg, dblZ, negY, fin3_def_ext]
-  linear_combination -2 * P z ^ 2 * ((equation_iff _).mp hP)
+  linear_combination -2 * P z ^ 2 * (equation_iff _).mp hP
 
 lemma negAddY_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     W'.negAddY P (W'.neg P) = W'.dblZ P ^ 3 := by
