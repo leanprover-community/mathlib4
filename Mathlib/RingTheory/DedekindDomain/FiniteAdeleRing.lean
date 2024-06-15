@@ -383,13 +383,76 @@ open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
 lemma foo (a b : FiniteAdeleRing R K) (v : HeightOneSpectrum R) :
     ((a * b : FiniteAdeleRing R K) : K_hat R K) v = (a : K_hat R K) v * (b : K_hat R K) v := rfl
 
+open scoped DiscreteValuation
+
+open Multiplicative
+
 variable {R K} in
 lemma clear_local_denominator (v : HeightOneSpectrum R)
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
     simp [ha, Submonoid.one_mem]
-  · sorry
+  · have xfoo : Valued.v a ≠ 0 := by
+     intro h
+     apply ha
+     simp only [map_eq_zero] at h
+     rw [h]
+     exact ValuationSubring.zero_mem (adicCompletionIntegers K v)
+    obtain ⟨n, hn⟩ : ∃ n : Multiplicative ℤ, Valued.v a = n := Option.ne_none_iff_exists'.mp xfoo
+    -- n>1
+    have foo : n > 1 := by
+      by_contra! h2
+      apply ha
+      unfold adicCompletionIntegers
+      simp only [Valuation.mem_valuationSubring_iff]
+      rw [hn]
+      exact_mod_cast h2
+    let d : ℤ := Multiplicative.toAdd n
+    have hd : 0 < d := by
+      change 1 < n at foo
+      rw [← Multiplicative.toAdd_lt] at foo
+      exact foo
+    have := v.ne_bot
+    rw [Submodule.ne_bot_iff] at this
+    obtain ⟨r, hrv, hr0⟩ := this
+    have moo : v.asIdeal ∣ Ideal.span {r} := by
+      simp only [Ideal.dvd_span_singleton, hrv]
+    rw [← valuation_lt_one_iff_dvd (K := K) v r, valuation_of_algebraMap] at moo
+    obtain ⟨m, hm⟩ : ∃ m : Multiplicative ℤ, v.intValuation r = m :=
+      Option.ne_none_iff_exists'.mp <| int_valuation_ne_zero _ _ hr0
+    let e : ℤ := Multiplicative.toAdd m
+    have moo2 := hm ▸ moo
+    norm_cast at moo2
+    rw [← Multiplicative.toAdd_lt] at moo2
+    simp at moo2
+    refine ⟨r^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hr0) _, ?_⟩
+    push_cast
+    rw [mem_adicCompletionIntegers, map_mul, hn, map_pow]
+    suffices (n : ℤₘ₀) * m ^ d.natAbs  ≤ 1 by
+      convert this
+      rw [← hm]
+      simp
+      convert Valued.valuedCompletion_apply (r : K)
+      -- now purely global
+      symm
+      apply Valuation.extendToLocalization_apply_map_apply
+      intro r hr hr2
+      simp at hr2
+      have := int_valuation_zero_le v ⟨r, hr⟩
+      simp [← hr2] at this
+    norm_cast
+
+    rw [← toAdd_le, toAdd_mul, toAdd_pow, toAdd_one]--, ← Int.eq_natAbs_of_zero_le hd.le]
+    change d + _ • e ≤ 0
+    change e < 0 at moo2
+    rw [show d.natAbs • e = (d.natAbs : ℤ) • e by simp only [nsmul_eq_mul,
+      Int.natCast_natAbs, smul_eq_mul]]
+    rw [← Int.eq_natAbs_of_zero_le hd.le, smul_eq_mul]
+    suffices d * 1 + d * e ≤ 0 by simpa
+    rw [← mul_add]
+    have moo : 1 + e ≤ 0 := by omega
+    exact Linarith.mul_nonpos moo foo
 
 lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
     a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
@@ -501,7 +564,7 @@ instance : Nonempty (R⁰) := ⟨1, Submonoid.one_mem R⁰⟩
 instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
-#synth TopologicalRing (FiniteAdeleRing R K) -- works
+--#synth TopologicalRing (FiniteAdeleRing R K) -- works
 
 end Topology
 
