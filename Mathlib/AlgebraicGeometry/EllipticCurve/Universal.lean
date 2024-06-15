@@ -10,8 +10,8 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 
 This file defines the universal Weierstrass curve (`Universal.curve`) over the
 polynomial ring `ℤ[A₁,A₂,A₃,A₄,A₆]`, and the universal pointed elliptic curve
-(`Universal.pointedCurve`) over the field of fractions (`Universal.Field`) of the universal ring
-`ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩ = Universal.Poly/⟨P⟩` (`Universal.Ring`, where `P` is the Weierstrass
+(`Universal.pointedCurve`) over the field of fractions (`Universal.Field`) of
+`Universal.Ring = Universal.Poly/⟨P⟩ = ℤ[A₁,A₂,A₃,A₄,A₆,X,Y]/⟨P⟩` (where `P` is the Weierstrass
 polynomial) with distinguished point `(X,Y)`.
 
 Given a Weierstrass curve `W` over a commutative ring `R`, we define the specialization
@@ -132,14 +132,16 @@ lemma curveField_eq : curveField = pointedCurve.toWeierstrassCurve := rfl
 
 end Universal
 
-/-- The cusp curve $Y^2 = X^3$ over ℤ. -/
-def cusp : Affine ℤ := { a₁ := 0, a₂ := 0, a₃ := 0, a₄ := 0, a₆ := 0 }
+open Universal
+variable (R) [CommRing R] (W : WeierstrassCurve R)
 
-lemma cusp_equation_one_one : cusp.Equation 1 1 := by
+/-- The cusp curve $Y^2 = X^3$ over a commutative ring. -/
+def cusp : WeierstrassCurve R := { a₁ := 0, a₂ := 0, a₃ := 0, a₄ := 0, a₆ := 0 }
+
+lemma cusp_equation_one_one : Affine.Equation (cusp R) 1 1 := by
   simp [Affine.Equation, Affine.polynomial, cusp, Polynomial.evalEval]
 
-open Universal
-variable {R} [CommRing R] (W : WeierstrassCurve R)
+variable {R}
 
 /-- The specialization homomorphism from `ℤ[A₁, ⋯, A₆]`
 to the ring of definition of the Weierstrass curve. -/
