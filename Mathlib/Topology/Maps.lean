@@ -66,6 +66,12 @@ protected theorem Inducing.comp (hg : Inducing g) (hf : Inducing f) :
   ⟨by rw [hf.induced, hg.induced, induced_compose]⟩
 #align inducing.comp Inducing.comp
 
+theorem Inducing.of_comp_iff (hg : Inducing g) :
+    Inducing (g ∘ f) ↔ Inducing f := by
+  refine ⟨fun h ↦ ?_, hg.comp⟩
+  rw [inducing_iff, hg.induced, induced_compose, h.induced]
+#align inducing.inducing_iff Inducing.of_comp_iff
+
 theorem inducing_of_inducing_compose
     (hf : Continuous f) (hg : Continuous g) (hgf : Inducing (g ∘ f)) : Inducing f :=
   ⟨le_antisymm (by rwa [← continuous_iff_le_induced])
@@ -137,13 +143,6 @@ protected theorem continuous (hf : Inducing f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 #align inducing.continuous Inducing.continuous
 
-protected theorem inducing_iff (hg : Inducing g) :
-    Inducing f ↔ Inducing (g ∘ f) := by
-  refine' ⟨fun h => hg.comp h, fun hgf => inducing_of_inducing_compose _ hg.continuous hgf⟩
-  rw [hg.continuous_iff]
-  exact hgf.continuous
-#align inducing.inducing_iff Inducing.inducing_iff
-
 theorem closure_eq_preimage_closure_image (hf : Inducing f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) := by
   ext x
@@ -176,6 +175,9 @@ theorem dense_iff (hf : Inducing f) {s : Set X} :
   simp only [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]
 #align inducing.dense_iff Inducing.dense_iff
 
+theorem of_subsingleton [Subsingleton X] (f : X → Y) : Inducing f :=
+  ⟨Subsingleton.elim _ _⟩
+
 end Inducing
 
 end Inducing
@@ -202,6 +204,9 @@ protected theorem Embedding.comp (hg : Embedding g) (hf : Embedding f) :
     Embedding (g ∘ f) :=
   { hg.toInducing.comp hf.toInducing with inj := fun _ _ h => hf.inj <| hg.inj h }
 #align embedding.comp Embedding.comp
+
+theorem Embedding.of_comp_iff (hg : Embedding g) : Embedding (g ∘ f) ↔ Embedding f := by
+  simp_rw [embedding_iff, hg.toInducing.of_comp_iff, hg.inj.of_comp_iff f]
 
 theorem embedding_of_embedding_compose
     (hf : Continuous f) (hg : Continuous g) (hgf : Embedding (g ∘ f)) : Embedding f :=
@@ -250,6 +255,9 @@ See also `DiscreteTopology.of_continuous_injective`. -/
 theorem Embedding.discreteTopology [DiscreteTopology Y] (hf : Embedding f) : DiscreteTopology X :=
   .of_continuous_injective hf.continuous hf.inj
 #align embedding.discrete_topology Embedding.discreteTopology
+
+theorem Embedding.of_subsingleton [Subsingleton X] (f : X → Y) : Embedding f :=
+  ⟨.of_subsingleton f, f.injective_of_subsingleton⟩
 
 end Embedding
 
@@ -417,6 +425,8 @@ theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continu
     hf.preimage_closure_eq_closure_preimage hfc]
 #align is_open_map.preimage_frontier_eq_frontier_preimage IsOpenMap.preimage_frontier_eq_frontier_preimage
 
+theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.elim
+
 end IsOpenMap
 
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
@@ -476,7 +486,7 @@ theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
 #align is_closed_map.closed_range IsClosedMap.isClosed_range
 
-@[deprecated] alias closed_range := isClosed_range -- 2024-03-17
+@[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem to_quotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : QuotientMap f :=
@@ -630,6 +640,9 @@ theorem of_comp (f : X → Y) (hg : OpenEmbedding g)
   (OpenEmbedding.of_comp_iff f hg).1 h
 #align open_embedding.of_comp OpenEmbedding.of_comp
 
+theorem of_isEmpty [IsEmpty X] (f : X → Y) : OpenEmbedding f :=
+  openEmbedding_of_embedding_open (.of_subsingleton f) (IsOpenMap.of_isEmpty f)
+
 end OpenEmbedding
 
 end OpenEmbedding
@@ -686,6 +699,11 @@ theorem comp (hg : ClosedEmbedding g) (hf : ClosedEmbedding f) :
     ClosedEmbedding (g ∘ f) :=
   ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).isClosed_range⟩
 #align closed_embedding.comp ClosedEmbedding.comp
+
+theorem of_comp_iff (hg : ClosedEmbedding g) :
+    ClosedEmbedding (g ∘ f) ↔ ClosedEmbedding f := by
+  simp_rw [closedEmbedding_iff, hg.toEmbedding.of_comp_iff, Set.range_comp,
+    ← hg.closed_iff_image_closed]
 
 theorem closure_image_eq (hf : ClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=

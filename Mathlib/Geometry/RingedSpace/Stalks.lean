@@ -100,8 +100,8 @@ theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v}
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
     X.presheaf.germ ⟨f x, show f x ∈ h.isOpenMap.functor.obj V from ⟨x, hx, rfl⟩⟩ ≫
         (restrictStalkIso X h x).inv =
-      (X.restrict h).presheaf.germ ⟨x, hx⟩ :=
-  by rw [← restrictStalkIso_hom_eq_germ, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+      (X.restrict h).presheaf.germ ⟨x, hx⟩ := by
+  rw [← restrictStalkIso_hom_eq_germ, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_stalk_iso_inv_eq_germ AlgebraicGeometry.PresheafedSpace.restrictStalkIso_inv_eq_germ
 
@@ -165,7 +165,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If `α = β` and `x = x'`, we would like to say that `stalk_map α x = stalk_map β x'`.
 Unfortunately, this equality is not well-formed, as their types are not _definitionally_ the same.
-To get a proper congruence lemma, we therefore have to introduce these `eq_to_hom` arrows on
+To get a proper congruence lemma, we therefore have to introduce these `eqToHom` arrows on
 either side of the equality.
 -/
 theorem congr {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y)
@@ -180,16 +180,16 @@ set_option linter.uppercaseLean3 false in
 
 theorem congr_hom {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y) (h : α = β) (x : X) :
     stalkMap α x =
-      eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x) by rw [h]) ≫ stalkMap β x :=
-  by rw [← stalkMap.congr α β h x x rfl, eqToHom_refl, Category.comp_id]
+      eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x) by rw [h]) ≫ stalkMap β x := by
+  rw [← stalkMap.congr α β h x x rfl, eqToHom_refl, Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_hom AlgebraicGeometry.PresheafedSpace.stalkMap.congr_hom
 
 theorem congr_point {X Y : PresheafedSpace.{_, _, v} C}
     (α : X ⟶ Y) (x x' : X) (h : x = x') :
     stalkMap α x ≫ eqToHom (show X.stalk x = X.stalk x' by rw [h]) =
-      eqToHom (show Y.stalk (α.base x) = Y.stalk (α.base x') by rw [h]) ≫ stalkMap α x' :=
-  by rw [stalkMap.congr α α rfl x x' h]
+      eqToHom (show Y.stalk (α.base x) = Y.stalk (α.base x') by rw [h]) ≫ stalkMap α x' := by
+  rw [stalkMap.congr α α rfl x x' h]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_point AlgebraicGeometry.PresheafedSpace.stalkMap.congr_point
 
@@ -202,12 +202,12 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     -- at `α x`. Unfortunately, we have a problem with dependent type theory here: Because `x`
     -- is not *definitionally* equal to `β (α x)`, the map `stalk_map β (α x)` has not the correct
     -- type for an inverse.
-    -- To get a proper inverse, we need to compose with the `eq_to_hom` arrow
+    -- To get a proper inverse, we need to compose with the `eqToHom` arrow
     -- `X.stalk x ⟶ X.stalk ((α ≫ β).base x)`.
-    refine'
+    refine
       ⟨eqToHom (show X.stalk x = X.stalk ((α ≫ β).base x) by rw [h_eq]) ≫
           (stalkMap β (α.base x) : _),
-        _, _⟩
+        ?_, ?_⟩
     · rw [← Category.assoc, congr_point α x ((α ≫ β).base x) h_eq.symm, Category.assoc]
       erw [← stalkMap.comp β α (α.base x)]
       rw [congr_hom _ _ (IsIso.inv_hom_id α), stalkMap.id, eqToHom_trans_assoc, eqToHom_refl,

@@ -3,9 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Set.Image
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import data.set.pointwise.smul from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
@@ -573,7 +574,7 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
   ⟨fun {s t} h ↦ by
     by_contra! H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
-    rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
+    rw [Ne, ← hst.of_smul_left.subset_zero_iff, Ne,
       ← hst.of_smul_right.subset_zero_iff] at H
     simp only [not_subset, mem_zero] at H
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
@@ -584,7 +585,7 @@ instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivi
   ⟨fun {a s} h ↦ by
     by_contra! H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
-    rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
+    rw [Ne, Ne, ← hst.of_image.subset_zero_iff, not_subset] at H
     obtain ⟨ha, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
 #align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
@@ -807,7 +808,7 @@ theorem zero_mem_smul_set (h : (0 : β) ∈ t) : (0 : β) ∈ a • t := ⟨0, h
 variable [Zero α] [NoZeroSMulDivisors α β]
 
 theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
-  refine' ⟨_, zero_mem_smul_set⟩
+  refine ⟨?_, zero_mem_smul_set⟩
   rintro ⟨b, hb, h⟩
   rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
 #align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff
@@ -947,6 +948,11 @@ theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
 #align set.vadd_set_inter Set.vadd_set_inter
 
 @[to_additive]
+theorem smul_set_iInter {ι : Type*}
+    (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
+  image_iInter (MulAction.bijective a) t
+
+@[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective a) _ _
 #align set.smul_set_sdiff Set.smul_set_sdiff
@@ -1017,8 +1023,8 @@ theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
 #align set.Union_neg_vadd Set.iUnion_neg_vadd
 
 @[to_additive]
-theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } :=
-  by simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
+theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
+  simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
 #align set.Union_smul_eq_set_of_exists Set.iUnion_smul_eq_setOf_exists
 #align set.Union_vadd_eq_set_of_exists Set.iUnion_vadd_eq_setOf_exists
 

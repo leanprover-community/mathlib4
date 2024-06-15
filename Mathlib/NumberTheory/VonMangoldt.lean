@@ -22,7 +22,7 @@ The main definition for this file is
 - `ArithmeticFunction.vonMangoldt`: The von Mangoldt function `Λ`.
 
 We then prove the classical summation property of the von Mangoldt function in
-`ArithmeticFunction.vonMangoldt_sum`, that `∑ i in n.divisors, Λ i = Real.log n`, and use this
+`ArithmeticFunction.vonMangoldt_sum`, that `∑ i ∈ n.divisors, Λ i = Real.log n`, and use this
 to deduce alternative expressions for the von Mangoldt function via Möbius inversion, see
 `ArithmeticFunction.sum_moebius_mul_log_eq`.
 
@@ -108,10 +108,8 @@ theorem vonMangoldt_eq_zero_iff {n : ℕ} : Λ n = 0 ↔ ¬IsPrimePow n :=
   vonMangoldt_ne_zero_iff.not_right
 #align nat.arithmetic_function.von_mangoldt_eq_zero_iff ArithmeticFunction.vonMangoldt_eq_zero_iff
 
-open scoped BigOperators
-
-theorem vonMangoldt_sum {n : ℕ} : ∑ i in n.divisors, Λ i = Real.log n := by
-  refine' recOnPrimeCoprime _ _ _ n
+theorem vonMangoldt_sum {n : ℕ} : ∑ i ∈ n.divisors, Λ i = Real.log n := by
+  refine recOnPrimeCoprime ?_ ?_ ?_ n
   · simp
   · intro p k hp
     rw [sum_divisors_prime_pow hp, cast_pow, Real.log_pow, Finset.sum_range_succ', Nat.pow_zero,
@@ -143,14 +141,14 @@ theorem moebius_mul_log_eq_vonMangoldt : (μ : ArithmeticFunction ℝ) * log = �
   rw [mul_comm]; simp
 #align nat.arithmetic_function.moebius_mul_log_eq_von_mangoldt ArithmeticFunction.moebius_mul_log_eq_vonMangoldt
 
-theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d in n.divisors, (μ d : ℝ) * log d) = -Λ n := by
+theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d ∈ n.divisors, (μ d : ℝ) * log d) = -Λ n := by
   simp only [← log_mul_moebius_eq_vonMangoldt, mul_comm log, mul_apply, log_apply, intCoe_apply, ←
     Finset.sum_neg_distrib, neg_mul_eq_mul_neg]
   rw [sum_divisorsAntidiagonal fun i j => (μ i : ℝ) * -Real.log j]
-  have : (∑ i : ℕ in n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
-      ∑ i : ℕ in n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by
+  have : (∑ i ∈ n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
+      ∑ i ∈ n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by
     apply sum_congr rfl
-    simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne.def, neg_inj, mem_divisors]
+    simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne, neg_inj, mem_divisors]
     intro m mn hn
     have : (m : ℝ) ≠ 0 := by
       rw [cast_ne_zero]

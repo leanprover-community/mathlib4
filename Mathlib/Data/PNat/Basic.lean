@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Neil Strickland
+Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 import Mathlib.Data.PNat.Defs
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
@@ -68,8 +67,15 @@ theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
 #align pnat.nat_pred_inj PNat.natPred_inj
 
+@[simp, norm_cast]
+lemma val_ofNat (n : ℕ) [NeZero n] :
+    ((no_index (OfNat.ofNat n) : ℕ+) : ℕ) = OfNat.ofNat n :=
+  rfl
+
 @[simp]
-lemma val_ofNat (n : ℕ) : ((no_index (OfNat.ofNat n.succ) : ℕ+) : ℕ) = n.succ := rfl
+lemma mk_ofNat (n : ℕ) (h : 0 < n) :
+    @Eq ℕ+ (⟨no_index (OfNat.ofNat n), h⟩ : ℕ+) (haveI : NeZero n := ⟨h.ne'⟩; OfNat.ofNat n) :=
+  rfl
 
 end PNat
 
@@ -181,130 +187,6 @@ theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
   rfl
 #align pnat.bot_eq_one PNat.bot_eq_one
 
--- Porting note (#11229): deprecated
-section deprecated
-
-set_option linter.deprecated false
-
--- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
-@[simp, deprecated]
-theorem mk_bit0 (n) {h} : (⟨bit0 n, h⟩ : ℕ+) = (bit0 ⟨n, pos_of_bit0_pos h⟩ : ℕ+) :=
-  rfl
-#align pnat.mk_bit0 PNat.mk_bit0
-
-@[simp, deprecated]
-theorem mk_bit1 (n) {h} {k} : (⟨bit1 n, h⟩ : ℕ+) = (bit1 ⟨n, k⟩ : ℕ+) :=
-  rfl
-#align pnat.mk_bit1 PNat.mk_bit1
-
--- Some lemmas that rewrite inequalities between explicit numerals in `ℕ+`
--- into the corresponding inequalities in `ℕ`.
--- TODO: perhaps this should not be attempted by `simp`,
--- and instead we should expect `norm_num` to take care of these directly?
--- TODO: these lemmas are perhaps incomplete:
--- * 1 is not represented as a bit0 or bit1
--- * strict inequalities?
-@[simp, deprecated]
-theorem bit0_le_bit0 (n m : ℕ+) : bit0 n ≤ bit0 m ↔ bit0 (n : ℕ) ≤ bit0 (m : ℕ) :=
-  Iff.rfl
-#align pnat.bit0_le_bit0 PNat.bit0_le_bit0
-
-@[simp, deprecated]
-theorem bit0_le_bit1 (n m : ℕ+) : bit0 n ≤ bit1 m ↔ bit0 (n : ℕ) ≤ bit1 (m : ℕ) :=
-  Iff.rfl
-#align pnat.bit0_le_bit1 PNat.bit0_le_bit1
-
-@[simp, deprecated]
-theorem bit1_le_bit0 (n m : ℕ+) : bit1 n ≤ bit0 m ↔ bit1 (n : ℕ) ≤ bit0 (m : ℕ) :=
-  Iff.rfl
-#align pnat.bit1_le_bit0 PNat.bit1_le_bit0
-
-@[simp, deprecated]
-theorem bit1_le_bit1 (n m : ℕ+) : bit1 n ≤ bit1 m ↔ bit1 (n : ℕ) ≤ bit1 (m : ℕ) :=
-  Iff.rfl
-#align pnat.bit1_le_bit1 PNat.bit1_le_bit1
-
-end deprecated
-
-@[simp, norm_cast]
-theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
-  rfl
-#align pnat.mul_coe PNat.mul_coe
-
-/-- `PNat.coe` promoted to a `MonoidHom`. -/
-def coeMonoidHom : ℕ+ →* ℕ where
-  toFun := Coe.coe
-  map_one' := one_coe
-  map_mul' := mul_coe
-#align pnat.coe_monoid_hom PNat.coeMonoidHom
-
-@[simp]
-theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
-  rfl
-#align pnat.coe_coe_monoid_hom PNat.coe_coeMonoidHom
-
-@[simp]
-theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
-  le_bot_iff
-#align pnat.le_one_iff PNat.le_one_iff
-
-theorem lt_add_left (n m : ℕ+) : n < m + n :=
-  lt_add_of_pos_left _ m.2
-#align pnat.lt_add_left PNat.lt_add_left
-
-theorem lt_add_right (n m : ℕ+) : n < n + m :=
-  (lt_add_left n m).trans_eq (add_comm _ _)
-#align pnat.lt_add_right PNat.lt_add_right
-
--- Porting note (#11229): deprecated
-section deprecated
-
-set_option linter.deprecated false
-
-@[simp, norm_cast, deprecated]
-theorem coe_bit0 (a : ℕ+) : ((bit0 a : ℕ+) : ℕ) = bit0 (a : ℕ) :=
-  rfl
-#align pnat.coe_bit0 PNat.coe_bit0
-
-@[simp, norm_cast, deprecated]
-theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
-  rfl
-#align pnat.coe_bit1 PNat.coe_bit1
-
-end deprecated
-
-@[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
-  rfl
-#align pnat.pow_coe PNat.pow_coe
-
-/-- Subtraction a - b is defined in the obvious way when
-  a > b, and by a - b = 1 if a ≤ b.
--/
-instance instSub : Sub ℕ+ :=
-  ⟨fun a b => toPNat' (a - b : ℕ)⟩
-
-theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
-  change (toPNat' _ : ℕ) = ite _ _ _
-  split_ifs with h
-  · exact toPNat'_coe (tsub_pos_of_lt h)
-  · rw [tsub_eq_zero_iff_le.mpr (le_of_not_gt h : (a : ℕ) ≤ b)]
-    rfl
-#align pnat.sub_coe PNat.sub_coe
-
-theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
-  fun h =>
-    PNat.eq <| by
-      rw [add_coe, sub_coe, if_pos h]
-      exact add_tsub_cancel_of_le h.le
-#align pnat.add_sub_of_lt PNat.add_sub_of_lt
-
-/-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
-theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
-  | ⟨1, _⟩, h₁ => False.elim <| h₁ rfl
-  | ⟨n + 2, _⟩, _ => ⟨⟨n + 1, by simp⟩, rfl⟩
-#align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
-
 /-- Strong induction on `ℕ+`, with `n = 1` treated separately. -/
 def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
@@ -341,6 +223,122 @@ theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
   cases n <;> [exact absurd h (by decide); rfl]
 #align pnat.rec_on_succ PNat.recOn_succ
 
+-- Porting note (#11229): deprecated
+section deprecated
+
+set_option linter.deprecated false
+
+-- Some lemmas that rewrite inequalities between explicit numerals in `ℕ+`
+-- into the corresponding inequalities in `ℕ`.
+-- TODO: perhaps this should not be attempted by `simp`,
+-- and instead we should expect `norm_num` to take care of these directly?
+-- TODO: these lemmas are perhaps incomplete:
+-- * 1 is not represented as a bit0 or bit1
+-- * strict inequalities?
+@[simp, deprecated (since := "2022-12-23")]
+theorem bit0_le_bit0 (n m : ℕ+) : bit0 n ≤ bit0 m ↔ bit0 (n : ℕ) ≤ bit0 (m : ℕ) :=
+  Iff.rfl
+#align pnat.bit0_le_bit0 PNat.bit0_le_bit0
+
+@[simp, deprecated (since := "2022-12-23")]
+theorem bit0_le_bit1 (n m : ℕ+) : bit0 n ≤ bit1 m ↔ bit0 (n : ℕ) ≤ bit1 (m : ℕ) :=
+  Iff.rfl
+#align pnat.bit0_le_bit1 PNat.bit0_le_bit1
+
+@[simp, deprecated (since := "2022-12-23")]
+theorem bit1_le_bit0 (n m : ℕ+) : bit1 n ≤ bit0 m ↔ bit1 (n : ℕ) ≤ bit0 (m : ℕ) :=
+  Iff.rfl
+#align pnat.bit1_le_bit0 PNat.bit1_le_bit0
+
+@[simp, deprecated (since := "2022-12-23")]
+theorem bit1_le_bit1 (n m : ℕ+) : bit1 n ≤ bit1 m ↔ bit1 (n : ℕ) ≤ bit1 (m : ℕ) :=
+  Iff.rfl
+#align pnat.bit1_le_bit1 PNat.bit1_le_bit1
+
+end deprecated
+
+@[simp, norm_cast]
+theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
+  rfl
+#align pnat.mul_coe PNat.mul_coe
+
+/-- `PNat.coe` promoted to a `MonoidHom`. -/
+def coeMonoidHom : ℕ+ →* ℕ where
+  toFun := Coe.coe
+  map_one' := one_coe
+  map_mul' := mul_coe
+#align pnat.coe_monoid_hom PNat.coeMonoidHom
+
+@[simp]
+theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
+  rfl
+#align pnat.coe_coe_monoid_hom PNat.coe_coeMonoidHom
+
+@[simp]
+theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
+  le_bot_iff
+#align pnat.le_one_iff PNat.le_one_iff
+
+theorem lt_add_left (n m : ℕ+) : n < m + n :=
+  lt_add_of_pos_left _ m.2
+#align pnat.lt_add_left PNat.lt_add_left
+
+theorem lt_add_right (n m : ℕ+) : n < n + m :=
+  (lt_add_left n m).trans_eq (add_comm _ _)
+#align pnat.lt_add_right PNat.lt_add_right
+
+@[simp, norm_cast]
+theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
+  rfl
+#align pnat.pow_coe PNat.pow_coe
+
+/-- b is greater one if any a is less than b -/
+theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
+
+theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
+
+theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
+
+/-- Subtraction a - b is defined in the obvious way when
+  a > b, and by a - b = 1 if a ≤ b.
+-/
+instance instSub : Sub ℕ+ :=
+  ⟨fun a b => toPNat' (a - b : ℕ)⟩
+
+theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
+  change (toPNat' _ : ℕ) = ite _ _ _
+  split_ifs with h
+  · exact toPNat'_coe (tsub_pos_of_lt h)
+  · rw [tsub_eq_zero_iff_le.mpr (le_of_not_gt h : (a : ℕ) ≤ b)]
+    rfl
+#align pnat.sub_coe PNat.sub_coe
+
+theorem sub_le (a b : ℕ+) : a - b ≤ a := by
+  rw [← coe_le_coe, sub_coe]
+  split_ifs with h
+  · exact Nat.sub_le a b
+  · exact a.2
+
+theorem le_sub_one_of_lt {a b : ℕ+} (hab: a < b) : a ≤ b - (1 : ℕ+) := by
+  rw [← coe_le_coe, sub_coe]
+  split_ifs with h
+  · exact Nat.le_pred_of_lt hab
+  · exact hab.le.trans (le_of_not_lt h)
+
+theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
+  fun h =>
+    PNat.eq <| by
+      rw [add_coe, sub_coe, if_pos h]
+      exact add_tsub_cancel_of_le h.le
+#align pnat.add_sub_of_lt PNat.add_sub_of_lt
+
+/-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
+theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
+  | ⟨1, _⟩, h₁ => False.elim <| h₁ rfl
+  | ⟨n + 2, _⟩, _ => ⟨⟨n + 1, by simp⟩, rfl⟩
+#align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
+
+/-- Lemmas with div, dvd and mod operations -/
 theorem modDivAux_spec :
     ∀ (k : ℕ+) (r q : ℕ) (_ : ¬(r = 0 ∧ q = 0)),
       ((modDivAux k r q).1 : ℕ) + k * (modDivAux k r q).2 = r + k * q
