@@ -213,7 +213,9 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) : IO (Array ErrorContext
     return Array.mkArray1 err
   return #[]
 
-/-- Lint a list of files referenced and return the number of files which had new style errors.
+/-- Apply text-based linters to a list of files.
+Print formatted errors and possibly update the style exceptions file accordingly.
+Return the number of files which had unexpected style errors.
 `mode` specifies what kind of output this script should produce. -/
 def lintFiles (files : Array FilePath) (mode : OutputSetting) : IO UInt32 := do
   -- Read the style exceptions file.
