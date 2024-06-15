@@ -431,7 +431,7 @@ space correspond bijectively to "convergent" maps out of the discrete space.
 noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [TopologicalSpace Y]
     [T2Space Y] [Infinite X] :
     C(OnePoint X, Y) ≃ { f : X → Y // ∃ L, Tendsto (fun x : X ↦ f x) cofinite (𝓝 L) } where
-  toFun f := ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete _ |>.mp (map_continuous f)⟩⟩
+  toFun f := ⟨(f ·), ⟨f ∞, continuous_iff_from_discrete _ |>.mp (map_continuous f)⟩⟩
   invFun f :=
     { toFun := fun x => match x with
         | ∞ => Classical.choose f.2
