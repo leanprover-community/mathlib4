@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
-import Std.Util.TermUnsafe
-import Std.Tactic.OpenPrivate
+import Batteries.Tactic.OpenPrivate
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the
@@ -107,7 +106,7 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
 
   if diffs.isEmpty then return "no new constants"
 
-  pure $ MessageData.joinSep diffs.toList "\n\n"
+  pure <| MessageData.joinSep diffs.toList "\n\n"
 
 /-- `whatsnew in $command` executes the command and then prints the
 declarations that were added to the environment. -/

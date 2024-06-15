@@ -1,4 +1,3 @@
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
@@ -14,12 +13,6 @@ set_option autoImplicit true
 -- It may also be useful to enable
 -- set_option trace.Meta.Tactic.solveByElim true
 
--- Recall that `apply?` caches the discrimination tree on disk.
--- If you are modifying the way that `apply?` indexes lemmas,
--- while testing you will probably want to delete
--- `.lake/build/lib/MathlibExtras/LibrarySearch.extra`
--- so that the cache is rebuilt.
-
 -- We need to set this here, as the lakefile does not enable this during testing.
 -- https://github.com/leanprover-community/mathlib4/issues/6440
 set_option pp.unicode.fun true
@@ -30,7 +23,7 @@ noncomputable section
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
-/-- info: Try this: exact Nat.succ_pos 1 -/
+/-- info: Try this: exact Nat.zero_lt_succ 1 -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 
@@ -38,26 +31,26 @@ example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 #guard_msgs in
 example (x y : Nat) : x + y = y + x := by apply?
 
-/-- info: Try this: exact fun a ↦ Nat.add_le_add_right a k -/
-#guard_msgs in
+/- info: Try this: exact fun a ↦ Nat.add_le_add_right a k -/
+#guard_msgs (drop info) in
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 
-/-- info: Try this: exact Nat.mul_dvd_mul_left a w -/
-#guard_msgs in
-example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
+/- info: Try this: exact Nat.mul_dvd_mul_left a w -/
+#guard_msgs (drop info) in
+example (_ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
 -- Could be any number of results (`Int.one`, `Int.zero`, etc)
 #guard_msgs (drop info) in
 example : Int := by apply?
 
-/-- info: Try this: Nat.lt.base x -/
+/-- info: Try this: lt_add_one x -/
 #guard_msgs in
 example : x < x + 1 := exact?%
 
 /-- info: Try this: exact p -/
 #guard_msgs in
 example (P : Prop) (p : P) : P := by apply?
-/-- info: Try this: exact (np p).elim -/
+/-- info: Try this: exact False.elim (np p) -/
 #guard_msgs in
 example (P : Prop) (p : P) (np : ¬P) : false := by apply?
 /-- info: Try this: exact h x rfl -/
@@ -75,43 +68,43 @@ example (α : Prop) : α → α := by apply?
 
 /-- info: Try this: exact Nat.add_comm a b -/
 #guard_msgs in
-example (a b : ℕ) : a + b = b + a :=
-by apply?
+example (a b : ℕ) : a + b = b + a := by
+  apply?
 
 /-- info: Try this: exact Nat.mul_sub_left_distrib n m k -/
 #guard_msgs in
-example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
-by apply?
+example (n m k : ℕ) : n * (m - k) = n * m - n * k := by
+  apply?
 
-/-- info: Try this: exact (Nat.mul_sub_left_distrib n m k).symm -/
+/-- info: Try this: exact Eq.symm (Nat.mul_sub_left_distrib n m k) -/
 #guard_msgs in
-example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
-by apply?
+example (n m k : ℕ) : n * m - n * k = n * (m - k) := by
+  apply?
 
-/-- info: Try this: exact eq_comm -/
-#guard_msgs in
+/- info: Try this: exact eq_comm -/
+#guard_msgs (drop info) in
 example {α : Type} (x y : α) : x = y ↔ y = x := by apply?
 
-/-- info: Try this: exact Nat.add_pos_left ha b -/
-#guard_msgs in
-example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
+/- info: Try this: exact Nat.add_pos_left ha b -/
+#guard_msgs (drop info) in
+example (a b : ℕ) (_ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
-/-- info: Try this: exact Nat.add_pos_left ha b -/
-#guard_msgs in
+/- info: Try this: exact Nat.add_pos_left ha b -/
+#guard_msgs (drop info) in
 -- Verify that if maxHeartbeats is 0 we don't stop immediately.
 set_option maxHeartbeats 0 in
-example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (_ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
 section synonym
 
-/-- info: Try this: exact Nat.add_pos_left ha b -/
-#guard_msgs in
-example (a b : ℕ) (ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
+/- info: Try this: exact Nat.add_pos_left ha b -/
+#guard_msgs (drop info) in
+example (a b : ℕ) (_ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
-example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b :=
-by apply?
+example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b := by
+  apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
@@ -158,8 +151,8 @@ end synonym
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by apply?
 
 -- We even find `iff` results:
-/-- info: Try this: exact (Nat.dvd_add_left h₁).mp h₂ -/
-#guard_msgs in
+/- info: Try this: exact (Nat.dvd_add_left h₁).mp h₂ -/
+#guard_msgs (drop info) in
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by apply?
 
 -- Note: these examples no longer work after we turned off lemmas with discrimination key `#[*]`.
@@ -174,7 +167,7 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
-/-- info: Try this: exact List.join L -/
+/-- info: Try this: exact L.join -/
 #guard_msgs in
 example (L _M : List (List ℕ)) : List ℕ := by apply? using L
 
@@ -198,13 +191,13 @@ example (P Q : List ℕ) (_h : ℕ) : List ℕ := by apply? using P, Q
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)
 
-theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) :=
-  by (cases A <;> cases B <;> simp)
+theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) := by
+  (cases A <;> cases B <;> simp)
 
 /-- info: Try this: exact Bool_eq_iff -/
 #guard_msgs in
-theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) :=
-  by apply? -- exact Bool_eq_iff
+theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) := by
+  apply? -- exact Bool_eq_iff
 
 assert_no_sorry Bool_eq_iff2
 
@@ -219,13 +212,9 @@ example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   exact?
 
--- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/exact.3F.20recent.20regression.3F/near/387691588
-lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
-  exact? says exact dvd_of_mul_left_dvd h
-
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
 example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
-  exact? says exact mt h h'
+  exact? says exact fun a ↦ h' (h a)
 
 -- Removed until we come up with a way of handling nonspecific lemmas
 -- that does not pollute the output or cause too much slow-down.
@@ -236,3 +225,10 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 --   first
 --   | exact? says exact le_antisymm hxy hyx
 --   | exact? says exact ge_antisymm hyx hxy
+
+-- Check that adding `with_reducible` prevents expensive kernel reductions.
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60exact.3F.60.20failure.3A.20.22maximum.20recursion.20depth.20has.20been.20reached.22/near/417649319
+/-- info: Try this: exact Nat.add_comm n m -/
+#guard_msgs in
+example (_h : List.range 10000 = List.range 10000) (n m : Nat) : n + m = m + n := by
+  with_reducible exact?

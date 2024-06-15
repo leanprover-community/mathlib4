@@ -3,11 +3,10 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Data.MLList.Basic
+import Batteries.Data.MLList.Basic
 import Mathlib.Control.Basic
-import Mathlib.Tactic.RunCmd
 
-@[reducible] def S (α : Type) := StateT (List Nat) Option α
+abbrev S (α : Type) := StateT (List Nat) Option α
 def append (x : Nat) : S Unit :=
   fun s => some ((), x :: s)
 
@@ -24,7 +23,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   -- This is different from previous behaviour, where it just terminated the lazy list.
   -- Hence we must use `.takeAsList 11` here rather than `.force`.
   let x := ((MLList.fix F 10).takeAsList 11).run []
-  guard $ x = some ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+  guard <| x = some ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
 example : ((MLList.fix F 10).takeAsList 4).run [] = some ([10, 9, 8, 7], [8, 9, 10]) := by
   native_decide
@@ -39,7 +38,7 @@ def ll : MLList S Nat := (MLList.ofList [l1, l2]).join
 
 run_cmd Lean.Elab.Command.liftTermElabM do
   let x := ll.force.run []
-  guard $ x = some ([0, 1, 2, 3, 4, 5], [])
+  guard <| x = some ([0, 1, 2, 3, 4, 5], [])
 
 def half_or_fail (n : Nat) : MetaM Nat :=
 do guard (n % 2 = 0)
@@ -49,7 +48,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   let x : MLList MetaM Nat := MLList.range
   let y := x.filterMapM fun n => try? <| half_or_fail n
   let z ← y.takeAsList 10
-  guard $ z.length = 10
+  guard <| z.length = 10
 
 run_cmd Lean.Elab.Command.liftTermElabM do
   let R : MLList MetaM Nat := MLList.range
@@ -58,12 +57,12 @@ run_cmd Lean.Elab.Command.liftTermElabM do
     pure n
   let n ← R.takeAsList 5
   let m ← S.head
-  guard $ n = [0,1,2,3,4]
-  guard $ m = 0
+  guard <| n = [0,1,2,3,4]
+  guard <| m = 0
 
 run_cmd Lean.Elab.Command.liftTermElabM do
   let R : MLList MetaM Nat := MLList.range
   let n ← R.firstM fun n => try? do
     guard (n = 5)
     pure n
-  guard $ n = 5
+  guard <| n = 5

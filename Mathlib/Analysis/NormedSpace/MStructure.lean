@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
 
 #align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
@@ -61,10 +62,9 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 -/
 
 variable (X : Type*) [NormedAddCommGroup X]
-
 variable {M : Type*} [Ring M] [Module M X]
 
---porting note: Mathlib3 uses names with uppercase 'L' for L-projections
+-- Porting note: Mathlib3 uses names with uppercase 'L' for L-projections
 set_option linter.uppercaseLean3 false
 
 /-- A projection on a normed space `X` is said to be an L-projection if, for all `x` in `X`,
@@ -91,7 +91,7 @@ variable {X}
 
 namespace IsLprojection
 
---porting note: The literature always uses uppercase 'L' for L-projections
+-- Porting note: The literature always uses uppercase 'L' for L-projections
 theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
   ⟨h.proj.one_sub, fun x => by
     rw [add_comm, sub_sub_cancel]
@@ -105,7 +105,7 @@ theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) 
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     Commute P Q := by
   have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ => by
-    --porting note: Needed to fix function, which changes indent of following lines
+    -- Porting note: Needed to fix function, which changes indent of following lines
     refine @eq_of_smul_eq_smul _ X _ _ _ _ fun x => by
       rw [← norm_sub_eq_zero_iff]
       have e1 : ‖R • x‖ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
@@ -128,11 +128,11 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
             simpa only [mul_smul, sub_smul, one_smul] using this
 
       rw [GE.ge] at e1
-      --porting note: Bump index in nth_rewrite
+      -- Porting note: Bump index in nth_rewrite
       nth_rewrite 2 [← add_zero ‖R • x‖] at e1
       rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
       rw [le_antisymm_iff]
-      refine' ⟨_, norm_nonneg _⟩
+      refine ⟨?_, norm_nonneg _⟩
       rwa [← mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1
   have QP_eq_QPQ : Q * P = Q * P * Q := by
     have e1 : P * (1 - Q) = P * (1 - Q) - (Q * P - Q * P * Q) :=
@@ -141,16 +141,16 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
         _ = P * (1 - Q) - (Q * P - Q * P * Q) := by noncomm_ring
     rwa [eq_sub_iff_add_eq, add_right_eq_self, sub_eq_zero] at e1
   show P * Q = Q * P
-  · rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
+  rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
 #align is_Lprojection.commute IsLprojection.commute
 
 theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P * Q) := by
-  refine' ⟨IsIdempotentElem.mul_of_commute (h₁.commute h₂) h₁.proj h₂.proj, _⟩
+  refine ⟨IsIdempotentElem.mul_of_commute (h₁.commute h₂) h₁.proj h₂.proj, ?_⟩
   intro x
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · calc
-      ‖x‖ = ‖(P * Q) • x + (x - (P * Q) • x)‖ := by rw [add_sub_cancel'_right ((P * Q) • x) x]
+      ‖x‖ = ‖(P * Q) • x + (x - (P * Q) • x)‖ := by rw [add_sub_cancel ((P * Q) • x) x]
       _ ≤ ‖(P * Q) • x‖ + ‖x - (P * Q) • x‖ := by apply norm_add_le
       _ = ‖(P * Q) • x‖ + ‖(1 - P * Q) • x‖ := by rw [sub_smul, one_smul]
   · calc
@@ -168,7 +168,7 @@ theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsL
   noncomm_ring
 #align is_Lprojection.join IsLprojection.join
 
---porting note: Advice is to explicitly name instances
+-- Porting note: Advice is to explicitly name instances
 -- https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki#some-common-fixes
 instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
@@ -245,14 +245,14 @@ instance Subtype.boundedOrder [FaithfulSMul M X] :
 
 @[simp]
 theorem coe_bot [FaithfulSMul M X] :
-    --porting note: Manual correction of name required here
+    -- Porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderBot.toBot.bot : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
 #align is_Lprojection.coe_bot IsLprojection.coe_bot
 
 @[simp]
 theorem coe_top [FaithfulSMul M X] :
-    --porting note: Manual correction of name required here
+    -- Porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderTop.toTop.top : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
 #align is_Lprojection.coe_top IsLprojection.coe_top
@@ -276,7 +276,7 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
     Pᶜ.prop.proj.eq]
 #align is_Lprojection.distrib_lattice_lemma IsLprojection.distrib_lattice_lemma
 
---porting note: In mathlib3 we were able to directly show that `{ P : M // IsLprojection X P }` was
+-- Porting note: In mathlib3 we were able to directly show that `{ P : M // IsLprojection X P }` was
 --  an instance of a `DistribLattice`. Trying to do that in mathlib4 fails with "error:
 -- (deterministic) timeout at 'whnf', maximum number of heartbeats (800000) has been reached"
 -- My workaround is to show instance Lattice first
@@ -286,7 +286,7 @@ instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
       sub_self, add_zero]
   le_sup_right P Q := by
     rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, (P.prop.commute Q.prop).eq,
-      ← mul_assoc, Q.prop.proj.eq, add_sub_cancel'_right]
+      ← mul_assoc, Q.prop.proj.eq, add_sub_cancel]
   sup_le P Q R := by
     rw [le_def, le_def, le_def, coe_inf, coe_inf, coe_sup, coe_inf, coe_sup, ← add_sub, add_mul,
       sub_mul, mul_assoc]
@@ -318,7 +318,7 @@ instance Subtype.distribLattice [FaithfulSMul M X] :
 
 instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     BooleanAlgebra { P : M // IsLprojection X P } :=
---porting note: use explicitly specified instance names
+-- Porting note: use explicitly specified instance names
   { IsLprojection.Subtype.hasCompl,
     IsLprojection.Subtype.sdiff,
     IsLprojection.Subtype.boundedOrder with
@@ -327,7 +327,7 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     top_le_sup_compl := fun P =>
       (Subtype.ext
         (by
-          rw [coe_top, coe_sup, coe_compl, add_sub_cancel'_right, ← coe_compl, mul_compl_self,
+          rw [coe_top, coe_sup, coe_compl, add_sub_cancel, ← coe_compl, mul_compl_self,
             sub_zero])).le
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 

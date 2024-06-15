@@ -202,30 +202,22 @@ section PartialOrder
 
 variable [Preorder α] [PartialOrder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
 
-theorem l_u_l_eq_l (a : α) : l (u (l a)) = l a :=
-  (gc.l_u_le _).antisymm (gc.monotone_l (gc.le_u_l _))
+theorem l_u_l_eq_l (a : α) : l (u (l a)) = l a := gc.dual.u_l_u_eq_u _
 #align galois_connection.l_u_l_eq_l GaloisConnection.l_u_l_eq_l
 
-theorem l_u_l_eq_l' : l ∘ u ∘ l = l :=
-  funext gc.l_u_l_eq_l
+theorem l_u_l_eq_l' : l ∘ u ∘ l = l := funext gc.l_u_l_eq_l
 #align galois_connection.l_u_l_eq_l' GaloisConnection.l_u_l_eq_l'
 
 theorem l_unique {l' : α → β} {u' : β → α} (gc' : GaloisConnection l' u') (hu : ∀ b, u b = u' b)
     {a : α} : l a = l' a :=
-  le_antisymm (gc.l_le <| (hu (l' a)).symm ▸ gc'.le_u_l _) (gc'.l_le <| hu (l a) ▸ gc.le_u_l _)
+  gc.dual.u_unique gc'.dual hu
 #align galois_connection.l_unique GaloisConnection.l_unique
 
 /-- If there exists an `a` such that `b = l a`, then `a = u b` is one such element. -/
-theorem exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) :=
-  ⟨fun ⟨_, hS⟩ => hS.symm ▸ (gc.l_u_l_eq_l _).symm, fun HI => ⟨_, HI⟩⟩
+theorem exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) := gc.dual.exists_eq_u _
 #align galois_connection.exists_eq_l GaloisConnection.exists_eq_l
 
-theorem l_eq {x : α} {z : β} : l x = z ↔ ∀ y, z ≤ y ↔ x ≤ u y := by
-  constructor
-  · rintro rfl y
-    exact gc x y
-  · intro H
-    exact ((gc _ _).mpr <| (H z).mp le_rfl).antisymm ((H <| l x).mpr (gc.le_u_l x))
+theorem l_eq {x : α} {z : β} : l x = z ↔ ∀ y, z ≤ y ↔ x ≤ u y := gc.dual.u_eq
 #align galois_connection.l_eq GaloisConnection.l_eq
 
 end PartialOrder
@@ -272,8 +264,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf α] [SemilatticeInf β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
 
-theorem u_inf : u (b₁ ⊓ b₂) = u b₁ ⊓ u b₂ :=
-  gc.dual.l_sup
+theorem u_inf : u (b₁ ⊓ b₂) = u b₁ ⊓ u b₂ := gc.dual.l_sup
 #align galois_connection.u_inf GaloisConnection.u_inf
 
 end SemilatticeInf
@@ -329,7 +320,7 @@ protected theorem id [pα : Preorder α] : @GaloisConnection α α pα pα id id
 
 protected theorem compose [Preorder α] [Preorder β] [Preorder γ] {l1 : α → β} {u1 : β → α}
     {l2 : β → γ} {u2 : γ → β} (gc1 : GaloisConnection l1 u1) (gc2 : GaloisConnection l2 u2) :
-    GaloisConnection (l2 ∘ l1) (u1 ∘ u2) := by intro a b; dsimp; rw [gc2, gc1]
+    GaloisConnection (l2 ∘ l1) (u1 ∘ u2) := fun _ _ ↦ (gc2 _ _).trans (gc1 _ _)
 #align galois_connection.compose GaloisConnection.compose
 
 protected theorem dfun {ι : Type u} {α : ι → Type v} {β : ι → Type w} [∀ i, Preorder (α i)]
@@ -341,8 +332,7 @@ protected theorem dfun {ι : Type u} {α : ι → Type v} {β : ι → Type w} [
 
 protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} {u : β → α}
     (gc : GaloisConnection l u) :
-    GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := by
-  intro a b
+    GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := fun a b ↦ by
   dsimp
   rw [le_compl_iff_le_compl, gc, compl_le_iff_compl_le]
 
@@ -472,7 +462,7 @@ theorem galoisConnection_mul_div {k : ℕ} (h : 0 < k) :
 
 end Nat
 
--- Porting note: this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois insertion is a Galois connection where `l ∘ u = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
@@ -634,8 +624,7 @@ variable [PartialOrder β]
 
 -- See note [reducible non instances]
 /-- Lift the suprema along a Galois insertion -/
-@[reducible]
-def liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : SemilatticeSup β :=
+abbrev liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : SemilatticeSup β :=
   { ‹PartialOrder β› with
     sup := fun a b => l (u a ⊔ u b)
     le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
@@ -646,8 +635,7 @@ def liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : Semilatt
 
 -- See note [reducible non instances]
 /-- Lift the infima along a Galois insertion -/
-@[reducible]
-def liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : SemilatticeInf β :=
+abbrev liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : SemilatticeInf β :=
   { ‹PartialOrder β› with
     inf := fun a b =>
       gi.choice (u a ⊓ u b) <|
@@ -664,15 +652,13 @@ def liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : Semilatt
 
 -- See note [reducible non instances]
 /-- Lift the suprema and infima along a Galois insertion -/
-@[reducible]
-def liftLattice [Lattice α] (gi : GaloisInsertion l u) : Lattice β :=
+abbrev liftLattice [Lattice α] (gi : GaloisInsertion l u) : Lattice β :=
   { gi.liftSemilatticeSup, gi.liftSemilatticeInf with }
 #align galois_insertion.lift_lattice GaloisInsertion.liftLattice
 
 -- See note [reducible non instances]
 /-- Lift the top along a Galois insertion -/
-@[reducible]
-def liftOrderTop [Preorder α] [OrderTop α] (gi : GaloisInsertion l u) :
+abbrev liftOrderTop [Preorder α] [OrderTop α] (gi : GaloisInsertion l u) :
     OrderTop β where
   top := gi.choice ⊤ <| le_top
   le_top := by
@@ -681,15 +667,13 @@ def liftOrderTop [Preorder α] [OrderTop α] (gi : GaloisInsertion l u) :
 
 -- See note [reducible non instances]
 /-- Lift the top, bottom, suprema, and infima along a Galois insertion -/
-@[reducible]
-def liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l u) : BoundedOrder β :=
+abbrev liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l u) : BoundedOrder β :=
   { gi.liftOrderTop, gi.gc.liftOrderBot with }
 #align galois_insertion.lift_bounded_order GaloisInsertion.liftBoundedOrder
 
 -- See note [reducible non instances]
 /-- Lift all suprema and infima along a Galois insertion -/
-@[reducible]
-def liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
+abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
   { gi.liftBoundedOrder, gi.liftLattice with
     sSup := fun s => l (sSup (u '' s))
     sSup_le := fun s => (gi.isLUB_of_u_image (isLUB_sSup _)).2
@@ -706,7 +690,7 @@ end lift
 
 end GaloisInsertion
 
--- Porting note: this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois coinsertion is a Galois connection where `u ∘ l = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/
@@ -884,61 +868,56 @@ variable [PartialOrder α]
 
 -- See note [reducible non instances]
 /-- Lift the infima along a Galois coinsertion -/
-@[reducible]
-def liftSemilatticeInf [SemilatticeInf β] (gi : GaloisCoinsertion l u) : SemilatticeInf α :=
+abbrev liftSemilatticeInf [SemilatticeInf β] (gi : GaloisCoinsertion l u) : SemilatticeInf α :=
   { ‹PartialOrder α› with
     inf_le_left := fun a b => by
-      exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_left a b
+      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_left a b
     inf_le_right := fun a b => by
-      exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_right a b
+      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_right a b
     le_inf := fun a b c => by
-      exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).le_inf a b c
+      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).le_inf a b c
     inf := fun a b => u (l a ⊓ l b) }
 #align galois_coinsertion.lift_semilattice_inf GaloisCoinsertion.liftSemilatticeInf
 
 -- See note [reducible non instances]
 /-- Lift the suprema along a Galois coinsertion -/
-@[reducible]
-def liftSemilatticeSup [SemilatticeSup β] (gi : GaloisCoinsertion l u) : SemilatticeSup α :=
+abbrev liftSemilatticeSup [SemilatticeSup β] (gi : GaloisCoinsertion l u) : SemilatticeSup α :=
   { ‹PartialOrder α› with
     sup := fun a b =>
       gi.choice (l a ⊔ l b) <|
         sup_le (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_left)
           (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_right)
     le_sup_left := fun a b => by
-      exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_left a b
+      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_left a b
     le_sup_right := fun a b => by
-      exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_right a b
+      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_right a b
     sup_le := fun a b c => by
-      exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).sup_le a b c }
+      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).sup_le a b c }
 #align galois_coinsertion.lift_semilattice_sup GaloisCoinsertion.liftSemilatticeSup
 
 -- See note [reducible non instances]
 /-- Lift the suprema and infima along a Galois coinsertion -/
-@[reducible]
-def liftLattice [Lattice β] (gi : GaloisCoinsertion l u) : Lattice α :=
+abbrev liftLattice [Lattice β] (gi : GaloisCoinsertion l u) : Lattice α :=
   { gi.liftSemilatticeSup, gi.liftSemilatticeInf with }
 #align galois_coinsertion.lift_lattice GaloisCoinsertion.liftLattice
 
 -- See note [reducible non instances]
 /-- Lift the bot along a Galois coinsertion -/
-@[reducible]
-def liftOrderBot [Preorder β] [OrderBot β] (gi : GaloisCoinsertion l u) : OrderBot α :=
-  { @OrderDual.orderBot _ _ gi.dual.liftOrderTop with bot := gi.choice ⊥ <| bot_le }
+abbrev liftOrderBot [Preorder β] [OrderBot β] (gi : GaloisCoinsertion l u) : OrderBot α :=
+  { @OrderDual.instOrderBot _ _ gi.dual.liftOrderTop with bot := gi.choice ⊥ <| bot_le }
 #align galois_coinsertion.lift_order_bot GaloisCoinsertion.liftOrderBot
 
 -- See note [reducible non instances]
 /-- Lift the top, bottom, suprema, and infima along a Galois coinsertion -/
-@[reducible]
-def liftBoundedOrder [Preorder β] [BoundedOrder β] (gi : GaloisCoinsertion l u) : BoundedOrder α :=
+abbrev liftBoundedOrder
+    [Preorder β] [BoundedOrder β] (gi : GaloisCoinsertion l u) : BoundedOrder α :=
   { gi.liftOrderBot, gi.gc.liftOrderTop with }
 #align galois_coinsertion.lift_bounded_order GaloisCoinsertion.liftBoundedOrder
 
 -- See note [reducible non instances]
 /-- Lift all suprema and infima along a Galois coinsertion -/
-@[reducible]
-def liftCompleteLattice [CompleteLattice β] (gi : GaloisCoinsertion l u) : CompleteLattice α :=
-  { @OrderDual.completeLattice αᵒᵈ gi.dual.liftCompleteLattice with
+abbrev liftCompleteLattice [CompleteLattice β] (gi : GaloisCoinsertion l u) : CompleteLattice α :=
+  { @OrderDual.instCompleteLattice αᵒᵈ gi.dual.liftCompleteLattice with
     sInf := fun s => u (sInf (l '' s))
     sSup := fun s => gi.choice (sSup (l '' s)) _ }
 #align galois_coinsertion.lift_complete_lattice GaloisCoinsertion.liftCompleteLattice

@@ -68,13 +68,13 @@ variable {ι ι' G H : Type*} [Group G] [Group H]
 
 /-- A free group basis for `G` over `ι` is associated to a map `ι → G` recording the images of
 the generators. -/
-instance funLike : FunLike (FreeGroupBasis ι G) ι (fun _ ↦ G) where
+instance instFunLike : FunLike (FreeGroupBasis ι G) ι G where
   coe b := fun i ↦ b.repr.symm (FreeGroup.of i)
   coe_injective' := by
     rintro ⟨b⟩  ⟨b'⟩ hbb'
     have H : (b.symm : FreeGroup ι →* G) = (b'.symm : FreeGroup ι →* G) := by
       ext i; exact congr_fun hbb' i
-    have : b.symm = b'.symm := by ext x; exact FunLike.congr_fun H x
+    have : b.symm = b'.symm := by ext x; exact DFunLike.congr_fun H x
     rw [ofRepr.injEq, ← MulEquiv.symm_symm b, ← MulEquiv.symm_symm b', this]
 
 @[simp] lemma repr_apply_coe (b : FreeGroupBasis ι G) (i : ι) : b.repr (b i) = FreeGroup.of i := by
@@ -174,16 +174,16 @@ variable (G : Type*) [Group G] [IsFreeGroup G]
 def Generators : Type _ := (IsFreeGroup.nonempty_basis (G := G)).choose
 
 /-- Any free group is isomorphic to "the" free group. -/
-irreducible_def MulEquiv : FreeGroup (Generators G) ≃* G :=
+irreducible_def mulEquiv : FreeGroup (Generators G) ≃* G :=
   (IsFreeGroup.nonempty_basis (G := G)).choose_spec.some.repr.symm
 
 /-- A free group basis of a free group `G`, over the set `Generators G`. -/
-def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (MulEquiv G).symm
+def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (mulEquiv G).symm
 
 /-- Any free group is isomorphic to "the" free group. -/
 @[simps!]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
-  (MulEquiv G).symm
+  (mulEquiv G).symm
 #align is_free_group.to_free_group IsFreeGroup.toFreeGroup
 #align is_free_group.to_free_group_apply IsFreeGroup.toFreeGroup_apply
 #align is_free_group.to_free_group_symm_apply IsFreeGroup.toFreeGroup_symm_apply
@@ -192,7 +192,7 @@ variable {G}
 
 /-- The canonical injection of G's generators into G -/
 def of : Generators G → G :=
-  (MulEquiv G).toFun ∘ FreeGroup.of
+  (mulEquiv G).toFun ∘ FreeGroup.of
 #align is_free_group.of IsFreeGroup.of
 
 variable {H : Type*} [Group H]
@@ -243,7 +243,7 @@ lemma ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     IsFreeGroup G :=
   (FreeGroupBasis.ofUniqueLift X of h).isFreeGroup
 
-lemma ofMulEquiv [IsFreeGroup G] (e : G ≃* H) : IsFreeGroup H :=
+lemma ofMulEquiv (e : G ≃* H) : IsFreeGroup H :=
   ((basis G).map e).isFreeGroup
 
 end IsFreeGroup

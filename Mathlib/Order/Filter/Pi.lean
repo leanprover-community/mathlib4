@@ -24,7 +24,8 @@ In this file we define two filters on `Π i, α i` and prove some basic properti
 
 open Set Function
 
-open Classical Filter
+open scoped Classical
+open Filter
 
 namespace Filter
 
@@ -52,6 +53,11 @@ theorem tendsto_pi {β : Type*} {m : β → ∀ i, α i} {l : Filter β} :
   simp only [pi, tendsto_iInf, tendsto_comap_iff]; rfl
 #align filter.tendsto_pi Filter.tendsto_pi
 
+/-- If a function tends to a product `Filter.pi f` of filters, then its `i`-th component tends to
+`f i`. See also `Filter.Tendsto.apply_nhds` for the special case of converging to a point in a
+product of topological spaces. -/
+alias ⟨Tendsto.apply, _⟩ := tendsto_pi
+
 theorem le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i) g (f i) :=
   tendsto_pi
 #align filter.le_pi Filter.le_pi
@@ -67,7 +73,7 @@ theorem mem_pi_of_mem (i : ι) {s : Set (α i)} (hs : s ∈ f i) : eval i ⁻¹'
 
 theorem pi_mem_pi {I : Set ι} (hI : I.Finite) (h : ∀ i ∈ I, s i ∈ f i) : I.pi s ∈ pi f := by
   rw [pi_def, biInter_eq_iInter]
-  refine' mem_iInf_of_iInter hI (fun i => _) Subset.rfl
+  refine mem_iInf_of_iInter hI (fun i => ?_) Subset.rfl
   exact preimage_mem_comap (h i i.2)
 #align filter.pi_mem_pi Filter.pi_mem_pi
 
@@ -90,7 +96,7 @@ theorem mem_pi' {s : Set (∀ i, α i)} :
 theorem mem_of_pi_mem_pi [∀ i, NeBot (f i)] {I : Set ι} (h : I.pi s ∈ pi f) {i : ι} (hi : i ∈ I) :
     s i ∈ f i := by
   rcases mem_pi.1 h with ⟨I', -, t, htf, hts⟩
-  refine' mem_of_superset (htf i) fun x hx => _
+  refine mem_of_superset (htf i) fun x hx => ?_
   have : ∀ i, (t i).Nonempty := fun i => nonempty_of_mem (htf i)
   choose g hg using this
   have : update g i x ∈ I'.pi t := fun j _ => by
@@ -119,6 +125,19 @@ theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : �
   simpa [Set.pi_def] using hasBasis_iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
 #align filter.has_basis_pi Filter.hasBasis_pi
 
+theorem le_pi_principal (s : (i : ι) → Set (α i)) :
+    𝓟 (univ.pi s) ≤ pi fun i ↦ 𝓟 (s i) :=
+  le_pi.2 fun i ↦ tendsto_principal_principal.2 fun _f hf ↦ hf i trivial
+
+@[simp]
+theorem pi_principal [Finite ι] (s : (i : ι) → Set (α i)) :
+    pi (fun i ↦ 𝓟 (s i)) = 𝓟 (univ.pi s) := by
+  simp [Filter.pi, Set.pi_def]
+
+@[simp]
+theorem pi_pure [Finite ι] (f : (i : ι) → α i) : pi (pure <| f ·) = pure f := by
+  simp only [← principal_singleton, pi_principal, univ_pi_singleton]
+
 @[simp]
 theorem pi_inf_principal_univ_pi_eq_bot :
     pi f ⊓ 𝓟 (Set.pi univ s) = ⊥ ↔ ∃ i, f i ⊓ 𝓟 (s i) = ⊥ := by
@@ -138,7 +157,7 @@ theorem pi_inf_principal_univ_pi_eq_bot :
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
     pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
   rw [← univ_pi_piecewise_univ I, pi_inf_principal_univ_pi_eq_bot]
-  refine' exists_congr fun i => _
+  refine exists_congr fun i => ?_
   by_cases hi : i ∈ I <;> simp [hi, NeBot.ne']
 #align filter.pi_inf_principal_pi_eq_bot Filter.pi_inf_principal_pi_eq_bot
 
@@ -173,10 +192,10 @@ instance [∀ i, NeBot (f i)] : NeBot (pi f) :=
 @[simp]
 theorem map_eval_pi (f : ∀ i, Filter (α i)) [∀ i, NeBot (f i)] (i : ι) :
     map (eval i) (pi f) = f i := by
-  refine' le_antisymm (tendsto_eval_pi f i) fun s hs => _
+  refine le_antisymm (tendsto_eval_pi f i) fun s hs => ?_
   rcases mem_pi.1 (mem_map.1 hs) with ⟨I, hIf, t, htf, hI⟩
   rw [← image_subset_iff] at hI
-  refine' mem_of_superset (htf i) ((subset_eval_image_pi _ _).trans hI)
+  refine mem_of_superset (htf i) ((subset_eval_image_pi ?_ _).trans hI)
   exact nonempty_of_mem (pi_mem_pi hIf fun i _ => htf i)
 #align filter.map_eval_pi Filter.map_eval_pi
 
@@ -187,7 +206,7 @@ theorem pi_le_pi [∀ i, NeBot (f₁ i)] : pi f₁ ≤ pi f₂ ↔ ∀ i, f₁ i
 
 @[simp]
 theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ := by
-  refine' ⟨fun h => _, congr_arg pi⟩
+  refine ⟨fun h => ?_, congr_arg pi⟩
   have hle : f₁ ≤ f₂ := pi_le_pi.1 h.le
   haveI : ∀ i, NeBot (f₂ i) := fun i => neBot_of_le (hle i)
   exact hle.antisymm (pi_le_pi.1 h.ge)

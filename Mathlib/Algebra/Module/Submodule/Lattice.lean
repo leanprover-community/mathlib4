@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Submodule.LinearMap
+import Mathlib.Algebra.Module.Equiv
+import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PUnitInstances
+import Mathlib.Data.Set.Subsingleton
 
 #align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -32,9 +34,7 @@ variable {R S M : Type*}
 section AddCommMonoid
 
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
-
 variable [SMul S R] [IsScalarTower S R M]
-
 variable {p q : Submodule R M}
 
 namespace Submodule
@@ -63,26 +63,15 @@ theorem bot_toAddSubmonoid : (⊥ : Submodule R M).toAddSubmonoid = ⊥ :=
   rfl
 #align submodule.bot_to_add_submonoid Submodule.bot_toAddSubmonoid
 
-section
-
-variable (R)
-
 @[simp]
-theorem restrictScalars_bot : restrictScalars S (⊥ : Submodule R M) = ⊥ :=
-  rfl
-#align submodule.restrict_scalars_bot Submodule.restrictScalars_bot
+lemma bot_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    (⊥ : Submodule R M).toAddSubgroup = ⊥ := rfl
 
+variable (R) in
 @[simp]
 theorem mem_bot {x : M} : x ∈ (⊥ : Submodule R M) ↔ x = 0 :=
   Set.mem_singleton_iff
 #align submodule.mem_bot Submodule.mem_bot
-
-end
-
-@[simp]
-theorem restrictScalars_eq_bot_iff {p : Submodule R M} : restrictScalars S p = ⊥ ↔ p = ⊥ := by
-  simp [SetLike.ext_iff]
-#align submodule.restrict_scalars_eq_bot_iff Submodule.restrictScalars_eq_bot_iff
 
 instance uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
@@ -163,25 +152,13 @@ theorem top_toAddSubmonoid : (⊤ : Submodule R M).toAddSubmonoid = ⊤ :=
 #align submodule.top_to_add_submonoid Submodule.top_toAddSubmonoid
 
 @[simp]
+lemma top_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
+
+@[simp]
 theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=
   trivial
 #align submodule.mem_top Submodule.mem_top
-
-section
-
-variable (R)
-
-@[simp]
-theorem restrictScalars_top : restrictScalars S (⊤ : Submodule R M) = ⊤ :=
-  rfl
-#align submodule.restrict_scalars_top Submodule.restrictScalars_top
-
-end
-
-@[simp]
-theorem restrictScalars_eq_top_iff {p : Submodule R M} : restrictScalars S p = ⊤ ↔ p = ⊤ := by
-  simp [SetLike.ext_iff]
-#align submodule.restrict_scalars_eq_top_iff Submodule.restrictScalars_eq_top_iff
 
 instance : OrderTop (Submodule R M) where
   top := ⊤
@@ -237,8 +214,8 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     sup_le := fun _ _ _ h₁ h₂ ↦ sInf_le' ⟨h₁, h₂⟩
     inf := (· ⊓ ·)
     le_inf := fun _ _ _ ↦ Set.subset_inter
-    inf_le_left := fun _ _ ↦ Set.inter_subset_left _ _
-    inf_le_right := fun _ _ ↦ Set.inter_subset_right _ _
+    inf_le_left := fun _ _ ↦ Set.inter_subset_left
+    inf_le_right := fun _ _ ↦ Set.inter_subset_right
     le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
     sSup_le := fun _ _ hs ↦ sInf_le' hs
     le_sInf := fun _ _ ↦ le_sInf'
@@ -264,7 +241,7 @@ theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P
 theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
     (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
   letI := Classical.decEq ι
-  refine' s.induction_on _ fun i s _ ih ↦ _
+  refine s.induction_on ?_ fun i s _ ih ↦ ?_
   · simp
   · rw [Finset.inf_insert, inf_coe, ih]
     simp
@@ -318,15 +295,13 @@ theorem mem_iSup_of_mem {ι : Sort*} {b : M} {p : ι → Submodule R M} (i : ι)
   (le_iSup p i) h
 #align submodule.mem_supr_of_mem Submodule.mem_iSup_of_mem
 
-open BigOperators
-
 theorem sum_mem_iSup {ι : Type*} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i, f i ∈ p i) : (∑ i, f i) ∈ ⨆ i, p i :=
   sum_mem fun i _ ↦ mem_iSup_of_mem i (h i)
 #align submodule.sum_mem_supr Submodule.sum_mem_iSup
 
 theorem sum_mem_biSup {ι : Type*} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
-    (h : ∀ i ∈ s, f i ∈ p i) : (∑ i in s, f i) ∈ ⨆ i ∈ s, p i :=
+    (h : ∀ i ∈ s, f i ∈ p i) : (∑ i ∈ s, f i) ∈ ⨆ i ∈ s, p i :=
   sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
 #align submodule.sum_mem_bsupr Submodule.sum_mem_biSup
 
@@ -339,6 +314,28 @@ theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s �
   rw [LE.le] at this
   exact this
 #align submodule.mem_Sup_of_mem Submodule.mem_sSup_of_mem
+
+@[simp]
+theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
+    (sSup s).toAddSubmonoid = sSup (toAddSubmonoid '' s) := by
+  let p : Submodule R M :=
+    { toAddSubmonoid := sSup (toAddSubmonoid '' s)
+      smul_mem' := fun t {m} h ↦ by
+        simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
+        refine AddSubmonoid.iSup_induction'
+          (C := fun x _ ↦ t • x ∈ ⨆ p : toAddSubmonoid '' s, (p : AddSubmonoid M)) ?_ ?_
+          (fun x y _ _ ↦ ?_) h
+        · rintro ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ x (hx : x ∈ p)
+          suffices p.toAddSubmonoid ≤ ⨆ q : toAddSubmonoid '' s, (q : AddSubmonoid M) by
+            exact this (smul_mem p t hx)
+          apply le_sSup
+          rw [Subtype.range_coe_subtype]
+          exact ⟨p, hp, rfl⟩
+        · simpa only [smul_zero] using zero_mem _
+        · simp_rw [smul_add]; exact add_mem }
+  refine le_antisymm (?_ : sSup s ≤ p) ?_
+  · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
+  · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq
 
 variable (R)
 

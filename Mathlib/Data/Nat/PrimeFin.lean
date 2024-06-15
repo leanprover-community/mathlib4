@@ -30,7 +30,7 @@ instance Primes.infinite : Infinite Primes := infinite_setOf_prime.to_subtype
 instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
 
 /-- The prime factors of a natural number as a finset. -/
-@[pp_dot] def primeFactors (n : ℕ) : Finset ℕ := n.factors.toFinset
+def primeFactors (n : ℕ) : Finset ℕ := n.factors.toFinset
 
 @[simp] lemma toFinset_factors (n : ℕ) : n.factors.toFinset = n.primeFactors := rfl
 
@@ -54,17 +54,22 @@ lemma pos_of_mem_primeFactors (hp : p ∈ n.primeFactors) : 0 < p :=
   (prime_of_mem_primeFactors hp).pos
 
 lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
-  le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt $ dvd_of_mem_primeFactors h
+  le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt <| dvd_of_mem_primeFactors h
 
-@[simp] lemma primeFactors_zero : primeFactors 0 = ∅ := rfl
-@[simp] lemma primeFactors_one : primeFactors 1 = ∅ := rfl
+@[simp] lemma primeFactors_zero : primeFactors 0 = ∅ := by
+  ext
+  simp
+
+@[simp] lemma primeFactors_one : primeFactors 1 = ∅ := by
+  ext
+  simpa using Prime.ne_one
 
 @[simp] lemma primeFactors_eq_empty : n.primeFactors = ∅ ↔ n = 0 ∨ n = 1 := by
   constructor
   · contrapose!
     rintro hn
     obtain ⟨p, hp, hpn⟩ := exists_prime_and_dvd hn.2
-    exact Nonempty.ne_empty $ ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
+    exact Nonempty.ne_empty <| ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
   · rintro (rfl | rfl) <;> simp
 
 @[simp]
@@ -96,7 +101,7 @@ lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
 
 protected lemma Coprime.disjoint_primeFactors (hab : Coprime a b) :
     Disjoint a.primeFactors b.primeFactors :=
-  List.disjoint_toFinset_iff_disjoint.2 $ coprime_factors_disjoint hab
+  List.disjoint_toFinset_iff_disjoint.2 <| coprime_factors_disjoint hab
 
 lemma primeFactors_pow_succ (n k : ℕ) : (n ^ (k + 1)).primeFactors = n.primeFactors := by
   rcases eq_or_ne n 0 with (rfl | hn)

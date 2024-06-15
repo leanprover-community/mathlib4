@@ -19,13 +19,12 @@ a minimum number of equalities.
 
 -/
 
-set_option autoImplicit true
+universe u
 
 /-- Define a `Field` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul`, `div` and `sub`
 See note [reducible non-instances]. -/
-@[reducible]
-def Field.ofMinimalAxioms (K : Type u)
+abbrev Field.ofMinimalAxioms (K : Type u)
     [Add K] [Mul K] [Neg K] [Inv K] [Zero K] [One K]
     (add_assoc : ∀ a b c : K, a + b + c = a + (b + c))
     (zero_add : ∀ a : K, 0 + a = a)
@@ -41,4 +40,6 @@ def Field.ofMinimalAxioms (K : Type u)
     add_left_neg mul_assoc mul_comm one_mul left_distrib
   { exists_pair_ne := exists_pair_ne
     mul_inv_cancel := mul_inv_cancel
-    inv_zero := inv_zero }
+    inv_zero := inv_zero
+    nnqsmul := _
+    qsmul := _ }

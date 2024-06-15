@@ -6,7 +6,6 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.NeZero
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -15,6 +14,9 @@ import Mathlib.Algebra.NeZero
 
 -/
 
+-- `NeZero` cannot be additivised, hence its theory should be developed outside of the
+-- `Algebra.Group` folder.
+assert_not_exists NeZero
 
 variable {α β M N P : Type*}
 
@@ -24,25 +26,40 @@ variable {G : Type*} {H : Type*}
 -- groups
 variable {F : Type*}
 
-namespace NeZero
+section CommMonoid
+variable [CommMonoid α]
 
-theorem of_map {R M} [Zero R] [Zero M] [ZeroHomClass F R M]
-    (f : F) {r : R} [neZero : NeZero (f r)] : NeZero r :=
-  ⟨fun h => ne (f r) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
-#align ne_zero.of_map NeZero.of_map
+/-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
+monoids. -/
+@[to_additive (attr := simps) "Multiplication by a natural `n` on a commutative additive monoid,
+considered as a morphism of additive monoids."]
+def powMonoidHom (n : ℕ) : α →* α where
+  toFun := (· ^ n)
+  map_one' := one_pow _
+  map_mul' a b := mul_pow a b n
+#align pow_monoid_hom powMonoidHom
+#align nsmul_add_monoid_hom nsmulAddMonoidHom
+#align pow_monoid_hom_apply powMonoidHom_apply
+#align nsmul_add_monoid_hom_apply nsmulAddMonoidHom_apply
 
-theorem of_injective {R M} [Zero R] {r : R} [NeZero r] [Zero M] [ZeroHomClass F R M] {f : F}
-    (hf : Function.Injective f) : NeZero (f r) :=
-  ⟨by
-    rw [← ZeroHomClass.map_zero f]
-    exact hf.ne NeZero.out⟩
-#align ne_zero.of_injective NeZero.of_injective
-
-end NeZero
+end CommMonoid
 
 section DivisionCommMonoid
 
 variable [DivisionCommMonoid α]
+
+/-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
+homomorphism. -/
+@[to_additive (attr := simps) "Multiplication by an integer `n` on a commutative additive group,
+considered as an additive group homomorphism."]
+def zpowGroupHom (n : ℤ) : α →* α where
+  toFun := (· ^ n)
+  map_one' := one_zpow n
+  map_mul' a b := mul_zpow a b n
+#align zpow_group_hom zpowGroupHom
+#align zsmul_add_group_hom zsmulAddGroupHom
+#align zpow_group_hom_apply zpowGroupHom_apply
+#align zsmul_add_group_hom_apply zsmulAddGroupHom_apply
 
 /-- Inversion on a commutative group, considered as a monoid homomorphism. -/
 @[to_additive "Negation on a commutative additive group, considered as an additive monoid
@@ -74,7 +91,6 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_mul' := fun x y => by
-        intros
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
@@ -101,44 +117,8 @@ theorem comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (
 end MulHom
 
 namespace MonoidHom
-
+section Group
 variable [Group G] [CommGroup H]
-
-/-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
-sending `x` to `f x * g x`. -/
-@[to_additive]
-instance mul {M N} [MulOneClass M] [CommMonoid N] : Mul (M →* N) :=
-  ⟨fun f g =>
-    { toFun := fun m => f m * g m,
-      map_one' := show f 1 * g 1 = 1 by simp,
-      map_mul' := fun x y => by
-        intros
-        show f (x * y) * g (x * y) = f x * g x * (f y * g y)
-        rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
-
-/-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
-`f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/
-add_decl_doc AddMonoidHom.add
-
-@[to_additive (attr := simp)]
-theorem mul_apply {M N} [MulOneClass M] [CommMonoid N] (f g : M →* N) (x : M) :
-    (f * g) x = f x * g x := rfl
-#align monoid_hom.mul_apply MonoidHom.mul_apply
-#align add_monoid_hom.add_apply AddMonoidHom.add_apply
-
-@[to_additive]
-theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
-    (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
-#align monoid_hom.mul_comp MonoidHom.mul_comp
-#align add_monoid_hom.add_comp AddMonoidHom.add_comp
-
-@[to_additive]
-theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
-    g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
-  ext
-  simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
-#align monoid_hom.comp_mul MonoidHom.comp_mul
-#align add_monoid_hom.comp_add AddMonoidHom.comp_add
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
 For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`.  -/
@@ -146,7 +126,8 @@ For the iff statement on the triviality of the kernel, see `injective_iff_map_eq
   "A homomorphism from an additive group to an additive monoid is injective iff
   its kernel is trivial. For the iff statement on the triviality of the kernel,
   see `injective_iff_map_eq_zero'`."]
-theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H] [MonoidHomClass F G H]
+theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
+    [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
   ⟨fun h x => (map_eq_one_iff f h).mp, fun h x y hxy =>
     mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_self, map_one]⟩
@@ -160,7 +141,8 @@ For the implication, see `injective_iff_map_eq_one`. -/
   "A homomorphism from an additive group to an additive monoid is injective iff its
   kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
   `injective_iff_map_eq_zero`."]
-theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H] [MonoidHomClass F G H]
+theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
+    [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
   (injective_iff_map_eq_one f).trans <|
     forall_congr' fun _ => ⟨fun h => ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩
@@ -208,30 +190,66 @@ theorem coe_of_map_div {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x /
 #align monoid_hom.coe_of_map_div MonoidHom.coe_of_map_div
 #align add_monoid_hom.coe_of_map_sub AddMonoidHom.coe_of_map_sub
 
+end Group
+
+section Mul
+variable [MulOneClass M] [CommMonoid N]
+
+/-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
+sending `x` to `f x * g x`. -/
+@[to_additive]
+instance mul : Mul (M →* N) :=
+  ⟨fun f g =>
+    { toFun := fun m => f m * g m,
+      map_one' := show f 1 * g 1 = 1 by simp,
+      map_mul' := fun x y => by
+        show f (x * y) * g (x * y) = f x * g x * (f y * g y)
+        rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
+
+/-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
+`f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/
+add_decl_doc AddMonoidHom.add
+
+@[to_additive (attr := simp)] lemma mul_apply (f g : M →* N) (x : M) : (f * g) x = f x * g x := rfl
+#align monoid_hom.mul_apply MonoidHom.mul_apply
+#align add_monoid_hom.add_apply AddMonoidHom.add_apply
+
+@[to_additive]
+lemma mul_comp [MulOneClass P] (g₁ g₂ : M →* N) (f : P →* M) :
+    (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
+#align monoid_hom.mul_comp MonoidHom.mul_comp
+#align add_monoid_hom.add_comp AddMonoidHom.add_comp
+
+@[to_additive]
+lemma comp_mul [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
+    g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
+  ext; simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
+#align monoid_hom.comp_mul MonoidHom.comp_mul
+#align add_monoid_hom.comp_add AddMonoidHom.comp_add
+
+end Mul
+
+section InvDiv
+variable [MulOneClass M] [MulOneClass N] [CommGroup G] [CommGroup H]
+
 /-- If `f` is a monoid homomorphism to a commutative group, then `f⁻¹` is the homomorphism sending
 `x` to `(f x)⁻¹`. -/
 @[to_additive "If `f` is an additive monoid homomorphism to an additive commutative group,
 then `-f` is the homomorphism sending `x` to `-(f x)`."]
-instance {M G} [MulOneClass M] [CommGroup G] : Inv (M →* G) :=
-  ⟨fun f => (mk' fun g => (f g)⁻¹) fun a b => by rw [← mul_inv, f.map_mul]⟩
+instance : Inv (M →* G) where
+  inv f := mk' (fun g ↦ (f g)⁻¹) fun a b ↦ by simp_rw [← mul_inv, f.map_mul]
 
-@[to_additive (attr := simp)]
-theorem inv_apply {M G} [MulOneClass M] [CommGroup G] (f : M →* G) (x : M) :
-    f⁻¹ x = (f x)⁻¹ := rfl
+@[to_additive (attr := simp)] lemma inv_apply (f : M →* G) (x : M) : f⁻¹ x = (f x)⁻¹ := rfl
 #align monoid_hom.inv_apply MonoidHom.inv_apply
 #align add_monoid_hom.neg_apply AddMonoidHom.neg_apply
 
 @[to_additive (attr := simp)]
-theorem inv_comp {M N A} [MulOneClass M] [MulOneClass N] [CommGroup A]
-    (φ : N →* A) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ)⁻¹ := by
-  ext
-  simp only [Function.comp_apply, inv_apply, coe_comp]
+theorem inv_comp (φ : N →* G) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ)⁻¹ := rfl
 #align monoid_hom.inv_comp MonoidHom.inv_comp
 #align add_monoid_hom.neg_comp AddMonoidHom.neg_comp
 
 @[to_additive (attr := simp)]
-theorem comp_inv {M A B} [MulOneClass M] [CommGroup A] [CommGroup B]
-    (φ : A →* B) (ψ : M →* A) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
+theorem comp_inv (φ : G →* H) (ψ : M →* G) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
   ext
   simp only [Function.comp_apply, inv_apply, map_inv, coe_comp]
 #align monoid_hom.comp_inv MonoidHom.comp_inv
@@ -241,22 +259,21 @@ theorem comp_inv {M A B} [MulOneClass M] [CommGroup A] [CommGroup B]
 sending `x` to `(f x) / (g x)`. -/
 @[to_additive "If `f` and `g` are monoid homomorphisms to an additive commutative group,
 then `f - g` is the homomorphism sending `x` to `(f x) - (g x)`."]
-instance {M G} [MulOneClass M] [CommGroup G] : Div (M →* G) :=
-  ⟨fun f g => (mk' fun x => f x / g x) fun a b => by
-    simp [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm]⟩
+instance : Div (M →* G) where
+  div f g := mk' (fun x ↦ f x / g x) fun a b ↦ by
+    simp [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm]
 
-@[to_additive (attr := simp)]
-theorem div_apply {M G} [MulOneClass M] [CommGroup G] (f g : M →* G) (x : M) :
-    (f / g) x = f x / g x := rfl
+@[to_additive (attr := simp)] lemma div_apply (f g : M →* G) (x : M) : (f / g) x = f x / g x := rfl
 #align monoid_hom.div_apply MonoidHom.div_apply
 #align add_monoid_hom.sub_apply AddMonoidHom.sub_apply
 
-end MonoidHom
+@[to_additive (attr := simp)]
+lemma div_comp (f g : N →* G) (h : M →* N) : (f / g).comp h = f.comp h / g.comp h := rfl
 
-/-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
-with zero morphism sending `x` to `f x * g x`. -/
-instance [MulZeroOneClass M] [CommMonoidWithZero N] : Mul (M →*₀ N) :=
-  ⟨fun f g => { (f * g : M →* N) with
-    toFun := fun a => f a * g a,
-    map_zero' := by dsimp only []; rw [map_zero, zero_mul] }⟩
-    -- Porting note: why do we need `dsimp` here?
+@[to_additive (attr := simp)]
+lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.comp h := by
+  ext; simp only [Function.comp_apply, div_apply, map_div, coe_comp]
+
+end InvDiv
+
+end MonoidHom

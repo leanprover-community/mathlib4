@@ -3,10 +3,10 @@ Copyright (c) 2023 Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Concrete colorings of common graphs
@@ -38,14 +38,14 @@ def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph
     exact Fin.ext
   map_rel_iff' := by
     intro v w
-    fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covby_iff]
+    fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covBy_iff]
 
 theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
-  have hc := (pathGraph.bicoloring n).to_colorable
+  have hc := (pathGraph.bicoloring n).colorable
   apply le_antisymm
-  · exact chromaticNumber_le_of_colorable hc
+  · exact hc.chromaticNumber_le
   · simpa only [pathGraph_two_eq_top, chromaticNumber_top] using
-      hc.chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
+      chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
 
 end SimpleGraph

@@ -3,9 +3,8 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Selsam
 -/
-import Lean
-
-set_option autoImplicit true
+import Lean.Elab.Command
+import Lean.Linter.Util
 
 namespace Mathlib.Prelude.Rename
 
@@ -54,6 +53,7 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
+set_option autoImplicit true in
 -- TODO: upstream into core/std
 instance [Inhabited α] : Inhabited (Thunk α) where
   default := .pure default
@@ -126,7 +126,7 @@ these reasons, you should use `#align` on any theorem that needs to be renamed f
 syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
-def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
+def ensureUnused {m : Type → Type} [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
   if let some (_, n) := (renameExtension.getState (← getEnv)).get.toLean4.find? id then
     if n.isAnonymous then
       throwError "{id} has already been no-aligned"
@@ -158,19 +158,21 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
         addConstInfo id4 c none
       else if align.precheck.get (← getOptions) then
         let note := "(add `set_option align.precheck false` to suppress this message)"
-        let inner := match ← try some <$> resolveGlobalConstWithInfos id4 catch _ => pure none with
+        let inner := match ←
+          try some <$> (liftCoreM <| realizeGlobalConstWithInfos id4)
+          catch _ => pure none with
         | none => m!""
-        | some cs => m!" Did you mean:\n\n{
-            ("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")
-          }\n\n#align inputs have to be fully qualified.{""
-          } (Double check the lean 3 name too, we can't check that!)"
+        | some cs => m!" Did you mean:\n\n\
+              {("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")}\n\n\
+            #align inputs have to be fully qualified. \
+            (Double check the lean 3 name too, we can't check that!)"
         throwErrorAt id4 "Declaration {c} not found.{inner}\n{note}"
       if Linter.getLinterValue linter.uppercaseLean3 (← getOptions) then
         if id3.getId.anyS suspiciousLean3Name then
-          Linter.logLint linter.uppercaseLean3 id3 $
-            "Lean 3 names are usually lowercase. This might be a typo.\n" ++
-            "If the Lean 3 name is correct, then above this line, add:\n" ++
-            "set_option linter.uppercaseLean3 false in\n"
+          Linter.logLint linter.uppercaseLean3 id3
+            "Lean 3 names are usually lowercase. This might be a typo.\n\
+             If the Lean 3 name is correct, then above this line, add:\n\
+             set_option linter.uppercaseLean3 false in\n"
     withRef id3 <| ensureUnused id3.getId
     liftCoreM <| addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
@@ -187,7 +189,7 @@ syntax (name := noalign) "#noalign " ident : command
 @[command_elab noalign] def elabNoAlign : CommandElab
   | `(#noalign $id3:ident) => do
     withRef id3 <| ensureUnused id3.getId
-    liftCoreM $ addNameAlignment id3.getId .anonymous
+    liftCoreM <| addNameAlignment id3.getId .anonymous
   | _ => throwUnsupportedSyntax
 
 /-- Show information about the alignment status of a lean 3 definition. -/

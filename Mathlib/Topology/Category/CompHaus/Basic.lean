@@ -8,6 +8,8 @@ import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.CategoryTheory.Elementwise
 
 #align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -31,6 +33,9 @@ introduced.
 
 universe v u
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 open CategoryTheory
 
 /-- The type of Compact Hausdorff topological spaces. -/
@@ -38,9 +43,9 @@ structure CompHaus where
   /-- The underlying topological space of an object of `CompHaus`. -/
   toTop : TopCat
   -- Porting note: Renamed field.
-  /-- The underlying topological space is compact.-/
+  /-- The underlying topological space is compact. -/
   [is_compact : CompactSpace toTop]
-  /-- The underlying topological space is T2.-/
+  /-- The underlying topological space is T2. -/
   [is_hausdorff : T2Space toTop]
 set_option linter.uppercaseLean3 false in
 #align CompHaus CompHaus
@@ -50,7 +55,7 @@ namespace CompHaus
 instance : Inhabited CompHaus :=
   ⟨{ toTop := { α := PEmpty } }⟩
 
-instance : CoeSort CompHaus (Type*) :=
+instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩
 
 instance {X : CompHaus} : CompactSpace X :=
@@ -96,15 +101,15 @@ theorem coe_of : (CompHaus.of X : Type _) = X :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
   show TopologicalSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
   show T2Space X.toTop from inferInstance
 
@@ -123,7 +128,7 @@ theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bi
     intro S hS
     rw [← E.image_eq_preimage]
     exact isClosedMap f S hS
-  refine' ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
+  refine ⟨⟨⟨E.symm, hE⟩, ?_, ?_⟩⟩
   · ext x
     apply E.symm_apply_apply
   · ext x
@@ -184,21 +189,21 @@ def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
-instance : Full compHausToTop :=
-  show Full <| inducedFunctor _ from inferInstance
+instance : compHausToTop.Full  :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful compHausToTop :=
-  show Faithful <| inducedFunctor _ from inferInstance
+instance : compHausToTop.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
-instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
+instance CompHaus.forget_reflectsIsomorphisms : (forget CompHaus.{u}).ReflectsIsomorphisms :=
   ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
@@ -228,11 +233,11 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     -- Porting note: `ext` fails.
     apply ContinuousMap.ext
     intro (x : StoneCech X)
-    refine' congr_fun _ x
+    refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
-    rintro _ ⟨y, rfl⟩
-    apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
-    apply continuous_stoneCechUnit
+    · rintro _ ⟨y, rfl⟩
+      apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
+      apply continuous_stoneCechUnit
   right_inv := by
     rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
     -- Porting note: `ext` fails.
@@ -257,7 +262,8 @@ set_option linter.uppercaseLean3 false in
 /-- The category of compact Hausdorff spaces is reflective in the category of topological spaces.
 -/
 noncomputable instance compHausToTop.reflective : Reflective compHausToTop where
-  toIsRightAdjoint := ⟨topToCompHaus, Adjunction.adjunctionOfEquivLeft _ _⟩
+  L := topToCompHaus
+  adj := Adjunction.adjunctionOfEquivLeft _ _
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.reflective compHausToTop.reflective
 
@@ -281,8 +287,7 @@ namespace CompHaus
 /-- An explicit limit cone for a functor `F : J ⥤ CompHaus`, defined in terms of
 `TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Limits.Cone F :=
-  -- Porting note: Exploit the `TopCatMax` trick.
-  letI FF : J ⥤ TopCatMax.{v,u} := F ⋙ compHausToTop
+  letI FF : J ⥤ TopCat := F ⋙ compHausToTop
   { pt := {
       toTop := (TopCat.limitCone FF).pt
       is_compact := by
@@ -320,7 +325,7 @@ set_option linter.uppercaseLean3 false in
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
     Limits.IsLimit.{v} (limitCone.{v,u} F) :=
-  letI FF : J ⥤ TopCatMax.{v,u} := F ⋙ compHausToTop
+  letI FF : J ⥤ TopCat := F ⋙ compHausToTop
   { lift := fun S => (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
     fac := fun S => (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)
     uniq := fun S => (TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) }
@@ -363,7 +368,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       change 0 = φ (f x)
       simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]
     apply_fun fun e => (e y).down.1 at H
-    dsimp at H
+    dsimp [Z] at H
     change 0 = φ y at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H

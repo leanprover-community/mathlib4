@@ -1,6 +1,4 @@
 import Mathlib.Algebra.Group.Defs
-import Std.Tactic.NormCast
-import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
@@ -42,7 +40,7 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
+instance dummy_pow : my_has_pow ℕ <| PLift ℤ := ⟨fun _ _ => 5⟩
 
 @[to_additive bar2]
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
@@ -221,22 +219,17 @@ attribute [to_additive add_some_def] some_def
 
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
--- [todo] currently this test breaks.
--- example : (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
---         = (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
--- by norm_cast
-
 section
 
 set_option linter.unusedVariables false
--- porting note : not sure what the tests do, but the linter complains.
+-- Porting note: not sure what the tests do, but the linter complains.
 
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
 
 @[to_additive]
-instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((i : I) → f i) :=
+instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
   ⟨fun _ => 1⟩
 
 run_cmd do
@@ -276,7 +269,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl ⟩
+instance FooClass_one [One α] : FooClass α := ⟨fun _ ↦ rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 
@@ -286,13 +279,13 @@ end instances
 
 /- Test that we can rewrite with definitions with the `@[to_additive]` attribute. -/
 @[to_additive]
-lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 :=
-  by rw [npowRec]
+lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
+  rw [npowRec]
 
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
-lemma optiontest (x : Option α) : x.elim .none Option.some = x :=
-  by cases x <;> rw [Option.elim]
+lemma optiontest (x : Option α) : x.elim .none Option.some = x := by
+  cases x <;> rw [Option.elim]
 
 /- Check that `to_additive` works if a `_match` aux declaration is created. -/
 @[to_additive]

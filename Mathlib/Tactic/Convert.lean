@@ -3,7 +3,6 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Lean
 import Mathlib.Tactic.Congr!
 
 /-!
@@ -103,7 +102,7 @@ elab_rules : tactic
 | `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
-    let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+    let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ←
       withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
@@ -112,7 +111,7 @@ elab_rules : tactic
         withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
           let t ← elabTermEnsuringType (mayPostpone := true) term expectedType
           -- Process everything so that tactics get run, but again allow TC failures
-          Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+          Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
           -- Use a type hint to ensure we collect goals from the type too
           mkExpectedTypeHint t (← inferType t)
     liftMetaTactic fun g ↦

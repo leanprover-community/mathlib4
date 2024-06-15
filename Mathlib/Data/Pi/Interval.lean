@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
 
 #align_import data.pi.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
@@ -18,8 +18,6 @@ order are locally finite and calculates the cardinality of their intervals.
 
 open Finset Fintype
 
-open BigOperators
-
 variable {ι : Type*} {α : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
 namespace Pi
@@ -29,7 +27,7 @@ variable [∀ i, PartialOrder (α i)]
 section LocallyFiniteOrder
 variable [∀ i, LocallyFiniteOrder (α i)]
 
-instance : LocallyFiniteOrder (∀ i, α i) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (∀ i, α i) :=
   LocallyFiniteOrder.ofIcc _ (fun a b => piFinset fun i => Icc (a i) (b i)) fun a b x => by
     simp_rw [mem_piFinset, mem_Icc, le_def, forall_and]
 
@@ -60,8 +58,8 @@ end LocallyFiniteOrder
 section LocallyFiniteOrderBot
 variable [∀ i, LocallyFiniteOrderBot (α i)] (b : ∀ i, α i)
 
-instance : LocallyFiniteOrderBot (∀ i, α i) :=
-  LocallyFiniteOrderTop.ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
+instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (∀ i, α i) :=
+  .ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
     simp_rw [mem_piFinset, mem_Iic, le_def]
 
 theorem card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card :=
@@ -77,7 +75,7 @@ end LocallyFiniteOrderBot
 section LocallyFiniteOrderTop
 variable [∀ i, LocallyFiniteOrderTop (α i)] (a : ∀ i, α i)
 
-instance : LocallyFiniteOrderTop (∀ i, α i) :=
+instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (∀ i, α i) :=
   LocallyFiniteOrderTop.ofIci _ (fun a => piFinset fun i => Ici (a i)) fun a x => by
     simp_rw [mem_piFinset, mem_Ici, le_def]
 

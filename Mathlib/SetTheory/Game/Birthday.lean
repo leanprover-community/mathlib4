@@ -51,8 +51,9 @@ theorem birthday_def (x : PGame) :
   cases x; rw [birthday]; rfl
 #align pgame.birthday_def SetTheory.PGame.birthday_def
 
-theorem birthday_moveLeft_lt {x : PGame} (i : x.LeftMoves) : (x.moveLeft i).birthday < x.birthday :=
-  by cases x; rw [birthday]; exact lt_max_of_lt_left (lt_lsub _ i)
+theorem birthday_moveLeft_lt {x : PGame} (i : x.LeftMoves) :
+    (x.moveLeft i).birthday < x.birthday := by
+  cases x; rw [birthday]; exact lt_max_of_lt_left (lt_lsub _ i)
 #align pgame.birthday_move_left_lt SetTheory.PGame.birthday_moveLeft_lt
 
 theorem birthday_moveRight_lt {x : PGame} (i : x.RightMoves) :
@@ -89,7 +90,7 @@ theorem Relabelling.birthday_congr : ∀ {x y : PGame.{u}}, x ≡r y → birthda
     · exact ⟨_, (r.moveLeftSymm j).birthday_congr⟩
     · exact ⟨_, (r.moveRight j).birthday_congr.symm⟩
     · exact ⟨_, (r.moveRightSymm j).birthday_congr⟩
-termination_by birthday_congr x y _ => (x, y)
+termination_by x y => (x, y)
 #align pgame.relabelling.birthday_congr SetTheory.PGame.Relabelling.birthday_congr
 
 @[simp]
@@ -170,7 +171,7 @@ theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.
     · exact lt_max_of_lt_right ((nadd_le_nadd_right hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_left ((nadd_le_nadd_left hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_right ((nadd_le_nadd_left hj _).trans_lt (lt_lsub _ _))
-termination_by birthday_add a b => (a, b)
+termination_by a b => (a, b)
 #align pgame.birthday_add SetTheory.PGame.birthday_add
 
 theorem birthday_add_zero : (a + 0).birthday = a.birthday := by simp
@@ -186,10 +187,13 @@ theorem birthday_one_add : (1 + a).birthday = Order.succ a.birthday := by simp
 #align pgame.birthday_one_add SetTheory.PGame.birthday_one_add
 
 @[simp]
-theorem birthday_nat_cast : ∀ n : ℕ, birthday n = n
+theorem birthday_natCast : ∀ n : ℕ, birthday n = n
   | 0 => birthday_zero
-  | n + 1 => by simp [birthday_nat_cast]
-#align pgame.birthday_nat_cast SetTheory.PGame.birthday_nat_cast
+  | n + 1 => by simp [birthday_natCast]
+#align pgame.birthday_nat_cast SetTheory.PGame.birthday_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias birthday_nat_cast := birthday_natCast
 
 theorem birthday_add_nat (n : ℕ) : (a + n).birthday = a.birthday + n := by simp
 #align pgame.birthday_add_nat SetTheory.PGame.birthday_add_nat

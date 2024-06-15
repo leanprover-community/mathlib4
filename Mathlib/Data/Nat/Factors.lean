@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Chain
 
 #align_import data.nat.factors from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -35,8 +37,8 @@ def factors : ℕ → List ℕ
   | 1 => []
   | k + 2 =>
     let m := minFac (k + 2)
-    have : (k + 2) / m < (k + 2) := factors_lemma
     m :: factors ((k + 2) / m)
+decreasing_by show (k + 2) / m < (k + 2); exact factors_lemma
 #align nat.factors Nat.factors
 
 @[simp]
@@ -46,6 +48,9 @@ theorem factors_zero : factors 0 = [] := by rw [factors]
 @[simp]
 theorem factors_one : factors 1 = [] := by rw [factors]
 #align nat.factors_one Nat.factors_one
+
+@[simp]
+theorem factors_two : factors 2 = [2] := by simp [factors]
 
 theorem prime_of_mem_factors {n : ℕ} : ∀ {p : ℕ}, (h : p ∈ factors n) → Prime p := by
   match n with
@@ -95,7 +100,7 @@ theorem factors_chain {n : ℕ} :
       let m := minFac (k + 2)
       have : (k + 2) / m < (k + 2) := factors_lemma
       rw [factors]
-      refine' List.Chain.cons ((le_minFac.2 h).resolve_left (by simp)) (factors_chain _)
+      refine List.Chain.cons ((le_minFac.2 h).resolve_left (by simp)) (factors_chain ?_)
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 #align nat.factors_chain Nat.factors_chain
 
@@ -168,9 +173,9 @@ theorem le_of_mem_factors {n p : ℕ} (h : p ∈ n.factors) : p ≤ n := by
 /-- **Fundamental theorem of arithmetic**-/
 theorem factors_unique {n : ℕ} {l : List ℕ} (h₁ : prod l = n) (h₂ : ∀ p ∈ l, Prime p) :
     l ~ factors n := by
-  refine' perm_of_prod_eq_prod _ _ _
+  refine perm_of_prod_eq_prod ?_ ?_ ?_
   · rw [h₁]
-    refine' (prod_factors _).symm
+    refine (prod_factors ?_).symm
     rintro rfl
     rw [prod_eq_zero_iff] at h₁
     exact Prime.ne_zero (h₂ 0 h₁) rfl
@@ -199,7 +204,7 @@ theorem eq_prime_pow_of_unique_prime_dvd {n p : ℕ} (hpos : n ≠ 0)
 /-- For positive `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
 theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).factors ~ a.factors ++ b.factors := by
-  refine' (factors_unique _ _).symm
+  refine (factors_unique ?_ ?_).symm
   · rw [List.prod_append, prod_factors ha, prod_factors hb]
   · intro p hp
     rw [List.mem_append] at hp
@@ -243,14 +248,30 @@ theorem dvd_of_factors_subperm {a b : ℕ} (ha : a ≠ 0) (h : a.factors <+~ b.f
   rcases a with (_ | _ | a)
   · exact (ha rfl).elim
   · exact one_dvd _
-  --Porting note: previous proof
+  -- Porting note: previous proof
   --use (b.factors.diff a.succ.succ.factors).prod
-  use (@List.diff _ instBEq b.factors a.succ.succ.factors).prod
+  use (@List.diff _ instBEqOfDecidableEq b.factors a.succ.succ.factors).prod
   nth_rw 1 [← Nat.prod_factors ha]
   rw [← List.prod_append,
     List.Perm.prod_eq <| List.subperm_append_diff_self_of_count_le <| List.subperm_ext_iff.mp h,
     Nat.prod_factors hb.ne']
 #align nat.dvd_of_factors_subperm Nat.dvd_of_factors_subperm
+
+theorem replicate_subperm_factors_iff {a b n : ℕ} (ha : Prime a) (hb : b ≠ 0) :
+    replicate n a <+~ factors b ↔ a ^ n ∣ b := by
+  induction n generalizing b with
+  | zero => simp
+  | succ n ih =>
+    constructor
+    · rw [List.subperm_iff]
+      rintro ⟨u, hu1, hu2⟩
+      rw [← Nat.prod_factors hb, ← hu1.prod_eq, ← prod_replicate]
+      exact hu2.prod_dvd_prod
+    · rintro ⟨c, rfl⟩
+      rw [Ne, pow_succ', mul_assoc, mul_eq_zero, _root_.not_or] at hb
+      rw [pow_succ', mul_assoc, replicate_succ, (Nat.perm_factors_mul hb.1 hb.2).subperm_left,
+        factors_prime ha, singleton_append, subperm_cons, ih hb.2]
+      exact dvd_mul_right _ _
 
 end
 
@@ -309,7 +330,7 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
   obtain ⟨_ | _ | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
   · contradiction
   · contradiction
-  · simp [pow_succ, mul_assoc]
+  · simp [Nat.pow_succ, mul_assoc]
   · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat

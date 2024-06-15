@@ -24,7 +24,6 @@ variable {α β : Type*}
 section SeminormedAddGroup
 
 variable [SeminormedAddGroup α] [SeminormedAddGroup β] [SMulZeroClass α β]
-
 variable [BoundedSMul α β]
 
 theorem norm_smul_le (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ := by
@@ -78,18 +77,20 @@ theorem BoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ �
     dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 #align has_bounded_smul.of_norm_smul_le BoundedSMul.of_norm_smul_le
 
+theorem BoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
+    BoundedSMul α β := .of_norm_smul_le h
+
 end SeminormedRing
 
 section NormedDivisionRing
 
 variable [NormedDivisionRing α] [SeminormedAddGroup β]
-
 variable [MulActionWithZero α β] [BoundedSMul α β]
 
 theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
   by_cases h : r = 0
   · simp [h, zero_smul α x]
-  · refine' le_antisymm (norm_smul_le r x) _
+  · refine le_antisymm (norm_smul_le r x) ?_
     calc
       ‖r‖ * ‖x‖ = ‖r‖ * ‖r⁻¹ • r • x‖ := by rw [inv_smul_smul₀ h]
       _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := by gcongr; apply norm_smul_le
@@ -105,7 +106,6 @@ end NormedDivisionRing
 section NormedDivisionRingModule
 
 variable [NormedDivisionRing α] [SeminormedAddCommGroup β]
-
 variable [Module α β] [BoundedSMul α β]
 
 theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * dist x y := by

@@ -5,7 +5,6 @@ Authors: Scott Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.category.Ring.basic from "leanprover-community/mathlib"@"34b2a989ad80bce3a5de749d935a4f23726e26e9"
@@ -21,15 +20,12 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
-set_option autoImplicit true
-
-
 universe u v
 
 open CategoryTheory
 
 /-- The category of semirings. -/
-def SemiRingCat : Type (u + 1) :=
+abbrev SemiRingCat : Type (u + 1) :=
   Bundled Semiring
 set_option linter.uppercaseLean3 false in
 #align SemiRing SemiRingCat
@@ -55,39 +51,32 @@ instance bundledHom : BundledHom AssocRingHom where
 set_option linter.uppercaseLean3 false in
 #align SemiRing.bundled_hom SemiRingCat.bundledHom
 
-deriving instance LargeCategory for SemiRingCat
-
---Porting note: deriving fails for ConcreteCategory, adding instance manually.
+-- Porting note: deriving fails for ConcreteCategory, adding instance manually.
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 
-instance : ConcreteCategory SemiRingCat := by
-  dsimp [SemiRingCat]
-  infer_instance
-
-instance : CoeSort SemiRingCat (Type*) where
-  coe X := X.α
-
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
   (forget SemiRingCat).obj R ≟ R
 
 instance instSemiring (X : SemiRingCat) : Semiring X := X.str
 
-instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
+instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
+  ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : SemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget SemiRingCat).map f = (f : X → Y) := rfl
+-- porting note (#10756): added lemma
+@[simp] lemma forget_map {X Y : SemiRingCat} (f : X ⟶ Y) :
+    (forget SemiRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : SemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   RingHom.ext w
@@ -104,10 +93,42 @@ theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
 
+-- Coercing the identity morphism, as a ring homomorphism, gives the identity function.
+@[simp] theorem coe_ringHom_id {X : SemiRingCat} :
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (𝟙 X) = id :=
+  rfl
+
+-- Coercing `𝟙 (of X)` to a function should be expressed as the coercion of `RingHom.id X`.
+@[simp] theorem coe_id_of {X : Type u} [Semiring X] :
+    @DFunLike.coe no_index (SemiRingCat.of X ⟶ SemiRingCat.of X) X
+      (fun _ ↦ X) _
+      (𝟙 (of X)) =
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (RingHom.id X) :=
+  rfl
+
+-- Coercing `f ≫ g`, where `f : of X ⟶ of Y` and `g : of Y ⟶ of Z`, to a function should be
+-- expressed in terms of the coercion of `g.comp f`.
+@[simp] theorem coe_comp_of {X Y Z : Type u} [Semiring X] [Semiring Y] [Semiring Z]
+    (f : X →+* Y) (g : Y →+* Z) :
+    @DFunLike.coe no_index (SemiRingCat.of X ⟶ SemiRingCat.of Z) X
+      (fun _ ↦ Z) _
+      (CategoryStruct.comp (X := SemiRingCat.of X) (Y := SemiRingCat.of Y) (Z := SemiRingCat.of Z)
+        f g) =
+    @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+-- Sometimes neither the `ext` lemma for `SemiRingCat` nor for `RingHom` is applicable,
+-- because of incomplete unfolding of `SemiRingCat.of X ⟶ SemiRingCat.of Y := X →+* Y`,
+-- but this one will fire.
+@[ext] theorem ext_of {X Y : Type u} [Semiring X] [Semiring Y] (f g : X →+* Y)
+    (h : ∀ x, f x = g x) :
+    @Eq (SemiRingCat.of X ⟶ SemiRingCat.of Y) f g :=
+  RingHom.ext h
+
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
-    (@FunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
-      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+    (@DFunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
+      ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
 instance : Inhabited SemiRingCat :=
@@ -149,22 +170,22 @@ set_option linter.uppercaseLean3 false in
 Ring equivalence are isomorphisms in category of semirings
 -/
 @[simps]
-def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+def _root_.RingEquiv.toSemiRingCatIso {X Y : Type u} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 
-instance forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
+instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget SemiRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    exact e.toSemiRingCatIso.isIso_hom
 
 end SemiRingCat
 
 /-- The category of rings. -/
-def RingCat : Type (u + 1) :=
+abbrev RingCat : Type (u + 1) :=
   Bundled Ring
 set_option linter.uppercaseLean3 false in
 #align Ring RingCat
@@ -177,37 +198,31 @@ instance : BundledHom.ParentProjection @Ring.toSemiring :=
 -- Porting note: Another place where mathlib had derived a concrete category
 -- but this does not work here, so we add the instance manually.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-deriving instance LargeCategory for RingCat
-
-instance : ConcreteCategory RingCat := by
-  dsimp [RingCat]
-  infer_instance
-
-instance : CoeSort RingCat (Type*) where
-  coe X := X.α
 
 instance (X : RingCat) : Ring X := X.str
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
   (forget RingCat).obj R ≟ R
 
 instance instRing (X : RingCat) : Ring X := X.str
 
-instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
+instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : RingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget RingCat).map f = (f : X → Y) := rfl
+-- porting note (#10756): added lemma
+@[simp] lemma forget_map {X Y : RingCat} (f : X ⟶ Y) : (forget RingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : RingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   RingHom.ext w
@@ -243,10 +258,42 @@ theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align Ring.coe_of RingCat.coe_of
 
+-- Coercing the identity morphism, as a ring homomorphism, gives the identity function.
+@[simp] theorem coe_ringHom_id {X : RingCat} :
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (𝟙 X) = id :=
+  rfl
+
+-- Coercing `𝟙 (of X)` to a function should be expressed as the coercion of `RingHom.id X`.
+@[simp] theorem coe_id_of {X : Type u} [Ring X] :
+    @DFunLike.coe no_index (RingCat.of X ⟶ RingCat.of X) X
+      (fun _ ↦ X) _
+      (𝟙 (of X)) =
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (RingHom.id X) :=
+  rfl
+
+-- Coercing `f ≫ g`, where `f : of X ⟶ of Y` and `g : of Y ⟶ of Z`, to a function should be
+-- expressed in terms of the coercion of `g.comp f`.
+@[simp] theorem coe_comp_of {X Y Z : Type u} [Ring X] [Ring Y] [Ring Z]
+    (f : X →+* Y) (g : Y →+* Z) :
+    @DFunLike.coe no_index (RingCat.of X ⟶ RingCat.of Z) X
+      (fun _ ↦ Z) _
+      (CategoryStruct.comp (X := RingCat.of X) (Y := RingCat.of Y) (Z := RingCat.of Z)
+        f g) =
+    @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+-- Sometimes neither the `ext` lemma for `RingCat` nor for `RingHom` is applicable,
+-- because of incomplete unfolding of `RingCat.of X ⟶ RingCat.of Y := X →+* Y`,
+-- but this one will fire.
+@[ext] theorem ext_of {X Y : Type u} [Ring X] [Ring Y] (f g : X →+* Y)
+    (h : ∀ x, f x = g x) :
+    @Eq (RingCat.of X ⟶ RingCat.of Y) f g :=
+  RingHom.ext h
+
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
-    (@FunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
-      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+    (@DFunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
+      ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
@@ -284,12 +331,12 @@ instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type*) where
+instance : CoeSort CommSemiRingCat Type* where
   coe X := X.α
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
   (forget CommSemiRingCat).obj R ≟ R
 
@@ -298,18 +345,23 @@ instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
 instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X :=
   X.str
 
--- Porting note: added
+instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommSemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget CommSemiRingCat).map f = (f : X → Y) := rfl
+-- porting note (#10756): added lemma
+@[simp] lemma forget_map {X Y : CommSemiRingCat} (f : X ⟶ Y) :
+  (forget CommSemiRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : CommSemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   RingHom.ext w
@@ -328,9 +380,9 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
-    (@FunLike.coe (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) _
+    (@DFunLike.coe (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) _
       (fun _ => (forget CommSemiRingCat).obj _)
-      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+      ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
 -- Porting note: I think this is now redundant.
@@ -353,6 +405,38 @@ theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) =
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.coe_of CommSemiRingCat.coe_of
 
+-- Coercing the identity morphism, as a ring homomorphism, gives the identity function.
+@[simp] theorem coe_ringHom_id {X : CommSemiRingCat} :
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (𝟙 X) = id :=
+  rfl
+
+-- Coercing `𝟙 (of X)` to a function should be expressed as the coercion of `RingHom.id X`.
+@[simp] theorem coe_id_of {X : Type u} [CommSemiring X] :
+    @DFunLike.coe no_index (CommSemiRingCat.of X ⟶ CommSemiRingCat.of X) X
+      (fun _ ↦ X) _
+      (𝟙 (of X)) =
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (RingHom.id X) :=
+  rfl
+
+-- Coercing `f ≫ g`, where `f : of X ⟶ of Y` and `g : of Y ⟶ of Z`, to a function should be
+-- expressed in terms of the coercion of `g.comp f`.
+@[simp] theorem coe_comp_of {X Y Z : Type u} [CommSemiring X] [CommSemiring Y] [CommSemiring Z]
+    (f : X →+* Y) (g : Y →+* Z) :
+    @DFunLike.coe no_index (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Z) X
+      (fun _ ↦ Z) _
+      (CategoryStruct.comp (X := CommSemiRingCat.of X) (Y := CommSemiRingCat.of Y)
+        (Z := CommSemiRingCat.of Z) f g) =
+    @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+-- Sometimes neither the `ext` lemma for `CommSemiRingCat` nor for `RingHom` is applicable,
+-- because of incomplete unfolding of `CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y := X →+* Y`,
+-- but this one will fire.
+@[ext] theorem ext_of {X Y : Type u} [CommSemiring X] [CommSemiring Y] (f g : X →+* Y)
+    (h : ∀ x, f x = g x) :
+    @Eq (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) f g :=
+  RingHom.ext h
+
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
@@ -370,17 +454,17 @@ set_option linter.uppercaseLean3 false in
 Ring equivalence are isomorphisms in category of commutative semirings
 -/
 @[simps]
-def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
-    CommSemiRingCat.of X ≅ CommSemiRingCat.of Y where
+def _root_.RingEquiv.toCommSemiRingCatIso {X Y : Type u} [CommSemiring X] [CommSemiring Y]
+    (e : X ≃+* Y) : CommSemiRingCat.of X ≅ CommSemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 
-instance forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
+instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommSemiRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    exact ⟨e.toSemiRingCatIso.isIso_hom.1⟩
 
 end CommSemiRingCat
 
@@ -403,10 +487,10 @@ instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type*) where
+instance : CoeSort CommRingCat Type* where
   coe X := X.α
 
--- Porting note : Hinting to Lean that `forget R` and `R` are the same
+-- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
   (forget CommRingCat).obj R ≟ R
 
@@ -414,18 +498,23 @@ instance instCommRing (X : CommRingCat) : CommRing X := X.str
 
 instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
 
--- Porting note: added
+instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget CommRingCat).map f = (f : X → Y) := rfl
+-- porting note (#10756): added lemma
+@[simp] lemma forget_map {X Y : CommRingCat} (f : X ⟶ Y) :
+    (forget CommRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : CommRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   RingHom.ext w
@@ -436,6 +525,21 @@ def of (R : Type u) [CommRing R] : CommRingCat :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.of CommRingCat.of
 
+instance instFunLike' {X : Type*} [CommRing X] {Y : CommRingCat} :
+    FunLike (CommRingCat.of X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+instance instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] :
+    FunLike (X ⟶ CommRingCat.of Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+instance instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] :
+    FunLike (CommRingCat.of X ⟶ CommRingCat.of Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
 /-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
 def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
   f
@@ -444,8 +548,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
-    (@FunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
-      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+    (@DFunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
+      ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
 -- Porting note: I think this is now redundant.
@@ -468,6 +572,38 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.coe_of CommRingCat.coe_of
 
+-- Coercing the identity morphism, as a ring homomorphism, gives the identity function.
+@[simp] theorem coe_ringHom_id {X : CommRingCat} :
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (𝟙 X) = id :=
+  rfl
+
+-- Coercing `𝟙 (of X)` to a function should be expressed as the coercion of `RingHom.id X`.
+@[simp] theorem coe_id_of {X : Type u} [CommRing X] :
+    @DFunLike.coe no_index (CommRingCat.of X ⟶ CommRingCat.of X) X
+      (fun _ ↦ X) _
+      (𝟙 (of X)) =
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (RingHom.id X) :=
+  rfl
+
+-- Coercing `f ≫ g`, where `f : of X ⟶ of Y` and `g : of Y ⟶ of Z`, to a function should be
+-- expressed in terms of the coercion of `g.comp f`.
+@[simp] theorem coe_comp_of {X Y Z : Type u} [CommRing X] [CommRing Y] [CommRing Z]
+    (f : X →+* Y) (g : Y →+* Z) :
+    @DFunLike.coe no_index (CommRingCat.of X ⟶ CommRingCat.of Z) X
+      (fun _ ↦ Z) _
+      (CategoryStruct.comp (X := CommRingCat.of X) (Y := CommRingCat.of Y) (Z := CommRingCat.of Z)
+        f g) =
+    @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+-- Sometimes neither the `ext` lemma for `CommRingCat` nor for `RingHom` is applicable,
+-- because of incomplete unfolding of `CommRingCat.of X ⟶ CommRingCat.of Y := X →+* Y`,
+-- but this one will fire.
+@[ext] theorem ext_of {X Y : Type u} [CommRing X] [CommRing Y] (f g : X →+* Y)
+    (h : ∀ x, f x = g x) :
+    @Eq (CommRingCat.of X ⟶ CommRingCat.of Y) f g :=
+  RingHom.ext h
+
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
@@ -480,7 +616,7 @@ instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
 
-instance : Full (forget₂ CommRingCat CommSemiRingCat) where preimage {X Y} f := f
+instance : (forget₂ CommRingCat CommSemiRingCat).Full where map_surjective f := ⟨f, rfl⟩
 
 end CommRingCat
 
@@ -493,8 +629,7 @@ variable {X Y : Type u}
 
 /-- Build an isomorphism in the category `RingCat` from a `RingEquiv` between `RingCat`s. -/
 @[simps]
-def toRingCatIso [Ring X] [Ring Y] (e : X ≃+* Y) : RingCat.of X ≅ RingCat.of Y
-    where
+def toRingCatIso [Ring X] [Ring Y] (e : X ≃+* Y) : RingCat.of X ≅ RingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 set_option linter.uppercaseLean3 false in
@@ -502,8 +637,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- Build an isomorphism in the category `CommRingCat` from a `RingEquiv` between `CommRingCat`s. -/
 @[simps]
-def toCommRingCatIso [CommRing X] [CommRing Y] (e : X ≃+* Y) : CommRingCat.of X ≅ CommRingCat.of Y
-    where
+def toCommRingCatIso [CommRing X] [CommRing Y] (e : X ≃+* Y) :
+    CommRingCat.of X ≅ CommRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 set_option linter.uppercaseLean3 false in
@@ -514,32 +649,18 @@ end RingEquiv
 namespace CategoryTheory.Iso
 
 /-- Build a `RingEquiv` from an isomorphism in the category `RingCat`. -/
-def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y
-    where
-  toFun := i.hom
-  invFun := i.inv
-  -- Porting note: All these proofs were much easier in lean3.
-  left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
-  right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
-  map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
-  map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
+def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y :=
+  RingEquiv.ofHomInv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.Ring_iso_to_ring_equiv CategoryTheory.Iso.ringCatIsoToRingEquiv
 
 /-- Build a `RingEquiv` from an isomorphism in the category `CommRingCat`. -/
-def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
-    where
-  toFun := i.hom
-  invFun := i.inv
-  -- Porting note: All these proofs were much easier in lean3.
-  left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
-  right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
-  map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
-  map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
+def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y :=
+  RingEquiv.ofHomInv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv CategoryTheory.Iso.commRingCatIsoToRingEquiv
 
--- Porting note : make this high priority to short circuit simplifier
+-- Porting note: make this high priority to short circuit simplifier
 @[simp (high)]
 theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.toRingHom = i.hom := by
@@ -548,7 +669,7 @@ theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_toRingHom
 
--- Porting note : make this high priority to short circuit simplifier
+-- Porting note: make this high priority to short circuit simplifier
 @[simp (high)]
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
@@ -561,8 +682,8 @@ end CategoryTheory.Iso
 
 /-- Ring equivalences between `RingCat`s are the same as (isomorphic to) isomorphisms in
 `RingCat`. -/
-def ringEquivIsoRingIso {X Y : Type u} [Ring X] [Ring Y] : X ≃+* Y ≅ RingCat.of X ≅ RingCat.of Y
-    where
+def ringEquivIsoRingIso {X Y : Type u} [Ring X] [Ring Y] :
+    X ≃+* Y ≅ RingCat.of X ≅ RingCat.of Y where
   hom e := e.toRingCatIso
   inv i := i.ringCatIsoToRingEquiv
 set_option linter.uppercaseLean3 false in
@@ -571,28 +692,27 @@ set_option linter.uppercaseLean3 false in
 /-- Ring equivalences between `CommRingCat`s are the same as (isomorphic to) isomorphisms
 in `CommRingCat`. -/
 def ringEquivIsoCommRingIso {X Y : Type u} [CommRing X] [CommRing Y] :
-    X ≃+* Y ≅ CommRingCat.of X ≅ CommRingCat.of Y
-    where
+    X ≃+* Y ≅ CommRingCat.of X ≅ CommRingCat.of Y where
   hom e := e.toCommRingCatIso
   inv i := i.commRingCatIsoToRingEquiv
 set_option linter.uppercaseLean3 false in
 #align ring_equiv_iso_CommRing_iso ringEquivIsoCommRingIso
 
-instance RingCat.forget_reflects_isos : ReflectsIsomorphisms (forget RingCat.{u}) where
+instance RingCat.forget_reflects_isos : (forget RingCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget RingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toRingCatIso).1⟩
+    exact e.toRingCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_reflects_isos RingCat.forget_reflects_isos
 
-instance CommRingCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommRingCat.{u}) where
+instance CommRingCat.forget_reflects_isos : (forget CommRingCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toCommRingCatIso).1⟩
+    exact e.toCommRingCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_reflects_isos CommRingCat.forget_reflects_isos
 
@@ -614,4 +734,37 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: This was the case in mathlib3, perhaps it is different now?
 attribute [local instance] reflectsIsomorphisms_forget₂
 
-example : ReflectsIsomorphisms (forget₂ RingCat AddCommGroupCat) := by infer_instance
+example : (forget₂ RingCat AddCommGroupCat).ReflectsIsomorphisms := by infer_instance
+
+/-!
+`@[simp]` lemmas for `RingHom.comp` and categorical identities.
+-/
+
+@[simp] theorem RingHom.comp_id_semiringCat
+    {G : SemiRingCat.{u}} {H : Type u} [Semiring H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (SemiRingCat.ofHom f)
+@[simp] theorem RingHom.id_semiringCat_comp
+    {G : Type u} [Semiring G] {H : SemiRingCat.{u}} (f : G →+* H) : RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (SemiRingCat.ofHom f)
+
+@[simp] theorem RingHom.comp_id_commSemiringCat
+    {G : CommSemiRingCat.{u}} {H : Type u} [CommSemiring H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommSemiRingCat.ofHom f)
+@[simp] theorem RingHom.id_commSemiringCat_comp
+    {G : Type u} [CommSemiring G] {H : CommSemiRingCat.{u}} (f : G →+* H) :
+    RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommSemiRingCat.ofHom f)
+
+@[simp] theorem RingHom.comp_id_ringCat
+    {G : RingCat.{u}} {H : Type u} [Ring H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (RingCat.ofHom f)
+@[simp] theorem RingHom.id_ringCat_comp
+    {G : Type u} [Ring G] {H : RingCat.{u}} (f : G →+* H) : RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (RingCat.ofHom f)
+
+@[simp] theorem RingHom.comp_id_commRingCat
+    {G : CommRingCat.{u}} {H : Type u} [CommRing H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommRingCat.ofHom f)
+@[simp] theorem RingHom.id_commRingCat_comp
+    {G : Type u} [CommRing G] {H : CommRingCat.{u}} (f : G →+* H) : RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommRingCat.ofHom f)

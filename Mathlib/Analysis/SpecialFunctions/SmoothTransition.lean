@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.Calculus.FDeriv.Extend
-import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 
@@ -24,8 +22,6 @@ cannot have:
 * `Real.smoothTransition` is equal to zero for `x ≤ 0` and is equal to one for `x ≥ 1`; it is given
   by `expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))`;
 -/
-
-set_option autoImplicit true
 
 noncomputable section
 
@@ -50,7 +46,7 @@ namespace expNegInvGlue
 theorem zero_of_nonpos {x : ℝ} (hx : x ≤ 0) : expNegInvGlue x = 0 := by simp [expNegInvGlue, hx]
 #align exp_neg_inv_glue.zero_of_nonpos expNegInvGlue.zero_of_nonpos
 
-@[simp] -- porting note: new lemma
+@[simp] -- Porting note (#10756): new lemma
 protected theorem zero : expNegInvGlue 0 = 0 := zero_of_nonpos le_rfl
 
 /-- The function `expNegInvGlue` is positive on `(0, +∞)`. -/
@@ -65,8 +61,8 @@ theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
   | inr h => exact le_of_lt (pos_of_pos h)
 #align exp_neg_inv_glue.nonneg expNegInvGlue.nonneg
 
--- porting note: new lemma
-@[simp] theorem zero_iff_nonpos : expNegInvGlue x = 0 ↔ x ≤ 0 :=
+-- Porting note (#10756): new lemma
+@[simp] theorem zero_iff_nonpos {x : ℝ} : expNegInvGlue x = 0 ↔ x ≤ 0 :=
   ⟨fun h ↦ not_lt.mp fun h' ↦ (pos_of_pos h').ne' h, zero_of_nonpos⟩
 
 /-!
@@ -168,7 +164,7 @@ theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
   (div_eq_one_iff_eq <| (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
 #align real.smooth_transition.one_of_one_le Real.smoothTransition.one_of_one_le
 
-@[simp] -- porting note: new theorem
+@[simp] -- Porting note (#10756): new theorem
 nonrec theorem zero_iff_nonpos : smoothTransition x = 0 ↔ x ≤ 0 := by
   simp only [smoothTransition, _root_.div_eq_zero_iff, (pos_denom x).ne', zero_iff_nonpos, or_false]
 
@@ -190,7 +186,8 @@ projection of `x : ℝ` to $[0, 1]$ gives the same result as applying it to `x`.
 @[simp]
 protected theorem projIcc :
     smoothTransition (projIcc (0 : ℝ) 1 zero_le_one x) = smoothTransition x := by
-  refine' congr_fun (IccExtend_eq_self zero_le_one smoothTransition (fun x hx => _) fun x hx => _) x
+  refine congr_fun
+    (IccExtend_eq_self zero_le_one smoothTransition (fun x hx => ?_) fun x hx => ?_) x
   · rw [smoothTransition.zero, zero_of_nonpos hx.le]
   · rw [smoothTransition.one, one_of_one_le hx.le]
 #align real.smooth_transition.proj_Icc Real.smoothTransition.projIcc
