@@ -256,4 +256,16 @@ lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
 #align int.two_mul_div_two_of_odd Int.two_mul_ediv_two_of_odd
 
+@[norm_cast, simp]
+theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℤ) ↔ IsSquare n := by
+  constructor <;> rintro ⟨x, h⟩
+  · exact ⟨x.natAbs, (natAbs_mul_natAbs_eq h.symm).symm⟩
+  · exact ⟨x, mod_cast h⟩
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem isSquare_ofNat_iff {n : ℕ} :
+    IsSquare (no_index (OfNat.ofNat n) : ℤ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
+  isSquare_natCast_iff
+
 end Int
