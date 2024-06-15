@@ -366,6 +366,12 @@ instance : CoeFun (FiniteAdeleRing R K)
     (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
   coe a v := a.1 v
 
+open scoped algebraMap in
+-- move to nearer definition
+lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
+    a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
+  ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
+
 section Topology
 
 open Classical
@@ -378,18 +384,6 @@ open scoped DiscreteValuation
 
 open Multiplicative Additive
 
--- this needs moving
-lemma local_eq_global (r : R) : Valued.v (r : v.adicCompletion K) = v.valuation (r : K) := by
-  convert Valued.valuedCompletion_apply (r : K)
-
--- this needs moving too
-lemma valuation_eq_intValuationDef (r : R) : v.valuation (r : K) = v.intValuationDef r :=
-  Valuation.extendToLocalization_apply_map_apply _ _ _ _
-
--- this is in #13853
-lemma WithZero.one_lt_coe {a : Multiplicative ℤ} : 1 < (a : ℤₘ₀) ↔ 1 < a :=
-  WithBot.one_lt_coe
-
 variable {R K} in
 lemma clear_local_denominator (v : HeightOneSpectrum R)
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
@@ -397,24 +391,25 @@ lemma clear_local_denominator (v : HeightOneSpectrum R)
   · use 1
     simp [ha, Submonoid.one_mem]
   · rw [not_mem_adicCompletionIntegers] at ha
+    -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
       Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
     rw [hd, WithZero.one_lt_coe, ← ofAdd_zero, ofAdd_lt] at ha
+    -- let ϖ be a uniformiser
     obtain ⟨ϖ, hϖ⟩ := int_valuation_exists_uniformizer v
     have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
+    -- use ϖ^d
     refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
-    -- now manually translate an equality in ℤₘ₀ to an equality in ℤ
-    rw [algebraMap.coe_pow, mem_adicCompletionIntegers, map_mul, hd, map_pow, local_eq_global,
-      valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow, ← WithZero.coe_mul,
-      WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow, toAdd_ofAdd, toAdd_one,
+    -- now manually translate the goal (an inequality in ℤₘ₀) to an inequality in ℤ
+    rw [mem_adicCompletionIntegers, algebraMap.coe_pow, map_mul, hd, map_pow,
+      valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow,
+      ← WithZero.coe_mul, WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow,
+      toAdd_ofAdd, toAdd_one,
       show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
-      Int.natCast_natAbs, smul_eq_mul], ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+        Int.natCast_natAbs, smul_eq_mul],
+      ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+    -- and now it's easy
     linarith
-
--- move to nearer definition
-lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
-    a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
-  ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
 
 -- move to another file
 lemma Submonoid.finprod_mem {G : Type*} [CommMonoid G] {M : Submonoid G} {ι : Type*}
@@ -426,56 +421,37 @@ lemma Submonoid.finprod_mem {G : Type*} [CommMonoid G] {M : Submonoid G} {ι : T
     exact mem_of_mem_diff ((Finite.mem_toFinset hS).mp hi)
   · exact finprod_mem_eq_one_of_infinite hS ▸ M.one_mem
 
+/-
+#find_home! Submonoid.finprod_mem
+[Mathlib.LinearAlgebra.Basis, Mathlib.Topology.Algebra.Group.Basic]
+-/
+
 open scoped DiscreteValuation
 
--- this should now be trivial
-lemma boundthing (r : R) :
-    (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
-  rw [mem_adicCompletionIntegers]
-  letI : Valued K ℤₘ₀ := adicValued v
-  change Valued.v (r : v.adicCompletion K) ≤ 1
-  suffices Valued.v (r : K) ≤ 1 by
-    rw [← Valued.valuedCompletion_apply] at this
-    convert this
-  change v.valuation (r : K) ≤ 1
-  suffices v.valuation (r : K) = v.intValuation r by
-    rw [this]
-    exact v.int_valuation_le_one r
-  apply valuation_of_algebraMap
-
--- this needs tidying
 variable {R K} in
 lemma clear_denominator (a : FiniteAdeleRing R K) :
     ∃ (b : R⁰) (c : R_hat R K), a * ((b : R) : FiniteAdeleRing R K) = c := by
   let S := {v | a v ∉ adicCompletionIntegers K v}
-  -- (a.2 : S.finite)
   choose b hb h using clear_local_denominator (R := R) (K := K)
   let p := ∏ᶠ v ∈ S, b v (a v)
   have hp : p ∈ R⁰ := Submonoid.finprod_mem <| fun v _ ↦ hb _ _
   use ⟨p, hp⟩
   rw [exists_finiteIntegralAdele_iff]
   intro v
-  change a v * _ ∈ _
-  dsimp
   by_cases hv : a v ∈ adicCompletionIntegers K v
   · apply mul_mem hv
-    apply boundthing
-  · have foo := h v (a v)
-    simp at foo
-    change a v * p ∈ _
-    change v ∈ S at hv
-    dsimp
+    apply coe_mem_adicCompletionIntegers
+  · change v ∈ S at hv
+    dsimp only
     have pprod : p = b v (a v) * ∏ᶠ w ∈ S \ {v}, b w (a w) := by
-      rw [show b v (a v) = ∏ᶠ w ∈ ({v} : Set (HeightOneSpectrum R)), b w (a w) by
-        rw [finprod_mem_singleton]]
-      rw [finprod_mem_mul_diff]
-      · simp [hv]
-      · exact a.2
+      rw [← finprod_mem_singleton (a := v) (f := fun v ↦ b v (a v)),
+        finprod_mem_mul_diff <| singleton_subset_iff.2 hv]
+      exact a.2
     rw [pprod]
     push_cast
     rw [← mul_assoc]
-    apply mul_mem foo
-    apply boundthing
+    apply mul_mem (h v (a v))
+    apply coe_mem_adicCompletionIntegers
 
 open scoped Pointwise
 
@@ -484,10 +460,7 @@ theorem submodulesRingBasis : SubmodulesRingBasis
   inter i j := ⟨i * j, by
     push_cast
     simp only [le_inf_iff, Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
-    refine ⟨⟨((j : R) : R_hat R K), ?_⟩, ⟨((i : R) : R_hat R K), rfl⟩⟩
-    rw [mul_comm]
-    rfl
-    ⟩
+    exact ⟨⟨((j : R) : R_hat R K), by rw [mul_comm]; rfl⟩, ⟨((i : R) : R_hat R K), rfl⟩⟩⟩
   leftMul a r := by
     rcases clear_denominator a with ⟨b, c, h⟩
     use r * b

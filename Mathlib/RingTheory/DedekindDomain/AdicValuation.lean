@@ -290,6 +290,10 @@ theorem valuation_of_algebraMap (r : R) : v.valuation (algebraMap R K r) = v.int
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
 #align is_dedekind_domain.height_one_spectrum.valuation_of_algebra_map IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap
 
+open scoped algebraMap in
+lemma valuation_eq_intValuationDef (r : R) : v.valuation (r : K) = v.intValuationDef r :=
+  Valuation.extendToLocalization_apply_map_apply _ _ _ _
+
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem valuation_le_one (r : R) : v.valuation (algebraMap R K r) ≤ 1 := by
   rw [valuation_of_algebraMap]; exact v.int_valuation_le_one r
@@ -458,6 +462,25 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     ext
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl
+
+open scoped algebraMap in -- to make the coercions from `R` fire
+/-- The valuation on the completion agrees with the global valuation on elements of the
+integer ring. -/
+theorem valuedAdicCompletion_eq_valuation (r : R) :
+    Valued.v (r : v.adicCompletion K) = v.valuation (r : K) := by
+  convert Valued.valuedCompletion_apply (r : K)
+
+/-- The valuation on the completion agrees with the global valuation on elements of the field. -/
+theorem valuedAdicCompletion_eq_valuation' (k : K) :
+    Valued.v (k : v.adicCompletion K) = v.valuation k := by
+  convert Valued.valuedCompletion_apply k
+
+open scoped algebraMap in -- to make the coercion from `R` fire
+/-- A global integer is in the local integers. -/
+lemma coe_mem_adicCompletionIntegers (r : R) :
+    (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
+  rw [mem_adicCompletionIntegers, valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
+  exact int_valuation_le_one v r
 
 @[simp]
 theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K) :
