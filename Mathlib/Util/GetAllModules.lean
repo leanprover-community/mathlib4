@@ -24,6 +24,7 @@ open Lean System.FilePath
 #[file₁, ..., fileₙ]
 ```
 of all their file names.
+These names are sorted in a platform-independent order.
 
 The input `git` is a `Bool`ean flag:
 * `true` means that the command uses `git ls-files` to find the relevant files;
@@ -39,7 +40,8 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
     else do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
-  let files := (allModules.erase ml.lean).qsort (·.toString < ·.toString)
+  let files := (allModules.erase ml.lean).qsort
+    (·.components < ·.components)
   let existingFiles ← files.mapM fun f => do
     -- this check is helpful in case the `git` option is on and a local file has been removed
     if ← pathExists f then
@@ -48,9 +50,8 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
   return existingFiles.filter (· != "")
 
 /-- Like `getAllFiles`, but return an array of *module* names instead,
-i.e. names of the form `"Mathlib.Algebra.Algebra.Basic"`. -/
+i.e. names of the form `Mathlib.Algebra.Algebra.Basic`. -/
 def getAllModules (git : Bool) (ml : String) : IO (Array String) := do
   let files ← getAllFiles git ml
   return ← files.mapM fun f => do
      return (← moduleNameOfFileName f none).toString
-
