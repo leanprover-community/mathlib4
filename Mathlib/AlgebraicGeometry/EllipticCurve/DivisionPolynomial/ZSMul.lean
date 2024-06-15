@@ -23,6 +23,11 @@ given by evaluation of division polynomials, so our task reduces to proving cert
 identities (`dblXYZ_smulEval` and `addXYZ_smulEval₁`), namely that the polynomials
 `dblXYZ` and `addXYZ`, when applied to `(φₘ, ωₘ, ψₘ)` and `(φₘ₊₁, ωₘ₊₁, ψₘ₊₁)`, yields
 `(φ₂ₘ, ω₂ₘ, ψ₂ₘ)` and `(φ₂ₘ₊₁, ω₂ₘ₊₁, ψ₂ₘ₊₁)`, modulo the Weierstrass polynomial.
+It is crucial that two formulas (`dblXYZ` for doubling, `addXYZ` for addition of two different
+points) suffice to cover all cases of the group law in Jacobian coordinates.
+Since `P = (x,y) ≠ O`, `m • P` is never equal to `(m + 1) • P`, so `addXYZ` always apply
+in the `2 * m + 1` case (it gives `(0,0,0)` when applied to two equal points),
+and `dblXYZ` always applies in the `2 * m` case.
 
 Since `dblXYZ`, `addXYZ` and the division polynomials are all compatible with ring homomorphisms,
 it suffices to prove the universal division polynomials satisfy these identities
