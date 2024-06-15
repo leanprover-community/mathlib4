@@ -203,7 +203,7 @@ theorem Mates_vcomp
      := by
   unfold LeftAdjointSquare.vcomp RightAdjointSquare.vcomp Mates
   ext b
-  simp
+  simp?
   slice_rhs 1 4 =>
     {
       rw [← assoc, ← assoc]
