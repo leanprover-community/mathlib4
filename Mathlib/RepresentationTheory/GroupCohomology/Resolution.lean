@@ -61,6 +61,9 @@ over `k`.
 /- Porting note: most altered proofs in this file involved changing `simp` to `rw` or `erw`, so
 https://github.com/leanprover-community/mathlib4/issues/5026 and
 https://github.com/leanprover-community/mathlib4/issues/5164 are relevant. -/
+
+suppress_compilation
+
 noncomputable section
 
 universe u v w

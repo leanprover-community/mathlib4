@@ -848,7 +848,7 @@ theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
-    (s₁ ∪ s₂).sup' (h₁.mono <| subset_union_left _ _) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
+    (s₁ ∪ s₂).sup' (h₁.mono subset_union_left) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
   eq_of_forall_ge_iff fun a => by simp [or_imp, forall_and]
 #align finset.sup'_union Finset.sup'_union
 
@@ -886,7 +886,7 @@ lemma prodMk_sup'_sup' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
     exact ⟨by aesop, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
 
 /-- See also `Finset.prodMk_sup'_sup'`. -/
--- @[simp] -- TODO: Why does `Prod_map` simplify the LHS?
+-- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
 lemma sup'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
     sup' (s ×ˢ t) hst (Prod.map f g) = (sup' s hst.fst f, sup' t hst.snd g) :=
   (prodMk_sup'_sup' _ _ _ _).symm
@@ -1041,7 +1041,7 @@ theorem inf'_const (a : α) : (s.inf' H fun _ => a) = a :=
 
 theorem inf'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
-    (s₁ ∪ s₂).inf' (h₁.mono <| subset_union_left _ _) f = s₁.inf' h₁ f ⊓ s₂.inf' h₂ f :=
+    (s₁ ∪ s₂).inf' (h₁.mono subset_union_left) f = s₁.inf' h₁ f ⊓ s₂.inf' h₂ f :=
   @sup'_union αᵒᵈ _ _ _ _ _ h₁ h₂ _
 #align finset.inf'_union Finset.inf'_union
 
@@ -1075,7 +1075,7 @@ lemma prodMk_inf'_inf' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
   prodMk_sup'_sup' (α := αᵒᵈ) (β := βᵒᵈ) hs ht _ _
 
 /-- See also `Finset.prodMk_inf'_inf'`. -/
--- @[simp] -- TODO: Why does `Prod_map` simplify the LHS?
+-- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
 lemma inf'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
     inf' (s ×ˢ t) hst (Prod.map f g) = (inf' s hst.fst f, inf' t hst.snd g) :=
   (prodMk_inf'_inf' _ _ _ _).symm
