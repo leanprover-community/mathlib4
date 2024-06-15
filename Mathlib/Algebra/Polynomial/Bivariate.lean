@@ -1,11 +1,9 @@
 /-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
+Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-
-#align_import data.polynomial.algebra_map from "leanprover-community/mathlib"@"e064a7bf82ad94c3c17b5128bbd860d1ec34874e"
 
 /-!
 # Bivariate polynomials
