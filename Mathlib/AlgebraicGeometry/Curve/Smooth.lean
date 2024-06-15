@@ -46,16 +46,24 @@ Given a scheme morphism `f : X ⟶ Y` and a point `x : X.toTopCat`, stating that
 `X`.
 -/
 class Scheme.IsSmoothAt {X Y : Scheme} (f : X ⟶ Y) (x : X.toTopCat) : Type _ where
+/- A ring whose prime spectrum is isomorphic to some open nbd of `x`. --/
   R : CommRingCat
+/- A ring whose prime spectrum is isomorphic to some open subset of `Y` --/
   S : CommRingCat
+/- An open nbd of x. --/
   U : TopologicalSpace.OpenNhds x
+/- An open subset of `Y`. --/
   V : TopologicalSpace.Opens Y.toTopCat
+/- `f` maps `U` into `V`. --/
   le_preimage : U.obj ≤ TopologicalSpace.Opens.mk (f.val.base ⁻¹' V.carrier)
     (IsOpen.preimage (Scheme.Hom.continuous f) V.is_open')
+/- `U` is isomorphic to the prime spectrum of `R`. --/
   U_affine : X.toLocallyRingedSpace.restrict U.openEmbedding ≅ Spec.toLocallyRingedSpace.obj
     (Opposite.op R)
+/- `V` is isomorphic to the prime spectrum of `S`. --/
   V_affine : Y.toLocallyRingedSpace.restrict V.openEmbedding ≅ Spec.toLocallyRingedSpace.obj
     (Opposite.op S)
+/- The canonical ring homomorphism from `S` to `R` is smooth. --/
   is_smooth :
     let this : X.presheaf.obj (Opposite.op (TopologicalSpace.Opens.mk
       (f.val.base ⁻¹' V.carrier) (IsOpen.preimage (Scheme.Hom.continuous f) V.is_open'))) ⟶
