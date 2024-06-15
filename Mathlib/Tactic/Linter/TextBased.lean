@@ -200,49 +200,51 @@ def IO.FS.appendToFile (fname : FilePath) (content : String) : IO Unit := do
   let previous_content ← IO.FS.readFile fname
   IO.FS.writeFile fname (previous_content ++ content)
 
-/-- Read a file and apply all text-based linters.
-Print formatted errors and possibly update the style exceptions file accordingly.
-
-Return `true` if there were new errors (and `false` otherwise).
-`sizeLimit` is any pre-existing limit on this file's size.
-`mode` specifies what kind of output this script should produce. -/
-def lintFile (path : FilePath) (sizeLimit : Option ℕ) (mode : OutputSetting) : IO Bool := do
+/-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
+`sizeLimit` is any pre-existing limit on this file's size. -/
+def lintFile (path : FilePath) (sizeLimit : Option ℕ) : IO (Array ErrorContext) := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if isImportsOnlyFile lines then
-    return false
+    return #[]
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
     let err := ErrorContext.mk (StyleError.fileTooLong n limit) 1 path
-    match mode with
-    | OutputSetting.print style => formatErrors (Array.mkArray1 err) style
-    -- XXX: should these also print the errors? if yes, only for humans, I guess!
-    | OutputSetting.append =>
-      let path := mkFilePath ["scripts/style-exceptions.txt"]
-      IO.FS.appendToFile path (s!"{outputMessage err ErrorFormat.exceptionsFile}\n")
-    | OutputSetting.regenerate =>
-      -- FIXME: implement this!
-      IO.println "the --regenerate option is not implemented yet: \
-        please call `./scripts/update-style-exceptions.sh instead"
-      -- FIXME: can I call that script myself, as a band-aid?
-    return true
-  return false
+    return Array.mkArray1 err
+  return #[]
 
 /-- Lint a list of files referenced and return the number of files which had new style errors.
 `mode` specifies what kind of output this script should produce. -/
 def lintFiles (files : Array FilePath) (mode : OutputSetting) : IO UInt32 := do
   -- Read the style exceptions file.
-  let exceptions_file ← IO.FS.lines (mkFilePath ["scripts/style-exceptions.txt"])
+  let exceptions_file ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
   let style_exceptions := parseStyleExceptions exceptions_file
-  let mut number_error_files := 0
+  let mut number_error_files : UInt32 := 0
+  let mut all_unexpected_errors : Array ErrorContext := #[]
   for file in files do
     -- Find the size limit for this given file.
     -- If several size limits are given (unlikely in practice), we use the first one.
     let size_limits := (style_exceptions.filter (·.path == file)).filterMap (fun errctx ↦
       match errctx.error with
       | StyleError.fileTooLong _ limit => some limit)
-    if ← lintFile file (size_limits.get? 0) mode then
+    let errors ← lintFile file (size_limits.get? 0)
+    if errors.size > 0 then
       number_error_files := number_error_files + 1
+      all_unexpected_errors := all_unexpected_errors.append errors
+  if all_unexpected_errors.size > 0 then
+    match mode with
+    | OutputSetting.print style => formatErrors all_unexpected_errors style
+    -- XXX: should these also print the errors? if yes, only for humans, I guess!
+    | OutputSetting.append =>
+      let path := mkFilePath ["scripts", "style-exceptions.txt"]
+      let formatted := (all_unexpected_errors.map
+        (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
+      IO.FS.appendToFile path s!"{"\n".intercalate formatted}\n"
+    | OutputSetting.regenerate =>
+      -- FIXME: implement this!
+      IO.println "the --regenerate option is not implemented yet: \
+        please call `./scripts/update-style-exceptions.sh instead"
+      -- FIXME: can I call that script myself, as a band-aid?
   return number_error_files
 
 /-- Lint all files referenced in a given import-only file.
