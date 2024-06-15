@@ -338,12 +338,12 @@ lemma cfcₙ_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R) (hf : ∀ i
 open Finset in
 lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a))
-    (hf_zero : ∀ i ∈ s, f i 0 = 0) :
+    (hf0 : ∀ i ∈ s, f i 0 = 0) :
     cfcₙ (∑ i in s, f i)  a = ∑ i in s, cfcₙ (f i) a := by
   rw [← sum_coe_sort s, ← sum_coe_sort s]
   have hf' : ∀ i : {x : ι // x ∈ s}, ContinuousOn (f i) (σₙ R a) := fun ⟨i, hi⟩ => hf i hi
-  have hf_zero' : ∀ i : {x : ι // x ∈ s}, f i 0 = 0 := fun ⟨i, hi⟩ => hf_zero i hi
-  exact cfcₙ_sum_univ a _ hf' hf_zero'
+  have hf0' : ∀ i : {x : ι // x ∈ s}, f i 0 = 0 := fun ⟨i, hi⟩ => hf0 i hi
+  exact cfcₙ_sum_univ a _ hf' hf0'
 
 lemma cfcₙ_smul {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
