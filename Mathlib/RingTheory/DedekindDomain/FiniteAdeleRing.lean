@@ -432,18 +432,17 @@ lemma clear_local_denominator (v : HeightOneSpectrum R)
     suffices (n : ℤₘ₀) * m ^ d.natAbs  ≤ 1 by
       convert this
       rw [← hm]
-      simp
+      simp only [intValuation_toFun]
       convert Valued.valuedCompletion_apply (r : K)
-      -- now purely global
+      -- question now purely global
       symm
       apply Valuation.extendToLocalization_apply_map_apply
       intro r hr hr2
-      simp at hr2
+      simp only [SetLike.mem_coe, Valuation.mem_supp_iff, intValuation_toFun] at hr2
       have := int_valuation_zero_le v ⟨r, hr⟩
       simp [← hr2] at this
     norm_cast
-
-    rw [← toAdd_le, toAdd_mul, toAdd_pow, toAdd_one]--, ← Int.eq_natAbs_of_zero_le hd.le]
+    rw [← toAdd_le, toAdd_mul, toAdd_pow, toAdd_one]
     change d + _ • e ≤ 0
     change e < 0 at moo2
     rw [show d.natAbs • e = (d.natAbs : ℤ) • e by simp only [nsmul_eq_mul,
