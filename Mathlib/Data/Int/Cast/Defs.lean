@@ -66,4 +66,5 @@ class AddCommGroupWithOne (R : Type u)
 #align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne
 #align add_comm_group_with_one.to_add_comm_monoid_with_one AddCommGroupWithOne.toAddCommMonoidWithOne
 
+attribute [instance 90] AddCommGroupWithOne.toAddGroupWithOne
 attribute [instance 50] AddCommGroupWithOne.toAddCommGroup
