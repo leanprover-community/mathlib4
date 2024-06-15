@@ -34,13 +34,29 @@ variable {G₀ : Type u} {M₀ M₀' G₀' : Type*}
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
 class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   /-- Zero is a left absorbing element for multiplication -/
-  zero_mul : ∀ a : M₀, 0 * a = 0
+  protected zero_mul : ∀ a : M₀, 0 * a = 0
   /-- Zero is a right absorbing element for multiplication -/
-  mul_zero : ∀ a : M₀, a * 0 = 0
+  protected mul_zero : ∀ a : M₀, a * 0 = 0
 #align mul_zero_class MulZeroClass
 
 attribute [instance 50] MulZeroClass.toZero
 attribute [instance 20] MulZeroClass.toMul
+
+section MulZeroClass
+
+variable [MulZeroClass M₀] (a : M₀)
+
+@[simp]
+theorem zero_mul : 0 * a = 0 :=
+  MulZeroClass.zero_mul a
+#align zero_mul zero_mul
+
+@[simp]
+theorem mul_zero : a * 0 = 0 :=
+  MulZeroClass.mul_zero a
+#align mul_zero mul_zero
+
+end MulZeroClass
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
@@ -86,11 +102,6 @@ end IsRightCancelMulZero
 class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀]
   extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀ : Prop
 #align is_cancel_mul_zero IsCancelMulZero
-
-export MulZeroClass (zero_mul mul_zero)
-attribute [simp] zero_mul mul_zero
-#align zero_mul MulZeroClass.zero_mul
-#align mul_zero MulZeroClass.mul_zero
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
 for all `a` and `b` of type `G₀`. -/
@@ -226,7 +237,7 @@ The type is required to come with an “inverse” function, and the inverse of 
 
 Examples include division rings and the ordered monoids that are the
 target of valuations in general valuation theory. -/
-class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
+class GroupWithZero (G₀ : Type u) extends DivInvMonoid G₀, MonoidWithZero G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
   inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
@@ -235,8 +246,7 @@ class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G�
 
 attribute [instance 100] GroupWithZero.toMonoidWithZero
 attribute [instance 0] GroupWithZero.toDivInvMonoid -- use `GroupWithZero.toDivisionMonoid`
-attribute [instance 0] GroupWithZero.toInv
-attribute [instance 0] GroupWithZero.toDiv
+attribute [instance 0] GroupWithZero.toZero
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero

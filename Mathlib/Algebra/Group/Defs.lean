@@ -1215,6 +1215,7 @@ class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMon
 #align subtraction_comm_monoid SubtractionCommMonoid
 
 attribute [instance 90] SubtractionCommMonoid.toSubtractionMonoid
+attribute [instance 50] SubtractionCommMonoid.toAddCommMonoid
 
 /-- Commutative `DivisionMonoid`.
 
@@ -1224,6 +1225,7 @@ class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 #align division_comm_monoid DivisionCommMonoid
 
 attribute [instance 90] DivisionCommMonoid.toDivisionMonoid
+attribute [instance 50] DivisionCommMonoid.toCommMonoid
 
 attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
@@ -1334,6 +1336,7 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 #align add_comm_group AddCommGroup
 
 attribute [instance 90] AddCommGroup.toAddGroup
+attribute [instance 200] AddCommGroup.toAddCommMonoid
 
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]

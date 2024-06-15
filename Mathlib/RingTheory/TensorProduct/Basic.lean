@@ -297,10 +297,14 @@ protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
 
-instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
+instance instMulOneClass : MulOneClass (A ⊗[R] B) where
   one_mul := Algebra.TensorProduct.one_mul
   mul_one := Algebra.TensorProduct.mul_one
-  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+
+instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
+  toAddCommMonoid := addCommMonoid
+  toMulOneClass := instMulOneClass
+  __ := instNonUnitalNonAssocSemiring
   __ := instAddCommMonoidWithOne
 
 end NonAssocSemiring
@@ -319,8 +323,13 @@ protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul 
   exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
-instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
+instance instSemigroup : Semigroup (A ⊗[R] B) where
   mul_assoc := Algebra.TensorProduct.mul_assoc
+
+instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
+  toAddCommMonoid := addCommMonoid
+  toSemigroup := instSemigroup
+  __ := instNonUnitalNonAssocSemiring
 
 end NonUnitalSemiring
 
@@ -330,14 +339,16 @@ variable [Semiring A] [Algebra R A]
 variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra R C]
 
+instance instMonoid : Monoid (A ⊗[R] B) where
+  mul_assoc := Algebra.TensorProduct.mul_assoc
+
 instance instSemiring : Semiring (A ⊗[R] B) where
+  toAddCommMonoid := addCommMonoid
+  toMonoid := instMonoid
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
   mul_zero a := by simp [HMul.hMul, Mul.mul]
-  mul_assoc := Algebra.TensorProduct.mul_assoc
-  one_mul := Algebra.TensorProduct.one_mul
-  mul_one := Algebra.TensorProduct.mul_one
   natCast_zero := AddMonoidWithOne.natCast_zero
   natCast_succ := AddMonoidWithOne.natCast_succ
 
@@ -528,8 +539,8 @@ variable [Ring A] [Algebra R A]
 variable [Ring B] [Algebra R B]
 
 instance instRing : Ring (A ⊗[R] B) where
-  toSemiring := instSemiring
-  __ := TensorProduct.addCommGroup
+  toAddCommGroup := TensorProduct.addCommGroup
+  toMonoid := TensorProduct.instMonoid
   __ := instNonAssocRing
 
 theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by

@@ -812,7 +812,7 @@ theorem comap_top (f : F) : (⊤ : NonUnitalStarSubalgebra R B).comap f = ⊤ :=
 
 /-- `NonUnitalStarAlgHom` to `⊤ : NonUnitalStarSubalgebra R A`. -/
 def toTop : A →⋆ₙₐ[R] (⊤ : NonUnitalStarSubalgebra R A) :=
-  NonUnitalStarAlgHom.codRestrict (NonUnitalStarAlgHom.id R A) ⊤ fun _ => mem_top
+  NonUnitalStarAlgHom.codRestrict (NonUnitalStarAlgHom.id R A) _ fun _ => mem_top
 
 end NonUnitalStarAlgebra
 

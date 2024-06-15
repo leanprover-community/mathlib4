@@ -211,9 +211,9 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : GroupWithZero G₀' :=
-  { hf.divInvMonoid f one mul inv div npow zpow,
-    pullback_nonzero f zero one with
-    toMonoidWithZero := hf.monoidWithZero f zero one mul npow
+  { pullback_nonzero f zero one with
+    toDivInvMonoid := hf.divInvMonoid f one mul inv div npow zpow
+    __ := hf.monoidWithZero f zero one mul npow
     inv_zero := hf <| by erw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
       erw [one, mul, inv, mul_inv_cancel ((hf.ne_iff' zero).2 hx)] }
@@ -227,8 +227,8 @@ protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
     GroupWithZero G₀' :=
-  { hf.divInvMonoid f one mul inv div npow zpow with
-    toMonoidWithZero := hf.monoidWithZero f zero one mul npow
+  { toDivInvMonoid := hf.divInvMonoid f one mul inv div npow zpow
+    __ := hf.monoidWithZero f zero one mul npow
     inv_zero := by erw [← zero, ← inv, inv_zero],
     mul_inv_cancel := hf.forall.2 fun x hx => by
         erw [← inv, ← mul, mul_inv_cancel (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]
