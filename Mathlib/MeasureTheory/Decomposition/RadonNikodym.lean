@@ -431,8 +431,8 @@ lemma _root_.MeasurableEmbedding.rnDeriv_map (hf : MeasurableEmbedding f)
   have : SigmaFinite (map f ν) := hf.sigmaFinite_map
   have : SigmaFinite (map f (μ.singularPart ν)) := hf.sigmaFinite_map
   have : SigmaFinite (map f (ν.withDensity (μ.rnDeriv ν))) := hf.sigmaFinite_map
-  have h_add := Measure.rnDeriv_add' ((μ.singularPart ν).map f) ((ν.withDensity (μ.rnDeriv ν)).map f)
-    (ν.map f)
+  have h_add := Measure.rnDeriv_add' ((μ.singularPart ν).map f)
+    ((ν.withDensity (μ.rnDeriv ν)).map f) (ν.map f)
   rw [Filter.EventuallyEq, hf.ae_map_iff, ← Filter.EventuallyEq] at h_add
   refine h_add.trans ((Measure.rnDeriv_add' _ _ _).trans ?_).symm
   refine Filter.EventuallyEq.add ?_ ?_
