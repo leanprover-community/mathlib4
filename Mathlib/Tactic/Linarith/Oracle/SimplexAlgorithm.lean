@@ -27,7 +27,9 @@ def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matTyp
   let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
   (ofValues values, strictIndexes)
 
-/-- Extract the certificate from the `vec` found by `Linarith.SimplexAlgorithm.findPositiveVector`. -/
+/--
+Extract the certificate from the `vec` found by `Linarith.SimplexAlgorithm.findPositiveVector`.
+-/
 def postprocess (vec : Array ℚ) : HashMap ℕ ℕ :=
   let common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
   let vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
