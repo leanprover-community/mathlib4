@@ -32,7 +32,7 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`.
+This file is a straight-forward adaptation of `Mathlib.Analysis.NormedSpace.PiLp`.
 
 -/
 

@@ -204,9 +204,9 @@ at most `2 ^ Fintype.card ι`. -/
 theorem card_filter_mem_Icc_le [Fintype ι] (x : ι → ℝ) :
     (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card ≤ 2 ^ Fintype.card ι := by
   rw [← Fintype.card_set]
-  refine Finset.card_le_card_of_inj_on (fun J : Box ι => { i | J.lower i = x i })
+  refine Finset.card_le_card_of_injOn (fun J : Box ι => { i | J.lower i = x i })
     (fun _ _ => Finset.mem_univ _) ?_
-  simpa only [Finset.mem_filter] using π.injOn_setOf_mem_Icc_setOf_lower_eq x
+  simpa using π.injOn_setOf_mem_Icc_setOf_lower_eq x
 #align box_integral.prepartition.card_filter_mem_Icc_le BoxIntegral.Prepartition.card_filter_mem_Icc_le
 
 /-- Given a prepartition `π : BoxIntegral.Prepartition I`, `π.iUnion` is the part of `I` covered by

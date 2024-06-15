@@ -9,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Limits in concrete categories
@@ -73,7 +75,7 @@ variable {J : Type w} (f : J → C) [HasProduct f] {D : Type t} [Category.{r} D]
 lemma Pi.map_ext (x y : F.obj (∏ᶜ f : C))
     (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
   apply ConcreteCategory.injective_of_mono_of_preservesPullback (PreservesProduct.iso F f).hom
-  apply @Concrete.limit_ext.{w, r, t} D
+  apply @Concrete.limit_ext.{w, w, r, t} D
     _ _ (Discrete J) _ _ _ _ (piComparison F _ x) (piComparison F _ y)
   intro ⟨(j : J)⟩
   show ((forget D).map (piComparison F f) ≫ (forget D).map (limit.π _ _)) x =

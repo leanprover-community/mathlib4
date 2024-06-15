@@ -3,11 +3,11 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
+
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Data.Complex.Cardinality
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Data.Complex.Basic
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 #align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
@@ -129,7 +129,7 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-open Submodule FiniteDimensional
+open Submodule
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
@@ -163,28 +163,6 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
             Nat.succ_succ_ne_one, one_im, I_im, one_re, Finsupp.single_eq_same, Fin.zero_eq_one_iff]
 set_option linter.uppercaseLean3 false in
 #align complex.coe_basis_one_I Complex.coe_basisOneI
-
-instance : FiniteDimensional ℝ ℂ :=
-  of_fintype_basis basisOneI
-
-@[simp]
-theorem finrank_real_complex : FiniteDimensional.finrank ℝ ℂ = 2 := by
-  rw [finrank_eq_card_basis basisOneI, Fintype.card_fin]
-#align complex.finrank_real_complex Complex.finrank_real_complex
-
-@[simp]
-theorem rank_real_complex : Module.rank ℝ ℂ = 2 := by simp [← finrank_eq_rank, finrank_real_complex]
-#align complex.rank_real_complex Complex.rank_real_complex
-
-theorem rank_real_complex'.{u} : Cardinal.lift.{u} (Module.rank ℝ ℂ) = 2 := by
-  rw [← finrank_eq_rank, finrank_real_complex, Cardinal.lift_natCast, Nat.cast_ofNat]
-#align complex.rank_real_complex' Complex.rank_real_complex'
-
-/-- `Fact` version of the dimension of `ℂ` over `ℝ`, locally useful in the definition of the
-circle. -/
-theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
-  ⟨finrank_real_complex⟩
-#align complex.finrank_real_complex_fact Complex.finrank_real_complex_fact
 
 end Complex
 
@@ -237,23 +215,6 @@ instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ 
 
 -- check that the following instance is implied by the one above.
 example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
-
-instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
-    [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
-  FiniteDimensional.trans ℝ ℂ E
-#align finite_dimensional.complex_to_real FiniteDimensional.complexToReal
-
-theorem rank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
-    Module.rank ℝ E = 2 * Module.rank ℂ E :=
-  Cardinal.lift_inj.1 <| by
-    rw [← lift_rank_mul_lift_rank ℝ ℂ E, Complex.rank_real_complex']
-    simp only [Cardinal.lift_id']
-#align rank_real_of_complex rank_real_of_complex
-
-theorem finrank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
-    FiniteDimensional.finrank ℝ E = 2 * FiniteDimensional.finrank ℂ E := by
-  rw [← FiniteDimensional.finrank_mul_finrank ℝ ℂ E, Complex.finrank_real_complex]
-#align finrank_real_of_complex finrank_real_of_complex
 
 instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E] [Star E]
     [Module ℂ E] [StarModule ℂ E] : StarModule ℝ E :=
@@ -328,15 +289,6 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
     refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
-
-/-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
-def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
-  { equivRealProd with map_add' := by simp }
-#align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
-
-theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
-    Complex.equivRealProdAddHom.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
@@ -617,24 +569,3 @@ lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalRing A] [StarRing A]
       abel
 
 end RealImaginaryPart
-
-section Rational
-
-open Cardinal Module
-
-@[simp]
-lemma Real.rank_rat_real : Module.rank ℚ ℝ = continuum := by
-  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℝ ?_).trans mk_real
-  simpa [mk_real] using aleph0_lt_continuum
-
-@[simp]
-lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
-  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans mk_complex
-  simpa using aleph0_lt_continuum
-
-/-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,
-as additive groups. -/
-theorem Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
-  LinearEquiv.nonempty_equiv_iff_rank_eq.mpr <| by simp
-
-end Rational

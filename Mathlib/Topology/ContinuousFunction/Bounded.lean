@@ -1000,7 +1000,7 @@ theorem norm_normComp : ‖f.normComp‖ = ‖f‖ := by
 #align bounded_continuous_function.norm_norm_comp BoundedContinuousFunction.norm_normComp
 
 theorem bddAbove_range_norm_comp : BddAbove <| Set.range <| norm ∘ f :=
-  (Real.isBounded_iff_bddBelow_bddAbove.mp <| @isBounded_range _ _ _ _ f.normComp).2
+  (@isBounded_range _ _ _ _ f.normComp).bddAbove
 #align bounded_continuous_function.bdd_above_range_norm_comp BoundedContinuousFunction.bddAbove_range_norm_comp
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ := by

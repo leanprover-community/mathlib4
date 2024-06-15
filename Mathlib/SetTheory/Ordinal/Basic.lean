@@ -318,7 +318,15 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
 
 /-! ### The order on ordinals -/
 
+/--
+For `Ordinal`:
 
+* less-equal is defined such that well orders `r` and `s` satisfy `type r ≤ type s` if there exists
+  a function embedding `r` as an *initial* segment of `s`.
+
+* less-than is defined such that well orders `r` and `s` satisfy `type r < type s` if there exists
+  a function embedding `r` as a *principal* segment of `s`.
+-/
 instance partialOrder : PartialOrder Ordinal where
   le a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≼i s))
@@ -342,17 +350,6 @@ instance partialOrder : PartialOrder Ordinal where
   le_antisymm a b :=
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
-
--- Porting note: How can we add a doc to this?
--- /-- Ordinal less-equal is defined such that
---   well orders `r` and `s` satisfy `type r ≤ type s` if there exists
---   a function embedding `r` as an initial segment of `s`. -/
--- add_decl_doc Ordinal.partial_order.le
-
--- /-- Ordinal less-than is defined such that
---   well orders `r` and `s` satisfy `type r < type s` if there exists
---   a function embedding `r` as a principal segment of `s`. -/
--- add_decl_doc ordinal.partial_order.lt
 
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ≼i s) :=
