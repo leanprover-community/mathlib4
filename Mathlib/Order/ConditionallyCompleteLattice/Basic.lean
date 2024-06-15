@@ -980,6 +980,12 @@ lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
     Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
   Iic_ciInf (α := αᵒᵈ) hf
 
+lemma sup_eq_top_of_top_mem [OrderTop α] (h : ⊤ ∈ s) : sSup s = ⊤ :=
+  top_unique <| le_csSup (OrderTop.bddAbove s) h
+
+lemma inf_eq_bot_of_bot_mem [OrderBot α] (h : ⊥ ∈ s) : sInf s = ⊥ :=
+  bot_unique <| csInf_le (OrderBot.bddBelow s) h
+
 end ConditionallyCompleteLattice
 
 instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
