@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Join
-import Mathlib.Data.Set.Image
 
 #align_import data.list.of_fn from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 
@@ -72,14 +71,14 @@ theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i 
 #align list.nth_of_fn List.get?_ofFn
 
 set_option linter.deprecated false in
-@[deprecated get_ofFn] -- 2023-01-17
+@[deprecated get_ofFn (since := "2023-01-17")]
 theorem nthLe_ofFn {n} (f : Fin n → α) (i : Fin n) :
     nthLe (ofFn f) i ((length_ofFn f).symm ▸ i.2) = f i := by
   simp [nthLe]
 #align list.nth_le_of_fn List.nthLe_ofFn
 
 set_option linter.deprecated false in
-@[simp, deprecated get_ofFn] -- 2023-01-17
+@[simp, deprecated get_ofFn (since := "2023-01-17")]
 theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
     nthLe (ofFn f) i h = f ⟨i, length_ofFn f ▸ h⟩ :=
   nthLe_ofFn f ⟨i, length_ofFn f ▸ h⟩
@@ -169,10 +168,11 @@ theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
 theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
     List.ofFn f = List.join (List.ofFn fun i : Fin m => List.ofFn fun j : Fin n => f ⟨i * n + j,
     calc
-      ↑i * n + j < (i + 1) * n := (add_lt_add_left j.prop _).trans_eq (add_one_mul (_ : ℕ) _).symm
+      ↑i * n + j < (i + 1) * n :=
+        (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.add_mul, Nat.one_mul])
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
   induction' m with m IH
-  · simp [ofFn_zero, zero_mul, ofFn_zero, join]
+  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, join]
   · simp_rw [ofFn_succ', succ_mul, join_concat, ofFn_add, IH]
     rfl
 #align list.of_fn_mul List.ofFn_mul
@@ -181,9 +181,9 @@ theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
 theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
     List.ofFn f = List.join (List.ofFn fun i : Fin n => List.ofFn fun j : Fin m => f ⟨m * i + j,
     calc
-      m * i + j < m * (i + 1) := (add_lt_add_left j.prop _).trans_eq (mul_add_one (_ : ℕ) _).symm
-      _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by
-  simp_rw [mul_comm m n, mul_comm m, ofFn_mul, Fin.cast_mk]
+      m * i + j < m * (i + 1) :=
+        (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.mul_add, Nat.mul_one])
+      _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by simp_rw [m.mul_comm, ofFn_mul, Fin.cast_mk]
 #align list.of_fn_mul' List.ofFn_mul'
 
 @[simp]
@@ -199,7 +199,7 @@ theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| 
   rw [← Function.comp_def, ← map_ofFn, ofFn_get]
 
 set_option linter.deprecated false in
-@[deprecated ofFn_get] -- 2023-01-17
+@[deprecated ofFn_get (since := "2023-01-17")]
 theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
   ofFn_get
 #align list.of_fn_nth_le List.ofFn_nthLe
@@ -225,7 +225,7 @@ theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replica
 @[simp]
 theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
     List.ofFn (Fin.repeat n a) = (List.replicate n (List.ofFn a)).join := by
-  simp_rw [ofFn_mul, ← ofFn_const, Fin.repeat, Fin.modNat, add_comm,
+  simp_rw [ofFn_mul, ← ofFn_const, Fin.repeat, Fin.modNat, Nat.add_comm,
     Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt (Fin.is_lt _)]
 #align list.of_fn_fin_repeat List.ofFn_fin_repeat
 

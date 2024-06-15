@@ -96,7 +96,7 @@ def boundariesIsoImage [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
 
 theorem boundaries_eq_bot [HasZeroObject V] {j} (h : ¬c.Rel (c.prev j) j) : C.boundaries j = ⊥ := by
   rw [eq_bot_iff]
-  refine' imageSubobject_le _ 0 _
+  refine imageSubobject_le _ 0 ?_
   rw [C.dTo_eq_zero h, zero_comp]
 #align homological_complex.boundaries_eq_bot HomologicalComplex.boundaries_eq_bot
 
@@ -208,7 +208,6 @@ abbrev cycles'Map (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles' i : V) ⟶ (C₂.
   Subobject.factorThru _ ((C₁.cycles' i).arrow ≫ f.f i) (kernelSubobject_factors _ _ (by simp))
 #align cycles_map cycles'Map
 
--- Porting note: Originally `@[simp, reassoc.1, elementwise]`
 @[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem cycles'Map_arrow (f : C₁ ⟶ C₂) (i : ι) :
     cycles'Map f i ≫ (C₂.cycles' i).arrow = (C₁.cycles' i).arrow ≫ f.f i := by simp
@@ -273,7 +272,6 @@ section
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V]
 variable {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
--- Porting note: Originally `@[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem boundariesToCycles'_naturality (i : ι) :
     boundariesMap f i ≫ C₂.boundariesToCycles' i =

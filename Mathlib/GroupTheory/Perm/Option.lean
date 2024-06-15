@@ -62,8 +62,8 @@ theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α
 `Option α` and permuting the remaining with a `Perm α`.
 The fixed `Option α` is swapped with `none`. -/
 @[simps]
-def Equiv.Perm.decomposeOption {α : Type*} [DecidableEq α] : Perm (Option α) ≃ Option α × Perm α
-    where
+def Equiv.Perm.decomposeOption {α : Type*} [DecidableEq α] :
+    Perm (Option α) ≃ Option α × Perm α where
   toFun σ := (σ none, removeNone σ)
   invFun i := swap none i.1 * i.2.optionCongr
   left_inv σ := by simp

@@ -57,7 +57,7 @@ lemma prod_fac₁ :
 `W₁.Localization × W₂.Localization ⥤ E` -/
 noncomputable def prodLift :
     W₁.Localization × W₂.Localization ⥤ E := by
-  refine' uncurry.obj (Construction.lift (prodLift₁ F hF).flip _).flip
+  refine uncurry.obj (Construction.lift (prodLift₁ F hF).flip ?_).flip
   intro _ _ f₂ hf₂
   haveI : ∀ (X₁ : W₁.Localization),
       IsIso (((Functor.flip (prodLift₁ F hF)).map f₂).app X₁) := fun X₁ => by

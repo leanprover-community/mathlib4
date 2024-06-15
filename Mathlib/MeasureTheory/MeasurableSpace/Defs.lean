@@ -122,7 +122,7 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
     exact m.measurableSet_iUnion _ fun _ => h _
 #align measurable_set.Union MeasurableSet.iUnion
 
-@[deprecated MeasurableSet.iUnion]
+@[deprecated MeasurableSet.iUnion (since := "2023-02-06")]
 theorem MeasurableSet.biUnion_decode₂ [Encodable β] ⦃f : β → Set α⦄ (h : ∀ b, MeasurableSet (f b))
     (n : ℕ) : MeasurableSet (⋃ b ∈ decode₂ β n, f b) :=
   .iUnion fun _ => .iUnion fun _ => h _
@@ -528,8 +528,8 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
 #align measurable_space.measurable_set_Sup MeasurableSpace.measurableSet_sSup
 
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
-    MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s :=
-  by simp only [iSup, measurableSet_sSup, exists_range_iff]
+    MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
+  simp only [iSup, measurableSet_sSup, exists_range_iff]
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_iSup
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :

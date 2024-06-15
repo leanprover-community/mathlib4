@@ -109,28 +109,28 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
       simpa only [ENNReal.one_le_coe_iff] using
         le_of_tendsto (hd' w (fun j => r₁ (f j)) hr <| eventually_of_forall hw') hη'
     exact (lt_self_iff_false _).mp (lt_of_lt_of_le hη hη')
-  refine' ⟨1 - C⁻¹, tsub_lt_self zero_lt_one (inv_pos.mpr hC), _⟩
+  refine ⟨1 - C⁻¹, tsub_lt_self zero_lt_one (inv_pos.mpr hC), ?_⟩
   replace hC : C ≠ 0 := ne_of_gt hC
   let b : ℕ → Set α := fun j => closedBall (w j) (M * r₁ (f j))
   let B : ℕ → Set α := fun j => closedBall (w j) (r₁ (f j))
   have h₁ : ∀ j, b j ⊆ B j := fun j =>
     closedBall_subset_closedBall (mul_le_of_le_one_left (hrp (f j)) hM'.le)
-  have h₂ : ∀ j, W ∩ B j ⊆ B j := fun j => inter_subset_right W (B j)
+  have h₂ : ∀ j, W ∩ B j ⊆ B j := fun j => inter_subset_right
   have h₃ : ∀ᶠ j in atTop, Disjoint (b j) (W ∩ B j) := by
     apply hMr.mp
     rw [eventually_atTop]
-    refine'
-      ⟨i, fun j hj hj' => Disjoint.inf_right (B j) <| Disjoint.inf_right' (blimsup Y₁ atTop p) _⟩
+    refine
+      ⟨i, fun j hj hj' => Disjoint.inf_right (B j) <| Disjoint.inf_right' (blimsup Y₁ atTop p) ?_⟩
     change Disjoint (b j) (Z i)ᶜ
     rw [disjoint_compl_right_iff_subset]
-    refine' (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
-      ((cthickening_mono hj' _).trans fun a ha => _)
+    refine (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
+      ((cthickening_mono hj' _).trans fun a ha => ?_)
     simp only [Z, mem_iUnion, exists_prop]
     exact ⟨f j, ⟨hf₁ j, hj.le.trans (hf₂ j)⟩, ha⟩
   have h₄ : ∀ᶠ j in atTop, μ (B j) ≤ C * μ (b j) :=
     (hr.eventually (IsUnifLocDoublingMeasure.eventually_measure_le_scaling_constant_mul'
       μ M hM)).mono fun j hj => hj (w j)
-  refine' (h₃.and h₄).mono fun j hj₀ => _
+  refine (h₃.and h₄).mono fun j hj₀ => ?_
   change μ (W ∩ B j) / μ (B j) ≤ ↑(1 - C⁻¹)
   rcases eq_or_ne (μ (B j)) ∞ with (hB | hB); · simp [hB]
   apply ENNReal.div_le_of_le_mul
@@ -143,7 +143,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     rw [ENNReal.coe_inv hC, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_le_of_le_mul' hj₂
   have hj₃ : ↑C⁻¹ * μ (B j) + μ (W ∩ B j) ≤ μ (B j) := by
-    refine' le_trans (add_le_add_right hj₂ _) _
+    refine le_trans (add_le_add_right hj₂ _) ?_
     rw [← measure_union' hj₁ measurableSet_closedBall]
     exact measure_mono (union_subset (h₁ j) (h₂ j))
   replace hj₃ := tsub_le_tsub_right hj₃ (↑C⁻¹ * μ (B j))
@@ -170,7 +170,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
   rcases le_or_lt 1 M with hM' | hM'
   · apply HasSubset.Subset.eventuallyLE
     change _ ≤ _
-    refine' mono_blimsup' (hMr.mono fun i hi _ => cthickening_mono _ (s i))
+    refine mono_blimsup' (hMr.mono fun i hi _ => cthickening_mono ?_ (s i))
     exact (le_mul_of_one_le_left (hRp i) hM').trans hi
   · simp only [← @cthickening_closure _ _ _ (s _)]
     have hs : ∀ i, IsClosed (closure (s i)) := fun i => isClosed_closure
@@ -200,15 +200,15 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     clear p hr r; intro p r hr
     have hr' : Tendsto (fun i => M * r i) atTop (𝓝[>] 0) := by
       convert TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [mul_zero]
-    refine' eventuallyLE_antisymm_iff.mpr ⟨_, _⟩
+    refine eventuallyLE_antisymm_iff.mpr ⟨?_, ?_⟩
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p (inv_pos.mpr hM) hr'
         (eventually_of_forall fun i => by rw [inv_mul_cancel_left₀ hM.ne' (r i)])
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p hM hr
         (eventually_of_forall fun i => le_refl _)
   let r' : ℕ → ℝ := fun i => if 0 < r i then r i else 1 / ((i : ℝ) + 1)
   have hr' : Tendsto r' atTop (𝓝[>] 0) := by
-    refine' tendsto_nhdsWithin_iff.mpr
-      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, eventually_of_forall fun i => _⟩
+    refine tendsto_nhdsWithin_iff.mpr
+      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, eventually_of_forall fun i => ?_⟩
     by_cases hi : 0 < r i
     · simp [r', hi]
     · simp only [r', hi, one_div, mem_Ioi, if_false, inv_pos]; positivity
@@ -233,12 +233,12 @@ theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
     (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
-  refine' eventuallyLE_antisymm_iff.mpr ⟨_, HasSubset.Subset.eventuallyLE (_ : _ ≤ _)⟩
+  refine eventuallyLE_antisymm_iff.mpr ⟨?_, HasSubset.Subset.eventuallyLE (?_ : _ ≤ _)⟩
   · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (@one_half_pos ℝ _) r hr).symm
       EventuallyEq.rfl]
     apply HasSubset.Subset.eventuallyLE
     change _ ≤ _
-    refine' mono_blimsup' (hr'.mono fun i hi pi => cthickening_subset_thickening' (hi pi) _ (s i))
+    refine mono_blimsup' (hr'.mono fun i hi pi => cthickening_subset_thickening' (hi pi) ?_ (s i))
     nlinarith [hi pi]
   · exact mono_blimsup fun i _ => thickening_subset_cthickening _ _
 #align blimsup_cthickening_ae_eq_blimsup_thickening blimsup_cthickening_ae_eq_blimsup_thickening
@@ -275,7 +275,7 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
   let q : ℕ → Prop := fun i => p i ∧ 0 < r i
   have h₁ : blimsup (fun i => thickening (r i) (s i)) atTop p =
       blimsup (fun i => thickening (r i) (s i)) atTop q := by
-    refine' blimsup_congr' (eventually_of_forall fun i h => _)
+    refine blimsup_congr' (eventually_of_forall fun i h => ?_)
     replace hi : 0 < r i := by contrapose! h; apply thickening_of_nonpos h
     simp only [q, hi, iff_self_and, imp_true_iff]
   have h₂ : blimsup (fun i => thickening (M * r i) (s i)) atTop p =
