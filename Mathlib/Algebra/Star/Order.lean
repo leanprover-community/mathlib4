@@ -235,8 +235,7 @@ lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   (isSelfAdjoint_zero R).mono hx
 
 theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x * x := by
-  rw [lt_iff_le_and_ne]
-  refine ⟨star_mul_self_nonneg _, ?_⟩
+  rw [(star_mul_self_nonneg _).lt_iff_ne]
   intro h
   rw [← mul_zero (star x), hx.star.left.eq_iff] at h
   exact hx.ne_zero h.symm
