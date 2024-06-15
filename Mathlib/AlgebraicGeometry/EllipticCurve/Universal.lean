@@ -96,7 +96,6 @@ def pointedCurve : EllipticCurve Universal.Field where
     simpa only [map_Δ, map_ne_zero_iff _ algebraMap_field_injective] using Δ_curve_ne_zero
   coe_Δ' := rfl
 
-
 open Polynomial in
 lemma equation_point : pointedCurve.toAffine.Equation (polyToField (C X)) (polyToField Y) := by
   simp_rw [Affine.Equation, pointedCurve, baseChange, EllipticCurve.toAffine,
