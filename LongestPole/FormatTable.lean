@@ -20,6 +20,7 @@ inductive Alignment where
   | center
 deriving Inhabited, BEq
 
+/-- Align a `String` `s` to the left, right, or center within a field of width `width`. -/
 def Alignment.align (a : Alignment) (s : String) (width : Nat) : String :=
   match a with
   | Alignment.left => s.rightpad width
@@ -29,7 +30,7 @@ def Alignment.align (a : Alignment) (s : String) (width : Nat) : String :=
     String.replicate pad ' ' ++ s ++ String.replicate (width - s.length - pad) ' '
 
 /--
-Takes a two-dimensional array of `String`s` into a markdown-compliant table.
+Render a two-dimensional array of `String`s` into a markdown-compliant table.
 `headers` is a list of column headers,
 `table` is a 2D array of cell contents,
 `alignments` describes how to align each table column (default: left-aligned) -/
