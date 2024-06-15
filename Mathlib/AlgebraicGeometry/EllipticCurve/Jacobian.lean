@@ -568,9 +568,7 @@ lemma dblU_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) : W'.dblU P = -3 * P x
 lemma dblU_ne_zero_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W.negY Q * P z ^ 3) : W.dblU P ≠ 0 := by
-  rw [nonsingular_of_Z_ne_zero hPz, Affine.Nonsingular, ← equation_of_Z_ne_zero hPz,
-    ← eval_polynomialX_of_Z_ne_zero hPz, div_ne_zero_iff, and_iff_left <| pow_ne_zero 4 hPz,
-    ← eval_polynomialY_of_Z_ne_zero hPz, div_ne_zero_iff, and_iff_left <| pow_ne_zero 3 hPz,
+  rw [nonsingular_iff_of_Z_ne_zero hPz,
     show eval P W.polynomialY = P y - W.negY P by rw [negY, eval_polynomialY]; ring1,
     Y_eq_negY_of_Y_eq hQz hx hy hy', sub_self, ne_self_iff_false, or_false] at hP
   exact hP.right
