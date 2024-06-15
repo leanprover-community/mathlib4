@@ -3,17 +3,33 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
 
 /-!
-# `linarith` certificate search a LP problem
+# `linarith` certificate search as an LP problem
 
-`linarith` certificate search can easily be reduced to this LP problem: given the matrix `A` and the
-list `strictIndexes`, find the non-negative vector `v` such that some of its coordinates from
+`linarith` certificate search can easily be reduced to the following problem:
+given the matrix `A` and the list `strictIndexes`,
+find the nonnegative vector `v` such that some of its coordinates from
 the `strictIndexes` are positive and `A v = 0`.
 
 The function `findPositiveVector` solves this problem.
+
+# Algorithm sketch
+
+1. We translate the problem stated above to some Linear Programmin problem. See `stateLP` for
+  details. Let us denote the corresponding matrix `B`.
+
+2. We solve the equation `B x = 0` using Gauss Elimination, splitting the set of variables into
+  *free* variables, which can take any value,
+  and *basic* variables which are linearly expressed through the free one.
+  This gives us an initial tableau for the Simplex Algorithm.
+  See `Linarith.SimplexAlgorithm.Gauss.getTableau`.
+
+3. We run the Simplex Algorithm until it finds a solution.
+  See the file `SimplexAlgorithm.lean`.
+
 -/
 
 namespace Linarith.SimplexAlgorithm
@@ -22,11 +38,11 @@ variable {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
 /--
 Given matrix `A` and list `strictIndexes` of strict inequalities' indexes, we want to state the
-Linear Programming problem which solution produces solution for the initial problem (see
+Linear Programming problem which solution would give us a solution for the initial problem (see
 `findPositiveVector`).
 
 As an objective function (that we are trying to maximize) we use sum of coordinates from
-`strictIndexes`: it suffices to find the non-negative vector that makes this function positive.
+`strictIndexes`: it suffices to find the nonnegative vector that makes this function positive.
 
 We introduce two auxiliary variables and one constraint:
 * The variable `y` is interpreted as "homogenized" `1`. We need it because dealing with a
@@ -39,7 +55,7 @@ The objective function also interpreted as an auxiliary variable with constraint
 The variable `f` has to always be basic while `y` has to be free. Our Gauss method implementation
 greedy collects basic variables moving from left to right. So we place `f` before `x`-s and `y`
 after them. We place `z` between `f` and `x` because in this case `z` will be basic and
-`Gauss.getTableau` produce tableau with non-negative last column, meaning that we are starting from
+`Gauss.getTableau` produce tableau with nonnegative last column, meaning that we are starting from
 a feasible point.
 -/
 def stateLP {n m : Nat} (A : matType n m) (strictIndexes : List Nat) : matType (n + 2) (m + 3) :=
