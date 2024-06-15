@@ -292,11 +292,11 @@ the measurable spaces are indexed by a countable type. This implies the $\sigma$
 `kolContent` (see `sigma_additive_addContent_of_tendsto_zero`),
 which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
 theorem secondLemma
-    (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X)
+    (φ : ℕ ≃ ι) {A : ℕ → Set ((i : ι) → X i)} (A_mem : ∀ n, A n ∈ cylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
   have : ∀ i, Nonempty (X i) := by
-    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
     infer_instance
   set μ_proj := isProjectiveMeasureFamily_pi μ
   let μ_proj' := isProjectiveMeasureFamily_pi (fun k : ℕ ↦ μ (φ k))
@@ -406,7 +406,6 @@ which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
 theorem thirdLemma (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
-  classical
   have : ∀ i, Nonempty (X i) := by
     have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
     infer_instance
@@ -429,8 +428,8 @@ theorem thirdLemma (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ 
   let aux : (n : ℕ) → (s n ≃ t n) := fun n ↦
     { toFun := fun i ↦ ⟨⟨i.1, su n i.2⟩, st n i i.2⟩
       invFun := fun i ↦ ⟨i.1.1, ts n i i.2⟩
-      left_inv := by simp [Function.LeftInverse]
-      right_inv := by simp [Function.RightInverse, Function.LeftInverse] }
+      left_inv := fun i ↦ by simp
+      right_inv := fun i ↦ by simp }
   have h n (i : s n) : X (aux n i) = X i.1 := rfl
   have imp n (x : (i : s n) → Set (X i)) : Set.univ.pi (fun i : t n ↦ x ((aux n).invFun i)) =
       (fun x i ↦ cast (h n i) (x (aux n i))) ⁻¹' Set.univ.pi x := by
@@ -451,6 +450,7 @@ theorem thirdLemma (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ 
   have mT n : MeasurableSet (T n) := by
     apply (mS n).preimage (meas n)
   let B : ℕ → Set (∀ i : u, X i) := fun n ↦ cylinder (t n) (T n)
+  classical
   have B_eq n : B n = (fun x : (i : u) → X i ↦ fun i ↦ if hi : i ∈ u
       then x ⟨i, hi⟩ else Classical.ofNonempty) ⁻¹' (A n) := by
     ext x
@@ -499,7 +499,7 @@ theorem thirdLemma (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ 
   · -- If `u` is infinite, then we have an equivalence with `ℕ` so we can apply `secondLemma`.
     have count_u : Countable u := Set.countable_iUnion (fun n ↦ (s n).countable_toSet)
     obtain ⟨φ, -⟩ := Classical.exists_true_of_nonempty (α := ℕ ≃ u) nonempty_equiv_of_countable
-    refine secondLemma (fun i : u ↦ μ i) φ B (fun n ↦ ?_) B_anti B_inter
+    refine secondLemma (fun i : u ↦ μ i) φ (fun n ↦ ?_) B_anti B_inter
     simp only [mem_cylinders, exists_prop]
     exact ⟨t n, T n, mT n, rfl⟩
 
@@ -558,7 +558,6 @@ instance : IsProbabilityMeasure (measure_produit μ) := by
 theorem measure_boxes {s : Finset ι} {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
     measure_produit μ (Set.pi s t) = ∏ i ∈ s, (μ i) (t i) := by
-  classical
   have : Set.pi s t = cylinder s ((@Set.univ s).pi (fun i : s ↦ t i)) := by
     ext x
     simp
@@ -570,16 +569,14 @@ theorem measure_boxes {s : Finset ι} {t : (i : ι) → Set (X i)}
 
 theorem measure_cylinder {s : Finset ι} {S : Set ((i : s) → X i)} (mS : MeasurableSet S) :
     measure_produit μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S := by
-  rw [cylinder, ← Measure.map_apply _ mS, isProjectiveLimit_measure_produit μ]
-  exact measurable_proj _
+  rw [cylinder, ← Measure.map_apply (measurable_proj' _) mS, isProjectiveLimit_measure_produit μ]
 
 theorem integral_dep_measure_prod {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Finset ι} {f : ((i : s) → X i) → E} (hf : StronglyMeasurable f) :
     ∫ y, f ((fun x (i : s) ↦ x i) y) ∂measure_produit μ =
     ∫ y, f y ∂Measure.pi (fun i : s ↦ μ i) := by
-  rw [← integral_map, isProjectiveLimit_measure_produit μ]
-  · exact (measurable_proj _).aemeasurable
-  · exact hf.aestronglyMeasurable
+  rw [← integral_map (measurable_proj' _).aemeasurable hf.aestronglyMeasurable,
+    isProjectiveLimit_measure_produit μ]
 
 theorem integral_dependsOn [DecidableEq ι] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Finset ι} {f : ((i : ι) → X i) → E} (mf : StronglyMeasurable f) (hf : DependsOn f s)
@@ -592,23 +589,20 @@ theorem integral_dependsOn [DecidableEq ι] {E : Type*} [NormedAddCommGroup E] [
     intro i hi
     simp only [Function.updateFinset, dite_eq_ite, ite_eq_left_iff]
     exact fun h ↦ (h hi).elim
-  rw [← integral_congr_ae <| eventually_of_forall this]
-  rw [integral_dep_measure_prod]
-  · exact mf.comp_measurable measurable_updateFinset
+  rw [← integral_congr_ae <| eventually_of_forall this, integral_dep_measure_prod]
+  exact mf.comp_measurable measurable_updateFinset
 
 theorem lintegral_dep {s : Finset ι} {f : ((i : s) → X i) → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ y, f ((fun x (i : s) ↦ x i) y) ∂measure_produit μ =
     ∫⁻ y, f y∂Measure.pi (fun i : s ↦ μ i) := by
-  rw [← lintegral_map hf, isProjectiveLimit_measure_produit μ]
-  exact (measurable_proj _)
+  rw [← lintegral_map hf (measurable_proj' _), isProjectiveLimit_measure_produit μ]
 
 theorem lintegral_dependsOn [DecidableEq ι]
     {f : ((i : ι) → X i) → ℝ≥0∞} (mf : Measurable f) {s : Finset ι} (hf : DependsOn f s)
     (x : (i : ι) → X i) : ∫⁻ y, f y ∂measure_produit μ = (∫⋯∫⁻_s, f ∂μ) x := by
   let g : ((i : s) → X i) → ℝ≥0∞ := fun y ↦ f (Function.updateFinset x _ y)
   have this y : g ((fun z (i : s) ↦ z i) y) = f y := by
-    apply hf
-    intro i hi
+    refine hf fun i hi ↦ ?_
     simp only [Function.updateFinset, dite_eq_ite, ite_eq_left_iff]
     exact fun h ↦ (h hi).elim
   simp_rw [← this]
