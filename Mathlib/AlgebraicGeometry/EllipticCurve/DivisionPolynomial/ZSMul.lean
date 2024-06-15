@@ -19,32 +19,39 @@ It is easy to deduce the formula for `(-n) • P` from the formula for `n • P`
 even-odd induction on `n`. If `n = 2 * m`, we use the doubling formula to write `n • P`
 as `Jacobian.dblXYZ (m • P)`, while if `n = 2 * m + 1`, we use the addition formula to write it
 as `Jacobian.addXYZ (m • P) ((m + 1) • P)`. By induction hypothesis, `m • P` and `(m + 1) • P` are
-given by evaluation of division polynomials, so our task reduces to proving certain polynomial
-identities (`dblXYZ_smulEval` and `addXYZ_smulEval₁`), namely that the polynomials
-`dblXYZ` and `addXYZ`, when applied to `(φₘ, ωₘ, ψₘ)` and `(φₘ₊₁, ωₘ₊₁, ψₘ₊₁)`, yields
-`(φ₂ₘ, ω₂ₘ, ψ₂ₘ)` and `(φ₂ₘ₊₁, ω₂ₘ₊₁, ψ₂ₘ₊₁)`, modulo the Weierstrass polynomial.
-It is crucial that two formulas (`dblXYZ` for doubling, `addXYZ` for addition of two different
-points) suffice to cover all cases of the group law in Jacobian coordinates.
-Since `P = (x,y) ≠ O`, `m • P` is never equal to `(m + 1) • P`, so `addXYZ` always apply
-in the `2 * m + 1` case (it gives `(0,0,0)` when applied to two equal points),
+given by evaluation of division polynomials (`smulEval`), so our task reduces to proving
+`dblXYZ_smulEval` and `addXYZ_smulEval₁`.
+
+Since `dblXYZ`, `addXYZ` and the division polynomials are all compatible
+with ring homomorphisms (`map_dblXYZ`, `map_addXYZ` and `map_ψ` etc.), it further
+reduces to proving certain polynomial identites (`dblXYZ_smulRing` and `addXYZ_smulRing`)
+of universal division polynomials (`smulRing`), because there is a homomorphism
+`ringEval W (_ : Affine.Equation W x y)` from `Universal.Ring` that specialize the universal
+division polynomials to their evaluations at `(x,y)` (see `ringEval_comp_smulRing`).
+
+The polynomial identities say that `dblXYZ` and `addXYZ`, when applied to the universal
+`(φₘ, ωₘ, ψₘ)` and `(φₘ₊₁, ωₘ₊₁, ψₘ₊₁)`, yields `(φ₂ₘ, ω₂ₘ, ψ₂ₘ)` and `(φ₂ₘ₊₁, ω₂ₘ₊₁, ψ₂ₘ₊₁)`,
+modulo the Weierstrass polynomial. It is crucial that two formulas (`dblXYZ` for doubling,
+`addXYZ` for addition of two different points) suffice to cover all cases of the group law
+in Jacobian coordinates. Since `P = (x,y) ≠ O`, `m • P` is never equal to `(m + 1) • P`, so
+`addXYZ` always apply in the `2 * m + 1` case (it gives `(0,0,0)` when applied to two equal points),
 and `dblXYZ` always applies in the `2 * m` case.
 
-Since `dblXYZ`, `addXYZ` and the division polynomials are all compatible with ring homomorphisms,
-it suffices to prove the universal division polynomials satisfy these identities
-(`dblXYZ_smulRing` and `addXYZ_smulRing`). Since the ring homomorphism from the universal ring
-to the universal field is injective, it suffices to prove these identities in the universal field
+Since the ring homomorphism from the universal ring to the universal field
+is injective, it suffices to prove these identities in the universal field
 (`dblXYZ_smulField` and `addXYZ_smulField`), which amounts to the universal case of the identities
 `dblXYZ (φₘ, ωₘ, ψₘ) = (φ₂ₘ, ω₂ₘ, ψ₂ₘ)` and
 `addXYZ (φₘ, ωₘ, ψₘ) (φₘ₊₁, ωₘ₊₁, ψₘ₊₁) = (φ₂ₘ₊₁, ω₂ₘ₊₁, ψ₂ₘ₊₁)`, with `P = (X,Y)` the
 universal point on the universal curve. It is easy to show the Z-coordinates are equal
 even in the polynomial ring (`dblZ_smulPoly` and `addZ_smulPoly`), without passing to the quotient.
 
-Since `ψₙ` is nonzero when `n` is, to show that the other coordinates are also equal, it suffices
-to show the two sides, when interpreted as Jacobian coordinates, represent the same point on the
-universal curve, according to `Jacobian.equiv_iff_eq_of_Z_eq`. If we can show the universal
-case of the multiplication formula `n • P = ⟦(φₘ, ωₙ, ψₙ)⟧` with `P = (X,Y) = ⟦(X, Y, 1)⟧`
-(`Universal.Jacobian.zsmul_point_eq_smulField`), then the two desired identities become
-`dblXYZ (m • P) = (2 * m) • P` and `addXYZ (m • P) ((m + 1) • P) = (2 * m + 1) • P`,
+Since the universal `ψₙ` is nonzero when `n` is, to show that the other coordinates
+are also equal, it suffices to show the two sides, when interpreted as Jacobian coordinates,
+represent the same point on the universal curve, according to `Jacobian.equiv_iff_eq_of_Z_eq`.
+If we can show the universal case of the multiplication formula `n • P = ⟦(φₘ, ωₙ, ψₙ)⟧` with
+`P = (X,Y) = ⟦(X, Y, 1)⟧` (`Universal.Jacobian.zsmul_point_eq_smulField`), then the two desired
+identities become `dblXYZ (m • P) = (2 * m) • P` and
+`addXYZ (m • P) ((m + 1) • P) = (2 * m + 1) • P`,
 which are true by the validity of the doubling and addition formulas.
 
 Equivalently, we aim to prove the formula in affine coordinates: `n • (X,Y) = (φₘ/ψₙ², ωₙ/ψₙ³)`
