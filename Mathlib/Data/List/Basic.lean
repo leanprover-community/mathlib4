@@ -681,7 +681,7 @@ lemma getLast_filter {p : α → Bool} :
     obtain ha | ha := Bool.eq_false_or_eq_true (p a)
     · simp only [ha, ite_true]
       rw [getLast_cons, getLast_filter (b :: as) _ h']
-      exact ne_nil_of_mem $ mem_filter.2 ⟨getLast_mem _, h'⟩
+      exact ne_nil_of_mem <| mem_filter.2 ⟨getLast_mem _, h'⟩
     · simp only [ha, cond_false] at h ⊢
       exact getLast_filter (b :: as) h h'
 
