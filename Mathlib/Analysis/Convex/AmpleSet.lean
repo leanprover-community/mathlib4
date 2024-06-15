@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Floris van Doorn
 -/
 import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 
 /-!
@@ -16,13 +17,12 @@ differential relations.
 ## Main results
 - `ampleSet_empty` and `ampleSet_univ`: the empty set and `univ` are ample
 - `AmpleSet.union`: the union of two ample sets is ample
-- `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences
+- `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences;
+  `AmpleSet.{pre}image_iff` are "iff" versions of these
 - `AmpleSet.vadd`: in particular, ample-ness is invariant under affine translations
-
-## TODO
-`AmpleSet.of_one_lt_codim`: a linear subspace of codimension at least two has an ample complement.
-This is the crucial geometric ingredient which allows to apply convex integration
-to the theory of immersions in positive codimension.
+- `AmpleSet.of_one_lt_codim`: a linear subspace of codimension at least two has an ample complement.
+  This is the crucial geometric ingredient which allows to apply convex integration
+  to the theory of immersions in positive codimension.
 
 ## Implementation notes
 
@@ -59,8 +59,10 @@ theorem ampleSet_univ {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] :
 @[simp]
 theorem ampleSet_empty : AmpleSet (∅ : Set F) := fun _ ↦ False.elim
 
+namespace AmpleSet
+
 /-- The union of two ample sets is ample. -/
-theorem AmpleSet.union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : AmpleSet (s ∪ t) := by
+theorem union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : AmpleSet (s ∪ t) := by
   intro x hx
   rcases hx with (h | h) <;>
   -- The connected component of `x ∈ s` in `s ∪ t` contains the connected component of `x` in `s`,
@@ -74,7 +76,7 @@ theorem AmpleSet.union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : Ample
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
 
 /-- Images of ample sets under continuous affine equivalences are ample. -/
-theorem AmpleSet.image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
+theorem image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
     AmpleSet (L '' s) := forall_mem_image.mpr fun x hx ↦
   calc (convexHull ℝ) (connectedComponentIn (L '' s) (L x))
     _ = (convexHull ℝ) (L '' (connectedComponentIn s x)) :=
@@ -84,16 +86,51 @@ theorem AmpleSet.image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
     _ = univ := by rw [h x hx, image_univ, L.surjective.range_eq]
 
 /-- A set is ample iff its image under a continuous affine equivalence is. -/
-theorem AmpleSet.image_iff {s : Set E} (L : E ≃ᵃL[ℝ] F) :
+theorem image_iff {s : Set E} (L : E ≃ᵃL[ℝ] F) :
     AmpleSet (L '' s) ↔ AmpleSet s :=
   ⟨fun h ↦ (L.symm_image_image s) ▸ h.image L.symm, fun h ↦ h.image L⟩
 
-/-- Preimages of ample sets under continuous affine equivalences are ample. -/
-theorem AmpleSet.preimage {s : Set F} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) : AmpleSet (L ⁻¹' s) := by
+/-- Pre-images of ample sets under continuous affine equivalences are ample. -/
+theorem preimage {s : Set F} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) : AmpleSet (L ⁻¹' s) := by
   rw [← L.image_symm_eq_preimage]
   exact h.image L.symm
 
 /-- A set is ample iff its pre-image under a continuous affine equivalence is. -/
-theorem AmpleSet.preimage_iff {s : Set F} (L : E ≃ᵃL[ℝ] F) :
+theorem preimage_iff {s : Set F} (L : E ≃ᵃL[ℝ] F) :
     AmpleSet (L ⁻¹' s) ↔ AmpleSet s :=
   ⟨fun h ↦ L.image_preimage s ▸ h.image L, fun h ↦ h.preimage L⟩
+
+open scoped Pointwise
+
+/-- Affine translations of ample sets are ample. -/
+theorem vadd [ContinuousAdd E] {s : Set E} (h : AmpleSet s) {y : E} :
+    AmpleSet (y +ᵥ s) :=
+  h.image (ContinuousAffineEquiv.constVAdd ℝ E y)
+
+/-- A set is ample iff its affine translation is. -/
+theorem vadd_iff [ContinuousAdd E] {s : Set E} {y : E} :
+    AmpleSet (y +ᵥ s) ↔ AmpleSet s :=
+  AmpleSet.image_iff (ContinuousAffineEquiv.constVAdd ℝ E y)
+
+/-! ## Subspaces of codimension at least two have ample complement -/
+section Codimension
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is ample. -/
+theorem of_one_lt_codim [TopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Submodule ℝ F}
+    (hcodim : 1 < Module.rank ℝ (F ⧸ E)) :
+    AmpleSet (Eᶜ : Set F) := fun x hx ↦ by
+  rw [E.connectedComponentIn_eq_self_of_one_lt_codim hcodim hx, eq_univ_iff_forall]
+  intro y
+  by_cases h : y ∈ E
+  · obtain ⟨z, hz⟩ : ∃ z, z ∉ E := by
+      rw [← not_forall, ← Submodule.eq_top_iff']
+      rintro rfl
+      simp [rank_zero_iff.2 inferInstance] at hcodim
+    refine segment_subset_convexHull ?_ ?_ (mem_segment_sub_add y z) <;>
+      simpa [sub_eq_add_neg, Submodule.add_mem_iff_right _ h]
+  · exact subset_convexHull ℝ (Eᶜ : Set F) h
+
+end Codimension
+
+end AmpleSet

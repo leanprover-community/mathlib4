@@ -58,25 +58,20 @@ theorem isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X 
    fun w => isIso_of_hom_simple w⟩
 #align category_theory.is_iso_iff_nonzero CategoryTheory.isIso_iff_nonzero
 
+open scoped Classical in
 /-- In any preadditive category with kernels,
-the endomorphisms of a simple object form a division ring.
--/
-noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) := by
-  classical exact
-    { (inferInstance : Ring (End X)) with
-      inv := fun f =>
-        if h : f = 0 then 0
-        else
-          haveI := isIso_of_hom_simple h
-          inv f
-      exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
-      inv_zero := dif_pos rfl
-      mul_inv_cancel := fun f h => by
-        dsimp
-        rw [dif_neg h]
-        haveI := isIso_of_hom_simple h
-        exact IsIso.inv_hom_id f
-      qsmul := qsmulRec _ }
+the endomorphisms of a simple object form a division ring. -/
+noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) where
+  inv f := if h : f = 0 then 0 else haveI := isIso_of_hom_simple h; inv f
+  exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
+  inv_zero := dif_pos rfl
+  mul_inv_cancel f hf := by
+    dsimp
+    rw [dif_neg hf]
+    haveI := isIso_of_hom_simple hf
+    exact IsIso.inv_hom_id f
+  nnqsmul := _
+  qsmul := _
 
 open FiniteDimensional
 
@@ -119,7 +114,7 @@ then `X ⟶ X` is 1-dimensional.
 theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X, IsIso f ↔ f ≠ 0)
     [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
   have id_nonzero := (isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
-  refine' finrank_eq_one (𝟙 X) id_nonzero _
+  refine finrank_eq_one (𝟙 X) id_nonzero ?_
   intro f
   have : Nontrivial (End X) := nontrivial_of_ne _ _ id_nonzero
   have : FiniteDimensional 𝕜 (End X) := I
@@ -173,7 +168,7 @@ theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X �
     exact zero_le_one
   · obtain ⟨f, nz⟩ := (nontrivial_iff_exists_ne 0).mp h
     haveI fi := (isIso_iff_nonzero f).mpr nz
-    refine' finrank_le_one f _
+    refine finrank_le_one f ?_
     intro g
     obtain ⟨c, w⟩ := endomorphism_simple_eq_smul_id 𝕜 (g ≫ inv f)
     exact ⟨c, by simpa using w =≫ f⟩
@@ -199,7 +194,7 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 0 ↔ IsEmpty (X ≅ Y) := by
   rw [← not_nonempty_iff, ← not_congr (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y)]
-  refine' ⟨fun h => by rw [h]; simp, fun h => _⟩
+  refine ⟨fun h => by rw [h]; simp, fun h => ?_⟩
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
   interval_cases finrank 𝕜 (X ⟶ Y)
   · rfl
@@ -211,8 +206,8 @@ open scoped Classical
 theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) = if Nonempty (X ≅ Y) then 1 else 0 := by
   split_ifs with h
-  exact (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y).2 h
-  exact (finrank_hom_simple_simple_eq_zero_iff 𝕜 X Y).2 (not_nonempty_iff.mp h)
+  · exact (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y).2 h
+  · exact (finrank_hom_simple_simple_eq_zero_iff 𝕜 X Y).2 (not_nonempty_iff.mp h)
 #align category_theory.finrank_hom_simple_simple CategoryTheory.finrank_hom_simple_simple
 
 end CategoryTheory

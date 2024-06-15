@@ -3,7 +3,7 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.UniformConvergence
+import Mathlib.Topology.Algebra.Module.UniformConvergence
 
 #align_import topology.algebra.module.strong_topology from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
@@ -308,8 +308,7 @@ Note that in non-normed space it is not always true that composition is continuo
 in both variables, so we have to fix one of them. -/
 @[simps]
 def precomp [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
-    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G
-    where
+    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G where
   toFun f := f.comp L
   map_add' f g := add_comp f g L
   map_smul' a f := smul_comp a f L
@@ -330,8 +329,7 @@ Note that in non-normed space it is not always true that composition is continuo
 in both variables, so we have to fix one of them. -/
 @[simps]
 def postcomp [TopologicalAddGroup F] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
-    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G
-    where
+    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
   toFun f := L.comp f
   map_add' := comp_add L
   map_smul' := comp_smulₛₗ L
@@ -443,6 +441,12 @@ the spaces of continuous linear maps. -/
 def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H) ≃L[𝕜] F →L[𝕜] G :=
   e₁.arrowCongrSL e₂
 #align continuous_linear_equiv.arrow_congr ContinuousLinearEquiv.arrowCongr
+
+@[simp] lemma arrowCongr_apply (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) (f : E →L[𝕜] H) (x : F) :
+    e₁.arrowCongr e₂ f x = e₂ (f (e₁.symm x)) := rfl
+
+@[simp] lemma arrowCongr_symm (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
+    (e₁.arrowCongr e₂).symm = e₁.symm.arrowCongr e₂.symm := rfl
 
 end Linear
 

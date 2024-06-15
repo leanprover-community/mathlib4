@@ -3,9 +3,9 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Polynomial modules in finite dimensions

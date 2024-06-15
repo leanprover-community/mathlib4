@@ -57,8 +57,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.of CategoryTheory.Cat.of
 
 /-- Bicategory structure on `Cat` -/
-instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u}
-    where
+instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   Hom C D := C ⥤ D
   id C := 𝟭 C
   comp F G := F ⋙ G
@@ -122,8 +121,7 @@ section
 attribute [local simp] eqToHom_map
 
 /-- Any isomorphism in `Cat` induces an equivalence of the underlying categories. -/
-def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D
-    where
+def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   functor := γ.hom
   inverse := γ.inv
   unitIso := eqToIso <| Eq.symm γ.hom_inv_id
@@ -162,9 +160,7 @@ instance : Functor.Faithful typeToCat.{u} where
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
-  preimage F := Discrete.as ∘ F.obj ∘ Discrete.mk
-  witness := by
-    intro X Y F
+  map_surjective F := ⟨Discrete.as ∘ F.obj ∘ Discrete.mk, by
     apply Functor.ext
     · intro x y f
       dsimp
@@ -172,6 +168,6 @@ instance : Functor.Full typeToCat.{u} where
       aesop_cat
     · rintro ⟨x⟩
       apply Discrete.ext
-      rfl
+      rfl⟩
 
 end CategoryTheory

@@ -148,9 +148,6 @@ theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
   · have : h.toWalk.length = 1 := Walk.length_cons _ _
     exact ge_antisymm (h.reachable.pos_dist_of_ne h.ne) (this ▸ dist_le _)
 
-lemma dist_bot : ∀ u v, (⊥ : SimpleGraph V).dist u v = 0 :=
-  fun u v => by by_cases h : u = v <;> simp [h]
-
 theorem Walk.isPath_of_length_eq_dist {u v : V} (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
   classical
@@ -171,5 +168,8 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
   obtain ⟨p, h⟩ := hconn.exists_walk_of_dist u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+
+lemma dist_bot : ∀ u v, (⊥ : SimpleGraph V).dist u v = 0 :=
+  fun u v => by by_cases h : u = v <;> simp [h]
 
 end SimpleGraph

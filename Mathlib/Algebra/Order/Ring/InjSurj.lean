@@ -22,8 +22,8 @@ variable [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [SMul ℕ β] [S
   [NatCast β] [IntCast β] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
 
 /-- Pullback an `OrderedSemiring` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def orderedSemiring [OrderedSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev orderedSemiring [OrderedSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : OrderedSemiring β where
@@ -37,8 +37,8 @@ protected def orderedSemiring [OrderedSemiring α] (zero : f 0 = 0) (one : f 1 =
 #align function.injective.ordered_semiring Function.Injective.orderedSemiring
 
 /-- Pullback an `OrderedCommSemiring` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def orderedCommSemiring [OrderedCommSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev orderedCommSemiring [OrderedCommSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : OrderedCommSemiring β where
@@ -47,8 +47,8 @@ protected def orderedCommSemiring [OrderedCommSemiring α] (zero : f 0 = 0) (one
 #align function.injective.ordered_comm_semiring Function.Injective.orderedCommSemiring
 
 /-- Pullback an `OrderedRing` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def orderedRing [OrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev orderedRing [OrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -61,8 +61,8 @@ protected def orderedRing [OrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
 #align function.injective.ordered_ring Function.Injective.orderedRing
 
 /-- Pullback an `OrderedCommRing` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def orderedCommRing [OrderedCommRing α]
+-- See note [reducible non-instances]
+protected abbrev orderedCommRing [OrderedCommRing α]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -73,8 +73,8 @@ protected def orderedCommRing [OrderedCommRing α]
 #align function.injective.ordered_comm_ring Function.Injective.orderedCommRing
 
 /-- Pullback a `StrictOrderedSemiring` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def strictOrderedSemiring [StrictOrderedSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev strictOrderedSemiring [StrictOrderedSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : StrictOrderedSemiring β where
@@ -89,8 +89,8 @@ protected def strictOrderedSemiring [StrictOrderedSemiring α] (zero : f 0 = 0) 
 #align function.injective.strict_ordered_semiring Function.Injective.strictOrderedSemiring
 
 /-- Pullback a `strictOrderedCommSemiring` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def strictOrderedCommSemiring [StrictOrderedCommSemiring α]
+-- See note [reducible non-instances]
+protected abbrev strictOrderedCommSemiring [StrictOrderedCommSemiring α]
     (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
@@ -100,8 +100,8 @@ protected def strictOrderedCommSemiring [StrictOrderedCommSemiring α]
 #align function.injective.strict_ordered_comm_semiring Function.Injective.strictOrderedCommSemiring
 
 /-- Pullback a `StrictOrderedRing` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def strictOrderedRing [StrictOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev strictOrderedRing [StrictOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
@@ -114,8 +114,8 @@ protected def strictOrderedRing [StrictOrderedRing α] (zero : f 0 = 0) (one : f
 #align function.injective.strict_ordered_ring Function.Injective.strictOrderedRing
 
 /-- Pullback a `StrictOrderedCommRing` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def strictOrderedCommRing [StrictOrderedCommRing α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev strictOrderedCommRing [StrictOrderedCommRing α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -127,8 +127,8 @@ protected def strictOrderedCommRing [StrictOrderedCommRing α] (zero : f 0 = 0) 
 #align function.injective.strict_ordered_comm_ring Function.Injective.strictOrderedCommRing
 
 /-- Pullback a `LinearOrderedSemiring` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def linearOrderedSemiring [LinearOrderedSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev linearOrderedSemiring [LinearOrderedSemiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
@@ -139,8 +139,8 @@ protected def linearOrderedSemiring [LinearOrderedSemiring α] (zero : f 0 = 0) 
 #align function.injective.linear_ordered_semiring Function.Injective.linearOrderedSemiring
 
 /-- Pullback a `LinearOrderedSemiring` under an injective map. -/
-@[reducible] -- -- See note [reducible non-instances]
-protected def linearOrderedCommSemiring [LinearOrderedCommSemiring α]
+-- -- See note [reducible non-instances]
+protected abbrev linearOrderedCommSemiring [LinearOrderedCommSemiring α]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
@@ -151,8 +151,8 @@ protected def linearOrderedCommSemiring [LinearOrderedCommSemiring α]
 #align function.injective.linear_ordered_comm_semiring Function.Injective.linearOrderedCommSemiring
 
 /-- Pullback a `LinearOrderedRing` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-def linearOrderedRing [LinearOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+abbrev linearOrderedRing [LinearOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
@@ -166,8 +166,8 @@ def linearOrderedRing [LinearOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
 #align function.injective.linear_ordered_ring Function.Injective.linearOrderedRing
 
 /-- Pullback a `LinearOrderedCommRing` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-protected def linearOrderedCommRing [LinearOrderedCommRing α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev linearOrderedCommRing [LinearOrderedCommRing α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)

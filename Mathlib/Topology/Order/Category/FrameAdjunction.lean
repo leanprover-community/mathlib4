@@ -48,8 +48,7 @@ variable (L : Type*) [CompleteLattice L]
 
 /-- The type of points of a complete lattice `L`, where a *point* of a complete lattice is,
 by definition, a frame homomorphism from `L` to `Prop`. -/
-@[reducible]
-def PT := FrameHom L Prop
+abbrev PT := FrameHom L Prop
 
 /-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of
 points of `L`. -/
@@ -76,6 +75,9 @@ instance instTopologicalSpace : TopologicalSpace (PT L) where
 lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff.rfl
 
 end PT
+
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 /-- The covariant functor `pt` from the category of locales to the category of
 topological spaces, which sends a locale `L` to the topological space `PT L` of homomorphisms
