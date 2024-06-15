@@ -112,15 +112,13 @@ def transferNatTrans : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R�
 #align category_theory.transfer_nat_trans CategoryTheory.transferNatTrans
 
 -- ER: A new construction with a new name.
+@[simps]
 def Mates :
     (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) where
-      toFun := fun α => whiskerLeft (R₁ ⋙ G) adj₂.unit ≫ whiskerRight (whiskerLeft R₁ α) R₂ ≫ whiskerRight adj₁.counit (H ⋙ R₂)
-      invFun := by
-        intro β
-        have η₁GL₂ := whiskerRight adj₁.unit (G ⋙ L₂)
-        have L₁βL₂ := whiskerRight (whiskerLeft L₁ β) L₂
-        have HR₂ε₂ := whiskerLeft (L₁ ⋙ H) adj₂.counit
-        exact η₁GL₂ ≫ L₁βL₂ ≫ HR₂ε₂
+      toFun := fun α ↦
+        whiskerLeft (R₁ ⋙ G) adj₂.unit ≫ whiskerRight (whiskerLeft R₁ α) R₂ ≫ whiskerRight adj₁.counit (H ⋙ R₂)
+      invFun := fun β ↦
+        whiskerRight adj₁.unit (G ⋙ L₂) ≫ whiskerRight (whiskerLeft L₁ β) L₂ ≫ whiskerLeft (L₁ ⋙ H) adj₂.counit
       left_inv := by
         intro α
         ext
@@ -149,7 +147,6 @@ theorem LeftMateEqualsTransferNatTrans.symm
     (Mates adj₁ adj₂).symm α = (transferNatTrans adj₁ adj₂).symm α := by
   ext; unfold Mates transferNatTrans; simp
 
--- ER: It's not clear to me what this theorem is for.
 theorem transferNatTrans_counit (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (Y : D) :
     L₂.map ((transferNatTrans adj₁ adj₂ f).app _) ≫ adj₂.counit.app _ =
       f.app _ ≫ H.map (adj₁.counit.app Y) := by
@@ -157,7 +154,6 @@ theorem transferNatTrans_counit (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (Y : D) :
   simp
 #align category_theory.transfer_nat_trans_counit CategoryTheory.transferNatTrans_counit
 
--- ER: It's not clear to me what this theorem is for.
 theorem unit_transferNatTrans (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (X : C) :
     G.map (adj₁.unit.app X) ≫ (transferNatTrans adj₁ adj₂ f).app _ =
       adj₂.unit.app _ ≫ R₂.map (f.app _) := by
@@ -203,7 +199,8 @@ theorem Mates_vcomp
      := by
   unfold LeftAdjointSquare.vcomp RightAdjointSquare.vcomp Mates
   ext b
-  simp?
+  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc, comp_app,
+  whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, whiskerRight_twice]
   slice_rhs 1 4 =>
     {
       rw [← assoc, ← assoc]
@@ -230,13 +227,13 @@ theorem Mates_vcomp
       rw [← R₃.map_comp, Functor.comp_map L₂ _, ← Functor.comp_map _ L₂, ← H₂.map_comp]
       rw [adj₂.counit.naturality]
     }
-  simp?
+  simp only [comp_obj, Functor.comp_map, map_comp, id_obj, Functor.id_map, assoc]
   slice_rhs 4 5 =>
     {
       rw [← R₃.map_comp, ← H₂.map_comp, ← Functor.comp_map _ L₂]
       rw [adj₂.counit.naturality]
     }
-  simp?
+  simp only [comp_obj, id_obj, Functor.id_map, map_comp, assoc]
   slice_rhs 3 4 =>
     {
       rw [← R₃.map_comp, ← H₂.map_comp]
@@ -279,7 +276,9 @@ theorem Mates_hcomp
       ((Mates adj₃ adj₄) β) := by
   unfold LeftAdjointSquare.hcomp RightAdjointSquare.hcomp Mates Adjunction.comp
   ext c
-  simp?
+  simp only [comp_obj, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc,
+    Equiv.coe_fn_mk, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, associator_inv_app,
+    Functor.comp_map, associator_hom_app, map_id, id_comp, whiskerRight_twice]
   slice_rhs 3 4 =>
     {
       rw [← R₂.map_comp]
