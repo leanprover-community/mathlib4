@@ -100,7 +100,7 @@ def max {lt} (self : BinaryHeap α lt) : Option α := self.1.get? 0
 
 /-- Auxiliary for `popMax`. -/
 def popMaxAux {lt} (self : BinaryHeap α lt) : {a' : BinaryHeap α lt // a'.size = self.size - 1} :=
-  match e: self.1.size with
+  match e : self.1.size with
   | 0 => ⟨self, by simp [size, e]⟩
   | n+1 =>
     have h0 := by rw [e]; apply Nat.succ_pos
@@ -124,11 +124,11 @@ def extractMax {lt} (self : BinaryHeap α lt) : Option α × BinaryHeap α lt :=
   (self.max, self.popMax)
 
 theorem size_pos_of_max {lt} {self : BinaryHeap α lt} (e : self.max = some x) : 0 < self.size :=
-  Decidable.of_not_not fun h: ¬ 0 < self.1.size ↦ by simp [BinaryHeap.max, Array.get?, h] at e
+  Decidable.of_not_not fun h : ¬ 0 < self.1.size ↦ by simp [BinaryHeap.max, Array.get?, h] at e
 
 /-- `O(log n)`. Equivalent to `extractMax (self.insert x)`, except that extraction cannot fail. -/
 def insertExtractMax {lt} (self : BinaryHeap α lt) (x : α) : α × BinaryHeap α lt :=
-  match e: self.max with
+  match e : self.max with
   | none => (x, self)
   | some m =>
     if lt x m then
@@ -138,7 +138,7 @@ def insertExtractMax {lt} (self : BinaryHeap α lt) (x : α) : α × BinaryHeap 
 
 /-- `O(log n)`. Equivalent to `(self.max, self.popMax.insert x)`. -/
 def replaceMax {lt} (self : BinaryHeap α lt) (x : α) : Option α × BinaryHeap α lt :=
-  match e: self.max with
+  match e : self.max with
   | none => (none, ⟨self.1.push x⟩)
   | some m =>
     let a := self.1.set ⟨0, size_pos_of_max e⟩ x
@@ -162,7 +162,7 @@ def Array.toBinaryHeap (lt : α → α → Bool) (a : Array α) : BinaryHeap α 
 @[specialize] def Array.heapSort (a : Array α) (lt : α → α → Bool) : Array α :=
   let gt y x := lt x y
   let rec loop (a : BinaryHeap α gt) (out : Array α) : Array α :=
-    match e: a.max with
+    match e : a.max with
     | none => out
     | some x =>
       have : a.popMax.size < a.size := by

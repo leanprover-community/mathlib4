@@ -130,7 +130,6 @@ For example, `set_option pp.all true in extract_goal` gives the `pp.all` form.
 syntax (name := extractGoal) "extract_goal" config (" using " ident)? : tactic
 
 elab_rules : tactic
-  | `(tactic| extract_goal $cfg:config $[using $name?]?) => do
     let name ← if let some name := name?
                 then pure name.getId
                 else mkAuxName ((← getCurrNamespace) ++ `extracted) 1
@@ -144,7 +143,6 @@ elab_rules : tactic
             pure g
           else
             g.cleanup
-        | `(config| $fvars:ident*) =>
           -- Note: `getFVarIds` does `withMainContext`
           g.cleanup (toPreserve := (← getFVarIds fvars)) (indirectProps := false)
         | _ => throwUnsupportedSyntax

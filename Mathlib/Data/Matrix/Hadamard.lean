@@ -115,7 +115,7 @@ variable (M : Matrix n n α)
 
 theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
   ext i j
-  by_cases h: i = j <;> simp [h]
+  by_cases h : i = j <;> simp [h]
 #align matrix.hadamard_one Matrix.hadamard_one
 
 theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i => M i i := by

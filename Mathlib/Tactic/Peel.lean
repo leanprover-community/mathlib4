@@ -223,7 +223,6 @@ def peelArgsIff (l : List Name) : TacticM Unit := withMainContext do
       peelArgsIff hs
 
 elab_rules : tactic
-  | `(tactic| peel $[$num?:num]? $e:term $[with $l?* $n?]?) => withMainContext do
     /- we use `elabTermForApply` instead of `elabTerm` so that terms passed to `peel` can contain
     quantifiers with implicit bound variables without causing errors or requiring `@`.  -/
     let e ← elabTermForApply e false
@@ -237,9 +236,6 @@ elab_rules : tactic
     else
       unless ← peelUnbounded e n? do
         throwPeelError (← inferType e) (← getMainTarget)
-  | `(tactic| peel $n:num) => peelArgsIff <| .replicate n.getNat `_
   | `(tactic| peel with $args*) => peelArgsIff (args.map getNameOfIdent').toList
 
 macro_rules
-  | `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]? using $u:term) =>
-    `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]?; exact $u)

@@ -120,6 +120,5 @@ produces three goals with hypotheses
    rather than `tail.tail.tail.head`? -/
 
 @[tactic finCases] elab_rules : tactic
-  | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext <| focus do
     for h in hyps do
       allGoals <| liftMetaTactic (finCasesAt · (← getFVarId h))

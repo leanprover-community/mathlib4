@@ -128,7 +128,7 @@ theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l)
   exact dropWhile_nthLe_zero_not _ _ _
 #align list.rdrop_while_last_not List.rdropWhile_last_not
 
-theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
+theorem rdropWhile_prefix : l.rdropWhile p <+ : l : = by
   rw [← reverse_suffix, rdropWhile, reverse_reverse]
   exact dropWhile_suffix _
 #align list.rdrop_while_prefix List.rdropWhile_prefix
@@ -211,7 +211,7 @@ theorem rtakeWhile_concat_neg (x : α) (h : ¬p x) : rtakeWhile p (l ++ [x]) = [
   rw [rtakeWhile_concat, if_neg h]
 #align list.rtake_while_concat_neg List.rtakeWhile_concat_neg
 
-theorem rtakeWhile_suffix : l.rtakeWhile p <:+ l := by
+theorem rtakeWhile_suffix : l.rtakeWhile p < : + l : = by
   rw [← reverse_prefix, rtakeWhile, reverse_reverse]
   exact takeWhile_prefix _
 #align list.rtake_while_suffix List.rtakeWhile_suffix
@@ -251,7 +251,7 @@ lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
 
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :
-    List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁:= by
+    List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁ := by
   rw [rdrop_eq_reverse_drop_reverse, ← length_reverse l₂,
       reverse_append, drop_left, reverse_reverse]
 
@@ -264,7 +264,7 @@ lemma rdrop_append_of_le_length {l₁ l₂ : List α} (k : ℕ) :
 
 @[simp]
 lemma rdrop_append_length_add {l₁ l₂ : List α} (k : ℕ) :
-    List.rdrop (l₁ ++ l₂) (length l₂ + k)  = List.rdrop l₁ k:= by
+    List.rdrop (l₁ ++ l₂) (length l₂ + k) = List.rdrop l₁ k := by
   rw [← rdrop_add, rdrop_append_length]
 
 end List

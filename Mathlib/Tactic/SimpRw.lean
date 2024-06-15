@@ -19,7 +19,6 @@ def withSimpRWRulesSeq (token : Syntax) (rwRulesSeqStx : Syntax)
   -- show initial state up to (incl.) `[`
   withTacticInfoContext (mkNullNode #[token, lbrak]) (pure ())
   let numRules := (rules.size + 1) / 2
-  for i in [:numRules] do
     let rule := rules[i * 2]!
     let sep  := rules.getD (i * 2 + 1) Syntax.missing
     -- show rule state up to (incl.) next `,`
@@ -65,8 +64,5 @@ elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
   evalTactic (← `(tactic| simp%$s $cfg' only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
-    | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
       else
-        `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))

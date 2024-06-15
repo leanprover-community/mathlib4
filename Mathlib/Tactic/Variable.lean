@@ -36,10 +36,6 @@ register_option variable?.checkRedundant : Bool :=
 
 /-- Get the type out of a bracketed binder. -/
 def bracketedBinderType : Syntax → Option Term
-  | `(bracketedBinderF|($_* $[: $ty?]? $(_annot?)?)) => ty?
-  | `(bracketedBinderF|{$_* $[: $ty?]?})             => ty?
-  | `(bracketedBinderF|⦃$_* $[: $ty?]?⦄)             => ty?
-  | `(bracketedBinderF|[$[$_ :]? $ty])               => some ty
   | _                                                => none
 
 /-- The `variable?` command has the same syntax as `variable`, but it will auto-insert
@@ -189,7 +185,6 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
         Term.withoutAutoBoundImplicit do
         let (binders, toOmit) := ← do
           match binder with
-          | `(bracketedBinderF|[$[$ident? :]? $ty]) =>
             -- Check if it's an alias
             let type ← instantiateMVars (← inferType bindersElab.back)
             if ← isVariableAlias type then

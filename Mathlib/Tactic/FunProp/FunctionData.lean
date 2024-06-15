@@ -189,7 +189,6 @@ def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option 
        fData.mainVar == fData.fn then
       return none
 
-    let gBody' := Mor.mkAppN fData.fn fData.args[:n-1]
     let gBody' := if let .some coe := yₙ.coe then coe.app gBody' else gBody'
     let g' ← mkLambdaFVars #[x] gBody'
     let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) (yₙ.expr)) default
@@ -273,7 +272,7 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
     withLocalDeclD `y (← inferType gx) fun y => do
 
       let ys ← mkProdSplitElem y gxs.size
-      let args' := (args.zip ys).foldl (init:=fData.args)
+      let args' := (args.zip ys).foldl (init := fData.args)
           (fun args' (i,y) => args'.set! i { expr := y, coe := args'[i]!.coe })
 
       let f ← mkLambdaFVars #[y] (Mor.mkAppN fData.fn args')

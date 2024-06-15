@@ -422,7 +422,6 @@ arithmetic by hand.
 partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := Id.run do
   let (e, pr) := reifyFmla ctx'
   let mut pr := pr
-  for i in [0:nvars] do
     let j := nvars-i-1
     let ty := mkApp2 (mkConst ``Iff) (mkApp (mkBVar j) (mkRawNatLit j)) (mkBVar nvars)
     pr := mkLambda `h default ty pr
@@ -434,7 +433,6 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
   | 0 => e
   | n+1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
-  for _ in [0:nvars] do
     e := mkForall `a default (mkSort levelZero) e
     pr := mkLambda `a default (mkSort levelZero) pr
   pure (e, pr)
@@ -517,7 +515,6 @@ def parseDimacs : Parsec (Nat × Array (Array Int)) := do
   let nvars ← parseNat <* ws
   let nclauses ← parseNat <* ws
   let mut clauses := Array.mkEmpty nclauses
-  for _ in [:nclauses] do
     clauses := clauses.push (← parseInts)
   pure (nvars, clauses)
 
@@ -601,7 +598,6 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 elab "lrat_proof " n:(ident <|> "example")
-    ppSpace cnf:term:max ppSpace lrat:term:max : command => do
   let name := (← getCurrNamespace) ++ if n.1.isIdent then n.1.getId else `_example
   Command.liftTermElabM do
     let cnf ← unsafe evalTerm String (mkConst ``String) cnf
@@ -655,7 +651,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 * You can use the `include_str` macro in place of the two strings
   to load CNF / LRAT files from disk.
 -/
-elab "from_lrat " cnf:term:max ppSpace lrat:term:max : term => do
+elab "from_lrat " cnf:term:max ppSpace lrat:term:max:term => do
   let cnf ← unsafe evalTerm String (mkConst ``String) cnf
   let lrat ← unsafe evalTerm String (mkConst ``String) lrat
   let name ← mkAuxName `lrat

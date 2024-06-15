@@ -35,7 +35,6 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
     let mut mat := s.mat
     let intersectCoef := mat[(exitIdx, enterIdx)]!
 
-    for i in [:s.basic.size] do
       if i == exitIdx then
         continue
       let coef := mat[(i, enterIdx)]! / intersectCoef
@@ -69,7 +68,6 @@ function, the one with the smallest index (in the initial indexing).
 def chooseEnteringVar : SimplexAlgorithmM matType Nat := do
   let mut enterIdxOpt : Option Nat := .none -- index of entering variable in the `free` array
   let mut minIdx := 0
-  for i in [:(← get).free.size - 1] do
     if (← get).mat[(0, i)]! > 0 &&
         (enterIdxOpt.isNone || (← get).free[i]! < minIdx) then
       enterIdxOpt := i
@@ -88,7 +86,6 @@ def chooseExitingVar (enterIdx : Nat) : SimplexAlgorithmM matType Nat := do
   let mut exitIdxOpt : Option Nat := .none -- index of entering variable in the `basic` array
   let mut minCoef := 0
   let mut minIdx := 0
-  for i in [1:(← get).basic.size] do
     if (← get).mat[(i, enterIdx)]! >= 0 then
       continue
     let lastIdx := (← get).free.size - 1

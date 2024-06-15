@@ -60,7 +60,7 @@ noncomputable section
 
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
 The embedding from `R` is called `C`. -/
-structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
+structure Polynomial (R : Type*) [Semiring R] where ofFinsupp : :
   toFinsupp : AddMonoidAlgebra R ℕ
 #align polynomial Polynomial
 #align polynomial.of_finsupp Polynomial.ofFinsupp

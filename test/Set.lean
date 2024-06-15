@@ -40,7 +40,7 @@ example : True := by
 
 -- simulate a slow to elaborate term
 open Qq in
-elab "test" : term => do
+elab "test":term => do
   sleepAtLeastHeartbeats (1000 * 1000)
   return q((1 : Nat))
 

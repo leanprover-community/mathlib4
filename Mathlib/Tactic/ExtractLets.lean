@@ -79,8 +79,6 @@ def evalExtractLets : Tactic := fun stx => do
   match stx with
   | `(tactic| extract_lets)                       => doExtract none none
   | `(tactic| extract_lets $hs*)                  => doExtract hs none
-  | `(tactic| extract_lets $loc:location)         => doExtract none loc
-  | `(tactic| extract_lets $hs* $loc:location)    => doExtract hs loc
   | _ => throwUnsupportedSyntax
 where
   @[nolint docBlame]

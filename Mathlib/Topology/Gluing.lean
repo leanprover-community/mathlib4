@@ -109,7 +109,7 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
   rw [coequalizer_isOpen_iff]
   dsimp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_r, GlueData.diagram_right,
     parallelPair_obj_one]
-  rw [colimit_isOpen_iff.{_,u}]  -- Porting note: changed `.{u}` to `.{_,u}`.  fun fact: the proof
+  rw [colimit_isOpen_iff.{_,u}] -- Porting note: changed `.{u}` to `.{_,u}`.  fun fact: the proof
                                  -- breaks down if this `rw` is merged with the `rw` above.
   constructor
   · intro h j; exact h ⟨j⟩
@@ -408,7 +408,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
-  t_id i := by ext; erw [h.t_id]; rfl  -- now `erw` after #13170
+  t_id i := by ext; erw [h.t_id]; rfl -- now `erw` after #13170
   t' := h.t'
   t_fac i j k := by
     delta MkCore.t'

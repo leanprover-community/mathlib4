@@ -400,7 +400,7 @@ def mk₄ {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂)
 /-- Constructor for `ComposableArrows C 5`. -/
 @[simp]
 def mk₅ {X₀ X₁ X₂ X₃ X₄ X₅ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃)
-    (i : X₃ ⟶ X₄) (j : X₄ ⟶ X₅):
+    (i : X₃ ⟶ X₄) (j : X₄ ⟶ X₅) :
     ComposableArrows C 5 :=
   (mk₄ g h i j).precomp f
 
@@ -536,7 +536,7 @@ def isoMkSucc {F G : ComposableArrows C (n + 1)} (α : F.obj' 0 ≅ G.obj' 0)
 
 lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     (h : F.δ₀ = G.δ₀) (w : F.map' 0 1 = eqToHom h₀ ≫ G.map' 0 1 ≫
-      eqToHom (Functor.congr_obj h.symm 0)): F = G := by
+      eqToHom (Functor.congr_obj h.symm 0)) : F = G : = by
   have : ∀ i, F.obj i = G.obj i := by
     intro ⟨i, hi⟩
     cases' i with i
@@ -606,7 +606,7 @@ lemma ext₂ {f g : ComposableArrows C 2}
   ext_succ h₀ (ext₁ h₁ h₂ w₁) w₀
 
 lemma mk₂_surjective (X : ComposableArrows C 2) :
-    ∃ (X₀ X₁ X₂ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂), X = mk₂ f₀ f₁:=
+    ∃ (X₀ X₁ X₂ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂), X = mk₂ f₀ f₁ :=
   ⟨_, _, _, X.map' 0 1, X.map' 1 2, ext₂ rfl rfl rfl (by simp) (by simp)⟩
 
 section

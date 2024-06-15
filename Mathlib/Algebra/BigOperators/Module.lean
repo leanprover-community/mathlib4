@@ -32,7 +32,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
       Nat.sub_add_cancel (pos_of_gt hmn), sub_add_cancel]
   rw [sum_eq_sum_Ico_succ_bot hmn]
   -- Porting note: the following used to be done with `conv`
-  have h₃: (Finset.sum (Ico (m + 1) n) fun i => f i • g i) =
+  have h₃ : (Finset.sum (Ico (m + 1) n) fun i => f i • g i) =
              (Finset.sum (Ico (m + 1) n) fun i =>
                 f i • ((Finset.sum (Finset.range (i + 1)) g) -
                         (Finset.sum (Finset.range i) g))) := by

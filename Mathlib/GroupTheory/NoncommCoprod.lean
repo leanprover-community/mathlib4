@@ -88,7 +88,7 @@ theorem noncommCoprod_unique (f : M × N →* P) :
   ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
 
 @[to_additive (attr := simp)]
-theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N]:
+theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N] :
     (inl M N).noncommCoprod (inr M N) commute_inl_inr = id (M × N) :=
   noncommCoprod_unique <| .id (M × N)
 

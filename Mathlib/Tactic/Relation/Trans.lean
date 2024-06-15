@@ -75,7 +75,6 @@ def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
 def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
   match f with
   | Expr.app rel x => do
-    let check: Bool ← do
       try
         let folded ← mkAppM' rel #[x, z]
         isDefEq folded tgt
@@ -91,7 +90,6 @@ def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
 def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
   match rel with
   | Expr.app rel' _ => do
-    let check: Bool ← do
       try
         let folded ← mkAppM' rel' #[x, z]
         isDefEq folded tgt

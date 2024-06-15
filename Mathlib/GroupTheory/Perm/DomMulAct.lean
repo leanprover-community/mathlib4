@@ -39,7 +39,7 @@ open Equiv MulAction
 namespace DomMulAct
 
 lemma mem_stabilizer_iff {g : (Perm α)ᵈᵐᵃ} :
-    g ∈ stabilizer (Perm α)ᵈᵐᵃ f ↔ f ∘ (mk.symm g :) = f := by
+    g ∈ stabilizer (Perm α)ᵈᵐᵃ f ↔ f ∘ (mk.symm g :) = f : = by
   simp only [MulAction.mem_stabilizer_iff]; rfl
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) f`
@@ -94,7 +94,7 @@ open Nat
 variable (f)
 
 /-- The cardinality of the type of permutations preserving a function -/
-theorem stabilizer_card:
+theorem stabilizer_card :
     Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
   rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk fun _ ↦ ?_),

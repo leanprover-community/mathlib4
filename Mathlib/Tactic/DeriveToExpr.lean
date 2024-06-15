@@ -47,7 +47,6 @@ def mkToExprBody (header : Header) (indVal : InductiveVal) (auxFunName : Name) :
     TermElabM Term := do
   let discrs ← mkDiscrs header indVal
   let alts ← mkAlts
-  `(match $[$discrs],* with $alts:matchAlt*)
 where
   /-- Create the `match` cases, one per constructor. -/
   mkAlts : TermElabM (Array (TSyntax ``matchAlt)) := do
@@ -57,7 +56,6 @@ where
       let alt ← forallTelescopeReducing ctorInfo.type fun xs _ => do
         let mut patterns := #[]
         -- add `_` pattern for indices
-        for _ in [:indVal.numIndices] do
           patterns := patterns.push (← `(_))
         let mut ctorArgs := #[]
         let mut rhsArgs : Array Term := #[]
@@ -69,19 +67,15 @@ where
           else
             `(toExpr $a)
         -- add `_` pattern for inductive parameters, which are inaccessible
-        for i in [:ctorInfo.numParams] do
           let a := mkIdent header.argNames[i]!
           ctorArgs := ctorArgs.push (← `(_))
           rhsArgs := rhsArgs.push <| ← mkArg xs[i]! a
-        for i in [:ctorInfo.numFields] do
           let a := mkIdent (← mkFreshUserName `a)
           ctorArgs := ctorArgs.push a
           rhsArgs := rhsArgs.push <| ← mkArg xs[ctorInfo.numParams + i]! a
-        patterns := patterns.push (← `(@$(mkIdent ctorName):ident $ctorArgs:term*))
         let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel.{$(mkIdent u)}))
         let rhs : Term ←
           mkAppNTerm (← `(Expr.const $(quote ctorInfo.name) [$levels,*])) rhsArgs
-        `(matchAltExpr| | $[$patterns:term],* => $rhs)
       alts := alts.push alt
     return alts
 
@@ -91,7 +85,6 @@ def mkToTypeExpr (argNames : Array Name) (indVal : InductiveVal) : TermElabM Ter
   let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel.{$(mkIdent u)}))
   forallTelescopeReducing indVal.type fun xs _ => do
     let mut args : Array Term := #[]
-    for i in [:xs.size] do
       let x := xs[i]!
       let a := mkIdent argNames[i]!
       if ← Meta.isType x then
@@ -113,18 +106,14 @@ are very simple, so duplicating them seemed to be OK.) -/
 def mkLocalInstanceLetDecls (ctx : Deriving.Context) (argNames : Array Name) :
     TermElabM (Array (TSyntax ``Parser.Term.letDecl)) := do
   let mut letDecls := #[]
-  for i in [:ctx.typeInfos.size] do
     let indVal       := ctx.typeInfos[i]!
     let auxFunName   := ctx.auxFunNames[i]!
     let currArgNames ← mkInductArgNames indVal
     let numParams    := indVal.numParams
-    let currIndices  := currArgNames[numParams:]
     let binders      ← mkImplicitBinders currIndices
-    let argNamesNew  := argNames[:numParams] ++ currIndices
     let indType      ← mkInductiveApp indVal argNamesNew
     let instName     ← mkFreshUserName `localinst
     let toTypeExpr   ← mkToTypeExpr argNames indVal
-    let letDecl      ← `(Parser.Term.letDecl| $(mkIdent instName):ident $binders:implicitBinder* :
                             ToExpr $indType :=
                           { toExpr := $(mkIdent auxFunName), toTypeExpr := $toTypeExpr })
     letDecls := letDecls.push letDecl
@@ -169,19 +158,13 @@ def mkAuxFunction (ctx : Deriving.Context) (i : Nat) : TermElabM Command := do
     ++ #[← addLevels header.binders.back]
   let levels := indVal.levelParams.toArray.map mkIdent
   if ctx.usePartial then
-    `(private partial def $(mkIdent auxFunName):ident.{$levels,*} $binders:bracketedBinder* :
-        Expr := $body:term)
   else
-    `(private def $(mkIdent auxFunName):ident.{$levels,*} $binders:bracketedBinder* :
-        Expr := $body:term)
 
 /-- Create all the auxiliary functions using `mkAuxFunction` for the (mutual) inductive type(s).
 Wraps the resulting definition commands in `mutual ... end`. -/
 def mkMutualBlock (ctx : Deriving.Context) : TermElabM Syntax := do
   let mut auxDefs := #[]
-  for i in [:ctx.typeInfos.size] do
     auxDefs := auxDefs.push (← mkAuxFunction ctx i)
-  `(mutual $auxDefs:command* end)
 
 open TSyntax.Compat in
 /-- Assuming all of the auxiliary definitions exist, create all the `instance` commands
@@ -189,7 +172,6 @@ for the `ToExpr` instances for the (mutual) inductive type(s). -/
 def mkInstanceCmds (ctx : Deriving.Context) (typeNames : Array Name) :
     TermElabM (Array Command) := do
   let mut instances := #[]
-  for i in [:ctx.typeInfos.size] do
     let indVal       := ctx.typeInfos[i]!
     if typeNames.contains indVal.name then
       let auxFunName   := ctx.auxFunNames[i]!
@@ -200,7 +182,6 @@ def mkInstanceCmds (ctx : Deriving.Context) (typeNames : Array Name) :
       let indType      ← fixIndType indVal (← mkInductiveApp indVal argNames)
       let toTypeExpr   ← mkToTypeExpr argNames indVal
       let levels       := indVal.levelParams.toArray.map mkIdent
-      let instCmd ← `(instance $binders:implicitBinder* : ToExpr $indType where
                         toExpr := $(mkIdent auxFunName).{$levels,*}
                         toTypeExpr := $toTypeExpr)
       instances := instances.push instCmd

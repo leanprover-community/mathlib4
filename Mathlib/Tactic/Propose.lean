@@ -118,7 +118,6 @@ syntax (name := propose') "have?" "!"? (ident)? (" : " term)? " using " (colGt t
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic
-  | `(tactic| have?%$tk $[!%$lucky]? $[$h:ident]? $[ : $type:term]? using $[$terms:term],*) => do
     let stx ← getRef
     let goal ← getMainGoal
     goal.withContext do
@@ -141,7 +140,3 @@ elab_rules : tactic
 @[inherit_doc propose'] syntax "have?!" (" : " term)? " using " (colGt term),+ : tactic
 @[inherit_doc propose'] syntax "have!?" (" : " term)? " using " (colGt term),+ : tactic
 macro_rules
-  | `(tactic| have?!%$tk $[: $type]? using $terms,*) =>
-    `(tactic| have?%$tk ! $[: $type]? using $terms,*)
-  | `(tactic| have!?%$tk $[: $type]? using $terms,*) =>
-    `(tactic| have?%$tk ! $[: $type]? using $terms,*)

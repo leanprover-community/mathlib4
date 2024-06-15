@@ -50,4 +50,3 @@ subexpressions in the goal. -/
 elab stx:"gcongr?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo GCongrSelectionPanel.javascriptHash
-    (pure <| json% { replaceRange: $(replaceRange) }) stx

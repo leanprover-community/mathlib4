@@ -83,12 +83,10 @@ def MVarId.introsWithBinderIdents
     return (ids, #[], g)
   let mut ids := ids
   let mut names := #[]
-  for _ in [0:n] do
     names := names.push (ids.headD (Unhygienic.run `(binderIdent| _)))
     ids := ids.tail
   let (xs, g) ← g.introN n <| names.toList.map fun stx =>
     match stx.raw with
-    | `(binderIdent| $n:ident) => n.getId
     | _ => `_
   g.withContext do
     for n in names, fvar in xs do

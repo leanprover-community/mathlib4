@@ -82,7 +82,7 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
       (((IsLocalization.map (Localization.Away (f r)) f
             (by rintro x ⟨n, rfl⟩; use n; simp : Submonoid.powers r ≤ Submonoid.comap f
                 (Submonoid.powers (f r)))) : Localization.Away r →+* Localization.Away (f r)).comp
-                (e₁: R' →+* Localization.Away r))
+                (e₁ : R' →+* Localization.Away r))
   suffices e = IsLocalization.Away.map R' S' f r by
     convert this
   apply IsLocalization.ringHom_ext (Submonoid.powers r) _

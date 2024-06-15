@@ -275,7 +275,6 @@ where
     if not config.partialApp && numArgs < side.getAppNumArgs then
         return none
     let mut f := side
-    for _ in [:numArgs] do
       f := f.appFn!'
     let info ← getFunInfoNArgs f numArgs
     let mut fixed : Array Bool := #[]
@@ -329,7 +328,6 @@ where
       if not config.partialApp && numArgs < side.getAppNumArgs then
         return none
       let mut f := side
-      for _ in [:numArgs] do
         f := f.appFn!'
       let some congrThm ← mkCongrSimpNArgs f numArgs
         | return none
@@ -737,7 +735,6 @@ syntax (name := congr!) "congr!" (Parser.Tactic.config)? (ppSpace num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| congr! $[$cfg:config]? $[$n]? $[with $ps?*]?) => do
   let config ← elabConfig (mkOptionalNode cfg)
   let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   liftMetaTactic fun g ↦

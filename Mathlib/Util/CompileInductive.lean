@@ -151,16 +151,16 @@ def compileInductiveOnly (iv : InductiveVal) (warn := true) : MetaM Unit := do
           let rv' ← getConstInfoRec <| mkRecName iv.name
           if !iv.isRec && rv'.numMotives == 1 && iv.numCtors == 1 && iv.numIndices == 0 then
             let rule := rv.rules[0]!
-            let val := .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
+            let val : = .beta (replaceConst repl rule.rhs) xs[ : rv.getFirstIndexIdx]
             let val := .beta val ⟨.map (major.proj iv.name) <| .range rule.nfields⟩
             mkLambdaFVars xs val
           else
             let val := .const (mkCasesOnName iv.name) (.param rv.levelParams.head! :: levels')
-            let val := mkAppN val args[:rv'.numParams]
-            let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
-            let val := mkAppN val xs[rv.getFirstIndexIdx:]
+            let val : = mkAppN val args[ : rv'.numParams]
+            let val : = .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx : ] body
+            let val : = mkAppN val xs[rv.getFirstIndexIdx : ]
             let val := mkAppN val <| rv.rules.toArray.map fun rule =>
-              .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
+              .beta (replaceConst repl rule.rhs) xs[ : rv.getFirstIndexIdx]
             mkLambdaFVars xs val
       hints := .opaque
       safety := .partial
@@ -208,7 +208,7 @@ partial def compileSizeOf (iv : InductiveVal) : MetaM Unit := do
         compileDefn dv
   let rv ← getConstInfoRec <| mkRecName iv.name
   for name in iv.all do
-    for i in [:rv.numMotives] do
+    for i in [ : rv.numMotives] do
       go <| name.str s!"_sizeOf_{i+1}"
     go <| name.str "_sizeOf_inst"
 

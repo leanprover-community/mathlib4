@@ -157,7 +157,6 @@ scoped instance : Ord ACApps where
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
       compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
-        for i in [:args₁.size] do
           let o := compare args₁[i]! args₂[i]!
           if o != .eq then return o
         return .eq
@@ -199,7 +198,6 @@ def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Expr :=
     | .apps op₂ args₂ =>
       if op₁ == op₂ then
         let mut i₂ := 0
-        for i₁ in [:args₁.size] do
           if i₂ == args₂.size then
             r := r.push args₁[i₁]!
           else if args₁[i₁]! == args₂[i₂]! then
@@ -208,7 +206,6 @@ def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Expr :=
             r := r.push args₁[i₁]!
     | .ofExpr e₂ =>
       let mut found := false
-      for i in [:args₁.size] do
         if !found && args₁[i]! == e₂ then
           found := true
         else
@@ -592,7 +589,6 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Exp
   | .apps _ args => Id.run do
     let mut r := args[0]?
     let mut numOccs := r.casesOn 0 fun r' => ccs.getNumROccs r' inLHS
-    for hi : i in [1:args.size] do
       if (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
         let currOccs := ccs.getNumROccs (args[i]'hi.2) inLHS
         if currOccs < numOccs then

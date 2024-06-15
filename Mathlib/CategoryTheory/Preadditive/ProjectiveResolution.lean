@@ -80,7 +80,7 @@ lemma complex_exactAt_succ (n : ℕ) :
   rw [← quasiIsoAt_iff_exactAt' P.π (n + 1) (exactAt_succ_single_obj _ _)]
   infer_instance
 
-lemma exact_succ (n : ℕ):
+lemma exact_succ (n : ℕ) :
     (ShortComplex.mk _ _ (P.complex.d_comp_d (n + 2) (n + 1) n)).Exact :=
   ((HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n) (by simp only [prev]; rfl)
     (by simp)).1 (P.complex_exactAt_succ n)

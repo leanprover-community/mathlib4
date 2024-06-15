@@ -1050,19 +1050,15 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
       Linter.logLintIf linter.simpsNoConstructor ref m!"\
         The definition {nm} is not a constructor application. Please use `@[simps!]` instead.\n\
         \n\
-        Explanation: `@[simps]` uses the definition to find what the simp lemmas should \
         be. If the definition is a constructor, then this is easy, since the values of the \
         projections are just the arguments to the constructor. If the definition is not a \
         constructor, then `@[simps]` will unfold the right-hand side until it has found a \
         constructor application, and uses those values.\n\n\
         This might not always result in the simp-lemmas you want, so you are advised to use \
         `@[simps?]` to double-check whether `@[simps]` generated satisfactory lemmas.\n\
-        Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain \
         cases.\n\
-        Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := .default, \
         simpRhs := true})]`. You can also try `@[simps (config := \{rhsMd := .default})]` \
         to still unfold the definitions, but avoid calling `simp` on the resulting statement.\n\
-        Note 3: You need `simps!` if not all fields are given explicitly in this definition, \
         even if the definition is a constructor application. For example, if you give a \
         `MulEquiv` by giving the corresponding `Equiv` and the proof that it respects \
         multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to \
@@ -1111,11 +1107,9 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     let neededProj := (x.splitOn "_")[0]!
     throwError "Invalid simp lemma {simpLemma}. \
       Structure {str} does not have projection {neededProj}.\n\
-      The known projections are:\
       {indentD <| toMessageData projs}\n\
       You can also see this information by running\
       \n  `initialize_simps_projections? {str}`.\n\
-      Note: these projection names might be customly defined for `simps`, \
       and could differ from the projection names of the structure."
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs

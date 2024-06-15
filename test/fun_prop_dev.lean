@@ -158,8 +158,8 @@ def LinHom.mk' (f : α → β) (hf : Lin f := by fun_prop) : α -o β := mk f hf
 section Notation
 open Lean Syntax Parser
 open TSyntax.Compat
-macro "fun" xs:explicitBinders " ⊸ " b:term : term => expandExplicitBinders ``LinHom.mk' xs b
-macro "fun" xs:explicitBinders " -o " b:term : term => expandExplicitBinders ``LinHom.mk' xs b
+macro "fun" xs:explicitBinders " ⊸ " b:term:term => expandExplicitBinders ``LinHom.mk' xs b
+macro "fun" xs:explicitBinders " -o " b:term:term => expandExplicitBinders ``LinHom.mk' xs b
 end Notation
 
 

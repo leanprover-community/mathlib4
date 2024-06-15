@@ -43,7 +43,7 @@ namespace RootPairing
 
 variable (P : RootPairing ι R M N) (i j : ι)
 
-lemma root_ne (h: i ≠ j) : P.root i ≠ P.root j := by
+lemma root_ne (h : i ≠ j) : P.root i ≠ P.root j : = by
   simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, not_false_eq_true]
 
 lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=

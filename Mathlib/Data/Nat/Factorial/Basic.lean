@@ -269,7 +269,7 @@ theorem ascFactorial_eq_div' (n k : ℕ) (h : 0 < n) :
   Nat.eq_div_of_mul_eq_right (n - 1).factorial_ne_zero (factorial_mul_ascFactorial' _ _ h)
 #align nat.asc_factorial_eq_div Nat.ascFactorial_eq_div
 
-theorem ascFactorial_of_sub {n k : ℕ}:
+theorem ascFactorial_of_sub {n k : ℕ} :
     (n - k) * (n - k + 1).ascFactorial k = (n - k).ascFactorial (k + 1) := by
   rw [succ_ascFactorial, ascFactorial_succ]
 #align nat.asc_factorial_of_sub Nat.ascFactorial_of_sub

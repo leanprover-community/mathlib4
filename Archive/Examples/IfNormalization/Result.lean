@@ -18,7 +18,7 @@ See `Statement.lean` for background.
 set_option autoImplicit true
 
 macro "◾" : tactic => `(tactic| aesop)
-macro "◾" : term => `(term| by aesop)
+macro "◾":term => `(term| by aesop)
 
 namespace IfExpr
 

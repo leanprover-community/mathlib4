@@ -30,7 +30,7 @@ We need to be able to `let` some implementation details that are still local ins
 Normally implementation detail fvars are not local instances,
 but we need them to be implementation details so that `simp` will see them as "reducible" fvars.
 -/
-syntax (name := letImplDetailStx) "let_impl_detail " ident " := " term "; " term : term
+syntax (name := letImplDetailStx) "let_impl_detail " ident " := " term "; " term:term
 
 open Lean Elab Term Meta
 
@@ -54,18 +54,15 @@ def elabLetImplDetail : TermElab := fun stx expectedType? =>
   | _ => throwUnsupportedSyntax
 
 macro_rules
-| `({ $[$srcs,* with]? $[$fields],* $[: $ty?]? }) => show MacroM Term from do
     let mut spreads := #[]
     let mut newFields := #[]
 
     for field in fields do
       match field.1 with
-        | `(structInstField| $name:ident := $arg) =>
           if name.getId.eraseMacroScopes == `__ then do
             spreads := spreads.push arg
           else
             newFields := newFields.push field
-        | `(structInstFieldAbbrev| $_:ident) =>
           newFields := newFields.push field
         | _ =>
           throwUnsupported
@@ -77,5 +74,4 @@ macro_rules
       return (mkIdent <| ← Macro.addMacroScope n, spread)
 
     let srcs := (srcs.map (·.getElems)).getD {} ++ spreadData.map Prod.fst
-    let body ← `({ $srcs,* with $[$newFields],* $[: $ty?]? })
     spreadData.foldrM (init := body) fun (id, val) body => `(let_impl_detail $id := $val; $body)

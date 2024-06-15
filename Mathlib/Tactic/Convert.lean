@@ -99,7 +99,6 @@ syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term 
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
@@ -156,6 +155,5 @@ example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
 syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
 macro_rules
-| `(tactic| ac_change $t $[using $n]?) => `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
 
 end Mathlib.Tactic

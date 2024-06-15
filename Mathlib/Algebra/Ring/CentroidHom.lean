@@ -457,7 +457,7 @@ instance applyModule : Module (CentroidHom α) α where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
   one_smul _ := rfl
-  mul_smul _ _ _:= rfl
+  mul_smul _ _ _ := rfl
   smul_zero := map_zero
   smul_add := map_add
 

@@ -113,7 +113,6 @@ runs `X` and verifies that it still prints "Try this: Y".
 syntax (name := says) tactic " says" (colGt tacticSeq)? : tactic
 
 elab_rules : tactic
-  | `(tactic| $tac:tactic says%$tk $[$result:tacticSeq]?) => do
   let verify := says.verify.get (← getOptions) ||
     !says.no_verify_in_CI.get (← getOptions) && (← IO.getEnv "CI").isSome
   match result, verify with

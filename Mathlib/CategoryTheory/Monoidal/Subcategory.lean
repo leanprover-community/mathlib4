@@ -52,7 +52,7 @@ variable [MonoidalPredicate P]
 instance : MonoidalCategoryStruct (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   whiskerLeft X _ _ f := X.1 ◁ f
-  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
+  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y : = (f ▷ Y.1 :)
   tensorHom f g := f ⊗ g
   tensorUnit := ⟨𝟙_ C, prop_id⟩
   associator X Y Z :=

@@ -57,7 +57,7 @@ elab "assert_not_exists " n:ident : command => do
       | pure m!"Declaration {c} is defined in this file."
     let mut msg := m!"Declaration {c} is not allowed to be imported by this file.\n\
       It is defined in {env.header.moduleNames[idx.toNat]!},"
-    for i in [idx.toNat+1:env.header.moduleData.size] do
+    for i in [idx.toNat+1 : env.header.moduleData.size] do
       if env.header.moduleData[i]!.imports.any (·.module == env.header.moduleNames[idx.toNat]!) then
         idx := i
         msg := msg ++ m!"\n  which is imported by {env.header.moduleNames[i]!},"

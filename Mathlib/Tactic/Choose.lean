@@ -145,7 +145,6 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
 /-- A wrapper around `choose1` that parses identifiers and adds variable info to new variables. -/
 def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSyntax ``binderIdent) :
     MetaM (ElimStatus × MVarId) := do
-  let n := if let `(binderIdent| $n:ident) := data then n.getId else `_
   let (status, fvar, g) ← choose1 g nondep h n
   g.withContext <| fvar.addLocalVarInfoForBinderIdent data
   pure (status, g)
@@ -163,7 +162,6 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
       throwError msg
     | _, _ => do
       let (fvar, g) ← match n with
-      | `(binderIdent| $n:ident) => g.intro n.getId
       | _ => g.intro1
       g.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
       return g

@@ -100,7 +100,7 @@ def normalize : α →*₀ α where
   toFun x := x * normUnit x
   map_zero' := by
     simp only [normUnit_zero]
-    exact mul_one (0:α)
+    exact mul_one (0 : α)
   map_one' := by dsimp only; rw [normUnit_one, one_mul]; rfl
   map_mul' x y :=
     (by_cases fun hx : x = 0 => by dsimp only; rw [hx, zero_mul, zero_mul, zero_mul]) fun hx =>

@@ -28,26 +28,6 @@ open Lean Parser Elab Command
 to disable the compiler in a given file or a given section.
 This is a hack to work around mathlib4#7103. -/
 def elabSuppressCompilationDecl : CommandElab := fun
-| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? def $id $sig:optDeclSig $val:declVal) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? def $id $sig:optDeclSig $val:declVal)
-| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,*) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,*)
-| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal)
-| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? example $sig:optDeclSig $val:declVal) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? example $sig:optDeclSig $val:declVal)
-| `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? abbrev $id $sig:optDeclSig $val:declVal) => do
-  elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? abbrev $id $sig:optDeclSig $val:declVal)
 | _ => throwUnsupportedSyntax
 
 /-- The command `unsuppress_compilation in def foo : ...` makes sure that the definition is
@@ -57,11 +37,8 @@ syntax "unsuppress_compilation" (" in " command)? : command
 /-- Make sure that notations are compiled, even if `suppress_compilation` is active, by prepending
 them with `unsuppress_compilation`. -/
 def expandSuppressCompilationNotation : Macro := fun
-| `($[$doc?:docComment]? $(attrs?)? $(attrKind)? notation
     $(prec?)? $(name?)? $(prio?)? $items* => $v) => do
-  let defn ← expandNotation <| ← `($[$doc?:docComment]? $(attrs?)? $(attrKind)? notation
     $(prec?)? $(name?)? $(prio?)? $items* => $v)
-  `(unsuppress_compilation in $(⟨defn⟩):command)
 | _ => Macro.throwUnsupported
 
 /-- Replacing `def` and `instance` by `noncomputable def` and `noncomputable instance`, designed
@@ -90,6 +67,5 @@ macro_rules
     attribute [-macro] $notaMacro
   )
   if let some cmd := cmd? then
-    `($attrCmds:command $cmd:command suppress_compilation)
   else
     return attrCmds

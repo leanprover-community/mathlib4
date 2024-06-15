@@ -82,7 +82,7 @@ def simpTerm (e : Expr) : MetaM Expr := do
   -- a type hint ourselves.
   Meta.mkExpectedTypeHint e' mvar
 
-elab "simpTerm% " t:term : term => do simpTerm (← Term.elabTerm t none)
+elab "simpTerm% " t:term:term => do simpTerm (← Term.elabTerm t none)
 ```
 -/
 def synthesizeUsingTactic' {u : Level} (type : Q(Sort u)) (tac : Syntax) : MetaM Q($type) := do

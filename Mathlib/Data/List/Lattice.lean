@@ -97,7 +97,7 @@ theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ 
         simp only [cons_append, cons_union, e, insert_of_not_mem h]⟩
 #align list.sublist_suffix_of_union List.sublist_suffix_of_union
 
-theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
+theorem suffix_union_right (l₁ l₂ : List α) : l₂ < : + l₁ ∪ l₂ : =
   (sublist_suffix_of_union l₁ l₂).imp fun _ => And.right
 #align list.suffix_union_right List.suffix_union_right
 

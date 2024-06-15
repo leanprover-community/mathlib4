@@ -252,7 +252,7 @@ lemma interpStrip_eq_of_zero (z : ℂ) (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 
   if_pos h
 
 /-- Rewrite for `InterpStrip` on the open vertical strip. -/
-lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 1):
+lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 1) :
     interpStrip f z = (sSupNormIm f 0) ^ (1 - z) * (sSupNormIm f 1) ^ z := by
   by_cases h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
   · rw [interpStrip_eq_of_zero _ z h]

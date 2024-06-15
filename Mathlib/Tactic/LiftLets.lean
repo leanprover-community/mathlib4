@@ -60,7 +60,6 @@ private partial def Lean.Expr.liftLetsAux (config : LiftLetsConfig) (e : Expr) (
         (b.instantiate1 fvar).liftLetsAux config fvars fun fvars2 b => do
           -- See which bindings can't be migrated out
           let deps ← collectForwardDeps #[fvar] false
-          let fvars2 := fvars2[fvars.size:].toArray
           let (fvars2, fvars2') := fvars2.partition deps.contains
           mkLetFVars fvars2' (← mkLambdaFVars #[fvar] (← mkLetFVars fvars2 b))
       -- Re-enter the new lets; we do it this way to keep the local context clean
@@ -72,7 +71,6 @@ private partial def Lean.Expr.liftLetsAux (config : LiftLetsConfig) (e : Expr) (
         (b.instantiate1 fvar).liftLetsAux config fvars fun fvars2 b => do
           -- See which bindings can't be migrated out
           let deps ← collectForwardDeps #[fvar] false
-          let fvars2 := fvars2[fvars.size:].toArray
           let (fvars2, fvars2') := fvars2.partition deps.contains
           mkLetFVars fvars2' (← mkForallFVars #[fvar] (← mkLetFVars fvars2 b))
       -- Re-enter the new lets; we do it this way to keep the local context clean
@@ -120,7 +118,6 @@ During the lifting process, let bindings are merged if they have the same type a
 syntax (name := lift_lets) "lift_lets" (Parser.Tactic.config)? (ppSpace location)? : tactic
 
 elab_rules : tactic
-  | `(tactic| lift_lets $[$cfg:config]? $[$loc:location]?) => do
     let config ← elabConfig (mkOptionalNode cfg)
     withLocation (expandOptLocation (Lean.mkOptionalNode loc))
       (atLocal := fun h ↦ liftMetaTactic1 fun mvarId ↦ do

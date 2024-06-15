@@ -227,7 +227,7 @@ end Monoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid G] {a b c d: G}
+variable [DivisionMonoid G] {a b c d : G}
 
 @[to_additive]
 protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]

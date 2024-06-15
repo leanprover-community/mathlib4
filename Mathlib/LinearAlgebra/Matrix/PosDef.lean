@@ -74,7 +74,7 @@ lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
     simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 (B *ᵥ x)
 
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A)
-    {m : Type*} [Fintype m] (B : Matrix m n R):
+    {m : Type*} [Fintype m] (B : Matrix m n R) :
     PosSemidef (B * A * Bᴴ) := by
   simpa only [conjTranspose_conjTranspose] using hA.conjTranspose_mul_mul_same Bᴴ
 

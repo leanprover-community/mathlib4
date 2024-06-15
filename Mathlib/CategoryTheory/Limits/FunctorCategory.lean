@@ -189,7 +189,7 @@ instance evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
     PreservesLimitsOfShape J ((evaluation K C).obj k) where
   preservesLimit {F} := by
     -- Porting note: added a let because X was not inferred
-    let X : (k:K) → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
+    let X : (k : K) → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) : =
       fun k => getLimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     exact preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
       IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
@@ -252,7 +252,7 @@ instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
     PreservesColimitsOfShape J ((evaluation K C).obj k) where
   preservesColimit {F} := by
     -- Porting note: added a let because X was not inferred
-    let X : (k:K) → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
+    let X : (k : K) → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) : =
       fun k => getColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     refine preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
       IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm

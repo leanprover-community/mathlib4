@@ -176,7 +176,7 @@ theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.leng
 
 theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
-      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])):
+      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])) :
     (insertNth n x l).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
   induction' l with hd tl IH generalizing n k
   · simp at hk'

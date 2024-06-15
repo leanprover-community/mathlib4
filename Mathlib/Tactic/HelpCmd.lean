@@ -248,8 +248,6 @@ private def elabHelpCat (more : Option Syntax) (catStx : Ident) (id : Option Str
 
 elab_rules : command
   | `(#help cat $[+%$more]? $cat) => elabHelpCat more cat none
-  | `(#help cat $[+%$more]? $cat $id:ident) => elabHelpCat more cat (id.getId.toString false)
-  | `(#help cat $[+%$more]? $cat $id:str) => elabHelpCat more cat id.getString
 
 /--
 The command `#help term` shows all term syntaxes that have been defined in the current environment.

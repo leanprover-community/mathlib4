@@ -712,7 +712,7 @@ theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b
 
 Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
 of `n`. -/
-theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ):
+theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ) :
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
   rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n)]
   nth_rw 2 [← zero_add 1]

@@ -180,7 +180,6 @@ def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
 def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
-    (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
 -- TODO: clean up and move it somewhere in mathlib? It's a bit much for this file
 -- see note [norm_num lemma function equality]
@@ -190,7 +189,6 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     Nat.mul da db = Nat.mul k dc →
     IsRat (f a b) nc dc := by
   rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * db + nb * da = k * nc) (h₂ : da * db = k * dc)
-  have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
   have := invertibleOfMul' (α := α) h₂
   use this
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
@@ -373,7 +371,6 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     Nat.mul da db = Nat.mul k dc →
     IsRat (f a b) nc dc := by
   rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * nb = k * nc) (h₂ : da * db = k * dc)
-  have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
   have := invertibleOfMul' (α := α) h₂
   refine ⟨this, ?_⟩
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
@@ -575,7 +572,6 @@ theorem isNat_dvd_true : {a b : ℕ} → {a' b' : ℕ} →
 
 theorem isNat_dvd_false : {a b : ℕ} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.mod b' a' = Nat.succ c → ¬a ∣ b
-  | _, _, _, _, c, ⟨rfl⟩, ⟨rfl⟩, e => mt Nat.mod_eq_zero_of_dvd (e.symm ▸ Nat.succ_ne_zero c :)
 
 /-- The `norm_num` extension which identifies expressions of the form `(a : ℕ) | b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/

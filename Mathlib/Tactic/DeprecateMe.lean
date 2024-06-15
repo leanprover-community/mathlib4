@@ -67,10 +67,6 @@ If the input command is neither a `theorem` nor a `lemma`, then it returns
 `.missing` and the unchanged command.
 -/
 def renameTheorem : TSyntax `command → TSyntax `Lean.Parser.Command.declId × TSyntax `command
-  | `(command| $dm:declModifiers theorem $id:declId $d:declSig $v:declVal) => Unhygienic.run do
-    return (id, ← `($dm:declModifiers theorem $newName:declId $d:declSig $v:declVal))
-  | `(command| $dm:declModifiers lemma $id:declId $d:declSig $v:declVal) => Unhygienic.run do
-    return (id, ← `($dm:declModifiers lemma $newName:declId $d:declSig $v:declVal))
   | a => (default, a)
 
 open Meta.Tactic.TryThis in

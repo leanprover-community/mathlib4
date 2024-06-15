@@ -32,8 +32,6 @@ Transforms the goal into its contrapositive.
 syntax (name := contrapose) "contrapose" (ppSpace colGt ident (" with " ident)?)? : tactic
 macro_rules
   | `(tactic| contrapose) => `(tactic| (refine mtr ?_))
-  | `(tactic| contrapose $e) => `(tactic| (revert $e:ident; contrapose; intro $e:ident))
-  | `(tactic| contrapose $e with $e') => `(tactic| (revert $e:ident; contrapose; intro $e':ident))
 
 /--
 Transforms the goal into its contrapositive and uses pushes negations inside `P` and `Q`.
@@ -42,7 +40,5 @@ Usage matches `contrapose`
 syntax (name := contrapose!) "contrapose!" (ppSpace colGt ident (" with " ident)?)? : tactic
 macro_rules
   | `(tactic| contrapose!) => `(tactic| (contrapose; try push_neg))
-  | `(tactic| contrapose! $e) => `(tactic| (revert $e:ident; contrapose!; intro $e:ident))
-  | `(tactic| contrapose! $e with $e') => `(tactic| (revert $e:ident; contrapose!; intro $e':ident))
 
 end Mathlib.Tactic.Contrapose

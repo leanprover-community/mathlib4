@@ -48,7 +48,6 @@ def successIfFailWithMessage [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [M
       throwError "tactic succeeded, but was expected to fail"
 
 elab_rules : tactic
-| `(tactic| success_if_fail_with_msg $msg:term $tacs:tacticSeq) =>
   Term.withoutErrToSorry <| withoutRecover do
     let msg ← unsafe Term.evalTerm String (.const ``String []) msg
     successIfFailWithMessage msg (evalTacticSeq tacs) tacs

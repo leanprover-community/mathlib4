@@ -205,7 +205,7 @@ instance Fix.mvfunctor : MvFunctor (Fix F) where map := @Fix.map _ _ _ _
 variable {α : TypeVec.{u} n}
 
 /-- Recursor for `Fix F` -/
-def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
+def Fix.rec {β : Type u} (g : F (α : : : β) → β) : Fix F α → β : =
   Quot.lift (recF g) (recF_eq_of_wEquiv α g)
 #align mvqpf.fix.rec MvQPF.Fix.rec
 
@@ -346,7 +346,7 @@ instance mvqpfFix : MvQPF (Fix F) where
 
 /-- Dependent recursor for `fix F` -/
 def Fix.drec {β : Fix F α → Type u}
-    (g : ∀ x : F (α ::: Sigma β), β (Fix.mk <| (id ::: Sigma.fst) <$$> x)) (x : Fix F α) : β x :=
+    (g : ∀ x : F (α : : : Sigma β), β (Fix.mk <| (id : : : Sigma.fst) <$$> x)) (x : Fix F α) : β x : =
   let y := @Fix.rec _ F _ _ α (Sigma β) (fun i => ⟨_, g i⟩) x
   have : x = y.1 := by
     symm

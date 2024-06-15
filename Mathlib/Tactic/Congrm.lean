@@ -57,7 +57,6 @@ equality proofs into the congruence, just like for congruence quotations.
 syntax (name := congrM) "congrm " term : tactic
 
 elab_rules : tactic
-  | `(tactic| congrm $expr:term) => do
     -- Wrap all synthetic holes `?m` as `c(?m)` to form `congr(...)` pattern
     let pattern ← expr.raw.replaceM fun stx =>
       if stx.isOfKind ``Parser.Term.syntheticHole then

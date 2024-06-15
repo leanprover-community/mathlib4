@@ -132,7 +132,6 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
     e₁.withApp fun f₁ args₁ =>
     e₂.withApp fun f₂ args₂ => do
       if ha : args₁.size = args₂.size then
-        for hi : i in [:args₁.size] do
           if (← getRoot (args₁[i]'hi.2)) != (← getRoot (args₂[i]'(ha.symm ▸ hi.2))) then
             return false
         if f₁ == f₂ then return true
@@ -379,7 +378,6 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   let some specLemma ← mkCCHCongrTheorem lhsFn lhsArgs.size | failure
   let mut kindsIt := specLemma.argKinds
   let mut lemmaArgs : Array Expr := #[]
-  for hi : i in [:lhsArgs.size] do
     guard !kindsIt.isEmpty
     lemmaArgs := lemmaArgs.push (lhsArgs[i]'hi.2) |>.push (rhsArgs[i]'(ha.symm ▸ hi.2))
     if kindsIt[0]! matches CongrArgKind.heq then
@@ -566,7 +564,6 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
   -- 4. Build transitivity proof
   let mut pr? : Option Expr := none
   let mut lhs := e₁
-  for i in [:path₁.size] do
     pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i]! Hs₁[i]! heqProofs) heqProofs
     lhs := path₁[i]!
   let mut i := Hs₂.size
@@ -918,7 +915,6 @@ Simplifies an expression `e` by either simplifying one argument to the AC operat
 expression. -/
 def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   if let .apps _ args := e then
-    for h : i in [:args.size] do
       if i == 0 || (args[i]'h.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2)) then
         let some ae := (← get).acEntries.find? (args[i]'h.2) | failure
         let occs := ae.RLHSOccs
@@ -958,7 +954,6 @@ def insertEraseROccs (e lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
   match e with
   | .apps _ args =>
     insertEraseROcc args[0]! lhs inLHS isInsert
-    for i in [1:args.size] do
       if args[i]! != args[i - 1]! then
         insertEraseROcc args[i]! lhs inLHS isInsert
   | .ofExpr e => insertEraseROcc e lhs inLHS isInsert
@@ -1054,7 +1049,6 @@ the intersection `t` of `ts` and `tr` is nonempty, let `ts = t*s` and `tr := t*r
 equality `r*a = s*b`. -/
 def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
   let .apps op args := ts | return
-  for hi : i in [:args.size] do
     if i == 0 || (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
       let some ent := (← get).acEntries.find? (args[i]'hi.2) | failure
       let occs := ent.RLHSOccs
@@ -1237,7 +1231,6 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
     if state.ignoreInstances then
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
     if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
-      for h : i in [:apps.size] do
         let arg := (apps[i]'h.2).appArg!
         addOccurrence e arg false
         if pinfo.head?.any ParamInfo.isInstImplicit then
@@ -1255,12 +1248,10 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
     else
       -- Expensive case where we store a quadratic number of occurrences,
       -- as described in the paper "Congruence Closure in Internsional Type Theory"
-      for h : i in [:apps.size] do
         let curr := apps[i]'h.2
         let .app currFn currArg := curr | unreachable!
         if i < apps.size - 1 then
           mkEntry curr false
-        for h : j in [i:apps.size] do
           addOccurrence (apps[j]'h.2) currArg false
           addOccurrence (apps[j]'h.2) currFn false
         if pinfo.head?.any ParamInfo.isInstImplicit then
@@ -1898,7 +1889,6 @@ def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit :
     go e₁ e₂ n₁ n₂ r₁ r₂ false H heqProof
 where
   /-- The auxiliary definition for `addEqvStep` to flip the input. -/
-  go (e₁ e₂: Expr) (n₁ n₂ r₁ r₂ : Entry) (flipped : Bool) (H : EntryExpr) (heqProof : Bool) :
       CCM Unit := do
     -- Interpreted values are already in the correct equivalence class,
     -- so merging two different classes means we found an inconsistency.

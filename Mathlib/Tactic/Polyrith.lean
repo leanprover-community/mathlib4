@@ -189,7 +189,6 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
   if !only then
     for ldecl in ← getLCtx do
       out ← processHyp (.fvar ldecl.fvarId) ldecl.type out
-  for hyp in hyps, i in [:hyps.size] do
     out ← processHyp (.input i) (← inferType hyp) out
   pure (α, out, tgt)
 
@@ -363,8 +362,6 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
         let stx := (withRef (← getRef) <| p.toSyntax vars).run
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
-          else if pow = 1 then `(tactic| linear_combination $stx:term)
-          else `(tactic| linear_combination (exp := $(quote pow)) $stx:term)
         try
           guard (← Elab.runTactic g tac).1.isEmpty
         catch _ => throwError

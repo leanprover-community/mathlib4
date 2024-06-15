@@ -83,7 +83,6 @@ def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
 
 /-- An extension of the `have` tactic that turns the hypothesis into a goal to be proved later -/
 elab_rules : tactic
-| `(tactic| have $n:optBinderIdent $bs* $[: $t:term]?) => do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t false
   replaceMainGoal [goal1, goal2]
 
@@ -91,12 +90,10 @@ elab_rules : tactic
 An extension of the `suffices` tactic that turns the hypothesis into a goal to be proved later
 -/
 elab_rules : tactic
-| `(tactic| suffices $n:optBinderIdent $bs* $[: $t:term]?) => do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t false
   replaceMainGoal [goal2, goal1]
 
 /-- An extension of the `let` tactic that turns the hypothesis into a goal to be proved later -/
 elab_rules : tactic
-| `(tactic| let $n:optBinderIdent $bs* $[: $t:term]?) => withMainContext do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t true
   replaceMainGoal [goal1, goal2]

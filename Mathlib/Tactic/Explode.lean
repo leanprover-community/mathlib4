@@ -48,7 +48,6 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
     Meta.lambdaTelescope e fun args body => do
       let mut entries' := entries
       let mut rdeps := []
-      for arg in args, i in [0:args.size] do
         let (argEntry, entries'') := entries'.add arg
           { type     := ← addMessageContext <| ← Meta.inferType arg
             depth    := depth

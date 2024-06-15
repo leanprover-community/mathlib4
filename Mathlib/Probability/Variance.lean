@@ -123,7 +123,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero (hX : Mem�
 #align measure_theory.mem_ℒp.variance_eq_of_integral_eq_zero MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero
 
 theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
-    variance X μ = μ[(X - fun _ => μ[X] :) ^ (2 : Nat)] := by
+    variance X μ = μ[(X - fun _ => μ[X] :) ^ (2 : Nat)] : = by
   rw [variance, evariance_eq_lintegral_ofReal, ← ofReal_integral_eq_lintegral_ofReal,
     ENNReal.toReal_ofReal (by positivity)]
   · rfl
@@ -235,7 +235,7 @@ theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → 
 #align probability_theory.variance_le_expectation_sq ProbabilityTheory.variance_le_expectation_sq
 
 theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : AEStronglyMeasurable X ℙ) :
-    eVar[X] = (∫⁻ ω, (‖X ω‖₊ ^ 2 :)) - ENNReal.ofReal (𝔼[X] ^ 2) := by
+    eVar[X] = (∫⁻ ω, (‖X ω‖₊ ^ 2 :)) - ENNReal.ofReal (𝔼[X] ^ 2) : = by
   by_cases hℒ : Memℒp X 2
   · rw [← hℒ.ofReal_variance_eq, variance_def' hℒ, ENNReal.ofReal_sub _ (sq_nonneg _)]
     congr

@@ -21,7 +21,6 @@ variable {n m : Nat} {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm 
 
 /-- Finds the first row starting from the `rowStart` with nonzero element in the column `col`. -/
 def findNonzeroRow (rowStart col : Nat) : GaussM n m matType <| Option Nat := do
-  for i in [rowStart:n] do
     if (← get)[(i, col)]! != 0 then
       return i
   return .none
@@ -45,7 +44,6 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
 
     modify fun mat => divideRow mat row mat[(row, col)]!
 
-    for i in [:n] do
       if i == row then
         continue
       let coef := (← get)[(i, col)]!
@@ -56,7 +54,6 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
     row := row + 1
     col := col + 1
 
-  for i in [col:m] do
     free := free.push i
 
   let ansMatrix : matType basic.size free.size := ← do

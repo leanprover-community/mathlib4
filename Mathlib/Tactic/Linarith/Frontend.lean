@@ -220,7 +220,6 @@ abbrev ExprMultiMap α := Array (Expr × List α)
 /-- Retrieves the list of values at a key, as well as the index of the key for later modification.
 (If the key is not in the map it returns `self.size` as the index.) -/
 def ExprMultiMap.find (self : ExprMultiMap α) (k : Expr) : MetaM (Nat × List α) := do
-  for h : i in [:self.size] do
     let (k', vs) := self[i]'h.2
     if ← isDefEq k' k then
       return (i, vs)
@@ -229,7 +228,6 @@ def ExprMultiMap.find (self : ExprMultiMap α) (k : Expr) : MetaM (Nat × List �
 /-- Insert a new value into the map at key `k`. This does a defeq check with all other keys
 in the map. -/
 def ExprMultiMap.insert (self : ExprMultiMap α) (k : Expr) (v : α) : MetaM (ExprMultiMap α) := do
-  for h : i in [:self.size] do
     if ← isDefEq (self[i]'h.2).1 k then
       return self.modify i fun (k, vs) => (k, v::vs)
   return self.push (k, [v])
@@ -418,7 +416,6 @@ routine.
 syntax (name := linarith) "linarith" "!"? linarithArgsRest : tactic
 
 @[inherit_doc linarith] macro "linarith!" rest:linarithArgsRest : tactic =>
-  `(tactic| linarith ! $rest:linarithArgsRest)
 
 /--
 An extension of `linarith` with some preprocessing to allow it to solve some nonlinear arithmetic
@@ -434,7 +431,6 @@ in `linarith`. The preprocessing is as follows:
 -/
 syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
 @[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
-  `(tactic| nlinarith ! $rest:linarithArgsRest)
 
 /-- Elaborate `t` in a way that is suitable for linarith. -/
 def elabLinarithArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do

@@ -112,7 +112,7 @@ theorem isConnected_iff_isColimit_pUnitCocone :
   exact ⟨colimit.isoColimitCocone colimitCocone⟩
 
 universe v₂ u₂
-variable {C : Type u} {D: Type u₂} [Category.{v} C] [Category.{v₂} D]
+variable {C : Type u} {D : Type u₂} [Category.{v} C] [Category.{v₂} D]
 
 /-- The domain of a final functor is connected if and only if its codomain is connected. -/
 theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :

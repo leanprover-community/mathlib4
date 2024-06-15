@@ -203,7 +203,6 @@ def mkImplType (Pi : Q(Prop)) (arr : TSyntax ``impArrow) (Pj : Q(Prop)) : MetaM 
 /-! # Tactic implementation -/
 
 elab_rules : tactic
-| `(tactic| tfae_have $[$h:ident : ]? $i:num $arr:impArrow $j:num) => do
   let goal ← getMainGoal
   goal.withContext do
     let (_, tfaeList) ← getTFAEList (← goal.getType)

@@ -220,7 +220,6 @@ def Trie.mkPath (keys : Array Key) (child : Trie α) :=
 
 /-- `Trie` constructor for a single value, taking the keys starting at index `i`. -/
 def Trie.singleton (keys : Array Key) (value : α) (i : Nat) : Trie α :=
-  mkPath keys[i:] (values #[value])
 
 /-- `Trie.node` constructor for combining two `Key`, `Trie α` pairs. -/
 def Trie.mkNode2 (k1 : Key) (t1 : Trie α) (k2 : Key) (t2 : Trie α) : Trie α :=
@@ -238,7 +237,6 @@ def Trie.values! : Trie α → Array α
 The result is sorted by the `Key`'s -/
 def Trie.children! : Trie α → Array (Key × Trie α)
   | .node cs => cs
-  | .path ks c => #[(ks[0]!, mkPath ks[1:] c)]
   | .values _ => panic! "did not expect .values constructor"
 
 private partial def Trie.format [ToFormat α] : Trie α → Format
@@ -353,7 +351,6 @@ where
 
   goArray (as bs : Array DTExpr) : StateM (HashMap MVarId MVarId) Bool := do
     if h : as.size = bs.size then
-      for g : i in [:as.size] do
         unless ← go as[i] (bs[i]'(h ▸ g.2)) do
           return false
       return true
@@ -500,7 +497,6 @@ def getIgnores (fn : Expr) (args : Array Expr) : MetaM (Array Bool) := do
   let mut fnType ← inferType fn
   let mut result := Array.mkEmpty args.size
   let mut j := 0
-  for i in [:args.size] do
     unless fnType matches .forallE .. do
       fnType ← whnfD (fnType.instantiateRevRange j i args)
       j := i
@@ -550,7 +546,6 @@ def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : 
   let mut inst := inst
   let mut lhs := args[4]!
   let mut rhs := args[5]!
-  for arg in args[6:] do
     let mkApp3 (.const i _) _ f inst' := inst | return (type, lhs, rhs, lambdas)
     unless i == instPi do return (type, lhs, rhs, lambdas)
     type := .app f arg
@@ -594,7 +589,6 @@ def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
     distributeLambdas lambdas type arg
   else
   /- use that `f⁻¹ a = (f a)⁻¹` -/
-  for arg' in args[3:] do
     let mkApp3 (.const i _) _ f inst' := inst | return (type, arg, lambdas)
     unless i == instPi do return (type, arg, lambdas)
     type := .app f arg'
@@ -898,12 +892,9 @@ partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie �
   | .values vs =>
       .values (insertInArray vs v)
   | .path ks c => Id.run do
-    for n in [:ks.size] do
       let k1 := keys[i+n]!
       let k2 := ks[n]!
       if k1 != k2 then
-        let shared := ks[:n]
-        let rest := ks[n+1:]
         return .mkPath shared (.mkNode2 k1 (.singleton keys v (i+n+1)) k2 (.mkPath rest c))
     return .path ks (insertInTrie keys v (i + ks.size) c)
 

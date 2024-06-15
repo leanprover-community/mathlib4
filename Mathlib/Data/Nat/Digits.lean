@@ -560,7 +560,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 
 /-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
 -/
-lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p):
+lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
   convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
@@ -795,7 +795,7 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
       simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
       exact ih trivial
-@[deprecated (since := "2024-02-19")] alias to_digits_core_lens_eq_aux:= toDigitsCore_lens_eq_aux
+@[deprecated (since := "2024-02-19")] alias to_digits_core_lens_eq_aux := toDigitsCore_lens_eq_aux
 
 lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
@@ -804,7 +804,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
     if hnb : (n / b) = 0 then
       simp only [hnb, if_true, List.length]
     else
-      generalize hx: Nat.digitChar (n % b) = x
+      generalize hx : Nat.digitChar (n % b) = x
       simp only [hx, hnb, if_false] at ih
       simp only [hnb, if_false]
       specialize ih (n / b) c (x :: tl)
@@ -812,7 +812,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
       have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
       apply toDigitsCore_lens_eq_aux
       exact lens_eq
-@[deprecated (since := "2024-02-19")] alias to_digits_core_lens_eq:= toDigitsCore_lens_eq
+@[deprecated (since := "2024-02-19")] alias to_digits_core_lens_eq := toDigitsCore_lens_eq
 
 lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
@@ -822,7 +822,7 @@ lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n /
 the number of digits in `n < e` for some base `b`. Since this works with any base greater
 than one, it can be used for binary, decimal, and hex. -/
 lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
-    (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
+    (hlt : n < b ^ e) (h_e_pos : 0 < e) : (Nat.toDigitsCore b f n []).length <= e : = by
   induction f generalizing n e hlt h_e_pos with
     simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
   | succ f ih =>

@@ -191,7 +191,6 @@ Does `mkLambdaFVars fvars e` but
 def mkLambdaFVarsUsedOnly (fvars : Array Expr) (e : Expr) : MetaM (Array Expr × Expr) := do
   let mut e := e
   let mut fvars' : List Expr := []
-  for i' in [0:fvars.size] do
     let i := fvars.size - i' - 1
     let fvar := fvars[i]!
     e ← mkLambdaFVars #[fvar] e
@@ -501,7 +500,6 @@ example : List.nthLe [1, 2] 1 (by simp) = 2 := by
 ```
 -/
 elab (name := generalizeProofsElab) "generalize_proofs" config?:(Parser.Tactic.config)?
-    hs:(ppSpace colGt binderIdent)* loc?:(location)? : tactic => withMainContext do
   let config ← GeneralizeProofs.elabConfig (mkOptionalNode config?)
   let (fvars, target) ←
     match expandOptLocation (Lean.mkOptionalNode loc?) with
@@ -513,7 +511,6 @@ elab (name := generalizeProofsElab) "generalize_proofs" config?:(Parser.Tactic.c
     g.withContext do
       let mut lctx ← getLCtx
       for h in hs, fvar in pfs do
-        if let `(binderIdent| $s:ident) := h then
           lctx := lctx.setUserName fvar.fvarId! s.getId
         Expr.addLocalVarInfoForBinderIdent fvar h
       withLCtx lctx (← getLocalInstances) do

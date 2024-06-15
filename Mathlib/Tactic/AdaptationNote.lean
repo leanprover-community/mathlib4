@@ -47,7 +47,7 @@ elab "#adaptation_note " (docComment)? : tactic =>
   reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
 
 @[inherit_doc adaptationNoteCmd]
-syntax (name := adaptationNoteTermStx) "#adaptation_note " (docComment)? term : term
+syntax (name := adaptationNoteTermStx) "#adaptation_note " (docComment)? term:term
 
 /-- Elaborator for adaptation notes. -/
 @[term_elab adaptationNoteTermStx]

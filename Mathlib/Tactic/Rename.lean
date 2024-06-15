@@ -17,7 +17,6 @@ You can use `rename' a => b, b => a` to swap two variables. -/
 syntax (name := rename') "rename' " renameArg,+ : tactic
 
 elab_rules : tactic
-  | `(tactic| rename' $[$as:term => $bs:ident],*) => do
     let ids ← getFVarIds as
     liftMetaTactic1 fun goal ↦ do
       let mut lctx ← getLCtx

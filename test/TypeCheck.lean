@@ -1,6 +1,6 @@
 import Mathlib.Tactic.TypeCheck
 /-- A term where `inferType` returns `Prop`, but which does not type check. -/
-elab "wrong" : term =>
+elab "wrong":term =>
   return Lean.mkApp2 (.const ``id [.zero]) (.sort .zero) (.app (.sort .zero) (.sort .zero))
 
 /--

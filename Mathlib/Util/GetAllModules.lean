@@ -33,7 +33,7 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
   let ml.lean := addExtension ⟨ml⟩ "lean"  -- for example, `Mathlib.lean`
   let allModules : Array System.FilePath ← (do
     if git then
-      let mlDir := ml.push pathSeparator   -- for example, `Mathlib/`
+      let mlDir := ml.push pathSeparator -- for example, `Mathlib/`
       let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
       return (((allLean.dropRightWhile (· == '\n')).splitOn "\n").map (⟨·⟩)).toArray
     else do

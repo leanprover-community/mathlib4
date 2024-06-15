@@ -29,7 +29,6 @@ syntax (name := observe) "observe" "?"? (ppSpace ident)? " : " term
   (" using " (colGt term),+)? : tactic
 
 elab_rules : tactic |
-  `(tactic| observe%$tk $[?%$trace]? $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
   let name : Name := match n? with
     | none   => `this
     | some n => n.getId

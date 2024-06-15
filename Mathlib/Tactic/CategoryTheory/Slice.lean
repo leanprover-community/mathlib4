@@ -65,7 +65,6 @@ composition as needed, zooms in on the `a`-th through `b`-th morphisms, and invo
 syntax (name := sliceLHS) "slice_lhs " num ppSpace num " => " convSeq : tactic
 macro_rules
   | `(tactic| slice_lhs $a $b => $seq) =>
-    `(tactic| conv => lhs; slice $a $b; ($seq:convSeq))
 
 /--
 `slice_rhs a b => tac` zooms to the right hand side, uses associativity for categorical
@@ -74,7 +73,6 @@ composition as needed, zooms in on the `a`-th through `b`-th morphisms, and invo
 syntax (name := sliceRHS) "slice_rhs " num ppSpace num " => " convSeq : tactic
 macro_rules
   | `(tactic| slice_rhs $a $b => $seq) =>
-    `(tactic| conv => rhs; slice $a $b; ($seq:convSeq))
 
 /- Porting note: update when `add_tactic_doc` is supported` -/
 -- add_tactic_doc

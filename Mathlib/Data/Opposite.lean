@@ -34,7 +34,7 @@ variable (α : Sort u)
 -/
 structure Opposite :=
   /-- The canonical map `α → αᵒᵖ`. -/
-  op ::
+  op : :
   /-- The canonical map `αᵒᵖ → α`. -/
   unop : α
 #align opposite Opposite
@@ -44,7 +44,7 @@ structure Opposite :=
 -- Porting note: pp_nodot has not been implemented for Opposite.op
 
 @[inherit_doc]
-notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
+notation : max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
 -- `Presheaf Cᵒᵖ` parses as `Presheaf (Cᵒᵖ)` and not `(Presheaf C)ᵒᵖ`.
 α "ᵒᵖ" => Opposite α
 

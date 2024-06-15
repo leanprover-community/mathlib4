@@ -176,7 +176,7 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D where
     | inl X, inl Y, f => F.map f
     | inr X, inr Y, f => G.map f
   map_id {X} := by cases X <;> (erw [Functor.map_id]; rfl)
-  map_comp {X Y Z} f g:=
+  map_comp {X Y Z} f g :=
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => by erw [F.map_comp]; rfl
     | inr X, inr Y, inr Z, f, g => by erw [G.map_comp]; rfl

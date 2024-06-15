@@ -44,7 +44,7 @@ theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
 -- See Note [decidable namespace]
 protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) : ∃ y, y ≠ x := by
   rcases exists_pair_ne α with ⟨y, y', h⟩
-  by_cases hx:x = y
+  by_cases hx : x = y
   · rw [← hx] at h
     exact ⟨y', h.symm⟩
   · exact ⟨y, Ne.symm hx⟩

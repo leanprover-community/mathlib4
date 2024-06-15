@@ -27,7 +27,6 @@ Info messages are placed at `tk`.
 -/
 def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
   withoutModifyingStateWithInfoAndMessages <| withMainContext do
-    if let `($_:ident) := term then
       -- show signature for `#check ident`
       try
         for c in (← realizeGlobalConstWithInfos term) do

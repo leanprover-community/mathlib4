@@ -53,7 +53,6 @@ h : β
 syntax (name := replace') "replace" haveIdLhs' : tactic
 
 elab_rules : tactic
-| `(tactic| replace $n:optBinderIdent $bs* $[: $t:term]?) => withMainContext do
     let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t false
     let name := optBinderIdent.name n
     let hId? := (← getLCtx).findFromUserName? name |>.map fun d ↦ d.fvarId

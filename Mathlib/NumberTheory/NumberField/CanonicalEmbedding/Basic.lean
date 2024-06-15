@@ -127,7 +127,7 @@ noncomputable def latticeBasis [NumberField K] :
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
-    rw [show M = N.transpose by { ext:2; rfl }]
+    rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
@@ -283,7 +283,7 @@ theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
   rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, normAtPlace_smul, map_one,
     mul_one]
 
-theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K):
+theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K) :
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
 

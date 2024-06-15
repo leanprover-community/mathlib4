@@ -18,7 +18,6 @@ open Lean Elab.Tactic Parser.Tactic Lean.Meta
 -/
 private inductive SplitPosition
 | target
-| hyp (fvarId: FVarId)
 
 /-- Collects a list of positions pointed to by `loc` and their types.
 -/
@@ -90,11 +89,9 @@ private def splitIf1 (cond : Expr) (hName : Name) (loc : Location) : TacticM Uni
 /-- Pops off the front of the list of names, or generates a fresh name if the
 list is empty.
 -/
-private def getNextName (hNames: IO.Ref (List (TSyntax `Lean.binderIdent))) : MetaM Name := do
   match ← hNames.get with
   | [] => mkFreshUserName `h
   | n::ns => do hNames.set ns
-                if let `(binderIdent| $x:ident) := n
                 then pure x.getId
                 else pure `_
 
@@ -140,7 +137,6 @@ ite-expression.
 syntax (name := splitIfs) "split_ifs" (location)? (" with" (ppSpace colGt binderIdent)+)? : tactic
 
 elab_rules : tactic
-| `(tactic| split_ifs $[$loc:location]? $[with $withArg*]?) =>
   let loc := match loc with
   | none => Location.targets #[] true
   | some loc => expandLocation loc

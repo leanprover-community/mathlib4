@@ -123,14 +123,6 @@ structure Methods where
   /-- Construct the canonical numeral for integer `z`, or fail if `z` is out of range. -/
   mkNumeral : Int → MetaM Expr
 
-theorem of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
-theorem of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
-theorem of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
-theorem of_not_le_right [LE α] (h : ¬(a:α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
-theorem of_lt_left [LinearOrder α] (h : (a:α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
-theorem of_lt_right [LinearOrder α] (h : (a:α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
-theorem of_le_left [LE α] (h : (a:α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
-theorem of_le_right [LE α] (h : (a:α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
 
 /--
 Given a proof `pf`, attempts to parse it as an upper (`lb = false`) or lower (`lb = true`)
@@ -159,7 +151,6 @@ def Methods.getBound (m : Methods) (e : Expr) (pf : Expr) (lb : Bool) :
   let .true ← withNewMCtxDepth <| withReducible <| isDefEq e e' | failure
   pure c
 
-theorem le_of_not_le_of_le [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) : (n:α) ≤ lo :=
   le_trans (le_of_not_le h1) h2
 
 /--
@@ -201,9 +192,7 @@ partial def Methods.bisect (m : Methods) (g : MVarId) (cases : Subarray Interval
     let g₂ ← mkFreshExprMVar (← mkArrow le tgt) .syntheticOpaque
     g.assign <| ← mkAppM ``dite #[le, g₂, g₁]
     let (x₁, g₁) ← g₁.mvarId!.intro1
-    m.bisect g₁ cases[:mid] z1 (.lt z3) e1 e3 p1 (.fvar x₁) e
     let (x₂, g₂) ← g₂.mvarId!.intro1
-    m.bisect g₂ cases[mid:] (.le z3) z2 e3 e2 (.fvar x₂) p2 e
   else if _x : 0 < cases.size then
     let { goal, rhs, .. } := cases[0]
     let pf₁ ← match z1 with | .le _ => pure p1 | .lt _ => m.roundUp e1 e rhs p1
@@ -304,7 +293,6 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
       let lo := z1.asLower
       let tgt ← g.getType
       let tag ← g.getTag
-      for i in [:(z2.asUpper-lo+1).toNat] do
         let z := lo+i
         let rhs ← m.mkNumeral z
         let ty ← mkArrow (← mkEq e rhs) tgt
@@ -345,7 +333,6 @@ syntax (name := intervalCases) "interval_cases" (ppSpace colGt atomic(binderIden
   (" using " term ", " term)? : tactic
 
 elab_rules : tactic
-  | `(tactic| interval_cases $[$[$h :]? $e]? $[using $lb, $ub]?) => do
     let g ← getMainGoal
     let cont x h? subst g e lbs ubs mustUseBounds : TacticM Unit := do
       let goals ← IntervalCases.intervalCases g (.fvar x) e lbs ubs mustUseBounds
@@ -359,7 +346,6 @@ elab_rules : tactic
       replaceMainGoal gs.toList
     g.withContext do
     let hName? := (h.getD none).map fun
-      | `(binderIdent| $n:ident) => n.getId
       | _ => `_
     match e, lb, ub with
     | e, some lb, some ub =>

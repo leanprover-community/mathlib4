@@ -237,7 +237,7 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
   /-- Successor powers behave as expected -/
   gnpow_succ' :
     ∀ (n : ℕ) (a : GradedMonoid A),
-      (GradedMonoid.mk _ <| gnpow n.succ a.snd) = ⟨_, gnpow n a.snd⟩ * a:= by
+      (GradedMonoid.mk _ <| gnpow n.succ a.snd) = ⟨_, gnpow n a.snd⟩ * a := by
     apply_gmonoid_gnpowRec_succ_tac
 #align graded_monoid.gmonoid GradedMonoid.GMonoid
 
@@ -336,7 +336,7 @@ section Monoid
 variable [AddMonoid ι] [GMonoid A]
 
 instance : NatPow (A 0) where
-  pow x n := @Eq.rec ι (n • (0:ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
+  pow x n : = @Eq.rec ι (n • (0 : ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
 
 variable {A}
 
@@ -635,7 +635,7 @@ instance SetLike.gMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A 
     mul_one := fun ⟨_, _, _⟩ => Sigma.subtype_ext (add_zero _) (mul_one _)
     mul_assoc := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ⟨_, _, _⟩ =>
       Sigma.subtype_ext (add_assoc _ _ _) (mul_assoc _ _ _)
-    gnpow := fun n _ a => ⟨(a:R)^n, SetLike.pow_mem_graded n a.prop⟩
+    gnpow : = fun n _ a => ⟨(a : R)^n, SetLike.pow_mem_graded n a.prop⟩
     gnpow_zero' := fun _ => Sigma.subtype_ext (zero_nsmul _) (pow_zero _)
     gnpow_succ' := fun _ _ => Sigma.subtype_ext (succ_nsmul _ _) (pow_succ _ _) }
 #align set_like.gmonoid SetLike.gMonoid
@@ -655,7 +655,7 @@ example {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
 @[simp,nolint simpNF]
 theorem SetLike.coe_gnpow {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
     [SetLike.GradedMonoid A] {i : ι} (x : A i) (n : ℕ) :
-    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x:R)^n :=
+    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x : R)^n : =
   rfl
 #align set_like.coe_gnpow SetLike.coe_gnpow
 

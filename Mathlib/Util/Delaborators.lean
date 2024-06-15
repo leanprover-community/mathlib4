@@ -22,7 +22,7 @@ open Lean.PrettyPrinter.Delaborator
 also be written as `(x : α) → β x`. -/
 -- A direct copy of forall notation but with `Π`/`Pi` instead of `∀`/`Forall`.
 @[term_parser]
-def piNotation := leading_parser:leadPrec
+def piNotation : = leading_parser : leadPrec
   unicodeSymbol "Π" "PiType" >>
   many1 (ppSpace >> (binderIdent <|> bracketedBinder)) >>
   optType >> ", " >> termParser
@@ -30,11 +30,11 @@ def piNotation := leading_parser:leadPrec
 /-- Dependent function type (a "pi type"). The notation `Π x ∈ s, β x` is
 short for `Π x, x ∈ s → β x`. -/
 -- A copy of forall notation from `Batteries.Util.ExtendedBinder` for pi notation
-syntax "Π " binderIdent binderPred ", " term : term
+syntax "Π " binderIdent binderPred ", " term:term
 
 macro_rules
-  | `(Π $x:ident $pred:binderPred, $p) => `(Π $x:ident, satisfies_binder_pred% $x $pred → $p)
-  | `(Π _ $pred:binderPred, $p) => `(Π x, satisfies_binder_pred% x $pred → $p)
+  | `(Π $x : ident $pred : binderPred, $p) => `(Π $x : ident, satisfies_binder_pred% $x $pred → $p)
+  | `(Π _ $pred : binderPred, $p) => `(Π x, satisfies_binder_pred% x $pred → $p)
 
 /-- Since pi notation and forall notation are interchangeable, we can
 parse it by simply using the pre-existing forall parser. -/
@@ -48,28 +48,28 @@ such as `∀ ε > 0`. -/
 def delabPi : Delab := whenPPOption Lean.getPPNotation do
   let stx ← delabForall
   match stx with
-  | `(∀ ($i:ident : $_), $j:ident ∈ $s → $body) =>
-    if i == j then `(∀ $i:ident ∈ $s, $body) else pure stx
-  | `(∀ ($x:ident : $_), $y:ident > $z → $body) =>
-    if x == y then `(∀ $x:ident > $z, $body) else pure stx
-  | `(∀ ($x:ident : $_), $y:ident < $z → $body) =>
-    if x == y then `(∀ $x:ident < $z, $body) else pure stx
-  | `(∀ ($x:ident : $_), $y:ident ≥ $z → $body) =>
-    if x == y then `(∀ $x:ident ≥ $z, $body) else pure stx
-  | `(∀ ($x:ident : $_), $y:ident ≤ $z → $body) =>
-    if x == y then `(∀ $x:ident ≤ $z, $body) else pure stx
-  | `(Π ($i:ident : $_), $j:ident ∈ $s → $body) =>
-    if i == j then `(Π $i:ident ∈ $s, $body) else pure stx
-  | `(∀ ($i:ident : $_), $j:ident ∉ $s → $body) =>
-    if i == j then `(∀ $i:ident ∉ $s, $body) else pure stx
-  | `(∀ ($i:ident : $_), $j:ident ⊆ $s → $body) =>
-    if i == j then `(∀ $i:ident ⊆ $s, $body) else pure stx
-  | `(∀ ($i:ident : $_), $j:ident ⊂ $s → $body) =>
-    if i == j then `(∀ $i:ident ⊂ $s, $body) else pure stx
-  | `(∀ ($i:ident : $_), $j:ident ⊇ $s → $body) =>
-    if i == j then `(∀ $i:ident ⊇ $s, $body) else pure stx
-  | `(∀ ($i:ident : $_), $j:ident ⊃ $s → $body) =>
-    if i == j then `(∀ $i:ident ⊃ $s, $body) else pure stx
+  | `(∀ ($i : ident : $_), $j : ident ∈ $s → $body) =>
+    if i == j then `(∀ $i : ident ∈ $s, $body) else pure stx
+  | `(∀ ($x : ident : $_), $y : ident > $z → $body) =>
+    if x == y then `(∀ $x : ident > $z, $body) else pure stx
+  | `(∀ ($x : ident : $_), $y : ident < $z → $body) =>
+    if x == y then `(∀ $x : ident < $z, $body) else pure stx
+  | `(∀ ($x : ident : $_), $y : ident ≥ $z → $body) =>
+    if x == y then `(∀ $x : ident ≥ $z, $body) else pure stx
+  | `(∀ ($x : ident : $_), $y : ident ≤ $z → $body) =>
+    if x == y then `(∀ $x : ident ≤ $z, $body) else pure stx
+  | `(Π ($i : ident : $_), $j : ident ∈ $s → $body) =>
+    if i == j then `(Π $i : ident ∈ $s, $body) else pure stx
+  | `(∀ ($i : ident : $_), $j : ident ∉ $s → $body) =>
+    if i == j then `(∀ $i : ident ∉ $s, $body) else pure stx
+  | `(∀ ($i : ident : $_), $j : ident ⊆ $s → $body) =>
+    if i == j then `(∀ $i : ident ⊆ $s, $body) else pure stx
+  | `(∀ ($i : ident : $_), $j : ident ⊂ $s → $body) =>
+    if i == j then `(∀ $i : ident ⊂ $s, $body) else pure stx
+  | `(∀ ($i : ident : $_), $j : ident ⊇ $s → $body) =>
+    if i == j then `(∀ $i : ident ⊇ $s, $body) else pure stx
+  | `(∀ ($i : ident : $_), $j : ident ⊃ $s → $body) =>
+    if i == j then `(∀ $i : ident ⊃ $s, $body) else pure stx
   | _ => pure stx
 
 /-- Override the Lean 4 pi notation delaborator with one that uses `Π` and prints
@@ -82,7 +82,7 @@ def delabPi' : Delab := whenPPOption Lean.getPPNotation do
   -- Replacements
   let stx : Term ←
     match stx with
-    | `($group:bracketedBinder → $body) => `(Π $group:bracketedBinder, $body)
+    | `($group : bracketedBinder → $body) => `(Π $group : bracketedBinder, $body)
     | _ => pure stx
   -- Merging
   match stx with
@@ -111,47 +111,47 @@ def exists_delab : Delab := whenPPOption Lean.getPPNotation do
       if prop && !dep then
         `(∃ (_ : $dom), $body)
       else if prop || ppTypes then
-        `(∃ ($x:ident : $dom), $body)
+        `(∃ ($x : ident : $dom), $body)
       else
-        `(∃ $x:ident, $body)
+        `(∃ $x : ident, $body)
   -- Cute binders
   let stx : Term ←
     match stx with
-    | `(∃ $i:ident, $j:ident ∈ $s ∧ $body)
-    | `(∃ ($i:ident : $_), $j:ident ∈ $s ∧ $body) =>
-      if i == j then `(∃ $i:ident ∈ $s, $body) else pure stx
-    | `(∃ $x:ident, $y:ident > $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident > $z ∧ $body) =>
-      if x == y then `(∃ $x:ident > $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident < $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident < $z ∧ $body) =>
-      if x == y then `(∃ $x:ident < $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ≥ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ≥ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ≥ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ≤ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ≤ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ≤ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ∉ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ∉ $z ∧ $body) => do
-      if x == y then `(∃ $x:ident ∉ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ⊆ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ⊆ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ⊆ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ⊂ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ⊂ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ⊂ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ⊇ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ⊇ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ⊇ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ⊃ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ⊃ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ⊃ $z, $body) else pure stx
+    | `(∃ $i : ident, $j : ident ∈ $s ∧ $body)
+    | `(∃ ($i : ident : $_), $j : ident ∈ $s ∧ $body) =>
+      if i == j then `(∃ $i : ident ∈ $s, $body) else pure stx
+    | `(∃ $x : ident, $y : ident > $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident > $z ∧ $body) =>
+      if x == y then `(∃ $x : ident > $z, $body) else pure stx
+    | `(∃ $x : ident, $y : ident < $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident < $z ∧ $body) =>
+      if x == y then `(∃ $x : ident < $z, $body) else pure stx
+    | `(∃ $x : ident, $y : ident ≥ $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident ≥ $z ∧ $body) =>
+      if x == y then `(∃ $x : ident ≥ $z, $body) else pure stx
+    | `(∃ $x : ident, $y : ident ≤ $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident ≤ $z ∧ $body) =>
+      if x == y then `(∃ $x : ident ≤ $z, $body) else pure stx
+    | `(∃ $x : ident, $y : ident ∉ $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident ∉ $z ∧ $body) => do
+      if x == y then `(∃ $x : ident ∉ $z, $body) else pure stx
+    | `(∃ $x : ident, $y : ident ⊆ $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident ⊆ $z ∧ $body) =>
+      if x == y then `(∃ $x : ident ⊆ $z, $body) else pure stx
+    | `(∃ $x : ident, $y : ident ⊂ $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident ⊂ $z ∧ $body) =>
+      if x == y then `(∃ $x : ident ⊂ $z, $body) else pure stx
+    | `(∃ $x : ident, $y : ident ⊇ $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident ⊇ $z ∧ $body) =>
+      if x == y then `(∃ $x : ident ⊇ $z, $body) else pure stx
+    | `(∃ $x : ident, $y : ident ⊃ $z ∧ $body)
+    | `(∃ ($x : ident : $_), $y : ident ⊃ $z ∧ $body) =>
+      if x == y then `(∃ $x : ident ⊃ $z, $body) else pure stx
     | _ => pure stx
   match stx with
-  | `(∃ $group:bracketedExplicitBinders, ∃ $[$groups:bracketedExplicitBinders]*, $body) =>
+  | `(∃ $group : bracketedExplicitBinders, ∃ $[$groups : bracketedExplicitBinders]*, $body) =>
     `(∃ $group $groups*, $body)
-  | `(∃ $b:binderIdent, ∃ $[$bs:binderIdent]*, $body) => `(∃ $b:binderIdent $[$bs]*, $body)
+  | `(∃ $b : binderIdent, ∃ $[$bs : binderIdent]*, $body) => `(∃ $b : binderIdent $[$bs]*, $body)
   | _ => pure stx
 end existential
 

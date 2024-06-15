@@ -72,10 +72,6 @@ syntax (name := introv) "introv " (ppSpace colGt binderIdent)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx ↦ do
   match stx with
   | `(tactic| introv)                     => introsDep
-  | `(tactic| introv $h:ident $hs:binderIdent*) =>
-    evalTactic (← `(tactic| introv; intro $h:ident; introv $hs:binderIdent*))
-  | `(tactic| introv _%$tk $hs:binderIdent*) =>
-    evalTactic (← `(tactic| introv; intro _%$tk; introv $hs:binderIdent*))
   | _ => throwUnsupportedSyntax
 where
   introsDep : TacticM Unit := do

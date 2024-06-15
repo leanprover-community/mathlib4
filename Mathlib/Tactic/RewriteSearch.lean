@@ -91,7 +91,6 @@ def tokenize (e : Expr) : MetaM (List String) := do
 /--
 Data structure containing the history of a rewrite search.
 -/
-structure SearchNode where mk' ::
   /-- The lemmas used so far. -/
   -- The first component is the index amongst successful rewrites at the previous node.
   history : Array (Nat × Expr × Bool)

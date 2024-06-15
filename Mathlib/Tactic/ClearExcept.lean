@@ -13,7 +13,6 @@ namespace Lean.Elab.Tactic
 syntax (name := clearExcept) "clear " "*" " -" (ppSpace colGt ident)* : tactic
 
 elab_rules : tactic
-  | `(tactic| clear * - $hs:ident*) => do
     let fvarIds ← getFVarIds hs
     liftMetaTactic1 fun goal ↦ do
       let mut toClear : Array FVarId := #[]

@@ -4,7 +4,7 @@ import Lean.PrettyPrinter
 
 section
 
-local syntax:arg term:max noWs superscript(term) : term
+local syntax:arg term:max noWs superscript(term):term
 local macro_rules | `($a:term$b:superscript) => `($a ^ $b)
 
 variable (foo : Nat)
@@ -46,7 +46,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 end
 
 section
-local macro:arg a:term:max b:subscript(term) : term => `($a $(⟨b.raw[0]⟩))
+local macro:arg a:term:max b:subscript(term):term => `($a $(⟨b.raw[0]⟩))
 
 example (a : Nat → Nat) (h : ∀ i, 1 ≤ (a)ᵢ) : 2 ≤ a ₀ + a ₁ :=
   Nat.add_le_add h₍₀₎ (h)₁

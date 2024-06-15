@@ -52,7 +52,6 @@ def applyTheConstructor (mvarId : MVarId) :
           let mut explicit := #[]
           let mut implicit := #[]
           let mut insts := #[]
-          for arg in args, binderInfo in binderInfos, i in [0:args.size] do
             if cinfo.numParams ≤ i ∧ binderInfo.isExplicit then
               explicit := explicit.push arg.mvarId!
             else

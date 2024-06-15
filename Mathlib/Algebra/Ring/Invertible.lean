@@ -42,7 +42,7 @@ theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertib
   Nat.zero_lt_of_ne_zero fun h => nonzero_of_invertible (n : α) (h ▸ Nat.cast_zero)
 
 theorem invOf_add_invOf [Semiring α] (a b : α) [Invertible a] [Invertible b] :
-    ⅟a + ⅟b = ⅟a * (a + b) * ⅟b:= by
+    ⅟a + ⅟b = ⅟a * (a + b) * ⅟b := by
   rw [mul_add, invOf_mul_self, add_mul, one_mul, mul_assoc, mul_invOf_self, mul_one, add_comm]
 
 /-- A version of `inv_sub_inv'` for `invOf`. -/

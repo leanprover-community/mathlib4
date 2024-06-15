@@ -21,7 +21,6 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
   if a.size > b.size then
     return false
   let mut i := 0
-  for j in [0:b.size] do
     if i = a.size then
       break
 
@@ -37,7 +36,6 @@ private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM 
     MetaM α :=
   lambdaLetTelescope e λ xs b => do
     if let .some i ← xs.findIdxM? (fun x ↦ do pure ¬(← x.fvarId!.isLetVar)) then
-      k xs[0:i] (← mkLambdaFVars xs[i:] b)
     else
       k xs b
 
@@ -59,7 +57,6 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 
   let swapBVarArray : Array Expr := Id.run do
     let mut a : Array Expr := .mkEmpty e.looseBVarRange
-    for k in [0:e.looseBVarRange] do
       a := a.push (.bvar (if k = i then j else if k = j then i else k))
     a
 
@@ -74,7 +71,6 @@ def mkProdElem (xs : Array Expr) : MetaM Expr := do
   | 1 => return xs[0]!
   | _ =>
     let n := xs.size
-    xs[0:n-1].foldrM (init:=xs[n-1]!) fun x p => mkAppM ``Prod.mk #[x,p]
 
 /--
 For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.

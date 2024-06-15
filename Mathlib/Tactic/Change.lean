@@ -32,7 +32,6 @@ syntax (name := change?) "change?" (ppSpace colGt term)? : tactic
 
 open Lean Meta Elab.Tactic Meta.Tactic.TryThis in
 elab_rules : tactic
-| `(tactic|change?%$tk $[$sop:term]?) => withMainContext do
   let stx ← getRef
   let expr ← match sop with
     | none => getMainTarget

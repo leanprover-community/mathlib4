@@ -146,7 +146,6 @@ syntax (name := unfoldLetStx) "unfold_let" (ppSpace colGt term:max)*
 elab_rules : tactic
   | `(tactic| unfold_let $[$loc?]?) =>
     runDefEqTactic (fun _ => zetaReduce) loc? "unfold_let"
-  | `(tactic| unfold_let $hs:term* $[$loc?]?) => do
     let fvars ← getFVarIds hs
     runDefEqTactic (fun _ => unfoldFVars fvars) loc? "unfold_let"
 
@@ -155,7 +154,6 @@ syntax "unfold_let" (ppSpace colGt term:max)* : conv
 
 elab_rules : conv
   | `(conv| unfold_let) => runDefEqConvTactic zetaReduce
-  | `(conv| unfold_let $hs:term*) => do
     runDefEqConvTactic (unfoldFVars (← getFVarIds hs))
 
 
@@ -188,7 +186,6 @@ syntax (name := refoldLetStx) "refold_let" (ppSpace colGt term:max)*
   (ppSpace Parser.Tactic.location)? : tactic
 
 elab_rules : tactic
-  | `(tactic| refold_let $hs:term* $[$loc?]?) => do
     let fvars ← getFVarIds hs
     runDefEqTactic (refoldFVars fvars) loc? "refold_let"
 
@@ -196,7 +193,6 @@ elab_rules : tactic
 syntax "refold_let" (ppSpace colGt term:max)* : conv
 
 elab_rules : conv
-  | `(conv| refold_let $hs:term*) => do
     runDefEqConvTactic (refoldFVars (← getFVarIds hs) none)
 
 

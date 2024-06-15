@@ -350,7 +350,6 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add   := fun _ stx ↦ do
         let ids ← match stx with
-          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
@@ -368,7 +367,6 @@ initialize reorderAttr : NameMapExtension (List <| List Nat) ←
       We keep it as an attribute for now so that mathport can still use it, and it can generate a \
       warning."
     add := fun
-    | _, stx@`(attr| to_additive_reorder $[$[$reorders:num]*],*) => do
       Linter.logLintIf linter.toAdditiveReorder stx m!"\
         Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` instead.\n\n\
         That will also generate the additive version with the arguments swapped, \
@@ -1100,7 +1098,6 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
     let mut existing := some false
@@ -1108,7 +1105,6 @@ def elabToAdditive : Syntax → CoreM Config
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
-      | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
         reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
       | `(toAdditiveOption| existing) =>
         existing := some true

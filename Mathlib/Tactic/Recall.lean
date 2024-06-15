@@ -37,7 +37,6 @@ syntax (name := recall) "recall " ident ppIndent(optDeclSig) (declVal)? : comman
 open Lean Meta Elab Command Term
 
 elab_rules : command
-  | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
     let declName := id.getId
     let some info := (← getEnv).find? declName
       | throwError "unknown constant '{declName}'"
@@ -47,7 +46,6 @@ elab_rules : command
     if let some val := val? then
       let some infoVal := info.value?
         | throwErrorAt val "constant '{declName}' has no defined value"
-      elabCommand <| ← `(noncomputable def $newId $sig:optDeclSig $val)
       let some newInfo := (← getEnv).find? newId.getId | return -- def already threw
       liftTermElabM do
         let mvs ← newInfo.levelParams.mapM fun _ => mkFreshLevelMVar

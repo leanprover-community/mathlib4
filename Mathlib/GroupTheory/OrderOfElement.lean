@@ -243,7 +243,7 @@ theorem orderOf_le_of_pow_eq_one (hn : 0 < n) (h : x ^ n = 1) : orderOf x ≤ n 
 
 @[to_additive (attr := simp)]
 theorem orderOf_one : orderOf (1 : G) = 1 := by
-  rw [orderOf, ← minimalPeriod_id (x := (1:G)), ← one_mul_eq_id]
+  rw [orderOf, ← minimalPeriod_id (x : = (1 : G)), ← one_mul_eq_id]
 #align order_of_one orderOf_one
 #align order_of_zero addOrderOf_zero
 

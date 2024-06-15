@@ -122,7 +122,7 @@ def lengthParity : W →* Multiplicative (ZMod 2) := cs.lift ⟨fun _ ↦ Multip
   simp_rw [CoxeterMatrix.IsLiftable, ← ofAdd_add, (by decide : (1 + 1 : ZMod 2) = 0)]
   simp⟩
 
-theorem lengthParity_simple (i : B):
+theorem lengthParity_simple (i : B) :
     cs.lengthParity (s i) = Multiplicative.ofAdd 1 := cs.lift_apply_simple _ _
 
 theorem lengthParity_comp_simple :

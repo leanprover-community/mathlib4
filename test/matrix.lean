@@ -25,7 +25,7 @@ section elaborators
 open Lean Meta Elab Command
 
 /-- `dims% e` elaborates `e` as a Matrix and returns its dimensions as a `Nat × Nat`. -/
-elab "dims% " e:term : term => do
+elab "dims% " e:term:term => do
   let elem_t ← mkFreshTypeMVar
   let m ← mkFreshExprMVar (mkConst ``Nat)
   let n ← mkFreshExprMVar (mkConst ``Nat)

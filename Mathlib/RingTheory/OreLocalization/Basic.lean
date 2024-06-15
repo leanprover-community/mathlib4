@@ -84,7 +84,7 @@ variable {R : Type*} [Monoid R] {S : Submonoid R}
 variable (R S) [OreSet S]
 
 @[inherit_doc OreLocalization]
-scoped syntax:1075 term noWs atomic("[" term "⁻¹" noWs "]") : term
+scoped syntax:1075 term noWs atomic("[" term "⁻¹" noWs "]"):term
 macro_rules | `($R[$S⁻¹]) => ``(OreLocalization $S $R)
 
 attribute [local instance] oreEqv

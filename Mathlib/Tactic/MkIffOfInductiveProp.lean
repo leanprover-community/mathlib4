@@ -73,7 +73,6 @@ private def updateLambdaBinderInfoD! (e : Expr) : Expr :=
 When possible, `p ∧ q` is used instead of `∃ (_ : p), q`. -/
 def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
   args.foldrM
-    (fun arg i:Expr => do
       let t ← inferType arg
       let l := (← inferType t).sortLevel!
       if arg.occurs i || l != Level.zero
@@ -396,7 +395,6 @@ See also the `mk_iff` user attribute.
 syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop " ident ppSpace ident : command
 
 elab_rules : command
-| `(command| mk_iff_of_inductive_prop $i:ident $r:ident) =>
     Command.liftCoreM <| MetaM.run' do
       mkIffOfInductivePropImpl i.getId r.getId r
 
@@ -405,7 +403,6 @@ initialize Lean.registerBuiltinAttribute {
   descr := "Generate an `iff` lemma for an inductive `Prop`."
   add := fun decl stx _ => Lean.Meta.MetaM.run' do
     let (tgt, idStx) ← match stx with
-      | `(attr| mk_iff $tgt:ident) =>
         pure ((← mkDeclName (← getCurrNamespace) {} tgt.getId).1, tgt.raw)
       | `(attr| mk_iff) => pure (decl.decapitalize.appendAfter "_iff", stx)
       | _ => throwError "unrecognized syntax"

@@ -188,7 +188,7 @@ def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ �
      cases x with
      | inl x => exact τ₁.app a x
      | inr x => exact τ₂.app a x
-  naturality _ _ _:= by
+  naturality _ _ _ := by
     ext x
     cases x with | _ => simp only [coprod, types_comp_apply, FunctorToTypes.naturality]
 

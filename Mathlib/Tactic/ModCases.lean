@@ -85,7 +85,6 @@ def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Un
   let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
-    | `(binderIdent| $n:ident) => g.intro n.getId
     | _ => g.intro `H
     g.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent h
     pure g
@@ -159,7 +158,6 @@ def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Un
   let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
-    | `(binderIdent| $n:ident) => g.intro n.getId
     | _ => g.intro `H
     g.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent h
     pure g
@@ -181,7 +179,6 @@ end NatMod
 syntax "mod_cases " (atomic(binderIdent ":"))? term:71 " % " num : tactic
 
 elab_rules : tactic
-  | `(tactic| mod_cases $[$h :]? $e % $n) => do
     let n := n.getNat
     if n == 0 then Elab.throwUnsupportedSyntax
     let h := h.getD (← `(binderIdent| _))

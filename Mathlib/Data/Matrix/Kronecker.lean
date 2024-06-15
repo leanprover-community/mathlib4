@@ -357,7 +357,7 @@ theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : M
 
 theorem kronecker_ofNat [Semiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) [b.AtLeastTwo] :
     A ⊗ₖ (no_index (OfNat.ofNat b) : Matrix n n α) =
-      blockDiagonal fun _ => A <• (OfNat.ofNat b : α):=
+      blockDiagonal fun _ => A <• (OfNat.ofNat b : α) :=
   kronecker_diagonal _ _
 
 theorem ofNat_kronecker [Semiring α] [DecidableEq l] (a : ℕ) [a.AtLeastTwo] (B : Matrix m n α) :

@@ -39,7 +39,7 @@ variable (C : Type u) [Category.{v} C] [HasShift C ℤ]
 and `f : X ⟶ Y`, `g : Y ⟶ Z`, `h : Z ⟶ X⟦1⟧` are morphisms in `C`.
 See <https://stacks.math.columbia.edu/tag/0144>.
 -/
-structure Triangle where mk' ::
+structure Triangle where mk' : :
   /-- the first object of a triangle -/
   obj₁ : C
   /-- the second object of a triangle -/
