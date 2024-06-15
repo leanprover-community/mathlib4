@@ -99,8 +99,8 @@ def pointedCurve : EllipticCurve Universal.Field where
 open Polynomial in
 lemma equation_point : pointedCurve.toAffine.Equation (polyToField (C X)) (polyToField Y) := by
   simp_rw [Affine.Equation, pointedCurve, baseChange, EllipticCurve.toAffine,
-    algebraMap_field_eq_comp, ← map_map, Affine.map_polynomial_eval_C_eval, Affine.map_polynomial,
-    eval_map, eval_C_X_eval₂_map_C_X, polyToField_polynomial]
+    algebraMap_field_eq_comp, ← map_map, Affine.map_polynomial_evalEval, Affine.map_polynomial,
+    evalEval, eval_map, eval_C_X_eval₂_map_C_X, polyToField_polynomial]
 
 open Polynomial Affine in
 /-- The distinguished point on the universal pointed Weierstrass curve. -/
@@ -136,7 +136,7 @@ end Universal
 def cusp : Affine ℤ := { a₁ := 0, a₂ := 0, a₃ := 0, a₄ := 0, a₆ := 0 }
 
 lemma cusp_equation_one_one : cusp.Equation 1 1 := by
-  simp [Affine.Equation, Affine.polynomial, cusp]
+  simp [Affine.Equation, Affine.polynomial, cusp, Polynomial.evalEval]
 
 open Universal
 variable {R} [CommRing R] (W : WeierstrassCurve R)
