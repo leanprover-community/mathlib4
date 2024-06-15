@@ -279,7 +279,7 @@ theorem Mates_hcomp
       ((Mates adj₃ adj₄) β) := by
   unfold LeftAdjointSquare.hcomp RightAdjointSquare.hcomp Mates Adjunction.comp
   ext c
-  simp
+  simp?
   slice_rhs 3 4 =>
     {
       rw [← R₂.map_comp]
