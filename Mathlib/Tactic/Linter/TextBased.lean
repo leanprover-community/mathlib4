@@ -84,11 +84,10 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (fun c ↦ c == ' ')
   match parts with
     | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
-      -- Turn the filename into a path. XXX: is there a nicer way to do this?
-      -- Invariant: `style-exceptions.txt` always contains Unix paths
-      -- (because, for example, in practice it is updated by CI, which runs on unix).
-      -- Hence, splitting and joining on "/" is actually somewhat safe.
-      let path : FilePath := mkFilePath (filename.split (fun c ↦ c == '/'))
+      -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
+      -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
+      -- component contains any path separator.
+      let path : FilePath := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
       let err : Option StyleError := match error_code with
