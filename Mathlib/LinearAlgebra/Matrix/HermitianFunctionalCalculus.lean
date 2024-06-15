@@ -146,6 +146,9 @@ noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) 
     ext
     simp
 
+/- The following three results can go into the Spectrum file right before `end Decidable Eq`. Rather
+than creating a dependent PR, we can wait until the diagonal spectrum PR merges.-/
+
 /-- The ℝ-spectrum of a Hermitian Matrix over RCLike field is the range of the eigenvalue function-/
 theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
     (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
