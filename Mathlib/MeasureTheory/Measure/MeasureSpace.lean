@@ -1565,9 +1565,11 @@ theorem sum_cond (μ ν : Measure α) : (sum fun b => cond b μ ν) = μ + ν :=
 #align measure_theory.measure.sum_cond MeasureTheory.Measure.sum_cond
 
 @[simp]
-theorem sum_of_empty [IsEmpty ι] (μ : ι → Measure α) : sum μ = 0 := by
+theorem sum_of_isEmpty [IsEmpty ι] (μ : ι → Measure α) : sum μ = 0 := by
   rw [← measure_univ_eq_zero, sum_apply _ MeasurableSet.univ, tsum_empty]
-#align measure_theory.measure.sum_of_empty MeasureTheory.Measure.sum_of_empty
+#align measure_theory.measure.sum_of_empty MeasureTheory.Measure.sum_of_isEmpty
+
+@[deprecated (since := "2024-06-11")] alias sum_of_empty := sum_of_isEmpty
 
 theorem sum_add_sum_compl (s : Set ι) (μ : ι → Measure α) :
     ((sum fun i : s => μ i) + sum fun i : ↥sᶜ => μ i) = sum μ := by
