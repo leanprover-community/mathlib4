@@ -171,12 +171,12 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         exists_false, exists_const, not_false_eq_true]
     refine
       ⟨⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
-        ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
-        open_lemma u (fun n ↦ ⋃ m ≤ n, v m) (fun n ↦ (u_props n).1),
-        open_lemma v (fun n ↦ ⋃ m ≤ n, u m) (fun n ↦ (v_props n).1),
-        cover_lemma s u v u_cov (fun n ↦ (v_props n).2),
-        cover_lemma t v u v_cov (fun n ↦ (u_props n).2),
-        ?_⟩
+       ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
+       open_lemma u (fun n ↦ ⋃ m ≤ n, v m) (fun n ↦ (u_props n).1),
+       open_lemma v (fun n ↦ ⋃ m ≤ n, u m) (fun n ↦ (v_props n).1),
+       cover_lemma s u v u_cov (fun n ↦ (v_props n).2),
+       cover_lemma t v u v_cov (fun n ↦ (u_props n).2),
+       ?_⟩
     rw [Set.disjoint_left]
     rintro x ⟨un, ⟨n, rfl⟩, xinun⟩
     suffices ∀ (m : ℕ), x ∈ v m → x ∈ closure (⋃ m' ∈ {m' | m' ≤ m}, u m') by simpa
@@ -187,10 +187,12 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     exact subset_closure (mem_biUnion n_le_m xinun.1)
   · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
     exact
-      ⟨⟨fun _ ↦ U, h_sub_U.trans (iUnion_const U).symm.subset,
+      ⟨⟨fun _ ↦ U,
+        h_sub_U.trans (iUnion_const U).symm.subset,
         fun _ ↦
           ⟨U_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) k_sub_V (UV_dis.closure_left V_open)⟩⟩,
-      ⟨fun _ ↦ V, k_sub_V.trans (iUnion_const V).symm.subset,
+       ⟨fun _ ↦ V,
+        k_sub_V.trans (iUnion_const V).symm.subset,
         fun _ ↦
           ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
 
@@ -2174,10 +2176,10 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpa
       t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains)
     exact
       ⟨interior n,
-        isOpen_interior,
-        disjoint_left.mpr fun ⦃_⦄ ain ↦
-          nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
-        fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
+       isOpen_interior,
+       disjoint_left.mpr fun ⦃_⦄ ain ↦
+         nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
+       fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
   -- By Lindelöf, we may obtain a countable subcover witnessing `HasSeparatingCover`
   choose u u_open u_dis u_nhd using this
   obtain ⟨f, f_cov⟩ := s_cl.isLindelof.indexed_countable_subcover
