@@ -153,6 +153,10 @@ def exp : PowerSeries A :=
   mk fun n => algebraMap ℚ A (1 / n !)
 #align power_series.exp PowerSeries.exp
 
+/-- Power series for the function `log(1 + x)`. -/
+def log_add_one : PowerSeries A :=
+  mk fun n => if n = 0 then 0 else algebraMap ℚ A (- (- 1) ^ n / n)
+
 /-- Power series for the sine function at zero. -/
 def sin : PowerSeries A :=
   mk fun n => if Even n then 0 else algebraMap ℚ A ((-1) ^ (n / 2) / n !)
