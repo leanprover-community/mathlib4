@@ -34,14 +34,17 @@ attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace
 
-/-- `LightProfinite` is the category of second countable profinite spaces. -/
-structure LightProfinite where
-  /-- The underlying compact Hausdorff space of a light profinite space. -/
-  toCompHaus : CompHaus.{u}
-  /-- A light profinite space is totally disconnected -/
-  [isTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
-  /-- A light profinite space is second countable -/
-  [secondCountable : SecondCountableTopology toCompHaus]
+-- /-- `LightProfinite` is the category of second countable profinite spaces. -/
+-- structure LightProfinite where
+--   /-- The underlying compact Hausdorff space of a light profinite space. -/
+--   toCompHaus : CompHaus.{u}
+--   /-- A light profinite space is totally disconnected -/
+--   [isTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
+--   /-- A light profinite space is second countable -/
+--   [secondCountable : SecondCountableTopology toCompHaus]
+
+abbrev LightProfinite := CompHausLike
+  (fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)
 
 namespace LightProfinite
 
@@ -49,117 +52,63 @@ namespace LightProfinite
 Construct a term of `LightProfinite` from a type endowed with the structure of a compact,
 Hausdorff, totally disconnected and second countable topological space.
 -/
-def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] [SecondCountableTopology X] : LightProfinite :=
-  ⟨⟨X, inferInstance⟩, trivial⟩
+  CompHausLike.of _ X ⟨(inferInstance : TotallyDisconnectedSpace X),
+    (inferInstance : SecondCountableTopology X)⟩
 
 instance : Inhabited LightProfinite :=
   ⟨LightProfinite.of PEmpty⟩
 
-instance category : Category LightProfinite :=
-  InducedCategory.category toCompHaus
-
-instance concreteCategory : ConcreteCategory LightProfinite :=
-  InducedCategory.concreteCategory _
-
-instance hasForget₂ : HasForget₂ LightProfinite TopCat :=
-  InducedCategory.hasForget₂ _
-
-instance : CoeSort LightProfinite (Type*) :=
-  ⟨fun X => X.toCompHaus⟩
-
 instance {X : LightProfinite} : TotallyDisconnectedSpace X :=
-  X.isTotallyDisconnected
+  X.prop.1
 
 instance {X : LightProfinite} : SecondCountableTopology X :=
-  X.secondCountable
-
--- We check that we automatically infer that light profinite spaces are compact and Hausdorff.
-example {X : LightProfinite} : CompactSpace X :=
-  inferInstance
-
-example {X : LightProfinite} : T2Space X :=
-  inferInstance
-
--- Porting note: the next four instances were not needed previously.
-instance {X : LightProfinite} : TopologicalSpace ((forget LightProfinite).obj X) :=
-  show TopologicalSpace X from inferInstance
+  X.prop.2
 
 instance {X : LightProfinite} : TotallyDisconnectedSpace ((forget LightProfinite).obj X) :=
-  show TotallyDisconnectedSpace X from inferInstance
-
-instance {X : LightProfinite} : CompactSpace ((forget LightProfinite).obj X) :=
-  show CompactSpace X from inferInstance
-
-instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
-  show T2Space X from inferInstance
+  X.prop.1
 
 instance {X : LightProfinite} : SecondCountableTopology ((forget LightProfinite).obj X) :=
-  show SecondCountableTopology X from inferInstance
-
-@[simp]
-theorem coe_id (X : LightProfinite) : (𝟙 ((forget LightProfinite).obj X)) = id :=
-  rfl
-
-@[simp]
-theorem coe_comp {X Y Z : LightProfinite} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    ((forget LightProfinite).map f ≫ (forget LightProfinite).map g) = g ∘ f :=
-  rfl
+  X.prop.2
 
 end LightProfinite
 
 /-- The fully faithful embedding of `LightProfinite` in `Profinite`. -/
-@[simps]
-def lightToProfinite : LightProfinite ⥤ Profinite where
-  obj X := Profinite.of X
-  map f := f
-
-/-- `lightToProfinite` is fully faithful. -/
-def lightToProfiniteFullyFaithful : lightToProfinite.FullyFaithful := fullyFaithfulInducedFunctor _
-
-instance : lightToProfinite.Faithful := lightToProfiniteFullyFaithful.faithful
-
-instance : lightToProfinite.Full := lightToProfiniteFullyFaithful.full
+abbrev lightToProfinite : LightProfinite ⥤ Profinite :=
+  CompHausLike.toCompHausLike (fun _ ↦ inferInstance)
 
 /-- The fully faithful embedding of `LightProfinite` in `CompHaus`. -/
-@[simps!]
-def lightProfiniteToCompHaus : LightProfinite ⥤ CompHaus :=
-  inducedFunctor _
+abbrev lightProfiniteToCompHaus : LightProfinite ⥤ CompHaus :=
+  compHausLikeToCompHaus _
 
-/-- `lightProfiniteToCompHaus` is fully faithful. -/
-def lightProfiniteToCompHausFullyFaithful : lightProfiniteToCompHaus.FullyFaithful :=
-  fullyFaithfulInducedFunctor _
+-- /-- `lightProfiniteToCompHaus` is fully faithful. -/
+-- def lightProfiniteToCompHausFullyFaithful : lightProfiniteToCompHaus.FullyFaithful :=
+--   fullyFaithfulInducedFunctor _
 
-instance : lightProfiniteToCompHaus.Full := lightProfiniteToCompHausFullyFaithful.full
+-- instance {X : LightProfinite} : TotallyDisconnectedSpace (lightProfiniteToCompHaus.obj X) :=
+--   X.isTotallyDisconnected
 
-instance : lightProfiniteToCompHaus.Faithful := lightProfiniteToCompHausFullyFaithful.faithful
-
-instance {X : LightProfinite} : TotallyDisconnectedSpace (lightProfiniteToCompHaus.obj X) :=
-  X.isTotallyDisconnected
-
-instance {X : LightProfinite} : SecondCountableTopology (lightProfiniteToCompHaus.obj X) :=
-  X.secondCountable
+-- instance {X : LightProfinite} : SecondCountableTopology (lightProfiniteToCompHaus.obj X) :=
+--   X.secondCountable
 
 /-- The fully faithful embedding of `LightProfinite` in `TopCat`.
 This is definitionally the same as the obvious composite. -/
-@[simps!]
-def LightProfinite.toTopCat : LightProfinite ⥤ TopCat :=
-  forget₂ _ _
--- Porting note: deriving fails, adding manually.
--- deriving Full, Faithful
+abbrev LightProfinite.toTopCat : LightProfinite ⥤ TopCat :=
+  CompHausLike.compHausLikeToTop _
 
-/-- `LightProfinite.toTopCat` is fully faithful. -/
-def LightProfinite.toTopCatFullyFaithful : LightProfinite.toTopCat.FullyFaithful :=
-  fullyFaithfulInducedFunctor _
+-- /-- `LightProfinite.toTopCat` is fully faithful. -/
+-- def LightProfinite.toTopCatFullyFaithful : LightProfinite.toTopCat.FullyFaithful :=
+--   fullyFaithfulInducedFunctor _
 
-instance : LightProfinite.toTopCat.Full := LightProfinite.toTopCatFullyFaithful.full
+-- instance : LightProfinite.toTopCat.Full := LightProfinite.toTopCatFullyFaithful.full
 
-instance : LightProfinite.toTopCat.Faithful := LightProfinite.toTopCatFullyFaithful.faithful
+-- instance : LightProfinite.toTopCat.Faithful := LightProfinite.toTopCatFullyFaithful.faithful
 
-@[simp]
-theorem LightProfinite.toCompHaus_comp_toTop :
-    lightProfiniteToCompHaus ⋙ compHausToTop = LightProfinite.toTopCat :=
-  rfl
+-- @[simp]
+-- theorem LightProfinite.toCompHaus_comp_toTop :
+--     lightProfiniteToCompHaus ⋙ compHausToTop = LightProfinite.toTopCat :=
+--   rfl
 
 section DiscreteTopology
 
@@ -201,10 +150,12 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
     Limits.Cone F where
   pt :=
-    { toCompHaus := (CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).pt
-      secondCountable := by
-        change SecondCountableTopology ({ u : ∀ j : J, F.obj j | _ } : Type _)
-        apply inducing_subtype_val.secondCountableTopology }
+    { toTop := (CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).pt.toTop
+      prop := by
+        constructor
+        · infer_instance
+        · change SecondCountableTopology ({ u : ∀ j : J, F.obj j | _ } : Type _)
+          apply inducing_subtype_val.secondCountableTopology }
   π :=
   { app := (CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).π.app
     naturality := by
@@ -253,25 +204,25 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
   intro A B f hf
   exact LightProfinite.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)
 
-/-- Construct an isomorphism from a homeomorphism. -/
-@[simps! hom inv]
-noncomputable
-def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
-  lightProfiniteToCompHausFullyFaithful.preimageIso (CompHausLike.isoOfHomeo f)
+-- /-- Construct an isomorphism from a homeomorphism. -/
+-- @[simps! hom inv]
+-- noncomputable
+-- def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
+--   lightProfiniteToCompHausFullyFaithful.preimageIso (CompHausLike.isoOfHomeo f)
 
-/-- Construct a homeomorphism from an isomorphism. -/
-@[simps!]
-def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso (lightProfiniteToCompHaus.mapIso f)
+-- /-- Construct a homeomorphism from an isomorphism. -/
+-- @[simps!]
+-- def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso (lightProfiniteToCompHaus.mapIso f)
 
-/-- The equivalence between isomorphisms in `LightProfinite` and homeomorphisms
-of topological spaces. -/
-@[simps!]
-noncomputable
-def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
-  toFun := homeoOfIso
-  invFun := isoOfHomeo
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
+-- /-- The equivalence between isomorphisms in `LightProfinite` and homeomorphisms
+-- of topological spaces. -/
+-- @[simps!]
+-- noncomputable
+-- def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
+--   toFun := homeoOfIso
+--   invFun := isoOfHomeo
+--   left_inv f := by ext; rfl
+--   right_inv f := by ext; rfl
 
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
@@ -311,28 +262,28 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
 
-instance {X Y : LightProfinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [CompHaus.epi_iff_surjective, ← epi_iff_surjective]; assumption
+-- instance {X Y : LightProfinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
+--   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+--   erw [CompHaus.epi_iff_surjective, ← epi_iff_surjective]; assumption
 
-instance {X Y : LightProfinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [epi_iff_surjective, ← CompHaus.epi_iff_surjective]; assumption
+-- instance {X Y : LightProfinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
+--   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+--   erw [epi_iff_surjective, ← CompHaus.epi_iff_surjective]; assumption
 
-theorem mono_iff_injective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
-    Mono f ↔ Function.Injective f := by
-  constructor
-  · intro hf x₁ x₂ h
-    let g₁ : of PUnit.{u+1} ⟶ X := ⟨fun _ => x₁, continuous_const⟩
-    let g₂ : of PUnit.{u+1} ⟶ X := ⟨fun _ => x₂, continuous_const⟩
-    have : g₁ ≫ f = g₂ ≫ f := by
-      ext
-      exact h
-    rw [cancel_mono] at this
-    apply_fun fun e => e PUnit.unit at this
-    exact this
-  · rw [← CategoryTheory.mono_iff_injective]
-    apply (forget LightProfinite).mono_of_mono_map
+-- theorem mono_iff_injective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
+--     Mono f ↔ Function.Injective f := by
+--   constructor
+--   · intro hf x₁ x₂ h
+--     let g₁ : of PUnit.{u+1} ⟶ X := ⟨fun _ => x₁, continuous_const⟩
+--     let g₂ : of PUnit.{u+1} ⟶ X := ⟨fun _ => x₂, continuous_const⟩
+--     have : g₁ ≫ f = g₂ ≫ f := by
+--       ext
+--       exact h
+--     rw [cancel_mono] at this
+--     apply_fun fun e => e PUnit.unit at this
+--     exact this
+--   · rw [← CategoryTheory.mono_iff_injective]
+--     apply (forget LightProfinite).mono_of_mono_map
 
 end LightProfinite
 
