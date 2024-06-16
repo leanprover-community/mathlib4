@@ -7,6 +7,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.Tactic.ComputeDegree
 
 #align_import data.polynomial.ring_division from "leanprover-community/mathlib"@"8efcf8022aac8e01df8d302dcebdbc25d6a886c8"
 
@@ -337,42 +338,42 @@ end Ring
 
 section CommSemiring
 
-variable [CommSemiring R]
+variable [CommSemiring R] {a p : R[X]}
 
-theorem Monic.C_dvd_iff_isUnit {p : R[X]} (hp : Monic p) {a : R} :
-    C a ∣ p ↔ IsUnit a :=
+section Monic
+
+variable (hp : p.Monic)
+
+theorem Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a :=
   ⟨fun h => isUnit_iff_dvd_one.mpr <|
       hp.coeff_natDegree ▸ (C_dvd_iff_dvd_coeff _ _).mp h p.natDegree,
    fun ha => (ha.map C).dvd⟩
 
-theorem natDegree_pos_of_monic_of_ne_one {a : R[X]} (hu : a ≠ 1) (ha : Monic a) :
-    0 < natDegree a := by
-  by_contra! ha'
-  exact hu <| eq_one_of_monic_natDegree_zero ha (by omega)
+theorem Monic.natDegree_pos_of_ne_one (hu : p ≠ 1) : 0 < natDegree p := by
+  by_contra! hp'
+  exact hu <| eq_one_of_monic_natDegree_zero hp (by omega)
 
-theorem degree_pos_of_monic_of_ne_one {a : R[X]} (hu : a ≠ 1) (ha : Monic a) :
-    0 < degree a :=
-  natDegree_pos_iff_degree_pos.mp <| natDegree_pos_of_monic_of_ne_one hu ha
+theorem Monic.natDegree_pos : 0 < natDegree p ↔ p ≠ 1 :=
+  ⟨fun hu ↦ by contrapose! hu; rw [hu]; compute_degree!, fun hu ↦ hp.natDegree_pos_of_ne_one hu⟩
 
-theorem degree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p) :
-    0 < degree a :=
-  lt_of_not_ge <| fun h => ha <| by
-    rw [Polynomial.eq_C_of_degree_le_zero h] at hap ⊢
-    simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
+theorem Monic.degree_pos : 0 < degree p ↔ p ≠ 1 :=
+  natDegree_pos_iff_degree_pos.symm.trans hp.natDegree_pos
 
-theorem natDegree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p) :
-    0 < natDegree a :=
-  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic ha hap hp
+theorem Monic.degree_pos_of_not_isUnit (hu : ¬IsUnit p) : 0 < degree p :=
+  hp.degree_pos.mpr (fun hp' ↦ (hp' ▸ hu) isUnit_one)
 
-theorem degree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
-    0 < degree a :=
-  degree_pos_of_monic_of_ne_one (fun ha' ↦ (ha' ▸ hu) isUnit_one) ha
+theorem Monic.natDegree_pos_of_not_isUnit (hu : ¬IsUnit p) : 0 < natDegree p :=
+  hp.natDegree_pos.mpr (fun hp' ↦ (hp' ▸ hu) isUnit_one)
 
-theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
-    0 < natDegree a :=
-  natDegree_pos_of_monic_of_ne_one (fun ha' ↦ (ha' ▸ hu) isUnit_one) ha
+theorem degree_pos_of_not_isUnit_of_dvd_monic (ha : ¬IsUnit a) (hap : a ∣ p) : 0 < degree a := by
+  contrapose! ha with h
+  rw [Polynomial.eq_C_of_degree_le_zero h] at hap ⊢
+  simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
+
+theorem natDegree_pos_of_not_isUnit_of_dvd_monic (ha : ¬IsUnit a) (hap : a ∣ p) : 0 < natDegree a :=
+  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic hp ha hap
+
+end Monic
 
 theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
     ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
