@@ -112,7 +112,7 @@ theorem irrational_sqrt_intCast_iff_of_nonneg {z : ℤ} (hz : 0 ≤ z) :
     Rat.cast_intCast]
 
 theorem irrational_sqrt_natCast_iff {n : ℕ} : Irrational (√n) ↔ ¬IsSquare n := by
-  rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg (mod_cast Nat.zero_le n),
+  rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg n.cast_nonneg,
     Rat.cast_natCast]
 
 -- See note [no_index around OfNat.ofNat]
