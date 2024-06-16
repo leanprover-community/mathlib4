@@ -103,11 +103,13 @@ def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
       getExplicitRelArgCore tgt rel' x z
   | _ => return (rel ,x)
 
+/-- Internal definition for `trans` tactic. Either a binary relation or a non-dependent
+arrow. -/
 inductive TransRelation
   | app (rel : Expr)
   | implies (name : Name) (bi : BinderInfo)
 
-/-- finds an explicit binary relation in the argument, if possible. -/
+/-- Finds an explicit binary relation in the argument, if possible. -/
 def getRel (tgt : Expr) : MetaM (Option (TransRelation × Expr × Expr)) := do
   match tgt with
   | .forallE name binderType body info => return .some (.implies name info, binderType, body)
