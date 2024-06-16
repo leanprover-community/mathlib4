@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Topology.Constructions
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.MeasureTheory.Group.Arithmetic
 
 import Mathlib.Tactic.FunProp
 
@@ -44,17 +41,3 @@ attribute [fun_prop]
   Measurable.div
   Measurable.inv
   Measurable.smul
-
-
--- transitions
-attribute [fun_prop]
-
-  Continuous.measurable -- Continuous f → Measurable f
-  measurable_of_continuousOn_compl_singleton
-
--- morphisms
-attribute [fun_prop]
-  ContinuousLinearMap.measurable
-  ContinuousLinearMap.measurable_comp
-  ContinuousLinearMap.measurable_apply
-  Measurable.apply_continuousLinearMap
