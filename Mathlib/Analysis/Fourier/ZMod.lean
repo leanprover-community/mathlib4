@@ -117,7 +117,7 @@ lemma fourierTransform_eq_gaussSum_mulShift (k : ZMod N) :
 
 /-- For a primitive Dirichlet character `χ`, the Fourier transform of `χ` is a constant multiple
 of `χ⁻¹` (and the constant is essentially the Gauss sum). -/
-lemma fourierTransform_eq_inv_mul_gaussSum (k : ZMod N) (hχ : isPrimitive χ) :
+lemma fourierTransform_eq_inv_mul_gaussSum (k : ZMod N) (hχ : IsPrimitive χ) :
     𝓕 χ k = χ⁻¹ (-k) * gaussSum χ stdAddChar := by
   rw [fourierTransform_eq_gaussSum_mulShift, gaussSum_mulShift_of_isPrimitive _ hχ]
 
