@@ -148,7 +148,10 @@ theorem irrational_sqrt_rat_iff (q : ℚ) :
 #align irrational_sqrt_rat_iff irrational_sqrt_rat_iff
 
 instance (n : ℕ) : Decidable (Irrational (√n)) :=
-  decidable_of_iff' _ irrational_sqrt_intCast_iff
+  decidable_of_iff' _ irrational_sqrt_natCast_iff
+
+instance {n : ℕ} [n.AtLeastTwo] : Decidable (Irrational (√(no_index (OfNat.ofNat n)))) :=
+  decidable_of_iff' _ irrational_sqrt_natCast_iff
 
 instance (z : ℤ) : Decidable (Irrational (√z)) :=
   decidable_of_iff' _ irrational_sqrt_intCast_iff
