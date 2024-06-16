@@ -500,7 +500,7 @@ theorem uniformContinuous_extension : UniformContinuous (Completion.extension f)
   cPkg.uniformContinuous_extend
 #align uniform_space.completion.uniform_continuous_extension UniformSpace.Completion.uniformContinuous_extension
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_extension : Continuous (Completion.extension f) :=
   cPkg.continuous_extend
 #align uniform_space.completion.continuous_extension UniformSpace.Completion.continuous_extension
