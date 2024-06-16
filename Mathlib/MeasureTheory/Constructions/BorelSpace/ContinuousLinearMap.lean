@@ -26,11 +26,12 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpac
   [OpensMeasurableSpace E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [MeasurableSpace F]
   [BorelSpace F]
 
-@[measurability]
+@[fun_prop, measurability]
 protected theorem measurable (L : E →L[𝕜] F) : Measurable L :=
   L.continuous.measurable
 #align continuous_linear_map.measurable ContinuousLinearMap.measurable
 
+@[fun_prop]
 theorem measurable_comp (L : E →L[𝕜] F) {φ : α → E} (φ_meas : Measurable φ) :
     Measurable fun a : α => L (φ a) :=
   L.measurable.comp φ_meas
@@ -52,7 +53,7 @@ instance instBorelSpace : BorelSpace (E →L[𝕜] F) :=
   ⟨rfl⟩
 #align continuous_linear_map.borel_space ContinuousLinearMap.instBorelSpace
 
-@[measurability]
+@[fun_prop, measurability]
 theorem measurable_apply [MeasurableSpace F] [BorelSpace F] (x : E) :
     Measurable fun f : E →L[𝕜] F => f x :=
   (apply 𝕜 F x).continuous.measurable
@@ -78,7 +79,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-@[measurability]
+@[fun_prop, measurability]
 theorem Measurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : Measurable φ) (v : F) :
     Measurable fun a => φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).measurable.comp hφ
