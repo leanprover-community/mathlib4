@@ -559,7 +559,7 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
-    any_goals simp only [zero_def, toClassFun, zero_add, add_zero]
+    any_goals simp only [← zero_def, toClassFun, zero_add, add_zero]
     by_cases hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂
     · simp only [hxy.left, hxy.right, add_of_Y_eq rfl rfl]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm

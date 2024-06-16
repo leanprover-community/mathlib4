@@ -11,7 +11,6 @@ import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
-import Batteries.Data.List.Lemmas
 import Mathlib.Tactic.Common
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -1416,7 +1415,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := nthLe_reverse' ..
 
 -- FIXME: prove it the other way around
-attribute [deprecated get_reverse'] nthLe_reverse' -- 2023-01-05
+attribute [deprecated get_reverse' (since := "2023-01-05")] nthLe_reverse'
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
     l = [l.nthLe 0 (by omega)] := by
@@ -1765,19 +1764,6 @@ theorem cons_get_drop_succ {l : List α} {n} :
 #align list.drop_take List.drop_take
 #align list.map_drop List.map_drop
 #align list.modify_nth_tail_eq_take_drop List.modifyNthTail_eq_take_drop
-
-@[simp]
-theorem modifyNth_nil (f : α → α) (n : ℕ) :
-    modifyNth f n [] = [] := by cases n <;> rfl
-
-@[simp]
-theorem modifyNth_zero_cons (f : α → α) (a : α) (l : List α) :
-    modifyNth f 0 (a :: l) = f a :: l := rfl
-
-@[simp]
-theorem modifyNth_succ_cons (f : α → α) (n : ℕ) (a : α) (l : List α) :
-    modifyNth f (n + 1) (a :: l) = a :: modifyNth f n l := rfl
-
 #align list.modify_nth_eq_take_drop List.modifyNth_eq_take_drop
 #align list.modify_nth_eq_take_cons_drop List.modifyNth_eq_take_cons_drop
 #align list.update_nth_eq_take_cons_drop List.set_eq_take_cons_drop
@@ -2120,7 +2106,7 @@ theorem get_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
   nthLe_succ_scanl
 
 -- FIXME: we should do the proof the other way around
-attribute [deprecated get_succ_scanl] nthLe_succ_scanl -- 2023-01-05
+attribute [deprecated get_succ_scanl (since := "2023-01-05")] nthLe_succ_scanl
 
 end Scanl
 
