@@ -18,7 +18,7 @@ The function `findPositiveVector` solves this problem.
 
 # Algorithm sketch
 
-1. We translate the problem stated above to some Linear Programmin problem. See `stateLP` for
+1. We translate the problem stated above to some Linear Programming problem. See `stateLP` for
   details. Let us denote the corresponding matrix `B`.
 
 2. We solve the equation `B x = 0` using Gauss Elimination, splitting the set of variables into
