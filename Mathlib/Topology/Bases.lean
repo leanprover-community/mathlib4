@@ -298,7 +298,7 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
 
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
     (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
   hB.continuous_iff.2 hf

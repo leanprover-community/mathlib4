@@ -906,11 +906,15 @@ theorem mk_coe' (e : A ≃⋆ₐ[R] B) (f h₁ h₂ h₃ h₄ h₅ h₆) :
   symm_bijective.injective <| ext fun _ => rfl
 #align star_alg_equiv.mk_coe' StarAlgEquiv.mk_coe'ₓ
 
+/-- Auxilliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
+protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :=
+  (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm
+
 -- Porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
 @[simp]
 theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm =
-      { (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm with
+      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ h₆ with
         toFun := f'
         invFun := f } :=
   rfl

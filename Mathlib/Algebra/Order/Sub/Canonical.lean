@@ -483,7 +483,7 @@ theorem tsub_lt_self : 0 < a → 0 < b → a - b < a :=
   Contravariant.AddLECancellable.tsub_lt_self
 #align tsub_lt_self tsub_lt_self
 
-theorem tsub_lt_self_iff : a - b < a ↔ 0 < a ∧ 0 < b :=
+@[simp] theorem tsub_lt_self_iff : a - b < a ↔ 0 < a ∧ 0 < b :=
   Contravariant.AddLECancellable.tsub_lt_self_iff
 #align tsub_lt_self_iff tsub_lt_self_iff
 
@@ -491,6 +491,9 @@ theorem tsub_lt_self_iff : a - b < a ↔ 0 < a ∧ 0 < b :=
 theorem tsub_lt_tsub_iff_left_of_le (h : b ≤ a) : a - b < a - c ↔ c < b :=
   Contravariant.AddLECancellable.tsub_lt_tsub_iff_left_of_le Contravariant.AddLECancellable h
 #align tsub_lt_tsub_iff_left_of_le tsub_lt_tsub_iff_left_of_le
+
+lemma tsub_tsub_eq_min (a b : α) : a - (a - b) = min a b := by
+  rw [tsub_eq_tsub_min _ b, tsub_tsub_cancel_of_le (min_le_left a _)]
 
 end Contra
 

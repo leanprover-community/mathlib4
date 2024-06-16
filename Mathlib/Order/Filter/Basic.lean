@@ -2389,10 +2389,11 @@ theorem comap_mono : Monotone (comap m) :=
 #align filter.comap_mono Filter.comap_mono
 
 /-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr, deprecated] theorem map_le_map (h : F ≤ G) : map m F ≤ map m G := map_mono h
+@[gcongr] theorem _root_.GCongr.Filter.map_le_map (h : F ≤ G) : map m F ≤ map m G := map_mono h
 
 /-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr, deprecated] theorem comap_le_comap (h : F ≤ G) : comap m F ≤ comap m G := comap_mono h
+@[gcongr]
+theorem _root_.GCongr.Filter.comap_le_comap (h : F ≤ G) : comap m F ≤ comap m G := comap_mono h
 
 @[simp] theorem map_bot : map m ⊥ = ⊥ := (gc_map_comap m).l_bot
 #align filter.map_bot Filter.map_bot
