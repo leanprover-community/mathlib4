@@ -67,9 +67,6 @@ jobs:
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         run: lake exe mk_all
 
-      - name: check_imported
-        run: git diff --exit-code
-
       - name: suggester / import list
         uses: reviewdog/action-suggester@v1
         with:

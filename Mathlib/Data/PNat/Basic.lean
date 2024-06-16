@@ -235,22 +235,22 @@ set_option linter.deprecated false
 -- TODO: these lemmas are perhaps incomplete:
 -- * 1 is not represented as a bit0 or bit1
 -- * strict inequalities?
-@[simp, deprecated]
+@[simp, deprecated (since := "2022-12-23")]
 theorem bit0_le_bit0 (n m : ℕ+) : bit0 n ≤ bit0 m ↔ bit0 (n : ℕ) ≤ bit0 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit0_le_bit0 PNat.bit0_le_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2022-12-23")]
 theorem bit0_le_bit1 (n m : ℕ+) : bit0 n ≤ bit1 m ↔ bit0 (n : ℕ) ≤ bit1 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit0_le_bit1 PNat.bit0_le_bit1
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2022-12-23")]
 theorem bit1_le_bit0 (n m : ℕ+) : bit1 n ≤ bit0 m ↔ bit1 (n : ℕ) ≤ bit0 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit1_le_bit0 PNat.bit1_le_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2022-12-23")]
 theorem bit1_le_bit1 (n m : ℕ+) : bit1 n ≤ bit1 m ↔ bit1 (n : ℕ) ≤ bit1 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit1_le_bit1 PNat.bit1_le_bit1

@@ -79,6 +79,8 @@ instance : (forget.{v} R).Faithful := (fullyFaithfulForget R).faithful
 
 instance : (forget.{v} R).Full := (fullyFaithfulForget R).full
 
+instance : (forget.{v} R).ReflectsIsomorphisms := (fullyFaithfulForget R).reflectsIsomorphisms
+
 /-- Evaluation on an object `X` gives a functor
 `SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
 def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
@@ -99,6 +101,22 @@ def toSheafCompSheafToPresheafIso :
 
 instance : (toSheaf.{v} R).Faithful :=
   Functor.Faithful.of_comp_iso (toSheafCompSheafToPresheafIso.{v} R)
+
+instance (M N : SheafOfModules.{v} R) : AddCommGroup (M ⟶ N) :=
+  (fullyFaithfulForget R).homEquiv.addCommGroup
+
+@[simp]
+lemma add_val {M N : SheafOfModules.{v} R} (f g : M ⟶ N) :
+    (f + g).val = f.val + g.val := rfl
+
+instance : Preadditive (SheafOfModules.{v} R) where
+  add_comp := by intros; ext1; dsimp; simp only [Preadditive.add_comp]
+  comp_add := by intros; ext1; dsimp; simp only [Preadditive.comp_add]
+
+instance : (forget R).Additive where
+
+instance : (toSheaf R).Additive where
+
 
 /-- The type of sections of a sheaf of modules. -/
 abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
