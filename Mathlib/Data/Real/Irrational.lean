@@ -93,7 +93,8 @@ theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp
     (sq_sqrt (Int.cast_nonneg.2 <| le_of_lt hm)) (by rw [Hpv]; exact one_ne_zero)
 #align irrational_sqrt_of_multiplicity_odd irrational_sqrt_of_multiplicity_odd
 
-theorem irrational_sqrt_ratCast_iff_of_nonneg {q : ℚ} (hq : 0 ≤ q) : Irrational (√q) ↔ ¬IsSquare q := by
+theorem irrational_sqrt_ratCast_iff_of_nonneg {q : ℚ} (hq : 0 ≤ q) :
+    Irrational (√q) ↔ ¬IsSquare q := by
   refine Iff.not ?_
   change Exists _ ↔ Exists _
   simp_rw [← sq]
