@@ -32,7 +32,7 @@ and we now turn it on locally when convenient.
 -/
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
-open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace
+open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace CompHausLike
 
 /-- `LightProfinite` is the category of second countable profinite spaces. -/
 abbrev LightProfinite := CompHausLike
@@ -40,14 +40,17 @@ abbrev LightProfinite := CompHausLike
 
 namespace LightProfinite
 
+instance (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+    [TotallyDisconnectedSpace X] [SecondCountableTopology X] : HasProp (fun Y ↦ TotallyDisconnectedSpace Y ∧ SecondCountableTopology Y) X :=
+  ⟨⟨(inferInstance : TotallyDisconnectedSpace X), (inferInstance : SecondCountableTopology X)⟩⟩
+
 /--
 Construct a term of `LightProfinite` from a type endowed with the structure of a compact,
 Hausdorff, totally disconnected and second countable topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] [SecondCountableTopology X] : LightProfinite :=
-  CompHausLike.of _ X ⟨(inferInstance : TotallyDisconnectedSpace X),
-    (inferInstance : SecondCountableTopology X)⟩
+  CompHausLike.of _ X
 
 instance : Inhabited LightProfinite :=
   ⟨LightProfinite.of PEmpty⟩

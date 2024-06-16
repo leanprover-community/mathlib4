@@ -62,11 +62,8 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
-instance : Preregular CompHaus := by
-  apply preregular
-  · simp only [implies_true]
-  · intro _ _ _
-    exact ((effectiveEpi_tfae _).out 0 2).mp
+instance : Preregular CompHaus :=
+  preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp
 
 -- Was an `example`, but that made the linter complain about unused imports
 instance : Precoherent CompHaus.{u} := inferInstance
@@ -96,8 +93,8 @@ theorem effectiveEpiFamily_tfae
     simpa using h
   tfae_have 2 → 3
   · intro e; rw [epi_iff_surjective] at e
-    let i : ∐ X ≅ finiteCoproduct X trivial :=
-      (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _ _)
+    let i : ∐ X ≅ finiteCoproduct X :=
+      (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
     intro b
     obtain ⟨t, rfl⟩ := e b
     let q := i.hom t
@@ -105,7 +102,7 @@ theorem effectiveEpiFamily_tfae
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
     rw [this]
     show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
-    suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X _ π by
+    suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
       rw [this]; rfl
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext

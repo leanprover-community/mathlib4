@@ -37,12 +37,8 @@ theorem effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
 
 instance : Preregular LightProfinite := by
   apply CompHausLike.preregular
-  · intro X Y _ _ _
-    constructor
-    · exact show TotallyDisconnectedSpace {xy : X × Y | _} from inferInstance
-    · exact show SecondCountableTopology {xy : X × Y | _} from inferInstance
-  · intro _ _ f
-    exact (effectiveEpi_iff_surjective f).mp
+  intro _ _ f
+  exact (effectiveEpi_iff_surjective f).mp
 
 -- Was an `example`, but that made the linter complain about unused imports
 instance : Precoherent LightProfinite.{u} := inferInstance

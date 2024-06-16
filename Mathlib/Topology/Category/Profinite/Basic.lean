@@ -42,9 +42,7 @@ set_option linter.uppercaseLean3 false
 
 universe v u
 
-open CategoryTheory
-
-open Topology
+open CategoryTheory Topology CompHausLike
 
 /-- The type of profinite topological spaces. -/
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
@@ -52,12 +50,16 @@ abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
 
+instance  (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+    [TotallyDisconnectedSpace X] :  HasProp (fun Y ↦ TotallyDisconnectedSpace Y) X :=
+  ⟨(inferInstance : TotallyDisconnectedSpace X)⟩
+
 /-- Construct a term of `Profinite` from a type endowed with the structure of a
 compact, Hausdorff and totally disconnected topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
-  CompHausLike.of _ X (inferInstance : TotallyDisconnectedSpace X)
+  CompHausLike.of _ X
 #align Profinite.of Profinite.of
 
 instance : Inhabited Profinite :=
