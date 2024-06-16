@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Function.LpOrder
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 #align_import measure_theory.function.l1_space from "leanprover-community/mathlib"@"ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f"
 
@@ -712,7 +713,7 @@ lemma integrable_left_of_integrable_add_of_nonneg {f g : α → ℝ}
     (h_int : Integrable (f + g) μ) : Integrable f μ := by
   refine h_int.mono' h_meas ?_
   filter_upwards [hf, hg] with a haf hag
-  exact (Real.norm_of_nonneg haf).symm ▸ (le_add_iff_nonneg_right _).mpr hag
+  exact (Real.norm_of_nonneg haf).symm ▸ le_add_of_nonneg_right hag
 
 lemma integrable_right_of_integrable_add_of_nonneg {f g : α → ℝ}
     (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)

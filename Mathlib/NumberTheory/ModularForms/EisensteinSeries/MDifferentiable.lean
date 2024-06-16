@@ -38,7 +38,7 @@ lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
           ((comp_ne_zero_iff _ Int.cast_injective Int.cast_zero).mpr ha)
     ·  exact fun z hz ↦ zpow_ne_zero k (linear_ne_zero (a ·)
         ⟨z, hz⟩ ((comp_ne_zero_iff _ Int.cast_injective Int.cast_zero).mpr ha))
-  · simp only [ Fin.isValue, Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div]
+  · simp only [Fin.isValue, Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div]
     apply differentiableOn_const
 
 /-- Auxilary lemma showing that for any `k : ℤ` and `(a : Fin 2 → ℤ)`
