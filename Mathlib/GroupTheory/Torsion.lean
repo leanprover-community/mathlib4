@@ -224,7 +224,7 @@ def primaryComponent : Submonoid G where
       obtain ⟨n, hn⟩ := exists_orderOf_eq_prime_pow_iff.mp hg₂
       exact
         ⟨m + n, by
-          rw [mul_pow, pow_add, pow_mul, hm, one_pow, Monoid.one_mul, mul_comm, pow_mul, hn,
+          rw [mul_pow, pow_add, pow_mul, hm, one_pow, one_mul, mul_comm, pow_mul, hn,
             one_pow]⟩
 #align comm_monoid.primary_component CommMonoid.primaryComponent
 #align add_comm_monoid.primary_component AddCommMonoid.primaryComponent

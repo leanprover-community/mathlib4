@@ -72,6 +72,7 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
   nnqsmul := _
 #align is_field.to_semifield IsField.toSemifield
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 /-- Transferring from `IsField` to `Field`. -/
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
   { ‹Ring R›, IsField.toSemifield h with qsmul := _ }

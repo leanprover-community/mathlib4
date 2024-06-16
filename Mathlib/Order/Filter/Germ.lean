@@ -453,8 +453,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
   { Function.Surjective.monoid ofFun (surjective_quot_mk _) (by rfl)
       (fun _ _ => by rfl) fun _ _ => by rfl with
-    toSemigroup := instSemigroup
-    toOne := instOne
+    toMulOneClass := instMulOneClass
     npow := fun n a => a ^ n }
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/

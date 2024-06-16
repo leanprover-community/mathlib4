@@ -1197,8 +1197,7 @@ instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
     /- The `toSemigroup` and `toOne` fields are given explicitly for performance reasons.
     This avoids any need to unfold `Function.Surjective.monoid` when the type checker is
     checking that instance diagrams commute -/
-    toSemigroup := Con.semigroup _
-    toOne := Con.one _ }
+    toMulOneClass := Con.mulOneClass _ }
 #align con.monoid Con.monoid
 #align add_con.add_monoid AddCon.addMonoid
 

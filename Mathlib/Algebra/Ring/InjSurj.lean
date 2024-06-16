@@ -84,8 +84,8 @@ protected abbrev semiring [Semiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : Semiring β where
-  toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
-  __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
+  toNonAssocSemiring := hf.nonAssocSemiring f zero one add mul nsmul natCast
+  __ := hf.nonUnitalSemiring f zero add mul nsmul
   __ := hf.monoidWithZero f zero one mul npow
 #align function.injective.semiring Function.Injective.semiring
 
@@ -230,7 +230,8 @@ preserves `-` and `*` from a type which has distributive negation. -/
 -- See note [reducible non-instances]
 protected abbrev hasDistribNeg [Mul α] [HasDistribNeg α]
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg β :=
-  { hf.involutiveNeg _ neg, ‹Mul β› with
+  { ‹Mul β› with
+    toInvolutiveNeg := hf.involutiveNeg _ neg
     neg_mul := hf.forall₂.2 fun x y => by erw [← neg, ← mul, neg_mul, neg, mul]
     mul_neg := hf.forall₂.2 fun x y => by erw [← neg, ← mul, mul_neg, neg, mul] }
 #align function.surjective.has_distrib_neg Function.Surjective.hasDistribNeg
@@ -271,8 +272,8 @@ protected abbrev semiring [Semiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n) : Semiring β where
-  toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
-  __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
+  toNonAssocSemiring := hf.nonAssocSemiring f zero one add mul nsmul natCast
+  __ := hf.nonUnitalSemiring f zero add mul nsmul
   __ := hf.monoidWithZero f zero one mul npow
 #align function.surjective.semiring Function.Surjective.semiring
 

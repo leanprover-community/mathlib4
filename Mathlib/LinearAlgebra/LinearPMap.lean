@@ -481,10 +481,7 @@ instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
     · simp only [add_apply, hxy, zero_apply, add_zero]⟩
 
 instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
-  zero_add f := by
-    simp
-  add_zero := by
-    simp
+  add_assoc := add_assoc
   nsmul := nsmulRec
 
 instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=

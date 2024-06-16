@@ -310,7 +310,7 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
   rw [← inv_mul_cancel_left₀ (left_ne_zero_of_mul_eq_one h) b, h, mul_one]
 
 -- See note [lower instance priority]
-instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
+instance (priority := 150) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
   { ‹GroupWithZero G₀› with
     inv := Inv.inv,
     inv_inv := fun a => by

@@ -50,6 +50,8 @@ class BooleanRing (α) extends Ring α where
   mul_self : ∀ a : α, a * a = a
 #align boolean_ring BooleanRing
 
+attribute [instance 20] BooleanRing.toRing
+
 section BooleanRing
 
 variable [BooleanRing α] (a b : α)

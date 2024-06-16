@@ -206,12 +206,12 @@ lemma mabs_div_sup_mul_mabs_div_inf (a b c : α) :
 #align lattice_ordered_comm_group.abs_sub_sup_add_abs_sub_inf abs_sub_sup_add_abs_sub_inf
 
 @[to_additive] lemma mabs_sup_div_sup_le_mabs (a b c : α) : |(a ⊔ c) / (b ⊔ c)|ₘ ≤ |a / b|ₘ := by
-  apply le_of_mul_le_of_one_le_left _ (one_le_mabs _); rw [mabs_div_sup_mul_mabs_div_inf]
+  apply le_of_mul_le_of_one_le_left _ (one_le_mabs _); swap; rw [mabs_div_sup_mul_mabs_div_inf]
 #align lattice_ordered_comm_group.mabs_sup_div_sup_le_mabs mabs_sup_div_sup_le_mabs
 #align lattice_ordered_comm_group.abs_sup_sub_sup_le_abs abs_sup_sub_sup_le_abs
 
 @[to_additive] lemma mabs_inf_div_inf_le_mabs (a b c : α) : |(a ⊓ c) / (b ⊓ c)|ₘ ≤ |a / b|ₘ := by
-  apply le_of_mul_le_of_one_le_right _ (one_le_mabs _); rw [mabs_div_sup_mul_mabs_div_inf]
+  apply le_of_mul_le_of_one_le_right _ (one_le_mabs _); swap; rw [mabs_div_sup_mul_mabs_div_inf]
 #align lattice_ordered_comm_group.mabs_inf_div_inf_le_mabs mabs_inf_div_inf_le_mabs
 #align lattice_ordered_comm_group.abs_inf_sub_inf_le_abs abs_inf_sub_inf_le_abs
 

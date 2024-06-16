@@ -310,6 +310,7 @@ noncomputable
 def AdjoinRootXPowSubCEquivToRootsOfUnity (σ : K[n√a] ≃ₐ[K] K[n√a]) :
     rootsOfUnity ⟨n, hn⟩ K :=
   letI := Fact.mk H
+  letI : Semiring K[n√a] := inferInstance
   letI : IsDomain K[n√a] := inferInstance
   letI := Classical.decEq K
   (rootsOfUnityEquivOfPrimitiveRoots (n := ⟨n, hn⟩) (algebraMap K K[n√a]).injective hζ).symm

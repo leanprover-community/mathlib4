@@ -102,6 +102,8 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
 #align euclidean_domain.remainder_lt EuclideanDomain.remainder_lt
 #align euclidean_domain.mul_left_not_lt EuclideanDomain.mul_left_not_lt
 
+attribute [instance 50] EuclideanDomain.toCommRing
+
 namespace EuclideanDomain
 
 variable {R : Type u} [EuclideanDomain R]

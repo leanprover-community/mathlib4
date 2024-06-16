@@ -34,6 +34,7 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
         exact Nat.mul_le_mul_left _ b0 }
 
 -- see Note [lower instance priority]
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 instance (priority := 100) Field.toEuclideanDomain {K : Type*} [Field K] : EuclideanDomain K :=
 { toCommRing := Field.toCommRing
   quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,

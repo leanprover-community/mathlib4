@@ -543,6 +543,7 @@ variable {R : Type*} [CommMonoidWithZero R]
 /-- A multiplicative character on a finite commutative monoid has finite (= positive) order. -/
 lemma orderOf_pos (χ : MulChar M R) : 0 < orderOf χ := by
   let e := MulChar.mulEquivToUnitHom (R := M) (R' := R)
+  letI : Monoid (Mˣ →* Rˣ) := inferInstance
   rw [← MulEquiv.orderOf_eq e χ]
   have : orderOf (e χ) ∣ Fintype.card Mˣ := by
     refine orderOf_dvd_of_pow_eq_one ?_

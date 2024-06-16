@@ -396,6 +396,7 @@ instance : AddCommGroup ℍ[R,c₁,c₂] :=
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : AddCommGroupWithOne ℍ[R,c₁,c₂] where
+  __ := QuaternionAlgebra.instAddCommGroup
   natCast n := ((n : R) : ℍ[R,c₁,c₂])
   natCast_zero := by simp
   natCast_succ := by simp

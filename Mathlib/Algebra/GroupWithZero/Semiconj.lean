@@ -50,7 +50,7 @@ theorem inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
     simp only [SemiconjBy, mul_zero, @eq_comm _ _ (y * a), mul_eq_zero] at h
     simp [h.resolve_right ha]
   · have := mul_ne_zero ha hx
-    rw [h.eq, mul_ne_zero_iff] at this
+    rw [h.eq, mul_ne_zero_iff (M₀ := G₀)] at this
     exact @units_inv_right _ _ _ (Units.mk0 x hx) (Units.mk0 y this.1) h
 #align semiconj_by.inv_right₀ SemiconjBy.inv_right₀
 

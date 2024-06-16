@@ -479,12 +479,12 @@ theorem toJordanDecomposition_smul_real (s : SignedMeasure α) (r : ℝ) :
   · exact toJordanDecomposition_smul_real_nonneg s r hr
   · ext1
     · rw [real_smul_posPart_neg _ _ (not_le.1 hr),
-        show r • s = -(-r • s) by rw [neg_smul, neg_neg], toJordanDecomposition_neg, neg_posPart,
-        toJordanDecomposition_smul_real_nonneg, ← smul_negPart, real_smul_nonneg]
+        show r • s = -(-r • s) by rw [neg_smul r s, neg_neg], toJordanDecomposition_neg,
+        neg_posPart, toJordanDecomposition_smul_real_nonneg, ← smul_negPart, real_smul_nonneg]
       all_goals exact Left.nonneg_neg_iff.2 (le_of_lt (not_le.1 hr))
     · rw [real_smul_negPart_neg _ _ (not_le.1 hr),
-        show r • s = -(-r • s) by rw [neg_smul, neg_neg], toJordanDecomposition_neg, neg_negPart,
-        toJordanDecomposition_smul_real_nonneg, ← smul_posPart, real_smul_nonneg]
+        show r • s = -(-r • s) by rw [neg_smul r s, neg_neg], toJordanDecomposition_neg,
+        neg_negPart, toJordanDecomposition_smul_real_nonneg, ← smul_posPart, real_smul_nonneg]
       all_goals exact Left.nonneg_neg_iff.2 (le_of_lt (not_le.1 hr))
 #align measure_theory.signed_measure.to_jordan_decomposition_smul_real MeasureTheory.SignedMeasure.toJordanDecomposition_smul_real
 

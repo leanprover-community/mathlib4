@@ -456,7 +456,7 @@ variable [AddCommGroupWithOne A] [Module R A]
 variable [AddCommGroupWithOne B] [Module R B]
 
 instance instAddCommGroupWithOne : AddCommGroupWithOne (A ⊗[R] B) where
-  toAddCommGroup := TensorProduct.addCommGroup
+  __ := TensorProduct.addCommGroup
   __ := instAddCommMonoidWithOne
   intCast z := z ⊗ₜ (1 : B)
   intCast_ofNat n := by simp [natCast_def]

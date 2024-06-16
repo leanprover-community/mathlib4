@@ -320,7 +320,8 @@ theorem psum_one : psum σ R 1 = ∑ i, X i := by
 
 @[simp]
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
-  simp_rw [psum, map_sum, map_pow, rename_X, e.sum_comp (X · ^ n)]
+  simp_rw [psum, map_sum, map_pow, rename_X]
+  rw [e.sum_comp (X · ^ n)]
 
 theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ _ n
 

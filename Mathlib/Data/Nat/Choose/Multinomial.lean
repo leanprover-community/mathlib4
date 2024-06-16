@@ -184,7 +184,9 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
       congr 1
       exact Nat.multinomial_congr fun _ h ↦ (Function.update_noteq (mem_erase.1 h).1 0 f).symm
     rw [not_mem_support_iff] at h
-    rw [h, Nat.choose_zero_right, one_mul, ← h, update_self]
+    rw [h, Nat.choose_zero_right, one_mul]
+    simp_rw [← h]
+    rw [update_self]
 #align finsupp.multinomial_update Finsupp.multinomial_update
 
 end Finsupp

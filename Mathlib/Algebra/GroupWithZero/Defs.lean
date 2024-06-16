@@ -39,6 +39,9 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   mul_zero : ∀ a : M₀, a * 0 = 0
 #align mul_zero_class MulZeroClass
 
+attribute [instance 50] MulZeroClass.toZero
+attribute [instance 20] MulZeroClass.toMul
+
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplication by a nonzero element is left cancellative. -/
@@ -102,24 +105,40 @@ and right absorbing. -/
 class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
 #align semigroup_with_zero SemigroupWithZero
 
+attribute [instance 50] SemigroupWithZero.toMulZeroClass
+attribute [instance 20] SemigroupWithZero.toSemigroup
+attribute [instance 0] SemigroupWithZero.toZero
+
 /-- A typeclass for non-associative monoids with zero elements. -/
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 #align mul_zero_one_class MulZeroOneClass
+
+attribute [instance 100] MulZeroOneClass.toMulZeroClass
+attribute [instance 20] MulZeroOneClass.toMulOneClass
+attribute [instance 0] MulZeroOneClass.toZero
 
 /-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
 and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 #align monoid_with_zero MonoidWithZero
 
+attribute [instance 150] MonoidWithZero.toMonoid
+attribute [instance 0] MonoidWithZero.toZero
+
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
 class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
 #align cancel_monoid_with_zero CancelMonoidWithZero
 
+-- See note [lower cancel priority]
+attribute [instance 75] CancelMonoidWithZero.toMonoidWithZero
+
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
-class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
+class CommMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, CommMonoid M₀
 #align comm_monoid_with_zero CommMonoidWithZero
+
+attribute [instance 90] CommMonoidWithZero.toMonoidWithZero
 
 section CancelMonoidWithZero
 
@@ -214,6 +233,11 @@ class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G�
   protected mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 #align group_with_zero GroupWithZero
 
+attribute [instance 100] GroupWithZero.toMonoidWithZero
+attribute [instance 0] GroupWithZero.toDivInvMonoid -- use `GroupWithZero.toDivisionMonoid`
+attribute [instance 0] GroupWithZero.toInv
+attribute [instance 0] GroupWithZero.toDiv
+
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
 
@@ -233,7 +257,7 @@ end GroupWithZero
 if it is a commutative monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
-class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
+class CommGroupWithZero (G₀ : Type*) extends GroupWithZero G₀, CommMonoidWithZero G₀
 #align comm_group_with_zero CommGroupWithZero
 
 section

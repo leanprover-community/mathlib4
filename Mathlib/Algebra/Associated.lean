@@ -1106,6 +1106,7 @@ variable [CommMonoidWithZero α]
 instance instCommMonoidWithZero : CommMonoidWithZero (Associates α) where
     zero_mul := forall_associated.2 fun a ↦ by rw [← mk_zero, mk_mul_mk, zero_mul]
     mul_zero := forall_associated.2 fun a ↦ by rw [← mk_zero, mk_mul_mk, mul_zero]
+    mul_comm := mul_comm
 
 instance instOrderTop : OrderTop (Associates α) where
   top := 0
