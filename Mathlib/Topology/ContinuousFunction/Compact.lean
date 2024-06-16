@@ -253,7 +253,7 @@ section
 variable {R : Type*} [NormedRing R]
 
 instance : NormedRing C(α, R) :=
-  { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRingContinuousMap with
+  { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRing with
     norm_mul := fun f g => norm_mul_le (mkOfCompact f) (mkOfCompact g) }
 
 end
