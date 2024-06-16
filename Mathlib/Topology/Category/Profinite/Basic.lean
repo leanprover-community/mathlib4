@@ -193,17 +193,23 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps!]
+@[simps]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
   map f := ⟨f, by continuity⟩
 #align Fintype.to_Profinite FintypeCat.toProfinite
 
-instance : FintypeCat.toProfinite.Faithful where
-  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+attribute [nolint simpNF] FintypeCat.toProfinite_map_apply
 
-instance : FintypeCat.toProfinite.Full where
-  map_surjective f := ⟨fun x ↦ f x, rfl⟩
+/-- `FintypeCat.toLightProfinite` is fully faithful. -/
+def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
+  preimage f := (f : _ → _)
+  map_preimage _ := rfl
+  preimage_map _ := rfl
+
+instance : FintypeCat.toProfinite.Faithful := FintypeCat.toProfiniteFullyFaithful.faithful
+
+instance : FintypeCat.toProfinite.Full := FintypeCat.toProfiniteFullyFaithful.full
 
 end DiscreteTopology
 

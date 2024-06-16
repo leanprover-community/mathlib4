@@ -236,8 +236,8 @@ instance : PreservesFiniteCoproducts lightToProfinite := by
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) lightToProfinite from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (finiteCoproduct.isColimit _)
-  have : Finite J := Finite.of_fintype _
   sorry
+  -- have : Finite J := Finite.of_fintype _
   -- exact Profinite.finiteCoproduct.isColimit (X := fun (j : J) ↦ (Profinite.of (F.obj ⟨j⟩)))
 
 noncomputable

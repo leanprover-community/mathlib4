@@ -78,7 +78,6 @@ namespace Stonean
 --   show Category (InducedCategory CompHaus (·.compHaus)) from inferInstance
 
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
-@[simps!]
 abbrev toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   compHausLikeToCompHaus _
 
