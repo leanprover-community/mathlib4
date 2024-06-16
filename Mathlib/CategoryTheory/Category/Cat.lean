@@ -82,10 +82,6 @@ instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.bicategory.strict CategoryTheory.Cat.bicategory.strict
 
-lemma leftUnitor_eqToIso : ∀ {a b : Cat} (f : a ⟶ b), λ_ f = eqToIso (Category.id_comp f) := by
-  intro a b f
-  dsimp only [eqToIso_refl]
-
 /-- Category structure on `Cat` -/
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
@@ -122,7 +118,7 @@ lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G
   rfl
 
 @[simp, nolint simpNF]
-lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = 𝟙 (F.obj X) := by
+lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = 𝟙 (F.obj X) :=
   rfl
 
 @[simp, nolint simpNF]
