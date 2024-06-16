@@ -18,8 +18,8 @@ namespace Mathlib.Tactic
 open Lean Elab Tactic Meta Parser.Tactic
 
 /-- `nth_rewrite` is a variant of `rewrite` that only changes the nth occurrence of the expression
-to be rewritten.  `nth_rewrite n [eq₁, eq₂,...]` will rewrite the `n`ᵗʰ occurrence
-of the equalities `eq₁`, `eq₂`,... etc.
+to be rewritten. `nth_rewrite n [eq₁, eq₂, ..., eqₘ]` will rewrite the `n`ᵗʰ occurrence
+of each of the `m` equalities `eqᵢ`.
 
 Note: The occurrences are counted beginning with `1` and not `0`, this is different than in
 mathlib3. The translation will be handled by mathport. -/
