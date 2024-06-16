@@ -150,10 +150,6 @@ def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Optio
 
 end
 
-/-- All text-based linters registered in this file. -/
-def allLinters : Array TextbasedLinter := Array.mk
-  []
-
 /-- Read a file, apply all text-based linters and print formatted errors.
 Return `true` if there were new errors (and `false` otherwise).
 `sizeLimit` is any pre-existing limit on this file's size. -/
@@ -175,7 +171,7 @@ def lintAllFiles (path : FilePath) : IO UInt32 := do
   -- Read all module names from the file at `path`.
   let allModules ← IO.FS.lines path
   -- Read the style exceptions file.
-  let exceptions_file ← IO.FS.lines (mkFilePath ["scripts/style-exceptions.txt"])
+  let exceptions_file ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
   let mut style_exceptions := parseStyleExceptions exceptions_file
   let mut number_error_files := 0
   for module in allModules do
