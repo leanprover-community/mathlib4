@@ -519,7 +519,7 @@ theorem mul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
 
 @[to_additive]
 theorem iInter_mul_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) * t ⊆ ⋂ i, s i * t :=
-  image2_iInter_subset_left _ _ _
+  Set.image2_iInter_subset_left _ _ _
 #align set.Inter_mul_subset Set.iInter_mul_subset
 #align set.Inter_add_subset Set.iInter_add_subset
 

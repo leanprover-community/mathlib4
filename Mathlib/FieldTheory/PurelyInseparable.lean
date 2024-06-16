@@ -999,7 +999,7 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
   let j : E ≃ₐ[F] E' := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F E K)
   have hi : M ≤ L.restrictScalars F := by
     rw [restrictScalars_adjoin_of_algEquiv (E := K) j rfl, restrictScalars_adjoin]
-    exact adjoin.mono _ _ _ (Set.subset_union_right _ _)
+    exact adjoin.mono _ _ _ Set.subset_union_right
   let i : M →+* L := Subsemiring.inclusion hi
   letI : Algebra M L := i.toAlgebra
   letI : SMul M L := Algebra.toSMul
