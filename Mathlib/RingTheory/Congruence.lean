@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 
 #align_import ring_theory.congruence from "leanprover-community/mathlib"@"2f39bcbc98f8255490f8d4562762c9467694c809"
 
@@ -305,6 +305,9 @@ theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
 #align ring_con.coe_nat_cast RingCon.coe_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
+
 end NatCast
 
 section IntCast
@@ -318,6 +321,9 @@ instance : IntCast c.Quotient :=
 theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
 #align ring_con.coe_int_cast RingCon.coe_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
 
 end IntCast
 

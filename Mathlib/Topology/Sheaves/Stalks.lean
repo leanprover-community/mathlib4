@@ -198,11 +198,11 @@ set_option linter.uppercaseLean3 false in
 theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
     (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
-  convert IsIso.of_iso
+  convert
       ((Functor.Final.colimitIso (hf.isOpenMap.functorNhds x).op
               ((OpenNhds.inclusion (f x)).op ⋙ f _* F) :
             _).symm ≪≫
-        colim.mapIso _)
+        colim.mapIso _).isIso_hom
   swap
   · fapply NatIso.ofComponents
     · intro U
@@ -306,7 +306,7 @@ variable {C}
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by
-  refine' colimit.desc _ ⟨_, fun U => _, _⟩
+  refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
         (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 : _)⟩)
@@ -490,7 +490,7 @@ instance stalkFunctor_preserves_mono (x : X) :
     ConcreteCategory.mono_of_injective _ <|
       (app_injective_iff_stalkFunctor_map_injective f.1).mpr
         (fun c =>
-          (@ConcreteCategory.mono_iff_injective_of_preservesPullback _ _ _ _ _ (f.1.app (op c))).mp
+          (ConcreteCategory.mono_iff_injective_of_preservesPullback (f.1.app (op c))).mp
             ((NatTrans.mono_iff_mono_app _ f.1).mp
                 (CategoryTheory.presheaf_mono_of_mono ..) <|
               op c))

@@ -136,7 +136,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h
   obtain ⟨i, h, hin, rfl⟩ := h
   rw [mul_comm, ← mul_assoc, Complex.exp_mul_I]
-  refine' ⟨if i * 2 ≤ n then i else i - n, _, _, _⟩
+  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?_, ?_⟩
   on_goal 2 =>
     replace hin := Nat.isCoprime_iff_coprime.mpr hin
     split_ifs
@@ -159,7 +159,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     · push_cast; rfl
     · push_cast; rfl
     field_simp [hn]
-    refine' ⟨(neg_lt_neg Real.pi_pos).trans_le _, _⟩
+    refine ⟨(neg_lt_neg Real.pi_pos).trans_le ?_, ?_⟩
     · rw [neg_zero]
       exact mul_nonneg (mul_nonneg i.cast_nonneg <| by simp [Real.pi_pos.le])
         (by rw [inv_nonneg]; simp only [Nat.cast_nonneg])
@@ -176,7 +176,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     rw [← sub_one_mul, sub_div, div_self]
     exact mod_cast hn
   field_simp [hn]
-  refine' ⟨_, le_trans _ Real.pi_pos.le⟩
+  refine ⟨?_, le_trans ?_ Real.pi_pos.le⟩
   on_goal 2 =>
     rw [mul_div_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg (sub_nonpos.mpr <| mod_cast h.le)
@@ -188,9 +188,9 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   · exact Nat.cast_pos.mpr hn.bot_lt
 #align is_primitive_root.arg IsPrimitiveRoot.arg
 
-lemma Complex.norm_eq_one_of_mem_rootOfUnity {ζ : ℂˣ} {n : ℕ+} (hζ : ζ ∈ rootsOfUnity n ℂ) :
+lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ+} (hζ : ζ ∈ rootsOfUnity n ℂ) :
     ‖(ζ : ℂ)‖ = 1 := by
   refine norm_eq_one_of_pow_eq_one ?_ <| n.ne_zero
   norm_cast
-  rw [show ζ ^ (n : ℕ) = 1 from hζ]
-  rfl
+  rw [_root_.mem_rootsOfUnity] at hζ
+  rw [hζ, Units.val_one]

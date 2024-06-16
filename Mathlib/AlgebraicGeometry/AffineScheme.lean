@@ -229,7 +229,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     rw [← ΓSpec.adjunction_unit_app_app_top X]
     rfl
   · dsimp
-    refine' (Scheme.preimage_basicOpen _ _).trans _
+    refine (Scheme.preimage_basicOpen _ _).trans ?_
     congr 1
     exact IsIso.inv_hom_id_apply _ _
 #align algebraic_geometry.Scheme.map_prime_spectrum_basic_open_of_affine AlgebraicGeometry.Scheme.map_PrimeSpectrum_basicOpen_of_affine
@@ -325,9 +325,9 @@ theorem fromSpec_base_preimage :
   exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
 #align algebraic_geometry.is_affine_open.from_Spec_base_preimage AlgebraicGeometry.IsAffineOpen.fromSpec_base_preimage
 
--- Adaptation note: 2024-04-23
--- The backwards compatibility flags don't help here.
-set_option maxHeartbeats 800000 in
+#adaptation_note /-- 2024-04-23
+The backwards compatibility flags don't help here. -/
+set_option maxHeartbeats 400000 in
 -- Doesn't build without the `IsAffine` instance but the linter complains
 @[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :
@@ -542,7 +542,7 @@ theorem isLocalization_stalk'
   rw [iff_iff_eq]
   congr 2
   rw [RingHom.algebraMap_toAlgebra]
-  refine' (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hy⟩).trans _
+  refine (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hy⟩).trans ?_
   rw [IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 

@@ -53,7 +53,6 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
 #align pi_fin_two_equiv_symm_apply piFinTwoEquiv_symm_apply
 #align pi_fin_two_equiv_apply piFinTwoEquiv_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
     (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
       Set.pi Set.univ (Fin.cons s <| Fin.cons t finZeroElim) := by
@@ -61,7 +60,6 @@ theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t :
   simp [Fin.forall_fin_two]
 #align fin.preimage_apply_01_prod Fin.preimage_apply_01_prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
     (fun f : Fin 2 → α => (f 0, f 1)) ⁻¹' s ×ˢ t = Set.pi Set.univ ![s, t] :=
   @Fin.preimage_apply_01_prod (fun _ => α) s t
@@ -320,7 +318,7 @@ def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Sum (Fin m) (Fin n)) Sum.inl Sum.inr i
   left_inv x := by cases' x with y y <;> dsimp <;> simp
-  right_inv x := by refine' Fin.addCases (fun i => _) (fun i => _) x <;> simp
+  right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 #align fin_sum_fin_equiv finSumFinEquiv
 
 @[simp]
@@ -441,7 +439,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
 
 -- Porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
-  rw [finRotate_succ_apply, zero_add]
+  rw [finRotate_succ_apply, Fin.zero_add]
 #align fin_rotate_apply_zero finRotate_apply_zero
 
 theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
@@ -497,7 +495,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   -- TODO: is there a canonical order of `*` and `+` here?
   left_inv a := Nat.div_add_mod' _ _
   right_inv p := by
-    refine' Prod.ext _ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
+    refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
     dsimp only
     rw [Nat.add_comm, Nat.add_mul_div_right _ _ n.pos_of_neZero, Nat.div_eq_of_lt p.2.is_lt,
       Nat.zero_add]

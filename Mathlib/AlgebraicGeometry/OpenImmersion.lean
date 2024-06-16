@@ -55,7 +55,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
   local_affine := by
     intro x
     obtain ⟨R, f, h₁, h₂⟩ := h x
-    refine' ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨_⟩⟩
+    refine ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨?_⟩⟩
     apply LocallyRingedSpace.isoOfSheafedSpaceIso
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
@@ -713,7 +713,7 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
     dsimp [Opens.map]
     refine Set.image_preimage_eq_inter_range.trans ?_
     erw [Set.inter_eq_left]
-    refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
+    refine Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   refine le_trans (Scheme.basicOpen_le _ _) (le_of_eq ?_)
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
