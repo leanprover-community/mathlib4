@@ -11,7 +11,6 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Tactic.Monotonicity
 
 #align_import algebra.lie.nilpotent from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
