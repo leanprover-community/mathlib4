@@ -6,6 +6,7 @@ import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category CategoryTheory.Limits ZeroObject
@@ -286,7 +287,7 @@ variable {B : Type*} [Category B] [Abelian B]
 variable {X Y : A} (f : X ⟶ Y)
 variable (F : A ⥤ B) [Functor.Additive F]
 
-noncomputable def imageComparisonOfCokernelComparisonIso (hc : IsIso (cokernelComparison f F)) :
+noncomputable def imageComparisonOfCokernelComparisonMono (hc : Mono (cokernelComparison f F)) :
     F.obj (Abelian.image f) ⟶ Abelian.image (F.map f) := by
   refine kernel.lift (cokernel.π (F.map f)) (F.map (Abelian.image.ι f)) ?_
   rw [← cancel_mono (cokernelComparison f F)]
@@ -294,22 +295,54 @@ noncomputable def imageComparisonOfCokernelComparisonIso (hc : IsIso (cokernelCo
   rw [← F.map_comp, kernel.condition, F.map_zero]
 
 @[simp]
-lemma imageComparison_comp_ι (hc : IsIso (cokernelComparison f F)) :
-    imageComparisonOfCokernelComparisonIso f F hc ≫ Abelian.image.ι (F.map f) =
+lemma imageComparison_comp_ι (hc : Mono (cokernelComparison f F)) :
+    imageComparisonOfCokernelComparisonMono f F hc ≫ Abelian.image.ι (F.map f) =
     F.map (Abelian.image.ι f) := by
-  simp only [imageComparisonOfCokernelComparisonIso, equalizer_as_kernel, kernel.lift_ι]
+  simp only [imageComparisonOfCokernelComparisonMono, equalizer_as_kernel, kernel.lift_ι]
 
-variable (hc : IsIso (cokernelComparison f F))
+@[simp]
+lemma factorThruImage_comp_imageComparison (hc : Mono (cokernelComparison f F)) :
+    F.map (Abelian.factorThruImage f) ≫ imageComparisonOfCokernelComparisonMono f F hc =
+    Abelian.factorThruImage (F.map f) := by
+  rw [← cancel_mono (Abelian.image.ι (F.map f)), assoc, imageComparison_comp_ι,
+    Abelian.image.fac, ← F.map_comp, Abelian.image.fac]
 
-lemma imageComparisonMonoOfMono (hm : Mono (F.map (Abelian.image.ι f))) :
-    Mono (imageComparisonOfCokernelComparisonIso f F hc) := by
+lemma imageComparisonMonoOfMono (hc : Mono (cokernelComparison f F))
+    (hm : Mono (F.map (Abelian.image.ι f))) :
+    Mono (imageComparisonOfCokernelComparisonMono f F hc) := by
   refine @mono_of_mono _ _ _ _ _ _ (Abelian.image.ι (F.map f)) ?_
   rw [imageComparison_comp_ι]
   exact hm
 
-lemma imageComparisonEpiOfExact (he : (ShortComplex.mk (F.map (Abelian.image.ι f))
+lemma kernelComplexExact : (ShortComplex.mk (kernel.ι f) f (kernel.condition f)).Exact := by
+  rw [ShortComplex.exact_iff_isZero_homology]
+  refine IsZero.of_iso ?_ (ShortComplex.homology'IsoHomology _).symm
+  refine IsZero.of_iso ?_ (homology'IsoCokernelLift _ _ _)
+  simp only [equalizer_as_kernel, IsLimit.lift_self, Fork.ofι_pt]
+  refine IsZero.of_iso (isZero_zero A) (Limits.cokernel.ofEpi _)
+
+lemma kernelImageComplexShortExact : (ShortComplex.mk (kernel.ι f) (Abelian.factorThruImage f)
+    (by rw [← cancel_mono (Abelian.image.ι f), assoc, Abelian.image.fac, zero_comp,
+    kernel.condition f])).ShortExact where
+  exact := by
+    set φ := ShortComplex.homMk (S₁ := ShortComplex.mk (kernel.ι f) (Abelian.factorThruImage f)
+      (by rw [← cancel_mono (Abelian.image.ι f), assoc, Abelian.image.fac, zero_comp,
+      kernel.condition f])) (S₂ := ShortComplex.mk (kernel.ι f) f (kernel.condition f))
+      (𝟙 _) (𝟙 _) (Abelian.image.ι f) (by rw [id_comp, comp_id])
+      (by rw [id_comp]; simp only [equalizer_as_kernel, id_eq, eq_mpr_eq_cast, kernel.lift_ι])
+    have : Epi φ.τ₁ := by simp only [equalizer_as_kernel, id_eq, eq_mpr_eq_cast,
+      ShortComplex.homMk_τ₁, φ]; exact inferInstance
+    have : IsIso φ.τ₂ := by simp only [equalizer_as_kernel, id_eq, eq_mpr_eq_cast,
+      ShortComplex.homMk_τ₂, φ]; exact inferInstance
+    have : Mono φ.τ₃ := by simp only [equalizer_as_kernel, id_eq, eq_mpr_eq_cast,
+      ShortComplex.homMk_τ₃, φ]; exact inferInstance
+    rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
+    exact kernelComplexExact f
+
+lemma imageComparisonEpiOfExact (hc : IsIso (cokernelComparison f F))
+    (he : (ShortComplex.mk (F.map (Abelian.image.ι f))
     (F.map (cokernel.π f)) (by rw [← F.map_comp]; simp)).Exact) :
-    Epi (imageComparisonOfCokernelComparisonIso f F hc) := by
+    Epi (imageComparisonOfCokernelComparisonMono f F inferInstance) := by
   set R₁ := (ShortComplex.mk (F.map (Abelian.image.ι f))
     (F.map (cokernel.π f)) (by rw [← F.map_comp]; simp)).toComposableArrows
   set R₂ := (ShortComplex.mk (Abelian.image.ι (F.map f)) (cokernel.π (F.map f))
@@ -318,10 +351,10 @@ lemma imageComparisonEpiOfExact (he : (ShortComplex.mk (F.map (Abelian.image.ι 
     refine ComposableArrows.homMk
       (fun i ↦
         match i with
-        | 0 => imageComparisonOfCokernelComparisonIso f F hc
+        | 0 => imageComparisonOfCokernelComparisonMono f F inferInstance
         | 1 => 𝟙 _
         | 2 => CategoryTheory.inv (cokernelComparison f F)) ?_
-    intro i hi
+    intro i _
     match i with
     | 0 => erw [imageComparison_comp_ι, comp_id]; rfl
     | 1 => simp only
@@ -331,13 +364,8 @@ lemma imageComparisonEpiOfExact (he : (ShortComplex.mk (F.map (Abelian.image.ι 
            change F.map (cokernel.π f) = cokernel.π (F.map f) ≫ _
            rw [π_comp_cokernelComparison]
   have hR₁ : R₁.Exact := ShortComplex.Exact.exact_toComposableArrows he
-  have hR₂ : R₂.Exact := by
-    refine ShortComplex.Exact.exact_toComposableArrows ?_
-    rw [ShortComplex.exact_iff_isZero_homology]
-    refine IsZero.of_iso ?_ (ShortComplex.homology'IsoHomology _).symm
-    refine IsZero.of_iso ?_ (homology'IsoCokernelLift _ _ _)
-    simp only [equalizer_as_kernel, IsLimit.lift_self, Fork.ofι_pt]
-    refine IsZero.of_iso (isZero_zero B) (Limits.cokernel.ofEpi _)
+  have hR₂ : R₂.Exact :=
+    ShortComplex.Exact.exact_toComposableArrows (kernelComplexExact (cokernel.π (F.map f)))
   have hR₂' : Mono (R₂.map' 0 1) := by
     simp only [R₂, ShortComplex.toComposableArrows]
     simp only [Nat.reduceAdd, equalizer_as_kernel, ComposableArrows.mk₂, id_eq, Int.reduceNeg,
@@ -357,22 +385,74 @@ lemma imageComparisonEpiOfExact (he : (ShortComplex.mk (F.map (Abelian.image.ι 
     exact inferInstance
   exact Abelian.epi_of_mono_of_epi_of_mono φ hR₁ hR₂ hR₂' h₀ h₁
 
-lemma imageComparisonIsoOfMonoAndExact (hm : Mono (F.map (Abelian.image.ι f)))
+lemma imageComparisonIsoOfMonoAndExact (hc : IsIso (cokernelComparison f F))
+    (hm : Mono (F.map (Abelian.image.ι f)))
     (he : (ShortComplex.mk (F.map (Abelian.image.ι f))
     (F.map (cokernel.π f)) (by rw [← F.map_comp]; simp)).Exact) :
-    IsIso (imageComparisonOfCokernelComparisonIso f F hc) := by
-  have := imageComparisonMonoOfMono f F hc hm
+    IsIso (imageComparisonOfCokernelComparisonMono f F inferInstance) := by
+  have := imageComparisonMonoOfMono f F inferInstance hm
   have := imageComparisonEpiOfExact f F hc he
   exact isIso_of_mono_of_epi _
 
 lemma imageComparisonVsKernelComparison (S : ShortComplex A)
     (hS : IsIso (cokernelComparison S.f F)) :
-    (imageComparisonOfCokernelComparisonIso S.f F hS) ≫
+    (imageComparisonOfCokernelComparisonMono S.f F inferInstance) ≫
     (F.mapShortComplex.obj S).abelianImageToKernel =
     F.map (S.abelianImageToKernel) ≫ kernelComparison S.g F := by
   rw [← cancel_mono (kernel.ι (F.map S.g)), assoc]
   erw [ShortComplex.abelianImageToKernel_comp_kernel_ι, imageComparison_comp_ι]
   rw [assoc, kernelComparison_comp_ι, ← F.map_comp, S.abelianImageToKernel_comp_kernel_ι]
+
+lemma kernelComparisonMonoOfMono (hm : Mono (F.map (kernel.ι f))) :
+    Mono (kernelComparison f F) := by
+  refine @mono_of_mono _ _ _ _ _ _ (kernel.ι (F.map f)) ?_
+  rw [kernelComparison_comp_ι]
+  exact hm
+
+lemma kernelComparisonEpiOfImageComparisonMono (hc : Mono (cokernelComparison f F))
+    (hm : Mono (imageComparisonOfCokernelComparisonMono f F hc))
+    (he : (ShortComplex.mk (F.map (kernel.ι f))
+    (F.map (Abelian.factorThruImage f))
+    (by rw [← F.map_comp, ← F.map_zero]; congr 1; rw [← cancel_mono (Abelian.image.ι f), assoc,
+    Abelian.image.fac, kernel.condition, zero_comp])).Exact) : Epi (kernelComparison f F) := by
+  set R₁ := (ShortComplex.mk (F.map (kernel.ι f))
+    (F.map (Abelian.factorThruImage f))
+    (by rw [← F.map_comp, ← F.map_zero]; congr 1; rw [← cancel_mono (Abelian.image.ι f), assoc,
+    Abelian.image.fac, kernel.condition, zero_comp])).toComposableArrows
+  set R₂ := (ShortComplex.mk (kernel.ι (F.map f)) (Abelian.factorThruImage (F.map f))
+    (by rw [← cancel_mono (Abelian.image.ι (F.map f)), assoc, Abelian.image.fac, zero_comp,
+        kernel.condition])).toComposableArrows
+  set φ : R₁ ⟶ R₂ := by
+    refine ComposableArrows.homMk
+      (fun i ↦
+        match i with
+        | 0 => kernelComparison f F
+        | 1 => 𝟙 _
+        | 2 => imageComparisonOfCokernelComparisonMono f F hc)
+      ?_
+    intro i _
+    match i with
+    | 0 => erw [kernelComparison_comp_ι, comp_id]; rfl
+    | 1 => erw [factorThruImage_comp_imageComparison, id_comp]; rfl
+  have hR₁ : R₁.Exact := ShortComplex.Exact.exact_toComposableArrows he
+  have hR₂ : R₂.Exact := ShortComplex.Exact.exact_toComposableArrows
+    (kernelImageComplexShortExact (F.map f)).exact
+  have hR₂' : Mono (R₂.map' 0 1) := by
+    simp only [Nat.reduceAdd, equalizer_as_kernel, id_eq, eq_mpr_eq_cast, Int.reduceNeg,
+      Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceSub, Int.reduceAdd, Fin.zero_eta,
+      ShortComplex.toComposableArrows_obj, ComposableArrows.Precomp.obj_zero, Fin.mk_one,
+      ComposableArrows.Precomp.obj_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj,
+      ComposableArrows.map', ShortComplex.toComposableArrows_map,
+      ComposableArrows.Precomp.map_zero_one, R₂]
+    exact inferInstance
+  have h₀ : Epi (ComposableArrows.app' φ 1) := by
+    simp only [id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceAdd,
+      Int.reduceSub, ComposableArrows.obj', Nat.reduceAdd, Fin.mk_one, ComposableArrows.app',
+      ComposableArrows.homMk_app, φ]
+    exact inferInstance
+  have h₁ : Mono (ComposableArrows.app' φ 2) := hm
+  exact Abelian.epi_of_mono_of_epi_of_mono φ hR₁ hR₂ hR₂' h₀ h₁
+
 
 /-
 variable {ι : Type*} {c : ComplexShape ι}

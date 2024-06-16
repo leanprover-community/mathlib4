@@ -20,7 +20,7 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 namespace Functor
 
-scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
+scoped [ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
 
 open ZeroObject Limits Preadditive Pretriangulated
 
@@ -32,7 +32,13 @@ local instance : t₂.HasHeart := hasHeartFullSubcategory t₂
 noncomputable local instance : t₁.HasHomology₀ := t₁.hasHomology₀
 noncomputable local instance : t₂.HasHomology₀ := t₂.hasHomology₀
 
+noncomputable local instance : t₂.homology₀.ShiftSequence ℤ :=
+  Functor.ShiftSequence.tautological _ _
+
 abbrev AcyclicObject (X : t₁.Heart) := t₂.heart (F.obj X.1)
+
+lemma AcyclicImageHasZeroHomology {X : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X) (n : ℤ)
+    (hn : n ≠ 0) : IsZero ((t₂.homology n).obj (F.obj X.1)) := sorry
 
 abbrev AcyclicCategory := FullSubcategory (AcyclicObject F t₁ t₂)
 
@@ -52,7 +58,7 @@ instance : Functor.Additive (FunctorFromHeart F t₁) where
     simp only [comp_obj, comp_map, map_add]
 
 noncomputable abbrev FunctorFromHeartToHeart : t₁.Heart ⥤ t₂.Heart :=
-  t₁.ιHeart ⋙ F ⋙ t₂.homology₀
+  t₁.ιHeart ⋙ F ⋙ t₂.homology 0
 
 def AcyclicToHeart : (AcyclicCategory F t₁ t₂) ⥤ t₁.Heart := fullSubcategoryInclusion _
 
@@ -121,6 +127,54 @@ lemma AcyclicExtension {S : ShortComplex t₁.Heart} (SE : S.ShortExact)
   constructor
   · exact t₂.isLE₂ _ DT' 0 hS₁.1 hS₃.1
   · exact t₂.isGE₂ _ DT' 0 hS₁.2 hS₃.2
+
+noncomputable abbrev ShortExactComplexToImageDistTriangle {S : ShortComplex t₁.Heart}
+    (he : S.ShortExact) : Pretriangulated.Triangle D :=
+  F.mapTriangle.obj (heartShortExactTriangle t₁ _ he)
+
+lemma ShortExactComplexToImageDistTriangle_distinguished {S : ShortComplex t₁.Heart}
+    (he : S.ShortExact) : ShortExactComplexToImageDistTriangle F t₁ he ∈ distinguishedTriangles :=
+  F.map_distinguished _ (heartShortExactTriangle_distinguished t₁ _ he)
+
+noncomputable abbrev ShortExactComplexImageIsoHomology {S : ShortComplex t₁.Heart} (he : S.ShortExact) :
+    ShortComplex.mk ((t₂.homology 0).map (ShortExactComplexToImageDistTriangle F t₁ he).mor₁)
+    ((t₂.homology 0).map (ShortExactComplexToImageDistTriangle F t₁ he).mor₂)
+      (by rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _
+      (ShortExactComplexToImageDistTriangle_distinguished F t₁ he), Functor.map_zero])
+    ≅ (FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S := by
+  refine ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+
+lemma ShortExactComplexImageExact {S : ShortComplex t₁.Heart} (he : S.ShortExact) :
+    ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).Exact :=
+  ShortComplex.exact_of_iso (ShortExactComplexImageIsoHomology F t₁ t₂ he)
+  (t₂.homology_exact₂ _ (ShortExactComplexToImageDistTriangle_distinguished F t₁ he) 0)
+
+lemma ShortExactComplexImageLeftExact {S : ShortComplex t₁.Heart} (he : S.ShortExact)
+    (hv : IsZero ((t₂.homology (-1 : ℤ)).obj (F.obj S.X₃.1))) :
+    Mono ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).f :=
+  (ShortComplex.exact_iff_mono _ (IsZero.eq_zero_of_src hv _)).mp (t₂.homology_exact₁ _
+  (ShortExactComplexToImageDistTriangle_distinguished F t₁ he) (-1 : ℤ) 0 (by simp))
+
+lemma ShortExactComplexImageRightExact {S : ShortComplex t₁.Heart} (he : S.ShortExact)
+    (hv : IsZero ((t₂.homology (1 : ℤ)).obj (F.obj S.X₁.1))) :
+    Epi ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).g :=
+  (ShortComplex.exact_iff_epi _ (IsZero.eq_zero_of_tgt hv _)).mp (t₂.homology_exact₃ _
+  (ShortExactComplexToImageDistTriangle_distinguished F t₁ he) (0 : ℤ) 1 (by simp))
+
+lemma ShortExactComplexImageShortExact {S : ShortComplex t₁.Heart} (he : S.ShortExact)
+    (hv₁ : IsZero ((t₂.homology (1 : ℤ)).obj (F.obj S.X₁.1)))
+    (hv₂ : IsZero ((t₂.homology (-1 : ℤ)).obj (F.obj S.X₃.1))) :
+    ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).ShortExact where
+  exact := ShortExactComplexImageExact F t₁ t₂ he
+  mono_f := ShortExactComplexImageLeftExact F t₁ t₂ he hv₂
+  epi_g := ShortExactComplexImageRightExact F t₁ t₂ he hv₁
+
+lemma ShortExactComplexImageShortExact' {S : ShortComplex t₁.Heart} (he : S.ShortExact)
+    (hv₁ : AcyclicObject F t₁ t₂ S.X₁) (hv₂ : AcyclicObject F t₁ t₂ S.X₃) :
+    ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).ShortExact :=
+  ShortExactComplexImageShortExact F t₁ t₂ he
+  (AcyclicImageHasZeroHomology F t₁ t₂ hv₁ (1 : ℤ) (by simp))
+  (AcyclicImageHasZeroHomology F t₁ t₂ hv₂ (-1 : ℤ) (by simp))
 
 lemma AcyclicShortExact {S : ShortComplex (AcyclicCategory F t₁ t₂)}
     (SE : ((AcyclicToHeart F t₁ t₂).mapShortComplex.obj S).ShortExact) :
@@ -238,8 +292,6 @@ lemma AcyclicShortExact {S : ShortComplex (AcyclicCategory F t₁ t₂)}
   exact ShortComplex.shortExact_of_iso e (shortExact_of_distTriang t₂ δ h)
 -/
 
-noncomputable local instance : t₂.homology₀.ShiftSequence ℤ :=
-  Functor.ShiftSequence.tautological _ _
 
 noncomputable def ShortComplexHomologyFunctor (S : ShortComplex t₁.Heart)
     (hS₁ : AcyclicObject F t₁ t₂ S.X₁) (hS : S.Exact) {n : ℤ} (hn : n ≠ -1 ∧ n ≠ 0) :
