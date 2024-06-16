@@ -671,6 +671,8 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
   exact getLast_append_singleton _
 #align list.last_replicate_succ List.getLast_replicate_succ
 
+/-- If the last element of `l` does not satisfy `p`, then it is also the last element of
+`l.filter p`. -/
 lemma getLast_filter {p : α → Bool} :
     ∀ (l : List α) (hlp : l.filter p ≠ []), p (l.getLast (hlp <| ·.symm ▸ rfl)) = true →
       (l.filter p).getLast hlp = l.getLast (hlp <| ·.symm ▸ rfl)
