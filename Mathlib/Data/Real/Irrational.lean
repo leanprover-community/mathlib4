@@ -93,23 +93,34 @@ theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp
     (sq_sqrt (Int.cast_nonneg.2 <| le_of_lt hm)) (by rw [Hpv]; exact one_ne_zero)
 #align irrational_sqrt_of_multiplicity_odd irrational_sqrt_of_multiplicity_odd
 
+@[simp] theorem not_irrational_zero : ¬Irrational 0 := not_not_intro ⟨0, Rat.cast_zero⟩
+@[simp] theorem not_irrational_one : ¬Irrational 1 := not_not_intro ⟨1, Rat.cast_one⟩
+
 theorem irrational_sqrt_ratCast_iff_of_nonneg {q : ℚ} (hq : 0 ≤ q) :
     Irrational (√q) ↔ ¬IsSquare q := by
-  refine Iff.not ?_
-  change Exists _ ↔ Exists _
-  simp_rw [← sq]
+  refine Iff.not (?_ : Exists _ ↔ Exists _)
   constructor
   · rintro ⟨y, hy⟩
     refine ⟨y, Rat.cast_injective (α := ℝ) ?_⟩
-    rw [Rat.cast_pow, hy, sq_sqrt (mod_cast hq)]
+    rw [Rat.cast_mul, hy, mul_self_sqrt (Rat.cast_nonneg.2 hq)]
   · rintro ⟨q', rfl⟩
-    refine ⟨|q'|, ?_⟩
-    rw [Rat.cast_pow, sqrt_sq_eq_abs, cast_abs]
+    exact ⟨|q'|, mod_cast (sqrt_mul_self_eq_abs q').symm⟩
+
+theorem irrational_sqrt_ratCast_iff {q : ℚ} :
+    Irrational (√q) ↔ ¬IsSquare q ∧ 0 ≤ q := by
+  obtain hq | hq := le_or_lt 0 q
+  · simp_rw [irrational_sqrt_ratCast_iff_of_nonneg hq, and_iff_left hq]
+  · rw [sqrt_eq_zero_of_nonpos (Rat.cast_nonpos.2 hq.le)]
+    simp_rw [not_irrational_zero, false_iff, not_and, not_le, hq, implies_true]
 
 theorem irrational_sqrt_intCast_iff_of_nonneg {z : ℤ} (hz : 0 ≤ z) :
     Irrational (√z) ↔ ¬IsSquare z := by
   rw [← Rat.isSquare_intCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg (mod_cast hz),
     Rat.cast_intCast]
+
+theorem irrational_sqrt_intCast_iff {z : ℤ} :
+    Irrational (√z) ↔ ¬IsSquare z ∧ 0 ≤ z := by
+  rw [← Rat.cast_intCast, irrational_sqrt_ratCast_iff, Rat.isSquare_intCast_iff, Int.cast_nonneg]
 
 theorem irrational_sqrt_natCast_iff {n : ℕ} : Irrational (√n) ↔ ¬IsSquare n := by
   rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg n.cast_nonneg,
@@ -129,22 +140,15 @@ theorem irrational_sqrt_two : Irrational (√2) := by
   simpa using Nat.prime_two.irrational_sqrt
 #align irrational_sqrt_two irrational_sqrt_two
 
-@[simp] theorem not_irrational_zero : ¬Irrational 0 := not_not_intro ⟨0, Rat.cast_zero⟩
-@[simp] theorem not_irrational_one : ¬Irrational 1 := not_not_intro ⟨1, Rat.cast_one⟩
-
+@[deprecated irrational_sqrt_ratCast_iff]
 theorem irrational_sqrt_rat_iff (q : ℚ) :
     Irrational (√q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q := by
-  rw [ne_eq, ← Rat.exists_mul_self]
-  obtain hq | hq := le_or_lt 0 q
-  · simp_rw [irrational_sqrt_ratCast_iff_of_nonneg hq, ← @eq_comm _ q]
-    exact (and_iff_left hq).symm
-  · rw [sqrt_eq_zero_of_nonpos (mod_cast hq.le)]
-    simp only [not_irrational_zero, false_iff, not_and, not_le, hq, implies_true]
-    exact mod_cast hq.le
+  rw [irrational_sqrt_ratCast_iff, ne_eq, ← Rat.exists_mul_self]
+  simp only [eq_comm, IsSquare]
 #align irrational_sqrt_rat_iff irrational_sqrt_rat_iff
 
 instance (q : ℚ) : Decidable (Irrational (√q)) :=
-  decidable_of_iff' _ (irrational_sqrt_rat_iff q)
+  decidable_of_iff' _ irrational_sqrt_ratCast_iff
 
 /-!
 ### Dot-style operations on `Irrational`
