@@ -369,6 +369,20 @@ theorem ord_compl_le (n p : ℕ) : ord_compl[p] n ≤ n :=
   Nat.div_le_self _ _
 #align nat.ord_compl_le Nat.ord_compl_le
 
+/- The odd part of `n > 0` is either 1, or `n`, or has a value between 1 and `n`. -/
+lemma ord_compl_eq_or_lt (n p : ℕ) (hn : 0 < n) :
+    ord_compl[p] n = 1 ∨ ord_compl[p] n = n ∨ (1 < ord_compl[p] n ∧ n > ord_compl[p] n) := by
+  have h (n m : ℕ) (hn1 : n ≤ m) (hn2 : 1 ≤ n) : n = 1 ∨ n = m ∨ (1 < n ∧ m > n) := by omega
+  apply h (ord_compl[p] n)
+  · apply ord_compl_le n
+  · apply ord_compl_pos p (not_eq_zero_of_lt hn)
+
+/- With respect to prime `p`, the odd part of `p ^ m` is 1. -/
+lemma ord_compl_of_pow (m n p: ℕ) (hp : p.Prime) (hn : n = p ^ m) : ord_compl[p] n = 1 := by
+  rw [hn, Prime.factorization_pow, Finsupp.single_eq_same]
+  simp only [Prime.pos hp, ofNat_pos, pow_pos, Nat.div_self]
+  exact hp
+
 theorem ord_proj_mul_ord_compl_eq_self (n p : ℕ) : ord_proj[p] n * ord_compl[p] n = n :=
   Nat.mul_div_cancel' (ord_proj_dvd n p)
 #align nat.ord_proj_mul_ord_compl_eq_self Nat.ord_proj_mul_ord_compl_eq_self
