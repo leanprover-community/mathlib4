@@ -31,7 +31,7 @@ noncomputable section
 
 open Matrix Matrix.SpecialLinearGroup
 
-open scoped Classical BigOperators MatrixGroups
+open scoped Classical MatrixGroups
 
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/
@@ -333,8 +333,7 @@ theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
 #align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.ModularGroup.SLOnGLPos_smul_apply
 
 instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
-  smul_assoc := by
-    intro s g z
+  smul_assoc s g z := by
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.SL_to_GL_tower UpperHalfPlane.ModularGroup.SL_to_GL_tower
@@ -349,8 +348,7 @@ theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.ModularGroup.subgroup_on_glpos_smul_apply
 
 instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
-  smul_assoc := by
-    intro s g z
+  smul_assoc s g z := by
     simp only [subgroup_on_glpos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.ModularGroup.subgroup_on_glpos
@@ -537,7 +535,7 @@ theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
 theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
-  refine' ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, _⟩
+  refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
   ext1 ⟨z, hz⟩; ext1
   suffices ↑a * z * a + b * a = b * a + a * a * z by
     -- Porting note: added `coeToGL` and merged `rw` and `simpa`
@@ -552,7 +550,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
   have h_denom := denom_ne_zero g
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
   replace hc : c ≠ 0 := by simpa using hc
-  refine' ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, _⟩
+  refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
     -- Porting note: golfed broken proof

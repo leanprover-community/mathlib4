@@ -391,7 +391,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         dsimp at h
         have := idealOfLE_le_of_le A _ _ ?_ ?_ h
         iterate 2 erw [idealOfLE_ofPrime] at this
-        exact this
+        · exact this
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
@@ -627,7 +627,7 @@ def principalUnitGroup : Subgroup Kˣ where
     intro a b ha hb
     -- Porting note: added
     rw [Set.mem_setOf] at ha hb
-    refine' lt_of_le_of_lt _ (max_lt hb ha)
+    refine lt_of_le_of_lt ?_ (max_lt hb ha)
     -- Porting note: `sub_add_sub_cancel` needed some help
     rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
       ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel (↑(a * b) : K) _ 1]
@@ -782,8 +782,8 @@ the action is by a group. Notably this provides an instances when `G` is `K ≃+
 
 These instances are in the `Pointwise` locale.
 
-The lemmas in this section are copied from `RingTheory/Subring/Pointwise.lean`; try to keep these
-in sync.
+The lemmas in this section are copied from the file `Mathlib.Algebra.Ring.Subring.Pointwise`; try
+to keep these in sync.
 -/
 
 

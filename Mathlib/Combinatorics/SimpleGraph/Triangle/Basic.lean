@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Finset
@@ -64,7 +64,7 @@ nonrec lemma EdgeDisjointTriangles.mono (h : G ≤ H) (hH : H.EdgeDisjointTriang
 lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
     (G.map f).EdgeDisjointTriangles := by
   rw [EdgeDisjointTriangles, cliqueSet_map (by norm_num : 3 ≠ 1),
-    ((Finset.map_injective f).injOn _).pairwise_image]
+    (Finset.map_injective f).injOn.pairwise_image]
   classical
   rintro s hs t ht hst
   dsimp [Function.onFun]
@@ -279,7 +279,7 @@ lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
 theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) :
     ε ≤ 0 := by
   have := h₀ (empty_subset _)
-  rw [coe_empty, Finset.card_empty, cast_zero, deleteEdges_empty_eq] at this
+  rw [coe_empty, Finset.card_empty, cast_zero, deleteEdges_empty] at this
   exact nonpos_of_mul_nonpos_left (this h₁) (cast_pos.2 <| sq_pos_of_pos Fintype.card_pos)
 #align simple_graph.far_from_triangle_free.nonpos SimpleGraph.FarFromTriangleFree.nonpos
 
