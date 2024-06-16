@@ -97,7 +97,7 @@ theorem logDeriv_comp (f g : 𝕜 → 𝕜) (x : 𝕜) (hf : DifferentiableAt �
 
 /-- The logarithmic derivative of a sequence of functions converging locally uniformly to a
 function is the logarithmic derivative of the limit function-/
-theorem logDeriv_tendsto {ι : Type*} [Preorder ι] {p : Filter ι} (f : ι → ℂ → ℂ) (g : ℂ → ℂ)
+theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} (f : ι → ℂ → ℂ) (g : ℂ → ℂ)
     {s : Set ℂ} (hs : IsOpen s) (x : s) (hF : TendstoLocallyUniformlyOn f g p s)
     (hf : ∀ᶠ n : ι in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
     Tendsto (fun n : ι => logDeriv (f n) x) p (𝓝 ((logDeriv g) x)) := by
