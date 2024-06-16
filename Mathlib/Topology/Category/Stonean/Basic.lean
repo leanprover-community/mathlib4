@@ -79,12 +79,12 @@ namespace Stonean
 
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
 @[simps!]
-def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
+abbrev toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   compHausLikeToCompHaus _
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
-def fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
-  fullyFaithfulInducedFunctor _
+abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
+  CompHausLike.fullyFaithfulToCompHausLike _
 
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
@@ -93,69 +93,73 @@ abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [ExtremallyDisconnected X] : Stonean :=
   CompHausLike.of _ X (inferInstance : ExtremallyDisconnected X)
 
-/-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
-instance : toCompHaus.Full := fullyFaithfulToCompHaus.full
+-- /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
+-- instance : toCompHaus.Full := fullyFaithfulToCompHaus.full
 
-/-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : toCompHaus.Faithful := fullyFaithfulToCompHaus.faithful
+-- /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
+-- instance : toCompHaus.Faithful := fullyFaithfulToCompHaus.faithful
 
-/-- Stonean spaces are a concrete category. -/
-instance : ConcreteCategory Stonean where
-  forget := toCompHaus ⋙ forget _
+-- /-- Stonean spaces are a concrete category. -/
+-- instance : ConcreteCategory Stonean where
+--   forget := toCompHaus ⋙ forget _
 
-instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
-instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
+-- instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
+-- instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
 
-/-- Stonean spaces are topological spaces. -/
-instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
-  show TopologicalSpace X.toTop from inferInstance
+-- /-- Stonean spaces are topological spaces. -/
+-- instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
+--   show TopologicalSpace X.toTop from inferInstance
 
-/-- Stonean spaces are compact. -/
-instance (X : Stonean.{u}) : CompactSpace X :=
-  show CompactSpace X.toTop from inferInstance
+-- /-- Stonean spaces are compact. -/
+-- instance (X : Stonean.{u}) : CompactSpace X :=
+--   show CompactSpace X.toTop from inferInstance
 
-/-- Stonean spaces are Hausdorff. -/
-instance (X : Stonean.{u}) : T2Space X :=
-  show T2Space X.toTop from inferInstance
+-- /-- Stonean spaces are Hausdorff. -/
+-- instance (X : Stonean.{u}) : T2Space X :=
+--   show T2Space X.toTop from inferInstance
 
 instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
   X.prop
 
 /-- The functor from Stonean spaces to profinite spaces. -/
-@[simps]
-def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
-  obj X :=
-    { toTop := X.toTop,
-      prop := show TotallyDisconnectedSpace X from inferInstance }
-  map f := f
+abbrev toProfinite : Stonean.{u} ⥤ Profinite.{u} :=
+  CompHausLike.toCompHausLike (fun _ ↦ inferInstance)
+-- where
+--   obj X :=
+--     { toTop := X.toTop,
+--       prop := show TotallyDisconnectedSpace X from inferInstance }
+--   map f := f
 
-instance (X : Stonean.{u}) : TotallyDisconnectedSpace X := inferInstance
+instance (X : Stonean.{u}) : ExtremallyDisconnected ((forget _).obj X) := X.prop
 
-/-- The functor from Stonean spaces to profinite spaces is full. -/
-instance : toProfinite.Full where
-  map_surjective f := ⟨f, rfl⟩
+instance (X : Stonean.{u}) : TotallyDisconnectedSpace ((forget _).obj X) :=
+  show TotallyDisconnectedSpace X from inferInstance
 
-/-- The functor from Stonean spaces to profinite spaces is faithful. -/
-instance : toProfinite.Faithful := {}
+-- /-- The functor from Stonean spaces to profinite spaces is full. -/
+-- instance : toProfinite.Full where
+--   map_surjective f := ⟨f, rfl⟩
 
-/-- The functor from Stonean spaces to compact Hausdorff spaces
-    factors through profinite spaces. -/
-example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
-  rfl
+-- /-- The functor from Stonean spaces to profinite spaces is faithful. -/
+-- instance : toProfinite.Faithful := {}
 
-/-- Construct an isomorphism from a homeomorphism. -/
--- @[simps! hom inv]
-noncomputable
-def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y := sorry
-  -- @asIso _ _ _ _ ⟨f, f.continuous⟩
-  -- (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHaus.isoOfHomeo f).isIso_hom _)
+-- /-- The functor from Stonean spaces to compact Hausdorff spaces
+--     factors through profinite spaces. -/
+-- example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
+--   rfl
 
-/-- Construct a homeomorphism from an isomorphism. -/
-abbrev homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso f
+-- /-- Construct an isomorphism from a homeomorphism. -/
+-- -- @[simps! hom inv]
+-- noncomputable
+-- def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y := sorry
+--   -- @asIso _ _ _ _ ⟨f, f.continuous⟩
+--   -- (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHaus.isoOfHomeo f).isIso_hom _)
 
-/-- The equivalence between isomorphisms in `Stonean` and homeomorphisms
-of topological spaces. -/
-abbrev isoEquivHomeo {X Y : Stonean} : (X ≅ Y) ≃ (X ≃ₜ Y) := CompHausLike.isoEquivHomeo
+-- /-- Construct a homeomorphism from an isomorphism. -/
+-- abbrev homeoOfIso {X Y : Stonean} (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso f
+
+-- /-- The equivalence between isomorphisms in `Stonean` and homeomorphisms
+-- of topological spaces. -/
+-- abbrev isoEquivHomeo {X Y : Stonean} : (X ≅ Y) ≃ (X ≃ₜ Y) := CompHausLike.isoEquivHomeo
 
 /--
 A finite discrete space as a Stonean space.

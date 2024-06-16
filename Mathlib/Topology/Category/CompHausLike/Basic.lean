@@ -38,6 +38,9 @@ instance category : Category (CompHausLike P) :=
 instance concreteCategory : ConcreteCategory (CompHausLike P) :=
   InducedCategory.concreteCategory _
 
+instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
+  InducedCategory.hasForget₂ _
+
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X] (h : (P (TopCat.of X)))
 
 /-- A constructor for objects of the category `CompHausLike P`,
@@ -53,10 +56,10 @@ def of : CompHausLike P where
 theorem coe_of : (CompHausLike.of P X h : Type _) = X :=
   rfl
 
--- Porting note: have changed statement as the original LHS simplified.
-@[simp]
-theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
-  rfl
+-- -- Porting note: have changed statement as the original LHS simplified.
+-- @[simp]
+-- theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
+--   rfl
 
 -- Porting note: have changed statement as the original LHS simplified.
 @[simp]
@@ -64,25 +67,85 @@ theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
   rfl
 
--- Porting note (#10688): This lemma was not needed in mathlib3
-@[simp]
-lemma forget_ContinuousMap_mk {X Y : CompHausLike P} (f : X → Y) (hf : Continuous f) :
-    (forget (CompHausLike P)).map (ContinuousMap.mk f hf) = f :=
-  rfl
+-- -- Porting note (#10688): This lemma was not needed in mathlib3
+-- @[simp]
+-- lemma forget_ContinuousMap_mk {X Y : CompHausLike P} (f : X → Y) (hf : Continuous f) :
+--     (forget (CompHausLike P)).map (ContinuousMap.mk f hf) = f :=
+--   rfl
 
--- Porting note (#10754): Adding instance
+-- "Porting" note (#10754): Adding instance
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
   show TopologicalSpace X.toTop from inferInstance
 
--- Porting note (#10754): Adding instance
+-- "Porting" note (#10754): Adding instance
 instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note (#10754): Adding instance
+-- "Porting" note (#10754): Adding instance
 instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
   show T2Space X.toTop from inferInstance
 
 variable {P}
+
+@[simps]
+def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    CompHausLike P ⥤ CompHausLike P' where
+  obj X := CompHausLike.of _ X (h _ X.prop)
+  map f := f
+
+def fullyFaithfulToCompHausLike {P P' : TopCat → Prop}
+    (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) : (toCompHausLike h).FullyFaithful :=
+  fullyFaithfulInducedFunctor _
+
+instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    (toCompHausLike h).Full := (fullyFaithfulToCompHausLike h).full
+
+instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    (toCompHausLike h).Faithful := (fullyFaithfulToCompHausLike h).faithful
+
+variable (P)
+
+/-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
+-- Porting note: `semireducible` -> `.default`.
+@[simps (config := { rhsMd := .default })]
+def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
+  inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
+
+example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    toCompHausLike h ⋙ compHausLikeToTop P' = compHausLikeToTop P := rfl
+
+def fullyFaithfulCompHausLikeToTop : (compHausLikeToTop P).FullyFaithful :=
+  fullyFaithfulInducedFunctor _
+
+instance : (compHausLikeToTop P).Full  :=
+  show (inducedFunctor _).Full from inferInstance
+
+instance : (compHausLikeToTop P).Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
+
+instance (X : CompHausLike P) : CompactSpace ((compHausLikeToTop P).obj X) :=
+  show CompactSpace X.toTop from inferInstance
+
+instance (X : CompHausLike P) : T2Space ((compHausLikeToTop P).obj X) :=
+  show T2Space X.toTop from inferInstance
+
+variable {P}
+
+theorem epi_of_surjective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (hf : Function.Surjective f) :
+    Epi f := by
+  rw [← CategoryTheory.epi_iff_surjective] at hf
+  exact (forget (CompHausLike P)).epi_of_epi_map hf
+
+theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
+    Mono f ↔ Function.Injective f := by
+  constructor
+  · intro hf x₁ x₂ h
+    let g₁ : X ⟶ X := ⟨fun _ => x₁, continuous_const⟩
+    let g₂ : X ⟶ X := ⟨fun _ => x₂, continuous_const⟩
+    have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
+    exact ContinuousMap.congr_fun ((cancel_mono _).mp this) x₁
+  · rw [← CategoryTheory.mono_iff_injective]
+    apply (forget (CompHausLike P)).mono_of_mono_map
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
 theorem isClosedMap {X Y : CompHausLike.{u} P} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
@@ -103,6 +166,10 @@ theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Funct
   · ext x
     apply E.apply_symm_apply
 
+instance forget_reflectsIsomorphisms :
+    (forget (CompHausLike.{u} P)).ReflectsIsomorphisms :=
+  ⟨by intro A B f hf; exact isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+
 /-- Any continuous bijection of compact Hausdorff spaces induces an isomorphism. -/
 noncomputable def isoOfBijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
     (bij : Function.Bijective f) : X ≅ Y :=
@@ -110,26 +177,14 @@ noncomputable def isoOfBijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
   asIso f
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps hom inv]
-def isoOfHomeo {X Y : CompHausLike.{u} P} (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ⟨f, f.continuous⟩
-  inv := ⟨f.symm, f.symm.continuous⟩
-  hom_inv_id := by
-    ext x
-    exact f.symm_apply_apply x
-  inv_hom_id := by
-    ext x
-    exact f.apply_symm_apply x
+@[simps!]
+def isoOfHomeo {X Y : CompHausLike.{u} P} (f : X ≃ₜ Y) : X ≅ Y :=
+  (fullyFaithfulCompHausLikeToTop P).preimageIso (TopCat.isoOfHomeo f)
 
 /-- Construct a homeomorphism from an isomorphism. -/
-@[simps]
-def homeoOfIso {X Y : CompHausLike.{u} P} (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.hom
-  invFun := f.inv
-  left_inv x := by sorry
-  right_inv x := by sorry
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+@[simps!]
+def homeoOfIso {X Y : CompHausLike.{u} P} (f : X ≅ Y) : X ≃ₜ Y :=
+  TopCat.homeoOfIso <| (compHausLikeToTop P).mapIso f
 
 /-- The equivalence between isomorphisms in `CompHaus` and homeomorphisms
 of topological spaces. -/
@@ -137,71 +192,5 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
-
-@[simps]
-def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
-    CompHausLike P ⥤ CompHausLike P' where
-  obj X := CompHausLike.of _ X (h _ X.prop)
-  map f := f
-
-instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
-    (toCompHausLike h).Full := show (inducedFunctor _).Full from inferInstance
-
-instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
-    (toCompHausLike h).Faithful := show (inducedFunctor _).Faithful from inferInstance
-
-variable (P)
-
-/-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
--- Porting note: `semireducible` -> `.default`.
-@[simps (config := { rhsMd := .default })]
-def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
-  inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
-
-example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
-    toCompHausLike h ⋙ compHausLikeToTop P' = compHausLikeToTop P := rfl
-
-instance : (compHausLikeToTop P).Full  :=
-  show (inducedFunctor _).Full from inferInstance
-
-instance : (compHausLikeToTop P).Faithful :=
-  show (inducedFunctor _).Faithful from inferInstance
-
-instance (X : CompHausLike P) : CompactSpace ((compHausLikeToTop P).obj X) :=
-  show CompactSpace X.toTop from inferInstance
-
-instance (X : CompHausLike P) : T2Space ((compHausLikeToTop P).obj X) :=
-  show T2Space X.toTop from inferInstance
-
-instance forget_reflectsIsomorphisms :
-    (forget (CompHausLike.{u} P)).ReflectsIsomorphisms :=
-  ⟨by intro A B f hf; exact isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
-
-variable {P}
-
-theorem epi_of_surjective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (hf : Function.Surjective f) :
-    Epi f := by
-  rw [← CategoryTheory.epi_iff_surjective] at hf
-  exact (forget (CompHausLike P)).epi_of_epi_map hf
-
-theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
-    (hPUnit : P (TopCat.of PUnit) /- Added that the one-point space satisfies `P` -/) :
-    Mono f ↔ Function.Injective f := by
-  constructor
-  · intro hf x₁ x₂ h
-    let g₁ : of _ PUnit hPUnit ⟶ X := ⟨fun _ => x₁, continuous_const⟩
-    let g₂ : of _ PUnit hPUnit ⟶ X := ⟨fun _ => x₂, continuous_const⟩
-    have : g₁ ≫ f = g₂ ≫ f := by
-      ext
-      exact h
-    rw [cancel_mono] at this
-    apply_fun fun e => e PUnit.unit at this
-    exact this
-  · rw [← CategoryTheory.mono_iff_injective]
-    apply (forget (CompHausLike P)).mono_of_mono_map
+  left_inv _ := rfl
+  right_inv _ := rfl
