@@ -18,7 +18,8 @@ namespace Mathlib.Tactic
 open Lean Elab Tactic Meta Parser.Tactic
 
 /-- `nth_rewrite` is a variant of `rewrite` that only changes the nth occurrence of the expression
-to be rewritten.
+to be rewritten.  `nth_rewrite n [eq₁, eq₂,...]` will rewrite the `n`ᵗʰ occurrence
+of the equalities `eq₁`, `eq₂`,... etc.
 
 Note: The occurrences are counted beginning with `1` and not `0`, this is different than in
 mathlib3. The translation will be handled by mathport. -/
@@ -41,7 +42,9 @@ syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (lo
   | _ => throwUnsupportedSyntax
 
 /--
-`nth_rw` is like `nth_rewrite`, but also tries to close the goal by trying `rfl` afterwards.
+`nth_rw` is a variant of `nth_rewrite` that also tries to close the goal by trying `rfl` afterwards.
+`nth_rw n [eq₁, eq₂,...]` rewrites the `nᵗʰ` occurrence of each equality `eq₁`, `eq₂`,... etc.
+Occurrences are counted beginning with `1`.
 -/
 macro (name := nthRwSeq) "nth_rw" c:(config)? ppSpace n:num s:rwRuleSeq l:(location)? : tactic =>
   -- Note: This is a direct copy of `nth_rw` from core.
