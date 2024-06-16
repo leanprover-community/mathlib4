@@ -410,7 +410,7 @@ theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 #align linear_independent.set_finite_of_is_noetherian LinearIndependent.set_finite_of_isNoetherian
 
-@[deprecated]
+@[deprecated (since := "2023-12-30")]
 alias finite_of_linearIndependent := LinearIndependent.set_finite_of_isNoetherian
 #align finite_of_linear_independent LinearIndependent.set_finite_of_isNoetherian
 
