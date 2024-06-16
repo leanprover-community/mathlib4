@@ -43,7 +43,7 @@ syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (lo
 
 /--
 `nth_rw` is a variant of `nth_rewrite` that also tries to close the goal by trying `rfl` afterwards.
-`nth_rw n [eq₁, eq₂,...]` rewrites the `nᵗʰ` occurrence of each equality `eq₁`, `eq₂`,... etc.
+`nth_rw n [eq₁, eq₂,...]` rewrites the `n`ᵗʰ occurrence of each equality `eq₁`, `eq₂`,... etc.
 Occurrences are counted beginning with `1`.
 -/
 macro (name := nthRwSeq) "nth_rw" c:(config)? ppSpace n:num s:rwRuleSeq l:(location)? : tactic =>
