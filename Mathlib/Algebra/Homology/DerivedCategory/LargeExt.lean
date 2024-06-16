@@ -168,8 +168,7 @@ variable (C)
 noncomputable def LargeExtFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ Ab.{w} where
   obj X := LargeExtFunctor.obj n X.unop
   map {X₁ X₂} f :=
-    { app := fun Y => AddCommGroupCat.ofHom (AddMonoidHom.mk'
-        (fun β ↦ (ofHom f.unop).comp β (zero_add n)) (by aesop))
+    { app := fun Y => AddCommGroupCat.ofHom (precomp (ofHom f.unop) _ _ _ (zero_add n))
       naturality := by
         intros
         ext
@@ -177,6 +176,7 @@ noncomputable def LargeExtFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ Ab.{w} where
         dsimp [LargeExtFunctor.obj]
         apply comp_assoc
         all_goals omega }
+  map_id _ := by ext; simp [LargeExtFunctor.obj]
   map_comp _ _ := by
     ext
     dsimp [LargeExtFunctor.obj]
