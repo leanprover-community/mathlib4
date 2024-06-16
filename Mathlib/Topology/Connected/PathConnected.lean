@@ -488,7 +488,7 @@ theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).extend := by
-  refine' h.comp (continuous_id.prod_map continuous_projIcc)
+  apply h.comp (continuous_id.prod_map continuous_projIcc)
   exact zero_le_one
 #align path.continuous_uncurry_extend_of_continuous_family Path.continuous_uncurry_extend_of_continuous_family
 
@@ -1037,8 +1037,8 @@ theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPat
   rcases hUV with ⟨x, xU, xV⟩
   use x, Or.inl xU
   rintro y (yU | yV)
-  · exact (hU.joinedIn x xU y yU).mono (subset_union_left U V)
-  · exact (hV.joinedIn x xV y yV).mono (subset_union_right U V)
+  · exact (hU.joinedIn x xU y yU).mono subset_union_left
+  · exact (hV.joinedIn x xV y yV).mono subset_union_right
 #align is_path_connected.union IsPathConnected.union
 
 /-- If a set `W` is path-connected, then it is also path-connected when seen as a set in a smaller
