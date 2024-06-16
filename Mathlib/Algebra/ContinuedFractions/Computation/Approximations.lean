@@ -229,9 +229,10 @@ theorem fib_le_of_continuantsAux_b :
           of_one_le_get?_part_denom (part_denom_eq_s_b s_ppred_nth_eq)
         have : (0 : K) ≤ fib (n + 1) := mod_cast (fib (n + 1)).zero_le
         have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
-        mono
+        mono -- with `gcongr`, there is a final goal left!
         · norm_num
-        · tauto)
+        · tauto
+        )
 #align generalized_continued_fraction.fib_le_of_continuants_aux_b GeneralizedContinuedFraction.fib_le_of_continuantsAux_b
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
@@ -528,8 +529,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     have : (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ :=
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
     have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
-    -- Porting note: was `mono`
-    refine mul_le_mul_of_nonneg_right ?_ ?_ <;> assumption
+    gcongr ; exact this
 #align generalized_continued_fraction.abs_sub_convergents_le GeneralizedContinuedFraction.abs_sub_convergents_le
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
