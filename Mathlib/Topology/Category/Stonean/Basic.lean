@@ -208,6 +208,7 @@ noncomputable
 instance presentation.epi_π (X : CompHaus) : Epi (π X) :=
   (projectivePresentation X).epi
 
+/-- The underlying `CompHaus` of a `Stonean`. -/
 abbrev _root_.Stonean.compHaus (X : Stonean) := Stonean.toCompHaus.obj X
 
 /--
