@@ -3,14 +3,11 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.Topology.StoneCech
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.CategoryTheory.Elementwise
 
 #align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 

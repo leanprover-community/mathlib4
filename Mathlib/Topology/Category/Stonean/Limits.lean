@@ -3,9 +3,8 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
+import Mathlib.Topology.Category.CompHausLike.Limits
 import Mathlib.Topology.Category.Stonean.Basic
-import Mathlib.Topology.Category.CompHaus.Limits
-import Mathlib.Topology.Category.Profinite.Limits
 /-!
 # Explicit (co)limits in the category of Stonean spaces
 
@@ -47,13 +46,6 @@ theorem extremallyDisconnected_preimage : ExtremallyDisconnected (f ⁻¹' (Set.
       ← h.1.closedEmbedding_subtype_val.closure_image_eq U]
     exact isOpen_induced (ExtremallyDisconnected.open_closure _
       (h.2.openEmbedding_subtype_val.isOpenMap U hU))
-
--- TODO: move
-theorem extremallyDisconnected_of_homeo {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [ExtremallyDisconnected X] (e : X ≃ₜ Y) : ExtremallyDisconnected Y where
-  open_closure U hU := by
-    rw [e.symm.inducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
-    exact ExtremallyDisconnected.open_closure _ (e.symm.isOpen_image.mpr hU)
 
 theorem extremallyDisconnected_pullback :
     ExtremallyDisconnected {xy : X × Y | f xy.1 = i xy.2} :=
