@@ -67,7 +67,7 @@ There are two oracles that can be used in `linarith` so far.
   set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
   by counting how many copies of each original comparison appear in the history.
   This oracle was historically implemented earlier, and is sometimes faster on small states, but it
-  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and can not handle 
+  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and can not handle
   large problems. You can use it with `linarith (config := { oracle := .fourierMotzkin })`.
 
 2. **Simplex Algorithm (default).**
