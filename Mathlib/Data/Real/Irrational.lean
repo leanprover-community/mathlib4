@@ -134,12 +134,11 @@ theorem irrational_sqrt_two : Irrational (√2) := by
 
 theorem irrational_sqrt_rat_iff (q : ℚ) :
     Irrational (√q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q := by
-  rw [ne_comm, ne_eq, @eq_comm _ q, ← Rat.exists_mul_self]
-  simp_rw [← @eq_comm _ q]
+  rw [ne_eq, ← Rat.exists_mul_self]
   obtain hq | hq := le_or_lt 0 q
-  · rw [irrational_sqrt_ratCast_iff_of_nonneg hq]
+  · simp_rw [irrational_sqrt_ratCast_iff_of_nonneg hq, ← @eq_comm _ q]
     exact (and_iff_left hq).symm
-  · rw [sqrt_eq_zero_of_nonpos]
+  · rw [sqrt_eq_zero_of_nonpos (mod_cast hq.le)]
     simp only [not_irrational_zero, false_iff, not_and, not_le, hq, implies_true]
     exact mod_cast hq.le
 #align irrational_sqrt_rat_iff irrational_sqrt_rat_iff
