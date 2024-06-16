@@ -128,7 +128,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
         let c' := m.toNormal.find! c
         newStr := newStr.push c'
         pos := pos + c
-        if String.csize c != String.csize c' then
+        if c.utf8Size != c'.utf8Size then
           aligns := aligns.push (newStr.endPos, pos)
       newStr := newStr.push ' '
       if stopWs.1 - stopTk.1 != 1 then
