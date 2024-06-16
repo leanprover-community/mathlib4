@@ -1612,7 +1612,7 @@ end LatticeHom
 
 /-! ### Pi -/
 
-namespace LatticeHom
+namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)]
 
 /-- Evaluation as a lattice homomorphism. -/
@@ -1626,7 +1626,7 @@ lemma coe_evalLatticeHom (i : ι) : ⇑(evalLatticeHom (α := α) i) = Function.
 
 lemma evalLatticeHom_apply (i : ι) (f : ∀ i, α i) : evalLatticeHom i f = f i := rfl
 
-end LatticeHom
+end Pi
 
 /-! ### `WithTop`, `WithBot` -/
 
