@@ -118,29 +118,29 @@ lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G
   rfl
 
 @[simp, nolint simpNF]
-lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = 𝟙 (F.obj X) :=
+lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = eqToHom (by simp) :=
   rfl
 
 @[simp, nolint simpNF]
-lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).inv.app X = 𝟙 (F.obj X) :=
+lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).inv.app X = eqToHom (by simp) :=
   rfl
 
 @[simp, nolint simpNF]
-lemma rightUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).hom.app X = 𝟙 (F.obj X) :=
+lemma rightUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).hom.app X = eqToHom (by simp) :=
   rfl
 
 @[simp, nolint simpNF]
-lemma rightUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).inv.app X = 𝟙 (F.obj X) :=
+lemma rightUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).inv.app X = eqToHom (by simp) :=
   rfl
 
 @[simp, nolint simpNF]
 lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
-    (α_ F G H).hom.app X = 𝟙 ((F ≫ G) ≫ H).obj X :=
+    (α_ F G H).hom.app X = eqToHom (by simp) :=
   rfl
 
 @[simp, nolint simpNF]
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
-    (α_ F G H).inv.app X = 𝟙 (F ≫ G ≫ H).obj X :=
+    (α_ F G H).inv.app X = eqToHom (by simp) :=
   rfl
 
 /-- Functor that gets the set of objects of a category. It is not
