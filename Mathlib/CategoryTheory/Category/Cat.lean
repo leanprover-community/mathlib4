@@ -82,6 +82,10 @@ instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.bicategory.strict CategoryTheory.Cat.bicategory.strict
 
+lemma leftUnitor_eqToIso : ∀ {a b : Cat} (f : a ⟶ b), λ_ f = eqToIso (Category.id_comp f) := by
+  intro a b f
+  dsimp only [eqToIso_refl]
+
 /-- Category structure on `Cat` -/
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
@@ -141,20 +145,6 @@ lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ 
 @[simp, nolint simpNF]
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).inv.app X = 𝟙 (F ≫ G ≫ H).obj X :=
-  rfl
-
-@[simp, nolint simpNF]
-lemma whiskerLeft_twice {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) {H K : D ⟶ E} (α : H ⟶ K) :
-    F ◁ (G ◁ α) = (F ≫ G) ◁ α :=
-  rfl
-
-@[simp, nolint simpNF]
-theorem whiskerRight_twice {B C D E : Cat} {H K : B ⟶ C} (F : C ⟶ D) (G : D ⟶ E) (α : H ⟶ K) :
-    (α ▷ F) ▷ G = α ▷ (F ≫ G) :=
-  rfl
-
-theorem whiskerRight_left {B C D E : Cat} (F : B ⟶ C) {G H : C ⟶ D} (α : G ⟶ H) (K : D ⟶ E) :
-    (F ◁ α) ▷ K = F ◁ (α ▷ K) :=
   rfl
 
 /-- Functor that gets the set of objects of a category. It is not
