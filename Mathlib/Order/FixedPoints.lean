@@ -330,7 +330,7 @@ theorem lfp_eq_sSup_iterate (h : Continuous f) :
     intro a h_a
     exact ωSup_repeat_le_prefixedPoint ⟨f, h⟩ ⊥ bot_le h_a bot_le
 
-theorem gfp_eq_sSup_iterate (h : Continuous (OrderHom.dual f)) :
+theorem gfp_eq_sInf_iterate (h : Continuous (OrderHom.dual f)) :
     gfp f = sInf { f^[n] ⊤ | n : Nat} :=
   lfp_eq_sSup_iterate (OrderHom.dual f) h
 

@@ -924,7 +924,7 @@ namespace fixedPoints
 open Function
 
 /-- Iteration of a function on an initial element interpreted as a chain. -/
-def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) :Chain α :=
+def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
   ⟨fun n => f^[n] x, Monotone.monotone_iterate_of_le_map f.monotone h⟩
 
 variable (f : α →𝒄 α) (x : α)
