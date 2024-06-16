@@ -434,4 +434,38 @@ lemma map_distinguished_op_exact [HasShift C ℤ] [HasZeroObject C] [Preadditive
 
 end Functor
 
+-- should be moved to a new file `ShiftedHomOpposite`
+namespace Pretriangulated
+
+open Opposite
+
+variable {C}
+variable [HasShift C ℤ] (X Y Z : C)
+
+/-- The bijection `(((Opposite.op X)⟦n⟧).unop ⟶ Y) ≃ (X ⟶ Y⟦n⟧)` when `X` and `Y`
+are objects of a category `C` equipped with a shift by `ℤ`. -/
+noncomputable def oppositeShiftHomEquiv (n : ℤ) :
+    (((Opposite.op X)⟦n⟧).unop ⟶ Y) ≃ (X ⟶ Y⟦n⟧) :=
+  (shiftEquiv C n).symm.toAdjunction.homEquiv _ _
+
+/-- The bijection `(((Opposite.op X)⟦n⟧).unop ⟶ Y⟦a⟧) ≃ (X ⟶ Y⟦a'⟧)` when `X` and `Y`
+are objects of a category `C` equipped with a shift by `ℤ` and `n`, `a` and `a'` are
+integers such that `n + a = a'`. -/
+noncomputable def oppositeShiftHomEquiv' (n a a' : ℤ) (h : n + a = a') :
+    (((Opposite.op X)⟦n⟧).unop ⟶ Y⟦a⟧) ≃ (X ⟶ Y⟦a'⟧) :=
+  (oppositeShiftHomEquiv X (Y⟦a⟧) n).trans
+    ((shiftFunctorAdd' C a n a' (by omega)).symm.app Y).homToEquiv
+
+variable {X Y Z}
+
+@[reassoc]
+lemma oppositeShiftHomEquiv'_compatibility {n m : ℤ} (f : X ⟶ Y⟦n⟧) (g : Y ⟶ Z⟦m⟧)
+    (q : ℤ) (hq : n + m = q) :
+    f ≫ g⟦n⟧' ≫ (shiftFunctorAdd' C m n q (by omega)).inv.app Z =
+      oppositeShiftHomEquiv' X Z n m q hq
+        ((f.op⟦n⟧').unop ≫ ((opShiftFunctorEquivalence C n).counitIso.inv.app _).unop ≫ g) := by
+  sorry
+
+end Pretriangulated
+
 end CategoryTheory

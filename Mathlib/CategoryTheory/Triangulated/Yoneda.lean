@@ -51,11 +51,7 @@ noncomputable instance preadditiveYonedaShiftSequence (B : C) :
   sequence n := preadditiveYoneda.obj (B⟦n⟧)
   isoZero := preadditiveYoneda.mapIso ((shiftFunctorZero C ℤ).app B)
   shiftIso n a a' h := NatIso.ofComponents (fun A ↦ AddEquiv.toAddCommGroupCatIso
-    { toFun := fun f ↦ ((shiftFunctor Cᵒᵖ n).preimage
-        (((shiftFunctorAdd' C a' (-n) a (by omega)).hom.app B).op ≫ f.op)).unop
-      invFun := sorry
-      left_inv := sorry
-      right_inv := sorry
+    { toEquiv := oppositeShiftHomEquiv' A.unop B n a a' h
       map_add' := sorry }) sorry
   shiftIso_zero := sorry
   shiftIso_add := sorry

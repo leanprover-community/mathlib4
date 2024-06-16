@@ -325,8 +325,6 @@ noncomputable def contravariantSequence (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) 
 
 open Pretriangulated.Opposite
 
-set_option simprocs false
-
 /-- The contravariant (exact) sequence of `LargeExt` identifies to the homology sequence
 of the homological functor `(preadditiveCoyoneda.obj (Opposite.op ((singleFunctor C 0).obj A)))`
 applied to the distinguished triangle `hS.singleTriangle`. -/
@@ -345,11 +343,9 @@ noncomputable def contravariantSequenceIso (n₀ n₁ : ℕ) (h : n₀ + 1 = n�
     (by ext x; apply ShiftedHom.mk₀_comp) (by ext x; apply ShiftedHom.mk₀_comp)
     (by
       ext x
-      dsimp [addEquiv, Functor.homologySequenceδ, equiv,
-        Functor.shift, Functor.shiftMap, Functor.shiftIso]
-      dsimp [Functor.ShiftSequence.shiftIso, Functor.ShiftSequence.sequence,
-        ModuleCat.ofHom, DFunLike.coe, EquivLike.coe]
-      sorry)
+      have eq := oppositeShiftHomEquiv'_compatibility hS.singleδ x.hom n₁ (by omega)
+      nth_rw 2 [← assoc] at eq
+      exact eq)
     (by ext x; apply ShiftedHom.mk₀_comp) (by ext x; apply ShiftedHom.mk₀_comp)
 
 lemma contravariantSequence_exact (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
