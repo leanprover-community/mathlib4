@@ -273,7 +273,6 @@ lemma covariantSequence_exact (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
 
 variable {A}
 
-
 /-- Given a short exact short complex `S` in an abelian category `C` and `A : C`,
 this is the exactness of
 `LargeExact A S.X₃ n₀ ⟶ LargeExact A S.X₁ n₁ ⟶ LargeExact A S.X₂ n₁`
@@ -306,6 +305,93 @@ lemma covariant_sequence_exact₃
     ((covariantSequence_exact A hS n₀ n₁ h).exact 1) x₃ hx₃
 
 end CovariantExactSequence
+
+section ContravariantExactSequence
+
+variable (B : C) {S : ShortComplex C} (hS : S.ShortExact)
+
+/-- Given a short exact short complex `S` in an abelian category `C` and `B : C`,
+this is the contravariant (exact) sequence of `LargeExt` with six terms which starts by:
+`LargeExact S.X₃ B n₀ ⟶ LargeExact S.X₂ B n₀ ⟶ LargeExact S.X₁ B n₀ → LargeExact S.X₃ B n₁ ⟶ ` -/
+@[simp]
+noncomputable def contravariantSequence (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
+    ComposableArrows AddCommGroupCat.{w} 5 :=
+  ComposableArrows.mk₅
+    (AddCommGroupCat.ofHom (precomp (ofHom S.g) B n₀ n₀ (zero_add n₀)))
+    (AddCommGroupCat.ofHom (precomp (ofHom S.f) B n₀ n₀ (zero_add n₀)))
+    (AddCommGroupCat.ofHom (precomp hS.largeExtClass B n₀ n₁ (by omega)))
+    (AddCommGroupCat.ofHom (precomp (ofHom S.g) B n₁ n₁ (zero_add n₁)))
+    (AddCommGroupCat.ofHom (precomp (ofHom S.f) B n₁ n₁ (zero_add n₁)))
+
+open Pretriangulated.Opposite
+
+set_option simprocs false
+
+/-- The contravariant (exact) sequence of `LargeExt` identifies to the homology sequence
+of the homological functor `(preadditiveCoyoneda.obj (Opposite.op ((singleFunctor C 0).obj A)))`
+applied to the distinguished triangle `hS.singleTriangle`. -/
+noncomputable def contravariantSequenceIso (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
+    contravariantSequence B hS n₀ n₁ h ≅
+      (preadditiveYoneda.obj ((singleFunctor C 0).obj B)).homologySequenceComposableArrows₅
+        (((triangleOpEquivalence _).functor.obj
+          (Opposite.op hS.singleTriangle))) n₀ n₁ (by omega) :=
+  isoMk₅
+    (AddEquiv.toAddCommGroupCatIso (addEquiv S.X₃ B n₀))
+    (AddEquiv.toAddCommGroupCatIso (addEquiv S.X₂ B n₀))
+    (AddEquiv.toAddCommGroupCatIso (addEquiv S.X₁ B n₀))
+    (AddEquiv.toAddCommGroupCatIso (addEquiv S.X₃ B n₁))
+    (AddEquiv.toAddCommGroupCatIso (addEquiv S.X₂ B n₁))
+    (AddEquiv.toAddCommGroupCatIso (addEquiv S.X₁ B n₁))
+    (by ext x; apply ShiftedHom.mk₀_comp) (by ext x; apply ShiftedHom.mk₀_comp)
+    (by
+      ext x
+      dsimp [addEquiv, Functor.homologySequenceδ, equiv,
+        Functor.shift, Functor.shiftMap, Functor.shiftIso]
+      dsimp [Functor.ShiftSequence.shiftIso, Functor.ShiftSequence.sequence,
+        ModuleCat.ofHom, DFunLike.coe, EquivLike.coe]
+      sorry)
+    (by ext x; apply ShiftedHom.mk₀_comp) (by ext x; apply ShiftedHom.mk₀_comp)
+
+lemma contravariantSequence_exact (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
+    (contravariantSequence B hS n₀ n₁ h).Exact := by
+  rw [exact_iff_of_iso (contravariantSequenceIso B hS n₀ n₁ h)]
+  apply Functor.homologySequenceComposableArrows₅_exact _ _
+    (op_distinguished _ hS.singleTriangle_distinguished)
+
+variable {B}
+
+/-- Given a short exact short complex `S` in an abelian category `C` and `B : C`,
+this is the exactness of
+`LargeExact S.X₂ B n₀ ⟶ LargeExact S.X₁ B n₀ ⟶ LargeExact S.X₃ B n₁`
+when `1 + n₀ = n₁`. -/
+lemma contravariant_sequence_exact₁
+    {n₀ : ℕ} (x₁ : LargeExt S.X₁ B n₀) (n₁ : ℕ) (h : 1 + n₀ = n₁)
+    (hx₁ : hS.largeExtClass.comp x₁ h = 0) :
+    ∃ (x₂ : LargeExt S.X₂ B n₀), (ofHom S.f).comp x₂ (zero_add n₀) = x₁ :=
+  (ShortComplex.ab_exact_iff _).1
+    ((contravariantSequence_exact B hS n₀ n₁ (by omega)).exact 1) x₁ hx₁
+
+/-- Given a short exact short complex `S` in an abelian category `C` and `B : C`,
+this is the exactness of
+`LargeExact S.X₃ B n ⟶ LargeExact S.X₂ B n ⟶ LargeExact S.X₁ B n`. -/
+lemma contravariant_sequence_exact₂
+    {n : ℕ} (x₂ : LargeExt S.X₂ B n) (hx₂ : (ofHom S.f).comp x₂ (zero_add n) = 0) :
+    ∃ (x₃ : LargeExt S.X₃ B n), (ofHom S.g).comp x₃ (zero_add n) = x₂ :=
+  (ShortComplex.ab_exact_iff _).1
+    ((contravariantSequence_exact B hS n _ rfl).exact 0) x₂ hx₂
+
+/-- Given a short exact short complex `S` in an abelian category `C` and `B : C`,
+this is the exactness of
+`LargeExact S.X₁ B n₀ ⟶ LargeExact S.X₃ B n₁ ⟶ LargeExact S.X₂ B n₁`
+when `1 + n₀ = n₁`. -/
+lemma contravariant_sequence_exact₃
+    {n₁ : ℕ} (x₃ : LargeExt S.X₃ B n₁) (hx₃ : (ofHom S.g).comp x₃ (zero_add n₁) = 0)
+    (n₀ : ℕ) (h : 1 + n₀ = n₁) :
+    ∃ (x₁ : LargeExt S.X₁ B n₀), hS.largeExtClass.comp x₁ h = x₃ :=
+  (ShortComplex.ab_exact_iff _).1
+    ((contravariantSequence_exact B hS n₀ n₁ (by omega)).exact 2) x₃ hx₃
+
+end ContravariantExactSequence
 
 end LargeExt
 
