@@ -713,7 +713,7 @@ lemma integrable_left_of_integrable_add_of_nonneg {f g : α → ℝ}
     (h_int : Integrable (f + g) μ) : Integrable f μ := by
   refine h_int.mono' h_meas ?_
   filter_upwards [hf, hg] with a haf hag
-  exact (Real.norm_of_nonneg haf).symm ▸ le_add_of_nonneg_right hag
+  exact (Real.norm_of_nonneg haf).symm ▸ (le_add_iff_nonneg_right _).mpr hag
 
 lemma integrable_right_of_integrable_add_of_nonneg {f g : α → ℝ}
     (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
@@ -938,6 +938,43 @@ theorem coe_toNNReal_ae_eq {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x < �
   intro x hx
   simp only [hx.ne, Ne, not_false_iff, coe_toNNReal]
 #align measure_theory.coe_to_nnreal_ae_eq MeasureTheory.coe_toNNReal_ae_eq
+
+section count
+
+variable [MeasurableSingletonClass α] {f : α → β}
+
+/-- A function has finite integral for the counting measure iff its norm is summable. -/
+lemma hasFiniteIntegral_count_iff :
+    HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
+  simp only [HasFiniteIntegral, lintegral_count, lt_top_iff_ne_top,
+    ENNReal.tsum_coe_ne_top_iff_summable,  ← NNReal.summable_coe, coe_nnnorm]
+
+/-- A function is integrable for the counting measure iff its norm is summable. -/
+lemma integrable_count_iff :
+    Integrable f Measure.count ↔ Summable (‖f ·‖) := by
+  -- Note: this proof would be much easier if we assumed `SecondCountableTopology G`. Without
+  -- this we have to justify the claim that `f` lands a.e. in a separable subset, which is true
+  -- (because summable functions have countable range) but slightly tedious to check.
+  rw [Integrable, hasFiniteIntegral_count_iff, and_iff_right_iff_imp]
+  intro hs
+  have hs' : (Function.support f).Countable := by
+    simpa only [Ne, Pi.zero_apply, eq_comm, Function.support, norm_eq_zero]
+      using hs.countable_support
+  letI : MeasurableSpace β := borel β
+  haveI : BorelSpace β := ⟨rfl⟩
+  refine aestronglyMeasurable_iff_aemeasurable_separable.mpr ⟨?_, ?_⟩
+  · refine (measurable_zero.measurable_of_countable_ne ?_).aemeasurable
+    simpa only [Ne, Pi.zero_apply, eq_comm, Function.support] using hs'
+  · refine ⟨f '' univ, ?_, ae_of_all _ fun a ↦ ⟨a, ⟨mem_univ _, rfl⟩⟩⟩
+    suffices f '' univ ⊆ (f '' f.support) ∪ {0} from
+      (((hs'.image f).union (countable_singleton 0)).mono this).isSeparable
+    intro g hg
+    rcases eq_or_ne g 0 with rfl | hg'
+    · exact Or.inr (mem_singleton _)
+    · obtain ⟨x, -, rfl⟩ := (mem_image ..).mp hg
+      exact Or.inl ⟨x, hg', rfl⟩
+
+end count
 
 section
 
