@@ -29,22 +29,6 @@ def Irrational (x : ℝ) :=
   x ∉ Set.range ((↑) : ℚ → ℝ)
 #align irrational Irrational
 
-@[simp] theorem not_irrational_zero : ¬Irrational 0 := not_not_intro ⟨0, Rat.cast_zero⟩
-@[simp] theorem not_irrational_one : ¬Irrational 1 := not_not_intro ⟨1, Rat.cast_one⟩
-
-@[simp] theorem not_irrational_natCast (n : ℕ) : ¬Irrational n :=
-  not_not_intro ⟨n, Rat.cast_natCast _⟩
-
-@[simp] theorem not_irrational_intCast (z : ℤ) : ¬Irrational z :=
-  not_not_intro ⟨z, Rat.cast_intCast _⟩
-
-@[simp] theorem not_irrational_ratCast (q : ℚ) : ¬Irrational q := not_not_intro ⟨q, rfl⟩
-
-@[simp] theorem not_irrational_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ¬Irrational (no_index (OfNat.ofNat n)) :=
-  not_irrational_natCast n
-
-
 theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, x ≠ a / b := by
   simp only [Irrational, Rat.forall, cast_mk, not_exists, Set.mem_range, cast_intCast, cast_div,
     eq_comm]
@@ -109,7 +93,7 @@ theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp
     (sq_sqrt (Int.cast_nonneg.2 <| le_of_lt hm)) (by rw [Hpv]; exact one_ne_zero)
 #align irrational_sqrt_of_multiplicity_odd irrational_sqrt_of_multiplicity_odd
 
-theorem irrational_sqrt_ratCast_iff {q : ℚ} (hq : 0 ≤ q) : Irrational (√q) ↔ ¬IsSquare q := by
+theorem irrational_sqrt_ratCast_iff_of_nonneg {q : ℚ} (hq : 0 ≤ q) : Irrational (√q) ↔ ¬IsSquare q := by
   refine Iff.not ?_
   change Exists _ ↔ Exists _
   simp_rw [← sq]
@@ -121,12 +105,13 @@ theorem irrational_sqrt_ratCast_iff {q : ℚ} (hq : 0 ≤ q) : Irrational (√q)
     refine ⟨|q'|, ?_⟩
     rw [Rat.cast_pow, sqrt_sq_eq_abs, cast_abs]
 
-theorem irrational_sqrt_intCast_iff {z : ℤ} (hz : 0 ≤ z) :
+theorem irrational_sqrt_intCast_iff_of_nonneg {z : ℤ} (hz : 0 ≤ z) :
     Irrational (√z) ↔ ¬IsSquare z := by
-  rw [← Rat.isSquare_intCast_iff, ← irrational_sqrt_ratCast_iff (mod_cast hz), Rat.cast_intCast]
+  rw [← Rat.isSquare_intCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg (mod_cast hz),
+    Rat.cast_intCast]
 
 theorem irrational_sqrt_natCast_iff {n : ℕ} : Irrational (√n) ↔ ¬IsSquare n := by
-  rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff (mod_cast Nat.zero_le n),
+  rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg (mod_cast Nat.zero_le n),
     Rat.cast_natCast]
 
 -- See note [no_index around OfNat.ofNat]
@@ -143,12 +128,15 @@ theorem irrational_sqrt_two : Irrational (√2) := by
   simpa using Nat.prime_two.irrational_sqrt
 #align irrational_sqrt_two irrational_sqrt_two
 
+@[simp] theorem not_irrational_zero : ¬Irrational 0 := not_not_intro ⟨0, Rat.cast_zero⟩
+@[simp] theorem not_irrational_one : ¬Irrational 1 := not_not_intro ⟨1, Rat.cast_one⟩
+
 theorem irrational_sqrt_rat_iff (q : ℚ) :
     Irrational (√q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q := by
   rw [ne_comm, ne_eq, @eq_comm _ q, ← Rat.exists_mul_self]
   simp_rw [← @eq_comm _ q]
   obtain hq | hq := le_or_lt 0 q
-  · rw [irrational_sqrt_ratCast_iff hq]
+  · rw [irrational_sqrt_ratCast_iff_of_nonneg hq]
     exact (and_iff_left hq).symm
   · rw [sqrt_eq_zero_of_nonpos]
     simp only [not_irrational_zero, false_iff, not_and, not_le, hq, implies_true]
@@ -192,6 +180,10 @@ theorem ne_zero (h : Irrational x) : x ≠ 0 := mod_cast h.ne_nat 0
 theorem ne_one (h : Irrational x) : x ≠ 1 := by simpa only [Nat.cast_one] using h.ne_nat 1
 #align irrational.ne_one Irrational.ne_one
 
+-- See note [no_index around OfNat.ofNat]
+@[simp] theorem ne_ofNat (h : Irrational x) (n : ℕ) [n.AtLeastTwo] : x ≠ no_index (OfNat.ofNat n) :=
+  h.ne_nat n
+
 end Irrational
 
 @[simp]
@@ -206,6 +198,10 @@ theorem Int.not_irrational (m : ℤ) : ¬Irrational m := fun h => h.ne_int m rfl
 theorem Nat.not_irrational (m : ℕ) : ¬Irrational m := fun h => h.ne_nat m rfl
 #align nat.not_irrational Nat.not_irrational
 
+-- See note [no_index around OfNat.ofNat]
+@[simp] theorem not_irrational_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ¬Irrational (no_index (OfNat.ofNat n)) :=
+  n.not_irrational
 namespace Irrational
 
 variable (q : ℚ) {x y : ℝ}
