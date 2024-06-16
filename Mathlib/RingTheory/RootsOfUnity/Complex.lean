@@ -192,5 +192,5 @@ lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ+} (hζ : ζ 
     ‖(ζ : ℂ)‖ = 1 := by
   refine norm_eq_one_of_pow_eq_one ?_ <| n.ne_zero
   norm_cast
-  rw [show ζ ^ (n : ℕ) = 1 from hζ]
-  rfl
+  rw [_root_.mem_rootsOfUnity] at hζ
+  rw [hζ, Units.val_one]

@@ -397,8 +397,7 @@ lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
     equivToUnitHom (χ₁ * χ₂) a = equivToUnitHom χ₁ a * equivToUnitHom χ₂ a := by
   apply_fun ((↑) : R'ˣ → R') using Units.ext
   push_cast
-  simp_rw [coe_equivToUnitHom]
-  rfl
+  simp_rw [coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply]
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups
 as a multiplicative equivalence. -/
