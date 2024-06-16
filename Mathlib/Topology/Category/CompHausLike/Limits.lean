@@ -236,8 +236,8 @@ lemma Sigma.openEmbedding_ι (a : α) :
     haveI := has_coproduct X hP
     OpenEmbedding (Sigma.ι X a) := by
   haveI := has_coproduct X hP
-  refine' OpenEmbedding.of_comp _ (homeoOfIso
-    ((colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit X hP))).openEmbedding _
+  refine OpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
+    (finiteCoproduct.isColimit X hP))).openEmbedding ?_
   convert finiteCoproduct.openEmbedding_ι X hP a
   ext x
   change (Sigma.ι X a ≫ _) x = _
