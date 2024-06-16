@@ -201,6 +201,7 @@ theorem integrable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Integrable
   refine Integrable.sub ?_ ?_ <;>
     · constructor
       · -- NB: `measurability` proves this, but is very slow
+        -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
         exact (((Measure.measurable_rnDeriv _ μ
           ).ennreal_toNNReal).coe_nnreal_real).aestronglyMeasurable
       exact hasFiniteIntegral_toReal_of_lintegral_ne_top (lintegral_rnDeriv_lt_top _ μ).ne
@@ -314,11 +315,13 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
     JordanDecomposition.toSignedMeasure]
   congr
   -- NB: `measurability` proves this `have`, but is slow.
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
   · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := hf.real_toNNReal.coe_nnreal_ennreal
     refine eq_singularPart hfpos htμ.1 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
   · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) :=
       -- NB: `measurability` proves this, but is slow.
+      -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
       (measurable_neg_iff.mpr hf).real_toNNReal.coe_nnreal_ennreal
     refine eq_singularPart hfneg htμ.2 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]

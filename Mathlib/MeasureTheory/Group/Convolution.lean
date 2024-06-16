@@ -43,7 +43,8 @@ theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
   unfold mconv
   rw [MeasureTheory.Measure.dirac_prod, map_map]
   · simp only [Function.comp_def, one_mul, map_id']
-  · -- NB: `measurability` proves this, but is slow.
+  · -- NB. `measurability` proves this, but is slow
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
     exact Measurable.mul measurable_fst measurable_snd
   measurability
 
@@ -55,8 +56,10 @@ theorem mconv_dirac_one [MeasurableMul₂ M]
   rw [MeasureTheory.Measure.prod_dirac, map_map]
   · simp only [Function.comp_def, mul_one, map_id']
   · -- NB. `measurability` proves this, but is slow
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
     exact Measurable.mul measurable_fst measurable_snd
   -- NB. `measurability` proves this, but is slow
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
   apply Measurable.prod
   · apply measurable_id'
   · exact measurable_const
@@ -79,6 +82,7 @@ theorem mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : M
   unfold mconv
   rw [prod_add, map_add]
   -- NB. `measurability` proves this, but is pretty slow
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
   exact Measurable.mul measurable_fst measurable_snd
 
 @[to_additive add_conv]
@@ -87,6 +91,7 @@ theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : M
   unfold mconv
   rw [add_prod, map_add]
   -- NB. `measurability` proves this, but is pretty slow
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
   exact Measurable.mul measurable_fst measurable_snd
 
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
@@ -97,6 +102,7 @@ theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul
   rw [← prod_swap, map_map]
   · simp [Function.comp_def, mul_comm]
   · -- NB. `measurability` proves this, but is pretty slow
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
     exact Measurable.mul measurable_fst measurable_snd
   measurability
 
@@ -119,6 +125,7 @@ instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : 
     IsProbabilityMeasure (μ ∗ ν) := by
   apply MeasureTheory.isProbabilityMeasure_map
   -- NB. `measurability` proves this, but is really slow
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
   exact AEMeasurable.mul (measurable_fst.comp_aemeasurable' aemeasurable_id')
     (measurable_snd.comp_aemeasurable' aemeasurable_id')
 

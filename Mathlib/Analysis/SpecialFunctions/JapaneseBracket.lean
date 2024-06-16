@@ -156,6 +156,7 @@ theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : �
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
     ?_ (eventually_of_forall fun x => ?_)
   · -- Note: `measurability` proves this, but very slowly.
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
     exact measurable_norm.pow_const 2 |>.const_add 1 |>.pow_const (-r / 2) |>.aestronglyMeasurable
   refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity

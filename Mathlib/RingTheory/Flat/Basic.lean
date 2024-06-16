@@ -237,7 +237,7 @@ theorem rTensor_preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Mo
     Function.Injective (L.rTensor M) :=
   rTensor_injective_iff_lcomp_surjective.2 ((iff_characterModule_baer.1 h).extension_property _ hL)
 
-@[deprecated]
+@[deprecated (since := "2024-03-29")]
 alias preserves_injective_linearMap := rTensor_preserves_injective_linearMap
 
 /--

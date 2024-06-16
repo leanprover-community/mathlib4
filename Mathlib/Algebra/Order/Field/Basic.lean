@@ -293,11 +293,10 @@ lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a /
   simpa only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv (hc.trans h) hc]
 #align div_lt_div_of_lt_left div_lt_div_of_pos_left
 
--- 2024-02-16
-@[deprecated] alias div_le_div_of_le_of_nonneg := div_le_div_of_nonneg_right
-@[deprecated] alias div_lt_div_of_lt := div_lt_div_of_pos_right
-@[deprecated] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
-@[deprecated] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
+@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_of_nonneg := div_le_div_of_nonneg_right
+@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt := div_lt_div_of_pos_right
+@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
+@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
 
 @[deprecated div_le_div_of_nonneg_right (since := "2024-02-16")]
 lemma div_le_div_of_le (hc : 0 ≤ c) (hab : a ≤ b) : a / c ≤ b / c :=
