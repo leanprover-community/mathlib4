@@ -3,12 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-
 /-!
 
 # Explicit limits and colimits
@@ -117,16 +115,19 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g hP) :=
 theorem hasPullback : HasLimit (cospan f g) where
   exists_limit := ⟨⟨pullback.cone f g hP, pullback.isLimit f g hP⟩⟩
 
+/-- The functor to `TopCat` creates pullbacks if they exist. -/
 noncomputable def createsPullback : CreatesLimit (cospan f g) (compHausLikeToTop P) := by
   refine createsLimitOfFullyFaithfulOfIso (pullback f g hP)
     (((TopCat.pullbackConeIsLimit f g).conePointUniqueUpToIso
         (limit.isLimit _)) ≪≫ Limits.lim.mapIso (?_ ≪≫ (diagramIsoCospan _).symm))
   exact Iso.refl _
 
+/-- The functor to `TopCat` preserves pullbacks. -/
 noncomputable def preservesPullback : PreservesLimit (cospan f g) (compHausLikeToTop P) :=
   letI := createsPullback f g hP
   preservesLimitOfCreatesLimitAndHasLimit _ _
 
+/-- The functor to another `CompHausLike` preserves pullbacks. -/
 noncomputable def preservesPullback' {P' : TopCat → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesLimit (cospan f g) (toCompHausLike h) := by
@@ -242,6 +243,7 @@ lemma Sigma.openEmbedding_ι (a : α) :
   change (Sigma.ι X a ≫ _) x = _
   simp
 
+/-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 def preservesFiniteCoproducts
     (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike P),
       P (TopCat.of (Σ (a : α), (X a).toTop))) :
@@ -253,6 +255,7 @@ def preservesFiniteCoproducts
   · exact TopCat.sigmaCofanIsColimit _
   · exact hP _
 
+/-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
 noncomputable def preservesFiniteCoproducts' (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike P),
       P (TopCat.of (Σ (a : α), (X a).toTop)))
       {P' : TopCat.{u} → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
@@ -280,6 +283,7 @@ theorem hasPullbacksOfInclusions
       apply Sigma.openEmbedding_ι
       exact hP _ }
 
+/-- The functor to `TopCat` creates pullbacks of inclusions if they exist. -/
 noncomputable def preservesPullbacksOfInclusions
     (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike.{u} P),
       P (TopCat.of.{u} (Σ (a : α), (X a).toTop)))

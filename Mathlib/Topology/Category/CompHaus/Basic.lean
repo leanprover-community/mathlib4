@@ -39,6 +39,7 @@ attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 open CategoryTheory CompHausLike
 
+/-- The category of compact Hausdorff spaces. -/
 abbrev CompHaus := CompHausLike (fun _ ↦ True)
 set_option linter.uppercaseLean3 false in
 #align CompHaus CompHaus
@@ -356,5 +357,6 @@ set_option linter.uppercaseLean3 false in
 
 end CompHaus
 
+/-- Every `CompHausLike` admits a functor to `CompHaus`. -/
 abbrev compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus :=
   CompHausLike.toCompHausLike (by simp only [implies_true])

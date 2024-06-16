@@ -1,7 +1,16 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
+-/
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Topology.Category.TopCat.Basic
--- import Mathlib.Topology.ExtremallyDisconnected
--- import Mathlib.Topology.Sets.Closeds
+/-!
+
+# Categories of Compact Hausdorff Spaces
+
+We construct the category of compact Hausdorff spaces satisfying an additional property `P`.
+-/
 
 universe u
 
@@ -87,12 +96,15 @@ instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
 
 variable {P}
 
+/-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
 @[simps]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
   obj X := CompHausLike.of _ X (h _ X.prop)
   map f := f
 
+/-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
+faithful. -/
 def fullyFaithfulToCompHausLike {P P' : TopCat → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) : (toCompHausLike h).FullyFaithful :=
   fullyFaithfulInducedFunctor _
@@ -105,7 +117,7 @@ instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P
 
 variable (P)
 
-/-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
+/-- The fully faithful embedding of `CompHausLike P` in `TopCat`. -/
 -- Porting note: `semireducible` -> `.default`.
 @[simps (config := { rhsMd := .default })]
 def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
@@ -114,6 +126,7 @@ def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
 example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     toCompHausLike h ⋙ compHausLikeToTop P' = compHausLikeToTop P := rfl
 
+/-- The functor from `CompHausLike P` to `TopCat` is fully faithful. -/
 def fullyFaithfulCompHausLikeToTop : (compHausLikeToTop P).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
