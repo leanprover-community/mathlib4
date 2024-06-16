@@ -29,8 +29,6 @@ open Filter Set Metric ContinuousLinearMap
 
 open scoped Topology
 
-attribute [local mono] Set.prod_mono
-
 /-- If a function `f` is differentiable in a convex open set and continuous on its closure, and its
 derivative converges to a limit `f'` at a point on the boundary, then `f` is differentiable there
 with derivative `f'`. -/
@@ -87,7 +85,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     refine ContinuousWithinAt.closure_le uv_in ?_ ?_ key
     all_goals
       -- common start for both continuity proofs
-      have : (B ∩ s) ×ˢ (B ∩ s) ⊆ s ×ˢ s := by mono <;> exact inter_subset_right
+      have : (B ∩ s) ×ˢ (B ∩ s) ⊆ s ×ˢ s := by gcongr <;> exact inter_subset_right
       obtain ⟨u_in, v_in⟩ : u ∈ closure s ∧ v ∈ closure s := by
         simpa [closure_prod_eq] using closure_mono this uv_in
       apply ContinuousWithinAt.mono _ this
