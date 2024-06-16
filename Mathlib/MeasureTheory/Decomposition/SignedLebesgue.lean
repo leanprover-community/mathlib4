@@ -189,13 +189,21 @@ variable {s t : SignedMeasure α}
 @[measurability]
 theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
   rw [rnDeriv_def]
-  measurability
+  -- Note. `measurabilty` proves this, but is very slow
+  apply Measurable.add
+  · exact ((Measure.measurable_rnDeriv _ μ).ennreal_toNNReal).coe_nnreal_real
+  · rw [measurable_neg_iff]
+    exact (Measure.measurable_rnDeriv _ μ).ennreal_toNNReal.coe_nnreal_real
+
 #align measure_theory.signed_measure.measurable_rn_deriv MeasureTheory.SignedMeasure.measurable_rnDeriv
 
 theorem integrable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Integrable (rnDeriv s μ) μ := by
   refine Integrable.sub ?_ ?_ <;>
     · constructor
-      · apply Measurable.aestronglyMeasurable; measurability
+      · -- NB: `measurability` proves this, but is very slow
+        -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+        exact (((Measure.measurable_rnDeriv _ μ
+          ).ennreal_toNNReal).coe_nnreal_real).aestronglyMeasurable
       exact hasFiniteIntegral_toReal_of_lintegral_ne_top (lintegral_rnDeriv_lt_top _ μ).ne
 #align measure_theory.signed_measure.integrable_rn_deriv MeasureTheory.SignedMeasure.integrable_rnDeriv
 
@@ -306,10 +314,15 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
   rw [singularPart, ← t.toSignedMeasure_toJordanDecomposition,
     JordanDecomposition.toSignedMeasure]
   congr
-  · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := by measurability
+  -- NB: `measurability` proves this `have`, but is slow.
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+  · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := hf.real_toNNReal.coe_nnreal_ennreal
     refine eq_singularPart hfpos htμ.1 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
-  · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) := by measurability
+  · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) :=
+      -- NB: `measurability` proves this, but is slow.
+      -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+      (measurable_neg_iff.mpr hf).real_toNNReal.coe_nnreal_ennreal
     refine eq_singularPart hfneg htμ.2 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
 
