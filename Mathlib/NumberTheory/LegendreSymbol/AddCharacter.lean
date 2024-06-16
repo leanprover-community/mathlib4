@@ -206,7 +206,7 @@ theorem zmodChar_primitive_of_primitive_root (n : ℕ) [NeZero n] {ζ : C} (h : 
 does not divide `n` -/
 noncomputable def primitiveZModChar (n : ℕ+) (F' : Type v) [Field F'] (h : (n : F') ≠ 0) :
     PrimitiveAddChar (ZMod n) F' :=
-  haveI : NeZero (n : F') := ⟨h⟩
+  have : NeZero (n : F') := ⟨h⟩
   ⟨n, zmodChar n (IsCyclotomicExtension.zeta_pow n F' _),
     zmodChar_primitive_of_primitive_root n (IsCyclotomicExtension.zeta_spec n F' _)⟩
 #align add_char.primitive_zmod_char AddChar.primitiveZModChar
