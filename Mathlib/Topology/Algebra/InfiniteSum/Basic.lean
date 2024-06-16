@@ -133,7 +133,7 @@ theorem multipliable_of_finite_mulSupport (h : (mulSupport f).Finite) : Multipli
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
 
 @[to_additive]
-lemma Finite.multipliable [Finite β] (f : β → α) : Multipliable f :=
+lemma Multipliable.of_finite [Finite β] {f : β → α} : Multipliable f :=
   multipliable_of_finite_mulSupport <| Set.finite_univ.subset (Set.subset_univ _)
 
 @[to_additive]

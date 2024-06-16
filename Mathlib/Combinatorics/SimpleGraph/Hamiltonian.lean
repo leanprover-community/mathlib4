@@ -74,7 +74,9 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
   toIsCycle := hp.isCycle.map hf.injective
   isHamiltonian_tail := by
-    simp [IsHamiltonian, support_tail, hf.surjective.forall, List.count_tail, hf.injective]
+    simp only [IsHamiltonian, support_tail, support_map, ne_eq, List.map_eq_nil, support_ne_nil,
+      not_false_eq_true, List.count_tail, hf.surjective.forall, hf.injective,
+      List.count_map_of_injective]
     intro x
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl
@@ -89,7 +91,7 @@ lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
 lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
   simp only [isHamiltonianCycle_isCycle_and_isHamiltonian_tail , IsHamiltonian, support_tail,
-   exists_prop]
+    exists_prop]
 
 /-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :

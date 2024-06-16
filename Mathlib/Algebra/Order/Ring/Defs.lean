@@ -1330,10 +1330,9 @@ instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
 #align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
--- 2023-12-23
-@[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
-@[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
-@[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
-@[deprecated] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
+@[deprecated (since := "2023-12-23")] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
+@[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
 
 assert_not_exists MonoidHom

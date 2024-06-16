@@ -1695,12 +1695,12 @@ section Bit
 set_option linter.deprecated false
 variable [Add α] [Preorder α]
 
-@[deprecated]
+@[deprecated (since := "2022-11-20")]
 theorem bit0_mono [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     Monotone (bit0 : α → α) := fun _ _ h => add_le_add h h
 #align bit0_mono bit0_mono
 
-@[deprecated]
+@[deprecated (since := "2022-11-20")]
 theorem bit0_strictMono [CovariantClass α α (· + ·) (· < ·)]
     [CovariantClass α α (swap (· + ·)) (· < ·)] :
     StrictMono (bit0 : α → α) := fun _ _ h => add_lt_add h h
