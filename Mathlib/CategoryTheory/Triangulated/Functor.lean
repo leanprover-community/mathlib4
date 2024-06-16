@@ -25,8 +25,9 @@ open Category Limits Pretriangulated Preadditive
 
 namespace Functor
 
-variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D ℤ]
-  (F : C ⥤ D) [F.CommShift ℤ]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
+  (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
 
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
@@ -84,7 +85,8 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
       simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
         ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
 
-attribute [local simp] commShiftIso_zero commShiftIso_add
+attribute [local simp] map_zsmul comp_zsmul zsmul_comp
+  commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
 set_option maxHeartbeats 400000 in
@@ -110,6 +112,23 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
       (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+
+/-- The canonical isomorphism `(F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle`. -/
+@[simps!]
+def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
+  NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
+
+/-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functors
+`F₁.mapTriangle` and `F₂.mapTriangle` if the isomorphism `F₁ ≅ F₂` is compatible
+with the shifts. -/
+@[simps!]
+def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
+    [NatTrans.CommShift e.hom ℤ] : F₁.mapTriangle ≅ F₂.mapTriangle :=
+  NatIso.ofComponents (fun T =>
+    Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
+      dsimp
+      simp only [assoc, NatTrans.CommShift.comm_app e.hom (1 : ℤ) T.obj₁,
+        NatTrans.naturality_assoc])) (by aesop_cat)
 
 end Additive
 
