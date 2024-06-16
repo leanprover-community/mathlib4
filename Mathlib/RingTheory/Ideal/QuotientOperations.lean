@@ -237,12 +237,31 @@ lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
   · intros j hj
     simp [(he j).2 i hj.symm]
 
-/-- Chinese Remainder Theorem. Eisenbud Ex.2.6. Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
+/-- **Chinese Remainder Theorem**. Eisenbud Ex.2.6.
+Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
 noncomputable def quotientInfRingEquivPiQuotient [Finite ι] (f : ι → Ideal R)
     (hf : Pairwise fun i j => IsCoprime (f i) (f j)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
 #align ideal.quotient_inf_ring_equiv_pi_quotient Ideal.quotientInfRingEquivPiQuotient
+
+/-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
+commutative ring then the canonical map `R → ∏ (R ⧸ Iᵢ)` is surjective. -/
+lemma pi_quotient_surjective {R : Type*} [CommRing R] {ι : Type*} [Finite ι] {I : ι → Ideal R}
+    (hf : Pairwise fun i j ↦ IsCoprime (I i) (I j)) (x : (i : ι) → R ⧸ I i) :
+    ∃ r : R, ∀ i, r = x i := by
+  obtain ⟨y, rfl⟩ := Ideal.quotientInfToPiQuotient_surj hf x
+  obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective y
+  exact ⟨r, fun i ↦ rfl⟩
+
+-- variant of `IsDedekindDomain.exists_forall_sub_mem_ideal` which doesn't assume Dedekind domain!
+/-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
+commutative ring then given elements `xᵢ` you can find `r` with `r - xᵢ ∈ Iᵢ` for all `i`. -/
+lemma exists_forall_sub_mem_ideal {R : Type*} [CommRing R] {ι : Type*} [Finite ι]
+    {I : ι → Ideal R} (hI : Pairwise fun i j ↦ IsCoprime (I i) (I j)) (x : ι → R) :
+    ∃ r : R, ∀ i, r - x i ∈ I i := by
+  obtain ⟨y, hy⟩ := Ideal.pi_quotient_surjective hI (fun i ↦ x i)
+  exact ⟨y, fun i ↦ (Submodule.Quotient.eq (I i)).mp <| hy i⟩
 
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
 noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
@@ -286,6 +305,40 @@ theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopri
       Ideal.Quotient.factor (I ⊓ J) J inf_le_right := by
   apply Quotient.ringHom_ext; ext; rfl
 #align ideal.snd_comp_quotient_inf_equiv_quotient_prod Ideal.snd_comp_quotientInfEquivQuotientProd
+
+/-- **Chinese remainder theorem**, specialized to two ideals. -/
+noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
+    R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
+  Ideal.quotEquivOfEq (inf_eq_mul_of_isCoprime coprime).symm |>.trans <|
+    Ideal.quotientInfEquivQuotientProd I J coprime
+#align ideal.quotient_mul_equiv_quotient_prod Ideal.quotientMulEquivQuotientProd
+
+@[simp]
+theorem quotientMulEquivQuotientProd_fst (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I * J) :
+    (quotientMulEquivQuotientProd I J coprime x).fst =
+      Ideal.Quotient.factor (I * J) I mul_le_right x :=
+  Quot.inductionOn x fun _ => rfl
+
+@[simp]
+theorem quotientMulEquivQuotientProd_snd (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I * J) :
+    (quotientMulEquivQuotientProd I J coprime x).snd =
+      Ideal.Quotient.factor (I * J) J mul_le_left x :=
+  Quot.inductionOn x fun _ => rfl
+
+@[simp]
+theorem fst_comp_quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
+    (RingHom.fst _ _).comp
+        (quotientMulEquivQuotientProd I J coprime : R ⧸ I * J →+* (R ⧸ I) × R ⧸ J) =
+      Ideal.Quotient.factor (I * J) I mul_le_right := by
+  apply Quotient.ringHom_ext; ext; rfl
+
+@[simp]
+theorem snd_comp_quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
+    (RingHom.snd _ _).comp
+        (quotientMulEquivQuotientProd I J coprime : R ⧸ I * J →+* (R ⧸ I) × R ⧸ J) =
+      Ideal.Quotient.factor (I * J) J mul_le_left := by
+  apply Quotient.ringHom_ext; ext; rfl
+
 end ChineseRemainder
 
 section QuotientAlgebra
@@ -438,9 +491,9 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
 #align ideal.quotient_ker_alg_equiv_of_right_inverse.apply Ideal.quotientKerAlgEquivOfRightInverse_apply
 #align ideal.quotient_ker_alg_equiv_of_right_inverse_symm.apply Ideal.quotientKerAlgEquivOfRightInverse_symm_apply
 
-@[deprecated] -- 2024-02-27
+@[deprecated (since := "2024-02-27")]
 alias quotientKerAlgEquivOfRightInverse.apply := quotientKerAlgEquivOfRightInverse_apply
-@[deprecated] -- 2024-02-27
+@[deprecated (since := "2024-02-27")]
 alias QuotientKerAlgEquivOfRightInverseSymm.apply := quotientKerAlgEquivOfRightInverse_symm_apply
 
 /-- The **first isomorphism theorem** for algebras. -/
@@ -627,8 +680,8 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
 #align ideal.quotient_equiv_alg_of_eq_symm Ideal.quotientEquivAlgOfEq_symm
 
 lemma comap_map_mk {I J : Ideal R} (h : I ≤ J) :
-    Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J :=
-  by ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
+    Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J := by
+  ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
 
 /-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
 noncomputable def quotientKerEquivRange

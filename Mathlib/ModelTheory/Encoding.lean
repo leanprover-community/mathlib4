@@ -158,7 +158,7 @@ instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α)
     simp only [Option.join, head?, List.map, Option.some_bind, id]
 
 instance [h1 : Countable α] [h2 : Countable (Σl, L.Functions l)] : Countable (L.Term α) := by
-  refine' mk_le_aleph0_iff.1 (card_le.trans (max_le_iff.2 _))
+  refine mk_le_aleph0_iff.1 (card_le.trans (max_le_iff.2 ?_))
   simp only [le_refl, mk_sum, add_le_aleph0, lift_le_aleph0, true_and_iff]
   exact ⟨Cardinal.mk_le_aleph0, Cardinal.mk_le_aleph0⟩
 
@@ -216,7 +216,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
     have : SizeOf.sizeOf
         (↑(listDecode l).2 : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.Relations n) ℕ))) <
         1 + (1 + 1) + SizeOf.sizeOf l := by
-      refine' lt_of_le_of_lt (listDecode l).2.2 (max_lt _ (Nat.lt_add_of_pos_left (by decide)))
+      refine lt_of_le_of_lt (listDecode l).2.2 (max_lt ?_ (Nat.lt_add_of_pos_left (by decide)))
       rw [add_assoc, lt_add_iff_pos_right, add_pos_iff]
       exact Or.inl zero_lt_two
     ⟨sigmaImp (listDecode l).1 (listDecode (listDecode l).2).1,

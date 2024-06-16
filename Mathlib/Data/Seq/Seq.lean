@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.LazyList
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
 
@@ -676,9 +675,9 @@ theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append
         · apply recOn t <;> simp
           · apply recOn u <;> simp
             · intro _ u
-              refine' ⟨nil, nil, u, _, _⟩ <;> simp
+              refine ⟨nil, nil, u, ?_, ?_⟩ <;> simp
           · intro _ t
-            refine' ⟨nil, t, u, _, _⟩ <;> simp
+            refine ⟨nil, t, u, ?_, ?_⟩ <;> simp
         · intro _ s
           exact ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
@@ -725,7 +724,7 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
       apply recOn s <;> simp
       · apply recOn t <;> simp
         · intro _ t
-          refine' ⟨nil, t, _, _⟩ <;> simp
+          refine ⟨nil, t, ?_, ?_⟩ <;> simp
       · intro _ s
         exact ⟨s, t, rfl, rfl⟩
 #align stream.seq.map_append Stream'.Seq.map_append
@@ -794,13 +793,13 @@ theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) 
             · simp
             · intro s T
               cases' s with a s; simp only [join_cons, destruct_cons, true_and]
-              refine' ⟨s, nil, T, _, _⟩ <;> simp
+              refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
           · intro s S
             cases' s with a s
             simpa using ⟨s, S, T, rfl, rfl⟩
         · intro _ s
           exact ⟨s, S, T, rfl, rfl⟩
-  · refine' ⟨nil, S, T, _, _⟩ <;> simp
+  · refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
 #align stream.seq.join_append Stream'.Seq.join_append
 
 @[simp]
@@ -995,7 +994,7 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
             simpa [map] using ⟨_, _, rfl, rfl⟩
         · intro _ s
           exact ⟨s, S, rfl, rfl⟩
-  · refine' ⟨nil, S, _, _⟩ <;> simp
+  · refine ⟨nil, S, ?_, ?_⟩ <;> simp
 #align stream.seq1.map_join' Stream'.Seq1.map_join'
 
 @[simp]
@@ -1022,10 +1021,10 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
             apply recOn s <;> simp
             · exact ⟨_, _, rfl, rfl⟩
             · intro x s
-              refine' ⟨Seq.cons x (append s (Seq.join S)), SS, _, _⟩ <;> simp
+              refine ⟨Seq.cons x (append s (Seq.join S)), SS, ?_, ?_⟩ <;> simp
         · intro _ s
           exact ⟨s, SS, rfl, rfl⟩
-  · refine' ⟨nil, SS, _, _⟩ <;> simp
+  · refine ⟨nil, SS, ?_, ?_⟩ <;> simp
 #align stream.seq1.join_join Stream'.Seq1.join_join
 
 @[simp]
