@@ -139,7 +139,6 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     exact WithTop.zero_lt_top
 #align finite_integral_one_add_norm finite_integral_one_add_norm
 
-set_option profiler true in
 theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     Integrable (fun x ↦ (1 + ‖x‖) ^ (-r)) μ := by
   constructor

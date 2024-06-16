@@ -194,14 +194,10 @@ theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable
 
 #align measure_theory.signed_measure.measurable_rn_deriv MeasureTheory.SignedMeasure.measurable_rnDeriv
 
--- XXX: fun_prop doesn't know AEStronglyMeasurable yet...
--- attribute [fun_prop] Measurable.aestronglyMeasurable
-
 theorem integrable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Integrable (rnDeriv s μ) μ := by
   refine Integrable.sub ?_ ?_ <;>
     · constructor
-      · -- NB: `measurability` proves this, but is very slow
-        apply Measurable.aestronglyMeasurable
+      · apply Measurable.aestronglyMeasurable
         fun_prop
       exact hasFiniteIntegral_toReal_of_lintegral_ne_top (lintegral_rnDeriv_lt_top _ μ).ne
 #align measure_theory.signed_measure.integrable_rn_deriv MeasureTheory.SignedMeasure.integrable_rnDeriv
