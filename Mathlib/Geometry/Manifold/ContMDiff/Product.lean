@@ -319,7 +319,7 @@ theorem smooth_prod_assoc :
   smooth_fst.fst.prod_mk <| smooth_fst.snd.prod_mk smooth_snd
 #align smooth_prod_assoc smooth_prod_assoc
 
-section Prod_map
+section prodMap
 
 variable {g : N → N'} {r : Set N} {y : N}
 
@@ -384,7 +384,7 @@ nonrec theorem Smooth.prod_map (hf : Smooth I I' f) (hg : Smooth J J' g) :
   hf.prod_map hg
 #align smooth.prod_map Smooth.prod_map
 
-end Prod_map
+end prodMap
 
 section PiSpace
 

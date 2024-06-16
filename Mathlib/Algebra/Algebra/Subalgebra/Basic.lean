@@ -202,9 +202,8 @@ protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [A
   intCast_mem S n
 #align subalgebra.coe_int_mem Subalgebra.intCast_mem
 
--- 2024-04-05
-@[deprecated natCast_mem] alias coe_nat_mem := Subalgebra.natCast_mem
-@[deprecated intCast_mem] alias coe_int_mem := Subalgebra.intCast_mem
+@[deprecated natCast_mem (since := "2024-04-05")] alias coe_nat_mem := Subalgebra.natCast_mem
+@[deprecated intCast_mem (since := "2024-04-05")] alias coe_int_mem := Subalgebra.intCast_mem
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
@@ -752,7 +751,7 @@ def adjoin (s : Set A) : Subalgebra R A :=
 variable {R}
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → Subalgebra R A) (↑) := fun s S =>
-  ⟨fun H => le_trans (le_trans (Set.subset_union_right _ _) Subsemiring.subset_closure) H,
+  ⟨fun H => le_trans (le_trans Set.subset_union_right Subsemiring.subset_closure) H,
    fun H => show Subsemiring.closure (Set.range (algebraMap R A) ∪ s) ≤ S.toSubsemiring from
       Subsemiring.closure_le.2 <| Set.union_subset S.range_subset H⟩
 #align algebra.gc Algebra.gc
@@ -1283,6 +1282,16 @@ theorem centralizer_eq_top_iff_subset {s : Set A} : centralizer R s = ⊤ ↔ s 
 theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' (Set.centralizer_univ A)
 #align subalgebra.centralizer_univ Subalgebra.centralizer_univ
+
+lemma le_centralizer_centralizer {s : Subalgebra R A} :
+    s ≤ centralizer R (centralizer R (s : Set A)) :=
+  Set.subset_centralizer_centralizer
+
+@[simp]
+lemma centralizer_centralizer_centralizer {s : Set A} :
+    centralizer R s.centralizer.centralizer = centralizer R s := by
+  apply SetLike.coe_injective
+  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
 
 end Centralizer
 
