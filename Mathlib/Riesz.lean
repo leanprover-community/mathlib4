@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
+Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
@@ -7,27 +7,27 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 /-!
-# Une introduction à Lean par le théorème de Riesz
+# An introduction to Lean via Riesz' Theorem
 
-Je vais expliquer la preuve du théorème de Riesz à l'ordinateur.
+I will explain the proof of Riesz' Theorem to the computer.
 
-Le théorème de Riesz affirme que si un espace vectoriel réel a une boule compacte,
-alors il est de dimension finie.
+This theorem asserts that if a real normed vector space has a compact ball, then the space
+is finite-dimensional.
 
-On raisonne par contraposée : si l'espace n'est pas de dimension finie, on va
-construire une suite dans la boule de rayon `2` dont tous les points sont à distance
-au moins `1`, ce qui contredirait la compacité de la boule.
+We prove the contrapositive: if the space is not finite-dimensional, we will construct a sequence
+in the ball of radius `2` whose points are all at distance at least `1`, contradicting the
+compactness of the ball.
 
-On construit la suite par récurrence. Supposons les `n` premiers points construits.
-Ils engendrent un sous-espace `F` de dimension finie, qui est complet (par équivalence
-des normes) donc fermé. Soit `x ∉ F`, et notons `d` sa distance à `F` (qui est positive
-par fermeture). On choisit `y ∈ F` avec `dist x y < 2 d`. J'affirme que `d⁻¹ * (x - y)`
-convient pour le point suivant. Il est bien de norme au plus `2`. De plus, comme `xᵢ ∈ F`,
-on a `y + d * xᵢ ∈ F`. Ainsi,
-`d ≤ dist x (y + d * xᵢ)`, soit `d ≤ ‖d * (d⁻¹ * (x - y) - xᵢ)‖`,
-et donc `1 ≤ ‖d⁻¹ * (x - y) - xᵢ‖` comme on le voulait.
+We construct the sequence by induction. Assume that the first `n` points `xᵢ` have been constructed.
+They span a subspace `F` which is finite-dimensional and therefore complete (by equivalence of
+norms), hence closed. Let `x ∉ F`. Denote by `d` its distance to `F` (which is positive by
+closedness). Let us choose `y ∈ F` with `dist x y < 2 d`. I claim that `d⁻¹ * (x - y)` can be
+chosen as the next point of the sequence. Its norm is indeed at most `2`. Moreover, as `x∩ ∈ F`, we
+have `y + d * xᵢ ∈ F`. Therefore,
+`d ≤ dist x (y + d * xᵢ)`, i.e., `d ≤ ‖d * (d⁻¹ * (x - y) - xᵢ)‖`,
+which gives `1 ≤ ‖d⁻¹ * (x - y) - xᵢ‖` as claimed.
 
-Pour expliquer cette preuve de 10 lignes à Lean, on va la couper en plusieurs sous-lemmes.
+To explain this 10 lines proof to Lean, we will cut it in several sublemmas.
 -/
 
 open Filter Metric
@@ -35,10 +35,9 @@ open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- Étant donné un sous-espace vectoriel fermé qui n'est pas tout l'espace, on peut
-trouver un point de norme au plus `2` à distance au moins `1` de tout point
-du sous-espace. -/
-lemma existe_point_loin_de_sousmodule
+/-- Given a closed subspace which is not the whole space, one can find a point with norm at most `2`
+which is at distance `1` of every point in the subspace. -/
+lemma exists_point_away_from_subspace
     (F : Submodule ℝ E) (hF : ∃ x, x ∉ F) (hFc : IsClosed (F : Set E)) :
     ∃ (z : E), ‖z‖ < 2 ∧ (∀ y ∈ F, 1 ≤ ‖z - y‖) := by
   obtain ⟨x, x_pas_dans_F⟩ := hF
@@ -66,10 +65,9 @@ lemma existe_point_loin_de_sousmodule
       _ = ‖z - y‖                    := by simp_rw [z, smul_sub, smul_smul, B, one_smul]
   exact ⟨z, Nz, I⟩
 
-/-- Dans un espace vectoriel normé réel de dimension infinie, étant donné un ensemble
-fini de points, on peut trouver un point de norme au plus `2` à distance au moins `1`
-de tous ces points. -/
-lemma existe_point_loin_de_fini
+/-- In an infinite-dimensional real normed vector space, given a finite number of points, one can
+find a point with norm at most `2` whose distance to all these points is at least `1`. -/
+lemma exists_point_away_from_finite
     (s : Set E) (hs : Set.Finite s) (h : ¬(FiniteDimensional ℝ E)) :
     ∃ (z : E), ‖z‖ < 2 ∧ (∀ y ∈ s, 1 ≤ ‖z - y‖) := by
   let F := Submodule.span ℝ s
@@ -82,12 +80,12 @@ lemma existe_point_loin_de_fini
     have : FiniteDimensional ℝ (⊤ : Submodule ℝ E) := by rwa [this]
     refine Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
   obtain ⟨x, x_lt_2, hx⟩ : ∃ (x : E), ‖x‖ < 2 ∧ ∀ (y : E), y ∈ F → 1 ≤ ‖x - y‖ :=
-    existe_point_loin_de_sousmodule F hF Fclosed
+    exists_point_away_from_subspace F hF Fclosed
   exact ⟨x, x_lt_2, fun y hy ↦ hx _ (Submodule.subset_span hy)⟩
 
-/-- Dans un espace vectoriel normé réel de dimension infinie, on peut trouver une
-suite de points tous de norme au plus `2` et mutuellement distants d'au moins `1`. -/
-lemma existe_suite_loin (h : ¬(FiniteDimensional ℝ E)) :
+/-- In an infinite-dimensional real normed vector space, one can find a sequence of points of norm
+at most `2`, all of them separated by at least `1`. -/
+lemma exists_sequence_separated (h : ¬(FiniteDimensional ℝ E)) :
     ∃ (u : ℕ → E), (∀ n, ‖u n‖ < 2) ∧ (∀ m n, m ≠ n → 1 ≤ ‖u n - u m‖) := by
   have : IsSymm E (fun (x y : E) ↦ 1 ≤ ‖y - x‖) := by
     constructor
@@ -97,16 +95,16 @@ lemma existe_suite_loin (h : ¬(FiniteDimensional ℝ E)) :
   apply exists_seq_of_forall_finset_exists' (fun (x : E) ↦ ‖x‖ < 2)
     (fun (x : E) (y : E) ↦ 1 ≤ ‖y - x‖)
   intro s _hs
-  exact existe_point_loin_de_fini (s : Set E) s.finite_toSet h
+  exact exists_point_away_from_finite (s : Set E) s.finite_toSet h
 
-/-- Considérons un espace vectoriel normé réel dans lequel la boule fermée de rayon `2` est
-compacte. Alors cet espace est de dimension finie. -/
-theorem ma_version_de_riesz (h : IsCompact (closedBall (0 : E) 2)) :
+/-- Consider a real normed  vector space in which the closed ball of radius `2` is compact. Then
+this space is finite-dimensional. -/
+theorem my_riesz_version (h : IsCompact (closedBall (0 : E) 2)) :
     FiniteDimensional ℝ E := by
   by_contra hfin
   obtain ⟨u, u_lt_two, u_far⟩ :
     ∃ (u : ℕ → E), (∀ n, ‖u n‖ < 2) ∧ (∀ m n, m ≠ n → 1 ≤ ‖u n - u m‖) :=
-    existe_suite_loin hfin
+    exists_sequence_separated hfin
   have A : ∀ n, u n ∈ closedBall (0 : E) 2 := by
     intro n
     simpa only [norm_smul, dist_zero_right, mem_closedBall] using (u_lt_two n).le
@@ -123,10 +121,10 @@ theorem ma_version_de_riesz (h : IsCompact (closedBall (0 : E) 2)) :
     exact (φmono (Nat.lt_succ_self N)).ne
   _ < 1 := hN (N+1) (Nat.le_succ N)
 
-/- La preuve est finie, et prend environ 100 lignes, soit 10 fois plus que la version
-informelle. C'est assez typique. -/
+/- The proof is over. It takes roughly 100 lines, 10 times more than the informal proof. This is
+quite typical.  -/
 
-theorem la_vraie_version_de_riesz
+theorem the_real_riesz_version
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace 𝕜] {r : ℝ}
     (r_pos : 0 < r)  {c : F} (hc : IsCompact (closedBall c r)) :
@@ -139,25 +137,25 @@ theorem la_vraie_version_de_riesz
   exact?
 -/
 
-/- Les preuves sont vérifiées par le "noyau". Mais comment se convaincre que les définitions
-sont bonnes ? Avec une mauvaise définition, on risque de pouvoir démontrer n'importe quoi. -/
+/- The proofs are checked by the "kernel". But how can one be convinced that the definitions are
+good? With wrong definitions, one could prove anything. -/
 
 def IsSGCompact {α : Type*} (_s : Set α) : Prop := False
 
-theorem riesz_avec_isSGCompact (h : IsSGCompact (closedBall (0 : E) 2)) :
+theorem riesz_with_isSGCompact (h : IsSGCompact (closedBall (0 : E) 2)) :
   FiniteDimensional ℝ E :=
 False.elim h
 
-theorem antiriesz_avec_isSGCompact (h : IsSGCompact (closedBall (0 : E) 2)) :
+theorem antiriesz_with_isSGCompact (h : IsSGCompact (closedBall (0 : E) 2)) :
   ¬(FiniteDimensional ℝ E) :=
 False.elim h
 
-/- On peut essayer de dérouler les définitions pour voir si elles ont l'air raisonnables. -/
+/- We can try unfolding the definitions to see if they look reasonable. -/
 
 #check IsCompact
 #check FiniteDimensional
 
-/- On peut voir si les définitions permettent de démontrer des théorèmes raisonnables. -/
+/- We can try to see if the definitions make it possible to prove reasonable theorems. -/
 
 example (n : ℕ) : FiniteDimensional ℝ (Fin n → ℝ) := by infer_instance
 
