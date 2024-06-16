@@ -598,8 +598,8 @@ theorem sum_eq_zero_of_ne_one [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1)
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-06-16")]
-def IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'} (hχ : χ.IsNontrivial) : 
-    ∑ a, χ a = 0 := 
+def IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'} (hχ : χ.IsNontrivial) :
+    ∑ a, χ a = 0 :=
   sum_eq_zero_of_ne_one ((isNontrivial_iff _).mp hχ)
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
