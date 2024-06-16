@@ -15,8 +15,8 @@ import Mathlib.Tactic.IntervalCases
 # Irrational real numbers
 
 In this file we define a predicate `Irrational` on `ℝ`, prove that the `n`-th root of an integer
-number is irrational if it is not integer, and that `sqrt q` is irrational if and only if
-`Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q`.
+number is irrational if it is not integer, and that `√(q : ℚ)` is irrational if and only if
+`¬IsSquare q ∧ 0 ≤ q`.
 
 We also provide dot-style constructors like `Irrational.add_rat`, `Irrational.rat_sub` etc.
 -/
