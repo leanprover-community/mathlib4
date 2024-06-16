@@ -578,16 +578,6 @@ lemma A2  (f : ℕ → ℂ → ℂ) (hf : ∀ x : ℂ,  Summable fun n => Comple
   sorry
 
 
-lemma A3 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf : TendstoUniformlyOn f g atTop K)
- (hg : ∃ T : ℝ, ∀ x : ℂ, x ∈ K → (g x).re ≤ T) :
-  TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) atTop K := by
-
-sorry
-
-example (a b: ℝ) (ha : a ≠ 0) : b-a = a*(b/a - 1) := by
-  field_simp
-
-
 lemma A4 (a: ℝ) : UniformContinuousOn cexp {x : ℂ | x.re ≤ a} := by
 rw [Metric.uniformContinuousOn_iff]
 intro ε hε
@@ -636,3 +626,37 @@ theorem UniformContinuousOn.comp_tendstoUniformlyOn (s : Set ℂ) (F : ℕ → �
     TendstoUniformlyOn (fun i => fun x =>  g  (F i x)) (fun x => g (f x)) atTop s := by
   rw [uniformContinuousOn_iff_restrict] at hg
   apply (UniformContinuous.comp_tendstoUniformlyOn hg h)
+
+lemma A33 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (T : ℝ) (hf : TendstoUniformlyOn f g atTop K)
+ (hg : ∀ x : ℂ, x ∈ K → (g x).re ≤ T) : ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ (n : ℕ) (x : ℂ), x ∈ K → N ≤ n →
+   (f n x).re ≤ T + ε := by
+  intro ε hε
+  rw [Metric.tendstoUniformlyOn_iff] at hf
+  simp at hf
+  have hf2 := hf ε hε
+  obtain ⟨N, hN⟩ := hf2
+  use N
+  intro n x hx hn
+  have hN2 := hN n hn x hx
+  simp [dist_eq_norm] at hN2
+  rw [AbsoluteValue.map_sub] at hN2
+  have := Complex.abs_re_le_abs ((f n x) - g x)
+  have h3 := le_of_abs_le this
+  have h4 := le_trans h3 hN2.le
+  simp at h4
+  apply le_trans h4
+  have := hg x hx
+  linarith
+
+
+lemma A3 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf : TendstoUniformlyOn f g atTop K)
+  (hg : ∃ T : ℝ, ∀ x : ℂ, x ∈ K → (g x).re ≤ T) :
+    TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) atTop K := by
+  rw [Metric.tendstoUniformlyOn_iff] at hf
+  simp at hf
+  have hf2 := hf (1) (by exact Real.zero_lt_one)
+  obtain ⟨N, hN⟩ := hf2
+
+
+
+  sorry
