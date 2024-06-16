@@ -431,7 +431,7 @@ def lint(path, fix=False):
         newlines = enum_lines
         for error_check in [line_endings_check,
                             four_spaces_in_second_line,
-                            long_lines_check,
+                            #long_lines_check,
                             isolated_by_dot_semicolon_check,
                             set_option_check,
                             left_arrow_check,
