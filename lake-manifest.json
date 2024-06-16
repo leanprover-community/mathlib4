@@ -4,7 +4,7 @@
  [{"url": "https://github.com/leanprover-community/batteries",
    "type": "git",
    "subDir": null,
-   "rev": "cbb12953d9b4b7d9949c5ec326eee205b67277ae",
+   "rev": "a62432fe6b52aa1c10b364a5de6a618d0f0fd0e6",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
