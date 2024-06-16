@@ -57,10 +57,12 @@ instance {X : CompHaus} : T2Space X :=
 
 variable (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
+instance : HasProp (fun _ ↦ True) X := ⟨trivial⟩
+
 /-- A constructor for objects of the category `CompHaus`,
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
-abbrev of : CompHaus := CompHausLike.of _ X trivial
+abbrev of : CompHaus := CompHausLike.of _ X
 set_option linter.uppercaseLean3 false in
 #align CompHaus.of CompHaus.of
 

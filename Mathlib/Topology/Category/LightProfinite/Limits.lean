@@ -31,24 +31,24 @@ and we now turn it on locally when convenient.
 -/
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
-instance : FinitaryExtensive LightProfinite := by
-  apply CompHausLike.finitaryExtensive
-  · intro α _ X
-    constructor
-    · exact show TotallyDisconnectedSpace (Σ (a : α), X a) from inferInstance
-    · exact show SecondCountableTopology (Σ (a : α), X a) from inferInstance
-  · intro X Y _ _ _ _
-    constructor
-    · exact show TotallyDisconnectedSpace {xy : X × Y | _} from inferInstance
-    · exact show SecondCountableTopology {xy : X × Y | _} from inferInstance
+set_option linter.unusedVariables false in
+instance : HasExplicitPullbacks
+    (fun Y ↦ TotallyDisconnectedSpace Y ∧ SecondCountableTopology Y) where
+  hasExplicitPullbacks _ _ := {
+    hasProp := ⟨show TotallyDisconnectedSpace {xy : _ | _} from inferInstance,
+      show SecondCountableTopology {xy : _ | _} from inferInstance⟩ }
 
-noncomputable instance : PreservesFiniteCoproducts lightProfiniteToCompHaus := by
-  apply CompHausLike.preservesFiniteCoproducts'
-  intro α _ X
-  constructor
-  · exact show TotallyDisconnectedSpace (Σ (a : α), X a) from inferInstance
-  · exact show SecondCountableTopology (Σ (a : α), X a) from inferInstance
+set_option linter.unusedVariables false in
+instance : HasExplicitFiniteCoproducts
+    (fun Y ↦ TotallyDisconnectedSpace Y ∧ SecondCountableTopology Y) where
+  hasProp _ := { hasProp :=
+    ⟨show TotallyDisconnectedSpace (Σ (a : _), _) from inferInstance,
+      show SecondCountableTopology (Σ (a : _), _) from inferInstance⟩ }
+
+example : FinitaryExtensive LightProfinite := inferInstance
+
+noncomputable example : PreservesFiniteCoproducts lightProfiniteToCompHaus := inferInstance
 
 end LightProfinite

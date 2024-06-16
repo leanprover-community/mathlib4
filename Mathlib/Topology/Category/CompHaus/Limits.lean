@@ -30,22 +30,23 @@ attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 universe u w
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
-instance : FinitaryExtensive CompHaus := by
-  apply CompHausLike.finitaryExtensive
-  all_goals simp only [implies_true]
+instance : HasExplicitPullbacks (fun _ ↦ True) where
+  hasExplicitPullbacks _ _ := inferInstance
+
+instance : HasExplicitFiniteCoproducts (fun _ ↦ True) where
+  hasProp _ := inferInstance
+
+example : FinitaryExtensive CompHaus := inferInstance
 
 /-- A one-element space is terminal in `CompHaus` -/
-def isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
-  CompHausLike.isTerminalPUnit trivial
+abbrev isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) := CompHausLike.isTerminalPUnit
 
 /-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
 noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
   terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
 
-noncomputable instance : PreservesFiniteCoproducts compHausToTop := by
-  apply CompHausLike.preservesFiniteCoproducts
-  simp only [implies_true]
+noncomputable example : PreservesFiniteCoproducts compHausToTop := inferInstance
 
 end CompHaus

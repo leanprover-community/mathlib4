@@ -50,7 +50,12 @@ instance concreteCategory : ConcreteCategory (CompHausLike P) :=
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
   InducedCategory.hasForget₂ _
 
-variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X] (h : (P (TopCat.of X)))
+variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+
+class HasProp : Prop where
+  hasProp : P (TopCat.of X)
+
+variable [HasProp P X] -- (h : (P (TopCat.of X)))
 
 /-- A constructor for objects of the category `CompHausLike P`,
 taking a type, and bundling the compact Hausdorff topology
@@ -59,10 +64,10 @@ def of : CompHausLike P where
   toTop := TopCat.of X
   is_compact := ‹_›
   is_hausdorff := ‹_›
-  prop := ‹_›
+  prop := HasProp.hasProp
 
 @[simp]
-theorem coe_of : (CompHausLike.of P X h : Type _) = X :=
+theorem coe_of : (CompHausLike.of P X : Type _) = X :=
   rfl
 
 -- Porting note: have changed statement as the original LHS simplified.
@@ -94,7 +99,9 @@ variable {P}
 @[simps]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
-  obj X := CompHausLike.of _ X (h _ X.prop)
+  obj X :=
+    have : HasProp P' X := ⟨(h _ X.prop)⟩
+    CompHausLike.of _ X
   map f := f
 
 /-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully

@@ -50,15 +50,13 @@ proof_wanted surjective_of_effectiveEpi {X Y : CompHausLike P} (f : X ⟶ Y) [Ef
     (_ : P <| TopCat.of <| Set.range f) :
     Function.Surjective f
 
-theorem preregular (hP : ∀ ⦃X Y B : CompHausLike P⦄ (f : X ⟶ B) (g : Y ⟶ B),
-    P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd }))
+theorem preregular [HasExplicitPullbacks P]
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f) :
     Preregular (CompHausLike P) where
   exists_fac := by
     intro X Y Z f π hπ
-    refine ⟨pullback f π (hP _ _), pullback.fst f π (hP _ _), ?_, pullback.snd f π (hP _ _),
-      (pullback.condition _ _ (hP _ _)).symm⟩
-    refine ⟨⟨struct _ ?_⟩⟩
+    refine ⟨pullback f π, pullback.fst f π, ⟨⟨struct _ ?_⟩⟩, pullback.snd f π,
+      (pullback.condition _ _).symm⟩
     intro y
     obtain ⟨z, hz⟩ := hs π hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩

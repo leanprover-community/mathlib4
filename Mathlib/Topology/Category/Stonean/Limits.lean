@@ -17,68 +17,57 @@ pullbacks where one of the maps is an open embedding
 
 -/
 
-universe u
+universe w u
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
 attribute [local instance] ConcreteCategory.instFunLike
 
 namespace Stonean
 
-instance : HasFiniteCoproducts Stonean.{u} := by
-  apply CompHausLike.has_finite_coproducts.{u}
-  intro α _ X
-  exact show ExtremallyDisconnected (Σ (a : α), X a) from inferInstance
+set_option linter.unusedVariables false in
+instance : HasExplicitFiniteCoproducts.{w}
+    (fun (Y : TopCat.{max u w}) ↦ ExtremallyDisconnected Y) where
+  hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (a : _), _) from inferInstance}
 
-instance : PreservesFiniteCoproducts (CompHausLike.compHausLikeToTop _ : Stonean.{u} ⥤ _) := by
-  apply CompHausLike.preservesFiniteCoproducts.{u}
-  intro α _ X
-  exact show ExtremallyDisconnected (Σ (a : α), X a) from inferInstance
+instance : HasExplicitFiniteCoproducts.{0} (fun (Y : TopCat.{u}) ↦ ExtremallyDisconnected Y) :=
+  inferInstance
 
-variable {X Y Z : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)
+example : HasFiniteCoproducts Stonean.{u} := inferInstance
 
-theorem extremallyDisconnected_preimage : ExtremallyDisconnected (f ⁻¹' (Set.range i)) where
+example : PreservesFiniteCoproducts (CompHausLike.compHausLikeToTop _ : Stonean.{u} ⥤ _) :=
+  inferInstance
+
+variable {X Y Z : Stonean} {f : X ⟶ Z} (i : Y ⟶ Z) (hi : OpenEmbedding f)
+
+lemma extremallyDisconnected_preimage : ExtremallyDisconnected (i ⁻¹' (Set.range f)) where
   open_closure U hU := by
-    have h : IsClopen (f ⁻¹' (Set.range i)) :=
-      ⟨IsClosed.preimage f.continuous (isCompact_range i.continuous).isClosed,
-        IsOpen.preimage f.continuous hi.isOpen_range⟩
+    have h : IsClopen (i ⁻¹' (Set.range f)) :=
+      ⟨IsClosed.preimage i.continuous (isCompact_range f.continuous).isClosed,
+        IsOpen.preimage i.continuous hi.isOpen_range⟩
     rw [← (closure U).preimage_image_eq Subtype.coe_injective,
       ← h.1.closedEmbedding_subtype_val.closure_image_eq U]
     exact isOpen_induced (ExtremallyDisconnected.open_closure _
       (h.2.openEmbedding_subtype_val.isOpenMap U hU))
 
-theorem extremallyDisconnected_pullback :
-    ExtremallyDisconnected {xy : X × Y | f xy.1 = i xy.2} :=
-  have := extremallyDisconnected_preimage f hi
-  extremallyDisconnected_of_homeo (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding).symm
+lemma extremallyDisconnected_pullback : ExtremallyDisconnected {xy : X × Y | f xy.1 = i xy.2} :=
+  have := extremallyDisconnected_preimage i hi
+  let e := (TopCat.pullbackHomeoPreimage i i.2 f hi.toEmbedding).symm
+  let e' : {xy : X × Y | f xy.1 = i xy.2} ≃ₜ {xy : Y × X | i xy.1 = f xy.2} := by
+    exact TopCat.homeoOfIso
+      ((TopCat.pullbackIsoProdSubtype f i).symm ≪≫ pullbackSymmetry _ _ ≪≫
+        (TopCat.pullbackIsoProdSubtype i f))
+  extremallyDisconnected_of_homeo (e.trans e'.symm)
 
-instance : HasPullbacksOfInclusions Stonean.{u} := by
+instance : HasExplicitPullbacksOfInclusions (fun (Y : TopCat.{u}) ↦ ExtremallyDisconnected Y) := by
   apply CompHausLike.hasPullbacksOfInclusions
-  · intro α _ X
-    exact show ExtremallyDisconnected (Σ (a : α), X a) from inferInstance
-  · intro _ _ _ _ _ hi
-    exact extremallyDisconnected_pullback _ hi
+  intro _ _ _ _ _ hi
+  exact ⟨extremallyDisconnected_pullback _ hi⟩
 
-noncomputable
-instance : PreservesPullbacksOfInclusions
-    (CompHausLike.compHausLikeToTop _ : Stonean.{u} ⥤ _) := by
-  apply CompHausLike.preservesPullbacksOfInclusions
-  · intro α _ X
-    exact show ExtremallyDisconnected (Σ (a : α), X a) from inferInstance
-  · intro _ _ _ _ _ hi
-    exact extremallyDisconnected_pullback _ hi
+example : FinitaryExtensive Stonean.{u} := inferInstance
 
-instance : FinitaryExtensive Stonean.{u} :=
-  finitaryExtensive_of_preserves_and_reflects (CompHausLike.compHausLikeToTop _ : Stonean ⥤ _)
+noncomputable example : PreservesFiniteCoproducts Stonean.toCompHaus := inferInstance
 
-noncomputable instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
-  apply CompHausLike.preservesFiniteCoproducts'
-  intro α _ X
-  exact show ExtremallyDisconnected (Σ (a : α), X a) from inferInstance
-
-noncomputable instance : PreservesFiniteCoproducts Stonean.toProfinite := by
-  apply CompHausLike.preservesFiniteCoproducts'
-  intro α _ X
-  exact show ExtremallyDisconnected (Σ (a : α), X a) from inferInstance
+noncomputable example : PreservesFiniteCoproducts Stonean.toProfinite := inferInstance
 
 end Stonean

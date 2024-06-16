@@ -31,18 +31,20 @@ and we now turn it on locally when convenient.
 -/
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
-instance : FinitaryExtensive Profinite := by
-  apply CompHausLike.finitaryExtensive
-  · intro α _ X
-    exact show TotallyDisconnectedSpace (Σ (a : α), X a) from inferInstance
-  · intro X Y _ _ _ _
-    exact show TotallyDisconnectedSpace {xy : X × Y | _} from inferInstance
+set_option linter.unusedVariables false in
+instance : HasExplicitPullbacks (fun Y ↦ TotallyDisconnectedSpace Y) where
+  hasExplicitPullbacks _ _ := { hasProp :=
+    show TotallyDisconnectedSpace {xy : _ | _} from inferInstance}
 
-noncomputable instance : PreservesFiniteCoproducts profiniteToCompHaus := by
-  apply CompHausLike.preservesFiniteCoproducts'
-  intro α _ X
-  exact show TotallyDisconnectedSpace (Σ (a : α), X a) from inferInstance
+set_option linter.unusedVariables false in
+instance : HasExplicitFiniteCoproducts (fun Y ↦ TotallyDisconnectedSpace Y) where
+  hasProp _ := { hasProp :=
+    show TotallyDisconnectedSpace (Σ (a : _), _) from inferInstance}
+
+example : FinitaryExtensive Profinite := inferInstance
+
+noncomputable example : PreservesFiniteCoproducts profiniteToCompHaus := inferInstance
 
 end Profinite

@@ -81,15 +81,19 @@ abbrev toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
 abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
   CompHausLike.fullyFaithfulToCompHausLike _
 
+open CompHausLike
+
+instance  (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+    [ExtremallyDisconnected X] : HasProp (fun Y ↦ ExtremallyDisconnected Y) X :=
+  ⟨(inferInstance : ExtremallyDisconnected X)⟩
+
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
-    [ExtremallyDisconnected X] : Stonean :=
-  CompHausLike.of _ X (inferInstance : ExtremallyDisconnected X)
+    [ExtremallyDisconnected X] : Stonean := CompHausLike.of _ X
 
-instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
-  X.prop
+instance (X : Stonean.{u}) : ExtremallyDisconnected X := X.prop
 
 /-- The functor from Stonean spaces to profinite spaces. -/
 abbrev toProfinite : Stonean.{u} ⥤ Profinite.{u} :=
