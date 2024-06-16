@@ -26,13 +26,15 @@ This file establishes the bijection between the 2-cells
 
 where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. The corresponding natural transformations are called mates.
 
-This bijection includes a number of interesting cases
-as specializations. For instance, in the special case where `G,H` are identity functors then the bijection preserves and reflects isomorphisms (i.e. we have bijections
-`(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)`, and if either side is an iso then the other side is as well). This demonstrates that adjoints to a given functor are unique up to isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
+This bijection includes a number of interesting cases as specializations. For instance, in the
+special case where `G,H` are identity functors then the bijection preserves and reflects
+isomorphisms (i.e. we have bijections`(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)`, and if either side is an iso then the
+other side is as well). This demonstrates that adjoints to a given functor are unique up to
+isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
 
 Another example arises from considering the square representing that a functor `H` preserves
-products, in particular the morphism `HA ⨯ H- ⟶ H(A ⨯ -)`. Then provided `(A ⨯ -)` and `HA ⨯ -` have
-left adjoints (for instance if the relevant categories are cartesian closed), the transferred
+products, in particular the morphism `HA ⨯ H- ⟶ H(A ⨯ -)`. Then provided `(A ⨯ -)` and `HA ⨯ -`
+have left adjoints (for instance if the relevant categories are cartesian closed), the transferred
 natural transformation is the exponential comparison morphism: `H(A ^ -) ⟶ HA ^ H-`.
 Furthermore if `H` has a left adjoint `L`, this morphism is an isomorphism iff its mate
 `L(HA ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see
@@ -47,7 +49,8 @@ namespace CategoryTheory
 
 open Category Functor Adjunction NatTrans
 
-variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+variable {C : Type u₁} {D : Type u₂}
+variable [Category.{v₁} C] [Category.{v₂} D]
 
 section Square
 
@@ -55,16 +58,15 @@ variable {E : Type u₃} {F : Type u₄} [Category.{v₃} E] [Category.{v₄} F]
 variable {G : C ⥤ E} {H : D ⥤ F} {L₁ : C ⥤ D} {R₁ : D ⥤ C} {L₂ : E ⥤ F} {R₂ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 
-/-- Suppose we have a square of functors (where the top and bottom are adjunctions `L₁ ⊣ R₁` and
-`L₂ ⊣ R₂` respectively).
+/-- Suppose we have a square of functors (where the top and
+bottom are adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` respectively).
 
       C ↔ D
     G ↓   ↓ H
       E ↔ F
 
 Then we have a bijection between natural transformations `G ⋙ L₂ ⟶ L₁ ⋙ H` and
-`R₁ ⋙ G ⟶ H ⋙ R₂`.
-This can be seen as a bijection of the 2-cells:
+`R₁ ⋙ G ⟶ H ⋙ R₂`. This can be seen as a bijection of the 2-cells:
 
          L₁                  R₁
       C --→ D             C ←-- D
@@ -116,16 +118,21 @@ def transferNatTrans : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R�
 def Mates :
     (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) where
       toFun := fun α ↦
-        whiskerLeft (R₁ ⋙ G) adj₂.unit ≫ whiskerRight (whiskerLeft R₁ α) R₂ ≫ whiskerRight adj₁.counit (H ⋙ R₂)
+        whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
+        whiskerRight (whiskerLeft R₁ α) R₂ ≫
+        whiskerRight adj₁.counit (H ⋙ R₂)
       invFun := fun β ↦
-        whiskerRight adj₁.unit (G ⋙ L₂) ≫ whiskerRight (whiskerLeft L₁ β) L₂ ≫ whiskerLeft (L₁ ⋙ H) adj₂.counit
+        whiskerRight adj₁.unit (G ⋙ L₂) ≫
+        whiskerRight (whiskerLeft L₁ β) L₂ ≫
+        whiskerLeft (L₁ ⋙ H) adj₂.counit
       left_inv := by
         intro α
         ext
         unfold whiskerRight whiskerLeft
         simp only [comp_obj, id_obj, Functor.comp_map, comp_app, map_comp, assoc, counit_naturality,
           counit_naturality_assoc, left_triangle_components_assoc]
-        rw [← assoc, ← Functor.comp_map, α.naturality, Functor.comp_map, assoc, ← H.map_comp, left_triangle_components, map_id]
+        rw [← assoc, ← Functor.comp_map, α.naturality, Functor.comp_map, assoc, ← H.map_comp,
+          left_triangle_components, map_id]
         simp only [comp_obj, comp_id]
       right_inv := by
         intro β
@@ -133,7 +140,8 @@ def Mates :
         unfold whiskerLeft whiskerRight
         simp only [comp_obj, id_obj, Functor.comp_map, comp_app, map_comp, assoc,
           unit_naturality_assoc, right_triangle_components_assoc]
-        rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map, ← G.map_comp, right_triangle_components, map_id, id_comp]
+        rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map,
+          ← G.map_comp, right_triangle_components, map_id, id_comp]
 
 -- ER: Note these definitions agree.
 theorem RightMateEqualsTransferNatTrans
@@ -147,6 +155,7 @@ theorem LeftMateEqualsTransferNatTrans.symm
     (Mates adj₁ adj₂).symm α = (transferNatTrans adj₁ adj₂).symm α := by
   ext; unfold Mates transferNatTrans; simp
 
+-- ER: Propose to cut and replace with the version below:
 theorem transferNatTrans_counit (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (Y : D) :
     L₂.map ((transferNatTrans adj₁ adj₂ f).app _) ≫ adj₂.counit.app _ =
       f.app _ ≫ H.map (adj₁.counit.app Y) := by
@@ -154,6 +163,13 @@ theorem transferNatTrans_counit (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (Y : D) :
   simp
 #align category_theory.transfer_nat_trans_counit CategoryTheory.transferNatTrans_counit
 
+theorem Mates_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
+    L₂.map ((Mates adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
+      α.app _ ≫ H.map (adj₁.counit.app d) := by
+  erw [Functor.map_comp]; simp
+#align category_theory.mates_counit CategoryTheory.Mates_counit
+
+-- ER: Propose to cut and replace with the version below:
 theorem unit_transferNatTrans (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (X : C) :
     G.map (adj₁.unit.app X) ≫ (transferNatTrans adj₁ adj₂ f).app _ =
       adj₂.unit.app _ ≫ R₂.map (f.app _) := by
@@ -162,6 +178,27 @@ theorem unit_transferNatTrans (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (X : C) :
     Functor.comp_map, ← H.map_comp]
   dsimp; simp
 #align category_theory.unit_transfer_nat_trans CategoryTheory.unit_transferNatTrans
+
+-- ER: I don't get why this is harder than the counit case.
+theorem unit_Mates (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (c : C) :
+    G.map (adj₁.unit.app c) ≫ (Mates adj₁ adj₂ α).app _ =
+      adj₂.unit.app _ ≫ R₂.map (α.app _) := by
+  dsimp [Mates]
+  rw [← adj₂.unit_naturality_assoc]
+  slice_lhs 2 3 =>
+    {
+      rw [← R₂.map_comp, ← Functor.comp_map G L₂]
+      rw [α.naturality]
+    }
+  rw [R₂.map_comp]
+  slice_lhs 3 4 =>
+    {
+      rw [← R₂.map_comp, Functor.comp_map L₁ H]
+      rw [← H.map_comp]
+      rw [left_triangle_components]
+    }
+  simp only [comp_obj, map_id, comp_id]
+#align category_theory.unit_mates CategoryTheory.unit_Mates
 
 -- See library note [dsimp, simp]
 end Square
@@ -179,49 +216,33 @@ variable {L₃ : E ⥤ F}{R₃ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 def LeftAdjointSquare.vcomp :
-    (G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁) → (G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) →
-    ((G₁ ⋙ G₂) ⋙ L₃ ⟶ L₁ ⋙ (H₁ ⋙ H₂)) := fun α β ↦
-  (whiskerLeft G₁ β) ≫ (whiskerRight α H₂)
+    (G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁) → (G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) → ((G₁ ⋙ G₂) ⋙ L₃ ⟶ L₁ ⋙ (H₁ ⋙ H₂)) :=
+  fun α β ↦ (whiskerLeft G₁ β) ≫ (whiskerRight α H₂)
 
 def RightAdjointSquare.vcomp :
-    (R₁ ⋙ G₁ ⟶ H₁ ⋙ R₂) → (R₂ ⋙ G₂ ⟶ H₂ ⋙ R₃) →
-    (R₁ ⋙ (G₁ ⋙ G₂) ⟶ (H₁ ⋙ H₂) ⋙ R₃) := fun α β ↦
-  (whiskerRight α G₂) ≫ (whiskerLeft H₁ β)
+    (R₁ ⋙ G₁ ⟶ H₁ ⋙ R₂) → (R₂ ⋙ G₂ ⟶ H₂ ⋙ R₃) → (R₁ ⋙ (G₁ ⋙ G₂) ⟶ (H₁ ⋙ H₂) ⋙ R₃) :=
+  fun α β ↦ (whiskerRight α G₂) ≫ (whiskerLeft H₁ β)
 
 theorem Mates_vcomp
-    (α : G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁)
-  (β : G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) :
-  (Mates (G := G₁ ⋙ G₂) (H := H₁ ⋙ H₂) adj₁ adj₃) (LeftAdjointSquare.vcomp α β)
-    =
-  RightAdjointSquare.vcomp
-  ( (Mates (G := G₁) (H := H₁) adj₁ adj₂) α)
-  ( (Mates (G := G₂) (H := H₂) adj₂ adj₃) β)
-     := by
+    (α : G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁) (β : G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) :
+    (Mates (G := G₁ ⋙ G₂) (H := H₁ ⋙ H₂) adj₁ adj₃) (LeftAdjointSquare.vcomp α β) =
+      RightAdjointSquare.vcomp (Mates adj₁ adj₂ α) (Mates adj₂ adj₃ β) := by
   unfold LeftAdjointSquare.vcomp RightAdjointSquare.vcomp Mates
   ext b
-  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc, comp_app,
-  whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, whiskerRight_twice]
+  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
+    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map,
+    whiskerRight_twice]
   slice_rhs 1 4 =>
     {
-      rw [← assoc, ← assoc]
-      rw [← unit_naturality (adj₃)]
+      rw [← assoc, ← assoc, ← unit_naturality (adj₃)]
     }
   rw [L₃.map_comp, R₃.map_comp]
-  slice_rhs 3 4  =>
-    { rw [← Functor.comp_map G₂ L₃, ← R₃.map_comp]
-      rw [β.naturality]
-    }
-  rw [L₃.map_comp, R₃.map_comp]
-  slice_rhs 3 4 =>
-    { rw [← R₃.map_comp, ← Functor.comp_map G₂ L₃, ← assoc]
-      rw [β.naturality]
-    }
-  rw [R₃.map_comp, R₃.map_comp]
-  slice_rhs 2 3 =>
+  slice_rhs 2 4 =>
     {
-      rw [← R₃.map_comp, ← Functor.comp_map G₂ L₃]
-      rw [β.naturality]
+      rw [← R₃.map_comp, ← R₃.map_comp, ← assoc, ← L₃.map_comp, ← G₂.map_comp, ← G₂.map_comp]
+      rw [← Functor.comp_map G₂ L₃, β.naturality]
     }
+  rw [(L₂ ⋙ H₂).map_comp, R₃.map_comp, R₃.map_comp]
   slice_rhs 4 5 =>
     {
       rw [← R₃.map_comp, Functor.comp_map L₂ _, ← Functor.comp_map _ L₂, ← H₂.map_comp]
@@ -230,24 +251,22 @@ theorem Mates_vcomp
   simp only [comp_obj, Functor.comp_map, map_comp, id_obj, Functor.id_map, assoc]
   slice_rhs 4 5 =>
     {
-      rw [← R₃.map_comp, ← H₂.map_comp, ← Functor.comp_map _ L₂]
-      rw [adj₂.counit.naturality]
+      rw [← R₃.map_comp, ← H₂.map_comp, ← Functor.comp_map _ L₂, adj₂.counit.naturality]
     }
   simp only [comp_obj, id_obj, Functor.id_map, map_comp, assoc]
   slice_rhs 3 4 =>
     {
-      rw [← R₃.map_comp, ← H₂.map_comp]
-      rw [left_triangle_components]
+      rw [← R₃.map_comp, ← H₂.map_comp, left_triangle_components]
     }
   simp only [map_id, id_comp]
 
 end MatesVComp
 
--- ER: A new section proving that the mates bijection commutes with horizontal composition of squares.
+-- ER: A new section proving that the mates bijection commutes with horizontal composition of
+-- squares.
 section MatesHComp
 
-variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
-variable {D : Type u₄} {E : Type u₅} {F : Type u₆}
+variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄} {E : Type u₅} {F : Type u₆}
 variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
 variable [Category.{v₄} D] [Category.{v₅} E][Category.{v₆} F]
 variable {G : A ⥤ D}{H : B ⥤ E}{K : C ⥤ F}
@@ -257,49 +276,38 @@ variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 variable (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
 
 def LeftAdjointSquare.hcomp :
-    (G ⋙ L₂ ⟶ L₁ ⋙ H) → (H ⋙ L₄ ⟶ L₃ ⋙ K) →
-    (G ⋙ (L₂ ⋙ L₄) ⟶ (L₁ ⋙ L₃) ⋙ K) := fun α β ↦
+    (G ⋙ L₂ ⟶ L₁ ⋙ H) → (H ⋙ L₄ ⟶ L₃ ⋙ K) → (G ⋙ (L₂ ⋙ L₄) ⟶ (L₁ ⋙ L₃) ⋙ K) := fun α β ↦
   (whiskerRight α L₄) ≫ (whiskerLeft L₁ β)
 
 def RightAdjointSquare.hcomp :
-    (R₁ ⋙ G ⟶ H ⋙ R₂) → (R₃ ⋙ H ⟶ K ⋙ R₄) →
-    ((R₃ ⋙ R₁) ⋙ G ⟶ K ⋙ (R₄ ⋙ R₂)) := fun α β ↦
+    (R₁ ⋙ G ⟶ H ⋙ R₂) → (R₃ ⋙ H ⟶ K ⋙ R₄) → ((R₃ ⋙ R₁) ⋙ G ⟶ K ⋙ (R₄ ⋙ R₂)) := fun α β ↦
   (whiskerLeft R₃ α) ≫ (whiskerRight β R₂)
 
 theorem Mates_hcomp
-    (α : G ⋙ L₂ ⟶ L₁ ⋙ H)
-    (β : H ⋙ L₄ ⟶ L₃ ⋙ K) :
-    (Mates (G := G) (H := K)
-      (adj₁.comp adj₃) (adj₂.comp adj₄)) (LeftAdjointSquare.hcomp α β) =
-    RightAdjointSquare.hcomp
-      ((Mates adj₁ adj₂) α)
-      ((Mates adj₃ adj₄) β) := by
+    (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (β : H ⋙ L₄ ⟶ L₃ ⋙ K) :
+    (Mates (adj₁.comp adj₃) (adj₂.comp adj₄)) (LeftAdjointSquare.hcomp α β) =
+      RightAdjointSquare.hcomp (Mates adj₁ adj₂ α) (Mates adj₃ adj₄ β) := by
   unfold LeftAdjointSquare.hcomp RightAdjointSquare.hcomp Mates Adjunction.comp
   ext c
   simp only [comp_obj, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc,
     Equiv.coe_fn_mk, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, associator_inv_app,
     Functor.comp_map, associator_hom_app, map_id, id_comp, whiskerRight_twice]
-  slice_rhs 3 4 =>
+  slice_rhs 2 4 =>
     {
-      rw [← R₂.map_comp]
-      rw [← unit_naturality (adj₄)]
+      rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality (adj₄)]
     }
-  slice_rhs 2 3 =>
-    {
-      rw [← R₂.map_comp, ← assoc]
-      rw [← unit_naturality (adj₄)]
-    }
-  rw [R₂.map_comp, R₂.map_comp]
+  rw [R₂.map_comp, L₄.map_comp, R₄.map_comp, R₂.map_comp]
   slice_rhs 4 5 =>
     {
-      rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄]
-      rw [β.naturality]
+      rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄ , β.naturality]
     }
   simp only [comp_obj, Functor.comp_map, map_comp, assoc]
 
 end MatesHComp
 
--- ER: Combining the previous sections, we can compose squares of squares and again this commutes with the mates bijection. These results form the basis for an isomorphism of double categories to be proven later.
+-- ER: Combining the previous sections, we can compose squares of squares and again this commutes
+-- with the mates bijection. These results form the basis for an isomorphism of double categories
+-- to be proven later.
 section MatesSquareComp
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
@@ -308,47 +316,36 @@ variable {X : Type u₇} {Y : Type u₈} {Z : Type u₉}
 variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
 variable [Category.{v₄} D] [Category.{v₅} E][Category.{v₆} F]
 variable [Category.{v₇} X] [Category.{v₈} Y][Category.{v₉} Z]
-variable {G₁ : A ⥤ D} {H₁ : B ⥤ E} {K₁ : C ⥤ F}
-variable {G₂ : D ⥤ X} {H₂ : E ⥤ Y} {K₂ : F ⥤ Z}
-variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : B ⥤ C}{R₂ : C ⥤ B}
-variable {L₃ : D ⥤ E} {R₃ : E ⥤ D} {L₄ : E ⥤ F}{R₄ : F ⥤ E}
-variable {L₅ : X ⥤ Y} {R₅ : Y ⥤ X} {L₆ : Y ⥤ Z}{R₆ : Z ⥤ Y}
-variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
-variable (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
-variable (adj₅ : L₅ ⊣ R₅) (adj₆ : L₆ ⊣ R₆)
+variable {G₁ : A ⥤ D} {H₁ : B ⥤ E} {K₁ : C ⥤ F} {G₂ : D ⥤ X} {H₂ : E ⥤ Y} {K₂ : F ⥤ Z}
+variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : B ⥤ C} {R₂ : C ⥤ B} {L₃ : D ⥤ E} {R₃ : E ⥤ D}
+variable {L₄ : E ⥤ F} {R₄ : F ⥤ E} {L₅ : X ⥤ Y} {R₅ : Y ⥤ X} {L₆ : Y ⥤ Z} {R₆ : Z ⥤ Y}
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
+variable (adj₄ : L₄ ⊣ R₄) (adj₅ : L₅ ⊣ R₅) (adj₆ : L₆ ⊣ R₆)
 
 def LeftAdjointSquare.comp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
     ((G₁ ⋙ G₂) ⋙ (L₅ ⋙ L₆)) ⟶ ((L₁ ⋙ L₂) ⋙ (K₁ ⋙ K₂))
-  := LeftAdjointSquare.vcomp
-      ( LeftAdjointSquare.hcomp α β)
-      ( LeftAdjointSquare.hcomp γ δ)
+  := LeftAdjointSquare.vcomp (LeftAdjointSquare.hcomp α β) (LeftAdjointSquare.hcomp γ δ)
 
 theorem LeftAdjointSquare.comp_vhcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
     LeftAdjointSquare.comp α β γ δ =
-    LeftAdjointSquare.vcomp
-      ( LeftAdjointSquare.hcomp α β)
-      ( LeftAdjointSquare.hcomp γ δ) := rfl
+      LeftAdjointSquare.vcomp (LeftAdjointSquare.hcomp α β) (LeftAdjointSquare.hcomp γ δ) := rfl
 
 theorem LeftAdjointSquare.comp_hvcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
     LeftAdjointSquare.comp α β γ δ =
-    LeftAdjointSquare.hcomp
-    ( LeftAdjointSquare.vcomp α γ)
-    ( LeftAdjointSquare.vcomp β δ) := by
-  unfold LeftAdjointSquare.comp
-  unfold LeftAdjointSquare.hcomp LeftAdjointSquare.vcomp
+      LeftAdjointSquare.hcomp (LeftAdjointSquare.vcomp α γ) (LeftAdjointSquare.vcomp β δ) := by
+  unfold LeftAdjointSquare.comp LeftAdjointSquare.hcomp LeftAdjointSquare.vcomp
   unfold whiskerLeft whiskerRight
   ext a
   simp only [comp_obj, comp_app, map_comp, assoc]
   slice_rhs 2 3 =>
     {
-      rw [← Functor.comp_map _ L₆]
-      rw [δ.naturality]
+      rw [← Functor.comp_map _ L₆, δ.naturality]
     }
   simp only [comp_obj, Functor.comp_map, assoc]
 
@@ -356,46 +353,39 @@ def RightAdjointSquare.comp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
     ((R₂ ⋙ R₁) ⋙ (G₁ ⋙ G₂) ⟶ (K₁ ⋙ K₂) ⋙ (R₆ ⋙ R₅))
-  := RightAdjointSquare.vcomp
-    ( RightAdjointSquare.hcomp α β)
-    ( RightAdjointSquare.hcomp γ δ)
+  := RightAdjointSquare.vcomp (RightAdjointSquare.hcomp α β) (RightAdjointSquare.hcomp γ δ)
 
 theorem RightAdjointSquare.comp_vhcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
     RightAdjointSquare.comp α β γ δ =
-    RightAdjointSquare.vcomp
-    ( RightAdjointSquare.hcomp α β)
-    ( RightAdjointSquare.hcomp γ δ) := rfl
+    RightAdjointSquare.vcomp (RightAdjointSquare.hcomp α β) (RightAdjointSquare.hcomp γ δ) := rfl
 
 theorem RightAdjointSquare.comp_hvcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
     RightAdjointSquare.comp α β γ δ =
-    RightAdjointSquare.hcomp
-    ( RightAdjointSquare.vcomp α γ)
-    ( RightAdjointSquare.vcomp β δ) := by
-  unfold RightAdjointSquare.comp
-  unfold RightAdjointSquare.hcomp RightAdjointSquare.vcomp
+    RightAdjointSquare.hcomp (RightAdjointSquare.vcomp α γ) (RightAdjointSquare.vcomp β δ) := by
+  unfold RightAdjointSquare.comp RightAdjointSquare.hcomp RightAdjointSquare.vcomp
   unfold whiskerLeft whiskerRight
   ext c
   simp only [comp_obj, comp_app, map_comp, assoc]
   slice_rhs 2 3 =>
     {
-      rw [← Functor.comp_map _ R₅]
-      rw [← γ.naturality]
+      rw [← Functor.comp_map _ R₅, ← γ.naturality]
     }
   simp only [comp_obj, Functor.comp_map, assoc]
 
 theorem Mates_square
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
-    (Mates (G := G₁ ⋙ G₂) (H := K₁ ⋙ K₂)
-      (adj₁.comp adj₂) (adj₅.comp adj₆)) (LeftAdjointSquare.comp α β γ δ) =
-    RightAdjointSquare.comp
-      ((Mates adj₁ adj₃) α) ((Mates adj₂ adj₄) β)
-      ((Mates adj₃ adj₅) γ) ((Mates adj₄ adj₆) δ) := by
-  have vcomp := Mates_vcomp (adj₁.comp adj₂) (adj₃.comp adj₄) (adj₅.comp adj₆) (LeftAdjointSquare.hcomp α β) (LeftAdjointSquare.hcomp γ δ)
+    (Mates (G := G₁ ⋙ G₂) (H := K₁ ⋙ K₂) (adj₁.comp adj₂) (adj₅.comp adj₆))
+        (LeftAdjointSquare.comp α β γ δ) =
+      RightAdjointSquare.comp
+        (Mates adj₁ adj₃ α) (Mates adj₂ adj₄ β) (Mates adj₃ adj₅ γ) (Mates adj₄ adj₆ δ) := by
+  have vcomp :=
+    Mates_vcomp (adj₁.comp adj₂) (adj₃.comp adj₄) (adj₅.comp adj₆)
+      (LeftAdjointSquare.hcomp α β) (LeftAdjointSquare.hcomp γ δ)
   have hcomp1 := Mates_hcomp adj₁ adj₃ adj₂ adj₄ α β
   have hcomp2 := Mates_hcomp adj₃ adj₅ adj₄ adj₆ γ δ
   rw [hcomp1, hcomp2] at vcomp
@@ -408,17 +398,18 @@ section Self
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
-/-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both between categories `C`, `D`, there is a
-bijection between natural transformations `L₂ ⟶ L₁` and natural transformations `R₁ ⟶ R₂`.
-This is defined as a special case of `transferNatTrans`, where the two "vertical" functors are
-identity.
-TODO: Generalise to when the two vertical functors are equivalences rather than being exactly `𝟭`.
+/-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both
+between categories `C`, `D`, there is a bijection between natural transformations `L₂ ⟶ L₁` and
+natural transformations `R₁ ⟶ R₂`. This is defined as a special case of `transferNatTrans`, where
+the two "vertical" functors are identity.
+TODO: Generalise to when the two vertical functors are
+equivalences rather than being exactly `𝟭`.
 
-Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transformation is an iso
-iff its image under the bijection is an iso, see eg `CategoryTheory.transferNatTransSelf_iso`.
-This is in contrast to the general case `transferNatTrans` which does not in general have this
-property.
--/
+Furthermore, this bijection preserves (and reflects) isomorphisms,
+i.e. a transformation is an iso iff its image under the bijection
+is an iso, see eg `CategoryTheory.transferNatTransSelf_iso`.
+This is in contrast to the general case `transferNatTrans` which
+ does not in general have this property.-/
 def transferNatTransSelf : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
