@@ -735,7 +735,7 @@ theorem Monic.irreducible_iff_degree_lt {p : R[X]} (p_monic : Monic p) (p_1 : p 
   constructor
   · rintro h q deg_le dvd
     by_contra q_unit
-    have := degree_pos_of_not_isUnit_of_dvd_monic q_unit dvd p_monic
+    have := degree_pos_of_not_isUnit_of_dvd_monic p_monic q_unit dvd
     have hu := p_monic.isUnit_leadingCoeff_of_dvd dvd
     refine (h _ (monic_of_isUnit_leadingCoeff_inv_smul hu) ?_ ?_ (dvd_trans ?_ dvd)).elim
     · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
