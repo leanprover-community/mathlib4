@@ -65,22 +65,16 @@ def of : CompHausLike P where
 theorem coe_of : (CompHausLike.of P X h : Type _) = X :=
   rfl
 
--- -- Porting note: have changed statement as the original LHS simplified.
--- @[simp]
--- theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
---   rfl
+-- Porting note: have changed statement as the original LHS simplified.
+@[simp]
+theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
+  rfl
 
 -- Porting note: have changed statement as the original LHS simplified.
 @[simp]
 theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
   rfl
-
--- -- Porting note (#10688): This lemma was not needed in mathlib3
--- @[simp]
--- lemma forget_ContinuousMap_mk {X Y : CompHausLike P} (f : X → Y) (hf : Continuous f) :
---     (forget (CompHausLike P)).map (ContinuousMap.mk f hf) = f :=
---   rfl
 
 -- "Porting" note (#10754): Adding instance
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
