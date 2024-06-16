@@ -170,7 +170,7 @@ are regular. -/
 `b + a` are add-regular."]
 theorem isRegular_mul_and_mul_iff :
     IsRegular (a * b) ∧ IsRegular (b * a) ↔ IsRegular a ∧ IsRegular b := by
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · rintro ⟨ab, ba⟩
     exact
       ⟨⟨IsLeftRegular.of_mul ba.left, IsRightRegular.of_mul ab.right⟩,
@@ -310,7 +310,7 @@ variable [CommSemigroup R] {a b : R}
 /-- A product is regular if and only if the factors are. -/
 @[to_additive "A sum is add-regular if and only if the summands are."]
 theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
-  refine' Iff.trans _ isRegular_mul_and_mul_iff
+  refine Iff.trans ?_ isRegular_mul_and_mul_iff
   exact ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
 #align is_regular_mul_iff isRegular_mul_iff
 #align is_add_regular_add_iff isAddRegular_add_iff
@@ -375,11 +375,11 @@ theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g :=
 
 section CancelMonoidWithZero
 
-variable [CancelMonoidWithZero R] {a : R}
+variable [MulZeroClass R] [IsCancelMulZero R] {a : R} {a : R}
 
 /-- Non-zero elements of an integral domain are regular. -/
 theorem isRegular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
-  ⟨fun _ _ => (mul_right_inj' a0).mp, fun _ _ => (mul_left_inj' a0).mp⟩
+  ⟨fun _ _ => mul_left_cancel₀ a0, fun _ _ => mul_right_cancel₀ a0⟩
 #align is_regular_of_ne_zero isRegular_of_ne_zero
 
 /-- In a non-trivial integral domain, an element is regular iff it is non-zero. -/

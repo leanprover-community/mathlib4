@@ -396,9 +396,10 @@ theorem norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Ic
     exact integral_nonneg (fun x hx => (norm_nonneg _).trans (hle x hx)) μ
 #align box_integral.norm_integral_le_of_norm_le BoxIntegral.norm_integral_le_of_norm_le
 
-theorem norm_integral_le_of_le_const {c : ℝ} (hc : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ c) (μ : Measure ℝⁿ)
-    [IsLocallyFiniteMeasure μ] : ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ (μ I).toReal * c :=
-  by simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
+theorem norm_integral_le_of_le_const {c : ℝ}
+    (hc : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ c) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
+    ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ (μ I).toReal * c := by
+  simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
 #align box_integral.norm_integral_le_of_le_const BoxIntegral.norm_integral_le_of_le_const
 
 /-!
@@ -480,7 +481,6 @@ theorem dist_integralSum_le_of_memBaseSet (h : Integrable I l f vol) (hpos₁ : 
     dist (integralSum f vol π₁) (integralSum f vol π₂) ≤ ε₁ + ε₂ := by
   rcases h₁.exists_common_compl h₂ HU with ⟨π, hπU, hπc₁, hπc₂⟩
   set r : ℝⁿ → Ioi (0 : ℝ) := fun x => min (h.convergenceR ε₁ c₁ x) (h.convergenceR ε₂ c₂ x)
-  have hr : l.RCond r := (h.convergenceR_cond _ c₁).min (h.convergenceR_cond _ c₂)
   set πr := π.toSubordinate r
   have H₁ :
     dist (integralSum f vol (π₁.unionComplToSubordinate π hπU r)) (integral I l f vol) ≤ ε₁ :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
-import Mathlib.NumberTheory.LegendreSymbol.GaussSum
+import Mathlib.NumberTheory.GaussSum
 
 #align_import number_theory.legendre_symbol.quadratic_char.gauss_sum from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
