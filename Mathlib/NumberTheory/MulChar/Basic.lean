@@ -431,7 +431,7 @@ section nontrivial
 variable {R : Type*} [CommMonoid R] {R' : Type*} [CommMonoidWithZero R']
 
 lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
-  simp only [Ne, ext_iff, not_forall, one_apply_coe]
+  simp only [ext_iff, one_apply_coe]
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
@@ -487,8 +487,8 @@ lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ 
   exact (injective_ringHomComp hf).eq_iff
 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
-    χ.ringHomComp f ≠ 1 ↔ χ ≠ 1 := by
-  simp only [Ne, ringHomComp_eq_one_iff, hf]
+    χ.ringHomComp f ≠ 1 ↔ χ ≠ 1 :=
+  (ringHomComp_eq_one_iff hf).not
 
 set_option linter.deprecated false in
 /-- Composition with an injective ring homomorphism preserves nontriviality. -/
