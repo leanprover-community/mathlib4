@@ -68,7 +68,7 @@ def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ 
     Fin l.length ≃ α where
   toFun i := l.get i
   invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
-  left_inv i := by simp [List.get_indexOf, nd]
+  left_inv i := by simp [List.indexOf_getElem, nd]
   right_inv a := by simp
 #align list.nodup.nth_le_equiv_of_forall_mem_list List.Nodup.getEquivOfForallMemList
 
@@ -126,14 +126,17 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
       rw [Nat.sub_le_sub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
       rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
       exact b.succ_pos
-  have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
+  simp only [get_eq_getElem] at h
+  simp only [get?_eq_getElem?] at hf IH
+  have : ∀ ix, tl[ix]? = (l'.drop (f 0 + 1))[f' ix]? := by
     intro ix
-    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf, List.get?]
+    rw [List.getElem?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf]
+    simp only [getElem?_cons_succ]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
-  rw [List.singleton_sublist, ← h, l'.get_take _ (Nat.lt_succ_self _)]
+  rw [List.singleton_sublist, ← h, l'.getElem_take _ (Nat.lt_succ_self _)]
   apply List.get_mem
 #align list.sublist_of_order_embedding_nth_eq List.sublist_of_orderEmbedding_get?_eq
 
@@ -182,7 +185,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     · simp
     · intro i
       apply Option.some_injective
-      simpa [get?_eq_get i.2, get?_eq_get (h i.2)] using hf i
+      simpa [getElem?_eq_getElem i.2, getElem?_eq_getElem (h i.2)] using hf i
   · rintro ⟨f, hf⟩
     refine
       ⟨OrderEmbedding.ofStrictMono (fun i => if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)

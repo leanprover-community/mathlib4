@@ -235,7 +235,7 @@ theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * 
 
 @[to_additive (attr := simp)]
 theorem prod_take_succ :
-    ∀ (L : List M) (i : ℕ) (p), (L.take (i + 1)).prod = (L.take i).prod * L.get ⟨i, p⟩
+    ∀ (L : List M) (i : ℕ) (p : i < L.length), (L.take (i + 1)).prod = (L.take i).prod * L[i]
   | [], i, p => by cases p
   | h :: t, 0, _ => rfl
   | h :: t, n + 1, p => by
@@ -759,9 +759,15 @@ lemma drop_sum_join (L : List (List α)) (i : ℕ) :
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
+lemma drop_take_succ_join_eq_getElem (L : List (List α)) (i : Nat) (h : i < L.length) :
+    (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
+  simpa using drop_take_succ_join_eq_getElem' _ _ _
+
+@[deprecated drop_take_succ_join_eq_getElem (since := "2024-06-11")]
 lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = get L i := by
-  simpa using drop_take_succ_join_eq_get' _ _
+  rw [drop_take_succ_join_eq_getElem _ _ i.2]
+  simp
 
 end List
 
