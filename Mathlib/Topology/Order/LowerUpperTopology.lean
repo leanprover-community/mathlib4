@@ -442,29 +442,7 @@ section PrimativeSpectrum
 
 variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
 
-#check (T : α → Prop)
-
-#check isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
-
-#check Topology.IsLower.isTopologicalBasis
-
-#check preimage
-
-#check Function.Injective
-
-#check Subtype.val.Injective
-
-#check Function.Injective.preimage_image (f := Subtype.val)
-
-#check Subtype.image_preimage_coe
-
-#check Subtype.val
-
-lemma t : Function.Injective (Subtype.val (α := α) (p := T)) := by exact Subtype.val_injective
-
---#check Subtype.val_surjective
-
-lemma test1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
+lemma test1 [DecidableEq α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
   rw [IsLower.lowerBasis]
   ext R
@@ -484,17 +462,24 @@ lemma test1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := 
     use sInf F -- As F is finite, do we need complete?
     rw [← hF.2]
     rw [← preimage_compl]
-    -- theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' (((↑) : s → α) ⁻¹' t) = s ∩ t :=
-    -- image_preimage_eq_range_inter.trans <| congr_arg (· ∩ t) range_coe
-    --rw [image_preimage_eq_range_inter]
     have e1 : Subtype.val '' (Subtype.val (p := T) ⁻¹' (↑(upperClosure F))ᶜ) = T ∩ (upperClosure F)ᶜ := by
       rw [← (Subtype.image_preimage_coe T (↑(upperClosure F : Set α))ᶜ)]
       rfl
-    have e2 : T ∩ (↑(upperClosure F))ᶜ = T \ Ici (sInf F) := sorry
+    have e2 : T ∩ (↑(upperClosure F))ᶜ = T \ Ici (sInf F) := by
+      lift F to Finset α using hF.1
+      induction F using Finset.induction_on
+      · simp only [Finset.coe_empty, upperClosure_empty, UpperSet.coe_top, compl_empty, inter_univ,
+        sInf_empty, Ici_top]
+        symm
+        apply diff_singleton_eq_self
+        by_contra hf
+        apply (hT ⊤ hf).1
+        exact isMax_top
+      · sorry
     rw [← e2]
-    rw [← e1]
-    rfl
+    exact id (Eq.symm e1)
 
+/-
 lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ∩ Ici a := by
   constructor
   · intro h
@@ -502,6 +487,7 @@ lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ∩ Ici a := by
   · --intro h
     --cases' h with a ha
     exact False.elim β
+-/
 
 end PrimativeSpectrum
 
