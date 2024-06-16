@@ -147,10 +147,17 @@ theorem irrational_sqrt_rat_iff (q : ℚ) :
   simp only [eq_comm, IsSquare]
 #align irrational_sqrt_rat_iff irrational_sqrt_rat_iff
 
-instance (n : ℕ) : Decidable (Irrational (√n)) :=
-  decidable_of_iff' _ irrational_sqrt_natCast_iff
-
+/--
+This can be used as
+```lean
+unseal Nat.sqrt.iter in
+example : Irrational √24 := by decide
+```
+-/
 instance {n : ℕ} [n.AtLeastTwo] : Decidable (Irrational (√(no_index (OfNat.ofNat n)))) :=
+  decidable_of_iff' _ irrational_sqrt_ofNat_iff
+
+instance (n : ℕ) : Decidable (Irrational (√n)) :=
   decidable_of_iff' _ irrational_sqrt_natCast_iff
 
 instance (z : ℤ) : Decidable (Irrational (√z)) :=
