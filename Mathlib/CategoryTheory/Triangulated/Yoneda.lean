@@ -43,4 +43,7 @@ lemma preadditiveYoneda_map_distinguished
     ((shortComplexOfDistTriangle T hT).op.map (preadditiveYoneda.obj B)).Exact :=
   (preadditiveYoneda.obj B).map_distinguished_op_exact T hT
 
+noncomputable instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).ShiftSequence ℤ :=
+  Functor.ShiftSequence.tautological _ _
+
 end CategoryTheory

@@ -252,8 +252,6 @@ of the homological functor `(preadditiveCoyoneda.obj (Opposite.op ((singleFuncto
 applied to the distinguished triangle `hS.singleTriangle`. -/
 noncomputable def covariantSequenceIso (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
     covariantSequence A hS n₀ n₁ h ≅
-      letI := Functor.ShiftSequence.tautological
-        (preadditiveCoyoneda.obj (Opposite.op ((singleFunctor C 0).obj A))) ℤ
       (preadditiveCoyoneda.obj
           (Opposite.op ((singleFunctor C 0).obj A))).homologySequenceComposableArrows₅
         hS.singleTriangle n₀ n₁ (by omega) :=
@@ -271,8 +269,6 @@ noncomputable def covariantSequenceIso (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
 lemma covariantSequence_exact (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
     (covariantSequence A hS n₀ n₁ h).Exact := by
   rw [exact_iff_of_iso (covariantSequenceIso A hS n₀ n₁ h)]
-  letI := Functor.ShiftSequence.tautological
-    (preadditiveCoyoneda.obj (Opposite.op ((singleFunctor C 0).obj A))) ℤ
   apply Functor.homologySequenceComposableArrows₅_exact _ _ (hS.singleTriangle_distinguished)
 
 variable {A}
