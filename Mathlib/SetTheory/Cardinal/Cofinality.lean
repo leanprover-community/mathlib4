@@ -250,9 +250,8 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     · rwa [← typein_le_typein, typein_enum]
   · rcases cof_eq (· < · : (Quotient.out o).α → (Quotient.out o).α → Prop) with ⟨S, hS, hS'⟩
     let f : S → Ordinal := fun s => typein LT.lt s.val
-    refine'
-      ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self i) (le_of_forall_lt fun a ha => _), by
-        rwa [type_lt o] at hS'⟩
+    refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
+      (le_of_forall_lt fun a ha => ?_), by rwa [type_lt o] at hS'⟩
     rw [← type_lt o] at ha
     rcases hS (enum (· < ·) a ha) with ⟨b, hb, hb'⟩
     rw [← typein_le_typein, typein_enum] at hb'

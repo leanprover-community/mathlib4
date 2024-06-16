@@ -234,7 +234,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     refine lt_of_le_of_lt ?_ hn
     exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
-    exact (le_add_iff_nonneg_right _).mpr (by positivity)
+    exact le_add_of_nonneg_right (by positivity)
 
 end SeminormedAddCommGroup
 

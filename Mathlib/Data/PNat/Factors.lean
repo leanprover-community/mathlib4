@@ -163,8 +163,8 @@ theorem to_ofNatMultiset (v : Multiset ℕ) (h) : (ofNatMultiset v h : Multiset 
   rw [Multiset.map_pmap, this, Multiset.pmap_eq_map, Multiset.map_id]
 #align prime_multiset.to_of_nat_multiset PrimeMultiset.to_ofNatMultiset
 
-theorem prod_ofNatMultiset (v : Multiset ℕ) (h) : ((ofNatMultiset v h).prod : ℕ) = (v.prod : ℕ) :=
-  by rw [coe_prod, to_ofNatMultiset]
+theorem prod_ofNatMultiset (v : Multiset ℕ) (h) :
+    ((ofNatMultiset v h).prod : ℕ) = (v.prod : ℕ) := by rw [coe_prod, to_ofNatMultiset]
 #align prime_multiset.prod_of_nat_multiset PrimeMultiset.prod_ofNatMultiset
 
 /-- If a `Multiset ℕ+` consists only of primes, it can be recast as a `PrimeMultiset`. -/

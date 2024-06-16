@@ -30,8 +30,6 @@ variable {f : I → Type v}
 -- The family of types already equipped with instances
 variable (x y : ∀ i, f i) (i : I)
 
--- Porting note: All these instances used `refine_struct` and `pi_instance_derive_field`
-
 instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
   { add := (· + ·)
     mul := (· * ·)

@@ -79,7 +79,8 @@ theorem coe_basis (pb : PowerBasis R S) : ⇑pb.basis = fun i : Fin pb.dim => pb
 /-- Cannot be an instance because `PowerBasis` cannot be a class. -/
 theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
 #align power_basis.finite_dimensional PowerBasis.finite
-@[deprecated] alias finiteDimensional := PowerBasis.finite
+
+@[deprecated (since := "2024-03-05")] alias finiteDimensional := PowerBasis.finite
 
 theorem finrank [StrongRankCondition R] (pb : PowerBasis R S) :
     FiniteDimensional.finrank R S = pb.dim := by
@@ -207,8 +208,8 @@ theorem isIntegral_gen (pb : PowerBasis A S) : IsIntegral A pb.gen :=
 #align power_basis.is_integral_gen PowerBasis.isIntegral_gen
 
 @[simp]
-theorem degree_minpoly [Nontrivial A] (pb : PowerBasis A S) : degree (minpoly A pb.gen) = pb.dim :=
-  by rw [← minpolyGen_eq, degree_minpolyGen]
+theorem degree_minpoly [Nontrivial A] (pb : PowerBasis A S) :
+    degree (minpoly A pb.gen) = pb.dim := by rw [← minpolyGen_eq, degree_minpolyGen]
 #align power_basis.degree_minpoly PowerBasis.degree_minpoly
 
 @[simp]
