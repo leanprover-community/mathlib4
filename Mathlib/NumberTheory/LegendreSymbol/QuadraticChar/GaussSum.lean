@@ -51,14 +51,7 @@ theorem FiniteField.isSquare_two_iff :
     have h := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (Ring.two_ne_zero hF), quadraticChar_two hF,
       χ₈_nat_eq_if_mod_eight]
-    simp only [h, Nat.one_ne_zero, if_false, ite_eq_left_iff, Ne, (by decide : (-1 : ℤ) ≠ 1),
-      imp_false, Classical.not_not]
-  all_goals
-    rw [← Nat.mod_mod_of_dvd _ (by decide : 2 ∣ 8)] at h
-    have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
-    revert h₁ h
-    generalize Fintype.card F % 8 = n
-    intros; interval_cases n <;> simp_all -- Porting note (#11043): was `decide!`
+  all_goals omega
 #align finite_field.is_square_two_iff FiniteField.isSquare_two_iff
 
 /-- The value of the quadratic character at `-2` -/
@@ -81,14 +74,7 @@ theorem FiniteField.isSquare_neg_two_iff :
     have h := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (Ring.two_ne_zero hF)),
       quadraticChar_neg_two hF, χ₈'_nat_eq_if_mod_eight]
-    simp only [h, Nat.one_ne_zero, if_false, ite_eq_left_iff, Ne, (by decide : (-1 : ℤ) ≠ 1),
-      imp_false, Classical.not_not]
-  all_goals
-    rw [← Nat.mod_mod_of_dvd _ (by decide : 2 ∣ 8)] at h
-    have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
-    revert h₁ h
-    generalize Fintype.card F % 8 = n
-    intros; interval_cases n <;> simp_all -- Porting note (#11043): was `decide!`
+  all_goals omega
 #align finite_field.is_square_neg_two_iff FiniteField.isSquare_neg_two_iff
 
 /-- The relation between the values of the quadratic character of one field `F` at the
@@ -99,16 +85,15 @@ theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Ty
     quadraticChar F (Fintype.card F') =
     quadraticChar F' (quadraticChar F (-1) * Fintype.card F) := by
   let χ := (quadraticChar F).ringHomComp (algebraMap ℤ F')
-  have hχ₁ : χ.IsNontrivial := by
+  have hχ₁ : χ ≠ 1 := by
     obtain ⟨a, ha⟩ := quadraticChar_exists_neg_one hF
     have hu : IsUnit a := by
       contrapose ha
       exact ne_of_eq_of_ne (map_nonunit (quadraticChar F) ha) (mt zero_eq_neg.mp one_ne_zero)
-    use hu.unit
-    simp only [χ, IsUnit.unit_spec, ringHomComp_apply, eq_intCast, Ne, ha]
-    rw [Int.cast_neg, Int.cast_one]
-    exact Ring.neg_one_ne_one_of_char_ne_two hF'
-  have hχ₂ : χ.IsQuadratic := IsQuadratic.comp (quadraticChar_isQuadratic F) _
+    refine ne_one_iff.mpr ⟨hu.unit, ?_⟩
+    simpa only [χ, IsUnit.unit_spec, ringHomComp_apply, eq_intCast, ha, Int.cast_neg, Int.cast_one]
+      using Ring.neg_one_ne_one_of_char_ne_two hF'
+  have hχ₂ : χ.IsQuadratic := (quadraticChar_isQuadratic F).comp _
   have h := Char.card_pow_card hχ₁ hχ₂ h hF'
   rw [← quadraticChar_eq_pow_of_char_ne_two' hF'] at h
   exact (IsQuadratic.eq_of_eq_coe (quadraticChar_isQuadratic F')
