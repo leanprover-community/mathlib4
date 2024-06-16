@@ -7,6 +7,7 @@ import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Order.Irreducible
+import Mathlib.Data.Set.Subset
 
 #align_import topology.order.lower_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -442,6 +443,21 @@ section PrimativeSpectrum
 
 variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
 
+variable (S : Set α)
+
+open Set.Notation
+
+#check T ↓\ S
+
+#check inter_subset_left
+
+
+
+#check coe_upperClosure
+-- theorem coe_upperClosure (s : Set α) : ↑(upperClosure s) = ⋃ a ∈ s, Ici a
+
+#check compl_compl
+
 lemma test1 [DecidableEq α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
   rw [IsLower.lowerBasis]
@@ -465,17 +481,28 @@ lemma test1 [DecidableEq α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T 
     have e1 : Subtype.val '' (Subtype.val (p := T) ⁻¹' (↑(upperClosure F))ᶜ) = T ∩ (upperClosure F)ᶜ := by
       rw [← (Subtype.image_preimage_coe T (↑(upperClosure F : Set α))ᶜ)]
       rfl
-    have e2 : T ∩ (↑(upperClosure F))ᶜ = T \ Ici (sInf F) := by
+    have e3 : T ↓∩ ⋂ i ∈ F, (Ici i)ᶜ =  ⋂ i ∈ F, T ↓∩ (Ici i)ᶜ := by
+      exact preimage_iInter₂
+    have e2 : T ↓∩ (↑(upperClosure F))ᶜ = T ↓∩ (Ici (sInf F))ᶜ  := by
+      rw [coe_upperClosure]
+      simp only [compl_iUnion]
+      rw [preimage_iInter₂]
       lift F to Finset α using hF.1
       induction F using Finset.induction_on
-      · simp only [Finset.coe_empty, upperClosure_empty, UpperSet.coe_top, compl_empty, inter_univ,
-        sInf_empty, Ici_top]
-        symm
-        apply diff_singleton_eq_self
+      · simp only [Finset.coe_empty, mem_empty_iff_false, preimage_compl, iInter_of_empty,
+        iInter_univ, sInf_empty, Ici_top]
+        rw [eq_compl_comm]
+        simp only [compl_univ]
         by_contra hf
-        apply (hT ⊤ hf).1
-        exact isMax_top
-      · sorry
+        rw [← Set.not_nonempty_iff_eq_empty] at hf
+        simp at hf
+        cases' hf with x hx
+        simp at hx
+        apply (hT x (Subtype.coe_prop x)).1
+        exact isMax_iff_eq_top.mpr hx
+      · simp only [Finset.coe_insert, mem_insert_iff, Finset.mem_coe, preimage_compl,
+        iInter_iInter_eq_or_left, sInf_insert]
+        sorry
     rw [← e2]
     exact id (Eq.symm e1)
 
