@@ -95,7 +95,7 @@ noncomputable def dft (Φ : ZMod N → ℂ) (k : ZMod N) : ℂ :=
 lemma dft_def (Φ : ZMod N → ℂ) (k : ZMod N) :
     𝓕 Φ k = ∑ j : ZMod N, toCircle (-(j * k)) • Φ j := by
   simp only [dft, Fourier.fourierIntegral_def,
-    integral_countable' (integrable_count_iff.mpr <| Finite.summable _), Measure.count_singleton,
+    integral_countable' (integrable_count_iff.mpr .of_finite), Measure.count_singleton,
     ENNReal.one_toReal, one_smul, tsum_fintype]
 
 end fourier
