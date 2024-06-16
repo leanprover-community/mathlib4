@@ -289,8 +289,6 @@ theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
 
 @[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_le := card_dvd_of_le
 
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_surjective := card_dvd_of_surjective
-
 @[to_additive]
 theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
     Nat.card G' ∣ Nat.card G := by
@@ -298,6 +296,8 @@ theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
   exact Dvd.intro_left (Nat.card f.ker) f.ker.card_mul_index
 #align subgroup.nat_card_dvd_of_surjective Subgroup.card_dvd_of_surjective
 #align add_subgroup.nat_card_dvd_of_surjective AddSubgroup.card_dvd_of_surjective
+
+@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_surjective := card_dvd_of_surjective
 
 @[to_additive]
 theorem index_map (f : G →* G') :
