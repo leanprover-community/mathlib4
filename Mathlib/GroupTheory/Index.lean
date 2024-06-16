@@ -281,6 +281,10 @@ theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
 #align subgroup.card_mul_index Subgroup.card_mul_index
 #align add_subgroup.card_mul_index AddSubgroup.card_mul_index
 
+@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_injective := card_dvd_of_injective
+
+@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_le := card_dvd_of_le
+
 @[to_additive]
 theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
     Nat.card G' ∣ Nat.card G := by
