@@ -41,7 +41,8 @@ abbrev LightProfinite := CompHausLike
 namespace LightProfinite
 
 instance (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
-    [TotallyDisconnectedSpace X] [SecondCountableTopology X] : HasProp (fun Y ↦ TotallyDisconnectedSpace Y ∧ SecondCountableTopology Y) X :=
+    [TotallyDisconnectedSpace X] [SecondCountableTopology X] : HasProp (fun Y ↦
+      TotallyDisconnectedSpace Y ∧ SecondCountableTopology Y) X :=
   ⟨⟨(inferInstance : TotallyDisconnectedSpace X), (inferInstance : SecondCountableTopology X)⟩⟩
 
 /--
