@@ -225,12 +225,13 @@ lemma compProd_assoc {i j k l : ℕ} (κ : kernel ((x : Iic i) → X x) ((x : Io
     simp
   ext a s hs
   have h_comp_det : ∀ b, ξ (el i k (hij.trans hjk).le (a, b))
-      = (ξ ∘ₖ kernel.deterministic (el i k (hij.trans hjk).le) (el i k (hij.trans hjk).le).measurable)
-        (a, b) := by
+      = (ξ ∘ₖ kernel.deterministic (el i k (hij.trans hjk).le)
+          (el i k (hij.trans hjk).le).measurable) (a, b) := by
     intro b
     rw [kernel.comp_deterministic_eq_comap, kernel.comap_apply]
   have h_meas_comp : Measurable fun b ↦
-      ξ (el i k (hij.trans hjk).le (a, b)) {c | (b, c) ∈ er i k l (hij.trans hjk) hkl.le ⁻¹' s} := by
+      ξ (el i k (hij.trans hjk).le (a, b))
+        {c | (b, c) ∈ er i k l (hij.trans hjk) hkl.le ⁻¹' s} := by
     simp_rw [h_comp_det]
     exact kernel.measurable_kernel_prod_mk_left' ((er _ _ _ _ _).measurable hs) a
   rw [compProd_apply' _ _ hij (hjk.trans hkl) _ hs,
@@ -245,8 +246,8 @@ lemma compProd_assoc {i j k l : ℕ} (κ : kernel ((x : Iic i) → X x) ((x : Io
   simp_rw [kernel.compProd_apply _ _ _ (this _), split, kernel.comap_apply]
   rw [kernel.lintegral_compProd]
   swap; exact h_meas_comp.comp (er i j k hij hjk.le).measurable
-  simp only [kernel.comap_apply, el_assoc, Set.mem_preimage, Set.preimage_setOf_eq, Set.mem_setOf_eq,
-    er_assoc]
+  simp only [kernel.comap_apply, el_assoc, Set.mem_preimage, Set.preimage_setOf_eq,
+    Set.mem_setOf_eq, er_assoc]
   simp_rw [el_assoc hij hjk.le]
 
 noncomputable
@@ -410,29 +411,3 @@ theorem compProd_kerNat (κ : (k : ℕ) → kernel ((x : Iic k) → X x) (X (k +
     · rw [kerNat_succ_right _ _ _ (hij.trans_le (Nat.lt_succ_iff.mp hjk))]
 
 end kerNat
-
--- def e_succ_nat {α : ℕ → Type*} [mα : ∀ n, MeasurableSpace (α n)] (j : ℕ) :
---     α (j + 1) ≃ᵐ ((k : Ioc j (j + 1)) → α ↑k) where
---   toFun := fun a x ↦ by
---     rw [le_antisymm (x.2).2 (Nat.succ_le_iff.mpr x.2.1)]
---     exact a
---   invFun := fun a ↦ a ⟨j + 1, ⟨Nat.lt_succ_self j, le_rfl⟩⟩
---   left_inv := fun a ↦ by simp only [eq_mpr_eq_cast, cast_eq]
---   right_inv := fun a ↦ by
---     simp only [eq_mpr_eq_cast]
---     ext x
---     refine (cast_eq rfl ?_).trans ?_
---     have : x = ⟨j + 1, ⟨Nat.lt_succ_self j, le_rfl⟩⟩ := by
---       rw [← Subtype.eta x x.2, Subtype.coe_eta]
---       exact le_antisymm x.2.2 (Nat.succ_le_iff.mpr x.2.1)
---     rw [this]
---   measurable_toFun := by
---     simp only [eq_mpr_eq_cast, Equiv.coe_fn_mk]
---     apply measurable_pi_lambda _ (fun x ↦ ?_)
---     have h : ↑x = j + 1 := le_antisymm x.2.2 (Nat.succ_le_iff.mpr x.2.1)
---     have hm : HEq (mα ↑x) (mα (j + 1)) := by rw [h]
---     have hα : α ↑x = α (j + 1) := by rw [h]
---     exact measurable_cast hα.symm hm.symm
---   measurable_invFun := by
---     simp only [eq_mpr_eq_cast, Equiv.coe_fn_symm_mk]
---     apply measurable_pi_apply
