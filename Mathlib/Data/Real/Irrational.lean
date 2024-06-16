@@ -147,6 +147,12 @@ theorem irrational_sqrt_rat_iff (q : ℚ) :
   simp only [eq_comm, IsSquare]
 #align irrational_sqrt_rat_iff irrational_sqrt_rat_iff
 
+instance (n : ℕ) : Decidable (Irrational (√n)) :=
+  decidable_of_iff' _ irrational_sqrt_intCast_iff
+
+instance (z : ℤ) : Decidable (Irrational (√z)) :=
+  decidable_of_iff' _ irrational_sqrt_intCast_iff
+
 instance (q : ℚ) : Decidable (Irrational (√q)) :=
   decidable_of_iff' _ irrational_sqrt_ratCast_iff
 
