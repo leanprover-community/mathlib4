@@ -143,19 +143,19 @@ section ZModCharDef
 
 
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
-def zmodChar (n : ℕ) [NeZero n] {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) : AddChar (ZMod n) C where
+def zmodChar (n : ℕ) [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) : AddChar (ZMod n) C where
   toFun a := ζ ^ a.val
   map_zero_eq_one' := by simp only [ZMod.val_zero, pow_zero]
   map_add_eq_mul' x y := by simp only [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
 #align add_char.zmod_char AddChar.zmodChar
 
 /-- The additive character on `ZMod n` defined using `ζ` sends `a` to `ζ^a`. -/
-theorem zmodChar_apply {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ZMod n) :
+theorem zmodChar_apply {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ZMod n) :
     zmodChar n hζ a = ζ ^ a.val :=
   rfl
 #align add_char.zmod_char_apply AddChar.zmodChar_apply
 
-theorem zmodChar_apply' {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
+theorem zmodChar_apply' {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
   rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'
