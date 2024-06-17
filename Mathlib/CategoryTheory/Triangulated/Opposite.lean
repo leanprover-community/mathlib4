@@ -208,12 +208,29 @@ lemma opShiftFunctorEquivalence_zero_unitIso_inv_app (X : Cᵒᵖ) :
   rw [shiftFunctorZero_op_hom_app, unop_comp, Quiver.Hom.unop_op, Functor.map_comp,
     shiftFunctorCompIsoId_zero_zero_inv_app, assoc]
 
+-- TODO: remove dependency to these two abuse of defeq lemmas in
+-- the proof of `opShiftFunctorEquivalence_add'_unitIso_inv_app`
+lemma shiftFunctorOpIso_add_neg_self (p : ℤ) :
+    shiftFunctorOpIso C p (-p) (add_neg_self p) = Iso.refl _ := rfl
+
+lemma shiftFunctor_op (p : ℤ) :
+    shiftFunctor Cᵒᵖ p = (shiftFunctor C (-p)).op := rfl
+
 lemma opShiftFunctorEquivalence_add'_unitIso_inv_app (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
     (opShiftFunctorEquivalence C p).unitIso.inv.app X =
-      (((shiftFunctorAdd' Cᵒᵖ n m p (by omega)).hom.app X).unop⟦p⟧').op ≫ ((shiftFunctorAdd' C m n p h).inv.app _).op ≫
+      (((shiftFunctorAdd' Cᵒᵖ n m p (by omega)).hom.app X).unop⟦p⟧').op ≫
+        ((shiftFunctorAdd' C m n p h).inv.app _).op ≫
         (((opShiftFunctorEquivalence C m).unitIso.inv.app (X⟦n⟧)).unop⟦n⟧').op ≫
-        (opShiftFunctorEquivalence C n).unitIso.inv.app X :=
-  sorry
+        (opShiftFunctorEquivalence C n).unitIso.inv.app X := by
+  dsimp [opShiftFunctorEquivalence]
+  simp only [shiftFunctorAdd'_op_hom_app _ n m p (by omega) _ _ _
+    (add_neg_self n) (add_neg_self m) (add_neg_self p)]
+  simp only [shiftFunctor_op_map _ _ (add_neg_self m), Iso.inv_hom_id_app_assoc]
+  dsimp [shiftFunctorOpIso_add_neg_self]
+  erw [Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id,
+    id_comp, id_comp, id_comp, id_comp, comp_id, comp_id]
+  simp [shiftFunctor_op, shiftFunctorCompIsoId_add'_inv_app _ _ _ _ _ _
+    (neg_add_self m) (neg_add_self n) (neg_add_self p) h]
 
 variable (C)
 
