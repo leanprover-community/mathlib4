@@ -373,6 +373,20 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 @[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
 @[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : α) : WithTop α) = OfNat.ofNat n := rfl
+@[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
+    (m : WithTop α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+  coe_eq_coe
+@[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
+    no_index (OfNat.ofNat n) = (m : WithTop α) ↔ OfNat.ofNat n = m :=
+  coe_eq_coe
+@[simp] lemma ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithTop α) ≠ ⊤ :=
+  natCast_ne_top n
+@[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ no_index (OfNat.ofNat n) :=
+  top_ne_natCast n
+
 end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
@@ -572,6 +586,20 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 @[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 @[deprecated (since := "2024-04-05")] alias nat_ne_bot := natCast_ne_bot
 @[deprecated (since := "2024-04-05")] alias bot_ne_nat := bot_ne_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : α) : WithBot α) = OfNat.ofNat n := rfl
+@[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
+    (m : WithBot α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+  coe_eq_coe
+@[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
+    no_index (OfNat.ofNat n) = (m : WithBot α) ↔ OfNat.ofNat n = m :=
+  coe_eq_coe
+@[simp] lemma ofNat_ne_bot (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithBot α) ≠ ⊥ :=
+  natCast_ne_bot n
+@[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ no_index (OfNat.ofNat n) :=
+  bot_ne_natCast n
 
 end AddMonoidWithOne
 
