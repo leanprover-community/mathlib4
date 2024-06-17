@@ -133,6 +133,10 @@ theorem multipliable_of_finite_mulSupport (h : (mulSupport f).Finite) : Multipli
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
 
 @[to_additive]
+lemma Multipliable.of_finite [Finite β] {f : β → α} : Multipliable f :=
+  multipliable_of_finite_mulSupport <| Set.finite_univ.subset (Set.subset_univ _)
+
+@[to_additive]
 theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1) : HasProd f (f b) :=
   suffices HasProd f (∏ b' ∈ {b}, f b') by simpa using this
   hasProd_prod_of_ne_finset_one <| by simpa [hf]

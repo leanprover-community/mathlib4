@@ -6,6 +6,7 @@ Authors: Yourong Zang
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Data.Complex.FiniteDimensional
 
 #align_import analysis.complex.conformal from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
 

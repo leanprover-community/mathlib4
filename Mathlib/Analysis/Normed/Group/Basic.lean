@@ -1872,9 +1872,8 @@ theorem nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n :=
   NNReal.eq <| norm_natCast _
 #align real.nnnorm_coe_nat Real.nnnorm_natCast
 
--- 2024-04-05
-@[deprecated] alias norm_coe_nat := norm_natCast
-@[deprecated] alias nnnorm_coe_nat := nnnorm_natCast
+@[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
+@[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 -- Porting note (#10618): `simp` can prove this
 theorem norm_two : ‖(2 : ℝ)‖ = 2 :=

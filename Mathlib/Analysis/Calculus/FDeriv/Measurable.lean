@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic

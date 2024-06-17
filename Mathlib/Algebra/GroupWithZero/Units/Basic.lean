@@ -579,9 +579,4 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 
 end NoncomputableDefs
 
--- 2024-03-20
--- The names `div_mul_cancel`, `mul_div_cancel` and `mul_div_cancel_left` have been reused
--- @[deprecated] alias div_mul_cancel := div_mul_cancel₀
--- @[deprecated] alias mul_div_cancel := mul_div_cancel_right₀
--- @[deprecated] alias mul_div_cancel_left := mul_div_cancel_left₀
-@[deprecated] alias mul_div_cancel' := mul_div_cancel₀
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel' := mul_div_cancel₀
