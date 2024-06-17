@@ -16,8 +16,6 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 ## Main definitions and results
 * `RingCon.setLike`: Every `I : RingCon R` can be interpreted as a set of `R` where `x ∈ I` if and
   only if `I x 0`. In this sense, two-sided-ideals of `R` are exactly `RingCon R`.
-* `RingCon.orderIsoRingConMop`: The two-sided-ideals of `R` and that of `Rᵐᵒᵖ` correspond
-  bijectively to each other.
 
 * `RingCon.addCommGroup`: when viewing `I : RingCon R` as a set, it is an abelian group.
 
