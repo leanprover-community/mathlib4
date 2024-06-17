@@ -107,7 +107,8 @@ structure PrelaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 namespace PrelaxFunctor
 
 attribute [simp] map₂_id
-attribute [reassoc (attr := simp)] map₂_comp
+attribute [reassoc] map₂_comp
+attribute [simp] map₂_comp
 
 /-- The underlying lax prefunctor. -/
 add_decl_doc PrelaxFunctor.toLaxPreFunctor
