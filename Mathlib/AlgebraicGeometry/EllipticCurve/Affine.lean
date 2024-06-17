@@ -829,51 +829,33 @@ lemma map_polynomial : (W.map f).toAffine.polynomial = W.polynomial.map (mapRing
   simp only [polynomial]
   map_simp
 
-lemma map_polynomial_eval (x : R[X]) :
-    (W.map f).toAffine.polynomial.eval (x.map f) = (W.polynomial.eval x).map f := by
-  rw [map_polynomial, eval_map, ← coe_mapRingHom, eval₂_hom]
+lemma baseChange_polynomial_evalEval_X_Y :
+    (W.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W.polynomial := by
+  rw [baseChange, toAffine, map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
 
-lemma map_polynomial_eval_eval (x : R[X]) (y : R) :
-    ((W.map f).toAffine.polynomial.eval <| x.map f).eval (f y) =
-      f ((W.polynomial.eval x).eval y) := by
-  rw [map_polynomial_eval, eval_map, eval₂_hom]
-
-lemma map_polynomial_evalEval (x y : R) :
-    (W.map f).toAffine.polynomial.evalEval (f x) (f y) = f (W.polynomial.evalEval x y) := by
-  rw [← map_polynomial_eval_eval, map_C]
-
+variable {W} in
 lemma Equation.map {x y : R} (h : W.Equation x y) : Equation (W.map f) (f x) (f y) := by
-  rw [Equation, map_polynomial_evalEval, ← f.map_zero]; exact congr_arg f h
+  rw [Equation, map_polynomial, map_mapRingHom_evalEval, ← f.map_zero]; exact congr_arg f h
 
 variable {f} in
 lemma map_equation (hf : Function.Injective f) (x y : R) :
     (W.map f).toAffine.Equation (f x) (f y) ↔ W.Equation x y := by
-  simp only [Equation, map_polynomial_evalEval, map_eq_zero_iff f hf]
+  simp only [Equation, map_polynomial, map_mapRingHom_evalEval, map_eq_zero_iff f hf]
 #align weierstrass_curve.equation_iff_base_change WeierstrassCurve.Affine.map_equation
 
 lemma map_polynomialX : (W.map f).toAffine.polynomialX = W.polynomialX.map (mapRingHom f) := by
   simp only [polynomialX]
   map_simp
 
-lemma map_polynomialX_eval_eval (x : R[X]) (y : R) :
-    ((W.map f).toAffine.polynomialX.eval <| x.map f).eval (f y) =
-      f ((W.polynomialX.eval x).eval y) := by
-  rw [map_polynomialX, eval_map, ← coe_mapRingHom, eval₂_hom, coe_mapRingHom, eval_map, eval₂_hom]
-
 lemma map_polynomialY : (W.map f).toAffine.polynomialY = W.polynomialY.map (mapRingHom f) := by
   simp only [polynomialY]
   map_simp
 
-lemma map_polynomialY_eval_eval (x : R[X]) (y : R) :
-    ((W.map f).toAffine.polynomialY.eval <| x.map f).eval (f y) =
-      f ((W.polynomialY.eval x).eval y) := by
-  rw [map_polynomialY, eval_map, ← coe_mapRingHom, eval₂_hom, coe_mapRingHom, eval_map, eval₂_hom]
-
 variable {f} in
 lemma map_nonsingular (hf : Function.Injective f) (x y : R) :
     (W.map f).toAffine.Nonsingular (f x) (f y) ↔ W.Nonsingular x y := by
-  simp only [Nonsingular, evalEval, W.map_equation hf, ← map_C, map_polynomialX_eval_eval,
-    map_polynomialY_eval_eval, map_ne_zero_iff f hf]
+  simp only [Nonsingular, evalEval, W.map_equation hf, map_polynomialX,
+    map_polynomialY, map_mapRingHom_evalEval, map_ne_zero_iff f hf]
 #align weierstrass_curve.nonsingular_iff_base_change WeierstrassCurve.Affine.map_nonsingular
 
 lemma map_negPolynomial :
@@ -945,12 +927,6 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
     (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
 
-lemma baseChange_polynomial_eval_eval (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomial.eval <| x.map f).eval (f y) =
-      f (((W.baseChange A).toAffine.polynomial.eval x).eval y) := by
-  erw [← map_polynomial_eval_eval, map_baseChange]
-  rfl
-
 variable {g} in
 lemma baseChange_equation (hf : Function.Injective f) (x y : A) :
     (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
@@ -962,21 +938,9 @@ lemma baseChange_polynomialX : (W.baseChange B).toAffine.polynomialX =
     (W.baseChange A).toAffine.polynomialX.map (mapRingHom f) := by
   rw [← map_polynomialX, map_baseChange]
 
-lemma baseChange_polynomialX_eval_eval (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomialX.eval <| x.map f).eval (f y) =
-      f (((W.baseChange A).toAffine.polynomialX.eval x).eval y) := by
-  erw [← map_polynomialX_eval_eval, map_baseChange]
-  rfl
-
 lemma baseChange_polynomialY : (W.baseChange B).toAffine.polynomialY =
     (W.baseChange A).toAffine.polynomialY.map (mapRingHom f) := by
   rw [← map_polynomialY, map_baseChange]
-
-lemma baseChange_polynomialY_eval_eval (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomialY.eval <| x.map f).eval (f y) =
-      f (((W.baseChange A).toAffine.polynomialY.eval x).eval y) := by
-  erw [← map_polynomialY_eval_eval, map_baseChange]
-  rfl
 
 variable {f} in
 lemma baseChange_nonsingular (hf : Function.Injective f) (x y : A) :
