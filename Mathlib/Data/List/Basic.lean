@@ -162,7 +162,7 @@ attribute [simp] List.mem_bind
 theorem map_bind (g : β → List γ) (f : α → β) :
     ∀ l : List α, (List.map f l).bind g = l.bind fun a => g (f a)
   | [] => rfl
-  | a :: l => by simp only [cons_bind, map_cons, map_bind _ _ l]
+  | a :: l => by simp only [bind_cons, map_cons, map_bind _ _ l]
 #align list.map_bind List.map_bind
 
 /-! ### length -/
@@ -1773,7 +1773,7 @@ theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: tak
 
 @[simp]
 theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
-  rw [drop_add, drop_one]
+  rw [← drop_drop, drop_one]
 
 theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
     l[n] :: l.drop (n + 1) = l.drop n :=
@@ -2984,13 +2984,15 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
         exact IH
 #align list.monotone_filter_right List.monotone_filter_right
 
-#align list.map_filter List.map_filter
+#align list.map_filter List.filter_map
 
-lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
+lemma map_filter {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [(· ∘ ·), map_filter, hf.eq_iff]
-#align list.map_filter' List.map_filter'
+  simp [(· ∘ ·), filter_map, hf.eq_iff]
+#align list.map_filter' List.map_filter
+
+@[deprecated (since := "2024-06-16")] alias map_filter' := map_filter
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =
@@ -3006,7 +3008,7 @@ lemma filter_attach (l : List α) (p : α → Bool) :
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
     simp_rw [map_map, (· ∘ ·), Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
-      ← map_filter, attach_map_val]
+      ← filter_map, attach_map_val]
 #align list.filter_attach List.filter_attach
 
 #align list.filter_filter List.filter_filter
@@ -3062,8 +3064,6 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   · simp [dropWhile]
   · by_cases hp : p x <;> simp [hp, dropWhile, IH]
 #align list.drop_while_eq_nil_iff List.dropWhile_eq_nil_iff
-
-@[simp] theorem takeWhile_nil : List.takeWhile p [] = [] := rfl
 
 theorem takeWhile_cons {x : α} :
     List.takeWhile p (x :: l) = (match p x with
