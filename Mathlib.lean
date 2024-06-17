@@ -709,6 +709,7 @@ import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
+import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
@@ -1027,6 +1028,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Group.CocompactMap
 import Mathlib.Analysis.Normed.Group.Completeness
 import Mathlib.Analysis.Normed.Group.Completion
+import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.ControlledClosure
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
@@ -1614,6 +1616,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
@@ -3505,7 +3508,9 @@ import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.RingTheory.Coalgebra.Hom
 import Mathlib.RingTheory.Complex
-import Mathlib.RingTheory.Congruence
+import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.Congruence.BigOperators
+import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas

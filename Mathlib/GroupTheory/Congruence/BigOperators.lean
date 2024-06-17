@@ -20,7 +20,7 @@ namespace Con
 
 /-- Multiplicative congruence relations preserve product indexed by a list. -/
 @[to_additive "Additive congruence relations preserve sum indexed by a list."]
-protected theorem list_prod {ι M : Type*} [CommMonoid M] (c : Con M) {l : List ι} {f g : ι → M}
+protected theorem list_prod {ι M : Type*} [Monoid M] (c : Con M) {l : List ι} {f g : ι → M}
     (h : ∀ x ∈ l, c (f x) (g x)) :
     c (l.map f).prod (l.map g).prod := by
   induction l with
