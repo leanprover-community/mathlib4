@@ -6,8 +6,6 @@ Authors: Christopher Hoskin
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
-import Mathlib.Order.Irreducible
-import Mathlib.Data.Set.Subset
 
 #align_import topology.order.lower_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -289,7 +287,7 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
 
 /-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
 preimage of every interval `Set.Ici a` is a closed set. -/
-@[deprecated] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
+@[deprecated (since := "2023-12-24")] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
 
 end Preorder
 
@@ -370,7 +368,7 @@ lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous
 provided that the preimage of every interval `Set.Iic a` is a closed set. -/
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
     Continuous f :=
   continuous_iff_Iic.2 h
@@ -417,108 +415,10 @@ instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
     suffices IsLower (α × β)ᵒᵈ from IsLower.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
     exact instIsLowerProd (α := αᵒᵈ) (β := βᵒᵈ)
 
-/-
-section SemilatticeInf
-
-variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
-
-variable (T : Set α)
-
-instance : TopologicalSpace T := inferInstance
-
-#check { p // InfPrime p}
-
-variable (q : { p // InfPrime (α := α) p})
-
---variable (T : (Set { p // InfPrime (α := α) p}))
-
-end SemilatticeInf
--/
-
 section CompleteLattice_IsLower
 
-variable [CompleteLattice α] [TopologicalSpace α] [IsLower α]
-
-section PrimativeSpectrum
-
-variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
-
-variable (S : Set α)
-
-open Set.Notation
-
-#check T ↓\ S
-
-#check inter_subset_left
-
-
-
-#check coe_upperClosure
--- theorem coe_upperClosure (s : Set α) : ↑(upperClosure s) = ⋃ a ∈ s, Ici a
-
-#check compl_compl
-
-lemma test1 [DecidableEq α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
-  convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
-  rw [IsLower.lowerBasis]
-  ext R
-  simp only [mem_setOf_eq, mem_image, exists_exists_and_eq_and, preimage_compl]
-  constructor
-  · intro ha
-    cases' ha with a ha'
-    use {a}
-    simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, true_and]
-    rw [← (Function.Injective.preimage_image Subtype.val_injective R)]
-    rw [← ha']
-    rw [← preimage_compl]
-    simp only [preimage_compl, preimage_diff, Subtype.coe_preimage_self]
-    exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
-  · intro ha
-    cases' ha with F hF
-    use sInf F -- As F is finite, do we need complete?
-    rw [← hF.2]
-    rw [← preimage_compl]
-    have e1 : Subtype.val '' (Subtype.val (p := T) ⁻¹' (↑(upperClosure F))ᶜ) = T ∩ (upperClosure F)ᶜ := by
-      rw [← (Subtype.image_preimage_coe T (↑(upperClosure F : Set α))ᶜ)]
-      rfl
-    have e3 : T ↓∩ ⋂ i ∈ F, (Ici i)ᶜ =  ⋂ i ∈ F, T ↓∩ (Ici i)ᶜ := by
-      exact preimage_iInter₂
-    have e2 : T ↓∩ (↑(upperClosure F))ᶜ = T ↓∩ (Ici (sInf F))ᶜ  := by
-      rw [coe_upperClosure]
-      simp only [compl_iUnion]
-      rw [preimage_iInter₂]
-      lift F to Finset α using hF.1
-      induction F using Finset.induction_on
-      · simp only [Finset.coe_empty, mem_empty_iff_false, preimage_compl, iInter_of_empty,
-        iInter_univ, sInf_empty, Ici_top]
-        rw [eq_compl_comm]
-        simp only [compl_univ]
-        by_contra hf
-        rw [← Set.not_nonempty_iff_eq_empty] at hf
-        simp at hf
-        cases' hf with x hx
-        simp at hx
-        apply (hT x (Subtype.coe_prop x)).1
-        exact isMax_iff_eq_top.mpr hx
-      · simp only [Finset.coe_insert, mem_insert_iff, Finset.mem_coe, preimage_compl,
-        iInter_iInter_eq_or_left, sInf_insert]
-        sorry
-    rw [← e2]
-    exact id (Eq.symm e1)
-
-/-
-lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ∩ Ici a := by
-  constructor
-  · intro h
-    sorry
-  · --intro h
-    --cases' h with a ha
-    exact False.elim β
--/
-
-end PrimativeSpectrum
-
-variable [CompleteLattice β] [TopologicalSpace β] [IsLower β]
+variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLower α]
+  [TopologicalSpace β] [IsLower β]
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine IsLower.continuous_iff_Ici.2 fun b => ?_
