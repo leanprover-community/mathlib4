@@ -250,7 +250,8 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
   · dsimp only [rightInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
-    · simp [getD_cons_succ, ih j']
+    · simp only [getD_eq_getElem?, get?_eq_getElem?] at ih
+      simp [getD_cons_succ, ih j']
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     (lis ω).getD j 1 =
@@ -325,10 +326,9 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   nth_rw 1 [← take_append_drop (j + 1) ω]
   rw [take_succ]
   obtain lt | le := lt_or_le j ω.length
-  · rw [get?_eq_get lt]
-    simp only [wordProd_append, wordProd_cons, mul_assoc]
+  · simp only [get?_eq_getElem?, getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · rw [get?_eq_none.mpr le]
+  · simp only [get?_eq_getElem?, getElem?_eq_none.mpr le]
     simp
 
 theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
@@ -337,10 +337,9 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   nth_rw 4 [← take_append_drop (j + 1) ω]
   rw [take_succ]
   obtain lt | le := lt_or_le j ω.length
-  · rw [get?_eq_get lt]
-    simp only [wordProd_append, wordProd_cons, mul_assoc]
+  · simp only [get?_eq_getElem?, getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · rw [get?_eq_none.mpr le]
+  · simp only [get?_eq_getElem?, getElem?_eq_none.mpr le]
     simp
 
 theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω) {t : W}
@@ -406,7 +405,8 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
       Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
     show get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
-    rw [get?_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j'), get?_drop]
+    rw [get?_eq_getElem?, get?_eq_getElem?,
+      getElem?_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j'), getElem?_drop]
     congr
     show j + 1 + (j' - 1 - List.length (take j ω)) = j'
     rw [length_take]

@@ -459,23 +459,31 @@ theorem length_inits (l : List α) : length (inits l) = length l + 1 := by simp 
 #align list.length_inits List.length_inits
 
 @[simp]
-theorem get_tails (l : List α) (n : Fin (length (tails l))) : (tails l).get n = l.drop n := by
-  induction l with
+theorem getElem_tails (l : List α) (n : Nat) (h : n < (tails l).length) :
+    (tails l)[n] = l.drop n := by
+  induction l generalizing n with
   | nil => simp
   | cons a l ihl =>
-    cases n using Fin.cases with
+    cases n with
     | zero => simp
     | succ n => simp [ihl]
+
+theorem get_tails (l : List α) (n : Fin (length (tails l))) : (tails l).get n = l.drop n := by
+  simp
 #align list.nth_le_tails List.get_tails
 
 @[simp]
-theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n = l.take n := by
-  induction l with
+theorem getElem_inits (l : List α) (n : Nat) (h : n < length (inits l)) :
+    (inits l)[n] = l.take n := by
+  induction l generalizing n with
   | nil => simp
   | cons a l ihl =>
-    cases n using Fin.cases with
+    cases n with
     | zero => simp
     | succ n => simp [ihl]
+
+theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n = l.take n := by
+  simp
 #align list.nth_le_inits List.get_inits
 
 section deprecated
@@ -549,10 +557,14 @@ theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
 theorem IsPrefix.ne_nil {x y : List α} (h : x <+: y) (hx : x ≠ []) : y ≠ [] := by
   rintro rfl; exact hx <| List.prefix_nil.mp h
 
+theorem IsPrefix.getElem {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
+    x[n] = y[n]'(hn.trans_le h.length_le) := by
+  obtain ⟨_, rfl⟩ := h
+  exact (List.getElem_append n hn).symm
+
 theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
     x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
-  obtain ⟨_, rfl⟩ := h
-  exact (List.get_append n hn).symm
+  simp only [get_eq_getElem, IsPrefix.getElem h hn]
 
 theorem IsPrefix.head_eq {x y : List α} (h : x <+: y) (hx : x ≠ []) :
     x.head hx = y.head (h.ne_nil hx) := by
