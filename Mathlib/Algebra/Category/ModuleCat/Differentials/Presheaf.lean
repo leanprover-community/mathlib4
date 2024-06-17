@@ -42,9 +42,6 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 namespace PresheafOfModules
 
-abbrev smul {R : Cᵒᵖ ⥤ RingCat.{u}} (M : PresheafOfModules.{v} R) {X : Cᵒᵖ}
-    (r : R.obj X) (m : M.obj X) : M.obj X := r • m
-
 variable {R : Cᵒᵖ ⥤ CommRingCat.{u}}
   (M : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat))
 
@@ -52,6 +49,7 @@ variable {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 over the presheaf of commutative rings `R`. -/
 @[ext]
 structure AbsoluteDerivation where
+  /-- the underlying additive map `R.obj X →+ M.obj X` of a derivation -/
   d {X : Cᵒᵖ} : R.obj X →+ M.obj X
   d_one (X : Cᵒᵖ) : d (X := X) 1 = 0 := by aesop_cat
   d_mul {X : Cᵒᵖ} (a b : R.obj X) : d (a * b) = a • d b + b • d a := by aesop_cat
@@ -69,6 +67,9 @@ lemma congr_d {d d' : M.AbsoluteDerivation} (h : d = d') {X : Cᵒᵖ} (x : R.ob
 
 variable (d : M.AbsoluteDerivation)
 
+/-- Given an absolute derivation `d` of a presheaf of modules `M` over a
+presheaf of commutative rings `R` on a category `C`, this is the
+induced (absolute) derivation of the `R.obj X`-module `M.obj X` for all `X : Cᵒᵖ`. -/
 @[simps]
 def derivation (X : Cᵒᵖ) : Derivation ℤ (R.obj X) (M.obj X) where
   toFun x := d.d x
@@ -79,6 +80,8 @@ def derivation (X : Cᵒᵖ) : Derivation ℤ (R.obj X) (M.obj X) where
 
 variable {M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)} (f : M ⟶ M')
 
+/-- The postcomposition of an absolute derivation of a presheaf of modules `M` by
+a morphism `M ⟶ M'`. -/
 def postcomp : AbsoluteDerivation M' where
   d {X} := (f.app X).toAddMonoidHom.comp d.d
   d_map {X Y} g x := by
@@ -89,7 +92,11 @@ def postcomp : AbsoluteDerivation M' where
 lemma postcomp_d_apply {X : Cᵒᵖ} (x : R.obj X) :
     (d.postcomp f).d x = f.app _ (d.d x) := rfl
 
+/-- The universal property that an absolute derivation `d : M.AbsoluteDerivation` must
+satisfy so that the presheaf of modules `M` can be considered as the presheaf of
+(absolute) differentials of a presheaf of commutative rings. -/
 structure Universal where
+  /-- An absolyte derivation of `M'` descends as a morphism `M ⟶ M'`. -/
   desc {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
     (d' : M'.AbsoluteDerivation) : M ⟶ M'
   fac {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
@@ -104,6 +111,8 @@ variable (hR : d.Universal)
 
 variable (M')
 
+/-- If a derivation `d : M.AbsoluteDerivation` is universal,
+this is the bijection `(M ⟶ M') ≃ M'.AbsoluteDerivation` for all `M'`. -/
 def homEquiv : (M ⟶ M') ≃ M'.AbsoluteDerivation where
   toFun φ := d.postcomp φ
   invFun d' := hR.desc d'
@@ -128,6 +137,7 @@ end AbsoluteDerivation
 
 variable (R)
 
+/-- Auxiliary definition for `absoluteDifferentials`. -/
 noncomputable def absoluteDifferentialsBundledCore :
     BundledCorePresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat) where
   obj X := ModuleCat.of (R.obj X) (Ω[(R.obj X)⁄ℤ])
@@ -154,12 +164,10 @@ noncomputable def absoluteDifferentialsBundledCore :
       KaehlerDifferential.map_D ℤ ℤ (R.obj Y) (R.obj Z), R.map_comp]
     rfl
 
+/-- The presheaf of (absolute) differentials of a presheaf of commutative rings. -/
 noncomputable def absoluteDifferentials :
     PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat) :=
   (absoluteDifferentialsBundledCore R).toPresheafOfModules
-
-lemma absoluteDifferentials_presheaf_obj (X : Cᵒᵖ) :
-    (absoluteDifferentials R).presheaf.obj X = AddCommGroupCat.of (Ω[(R.obj X)⁄ℤ]) := rfl
 
 lemma absoluteDifferentials_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : Ω[(R.obj X)⁄ℤ]) :
     (absoluteDifferentials R).map f x =
@@ -174,6 +182,7 @@ lemma absoluteDifferentials_map_apply_d {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : R.obj
   rw [absoluteDifferentials_map_apply]
   apply KaehlerDifferential.map_D
 
+/-- The universal (absolute) derivation on the presheaf of modules `absoluteDifferentials R`. -/
 noncomputable def absoluteDerivation : (absoluteDifferentials R).AbsoluteDerivation where
   d {X} := AddMonoidHom.mk' (fun x => KaehlerDifferential.D ℤ (R.obj X) x) (by simp)
   d_one := by dsimp; simp
@@ -191,6 +200,7 @@ variable {R}
 variable {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
   (d' : M'.AbsoluteDerivation)
 
+/-- Auxiliary definition for `absoluteDerivationUniversal`. -/
 noncomputable def desc : absoluteDifferentials R ⟶ M' :=
   Hom.mk'' (fun X => (d'.derivation X).liftKaehlerDifferential) (fun X Y f => by
     apply KaehlerDifferential.linearMap_ext ℤ (R.obj X)
@@ -227,12 +237,15 @@ lemma postcomp_injective {φ φ' : absoluteDifferentials R ⟶ M'}
 end absoluteDerivationUniversal
 
 open absoluteDerivationUniversal in
+/-- The (absolute) derivation on the presheaf of modules `absoluteDifferentials R` is universal. -/
 noncomputable def absoluteDerivationUniversal : (absoluteDerivation R).Universal where
-  desc {M'} d' := desc d'
+  desc d' := desc d'
 
 variable {R}
 variable (M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat))
 
+/-- The bijection `(absoluteDifferentials R ⟶ M') ≃ M'.AbsoluteDerivation` for any presheaf
+of modules `M` which is given by the universal property of `absoluteDifferentials R`. -/
 noncomputable abbrev absoluteDerivationHomEquiv :
     (absoluteDifferentials R ⟶ M') ≃ M'.AbsoluteDerivation :=
   (absoluteDerivationUniversal R).homEquiv M'
