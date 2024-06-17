@@ -35,8 +35,15 @@ with the Borel `MeasurableSpace` structure on `α`, we create a duplicate type,
 
 variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
+/-- Notation for `=ᶠ[residual _]`. That is, eventual equality with respect to
+the filter of residual sets.-/
 notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
+
+/-- Notation to say that a property of points in a topological space holds
+almost everywhere in the sense of Baire category. That is, on a residual set. -/
 notation3 "∀ᵇ "(...)", "r:(scoped p => Filter.Eventually p <| residual _) => r
+
+/-- Notation to say that a property of points in a topological space holds on a non meager set. -/
 notation3 "∃ᵇ "(...)", "r:(scoped p => Filter.Frequently p <| residual _) => r
 
 /-- A type tag for `α` with `MeasurableSet` given by `BaireMeasurableSet`. -/
@@ -120,7 +127,7 @@ open Filter
 theorem MeasurableSet.residualEq_open [MeasurableSpace α] [BorelSpace α] (h : MeasurableSet s) :
     ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u := by
   apply h.induction_on_open (fun s hs => ⟨s, hs, EventuallyEq.rfl⟩)
-  . rintro s - ⟨u, uo, su⟩
+  · rintro s - ⟨u, uo, su⟩
     refine ⟨(closure u)ᶜ, isClosed_closure.isOpen_compl,
       EventuallyEq.compl (su.trans $ EventuallyLE.antisymm subset_closure.eventuallyLE ?_)⟩
     have : (u ∪ (closure u)ᶜ) ∈ residual _ :=
