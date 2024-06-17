@@ -157,8 +157,8 @@ variable [TopologicalSpace X]
 
 open OrderDual
 
-instance : TopologicalSpace Xᵒᵈ := ‹TopologicalSpace X›
-instance [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹DiscreteTopology X›
+instance OrderDual.instTopologicalSpace : TopologicalSpace Xᵒᵈ := ‹_›
+instance OrderDual.instDiscreteTopology [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹_›
 
 theorem continuous_toDual : Continuous (toDual : X → Xᵒᵈ) := continuous_id
 #align continuous_to_dual continuous_toDual
@@ -183,6 +183,11 @@ theorem nhds_toDual (x : X) : 𝓝 (toDual x) = map toDual (𝓝 x) := rfl
 
 theorem nhds_ofDual (x : X) : 𝓝 (ofDual x) = map ofDual (𝓝 x) := rfl
 #align nhds_of_dual nhds_ofDual
+
+variable [Preorder X] {x : X}
+
+instance OrderDual.instNeBotNhdsWithinIoi [(𝓝[<] x).NeBot] : (𝓝[>] toDual x).NeBot := ‹_›
+instance OrderDual.instNeBotNhdsWithinIio [(𝓝[>] x).NeBot] : (𝓝[<] toDual x).NeBot := ‹_›
 
 end
 
@@ -533,9 +538,8 @@ theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (un
   h.comp (Continuous.Prod.mk_left _)
 #align continuous_uncurry_right Continuous.uncurry_right
 
--- 2024-03-09
-@[deprecated] alias continuous_uncurry_left := Continuous.uncurry_left
-@[deprecated] alias continuous_uncurry_right := Continuous.uncurry_right
+@[deprecated (since := "2024-03-09")] alias continuous_uncurry_left := Continuous.uncurry_left
+@[deprecated (since := "2024-03-09")] alias continuous_uncurry_right := Continuous.uncurry_right
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
   Continuous.uncurry_left x h

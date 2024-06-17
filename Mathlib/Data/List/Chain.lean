@@ -165,14 +165,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     intro i w
     exact h (i+1) (by simp only [length_cons]; omega)
 
-set_option linter.deprecated false in
-@[deprecated chain_iff_get (since := "2023-01-10")]
-theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
-    (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
-    ∀ (i) (h : i < length l - 1),
-    R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) := by
-  rw [chain_iff_get]; simp [nthLe]
-#align list.chain_iff_nth_le List.chain_iff_nthLe
+#align list.chain_iff_nth_le List.chain_iff_getₓ
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
@@ -364,13 +357,7 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
 
-set_option linter.deprecated false in
-@[deprecated chain'_iff_get (since := "2023-01-10")]
-theorem chain'_iff_nthLe {R} {l : List α} : Chain' R l ↔
-    ∀ (i) (h : i < length l - 1),
-      R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) :=
-  chain'_iff_get.trans <| by simp [nthLe]
-#align list.chain'_iff_nth_le List.chain'_iff_nthLe
+#align list.chain'_iff_nth_le List.chain'_iff_getₓ
 
 /-- If `l₁ l₂` and `l₃` are lists and `l₁ ++ l₂` and `l₂ ++ l₃` both satisfy
   `Chain' R`, then so does `l₁ ++ l₂ ++ l₃` provided `l₂ ≠ []` -/
