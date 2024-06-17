@@ -15,13 +15,17 @@ universe u w
 
 open CategoryTheory Limits LocallyConstant Opposite CompHausLike
 
+attribute [local instance] ConcreteCategory.instFunLike
+
+variable {P : TopCat.{u} → Prop}
+
 namespace CompHausLike.Aux
 
 section
 
 -- variable {S T : CompHaus.{u}} {Y : Type w} (f : S → Y) (f' : LocallyConstant S Y) (g : T ⟶ S)
 
-variable {S T Y : Type*}
+variable {S T : Type u} {Y : Type*}
   [TopologicalSpace S] [CompactSpace S] [TopologicalSpace T] [CompactSpace T]
   (f : S → Y) (f' : LocallyConstant S Y) (g : C(T, S))
 
@@ -38,7 +42,7 @@ In this section we define the indexing set for this partition and prove some API
 -/
 
 /-- The indexing set of the partition. -/
-def α : Type _ := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
+def α : Type u := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
 
 /--
 The map from `α f`. When `f` is locally constant, `S` is the coproduct of `σ f` in `CompHaus`.
@@ -157,7 +161,7 @@ end
 
 end Aux
 
-variable {P : TopCat.{u} → Prop}
+variable [HasExplicitFiniteCoproducts.{u} P]
 
 section SigmaComparison
 
@@ -165,14 +169,18 @@ variable
   (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) [PreservesFiniteProducts X]
   {α : Type u} [Finite α] (σ : α → Type u)
   [∀ a, TopologicalSpace (σ a)] [∀ a, CompactSpace (σ a)] [∀ a, T2Space (σ a)]
-  (h : ∀ a, P (TopCat.of (σ a))) (hP : P (TopCat.of (Σ (a : α), (TopCat.of (σ a)))))
-  [HasFiniteCoproducts (CompHausLike P)]
+  [∀ a, HasProp P (σ a)]
+  -- (h : ∀ a, P (TopCat.of (σ a))) -- (hP : P (TopCat.of (Σ (a : α), (TopCat.of (σ a)))))
+  -- [HasFiniteCoproducts (CompHausLike P)]
+
+instance : HasProp P (Σ (a : α), (σ a)) :=
+  HasExplicitFiniteCoproducts.hasProp (fun a ↦ of P (σ a))
 
 /--
 The comparison map from the value of a condensed set on a finite coproduct to the product of the
 values on the components.
 -/
-def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a) hP)⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a) (h a)⟩) :=
+def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a)⟩) :=
   fun x a ↦ X.map ⟨Sigma.mk a, continuous_sigmaMk⟩ x
 
 noncomputable instance : PreservesLimitsOfShape (Discrete α) X :=
@@ -182,16 +190,16 @@ noncomputable instance : PreservesLimitsOfShape (Discrete α) X :=
   have : Fintype α' := Fintype.ofEquiv α e
   preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) X
 
-theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ h hP =
+theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'
-      (finiteCoproduct.isColimit.{u, u} (fun a ↦ of P (σ a) (h a)) hP)
-      (productIsProduct fun x ↦ Opposite.op (of P (σ x) (h x))))).hom ≫
-    (PreservesProduct.iso X fun a ↦ ⟨of P (σ a) (h a)⟩).hom ≫
-    (Types.productIso.{u, max u w} fun a ↦ X.obj ⟨of P (σ a) (h a)⟩).hom := by
+      (finiteCoproduct.isColimit.{u, u} (fun a ↦ of P (σ a)))
+      (productIsProduct fun x ↦ Opposite.op (of P (σ x))))).hom ≫
+    (PreservesProduct.iso X fun a ↦ ⟨of P (σ a)⟩).hom ≫
+    (Types.productIso.{u, max u w} fun a ↦ X.obj ⟨of P (σ a)⟩).hom := by
   ext x a
   simp only [Cofan.mk_pt, Fan.mk_pt, Functor.mapIso_hom,
     PreservesProduct.iso_hom, types_comp_apply, Types.productIso_hom_comp_eval_apply]
-  have := congrFun (piComparison_comp_π X (fun a ↦ ⟨of P (σ a) (h a)⟩) a)
+  have := congrFun (piComparison_comp_π X (fun a ↦ ⟨of P (σ a)⟩) a)
   simp only [types_comp_apply] at this
   rw [this, ← FunctorToTypes.map_comp_apply]
   simp only [sigmaComparison]
@@ -199,12 +207,12 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ h hP =
   congr 2
   erw [← opCoproductIsoProduct_inv_comp_ι]
   simp only [coe_of, Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
-  change finiteCoproduct.ι.{u, u} (fun a ↦ of P (σ a) (h a)) hP _ = _
+  change finiteCoproduct.ι.{u, u} (fun a ↦ of P (σ a)) _ = _
   simp only [opCoproductIsoProduct, ← unop_comp, opCoproductIsoProduct'_comp_self]
   erw [IsColimit.fac]
   rfl
 
-instance isIsoSigmaComparison : IsIso <| sigmaComparison X σ h hP := by
+instance isIsoSigmaComparison : IsIso <| sigmaComparison X σ := by
   rw [sigmaComparison_eq_comp_isos]
   infer_instance
 
@@ -271,8 +279,8 @@ The hard part of this adjunction is to define the counit. See `counitAppApp` for
 -/
 
 variable {S T : CompHausLike.{u} P} (g : T ⟶ S) {Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w}
-    [PreservesFiniteProducts Y] (hu : P (TopCat.of PUnit.{u+1}))
-    (f : LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u+1} hu))))
+    [PreservesFiniteProducts Y] [HasProp P PUnit.{u+1}]
+    (f : LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u+1}))))
 
 variable (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike P),
       P (TopCat.of (Σ (a : α), (X a).toTop)))
@@ -283,26 +291,69 @@ variable (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike P),
 
 open Aux
 
+-- variable [∀ (a : α f), HasProp P a.val]
+
+variable (hh : ∀ (S : CompHausLike.{u} P) (s : Set S) (_ : IsClopen s), HasProp P s)
+
+lemma hasProp_fiber {S : CompHausLike.{u} P} {X : Type (max u w)}
+    (f : LocallyConstant S X) (a : α f) : HasProp P a.val := by
+  refine hh S _ ?_
+  convert f.2.isClopen_fiber a.image
+  rw [α.eq_fiber_image]
+  ext
+  simp
+
+instance (a : α f) : HasProp P (σ f a) := hasProp_fiber hh f a
+
+instance (a : α f) : HasProp P a.val := hasProp_fiber hh f a
+
 #exit
 
+-- instance (a : α f) : HasProp P a.val := (inferInstance : HasProp P (σ f a))
+
 /-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
-def sigmaIncl (a : α f) : CompHausLike.of P a.val ⟶ S := Condensed.sigmaIncl _ a
+def sigmaIncl (a : α f) : CompHausLike.of P a.val ⟶ S := CompHausLike.Aux.sigmaIncl _ a
 
 /-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in `CompHaus`. -/
-noncomputable def sigmaIso : (CompHaus.of <| (x : α f) × x.val) ≅ S :=
-  CompHaus.isoOfBijective (sigmaIsoHom f) ⟨sigmaIsoHom_inj f, sigmaIsoHom_surj f⟩
+noncomputable def sigmaIso : (CompHausLike.of P <| (x : α f) × x.val) ≅ S :=
+  CompHausLike.isoOfBijective (sigmaIsoHom f) ⟨sigmaIsoHom_inj f, sigmaIsoHom_surj f⟩
 
-lemma _root_.CompHaus.comp {X Y Z : CompHaus} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f ≫ g = (g : C(_, _)).comp f := rfl
+-- lemma _root_.CompHausLike.comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
+--     f ≫ g = (g : C(_, _)).comp f := rfl
 
 -- /--
 -- This is an auxiliary definition, the details do not matter. What's important is that this map exists
 -- so that the lemma `sigmaIncl_comp_sigmaIncl` works.
 -- -/
--- def sigmaInclIncl {X : Type w}
---     (g : (Y.obj (op (CompHaus.of PUnit.{u+1}))) → X) (a : α (f.map g))
---     (b : α (f.comap (sigmaIncl (f.map g) a))) :
---     CompHaus.of b.val ⟶ CompHaus.of (α.mk f (b.preimage).val).val where
+-- def sigmaInclIncl {X : Type w} (g : (Y.obj (op (CompHausLike.of P PUnit.{u+1}))) → X)
+--     (a : α (f.map g))
+--     (b : α (f.comap (Aux.sigmaIncl (map g f) a))) :
+--     C(b.val, (α.mk f (b.preimage).val).val) where
+--   toFun x := ⟨x.val.val, by
+--     rw [α.mem_iff_eq_image, α.mk_image]
+--     simp only [map_apply, sigmaIncl, coe_comap, ContinuousMap.coe_mk]
+--     have := x.prop
+--     rw [α.mem_iff_eq_image] at this
+--     simp only [map_apply, sigmaIncl, coe_comap,
+--       ContinuousMap.coe_mk, Function.comp_apply] at this
+--     rw [this]
+--     exact (α.map_preimage_eq_image _ _).symm⟩
+--   continuous_toFun := Continuous.subtype_mk (continuous_induced_dom.comp continuous_induced_dom) _
+
+-- lemma sigmaIncl_comp_sigmaIncl {X : Type w} (g : Y → X) (a : α (f'.map g))
+--     (b : α (f'.comap (sigmaIncl (f'.map g) a))) :
+--     (sigmaIncl (f'.map g) a).comp (sigmaIncl (f'.comap (sigmaIncl (f'.map g) a)) b) =
+--       (sigmaIncl f' (α.mk f' (b.preimage).val)).comp (sigmaInclIncl f' g a b) := rfl
+
+/--
+This is an auxiliary definition, the details do not matter. What's important is that this map exists
+so that the lemma `sigmaIncl_comp_sigmaIncl` works.
+-/
+def sigmaInclIncl {X : Type w}
+    (g : (Y.obj (op (CompHausLike.of P PUnit.{u+1}))) → X) (a : α (f.map g))
+    (b : α (f.comap ((Aux.sigmaIncl (f.map g) a)))) :
+    CompHausLike.of P b.val ⟶ CompHausLike.of P (α.mk f (b.preimage).val).val :=
+  Aux.sigmaInclIncl _ _ _ _
 --   toFun x := ⟨x.val.val, by
 --     rw [α.mem_iff_eq_image, α.mk_image]
 --     simp only [map_apply, CompHaus.coe_of, sigmaIncl, coe_comap,
@@ -315,18 +366,20 @@ lemma _root_.CompHaus.comp {X Y Z : CompHaus} (f : X ⟶ Y) (g : Y ⟶ Z) :
 --     exact (α.map_preimage_eq_image _ _).symm⟩
 --   continuous_toFun := Continuous.subtype_mk (continuous_induced_dom.comp continuous_induced_dom)
 
--- lemma sigmaIncl_comp_sigmaIncl {X : Type w}
---     (g : (Y.obj (op (CompHaus.of PUnit.{u+1}))) → X) (a : α (f.map g))
---     (b : α (f.comap (sigmaIncl (f.map g) a))) :
---     sigmaIncl (f.comap (sigmaIncl (f.map g) a)) b ≫ sigmaIncl (f.map g) a =
---       (sigmaInclIncl _ _ a b) ≫ sigmaIncl f (α.mk f (b.preimage).val) := rfl
+#exit
 
-lemma sigmaComparison_comp_sigmaIso' (X : CompHaus.{u}ᵒᵖ ⥤ Type max u w) (a : α f):
+lemma sigmaIncl_comp_sigmaIncl {X : Type w}
+    (g : (Y.obj (op (CompHausLike.of P PUnit.{u+1}))) → X) (a : α (f.map g))
+    (b : α (f.comap (Aux.sigmaIncl (f.map g) a))) :
+    sigmaIncl (f.comap (Aux.sigmaIncl (f.map g) a)) b ≫ Aux.sigmaIncl (f.map g) a =
+      (sigmaInclIncl f g a b) ≫ Aux.sigmaIncl f (α.mk f (b.preimage).val) := rfl
+
+lemma sigmaComparison_comp_sigmaIso' (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) (a : α f):
     (X.mapIso (sigmaIso f).op).hom ≫ sigmaComparison X (σ f) ≫ (fun g ↦ g a) =
       X.map (sigmaIncl f a).op := by
   ext
   simp only [Functor.mapIso_hom, Iso.op_hom, types_comp_apply, sigmaComparison,
-    CompHaus.coe_of, ← FunctorToTypes.map_comp_apply]
+    CompHausLike.coe_of, ← FunctorToTypes.map_comp_apply]
   congr
 
 lemma sigmaComparison_comp_sigmaIso (a : α f):
@@ -334,8 +387,12 @@ lemma sigmaComparison_comp_sigmaIso (a : α f):
       Y.map (sigmaIncl f a).op := sigmaComparison_comp_sigmaIso' f Y a
 
 /-- The projection of the counit. -/
-noncomputable def counitAppAppImage : (a : α f) → Y.obj ⟨CompHaus.of <| a.val⟩ :=
-  fun a ↦ Y.map (CompHaus.isTerminalPUnit.from _).op a.image
+noncomputable def counitAppAppImage : (a : α f) → Y.obj ⟨CompHausLike.of P a.val⟩ :=
+  fun a ↦ Y.map (CompHausLike.isTerminalPUnit.from _).op a.image
+
+
+-- variable (hh : ∀ (S : CompHausLike.{u} P) (X : Type (max u w)) (f : LocallyConstant S X) (a : α f),
+--   HasProp P a.val)
 
 /--
 The counit is defined as follows: given a locally constant map `f : S → Y(*)`, let
@@ -344,15 +401,17 @@ element of `Y(S)`. It suffices to provide an element of `Y(Sᵢ)` for all `i`. L
 the value of `f` on `Sᵢ`. Our desired element is the image of `yᵢ` under the canonical map
 `Y(*) → Y(Sᵢ)`.
 -/
-noncomputable def counitAppApp (S : CompHaus.{u}) (Y : CompHaus.{u}ᵒᵖ ⥤ Type max u w)
+noncomputable def counitAppApp (S : CompHausLike.{u} P) (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts Y] :
-    LocallyConstant S (Y.obj (op (CompHaus.of PUnit.{u+1}))) ⟶ Y.obj ⟨S⟩ :=
-  fun f ↦ ((inv (sigmaComparison Y (σ f))) ≫ (Y.mapIso (sigmaIso f).op).inv)
-    (counitAppAppImage f)
+    LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u+1}))) ⟶ Y.obj ⟨S⟩ :=
+  fun f ↦
+    have := hasProp_fiber hh f
+    ((inv (sigmaComparison Y (σ f))) ≫ (Y.mapIso (sigmaIso f).op).inv)
+      (counitAppAppImage f)
 
 -- This is the key lemma to prove naturality of the counit: to check equality of two elements of
 -- `X(S)`, it suffices to check equality after composing with each `X(S) → X(Sᵢ)`.
-lemma locallyConstantCondensed_ext (X : CompHaus.{u}ᵒᵖ ⥤ Type max u w)
+lemma locallyConstantCondensed_ext (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts X] (x y : X.obj ⟨S⟩)
     (h : ∀ (a : α f), X.map (sigmaIncl f a).op x = X.map (sigmaIncl f a).op y) : x = y := by
   apply_fun (X.mapIso (sigmaIso f).op).hom using injective_of_mono _
@@ -363,7 +422,7 @@ lemma locallyConstantCondensed_ext (X : CompHaus.{u}ᵒᵖ ⥤ Type max u w)
   exact h
 
 lemma incl_of_counitAppApp (a : α f) :
-    Y.map (sigmaIncl f a).op (counitAppApp S Y f) = counitAppAppImage f a := by
+    Y.map (sigmaIncl f a).op (counitAppApp hh S Y f) = counitAppAppImage f a := by
   rw [← sigmaComparison_comp_sigmaIso, Functor.mapIso_hom, Iso.op_hom, types_comp_apply]
   simp only [counitAppApp, Functor.mapIso_inv, ← Iso.op_hom, types_comp_apply,
     ← FunctorToTypes.map_comp_apply, Iso.inv_hom_id, FunctorToTypes.map_id_apply]
@@ -374,58 +433,71 @@ This is an auxiliary definition, the details do not matter. What's important is 
 so that the lemma `incl_comap` works.
 -/
 def component_hom (a : α (f.comap g)) :
-    CompHaus.of a.val ⟶ CompHaus.of (α.mk f (g a.preimage)).val where
+    have := hasProp_fiber hh (f.comap g)
+    CompHausLike.of P a.val ⟶ CompHausLike.of P (α.mk f (g a.preimage)).val where
   toFun x := ⟨g x.val, by
     simp only [α.mk, Set.mem_preimage, Set.mem_singleton_iff]
     erw [α.map_eq_image_comap, α.map_preimage_eq_image_comap]
     ⟩
   continuous_toFun := Continuous.subtype_mk (Continuous.comp g.continuous continuous_subtype_val) _
 
-lemma incl_comap {S T : CompHausᵒᵖ}
-    (f : LocallyConstant S.unop (Y.obj (op (CompHaus.of PUnit.{u+1}))))
-    (g : S ⟶ T) (a : α (f.comap g.unop)) : g ≫ (sigmaIncl (f.comap g.unop) a).op =
-    (sigmaIncl f _).op ≫ (component_hom g.unop f a).op := by
+lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
+    (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u+1}))))
+      (g : S ⟶ T) (a : α (f.comap g.unop)) :
+        have := hasProp_fiber hh (f.comap g.unop)
+        have := hasProp_fiber hh f
+        g ≫ (sigmaIncl (f.comap g.unop) a).op =
+          (sigmaIncl f _).op ≫ (component_hom g.unop f hh a).op := by
   rfl
 
 /-- The counit is natural in the compact Hausdorff space `S` -/
 @[simps!]
-noncomputable def counitApp (Y : CompHaus.{u}ᵒᵖ ⥤ Type max u w)
+noncomputable def counitApp (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts Y] :
-    (functorToPresheaves.obj (Y.obj (op (CompHaus.of PUnit.{u+1})))) ⟶ Y where
-  app := fun ⟨S⟩ ↦ counitAppApp S Y
+    (functorToPresheaves.obj (Y.obj (op (CompHausLike.of P PUnit.{u+1})))) ⟶ Y where
+  app := fun ⟨S⟩ ↦ counitAppApp hh S Y
   naturality := by
     intro S T g
     simp only [functorToPresheaves]
     ext f
+    have := hasProp_fiber hh (f.comap g.unop)
     apply locallyConstantCondensed_ext (f.comap g.unop)
     intro a
     simp only [op_unop, types_comp_apply]
-    rw [incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap]
+    rw [incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap hh]
     simp only [op_unop, FunctorToTypes.map_comp_apply]
     rw [incl_of_counitAppApp]
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
       terminal.comp_from, α.image_eq_image_mk]
     rfl
 
-theorem hom_apply_counitAppApp (X : CompHaus.{u}ᵒᵖ ⥤ Type max u w)
+theorem hom_apply_counitAppApp (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts X] (g : Y ⟶ X)
-    (a : α (f.map (g.app (op (CompHaus.of PUnit.{u+1}))))) :
-    X.map (sigmaIncl (map (g.app (op (CompHaus.of PUnit.{u+1}))) f) a).op
-      (g.app ⟨S⟩ (counitAppApp S Y f)) =
-        counitAppAppImage (map (g.app (op (CompHaus.of PUnit.{u+1}))) f) a := by
+    (a : α (f.map (g.app (op (CompHausLike.of P PUnit.{u+1}))))) :
+      have := hasProp_fiber hh (f.map (g.app (op (CompHausLike.of P PUnit.{u+1}))))
+      X.map (sigmaIncl (map (g.app (op (CompHausLike.of P PUnit.{u+1}))) f) a).op
+        (g.app ⟨S⟩ (counitAppApp hh S Y f)) =
+          counitAppAppImage (map (g.app (op (CompHausLike.of P PUnit.{u+1}))) f) a := by
+  intro x
+  have := hasProp_fiber hh
+    (f.comap (sigmaIncl (map (g.app (op (CompHausLike.of P PUnit.{u+1}))) f) a))
   apply locallyConstantCondensed_ext (f.comap (sigmaIncl _ _))
   intro b
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
   simp only [counitAppAppImage]
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-  simp only [CompHaus.coe_of, map_apply, IsTerminal.comp_from]
-  rw [← α.map_preimage_eq_image_map f (g.app (op (CompHaus.of PUnit.{u+1})))]
+  simp only [CompHausLike.coe_of, map_apply, IsTerminal.comp_from]
+  rw [← α.map_preimage_eq_image_map f (g.app (op (CompHausLike.of P PUnit.{u+1})))]
   change (_ ≫ X.map _) _ = (_ ≫ X.map _) _
   simp only [← g.naturality]
+  -- erw [CompHausLike.comp, sigmaIncl_comp_sigmaIncl]
+  -- simp only [coe_comap, map_apply, types_comp_apply]
+  -- erw [ContinuousMap.coe_comp]
   sorry
-  -- rw [CompHaus.comp, sigmaIncl_comp_sigmaIncl]
-  -- simp only [coe_comap, map_apply, CompHaus.coe_of, op_comp, Functor.map_comp, types_comp_apply]
-  -- rw [incl_of_counitAppApp]
+  -- change g.app _ (Y.map (_ ≫ (sigmaIncl _ _).op)) _ = _
+  -- simp only [coe_comap, map_apply, CompHausLike.coe_of, op_comp, Functor.map_comp, types_comp_apply]
+
+  -- erw [incl_of_counitAppApp]
   -- simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
   --   terminal.comp_from]
   -- erw [α.mk_image]
