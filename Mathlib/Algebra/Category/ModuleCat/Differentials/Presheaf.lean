@@ -9,10 +9,8 @@ import Mathlib.RingTheory.Kaehler
 /-!
 # The presheaf of differentials of a presheaf of modules
 
-In this file, we shall define the presheaf of relative differentials of of a morphism
-of presheaves of commutative rings `R₀ ⟶ R` (TODO). In order to do this, we first
-introduce the presheaf of absolute differentials `absoluteDifferenials R` (i.e. the
-differentials over `ℤ`).
+In order to do this, we first introduce the presheaf
+of absolute differentials `absoluteDifferentials R` (i.e. the differentials over `ℤ`).
 
 ## Main definitions
 
@@ -21,9 +19,12 @@ the type `M.AbsoluteDerivation` of absolute derivations from `R` to `M`.
 
 ## TODO
 
-- When the pullback of presheaves of modules is defined, construct
-relative version of the presheaf of differentials, as a cokernel
-of a suitable
+- If `F : C ⥤ D` is a functor, and `f : S ⟶ F.op ⋙ R` a morphism of presheaves of rings,
+construct the relative differentials of `f` as the quotient of `absoluteDifferentials R`
+by the image of the canonical morphism from the pullback of `absoluteDifferentials S`:
+this requires the construction of the pullback functor for presheaves of modules
+(as a left adjoint to the functor constructed in the file
+`Algebra.Category.ModuleCat.Presheaf.Pushforward`).
 - Sheafify these constructions
 
 -/
@@ -147,13 +148,12 @@ noncomputable def absoluteDifferentialsBundledCore :
     letI := (R.map f).toAlgebra
     exact KaehlerDifferential.map ℤ ℤ (R.obj X) (R.obj Y)
   map_id X := by
-    convert KaehlerDifferential.linearMap_ext ℤ (R.obj X) _ _ _
+    convert KaehlerDifferential.linearMap_ext _
     intro x
-    dsimp
     erw [ModuleCat.restrictScalarsId'App_inv_apply]
     rw [KaehlerDifferential.map_D, R.map_id, Algebra.id.map_eq_id, RingHom.id_apply]
   map_comp {X Y Z} f g := by
-    convert KaehlerDifferential.linearMap_ext ℤ (R.obj X) _ _ _
+    convert KaehlerDifferential.linearMap_ext _
     intro x
     letI := (R.map f).toAlgebra
     letI := (R.map g).toAlgebra
@@ -205,7 +205,7 @@ variable {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
 /-- Auxiliary definition for `absoluteDerivationUniversal`. -/
 noncomputable def desc : absoluteDifferentials R ⟶ M' :=
   Hom.mk'' (fun X => (d'.derivation X).liftKaehlerDifferential) (fun X Y f => by
-    apply KaehlerDifferential.linearMap_ext ℤ (R.obj X)
+    apply KaehlerDifferential.linearMap_ext (R := ℤ) (S := R.obj X)
     intro x
     dsimp
     erw [ModuleCat.comp_apply, ModuleCat.comp_apply, restrictionApp_apply,
