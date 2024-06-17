@@ -43,134 +43,6 @@ namespace RootPairing
 
 variable (P : RootPairing ι R M N) (i j : ι)
 
-lemma root_ne (h: i ≠ j) : P.root i ≠ P.root j := by
-  simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, not_false_eq_true]
-
-lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
-  fun h ↦ by simpa [h] using P.root_coroot_two i
-
-lemma ne_zero' [CharZero R] : (P.coroot i : N) ≠ 0 :=
-  fun h ↦ by simpa [h] using P.root_coroot_two i
-
-@[simp]
-lemma root_coroot_eq_pairing :
-    P.toLin (P.root i) (P.coroot j) = P.pairing i j :=
-  rfl
-
-lemma coroot_root_eq_pairing :
-    P.toLin.flip (P.coroot i) (P.root j) = P.pairing j i := by
-  simp
-
-@[simp]
-lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
-
-lemma coroot_root_two :
-    P.toLin.flip (P.coroot i) (P.root i) = 2 := by
-  simp
-
-@[simp] lemma flip_flip : P.flip.flip = P := rfl
-
-lemma reflection_apply (x : M) :
-    P.reflection i x = x - (P.toLin x (P.coroot i)) • P.root i :=
-  rfl
-
-lemma reflection_apply_root :
-    P.reflection i (P.root j) = P.root j - (P.pairing j i) • P.root i :=
-  rfl
-
-@[simp]
-lemma reflection_apply_self :
-    P.reflection i (P.root i) = - P.root i :=
-  Module.reflection_apply_self (P.coroot_root_two i)
-
-@[simp]
-lemma reflection_same (x : M) : P.reflection i (P.reflection i x) = x :=
-  Module.involutive_reflection (P.coroot_root_two i) x
-
-lemma reflection_invOn_self : InvOn (P.reflection i) (P.reflection i) (range P.root)
-    (range P.root) := by
-  constructor <;>
-    exact fun x _ => Module.involutive_reflection (P.coroot_root_two i) x
-
-lemma bijOn_reflection_root : BijOn (P.reflection i) (range P.root) (range P.root) := InvOn.bijOn
-  (reflection_invOn_self P i) (mapsTo_preReflection_root P i) (mapsTo_preReflection_root P i)
-
-lemma coreflection_apply (f : N) :
-    P.coreflection i f = f - (P.toLin (P.root i) f) • P.coroot i :=
-  rfl
-
-@[simp]
-lemma coreflection_apply_self :
-    P.coreflection i (P.coroot i) = - P.coroot i :=
-  Module.reflection_apply_self (P.flip.coroot_root_two i)
-
-lemma coreflection_eq_flip_reflection (f : N) : P.coreflection i f = P.flip.reflection i f :=
-  rfl
-
-@[simp]
-lemma coreflection_self (x : N) : P.coreflection i (P.coreflection i x) = x :=
-  reflection_same P.flip i x
-
-lemma coreflection_invOn_self : InvOn (P.coreflection i) (P.coreflection i) (range P.coroot)
-    (range P.coroot) := reflection_invOn_self P.flip i
-
-lemma bijOn_coreflection_coroot : BijOn (P.coreflection i) (range P.coroot) (range P.coroot) :=
-  bijOn_reflection_root P.flip i
-
-@[simp]
-lemma reflection_image_eq :
-    P.reflection i '' (range P.root) = range P.root :=
-  (P.bijOn_reflection_root i).image_eq
-
-@[simp]
-lemma coreflection_image_eq :
-    P.coreflection i '' (range P.coroot) = range P.coroot :=
-  (P.bijOn_coreflection_coroot i).image_eq
-
-lemma reflection_dualMap_eq_coreflection :
-    (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
-  ext n m
-  simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
-
-lemma reflection_mul (x : M) :
-    (P.reflection i * P.reflection j) x = P.reflection i (P.reflection j x) := rfl
-
-lemma isCrystallographic_iff :
-    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
-  rw [IsCrystallographic]
-  refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
-  · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
-  · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
-
-lemma isReduced_iff : P.IsReduced ↔ ∀ (i j : ι), i ≠ j →
-    ¬ LinearIndependent R ![P.root i, P.root j] → P.root i = - P.root j := by
-  rw [IsReduced]
-  refine ⟨fun h i j hij hLin ↦ ?_, fun h i j hLin  ↦ ?_⟩
-  · specialize h i j hLin
-    simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, false_or]
-  · by_cases h' : i = j
-    · exact Or.inl (congrArg (⇑P.root) h')
-    · exact Or.inr (h i j h' hLin)
-
-section pairs
-
-lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
-  simp only [coxeterWeight, mul_comm]
-
-lemma IsOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
-  simp only [IsOrthogonal, and_comm]
-
-lemma IsOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
-  rw [Commute, SemiconjBy]
-  ext v
-  simp_all only [IsOrthogonal, reflection_mul, reflection_apply, smul_sub]
-  simp_all only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply,
-    root_coroot_eq_pairing, smul_eq_mul, mul_zero, sub_zero]
-  exact sub_right_comm v ((P.toLin v) (P.coroot j) • P.root j)
-      ((P.toLin v) (P.coroot i) • P.root i)
-
-end pairs
-
 variable [Finite ι]
 
 lemma eq_of_pairing_pairing_eq_two [NoZeroSMulDivisors ℤ M] (i j : ι)
@@ -227,6 +99,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootPairing ι R M N}
     (he : P₁.toLin = P₂.toLin)
     (hr : P₁.root = P₂.root)
+    (hp : P₁.reflection_perm = P₂.reflection_perm)
     (hc : range P₁.coroot = range P₂.coroot) :
     P₁ = P₂ := by
   suffices P₁.coroot = P₂.coroot by cases' P₁ with p₁; cases' P₂ with p₂; cases p₁; cases p₂; congr
@@ -237,9 +110,9 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   apply Dual.eq_of_preReflection_mapsTo' (P₁.ne_zero i) (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
-  · exact P₁.mapsTo_preReflection_root i
+  · exact P₁.reflection_mapsto_root i
   · exact hr ▸ he ▸ P₂.coroot_root_two i
-  · exact hr ▸ he ▸ P₂.mapsTo_preReflection_root i
+  · exact hr ▸ he ▸ P₂.reflection_mapsto_root i
 
 /-- This lemma exists to support the definition `RootSystem.mk'` and usually should not be used
 directly. The lemma `RootPairing.coroot_eq_coreflection_of_root_eq_of_span_eq_top` or even
@@ -282,7 +155,7 @@ lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZeroSMulD
     {i j k : ι} (hk : P.root k = P.reflection i (P.root j)) :
     P.coroot k = P.coreflection i (P.coroot j) :=
   coroot_eq_coreflection_of_root_eq_of_span_eq_top' P.toPerfectPairing P.root P.coroot
-    P.coroot_root_two P.mapsTo_preReflection_root hsp hk
+    P.coroot_root_two P.reflection_mapsto_root hsp hk
 
 end RootPairing
 
@@ -299,7 +172,8 @@ its roots. -/
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootSystem ι R M N}
     (he : P₁.toLin = P₂.toLin)
-    (hr : P₁.root = P₂.root) :
+    (hr : P₁.root = P₂.root)
+    (hp : P₁.reflection_perm = P₂.reflection_perm) :
     P₁ = P₂ := by
   suffices ∀ P₁ P₂ : RootSystem ι R M N, P₁.toLin = P₂.toLin → P₁.root = P₂.root →
       range P₁.coroot ⊆ range P₂.coroot by
@@ -308,16 +182,16 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     cases' P₁ with P₁
     cases' P₂ with P₂
     congr
-    exact RootPairing.ext he hr (le_antisymm h₁ h₂)
+    exact RootPairing.ext he hr hp (le_antisymm h₁ h₂)
   clear! P₁ P₂
   rintro P₁ P₂ he hr - ⟨i, rfl⟩
   use i
   apply P₁.bijectiveRight.injective
   apply Dual.eq_of_preReflection_mapsTo (P₁.ne_zero i) (finite_range P₁.root) P₁.span_eq_top
   · exact hr ▸ he ▸ P₂.coroot_root_two i
-  · exact hr ▸ he ▸ P₂.mapsTo_preReflection_root i
+  · exact hr ▸ he ▸ P₂.reflection_mapsto_root i
   · exact P₁.coroot_root_two i
-  · exact P₁.mapsTo_preReflection_root i
+  · exact P₁.reflection_mapsto_root i
 
 /-- In characteristic zero if there is no torsion, to check that a family of roots form a root
 system, we do not need to check that the coroots are stable under reflections since this follows
@@ -334,12 +208,15 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M]
   root := root
   coroot := coroot
   root_coroot_two := hp
-  mapsTo_preReflection_root := hs
   span_eq_top := hsp
-  mapsTo_preReflection_coroot := by
-    rintro i - ⟨j, rfl⟩
-    obtain ⟨k, h⟩ := hs i (mem_range_self j)
-    exact ⟨k, coroot_eq_coreflection_of_root_eq_of_span_eq_top' p root coroot hp hs hsp h⟩
+  reflection_perm i := reflection_in i p root coroot hp hs
+  reflection_perm_root i j := by
+    simp only [reflection_in_apply]
+    rw [← (exist_root_reflection p root coroot i j hs).choose_spec]
+  reflection_perm_coroot i j := by
+    simp only [reflection_in_apply]
+    refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top' p root coroot hp hs hsp ?_).symm
+    rw [← (exist_root_reflection p root coroot i j hs).choose_spec]
 
 /-- In characteristic zero if there is no torsion, if the `i`th reflection of the `j`th root is the
 `k`th root, then the corresponding relationship holds for coroots. -/
