@@ -35,7 +35,7 @@ In particular, they can be computed by strong induction to be:
 elliptic curve, division polynomial, torsion point
 -/
 
-open Polynomial PolynomialPolynomial
+open Polynomial
 
 universe u
 
