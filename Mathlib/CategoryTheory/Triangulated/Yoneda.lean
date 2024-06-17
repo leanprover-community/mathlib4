@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.Opposite
 
@@ -46,14 +47,16 @@ lemma preadditiveYoneda_map_distinguished
 noncomputable instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).ShiftSequence ℤ :=
   Functor.ShiftSequence.tautological _ _
 
-noncomputable instance preadditiveYonedaShiftSequence (B : C) :
-    (preadditiveYoneda.obj B).ShiftSequence ℤ where
+noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
   sequence n := preadditiveYoneda.obj (B⟦n⟧)
   isoZero := preadditiveYoneda.mapIso ((shiftFunctorZero C ℤ).app B)
   shiftIso n a a' h := NatIso.ofComponents (fun A ↦ AddEquiv.toAddCommGroupCatIso
-    { toEquiv := oppositeShiftHomEquiv' A.unop B n a a' h
-      map_add' := sorry }) sorry
-  shiftIso_zero := sorry
-  shiftIso_add := sorry
+    { toEquiv := Quiver.Hom.opEquiv.trans (ShiftedHom.opEquiv' n a a' h).symm
+      map_add' := fun _ _ ↦ ShiftedHom.opEquiv'_symm_add _ _ _ h })
+        (by intros; ext; apply ShiftedHom.opEquiv'_symm_comp _ _ _ h)
+  shiftIso_zero a := by ext; apply ShiftedHom.opEquiv'_zero_add_symm
+  shiftIso_add n m a a' a'' ha' ha'' := by
+    ext _ x
+    exact ShiftedHom.opEquiv'_add_symm n m a a' a'' ha' ha'' x.op
 
 end CategoryTheory

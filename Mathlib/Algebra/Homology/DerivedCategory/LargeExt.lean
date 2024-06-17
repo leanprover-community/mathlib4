@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
-import Mathlib.CategoryTheory.Shift.ShiftedHom
 import Mathlib.CategoryTheory.Triangulated.Yoneda
 
 /-!
@@ -343,9 +342,8 @@ noncomputable def contravariantSequenceIso (n₀ n₁ : ℕ) (h : n₀ + 1 = n�
     (by ext x; apply ShiftedHom.mk₀_comp) (by ext x; apply ShiftedHom.mk₀_comp)
     (by
       ext x
-      have eq := oppositeShiftHomEquiv'_compatibility hS.singleδ x.hom n₁ (by omega)
-      nth_rw 2 [← assoc] at eq
-      exact eq)
+      exact (ShiftedHom.opEquiv'_symm_op_opShiftFunctorEquivalence_counitIso_inv_app_op_shift
+        hS.singleδ x.hom n₁ (by omega)).symm)
     (by ext x; apply ShiftedHom.mk₀_comp) (by ext x; apply ShiftedHom.mk₀_comp)
 
 lemma contravariantSequence_exact (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
