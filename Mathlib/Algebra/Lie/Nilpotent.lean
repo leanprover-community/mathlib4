@@ -486,8 +486,7 @@ theorem ucs_mono (k : ℕ) (h : N₁ ≤ N₂) : N₁.ucs k ≤ N₂.ucs k := by
   induction' k with k ih
   · simpa
   simp only [ucs_succ]
-  -- Porting note: `mono` makes no progress
-  apply monotone_normalizer ih
+  mono
 #align lie_submodule.ucs_mono LieSubmodule.ucs_mono
 
 theorem ucs_eq_self_of_normalizer_eq_self (h : N₁.normalizer = N₁) (k : ℕ) : N₁.ucs k = N₁ := by
