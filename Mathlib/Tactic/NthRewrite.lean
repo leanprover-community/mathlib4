@@ -17,11 +17,13 @@ namespace Mathlib.Tactic
 
 open Lean Elab Tactic Meta Parser.Tactic
 
-/-- `nth_rewrite` is a variant of `rewrite` that only changes the nth occurrence of the expression
-to be rewritten. `nth_rewrite n [eq₁, eq₂, ..., eqₘ]` will rewrite the `n`ᵗʰ occurrence
-of each of the `m` equalities `eqᵢ`.
+/-- `nth_rewrite` is a variant of `rewrite` that only changes the `n`ᵗʰ _occurrence_ of the
+expression to be rewritten. `nth_rewrite n [eq₁, eq₂, ..., eqₘ]` will rewrite the `n`ᵗʰ _occurrence_
+of each of the `m` equalities `eqᵢ`in that order. Occurrences are counted beginning with `1`.
+If a term `t` is introduced by rewriting with `eqᵢ`, then this instance of `t` will be counted
+as an _occurrence_ of `t`for all subsequent rewrites of `t` with `eqⱼ` for `j > i`.
 
-Note: The occurrences are counted beginning with `1` and not `0`, this is different than in
+Note : The occurrences are counted beginning with `1` and not `0`, this is different than in
 mathlib3. The translation will be handled by mathport. -/
 syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (location)? : tactic
 
@@ -43,8 +45,11 @@ syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (lo
 
 /--
 `nth_rw` is a variant of `nth_rewrite` that also tries to close the goal by trying `rfl` afterwards.
-`nth_rw n [eq₁, eq₂,...]` rewrites the `n`ᵗʰ occurrence of each equality `eq₁`, `eq₂`,... etc.
-Occurrences are counted beginning with `1`.
+`nth_rw n [eq₁, eq₂,..., eqₘ]` will rewrite the `n`ᵗʰ _occurrence_ of each of the `m` equalities
+`eqᵢ`in that order. Occurrences are counted beginning with `1`. If a term `t` is introduced
+by rewriting with `eqᵢ`, then this instance of `t` will be counted as an _occurrence_ of `t` for all
+subsequent rewrites of `t` with `eqⱼ` for `j > i`. Further, `nth_rw` will close the remaining goal
+with `rfl` if possible.
 -/
 macro (name := nthRwSeq) "nth_rw" c:(config)? ppSpace n:num s:rwRuleSeq l:(location)? : tactic =>
   -- Note: This is a direct copy of `nth_rw` from core.
