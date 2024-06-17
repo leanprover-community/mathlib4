@@ -183,7 +183,15 @@ opaque deriv (f : α → β) (x dx : α) : β := f x
 @[fun_trans] theorem deriv_apply (x : α) : deriv (fun f : α → β => f x) = fun f df => df x := silentSorry
 @[fun_trans] theorem deriv_applyDep (x : α) : deriv (fun f : (x' : α) → E x' => f x) = fun f df => df x := silentSorry
 @[fun_trans] theorem deriv_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) :
-    deriv (fun x => f (g x)) = fun x dx => deriv f (g x) (deriv g x dx) := silentSorry
+    deriv (fun x => f (g x)) = fun x dx => let y := g x; let dy := deriv g x dx; deriv f y dy := silentSorry
+@[fun_trans] theorem deriv_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) :
+    deriv (fun x => let y := g x; f x y)
+    =
+    fun x dx =>
+      let y := g x
+      let dy := deriv g x dx
+      let dz := deriv (fun (x,y) => f x y) (x,y) (dx,dy)
+      dz := silentSorry
 @[fun_trans] theorem deriv_comp_at (f : β → γ) (g : α → β) (x) (hf : ConAt f (g x)) (hg : ConAt g x) :
     deriv (fun x => f (g x)) x = fun dx => deriv f (g x) (deriv g x dx) := silentSorry
 @[fun_trans] theorem deriv_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) :
@@ -277,6 +285,19 @@ example (f : α → β) :
   (fun x => deriv f x)
   =
   (fun x => deriv f x) := by fun_trans
+
+
+set_option trace.Meta.Tactic.fun_trans true
+
+example (f : α → α) (hf : Con f) :
+  (deriv (fun x => let x1 := f x; let b := 1; let x2 := f x1; x2))
+  =
+  sorry := by fun_trans (config := {zeta:=false}); sorry
+
+example (op : α → α → α) (hf : Con (fun (x,y) => op x y)) :
+  (deriv (fun x => let x1 := op x x; let x2 := op x1 x; x2))
+  =
+  sorry := by fun_trans (config := {zeta:=false}); sorry
 
 
 #exit

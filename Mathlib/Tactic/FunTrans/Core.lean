@@ -400,10 +400,25 @@ def letCase (funTransDecl : FunTransDecl) (e f : Expr) : SimpM (Option Simp.Resu
 
   let .lam xName xType (.letE yName yType yVal yBody _) xBi := f | return none
 
-  let f := Expr.lam xName xType (.lam yName yType yBody .default) xBi
-  let g := Expr.lam xName xType yVal .default
+  match (yBody.hasLooseBVar 0), (yBody.hasLooseBVar 1) with
+  | true, true =>
 
-  applyLetRule funTransDecl e f g
+    let f := Expr.lam xName xType (.lam yName yType yBody .default) xBi
+    let g := Expr.lam xName xType yVal .default
+
+    applyLetRule funTransDecl e f g
+  | true, false =>
+    let f := Expr.lam yName yType yBody default
+    let g := Expr.lam xName xType yVal default
+
+    applyCompRule funTransDecl e f g
+
+  | false, _ =>
+    let f := Expr.lam xName xType (yBody.lowerLooseBVars 1 1) xBi
+    let e' := e.setArg (funTransDecl.funArgId) f
+
+    return .some ({expr := e'})
+
 
 
 def bvarAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.FunctionData) : SimpM (Option Simp.Result) := do
