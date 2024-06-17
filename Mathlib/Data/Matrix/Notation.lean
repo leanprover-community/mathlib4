@@ -179,7 +179,7 @@ end DotProduct
 
 section ColRow
 
-variable {ι : Type*} [Unique ι]
+variable {ι : Type*}
 @[simp]
 theorem col_empty (v : Fin 0 → α) : col ι v = vecEmpty :=
   empty_eq _
