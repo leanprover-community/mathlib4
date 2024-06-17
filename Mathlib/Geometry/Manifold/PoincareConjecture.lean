@@ -7,17 +7,26 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Topology.Homotopy.Equiv
+import Mathlib.Util.Superscript
 
 /-!
 # Statement of the generalized Poincaré conjecture
 
 https://en.wikipedia.org/wiki/Generalized_Poincar%C3%A9_conjecture
+
+The mathlib notation `≃ₕ` stands for a homotopy equivalence, while `≃ₜ` stands for a homeomorphism.
 -/
 
 open scoped Manifold
 open Metric (sphere)
 
+local macro "ℝ"n:superscript(term) : term => `(EuclideanSpace ℝ (Fin $(⟨n.raw[0]⟩)))
+local macro "𝕊"n:superscript(term) : term =>
+  `(sphere (0 : EuclideanSpace ℝ (Fin ($(⟨n.raw[0]⟩) + 1))) 1)
+
 variable (M : Type*) [TopologicalSpace M] [T2Space M]
+
+open ContinuousMap
 
 /-- The generalized topological Poincaré conjecture.
  - For n = 2 it follows from the classification of surfaces.
@@ -26,39 +35,34 @@ variable (M : Type*) [TopologicalSpace M] [T2Space M]
  - For n = 4 it was proven by Michael Freedman in 1982.
  - For n = 3 it was proven by Grigori Perelman in 2003. -/
 proof_wanted ContinuousMap.HomotopyEquiv.nonempty_homeomorph_sphere
-    (n : ℕ) [ChartedSpace (EuclideanSpace ℝ (Fin n)) M] :
-    letI S := sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1
-    ContinuousMap.HomotopyEquiv M S → Nonempty (Homeomorph M S)
+    (n : ℕ) [ChartedSpace (ℝⁿ) M] : M ≃ₕ 𝕊ⁿ → Nonempty (M ≃ₜ 𝕊ⁿ)
 
 /-- The 3-dimensional topological Poincaré conjecture (proven by Perelman) -/
-proof_wanted SimplyConnectedSpace.nonempty_homeomorph_sphere_fin4
-    [ChartedSpace (EuclideanSpace ℝ (Fin 3)) M] [SimplyConnectedSpace M] [CompactSpace M] :
-    Nonempty (Homeomorph M <| sphere (0 : EuclideanSpace ℝ (Fin 4)) 1)
+proof_wanted SimplyConnectedSpace.nonempty_homeomorph_sphere_three
+    [ChartedSpace (ℝ³) M] [SimplyConnectedSpace M] [CompactSpace M] :
+    Nonempty (M ≃ₜ 𝕊³)
 
 /-- The 3-dimensional smooth Poincaré conjecture (proven by Perelman) -/
-proof_wanted SimplyConnectedSpace.nonempty_diffeomorph_sphere_fin4
-    [ChartedSpace (EuclideanSpace ℝ (Fin 3)) M] [SmoothManifoldWithCorners (𝓡 3) M]
+proof_wanted SimplyConnectedSpace.nonempty_diffeomorph_sphere_three
+    [ChartedSpace (ℝ³) M] [SmoothManifoldWithCorners (𝓡 3) M]
     [SimplyConnectedSpace M] [CompactSpace M] :
-    Nonempty (Diffeomorph (𝓡 3) (𝓡 3) M (sphere (0 : EuclideanSpace ℝ (Fin 4)) 1) ∞)
+    Nonempty (Diffeomorph (𝓡 3) (𝓡 3) M (𝕊³) ∞)
 
 /-- The smooth Poincaré conjecture; true for n = 1, 2, 3, 5, 6, 12, 56, and 61,
 open for n = 4, and it is conjectured that there are no other n > 4 for which it is true
 (Conjecture 1.17, https://annals.math.princeton.edu/2017/186-2/p03). -/
 def ContinuousMap.HomotopyEquiv.NonemptyDiffeomorphSphere (n : ℕ) : Prop :=
-  ∀ (_ : ChartedSpace (EuclideanSpace ℝ (Fin n)) M) (_ : SmoothManifoldWithCorners (𝓡 n) M),
-    letI S := sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1
-    ContinuousMap.HomotopyEquiv M S → Nonempty (Diffeomorph (𝓡 n) (𝓡 n) M S ∞)
+  ∀ (_ : ChartedSpace (ℝⁿ) M) (_ : SmoothManifoldWithCorners (𝓡 n) M),
+    M ≃ₕ 𝕊ⁿ → Nonempty (Diffeomorph (𝓡 n) (𝓡 n) M (𝕊ⁿ) ∞)
 
 /-- The existence of an exotic 7-sphere (due to John Milnor) -/
-proof_wanted exists_homeomorph_isEmpty_diffeomorph_sphere_fin8 :
-    letI S := sphere (0 : EuclideanSpace ℝ (Fin 8)) 1
-    ∃ (M : Type) (_ : TopologicalSpace M) (_ : ChartedSpace (EuclideanSpace ℝ (Fin 7)) M)
-      (_ : SmoothManifoldWithCorners (𝓡 7) M) (_homeo : Homeomorph M S),
-      IsEmpty (Diffeomorph (𝓡 7) (𝓡 7) M S ∞)
+proof_wanted exists_homeomorph_isEmpty_diffeomorph_sphere_seven :
+    ∃ (M : Type) (_ : TopologicalSpace M) (_ : ChartedSpace (ℝ⁷) M)
+      (_ : SmoothManifoldWithCorners (𝓡 7) M) (_homeo : M ≃ₜ 𝕊⁷),
+      IsEmpty (Diffeomorph (𝓡 7) (𝓡 7) M (𝕊⁷) ∞)
 
 /-- The existence of a small exotic ℝ⁴, i.e. an open subset of ℝ⁴ that is homeomorphic but
 not diffeomorphic to ℝ⁴. See https://en.wikipedia.org/wiki/Exotic_R4. -/
-proof_wanted exists_open_nonempty_homeomorph_isEmpty_diffeomorph_euclideanSpace_fin4 :
-    letI R4 := EuclideanSpace ℝ (Fin 4)
-    ∃ S : TopologicalSpace.Opens R4,
-      Nonempty (Homeomorph R4 S) ∧ IsEmpty (Diffeomorph (𝓡 4) (𝓡 4) R4 S ∞)
+proof_wanted exists_open_nonempty_homeomorph_isEmpty_diffeomorph_euclideanSpace_four :
+    ∃ M : TopologicalSpace.Opens (ℝ⁴),
+      Nonempty (M ≃ₜ ℝ⁴) ∧ IsEmpty (Diffeomorph (𝓡 4) (𝓡 4) M (ℝ⁴) ∞)
