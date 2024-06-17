@@ -349,12 +349,8 @@ theorem Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a :=
       hp.coeff_natDegree ▸ (C_dvd_iff_dvd_coeff _ _).mp h p.natDegree,
    fun ha => (ha.map C).dvd⟩
 
-theorem Monic.natDegree_pos_of_ne_one (hu : p ≠ 1) : 0 < natDegree p := by
-  by_contra! hp'
-  exact hu <| eq_one_of_monic_natDegree_zero hp (by omega)
-
 theorem Monic.natDegree_pos : 0 < natDegree p ↔ p ≠ 1 :=
-  ⟨fun hu ↦ by contrapose! hu; rw [hu]; compute_degree!, fun hu ↦ hp.natDegree_pos_of_ne_one hu⟩
+  Nat.pos_iff_ne_zero.trans (Monic.natDegree_eq_zero hp).not
 
 theorem Monic.degree_pos : 0 < degree p ↔ p ≠ 1 :=
   natDegree_pos_iff_degree_pos.symm.trans hp.natDegree_pos
