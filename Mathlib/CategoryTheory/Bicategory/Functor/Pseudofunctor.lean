@@ -204,6 +204,30 @@ def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) :=
   (F : OplaxFunctor B C).mapFunctor a b
 #align category_theory.pseudofunctor.map_functor CategoryTheory.Pseudofunctor.mapFunctor
 
+/-- The identity pseudofunctor. -/
+@[simps]
+def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
+  { PrelaxFunctor.id B with
+    mapId := fun a => Iso.refl (𝟙 a)
+    mapComp := fun f g => Iso.refl (f ≫ g) }
+#align category_theory.pseudofunctor.id CategoryTheory.Pseudofunctor.id
+
+instance : Inhabited (Pseudofunctor B B) :=
+  ⟨id B⟩
+
+/-- Composition of pseudofunctors. -/
+def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
+  { (F : PrelaxFunctor B C).comp
+      (G : PrelaxFunctor C D) with
+    mapId := fun a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a)
+    mapComp := fun f g =>
+      (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
+#align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
+
+-- `comp` is near the `maxHeartbeats` limit (and seems to go over in CI),
+-- so we defer creating its `@[simp]` lemmas until a separate command.
+attribute [simps] comp
+
 section
 
 variable {a b : B}
@@ -246,30 +270,6 @@ lemma map₂_inv_hom {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
   simp
 
 end
-
-/-- The identity pseudofunctor. -/
-@[simps]
-def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
-  { PrelaxFunctor.id B with
-    mapId := fun a => Iso.refl (𝟙 a)
-    mapComp := fun f g => Iso.refl (f ≫ g) }
-#align category_theory.pseudofunctor.id CategoryTheory.Pseudofunctor.id
-
-instance : Inhabited (Pseudofunctor B B) :=
-  ⟨id B⟩
-
-/-- Composition of pseudofunctors. -/
-def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
-  { (F : PrelaxFunctor B C).comp
-      (G : PrelaxFunctor C D) with
-    mapId := fun a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a)
-    mapComp := fun f g =>
-      (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
-#align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
-
--- `comp` is near the `maxHeartbeats` limit (and seems to go over in CI),
--- so we defer creating its `@[simp]` lemmas until a separate command.
-attribute [simps] comp
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
 -/
