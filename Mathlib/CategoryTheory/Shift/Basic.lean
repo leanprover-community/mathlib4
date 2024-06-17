@@ -535,8 +535,8 @@ theorem shift_shiftFunctorCompIsoId_neg_add_self_inv_app (n : A) (X : C) :
   apply shift_shiftFunctorCompIsoId_inv_app
 #align category_theory.shift_shift_functor_comp_iso_id_neg_add_self_inv_app CategoryTheory.shift_shiftFunctorCompIsoId_neg_add_self_inv_app
 
-lemma shiftFunctorCompIsoId_add'_inv_app (m n p m' n' p' : A) (hm : m' + m = 0) (hn : n' + n = 0) (hp : p' + p = 0)
-    (h : m + n = p) :
+lemma shiftFunctorCompIsoId_add'_inv_app (m n p m' n' p' : A)
+    (hm : m' + m = 0) (hn : n' + n = 0) (hp : p' + p = 0) (h : m + n = p) :
     (shiftFunctorCompIsoId C p' p hp).inv.app X =
       (shiftFunctorCompIsoId C n' n hn).inv.app X ≫
         (shiftFunctorCompIsoId C m' m hm).inv.app (X⟦n'⟧)⟦n⟧' ≫
@@ -544,7 +544,21 @@ lemma shiftFunctorCompIsoId_add'_inv_app (m n p m' n' p' : A) (hm : m' + m = 0) 
         ((shiftFunctorAdd' C n' m' p'
           (by rw [← add_left_inj p, hp, ← h, add_assoc,
             ← add_assoc m', hm, zero_add, hn])).inv.app X)⟦p⟧' := by
-  sorry
+  dsimp [shiftFunctorCompIsoId]
+  simp only [Functor.map_comp, Category.assoc]
+  congr 1
+  erw [← NatTrans.naturality]
+  dsimp
+  rw [← cancel_mono ((shiftFunctorAdd' C p' p 0 hp).inv.app X), Iso.hom_inv_id_app,
+    Category.assoc, Category.assoc, Category.assoc, Category.assoc,
+    ← shiftFunctorAdd'_assoc_inv_app p' m n n' p 0
+      (by rw [← add_left_inj n, hn, add_assoc, h, hp]) h (by rw [add_assoc, h, hp]),
+    ← Functor.map_comp_assoc, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
+    Category.assoc, Category.assoc,
+    shiftFunctorAdd'_assoc_inv_app (C := C) n' m' m p' 0 n' _ _
+      (by rw [add_assoc, hm, add_zero]), Iso.hom_inv_id_app_assoc,
+    ← shiftFunctorAdd'_add_zero_hom_app, Iso.hom_inv_id_app,
+    Functor.map_id, Category.id_comp, Iso.hom_inv_id_app]
 
 variable (A)
 
