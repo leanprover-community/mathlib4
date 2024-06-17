@@ -115,8 +115,6 @@ protected theorem prop (a : Fin n) : a.val < n :=
 section Order
 variable {a b c : Fin n}
 
-protected lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Nat.le_trans
-protected lemma lt_trans : a < b → b < c → a < c := Nat.lt_trans
 protected lemma lt_of_le_of_lt : a ≤ b → b < c → a < c := Nat.lt_of_le_of_lt
 protected lemma lt_of_lt_of_le : a < b → b ≤ c → a < c := Nat.lt_of_lt_of_le
 protected lemma le_rfl : a ≤ a := Nat.le_refl _
@@ -125,7 +123,6 @@ protected lemma lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b := by
 protected lemma lt_or_lt_of_ne (h : a ≠ b) : a < b ∨ b < a := Nat.lt_or_lt_of_ne $ val_ne_iff.2 h
 protected lemma lt_or_le (a b : Fin n) : a < b ∨ b ≤ a := Nat.lt_or_ge _ _
 protected lemma le_or_lt (a b : Fin n) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
-protected lemma lt_asymm : a < b → ¬ b < a := Nat.lt_asymm
 protected lemma le_of_eq (hab : a = b) : a ≤ b := Nat.le_of_eq $ congr_arg val hab
 protected lemma ge_of_eq (hab : a = b) : b ≤ a := Fin.le_of_eq hab.symm
 protected lemma eq_or_lt_of_le : a ≤ b → a = b ∨ a < b := by rw [ext_iff]; exact Nat.eq_or_lt_of_le
@@ -168,7 +165,7 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   ext_iff.symm
 #align fin.coe_eq_coe Fin.val_eq_val
 
-@[deprecated ext_iff] -- 2024-02-20
+@[deprecated ext_iff (since := "2024-02-20")]
 theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
   ext_iff
 #align fin.eq_iff_veq Fin.eq_iff_veq
@@ -502,13 +499,13 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
 section deprecated
 set_option linter.deprecated false
 
-@[deprecated]
+@[deprecated (since := "2023-01-12")]
 theorem val_bit0 {n : ℕ} (k : Fin n) : ((bit0 k : Fin n) : ℕ) = bit0 (k : ℕ) % n := by
   cases k
   rfl
 #align fin.coe_bit0 Fin.val_bit0
 
-@[deprecated]
+@[deprecated (since := "2023-01-12")]
 theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
     ((bit1 k : Fin n) : ℕ) = bit1 (k : ℕ) % n := by
   cases n;
@@ -529,13 +526,13 @@ end deprecated
 section Bit
 set_option linter.deprecated false
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-01-12")]
 theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
     (⟨bit0 m, h⟩ : Fin n) = (bit0 ⟨m, (Nat.le_add_right m m).trans_lt h⟩ : Fin _) :=
   eq_of_val_eq (Nat.mod_eq_of_lt h).symm
 #align fin.mk_bit0 Fin.mk_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-01-12")]
 theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
     (⟨bit1 m, h⟩ : Fin n) =
       (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) := by
@@ -926,7 +923,7 @@ theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p �
   simp [Fin.lt_def, -val_fin_lt]; omega
 #align fin.succ_above_lt_gt Fin.castSucc_lt_or_lt_succ
 
-@[deprecated] alias succAbove_lt_gt := castSucc_lt_or_lt_succ
+@[deprecated (since := "2024-05-30")] alias succAbove_lt_gt := castSucc_lt_or_lt_succ
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -1446,7 +1443,8 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 #align fin.succ_above_last_apply Fin.succAbove_last_apply
 
-@[deprecated] lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
+@[deprecated (since := "2024-05-30")]
+lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
 #align fin.succ_above_lt_ge Fin.succAbove_lt_ge
 

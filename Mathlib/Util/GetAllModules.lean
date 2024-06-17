@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 
 import Lean.Util.Path
-import Lake.CLI.Main
 
 
 /-!
@@ -55,18 +54,3 @@ def getAllModules (git : Bool) (ml : String) : IO (Array String) := do
   return ← files.mapM fun f => do
      return (← moduleNameOfFileName f none).toString
 
-open Lake in
-/-- `getLeanLibs` returns the names (as an `Array` of `String`s) of all the libraries
-on which the current project depends.
-If the current project is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and
-it includes `Mathlib/Tactic`. -/
-def getLeanLibs : IO (Array String) := do
-  let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
-  let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
-  let ws ← MonadError.runEIO (MainM.runLogIO (loadWorkspace config)).toEIO
-  let package := ws.root
-  let libs := (package.leanLibs.map (·.name)).map (·.toString)
-  return if package.name == `mathlib then
-    libs.erase "Cache" |>.erase "LongestPole" |>.push ("Mathlib".push pathSeparator ++ "Tactic")
-  else
-    libs

@@ -43,4 +43,17 @@ instance : DecidablePred (IsSquare : ℚ → Prop) :=
   fun m => decidable_of_iff' (sqrt m * sqrt m = m) <| by
     simp_rw [← exists_mul_self m, IsSquare, eq_comm]
 
+@[simp, norm_cast]
+theorem sqrt_intCast (z : ℤ) : Rat.sqrt (z : ℚ) = Int.sqrt z := by
+  simp only [sqrt, num_intCast, den_intCast, Nat.sqrt_one, mkRat_one]
+
+@[simp, norm_cast]
+theorem sqrt_natCast (n : ℕ) : Rat.sqrt (n : ℚ) = Nat.sqrt n := by
+  rw [← Int.cast_natCast, sqrt_intCast, Int.sqrt_natCast, Int.cast_natCast]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem sqrt_ofNat (n : ℕ) : Rat.sqrt (no_index (OfNat.ofNat n) : ℚ) = Nat.sqrt (OfNat.ofNat n) :=
+  sqrt_natCast _
+
 end Rat

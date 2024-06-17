@@ -247,6 +247,8 @@ theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = ((↑) : Nonemp
   rfl
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
+theorem coe_def (s : NonemptyInterval α) : (s : Set α) = Set.Icc s.toProd.1 s.toProd.2 := rfl
+
 @[simp, norm_cast]
 theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
   Icc_self _
@@ -324,6 +326,12 @@ instance : Coe (NonemptyInterval α) (Interval α) :=
 instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r => r ≠ ⊥ :=
   WithBot.canLift
 #align interval.can_lift Interval.canLift
+
+/-- Recursor for `Interval` using the preferred forms `⊥` and `↑a`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+def recBotCoe {C : Interval α → Sort*} (bot : C ⊥) (coe : ∀ a : NonemptyInterval α, C a) :
+    ∀ n : Interval α, C n :=
+  WithBot.recBotCoe bot coe
 
 theorem coe_injective : Injective ((↑) : NonemptyInterval α → Interval α) :=
   WithBot.coe_injective
@@ -486,8 +494,8 @@ theorem coe_top [BoundedOrder α] : ((⊤ : Interval α) : Set α) = univ :=
 @[simp, norm_cast]
 theorem coe_dual (s : Interval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s := by
   cases s with
-  | none => rfl
-  | some s₀ => exact NonemptyInterval.coe_dual s₀
+  | bot => rfl
+  | coe s₀ => exact NonemptyInterval.coe_dual s₀
 #align interval.coe_dual Interval.coe_dual
 
 theorem subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map f
@@ -524,7 +532,7 @@ instance lattice : Lattice (Interval α) :=
       | _, ⊥ => ⊥
       | some s, some t =>
         if h : s.fst ≤ t.snd ∧ t.fst ≤ s.snd then
-          some
+          WithBot.some
             ⟨⟨s.fst ⊔ t.fst, s.snd ⊓ t.snd⟩,
               sup_le (le_inf s.fst_le_snd h.1) <| le_inf h.2 t.fst_le_snd⟩
         else ⊥
@@ -551,11 +559,11 @@ instance lattice : Lattice (Interval α) :=
     le_inf := fun s t c =>
       match s, t, c with
       | ⊥, t, c => fun _ _ => bot_le
-      | some s, t, c => fun hb hc => by
+      | (s : NonemptyInterval α), t, c => fun hb hc => by
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
         change _ ≤ dite _ _ _
-        simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc ⊢
+        simp only [WithBot.coe_le_coe] at hb hc ⊢
         rw [dif_pos, WithBot.coe_le_coe]
         · exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
         -- Porting note: had to add the next 6 lines including the changes because
@@ -571,26 +579,20 @@ instance lattice : Lattice (Interval α) :=
         exact ⟨hb₁.trans <| s.fst_le_snd.trans hc₂, hc₁.trans <| s.fst_le_snd.trans hb₂⟩ }
 
 @[simp, norm_cast]
-theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := by
-  cases s with
-  | none =>
-    rw [WithBot.none_eq_bot, bot_inf_eq]
+theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
+  | ⊥, _ => by
+    rw [bot_inf_eq]
     exact (empty_inter _).symm
-  | some s =>
-    cases t with
-    | none =>
-      rw [WithBot.none_eq_bot, inf_bot_eq]
-      exact (inter_empty _).symm
-    | some t =>
-      refine (?_ : setLike.coe (dite
-        -- Porting note: Needed to fill this first `_` explicitly.
-        (s.toProd.fst ≤ t.toProd.snd ∧ t.toProd.fst ≤ s.toProd.snd)
-        _ _) = _).trans Icc_inter_Icc.symm
-      split_ifs with h
-      · rfl
-      · exact (Icc_eq_empty fun H =>
-          h ⟨le_sup_left.trans <| H.trans inf_le_right,
-          le_sup_right.trans <| H.trans inf_le_left⟩).symm
+  | (s : NonemptyInterval α), ⊥ => by
+    rw [inf_bot_eq]
+    exact (inter_empty _).symm
+  | (s : NonemptyInterval α), (t : NonemptyInterval α) => by
+    simp only [Inf.inf, coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc]
+    split_ifs with h
+    · simp only [coe_coe, NonemptyInterval.coe_def]
+    · refine (Icc_eq_empty <| mt ?_ h).symm
+      exact fun h ↦ ⟨le_sup_left.trans <| h.trans inf_le_right,
+        le_sup_right.trans <| h.trans inf_le_left⟩
 #align interval.coe_inf Interval.coe_inf
 
 end Decidable
@@ -657,7 +659,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
         sSup := fun S =>
           if h : S ⊆ {⊥} then ⊥
           else
-            some
+            WithBot.some
               ⟨⟨⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
                   ⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩, by
                 obtain ⟨s, hs, ha⟩ := not_subset.1 h
@@ -692,7 +694,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
               ⊥ ∉ S ∧
                 ∀ ⦃s : NonemptyInterval α⦄,
                   ↑s ∈ S → ∀ ⦃t : NonemptyInterval α⦄, ↑t ∈ S → s.fst ≤ t.snd then
-            some
+            WithBot.some
               ⟨⟨⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
                   ⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩,
                 iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
@@ -709,8 +711,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
         le_sInf := by
           intro S s ha
           cases s with
-          | none => exact bot_le
-          | some s =>
+          | bot => exact bot_le
+          | coe s =>
             dsimp -- Porting note (#11227): added a `dsimp`
             split_ifs with h
             · exact WithBot.coe_le_coe.2
@@ -742,7 +744,7 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
   change ((dite _ _ _ : Interval α) : Set α) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
   split_ifs with h
   · ext
-    simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
+    simp [Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
   simp_rw [not_and_or, Classical.not_not] at h
   rcases h with h | h
   · refine (eq_empty_of_subset_empty ?_).symm
