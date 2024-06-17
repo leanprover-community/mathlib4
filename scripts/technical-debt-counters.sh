@@ -1,7 +1,35 @@
 #!/usr/bin/env bash
 
-# This script quantifies some of the technical debt in mathlib4.
+# `./scripts/et.sh` returns a tally of some technical debts in current Mathlib,
+# reporting also the change with respect to the same counts in
+# Mathlib from last week.
 
+# the script takes two optional arguments `<optCurrCommit> <optReferenceCommit>`
+# and tallies the same technical debts on `<optCurrCommit>` using `<optReferenceCommit>`
+# as a reference.
+
+if [ -n "${1}" ]; then
+  currCommit="${1}"
+else
+  currCommit="$(git rev-parse HEAD)"
+fi
+
+shift
+
+if [ -n "${1}" ]; then
+  refCommit="${1}"
+else
+  refCommit="$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -1)"
+fi
+
+# `tdc` produces a semi-formatted output of the form
+# ...
+# <number>|description
+# ...
+# summarizing technical debts in Mathlib.
+# The script uses the fact that a line represents a technical debt if and only if the text before
+# the first `|` is a number.  This is then used for comparison and formatting.
+tdc () {
 titlesAndRegexes=(
   "porting notes"                  "Porting note"
   "backwards compatibility flags"  "set_option.*backward"
@@ -12,7 +40,7 @@ titlesAndRegexes=(
   "erw"                            "erw \["
 )
 
-printf '|Number|Type|\n|-:|:-|\n'
+printf '|Current number|Change|Type|\n|-:|:-:|:-|\n'
 for i in ${!titlesAndRegexes[@]}; do
   # loop on the odd-indexed entries and name each entry and the following
   if (( (i + 1) % 2 )); then
@@ -22,21 +50,46 @@ for i in ${!titlesAndRegexes[@]}; do
     then fl="-i"  # just for porting notes we ignore the case in the regex
     else fl="--"
     fi
-    printf '| %s | %s |\n' "$(git grep "${fl}" "${regex}" | wc -l)" "${title}"
+    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" | wc -l)" "${title}"
   fi
 done
 
-printf '|%s | %s |\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
-printf '|%s | %s |\n' "$(grep -c 'ERR_MOD' scripts/style-exceptions.txt)" "missing module docstrings"
-printf '|%s | %s |\n' "$(grep -c 'ERR_NUM_LIN' scripts/style-exceptions.txt)" "large files"
+printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
+printf '%s|%s\n' "$(grep -c 'ERR_MOD' scripts/style-exceptions.txt)" "missing module docstrings"
+printf '%s|%s\n' "$(grep -c 'ERR_NUM_LIN' scripts/style-exceptions.txt)" "large files"
 # We print the number of files, not the number of matches --- hence, the nested grep.
-printf '|%s | %s |\n' "$(git grep -c 'autoImplicit true' | grep -c -v 'test')" "non-test files with autoImplicit true"
-printf '|%s | %s |\n' "$(git grep '@\[.*deprecated' | grep -c -v 'deprecated .*(since := "')" "deprecations without a date"
+printf '%s|%s\n' "$(git grep -c 'autoImplicit true' | grep -c -v 'test')" "non-test files with autoImplicit true"
+#printf '%s|%s\n' "$(git grep '@\[.*deprecated' | grep -c -v 'deprecated .*(since := "')" "deprecations without a date"
 
-initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l)"
+initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l | sed 's=^ *==')"
 
-printf '|%s | %s |\n\n' "$(printf '%s' "${initFiles}" | wc -l)" "\`Init\` files"
+printf '%s|%s\n' "$(printf '%s' "${initFiles}" | wc -l)" "\`Init\` files"
+printf '%s|%s\n\n' "$(printf '%s\n' "${initFiles}" | grep total | sed 's= total==')"  'total LoC in `Init` files'
 
-printf '```spoiler %s %s\n%s\n```\n' "$(printf '%s\n' "${initFiles}" | grep total)"  "LoC in 'Init' files" "$(
-    printf '%s\n' "${initFiles}" | awk 'BEGIN{print"|LoC|File|\n|-:|-|"} {printf("|%s|%s|\n", $1, $2)}'
+printf $'```spoiler \'Init\' file by file\n%s\n```\n' "$(
+    printf '%s\n' "${initFiles}" | awk 'BEGIN{print("|LoC|Change|File|\n|-:|:-:|-|")} {printf("%s|%s\n", $1, $2)}'
   )"
+}
+
+# collect the technical debts from the current mathlib
+new="$(git checkout -q "${currCommit}" && tdc; git switch -q -)"
+
+# collect the technical debts from the reference mathlib -- switch to the
+old="$(git checkout -q "${refCommit}" && tdc; git switch -q -)"
+
+paste -d@ <(echo "$new") <(echo "${old}") | sed 's=@=|@|=' |
+  awk -F'|' '
+    ($1+0 == $1) { printf("|%s|%s|%s|\n", $1, $1-$4, $2) }
+    !($1+0 == $1) {
+      #print "*** "$0
+      found=0
+      for(i=1; i<=NF; i++) {
+        if ($i == "@") { found=1 }
+        if (found == "0") { printf("%s|", $i) }
+      }
+      print "@"
+    }' | sed 's=|@$=='
+
+baseURL='https://github.com/leanprover-community/mathlib4/commit'
+printf '\nCurrent commit [%s](%s)\n' "${currCommit:0:10}" "${baseURL}/${currCommit}"
+printf 'Reference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
