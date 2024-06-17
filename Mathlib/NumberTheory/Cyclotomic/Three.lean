@@ -119,7 +119,8 @@ variable (x : 𝓞 K)
 /-- Let `(x : 𝓞 K)`. Then we have that `λ` divides one amongst `x`, `x - 1` and `x + 1`. -/
 lemma dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
   classical
-  let _ := hζ.fintypeQuotienttoIntegerSubOne (by decide)
+  have := hζ.finite_quotient_toInteger_sub_one (by decide)
+  let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {λ})
   have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
   rw [Finset.univ_of_card_eq_three] at this
   · simp only [Finset.mem_insert, Finset.mem_singleton] at this
@@ -132,7 +133,8 @@ lemma dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x
     · right; right
       refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
       rw [RingHom.map_add, h, RingHom.map_one, add_left_neg]
-  · rw [hζ.card_quotient_toInteger_sub_one, hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
+  · rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),
+      hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
     simp
 
 /-- We have that `η ^ 2 + η + 1 = 0`. -/
