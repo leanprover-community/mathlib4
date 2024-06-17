@@ -51,6 +51,9 @@ theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
   rfl
 #align with_top.coe_neg WithTop.LinearOrderedAddCommGroup.coe_neg
 
+@[simp, nolint simpNF]
+theorem neg_top : -(⊤ : WithTop α) = ⊤ := rfl
+
 @[simp, norm_cast]
 theorem coe_sub {a b : α} : (↑(a - b) : WithTop α) = ↑a - ↑b := rfl
 
@@ -69,8 +72,7 @@ instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
   __ := Option.nontrivial
   sub_eq_add_neg a b := by
-    cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg,
-      (show (-(⊤ : WithTop α) = ⊤) from rfl)]
+    cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg]
   neg_top := Option.map_none
   zsmul := zsmulRec
   add_neg_cancel := by
