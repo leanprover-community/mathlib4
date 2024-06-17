@@ -140,7 +140,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroupWithTop
 
-variable (α : Type*) [LinearOrderedAddCommGroupWithTop α]
+variable {α : Type*} [LinearOrderedAddCommGroupWithTop α]
 
 @[simp]
 lemma top_ne_zero' :
@@ -152,18 +152,18 @@ lemma top_ne_zero' :
   simp at this
 
 @[simp]
-lemma neg_eq_top_iff (a : α) :
+lemma neg_eq_top {a : α} :
     -a = ⊤ ↔ a = ⊤ :=
   ⟨by
   intro h
   by_contra nh
   replace nh := add_neg_cancel_of_ne_top nh
   rw [h, add_top] at nh
-  exact top_ne_zero' _ nh, fun h ↦ h ▸ neg_top⟩
+  exact top_ne_zero' nh, fun h ↦ h ▸ neg_top⟩
 
 @[simp]
-lemma add_eq_top_iff (a b : α) :
-    (a + b = ⊤) ↔ a = ⊤ ∨ b = ⊤ := by
+lemma add_eq_top {a b : α} :
+    a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   constructor
   · intro h
     by_contra nh
@@ -181,7 +181,7 @@ instance (priority := 100) : SubtractionMonoid α where
   neg_neg (a) := by
     by_cases h : a = ⊤
     · simp [h]
-    · have h2 : ¬ -a = ⊤ := fun nh ↦ h <| (neg_eq_top_iff ..).mp nh
+    · have h2 : ¬ -a = ⊤ := fun nh ↦ h <| (neg_eq_top ..).mp nh
       replace h2 : a + (-a + - -a) = a + 0 := congrArg (a + ·) (add_neg_cancel_of_ne_top h2)
       rw [← add_assoc, add_neg_cancel_of_ne_top h] at h2
       simp only [zero_add, add_zero] at h2
