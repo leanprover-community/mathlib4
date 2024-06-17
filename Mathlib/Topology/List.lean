@@ -163,7 +163,7 @@ theorem tendsto_eraseIdx :
     exact tendsto_fst.cons ((@tendsto_eraseIdx n l).comp tendsto_snd)
 #align list.tendsto_remove_nth List.tendsto_eraseIdx
 
-@[deprecated] alias tendsto_removeNth := tendsto_eraseIdx -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias tendsto_removeNth := tendsto_eraseIdx
 
 theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l n :=
   continuous_iff_continuousAt.mpr fun _a => tendsto_eraseIdx

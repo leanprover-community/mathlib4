@@ -3,7 +3,7 @@ Copyright (c) 2023 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.RingTheory.ClassGroup
 
@@ -11,7 +11,8 @@ import Mathlib.RingTheory.ClassGroup
 # Group law on Weierstrass curves
 
 This file proves that the nonsingular rational points on a Weierstrass curve forms an abelian group
-under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`.
+under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine` and in
+`Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian`.
 
 ## Mathematical background
 
@@ -29,7 +30,10 @@ Now $F[W]$ is a free rank two $F[X]$-algebra with basis $\{1, Y\}$, so every ele
 of the form $p + qY$ for some $p, q \in F[X]$, and there is an algebra norm $N : F[W] \to F[X]$.
 Injectivity can then be shown by computing the degree of such a norm $N(p + qY)$ in two different
 ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
-auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroupPoint`.
+auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
+
+When `W` is given in Jacobian coordinates, `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv` pulls
+back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Jacobian.Point`.
 
 ## Main definitions
 
@@ -38,12 +42,14 @@ auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup
 
 ## Main statements
 
- * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of a
-    Weierstrass curve is an integral domain.
+ * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of an
+    affine Weierstrass curve is an integral domain.
  * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
-    element in the coordinate ring in terms of the power basis.
- * `WeierstrassCurve.Affine.Point.instAddCommGroupPoint`: the type of nonsingular rational points on
-    a Weierstrass curve forms an abelian group under addition.
+    element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
+ * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on
+    an affine Weierstrass curve forms an abelian group under addition.
+ * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular rational
+    points on a Jacobian Weierstrass curve forms an abelian group under addition.
 
 ## References
 
@@ -62,13 +68,13 @@ local macro "C_simp" : tactic =>
 local macro "eval_simp" : tactic =>
   `(tactic| simp only [eval_C, eval_X, eval_neg, eval_add, eval_sub, eval_mul, eval_pow])
 
-universe u
+universe u v
 
 namespace WeierstrassCurve.Affine
 
 /-! ## Weierstrass curves in affine coordinates -/
 
-variable {R : Type u} [CommRing R] (W : Affine R)
+variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : Affine R) (f : R →+* S)
 
 -- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
 -- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
@@ -89,26 +95,142 @@ abbrev FunctionField : Type u :=
 
 namespace CoordinateRing
 
+section Algebra
+
+/-! ### The coordinate ring as an `R[X]`-algebra -/
+
+noncomputable instance : Algebra R W.CoordinateRing :=
+  Quotient.algebra R
+#align weierstrass_curve.coordinate_ring.algebra' WeierstrassCurve.Affine.CoordinateRing.instAlgebra
+
+noncomputable instance : Algebra R[X] W.CoordinateRing :=
+  Quotient.algebra R[X]
+#align weierstrass_curve.coordinate_ring.algebra WeierstrassCurve.Affine.CoordinateRing.instAlgebraPolynomial
+
+instance : IsScalarTower R R[X] W.CoordinateRing :=
+  Quotient.isScalarTower R R[X] _
+#align weierstrass_curve.coordinate_ring.is_scalar_tower WeierstrassCurve.Affine.CoordinateRing.instIsScalarTowerPolynomial
+
+instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
+  Module.subsingleton R[X] _
+#align weierstrass_curve.coordinate_ring.subsingleton WeierstrassCurve.Affine.CoordinateRing.instSubsingleton
+
+-- Porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
+/-- The natural ring homomorphism mapping an element of `R[X][Y]` to an element of `R[W]`. -/
+noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
+  AdjoinRoot.mk W.polynomial
+
+-- Porting note: added `classical` explicitly
+/-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
+protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
+  classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
+    (AdjoinRoot.powerBasis' W.monic_polynomial).basis.reindex <| finCongr W.natDegree_polynomial
+#align weierstrass_curve.coordinate_ring.basis WeierstrassCurve.Affine.CoordinateRing.basis
+
+lemma basis_apply (n : Fin 2) :
+    CoordinateRing.basis W n = (AdjoinRoot.powerBasis' W.monic_polynomial).gen ^ (n : ℕ) := by
+  classical
+  nontriviality R
+  rw [CoordinateRing.basis, Or.by_cases, dif_neg <| not_subsingleton R, Basis.reindex_apply,
+    PowerBasis.basis_eq_pow]
+  rfl
+#align weierstrass_curve.coordinate_ring.basis_apply WeierstrassCurve.Affine.CoordinateRing.basis_apply
+
+-- Porting note: added `@[simp]` in lieu of `coe_basis`
+@[simp]
+lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
+  simpa only [basis_apply] using pow_zero _
+#align weierstrass_curve.coordinate_ring.basis_zero WeierstrassCurve.Affine.CoordinateRing.basis_zero
+
+-- Porting note: added `@[simp]` in lieu of `coe_basis`
+@[simp]
+lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
+  simpa only [basis_apply] using pow_one _
+#align weierstrass_curve.coordinate_ring.basis_one WeierstrassCurve.Affine.CoordinateRing.basis_one
+
+-- Porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
+lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
+  ext n
+  fin_cases n
+  exacts [basis_zero W, basis_one W]
+#align weierstrass_curve.coordinate_ring.coe_basis WeierstrassCurve.Affine.CoordinateRing.coe_basis
+
+variable {W} in
+lemma smul (x : R[X]) (y : W.CoordinateRing) : x • y = mk W (C x) * y :=
+  (algebraMap_smul W.CoordinateRing x y).symm
+#align weierstrass_curve.coordinate_ring.smul WeierstrassCurve.Affine.CoordinateRing.smul
+
+variable {W} in
+lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W.CoordinateRing) + q • mk W Y = 0) :
+    p = 0 ∧ q = 0 := by
+  have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W).linearIndependent ![p, q]
+  erw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, basis_one] at h
+  exact ⟨h hpq 0, h hpq 1⟩
+#align weierstrass_curve.coordinate_ring.smul_basis_eq_zero WeierstrassCurve.Affine.CoordinateRing.smul_basis_eq_zero
+
+variable {W} in
+lemma exists_smul_basis_eq (x : W.CoordinateRing) :
+    ∃ p q : R[X], p • (1 : W.CoordinateRing) + q • mk W Y = x := by
+  have h := (CoordinateRing.basis W).sum_equivFun x
+  erw [Fin.sum_univ_succ, Fin.sum_univ_one, basis_zero, basis_one] at h
+  exact ⟨_, _, h⟩
+#align weierstrass_curve.coordinate_ring.exists_smul_basis_eq WeierstrassCurve.Affine.CoordinateRing.exists_smul_basis_eq
+
+lemma smul_basis_mul_C (y : R[X]) (p q : R[X]) :
+    (p • (1 : W.CoordinateRing) + q • mk W Y) * mk W (C y) =
+      (p * y) • (1 : W.CoordinateRing) + (q * y) • mk W Y := by
+  simp only [smul, _root_.map_mul]
+  ring1
+set_option linter.uppercaseLean3 false in
+#align weierstrass_curve.coordinate_ring.smul_basis_mul_C WeierstrassCurve.Affine.CoordinateRing.smul_basis_mul_C
+
+lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W.CoordinateRing) + q • mk W Y) * mk W Y =
+    (q * (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)) • (1 : W.CoordinateRing) +
+      (p - q * (C W.a₁ * X + C W.a₃)) • mk W Y := by
+  have Y_sq : mk W Y ^ 2 =
+      mk W (C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆) - C (C W.a₁ * X + C W.a₃) * Y) := by
+    exact AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [polynomial]; ring1⟩
+  simp only [smul, add_mul, mul_assoc, ← sq, Y_sq, C_sub, map_sub, C_mul, _root_.map_mul]
+  ring1
+set_option linter.uppercaseLean3 false in
+#align weierstrass_curve.coordinate_ring.smul_basis_mul_Y WeierstrassCurve.Affine.CoordinateRing.smul_basis_mul_Y
+
+/-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
+noncomputable def map : W.CoordinateRing →+* (W.map f).toAffine.CoordinateRing :=
+  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f) _ <| by
+    rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root]
+
+lemma map_mk (x : R[X][Y]) : map W f (mk W x) = mk (W.map f) (x.map <| mapRingHom f) := by
+  rw [map, AdjoinRoot.lift_mk, ← eval₂_map]
+  exact AdjoinRoot.aeval_eq <| x.map <| mapRingHom f
+
+variable {W} in
+protected lemma map_smul (x : R[X]) (y : W.CoordinateRing) :
+    map W f (x • y) = x.map f • map W f y := by
+  rw [smul, _root_.map_mul, map_mk, map_C, smul]
+  rfl
+
+variable {f} in
+lemma map_injective (hf : Function.Injective f) : Function.Injective <| map W f :=
+  (injective_iff_map_eq_zero _).mpr fun y hy => by
+    obtain ⟨p, q, rfl⟩ := exists_smul_basis_eq y
+    simp_rw [map_add, CoordinateRing.map_smul, map_one, map_mk, map_X] at hy
+    obtain ⟨hp, hq⟩ := smul_basis_eq_zero hy
+    rw [Polynomial.map_eq_zero_iff hf] at hp hq
+    simp_rw [hp, hq, zero_smul, add_zero]
+
+instance [IsDomain R] : IsDomain W.CoordinateRing :=
+  have : IsDomain (W.map <| algebraMap R <| FractionRing R).toAffine.CoordinateRing :=
+    AdjoinRoot.isDomain_of_prime (irreducible_polynomial _).prime
+  (map_injective W <| IsFractionRing.injective R <| FractionRing R).isDomain
+#align weierstrass_curve.coordinate_ring.is_domain WeierstrassCurve.Affine.CoordinateRing.instIsDomain
+#noalign weierstrass_curve.coordinate_ring.is_domain_of_field
+
+end Algebra
+
 section Ring
 
 /-! ### Ideals in the coordinate ring over a ring -/
-
-instance instIsDomainCoordinateRing [IsDomain R] [NormalizedGCDMonoid R] :
-    IsDomain W.CoordinateRing :=
-  (Quotient.isDomain_iff_prime _).mpr <| by
-    simpa only [span_singleton_prime W.polynomial_ne_zero, ← irreducible_iff_prime]
-      using W.irreducible_polynomial
-#align weierstrass_curve.coordinate_ring.is_domain WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing
-
-instance instIsDomainCoordinateRing_of_Field {F : Type u} [Field F] (W : Affine F) :
-    IsDomain W.CoordinateRing := by
-  classical exact instIsDomainCoordinateRing W
-#align weierstrass_curve.coordinate_ring.is_domain_of_field WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing_of_Field
-
--- Porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
-/-- An element of the coordinate ring `R[W]` of `W` over `R`. -/
-noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
-  AdjoinRoot.mk W.polynomial
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $X - x$ in $R[W]$ for some $x \in R$. -/
@@ -184,6 +306,18 @@ lemma XYIdeal_add_eq (x₁ x₂ y₁ L : R) : XYIdeal W (W.addX x₁ x₂ L) (C 
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.XY_ideal_add_eq WeierstrassCurve.Affine.CoordinateRing.XYIdeal_add_eq
 
+/-- The $R$-algebra isomorphism from $R[W] / \langle X - x, Y - y(X) \rangle$ to $R$ obtained by
+evaluation at $y(X)$ and at $x$ provided that $W(x, y(x)) = 0$. -/
+noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
+    (W.CoordinateRing ⧸ XYIdeal W x y) ≃ₐ[R] R :=
+  ((quotientEquivAlgOfEq R <| by
+      simp only [XYIdeal, XClass, YClass, ← Set.image_pair, ← map_span]; rfl).trans <|
+        DoubleQuot.quotQuotEquivQuotOfLEₐ R <| (span_singleton_le_iff_mem _).mpr <|
+          mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero.mpr h).trans
+    quotientSpanCXSubCXSubCAlgEquiv
+set_option linter.uppercaseLean3 false in
+#align weierstrass_curve.coordinate_ring.quotient_XY_ideal_equiv WeierstrassCurve.Affine.CoordinateRing.quotientXYIdealEquiv
+
 end Ring
 
 section Field
@@ -226,16 +360,16 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
       C (X - C x) * (C (X ^ 2 + C (x + W.a₂) * X + C (x ^ 2 + W.a₂ * x + W.a₄)) - C (C W.a₁) * Y) =
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
-      congr_arg C (congr_arg C ((W.equation_iff _ _).mp h.left).symm)
+      congr_arg C (congr_arg C ((equation_iff ..).mp h.left).symm)
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← _root_.map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, _root_.map_mul, span_insert,
     ← span_singleton_mul_span_singleton, ← Ideal.mul_sup, ← span_insert]
   convert mul_top (_ : Ideal W.CoordinateRing) using 2
-  simp_rw [← @Set.image_singleton _ _ <| mk W, ← Set.image_insert_eq, ← map_span]
+  simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg
   simp_rw [eq_top_iff_one, mem_span_insert', mem_span_singleton']
-  rcases ((W.nonsingular_iff' _ _).mp h).right with hx | hy
+  rcases ((nonsingular_iff' ..).mp h).right with hx | hy
   · let W_X := W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)
     refine
       ⟨C <| C W_X⁻¹ * -(X + C (2 * x + W.a₂)), C <| C <| W_X⁻¹ * W.a₁, 0, C <| C <| W_X⁻¹ * -1, ?_⟩
@@ -255,7 +389,7 @@ set_option linter.uppercaseLean3 false in
 private lemma XYIdeal'_mul_inv {x y : F} (h : W.Nonsingular x y) :
     XYIdeal W x (C y) * (XYIdeal W x (C <| W.negY x y) *
         (XIdeal W x : FractionalIdeal W.CoordinateRing⁰ W.FunctionField)⁻¹) = 1 := by
-  rw [← mul_assoc, ← FractionalIdeal.coeIdeal_mul, mul_comm <| XYIdeal W _ _, XYIdeal_neg_mul h,
+  rw [← mul_assoc, ← FractionalIdeal.coeIdeal_mul, mul_comm <| XYIdeal W .., XYIdeal_neg_mul h,
     XIdeal, FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x]
 
 lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
@@ -278,7 +412,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
   convert top_mul (_ : Ideal W.CoordinateRing)
-  simp_rw [XClass, ← @Set.image_singleton _ _ <| mk W, ← map_span, ← Ideal.map_sup, eq_top_iff_one,
+  simp_rw [XClass, ← Set.image_singleton (f := mk W), ← map_span, ← Ideal.map_sup, eq_top_iff_one,
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
   by_cases hx : x₁ = x₂
@@ -292,7 +426,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
-      -4 * congr_arg C (congr_arg C <| (W.equation_iff _ _).mp h₁)
+      -4 * congr_arg C (congr_arg C <| (equation_iff ..).mp h₁)
   · replace hx := sub_ne_zero_of_ne hx
     refine ⟨_, ⟨⟨C <| C (x₁ - x₂)⁻¹, C <| C <| (x₁ - x₂)⁻¹ * -1, 0, ?_⟩, map_one _⟩⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
@@ -320,7 +454,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq {x y : F} (h : W.Nonsingular x y) :
     ClassGroup.mk (XYIdeal' <| nonsingular_neg h) * ClassGroup.mk (XYIdeal' h) = 1 := by
   rw [← _root_.map_mul]
   exact
-    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul _ _).symm.trans <|
+    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
       FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.mk_XY_ideal'_mul_mk_XY_ideal'_of_Yeq WeierstrassCurve.Affine.CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq
@@ -330,124 +464,13 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingula
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← _root_.map_mul]
-  exact (ClassGroup.mk_eq_mk_of_coe_ideal (by exact (FractionalIdeal.coeIdeal_mul _ _).symm) <|
+  exact (ClassGroup.mk_eq_mk_of_coe_ideal (by exact (FractionalIdeal.coeIdeal_mul ..).symm) <|
       XYIdeal'_eq _).mpr
     ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.mk_XY_ideal'_mul_mk_XY_ideal' WeierstrassCurve.Affine.CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'
 
 end Field
-
-section Algebra
-
-/-! ### The coordinate ring as an `R[X]`-algebra -/
-
-noncomputable instance instAlgebraCoordinateRing : Algebra R[X] W.CoordinateRing :=
-  Quotient.algebra R[X]
-#align weierstrass_curve.coordinate_ring.algebra WeierstrassCurve.Affine.CoordinateRing.instAlgebraCoordinateRing
-
-noncomputable instance instAlgebraCoordinateRing' : Algebra R W.CoordinateRing :=
-  Quotient.algebra R
-#align weierstrass_curve.coordinate_ring.algebra' WeierstrassCurve.Affine.CoordinateRing.instAlgebraCoordinateRing'
-
-instance instIsScalarTowerCoordinateRing : IsScalarTower R R[X] W.CoordinateRing :=
-  Quotient.isScalarTower R R[X] _
-#align weierstrass_curve.coordinate_ring.is_scalar_tower WeierstrassCurve.Affine.CoordinateRing.instIsScalarTowerCoordinateRing
-
-instance instSubsingletonCoordinateRing [Subsingleton R] : Subsingleton W.CoordinateRing :=
-  Module.subsingleton R[X] _
-#align weierstrass_curve.coordinate_ring.subsingleton WeierstrassCurve.Affine.CoordinateRing.instSubsingletonCoordinateRing
-
-/-- The $R$-algebra isomorphism from $R[W] / \langle X - x, Y - y(X) \rangle$ to $R$ obtained by
-evaluation at $y(X)$ and at $x$ provided that $W(x, y(x)) = 0$. -/
-noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
-    (W.CoordinateRing ⧸ XYIdeal W x y) ≃ₐ[R] R :=
-  ((quotientEquivAlgOfEq R <| by
-      simp only [XYIdeal, XClass, YClass, ← Set.image_pair, ← map_span]; rfl).trans <|
-        DoubleQuot.quotQuotEquivQuotOfLEₐ R <| (span_singleton_le_iff_mem _).mpr <|
-          mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero.mpr h).trans
-    quotientSpanCXSubCXSubCAlgEquiv
-set_option linter.uppercaseLean3 false in
-#align weierstrass_curve.coordinate_ring.quotient_XY_ideal_equiv WeierstrassCurve.Affine.CoordinateRing.quotientXYIdealEquiv
-
--- Porting note: added `classical` explicitly
-/-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
-protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
-  classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
-    (AdjoinRoot.powerBasis' W.monic_polynomial).basis.reindex <| finCongr W.natDegree_polynomial
-#align weierstrass_curve.coordinate_ring.basis WeierstrassCurve.Affine.CoordinateRing.basis
-
-lemma basis_apply (n : Fin 2) :
-    CoordinateRing.basis W n = (AdjoinRoot.powerBasis' W.monic_polynomial).gen ^ (n : ℕ) := by
-  classical
-  nontriviality R
-  rw [CoordinateRing.basis, Or.by_cases, dif_neg <| not_subsingleton R, Basis.reindex_apply,
-    PowerBasis.basis_eq_pow]
-  rfl
-#align weierstrass_curve.coordinate_ring.basis_apply WeierstrassCurve.Affine.CoordinateRing.basis_apply
-
--- Porting note: added `@[simp]` in lieu of `coe_basis`
-@[simp]
-lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
-  simpa only [basis_apply] using pow_zero _
-#align weierstrass_curve.coordinate_ring.basis_zero WeierstrassCurve.Affine.CoordinateRing.basis_zero
-
--- Porting note: added `@[simp]` in lieu of `coe_basis`
-@[simp]
-lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
-  simpa only [basis_apply] using pow_one _
-#align weierstrass_curve.coordinate_ring.basis_one WeierstrassCurve.Affine.CoordinateRing.basis_one
-
--- Porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
-lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
-  ext n
-  fin_cases n
-  exacts [basis_zero W, basis_one W]
-#align weierstrass_curve.coordinate_ring.coe_basis WeierstrassCurve.Affine.CoordinateRing.coe_basis
-
-variable {W}
-
-lemma smul (x : R[X]) (y : W.CoordinateRing) : x • y = mk W (C x) * y :=
-  (algebraMap_smul W.CoordinateRing x y).symm
-#align weierstrass_curve.coordinate_ring.smul WeierstrassCurve.Affine.CoordinateRing.smul
-
-lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W.CoordinateRing) + q • mk W Y = 0) :
-    p = 0 ∧ q = 0 := by
-  have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W).linearIndependent ![p, q]
-  erw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, basis_one] at h
-  exact ⟨h hpq 0, h hpq 1⟩
-#align weierstrass_curve.coordinate_ring.smul_basis_eq_zero WeierstrassCurve.Affine.CoordinateRing.smul_basis_eq_zero
-
-lemma exists_smul_basis_eq (x : W.CoordinateRing) :
-    ∃ p q : R[X], p • (1 : W.CoordinateRing) + q • mk W Y = x := by
-  have h := (CoordinateRing.basis W).sum_equivFun x
-  erw [Fin.sum_univ_succ, Fin.sum_univ_one, basis_zero, basis_one] at h
-  exact ⟨_, _, h⟩
-#align weierstrass_curve.coordinate_ring.exists_smul_basis_eq WeierstrassCurve.Affine.CoordinateRing.exists_smul_basis_eq
-
-variable (W)
-
-lemma smul_basis_mul_C (y : R[X]) (p q : R[X]) :
-    (p • (1 : W.CoordinateRing) + q • mk W Y) * mk W (C y) =
-      (p * y) • (1 : W.CoordinateRing) + (q * y) • mk W Y := by
-  simp only [smul, _root_.map_mul]
-  ring1
-set_option linter.uppercaseLean3 false in
-#align weierstrass_curve.coordinate_ring.smul_basis_mul_C WeierstrassCurve.Affine.CoordinateRing.smul_basis_mul_C
-
-lemma smul_basis_mul_Y (p q : R[X]) :
-    (p • (1 : W.CoordinateRing) + q • mk W Y) * mk W Y =
-      (q * (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)) • (1 : W.CoordinateRing) +
-        (p - q * (C W.a₁ * X + C W.a₃)) • mk W Y := by
-  have Y_sq : mk W Y ^ 2 =
-      mk W (C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆) - C (C W.a₁ * X + C W.a₃) * Y) := by
-    exact AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [polynomial]; ring1⟩
-  simp_rw [smul, add_mul, mul_assoc, ← sq, Y_sq, C_sub, map_sub, C_mul, _root_.map_mul]
-  ring1
-set_option linter.uppercaseLean3 false in
-#align weierstrass_curve.coordinate_ring.smul_basis_mul_Y WeierstrassCurve.Affine.CoordinateRing.smul_basis_mul_Y
-
-end Algebra
 
 section Norm
 
@@ -507,8 +530,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
 #align weierstrass_curve.coordinate_ring.degree_norm_smul_basis WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis
 
-variable {W}
-
+variable {W} in
 lemma degree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
     (Algebra.norm R[X] x).degree ≠ 1 := by
   rcases exists_smul_basis_eq x with ⟨p, q, rfl⟩
@@ -519,6 +541,7 @@ lemma degree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
   exact (lt_max_of_lt_right <| by exact (cmp_eq_lt_iff ..).mp rfl).ne'
 #align weierstrass_curve.coordinate_ring.degree_norm_ne_one WeierstrassCurve.Affine.CoordinateRing.degree_norm_ne_one
 
+variable {W} in
 lemma natDegree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
     (Algebra.norm R[X] x).natDegree ≠ 1 :=
   degree_norm_ne_one x ∘ (degree_eq_iff_natDegree_eq_of_pos zero_lt_one).mpr
@@ -550,7 +573,7 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
-    any_goals simp only [zero_def, toClassFun, _root_.zero_add, _root_.add_zero]
+    any_goals simp only [zero_def, toClassFun, zero_add, add_zero]
     by_cases hx : x₁ = x₂
     · by_cases hy : y₁ = W.negY x₂ y₂
       · substs hx hy
@@ -572,8 +595,7 @@ lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
   rfl
 #align weierstrass_curve.point.to_class_some WeierstrassCurve.Affine.Point.toClass_some
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
+private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   rcases P, Q with ⟨_ | @⟨x₁, y₁, _⟩, _ | @⟨x₂, y₂, _⟩⟩
   any_goals rfl
   · rw [zero_def, zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
@@ -588,22 +610,11 @@ lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
       · rw [add_of_X_ne hx] at h
         contradiction
     · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
-#align weierstrass_curve.point.add_eq_zero WeierstrassCurve.Affine.Point.add_eq_zero
-
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma add_left_neg (P : W.Point) : -P + P = 0 := by
-  rw [add_eq_zero]
-#align weierstrass_curve.point.add_left_neg WeierstrassCurve.Affine.Point.add_left_neg
-
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma neg_add_eq_zero (P Q : W.Point) : -P + Q = 0 ↔ P = Q := by
-  rw [add_eq_zero, neg_inj]
-#align weierstrass_curve.point.neg_add_eq_zero WeierstrassCurve.Affine.Point.neg_add_eq_zero
 
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
   · intro hP
-    rcases P with (_ | @⟨_, _, ⟨h, _⟩⟩)
+    rcases P with (_ | ⟨h, _⟩)
     · rfl
     · rcases (ClassGroup.mk_eq_one_of_coe_ideal <| by rfl).mp hP with ⟨p, h0, hp⟩
       apply (p.natDegree_norm_ne_one _).elim
@@ -616,37 +627,53 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
 
 lemma toClass_injective : Function.Injective <| @toClass _ _ W := by
   rintro (_ | h) _ hP
-  all_goals rw [← neg_add_eq_zero, ← toClass_eq_zero, map_add, ← hP]
+  all_goals rw [← neg_inj, ← add_eq_zero, ← toClass_eq_zero, map_add, ← hP]
   · exact zero_add 0
   · exact CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h
 #align weierstrass_curve.point.to_class_injective WeierstrassCurve.Affine.Point.toClass_injective
 
-lemma add_comm (P Q : W.Point) : P + Q = Q + P :=
-  toClass_injective <| by simp only [map_add, _root_.add_comm]
-#align weierstrass_curve.point.add_comm WeierstrassCurve.Affine.Point.add_comm
-
-lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
-  toClass_injective <| by simp only [map_add, _root_.add_assoc]
-#align weierstrass_curve.point.add_assoc WeierstrassCurve.Affine.Point.add_assoc
-
-noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
+noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
   zero_add := zero_add
   add_zero := add_zero
-  add_left_neg := add_left_neg
-  add_comm := add_comm
-  add_assoc := add_assoc
+  add_left_neg _ := by rw [add_eq_zero]
+  add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
+  add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
+
+#noalign weierstrass_curve.point.add_eq_zero
+#noalign weierstrass_curve.point.neg_add_eq_zero
+#noalign weierstrass_curve.point.add_left_neg
+#noalign weierstrass_curve.point.add_comm
+#noalign weierstrass_curve.point.add_assoc
 
 end Point
 
 end WeierstrassCurve.Affine
 
-namespace EllipticCurve.Affine
+namespace WeierstrassCurve.Jacobian.Point
+
+/-! ## Weierstrass curves in Jacobian coordinates -/
+
+variable {F : Type u} [Field F] {W : Jacobian F}
+
+noncomputable instance : AddCommGroup W.Point where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+  zero_add _ := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
+  add_zero _ := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
+  add_left_neg P := (toAffineAddEquiv W).injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, add_left_neg, toAffineLift_zero]
+  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
+  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
+
+end WeierstrassCurve.Jacobian.Point
+
+namespace EllipticCurve.Affine.Point
 
 /-! ## Elliptic curves in affine coordinates -/
-
-namespace Point
 
 variable {R : Type} [Nontrivial R] [CommRing R] (E : EllipticCurve R)
 
@@ -655,6 +682,4 @@ def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
   WeierstrassCurve.Affine.Point.some <| nonsingular E h
 #align elliptic_curve.point.mk EllipticCurve.Affine.Point.mk
 
-end Point
-
-end EllipticCurve.Affine
+end EllipticCurve.Affine.Point
