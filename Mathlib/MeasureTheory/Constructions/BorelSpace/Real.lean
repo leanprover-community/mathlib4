@@ -28,7 +28,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 open Set Filter MeasureTheory MeasurableSpace
 
-open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
+open scoped Classical Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -271,7 +271,7 @@ theorem measurable_toNNReal : Measurable ENNReal.toNNReal :=
 #align ennreal.measurable_to_nnreal ENNReal.measurable_toNNReal
 
 instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
-  refine' ⟨measurable_of_measurable_nnreal_nnreal _ _ _⟩
+  refine ⟨measurable_of_measurable_nnreal_nnreal ?_ ?_ ?_⟩
   · simp only [← ENNReal.coe_mul, measurable_mul.coe_nnreal_ennreal]
   · simp only [ENNReal.top_mul', ENNReal.coe_eq_zero]
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const
@@ -538,7 +538,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
     · exact measurable_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
-    refine fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+    refine fun n => (measure_mono Set.inter_subset_left).trans_lt ?_
     exact measure_spanningSets_lt_top μ n
   refine ⟨sets, fun n => ⟨h_meas n, h_finite n, ?_⟩, ?_⟩
   · exact fun x hx => hx.2

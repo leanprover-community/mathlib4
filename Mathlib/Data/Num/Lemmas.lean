@@ -3,11 +3,12 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Num.Bitwise
-import Mathlib.Data.Int.CharZero
+import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
+import Mathlib.Data.Num.Bitwise
 
 #align_import data.num.lemmas from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -129,7 +130,7 @@ theorem mul_to_nat (m) : ∀ n, ((m * n : PosNum) : ℕ) = m * n
 #align pos_num.mul_to_nat PosNum.mul_to_nat
 
 theorem to_nat_pos : ∀ n : PosNum, 0 < (n : ℕ)
-  | 1 => zero_lt_one
+  | 1 => Nat.zero_lt_one
   | bit0 p =>
     let h := to_nat_pos p
     add_pos h h
@@ -138,7 +139,7 @@ theorem to_nat_pos : ∀ n : PosNum, 0 < (n : ℕ)
 
 theorem cmp_to_nat_lemma {m n : PosNum} : (m : ℕ) < n → (bit1 m : ℕ) < bit0 n :=
   show (m : ℕ) < n → (m + m + 1 + 1 : ℕ) ≤ n + n by
-    intro h; rw [Nat.add_right_comm m m 1, add_assoc]; exact add_le_add h h
+    intro h; rw [Nat.add_right_comm m m 1, add_assoc]; exact Nat.add_le_add h h
 #align pos_num.cmp_to_nat_lemma PosNum.cmp_to_nat_lemma
 
 theorem cmp_swap (m) : ∀ n, (cmp m n).swap = cmp n m := by
@@ -150,22 +151,22 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
   | 1, 1 => rfl
   | bit0 a, 1 =>
     let h : (1 : ℕ) ≤ a := to_nat_pos a
-    add_le_add h h
+    Nat.add_le_add h h
   | bit1 a, 1 => Nat.succ_lt_succ <| to_nat_pos <| bit0 a
   | 1, bit0 b =>
     let h : (1 : ℕ) ≤ b := to_nat_pos b
-    add_le_add h h
+    Nat.add_le_add h h
   | 1, bit1 b => Nat.succ_lt_succ <| to_nat_pos <| bit0 b
   | bit0 a, bit0 b => by
     dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
-    · exact add_lt_add this this
+    · exact Nat.add_lt_add this this
     · rw [this]
-    · exact add_lt_add this this
+    · exact Nat.add_lt_add this this
   | bit0 a, bit1 b => by
     dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
-    · exact Nat.le_succ_of_le (add_lt_add this this)
+    · exact Nat.le_succ_of_le (Nat.add_lt_add this this)
     · rw [this]
       apply Nat.lt_succ_self
     · exact cmp_to_nat_lemma this
@@ -175,13 +176,13 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
     · exact cmp_to_nat_lemma this
     · rw [this]
       apply Nat.lt_succ_self
-    · exact Nat.le_succ_of_le (add_lt_add this this)
+    · exact Nat.le_succ_of_le (Nat.add_lt_add this this)
   | bit1 a, bit1 b => by
     dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
-    · exact Nat.succ_lt_succ (add_lt_add this this)
+    · exact Nat.succ_lt_succ (Nat.add_lt_add this this)
     · rw [this]
-    · exact Nat.succ_lt_succ (add_lt_add this this)
+    · exact Nat.succ_lt_succ (Nat.add_lt_add this this)
 #align pos_num.cmp_to_nat PosNum.cmp_to_nat
 
 @[norm_cast]
@@ -408,15 +409,20 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
     natCast_succ := fun _ => ofNat'_succ }
 #align num.add_monoid_with_one Num.addMonoidWithOne
 
-instance commSemiring : CommSemiring Num := by
-  refine'
-    { Num.addMonoid,
-      Num.addMonoidWithOne with
-      mul := (· * ·)
-      npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩, .. } <;>
-    try { intros; rfl } <;>
-    transfer <;>
-    simp [add_comm, mul_add, add_mul, mul_assoc, mul_comm, mul_left_comm]
+instance commSemiring : CommSemiring Num where
+  __ := Num.addMonoid
+  __ := Num.addMonoidWithOne
+  mul := (· * ·)
+  npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
+  mul_zero _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, mul_zero]
+  zero_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, zero_mul]
+  mul_one _ := by rw [← to_nat_inj, mul_to_nat, cast_one, mul_one]
+  one_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_one, one_mul]
+  add_comm _ _ := by simp_rw [← to_nat_inj, add_to_nat, add_comm]
+  mul_comm _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_comm]
+  mul_assoc _ _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_assoc]
+  left_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, mul_add]
+  right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
 #align num.comm_semiring Num.commSemiring
 
 instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
@@ -479,6 +485,9 @@ theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
 theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
   rw [← cast_to_nat, to_of_nat]
 #align num.of_nat_cast Num.of_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias of_nat_cast := of_natCast
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
@@ -588,25 +597,27 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
-instance addCommSemigroup : AddCommSemigroup PosNum := by
-  refine' { add := (· + ·).. } <;> transfer
+instance addCommSemigroup : AddCommSemigroup PosNum where
+  add := (· + ·)
+  add_assoc := by transfer
+  add_comm := by transfer
 #align pos_num.add_comm_semigroup PosNum.addCommSemigroup
 
-instance commMonoid : CommMonoid PosNum := by
-  refine'
-    { mul := (· * ·)
-      one := (1 : PosNum)
-      npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩,.. } <;>
-  try { intros; rfl } <;>
-  transfer
+instance commMonoid : CommMonoid PosNum where
+  mul := (· * ·)
+  one := (1 : PosNum)
+  npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩
+  mul_assoc := by transfer
+  one_mul := by transfer
+  mul_one := by transfer
+  mul_comm := by transfer
 #align pos_num.comm_monoid PosNum.commMonoid
 
-instance distrib : Distrib PosNum := by
-  refine'
-    { add := (· + ·)
-      mul := (· * ·).. } <;>
-  (transfer
-   simp [mul_add, mul_comm])
+instance distrib : Distrib PosNum where
+  add := (· + ·)
+  mul := (· * ·)
+  left_distrib := by transfer; simp [mul_add]
+  right_distrib := by transfer; simp [mul_add, mul_comm]
 #align pos_num.distrib PosNum.distrib
 
 instance linearOrder : LinearOrder PosNum where
@@ -1534,10 +1545,16 @@ theorem of_intCast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
   rw [← cast_to_int, to_of_int]
 #align znum.of_int_cast ZNum.of_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias of_int_cast := of_intCast
+
 @[simp, norm_cast]
 theorem of_natCast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
   rw [← Int.cast_natCast, of_intCast, Int.cast_natCast]
 #align znum.of_nat_cast ZNum.of_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias of_nat_cast := of_natCast
 
 @[simp, norm_cast]
 theorem dvd_to_int (m n : ZNum) : (m : ℤ) ∣ n ↔ m ∣ n :=

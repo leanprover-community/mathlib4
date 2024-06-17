@@ -39,12 +39,9 @@ open MeasureTheory Filter Finset
 
 noncomputable section
 
-open scoped BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
+open scoped MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
-
--- Porting note: this lemma replaces `ENNReal.toReal_bit0`, which does not exist in Lean 4
-private lemma coe_two : ENNReal.toReal 2 = (2 : ℝ) := rfl
 
 -- Porting note: Consider if `evariance` or `eVariance` is better. Also,
 -- consider `eVariationOn` in `Mathlib.Analysis.BoundedVariation`.
@@ -66,7 +63,7 @@ theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX :
     evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memℒp_const <| μ[X]).2 2
   rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, ← ENNReal.rpow_two] at this
-  simp only [coe_two, Pi.sub_apply, ENNReal.one_toReal, one_div] at this
+  simp only [ENNReal.toReal_ofNat, Pi.sub_apply, ENNReal.one_toReal, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
   simp_rw [ENNReal.rpow_two] at this
   exact this
@@ -79,7 +76,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   have : Memℒp (fun ω => X ω - μ[X]) 2 μ := by
     refine ⟨hXm.sub aestronglyMeasurable_const, ?_⟩
     rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
-    simp only [coe_two, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
+    simp only [ENNReal.toReal_ofNat, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
   -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
@@ -120,7 +117,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero (hX : Mem�
     simp_rw [hXint, sub_zero]
   · rfl
   · convert hX.integrable_norm_rpow two_ne_zero ENNReal.two_ne_top with ω
-    simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
+    simp only [Pi.sub_apply, Real.norm_eq_abs, ENNReal.toReal_ofNat, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
 #align measure_theory.mem_ℒp.variance_eq_of_integral_eq_zero MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero
@@ -134,7 +131,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
     -- and `convert` cannot disambiguate based on typeclass inference failure.
     convert (hX.sub <| memℒp_const (μ [X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
       with ω
-    simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
+    simp only [Pi.sub_apply, Real.norm_eq_abs, ENNReal.toReal_ofNat, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
 #align measure_theory.mem_ℒp.variance_eq MeasureTheory.Memℒp.variance_eq
@@ -233,7 +230,7 @@ theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → 
       apply hX
       convert A.add B
       simp
-  · exact @ae_of_all _ (_) _ _ fun x => sq_nonneg _
+  · exact eventually_of_forall fun x => sq_nonneg _
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
 #align probability_theory.variance_le_expectation_sq ProbabilityTheory.variance_le_expectation_sq
 
@@ -252,7 +249,7 @@ theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : A
     rw [Memℒp, not_and] at hℒ
     specialize hℒ hX
     simp only [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, not_lt, top_le_iff,
-      coe_two, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true_iff,
+      ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true_iff,
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
 #align probability_theory.evariance_def' ProbabilityTheory.evariance_def'
@@ -267,8 +264,8 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
     simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
       NNReal.coe_le_coe, ENNReal.ofReal_coe_nnreal]
   · rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
-    simp only [show ENNReal.ofNNReal (c ^ 2) = (ENNReal.ofNNReal c) ^ 2 by norm_cast, coe_two,
-      one_div, Pi.sub_apply]
+    simp only [show ENNReal.ofNNReal (c ^ 2) = (ENNReal.ofNNReal c) ^ 2 by norm_cast,
+      ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
     rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
     congr
     simp_rw [← ENNReal.rpow_mul, inv_mul_cancel (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
@@ -315,16 +312,16 @@ variances. -/
 theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X : ι → Ω → ℝ}
     {s : Finset ι} (hs : ∀ i ∈ s, @Memℒp _ _ _ (_) (X i) 2 ℙ)
     (h : Set.Pairwise ↑s fun i j => @IndepFun _ _ _ (_) _ _ (X i) (X j) ℙ) :
-    Var[∑ i in s, X i] = ∑ i in s, Var[X i] := by
+    Var[∑ i ∈ s, X i] = ∑ i ∈ s, Var[X i] := by
   classical
   induction' s using Finset.induction_on with k s ks IH
   · simp only [Finset.sum_empty, variance_zero]
   rw [variance_def' (memℒp_finset_sum' _ hs), sum_insert ks, sum_insert ks]
   simp only [add_sq']
   calc
-    𝔼[X k ^ 2 + (∑ i in s, X i) ^ 2 + 2 * X k * ∑ i in s, X i] - 𝔼[X k + ∑ i in s, X i] ^ 2 =
-        𝔼[X k ^ 2] + 𝔼[(∑ i in s, X i) ^ 2] + 𝔼[2 * X k * ∑ i in s, X i] -
-          (𝔼[X k] + 𝔼[∑ i in s, X i]) ^ 2 := by
+    𝔼[X k ^ 2 + (∑ i ∈ s, X i) ^ 2 + 2 * X k * ∑ i ∈ s, X i] - 𝔼[X k + ∑ i ∈ s, X i] ^ 2 =
+        𝔼[X k ^ 2] + 𝔼[(∑ i ∈ s, X i) ^ 2] + 𝔼[2 * X k * ∑ i ∈ s, X i] -
+          (𝔼[X k] + 𝔼[∑ i ∈ s, X i]) ^ 2 := by
       rw [integral_add', integral_add', integral_add']
       · exact Memℒp.integrable one_le_two (hs _ (mem_insert_self _ _))
       · apply integrable_finset_sum' _ fun i hi => ?_
@@ -344,12 +341,12 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
           (Memℒp.integrable one_le_two (hs _ (mem_insert_of_mem hi)))
         apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
         exact fun hki => ks (hki.symm ▸ hi)
-    _ = Var[X k] + Var[∑ i in s, X i] +
-        (𝔼[2 * X k * ∑ i in s, X i] - 2 * 𝔼[X k] * 𝔼[∑ i in s, X i]) := by
+    _ = Var[X k] + Var[∑ i ∈ s, X i] +
+        (𝔼[2 * X k * ∑ i ∈ s, X i] - 2 * 𝔼[X k] * 𝔼[∑ i ∈ s, X i]) := by
       rw [variance_def' (hs _ (mem_insert_self _ _)),
         variance_def' (memℒp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi))]
       ring
-    _ = Var[X k] + Var[∑ i in s, X i] := by
+    _ = Var[X k] + Var[∑ i ∈ s, X i] := by
       simp_rw [Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, sum_apply, mul_sum, mul_assoc,
         add_right_eq_self]
       rw [integral_finset_sum s fun i hi => ?_]; swap
@@ -367,7 +364,7 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
         exact fun hki => ks (hki.symm ▸ hi)
       · exact Memℒp.aestronglyMeasurable (hs _ (mem_insert_self _ _))
       · exact Memℒp.aestronglyMeasurable (hs _ (mem_insert_of_mem hi))
-    _ = Var[X k] + ∑ i in s, Var[X i] := by
+    _ = Var[X k] + ∑ i ∈ s, Var[X i] := by
       rw [IH (fun i hi => hs i (mem_insert_of_mem hi))
           (h.mono (by simp only [coe_insert, Set.subset_insert]))]
 #align probability_theory.indep_fun.variance_sum ProbabilityTheory.IndepFun.variance_sum

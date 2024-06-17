@@ -119,7 +119,7 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
--- Adaptation note: otherwise there is a spurious warning on `contrapose!` below.
+#adaptation_note /-- otherwise there is a spurious warning on `contrapose!` below. -/
 set_option linter.unusedVariables false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
@@ -174,7 +174,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     simp_rw [Polynomial.map_pow, map_X, χ, lieCharpoly_map_eval, one_smul, u, sub_add_cancel,
       -- and therefore the endomorphism `⁅y, _⁆` acts nilpotently on `E`.
       r, LinearMap.charpoly_eq_X_pow_iff,
-      Subtype.ext_iff, coe_toEnd_pow, ZeroMemClass.coe_zero] at this
+      Subtype.ext_iff, coe_toEnd_pow _ _ _ E, ZeroMemClass.coe_zero] at this
     -- We ultimately want to show `engel K x ≤ engel K y`
     intro z hz
     -- which holds by definition of Engel subalgebra and the nilpotency that we just established.
@@ -301,7 +301,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.2, rfl⟩ this).ge
     intro z
     -- And so we are done, by the definition of Engel subalgebra.
-    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow] using this z.2
+    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using this z.2
   -- Now we are in good shape.
   -- Fix an element `z` in the Engel subalgebra of `y`.
   intro z hz

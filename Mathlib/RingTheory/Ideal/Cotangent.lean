@@ -196,6 +196,26 @@ def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
   exact Ideal.quotEquivOfEq (sup_eq_right.mpr <| Ideal.pow_le_self two_ne_zero)
 #align ideal.quot_cotangent Ideal.quotCotangent
 
+/-- The map `I/I² → J/J²` if `I ≤ f⁻¹(J)`. -/
+def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) :
+    I₁.Cotangent →ₗ[R] I₂.Cotangent := by
+  refine Submodule.mapQ ((I₁ • ⊤ : Submodule A I₁).restrictScalars R)
+    ((I₂ • ⊤ : Submodule B I₂).restrictScalars R) ?_ ?_
+  · exact f.toLinearMap.restrict (p := I₁.restrictScalars R) (q := I₂.restrictScalars R) h
+  · intro x hx
+    refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
+    rintro a ha ⟨b, hb⟩ -
+    simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
+    convert (Submodule.smul_mem_smul (M := I₂) (r := f a)
+      (n := ⟨f b, h hb⟩) (h ha) (Submodule.mem_top)) using 1
+    ext
+    exact f.map_mul a b
+
+@[simp]
+lemma mapCotangent_toCotangent
+    (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
+    Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
+
 end Ideal
 
 namespace LocalRing

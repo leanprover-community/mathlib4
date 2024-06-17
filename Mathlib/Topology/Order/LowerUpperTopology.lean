@@ -287,7 +287,7 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
 
 /-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
 preimage of every interval `Set.Ici a` is a closed set. -/
-@[deprecated] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
+@[deprecated (since := "2023-12-24")] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
 
 end Preorder
 
@@ -368,7 +368,7 @@ lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous
 provided that the preimage of every interval `Set.Iic a` is a closed set. -/
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
     Continuous f :=
   continuous_iff_Iic.2 h
@@ -393,7 +393,7 @@ instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     [OrderBot α] [Preorder β] [TopologicalSpace β] [IsLower β] [OrderBot β] :
     IsLower (α × β) where
   topology_eq_lowerTopology := by
-    refine' le_antisymm (le_generateFrom _) _
+    refine le_antisymm (le_generateFrom ?_) ?_
     · rintro _ ⟨x, rfl⟩
       exact (isClosed_Ici.prod isClosed_Ici).isOpen_compl
     rw [(IsLower.isTopologicalBasis.prod

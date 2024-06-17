@@ -266,7 +266,7 @@ theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
   exact congr_fun hxy n
 
 /-- If a measurable space is countably generated and separates points, it is measure equivalent
-to some some subset of the Cantor space `ℕ → Bool` (equipped with the product sigma algebra).
+to some subset of the Cantor space `ℕ → Bool` (equipped with the product sigma algebra).
 Note: `s` need not be measurable, so this map need not be a `MeasurableEmbedding` to
 the Cantor Space. -/
 theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
@@ -333,7 +333,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
       classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
-        exact diff_subset _ _
+        exact diff_subset
       · simp only [Finset.coe_sdiff, coe_toFinset]
         refine (IsCompl.eq_compl ⟨?_, ?_⟩).symm
         · refine Set.disjoint_sUnion_right.mpr fun u huS => ?_
