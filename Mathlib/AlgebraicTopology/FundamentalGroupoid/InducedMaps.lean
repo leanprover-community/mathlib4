@@ -146,7 +146,7 @@ def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
 #align continuous_map.homotopy.ulift_map ContinuousMap.Homotopy.uliftMap
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
-@[simp]
+@[simp, nolint simpNF]
 theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl
 #align continuous_map.homotopy.ulift_apply ContinuousMap.Homotopy.ulift_apply

@@ -393,7 +393,7 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp)] -- Porting note (#10675): dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subgroup.mem_carrier Subgroup.mem_carrier
@@ -1454,7 +1454,7 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
 -- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
 -- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp 1100)]
+@[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image

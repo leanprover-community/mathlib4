@@ -263,7 +263,7 @@ theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 #align free_magma.traverse_eq FreeMagma.traverse_eq
 
 -- Porting note (#10675): dsimp can not prove this
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mul_map_seq (x y : FreeMagma α) :
     ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
@@ -691,7 +691,7 @@ theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x := rfl
 #align free_semigroup.traverse_eq FreeSemigroup.traverse_eq
 
 -- Porting note (#10675): dsimp can not prove this
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mul_map_seq (x y : FreeSemigroup α) :
     ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) := rfl
 #align free_semigroup.mul_map_seq FreeSemigroup.mul_map_seq

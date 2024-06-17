@@ -196,7 +196,7 @@ theorem left_unitality_app (n : M) (X : C) :
 #align category_theory.left_unitality_app CategoryTheory.left_unitality_app
 
 -- Porting note: linter claims `simp can prove it`, but cnot
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint simpNF)]
 theorem obj_ε_app (n : M) (X : C) :
     (F.obj n).map (F.ε.app X) = (F.map (λ_ n).inv).app X ≫ (F.μIso (𝟙_ M) n).inv.app X := by
   refine Eq.trans ?_ (Category.id_comp _)
@@ -207,7 +207,7 @@ theorem obj_ε_app (n : M) (X : C) :
 #align category_theory.obj_ε_app CategoryTheory.obj_ε_app
 
 -- Porting note: linter claims `simp can prove it`, but cnot
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint simpNF)]
 theorem obj_ε_inv_app (n : M) (X : C) :
     (F.obj n).map (F.εIso.inv.app X) = (F.μ (𝟙_ M) n).app X ≫ (F.map (λ_ n).hom).app X := by
   rw [← cancel_mono ((F.obj n).map (F.ε.app X)), ← Functor.map_comp]

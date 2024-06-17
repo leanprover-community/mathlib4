@@ -198,7 +198,7 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
 -- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 #align cardinal.lift_umax Cardinal.lift_umax
@@ -206,7 +206,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
 -- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 #align cardinal.lift_umax' Cardinal.lift_umax'
@@ -214,7 +214,7 @@ theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
 -- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- A cardinal lifted to a lower or equal universe equals itself. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 #align cardinal.lift_id' Cardinal.lift_id'
@@ -1050,7 +1050,7 @@ lemma exists_eq_of_iSup_eq_of_not_isLimit
   exact (le_ciSup hf _).trans h
 
 -- Porting note: simpNF is not happy with universe levels.
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
 -- Porting note: Added .{v,u,w} universe hint below
@@ -1187,7 +1187,7 @@ theorem lift_succ (a) : lift.{v,u} (succ a) = succ (lift.{v,u} a) :=
 
 -- Porting note: simpNF is not happy with universe levels.
 -- Porting note: Inserted .{u,v} below
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
   rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]

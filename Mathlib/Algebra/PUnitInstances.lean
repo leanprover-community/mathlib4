@@ -42,7 +42,7 @@ instance commGroup : CommGroup PUnit where
 
 -- dsimp loops when applying this lemma to its LHS,
 -- probably https://github.com/leanprover/lean4/pull/2867
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, nolint simpNF)]
 theorem one_eq : (1 : PUnit) = unit :=
   rfl
 #align punit.one_eq PUnit.one_eq

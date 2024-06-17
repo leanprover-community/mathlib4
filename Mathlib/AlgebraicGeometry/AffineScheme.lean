@@ -376,7 +376,7 @@ theorem opensFunctor_map_basicOpen :
 -- by linter seems to tell me that left hand side should be changed in to something exactly the same
 -- as before. I am not sure if this is caused by LHS being written with all explicit argument,
 -- I am not sure if this is intentional or not.
-@[simp]
+@[simp, nolint simpNF]
 theorem basicOpen_fromSpec_app :
     (𝖲𝗉𝖾𝖼 𝓞ₓ(U)).basicOpen (hU.fromSpec.1.c.app (op U) f) =
       PrimeSpectrum.basicOpen f := by

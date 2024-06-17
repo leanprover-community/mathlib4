@@ -159,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
 -- see https://github.com/leanprover/std4/issues/86
-@[simp]
+@[simp, nolint simpNF]
 theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     ofHom f x = f x :=
   rfl

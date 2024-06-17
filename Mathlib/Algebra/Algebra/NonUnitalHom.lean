@@ -524,7 +524,7 @@ theorem toNonUnitalAlgHom_eq_coe (f : A →ₐ[R] B) : f.toNonUnitalAlgHom = f :
 #align alg_hom.to_non_unital_alg_hom_eq_coe AlgHom.toNonUnitalAlgHom_eq_coe
 
 -- Note (#6057) : tagging simpNF because linter complains
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF]
 theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f.toNonUnitalAlgHom) = ⇑f :=
   rfl
 

@@ -76,7 +76,7 @@ def ε : 𝟙_ (ModuleCat.{u} R) ⟶ (free R).obj (𝟙_ (Type u)) :=
 #align Module.free.ε ModuleCat.Free.ε
 
 -- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp]
+@[simp, nolint simpNF]
 theorem ε_apply (r : R) : ε R r = Finsupp.single PUnit.unit r :=
   rfl
 #align Module.free.ε_apply ModuleCat.Free.ε_apply
