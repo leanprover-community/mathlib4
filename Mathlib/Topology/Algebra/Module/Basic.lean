@@ -521,7 +521,7 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
   LinearMap.CompatibleSMul.map_smul (f : M₁ →ₗ[S] M₂) c x
 #align continuous_linear_map.map_smul_of_tower ContinuousLinearMap.map_smul_of_tower
 
-@[deprecated _root_.map_sum]
+@[deprecated _root_.map_sum (since := "2023-09-16")]
 protected theorem map_sum {ι : Type*} (f : M₁ →SL[σ₁₂] M₂) (s : Finset ι) (g : ι → M₁) :
     f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
   map_sum ..

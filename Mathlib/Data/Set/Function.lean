@@ -413,6 +413,9 @@ theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 #align set.maps_to_empty Set.mapsTo_empty
 
+@[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
+  simp [mapsTo', subset_empty_iff]
+
 /-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
 theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
   (hs.image f).mono (mapsTo'.mp h)
@@ -864,6 +867,9 @@ theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
   empty_subset _
 #align set.surj_on_empty Set.surjOn_empty
 
+@[simp] theorem surjOn_empty_iff : SurjOn f ∅ t ↔ t = ∅ := by
+  simp [SurjOn, subset_empty_iff]
+
 @[simp] lemma surjOn_singleton : SurjOn f s {b} ↔ b ∈ f '' s := singleton_subset_iff
 #align set.surj_on_singleton Set.surjOn_singleton
 
@@ -1032,6 +1038,12 @@ theorem BijOn.mk (h₁ : MapsTo f s t) (h₂ : InjOn f s) (h₃ : SurjOn f s t) 
 theorem bijOn_empty (f : α → β) : BijOn f ∅ ∅ :=
   ⟨mapsTo_empty f ∅, injOn_empty f, surjOn_empty f ∅⟩
 #align set.bij_on_empty Set.bijOn_empty
+
+@[simp] theorem bijOn_empty_iff_left : BijOn f s ∅ ↔ s = ∅ :=
+  ⟨fun h ↦ by simpa using h.mapsTo, by rintro rfl; exact bijOn_empty f⟩
+
+@[simp] theorem bijOn_empty_iff_right : BijOn f ∅ t ↔ t = ∅ :=
+  ⟨fun h ↦ by simpa using h.surjOn, by rintro rfl; exact bijOn_empty f⟩
 
 @[simp] lemma bijOn_singleton : BijOn f {a} {b} ↔ f a = b := by simp [BijOn, eq_comm]
 #align set.bij_on_singleton Set.bijOn_singleton

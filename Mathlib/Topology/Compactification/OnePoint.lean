@@ -84,6 +84,14 @@ instance : CoeTC X (OnePoint X) := ⟨some⟩
 
 instance : Inhabited (OnePoint X) := ⟨∞⟩
 
+protected lemma «forall» {p : OnePoint X → Prop} :
+    (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p x :=
+  Option.forall
+
+protected lemma «exists» {p : OnePoint X → Prop} :
+    (∃ x, p x) ↔ p ∞ ∨ ∃ (x : X), p x :=
+  Option.exists
+
 instance [Fintype X] : Fintype (OnePoint X) :=
   inferInstanceAs (Fintype (Option X))
 
@@ -391,20 +399,86 @@ theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y}
   rw [ContinuousAt, nhds_coe_eq, tendsto_map'_iff, ContinuousAt]; rfl
 #align alexandroff.continuous_at_coe OnePoint.continuousAt_coe
 
-lemma continuous_iff {X Y : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] (f : OnePoint X → Y) : Continuous f ↔
+lemma continuous_iff {Y : Type*} [TopologicalSpace Y] (f : OnePoint X → Y) : Continuous f ↔
     Tendsto (fun x : X ↦ f x) (coclosedCompact X) (𝓝 (f ∞)) ∧ Continuous (fun x : X ↦ f x) := by
-  simp_rw [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty']
+  simp only [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty']
   rfl
 
-lemma continuous_iff_of_discrete {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+/--
+A constructor for continuous maps out of a one point compactification, given a continuous map from
+the underlying space and a limit value at infinity.
+-/
+def continuousMapMk {Y : Type*} [TopologicalSpace Y] (f : C(X, Y)) (y : Y)
+    (h : Tendsto f (coclosedCompact X) (𝓝 y)) : C(OnePoint X, Y) where
+  toFun
+    | ∞ => y
+    | some x => f x
+  continuous_toFun := by
+    rw [continuous_iff]
+    refine ⟨h, f.continuous⟩
+
+lemma continuous_iff_from_discrete {Y : Type*} [TopologicalSpace Y]
     [DiscreteTopology X] (f : OnePoint X → Y) :
     Continuous f ↔ Tendsto (fun x : X ↦ f x) cofinite (𝓝 (f ∞)) := by
   simp [continuous_iff, cocompact_eq_cofinite, continuous_of_discreteTopology]
 
-lemma continuous_iff_of_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
+/--
+A constructor for continuous maps out of a one point compactification of a discrete space, given a
+map from the underlying space and a limit value at infinity.
+-/
+def continuousMapMkDiscrete {Y : Type*} [TopologicalSpace Y]
+    [DiscreteTopology X] (f : X → Y) (y : Y) (h : Tendsto f cofinite (𝓝 y)) :
+    C(OnePoint X, Y) :=
+  continuousMapMk ⟨f, continuous_of_discreteTopology⟩ y (by simpa [cocompact_eq_cofinite])
+
+variable (X) in
+/--
+Continuous maps out of the one point compactification of an infinite discrete space to a Hausdorff
+space correspond bijectively to "convergent" maps out of the discrete space.
+-/
+noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [TopologicalSpace Y]
+    [T2Space Y] [Infinite X] :
+    C(OnePoint X, Y) ≃ { f : X → Y // ∃ L, Tendsto (fun x : X ↦ f x) cofinite (𝓝 L) } where
+  toFun f := ⟨(f ·), ⟨f ∞, continuous_iff_from_discrete _ |>.mp (map_continuous f)⟩⟩
+  invFun f :=
+    { toFun := fun x => match x with
+        | ∞ => Classical.choose f.2
+        | some x => f.1 x
+      continuous_toFun := continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.2 }
+  left_inv f := by
+    ext x
+    refine OnePoint.rec ?_ ?_ x
+    · refine tendsto_nhds_unique ?_ (continuous_iff_from_discrete _ |>.mp <| map_continuous f)
+      let f' : { f : X → Y // ∃ L, Tendsto (fun x : X ↦ f x) cofinite (𝓝 L) } :=
+        ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete f |>.mp <| map_continuous f⟩⟩
+      exact Classical.choose_spec f'.property
+    · simp
+  right_inv f := rfl
+
+lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
-  rw [continuous_iff_of_discrete, Nat.cofinite_eq_atTop]
+  rw [continuous_iff_from_discrete, Nat.cofinite_eq_atTop]
+
+/--
+A constructor for continuous maps out of the one point compactification of `ℕ`, given a
+sequence and a limit value at infinity.
+-/
+def continuousMapMkNat {Y : Type*} [TopologicalSpace Y]
+    (f : ℕ → Y) (y : Y) (h : Tendsto f atTop (𝓝 y)) :
+    C(OnePoint ℕ, Y) :=
+  continuousMapMkDiscrete f y (by rwa [Nat.cofinite_eq_atTop])
+
+/--
+Continuous maps out of the one point compactification of `ℕ` to a Hausdorff space `Y` correspond
+bijectively to convergent sequences in `Y`.
+-/
+noncomputable def continuousMapNatEquiv (Y : Type*) [TopologicalSpace Y] [T2Space Y] :
+    C(OnePoint ℕ, Y) ≃ { f : ℕ → Y // ∃ L, Tendsto (f ·) atTop (𝓝 L) } := by
+  refine (continuousMapDiscreteEquiv ℕ Y).trans {
+    toFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [← Nat.cofinite_eq_atTop]⟩
+    invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩
+    left_inv := fun _ ↦ rfl
+    right_inv := fun _ ↦ rfl }
 
 /-- If `X` is not a compact space, then the natural embedding `X → OnePoint X` has dense range.
 -/
