@@ -26,29 +26,33 @@ variable {R : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
 
-/-- `Matrix.col ι u` is the column matrix whose entries are given by `u`.
+/--
+`Matrix.col ι u` the matrix with all columns equal to the vector `u`.
 
+To get a column matrix with exactly one column, `Matrix.col (Fin 1) u` is the canonical choice.
 -/
 @[nolint unusedArguments]
-def col (ι : Type*) [Unique ι] (w : m → α) : Matrix m ι α :=
+def col (ι : Type*) (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 #align matrix.col Matrix.col
 
 -- TODO: set as an equation lemma for `col`, see mathlib4#3024
 @[simp]
-theorem col_apply {ι : Type*} [Unique ι] (w : m → α) (i) (j : ι) : col ι w i j = w i :=
+theorem col_apply {ι : Type*} (w : m → α) (i) (j : ι) : col ι w i j = w i :=
   rfl
 #align matrix.col_apply Matrix.col_apply
 
-/-- `Matrix.row ι u` is the row matrix whose entries are given by `u`.
+/--
+`Matrix.row ι u` the matrix with all rows equal to the vector `u`.
 
+To get a row matrix with exactly one row, `Matrix.row (Fin 1) u` is the canonical choice.
 -/
 @[nolint unusedArguments]
-def row (ι : Type*) [Unique ι] (v : n → α) : Matrix ι n α :=
+def row (ι : Type*) (v : n → α) : Matrix ι n α :=
   of fun _ y => v y
 #align matrix.row Matrix.row
 
-variable {ι : Type*} [Unique ι]
+variable {ι : Type*}
 
 -- TODO: set as an equation lemma for `row`, see mathlib4#3024
 @[simp]
@@ -56,14 +60,15 @@ theorem row_apply (v : n → α) (i : ι) (j) : row ι v i j = v j :=
   rfl
 #align matrix.row_apply Matrix.row_apply
 
-theorem col_injective : Function.Injective (col ι: (m → α) → Matrix m ι α) :=
+theorem col_injective [Inhabited ι] : Function.Injective (col ι: (m → α) → Matrix m ι α) :=
   fun _x _y h => funext fun i => congr_fun₂ h i default
 
-@[simp] theorem col_inj {v w : m → α} : col ι v = col ι w ↔ v = w := col_injective.eq_iff
+@[simp] theorem col_inj [Inhabited ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
+  col_injective.eq_iff
 
-@[simp] theorem col_zero [Zero α] : col ι (0 : m → α) = 0 := rfl
+@[simp] theorem col_zero [Zero α] [Inhabited ι]: col ι (0 : m → α) = 0 := rfl
 
-@[simp] theorem col_eq_zero [Zero α] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
+@[simp] theorem col_eq_zero [Zero α] [Inhabited ι] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
 
 @[simp]
 theorem col_add [Add α] (v w : m → α) : col ι (v + w) = col ι v + col ι w := by
@@ -77,15 +82,15 @@ theorem col_smul [SMul R α] (x : R) (v : m → α) : col ι (x • v) = x • c
   rfl
 #align matrix.col_smul Matrix.col_smul
 
-theorem row_injective : Function.Injective (row ι : (n → α) → Matrix ι n α) :=
+theorem row_injective [Inhabited ι] : Function.Injective (row ι : (n → α) → Matrix ι n α) :=
   fun _x _y h => funext fun j => congr_fun₂ h default j
 
-@[simp] theorem row_inj {v w : n → α} : row ι v = row ι w ↔ v = w :=
+@[simp] theorem row_inj [Inhabited ι] {v w : n → α} : row ι v = row ι w ↔ v = w :=
   row_injective.eq_iff
 
 @[simp] theorem row_zero [Zero α] : row ι (0 : n → α) = 0 := rfl
 
-@[simp] theorem row_eq_zero [Zero α] (v : n → α) : row ι v = 0 ↔ v = 0 := row_inj
+@[simp] theorem row_eq_zero [Zero α] [Inhabited ι] (v : n → α) : row ι v = 0 ↔ v = 0 := row_inj
 
 @[simp]
 theorem row_add [Add α] (v w : m → α) : row ι (v + w) = row ι v + row ι w := by
@@ -154,7 +159,7 @@ theorem row_mul_col_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → �
 #align matrix.row_mul_col_apply Matrix.row_mul_col_apply
 
 @[simp]
-theorem diag_col_mul_row [Mul α] [AddCommMonoid α] (a b : n → α) :
+theorem diag_col_mul_row [Mul α] [AddCommMonoid α] [Unique ι] (a b : n → α) :
     diag (col ι a * row ι b) = a * b := by
   ext
   simp [Matrix.mul_apply, col, row]
@@ -162,7 +167,7 @@ theorem diag_col_mul_row [Mul α] [AddCommMonoid α] (a b : n → α) :
 
 variable (ι)
 
-theorem vecMulVec_eq [Mul α] [AddCommMonoid α] (w : m → α) (v : n → α) :
+theorem vecMulVec_eq [Mul α] [AddCommMonoid α] [Unique ι] (w : m → α) (v : n → α) :
     vecMulVec w v = col ι w * row ι v := by
   ext
   simp [vecMulVec, mul_apply]
