@@ -142,6 +142,8 @@ def Mates :
           unit_naturality_assoc, right_triangle_components_assoc]
         rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map,
           ← G.map_comp, right_triangle_components, map_id, id_comp]
+#align category_theory.mates CategoryTheory.Mates
+
 
 -- ER: Note these definitions agree.
 theorem RightMateEqualsTransferNatTrans
@@ -218,10 +220,12 @@ variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R�
 def LeftAdjointSquare.vcomp :
     (G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁) → (G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) → ((G₁ ⋙ G₂) ⋙ L₃ ⟶ L₁ ⋙ (H₁ ⋙ H₂)) :=
   fun α β ↦ (whiskerLeft G₁ β) ≫ (whiskerRight α H₂)
+#align category_theory.leftadjointsquare.vcomp CategoryTheory.LeftAdjointSquare.vcomp
 
 def RightAdjointSquare.vcomp :
     (R₁ ⋙ G₁ ⟶ H₁ ⋙ R₂) → (R₂ ⋙ G₂ ⟶ H₂ ⋙ R₃) → (R₁ ⋙ (G₁ ⋙ G₂) ⟶ (H₁ ⋙ H₂) ⋙ R₃) :=
   fun α β ↦ (whiskerRight α G₂) ≫ (whiskerLeft H₁ β)
+#align category_theory.rightadjointsquare.vcomp CategoryTheory.RightAdjointSquare.vcomp
 
 theorem Mates_vcomp
     (α : G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁) (β : G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) :
@@ -278,10 +282,13 @@ variable (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
 def LeftAdjointSquare.hcomp :
     (G ⋙ L₂ ⟶ L₁ ⋙ H) → (H ⋙ L₄ ⟶ L₃ ⋙ K) → (G ⋙ (L₂ ⋙ L₄) ⟶ (L₁ ⋙ L₃) ⋙ K) := fun α β ↦
   (whiskerRight α L₄) ≫ (whiskerLeft L₁ β)
+#align category_theory.leftadjointsquare.hcomp CategoryTheory.LeftAdjointSquare.hcomp
 
 def RightAdjointSquare.hcomp :
     (R₁ ⋙ G ⟶ H ⋙ R₂) → (R₃ ⋙ H ⟶ K ⋙ R₄) → ((R₃ ⋙ R₁) ⋙ G ⟶ K ⋙ (R₄ ⋙ R₂)) := fun α β ↦
   (whiskerLeft R₃ α) ≫ (whiskerRight β R₂)
+#align category_theory.rightadjointsquare.hcomp CategoryTheory.RightAdjointSquare.hcomp
+
 
 theorem Mates_hcomp
     (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (β : H ⋙ L₄ ⟶ L₃ ⋙ K) :
@@ -327,6 +334,8 @@ def LeftAdjointSquare.comp
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
     ((G₁ ⋙ G₂) ⋙ (L₅ ⋙ L₆)) ⟶ ((L₁ ⋙ L₂) ⋙ (K₁ ⋙ K₂)) :=
   LeftAdjointSquare.vcomp (LeftAdjointSquare.hcomp α β) (LeftAdjointSquare.hcomp γ δ)
+#align category_theory.leftadjointsquare.comp CategoryTheory.LeftAdjointSquare.comp
+
 
 theorem LeftAdjointSquare.comp_vhcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
@@ -354,6 +363,7 @@ def RightAdjointSquare.comp
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
     ((R₂ ⋙ R₁) ⋙ (G₁ ⋙ G₂) ⟶ (K₁ ⋙ K₂) ⋙ (R₆ ⋙ R₅)) :=
   RightAdjointSquare.vcomp (RightAdjointSquare.hcomp α β) (RightAdjointSquare.hcomp γ δ)
+#align category_theory.rightadjointsquare.comp CategoryTheory.RightAdjointSquare.comp
 
 theorem RightAdjointSquare.comp_vhcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
