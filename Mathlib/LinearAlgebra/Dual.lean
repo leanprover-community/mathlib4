@@ -688,7 +688,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       ext m f <;> simp [e]
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
-    exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
+    exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
 variable {R M N} in
 lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
@@ -741,7 +741,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
 
 -- Porting note: replace use_finite_instance tactic
 open Lean.Elab.Tactic in
-/-- Try using `Set.to_finite` to dispatch a `Set.finite` goal. -/
+/-- Try using `Set.toFinite` to dispatch a `Set.Finite` goal. -/
 def evalUseFiniteInstance : TacticM Unit := do
   evalTactic (← `(tactic| intros; apply Set.toFinite))
 

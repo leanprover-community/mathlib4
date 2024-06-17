@@ -39,7 +39,7 @@ lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve
         exact ⟨Y a, 𝟙 Y a, π a, Presieve.ofArrows.mk a, by simp⟩
     | top X =>
       refine ⟨Unit, inferInstance, fun _ => X, fun _ => (𝟙 X), ⟨?_⟩, by simp⟩
-      have : IsIso (Sigma.desc (Cofan.mk X fun _ ↦ 𝟙 X).inj) := by
+      have : IsIso (Sigma.desc (Cofan.mk X fun (_ : Unit) ↦ 𝟙 X).inj) := by
         have : IsIso (coproductUniqueIso (fun () => X)).hom := inferInstance
         exact this
       exact Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X _)
