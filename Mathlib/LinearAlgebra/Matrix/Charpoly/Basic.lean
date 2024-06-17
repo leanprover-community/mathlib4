@@ -31,7 +31,7 @@ universe u v w
 
 namespace Matrix
 
-open BigOperators Finset Matrix Polynomial
+open Finset Matrix Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable {m n : Type*} [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n]

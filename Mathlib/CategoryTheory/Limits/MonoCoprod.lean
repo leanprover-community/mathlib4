@@ -95,7 +95,7 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
 
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
-    refine' ⟨BinaryCofan.mk (Sum.inl : A ⟶ Sum A B) Sum.inr, _, _⟩
+    refine ⟨BinaryCofan.mk (Sum.inl : A ⟶ Sum A B) Sum.inr, ?_, ?_⟩
     · exact BinaryCofan.IsColimit.mk _
         (fun f₁ f₂ x => by
           rcases x with x | x

@@ -145,7 +145,7 @@ def rev {n : Nat} : Fin2 n → Fin2 n
 @[simp] lemma rev_last {n} : rev (@last n) = fz := by
   induction n <;> simp_all [rev, castSucc, last]
 
-@[simp] lemma inv_castSucc {n} (i : Fin2 n) : rev (castSucc i) = fs (rev i) := by
+@[simp] lemma rev_castSucc {n} (i : Fin2 n) : rev (castSucc i) = fs (rev i) := by
   induction i <;> simp_all [rev, castSucc, last]
 
 @[simp] lemma rev_rev {n} (i : Fin2 n) : i.rev.rev = i := by

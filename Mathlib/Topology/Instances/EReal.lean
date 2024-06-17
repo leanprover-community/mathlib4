@@ -32,7 +32,7 @@ noncomputable section
 
 open scoped Classical
 open Set Filter Metric TopologicalSpace Topology
-open scoped ENNReal NNReal BigOperators Filter
+open scoped ENNReal NNReal Filter
 
 variable {α : Type*} [TopologicalSpace α]
 
@@ -243,12 +243,12 @@ theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) 
 instance : ContinuousNeg EReal := ⟨negOrderIso.continuous⟩
 
 /-- Negation on `EReal` as a homeomorphism -/
-@[deprecated Homeomorph.neg]
+@[deprecated Homeomorph.neg (since := "2023-03-14")]
 def negHomeo : EReal ≃ₜ EReal :=
   negOrderIso.toHomeomorph
 #align ereal.neg_homeo EReal.negHomeo
 
-@[deprecated continuous_neg]
+@[deprecated continuous_neg (since := "2023-03-14")]
 protected theorem continuous_neg : Continuous fun x : EReal => -x :=
   continuous_neg
 #align ereal.continuous_neg EReal.continuous_neg

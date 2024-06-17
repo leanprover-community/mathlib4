@@ -28,7 +28,7 @@ This file defines the multinomial coefficient and several small lemma's for mani
 -/
 
 open Finset
-open scoped BigOperators Nat
+open scoped Nat
 
 namespace Nat
 
@@ -52,10 +52,10 @@ theorem multinomial_spec : (∏ i ∈ s, (f i)!) * multinomial s f = (∑ i ∈ 
   Nat.mul_div_cancel' (prod_factorial_dvd_factorial_sum s f)
 #align nat.multinomial_spec Nat.multinomial_spec
 
-@[simp]
-theorem multinomial_nil : multinomial ∅ f = 1 := by
-  dsimp [multinomial]
-#align nat.multinomial_nil Nat.multinomial_nil
+@[simp] lemma multinomial_empty : multinomial ∅ f = 1 := by simp [multinomial]
+#align nat.multinomial_nil Nat.multinomial_empty
+
+@[deprecated (since := "2024-06-01")] alias multinomial_nil := multinomial_empty
 
 variable {s f}
 
@@ -248,6 +248,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
         exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       convert @Nat.cast_one R _
+      simp
     · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty

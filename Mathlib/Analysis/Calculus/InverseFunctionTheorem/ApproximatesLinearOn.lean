@@ -208,8 +208,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     rw [div_mul_eq_mul_div, div_le_iff]; swap; · linarith
     calc
       (f'symm.nnnorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) * dist (f b) y =
-          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) :=
-        by ring
+          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) := by
+        ring
       _ ≤ f'symm.nnnorm * dist (f b) y * 1 := by
         gcongr
         rw [sub_le_self_iff]
@@ -303,8 +303,8 @@ theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearR
   refine
     le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
-    (hf.mono_set (inter_subset_left s t)).image_mem_nhds f'symm (inter_mem hs ht) hc
-  exact mem_of_superset this (image_subset _ (inter_subset_right _ _))
+    (hf.mono_set inter_subset_left).image_mem_nhds f'symm (inter_mem hs ht) hc
+  exact mem_of_superset this (image_subset _ inter_subset_right)
 #align approximates_linear_on.map_nhds_eq ApproximatesLinearOn.map_nhds_eq
 
 end LocallyOnto
@@ -438,7 +438,7 @@ theorem toPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[�
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
-  refine' (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl _
+  refine (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_
   rw [toPartialHomeomorph_target, image_univ, range_iff_surjective]
   exact hf.surjective hc
 #align approximates_linear_on.to_homeomorph ApproximatesLinearOn.toHomeomorph

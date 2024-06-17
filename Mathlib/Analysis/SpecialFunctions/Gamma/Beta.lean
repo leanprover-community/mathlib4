@@ -45,7 +45,7 @@ set_option linter.uppercaseLean3 false
 
 open Filter intervalIntegral Set Real MeasureTheory
 
-open scoped Nat Topology BigOperators Real
+open scoped Nat Topology Real
 
 section BetaIntegral
 

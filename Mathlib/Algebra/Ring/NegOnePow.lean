@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.ZMod.IntUnitsPower
 
 /-!
@@ -74,6 +74,10 @@ lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
 lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
   dsimp [negOnePow]
   simp only [zpow_neg, ← inv_zpow, inv_neg, inv_one]
+
+@[simp]
+lemma negOnePow_abs (n : ℤ) : |n|.negOnePow = n.negOnePow := by
+  obtain h|h := abs_choice n <;> simp only [h, negOnePow_neg]
 
 lemma negOnePow_sub (n₁ n₂ : ℤ) :
     (n₁ - n₂).negOnePow = n₁.negOnePow * n₂.negOnePow := by

@@ -45,7 +45,6 @@ section
 variable (α : Type*) [Fintype α] [Nonempty α] {m n : ℕ}
 
 open Finset Fintype Nat
-open scoped BigOperators
 
 private lemma binomial_sum_eq (h : n < m) :
     ∑ i ∈ range (n + 1), (n.choose i * (m - n) / ((m - i) * m.choose i) : ℚ) = 1 := by
@@ -322,7 +321,6 @@ end Finset
 
 open Finset hiding card
 open Fintype Nat
-open scoped BigOperators
 
 namespace AhlswedeZhang
 variable {α : Type*} [Fintype α] [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α}

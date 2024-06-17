@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Fintype.Powerset
@@ -19,7 +19,6 @@ multiplicative and additive structures on the values being combined.
 -/
 
 open Fintype
-open scoped BigOperators
 
 variable {ι α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
 
@@ -106,7 +105,7 @@ lemma sum_mul_boole (s : Finset ι) (f : ι → α) (i : ι) :
 #align finset.sum_mul_boole Finset.sum_mul_boole
 
 lemma sum_boole_mul (s : Finset ι) (f : ι → α) (i : ι) :
-    ∑ j ∈ s, ite (i = j) 1 0 * f i = ite (i ∈ s) (f i) 0 := by simp
+    ∑ j ∈ s, ite (i = j) 1 0 * f j = ite (i ∈ s) (f i) 0 := by simp
 #align finset.sum_boole_mul Finset.sum_boole_mul
 
 end NonAssocSemiring
@@ -276,14 +275,17 @@ theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
   simp
 #align finset.prod_one_sub_ordered Finset.prod_one_sub_ordered
 
-theorem prod_range_cast_nat_sub (n k : ℕ) :
+theorem prod_range_natCast_sub (n k : ℕ) :
     ∏ i ∈ range k, (n - i : α) = (∏ i ∈ range k, (n - i) : ℕ) := by
   rw [prod_natCast]
   rcases le_or_lt k n with hkn | hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
-#align finset.prod_range_cast_nat_sub Finset.prod_range_cast_nat_sub
+#align finset.prod_range_cast_nat_sub Finset.prod_range_natCast_sub
+
+@[deprecated (since := "2024-05-27")] alias prod_range_cast_nat_sub := prod_range_natCast_sub
+
 
 end CommRing
 

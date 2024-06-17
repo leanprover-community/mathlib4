@@ -31,7 +31,7 @@ infinite series, absolute convergence, normed group
 -/
 
 
-open BigOperators Topology NNReal
+open Topology NNReal
 
 open Finset Filter Metric
 

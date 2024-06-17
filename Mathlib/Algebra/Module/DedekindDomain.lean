@@ -20,8 +20,6 @@ direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and
 
 universe u v
 
-open scoped BigOperators
-
 variable {R : Type u} [CommRing R] [IsDomain R] {M : Type v} [AddCommGroup M] [Module R M]
 
 open scoped DirectSum

@@ -20,7 +20,7 @@ definitions and properties of which can be found in `Data.ENNReal.Inv`.
 Note: the definitions of the operations included in this file can be found in `Data.ENNReal.Basic`.
 -/
 
-open Set BigOperators NNReal ENNReal
+open Set NNReal ENNReal
 
 namespace ENNReal
 
@@ -383,6 +383,9 @@ theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
   rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
 #align ennreal.nat_cast_sub ENNReal.natCast_sub
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_sub := natCast_sub
+
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add
 #align ennreal.sub_eq_of_eq_add ENNReal.sub_eq_of_eq_add
@@ -531,12 +534,11 @@ theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
     (Hlt : ∀ i ∈ s, f i < g i) : ∑ i ∈ s, f i < ∑ i ∈ s, g i := by
-  induction' hs using Finset.Nonempty.cons_induction with a a s as _ IH
-  · simp [Hlt _ (Finset.mem_singleton_self _)]
-  · simp only [as, Finset.sum_cons, not_false_iff]
-    exact
-      ENNReal.add_lt_add (Hlt _ (Finset.mem_cons_self _ _))
-        (IH fun i hi => Hlt _ (Finset.mem_cons.2 <| Or.inr hi))
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton => simp [Hlt _ (Finset.mem_singleton_self _)]
+  | cons _ _ _ _ ih =>
+    simp only [Finset.sum_cons, forall_mem_cons] at Hlt ⊢
+    exact ENNReal.add_lt_add Hlt.1 (ih Hlt.2)
 #align ennreal.sum_lt_sum_of_nonempty ENNReal.sum_lt_sum_of_nonempty
 
 theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}

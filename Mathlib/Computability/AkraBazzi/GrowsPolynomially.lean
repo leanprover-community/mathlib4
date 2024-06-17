@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
@@ -27,7 +26,7 @@ this issue doesn't seem to arise in practice.
 
 -/
 
-open Finset Real Filter Asymptotics BigOperators
+open Finset Real Filter Asymptotics
 open scoped Topology
 
 namespace AkraBazziRecurrence
