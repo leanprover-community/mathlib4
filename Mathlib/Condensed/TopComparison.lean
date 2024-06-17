@@ -132,6 +132,7 @@ variable (P : TopCat.{u} → Prop) (X : TopCat.{max u w})
     [CompHausLike.HasExplicitFiniteCoproducts.{0} P] [CompHausLike.HasExplicitPullbacks.{u} P]
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
+/-- TODO: refactor the definition of `TopCat.toCondensed` to use this construction. -/
 def TopCat.toSheafCompHausLike :
     have := CompHausLike.preregular hs
     Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
@@ -145,6 +146,7 @@ def TopCat.toSheafCompHausLike :
     intro Z B π he
     apply QuotientMap.of_surjective_continuous (hs _ he) π.continuous
 
+/-- TODO: refactor the definition of `topCatToCondensed` to use this construction. -/
 noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
     TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where

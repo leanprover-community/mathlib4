@@ -249,6 +249,7 @@ open Aux
 
 variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
 
+/-- A fiber of a locally constant map as a `CompHausLike`. -/
 def part {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : α r) :
     CompHausLike.{u} P :=
   CompHausLike.of P a.val
