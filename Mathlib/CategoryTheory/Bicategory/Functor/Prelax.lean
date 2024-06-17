@@ -6,6 +6,26 @@ Authors: Calle Sönne
 
 import Mathlib.CategoryTheory.Bicategory.Basic
 
+/-!
+
+# Prelax functors
+
+This file defines lax prefunctors and prelax functors between bicategories. The point of these
+definitions is to give some API that will be helpful in both the development of Lax and Oplax
+functors.
+
+A lax prefunctor `F` between quivers `B` and `C`, equipped with quiver structures on the hom types,
+consists of
+* a function between objects `F.obj : B ⟶ C`,
+* a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
+* a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
+
+A prelax functor is a lax prefunctor such that `map₂` is a functor. Namely, it satisfies
+* `F.map₂ (𝟙 f) = 𝟙 (F.map f)`,
+* `F.map₂ (η ≫ θ) = F.map₂ η ≫ F.map₂ θ`.
+
+-/
+
 namespace CategoryTheory
 
 open Category Bicategory
