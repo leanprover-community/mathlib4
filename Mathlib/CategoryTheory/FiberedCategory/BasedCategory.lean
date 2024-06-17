@@ -24,7 +24,7 @@ Natural transformations between based functors `F G : BasedFunctor 𝒳 𝒴` ar
 underlying `F` and `G` such that `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`.
 -/
 
-universe v₂ u₂ v₁ u₁
+universe v₅ u₅ v₄ u₄ v₃ u₃ v₂ u₂ v₁ u₁
 
 open CategoryTheory Functor Category NatTrans IsHomLift
 
@@ -49,35 +49,57 @@ def BasedCategory.ofFunctor {𝒳 : Type u₂} [Category.{v₂} 𝒳] (p : 𝒳 
 
 /-- A functor between based categories is a functor between the underlying categories that commutes
 with the projections. -/
-structure BasedFunctor (𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮) extends
+structure BasedFunctor (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) extends
     CategoryTheory.Functor 𝒳.obj 𝒴.obj where
   w : toFunctor ⋙ 𝒴.p = 𝒳.p := by aesop_cat
 
 namespace BasedFunctor
 
-/-- The category of based categories. -/
+/-- The identity based functor. -/
 @[simps!]
-instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
-  Hom 𝒳 𝒴 := BasedFunctor 𝒳 𝒴
-  id 𝒳 := { toFunctor := 𝟭 𝒳.obj }
-  comp F G := {
-    toFunctor := F.toFunctor ⋙ G.toFunctor
-    w := by rw [Functor.assoc, G.w, F.w] }
+def id (𝒳 : BasedCategory.{v₂, u₂} 𝒮) : BasedFunctor 𝒳 𝒳 where
+  toFunctor := 𝟭 𝒳.obj
+
+-- variable below here, put category instance later
+
+/-- The composition of two based functors. -/
+@[simps!]
+def comp {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
+    {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : BasedFunctor 𝒳 𝒴) (G : BasedFunctor 𝒴 𝒵) :
+    BasedFunctor 𝒳 𝒵 where
+  toFunctor := F.toFunctor ⋙ G.toFunctor
+  w := by rw [Functor.assoc, G.w, F.w]
+
+@[simp]
+lemma comp_id {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
+    (F : BasedFunctor 𝒳 𝒴) : comp F (id 𝒴) = F :=
+  rfl
+
+@[simp]
+lemma id_comp {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
+    (F : BasedFunctor 𝒳 𝒴) : comp (id 𝒳) F = F :=
+  rfl
+
+@[simp]
+lemma comp_assoc {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
+    {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {𝒜 : BasedCategory.{v₅, u₅} 𝒮} (F : BasedFunctor 𝒳 𝒴)
+    (G : BasedFunctor 𝒴 𝒵) (H : BasedFunctor 𝒵 𝒜) : comp (comp F G) H = comp F (comp G H) :=
+  rfl
 
 section
 
-variable {𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮}
+variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
 
 @[simp]
 lemma w_obj (F : BasedFunctor 𝒳 𝒴) (a : 𝒳.obj) : 𝒴.p.obj (F.obj a) = 𝒳.p.obj a := by
   rw [← Functor.comp_obj, F.w]
 
-instance (F : 𝒳 ⟶ 𝒴) (a : 𝒳.obj) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (𝟙 (F.obj a)) :=
+instance (F : BasedFunctor 𝒳 𝒴) (a : 𝒳.obj) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (𝟙 (F.obj a)) :=
   IsHomLift.id (w_obj F a)
 
 section
 
-variable (F : 𝒳 ⟶ 𝒴) {R S : 𝒮} {a b : 𝒳.obj} (f : R ⟶ S) (φ : a ⟶ b)
+variable (F : BasedFunctor 𝒳 𝒴) {R S : 𝒮} {a b : 𝒳.obj} (f : R ⟶ S) (φ : a ⟶ b)
 
 /-- For a based functor `F : 𝒳 ⟶ 𝒴`, then whenever an arrow `φ` in `𝒳` lifts some `f` in `𝒮`,
 then `F(φ)` also lifts `f`. -/
@@ -103,17 +125,18 @@ end
 
 end BasedFunctor
 
+
 /-- A `BasedNatTrans` between two `BasedFunctor`s is a natural transformation `α` between the
 underlying functors, such that for all `a : 𝒳`, `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`. -/
-structure BasedNatTrans {𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮} (F G :  𝒳 ⟶ 𝒴) extends
-    CategoryTheory.NatTrans F.toFunctor G.toFunctor where
+structure BasedNatTrans {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
+    (F G :  BasedFunctor 𝒳 𝒴) extends CategoryTheory.NatTrans F.toFunctor G.toFunctor where
   aboveId' : ∀ (a : 𝒳.obj), IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (toNatTrans.app a) := by aesop_cat
 
 namespace BasedNatTrans
 
 open BasedFunctor
 
-variable {𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮} (F : 𝒳 ⟶ 𝒴)
+variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮} (F : BasedFunctor 𝒳 𝒴)
 
 /-- The identity natural transformation is a `BasedNatTrans`. -/
 @[simps!]
@@ -130,7 +153,7 @@ lemma id_toNatTrans : (id F).toNatTrans = CategoryTheory.NatTrans.id F.toFunctor
 
 section
 
-variable {F} {G :  𝒳 ⟶ 𝒴} (α : BasedNatTrans F G)
+variable {F} {G :  BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G)
 
 instance app_isHomLift (a : 𝒳.obj) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.toNatTrans.app a) :=
   α.aboveId' a
@@ -148,7 +171,7 @@ end
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
 transformations. -/
 @[simps!]
-def comp {F G H :  𝒳 ⟶ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
+def comp {F G H :  BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
     BasedNatTrans F H where
   toNatTrans := CategoryTheory.NatTrans.vcomp α.toNatTrans β.toNatTrans
   aboveId' := by
@@ -157,7 +180,7 @@ def comp {F G H :  𝒳 ⟶ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G
     infer_instance
 
 @[simp]
-lemma comp_toNatTrans {F G H :  𝒳 ⟶ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
+lemma comp_toNatTrans {F G H :  BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
     (comp α β).toNatTrans = NatTrans.vcomp α.toNatTrans β.toNatTrans :=
   rfl
 
@@ -168,22 +191,24 @@ namespace BasedCategory
 open BasedFunctor BasedNatTrans
 
 @[simps!]
-instance homCategory (𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮) : Category (𝒳 ⟶ 𝒴) where
+instance homCategory (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) :
+    Category (BasedFunctor 𝒳 𝒴) where
   Hom := BasedNatTrans
   id := BasedNatTrans.id
   comp := BasedNatTrans.comp
 
 section
 
-variable {𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮}
+variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
 
 @[ext]
-lemma homCategory.ext {F G :  𝒳 ⟶ 𝒴} (α β : F ⟶ G) (h : α.toNatTrans = β.toNatTrans) : α = β :=
+lemma homCategory.ext {F G :  BasedFunctor 𝒳 𝒴} (α β : F ⟶ G) (h : α.toNatTrans = β.toNatTrans) :
+    α = β :=
   BasedNatTrans.ext α β h
 
 /-- The inverse of a based natural transformation whose underlying natural tranformation is an
 isomorphism. -/
-def BasedNatIso {F G : 𝒳 ⟶ 𝒴} (α : F.toFunctor ≅ G.toFunctor)
+def BasedNatIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ≅ G.toFunctor)
     (aboveId' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
   hom := { toNatTrans := α.hom }
   inv := {
@@ -197,40 +222,47 @@ def BasedNatIso {F G : 𝒳 ⟶ 𝒴} (α : F.toFunctor ≅ G.toFunctor)
 
 /-- The inverse of a based natural transformation whose underlying natural tranformation carries an
 `IsIso` instance. -/
-noncomputable def BasedNatIso_of_isIso {F G : 𝒳 ⟶ 𝒴} (α : F.toFunctor ⟶ G.toFunctor)
+noncomputable def BasedNatIso_of_isIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ⟶ G.toFunctor)
     [IsIso α] (aboveId' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.app a)) : F ≅ G where
   hom := { toNatTrans := α }
   inv := { toNatTrans := inv α, aboveId' := fun a => by simp [lift_id_inv_isIso] }
 
 /-- The identity natural transformation is a based natural isomorphism. -/
 @[simps]
-def BasedNatIso.id (F :  𝒳 ⟶ 𝒴) : F ≅ F where
+def BasedNatIso.id (F :  BasedFunctor 𝒳 𝒴) : F ≅ F where
   hom := 𝟙 F
   inv := 𝟙 F
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
 and natural transformations. -/
 @[simps!]
-def whiskerLeft {𝒵 : BasedCategory.{v₂, u₂} 𝒮} (F :  𝒳 ⟶ 𝒴) {G H : 𝒴 ⟶ 𝒵} (α : G ⟶ H) :
-    (F ≫ G) ⟶ F ≫ H where
+def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F :  BasedFunctor 𝒳 𝒴) {G H : BasedFunctor 𝒴 𝒵}
+    (α : G ⟶ H) : BasedFunctor.comp F G ⟶ BasedFunctor.comp F H where
   toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
   aboveId' := fun a => α.aboveId (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
 functors and natural transformations. -/
 @[simps!]
-def whiskerRight {𝒵 : BasedCategory.{v₂, u₂} 𝒮} {F G :  𝒳 ⟶ 𝒴} (α : F ⟶ G) (H : 𝒴 ⟶ 𝒵) :
-    F ≫ H ⟶ G ≫ H where
+def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G :  BasedFunctor 𝒳 𝒴} (α : F ⟶ G)
+    (H : BasedFunctor 𝒴 𝒵) : BasedFunctor.comp F H ⟶ BasedFunctor.comp G H where
   toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
   aboveId' := fun a => by apply BasedFunctor.pres_IsHomLift
 
 end
 
+/-- The category of based categories. -/
+@[simps!]
+instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
+  Hom := BasedFunctor
+  id := id
+  comp := comp
+
 /-- `BasedCategory.{v₂, u₂} 𝒮` forms a bicategory. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
-  Hom 𝒳 𝒴 :=  𝒳 ⟶ 𝒴
-  id 𝒳 := 𝟙 𝒳
-  comp F G := F ≫ G
+  Hom 𝒳 𝒴 :=  BasedFunctor 𝒳 𝒴
+  id 𝒳 := id 𝒳
+  comp F G := BasedFunctor.comp F G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴
   whiskerLeft {𝒳 𝒴 𝒵} F {G H} α := whiskerLeft F α
   whiskerRight {𝒳 𝒴 𝒵} F G α H := whiskerRight α H
