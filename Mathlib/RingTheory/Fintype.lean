@@ -23,7 +23,7 @@ lemma Finset.univ_of_card_eq_two (h : Fintype.card R = 2) :
     refine Fintype.one_lt_card_iff_nontrivial.1 ?_
     rw [h]
     norm_num
-  refine (eq_of_subset_of_card_le (fun _ _ ↦ mem_univ _) ?_).symm
+  refine (eq_of_subset_of_card_le (subset_univ _) ?_).symm
   rw [card_univ, h, card_insert_of_not_mem, card_singleton]
   rw [mem_singleton]
   exact zero_ne_one
@@ -34,7 +34,7 @@ lemma Finset.univ_of_card_eq_three (h : Fintype.card R = 3) :
     refine Fintype.one_lt_card_iff_nontrivial.1 ?_
     rw [h]
     norm_num
-  refine (eq_of_subset_of_card_le (fun _ _ ↦ mem_univ _) ?_).symm
+  refine (eq_of_subset_of_card_le (subset_univ _) ?_).symm
   rw [card_univ, h, card_insert_of_not_mem, card_insert_of_not_mem, card_singleton]
   · rw [mem_singleton]
     intro H
