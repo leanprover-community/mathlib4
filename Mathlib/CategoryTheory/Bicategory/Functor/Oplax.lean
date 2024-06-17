@@ -109,14 +109,13 @@ initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂
 
 namespace OplaxFunctor
 
--- TEST (might need to move map₂_leftUnitor etc back down)
 attribute [reassoc (attr := simp)]
-  mapComp_naturality_left mapComp_naturality_right map₂_associator map₂_leftUnitor map₂_rightUnitor
+  mapComp_naturality_left mapComp_naturality_right map₂_associator
 
 -- the simpNF linter complains that `map₂_leftUnitor_assoc` etc can be
 -- proved with `simp` so I move them here
--- attribute [reassoc] map₂_leftUnitor map₂_rightUnitor
--- attribute [simp] map₂_leftUnitor map₂_rightUnitor
+attribute [reassoc] map₂_leftUnitor map₂_rightUnitor
+attribute [simp] map₂_leftUnitor map₂_rightUnitor
 
 section
 

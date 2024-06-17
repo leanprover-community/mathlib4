@@ -206,7 +206,7 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   toPrelaxFunctor := (F : PrelaxFunctor B C).comp (G : PrelaxFunctor C D)
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
-  -- Note: whilst these are all provable by `aesop_cat`, the proof is too slow and times out
+  -- Note: whilst these are all provable by `aesop_cat`, the proof is too slow
   map₂_whisker_left f η := by dsimp; simp
   map₂_whisker_right η h := by dsimp; simp
   map₂_associator f g h := by dsimp; simp
