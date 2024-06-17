@@ -372,7 +372,8 @@ def lift {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (
 @[simp, reassoc]
 lemma lift_lifts {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (f : X ⟶ Y)
     [Epi f] : lift e f ≫ f = e :=
-  have : Epi (profiniteToCompHaus.map f) := by
+  haveI : Epi (profiniteToCompHaus.map f) := by
+  -- `haveI` because otherwise the linter thinks it's unused.
     simp only [CompHaus.epi_iff_surjective, CompHausLike.toCompHausLike_obj,
       CompHausLike.toCompHausLike_map]
     exact (Profinite.epi_iff_surjective f).mp inferInstance
