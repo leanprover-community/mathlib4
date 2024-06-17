@@ -639,7 +639,7 @@ inductive Point
 #align weierstrass_curve.point WeierstrassCurve.Affine.Point
 
 /-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
-scoped notation3 W "⟮" S "⟯" => Affine.Point <| baseChange W S
+scoped notation3:max W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
 namespace Point
 
@@ -725,6 +725,13 @@ lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y�
   add_of_Y_eq rfl hy
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_self_of_Yeq WeierstrassCurve.Affine.Point.add_self_of_Y_eq
+
+@[simp]
+lemma add_of_imp {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
+    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) := by
+  by_cases hx : x₁ = x₂
+  · simp only [← add_def, add, dif_pos hx, dif_neg <| hxy hx]
+  · simp only [← add_def, add, dif_neg hx]
 
 @[simp]
 lemma add_of_Y_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}

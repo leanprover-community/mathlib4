@@ -220,7 +220,7 @@ theorem map_pure_sublist_sublists (l : List α) : map pure l <+ sublists l := by
 #align list.map_ret_sublist_sublists List.map_pure_sublist_sublists
 
 set_option linter.deprecated false in
-@[deprecated map_pure_sublist_sublists] -- 2024-03-24
+@[deprecated map_pure_sublist_sublists (since := "2024-03-24")]
 theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l :=
   map_pure_sublist_sublists l
 
