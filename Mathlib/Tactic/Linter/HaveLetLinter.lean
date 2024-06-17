@@ -3,8 +3,6 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Lean.Server.InfoUtils
 import Batteries.Data.List.Basic
 
 /-!
@@ -116,7 +114,7 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
   let gh := linter.haveLet.get (← getOptions)
   unless gh != 0 && (← getInfoState).enabled do
     return
-  unless gh == 1 && (← MonadState.get).messages.isEmpty do
+  unless gh == 1 && (← MonadState.get).messages.unreported.isEmpty do
     let trees ← getInfoTrees
     for t in trees.toArray do
       for (s, fmt) in ← nonPropHaves t do
