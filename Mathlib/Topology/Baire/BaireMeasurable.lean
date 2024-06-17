@@ -7,12 +7,39 @@ import Mathlib.Topology.GDelta
 import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
+/-!
+# Baire category and Baire measurable sets
+
+This file defines some of the basic notions of Baire category and Baire measurable sets.
+
+## Main definitions
+
+First, we define the notation `=ᵇ`. The denotes eventual equality with respect to the filter of
+`residual` sets in a topological space.
+
+A set `s` in a topological space `α` is called a `BaireMeasurableSet` or said to have the
+*property of Baire* if it satisfies either of the following equivalent conditions:
+
+* There is a *Borel* set `u` such that `s =ᵇ u`. (This is our definition)
+* There is an *open* set `u` such that `s =ᵇ u`. (See `BaireMeasurableSet.residual_eq_open`)
+
+## Implementation notes
+
+Much of our implementation mimics that of the null measurable sets in
+`MeasureTheory.Measure.NullMeasurable.lean`. Namely in order to avoid conflict
+with the Borel `MeasurableSpace` structure on `α`, we create a duplicate type,
+`BaireMeasurableSpace α`, and register the Baire measurable sets as an instance of
+`MeasurableSpace (BaireMeasurableSpace α)`.
+
+-/
+
 variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
 notation3 "∀ᵇ "(...)", "r:(scoped p => Filter.Eventually p <| residual _) => r
 notation3 "∃ᵇ "(...)", "r:(scoped p => Filter.Frequently p <| residual _) => r
 
+/-- A type tag for `α` with `MeasurableSet` given by `BaireMeasurableSet`. -/
 def BaireMeasurableSpace : Type _ := α
 
 variable {α}
@@ -20,6 +47,11 @@ variable {α}
 instance BaireMeasurableSpace.instMeasurableSpace : MeasurableSpace (BaireMeasurableSpace α) :=
   EventuallyMeasurableSpace (α := α) (borel _) (residual _)
 
+/-- We say a set is a `BaireMeasurableSet` if it differs from some Borel set by
+a meager set. This forms a σ-algebra.
+
+It is equivalent, and a more standard definition, to say that the set differs from
+some *open* set by a meager set. See `BaireMeasurableSet.residual_eq_open` -/
 def BaireMeasurableSet (s : Set α) : Prop := @MeasurableSet (BaireMeasurableSpace _) _ s
 
 variable {s t: Set α}
@@ -84,6 +116,7 @@ end BaireMeasurableSet
 
 open Filter
 
+/--Any Borel set differs from some open set by a meager set. -/
 theorem MeasurableSet.residualEq_open [MeasurableSpace α] [BorelSpace α] (h : MeasurableSet s) :
     ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u := by
   apply h.induction_on_open (fun s hs => ⟨s, hs, EventuallyEq.rfl⟩)
@@ -100,6 +133,7 @@ theorem MeasurableSet.residualEq_open [MeasurableSpace α] [BorelSpace α] (h : 
   choose u uo su using hs
   exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
 
+/--Any `BaireMeasurableSet` differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.residualEq_open (h : BaireMeasurableSet s) :
     ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u := by
   borelize α
@@ -113,6 +147,7 @@ open Set
 
 variable {f : α → β} (hc : Continuous f) (ho : IsOpenMap f)
 
+/-- The preimage of a `Dense` set under a continuous open map is `Dense`. -/
 theorem Dense.dense_preimage_of_isOpenMap {t : Set β} (ht : Dense t) : Dense (f ⁻¹' t) := by
   rw [dense_iff_closure_eq, ← ho.preimage_closure_eq_closure_preimage hc,
     dense_iff_closure_eq.mp ht, preimage_univ]
@@ -122,9 +157,11 @@ theorem residual_map_le_of_isOpenMap : (residual α).map f ≤ residual β := by
   rintro t ⟨ht, htd⟩
   exact residual_of_dense_open (ht.preimage hc) (htd.dense_preimage_of_isOpenMap hc ho)
 
+/-- The preimage of a meager set under a continuous open map is meager. -/
 theorem IsMeagre.preimage_of_isOpenMap {s : Set β} (h : IsMeagre s) : IsMeagre (f ⁻¹' s) :=
   residual_map_le_of_isOpenMap hc ho h
 
+/-- The preimage of a `BaireMeasurableSet` under a continuous open map is Baire measurable. -/
 theorem BaireMeasurableSet.preimage {s : Set β} (h : BaireMeasurableSet s) :
     BaireMeasurableSet (f⁻¹' s) := by
   rcases h with ⟨u, hu, hsu⟩
