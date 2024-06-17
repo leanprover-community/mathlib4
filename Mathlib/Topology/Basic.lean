@@ -1408,6 +1408,13 @@ theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
   (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun _y hy => ⟨hy.2, hsub hy.1⟩
 #align dense.inter_nhds_nonempty Dense.inter_nhds_nonempty
 
+/-- The union of a set and the complement of its closure is a dense set. -/
+theorem union_compl_closure_dense {s : Set X} :
+    Dense (s ∪ (closure s)ᶜ) := by
+  rw [dense_iff_closure_eq, closure_union, ←univ_subset_iff]
+  refine' _root_.subset_trans _ (union_subset_union_right _ (subset_closure))
+  simp
+
 theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
   calc
     closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [diff_eq, inter_comm]
