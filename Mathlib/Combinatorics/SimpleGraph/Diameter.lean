@@ -39,12 +39,12 @@ lemma diam_ne_zero_nonempty (h : G.diam ≠ 0) : Nonempty α := by
   unfold diam
   aesop
 
-private lemma not_bddAbove_diam_eq_zero (h : ¬BddAbove {d | ∃ u v, d = G.dist u v}) :
+private lemma diam_eq_zero_of_not_bddAbove (h : ¬BddAbove {d | ∃ u v, d = G.dist u v}) :
     G.diam = 0 := by
   apply Set.infinite_of_not_bddAbove at h
   rw [diam, Set.Infinite.Nat.sSup_eq_zero h]
 
-lemma diam_exists [Nonempty α] : ∃ u v, G.dist u v = G.diam := by
+lemma exists_dist_eq_diam [Nonempty α] : ∃ u v, G.dist u v = G.diam := by
   let s := {d | ∃ u v, d = G.dist u v}
   let u := Classical.arbitrary α
   by_cases h : BddAbove s
@@ -58,7 +58,7 @@ lemma bddAbove_dist_le_diam (h : BddAbove {d | ∃ u v, d = G.dist u v}) :
   rw [diam, Nat.sSup_def h]
   aesop
 
-lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
+@[simp] lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
   unfold diam
   by_cases h : Nonempty α
   · have : {d | ∃ u v, d = (⊥ : SimpleGraph α).dist u v} = {0} :=
@@ -84,7 +84,7 @@ lemma diam_eq_zero : G.diam = 0 ↔ ¬BddAbove {d | ∃ u v, d = G.dist u v} ∨
     · exact not_bddAbove_diam_eq_zero h
     · rw [h, diam_bot]
 
-lemma diam_le (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
+lemma dist_le_diam (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
   intros
   apply le_csSup
   rw [ne_eq, diam_eq_zero] at h
