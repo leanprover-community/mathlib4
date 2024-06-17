@@ -86,10 +86,9 @@ paste -d@ <(echo "$new") <(echo "${old}") | sed 's=@=|@|=' |
     ($1+0 == $1) { printf("|%s|%s|%s|\n", $1, $1-$4, $2) }
     # otherwise, the line is a "formatting" line, so we simply print it unchanged until we find `@`
     !($1+0 == $1) {
-      found=0
       for(i=1; i<=NF; i++) {
-        if ($i == "@") { found=1 }
-        if (found == "0") { printf("%s|", $i) }
+        if ($i == "@") { break }
+        else { printf("%s|", $i) }
       }
       print "@"
     }' |
