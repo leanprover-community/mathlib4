@@ -51,7 +51,7 @@ lemma exists_dist_eq_diam [Nonempty α] : ∃ u v, G.dist u v = G.diam := by
   · have : s.Nonempty := ⟨0, u, u, dist_self.symm⟩
     obtain ⟨u, v, huv⟩ := Nat.sSup_mem this h
     use u, v, huv.symm
-  · exact not_bddAbove_diam_eq_zero h ▸ ⟨u, u, dist_self⟩
+  · exact diam_eq_zero_of_not_bddAbove h ▸ ⟨u, u, dist_self⟩
 
 lemma bddAbove_dist_le_diam (h : BddAbove {d | ∃ u v, d = G.dist u v}) :
     ∀ u v, G.dist u v ≤ G.diam := by
@@ -81,7 +81,7 @@ lemma diam_eq_zero : G.diam = 0 ↔ ¬BddAbove {d | ∃ u v, d = G.dist u v} ∨
       have := bddAbove_dist_le_diam h u v
       simp_all [dist_eq_one_iff_adj.mpr huv]
   · cases' h with h h
-    · exact not_bddAbove_diam_eq_zero h
+    · exact diam_eq_zero_of_not_bddAbove h
     · rw [h, diam_bot]
 
 lemma dist_le_diam (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
@@ -92,8 +92,8 @@ lemma dist_le_diam (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
 
 lemma diam_le_subgraph_diam [Nonempty α] (hg: G.Connected) (hz : G.diam ≠ 0) (h : G ≤ G') :
     G'.diam ≤ G.diam :=
-  have ⟨u, v, huv⟩ := G'.diam_exists
-  huv ▸ LE.le.trans (dist_le_subgraph_dist h (hg u v)) (G.diam_le hz u v)
+  have ⟨u, v, huv⟩ := G'.exists_dist_eq_diam
+  huv ▸ LE.le.trans (dist_le_subgraph_dist h <| hg u v) <| G.dist_le_diam hz u v
 
 /--
 The extended diameter is the greatest distance between any two vertices, with the value `⊤` in
