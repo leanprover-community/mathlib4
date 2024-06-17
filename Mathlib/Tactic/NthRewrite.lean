@@ -23,7 +23,7 @@ of each of the `m` equalities `eqᵢ`in that order. Occurrences are counted begi
 If a term `t` is introduced by rewriting with `eqᵢ`, then this instance of `t` will be counted
 as an _occurrence_ of `t`for all subsequent rewrites of `t` with `eqⱼ` for `j > i`.
 
-Note : The occurrences are counted beginning with `1` and not `0`, this is different than in
+Note: The occurrences are counted beginning with `1` and not `0`, this is different than in
 mathlib3. The translation will be handled by mathport. -/
 syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (location)? : tactic
 
