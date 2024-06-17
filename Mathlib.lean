@@ -1027,6 +1027,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Group.CocompactMap
 import Mathlib.Analysis.Normed.Group.Completeness
 import Mathlib.Analysis.Normed.Group.Completion
+import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.ControlledClosure
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
