@@ -90,7 +90,7 @@ lemma dist_le_diam (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
   rw [ne_eq, diam_eq_zero] at h
   repeat tauto
 
-lemma diam_le_subgraph_diam [Nonempty α] (hg: G.Connected) (hz : G.diam ≠ 0) (h : G ≤ G') :
+lemma diam_mono [Nonempty α] (hg : G.Connected) (hz : G.diam ≠ 0) (h : G ≤ G') :
     G'.diam ≤ G.diam :=
   have ⟨u, v, huv⟩ := G'.exists_dist_eq_diam
   huv ▸ LE.le.trans (dist_le_subgraph_dist h <| hg u v) <| G.dist_le_diam hz u v
