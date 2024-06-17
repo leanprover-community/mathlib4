@@ -60,35 +60,29 @@ namespace BasedFunctor
 def id (𝒳 : BasedCategory.{v₂, u₂} 𝒮) : BasedFunctor 𝒳 𝒳 where
   toFunctor := 𝟭 𝒳.obj
 
--- variable below here, put category instance later
+variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
 
 /-- The composition of two based functors. -/
 @[simps!]
-def comp {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
-    {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : BasedFunctor 𝒳 𝒴) (G : BasedFunctor 𝒴 𝒵) :
+def comp {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : BasedFunctor 𝒳 𝒴) (G : BasedFunctor 𝒴 𝒵) :
     BasedFunctor 𝒳 𝒵 where
   toFunctor := F.toFunctor ⋙ G.toFunctor
   w := by rw [Functor.assoc, G.w, F.w]
 
 @[simp]
-lemma comp_id {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
-    (F : BasedFunctor 𝒳 𝒴) : comp F (id 𝒴) = F :=
+lemma comp_id (F : BasedFunctor 𝒳 𝒴) : comp F (id 𝒴) = F :=
   rfl
 
 @[simp]
-lemma id_comp {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
-    (F : BasedFunctor 𝒳 𝒴) : comp (id 𝒳) F = F :=
+lemma id_comp (F : BasedFunctor 𝒳 𝒴) : comp (id 𝒳) F = F :=
   rfl
 
 @[simp]
-lemma comp_assoc {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
-    {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {𝒜 : BasedCategory.{v₅, u₅} 𝒮} (F : BasedFunctor 𝒳 𝒴)
-    (G : BasedFunctor 𝒴 𝒵) (H : BasedFunctor 𝒵 𝒜) : comp (comp F G) H = comp F (comp G H) :=
+lemma comp_assoc {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {𝒜 : BasedCategory.{v₅, u₅} 𝒮}
+    (F : BasedFunctor 𝒳 𝒴) (G : BasedFunctor 𝒴 𝒵) (H : BasedFunctor 𝒵 𝒜) :
+      comp (comp F G) H = comp F (comp G H) :=
   rfl
 
-section
-
-variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
 
 @[simp]
 lemma w_obj (F : BasedFunctor 𝒳 𝒴) (a : 𝒳.obj) : 𝒴.p.obj (F.obj a) = 𝒳.p.obj a := by
@@ -118,8 +112,6 @@ lemma IsHomLift_ofImage [IsHomLift 𝒴.p f (F.map φ)] : IsHomLift 𝒳.p f φ 
 
 lemma IsHomLift_iff : IsHomLift 𝒴.p f (F.map φ) ↔ IsHomLift 𝒳.p f φ :=
   ⟨fun _ => IsHomLift_ofImage F f φ, fun _ => pres_IsHomLift F f φ⟩
-
-end
 
 end
 
@@ -258,7 +250,7 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
   id := id
   comp := comp
 
-/-- `BasedCategory.{v₂, u₂} 𝒮` forms a bicategory. -/
+/-- The bicategory of based categories. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   Hom 𝒳 𝒴 :=  BasedFunctor 𝒳 𝒴
   id 𝒳 := id 𝒳
