@@ -7,15 +7,19 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Triangulated.Opposite
 import Mathlib.CategoryTheory.Shift.ShiftedHom
 
--- should be moved
-/-- The bijection `(X ⟶ Y) ≃ (op Y ⟶ op X)`. -/
-@[simps]
-def Quiver.Hom.opEquiv {V : Type*} [Quiver V] {X Y : V} :
-    (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
-  toFun := Opposite.op
-  invFun := Opposite.unop
-  left_inv _ := rfl
-  right_inv _ := rfl
+/-! Shifted morphisms in the opposite category
+
+If `C` is a category equipped with a shift by `ℤ`, `X` and `Y` are objects
+of `C`, and `n : ℤ`, we define a bijection
+`ShiftedHom.opEquiv : ShiftedHom X Y n ≃ ShiftedHom (Opposite.op Y) (Opposite.op X) n`.
+
+We also introduce `ShiftedHom.opEquiv'` which produces a bijection
+`ShiftedHom X Y a' ≃ (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧)` when `n + a = a'`.
+The compatibilities that are obtained shall be used in order to study
+the homological functor `preadditiveYoneda.obj B : Cᵒᵖ ⥤ Type _` when `B` is an object
+in a pretriangulated category `C`.
+
+-/
 
 namespace CategoryTheory
 
