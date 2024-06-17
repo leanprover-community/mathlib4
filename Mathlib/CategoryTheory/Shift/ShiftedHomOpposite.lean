@@ -84,7 +84,13 @@ lemma opEquiv'_add_symm (n m a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' =
     (opEquiv' (m + n) a a'' (by omega)).symm x =
       (opEquiv' m a' a'' ha'').symm ((opEquiv' n a a' ha').symm
         (x ≫ (shiftFunctorAdd Cᵒᵖ m n).hom.app _)).op := by
-  sorry
+  simp only [opEquiv'_symm_apply, opEquiv_symm_apply,
+    opShiftFunctorEquivalence_add'_unitIso_inv_app _ _ _ _ (add_comm n m)]
+  dsimp
+  simp only [assoc, Functor.map_comp, ← shiftFunctorAdd'_eq_shiftFunctorAdd,
+    ← NatTrans.naturality_assoc,
+    shiftFunctorAdd'_assoc_inv_app a n m a' (m + n) a'' (by omega) (by omega) (by omega)]
+  rfl
 
 section Preadditive
 
