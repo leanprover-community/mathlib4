@@ -5,7 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 
 import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
 

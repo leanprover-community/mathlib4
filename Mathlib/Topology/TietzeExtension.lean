@@ -365,7 +365,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         calc
           0 < c - g y := sub_pos.2 hac
           _ = dg y := (dga rfl).symm
-      · exact hlt.trans_le ((le_add_iff_nonneg_right _).2 <| (dgmem y).1)
+      · exact hlt.trans_le (le_add_of_nonneg_right (dgmem y).1)
     rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
     refine ⟨x, hxy.le, ?_⟩
     rcases le_total c (g y) with hc | hc
