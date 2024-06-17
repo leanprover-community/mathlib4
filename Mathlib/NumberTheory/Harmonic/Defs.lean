@@ -17,8 +17,6 @@ This file defines the harmonic numbers.
 
 -/
 
-open BigOperators
-
 /-- The nth-harmonic number defined as a finset sum of consecutive reciprocals. -/
 def harmonic : ℕ → ℚ := fun n => ∑ i ∈ Finset.range n, (↑(i + 1))⁻¹
 

@@ -19,7 +19,7 @@ import Mathlib.Topology.Order.T5
 noncomputable section
 
 open Set Filter Metric Function
-open scoped Classical Topology ENNReal NNReal BigOperators Filter
+open scoped Classical Topology ENNReal NNReal Filter
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -296,7 +296,7 @@ protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → �
 #align ennreal.tendsto_at_top ENNReal.tendsto_atTop
 
 instance : ContinuousAdd ℝ≥0∞ := by
-  refine' ⟨continuous_iff_continuousAt.2 _⟩
+  refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨_ | a, b⟩
   · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
   rcases b with (_ | b)
@@ -347,10 +347,10 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a �
       (lt_mem_nhds <| div_lt_top coe_ne_top hε.ne').prod_nhds (lt_mem_nhds hεb)
     refine this.mono fun c hc => ?_
     exact (ENNReal.div_mul_cancel hε.ne' coe_ne_top).symm.trans_lt (mul_lt_mul hc.1 hc.2)
-  induction a using recTopCoe with
+  induction a with
   | top => simp only [ne_eq, or_false, not_true_eq_false] at hb; simp [ht b hb, top_mul hb]
   | coe a =>
-    induction b using recTopCoe with
+    induction b with
     | top =>
       simp only [ne_eq, or_false, not_true_eq_false] at ha
       simpa [(· ∘ ·), mul_comm, mul_top ha]
@@ -1083,6 +1083,13 @@ theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} 
     _ ≤ c := tsum_le_c
 #align ennreal.finset_card_const_le_le_of_tsum_le ENNReal.finset_card_const_le_le_of_tsum_le
 
+theorem tsum_fiberwise (f : β → ℝ≥0∞) (g : β → γ) :
+    ∑' x, ∑' b : g ⁻¹' {x}, f b = ∑' i, f i := by
+  apply HasSum.tsum_eq
+  let equiv := Equiv.sigmaFiberEquiv g
+  apply (equiv.hasSum_iff.mpr ENNReal.summable.hasSum).sigma
+  exact fun _ ↦ ENNReal.summable.hasSum_iff.mpr rfl
+
 end tsum
 
 theorem tendsto_toReal_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞} (hf : ∀ i, f i ≠ ∞) {x : ℝ≥0∞}
@@ -1518,21 +1525,18 @@ theorem ediam_eq {s : Set ℝ} (h : Bornology.IsBounded s) :
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · simp
   refine le_antisymm (Metric.ediam_le_of_forall_dist_le fun x hx y hy => ?_) ?_
-  · have := Real.subset_Icc_sInf_sSup_of_isBounded h
-    exact Real.dist_le_of_mem_Icc (this hx) (this hy)
+  · exact Real.dist_le_of_mem_Icc (h.subset_Icc_sInf_sSup hx) (h.subset_Icc_sInf_sSup hy)
   · apply ENNReal.ofReal_le_of_le_toReal
     rw [← Metric.diam, ← Metric.diam_closure]
-    have h' := Real.isBounded_iff_bddBelow_bddAbove.1 h
     calc sSup s - sInf s ≤ dist (sSup s) (sInf s) := le_abs_self _
-    _ ≤ Metric.diam (closure s) := dist_le_diam_of_mem h.closure (csSup_mem_closure hne h'.2)
-        (csInf_mem_closure hne h'.1)
+    _ ≤ Metric.diam (closure s) := dist_le_diam_of_mem h.closure (csSup_mem_closure hne h.bddAbove)
+        (csInf_mem_closure hne h.bddBelow)
 #align real.ediam_eq Real.ediam_eq
 
 /-- For a bounded set `s : Set ℝ`, its `Metric.diam` is equal to `sSup s - sInf s`. -/
 theorem diam_eq {s : Set ℝ} (h : Bornology.IsBounded s) : Metric.diam s = sSup s - sInf s := by
   rw [Metric.diam, Real.ediam_eq h, ENNReal.toReal_ofReal]
-  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
-  exact sub_nonneg.2 (Real.sInf_le_sSup s h.1 h.2)
+  exact sub_nonneg.2 (Real.sInf_le_sSup s h.bddBelow h.bddAbove)
 #align real.diam_eq Real.diam_eq
 
 @[simp]
@@ -1585,7 +1589,8 @@ theorem edist_le_tsum_of_edist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ�
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     edist (f n) a ≤ ∑' m, d (n + m) := by
   refine le_of_tendsto (tendsto_const_nhds.edist ha) (mem_atTop_sets.2 ⟨n, fun m hnm => ?_⟩)
-  refine' le_trans (edist_le_Ico_sum_of_edist_le hnm fun _ _ => hf _) _
+  change edist _ _ ≤ _
+  refine le_trans (edist_le_Ico_sum_of_edist_le hnm fun _ _ => hf _) ?_
   rw [Finset.sum_Ico_eq_sum_range]
   exact sum_le_tsum _ (fun _ _ => zero_le _) ENNReal.summable
 #align edist_le_tsum_of_edist_le_of_tendsto edist_le_tsum_of_edist_le_of_tendsto

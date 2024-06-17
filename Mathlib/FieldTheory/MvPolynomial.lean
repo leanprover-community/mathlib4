@@ -24,8 +24,6 @@ open scoped Classical
 
 open Set LinearMap Submodule
 
-open BigOperators
-
 namespace MvPolynomial
 
 universe u v

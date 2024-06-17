@@ -72,7 +72,7 @@ Lots is missing!
 -/
 
 
-open Polynomial BigOperators Function AddMonoidAlgebra Finsupp
+open Polynomial Function AddMonoidAlgebra Finsupp
 
 noncomputable section
 

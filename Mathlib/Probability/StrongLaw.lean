@@ -61,7 +61,7 @@ open MeasureTheory Filter Finset Asymptotics
 
 open Set (indicator)
 
-open scoped Topology BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
+open scoped Topology MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 

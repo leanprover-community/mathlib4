@@ -173,7 +173,7 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
       have B : MeasurableSet {x | g x ≤ N} := measurableSet_le hg measurable_const
       exact (A.inter B).inter (measurable_spanningSets μ p)
     have s_lt_top : μ s < ∞ :=
-      (measure_mono (Set.inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top μ p)
+      (measure_mono (Set.inter_subset_right)).trans_lt (measure_spanningSets_lt_top μ p)
     have A : (∫⁻ x in s, g x ∂μ) + ε * μ s ≤ (∫⁻ x in s, g x ∂μ) + 0 :=
       calc
         (∫⁻ x in s, g x ∂μ) + ε * μ s = (∫⁻ x in s, g x ∂μ) + ∫⁻ _ in s, ε ∂μ := by
@@ -265,19 +265,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg_of_stronglyMeasurable (hfm : Stro
   intro b hb_neg
   let s := {x | f x ≤ b}
   have hs : MeasurableSet s := hfm.measurableSet_le stronglyMeasurable_const
-  have mus : μ s < ∞ := by
-    let c : ℝ≥0 := ⟨|b|, abs_nonneg _⟩
-    have c_pos : (c : ℝ≥0∞) ≠ 0 := by simpa [c, ← NNReal.coe_eq_zero] using hb_neg.ne
-    calc
-      μ s ≤ μ {x | (c : ℝ≥0∞) ≤ ‖f x‖₊} := by
-        apply measure_mono
-        intro x hx
-        simp only [s, Set.mem_setOf_eq] at hx
-        simpa only [c, nnnorm, abs_of_neg hb_neg, abs_of_neg (hx.trans_lt hb_neg), Real.norm_eq_abs,
-          Subtype.mk_le_mk, neg_le_neg_iff, Set.mem_setOf_eq, ENNReal.coe_le_coe, NNReal] using hx
-      _ ≤ (∫⁻ x, ‖f x‖₊ ∂μ) / c :=
-        (meas_ge_le_lintegral_div hfm.aemeasurable.ennnorm c_pos ENNReal.coe_ne_top)
-      _ < ∞ := ENNReal.div_lt_top (ne_of_lt hf.2) c_pos
+  have mus : μ s < ∞ := Integrable.measure_le_lt_top hf hb_neg
   have h_int_gt : (∫ x in s, f x ∂μ) ≤ b * (μ s).toReal := by
     have h_const_le : (∫ x in s, f x ∂μ) ≤ ∫ _ in s, b ∂μ := by
       refine
@@ -353,7 +341,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite [SigmaFinite μ] {
   intro s s_meas _
   exact
     hf_zero _ (s_meas.inter t_meas)
-      (lt_of_le_of_lt (measure_mono (Set.inter_subset_right _ _)) t_lt_top)
+      (lt_of_le_of_lt (measure_mono (Set.inter_subset_right)) t_lt_top)
 #align measure_theory.ae_nonneg_of_forall_set_integral_nonneg_of_sigma_finite MeasureTheory.ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite
 
 @[deprecated (since := "2024-04-17")]
@@ -390,7 +378,7 @@ theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg {f : α → ℝ}
     ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter
       (hf_int_finite t ht (lt_top_iff_ne_top.mpr hμt)) fun s hs _ => ?_
   refine hf_zero (s ∩ t) (hs.inter ht) ?_
-  exact (measure_mono (Set.inter_subset_right s t)).trans_lt (lt_top_iff_ne_top.mpr hμt)
+  exact (measure_mono Set.inter_subset_right).trans_lt (lt_top_iff_ne_top.mpr hμt)
 #align measure_theory.ae_nonneg_restrict_of_forall_set_integral_nonneg MeasureTheory.ae_nonneg_restrict_of_forall_setIntegral_nonneg
 
 @[deprecated (since := "2024-04-17")]

@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import category_theory.adhesive from "leanprover-community/mathlib"@"afff1f24a6b68d0077c9d63782a1d093e337758c"
 
@@ -26,7 +27,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
   monomorphisms are stable under pushouts.
 - `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
   regular (this implies that adhesive categories are balanced).
-- `CategoryTHeory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
+- `CategoryTheory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
   has all pullbacks and all pushouts and is adhesive
 
 ## References

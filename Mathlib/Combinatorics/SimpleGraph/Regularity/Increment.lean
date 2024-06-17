@@ -38,7 +38,7 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 open Finset Fintype SimpleGraph SzemerediRegularity
 
-open scoped BigOperators SzemerediRegularity.Positivity
+open scoped SzemerediRegularity.Positivity
 
 variable {α : Type*} [Fintype α] [DecidableEq α] {P : Finpartition (univ : Finset α)}
   (hP : P.IsEquipartition) (G : SimpleGraph α) [DecidableRel G.Adj] (ε : ℝ)

@@ -32,7 +32,7 @@ algebraic manipulation.
  -/
 
 
-open scoped Real Topology BigOperators Nat
+open scoped Real Topology Nat
 
 open Filter Finset intervalIntegral
 

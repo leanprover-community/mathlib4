@@ -27,8 +27,6 @@ submodule, subspace, linear map
 
 open Function
 
-open BigOperators
-
 universe u'' u' u v w
 
 variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}

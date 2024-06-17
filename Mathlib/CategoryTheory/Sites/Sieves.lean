@@ -795,7 +795,7 @@ def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
       (Sieve.functorPullback F) := by
   apply (functor_galoisConnection F X).toGaloisInsertion
   intro S Y f hf
-  refine' ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, _⟩
+  refine ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, ?_⟩
   simpa using S.downward_closed hf _
 #align category_theory.sieve.ess_surj_full_functor_galois_insertion CategoryTheory.Sieve.essSurjFullFunctorGaloisInsertion
 

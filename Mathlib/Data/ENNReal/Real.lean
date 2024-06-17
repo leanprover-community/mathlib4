@@ -26,7 +26,7 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
     `ℝ≥0∞` is a complete lattice.
 -/
 
-open Set BigOperators NNReal ENNReal
+open Set NNReal ENNReal
 
 namespace ENNReal
 
@@ -49,7 +49,7 @@ theorem toReal_sub_of_le {a b : ℝ≥0∞} (h : b ≤ a) (ha : a ≠ ∞) :
 
 theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal ≤ (a - b).toReal := by
   lift b to ℝ≥0 using hb
-  induction a using recTopCoe
+  induction a
   · simp
   · simp only [← coe_sub, NNReal.sub_def, Real.coe_toNNReal', coe_toReal]
     exact le_max_left _ _
@@ -160,7 +160,7 @@ theorem toReal_inf {a b : ℝ≥0∞} : a ≠ ∞ → b ≠ ∞ → (a ⊓ b).to
 #align ennreal.to_real_inf ENNReal.toReal_inf
 
 theorem toNNReal_pos_iff : 0 < a.toNNReal ↔ 0 < a ∧ a < ∞ := by
-  induction a using recTopCoe <;> simp
+  induction a <;> simp
 #align ennreal.to_nnreal_pos_iff ENNReal.toNNReal_pos_iff
 
 theorem toNNReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 < a.toNNReal :=
@@ -186,8 +186,9 @@ theorem ofReal_le_of_le_toReal {a : ℝ} {b : ℝ≥0∞} (h : a ≤ ENNReal.toR
 #align ennreal.of_real_le_of_le_to_real ENNReal.ofReal_le_of_le_toReal
 
 @[simp]
-theorem ofReal_le_ofReal_iff {p q : ℝ} (h : 0 ≤ q) : ENNReal.ofReal p ≤ ENNReal.ofReal q ↔ p ≤ q :=
-  by rw [ENNReal.ofReal, ENNReal.ofReal, coe_le_coe, Real.toNNReal_le_toNNReal_iff h]
+theorem ofReal_le_ofReal_iff {p q : ℝ} (h : 0 ≤ q) :
+    ENNReal.ofReal p ≤ ENNReal.ofReal q ↔ p ≤ q := by
+  rw [ENNReal.ofReal, ENNReal.ofReal, coe_le_coe, Real.toNNReal_le_toNNReal_iff h]
 #align ennreal.of_real_le_of_real_iff ENNReal.ofReal_le_ofReal_iff
 
 lemma ofReal_le_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p ≤ .ofReal q ↔ p ≤ q ∨ p ≤ 0 :=
@@ -203,8 +204,9 @@ theorem ofReal_eq_ofReal_iff {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
 #align ennreal.of_real_eq_of_real_iff ENNReal.ofReal_eq_ofReal_iff
 
 @[simp]
-theorem ofReal_lt_ofReal_iff {p q : ℝ} (h : 0 < q) : ENNReal.ofReal p < ENNReal.ofReal q ↔ p < q :=
-  by rw [ENNReal.ofReal, ENNReal.ofReal, coe_lt_coe, Real.toNNReal_lt_toNNReal_iff h]
+theorem ofReal_lt_ofReal_iff {p q : ℝ} (h : 0 < q) :
+    ENNReal.ofReal p < ENNReal.ofReal q ↔ p < q := by
+  rw [ENNReal.ofReal, ENNReal.ofReal, coe_lt_coe, Real.toNNReal_lt_toNNReal_iff h]
 #align ennreal.of_real_lt_of_real_iff ENNReal.ofReal_lt_ofReal_iff
 
 theorem ofReal_lt_ofReal_iff_of_nonneg {p q : ℝ} (hp : 0 ≤ p) :
@@ -232,6 +234,9 @@ alias ⟨_, ofReal_of_nonpos⟩ := ofReal_eq_zero
 lemma ofReal_lt_natCast {p : ℝ} {n : ℕ} (hn : n ≠ 0) : ENNReal.ofReal p < n ↔ p < n := by
   exact mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
 
+@[deprecated (since := "2024-04-17")]
+alias ofReal_lt_nat_cast := ofReal_lt_natCast
+
 @[simp]
 lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
   exact mod_cast ofReal_lt_natCast one_ne_zero
@@ -244,6 +249,9 @@ lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [n.AtLeastTwo] :
 @[simp]
 lemma natCast_le_ofReal {n : ℕ} {p : ℝ} (hn : n ≠ 0) : n ≤ ENNReal.ofReal p ↔ n ≤ p := by
   simp only [← not_lt, ofReal_lt_natCast hn]
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_le_ofReal := natCast_le_ofReal
 
 @[simp]
 lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
@@ -258,6 +266,9 @@ lemma ofNat_le_ofReal {n : ℕ} [n.AtLeastTwo] {p : ℝ} :
 lemma ofReal_le_natCast {r : ℝ} {n : ℕ} : ENNReal.ofReal r ≤ n ↔ r ≤ n :=
   coe_le_coe.trans Real.toNNReal_le_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias ofReal_le_nat_cast := ofReal_le_natCast
+
 @[simp]
 lemma ofReal_le_one {r : ℝ} : ENNReal.ofReal r ≤ 1 ↔ r ≤ 1 :=
   coe_le_coe.trans Real.toNNReal_le_one
@@ -271,6 +282,9 @@ lemma ofReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
 lemma natCast_lt_ofReal {n : ℕ} {r : ℝ} : n < ENNReal.ofReal r ↔ n < r :=
   coe_lt_coe.trans Real.natCast_lt_toNNReal
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_lt_ofReal := natCast_lt_ofReal
+
 @[simp]
 lemma one_lt_ofReal {r : ℝ} : 1 < ENNReal.ofReal r ↔ 1 < r := coe_lt_coe.trans Real.one_lt_toNNReal
 
@@ -282,6 +296,9 @@ lemma ofNat_lt_ofReal {n : ℕ} [n.AtLeastTwo] {r : ℝ} :
 @[simp]
 lemma ofReal_eq_natCast {r : ℝ} {n : ℕ} (h : n ≠ 0) : ENNReal.ofReal r = n ↔ r = n :=
   ENNReal.coe_inj.trans <| Real.toNNReal_eq_natCast h
+
+@[deprecated (since := "2024-04-17")]
+alias ofReal_eq_nat_cast := ofReal_eq_natCast
 
 @[simp]
 lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=
@@ -346,8 +363,9 @@ theorem ofReal_mul' {p q : ℝ} (hq : 0 ≤ q) :
   rw [mul_comm, ofReal_mul hq, mul_comm]
 #align ennreal.of_real_mul' ENNReal.ofReal_mul'
 
-theorem ofReal_pow {p : ℝ} (hp : 0 ≤ p) (n : ℕ) : ENNReal.ofReal (p ^ n) = ENNReal.ofReal p ^ n :=
-  by rw [ofReal_eq_coe_nnreal hp, ← coe_pow, ← ofReal_coe_nnreal, NNReal.coe_pow, NNReal.coe_mk]
+theorem ofReal_pow {p : ℝ} (hp : 0 ≤ p) (n : ℕ) :
+    ENNReal.ofReal (p ^ n) = ENNReal.ofReal p ^ n := by
+  rw [ofReal_eq_coe_nnreal hp, ← coe_pow, ← ofReal_coe_nnreal, NNReal.coe_pow, NNReal.coe_mk]
 #align ennreal.of_real_pow ENNReal.ofReal_pow
 
 theorem ofReal_nsmul {x : ℝ} {n : ℕ} : ENNReal.ofReal (n • x) = n • ENNReal.ofReal x := by
@@ -483,7 +501,7 @@ theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal �
 #align ennreal.to_real_pos_iff_ne_top ENNReal.toReal_pos_iff_ne_top
 
 theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
-  induction' a using recTopCoe with a; · simp
+  induction' a with a; · simp
   rcases eq_or_ne a 0 with (rfl | ha); · simp
   rw [← coe_inv ha, toNNReal_coe, toNNReal_coe]
 #align ennreal.to_nnreal_inv ENNReal.toNNReal_inv
@@ -666,7 +684,7 @@ theorem iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 #align ennreal.supr_coe_nat ENNReal.iSup_natCast
 
-@[deprecated] alias iSup_coe_nat := iSup_natCast -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias iSup_coe_nat := iSup_natCast
 
 end iSup
 

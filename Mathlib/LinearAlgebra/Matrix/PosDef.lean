@@ -236,8 +236,8 @@ theorem posSemidef_conjTranspose_mul_self (A : Matrix m n R) : PosSemidef (Aᴴ 
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
-theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) :=
-  by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
+theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) := by
+  simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
@@ -337,11 +337,11 @@ lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
   simp only [hA.1.eigenvalues_eq]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
-theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M := by
-   rw [hM.isHermitian.det_eq_prod_eigenvalues]
-   apply Finset.prod_pos
-   intro i _
-   exact hM.eigenvalues_pos i
+theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det M := by
+  rw [hM.isHermitian.det_eq_prod_eigenvalues]
+  apply Finset.prod_pos
+  intro i _
+  simpa using hM.eigenvalues_pos i
 #align matrix.pos_def.det_pos Matrix.PosDef.det_pos
 
 end PosDef

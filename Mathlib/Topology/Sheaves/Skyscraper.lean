@@ -197,7 +197,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h :
       simp only [← c.w (homOfLE <| @inf_le_left _ _ h1.choose U.unop).op, ←
         c.w (homOfLE <| @inf_le_right _ _ h1.choose U.unop).op, ← Category.assoc]
       congr 1
-      refine' ((if_neg _).symm.ndrec terminalIsTerminal).hom_ext _ _
+      refine ((if_neg ?_).symm.ndrec terminalIsTerminal).hom_ext _ _
       exact fun h => h1.choose_spec h.1
     uniq := fun c f H => by
       dsimp -- Porting note (#11227):added a `dsimp`
@@ -228,8 +228,8 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
           dsimp [skyscraperPresheaf]
           rw [if_neg]
           · exact terminalIsTerminal
-          · -- Adaptation note: 2024-03-24
-            -- Previously the universe annotation was not needed here.
+          · #adaptation_note /-- 2024-03-24
+            Previously the universe annotation was not needed here. -/
             exact Set.not_mem_empty PUnit.unit.{u+1})))
 #align skyscraper_presheaf_is_sheaf skyscraperPresheaf_isSheaf
 

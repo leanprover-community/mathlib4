@@ -116,7 +116,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     have W_in : W ∈ 𝓝Δ := by
       rw [mem_nhdsSet_iff_forall]
       rintro ⟨z, z'⟩ (rfl : z = z')
-      refine' IsOpen.mem_nhds _ _
+      refine IsOpen.mem_nhds ?_ ?_
       · apply_rules [IsOpen.union, IsOpen.prod]
       · simp only [W, mem_union, mem_prod, and_self_iff]
         exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h

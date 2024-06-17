@@ -1,0 +1,51 @@
+name: Monitor Dependency Update Failures
+
+# This action currently uses the NIGHTLY_TESTING secret, but could be moved to a separate secret.
+
+on:
+  workflow_run:
+    workflows: ["Update Mathlib Dependencies"]
+    types:
+      - completed
+
+jobs:
+  monitor-failures:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && startsWith(github.event.workflow_run.head_branch, 'update-dependencies-') }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.NIGHTLY_TESTING }}
+
+      - name: Get PR number
+        id: get_pr
+        run: |
+          pr_number=$(gh pr list --state open --head "${{ github.repository }}:${{ github.event.workflow_run.head_branch }}" --json number -q '.[0].number')
+          echo "pr_number=$pr_number" >> "$GITHUB_ENV"
+
+      - name: Update PR labels
+        if: env.pr_number
+        run: |
+          gh pr edit "${{ env.pr_number }}" --remove-label "auto-merge-after-CI" --add-label "awaiting-CI,awaiting-review"
+
+      - name: Get CI URL
+        id: ci_url
+        run: |
+          url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s "$url" |
+            awk -v url="$url" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}' >> "$GITHUB_OUTPUT"
+
+      - name: Send Zulip message
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: |
+            ❌ `lake update` [failed](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}

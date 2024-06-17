@@ -40,7 +40,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
-open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
+open scoped Classical Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -641,7 +641,7 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
       rw [h_set_eq]
       exact aeSeq.fun_prop_of_mem_aeSeqSet hf h
     · exact IsGreatest.isLUB ⟨(@exists_const (hα.some = hα.some) ι _).2 rfl, fun x ⟨i, hi⟩ => hi.ge⟩
-  refine' ⟨g_seq, Measurable.isLUB (aeSeq.measurable hf p) hg_seq, _⟩
+  refine ⟨g_seq, Measurable.isLUB (aeSeq.measurable hf p) hg_seq, ?_⟩
   exact
     (ite_ae_eq_of_measure_compl_zero g (fun _ => hα.some) (aeSeqSet hf p)
         (aeSeq.measure_compl_aeSeqSet_eq_zero hf hg)).symm
