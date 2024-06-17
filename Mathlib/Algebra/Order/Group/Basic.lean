@@ -174,7 +174,7 @@ lemma add_eq_top {a b : α} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ where
     cases h <;> simp_all
 
 instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
-  neg_neg (a) := by
+  neg_neg a := by
     by_cases h : a = ⊤
     · simp [h]
     · have h2 : ¬ -a = ⊤ := fun nh ↦ h <| (neg_eq_top ..).mp nh
@@ -182,7 +182,7 @@ instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
       rw [← add_assoc, add_neg_cancel_of_ne_top h] at h2
       simp only [zero_add, add_zero] at h2
       exact h2
-  neg_add_rev (a b) := by
+  neg_add_rev a b := by
     by_cases ha : a = ⊤
     · simp [ha]
     by_cases hb : b = ⊤
@@ -198,7 +198,7 @@ instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
       dsimp only
       rw [← add_assoc, add_comm (-(a + b)), add_neg_cancel_of_ne_top, zero_add]
       simp [ha, hb]
-  neg_eq_of_add (a b) (h) := by
+  neg_eq_of_add a b h := by
     have oh := congrArg (-a + ·) h
     dsimp only at oh
     rw [add_zero, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top, zero_add] at oh
