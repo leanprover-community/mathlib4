@@ -19,6 +19,10 @@ number is irrational if it is not integer, and that `√(q : ℚ)` is irrational
 `¬IsSquare q ∧ 0 ≤ q`.
 
 We also provide dot-style constructors like `Irrational.add_rat`, `Irrational.rat_sub` etc.
+
+With the `Decidable` instances in this file, is possible to prove `Irrational √n` using `decide`,
+when `n` is a numeric literal or cast;
+but this only works if you `unseal Nat.sqrt.iter in` before the theorem where you use this proof.
 -/
 
 
