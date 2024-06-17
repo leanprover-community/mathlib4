@@ -48,6 +48,12 @@ class ExtremallyDisconnected : Prop where
   open_closure : ∀ U : Set X, IsOpen U → IsOpen (closure U)
 #align extremally_disconnected ExtremallyDisconnected
 
+theorem extremallyDisconnected_of_homeo {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [ExtremallyDisconnected X] (e : X ≃ₜ Y) : ExtremallyDisconnected Y where
+  open_closure U hU := by
+    rw [e.symm.inducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
+    exact ExtremallyDisconnected.open_closure _ (e.symm.isOpen_image.mpr hU)
+
 section TotallySeparated
 
 /-- Extremally disconnected spaces are totally separated. -/
