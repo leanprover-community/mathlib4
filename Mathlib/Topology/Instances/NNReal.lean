@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.MetricSpace.Isometry
 
 #align_import topology.instances.nnreal from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
@@ -22,6 +23,7 @@ Instances for the following typeclasses are defined:
 * `TopologicalSemiring ℝ≥0`
 * `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
+* `ProperSpace ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
 * `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
@@ -56,7 +58,7 @@ open Topology
 
 namespace NNReal
 
-open NNReal BigOperators Filter
+open NNReal Filter
 
 instance : TopologicalSpace ℝ≥0 := inferInstance
 
@@ -86,6 +88,11 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 #align continuous_real_to_nnreal continuous_real_toNNReal
 
+/-- `Real.toNNReal` bundled as a continuous map for convenience. -/
+@[simps (config := .asFn)]
+noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
+  .mk Real.toNNReal continuous_real_toNNReal
+
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 #align nnreal.continuous_coe NNReal.continuous_coe
@@ -99,7 +106,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
-  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, FunLike.ext' rfl⟩
+  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
 #align nnreal.continuous_map.can_lift NNReal.ContinuousMap.canLift
 
 @[simp, norm_cast]
@@ -171,8 +178,8 @@ theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 �
 @[norm_cast]
 theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
   constructor
-  exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
-  exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
 #align nnreal.summable_coe NNReal.summable_coe
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
@@ -180,7 +187,7 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 #align nnreal.summable_coe_of_nonneg NNReal.summable_mk
 
-open Classical
+open scoped Classical
 
 @[norm_cast]
 theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=
@@ -218,12 +225,12 @@ nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
 #align nnreal.summable_nat_add_iff NNReal.summable_nat_add_iff
 
 nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
-    HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i in range k, f i) := by
+    HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by
   rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
-    ∑' i, f i = (∑ i in range k, f i) + ∑' i, f (i + k) :=
+    ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
   (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
@@ -260,5 +267,39 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 #align nnreal.pow_order_iso NNReal.powOrderIso
+
+section Monotone
+
+/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
+theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
+    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
+  obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
+  exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
+
+/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
+theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
+    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
+  obtain ⟨B, hB⟩ := Real.exists_isGLB (Set.range_nonempty f) h_bdd
+  exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
+
+/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
+theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
+    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
+  have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
+    rintro r ⟨n, hn⟩
+    simp_rw [← hn]
+    exact NNReal.coe_nonneg _
+  obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
+  have hL0 : 0 ≤ L :=
+    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
+    (le_isGLB_iff h_glb).mpr h_bdd_0
+  exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
+
+end Monotone
+
+instance instProperSpace : ProperSpace ℝ≥0 where
+  isCompact_closedBall x r := by
+    have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
+    exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 end NNReal

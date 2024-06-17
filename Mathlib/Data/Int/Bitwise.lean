@@ -3,17 +3,17 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Bitwise
-import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
-import Mathlib.Init.Data.Int.Bitwise
 
 #align_import data.int.bitwise from "leanprover-community/mathlib"@"0743cc5d9d86bcd1bba10f480e948a257d65056f"
+#align_import init.data.int.bitwise from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
 /-!
 # Bitwise operations on integers
 
+Possibly only of archaeological significance.
 
 ## Recursors
 * `Int.bitCasesOn`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
@@ -21,6 +21,104 @@ import Mathlib.Init.Data.Int.Bitwise
 -/
 
 namespace Int
+
+/-- `div2 n = n/2`-/
+def div2 : ℤ → ℤ
+  | (n : ℕ) => n.div2
+  | -[n +1] => negSucc n.div2
+#align int.div2 Int.div2
+
+/-- `bodd n` returns `true` if `n` is odd-/
+def bodd : ℤ → Bool
+  | (n : ℕ) => n.bodd
+  | -[n +1] => not (n.bodd)
+#align int.bodd Int.bodd
+
+-- Porting note: `bit0, bit1` deprecated, do we need to adapt `bit`?
+set_option linter.deprecated false in
+/-- `bit b` appends the digit `b` to the binary representation of
+  its integer input. -/
+def bit (b : Bool) : ℤ → ℤ :=
+  cond b bit1 bit0
+#align int.bit Int.bit
+
+/-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
+def testBit : ℤ → ℕ → Bool
+  | (m : ℕ), n => Nat.testBit m n
+  | -[m +1], n => !(Nat.testBit m n)
+#align int.test_bit Int.testBit
+
+/-- `Int.natBitwise` is an auxiliary definition for `Int.bitwise`. -/
+def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
+  cond (f false false) -[ Nat.bitwise (fun x y => not (f x y)) m n +1] (Nat.bitwise f m n)
+#align int.nat_bitwise Int.natBitwise
+
+/-- `Int.bitwise` applies the function `f` to pairs of bits in the same position in
+  the binary representations of its inputs. -/
+def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => natBitwise f m n
+  | (m : ℕ), -[n +1] => natBitwise (fun x y => f x (not y)) m n
+  | -[m +1], (n : ℕ) => natBitwise (fun x y => f (not x) y) m n
+  | -[m +1], -[n +1] => natBitwise (fun x y => f (not x) (not y)) m n
+#align int.bitwise Int.bitwise
+
+/-- `lnot` flips all the bits in the binary representation of its input -/
+def lnot : ℤ → ℤ
+  | (m : ℕ) => -[m +1]
+  | -[m +1] => m
+#align int.lnot Int.lnot
+
+/-- `lor` takes two integers and returns their bitwise `or`-/
+def lor : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => m ||| n
+  | (m : ℕ), -[n +1] => -[Nat.ldiff n m +1]
+  | -[m +1], (n : ℕ) => -[Nat.ldiff m n +1]
+  | -[m +1], -[n +1] => -[m &&& n +1]
+#align int.lor Int.lor
+
+/-- `land` takes two integers and returns their bitwise `and`-/
+def land : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => m &&& n
+  | (m : ℕ), -[n +1] => Nat.ldiff m n
+  | -[m +1], (n : ℕ) => Nat.ldiff n m
+  | -[m +1], -[n +1] => -[m ||| n +1]
+#align int.land Int.land
+
+-- Porting note: I don't know why `Nat.ldiff` got the prime, but I'm matching this change here
+/-- `ldiff a b` performs bitwise set difference. For each corresponding
+  pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
+  boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result. -/
+def ldiff : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => Nat.ldiff m n
+  | (m : ℕ), -[n +1] => m &&& n
+  | -[m +1], (n : ℕ) => -[m ||| n +1]
+  | -[m +1], -[n +1] => Nat.ldiff n m
+#align int.ldiff Int.ldiff
+
+-- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
+/-- `xor` computes the bitwise `xor` of two natural numbers-/
+protected def xor : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => (m ^^^ n)
+  | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
+  | -[m +1], (n : ℕ) => -[(m ^^^ n) +1]
+  | -[m +1], -[n +1] => (m ^^^ n)
+#align int.lxor Int.xor
+
+/-- `m <<< n` produces an integer whose binary representation
+  is obtained by left-shifting the binary representation of `m` by `n` places -/
+instance : ShiftLeft ℤ where
+  shiftLeft
+  | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
+  | (m : ℕ), -[n +1] => m >>> (Nat.succ n)
+  | -[m +1], (n : ℕ) => -[Nat.shiftLeft' true m n +1]
+  | -[m +1], -[n +1] => -[m >>> (Nat.succ n) +1]
+#align int.shiftl ShiftLeft.shiftLeft
+
+/-- `m >>> n` produces an integer whose binary representation
+  is obtained by right-shifting the binary representation of `m` by `n` places -/
+instance : ShiftRight ℤ where
+  shiftRight m n := m <<< (-n)
+#align int.shiftr ShiftRight.shiftRight
 
 /-! ### bitwise ops -/
 
@@ -68,7 +166,7 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
     change (!Nat.bodd n) = !(bodd n)
     rw [bodd_coe]
 -- Porting note: Heavily refactored proof, used to work all with `simp`:
--- `cases n <;> simp [Neg.neg, Int.coe_nat_eq, Int.neg, bodd, -of_nat_eq_coe]`
+-- `cases n <;> simp [Neg.neg, Int.natCast_eq_ofNat, Int.neg, bodd, -of_nat_eq_coe]`
 #align int.bodd_neg Int.bodd_neg
 
 @[simp]
@@ -100,7 +198,7 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     rw [show (cond (bodd n) 1 0 : ℤ) = (cond (bodd n) 1 0 : ℕ) by cases bodd n <;> rfl]
     exact congr_arg ofNat n.bodd_add_div2
   | -[n+1] => by
-    refine' Eq.trans _ (congr_arg negSucc n.bodd_add_div2)
+    refine Eq.trans ?_ (congr_arg negSucc n.bodd_add_div2)
     dsimp [bodd]; cases Nat.bodd n <;> dsimp [cond, not, div2, Int.mul]
     · change -[2 * Nat.div2 n+1] = _
       rw [zero_add]
@@ -117,20 +215,20 @@ section deprecated
 
 set_option linter.deprecated false
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit0_val (n : ℤ) : bit0 n = 2 * n :=
   (two_mul _).symm
 #align int.bit0_val Int.bit0_val
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit1_val (n : ℤ) : bit1 n = 2 * n + 1 :=
   congr_arg (· + (1 : ℤ)) (bit0_val _)
 #align int.bit1_val Int.bit1_val
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  apply (bit0_val n).trans (add_zero _).symm
-  apply bit1_val
+  · apply (bit0_val n).trans (add_zero _).symm
+  · apply bit1_val
 #align int.bit_val Int.bit_val
 
 theorem bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
@@ -167,57 +265,56 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
   cases b <;> cases bodd n <;> simp [(show bodd 2 = false by rfl)]
 #align int.bodd_bit Int.bodd_bit
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-01-02")]
 theorem bodd_bit0 (n : ℤ) : bodd (bit0 n) = false :=
   bodd_bit false n
 #align int.bodd_bit0 Int.bodd_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-01-02")]
 theorem bodd_bit1 (n : ℤ) : bodd (bit1 n) = true :=
   bodd_bit true n
 #align int.bodd_bit1 Int.bodd_bit1
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit0_ne_bit1 (m n : ℤ) : bit0 m ≠ bit1 n :=
   mt (congr_arg bodd) <| by simp
 #align int.bit0_ne_bit1 Int.bit0_ne_bit1
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
   (bit0_ne_bit1 _ _).symm
 #align int.bit1_ne_bit0 Int.bit1_ne_bit0
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
 #align int.bit1_ne_zero Int.bit1_ne_zero
 
 end deprecated
 
 @[simp]
-theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_zero
+theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_zero]; clear testBit_zero;
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero;
         cases b <;>
       rfl
-#align int.test_bit_zero Int.testBit_zero
+#align int.test_bit_zero Int.testBit_bit_zero
 
 @[simp]
-theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
+theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_succ
   | -[n+1] => by
     dsimp only [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_succ]
-#align int.test_bit_succ Int.testBit_succ
+    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
+#align int.test_bit_succ Int.testBit_bit_succ
 
--- Porting note: TODO
--- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
+-- Porting note (#11215): TODO
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
 -- #align int.bitwise_tac int.bitwise_tac
 
---Porting note : Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_or : bitwise or = lor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -235,7 +332,7 @@ theorem bitwise_or : bitwise or = lor := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_or Int.bitwise_or
 
---Porting note : Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -251,7 +348,7 @@ theorem bitwise_and : bitwise and = land := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_and Int.bitwise_and
 
---Porting note : Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -270,7 +367,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_diff Int.bitwise_diff
 
---Porting note : Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -374,8 +471,8 @@ theorem shiftRight_neg (m n : ℤ) : m >>> (-n) = m <<< n := by rw [← shiftLef
 
 -- Porting note: what's the correct new name?
 @[simp]
-theorem shiftLeft_coe_nat (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) :=
-  by simp [instShiftLeftInt, HShiftLeft.hShiftLeft]
+theorem shiftLeft_coe_nat (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) := by
+  unfold_projs; simp
 #align int.shiftl_coe_nat Int.shiftLeft_coe_nat
 
 -- Porting note: what's the correct new name?
@@ -392,14 +489,15 @@ theorem shiftLeft_negSucc (m n : ℕ) : -[m+1] <<< (n : ℤ) = -[Nat.shiftLeft' 
 theorem shiftRight_negSucc (m n : ℕ) : -[m+1] >>> (n : ℤ) = -[m >>> n+1] := by cases n <;> rfl
 #align int.shiftr_neg_succ Int.shiftRight_negSucc
 
-theorem shiftRight_add : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>> (n : ℤ)) >>> (k : ℤ)
+/-- Compare with `Int.shiftRight_add`, which doesn't have the coercions `ℕ → ℤ`. -/
+theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>> (n : ℤ)) >>> (k : ℤ)
   | (m : ℕ), n, k => by
     rw [shiftRight_coe_nat, shiftRight_coe_nat, ← Int.ofNat_add, shiftRight_coe_nat,
       Nat.shiftRight_add]
   | -[m+1], n, k => by
     rw [shiftRight_negSucc, shiftRight_negSucc, ← Int.ofNat_add, shiftRight_negSucc,
       Nat.shiftRight_add]
-#align int.shiftr_add Int.shiftRight_add
+#align int.shiftr_add Int.shiftRight_add'
 
 /-! ### bitwise ops -/
 
@@ -412,20 +510,21 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) =>
-        by dsimp; simp [← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
+        by dsimp; simp [← Nat.shiftLeft_sub _ , Nat.add_sub_cancel_left])
       fun i n => by
         dsimp
-        simp [Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
-        rfl
+        simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
+          ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_coe_nat,
+          ← shiftRight_add', Nat.cast_one]
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
       (fun n k i => -[m+1] <<< i = -[(Nat.shiftLeft' true m n) >>> k+1])
       (fun i n =>
         congr_arg negSucc <| by
-          rw [← Nat.shiftLeft'_sub, add_tsub_cancel_left]; apply Nat.le_add_right)
+          rw [← Nat.shiftLeft'_sub, Nat.add_sub_cancel_left]; apply Nat.le_add_right)
       fun i n =>
-      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub, tsub_self]
-      <;> rfl
+      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub _ _ le_rfl,
+          Nat.sub_self, Nat.shiftLeft']
 #align int.shiftl_add Int.shiftLeft_add
 
 theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n : ℤ)) >>> k :=
@@ -437,11 +536,6 @@ theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftLeft_eq_mul_pow
 
-theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / (2 ^ n : ℕ)
-  | (m : ℕ), n => by rw [shiftRight_coe_nat, Nat.shiftRight_eq_div_pow _ _]; simp
-  | -[m+1], n => by
-    rw [shiftRight_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]; rfl
-    exact ofNat_lt_ofNat_of_lt (pow_pos (by decide) _)
 #align int.shiftr_eq_div_pow Int.shiftRight_eq_div_pow
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
@@ -454,9 +548,10 @@ theorem zero_shiftLeft : ∀ n : ℤ, 0 <<< n = 0
   | -[_+1] => congr_arg ((↑) : ℕ → ℤ) (by simp)
 #align int.zero_shiftl Int.zero_shiftLeft
 
+/-- Compare with `Int.zero_shiftRight`, which has `n : ℕ`. -/
 @[simp]
-theorem zero_shiftRight (n : ℤ) : 0 >>> n = 0 :=
+theorem zero_shiftRight' (n : ℤ) : 0 >>> n = 0 :=
   zero_shiftLeft _
-#align int.zero_shiftr Int.zero_shiftRight
+#align int.zero_shiftr Int.zero_shiftRight'
 
 end Int

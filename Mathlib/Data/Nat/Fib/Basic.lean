@@ -3,12 +3,11 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Nat.Bitwise
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
@@ -51,8 +50,6 @@ For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
 fib, fibonacci
 -/
-
-open BigOperators
 
 namespace Nat
 
@@ -116,24 +113,24 @@ theorem fib_add_two_sub_fib_add_one {n : ℕ} : fib (n + 2) - fib (n + 1) = fib 
 
 theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
   rcases exists_add_of_le hn with ⟨n, rfl⟩
-  rw [← tsub_pos_iff_lt, add_comm 2, fib_add_two_sub_fib_add_one, fib_pos]
+  rw [← tsub_pos_iff_lt, add_comm 2, add_right_comm, fib_add_two, add_tsub_cancel_right, fib_pos]
   exact succ_pos n
 #align nat.fib_lt_fib_succ Nat.fib_lt_fib_succ
 
 /-- `fib (n + 2)` is strictly monotone. -/
 theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
-  refine' strictMono_nat_of_lt_succ fun n => _
+  refine strictMono_nat_of_lt_succ fun n => ?_
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
 #align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
 
 lemma fib_strictMonoOn : StrictMonoOn fib (Set.Ici 2)
-  | _m + 2, _, _n + 2, _, hmn => fib_add_two_strictMono $ lt_of_add_lt_add_right hmn
+  | _m + 2, _, _n + 2, _, hmn => fib_add_two_strictMono <| lt_of_add_lt_add_right hmn
 
 lemma fib_lt_fib {m : ℕ} (hm : 2 ≤ m) : ∀ {n}, fib m < fib n ↔ m < n
   | 0 => by simp [hm]
   | 1 => by simp [hm]
-  | n + 2 => fib_strictMonoOn.lt_iff_lt hm $ by simp
+  | n + 2 => fib_strictMonoOn.lt_iff_lt hm <| by simp
 
 theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
   induction' five_le_n with n five_le_n IH
@@ -152,7 +149,7 @@ lemma le_fib_add_one : ∀ n, n ≤ fib n + 1
   | 2 => le_rfl
   | 3 => le_rfl
   | 4 => le_rfl
-  | _n + 5 => (le_fib_self le_add_self).trans $ le_succ _
+  | _n + 5 => (le_fib_self le_add_self).trans <| le_succ _
 
 /-- Subsequent Fibonacci numbers are coprime,
   see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
@@ -168,17 +165,16 @@ theorem fib_coprime_fib_succ (n : ℕ) : Nat.Coprime (fib n) (fib (n + 1)) := by
 theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) := by
   induction' n with n ih generalizing m
   · simp
-  · intros
-    specialize ih (m + 1)
+  · specialize ih (m + 1)
     rw [add_assoc m 1 n, add_comm 1 n] at ih
-    simp only [fib_add_two, ih]
+    simp only [fib_add_two, succ_eq_add_one, ih]
     ring
 #align nat.fib_add Nat.fib_add
 
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
-  · rw [Nat.succ_eq_add_one, two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
+  · rw [two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
     simp only [← add_assoc, add_tsub_cancel_right]
     ring
 #align nat.fib_two_mul Nat.fib_two_mul
@@ -191,9 +187,9 @@ theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib 
 theorem fib_two_mul_add_two (n : ℕ) :
     fib (2 * n + 2) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
   rw [fib_add_two, fib_two_mul, fib_two_mul_add_one]
-  -- porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
+  -- Porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
   have : fib n ≤ 2 * fib (n + 1) :=
-    le_trans (fib_le_fib_succ) (mul_comm 2 _ ▸ le_mul_of_pos_right two_pos)
+    le_trans fib_le_fib_succ (mul_comm 2 _ ▸ Nat.le_mul_of_pos_right _ two_pos)
   zify [this]
   ring
 
@@ -308,19 +304,19 @@ theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
 #align nat.fib_dvd Nat.fib_dvd
 
 theorem fib_succ_eq_sum_choose :
-    ∀ n : ℕ, fib (n + 1) = ∑ p in Finset.antidiagonal n, choose p.1 p.2 :=
+    ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=
   twoStepInduction rfl rfl fun n h1 h2 => by
     rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 #align nat.fib_succ_eq_sum_choose Nat.fib_succ_eq_sum_choose
 
-theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k in Finset.range n, fib k) + 1 := by
+theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k ∈ Finset.range n, fib k) + 1 := by
   induction' n with n ih
   · simp
   · calc
       fib (n + 2) = fib n + fib (n + 1) := fib_add_two
-      _ = (fib n + ∑ k in Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
-      _ = (∑ k in Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
+      _ = (fib n + ∑ k ∈ Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
+      _ = (∑ k ∈ Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
 #align nat.fib_succ_eq_succ_sum Nat.fib_succ_eq_succ_sum
 
 end Nat

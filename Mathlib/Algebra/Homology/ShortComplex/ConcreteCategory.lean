@@ -121,7 +121,7 @@ section abelian
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 namespace ShortComplex
 
@@ -142,10 +142,10 @@ lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
     (Limits.Concrete.pullbackMk D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂)
   have eq₁ := Concrete.pullbackMk_fst D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂
   have eq₂ := Concrete.pullbackMk_snd D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂
-  dsimp [FunLike.coe] at eq₁ eq₂
+  dsimp [DFunLike.coe] at eq₁ eq₂
   rw [Functor.map_comp, types_comp_apply, FunctorToTypes.map_comp_apply] at eq
   rw [eq₂] at eq
-  refine' eq.trans (congr_arg ((forget C).map D.v₂₃.τ₁) _)
+  refine eq.trans (congr_arg ((forget C).map D.v₂₃.τ₁) ?_)
   apply (Preadditive.mono_iff_injective' D.L₂.f).1 inferInstance
   rw [← FunctorToTypes.map_comp_apply, φ₁_L₂_f]
   dsimp [φ₂]

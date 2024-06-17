@@ -3,8 +3,9 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.ShrinkingLemma
 
 #align_import topology.metric_space.shrinking_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -28,7 +29,6 @@ open Set Metric
 open Topology
 
 variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι → α}
-
 variable {x : α} {r : ℝ} {s : Set α}
 
 /-- **Shrinking lemma** for coverings by open balls in a proper metric space. A point-finite open

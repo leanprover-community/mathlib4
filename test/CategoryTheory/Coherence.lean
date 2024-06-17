@@ -1,3 +1,5 @@
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 
 open CategoryTheory
@@ -53,14 +55,14 @@ example : (λ_ (𝟙_ C)).inv = (ρ_ (𝟙_ C)).inv := by coherence
 example (X Y Z : C) : (α_ X Y Z).inv ≫ (α_ X Y Z).hom = 𝟙 (X ⊗ Y ⊗ Z) := by coherence
 example (X Y Z W : C) :
   (𝟙 X ⊗ (α_ Y Z W).hom) ≫ (α_ X Y (Z ⊗ W)).inv ≫ (α_ (X ⊗ Y) Z W).inv =
-    (α_ X (Y ⊗ Z) W).inv ≫ ((α_ X Y Z).inv ⊗ 𝟙 W) :=
-by coherence
+    (α_ X (Y ⊗ Z) W).inv ≫ ((α_ X Y Z).inv ⊗ 𝟙 W) := by
+  coherence
 example (X Y : C) :
-  (𝟙 X ⊗ (λ_ Y).inv) ≫ (α_ X (𝟙_ C) Y).inv = (ρ_ X).inv ⊗ 𝟙 Y :=
-by coherence
+  (𝟙 X ⊗ (λ_ Y).inv) ≫ (α_ X (𝟙_ C) Y).inv = (ρ_ X).inv ⊗ 𝟙 Y := by
+  coherence
 example (X Y : C) (f : 𝟙_ C ⟶ X) (g : X ⟶ Y) (_w : false) :
-  (λ_ (𝟙_ C)).hom ≫ f ≫ 𝟙 X ≫ g = (ρ_ (𝟙_ C)).hom ≫ f ≫ g :=
-by coherence
+  (λ_ (𝟙_ C)).hom ≫ f ≫ 𝟙 X ≫ g = (ρ_ (𝟙_ C)).hom ≫ f ≫ g := by
+  coherence
 
 example (X₁ X₂ : C) :
   (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
@@ -76,8 +78,8 @@ example (X₁ X₂ : C) :
                       (𝟙 X₁ ⊗ (α_ X₂ (𝟙_ C) (𝟙_ C)).hom) ≫
                         (α_ X₁ X₂ (𝟙_ C ⊗ 𝟙_ C)).inv =
   (((λ_ (𝟙_ C)).hom ⊗ 𝟙 (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).hom ≫ (ρ_ (X₁ ⊗ X₂)).inv) ≫
-    (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) :=
-by coherence
+    (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) := by
+  coherence
 
 end monoidal
 
@@ -93,22 +95,22 @@ example {a : B} (f : a ⟶ a) : 𝟙 f ▷ f = 𝟙 (f ≫ f) := by whisker_simp
 example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by bicategory_coherence
 example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by bicategory_coherence
 example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-  (α_ f g h).inv ≫ (α_ f g h).hom = 𝟙 (f ≫ g ≫ h) :=
-by bicategory_coherence
+  (α_ f g h).inv ≫ (α_ f g h).hom = 𝟙 (f ≫ g ≫ h) := by
+  bicategory_coherence
 example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
   f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv ≫ (α_ (f ≫ g) h i).inv =
-    (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i :=
-by bicategory_coherence
+    (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i := by
+  bicategory_coherence
 example (f : a ⟶ b) (g : b ⟶ c) :
-  f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g :=
-by bicategory_coherence
+  f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g := by
+  bicategory_coherence
 
 example : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
   bicategory_coherence
 
 example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :
-  (λ_ (𝟙 a)).hom ≫ η ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ :=
-by coherence
+  (λ_ (𝟙 a)).hom ≫ η ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ := by
+  coherence
 
 example (f₁ : a ⟶ b) (f₂ : b ⟶ c) :
   (α_ (𝟙 a) (𝟙 a) (f₁ ≫ f₂)).hom ≫
@@ -124,7 +126,7 @@ example (f₁ : a ⟶ b) (f₂ : b ⟶ c) :
                       (f₁ ◁ (α_ f₂ (𝟙 c) (𝟙 c)).hom) ≫
                         (α_ f₁ f₂ (𝟙 c ≫ 𝟙 c)).inv =
   ((λ_ (𝟙 a)).hom ▷ (f₁ ≫ f₂) ≫ (λ_ (f₁ ≫ f₂)).hom ≫ (ρ_ (f₁ ≫ f₂)).inv) ≫
-    (f₁ ≫ f₂) ◁ (λ_ (𝟙 c)).inv :=
-by pure_coherence
+    (f₁ ≫ f₂) ◁ (λ_ (𝟙 c)).inv := by
+  pure_coherence
 
 end Bicategory

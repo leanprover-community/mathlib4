@@ -34,11 +34,8 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 universe u1 u2 u3
 
 variable {R M N : Type*}
-
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
-
 variable [Module R M] [Module R N]
-
 variable (Q : QuadraticForm R M)
 
 namespace CliffordAlgebra
@@ -100,7 +97,7 @@ def foldl (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x
 @[simp]
 theorem foldl_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
     foldl Q f hf n (reverse x) = foldr Q f hf n x :=
-  FunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
+  DFunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
 #align clifford_algebra.foldl_reverse CliffordAlgebra.foldl_reverse
 
 @[simp]
@@ -139,34 +136,36 @@ theorem foldl_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n :
 
 end Foldl
 
-theorem right_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (algebraMap _ _ r))
-    (h_add : ∀ x y, P x → P y → P (x + y)) (h_ι_mul : ∀ m x, P x → P (x * ι Q m)) : ∀ x, P x := by
+@[elab_as_elim]
+theorem right_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R, P (algebraMap _ _ r))
+    (add : ∀ x y, P x → P y → P (x + y)) (mul_ι : ∀ m x, P x → P (x * ι Q m)) : ∀ x, P x := by
   /- It would be neat if we could prove this via `foldr` like how we prove
     `CliffordAlgebra.induction`, but going via the grading seems easier. -/
   intro x
   have : x ∈ ⊤ := Submodule.mem_top (R := R)
   rw [← iSup_ι_range_eq_top] at this
-  induction this using Submodule.iSup_induction' with -- _ this (fun i x hx => ?_) _ h_add
-  | hp i x hx =>
+  induction this using Submodule.iSup_induction' with
+  | mem i x hx =>
     induction hx using Submodule.pow_induction_on_right' with
-    | hr r => exact hr r
-    | hadd _x _y _i _ _ ihx ihy => exact h_add _ _ ihx ihy
-    | hmul _i x _hx px m hm =>
+    | algebraMap r => exact algebraMap r
+    | add _x _y _i _ _ ihx ihy => exact add _ _ ihx ihy
+    | mul_mem _i x _hx px m hm =>
       obtain ⟨m, rfl⟩ := hm
-      exact h_ι_mul _ _ px
-  | h0 => simpa only [map_zero] using hr 0
-  | hadd _x _y _ _ ihx ihy =>
-    exact h_add _ _ ihx ihy
+      exact mul_ι _ _ px
+  | zero => simpa only [map_zero] using algebraMap 0
+  | add _x _y _ _ ihx ihy =>
+    exact add _ _ ihx ihy
 #align clifford_algebra.right_induction CliffordAlgebra.right_induction
 
-theorem left_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (algebraMap _ _ r))
-    (h_add : ∀ x y, P x → P y → P (x + y)) (h_mul_ι : ∀ x m, P x → P (ι Q m * x)) : ∀ x, P x := by
-  refine' reverse_involutive.surjective.forall.2 _
+@[elab_as_elim]
+theorem left_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R, P (algebraMap _ _ r))
+    (add : ∀ x y, P x → P y → P (x + y)) (ι_mul : ∀ x m, P x → P (ι Q m * x)) : ∀ x, P x := by
+  refine reverse_involutive.surjective.forall.2 ?_
   intro x
   induction' x using CliffordAlgebra.right_induction with r x y hx hy m x hx
-  · simpa only [reverse.commutes] using hr r
-  · simpa only [map_add] using h_add _ _ hx hy
-  · simpa only [reverse.map_mul, reverse_ι] using h_mul_ι _ _ hx
+  · simpa only [reverse.commutes] using algebraMap r
+  · simpa only [map_add] using add _ _ hx hy
+  · simpa only [reverse.map_mul, reverse_ι] using ι_mul _ _ hx
 #align clifford_algebra.left_induction CliffordAlgebra.left_induction
 
 /-! ### Versions with extra state -/
@@ -227,12 +226,12 @@ theorem foldr'_ι_mul (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     foldr' Q f hf n (ι Q m * x) = f m (x, foldr' Q f hf n x) := by
   dsimp [foldr']
   rw [foldr_mul, foldr_ι, foldr'Aux_apply_apply]
-  refine' congr_arg (f m) (Prod.mk.eta.symm.trans _)
+  refine congr_arg (f m) (Prod.mk.eta.symm.trans ?_)
   congr 1
-  induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
-  · simp_rw [foldr_algebraMap, Prod.smul_mk, Algebra.algebraMap_eq_smul_one]
-  · rw [map_add, Prod.fst_add, hx, hy]
-  · rw [foldr_mul, foldr_ι, foldr'Aux_apply_apply, hx]
+  induction x using CliffordAlgebra.left_induction with
+  | algebraMap r => simp_rw [foldr_algebraMap, Prod.smul_mk, Algebra.algebraMap_eq_smul_one]
+  | add x y hx hy => rw [map_add, Prod.fst_add, hx, hy]
+  | ι_mul m x hx => rw [foldr_mul, foldr_ι, foldr'Aux_apply_apply, hx]
 #align clifford_algebra.foldr'_ι_mul CliffordAlgebra.foldr'_ι_mul
 
 end CliffordAlgebra

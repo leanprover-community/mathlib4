@@ -61,7 +61,7 @@ theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
   · rw [h2]; exact h1
   · cases' h1 with h1 h1
     · right; simp [h2, mul_mod, h1, Nat.succ_lt_succ]
-    · left; simp only [h2, mul_mod, h1, mod_mod]; decide
+    · left; simp only [h2, mul_mod, h1, mod_mod]
 #align miu.mod3_eq_1_or_mod3_eq_2 Miu.mod3_eq_1_or_mod3_eq_2
 
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
@@ -198,7 +198,7 @@ theorem goodm_of_derivable (en : Miustr) : Derivable en → Goodm en := by
 #align miu.goodm_of_derivable Miu.goodm_of_derivable
 
 /-!
-We put togther our two conditions to give one necessary condition `Decstr` for an `Miustr` to be
+We put together our two conditions to give one necessary condition `Decstr` for an `Miustr` to be
 derivable.
 -/
 

@@ -67,13 +67,13 @@ def bihimp [Inf α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 #align bihimp bihimp
 
-/- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
-  `order` or `symmDiff` if that happens. -/
 /-- Notation for symmDiff -/
-infixl:100 " ∆ " => symmDiff
+scoped[symmDiff] infixl:100 " ∆ " => symmDiff
 
 /-- Notation for bihimp -/
-infixl:100 " ⇔ " => bihimp
+scoped[symmDiff] infixl:100 " ⇔ " => bihimp
+
+open scoped symmDiff
 
 theorem symmDiff_def [Sup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
   rfl
@@ -113,7 +113,7 @@ theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual 
 theorem symmDiff_comm : a ∆ b = b ∆ a := by simp only [symmDiff, sup_comm]
 #align symm_diff_comm symmDiff_comm
 
-instance symmDiff_isCommutative : IsCommutative α (· ∆ ·) :=
+instance symmDiff_isCommutative : Std.Commutative (α := α) (· ∆ ·) :=
   ⟨symmDiff_comm⟩
 #align symm_diff_is_comm symmDiff_isCommutative
 
@@ -187,9 +187,9 @@ theorem sdiff_symmDiff_eq_sup : (a \ b) ∆ b = a ⊔ b := by
 
 @[simp]
 theorem symmDiff_sup_inf : a ∆ b ⊔ a ⊓ b = a ⊔ b := by
-  refine' le_antisymm (sup_le symmDiff_le_sup inf_le_sup) _
+  refine le_antisymm (sup_le symmDiff_le_sup inf_le_sup) ?_
   rw [sup_inf_left, symmDiff]
-  refine' sup_le (le_inf le_sup_right _) (le_inf _ le_sup_right)
+  refine sup_le (le_inf le_sup_right ?_) (le_inf ?_ le_sup_right)
   · rw [sup_right_comm]
     exact le_sup_of_le_left le_sdiff_sup
   · rw [sup_assoc]
@@ -211,9 +211,15 @@ theorem inf_symmDiff_symmDiff : (a ⊓ b) ∆ (a ∆ b) = a ⊔ b := by
 #align inf_symm_diff_symm_diff inf_symmDiff_symmDiff
 
 theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
-  refine' (sup_le_sup (sdiff_triangle a b c) <| sdiff_triangle _ b _).trans_eq _
-  rw [@sup_comm _ _ (c \ b), sup_sup_sup_comm, symmDiff, symmDiff]
+  refine (sup_le_sup (sdiff_triangle a b c) <| sdiff_triangle _ b _).trans_eq ?_
+  rw [sup_comm (c \ b), sup_sup_sup_comm, symmDiff, symmDiff]
 #align symm_diff_triangle symmDiff_triangle
+
+theorem le_symmDiff_sup_right (a b : α) : a ≤ (a ∆ b) ⊔ b := by
+  convert symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
+
+theorem le_symmDiff_sup_left (a b : α) : b ≤ (a ∆ b) ⊔ a :=
+  symmDiff_comm a b ▸ le_symmDiff_sup_right ..
 
 end GeneralizedCoheytingAlgebra
 
@@ -234,7 +240,7 @@ theorem ofDual_symmDiff (a b : αᵒᵈ) : ofDual (a ∆ b) = ofDual a ⇔ ofDua
 theorem bihimp_comm : a ⇔ b = b ⇔ a := by simp only [(· ⇔ ·), inf_comm]
 #align bihimp_comm bihimp_comm
 
-instance bihimp_isCommutative : IsCommutative α (· ⇔ ·) :=
+instance bihimp_isCommutative : Std.Commutative (α := α) (· ⇔ ·) :=
   ⟨bihimp_comm⟩
 #align bihimp_is_comm bihimp_isCommutative
 
@@ -405,7 +411,7 @@ theorem inf_symmDiff_distrib_left : a ⊓ b ∆ c = (a ⊓ b) ∆ (a ⊓ c) := b
 #align inf_symm_diff_distrib_left inf_symmDiff_distrib_left
 
 theorem inf_symmDiff_distrib_right : a ∆ b ⊓ c = (a ⊓ c) ∆ (b ⊓ c) := by
-  simp_rw [@inf_comm _ _ _ c, inf_symmDiff_distrib_left]
+  simp_rw [inf_comm _ c, inf_symmDiff_distrib_left]
 #align inf_symm_diff_distrib_right inf_symmDiff_distrib_right
 
 theorem sdiff_symmDiff : c \ a ∆ b = c ⊓ a ⊓ b ⊔ c \ a ⊓ c \ b := by
@@ -413,7 +419,7 @@ theorem sdiff_symmDiff : c \ a ∆ b = c ⊓ a ⊓ b ⊔ c \ a ⊓ c \ b := by
 #align sdiff_symm_diff sdiff_symmDiff
 
 theorem sdiff_symmDiff' : c \ a ∆ b = c ⊓ a ⊓ b ⊔ c \ (a ⊔ b) := by
-  rw [sdiff_symmDiff, sdiff_sup, sup_comm]
+  rw [sdiff_symmDiff, sdiff_sup]
 #align sdiff_symm_diff' sdiff_symmDiff'
 
 @[simp]
@@ -435,14 +441,14 @@ theorem sdiff_symmDiff_right : b \ a ∆ b = a ⊓ b := by
 #align sdiff_symm_diff_right sdiff_symmDiff_right
 
 theorem symmDiff_eq_sup : a ∆ b = a ⊔ b ↔ Disjoint a b := by
-  refine' ⟨fun h => _, Disjoint.symmDiff_eq_sup⟩
+  refine ⟨fun h => ?_, Disjoint.symmDiff_eq_sup⟩
   rw [symmDiff_eq_sup_sdiff_inf, sdiff_eq_self_iff_disjoint] at h
   exact h.of_disjoint_inf_of_le le_sup_left
 #align symm_diff_eq_sup symmDiff_eq_sup
 
 @[simp]
 theorem le_symmDiff_iff_left : a ≤ a ∆ b ↔ Disjoint a b := by
-  refine' ⟨fun h => _, fun h => h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
+  refine ⟨fun h => ?_, fun h => h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
   rw [symmDiff_eq_sup_sdiff_inf] at h
   exact disjoint_iff_inf_le.mpr (le_sdiff_iff.1 <| inf_le_of_left_le h).le
 #align le_symm_diff_iff_left le_symmDiff_iff_left
@@ -457,7 +463,7 @@ theorem symmDiff_symmDiff_left :
   calc
     a ∆ b ∆ c = a ∆ b \ c ⊔ c \ a ∆ b := symmDiff_def _ _
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ (c \ (a ⊔ b) ⊔ c ⊓ a ⊓ b) := by
-        { rw [sdiff_symmDiff', @sup_comm _ _ (c ⊓ a ⊓ b), symmDiff_sdiff] }
+        { rw [sdiff_symmDiff', sup_comm (c ⊓ a ⊓ b), symmDiff_sdiff] }
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
 #align symm_diff_symm_diff_left symmDiff_symmDiff_left
 
@@ -466,7 +472,7 @@ theorem symmDiff_symmDiff_right :
   calc
     a ∆ (b ∆ c) = a \ b ∆ c ⊔ b ∆ c \ a := symmDiff_def _ _
     _ = a \ (b ⊔ c) ⊔ a ⊓ b ⊓ c ⊔ (b \ (c ⊔ a) ⊔ c \ (b ⊔ a)) := by
-        { rw [sdiff_symmDiff', @sup_comm _ _ (a ⊓ b ⊓ c), symmDiff_sdiff] }
+        { rw [sdiff_symmDiff', sup_comm (a ⊓ b ⊓ c), symmDiff_sdiff] }
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
 #align symm_diff_symm_diff_right symmDiff_symmDiff_right
 
@@ -474,7 +480,7 @@ theorem symmDiff_assoc : a ∆ b ∆ c = a ∆ (b ∆ c) := by
   rw [symmDiff_symmDiff_left, symmDiff_symmDiff_right]
 #align symm_diff_assoc symmDiff_assoc
 
-instance symmDiff_isAssociative : IsAssociative α (· ∆ ·) :=
+instance symmDiff_isAssociative : Std.Associative (α := α)  (· ∆ ·) :=
   ⟨symmDiff_assoc⟩
 #align symm_diff_is_assoc symmDiff_isAssociative
 
@@ -571,7 +577,7 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra α] (a b c d : α)
 
-/- `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
+/-! `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
 the `GeneralizedBooleanAlgebra` ones -/
 section CogeneralizedBooleanAlgebra
 
@@ -623,7 +629,7 @@ theorem bihimp_assoc : a ⇔ b ⇔ c = a ⇔ (b ⇔ c) :=
   @symmDiff_assoc αᵒᵈ _ _ _ _
 #align bihimp_assoc bihimp_assoc
 
-instance bihimp_isAssociative : IsAssociative α (· ⇔ ·) :=
+instance bihimp_isAssociative : Std.Associative (α := α) (· ⇔ ·) :=
   ⟨bihimp_assoc⟩
 #align bihimp_is_assoc bihimp_isAssociative
 
@@ -741,7 +747,7 @@ theorem compl_bihimp : (a ⇔ b)ᶜ = a ∆ b :=
 
 @[simp]
 theorem compl_symmDiff_compl : aᶜ ∆ bᶜ = a ∆ b :=
-  sup_comm.trans <| by simp_rw [compl_sdiff_compl, sdiff_eq, symmDiff_eq]
+  (sup_comm _ _).trans <| by simp_rw [compl_sdiff_compl, sdiff_eq, symmDiff_eq]
 #align compl_symm_diff_compl compl_symmDiff_compl
 
 @[simp]

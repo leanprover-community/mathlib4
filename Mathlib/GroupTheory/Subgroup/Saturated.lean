@@ -3,7 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Module.Defs
 
 #align_import group_theory.subgroup.saturated from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -43,15 +44,15 @@ theorem saturated_iff_zpow {H : Subgroup G} :
   constructor
   · intros hH n g hgn
     induction' n with n n
-    · simp only [Int.coe_nat_eq_zero, Int.ofNat_eq_coe, zpow_ofNat] at hgn ⊢
+    · simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢
       exact hH hgn
     · suffices g ^ (n + 1) ∈ H by
-        refine' (hH this).imp _ id
+        refine (hH this).imp ?_ id
         simp only [IsEmpty.forall_iff, Nat.succ_ne_zero]
       simpa only [inv_mem_iff, zpow_negSucc] using hgn
   · intro h n g hgn
     specialize h n g
-    simp only [Int.coe_nat_eq_zero, zpow_ofNat] at h
+    simp only [Int.natCast_eq_zero, zpow_natCast] at h
     apply h hgn
 #align subgroup.saturated_iff_zpow Subgroup.saturated_iff_zpow
 #align add_subgroup.saturated_iff_zsmul AddSubgroup.saturated_iff_zsmul

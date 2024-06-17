@@ -28,9 +28,6 @@ two edges is a square.
 Define all other graph products!
 -/
 
-set_option autoImplicit true
-
-
 variable {α β γ : Type*}
 
 namespace SimpleGraph
@@ -47,22 +44,24 @@ def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) w
   loopless x := by simp
 #align simple_graph.box_prod SimpleGraph.boxProd
 
--- mathport name: «expr □ »
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 infixl:70 " □ " => boxProd
 
+set_option autoImplicit true in
 @[simp]
 theorem boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
   Iff.rfl
 #align simple_graph.box_prod_adj SimpleGraph.boxProd_adj
 
---@[simp] porting note: `simp` can prove
+set_option autoImplicit true in
+--@[simp] Porting note (#10618): `simp` can prove
 theorem boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
   simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
 #align simple_graph.box_prod_adj_left SimpleGraph.boxProd_adj_left
 
---@[simp] porting note: `simp` can prove
+set_option autoImplicit true in
+--@[simp] Porting note (#10618): `simp` can prove
 theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
@@ -109,6 +108,7 @@ namespace Walk
 
 variable {G}
 
+set_option autoImplicit true in
 /-- Turn a walk on `G` into a walk on `G □ H`. -/
 protected def boxProdLeft (b : β) : G.Walk a₁ a₂ → (G □ H).Walk (a₁, b) (a₂, b) :=
   Walk.map (G.boxProdLeft H b).toHom
@@ -116,6 +116,7 @@ protected def boxProdLeft (b : β) : G.Walk a₁ a₂ → (G □ H).Walk (a₁, 
 
 variable (G) {H}
 
+set_option autoImplicit true in
 /-- Turn a walk on `H` into a walk on `G □ H`. -/
 protected def boxProdRight (a : α) : H.Walk b₁ b₂ → (G □ H).Walk (a, b₁) (a, b₂) :=
   Walk.map (G.boxProdRight H a).toHom
@@ -143,16 +144,18 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
       (fun hG => hG.2 ▸ w.ofBoxProdRight)
 #align simple_graph.walk.of_box_prod_right SimpleGraph.Walk.ofBoxProdRight
 
+set_option autoImplicit true in
 @[simp]
 theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} :
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
   | nil => rfl
   | cons' x y z h w => by
     rw [Walk.boxProdLeft, map_cons, ofBoxProdLeft, Or.by_cases, dif_pos, ← Walk.boxProdLeft]
-    simp [ofBoxProdLeft_boxProdLeft]
-    exact ⟨h, rfl⟩
+    · simp [ofBoxProdLeft_boxProdLeft]
+    · exact ⟨h, rfl⟩
 #align simple_graph.walk.of_box_prod_left_box_prod_left SimpleGraph.Walk.ofBoxProdLeft_boxProdLeft
 
+set_option autoImplicit true in
 @[simp]
 theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
@@ -160,8 +163,8 @@ theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b
   | cons' x y z h w => by
     rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
       Walk.boxProdRight]
-    simp [ofBoxProdLeft_boxProdRight]
-    exact ⟨h, rfl⟩
+    · simp [ofBoxProdLeft_boxProdRight]
+    · exact ⟨h, rfl⟩
 #align simple_graph.walk.of_box_prod_left_box_prod_right SimpleGraph.Walk.ofBoxProdLeft_boxProdRight
 
 end Walk

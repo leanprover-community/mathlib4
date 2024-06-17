@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Equivalence
+import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Localization of product categories
@@ -55,7 +57,7 @@ lemma prod_fac₁ :
 `W₁.Localization × W₂.Localization ⥤ E` -/
 noncomputable def prodLift :
     W₁.Localization × W₂.Localization ⥤ E := by
-  refine' uncurry.obj (Construction.lift (prodLift₁ F hF).flip _).flip
+  refine uncurry.obj (Construction.lift (prodLift₁ F hF).flip ?_).flip
   intro _ _ f₂ hf₂
   haveI : ∀ (X₁ : W₁.Localization),
       IsIso (((Functor.flip (prodLift₁ F hF)).map f₂).app X₁) := fun X₁ => by

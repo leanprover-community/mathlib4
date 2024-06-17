@@ -3,7 +3,7 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Products.Bifunctor
+import Mathlib.CategoryTheory.Products.Basic
 
 #align_import category_theory.functor.currying from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -27,8 +27,7 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
 /-- The uncurrying functor, taking a functor `C ⥤ (D ⥤ E)` and producing a functor `(C × D) ⥤ E`.
 -/
 @[simps]
-def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E
-    where
+def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   obj F :=
     { obj := fun X => (F.obj X.1).obj X.2
       map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
@@ -49,8 +48,7 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E
 
 /-- The object level part of the currying functor. (See `curry` for the functorial version.)
 -/
-def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E
-    where
+def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
       map := fun g => F.map (𝟙 X, g)

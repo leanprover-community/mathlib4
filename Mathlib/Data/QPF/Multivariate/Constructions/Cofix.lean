@@ -227,12 +227,12 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
     intro a b r'ab
     have h₀ :
       appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P a) =
-        appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P b) :=
-      by rw [appendFun_comp_id, comp_map, comp_map]; exact h _ _ r'ab
+        appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P b) := by
+      rw [appendFun_comp_id, comp_map, comp_map]; exact h _ _ r'ab
     have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
-      dsimp [hr']
+      dsimp [r', hr']
       rw [Quot.sound cuv]
       apply h'
     let f : Quot r → Quot r' :=
@@ -252,7 +252,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
     have : f ∘ Quot.mk r ∘ Quot.mk Mcongr = Quot.mk r' := rfl
     rw [← this, appendFun_comp_id, q.P.comp_map, q.P.comp_map, abs_map, abs_map, abs_map, abs_map,
       h₀]
-  refine' ⟨r', this, rxy⟩
+  exact ⟨r', this, rxy⟩
 
 /-- Bisimulation principle using `map` and `Quot.mk` to match and relate children of two trees. -/
 theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
@@ -272,7 +272,7 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
     | inr r'xy =>
       have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
       rw [← Quot.factor_mk_eq _ _ this]
-      dsimp
+      dsimp [r']
       rw [appendFun_comp_id]
       rw [@comp_map _ _ _ q _ _ _ (appendFun id (Quot.mk r)),
         @comp_map _ _ _ q _ _ _ (appendFun id (Quot.mk r))]
@@ -292,7 +292,7 @@ theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
   rw [← split_dropFun_lastFun f₀, ← split_dropFun_lastFun f₁]
   rw [appendFun_comp_splitFun, appendFun_comp_splitFun]
   rw [id_comp, id_comp]
-  congr 2 with (i j); cases' i with _ i <;> dsimp
+  congr 2 with (i j); cases' i with _ i
   · apply Quot.sound
     apply h' _ j
   · change f₀ _ j = f₁ _ j
@@ -322,9 +322,9 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β �
     (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f', f₀, f₁, ux'eq, vx'eq, h'⟩
       rw [liftR_iff]
-      refine'
+      refine
         ⟨a, q.P.appendContents f' f₀, q.P.appendContents f' f₁, xeq.symm ▸ ux'eq,
-          yeq.symm ▸ vx'eq, _⟩
+          yeq.symm ▸ vx'eq, ?_⟩
       intro i; cases i
       · apply h'
       · intro j
@@ -400,12 +400,12 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
   have hh :
     subtypeVal _ ⊚ toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b =
       ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diag := by
-    dsimp
+    dsimp [b]
     apply eq_of_drop_last_eq
     · dsimp
-      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, id_comp,
+      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, TypeVec.id_comp,
         dropFun_toSubtype]
-      erw [toSubtype_of_subtype_assoc, id_comp]
+      erw [toSubtype_of_subtype_assoc, TypeVec.id_comp]
       clear liftR_map_last q mvf lawful F x R f g hh h b c
       ext (i x) : 2
       induction i with
@@ -413,7 +413,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
       | fs _ ih =>
         apply ih
     simp only [lastFun_from_append1_drop_last, lastFun_toSubtype, lastFun_appendFun,
-      lastFun_subtypeVal, comp.left_id, lastFun_comp, lastFun_prod]
+      lastFun_subtypeVal, Function.id_comp, lastFun_comp, lastFun_prod]
     ext1
     rfl
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh
@@ -431,17 +431,14 @@ variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
 
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
-  refine' Cofix.bisim₂ R _ _ _ rfl
-  clear x;
-  rintro x y h;
+  refine Cofix.bisim₂ R ?_ _ _ rfl
+  clear x
+  rintro x y h
   subst h
   dsimp [Cofix.dest, Cofix.abs]
   induction y using Quot.ind
   simp only [Cofix.repr, M.dest_corec, abs_map, MvQPF.abs_repr, Function.comp]
-  conv =>
-    congr
-    rfl
-    rw [Cofix.dest]
+  conv => congr; rfl; rw [Cofix.dest]
   rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
   apply liftR_map_last
   intros
@@ -522,8 +519,8 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   mv_bisim x₀ with R a b x Ha Hb
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]
-  refine' liftR_map_last _ _ _ _ _
-  intro a; refine' ⟨a, rfl, rfl⟩
+  refine liftR_map_last _ _ _ _ ?_
+  intro a; refine ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 
 theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}

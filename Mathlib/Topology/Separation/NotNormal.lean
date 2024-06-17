@@ -41,12 +41,12 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
     -- By the Tietze Extension Theorem, any function `f : C(s, ℝ)` can be extended to `C(X, ℝ)`,
     -- hence `#C(s, ℝ) ≤ #C(X, ℝ)`
     _ ≤ #C(X, ℝ) := by
-      choose f hf using (ContinuousMap.exists_restrict_eq_of_closed · hs)
+      choose f hf using ContinuousMap.exists_restrict_eq (Y := ℝ) hs
       have hfi : Injective f := LeftInverse.injective hf
       exact mk_le_of_injective hfi
     -- Since `t` is dense, restriction `C(X, ℝ) → C(t, ℝ)` is injective, hence `#C(X, ℝ) ≤ #C(t, ℝ)`
     _ ≤ #C(t, ℝ) := mk_le_of_injective <| ContinuousMap.injective_restrict htd
-    _ ≤ #(t → ℝ) := mk_le_of_injective FunLike.coe_injective
+    _ ≤ #(t → ℝ) := mk_le_of_injective DFunLike.coe_injective
     -- Since `t` is countable, we have `#(t → ℝ) ≤ 𝔠`
     _ ≤ 𝔠 := by
       rw [mk_arrow, mk_real, lift_uzero, lift_continuum, continuum, ← power_mul]

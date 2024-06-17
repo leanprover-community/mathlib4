@@ -3,7 +3,7 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Basic
 
 #align_import order.well_founded from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 
@@ -84,7 +84,7 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   refine ⟨fun h => h.has_min, fun h => ⟨fun x => ?_⟩⟩
   by_contra hx
   obtain ⟨m, hm, hm'⟩ := h {x | ¬Acc r x} ⟨x, hx⟩
-  refine' hm ⟨_, fun y hy => _⟩
+  refine hm ⟨_, fun y hy => ?_⟩
   by_contra hy'
   exact hm' y hy' hy
 #align well_founded.well_founded_iff_has_min WellFounded.wellFounded_iff_has_min
@@ -104,7 +104,7 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
 
 section
 
-open Classical
+open scoped Classical
 
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
 `x < y` if one exists. Otherwise it is `x` itself. -/
@@ -129,13 +129,13 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
       rw [WellFounded.succ, dif_pos] at h'
       exact wo.wf.not_lt_min _ h hy h'
     rcases trichotomous_of r x y with (hy | hy | hy)
-    exfalso
-    exact this hy
-    right
-    exact hy.symm
+    · exfalso
+      exact this hy
+    · right
+      exact hy.symm
     left
     exact hy
-  rintro (hy | rfl); exact _root_.trans hy (wo.wf.lt_succ h); exact wo.wf.lt_succ h
+  rintro (hy | rfl); (· exact _root_.trans hy (wo.wf.lt_succ h)); exact wo.wf.lt_succ h
 #align well_founded.lt_succ_iff WellFounded.lt_succ_iff
 
 section LinearOrder
@@ -210,7 +210,7 @@ theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
   WellFounded.min_mem _ _ _
 #align function.argmin_on_mem Function.argminOn_mem
 
---Porting note: @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
   WellFounded.not_lt_min (InvImage.wf f h) s hs ha
@@ -222,12 +222,12 @@ section LinearOrder
 
 variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
 
---Porting note: @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
   not_lt.mp <| not_lt_argmin f h a
 #align function.argmin_le Function.argmin_le
 
---Porting note: @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f h s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f h s ha hs

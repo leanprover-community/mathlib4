@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Aesop
 import Mathlib.Order.BoundedOrder
 
 #align_import order.disjoint from "leanprover-community/mathlib"@"22c4d2ff43714b6ff724b2745ccfdc0f236a4a76"
@@ -297,7 +298,7 @@ end PartialOrderTop
 
 section PartialBoundedOrder
 
-variable [PartialOrder α] [BoundedOrder α] {a : α}
+variable [PartialOrder α] [BoundedOrder α] {a b : α}
 
 @[simp]
 theorem codisjoint_bot : Codisjoint a ⊥ ↔ a = ⊤ :=
@@ -308,6 +309,12 @@ theorem codisjoint_bot : Codisjoint a ⊥ ↔ a = ⊤ :=
 theorem bot_codisjoint : Codisjoint ⊥ a ↔ a = ⊤ :=
   ⟨fun h ↦ top_unique <| h bot_le le_rfl, fun h _ _ ha ↦ h.symm.trans_le ha⟩
 #align bot_codisjoint bot_codisjoint
+
+lemma Codisjoint.ne_bot_of_ne_top (h : Codisjoint a b) (ha : a ≠ ⊤) : b ≠ ⊥ := by
+  rintro rfl; exact ha <| by simpa using h
+
+lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ := by
+  rintro rfl; exact hb <| by simpa using h
 
 end PartialBoundedOrder
 
@@ -521,7 +528,7 @@ variable [DistribLattice α] [BoundedOrder α] {a b x y z : α}
 theorem inf_left_le_of_le_sup_right (h : IsCompl x y) (hle : a ≤ b ⊔ y) : a ⊓ x ≤ b :=
   calc
     a ⊓ x ≤ (b ⊔ y) ⊓ x := inf_le_inf hle le_rfl
-    _ = b ⊓ x ⊔ y ⊓ x := inf_sup_right
+    _ = b ⊓ x ⊔ y ⊓ x := inf_sup_right _ _ _
     _ = b ⊓ x := by rw [h.symm.inf_eq_bot, sup_bot_eq]
     _ ≤ b := inf_le_left
 #align is_compl.inf_left_le_of_le_sup_right IsCompl.inf_left_le_of_le_sup_right
@@ -579,7 +586,7 @@ theorem sup_inf {x' y'} (h : IsCompl x y) (h' : IsCompl x' y') : IsCompl (x ⊔ 
   of_eq
     (by rw [inf_sup_right, ← inf_assoc, h.inf_eq_bot, bot_inf_eq, bot_sup_eq, inf_left_comm,
       h'.inf_eq_bot, inf_bot_eq])
-    (by rw [sup_inf_left, @sup_comm _ _ x, sup_assoc, h.sup_eq_top, sup_top_eq, top_inf_eq,
+    (by rw [sup_inf_left, sup_comm x, sup_assoc, h.sup_eq_top, sup_top_eq, top_inf_eq,
       sup_assoc, sup_left_comm, h'.sup_eq_top, sup_top_eq])
 #align is_compl.sup_inf IsCompl.sup_inf
 
@@ -597,11 +604,11 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
   constructor
   · intro h
-    refine' ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
-      fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
+    refine ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, ?_⟩ ⟨hy, ?_⟩).1,
+      fun b hx hy ↦ (@h (⊥, b) ⟨?_, hx⟩ ⟨?_, hy⟩).2⟩
     all_goals exact bot_le
   · rintro ⟨ha, hb⟩ z hza hzb
-    refine' ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
+    exact ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
 #align prod.disjoint_iff Prod.disjoint_iff
 
 protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :
@@ -631,15 +638,14 @@ theorem isCompl_ofDual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ 
 #align is_compl_of_dual_iff isCompl_ofDual_iff
 
 theorem isCompl_bot_top : IsCompl (⊥ : α) ⊤ :=
-  IsCompl.of_eq bot_inf_eq sup_top_eq
+  IsCompl.of_eq (bot_inf_eq _) (sup_top_eq _)
 #align is_compl_bot_top isCompl_bot_top
 
 theorem isCompl_top_bot : IsCompl (⊤ : α) ⊥ :=
-  IsCompl.of_eq inf_bot_eq top_sup_eq
+  IsCompl.of_eq (inf_bot_eq _) (top_sup_eq _)
 #align is_compl_top_bot isCompl_top_bot
 
-theorem eq_top_of_isCompl_bot (h : IsCompl x ⊥) : x = ⊤ :=
-  sup_bot_eq.symm.trans h.sup_eq_top
+theorem eq_top_of_isCompl_bot (h : IsCompl x ⊥) : x = ⊤ := by rw [← sup_bot_eq x, h.sup_eq_top]
 #align eq_top_of_is_compl_bot eq_top_of_isCompl_bot
 
 theorem eq_top_of_bot_isCompl (h : IsCompl ⊥ x) : x = ⊤ :=
@@ -698,6 +704,12 @@ class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
 
 export ComplementedLattice (exists_isCompl)
 
+instance Subsingleton.instComplementedLattice
+    [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
+  refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
+  rw [Subsingleton.elim ⊥ ⊤]
+  exact codisjoint_top_right
+
 namespace ComplementedLattice
 
 variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]
@@ -711,8 +723,8 @@ end ComplementedLattice
 
 -- TODO: Define as a sublattice?
 /-- The sublattice of complemented elements. -/
-@[reducible]
-def Complementeds (α : Type*) [Lattice α] [BoundedOrder α] : Type _ := {a : α // IsComplemented a}
+abbrev Complementeds (α : Type*) [Lattice α] [BoundedOrder α] : Type _ :=
+  {a : α // IsComplemented a}
 #align complementeds Complementeds
 
 namespace Complementeds
@@ -731,12 +743,12 @@ theorem coe_injective : Injective ((↑) : Complementeds α → α) := Subtype.c
 theorem coe_inj : (a : α) = b ↔ a = b := Subtype.coe_inj
 #align complementeds.coe_inj Complementeds.coe_inj
 
--- porting note: removing `simp` because `Subtype.coe_le_coe` already proves it
+-- Porting note: removing `simp` because `Subtype.coe_le_coe` already proves it
 @[norm_cast]
 theorem coe_le_coe : (a : α) ≤ b ↔ a ≤ b := by simp
 #align complementeds.coe_le_coe Complementeds.coe_le_coe
 
--- porting note: removing `simp` because `Subtype.coe_lt_coe` already proves it
+-- Porting note: removing `simp` because `Subtype.coe_lt_coe` already proves it
 @[norm_cast]
 theorem coe_lt_coe : (a : α) < b ↔ a < b := Iff.rfl
 #align complementeds.coe_lt_coe Complementeds.coe_lt_coe
@@ -752,11 +764,11 @@ theorem coe_bot : ((⊥ : Complementeds α) : α) = ⊥ := rfl
 theorem coe_top : ((⊤ : Complementeds α) : α) = ⊤ := rfl
 #align complementeds.coe_top Complementeds.coe_top
 
--- porting note: removing `simp` because `Subtype.mk_bot` already proves it
+-- Porting note: removing `simp` because `Subtype.mk_bot` already proves it
 theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := rfl
 #align complementeds.mk_bot Complementeds.mk_bot
 
--- porting note: removing `simp` because `Subtype.mk_top` already proves it
+-- Porting note: removing `simp` because `Subtype.mk_top` already proves it
 theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := rfl
 #align complementeds.mk_top Complementeds.mk_top
 

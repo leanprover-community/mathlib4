@@ -5,7 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Data.Set.Finite
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import order.partial_sups from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -60,7 +61,7 @@ theorem partialSups_succ (f : ℕ → α) (n : ℕ) :
 #align partial_sups_succ partialSups_succ
 
 lemma partialSups_iff_forall {f : ℕ → α} (p : α → Prop)
-    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) : ∀  {n : ℕ}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k)
+    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) : ∀ {n : ℕ}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k)
   | 0 => by simp
   | (n + 1) => by simp [hp, partialSups_iff_forall, ← Nat.lt_succ_iff, ← Nat.forall_lt_succ]
 
@@ -84,7 +85,7 @@ theorem partialSups_le (f : ℕ → α) (n : ℕ) (a : α) (w : ∀ m, m ≤ n �
 lemma upperBounds_range_partialSups (f : ℕ → α) :
     upperBounds (Set.range (partialSups f)) = upperBounds (Set.range f) := by
   ext a
-  simp only [mem_upperBounds, Set.forall_range_iff, partialSups_le_iff]
+  simp only [mem_upperBounds, Set.forall_mem_range, partialSups_le_iff]
   exact ⟨fun h _ ↦ h _ _ le_rfl, fun h _ _ _ ↦ h _⟩
 
 @[simp]
@@ -110,7 +111,7 @@ def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α
   choice f h :=
     ⟨f, by convert (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
   gc f g := by
-    refine' ⟨(le_partialSups f).trans, fun h => _⟩
+    refine ⟨(le_partialSups f).trans, fun h => ?_⟩
     convert partialSups_mono h
     exact OrderHom.ext _ _ g.monotone.partialSups_eq.symm
   le_l_u f := le_partialSups f
@@ -163,7 +164,7 @@ theorem partialSups_eq_ciSup_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = 
 @[simp]
 theorem ciSup_partialSups_eq {f : ℕ → α} (h : BddAbove (Set.range f)) :
     ⨆ n, partialSups f n = ⨆ n, f n := by
-  refine' (ciSup_le fun n => _).antisymm (ciSup_mono _ <| le_partialSups f)
+  refine (ciSup_le fun n => ?_).antisymm (ciSup_mono ?_ <| le_partialSups f)
   · rw [partialSups_eq_ciSup_Iic]
     exact ciSup_le fun i => le_ciSup h _
   · rwa [bddAbove_range_partialSups]
@@ -179,7 +180,7 @@ theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ 
   simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f n
 #align partial_sups_eq_bsupr partialSups_eq_biSup
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 #align supr_partial_sups_eq iSup_partialSups_eq

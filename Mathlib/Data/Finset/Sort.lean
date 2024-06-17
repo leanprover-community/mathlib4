@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Order.RelIso.Set
-import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.List.NodupEquivFin
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Fintype.Card
 
 #align_import data.finset.sort from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
@@ -94,30 +95,30 @@ theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort (· ≥ ·)
   (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
-    (s.sort (· ≤ ·)).nthLe 0 h = s.min' H := by
+    (s.sort (· ≤ ·)).get ⟨0, h⟩ = s.min' H := by
   let l := s.sort (· ≤ ·)
   apply le_antisymm
   · have : s.min' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.min'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.min' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_nthLe_of_le _ _ (Nat.zero_le i)
+    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
   · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l 0 h)
     exact s.min'_le _ this
 #align finset.sorted_zero_eq_min'_aux Finset.sorted_zero_eq_min'_aux
 
 theorem sorted_zero_eq_min' {s : Finset α} {h : 0 < (s.sort (· ≤ ·)).length} :
-    (s.sort (· ≤ ·)).nthLe 0 h = s.min' (card_pos.1 <| by rwa [length_sort] at h) :=
+    (s.sort (· ≤ ·)).get ⟨0, h⟩ = s.min' (card_pos.1 <| by rwa [length_sort] at h) :=
   sorted_zero_eq_min'_aux _ _ _
 #align finset.sorted_zero_eq_min' Finset.sorted_zero_eq_min'
 
 theorem min'_eq_sorted_zero {s : Finset α} {h : s.Nonempty} :
-    s.min' h = (s.sort (· ≤ ·)).nthLe 0 (by rw [length_sort]; exact card_pos.2 h) :=
+    s.min' h = (s.sort (· ≤ ·)).get ⟨0, (by rw [length_sort]; exact card_pos.2 h)⟩ :=
   (sorted_zero_eq_min'_aux _ _ _).symm
 #align finset.min'_eq_sorted_zero Finset.min'_eq_sorted_zero
 
 theorem sorted_last_eq_max'_aux (s : Finset α)
     (h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
-    (s.sort (· ≤ ·)).nthLe ((s.sort (· ≤ ·)).length - 1) h = s.max' H := by
+    (s.sort (· ≤ ·)).get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ = s.max' H := by
   let l := s.sort (· ≤ ·)
   apply le_antisymm
   · have : l.get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ ∈ s :=
@@ -126,20 +127,20 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
   · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_nthLe_of_le _ _ (Nat.le_sub_one_of_lt i.prop)
+    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.le_sub_one_of_lt i.prop)
 #align finset.sorted_last_eq_max'_aux Finset.sorted_last_eq_max'_aux
 
 theorem sorted_last_eq_max' {s : Finset α}
     {h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length} :
-    (s.sort (· ≤ ·)).nthLe ((s.sort (· ≤ ·)).length - 1) h =
+    (s.sort (· ≤ ·)).get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ =
       s.max' (by rw [length_sort] at h; exact card_pos.1 (lt_of_le_of_lt bot_le h)) :=
   sorted_last_eq_max'_aux _ _ _
 #align finset.sorted_last_eq_max' Finset.sorted_last_eq_max'
 
 theorem max'_eq_sorted_last {s : Finset α} {h : s.Nonempty} :
     s.max' h =
-      (s.sort (· ≤ ·)).nthLe ((s.sort (· ≤ ·)).length - 1)
-        (by simpa using Nat.sub_lt (card_pos.mpr h) zero_lt_one) :=
+      (s.sort (· ≤ ·)).get ⟨(s.sort (· ≤ ·)).length - 1,
+        by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one⟩ :=
   (sorted_last_eq_max'_aux _ _ _).symm
 #align finset.max'_eq_sorted_last Finset.max'_eq_sorted_last
 
@@ -148,7 +149,7 @@ is the increasing bijection between `Fin k` and `s` as an `OrderIso`. Here, `h` 
 the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s` to avoid
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
-  OrderIso.trans (Fin.castIso ((length_sort (α := α) (· ≤ ·)).trans h).symm) <|
+  OrderIso.trans (Fin.castOrderIso ((length_sort (α := α) (· ≤ ·)).trans h).symm) <|
     (s.sort_sorted_lt.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
 #align finset.order_iso_of_fin Finset.orderIsoOfFin
 
@@ -173,7 +174,7 @@ theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x :
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
     s.orderEmbOfFin h i =
-      (s.sort (· ≤ ·)).nthLe i (by rw [length_sort, h]; exact i.2) :=
+      (s.sort (· ≤ ·)).get ⟨i, by rw [length_sort, h]; exact i.2⟩ :=
   rfl
 #align finset.order_emb_of_fin_apply Finset.orderEmbOfFin_apply
 
@@ -209,7 +210,8 @@ theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < 
 @[simp]
 theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
     orderEmbOfFin {a} (card_singleton a) i = a := by
-  rw [Subsingleton.elim i ⟨0, zero_lt_one⟩, orderEmbOfFin_zero _ zero_lt_one, min'_singleton]
+  rw [Subsingleton.elim i ⟨0, Nat.zero_lt_one⟩, orderEmbOfFin_zero _ Nat.zero_lt_one,
+    min'_singleton]
 #align finset.order_emb_of_fin_singleton Finset.orderEmbOfFin_singleton
 
 /-- Any increasing map `f` from `Fin k` to a finset of cardinality `k` has to coincide with
@@ -218,7 +220,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
   apply Fin.strictMono_unique hmono (s.orderEmbOfFin h).strictMono
   rw [range_orderEmbOfFin, ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
-  refine' eq_of_subset_of_card_le (fun x hx => _) _
+  refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
   · rw [h, card_image_of_injective _ hmono.injective, card_univ, Fintype.card_fin]
@@ -246,7 +248,7 @@ theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin 
 is an order embedding from `Fin k` to `α` whose image is contained in `s`. Specifically, it maps
 `Fin k` to an initial segment of `s`. -/
 def orderEmbOfCardLe (s : Finset α) {k : ℕ} (h : k ≤ s.card) : Fin k ↪o α :=
-  (Fin.castLEEmb h).trans (s.orderEmbOfFin rfl)
+  (Fin.castLEOrderEmb h).trans (s.orderEmbOfFin rfl)
 #align finset.order_emb_of_card_le Finset.orderEmbOfCardLe
 
 theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :

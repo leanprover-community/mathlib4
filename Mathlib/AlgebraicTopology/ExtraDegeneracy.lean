@@ -40,7 +40,7 @@ the augmentation on the alternating face map complex of `X` is a homotopy
 equivalence.
 
 ## References
-* [Paul G. Goerss, John F. Jardine, *Simplical Homotopy Theory*][goerss-jardine-2009]
+* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
 
@@ -53,7 +53,7 @@ namespace Augmented
 
 variable {C : Type*} [Category C]
 
--- porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
+-- Porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
 -- replaced by `X.left` in order to have lemmas with LHS/RHS in normal form
 /-- The datum of an extra degeneracy is a technical condition on
 augmented simplicial objects. The morphisms `s'` and `s n` of the
@@ -78,7 +78,7 @@ attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
-augmented simplical object in `D` obtained by applying `F` to `X`. -/
+augmented simplicial object in `D` obtained by applying `F` to `X`. -/
 def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
     (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'
@@ -168,7 +168,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift_fun_succ SSet.Augmented.StandardSimplex.shiftFun_succ
 
 /-- The shift of a morphism `f : [n] → Δ` in `SimplexCategory` corresponds to
-the monotone map which sends `0` to `0` and `i.succ` to `f.to_order_hom i`. -/
+the monotone map which sends `0` to `0` and `i.succ` to `f.toOrderHom i`. -/
 @[simp]
 def shift {n : ℕ} {Δ : SimplexCategory}
     (f : ([n] : SimplexCategory) ⟶ Δ) : ([n + 1] : SimplexCategory) ⟶ Δ :=
@@ -189,46 +189,54 @@ def shift {n : ℕ} {Δ : SimplexCategory}
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift SSet.Augmented.StandardSimplex.shift
 
+open SSet.standardSimplex in
 /-- The obvious extra degeneracy on the standard simplex. -/
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ) where
-  s' _ := SimplexCategory.Hom.mk (OrderHom.const _ 0)
-  s n f := shift f
+  s' _ := objMk (OrderHom.const _ 0)
+  s  n f := (objEquiv _ _).symm
+    (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp
     apply Subsingleton.elim
   s₀_comp_δ₁ := by
+    dsimp
     ext1 x
-    apply SimplexCategory.Hom.ext
+    apply (objEquiv _ _).injective
     ext j
     fin_cases j
     rfl
   s_comp_δ₀ n := by
     ext1 φ
+    apply (objEquiv _ _).injective
     apply SimplexCategory.Hom.ext
     ext i : 2
-    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
+    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex,
+      objEquiv, Equiv.ulift, uliftFunctor]
     simp only [shiftFun_succ]
   s_comp_δ n i := by
     ext1 φ
+    apply (objEquiv _ _).injective
     apply SimplexCategory.Hom.ext
     ext j : 2
-    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
+    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex,
+      objEquiv, Equiv.ulift, uliftFunctor]
     by_cases h : j = 0
     · subst h
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero <| h
       simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply,
-        Fin.succAboveEmb_apply]
+        Fin.succAboveOrderEmb_apply]
   s_comp_σ n i := by
     ext1 φ
+    apply (objEquiv _ _).injective
     apply SimplexCategory.Hom.ext
     ext j : 2
-    dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.standardSimplex]
+    dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.standardSimplex,
+      objEquiv, Equiv.ulift, uliftFunctor]
     by_cases h : j = 0
     · subst h
-      simp only [shiftFun_0]
-      exact shiftFun_0 φ.toOrderHom
+      rfl
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
       simp only [Fin.succ_predAbove_succ, shiftFun_succ, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
@@ -276,7 +284,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
       · simp only [WidePullback.π_arrow]
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
@@ -285,7 +293,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
   simp only [WidePullback.lift_π]
   rfl
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
       @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ i := by
@@ -296,15 +304,15 @@ theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
   · simp only [Fin.pred_succ]
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_π_succ CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_π_succ
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ := by
   apply WidePullback.lift_base
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_base CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_base
 
 /-- The augmented Čech nerve associated to a split epimorphism has an extra degeneracy. -/
-noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve
-    where
+noncomputable def extraDegeneracy :
+    SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve where
   s' := S.section_ ≫ WidePullback.lift f.hom (fun _ => 𝟙 _) fun i => by rw [id_comp]
   s n := ExtraDegeneracy.s f S n
   s'_comp_ε := by

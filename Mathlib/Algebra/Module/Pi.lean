@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
@@ -70,8 +70,7 @@ instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i,
 /- Extra instance to short-circuit type class resolution.
 For unknown reasons, this is necessary for certain inference problems. E.g., for this to succeed:
 ```lean
-example (β X : Type*) [NormedAddCommGroup β] [NormedSpace ℝ β] : Module ℝ (X → β) :=
-inferInstance
+example (β X : Type*) [NormedAddCommGroup β] [NormedSpace ℝ β] : Module ℝ (X → β) := inferInstance
 ```
 See: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/281296989
 -/
@@ -85,8 +84,7 @@ instance Function.module (α β : Type*) [Semiring α] [AddCommMonoid β] [Modul
 variable {I f}
 
 instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCommMonoid (g i)}
-    [∀ i, Module (f i) (g i)] : Module (∀ i, f i) (∀ i, g i)
-    where
+    [∀ i, Module (f i) (g i)] : Module (∀ i, f i) (∀ i, g i) where
   add_smul := by
     intros
     ext1

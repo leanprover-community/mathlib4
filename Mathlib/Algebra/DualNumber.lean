@@ -84,6 +84,10 @@ theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
 #align dual_number.eps_mul_eps DualNumber.eps_mul_eps
 
 @[simp]
+theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
+  TrivSqZeroExt.inv_inr 1
+
+@[simp]
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
   ext (mul_zero r).symm (mul_one r).symm
 #align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
@@ -108,7 +112,7 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
   algHom_ext' hinl (by
     ext a
     show f (inr a) = g (inr a)
-    simpa only [inr_eq_smul_eps] using FunLike.congr_fun hinr a)
+    simpa only [inr_eq_smul_eps] using DFunLike.congr_fun hinr a)
 
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
@@ -184,5 +188,11 @@ theorem lift_inlAlgHom_eps :
     lift ⟨(inlAlgHom _ _ _, ε), eps_mul_eps, fun _ => commute_eps_left _⟩ = AlgHom.id R A[ε] :=
   lift.apply_symm_apply <| AlgHom.id R A[ε]
 #align dual_number.lift_eps DualNumber.lift_inlAlgHom_epsₓ
+
+/-- Show DualNumber with values x and y as an "x + y*ε" string -/
+instance instRepr [Repr R] : Repr (DualNumber R) where
+  reprPrec f p :=
+    (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
+      reprPrec f.fst 65 ++ " + " ++ reprPrec f.snd 70 ++ "*ε"
 
 end DualNumber

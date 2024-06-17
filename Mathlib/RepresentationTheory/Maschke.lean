@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.CharP.Invertible
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.RingTheory.SimpleModule
 
 #align_import representation_theory.maschke from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -38,7 +38,7 @@ universe u v w
 
 noncomputable section
 
-open Module MonoidAlgebra BigOperators
+open Module MonoidAlgebra
 
 /-!
 We now do the key calculation in Maschke's theorem.
@@ -63,7 +63,6 @@ variable {V : Type v} [AddCommGroup V] [Module k V] [Module (MonoidAlgebra k G) 
 variable [IsScalarTower k (MonoidAlgebra k G) V]
 variable {W : Type w} [AddCommGroup W] [Module k W] [Module (MonoidAlgebra k G) W]
 variable [IsScalarTower k (MonoidAlgebra k G) W]
-
 variable (π : W →ₗ[k] V)
 
 /-- We define the conjugate of `π` by `g`, as a `k`-linear map. -/
@@ -145,34 +144,41 @@ namespace MonoidAlgebra
 -- Now we work over a `[Field k]`.
 variable {k : Type u} [Field k] {G : Type u} [Fintype G] [Invertible (Fintype.card G : k)]
 variable [Group G]
-variable {V : Type u} [AddCommGroup V] [Module k V] [Module (MonoidAlgebra k G) V]
-variable [IsScalarTower k (MonoidAlgebra k G) V]
-variable {W : Type u} [AddCommGroup W] [Module k W] [Module (MonoidAlgebra k G) W]
-variable [IsScalarTower k (MonoidAlgebra k G) W]
+variable {V : Type u} [AddCommGroup V] [Module (MonoidAlgebra k G) V]
+variable {W : Type u} [AddCommGroup W] [Module (MonoidAlgebra k G) W]
 
 theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
     (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id := by
+  let A := MonoidAlgebra k G
+  letI : Module k W := .compHom W (algebraMap k A)
+  letI : Module k V := .compHom V (algebraMap k A)
+  have := IsScalarTower.of_compHom k A W
+  have := IsScalarTower.of_compHom k A V
   obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
     simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
-  refine ⟨φ.equivariantProjection G, FunLike.ext _ _ ?_⟩
-  exact φ.equivariantProjection_condition G _ <| FunLike.congr_fun hφ
+  refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
+  exact φ.equivariantProjection_condition G _ <| DFunLike.congr_fun hφ
 #align monoid_algebra.exists_left_inverse_of_injective MonoidAlgebra.exists_leftInverse_of_injective
 
 namespace Submodule
 
 theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
     ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
-  have : IsScalarTower k (MonoidAlgebra k G) p := p.isScalarTower'
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
-  refine ⟨LinearMap.ker f, LinearMap.isCompl_of_proj ?_⟩
-  exact FunLike.congr_fun hf
+  exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| DFunLike.congr_fun hf⟩
 #align monoid_algebra.submodule.exists_is_compl MonoidAlgebra.Submodule.exists_isCompl
 
-/-- This also implies an instance `IsSemisimpleModule (MonoidAlgebra k G) V`. -/
+/-- This also implies instances `IsSemisimpleModule (MonoidAlgebra k G) V` and
+`IsSemisimpleRing (MonoidAlgebra k G)`. -/
 instance complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G) V) :=
   ⟨exists_isCompl⟩
 #align monoid_algebra.submodule.complemented_lattice MonoidAlgebra.Submodule.complementedLattice
+
+instance [AddGroup G] : IsSemisimpleRing (AddMonoidAlgebra k G) :=
+  letI : Invertible (Fintype.card (Multiplicative G) : k) := by
+    rwa [Fintype.card_congr Multiplicative.toAdd]
+  (AddMonoidAlgebra.toMultiplicativeAlgEquiv k G (R := ℕ)).toRingEquiv.symm.isSemisimpleRing
 
 end Submodule
 

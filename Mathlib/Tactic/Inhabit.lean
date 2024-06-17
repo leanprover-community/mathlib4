@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
 import Lean
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,

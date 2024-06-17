@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Basic
 
 #align_import ring_theory.mv_polynomial.tower from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
@@ -28,11 +28,8 @@ namespace MvPolynomial
 section Semiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B]
-
 variable [IsScalarTower R A B]
-
 variable {R B}
 
 theorem aeval_map_algebraMap (x : σ → B) (p : MvPolynomial σ R) :
@@ -45,9 +42,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
-
 variable {R A}
 
 theorem aeval_algebraMap_apply (x : σ → A) (p : MvPolynomial σ R) :
@@ -65,8 +60,9 @@ theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x 
 #align mv_polynomial.aeval_algebra_map_eq_zero_iff MvPolynomial.aeval_algebraMap_eq_zero_iff
 
 theorem aeval_algebraMap_eq_zero_iff_of_injective {x : σ → A} {p : MvPolynomial σ R}
-    (h : Function.Injective (algebraMap A B)) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 :=
-  by rw [aeval_algebraMap_apply, ← (algebraMap A B).map_zero, h.eq_iff]
+    (h : Function.Injective (algebraMap A B)) :
+    aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 := by
+  rw [aeval_algebraMap_apply, ← (algebraMap A B).map_zero, h.eq_iff]
 #align mv_polynomial.aeval_algebra_map_eq_zero_iff_of_injective MvPolynomial.aeval_algebraMap_eq_zero_iff_of_injective
 
 end CommSemiring

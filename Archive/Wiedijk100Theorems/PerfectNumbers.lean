@@ -7,6 +7,7 @@ import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import wiedijk_100_theorems.perfect_numbers from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -36,23 +37,23 @@ theorem odd_mersenne_succ (k : ℕ) : ¬2 ∣ mersenne (k + 1) := by
 
 namespace Nat
 
-open Nat.ArithmeticFunction Finset
+open ArithmeticFunction Finset
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
-  norm_num
+  set_option tactic.skipAssignedInstances false in norm_num
 #align theorems_100.nat.sigma_two_pow_eq_mersenne_succ Theorems100.Nat.sigma_two_pow_eq_mersenne_succ
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
 theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
     Nat.Perfect (2 ^ k * mersenne (k + 1)) := by
-  rw [Nat.perfect_iff_sum_divisors_eq_two_mul, ← mul_assoc, ← pow_succ, ← sigma_one_apply, mul_comm,
+  rw [Nat.perfect_iff_sum_divisors_eq_two_mul, ← mul_assoc, ← pow_succ',
+    ← sigma_one_apply, mul_comm,
     isMultiplicative_sigma.map_mul_of_coprime
       (Nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)),
     sigma_two_pow_eq_mersenne_succ]
   · simp [pr, Nat.prime_two, sigma_one_apply]
-  · apply mul_pos (pow_pos _ k) (mersenne_pos (Nat.succ_pos k))
-    norm_num
+  · positivity
 #align theorems_100.nat.perfect_two_pow_mul_mersenne_of_prime Theorems100.Nat.perfect_two_pow_mul_mersenne_of_prime
 
 theorem ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by
@@ -68,13 +69,13 @@ theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k *
   have h := multiplicity.finite_nat_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
   cases' multiplicity.pow_multiplicity_dvd h with m hm
   use (multiplicity 2 n).get h, m
-  refine' ⟨hm, _⟩
+  refine ⟨hm, ?_⟩
   rw [even_iff_two_dvd]
   have hg := multiplicity.is_greatest' h (Nat.lt_succ_self _)
   contrapose! hg
   rcases hg with ⟨k, rfl⟩
   apply Dvd.intro k
-  rw [pow_succ', mul_assoc, ← hm]
+  rw [pow_succ, mul_assoc, ← hm]
 #align theorems_100.nat.eq_two_pow_mul_odd Theorems100.Nat.eq_two_pow_mul_odd
 
 /-- **Perfect Number Theorem**: Euler's theorem that even perfect numbers can be factored as a
@@ -87,12 +88,12 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
   rw [even_iff_two_dvd] at hm
   rw [Nat.perfect_iff_sum_divisors_eq_two_mul hpos, ← sigma_one_apply,
     isMultiplicative_sigma.map_mul_of_coprime (Nat.prime_two.coprime_pow_of_not_dvd hm).symm,
-    sigma_two_pow_eq_mersenne_succ, ← mul_assoc, ← pow_succ] at perf
+    sigma_two_pow_eq_mersenne_succ, ← mul_assoc, ← pow_succ'] at perf
   rcases Nat.Coprime.dvd_of_dvd_mul_left
       (Nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)) (Dvd.intro _ perf) with
     ⟨j, rfl⟩
   rw [← mul_assoc, mul_comm _ (mersenne _), mul_assoc] at perf
-  have h := mul_left_cancel₀ (ne_of_gt (mersenne_pos (Nat.succ_pos _))) perf
+  have h := mul_left_cancel₀ (by positivity) perf
   rw [sigma_one_apply, Nat.sum_divisors_eq_sum_properDivisors_add_self, ← succ_mersenne, add_mul,
     one_mul, add_comm] at h
   have hj := add_left_cancel h

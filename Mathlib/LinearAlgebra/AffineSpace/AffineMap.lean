@@ -59,22 +59,21 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
-instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
+instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
-    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 fun _ => P2
-    where
+    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
     cases' (AddTorsor.nonempty : Nonempty P1) with p
     congr with v
     apply vadd_right_cancel (f p)
     erw [← f_add, h, ← g_add]
-#align affine_map.fun_like AffineMap.funLike
+#align affine_map.fun_like AffineMap.instFunLike
 
 instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align affine_map.has_coe_to_fun AffineMap.hasCoeToFun
 
 namespace LinearMap
@@ -140,7 +139,7 @@ theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2
 /-- Two affine maps are equal if they coerce to the same function. -/
 @[ext]
 theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align affine_map.ext AffineMap.ext
 
 theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
@@ -148,7 +147,7 @@ theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
 #align affine_map.ext_iff AffineMap.ext_iff
 
 theorem coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align affine_map.coe_fn_injective AffineMap.coeFn_injective
 
 protected theorem congr_arg (f : P1 →ᵃ[k] P2) {x y : P1} (h : x = y) : f x = f y :=
@@ -158,6 +157,20 @@ protected theorem congr_arg (f : P1 →ᵃ[k] P2) {x y : P1} (h : x = y) : f x =
 protected theorem congr_fun {f g : P1 →ᵃ[k] P2} (h : f = g) (x : P1) : f x = g x :=
   h ▸ rfl
 #align affine_map.congr_fun AffineMap.congr_fun
+
+/-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
+theorem ext_linear {f g : P1 →ᵃ[k] P2} (h₁ : f.linear = g.linear) {p : P1} (h₂ : f p = g p) :
+    f = g := by
+  ext q
+  have hgl : g.linear (q -ᵥ p) = toFun g ((q -ᵥ p) +ᵥ q) -ᵥ toFun g q := by simp
+  have := f.map_vadd' q (q -ᵥ p)
+  rw [h₁, hgl, toFun_eq_coe, map_vadd, linearMap_vsub, h₂] at this
+  simpa
+
+/-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
+theorem ext_linear_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ (f.linear = g.linear) ∧ (∃ p, f p = g p) :=
+  ⟨fun h ↦ ⟨congrArg _ h, by inhabit P1; exact default, by rw [h]⟩,
+  fun h ↦ Exists.casesOn h.2 fun _ hp ↦ ext_linear h.1 hp⟩
 
 variable (k P1)
 
@@ -175,7 +188,7 @@ theorem coe_const (p : P2) : ⇑(const k P1 p) = Function.const P1 p :=
   rfl
 #align affine_map.coe_const AffineMap.coe_const
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem const_apply (p : P2) (q : P1) : (const k P1 p) q = p := rfl
 
@@ -188,7 +201,7 @@ variable {k P1}
 
 theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
     f.linear = 0 ↔ ∃ q, f = const k P1 q := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · use f (Classical.arbitrary P1)
     ext
     rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linearMap_vsub, h,
@@ -226,7 +239,7 @@ section SMul
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
-  -- porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
+  -- Porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
   smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
   one_smul f := ext fun p => one_smul _ _
   mul_smul c₁ c₂ f := ext fun p => mul_smul _ _ _
@@ -482,7 +495,7 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
 theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
-  -- porting note: `simp` needs `Set.mem_vsub` to be an expression
+  -- Porting note: `simp` needs `Set.mem_vsub` to be an expression
   simp only [(Set.mem_vsub), Set.mem_image,
     exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
   constructor
@@ -657,7 +670,7 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
 are the same. -/
 theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
   rw [decomp]
-  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel, zero_add]
+  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 #align affine_map.decomp' AffineMap.decomp'
 
 theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
@@ -673,7 +686,7 @@ theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b :
 
 section
 
-variable {ι : Type*} {V : ∀ _ : ι, Type*} {P : ∀ _ : ι, Type*} [∀ i, AddCommGroup (V i)]
+variable {ι : Type*} {V : ι → Type*} {P : ι → Type*} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
 /-- Evaluation at a point as an affine map. -/
@@ -704,13 +717,12 @@ end AffineMap
 
 namespace AffineMap
 
-variable {R k V1 P1 V2 : Type*}
+variable {R k V1 P1 V2 P2 V3 P3 : Type*}
 
 section Ring
 
-variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
-
-variable [Module k V1] [Module k V2]
+variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2] [AffineSpace V2 P2]
+variable [AddCommGroup V3] [AffineSpace V3 P3] [Module k V1] [Module k V2] [Module k V3]
 
 section DistribMulAction
 
@@ -718,8 +730,8 @@ variable [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) where
-  smul_add _c _f _g := ext fun _p => smul_add _ _ _
-  smul_zero _c := ext fun _p => smul_zero _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+  smul_zero _ := ext fun _ => smul_zero _
 
 end DistribMulAction
 
@@ -747,22 +759,99 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   left_inv f := by
     ext
     rw [f.decomp]
-    simp [const_apply _ _]  -- porting note: `simp` needs `_`s to use this lemma
+    simp [const_apply _ _]  -- Porting note: `simp` needs `_`s to use this lemma
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp [const_apply _ _, const_linear _ _]  -- porting note: `simp` needs `_`s
+    ext <;> simp [const_apply _ _, const_linear _ _]  -- Porting note: `simp` needs `_`s
   map_add' := by simp
   map_smul' := by simp
 #align affine_map.to_const_prod_linear_map AffineMap.toConstProdLinearMap
 
 end Module
 
+section Pi
+
+variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
+  [(i : ι) → Module k (φv i)] [(i : ι) → AffineSpace (φv i) (φp i)]
+/-- `pi` construction for affine maps. From a family of affine maps it produces an affine
+map into a family of affine spaces.
+
+This is the affine version of `LinearMap.pi`.
+-/
+def pi (f : (i : ι) → (P1 →ᵃ[k] φp i)) : P1 →ᵃ[k] ((i : ι) → φp i) where
+  toFun m a := f a m
+  linear := LinearMap.pi (fun a ↦ (f a).linear)
+  map_vadd' _ _ := funext fun _ ↦ map_vadd _ _ _
+
+--fp for when the image is a dependent AffineSpace φp i, fv for when the
+--image is a Module φv i, f' for when the image isn't dependent.
+variable (fp : (i : ι) → (P1 →ᵃ[k] φp i)) (fv : (i : ι) → (P1 →ᵃ[k] φv i))
+  (f' : ι → P1 →ᵃ[k] P2)
+
+@[simp]
+theorem pi_apply (c : P1) (i : ι) : pi fp c i = fp i c :=
+  rfl
+
+theorem pi_comp (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i => (fp i).comp g) :=
+  rfl
+
+theorem pi_eq_zero : pi fv = 0 ↔ ∀ i, fv i = 0 := by
+  simp only [AffineMap.ext_iff, Function.funext_iff, pi_apply]
+  exact forall_comm
+
+theorem pi_zero : pi (fun _ ↦ 0 : (i : ι) → P1 →ᵃ[k] φv i) = 0 := by
+  ext; rfl
+
+theorem proj_pi (i : ι) : (proj i).comp (pi fp) = fp i :=
+  ext fun _ => rfl
+section Ext
+
+variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
+
+/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+  operation on `Pi.single` and at zero. Analogous to `LinearMap.pi_ext`. See also `pi_ext_nonempty`,
+  which instead of agrement at zero requires `Nonempty ι`. -/
+theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
+    f = g := by
+  apply ext_linear
+  · apply LinearMap.pi_ext
+    intro i x
+    have s₁ := h i x
+    have s₂ := f.map_vadd 0 (Pi.single i x)
+    have s₃ := g.map_vadd 0 (Pi.single i x)
+    rw [vadd_eq_add, add_zero] at s₂ s₃
+    replace h₂ := h i 0
+    simp only [Pi.single_zero] at h₂
+    rwa [s₂, s₃, h₂, vadd_right_cancel_iff] at s₁
+  · exact h₂
+
+/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+  operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
+  `pi_ext_zero`, which instead `Nonempty ι` requires agreement at 0.-/
+theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
+    f = g := by
+  apply pi_ext_zero h
+  inhabit ι
+  rw [← Pi.single_zero default]
+  apply h
+
+/-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
+note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
+@[ext]
+theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single i).toAffineMap =
+    g.comp (LinearMap.single i).toAffineMap) : f = g := by
+  refine pi_ext_nonempty fun i x => ?_
+  convert AffineMap.congr_fun (h i) x
+
+end Ext
+
+end Pi
+
 end Ring
 
 section CommRing
 
 variable [CommRing k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
-
 variable [Module k V1] [Module k V2]
 
 /-- `homothety c r` is the homothety (also known as dilation) about `c` with scale factor `r`. -/

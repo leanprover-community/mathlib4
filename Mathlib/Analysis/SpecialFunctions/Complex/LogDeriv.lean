@@ -22,7 +22,7 @@ open scoped Real Topology
 namespace Complex
 
 theorem isOpenMap_exp : IsOpenMap exp :=
-  open_map_of_strict_deriv hasStrictDerivAt_exp exp_ne_zero
+  isOpenMap_of_hasStrictDerivAt hasStrictDerivAt_exp exp_ne_zero
 #align complex.is_open_map_exp Complex.isOpenMap_exp
 
 /-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and
@@ -36,7 +36,7 @@ noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
       target := slitPlane
       map_source' := by
         rintro ⟨x, y⟩ ⟨h₁ : -π < y, h₂ : y < π⟩
-        refine' (not_or_of_imp fun hz => _).symm
+        refine (not_or_of_imp fun hz => ?_).symm
         obtain rfl : y = 0 := by
           rw [exp_im] at hz
           simpa [(Real.exp_pos _).ne', Real.sin_eq_zero_iff_of_lt_of_lt h₁ h₂] using hz
@@ -55,6 +55,12 @@ theorem hasStrictDerivAt_log {x : ℂ} (h : x ∈ slitPlane) : HasStrictDerivAt 
   expPartialHomeomorph.hasStrictDerivAt_symm h h0 <| by
     simpa [exp_log h0] using hasStrictDerivAt_exp (log x)
 #align complex.has_strict_deriv_at_log Complex.hasStrictDerivAt_log
+
+lemma hasDerivAt_log {z : ℂ} (hz : z ∈ slitPlane) : HasDerivAt log z⁻¹ z :=
+  HasStrictDerivAt.hasDerivAt <| hasStrictDerivAt_log hz
+
+lemma differentiableAt_log {z : ℂ} (hz : z ∈ slitPlane) : DifferentiableAt ℂ log z :=
+  (hasDerivAt_log hz).differentiableAt
 
 theorem hasStrictFDerivAt_log_real {x : ℂ} (h : x ∈ slitPlane) :
     HasStrictFDerivAt log (x⁻¹ • (1 : ℂ →L[ℝ] ℂ)) x :=

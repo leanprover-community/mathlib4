@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.RingTheory.Adjoin.Field
 
@@ -33,7 +32,7 @@ if it is the smallest field extension of `K` such that `f` splits.
 
 noncomputable section
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 universe u v w
 

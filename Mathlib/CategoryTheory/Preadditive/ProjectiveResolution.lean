@@ -30,7 +30,7 @@ open Projective
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /--
 A `ProjectiveResolution Z` consists of a bundled `ℕ`-indexed chain complex of projective objects,
 along with a quasi-isomorphism to the complex consisting of just `Z` supported in degree `0`.
@@ -50,7 +50,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution CategoryTheory.ProjectiveResolution
 
 open ProjectiveResolution in
-attribute [instance] projective quasiIso hasHomology
+attribute [instance] projective hasHomology ProjectiveResolution.quasiIso
 
 /-- An object admits a projective resolution.
 -/
@@ -78,7 +78,7 @@ variable {Z : C} (P : ProjectiveResolution Z)
 lemma complex_exactAt_succ (n : ℕ) :
     P.complex.ExactAt (n + 1) := by
   rw [← quasiIsoAt_iff_exactAt' P.π (n + 1) (exactAt_succ_single_obj _ _)]
-  · infer_instance
+  infer_instance
 
 lemma exact_succ (n : ℕ):
     (ShortComplex.mk _ _ (P.complex.d_comp_d (n + 2) (n + 1) n)).Exact :=
@@ -98,7 +98,7 @@ theorem complex_d_comp_π_f_zero :
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.complex_d_comp_π_f_zero CategoryTheory.ProjectiveResolution.complex_d_comp_π_f_zero
 
--- Porting note: removed @[simp] simp can prove this
+-- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_succ_comp (n : ℕ) :
     P.complex.d n (n + 1) ≫ P.complex.d (n + 1) (n + 2) = 0 := by
   simp

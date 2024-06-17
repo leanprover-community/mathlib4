@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Topology.ContinuousFunction.Basic
 
 #align_import topology.category.Top.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
@@ -13,9 +12,9 @@ import Mathlib.Topology.ContinuousFunction.Basic
 # Category instance for topological spaces
 
 We introduce the bundled category `TopCat` of topological spaces together with the functors
-`discrete` and `trivial` from the category of types to `TopCat` which equip a type with the
-corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `topology.category.TopCat.adjunctions`.
+`TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
+with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
+resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
 -/
 
 
@@ -34,10 +33,10 @@ set_option linter.uppercaseLean3 false in
 
 namespace TopCat
 
--- porting note: had to add in the last two proofs
-instance bundledHom : BundledHom @ContinuousMap :=
-  ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective,
-    fun _ => rfl, fun _ _ _ _ _ => rfl⟩
+instance bundledHom : BundledHom @ContinuousMap where
+  toFun := @ContinuousMap.toFun
+  id := @ContinuousMap.id
+  comp := @ContinuousMap.comp
 set_option linter.uppercaseLean3 false in
 #align Top.bundled_hom TopCat.bundledHom
 
@@ -45,34 +44,52 @@ deriving instance LargeCategory for TopCat
 
 -- Porting note: currently no derive handler for ConcreteCategory
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat := by
-  dsimp [TopCat]
-  infer_instance
+instance concreteCategory : ConcreteCategory TopCat :=
+  inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace)
 
-@[to_additive existing TopCat.instCoeSortTopCatType]
-instance instCoeSortTopCatType : CoeSort TopCat (Type*) :=
-  Bundled.coeSort
+instance : CoeSort TopCat Type* where
+  coe X := X.α
 
-instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=
-  x.str
+instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
+  X.str
 set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
--- Porting note: cannot find a coercion to function otherwise
-attribute [instance] ConcreteCategory.funLike in
-instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe f := f
+-- We leave this temporarily as a reminder of the downstream instances #13170
+-- -- Porting note: cannot find a coercion to function otherwise
+-- -- attribute [instance] ConcreteCategory.instFunLike in
+-- instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
+--   coe (f : C(X, Y)) := f
 
--- Porting note: simp can prove this; removed simp
+instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike C(X, Y) X Y
+
+instance instMonoidHomClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
+  inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
+
+-- Porting note (#10618): simp can prove this; removed simp
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.comp_app TopCat.comp_app
+
+@[simp] theorem coe_id (X : TopCat.{u}) : (𝟙 X : X → X) = id := rfl
+
+@[simp] theorem coe_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g : X → Z) = g ∘ f := rfl
+
+@[simp]
+lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
+  DFunLike.congr_fun f.hom_inv_id x
+
+@[simp]
+lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
+  DFunLike.congr_fun f.inv_hom_id y
 
 /-- Construct a bundled `Top` from the underlying type and the typeclass. -/
 def of (X : Type u) [TopologicalSpace X] : TopCat :=
@@ -85,8 +102,8 @@ instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
 -- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
-@[reducible]
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+@[instance] abbrev topologicalSpace_forget
+    (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
   X.str
 
 @[simp]
@@ -94,10 +111,24 @@ theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.coe_of TopCat.coe_of
 
+/--
+Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
+equal function coercion for a continuous map `C(X, Y)`.
+-/
+@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : C(X, Y)} {x} :
+    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
+      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
+      f x =
+    @DFunLike.coe C(X, Y) X
+      (fun _ ↦ Y) _
+      f x :=
+  rfl
+
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
--- porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
+-- Porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
 lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f x := rfl
 
 /-- The discrete topology on any type. -/

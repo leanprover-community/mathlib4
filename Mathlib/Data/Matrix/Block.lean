@@ -25,10 +25,9 @@ import Mathlib.Data.Matrix.Basic
 
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
-
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 
@@ -142,8 +141,9 @@ theorem fromBlocks_inj {A : Matrix n l α} {B : Matrix n m α} {C : Matrix o l �
 #align matrix.from_blocks_inj Matrix.fromBlocks_inj
 
 theorem fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
-    (f : α → β) : (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
-  by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
+    (f : α → β) : (fromBlocks A B C D).map f =
+      fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) := by
+  ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
 #align matrix.from_blocks_map Matrix.fromBlocks_map
 
 theorem fromBlocks_transpose (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
@@ -202,7 +202,7 @@ def toSquareBlockProp (M : Matrix m m α) (p : m → Prop) : Matrix { a // p a }
 #align matrix.to_square_block_prop Matrix.toSquareBlockProp
 
 theorem toSquareBlockProp_def (M : Matrix m m α) (p : m → Prop) :
-    -- porting note: added missing `of`
+    -- Porting note: added missing `of`
     toSquareBlockProp M p = of (fun i j : { a // p a } => M ↑i ↑j) :=
   rfl
 #align matrix.to_square_block_prop_def Matrix.toSquareBlockProp_def
@@ -215,7 +215,7 @@ def toSquareBlock (M : Matrix m m α) (b : m → β) (k : β) :
 #align matrix.to_square_block Matrix.toSquareBlock
 
 theorem toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
-    -- porting note: added missing `of`
+    -- Porting note: added missing `of`
     toSquareBlock M b k = of (fun i j : { a // b a = k } => M ↑i ↑j) :=
   rfl
 #align matrix.to_square_block_def Matrix.toSquareBlock_def
@@ -239,9 +239,9 @@ theorem fromBlocks_zero [Zero α] : fromBlocks (0 : Matrix n l α) 0 0 (0 : Matr
 
 theorem fromBlocks_add [Add α] (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (A' : Matrix n l α) (B' : Matrix n m α) (C' : Matrix o l α)
-    (D' : Matrix o m α) :
-    fromBlocks A B C D + fromBlocks A' B' C' D' = fromBlocks (A + A') (B + B') (C + C') (D + D') :=
-  by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
+    (D' : Matrix o m α) : fromBlocks A B C D + fromBlocks A' B' C' D' =
+      fromBlocks (A + A') (B + B') (C + C') (D + D') := by
+  ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
 #align matrix.from_blocks_add Matrix.fromBlocks_add
 
 theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
@@ -256,18 +256,18 @@ theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring �
 
 theorem fromBlocks_mulVec [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
     (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : Sum l m → α) :
-    mulVec (fromBlocks A B C D) x =
-      Sum.elim (mulVec A (x ∘ Sum.inl) + mulVec B (x ∘ Sum.inr))
-        (mulVec C (x ∘ Sum.inl) + mulVec D (x ∘ Sum.inr)) := by
+    (fromBlocks A B C D) *ᵥ x =
+      Sum.elim (A *ᵥ (x ∘ Sum.inl) + B *ᵥ (x ∘ Sum.inr))
+        (C *ᵥ (x ∘ Sum.inl) + D *ᵥ (x ∘ Sum.inr)) := by
   ext i
   cases i <;> simp [mulVec, dotProduct]
 #align matrix.from_blocks_mul_vec Matrix.fromBlocks_mulVec
 
 theorem vecMul_fromBlocks [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
     (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : Sum n o → α) :
-    vecMul x (fromBlocks A B C D) =
-      Sum.elim (vecMul (x ∘ Sum.inl) A + vecMul (x ∘ Sum.inr) C)
-        (vecMul (x ∘ Sum.inl) B + vecMul (x ∘ Sum.inr) D) := by
+    x ᵥ* fromBlocks A B C D =
+      Sum.elim ((x ∘ Sum.inl) ᵥ* A + (x ∘ Sum.inr) ᵥ* C)
+        ((x ∘ Sum.inl) ᵥ* B + (x ∘ Sum.inr) ᵥ* D) := by
   ext i
   cases i <;> simp [vecMul, dotProduct]
 #align matrix.vec_mul_from_blocks Matrix.vecMul_fromBlocks
@@ -449,8 +449,8 @@ variable (o m n α)
 
 /-- `Matrix.blockDiagonal` as an `AddMonoidHom`. -/
 @[simps]
-def blockDiagonalAddMonoidHom [AddZeroClass α] : (o → Matrix m n α) →+ Matrix (m × o) (n × o) α
-    where
+def blockDiagonalAddMonoidHom [AddZeroClass α] :
+    (o → Matrix m n α) →+ Matrix (m × o) (n × o) α where
   toFun := blockDiagonal
   map_zero' := blockDiagonal_zero
   map_add' := blockDiagonal_add
@@ -775,7 +775,7 @@ theorem blockDiagonal'_mul [NonUnitalNonAssocSemiring α] [∀ i, Fintype (n' i)
   ext ⟨k, i⟩ ⟨k', j⟩
   simp only [blockDiagonal'_apply, mul_apply, ← Finset.univ_sigma_univ, Finset.sum_sigma]
   rw [Fintype.sum_eq_single k]
-  · simp only [if_pos, dif_pos] -- porting note: added
+  · simp only [if_pos, dif_pos] -- Porting note: added
     split_ifs <;> simp
   · intro j' hj'
     exact Finset.sum_eq_zero fun _ _ => by rw [dif_neg hj'.symm, zero_mul]

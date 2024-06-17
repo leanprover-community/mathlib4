@@ -167,7 +167,7 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
   · intro h a f haf
     have : LiftP (fun i u => u ∈ f i '' univ) x := by
       rw [liftP_iff]
-      refine' ⟨a, f, haf.symm, _⟩
+      refine ⟨a, f, haf.symm, ?_⟩
       intro i u
       exact mem_image_of_mem _ (mem_univ _)
     exact h this
@@ -189,18 +189,18 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     have : LiftP (supp x) x := by rw [h]; introv; exact id
     rw [liftP_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
-    refine' ⟨a, f, xeq.symm, _⟩
+    refine ⟨a, f, xeq.symm, ?_⟩
     intro a' f' h''
     rintro hu u ⟨j, _h₂, hfi⟩
     have hh : u ∈ supp x a' := by rw [← hfi]; apply h'
-    refine' (mem_supp x _ u).mp hh _ _ hu
+    exact (mem_supp x _ u).mp hh _ _ hu
   rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ i u usuppx
     rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
     rw [← f'ieq]
     apply h'
   intro h'
-  refine' ⟨a, f, xeq.symm, _⟩; intro j y
+  refine ⟨a, f, xeq.symm, ?_⟩; intro j y
   apply h'; rw [mem_supp]
   intro a' f' xeq'
   apply h _ a' f' xeq'
@@ -243,7 +243,7 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
     rw [← hi]
     apply hf
   intro h'
-  refine' ⟨a, f, rfl, fun _ i => h' _ _ _⟩
+  refine ⟨a, f, rfl, fun _ i => h' _ _ ?_⟩
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 #align mvqpf.liftp_iff_of_is_uniform MvQPF.liftP_iff_of_isUniform
@@ -283,4 +283,25 @@ theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := b
   rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_isUniform]
 #align mvqpf.liftp_preservation_iff_uniform MvQPF.liftpPreservation_iff_uniform
 
+/-- Any type function `F` that is (extensionally) equivalent to a QPF, is itself a QPF,
+assuming that the functorial map of `F` behaves similar to `MvFunctor.ofEquiv eqv` -/
+def ofEquiv {F F' : TypeVec.{u} n → Type*} [MvFunctor F'] [q : MvQPF F'] [MvFunctor F]
+    (eqv : ∀ α, F α ≃ F' α)
+    (map_eq : ∀ (α β : TypeVec n) (f : α ⟹ β) (a : F α),
+      f <$$> a = ((eqv _).symm <| f <$$> eqv _ a) := by intros; rfl) :
+    MvQPF F where
+  P         := q.P
+  abs α     := (eqv _).symm <| q.abs α
+  repr α    := q.repr <| eqv _ α
+  abs_repr  := by simp [q.abs_repr]
+  abs_map   := by simp [q.abs_map, map_eq]
+
 end MvQPF
+
+/-- Every polynomial functor is a (trivial) QPF -/
+instance MvPFunctor.instMvQPFObj {n} (P : MvPFunctor n) : MvQPF P where
+  P := P
+  abs := id
+  repr := id
+  abs_repr := by intros; rfl
+  abs_map := by intros; rfl
