@@ -157,8 +157,8 @@ variable [TopologicalSpace X]
 
 open OrderDual
 
-instance : TopologicalSpace Xᵒᵈ := ‹TopologicalSpace X›
-instance [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹DiscreteTopology X›
+instance OrderDual.instTopologicalSpace : TopologicalSpace Xᵒᵈ := ‹_›
+instance OrderDual.instDiscreteTopology [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹_›
 
 theorem continuous_toDual : Continuous (toDual : X → Xᵒᵈ) := continuous_id
 #align continuous_to_dual continuous_toDual
@@ -183,6 +183,11 @@ theorem nhds_toDual (x : X) : 𝓝 (toDual x) = map toDual (𝓝 x) := rfl
 
 theorem nhds_ofDual (x : X) : 𝓝 (ofDual x) = map ofDual (𝓝 x) := rfl
 #align nhds_of_dual nhds_ofDual
+
+variable [Preorder X] {x : X}
+
+instance OrderDual.instNeBotNhdsWithinIoi [(𝓝[<] x).NeBot] : (𝓝[>] toDual x).NeBot := ‹_›
+instance OrderDual.instNeBotNhdsWithinIio [(𝓝[>] x).NeBot] : (𝓝[<] toDual x).NeBot := ‹_›
 
 end
 
