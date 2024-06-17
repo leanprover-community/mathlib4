@@ -648,11 +648,11 @@ instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
 attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 @[instance 200]
-abbrev Monoid.instMul {M : Type u} [Monoid M] : Mul M :=
+abbrev Monoid.instMul {M : Type*} [Monoid M] : Mul M :=
   Monoid.toMulOneClass.toMul
 
 @[instance 200]
-abbrev AddMonoid.instAdd {M : Type u} [AddMonoid M] : Add M :=
+abbrev AddMonoid.instAdd {M : Type*} [AddMonoid M] : Add M :=
   AddMonoid.toAddZeroClass.toAdd
 
 attribute [to_additive existing] Monoid.instMul
@@ -1268,6 +1268,16 @@ class AddGroup (A : Type u) extends SubNegMonoid A where
 attribute [instance 200] AddGroup.toSubNegMonoid
 
 attribute [to_additive] Group
+
+@[instance 120]
+abbrev Group.instMonoid [Group G] : Monoid G :=
+  Group.toDivInvMonoid.toMonoid
+
+@[instance 120]
+abbrev AddGroup.instAddMonoid [AddGroup G] : AddMonoid G :=
+  AddGroup.toSubNegMonoid.toAddMonoid
+
+attribute [to_additive existing] Group.instMonoid
 
 section Group
 
