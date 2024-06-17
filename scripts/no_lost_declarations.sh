@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
-begs="(theorem|lemma|inductive|structure|def|class|instance)"
+begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
 
 if [ "${1}" == "short" ]
 then

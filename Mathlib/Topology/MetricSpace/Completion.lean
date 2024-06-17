@@ -169,7 +169,7 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       edist_dist := fun x y ↦ rfl } _
 #align uniform_space.completion.metric_space UniformSpace.Completion.instMetricSpace
 
-@[deprecated eq_of_dist_eq_zero]
+@[deprecated eq_of_dist_eq_zero (since := "2024-03-10")]
 protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
   eq_of_dist_eq_zero h
 #align uniform_space.completion.eq_of_dist_eq_zero UniformSpace.Completion.eq_of_dist_eq_zero

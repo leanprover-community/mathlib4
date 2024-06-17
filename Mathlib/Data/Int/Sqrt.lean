@@ -39,4 +39,12 @@ theorem sqrt_nonneg (n : ℤ) : 0 ≤ sqrt n :=
   natCast_nonneg _
 #align int.sqrt_nonneg Int.sqrt_nonneg
 
+@[simp, norm_cast]
+theorem sqrt_natCast (n : ℕ) : Int.sqrt (n : ℤ) = Nat.sqrt n := by rw [sqrt, toNat_ofNat]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem sqrt_ofNat (n : ℕ) : Int.sqrt (no_index (OfNat.ofNat n) : ℤ) = Nat.sqrt (OfNat.ofNat n) :=
+  sqrt_natCast _
+
 end Int

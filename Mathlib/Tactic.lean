@@ -44,6 +44,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.DeprecateMe
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.DeriveTraversable
@@ -90,6 +91,7 @@ import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
+import Mathlib.Tactic.ITauto
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
@@ -103,12 +105,12 @@ import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
