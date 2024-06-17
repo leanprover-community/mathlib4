@@ -251,14 +251,14 @@ lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
 
 end DecidableEq
 
-lemma cons_le_cons (ha hb) : toColex (s.cons a ha) ≤ toColex (s.cons b hb) ↔ a ≤ b := by
+@[simp] lemma cons_le_cons (ha hb) : toColex (s.cons a ha) ≤ toColex (s.cons b hb) ↔ a ≤ b := by
   obtain rfl | hab := eq_or_ne a b
   · simp
   classical
   rw [← toColex_sdiff_le_toColex_sdiff', cons_sdiff_cons hab, cons_sdiff_cons hab.symm,
    singleton_le_singleton]
 
-lemma cons_lt_cons (ha hb) : toColex (s.cons a ha) < toColex (s.cons b hb) ↔ a < b :=
+@[simp] lemma cons_lt_cons (ha hb) : toColex (s.cons a ha) < toColex (s.cons b hb) ↔ a < b :=
   lt_iff_lt_of_le_iff_le' (cons_le_cons _ _) (cons_le_cons _ _)
 
 variable [DecidableEq α]
@@ -358,9 +358,10 @@ lemma lt_iff_exists_forall_lt_mem_iff_mem :
     by_contra! hwa
     exact hat $ (hw $ hwa.lt_of_ne $ ne_of_mem_of_not_mem hwt hat).1 has
 
+/-- If `s ≤ t` in colex and `s.card ≤ t.card`, then `s \ {a} ≤ t \ {min t}` for any `a ∈ s`. -/
 lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.card) (ha : a ∈ s) :
     toColex (s.erase a) ≤
-      toColex (t.erase $ min' t $ card_pos.1 $ (card_pos.2 ⟨a, ha⟩).trans_le hcard) := by
+      toColex (t.erase <| min' t <| card_pos.1 <| (card_pos.2 ⟨a, ha⟩).trans_le hcard) := by
   generalize_proofs ht
   set m := min' t ht
   -- Case on whether `s = t`
@@ -421,7 +422,7 @@ variable [Fintype α]
 
 instance instBoundedOrder : BoundedOrder (Colex α) where
   top := toColex univ
-  le_top _x := toColex_le_toColex_of_subset $ subset_univ _
+  le_top _x := toColex_le_toColex_of_subset <| subset_univ _
 
 @[simp] lemma toColex_univ [Fintype α] : toColex (univ : Finset α) = ⊤ := rfl
 @[simp] lemma ofColex_top [Fintype α] : ofColex (⊤ : Colex α) = univ := rfl
