@@ -603,7 +603,7 @@ the `npow` field when defining multiplicative objects.
 
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M, Add M where
+class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
@@ -617,11 +617,10 @@ class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M, Add M where
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
 
 attribute [instance 150] AddMonoid.toAddZeroClass
-attribute [instance 200] AddMonoid.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends MulOneClass M, Semigroup M, Mul M where
+class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
   /-- Raising to the power of a natural number. -/
   protected npow : ℕ → M → M := npowRec
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
@@ -634,11 +633,9 @@ class Monoid (M : Type u) extends MulOneClass M, Semigroup M, Mul M where
 #align monoid.npow_succ' Monoid.npow_succ
 
 attribute [instance 150] Monoid.toMulOneClass
-attribute [instance 200] Monoid.toMul
 
 -- Bug #660
 attribute [to_additive existing] Monoid.toSemigroup
-attribute [to_additive existing] Monoid.toMul
 
 @[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
@@ -649,6 +646,16 @@ instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
 #align add_monoid.has_smul_nat AddMonoid.toNatSMul
 
 attribute [to_additive existing toNatSMul] Monoid.toNatPow
+
+@[instance 200]
+abbrev Monoid.instMul {M : Type u} [Monoid M] : Mul M :=
+  Monoid.toMulOneClass.toMul
+
+@[instance 200]
+abbrev AddMonoid.instAdd {M : Type u} [AddMonoid M] : Add M :=
+  AddMonoid.toAddZeroClass.toAdd
+
+attribute [to_additive existing] Monoid.instMul
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M} {m n : ℕ}
