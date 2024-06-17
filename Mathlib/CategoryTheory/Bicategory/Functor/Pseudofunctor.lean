@@ -204,11 +204,48 @@ def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) :=
   (F : OplaxFunctor B C).mapFunctor a b
 #align category_theory.pseudofunctor.map_functor CategoryTheory.Pseudofunctor.mapFunctor
 
+section
+
+variable {a b : B}
+
 /-- A pseudofunctor `F : B ⥤ C` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms
 `F.map f ≅ F.map g` -/
 @[simps!]
-def map₂Iso {a b : B} {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
+def map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F : OplaxFunctor B C).map₂Iso η
+
+@[simp]
+lemma map₂Iso_symm {f g : a ⟶ b} (η : f ≅ g) : (F.map₂Iso η).symm = F.map₂Iso η.symm :=
+  rfl
+
+@[simp]
+lemma map₂Iso_trans {f g h : a ⟶ b} (η : f ≅ g) (θ : g ≅ h) :
+    F.map₂Iso (η ≪≫ θ) = F.map₂Iso η ≪≫ F.map₂Iso θ :=
+  (F.mapFunctor a b).mapIso_trans η θ
+
+@[simp]
+lemma map₂Iso_refl (f : a ⟶ b) : F.map₂Iso (Iso.refl f) = Iso.refl (F.map f) :=
+  (F.mapFunctor a b).mapIso_refl f
+
+instance map₂_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : IsIso (F.map₂ η) :=
+  (F.map₂Iso (asIso η)).isIso_hom
+
+@[simp]
+lemma map₂_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : F.map₂ (inv η) = inv (F.map₂ η) := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  simp [← F.map₂_comp η (inv η)]
+
+@[reassoc]
+lemma map₂_hom_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
+    F.map₂ η ≫ F.map₂ (inv η) = 𝟙 (F.map f) := by
+  simp
+
+@[reassoc]
+lemma map₂_inv_hom {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
+    F.map₂ (inv η) ≫ F.map₂ η = 𝟙 (F.map g) := by
+  simp
+
+end
 
 /-- The identity pseudofunctor. -/
 @[simps]
