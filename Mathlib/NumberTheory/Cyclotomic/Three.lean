@@ -138,7 +138,7 @@ lemma dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x
     simp
 
 /-- We have that `η ^ 2 + η + 1 = 0`. -/
-lemma eta_eq_add_eta_add_one : (η : 𝓞 K) ^ 2 + η + 1 = 0 := by
+lemma eta_sq_add_eta_add_one : (η : 𝓞 K) ^ 2 + η + 1 = 0 := by
   ext; simpa using hζ.isRoot_cyclotomic (by decide)
 
 /-- We have that `x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2)`. -/
@@ -147,7 +147,7 @@ lemma cube_sub_one_eq_mul : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
   calc _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + η ^ 3) - η ^ 3 := by ring
   _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + 1) - 1 := by
     simp [show hζ.toInteger ^ 3 = 1 from hζ.toInteger_isPrimitiveRoot.pow_eq_one]
-  _ = x ^ 3 - 1 := by rw [eta_eq_add_eta_add_one hζ]; ring
+  _ = x ^ 3 - 1 := by rw [eta_sq_add_eta_add_one hζ]; ring
 
 /-- We have that `λ` divides `x * (x - 1) * (x - (η + 1))`. -/
 lemma lambda_dvd_mul_sub_one_mul_sub_eta_add_one : λ ∣ x * (x - 1) * (x - (η + 1)) := by
