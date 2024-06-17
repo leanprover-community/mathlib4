@@ -115,17 +115,9 @@ theorem mem_enumFrom {x : α} {i j : ℕ} (xs : List α) (h : (i, x) ∈ xs.enum
   ⟨le_fst_of_mem_enumFrom h, fst_lt_add_of_mem_enumFrom h, snd_mem_of_mem_enumFrom h⟩
 #align list.mem_enum_from List.mem_enumFrom
 
-@[simp]
-theorem enum_nil : enum ([] : List α) = [] :=
-  rfl
 #align list.enum_nil List.enum_nil
-
 #align list.enum_from_nil List.enumFrom_nil
 #align list.enum_from_cons List.enumFrom_cons
-
-@[simp]
-theorem enum_cons (x : α) (xs : List α) : enum (x :: xs) = (0, x) :: enumFrom 1 xs :=
-  rfl
 #align list.enum_cons List.enum_cons
 
 @[simp]

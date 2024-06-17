@@ -184,7 +184,7 @@ theorem dropLast_sublist (l : List α) : l.dropLast <+ l :=
 
 @[gcongr]
 theorem drop_sublist_drop_left (l : List α) {m n : ℕ} (h : m ≤ n) : drop n l <+ drop m l := by
-  rw [← Nat.sub_add_cancel h, drop_add]
+  rw [← Nat.sub_add_cancel h, ← drop_drop]
   apply drop_sublist
 
 theorem dropLast_subset (l : List α) : l.dropLast ⊆ l :=

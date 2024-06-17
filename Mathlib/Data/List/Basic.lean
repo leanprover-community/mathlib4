@@ -2986,13 +2986,12 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 
 #align list.map_filter List.filter_map
 
-lemma map_filter {f : α → β} (hf : Injective f) (l : List α)
+-- TODO rename to `map_filter` when the deprecated `map_filter` is removed from Lean.
+lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [(· ∘ ·), filter_map, hf.eq_iff]
-#align list.map_filter' List.map_filter
-
-@[deprecated (since := "2024-06-16")] alias map_filter' := map_filter
+#align list.map_filter' List.map_filter'
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =

@@ -696,7 +696,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (permutations'Aux b l).bind (permutations'Aux a) := by
   induction' l with c l ih
   · simp [swap]
-  simp only [permutations'Aux, cons_bind, map_cons, map_map, cons_append]
+  simp only [permutations'Aux, bind_cons, map_cons, map_map, cons_append]
   apply Perm.swap'
   have :
     ∀ a b,
