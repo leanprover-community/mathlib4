@@ -82,10 +82,6 @@ structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
     [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
   mapId (a : B) : map (𝟙 a) ≅ 𝟙 (obj a)
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map (f ≫ g) ≅ map f ≫ map g
-  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat
-  map₂_comp :
-    ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h), map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
-    aesop_cat
   map₂_whisker_left :
     ∀ {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h),
       map₂ (f ◁ η) = (mapComp f g).hom ≫ map f ◁ map₂ η ≫ (mapComp f h).inv := by
@@ -115,11 +111,10 @@ initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map�
 namespace Pseudofunctor
 
 attribute [reassoc]
-  map₂_comp map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor map₂_right_unitor
+  map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor map₂_right_unitor
 
 attribute [simp]
-  map₂_id map₂_comp map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor
-  map₂_right_unitor
+  map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor map₂_right_unitor
 
 section
 
@@ -131,8 +126,6 @@ add_decl_doc Pseudofunctor.toPrelaxFunctor
 
 attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
   CategoryTheory.Pseudofunctor.mapComp
-  CategoryTheory.Pseudofunctor.map₂_id
-  CategoryTheory.Pseudofunctor.map₂_comp
   CategoryTheory.Pseudofunctor.map₂_whisker_left
   CategoryTheory.Pseudofunctor.map₂_whisker_right
   CategoryTheory.Pseudofunctor.map₂_associator
@@ -198,6 +191,7 @@ theorem to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
 
 -- Porting note: I changed `simps` to `simps!` without understanding what I was doing
 -- (lean 4 told me to do this)
+-- TODO: is this needed?
 /-- Function on 1-morphisms as a functor. -/
 @[simps!]
 def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) :=
@@ -216,12 +210,16 @@ instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
 /-- Composition of pseudofunctors. -/
-def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
-  { (F : PrelaxFunctor B C).comp
-      (G : PrelaxFunctor C D) with
-    mapId := fun a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a)
-    mapComp := fun f g =>
-      (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
+def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D where
+  toPrelaxFunctor := (F : PrelaxFunctor B C).comp (G : PrelaxFunctor C D)
+  mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
+  mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
+  -- Note: whilst these are all provable by `aesop_cat`, the proof is too slow
+  map₂_whisker_left f η := by dsimp; simp
+  map₂_whisker_right η h := by dsimp; simp
+  map₂_associator f g h := by dsimp; simp
+  map₂_left_unitor f := by dsimp; simp
+  map₂_right_unitor f := by dsimp; simp
 #align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
 
 -- `comp` is near the `maxHeartbeats` limit (and seems to go over in CI),
