@@ -194,8 +194,8 @@ instance (priority := 100) : SubtractionMonoid α where
     apply (_ : Function.Injective (a + b + ·))
     · dsimp
       rw [add_neg_cancel_of_ne_top, ← add_assoc, add_assoc a,
-        add_neg_cancel_of_ne_top, add_zero,
-        add_neg_cancel_of_ne_top] <;>
+        add_neg_cancel_of_ne_top hb, add_zero,
+        add_neg_cancel_of_ne_top ha]
       simp [ha, hb]
     · apply Function.LeftInverse.injective (g := (-(a + b) + ·))
       intro x
