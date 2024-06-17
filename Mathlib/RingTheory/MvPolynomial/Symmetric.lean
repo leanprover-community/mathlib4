@@ -201,7 +201,7 @@ lemma muProduct_def (μ : n.Partition) :
 
 @[simp]
 theorem muProduct_indiscrete_zero :
-    muProduct σ R f (Nat.Partition.indiscrete 0) = 1 := by simp [muProduct]
+    muProduct σ R f (.indiscrete 0) = 1 := by simp [muProduct]
 
 @[simp]
 theorem muProduct_indiscrete_of_pos (npos : n > 0) :
