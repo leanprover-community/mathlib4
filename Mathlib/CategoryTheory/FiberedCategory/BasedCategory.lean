@@ -55,6 +55,7 @@ structure BasedFunctor (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCat
     CategoryTheory.Functor 𝒳.obj 𝒴.obj where
   w : toFunctor ⋙ 𝒴.p = 𝒳.p := by aesop_cat
 
+/-- Notation for `BasedFunctor`. -/
 scoped infixr:26 " ⥤ᵇ " => BasedFunctor
 
 namespace BasedFunctor
