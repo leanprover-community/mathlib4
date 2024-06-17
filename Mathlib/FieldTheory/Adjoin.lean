@@ -1396,8 +1396,8 @@ open AlgEquiv
 variable {K L : Type _} [Field K] [Field L] [Algebra K L]
 namespace AdjoinRoot
 
-/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`, where
-  the two polynomial `p q : K[X]` are equal.-/
+/-- The canonical algebraic homomorphism from `AdjoinRoot p` to `AdjoinRoot q`, where
+  the polynomial `q : K[X]` divides `p`. -/
 noncomputable def algHomOfDvd {p q : K[X]} (hpq : q ∣ p) :
     AdjoinRoot p →ₐ[K] AdjoinRoot q :=
   (liftHom p (root q) (by simp only [aeval_eq, mk_eq_zero, hpq]))
@@ -1412,7 +1412,7 @@ theorem algHomOfDvd_apply_root {p q : K[X]} (hpq : q ∣ p) :
   rw [algHomOfDvd, liftHom_root]
 
 /-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`, where
-  the two polynomial `p q : K[X]` are equal.-/
+  the two polynomials `p q : K[X]` are equal. -/
 noncomputable def algEquivOfEq {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
     AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
   ofAlgHom (algHomOfDvd (dvd_of_eq h_eq.symm)) (algHomOfDvd (dvd_of_eq h_eq))

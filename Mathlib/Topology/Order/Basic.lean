@@ -595,13 +595,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     exact isOpen_Ioo
   exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
-/-- The set of points which are isolated on the right is countable when the space is
-second-countable. -/
-@[deprecated countable_setOf_covBy_right (since := "2023-02-05")]
-theorem countable_of_isolated_right' [SecondCountableTopology α] :
-    Set.Countable { x : α | ∃ y, x < y ∧ Ioo x y = ∅ } := by
-  simpa only [← covBy_iff_Ioo_eq] using countable_setOf_covBy_right
-#align countable_of_isolated_right countable_of_isolated_right'
+#align countable_of_isolated_right countable_setOf_covBy_rightₓ
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/

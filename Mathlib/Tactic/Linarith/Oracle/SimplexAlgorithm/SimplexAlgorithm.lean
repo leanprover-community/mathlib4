@@ -3,7 +3,7 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 
 /-!
 # Simplex Algorithm
@@ -39,7 +39,8 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
       if i == exitIdx then
         continue
       let coef := mat[(i, enterIdx)]! / intersectCoef
-      mat := subtractRow mat exitIdx i coef
+      if coef != 0 then
+        mat := subtractRow mat exitIdx i coef
       mat := setElem mat i enterIdx coef
     mat := setElem mat exitIdx enterIdx (-1)
     mat := divideRow mat exitIdx (-intersectCoef)
@@ -100,7 +101,8 @@ def chooseExitingVar (enterIdx : Nat) : SimplexAlgorithmM matType Nat := do
   return exitIdxOpt.get! -- such variable always exists because our problem is bounded
 
 /--
-Chooses entering and exiting variables using Bland's rule that guarantees that the Simplex
+Chooses entering and exiting variables using
+(Bland's rule)[(https://en.wikipedia.org/wiki/Bland%27s_rule)] that guarantees that the Simplex
 Algorithm terminates.
 -/
 def choosePivots : SimplexAlgorithmM matType (Nat × Nat) := do
