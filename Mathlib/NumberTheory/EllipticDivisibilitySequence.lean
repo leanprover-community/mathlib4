@@ -84,16 +84,17 @@ namespace EllSequence
 /-- The expression `W((m+n)/2) * W((m-n)/2)` is the basic building block of elliptic relations,
 where integers `m` and `n` should have the same parity. -/
 def addMulSub (m n : ℤ) : R := W ((m + n).div 2) * W ((m - n).div 2)
--- Implementation note: we use `Int.div _ 2` instead of `_ / 2` so that `(-m).div 2 = -(m.div 2)`
--- and lemmas like `addMulSub_neg₀` hold unconditionally, even though in the case we care about
--- (`m` and `n` both even or both odd) both are equal.
+/- Implementation note: we use `Int.div _ 2` instead of `_ / 2` so that `(-m).div 2 = -(m.div 2)`
+and lemmas like `addMulSub_neg₀` hold unconditionally, even though in the case we care about
+(`m` and `n` both even or both odd) both are equal. -/
 
 /-- The four-index elliptic relation, defined in terms of `addMulSub`,
 featuring the three partitions of four indices into two pairs.
 Intended to apply to four integers of the same parity. -/
 def rel₄ (a b c d : ℤ) : R :=
   addMulSub W a b * addMulSub W c d
-    - addMulSub W a c * addMulSub W b d + addMulSub W a d * addMulSub W b c
+    - addMulSub W a c * addMulSub W b d
+    + addMulSub W a d * addMulSub W b c
 
 /-- The defining property of Stange's elliptic nets,
 equivalent to a suitable valid (same-parity indices) `rel₄` relation,
