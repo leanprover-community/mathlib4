@@ -56,7 +56,7 @@ structure AbsoluteDerivation where
   d_one (X : Cᵒᵖ) : d (X := X) 1 = 0 := by aesop_cat
   d_mul {X : Cᵒᵖ} (a b : R.obj X) : d (a * b) = a • d b + b • d a := by aesop_cat
   d_map {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
-    d (R.map f x) = M.presheaf.map f (d x) := by aesop_cat
+    d (R.map f x) = M.map f (d x) := by aesop_cat
 
 namespace AbsoluteDerivation
 
@@ -119,7 +119,8 @@ lemma homEquiv_apply_d_apply (f : M ⟶ M') {X : Cᵒᵖ} (x : R.obj X) :
 @[simp]
 lemma homEquiv_symm_app_d (d' : M'.AbsoluteDerivation) {X : Cᵒᵖ} (x : R.obj X) :
     ((hR.homEquiv M').symm d').app X (d.d x) = d'.d x := by
-  conv_rhs => rw [← hR.fac d']
+  dsimp [homEquiv]
+  conv_rhs => rw [← hR.fac d', postcomp_d_apply]
 
 end Universal
 
@@ -160,24 +161,24 @@ noncomputable def absoluteDifferentials :
 lemma absoluteDifferentials_presheaf_obj (X : Cᵒᵖ) :
     (absoluteDifferentials R).presheaf.obj X = AddCommGroupCat.of (Ω[(R.obj X)⁄ℤ]) := rfl
 
-lemma absoluteDifferentials_presheaf_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : Ω[(R.obj X)⁄ℤ]) :
-    (absoluteDifferentials R).presheaf.map f x =
+lemma absoluteDifferentials_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : Ω[(R.obj X)⁄ℤ]) :
+    (absoluteDifferentials R).map f x =
       letI := (R.map f).toAlgebra
       KaehlerDifferential.map ℤ ℤ (R.obj X) (R.obj Y) x := rfl
 
 @[simp]
-lemma absoluteDifferentials_presheaf_map_apply_d {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
-    (absoluteDifferentials R).presheaf.map f (KaehlerDifferential.D ℤ _ x) =
+lemma absoluteDifferentials_map_apply_d {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
+    (absoluteDifferentials R).map f (KaehlerDifferential.D ℤ _ x) =
       KaehlerDifferential.D ℤ _ (R.map f x) := by
   letI := (R.map f).toAlgebra
-  rw [absoluteDifferentials_presheaf_map_apply]
+  rw [absoluteDifferentials_map_apply]
   apply KaehlerDifferential.map_D
 
 noncomputable def absoluteDerivation : (absoluteDifferentials R).AbsoluteDerivation where
   d {X} := AddMonoidHom.mk' (fun x => KaehlerDifferential.D ℤ (R.obj X) x) (by simp)
   d_one := by dsimp; simp
   d_mul := by dsimp; simp
-  d_map {X Y} f x := ((absoluteDifferentials_presheaf_map_apply_d R f x)).symm
+  d_map {X Y} f x := ((absoluteDifferentials_map_apply_d R f x)).symm
 
 variable {R} in
 @[simp]
@@ -198,7 +199,7 @@ noncomputable def desc : absoluteDifferentials R ⟶ M' :=
     erw [ModuleCat.comp_apply, ModuleCat.comp_apply, restrictionApp_apply,
       restrictionApp_apply]
     dsimp
-    rw [absoluteDifferentials_presheaf_map_apply_d]
+    rw [absoluteDifferentials_map_apply_d]
     erw [Derivation.liftKaehlerDifferential_comp_D,
       Derivation.liftKaehlerDifferential_comp_D]
     rw [d'.derivation_apply, d'.derivation_apply, d'.d_map])
