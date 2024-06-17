@@ -35,12 +35,10 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 
 namespace Nat
 
--- TODO: this test should print the following (currently, doesn't warn at all)
--- delete this test, or fix and re-enable it!
--- /--
--- warning:
--- The namespace 'Nat' is duplicated in the declaration 'Foo.Nat.Nat.Nats' [linter.dupNamespace]
--- -/
+/--
+warning: The namespace 'Nat' is duplicated in the declaration 'Foo.Nat.Nat.Nats'
+note: this linter can be disabled with `set_option linter.dupNamespace false`
+-/
 #guard_msgs in
 set_option linter.dupNamespace true in
 alias Nat.Nats := Nat
