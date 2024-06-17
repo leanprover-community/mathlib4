@@ -175,6 +175,10 @@ class Semiring (α : Type u) extends NonAssocSemiring α, NonUnitalSemiring α, 
 attribute [instance 100] Semiring.toAddCommMonoid
 attribute [instance 150] Semiring.toMonoidWithZero
 
+@[instance 200]
+abbrev Semiring.instMonoid [Semiring R] : Monoid R :=
+  Semiring.toMonoidWithZero.toMonoid
+
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R,
     NonAssocRing R, NonUnitalRing R
