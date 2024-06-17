@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.RingTheory.Congruence.Opposite
-import Mathlib.RingTheory.Congruence.BigOperators
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Module.Opposites
+import Mathlib.Tactic.Abel
+import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Two Sided Ideals
