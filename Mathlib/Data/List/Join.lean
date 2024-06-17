@@ -21,8 +21,6 @@ variable {α β : Type*}
 
 namespace List
 
-attribute [simp] join
-
 -- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
