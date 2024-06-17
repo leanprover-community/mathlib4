@@ -115,7 +115,7 @@ def adj : free ⊣ forget :=
 instance : ConcreteCategory Compactum where forget := forget
 
 -- Porting note: changed from forget to X.A
-instance : CoeSort Compactum (Type*) :=
+instance : CoeSort Compactum Type* :=
   ⟨fun X => X.A⟩
 
 instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
@@ -189,7 +189,7 @@ instance {X : Compactum} : CompactSpace X := by
   constructor
   rw [isCompact_iff_ultrafilter_le_nhds]
   intro F _
-  refine' ⟨X.str F, by tauto, _⟩
+  refine ⟨X.str F, by tauto, ?_⟩
   rw [le_nhds_iff]
   intro S h1 h2
   exact h2 F h1
@@ -241,7 +241,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
     rintro B ⟨Q, hQ, rfl⟩
     have : (Q ∩ cl A).Nonempty := Filter.nonempty_of_mem (inter_mem hQ hF)
     rcases this with ⟨q, hq1, P, hq2, hq3⟩
-    refine' ⟨P, hq2, _⟩
+    refine ⟨P, hq2, ?_⟩
     rw [← hq3] at hq1
     simpa
   -- Suffices to show that the intersection of any finite subcollection of C1 is nonempty.
@@ -326,9 +326,9 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     apply finiteInterClosure_insert
     · constructor
       · use Set.univ
-        refine' ⟨Filter.univ_sets _, _⟩
+        refine ⟨Filter.univ_sets _, ?_⟩
         ext
-        refine' ⟨_, by tauto⟩
+        refine ⟨?_, by tauto⟩
         · intro
           apply Filter.univ_sets
       · exact claim3
@@ -338,14 +338,14 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     obtain ⟨G, h1⟩ := Ultrafilter.exists_ultrafilter_of_finite_inter_nonempty _ this
     have c1 : X.join G = F := Ultrafilter.coe_le_coe.1 fun P hP => h1 (Or.inr ⟨P, hP, rfl⟩)
     have c2 : G.map X.str = X.incl x := by
-      refine' Ultrafilter.coe_le_coe.1 fun P hP => _
+      refine Ultrafilter.coe_le_coe.1 fun P hP => ?_
       apply mem_of_superset (h1 (Or.inl rfl))
       rintro x ⟨rfl⟩
       exact hP
     simp [← c1, c2]
   -- Finish...
   intro T hT
-  refine' claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ _)
+  refine claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ ?_)
   intro t ht
   exact finiteInterClosure.basic (@hT t ht)
 #align Compactum.str_eq_of_le_nhds Compactum.str_eq_of_le_nhds
@@ -441,11 +441,12 @@ def compactumToCompHaus : Compactum ⥤ CompHaus where
 namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
-def full : compactumToCompHaus.{u}.Full where preimage X Y {f} := Compactum.homOfContinuous f.1 f.2
+instance full : compactumToCompHaus.{u}.Full where
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.2, rfl⟩
 #align Compactum_to_CompHaus.full compactumToCompHaus.full
 
 /-- The functor `compactumToCompHaus` is faithful. -/
-theorem faithful : compactumToCompHaus.Faithful where
+instance faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
@@ -473,16 +474,12 @@ def isoOfTopologicalSpace {D : CompHaus} :
 #align Compactum_to_CompHaus.iso_of_topological_space compactumToCompHaus.isoOfTopologicalSpace
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
-theorem essSurj : compactumToCompHaus.EssSurj :=
+instance essSurj : compactumToCompHaus.EssSurj :=
   { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
 #align Compactum_to_CompHaus.ess_surj compactumToCompHaus.essSurj
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
-noncomputable instance isEquivalence : compactumToCompHaus.IsEquivalence := by
-  have := compactumToCompHaus.full
-  have := compactumToCompHaus.faithful
-  have := compactumToCompHaus.essSurj
-  apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence : compactumToCompHaus.IsEquivalence where
 #align Compactum_to_CompHaus.is_equivalence compactumToCompHaus.isEquivalence
 
 end compactumToCompHaus

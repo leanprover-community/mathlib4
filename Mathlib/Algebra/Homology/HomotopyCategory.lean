@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.Linear
+import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 import Mathlib.CategoryTheory.Quotient.Linear
 import Mathlib.CategoryTheory.Quotient.Preadditive
 
@@ -64,7 +65,7 @@ def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
 
-instance : (quotient V c).Full := Quotient.fullFunctor _
+instance : (quotient V c).Full := Quotient.full_functor _
 
 instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 
@@ -89,6 +90,12 @@ instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
 instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0, by
     rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
+
+instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).Full :=
+  Quotient.full_whiskeringLeft_functor _ _
+
+instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
+  Quotient.faithful_whiskeringLeft_functor _ _
 
 variable {V c}
 

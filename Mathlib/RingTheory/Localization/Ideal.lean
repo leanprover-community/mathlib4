@@ -54,7 +54,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R
     ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
   constructor
   · change _ → z ∈ map_ideal M S I
-    refine' fun h => Ideal.mem_sInf.1 h fun z hz => _
+    refine fun h => Ideal.mem_sInf.1 h fun z hz => ?_
     obtain ⟨y, hy⟩ := hz
     let Z : { x // x ∈ I } := ⟨y, hy.left⟩
     use ⟨Z, 1⟩
@@ -77,8 +77,8 @@ theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algeb
 
 theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
-  refine' le_antisymm _ Ideal.le_comap_map
-  refine' (fun a ha => _)
+  refine le_antisymm ?_ Ideal.le_comap_map
+  refine (fun a ha => ?_)
   obtain ⟨⟨b, s⟩, h⟩ := (mem_map_algebraMap_iff M S).1 (Ideal.mem_comap.1 ha)
   replace h : algebraMap R S (s * a) = algebraMap R S b := by
     simpa only [← map_mul, mul_comm] using h
@@ -97,8 +97,8 @@ def orderEmbedding : Ideal S ↪o Ideal R where
   map_rel_iff' := by
     rintro J₁ J₂
     constructor
-    exact fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ
-    exact fun hJ => Ideal.comap_mono hJ
+    · exact fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ
+    · exact fun hJ => Ideal.comap_mono hJ
 #align is_localization.order_embedding IsLocalization.orderEmbedding
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
@@ -110,17 +110,17 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
       (Ideal.comap (algebraMap R S) J).IsPrime ∧
         Disjoint (M : Set R) ↑(Ideal.comap (algebraMap R S) J) := by
   constructor
-  · refine' fun h =>
-      ⟨⟨_, _⟩,
+  · refine fun h =>
+      ⟨⟨?_, ?_⟩,
         Set.disjoint_left.mpr fun m hm1 hm2 =>
           h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
-    · refine' fun hJ => h.ne_top _
+    · refine fun hJ => h.ne_top ?_
       rw [eq_top_iff, ← (orderEmbedding M S).le_iff_le]
       exact le_of_eq hJ.symm
     · intro x y hxy
       rw [Ideal.mem_comap, RingHom.map_mul] at hxy
       exact h.mem_or_mem hxy
-  · refine' fun h => ⟨fun hJ => h.left.ne_top (eq_top_iff.2 _), _⟩
+  · refine fun h => ⟨fun hJ => h.left.ne_top (eq_top_iff.2 ?_), ?_⟩
     · rwa [eq_top_iff, ← (orderEmbedding M S).le_iff_le] at hJ
     · intro x y hxy
       obtain ⟨a, s, ha⟩ := mk'_surjective M x
@@ -153,8 +153,8 @@ def orderIsoOfPrime :
   map_rel_iff' := by
     rintro I I'
     constructor
-    exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
-      map_comap M S I'.val ▸ Ideal.map_mono h)
+    · exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
+        map_comap M S I'.val ▸ Ideal.map_mono h)
     exact fun h x hx => h hx
 #align is_localization.order_iso_of_prime IsLocalization.orderIsoOfPrime
 
@@ -184,7 +184,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
   · rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hI
     obtain ⟨n, hn⟩ := hI.3 hM
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n
-    refine' ⟨(Ideal.Quotient.mk J) (r * rn), _⟩
+    refine ⟨(Ideal.Quotient.mk J) (r * rn), ?_⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
     replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
     rw [RingHom.map_one, RingHom.map_mul] at hn

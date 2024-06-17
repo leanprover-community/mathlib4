@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.GroupCat.Limits
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import algebra.category.Ring.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
 
@@ -134,7 +134,6 @@ instance hasLimit : HasLimit F := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u}
 /-- If `J` is `u`-small, `SemiRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J SemiRingCat.{u} where
 
-/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} SemiRingCat.{u} where
   has_limits_of_shape _ _ := { }
@@ -299,7 +298,6 @@ instance hasLimit : HasLimit F := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u}
 /-- If `J` is `u`-small, `CommSemiRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommSemiRingCat.{u} where
 
-/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommSemiRingCat.{u} where
 set_option linter.uppercaseLean3 false in
@@ -387,7 +385,7 @@ All we need to do is notice that the limit point has a `Ring` instance available
 and then reuse the existing limit.
 -/
 instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
-  letI : (forget₂ RingCat SemiRingCat).ReflectsIsomorphisms :=
+  have : (forget₂ RingCat SemiRingCat).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   have : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
@@ -431,7 +429,6 @@ instance hasLimit : HasLimit F :=
 /-- If `J` is `u`-small, `RingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J RingCat.{u} where
 
-/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} RingCat.{u} where
 set_option linter.uppercaseLean3 false in
@@ -545,7 +542,7 @@ instance :
     but it seems this would introduce additional identity morphisms in `limit.π`.
     -/
     -- Porting note: need to add these instances manually
-    letI : (forget₂ CommRingCat.{u} RingCat.{u}).ReflectsIsomorphisms :=
+    have : (forget₂ CommRingCat.{u} RingCat.{u}).ReflectsIsomorphisms :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
     have : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
       inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
@@ -597,7 +594,6 @@ instance hasLimit : HasLimit F :=
 /-- If `J` is `u`-small, `CommRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommRingCat.{u} where
 
-/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of commutative rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommRingCat.{u} where
 set_option linter.uppercaseLean3 false in

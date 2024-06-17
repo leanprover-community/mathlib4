@@ -30,8 +30,6 @@ Between two finsets of vertices,
 
 open Finset
 
-open BigOperators
-
 variable {𝕜 ι κ α β : Type*}
 
 /-! ### Density of a relation -/
@@ -104,6 +102,10 @@ section DecidableEq
 
 variable [DecidableEq α] [DecidableEq β]
 
+lemma interedges_eq_biUnion :
+    interedges r s t = s.biUnion (fun x ↦ (t.filter (r x)).map ⟨(x, ·), Prod.mk.inj_left x⟩) := by
+  ext ⟨x, y⟩; simp [mem_interedges_iff]
+
 theorem interedges_biUnion_left (s : Finset ι) (t : Finset β) (f : ι → Finset α) :
     interedges r (s.biUnion f) t = s.biUnion fun a ↦ interedges r (f a) t := by
   ext
@@ -159,7 +161,7 @@ theorem edgeDensity_empty_right (s : Finset α) : edgeDensity r s ∅ = 0 := by
 #align rel.edge_density_empty_right Rel.edgeDensity_empty_right
 
 theorem card_interedges_finpartition_left [DecidableEq α] (P : Finpartition s) (t : Finset β) :
-    (interedges r s t).card = ∑ a in P.parts, (interedges r a t).card := by
+    (interedges r s t).card = ∑ a ∈ P.parts, (interedges r a t).card := by
   classical
   simp_rw [← P.biUnion_parts, interedges_biUnion_left, id]
   rw [card_biUnion]
@@ -167,7 +169,7 @@ theorem card_interedges_finpartition_left [DecidableEq α] (P : Finpartition s) 
 #align rel.card_interedges_finpartition_left Rel.card_interedges_finpartition_left
 
 theorem card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P : Finpartition t) :
-    (interedges r s t).card = ∑ b in P.parts, (interedges r s b).card := by
+    (interedges r s t).card = ∑ b ∈ P.parts, (interedges r s b).card := by
   classical
   simp_rw [← P.biUnion_parts, interedges_biUnion_right, id]
   rw [card_biUnion]
@@ -176,7 +178,7 @@ theorem card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P :
 
 theorem card_interedges_finpartition [DecidableEq α] [DecidableEq β] (P : Finpartition s)
     (Q : Finpartition t) :
-    (interedges r s t).card = ∑ ab in P.parts ×ˢ Q.parts, (interedges r ab.1 ab.2).card := by
+    (interedges r s t).card = ∑ ab ∈ P.parts ×ˢ Q.parts, (interedges r ab.1 ab.2).card := by
   rw [card_interedges_finpartition_left _ P, sum_product]
   congr; ext
   rw [card_interedges_finpartition_right]
@@ -194,10 +196,10 @@ theorem mul_edgeDensity_le_edgeDensity (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
 theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hs₂ : s₂.Nonempty)
     (ht₂ : t₂.Nonempty) :
     edgeDensity r s₂ t₂ - edgeDensity r s₁ t₁ ≤ 1 - s₂.card / s₁.card * (t₂.card / t₁.card) := by
-  refine' (sub_le_sub_left (mul_edgeDensity_le_edgeDensity r hs ht hs₂ ht₂) _).trans _
-  refine' le_trans _ (mul_le_of_le_one_right _ (edgeDensity_le_one r s₂ t₂))
+  refine (sub_le_sub_left (mul_edgeDensity_le_edgeDensity r hs ht hs₂ ht₂) _).trans ?_
+  refine le_trans ?_ (mul_le_of_le_one_right ?_ (edgeDensity_le_one r s₂ t₂))
   · rw [sub_mul, one_mul]
-  refine' sub_nonneg_of_le (mul_le_one _ _ _)
+  refine sub_nonneg_of_le (mul_le_one ?_ ?_ ?_)
   · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_card hs)) (Nat.cast_nonneg _)
   · apply div_nonneg <;> exact mod_cast Nat.zero_le _
   · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_card ht)) (Nat.cast_nonneg _)
@@ -206,7 +208,7 @@ theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t�
 theorem abs_edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
     (hs₂ : s₂.Nonempty) (ht₂ : t₂.Nonempty) :
     |edgeDensity r s₂ t₂ - edgeDensity r s₁ t₁| ≤ 1 - s₂.card / s₁.card * (t₂.card / t₁.card) := by
-  refine' abs_sub_le_iff.2 ⟨edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂ ht₂, _⟩
+  refine abs_sub_le_iff.2 ⟨edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂ ht₂, ?_⟩
   rw [← add_sub_cancel_right (edgeDensity r s₁ t₁) (edgeDensity (fun x y ↦ ¬r x y) s₁ t₁),
     ← add_sub_cancel_right (edgeDensity r s₂ t₂) (edgeDensity (fun x y ↦ ¬r x y) s₂ t₂),
     edgeDensity_add_edgeDensity_compl _ (hs₂.mono hs) (ht₂.mono ht),
@@ -232,15 +234,15 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have hr : 2 * δ - δ ^ 2 = 1 - (1 - δ) * (1 - δ) := by ring
   rw [hr]
   norm_cast
-  refine'
-    (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans _
+  refine
+    (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans ?_
   push_cast
   have h₁ := hs₂'.mono hs
   have h₂ := ht₂'.mono ht
   gcongr
-  · refine' (le_div_iff _).2 hs₂
+  · refine (le_div_iff ?_).2 hs₂
     exact mod_cast h₁.card_pos
-  · refine' (le_div_iff _).2 ht₂
+  · refine (le_div_iff ?_).2 ht₂
     exact mod_cast h₂.card_pos
 #align rel.abs_edge_density_sub_edge_density_le_two_mul_sub_sq Rel.abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq
 
@@ -253,10 +255,10 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul (hs : s₂ ⊆ s₁) (ht : t�
   · exact (abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq r hs ht hδ h hscard htcard).trans
       ((sub_le_self_iff _).2 <| sq_nonneg δ)
   rw [two_mul]
-  refine' (abs_sub _ _).trans (add_le_add (le_trans _ h) (le_trans _ h)) <;>
+  refine (abs_sub _ _).trans (add_le_add (le_trans ?_ h) (le_trans ?_ h)) <;>
     · rw [abs_of_nonneg]
-      exact mod_cast edgeDensity_le_one r _ _
-      exact mod_cast edgeDensity_nonneg r _ _
+      · exact mod_cast edgeDensity_le_one r _ _
+      · exact mod_cast edgeDensity_nonneg r _ _
 #align rel.abs_edge_density_sub_edge_density_le_two_mul Rel.abs_edgeDensity_sub_edgeDensity_le_two_mul
 
 end Asymmetric
@@ -277,7 +279,7 @@ theorem mk_mem_interedges_comm : (a, b) ∈ interedges r s t ↔ (b, a) ∈ inte
 #align rel.mk_mem_interedges_comm Rel.mk_mem_interedges_comm
 
 theorem card_interedges_comm (s t : Finset α) : (interedges r s t).card = (interedges r t s).card :=
-  Finset.card_congr (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ (swap_mem_interedges_iff hr).2)
+  Finset.card_bij (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ (swap_mem_interedges_iff hr).2)
     (fun _ _ _ _ h ↦ Prod.swap_injective h) fun x h ↦
     ⟨x.swap, (swap_mem_interedges_iff hr).2 h, x.swap_swap⟩
 #align rel.card_interedges_comm Rel.card_interedges_comm
@@ -319,7 +321,6 @@ theorem edgeDensity_def (s t : Finset α) :
   rfl
 #align simple_graph.edge_density_def SimpleGraph.edgeDensity_def
 
-@[simp]
 theorem card_interedges_div_card (s t : Finset α) :
     ((G.interedges s t).card : ℚ) / (s.card * t.card) = G.edgeDensity s t :=
   rfl
@@ -376,7 +377,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     (G.interedges s t).card + (Gᶜ.interedges s t).card = s.card * t.card := by
   rw [← card_product, interedges_def, interedges_def]
   have : ((s ×ˢ t).filter fun e ↦ Gᶜ.Adj e.1 e.2) = (s ×ˢ t).filter fun e ↦ ¬G.Adj e.1 e.2 := by
-    refine' filter_congr fun x hx ↦ _
+    refine filter_congr fun x hx ↦ ?_
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
   rw [this, ← card_union_of_disjoint, filter_union_filter_neg_eq]

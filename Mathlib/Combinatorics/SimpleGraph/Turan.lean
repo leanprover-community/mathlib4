@@ -53,7 +53,7 @@ lemma turanGraph_zero : turanGraph n 0 = ⊤ := by
 @[simp]
 theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
   simp_rw [SimpleGraph.ext_iff, Function.funext_iff, turanGraph, top_adj, eq_iff_iff, not_iff_not]
-  refine' ⟨fun h ↦ _, _⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · contrapose! h
     use ⟨0, (Nat.pos_of_ne_zero h.1).trans h.2⟩, ⟨r, h.2⟩
     simp [h.1.symm]

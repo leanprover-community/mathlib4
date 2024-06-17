@@ -46,18 +46,15 @@ The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
 Lebesgue decomposition theorem
 -/
 
-
-noncomputable section
-
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 open Set
-
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
 
 namespace MeasureTheory
 
 namespace Measure
+
+variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 /-- A pair of measures `μ` and `ν` is said to `HaveLebesgueDecomposition` if there exists a
 measure `ξ` and a measurable function `f`, such that `ξ` is mutually singular with respect to
@@ -68,19 +65,19 @@ class HaveLebesgueDecomposition (μ ν : Measure α) : Prop where
 #align measure_theory.measure.have_lebesgue_decomposition MeasureTheory.Measure.HaveLebesgueDecomposition
 #align measure_theory.measure.have_lebesgue_decomposition.lebesgue_decomposition MeasureTheory.Measure.HaveLebesgueDecomposition.lebesgue_decomposition
 
+open Classical in
 /-- If a pair of measures `HaveLebesgueDecomposition`, then `singularPart` chooses the
 measure from `HaveLebesgueDecomposition`, otherwise it returns the zero measure. For sigma-finite
 measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`. -/
-@[pp_dot]
-irreducible_def singularPart (μ ν : Measure α) : Measure α :=
+noncomputable irreducible_def singularPart (μ ν : Measure α) : Measure α :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).1 else 0
 #align measure_theory.measure.singular_part MeasureTheory.Measure.singularPart
 
+open Classical in
 /-- If a pair of measures `HaveLebesgueDecomposition`, then `rnDeriv` chooses the
 measurable function from `HaveLebesgueDecomposition`, otherwise it returns the zero function.
 For sigma-finite measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`. -/
-@[pp_dot]
-irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
+noncomputable irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).2 else 0
 #align measure_theory.measure.rn_deriv MeasureTheory.Measure.rnDeriv
 
@@ -140,7 +137,7 @@ instance instHaveLebesgueDecompositionZeroRight : HaveLebesgueDecomposition μ 0
 instance instHaveLebesgueDecompositionSelf : HaveLebesgueDecomposition μ μ where
   lebesgue_decomposition := ⟨⟨0, 1⟩, measurable_const, MutuallySingular.zero_left, by simp⟩
 
-instance haveLebesgueDecompositionSmul' (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+instance haveLebesgueDecompositionSMul' (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0∞) : (r • μ).HaveLebesgueDecomposition ν where
   lebesgue_decomposition := by
     obtain ⟨hmeas, hsing, hadd⟩ := haveLebesgueDecomposition_spec μ ν
@@ -148,12 +145,12 @@ instance haveLebesgueDecompositionSmul' (μ ν : Measure α) [HaveLebesgueDecomp
     simp only [ENNReal.smul_def]
     rw [withDensity_smul _ hmeas, ← smul_add, ← hadd]
 
-instance haveLebesgueDecompositionSmul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+instance haveLebesgueDecompositionSMul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) : (r • μ).HaveLebesgueDecomposition ν := by
   rw [ENNReal.smul_def]; infer_instance
-#align measure_theory.measure.have_lebesgue_decomposition_smul MeasureTheory.Measure.haveLebesgueDecompositionSmul
+#align measure_theory.measure.have_lebesgue_decomposition_smul MeasureTheory.Measure.haveLebesgueDecompositionSMul
 
-instance haveLebesgueDecompositionSmulRight (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+instance haveLebesgueDecompositionSMulRight (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) :
     μ.HaveLebesgueDecomposition (r • ν) where
   lebesgue_decomposition := by
@@ -222,11 +219,11 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
   simp only [nonpos_iff_eq_zero, add_eq_zero]
   constructor
   · refine hμν ?_
-    simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero]
+    simp only [coe_add, Pi.add_apply, add_eq_zero]
     constructor
-    · exact measure_mono_null (Set.inter_subset_right _ _) ht1
-    · exact measure_mono_null (Set.inter_subset_left _ _) hνs
-  · exact measure_mono_null (Set.inter_subset_right _ _) ht2
+    · exact measure_mono_null Set.inter_subset_right ht1
+    · exact measure_mono_null Set.inter_subset_left hνs
+  · exact measure_mono_null Set.inter_subset_right ht2
 
 lemma singularPart_eq_zero_of_ac (h : μ ≪ ν) : μ.singularPart ν = 0 := by
   rw [← MutuallySingular.self_iff]
@@ -410,23 +407,23 @@ theorem eq_singularPart {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurabl
     have hf : ν.withDensity f (A ∩ (S ∩ T)ᶜ) = 0 := by
       refine withDensity_absolutelyContinuous ν _ ?_
       rw [← nonpos_iff_eq_zero]
-      exact hνinter ▸ measure_mono (inter_subset_right _ _)
+      exact hνinter ▸ measure_mono inter_subset_right
     have hrn : ν.withDensity (μ.rnDeriv ν) (A ∩ (S ∩ T)ᶜ) = 0 := by
       refine withDensity_absolutelyContinuous ν _ ?_
       rw [← nonpos_iff_eq_zero]
-      exact hνinter ▸ measure_mono (inter_subset_right _ _)
+      exact hνinter ▸ measure_mono inter_subset_right
     rw [restrict_apply hA, restrict_apply hA, ← add_zero (s (A ∩ (S ∩ T)ᶜ)), ← hf, ← add_apply, ←
       hadd, add_apply, hrn, add_zero]
   have heq' : ∀ A : Set α, MeasurableSet A → s A = s.restrict (S ∩ T)ᶜ A := by
     intro A hA
     have hsinter : s (A ∩ (S ∩ T)) = 0 := by
       rw [← nonpos_iff_eq_zero]
-      exact hS₂ ▸ measure_mono ((inter_subset_right _ _).trans (inter_subset_left _ _))
+      exact hS₂ ▸ measure_mono (inter_subset_right.trans inter_subset_left)
     rw [restrict_apply hA, ← diff_eq, AEDisjoint.measure_diff_left hsinter]
   ext1 A hA
   have hμinter : μ.singularPart ν (A ∩ (S ∩ T)) = 0 := by
     rw [← nonpos_iff_eq_zero]
-    exact hT₂ ▸ measure_mono ((inter_subset_right _ _).trans (inter_subset_right _ _))
+    exact hT₂ ▸ measure_mono (inter_subset_right.trans inter_subset_right)
   rw [heq' A hA, heq, restrict_apply hA, ← diff_eq, AEDisjoint.measure_diff_left hμinter]
 #align measure_theory.measure.eq_singular_part MeasureTheory.Measure.eq_singularPart
 
@@ -505,10 +502,10 @@ theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Me
     ext1 A hA
     have hs : s (A ∩ (S ∩ T)) = 0 := by
       rw [← nonpos_iff_eq_zero]
-      exact hS₂ ▸ measure_mono ((inter_subset_right _ _).trans (inter_subset_left _ _))
+      exact hS₂ ▸ measure_mono (inter_subset_right.trans inter_subset_left)
     have hsing : μ.singularPart ν (A ∩ (S ∩ T)) = 0 := by
       rw [← nonpos_iff_eq_zero]
-      exact hT₂ ▸ measure_mono ((inter_subset_right _ _).trans (inter_subset_right _ _))
+      exact hT₂ ▸ measure_mono (inter_subset_right.trans inter_subset_right)
     rw [restrict_apply hA, restrict_apply hA, ← add_zero (ν.withDensity f (A ∩ (S ∩ T))), ← hs, ←
       add_apply, add_comm, ← hadd, add_apply, hsing, zero_add]
   have heq' :
@@ -516,7 +513,7 @@ theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Me
     intro A hA
     have hνfinter : ν.withDensity f (A ∩ (S ∩ T)ᶜ) = 0 := by
       rw [← nonpos_iff_eq_zero]
-      exact withDensity_absolutelyContinuous ν f hνinter ▸ measure_mono (inter_subset_right _ _)
+      exact withDensity_absolutelyContinuous ν f hνinter ▸ measure_mono inter_subset_right
     rw [restrict_apply hA, ← add_zero (ν.withDensity f (A ∩ (S ∩ T))), ← hνfinter, ← diff_eq,
       measure_inter_add_diff _ (hS₁.inter hT₁)]
   ext1 A hA
@@ -524,7 +521,7 @@ theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Me
     rw [← nonpos_iff_eq_zero]
     exact
       withDensity_absolutelyContinuous ν (μ.rnDeriv ν) hνinter ▸
-        measure_mono (inter_subset_right _ _)
+        measure_mono inter_subset_right
   rw [heq' A hA, heq, ← add_zero ((ν.withDensity (μ.rnDeriv ν)).restrict (S ∩ T) A), ← hνrn,
     restrict_apply hA, ← diff_eq, measure_inter_add_diff _ (hS₁.inter hT₁)]
 #align measure_theory.measure.eq_with_density_rn_deriv MeasureTheory.Measure.eq_withDensity_rnDeriv
@@ -687,7 +684,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
   choose f hf₁ hf₂ hf₃ using this
   -- set `A` to be the intersection of all the negative parts of obtained Hahn decompositions
   -- and we show that `μ A = 0`
-  set A := ⋂ n, (f n)ᶜ with hA₁
+  let A := ⋂ n, (f n)ᶜ
   have hAmeas : MeasurableSet A := MeasurableSet.iInter fun n ↦ (hf₁ n).compl
   have hA₂ : ∀ n : ℕ, μ.toSignedMeasure - ((1 / (n + 1) : ℝ≥0) • ν).toSignedMeasure ≤[A] 0 := by
     intro n; exact restrict_le_restrict_subset _ _ (hf₁ n).compl (hf₃ n) (iInter_subset _ _)
@@ -760,8 +757,8 @@ theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE 
   have h₂ := hA.inter (measurableSet_lt hg.1 hf.1)
   rw [set_lintegral_max hf.1 hg.1]
   refine (add_le_add (hg.2 _ h₁) (hf.2 _ h₂)).trans_eq ?_
-  · simp only [← not_le, ← compl_setOf, ← diff_eq]
-    exact measure_inter_add_diff _ (measurableSet_le hf.1 hg.1)
+  simp only [← not_le, ← compl_setOf, ← diff_eq]
+  exact measure_inter_add_diff _ (measurableSet_le hf.1 hg.1)
 #align measure_theory.measure.lebesgue_decomposition.sup_mem_measurable_le MeasureTheory.Measure.LebesgueDecomposition.sup_mem_measurableLE
 
 theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α) :
@@ -893,7 +890,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       -- since `E` is positive, we have `∫⁻ a in A ∩ E, ε + ξ a ∂ν ≤ μ (A ∩ E)` for all `A`
       have hε₂ : ∀ A : Set α, MeasurableSet A → (∫⁻ a in A ∩ E, ε + ξ a ∂ν) ≤ μ (A ∩ E) := by
         intro A hA
-        have := subset_le_of_restrict_le_restrict _ _ hE₁ hE₃ (inter_subset_right A E)
+        have := subset_le_of_restrict_le_restrict _ _ hE₁ hE₃ A.inter_subset_right
         rwa [zero_apply, toSignedMeasure_sub_apply (hA.inter hE₁),
           Measure.sub_apply (hA.inter hE₁) hle,
           ENNReal.toReal_sub_of_le _ (measure_ne_top _ _), sub_nonneg, le_sub_iff_add_le,
@@ -993,7 +990,7 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
               rw [disjoint_iff_inter_eq_empty] at this
               rw [this, empty_inter, measure_empty]
           simp_rw [this, tsum_eq_zero_iff ENNReal.summable]
-          intro n; exact measure_mono_null (inter_subset_right _ _) (hA₂ n)
+          intro n; exact measure_mono_null inter_subset_right (hA₂ n)
         · exact h₂.mono fun i j ↦ Disjoint.mono inf_le_left inf_le_left
         · exact fun n ↦ (S.set_mem n).inter (hA₁ n)
       -- We will now show `ν Bᶜ = 0`. This follows since `Bᶜ = ⋃ n, S.set n ∩ (A n)ᶜ` and thus,
@@ -1034,9 +1031,9 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
         suffices hsumeq : (sum fun i : ℕ ↦ (νn i).restrict (S.set n)) = νn n by rw [hsumeq]
         ext1 s hs
         rw [sum_apply _ hs, tsum_eq_single n, hνn, h₁, restrict_restrict (T.set_mem n), inter_self]
-        · intro m hm
-          rw [hνn, h₁, restrict_restrict (T.set_mem n), (h₃ hm.symm).inter_eq, restrict_empty,
-            coe_zero, Pi.zero_apply]
+        intro m hm
+        rw [hνn, h₁, restrict_restrict (T.set_mem n), (h₃ hm.symm).inter_eq, restrict_empty,
+          coe_zero, Pi.zero_apply]
       · exact fun n ↦ Measurable.indicator (measurable_rnDeriv _ _) (S.set_mem n)⟩
 #align measure_theory.measure.have_lebesgue_decomposition_of_sigma_finite MeasureTheory.Measure.haveLebesgueDecomposition_of_sigmaFinite
 

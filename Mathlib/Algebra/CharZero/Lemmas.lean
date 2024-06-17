@@ -3,7 +3,7 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Function.Support
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Cast.Field
 
@@ -67,9 +67,15 @@ lemma support_natCast (hn : n ≠ 0) : support (n : α → M) = univ :=
   support_const <| Nat.cast_ne_zero.2 hn
 #align function.support_nat_cast Function.support_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias support_nat_cast := support_natCast
+
 lemma mulSupport_natCast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
   mulSupport_const <| Nat.cast_ne_one.2 hn
 #align function.mul_support_nat_cast Function.mulSupport_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias mulSupport_nat_cast := mulSupport_natCast
 
 end Function
 end AddMonoidWithOne
@@ -132,7 +138,7 @@ set_option linter.deprecated false
 theorem bit0_injective : Function.Injective (bit0 : R → R) := fun a b h => by
   dsimp [bit0] at h
   simp only [(two_mul a).symm, (two_mul b).symm] at h
-  refine' nat_mul_inj' _ two_ne_zero
+  refine nat_mul_inj' ?_ two_ne_zero
   exact mod_cast h
 #align bit0_injective bit0_injective
 
@@ -206,7 +212,7 @@ section RingHom
 
 variable {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem RingHom.charZero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
+theorem RingHom.charZero (ϕ : R →+* S) [CharZero S] : CharZero R :=
   ⟨fun a b h => CharZero.cast_injective (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩
 #align ring_hom.char_zero RingHom.charZero
 

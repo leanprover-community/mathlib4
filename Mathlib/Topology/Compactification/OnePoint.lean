@@ -76,6 +76,14 @@ instance : CoeTC X (OnePoint X) := ⟨some⟩
 
 instance : Inhabited (OnePoint X) := ⟨∞⟩
 
+protected lemma «forall» {p : OnePoint X → Prop} :
+    (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p x :=
+  Option.forall
+
+protected lemma «exists» {p : OnePoint X → Prop} :
+    (∃ x, p x) ↔ p ∞ ∨ ∃ (x : X), p x :=
+  Option.exists
+
 instance [Fintype X] : Fintype (OnePoint X) :=
   inferInstanceAs (Fintype (Option X))
 
@@ -189,14 +197,14 @@ instance : TopologicalSpace (OnePoint X) where
   isOpen_univ := by simp
   isOpen_inter s t := by
     rintro ⟨hms, hs⟩ ⟨hmt, ht⟩
-    refine' ⟨_, hs.inter ht⟩
+    refine ⟨?_, hs.inter ht⟩
     rintro ⟨hms', hmt'⟩
     simpa [compl_inter] using (hms hms').union (hmt hmt')
   isOpen_sUnion S ho := by
     suffices IsOpen ((↑) ⁻¹' ⋃₀ S : Set X) by
-      refine' ⟨_, this⟩
+      refine ⟨?_, this⟩
       rintro ⟨s, hsS : s ∈ S, hs : ∞ ∈ s⟩
-      refine' IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
+      refine IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl ?_
       exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
@@ -306,12 +314,12 @@ instance nhdsWithin_compl_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] :
 #align alexandroff.nhds_within_compl_coe_ne_bot OnePoint.nhdsWithin_compl_coe_neBot
 
 theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
-  refine' (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) _ _
+  refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
   · rintro s ⟨hs, hso⟩
-    refine' ⟨_, (isOpen_iff_of_mem hs).mp hso, _⟩
+    refine ⟨_, (isOpen_iff_of_mem hs).mp hso, ?_⟩
     simp [Subset.rfl]
   · rintro s ⟨h₁, h₂⟩
-    refine' ⟨_, ⟨mem_compl infty_not_mem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, _⟩
+    refine ⟨_, ⟨mem_compl infty_not_mem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
     simp [compl_image_coe, ← diff_eq, subset_preimage_image]
 #align alexandroff.nhds_within_compl_infty_eq OnePoint.nhdsWithin_compl_infty_eq
 
@@ -383,6 +391,87 @@ theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y}
   rw [ContinuousAt, nhds_coe_eq, tendsto_map'_iff, ContinuousAt]; rfl
 #align alexandroff.continuous_at_coe OnePoint.continuousAt_coe
 
+lemma continuous_iff {Y : Type*} [TopologicalSpace Y] (f : OnePoint X → Y) : Continuous f ↔
+    Tendsto (fun x : X ↦ f x) (coclosedCompact X) (𝓝 (f ∞)) ∧ Continuous (fun x : X ↦ f x) := by
+  simp only [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty']
+  rfl
+
+/--
+A constructor for continuous maps out of a one point compactification, given a continuous map from
+the underlying space and a limit value at infinity.
+-/
+def continuousMapMk {Y : Type*} [TopologicalSpace Y] (f : C(X, Y)) (y : Y)
+    (h : Tendsto f (coclosedCompact X) (𝓝 y)) : C(OnePoint X, Y) where
+  toFun
+    | ∞ => y
+    | some x => f x
+  continuous_toFun := by
+    rw [continuous_iff]
+    refine ⟨h, f.continuous⟩
+
+lemma continuous_iff_from_discrete {Y : Type*} [TopologicalSpace Y]
+    [DiscreteTopology X] (f : OnePoint X → Y) :
+    Continuous f ↔ Tendsto (fun x : X ↦ f x) cofinite (𝓝 (f ∞)) := by
+  simp [continuous_iff, cocompact_eq_cofinite, continuous_of_discreteTopology]
+
+/--
+A constructor for continuous maps out of a one point compactification of a discrete space, given a
+map from the underlying space and a limit value at infinity.
+-/
+def continuousMapMkDiscrete {Y : Type*} [TopologicalSpace Y]
+    [DiscreteTopology X] (f : X → Y) (y : Y) (h : Tendsto f cofinite (𝓝 y)) :
+    C(OnePoint X, Y) :=
+  continuousMapMk ⟨f, continuous_of_discreteTopology⟩ y (by simpa [cocompact_eq_cofinite])
+
+variable (X) in
+/--
+Continuous maps out of the one point compactification of an infinite discrete space to a Hausdorff
+space correspond bijectively to "convergent" maps out of the discrete space.
+-/
+noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [TopologicalSpace Y]
+    [T2Space Y] [Infinite X] :
+    C(OnePoint X, Y) ≃ { f : X → Y // ∃ L, Tendsto (fun x : X ↦ f x) cofinite (𝓝 L) } where
+  toFun f := ⟨(f ·), ⟨f ∞, continuous_iff_from_discrete _ |>.mp (map_continuous f)⟩⟩
+  invFun f :=
+    { toFun := fun x => match x with
+        | ∞ => Classical.choose f.2
+        | some x => f.1 x
+      continuous_toFun := continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.2 }
+  left_inv f := by
+    ext x
+    refine OnePoint.rec ?_ ?_ x
+    · refine tendsto_nhds_unique ?_ (continuous_iff_from_discrete _ |>.mp <| map_continuous f)
+      let f' : { f : X → Y // ∃ L, Tendsto (fun x : X ↦ f x) cofinite (𝓝 L) } :=
+        ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete f |>.mp <| map_continuous f⟩⟩
+      exact Classical.choose_spec f'.property
+    · simp
+  right_inv f := rfl
+
+lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
+    Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
+  rw [continuous_iff_from_discrete, Nat.cofinite_eq_atTop]
+
+/--
+A constructor for continuous maps out of the one point compactification of `ℕ`, given a
+sequence and a limit value at infinity.
+-/
+def continuousMapMkNat {Y : Type*} [TopologicalSpace Y]
+    (f : ℕ → Y) (y : Y) (h : Tendsto f atTop (𝓝 y)) :
+    C(OnePoint ℕ, Y) :=
+  continuousMapMkDiscrete f y (by rwa [Nat.cofinite_eq_atTop])
+
+/--
+Continuous maps out of the one point compactification of `ℕ` to a Hausdorff space `Y` correspond
+bijectively to convergent sequences in `Y`.
+-/
+noncomputable def continuousMapNatEquiv (Y : Type*) [TopologicalSpace Y] [T2Space Y] :
+    C(OnePoint ℕ, Y) ≃ { f : ℕ → Y // ∃ L, Tendsto (f ·) atTop (𝓝 L) } := by
+  refine (continuousMapDiscreteEquiv ℕ Y).trans {
+    toFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [← Nat.cofinite_eq_atTop]⟩
+    invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩
+    left_inv := fun _ ↦ rfl
+    right_inv := fun _ ↦ rfl }
+
 /-- If `X` is not a compact space, then the natural embedding `X → OnePoint X` has dense range.
 -/
 theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint X) := by
@@ -445,7 +534,7 @@ instance : CompactSpace (OnePoint X) where
 
 /-- The one point compactification of a `T0Space` space is a `T0Space`. -/
 instance [T0Space X] : T0Space (OnePoint X) := by
-  refine' ⟨fun x y hxy => _⟩
+  refine ⟨fun x y hxy => ?_⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
   exacts [rfl, congr_arg some h.eq]
 
@@ -491,6 +580,21 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
   simpa [nhds_coe_eq, nhds_discrete, CofiniteTopology.nhds_eq] using
     (finite_singleton ((default : X) : OnePoint X)).infinite_compl
 #align alexandroff.not_continuous_cofinite_topology_of_symm OnePoint.not_continuous_cofiniteTopology_of_symm
+
+instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
+    TotallySeparatedSpace (OnePoint X) where
+  isTotallySeparated_univ x _ y _ hxy := by
+    cases x with
+    | none =>
+      refine ⟨{y}ᶜ, {y}, isOpen_compl_singleton, ?_, hxy, rfl, (compl_union_self _).symm.subset,
+        disjoint_compl_left⟩
+      rw [OnePoint.isOpen_iff_of_not_mem]
+      exacts [isOpen_discrete _, hxy]
+    | some val =>
+      refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, hxy.symm, by simp,
+        disjoint_compl_right⟩
+      rw [OnePoint.isOpen_iff_of_not_mem]
+      exacts [isOpen_discrete _, (Option.some_ne_none val).symm]
 
 end OnePoint
 

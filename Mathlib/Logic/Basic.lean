@@ -6,8 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
-import Std.Util.LibraryNote
-import Std.Tactic.Lint.Basic
+import Batteries.Util.LibraryNote
+import Batteries.Tactic.Lint.Basic
 
 #align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 #align_import init.ite_simp from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
@@ -42,7 +42,7 @@ attribute [simp] cast_eq cast_heq imp_false
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as done in the `elide` and `unelide` tactics. -/
-@[reducible] def hidden {α : Sort*} {a : α} := a
+abbrev hidden {α : Sort*} {a : α} := a
 #align hidden hidden
 
 variable {α : Sort*}
@@ -128,8 +128,11 @@ theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.1, fun h ↦ ⟨h�
 #align fact_iff fact_iff
 #align fact.elim Fact.elim
 
+instance {p : Prop} [Decidable p] : Decidable (Fact p) :=
+  decidable_of_iff _ fact_iff.symm
+
 /-- Swaps two pairs of arguments to a function. -/
-@[reducible] def Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
+abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
     {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort*} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
     (i₂ j₂ i₁ j₁) : φ i₁ j₁ i₂ j₂ := f i₁ j₁ i₂ j₂
 #align function.swap₂ Function.swap₂
@@ -164,18 +167,17 @@ instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 alias Iff.imp := imp_congr
 #align iff.imp Iff.imp
 
-@[simp] theorem eq_true_eq_id : Eq True = id := by
-  funext _; simp only [true_iff, id, eq_iff_iff]
 #align eq_true_eq_id eq_true_eq_id
-
 #align imp_and_distrib imp_and
 #align imp_iff_right imp_iff_rightₓ -- reorder implicits
 #align imp_iff_not imp_iff_notₓ -- reorder implicits
 
-@[simp] theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b := Decidable.imp_iff_right_iff
+-- This is a duplicate of `Classical.imp_iff_right_iff`. Deprecate?
+theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b := Decidable.imp_iff_right_iff
 #align imp_iff_right_iff imp_iff_right_iff
 
-@[simp] theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c := Decidable.and_or_imp
+-- This is a duplicate of `Classical.and_or_imp`. Deprecate?
+theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c := Decidable.and_or_imp
 #align and_or_imp and_or_imp
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
@@ -351,17 +353,17 @@ alias Iff.or := or_congr
 alias ⟨Or.rotate, _⟩ := or_rotate
 #align or.rotate Or.rotate
 
-@[deprecated Or.imp]
+@[deprecated Or.imp (since := "2022-10-24")]
 theorem or_of_or_of_imp_of_imp {a b c d : Prop} (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → d) :
     c ∨ d :=
   Or.imp h₂ h₃ h₁
 #align or_of_or_of_imp_of_imp or_of_or_of_imp_of_imp
 
-@[deprecated Or.imp_left]
+@[deprecated Or.imp_left (since := "2022-10-24")]
 theorem or_of_or_of_imp_left {a c b : Prop} (h₁ : a ∨ c) (h : a → b) : b ∨ c := Or.imp_left h h₁
 #align or_of_or_of_imp_left or_of_or_of_imp_left
 
-@[deprecated Or.imp_right]
+@[deprecated Or.imp_right (since := "2022-10-24")]
 theorem or_of_or_of_imp_right {c a b : Prop} (h₁ : c ∨ a) (h : a → b) : c ∨ b := Or.imp_right h h₁
 #align or_of_or_of_imp_right or_of_or_of_imp_right
 
@@ -400,9 +402,7 @@ theorem imp_iff_or_not {b a : Prop} : b → a ↔ a ∨ ¬b := Decidable.imp_iff
 theorem not_imp_not : ¬a → ¬b ↔ b → a := Decidable.not_imp_not
 #align not_imp_not not_imp_not
 
-@[simp]
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
-  rw [imp_iff_or_not, imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by simp
 
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
@@ -535,9 +535,8 @@ theorem forall_mem_comm {α β} [Membership α β] {s : β} {p : α → α → P
   forall_cond_comm
 #align ball_mem_comm forall_mem_comm
 
--- 2024-03-23
-@[deprecated] alias ball_cond_comm := forall_cond_comm
-@[deprecated] alias ball_mem_comm := forall_mem_comm
+@[deprecated (since := "2024-03-23")] alias ball_cond_comm := forall_cond_comm
+@[deprecated (since := "2024-03-23")] alias ball_mem_comm := forall_mem_comm
 
 #align ne_of_apply_ne ne_of_apply_ne
 
@@ -553,7 +552,7 @@ theorem eq_equivalence {α : Sort*} : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
 
--- These were migrated to Std but the `@[simp]` attributes were (mysteriously?) removed.
+-- These were migrated to Batteries but the `@[simp]` attributes were (mysteriously?) removed.
 attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
 
 #align eq_mp_eq_cast eq_mp_eq_cast
@@ -595,8 +594,8 @@ theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) 
 -- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    HEq (@Eq.rec α a' motive p a t) p :=
-  by subst t; rfl
+    HEq (@Eq.rec α a' motive p a t) p := by
+  subst t; rfl
 
 set_option autoImplicit true in
 theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
@@ -637,7 +636,7 @@ theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a)
 #align pi_congr pi_congr
 
 -- Porting note: some higher order lemmas such as `forall₂_congr` and `exists₂_congr`
--- were moved to `Std4`
+-- were moved to `Batteries`
 
 theorem forall₂_imp {p q : ∀ a, β a → Prop} (h : ∀ a b, p a b → q a b) :
     (∀ a b, p a b) → ∀ a b, q a b :=
@@ -716,7 +715,7 @@ theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha 
     (∀ x, p x) → b ↔ ∃ x, p x → b := by
   let ⟨a⟩ := ha
   refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
-  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (not_imp.1 (h' x)).1
+  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (_root_.not_imp.1 (h' x)).1
 #align forall_imp_iff_exists_imp forall_imp_iff_exists_imp
 
 @[mfld_simps]
@@ -778,9 +777,27 @@ theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
   simp only [ExistsUnique, and_self, forall_eq', exists_eq']
 #align exists_unique_eq' exists_unique_eq'
 
--- @[simp] -- FIXME simp does not apply this lemma for some reason
+@[simp]
 theorem exists_apply_eq_apply' (f : α → β) (a' : α) : ∃ a, f a' = f a := ⟨a', rfl⟩
 #align exists_apply_eq_apply' exists_apply_eq_apply'
+
+@[simp]
+lemma exists_apply_eq_apply2 {α β γ} {f : α → β → γ} {a : α} {b : β} : ∃ x y, f x y = f a b :=
+  ⟨a, b, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply2' {α β γ} {f : α → β → γ} {a : α} {b : β} : ∃ x y, f a b = f x y :=
+  ⟨a, b, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply3 {α β γ δ} {f : α → β → γ → δ} {a : α} {b : β} {c : γ} :
+    ∃ x y z, f x y z = f a b c :=
+  ⟨a, b, c, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply3' {α β γ δ} {f : α → β → γ → δ} {a : α} {b : β} {c : γ} :
+    ∃ x y z, f a b c = f x y z :=
+  ⟨a, b, c, rfl⟩
 
 -- Porting note: an alternative workaround theorem:
 theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun _ ↦ b, rfl⟩
@@ -916,12 +933,6 @@ theorem exists_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔
     Exists q ↔ ∃ h : p', q' (hp.2 h) :=
   ⟨fun ⟨_, _⟩ ↦ ⟨hp.1 ‹_›, (hq _).1 ‹_›⟩, fun ⟨_, _⟩ ↦ ⟨_, (hq _).2 ‹_›⟩⟩
 #align exists_prop_congr exists_prop_congr
-
-@[congr]
-theorem exists_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
-    Exists q = ∃ h : p', q' (hp.2 h) :=
-  propext (exists_prop_congr hq hp)
-#align exists_prop_congr' exists_prop_congr'
 
 /-- See `IsEmpty.exists_iff` for the `False` version. -/
 @[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=
@@ -1077,14 +1088,13 @@ theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x
 #align ball_congr forall₂_congr
 #align bex_congr exists₂_congr
 
-@[deprecated exists_eq_left] -- 2024-04-06
+@[deprecated exists_eq_left (since := "2024-04-06")]
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
 #align bex_eq_left bex_eq_left
 
--- 2024-04-06
-@[deprecated] alias ball_congr := forall₂_congr
-@[deprecated] alias bex_congr := exists₂_congr
+@[deprecated (since := "2024-04-06")] alias ball_congr := forall₂_congr
+@[deprecated (since := "2024-04-06")] alias bex_congr := exists₂_congr
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
@@ -1102,11 +1112,11 @@ theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x : _) (_ : p x), r x) →
   | ⟨x, hp, hr⟩ => ⟨x, H _ hp, hr⟩
 #align bex.imp_left BEx.imp_left
 
-@[deprecated id] -- 2024-03-23
+@[deprecated id (since := "2024-03-23")]
 theorem ball_of_forall (h : ∀ x, p x) (x) : p x := h x
 #align ball_of_forall ball_of_forall
 
-@[deprecated forall_imp] -- 2024-03-23
+@[deprecated forall_imp (since := "2024-03-23")]
 theorem forall_of_ball (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
 #align forall_of_ball forall_of_ball
 
@@ -1121,10 +1131,9 @@ theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
 theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
 #align bex_imp_distrib exists₂_imp
 
--- 2024-03-23
-@[deprecated] alias bex_of_exists := exists_mem_of_exists
-@[deprecated] alias exists_of_bex := exists_of_exists_mem
-@[deprecated] alias bex_imp := exists₂_imp
+@[deprecated (since := "2024-03-23")] alias bex_of_exists := exists_mem_of_exists
+@[deprecated (since := "2024-03-23")] alias exists_of_bex := exists_of_exists_mem
+@[deprecated (since := "2024-03-23")] alias bex_imp := exists₂_imp
 
 theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists₂_imp
 #align not_bex not_exists_mem
@@ -1163,16 +1172,15 @@ theorem exists_mem_or_left :
   exact Iff.trans (exists_congr fun x ↦ or_and_right) exists_or
 #align bex_or_left_distrib exists_mem_or_left
 
--- 2023-03-23
-@[deprecated] alias not_ball_of_bex_not := not_forall₂_of_exists₂_not
-@[deprecated] alias Decidable.not_ball := Decidable.not_forall₂
-@[deprecated] alias not_ball := not_forall₂
-@[deprecated] alias ball_true_iff := forall₂_true_iff
-@[deprecated] alias ball_and := forall₂_and
-@[deprecated] alias not_bex := not_exists_mem
-@[deprecated] alias bex_or := exists_mem_or
-@[deprecated] alias ball_or_left := forall₂_or_left
-@[deprecated] alias bex_or_left := exists_mem_or_left
+@[deprecated (since := "2023-03-23")] alias not_ball_of_bex_not := not_forall₂_of_exists₂_not
+@[deprecated (since := "2023-03-23")] alias Decidable.not_ball := Decidable.not_forall₂
+@[deprecated (since := "2023-03-23")] alias not_ball := not_forall₂
+@[deprecated (since := "2023-03-23")] alias ball_true_iff := forall₂_true_iff
+@[deprecated (since := "2023-03-23")] alias ball_and := forall₂_and
+@[deprecated (since := "2023-03-23")] alias not_bex := not_exists_mem
+@[deprecated (since := "2023-03-23")] alias bex_or := exists_mem_or
+@[deprecated (since := "2023-03-23")] alias ball_or_left := forall₂_or_left
+@[deprecated (since := "2023-03-23")] alias bex_or_left := exists_mem_or_left
 
 end BoundedQuantifiers
 
@@ -1330,16 +1338,9 @@ theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
     dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
   by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
-@[simp] lemma if_true_right : (if P then Q else True) ↔ ¬P ∨ Q := by by_cases P <;> simp [*]
 #align if_true_right_eq_or if_true_right
-
-@[simp] lemma if_true_left : (if P then True else Q) ↔ P ∨ Q := by by_cases P <;> simp [*]
 #align if_true_left_eq_or if_true_left
-
-@[simp] lemma if_false_right : (if P then Q else False) ↔ P ∧ Q := by by_cases P <;> simp [*]
 #align if_false_right_eq_and if_false_right
-
-@[simp] lemma if_false_left : (if P then False else Q) ↔ ¬P ∧ Q := by by_cases P <;> simp [*]
 #align if_false_left_eq_and if_false_left
 
 end ite
