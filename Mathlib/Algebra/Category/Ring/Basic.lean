@@ -736,6 +736,11 @@ attribute [local instance] reflectsIsomorphisms_forget₂
 
 example : (forget₂ RingCat AddCommGroupCat).ReflectsIsomorphisms := by infer_instance
 
+instance : HasForget₂ CommRingCat.{u} AddCommGroupCat.{u} where
+  forget₂ :=
+    { obj := fun R => AddCommGroupCat.of R.α
+      map := fun {R R'} φ => AddCommGroupCat.ofHom (AddMonoidHom.mk' φ.toFun (by simp)) }
+
 /-!
 `@[simp]` lemmas for `RingHom.comp` and categorical identities.
 -/

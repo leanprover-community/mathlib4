@@ -35,12 +35,6 @@ open CategoryTheory LinearMap Opposite
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- should be moved
-instance : HasForget₂ CommRingCat AddCommGroupCat where
-  forget₂ :=
-    { obj := fun R => AddCommGroupCat.of R.α
-      map := fun {R R'} φ => AddCommGroupCat.ofHom (AddMonoidHom.mk' φ.toFun (by simp)) }
-
 variable {C : Type u₁} [Category.{v₁} C]
 
 namespace PresheafOfModules
