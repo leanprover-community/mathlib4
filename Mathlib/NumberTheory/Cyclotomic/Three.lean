@@ -117,7 +117,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
 variable (x : 𝓞 K)
 
 /-- Let `(x : 𝓞 K)`. Then we have that `λ` divides one amongst `x`, `x - 1` and `x + 1`. -/
-lemma dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
+lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
   classical
   have := hζ.finite_quotient_toInteger_sub_one (by decide)
   let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {λ})
@@ -151,7 +151,7 @@ lemma cube_sub_one_eq_mul : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
 
 /-- We have that `λ` divides `x * (x - 1) * (x - (η + 1))`. -/
 lemma lambda_dvd_mul_sub_one_mul_sub_eta_add_one : λ ∣ x * (x - 1) * (x - (η + 1)) := by
-  rcases dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (h | h | h)
+  rcases lambda_dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (h | h | h)
   · exact dvd_mul_of_dvd_left (dvd_mul_of_dvd_left h _) _
   · exact dvd_mul_of_dvd_left (dvd_mul_of_dvd_right h _) _
   · refine dvd_mul_of_dvd_right ?_ _
@@ -185,7 +185,7 @@ lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x
 /-- If `λ` does not divide `x`, then `λ ^ 4` divides `x ^ 3 - 1` or `x ^ 3 + 1`. -/
 lemma lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd {x : 𝓞 K} (h : ¬ λ ∣ x) :
     λ ^ 4 ∣ x ^ 3 - 1 ∨ λ ^ 4 ∣ x ^ 3 + 1 := by
-  rcases dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (H | H | H)
+  rcases lambda_dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (H | H | H)
   · contradiction
   · left
     exact lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ H
