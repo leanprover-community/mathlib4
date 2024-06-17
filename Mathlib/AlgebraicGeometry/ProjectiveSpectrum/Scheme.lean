@@ -644,6 +644,57 @@ def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
   ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| pbo f) (op (CommRingCat.of <| A⁰_ f))
     (awayToΓ 𝒜 f).op
 
+open HomogeneousLocalization LocalRing
+
+lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
+    (toSpec 𝒜 f).1.base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
+      (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
+  show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ LocallyRingedSpace.ΓToStalk (Proj| pbo f) x)
+        (LocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
+  rw [awayToΓ_ΓToStalk, CommRingCat.comp_eq_ring_hom_comp, PrimeSpectrum.comap_comp]
+  exact congr(PrimeSpectrum.comap _ $(@LocalRing.comap_closedPoint
+    (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _
+    ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalRingHom_of_isIso _)))
+
+lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
+    (toSpec 𝒜 f).1.base x = ProjIsoSpecTopComponent.toSpec 𝒜 f x :=
+  toSpec_base_apply_eq_comap 𝒜 x |>.trans <| PrimeSpectrum.ext _ _ <| Ideal.ext fun z =>
+  show ¬ IsUnit _ ↔ z ∈ ProjIsoSpecTopComponent.ToSpec.carrier _ by
+  obtain ⟨z, rfl⟩ := z.mk_surjective
+  rw [← HomogeneousLocalization.isUnit_iff_isUnit_val,
+    ProjIsoSpecTopComponent.ToSpec.mk_mem_carrier, HomogeneousLocalization.map_mk,
+    HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
+    IsLocalization.AtPrime.isUnit_mk'_iff]
+  exact not_not
+
+lemma mk_mem_toSpec_base_apply {f} (x : Proj| pbo f)
+    (z : NumDenSameDeg 𝒜 (.powers f)) :
+    HomogeneousLocalization.mk z ∈ ((toSpec 𝒜 f).1.base x).asIdeal ↔
+      z.num.1 ∈ x.1.asHomogeneousIdeal :=
+  (toSpec_base_apply_eq 𝒜 x).symm ▸ ProjIsoSpecTopComponent.ToSpec.mk_mem_carrier _ _
+
+lemma toSpec_preimage_basicOpen {f}
+    (t : NumDenSameDeg 𝒜 (.powers f)) :
+    toSpec 𝒜 f ⁻¹ᵁ (sbo (.mk t)) = Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) :=
+  Opens.ext <| Opens.map_coe _ _ ▸ by
+  convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
+  exact funext fun _ => toSpec_base_apply_eq _ _
+
+@[reassoc]
+lemma toOpen_toSpec_val_c_app (f) (U) :
+    StructureSheaf.toOpen (A⁰_ f) U.unop ≫ (toSpec 𝒜 f).val.c.app U =
+      awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.map (homOfLE le_top).op :=
+  Eq.trans (by congr) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app _ U
+
+lemma toStalk_stalkMap_toSpec (f) (x) :
+    StructureSheaf.toStalk _ _ ≫ PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
+      awayToΓ 𝒜 f ≫ (Proj| pbo f).ΓToStalk x := by
+  rw [StructureSheaf.toStalk, Category.assoc]
+  simp_rw [CommRingCat.coe_of]
+  erw [PresheafedSpace.stalkMap_germ']
+  rw [toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
+  rfl
+
 end ProjectiveSpectrum.Proj
 
 end AlgebraicGeometry
