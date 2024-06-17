@@ -43,11 +43,33 @@ lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T �
     have e1 : a ⊓ b ≤ p := inf_le_of_right_le h3
     exact h e1
 
+open Finset in
+lemma basis2 [OrderTop α] (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
+  rw [coe_upperClosure]
+  simp only [compl_iUnion]
+  rw [preimage_iInter₂]
+  induction' F using Finset.induction_on with a F' I3 I4
+  · simp only [Finset.coe_empty, mem_empty_iff_false, iInter_of_empty,
+    iInter_univ, sInf_empty, Ici_top]
+    simp only [inf_empty, Ici_top, Set.preimage_compl]
+    rw [eq_compl_comm]
+    simp only [Set.compl_univ]
+    by_contra hf
+    rw [← Set.not_nonempty_iff_eq_empty] at hf
+    simp at hf
+    cases' hf with x hx
+    simp at hx
+    apply (hT x (Subtype.coe_prop x)).1
+    exact isMax_iff_eq_top.mpr hx
+  · simp only [coe_insert, mem_insert_iff, mem_coe, Set.preimage_compl, iInter_iInter_eq_or_left,
+    inf_insert, id_eq]
+
+
 end SemilatticeInf
 
 section PrimativeSpectrum
 
-variable [CompleteLattice α] [TopologicalSpace α] [IsLower α]
+variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
 
 variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
 
