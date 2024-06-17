@@ -63,7 +63,7 @@ theorem exists_partition {ι : Type*} [Finite ι] {ε : ℝ} (hε : 0 < ε) {b :
       ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   obtain ⟨t, ht⟩ := h.exists_partition' n hε hb (A ∘ e.symm)
-  refine' ⟨t ∘ e, fun i₀ i₁ h ↦ _⟩
+  refine ⟨t ∘ e, fun i₀ i₁ h ↦ ?_⟩
   convert (config := {transparency := .default})
     ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
 #align absolute_value.is_admissible.exists_partition AbsoluteValue.IsAdmissible.exists_partition
@@ -76,7 +76,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
   haveI := Classical.decEq R
   induction' n with n ih
   · intro ε _hε b _hb A
-    refine' ⟨0, 1, _, _⟩
+    refine ⟨0, 1, ?_, ?_⟩
     · simp
     rintro ⟨i, ⟨⟩⟩
   intro ε hε b hb A
@@ -107,7 +107,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
   -- Since `s` is large enough, there are two elements of `A ∘ s`
   -- where the second components lie close together.
   obtain ⟨k₀, k₁, hk, h⟩ := ih hε hb fun x ↦ Fin.tail (A (s x))
-  refine' ⟨s k₀, s k₁, fun h ↦ hk (s_inj h), fun i ↦ Fin.cases _ (fun i ↦ _) i⟩
+  refine ⟨s k₀, s k₁, fun h ↦ hk (s_inj h), fun i ↦ Fin.cases ?_ (fun i ↦ ?_) i⟩
   · exact hs k₀ k₁
   · exact h i
 #align absolute_value.is_admissible.exists_approx_aux AbsoluteValue.IsAdmissible.exists_approx_aux

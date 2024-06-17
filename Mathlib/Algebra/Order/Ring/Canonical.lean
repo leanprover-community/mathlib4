@@ -56,7 +56,7 @@ instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
-  refine' ⟨fun a b c h => _⟩
+  refine ⟨fun a b c h => ?_⟩
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
@@ -79,6 +79,9 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
 protected theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
+
+lemma pow_pos (ha : 0 < a) (n : ℕ) : 0 < a ^ n := pos_iff_ne_zero.2 <| pow_ne_zero _ ha.ne'
+#align canonically_ordered_comm_semiring.pow_pos CanonicallyOrderedCommSemiring.pow_pos
 
 protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd : c < d) :
     a * c < b * d := by
@@ -123,5 +126,8 @@ theorem mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
 theorem tsub_mul (a b c : α) : (a - b) * c = a * c - b * c :=
   Contravariant.AddLECancellable.tsub_mul
 #align tsub_mul tsub_mul
+
+lemma mul_tsub_one (a b : α) : a * (b - 1) = a * b - a := by rw [mul_tsub, mul_one]
+lemma tsub_one_mul (a b : α) : (a - 1) * b = a * b - b := by rw [tsub_mul, one_mul]
 
 end Sub
