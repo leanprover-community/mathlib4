@@ -3,8 +3,8 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Module.Equiv
-import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.module.opposites from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -12,7 +12,7 @@ import Mathlib.GroupTheory.GroupAction.Opposite
 # Module operations on `Mᵐᵒᵖ`
 
 This file contains definitions that build on top of the group action definitions in
-`GroupTheory.GroupAction.Opposite`.
+`Algebra.Ring.Action`.
 -/
 
 

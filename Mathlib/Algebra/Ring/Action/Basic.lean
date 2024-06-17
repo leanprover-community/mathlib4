@@ -3,10 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Algebra.Field.Defs
 
 #align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -28,7 +28,6 @@ They are all grouped under `MulSemiringAction`.
 group action, invariant subring
 
 -/
-
 
 universe u v
 
@@ -111,7 +110,7 @@ end
 
 section SimpLemmas
 
-variable {M G A R F}
+variable {M G A F}
 
 attribute [simp] smul_one smul_mul' smul_zero smul_add
 

@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.GroupWithZero.Opposite
 import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import algebra.ring.opposite from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
@@ -19,22 +19,6 @@ namespace MulOpposite
 instance instDistrib [Distrib α] : Distrib αᵐᵒᵖ where
   left_distrib _ _ _ := unop_injective <| add_mul _ _ _
   right_distrib _ _ _ := unop_injective <| mul_add _ _ _
-
-instance instMulZeroClass [MulZeroClass α] : MulZeroClass αᵐᵒᵖ where
-  zero_mul _ := unop_injective <| mul_zero _
-  mul_zero _ := unop_injective <| zero_mul _
-
-instance instMulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass αᵐᵒᵖ where
-  __ := instMulOneClass
-  __ := instMulZeroClass
-
-instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵐᵒᵖ where
-  __ := instSemigroup
-  __ := instMulZeroClass
-
-instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵐᵒᵖ where
-  __ := instMonoid
-  __ := instMulZeroOneClass
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
     NonUnitalNonAssocSemiring αᵐᵒᵖ where
@@ -89,11 +73,6 @@ instance instCommRing [CommRing α] : CommRing αᵐᵒᵖ where
   __ := instRing
   __ := instCommMonoid
 
-instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵐᵒᵖ where
-  eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
-      Or.casesOn (eq_zero_or_eq_zero_of_mul_eq_zero <| op_injective H)
-        (fun hy => Or.inr <| unop_injective <| hy) fun hx => Or.inl <| unop_injective <| hx
-
 instance instIsDomain [Ring α] [IsDomain α] : IsDomain αᵐᵒᵖ :=
   NoZeroDivisors.to_isDomain _
 
@@ -111,22 +90,6 @@ namespace AddOpposite
 instance instDistrib [Distrib α] : Distrib αᵃᵒᵖ where
   left_distrib _ _ _ := unop_injective <| mul_add _ _ _
   right_distrib _ _ _ := unop_injective <| add_mul _ _ _
-
-instance instMulZeroClass [MulZeroClass α] : MulZeroClass αᵃᵒᵖ where
-  zero_mul _ := unop_injective <| zero_mul _
-  mul_zero _ := unop_injective <| mul_zero _
-
-instance instMulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass αᵃᵒᵖ where
-  __ := instMulOneClass
-  __ := instMulZeroClass
-
-instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵃᵒᵖ where
-  __ := instSemigroup
-  __ := instMulZeroClass
-
-instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵃᵒᵖ where
-  __ := instMonoid
-  __ := instMulZeroOneClass
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
     NonUnitalNonAssocSemiring αᵃᵒᵖ where
@@ -181,20 +144,8 @@ instance instCommRing [CommRing α] : CommRing αᵃᵒᵖ where
   __ := instRing
   __ := instCommMonoid
 
-instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵃᵒᵖ where
-  eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
-    Or.imp (fun hx => unop_injective hx) (fun hy => unop_injective hy)
-    (@eq_zero_or_eq_zero_of_mul_eq_zero α _ _ _ _ _ <| op_injective H)
-
 instance instIsDomain [Ring α] [IsDomain α] : IsDomain αᵃᵒᵖ :=
   NoZeroDivisors.to_isDomain _
-
-instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵃᵒᵖ where
-  __ := instMonoidWithZero
-  __ := instNontrivial
-  __ := instDivInvMonoid
-  mul_inv_cancel _ hx := unop_injective <| mul_inv_cancel <| unop_injective.ne hx
-  inv_zero := unop_injective inv_zero
 
 end AddOpposite
 

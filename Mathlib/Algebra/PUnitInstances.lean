@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Order.CompleteBooleanAlgebra
 
 #align_import algebra.punit_instances from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"

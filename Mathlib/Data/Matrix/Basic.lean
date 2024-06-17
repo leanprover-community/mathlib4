@@ -5,6 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
@@ -14,7 +15,6 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.GroupTheory.GroupAction.BigOperators
 
 #align_import data.matrix.basic from "leanprover-community/mathlib"@"eba5bb3155cab51d80af00e8d7d69fa271b1302b"
 

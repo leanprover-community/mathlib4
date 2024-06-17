@@ -1,4 +1,4 @@
-import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 open MulOpposite renaming op → mop
 open AddOpposite renaming op → aop

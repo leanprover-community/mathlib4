@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Perm.Basic
 
 #align_import algebra.hom.aut from "leanprover-community/mathlib"@"d4f69d96f3532729da8ebb763f4bc26fcf640f06"
@@ -27,9 +28,7 @@ equivalences (and other files that use them) before the group structure is defin
 MulAut, AddAut
 -/
 
--- TODO after #13161
--- assert_not_exists MonoidWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
 
 variable {A : Type*} {M : Type*} {G : Type*}
 
@@ -115,13 +114,10 @@ def toPerm : MulAut M →* Equiv.Perm M where
 /-- The tautological action by `MulAut M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M) M where
+instance applyMulAction {M} [Monoid M] : MulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-  smul_one := MulEquiv.map_one
-  smul_mul := MulEquiv.map_mul
-#align mul_aut.apply_mul_distrib_mul_action MulAut.applyMulDistribMulAction
 
 @[simp]
 protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a :=
@@ -240,13 +236,10 @@ def toPerm : AddAut A →* Equiv.Perm A where
 /-- The tautological action by `AddAut A` on `A`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A where
+instance applyMulAction {A} [AddMonoid A] : MulAction (AddAut A) A where
   smul := (· <| ·)
-  smul_zero := AddEquiv.map_zero
-  smul_add := AddEquiv.map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-#align add_aut.apply_distrib_mul_action AddAut.applyDistribMulAction
 
 @[simp]
 protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = f a :=

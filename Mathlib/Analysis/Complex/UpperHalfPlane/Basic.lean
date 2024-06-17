@@ -3,11 +3,11 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Data.Fintype.Parity
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Data.Fintype.Parity
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.LinearCombination
 

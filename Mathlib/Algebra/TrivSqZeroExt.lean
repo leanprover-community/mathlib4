@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.LinearAlgebra.Prod
 
 #align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"

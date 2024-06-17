@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import dynamics.periodic_pts from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 

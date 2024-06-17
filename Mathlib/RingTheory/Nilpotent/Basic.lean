@@ -5,9 +5,9 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
 import Mathlib.RingTheory.Nilpotent.Defs

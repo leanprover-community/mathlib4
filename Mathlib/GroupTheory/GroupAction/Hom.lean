@@ -2,13 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
-
 -/
-
+import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
 #align_import algebra.hom.group_action from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
 

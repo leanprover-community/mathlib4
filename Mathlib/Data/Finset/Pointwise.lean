@@ -3,12 +3,12 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
-import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import data.finset.pointwise from "leanprover-community/mathlib"@"eba7871095e834365616b5e43c8c7bb0b37058d0"

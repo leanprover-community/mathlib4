@@ -3,8 +3,8 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import algebra.module.pointwise_pi from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
