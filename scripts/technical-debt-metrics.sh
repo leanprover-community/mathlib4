@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# `./scripts/technical-debt-counters.sh` returns a tally of some technical debts in current Mathlib,
+# `./scripts/technical-debt-metrics.sh` returns a tally of some technical debts in current Mathlib,
 # reporting also the change with respect to the same counts in
 # Mathlib from last week.
 
