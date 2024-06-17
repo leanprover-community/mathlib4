@@ -46,7 +46,7 @@ variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (
 structure LaxPreFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
   (C : Type u₂) [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)] extends
   Prefunctor B C where
-  /-- The action of a prelax functor on 2-morphisms. -/
+  /-- The action of a lax prefunctor on 2-morphisms. -/
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
 #align category_theory.prelax_functor CategoryTheory.LaxPreFunctor
 
@@ -72,7 +72,7 @@ variable (F : LaxPreFunctor B C)
 #noalign category_theory.prelax_functor.to_prefunctor_obj
 #noalign category_theory.prelax_functor.to_prefunctor_map
 
-/-- The identity prelax functor. -/
+/-- The identity lax prefunctor. -/
 @[simps]
 def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] : LaxPreFunctor B B :=
   { Prefunctor.id B with map₂ := fun η => η }
@@ -81,11 +81,11 @@ def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a 
 instance : Inhabited (LaxPreFunctor B B) :=
   ⟨LaxPreFunctor.id B⟩
 
--- Porting note: `by exact` was not necessary in mathlib3
-/-- Composition of prelax functors. -/
+/-- Composition of lax prefunctors. -/
 @[simps]
-def comp (F : LaxPreFunctor B C) (G : LaxPreFunctor C D) : LaxPreFunctor B D :=
-  { (F : Prefunctor B C).comp ↑G with map₂ := fun η => by exact G.map₂ (F.map₂ η) }
+def comp (F : LaxPreFunctor B C) (G : LaxPreFunctor C D) : LaxPreFunctor B D where
+  toPrefunctor := F.toPrefunctor.comp G.toPrefunctor
+  map₂ := fun η => G.map₂ (F.map₂ η)
 #align category_theory.prelax_functor.comp CategoryTheory.LaxPreFunctor.comp
 
 end LaxPreFunctor
@@ -97,9 +97,9 @@ This structure will be extended to define `LaxFunctor` and `OplaxFunctor`.
 -/
 structure PrelaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
     extends LaxPreFunctor B C where
-  /-- Prelax functors preserve identity 2-morphisms. -/
+  /-- Prelax functors preserves identity 2-morphisms. -/
   map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop
-  /-- Prelax functors preserve compositions. -/
+  /-- Prelax functors preserves compositions of 2-morphisms. -/
   map₂_comp :
     ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h), map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
     aesop_cat
@@ -108,6 +108,9 @@ namespace PrelaxFunctor
 
 attribute [simp] map₂_id
 attribute [reassoc (attr := simp)] map₂_comp
+
+/-- The underlying lax prefunctor. -/
+add_decl_doc PrelaxFunctor.toLaxPreFunctor
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
@@ -143,8 +146,7 @@ section
 
 variable {a b : B}
 
-/-- An oplax functor `F : B ⥤ C` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms
-`F.map f ≅ F.map g` -/
+/-- A prelaxfunctor `F` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms `F.map f ≅ F.map g`. -/
 @[simps!]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η

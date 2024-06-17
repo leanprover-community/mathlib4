@@ -109,16 +109,18 @@ initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂
 
 namespace OplaxFunctor
 
+-- TEST (might need to move map₂_leftUnitor etc back down)
 attribute [reassoc (attr := simp)]
-  mapComp_naturality_left mapComp_naturality_right map₂_associator
+  mapComp_naturality_left mapComp_naturality_right map₂_associator map₂_leftUnitor map₂_rightUnitor
 
 -- the simpNF linter complains that `map₂_leftUnitor_assoc` etc can be
 -- proved with `simp` so I move them here
-attribute [reassoc] map₂_leftUnitor map₂_rightUnitor
-attribute [simp] map₂_leftUnitor map₂_rightUnitor
+-- attribute [reassoc] map₂_leftUnitor map₂_rightUnitor
+-- attribute [simp] map₂_leftUnitor map₂_rightUnitor
+
 section
 
-/-- The prelax functor between the underlying quivers. -/
+/-- The underlying prelax functor. -/
 add_decl_doc OplaxFunctor.toPrelaxFunctor
 
 attribute [nolint docBlame] CategoryTheory.OplaxFunctor.mapId
@@ -150,11 +152,10 @@ variable (F : OplaxFunctor B C)
 
 /-- The identity oplax functor. -/
 @[simps]
-def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B :=
-  { PrelaxFunctor.id B with
-    mapId := fun a => 𝟙 (𝟙 a)
-    mapComp := fun f g => 𝟙 (f ≫ g)
-  }
+def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B where
+  toPrelaxFunctor := PrelaxFunctor.id B
+  mapId := fun a => 𝟙 (𝟙 a)
+  mapComp := fun f g => 𝟙 (f ≫ g)
 #align category_theory.oplax_functor.id CategoryTheory.OplaxFunctor.id
 
 instance : Inhabited (OplaxFunctor B B) :=
@@ -162,37 +163,36 @@ instance : Inhabited (OplaxFunctor B B) :=
 
 /-- Composition of oplax functors. -/
 --@[simps]
-def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
-  {
-    (F : PrelaxFunctor B C).comp G with
-    mapId := fun a => by exact (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
-    mapComp := fun f g => by
-      exact (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
-    mapComp_naturality_left := fun η g => by
-      dsimp
-      rw [← G.map₂_comp_assoc, mapComp_naturality_left, G.map₂_comp_assoc, mapComp_naturality_left,
-        assoc]
-    mapComp_naturality_right := fun η => by
-      dsimp
-      intros
-      rw [← G.map₂_comp_assoc, mapComp_naturality_right, G.map₂_comp_assoc,
-        mapComp_naturality_right, assoc]
-    map₂_associator := fun f g h => by
-      dsimp
-      -- Porting note: if you use the `map₂_associator_aux` hack in the definition of
-      -- `map₂_associator` then the `simp only` call below does not seem to apply `map₂_associator`
-      simp only [map₂_associator, ← PrelaxFunctor.map₂_comp_assoc, ← mapComp_naturality_right_assoc,
-        whiskerLeft_comp, assoc]
-      simp only [map₂_associator, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
-        comp_whiskerRight, assoc]
-    map₂_leftUnitor := fun f => by
-      dsimp
-      simp only [map₂_leftUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
-        comp_whiskerRight, assoc]
-    map₂_rightUnitor := fun f => by
-      dsimp
-      simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_right_assoc,
-        whiskerLeft_comp, assoc] }
+def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
+  toPrelaxFunctor := PrelaxFunctor.comp F.toPrelaxFunctor G.toPrelaxFunctor
+  mapId := fun a => by exact (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
+  mapComp := fun f g => by
+    exact (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
+  mapComp_naturality_left := fun η g => by
+    dsimp;
+    rw [← G.map₂_comp_assoc, mapComp_naturality_left, G.map₂_comp_assoc, mapComp_naturality_left,
+      assoc]
+  mapComp_naturality_right := fun η => by
+    dsimp
+    intros
+    rw [← G.map₂_comp_assoc, mapComp_naturality_right, G.map₂_comp_assoc,
+      mapComp_naturality_right, assoc]
+  map₂_associator := fun f g h => by
+    dsimp
+    -- Porting note: if you use the `map₂_associator_aux` hack in the definition of
+    -- `map₂_associator` then the `simp only` call below does not seem to apply `map₂_associator`
+    simp only [map₂_associator, ← PrelaxFunctor.map₂_comp_assoc, ← mapComp_naturality_right_assoc,
+      whiskerLeft_comp, assoc]
+    simp only [map₂_associator, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
+      comp_whiskerRight, assoc]
+  map₂_leftUnitor := fun f => by
+    dsimp
+    simp only [map₂_leftUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
+      comp_whiskerRight, assoc]
+  map₂_rightUnitor := fun f => by
+    dsimp
+    simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_right_assoc,
+      whiskerLeft_comp, assoc]
 #align category_theory.oplax_functor.comp CategoryTheory.OplaxFunctor.comp
 
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.

@@ -120,7 +120,7 @@ section
 
 open Iso
 
-/-- The prelax functor between the underlying quivers. -/
+/-- The underlying prelax functor. -/
 add_decl_doc Pseudofunctor.toPrelaxFunctor
 
 
@@ -152,10 +152,10 @@ variable (F : Pseudofunctor B C)
 #noalign category_theory.pseudofunctor.to_prelax_functor_map₂
 
 /-- The oplax functor associated with a pseudofunctor. -/
-def toOplax : OplaxFunctor B C :=
-  { (F : PrelaxFunctor B C) with
-    mapId := fun a => (F.mapId a).hom
-    mapComp := fun f g => (F.mapComp f g).hom }
+def toOplax : OplaxFunctor B C where
+  toPrelaxFunctor := F.toPrelaxFunctor
+  mapId := fun a => (F.mapId a).hom
+  mapComp := fun f g => (F.mapComp f g).hom
 #align category_theory.pseudofunctor.to_oplax CategoryTheory.Pseudofunctor.toOplax
 
 instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
@@ -191,21 +191,22 @@ theorem to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
 
 /-- The identity pseudofunctor. -/
 @[simps]
-def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
-  { PrelaxFunctor.id B with
-    mapId := fun a => Iso.refl (𝟙 a)
-    mapComp := fun f g => Iso.refl (f ≫ g) }
+def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B where
+  toPrelaxFunctor := PrelaxFunctor.id B
+  mapId := fun a => Iso.refl (𝟙 a)
+  mapComp := fun f g => Iso.refl (f ≫ g)
 #align category_theory.pseudofunctor.id CategoryTheory.Pseudofunctor.id
 
 instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
 /-- Composition of pseudofunctors. -/
+@[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D where
   toPrelaxFunctor := (F : PrelaxFunctor B C).comp (G : PrelaxFunctor C D)
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
-  -- Note: whilst these are all provable by `aesop_cat`, the proof is too slow
+  -- Note: whilst these are all provable by `aesop_cat`, the proof is too slow and times out
   map₂_whisker_left f η := by dsimp; simp
   map₂_whisker_right η h := by dsimp; simp
   map₂_associator f g h := by dsimp; simp
@@ -213,51 +214,52 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   map₂_right_unitor f := by dsimp; simp
 #align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
 
--- `comp` is near the `maxHeartbeats` limit (and seems to go over in CI),
--- so we defer creating its `@[simp]` lemmas until a separate command.
-attribute [simps] comp
+-- TODO: clean up
+-- -- `comp` is near the `maxHeartbeats` limit (and seems to go over in CI),
+-- -- so we defer creating its `@[simp]` lemmas until a separate command.
+-- attribute [simps] comp
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
 -/
 @[simps]
-def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C :=
-  { (F : PrelaxFunctor B C) with
-    mapId := F'.mapIdIso
-    mapComp := F'.mapCompIso
-    map₂_whisker_left := fun f g h η => by
-      dsimp
-      rw [F'.mapCompIso_hom f g, ← F.mapComp_naturality_right_assoc, ← F'.mapCompIso_hom f h,
-        hom_inv_id, comp_id]
-    map₂_whisker_right := fun η h => by
-      dsimp
-      rw [F'.mapCompIso_hom _ h, ← F.mapComp_naturality_left_assoc, ← F'.mapCompIso_hom _ h,
-        hom_inv_id, comp_id]
-    map₂_associator := fun f g h => by
-      dsimp
-      rw [F'.mapCompIso_hom (f ≫ g) h, F'.mapCompIso_hom f g, ← F.map₂_associator_assoc, ←
-        F'.mapCompIso_hom f (g ≫ h), ← F'.mapCompIso_hom g h, whiskerLeft_hom_inv_assoc,
-        hom_inv_id, comp_id] }
+def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
+  toPrelaxFunctor := F.toPrelaxFunctor
+  mapId := F'.mapIdIso
+  mapComp := F'.mapCompIso
+  map₂_whisker_left := fun f g h η => by
+    dsimp
+    rw [F'.mapCompIso_hom f g, ← F.mapComp_naturality_right_assoc, ← F'.mapCompIso_hom f h,
+      hom_inv_id, comp_id]
+  map₂_whisker_right := fun η h => by
+    dsimp
+    rw [F'.mapCompIso_hom _ h, ← F.mapComp_naturality_left_assoc, ← F'.mapCompIso_hom _ h,
+      hom_inv_id, comp_id]
+  map₂_associator := fun f g h => by
+    dsimp
+    rw [F'.mapCompIso_hom (f ≫ g) h, F'.mapCompIso_hom f g, ← F.map₂_associator_assoc, ←
+      F'.mapCompIso_hom f (g ≫ h), ← F'.mapCompIso_hom g h, whiskerLeft_hom_inv_assoc,
+      hom_inv_id, comp_id]
 #align category_theory.pseudofunctor.mk_of_oplax CategoryTheory.Pseudofunctor.mkOfOplax
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
 -/
 @[simps]
 noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
-    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C :=
-  { (F : PrelaxFunctor B C) with
-    mapId := fun a => asIso (F.mapId a)
-    mapComp := fun f g => asIso (F.mapComp f g)
-    map₂_whisker_left := fun f g h η => by
-      dsimp
-      rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_right]
-    map₂_whisker_right := fun η h => by
-      dsimp
-      rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_left]
-    map₂_associator := fun f g h => by
-      dsimp
-      simp only [← assoc]
-      rw [IsIso.eq_comp_inv, ← inv_whiskerLeft, IsIso.eq_comp_inv]
-      simp only [assoc, F.map₂_associator] }
+    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C where
+  toPrelaxFunctor := F.toPrelaxFunctor
+  mapId := fun a => asIso (F.mapId a)
+  mapComp := fun f g => asIso (F.mapComp f g)
+  map₂_whisker_left := fun f g h η => by
+    dsimp
+    rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_right]
+  map₂_whisker_right := fun η h => by
+    dsimp
+    rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_left]
+  map₂_associator := fun f g h => by
+    dsimp
+    simp only [← assoc]
+    rw [IsIso.eq_comp_inv, ← inv_whiskerLeft, IsIso.eq_comp_inv]
+    simp only [assoc, F.map₂_associator]
 #align category_theory.pseudofunctor.mk_of_oplax' CategoryTheory.Pseudofunctor.mkOfOplax'
 
 end
