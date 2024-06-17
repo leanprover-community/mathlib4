@@ -72,11 +72,11 @@ theorem normalizer_inf : (N₁ ⊓ N₂).normalizer = N₁.normalizer ⊓ N₂.n
 #align lie_submodule.normalizer_inf LieSubmodule.normalizer_inf
 
 @[mono]
-theorem monotone_normalizer : Monotone (normalizer : LieSubmodule R L M → LieSubmodule R L M) := by
-  intro N₁ N₂ h m hm
+theorem monotone_normalizer (h : N₁ ≤ N₂) : normalizer N₁ ≤ normalizer N₂ := by
+  intro m hm
   rw [mem_normalizer] at hm ⊢
   exact fun x => h (hm x)
-#align lie_submodule.monotone_normalizer LieSubmodule.monotone_normalizer
+#align lie_submodule.monotone_normalizer LieSubmodule.monotone_normalizerₓ
 
 @[simp]
 theorem comap_normalizer (f : M' →ₗ⁅R,L⁆ M) : N.normalizer.comap f = (N.comap f).normalizer := by
