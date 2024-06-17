@@ -14,7 +14,9 @@ import Mathlib.Util.Superscript
 
 https://en.wikipedia.org/wiki/Generalized_Poincar%C3%A9_conjecture
 
-The mathlib notation `≃ₕ` stands for a homotopy equivalence, while `≃ₜ` stands for a homeomorphism.
+The mathlib notation `≃ₕ` stands for a homotopy equivalence, `≃ₜ` stands for a homeomorphism,
+and `≃ₘ⟮𝓡 n, 𝓡 n⟯` stands for a diffeomorphism, where `𝓡 n` is the `n`-dimensional Euclidean
+space viewed as a model space.
 -/
 
 open scoped Manifold
@@ -46,23 +48,22 @@ proof_wanted SimplyConnectedSpace.nonempty_homeomorph_sphere_three
 proof_wanted SimplyConnectedSpace.nonempty_diffeomorph_sphere_three
     [ChartedSpace ℝ³ M] [SmoothManifoldWithCorners (𝓡 3) M]
     [SimplyConnectedSpace M] [CompactSpace M] :
-    Nonempty (Diffeomorph (𝓡 3) (𝓡 3) M 𝕊³ ∞)
+    Nonempty (M ≃ₘ⟮𝓡 3, 𝓡 3⟯ 𝕊³)
 
 /-- The smooth Poincaré conjecture; true for n = 1, 2, 3, 5, 6, 12, 56, and 61,
 open for n = 4, and it is conjectured that there are no other n > 4 for which it is true
 (Conjecture 1.17, https://annals.math.princeton.edu/2017/186-2/p03). -/
 def ContinuousMap.HomotopyEquiv.NonemptyDiffeomorphSphere (n : ℕ) : Prop :=
   ∀ (_ : ChartedSpace ℝⁿ M) (_ : SmoothManifoldWithCorners (𝓡 n) M),
-    M ≃ₕ 𝕊ⁿ → Nonempty (Diffeomorph (𝓡 n) (𝓡 n) M 𝕊ⁿ ∞)
+    M ≃ₕ 𝕊ⁿ → Nonempty (M ≃ₘ⟮𝓡 n, 𝓡 n⟯ 𝕊ⁿ)
 
 /-- The existence of an exotic 7-sphere (due to John Milnor) -/
 proof_wanted exists_homeomorph_isEmpty_diffeomorph_sphere_seven :
     ∃ (M : Type) (_ : TopologicalSpace M) (_ : ChartedSpace ℝ⁷ M)
       (_ : SmoothManifoldWithCorners (𝓡 7) M) (_homeo : M ≃ₜ 𝕊⁷),
-      IsEmpty (Diffeomorph (𝓡 7) (𝓡 7) M 𝕊⁷ ∞)
+      IsEmpty (M ≃ₘ⟮𝓡 7, 𝓡 7⟯ 𝕊⁷)
 
 /-- The existence of a small exotic ℝ⁴, i.e. an open subset of ℝ⁴ that is homeomorphic but
 not diffeomorphic to ℝ⁴. See https://en.wikipedia.org/wiki/Exotic_R4. -/
 proof_wanted exists_open_nonempty_homeomorph_isEmpty_diffeomorph_euclideanSpace_four :
-    ∃ M : TopologicalSpace.Opens ℝ⁴,
-      Nonempty (M ≃ₜ ℝ⁴) ∧ IsEmpty (Diffeomorph (𝓡 4) (𝓡 4) M ℝ⁴ ∞)
+    ∃ M : TopologicalSpace.Opens ℝ⁴, Nonempty (M ≃ₜ ℝ⁴) ∧ IsEmpty (M ≃ₘ⟮𝓡 4, 𝓡 4⟯ ℝ⁴)
