@@ -424,7 +424,7 @@ theorem psumMu_zero : psumMu σ R (Nat.Partition.indiscrete 0) = 1 := by
   rw [psumMu, muProduct_indiscrete_zero]
 
 @[simp]
-theorem psumMu_onePart {n : ℕ} (npos : n > 0) :
+theorem psumMu_indiscrete {n : ℕ} (npos : n > 0) :
     psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by simp [psumMu, npos]
 
 @[simp]
