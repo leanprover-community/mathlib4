@@ -189,15 +189,6 @@ theorem to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
   rfl
 #align category_theory.pseudofunctor.to_oplax_map_comp CategoryTheory.Pseudofunctor.to_oplax_mapComp
 
--- Porting note: I changed `simps` to `simps!` without understanding what I was doing
--- (lean 4 told me to do this)
--- TODO: is this needed?
-/-- Function on 1-morphisms as a functor. -/
-@[simps!]
-def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) :=
-  (F : OplaxFunctor B C).mapFunctor a b
-#align category_theory.pseudofunctor.map_functor CategoryTheory.Pseudofunctor.mapFunctor
-
 /-- The identity pseudofunctor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=

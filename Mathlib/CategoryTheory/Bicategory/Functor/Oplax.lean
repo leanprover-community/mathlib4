@@ -148,13 +148,6 @@ variable (F : OplaxFunctor B C)
 -- `PrelaxFunctor.map₂` to nonexistent `OplaxFunctor.map₂`
 #noalign category_theory.oplax_functor.to_prelax_functor_map₂
 
-/-- Function between 1-morphisms as a functor. -/
-@[simps]
-def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) where
-  obj f := F.map f
-  map η := F.map₂ η
-#align category_theory.oplax_functor.map_functor CategoryTheory.OplaxFunctor.mapFunctor
-
 /-- The identity oplax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B :=
