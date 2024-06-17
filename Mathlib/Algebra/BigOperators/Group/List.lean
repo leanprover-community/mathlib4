@@ -859,7 +859,7 @@ lemma unop_map_list_prod {F : Type*} [FunLike F M Nᵐᵒᵖ] [MonoidHomClass F 
 namespace MonoidHom
 
 /-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-@[deprecated _root_.unop_map_list_prod]
+@[deprecated _root_.unop_map_list_prod (since := "2023-01-10")]
 protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
   unop_map_list_prod f l

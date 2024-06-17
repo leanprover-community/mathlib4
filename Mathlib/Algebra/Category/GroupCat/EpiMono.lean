@@ -5,6 +5,8 @@ Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import algebra.category.Group.epi_mono from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

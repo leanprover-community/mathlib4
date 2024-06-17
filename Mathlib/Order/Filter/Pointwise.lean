@@ -193,6 +193,7 @@ protected theorem map_inv : f.map Inv.inv = f⁻¹ :=
   rfl
 #align filter.map_inv Filter.map_inv
 #align filter.map_neg Filter.map_neg
+#align filter.map_neg_eq_comap_neg Filter.map_negₓ
 
 @[to_additive]
 theorem mem_inv : s ∈ f⁻¹ ↔ Inv.inv ⁻¹' s ∈ f :=
