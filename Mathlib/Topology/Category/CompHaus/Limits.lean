@@ -126,7 +126,7 @@ def pullbackIsoPullback : CompHaus.pullback f g ≅ Limits.pullback f g :=
 /-- The homeomorphism from the explicit pullback to the abstract pullback. -/
 noncomputable
 def pullbackHomeoPullback : (CompHaus.pullback f g).toTop ≃ₜ (Limits.pullback f g).toTop :=
-  CompHaus.homeoOfIso (pullbackIsoPullback f g)
+  CompHausLike.homeoOfIso (pullbackIsoPullback f g)
 
 theorem pullback_fst_eq :
     CompHaus.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
@@ -209,7 +209,7 @@ theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
 /-- The homeomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
 def coproductHomeoCoproduct : finiteCoproduct X ≃ₜ (∐ X : _) :=
-  CompHaus.homeoOfIso (coproductIsoCoproduct X)
+  CompHausLike.homeoOfIso (coproductIsoCoproduct X)
 
 end Iso
 
