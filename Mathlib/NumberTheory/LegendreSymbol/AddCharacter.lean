@@ -118,7 +118,7 @@ structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] wh
 
 section ZMod
 
-variable {N : ℕ+} {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
+variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
 /-- If `e` is not primitive, then `e.mulShift d = 1` for some proper divisor `d` of `N`. -/
 lemma exists_divisor_of_not_isPrimitive (he : ¬e.IsPrimitive) :
@@ -127,7 +127,7 @@ lemma exists_divisor_of_not_isPrimitive (he : ¬e.IsPrimitive) :
   rcases he with ⟨b, hb_ne, hb⟩
   -- We have `AddChar.mulShift e b = 1`, but `b ≠ 0`.
   obtain ⟨d, hd, u, hu, rfl⟩ := b.eq_unit_mul_divisor
-  refine ⟨d, hd, lt_of_le_of_ne (Nat.le_of_dvd N.pos hd) ?_, ?_⟩
+  refine ⟨d, hd, lt_of_le_of_ne (Nat.le_of_dvd (NeZero.pos _) hd) ?_, ?_⟩
   · exact fun h ↦ by simp only [h, ZMod.natCast_self, mul_zero, ne_eq, not_true_eq_false] at hb_ne
   · rw [← mulShift_unit_eq_one_iff _ hu, ← hb, mul_comm]
     ext1 y
@@ -143,19 +143,19 @@ section ZModCharDef
 
 
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
-def zmodChar (n : ℕ+) {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) : AddChar (ZMod n) C where
+def zmodChar (n : ℕ) [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) : AddChar (ZMod n) C where
   toFun a := ζ ^ a.val
   map_zero_eq_one' := by simp only [ZMod.val_zero, pow_zero]
   map_add_eq_mul' x y := by simp only [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
 #align add_char.zmod_char AddChar.zmodChar
 
 /-- The additive character on `ZMod n` defined using `ζ` sends `a` to `ζ^a`. -/
-theorem zmodChar_apply {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ZMod n) :
+theorem zmodChar_apply {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ZMod n) :
     zmodChar n hζ a = ζ ^ a.val :=
   rfl
 #align add_char.zmod_char_apply AddChar.zmodChar_apply
 
-theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
+theorem zmodChar_apply' {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
   rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'
@@ -163,7 +163,7 @@ theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ)
 end ZModCharDef
 
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
-theorem zmod_char_ne_one_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) : ψ ≠ 1 ↔ ψ 1 ≠ 1 := by
+theorem zmod_char_ne_one_iff (n : ℕ) [NeZero n] (ψ : AddChar (ZMod n) C) : ψ ≠ 1 ↔ ψ 1 ≠ 1 := by
   rw [ne_one_iff]
   refine ⟨?_, fun h => ⟨_, h⟩⟩
   contrapose!
@@ -174,8 +174,9 @@ theorem zmod_char_ne_one_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) : ψ ≠ 1 ↔
 #align add_char.zmod_char_is_nontrivial_iff AddChar.zmod_char_ne_one_iff
 
 /-- A primitive additive character on `ZMod n` takes the value `1` only at `0`. -/
-theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ+) {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ)
-    (a : ZMod n) : ψ a = 1 ↔ a = 0 := by
+theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ) [NeZero n]
+    {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ) (a : ZMod n) :
+    ψ a = 1 ↔ a = 0 := by
   refine ⟨fun h => not_imp_comm.mp (@hψ a) ?_, fun ha => by rw [ha, map_zero_eq_one]⟩
   rw [zmod_char_ne_one_iff n (mulShift ψ a), mulShift_apply, mul_one, h, Classical.not_not]
 #align add_char.is_primitive.zmod_char_eq_one_iff AddChar.IsPrimitive.zmod_char_eq_one_iff
@@ -193,19 +194,19 @@ theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod
 
 /-- The additive character on `ZMod n` associated to a primitive `n`th root of unity
 is primitive -/
-theorem zmodChar_primitive_of_primitive_root (n : ℕ+) {ζ : C} (h : IsPrimitiveRoot ζ n) :
+theorem zmodChar_primitive_of_primitive_root (n : ℕ) [NeZero n] {ζ : C} (h : IsPrimitiveRoot ζ n) :
     IsPrimitive (zmodChar n ((IsPrimitiveRoot.iff_def ζ n).mp h).left) := by
   apply zmod_char_primitive_of_eq_one_only_at_zero
   intro a ha
   rw [zmodChar_apply, ← pow_zero ζ] at ha
-  exact (ZMod.val_eq_zero a).mp (IsPrimitiveRoot.pow_inj h (ZMod.val_lt a) n.pos ha)
+  exact (ZMod.val_eq_zero a).mp (IsPrimitiveRoot.pow_inj h (ZMod.val_lt a) (NeZero.pos _) ha)
 #align add_char.zmod_char_primitive_of_primitive_root AddChar.zmodChar_primitive_of_primitive_root
 
 /-- There is a primitive additive character on `ZMod n` if the characteristic of the target
 does not divide `n` -/
 noncomputable def primitiveZModChar (n : ℕ+) (F' : Type v) [Field F'] (h : (n : F') ≠ 0) :
     PrimitiveAddChar (ZMod n) F' :=
-  haveI : NeZero ((n : ℕ) : F') := ⟨h⟩
+  have : NeZero (n : F') := ⟨h⟩
   ⟨n, zmodChar n (IsCyclotomicExtension.zeta_pow n F' _),
     zmodChar_primitive_of_primitive_root n (IsCyclotomicExtension.zeta_spec n F' _)⟩
 #align add_char.primitive_zmod_char AddChar.primitiveZModChar
