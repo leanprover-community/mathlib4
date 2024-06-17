@@ -148,12 +148,13 @@ noncomputable def absoluteDifferentialsBundledCore :
     letI := (R.map f).toAlgebra
     exact KaehlerDifferential.map ℤ ℤ (R.obj X) (R.obj Y)
   map_id X := by
-    convert KaehlerDifferential.linearMap_ext _
+    convert KaehlerDifferential.linearMap_ext ?_
     intro x
+    dsimp
     erw [ModuleCat.restrictScalarsId'App_inv_apply]
     rw [KaehlerDifferential.map_D, R.map_id, Algebra.id.map_eq_id, RingHom.id_apply]
   map_comp {X Y Z} f g := by
-    convert KaehlerDifferential.linearMap_ext _
+    convert KaehlerDifferential.linearMap_ext ?_
     intro x
     letI := (R.map f).toAlgebra
     letI := (R.map g).toAlgebra
@@ -233,7 +234,7 @@ lemma postcomp_injective {φ φ' : absoluteDifferentials R ⟶ M'}
     (h : (absoluteDerivation R).postcomp φ = (absoluteDerivation R).postcomp φ') :
     φ = φ' := by
   ext1 X
-  apply KaehlerDifferential.linearMap_ext ℤ (R.obj X)
+  apply KaehlerDifferential.linearMap_ext (R := ℤ) (S := R.obj X)
   exact AbsoluteDerivation.congr_d h
 
 end absoluteDerivationUniversal
