@@ -581,7 +581,7 @@ end Module
 
 section SpectrumDiagonal
 
-variable {R : Type*} [Field R] {n : Type*} [DecidableEq n][Fintype n]
+variable {R : Type*} [Field R] {n : Type*} [DecidableEq n] [Fintype n]
 
 open Module.End
 
