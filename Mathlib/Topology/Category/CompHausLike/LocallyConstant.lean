@@ -163,8 +163,6 @@ variable
   {α : Type u} [Finite α] (σ : α → Type u)
   [∀ a, TopologicalSpace (σ a)] [∀ a, CompactSpace (σ a)] [∀ a, T2Space (σ a)]
   [∀ a, HasProp P (σ a)]
-  -- (h : ∀ a, P (TopCat.of (σ a))) -- (hP : P (TopCat.of (Σ (a : α), (TopCat.of (σ a)))))
-  -- [HasFiniteCoproducts (CompHausLike P)]
 
 instance : HasProp P (Σ (a : α), (σ a)) :=
   HasExplicitFiniteCoproducts.hasProp (fun a ↦ of P (σ a))
@@ -249,22 +247,7 @@ variable {S T : CompHausLike.{u} P} (g : T ⟶ S) {Y : (CompHausLike.{u} P)ᵒ�
 
 open Aux
 
--- variable (hh : ∀ (S : CompHausLike.{u} P) (s : Set S) (_ : IsClopen s), HasProp P s)
 variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
-
--- instance : HasProp P S := ⟨S.prop⟩
-
--- instance (a : α f) : HasProp P a.val := by
---   have : HasProp P S := ⟨S.prop⟩
---   infer_instance
-
--- lemma hasProp_fiber {S : CompHausLike.{u} P} {X : Type (max u w)}
---     (f : LocallyConstant S X) (a : α f) : HasProp P a.val := by
---   refine hh S _ ?_
---   convert f.2.isClopen_fiber a.image
---   rw [α.eq_fiber_image]
---   ext
---   simp
 
 def part {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : α r) :
     CompHausLike.{u} P :=
@@ -284,9 +267,6 @@ def sigmaIncl {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q
 noncomputable def sigmaIso {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) :
     (CompHausLike.finiteCoproduct (part r)) ≅ Q :=
   CompHausLike.isoOfBijective (sigmaIsoHom r) ⟨sigmaIsoHom_inj r, sigmaIsoHom_surj r⟩
-
--- lemma _root_.CompHausLike.comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
---     f ≫ g = (g : C(_, _)).comp f := rfl
 
 /--
 This is an auxiliary definition, the details do not matter. What's important is that this map exists
@@ -314,17 +294,10 @@ lemma sigmaComparison_comp_sigmaIso {Q : CompHausLike.{u} P} {Z : Type (max u w)
     CompHausLike.coe_of, ← FunctorToTypes.map_comp_apply]
   congr
 
--- lemma sigmaComparison_comp_sigmaIso (a : α f):
---     (Y.mapIso (sigmaIso hh f).op).hom ≫ sigmaComparison Y (σ f) ≫ (fun g ↦ g a) =
---       Y.map (sigmaIncl f a).op := sigmaComparison_comp_sigmaIso' f Y a
-
 /-- The projection of the counit. -/
 noncomputable def counitAppAppImage : (a : α f) → Y.obj ⟨part f a⟩ :=
   fun a ↦ Y.map (CompHausLike.isTerminalPUnit.from _).op a.image
 
-
--- variable (hh : ∀ (S : CompHausLike.{u} P) (X : Type (max u w)) (f : LocallyConstant S X) (a : α f),
---   HasProp P a.val)
 
 /--
 The counit is defined as follows: given a locally constant map `f : S → Y(*)`, let
