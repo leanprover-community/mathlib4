@@ -1168,8 +1168,8 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
         (option_some.comp $ snd.comp $ fst.comp snd)
         (snd.comp $ snd.comp snd)).of_eq
   fun a ps => by
-  induction' ps with p ps ih <;> simp[List.lookup, *]
-  cases ha : a == p.1 <;> simp[ha]
+  induction' ps with p ps ih <;> simp [List.lookup, *]
+  cases ha : a == p.1 <;> simp [ha]
 
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
@@ -1242,7 +1242,7 @@ theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
       (Primrec₂.uncurry.mpr hm)
       (list_map (hl.comp fst snd) (Primrec₂.pair.comp₂ (fst.comp₂ .left) .right))
       (hg.comp₂ (fst.comp₂ .left) (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right))
-      (by simpa using Ord) (by simpa[Function.comp] using H)
+      (by simpa using Ord) (by simpa [Function.comp] using H)
 
 end Primrec
 

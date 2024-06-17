@@ -521,7 +521,7 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
   LinearMap.CompatibleSMul.map_smul (f : M₁ →ₗ[S] M₂) c x
 #align continuous_linear_map.map_smul_of_tower ContinuousLinearMap.map_smul_of_tower
 
-@[deprecated _root_.map_sum]
+@[deprecated _root_.map_sum (since := "2023-09-16")]
 protected theorem map_sum {ι : Type*} (f : M₁ →SL[σ₁₂] M₂) (s : Finset ι) (g : ι → M₁) :
     f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
   map_sum ..
@@ -2754,7 +2754,7 @@ instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [C
   have quot : QuotientMap fun au : R × M => (au.1, S.mkQ au.2) :=
     IsOpenMap.to_quotientMap (IsOpenMap.id.prod S.isOpenMap_mkQ)
       (continuous_id.prod_map continuous_quot_mk)
-      (Function.surjective_id.Prod_map <| surjective_quot_mk _)
+      (Function.surjective_id.prodMap <| surjective_quot_mk _)
   rw [quot.continuous_iff]
   exact continuous_quot_mk.comp continuous_smul
 #align submodule.has_continuous_smul_quotient Submodule.continuousSMul_quotient

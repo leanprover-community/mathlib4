@@ -95,7 +95,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   · exact lt_of_le_of_ne hp.1.two_le (hodd.ne_two_of_dvd_nat (dvd_refl _)).symm
   · exact hp.1.pos
 
-@[deprecated exists_sq_add_sq_add_one_eq_mul]
+@[deprecated exists_sq_add_sq_add_one_eq_mul (since := "2023-06-04")]
 theorem exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
     ∃ (a b : ℤ) (k : ℕ), a ^ 2 + b ^ 2 + 1 = k * p ∧ k < p :=
   let ⟨a, b, k, _, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p

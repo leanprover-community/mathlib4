@@ -339,6 +339,16 @@ theorem interior_iInter_of_finite [Finite ι] (f : ι → Set X) :
   rw [← sInter_range, (finite_range f).interior_sInter, biInter_range]
 #align interior_Inter interior_iInter_of_finite
 
+@[simp]
+theorem interior_iInter₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m < n, f m) = ⋂ m < n, interior (f m) :=
+  (finite_lt_nat n).interior_biInter f
+
+@[simp]
+theorem interior_iInter₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m ≤ n, f m) = ⋂ m ≤ n, interior (f m) :=
+  (finite_le_nat n).interior_biInter f
+
 theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
   have : interior (s ∪ t) ⊆ s := fun x ⟨u, ⟨(hu₁ : IsOpen u), (hu₂ : u ⊆ s ∪ t)⟩, (hx₁ : x ∈ u)⟩ =>
@@ -518,6 +528,16 @@ theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set X) :
     closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   rw [← sUnion_range, (finite_range _).closure_sUnion, biUnion_range]
 #align closure_Union closure_iUnion_of_finite
+
+@[simp]
+theorem closure_iUnion₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m < n, f m) = ⋃ m < n, closure (f m) :=
+  (finite_lt_nat n).closure_biUnion f
+
+@[simp]
+theorem closure_iUnion₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m ≤ n, f m) = ⋃ m ≤ n, closure (f m) :=
+  (finite_le_nat n).closure_biUnion f
 
 theorem interior_subset_closure : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
@@ -1241,7 +1261,7 @@ theorem mem_closure_iff_nhds_ne_bot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ 
   mem_closure_iff_clusterPt.trans neBot_iff
 #align mem_closure_iff_nhds_ne_bot mem_closure_iff_nhds_ne_bot
 
-@[deprecated] -- 28 January 2024
+@[deprecated (since := "2024-01-28")]
 alias mem_closure_iff_nhds_neBot := mem_closure_iff_nhds_ne_bot
 
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
@@ -1559,7 +1579,7 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
   hf hs
 
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
-@[deprecated] -- 15 January 2024
+@[deprecated (since := "2024-01-15")]
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
     f =ᶠ[𝓝 x] 0 ↔ x ∉ closure (Function.support f) := by
   rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support,
