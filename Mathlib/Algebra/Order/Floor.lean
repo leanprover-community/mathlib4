@@ -1741,11 +1741,14 @@ theorem natCast_ceil_eq_intCast_ceil  (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a�
   rw [← Int.ofNat_ceil_eq_ceil ha, Int.cast_natCast]
 #align nat.cast_ceil_eq_cast_int_ceil natCast_ceil_eq_intCast_ceil
 
--- 2024-02-14
-@[deprecated] alias Nat.cast_floor_eq_int_floor := Int.ofNat_floor_eq_floor
-@[deprecated] alias Nat.cast_ceil_eq_int_ceil := Int.ofNat_ceil_eq_ceil
-@[deprecated] alias Nat.cast_floor_eq_cast_int_floor := natCast_floor_eq_intCast_floor
-@[deprecated] alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
+@[deprecated (since := "2024-02-14")] alias Nat.cast_floor_eq_int_floor := Int.ofNat_floor_eq_floor
+@[deprecated (since := "2024-02-14")] alias Nat.cast_ceil_eq_int_ceil := Int.ofNat_ceil_eq_ceil
+
+@[deprecated (since := "2024-02-14")]
+alias Nat.cast_floor_eq_cast_int_floor := natCast_floor_eq_intCast_floor
+
+@[deprecated (since := "2024-02-14")]
+alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
 
 end FloorRingToSemiring
 
