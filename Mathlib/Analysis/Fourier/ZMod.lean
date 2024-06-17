@@ -84,19 +84,26 @@ section fourier
 open MeasureTheory
 
 /-- The discrete measurable space structure (every set is measurable). -/
-instance instMeasurableSpaceZMod : MeasurableSpace (ZMod N) := ⊤
+instance : MeasurableSpace (ZMod N) := ⊤
 
-/-- The discrete Fourier transform on `ℤ / Nℤ` (with the counting measure) -/
+/-- The discrete topology (every set is open). -/
+instance : TopologicalSpace (ZMod N) := ⊥
+
+instance : DiscreteTopology (ZMod N) := ⟨rfl⟩
+
+/-- The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure) -/
 noncomputable def dft (Φ : ZMod N → ℂ) (k : ZMod N) : ℂ :=
   Fourier.fourierIntegral toCircle Measure.count Φ k
 
 @[inherit_doc] scoped notation "𝓕" => dft
 
-lemma dft_def (Φ : ZMod N → ℂ) (k : ZMod N) :
+lemma dft_apply (Φ : ZMod N → ℂ) (k : ZMod N) :
     𝓕 Φ k = ∑ j : ZMod N, toCircle (-(j * k)) • Φ j := by
-  simp only [dft, Fourier.fourierIntegral_def,
-    integral_countable' (integrable_count_iff.mpr .of_finite), Measure.count_singleton,
-    ENNReal.one_toReal, one_smul, tsum_fintype]
+  simp only [dft, Fourier.fourierIntegral_def, integral_countable' <| .of_finite ..,
+    Measure.count_singleton, ENNReal.one_toReal, one_smul, tsum_fintype]
+
+lemma dft_def (Φ : ZMod N → ℂ) : 𝓕 Φ = fun k ↦ ∑ j : ZMod N, toCircle (-(j * k)) • Φ j :=
+  funext (dft_apply Φ)
 
 end fourier
 
