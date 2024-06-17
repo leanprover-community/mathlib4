@@ -307,7 +307,7 @@ lemma Cofan.isColimit_iff_isIso_sigmaDesc
   rfl
 
 /-- A coproduct of coproducts is a coproduct -/
-def Cofan.isColimitTrans {α : Type*} {X : α → C} (c : Cofan X) (hc : IsColimit c)
+def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
     {β : α → Type*} {Y : (a : α) → β a → C} (π : (a : α) → (b : β a) → Y a b ⟶ X a)
       (hs : ∀ a, IsColimit (Cofan.mk (X a) (π a))) :
         IsColimit (Cofan.mk (f := fun ⟨a,b⟩ => Y a b) c.pt
