@@ -83,7 +83,7 @@ def lapply (i : ι) : (Π₀ i, M i) →ₗ[R] M i where
 #align dfinsupp.lapply DFinsupp.lapply
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
-@[simp, nolint simpNF]
+@[simp]
 theorem lmk_apply (s : Finset ι) (x) : (lmk s : _ →ₗ[R] Π₀ i, M i) x = mk s x :=
   rfl
 #align dfinsupp.lmk_apply DFinsupp.lmk_apply

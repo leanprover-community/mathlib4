@@ -1630,7 +1630,7 @@ theorem mulEquivOfMulEquiv_eq_map {k : LocalizationMap T Q} {j : M ≃* P}
 #align submonoid.localization_map.mul_equiv_of_mul_equiv_eq_map Submonoid.LocalizationMap.mulEquivOfMulEquiv_eq_map
 #align add_submonoid.localization_map.add_equiv_of_add_equiv_eq_map AddSubmonoid.LocalizationMap.addEquivOfAddEquiv_eq_map
 
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem mulEquivOfMulEquiv_eq {k : LocalizationMap T Q} {j : M ≃* P} (H : S.map j.toMonoidHom = T)
     (x) :
     f.mulEquivOfMulEquiv k H (f.toMap x) = k.toMap (j x) :=
@@ -1638,7 +1638,7 @@ theorem mulEquivOfMulEquiv_eq {k : LocalizationMap T Q} {j : M ≃* P} (H : S.ma
 #align submonoid.localization_map.mul_equiv_of_mul_equiv_eq Submonoid.LocalizationMap.mulEquivOfMulEquiv_eq
 #align add_submonoid.localization_map.add_equiv_of_add_equiv_eq AddSubmonoid.LocalizationMap.addEquivOfAddEquiv_eq
 
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem mulEquivOfMulEquiv_mk' {k : LocalizationMap T Q} {j : M ≃* P} (H : S.map j.toMonoidHom = T)
     (x y) :
     f.mulEquivOfMulEquiv k H (f.mk' x y) = k.mk' (j x) ⟨j y, H ▸ Set.mem_image_of_mem j y.2⟩ :=
@@ -1646,7 +1646,7 @@ theorem mulEquivOfMulEquiv_mk' {k : LocalizationMap T Q} {j : M ≃* P} (H : S.m
 #align submonoid.localization_map.mul_equiv_of_mul_equiv_mk' Submonoid.LocalizationMap.mulEquivOfMulEquiv_mk'
 #align add_submonoid.localization_map.add_equiv_of_add_equiv_mk' AddSubmonoid.LocalizationMap.addEquivOfAddEquiv_mk'
 
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem of_mulEquivOfMulEquiv_apply {k : LocalizationMap T Q} {j : M ≃* P}
     (H : S.map j.toMonoidHom = T) (x) :
     (f.ofMulEquivOfLocalizations (f.mulEquivOfMulEquiv k H)).toMap x = k.toMap (j x) :=
@@ -1759,13 +1759,13 @@ noncomputable def mulEquivOfQuotient (f : Submonoid.LocalizationMap S N) : Local
 variable {f}
 
 -- Porting note (#10675): dsimp can not prove this
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem mulEquivOfQuotient_apply (x) : mulEquivOfQuotient f x = (monoidOf S).lift f.map_units x :=
   rfl
 #align localization.mul_equiv_of_quotient_apply Localization.mulEquivOfQuotient_apply
 #align add_localization.add_equiv_of_quotient_apply AddLocalization.addEquivOfQuotient_apply
 
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem mulEquivOfQuotient_mk' (x y) : mulEquivOfQuotient f ((monoidOf S).mk' x y) = f.mk' x y :=
   (monoidOf S).lift_mk' _ _ _
 #align localization.mul_equiv_of_quotient_mk' Localization.mulEquivOfQuotient_mk'

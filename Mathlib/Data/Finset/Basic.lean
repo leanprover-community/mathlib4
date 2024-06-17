@@ -1131,7 +1131,7 @@ theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b =
 #align finset.eq_of_not_mem_of_mem_insert Finset.eq_of_not_mem_of_mem_insert
 
 /-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
-@[simp, nolint simpNF] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
+@[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
 
 @[simp]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=

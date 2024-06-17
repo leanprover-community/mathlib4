@@ -310,7 +310,7 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 
 -- The `simp` attribute is needed to make this a `dsimp` lemma.
 -- `simp` will always rewrite with `Equiv.symm_symm` before this has a chance to fire.
-@[simp, nolint simpNF] theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
+@[simp] theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 #align equiv.symm_symm_apply Equiv.symm_symm_apply
 
 theorem apply_eq_iff_eq (f : α ≃ β) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f

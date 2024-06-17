@@ -122,7 +122,7 @@ lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
 -- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
 -- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
   ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
@@ -908,7 +908,7 @@ end deprecated
 -- not just use the equational lemmas.
 
 -- @[simp]
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
 #align list.modify_head_modify_head List.modifyHead_modifyHead

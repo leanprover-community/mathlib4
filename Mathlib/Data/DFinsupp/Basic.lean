@@ -1271,7 +1271,7 @@ theorem subtypeDomain_def (f : Π₀ i, β i) :
   ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
 #align dfinsupp.subtype_domain_def DFinsupp.subtypeDomain_def
 
-@[simp, nolint simpNF] -- Porting note: simpNF claims that LHS does not simplify, but it does
+@[simp] -- Porting note: simpNF claims that LHS does not simplify, but it does
 theorem support_subtypeDomain {f : Π₀ i, β i} :
     (subtypeDomain p f).support = f.support.subtype p := by
   ext i
@@ -2032,7 +2032,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
 -- This applies to roughly the remainder of the file.
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom`,-/
-@[simp, nolint simpNF] -- Porting note: linter claims that simp can prove this, but it can not
+@[simp] -- Porting note: linter claims that simp can prove this, but it can not
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
     liftAddHom (β := β) (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
   (liftAddHom (β := β)).toEquiv.apply_eq_iff_eq_symm_apply.2 rfl

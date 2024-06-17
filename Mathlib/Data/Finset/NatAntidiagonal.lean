@@ -60,7 +60,7 @@ theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
 -- nolint as this is for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem antidiagonal_zero : antidiagonal 0 = {(0, 0)} := rfl
 #align finset.nat.antidiagonal_zero Finset.Nat.antidiagonal_zero
 

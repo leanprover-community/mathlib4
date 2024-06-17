@@ -404,7 +404,7 @@ theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
 
 -- dsimp loops when applying this lemma to its LHS,
 -- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 #align ideal.zero_eq_bot Ideal.zero_eq_bot

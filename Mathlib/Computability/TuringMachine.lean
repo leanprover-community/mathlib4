@@ -703,7 +703,7 @@ theorem Tape.map_write {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
 
 -- Porting note: `simpNF` complains about LHS does not simplify when using the simp lemma on
 --               itself, but it does indeed.
-@[simp, nolint simpNF]
+@[simp]
 theorem Tape.write_move_right_n {Γ} [Inhabited Γ] (f : Γ → Γ) (L R : ListBlank Γ) (n : ℕ) :
     ((Tape.move Dir.right)^[n] (Tape.mk' L R)).write (f (R.nth n)) =
       (Tape.move Dir.right)^[n] (Tape.mk' L (R.modifyNth f n)) := by

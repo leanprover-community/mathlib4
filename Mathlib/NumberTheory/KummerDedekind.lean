@@ -226,7 +226,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
 
 -- Porting note: on-line linter fails with `failed to synthesize` instance
 -- but #lint does not report any problem
-@[simp, nolint simpNF]
+@[simp]
 theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) (a : R<x>) :
     quotAdjoinEquivQuotMap hx h_alg (Ideal.Quotient.mk (I.map (algebraMap R R<x>)) a) =

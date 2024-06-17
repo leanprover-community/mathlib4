@@ -1058,7 +1058,7 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
 
 -- Porting note: simpNF linter complains that LHS doesn't simplify, but it does
 /-- A product over `s.subtype p` equals one over `s.filter p`. -/
-@[to_additive (attr := simp, nolint simpNF)
+@[to_additive (attr := simp)
   "A sum over `s.subtype p` equals one over `s.filter p`."]
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
     ∏ x ∈ s.subtype p, f x = ∏ x ∈ s.filter p, f x := by

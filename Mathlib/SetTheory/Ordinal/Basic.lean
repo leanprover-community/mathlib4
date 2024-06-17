@@ -198,7 +198,7 @@ theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := by
   rfl
 #align ordinal.type_def' Ordinal.type_def'
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+@[simp] -- Porting note (#10675): dsimp can not prove this
 theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := by
   rfl
 #align ordinal.type_def Ordinal.type_def
@@ -305,7 +305,7 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
   (RelIso.preimage f r).ordinal_type_eq
 #align ordinal.type_preimage Ordinal.type_preimage
 
-@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
+@[simp] -- `simpNF` incorrectly complains the LHS doesn't simplify.
 theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
   convert (RelIso.preimage f r).ordinal_type_eq
@@ -605,7 +605,7 @@ theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = 
 #align ordinal.card_type Ordinal.card_type
 
 -- Porting note: nolint, simpNF linter falsely claims the lemma never applies
-@[simp, nolint simpNF]
+@[simp]
 theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
     #{ y // r y x } = (typein r x).card :=
   rfl
@@ -645,7 +645,7 @@ theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
 #align ordinal.type_ulift Ordinal.type_uLift
 
 -- Porting note: simpNF linter falsely claims that this never applies
-@[simp, nolint simpNF]
+@[simp]
 theorem type_uLift_aux (r : α → α → Prop) [IsWellOrder α r] :
     @type.{max v u} _ (fun x y => r (ULift.down.{v,u} x) (ULift.down.{v,u} y))
       (inferInstanceAs (IsWellOrder (ULift α) (ULift.down ⁻¹'o r))) = lift.{v} (type r) :=
@@ -664,7 +664,7 @@ theorem type_lift_preimage {α : Type u} {β : Type v} (r : α → α → Prop) 
   (RelIso.preimage f r).ordinal_lift_type_eq
 #align ordinal.type_lift_preimage Ordinal.type_lift_preimage
 
-@[simp, nolint simpNF]
+@[simp]
 theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (@type _ (fun x y => r (f x) (f y))
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
@@ -1137,7 +1137,7 @@ theorem typein_le_typein' (o : Ordinal) {x x' : o.out.α} :
 #align ordinal.typein_le_typein' Ordinal.typein_le_typein'
 
 -- Porting note: added nolint, simpnf linter falsely claims it never applies
-@[simp, nolint simpNF]
+@[simp]
 theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o o' : Ordinal} (ho : o < type r)
     (ho' : o' < type r) : ¬r (enum r o' ho') (enum r o ho) ↔ o ≤ o' := by
   rw [← @not_lt _ _ o' o, enum_lt_enum ho']

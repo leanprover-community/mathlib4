@@ -176,7 +176,7 @@ theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
 
 -- Porting note: I'm not sure if this comment still applies.
 -- built-in reduction doesn't always work
-@[simp, nolint simpNF]
+@[simp]
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   ext_iff
 #align fin.mk_eq_mk Fin.mk_eq_mk

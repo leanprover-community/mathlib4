@@ -109,7 +109,7 @@ abbrev LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F]
   left_unitality X := by simpa using left_unitality X
   right_unitality X := by simpa using right_unitality X
 
-attribute [simp, nolint simpNF] LaxMonoidal.μ_natural_left LaxMonoidal.μ_natural_right
+attribute [simp] LaxMonoidal.μ_natural_left LaxMonoidal.μ_natural_right
 
 -- The unitality axioms cannot be used as simp lemmas because they require
 -- higher-order matching to figure out the `F` and `X` from `F X`.

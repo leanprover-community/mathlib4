@@ -678,7 +678,7 @@ structure ImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶
 attribute [inherit_doc ImageMap] ImageMap.map ImageMap.map_ι
 
 -- Porting note: LHS of this simplifies, simpNF still complains after blacklisting
-attribute [-simp, nolint simpNF] ImageMap.mk.injEq
+attribute [-simp] ImageMap.mk.injEq
 
 instance inhabitedImageMap {f : Arrow C} [HasImage f.hom] : Inhabited (ImageMap (𝟙 f)) :=
   ⟨⟨𝟙 _, by aesop⟩⟩

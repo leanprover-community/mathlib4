@@ -788,7 +788,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
     simp }
 
 -- Note (#6057) : tagging simpNF because linter complains
-@[simp high, nolint simpNF]
+@[simp high]
 theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl

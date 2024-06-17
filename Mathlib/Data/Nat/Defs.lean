@@ -285,8 +285,8 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
   not_lt_zero
 
 -- We want to use these two lemmas earlier than the lemmas simp can prove them with
-@[simp, nolint simpNF] protected alias add_left_inj := Nat.add_right_cancel_iff
-@[simp, nolint simpNF] protected alias add_right_inj := Nat.add_left_cancel_iff
+@[simp] protected alias add_left_inj := Nat.add_right_cancel_iff
+@[simp] protected alias add_right_inj := Nat.add_left_cancel_iff
 
 -- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding during pattern
 -- matching. These lemmas package them back up as typeclass mediated operations.
@@ -295,8 +295,8 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
 #align nat.add_def Nat.add_def
 
 -- We want to use these two lemmas earlier than the lemmas simp can prove them with
-@[simp, nolint simpNF] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega
-@[simp, nolint simpNF] protected lemma add_eq_right : a + b = b ↔ a = 0 := by omega
+@[simp] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega
+@[simp] protected lemma add_eq_right : a + b = b ↔ a = 0 := by omega
 
 lemma two_le_iff : ∀ n, 2 ≤ n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by simp
@@ -310,7 +310,7 @@ lemma add_eq_min_iff : m + n = min m n ↔ m = 0 ∧ n = 0 := by omega
 #align nat.add_eq_min_iff Nat.add_eq_min_iff
 
 -- We want to use this lemma earlier than the lemma simp can prove it with
-@[simp, nolint simpNF] protected lemma add_eq_zero : m + n = 0 ↔ m = 0 ∧ n = 0 := by omega
+@[simp] protected lemma add_eq_zero : m + n = 0 ↔ m = 0 ∧ n = 0 := by omega
 
 lemma add_pos_iff_pos_or_pos : 0 < m + n ↔ 0 < m ∨ 0 < n := by omega
 #align nat.add_pos_iff_pos_or_pos Nat.add_pos_iff_pos_or_pos
@@ -766,7 +766,7 @@ protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) :=by
 #align nat.pow_right_injective Nat.pow_right_injective
 
 -- We want to use this lemma earlier than the lemma simp can prove it with
-@[simp, nolint simpNF] protected lemma pow_eq_zero {a : ℕ} : ∀ {n : ℕ}, a ^ n = 0 ↔ a = 0 ∧ n ≠ 0
+@[simp] protected lemma pow_eq_zero {a : ℕ} : ∀ {n : ℕ}, a ^ n = 0 ↔ a = 0 ∧ n ≠ 0
   | 0 => by simp
   | n + 1 => by rw [Nat.pow_succ, mul_eq_zero, Nat.pow_eq_zero]; omega
 

@@ -825,7 +825,7 @@ instance instDiv : Div (α →ₘ[μ] γ) :=
 #align measure_theory.ae_eq_fun.has_div MeasureTheory.AEEqFun.instDiv
 #align measure_theory.ae_eq_fun.has_sub MeasureTheory.AEEqFun.instSub
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note: LHS does not simplify.
+@[to_additive (attr := simp)] -- Porting note: LHS does not simplify.
 theorem mk_div (f g : α → γ) (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     mk (f / g) (hf.div hg) = (mk f hf : α →ₘ[μ] γ) / mk g hg :=
   rfl

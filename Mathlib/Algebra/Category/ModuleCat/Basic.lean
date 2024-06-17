@@ -183,7 +183,7 @@ instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Un
 @[simp] theorem of_coe (X : ModuleCat R) : of R X = X := rfl
 
 -- Porting note: the simpNF linter complains, but we really need this?!
--- @[simp, nolint simpNF]
+-- @[simp]
 theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
   rfl
 #align Module.coe_of ModuleCat.coe_of
@@ -423,7 +423,7 @@ given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
 -- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
+@[simp]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
 end

@@ -76,7 +76,7 @@ inductive WalkingParallelPairHom : WalkingParallelPair â†’ WalkingParallelPair â
 
 /- Porting note: this simplifies using walkingParallelPairHom_id; replacement is below;
 simpNF still complains of striking this from the simp list -/
-attribute [-simp, nolint simpNF] WalkingParallelPairHom.id.sizeOf_spec
+attribute [-simp] WalkingParallelPairHom.id.sizeOf_spec
 
 /-- Satisfying the inhabited linter -/
 instance : Inhabited (WalkingParallelPairHom zero one) where default := WalkingParallelPairHom.left

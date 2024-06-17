@@ -150,7 +150,7 @@ theorem gradedComm_tmul_one (a : ⨁ i, 𝒜 i) : gradedComm R 𝒜 ℬ (a ⊗�
 theorem gradedComm_one_tmul (b : ⨁ i, ℬ i) : gradedComm R 𝒜 ℬ (1 ⊗ₜ b) = b ⊗ₜ 1 :=
   gradedComm_of_zero_tmul _ _ _ _ _
 
-@[simp, nolint simpNF] -- linter times out
+@[simp] -- linter times out
 theorem gradedComm_one : gradedComm R 𝒜 ℬ 1 = 1 :=
   gradedComm_one_tmul _ _ _ _
 

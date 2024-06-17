@@ -65,7 +65,7 @@ inductive Hom : ∀ _ _ : WalkingMulticospan fst snd, Type w
 
 /- Porting note: simpNF says the LHS of this internal identifier simplifies
 (which it does, using Hom.id_eq_id) -/
-attribute [-simp, nolint simpNF] WalkingMulticospan.Hom.id.sizeOf_spec
+attribute [-simp] WalkingMulticospan.Hom.id.sizeOf_spec
 
 instance {a : WalkingMulticospan fst snd} : Inhabited (Hom a a) :=
   ⟨Hom.id _⟩
@@ -114,7 +114,7 @@ inductive Hom : ∀ _ _ : WalkingMultispan fst snd, Type v
 
 /- Porting note: simpNF says the LHS of this internal identifier simplifies
 (which it does, using Hom.id_eq_id) -/
-attribute [-simp, nolint simpNF] WalkingMultispan.Hom.id.sizeOf_spec
+attribute [-simp] WalkingMultispan.Hom.id.sizeOf_spec
 
 instance {a : WalkingMultispan fst snd} : Inhabited (Hom a a) :=
   ⟨Hom.id _⟩
@@ -462,7 +462,7 @@ theorem toPiFork_π_app_zero : K.toPiFork.ι = Pi.lift K.ι :=
   rfl
 #align category_theory.limits.multifork.to_pi_fork_π_app_zero CategoryTheory.Limits.Multifork.toPiFork_π_app_zero
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
+@[simp] -- Porting note (#10675): dsimp cannot prove this
 theorem toPiFork_π_app_one : K.toPiFork.π.app WalkingParallelPair.one = Pi.lift K.ι ≫ I.fstPiMap :=
   rfl
 #align category_theory.limits.multifork.to_pi_fork_π_app_one CategoryTheory.Limits.Multifork.toPiFork_π_app_one
@@ -492,7 +492,7 @@ theorem ofPiFork_π_app_left (c : Fork I.fstPiMap I.sndPiMap) (a) :
   rfl
 #align category_theory.limits.multifork.of_pi_fork_π_app_left CategoryTheory.Limits.Multifork.ofPiFork_π_app_left
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
+@[simp] -- Porting note (#10675): dsimp cannot prove this
 theorem ofPiFork_π_app_right (c : Fork I.fstPiMap I.sndPiMap) (a) :
     (ofPiFork I c).π.app (WalkingMulticospan.right a) = c.ι ≫ I.fstPiMap ≫ Pi.π _ _ :=
   rfl
@@ -672,7 +672,7 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
 #align category_theory.limits.multicofork.of_sigma_cofork CategoryTheory.Limits.Multicofork.ofSigmaCofork
 
 -- Porting note (#10675): dsimp cannot prove this... once ofSigmaCofork_ι_app_right' is defined
-@[simp, nolint simpNF]
+@[simp]
 theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
       (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π :=

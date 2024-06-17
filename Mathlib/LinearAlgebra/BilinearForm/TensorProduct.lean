@@ -118,7 +118,7 @@ noncomputable def tensorDistribEquiv :
 #align bilin_form.tensor_distrib_equiv LinearMap.BilinForm.tensorDistribEquiv
 
 -- this is a dsimp lemma
-@[simp, nolint simpNF]
+@[simp]
 theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) (B₁ ⊗ₜ[R] B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')

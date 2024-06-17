@@ -42,7 +42,7 @@ instance commGroup : CommGroup PUnit where
 
 -- dsimp loops when applying this lemma to its LHS,
 -- probably https://github.com/leanprover/lean4/pull/2867
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem one_eq : (1 : PUnit) = unit :=
   rfl
 #align punit.one_eq PUnit.one_eq
@@ -56,14 +56,14 @@ theorem mul_eq {x y : PUnit} : x * y = unit :=
 #align punit.add_eq PUnit.add_eq
 
 -- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem div_eq {x y : PUnit} : x / y = unit :=
   rfl
 #align punit.div_eq PUnit.div_eq
 #align punit.sub_eq PUnit.sub_eq
 
 -- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem inv_eq {x : PUnit} : x⁻¹ = unit :=
   rfl
 #align punit.inv_eq PUnit.inv_eq

@@ -1751,25 +1751,25 @@ theorem tendsto_Iic_atBot [SemilatticeInf α] {a : α} {f : β → Iic a} {l : F
   rw [atBot_Iic_eq, tendsto_comap_iff, Function.comp_def]
 #align filter.tendsto_Iic_at_bot Filter.tendsto_Iic_atBot
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify. It does.
+@[simp] -- Porting note: linter claims that LHS doesn't simplify. It does.
 theorem tendsto_comp_val_Ioi_atTop [SemilatticeSup α] [NoMaxOrder α] {a : α} {f : α → β}
     {l : Filter β} : Tendsto (fun x : Ioi a => f x) atTop l ↔ Tendsto f atTop l := by
   rw [← map_val_Ioi_atTop a, tendsto_map'_iff, Function.comp_def]
 #align filter.tendsto_comp_coe_Ioi_at_top Filter.tendsto_comp_val_Ioi_atTop
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify. It does.
+@[simp] -- Porting note: linter claims that LHS doesn't simplify. It does.
 theorem tendsto_comp_val_Ici_atTop [SemilatticeSup α] {a : α} {f : α → β} {l : Filter β} :
     Tendsto (fun x : Ici a => f x) atTop l ↔ Tendsto f atTop l := by
   rw [← map_val_Ici_atTop a, tendsto_map'_iff, Function.comp_def]
 #align filter.tendsto_comp_coe_Ici_at_top Filter.tendsto_comp_val_Ici_atTop
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify. It does.
+@[simp] -- Porting note: linter claims that LHS doesn't simplify. It does.
 theorem tendsto_comp_val_Iio_atBot [SemilatticeInf α] [NoMinOrder α] {a : α} {f : α → β}
     {l : Filter β} : Tendsto (fun x : Iio a => f x) atBot l ↔ Tendsto f atBot l := by
   rw [← map_val_Iio_atBot a, tendsto_map'_iff, Function.comp_def]
 #align filter.tendsto_comp_coe_Iio_at_bot Filter.tendsto_comp_val_Iio_atBot
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify. It does.
+@[simp] -- Porting note: linter claims that LHS doesn't simplify. It does.
 theorem tendsto_comp_val_Iic_atBot [SemilatticeInf α] {a : α} {f : α → β} {l : Filter β} :
     Tendsto (fun x : Iic a => f x) atBot l ↔ Tendsto f atBot l := by
   rw [← map_val_Iic_atBot a, tendsto_map'_iff, Function.comp_def]

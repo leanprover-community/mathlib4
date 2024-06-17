@@ -943,7 +943,7 @@ theorem integral_congr_ae {f g : α → G} (h : f =ᵐ[μ] g) : ∫ a, f a ∂μ
 #align measure_theory.integral_congr_ae MeasureTheory.integral_congr_ae
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
-@[simp, nolint simpNF]
+@[simp]
 theorem L1.integral_of_fun_eq_integral {f : α → G} (hf : Integrable f μ) :
     ∫ a, (hf.toL1 f) a ∂μ = ∫ a, f a ∂μ := by
   by_cases hG : CompleteSpace G

@@ -495,7 +495,7 @@ def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0
 #align category_theory.limits.is_iso_zero_equiv CategoryTheory.Limits.isIsoZeroEquiv
 
 -- Porting note: simp solves these
-attribute [-simp, nolint simpNF] isIsoZeroEquiv_apply isIsoZeroEquiv_symm_apply
+attribute [-simp] isIsoZeroEquiv_apply isIsoZeroEquiv_symm_apply
 
 /-- A zero morphism `0 : X ⟶ X` is an isomorphism if and only if
 the identity on `X` is zero.

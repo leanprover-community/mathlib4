@@ -162,7 +162,7 @@ protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α
   eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
 #align finset.sup_comm Finset.sup_comm
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS does not simplify
+@[simp] -- Porting note: linter claims that LHS does not simplify
 theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x) = s.sup f :=
   (s.attach.sup_map (Function.Embedding.subtype _) f).symm.trans <| congr_arg _ attach_map_val
 #align finset.sup_attach Finset.sup_attach

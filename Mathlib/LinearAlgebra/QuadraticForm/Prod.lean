@@ -290,7 +290,7 @@ def Isometry.proj [Fintype ι] [DecidableEq ι] (i : ι) (Q : QuadraticForm R (M
     rw [Pi.single_eq_of_ne hij, zero_apply]
 
 /-- Note that `QuadraticForm.Isometry.id` would not be well-typed as the RHS. -/
-@[simp, nolint simpNF]  -- ignore the bogus "Left-hand side does not simplify" lint error
+@[simp]  -- ignore the bogus "Left-hand side does not simplify" lint error
 theorem Isometry.proj_comp_single_of_same [Fintype ι] [DecidableEq ι]
     (i : ι) (Q : QuadraticForm R (Mᵢ i)) :
     (proj i Q).comp (single _ i) = .ofEq (Pi.single_eq_same _ _) :=

@@ -73,7 +73,7 @@ variable {β : Sort*}
 /-- We can push `eqToHom` to the left through families of morphisms. -/
 -- The simpNF linter incorrectly claims that this will never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β} (w : j = j') :
     z j ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ z j' := by
   cases w
@@ -82,7 +82,7 @@ theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β}
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
 -- The simpNF linter incorrectly claims that this will never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).hom ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').hom := by
   cases w
@@ -91,7 +91,7 @@ theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
 -- The simpNF linter incorrectly claims that this will never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).inv ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').inv := by
   cases w
@@ -100,7 +100,7 @@ theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
 /- Porting note: simpNF complains about this not reducing but it is clearly used
 in `congrArg_mpr_hom_left`. It has been no-linted. -/
 /-- Reducible form of congrArg_mpr_hom_left -/
-@[simp, nolint simpNF]
+@[simp]
 theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
     cast (congrArg (fun W : C => W ⟶ Z) p.symm) q = eqToHom p ≫ q := by
   cases p
@@ -122,7 +122,7 @@ theorem congrArg_mpr_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
 /- Porting note: simpNF complains about this not reducing but it is clearly used
 in `congrArg_mrp_hom_right`. It has been no-linted. -/
 /-- Reducible form of `congrArg_mpr_hom_right` -/
-@[simp, nolint simpNF]
+@[simp]
 theorem congrArg_cast_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
     cast (congrArg (fun W : C => X ⟶ W) q.symm) p = p ≫ eqToHom q.symm := by
   cases q

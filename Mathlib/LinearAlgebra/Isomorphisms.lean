@@ -110,7 +110,7 @@ theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := inclusion (le_sup_left : p ≤ p ⊔ p')
     quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =

@@ -153,14 +153,14 @@ Porting note: `nolint simpNF` as the linter was complaining that this was provab
 but it is in fact not. Also the `docBlame` linter expects a docstring even though this is `Prop`
 valued
 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
     (adj.homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (adj.homEquiv X Y).symm g := by
   rw [homEquiv_counit, F.map_comp, assoc, adj.homEquiv_counit.symm]
 #align category_theory.adjunction.hom_equiv_naturality_left_symm CategoryTheory.Adjunction.homEquiv_naturality_left_symm
 
 -- Porting note: Same as above
-@[simp, nolint simpNF]
+@[simp]
 theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
   rw [← Equiv.eq_symm_apply]
@@ -168,14 +168,14 @@ theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
 #align category_theory.adjunction.hom_equiv_naturality_left CategoryTheory.Adjunction.homEquiv_naturality_left
 
 -- Porting note: Same as above
-@[simp, nolint simpNF]
+@[simp]
 theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
   rw [homEquiv_unit, G.map_comp, ← assoc, ← homEquiv_unit]
 #align category_theory.adjunction.hom_equiv_naturality_right CategoryTheory.Adjunction.homEquiv_naturality_right
 
 -- Porting note: Same as above
-@[simp, nolint simpNF]
+@[simp]
 theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [Equiv.symm_apply_eq]

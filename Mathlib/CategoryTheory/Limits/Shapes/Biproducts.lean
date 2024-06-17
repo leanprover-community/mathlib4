@@ -276,7 +276,7 @@ structure IsBilimit {F : J → C} (B : Bicone F) where
 attribute [inherit_doc IsBilimit] IsBilimit.isLimit IsBilimit.isColimit
 
 -- Porting note (#10618): simp can prove this, linter doesn't notice it is removed
-attribute [-simp, nolint simpNF] IsBilimit.mk.injEq
+attribute [-simp] IsBilimit.mk.injEq
 
 attribute [local ext] Bicone.IsBilimit
 
@@ -517,7 +517,7 @@ theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `biproduct.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
   cases w
@@ -526,7 +526,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `biproduct.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
   cases w

@@ -65,7 +65,7 @@ structure IsLimit (t : Cone F) where
 #align category_theory.limits.is_limit.uniq' CategoryTheory.Limits.IsLimit.uniq
 
 -- Porting note (#10618):  simp can prove this. Linter complains it still exists
-attribute [-simp, nolint simpNF] IsLimit.mk.injEq
+attribute [-simp] IsLimit.mk.injEq
 
 attribute [reassoc (attr := simp)] IsLimit.fac
 
@@ -579,7 +579,7 @@ structure IsColimit (t : Cocone F) where
 attribute [reassoc (attr := simp)] IsColimit.fac
 
 -- Porting note (#10618): simp can prove this. Linter claims it still is tagged with simp
-attribute [-simp, nolint simpNF] IsColimit.mk.injEq
+attribute [-simp] IsColimit.mk.injEq
 
 namespace IsColimit
 

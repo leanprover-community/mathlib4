@@ -82,23 +82,23 @@ lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zer
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
 -- We want to use these lemmas earlier than the lemmas simp can prove them with
-@[simp, nolint simpNF]
+@[simp]
 protected lemma neg_pos : 0 < -a ↔ a < 0 := ⟨Int.neg_of_neg_pos, Int.neg_pos_of_neg⟩
 
-@[simp, nolint simpNF]
+@[simp]
 protected lemma neg_nonneg : 0 ≤ -a ↔ a ≤ 0 := ⟨Int.nonpos_of_neg_nonneg, Int.neg_nonneg_of_nonpos⟩
 
-@[simp, nolint simpNF]
+@[simp]
 protected lemma neg_neg_iff_pos : -a < 0 ↔ 0 < a := ⟨Int.pos_of_neg_neg, Int.neg_neg_of_pos⟩
 
-@[simp, nolint simpNF]
+@[simp]
 protected lemma neg_nonpos_iff_nonneg : -a ≤ 0 ↔ 0 ≤ a :=
   ⟨Int.nonneg_of_neg_nonpos, Int.neg_nonpos_of_nonneg⟩
 
-@[simp, nolint simpNF]
+@[simp]
 protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_pos_of_lt⟩
 
-@[simp, nolint simpNF]
+@[simp]
 protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg, Int.sub_nonneg_of_le⟩
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
@@ -120,7 +120,7 @@ protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
 protected lemma natCast_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 -- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] lemma natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 := by omega
+@[simp] lemma natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 := by omega
 #align int.coe_nat_eq_zero Int.natCast_eq_zero
 
 lemma natCast_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by omega
@@ -130,7 +130,7 @@ lemma natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n := by omega
 #align int.coe_nat_ne_zero_iff_pos Int.natCast_ne_zero_iff_pos
 
 -- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] lemma natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n := by omega
+@[simp] lemma natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n := by omega
 #align int.coe_nat_pos Int.natCast_pos
 
 lemma natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) := natCast_pos.2 n.succ_pos

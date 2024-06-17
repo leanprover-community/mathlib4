@@ -356,7 +356,7 @@ theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
 
 #adaptation_note /-- nightly-2024-04-01
 The simpNF linter now times out on this lemma. -/
-@[simp, nolint simpNF]
+@[simp]
 theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=

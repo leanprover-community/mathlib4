@@ -624,14 +624,14 @@ noncomputable def finEquivPowers (x : G) (hx : IsOfFinOrder x) : Fin (orderOf x)
 #align fin_equiv_multiples finEquivMultiples
 
 -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
     finEquivPowers x hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
 #align fin_equiv_powers_apply finEquivPowers_apply
 #align fin_equiv_multiples_apply finEquivMultiples_apply
 
 -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
@@ -774,14 +774,14 @@ noncomputable def finEquivZPowers (x : G) (hx : IsOfFinOrder x) :
 #align fin_equiv_zmultiples finEquivZMultiples
 
 -- This lemma has always been bad, but the linter only noticed after leaprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 lemma finEquivZPowers_apply (hx) {n : Fin (orderOf x)} :
     finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_natCast x n⟩ := rfl
 #align fin_equiv_zpowers_apply finEquivZPowers_apply
 #align fin_equiv_zmultiples_apply finEquivZMultiples_apply
 
  -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 lemma finEquivZPowers_symm_apply (x : G) (hx) (n : ℕ) :
     (finEquivZPowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
     ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
@@ -895,7 +895,7 @@ noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ p
 
 -- Porting note: the simpNF linter complains that simp can change the LHS to something
 -- that looks the same as the current LHS even with `pp.explicit`
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem powersEquivPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
     powersEquivPowers h ⟨x ^ n, n, rfl⟩ = ⟨y ^ n, n, rfl⟩ := by
   rw [powersEquivPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivPowers_symm_apply, ←
@@ -988,7 +988,7 @@ noncomputable def zpowersEquivZPowers (h : orderOf x = orderOf y) :
 
 -- Porting note: the simpNF linter complains that simp can change the LHS to something
 -- that looks the same as the current LHS even with `pp.explicit`
-@[to_additive (attr := simp, nolint simpNF) zmultiples_equiv_zmultiples_apply]
+@[to_additive (attr := simp) zmultiples_equiv_zmultiples_apply]
 theorem zpowersEquivZPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
     zpowersEquivZPowers h ⟨x ^ n, n, zpow_natCast x n⟩ = ⟨y ^ n, n, zpow_natCast y n⟩ := by
   rw [zpowersEquivZPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZPowers_symm_apply, ←

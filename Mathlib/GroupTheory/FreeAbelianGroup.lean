@@ -202,7 +202,7 @@ protected theorem induction_on' {C : FreeAbelianGroup α → Prop} (z : FreeAbel
   FreeAbelianGroup.induction_on z C0 C1 Cn Cp
 #align free_abelian_group.induction_on' FreeAbelianGroup.induction_on'
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+@[simp] -- Porting note (#10675): dsimp can not prove this
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeAbelianGroup α) = pure (f x) :=
   rfl
 #align free_abelian_group.map_pure FreeAbelianGroup.map_pure

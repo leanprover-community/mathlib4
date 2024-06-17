@@ -147,7 +147,7 @@ lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective
 
 -- Porting note: it is unclear why the linter doesn't like this.
 -- If you understand why, please replace this comment with an explanation, or resolve.
-@[simp, nolint simpNF]
+@[simp]
 theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
     (∃ h : p b, a = Subtype.mk b h) ↔ ↑a = b :=
   coe_eq_iff.symm
@@ -155,7 +155,7 @@ theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
 
 -- Porting note: it is unclear why the linter doesn't like this.
 -- If you understand why, please replace this comment with an explanation, or resolve.
-@[simp, nolint simpNF]
+@[simp]
 theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
     (∃ h : p b, Subtype.mk b h = a) ↔ b = a := by
   simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a]

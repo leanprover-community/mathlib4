@@ -182,7 +182,7 @@ However, simp does indeed solve the following. leanprover/std4#71 is related.
 example {α ι} [Lattice α] [OrderBot α] (s : Finset ι) (f : ι → α) :
   (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by simp
 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
   refine ⟨fun h t ht i his hit => ?_, SupIndep.attach⟩
   classical

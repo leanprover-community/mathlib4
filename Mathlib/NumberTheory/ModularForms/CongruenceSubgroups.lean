@@ -148,7 +148,7 @@ def Gamma1' (N : ℕ) : Subgroup (Gamma0 N) :=
   (Gamma0Map N).ker
 #align Gamma1' Gamma1'
 
-@[simp, nolint simpNF] -- Porting note: linter failed to synth `CommMonoid { x // x ∈ Gamma0 N }`
+@[simp] -- Porting note: linter failed to synth `CommMonoid { x // x ∈ Gamma0 N }`
 theorem Gamma1_mem' (N : ℕ) (γ : Gamma0 N) : γ ∈ Gamma1' N ↔ (Gamma0Map N) γ = 1 :=
   Iff.rfl
 #align Gamma1_mem' Gamma1_mem'

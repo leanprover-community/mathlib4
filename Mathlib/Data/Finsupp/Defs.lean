@@ -678,7 +678,7 @@ theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) :
   · rw [erase_ne hab]
 #align finsupp.erase_of_not_mem_support Finsupp.erase_of_not_mem_support
 
-@[simp, nolint simpNF] -- Porting note: simpNF linter claims simp can prove this, it can not
+@[simp] -- Porting note: simpNF linter claims simp can prove this, it can not
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   classical rw [← support_eq_empty, support_erase, support_zero, erase_empty]
 #align finsupp.erase_zero Finsupp.erase_zero

@@ -89,7 +89,7 @@ theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
 
 -- Porting note (#10618): `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
 -- but `dsimp` can't.
-@[simp, nolint simpNF]
+@[simp]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 #align lie_submodule.mem_carrier LieSubmodule.mem_carrier
@@ -1527,7 +1527,7 @@ def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
 #align lie_ideal.top_equiv LieIdeal.topEquiv
 
 -- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
+@[simp]
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl
 #align lie_ideal.top_equiv_apply LieIdeal.topEquiv_apply
@@ -1541,7 +1541,7 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
     map_lie' := rfl }
 
 -- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
+@[simp] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
 

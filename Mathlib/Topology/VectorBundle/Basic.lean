@@ -494,7 +494,7 @@ theorem symm_continuousLinearEquivAt_eq (e : Trivialization F (π F E)) [e.IsLin
   rfl
 #align trivialization.symm_continuous_linear_equiv_at_eq Trivialization.symm_continuousLinearEquivAt_eq
 
-@[simp, nolint simpNF] -- `simp` can prove it but `dsimp` can't; todo: prove `Sigma.eta` with `rfl`
+@[simp] -- `simp` can prove it but `dsimp` can't; todo: prove `Sigma.eta` with `rfl`
 theorem continuousLinearEquivAt_apply' (e : Trivialization F (π F E)) [e.IsLinear R]
     (x : TotalSpace F E) (hx : x ∈ e.source) :
     e.continuousLinearEquivAt R x.proj (e.mem_source.1 hx) x.2 = (e x).2 := rfl

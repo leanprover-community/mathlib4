@@ -266,7 +266,7 @@ theorem vectorAllP_nil (p : α → Prop) : VectorAllP p [] = True :=
   rfl
 #align vector_allp_nil vectorAllP_nil
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
+@[simp] -- Porting note (#10675): dsimp cannot prove this
 theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x []) = p x :=
   rfl
 #align vector_allp_singleton vectorAllP_singleton

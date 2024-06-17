@@ -145,7 +145,7 @@ theorem approxOn_mem {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α
   exacts [h₀, Subtype.mem _]
 #align measure_theory.simple_func.approx_on_mem MeasureTheory.SimpleFunc.approxOn_mem
 
-@[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
+@[simp] -- Porting note: LHS doesn't simplify.
 theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Measurable f) {g : γ → β}
     (hg : Measurable g) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) :
     approxOn (f ∘ g) (hf.comp hg) s y₀ h₀ n = (approxOn f hf s y₀ h₀ n).comp g hg :=

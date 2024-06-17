@@ -1166,7 +1166,7 @@ theorem liftRel_pure_right (R : α → β → Prop) (ca : Computation α) (b : �
 
 -- Porting note: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
 -- a general invariant on `LiftRel`
-@[simp, nolint simpNF]
+@[simp]
 theorem liftRel_pure (R : α → β → Prop) (a : α) (b : β) :
     LiftRel R (pure a) (pure b) ↔ R a b := by
   rw [liftRel_pure_left]

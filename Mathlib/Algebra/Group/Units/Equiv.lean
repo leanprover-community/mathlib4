@@ -134,7 +134,7 @@ theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (a * ·) :=
 -- mysteriously simp can already prove that one (although not the multiplicative one)!
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
 @[to_additive "Extra simp lemma that `dsimp` can use. `simp` will never use this.",
-  simp, nolint simpNF]
+  simp]
 theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻¹ * ·) :=
   rfl
 #align equiv.mul_left_symm_apply Equiv.mulLeft_symm_apply
@@ -173,7 +173,7 @@ theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ 
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
 @[to_additive "Extra simp lemma that `dsimp` can use. `simp` will never use this.",
-  simp, nolint simpNF]
+  simp]
 theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
   rfl
 #align equiv.mul_right_symm_apply Equiv.mulRight_symm_apply

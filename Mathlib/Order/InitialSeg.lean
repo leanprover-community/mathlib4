@@ -385,7 +385,7 @@ def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r 
 #align principal_seg.of_element PrincipalSeg.ofElement
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
 #align principal_seg.of_element_apply PrincipalSeg.ofElement_apply
@@ -407,13 +407,13 @@ noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
 attribute [nolint simpNF] PrincipalSeg.subrelIso_symm_apply
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
     f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem subrelIso_apply (f : r ≺i s) (a : α) :
     f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _

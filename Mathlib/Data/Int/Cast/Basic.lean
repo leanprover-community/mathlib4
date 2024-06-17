@@ -62,7 +62,7 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
 -- type had `HasLiftT`
 
 -- This lemma competes with `Int.ofNat_eq_natCast` to come later
-@[simp high, nolint simpNF, norm_cast]
+@[simp high, norm_cast]
 theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 #align int.cast_coe_nat Int.cast_natCastₓ

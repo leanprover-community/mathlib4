@@ -27,6 +27,6 @@ instance instOrderBot : OrderBot ℕ where
 /-! ### Miscellaneous lemmas -/
 
 -- We want to use this lemma earlier than the lemma simp can prove it with
-@[simp, nolint simpNF] protected lemma bot_eq_zero : ⊥ = 0 := rfl
+@[simp] protected lemma bot_eq_zero : ⊥ = 0 := rfl
 
 end Nat

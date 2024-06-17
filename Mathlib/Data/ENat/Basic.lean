@@ -83,7 +83,7 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 #align enat.coe_sub ENat.coe_sub
 
 -- Eligible for dsimp
-@[simp, nolint simpNF] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+@[simp] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 #align enat.coe_mul ENat.coe_mul
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm

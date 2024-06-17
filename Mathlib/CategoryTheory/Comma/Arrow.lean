@@ -123,7 +123,7 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} {u : X ⟶ P} {v : Y 
 
 /- Porting note: was warned simp could prove reassoc'd version. Found simp could not.
 Added nolint. -/
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right :=
   sq.w
 #align category_theory.arrow.w CategoryTheory.Arrow.w

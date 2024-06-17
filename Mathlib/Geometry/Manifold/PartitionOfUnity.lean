@@ -494,7 +494,7 @@ def toBumpCovering : BumpCovering ι M s where
 #align smooth_bump_covering.to_bump_covering SmoothBumpCovering.toBumpCovering
 
 -- Porting note: `simpNF` says that `simp` can't simplify LHS but it can.
-@[simp, nolint simpNF]
+@[simp]
 theorem isSubordinate_toBumpCovering {f : SmoothBumpCovering ι I M s} {U : M → Set M} :
     (f.toBumpCovering.IsSubordinate fun i => U (f.c i)) ↔ f.IsSubordinate U :=
   Iff.rfl

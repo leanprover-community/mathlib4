@@ -46,7 +46,7 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α �
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
 -- see https://github.com/leanprover/std4/issues/86
-@[simp, nolint simpNF]
+@[simp]
 theorem free_map_coe {α β : Type u} {f : α → β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl
 #align CommRing.free_map_coe CommRingCat.free_map_coe

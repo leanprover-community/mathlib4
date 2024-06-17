@@ -302,14 +302,14 @@ set_option linter.uppercaseLean3 false in
 #align Action.left_dual_V Action.leftDual_v
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 set_option linter.uppercaseLean3 false in
 #align Action.right_dual_ρ Action.rightDual_ρ
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 set_option linter.uppercaseLean3 false in
