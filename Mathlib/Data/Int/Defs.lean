@@ -172,10 +172,12 @@ protected lemma two_mul : ∀ n : ℤ, 2 * n = n + n
 section deprecated
 set_option linter.deprecated false
 
-@[norm_cast, deprecated] lemma ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n := rfl
+@[norm_cast, deprecated (since := "2022-11-23")]
+lemma ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n := rfl
 #align int.coe_nat_bit0 Int.ofNat_bit0
 
-@[norm_cast, deprecated] lemma ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n := rfl
+@[norm_cast, deprecated (since := "2022-11-23")]
+lemma ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n := rfl
 #align int.coe_nat_bit1 Int.ofNat_bit1
 
 end deprecated

@@ -487,9 +487,15 @@ theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj �
   Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
 #align trivialization.preimage_homeomorph_apply Trivialization.preimageHomeomorph_apply
 
+/-- Auxilliary definition to avoid looping in `dsimp`
+with `Trivialization.preimageHomeomorph_symm_apply`. -/
+protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSet) :=
+  (e.preimageHomeomorph hb).symm
+
 @[simp]
 theorem preimageHomeomorph_symm_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : s × F) :
-    (e.preimageHomeomorph hb).symm p = ⟨e.symm (p.1, p.2), ((e.preimageHomeomorph hb).symm p).2⟩ :=
+    (e.preimageHomeomorph hb).symm p =
+      ⟨e.symm (p.1, p.2), ((preimageHomeomorph_symm_apply.aux e hb) p).2⟩ :=
   rfl
 #align trivialization.preimage_homeomorph_symm_apply Trivialization.preimageHomeomorph_symm_apply
 
@@ -586,7 +592,7 @@ theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 #align trivialization.coe_mem_source Trivialization.coe_mem_source
 
-@[deprecated PartialHomeomorph.open_target]
+@[deprecated PartialHomeomorph.open_target (since := "2023-03-10")]
 theorem open_target' : IsOpen e'.target := e'.open_target
 #align trivialization.open_target Trivialization.open_target'
 
