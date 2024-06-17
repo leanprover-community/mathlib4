@@ -22,7 +22,7 @@ noncomputable def natUnionInftyEmbedding : C(OnePoint ℕ, ℝ) where
   toFun
     | ∞ => 0
     | OnePoint.some n => 1 / (n+1 : ℝ)
-  continuous_toFun := OnePoint.continuous_iff_of_nat _ |>.mpr
+  continuous_toFun := OnePoint.continuous_iff_from_nat _ |>.mpr
     tendsto_one_div_add_atTop_nhds_zero_nat
 
 /--
@@ -59,6 +59,6 @@ open Filter Topology
 
 lemma continuous_iff_convergent {Y : Type*} [TopologicalSpace Y] (f : ℕ∪{∞} → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) :=
-  continuous_iff_of_nat f
+  continuous_iff_from_nat f
 
 end LightProfinite
