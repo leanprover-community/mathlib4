@@ -363,10 +363,9 @@ def lift {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (
     Stonean.toProfinite.obj Z ⟶ X :=
   let e' : Z.compHaus ⟶ (profiniteToCompHaus.obj Y) := ⟨e, e.continuous⟩
   have : Epi (profiniteToCompHaus.map f) := by
-    rw [CompHaus.epi_iff_surjective]
-    simp
-    erw [← Profinite.epi_iff_surjective]
-    infer_instance
+    simp only [CompHaus.epi_iff_surjective, CompHausLike.toCompHausLike_obj,
+      CompHausLike.toCompHausLike_map]
+    exact (Profinite.epi_iff_surjective f).mp inferInstance
   CompHaus.lift e' (profiniteToCompHaus.map f)
   -- this proof is temporarily uglified because of the refactor.
 
@@ -374,10 +373,9 @@ def lift {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (
 lemma lift_lifts {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (f : X ⟶ Y)
     [Epi f] : lift e f ≫ f = e :=
   have : Epi (profiniteToCompHaus.map f) := by
-    rw [CompHaus.epi_iff_surjective]
-    simp
-    erw [← Profinite.epi_iff_surjective]
-    infer_instance
+    simp only [CompHaus.epi_iff_surjective, CompHausLike.toCompHausLike_obj,
+      CompHausLike.toCompHausLike_map]
+    exact (Profinite.epi_iff_surjective f).mp inferInstance
   CompHaus.lift_lifts _ _
   -- this proof is temporarily uglified because of the refactor.
 
