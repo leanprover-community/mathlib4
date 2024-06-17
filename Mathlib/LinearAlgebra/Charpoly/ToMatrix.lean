@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 ## Main result
 
 * `LinearMap.charpoly_toMatrix f` : `charpoly f` is the characteristic polynomial of the matrix
-of `f` in any basis.
+  of `f` in any basis.
 
 -/
 
@@ -24,6 +24,8 @@ universe u v w
 
 variable {R M M₁ M₂ : Type*} [CommRing R] [Nontrivial R]
 variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
+variable [AddCommGroup M₁] [Module R M₁] [Module.Finite R M₁] [Module.Free R M₁]
+variable [AddCommGroup M₂] [Module R M₂] [Module.Finite R M₂] [Module.Free R M₂]
 variable (f : M →ₗ[R] M)
 
 open Matrix
@@ -36,8 +38,8 @@ namespace LinearMap
 
 section Basic
 
-attribute [-instance] instCoeOut
-
+/- These attribute tweaks save ~ 2000 heartbeats in `LinearMap.charpoly_toMatrix`. -/
+attribute [-instance] instCoeOutOfCoeSort
 attribute [local instance 2000] RingHomClass.toNonUnitalRingHomClass
 attribute [local instance 2000] NonUnitalRingHomClass.toMulHomClass
 
@@ -85,9 +87,7 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
     _ = f.charpoly := rfl
 #align linear_map.charpoly_to_matrix LinearMap.charpoly_toMatrix
 
-lemma charpoly_prodMap [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
-    [Module.Finite R M₁] [Module.Finite R M₂] [Module.Free R M₁] [Module.Free R M₂]
-    (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂) :
+lemma charpoly_prodMap (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂) :
     (f₁.prodMap f₂).charpoly = f₁.charpoly * f₂.charpoly := by
   let b₁ := chooseBasis R M₁
   let b₂ := chooseBasis R M₂
@@ -98,3 +98,12 @@ lemma charpoly_prodMap [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [
 end Basic
 
 end LinearMap
+
+@[simp]
+lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M₁) :
+    (e.conj φ).charpoly = φ.charpoly := by
+  let b := chooseBasis R M₁
+  rw [← LinearMap.charpoly_toMatrix φ b, ← LinearMap.charpoly_toMatrix (e.conj φ) (b.map e)]
+  congr 1
+  ext i j : 1
+  simp [Matrix.charmatrix, LinearMap.toMatrix, Matrix.diagonal, LinearEquiv.conj_apply]

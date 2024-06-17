@@ -269,7 +269,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   ext s
   constructor
   · rintro ⟨F, hF, rfl⟩
-    refine' ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, _⟩
+    refine ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, ?_⟩
     simp only [sInter_image]
   · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
     haveI := hF.to_subtype
@@ -288,7 +288,7 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
 
 /-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
 preimage of every interval `Set.Ici a` is a closed set. -/
-@[deprecated] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
+@[deprecated (since := "2023-12-24")] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
 
 end Preorder
 
@@ -369,7 +369,7 @@ lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous
 provided that the preimage of every interval `Set.Iic a` is a closed set. -/
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
     Continuous f :=
   continuous_iff_Iic.2 h
@@ -394,7 +394,7 @@ instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     [OrderBot α] [Preorder β] [TopologicalSpace β] [IsLower β] [OrderBot β] :
     IsLower (α × β) where
   topology_eq_lowerTopology := by
-    refine' le_antisymm (le_generateFrom _) _
+    refine le_antisymm (le_generateFrom ?_) ?_
     · rintro _ ⟨x, rfl⟩
       exact (isClosed_Ici.prod isClosed_Ici).isOpen_compl
     simp_rw [← continuous_id_iff_le, @continuous_prod_iff, @IsLower.continuous_iff_Ici]
@@ -443,9 +443,9 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLowe
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine IsLower.continuous_iff_Ici.2 fun b => ?_
   convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
-  refine' Subset.antisymm (fun a => sInf_le) fun a ha => le_trans _ <|
+  refine Subset.antisymm (fun a => sInf_le) fun a ha => le_trans ?_ <|
     OrderHomClass.mono (f : α →o β) ha
-  refine' LE.le.trans _ (map_sInf f _).ge
+  refine LE.le.trans ?_ (map_sInf f _).ge
   simp
 #align Inf_hom.continuous sInfHom.continuous
 

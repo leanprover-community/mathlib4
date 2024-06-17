@@ -12,7 +12,7 @@ import Mathlib.Data.List.Basic
 
 This file proves basic properties of `List.countP` and `List.count`, which count the number of
 elements of a list satisfying a predicate and equal to a given element respectively. Their
-definitions can be found in `Std.Data.List.Basic`.
+definitions can be found in `Batteries.Data.List.Basic`.
 -/
 
 assert_not_exists Set.range
@@ -86,7 +86,8 @@ variable [DecidableEq α]
 
 #align list.count_nil List.count_nil
 
-@[deprecated] theorem count_cons' (a b : α) (l : List α) :
+@[deprecated (since := "2023-08-23")]
+theorem count_cons' (a b : α) (l : List α) :
     count a (b :: l) = count a l + if a = b then 1 else 0 := by
   simp only [count, beq_iff_eq, countP_cons, Nat.add_right_inj]
   simp only [eq_comm]
@@ -146,7 +147,7 @@ lemma count_attach (a : {x // x ∈ l}) : l.attach.count a = l.count ↑a :=
 #align list.count_attach List.count_attach
 
 @[simp]
-theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
+theorem count_map_of_injective {β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countP_map, (· ∘ ·), hf.beq_eq]
 #align list.count_map_of_injective List.count_map_of_injective

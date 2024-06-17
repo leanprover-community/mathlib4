@@ -30,6 +30,10 @@ open QuadraticForm
 instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
+@[simp] theorem moduleCat_of_toModuleCat (X : QuadraticModuleCat.{v} R) :
+    ModuleCat.of R X.toModuleCat = X.toModuleCat :=
+  rfl
+
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
 @[simps form]
 def of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
@@ -78,9 +82,9 @@ abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
 instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) where
   forget :=
     { obj := fun M => M
-      map := @fun M N f => f.toIsometry }
+      map := fun f => f.toIsometry }
   forget_faithful :=
-    { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
+    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=

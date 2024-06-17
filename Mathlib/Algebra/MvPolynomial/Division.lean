@@ -55,7 +55,7 @@ theorem coeff_divMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) (s' : σ �
 
 @[simp]
 theorem support_divMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) :
-    (x /ᵐᵒⁿᵒᵐⁱᵃˡ s).support = x.support.preimage _ ((add_right_injective s).injOn _) :=
+    (x /ᵐᵒⁿᵒᵐⁱᵃˡ s).support = x.support.preimage _ (add_right_injective s).injOn :=
   rfl
 #align mv_polynomial.support_div_monomial MvPolynomial.support_divMonomial
 
@@ -236,7 +236,7 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     · simp_all only [ite_self, le_refl, ite_true, dvd_mul_right, or_false, and_self]
   · rintro ⟨h | hij, d, rfl⟩
     · simp_rw [h, monomial_zero, dvd_zero]
-    · refine' ⟨monomial (j - i) d, _⟩
+    · refine ⟨monomial (j - i) d, ?_⟩
       rw [monomial_mul, add_tsub_cancel_of_le hij]
 #align mv_polynomial.monomial_dvd_monomial MvPolynomial.monomial_dvd_monomial
 
@@ -250,7 +250,7 @@ theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
 @[simp]
 theorem X_dvd_X [Nontrivial R] {i j : σ} :
     (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j := by
-  refine' monomial_one_dvd_monomial_one.trans _
+  refine monomial_one_dvd_monomial_one.trans ?_
   simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero,
     ne_eq, not_false_eq_true, and_true]
 set_option linter.uppercaseLean3 false in
@@ -259,7 +259,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
     (X i : MvPolynomial σ R) ∣ monomial j r ↔ r = 0 ∨ j i ≠ 0 := by
-  refine' monomial_dvd_monomial.trans _
+  refine monomial_dvd_monomial.trans ?_
   simp_rw [one_dvd, and_true_iff, Finsupp.single_le_iff, Nat.one_le_iff_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X_dvd_monomial MvPolynomial.X_dvd_monomial

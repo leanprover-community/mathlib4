@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Zip
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Zip
 
 #align_import data.list.range from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
@@ -82,6 +83,11 @@ theorem pairwise_lt_range (n : ℕ) : Pairwise (· < ·) (range n) := by
 theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
   Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
 #align list.pairwise_le_range List.pairwise_le_range
+
+theorem take_range (m n : ℕ) : take m (range n) = range (min m n) := by
+  apply List.ext_get
+  · simp
+  · simp (config := { contextual := true }) [← get_take, Nat.lt_min]
 
 theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp (config := {decide := true}) only [range_eq_range', nodup_range']

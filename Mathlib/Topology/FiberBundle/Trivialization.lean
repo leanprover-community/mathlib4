@@ -180,7 +180,7 @@ theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
 @[simp, mfld_simps]
 theorem preimage_symm_proj_baseSet :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
-  refine' inter_eq_right.mpr fun x hx => _
+  refine inter_eq_right.mpr fun x hx => ?_
   simp only [mem_preimage, PartialEquiv.invFun_as_coe, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
 #align pretrivialization.preimage_symm_proj_base_set Pretrivialization.preimage_symm_proj_baseSet
@@ -487,9 +487,15 @@ theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj �
   Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
 #align trivialization.preimage_homeomorph_apply Trivialization.preimageHomeomorph_apply
 
+/-- Auxilliary definition to avoid looping in `dsimp`
+with `Trivialization.preimageHomeomorph_symm_apply`. -/
+protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSet) :=
+  (e.preimageHomeomorph hb).symm
+
 @[simp]
 theorem preimageHomeomorph_symm_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : s × F) :
-    (e.preimageHomeomorph hb).symm p = ⟨e.symm (p.1, p.2), ((e.preimageHomeomorph hb).symm p).2⟩ :=
+    (e.preimageHomeomorph hb).symm p =
+      ⟨e.symm (p.1, p.2), ((preimageHomeomorph_symm_apply.aux e hb) p).2⟩ :=
   rfl
 #align trivialization.preimage_homeomorph_symm_apply Trivialization.preimageHomeomorph_symm_apply
 
@@ -504,10 +510,14 @@ theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
   e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
 #align trivialization.source_homeomorph_base_set_prod_apply Trivialization.sourceHomeomorphBaseSetProd_apply
 
+/-- Auxilliary definition to avoid looping in `dsimp`
+with `Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
+protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBaseSetProd.symm
+
 @[simp]
 theorem sourceHomeomorphBaseSetProd_symm_apply (p : e.baseSet × F) :
     e.sourceHomeomorphBaseSetProd.symm p =
-      ⟨e.symm (p.1, p.2), (e.sourceHomeomorphBaseSetProd.symm p).2⟩ :=
+      ⟨e.symm (p.1, p.2), (sourceHomeomorphBaseSetProd_symm_apply.aux e p).2⟩ :=
   rfl
 #align trivialization.source_homeomorph_base_set_prod_symm_apply Trivialization.sourceHomeomorphBaseSetProd_symm_apply
 
@@ -582,7 +592,7 @@ theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 #align trivialization.coe_mem_source Trivialization.coe_mem_source
 
-@[deprecated PartialHomeomorph.open_target]
+@[deprecated PartialHomeomorph.open_target (since := "2023-03-10")]
 theorem open_target' : IsOpen e'.target := e'.open_target
 #align trivialization.open_target Trivialization.open_target'
 
@@ -652,7 +662,7 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
       TotalSpace.mk z.1 (e.symm z.1 z.2) = e.toPartialHomeomorph.symm z := by
     rintro x ⟨hx : x.1 ∈ e.baseSet, _⟩
     rw [e.mk_symm hx]
-  refine' ContinuousOn.congr _ this
+  refine ContinuousOn.congr ?_ this
   rw [← e.target_eq]
   exact e.toPartialHomeomorph.continuousOn_symm
 #align trivialization.continuous_on_symm Trivialization.continuousOn_symm
@@ -687,7 +697,7 @@ def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
 theorem mk_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) (x : F) :
     (b, e₁.coordChange e₂ b x) = e₂ (e₁.toPartialHomeomorph.symm (b, x)) := by
-  refine' Prod.ext _ rfl
+  refine Prod.ext ?_ rfl
   rw [e₂.coe_fst', ← e₁.coe_fst', e₁.apply_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
@@ -716,8 +726,8 @@ theorem coordChange_coordChange (e₁ e₂ e₃ : Trivialization F proj) {b : B}
 
 theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) : Continuous (e₁.coordChange e₂ b) := by
-  refine' continuous_snd.comp (e₂.toPartialHomeomorph.continuousOn.comp_continuous
-    (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous _ _) _)
+  refine continuous_snd.comp (e₂.toPartialHomeomorph.continuousOn.comp_continuous
+    (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous ?_ ?_) ?_)
   · exact continuous_const.prod_mk continuous_id
   · exact fun x => e₁.mem_target.2 h₁
   · intro x
@@ -785,10 +795,7 @@ noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
   source_eq := by simp [source_eq]
   target_eq := by simp [target_eq, prod_univ]
   proj_toFun p := by
-    rintro (⟨he, hs⟩ | ⟨he, hs⟩)
-    -- Porting note: was `<;> simp [*]`
-    · simp [piecewise_eq_of_mem _ _ _ hs, *]
-    · simp [piecewise_eq_of_not_mem _ _ _ hs, *]
+    rintro (⟨he, hs⟩ | ⟨he, hs⟩) <;> simp [*]
 #align trivialization.piecewise Trivialization.piecewise
 
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B`

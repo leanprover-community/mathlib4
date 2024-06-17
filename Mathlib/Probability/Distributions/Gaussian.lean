@@ -3,7 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 import Mathlib.Probability.Notation
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
 
@@ -131,7 +131,7 @@ lemma gaussianPDFReal_add {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
 
 lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c⁻¹ * x) = |c| * gaussianPDFReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) x := by
-  simp only [gaussianPDFReal._eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
+  simp only [gaussianPDFReal.eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
     Real.sqrt_mul', one_div, mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk, NNReal.coe_pos]
   rw [← mul_assoc]
   refine congr_arg₂ _ ?_ ?_
@@ -217,10 +217,9 @@ lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) 
 lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     volume ≪ gaussianReal μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
-  refine withDensity_absolutelyContinuous' ?_ ?_ ?_
+  refine withDensity_absolutelyContinuous' ?_ ?_
   · exact (measurable_gaussianPDF _ _).aemeasurable
   · exact ae_of_all _ (fun _ ↦ (gaussianPDF_pos _ hv _).ne')
-  · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
 
 lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
     ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPDF μ v := by
