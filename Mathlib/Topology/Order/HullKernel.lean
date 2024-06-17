@@ -19,11 +19,39 @@ open Topology
 open Set
 open Set.Notation
 
+section SemilatticeInf
+
+variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
+
+variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
+
+lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T ↓∩ (Ici (a ⊓ b))ᶜ) := by
+  ext p
+  simp only [preimage_compl, mem_inter_iff, mem_compl_iff, mem_preimage, mem_Ici]
+  rw [← not_or]
+  constructor
+  · intro h
+    by_contra h2
+    have e1 : a ≤ ↑p ∨ b ≤ ↑p := by
+      apply (hT p (Subtype.coe_prop p)).2  h2
+    exact h e1
+  · intros h
+    by_contra h2
+    cases' h2 with h1 h3
+    have e1 : a ⊓ b ≤ p := inf_le_of_left_le h1
+    exact h e1
+    have e1 : a ⊓ b ≤ p := inf_le_of_right_le h3
+    exact h e1
+
+end SemilatticeInf
+
 section PrimativeSpectrum
 
 variable [CompleteLattice α] [TopologicalSpace α] [IsLower α]
 
 variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
+
+
 
 
 
