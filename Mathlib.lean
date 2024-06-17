@@ -1809,6 +1809,7 @@ import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Limits
+import Mathlib.Condensed.LocallyConstant
 import Mathlib.Condensed.Module
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
@@ -4077,6 +4078,7 @@ import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 import Mathlib.Topology.Category.CompHausLike.Limits
+import Mathlib.Topology.Category.CompHausLike.Sheaf
 import Mathlib.Topology.Category.Compactum
 import Mathlib.Topology.Category.FinTopCat
 import Mathlib.Topology.Category.LightProfinite.Basic
