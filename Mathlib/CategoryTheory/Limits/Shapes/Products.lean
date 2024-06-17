@@ -291,8 +291,7 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
     (Cofan.ext (@asIso _ _ _ _ _ hc) (fun _ => colimit.ι_desc _ _))
 
-lemma Cofan.isColimit_iff_isIso_sigmaDesc
-    {β : Type*} {f : β → C} [HasCoproduct f] (c : Cofan f) :
+lemma Cofan.isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
     IsIso (Sigma.desc c.inj) ↔ Nonempty (IsColimit c) := by
   refine ⟨fun h ↦ ⟨isColimitOfIsIsoSigmaDesc c⟩, fun ⟨hc⟩ ↦ ?_⟩
   have : IsIso (((coproductIsCoproduct f).coconePointUniqueUpToIso hc).hom ≫ hc.desc c) :=
