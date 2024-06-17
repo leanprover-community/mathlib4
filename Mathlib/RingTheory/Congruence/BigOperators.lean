@@ -16,19 +16,19 @@ open BigOperators
 namespace RingCon
 
 /-- Congruence relation of a ring preserves finite sum indexed by a list. -/
-protected lemma list_sum {ι S : Type*} [AddCommMonoid S] [Mul S]
+protected lemma listSum {ι S : Type*} [AddMonoid S] [Mul S]
     (t : RingCon S) (l : List ι) {f g : ι → S} (h : ∀ i ∈ l, t (f i) (g i)) :
     t (l.map f).sum (l.map g).sum :=
   t.toAddCon.list_sum h
 
 /-- Congruence relation of a ring preserves finite sum indexed by a multiset. -/
-protected lemma multiset_sum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S)
+protected lemma multisetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S)
     (s : Multiset ι) {f g : ι → S} (h : ∀ i ∈ s, t (f i) (g i)) :
     t (s.map f).sum (s.map g).sum :=
   t.toAddCon.multiset_sum h
 
 /-- Congruence relation of a ring preserves finite sum. -/
-protected lemma finset_sum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S) (s : Finset ι)
+protected lemma finsetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S) (s : Finset ι)
     {f g : ι → S} (h : ∀ i ∈ s, t (f i) (g i)) :
     t (s.sum f) (s.sum g) :=
   t.toAddCon.finset_sum s h
