@@ -204,6 +204,12 @@ def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) :=
   (F : OplaxFunctor B C).mapFunctor a b
 #align category_theory.pseudofunctor.map_functor CategoryTheory.Pseudofunctor.mapFunctor
 
+/-- A pseudofunctor `F : B ⥤ C` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms
+`F.map f ≅ F.map g` -/
+@[simps!]
+def map₂Iso {a b : B} {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
+  (F : OplaxFunctor B C).map₂Iso η
+
 /-- The identity pseudofunctor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
