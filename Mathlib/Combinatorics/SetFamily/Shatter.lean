@@ -3,9 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Data.Nat.Interval
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Combinatorics.SetFamily.Compression.Down
 
 /-!
 # Shattering families
@@ -122,7 +123,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : 𝒜.card ≤ 𝒜.sh
   refine (add_le_add ih₁ ih₀).trans ?_
   rw [← card_union_add_card_inter, ← hℬ, ← card_union_of_disjoint]
   swap
-  · simp only [disjoint_left, mem_union, mem_shatterer, mem_image, not_exists, not_and]
+  · simp only [ℬ, disjoint_left, mem_union, mem_shatterer, mem_image, not_exists, not_and]
     rintro _ (hs | hs) s - rfl
     · exact aux (fun t ht ↦ (mem_memberSubfamily.1 ht).2) hs <| mem_insert_self _ _
     · exact aux (fun t ht ↦ (mem_nonMemberSubfamily.1 ht).2) hs <| mem_insert_self _ _
@@ -188,7 +189,7 @@ lemma vcDim_compress_le (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).vcD
 
 /-- The **Sauer-Shelah lemma**. -/
 lemma card_shatterer_le_sum_vcDim [Fintype α] :
-    𝒜.shatterer.card ≤ ∑ k in Iic 𝒜.vcDim, (Fintype.card α).choose k := by
+    𝒜.shatterer.card ≤ ∑ k ∈ Iic 𝒜.vcDim, (Fintype.card α).choose k := by
   simp_rw [← card_univ, ← card_powersetCard]
   refine (card_le_card fun s hs ↦ mem_biUnion.2 ⟨card s, ?_⟩).trans card_biUnion_le
   exact ⟨mem_Iic.2 (mem_shatterer.1 hs).card_le_vcDim, mem_powersetCard_univ.2 rfl⟩

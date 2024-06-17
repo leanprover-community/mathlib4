@@ -53,7 +53,7 @@ example {a : ℕ}
 by simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => do
+elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
   let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
     match cfg with
     | Option.none =>

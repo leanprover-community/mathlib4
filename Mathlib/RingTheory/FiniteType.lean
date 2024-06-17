@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.FreeAlgebra
+import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Noetherian
-import Mathlib.Data.Polynomial.Module.Basic
 
 #align_import ring_theory.finite_type from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
@@ -85,7 +85,7 @@ protected theorem polynomial : FiniteType R R[X] :=
       exact Polynomial.adjoin_X⟩⟩
 #align algebra.finite_type.polynomial Algebra.FiniteType.polynomial
 
-open Classical
+open scoped Classical
 
 protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι
@@ -105,7 +105,7 @@ protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolyno
 theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
-  refine' ⟨⟨s, eq_top_iff.2 fun b => _⟩⟩
+  refine ⟨⟨s, eq_top_iff.2 fun b => ?_⟩⟩
   have le : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S s) := by
     apply (Algebra.adjoin_le _ : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S ↑s))
     simp only [Subalgebra.coe_restrictScalars]
@@ -305,9 +305,7 @@ end RingHom
 namespace AlgHom
 
 variable {R A B C : Type*} [CommRing R]
-
 variable [CommRing A] [CommRing B] [CommRing C]
-
 variable [Algebra R A] [Algebra R B] [Algebra R C]
 
 /-- An algebra morphism `A →ₐ[R] B` is of `FiniteType` if it is of finite type as ring morphism.
@@ -384,7 +382,7 @@ theorem mem_adjoin_support (f : R[M]) : f ∈ adjoin R (of' R M '' f.support) :=
 elements of `S` generates `R[M]`. -/
 theorem support_gen_of_gen {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
     Algebra.adjoin R (⋃ f ∈ S, of' R M '' (f.support : Set M)) = ⊤ := by
-  refine' le_antisymm le_top _
+  refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
   have hincl :
@@ -427,7 +425,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of'_mem_span [Nontrivial R] {m : M} {S : Set M} :
     of' R M m ∈ span R (of' R M '' S) ↔ m ∈ S := by
-  refine' ⟨fun h => _, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of', ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -461,7 +459,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' AddSubmonoid.closure_induction this (fun m hm => _) _ _
+    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -487,7 +485,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' AddSubmonoid.closure_induction this (fun m hm => _) _ _
+    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -519,9 +517,9 @@ variable {R M}
 finite type. -/
 theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
     FiniteType R R[M] ↔ AddMonoid.FG M := by
-  refine' ⟨fun h => _, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
+  refine ⟨fun h => ?_, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
   obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ h
-  refine' AddMonoid.fg_def.2 ⟨S, (eq_top_iff' _).2 fun m => _⟩
+  refine AddMonoid.fg_def.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
   have hm : of' R M m ∈ Subalgebra.toSubmodule (adjoin R (of' R M '' ↑S)) := by
     simp only [hS, top_toSubmodule, Submodule.mem_top]
   rw [adjoin_eq_span] at hm
@@ -565,10 +563,10 @@ theorem mem_adjoin_support (f : MonoidAlgebra R M) : f ∈ adjoin R (of R M '' f
 of `S` generates `MonoidAlgebra R M`. -/
 theorem support_gen_of_gen {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R S = ⊤) :
     Algebra.adjoin R (⋃ f ∈ S, of R M '' (f.support : Set M)) = ⊤ := by
-  refine' le_antisymm le_top _
+  refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
-  --Porting note: ⋃ notation did not work here. Was
+  -- Porting note: ⋃ notation did not work here. Was
   -- ⋃ (g : MonoidAlgebra R M) (H : g ∈ S), (of R M '' g.support)
   have hincl : (of R M '' f.support) ⊆
       Set.iUnion fun (g : MonoidAlgebra R M)
@@ -611,7 +609,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of_mem_span_of_iff [Nontrivial R] {m : M} {S : Set M} :
     of R M m ∈ span R (of R M '' S) ↔ m ∈ S := by
-  refine' ⟨fun h => _, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -640,7 +638,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' Submonoid.closure_induction this (fun m hm => _) _ _
+    refine Submonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -665,7 +663,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' Submonoid.closure_induction this (fun m hm => _) _ _
+    refine Submonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩

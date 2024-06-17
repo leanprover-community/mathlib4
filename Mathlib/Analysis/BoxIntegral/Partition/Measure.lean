@@ -20,7 +20,7 @@ In this file we prove a few simple facts about rectangular boxes, partitions, an
 For the last statement, we both prove it as a proposition and define a bundled
 `BoxIntegral.BoxAdditiveMap` function.
 
-### Tags
+## Tags
 
 rectangular box, measure
 -/
@@ -84,7 +84,7 @@ end Box
 
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
-    (μ π.iUnion).toReal = ∑ J in π.boxes, (μ J).toReal := by
+    (μ π.iUnion).toReal = ∑ J ∈ π.boxes, (μ J).toReal := by
   erw [← ENNReal.toReal_sum, π.iUnion_def, measure_biUnion_finset π.pairwiseDisjoint]
   exacts [fun J _ => J.measurableSet_coe, fun J _ => (J.measure_coe_lt_top μ).ne]
 #align box_integral.prepartition.measure_Union_to_real BoxIntegral.Prepartition.measure_iUnion_toReal

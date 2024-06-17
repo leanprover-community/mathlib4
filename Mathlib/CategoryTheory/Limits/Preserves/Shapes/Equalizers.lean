@@ -26,9 +26,7 @@ universe w v₁ v₂ u₁ u₂
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
 
 namespace CategoryTheory.Limits
@@ -101,6 +99,13 @@ theorem PreservesEqualizer.iso_hom :
     (PreservesEqualizer.iso G f g).hom = equalizerComparison f g G :=
   rfl
 #align category_theory.limits.preserves_equalizer.iso_hom CategoryTheory.Limits.PreservesEqualizer.iso_hom
+
+@[simp]
+theorem PreservesEqualizer.iso_inv_ι :
+    (PreservesEqualizer.iso G f g).inv ≫ G.map (equalizer.ι f g) =
+      equalizer.ι (G.map f) (G.map g) := by
+  rw [← Iso.cancel_iso_hom_left (PreservesEqualizer.iso G f g), ← Category.assoc, Iso.hom_inv_id]
+  simp
 
 instance : IsIso (equalizerComparison f g G) := by
   rw [← PreservesEqualizer.iso_hom]

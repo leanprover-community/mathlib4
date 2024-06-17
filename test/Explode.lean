@@ -28,7 +28,7 @@ info: true_iff : ∀ (p : Prop), (True ↔ p) = p
 set_option pp.unicode.fun true
 
 theorem lambda : True → True :=
-  λ a => a
+  fun a ↦ a
 
 /--
 info: lambda : True → True
@@ -50,7 +50,7 @@ info: application : True ∧ True
 #guard_msgs in #explode application
 
 theorem theorem_1 : ∀ (p : Prop), p → p :=
-  λ (p : Prop) => (λ hP : p => hP)
+  fun (p : Prop) ↦ (fun hP : p ↦ hP)
 /--
 info: theorem_1 : ∀ (p : Prop), p → p
 
@@ -61,7 +61,7 @@ info: theorem_1 : ∀ (p : Prop), p → p
 #guard_msgs in #explode theorem_1
 
 theorem theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
-  λ p => λ q => λ hP => λ hQ => And.intro hP hQ
+  fun p ↦ fun q ↦ fun hP ↦ fun hQ ↦ And.intro hP hQ
 
 /--
 info: theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
@@ -77,8 +77,8 @@ info: theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
 
 theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
   Iff.intro
-    (λ hl => trivial)
-    (λ hr => h)
+    (fun hl ↦ trivial)
+    (fun hr ↦ h)
 
 /--
 info: theorem_3 : ∀ (a : Prop), a → (a ↔ True)
@@ -97,7 +97,7 @@ info: theorem_3 : ∀ (a : Prop), a → (a ↔ True)
 
 
 theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
-  λ U => λ W => λ hPQ => λ hNQ => λ hP => False.elim (hNQ (hPQ hP))
+  fun U ↦ fun W ↦ fun hPQ ↦ fun hNQ ↦ fun hP ↦ False.elim (hNQ (hPQ hP))
 
 /--
 info: theorem_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
@@ -115,12 +115,12 @@ info: theorem_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
 #guard_msgs in #explode theorem_4
 
 lemma lemma_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
-  λ p => λ q =>
-  λ hNQNP =>
-  λ hP =>
+  fun p ↦ fun q ↦
+  fun hNQNP ↦
+  fun hP ↦
     Or.elim (Classical.em q)
-    (λ hQ => hQ)
-    (λ hNQ =>
+    (fun hQ ↦ hQ)
+    (fun hNQ ↦
       let hNP := hNQNP hNQ
       False.elim (hNP hP))
 
@@ -146,7 +146,7 @@ info: lemma_5 : ∀ (p q : Prop), (¬q → ¬p) → p → q
 
 
 lemma lemma_6 : ∀ p q : Prop, (p → q) → p → q :=
-  λ p h hpq hp => hpq hp
+  fun p h hpq hp ↦ hpq hp
 
 /--
 info: lemma_6 : ∀ (p q : Prop), (p → q) → p → q
@@ -161,7 +161,7 @@ info: lemma_6 : ∀ (p q : Prop), (p → q) → p → q
 #guard_msgs in #explode lemma_6
 
 lemma lemma_7 : ∀ p q r : Prop, (p → q) → (p → q → r) → (p → r) :=
-  λ p q r hq hqr hp =>
+  fun p q r hq hqr hp ↦
     let hq' := hq hp
     let hqr' := hqr hp
     hqr' hq'
@@ -183,11 +183,11 @@ info: lemma_7 : ∀ (p q r : Prop), (p → q) → (p → q → r) → p → r
 #guard_msgs in #explode lemma_7
 
 lemma lemma_5' : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
-  λ p => λ q =>
-  λ hNQNP =>
+  fun p ↦ fun q ↦
+  fun hNQNP ↦
     Or.elim (Classical.em q)
-    (λ hQ hP => hQ)
-    (λ hNQ hP =>
+    (fun hQ hP ↦ hQ)
+    (fun hNQ hP ↦
       let hNP := hNQNP hNQ
       False.elim (hNP hP))
 
@@ -223,13 +223,13 @@ info: fun hp hnp ↦ hnp hp : p → (p → q) → q
 2│1,0  │ ∀E  │ q
 3│0,1,2│ ∀I  │ p → (p → q) → q
 -/
-#guard_msgs in #explode fun (hp : p) (hnp : p → q) => hnp hp
+#guard_msgs in #explode fun (hp : p) (hnp : p → q) ↦ hnp hp
 
 /--
 info: fun hNQNP ↦
   Or.elim (Classical.em q) (fun hQ hP ↦ hQ) fun hNQ hP ↦
     let hNP := hNQNP hNQ;
-    (hNP hP).elim : (¬q → ¬p) → p → q
+    False.elim (hNP hP) : (¬q → ¬p) → p → q
 
 0 │      │ hNQNP        ├ ¬q → ¬p
 1 │      │ Classical.em │ q ∨ ¬q
@@ -245,10 +245,10 @@ info: fun hNQNP ↦
 12│1,4,11│ Or.elim      │ p → q
 13│0,12  │ ∀I           │ (¬q → ¬p) → p → q
 -/
-#guard_msgs in #explode fun (hNQNP : ¬q → ¬p) =>
+#guard_msgs in #explode fun (hNQNP : ¬q → ¬p) ↦
   Or.elim (Classical.em q)
-    (λ hQ hP => hQ)
-    (λ hNQ hP =>
+    (fun hQ hP ↦ hQ)
+    (fun hNQ hP ↦
       let hNP := hNQNP hNQ
       False.elim (hNP hP))
 

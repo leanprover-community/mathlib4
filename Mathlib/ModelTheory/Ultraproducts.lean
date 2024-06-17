@@ -125,19 +125,19 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
       ∀ (m : ∀ a, M a) (a : α),
         (fun i : Fin (k + 1) => (Fin.snoc v m : _ → ∀ a, M a) i a) =
           Fin.snoc (fun i : Fin k => v i a) (m a) := by
-      refine' fun m a => funext (Fin.reverseInduction _ fun i _ => _)
+      refine fun m a => funext (Fin.reverseInduction ?_ fun i _ => ?_)
       · simp only [Fin.snoc_last]
       · simp only [Fin.snoc_castSucc]
     simp only [← Fin.comp_snoc]
     simp only [Function.comp, ih, h']
-    refine' ⟨fun h => _, fun h m => _⟩
+    refine ⟨fun h => ?_, fun h m => ?_⟩
     · contrapose! h
       simp_rw [← Ultrafilter.eventually_not, not_forall] at h
-      refine'
+      refine
         ⟨fun a : α =>
           Classical.epsilon fun m : M a =>
             ¬φ.Realize (fun i => x i a) (Fin.snoc (fun i => v i a) m),
-          _⟩
+          ?_⟩
       rw [← Ultrafilter.eventually_not]
       exact Filter.mem_of_superset h fun a ha => Classical.epsilon_spec ha
     · rw [Filter.eventually_iff] at *
@@ -162,7 +162,7 @@ theorem sentence_realize (φ : L.Sentence) :
 
 nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=
   letI : ∀ a, Inhabited (M a) := fun _ => Classical.inhabited_of_nonempty'
-  instNonempty
+  inferInstance
 #align first_order.language.ultraproduct.product.nonempty FirstOrder.Language.Ultraproduct.Product.instNonempty
 
 end Ultraproduct

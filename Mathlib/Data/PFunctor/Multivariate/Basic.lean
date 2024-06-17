@@ -162,7 +162,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
   constructor
   · rintro ⟨y, hy⟩
     cases' h : y with a f
-    refine' ⟨a, fun i j => (f i j).val, _, fun i j => (f i j).property⟩
+    refine ⟨a, fun i j => (f i j).val, ?_, fun i j => (f i j).property⟩
     rw [← hy, h, map_eq]
     rfl
   rintro ⟨a, f, xeq, pf⟩
@@ -210,7 +210,7 @@ theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
   · apply @h fun i x => ∃ y : P.B a i, f i y = x
     rw [liftP_iff']
     intros
-    refine' ⟨_, rfl⟩
+    exact ⟨_, rfl⟩
   · simp only [liftP_iff']
     cases h
     subst x
@@ -244,8 +244,7 @@ def last : PFunctor where
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- append arrows of a polynomial functor application -/
-@[reducible]
-def appendContents {α : TypeVec n} {β : Type*} {a : P.A} (f' : P.drop.B a ⟹ α)
+abbrev appendContents {α : TypeVec n} {β : Type*} {a : P.A} (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P.B a ⟹ (α ::: β) :=
   splitFun f' f
 #align mvpfunctor.append_contents MvPFunctor.appendContents

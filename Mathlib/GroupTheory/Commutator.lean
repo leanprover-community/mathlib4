@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Group.Commutator
+import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Bracket
-import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.GroupTheory.Subgroup.Centralizer
 import Mathlib.Tactic.Group
 
 #align_import group_theory.commutator from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
@@ -98,8 +99,8 @@ theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁,
 
 theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ centralizer H₂ := by
   rw [eq_bot_iff, commutator_le]
-  refine'
-    forall_congr' fun p => forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => _
+  refine forall_congr' fun p =>
+    forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => ?_
   rw [mem_bot, commutatorElement_eq_one_iff_mul_comm, eq_comm]
 #align subgroup.commutator_eq_bot_iff_le_centralizer Subgroup.commutator_eq_bot_iff_le_centralizer
 
@@ -226,17 +227,17 @@ theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} 
     Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ := by
   classical
     apply le_antisymm (commutator_pi_pi_le H K)
-    · rw [pi_le_iff]
-      intro i hi
-      rw [map_commutator]
-      apply commutator_mono <;>
-        · rw [le_pi_iff]
-          intro j _hj
-          rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩
-          by_cases h : j = i
-          · subst h
-            simpa using hx
-          · simp [h, one_mem]
+    rw [pi_le_iff]
+    intro i hi
+    rw [map_commutator]
+    apply commutator_mono <;>
+      · rw [le_pi_iff]
+        intro j _hj
+        rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩
+        by_cases h : j = i
+        · subst h
+          simpa using hx
+        · simp [h, one_mem]
 #align subgroup.commutator_pi_pi_of_finite Subgroup.commutator_pi_pi_of_finite
 
 end Subgroup

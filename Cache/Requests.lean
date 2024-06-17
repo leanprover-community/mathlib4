@@ -41,9 +41,7 @@ section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded -/
 def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
-  -- We sort the list so that the large files in `MathlibExtras` are requested first.
-  hashMap.toArray.qsort (fun ⟨p₁, _⟩ ⟨_, _⟩ => p₁.components.head? = "MathlibExtras")
-    |>.foldlM (init := "") fun acc ⟨_, hash⟩ => do
+  hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
     -- this does not exactly match the requirements for quoting for curl:
@@ -141,7 +139,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.Process.exit 1
   else IO.println "No files to download"
 
-def checkForToolchainMismatch : IO Unit := do
+def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
@@ -162,7 +160,7 @@ into the `lean-toolchain` file at the root directory of your project"
 
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
-    IO Unit := do
+    IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   if !isMathlibRoot then checkForToolchainMismatch
   downloadFiles hashMap forceDownload parallel

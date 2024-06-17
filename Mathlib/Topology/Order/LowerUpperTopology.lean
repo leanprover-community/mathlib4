@@ -98,7 +98,7 @@ namespace WithLower
 lemma toLower_inj {a b : α} : toLower a = toLower b ↔ a = b := Iff.rfl
 #align with_lower_topology.to_lower_inj Topology.WithLower.toLower_inj
 
--- porting note: removed @[simp] to make linter happy
+-- Porting note: removed @[simp] to make linter happy
 theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 #align with_lower_topology.of_lower_inj Topology.WithLower.ofLower_inj
@@ -239,7 +239,7 @@ theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α
 
 /-- Every set open in the lower topology is a lower set. -/
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
-  -- porting note: `rw` leaves a shadowed assumption
+  -- Porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
   induction h with
   | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
@@ -268,7 +268,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   ext s
   constructor
   · rintro ⟨F, hF, rfl⟩
-    refine' ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, _⟩
+    refine ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, ?_⟩
     simp only [sInter_image]
   · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
     haveI := hF.to_subtype
@@ -423,9 +423,9 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLowe
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine IsLower.continuous_iff_Ici.2 fun b => ?_
   convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
-  refine' Subset.antisymm (fun a => sInf_le) fun a ha => le_trans _ <|
+  refine Subset.antisymm (fun a => sInf_le) fun a ha => le_trans ?_ <|
     OrderHomClass.mono (f : α →o β) ha
-  refine' LE.le.trans _ (map_sInf f _).ge
+  refine LE.le.trans ?_ (map_sInf f _).ge
   simp
 #align Inf_hom.continuous sInfHom.continuous
 

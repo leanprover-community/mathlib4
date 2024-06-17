@@ -18,6 +18,11 @@ We construct the exterior algebra of a module `M` over a commutative semiring `R
 The exterior algebra of the `R`-module `M` is denoted as `ExteriorAlgebra R M`.
 It is endowed with the structure of an `R`-algebra.
 
+The `n`th exterior power of the `R`-module `M` is denoted by `exteriorPower R n M`;
+it is of type `Submodule R (ExteriorAlgebra R M)` and defined as
+`LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n`.
+We also introduce the notation `⋀[R]^n M` for `exteriorPower R n M`.
+
 Given a linear morphism `f : M → A` from a module `M` to another `R`-algebra `A`, such that
 `cond : ∀ m : M, f m * f m = 0`, there is a (unique) lift of `f` to an `R`-algebra morphism,
 which is denoted `ExteriorAlgebra.lift R f cond`.
@@ -45,13 +50,11 @@ as this avoids us having to duplicate API.
 universe u1 u2 u3 u4 u5
 
 variable (R : Type u1) [CommRing R]
-
 variable (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- The exterior algebra of an `R`-module `M`.
 -/
-@[reducible]
-def ExteriorAlgebra :=
+abbrev ExteriorAlgebra :=
   CliffordAlgebra (0 : QuadraticForm R M)
 #align exterior_algebra ExteriorAlgebra
 
@@ -61,10 +64,24 @@ variable {M}
 
 /-- The canonical linear map `M →ₗ[R] ExteriorAlgebra R M`.
 -/
-@[reducible]
-def ι : M →ₗ[R] ExteriorAlgebra R M :=
+abbrev ι : M →ₗ[R] ExteriorAlgebra R M :=
   CliffordAlgebra.ι _
 #align exterior_algebra.ι ExteriorAlgebra.ι
+
+section exteriorPower
+
+-- New variables `n` and `M`, to get the correct order of variables in the notation.
+variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
+
+/-- Definition of the `n`th exterior power of a `R`-module `N`. We introduce the notation
+`⋀[R]^n M` for `exteriorPower R n M`. -/
+abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
+  LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
+
+@[inherit_doc exteriorPower]
+notation:max "⋀[" R "]^" n:arg => exteriorPower R n
+
+end exteriorPower
 
 variable {R}
 
@@ -130,10 +147,10 @@ and is preserved under addition and muliplication, then it holds for all of `Ext
 -/
 @[elab_as_elim]
 theorem induction {C : ExteriorAlgebra R M → Prop}
-    (h_grade0 : ∀ r, C (algebraMap R (ExteriorAlgebra R M) r)) (h_grade1 : ∀ x, C (ι R x))
-    (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
+    (algebraMap : ∀ r, C (algebraMap R (ExteriorAlgebra R M) r)) (ι : ∀ x, C (ι R x))
+    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
     (a : ExteriorAlgebra R M) : C a :=
-  CliffordAlgebra.induction h_grade0 h_grade1 h_mul h_add a
+  CliffordAlgebra.induction algebraMap ι mul add a
 #align exterior_algebra.induction ExteriorAlgebra.induction
 
 /-- The left-inverse of `algebraMap`. -/
@@ -222,7 +239,7 @@ theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := toTrivSqZeroExt_ι _
@@ -235,7 +252,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
-  rw [← (algebraMap R (ExteriorAlgebra R M)).map_one, Ne.def, ι_eq_algebraMap_iff]
+  rw [← (algebraMap R (ExteriorAlgebra R M)).map_one, Ne, ι_eq_algebraMap_iff]
   exact one_ne_zero ∘ And.right
 #align exterior_algebra.ι_ne_one ExteriorAlgebra.ι_ne_one
 
@@ -265,7 +282,7 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
         congr_arg (ι R (f 0) * ·) <| hn (fun i => f <| Fin.succ i) (i.pred h)
       simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
-      refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
+      refine (eq_zero_iff_eq_zero_of_add_eq_zero ?_).mp hn
       rw [← add_mul, ι_add_mul_swap, zero_mul]
 #align exterior_algebra.ι_mul_prod_list ExteriorAlgebra.ι_mul_prod_list
 
@@ -275,11 +292,11 @@ variable (R)
 
 This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
 `TensorAlgebra.tprod`. -/
-def ιMulti (n : ℕ) : M [Λ^Fin n]→ₗ[R] ExteriorAlgebra R M :=
+def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
     map_eq_zero_of_eq' := fun f x y hfxy hxy => by
-      dsimp
+      dsimp [F]
       clear F
       wlog h : x < y
       · exact this R (A := A) n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
@@ -317,8 +334,8 @@ theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
 
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
-    ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) :=
-  (congr_arg List.prod (List.ofFn_succ _)).trans List.prod_cons
+    ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) := by
+  simp [ιMulti, Matrix.vecTail]
 #align exterior_algebra.ι_multi_succ_apply ExteriorAlgebra.ιMulti_succ_apply
 
 theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
@@ -333,7 +350,7 @@ variable (R)
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power. -/
 lemma ιMulti_range (n : ℕ) :
-    Set.range (ιMulti R n (M := M)) ⊆ ↑(LinearMap.range (ι R (M := M)) ^ n) := by
+    Set.range (ιMulti R n (M := M)) ⊆ ↑(⋀[R]^n M) := by
   rw [Set.range_subset_iff]
   intro v
   rw [ιMulti_apply]
@@ -344,10 +361,9 @@ lemma ιMulti_range (n : ℕ) :
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
 of the exterior algebra. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
-    Submodule.span R (Set.range (ιMulti R n)) =
-    LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n := by
+    Submodule.span R (Set.range (ιMulti R n)) = ⋀[R]^n M := by
   refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
-  rw [Submodule.pow_eq_span_pow_set, Submodule.span_le]
+  rw [exteriorPower, Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
   obtain ⟨f, rfl⟩ := Set.mem_pow.mp hu
   refine ⟨fun i => ιInv (f i).1, ?_⟩
@@ -430,6 +446,7 @@ theorem ιInv_comp_map (f : M →ₗ[R] N) :
   unfold ιInv
   conv_lhs => rw [LinearMap.comp_assoc, ← AlgHom.comp_toLinearMap, toTrivSqZeroExt_comp_map,
                 AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, TrivSqZeroExt.sndHom_comp_map]
+  rfl
 
 open Function in
 /-- For a linear map `f` from `M` to `N`,

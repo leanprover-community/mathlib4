@@ -41,16 +41,14 @@ open CategoryTheory Order Set Topology TopologicalSpace
 
 namespace Locale
 
-/- ### Definition of the points functor `pt` --/
-
+/-! ### Definition of the points functor `pt` --/
 section pt_definition
 
 variable (L : Type*) [CompleteLattice L]
 
 /-- The type of points of a complete lattice `L`, where a *point* of a complete lattice is,
 by definition, a frame homomorphism from `L` to `Prop`. -/
-@[reducible]
-def PT := FrameHom L Prop
+abbrev PT := FrameHom L Prop
 
 /-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of
 points of `L`. -/

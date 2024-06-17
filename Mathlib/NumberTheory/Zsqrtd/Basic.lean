@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Ring
 
 #align_import number_theory.zsqrtd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -178,8 +179,8 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
     zero := (0 : ℤ√d)
     sub := fun a b => a + -b
     neg := Neg.neg
-    zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
     nsmul := @nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩
+    zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩)
     add_assoc := ?_
     zero_add := ?_
     add_zero := ?_
@@ -273,43 +274,52 @@ instance nontrivial : Nontrivial (ℤ√d) :=
   ⟨⟨0, 1, (Zsqrtd.ext_iff 0 1).not.mpr (by simp)⟩⟩
 
 @[simp]
-theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
+theorem natCast_re (n : ℕ) : (n : ℤ√d).re = n :=
   rfl
-#align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
+#align zsqrtd.coe_nat_re Zsqrtd.natCast_re
 
 @[simp]
 theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
-theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
+theorem natCast_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
-#align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
+#align zsqrtd.coe_nat_im Zsqrtd.natCast_im
 
 @[simp]
 theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
   rfl
 
-theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
+theorem natCast_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
   rfl
-#align zsqrtd.coe_nat_val Zsqrtd.coe_nat_val
+#align zsqrtd.coe_nat_val Zsqrtd.natCast_val
 
 @[simp]
-theorem coe_int_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
-#align zsqrtd.coe_int_re Zsqrtd.coe_int_re
+theorem intCast_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
+#align zsqrtd.coe_int_re Zsqrtd.intCast_re
 
 @[simp]
-theorem coe_int_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
-#align zsqrtd.coe_int_im Zsqrtd.coe_int_im
+theorem intCast_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
+#align zsqrtd.coe_int_im Zsqrtd.intCast_im
 
-theorem coe_int_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by ext <;> simp
-#align zsqrtd.coe_int_val Zsqrtd.coe_int_val
+theorem intCast_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by ext <;> simp
+#align zsqrtd.coe_int_val Zsqrtd.intCast_val
 
 instance : CharZero (ℤ√d) where cast_injective m n := by simp [Zsqrtd.ext_iff]
 
 @[simp]
-theorem ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
-#align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_coe
+theorem ofInt_eq_intCast (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
+#align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_intCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat_re := natCast_re
+@[deprecated] alias coe_nat_im := natCast_im
+@[deprecated] alias coe_nat_val := natCast_val
+@[deprecated] alias coe_int_re := intCast_re
+@[deprecated] alias coe_int_im := intCast_im
+@[deprecated] alias coe_int_val := intCast_val
+@[deprecated] alias ofInt_eq_coe := ofInt_eq_intCast
 
 @[simp]
 theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by ext <;> simp
@@ -359,8 +369,8 @@ protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n 
 theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp only [add_zero, coe_int_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
-      mul_re, mul_zero, coe_int_im]
+    simp only [add_zero, intCast_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
+      mul_re, mul_zero, intCast_im]
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     rw [smul_val, Zsqrtd.ext_iff]
@@ -372,8 +382,8 @@ theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
   rw [coe_int_dvd_iff]
   constructor
   · rintro ⟨hre, -⟩
-    rwa [coe_int_re] at hre
-  · rw [coe_int_re, coe_int_im]
+    rwa [intCast_re] at hre
+  · rw [intCast_re, intCast_im]
     exact fun hc => ⟨hc, dvd_zero a⟩
 #align zsqrtd.coe_int_dvd_coe_int Zsqrtd.coe_int_dvd_coe_int
 
@@ -414,7 +424,7 @@ theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
     ∃ b : ℤ√d, a = ((Int.gcd a.re a.im : ℤ) : ℤ√d) * b ∧ IsCoprime b.re b.im := by
   obtain ⟨re, im, H1, Hre, Him⟩ := Int.exists_gcd_one hgcd
   rw [mul_comm] at Hre Him
-  refine' ⟨⟨re, im⟩, _, _⟩
+  refine ⟨⟨re, im⟩, ?_, ?_⟩
   · rw [smul_val, ← Hre, ← Him]
   · rw [← Int.gcd_eq_one_iff_coprime, H1]
 #align zsqrtd.exists_coprime_of_gcd_pos Zsqrtd.exists_coprime_of_gcd_pos
@@ -433,7 +443,7 @@ theorem sqLe_of_le {c d x y z w : ℕ} (xz : z ≤ x) (yw : y ≤ w) (xy : SqLe 
 
 theorem sqLe_add_mixed {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     c * (x * z) ≤ d * (y * w) :=
-  Nat.mul_self_le_mul_self_iff.2 <| by
+  Nat.mul_self_le_mul_self_iff.1 <| by
     simpa [mul_comm, mul_left_comm] using mul_le_mul xy zw (Nat.zero_le _) (Nat.zero_le _)
 #align zsqrtd.sq_le_add_mixed Zsqrtd.sqLe_add_mixed
 
@@ -448,7 +458,7 @@ theorem sqLe_cancel {c d x y z w : ℕ} (zw : SqLe y d x c) (h : SqLe (x + z) c 
     SqLe z c w d := by
   apply le_of_not_gt
   intro l
-  refine' not_le_of_gt _ h
+  refine not_le_of_gt ?_ h
   simp only [SqLe, mul_add, mul_comm, mul_left_comm, add_assoc, gt_iff_lt]
   have hm := sqLe_add_mixed zw (le_of_lt l)
   simp only [SqLe, mul_assoc, gt_iff_lt] at l zw
@@ -466,12 +476,12 @@ theorem sqLe_mul {d x y z w : ℕ} :
       (SqLe x 1 y d → SqLe w d z 1 → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
         (SqLe y d x 1 → SqLe z 1 w d → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
           (SqLe y d x 1 → SqLe w d z 1 → SqLe (x * w + y * z) d (x * z + d * y * w) 1) := by
-  refine' ⟨_, _, _, _⟩ <;>
+  refine ⟨?_, ?_, ?_, ?_⟩ <;>
     · intro xy zw
       have :=
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
-      refine' Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg _)
+      refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
       convert this using 1
       simp only [one_mul, Int.ofNat_add, Int.ofNat_mul]
       ring
@@ -532,13 +542,13 @@ theorem norm_one : norm (1 : ℤ√d) = 1 := by simp [norm]
 #align zsqrtd.norm_one Zsqrtd.norm_one
 
 @[simp]
-theorem norm_int_cast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
-#align zsqrtd.norm_int_cast Zsqrtd.norm_int_cast
+theorem norm_intCast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
+#align zsqrtd.norm_int_cast Zsqrtd.norm_intCast
 
 @[simp]
-theorem norm_nat_cast (n : ℕ) : norm (n : ℤ√d) = n * n :=
-  norm_int_cast n
-#align zsqrtd.norm_nat_cast Zsqrtd.norm_nat_cast
+theorem norm_natCast (n : ℕ) : norm (n : ℤ√d) = n * n :=
+  norm_intCast n
+#align zsqrtd.norm_nat_cast Zsqrtd.norm_natCast
 
 @[simp]
 theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by
@@ -584,11 +594,11 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
       (le_total 0 (norm x)).casesOn
         (fun hx =>
           ⟨star x, by
-            rwa [← Int.coe_nat_inj', Int.natAbs_of_nonneg hx, ← @Int.cast_inj (ℤ√d) _ _,
+            rwa [← Int.natCast_inj, Int.natAbs_of_nonneg hx, ← @Int.cast_inj (ℤ√d) _ _,
               norm_eq_mul_conj, eq_comm] at h⟩)
         fun hx =>
           ⟨-star x, by
-            rwa [← Int.coe_nat_inj', Int.ofNat_natAbs_of_nonpos hx, ← @Int.cast_inj (ℤ√d) _ _,
+            rwa [← Int.natCast_inj, Int.ofNat_natAbs_of_nonpos hx, ← @Int.cast_inj (ℤ√d) _ _,
               Int.cast_neg, norm_eq_mul_conj, neg_mul_eq_mul_neg, eq_comm] at h⟩,
     fun h => by
     let ⟨y, hy⟩ := isUnit_iff_dvd_one.1 h
@@ -603,7 +613,7 @@ theorem isUnit_iff_norm_isUnit {d : ℤ} (z : ℤ√d) : IsUnit z ↔ IsUnit z.n
 #align zsqrtd.is_unit_iff_norm_is_unit Zsqrtd.isUnit_iff_norm_isUnit
 
 theorem norm_eq_one_iff' {d : ℤ} (hd : d ≤ 0) (z : ℤ√d) : z.norm = 1 ↔ IsUnit z := by
-  rw [← norm_eq_one_iff, ← Int.coe_nat_inj', Int.natAbs_of_nonneg (norm_nonneg hd z), Int.ofNat_one]
+  rw [← norm_eq_one_iff, ← Int.natCast_inj, Int.natAbs_of_nonneg (norm_nonneg hd z), Int.ofNat_one]
 #align zsqrtd.norm_eq_one_iff' Zsqrtd.norm_eq_one_iff'
 
 theorem norm_eq_zero_iff {d : ℤ} (hd : d < 0) (z : ℤ√d) : z.norm = 0 ↔ z = 0 := by
@@ -681,7 +691,7 @@ theorem nonneg_add_lem {x y z w : ℕ} (xy : Nonneg (⟨x, -y⟩ : ℤ√d)) (zw
           (fun m n xy zw => sqLe_cancel xy zw) fun m n xy zw =>
           let t := Nat.le_trans zw (sqLe_of_le (Nat.le_add_right n (m + 1)) le_rfl xy)
           have : k + j + 1 ≤ k :=
-            Nat.mul_self_le_mul_self_iff.2 (by simpa [one_mul] using t)
+            Nat.mul_self_le_mul_self_iff.1 (by simpa [one_mul] using t)
           absurd this (not_le_of_gt <| Nat.succ_le_succ <| Nat.le_add_right _ _))
       (nonnegg_pos_neg.1 xy) (nonnegg_neg_pos.1 zw)
   rw [add_def, neg_add_eq_sub]
@@ -692,15 +702,15 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
   rcases nonneg_cases ha with ⟨x, y, rfl | rfl | rfl⟩ <;>
     rcases nonneg_cases hb with ⟨z, w, rfl | rfl | rfl⟩
   · trivial
-  · refine' nonnegg_cases_right fun i h => sqLe_of_le _ _ (nonnegg_pos_neg.1 hb)
+  · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 hb)
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro y (by simp [add_comm, *])))
     · apply Nat.le_add_left
-  · refine' nonnegg_cases_left fun i h => sqLe_of_le _ _ (nonnegg_neg_pos.1 hb)
+  · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 hb)
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro x (by simp [add_comm, *])))
     · apply Nat.le_add_left
-  · refine' nonnegg_cases_right fun i h => sqLe_of_le _ _ (nonnegg_pos_neg.1 ha)
+  · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 ha)
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro w (by simp [*])))
     · apply Nat.le_add_right
@@ -712,7 +722,7 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     -- simpa [add_comm] using
     --   nonnegg_pos_neg.2 (sqLe_add (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
   · exact nonneg_add_lem ha hb
-  · refine' nonnegg_cases_left fun i h => sqLe_of_le _ _ (nonnegg_neg_pos.1 ha)
+  · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 ha)
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro _ h))
     · apply Nat.le_add_right
@@ -768,7 +778,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
     | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_coe, add_assoc]; trivial⟩
     | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
     | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
-  refine' ⟨x + d * y, h.trans _⟩
+  refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   cases' y with y
   · simp
@@ -792,7 +802,7 @@ protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + 
 #align zsqrtd.add_lt_add_left Zsqrtd.add_lt_add_left
 
 theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ√d) * a) := by
-  rw [← Int.cast_ofNat n]
+  rw [← Int.cast_natCast n]
   exact
     match a, nonneg_cases ha, ha with
     | _, ⟨x, y, Or.inl rfl⟩, _ => by rw [smul_val]; trivial
@@ -817,7 +827,7 @@ theorem nonneg_muld {a : ℤ√d} (ha : Nonneg a) : Nonneg (sqrtd * a) :=
 
 theorem nonneg_mul_lem {x y : ℕ} {a : ℤ√d} (ha : Nonneg a) : Nonneg (⟨x, y⟩ * a) := by
   have : (⟨x, y⟩ * a : ℤ√d) = (x : ℤ√d) * a + sqrtd * ((y : ℤ√d) * a) := by
-    rw [decompose, right_distrib, mul_assoc, Int.cast_ofNat, Int.cast_ofNat]
+    rw [decompose, right_distrib, mul_assoc, Int.cast_natCast, Int.cast_natCast]
   rw [this]
   exact (nonneg_smul ha).add (nonneg_muld <| nonneg_smul ha)
 #align zsqrtd.nonneg_mul_lem Zsqrtd.nonneg_mul_lem
@@ -890,7 +900,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
   Or.elim g.eq_zero_or_pos
     (fun H => ⟨Nat.eq_zero_of_gcd_eq_zero_left H, Nat.eq_zero_of_gcd_eq_zero_right H⟩) fun gpos =>
     False.elim <| by
-      let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime gpos
+      let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime _ _
       rw [hx, hy] at h
       have : m * m = d * (n * n) := by
         refine mul_left_cancel₀ (mul_pos gpos gpos).ne' ?_
@@ -1006,7 +1016,7 @@ instance : OrderedRing (ℤ√d) := by infer_instance
 end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
-  refine' ⟨fun ha => (Zsqrtd.ext_iff _ _).mpr _, fun h => by rw [h, norm_zero]⟩
+  refine ⟨fun ha => (Zsqrtd.ext_iff _ _).mpr ?_, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d
@@ -1068,7 +1078,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
   (injective_iff_map_eq_zero (lift r)).mpr fun a ha => by
     have h_inj : Function.Injective ((↑) : ℤ → R) := Int.cast_injective
     suffices lift r a.norm = 0 by
-      simp only [coe_int_re, add_zero, lift_apply_apply, coe_int_im, Int.cast_zero,
+      simp only [intCast_re, add_zero, lift_apply_apply, intCast_im, Int.cast_zero,
         zero_mul] at this
       rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
     rw [norm_eq_mul_conj, RingHom.map_mul, ha, zero_mul]

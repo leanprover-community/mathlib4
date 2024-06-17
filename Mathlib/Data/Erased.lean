@@ -43,8 +43,7 @@ noncomputable def out {α} : Erased α → α
 
 Note: `(mk a).OutType` is not definitionally equal to `a`.
 -/
-@[reducible]
-def OutType (a : Erased (Sort u)) : Sort u :=
+abbrev OutType (a : Erased (Sort u)) : Sort u :=
   out a
 #align erased.out_type Erased.OutType
 
@@ -62,7 +61,7 @@ theorem out_mk {α} (a : α) : (mk a).out = a := by
 
 @[simp]
 theorem mk_out {α} : ∀ a : Erased α, mk (out a) = a
-  | ⟨s, h⟩ => by simp [mk]; congr; exact Classical.choose_spec h
+  | ⟨s, h⟩ => by simp only [mk]; congr; exact Classical.choose_spec h
 #align erased.mk_out Erased.mk_out
 
 @[ext]
@@ -153,10 +152,9 @@ theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β
   rfl
 #align erased.map_def Erased.map_def
 
---Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
-protected instance LawfulMonad : LawfulMonad Erased :=
-  { Erased.Monad with
-    id_map := by intros; ext; simp
+-- Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
+protected instance instLawfulMonad : LawfulMonad Erased :=
+  { id_map := by intros; ext; simp
     map_const := by intros; ext; simp [Functor.mapConst]
     pure_bind := by intros; ext; simp
     bind_assoc := by intros; ext; simp

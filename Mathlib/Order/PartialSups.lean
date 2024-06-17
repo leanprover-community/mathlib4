@@ -61,7 +61,7 @@ theorem partialSups_succ (f : ℕ → α) (n : ℕ) :
 #align partial_sups_succ partialSups_succ
 
 lemma partialSups_iff_forall {f : ℕ → α} (p : α → Prop)
-    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) : ∀  {n : ℕ}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k)
+    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) : ∀ {n : ℕ}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k)
   | 0 => by simp
   | (n + 1) => by simp [hp, partialSups_iff_forall, ← Nat.lt_succ_iff, ← Nat.forall_lt_succ]
 
@@ -85,7 +85,7 @@ theorem partialSups_le (f : ℕ → α) (n : ℕ) (a : α) (w : ∀ m, m ≤ n �
 lemma upperBounds_range_partialSups (f : ℕ → α) :
     upperBounds (Set.range (partialSups f)) = upperBounds (Set.range f) := by
   ext a
-  simp only [mem_upperBounds, Set.forall_range_iff, partialSups_le_iff]
+  simp only [mem_upperBounds, Set.forall_mem_range, partialSups_le_iff]
   exact ⟨fun h _ ↦ h _ _ le_rfl, fun h _ _ _ ↦ h _⟩
 
 @[simp]
@@ -164,7 +164,7 @@ theorem partialSups_eq_ciSup_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = 
 @[simp]
 theorem ciSup_partialSups_eq {f : ℕ → α} (h : BddAbove (Set.range f)) :
     ⨆ n, partialSups f n = ⨆ n, f n := by
-  refine' (ciSup_le fun n => _).antisymm (ciSup_mono _ <| le_partialSups f)
+  refine (ciSup_le fun n => ?_).antisymm (ciSup_mono ?_ <| le_partialSups f)
   · rw [partialSups_eq_ciSup_Iic]
     exact ciSup_le fun i => le_ciSup h _
   · rwa [bddAbove_range_partialSups]

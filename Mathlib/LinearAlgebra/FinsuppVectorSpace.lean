@@ -29,7 +29,6 @@ namespace Finsupp
 section Ring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-
 variable [Ring R] [AddCommGroup M] [Module R M]
 
 theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
@@ -42,12 +41,12 @@ theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
       exact disjoint_bot_right
     apply (hf i).map h_disjoint
   · intro i t _ hit
-    refine' (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono _ _
+    refine (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono ?_ ?_
     · rw [span_le]
       simp only [iSup_singleton]
       rw [range_coe]
       apply range_comp_subset_range _ (lsingle i)
-    · refine' iSup₂_mono fun i hi => _
+    · refine iSup₂_mono fun i hi => ?_
       rw [span_le, range_coe]
       apply range_comp_subset_range _ (lsingle i)
 #align finsupp.linear_independent_single Finsupp.linearIndependent_single
@@ -57,20 +56,19 @@ end Ring
 section Semiring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap Submodule
 
 open scoped Classical in
-/-- The basis on `ι →₀ M` with basis vectors `λ ⟨i, x⟩, single i (b i x)`. -/
+/-- The basis on `ι →₀ M` with basis vectors `fun ⟨i, x⟩ ↦ single i (b i x)`. -/
 protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (Σi, φ i) R (ι →₀ M) :=
   Basis.ofRepr
     { toFun := fun g =>
         { toFun := fun ix => (b ix.1).repr (g ix.1) ix.2
           support := g.support.sigma fun i => ((b i).repr (g i)).support
           mem_support_toFun := fun ix => by
-            simp only [Finset.mem_sigma, mem_support_iff, and_iff_right_iff_imp, Ne.def]
+            simp only [Finset.mem_sigma, mem_support_iff, and_iff_right_iff_imp, Ne]
             intro b hg
             simp [hg] at b }
       invFun := fun g =>
@@ -78,7 +76,7 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
             (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
-            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,
+            rw [Ne, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,
                 DFunLike.ext_iff]
             simp only [exists_prop, LinearEquiv.map_zero, comapDomain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
@@ -158,9 +156,7 @@ end DFinsupp
 namespace Basis
 
 variable {R M n : Type*}
-
 variable [DecidableEq n]
-
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :

@@ -30,16 +30,14 @@ open scoped BigOperators
 /- Let `n` be a natural number, `x` and `y` be as in the problem statement and `σ` be the
 permutation of natural numbers such that `z = y ∘ σ` -/
 variable (n : ℕ) (σ : Equiv.Perm ℕ) (hσ : {x | σ x ≠ x} ⊆ Finset.Icc 1 n) (x y : ℕ → ℝ)
-
 variable (hx : AntitoneOn x (Finset.Icc 1 n))
-
 variable (hy : AntitoneOn y (Finset.Icc 1 n))
 
 theorem imo1975_q1 :
-    ∑ i in Finset.Icc 1 n, (x i - y i) ^ 2 ≤ ∑ i in Finset.Icc 1 n, (x i - y (σ i)) ^ 2 := by
+    ∑ i ∈ Finset.Icc 1 n, (x i - y i) ^ 2 ≤ ∑ i ∈ Finset.Icc 1 n, (x i - y (σ i)) ^ 2 := by
   simp only [sub_sq, Finset.sum_add_distrib, Finset.sum_sub_distrib]
   -- a finite sum is invariant if we permute the order of summation
-  have hσy : ∑ i : ℕ in Finset.Icc 1 n, y i ^ 2 = ∑ i : ℕ in Finset.Icc 1 n, y (σ i) ^ 2 := by
+  have hσy : ∑ i ∈ Finset.Icc 1 n, y i ^ 2 = ∑ i ∈ Finset.Icc 1 n, y (σ i) ^ 2 := by
     rw [← Equiv.Perm.sum_comp σ (Finset.Icc 1 n) _ hσ]
   -- let's cancel terms appearing on both sides
   rw [hσy, add_le_add_iff_right, sub_le_sub_iff_left]

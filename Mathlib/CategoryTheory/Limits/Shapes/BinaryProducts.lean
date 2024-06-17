@@ -50,8 +50,7 @@ open WalkingPair
 
 /-- The equivalence swapping left and right.
 -/
-def WalkingPair.swap : WalkingPair ≃ WalkingPair
-    where
+def WalkingPair.swap : WalkingPair ≃ WalkingPair where
   toFun j := WalkingPair.recOn j right left
   invFun j := WalkingPair.recOn j right left
   left_inv j := by cases j; repeat rfl
@@ -80,8 +79,7 @@ theorem WalkingPair.swap_symm_apply_ff : WalkingPair.swap.symm right = left :=
 
 /-- An equivalence from `WalkingPair` to `Bool`, sometimes useful when reindexing limits.
 -/
-def WalkingPair.equivBool : WalkingPair ≃ Bool
-    where
+def WalkingPair.equivBool : WalkingPair ≃ Bool where
   toFun j := WalkingPair.recOn j true false
   -- to match equiv.sum_equiv_sigma_bool
   invFun b := Bool.recOn b right left
@@ -147,7 +145,7 @@ section
 variable {F G : Discrete WalkingPair ⥤ C} (f : F.obj ⟨left⟩ ⟶ G.obj ⟨left⟩)
   (g : F.obj ⟨right⟩ ⟶ G.obj ⟨right⟩)
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
 /-- The natural transformation between two functors out of the
@@ -290,10 +288,10 @@ variable {X Y : C}
 
 section
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 -- Porting note: would it be okay to use this more generally?
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
 @[simps pt]
@@ -424,7 +422,7 @@ theorem BinaryFan.isLimit_iff_isIso_fst {X Y : C} (h : IsTerminal Y) (c : Binary
 
 theorem BinaryFan.isLimit_iff_isIso_snd {X Y : C} (h : IsTerminal X) (c : BinaryFan X Y) :
     Nonempty (IsLimit c) ↔ IsIso c.snd := by
-  refine' Iff.trans _ (BinaryFan.isLimit_iff_isIso_fst h (BinaryFan.mk c.snd c.fst))
+  refine Iff.trans ?_ (BinaryFan.isLimit_iff_isIso_fst h (BinaryFan.mk c.snd c.fst))
   exact
     ⟨fun h => ⟨BinaryFan.isLimitFlip h.some⟩, fun h =>
       ⟨(BinaryFan.isLimitFlip h.some).ofIsoLimit (isoBinaryFanMk c).symm⟩⟩
@@ -482,7 +480,7 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
 
 theorem BinaryCofan.isColimit_iff_isIso_inr {X Y : C} (h : IsInitial X) (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔ IsIso c.inr := by
-  refine' Iff.trans _ (BinaryCofan.isColimit_iff_isIso_inl h (BinaryCofan.mk c.inr c.inl))
+  refine Iff.trans ?_ (BinaryCofan.isColimit_iff_isIso_inl h (BinaryCofan.mk c.inr c.inl))
   exact
     ⟨fun h => ⟨BinaryCofan.isColimitFlip h.some⟩, fun h =>
       ⟨(BinaryCofan.isColimitFlip h.some).ofIsoColimit (isoBinaryCofanMk c).symm⟩⟩
@@ -808,19 +806,19 @@ instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g :
       simpa using congr_arg (fun f => f ≫ prod.snd) h⟩
 #align category_theory.limits.prod.map_mono CategoryTheory.Limits.prod.map_mono
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
     diag X ≫ prod.map f f = f ≫ diag Y := by simp
 #align category_theory.limits.prod.diag_map CategoryTheory.Limits.prod.diag_map
 #align category_theory.limits.prod.diag_map_assoc CategoryTheory.Limits.prod.diag_map_assoc
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map_fst_snd {X Y : C} [HasBinaryProduct X Y] [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
     diag (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
 #align category_theory.limits.prod.diag_map_fst_snd CategoryTheory.Limits.prod.diag_map_fst_snd
 #align category_theory.limits.prod.diag_map_fst_snd_assoc CategoryTheory.Limits.prod.diag_map_fst_snd_assoc
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
     diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
@@ -1012,8 +1010,7 @@ variable {C}
 
 /-- The braiding isomorphism which swaps a binary product. -/
 @[simps]
-def prod.braiding (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] : P ⨯ Q ≅ Q ⨯ P
-    where
+def prod.braiding (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] : P ⨯ Q ≅ Q ⨯ P where
   hom := prod.lift prod.snd prod.fst
   inv := prod.lift prod.snd prod.fst
 #align category_theory.limits.prod.braiding CategoryTheory.Limits.prod.braiding
@@ -1123,7 +1120,7 @@ end
 
 section
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The braiding isomorphism which swaps a binary coproduct. -/
@@ -1196,7 +1193,7 @@ end
 
 section ProdFunctor
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1219,7 +1216,7 @@ end ProdFunctor
 
 section CoprodFunctor
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/
@@ -1244,11 +1241,8 @@ section ProdComparison
 universe w
 
 variable {C} {D : Type u₂} [Category.{w} D]
-
 variable (F : C ⥤ D) {A A' B B' : C}
-
 variable [HasBinaryProduct A B] [HasBinaryProduct A' B']
-
 variable [HasBinaryProduct (F.obj A) (F.obj B)] [HasBinaryProduct (F.obj A') (F.obj B')]
 
 /-- The product comparison morphism.
@@ -1291,8 +1285,7 @@ theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
 -/
 @[simps]
 def prodComparisonNatTrans [HasBinaryProducts C] [HasBinaryProducts D] (F : C ⥤ D) (A : C) :
-    prod.functor.obj A ⋙ F ⟶ F ⋙ prod.functor.obj (F.obj A)
-    where
+    prod.functor.obj A ⋙ F ⟶ F ⋙ prod.functor.obj (F.obj A) where
   app B := prodComparison F A B
   naturality f := by simp [prodComparison_natural]
 #align category_theory.limits.prod_comparison_nat_trans CategoryTheory.Limits.prodComparisonNatTrans
@@ -1338,11 +1331,8 @@ section CoprodComparison
 universe w
 
 variable {C} {D : Type u₂} [Category.{w} D]
-
 variable (F : C ⥤ D) {A A' B B' : C}
-
 variable [HasBinaryCoproduct A B] [HasBinaryCoproduct A' B']
-
 variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A') (F.obj B')]
 
 /-- The coproduct comparison morphism.
@@ -1446,14 +1436,14 @@ def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A w
     { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by
         dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
       naturality := fun f g k => by
-        ext;
-          · dsimp; simp }
+        ext
+        dsimp; simp }
   map_id X := by
     ext
-    · dsimp; simp
+    dsimp; simp
   map_comp f g := by
     ext
-    · dsimp; simp
+    dsimp; simp
 #align category_theory.over.coprod CategoryTheory.Over.coprod
 
 end CategoryTheory

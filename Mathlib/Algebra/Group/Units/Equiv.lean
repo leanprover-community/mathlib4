@@ -227,9 +227,20 @@ end Group
 
 end Equiv
 
+variable (α) in
+/-- The `αˣ` type is equivalent to a subtype of `α × α`. -/
+@[simps]
+def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1} where
+  toFun u := ⟨(u, ↑u⁻¹), u.val_inv, u.inv_val⟩
+  invFun p := Units.mk (p : α × α).1 (p : α × α).2 p.prop.1 p.prop.2
+  left_inv _ := Units.ext rfl
+  right_inv _ := Subtype.ext <| Prod.ext rfl rfl
+#align units_equiv_prod_subtype unitsEquivProdSubtype
+#align units_equiv_prod_subtype_apply_coe unitsEquivProdSubtype_apply_coe
+
 -- Porting note: we don't put `@[simp]` on the additive version;
 -- mysteriously simp can already prove that one (although not the multiplicative one)!
--- porting note: `@[simps apply]` removed because right now it's generating lemmas which
+-- Porting note: `@[simps apply]` removed because right now it's generating lemmas which
 -- aren't in simp normal form (they contain a `toFun`)
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
@@ -247,4 +258,11 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm
--- porting note: no `add_equiv.neg_symm` in `mathlib3`
+-- Porting note: no `add_equiv.neg_symm` in `mathlib3`
+
+@[to_additive]
+protected
+theorem MulEquiv.map_isUnit_iff {M N} [Monoid M] [Monoid N] [EquivLike F M N] [MonoidHomClass F M N]
+    (f : F) {m : M} : IsUnit (f m) ↔ IsUnit m :=
+  isUnit_map_of_leftInverse (MonoidHom.inverse (f : M →* N) (EquivLike.inv f)
+    (EquivLike.left_inv f) <| EquivLike.right_inv f) (EquivLike.left_inv f)

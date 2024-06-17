@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Basic
 
 #align_import data.list.forall2 from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
@@ -29,11 +29,6 @@ mk_iff_of_inductive_prop List.Forall₂ List.forall₂_iff
 
 #align list.forall₂.nil List.Forall₂.nil
 #align list.forall₂.cons List.Forall₂.cons
-
-@[simp]
-theorem forall₂_cons {a b l₁ l₂} : Forall₂ R (a :: l₁) (b :: l₂) ↔ R a b ∧ Forall₂ R l₁ l₂ :=
-  ⟨fun h => by cases' h with h₁ h₂; constructor <;> assumption, fun ⟨h₁, h₂⟩ =>
-    Forall₂.cons h₁ h₂⟩
 #align list.forall₂_cons List.forall₂_cons
 
 theorem Forall₂.imp (H : ∀ a b, R a b → S a b) {l₁ l₂} (h : Forall₂ R l₁ l₂) : Forall₂ S l₁ l₂ := by
@@ -161,26 +156,40 @@ theorem Forall₂.length_eq : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → length 
   | _, _, Forall₂.cons _ h₂ => congr_arg succ (Forall₂.length_eq h₂)
 #align list.forall₂.length_eq List.Forall₂.length_eq
 
-theorem Forall₂.nthLe :
-    ∀ {x : List α} {y : List β} (_ : Forall₂ R x y) ⦃i : ℕ⦄ (hx : i < x.length) (hy : i < y.length),
-      R (x.nthLe i hx) (y.nthLe i hy)
+theorem Forall₂.get :
+    ∀ {x : List α} {y : List β}, Forall₂ R x y →
+      ∀ ⦃i : ℕ⦄ (hx : i < x.length) (hy : i < y.length), R (x.get ⟨i, hx⟩) (y.get ⟨i, hy⟩)
   | _, _, Forall₂.cons ha _, 0, _, _ => ha
-  | _, _, Forall₂.cons _ hl, succ _, _, _ => hl.nthLe _ _
+  | _, _, Forall₂.cons _ hl, succ _, _, _ => hl.get _ _
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-05-05")] theorem Forall₂.nthLe {x y} (h : Forall₂ R x y) ⦃i : ℕ⦄
+    (hx : i < x.length) (hy : i < y.length) : R (x.nthLe i hx) (y.nthLe i hy) := h.get hx hy
 #align list.forall₂.nth_le List.Forall₂.nthLe
 
-theorem forall₂_of_length_eq_of_nthLe :
+theorem forall₂_of_length_eq_of_get :
     ∀ {x : List α} {y : List β},
-      x.length = y.length → (∀ i h₁ h₂, R (x.nthLe i h₁) (y.nthLe i h₂)) → Forall₂ R x y
+      x.length = y.length → (∀ i h₁ h₂, R (x.get ⟨i, h₁⟩) (y.get ⟨i, h₂⟩)) → Forall₂ R x y
   | [], [], _, _ => Forall₂.nil
   | _ :: _, _ :: _, hl, h =>
     Forall₂.cons (h 0 (Nat.zero_lt_succ _) (Nat.zero_lt_succ _))
-      (forall₂_of_length_eq_of_nthLe (succ.inj hl) fun i h₁ h₂ =>
+      (forall₂_of_length_eq_of_get (succ.inj hl) fun i h₁ h₂ =>
         h i.succ (succ_lt_succ h₁) (succ_lt_succ h₂))
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-05-05")] theorem forall₂_of_length_eq_of_nthLe {x y}
+    (H : x.length = y.length) (H' : ∀ i h₁ h₂, R (x.nthLe i h₁) (y.nthLe i h₂)) :
+    Forall₂ R x y := forall₂_of_length_eq_of_get H H'
 #align list.forall₂_of_length_eq_of_nth_le List.forall₂_of_length_eq_of_nthLe
 
-theorem forall₂_iff_nthLe {l₁ : List α} {l₂ : List β} :
+theorem forall₂_iff_get {l₁ : List α} {l₂ : List β} :
+    Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.get ⟨i, h₁⟩) (l₂.get ⟨i, h₂⟩) :=
+  ⟨fun h => ⟨h.length_eq, h.get⟩, fun h => forall₂_of_length_eq_of_get h.1 h.2⟩
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-05-05")] theorem forall₂_iff_nthLe {l₁ : List α} {l₂ : List β} :
     Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.nthLe i h₁) (l₂.nthLe i h₂) :=
-  ⟨fun h => ⟨h.length_eq, h.nthLe⟩, fun h => forall₂_of_length_eq_of_nthLe h.1 h.2⟩
+  forall₂_iff_get
 #align list.forall₂_iff_nth_le List.forall₂_iff_nthLe
 
 theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b
@@ -326,7 +335,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
   · induction' h with _ a b l1 l2 rab _ ih b l1 l2 _ ih
     · exact ⟨nil, Forall₂.nil, nil_sublist _⟩
     · obtain ⟨l, hl1, hl2⟩ := ih
-      refine' ⟨b :: l, Forall₂.cons rab hl1, hl2.cons_cons b⟩
+      exact ⟨b :: l, Forall₂.cons rab hl1, hl2.cons_cons b⟩
     · obtain ⟨l, hl1, hl2⟩ := ih
       exact ⟨l, hl1, hl2.trans (Sublist.cons _ (Sublist.refl _))⟩
   · obtain ⟨l, hl1, hl2⟩ := h

@@ -68,7 +68,6 @@ namespace AlgebraicTopology
 namespace DoldKan
 
 variable {C : Type*} [Category C] [Preadditive C]
-
 variable {X : SimplicialObject C}
 
 /-- As we are using chain complexes indexed by `ℕ`, we shall need the relation
@@ -115,8 +114,7 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
         eqToHom (by congr) := by
   simp only [hσ', hσ]
   split_ifs
-  · exfalso
-    linarith
+  · omega
   · have h' := tsub_eq_of_eq_add ha
     congr
 #align algebraic_topology.dold_kan.hσ'_eq AlgebraicTopology.DoldKan.hσ'_eq

@@ -26,12 +26,12 @@ example : 1 < 2 := by
   guard_hyp this : 2 ≤ 1
   contradiction
 
-example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
+example (_p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
   by_contra! foo : ¬ ¬ ¬ P -- normalises to ¬ P, as does ¬ (goal).
   guard_hyp foo : ¬ ¬ ¬ P
   exact bar
 
-example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
+example (_p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
   by_contra! : ¬ ¬ ¬ P
   guard_hyp this : ¬ ¬ ¬ P
   exact bar

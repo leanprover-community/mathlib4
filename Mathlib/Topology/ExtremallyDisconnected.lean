@@ -32,7 +32,8 @@ compact Hausdorff spaces.
 
 noncomputable section
 
-open Classical Function Set
+open scoped Classical
+open Function Set
 
 universe u
 
@@ -59,7 +60,7 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
-    refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
+    refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, ?_⟩⟩
     rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
@@ -87,7 +88,7 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   have ht : Continuous t := continuous_of_discreteTopology
   let h : StoneCech X → Y := stoneCechExtend ht
   have hh : Continuous h := continuous_stoneCechExtend ht
-  refine' ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf _⟩
+  refine ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf ?_⟩
   rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, id_comp]
 #align stone_cech.projective StoneCech.projective
 
@@ -162,7 +163,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
   · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
-      IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _
+      IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
       ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
       have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| π ⁻¹' {a}
@@ -247,7 +248,7 @@ noncomputable def ExtremallyDisconnected.homeoCompactToT2 [ExtremallyDisconnecte
 
 /-- Theorem 2.5 in [Gleason, *Projective topological spaces*][gleason1958]:
 in the category of compact spaces and continuous maps,
-the projective spaces are precisely the extremally disconnected spaces.-/
+the projective spaces are precisely the extremally disconnected spaces. -/
 protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconnected A]
     [CompactSpace A] [T2Space A] : CompactT2.Projective A := by
   -- let $B$ and $C$ be compact; let $f : B \twoheadrightarrow C$ and $\phi : A \to C$ be continuous
@@ -276,9 +277,13 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   ext x
   exact x.val.mem.symm
 
-protected theorem CompactT2.projective_iff_extremallyDisconnnected [CompactSpace A] [T2Space A] :
+protected theorem CompactT2.projective_iff_extremallyDisconnected [CompactSpace A] [T2Space A] :
     Projective A ↔ ExtremallyDisconnected A :=
   ⟨Projective.extremallyDisconnected, fun _ => ExtremallyDisconnected.projective⟩
+
+@[deprecated (since := "2024-05-26")]
+alias CompactT2.projective_iff_extremallyDisconnnected :=
+  CompactT2.projective_iff_extremallyDisconnected
 
 end
 

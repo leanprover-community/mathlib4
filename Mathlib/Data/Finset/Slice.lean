@@ -133,7 +133,6 @@ def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) :=
   𝒜.filter fun i => i.card = r
 #align finset.slice Finset.slice
 
--- mathport name: finset.slice
 -- Porting note: old code: scoped[FinsetFamily]
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice
@@ -174,7 +173,7 @@ theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.s
 #align finset.bUnion_slice Finset.biUnion_slice
 
 @[simp]
-theorem sum_card_slice : (∑ r in Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
+theorem sum_card_slice : (∑ r ∈ Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
   letI := Classical.decEq α
   rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)

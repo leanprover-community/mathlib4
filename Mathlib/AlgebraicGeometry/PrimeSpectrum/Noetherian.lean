@@ -20,7 +20,6 @@ namespace PrimeSpectrum
 open Submodule
 
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
-
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a noetherian ring, every ideal contains a product of prime ideals
@@ -28,9 +27,9 @@ variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
   -- Porting note: Need to specify `P` explicitly
-  refine' IsNoetherian.induction
+  refine IsNoetherian.induction
     (P := fun I => ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I)
-    (fun (M : Ideal R) hgt => _) I
+    (fun (M : Ideal R) hgt => ?_) I
   by_cases h_prM : M.IsPrime
   · use {⟨M, h_prM⟩}
     rw [Multiset.map_singleton, Multiset.prod_singleton]
@@ -39,7 +38,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     exact ⟨0, le_top⟩
   have lt_add : ∀ z ∉ M, M < M + span R {z} := by
     intro z hz
-    refine' lt_of_le_of_ne le_sup_left fun m_eq => hz _
+    refine lt_of_le_of_ne le_sup_left fun m_eq => hz ?_
     rw [m_eq]
     exact Ideal.mem_sup_right (mem_span_singleton_self z)
   obtain ⟨x, hx, y, hy, hxy⟩ := (Ideal.not_isPrime_iff.mp h_prM).resolve_left htop
@@ -64,9 +63,9 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥ := by
   revert h_nzI
   -- Porting note: Need to specify `P` explicitly
-  refine' IsNoetherian.induction (P := fun I => I ≠ ⊥ → ∃ Z : Multiset (PrimeSpectrum A),
+  refine IsNoetherian.induction (P := fun I => I ≠ ⊥ → ∃ Z : Multiset (PrimeSpectrum A),
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥)
-    (fun (M : Ideal A) hgt => _) I
+    (fun (M : Ideal A) hgt => ?_) I
   intro h_nzM
   have hA_nont : Nontrivial A := IsDomain.toNontrivial
   by_cases h_topM : M = ⊤
@@ -82,14 +81,14 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
   obtain ⟨x, hx, y, hy, h_xy⟩ := (Ideal.not_isPrime_iff.mp h_prM).resolve_left h_topM
   have lt_add : ∀ z ∉ M, M < M + span A {z} := by
     intro z hz
-    refine' lt_of_le_of_ne le_sup_left fun m_eq => hz _
+    refine lt_of_le_of_ne le_sup_left fun m_eq => hz ?_
     rw [m_eq]
     exact mem_sup_right (mem_span_singleton_self z)
   obtain ⟨Wx, h_Wx_le, h_Wx_ne⟩ := hgt (M + span A {x}) (lt_add _ hx) (ne_bot_of_gt (lt_add _ hx))
   obtain ⟨Wy, h_Wy_le, h_Wx_ne⟩ := hgt (M + span A {y}) (lt_add _ hy) (ne_bot_of_gt (lt_add _ hy))
   use Wx + Wy
   rw [Multiset.map_add, Multiset.prod_add]
-  refine' ⟨le_trans (Submodule.mul_le_mul h_Wx_le h_Wy_le) _, mt Ideal.mul_eq_bot.mp _⟩
+  refine ⟨le_trans (Submodule.mul_le_mul h_Wx_le h_Wy_le) ?_, mt Ideal.mul_eq_bot.mp ?_⟩
   · rw [add_mul]
     apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_right)
     rw [mul_add]

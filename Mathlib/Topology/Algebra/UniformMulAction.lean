@@ -175,7 +175,7 @@ instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
     have hmn : m • n • x = (Completion.map (SMul.smul m) ∘ Completion.map (SMul.smul n)) x := rfl
     have hnm : n • m • x = (Completion.map (SMul.smul n) ∘ Completion.map (SMul.smul m)) x := rfl
     rw [hmn, hnm, map_comp, map_comp]
-    exact congr_arg (fun f => Completion.map f x) (funext (smul_comm _ _))
+    · exact congr_arg (fun f => Completion.map f x) (funext (smul_comm _ _))
     repeat' exact uniformContinuous_const_smul _⟩
 
 @[to_additive]

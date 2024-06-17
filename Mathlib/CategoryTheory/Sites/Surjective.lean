@@ -43,7 +43,7 @@ def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : G.obj (op U)) : 
   arrows V i := ∃ t : F.obj (op V), f.app _ t = G.map i.op s
   downward_closed := by
     rintro V W i ⟨t, ht⟩ j
-    refine' ⟨F.map j.op t, _⟩
+    refine ⟨F.map j.op t, ?_⟩
     rw [op_comp, G.map_comp, comp_apply, ← ht, elementwise_of% f.naturality]
 #align category_theory.image_sieve CategoryTheory.imageSieve
 
@@ -124,7 +124,7 @@ theorem IsLocallySurjective.comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ �
   have : (Sieve.bind (imageSieve f₂ s) fun _ _ h => imageSieve f₁ h.choose) ≤
       imageSieve (f₁ ≫ f₂) s := by
     rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
-    refine' ⟨t', _⟩
+    refine ⟨t', ?_⟩
     rw [op_comp, F₃.map_comp, NatTrans.comp_app, comp_apply, comp_apply, ht',
       elementwise_of% f₂.naturality, H.choose_spec]
   apply J.superset_covering this

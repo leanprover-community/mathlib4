@@ -116,7 +116,7 @@ theorem equiv_free_prod_directSum_zmod [hG : AddGroup.FG G] :
       Nonempty <| G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i) := by
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ :=
     @Module.equiv_free_prod_directSum _ _ _ _ _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG)
-  refine' ⟨n, ι, fι, fun i => (p i).natAbs, fun i => _, e, ⟨_⟩⟩
+  refine ⟨n, ι, fι, fun i => (p i).natAbs, fun i => ?_, e, ⟨?_⟩⟩
   · rw [← Int.prime_iff_natAbs_prime, ← irreducible_iff_prime]; exact hp i
   exact
     f.toAddEquiv.trans
@@ -150,7 +150,6 @@ lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
       (∀ i, 1 < n i) ∧ Nonempty (G ≃+ ⨁ i, ZMod (n i)) := by
   classical
   obtain ⟨ι, hι, p, hp, n, ⟨e⟩⟩ := AddCommGroup.equiv_directSum_zmod_of_finite G
-  skip
   refine ⟨{i : ι // n i ≠ 0}, inferInstance, fun i ↦ p i ^ n i, ?_,
     ⟨e.trans (directSumNeZeroMulEquiv ι _ _).symm⟩⟩
   rintro ⟨i, hi⟩

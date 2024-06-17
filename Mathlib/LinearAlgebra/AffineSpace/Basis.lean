@@ -245,8 +245,8 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
     apply subsingleton_of_subsingleton
   haveI := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
   let s : Finset ι := {i}
-  have hi : i ∈ s := by simp
-  have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp
+  have hi : i ∈ s := by simp [s]
+  have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp [s]
   have hq : q = s.affineCombination k b (Function.const ι (1 : k)) := by
     simp [eq_iff_true_of_subsingleton]
   rw [Pi.one_apply, hq, b.coord_apply_combination_of_mem hi hw, Function.const_apply]
@@ -257,11 +257,12 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     intro x
     obtain ⟨j, hij⟩ := exists_ne i
     let s : Finset ι := {i, j}
-    have hi : i ∈ s := by simp
+    have hi : i ∈ s := by simp [s]
     let w : ι → k := fun j' => if j' = i then x else 1 - x
-    have hw : s.sum w = 1 := by simp [Finset.sum_ite, Finset.filter_insert, hij]
+    have hw : s.sum w = 1 := by simp [s, w, Finset.sum_ite, Finset.filter_insert, hij,
+      Finset.filter_true_of_mem, Finset.filter_false_of_mem]
     use s.affineCombination k b w
-    simp [b.coord_apply_combination_of_mem hi hw]
+    simp [w, b.coord_apply_combination_of_mem hi hw]
 #align affine_basis.surjective_coord AffineBasis.surjective_coord
 
 /-- Barycentric coordinates as an affine map. -/
@@ -296,7 +297,7 @@ theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset �
 theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
     ∃ s ⊆ t, ∃ b : AffineBasis s k P, ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
-  refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
+  refine ⟨s, hst, ⟨(↑), h_ind, ?_⟩, rfl⟩
   rw [Subtype.range_coe, h_tot, ht]
 #align affine_basis.exists_affine_subbasis AffineBasis.exists_affine_subbasis
 

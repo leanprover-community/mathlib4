@@ -60,8 +60,8 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
   · rw [codisjoint_iff_le_sup]
     intro x _hx
     obtain hp | hn := (le_refl (0 : ℤ)).le_or_le x
-    exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
-    exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
+    · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
+    · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 #align counterexample.with_sign.is_compl Counterexample.withSign.isCompl
 
 def withSign.independent : CompleteLattice.Independent withSign := by
@@ -86,8 +86,6 @@ theorem withSign.not_injective :
     DirectSum.lof ℕ _ (fun i => withSign i) 1 p1 + DirectSum.lof ℕ _ (fun i => withSign i) (-1) n1
   have : z ≠ 0 := by
     intro h
-    -- porting note: `DFinsupp.singleAddHom_apply` doesn't work so we have to unfold
-    dsimp [DirectSum.lof_eq_of, DirectSum.of, DFinsupp.singleAddHom] at h
     replace h := DFunLike.congr_fun h 1
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [DFinsupp.zero_apply, DFinsupp.add_apply, DFinsupp.single_eq_same,

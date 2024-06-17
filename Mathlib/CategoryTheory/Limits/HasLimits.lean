@@ -67,15 +67,13 @@ namespace CategoryTheory.Limits
 universe v₁ u₁ v₂ u₂ v₃ u₃ v v' v'' u u' u''
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
-
 variable {C : Type u} [Category.{v} C]
-
 variable {F : J ⥤ C}
 
 section Limit
 
 /-- `LimitCone F` contains a cone over `F` together with the information that it is a limit. -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): removed; linter not ported yet
 structure LimitCone (F : J ⥤ C) where
   /-- The cone itself -/
   cone : Cone F
@@ -414,7 +412,6 @@ theorem limit.lift_pre (c : Cone F) :
 #align category_theory.limits.limit.lift_pre CategoryTheory.Limits.limit.lift_pre
 
 variable {L : Type u₃} [Category.{v₃} L]
-
 variable (D : L ⥤ K) [HasLimit (D ⋙ E ⋙ F)]
 
 @[simp]
@@ -441,7 +438,6 @@ end Pre
 section Post
 
 variable {D : Type u'} [Category.{v'} D]
-
 variable (F) [HasLimit F] (G : C ⥤ D) [HasLimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the limit of `F` to the limit of `F ⋙ G`.
@@ -584,7 +580,7 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
 #align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
-  ⟨_, constLimAdj⟩
+  ⟨_, ⟨constLimAdj⟩⟩
 
 end LimFunctor
 
@@ -663,7 +659,7 @@ section Colimit
 
 /-- `ColimitCocone F` contains a cocone over `F` together with the information that it is a
     colimit. -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): removed; linter not ported yet
 structure ColimitCocone (F : J ⥤ C) where
   /-- The cocone itself -/
   cocone : Cocone F
@@ -1008,7 +1004,6 @@ theorem colimit.pre_desc (c : Cocone F) :
 #align category_theory.limits.colimit.pre_desc CategoryTheory.Limits.colimit.pre_desc
 
 variable {L : Type u₃} [Category.{v₃} L]
-
 variable (D : L ⥤ K) [HasColimit (D ⋙ E ⋙ F)]
 
 @[simp]
@@ -1039,7 +1034,6 @@ end Pre
 section Post
 
 variable {D : Type u'} [Category.{v'} D]
-
 variable (F) [HasColimit F] (G : C ⥤ D) [HasColimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the colimit of `F ⋙ G`
@@ -1190,7 +1184,7 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J where
 #align category_theory.limits.colim_const_adj CategoryTheory.Limits.colimConstAdj
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
-  ⟨_, colimConstAdj⟩
+  ⟨_, ⟨colimConstAdj⟩⟩
 
 end ColimFunctor
 

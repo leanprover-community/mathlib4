@@ -70,12 +70,8 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 -- Porting note: syntactic equality
 #noalign multiset.fst_coe_eq_coe
 
-@[simp]
-theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
-  cases x
-  cases y
-  rfl
-#align multiset.coe_eq Multiset.coe_eq
+-- Syntactic equality
+#noalign multiset.coe_eq
 
 -- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
@@ -137,7 +133,7 @@ theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂)
 @[simp]
 theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset ↔ m₁ ≤ m₂ := by
-  refine' ⟨fun h ↦ _, Multiset.toEnumFinset_mono⟩
+  refine ⟨fun h ↦ ?_, Multiset.toEnumFinset_mono⟩
   rw [Multiset.le_iff_count]
   intro x
   by_cases hx : x ∈ m₁
@@ -152,8 +148,7 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
 /-- The embedding from a multiset into `α × ℕ` where the second coordinate enumerates repeats.
 If you are looking for the function `m → α`, that would be plain `(↑)`. -/
 @[simps]
-def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
-    where
+def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ where
   toFun x := (x, x.2)
   inj' := by
     intro ⟨x, i, hi⟩ ⟨y, j, hj⟩
@@ -164,8 +159,7 @@ def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
 /-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
 that `Finset` to a type. -/
 @[simps]
-def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset
-    where
+def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
   toFun x :=
     ⟨m.coeEmbedding x, by
       rw [Multiset.mem_toEnumFinset]
@@ -264,7 +258,7 @@ theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = �
 
 @[to_additive]
 theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
-    m.prod = ∏ x in m.toEnumFinset, x.1 := by
+    m.prod = ∏ x ∈ m.toEnumFinset, x.1 := by
   congr
   simp
 #align multiset.prod_eq_prod_to_enum_finset Multiset.prod_eq_prod_toEnumFinset
@@ -272,7 +266,7 @@ theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
 
 @[to_additive]
 theorem Multiset.prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
-    ∏ x in m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
+    ∏ x ∈ m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
   rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.1.1 x.1.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x ↦ f x.1 x.2]
   · intro x

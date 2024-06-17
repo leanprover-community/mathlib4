@@ -52,27 +52,23 @@ variable {U : Type _} [Quiver.{u + 1} U] {V : Type _} [Quiver.{v + 1} V] (φ : U
 
 /-- The `Quiver.Star` at a vertex is the collection of arrows whose source is the vertex.
 The type `Quiver.Star u` is defined to be `Σ (v : U), (u ⟶ v)`. -/
-@[reducible]
-def Quiver.Star (u : U) :=
+abbrev Quiver.Star (u : U) :=
   Σ v : U, u ⟶ v
 #align quiver.star Quiver.Star
 
 /-- Constructor for `Quiver.Star`. Defined to be `Sigma.mk`. -/
-@[reducible]
-protected def Quiver.Star.mk {u v : U} (f : u ⟶ v) : Quiver.Star u :=
+protected abbrev Quiver.Star.mk {u v : U} (f : u ⟶ v) : Quiver.Star u :=
   ⟨_, f⟩
 #align quiver.star.mk Quiver.Star.mk
 
 /-- The `Quiver.Costar` at a vertex is the collection of arrows whose target is the vertex.
 The type `Quiver.Costar v` is defined to be `Σ (u : U), (u ⟶ v)`. -/
-@[reducible]
-def Quiver.Costar (v : U) :=
+abbrev Quiver.Costar (v : U) :=
   Σ u : U, u ⟶ v
 #align quiver.costar Quiver.Costar
 
 /-- Constructor for `Quiver.Costar`. Defined to be `Sigma.mk`. -/
-@[reducible]
-protected def Quiver.Costar.mk {u v : U} (f : u ⟶ v) : Quiver.Costar v :=
+protected abbrev Quiver.Costar.mk {u v : U} (f : u ⟶ v) : Quiver.Costar v :=
   ⟨_, f⟩
 #align quiver.costar.mk Quiver.Costar.mk
 
@@ -135,7 +131,7 @@ theorem Prefunctor.IsCovering.of_comp_right (hψ : ψ.IsCovering) (hφψ : (φ �
 
 theorem Prefunctor.IsCovering.of_comp_left (hφ : φ.IsCovering) (hφψ : (φ ⋙q ψ).IsCovering)
     (φsur : Surjective φ.obj) : ψ.IsCovering := by
-  refine' ⟨fun v => _, fun v => _⟩ <;> obtain ⟨u, rfl⟩ := φsur v
+  refine ⟨fun v => ?_, fun v => ?_⟩ <;> obtain ⟨u, rfl⟩ := φsur v
   exacts [(Bijective.of_comp_iff _ (hφ.star_bijective u)).mp (hφψ.star_bijective u),
     (Bijective.of_comp_iff _ (hφ.costar_bijective u)).mp (hφψ.costar_bijective u)]
 #align prefunctor.is_covering.of_comp_left Prefunctor.IsCovering.of_comp_left
@@ -192,14 +188,12 @@ protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
 
 /-- The path star at a vertex `u` is the type of all paths starting at `u`.
 The type `Quiver.PathStar u` is defined to be `Σ v : U, Path u v`. -/
-@[reducible]
-def Quiver.PathStar (u : U) :=
+abbrev Quiver.PathStar (u : U) :=
   Σ v : U, Path u v
 #align quiver.path_star Quiver.PathStar
 
 /-- Constructor for `Quiver.PathStar`. Defined to be `Sigma.mk`. -/
-@[reducible]
-protected def Quiver.PathStar.mk {u v : U} (p : Path u v) : Quiver.PathStar u :=
+protected abbrev Quiver.PathStar.mk {u v : U} (p : Path u v) : Quiver.PathStar u :=
   ⟨_, p⟩
 #align quiver.path_star.mk Quiver.PathStar.mk
 

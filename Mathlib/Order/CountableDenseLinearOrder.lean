@@ -33,7 +33,7 @@ back and forth, dense, countable, order
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 namespace Order
 
@@ -46,7 +46,7 @@ theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α]
     ∃ m : α, (∀ x ∈ lo, x < m) ∧ ∀ y ∈ hi, m < y :=
   if nlo : lo.Nonempty then
     if nhi : hi.Nonempty then
-      -- both sets are nonempty, use densely_ordered
+      -- both sets are nonempty, use `DenselyOrdered`
         Exists.elim
         (exists_between (lo_lt_hi _ (Finset.max'_mem _ nlo) _ (Finset.min'_mem _ nhi))) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm.1, fun y hy ↦
@@ -61,7 +61,7 @@ theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α]
         Exists.elim
         (exists_lt (Finset.min' hi nhi)) fun m hm ↦
         ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ lt_of_lt_of_le hm (Finset.min'_le hi y hy)⟩
-    else-- both sets are empty, use nonempty
+    else -- both sets are empty, use `Nonempty`
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 #align order.exists_between_finsets Order.exists_between_finsets

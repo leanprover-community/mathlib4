@@ -113,7 +113,6 @@ theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ →
 #align fish_assoc fish_assoc
 
 variable {β' γ' : Type v}
-
 variable {m' : Type v → Type w} [Monad m']
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
@@ -144,16 +143,16 @@ variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
     joinM (Functor.map f <$> a) = f <$> joinM a := by
-  simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
+  simp only [joinM, (· ∘ ·), id, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 
 theorem joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
-  simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
+  simp only [joinM, (· ∘ ·), id, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
 #align mjoin_map_mjoin joinM_map_joinM
 
 @[simp]
 theorem joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
-  simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
+  simp only [joinM, (· ∘ ·), id, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
 #align mjoin_map_pure joinM_map_pure
 
 @[simp]
@@ -254,7 +253,7 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
-      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]; rfl
+      simp only [map_seq, map_map]; rfl
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]

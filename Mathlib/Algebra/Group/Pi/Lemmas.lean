@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
@@ -16,10 +17,12 @@ This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` 
 imports.
 -/
 
+assert_not_exists AddMonoidWithOne
+assert_not_exists MonoidWithZero
+
 universe u v w
 
 variable {ι α : Type*}
-
 variable {I : Type u}
 
 -- The indexing type
@@ -34,49 +37,6 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
   Set.preimage_const 1 s
 #align set.preimage_one Set.preimage_one
 #align set.preimage_zero Set.preimage_zero
-
-namespace Pi
-
-instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
-  { addMonoid with
-    natCast := fun n _ => n
-    natCast_zero := funext fun _ => AddMonoidWithOne.natCast_zero
-    natCast_succ := fun n => funext fun _ => AddMonoidWithOne.natCast_succ n
-  }
-
-instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
-  { addGroup, addMonoidWithOne with
-    intCast := fun z _ => z
-    intCast_ofNat := fun n => funext fun _ => AddGroupWithOne.intCast_ofNat n
-    intCast_negSucc := fun n => funext fun _ => AddGroupWithOne.intCast_negSucc n
-  }
-
-instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) :=
-  { zero := (0 : ∀ i, f i)
-    mul := (· * ·)
-    --pi_instance
-    zero_mul := by intros; ext; exact zero_mul _
-    mul_zero := by intros; ext; exact mul_zero _
-}
-#align pi.mul_zero_class Pi.mulZeroClass
-
-instance mulZeroOneClass [∀ i, MulZeroOneClass <| f i] : MulZeroOneClass (∀ i : I, f i) :=
-  { mulZeroClass, mulOneClass with }
-#align pi.mul_zero_one_class Pi.mulZeroOneClass
-
-instance monoidWithZero [∀ i, MonoidWithZero <| f i] : MonoidWithZero (∀ i : I, f i) :=
-  { monoid, mulZeroClass with }
-#align pi.monoid_with_zero Pi.monoidWithZero
-
-instance commMonoidWithZero [∀ i, CommMonoidWithZero <| f i] : CommMonoidWithZero (∀ i : I, f i) :=
-  { monoidWithZero, commMonoid with }
-#align pi.comm_monoid_with_zero Pi.commMonoidWithZero
-
-instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
-  { semigroup, mulZeroClass with }
-#align pi.semigroup_with_zero Pi.semigroupWithZero
-
-end Pi
 
 namespace MulHom
 
@@ -271,17 +231,16 @@ This is the `OneHom` version of `Pi.mulSingle`. -/
       as functions supported at a point.
 
       This is the `ZeroHom` version of `Pi.single`."]
-def OneHom.single [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f i) where
+nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f i) where
   toFun := mulSingle i
   map_one' := mulSingle_one i
-#align one_hom.single OneHom.single
+#align one_hom.single OneHom.mulSingle
 #align zero_hom.single ZeroHom.single
 
 @[to_additive (attr := simp)]
-theorem OneHom.single_apply [∀ i, One <| f i] (i : I) (x : f i) :
-    OneHom.single f i x = mulSingle i x :=
-  rfl
-#align one_hom.single_apply OneHom.single_apply
+theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
+    mulSingle f i x = Pi.mulSingle i x := rfl
+#align one_hom.single_apply OneHom.mulSingle_apply
 #align zero_hom.single_apply ZeroHom.single_apply
 
 /-- The monoid homomorphism including a single monoid into a dependent family of additive monoids,
@@ -293,28 +252,17 @@ This is the `MonoidHom` version of `Pi.mulSingle`. -/
       of additive monoids, as functions supported at a point.
 
       This is the `AddMonoidHom` version of `Pi.single`."]
-def MonoidHom.single [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :=
-  { OneHom.single f i with map_mul' := mulSingle_op₂ (fun _ => (· * ·)) (fun _ => one_mul _) _ }
-#align monoid_hom.single MonoidHom.single
+def MonoidHom.mulSingle [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :=
+  { OneHom.mulSingle f i with map_mul' := mulSingle_op₂ (fun _ => (· * ·)) (fun _ => one_mul _) _ }
+#align monoid_hom.single MonoidHom.mulSingle
 #align add_monoid_hom.single AddMonoidHom.single
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.single_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
-    MonoidHom.single f i x = mulSingle i x :=
+theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
+    mulSingle f i x = Pi.mulSingle i x :=
   rfl
-#align monoid_hom.single_apply MonoidHom.single_apply
+#align monoid_hom.single_apply MonoidHom.mulSingle_apply
 #align add_monoid_hom.single_apply AddMonoidHom.single_apply
-
-/-- The multiplicative homomorphism including a single `MulZeroClass`
-into a dependent family of `MulZeroClass`es, as functions supported at a point.
-
-This is the `MulHom` version of `Pi.single`. -/
-@[simps]
-def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) : f i →ₙ* ∀ i, f i where
-  toFun := Pi.single i
-  map_mul' := Pi.single_op₂ (fun _ => (· * ·)) (fun _ => zero_mul _) _
-#align mul_hom.single MulHom.single
-#align mul_hom.single_apply MulHom.single_apply
 
 variable {f}
 
@@ -335,48 +283,23 @@ theorem Pi.mulSingle_inf [∀ i, SemilatticeInf (f i)] [∀ i, One (f i)] (i : I
 @[to_additive]
 theorem Pi.mulSingle_mul [∀ i, MulOneClass <| f i] (i : I) (x y : f i) :
     mulSingle i (x * y) = mulSingle i x * mulSingle i y :=
-  (MonoidHom.single f i).map_mul x y
+  (MonoidHom.mulSingle f i).map_mul x y
 #align pi.mul_single_mul Pi.mulSingle_mul
 #align pi.single_add Pi.single_add
 
 @[to_additive]
 theorem Pi.mulSingle_inv [∀ i, Group <| f i] (i : I) (x : f i) :
     mulSingle i x⁻¹ = (mulSingle i x)⁻¹ :=
-  (MonoidHom.single f i).map_inv x
+  (MonoidHom.mulSingle f i).map_inv x
 #align pi.mul_single_inv Pi.mulSingle_inv
 #align pi.single_neg Pi.single_neg
 
 @[to_additive]
-theorem Pi.single_div [∀ i, Group <| f i] (i : I) (x y : f i) :
+theorem Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
     mulSingle i (x / y) = mulSingle i x / mulSingle i y :=
-  (MonoidHom.single f i).map_div x y
-#align pi.single_div Pi.single_div
+  (MonoidHom.mulSingle f i).map_div x y
+#align pi.single_div Pi.mulSingle_div
 #align pi.single_sub Pi.single_sub
-
-theorem Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
-    single i (x * y) = single i x * single i y :=
-  (MulHom.single f i).map_mul x y
-#align pi.single_mul Pi.single_mul
-
-theorem Pi.single_mul_left_apply [∀ i, MulZeroClass <| f i] (a : f i) :
-    Pi.single i (a * x i) j = Pi.single i a j * x j :=
-  (Pi.apply_single (fun i => (· * x i)) (fun _ => zero_mul _) _ _ _).symm
-#align pi.single_mul_left_apply Pi.single_mul_left_apply
-
-theorem Pi.single_mul_right_apply [∀ i, MulZeroClass <| f i] (a : f i) :
-    Pi.single i (x i * a) j = x j * Pi.single i a j :=
-  (Pi.apply_single (fun i => (· * ·) (x i)) (fun _ => mul_zero _) _ _ _).symm
-#align pi.single_mul_right_apply Pi.single_mul_right_apply
-
-theorem Pi.single_mul_left [∀ i, MulZeroClass <| f i] (a : f i) :
-    Pi.single i (a * x i) = Pi.single i a * x :=
-  funext fun _ => Pi.single_mul_left_apply _ _ _ _
-#align pi.single_mul_left Pi.single_mul_left
-
-theorem Pi.single_mul_right [∀ i, MulZeroClass <| f i] (a : f i) :
-    Pi.single i (x i * a) = x * Pi.single i a :=
-  funext fun _ => Pi.single_mul_right_apply _ _ _ _
-#align pi.single_mul_right Pi.single_mul_right
 
 section
 variable [∀ i, Mul <| f i]
@@ -443,14 +366,14 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have hk := congr_fun h k
     have hl := congr_fun h l
     have hm := (congr_fun h m).symm
     have hn := (congr_fun h n).symm
     simp only [mul_apply, mulSingle_apply, if_pos rfl] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
-    · refine' Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv _).elim⟩
+    · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
       rcases eq_or_ne k l with (rfl | hkl)
       · rwa [if_neg hln.symm, if_neg hln.symm, one_mul, one_mul] at hn
       · rwa [if_neg hkl.symm, if_neg hln, one_mul, one_mul] at hl
@@ -582,3 +505,49 @@ theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) 
 #align pi.single_strict_mono Pi.single_strictMono
 
 end Pi
+
+namespace Sigma
+
+variable {α : Type*} {β : α → Type*} {γ : ∀ a, β a → Type*}
+
+@[to_additive (attr := simp)]
+theorem curry_one [∀ a b, One (γ a b)] : Sigma.curry (1 : (i : Σ a, β a) → γ i.1 i.2) = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_one [∀ a b, One (γ a b)] : Sigma.uncurry (1 : ∀ a b, γ a b) = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_mul [∀ a b, Mul (γ a b)] (x y : (i : Σ a, β a) → γ i.1 i.2) :
+    Sigma.curry (x * y) = Sigma.curry x * Sigma.curry y :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_mul [∀ a b, Mul (γ a b)] (x y : ∀ a b, γ a b) :
+    Sigma.uncurry (x * y) = Sigma.uncurry x * Sigma.uncurry y :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_inv [∀ a b, Inv (γ a b)] (x : (i : Σ a, β a) → γ i.1 i.2) :
+    Sigma.curry (x⁻¹) = (Sigma.curry x)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_inv [∀ a b, Inv (γ a b)] (x : ∀ a b, γ a b) :
+    Sigma.uncurry (x⁻¹) = (Sigma.uncurry x)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+    (i : Σ a, β a) (x : γ i.1 i.2) :
+    Sigma.curry (Pi.mulSingle i x) = Pi.mulSingle i.1 (Pi.mulSingle i.2 x) := by
+  simp only [Pi.mulSingle, Sigma.curry_update, Sigma.curry_one, Pi.one_apply]
+
+@[to_additive (attr := simp)]
+theorem uncurry_mulSingle_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+    (a : α) (b : β a) (x : γ a b) :
+    Sigma.uncurry (Pi.mulSingle a (Pi.mulSingle b x)) = Pi.mulSingle (Sigma.mk a b) x := by
+  rw [← curry_mulSingle ⟨a, b⟩, uncurry_curry]
+
+end Sigma

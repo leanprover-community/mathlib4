@@ -78,7 +78,7 @@ theorem const_succ {n} (p : Fin (n + 1) → Type u) {τ : Type u} (t : τ) :
 theorem const_succ_apply {n} (p : Fin (n + 1) → Type u) {τ : Type u} (t : τ)
     (x : p 0) : const p t x = const (vecTail p) t := rfl
 
-instance FromTypes.inhabited {n} {p : Fin n → Type u} {τ} [Inhabited τ] :
+instance inhabited {n} {p : Fin n → Type u} {τ} [Inhabited τ] :
     Inhabited (FromTypes p τ) := ⟨const p default⟩
 
 end FromTypes

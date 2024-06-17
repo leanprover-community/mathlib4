@@ -34,10 +34,9 @@ theorem surjective_respectsIso : RespectsIso surjective := by
 #align ring_hom.surjective_respects_iso RingHom.surjective_respectsIso
 
 theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
-  refine' StableUnderBaseChange.mk _ surjective_respectsIso _
+  refine StableUnderBaseChange.mk _ surjective_respectsIso ?_
   classical
   introv h x
-  skip
   induction x using TensorProduct.induction_on with
   | zero => exact ⟨0, map_zero _⟩
   | tmul x y =>
@@ -50,7 +49,6 @@ open scoped BigOperators
 
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H
-  skip
   letI := f.toAlgebra
   show Function.Surjective (Algebra.ofId R S)
   rw [← Algebra.range_top_iff_surjective, eq_top_iff]
@@ -68,7 +66,7 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
     obtain ⟨z, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers (r : R)) y
     erw [IsLocalization.map_mk', IsLocalization.eq] at hy
     obtain ⟨⟨_, m, rfl⟩, hm⟩ := hy
-    refine' ⟨m + n, _⟩
+    refine ⟨m + n, ?_⟩
     dsimp at hm ⊢
     simp_rw [_root_.one_mul, ← _root_.mul_assoc, ← map_pow, ← f.map_mul, ← pow_add, map_pow] at hm
     exact ⟨_, hm⟩

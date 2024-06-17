@@ -110,6 +110,12 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
+-- Adaptation note: nightly-2024-03-11
+-- We turn off simprocs here.
+-- Ideally someone will investigate whether `simp` lemmas can be rearranged
+-- so that this works without the `set_option`,
+-- *or* come up with a proposal regarding finer control of disabling simprocs.
+set_option simprocs false in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
   dsimp
@@ -145,6 +151,12 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
+-- Adaptation note: nightly-2024-03-11
+-- We turn off simprocs here.
+-- Ideally someone will investigate whether `simp` lemmas can be rearranged
+-- so that this works without the `set_option`,
+-- *or* come up with a proposal regarding finer control of disabling simprocs.
+set_option simprocs false in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]
@@ -201,7 +213,7 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
       dsimp
       rw [assoc, ← cyclesMap_i, reassoc_of% hk, zero_comp])
     dsimp at H
-    refine' ⟨S.X₁.liftCycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₁.liftCycles H.1 _ rfl ?_, ?_⟩
     · rw [← cancel_mono (S.f.f _), assoc, zero_comp, ← Hom.comm, reassoc_of% H.2,
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])

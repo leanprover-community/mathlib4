@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Adhesive
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 #align_import category_theory.sites.left_exact from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
@@ -21,12 +20,8 @@ open CategoryTheory Limits Opposite
 
 universe w' w v u
 
--- porting note: was `C : Type max v u` which made most instances non automatically applicable
--- it seems to me it is better to declare `C : Type u`: it works better, and it is more general
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-
 variable {D : Type w} [Category.{max v u} D]
-
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 noncomputable section
@@ -114,9 +109,7 @@ instance preservesLimits_diagramFunctor (X : C) [HasLimits D] :
   apply preservesLimitsOfShape_diagramFunctor.{w, v, u}
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [ConcreteCategory.{max v u} D]
-
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 /-- An auxiliary definition to be used in the proof that `J.plusFunctor D` commutes
@@ -162,7 +155,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
   congr 1
   dsimp
   rw [Category.assoc, Category.assoc, ← Iso.eq_inv_comp, Iso.inv_comp_eq, Iso.inv_comp_eq]
-  refine' colimit.hom_ext (fun j => _)
+  refine colimit.hom_ext (fun j => ?_)
   dsimp [plusMap]
   simp only [HasColimit.isoOfNatIso_ι_hom_assoc, ι_colimMap]
   dsimp [IsLimit.conePointUniqueUpToIso, HasLimit.isoOfNatIso, IsLimit.map]
@@ -206,7 +199,7 @@ instance preservesLimitsOfShape_plusFunctor
     rfl
 
 instance preserveFiniteLimits_plusFunctor
-    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
+    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [(forget D).ReflectsIsomorphisms] :
     PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intro K _ _
@@ -220,7 +213,7 @@ instance preservesLimitsOfShape_sheafification
   Limits.compPreservesLimitsOfShape _ _
 
 instance preservesFiniteLimits_sheafification
-    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
+    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [(forget D).ReflectsIsomorphisms] :
     PreservesFiniteLimits (J.sheafification D) :=
   Limits.compPreservesFiniteLimits _ _
 
@@ -229,17 +222,11 @@ end CategoryTheory.GrothendieckTopology
 namespace CategoryTheory
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [ConcreteCategory.{max v u} D]
-
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-
 variable [PreservesLimits (forget D)]
-
-variable [ReflectsIsomorphisms (forget D)]
-
+variable [(forget D).ReflectsIsomorphisms]
 variable (K : Type w')
-
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
 instance preservesLimitsOfShape_presheafToSheaf :
@@ -259,7 +246,7 @@ instance preservesLimitsOfShape_presheafToSheaf :
   apply isLimitOfReflects (sheafToPresheaf J D)
   have : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=
     reflectsLimitsOfShapeOfReflectsIsomorphisms
-  -- porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
+  -- Porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
   have : PreservesLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K))
       (plusPlusSheaf J D ⋙ sheafToPresheaf J D) :=
     preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
@@ -270,8 +257,6 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intros
   infer_instance
-
-instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
 
 variable (J D)
 

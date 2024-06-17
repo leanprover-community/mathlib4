@@ -6,7 +6,7 @@ Authors: Simon Hudon, Kyle Miller, Damiano Testa
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Tactic.Cleanup
 import Lean.PrettyPrinter
-import Std.Lean.Meta.Inaccessible
+import Batteries.Lean.Meta.Inaccessible
 
 /-!
 #  `extract_goal`: Format the current goal as a stand-alone example
@@ -47,10 +47,10 @@ example {z : Int} : ∃ n : Nat, ↑n = z := by
   apply int_eq_nat  -- works
 ```
 
-However, importing `Std.Classes.Cast`, makes `extract_goal` produce a different theorem
+However, importing `Batteries.Classes.Cast`, makes `extract_goal` produce a different theorem
 
 ```lean
-import Std.Classes.Cast
+import Batteries.Classes.Cast
 
 -- `theorem extracted_1` is the output of the `extract_goal` from the example below
 -- the type ascription is erased and the `↑` is untouched:
@@ -81,7 +81,7 @@ theorem extracted_1.{u_1} {α : Sort u_1} (a : α) : ∃ f, f a = a := sorry
 ```
 and also
 ```lean
-import Mathlib.Data.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Basic
 
 --  The `extract_goal` below produces this statement:
 theorem extracted_1 : X = X := sorry

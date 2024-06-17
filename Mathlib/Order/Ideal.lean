@@ -5,8 +5,9 @@ Authors: David Wärn
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
+import Mathlib.Order.Chain
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import order.ideal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -64,7 +65,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   directed' : DirectedOn (· ≤ ·) carrier
 #align order.ideal Order.Ideal
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
@@ -305,6 +306,9 @@ theorem mem_principal : x ∈ principal y ↔ x ≤ y :=
   Iff.rfl
 #align order.ideal.mem_principal Order.Ideal.mem_principal
 
+lemma mem_principal_self : x ∈ principal x :=
+  mem_principal.2 (le_refl x)
+
 end
 
 section OrderBot
@@ -468,15 +472,14 @@ end SemilatticeSupOrderBot
 section DistribLattice
 
 variable [DistribLattice P]
-
 variable {I J : Ideal P}
 
 theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i ⊔ j) :
     ∃ i' ∈ I, ∃ j' ∈ J, x = i' ⊔ j' := by
-  refine' ⟨x ⊓ i, I.lower inf_le_right hi, x ⊓ j, J.lower inf_le_right hj, _⟩
+  refine ⟨x ⊓ i, I.lower inf_le_right hi, x ⊓ j, J.lower inf_le_right hj, ?_⟩
   calc
     x = x ⊓ (i ⊔ j) := left_eq_inf.mpr hx
-    _ = x ⊓ i ⊔ x ⊓ j := inf_sup_left
+    _ = x ⊓ i ⊔ x ⊓ j := inf_sup_left _ _ _
 #align order.ideal.eq_sup_of_le_sup Order.Ideal.eq_sup_of_le_sup
 
 theorem coe_sup_eq : ↑(I ⊔ J) = { x | ∃ i ∈ I, ∃ j ∈ J, x = i ⊔ j } :=
@@ -601,4 +604,22 @@ theorem cofinal_meets_idealOfCofinals (i : ι) : ∃ x : P, x ∈ 𝒟 i ∧ x �
 
 end IdealOfCofinals
 
+section sUnion
+
+variable [Preorder P]
+
+/-- A non-empty directed union of ideals of sets in a preorder is an ideal. -/
+lemma isIdeal_sUnion_of_directedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
+    (hD : DirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
+  refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,
+    directedOn_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
+  let ⟨I, hI⟩ := hNe
+  exact ⟨I, ⟨hI, (hidl I hI).2⟩⟩
+
+/-- A union of a nonempty chain of ideals of sets is an ideal. -/
+lemma isIdeal_sUnion_of_isChain {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
+    (hC : IsChain (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion :=
+  isIdeal_sUnion_of_directedOn hidl hC.directedOn hNe
+
+end sUnion
 end Order

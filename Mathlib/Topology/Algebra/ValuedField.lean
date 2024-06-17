@@ -97,8 +97,8 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
 #align valued.topological_division_ring Valued.topologicalDivisionRing
 
 /-- A valued division ring is separated. -/
-instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : SeparatedSpace K := by
-  rw [separated_iff_t2]
+instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
+  suffices T2Space K by infer_instance
   apply TopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
   refine' ⟨{ k | v k < v x }, _, fun h => lt_irrefl _ h⟩
@@ -198,10 +198,10 @@ noncomputable def extension : hat K → Γ₀ :=
 #align valued.extension Valued.extension
 
 theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
-  refine' Completion.denseInducing_coe.continuous_extend _
+  refine Completion.denseInducing_coe.continuous_extend ?_
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
-  · refine' ⟨0, _⟩
+  · refine ⟨0, ?_⟩
     erw [← Completion.denseInducing_coe.toInducing.nhds_eq_comap]
     exact Valued.continuous_valuation.tendsto' 0 0 (map_zero v)
   · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) := by
@@ -222,8 +222,8 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
           rfl
           rfl
           rw [← one_mul (1 : hat K)]
-        refine'
-          Tendsto.mul continuous_fst.continuousAt (Tendsto.comp _ continuous_snd.continuousAt)
+        refine
+          Tendsto.mul continuous_fst.continuousAt (Tendsto.comp ?_ continuous_snd.continuousAt)
         -- Porting note: Added `ContinuousAt.tendsto`
         convert (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
         exact inv_one.symm
@@ -251,12 +251,12 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       exact c.continuousAt V'_in
     have : ∃ z₀ : K, ∃ y₀ ∈ V', ↑z₀ = y₀ * x₀ ∧ z₀ ≠ 0 := by
       rcases Completion.denseRange_coe.mem_nhds nhds_right with ⟨z₀, y₀, y₀_in, H : y₀ * x₀ = z₀⟩
-      refine' ⟨z₀, y₀, y₀_in, ⟨H.symm, _⟩⟩
+      refine ⟨z₀, y₀, y₀_in, ⟨H.symm, ?_⟩⟩
       rintro rfl
       exact mul_ne_zero (ne_of_mem_of_not_mem y₀_in zeroV') h H
     rcases this with ⟨z₀, y₀, y₀_in, hz₀, z₀_ne⟩
     have vz₀_ne : (v z₀ : Γ₀) ≠ 0 := by rwa [Valuation.ne_zero_iff]
-    refine' ⟨v z₀, _⟩
+    refine ⟨v z₀, ?_⟩
     rw [WithZeroTopology.tendsto_of_ne_zero vz₀_ne, eventually_comap]
     filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
@@ -268,13 +268,13 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       solve_by_elim
     calc
       v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel z₀_ne, mul_one]
-      _ = v (a * z₀⁻¹) * v z₀ := (Valuation.map_mul _ _ _)
+      _ = v (a * z₀⁻¹) * v z₀ := Valuation.map_mul _ _ _
       _ = v z₀ := by rw [this, one_mul]
 #align valued.continuous_extension Valued.continuous_extension
 
 @[simp, norm_cast]
 theorem extension_extends (x : K) : extension (x : hat K) = v x := by
-  refine' Completion.denseInducing_coe.extend_eq_of_tendsto _
+  refine Completion.denseInducing_coe.extend_eq_of_tendsto ?_
   rw [← Completion.denseInducing_coe.nhds_eq_comap]
   exact Valued.continuous_valuation.continuousAt
 #align valued.extension_extends Valued.extension_extends
@@ -333,7 +333,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     continuous_extension.continuousAt.preimage_mem_nhds
       (WithZeroTopology.singleton_mem_nhds_of_ne_zero h)
   rw [mem_closure_iff_nhds']
-  refine' ⟨fun hx => _, fun hx s hs => _⟩
+  refine ⟨fun hx => ?_, fun hx s hs => ?_⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
     replace hy₂ : v y = γ₀ := by simpa using hy₂
     rwa [← hy₂]

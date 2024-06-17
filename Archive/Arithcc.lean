@@ -53,20 +53,17 @@ section Types
 
 
 /-- Value type shared by both source and target languages. -/
-@[reducible]
-def Word :=
+abbrev Word :=
   ℕ
 #align arithcc.word Arithcc.Word
 
 /-- Variable identifier type in the source language. -/
-@[reducible]
-def Identifier :=
+abbrev Identifier :=
   String
 #align arithcc.identifier Arithcc.Identifier
 
 /-- Register name type in the target language. -/
-@[reducible]
-def Register :=
+abbrev Register :=
   ℕ
 #align arithcc.register Arithcc.Register
 
@@ -319,7 +316,8 @@ theorem compiler_correctness
   -- 5.III
   | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂
-    simp
+    simp only [compile, List.append_assoc, List.singleton_append, List.cons_append, outcome_append,
+      outcome, value]
     generalize value e_s₁ ξ = ν₁ at e_ih_s₁ ⊢
     generalize value e_s₂ ξ = ν₂ at e_ih_s₂ ⊢
     generalize dν : ν₁ + ν₂ = ν
