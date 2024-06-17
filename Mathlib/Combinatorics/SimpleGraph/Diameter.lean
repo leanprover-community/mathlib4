@@ -34,7 +34,7 @@ distances are not bounded above.
 noncomputable def diam (G : SimpleGraph α) : ℕ :=
   sSup {d | ∃ u v, d = G.dist u v}
 
-lemma diam_ne_zero_nonempty (h : G.diam ≠ 0) : Nonempty α := by
+lemma nonempty_of_diam_ne_zero (h : G.diam ≠ 0) : Nonempty α := by
   contrapose h
   unfold diam
   aesop
