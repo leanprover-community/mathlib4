@@ -141,11 +141,11 @@ theorem decomposeAux_single (m : M) (r : R) :
     decomposeAux f (Finsupp.single m r) =
       DirectSum.of (fun i : ι => gradeBy R f i) (f m)
         ⟨Finsupp.single m r, single_mem_gradeBy _ _ _⟩ := by
-  refine' (lift_single _ _ _).trans _
-  refine' (DirectSum.of_smul R _ _ _).symm.trans _
+  refine (lift_single _ _ _).trans ?_
+  refine (DirectSum.of_smul R _ _ _).symm.trans ?_
   apply DirectSum.of_eq_of_gradedMonoid_eq
-  refine' Sigma.subtype_ext rfl _
-  refine' (Finsupp.smul_single' _ _ _).trans _
+  refine Sigma.subtype_ext rfl ?_
+  refine (Finsupp.smul_single' _ _ _).trans ?_
   rw [mul_one]
   rfl
 #align add_monoid_algebra.decompose_aux_single AddMonoidAlgebra.decomposeAux_single
@@ -155,7 +155,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
   classical
   obtain ⟨x, hx⟩ := x
   revert hx
-  refine' Finsupp.induction x _ _
+  refine Finsupp.induction x ?_ ?_
   · intro hx
     symm
     exact AddMonoidHom.map_zero _
@@ -198,7 +198,6 @@ theorem decomposeAux_eq_decompose :
   rfl
 #align add_monoid_algebra.decompose_aux_eq_decompose AddMonoidAlgebra.decomposeAux_eq_decompose
 
-@[simp]
 theorem GradesBy.decompose_single (m : M) (r : R) :
     DirectSum.decompose (gradeBy R f) (Finsupp.single m r : R[M]) =
       DirectSum.of (fun i : ι => gradeBy R f i) (f m)
@@ -215,7 +214,6 @@ instance grade.decomposition : DirectSum.Decomposition (grade R : ι → Submodu
   infer_instance
 #align add_monoid_algebra.grade.decomposition AddMonoidAlgebra.grade.decomposition
 
-@[simp]
 theorem grade.decompose_single (i : ι) (r : R) :
     DirectSum.decompose (grade R : ι → Submodule _ _) (Finsupp.single i r : AddMonoidAlgebra _ _) =
       DirectSum.of (fun i : ι => grade R i) i ⟨Finsupp.single i r, single_mem_grade _ _⟩ :=

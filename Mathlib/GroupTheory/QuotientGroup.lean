@@ -5,10 +5,10 @@ Authors: Kevin Buzzard, Patrick Massot
 
 This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 -/
-import Mathlib.GroupTheory.Congruence
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.Finite
-import Mathlib.GroupTheory.Subgroup.Pointwise
 
 #align_import group_theory.quotient_group from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -59,8 +59,8 @@ protected def con : Con G where
     rw [leftRel_eq] at hab hcd ⊢
     dsimp only
     calc
-      (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) :=
-        by simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
+      (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) := by
+        simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
       _ ∈ N := N.mul_mem (nN.conj_mem _ hab _) hcd
 #align quotient_group.con QuotientGroup.con
 #align quotient_add_group.con QuotientAddGroup.con
@@ -103,6 +103,15 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
 #align quotient_group.mk'_eq_mk' QuotientGroup.mk'_eq_mk'
 #align quotient_add_group.mk'_eq_mk' QuotientAddGroup.mk'_eq_mk'
 
+open scoped Pointwise in
+@[to_additive]
+theorem sound (U : Set (G ⧸ N)) (g : N.op) :
+    g • (mk' N) ⁻¹' U = (mk' N) ⁻¹' U := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_smul_set_iff_inv_smul_mem]
+  congr! 1
+  exact Quotient.sound ⟨g⁻¹, rfl⟩
+
 /-- Two `MonoidHom`s from a quotient group are equal if their compositions with
 `QuotientGroup.mk'` are equal.
 
@@ -118,7 +127,7 @@ theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (m
 
 @[to_additive (attr := simp)]
 theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
-  refine' QuotientGroup.eq.trans _
+  refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
 #align quotient_group.eq_one_iff QuotientGroup.eq_one_iff
 #align quotient_add_group.eq_zero_iff QuotientAddGroup.eq_zero_iff
@@ -134,12 +143,12 @@ theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
   Subgroup.ext eq_one_iff
 #align quotient_group.ker_mk QuotientGroup.ker_mk'
 #align quotient_add_group.ker_mk QuotientAddGroup.ker_mk'
--- porting note: I think this is misnamed without the prime
+-- Porting note: I think this is misnamed without the prime
 
 @[to_additive]
 theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
     (x : G ⧸ N) = y ↔ x / y ∈ N := by
-  refine' eq_comm.trans (QuotientGroup.eq.trans _)
+  refine eq_comm.trans (QuotientGroup.eq.trans ?_)
   rw [nN.mem_comm_iff, div_eq_mul_inv]
 #align quotient_group.eq_iff_div_mem QuotientGroup.eq_iff_div_mem
 #align quotient_add_group.eq_iff_sub_mem QuotientAddGroup.eq_iff_sub_mem
@@ -236,9 +245,9 @@ theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
 @[to_additive
       "An `AddGroup` homomorphism `f : G →+ H` induces a map `G/N →+ H/M` if `N ⊆ f⁻¹(M)`."]
 def map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) : G ⧸ N →* H ⧸ M := by
-  refine' QuotientGroup.lift N ((mk' M).comp f) _
+  refine QuotientGroup.lift N ((mk' M).comp f) ?_
   intro x hx
-  refine' QuotientGroup.eq.2 _
+  refine QuotientGroup.eq.2 ?_
   rw [mul_one, Subgroup.inv_mem_iff]
   exact h hx
 #align quotient_group.map QuotientGroup.map
@@ -278,7 +287,7 @@ theorem map_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Norma
     (hgf : N ≤ Subgroup.comap (g.comp f) O :=
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _)))
     (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x := by
-  refine' induction_on' x fun x => _
+  refine induction_on' x fun x => ?_
   simp only [map_mk, MonoidHom.comp_apply]
 #align quotient_group.map_map QuotientGroup.map_map
 #align quotient_add_group.map_map QuotientAddGroup.map_map
@@ -304,7 +313,7 @@ lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N
   ext a
   constructor
   · rintro ⟨b, hb, h⟩
-    refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel' _ _⟩
+    refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel _ _⟩
     simp only [h, QuotientGroup.mk_div, div_self']
   · rintro ⟨a, ha, b, hb, rfl⟩
     refine ⟨b, hb, ?_⟩
@@ -526,7 +535,6 @@ def equivQuotientSubgroupOfOfEq {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A
 section ZPow
 
 variable {A B C : Type u} [CommGroup A] [CommGroup B] [CommGroup C]
-
 variable (f : A →* B) (g : B →* A) (e : A ≃* B) (d : B ≃* C) (n : ℤ)
 
 /-- The map of quotients by powers of an integer induced by a group homomorphism. -/
@@ -569,7 +577,7 @@ def equivQuotientZPowOfEquiv :
   MonoidHom.toMulEquiv _ _
     (homQuotientZPowOfHom_comp_of_rightInverse (e.symm : B →* A) (e : A →* B) n e.left_inv)
     (homQuotientZPowOfHom_comp_of_rightInverse (e : A →* B) (e.symm : B →* A) n e.right_inv)
-    -- porting note: had to explicitly coerce the `MulEquiv`s to `MonoidHom`s
+    -- Porting note: had to explicitly coerce the `MulEquiv`s to `MonoidHom`s
 #align quotient_group.equiv_quotient_zpow_of_equiv QuotientGroup.equivQuotientZPowOfEquiv
 #align quotient_add_group.equiv_quotient_zsmul_of_equiv QuotientAddGroup.equivQuotientZSMulOfEquiv
 
@@ -626,7 +634,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       use ⟨h, hh⟩
       let _ : Setoid ↑(H ⊔ N) :=
         (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))
-      -- porting note: Lean couldn't find this automatically
+      -- Porting note: Lean couldn't find this automatically
       refine Quotient.eq.mpr ?_
       change Setoid.r _ _
       rw [leftRel_apply]
@@ -726,12 +734,11 @@ end QuotientGroup
 
 namespace Group
 
-open Classical
+open scoped Classical
 
 open QuotientGroup Subgroup
 
 variable {F G H : Type u} [Group F] [Group G] [Group H] [Fintype F] [Fintype H]
-
 variable (f : F →* G) (g : G →* H)
 
 /-- If `F` and `H` are finite such that `ker(G →* H) ≤ im(F →* G)`, then `G` is finite. -/

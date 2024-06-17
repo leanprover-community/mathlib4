@@ -3,8 +3,8 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Algebra.NeZero
+import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
@@ -44,9 +44,8 @@ instance coePNatNat : Coe ℕ+ ℕ :=
 instance : Repr ℕ+ :=
   ⟨fun n n' => reprPrec n.1 n'⟩
 
---Porting note: New instance not in Lean3
-instance (n : ℕ) : OfNat ℕ+ (n+1) :=
-  ⟨⟨n + 1, Nat.succ_pos n⟩⟩
+instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
+  ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
 
 namespace PNat
 
@@ -194,7 +193,7 @@ theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 #align pnat.mk_one PNat.mk_one
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 #align pnat.one_coe PNat.one_coe

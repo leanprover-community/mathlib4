@@ -26,9 +26,7 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 
 variable {R M N N' : Type*}
-
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
-
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.
@@ -47,13 +45,13 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
   suffices
     (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R]
       ExteriorAlgebra R M →ₗ[R] ∀ i, M [⋀^Fin i]→ₗ[R] N by
-    refine' LinearMap.compr₂ this _
-    refine' (LinearEquiv.toLinearMap _).comp (LinearMap.proj 0)
+    refine LinearMap.compr₂ this ?_
+    refine (LinearEquiv.toLinearMap ?_).comp (LinearMap.proj 0)
     exact AlternatingMap.constLinearEquivOfIsEmpty.symm
-  refine' CliffordAlgebra.foldl _ _ _
-  · refine'
-      LinearMap.mk₂ R (fun m f i => (f i.succ).curryLeft m) (fun m₁ m₂ f => _) (fun c m f => _)
-        (fun m f₁ f₂ => _) fun c m f => _
+  refine CliffordAlgebra.foldl _ ?_ ?_
+  · refine
+      LinearMap.mk₂ R (fun m f i => (f i.succ).curryLeft m) (fun m₁ m₂ f => ?_) (fun c m f => ?_)
+        (fun m f₁ f₂ => ?_) fun c m f => ?_
     all_goals
       ext i : 1
       simp only [map_smul, map_add, Pi.add_apply, Pi.smul_apply, AlternatingMap.curryLeft_add,
@@ -72,7 +70,7 @@ theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
   dsimp [liftAlternating]
   rw [foldl_ι, LinearMap.mk₂_apply, AlternatingMap.curryLeft_apply_apply]
   congr
-  -- porting note: In Lean 3, `congr` could use the `[Subsingleton (Fin 0 → M)]` instance to finish
+  -- Porting note: In Lean 3, `congr` could use the `[Subsingleton (Fin 0 → M)]` instance to finish
   -- the proof. Here, the instance can be synthesized but `congr` does not use it so the following
   -- line is provided.
   rw [Matrix.zero_empty]
@@ -105,9 +103,9 @@ theorem liftAlternating_algebraMap (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (r : R)
 theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R] N)
     (v : Fin n → M) : liftAlternating (R := R) (M := M) (N := N) f (ιMulti R n v) = f n v := by
   rw [ιMulti_apply]
-  -- porting note: `v` is generalized automatically so it was removed from the next line
+  -- Porting note: `v` is generalized automatically so it was removed from the next line
   induction' n with n ih generalizing f
-  · -- porting note: Lean does not automatically synthesize the instance
+  · -- Porting note: Lean does not automatically synthesize the instance
     -- `[Subsingleton (Fin 0 → M)]` which is needed for `Subsingleton.elim 0 v` on line 114.
     letI : Subsingleton (Fin 0 → M) := by infer_instance
     rw [List.ofFn_zero, List.prod_nil, liftAlternating_one, Subsingleton.elim 0 v]
@@ -152,8 +150,7 @@ theorem liftAlternating_ιMulti :
 
 /-- `ExteriorAlgebra.liftAlternating` is an equivalence. -/
 @[simps apply symm_apply]
-def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N
-    where
+def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N where
   toFun := liftAlternating (R := R)
   map_add' := map_add _
   map_smul' := map_smul _

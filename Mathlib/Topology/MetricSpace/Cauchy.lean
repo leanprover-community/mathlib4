@@ -53,7 +53,7 @@ variable [Nonempty β] [SemilatticeSup β]
 
 /-- In a pseudometric space, Cauchy sequences are characterized by the fact that, eventually,
 the distance between its elements is arbitrarily small -/
--- porting note: @[nolint ge_or_gt] doesn't exist
+-- Porting note: @[nolint ge_or_gt] doesn't exist
 theorem Metric.cauchySeq_iff {u : β → α} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m ≥ N, ∀ n ≥ N, dist (u m) (u n) < ε :=
   uniformity_basis_dist.cauchySeq_iff
@@ -68,7 +68,7 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
 -- see Note [nolint_ge]
 /-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
 eventually, the distance between all its elements is uniformly, arbitrarily small. -/
--- porting note: no attr @[nolint ge_or_gt]
+-- Porting note: no attr @[nolint ge_or_gt]
 theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),
       ∃ N : β, ∀ m ≥ N, ∀ n ≥ N, ∀ x ∈ s, dist (F m x) (F n x) < ε := by
@@ -116,7 +116,7 @@ theorem cauchySeq_bdd {u : ℕ → α} (hu : CauchySeq u) : ∃ R > 0, ∀ m n, 
   · exact ⟨_, add_pos R0 R0, fun m n =>
       lt_of_le_of_lt (dist_triangle_right _ _ _) (add_lt_add (H m) (H n))⟩
   let R := Finset.sup (Finset.range N) fun n => nndist (u n) (u N)
-  refine' ⟨↑R + 1, add_pos_of_nonneg_of_pos R.2 zero_lt_one, fun n => _⟩
+  refine ⟨↑R + 1, add_pos_of_nonneg_of_pos R.2 zero_lt_one, fun n => ?_⟩
   rcases le_or_lt N n with h | h
   · exact lt_of_lt_of_le (hN _ h) (le_add_of_nonneg_left R.2)
   · have : _ ≤ R := Finset.le_sup (Finset.mem_range.2 h)
@@ -138,7 +138,7 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     let S N := (fun p : ℕ × ℕ => dist (s p.1) (s p.2)) '' { p | p.1 ≥ N ∧ p.2 ≥ N }
     have hS : ∀ N, ∃ x, ∀ y ∈ S N, y ≤ x := by
       rcases cauchySeq_bdd hs with ⟨R, -, hR⟩
-      refine' fun N => ⟨R, _⟩
+      refine fun N => ⟨R, ?_⟩
       rintro _ ⟨⟨m, n⟩, _, rfl⟩
       exact le_of_lt (hR m n)
     -- Prove that it bounds the distances of points in the Cauchy sequence
@@ -147,10 +147,10 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     have S0m : ∀ n, (0 : ℝ) ∈ S n := fun n => ⟨⟨n, n⟩, ⟨le_rfl, le_rfl⟩, dist_self _⟩
     have S0 := fun n => le_csSup (hS n) (S0m n)
     -- Prove that it tends to `0`, by using the Cauchy property of `s`
-    refine' ⟨fun N => sSup (S N), S0, ub, Metric.tendsto_atTop.2 fun ε ε0 => _⟩
-    refine' (Metric.cauchySeq_iff.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => _
+    refine ⟨fun N => sSup (S N), S0, ub, Metric.tendsto_atTop.2 fun ε ε0 => ?_⟩
+    refine (Metric.cauchySeq_iff.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => ?_
     rw [Real.dist_0_eq_abs, abs_of_nonneg (S0 n)]
-    refine' lt_of_le_of_lt (csSup_le ⟨_, S0m _⟩ _) (half_lt_self ε0)
+    refine lt_of_le_of_lt (csSup_le ⟨_, S0m _⟩ ?_) (half_lt_self ε0)
     rintro _ ⟨⟨m', n'⟩, ⟨hm', hn'⟩, rfl⟩
     exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')),
    fun ⟨b, _, b_bound, b_lim⟩ => cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩

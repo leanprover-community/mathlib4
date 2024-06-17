@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The category of additive commutative groups has all colimits.
 
-This file uses a "pre-automated" approach, just as for `Mon/Colimits.lean`.
+This file uses a "pre-automated" approach, just as for `Algebra.Category.MonCat.Colimits`.
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `AddCommGroup` and `MonoidHom`.
 
@@ -23,7 +23,7 @@ In fact, in `AddCommGroupCat` there is a much nicer model of colimits as quotien
 of finitely supported functions, and we really should implement this as well (or instead).
 -/
 
--- porting note: `AddCommGroup` in all the names
+-- Porting note: `AddCommGroup` in all the names
 set_option linter.uppercaseLean3 false
 
 universe w u v
@@ -63,7 +63,7 @@ instance : Inhabited (Prequotient.{w} F) :=
 
 open Prequotient
 
-/-- The relation on `prequotient` saying when two expressions are equal
+/-- The relation on `Prequotient` saying when two expressions are equal
 because of the abelian group laws, or
 because one element is mapped to another by a morphism in the diagram.
 -/
@@ -108,17 +108,25 @@ def ColimitType : Type max u v w :=
   Quotient (colimitSetoid.{w} F)
 #align AddCommGroup.colimits.colimit_type AddCommGroupCat.Colimits.ColimitType
 
-instance : AddCommGroup (ColimitType.{w} F) where
+instance : Zero (ColimitType.{w} F) where
   zero := Quotient.mk _ zero
+
+instance : Neg (ColimitType.{w} F) where
   neg := Quotient.map neg Relation.neg_1
-  add := Quotient.map₂ add fun x x' rx y y' ry =>
+
+instance : Add (ColimitType.{w} F) where
+  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
-  zero_add := Quotient.ind fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind fun _ => Quotient.sound <| Relation.add_left_neg _
-  add_comm := Quotient.ind₂ fun _ _ => Quotient.sound <| Relation.add_comm _ _
-  add_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
+
+instance : AddCommGroup (ColimitType.{w} F) where
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 instance ColimitTypeInhabited : Inhabited (ColimitType.{w} F) := ⟨0⟩
 
@@ -288,8 +296,8 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
         apply Quotient.sound
         apply leftRel_apply.mpr
         fconstructor
-        exact -x
-        simp only [add_zero, AddMonoidHom.map_neg]
+        · exact -x
+        · simp only [add_zero, AddMonoidHom.map_neg]
   inv :=
     QuotientAddGroup.lift _ (cokernel.π f) <| by
       rintro _ ⟨x, rfl⟩

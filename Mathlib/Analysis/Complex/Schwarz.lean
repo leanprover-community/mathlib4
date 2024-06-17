@@ -67,7 +67,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
     ‖dslope f c z‖ ≤ R₂ / R₁ := by
   have hR₁ : 0 < R₁ := nonempty_ball.1 ⟨z, hz⟩
   suffices ∀ᶠ r in 𝓝[<] R₁, ‖dslope f c z‖ ≤ R₂ / r by
-    refine' ge_of_tendsto _ this
+    refine ge_of_tendsto ?_ this
     exact (tendsto_const_nhds.div tendsto_id hR₁.ne').mono_left nhdsWithin_le_nhds
   rw [mem_ball] at hz
   filter_upwards [Ioo_mem_nhdsWithin_Iio ⟨hz, le_rfl⟩] with r hr
@@ -77,7 +77,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
     rw [closure_ball c hr₀.ne']
     exact ((differentiableOn_dslope <| ball_mem_nhds _ hR₁).mpr hd).mono
       (closedBall_subset_ball hr.2)
-  refine' norm_le_of_forall_mem_frontier_norm_le isBounded_ball hd _ _
+  refine norm_le_of_forall_mem_frontier_norm_le isBounded_ball hd ?_ ?_
   · rw [frontier_ball c hr₀.ne']
     intro z hz
     have hz' : z ≠ c := ne_of_mem_sphere hz hr₀.ne'
@@ -101,10 +101,10 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
   have hg₀ : ‖g‖₊ ≠ 0 := by simpa only [hg'] using one_ne_zero
   calc
     ‖dslope f c z‖ = ‖dslope (g ∘ f) c z‖ := by
-      rw [g.dslope_comp, hgf, IsROrC.norm_ofReal, abs_norm]
+      rw [g.dslope_comp, hgf, RCLike.norm_ofReal, abs_norm]
       exact fun _ => hd.differentiableAt (ball_mem_nhds _ hR₁)
     _ ≤ R₂ / R₁ := by
-      refine' schwarz_aux (g.differentiable.comp_differentiableOn hd) (MapsTo.comp _ h_maps) hz
+      refine schwarz_aux (g.differentiable.comp_differentiableOn hd) (MapsTo.comp ?_ h_maps) hz
       simpa only [hg', NNReal.coe_one, one_mul] using g.lipschitz.mapsTo_ball hg₀ (f c) R₂
 #align complex.norm_dslope_le_div_of_maps_to_ball Complex.norm_dslope_le_div_of_mapsTo_ball
 
@@ -185,7 +185,7 @@ disk to itself, then for any point `z` of this disk we have `dist (f z) c ≤ di
 theorem dist_le_dist_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball c R))
     (h_maps : MapsTo f (ball c R) (ball c R)) (hc : f c = c) (hz : z ∈ ball c R) :
     dist (f z) c ≤ dist z c := by
-  -- porting note: `simp` was failing to use `div_self`
+  -- Porting note: `simp` was failing to use `div_self`
   have := dist_le_div_mul_dist_of_mapsTo_ball hd (by rwa [hc]) hz
   rwa [hc, div_self, one_mul] at this
   exact (nonempty_ball.1 ⟨z, hz⟩).ne'

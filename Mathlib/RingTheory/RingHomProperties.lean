@@ -70,8 +70,8 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
     (IsLocalization.algEquiv (Submonoid.powers r) _ _).toRingEquiv
   let e₂ : Localization.Away (f r) ≃+* S' :=
     (IsLocalization.algEquiv (Submonoid.powers (f r)) _ _).toRingEquiv
-  refine' (hP.cancel_left_isIso e₁.toCommRingCatIso.hom (CommRingCat.ofHom _)).symm.trans _
-  refine' (hP.cancel_right_isIso (CommRingCat.ofHom _) e₂.toCommRingCatIso.hom).symm.trans _
+  refine (hP.cancel_left_isIso e₁.toCommRingCatIso.hom (CommRingCat.ofHom _)).symm.trans ?_
+  refine (hP.cancel_right_isIso (CommRingCat.ofHom _) e₂.toCommRingCatIso.hom).symm.trans ?_
   rw [← eq_iff_iff]
   congr 1
   -- Porting note: Here, the proof used to have a huge `simp` involving `[anonymous]`, which didn't
@@ -109,11 +109,9 @@ theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition 
     RingHom.RespectsIso @P := by
   constructor
   · introv H
-    skip
     apply hP
     exacts [H, hP' e]
   · introv H
-    skip
     apply hP
     exacts [hP' e, H]
 #align ring_hom.stable_under_composition.respects_iso RingHom.StableUnderComposition.respectsIso
@@ -155,13 +153,13 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
   convert h₁.1 (_ : R' →+* TensorProduct R R' S) (_ : TensorProduct R R' S ≃+* S')
       (h₂ H : P (_ : R' →+* TensorProduct R R' S))
   swap
-  · refine' { e with map_mul' := fun x y => _ }
+  · refine { e with map_mul' := fun x y => ?_ }
     change e (x * y) = e x * e y
     simp_rw [this]
     exact map_mul f' _ _
   · ext x
     change _ = e (x ⊗ₜ[R] 1)
-    --Porting note: Had `dsimp only [e]` here, which didn't work anymore
+    -- Porting note: Had `dsimp only [e]` here, which didn't work anymore
     rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
 #align ring_hom.stable_under_base_change.mk RingHom.StableUnderBaseChange.mk
 

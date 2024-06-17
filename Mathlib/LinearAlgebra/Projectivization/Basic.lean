@@ -112,7 +112,7 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
   · rintro ⟨a, ha⟩
     exact ⟨a, ha⟩
   · rintro ⟨a, ha⟩
-    refine' ⟨Units.mk0 a fun c => hv.symm _, ha⟩
+    refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
     rwa [c, zero_smul] at ha
 #align projectivization.mk_eq_mk_iff' Projectivization.mk_eq_mk_iff'
 
@@ -136,6 +136,7 @@ theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
 
 theorem submodule_eq (v : ℙ K V) : v.submodule = K ∙ v.rep := by
   conv_lhs => rw [← v.mk_rep]
+  rfl
 #align projectivization.submodule_eq Projectivization.submodule_eq
 
 theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
@@ -223,7 +224,7 @@ theorem map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injec
   rfl
 #align projectivization.map_id Projectivization.map_id
 
--- porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
+-- Porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
 theorem map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
     {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W) (hf : Function.Injective f)
     (g : W →ₛₗ[τ] U) (hg : Function.Injective g) :

@@ -17,7 +17,7 @@ is linear in both factors.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 
@@ -80,7 +80,7 @@ instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive w
 /-- A faithful additive monoidal functor to a monoidal preadditive category
 ensures that the domain is monoidal preadditive. -/
 theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
-    (F : MonoidalFunctor D C) [Faithful F.toFunctor] [F.toFunctor.Additive] :
+    (F : MonoidalFunctor D C) [F.Faithful] [F.Additive] :
     MonoidalPreadditive D :=
   { whiskerLeft_zero := by
       intros
@@ -102,23 +102,21 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
         MonoidalPreadditive.add_whiskerRight] }
 #align category_theory.monoidal_preadditive_of_faithful CategoryTheory.monoidalPreadditive_of_faithful
 
-open BigOperators
-
 theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) :
-    P ◁ ∑ j in s, g j = ∑ j in s, P ◁ g j :=
+    P ◁ ∑ j ∈ s, g j = ∑ j ∈ s, P ◁ g j :=
   map_sum ((tensoringLeft C).obj P).mapAddHom g s
 
 theorem sum_whiskerRight {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) (P : C) :
-    (∑ j in s, g j) ▷ P = ∑ j in s, g j ▷ P :=
+    (∑ j ∈ s, g j) ▷ P = ∑ j ∈ s, g j ▷ P :=
   map_sum ((tensoringRight C).obj P).mapAddHom g s
 
 theorem tensor_sum {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
-    (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j := by
+    (f ⊗ ∑ j ∈ s, g j) = ∑ j ∈ s, f ⊗ g j := by
   simp only [tensorHom_def, whiskerLeft_sum, Preadditive.comp_sum]
 #align category_theory.tensor_sum CategoryTheory.tensor_sum
 
 theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
-    (∑ j in s, g j) ⊗ f = ∑ j in s, g j ⊗ f := by
+    (∑ j ∈ s, g j) ⊗ f = ∑ j ∈ s, g j ⊗ f := by
   simp only [tensorHom_def, sum_whiskerRight, Preadditive.sum_comp]
 #align category_theory.sum_tensor CategoryTheory.sum_tensor
 
@@ -202,7 +200,7 @@ theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
   simp_rw [← id_tensorHom]
   simp only [← id_tensor_comp, biproduct.ι_π]
   simp only [id_tensor_comp, tensor_dite, comp_dite]
-  simp [id_tensorHom]
+  simp
 #align category_theory.left_distributor_assoc CategoryTheory.leftDistributor_assoc
 
 /-- The isomorphism showing how tensor product on the right distributes over direct sums. -/

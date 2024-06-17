@@ -1,13 +1,16 @@
 /-
-Copyright (c) 2022 Jireh Loreaux All rights reserved.
+Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Subsemigroup.Membership
+import Mathlib.Algebra.Ring.Center
+import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.GroupTheory.Subsemigroup.Membership
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 
 #align_import ring_theory.non_unital_subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
@@ -20,8 +23,6 @@ We define bundled non-unital subsemirings and some standard constructions:
 `map`, `comap` and range (`srange`) of a `NonUnitalRingHom` etc.
 -/
 
-
-open BigOperators
 
 universe u v w
 
@@ -123,7 +124,7 @@ theorem ext {S T : NonUnitalSubsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S 
 #align non_unital_subsemiring.ext NonUnitalSubsemiring.ext
 
 /-- Copy of a non-unital subsemiring with a new `carrier` equal to the old one. Useful to fix
-definitional equalities.-/
+definitional equalities. -/
 protected def copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
     NonUnitalSubsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubsemigroup.copy s hs with carrier := s }
@@ -303,9 +304,8 @@ theorem coe_map (f : F) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' 
 #align non_unital_subsemiring.coe_map NonUnitalSubsemiring.coe_map
 
 @[simp]
-theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
-  convert Set.mem_image_iff_bex
-  simp
+theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
+  Iff.rfl
 #align non_unital_subsemiring.mem_map NonUnitalSubsemiring.mem_map
 
 @[simp]
@@ -515,8 +515,8 @@ section NonUnitalSemiring
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
     (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) :=
-  by with_reducible_and_instances rfl
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) := by
+  with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
@@ -694,11 +694,11 @@ theorem mem_closure_iff {s : Set R} {x} :
 theorem closure_addSubmonoid_closure {s : Set R} :
     closure ↑(AddSubmonoid.closure s) = closure s := by
   ext x
-  refine' ⟨fun hx => _, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
+  refine ⟨fun hx => ?_, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
   rintro - ⟨H, rfl⟩
   rintro - ⟨J, rfl⟩
-  refine' (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => _
-  refine' (Subsemigroup.mem_closure.mp hy) H.toSubsemigroup fun z hz => _
+  refine (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => ?_
+  refine (Subsemigroup.mem_closure.mp hy) H.toSubsemigroup fun z hz => ?_
   exact (AddSubmonoid.mem_closure.mp hz) H.toAddSubmonoid fun w hw => J hw
 #align non_unital_subsemiring.closure_add_submonoid_closure NonUnitalSubsemiring.closure_addSubmonoid_closure
 
@@ -706,9 +706,9 @@ theorem closure_addSubmonoid_closure {s : Set R} :
 of `s`, and is preserved under addition and multiplication, then `p` holds for all elements
 of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
-    (H0 : p 0) (Hadd : ∀ x y, p x → p y → p (x + y)) (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨p, fun {a b} => Hadd a b⟩, H0⟩, fun {a b} => Hmul a b⟩).2 Hs h
+theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
+    (zero : p 0) (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
+  (@closure_le _ _ _ ⟨⟨⟨p, fun {a b} => add a b⟩, zero⟩, fun {a b} => mul a b⟩).2 mem h
 #align non_unital_subsemiring.closure_induction NonUnitalSubsemiring.closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
@@ -998,7 +998,6 @@ namespace RingEquiv
 open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
-
 variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative

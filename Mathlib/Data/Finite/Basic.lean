@@ -33,7 +33,7 @@ instances or other `Fintype` instances, then we need to "lower" the instance
 to be a `Finite` instance by removing the `Decidable` instances and switching
 the `Fintype` instances to `Finite` instances. These are precisely the ones
 that cannot be inferred using `Finite.of_fintype`. (However, when using
-`open Classical` or the `classical` tactic the instances relying only
+`open scoped Classical` or the `classical` tactic the instances relying only
 on `Decidable` instances will give `Finite` instances.) In the future we might
 consider writing automation to create these "lowered" instances.
 
@@ -45,7 +45,7 @@ finiteness, finite types
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 variable {α β γ : Type*}
 
@@ -57,7 +57,7 @@ instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Fini
 #align finite.of_subsingleton Finite.of_subsingleton
 
 -- Higher priority for `Prop`s
--- @[nolint instance_priority] -- Porting note: linter not found
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 #align finite.prop Finite.prop
@@ -133,7 +133,7 @@ instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ 
     -- "stuck at solving universe constraint" error.
     apply Finite.of_subsingleton
 
-  · refine' h.elim fun f => _
+  · refine h.elim fun f => ?_
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ DFunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite

@@ -17,7 +17,6 @@ We also prove basic lemmas about this definition.
 
 universe u v
 open Function Set
-open scoped BigOperators
 
 namespace Cardinal
 
@@ -63,7 +62,7 @@ theorem cast_toNat_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : ↑(toNat c)
 #align cardinal.cast_to_nat_of_aleph_0_le Cardinal.cast_toNat_of_aleph0_le
 
 theorem toNat_strictMonoOn : StrictMonoOn toNat (Iio ℵ₀) := by
-  simp only [← range_natCast, StrictMonoOn, forall_range_iff, toNat_natCast, Nat.cast_lt]
+  simp only [← range_natCast, StrictMonoOn, forall_mem_range, toNat_natCast, Nat.cast_lt]
   exact fun _ _ ↦ id
 
 theorem toNat_monotoneOn : MonotoneOn toNat (Iio ℵ₀) := toNat_strictMonoOn.monotoneOn
@@ -92,7 +91,7 @@ theorem toNat_le_toNat (hcd : c ≤ d) (hd : d < ℵ₀) : toNat c ≤ toNat d :
   toNat_monotoneOn (hcd.trans_lt hd) hd hcd
 #align cardinal.to_nat_le_of_le_of_lt_aleph_0 Cardinal.toNat_le_toNat
 
-@[deprecated toNat_le_toNat]
+@[deprecated toNat_le_toNat (since := "2024-02-15")]
 theorem toNat_le_of_le_of_lt_aleph0 (hd : d < ℵ₀) (hcd : c ≤ d) :
     toNat c ≤ toNat d :=
   toNat_le_toNat hcd hd
@@ -101,11 +100,11 @@ theorem toNat_lt_toNat (hcd : c < d) (hd : d < ℵ₀) : toNat c < toNat d :=
   toNat_strictMonoOn (hcd.trans hd) hd hcd
 #align cardinal.to_nat_lt_of_lt_of_lt_aleph_0 Cardinal.toNat_lt_toNat
 
-@[deprecated toNat_lt_toNat]
+@[deprecated toNat_lt_toNat (since := "2024-02-15")]
 theorem toNat_lt_of_lt_of_lt_aleph0 (hd : d < ℵ₀) (hcd : c < d) : toNat c < toNat d :=
   toNat_lt_toNat hcd hd
 
-@[deprecated] alias toNat_cast := toNat_natCast
+@[deprecated (since := "2024-02-15")] alias toNat_cast := toNat_natCast
 #align cardinal.to_nat_cast Cardinal.toNat_natCast
 
 -- See note [no_index around OfNat.ofNat]
@@ -174,9 +173,9 @@ theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat #α = toNat #β := by
 theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mul toNat x y
 #align cardinal.to_nat_mul Cardinal.toNat_mul
 
-@[deprecated map_prod]
+@[deprecated map_prod (since := "2024-02-15")]
 theorem toNat_finset_prod (s : Finset α) (f : α → Cardinal) :
-    toNat (∏ i in s, f i) = ∏ i in s, toNat (f i) :=
+    toNat (∏ i ∈ s, f i) = ∏ i ∈ s, toNat (f i) :=
   map_prod toNat _ _
 #align cardinal.to_nat_finset_prod Cardinal.toNat_finset_prod
 
@@ -191,7 +190,7 @@ theorem toNat_lift_add_lift {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < ℵ�
     toNat (lift.{v} a + lift.{u} b) = toNat a + toNat b := by
   simp [*]
 
-@[deprecated]
+@[deprecated (since := "2024-02-15")]
 alias toNat_add_of_lt_aleph0 := toNat_lift_add_lift
 #align cardinal.to_nat_add_of_lt_aleph_0 Cardinal.toNat_lift_add_lift
 
