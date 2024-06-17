@@ -442,7 +442,7 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
 
 /-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
 theorem det_one_add_col_mul_row {ι : Type*} [Unique ι] (u v : m → α) :
-    det (1 + col (ι := ι) u * row v) = 1 + v ⬝ᵥ u := by
+    det (1 + col ι u * row ι v) = 1 + v ⬝ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
     Matrix.row_mul_col_apply]
 #align matrix.det_one_add_col_mul_row Matrix.det_one_add_col_mul_row
@@ -454,9 +454,9 @@ TODO: show the more general version without `hA : IsUnit A.det` as
 -/
 theorem det_add_col_mul_row {ι : Type*} [Unique ι]
     {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
-    (A + col (ι := ι) u * row v).det = A.det * (1 + row v * A⁻¹ * col (ι := ι) u).det := by
+    (A + col ι u * row ι v).det = A.det * (1 + row ι v * A⁻¹ * col ι u).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
-  rwa [← Matrix.mul_nonsing_inv_cancel_left A (col u * row v),
+  rwa [← Matrix.mul_nonsing_inv_cancel_left A (col ι u * row ι v),
     ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm,
     ← Matrix.mul_assoc]
 

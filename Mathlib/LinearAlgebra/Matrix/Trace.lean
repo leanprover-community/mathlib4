@@ -181,7 +181,7 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 
 @[simp]
 theorem trace_col_mul_row {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R] (a b : n → R) :
-    trace (col (ι := ι) a * row b) = dotProduct a b := by
+    trace (col ι a * row ι b) = dotProduct a b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
 
