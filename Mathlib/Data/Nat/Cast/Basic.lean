@@ -23,6 +23,13 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
+assert_not_exists OrderedCommGroup
+assert_not_exists Commute.zero_right
+assert_not_exists Commute.add_right
+assert_not_exists abs_eq_max_neg
+assert_not_exists natCast_ne
+assert_not_exists MulOpposite.natCast
+
 -- Porting note: There are many occasions below where we need `simp [map_zero f]`
 -- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
@@ -45,6 +52,9 @@ def castAddMonoidHom (α : Type*) [AddMonoidWithOne α] :
 theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ → α) = Nat.cast :=
   rfl
 #align nat.coe_cast_add_monoid_hom Nat.coe_castAddMonoidHom
+
+lemma _root_.Even.natCast [AddMonoidWithOne α] {n : ℕ} (hn : Even n) : Even (n : α) :=
+  hn.map <| Nat.castAddMonoidHom α
 
 section NonAssocSemiring
 variable [NonAssocSemiring α]
@@ -101,9 +111,9 @@ theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = 
   DFunLike.ext f g <| by
     intro n
     induction n with
-    | zero => simp_rw [Nat.zero_eq, map_zero f, map_zero g]
+    | zero => simp_rw [map_zero f, map_zero g]
     | succ n ihn =>
-      simp [Nat.succ_eq_add_one, h, ihn]
+      simp [h, ihn]
 #align ext_nat' ext_nat'
 
 @[ext]
@@ -309,8 +319,6 @@ namespace Pi
 
 variable {π : α → Type*} [∀ a, NatCast (π a)]
 
-/- Porting note: manually wrote this instance.
-Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
 instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 
 theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
@@ -322,9 +330,8 @@ theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 #align pi.coe_nat Pi.natCast_def
 
--- 2024-04-05
-@[deprecated] alias nat_apply := natCast_apply
-@[deprecated] alias coe_nat := natCast_def
+@[deprecated (since := "2024-04-05")] alias nat_apply := natCast_apply
+@[deprecated (since := "2024-04-05")] alias coe_nat := natCast_def
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
@@ -335,12 +342,3 @@ theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_nat_cast_nat_cast Sum.elim_natCast_natCast
-
--- Guard against import creep regression.
-assert_not_exists OrderedCommGroup
-assert_not_exists CharZero
-assert_not_exists Commute.zero_right
-assert_not_exists Commute.add_right
-assert_not_exists abs_eq_max_neg
-assert_not_exists natCast_ne
-assert_not_exists MulOpposite.natCast

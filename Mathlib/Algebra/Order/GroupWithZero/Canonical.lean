@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
@@ -63,8 +64,7 @@ The following facts are true more generally in a (linearly) ordered commutative 
 -/
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
-@[reducible]
-def Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [One β] [Mul β]
+abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [One β] [Mul β]
     [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
@@ -155,8 +155,9 @@ theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
   ⟨fun h ↦ inv_inv c ▸ le_mul_inv_of_mul_le (inv_ne_zero hc) h, mul_inv_le_of_le_mul⟩
 #align mul_inv_le_iff₀ mul_inv_le_iff₀
 
-theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
-  by rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
+theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) :
+    a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b := by
+  rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
 #align div_le_div₀ div_le_div₀
 
 @[simp]
@@ -196,6 +197,12 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
   contrapose! h
   exact le_of_le_mul_right hc h
 #align mul_lt_right₀ mul_lt_right₀
+
+theorem inv_lt_one₀ (ha : a ≠ 0) : a⁻¹ < 1 ↔ 1 < a :=
+  @inv_lt_one' _ _ _ _ <| Units.mk0 a ha
+
+theorem one_lt_inv₀ (ha : a ≠ 0) : 1 < a⁻¹ ↔ a < 1 :=
+  @one_lt_inv' _ _ _ _ <| Units.mk0 a ha
 
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
@@ -273,10 +280,15 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
+#adaptation_note /-- 2024-04-23
+After https://github.com/leanprover/lean4/pull/3965,
+we need to either write `@inv_zero (G₀ := α) (_)` in `neg_top`,
+or use `set_option backward.isDefEq.lazyProjDelta false`.
+See https://github.com/leanprover-community/mathlib4/issues/12535 -/
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
-    neg_top := @inv_zero _ (_)
+    neg_top := set_option backward.isDefEq.lazyProjDelta false in @inv_zero _ (_)
     add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
@@ -288,7 +300,7 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 #align pow_lt_pow₀ pow_lt_pow_right₀
 
-@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀ -- 2023-12-23
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow₀ := pow_lt_pow_right₀
 
 end LinearOrderedCommGroupWithZero
 
@@ -333,14 +345,22 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 @[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := WithBot.coe_le_coe
 #align with_zero.coe_le_coe WithZero.coe_le_coe
 
+@[simp, norm_cast] lemma one_lt_coe [One α] : 1 < (a : WithZero α) ↔ 1 < a := coe_lt_coe
+
+@[simp, norm_cast] lemma one_le_coe [One α] : 1 ≤ (a : WithZero α) ↔ 1 ≤ a := coe_le_coe
+
+@[simp, norm_cast] lemma coe_lt_one [One α] : (a : WithZero α) < 1 ↔ a < 1 := coe_lt_coe
+
+@[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
+
 theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff
 
 instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
-  induction a using WithZero.recZeroCoe; · exact zero_le _
-  induction b using WithZero.recZeroCoe; · exact zero_le _
+  induction a; · exact zero_le _
+  induction b; · exact zero_le _
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
@@ -350,11 +370,11 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
 protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
-  induction a using WithZero.recZeroCoe
+  induction a
   · rwa [zero_add, zero_add]
-  induction b using WithZero.recZeroCoe
+  induction b
   · rw [add_zero]
-    induction c using WithZero.recZeroCoe
+    induction c
     · rw [add_zero]
     · rw [← coe_add, coe_le_coe]
       exact le_add_of_nonneg_right (h _)
@@ -366,9 +386,9 @@ protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (�
 
 instance existsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) :=
   ⟨fun {a b} => by
-    induction a using WithZero.cases_on
+    induction a
     · exact fun _ => ⟨b, (zero_add b).symm⟩
-    induction b using WithZero.cases_on
+    induction b
     · exact fun h => (WithBot.not_coe_le_bot _ h).elim
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
@@ -386,11 +406,11 @@ instance contravariantClass_mul_lt [Mul α] [ContravariantClass α α (· * ·) 
     ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
   refine ⟨fun a b c h => ?_⟩
   have := ((zero_le _).trans_lt h).ne'
-  induction a using WithZero.recZeroCoe
+  induction a
   · simp at this
-  induction c using WithZero.recZeroCoe
+  induction c
   · simp at this
-  induction b using WithZero.recZeroCoe
+  induction b
   exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
 #align with_zero.contravariant_class_mul_lt WithZero.contravariantClass_mul_lt
 
@@ -427,8 +447,8 @@ Mathematicians might be more likely to use the order-dual version, where all
 elements are ≤ 1 and then 1 is the top element.
 -/
 /-- If `0` is the least element in `α`, then `WithZero α` is an `OrderedAddCommMonoid`. -/
-@[reducible] -- See note [reducible non-instances]
-protected def orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
+-- See note [reducible non-instances]
+protected abbrev orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
     OrderedAddCommMonoid (WithZero α) :=
   { WithZero.partialOrder, WithZero.addCommMonoid with
     add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
@@ -442,9 +462,9 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
     WithZero.orderedAddCommMonoid _root_.zero_le,
     WithZero.existsAddOfLE with
     le_self_add := fun a b => by
-      induction a using WithZero.cases_on
+      induction a
       · exact bot_le
-      induction b using WithZero.cases_on
+      induction b
       · exact le_rfl
       · exact WithZero.coe_le_coe.2 le_self_add }
 #align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddCommMonoid

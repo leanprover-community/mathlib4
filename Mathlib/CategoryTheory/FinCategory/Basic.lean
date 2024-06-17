@@ -54,16 +54,14 @@ open Opposite
 
 /-- The opposite of a finite category is finite.
 -/
-instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : FinCategory Jᵒᵖ
-    where
+instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : FinCategory Jᵒᵖ where
   fintypeObj := Fintype.ofEquiv _ equivToOpposite
   fintypeHom j j' := Fintype.ofEquiv _ (opEquiv j j').symm
 #align category_theory.fin_category_opposite CategoryTheory.finCategoryOpposite
 
 /-- Applying `ULift` to morphisms and objects of a category preserves finiteness. -/
 instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
-    FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J))
-    where
+    FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where
   fintypeObj := ULift.fintype J
   fintypeHom := fun _ _ => ULift.fintype _
 #align category_theory.fin_category_ulift CategoryTheory.finCategoryUlift
