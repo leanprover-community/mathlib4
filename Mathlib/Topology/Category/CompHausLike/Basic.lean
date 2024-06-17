@@ -52,10 +52,11 @@ instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
 
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
+/-- This wraps the predicate `P` in a typeclass. -/
 class HasProp : Prop where
   hasProp : P (TopCat.of X)
 
-variable [HasProp P X] -- (h : (P (TopCat.of X)))
+variable [HasProp P X]
 
 /-- A constructor for objects of the category `CompHausLike P`,
 taking a type, and bundling the compact Hausdorff topology
@@ -70,12 +71,12 @@ def of : CompHausLike P where
 theorem coe_of : (CompHausLike.of P X : Type _) = X :=
   rfl
 
--- Porting note: have changed statement as the original LHS simplified.
+-- "Porting" note: have changed statement as the original LHS simplified.
 @[simp]
 theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
   rfl
 
--- Porting note: have changed statement as the original LHS simplified.
+-- "Porting" note: have changed statement as the original LHS simplified.
 @[simp]
 theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
@@ -119,8 +120,7 @@ instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P
 variable (P)
 
 /-- The fully faithful embedding of `CompHausLike P` in `TopCat`. -/
--- Porting note: `semireducible` -> `.default`.
-@[simps (config := { rhsMd := .default })]
+@[simps!]
 def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
   inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
 

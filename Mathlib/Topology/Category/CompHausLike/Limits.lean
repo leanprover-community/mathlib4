@@ -31,6 +31,10 @@ section FiniteCoproducts
 
 variable {P : TopCat.{max u w} → Prop} {α : Type w} [Finite α] (X : α → CompHausLike P)
 
+/--
+A typeclass describing the property that forming the disjoint union is stable under the
+property `P`.
+-/
 abbrev HasExplicitFiniteCoproduct := HasProp P (Σ (a : α), X a)
 
 variable [HasExplicitFiniteCoproduct X]
@@ -95,15 +99,25 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a 
   intro x
   change (ι X a ≫ desc X π) _ = _
   simp only [ι_desc]
--- `elementwise` should work here, but doesn't
 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩
 
 variable (P) in
+/--
+A typeclass describing the property that forming all finite disjoint unions is stable under the
+property `P`.
+-/
 class HasExplicitFiniteCoproducts : Prop where
   hasProp {α : Type w} [Finite α] (X : α → CompHausLike.{max u w} P) :
     HasExplicitFiniteCoproduct X
+
+/-
+This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
+in the indexing type of the coproduct. In almost all cases, `w` will be either `0` or `u`, but we
+want to allow both possibilities.
+-/
+attribute [nolint checkUnivs] HasExplicitFiniteCoproducts
 
 attribute [instance] HasExplicitFiniteCoproducts.hasProp
 
@@ -159,6 +173,9 @@ section Pullbacks
 
 variable {P : TopCat.{u} → Prop} {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y ⟶ B)
 
+/--
+A typeclass describing the property that an explicit pullback is stable under the property `P`.
+-/
 abbrev HasExplicitPullback := HasProp P { xy : X × Y | f xy.fst = g xy.snd }
 
 variable [HasExplicitPullback f g] -- (hP : P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd }))
@@ -264,6 +281,10 @@ noncomputable instance {P' : TopCat → Prop}
   exact preservesLimitOfReflectsOfPreserves (toCompHausLike h) (compHausLikeToTop P')
 
 variable (P) in
+/--
+A typeclass describing the property that forming all explicit pullbacks is stable under the
+property `P`.
+-/
 class HasExplicitPullbacks : Prop where
   hasExplicitPullbacks {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y ⟶ B) :
     HasExplicitPullback f g
@@ -275,6 +296,10 @@ instance [HasExplicitPullbacks P] : HasPullbacks (CompHausLike P) where
     hasLimitOfIso (diagramIsoCospan F).symm
 
 variable (P) in
+/--
+A typeclass describing the property that explicit pullbacks along inclusion maps into disjoint
+unions is stable under the property `P`.
+-/
 class HasExplicitPullbacksOfInclusions [HasExplicitFiniteCoproducts.{0} P] : Prop where
   hasPullbackInl : ∀ {X Y Z : CompHausLike P} (f : Z ⟶ X ⨿ Y), HasExplicitPullback coprod.inl f
 
