@@ -151,21 +151,17 @@ lemma top_ne_zero' :
   rw [← nh] at this
   simp at this
 
-@[simp]
-lemma neg_eq_top {a : α} :
-    -a = ⊤ ↔ a = ⊤ :=
-  ⟨by
-  intro h
-  by_contra nh
-  replace nh := add_neg_cancel_of_ne_top nh
-  rw [h, add_top] at nh
-  exact top_ne_zero' nh, fun h ↦ h ▸ neg_top⟩
+@[simp] lemma neg_eq_top {a : α} : -a = ⊤ ↔ a = ⊤ where
+  mp h := by
+    by_contra nh
+    replace nh := add_neg_cancel_of_ne_top nh
+    rw [h, add_top] at nh
+    exact top_ne_zero' nh
+  mpr h := h ▸ neg_top
 
 @[simp]
-lemma add_eq_top {a b : α} :
-    a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
-  constructor
-  · intro h
+lemma add_eq_top {a b : α} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ where
+  mp h := by
     by_contra nh
     rw [not_or] at nh
     replace h := congrArg (-a + ·) h
@@ -174,10 +170,10 @@ lemma add_eq_top {a b : α} :
       zero_add] at h
     · exact nh.2 h
     · exact nh.1
-  · intro h
+  mpr h := by
     cases h <;> simp_all
 
-instance (priority := 100) : SubtractionMonoid α where
+instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
   neg_neg (a) := by
     by_cases h : a = ⊤
     · simp [h]
