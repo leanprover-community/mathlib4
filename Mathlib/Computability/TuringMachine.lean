@@ -11,6 +11,7 @@ import Mathlib.Data.PFun
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.List.GetD
 
 #align_import computability.turing_machine from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -58,6 +59,12 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+
+-- After https://github.com/leanprover/lean4/pull/4400
+-- the simp normal forms for `List` lookup use the `GetElem` typeclass, rather than `List.get?`.
+-- This file has not been updated to reflect that change, so uses a number of deprecated lemmas.
+-- Updating this file to allow restoring the deprecation linter would be much appreciated.
+set_option linter.deprecated false
 
 assert_not_exists MonoidWithZero
 
@@ -287,7 +294,8 @@ def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   rw [List.getI_eq_default _ h]
   rcases le_or_lt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
-  rw [List.getI_eq_get _ h₂, List.get_append_right' h, List.get_replicate]
+  rw [List.getI_eq_get _ h₂, List.get_eq_getElem, List.getElem_append_right' h,
+    List.getElem_replicate]
 #align turing.list_blank.nth Turing.ListBlank.nth
 
 @[simp]

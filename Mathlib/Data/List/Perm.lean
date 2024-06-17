@@ -767,15 +767,20 @@ theorem perm_permutations'_iff {s t : List α} : permutations' s ~ permutations'
     Perm.permutations'⟩
 #align list.perm_permutations'_iff List.perm_permutations'_iff
 
-theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
+theorem getElem_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
-    (permutations'Aux x s).get ⟨n, hn⟩ = s.insertNth n x := by
+    (permutations'Aux x s)[n] = s.insertNth n x := by
   induction' s with y s IH generalizing n
   · simp only [length, Nat.zero_add, Nat.lt_one_iff] at hn
     simp [hn]
   · cases n
     · simp [get]
     · simpa [get] using IH _ _
+
+theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
+    (hn : n < length (permutations'Aux x s)) :
+    (permutations'Aux x s).get ⟨n, hn⟩ = s.insertNth n x := by
+  simp [getElem_permutations'Aux]
 #align list.nth_le_permutations'_aux List.get_permutations'Aux
 
 set_option linter.deprecated false in
@@ -806,7 +811,7 @@ theorem length_permutations'Aux (s : List α) (x : α) :
   · simpa using IH
 #align list.length_permutations'_aux List.length_permutations'Aux
 
-@[simp]
+@[deprecated (since := "2024-06-12")]
 theorem permutations'Aux_get_zero (s : List α) (x : α)
     (hn : 0 < length (permutations'Aux x s) := (by simp)) :
     (permutations'Aux x s).get ⟨0, hn⟩ = x :: s :=
@@ -819,7 +824,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
   have hl : s.length = t.length := by simpa using congr_arg length h
   rw [← get_permutations'Aux s x s.length (by simp),
     ← get_permutations'Aux t x s.length (by simp [hl])]
-  simp only [← getElem_eq_get, h, hl]
+  simp only [get_eq_getElem, h, hl]
 #align list.injective_permutations'_aux List.injective_permutations'Aux
 
 theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) :

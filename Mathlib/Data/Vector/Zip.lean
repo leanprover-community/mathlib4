@@ -33,7 +33,7 @@ theorem zipWith_toList (x : Vector α n) (y : Vector β n) :
 theorem zipWith_get (x : Vector α n) (y : Vector β n) (i) :
     (Vector.zipWith f x y).get i = f (x.get i) (y.get i) := by
   dsimp only [Vector.zipWith, Vector.get]
-  simp only [List.get_zipWith, Fin.cast]
+  simp
 #align vector.zip_with_nth Vector.zipWith_get
 
 @[simp]
