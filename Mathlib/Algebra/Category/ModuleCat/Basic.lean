@@ -224,6 +224,9 @@ theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
   rfl
 #align Module.coe_comp ModuleCat.coe_comp
 
+lemma comp_apply (f : M ⟶ N) (g : N ⟶ U) (x : M) :
+    (f ≫ g) x = g (f x) := rfl
+
 theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
   rfl
 #align Module.comp_def ModuleCat.comp_def

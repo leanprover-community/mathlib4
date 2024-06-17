@@ -19,6 +19,13 @@ differentials over `ℤ`).
 - Given a presheaf of modules `M` over a presheaf of commutative rings, we define
 the type `M.AbsoluteDerivation` of absolute derivations from `R` to `M`.
 
+## TODO
+
+- When the pullback of presheaves of modules is defined, construct
+relative version of the presheaf of differentials, as a cokernel
+of a suitable
+- Sheafify these constructions
+
 -/
 
 universe v u v₁ u₁
@@ -32,11 +39,6 @@ instance : HasForget₂ CommRingCat AddCommGroupCat where
   forget₂ :=
     { obj := fun R => AddCommGroupCat.of R.α
       map := fun {R R'} φ => AddCommGroupCat.ofHom (AddMonoidHom.mk' φ.toFun (by simp)) }
-
--- should be moved
-lemma ModuleCat.comp_apply {R : Type*} [Ring R] {M₁ M₂ M₃ : ModuleCat R} (f : M₁ ⟶ M₂)
-    (g : M₂ ⟶ M₃) (x : M₁) :
-    (f ≫ g) x = g (f x) := rfl
 
 variable {C : Type u₁} [Category.{v₁} C]
 
