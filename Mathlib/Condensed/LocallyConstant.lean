@@ -1,7 +1,19 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.Topology.Category.CompHausLike.LocallyConstant
 import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Light.Discrete
 import Mathlib.Condensed.TopComparison
+/-!
+
+# The sheaf of locally constant maps on `CompHausLike`
+
+This file proves that the discreteness functor into (light) condensed sets is given by the sheaf
+of locally constant maps, and deduces full faithfulness of these functors.
+-/
 
 universe w u
 
@@ -47,11 +59,7 @@ noncomputable def functorIsoTopCatToCondensed :
 variable [CompHausLike.HasProp P PUnit.{u+1}] (J : GrothendieckTopology (CompHausLike.{u} P))
   (A : Type*) [Category A]
 
-def _root_.SheafCompHausLike.underlying : Sheaf J A ⥤ A :=
-    (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩
 
--- variable (hh : ∀ (S : CompHausLike.{u} P) (s : Set S) (_ : IsClopen s), HasProp P s)
--- variable [HasExplicitFiniteCoproducts.{u} P]
 variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
 variable [HasExplicitFiniteCoproducts.{u} P]
 variable  [HasExplicitPullbacks P]
@@ -65,7 +73,7 @@ noncomputable instance {C A : Type*} [Category C] [Category A] [Preregular C] [F
 @[simps]
 noncomputable def counit :
     have := CompHausLike.preregular hs
-    SheafCompHausLike.underlying P (coherentTopology _) (Type (max u w)) ⋙ functor.{w, u} P hs ⟶
+    (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ ⋙ functor.{w, u} P hs ⟶
         𝟭 (Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w))) where
   app X :=
     have := CompHausLike.preregular hs
@@ -90,7 +98,7 @@ noncomputable def counit :
 The unit of the adjunciton is given by mapping each element to the corresponding constant map.
 -/
 @[simps]
-def unit : 𝟭 _ ⟶ functor P hs ⋙ SheafCompHausLike.underlying P _ _ where
+def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
   app X x := LocallyConstant.const _ x
 
 theorem locallyConstantAdjunction_left_triangle (X : Type max u w) :
@@ -115,15 +123,16 @@ theorem locallyConstantAdjunction_left_triangle (X : Type max u w) :
 
 /-- The unit of the adjunction is an iso. -/
 noncomputable def unitIso : 𝟭 (Type max u w) ≅ functor.{w, u} P hs ⋙
-    SheafCompHausLike.underlying P _ _ where
+    (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
   hom := unit P hs
   inv := { app := fun X f ↦ f.toFun PUnit.unit }
 
 /--
 `Condensed.LocallyConstant.functor` is left adjoint to the forgetful functor.
 -/
-@[simps! unit_app_apply counit_app_val_app]
-noncomputable def adjunction : functor.{w, u} P hs ⊣ SheafCompHausLike.underlying P _ _ :=
+-- Note: adding `@[simps]` makes the linter complain.
+noncomputable def adjunction :
+    functor.{w, u} P hs ⊣ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ :=
   Adjunction.mkOfUnitCounit {
     unit := unit P hs
     counit := counit P hs
@@ -161,21 +170,23 @@ end Condensed.LocallyConstant
 
 open Condensed.LocallyConstant
 
+/-- The functor from sets to condensed sets given by locally constant maps into the set. -/
 abbrev CondensedSet.LocallyConstant.functor : Type (u+1) ⥤ CondensedSet.{u} :=
   Condensed.LocallyConstant.functor.{u+1, u} (P := fun _ ↦ True)
     (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--
-`Condensed.LocallyConstant.functor` is isomorphic to `Condensed.discrete` (by uniqueness of
-adjoints).
+`CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
+(by uniqueness of adjoints).
 -/
 noncomputable def CondensedSet.LocallyConstant.iso :
     CondensedSet.LocallyConstant.functor ≅ discrete (Type (u+1)) :=
   (adjunction _ _).leftAdjointUniq (discreteUnderlyingAdj _)
 
+/-- `CondensedSet.LocallyConstant.functor` is fully faithful. -/
 noncomputable def fullyFaithfulCondensedSetLocallyConstantFunctor :
     CondensedSet.LocallyConstant.functor.FullyFaithful :=
-  (adjunction _ _).fullyFaithfulLOfIsIsoUnit
+  (adjunction.{u+1, u} _ _).fullyFaithfulLOfIsIsoUnit
 
 noncomputable instance : CondensedSet.LocallyConstant.functor.Faithful :=
   fullyFaithfulCondensedSetLocallyConstantFunctor.faithful
@@ -189,6 +200,7 @@ instance : (discrete (Type _)).Faithful := Functor.Faithful.of_iso
 noncomputable instance : (discrete (Type _)).Full := Functor.Full.of_iso
   CondensedSet.LocallyConstant.iso
 
+/-- The functor from sets to light condensed sets given by locally constant maps into the set. -/
 abbrev LightCondSet.LocallyConstant.functor : Type u ⥤ LightCondSet.{u} :=
   Condensed.LocallyConstant.functor.{u, u}
     (P := fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)
@@ -200,13 +212,14 @@ instance (S : LightProfinite.{u}) (p : S → Prop) :
     (inferInstance : SecondCountableTopology {s | p s})⟩⟩
 
 /--
-`Condensed.LocallyConstant.functor` is isomorphic to `Condensed.discrete` (by uniqueness of
-adjoints).
+`LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
+(by uniqueness of adjoints).
 -/
 noncomputable def LightCondSet.LocallyConstant.iso :
     LightCondSet.LocallyConstant.functor ≅ LightCondensed.discrete (Type u) :=
   (adjunction _ _).leftAdjointUniq (LightCondensed.discreteUnderlyingAdj _)
 
+/-- `LightCondSet.LocallyConstant.functor` is fully faithful. -/
 noncomputable def fullyFaithfulLightCondSetLocallyConstantFunctor :
     LightCondSet.LocallyConstant.functor.{u}.FullyFaithful :=
   (adjunction _ _).fullyFaithfulLOfIsIsoUnit

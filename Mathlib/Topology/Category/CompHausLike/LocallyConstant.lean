@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Data.Countable.Small
-import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
+import Mathlib.Topology.Category.CompHausLike.Limits
 import Mathlib.Topology.LocallyConstant.Basic
 /-!
 
