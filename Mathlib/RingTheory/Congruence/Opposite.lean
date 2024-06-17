@@ -27,7 +27,7 @@ def op (c : RingCon R) : RingCon Rᵐᵒᵖ where
   mul' h1 h2 := c.toCon.op.mul h1 h2
   add' h1 h2 := c.add h1 h2
 
-lemma op_iff {c : RingCon R} {x y : Rᵐᵒᵖ} : c.op x y ↔ c (y.unop) (x.unop) := Iff.rfl
+lemma op_iff {c : RingCon R} {x y : Rᵐᵒᵖ} : c.op x y ↔ c y.unop x.unop := Iff.rfl
 
 /--
 If `c` is a `RingCon Rᵐᵒᵖ`, then `(a, b) ↦ c b.op a.op` is a `RingCon R`.
@@ -40,10 +40,10 @@ def unop (c : RingCon Rᵐᵒᵖ) : RingCon R where
 lemma unop_iff {c : RingCon Rᵐᵒᵖ} {x y : R} : c.unop x y ↔ c (.op y) (.op x) := Iff.rfl
 
 /--
-The congruences of a ring `R` bijects to the congrunences of the opposite ring `Rᵐᵒᵖ`.
+The congruences of a ring `R` biject to the congruences of the opposite ring `Rᵐᵒᵖ`.
 -/
 @[simps]
-def orderIsoOp : RingCon R ≃o RingCon Rᵐᵒᵖ where
+def opOrderIso : RingCon R ≃o RingCon Rᵐᵒᵖ where
   toFun := op
   invFun := unop
   left_inv _ := rfl
