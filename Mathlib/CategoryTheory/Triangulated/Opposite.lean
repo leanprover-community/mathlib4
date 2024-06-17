@@ -199,6 +199,15 @@ lemma opShiftFunctorEquivalence_counitIso_hom_app_shift (X : Cᵒᵖ) (n : ℤ) 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app X)⟦n⟧' :=
   (opShiftFunctorEquivalence C n).counit_app_functor X
 
+lemma opShiftFunctorEquivalence_zero_unitIso_inv_app (X : Cᵒᵖ) :
+    (opShiftFunctorEquivalence C 0).unitIso.inv.app X =
+      (((shiftFunctorZero Cᵒᵖ ℤ).hom.app X).unop⟦(0 : ℤ)⟧').op ≫
+        ((shiftFunctorZero C ℤ).inv.app X.unop).op := by
+  apply Quiver.Hom.unop_inj
+  dsimp [opShiftFunctorEquivalence]
+  rw [shiftFunctorZero_op_hom_app, unop_comp, Quiver.Hom.unop_op, Functor.map_comp,
+    shiftFunctorCompIsoId_zero_zero_inv_app, assoc]
+
 variable (C)
 
 namespace TriangleOpEquivalence

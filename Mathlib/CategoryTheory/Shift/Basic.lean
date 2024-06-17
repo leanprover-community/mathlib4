@@ -535,6 +535,18 @@ theorem shift_shiftFunctorCompIsoId_neg_add_self_inv_app (n : A) (X : C) :
   apply shift_shiftFunctorCompIsoId_inv_app
 #align category_theory.shift_shift_functor_comp_iso_id_neg_add_self_inv_app CategoryTheory.shift_shiftFunctorCompIsoId_neg_add_self_inv_app
 
+variable (A)
+
+lemma shiftFunctorCompIsoId_zero_zero_hom_app (X : C) :
+    (shiftFunctorCompIsoId C 0 0 (add_zero 0)).hom.app X =
+      ((shiftFunctorZero C A).hom.app X)⟦0⟧' ≫ (shiftFunctorZero C A).hom.app X := by
+  simp [shiftFunctorCompIsoId, shiftFunctorAdd'_zero_add_inv_app]
+
+lemma shiftFunctorCompIsoId_zero_zero_inv_app (X : C) :
+    (shiftFunctorCompIsoId C 0 0 (add_zero 0)).inv.app X =
+      (shiftFunctorZero C A).inv.app X ≫ ((shiftFunctorZero C A).inv.app X)⟦0⟧' := by
+  simp [shiftFunctorCompIsoId, shiftFunctorAdd'_zero_add_hom_app]
+
 end
 
 open CategoryTheory.Limits

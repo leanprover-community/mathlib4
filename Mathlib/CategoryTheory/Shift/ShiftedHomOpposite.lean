@@ -50,6 +50,11 @@ lemma opEquiv'_symm_apply {n a : ℤ} (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.
       (opEquiv n).symm f ≫ (shiftFunctorAdd' C a n a' (by omega)).inv.app _ :=
   rfl
 
+lemma opEquiv'_apply {a' : ℤ} (f : ShiftedHom X Y a') (n a : ℤ) (h : n + a = a') :
+    opEquiv' n a a' h f =
+      opEquiv n (f ≫ (shiftFunctorAdd' C a n a' (by omega)).hom.app Y) := by
+  rfl
+
 lemma opEquiv'_symm_op_opShiftFunctorEquivalence_counitIso_inv_app_op_shift
     {n m : ℤ} (f : ShiftedHom X Y n) (g : ShiftedHom Y Z m)
     (q : ℤ) (hq : n + m = q) :
@@ -63,15 +68,16 @@ lemma opEquiv'_symm_op_opShiftFunctorEquivalence_counitIso_inv_app_op_shift
     opShiftFunctorEquivalence_unitIso_inv_naturality]
   erw [(opShiftFunctorEquivalence C n).inverse_counitInv_comp_assoc (Opposite.op Y)]
 
-lemma opEquiv'_zero_add_symm (a : ℤ) (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦(0 : ℤ)⟧) :
-    (opEquiv' 0 a a (zero_add a)).symm f =
-      ((shiftFunctorZero Cᵒᵖ ℤ).hom.app _).unop ≫ f.unop := by
-  sorry
-
 lemma opEquiv'_symm_comp (f : Y ⟶ X) {n a : ℤ} (x : Opposite.op (Z⟦a⟧) ⟶ (Opposite.op X⟦n⟧))
     (a' : ℤ) (h : n + a = a') :
     (opEquiv' n a a' h).symm (x ≫ f.op⟦n⟧') = f ≫ (opEquiv' n a a' h).symm x :=
   Quiver.Hom.op_inj (by simp [opEquiv'_symm_apply, opEquiv_symm_apply])
+
+lemma opEquiv'_zero_add_symm (a : ℤ) (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦(0 : ℤ)⟧) :
+    (opEquiv' 0 a a (zero_add a)).symm f =
+      ((shiftFunctorZero Cᵒᵖ ℤ).hom.app _).unop ≫ f.unop := by
+  simp [opEquiv'_symm_apply, opEquiv_symm_apply, shiftFunctorAdd'_add_zero,
+    opShiftFunctorEquivalence_zero_unitIso_inv_app]
 
 lemma opEquiv'_add_symm (n m a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' = a'')
     (x : (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦m + n⟧)) :
