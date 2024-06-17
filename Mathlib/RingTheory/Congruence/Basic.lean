@@ -113,12 +113,10 @@ protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
 #align ring_con.mul RingCon.mul
 
 protected theorem sub {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
-    {a b c d : S} (h : t a b) (h' : t c d) : t (a - c) (b - d) :=
-  t.toAddCon.sub h h'
+    {a b c d : S} (h : t a b) (h' : t c d) : t (a - c) (b - d) := t.toAddCon.sub h h'
 
 protected theorem neg {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
-    {a b} (h : t a b) : t (-a) (-b) :=
-  t.toAddCon.neg h
+    {a b} (h : t a b) : t (-a) (-b) := t.toAddCon.neg h
 
 protected theorem nsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     (m : ℕ) {x y : S} (hx : t x y) : t (m • x) (m • y) := t.toAddCon.nsmul m hx
