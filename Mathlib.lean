@@ -3866,12 +3866,12 @@ import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
@@ -4354,6 +4354,7 @@ import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Delaborators
 import Mathlib.Util.DischargerAsTactic
 import Mathlib.Util.Export
+import Mathlib.Util.FormatTable
 import Mathlib.Util.GetAllModules
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames

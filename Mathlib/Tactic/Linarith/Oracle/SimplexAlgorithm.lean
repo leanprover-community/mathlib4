@@ -4,17 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
 
 /-!
-# Hooks to enable the use of the simplex algorithm in `linarith`
+# The oracle based on Simplex Algorithm
+
+This file contains hooks to enable the use of the Simplex Algorithm in `linarith`.
+The algorithm's entry point is the function `Linarith.SimplexAlgorithm.findPositiveVector`.
+See the file `PositiveVector.lean` for details of how the procedure works.
 -/
 
 open Batteries
 
 namespace Linarith.SimplexAlgorithm
 
-/-- Preprocess the goal to pass it to `findPositiveVector`. -/
+/-- Preprocess the goal to pass it to `Linarith.SimplexAlgorithm.findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
     (maxVar : ℕ) : matType (maxVar + 1) (hyps.length) × List Nat :=
   let values : List (ℕ × ℕ × ℚ) := hyps.foldlIdx (init := []) fun idx cur comp =>
@@ -23,7 +27,9 @@ def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matTyp
   let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
   (ofValues values, strictIndexes)
 
-/-- Extract the certificate from the `vec` found by `findPositiveVector`. -/
+/--
+Extract the certificate from the `vec` found by `Linarith.SimplexAlgorithm.findPositiveVector`.
+-/
 def postprocess (vec : Array ℚ) : HashMap ℕ ℕ :=
   let common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
   let vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
@@ -34,7 +40,7 @@ end SimplexAlgorithm
 
 open SimplexAlgorithm
 
-/-- An oracle that uses the simplex algorithm. -/
+/-- An oracle that uses the Simplex Algorithm. -/
 def CertificateOracle.simplexAlgorithmSparse : CertificateOracle where
   produceCertificate hyps maxVar := do
     let (A, strictIndexes) := preprocess SparseMatrix hyps maxVar

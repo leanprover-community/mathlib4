@@ -562,25 +562,22 @@ end Properties
 
 section Finite
 
-variable {M : Type*} [CommMonoid M] [Fintype M] [DecidableEq M]
+variable {M : Type*} [CommMonoid M]
 variable {R : Type*} [CommMonoidWithZero R]
 
-/-- A multiplicative character on a finite commutative monoid has finite (= positive) order. -/
-lemma orderOf_pos (χ : MulChar M R) : 0 < orderOf χ := by
-  let e := MulChar.mulEquivToUnitHom (R := M) (R' := R)
-  rw [← MulEquiv.orderOf_eq e χ]
-  have : orderOf (e χ) ∣ Fintype.card Mˣ := by
-    refine orderOf_dvd_of_pow_eq_one ?_
-    ext1 x
-    simp only [MonoidHom.pow_apply, ← map_pow (e χ), pow_card_eq_one, map_one, MonoidHom.one_apply]
-  exact Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero Fintype.card_ne_zero this
-
-/-- If `χ` is a multiplicative character on a finite commutative monoid `M`, then `χ ^ #Mˣ = 1`. -/
-protected
-lemma pow_card_eq_one (χ : MulChar M R) : χ ^ (Fintype.card Mˣ) = 1 := by
+/-- If `χ` is a multiplicative character on a commutative monoid `M` with finitely many units,
+then `χ ^ #Mˣ = 1`. -/
+protected lemma pow_card_eq_one [Fintype Mˣ] (χ : MulChar M R) : χ ^ (Fintype.card Mˣ) = 1 := by
   ext1
   rw [pow_apply_coe, ← map_pow, one_apply_coe, ← Units.val_pow_eq_pow_val, pow_card_eq_one,
     Units.val_eq_one.mpr rfl, map_one]
+
+/-- A multiplicative character on a commutative monoid with finitely many units
+has finite (= positive) order. -/
+lemma orderOf_pos [Finite Mˣ] (χ : MulChar M R) : 0 < orderOf χ := by
+  cases nonempty_fintype Mˣ
+  apply IsOfFinOrder.orderOf_pos
+  exact isOfFinOrder_iff_pow_eq_one.2 ⟨_, Fintype.card_pos, χ.pow_card_eq_one⟩
 
 end Finite
 
