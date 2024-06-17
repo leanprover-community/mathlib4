@@ -1,4 +1,4 @@
-import Mathlib.Topology.Category.CompHausLike.Sheaf
+import Mathlib.Topology.Category.CompHausLike.LocallyConstant
 import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Light.Discrete
 import Mathlib.Condensed.TopComparison
