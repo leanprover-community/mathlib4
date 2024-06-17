@@ -70,7 +70,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
       listDecode (t.listEncode ++ l) = some t::listDecode l by
     induction' l with t l lih
     · rfl
-    · rw [cons_bind, h t (l.bind listEncode), lih, List.map]
+    · rw [bind_cons, h t (l.bind listEncode), lih, List.map]
   intro t
   induction' t with a n f ts ih <;> intro l
   · rw [listEncode, singleton_append, listDecode]
@@ -79,7 +79,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
         (finRange n).map (Option.some ∘ ts) ++ listDecode l := by
       induction' finRange n with i l' l'ih
       · rfl
-      · rw [cons_bind, List.append_assoc, ih, map_cons, l'ih, cons_append, Function.comp]
+      · rw [bind_cons, List.append_assoc, ih, map_cons, l'ih, cons_append, Function.comp]
     have h' : ∀ i : Fin n,
         (listDecode (((finRange n).bind fun i : Fin n => (ts i).listEncode) ++ l))[(i : Nat)]? =
           some (some (ts i)) := by

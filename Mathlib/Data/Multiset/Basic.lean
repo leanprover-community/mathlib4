@@ -2143,14 +2143,17 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
       decide_True, implies_true, Decidable.em]
 #align multiset.filter_add_not Multiset.filter_add_not
 
-theorem map_filter (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
-  Quot.inductionOn s fun l => by simp [List.map_filter]; rfl
-#align multiset.map_filter Multiset.map_filter
+theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
+  Quot.inductionOn s fun l => by simp [List.filter_map]; rfl
+#align multiset.map_filter Multiset.filter_map
 
+@[deprecated (since := "2024-06-16")] alias map_filter := filter_map
+
+-- TODO: rename to `map_filter` when the deprecated alias above is removed.
 lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [(· ∘ ·), map_filter, hf.eq_iff]
+  simp [(· ∘ ·), filter_map, hf.eq_iff]
 #align multiset.map_filter' Multiset.map_filter'
 
 lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
@@ -2735,7 +2738,7 @@ for more discussion.
 @[simp]
 theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p] :
     (s.map p).count True = card (s.filter p) := by
-  simp only [count_eq_card_filter_eq, map_filter, card_map, Function.id_comp,
+  simp only [count_eq_card_filter_eq, filter_map, card_map, Function.id_comp,
     eq_true_eq_id, Function.comp_apply]
 #align multiset.map_count_true_eq_filter_card Multiset.map_count_True_eq_filter_card
 
