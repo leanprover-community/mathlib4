@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# `./scripts/et.sh` returns a tally of some technical debts in current Mathlib,
+# `./scripts/technical-debt-counters.sh` returns a tally of some technical debts in current Mathlib,
 # reporting also the change with respect to the same counts in
 # Mathlib from last week.
 
@@ -14,12 +14,10 @@ else
   currCommit="$(git rev-parse HEAD)"
 fi
 
-shift
-
-if [ -n "${1}" ]; then
-  refCommit="${1}"
+if [ -n "${2}" ]; then
+  refCommit="${2}"
 else
-  refCommit="$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -1)"
+  refCommit="$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"
 fi
 
 # `tdc` produces a semi-formatted output of the form
@@ -66,7 +64,7 @@ initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l | sed 's=^ *==')"
 printf '%s|%s\n' "$(printf '%s' "${initFiles}" | wc -l)" "\`Init\` files"
 printf '%s|%s\n\n' "$(printf '%s\n' "${initFiles}" | grep total | sed 's= total==')"  'total LoC in `Init` files'
 
-printf $'```spoiler \'Init\' file by file\n%s\n```\n' "$(
+printf $'```spoiler Changed \'Init\' lines by file\n%s\n```\n' "$(
     printf '%s\n' "${initFiles}" | awk 'BEGIN{print("|LoC|Change|File|\n|-:|:-:|-|")} {printf("%s|%s\n", $1, $2)}'
   )"
 }
