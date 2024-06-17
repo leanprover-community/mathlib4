@@ -172,8 +172,8 @@ lemma add_eq_top_iff (a b : α) :
     dsimp only at h
     rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top,
       zero_add] at h
-    exact nh.2 h
-    exact nh.1
+    · exact nh.2 h
+    · exact nh.1
   · intro h
     cases h <;> simp_all
 
@@ -192,23 +192,21 @@ instance (priority := 100) : SubtractionMonoid α where
     by_cases hb : b = ⊤
     · simp [hb]
     apply (_ : Function.Injective (a + b + ·))
-    dsimp
-    rw [add_neg_cancel_of_ne_top, ← add_assoc, add_assoc a,
-      add_neg_cancel_of_ne_top, add_zero,
-      add_neg_cancel_of_ne_top]
-    exact ha
-    exact hb
-    simp [ha, hb]
-    apply Function.LeftInverse.injective (g := (-(a + b) + ·))
-    intro x
-    dsimp only
-    rw [← add_assoc, add_comm (-(a + b)), add_neg_cancel_of_ne_top, zero_add]
-    simp [ha, hb]
+    · dsimp
+      rw [add_neg_cancel_of_ne_top, ← add_assoc, add_assoc a,
+        add_neg_cancel_of_ne_top, add_zero,
+        add_neg_cancel_of_ne_top] <;>
+      simp [ha, hb]
+    · apply Function.LeftInverse.injective (g := (-(a + b) + ·))
+      intro x
+      dsimp only
+      rw [← add_assoc, add_comm (-(a + b)), add_neg_cancel_of_ne_top, zero_add]
+      simp [ha, hb]
   neg_eq_of_add (a b) (h) := by
     have oh := congrArg (-a + ·) h
     dsimp only at oh
     rw [add_zero, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top, zero_add] at oh
-    exact oh.symm
+    · exact oh.symm
     intro v
     simp [v] at h
 
