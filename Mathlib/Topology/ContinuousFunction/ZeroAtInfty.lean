@@ -59,7 +59,7 @@ section
 vanish at infinity.
 
 You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`. -/
-class ZeroAtInftyContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
+class ZeroAtInftyContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
     [Zero β] [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   /-- Each member of the class tends to zero along the `cocompact` filter. -/
   zero_at_infty (f : F) : Tendsto f (cocompact α) (𝓝 0)
@@ -461,7 +461,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 #align zero_at_infty_continuous_map.closed_range_to_bcf ZeroAtInftyContinuousMap.isClosed_range_toBCF
 
-@[deprecated] alias closed_range_toBCF := isClosed_range_toBCF -- 2024-03-17
+@[deprecated (since := "2024-03-17")] alias closed_range_toBCF := isClosed_range_toBCF
 
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/

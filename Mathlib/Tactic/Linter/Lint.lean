@@ -37,6 +37,16 @@ Linter that checks whether a structure should be in Prop.
     unless allProofs do return none
     return m!"all fields are propositional but the structure isn't."
 
+/-- Linter that check that all `deprecated` tags come with `since` dates. -/
+@[env_linter] def deprecatedNoSince : Linter where
+  noErrorsFound := "no `deprecated` tags without `since` dates."
+  errorsFound := "FOUND `deprecated` tags without `since` dates."
+  test declName := do
+    let some info := Lean.Linter.deprecatedAttr.getParam? (← getEnv) declName | return none
+    match info.since? with
+    | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
+    | none => return m!"`deprecated` attribute without `since` date"
+
 end Std.Tactic.Lint
 
 /-!
