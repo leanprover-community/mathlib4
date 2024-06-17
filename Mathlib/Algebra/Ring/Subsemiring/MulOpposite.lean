@@ -16,7 +16,7 @@ For every semiring `R`, we construct an equivalence between subsemirings of `R` 
 
 namespace Subsemiring
 
-variable {ι R : Type*} [NonAssocSemiring R]
+variable {ι : Sort*} {R : Type*} [NonAssocSemiring R]
 
 /-- Pull a subsemiring back to an opposite subsemiring along `MulOpposite.unop` -/
 @[simps toSubmonoid]

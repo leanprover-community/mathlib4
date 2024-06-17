@@ -19,7 +19,7 @@ namespace Subalgebra
 
 section Semiring
 
-variable {ι R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {ι : Sort*} {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- Pull a subalgebra back to an opposite subalgebra along `MulOpposite.unop` -/
 @[simps toSubsemiring]
