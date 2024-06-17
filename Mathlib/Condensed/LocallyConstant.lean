@@ -50,8 +50,9 @@ variable [CompHausLike.HasProp P PUnit.{u+1}] (J : GrothendieckTopology (CompHau
 def _root_.SheafCompHausLike.underlying : Sheaf J A ⥤ A :=
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩
 
-variable (hh : ∀ (S : CompHausLike.{u} P) (s : Set S) (_ : IsClopen s), HasProp P s)
+-- variable (hh : ∀ (S : CompHausLike.{u} P) (s : Set S) (_ : IsClopen s), HasProp P s)
 -- variable [HasExplicitFiniteCoproducts.{u} P]
+variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
 variable [HasExplicitFiniteCoproducts.{u} P]
 variable  [HasExplicitPullbacks P]
 
@@ -68,7 +69,7 @@ noncomputable def counit :
         𝟭 (Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w))) where
   app X :=
     have := CompHausLike.preregular hs
-    ⟨counitApp.{u, w} hh X.val⟩
+    ⟨counitApp.{u, w} X.val⟩
   naturality X Y g := by
     have := CompHausLike.preregular hs
     apply Sheaf.hom_ext
@@ -79,7 +80,7 @@ noncomputable def counit :
     ext S (f : LocallyConstant _ _)
     simp only [FunctorToTypes.comp, counitApp_app]
     apply locallyConstantCondensed_ext.{u, w} (f.map (g.val.app (op
-      (CompHausLike.of P PUnit.{u+1})))) hh
+      (CompHausLike.of P PUnit.{u+1}))))
     intro a
     simp only [op_unop, functorToPresheaves_map_app]
     erw [incl_of_counitAppApp]
@@ -94,7 +95,7 @@ def unit : 𝟭 _ ⟶ functor P hs ⋙ SheafCompHausLike.underlying P _ _ where
 
 theorem locallyConstantAdjunction_left_triangle (X : Type max u w) :
     functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫
-      ((counit P hs hh).app ((functor P hs).obj X)).val =
+      ((counit P hs).app ((functor P hs).obj X)).val =
     𝟙 (functorToPresheaves.obj X) := by
   ext ⟨S⟩ (f : LocallyConstant _ X)
   simp only [Functor.id_obj, Functor.comp_obj, underlying_obj, FunctorToTypes.comp, NatTrans.id_app,
@@ -125,7 +126,7 @@ noncomputable def unitIso : 𝟭 (Type max u w) ≅ functor.{w, u} P hs ⋙
 noncomputable def adjunction : functor.{w, u} P hs ⊣ SheafCompHausLike.underlying P _ _ :=
   Adjunction.mkOfUnitCounit {
     unit := unit P hs
-    counit := counit P hs hh
+    counit := counit P hs
     left_triangle := by
       ext X : 2
       simp only [id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
@@ -133,7 +134,7 @@ noncomputable def adjunction : functor.{w, u} P hs ⊣ SheafCompHausLike.underly
         whiskerLeft_app, Category.id_comp, NatTrans.id_app']
       apply Sheaf.hom_ext
       rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_id_val]
-      exact locallyConstantAdjunction_left_triangle P hs hh X
+      exact locallyConstantAdjunction_left_triangle P hs X
     right_triangle := by
       ext X (x : X.val.obj _)
       simp only [Functor.comp_obj, Functor.id_obj, underlying_obj, counit, FunctorToTypes.comp,
@@ -143,7 +144,7 @@ noncomputable def adjunction : functor.{w, u} P hs ⊣ SheafCompHausLike.underly
       let _ : PreservesFiniteProducts
           ((sheafToPresheaf (coherentTopology (CompHausLike P)) (Type (max u w))).obj X) :=
         (inferInstance : PreservesFiniteProducts (Sheaf.val _))
-      apply locallyConstantCondensed_ext ((unit P hs).app _ x) hh
+      apply locallyConstantCondensed_ext ((unit P hs).app _ x)
       intro a
       erw [incl_of_counitAppApp]
       simp only [sheafToPresheaf_obj, unit_app, coe_of, counitAppAppImage,
@@ -154,7 +155,7 @@ noncomputable def adjunction : functor.{w, u} P hs ⊣ SheafCompHausLike.underly
       simp only [coe_of, unit_app, LocallyConstant.coe_const, Function.const_apply]
       congr }
 
-instance : IsIso (adjunction P hs hh).unit := (inferInstance : IsIso (unitIso P hs).hom)
+instance : IsIso (adjunction P hs).unit := (inferInstance : IsIso (unitIso P hs).hom)
 
 end Condensed.LocallyConstant
 
@@ -170,11 +171,11 @@ adjoints).
 -/
 noncomputable def CondensedSet.LocallyConstant.iso :
     CondensedSet.LocallyConstant.functor ≅ discrete (Type (u+1)) :=
-  (adjunction _ _ (fun _ _ _ ↦ inferInstance)).leftAdjointUniq (discreteUnderlyingAdj _)
+  (adjunction _ _).leftAdjointUniq (discreteUnderlyingAdj _)
 
 noncomputable def fullyFaithfulCondensedSetLocallyConstantFunctor :
     CondensedSet.LocallyConstant.functor.FullyFaithful :=
-  (adjunction _ _ (fun _ _ _ ↦ inferInstance)).fullyFaithfulLOfIsIsoUnit
+  (adjunction _ _).fullyFaithfulLOfIsIsoUnit
 
 noncomputable instance : CondensedSet.LocallyConstant.functor.Faithful :=
   fullyFaithfulCondensedSetLocallyConstantFunctor.faithful
@@ -193,10 +194,10 @@ abbrev LightCondSet.LocallyConstant.functor : Type u ⥤ LightCondSet.{u} :=
     (P := fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)
     (hs := fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)
 
-lemma hasProp_lightProfinite_clopen (S : LightProfinite.{u}) (s : Set S) (_ : IsClopen s) :
-    HasProp (fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X) s := by
-  refine ⟨⟨(inferInstance : TotallyDisconnectedSpace s),
-    (inferInstance : SecondCountableTopology s)⟩⟩
+instance (S : LightProfinite.{u}) (p : S → Prop) :
+    HasProp (fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X) (Subtype p) :=
+  ⟨⟨(inferInstance : TotallyDisconnectedSpace (Subtype p)),
+    (inferInstance : SecondCountableTopology {s | p s})⟩⟩
 
 /--
 `Condensed.LocallyConstant.functor` is isomorphic to `Condensed.discrete` (by uniqueness of
@@ -204,11 +205,11 @@ adjoints).
 -/
 noncomputable def LightCondSet.LocallyConstant.iso :
     LightCondSet.LocallyConstant.functor ≅ LightCondensed.discrete (Type u) :=
-  (adjunction _ _ hasProp_lightProfinite_clopen.{u}).leftAdjointUniq (LightCondensed.discreteUnderlyingAdj _)
+  (adjunction _ _).leftAdjointUniq (LightCondensed.discreteUnderlyingAdj _)
 
 noncomputable def fullyFaithfulLightCondSetLocallyConstantFunctor :
     LightCondSet.LocallyConstant.functor.{u}.FullyFaithful :=
-  (adjunction _ _ hasProp_lightProfinite_clopen.{u}).fullyFaithfulLOfIsIsoUnit
+  (adjunction _ _).fullyFaithfulLOfIsIsoUnit
 
 instance : LightCondSet.LocallyConstant.functor.{u}.Faithful :=
   fullyFaithfulLightCondSetLocallyConstantFunctor.faithful
