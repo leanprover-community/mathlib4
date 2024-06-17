@@ -23,8 +23,6 @@ namespace CompHausLike.Aux
 
 section
 
--- variable {S T : CompHaus.{u}} {Y : Type w} (f : S → Y) (f' : LocallyConstant S Y) (g : T ⟶ S)
-
 variable {S T : Type*} {Y : Type*}
   [TopologicalSpace S] [CompactSpace S] [TopologicalSpace T] [CompactSpace T]
   (f : S → Y) (f' : LocallyConstant S Y) (g : C(T, S))
@@ -254,12 +252,7 @@ variable {S T : CompHausLike.{u} P} (g : T ⟶ S) {Y : (CompHausLike.{u} P)ᵒ�
     [PreservesFiniteProducts Y] [HasProp P PUnit.{u+1}]
     (f : LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u+1}))))
 
--- variable (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike P),
---       P (TopCat.of (Σ (a : α), (X a).toTop)))
-
 open Aux
-
--- variable [∀ (a : α f), HasProp P a.val]
 
 variable (hh : ∀ (S : CompHausLike.{u} P) (s : Set S) (_ : IsClopen s), HasProp P s)
 
