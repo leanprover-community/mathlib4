@@ -96,7 +96,7 @@ def indexCone : Cone (indexFunctor hC) where
 instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
-  isIso_of_bijective _
+  CompHausLike.isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)

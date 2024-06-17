@@ -132,8 +132,8 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
 @[simps]
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   obj X :=
-    { toCompHaus := X.compHaus,
-      isTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
+    { toTop := X.compHaus.toTop,
+      prop := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
@@ -329,18 +329,18 @@ namespace Profinite
     `X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
 noncomputable
 def presentation (X : Profinite) : Stonean where
-  compHaus := X.toCompHaus.projectivePresentation.p
-  extrDisc := X.toCompHaus.presentation.extrDisc
+  compHaus := (profiniteToCompHaus.obj X).projectivePresentation.p
+  extrDisc := (profiniteToCompHaus.obj X).presentation.extrDisc
 
 /-- The morphism from `presentation X` to `X`. -/
 noncomputable
 def presentation.π (X : Profinite) : Stonean.toProfinite.obj X.presentation ⟶ X :=
-  X.toCompHaus.projectivePresentation.f
+  (profiniteToCompHaus.obj X).projectivePresentation.f
 
 /-- The morphism from `presentation X` to `X` is an epimorphism. -/
 noncomputable
 instance presentation.epi_π (X : Profinite) : Epi (π X) := by
-  have := X.toCompHaus.projectivePresentation.epi
+  have := (profiniteToCompHaus.obj X).projectivePresentation.epi
   rw [CompHaus.epi_iff_surjective] at this
   rw [epi_iff_surjective]
   exact this
@@ -360,15 +360,31 @@ then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism `Z ⟶ X`. 
 -/
 noncomputable
 def lift {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (f : X ⟶ Y) [Epi f] :
-    Stonean.toProfinite.obj Z ⟶ X := CompHaus.lift e f
+    Stonean.toProfinite.obj Z ⟶ X :=
+  let e' : Z.compHaus ⟶ (profiniteToCompHaus.obj Y) := ⟨e, e.continuous⟩
+  have : Epi (profiniteToCompHaus.map f) := by
+    rw [CompHaus.epi_iff_surjective]
+    simp
+    erw [← Profinite.epi_iff_surjective]
+    infer_instance
+  CompHaus.lift e' (profiniteToCompHaus.map f)
+  -- this proof is temporarily uglified because of the refactor.
 
 @[simp, reassoc]
 lemma lift_lifts {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (f : X ⟶ Y)
-    [Epi f] : lift e f ≫ f = e := CompHaus.lift_lifts _ _
+    [Epi f] : lift e f ≫ f = e :=
+  have : Epi (profiniteToCompHaus.map f) := by
+    rw [CompHaus.epi_iff_surjective]
+    simp
+    erw [← Profinite.epi_iff_surjective]
+    infer_instance
+  CompHaus.lift_lifts _ _
+  -- this proof is temporarily uglified because of the refactor.
 
 lemma projective_of_extrDisc {X : Profinite.{u}} (hX : ExtremallyDisconnected X) :
     Projective X := by
-  show Projective (Stonean.toProfinite.obj ⟨X.toCompHaus⟩)
+  have : ExtremallyDisconnected (profiniteToCompHaus.obj X) := hX
+  show Projective (Stonean.toProfinite.obj ⟨profiniteToCompHaus.obj X⟩)
   exact inferInstance
 
 end Profinite
