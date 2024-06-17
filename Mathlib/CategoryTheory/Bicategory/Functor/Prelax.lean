@@ -50,6 +50,7 @@ structure LaxPreFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiv
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
 #align category_theory.prelax_functor CategoryTheory.LaxPreFunctor
 
+-- TODO: understand this
 initialize_simps_projections LaxPreFunctor (+toPrefunctor, -obj, -map)
 
 /-- The prefunctor between the underlying quivers. -/
@@ -98,11 +99,10 @@ This structure will be extended to define `LaxFunctor` and `OplaxFunctor`.
 structure PrelaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
     extends LaxPreFunctor B C where
   /-- Prelax functors preserves identity 2-morphisms. -/
-  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not aesop_cat?
   /-- Prelax functors preserves compositions of 2-morphisms. -/
-  map₂_comp :
-    ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h), map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
-    aesop_cat
+  map₂_comp : ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
+      map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by aesop_cat
 
 namespace PrelaxFunctor
 
