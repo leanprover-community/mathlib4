@@ -107,6 +107,6 @@ theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
 
 /-- The `n`th prime is greater or equal to `n + 2`. -/
 lemma add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
-  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le n 0
+  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
 end Nat
