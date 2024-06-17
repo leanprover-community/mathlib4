@@ -61,7 +61,7 @@ instance : Std.Associative (α := List α) Append.append where
 @[simp] theorem cons_injective {a : α} : Injective (cons a) := fun _ _ => tail_eq_of_cons_eq
 #align list.cons_injective List.cons_injective
 
-#align list.cons_inj List.cons_inj
+#align list.cons_inj List.cons_inj_right
 #align list.cons_eq_cons List.cons_eq_cons
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
@@ -666,7 +666,7 @@ theorem getLast_congr {l₁ l₂ : List α} (h₁ : l₁ ≠ []) (h₂ : l₂ �
 #align list.last_mem List.getLast_mem
 
 theorem getLast_replicate_succ (m : ℕ) (a : α) :
-    (replicate (m + 1) a).getLast (ne_nil_of_length_eq_succ (length_replicate _ _)) = a := by
+    (replicate (m + 1) a).getLast (ne_nil_of_length_eq_add_one (length_replicate _ _)) = a := by
   simp only [replicate_succ']
   exact getLast_append_singleton _
 #align list.last_replicate_succ List.getLast_replicate_succ
@@ -1515,7 +1515,7 @@ theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = l
 #align list.nth_update_nth_of_lt List.get?_set_eq_of_lt
 #align list.nth_update_nth_ne List.get?_set_ne
 #align list.update_nth_nil List.set_nil
-#align list.update_nth_succ List.set_succ
+#align list.update_nth_succ List.set_cons_succ
 #align list.update_nth_comm List.set_comm
 
 #align list.nth_le_update_nth_eq List.get_set_eq
@@ -1524,7 +1524,7 @@ theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = l
 theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
     (l.set i a)[j] = l[j]'(by simpa using hj) := by
-  rw [← Option.some_inj, ← List.getElem?_eq_getElem, List.getElem?_set_ne _ _ h,
+  rw [← Option.some_inj, ← List.getElem?_eq_getElem, List.getElem?_set_ne h,
     List.getElem?_eq_getElem]
 #align list.nth_le_update_nth_of_ne List.getElem_set_of_ne
 
@@ -2418,10 +2418,10 @@ theorem splitOnP_spec (as : List α) :
   | cons a as' ih =>
     rw [splitOnP_cons, filter]
     by_cases h : p a
-    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj]
+    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj_right]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
-        (append_ne_nil_of_ne_nil_right _ [[]] (cons_ne_nil [] [])), cons_inj]
+        (append_ne_nil_of_ne_nil_right _ [[]] (cons_ne_nil [] [])), cons_inj_right]
       exact ih
 where
   join_zipWith {xs ys : List (List α)} {a : α} (hxs : xs ≠ []) (hys : ys ≠ []) :
@@ -2522,7 +2522,7 @@ theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
     rw [modifyLast.go]
     case x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
     rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
-      nil_append, cons_append, nil_append, cons_inj]
+      nil_append, cons_append, nil_append, cons_inj_right]
     exact modifyLast_append_one _ _ tl
 
 theorem modifyLast_append (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []) :
@@ -3514,7 +3514,9 @@ theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zip
   | cons _ atl =>
     cases bs with
     | nil => rfl
-    | cons _ btl => rw [zipWithLeft, zipWithLeft', cons_inj]; exact @zipLeft_eq_zipLeft' atl btl
+    | cons _ btl =>
+      rw [zipWithLeft, zipWithLeft', cons_inj_right]
+      exact @zipLeft_eq_zipLeft' atl btl
 #align list.zip_left_eq_zip_left' List.zipLeft_eq_zipLeft'
 
 end ZipLeft
