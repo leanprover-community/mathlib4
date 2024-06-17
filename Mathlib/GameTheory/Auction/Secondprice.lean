@@ -96,7 +96,7 @@ noncomputable def winner : a.I := Classical.choose (exists_maxBid b)
 /-- The bid of the winner equals the highest bid. -/
 lemma bid_winner_eq_maxBid : b (winner b) = maxBid b := Classical.choose_spec (exists_maxBid b)
 
-/-- The bid of the winner is always greater than or equal to the bids of all others.-/
+/-- The bid of the winner is always greater than or equal to the bids of all other bidders.-/
 lemma bid_le_bid_winner (j : a.I) : b j ≤ b (winner b) := by
   rw [bid_winner_eq_maxBid b]
   exact Finset.le_sup' b (Finset.mem_univ j)
