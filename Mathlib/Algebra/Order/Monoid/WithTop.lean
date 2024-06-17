@@ -379,6 +379,9 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
     (m : WithTop α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
   coe_eq_coe
+@[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
+    no_index (OfNat.ofNat n) = (m : WithTop α) ↔ OfNat.ofNat n = m :=
+  coe_eq_coe
 @[simp] lemma ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithTop α) ≠ ⊤ :=
   natCast_ne_top n
 @[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ no_index (OfNat.ofNat n) :=
@@ -589,6 +592,9 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
     (no_index (OfNat.ofNat n : α) : WithBot α) = OfNat.ofNat n := rfl
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
     (m : WithBot α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+  coe_eq_coe
+@[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
+    no_index (OfNat.ofNat n) = (m : WithBot α) ↔ OfNat.ofNat n = m :=
   coe_eq_coe
 @[simp] lemma ofNat_ne_bot (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithBot α) ≠ ⊥ :=
   natCast_ne_bot n
