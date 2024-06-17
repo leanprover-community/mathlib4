@@ -9,7 +9,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 # Bivariate polynomials
 
 This file introduces the notation `R[X][Y]` for the polynomial ring `R[X][X]` in two variables,
-and the notation `Y` for the second variable, in the `Polynomial2` scope.
+and the notation `Y` for the second variable, in the `Polynomial` scope.
 
 It also defines `Polynomial.evalEval` for the evaluation of a bivariate polynomial at a point
 on the affine plane, which is a ring homomorphism (`Polynomial.evalEvalRingHom`), as well as
@@ -17,16 +17,14 @@ the abbreviation `CC` to view a constant in the base ring `R` as a bivariate pol
 -/
 
 /-- The notation `Y` for `X` in the `Polynomial2` scope. -/
-scoped[Polynomial2] notation3:max "Y" => Polynomial.X (R := Polynomial _)
+scoped[Polynomial] notation3:max "Y" => Polynomial.X (R := Polynomial _)
 
 /-- The notation `R[X][Y]` for `R[X][X]` in the `Polynomial2` scope. -/
-scoped[Polynomial2] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
+scoped[Polynomial] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
 
 namespace Polynomial
 
 noncomputable section
-
-open scoped Polynomial2
 
 variable {R : Type*}
 
