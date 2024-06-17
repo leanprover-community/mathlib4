@@ -184,6 +184,12 @@ lemma addMulSub_swap (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W m n = - addMulSub W n m := by
   rw [addMulSub, addMulSub, ← neg_sub, Int.neg_div, neg]; ring_nf
 
+lemma rel₃_iff₄ (m n r : ℤ) :
+    Rel₃ W m n r ↔ rel₄ W (2 * m) (2 * n) (2 * r) 0 = 0 := by
+  rw [rel₄, ← mul_zero 2, Rel₃]
+  simp_rw [addMulSub_even, add_zero, sub_zero]
+  convert sub_eq_zero.symm using 2; ring
+
 section transf
 
 variable (a b c d : ℤ)
@@ -277,12 +283,6 @@ end transf
 
 /-- The four-index elliptic relation multiplied by a two-index "coefficient". -/
 def rel₆ (k l a b c d : ℤ) : R := addMulSub W k l * rel₄ W a b c d
-
-lemma rel₃_iff₄ (m n r : ℤ) :
-    Rel₃ W m n r ↔ rel₄ W (2 * m) (2 * n) (2 * r) 0 = 0 := by
-  rw [rel₄, ← mul_zero 2, Rel₃]
-  simp_rw [addMulSub_even, add_zero, sub_zero]
-  convert sub_eq_zero.symm using 2; ring
 
 /-! In the following three key lemmas we use `m`, `n`, `r`, `s` to denote "free" indices and
 `c`, `d` to denote "fixed" indices. -/
