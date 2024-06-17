@@ -24,7 +24,7 @@ protected def op (S : Subring R) : Subring Rᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
   neg_mem' {x} hx := neg_mem (show x.unop ∈ S from hx)
 
-@[simp]
+@[simp, norm_cast]
 theorem op_coe (S : Subring R) : S.op = MulOpposite.unop ⁻¹' (S : Set R) := rfl
 
 @[simp]
@@ -36,7 +36,7 @@ protected def unop (S : Subring Rᵐᵒᵖ) : Subring R where
   toSubsemiring := S.toSubsemiring.unop
   neg_mem' {x} hx := neg_mem (show MulOpposite.op x ∈ S from hx)
 
-@[simp]
+@[simp, norm_cast]
 theorem unop_coe (S : Subring Rᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Rᵐᵒᵖ) := rfl
 
 @[simp]

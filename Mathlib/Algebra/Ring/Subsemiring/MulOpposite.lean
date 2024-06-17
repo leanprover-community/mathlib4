@@ -25,7 +25,7 @@ protected def op (S : Subsemiring R) : Subsemiring Rᵐᵒᵖ where
   add_mem' {x} {y} hx hy := add_mem (show x.unop ∈ S from hx) (show y.unop ∈ S from hy)
   zero_mem' := zero_mem S
 
-@[simp]
+@[simp, norm_cast]
 theorem op_coe (S : Subsemiring R) : S.op = MulOpposite.unop ⁻¹' (S : Set R) := rfl
 
 @[simp]
@@ -39,7 +39,7 @@ protected def unop (S : Subsemiring Rᵐᵒᵖ) : Subsemiring R where
     (show MulOpposite.op x ∈ S from hx) (show MulOpposite.op y ∈ S from hy)
   zero_mem' := zero_mem S
 
-@[simp]
+@[simp, norm_cast]
 theorem unop_coe (S : Subsemiring Rᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Rᵐᵒᵖ) := rfl
 
 @[simp]

@@ -27,7 +27,7 @@ protected def op (S : Subalgebra R A) : Subalgebra R Aᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
   algebraMap_mem' := S.algebraMap_mem
 
-@[simp]
+@[simp, norm_cast]
 theorem op_coe (S : Subalgebra R A) : S.op = MulOpposite.unop ⁻¹' (S : Set A) := rfl
 
 @[simp]
@@ -39,7 +39,7 @@ protected def unop (S : Subalgebra R Aᵐᵒᵖ) : Subalgebra R A where
   toSubsemiring := S.toSubsemiring.unop
   algebraMap_mem' := S.algebraMap_mem
 
-@[simp]
+@[simp, norm_cast]
 theorem unop_coe (S : Subalgebra R Aᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Aᵐᵒᵖ) := rfl
 
 @[simp]
