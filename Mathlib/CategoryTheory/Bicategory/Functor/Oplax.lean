@@ -182,8 +182,8 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
     mapComp_naturality_right := fun η => by
       dsimp
       intros
-      rw [← G.map₂_comp_assoc, mapComp_naturality_right, G.map₂_comp_assoc, mapComp_naturality_right,
-        assoc]
+      rw [← G.map₂_comp_assoc, mapComp_naturality_right, G.map₂_comp_assoc,
+        mapComp_naturality_right, assoc]
     map₂_associator := fun f g h => by
       dsimp
       -- Porting note: if you use the `map₂_associator_aux` hack in the definition of
