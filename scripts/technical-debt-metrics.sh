@@ -75,18 +75,26 @@ new="$(git checkout -q "${currCommit}" && tdc; git switch -q -)"
 # collect the technical debts from the reference mathlib -- switch to the
 old="$(git checkout -q "${refCommit}" && tdc; git switch -q -)"
 
+# place the outputs side-by-side, using `@` as a separator
 paste -d@ <(echo "$new") <(echo "${old}") | sed 's=@=|@|=' |
+  # each line should look like eithe
+  # [new number]|description@[old number]|descr
+  # or something that does not start with [number]|
+  # we split the lines into "words", using `|` as a separator
   awk -F'|' '
+    # if the first "word" is a number, then we write the 1st entry and compare it with the 4th
     ($1+0 == $1) { printf("|%s|%s|%s|\n", $1, $1-$4, $2) }
+    # otherwise, the line is a "formatting" line, so we simply print it unchanged until we find `@`
     !($1+0 == $1) {
-      #print "*** "$0
       found=0
       for(i=1; i<=NF; i++) {
         if ($i == "@") { found=1 }
         if (found == "0") { printf("%s|", $i) }
       }
       print "@"
-    }' | sed 's=|@$=='
+    }' |
+  # the sequence `@|` ending a line is an artifact of our process and we remove it
+  sed 's=|@$=='
 
 baseURL='https://github.com/leanprover-community/mathlib4/commit'
 printf '\nCurrent commit [%s](%s)\n' "${currCommit:0:10}" "${baseURL}/${currCommit}"
