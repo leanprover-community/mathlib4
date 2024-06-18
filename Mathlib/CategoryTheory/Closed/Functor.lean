@@ -122,9 +122,8 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   simp only [Functor.comp_obj, prod.functor_obj_obj, prodComparisonNatIso_inv, asIso_inv,
     NatTrans.comp_app, whiskerLeft_app, prod.functor_map_app, NatIso.isIso_inv_app,
     whiskerRight_app]
-  have piso := (prodComparison_inv_natural F f (𝟙 B)).symm
   rw [← F.map_id]
-  exact piso
+  exact (prodComparison_inv_natural F f (𝟙 B)).symm
 #align category_theory.exp_comparison_whisker_left CategoryTheory.expComparison_whiskerLeft
 
 /-- The functor `F` is cartesian closed (ie preserves exponentials) if each natural transformation
