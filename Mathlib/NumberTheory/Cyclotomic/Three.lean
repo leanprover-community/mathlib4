@@ -170,7 +170,7 @@ lemma lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one {x : 𝓞 K} (h : λ ∣ x
     calc _ =  (x - 1) * (x - 1 - λ) * (x - 1 - λ * (η + 1)) := by
           simp only [coe_eta, cube_sub_one_eq_mul hζ x]; ring
     _ = _ := by rw [hy]; ring
-  rw [this, show λ ^ 4 = λ ^ 3 * λ by ring]
+  rw [this, pow_succ]
   exact mul_dvd_mul_left _ (lambda_dvd_mul_sub_one_mul_sub_eta_add_one hζ y)
 
 /-- If `λ` divides `x + 1`, then `λ ^ 4` divides `x ^ 3 + 1`. -/
