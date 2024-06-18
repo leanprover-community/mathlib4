@@ -107,6 +107,13 @@ theorem mateEquiv_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
       α.app _ ≫ H.map (adj₁.counit.app d) := by
   erw [Functor.map_comp]; simp
 
+/-- A component of a transposed version of the inverse mates correspondence. -/
+theorem mateEquiv_counit_symm (α : R₁ ⋙ G ⟶ H ⋙ R₂) (d : D) :
+    L₂.map (α.app _) ≫ adj₂.counit.app _ =
+      ((mateEquiv adj₁ adj₂).symm α).app _ ≫ H.map (adj₁.counit.app d) := by
+  conv_lhs => rw [← (mateEquiv adj₁ adj₂).right_inv α]
+  exact (mateEquiv_counit adj₁ adj₂ ((mateEquiv adj₁ adj₂).symm α) d)
+
 /- A component of a transposed version of the mates correspondence. -/
 theorem unit_mateEquiv (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (c : C) :
     G.map (adj₁.unit.app c) ≫ (mateEquiv adj₁ adj₂ α).app _ =
@@ -126,6 +133,13 @@ theorem unit_mateEquiv (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (c : C) :
       rw [left_triangle_components]
     }
   simp only [comp_obj, map_id, comp_id]
+
+/-- A component of a transposed version of the inverse mates correspondence. -/
+theorem unit_mateEquiv_symm (α : R₁ ⋙ G ⟶ H ⋙ R₂) (c : C) :
+    G.map (adj₁.unit.app c) ≫ α.app _ =
+      adj₂.unit.app _ ≫ R₂.map (((mateEquiv adj₁ adj₂).symm α).app _) := by
+  conv_lhs => rw [← (mateEquiv adj₁ adj₂).right_inv α]
+  exact (unit_mateEquiv adj₁ adj₂ ((mateEquiv adj₁ adj₂).symm α) c)
 
 end mateEquiv
 
