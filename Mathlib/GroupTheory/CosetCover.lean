@@ -155,7 +155,7 @@ variable {G : Type*} [Group G] (c : Group.LeftCosetCover G)
 
 -- Inductive inner part of `Subgroup.exists_finiteIndex_of_leftCoset_cover`
 @[to_additive]
-theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
+theorem Group.LeftCosetCover.exists_finiteIndex
     [DecidableEq (Subgroup G)]
     [Finite c.carrier]
     (j : c.carrier)
@@ -259,7 +259,7 @@ theorem Group.LeftCosetCover.nonempty_carrier :
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then at least one subgroup `H i` has finite index in `G`. -/
 @[to_additive]
-theorem Subgroup.exists_finiteIndex_of_leftCoset_cover
+theorem Group.LeftCosetCover.exists_finiteIndex'
     {G : Type*} [Group G] (c : Group.LeftCosetCover G) [Finite c.carrier] :
     ∃ k, (c.subgroup k).FiniteIndex := by
   classical
@@ -268,16 +268,16 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover
   · rw [Set.iUnion₂_congr (t := fun i _ ↦ c.offset i • (c.subgroup j : Set G))
       fun i hi => by rw [hi]] at hcovers'
     exact ⟨j, Subgroup.finiteIndex_of_leftCoset_cover_const hcovers'⟩
-  · have ⟨i, _, hfi⟩ := Subgroup.exists_finiteIndex_of_leftCoset_cover_aux c j hcovers'
+  · have ⟨i, _, hfi⟩ := Group.LeftCosetCover.exists_finiteIndex c j hcovers'
     exact ⟨i, hfi⟩
 
 @[to_additive]
-def Subgroup.LeftCosetCover.core : Subgroup G :=
+def Group.LeftCosetCover.core : Subgroup G :=
   ⨅ i ∈ { i | (c.subgroup i).FiniteIndex }, (c.subgroup i)
 
 @[to_additive]
-theorem Subgroup.LeftCosetCover.core_finiteIndex [Finite c.carrier] :
-    (Subgroup.LeftCosetCover.core c).FiniteIndex := by
+theorem Group.LeftCosetCover.core_finiteIndex [Finite c.carrier] :
+    (Group.LeftCosetCover.core c).FiniteIndex := by
   apply Subgroup.finiteIndex_iInf
   intro i
   by_cases h : (c.subgroup i).FiniteIndex
@@ -286,13 +286,13 @@ theorem Subgroup.LeftCosetCover.core_finiteIndex [Finite c.carrier] :
     infer_instance
 
 @[to_additive]
-theorem Subgroup.LeftCosetCover.core_le [Finite c.carrier]
+theorem Group.LeftCosetCover.core_le [Finite c.carrier]
     {i : c.carrier} (hi : (c.subgroup i).FiniteIndex) :
-    Subgroup.LeftCosetCover.core c ≤ c.subgroup i :=
+    Group.LeftCosetCover.core c ≤ c.subgroup i :=
   iInf₂_le i hi
 
 @[to_additive]
-noncomputable def Subgroup.LeftCosetCover.density : ℚ :=
+noncomputable def Group.LeftCosetCover.density : ℚ :=
   finsum fun i ↦ ((c.subgroup i).index : ℚ)⁻¹
 
 def Set.iUnion_filter {ι : Type*} {α : Type*} (s : ι → Set α) (p : ι → Prop) :
@@ -304,14 +304,14 @@ def Set.iUnion_filter {ι : Type*} {α : Type*} (s : ι → Set α) (p : ι → 
   apply Classical.em
 
 @[to_additive]
-noncomputable def Subgroup.LeftCosetCover.sieve [Finite c.carrier]
+noncomputable def Group.LeftCosetCover.sieve [Finite c.carrier]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
     Group.LeftCosetCover G := by
-  let D := Subgroup.LeftCosetCover.core c
+  let D := Group.LeftCosetCover.core c
   -- `D`, as the finite intersection of subgroups of finite index, also has finite index.
-  have hD : D.FiniteIndex := Subgroup.LeftCosetCover.core_finiteIndex c
+  have hD : D.FiniteIndex := Group.LeftCosetCover.core_finiteIndex c
   have hD_le {i} (hfi : (c.subgroup i).FiniteIndex) : D ≤ c.subgroup i :=
-    Subgroup.LeftCosetCover.core_le c hfi
+    Group.LeftCosetCover.core_le c hfi
   -- Each subgroup of finite index in the covering is the union of finitely many cosets of `D`.
   choose t ht using fun i hfi =>
     Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup i) (hD_le hfi)
@@ -337,7 +337,8 @@ noncomputable def Subgroup.LeftCosetCover.sieve [Finite c.carrier]
         rw [if_neg hfi, dif_neg hfi]
         simp only [Finset.mem_singleton, SetLike.coe_mem, smul_coe_set, Set.iUnion_iUnion_eq_left] }
 
-theorem Subgroup.LeftCosetCover.sieve_carrier_fiber_le_subgroup
+@[to_additive]
+theorem Group.LeftCosetCover.sieve_carrier_fiber_le_subgroup
     [Finite c.carrier]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
     (y : (sieve c).carrier) :
@@ -388,35 +389,35 @@ theorem Subgroup.LeftCosetCover.sieve_carrier_fiber_le_subgroup
 -/
 
 @[to_additive]
-theorem Subgroup.LeftCosetCover.sieve_subgroup_eq
+theorem Group.LeftCosetCover.sieve_subgroup_eq
     [Finite c.carrier]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
-    (k : (Subgroup.LeftCosetCover.sieve c).carrier) :
-    (Subgroup.LeftCosetCover.sieve c).subgroup k =
+    (k : (Group.LeftCosetCover.sieve c).carrier) :
+    (Group.LeftCosetCover.sieve c).subgroup k =
       if (c.subgroup k.1).FiniteIndex
-      then Subgroup.LeftCosetCover.core c
+      then Group.LeftCosetCover.core c
       else c.subgroup k.1 := rfl
 
 @[to_additive]
-theorem Subgroup.LeftCosetCover.sieve_subgroup_finite_index_iff
+theorem Group.LeftCosetCover.sieve_subgroup_finite_index_iff
     [Finite c.carrier]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
-    (k : (Subgroup.LeftCosetCover.sieve c).carrier) :
-    ((Subgroup.LeftCosetCover.sieve c).subgroup k).FiniteIndex ↔
+    (k : (Group.LeftCosetCover.sieve c).carrier) :
+    ((Group.LeftCosetCover.sieve c).subgroup k).FiniteIndex ↔
       (c.subgroup k.1).FiniteIndex := by
-  rw [Subgroup.LeftCosetCover.sieve_subgroup_eq]
+  rw [Group.LeftCosetCover.sieve_subgroup_eq]
   split_ifs with h
-  · simp only [Subgroup.LeftCosetCover.core_finiteIndex c, h]
+  · simp only [Group.LeftCosetCover.core_finiteIndex c, h]
   · simp only [h]
 
  @[to_additive]
-theorem Subgroup.LeftCosetCover.sieve_subgroup_eq_core_iff
+theorem Group.LeftCosetCover.sieve_subgroup_eq_core_iff
     [Finite c.carrier]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
-    (i : (Subgroup.LeftCosetCover.sieve c).carrier) :
-    (Subgroup.LeftCosetCover.sieve c).subgroup i = Subgroup.LeftCosetCover.core c ↔
+    (i : (Group.LeftCosetCover.sieve c).carrier) :
+    (Group.LeftCosetCover.sieve c).subgroup i = Group.LeftCosetCover.core c ↔
     (c.subgroup i.fst).FiniteIndex := by
-  rw [Subgroup.LeftCosetCover.sieve_subgroup_eq]
+  rw [Group.LeftCosetCover.sieve_subgroup_eq]
   split_ifs with h
   · simp [h]
   · simp only [h, iff_false]
@@ -425,40 +426,38 @@ theorem Subgroup.LeftCosetCover.sieve_subgroup_eq_core_iff
 
 
 @[to_additive]
-instance Subgroup.LeftCosetCover.sieve_finite
+instance Group.LeftCosetCover.sieve_finite
     [Finite c.carrier]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
-    Finite (Subgroup.LeftCosetCover.sieve c).carrier := Finite.instSigma
+    Finite (Group.LeftCosetCover.sieve c).carrier := Finite.instSigma
 
 -- There is at least one coset of a subgroup of finite index in the original covering.
 -- Therefore a coset of `D` occurs in the new covering.
 @[to_additive]
-theorem Subgroup.LeftCosetCover.sieve_contains_core [Finite c.carrier]
+theorem Group.LeftCosetCover.sieve_contains_core [Finite c.carrier]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
-    ∃ k, (Subgroup.LeftCosetCover.sieve c).subgroup k = Subgroup.LeftCosetCover.core c := by
-  obtain ⟨k, hk⟩ := Subgroup.exists_finiteIndex_of_leftCoset_cover
-    (Subgroup.LeftCosetCover.sieve c)
+    ∃ k, (Group.LeftCosetCover.sieve c).subgroup k = Group.LeftCosetCover.core c := by
+  obtain ⟨k, hk⟩ := Group.LeftCosetCover.exists_finiteIndex' (Group.LeftCosetCover.sieve c)
   rw [sieve_subgroup_finite_index_iff, ← sieve_subgroup_eq_core_iff] at hk
   exact ⟨k, hk⟩
 
 @[to_additive]
-noncomputable def Subgroup.LeftCosetCover.normalize
+noncomputable def Group.LeftCosetCover.normalize
     [Finite c.carrier]
     [DecidableEq (Subgroup G)]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
     Group.LeftCosetCover G where
-  carrier := { k : (Subgroup.LeftCosetCover.sieve c).carrier |
-    ((Subgroup.LeftCosetCover.sieve c).subgroup k).FiniteIndex }
-  subgroup := fun k ↦ (Subgroup.LeftCosetCover.sieve c).subgroup k
-  offset := fun k ↦ (Subgroup.LeftCosetCover.sieve c).offset k
+  carrier := { k : (Group.LeftCosetCover.sieve c).carrier |
+    ((Group.LeftCosetCover.sieve c).subgroup k).FiniteIndex }
+  subgroup := fun k ↦ (Group.LeftCosetCover.sieve c).subgroup k
+  offset := fun k ↦ (Group.LeftCosetCover.sieve c).offset k
   covers := by
-    have ⟨k, hk⟩ := Subgroup.LeftCosetCover.sieve_contains_core c
+    have ⟨k, hk⟩ := Group.LeftCosetCover.sieve_contains_core c
     simp only [Set.coe_setOf, Set.mem_setOf_eq, Set.iUnion_subtype]
     by_contra h
-    have ⟨j, hj, hj'⟩ := Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
-      (Subgroup.LeftCosetCover.sieve c) k ?_
+    have ⟨j, hj, hj'⟩ := Group.LeftCosetCover.exists_finiteIndex (Group.LeftCosetCover.sieve c) k ?_
     · apply hj
-      rw [hk, Subgroup.LeftCosetCover.sieve_subgroup_eq_core_iff,
+      rw [hk, Group.LeftCosetCover.sieve_subgroup_eq_core_iff,
         ← sieve_subgroup_finite_index_iff]
       exact hj'
     · intro h'
@@ -471,20 +470,59 @@ noncomputable def Subgroup.LeftCosetCover.normalize
       rw [hk, sieve_subgroup_eq_core_iff, sieve_subgroup_finite_index_iff]
 
 @[to_additive]
-instance Subgroup.LeftCosetCover.normalize_finite
+noncomputable def Group.LeftCosetCover.normalize'
     [Finite c.carrier]
     [DecidableEq (Subgroup G)]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
-    Finite (Subgroup.LeftCosetCover.normalize c).carrier := Subtype.finite
+    Group.LeftCosetCover G := by
+--  let D := Group.LeftCosetCover.core c
+  -- `D`, as the finite intersection of subgroups of finite index, also has finite index.
+--  have hD : D.FiniteIndex := Group.LeftCosetCover.core_finiteIndex c
+--  have hD_le {i} (hfi : (c.subgroup i).FiniteIndex) : D ≤ c.subgroup i :=
+--    Group.LeftCosetCover.core_le c hfi
+  -- Each subgroup of finite index in the covering is the union of finitely many cosets of `D`.
+  have : c.core.FiniteIndex := c.core_finiteIndex
+  choose t ht using fun i hfi =>
+    Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup i) (c.core_le hfi)
+  -- We construct a cover of `G` by the cosets of subgroups of infinite index and of `D`.
+  exact {
+  carrier := (i : { i // (c.subgroup i).FiniteIndex }) × (t i i.prop)
+  subgroup := fun k ↦ (core c)
+  offset := fun k ↦ c.offset k.1 * k.2.val
+  covers := by
+    have ⟨y, hy⟩ := Group.LeftCosetCover.sieve_contains_core c
+    have hky : (c.subgroup y.1).FiniteIndex := (sieve_subgroup_eq_core_iff c _).mp hy
+    by_contra h
+    have ⟨j, hj, hj'⟩ := Group.LeftCosetCover.exists_finiteIndex
+      (Group.LeftCosetCover.sieve c) y ?_
+    · apply hj
+      rw [hy, Group.LeftCosetCover.sieve_subgroup_eq_core_iff,
+        ← sieve_subgroup_finite_index_iff]
+      exact hj'
+    · intro h'
+      apply h
+      simp only [Set.mem_setOf_eq] at h'
+      rw [← h']
 
--- -- to_additive is confused because of the inverse in `density`
--- @[to_additive]
-theorem Subgroup.LeftCosetCover.sieve_density
+      apply Set.iUnion_congr
+      intro i
+      apply Set.iUnion_congr_Prop ?_ (fun _ ↦ rfl)
+      rw [hk, sieve_subgroup_eq_core_iff, sieve_subgroup_finite_index_iff] }
+
+@[to_additive]
+instance Group.LeftCosetCover.normalize_finite
     [Finite c.carrier]
     [DecidableEq (Subgroup G)]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
-    Subgroup.LeftCosetCover.density (Subgroup.LeftCosetCover.sieve c)
-      = Subgroup.LeftCosetCover.density c := by
+    Finite (Group.LeftCosetCover.normalize c).carrier := Subtype.finite
+
+@[to_additive]
+theorem Group.LeftCosetCover.sieve_density
+    [Finite c.carrier]
+    [DecidableEq (Subgroup G)]
+    [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
+    Group.LeftCosetCover.density (Group.LeftCosetCover.sieve c)
+      = Group.LeftCosetCover.density c := by
   unfold density
   have _ : Fintype c.carrier := Fintype.ofFinite _
   have _ : Fintype (sieve c).carrier := Fintype.ofFinite (sieve c).carrier
@@ -501,14 +539,14 @@ theorem Subgroup.LeftCosetCover.sieve_density
       simp only [nsmul_eq_mul]
       rw [mul_inv_eq_iff_eq_mul₀]
       rw [← Subgroup.relindex_mul_index (core_le c hx), mul_comm]
-      simp only [Nat.cast_mul,  mul_assoc]
+      simp only [Nat.cast_mul (α := ℚ),  mul_assoc (G := ℚ)]
       rw [(mul_inv_eq_one₀ _).mpr rfl, mul_one]
       simp only [Nat.cast_inj]
       unfold sieve
       simp only [id_eq, smul_eq_mul, eq_mpr_eq_cast, cast_eq]
       have : (core c).FiniteIndex := core_finiteIndex c
-      set t := fun y hy ↦ (Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup y) (Subgroup.LeftCosetCover.core_le c hy)).choose with ht_eq
-      let ht := fun y hy ↦ (Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup y) (Subgroup.LeftCosetCover.core_le c hy)).choose_spec
+      set t := fun y hy ↦ (Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup y) (Group.LeftCosetCover.core_le c hy)).choose with ht_eq
+      let ht := fun y hy ↦ (Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup y) (Group.LeftCosetCover.core_le c hy)).choose_spec
 
       rw [Finset.card_congr (f := fun y hy ↦ (⟨y.snd, by
         simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hy
@@ -553,17 +591,17 @@ theorem Subgroup.LeftCosetCover.sieve_density
         exact hx.finiteIndex
       · simp only [ne_eq, Nat.cast_eq_zero]
         exact (core_finiteIndex c).finiteIndex
-      · simp only [Finset.mem_filter, Finset.mem_univ, true_and, inv_inj, Nat.cast_inj]
+      · simp only [Finset.mem_filter, Finset.mem_univ, true_and, inv_inj (G := ℚ), Nat.cast_inj]
         intro y hy
         apply congr_arg
         rw [sieve_subgroup_eq_core_iff, hy]
         exact hx
     · rw [Finset.sum_congr rfl (g := fun _ ↦ 0)]
-      simp only [Finset.sum_const_zero, zero_eq_inv]
+      simp only [Finset.sum_const_zero, zero_eq_inv (G₀ := ℚ)]
       rw [eq_comm, Nat.cast_eq_zero]
       by_contra hx'
       exact hx ⟨hx'⟩
-      · simp only [Finset.mem_filter, Finset.mem_univ, true_and, inv_eq_zero, Nat.cast_eq_zero]
+      · simp only [Finset.mem_filter, Finset.mem_univ, true_and, inv_eq_zero (G₀ := ℚ), Nat.cast_eq_zero]
         intro y hy
         suffices ¬ ((sieve c).subgroup y).FiniteIndex by
           by_contra hy'
@@ -574,14 +612,14 @@ theorem Subgroup.LeftCosetCover.sieve_density
   · simp only [Finset.coe_univ, Set.subset_univ]
   · simp only [Finset.coe_univ, Set.subset_univ]
 
--- -- to_additive is confused because of the inverse in `density`
--- @[to_additive]
-theorem Subgroup.LeftCosetCover.normalize_density
+
+@[to_additive]
+theorem Group.LeftCosetCover.normalize_density
     [Finite c.carrier]
     [DecidableEq (Subgroup G)]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
-    Subgroup.LeftCosetCover.density (Subgroup.LeftCosetCover.normalize c)
-      = Subgroup.LeftCosetCover.density c := by
+    Group.LeftCosetCover.density (Group.LeftCosetCover.normalize c)
+      = Group.LeftCosetCover.density c := by
   conv_rhs => rw [← sieve_density]
   unfold density
   have : Fintype c.carrier := Fintype.ofFinite _
@@ -596,7 +634,7 @@ theorem Subgroup.LeftCosetCover.normalize_density
     simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
     exact hx
   · simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.coe_univ, Set.image_univ,
-    Subtype.range_coe_subtype, Set.mem_setOf_eq, inv_eq_zero, Nat.cast_eq_zero]
+    Subtype.range_coe_subtype, Set.mem_setOf_eq, inv_eq_zero (G₀ := ℚ), Nat.cast_eq_zero]
     intro i hi hi'
     exfalso
     contradiction
@@ -606,15 +644,15 @@ theorem Subgroup.LeftCosetCover.normalize_density
       Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
     intro hx
     exact { finiteIndex := hx }
-  simp only [Function.support_inv, Finset.coe_univ, Set.subset_univ]
+  simp only [Function.support_inv (G₀ := ℚ), Finset.coe_univ, Set.subset_univ]
 
-theorem Subgroup.LeftCosetCover.disjoint_normalize_of_density_eq_one
+theorem Group.LeftCosetCover.disjoint_normalize_of_density_eq_one
     [Finite c.carrier]
     [DecidableEq (Subgroup G)]
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
-    (h : Subgroup.LeftCosetCover.density c = 1) :
+    (h : Group.LeftCosetCover.density c = 1) :
     Set.PairwiseDisjoint { i | (c.subgroup i).FiniteIndex} (fun i ↦ c.offset i • (c.subgroup i : Set G)) := by
-  rw [← Subgroup.LeftCosetCover.normalize_density] at h
+  rw [← Group.LeftCosetCover.normalize_density] at h
   -- rw [mul_inv_eq_one₀ (Nat.cast_ne_zero.mpr hD.finiteIndex), Nat.cast_inj, Finset.coe_filter]
   intro i hi j hj hij cc hi' hj' x hx
   -- have hdisjoint := Subgroup.pairwiseDisjoint_leftCoset_cover_const_of_index_eq hcovers' h.symm
@@ -622,8 +660,8 @@ theorem Subgroup.LeftCosetCover.disjoint_normalize_of_density_eq_one
   rw [Set.mem_setOf_eq] at hi hj
   simp only [Set.le_eq_subset] at hi' hj'
   have : (core c).FiniteIndex := core_finiteIndex c
-  set t := fun y hy ↦ (Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup y) (Subgroup.LeftCosetCover.core_le c hy)).choose with ht_eq
-  let ht := fun y hy ↦ (Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup y) (Subgroup.LeftCosetCover.core_le c hy)).choose_spec
+  set t := fun y hy ↦ (Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup y) (Group.LeftCosetCover.core_le c hy)).choose with ht_eq
+  let ht := fun y hy ↦ (Subgroup.exists_leftTransversal_of_FiniteIndex (H := c.subgroup y) (Group.LeftCosetCover.core_le c hy)).choose_spec
   have hk' (i : c.carrier) (hi : (c.subgroup i).FiniteIndex) (hi' : cc ≤ c.offset i • (c.subgroup i : Set G)) :
       ∃ (k : (normalize c).carrier), k.1.1 = i ∧ (normalize c).subgroup k = core c ∧ x ∈ (normalize c).offset k • (core c : Set G) := by
     rw [← (ht i hi).2] at hi'
@@ -637,7 +675,7 @@ theorem Subgroup.LeftCosetCover.disjoint_normalize_of_density_eq_one
          simp only [if_pos hi]
          apply core_finiteIndex⟩, rfl, by
          unfold normalize
-         rw [Subgroup.LeftCosetCover.sieve_subgroup_eq_core_iff]
+         rw [Group.LeftCosetCover.sieve_subgroup_eq_core_iff]
          exact hi,
       by unfold normalize sieve
          simp only [← smul_eq_mul, smul_assoc]
