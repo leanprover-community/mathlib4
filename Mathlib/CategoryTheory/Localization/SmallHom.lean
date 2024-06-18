@@ -20,14 +20,17 @@ with the composition of morphisms.
 
 -/
 
-universe w w' v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe w w' v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
+
+open Category
 
 variable {C : Type u₁} [Category.{v₁} C] {W : MorphismProperty C}
   {C' : Type u₂} [Category.{v₂} C'] {W' : MorphismProperty C'}
   {D : Type u₃} [Category.{v₃} D]
   {D' : Type u₄} [Category.{v₄} D']
+  {D'' : Type u₅} [Category.{v₅} D'']
 
 namespace LocalizerMorphism
 
@@ -55,7 +58,7 @@ lemma homMap_apply (G : D ⥤ D') (e : Φ.functor ⋙ L' ≅ L ⋙ G) (f : L.obj
     ext X
     dsimp [α]
     rw [Localization.liftNatTrans_app]
-    erw [Category.id_comp]
+    erw [id_comp]
     rw [Iso.hom_inv_id_app_assoc]
     rfl
   simp [this]
@@ -66,7 +69,8 @@ variable (W)
 
 namespace MorphismProperty
 
-variable (L : C ⥤ D) [L.IsLocalization W] (L' : C ⥤ D') [L'.IsLocalization W] (X Y Z : C)
+variable (L : C ⥤ D) [L.IsLocalization W] (L' : C ⥤ D') [L'.IsLocalization W]
+  (L'' : C ⥤ D'') [L''.IsLocalization W] (X Y Z : C)
 
 /-- This property holds if the type of morphisms between `X` and `Y`
 in the localized category with respect to `W : MorphismProperty C`
@@ -112,6 +116,32 @@ lemma localizationHomEquiv_refl :
     localizationsHomEquiv W L L (X := X) (Y := Y) = Equiv.refl _ := by
   ext f
   simpa using localizationsHomEquiv_eq W L L (𝟭 _) (Iso.refl _) f
+
+lemma localizationHomEquiv_symm (f : L.obj X ⟶ L.obj Y) :
+    (localizationsHomEquiv W L' L).symm f = localizationsHomEquiv W L L' f := by
+  apply (W.localizationsHomEquiv L' L).injective
+  let E := Localization.uniq L L' W
+  let α : L ⋙ E.functor ≅ L' := (Localization.compUniqFunctor L L' W)
+  rw [Equiv.apply_symm_apply, localizationsHomEquiv_eq W L L' E.functor α f,
+    localizationsHomEquiv_eq W L' L E.inverse
+      (isoWhiskerRight α.symm E.inverse ≪≫ Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft L E.unitIso.symm ≪≫ L.rightUnitor)]
+  dsimp
+  simp only [assoc, id_comp, comp_id, Functor.map_comp, Equivalence.inv_fun_map]
+  simp only [← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.comp_obj, Functor.map_id,
+    id_comp, Iso.hom_inv_id_app_assoc, Functor.id_obj, comp_id]
+
+lemma localizationHomEquiv_trans (f : L.obj X ⟶ L.obj Y) :
+    (localizationsHomEquiv W L' L'') (localizationsHomEquiv W L L' f) =
+      localizationsHomEquiv W L L'' f := by
+  let E := Localization.uniq L L' W
+  let α : L ⋙ E.functor ≅ L' := (Localization.compUniqFunctor L L' W)
+  let E' := Localization.uniq L' L'' W
+  let α' : L' ⋙ E'.functor ≅ L'' := (Localization.compUniqFunctor L' L'' W)
+  simp [localizationsHomEquiv_eq W L L' E.functor α,
+    localizationsHomEquiv_eq W L' L'' E'.functor α',
+    localizationsHomEquiv_eq W L L'' (E.functor ⋙ E'.functor)
+      ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight α E'.functor ≪≫ α')]
 
 lemma localizationHomEquiv_comp (f : L.obj X ⟶ L.obj Y) (g : L.obj Y ⟶ L.obj Z) :
     localizationsHomEquiv W L L' (f ≫ g) =
@@ -179,7 +209,9 @@ lemma equiv_equiv_symm (L' : C ⥤ D') [L'.IsLocalization W] (G : D ⥤ D')
     (e : L ⋙ G ≅ L') {X Y : C} (f : L.obj X ⟶ L.obj Y)
     [HasSmallLocalizedHom.{w} W X Y] : equiv W L' ((equiv W L).symm f) =
       e.inv.app X ≫ G.map f ≫ e.hom.app Y := by
-  sorry
+  dsimp [equiv]
+  rw [Equiv.symm_apply_apply, localizationHomEquiv_symm, localizationHomEquiv_trans]
+  apply localizationsHomEquiv_eq
 
 section
 
@@ -293,17 +325,17 @@ lemma equiv_map (G : D ⥤ D') (e : Φ.functor ⋙ L' ≅ L ⋙ G) (f : SmallHom
     dsimp [γ]
     rw [liftNatTrans_app]
     dsimp
-    rw [Category.id_comp, Category.id_comp, Category.comp_id]
-    erw [Category.id_comp, Category.comp_id]
-  simp only [Functor.map_comp, Category.assoc]
+    rw [id_comp, id_comp, comp_id]
+    erw [id_comp, comp_id]
+  simp only [Functor.map_comp, assoc]
   erw [← NatIso.naturality_1 γ]
   simp only [Functor.comp_map, ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α.hom.app X)),
-    ← cancel_epi (γ.hom.app (W.Q.obj X)), Category.assoc, Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp,
+    ← cancel_epi (γ.hom.app (W.Q.obj X)), assoc, Iso.inv_hom_id_app_assoc,
+    ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp,
     Iso.hom_inv_id_app_assoc]
-  simp only [hγ, Category.assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
-    Functor.map_id, Category.id_comp, Iso.hom_inv_id_app_assoc,
-    Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj, Category.comp_id]
+  simp only [hγ, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
+    Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
+    Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
 end
 
