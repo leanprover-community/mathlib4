@@ -57,6 +57,13 @@ Related files are:
 colex, colexicographic, binary
 -/
 
+namespace Finset
+variable {α : Type*} {s t : Finset α} {p : α → Prop} [DecidablePred p]
+
+lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by simp [ext_iff]
+
+end Finset
+
 open Finset Function
 
 #align nat.sum_two_pow_lt Nat.geomSum_lt
@@ -340,9 +347,9 @@ lemma lt_iff_max'_mem {s t : Colex α} :
     s < t ↔ ∃ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t := by
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop
 
-lemma lt_iff_exists_forall_lt_mem_iff_mem :
-    toColex s < toColex t ↔ ∃ w ∈ t, w ∉ s ∧ ∀ ⦃a⦄, w < a → (a ∈ s ↔ a ∈ t) := by
-  simp only [lt_iff_exists_forall_lt]
+lemma lt_iff_exists_filter_lt :
+    toColex s < toColex t ↔ ∃ w ∈ t \ s, s.filter (w < .) = t.filter (w < .) := by
+  simp only [lt_iff_exists_forall_lt, mem_sdiff, filter_inj, and_assoc]
   refine ⟨fun h ↦ ?_, ?_⟩
   · let u := (t \ s).filter fun w ↦ ∀ a ∈ s, a ∉ t → a < w
     have mem_u {w : α} : w ∈ u ↔ w ∈ t ∧ w ∉ s ∧ ∀ a ∈ s, a ∉ t → a < w := by simp [u, and_assoc]
@@ -370,7 +377,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.
   · exact (erase_le_erase ha $ min'_mem _ _).2 $ min'_le _ _ $ ha
   -- If `s ≠ t`, call `w` the colex witness. Case on whether `w < a` or `a < w`
   replace hst := hst.lt_of_ne $ toColex_inj.not.2 h'
-  simp only [lt_iff_exists_forall_lt_mem_iff_mem] at hst
+  simp only [lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc] at hst
   obtain ⟨w, hwt, hws, hw⟩ := hst
   obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_lt
   -- If `w < a`, then `a` is the colex witness for `s \ {a} < t \ {m}`
