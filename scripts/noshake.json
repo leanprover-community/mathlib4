@@ -186,6 +186,7 @@
  ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
  "ignore":
  {"Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Order.LeftRightNhds": ["Mathlib.Data.Set.Pointwise.Basic"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.NormedSpace.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.ContinuousFunction.NonUnitalFunctionalCalculus":
@@ -222,6 +223,7 @@
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
+  "Mathlib.Tactic.ITauto": ["Mathlib.Init.Logic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
@@ -292,11 +294,13 @@
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
+  "Mathlib.Init.Logic": ["Batteries.Logic"],
   "Mathlib.Init.Function": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Init.Data.Nat.GCD": ["Batteries.Data.Nat.Gcd"],
   "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
   "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],
+  "Mathlib.Init.Data.Bool.Lemmas": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.GroupTheory.MonoidLocalization": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],

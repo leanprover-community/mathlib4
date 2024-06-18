@@ -242,7 +242,7 @@ theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 #align local_homeomorph.source_preimage_target PartialHomeomorph.source_preimage_target
 
-@[deprecated toPartialEquiv_injective]
+@[deprecated toPartialEquiv_injective (since := "2023-02-18")]
 theorem eq_of_partialEquiv_eq {e e' : PartialHomeomorph X Y}
     (h : e.toPartialEquiv = e'.toPartialEquiv) : e = e' :=
   toPartialEquiv_injective h

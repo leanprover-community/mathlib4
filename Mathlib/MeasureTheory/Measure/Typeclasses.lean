@@ -1147,10 +1147,19 @@ theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable 
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
 #align measure_theory.sigma_finite.of_map MeasureTheory.SigmaFinite.of_map
 
-theorem _root_.MeasurableEquiv.sigmaFinite_map {μ : Measure α} (f : α ≃ᵐ β) (h : SigmaFinite μ) :
+lemma _root_.MeasurableEmbedding.sigmaFinite_map {f : α → β} (hf : MeasurableEmbedding f)
+    [SigmaFinite μ] :
     SigmaFinite (μ.map f) := by
-  refine SigmaFinite.of_map _ f.symm.measurable.aemeasurable ?_
-  rwa [map_map f.symm.measurable f.measurable, f.symm_comp_self, Measure.map_id]
+  refine ⟨fun n ↦ f '' (spanningSets μ n) ∪ (Set.range f)ᶜ, by simp, fun n ↦ ?_, ?_⟩
+  · rw [hf.map_apply, Set.preimage_union]
+    simp only [Set.preimage_compl, Set.preimage_range, Set.compl_univ, Set.union_empty,
+      Set.preimage_image_eq _ hf.injective]
+    exact measure_spanningSets_lt_top μ n
+  · rw [← Set.iUnion_union, ← Set.image_iUnion, iUnion_spanningSets,
+      Set.image_univ, Set.union_compl_self]
+
+theorem _root_.MeasurableEquiv.sigmaFinite_map (f : α ≃ᵐ β) [SigmaFinite μ] :
+    SigmaFinite (μ.map f) := f.measurableEmbedding.sigmaFinite_map
 #align measurable_equiv.sigma_finite_map MeasurableEquiv.sigmaFinite_map
 
 /-- Similar to `ae_of_forall_measure_lt_top_ae_restrict`, but where you additionally get the

@@ -37,6 +37,16 @@ Linter that checks whether a structure should be in Prop.
     unless allProofs do return none
     return m!"all fields are propositional but the structure isn't."
 
+/-- Linter that check that all `deprecated` tags come with `since` dates. -/
+@[env_linter] def deprecatedNoSince : Linter where
+  noErrorsFound := "no `deprecated` tags without `since` dates."
+  errorsFound := "FOUND `deprecated` tags without `since` dates."
+  test declName := do
+    let some info := Lean.Linter.deprecatedAttr.getParam? (← getEnv) declName | return none
+    match info.since? with
+    | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
+    | none => return m!"`deprecated` attribute without `since` date"
+
 end Std.Tactic.Lint
 
 /-!
@@ -76,7 +86,7 @@ def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.d
 If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a `declId`. -/
 partial
 def getIds : Syntax → Array Syntax
-  | .node _ `Std.Tactic.Alias.alias args => #[args[2]!]
+  | .node _ `Batteries.Tactic.Alias.alias args => #[args[2]!]
   | .node _ ``Lean.Parser.Command.export args => #[args[3]![0]]
   | stx@(.node _ _ args) =>
     ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)

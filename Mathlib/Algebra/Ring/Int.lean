@@ -140,8 +140,12 @@ lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
 
 set_option linter.deprecated false in
 
-@[simp, deprecated] lemma not_even_bit1 (n : ℤ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
+@[simp, deprecated (since := "2023-01-26")]
+lemma not_even_bit1 (n : ℤ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
 #align int.not_even_bit1 Int.not_even_bit1
+
+lemma not_even_two_mul_add_one (n : ℤ) : ¬ Even (2 * n + 1) :=
+  odd_iff_not_even.1 <| odd_two_mul_add_one n
 
 lemma even_sub' : Even (m - n) ↔ (Odd m ↔ Odd n) := by
   rw [even_sub, even_iff_not_odd, even_iff_not_odd, not_iff_not]
@@ -254,5 +258,17 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
 #align int.two_mul_div_two_of_odd Int.two_mul_ediv_two_of_odd
+
+@[norm_cast, simp]
+theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℤ) ↔ IsSquare n := by
+  constructor <;> rintro ⟨x, h⟩
+  · exact ⟨x.natAbs, (natAbs_mul_natAbs_eq h.symm).symm⟩
+  · exact ⟨x, mod_cast h⟩
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem isSquare_ofNat_iff {n : ℕ} :
+    IsSquare (no_index (OfNat.ofNat n) : ℤ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
+  isSquare_natCast_iff
 
 end Int

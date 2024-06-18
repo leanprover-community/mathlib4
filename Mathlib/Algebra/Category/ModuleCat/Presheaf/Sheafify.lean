@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
@@ -19,11 +19,6 @@ sheaf of modules over `R`: this is `PresheafOfModules.sheafify α φ`.
 In many application, the morphism `α` shall be the identity, but this more
 general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
-
-## TODO
-
-- promote this construction to a functor from presheaves of modules over `R₀`
-  to sheaves of modules over `R`, and construct an adjunction.
 
 -/
 
@@ -316,5 +311,72 @@ noncomputable def sheafify : SheafOfModules.{v} R where
       module := Sheafify.module α φ
       map_smul := fun _ _ _ => by apply Sheafify.map_smul }
   isSheaf := A.cond
+
+/-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
+@[simps]
+def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val where
+  hom := φ
+  map_smul X r₀ m₀ := by
+    simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
+      r₀ (by aesop) m₀ (by simp)).symm
+
+instance : Presheaf.IsLocallyInjective J (toSheafify α φ).hom := by
+  dsimp; infer_instance
+
+instance : Presheaf.IsLocallySurjective J (toSheafify α φ).hom := by
+  dsimp; infer_instance
+
+variable [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
+
+/-- The bijection `((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F)` which
+is part of the universal property of the sheafification of the presheaf of modules `M₀`,
+when `F` is a presheaf of modules which is a sheaf. -/
+noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
+    (hF : Presheaf.IsSheaf J F.presheaf) :
+    ((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F) :=
+  (restrictHomEquivOfIsLocallySurjective α hF).trans
+    (homEquivOfIsLocallyBijective (f := toSheafify α φ)
+      (N := (restrictScalars α).obj F) hF)
+
+lemma comp_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
+    (hF : Presheaf.IsSheaf J F.presheaf) (f : M₀ ⟶ (restrictScalars α).obj F) :
+    φ ≫ ((sheafifyHomEquiv' α φ hF).symm f).hom = f.hom :=
+  congr_arg Hom.hom ((sheafifyHomEquiv' α φ hF).apply_symm_apply f)
+
+/-- The bijection
+`(sheafify α φ ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F))`
+which is part of the universal property of the sheafification of the presheaf of modules `M₀`,
+for any sheaf of modules `F`, see `PresheafOfModules.sheafificationAdjunction` -/
+noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
+    (sheafify α φ ⟶ F) ≃
+      (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :=
+  (SheafOfModules.fullyFaithfulForget R).homEquiv.trans
+    (sheafifyHomEquiv' α φ F.isSheaf)
+
+section
+
+variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGroupCat.{v}}
+  (φ' : M₀'.presheaf ⟶ A'.val)
+  [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
+  (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
+  (fac : τ₀.hom ≫ φ' = φ ≫ τ.val)
+
+/-- The morphism of sheaves of modules `sheafify α φ ⟶ sheafify α φ'`
+induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
+which satisfy `τ₀.hom ≫ φ' = φ ≫ τ.val`. -/
+@[simps]
+def sheafifyMap : sheafify α φ ⟶ sheafify α φ' where
+  val :=
+    { hom := τ.val
+      map_smul := by
+        let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')
+        have eq : τ.val = f.hom := ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
+          (by
+            dsimp [f]
+            erw [comp_sheafifyHomEquiv'_symm_hom]
+            simp only [← fac, toSheafify_hom, Hom.comp_hom])
+        convert f.map_smul }
+
+end
 
 end PresheafOfModules

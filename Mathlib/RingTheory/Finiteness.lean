@@ -590,8 +590,10 @@ instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] 
   Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
-instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=
-  of_surjective f.rangeRestrict fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
+instance range {F : Type*} [FunLike F M N] [SemilinearMapClass F (RingHom.id R) M N] [Finite R M]
+    (f : F) : Finite R (LinearMap.range f) :=
+  of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
+    fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 #align module.finite.range Module.Finite.range
 
 /-- Pushforwards of finite submodules are finite. -/
