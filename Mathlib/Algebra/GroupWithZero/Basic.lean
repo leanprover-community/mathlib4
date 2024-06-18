@@ -316,17 +316,14 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
     inv_inv := fun a => by
       by_cases h : a = 0
       · simp [h]
-
       · exact left_inv_eq_right_inv (inv_mul_cancel <| inv_ne_zero h) (inv_mul_cancel h)
         ,
     mul_inv_rev := fun a b => by
       by_cases ha : a = 0
       · simp [ha]
-
       by_cases hb : b = 0
       · simp [hb]
-
-      refine' inv_eq_of_mul _
+      apply inv_eq_of_mul
       simp [mul_assoc, ha, hb],
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 #align group_with_zero.to_division_monoid GroupWithZero.toDivisionMonoid

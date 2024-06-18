@@ -247,7 +247,7 @@ theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
-  refine' ⟨c, one_lt_iff_ne_one.2 _, hc.symm⟩
+  refine ⟨c, one_lt_iff_ne_one.2 ?_, hc.symm⟩
   rintro rfl
   simp [hc, lt_irrefl] at h
 #align exists_one_lt_mul_of_lt exists_one_lt_mul_of_lt
@@ -310,10 +310,7 @@ instance (priority := 10) of_gt' {M : Type*} [CanonicallyOrderedAddCommMonoid M]
   [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
 
-set_option linter.deprecated false in
-instance bit0 {M} [CanonicallyOrderedAddCommMonoid M] {x : M} [NeZero x] : NeZero (bit0 x) :=
-  of_pos <| bit0_pos <| NeZero.pos x
-#align ne_zero.bit0 NeZero.bit0
+#noalign ne_zero.bit0
 
 end NeZero
 

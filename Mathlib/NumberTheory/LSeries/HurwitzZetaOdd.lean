@@ -46,6 +46,8 @@ open Complex hiding abs_of_nonneg
 open Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate
 
+namespace HurwitzZeta
+
 section kernel_defs
 /-!
 ## Definitions and elementary properties of kernels
@@ -327,6 +329,8 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
     oddKernel_functional_equation a, one_div x, one_div x⁻¹, inv_rpow (le_of_lt hx), one_div,
     inv_inv]
 
+end FEPair
+
 /-!
 ## Definition of the completed odd Hurwitz zeta function
 -/
@@ -574,3 +578,5 @@ lemma sinZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -
   rw [← Gammaℂ, sinZeta, (by ring : 1 - s + 1 = 2 - s), div_eq_mul_inv, inv_Gammaℝ_two_sub hs,
     completedSinZeta_one_sub, hurwitzZetaOdd, ← div_eq_mul_inv, ← mul_div_assoc, ← mul_div_assoc,
     mul_comm]
+
+end HurwitzZeta

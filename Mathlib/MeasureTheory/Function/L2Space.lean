@@ -78,12 +78,14 @@ theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Mem�
 
 variable {f : α → E}
 
-theorem Integrable.const_inner (c : E) (hf : Integrable f μ) : Integrable (fun x => ⟪c, f x⟫) μ :=
-  by rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
+theorem Integrable.const_inner (c : E) (hf : Integrable f μ) :
+    Integrable (fun x => ⟪c, f x⟫) μ := by
+  rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
 #align measure_theory.integrable.const_inner MeasureTheory.Integrable.const_inner
 
-theorem Integrable.inner_const (hf : Integrable f μ) (c : E) : Integrable (fun x => ⟪f x, c⟫) μ :=
-  by rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
+theorem Integrable.inner_const (hf : Integrable f μ) (c : E) :
+    Integrable (fun x => ⟪f x, c⟫) μ := by
+  rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
 #align measure_theory.integrable.inner_const MeasureTheory.Integrable.inner_const
 
 variable [CompleteSpace E] [NormedSpace ℝ E]
@@ -179,8 +181,8 @@ private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.r
 theorem mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)
         ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)) ∈
-      Lp 𝕜 1 μ :=
-  by simp_rw [mem_Lp_iff_snorm_lt_top, snorm_aeeqFun]; exact snorm_inner_lt_top f g
+      Lp 𝕜 1 μ := by
+  simp_rw [mem_Lp_iff_snorm_lt_top, snorm_aeeqFun]; exact snorm_inner_lt_top f g
 #align measure_theory.L2.mem_L1_inner MeasureTheory.L2.mem_L1_inner
 
 theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪f x, g x⟫) μ :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Quotient
-import Mathlib.RingTheory.Congruence
+import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Tactic.FinCases
 
@@ -128,6 +128,10 @@ theorem eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
 
 theorem eq_zero_iff_dvd (x y : R) : Ideal.Quotient.mk (Ideal.span ({x} : Set R)) y = 0 ↔ x ∣ y := by
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
+
+@[simp]
+lemma mk_singleton_self (x : R) : mk (Ideal.span {x}) x = 0 := by
+  rw [eq_zero_iff_dvd]
 
 -- Porting note (#10756): new theorem
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by

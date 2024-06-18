@@ -378,7 +378,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       simp only [smul_sub]
       have hc' : ContinuousOn (fun z => (z - c)⁻¹) (sphere c r) :=
         (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hzne _ hz
-      rw [circleIntegral.integral_sub] <;> refine' (hc'.smul _).circleIntegrable hr0.le
+      rw [circleIntegral.integral_sub] <;> refine (hc'.smul ?_).circleIntegrable hr0.le
       · exact hc.mono <| subset_inter
           (sphere_subset_closedBall.trans <| closedBall_subset_closedBall hrR) hzne
       · exact continuousOn_const
@@ -400,7 +400,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • f c :=
   circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto h0 hs
-    (hc.mono <| diff_subset _ _) (fun z hz => hd z ⟨hz.1.1, hz.2⟩)
+    (hc.mono diff_subset) (fun z hz => hd z ⟨hz.1.1, hz.2⟩)
     (hc.continuousAt <| closedBall_mem_nhds _ h0).continuousWithinAt
 #align complex.circle_integral_sub_center_inv_smul_of_differentiable_on_off_countable Complex.circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable
 

@@ -334,6 +334,12 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         exact h.2.2
 #align has_ftaylor_series_up_to_on_succ_iff_left hasFTaylorSeriesUpToOn_succ_iff_left
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4119,
+without `set_option maxSynthPendingDepth 2` this proof needs substantial repair.
+-/
+set_option maxSynthPendingDepth 2 in
 -- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.
 theorem HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
@@ -582,14 +588,14 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
         -- Porting note: needed `erw` here.
         -- https://github.com/leanprover-community/mathlib4/issues/5164
         erw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff']
-        convert (f'_eq_deriv y hy.2).mono (inter_subset_right v u)
+        convert (f'_eq_deriv y hy.2).mono inter_subset_right
         rw [← Hp'.zero_eq y hy.1]
         ext z
         change ((p' y 0) (init (@cons 0 (fun _ => E) z 0))) (@cons 0 (fun _ => E) z 0 (last 0)) =
           ((p' y 0) 0) z
         congr
         norm_num [eq_iff_true_of_subsingleton]
-      · convert (Hp'.mono (inter_subset_left v u)).congr fun x hx => Hp'.zero_eq x hx.1 using 1
+      · convert (Hp'.mono inter_subset_left).congr fun x hx => Hp'.zero_eq x hx.1 using 1
         · ext x y
           change p' x 0 (init (@snoc 0 (fun _ : Fin 1 => E) 0 y)) y = p' x 0 0 y
           rw [init_snoc]
@@ -609,7 +615,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' {n : ℕ} :
   · obtain ⟨u, hu, f', huf', hf'⟩ := contDiffWithinAt_succ_iff_hasFDerivWithinAt.mp hf
     obtain ⟨w, hw, hxw, hwu⟩ := mem_nhdsWithin.mp hu
     rw [inter_comm] at hwu
-    refine ⟨insert x s ∩ w, inter_mem_nhdsWithin _ (hw.mem_nhds hxw), inter_subset_left _ _, f',
+    refine ⟨insert x s ∩ w, inter_mem_nhdsWithin _ (hw.mem_nhds hxw), inter_subset_left, f',
       fun y hy => ?_, ?_⟩
     · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem ?_
       refine mem_of_superset ?_ (inter_subset_inter_left _ (subset_insert _ _))
@@ -662,7 +668,7 @@ theorem ContDiffWithinAt.contDiffOn' {m : ℕ} (hm : (m : ℕ∞) ≤ n)
 theorem ContDiffWithinAt.contDiffOn {m : ℕ} (hm : (m : ℕ∞) ≤ n) (h : ContDiffWithinAt 𝕜 n f s x) :
     ∃ u ∈ 𝓝[insert x s] x, u ⊆ insert x s ∧ ContDiffOn 𝕜 m f u :=
   let ⟨_u, uo, xu, h⟩ := h.contDiffOn' hm
-  ⟨_, inter_mem_nhdsWithin _ (uo.mem_nhds xu), inter_subset_left _ _, h⟩
+  ⟨_, inter_mem_nhdsWithin _ (uo.mem_nhds xu), inter_subset_left, h⟩
 #align cont_diff_within_at.cont_diff_on ContDiffWithinAt.contDiffOn
 
 protected theorem ContDiffWithinAt.eventually {n : ℕ} (h : ContDiffWithinAt 𝕜 n f s x) :
@@ -670,7 +676,7 @@ protected theorem ContDiffWithinAt.eventually {n : ℕ} (h : ContDiffWithinAt �
   rcases h.contDiffOn le_rfl with ⟨u, hu, _, hd⟩
   have : ∀ᶠ y : E in 𝓝[insert x s] x, u ∈ 𝓝[insert x s] y ∧ y ∈ u :=
     (eventually_nhdsWithin_nhdsWithin.2 hu).and hu
-  refine' this.mono fun y hy => (hd y hy.2).mono_of_mem _
+  refine this.mono fun y hy => (hd y hy.2).mono_of_mem ?_
   exact nhdsWithin_mono y (subset_insert _ _) hy.1
 #align cont_diff_within_at.eventually ContDiffWithinAt.eventually
 
@@ -853,7 +859,19 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
               E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
-        simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]; rfl
+        #adaptation_note
+        /--
+        After https://github.com/leanprover/lean4/pull/4119 we need to either use
+        `set_option maxSynthPendingDepth 2 in`
+        or fill in an explicit argument as
+        ```
+        simp only [LinearIsometryEquiv.comp_fderivWithin _
+          (f := iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) (hs x hx)]
+        ```
+        -/
+        set_option maxSynthPendingDepth 2 in
+          simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
+        rfl
       _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
               E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := rfl
       _ = iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)
@@ -868,8 +886,8 @@ theorem iteratedFDerivWithin_succ_eq_comp_right {n : ℕ} (hs : UniqueDiffOn �
     iteratedFDerivWithin 𝕜 (n + 1) f s x =
       (continuousMultilinearCurryRightEquiv' 𝕜 n E F ∘
           iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s)
-        x :=
-  by ext m; rw [iteratedFDerivWithin_succ_apply_right hs hx]; rfl
+        x := by
+  ext m; rw [iteratedFDerivWithin_succ_apply_right hs hx]; rfl
 #align iterated_fderiv_within_succ_eq_comp_right iteratedFDerivWithin_succ_eq_comp_right
 
 theorem norm_iteratedFDerivWithin_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
@@ -993,7 +1011,7 @@ theorem contDiffWithinAt_zero (hx : x ∈ s) :
     refine ⟨u, ?_, ?_⟩
     · simpa [hx] using H
     · simp only [Nat.cast_zero, hasFTaylorSeriesUpToOn_zero_iff] at hp
-      exact hp.1.mono (inter_subset_right s u)
+      exact hp.1.mono inter_subset_right
   · rintro ⟨u, H, hu⟩
     rw [← contDiffWithinAt_inter' H]
     have h' : x ∈ s ∩ u := ⟨hx, mem_of_mem_nhdsWithin hx H⟩
@@ -1017,8 +1035,9 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     exact (ContinuousMultilinearMap.uncurry_curryLeft _).symm
 #align has_ftaylor_series_up_to_on.eq_ftaylor_series_of_unique_diff_on HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 
-@[deprecated] alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
-  HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn -- 2024-03-28
+@[deprecated (since := "2024-03-28")]
+alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
+  HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
 `ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
@@ -1055,7 +1074,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
     rw [insert_eq_of_mem hx] at ho
     rw [inter_comm] at ho
-    refine' ⟨o, o_open, xo, _⟩
+    refine ⟨o, o_open, xo, ?_⟩
     have A : ∀ y ∈ s ∩ o, p y m = ftaylorSeriesWithin 𝕜 f s y m := by
       rintro y ⟨hy, yo⟩
       change p y m = iteratedFDerivWithin 𝕜 m f s y
@@ -1657,8 +1676,8 @@ and the `n`-th derivative of the derivative. -/
 theorem iteratedFDeriv_succ_eq_comp_right {n : ℕ} :
     iteratedFDeriv 𝕜 (n + 1) f x =
       (continuousMultilinearCurryRightEquiv' 𝕜 n E F ∘ iteratedFDeriv 𝕜 n fun y => fderiv 𝕜 f y)
-        x :=
-  by ext m; rw [iteratedFDeriv_succ_apply_right]; rfl
+        x := by
+  ext m; rw [iteratedFDeriv_succ_apply_right]; rfl
 #align iterated_fderiv_succ_eq_comp_right iteratedFDeriv_succ_eq_comp_right
 
 theorem norm_iteratedFDeriv_fderiv {n : ℕ} :

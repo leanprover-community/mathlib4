@@ -392,7 +392,7 @@ instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [Topologic
   constructor
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
-  refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono huv))
+  refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono huv))
   simp only [prod_prod, CanonicallyOrderedCommSemiring.mul_pos]
   constructor
   · exact u_open.measure_pos μ ⟨x, xu⟩
@@ -572,9 +572,9 @@ noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)}
     (hμ : μ.FiniteSpanningSetsIn C) (hν : ν.FiniteSpanningSetsIn D) :
     (μ.prod ν).FiniteSpanningSetsIn (image2 (· ×ˢ ·) C D) := by
   haveI := hν.sigmaFinite
-  refine'
+  refine
     ⟨fun n => hμ.set n.unpair.1 ×ˢ hν.set n.unpair.2, fun n =>
-      mem_image2_of_mem (hμ.set_mem _) (hν.set_mem _), fun n => _, _⟩
+      mem_image2_of_mem (hμ.set_mem _) (hν.set_mem _), fun n => ?_, ?_⟩
   · rw [prod_prod]
     exact mul_lt_top (hμ.finite _).ne (hν.finite _).ne
   · simp_rw [iUnion_unpair_prod, hμ.spanning, hν.spanning, univ_prod_univ]
@@ -1036,6 +1036,10 @@ theorem fst_univ : ρ.fst univ = ρ univ := by rw [fst_apply MeasurableSet.univ,
 
 @[simp] theorem fst_zero : fst (0 : Measure (α × β)) = 0 := by simp [fst]
 
+instance [SFinite ρ] : SFinite ρ.fst := by
+  rw [fst]
+  infer_instance
+
 instance fst.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.fst := by
   rw [fst]
   infer_instance
@@ -1083,6 +1087,10 @@ theorem snd_univ : ρ.snd univ = ρ univ := by rw [snd_apply MeasurableSet.univ,
 
 @[simp] theorem snd_zero : snd (0 : Measure (α × β)) = 0 := by simp [snd]
 
+instance [SFinite ρ] : SFinite ρ.snd := by
+  rw [snd]
+  infer_instance
+
 instance snd.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.snd := by
   rw [snd]
   infer_instance
@@ -1116,6 +1124,14 @@ theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : 
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
 #align measure_theory.measure.snd_map_prod_mk MeasureTheory.Measure.snd_map_prod_mk
+
+@[simp] lemma fst_map_swap : (ρ.map Prod.swap).fst = ρ.snd := by
+  rw [Measure.fst, Measure.map_map measurable_fst measurable_swap]
+  rfl
+
+@[simp] lemma snd_map_swap : (ρ.map Prod.swap).snd = ρ.fst := by
+  rw [Measure.snd, Measure.map_map measurable_snd measurable_swap]
+  rfl
 
 end Measure
 

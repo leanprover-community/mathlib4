@@ -48,7 +48,7 @@ theorem dense_compl_compact (hs : IsCompact s) : Dense sᶜ :=
 #align rat.dense_compl_compact Rat.dense_compl_compact
 
 instance cocompact_inf_nhds_neBot : NeBot (cocompact ℚ ⊓ 𝓝 p) := by
-  refine' (hasBasis_cocompact.inf (nhds_basis_opens _)).neBot_iff.2 _
+  refine (hasBasis_cocompact.inf (nhds_basis_opens _)).neBot_iff.2 ?_
   rintro ⟨s, o⟩ ⟨hs, hpo, ho⟩; rw [inter_comm]
   exact (dense_compl_compact hs).inter_open_nonempty _ ho ⟨p, hpo⟩
 #align rat.cocompact_inf_nhds_ne_bot Rat.cocompact_inf_nhds_neBot
@@ -83,7 +83,7 @@ instance : TotallyDisconnectedSpace ℚ := by
   refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
   by_contra! H : x ≠ y
   wlog hlt : x < y
-  · refine' this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt <;> assumption
+  · apply this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt <;> assumption
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩
   have := hs.image _ continuous_coe_real.continuousOn
   rw [isPreconnected_iff_ordConnected] at this

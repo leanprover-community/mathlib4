@@ -5,6 +5,8 @@ Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import algebra.category.Group.epi_mono from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -52,7 +54,7 @@ theorem range_eq_top_of_cancel {f : A →* B}
     rw [show (1 : B ⧸ f.range) = (1 : B) from QuotientGroup.mk_one _, QuotientGroup.eq, inv_one,
       one_mul]
     exact ⟨x, rfl⟩
-  replace h : (QuotientGroup.mk' _).ker = (1 : B →* B ⧸ f.range).ker := by rw [h]
+  replace h : (QuotientGroup.mk' f.range).ker = (1 : B →* B ⧸ f.range).ker := by rw [h]
   rwa [ker_one, QuotientGroup.ker_mk'] at h
 #align monoid_hom.range_eq_top_of_cancel MonoidHom.range_eq_top_of_cancel
 #align add_monoid_hom.range_eq_top_of_cancel AddMonoidHom.range_eq_top_of_cancel
