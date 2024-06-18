@@ -4,9 +4,9 @@ open MeasureTheory ProbabilityTheory Finset ENNReal Filter Topology Function
 
 section Preliminaries
 
-variable {ι : Type*} {α : ι → Type*}
+variable {ι : Type*}
 
-theorem preimage_proj (I J : Finset ι) [∀ i : ι, Decidable (i ∈ I)]
+theorem preimage_proj {α : ι → Type*} (I J : Finset ι) [∀ i : ι, Decidable (i ∈ I)]
     (hIJ : I ⊆ J) (s : (i : I) → Set (α i)) :
     (fun t : (∀ j : J, α j) ↦ fun i : I ↦ t ⟨i, hIJ i.2⟩) ⁻¹' (Set.univ.pi s) =
     (@Set.univ J).pi (fun j ↦ if h : j.1 ∈ I then s ⟨j.1, h⟩ else Set.univ) := by
@@ -24,8 +24,8 @@ variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (�
 subfamily. This gives a projective family of measures, see `IsProjectiveMeasureFamily`. -/
 theorem isProjectiveMeasureFamily_pi :
     IsProjectiveMeasureFamily (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
-  classical
   refine fun I J hJI ↦ Measure.pi_eq (fun s ms ↦ ?_)
+  classical
   rw [Measure.map_apply (measurable_proj₂' (α := X) I J hJI) (MeasurableSet.univ_pi ms),
     preimage_proj J I hJI, Measure.pi_pi]
   let g := fun i ↦ (μ i) (if hi : i ∈ J then s ⟨i, hi⟩ else Set.univ)
@@ -209,7 +209,7 @@ theorem prod_noyau_proj (N : ℕ) :
     my_ker (fun n ↦ kernel.const _ (μ (n + 1))) N =
       kernel.map ((kernel.deterministic id measurable_id) ×ₖ
           (kernel.const _ (Measure.pi (fun i : Ioc 0 N ↦ μ i))))
-        (er' N) (er' N).measurable := by
+        (er' N) (measurable_er' N) := by
   rcases eq_zero_or_pos N with hN | hN
   · cases hN
     rw [my_ker_zero]
@@ -218,10 +218,10 @@ theorem prod_noyau_proj (N : ℕ) :
     ext x s ms
     rw [kernel.map_apply, kernel.map_apply, kernel.deterministic_apply, kernel.prod_apply,
       kernel.deterministic_apply, kernel.const_apply, Measure.dirac_prod_dirac,
-      Measure.map_apply zer.measurable ms, Measure.map_apply (er' 0).measurable ms,
-      Measure.dirac_apply' _ (zer.measurable ms), Measure.dirac_apply' _ ((er' 0).measurable ms)]
-    apply indicator_eq_indicator
-    simp only [id_eq, zer, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, mem_preimage, er']
+      Measure.map_apply measurable_zer ms, Measure.map_apply (measurable_er' 0) ms,
+      Measure.dirac_apply' _ (measurable_zer ms), Measure.dirac_apply' _ ((measurable_er' 0) ms)]
+    apply indicator_const_eq
+    simp only [id_eq, zer, el, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, mem_preimage, er']
     congrm (fun i ↦ ?_) ∈ s
     simp [(mem_Iic_zero i.2).symm]
   · rw [my_ker_pos _ hN, kerNat_prod _ hN]
@@ -256,8 +256,9 @@ theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
           s ⟨0, mem_Iic.2 <| zero_le _⟩ ×ˢ
             Set.univ.pi (fun i : Ioc 0 (I.sup id) ↦ s ⟨i.1, Ioc_subset_Iic_self i.2⟩) := by
         ext x
-        simp only [er', MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, Set.mem_preimage, Set.mem_pi,
-          Set.mem_univ, true_implies, Subtype.forall, mem_Iic, Set.mem_prod, mem_Ioc]
+        simp only [er', el, nonpos_iff_eq_zero, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk,
+          Set.mem_preimage, comp_apply, Prod_map, id_eq, Set.mem_pi, Set.mem_univ, true_implies,
+          Subtype.forall, mem_Iic, Set.mem_prod, mem_Ioc]
         refine ⟨fun h ↦ ⟨h 0 (zero_le _), fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
         · convert h i hi2
           simp [hi1.ne.symm]
