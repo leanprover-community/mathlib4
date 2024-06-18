@@ -65,10 +65,10 @@ theorem Units.mem : u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
     (isOfFinOrder_iff_pow_eq_one.2 ⟨n, hnpos, hn⟩)
   replace hr : r ∈ Finset.Ico 0 3 := Finset.mem_Ico.2 ⟨by simp, hr3⟩
   replace hru : ↑u = η ^ r ∨ ↑u = -η ^ r := by
-    rcases hru with (h | h)
+    rcases hru with h | h
     · left; ext; exact h
     · right; ext; exact h
-  fin_cases hr <;> rcases hru with (h | h) <;> simp [h]
+  fin_cases hr <;> rcases hru with h | h <;> simp [h]
 
 /-- We have that `λ ^ 2 = -3 * η`. -/
 private lemma lambda_sq : λ ^ 2 = -3 * η := by
@@ -130,7 +130,7 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ �
     simp only [PNat.val_ofNat, Nat.cast_ofNat, Int.reduceAbs]
   rw [Finset.univ_of_card_eq_three h3] at this
   simp only [Finset.mem_insert, Finset.mem_singleton] at this
-  rcases this with (h | h | h)
+  rcases this with h | h | h
   · left
     exact Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 h
   · right; left
@@ -155,7 +155,7 @@ lemma cube_sub_one_eq_mul : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
 
 /-- We have that `λ` divides `x * (x - 1) * (x - (η + 1))`. -/
 lemma lambda_dvd_mul_sub_one_mul_sub_eta_add_one : λ ∣ x * (x - 1) * (x - (η + 1)) := by
-  rcases lambda_dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (h | h | h)
+  rcases lambda_dvd_or_dvd_sub_one_or_dvd_add_one hζ x with h | h | h
   · exact dvd_mul_of_dvd_left (dvd_mul_of_dvd_left h _) _
   · exact dvd_mul_of_dvd_left (dvd_mul_of_dvd_right h _) _
   · refine dvd_mul_of_dvd_right ?_ _
@@ -185,7 +185,7 @@ lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x
 /-- If `λ` does not divide `x`, then `λ ^ 4` divides `x ^ 3 - 1` or `x ^ 3 + 1`. -/
 lemma lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd {x : 𝓞 K} (h : ¬ λ ∣ x) :
     λ ^ 4 ∣ x ^ 3 - 1 ∨ λ ^ 4 ∣ x ^ 3 + 1 := by
-  rcases lambda_dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (H | H | H)
+  rcases lambda_dvd_or_dvd_sub_one_or_dvd_add_one hζ x with H | H | H
   · contradiction
   · left
     exact lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ H
