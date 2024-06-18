@@ -6,7 +6,7 @@ Authors: David Loeffler
 import Mathlib.Topology.Instances.ZMod
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 /-!
-# Measure-space instance on `ZMod N`
+# Measureable space instance on `ZMod N`
 
 We equip `ZMod N` with the discrete measureable space structure.
 -/
