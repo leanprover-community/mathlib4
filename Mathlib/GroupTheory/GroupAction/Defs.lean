@@ -58,6 +58,8 @@ class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
   smul_zero : ∀ a : M, a • (0 : A) = 0
 #align smul_zero_class SMulZeroClass
 
+attribute [instance 100] SMulZeroClass.toSMul
+
 section smul_zero
 
 variable [Zero A] [SMulZeroClass M A]
