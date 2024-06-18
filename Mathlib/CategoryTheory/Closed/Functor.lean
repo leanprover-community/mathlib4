@@ -107,13 +107,19 @@ theorem uncurry_expComparison (A B : C) :
 theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
     expComparison F A ≫ whiskerLeft _ (pre (F.map f)) =
       whiskerRight (pre f) _ ≫ expComparison F A' := by
+  unfold expComparison pre
+  have vcomp1 := MatesConjugates_vcomp (exp.adjunction A) (exp.adjunction (F.obj A)) (exp.adjunction (F.obj A')) ((prodComparisonNatIso F A).inv) ((prod.functor.map (F.map f)))
+  have vcomp2 := ConjugatesMates_vcomp (exp.adjunction A) (exp.adjunction A') (exp.adjunction (F.obj A')) ((prod.functor.map f)) ((prodComparisonNatIso F A').inv)
+  unfold LeftAdjointSquareConjugate.vcomp RightAdjointSquareConjugate.vcomp at vcomp1
+  unfold LeftAdjointConjugateSquare.vcomp RightAdjointConjugateSquare.vcomp at vcomp2
+  rw [← vcomp1, ← vcomp2]
+  apply congr_arg
   ext B
-  dsimp
-  apply uncurry_injective
-  rw [uncurry_natural_left, uncurry_natural_left, uncurry_expComparison, uncurry_pre,
-    prod.map_swap_assoc, ← F.map_id, expComparison_ev, ← F.map_id, ←
-    prodComparison_inv_natural_assoc, ← prodComparison_inv_natural_assoc, ← F.map_comp, ←
-    F.map_comp, prod_map_pre_app_comp_ev]
+  simp only [Functor.comp_obj, prod.functor_obj_obj, prodComparisonNatIso_inv, asIso_inv, NatTrans.comp_app,
+  whiskerLeft_app, prod.functor_map_app, NatIso.isIso_inv_app, whiskerRight_app]
+  have piso := (prodComparison_inv_natural F f (𝟙 B)).symm
+  rw [← F.map_id]
+  exact piso
 #align category_theory.exp_comparison_whisker_left CategoryTheory.expComparison_whiskerLeft
 
 /-- The functor `F` is cartesian closed (ie preserves exponentials) if each natural transformation
@@ -133,11 +139,11 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   ext B : 2
   dsimp [frobeniusMorphism, Conjugates, Mates, Adjunction.comp]
   simp only [id_comp, comp_id]
-  rw [← L.map_comp_assoc, prod.map_id_comp, assoc]
+  rw [← L.map_comp_assoc, prod.map_id_comp, ← L.map_comp_assoc, assoc, assoc]
   -- Porting note: need to use `erw` here.
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [expComparison_ev]
-  rw [prod.map_id_comp, assoc, ← F.map_id, ← prodComparison_inv_natural_assoc, ← F.map_comp]
+  rw [← assoc (prod.map (𝟙 (F.obj A)) (h.unit.app B)) _ _, ← prod.map_id_comp,  ← F.map_id, ← prodComparison_inv_natural_assoc, ← F.map_comp]
   -- Porting note: need to use `erw` here.
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [exp.ev_coev]

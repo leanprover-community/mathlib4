@@ -513,4 +513,84 @@ theorem IteratedMates_Conjugates_symm (α : U₂ ⋙ R₁ ⟶ R₂ ⋙ U₁) :
 
 end IteratedMates
 
+section MatesConjugatesVComp
+
+variable {A : Type u₁} {B : Type u₂} {C : Type u₃}{D : Type u₄}
+variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
+variable [Category.{v₄} D]
+variable {G : A ⥤ C}{H : B ⥤ D}
+variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : C ⥤ D}{R₂ : D ⥤ C}
+variable {L₃ : C ⥤ D}{R₃ : D ⥤ C}
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
+
+/-- Composition of a squares between left adjoints with a conjugate square. -/
+def LeftAdjointSquareConjugate.vcomp :
+    (G ⋙ L₂ ⟶ L₁ ⋙ H) → (L₃ ⟶ L₂) → (G ⋙ L₃ ⟶ L₁ ⋙ H) :=
+  fun α β ↦ (whiskerLeft G β) ≫ α
+
+/-- Composition of a squares between right adjoints with a conjugate square. -/
+def RightAdjointSquareConjugate.vcomp :
+    (R₁ ⋙ G ⟶ H ⋙ R₂) → (R₂ ⟶ R₃) → (R₁ ⋙ G ⟶ H ⋙ R₃) :=
+  fun α β ↦ α ≫ (whiskerLeft H β)
+
+/-- The mates equivalence commutes with this composition, essentially by `Mates_vcomp`. -/
+theorem MatesConjugates_vcomp
+    (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (β : L₃ ⟶ L₂) :
+    (Mates adj₁ adj₃) (LeftAdjointSquareConjugate.vcomp α β) =
+      RightAdjointSquareConjugate.vcomp (Mates adj₁ adj₂ α) (Conjugates adj₂ adj₃ β) := by
+  ext b
+  have vcomp := Mates_vcomp adj₁ adj₂ adj₃ α (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
+  unfold LeftAdjointSquare.vcomp RightAdjointSquare.vcomp at vcomp
+  unfold LeftAdjointSquareConjugate.vcomp RightAdjointSquareConjugate.vcomp Conjugates
+  have vcompb := congr_app vcomp b
+  simp at vcompb
+  unfold Mates
+  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
+    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
+    Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
+    rightUnitor_inv_app, leftUnitor_hom_app, map_id, Functor.id_map, comp_id, id_comp]
+  exact vcompb
+
+end MatesConjugatesVComp
+
+section ConjugatesMatesVComp
+
+variable {A : Type u₁} {B : Type u₂} {C : Type u₃}{D : Type u₄}
+variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
+variable [Category.{v₄} D]
+variable {G : A ⥤ C}{H : B ⥤ D}
+variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : A ⥤ B}{R₂ : B ⥤ A}
+variable {L₃ : C ⥤ D}{R₃ : D ⥤ C}
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
+
+/-- Composition of a conjugate square with a squares between left adjoints. -/
+def LeftAdjointConjugateSquare.vcomp :
+    (L₂ ⟶ L₁) → (G ⋙ L₃ ⟶ L₂ ⋙ H) → (G ⋙ L₃ ⟶ L₁ ⋙ H) :=
+  fun α β ↦ β ≫ (whiskerRight α H)
+
+/-- Composition of a conjugate square with a squares between right adjoints. -/
+def RightAdjointConjugateSquare.vcomp :
+    (R₁ ⟶ R₂) → (R₂ ⋙ G ⟶ H ⋙ R₃) → (R₁ ⋙ G ⟶ H ⋙ R₃) :=
+  fun α β ↦ (whiskerRight α G) ≫ β
+
+/-- The mates equivalence commutes with this composition, essentially by `Mates_vcomp`. -/
+theorem ConjugatesMates_vcomp
+    (α : L₂ ⟶ L₁) (β : G ⋙ L₃ ⟶ L₂ ⋙ H) :
+    (Mates adj₁ adj₃) (LeftAdjointConjugateSquare.vcomp α β) =
+      RightAdjointConjugateSquare.vcomp (Conjugates adj₁ adj₂ α) (Mates adj₂ adj₃ β) := by
+  ext b
+  have vcomp := Mates_vcomp adj₁ adj₂ adj₃ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) β
+  unfold LeftAdjointSquare.vcomp RightAdjointSquare.vcomp at vcomp
+  unfold LeftAdjointConjugateSquare.vcomp RightAdjointConjugateSquare.vcomp Conjugates
+  have vcompb := congr_app vcomp b
+  simp at vcompb
+  unfold Mates
+  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
+    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
+    Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
+    rightUnitor_inv_app, leftUnitor_hom_app, map_id, Functor.id_map, comp_id, id_comp]
+  exact vcompb
+
+end ConjugatesMatesVComp
+
 end CategoryTheory
