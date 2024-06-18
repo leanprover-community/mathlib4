@@ -59,22 +59,32 @@ used implications are:
   * `SMulPosStrictMono → SMulPosMono`
   * `PosSMulReflectLE → PosSMulReflectLT`
   * `SMulPosReflectLE → SMulPosReflectLT`
-* When `β` is a linear order: `PosSMulStrictMono → PosSMulReflectLE`
-* When `α` is a linear order: `SMulPosStrictMono → SMulPosReflectLE`
+* When `β` is a linear order:
+  * `PosSMulStrictMono → PosSMulReflectLE`
+  * `PosSMulReflectLT → PosSMulMono`
+  * `SMulPosReflectLT → SMulPosMono`
+  * `PosSMulReflectLE → PosSMulStrictMono`
+  * `SMulPosReflectLE → SMulPosStrictMono`
+* When `α` is a linear order:
+  * `SMulPosStrictMono → SMulPosReflectLE`
 * When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
   * `PosSMulMono → SMulPosMono`
   * `PosSMulStrictMono → SMulPosStrictMono`
-* When `α` is an ordered semifield, `β` is an `α`-module:
+* When `α` is an linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
+* When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+  * `PosSMulMono → PosSMulStrictMono`
+* When `α` is a ring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+  * `SMulPosMono → SMulPosStrictMono`
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
 * `OrderedSMul → PosSMulStrictMono`
 * `OrderedSMul → PosSMulReflectLT`
 
-All these are registered as instances, which means that in practice you should not worry about these
-implications. However, if you encounter a case where you think a statement is true but not covered
-by the current implications, please bring it up on Zulip!
+Most of them are registered as instances, which means that in practice you should not worry about
+these implications. However, if you encounter a case where you think a statement is true but not
+covered by the current implications, please bring it up on Zulip!
 
 ## Implementation notes
 
