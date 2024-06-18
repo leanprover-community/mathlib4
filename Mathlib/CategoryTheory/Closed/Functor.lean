@@ -77,13 +77,13 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 `F` is a cartesian closed functor if this is an iso for all `A`.
 -/
 def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
-  transferNatTrans (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
+  Mates (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 #align category_theory.exp_comparison CategoryTheory.expComparison
 
 theorem expComparison_ev (A B : C) :
     Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
-  convert transferNatTrans_counit _ _ (prodComparisonNatIso F A).inv B using 2
+  convert Mates_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
   simp only [Limits.prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
 #align category_theory.exp_comparison_ev CategoryTheory.expComparison_ev
@@ -91,7 +91,7 @@ theorem expComparison_ev (A B : C) :
 theorem coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
-  convert unit_transferNatTrans _ _ (prodComparisonNatIso F A).inv B using 3
+  convert unit_Mates _ _ (prodComparisonNatIso F A).inv B using 3
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
   dsimp
   simp
@@ -126,12 +126,12 @@ class CartesianClosedFunctor : Prop where
 attribute [instance] CartesianClosedFunctor.comparison_iso
 
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
-    transferNatTransSelf (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
+    Conjugates (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A) =
       expComparison F A := by
   rw [← Equiv.eq_symm_apply]
   ext B : 2
-  dsimp [frobeniusMorphism, transferNatTransSelf, transferNatTrans, Adjunction.comp]
+  dsimp [frobeniusMorphism, Conjugates, Mates, Adjunction.comp]
   simp only [id_comp, comp_id]
   rw [← L.map_comp_assoc, prod.map_id_comp, assoc]
   -- Porting note: need to use `erw` here.
@@ -156,7 +156,7 @@ at `A` is an isomorphism.
 theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
     [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobeniusMorphism_mate F h] at i
-  exact @transferNatTransSelf_of_iso _ _ _ _ _ _ _ _ _ _ _ i
+  exact @Conjugates_of_iso _ _ _ _ _ _ _ _ _ _ _ i
 #align category_theory.frobenius_morphism_iso_of_exp_comparison_iso CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
 
 /--

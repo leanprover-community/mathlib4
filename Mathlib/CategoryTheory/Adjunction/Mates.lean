@@ -409,16 +409,14 @@ variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 /-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both between categories `C`, `D`, there is a
-bijection between natural transformations `L₂ ⟶ L₁` and natural transformations `R₁ ⟶ R₂`. This is defined as a special case of `Mates`, where the two "vertical" functors are identity, modulo composition with the unitors.
+bijection between natural transformations `L₂ ⟶ L₁` and natural transformations `R₁ ⟶ R₂`. This is defined as a special case of `Mates`, where the two "vertical" functors are identity, modulo composition with the unitors. Corresponding natural transformations are called `Conjugates`.
 TODO: Generalise to when the two vertical functors are equivalences rather than being exactly `𝟭`.
 
 Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transformation is an iso
-iff its image under the bijection is an iso, see eg `CategoryTheory.transferNatTransSelf_iso`.
-This is in contrast to the general case `transferNatTrans` which
+iff its image under the bijection is an iso, see eg `CategoryTheory.Conjugates_iso`.
+This is in contrast to the general case `Mates` which
  does not in general have this property.-/
-
-/-- Mates between parallel adjunctions are called conjugates. -/
-def Conjugates : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
+ def Conjugates : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
     _ ≃ _ := Mates adj₁ adj₂
