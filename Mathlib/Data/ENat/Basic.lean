@@ -107,7 +107,9 @@ def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNat : ℕ∞ → ℕ := toNatHom
 
-theorem toNat_eq_toNatHom : toNat n = toNatHom n := rfl
+@[simp]
+theorem toNatHom_eq_toNat : toNatHom n = toNat n :=
+  rfl
 
 @[simp]
 theorem toNat_coe (n : ℕ) : toNat n = n :=
