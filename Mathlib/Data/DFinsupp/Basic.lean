@@ -96,17 +96,10 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
   DFunLike.ext _ _ h
 #align dfinsupp.ext DFinsupp.ext
 
-@[deprecated DFunLike.ext_iff (since := "2023-01-27")]
-theorem ext_iff {f g : Π₀ i, β i} : f = g ↔ ∀ i, f i = g i :=
-  DFunLike.ext_iff
-#align dfinsupp.ext_iff DFinsupp.ext_iff
+#align dfinsupp.ext_iff DFunLike.ext_iff
+#align dfinsupp.coe_fn_injective DFunLike.coe_injective
 
 lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
-
-@[deprecated DFunLike.coe_injective (since := "2023-01-27")]
-theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑) :=
-  DFunLike.coe_injective
-#align dfinsupp.coe_fn_injective DFinsupp.coeFn_injective
 
 instance : Zero (Π₀ i, β i) :=
   ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
