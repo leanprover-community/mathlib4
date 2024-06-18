@@ -8,9 +8,6 @@ import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Functor.FunctorHom
-import Mathlib.Tactic.ApplyFun
-import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 
 /-!
 # Functors to Type are closed.
@@ -56,24 +53,36 @@ def rightAdj (F : C ⥤ Type max w v u) : (C ⥤ Type max w v u) ⥤ C ⥤ Type 
 
 variable {F G H : C ⥤ Type max w v u}
 
+def HomObjEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (F.HomObj H G) where
+  toFun a := ⟨fun X y x ↦ a.app X (x, y), fun φ y ↦ by
+    ext x
+    erw [congr_fun (a.naturality φ) (x, y)]
+    rfl ⟩
+  invFun a := ⟨fun X ⟨x, y⟩ ↦ a.app X y x, fun X Y f ↦ by
+    ext ⟨x, y⟩
+    erw [congr_fun (a.naturality f y) x]
+    rfl ⟩
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
 /-- The bijection between morphisms `F ⊗ G ⟶ H` and morphisms `G ⟶ F.ihom H`. -/
-def homEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (G ⟶ F.ihom H) :=
-  ((Functor.functorHomEquiv F _ _).trans (Functor.HomObjEquiv F _ _)).symm
+def prodHomEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (G ⟶ F.ihom H) :=
+  (HomObjEquiv F G H).trans (Functor.functorHomEquiv F H G).symm
 
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
 def adj (F : C ⥤ Type max w v u) : tensorLeft F ⊣ rightAdj F where
-  homEquiv _ _ := homEquiv _ _ _
+  homEquiv _ _ := prodHomEquiv F _ _
   unit := {
-    app := fun G ↦ (homEquiv _ _ _).toFun (𝟙 _)
+    app := fun G ↦ prodHomEquiv _ _ _ (𝟙 _)
     naturality := fun G H f ↦ by
       ext c y
-      dsimp [rightAdj, homEquiv, Functor.functorHomEquiv]
+      dsimp [rightAdj, prodHomEquiv, Functor.functorHomEquiv]
       ext d
       dsimp only [Monoidal.tensorObj_obj, comp, Monoidal.whiskerLeft_app, whiskerLeft_apply]
       rw [Eq.symm (FunctorToTypes.naturality G H f _ y)]
       rfl
   }
-  counit := { app := fun G ↦ (homEquiv _ _ _).invFun (𝟙 _) }
+  counit := { app := fun G ↦ (prodHomEquiv _ _ _).invFun (𝟙 _) }
 
 instance closed (F : C ⥤ Type max w v u) : Closed F where
   adj := adj F
@@ -81,11 +90,3 @@ instance closed (F : C ⥤ Type max w v u) : Closed F where
 instance monoidalClosed : MonoidalClosed (C ⥤ Type max w v u) where
 
 end FunctorToTypes
-
-open SimplicialCategory
-
-variable (K X Y : SSet.{v})
-
-example : (K ⊗ Y ⟶ X) ≃ (Y ⟶ sHom K X) := FunctorToTypes.homEquiv _ _ _
-
-end CategoryTheory
