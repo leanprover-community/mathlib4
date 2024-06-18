@@ -184,7 +184,6 @@ theorem trace_col_mul_row {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     trace (col ι a * row ι b) = dotProduct a b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
-
 #align matrix.trace_col_mul_row Matrix.trace_col_mul_row
 
 end Mul
