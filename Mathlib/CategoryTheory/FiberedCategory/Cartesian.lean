@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 # Cartesian morphisms
 
 This file defines cartesian resp. strongly cartesian morphisms with respect to a functor
-`p : 𝒳 ⟶ 𝒮`.
+`p : 𝒳 ⥤ 𝒮`.
 
 ## Main definitions
 
