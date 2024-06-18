@@ -23,8 +23,6 @@ When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCom
 When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives the identification
 `C(α, β) ≃ C_c(α, β)`.
 
-## TODO
-
 -/
 
 variable {F α β γ : Type*} [TopologicalSpace α]
