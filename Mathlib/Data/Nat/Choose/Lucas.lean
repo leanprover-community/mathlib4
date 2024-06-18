@@ -58,7 +58,7 @@ theorem lucas_theorem : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (
     · rw [← h.left, ← h.right, mod_add_div]
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
-`choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over i < a, multiplied by 
+`choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over i < a, multiplied by
 `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
 theorem lucas_theorem' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
     ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
