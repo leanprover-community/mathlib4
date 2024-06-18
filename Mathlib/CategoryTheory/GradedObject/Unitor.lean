@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
+import Mathlib.CategoryTheory.GradedObject.Associator
 import Mathlib.CategoryTheory.GradedObject.Single
 /-!
 # The left and right unitors
@@ -13,9 +13,9 @@ map `p : I × J → J` such that `hp : ∀ (j : J), p ⟨0, j⟩ = j`,
 we define an isomorphism of `J`-graded objects for any `Y : GradedObject J D`.
 `mapBifunctorLeftUnitor F X e p hp Y : mapBifunctorMapObj F p ((single₀ I).obj X) Y ≅ Y`.
 Under similar assumptions, we also obtain a right unitor isomorphism
-`mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`.
-
-TODO (@joelriou): get the triangle identity.
+`mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`. Finally,
+the lemma `mapBifunctor_triangle` promotes a triangle identity involving functors
+to a triangle identity for the induced functors on graded objects.
 
 -/
 
@@ -43,8 +43,8 @@ noncomputable def mapBifunctorObjSingle₀ObjIso (a : I × J) (ha : a.1 = 0) :
   (F.mapIso (singleObjApplyIsoOfEq _ X _ ha)).app _ ≪≫ e.app (Y a.2)
 
 /-- Given `F : C ⥤ D ⥤ D`, `X : C` and `Y : GradedObject J D`,
-`((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y a` is an initial when `a : I × J`
-is such that `a.1 ≠ 0`. -/
+`((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y a` is an initial object
+when `a : I × J` is such that `a.1 ≠ 0`. -/
 noncomputable def mapBifunctorObjSingle₀ObjIsInitial (a : I × J) (ha : a.1 ≠ 0) :
     IsInitial (((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y a) :=
   IsInitial.isInitialObj (F.flip.obj (Y a.2)) _ (isInitialSingleObjApply _ _ _ ha)
@@ -233,7 +233,7 @@ variable {Y Y'}
 @[reassoc]
 lemma mapBifunctorRightUnitor_inv_naturality :
     φ ≫ (mapBifunctorRightUnitor F Y e p hp X').inv =
-      (mapBifunctorRightUnitor F Y e p hp X).inv ≫ mapBifunctorMapMap F p φ (𝟙 _):= by
+      (mapBifunctorRightUnitor F Y e p hp X).inv ≫ mapBifunctorMapMap F p φ (𝟙 _) := by
   ext j
   dsimp
   rw [mapBifunctorRightUnitor_inv_apply, mapBifunctorRightUnitor_inv_apply, assoc, assoc,
@@ -251,6 +251,106 @@ lemma mapBifunctorRightUnitor_naturality :
     comp_id, mapBifunctorRightUnitor_inv_naturality, Iso.hom_inv_id_assoc]
 
 end RightUnitor
+
+section
+
+variable {I₁ I₂ I₃ J : Type*} [Zero I₂]
+
+/-- Given two maps `r : I₁ × I₂ × I₃ → J` and `π : I₁ × I₃ → J`, this structure is the
+input in the formulation of the triangle equality `mapBifunctor_triangle` which
+relates the left and right unitor and the associator for `GradedObject.mapBifunctor`. -/
+structure TriangleIndexData (r : I₁ × I₂ × I₃ → J) (π : I₁ × I₃ → J) where
+  /-- a map `I₁ × I₂ → I₁` -/
+  p₁₂ : I₁ × I₂ → I₁
+  hp₁₂ (i : I₁ × I₂ × I₃) : π ⟨p₁₂ ⟨i.1, i.2.1⟩, i.2.2⟩ = r i
+  /-- a map `I₂ × I₃ → I₃` -/
+  p₂₃ : I₂ × I₃ → I₃
+  hp₂₃ (i : I₁ × I₂ × I₃) : π ⟨i.1, p₂₃ i.2⟩ = r i
+  h₁ (i₁ : I₁) : p₁₂ (i₁, 0) = i₁
+  h₃ (i₃ : I₃) : p₂₃ (0, i₃) = i₃
+
+variable {r : I₁ × I₂ × I₃ → J} {π : I₁ × I₃ → J}
+  (τ : TriangleIndexData r π)
+
+namespace TriangleIndexData
+
+attribute [simp] h₁ h₃
+
+lemma r_zero (i₁ : I₁) (i₃ : I₃) : r ⟨i₁, 0, i₃⟩ = π ⟨i₁, i₃⟩ := by
+  rw [← τ.hp₂₃, τ.h₃ i₃]
+
+/-- The `BifunctorComp₁₂IndexData r` attached to a `TriangleIndexData r π`. -/
+@[reducible]
+def ρ₁₂ : BifunctorComp₁₂IndexData r where
+  I₁₂ := I₁
+  p := τ.p₁₂
+  q := π
+  hpq := τ.hp₁₂
+
+/-- The `BifunctorComp₂₃IndexData r` attached to a `TriangleIndexData r π`. -/
+@[reducible]
+def ρ₂₃ : BifunctorComp₂₃IndexData r where
+  I₂₃ := I₃
+  p := τ.p₂₃
+  q := π
+  hpq := τ.hp₂₃
+
+end TriangleIndexData
+
+end
+
+section Triangle
+
+variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category C₁] [Category C₂] [Category C₃] [Category D]
+  [Zero I₂] [DecidableEq I₂] [HasInitial C₂]
+  {F₁ : C₁ ⥤ C₂ ⥤ C₁} {F₂ : C₂ ⥤ C₃ ⥤ C₃} {G : C₁ ⥤ C₃ ⥤ D}
+  (associator : bifunctorComp₁₂ F₁ G ≅ bifunctorComp₂₃ G F₂)
+  (X₂ : C₂) (e₁ : F₁.flip.obj X₂ ≅ 𝟭 C₁) (e₂ : F₂.obj X₂ ≅ 𝟭 C₃)
+  [∀ (X₁ : C₁), PreservesColimit (Functor.empty.{0} C₂) (F₁.obj X₁)]
+  [∀ (X₃ : C₃), PreservesColimit (Functor.empty.{0} C₂) (F₂.flip.obj X₃)]
+  {r : I₁ × I₂ × I₃ → J} {π : I₁ × I₃ → J}
+  (τ : TriangleIndexData r π)
+  (X₁ : GradedObject I₁ C₁) (X₃ : GradedObject I₃ C₃)
+  [HasMap (((mapBifunctor F₁ I₁ I₂).obj X₁).obj ((single₀ I₂).obj X₂)) τ.p₁₂]
+  [HasMap (((mapBifunctor G I₁ I₃).obj
+    (mapBifunctorMapObj F₁ τ.p₁₂ X₁ ((single₀ I₂).obj X₂))).obj X₃) π]
+  [HasMap (((mapBifunctor F₂ I₂ I₃).obj ((single₀ I₂).obj X₂)).obj X₃) τ.p₂₃]
+  [HasMap (((mapBifunctor G I₁ I₃).obj X₁).obj
+      (mapBifunctorMapObj F₂ τ.p₂₃ ((single₀ I₂).obj X₂) X₃)) π]
+  [HasGoodTrifunctor₁₂Obj F₁ G τ.ρ₁₂ X₁ ((single₀ I₂).obj X₂) X₃]
+  [HasGoodTrifunctor₂₃Obj G F₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃]
+  [HasMap (((mapBifunctor G I₁ I₃).obj X₁).obj X₃) π]
+  (triangle : ∀ (X₁ : C₁) (X₃ : C₃), ((associator.hom.app X₁).app X₂).app X₃ ≫
+    (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃)
+
+lemma mapBifunctor_triangle :
+    (mapBifunctorAssociator associator τ.ρ₁₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃).hom ≫
+    mapBifunctorMapMap G π (𝟙 X₁) (mapBifunctorLeftUnitor F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃).hom =
+      mapBifunctorMapMap G π (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).hom (𝟙 X₃) := by
+  rw [← cancel_epi ((mapBifunctorMapMap G π
+    (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).inv (𝟙 X₃)))]
+  ext j i₁ i₃ hj
+  simp only [categoryOfGradedObjects_comp, ι_mapBifunctorMapMap_assoc,
+    mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.flip_obj_obj, Functor.map_comp,
+    NatTrans.comp_app, categoryOfGradedObjects_id, Functor.map_id, id_comp, assoc,
+    ι_mapBifunctorMapMap]
+  congr 2
+  rw [← ιMapBifunctor₁₂BifunctorMapObj_eq_assoc F₁ G τ.ρ₁₂ _ _ _ i₁ 0 i₃ j
+    (by rw [τ.r_zero, hj]) i₁ (by simp), ι_mapBifunctorAssociator_hom_assoc,
+    ιMapBifunctorBifunctor₂₃MapObj_eq_assoc G F₂ τ.ρ₂₃ _ _ _ i₁ 0 i₃ j
+    (by rw [τ.r_zero, hj]) i₃ (by simp), ι_mapBifunctorMapMap]
+  dsimp
+  rw [Functor.map_id, NatTrans.id_app, id_comp,
+    ← Functor.map_comp_assoc, ← NatTrans.comp_app_assoc, ← Functor.map_comp,
+    ι_mapBifunctorLeftUnitor_hom_apply F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃ i₃,
+    ι_mapBifunctorRightUnitor_hom_apply F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁ i₁]
+  dsimp
+  simp only [Functor.map_comp, NatTrans.comp_app, ← triangle (X₁ i₁) (X₃ i₃), ← assoc]
+  congr 2
+  symm
+  apply NatTrans.naturality_app (associator.hom.app (X₁ i₁))
+
+end Triangle
 
 end GradedObject
 

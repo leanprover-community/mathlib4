@@ -311,7 +311,7 @@ theorem mul_right_cancel'' [ContravariantClass α α (swap (· * ·)) (· ≤ ·
   haveI := covariantClass_le_of_lt α α (swap (· * ·))
   refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   simp only [eq_iff_le_not_lt, ha, hb, true_and]
-  refine' ⟨fun ha ↦ h.not_lt _, fun hb ↦ h.not_lt _⟩
+  refine ⟨fun ha ↦ h.not_lt ?_, fun hb ↦ h.not_lt ?_⟩
   exacts [mul_lt_mul_of_lt_of_le ha hb, mul_lt_mul_of_le_of_lt ha hb]
 #align add_le_add_iff_of_ge add_le_add_iff_of_geₓ
 #align mul_le_mul_iff_of_ge mul_le_mul_iff_of_geₓ
@@ -1691,19 +1691,5 @@ protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : IsSymmOp α α (�
 
 end MulLECancellable
 
-section Bit
-set_option linter.deprecated false
-variable [Add α] [Preorder α]
-
-@[deprecated]
-theorem bit0_mono [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
-    Monotone (bit0 : α → α) := fun _ _ h => add_le_add h h
-#align bit0_mono bit0_mono
-
-@[deprecated]
-theorem bit0_strictMono [CovariantClass α α (· + ·) (· < ·)]
-    [CovariantClass α α (swap (· + ·)) (· < ·)] :
-    StrictMono (bit0 : α → α) := fun _ _ h => add_lt_add h h
-#align bit0_strict_mono bit0_strictMono
-
-end Bit
+#noalign bit0_mono
+#noalign bit0_strict_mono

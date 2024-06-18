@@ -16,8 +16,6 @@ and `c : M`, then `(.mk c : Mᵈᵐᵃ) • [f]` is represented by the function 
 We also prove basic properties of this action.
 -/
 
-set_option autoImplicit true
-
 open MeasureTheory Filter
 open scoped ENNReal
 
@@ -56,10 +54,12 @@ instance [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [Meas
     SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass Mᵈᵐᵃ 𝕜 (Lp E p μ) :=
+instance {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] :
+    SMulCommClass Mᵈᵐᵃ 𝕜 (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass 𝕜 Mᵈᵐᵃ (Lp E p μ) :=
+instance {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] :
+    SMulCommClass 𝕜 Mᵈᵐᵃ (Lp E p μ) :=
   .symm _ _ _
 
 -- We don't have a typeclass for additive versions of the next few lemmas

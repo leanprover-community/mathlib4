@@ -3,9 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Data.Int.Parity
 import Mathlib.Data.Fintype.BigOperators
 
 #align_import number_theory.sum_four_squares from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
@@ -95,7 +95,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   · exact lt_of_le_of_ne hp.1.two_le (hodd.ne_two_of_dvd_nat (dvd_refl _)).symm
   · exact hp.1.pos
 
-@[deprecated exists_sq_add_sq_add_one_eq_mul]
+@[deprecated exists_sq_add_sq_add_one_eq_mul (since := "2023-06-04")]
 theorem exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
     ∃ (a b : ℤ) (k : ℕ), a ^ 2 + b ^ 2 + 1 = k * p ∧ k < p :=
   let ⟨a, b, k, _, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p

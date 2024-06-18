@@ -66,7 +66,7 @@ def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : PositiveCone α) : Orde
     lt := fun a b => C.pos (b - a),
     lt_iff_le_not_le := fun a b => by simp [C.pos_iff],
     le_refl := fun a => by simp [C.zero_nonneg],
-    le_trans := fun a b c nab nbc => by simpa [← sub_add_sub_cancel] using C.add_nonneg nbc nab,
+    le_trans := fun a b c nab nbc => by simpa using C.add_nonneg nbc nab,
     le_antisymm := fun a b nab nba =>
       eq_of_sub_eq_zero <| C.nonneg_antisymm nba (by rwa [neg_sub]),
     add_le_add_left := fun a b nab c => by simpa using nab }

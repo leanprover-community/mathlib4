@@ -175,7 +175,7 @@ theorem HasMFDerivWithinAt.mono (h : HasMFDerivWithinAt I I' f t x f') (hst : s 
 
 theorem HasMFDerivAt.hasMFDerivWithinAt (h : HasMFDerivAt I I' f x f') :
     HasMFDerivWithinAt I I' f s x f' :=
-  ⟨ContinuousAt.continuousWithinAt h.1, HasFDerivWithinAt.mono h.2 (inter_subset_right _ _)⟩
+  ⟨ContinuousAt.continuousWithinAt h.1, HasFDerivWithinAt.mono h.2 inter_subset_right⟩
 #align has_mfderiv_at.has_mfderiv_within_at HasMFDerivAt.hasMFDerivWithinAt
 
 theorem HasMFDerivWithinAt.mdifferentiableWithinAt (h : HasMFDerivWithinAt I I' f s x f') :
@@ -225,7 +225,7 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivWithinAt I I' f s x f')
 
 theorem HasMFDerivWithinAt.mono_of_mem (h : HasMFDerivWithinAt I I' f s x f') (ht : s ∈ 𝓝[t] x) :
     HasMFDerivWithinAt I I' f t x f' :=
-  (hasMFDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
+  (hasMFDerivWithinAt_inter' ht).1 (h.mono inter_subset_right)
 #align has_mfderiv_within_at.nhds_within HasMFDerivWithinAt.mono_of_mem
 
 theorem HasMFDerivWithinAt.hasMFDerivAt (h : HasMFDerivWithinAt I I' f s x f') (hs : s ∈ 𝓝 x) :
@@ -390,7 +390,7 @@ theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n
     apply hf.1.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds I' (f x)
   rw [mdifferentiableWithinAt_iff]
-  exact ⟨hf.1.mono (inter_subset_left _ _), (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
+  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
 #align cont_mdiff_within_at.mdifferentiable_within_at ContMDiffWithinAt.mdifferentiableWithinAt
 
 theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : 1 ≤ n) :

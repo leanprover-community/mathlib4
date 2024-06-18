@@ -110,11 +110,11 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
--- Adaptation note: nightly-2024-03-11
--- We turn off simprocs here.
--- Ideally someone will investigate whether `simp` lemmas can be rearranged
--- so that this works without the `set_option`,
--- *or* come up with a proposal regarding finer control of disabling simprocs.
+#adaptation_note /-- nightly-2024-03-11
+We turn off simprocs here.
+Ideally someone will investigate whether `simp` lemmas can be rearranged
+so that this works without the `set_option`,
+*or* come up with a proposal regarding finer control of disabling simprocs. -/
 set_option simprocs false in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
@@ -151,11 +151,11 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
--- Adaptation note: nightly-2024-03-11
--- We turn off simprocs here.
--- Ideally someone will investigate whether `simp` lemmas can be rearranged
--- so that this works without the `set_option`,
--- *or* come up with a proposal regarding finer control of disabling simprocs.
+#adaptation_note /-- nightly-2024-03-11
+We turn off simprocs here.
+Ideally someone will investigate whether `simp` lemmas can be rearranged
+so that this works without the `set_option`,
+*or* come up with a proposal regarding finer control of disabling simprocs. -/
 set_option simprocs false in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
@@ -228,6 +228,7 @@ such that `c.Rel i j`, this is the snake diagram whose four lines are respective
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
 gives the homology sequence of `S`. -/
+@[simps]
 noncomputable def snakeInput : ShortComplex.SnakeInput C where
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
   L₁ := (opcyclesFunctor C c i).mapShortComplex.obj S
