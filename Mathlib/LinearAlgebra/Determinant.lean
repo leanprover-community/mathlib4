@@ -497,6 +497,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
     LinearEquiv.apply_symm_apply]
 #align linear_map.associated_det_comp_equiv LinearMap.associated_det_comp_equiv
 
+set_option linter.unnecessarySyntax false in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
 nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where

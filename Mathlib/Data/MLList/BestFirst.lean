@@ -205,6 +205,7 @@ def pop (q : BestFirstQueue prio ε m β maxSize) :
   | none => pure none
   | some (⟨a, _, b⟩, q') => pure (some ((a, b), q'))
 
+set_option linter.unnecessarySyntax false in
 /--
 Convert a `BestFirstQueue` to a `MLList ((α × ω) × β)`, by popping off all elements,
 recording also the values in `ω` of the best current lower bounds.
