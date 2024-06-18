@@ -250,6 +250,16 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
   rfl
 #align category_theory.iso.hom_eq_inv CategoryTheory.Iso.hom_eq_inv
 
+/-- The bijection `(X ⟶ Y) ≃ (X' ⟶ Y')` that is induced by isomorphisms
+`e : X ≅ X'` and `e' : Y ≅ Y'`. -/
+@[simps]
+def homEquiv {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y') :
+    (X ⟶ Y) ≃ (X' ⟶ Y') where
+  toFun f := e.inv ≫ f ≫ e'.hom
+  invFun g := e.hom ≫ g ≫ e'.inv
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
 end Iso
 
 /-- `IsIso` typeclass expressing that a morphism is invertible. -/

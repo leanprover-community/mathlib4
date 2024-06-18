@@ -9,30 +9,22 @@ import Mathlib.Logic.Small.Defs
 /-!
 # Shrinking morphisms in localized categories
 
+Given a class of morphisms `W : MorphismProperty C`, and two objects `X` and `Y`,
+we introduce a type-class `HasSmallLocalizedHom.{w} W X Y` which expresses
+that in the localized category with respect to `W`, the type of morphisms from `X`
+to `Y` is `w`-small for a certain universe `w`. Under this assumption,
+we define `SmallHom.{w} W X Y : Type w` as the shrunk type. For any localization
+functor `L : C ⥤ D` for `W`, we provide a bijection
+`SmallHom.equiv.{w} W L : SmallHom.{w} W X Y ≃ (L.obj X ⟶ L.obj Y)` that is compatible
+with the composition of morphisms.
+
 -/
 
 universe w w' w'' v u u' u''
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C]
-
-section
-
--- should be moved to CategoryTheory.Iso
-/-- The bijection `(X ⟶ Y) ≃ (X' ⟶ Y')` that is induced by isomorphisms
-`e : X ≅ X'` and `e' : Y ≅ Y'`. -/
-@[simps]
-def homEquivOfIsos {X Y X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y') :
-    (X ⟶ Y) ≃ (X' ⟶ Y') where
-  toFun f := e.inv ≫ f ≫ e'.hom
-  invFun g := e.hom ≫ g ≫ e'.inv
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-
-end
-
-variable (W : MorphismProperty C)
+variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
   {D : Type u'} [Category.{w'} D] (L : C ⥤ D) [L.IsLocalization W]
   {D' : Type u''} [Category.{w''} D'] (L' : C ⥤ D') [L'.IsLocalization W] (X Y Z : C)
 
@@ -51,7 +43,7 @@ for the same class of morphisms `W`. -/
 noncomputable def localizationsHomEquiv :
     (L.obj X ⟶ L.obj Y) ≃ (L'.obj X ⟶ L'.obj Y) :=
   (Localization.uniq L L' W).fullyFaithfulFunctor.homEquiv.trans
-    (homEquivOfIsos ((Localization.compUniqFunctor L L' W).app X)
+    (Iso.homEquiv ((Localization.compUniqFunctor L L' W).app X)
       ((Localization.compUniqFunctor L L' W).app Y))
 
 @[simp]
@@ -87,7 +79,7 @@ lemma small_of_hasSmallLocalizedHom [HasSmallLocalizedHom.{w} W X Y] :
 lemma hasSmallLocalizedHom_iff_of_isos {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y') :
     HasSmallLocalizedHom.{w} W X Y ↔ HasSmallLocalizedHom.{w} W X' Y' := by
   simp only [W.hasSmallLocalizedHom_iff W.Q]
-  exact small_congr (homEquivOfIsos (W.Q.mapIso e) (W.Q.mapIso e'))
+  exact small_congr (Iso.homEquiv (W.Q.mapIso e) (W.Q.mapIso e'))
 
 end MorphismProperty
 
@@ -114,7 +106,7 @@ noncomputable def equiv [HasSmallLocalizedHom.{w} W X Y] :
   letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
   (equivShrink _).symm.trans (W.localizationsHomEquiv W.Q L)
 
-variable [HasSmallLocalizedHom.{w} W X Y][HasSmallLocalizedHom.{w} W Y Z]
+variable [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y Z]
   [HasSmallLocalizedHom.{w} W X Z]
 
 variable {W}
@@ -129,7 +121,6 @@ noncomputable def comp (α : SmallHom.{w} W X Y) (β : SmallHom.{w} W Y Z) :
 lemma equiv_comp : equiv W L (α.comp β) = equiv W L α ≫ equiv W L β := by
   letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
   letI := small_of_hasSmallLocalizedHom.{w} W W.Q Y Z
-  letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Z
   obtain ⟨α, rfl⟩ := (equivShrink _).surjective α
   obtain ⟨β, rfl⟩ := (equivShrink _).surjective β
   dsimp [equiv, comp]
