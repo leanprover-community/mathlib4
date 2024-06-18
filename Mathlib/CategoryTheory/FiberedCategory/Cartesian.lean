@@ -73,39 +73,39 @@ section
 variable {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ']
 
 /-- Given a cartesian arrow `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, a morphism `φ' : a' ⟶ b`
-lifting `𝟙 R`, then `inducedMap f φ φ'` is the morphism `a' ⟶ a` obtained from the universal
+lifting `𝟙 R`, then `IsCartesian.map f φ φ'` is the morphism `a' ⟶ a` obtained from the universal
 property of `φ`. -/
-noncomputable def inducedMap : a' ⟶ a :=
+protected noncomputable def map : a' ⟶ a :=
   Classical.choose <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ'
 
-instance inducedMap_isHomLift : IsHomLift p (𝟙 R) (inducedMap p f φ φ') :=
+instance map_isHomLift : IsHomLift p (𝟙 R) (IsCartesian.map p f φ φ') :=
   (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.1
 
-@[simp]
-lemma inducedMap_comp : (inducedMap p f φ φ') ≫ φ = φ' :=
+@[reassoc (attr := simp)]
+lemma fac : IsCartesian.map p f φ φ' ≫ φ = φ' :=
   (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.2
 
 /-- Given a cartesian arrow `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, a morphism `φ' : a' ⟶ b`
 lifting `𝟙 R`, and a morphism `ψ : a' ⟶ a` such that `g ≫ ψ = φ'`. Then `ψ` is the map induced
 by the universal property of `φ`. -/
-lemma inducedMap_unique (ψ : a' ⟶ a) [IsHomLift p (𝟙 R) ψ] (hψ : ψ ≫ φ = φ') :
-    ψ = inducedMap p f φ φ' :=
+lemma map_uniq (ψ : a' ⟶ a) [IsHomLift p (𝟙 R) ψ] (hψ : ψ ≫ φ = φ') :
+    ψ = IsCartesian.map p f φ φ' :=
   (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').2
     ψ ⟨inferInstance, hψ⟩
 
 /-- Given a cartesian arrow `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, a morphism `φ' : a' ⟶ b`
 lifting `𝟙 R`, and two morphisms `ψ ψ' : a' ⟶ a` such that `g ≫ ψ = φ' = g ≫ ψ'`. Then we must
 have `ψ = ψ'`. -/
-protected lemma uniqueness {ψ ψ' : a' ⟶ a} [IsHomLift p (𝟙 R) ψ] [IsHomLift p (𝟙 R) ψ']
-    (hcomp : ψ ≫ φ = φ') (hcomp' : ψ' ≫ φ = φ') : ψ = ψ' := by
-  rw [inducedMap_unique p f φ φ' ψ hcomp, inducedMap_unique p f φ φ' ψ' hcomp']
+lemma eq_of_fac {ψ ψ' : a' ⟶ a} [IsHomLift p (𝟙 R) ψ]
+    [IsHomLift p (𝟙 R) ψ'] (hcomp : ψ ≫ φ = φ') (hcomp' : ψ' ≫ φ = φ') : ψ = ψ' := by
+  rw [map_uniq p f φ φ' ψ hcomp, map_uniq p f φ φ' ψ' hcomp']
 
 end
 
 @[simp]
-lemma inducedMap_self_eq_id : inducedMap p f φ φ = 𝟙 a := by
+lemma map_self : IsCartesian.map p f φ φ = 𝟙 a := by
   subst_hom_lift p f φ; symm
-  apply inducedMap_unique
+  apply map_uniq
   simp only [id_comp]
 
 /-- The canonical isomorphism between the domains of two cartesian arrows
@@ -316,3 +316,37 @@ noncomputable def isoOfBaseIso {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f'
 end IsStronglyCartesian
 
 end CategoryTheory
+noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
+  hom := IsCartesian.map p f φ φ'
+  inv := IsCartesian.map p f φ' φ
+  hom_inv_id := by
+    subst_hom_lift p f φ'
+    apply eq_of_fac p (p.map φ') φ' φ' (by simp) (id_comp _)
+  inv_hom_id := by
+    subst_hom_lift p f φ
+    apply eq_of_fac p (p.map φ) φ φ (by simp) (id_comp _)
+
+/-- Precomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
+instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
+    IsCartesian p f (φ'.hom ≫ φ) where
+  universal_property := by
+    intro c ψ hψ
+    use IsCartesian.map p f φ ψ ≫ φ'.inv
+    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    rw [Iso.eq_comp_inv]
+    apply map_uniq
+    simp only [assoc, hτ₂]
+
+/-- Postcomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
+instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
+    IsCartesian p f (φ ≫ φ'.hom) where
+  universal_property := by
+    intro c ψ hψ
+    use IsCartesian.map p f φ (ψ ≫ φ'.inv)
+    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    apply map_uniq
+    simp only [Iso.eq_comp_inv, assoc, hτ₂]
+
+end Functor.IsCartesian
