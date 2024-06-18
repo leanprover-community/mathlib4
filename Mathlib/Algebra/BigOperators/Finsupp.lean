@@ -105,12 +105,6 @@ theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 #align finsupp.prod_ite_eq Finsupp.prod_ite_eq
 #align finsupp.sum_ite_eq Finsupp.sum_ite_eq
 
-theorem prod_ite_eq_iff [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N)
-    {p : α → Prop} [DecidablePred p] (h : ∀ x ∈ f.support, p x ↔ a = x) :
-    (f.prod fun x v => if p x then b x v else 1) = if a ∈ f.support then b a (f a) else 1 := by
-  dsimp [Finsupp.prod]
-  rw [f.support.prod_ite_eq_iff _ _ h]
-
 /- Porting note: simpnf linter, added aux lemma below
 Left-hand side simplifies from
   Finsupp.sum f fun x v => if a = x then v else 0
