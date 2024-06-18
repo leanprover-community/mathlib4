@@ -472,9 +472,9 @@ theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : �
   ⟨g ∘ hf.mk f, hg.comp hf.measurable_mk, EventuallyEq.fun_comp hf.ae_eq_mk _⟩
 #align measurable.comp_ae_measurable Measurable.comp_aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : δ → β}
-    (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x => g (f x)) μ :=
+    (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf
 
 end

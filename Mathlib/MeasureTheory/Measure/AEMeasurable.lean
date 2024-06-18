@@ -170,6 +170,10 @@ theorem comp_aemeasurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (
     (ae_eq_comp hf hg.ae_eq_mk).trans (hf.ae_eq_mk.fun_comp (mk g hg))⟩
 #align ae_measurable.comp_ae_measurable AEMeasurable.comp_aemeasurable
 
+@[fun_prop]
+theorem comp_aemeasurable' {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ.map f))
+    (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ := comp_aemeasurable hg hf
+
 theorem comp_measurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ.map f))
     (hf : Measurable f) : AEMeasurable (g ∘ f) μ :=
   hg.comp_aemeasurable hf.aemeasurable
