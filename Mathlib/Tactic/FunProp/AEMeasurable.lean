@@ -46,16 +46,6 @@ attribute [fun_prop]
   -- AEMeasurable.fst
   -- AEMeasurable.snd
 
--- algebra
-attribute [fun_prop]
-  AEMeasurable.add
-  AEMeasurable.sub
-  AEMeasurable.mul
-  AEMeasurable.neg
-  AEMeasurable.div
-  AEMeasurable.inv
-  AEMeasurable.smul
-
 -- transitions
 attribute [fun_prop]
   AEMeasurable.mono'

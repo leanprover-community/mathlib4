@@ -150,7 +150,7 @@ theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AE
 #align ae_measurable.mul' AEMeasurable.mul'
 #align ae_measurable.add' AEMeasurable.add'
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop, attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a * g a) μ :=
   measurable_mul.comp_aemeasurable (hf.prod_mk hg)
@@ -343,7 +343,7 @@ theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AE
 #align ae_measurable.div' AEMeasurable.div'
 #align ae_measurable.sub' AEMeasurable.sub'
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop, attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a / g a) μ :=
   measurable_div.comp_aemeasurable (hf.prod_mk hg)
@@ -468,7 +468,7 @@ theorem Measurable.inv (hf : Measurable f) : Measurable fun x => (f x)⁻¹ :=
 #align measurable.inv Measurable.inv
 #align measurable.neg Measurable.neg
 
-@[to_additive (attr := measurability)]
+@[to_additive (attr := fun_prop, attr := measurability)]
 theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable (fun x => (f x)⁻¹) μ :=
   measurable_inv.comp_aemeasurable hf
 #align ae_measurable.inv AEMeasurable.inv
@@ -658,7 +658,7 @@ theorem Measurable.smul [MeasurableSMul₂ M β] (hf : Measurable f) (hg : Measu
 #align measurable.smul Measurable.smul
 #align measurable.vadd Measurable.vadd
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop, attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.smul [MeasurableSMul₂ M β] {μ : Measure α} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun x => f x • g x) μ :=
   MeasurableSMul₂.measurable_smul.comp_aemeasurable (hf.prod_mk hg)
