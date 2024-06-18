@@ -420,4 +420,54 @@ theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
   exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (eventually_of_forall hn_eq)
 #align measure_theory.tendsto_condexp_unique MeasureTheory.tendsto_condexp_unique
 
+open Set
+
+set_option quotPrecheck false in
+scoped notation μ "[" X "]" => ∫ x, ↑(X x) ∂μ
+
+scoped notation μ "⟦" s "|" m "⟧" =>
+  MeasureTheory.condexp m μ (indicator s fun ω => (1 : ℝ))
+
+/-- Total probability law using `condexp` as conditional probability. -/
+theorem total_law_condexp [mF : MeasurableSpace F] {Y : α → F} (hY : Measurable Y)
+    [IsProbabilityMeasure μ] {A : Set α} (hA : MeasurableSet[mF.comap Y] A)
+    [SigmaFinite (μ.trim (measurable_iff_comap_le.mp hY))] :
+    (μ A).toReal = μ[μ⟦A | mF.comap Y⟧] := by
+  have hAm0 : MeasurableSet A := (measurable_iff_comap_le.mp hY) A hA
+  have total_exp :
+      ∫ x, (μ[A.indicator fun _ ↦ (1 : ℝ)|mF.comap Y]) x ∂μ = μ[A.indicator (fun x ↦ 1)]
+      := by
+    have hI : HasFiniteIntegral (A.indicator (fun (_ : α) ↦ (1 : ℝ))) μ := by
+      unfold HasFiniteIntegral
+      have rmv_norm : ∀ a, ‖A.indicator (fun (_ : α) ↦ (1 : ℝ)) a‖₊ =
+          A.indicator (fun (_ : α) ↦ (1 : ℝ≥0∞)) a := by
+        intro a
+        by_cases ha : a ∈ A
+        · rw [indicator_of_mem ha fun _ ↦ 1, indicator_of_mem ha fun _ ↦ 1, nnnorm_one]
+          rfl
+        rw [indicator_of_not_mem ha fun _ ↦ 1, indicator_of_not_mem ha fun _ ↦ 1,
+          _root_.nnnorm_zero]
+        rfl
+      simp_rw [rmv_norm]
+      calc ∫⁻ a, A.indicator (fun _ ↦ 1) a ∂μ = ∫⁻ _ in A, 1 ∂μ :=
+        lintegral_indicator (fun _ ↦ 1) hAm0
+      _ = μ A := set_lintegral_one A
+      _ < ⊤ := measure_lt_top μ A
+    have hAEmα : AEStronglyMeasurable (A.indicator (fun (_ : α) ↦ (1 : ℝ))) μ := by
+      suffices StronglyMeasurable (A.indicator (fun (_ : α) ↦ (1 : ℝ))) by
+        exact StronglyMeasurable.aestronglyMeasurable this
+      exact StronglyMeasurable.mono
+        (StronglyMeasurable.indicator stronglyMeasurable_const hA)
+        (measurable_iff_comap_le.mp hY)
+    exact integral_condexp (measurable_iff_comap_le.mp hY) ⟨hAEmα, hI⟩
+  rw [total_exp, integral_indicator hAm0]
+  have ae_pos : 0 ≤ᵐ[μ.restrict A] (fun _ ↦ (1 : ℝ)) := by
+      suffices 0 ≤ (fun (_ : α) ↦ (1 : ℝ)) by exact ae_of_all (μ.restrict A) this
+      intro _
+      simp only [Pi.zero_apply, zero_le_one]
+  rw [
+    integral_eq_lintegral_of_nonneg_ae ae_pos aestronglyMeasurable_const,
+    ENNReal.ofReal_one, set_lintegral_one A
+  ]
+
 end MeasureTheory
