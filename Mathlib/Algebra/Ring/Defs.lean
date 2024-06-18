@@ -176,13 +176,10 @@ attribute [instance 100] Semiring.toAddCommMonoid
 attribute [instance 150] Semiring.toMonoidWithZero
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R,
-    NonAssocRing R, NonUnitalRing R
+class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
 
 attribute [instance 200] Ring.toSemiring
-attribute [instance 100] Ring.toNonAssocRing
-attribute [instance 100] Ring.toNonUnitalRing
 attribute [instance 100] Ring.toAddCommGroup
 attribute [instance 0] Ring.toNeg
 attribute [instance 0] Ring.toSub
@@ -471,6 +468,24 @@ theorem mul_one_sub (a b : α) : a * (1 - b) = a - a * b := by rw [mul_sub, mul_
 #align mul_one_sub mul_one_sub
 
 end NonAssocRing
+
+section Ring
+
+variable [Ring α] {a b c d e : α}
+
+-- A (unital, associative) ring is a not-necessarily-unital ring
+-- see Note [lower instance priority]
+instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
+  { ‹Ring α› with }
+#align ring.to_non_unital_ring Ring.toNonUnitalRing
+
+-- A (unital, associative) ring is a not-necessarily-associative ring
+-- see Note [lower instance priority]
+instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
+  { ‹Ring α› with }
+#align ring.to_non_assoc_ring Ring.toNonAssocRing
+
+end Ring
 
 /-- A non-unital non-associative commutative ring is a `NonUnitalNonAssocRing` with commutative
 multiplication. -/
