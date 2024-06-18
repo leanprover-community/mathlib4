@@ -22,6 +22,14 @@ A lax functor `F` between bicategories `B` and `C` consists of
 * `CategoryTheory.LaxFunctor B C` : an oplax functor between bicategories `B` and `C`
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of oplax functors
 
+## Future work
+
+Some constructions in the Bicategory library have only been done in terms of Oplax functors,
+since Lax functors had not yet been added (e.g `FunctorBicategory.lean`).
+
+
+Possible future work would
+
 -/
 
 namespace CategoryTheory
@@ -36,18 +44,18 @@ section
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-/-- An oplax functor `F` between bicategories `B` and `C` consists of a function between objects
+/-- A lax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
 Unlike functors between categories, `F.map` do not need to strictly commute with the composition,
 and do not need to strictly preserve the identity. Instead, there are specified 2-morphisms
-`F.map (𝟙 a) ⟶ 𝟙 (F.obj a)` and `F.map (f ≫ g) ⟶ F.map f ≫ F.map g`.
+`𝟙 (F.obj a) ⟶ F.map (𝟙 a)` and `F.map f ≫ F.map g ⟶ F.map (f ≫ g)`.
 
 `F.map₂` strictly commute with compositions and preserve the identity. They also preserve the
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
-structure OplaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
+structure LaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
   [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
   mapId (a : B) : 𝟙 (obj a) ⟶ map (𝟙 a)
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map f ≫ map g ⟶ map (f ≫ g)
