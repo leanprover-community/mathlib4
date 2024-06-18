@@ -426,6 +426,9 @@ theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (
   rfl
 #align subgroup.singleton_mul_subgroup Subgroup.singleton_mul_subgroup
 
+theorem mem_ConjAct {G: Type*} [Group G] (U: Subgroup G) (g: G) (x : G):
+  x ∈ ConjAct.toConjAct g • U ↔ ∃ u ∈ U, g * u * g⁻¹ = x := by rfl
+
 theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
     g • H = H :=
   have : ∀ g : ConjAct G, g • H ≤ H :=
