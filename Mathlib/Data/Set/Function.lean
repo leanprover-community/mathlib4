@@ -1487,7 +1487,7 @@ theorem BijOn.exists_extend {t' : Set β} (h : BijOn f s t) (htt' : t ⊆ t') (h
   simpa using h.exists_extend_of_subset (subset_univ s) htt' (by simpa [SurjOn])
 
 theorem InjOn.exists_subset_injOn_subset_range_eq {r : Set α} (hinj : InjOn f r) (hrs : r ⊆ s) :
-    ∃ (u : Set α), r ⊆ u ∧ u ⊆ s ∧ f '' u = f '' s ∧ Set.InjOn f u := by
+    ∃ u : Set α, r ⊆ u ∧ u ⊆ s ∧ f '' u = f '' s ∧ InjOn f u := by
   obtain ⟨u, hru, hus, h⟩ := hinj.bijOn_image.exists_extend_of_subset hrs
     (image_subset f hrs) Subset.rfl
   exact ⟨u, hru, hus, h.image_eq, h.injOn⟩
