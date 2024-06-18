@@ -135,24 +135,28 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     Conjugates (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A) =
       expComparison F A := by
-  rw [← Equiv.eq_symm_apply]
-  ext B : 2
-  dsimp [frobeniusMorphism, Conjugates, Mates, Adjunction.comp]
-  simp only [id_comp, comp_id]
-  rw [← L.map_comp_assoc, prod.map_id_comp, ← L.map_comp_assoc, assoc, assoc]
-  -- Porting note: need to use `erw` here.
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [expComparison_ev]
-  rw [← assoc (prod.map (𝟙 (F.obj A)) (h.unit.app B)) _ _, ← prod.map_id_comp,  ← F.map_id, ← prodComparison_inv_natural_assoc, ← F.map_comp]
-  -- Porting note: need to use `erw` here.
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [exp.ev_coev]
-  rw [F.map_id (A ⨯ L.obj B), comp_id]
-  ext
-  · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_fst]
-    simp
-  · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_snd]
-    simp
+  unfold expComparison frobeniusMorphism
+  have conjeq := IteratedMates_Conjugates h h (exp.adjunction (F.obj A)) (exp.adjunction A) (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L (prod.functor.map (h.counit.app A)))
+  rw [← conjeq]
+  apply congr_arg
+  ext B
+  unfold Mates
+  simp
+  rw [← F.map_comp, ← F.map_comp]
+  simp only [prod.map_map, comp_id, id_comp]
+  apply IsIso.eq_inv_of_inv_hom_id
+  rw [F.map_comp, assoc, assoc, prodComparison_natural]
+  slice_lhs 2 3 =>
+    {
+      rw [← prodComparison_comp]
+    }
+  rw [← assoc]
+  unfold prodComparison
+  have etalemma : (h.unit.app (F.obj A ⨯ F.obj B) ≫ prod.lift ((L ⋙ F).map prod.fst) ((L ⋙ F).map prod.snd)) = prod.map (h.unit.app (F.obj A)) (h.unit.app (F.obj B)) := by
+    ext <;> simp
+  rw [etalemma]
+  simp only [Functor.id_obj, Functor.comp_obj, prod.map_map, Adjunction.right_triangle_components,
+    prod.map_id_id]
 #align category_theory.frobenius_morphism_mate CategoryTheory.frobeniusMorphism_mate
 
 /--
