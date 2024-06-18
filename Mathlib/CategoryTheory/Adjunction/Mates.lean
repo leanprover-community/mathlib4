@@ -75,8 +75,7 @@ Then we have a bijection between natural transformations `G ⋙ L₂ ⟶ L₁ �
 Note that if one of the transformations is an iso, it does not imply the other is an iso.
 -/
 @[simps]
-def Mates :
-    (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) where
+def mateEquiv : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) where
       toFun α :=
         whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
         whiskerRight (whiskerLeft R₁ α) R₂ ≫
