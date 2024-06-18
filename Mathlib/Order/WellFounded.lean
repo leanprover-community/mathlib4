@@ -292,8 +292,7 @@ section WellFoundedLT
 variable [Preorder α] [Preorder β] {f : α → β}
 
 theorem WellFoundedLT.of_strictMono [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α where
-  wf := by
-    refine WellFounded.wellFounded_iff_has_min.2 fun s hne ↦ ?_
+  wf := WellFounded.wellFounded_iff_has_min.2 fun s hne ↦ by
     have hs' : (f '' s).Nonempty := ⟨f hne.some, _, hne.some_mem, rfl⟩
     obtain ⟨x, hx, hex⟩ := WellFounded.min_mem wellFounded_lt (f '' s) hs'
     refine ⟨x, hx, fun y hy hlt ↦ ?_⟩
