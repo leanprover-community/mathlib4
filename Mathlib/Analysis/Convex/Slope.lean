@@ -22,7 +22,7 @@ The main use is to show convexity/concavity from monotonicity of the derivative.
 variable {𝕜 : Type*} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
 
 /-- If `f : 𝕜 → 𝕜` is convex, then for any three points `x < y < z` the slope of the secant line of
-`f` on `[x, y]` is less than the slope of the secant line of `f` on `[x, z]`. -/
+`f` on `[x, y]` is less than the slope of the secant line of `f` on `[y, z]`. -/
 theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) ≤ (f z - f y) / (z - y) := by
   have hxz := hxy.trans hyz
@@ -46,7 +46,7 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
 #align convex_on.slope_mono_adjacent ConvexOn.slope_mono_adjacent
 
 /-- If `f : 𝕜 → 𝕜` is concave, then for any three points `x < y < z` the slope of the secant line of
-`f` on `[x, y]` is greater than the slope of the secant line of `f` on `[x, z]`. -/
+`f` on `[x, y]` is greater than the slope of the secant line of `f` on `[y, z]`. -/
 theorem ConcaveOn.slope_anti_adjacent (hf : ConcaveOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (f z - f y) / (z - y) ≤ (f y - f x) / (y - x) := by
   have := neg_le_neg (ConvexOn.slope_mono_adjacent hf.neg hx hz hxy hyz)
@@ -56,7 +56,7 @@ theorem ConcaveOn.slope_anti_adjacent (hf : ConcaveOn 𝕜 s f) {x y z : 𝕜} (
 
 /-- If `f : 𝕜 → 𝕜` is strictly convex, then for any three points `x < y < z` the slope of the
 secant line of `f` on `[x, y]` is strictly less than the slope of the secant line of `f` on
-`[x, z]`. -/
+`[y, z]`. -/
 theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜}
     (hx : x ∈ s) (hz : z ∈ s) (hxy : x < y) (hyz : y < z) :
     (f y - f x) / (y - x) < (f z - f y) / (z - y) := by
@@ -82,7 +82,7 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
 
 /-- If `f : 𝕜 → 𝕜` is strictly concave, then for any three points `x < y < z` the slope of the
 secant line of `f` on `[x, y]` is strictly greater than the slope of the secant line of `f` on
-`[x, z]`. -/
+`[y, z]`. -/
 theorem StrictConcaveOn.slope_anti_adjacent (hf : StrictConcaveOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f z - f y) / (z - y) < (f y - f x) / (y - x) := by
   have := neg_lt_neg (StrictConvexOn.slope_strict_mono_adjacent hf.neg hx hz hxy hyz)
@@ -91,7 +91,7 @@ theorem StrictConcaveOn.slope_anti_adjacent (hf : StrictConcaveOn 𝕜 s f) {x y
 #align strict_concave_on.slope_anti_adjacent StrictConcaveOn.slope_anti_adjacent
 
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
-less than the slope of the secant line of `f` on `[x, z]`, then `f` is convex. -/
+less than the slope of the secant line of `f` on `[y, z]`, then `f` is convex. -/
 theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
     (hf :
       ∀ {x y z : 𝕜},
@@ -124,7 +124,7 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
 #align convex_on_of_slope_mono_adjacent convexOn_of_slope_mono_adjacent
 
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
-greater than the slope of the secant line of `f` on `[x, z]`, then `f` is concave. -/
+greater than the slope of the secant line of `f` on `[y, z]`, then `f` is concave. -/
 theorem concaveOn_of_slope_anti_adjacent (hs : Convex 𝕜 s)
     (hf :
       ∀ {x y z : 𝕜},
@@ -138,7 +138,7 @@ theorem concaveOn_of_slope_anti_adjacent (hs : Convex 𝕜 s)
 #align concave_on_of_slope_anti_adjacent concaveOn_of_slope_anti_adjacent
 
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
-strictly less than the slope of the secant line of `f` on `[x, z]`, then `f` is strictly convex. -/
+strictly less than the slope of the secant line of `f` on `[y, z]`, then `f` is strictly convex. -/
 theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
     (hf :
       ∀ {x y z : 𝕜},
@@ -171,7 +171,7 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
 #align strict_convex_on_of_slope_strict_mono_adjacent strictConvexOn_of_slope_strict_mono_adjacent
 
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
-strictly greater than the slope of the secant line of `f` on `[x, z]`, then `f` is strictly concave.
+strictly greater than the slope of the secant line of `f` on `[y, z]`, then `f` is strictly concave.
 -/
 theorem strictConcaveOn_of_slope_strict_anti_adjacent (hs : Convex 𝕜 s)
     (hf :
@@ -186,7 +186,7 @@ theorem strictConcaveOn_of_slope_strict_anti_adjacent (hs : Convex 𝕜 s)
 #align strict_concave_on_of_slope_strict_anti_adjacent strictConcaveOn_of_slope_strict_anti_adjacent
 
 /-- A function `f : 𝕜 → 𝕜` is convex iff for any three points `x < y < z` the slope of the secant
-line of `f` on `[x, y]` is less than the slope of the secant line of `f` on `[x, z]`. -/
+line of `f` on `[x, y]` is less than the slope of the secant line of `f` on `[y, z]`. -/
 theorem convexOn_iff_slope_mono_adjacent :
     ConvexOn 𝕜 s f ↔
       Convex 𝕜 s ∧ ∀ ⦃x y z : 𝕜⦄,
@@ -196,7 +196,7 @@ theorem convexOn_iff_slope_mono_adjacent :
 #align convex_on_iff_slope_mono_adjacent convexOn_iff_slope_mono_adjacent
 
 /-- A function `f : 𝕜 → 𝕜` is concave iff for any three points `x < y < z` the slope of the secant
-line of `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[x, z]`. -/
+line of `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[y, z]`. -/
 theorem concaveOn_iff_slope_anti_adjacent :
     ConcaveOn 𝕜 s f ↔
       Convex 𝕜 s ∧
@@ -208,7 +208,7 @@ theorem concaveOn_iff_slope_anti_adjacent :
 
 /-- A function `f : 𝕜 → 𝕜` is strictly convex iff for any three points `x < y < z` the slope of
 the secant line of `f` on `[x, y]` is strictly less than the slope of the secant line of `f` on
-`[x, z]`. -/
+`[y, z]`. -/
 theorem strictConvexOn_iff_slope_strict_mono_adjacent :
     StrictConvexOn 𝕜 s f ↔
       Convex 𝕜 s ∧
@@ -220,7 +220,7 @@ theorem strictConvexOn_iff_slope_strict_mono_adjacent :
 
 /-- A function `f : 𝕜 → 𝕜` is strictly concave iff for any three points `x < y < z` the slope of
 the secant line of `f` on `[x, y]` is strictly greater than the slope of the secant line of `f` on
-`[x, z]`. -/
+`[y, z]`. -/
 theorem strictConcaveOn_iff_slope_strict_anti_adjacent :
     StrictConcaveOn 𝕜 s f ↔
       Convex 𝕜 s ∧
