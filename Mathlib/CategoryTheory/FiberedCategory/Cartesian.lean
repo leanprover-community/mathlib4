@@ -108,6 +108,7 @@ lemma map_self : IsCartesian.map p f φ φ = 𝟙 a := by
   apply map_uniq
   simp only [id_comp]
 
+-- TODO: comment
 noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
   hom := IsCartesian.map p f φ φ'
   inv := IsCartesian.map p f φ' φ
@@ -143,12 +144,16 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
 
 end Functor.IsCartesian
 
-namespace IsStronglyCartesian
+namespace Functor.IsStronglyCartesian
 
 section
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsStronglyCartesian p f φ]
 
+/-- The universal property of a strongly cartesian morphism.
+
+This lemma is more flexible with respect to non-definitional equalities than the field
+`universal_property'` of `IsStronglyCartesian`. -/
 lemma universal_property {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R) (f' : R' ⟶ S) (hf' : f' = g ≫ f)
     (φ' : a' ⟶ b) [IsHomLift p f' φ'] : ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ' := by
   subst_hom_lift p f' φ'; clear a b R S
@@ -170,16 +175,16 @@ a'        a --φ--> b
 v         v        v
 R' --g--> R --f--> S
 ```
-such that `φ` is a cartesian, and a morphism `φ' : a' ⟶ b`. Then `inducedMap` is the map `a' ⟶ a`
+such that `φ` is a cartesian, and a morphism `φ' : a' ⟶ b`. Then `map` is the map `a' ⟶ a`
 lying over `g` obtained from the universal property of `φ`. -/
-noncomputable def inducedMap : a' ⟶ a :=
+noncomputable def map : a' ⟶ a :=
   Classical.choose <| universal_property p f φ _ _ hf' φ'
 
-instance inducedMap_isHomLift : IsHomLift p g (inducedMap p f φ hf' φ') :=
+instance map_isHomLift : IsHomLift p g (map p f φ hf' φ') :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.1
 
 @[simp]
-lemma inducedMap_comp : (inducedMap p f φ hf' φ') ≫ φ = φ' :=
+lemma fac : (map p f φ hf' φ') ≫ φ = φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.2
 
 /-- Given a diagram
@@ -191,8 +196,7 @@ R' --g--> R --f--> S
 ```
 such that `φ` is a cartesian, and morphisms`φ' : a' ⟶ b` and `ψ : a' ⟶ a` such that `g ≫ ψ = φ'`.
 Then `ψ` is the map induced by the universal property. -/
-lemma inducedMap_unique (ψ : a' ⟶ a) [IsHomLift p g ψ] (hψ : ψ ≫ φ = φ') :
-    ψ = inducedMap p f φ hf' φ' :=
+lemma map_uniq (ψ : a' ⟶ a) [IsHomLift p g ψ] (hψ : ψ ≫ φ = φ') : ψ = map p f φ hf' φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').2 ψ ⟨inferInstance, hψ⟩
 
 /-- Given a diagram
@@ -204,16 +208,16 @@ R' --g--> R --f--> S
 ```
 such that `φ` is cartesian, and morphisms `φ' : a' ⟶ b`, `ψ ψ' : a' ⟶ a` such that
 `g ≫ ψ = φ' = g ≫ ψ'`. Then `ψ = ψ'`. -/
-protected lemma uniqueness {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ] [IsHomLift p g ψ']
+protected lemma eq_of_fac {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ] [IsHomLift p g ψ']
     (hcomp : ψ ≫ φ = φ') (hcomp' : ψ' ≫ φ = φ') : ψ = ψ' := by
-  rw [inducedMap_unique p f φ hf' φ' ψ hcomp, inducedMap_unique p f φ hf' φ' ψ' hcomp']
+  rw [map_uniq p f φ hf' φ' ψ hcomp, map_uniq p f φ hf' φ' ψ' hcomp']
 
 end
 
 @[simp]
-lemma inducedMap_self_eq_id : inducedMap p f φ (id_comp f).symm φ = 𝟙 a := by
+lemma map_self : map p f φ (id_comp f).symm φ = 𝟙 a := by
   subst_hom_lift p f φ; symm
-  apply inducedMap_unique
+  apply map_uniq
   simp only [id_comp]
 
 /-- The composition of two induced maps is also an induced map. In other words, given diagrams
@@ -226,13 +230,13 @@ R'' --g'--> R' --g--> R --f--> S          R' --f'--> S          R'' --f''--> S
 such that `φ` and `φ'` are cartesian arrows. Then composing the induced map from `a'' ⟶ a'` with
 the induced map from `a' ⟶ a` gives the induced map from `a'' ⟶ a`. -/
 @[simp]
-lemma inducedMap_inducedMap {R' R'' : 𝒮} {a' a'' : 𝒳} {f' : R' ⟶ S} {f'' : R'' ⟶ S} {g : R' ⟶ R}
+lemma map_comp_map {R' R'' : 𝒮} {a' a'' : 𝒳} {f' : R' ⟶ S} {f'' : R'' ⟶ S} {g : R' ⟶ R}
     {g' : R'' ⟶ R'} (H : f' = g ≫ f) (H' : f'' = g' ≫ f') (φ' : a' ⟶ b) (φ'' : a'' ⟶ b)
     [IsStronglyCartesian p f' φ'] [IsHomLift p f'' φ''] :
-    inducedMap p f' φ' H' φ'' ≫ inducedMap p f φ H φ' =
-      inducedMap p f φ (show f'' = (g' ≫ g) ≫ f by rwa [assoc, ← H]) φ'' := by
-  apply inducedMap_unique p f φ
-  simp only [assoc, inducedMap_comp]
+    map p f' φ' H' φ'' ≫ map p f φ H φ' =
+      map p f φ (show f'' = (g' ≫ g) ≫ f by rwa [assoc, ← H]) φ'' := by
+  apply map_uniq p f φ
+  simp only [assoc, fac]
 
 end
 
@@ -252,12 +256,12 @@ instance comp [IsStronglyCartesian p f φ] [IsStronglyCartesian p g ψ] :
     IsStronglyCartesian p (f ≫ g) (φ ≫ ψ) where
   universal_property' := by
     intro a' h τ hτ
-    use inducedMap p f φ (f' := h ≫ f) rfl (inducedMap p g ψ (assoc h f g).symm τ)
+    use map p f φ (f' := h ≫ f) rfl (map p g ψ (assoc h f g).symm τ)
     refine ⟨⟨inferInstance, ?_⟩, ?_⟩
-    · rw [← assoc, inducedMap_comp, inducedMap_comp]
+    · rw [← assoc, fac, fac]
     · intro π' ⟨hπ'₁, hπ'₂⟩
-      apply inducedMap_unique
-      apply inducedMap_unique
+      apply map_uniq
+      apply map_uniq
       simp only [assoc, hπ'₂]
 
 /-- Given two commutative squares
@@ -275,15 +279,15 @@ protected lemma of_comp [IsStronglyCartesian p g ψ] [IsStronglyCartesian p (f �
     have h₁ : IsHomLift p (h ≫ f ≫ g) (τ ≫ ψ) := by simpa using IsHomLift.comp p (h ≫ f) _ τ ψ
     /- We get a morphism `π : a' ⟶ a` such that `π ≫ φ ≫ ψ` = `τ = ψ` from the universal property
     of `φ ≫ ψ`. -/
-    use inducedMap p (f ≫ g) (φ ≫ ψ) (f' := h ≫ f ≫ g) rfl (τ ≫ ψ)
+    use map p (f ≫ g) (φ ≫ ψ) (f' := h ≫ f ≫ g) rfl (τ ≫ ψ)
     -- This will be the morphism induced by `φ`.
     refine ⟨⟨inferInstance, ?_⟩, ?_⟩
     /- The fact that `π ≫ φ = τ` follows from `π ≫ φ ≫ ψ = τ ≫ ψ` and the universal property of
     `ψ`. -/
-    · apply IsStronglyCartesian.uniqueness p g ψ (g := h ≫ f) rfl (τ ≫ ψ) (by simp) rfl
-    -- Finally, uniqueness of `π` comes from the universal property of `φ ≫ ψ`.
+    · apply IsStronglyCartesian.eq_of_fac p g ψ (g := h ≫ f) rfl (τ ≫ ψ) (by simp) rfl
+    -- Finally, eq_of_fac of `π` comes from the universal property of `φ ≫ ψ`.
     · intro π' ⟨hπ'₁, hπ'₂⟩
-      apply inducedMap_unique
+      apply map_uniq
       simp [hπ'₂.symm]
 
 end
@@ -306,10 +310,10 @@ instance of_isIso (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsStronglyCarte
 lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCartesian p f φ] (hf : IsIso f) : IsIso φ := by
   subst_hom_lift p f φ; clear a b R S
   -- Let `φ` be the morphism induced by applying universal property to `𝟙 b` lying over `f⁻¹ ≫ f`.
-  let φ' := inducedMap p (p.map φ) φ (IsIso.inv_hom_id (p.map φ)).symm (𝟙 b)
+  let φ' := map p (p.map φ) φ (IsIso.inv_hom_id (p.map φ)).symm (𝟙 b)
   use φ'
   -- `φ' ≫ φ = 𝟙 b` follows immediately from the universal property.
-  have inv_hom : φ' ≫ φ = 𝟙 b := inducedMap_comp p (p.map φ) φ _ (𝟙 b)
+  have inv_hom : φ' ≫ φ = 𝟙 b := fac p (p.map φ) φ _ (𝟙 b)
   refine ⟨?_, inv_hom⟩
   /- We now show that `φ ≫ φ' = 𝟙 a` by applying the universal property of `φ` to the equality
   `(φ ≫ φ') ≫ φ = φ ≫ 𝟙 b = 𝟙 a ≫ φ`. -/
@@ -318,20 +322,20 @@ lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCartesian p f φ] (hf : IsIs
     apply IsHomLift.comp
   have h₂ : IsHomLift p (p.map φ) (φ ≫ φ' ≫ φ) := by
     simpa using IsHomLift.comp p (𝟙 (p.obj a)) (p.map φ) (φ ≫ φ') φ
-  apply IsStronglyCartesian.uniqueness p _ φ (id_comp (p.map φ)).symm (φ ≫ φ' ≫ φ) (assoc _ _ _)
+  apply IsStronglyCartesian.eq_of_fac p _ φ (id_comp (p.map φ)).symm (φ ≫ φ' ≫ φ) (assoc _ _ _)
   · simp only [inv_hom, id_comp, comp_id]
 
 end
 
 /-- The canonical isomorphism between the domains of two cartesian arrows lying over
 isomorphic objects. -/
-noncomputable def isoOfBaseIso {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f' : R' ⟶ S}
+noncomputable def domainIsoOfBaseIso {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f' : R' ⟶ S}
   {g : R' ≅ R} (h : f' = g.hom ≫ f) (φ : a ⟶ b) (φ' : a' ⟶ b) [IsStronglyCartesian p f φ]
     [IsStronglyCartesian p f' φ'] : a' ≅ a where
-  hom := inducedMap p f φ h φ'
-  inv := @inducedMap _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (g.inv ≫ ·) h.symm) φ
+  hom := map p f φ h φ'
+  inv := @map _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (g.inv ≫ ·) h.symm) φ
     (by simp; infer_instance)
 
-end IsStronglyCartesian
+end Functor.IsStronglyCartesian
 
 end CategoryTheory
