@@ -670,6 +670,22 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
   exact getLast_append_singleton _
 #align list.last_replicate_succ List.getLast_replicate_succ
 
+/-- If the last element of `l` does not satisfy `p`, then it is also the last element of
+`l.filter p`. -/
+lemma getLast_filter {p : α → Bool} :
+    ∀ (l : List α) (hlp : l.filter p ≠ []), p (l.getLast (hlp <| ·.symm ▸ rfl)) = true →
+      (l.filter p).getLast hlp = l.getLast (hlp <| ·.symm ▸ rfl)
+  | [a], h, h' => by rw [List.getLast_singleton'] at h'; simp [List.filter_cons, h']
+  | a :: b :: as, h, h' => by
+    rw [List.getLast_cons_cons] at h' ⊢
+    simp only [List.filter_cons (x := a)] at h ⊢
+    obtain ha | ha := Bool.eq_false_or_eq_true (p a)
+    · simp only [ha, ite_true]
+      rw [getLast_cons, getLast_filter (b :: as) _ h']
+      exact ne_nil_of_mem <| mem_filter.2 ⟨getLast_mem _, h'⟩
+    · simp only [ha, cond_false] at h ⊢
+      exact getLast_filter (b :: as) h h'
+
 /-! ### getLast? -/
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
@@ -1039,6 +1055,15 @@ attribute [refl] List.Sublist.refl
 theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a :: l₁ <+ a :: l₂ :=
   Sublist.cons₂ _ s
 #align list.sublist.cons_cons List.Sublist.cons_cons
+
+lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l₂ ∨ a = b ∧ l₁ <+ l₂ := by
+  constructor
+  · rintro (_ | _)
+    · exact Or.inl ‹_›
+    · exact Or.inr ⟨rfl, ‹_›⟩
+  · rintro (h | ⟨rfl, h⟩)
+    · exact h.cons _
+    · rwa [cons_sublist_cons]
 
 #align list.sublist_append_left List.sublist_append_left
 #align list.sublist_append_right List.sublist_append_right
