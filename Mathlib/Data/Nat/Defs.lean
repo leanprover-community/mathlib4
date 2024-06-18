@@ -1423,9 +1423,11 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
     show ∃ d, c / a = b * d from ⟨d, h2⟩
 #align nat.dvd_div_of_mul_dvd Nat.dvd_div_of_mul_dvd
 
-@[simp] lemma dvd_div_iff (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
+@[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
   ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
-#align nat.dvd_div_iff Nat.dvd_div_iff
+#align nat.dvd_div_iff Nat.dvd_div_iff_mul_dvd
+
+@[deprecated (since := "2024-06-18")] alias dvd_div_iff := dvd_div_iff_mul_dvd
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
   obtain ⟨e, rfl⟩ := hdiv

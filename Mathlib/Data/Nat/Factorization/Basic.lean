@@ -856,7 +856,7 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
       haveI htp : 0 < t := hp.factorization_pos_of_dvd (k + 1).succ_ne_zero (k + 2).minFac_dvd
       convert h ((k + 2) / p ^ t) p t hp _ htp (hk _ (Nat.div_lt_of_lt_mul _)) using 1
       · rw [Nat.mul_div_cancel' hpt]
-      · rw [Nat.dvd_div_iff hpt, ← Nat.pow_succ]
+      · rw [Nat.dvd_div_iff_mul_dvd hpt, ← Nat.pow_succ]
         exact pow_succ_factorization_not_dvd (k + 1).succ_ne_zero hp
       · simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne', hp.one_lt]
 #align nat.rec_on_prime_pow Nat.recOnPrimePow
