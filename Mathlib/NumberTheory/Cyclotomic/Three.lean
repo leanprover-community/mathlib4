@@ -179,9 +179,7 @@ lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x
   replace h : λ ∣ -x - 1 := by
     convert h.neg_right using 1
     exact (neg_add' x 1).symm
-  obtain ⟨y, hy⟩ := lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h
-  refine ⟨-y, ?_⟩
-  rw [mul_neg, ← hy]
+  convert (lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h).neg_right using 1
   ring
 
 /-- If `λ` does not divide `x`, then `λ ^ 4` divides `x ^ 3 - 1` or `x ^ 3 + 1`. -/
