@@ -31,9 +31,7 @@ structure CompHausLike where
   /-- The underlying topological space satisfies P. -/
   prop : P toTop
 
--- Porting note (#10754): Adding instance
 attribute [instance] CompHausLike.is_compact
--- Porting note (#10754): Adding instance
 attribute [instance] CompHausLike.is_hausdorff
 
 namespace CompHausLike
@@ -80,15 +78,15 @@ theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
   rfl
 
--- "Porting" note (#10754): Adding instance
+-- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
   show TopologicalSpace X.toTop from inferInstance
 
--- "Porting" note (#10754): Adding instance
+-- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- "Porting" note (#10754): Adding instance
+-- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
   show T2Space X.toTop from inferInstance
 
