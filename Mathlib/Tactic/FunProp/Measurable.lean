@@ -31,13 +31,3 @@ attribute [fun_prop]
   Measurable.prod_mk
   Measurable.fst
   Measurable.snd
-
--- algebra
-attribute [fun_prop]
-  Measurable.add
-  Measurable.sub
-  Measurable.mul
-  Measurable.neg
-  Measurable.div
-  Measurable.inv
-  Measurable.smul
