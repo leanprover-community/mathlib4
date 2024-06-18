@@ -166,40 +166,19 @@ example {R : Type*} [Semiring R] {a b c d : R} :
   simp [Matrix.vecHead, Matrix.vecTail]
 
 /- Check that matrix notation works with `row` and `col` -/
-
-example : Matrix.row ![1, 1] = !![1, 1] := by
+example : Matrix.row _ ![1, 1] = !![1, 1] := by
   ext i j
   simp
 
-example : Matrix.col ![1, 1] = !![1; 1] := by
+example : Matrix.col _ ![1, 1] = !![1; 1] := by
   ext i j
   fin_cases i <;> simp
 
-/- By design, we need to choose the Finite type indexing our unique row. -/
-example  : Matrix.row (Fin 1) (fun (n : Fin 3) => 0) = 0 := by
+example (ι : Type*) [Inhabited ι] : Matrix.row ι (fun (n : Fin 3) => 0) = 0 := by
   simp_all
   rfl
 
-example  : Matrix.row (Fin 1) (fun (n : Fin 3) => 0) = 0 := by
-  simp_all
-  rfl
-
-/- Check that matrix notation works with `row` and `col` -/
-
-example : Matrix.row ![1, 1] = !![1, 1] := by
-  ext i j
-  simp
-
-example : Matrix.col ![1, 1] = !![1; 1] := by
-  ext i j
-  fin_cases i <;> simp
-
-/- By design, we need to choose the Finite type indexing our unique row. -/
-example  : Matrix.row (Fin 1) (fun (n : Fin 3) => 0) = 0 := by
-  simp_all
-  rfl
-
-example  : Matrix.row (Fin 1) (fun (n : Fin 3) => 0) = 0 := by
+example (ι : Type*) [Inhabited ι] : Matrix.col ι (fun (n : Fin 3) => 0) = 0 := by
   simp_all
   rfl
 
