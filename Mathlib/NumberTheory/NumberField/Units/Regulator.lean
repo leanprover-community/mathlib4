@@ -84,7 +84,7 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
   have h := congr_arg abs <| Matrix.submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det'
     (Matrix.of fun i w ↦ (mult (f w) : ℝ) * ((f w) (u i)).log) ?_ 0 (f.symm w₂)
   rw [← Matrix.det_reindex_self e₁, ← Matrix.det_reindex_self g]
-  · rw [Units.smul_def, abs_zsmul, Int.negOnePow_abs, one_smul] at h
+  · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
     convert h
     · ext; simp [f]
     · ext; simp; rfl
