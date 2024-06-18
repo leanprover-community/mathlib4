@@ -1645,32 +1645,32 @@ end truncateToReal
 
 section LimsupLiminf
 
-variable {ι : Type*}
+variable {ι : Type*} (F : Filter ι) [NeBot F]
 
-lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
+lemma limsup_sub_const (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
-lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
+lemma liminf_sub_const (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.liminf (fun i ↦ f i - c) F = Filter.liminf f F - c :=
   (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
-lemma limsup_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
+lemma limsup_const_sub (f : ι → ℝ≥0∞)
     {c : ℝ≥0∞} (c_ne_top : c ≠ ∞):
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F :=
   (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
-lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
+lemma liminf_const_sub  (f : ι → ℝ≥0∞)
     {c : ℝ≥0∞} (c_ne_top : c ≠ ∞):
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+lemma liminf_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
     {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
     F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
   have liminf_le : F.liminf xs ≤ b := by
@@ -1691,7 +1691,7 @@ lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   rfl
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+lemma limsup_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
     {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
     F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
   have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
@@ -1705,6 +1705,42 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
           ⟨b, by simpa only [eventually_map] using le_b⟩ ⟨0, eventually_of_forall (by simp)⟩
   rw [key]
   rfl
+
+/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
+lemma liminf_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+    F.liminf (fun i ↦ (xs i).toNNReal) = (F.liminf xs).toNNReal := by
+  have obs : (liminf (fun i ↦ (xs i).toReal) F).toNNReal = liminf (fun i ↦ (xs i).toNNReal) F := by
+    rw [Real.toNNReal_mono.map_liminf_of_continuousAt
+          (fun i ↦ (xs i).toReal) continuous_real_toNNReal.continuousAt ?_ ?_]
+    · congr
+      funext i
+      simp
+    · refine ⟨b.toNNReal, ?_⟩
+      simp only [eventually_map]
+      filter_upwards [le_b] with i xs_bdd
+      exact ((toReal_le_toReal (ne_top_of_le_ne_top b_ne_top xs_bdd) b_ne_top).mpr xs_bdd).trans
+          (Preorder.le_refl b.toReal)
+    · refine ⟨0, by simp only [ge_iff_le, eventually_map, toReal_nonneg, eventually_true]⟩
+  simp [← obs, liminf_toReal_eq F b_ne_top le_b]
+
+/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
+lemma limsup_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+    F.limsup (fun i ↦ (xs i).toNNReal) = (F.limsup xs).toNNReal := by
+  have obs : (limsup (fun i ↦ (xs i).toReal) F).toNNReal = limsup (fun i ↦ (xs i).toNNReal) F := by
+    rw [Real.toNNReal_mono.map_limsup_of_continuousAt
+          (fun i ↦ (xs i).toReal) continuous_real_toNNReal.continuousAt ?_ ?_]
+    · congr
+      funext i
+      simp
+    · refine ⟨b.toNNReal, ?_⟩
+      simp only [eventually_map]
+      filter_upwards [le_b] with i xs_bdd
+      exact ((toReal_le_toReal (ne_top_of_le_ne_top b_ne_top xs_bdd) b_ne_top).mpr xs_bdd).trans
+          (Preorder.le_refl b.toReal)
+    · refine ⟨0, by simp only [ge_iff_le, eventually_map, toReal_nonneg, eventually_true]⟩
+  simp [← obs, limsup_toReal_eq F b_ne_top le_b]
 
 end LimsupLiminf
 
