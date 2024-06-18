@@ -18,11 +18,10 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   [Pretriangulated C] [Pretriangulated D] [CategoryTheory.IsTriangulated C]
   [CategoryTheory.IsTriangulated D]
 
-namespace Functor
 
 scoped [ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
 
-open ZeroObject Limits Preadditive Pretriangulated
+open ZeroObject Limits Preadditive Pretriangulated CategoryTheory.Functor
 
 variable (F : C ⥤ D) [F.CommShift ℤ] (t₁ : TStructure C) (t₂ : TStructure D)
 variable [F.IsTriangulated]
@@ -38,11 +37,19 @@ noncomputable local instance : t₂.homology₀.ShiftSequence ℤ :=
 abbrev AcyclicObject (X : t₁.Heart) := t₂.heart (F.obj X.1)
 
 lemma AcyclicImageHasZeroHomology {X : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X) (n : ℤ)
-    (hn : n ≠ 0) : IsZero ((t₂.homology n).obj (F.obj X.1)) := sorry
+    (hn : n ≠ 0) : IsZero ((t₂.homology n).obj (F.obj X.1)) := by
+  simp only [AcyclicObject, mem_heart_iff] at hX
+  by_cases h : n ≥ 0
+  · have := hX.1
+    exact t₂.isZero_homology_of_isLE (F.obj X.1) n 0 (lt_iff_le_and_ne.mpr ⟨h, Ne.symm hn⟩)
+  · have := hX.2
+    exact t₂.isZero_homology_of_isGE (F.obj X.1) n 0 (lt_iff_not_le.mpr h)
 
 abbrev AcyclicCategory := FullSubcategory (AcyclicObject F t₁ t₂)
 
-abbrev FunctorFromAcyclic : (AcyclicCategory F t₁ t₂) ⥤ t₂.Heart := by
+namespace Functor
+
+abbrev FromAcyclic : (AcyclicCategory F t₁ t₂) ⥤ t₂.Heart := by
   refine FullSubcategory.lift t₂.heart
     (fullSubcategoryInclusion (AcyclicObject F t₁ t₂) ⋙ t₁.ιHeart ⋙ F) ?_
   intro ⟨_, h⟩
@@ -50,20 +57,22 @@ abbrev FunctorFromAcyclic : (AcyclicCategory F t₁ t₂) ⥤ t₂.Heart := by
   exact h
 
 
-abbrev FunctorFromHeart : t₁.Heart ⥤ D := t₁.ιHeart ⋙ F
+abbrev FromHeart : t₁.Heart ⥤ D := t₁.ιHeart ⋙ F
 
-instance : Functor.Additive (FunctorFromHeart F t₁) where
+instance : Functor.Additive (F.FromHeart t₁) where
   map_add := by
     intro X Y f g
     simp only [comp_obj, comp_map, map_add]
 
-noncomputable abbrev FunctorFromHeartToHeart : t₁.Heart ⥤ t₂.Heart :=
+noncomputable abbrev FromHeartToHeart : t₁.Heart ⥤ t₂.Heart :=
   t₁.ιHeart ⋙ F ⋙ t₂.homology 0
 
 def AcyclicToHeart : (AcyclicCategory F t₁ t₂) ⥤ t₁.Heart := fullSubcategoryInclusion _
 
-def FunctorFromAcyclicFactorization : FunctorFromAcyclic F t₁ t₂ ≅
-    fullSubcategoryInclusion (AcyclicObject F t₁ t₂) ⋙ FunctorFromHeartToHeart F t₁ t₂ := sorry
+def FromAcyclicFactorization : F.FromAcyclic t₁ t₂ ≅
+    fullSubcategoryInclusion (AcyclicObject F t₁ t₂) ⋙ F.FromHeartToHeart t₁ t₂ := sorry
+
+end Functor
 
 namespace AcyclicCategory
 
@@ -71,20 +80,20 @@ instance closedUnderIsomorphisms : ClosedUnderIsomorphisms (AcyclicObject F t₁
   refine ClosedUnderIsomorphisms.mk ?_
   intro _ _ e hX
   change t₂.heart _
-  exact ClosedUnderIsomorphisms.of_iso ((FunctorFromHeart F t₁).mapIso e) hX
+  exact ClosedUnderIsomorphisms.of_iso ((F.FromHeart t₁).mapIso e) hX
 
 variable (X Y : t₁.Heart)
 
 lemma zero {X : t₁.Heart} (hX : IsZero X) : AcyclicObject F t₁ t₂ X := by
   simp only [AcyclicObject]
-  exact ClosedUnderIsomorphisms.of_iso (((FunctorFromHeart F t₁).mapIso hX.isoZero).trans
-    (FunctorFromHeart F t₁).mapZeroObject).symm t₂.zero_mem_heart
+  exact ClosedUnderIsomorphisms.of_iso (((F.FromHeart t₁).mapIso hX.isoZero).trans
+    (F.FromHeart t₁).mapZeroObject).symm t₂.zero_mem_heart
 
 lemma prod {X Y : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X) (hY : AcyclicObject F t₁ t₂ Y) :
     AcyclicObject F t₁ t₂ (X ⨯ Y) := by
   simp only [AcyclicObject]
   have := PreservesLimitPair.iso t₁.ιHeart X Y
-  exact ClosedUnderIsomorphisms.of_iso (PreservesLimitPair.iso (FunctorFromHeart F t₁) X Y).symm
+  exact ClosedUnderIsomorphisms.of_iso (PreservesLimitPair.iso (F.FromHeart t₁) X Y).symm
       (prod_mem_heart t₂ _ _ hX hY)
 
 instance : HasTerminal (AcyclicCategory F t₁ t₂) := by
@@ -107,16 +116,16 @@ instance : HasFiniteProducts (AcyclicCategory F t₁ t₂) :=
 
 end AcyclicCategory
 
-instance : Functor.Additive (FunctorFromAcyclic F t₁ t₂) where
+instance : Functor.Additive (F.FromAcyclic t₁ t₂) where
   map_add := by
     intro X Y f g
-    simp only [FullSubcategory.lift_map, comp_map, fullSubcategoryInclusion.obj,
-      fullSubcategoryInclusion.map, map_add]
+    simp only [FullSubcategory.lift_map, Functor.comp_map, fullSubcategoryInclusion.obj,
+      fullSubcategoryInclusion.map, Functor.map_add]
 
-instance : Functor.Additive (AcyclicToHeart F t₁ t₂) where
+instance : Functor.Additive (F.AcyclicToHeart t₁ t₂) where
   map_add := by
     intro X Y f g
-    simp only [AcyclicToHeart, fullSubcategoryInclusion.obj, fullSubcategoryInclusion.map]
+    simp only [Functor.AcyclicToHeart, fullSubcategoryInclusion.obj, fullSubcategoryInclusion.map]
 
 lemma AcyclicExtension {S : ShortComplex t₁.Heart} (SE : S.ShortExact)
     (hS₁ : AcyclicObject F t₁ t₂ S.X₁) (hS₃ : AcyclicObject F t₁ t₂ S.X₃) :
@@ -141,44 +150,130 @@ noncomputable abbrev ShortExactComplexImageIsoHomology {S : ShortComplex t₁.He
     ((t₂.homology 0).map (ShortExactComplexToImageDistTriangle F t₁ he).mor₂)
       (by rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _
       (ShortExactComplexToImageDistTriangle_distinguished F t₁ he), Functor.map_zero])
-    ≅ (FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S := by
+    ≅ (F.FromHeartToHeart t₁ t₂).mapShortComplex.obj S := by
   refine ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
 
 lemma ShortExactComplexImageExact {S : ShortComplex t₁.Heart} (he : S.ShortExact) :
-    ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).Exact :=
+    ((F.FromHeartToHeart t₁ t₂).mapShortComplex.obj S).Exact :=
   ShortComplex.exact_of_iso (ShortExactComplexImageIsoHomology F t₁ t₂ he)
   (t₂.homology_exact₂ _ (ShortExactComplexToImageDistTriangle_distinguished F t₁ he) 0)
 
-lemma ShortExactComplexImageLeftExact {S : ShortComplex t₁.Heart} (he : S.ShortExact)
-    (hv : IsZero ((t₂.homology (-1 : ℤ)).obj (F.obj S.X₃.1))) :
-    Mono ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).f :=
+lemma MonoOfMonoAcyclicCokernel {X Y : t₁.Heart} (f : X ⟶ Y) (hm : Mono f)
+    (hv : IsZero ((t₂.homology (-1 : ℤ)).obj (F.obj (cokernel f).1))) :
+    Mono ((F.FromHeartToHeart t₁ t₂).map f) :=
   (ShortComplex.exact_iff_mono _ (IsZero.eq_zero_of_src hv _)).mp (t₂.homology_exact₁ _
-  (ShortExactComplexToImageDistTriangle_distinguished F t₁ he) (-1 : ℤ) 0 (by simp))
+  (ShortExactComplexToImageDistTriangle_distinguished F t₁ (monoCokernelComplexShortExact f hm))
+  (-1 : ℤ) 0 (by simp))
 
-lemma ShortExactComplexImageRightExact {S : ShortComplex t₁.Heart} (he : S.ShortExact)
-    (hv : IsZero ((t₂.homology (1 : ℤ)).obj (F.obj S.X₁.1))) :
-    Epi ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).g :=
+lemma EpiOfEpiAcyclicKernel {X Y : t₁.Heart} (f : X ⟶ Y) (he : Epi f)
+    (hv : IsZero ((t₂.homology (1 : ℤ)).obj (F.obj (kernel f).1))) :
+    Epi ((F.FromHeartToHeart t₁ t₂).map f) :=
   (ShortComplex.exact_iff_epi _ (IsZero.eq_zero_of_tgt hv _)).mp (t₂.homology_exact₃ _
-  (ShortExactComplexToImageDistTriangle_distinguished F t₁ he) (0 : ℤ) 1 (by simp))
+  (ShortExactComplexToImageDistTriangle_distinguished F t₁ (epiKernelComplexShortExact f he))
+  (0 : ℤ) 1 (by simp))
 
 lemma ShortExactComplexImageShortExact {S : ShortComplex t₁.Heart} (he : S.ShortExact)
     (hv₁ : IsZero ((t₂.homology (1 : ℤ)).obj (F.obj S.X₁.1)))
     (hv₂ : IsZero ((t₂.homology (-1 : ℤ)).obj (F.obj S.X₃.1))) :
-    ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).ShortExact where
+    ((F.FromHeartToHeart t₁ t₂).mapShortComplex.obj S).ShortExact where
   exact := ShortExactComplexImageExact F t₁ t₂ he
-  mono_f := ShortExactComplexImageLeftExact F t₁ t₂ he hv₂
-  epi_g := ShortExactComplexImageRightExact F t₁ t₂ he hv₁
+  mono_f := MonoOfMonoAcyclicCokernel F t₁ t₂ S.f he.mono_f
+    (IsZero.of_iso hv₂ ((t₂.homology (-1 : ℤ)).mapIso (F.mapIso
+    ((fullSubcategoryInclusion _).mapIso (IsColimit.coconePointUniqueUpToIso
+    (cokernelIsCokernel S.f) he.gIsCokernel)))))
+  epi_g := EpiOfEpiAcyclicKernel F t₁ t₂ S.g he.epi_g
+    (IsZero.of_iso hv₁ ((t₂.homology (1 : ℤ)).mapIso (F.mapIso
+    ((fullSubcategoryInclusion _).mapIso (IsLimit.conePointUniqueUpToIso
+    (kernelIsKernel S.g) he.fIsKernel)))))
 
 lemma ShortExactComplexImageShortExact' {S : ShortComplex t₁.Heart} (he : S.ShortExact)
     (hv₁ : AcyclicObject F t₁ t₂ S.X₁) (hv₂ : AcyclicObject F t₁ t₂ S.X₃) :
-    ((FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj S).ShortExact :=
+    ((F.FromHeartToHeart t₁ t₂).mapShortComplex.obj S).ShortExact :=
   ShortExactComplexImageShortExact F t₁ t₂ he
   (AcyclicImageHasZeroHomology F t₁ t₂ hv₁ (1 : ℤ) (by simp))
   (AcyclicImageHasZeroHomology F t₁ t₂ hv₂ (-1 : ℤ) (by simp))
 
+def IsIsoKernelComparisonOfEpi {X Y : t₁.Heart} (f : X ⟶ Y) (he : Epi f)
+    (h₁ : AcyclicObject F t₁ t₂ (kernel f)) (h₃ : AcyclicObject F t₁ t₂ Y) :
+    IsIso (kernelComparison f (F.FromHeartToHeart t₁ t₂)) := by
+  rw [isIso_iff_mono_and_epi]
+  set hx := ShortExactComplexImageShortExact' F t₁ t₂ (epiKernelComplexShortExact f he) h₁ h₃
+  constructor
+  · refine @mono_of_mono _ _ _ _ _ _ (kernel.ι ((F.FromHeartToHeart t₁ t₂).map f)) ?_
+    rw [kernelComparison_comp_ι]
+    exact hx.mono_f
+  · set R₁ := (ShortComplex.mk ((F.FromHeartToHeart t₁ t₂).map (kernel.ι f))
+      ((F.FromHeartToHeart t₁ t₂).map f)
+      (by rw [← map_comp, kernel.condition, Functor.map_zero])).toComposableArrows
+    set R₂ := (ShortComplex.mk (kernel.ι ((F.FromHeartToHeart t₁ t₂).map f))
+      ((F.FromHeartToHeart t₁ t₂).map f) (kernel.condition _)).toComposableArrows
+    have hR₁ : R₁.Exact := hx.exact.exact_toComposableArrows
+    have hR₂ : R₂.Exact := (kernelComplexExact _).exact_toComposableArrows
+    set φ : R₁ ⟶ R₂ := by
+      refine ComposableArrows.homMk ?_ ?_
+      · intro i
+        match i with
+        | 0 => exact kernelComparison f (F.FromHeartToHeart t₁ t₂)
+        | 1 => exact 𝟙 _
+        | 2 => exact 𝟙 _
+      · intro i _
+        match i with
+        | 0 => erw [kernelComparison_comp_ι, comp_id]; rfl
+        | 1 => erw [comp_id, id_comp]; rfl
+    refine Abelian.epi_of_mono_of_epi_of_mono φ hR₁ hR₂ ?_ ?_ ?_
+    · change Mono (kernel.ι _); exact inferInstance
+    · change Epi (𝟙 _); exact inferInstance
+    · change Mono (𝟙 _); exact inferInstance
+
+@[simps!]
+noncomputable def imageFactorisationOfAcyclic {X Y : t₁.Heart} (f : X ⟶ Y)
+    (h₁ : AcyclicObject F t₁ t₂ (cokernel f)) (h₂ : AcyclicObject F t₁ t₂ (kernel f)) :
+    ImageFactorisation ((F.FromHeartToHeart t₁ t₂).map f) := by
+  refine imageFactorisationOfNormalEpi (C := t₂.Heart) _ ?_ ?_
+  · refine {I := (F.FromHeartToHeart t₁ t₂).obj (Abelian.image f),
+            e := (F.FromHeartToHeart t₁ t₂).map (Abelian.factorThruImage _),
+            m := (F.FromHeartToHeart t₁ t₂).map (Abelian.image.ι _),
+            m_mono := ?_, fac := ?_}
+    · refine MonoOfMonoAcyclicCokernel F t₁ t₂ (Abelian.image.ι f) inferInstance
+        (@isZero_homology_of_isGE _ _ _ _ _ _ _ t₂ _ _ _ _ (-1 : ℤ) 0 (by simp only [Int.reduceNeg,
+          Left.neg_neg_iff, zero_lt_one]) ?_)
+      have := Limits.IsColimit.coconePointUniqueUpToIso (cokernelIsCokernel f)
+       (Limits.isCokernelEpiComp (cokernelIsCokernel (Abelian.image.ι f))
+        (Abelian.factorThruImage f) (Abelian.image.fac f).symm)
+      have := ClosedUnderIsomorphisms.of_iso this h₁
+      simp only [AcyclicObject, mem_heart_iff] at this
+      exact this.2
+    · rw [← map_comp, Abelian.image.fac]
+  · refine @normalEpiOfEpi (C := t₂.Heart) _ _ _ _ _ _  ?_
+    refine EpiOfEpiAcyclicKernel F t₁ t₂ (Abelian.factorThruImage f) inferInstance
+      (@isZero_homology_of_isLE _ _ _ _ _ _ _ t₂ _ _ _ _ _ (1 : ℤ) 0 zero_lt_one ?_)
+    have := Limits.IsLimit.conePointUniqueUpToIso (kernelIsKernel f) (Limits.isKernelCompMono
+      (kernelIsKernel (Abelian.factorThruImage f)) (Abelian.image.ι f) (Abelian.image.fac f).symm)
+    have := ClosedUnderIsomorphisms.of_iso this h₂
+    simp only [AcyclicObject, mem_heart_iff] at this
+    exact this.1
+
+noncomputable def isoImageOfAcyclic {X Y : t₁.Heart} (f : X ⟶ Y)
+    (h₁ : AcyclicObject F t₁ t₂ (cokernel f)) (h₂ : AcyclicObject F t₁ t₂ (kernel f)) :
+    (F.FromHeartToHeart t₁ t₂).obj (Abelian.image f) ≅
+    Abelian.image ((F.FromHeartToHeart t₁ t₂).map f) :=
+  (IsImage.isoExt (imageFactorisationOfAcyclic F t₁ t₂ f h₁ h₂).isImage (Limits.Image.isImage
+  ((F.FromHeartToHeart t₁ t₂).map f))).trans (Abelian.imageIsoImage _).symm
+
+lemma isoImageOfAcyclic_comp_ι {X Y : t₁.Heart} (f : X ⟶ Y)
+    (h₁ : AcyclicObject F t₁ t₂ (cokernel f)) (h₂ : AcyclicObject F t₁ t₂ (kernel f)) :
+    (isoImageOfAcyclic F t₁ t₂ f h₁ h₂).hom ≫ Abelian.image.ι ((F.FromHeartToHeart t₁ t₂).map f) =
+    (F.FromHeartToHeart t₁ t₂).map (Abelian.image.ι f) := by
+  simp only [isoImageOfAcyclic]
+  rw [Iso.trans_hom, Iso.symm_hom, assoc, image_compat]
+  erw [IsImage.isoExt_hom_m]
+  rfl
+
+--def IsIsoKernelComparisonOfAcyclic {X Y : t₁.Heart} (f : X ⟶ Y)
+
 lemma AcyclicShortExact {S : ShortComplex (AcyclicCategory F t₁ t₂)}
-    (SE : ((AcyclicToHeart F t₁ t₂).mapShortComplex.obj S).ShortExact) :
-    ((FunctorFromAcyclic F t₁ t₂).mapShortComplex.obj S).ShortExact := by sorry
+    (SE : ((F.AcyclicToHeart t₁ t₂).mapShortComplex.obj S).ShortExact) :
+    ((F.FromAcyclic t₁ t₂).mapShortComplex.obj S).ShortExact := by sorry
   -- prood needs to be adjusted because the definition of "Acyclic" changed
   /-
   set T := heartShortExactTriangle t₁ _ SE with hTdef
@@ -361,9 +456,9 @@ noncomputable def KernelMapEpiAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t
     (hY : AcyclicObject F t₁ t₂ Y) (f : X ⟶ Y)
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f)) (hf2 : Epi f)
     {c : KernelFork f} (hc : IsLimit c) :
-    IsLimit ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelFork c) := by sorry
-/-  refine IsLimit.ofIsoLimit (r := Limits.KernelFork.ofι (f := (F.FunctorFromHeartToHeart t₁ t₂).map
-     f) ((F.FunctorFromHeartToHeart t₁ t₂).map (kernel.ι f))
+    IsLimit ((F.FromHeartToHeart t₁ t₂).mapKernelFork c) := by sorry
+/-  refine IsLimit.ofIsoLimit (r := Limits.KernelFork.ofι (f := (F.FromHeartToHeart t₁ t₂).map
+     f) ((F.FromHeartToHeart t₁ t₂).map (kernel.ι f))
     (by rw [← map_comp, kernel.condition, Functor.map_zero])) ?_ ?_
   · set Z : AcyclicCategory F t₁ t₂ := ⟨(Limits.kernel f), hf1⟩
     set g : Z ⟶ ⟨X, hX⟩ := Limits.kernel.ι f with hgdef
@@ -389,7 +484,7 @@ noncomputable def KernelMapEpiAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t
         exact hf2
     have FSE : ((FunctorFromAcyclic F t₁ t₂).mapShortComplex.obj S).ShortExact :=
       AcyclicShortExact F t₁ t₂ SE
-    set S' := (FunctorFromHeartToHeart F t₁ t₂).mapShortComplex.obj
+    set S' := (F.FromHeartToHeart t₁ t₂).mapShortComplex.obj
       (ShortComplex.mk (kernel.ι (C := t₁.Heart) f) f (kernel.condition (C := t₁.Heart) f)) with hS'
     have S'E : S'.ShortExact := by
       refine ShortComplex.shortExact_of_iso ((ShortComplex.mapNatIso _
@@ -409,10 +504,10 @@ noncomputable def KernelMapEpiAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t
         id_eq, Iso.refl_hom, ShortComplex.map_g, comp_map, id_comp, fullSubcategoryInclusion.map,
         comp_id]
     exact ShortComplex.ShortExact.fIsKernel S'E
-  · refine (((F.FunctorFromHeartToHeart t₁ t₂).mapKernelForkIso c).trans ?_).symm
+  · refine (((F.FromHeartToHeart t₁ t₂).mapKernelForkIso c).trans ?_).symm
     refine Cones.ext ?_ ?_
     · simp only [const_obj_obj, Fork.ofι_pt]
-      have := (F.FunctorFromHeartToHeart t₁ t₂).mapIso (IsLimit.conePointUniqueUpToIso hc
+      have := (F.FromHeartToHeart t₁ t₂).mapIso (IsLimit.conePointUniqueUpToIso hc
         (kernelIsKernel f))
       exact this
     · intro j
@@ -438,7 +533,7 @@ noncomputable def KernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁
     (f : X ⟶ Y) (hf0 : AcyclicObject F t₁ t₂ (Abelian.image f))
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f))
     (hf2 : AcyclicObject F t₁ t₂ (Limits.cokernel f)) {c : KernelFork f} (hc : IsLimit c) :
-    IsLimit ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelFork c) := by sorry
+    IsLimit ((F.FromHeartToHeart t₁ t₂).mapKernelFork c) := by sorry
 /-  set g := Abelian.factorThruImage f
   have hg := isKernelCompMono (kernelIsKernel g) (Abelian.image.ι f)
     (Abelian.image.fac f).symm
@@ -446,17 +541,17 @@ noncomputable def KernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁
     set e := IsLimit.conePointUniqueUpToIso (kernelIsKernel f) hg
     exact ClosedUnderIsomorphisms.of_iso e hf1
   set hgK := KernelMapEpiAcyclic F t₁ t₂ hX hf0 g hg1 inferInstance (kernelIsKernel g)
-  have heq : (F.FunctorFromHeartToHeart t₁ t₂).map f =
-      (F.FunctorFromHeartToHeart t₁ t₂).map g ≫ (F.FunctorFromHeartToHeart t₁ t₂).map
+  have heq : (F.FromHeartToHeart t₁ t₂).map f =
+      (F.FromHeartToHeart t₁ t₂).map g ≫ (F.FromHeartToHeart t₁ t₂).map
       (Abelian.image.ι f) := by rw [← map_comp, Abelian.image.fac]
-  have hgK' := IsLimit.ofIsoLimit hgK ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelForkIso
+  have hgK' := IsLimit.ofIsoLimit hgK ((F.FromHeartToHeart t₁ t₂).mapKernelForkIso
     (KernelFork.ofι (kernel.ι g) (kernel.condition g)))
-  have hmon : Mono ((F.FunctorFromHeartToHeart t₁ t₂).map (Abelian.image.ι f)) := by
+  have hmon : Mono ((F.FromHeartToHeart t₁ t₂).map (Abelian.image.ι f)) := by
     have : IsLimit (Fork.ofι (Abelian.image.ι f) (by simp only [equalizer_as_kernel,
       kernel.condition, comp_zero])) :=
       kernelIsKernel (cokernel.π f)
     have := KernelMapEpiAcyclic F t₁ t₂ hY hf2 (cokernel.π f) hf0 inferInstance this
-    set e := (F.FunctorFromHeartToHeart t₁ t₂).mapKernelForkIso (KernelFork.ofι
+    set e := (F.FromHeartToHeart t₁ t₂).mapKernelForkIso (KernelFork.ofι
       (Abelian.image.ι f) (f := cokernel.π f) (by simp only [equalizer_as_kernel,
         kernel.condition]))
     have := IsLimit.ofIsoLimit this e
@@ -466,13 +561,13 @@ noncomputable def KernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁
       parallelPair_obj_zero, id_eq] at this
     exact this
   letI := hmon
-  have := isKernelCompMono hgK' ((F.FunctorFromHeartToHeart t₁ t₂).map (Abelian.image.ι f)) heq
+  have := isKernelCompMono hgK' ((F.FromHeartToHeart t₁ t₂).map (Abelian.image.ι f)) heq
   simp only [Fork.ofι_pt, const_obj_obj, Fork.ι_ofι, parallelPair_obj_zero] at this
-  set e := (KernelFork.functoriality (F.FunctorFromHeartToHeart t₁ t₂) _).mapIso
+  set e := (KernelFork.functoriality (F.FromHeartToHeart t₁ t₂) _).mapIso
     (IsLimit.uniqueUpToIso hg hc)
   simp only [comp_obj, comp_map, KernelFork.functoriality, eq_mpr_eq_cast, cast_eq, id_eq,
     Fork.ofι_pt, const_obj_obj, Fork.ι_ofι] at e
-  set f := ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelForkIso (KernelFork.ofι (kernel.ι g)
+  set f := ((F.FromHeartToHeart t₁ t₂).mapKernelForkIso (KernelFork.ofι (kernel.ι g)
     (f := f) (by conv_lhs => congr; simp only [g]; rfl; rw [← Abelian.image.fac f]
                  rw [← Category.assoc, kernel.condition, zero_comp])))
   exact IsLimit.ofIsoLimit this (f.symm.trans e)-/
@@ -483,21 +578,21 @@ noncomputable def preservesKernelOfAcyclic {X Y : t₁.Heart} (hX : AcyclicObjec
     (f : X ⟶ Y) (hf0 : AcyclicObject F t₁ t₂ (Abelian.image f))
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f))
     (hf2 : AcyclicObject F t₁ t₂ (Limits.cokernel f)) :
-    PreservesLimit (parallelPair f 0) (FunctorFromHeartToHeart F t₁ t₂) where
+    PreservesLimit (parallelPair f 0) (F.FromHeartToHeart t₁ t₂) where
   preserves := by
     intro c limc
     have := KernelMapAcyclic F t₁ t₂ hX hY f hf0 hf1 hf2 limc
-    simp only [comp_obj, comp_map, mapKernelFork] at this
-    exact (IsLimit.postcomposeHomEquiv (compNatIso' (F.FunctorFromHeartToHeart t₁ t₂))
-      ((F.FunctorFromHeartToHeart t₁ t₂).mapCone c)).toFun this
+    simp only [comp_obj, Functor.comp_map, mapKernelFork] at this
+    exact (IsLimit.postcomposeHomEquiv (compNatIso' (F.FromHeartToHeart t₁ t₂))
+      ((F.FromHeartToHeart t₁ t₂).mapCone c)).toFun this
 
 noncomputable def kernelComparisonIsIso {X Y : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X)
     (hY : AcyclicObject F t₁ t₂ Y)
     (f : X ⟶ Y) (hf0 : AcyclicObject F t₁ t₂ (Abelian.image f))
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f))
     (hf2 : AcyclicObject F t₁ t₂ (Limits.cokernel f)) :
-    IsIso (kernelComparison f (FunctorFromHeartToHeart F t₁ t₂)) :=
-  @instIsIsoKernelComparison _ _ _ _ _ _ (FunctorFromHeartToHeart F t₁ t₂) _ _ _ f _ _
+    IsIso (kernelComparison f (F.FromHeartToHeart t₁ t₂)) :=
+  @instIsIsoKernelComparison _ _ _ _ _ _ (F.FromHeartToHeart t₁ t₂) _ _ _ f _ _
   (preservesKernelOfAcyclic F t₁ t₂ hX hY f hf0 hf1 hf2)
 
 /- Dual results, sorried for now.-/
@@ -507,18 +602,18 @@ noncomputable def CokernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t�
     (f : X ⟶ Y) (hf0 : AcyclicObject F t₁ t₂ (Abelian.image f))
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f))
     (hf2 : AcyclicObject F t₁ t₂ (Limits.cokernel f)) {c : CokernelCofork f} (hc : IsColimit c) :
-    IsColimit ((F.FunctorFromHeartToHeart t₁ t₂).mapCokernelCofork c) := by sorry
+    IsColimit ((F.FromHeartToHeart t₁ t₂).mapCokernelCofork c) := by sorry
 
 noncomputable def preservesCokernelOfAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X)
     (hY : AcyclicObject F t₁ t₂ Y)
     (f : X ⟶ Y) (hf0 : AcyclicObject F t₁ t₂ (Abelian.image f))
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f))
     (hf2 : AcyclicObject F t₁ t₂ (Limits.cokernel f)) :
-    PreservesColimit (parallelPair f 0) (FunctorFromHeartToHeart F t₁ t₂) where
+    PreservesColimit (parallelPair f 0) (F.FromHeartToHeart t₁ t₂) where
   preserves := by
     intro c limc
     have := CokernelMapAcyclic F t₁ t₂ hX hY f hf0 hf1 hf2 limc
-    simp only [comp_obj, comp_map, mapCokernelCofork] at this
+    simp only [comp_obj, Functor.comp_map, mapCokernelCofork] at this
     sorry
 
 noncomputable def cokernelComparisonIsIso {X Y : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X)
@@ -526,8 +621,8 @@ noncomputable def cokernelComparisonIsIso {X Y : t₁.Heart} (hX : AcyclicObject
     (f : X ⟶ Y) (hf0 : AcyclicObject F t₁ t₂ (Abelian.image f))
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f))
     (hf2 : AcyclicObject F t₁ t₂ (Limits.cokernel f)) :
-    IsIso (cokernelComparison f (FunctorFromHeartToHeart F t₁ t₂)) :=
-  @instIsIsoCokernelComparison _ _ _ _ _ _ (FunctorFromHeartToHeart F t₁ t₂) _ _ _ f _ _
+    IsIso (cokernelComparison f (F.FromHeartToHeart t₁ t₂)) :=
+  @instIsIsoCokernelComparison _ _ _ _ _ _ (F.FromHeartToHeart t₁ t₂) _ _ _ f _ _
   (preservesCokernelOfAcyclic F t₁ t₂ hX hY f hf0 hf1 hf2)
 
 noncomputable def RightAcyclicKer_aux (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}

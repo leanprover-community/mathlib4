@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ExactSequence
 
 open CategoryTheory Limits Category
 

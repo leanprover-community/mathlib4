@@ -7,6 +7,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category CategoryTheory.Limits ZeroObject
@@ -166,10 +167,33 @@ map α :=
               simp only [parallelPair_obj_one, Functor.const_obj_obj, Fork.π_comp_hom]
   }
 
-variable {A : Type u} [Category.{v, u} A] [Abelian A] {B : Type u'} [Category.{v', u'} B]
-  [Abelian B]
+variable {A C : Type u} [Category.{v, u} A] [Category.{v,u} C] [HasZeroMorphisms C]
+  [Abelian A] {B : Type u'} [Category.{v', u'} B] [Abelian B]
 variable {X Y : A} {f : X ⟶ Y} (S : ShortComplex A)
 variable (F : A ⥤ B) [Functor.Additive F]
+
+
+lemma imageFactorisationOfEpi_aux {X Y : C} (f : X ⟶ Y) (F F' : MonoFactorisation f)
+    (hF : NormalEpi F.e) : hF.g ≫ F'.e = 0 := by
+  rw [← cancel_mono F'.m, zero_comp, assoc, F'.fac]
+  conv_lhs => congr; rfl; rw [← F.fac]
+  rw [← assoc, hF.w, zero_comp]
+
+def imageFactorisationOfNormalEpi {X Y : C} (f : X ⟶ Y) (F : MonoFactorisation f)
+    (hF : NormalEpi F.e) : ImageFactorisation f where
+  F := F
+  isImage :=
+  {
+   lift := fun F' ↦
+     hF.isColimit.desc (CokernelCofork.ofπ F'.e (imageFactorisationOfEpi_aux f F F' hF))
+   lift_fac := fun F' ↦ by
+     rw [← cancel_epi F.e, ← assoc]
+     have := hF.isColimit.fac (CokernelCofork.ofπ F'.e (imageFactorisationOfEpi_aux f F F' hF))
+       WalkingParallelPair.one
+     simp only [parallelPair_obj_one, Cofork.ofπ_pt, Functor.const_obj_obj, Cofork.ofπ_ι_app,
+       comp_id] at this
+     rw [this, F.fac, F'.fac]
+  }
 
 noncomputable def imageComparison (h : IsIso (cokernelComparison f F)) :
     F.obj (Abelian.image f) ⟶ Abelian.image (F.map f) := by
@@ -190,6 +214,9 @@ lemma kernelImageComparison_compat (hcoker : IsIso (cokernelComparison S.f F)) :
   rw [imageComparison]
   simp only [equalizer_as_kernel, Functor.mapShortComplex_obj, ShortComplex.map_X₁,
     ShortComplex.map_X₂, ShortComplex.map_f, kernel.lift_ι]
+
+lemma image_compat : (Abelian.imageIsoImage f).inv ≫ Abelian.image.ι f =
+    Limits.image.ι f := by sorry
 
 namespace CategoryTheory.ShortComplex
 
@@ -246,6 +273,7 @@ noncomputable def homologyIsoKernelCokernelToAbelianCoimage :
     S.homology ≅ kernel S.cokernelToAbelianCoimage :=
   (RightHomologyData.ofIsLimitKernelForkCokernelToAbelianCoimage S _
     (kernelIsKernel _)).homologyIso
+
 
 /-
 lemma image_compat : (Abelian.imageIsoImage S.f).hom ≫ (imageToKernel' S.f S.g S.zero) =
@@ -320,6 +348,27 @@ lemma kernelComplexExact : (ShortComplex.mk (kernel.ι f) f (kernel.condition f)
   refine IsZero.of_iso ?_ (homology'IsoCokernelLift _ _ _)
   simp only [equalizer_as_kernel, IsLimit.lift_self, Fork.ofι_pt]
   refine IsZero.of_iso (isZero_zero A) (Limits.cokernel.ofEpi _)
+
+lemma monoCokernelComplexShortExact (hm : Mono f) :
+    (ShortComplex.mk f (cokernel.π f) (by simp)).ShortExact where
+  exact := by
+    have := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel f)
+    refine ShortComplex.exact_of_iso (ShortComplex.isoMk ?_ ?_ ?_ ?_ ?_)
+      (kernelComplexExact (cokernel.π f))
+    · exact IsLimit.conePointUniqueUpToIso (kernelIsKernel (cokernel.π f)) this
+    · exact Iso.refl _
+    · exact Iso.refl _
+    · simp only [Cofork.ofπ_pt, Functor.const_obj_obj, Cofork.π_ofπ, Iso.refl_hom, comp_id]
+      have := IsLimit.conePointUniqueUpToIso_hom_comp (kernelIsKernel (cokernel.π f)) this
+        WalkingParallelPair.zero
+      simp only [Fork.ofι_pt, parallelPair_obj_zero, Cofork.ofπ_pt, Functor.const_obj_obj,
+        Cofork.π_ofπ, Fork.ofι_π_app] at this
+      exact this
+    · simp only [Iso.refl_hom, id_comp, comp_id]
+
+lemma epiKernelComplexShortExact (_ : Epi f) :
+    (ShortComplex.mk (kernel.ι f) f (by simp)).ShortExact where
+  exact := kernelComplexExact f
 
 lemma kernelImageComplexShortExact : (ShortComplex.mk (kernel.ι f) (Abelian.factorThruImage f)
     (by rw [← cancel_mono (Abelian.image.ι f), assoc, Abelian.image.fac, zero_comp,
@@ -453,6 +502,70 @@ lemma kernelComparisonEpiOfImageComparisonMono (hc : Mono (cokernelComparison f 
   have h₁ : Mono (ComposableArrows.app' φ 2) := hm
   exact Abelian.epi_of_mono_of_epi_of_mono φ hR₁ hR₂ hR₂' h₀ h₁
 
+namespace CategoryTheory.ShortComplex
+
+/-- The 4 composable arrows associated to a short complex. -/
+@[simps!]
+noncomputable def toComposableArrows₄ (S : ShortComplex A) : ComposableArrows A 4 :=
+  ComposableArrows.mk₄ (0 : (0 : A) ⟶ S.X₁) S.f S.g (0 : S.X₃ ⟶ (0 : A))
+
+lemma isComplex_toComposableArrows₄ (S : ShortComplex A) :
+    S.toComposableArrows₄.IsComplex where
+  zero i _ := match i with
+    | 0 => by simp
+    | 1 => S.zero
+    | 2 => by erw [comp_zero]
+
+noncomputable def toComposableArrows₄_δ₀_δfinal_iso_toComposableArrows (S : ShortComplex A) :
+    S.toComposableArrows ≅ S.toComposableArrows₄.δ₀.δlast := by
+  refine ComposableArrows.isoMk ?_ ?_
+  · intro i
+    match i with
+    | 0 => exact Iso.refl _
+    | 1 => exact Iso.refl _
+    | 2 => exact Iso.refl _
+  · intro i _
+    match i with
+    | 0 => erw [id_comp, comp_id]; rfl
+    | 1 => erw [comp_id, id_comp]; rfl
+
+lemma ShortExact.exact_toComposableArrows₄ {S : ShortComplex A} (hS : S.ShortExact) :
+    S.toComposableArrows₄.Exact := by
+  rw [ComposableArrows.exact_iff_δ₀]
+  constructor
+  · refine ComposableArrows.exact₂_mk _ (by erw [zero_comp]) ?_
+    change (ShortComplex.mk 0 S.f _).Exact
+    exact (ShortComplex.exact_iff_mono _ (IsZero.eq_zero_of_src (isZero_zero A) _)).mpr hS.mono_f
+  · rw [ComposableArrows.exact_iff_δlast]
+    constructor
+    · exact ComposableArrows.exact_of_iso (S.toComposableArrows₄_δ₀_δfinal_iso_toComposableArrows)
+        hS.exact.exact_toComposableArrows
+    · refine ComposableArrows.exact₂_mk _ (by erw [comp_zero]) ?_
+      change (ShortComplex.mk S.g 0 _).Exact
+      exact (ShortComplex.exact_iff_epi _ (IsZero.eq_zero_of_tgt (isZero_zero A) _)).mpr hS.epi_g
+
+lemma exact_iff_exact_toComposableArrows₄ (S : ShortComplex A) :
+    S.ShortExact ↔ S.toComposableArrows₄.Exact := by
+  constructor
+  · exact fun h ↦ h.exact_toComposableArrows₄
+  · intro h; refine {exact := ?_, mono_f := ?_, epi_g := ?_}
+    · rw [exact_iff_exact_toComposableArrows]
+      refine ComposableArrows.exact_of_iso
+        S.toComposableArrows₄_δ₀_δfinal_iso_toComposableArrows.symm ?_
+      rw [ComposableArrows.exact_iff_δ₀] at h
+      have := h.2
+      rw [ComposableArrows.exact_iff_δlast] at this
+      exact this.1
+    · rw [ComposableArrows.exact_iff_δ₀, ComposableArrows.exact₂_iff] at h
+      change (ShortComplex.mk 0 S.f _).Exact ∧ _ at h
+      exact (ShortComplex.exact_iff_mono _ (IsZero.eq_zero_of_src (isZero_zero A) _)).mp h.1
+      rw [ComposableArrows.isComplex₂_iff]; erw [zero_comp]
+    · rw [ComposableArrows.exact_iff_δlast, ComposableArrows.exact₂_iff] at h
+      change _ ∧ (ShortComplex.mk S.g 0 _).Exact at h
+      exact (ShortComplex.exact_iff_epi _ (IsZero.eq_zero_of_tgt (isZero_zero A) _)).mp h.2
+      rw [ComposableArrows.isComplex₂_iff]; erw [comp_zero]
+
+end ShortComplex
 
 /-
 variable {ι : Type*} {c : ComplexShape ι}
