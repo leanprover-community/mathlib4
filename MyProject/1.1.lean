@@ -184,7 +184,12 @@ end section
 
 
 --maximal entropy theorem
+noncomputable section
 
+def φ (x : ℝ) : ℝ :=
+x * Real.log x
+
+end section
 
 
 theorem max_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
@@ -195,12 +200,37 @@ by
   · by_cases h : ∀ i : Fin n, μ (fp.f i)=1/n
     · simp [met_entropy',h]
       rw[← mul_assoc]
-      sorry
+      obtain (rfl | hn) := eq_zero_or_pos n
+      · simp
+      · simp [toReal_inv, mul_inv_cancel <| show (n : ℝ) ≠ 0 by norm_cast; omega]
     · push_neg at h
-      sorry
+      rcases h with ⟨a,b⟩
+      simp [met_entropy']
+      obtain (rfl | hn) := eq_zero_or_pos n
+      · simp
+      · have h: -1/(n:ℝ) *Real.log (n:ℝ) = 1/(n:ℝ) * Real.log (1/(n:ℝ)) := by
+          field_simp
+          simp [Real.log_inv, mul_inv_cancel <| show (n : ℝ) ≠ 0 by norm_cast; omega]
+        have h': 1/(n:ℝ) * Real.log (1/(n:ℝ))= φ (1/(n:ℝ)) := by
+          tauto
+        have: 1/(n:ℝ) = 1/(n:ℝ)*(∑ i in Finset.univ, (μ (fp.f i)).toReal) := by
+          sorry
+        sorry
   · constructor
+    ·
+
+
     · sorry
-    · sorry
+
+
+
+
+
+
+
+
+
+
 
 
 
