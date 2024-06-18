@@ -15,9 +15,9 @@ In this file we define the type `BasedCategory 𝒮`, and give it the structure 
 bicategory. Given a category `𝒮`, we define the type `BasedCategory 𝒮` as the type of categories
 `𝒳` equiped with a functor `𝒳.p : 𝒳 ⥤ 𝒮`.
 
-We also define functors between based categories `𝒳 𝒴 : BasedCategory 𝒮`, via the structure
-`𝒳 ⥤ᵇ 𝒴 `. These are defined as functors between the underlying categories `𝒳.obj` and
-`𝒴.obj` which commute with the projections to `𝒮`.
+We also define a type of functors between based categories `𝒳` and `𝒴`, which we call
+`BasedFunctor 𝒳 𝒴` and denote as `𝒳 ⥤ᵇ 𝒴`. These are defined as functors between the underlying
+categories `𝒳.obj` and `𝒴.obj` which commute with the projections to `𝒮`.
 
 Natural transformations between based functors `F G : 𝒳 ⥤ᵇ 𝒴 ` are given by the structure
 `BasedNatTrans F G`. These are defined as natural transformations `α` between the functors
