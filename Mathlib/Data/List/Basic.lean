@@ -1779,10 +1779,6 @@ theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
     l[n] :: l.drop (n + 1) = l.drop n :=
   (drop_eq_getElem_cons h).symm
 
-theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
-    l[n] :: l.drop (n + 1) = l.drop n :=
-  (drop_eq_getElem_cons h).symm
-
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_getElem_cons n.2).symm
