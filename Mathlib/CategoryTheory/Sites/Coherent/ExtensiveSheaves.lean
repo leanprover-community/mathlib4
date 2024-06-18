@@ -19,13 +19,14 @@ This file characterises sheaves for the extensive topology.
   extensive topology are precisely those preserving finite products.
 -/
 
-universe v u w
+universe w
 
 namespace CategoryTheory
 
-open Limits
+open Limits Presieve Opposite
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type*} [Category C] {D : Type*} [Category D]
+
 variable [FinitaryPreExtensive C]
 
 /-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
@@ -42,8 +43,6 @@ instance {X : C} (S : Presieve X) [S.Extensive] : S.hasPullbacks where
     intro _ _ _ _ _ hg
     cases hg
     apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct hc
-
-open Presieve Opposite
 
 /--
 A finite product preserving presheaf is a sheaf for the extensive topology on a category which is
@@ -73,11 +72,13 @@ theorem extensiveTopology.isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (extensi
 theorem extensiveTopology.subcanonical : Sheaf.Subcanonical (extensiveTopology C) :=
   Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
 
+variable [FinitaryExtensive C]
+
 /--
 A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
 products.
 -/
-theorem Presieve.isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type w) :
+theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (extensiveTopology C) F ↔
     Nonempty (PreservesFiniteProducts F) := by
   refine ⟨fun hF ↦ ⟨⟨fun α _ ↦ ⟨fun {K} ↦ ?_⟩⟩⟩, fun hF ↦ ?_⟩
@@ -112,8 +113,7 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : 
 /--
 A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
 -/
-theorem Presheaf.isSheaf_iff_preservesFiniteProducts {D : Type*} [Category D]
-    [FinitaryExtensive C] (F : Cᵒᵖ ⥤ D) :
+theorem Presheaf.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ D) :
     IsSheaf (extensiveTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by
   constructor
   · intro h
@@ -130,5 +130,8 @@ theorem Presheaf.isSheaf_iff_preservesFiniteProducts {D : Type*} [Category D]
   · intro ⟨_⟩ E
     rw [Presieve.isSheaf_iff_preservesFiniteProducts]
     exact ⟨inferInstance⟩
+
+noncomputable instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.val :=
+  ((Presheaf.isSheaf_iff_preservesFiniteProducts F.val).mp F.cond).some
 
 end CategoryTheory
