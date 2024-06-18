@@ -280,7 +280,13 @@ theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
   simp only [← C_eq_natCast, natDegree_C]
 #align polynomial.nat_degree_nat_cast Polynomial.natDegree_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias natDegree_nat_cast := natDegree_natCast
+
 theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+
+@[deprecated (since := "2024-04-17")]
+alias degree_nat_cast_le := degree_natCast_le
 
 @[simp]
 theorem degree_monomial (n : ℕ) (ha : a ≠ 0) : degree (monomial n a) = n := by
@@ -551,7 +557,13 @@ theorem natDegree_intCast (n : ℤ) : natDegree (n : R[X]) = 0 := by
   rw [← C_eq_intCast, natDegree_C]
 #align polynomial.nat_degree_intCast Polynomial.natDegree_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias natDegree_int_cast := natDegree_intCast
+
 theorem degree_intCast_le (n : ℤ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+
+@[deprecated (since := "2024-04-17")]
+alias degree_int_cast_le := degree_intCast_le
 
 @[simp]
 theorem leadingCoeff_neg (p : R[X]) : (-p).leadingCoeff = -p.leadingCoeff := by
@@ -629,7 +641,7 @@ theorem eq_C_of_degree_le_zero (h : degree p ≤ 0) : p = C (coeff p 0) := by
   ext (_ | n)
   · simp
   rw [coeff_C, if_neg (Nat.succ_ne_zero _), coeff_eq_zero_of_degree_lt]
-  exact h.trans_lt (WithBot.some_lt_some.2 n.succ_pos)
+  exact h.trans_lt (WithBot.coe_lt_coe.2 n.succ_pos)
 #align polynomial.eq_C_of_degree_le_zero Polynomial.eq_C_of_degree_le_zero
 
 theorem eq_C_of_degree_eq_zero (h : degree p = 0) : p = C (coeff p 0) :=
@@ -1482,7 +1494,7 @@ theorem degree_X_add_C (a : R) : degree (X + C a) = 1 := by
   have : degree (C a) < degree (X : R[X]) :=
     calc
       degree (C a) ≤ 0 := degree_C_le
-      _ < 1 := WithBot.some_lt_some.mpr zero_lt_one
+      _ < 1 := WithBot.coe_lt_coe.mpr zero_lt_one
       _ = degree X := degree_X.symm
   rw [degree_add_eq_left_of_degree_lt this, degree_X]
 #align polynomial.degree_X_add_C Polynomial.degree_X_add_C

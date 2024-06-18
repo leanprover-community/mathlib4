@@ -96,8 +96,8 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
   -- haveI := Classical.decEq α
   LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)
     fun f g x => by
-      refine'
-        (mem_finsupp_iff_of_support_subset <| Finset.subset_of_eq <| rangeIcc_support _ _).trans _
+      refine
+        (mem_finsupp_iff_of_support_subset <| Finset.subset_of_eq <| rangeIcc_support _ _).trans ?_
       simp_rw [mem_rangeIcc_apply_iff]
       exact forall_and
 

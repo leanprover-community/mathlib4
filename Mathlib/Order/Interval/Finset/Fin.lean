@@ -14,6 +14,8 @@ This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardi
 intervals as Finsets and Fintypes.
 -/
 
+assert_not_exists MonoidWithZero
+
 namespace Fin
 
 variable {n : ℕ} (a b : Fin n)
@@ -178,7 +180,7 @@ theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) :
   simp only [exists_prop, Embedding.coe_subtype, mem_Ici, mem_map, mem_Icc]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    exact ⟨hx, le_tsub_of_add_le_right <| x.2⟩
+    exact ⟨hx, Nat.le_sub_of_add_le <| x.2⟩
   cases n
   · exact Fin.elim0 a
   · exact fun hx => ⟨⟨x, Nat.lt_succ_iff.2 hx.2⟩, hx.1, rfl⟩
@@ -193,7 +195,7 @@ theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) :
   simp only [exists_prop, Embedding.coe_subtype, mem_Ioi, mem_map, mem_Ioc]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    exact ⟨hx, le_tsub_of_add_le_right <| x.2⟩
+    exact ⟨hx, Nat.le_sub_of_add_le <| x.2⟩
   cases n
   · exact Fin.elim0 a
   · exact fun hx => ⟨⟨x, Nat.lt_succ_iff.2 hx.2⟩, hx.1, rfl⟩

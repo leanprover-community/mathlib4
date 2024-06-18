@@ -27,7 +27,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace GroupWithZeroCat
 
-instance : CoeSort GroupWithZeroCat (Type*) :=
+instance : CoeSort GroupWithZeroCat Type* :=
   Bundled.coeSort
 
 instance (X : GroupWithZeroCat) : GroupWithZero X :=

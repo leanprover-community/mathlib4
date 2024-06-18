@@ -54,7 +54,7 @@ theorem join_filter_not_isEmpty  :
       simp [join_filter_not_isEmpty (L := L)]
 #align list.join_filter_empty_eq_ff List.join_filter_not_isEmpty
 
-@[deprecated] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty -- 2024-02-25
+@[deprecated (since := "2024-02-25")] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
 
 @[simp]
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
@@ -131,7 +131,7 @@ theorem drop_take_succ_eq_cons_get (L : List α) (i : Fin L.length) :
 set_option linter.deprecated false in
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
 left with a list of length `1` made of the `i`-th element of the original list. -/
-@[deprecated drop_take_succ_eq_cons_get] -- 2023-01-10
+@[deprecated drop_take_succ_eq_cons_get (since := "2023-01-10")]
 theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length) :
     (L.take (i + 1)).drop i = [nthLe L i hi] := by
   induction' L with head tail generalizing i

@@ -726,7 +726,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     [MeasurableAdd₂ M] : MeasurableSMul₂ ℕ M :=
   ⟨by
     suffices Measurable fun p : M × ℕ => p.2 • p.1 by apply this.comp measurable_swap
-    refine' measurable_from_prod_countable fun n => _
+    refine measurable_from_prod_countable fun n => ?_
     induction' n with n ih
     · simp only [Nat.zero_eq, zero_smul, ← Pi.zero_def, measurable_zero]
     · simp only [succ_nsmul]
@@ -738,7 +738,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     [MeasurableAdd₂ M] [MeasurableNeg M] : MeasurableSMul₂ ℤ M :=
   ⟨by
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
-    refine' measurable_from_prod_countable fun n => _
+    refine measurable_from_prod_countable fun n => ?_
     induction' n with n n ih
     · simp only [Int.ofNat_eq_coe, natCast_zsmul]
       exact measurable_const_smul _

@@ -169,8 +169,8 @@ theorem snorm_exponent_zero {f : α → F} : snorm f 0 μ = 0 := by simp [snorm]
 #align measure_theory.snorm_exponent_zero MeasureTheory.snorm_exponent_zero
 
 @[simp]
-theorem memℒp_zero_iff_aestronglyMeasurable {f : α → E} : Memℒp f 0 μ ↔ AEStronglyMeasurable f μ :=
-  by simp [Memℒp, snorm_exponent_zero]
+theorem memℒp_zero_iff_aestronglyMeasurable {f : α → E} :
+    Memℒp f 0 μ ↔ AEStronglyMeasurable f μ := by simp [Memℒp, snorm_exponent_zero]
 #align measure_theory.mem_ℒp_zero_iff_ae_strongly_measurable MeasureTheory.memℒp_zero_iff_aestronglyMeasurable
 
 @[simp]
@@ -215,16 +215,16 @@ theorem zero_mem_ℒp' : Memℒp (fun _ : α => (0 : E)) p μ := zero_memℒp (E
 
 variable [MeasurableSpace α]
 
-theorem snorm'_measure_zero_of_pos {f : α → F} (hq_pos : 0 < q) : snorm' f q (0 : Measure α) = 0 :=
-  by simp [snorm', hq_pos]
+theorem snorm'_measure_zero_of_pos {f : α → F} (hq_pos : 0 < q) :
+    snorm' f q (0 : Measure α) = 0 := by simp [snorm', hq_pos]
 #align measure_theory.snorm'_measure_zero_of_pos MeasureTheory.snorm'_measure_zero_of_pos
 
 theorem snorm'_measure_zero_of_exponent_zero {f : α → F} : snorm' f 0 (0 : Measure α) = 1 := by
   simp [snorm']
 #align measure_theory.snorm'_measure_zero_of_exponent_zero MeasureTheory.snorm'_measure_zero_of_exponent_zero
 
-theorem snorm'_measure_zero_of_neg {f : α → F} (hq_neg : q < 0) : snorm' f q (0 : Measure α) = ∞ :=
-  by simp [snorm', hq_neg]
+theorem snorm'_measure_zero_of_neg {f : α → F} (hq_neg : q < 0) :
+    snorm' f q (0 : Measure α) = ∞ := by simp [snorm', hq_neg]
 #align measure_theory.snorm'_measure_zero_of_neg MeasureTheory.snorm'_measure_zero_of_neg
 
 @[simp]
@@ -294,8 +294,8 @@ theorem snorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne
     · exact Or.inl ENNReal.coe_ne_top
 #align measure_theory.snorm'_const' MeasureTheory.snorm'_const'
 
-theorem snormEssSup_const (c : F) (hμ : μ ≠ 0) : snormEssSup (fun _ : α => c) μ = (‖c‖₊ : ℝ≥0∞) :=
-  by rw [snormEssSup, essSup_const _ hμ]
+theorem snormEssSup_const (c : F) (hμ : μ ≠ 0) :
+    snormEssSup (fun _ : α => c) μ = (‖c‖₊ : ℝ≥0∞) := by rw [snormEssSup, essSup_const _ hμ]
 #align measure_theory.snorm_ess_sup_const MeasureTheory.snormEssSup_const
 
 theorem snorm'_const_of_isProbabilityMeasure (c : F) (hq_pos : 0 < q) [IsProbabilityMeasure μ] :

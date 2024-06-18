@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Card
 
 #align_import data.multiset.fintype from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
@@ -76,9 +76,7 @@ theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x
   rfl
 #align multiset.coe_mk Multiset.coe_mk
 
-@[simp]
-theorem Multiset.coe_mem {x : m} : ↑x ∈ m :=
-  Multiset.count_pos.mp (pos_of_gt x.2.2)
+@[simp] lemma Multiset.coe_mem {x : m} : ↑x ∈ m := Multiset.count_pos.mp (by have := x.2.2; omega)
 #align multiset.coe_mem Multiset.coe_mem
 
 @[simp]
@@ -101,7 +99,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
       simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
-      exact fun h ↦ Multiset.count_pos.mp (pos_of_gt h))
+      exact fun h ↦ Multiset.count_pos.mp (by omega))
 
 /-- Construct a finset whose elements enumerate the elements of the multiset `m`.
 The `ℕ` component is used to differentiate between equal elements: if `x` appears `n` times
@@ -117,7 +115,7 @@ theorem Multiset.mem_toEnumFinset (m : Multiset α) (p : α × ℕ) :
 #align multiset.mem_to_enum_finset Multiset.mem_toEnumFinset
 
 theorem Multiset.mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1 ∈ m :=
-  Multiset.count_pos.mp <| pos_of_gt <| (m.mem_toEnumFinset p).mp h
+  have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by omega)
 #align multiset.mem_of_mem_to_enum_finset Multiset.mem_of_mem_toEnumFinset
 
 @[mono]

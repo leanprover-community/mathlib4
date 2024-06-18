@@ -204,15 +204,13 @@ The polynomials `xInTermsOfW` give the coordinate transformation in the backward
 that corresponds to the ordinary `X n`. -/
 noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
   | n => (X n - ∑ i : Fin n,
-          have := i.2
           C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟ p : R) ^ n)
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W xInTermsOfW
 
-theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} :
-    xInTermsOfW p R n =
-      (X n - ∑ i ∈ range n, C ((p: R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) :=
-  by rw [xInTermsOfW, ← Fin.sum_univ_eq_sum_range]
+theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
+    (X n - ∑ i ∈ range n, C ((p: R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) := by
+  rw [xInTermsOfW, ← Fin.sum_univ_eq_sum_range]
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_eq xInTermsOfW_eq
 

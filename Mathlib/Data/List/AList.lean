@@ -370,7 +370,7 @@ def insertRec {C : AList β → Sort*} (H0 : C ∅)
   | ⟨[], _⟩ => H0
   | ⟨c :: l, h⟩ => by
     rw [mk_cons_eq_insert]
-    refine' IH _ _ _ _ (insertRec H0 IH _)
+    refine IH _ _ _ ?_ (insertRec H0 IH _)
     exact not_mem_keys_of_nodupKeys_cons h
 #align alist.insert_rec AList.insertRec
 
@@ -491,8 +491,8 @@ theorem mem_lookup_union_middle {a} {b : β a} {s₁ s₂ s₃ : AList β} :
   mem_dlookup_kunion_middle
 #align alist.mem_lookup_union_middle AList.mem_lookup_union_middle
 
-theorem insert_union {a} {b : β a} {s₁ s₂ : AList β} : insert a b (s₁ ∪ s₂) = insert a b s₁ ∪ s₂ :=
-  by ext; simp
+theorem insert_union {a} {b : β a} {s₁ s₂ : AList β} :
+    insert a b (s₁ ∪ s₂) = insert a b s₁ ∪ s₂ := by ext; simp
 #align alist.insert_union AList.insert_union
 
 theorem union_assoc {s₁ s₂ s₃ : AList β} : (s₁ ∪ s₂ ∪ s₃).entries ~ (s₁ ∪ (s₂ ∪ s₃)).entries :=

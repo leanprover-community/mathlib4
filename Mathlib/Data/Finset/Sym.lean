@@ -263,7 +263,7 @@ theorem sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).sym n = s.sym n ∩ t.
 
 @[simp]
 theorem sym_union (s t : Finset α) (n : ℕ) : s.sym n ∪ t.sym n ⊆ (s ∪ t).sym n :=
-  union_subset (sym_mono (subset_union_left s t) n) (sym_mono (subset_union_right s t) n)
+  union_subset (sym_mono subset_union_left n) (sym_mono subset_union_right n)
 #align finset.sym_union Finset.sym_union
 
 theorem sym_fill_mem (a : α) {i : Fin (n + 1)} {m : Sym α (n - i)} (h : m ∈ s.sym (n - i)) :
@@ -287,7 +287,8 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦ by
-    refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
+    refine Function.Injective.sigma_map (β₂ := ?_) (f₂ := ?_)
+        (Function.injective_id) (fun i ↦ ?_) ?_
     · exact fun i ↦ Sym α (n - i)
     swap
     · exact Subtype.coe_injective
