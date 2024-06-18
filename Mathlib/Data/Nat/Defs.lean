@@ -151,10 +151,13 @@ lemma le_of_pred_lt : ∀ {m}, pred m < n → m ≤ n
 
 lemma lt_iff_add_one_le : m < n ↔ m + 1 ≤ n := by rw [succ_le_iff]
 #align nat.lt_iff_add_one_le Nat.lt_iff_add_one_le
+
+#align nat.lt_add_one_iff Nat.lt_add_one_iff
 -- A flipped version of `lt_add_one_iff`.
 lemma lt_one_add_iff : m < 1 + n ↔ m ≤ n := by simp only [Nat.add_comm, Nat.lt_succ_iff]
 #align nat.lt_one_add_iff Nat.lt_one_add_iff
 
+#align nat.add_one_le_iff Nat.add_one_le_iff
 lemma one_add_le_iff : 1 + m ≤ n ↔ m < n := by simp only [Nat.add_comm, add_one_le_iff]
 #align nat.one_add_le_iff Nat.one_add_le_iff
 
