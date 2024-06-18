@@ -77,13 +77,13 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 `F` is a cartesian closed functor if this is an iso for all `A`.
 -/
 def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
-  Mates (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
+  mateEquiv (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 #align category_theory.exp_comparison CategoryTheory.expComparison
 
 theorem expComparison_ev (A B : C) :
     Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
-  convert Mates_counit _ _ (prodComparisonNatIso F A).inv B using 2
+  convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
   simp only [Limits.prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
 #align category_theory.exp_comparison_ev CategoryTheory.expComparison_ev
@@ -91,7 +91,7 @@ theorem expComparison_ev (A B : C) :
 theorem coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
-  convert unit_Mates _ _ (prodComparisonNatIso F A).inv B using 3
+  convert unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
   dsimp
   simp
@@ -108,14 +108,14 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
     expComparison F A ≫ whiskerLeft _ (pre (F.map f)) =
       whiskerRight (pre f) _ ≫ expComparison F A' := by
   unfold expComparison pre
-  have vcomp1 := MatesConjugates_vcomp
+  have vcomp1 := mateEquiv_conjugateEquiv_vcomp
     (exp.adjunction A) (exp.adjunction (F.obj A)) (exp.adjunction (F.obj A'))
     ((prodComparisonNatIso F A).inv) ((prod.functor.map (F.map f)))
-  have vcomp2 := ConjugatesMates_vcomp
+  have vcomp2 := conjugateEquiv_mateEquiv_vcomp
     (exp.adjunction A) (exp.adjunction A') (exp.adjunction (F.obj A'))
     ((prod.functor.map f)) ((prodComparisonNatIso F A').inv)
-  unfold LeftAdjointSquareConjugate.vcomp RightAdjointSquareConjugate.vcomp at vcomp1
-  unfold LeftAdjointConjugateSquare.vcomp RightAdjointConjugateSquare.vcomp at vcomp2
+  unfold leftAdjointSquareConjugate.vcomp rightAdjointSquareConjugate.vcomp at vcomp1
+  unfold leftAdjointConjugateSquare.vcomp rightAdjointConjugateSquare.vcomp at vcomp2
   rw [← vcomp1, ← vcomp2]
   apply congr_arg
   ext B
@@ -136,16 +136,17 @@ class CartesianClosedFunctor : Prop where
 attribute [instance] CartesianClosedFunctor.comparison_iso
 
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
-    Conjugates (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
+    conjugateEquiv (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A) =
       expComparison F A := by
   unfold expComparison frobeniusMorphism
-  have conjeq := IteratedMates_Conjugates h h (exp.adjunction (F.obj A)) (exp.adjunction A)
+  have conjeq := iterated_mateEquiv_conjugateEquiv h h
+    (exp.adjunction (F.obj A)) (exp.adjunction A)
     (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L (prod.functor.map (h.counit.app A)))
   rw [← conjeq]
   apply congr_arg
   ext B
-  unfold Mates
+  unfold mateEquiv
   simp only [Functor.comp_obj, prod.functor_obj_obj, Functor.id_obj, Equiv.coe_fn_mk,
     whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app,
     whiskerLeft_app, whiskerRight_app, prodComparisonNatTrans_app, prod.functor_map_app,
@@ -177,7 +178,7 @@ at `A` is an isomorphism.
 theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
     [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobeniusMorphism_mate F h] at i
-  exact @Conjugates_of_iso _ _ _ _ _ _ _ _ _ _ _ i
+  exact @conjugateEquiv_of_iso _ _ _ _ _ _ _ _ _ _ _ i
 #align category_theory.frobenius_morphism_iso_of_exp_comparison_iso
 CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
 
