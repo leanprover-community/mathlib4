@@ -60,7 +60,8 @@ theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank
     regulator K = |(Matrix.of fun i ↦ (logEmbedding K) (fundSystem K (e i))).det| := by
   simp_rw [regulator, Zlattice.covolume_eq_det _
     (((basisModTorsion K).map (logEmbeddingEquiv K)).reindex e.symm), Basis.coe_reindex,
-    Function.comp, Basis.map_apply, ← fundSystem_mk, logEmbeddingEquiv_apply, Equiv.symm_symm]
+    Function.comp, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm]
+  rfl
 
 /-- Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units. Then, for any infinite place `w'`, the
 square matrices with entries `(mult w * log w (u i))_i, {w ≠ w'}` have all the same determinant in
