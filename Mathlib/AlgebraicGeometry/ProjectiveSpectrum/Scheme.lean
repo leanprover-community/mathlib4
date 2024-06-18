@@ -696,6 +696,66 @@ lemma toStalk_stalkMap_toSpec (f) (x) :
   rw [toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
   rfl
 
+/--
+If `x` is a point in the basic open set `D(f)` where `f` is a homogeneous element of positive
+degree, then the homogeneously localized ring `A⁰ₓ` has the universal property of the localization
+of `A⁰_f` at `φ(x)` where `φ : Proj|D(f) ⟶ Spec A⁰_f` is the morphism of locally ringed space
+constructed as above.
+-/
+lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    @IsLocalization (Away 𝒜 f) _ ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
+      (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _
+      (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra := by
+  letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+    (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
+  have hm : 1 ≤ m := hm
+  constructor
+  · rintro ⟨y, hy⟩
+    obtain ⟨y, rfl⟩ := y.mk_surjective
+    refine isUnit_of_mul_eq_one _
+      (.mk ⟨y.1, y.3, y.2, (mk_mem_toSpec_base_apply _ _ _).not.mp hy⟩) <| val_injective _ ?_
+    simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk, mk_eq_mk',
+      val_one, IsLocalization.mk'_mul_mk'_eq_one']
+  · intro z
+    obtain ⟨⟨i, a, ⟨b, hb⟩, (hb' : b ∉ x.1.1)⟩, rfl⟩ := z.mk_surjective
+    refine ⟨⟨.mk ⟨i * m, ⟨a * b ^ (m - 1), ?_⟩, ⟨f ^ i, SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
+      ⟨.mk ⟨i * m, ⟨b ^ m, mul_comm m i ▸ SetLike.pow_mem_graded _ hb⟩,
+        ⟨f ^ i, SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
+        (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hb' m⟩⟩,
+        val_injective _ ?_⟩
+    · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
+      rw [← succ_nsmul', tsub_add_cancel_of_le hm, mul_comm, smul_eq_mul]
+    · simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk,
+        mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk, IsLocalization.mk'_eq_iff_eq]
+      rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le hm]
+  · intros y z e
+    obtain ⟨y, rfl⟩ := y.mk_surjective
+    obtain ⟨z, rfl⟩ := z.mk_surjective
+    obtain ⟨i, c, hc, hc', e⟩ : ∃ i, ∃ c ∈ 𝒜 i, c ∉ x.1.asHomogeneousIdeal ∧
+        c * (z.den.1 * y.num.1) = c * (y.den.1 * z.num.1) := by
+      apply_fun HomogeneousLocalization.val at e
+      simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mk, mk_eq_mk',
+        IsLocalization.mk'_eq_iff_eq] at e
+      obtain ⟨⟨c, hcx⟩, hc⟩ := IsLocalization.exists_of_eq (M := x.1.1.toIdeal.primeCompl) e
+      obtain ⟨i, hi⟩ := not_forall.mp ((x.1.1.isHomogeneous.mem_iff _).not.mp hcx)
+      refine ⟨i, _, (decompose 𝒜 c i).2, hi, ?_⟩
+      apply_fun (fun x ↦ (decompose 𝒜 x (i + z.deg + y.deg)).1) at hc
+      conv_rhs at hc => rw [add_right_comm]
+      rwa [← mul_assoc, coe_decompose_mul_add_of_right_mem, coe_decompose_mul_add_of_right_mem,
+        ← mul_assoc, coe_decompose_mul_add_of_right_mem, coe_decompose_mul_add_of_right_mem,
+        mul_assoc, mul_assoc] at hc
+      exacts [y.den.2, z.num.2, z.den.2, y.num.2]
+
+    refine ⟨⟨.mk ⟨m * i, ⟨c ^ m, SetLike.pow_mem_graded _ hc⟩,
+      ⟨f ^ i, mul_comm m i ▸ SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
+      (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hc' _⟩,
+      val_injective _ ?_⟩
+    simp only [val_mul, val_mk, mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk,
+      IsLocalization.mk'_eq_iff_eq, mul_assoc]
+    congr 2
+    rw [mul_left_comm, mul_left_comm y.den.1, ← tsub_add_cancel_of_le hm, pow_succ,
+      mul_assoc, mul_assoc, e]
+
 end ProjectiveSpectrum.Proj
 
 end AlgebraicGeometry
