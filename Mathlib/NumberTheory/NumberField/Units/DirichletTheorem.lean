@@ -465,8 +465,9 @@ def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   fun i => Quotient.out' (Additive.toMul (basisModTorsion K i) :)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
-    ⟦fundSystem K i⟧ = (basisModTorsion K i) := by
-  erw [fundSystem, @Quotient.mk_eq_iff_out, Quotient.out_equiv_out]
+    Additive.ofMul ⟦fundSystem K i⟧ = (basisModTorsion K i) := by
+  rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, @Quotient.mk_eq_iff_out,
+    Quotient.out', Quotient.out_equiv_out]
   rfl
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
