@@ -147,7 +147,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   apply congr_arg
   ext B
   unfold Mates
-  simp
+  simp?
   rw [← F.map_comp, ← F.map_comp]
   simp only [prod.map_map, comp_id, id_comp]
   apply IsIso.eq_inv_of_inv_hom_id
