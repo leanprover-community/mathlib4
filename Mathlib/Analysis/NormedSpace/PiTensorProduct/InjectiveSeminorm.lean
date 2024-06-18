@@ -395,7 +395,7 @@ noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i,
 
 @[simp]
 protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
-    mapL (f ^ n) = mapL f ^ n := map_pow mapLMonoidHom _ _
+    mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow (mapLMonoidHom (E := E)) _ _
 
 open Function in
 private theorem mapL_add_smul_aux [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
