@@ -142,7 +142,8 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ �
 
 /-- We have that `η ^ 2 + η + 1 = 0`. -/
 lemma eta_sq_add_eta_add_one : (η : 𝓞 K) ^ 2 + η + 1 = 0 := by
-  ext; simpa using hζ.isRoot_cyclotomic (by decide)
+  rw [eta_sq]
+  ring
 
 /-- We have that `x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2)`. -/
 lemma cube_sub_one_eq_mul : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
