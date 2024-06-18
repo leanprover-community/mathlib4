@@ -123,12 +123,12 @@ def to_trivial (A : Bimon_ C) : A ⟶ Comon_.trivial (Mon_ C) :=
 
 variable {C}
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem one_comul (M : Bimon_ C) :
     M.X.one ≫ M.comul.hom = (λ_ _).inv ≫ (M.X.one ⊗ M.X.one) := by
   simp
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem mul_counit (M : Bimon_ C) :
     M.X.mul ≫ M.counit.hom = (M.counit.hom ⊗ M.counit.hom) ≫ (λ_ _).hom := by
   simp
