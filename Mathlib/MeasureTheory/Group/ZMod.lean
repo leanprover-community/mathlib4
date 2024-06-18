@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.MeasurableSpace.Basic
 /-!
 # Measure-space instance on `ZMod N`
 
-We equip `ZMod N` with the discrete measure-space structure.
+We equip `ZMod N` with the discrete measureable space structure.
 -/
 
 variable {N : ℕ}
