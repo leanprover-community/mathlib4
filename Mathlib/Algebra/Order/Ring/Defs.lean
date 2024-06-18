@@ -931,35 +931,14 @@ theorem add_le_mul' (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ b * a :=
   (le_of_eq (add_comm _ _)).trans (add_le_mul b2 a2)
 #align add_le_mul' add_le_mul'
 
-set_option linter.deprecated false in
-section
-
 #noalign bit0_le_bit0
 #noalign bit0_lt_bit0
 #noalign bit1_le_bit1
 #noalign bit1_lt_bit1
-
-@[simp]
-theorem one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
-  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two' α)]
-#align one_le_bit1 one_le_bit1
-
-@[simp]
-theorem one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
-  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two' α)]
-#align one_lt_bit1 one_lt_bit1
-
-@[simp]
-theorem zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
-  rw [bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
-#align zero_le_bit0 zero_le_bit0
-
-@[simp]
-theorem zero_lt_bit0 : (0 : α) < bit0 a ↔ 0 < a := by
-  rw [bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
-#align zero_lt_bit0 zero_lt_bit0
-
-end
+#noalign one_le_bit1
+#noalign one_lt_bit1
+#noalign zero_le_bit0
+#noalign zero_lt_bit0
 
 theorem mul_nonneg_iff_right_nonneg_of_pos (ha : 0 < a) : 0 ≤ a * b ↔ 0 ≤ b :=
   ⟨fun h => nonneg_of_mul_nonneg_right h ha, mul_nonneg ha.le⟩
