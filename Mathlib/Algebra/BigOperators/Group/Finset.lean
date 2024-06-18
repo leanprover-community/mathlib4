@@ -1268,7 +1268,7 @@ theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
 
 @[to_additive (attr := simp)]
 theorem prod_dite_eq [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, a = x → β) :
-    ∏ x ∈ s, (if h : a = x then b x h else 1) = if a ∈ s then b a rfl else 1 := by
+    ∏ x ∈ s, (if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
     · intros _ _ h
@@ -1285,7 +1285,7 @@ theorem prod_dite_eq [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, 
 
 @[to_additive (attr := simp)]
 theorem prod_dite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, x = a → β) :
-    ∏ x ∈ s, (if h : x = a then b x h else 1) = if a ∈ s then b a rfl else 1 := by
+    ∏ x ∈ s, (if h : x = a then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
     · intros _ _ h
@@ -1302,7 +1302,7 @@ theorem prod_dite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α,
 
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
-    (∏ x ∈ s, if a = x then b x else 1) = if a ∈ s then b a else 1 :=
+    (∏ x ∈ s, ite (a = x) (b x) 1) = ite (a ∈ s) (b a) 1 :=
   prod_dite_eq s a fun x _ => b x
 #align finset.prod_ite_eq Finset.prod_ite_eq
 #align finset.sum_ite_eq Finset.sum_ite_eq
@@ -1316,7 +1316,7 @@ test on the index and whose alternative is `0` has value either the term at that
 
 The difference with `Finset.sum_ite_eq` is that the arguments to `Eq` are swapped."]
 theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
-    (∏ x ∈ s, if x = a then b x else 1) = if a ∈ s then b a else 1 :=
+    (∏ x ∈ s, ite (x = a) (b x) 1) = ite (a ∈ s) (b a) 1 :=
   prod_dite_eq' s a fun x _ => b x
 #align finset.prod_ite_eq' Finset.prod_ite_eq'
 #align finset.sum_ite_eq' Finset.sum_ite_eq'
@@ -1988,7 +1988,7 @@ theorem prod_erase [DecidableEq α] (s : Finset α) {f : α → β} {a : α} (h 
 @[to_additive "See also `Finset.sum_boole`."]
 theorem prod_ite_one (s : Finset α) (p : α → Prop) [DecidablePred p]
     (h : ∀ i ∈ s, ∀ j ∈ s, p i → p j → i = j) (a : β) :
-    ∏ i ∈ s, (if p i then a else 1) = if ∃ i ∈ s, p i then a else 1 := by
+    ∏ i ∈ s, ite (p i) a 1 = ite (∃ i ∈ s, p i) a 1 := by
   split_ifs with h
   · obtain ⟨i, hi, hpi⟩ := h
     rw [prod_eq_single_of_mem _ hi, if_pos hpi]
@@ -2029,7 +2029,7 @@ theorem eq_one_of_prod_eq_one {s : Finset α} {f : α → β} {a : α} (hp : ∏
 
 @[to_additive sum_boole_nsmul]
 theorem prod_pow_boole [DecidableEq α] (s : Finset α) (f : α → β) (a : α) :
-    (∏ x ∈ s, f x ^ if a = x then 1 else 0) = if a ∈ s then f a else 1 := by simp
+    (∏ x ∈ s, f x ^ ite (a = x) 1 0) = ite (a ∈ s) (f a) 1 := by simp
 #align finset.prod_pow_boole Finset.prod_pow_boole
 
 theorem prod_dvd_prod_of_dvd {S : Finset α} (g1 g2 : α → β) (h : ∀ a ∈ S, g1 a ∣ g2 a) :
@@ -2079,7 +2079,7 @@ lemma sum_card_fiberwise_eq_card_filter {κ : Type*} [DecidableEq κ] (s : Finse
   simpa only [card_eq_sum_ones] using sum_fiberwise_eq_sum_filter _ _ _ _
 
 lemma card_filter (p) [DecidablePred p] (s : Finset α) :
-    (filter p s).card = ∑ a ∈ s, if p a then 1 else 0 := by simp [sum_ite]
+    (filter p s).card = ∑ a ∈ s, ite (p a) 1 0 := by simp [sum_ite]
 #align finset.card_filter Finset.card_filter
 
 section Opposite
@@ -2340,7 +2340,7 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
 
 @[to_additive]
 lemma prod_ite_eq_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j)
-    (a : α) : ∏ i, (if p i then a else 1) = if ∃ i, p i then a else 1 := by
+    (a : α) : ∏ i, ite (p i) a 1 = ite (∃ i, p i) a 1 := by
   simp [prod_ite_one univ p (by simpa using h)]
 
 variable [DecidableEq ι]
