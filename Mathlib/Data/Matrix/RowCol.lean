@@ -66,7 +66,7 @@ theorem col_injective [Inhabited ι] : Function.Injective (col ι: (m → α) �
 @[simp] theorem col_inj [Inhabited ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
   col_injective.eq_iff
 
-@[simp] theorem col_zero [Zero α] [Inhabited ι]: col ι (0 : m → α) = 0 := rfl
+@[simp] theorem col_zero [Zero α] : col ι (0 : m → α) = 0 := rfl
 
 @[simp] theorem col_eq_zero [Zero α] [Inhabited ι] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
 
