@@ -125,7 +125,7 @@ variable {R : Type*} [CommRing R]
 
 /-- There is a character of order `n` on `F` if `#F ≡ 1 mod n` and the target contains
 a primitive `n`th root of unity. -/
-lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) [IsDomain R] {ζ : R}
+lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}
     (hζ : IsPrimitiveRoot ζ n) :
     ∃ χ : MulChar F R, orderOf χ = n := by
   have hn₀ : 0 < n := by
