@@ -43,6 +43,10 @@ lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T �
     have e1 : a ⊓ b ≤ p := inf_le_of_right_le h3
     exact h e1
 
+
+
+#check Ici
+
 open Finset in
 lemma basis2 [OrderTop α] (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
   rw [coe_upperClosure]
@@ -61,9 +65,14 @@ lemma basis2 [OrderTop α] (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet)
     simp at hx
     apply (hT x (Subtype.coe_prop x)).1
     exact isMax_iff_eq_top.mpr hx
-  · simp only [coe_insert, mem_insert_iff, mem_coe, Set.preimage_compl, iInter_iInter_eq_or_left,
-    inf_insert, id_eq]
-
+  · simp only [coe_insert, mem_insert_iff, mem_coe,  iInter_iInter_eq_or_left,
+      inf_insert, id_eq]
+    --simp at I4
+    --rw [I4]
+    rw [← basis1]
+    rw [← I4]
+    simp
+    exact hT
 
 end SemilatticeInf
 
