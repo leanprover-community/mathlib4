@@ -178,7 +178,7 @@ lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x
     λ ^ 4 ∣ x ^ 3 + 1 := by
   replace h : λ ∣ -x - 1 := by
     convert h.neg_right using 1
-    ring
+    exact (neg_add' x 1).symm
   obtain ⟨y, hy⟩ := lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h
   refine ⟨-y, ?_⟩
   rw [mul_neg, ← hy]
