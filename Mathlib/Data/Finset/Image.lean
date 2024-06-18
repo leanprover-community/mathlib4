@@ -431,7 +431,7 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
 
-@[deprecated image_nonempty] -- 2023-12-29
+@[deprecated image_nonempty (since := "2023-12-29")]
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
   image_nonempty
 
@@ -884,6 +884,6 @@ end Equiv
 
 namespace Finset
 
-@[deprecated] alias image_filter := filter_image -- 2023-12-27
+@[deprecated (since := "2023-12-27")] alias image_filter := filter_image
 
 end Finset
