@@ -69,8 +69,7 @@ variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u
 
 /-- The composition of two based functors. -/
 @[simps!]
-def comp {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) (G : 𝒴 ⥤ᵇ 𝒵) :
-    𝒳 ⥤ᵇ 𝒵 where
+def comp {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) (G : 𝒴 ⥤ᵇ 𝒵) : 𝒳 ⥤ᵇ 𝒵 where
   toFunctor := F.toFunctor ⋙ G.toFunctor
   w := by rw [Functor.assoc, G.w, F.w]
 
@@ -83,15 +82,15 @@ lemma id_comp (F : 𝒳 ⥤ᵇ 𝒴) : comp (id 𝒳) F = F :=
   rfl
 
 @[simp]
-lemma comp_assoc {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {𝒜 : BasedCategory.{v₅, u₅} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴 )
+lemma comp_assoc {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {𝒜 : BasedCategory.{v₅, u₅} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴)
     (G : 𝒴 ⥤ᵇ 𝒵) (H : 𝒵 ⥤ᵇ 𝒜) : comp (comp F G) H = comp F (comp G H) :=
   rfl
 
 @[simp]
-lemma w_obj (F : 𝒳 ⥤ᵇ 𝒴 ) (a : 𝒳.obj) : 𝒴.p.obj (F.obj a) = 𝒳.p.obj a := by
+lemma w_obj (F : 𝒳 ⥤ᵇ 𝒴) (a : 𝒳.obj) : 𝒴.p.obj (F.obj a) = 𝒳.p.obj a := by
   rw [← Functor.comp_obj, F.w]
 
-instance (F : 𝒳 ⥤ᵇ 𝒴 ) (a : 𝒳.obj) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (𝟙 (F.obj a)) :=
+instance (F : 𝒳 ⥤ᵇ 𝒴) (a : 𝒳.obj) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (𝟙 (F.obj a)) :=
   IsHomLift.id (w_obj F a)
 
 section
@@ -159,7 +158,7 @@ def id (F : 𝒳 ⥤ᵇ 𝒴) : BasedNatTrans F F where
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
 transformations. -/
 @[simps!]
-def comp {F G H :  𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
+def comp {F G H : 𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
     BasedNatTrans F H where
   toNatTrans := CategoryTheory.NatTrans.vcomp α.toNatTrans β.toNatTrans
   isHomLift' := by
@@ -188,7 +187,7 @@ lemma homCategory.ext (α β : F ⟶ G) (h : α.toNatTrans = β.toNatTrans) : α
 
 
 @[simp]
-lemma comp_toNatTrans {H :  𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) (β : G ⟶ H) :
+lemma comp_toNatTrans {H : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) (β : G ⟶ H) :
     (α ≫ β : F ⟶ H).toNatTrans = (α.toNatTrans ≫ β.toNatTrans : F.toFunctor ⟶ H.toFunctor) :=
   rfl
 
@@ -226,14 +225,14 @@ noncomputable def mkNatIsIso {F G : 𝒳 ⥤ᵇ 𝒴} (α : F.toFunctor ⟶ G.to
 
 /-- The identity natural transformation is a based natural isomorphism. -/
 @[simps]
-def BasedNatIso.id (F :  𝒳 ⥤ᵇ 𝒴) : F ≅ F where
+def BasedNatIso.id (F : 𝒳 ⥤ᵇ 𝒴) : F ≅ F where
   hom := 𝟙 F
   inv := 𝟙 F
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
 and natural transformations. -/
 @[simps!]
-def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F :  𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵}
+def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵}
     (α : G ⟶ H) : BasedFunctor.comp F G ⟶ BasedFunctor.comp F H where
   toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
   isHomLift' := fun a => α.isHomLift (F.w_obj a)
@@ -241,7 +240,7 @@ def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F :  𝒳 ⥤ᵇ 𝒴)
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
 functors and natural transformations. -/
 @[simps!]
-def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G :  𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G)
+def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G)
     (H : 𝒴 ⥤ᵇ 𝒵) : BasedFunctor.comp F H ⟶ BasedFunctor.comp G H where
   toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
   isHomLift' := fun a => by apply BasedFunctor.preserves_isHomLift
