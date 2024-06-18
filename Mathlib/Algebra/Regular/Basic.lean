@@ -379,7 +379,7 @@ theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g :=
 
 section CancelMonoidWithZero
 
-variable [MulZeroClass R] [IsCancelMulZero R] {a : R} {a : R}
+variable [MulZeroClass R] [IsCancelMulZero R] {a : R}
 
 /-- Non-zero elements of an integral domain are regular. -/
 theorem isRegular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
