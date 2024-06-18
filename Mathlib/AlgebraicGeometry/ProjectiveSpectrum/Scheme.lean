@@ -708,7 +708,6 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
       (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra := by
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
     (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
-  have hm : 1 ≤ m := hm
   constructor
   · rintro ⟨y, hy⟩
     obtain ⟨y, rfl⟩ := y.mk_surjective
@@ -724,10 +723,10 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
         (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hb' m⟩⟩,
         val_injective _ ?_⟩
     · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
-      rw [← succ_nsmul', tsub_add_cancel_of_le hm, mul_comm, smul_eq_mul]
+      rw [← succ_nsmul', tsub_add_cancel_of_le (by omega), mul_comm, smul_eq_mul]
     · simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk,
         mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk, IsLocalization.mk'_eq_iff_eq]
-      rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le hm]
+      rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le (by omega)]
   · intros y z e
     obtain ⟨y, rfl⟩ := y.mk_surjective
     obtain ⟨z, rfl⟩ := z.mk_surjective
@@ -739,7 +738,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
       obtain ⟨⟨c, hcx⟩, hc⟩ := IsLocalization.exists_of_eq (M := x.1.1.toIdeal.primeCompl) e
       obtain ⟨i, hi⟩ := not_forall.mp ((x.1.1.isHomogeneous.mem_iff _).not.mp hcx)
       refine ⟨i, _, (decompose 𝒜 c i).2, hi, ?_⟩
-      apply_fun (fun x ↦ (decompose 𝒜 x (i + z.deg + y.deg)).1) at hc
+      apply_fun fun x ↦ (decompose 𝒜 x (i + z.deg + y.deg)).1 at hc
       conv_rhs at hc => rw [add_right_comm]
       rwa [← mul_assoc, coe_decompose_mul_add_of_right_mem, coe_decompose_mul_add_of_right_mem,
         ← mul_assoc, coe_decompose_mul_add_of_right_mem, coe_decompose_mul_add_of_right_mem,
@@ -753,8 +752,8 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
     simp only [val_mul, val_mk, mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk,
       IsLocalization.mk'_eq_iff_eq, mul_assoc]
     congr 2
-    rw [mul_left_comm, mul_left_comm y.den.1, ← tsub_add_cancel_of_le hm, pow_succ,
-      mul_assoc, mul_assoc, e]
+    rw [mul_left_comm, mul_left_comm y.den.1, ← tsub_add_cancel_of_le (show 1 ≤ m from hm),
+      pow_succ, mul_assoc, mul_assoc, e]
 
 end ProjectiveSpectrum.Proj
 
