@@ -35,6 +35,10 @@ variable (Φ : LocalizerMorphism W W')
   (L : C ⥤ D) [L.IsLocalization W]
   (L' : C' ⥤ D') [L'.IsLocalization W'] {X Y : C}
 
+/-- If `Φ : LocalizerMorphism W W'` is a morphism of localizer, `L` and `L'`
+are localization functors for `W` and `W'`, then this is the induced map
+`(L.obj X ⟶ L.obj Y) → (L'.obj (Φ.functor.obj X) ⟶ L'.obj (Φ.functor.obj Y))`
+for all objects `X` and `Y`. -/
 noncomputable def homMap (f : L.obj X ⟶ L.obj Y) :
     L'.obj (Φ.functor.obj X) ⟶ L'.obj (Φ.functor.obj Y) :=
   Iso.homEquiv ((CatCommSq.iso _ _ _ _).symm.app _) ((CatCommSq.iso _ _ _ _).symm.app _)
@@ -151,30 +155,35 @@ end MorphismProperty
 namespace Localization
 
 variable (Φ : LocalizerMorphism W W') (L : C ⥤ D) [L.IsLocalization W]
-  (L' : C' ⥤ D') [L'.IsLocalization W'] (X Y Z : C)
 
 open MorphismProperty
 
 /-- The type of morphisms from `X` to `Y` in the localized category
 with respect to `W : MorphismProperty C` that is shrunk to `Type w`
 when `HasSmallLocalizedHom.{w} W X Y` holds. -/
-def SmallHom [HasSmallLocalizedHom.{w} W X Y] : Type w :=
+def SmallHom (X Y : C) [HasSmallLocalizedHom.{w} W X Y] : Type w :=
   letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
   Shrink.{w} (W.Q.obj X ⟶ W.Q.obj Y)
 
 namespace SmallHom
 
-variable {X Y Z}
-
 /-- The canonical bijection `SmallHom.{w} W X Y ≃ (L.obj X ⟶ L.obj Y)`
 when `L` is a localization functor for `W : MorphismProperty C` and
 that `HasSmallLocalizedHom.{w} W X Y` holds. -/
-noncomputable def equiv [HasSmallLocalizedHom.{w} W X Y] :
+noncomputable def equiv {X Y : C} [HasSmallLocalizedHom.{w} W X Y] :
     SmallHom.{w} W X Y ≃ (L.obj X ⟶ L.obj Y) :=
   letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
   (equivShrink _).symm.trans (W.localizationsHomEquiv W.Q L)
 
-variable [HasSmallLocalizedHom.{w} W X Y]
+lemma equiv_equiv_symm (L' : C ⥤ D') [L'.IsLocalization W] (G : D ⥤ D')
+    (e : L ⋙ G ≅ L') {X Y : C} (f : L.obj X ⟶ L.obj Y)
+    [HasSmallLocalizedHom.{w} W X Y] : equiv W L' ((equiv W L).symm f) =
+      e.inv.app X ≫ G.map f ≫ e.hom.app Y := by
+  sorry
+
+section
+
+variable {X Y Z : C} [HasSmallLocalizedHom.{w} W X Y]
 
 /-- The element in `SmallHom W X Y` induced by `f : X ⟶ Y`. -/
 noncomputable def mk (f : X ⟶ Y) : SmallHom.{w} W X Y :=
@@ -242,11 +251,17 @@ lemma mkInv_comp_mk (f : Y ⟶ X) (hf : W f) [HasSmallLocalizedHom.{w} W X X] :
 
 end
 
+end
+
 variable {W}
 
 section
 
-variable [W'.HasSmallLocalizedHom (Φ.functor.obj X) (Φ.functor.obj Y)]
+variable (L' : C' ⥤ D') [L'.IsLocalization W']
+variable {X Y Z : C}
+
+variable [W.HasSmallLocalizedHom X Y]
+  [W'.HasSmallLocalizedHom (Φ.functor.obj X) (Φ.functor.obj Y)]
 
 /-- The action of a localizer morphism on `SmallHom`. -/
 noncomputable def map (f : SmallHom.{w} W X Y) :
@@ -258,11 +273,44 @@ noncomputable def map (f : SmallHom.{w} W X Y) :
 
 lemma equiv_map (G : D ⥤ D') (e : Φ.functor ⋙ L' ≅ L ⋙ G) (f : SmallHom.{w} W X Y) :
     (equiv W' L') (f.map Φ) = e.hom.app X ≫ G.map (equiv W L f) ≫ e.inv.app Y := by
-  sorry
+  obtain ⟨g, rfl⟩ := (equiv W W.Q).symm.surjective f
+  simp only [map, Equiv.apply_symm_apply]
+  let G' := Φ.localizedFunctor W.Q W'.Q
+  let β := CatCommSq.iso Φ.functor W.Q W'.Q G'
+  let E := (uniq W.Q L W).functor
+  let α : W.Q ⋙ E ≅ L := compUniqFunctor W.Q L W
+  let E' := (uniq W'.Q L' W').functor
+  let α' : W'.Q ⋙ E' ≅ L' := compUniqFunctor W'.Q L' W'
+  rw [equiv_equiv_symm W W.Q L E α, equiv_equiv_symm W' W'.Q L' E' α']
+  change α'.inv.app _ ≫ E'.map (β.hom.app X ≫ G'.map g ≫ β.inv.app Y) ≫ _ = _
+  let γ : G' ⋙ E' ≅ E ⋙ G := liftNatIso W.Q W (W.Q ⋙ G' ⋙ E') (W.Q ⋙ E ⋙ G) _ _
+    ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight β.symm E' ≪≫
+      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ α' ≪≫ e ≪≫
+      isoWhiskerRight α.symm G ≪≫ Functor.associator _ _ _)
+  have hγ : ∀ (X : C), γ.hom.app (W.Q.obj X) =
+      E'.map (β.inv.app X) ≫ α'.hom.app (Φ.functor.obj X) ≫
+        e.hom.app X ≫ G.map (α.inv.app X) := fun X ↦ by
+    dsimp [γ]
+    rw [liftNatTrans_app]
+    dsimp
+    rw [Category.id_comp, Category.id_comp, Category.comp_id]
+    erw [Category.id_comp, Category.comp_id]
+  simp only [Functor.map_comp, Category.assoc]
+  erw [← NatIso.naturality_1 γ]
+  simp only [Functor.comp_map, ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α.hom.app X)),
+    ← cancel_epi (γ.hom.app (W.Q.obj X)), Category.assoc, Iso.inv_hom_id_app_assoc,
+    ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp,
+    Iso.hom_inv_id_app_assoc]
+  simp only [hγ, Category.assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
+    Functor.map_id, Category.id_comp, Iso.hom_inv_id_app_assoc,
+    Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj, Category.comp_id]
 
 end
 
-variable [HasSmallLocalizedHom.{w} W Y Z] [HasSmallLocalizedHom.{w} W X Z]
+variable {X Y Z : C}
+
+variable [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y Z]
+  [HasSmallLocalizedHom.{w} W X Z]
   [W'.HasSmallLocalizedHom (Φ.functor.obj X) (Φ.functor.obj Y)]
   [W'.HasSmallLocalizedHom (Φ.functor.obj Y) (Φ.functor.obj Z)]
   [W'.HasSmallLocalizedHom (Φ.functor.obj X) (Φ.functor.obj Z)]
