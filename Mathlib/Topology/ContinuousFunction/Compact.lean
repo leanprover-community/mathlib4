@@ -26,7 +26,6 @@ you should restate it here. You can also use
 
 -/
 
-
 noncomputable section
 
 open scoped Classical
