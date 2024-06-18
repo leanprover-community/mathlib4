@@ -31,7 +31,6 @@ namespace Matrix
 
 To get a column matrix with exactly one column, `Matrix.col (Fin 1) u` is the canonical choice.
 -/
-@[nolint unusedArguments]
 def col (ι : Type*) (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 #align matrix.col Matrix.col
@@ -47,7 +46,6 @@ theorem col_apply {ι : Type*} (w : m → α) (i) (j : ι) : col ι w i j = w i 
 
 To get a row matrix with exactly one row, `Matrix.row (Fin 1) u` is the canonical choice.
 -/
-@[nolint unusedArguments]
 def row (ι : Type*) (v : n → α) : Matrix ι n α :=
   of fun _ y => v y
 #align matrix.row Matrix.row
