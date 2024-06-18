@@ -9,6 +9,9 @@ import Mathlib.CategoryTheory.Sites.DenseSubsite
 /-!
 
 # Discrete objects in sheaf categories.
+
+TODO: prove that `sheafCompose` with a functor preserving sheafification preserves 
+discreteness.
 -/
 
 open CategoryTheory Limits Functor Adjunction Opposite
