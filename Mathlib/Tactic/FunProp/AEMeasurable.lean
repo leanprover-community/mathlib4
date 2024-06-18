@@ -6,8 +6,6 @@ Authors: Tomáš Skřivan
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 
-import Mathlib.Tactic.FunProp.Measurable
-
 /-!
 ## `fun_prop` minimal setup for AEMeasurable
 -/

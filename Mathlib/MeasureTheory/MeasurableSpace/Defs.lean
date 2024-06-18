@@ -550,6 +550,7 @@ end MeasurableSpace
 
 /-- A function `f` between measurable spaces is measurable if the preimage of every
   measurable set is measurable. -/
+@[fun_prop]
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 #align measurable Measurable
@@ -568,7 +569,7 @@ section MeasurableFunctions
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 #align measurable_id measurable_id
 
-@[measurability]
+@[fun_prop, measurability]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 #align measurable_id' measurable_id'
 
@@ -579,12 +580,12 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 #align measurable.comp Measurable.comp
 
 -- This is needed due to reducibility issues with the `measurability` tactic.
-@[aesop safe 50 (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf
 
-@[simp, measurability]
+@[simp, fun_prop, measurability]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 #align measurable_const measurable_const
