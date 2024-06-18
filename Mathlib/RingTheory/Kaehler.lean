@@ -746,7 +746,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
       induction x using Finsupp.induction_linear
       · simp
       · simp [smul_add, *]
-      · simp
+      · simp [smul_zero (M := A) (A := Ω[B⁄A])]
     · rw [map_add]; exact add_mem ‹_› ‹_›
   · convert_to (kerTotal A B).map (Finsupp.total B (Ω[B⁄R]) B (D R B)) ≤ _
     · rw [KaehlerDifferential.ker_map]
