@@ -1411,7 +1411,7 @@ theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
 /-- The union of a set and the complement of its closure is a dense set. -/
 theorem union_compl_closure_dense {s : Set X} :
     Dense (s ∪ (closure s)ᶜ) := by
-  rw [dense_iff_closure_eq, closure_union, ←univ_subset_iff]
+  rw [dense_iff_closure_eq, closure_union, ← univ_subset_iff]
   refine' _root_.subset_trans _ (union_subset_union_right _ (subset_closure))
   simp
 
