@@ -24,6 +24,8 @@ jobs:
 
       - name: Check for existing PRs
         id: check_pr
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           prs=$(gh pr list --search "author:leanprover-community-mathlib4-bot state:open" --json title,headRefName)
           for pr in $(echo "$prs" | jq -c '.[]'); do
