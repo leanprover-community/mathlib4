@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
 import Mathlib.Order.Disjointed
+import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
 #align_import measure_theory.measurable_space_def from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
