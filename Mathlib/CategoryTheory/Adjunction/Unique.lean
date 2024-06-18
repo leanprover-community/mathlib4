@@ -113,6 +113,22 @@ def leftAdjointUniq {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' �
   (natIsoEquiv adj1 adj2 (Iso.refl _)).symm
 #align category_theory.adjunction.left_adjoint_uniq CategoryTheory.Adjunction.leftAdjointUniq
 
+/-- If `F` is left adjoint to `G`, then it isomorphic to `G.leftAdjoint`. -/
+noncomputable abbrev leftAdjointCongr {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
+    haveI : G.IsRightAdjoint := adj.isRightAdjoint
+    F ≅ G.leftAdjoint :=
+  haveI : G.IsRightAdjoint := adj.isRightAdjoint
+  adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint G)
+
+/-- If `F` and `G` are naturally isomorphic and one of them is a right adjoint, their left adjoints
+are isomorphic. -/
+noncomputable abbrev _root_.CategoryTheory.Functor.leftAdjointCongr
+    {F G : D ⥤ C} (i : F ≅ G) [F.IsRightAdjoint] :
+    haveI := Functor.isRightAdjoint_of_iso i
+    F.leftAdjoint ≅ G.leftAdjoint :=
+  haveI := Functor.isRightAdjoint_of_iso i
+  ((Adjunction.ofIsRightAdjoint F).ofNatIsoRight i).leftAdjointUniq (Adjunction.ofIsRightAdjoint G)
+
 -- Porting note (#10618): removed simp as simp can prove this
 theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.homEquiv _ _ ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x := by
@@ -185,6 +201,22 @@ theorem leftAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
 def rightAdjointUniq {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G') : G ≅ G' :=
   (natIsoEquiv adj1 adj2).symm (Iso.refl _)
 #align category_theory.adjunction.right_adjoint_uniq CategoryTheory.Adjunction.rightAdjointUniq
+
+/-- If `G` is right adjoint to `F`, then it isomorphic to `F.rightAdjoint`. -/
+noncomputable abbrev rightAdjointCongr {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
+    haveI : F.IsLeftAdjoint := adj.isLeftAdjoint
+    F.rightAdjoint ≅ G :=
+  haveI : F.IsLeftAdjoint := adj.isLeftAdjoint
+  (adj.rightAdjointUniq (Adjunction.ofIsLeftAdjoint F)).symm
+
+/-- If `F` and `G` are naturally isomorphic and one of them is a left adjoint, their right adjoints
+are isomorphic. -/
+noncomputable abbrev _root_.CategoryTheory.Functor.rightAdjointCongr
+    {F G : D ⥤ C} (i : F ≅ G) [F.IsLeftAdjoint] :
+    haveI := Functor.isLeftAdjoint_of_iso i
+    F.rightAdjoint ≅ G.rightAdjoint :=
+  haveI := Functor.isLeftAdjoint_of_iso i
+  ((Adjunction.ofIsLeftAdjoint F).ofNatIsoLeft i).rightAdjointUniq (Adjunction.ofIsLeftAdjoint G)
 
 -- Porting note (#10618): simp can prove this
 theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G)

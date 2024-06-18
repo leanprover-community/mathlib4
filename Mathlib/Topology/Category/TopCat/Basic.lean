@@ -138,6 +138,16 @@ def discrete : Type u ⥤ TopCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Top.discrete TopCat.discrete
 
+/-- The functor `TopCat.discrete` is fully faithful. -/
+def fullyFaithfulDiscrete : discrete.FullyFaithful where
+  preimage f := (f : _ → _)
+  map_preimage _ := rfl
+  preimage_map _ := rfl
+
+instance : discrete.Faithful := fullyFaithfulDiscrete.faithful
+
+instance : discrete.Full := fullyFaithfulDiscrete.full
+
 instance {X : Type u} : DiscreteTopology (discrete.obj X) :=
   ⟨rfl⟩
 
