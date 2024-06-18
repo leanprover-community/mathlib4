@@ -11,7 +11,8 @@ import Mathlib.MeasureTheory.Measure.AEMeasurable
 
 open Mathlib
 
--- lambda rules
--- attribute [fun_prop]
-  -- AEMeasurable_apply -- is this somewhere?
-  -- AEMeasurable_pi -- is this somewhere?
+-- lambda rules: these two are currently missing
+-- attribute [fun_prop] AEMeasurable_apply AEMeasurable_pi
+
+-- product: these are currently not valid fun_prop theorems!
+-- attribute [fun_prop] AEMeasurable.fst AEMeasurable.snd
