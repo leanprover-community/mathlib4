@@ -686,6 +686,7 @@ lemma toOpen_toSpec_val_c_app (f) (U) :
       awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.map (homOfLE le_top).op :=
   Eq.trans (by congr) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app _ U
 
+@[reassoc]
 lemma toStalk_stalkMap_toSpec (f) (x) :
     StructureSheaf.toStalk _ _ ≫ PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
       awayToΓ 𝒜 f ≫ (Proj| pbo f).ΓToStalk x := by
