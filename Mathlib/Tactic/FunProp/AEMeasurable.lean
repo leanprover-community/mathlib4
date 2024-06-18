@@ -27,8 +27,6 @@ open Mathlib
 
 -- lambda rules
 attribute [fun_prop]
-  aemeasurable_id'
-  aemeasurable_const
   AEMeasurable.comp_aemeasurable'
   -- Measurable.comp_aemeasurable'
   -- AEMeasurable_apply -- is this somewhere?

@@ -40,6 +40,7 @@ theorem aemeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   exact ⟨fun _ => f default, measurable_const, rfl⟩
 #align ae_measurable_zero_measure aemeasurable_zero_measure
 
+@[fun_prop]
 theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤ m0) :
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)

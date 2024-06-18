@@ -452,7 +452,7 @@ theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurab
   ⟨fun hf => AEMeasurable.congr hf h, fun hg => AEMeasurable.congr hg h.symm⟩
 #align ae_measurable_congr aemeasurable_congr
 
-@[simp, measurability]
+@[simp, fun_prop, measurability]
 theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
   measurable_const.aemeasurable
 #align ae_measurable_const aemeasurable_const
