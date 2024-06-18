@@ -64,7 +64,7 @@ class Functor.IsStronglyCartesian extends IsHomLift p f φ : Prop where
 
 end
 
-namespace IsCartesian
+namespace Functor.IsCartesian
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsCartesian p f φ]
 
@@ -108,21 +108,40 @@ lemma map_self : IsCartesian.map p f φ φ = 𝟙 a := by
   apply map_uniq
   simp only [id_comp]
 
-/-- The canonical isomorphism between the domains of two cartesian arrows
-lying over the same object. -/
-@[simps]
-noncomputable def naturalIso {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] [IsCartesian p f φ'] :
-    a' ≅ a where
-  hom := inducedMap p f φ φ'
-  inv := inducedMap p f φ' φ
+noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
+  hom := IsCartesian.map p f φ φ'
+  inv := IsCartesian.map p f φ' φ
   hom_inv_id := by
     subst_hom_lift p f φ'
-    apply IsCartesian.uniqueness p (p.map φ') φ' φ' (by simp) (id_comp _)
+    apply eq_of_fac p (p.map φ') φ' φ' (by simp) (id_comp _)
   inv_hom_id := by
     subst_hom_lift p f φ
-    apply IsCartesian.uniqueness p (p.map φ) φ φ (by simp) (id_comp _)
+    apply eq_of_fac p (p.map φ) φ φ (by simp) (id_comp _)
 
-end IsCartesian
+/-- Precomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
+instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
+    IsCartesian p f (φ'.hom ≫ φ) where
+  universal_property := by
+    intro c ψ hψ
+    use IsCartesian.map p f φ ψ ≫ φ'.inv
+    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    rw [Iso.eq_comp_inv]
+    apply map_uniq
+    simp only [assoc, hτ₂]
+
+/-- Postcomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
+instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
+    IsCartesian p f (φ ≫ φ'.hom) where
+  universal_property := by
+    intro c ψ hψ
+    use IsCartesian.map p f φ (ψ ≫ φ'.inv)
+    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    apply map_uniq
+    simp only [Iso.eq_comp_inv, assoc, hτ₂]
+
+end Functor.IsCartesian
 
 namespace IsStronglyCartesian
 
@@ -316,37 +335,3 @@ noncomputable def isoOfBaseIso {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f'
 end IsStronglyCartesian
 
 end CategoryTheory
-noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
-  hom := IsCartesian.map p f φ φ'
-  inv := IsCartesian.map p f φ' φ
-  hom_inv_id := by
-    subst_hom_lift p f φ'
-    apply eq_of_fac p (p.map φ') φ' φ' (by simp) (id_comp _)
-  inv_hom_id := by
-    subst_hom_lift p f φ
-    apply eq_of_fac p (p.map φ) φ φ (by simp) (id_comp _)
-
-/-- Precomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
-instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
-    IsCartesian p f (φ'.hom ≫ φ) where
-  universal_property := by
-    intro c ψ hψ
-    use IsCartesian.map p f φ ψ ≫ φ'.inv
-    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
-    rintro τ ⟨hτ₁, hτ₂⟩
-    rw [Iso.eq_comp_inv]
-    apply map_uniq
-    simp only [assoc, hτ₂]
-
-/-- Postcomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
-instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
-    IsCartesian p f (φ ≫ φ'.hom) where
-  universal_property := by
-    intro c ψ hψ
-    use IsCartesian.map p f φ (ψ ≫ φ'.inv)
-    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
-    rintro τ ⟨hτ₁, hτ₂⟩
-    apply map_uniq
-    simp only [Iso.eq_comp_inv, assoc, hτ₂]
-
-end Functor.IsCartesian
