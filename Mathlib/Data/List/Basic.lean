@@ -2888,12 +2888,12 @@ theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : m
 
 theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
     l.filterMap f = l.bind fun a ↦ (f a).toList := by
-  induction' l with a l ih <;> simp
+  induction' l with a l ih <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
 
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
-  induction' l with a l ih <;> simp
+  induction' l with a l ih <;> simp [filterMap_cons]
   simp [ih (fun x hx ↦ h x (List.mem_cons_of_mem a hx))]
   cases' hfa : f a with b
   · have : g a = none := Eq.symm (by simpa [hfa] using h a (by simp))
@@ -2906,7 +2906,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
   mp := by
     induction' l with a l ih
     · simp
-    cases' ha : f a with b <;> simp [ha]
+    cases' ha : f a with b <;> simp [ha, filterMap_cons]
     · intro h
       simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
         using List.length_filterMap_le f l
