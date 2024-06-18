@@ -496,7 +496,7 @@ In this case the iterated mate equals the conjugate of the original transformati
 isomorphism if and only if the original transformation is. This explains why some Beck-Chevalley
 natural transformations are natural isomorphisms.
 -/
-theorem IteratedMates_Conjugate (α : F₁ ⋙ L₂ ⟶ L₁ ⋙ F₂) :
+theorem IteratedMates_Conjugates (α : F₁ ⋙ L₂ ⟶ L₁ ⋙ F₂) :
     Mates adj₄ adj₃ (Mates adj₁ adj₂ α) = Conjugates (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
   unfold Conjugates Mates Adjunction.comp
@@ -505,6 +505,11 @@ theorem IteratedMates_Conjugate (α : F₁ ⋙ L₂ ⟶ L₁ ⋙ F₂) :
     Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
     rightUnitor_inv_app, associator_inv_app, leftUnitor_hom_app, map_id, associator_hom_app,
     Functor.id_map, comp_id, id_comp]
+
+theorem IteratedMates_Conjugates_symm (α : U₂ ⋙ R₁ ⟶ R₂ ⋙ U₁) :
+    (Mates adj₁ adj₂).symm ((Mates adj₄ adj₃).symm α) = (Conjugates (adj₁.comp adj₄) (adj₃.comp adj₂)).symm α := by
+  rw [Equiv.eq_symm_apply, ← IteratedMates_Conjugates]
+  simp only [Equiv.apply_symm_apply]
 
 end IteratedMates
 
