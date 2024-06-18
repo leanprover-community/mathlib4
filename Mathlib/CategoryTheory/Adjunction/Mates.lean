@@ -253,7 +253,9 @@ variable {L₄ : E ⥤ F} {R₄ : F ⥤ E} {L₅ : X ⥤ Y} {R₅ : Y ⥤ X} {L�
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 variable (adj₄ : L₄ ⊣ R₄) (adj₅ : L₅ ⊣ R₅) (adj₆ : L₆ ⊣ R₆)
 
-/-- Squares of squares between left adjoints can be composed by iterating vertical and horizontal composition.-/
+/-- Squares of squares between left adjoints can be composed by iterating vertical and horizontal
+composition.
+-/
 def LeftAdjointSquare.comp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
@@ -283,7 +285,9 @@ theorem LeftAdjointSquare.comp_hvcomp
     }
   simp only [comp_obj, Functor.comp_map, assoc]
 
-/-- Squares of squares between right adjoints can be composed by iterating vertical and horizontal composition.-/
+/-- Squares of squares between right adjoints can be composed by iterating vertical and horizontal
+composition.
+-/
 def RightAdjointSquare.comp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
@@ -313,7 +317,8 @@ theorem RightAdjointSquare.comp_hvcomp
     }
   simp only [comp_obj, Functor.comp_map, assoc]
 
-/-- The mates equivalence commutes with composition of squares of squares. These results form the basis for an isomorphism of double categories to be proven later.
+/-- The mates equivalence commutes with composition of squares of squares. These results form the
+basis for an isomorphism of double categories to be proven later.
 -/
 theorem Mates_square
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
@@ -340,14 +345,16 @@ variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 /-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both between categories `C`, `D`, there is a
-bijection between natural transformations `L₂ ⟶ L₁` and natural transformations `R₁ ⟶ R₂`. This is defined as a special case of `Mates`, where the two "vertical" functors are identity, modulo composition with the unitors. Corresponding natural transformations are called `Conjugates`.
+bijection between natural transformations `L₂ ⟶ L₁` and natural transformations `R₁ ⟶ R₂`. This is
+defined as a special case of `Mates`, where the two "vertical" functors are identity, modulo
+composition with the unitors. Corresponding natural transformations are called `Conjugates`.
 TODO: Generalise to when the two vertical functors are equivalences rather than being exactly `𝟭`.
 
 Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transformation is an iso
 iff its image under the bijection is an iso, see eg `CategoryTheory.Conjugates_iso`.
-This is in contrast to the general case `Mates` which
- does not in general have this property.-/
- def Conjugates : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
+This is in contrast to the general case `Mates` which does not in general have this property.
+-/
+def Conjugates : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
     _ ≃ _ := Mates adj₁ adj₂
@@ -419,7 +426,6 @@ theorem Conjugates_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
   simp only [comp_id, id_comp, assoc, map_comp]
   rw [vcompd]
 
--- ER: Warning: swapped order of the arguments.
 theorem Conjugates_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
     (Conjugates adj₂ adj₃).symm β ≫ (Conjugates adj₁ adj₂).symm α =
       (Conjugates adj₁ adj₃).symm (α ≫ β) := by
@@ -434,25 +440,24 @@ theorem Conjugates_symm_comm {α : R₁ ⟶ R₂}{β : R₂ ⟶ R₁} (αβ : α
     (Conjugates adj₂ adj₁).symm β ≫ (Conjugates adj₁ adj₂).symm α = 𝟙 _ := by
   rw [Conjugates_symm_comp, αβ, Conjugates_symm_id]
 
-/-- If `α` is an isomorphism between left adjoints, then its conjugate transformation is an isomorphism.
-The converse is given in `Conjugates_of_iso`.
+/-- If `α` is an isomorphism between left adjoints, then its conjugate transformation is an
+isomorphism. The converse is given in `Conjugates_of_iso`.
 -/
 instance Conjugates_iso (α : L₂ ⟶ L₁) [IsIso α] :
     IsIso (Conjugates adj₁ adj₂ α) :=
   ⟨⟨Conjugates adj₂ adj₁ (inv α),
       ⟨Conjugates_comm _ _ (by simp), Conjugates_comm _ _ (by simp)⟩⟩⟩
 
-/-- If `α` is an isomorphism between right adjoints, then its conjugate transformation is an isomorphism.
-The converse is given in `Conjugates_symm_of_iso`.
+/-- If `α` is an isomorphism between right adjoints, then its conjugate transformation is an
+isomorphism. The converse is given in `Conjugates_symm_of_iso`.
 -/
 instance Conjugates_symm_iso (α : R₁ ⟶ R₂) [IsIso α] :
     IsIso ((Conjugates adj₁ adj₂).symm α) :=
   ⟨⟨(Conjugates adj₂ adj₁).symm (inv α),
       ⟨Conjugates_symm_comm _ _ (by simp), Conjugates_symm_comm _ _ (by simp)⟩⟩⟩
 
-/-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation is an isomorphism,
-then `α` is an isomorphism.
-The converse is given in `Conjugate_iso`.
+/-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation
+is an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugate_iso`.
 -/
 theorem Conjugate_of_iso (α : L₂ ⟶ L₁) [IsIso (Conjugates adj₁ adj₂ α)] :
     IsIso α := by
@@ -461,9 +466,8 @@ theorem Conjugate_of_iso (α : L₂ ⟶ L₁) [IsIso (Conjugates adj₁ adj₂ �
   infer_instance
 
 /--
-If `α` is a natural transformation between right adjoints whose conjugate natural transformation is an isomorphism,
-then `α` is an isomorphism.
-The converse is given in `Conjugates_symm_iso`.
+If `α` is a natural transformation between right adjoints whose conjugate natural transformation is
+an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugates_symm_iso`.
 -/
 theorem Conjugates_symm_of_iso (α : R₁ ⟶ R₂)
     [IsIso ((Conjugates adj₁ adj₂).symm α)] : IsIso α := by
@@ -472,5 +476,27 @@ theorem Conjugates_symm_of_iso (α : R₁ ⟶ R₂)
   infer_instance
 
 end ConjugateComposition
+
+section IteratedMates
+variable {A : Type u₁} {B : Type u₂}{C : Type u₃} {D : Type u₄}
+variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C] [Category.{v₄} D]
+variable {F₁ : A ⥤ C}{U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
+variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁)(adj₄ : F₂ ⊣ U₂)
+
+/-- When all four functors in a sequare are left adjoints, the mates operation can be iterated:
+
+         L₁                  R₁                  R₁
+      C --→ D             C ←-- D             C ←-- D
+   F₁ ↓  ↗  ↓  F₂      F₁ ↓  ↘  ↓ F₂       U₁ ↑  ↙  ↑ U₂
+      E --→ F             E ←-- F             E ←-- F
+         L₂                  R₂                  R₂
+
+In this case the iterated mate equals the conjugate of the original transformation and is thus an
+isomorphism if and only if the original transformation is. This explains why some Beck-Chevalley
+natural transformations are natural isomorphisms.
+-/
+
+end IteratedMates
 
 end CategoryTheory
