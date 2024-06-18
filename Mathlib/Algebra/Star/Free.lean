@@ -51,12 +51,11 @@ instance : StarRing (FreeAlgebra R X) where
   star_involutive x := by
     unfold Star.star
     simp only [Function.comp_apply]
-    let y := lift R (X := X) (MulOpposite.op ∘ ι R)
-    apply induction (C := fun x ↦ (y (y x).unop).unop = x) _ _ _ _ x
+    refine' FreeAlgebra.induction R X _ _ _ _ x
     · intros
       simp only [AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op]
     · intros
-      simp only [y, lift_ι_apply, Function.comp_apply, MulOpposite.unop_op]
+      simp only [lift_ι_apply, Function.comp_apply, MulOpposite.unop_op]
     · intros
       simp only [*, map_mul, MulOpposite.unop_mul]
     · intros

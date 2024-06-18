@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 

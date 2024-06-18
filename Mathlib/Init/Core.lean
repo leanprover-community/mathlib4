@@ -149,7 +149,7 @@ def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ 
 #align gt GT.gt
 #align ge GE.ge
 
-#align is_lawful_singleton LawfulSingleton
+#align is_lawful_singleton IsLawfulSingleton
 
 attribute [simp] insert_emptyc_eq
 

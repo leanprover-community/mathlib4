@@ -75,8 +75,7 @@ def downloadFile (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
-/-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Exit the process with exit code 1 if any files failed to download. -/
+/-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
 def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
@@ -140,8 +139,6 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.Process.exit 1
   else IO.println "No files to download"
 
-/-- Check if the project's `lean-toolchain` file matches mathlib's.
-Print and error and exit the process with error code 1 otherwise. -/
 def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
@@ -169,8 +166,6 @@ def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompre
   downloadFiles hashMap forceDownload parallel
   if decompress then
     IO.unpackCache hashMap forceUnpack
-  else
-    IO.println "Downloaded all files successfully!"
 
 end Get
 

@@ -38,7 +38,6 @@ variable {α : Type u} {ι : Sort v}
 
 /-- Class for the `sSup` operator -/
 class SupSet (α : Type*) where
-  /-- Supremum of a set -/
   sSup : Set α → α
 #align has_Sup SupSet
 #align has_Sup.Sup SupSet.sSup
@@ -46,7 +45,6 @@ class SupSet (α : Type*) where
 
 /-- Class for the `sInf` operator -/
 class InfSet (α : Type*) where
-  /-- Infimum of a set -/
   sInf : Set α → α
 #align has_Inf InfSet
 #align has_Inf.Inf InfSet.sInf
@@ -55,6 +53,12 @@ class InfSet (α : Type*) where
 export SupSet (sSup)
 
 export InfSet (sInf)
+
+/-- Supremum of a set -/
+add_decl_doc SupSet.sSup
+
+/-- Infimum of a set -/
+add_decl_doc InfSet.sInf
 
 /-- Indexed supremum -/
 def iSup [SupSet α] (s : ι → α) : α :=

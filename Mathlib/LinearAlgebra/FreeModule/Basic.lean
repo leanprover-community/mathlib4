@@ -190,12 +190,11 @@ end Semiring
 
 section CommSemiring
 
-variable {S} [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
-  [Module S M] [IsScalarTower R S M] [Module.Free S M]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
   [AddCommMonoid N] [Module R N] [Module.Free R N]
 
-instance tensor : Module.Free S (M ⊗[R] N) :=
-  let ⟨bM⟩ := exists_basis (R := S) (M := M)
+instance tensor : Module.Free R (M ⊗[R] N) :=
+  let ⟨bM⟩ := exists_basis (R := R) (M := M)
   let ⟨bN⟩ := exists_basis (R := R) (M := N)
   of_basis (bM.2.tensorProduct bN.2)
 #align module.free.tensor Module.Free.tensor

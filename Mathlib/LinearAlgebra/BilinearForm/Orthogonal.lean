@@ -70,18 +70,18 @@ theorem IsRefl.ortho_comm (H : B.IsRefl) {x y : M} : IsOrtho B x y ↔ IsOrtho B
 #align bilin_form.is_refl.ortho_comm LinearMap.BilinForm.IsRefl.ortho_comm
 
 theorem IsAlt.ortho_comm (H : B₁.IsAlt) {x y : M₁} : IsOrtho B₁ x y ↔ IsOrtho B₁ y x :=
-  LinearMap.IsAlt.ortho_comm H
+  H.isRefl.ortho_comm
 #align bilin_form.is_alt.ortho_comm LinearMap.BilinForm.IsAlt.ortho_comm
 
 theorem IsSymm.ortho_comm (H : B.IsSymm) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
-  LinearMap.IsSymm.ortho_comm H
+  H.isRefl.ortho_comm
 #align bilin_form.is_symm.ortho_comm LinearMap.BilinForm.IsSymm.ortho_comm
 
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.IsOrtho` -/
 def iIsOrtho {n : Type w} (B : BilinForm R M) (v : n → M) : Prop :=
-  B.IsOrthoᵢ v
+  Pairwise (B.IsOrtho on v)
 set_option linter.uppercaseLean3 false in
 #align bilin_form.is_Ortho LinearMap.BilinForm.iIsOrtho
 
@@ -168,10 +168,6 @@ theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogon
   fun n hn _ hm => b _ _ (hm n hn)
 #align bilin_form.le_orthogonal_orthogonal LinearMap.BilinForm.le_orthogonal_orthogonal
 
-lemma orthogonal_top (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
-    B.orthogonal ⊤ = ⊥ :=
-  (Submodule.eq_bot_iff _).mpr fun _ hx ↦ hB _ fun y ↦ hB₀ _ _ <| hx y Submodule.mem_top
-
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
     (K ∙ x) ⊓ B.orthogonal (K ∙ x) = ⊥ := by
@@ -221,7 +217,7 @@ variable [AddCommMonoid M₂'] [Module R M₂']
 
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
 nondegenerate if `Disjoint W (B.orthogonal W)`. -/
-theorem nondegenerate_restrict_of_disjoint_orthogonal (B : BilinForm R₁ M₁) (b : B.IsRefl)
+theorem nondegenerateRestrictOfDisjointOrthogonal (B : BilinForm R₁ M₁) (b : B.IsRefl)
     {W : Submodule R₁ M₁} (hW : Disjoint W (B.orthogonal W)) : (B.restrict W).Nondegenerate := by
   rintro ⟨x, hx⟩ b₁
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R₁]
@@ -229,10 +225,7 @@ theorem nondegenerate_restrict_of_disjoint_orthogonal (B : BilinForm R₁ M₁) 
   specialize b₁ ⟨y, hy⟩
   simp only [restrict_apply, domRestrict_apply] at b₁
   exact isOrtho_def.mpr (b x y b₁)
-#align bilin_form.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.BilinForm.nondegenerate_restrict_of_disjoint_orthogonal
-
-@[deprecated (since := "2024-05-30")]
-alias nondegenerateRestrictOfDisjointOrthogonal := nondegenerate_restrict_of_disjoint_orthogonal
+#align bilin_form.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.BilinForm.nondegenerateRestrictOfDisjointOrthogonal
 
 /-- An orthogonal basis with respect to a nondegenerate bilinear form has no self-orthogonal
 elements. -/
@@ -325,9 +318,9 @@ variable [FiniteDimensional K V]
 
 open FiniteDimensional Submodule
 
-variable {B : BilinForm K V}
+variable {B : BilinForm K V} {W : Subspace K V}
 
-theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
+theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←
@@ -338,33 +331,6 @@ theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
       add_comm, ← add_assoc, add_comm (finrank K (LinearMap.ker (B.domRestrict W))),
       LinearMap.finrank_range_add_finrank_ker]
 #align bilin_form.finrank_add_finrank_orthogonal LinearMap.BilinForm.finrank_add_finrank_orthogonal
-
-lemma finrank_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
-    finrank K (B.orthogonal W) = finrank K V - finrank K W := by
-  have := finrank_add_finrank_orthogonal hB₀ (W := W)
-  rw [B.orthogonal_top hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
-  have : finrank K W ≤ finrank K V := finrank_le W
-  omega
-
-lemma orthogonal_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
-    B.orthogonal (B.orthogonal W) = W := by
-  apply (eq_of_le_of_finrank_le (LinearMap.BilinForm.le_orthogonal_orthogonal hB₀) _).symm
-  simp only [finrank_orthogonal hB hB₀]
-  have : finrank K W ≤ finrank K V := finrank_le W
-  omega
-
-variable {W : Submodule K V}
-
-lemma isCompl_orthogonal_iff_disjoint (hB₀ : B.IsRefl) :
-    IsCompl W (B.orthogonal W) ↔ Disjoint W (B.orthogonal W) := by
-  refine ⟨IsCompl.disjoint, fun h ↦ ⟨h, ?_⟩⟩
-  rw [codisjoint_iff]
-  apply (eq_top_of_finrank_eq <| (finrank_le _).antisymm _)
-  calc
-    finrank K V ≤ finrank K V + finrank K ↥(W ⊓ B.orthogonal ⊤) := le_self_add
-    _ ≤ finrank K ↥(W ⊔ B.orthogonal W) + finrank K ↥(W ⊓ B.orthogonal W) := ?_
-    _ ≤ finrank K ↥(W ⊔ B.orthogonal W) := by simp [h.eq_bot]
-  rw [finrank_sup_add_finrank_inf_eq, finrank_add_finrank_orthogonal hB₀ W]
 
 /-- A subspace is complement to its orthogonal complement with respect to some
 reflexive bilinear form if that bilinear form restricted on to the subspace is nondegenerate. -/
@@ -393,7 +359,7 @@ form if and only if that bilinear form restricted on to the subspace is nondegen
 theorem restrict_nondegenerate_iff_isCompl_orthogonal
     (b₁ : B.IsRefl) : (B.restrict W).Nondegenerate ↔ IsCompl W (B.orthogonal W) :=
   ⟨fun b₂ => isCompl_orthogonal_of_restrict_nondegenerate b₁ b₂, fun h =>
-    B.nondegenerate_restrict_of_disjoint_orthogonal b₁ h.1⟩
+    B.nondegenerateRestrictOfDisjointOrthogonal b₁ h.1⟩
 #align bilin_form.restrict_nondegenerate_iff_is_compl_orthogonal LinearMap.BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal
 
 lemma orthogonal_eq_top_iff (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) :
@@ -434,7 +400,7 @@ on the whole space. -/
 
 /-- The restriction of a reflexive, non-degenerate bilinear form on the orthogonal complement of
 the span of a singleton is also non-degenerate. -/
-theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b₁ : B.Nondegenerate)
+theorem restrictOrthogonalSpanSingletonNondegenerate (B : BilinForm K V) (b₁ : B.Nondegenerate)
     (b₂ : B.IsRefl) {x : V} (hx : ¬B.IsOrtho x x) :
     Nondegenerate <| B.restrict <| B.orthogonal (K ∙ x) := by
   refine fun m hm => Submodule.coe_eq_zero.1 (b₁ m.1 fun n => ?_)
@@ -444,10 +410,6 @@ theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b�
   specialize hm ⟨z, hz⟩
   rw [restrict] at hm
   erw [add_right, show B m.1 y = 0 by rw [b₂]; exact m.2 y hy, hm, add_zero]
-#align bilin_form.restrict_orthogonal_span_singleton_nondegenerate LinearMap.BilinForm.restrict_nondegenerate_orthogonal_spanSingleton
-
-@[deprecated (since := "2024-05-30")]
-alias restrictNondegenerateOrthogonalSpanSingleton :=
-  restrict_nondegenerate_orthogonal_spanSingleton
+#align bilin_form.restrict_orthogonal_span_singleton_nondegenerate LinearMap.BilinForm.restrictOrthogonalSpanSingletonNondegenerate
 
 end BilinForm

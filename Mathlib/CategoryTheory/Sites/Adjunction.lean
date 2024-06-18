@@ -1,17 +1,18 @@
 /-
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Joël Riou
+Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.PreservesSheafification
+import Mathlib.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 #align_import category_theory.sites.adjunction from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
-In this file, we show that an adjunction `G ⊣ F` induces an adjunction between
-categories of sheaves. We also show that `G` preserves sheafification.
+In this file, we show that an adjunction `F ⊣ G` induces an adjunction between
+categories of sheaves, under certain hypotheses on `F` and `G`.
 
 -/
 
@@ -26,7 +27,7 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 variable {D : Type*} [Category D]
 variable {E : Type*} [Category E]
 variable {F : D ⥤ E} {G : E ⥤ D}
-variable [HasWeakSheafify J D]
+variable [HasWeakSheafify J D] [HasSheafCompose J F]
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
@@ -40,9 +41,16 @@ namespace Sheaf
 
 noncomputable section
 
+/-- This is the functor sending a sheaf `X : Sheaf J E` to the sheafification
+of `X ⋙ G`. -/
+abbrev composeAndSheafify (G : E ⥤ D) : Sheaf J E ⥤ Sheaf J D :=
+  sheafToPresheaf J E ⋙ (whiskeringRight _ _ _).obj G ⋙ presheafToSheaf J D
+set_option linter.uppercaseLean3 false in
+#align category_theory.Sheaf.compose_and_sheafify CategoryTheory.Sheaf.composeAndSheafify
+
 /-- An auxiliary definition to be used in defining `CategoryTheory.Sheaf.adjunction` below. -/
 @[simps]
-def composeEquiv [HasSheafCompose J F] (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
+def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
     ((composeAndSheafify J G).obj X ⟶ Y) ≃ (X ⟶ (sheafCompose J F).obj Y) :=
   let A := adj.whiskerRight Cᵒᵖ
   { toFun := fun η => ⟨A.homEquiv _ _ (toSheafify J _ ≫ η.val)⟩
@@ -71,8 +79,7 @@ attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
 and `F` preserves the correct limits. -/
 @[simps! unit_app_val counit_app_val]
-def adjunction [HasSheafCompose J F] (adj : G ⊣ F) :
-    composeAndSheafify J G ⊣ sheafCompose J F :=
+def adjunction (adj : G ⊣ F) : composeAndSheafify J G ⊣ sheafCompose J F :=
   Adjunction.mkOfHomEquiv
     { homEquiv := composeEquiv J adj
       homEquiv_naturality_left_symm := fun f g => by
@@ -93,26 +100,6 @@ set_option linter.uppercaseLean3 false in
 
 instance [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
   (adjunction J (Adjunction.ofIsRightAdjoint F)).isRightAdjoint
-
-instance [G.IsLeftAdjoint] : (composeAndSheafify J G).IsLeftAdjoint :=
-  (adjunction J (Adjunction.ofIsLeftAdjoint G)).isLeftAdjoint
-
-lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
-    J.PreservesSheafification G where
-  le P Q f hf := by
-    have := adj.isRightAdjoint
-    rw [MorphismProperty.inverseImage_iff]
-    dsimp
-    intro R hR
-    rw [← ((adj.whiskerRight Cᵒᵖ).homEquiv P R).comp_bijective]
-    convert (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
-      (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).cond)).bijective
-    ext g X
-    dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
-    simp
-
-instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
-  preservesSheafification_of_adjunction J (Adjunction.ofIsLeftAdjoint G)
 
 section ForgetToType
 

@@ -24,8 +24,8 @@ instance (priority := 100) Countable.toSmall (α : Type v) [Countable α] : Smal
 #align small_of_countable Countable.toSmall
 #align small_of_fintype Countable.toSmallₓ -- this alignment clashes with the one above
 
-@[deprecated (since := "2024-03-20"), nolint defLemma]
+@[deprecated, nolint defLemma] -- 2024-03-20
 alias small_of_countable := Countable.toSmall
 
-@[deprecated (since := "2024-03-20"), nolint defLemma]
+@[deprecated, nolint defLemma] -- 2024-03-20
 alias small_of_fintype := Countable.toSmall

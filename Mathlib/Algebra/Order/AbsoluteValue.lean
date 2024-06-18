@@ -7,7 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Ring.Regular
 
 #align_import algebra.order.absolute_value from "leanprover-community/mathlib"@"0013240bce820e3096cebb7ccf6d17e3f35f77ca"
 

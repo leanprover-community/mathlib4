@@ -5,8 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.NNRat.Defs
+import Mathlib.Data.Rat.Order
 
 #align_import data.rat.basic from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 

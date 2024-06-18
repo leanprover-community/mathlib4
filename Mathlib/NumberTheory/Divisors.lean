@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Factors
 import Mathlib.Order.Interval.Finset.Nat
@@ -409,7 +410,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     rw [← zero_add (∑ x ∈ s, x), ← add_assoc, add_zero]
     apply add_lt_add_right
     have hlt :=
-      sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset hx)
+      sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset _ _ hx)
     simp only [sum_const_zero] at hlt
     apply hlt
 #align nat.eq_proper_divisors_of_subset_of_sum_eq_sum Nat.eq_properDivisors_of_subset_of_sum_eq_sum
@@ -484,10 +485,10 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
   intro a
   constructor <;> intro h
   · rcases h with ⟨_h_left, rfl, h_right⟩
-    rw [Nat.pow_lt_pow_iff_right pp.one_lt] at h_right
-    exact ⟨h_right, rfl⟩
+    rw [pow_lt_pow_iff_right pp.one_lt] at h_right
+    exact ⟨h_right, by rfl⟩
   · rcases h with ⟨h_left, rfl⟩
-    rw [Nat.pow_lt_pow_iff_right pp.one_lt]
+    rw [pow_lt_pow_iff_right pp.one_lt]
     simp [h_left, le_of_lt]
 #align nat.mem_proper_divisors_prime_pow Nat.mem_properDivisors_prime_pow
 

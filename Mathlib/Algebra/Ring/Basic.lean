@@ -51,7 +51,12 @@ section AddHomClass
 variable {α β F : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
   [FunLike F α β] [AddHomClass F α β]
 
-#noalign map_bit0
+set_option linter.deprecated false in
+/-- Additive homomorphisms preserve `bit0`. -/
+@[deprecated, simp]
+theorem map_bit0 (f : F) (a : α) : (f (bit0 a) : β) = bit0 (f a) :=
+  map_add _ _ _
+#align map_bit0 map_bit0
 
 end AddHomClass
 
@@ -149,7 +154,7 @@ section NoZeroDivisors
 
 variable (α)
 
-lemma IsLeftCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocRing α] [IsLeftCancelMulZero α] :
+lemma IsLeftCancelMulZero.to_noZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
     NoZeroDivisors α :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} h ↦ by
       by_cases hx : x = 0
@@ -161,7 +166,7 @@ lemma IsLeftCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocRing α] [IsLeftCa
         rwa [sub_zero] at this } }
 #align is_left_cancel_mul_zero.to_no_zero_divisors IsLeftCancelMulZero.to_noZeroDivisors
 
-lemma IsRightCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocRing α] [IsRightCancelMulZero α] :
+lemma IsRightCancelMulZero.to_noZeroDivisors [Ring α] [IsRightCancelMulZero α] :
     NoZeroDivisors α :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} h ↦ by
       by_cases hy : y = 0
@@ -173,8 +178,7 @@ lemma IsRightCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocRing α] [IsRight
         rwa [sub_zero] at this } }
 #align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.to_noZeroDivisors
 
-instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
-    [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
+instance (priority := 100) NoZeroDivisors.to_isCancelMulZero [Ring α] [NoZeroDivisors α] :
     IsCancelMulZero α :=
   { mul_left_cancel_of_ne_zero := fun ha h ↦ by
       rw [← sub_eq_zero, ← mul_sub] at h
@@ -185,7 +189,7 @@ instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
 #align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.to_isCancelMulZero
 
 /-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
-lemma isCancelMulZero_iff_noZeroDivisors [NonUnitalNonAssocRing α] :
+lemma isCancelMulZero_iff_noZeroDivisors [Ring α] :
     IsCancelMulZero α ↔ NoZeroDivisors α :=
   ⟨fun _ => IsRightCancelMulZero.to_noZeroDivisors _, fun _ => inferInstance⟩
 

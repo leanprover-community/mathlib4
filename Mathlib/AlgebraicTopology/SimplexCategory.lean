@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
@@ -216,7 +215,7 @@ one given by the following generators and relations.
 
 /-- The `i`-th face map from `[n]` to `[n+1]` -/
 def δ {n} (i : Fin (n + 2)) : ([n] : SimplexCategory) ⟶ [n + 1] :=
-  mkHom (Fin.succAboveOrderEmb i).toOrderHom
+  mkHom (Fin.succAboveEmb i).toOrderHom
 #align simplex_category.δ SimplexCategory.δ
 
 /-- The `i`-th degeneracy map from `[n+1]` to `[n]` -/
@@ -480,9 +479,9 @@ instance : skeletalFunctor.EssSurj where
           (Nat.succ_pred_eq_of_pos <| Fintype.card_pos_iff.mpr ⟨⊥⟩).symm
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
-        refine
+        refine'
           { hom := ⟨f, hf.monotone⟩
-            inv := ⟨f.symm, ?_⟩
+            inv := ⟨f.symm, _⟩
             hom_inv_id := by ext1; apply f.symm_apply_apply
             inv_hom_id := by ext1; apply f.apply_symm_apply }
         intro i j h
@@ -615,7 +614,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
 
 instance : (forget SimplexCategory).ReflectsIsomorphisms :=
   ⟨fun f hf =>
-    Iso.isIso_hom
+    IsIso.of_iso
       { hom := f
         inv := Hom.mk
             { toFun := inv ((forget SimplexCategory).map f)

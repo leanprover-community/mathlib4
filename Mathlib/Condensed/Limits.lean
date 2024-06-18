@@ -9,7 +9,7 @@ import Mathlib.Condensed.Module
 
 # Limits in categories of condensed objects
 
-This file adds some instances for limits in condensed sets and condensed modules.
+This file adds some instances for limits in condensed sets and condensed abelian groups.
 -/
 
 universe u

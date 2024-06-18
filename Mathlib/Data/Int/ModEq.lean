@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Batteries.Data.Int.DivMod
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.GCongr.Core
@@ -322,6 +323,6 @@ theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
 #align int.mod_mul_left_mod Int.mod_mul_left_mod
 
-@[deprecated (since := "2024-04-02")] alias coe_nat_modEq_iff := natCast_modEq_iff
+@[deprecated] alias coe_nat_modEq_iff := natCast_modEq_iff -- 2024-04-02
 
 end Int

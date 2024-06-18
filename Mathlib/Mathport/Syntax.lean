@@ -47,7 +47,6 @@ import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Hint
-import Mathlib.Tactic.ITauto
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
@@ -186,6 +185,10 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 /- S -/ syntax (name := induction'') "induction''" casesTarget
   (fixingClause <|> generalizingClause)? (" with" (ppSpace colGt withPattern)+)? : tactic
 
+syntax termList := " [" term,* "]"
+/- B -/ syntax (name := itauto) "itauto" (" *" <|> termList)? : tactic
+/- B -/ syntax (name := itauto!) "itauto!" (" *" <|> termList)? : tactic
+
 /- B -/ syntax (name := obviously) "obviously" : tactic
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
@@ -218,8 +221,8 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 
-/- B -/ syntax (name := equivRw) "equiv_rw" (config)?
-  ((" [" term,* "]") <|> (ppSpace term)) (location)? : tactic
+/- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> (ppSpace term)) (location)? :
+  tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? ppSpace term : tactic
 
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (location)? : tactic

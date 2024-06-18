@@ -7,6 +7,7 @@ import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
 import Batteries.Data.RBMap.Basic
+import Mathlib.Data.HashMap
 import Mathlib.Control.Basic
 
 /-!
@@ -182,7 +183,7 @@ def natToInt : GlobalBranchingPreprocessor where
     let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
       try
         let (a, b) ← getRelSides (← inferType h)
-        pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
+        pure <| (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)
       catch _ => pure es
     pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
 

@@ -3,8 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
 
@@ -84,7 +83,7 @@ structure Valuation extends R →*₀ Γ₀ where
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
 
 You should also extend this typeclass when you extend `Valuation`. -/
-class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
+class ValuationClass (F) (R Γ₀ : outParam (Type*)) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
   [FunLike F R Γ₀]
   extends MonoidWithZeroHomClass F R Γ₀ : Prop where
   /-- The valuation of a a sum is less that the sum of the valuations -/

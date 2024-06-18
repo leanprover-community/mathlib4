@@ -117,7 +117,10 @@ instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCo
 
 end OrderedCancelCommMonoid
 
-#noalign bit0_pos
+set_option linter.deprecated false in
+@[deprecated] theorem bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
+  add_pos' h h
+#align bit0_pos bit0_pos
 
 /-- A linearly ordered additive commutative monoid. -/
 class LinearOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, LinearOrder α

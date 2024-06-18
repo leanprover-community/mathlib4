@@ -303,13 +303,10 @@ theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
   symm_bijective.injective <| ext fun _ => rfl
 #align ring_equiv.mk_coe' RingEquiv.mk_coe'
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `RingEquiv.symm_mk`. -/
-protected def symm_mk.aux (f : R → S) (g h₁ h₂ h₃ h₄) := (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm
-
 @[simp]
 theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
     (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
-      { symm_mk.aux f g h₁ h₂ h₃ h₄ with
+      { (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm with
         toFun := g
         invFun := f } :=
   rfl
