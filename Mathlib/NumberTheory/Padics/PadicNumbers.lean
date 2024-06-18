@@ -124,7 +124,6 @@ theorem norm_zero_iff (f : PadicSeq p) : f.norm = 0 ↔ f ≈ 0 := by
     by_contra hf
     unfold norm at h
     split_ifs at h
-    · contradiction
     apply hf
     intro ε hε
     exists stationaryPoint hf
@@ -609,7 +608,6 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge
-  · exact not_le_of_gt hε hge
   apply not_le_of_gt _ hge
   cases' _root_.em (N ≤ stationaryPoint hne) with hgen hngen
   · apply hN _ hgen _ hi

@@ -82,7 +82,7 @@ open MvFunctor
 
 /-- Multivariate quotients of polynomial functors.
 -/
-class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type*) [MvFunctor F] where
+class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type*) extends MvFunctor F where
   P : MvPFunctor.{u} n
   abs : ∀ {α}, P α → F α
   repr : ∀ {α}, F α → P α
@@ -92,7 +92,7 @@ class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type*) [MvFunctor F] where
 
 namespace MvQPF
 
-variable {n : ℕ} {F : TypeVec.{u} n → Type*} [MvFunctor F] [q : MvQPF F]
+variable {n : ℕ} {F : TypeVec.{u} n → Type*} [q : MvQPF F]
 
 open MvFunctor (LiftP LiftR)
 
@@ -102,24 +102,20 @@ open MvFunctor (LiftP LiftR)
 
 
 protected theorem id_map {α : TypeVec n} (x : F α) : TypeVec.id <$$> x = x := by
-  rw [← abs_repr x]
-  cases' repr x with a f
-  rw [← abs_map]
+  rw [← abs_repr x, ← abs_map]
   rfl
 #align mvqpf.id_map MvQPF.id_map
 
 @[simp]
 theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) (x : F α) :
     (g ⊚ f) <$$> x = g <$$> f <$$> x := by
-  rw [← abs_repr x]
-  cases' repr x with a f
-  rw [← abs_map, ← abs_map, ← abs_map]
+  rw [← abs_repr x, ← abs_map, ← abs_map, ← abs_map]
   rfl
 #align mvqpf.comp_map MvQPF.comp_map
 
 instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F where
-  id_map := @MvQPF.id_map n F _ _
-  comp_map := @comp_map n F _ _
+  id_map := @MvQPF.id_map n F _
+  comp_map := @comp_map n F _
 #align mvqpf.is_lawful_mvfunctor MvQPF.lawfulMvFunctor
 
 -- Lifting predicates and relations
@@ -285,7 +281,7 @@ theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := b
 
 /-- Any type function `F` that is (extensionally) equivalent to a QPF, is itself a QPF,
 assuming that the functorial map of `F` behaves similar to `MvFunctor.ofEquiv eqv` -/
-def ofEquiv {F F' : TypeVec.{u} n → Type*} [MvFunctor F'] [q : MvQPF F'] [MvFunctor F]
+def ofEquiv {F F' : TypeVec.{u} n → Type*} [q : MvQPF F'] [MvFunctor F]
     (eqv : ∀ α, F α ≃ F' α)
     (map_eq : ∀ (α β : TypeVec n) (f : α ⟹ β) (a : F α),
       f <$$> a = ((eqv _).symm <| f <$$> eqv _ a) := by intros; rfl) :

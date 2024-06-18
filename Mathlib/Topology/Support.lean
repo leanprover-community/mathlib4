@@ -309,7 +309,34 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
       ← (hU.openEmbedding_subtype_val).continuousAt_iff, extend_comp Subtype.val_injective]
     exact cont.continuousAt
 
+/-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
+@[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
+theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
+    (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
+  intro N hN
+  rw [mem_map, mem_cocompact']
+  refine' ⟨mulTSupport f, h.isCompact, _⟩
+  rw [compl_subset_comm]
+  intro v hv
+  rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
+  exact mem_of_mem_nhds hN
+#align has_compact_mul_support.is_one_at_infty HasCompactMulSupport.is_one_at_infty
+#align has_compact_support.is_zero_at_infty HasCompactSupport.is_zero_at_infty
+
 end HasCompactMulSupport
+
+section Compact
+
+variable [CompactSpace α] [One γ] [TopologicalSpace γ]
+
+/-- In a compact space `α`, any function has compact support. -/
+@[to_additive]
+theorem HasCompactMulSupport.of_compactSpace (f : α → γ) :
+    HasCompactMulSupport f :=
+  IsCompact.of_isClosed_subset isCompact_univ (isClosed_mulTSupport f)
+    (Set.subset_univ (mulTSupport f))
+
+end Compact
 
 end CompactSupport
 
@@ -317,7 +344,7 @@ end CompactSupport
 section CompactSupport2
 section Monoid
 
-variable [TopologicalSpace α] [Monoid β]
+variable [TopologicalSpace α] [MulOneClass β]
 variable {f f' : α → β} {x : α}
 
 @[to_additive]
@@ -328,9 +355,9 @@ theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompact
 
 end Monoid
 
-section DistribMulAction
+section SMulZeroClass
 
-variable [TopologicalSpace α] [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M]
+variable [TopologicalSpace α] [Zero M] [SMulZeroClass R M]
 variable {f : α → R} {f' : α → M} {x : α}
 
 theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
@@ -338,7 +365,7 @@ theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupp
   exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
 #align has_compact_support.smul_left HasCompactSupport.smul_left
 
-end DistribMulAction
+end SMulZeroClass
 
 section SMulWithZero
 
@@ -350,10 +377,9 @@ theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupp
   exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, zero_smul]
 #align has_compact_support.smul_right HasCompactSupport.smul_right
 
-theorem HasCompactSupport.smul_left' (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
-  rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
-  exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
-#align has_compact_support.smul_left' HasCompactSupport.smul_left'
+@[deprecated (since := "2024-06-05")]
+alias HasCompactSupport.smul_left' := HasCompactSupport.smul_left
+#align has_compact_support.smul_left' HasCompactSupport.smul_left
 
 end SMulWithZero
 

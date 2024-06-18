@@ -180,9 +180,9 @@ theorem tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → I
     mem_map.mpr (mem_cocompact.mpr ⟨f ⁻¹' t, h t ht, by simpa using preimage_mono hts⟩)
 #align cocompact_map.tendsto_of_forall_preimage CocompactMap.tendsto_of_forall_preimage
 
-/-- If the codomain is Hausdorff, preimages of compact sets are compact under a cocompact
-continuous map. -/
-theorem isCompact_preimage [T2Space β] (f : CocompactMap α β) ⦃s : Set β⦄ (hs : IsCompact s) :
+/-- Preimages of compact closed sets are compact under a cocompact continuous map. -/
+theorem isCompact_preimage_of_isClosed (f : CocompactMap α β)
+    ⦃s : Set β⦄ (hs : IsCompact s) (h's : IsClosed s) :
     IsCompact (f ⁻¹' s) := by
   obtain ⟨t, ht, hts⟩ :=
     mem_cocompact'.mp
@@ -192,7 +192,13 @@ theorem isCompact_preimage [T2Space β] (f : CocompactMap α β) ⦃s : Set β�
             (cocompact_tendsto f <|
               mem_cocompact.mpr ⟨s, hs, compl_subset_compl.mpr (image_preimage_subset f _)⟩))
   exact
-    ht.of_isClosed_subset (hs.isClosed.preimage <| map_continuous f) (by simpa using hts)
+    ht.of_isClosed_subset (h's.preimage <| map_continuous f) (by simpa using hts)
+
+/-- If the codomain is Hausdorff, preimages of compact sets are compact under a cocompact
+continuous map. -/
+theorem isCompact_preimage [T2Space β] (f : CocompactMap α β) ⦃s : Set β⦄ (hs : IsCompact s) :
+    IsCompact (f ⁻¹' s) :=
+  isCompact_preimage_of_isClosed f hs hs.isClosed
 #align cocompact_map.is_compact_preimage CocompactMap.isCompact_preimage
 
 end Basics

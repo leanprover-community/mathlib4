@@ -210,21 +210,6 @@ theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : �
     exact ⟨x, htsymm.mk_mem_comm.1 (hst h₁), hst h₂⟩
 #align continuous.uniform_continuous_of_tendsto_cocompact Continuous.uniformContinuous_of_tendsto_cocompact
 
-/-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
-@[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
-theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
-    (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
-  -- Porting note: move to src/topology/support.lean once the port is over
-  intro N hN
-  rw [mem_map, mem_cocompact']
-  refine ⟨mulTSupport f, h.isCompact, ?_⟩
-  rw [compl_subset_comm]
-  intro v hv
-  rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
-  exact mem_of_mem_nhds hN
-#align has_compact_mul_support.is_one_at_infty HasCompactMulSupport.is_one_at_infty
-#align has_compact_support.is_zero_at_infty HasCompactSupport.is_zero_at_infty
-
 @[to_additive]
 theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [One β]
     (h1 : HasCompactMulSupport f) (h2 : Continuous f) : UniformContinuous f :=
