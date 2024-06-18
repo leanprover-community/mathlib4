@@ -696,6 +696,12 @@ lemma toStalk_stalkMap_toSpec (f) (x) :
   rw [toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
   rfl
 
+/--
+If `x` is a point in the basic open set `D(f)` where `f` is a homogeneous element of positive
+degree, then the homogeneously localized ring `A⁰ₓ` has the universal property of the localization
+of `A⁰_f` at `φ(x)` where `φ : Proj|D(f) ⟶ Spec A⁰_f` is the morphism of locally ringed space
+constructed as above.
+-/
 lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     @IsLocalization (Away 𝒜 f) _ ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
       (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _
@@ -811,6 +817,7 @@ lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
   rw [TopCat.epi_iff_surjective]
   convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).surjective using 1
   ext; exact toSpec_eq_toSpec 𝒜 _
+
 end ProjectiveSpectrum.Proj
 
 open ProjectiveSpectrum.Proj in
