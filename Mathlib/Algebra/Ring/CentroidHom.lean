@@ -681,7 +681,7 @@ abbrev commRing
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext
-      refine' sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ _)
+      refine sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ ?_)
       rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,
         comp_mul_comm] }
 #align centroid_hom.comm_ring CentroidHom.commRing

@@ -74,7 +74,7 @@ theorem log_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : log b r = -Nat.cl
 theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
   cases n
   · simp [log_of_right_le_one]
-  · rw [log_of_one_le_right, Nat.floor_coe]
+  · rw [log_of_one_le_right, Nat.floor_natCast]
     simp
 #align int.log_nat_cast Int.log_natCast
 
@@ -138,7 +138,7 @@ theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
 theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
   · rw [log_of_one_le_right _ (one_le_zpow_of_nonneg _ <| Int.natCast_nonneg _), zpow_natCast, ←
-      Nat.cast_pow, Nat.floor_coe, Nat.log_pow hb]
+      Nat.cast_pow, Nat.floor_natCast, Nat.log_pow hb]
     exact mod_cast hb.le
   · rw [log_of_right_le_one _ (zpow_le_one_of_nonpos _ <| neg_nonpos.mpr (Int.natCast_nonneg _)),
       zpow_neg, inv_inv, zpow_natCast, ← Nat.cast_pow, Nat.ceil_natCast, Nat.clog_pow _ _ hb]

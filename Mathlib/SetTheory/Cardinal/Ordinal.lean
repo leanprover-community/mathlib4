@@ -958,16 +958,16 @@ theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n 
   add_le_add_iff_of_lt_aleph0 (nat_lt_aleph0 n)
 #align cardinal.add_nat_le_add_nat_iff_of_lt_aleph_0 Cardinal.add_nat_le_add_nat_iff
 
-@[deprecated]
-alias add_nat_le_add_nat_iff_of_lt_aleph_0 := add_nat_le_add_nat_iff  -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")]
+alias add_nat_le_add_nat_iff_of_lt_aleph_0 := add_nat_le_add_nat_iff
 
 @[simp]
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
 #align cardinal.add_one_le_add_one_iff_of_lt_aleph_0 Cardinal.add_one_le_add_one_iff
 
-@[deprecated]
-alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff  -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")]
+alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff
 
 /-! ### Properties about power -/
 section pow
@@ -1209,8 +1209,8 @@ theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Z
   · calc
       #(α →₀ β) ≤ #(Finset (α × β)) := mk_le_of_injective (Finsupp.graph_injective α β)
       _ = #(α × β) := mk_finset_of_infinite _
-      _ = max (lift.{v} #α) (lift.{u} #β) :=
-        by rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
+      _ = max (lift.{v} #α) (lift.{u} #β) := by
+        rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
 
   · apply max_le <;> rw [← lift_id #(α →₀ β), ← lift_umax]
     · cases' exists_ne (0 : β) with b hb

@@ -93,10 +93,12 @@ theorem product_subset_product (hs : s ⊆ s') (ht : t ⊆ t') : s ×ˢ t ⊆ s'
   mem_product.2 ⟨hs (mem_product.1 h).1, ht (mem_product.1 h).2⟩
 #align finset.product_subset_product Finset.product_subset_product
 
+@[gcongr]
 theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
   product_subset_product hs (Subset.refl _)
 #align finset.product_subset_product_left Finset.product_subset_product_left
 
+@[gcongr]
 theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
 #align finset.product_subset_product_right Finset.product_subset_product_right

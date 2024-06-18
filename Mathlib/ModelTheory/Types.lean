@@ -118,9 +118,9 @@ theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
   rw [iff_not_comm, ← not_nonempty_iff_eq_empty, Classical.not_not, Set.Nonempty]
   refine
     ⟨fun h =>
-      ⟨⟨L[[α]].completeTheory h.some, (subset_union_left _ S).trans completeTheory.subset,
+      ⟨⟨L[[α]].completeTheory h.some, (subset_union_left (t := S)).trans completeTheory.subset,
           completeTheory.isMaximal (L[[α]]) h.some⟩,
-        (subset_union_right ((L.lhomWithConstants α).onTheory T) _).trans completeTheory.subset⟩,
+        (((L.lhomWithConstants α).onTheory T).subset_union_right).trans completeTheory.subset⟩,
       ?_⟩
   rintro ⟨p, hp⟩
   exact p.isMaximal.1.mono (union_subset p.subset hp)

@@ -33,7 +33,6 @@ rational, continued fraction, termination
 
 namespace GeneralizedContinuedFraction
 
-/- ./././Mathport/Syntax/Translate/Command.lean:230:11: unsupported: unusual advanced open style -/
 open GeneralizedContinuedFraction (of)
 
 variable {K : Type*} [LinearOrderedField K] [FloorRing K]

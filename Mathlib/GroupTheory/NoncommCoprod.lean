@@ -35,11 +35,11 @@ namespace MulHom
 variable {M N P : Type*} [Mul M] [Mul N] [Semigroup P]
   (f : M →ₙ* P) (g : N →ₙ* P) (comm : ∀ m n, Commute (f m) (g n))
 
-/-- Coproduct of two `MulHom`s with the same codomain with commutation assumption :
+/-- Coproduct of two `MulHom`s with the same codomain with `Commute` assumption:
   `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
   (For the commutative case, use `MulHom.coprod`) -/
 @[to_additive (attr := simps)
-    "Coproduct of two `AddHom`s with the same codomain with commutation assumption:
+    "Coproduct of two `AddHom`s with the same codomain with `AddCommute` assumption:
     `f.noncommCoprod g _ (p : M × N) = f p.1 + g p.2`.
     (For the commutative case, use `AddHom.coprod`)"]
 def noncommCoprod : M × N →ₙ* P where
