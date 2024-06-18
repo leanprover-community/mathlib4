@@ -4105,7 +4105,6 @@ import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
 import Mathlib.Topology.Category.TopCat.Adjunctions
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Category.TopCat.DiscreteObjects
 import Mathlib.Topology.Category.TopCat.EffectiveEpi
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
