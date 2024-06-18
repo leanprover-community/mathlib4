@@ -116,20 +116,24 @@ TODO: clean this once lean4#2115 is fixed
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 #align non_unital_non_assoc_semiring NonUnitalNonAssocSemiring
 
+attribute [instance 96] NonUnitalNonAssocSemiring.toAddCommMonoid
 attribute [instance 10] NonUnitalNonAssocSemiring.toMulZeroClass
 attribute [instance 0] NonUnitalNonAssocSemiring.toMul
 
 /-- An associative but not-necessarily unital semiring. -/
-class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
+class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α,
+    AddCommMonoid α
 #align non_unital_semiring NonUnitalSemiring
 
+attribute [instance 98] NonUnitalSemiring.toAddCommMonoid
 attribute [instance 50] NonUnitalSemiring.toSemigroupWithZero
 
 /-- A unital but not-necessarily-associative semiring. -/
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
-    AddCommMonoidWithOne α
+    AddCommMonoidWithOne α, AddCommMonoid α
 #align non_assoc_semiring NonAssocSemiring
 
+attribute [instance 98] NonAssocSemiring.toAddCommMonoid
 attribute [instance 10] NonAssocSemiring.toMulZeroOneClass
 attribute [instance 0] NonAssocSemiring.toOne
 attribute [instance 0] NonAssocSemiring.toNatCast
@@ -138,20 +142,24 @@ attribute [instance 0] NonAssocSemiring.toNatCast
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
+attribute [instance 96] NonUnitalNonAssocRing.toAddCommGroup
 attribute [instance 50] NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring
 attribute [instance 0] NonUnitalNonAssocRing.toMul
 
 /-- An associative but not-necessarily unital ring. -/
-class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
+class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α,
+    AddCommGroup α
 #align non_unital_ring NonUnitalRing
 
+attribute [instance 98] NonUnitalRing.toAddCommGroup
 attribute [instance 50] NonUnitalRing.toNonUnitalSemiring
 
 /-- A unital but not-necessarily-associative ring. -/
 class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
-    AddCommGroupWithOne α
+    AddCommGroupWithOne α, AddCommGroup α
 #align non_assoc_ring NonAssocRing
 
+attribute [instance 98] NonAssocRing.toAddCommGroup
 attribute [instance 50] NonAssocRing.toNonAssocSemiring
 attribute [instance 0] NonAssocRing.toOne
 attribute [instance 0] NonAssocRing.toNatCast
@@ -160,15 +168,22 @@ attribute [instance 0] NonAssocRing.toIntCast
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
-class Semiring (α : Type u) extends NonAssocSemiring α, NonUnitalSemiring α, MonoidWithZero α
+class Semiring (α : Type u) extends NonAssocSemiring α, NonUnitalSemiring α, MonoidWithZero α,
+    AddCommMonoid α
 #align semiring Semiring
 
+attribute [instance 100] Semiring.toAddCommMonoid
 attribute [instance 150] Semiring.toMonoidWithZero
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R,
+    NonAssocRing R, NonUnitalRing R
 #align ring Ring
 
+attribute [instance 200] Ring.toSemiring
+attribute [instance 100] Ring.toNonAssocRing
+attribute [instance 100] Ring.toNonUnitalRing
+attribute [instance 100] Ring.toAddCommGroup
 attribute [instance 0] Ring.toNeg
 attribute [instance 0] Ring.toSub
 
@@ -456,32 +471,6 @@ theorem mul_one_sub (a b : α) : a * (1 - b) = a - a * b := by rw [mul_sub, mul_
 #align mul_one_sub mul_one_sub
 
 end NonAssocRing
-
-section Ring
-
-variable [Ring α] {a b c d e : α}
-
--- A (unital, associative) ring is a not-necessarily-unital ring
--- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
-  { ‹Ring α› with }
-#align ring.to_non_unital_ring Ring.toNonUnitalRing
-
--- A (unital, associative) ring is a not-necessarily-associative ring
--- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
-  { ‹Ring α› with }
-#align ring.to_non_assoc_ring Ring.toNonAssocRing
-
-/-- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
-definitions are given in terms of semirings, but many applications use rings or fields. We increase
-a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
-more specific instances are tried first. -/
-instance (priority := 200) : Semiring α :=
-  { ‹Ring α› with }
-#align ring.to_semiring Ring.toSemiring
-
-end Ring
 
 /-- A non-unital non-associative commutative ring is a `NonUnitalNonAssocRing` with commutative
 multiplication. -/

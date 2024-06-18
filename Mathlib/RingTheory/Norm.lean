@@ -70,7 +70,7 @@ theorem norm_apply (x : S) : norm R x = LinearMap.det (lmul R S x) := rfl
 #align algebra.norm_apply Algebra.norm_apply
 
 theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) (x : S) :
-    norm R x = 1 := by rw [norm_apply, LinearMap.det]; split_ifs <;> trivial
+    norm R x = 1 := by rw [norm_apply, LinearMap.det]; split_ifs; trivial
 #align algebra.norm_eq_one_of_not_exists_basis Algebra.norm_eq_one_of_not_exists_basis
 
 variable {R}

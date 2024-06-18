@@ -647,6 +647,16 @@ instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
 
 attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
+@[instance 200]
+abbrev Monoid.instMul {M : Type*} [Monoid M] : Mul M :=
+  Monoid.toMulOneClass.toMul
+
+@[instance 200]
+abbrev AddMonoid.instAdd {M : Type*} [AddMonoid M] : Add M :=
+  AddMonoid.toAddZeroClass.toAdd
+
+attribute [to_additive existing] Monoid.instMul
+
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M} {m n : ℕ}
 
@@ -1215,6 +1225,7 @@ class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMon
 #align subtraction_comm_monoid SubtractionCommMonoid
 
 attribute [instance 90] SubtractionCommMonoid.toSubtractionMonoid
+attribute [instance 50] SubtractionCommMonoid.toAddCommMonoid
 
 /-- Commutative `DivisionMonoid`.
 
@@ -1224,6 +1235,7 @@ class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 #align division_comm_monoid DivisionCommMonoid
 
 attribute [instance 90] DivisionCommMonoid.toDivisionMonoid
+attribute [instance 50] DivisionCommMonoid.toCommMonoid
 
 attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
@@ -1256,6 +1268,16 @@ class AddGroup (A : Type u) extends SubNegMonoid A where
 attribute [instance 200] AddGroup.toSubNegMonoid
 
 attribute [to_additive] Group
+
+@[instance 120]
+abbrev Group.instMonoid [Group G] : Monoid G :=
+  Group.toDivInvMonoid.toMonoid
+
+@[instance 120]
+abbrev AddGroup.instAddMonoid [AddGroup G] : AddMonoid G :=
+  AddGroup.toSubNegMonoid.toAddMonoid
+
+attribute [to_additive existing] Group.instMonoid
 
 section Group
 
@@ -1334,6 +1356,7 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 #align add_comm_group AddCommGroup
 
 attribute [instance 90] AddCommGroup.toAddGroup
+attribute [instance 200] AddCommGroup.toAddCommMonoid
 
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
