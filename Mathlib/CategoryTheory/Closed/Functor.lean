@@ -108,15 +108,20 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
     expComparison F A ≫ whiskerLeft _ (pre (F.map f)) =
       whiskerRight (pre f) _ ≫ expComparison F A' := by
   unfold expComparison pre
-  have vcomp1 := MatesConjugates_vcomp (exp.adjunction A) (exp.adjunction (F.obj A)) (exp.adjunction (F.obj A')) ((prodComparisonNatIso F A).inv) ((prod.functor.map (F.map f)))
-  have vcomp2 := ConjugatesMates_vcomp (exp.adjunction A) (exp.adjunction A') (exp.adjunction (F.obj A')) ((prod.functor.map f)) ((prodComparisonNatIso F A').inv)
+  have vcomp1 := MatesConjugates_vcomp
+    (exp.adjunction A) (exp.adjunction (F.obj A)) (exp.adjunction (F.obj A'))
+    ((prodComparisonNatIso F A).inv) ((prod.functor.map (F.map f)))
+  have vcomp2 := ConjugatesMates_vcomp
+    (exp.adjunction A) (exp.adjunction A') (exp.adjunction (F.obj A'))
+    ((prod.functor.map f)) ((prodComparisonNatIso F A').inv)
   unfold LeftAdjointSquareConjugate.vcomp RightAdjointSquareConjugate.vcomp at vcomp1
   unfold LeftAdjointConjugateSquare.vcomp RightAdjointConjugateSquare.vcomp at vcomp2
   rw [← vcomp1, ← vcomp2]
   apply congr_arg
   ext B
-  simp only [Functor.comp_obj, prod.functor_obj_obj, prodComparisonNatIso_inv, asIso_inv, NatTrans.comp_app,
-  whiskerLeft_app, prod.functor_map_app, NatIso.isIso_inv_app, whiskerRight_app]
+  simp only [Functor.comp_obj, prod.functor_obj_obj, prodComparisonNatIso_inv, asIso_inv,
+    NatTrans.comp_app, whiskerLeft_app, prod.functor_map_app, NatIso.isIso_inv_app,
+    whiskerRight_app]
   have piso := (prodComparison_inv_natural F f (𝟙 B)).symm
   rw [← F.map_id]
   exact piso
@@ -136,7 +141,8 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
         (frobeniusMorphism F h A) =
       expComparison F A := by
   unfold expComparison frobeniusMorphism
-  have conjeq := IteratedMates_Conjugates h h (exp.adjunction (F.obj A)) (exp.adjunction A) (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L (prod.functor.map (h.counit.app A)))
+  have conjeq := IteratedMates_Conjugates h h (exp.adjunction (F.obj A)) (exp.adjunction A)
+    (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L (prod.functor.map (h.counit.app A)))
   rw [← conjeq]
   apply congr_arg
   ext B
@@ -152,9 +158,11 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     }
   rw [← assoc]
   unfold prodComparison
-  have etalemma : (h.unit.app (F.obj A ⨯ F.obj B) ≫ prod.lift ((L ⋙ F).map prod.fst) ((L ⋙ F).map prod.snd)) = prod.map (h.unit.app (F.obj A)) (h.unit.app (F.obj B)) := by
+  have ηlemma : (h.unit.app (F.obj A ⨯ F.obj B) ≫
+    prod.lift ((L ⋙ F).map prod.fst) ((L ⋙ F).map prod.snd)) =
+    prod.map (h.unit.app (F.obj A)) (h.unit.app (F.obj B)) := by
     ext <;> simp
-  rw [etalemma]
+  rw [ηlemma]
   simp only [Functor.id_obj, Functor.comp_obj, prod.map_map, Adjunction.right_triangle_components,
     prod.map_id_id]
 #align category_theory.frobenius_morphism_mate CategoryTheory.frobeniusMorphism_mate
@@ -167,7 +175,8 @@ theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
     [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobeniusMorphism_mate F h] at i
   exact @Conjugates_of_iso _ _ _ _ _ _ _ _ _ _ _ i
-#align category_theory.frobenius_morphism_iso_of_exp_comparison_iso CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
+#align category_theory.frobenius_morphism_iso_of_exp_comparison_iso
+CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
 
 /--
 If the Frobenius morphism at `A` is an isomorphism, then the exponential comparison transformation
@@ -176,7 +185,8 @@ If the Frobenius morphism at `A` is an isomorphism, then the exponential compari
 theorem expComparison_iso_of_frobeniusMorphism_iso (h : L ⊣ F) (A : C)
     [i : IsIso (frobeniusMorphism F h A)] : IsIso (expComparison F A) := by
   rw [← frobeniusMorphism_mate F h]; infer_instance
-#align category_theory.exp_comparison_iso_of_frobenius_morphism_iso CategoryTheory.expComparison_iso_of_frobeniusMorphism_iso
+#align category_theory.exp_comparison_iso_of_frobenius_morphism_iso
+CategoryTheory.expComparison_iso_of_frobeniusMorphism_iso
 
 /-- If `F` is full and faithful, and has a left adjoint which preserves binary products, then it is
 cartesian closed.
@@ -187,6 +197,7 @@ products, then it is full and faithful.
 theorem cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [F.Full] [F.Faithful]
     [PreservesLimitsOfShape (Discrete WalkingPair) L] : CartesianClosedFunctor F where
   comparison_iso _ := expComparison_iso_of_frobeniusMorphism_iso F h _
-#align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts
+#align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products
+CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts
 
 end CategoryTheory

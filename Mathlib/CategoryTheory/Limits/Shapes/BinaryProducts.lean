@@ -1243,8 +1243,10 @@ universe w w' u₃
 variable {C} {D : Type u₂} [Category.{w} D] {E : Type u₃} [Category.{w'} E]
 variable (F : C ⥤ D) (G : D ⥤ E) {A A' B B' : C}
 variable [HasBinaryProduct A B] [HasBinaryProduct A' B']
-variable [HasBinaryProduct (F.obj A) (F.obj B)] [HasBinaryProduct (F.obj A') (F.obj B')]
-variable [HasBinaryProduct (G.obj (F.obj A)) (G.obj (F.obj B))] [HasBinaryProduct ((F ⋙ G).obj A) ((F ⋙ G).obj B)]
+variable [HasBinaryProduct (F.obj A) (F.obj B)]
+variable [HasBinaryProduct (F.obj A') (F.obj B')]
+variable [HasBinaryProduct (G.obj (F.obj A)) (G.obj (F.obj B))]
+variable [HasBinaryProduct ((F ⋙ G).obj A) ((F ⋙ G).obj B)]
 
 /-- The product comparison morphism.
 
@@ -1326,7 +1328,8 @@ def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
 #align category_theory.limits.prod_comparison_nat_iso CategoryTheory.Limits.prodComparisonNatIso
 
 theorem prodComparison_comp :
-    prodComparison (F ⋙ G) A B = G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
+    prodComparison (F ⋙ G) A B =
+      G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
   unfold prodComparison
   ext <;> simp <;> rw [← G.map_comp] <;> simp
 

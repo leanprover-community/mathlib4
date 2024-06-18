@@ -507,7 +507,8 @@ theorem IteratedMates_Conjugates (α : F₁ ⋙ L₂ ⟶ L₁ ⋙ F₂) :
     Functor.id_map, comp_id, id_comp]
 
 theorem IteratedMates_Conjugates_symm (α : U₂ ⋙ R₁ ⟶ R₂ ⋙ U₁) :
-    (Mates adj₁ adj₂).symm ((Mates adj₄ adj₃).symm α) = (Conjugates (adj₁.comp adj₄) (adj₃.comp adj₂)).symm α := by
+    (Mates adj₁ adj₂).symm ((Mates adj₄ adj₃).symm α) =
+      (Conjugates (adj₁.comp adj₄) (adj₃.comp adj₂)).symm α := by
   rw [Equiv.eq_symm_apply, ← IteratedMates_Conjugates]
   simp only [Equiv.apply_symm_apply]
 
