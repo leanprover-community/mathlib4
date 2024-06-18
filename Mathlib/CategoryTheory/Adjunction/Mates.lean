@@ -459,7 +459,7 @@ instance Conjugates_symm_iso (α : R₁ ⟶ R₂) [IsIso α] :
 /-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation
 is an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugate_iso`.
 -/
-theorem Conjugate_of_iso (α : L₂ ⟶ L₁) [IsIso (Conjugates adj₁ adj₂ α)] :
+theorem Conjugates_of_iso (α : L₂ ⟶ L₁) [IsIso (Conjugates adj₁ adj₂ α)] :
     IsIso α := by
   suffices IsIso ((Conjugates adj₁ adj₂).symm (Conjugates adj₁ adj₂ α))
     by simpa using this
@@ -496,6 +496,15 @@ In this case the iterated mate equals the conjugate of the original transformati
 isomorphism if and only if the original transformation is. This explains why some Beck-Chevalley
 natural transformations are natural isomorphisms.
 -/
+theorem IteratedMates_Conjugate (α : F₁ ⋙ L₂ ⟶ L₁ ⋙ F₂) :
+    Mates adj₄ adj₃ (Mates adj₁ adj₂ α) = Conjugates (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
+  ext d
+  unfold Conjugates Mates Adjunction.comp
+  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
+    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
+    Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
+    rightUnitor_inv_app, associator_inv_app, leftUnitor_hom_app, map_id, associator_hom_app,
+    Functor.id_map, comp_id, id_comp]
 
 end IteratedMates
 
