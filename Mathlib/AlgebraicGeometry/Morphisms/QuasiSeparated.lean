@@ -45,7 +45,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 @[mk_iff]
 class QuasiSeparated (f : X ⟶ Y) : Prop where
   /-- A morphism is `QuasiSeparated` if diagonal map is quasi-compact. -/
-  diagonalQuasiCompact : QuasiCompact (pullback.diagonal f)
+  diagonalQuasiCompact : QuasiCompact (pullback.diagonal f) := by infer_instance
 #align algebraic_geometry.quasi_separated AlgebraicGeometry.QuasiSeparated
 
 /-- The `AffineTargetMorphismProperty` corresponding to `QuasiSeparated`, asserting that the
@@ -140,8 +140,7 @@ theorem QuasiSeparated.affineProperty_isLocal : QuasiSeparated.affineProperty.Is
 #align algebraic_geometry.quasi_separated.affine_property_is_local AlgebraicGeometry.QuasiSeparated.affineProperty_isLocal
 
 instance (priority := 900) quasiSeparatedOfMono {X Y : Scheme} (f : X ⟶ Y) [Mono f] :
-    QuasiSeparated f :=
-  ⟨inferInstance⟩
+    QuasiSeparated f where
 #align algebraic_geometry.quasi_separated_of_mono AlgebraicGeometry.quasiSeparatedOfMono
 
 instance quasiSeparated_isStableUnderComposition :

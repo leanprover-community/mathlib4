@@ -63,7 +63,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
       (Function.Embedding.prodMap ⟨_, single_injective a⟩ ⟨_, single_injective a⟩) := by
   ext ⟨x, y⟩
   simp only [mem_antidiagonal, mem_map, mem_antidiagonal, Function.Embedding.coe_prodMap,
-    Function.Embedding.coeFn_mk, Prod_map, Prod.mk.injEq, Prod.exists]
+    Function.Embedding.coeFn_mk, Prod.map_apply, Prod.mk.injEq, Prod.exists]
   constructor
   · intro h
     refine ⟨x a, y a, DFunLike.congr_fun h a |>.trans single_eq_same, ?_⟩

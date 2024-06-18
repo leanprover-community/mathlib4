@@ -36,7 +36,7 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 lean_lib Mathlib
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
--- `Mathlib/Util/GetAllModules.lean`.
+-- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
 lean_lib Archive
@@ -83,7 +83,7 @@ https://github.com/leanprover/lean4/issues/4121 is resolved.
 
 You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
 -/
-@[test_runner]
+@[test_driver]
 lean_exe test where
   srcDir := "scripts"
 

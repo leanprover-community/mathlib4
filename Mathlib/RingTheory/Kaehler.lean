@@ -637,7 +637,7 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
   simp only [LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
     map_one, map_add, map_mul]
-  simp_rw [sup_assoc, ← (h.Prod_map h).range_comp]
+  simp_rw [sup_assoc, ← (h.prodMap h).range_comp]
   congr!
   -- Porting note: new
   simp_rw [← IsScalarTower.algebraMap_apply R A B]

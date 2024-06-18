@@ -1023,7 +1023,7 @@ instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
       apply IsOpenMap.to_quotientMap
       · exact (QuotientGroup.isOpenMap_coe N).prod (QuotientGroup.isOpenMap_coe N)
       · exact continuous_quot_mk.prod_map continuous_quot_mk
-      · exact (surjective_quot_mk _).Prod_map (surjective_quot_mk _)
+      · exact (surjective_quot_mk _).prodMap (surjective_quot_mk _)
     exact quot.continuous_iff.2 cont
   continuous_inv := by
     have quot := IsOpenMap.to_quotientMap
@@ -1829,7 +1829,7 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
 
 /-- A compact neighborhood of `1` in a topological group admits a closed compact subset
 that is a neighborhood of `1`. -/
-@[to_additive (attr := deprecated IsCompact.isCompact_isClosed_basis_nhds) -- Since 28 Jan 2024
+@[to_additive (attr := deprecated IsCompact.isCompact_isClosed_basis_nhds (since := "2024-01-28"))
   "A compact neighborhood of `0` in a topological additive group
 admits a closed compact subset that is a neighborhood of `0`."]
 theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
@@ -1850,7 +1850,8 @@ theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsC
     exact (continuous_const_smul _).continuousAt.preimage_mem_nhds (by simpa using h)
 
 /-- A topological group which is weakly locally compact is automatically locally compact. -/
-@[to_additive (attr := deprecated WeaklyLocallyCompactSpace.locallyCompactSpace)] -- 28 Jan 2024
+@[to_additive
+  (attr := deprecated WeaklyLocallyCompactSpace.locallyCompactSpace (since := "2024-01-28"))]
 theorem instLocallyCompactSpaceOfWeaklyOfGroup [WeaklyLocallyCompactSpace G] :
     LocallyCompactSpace G :=
   WeaklyLocallyCompactSpace.locallyCompactSpace
@@ -1885,7 +1886,7 @@ theorem HasCompactSupport.eq_zero_or_locallyCompactSpace_of_group
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
-@[to_additive (attr := deprecated isCompact_isClosed_basis_nhds) -- Since 28 Jan 2024
+@[to_additive (attr := deprecated isCompact_isClosed_basis_nhds (since := "2024-01-28"))
   "In a locally compact additive group, any neighborhood of the identity contains a
   compact closed neighborhood of the identity, even without separation assumptions on the space."]
 theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set G}
@@ -1898,7 +1899,7 @@ theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set 
 
 variable (G)
 
-@[to_additive (attr := deprecated exists_mem_nhds_isCompact_isClosed)] -- Since 28 Jan 2024
+@[to_additive (attr := deprecated exists_mem_nhds_isCompact_isClosed (since := "2024-01-28"))]
 theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
   let ⟨K, hK₁, hKcomp, hKcl⟩ := exists_mem_nhds_isCompact_isClosed (1 : G)

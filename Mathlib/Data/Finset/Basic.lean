@@ -504,7 +504,7 @@ alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
 #align finset.nonempty.bex Finset.Nonempty.exists_mem
-@[deprecated] alias Nonempty.bex := Nonempty.exists_mem -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias Nonempty.bex := Nonempty.exists_mem
 
 theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs
@@ -850,7 +850,6 @@ instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
   uniq j := Subtype.ext <| mem_singleton.mp j.2
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
@@ -1131,7 +1130,7 @@ theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b =
   (mem_insert.1 ha).resolve_right hb
 #align finset.eq_of_not_mem_of_mem_insert Finset.eq_of_not_mem_of_mem_insert
 
-/-- A version of `IsLawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
+/-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
 @[simp, nolint simpNF] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
 
 @[simp]
@@ -1148,7 +1147,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 #align finset.mem_insert_coe Finset.mem_insert_coe
 
-instance : IsLawfulSingleton α (Finset α) :=
+instance : LawfulSingleton α (Finset α) :=
   ⟨fun a => by ext; simp⟩
 
 @[simp]
@@ -1788,11 +1787,10 @@ theorem inter_union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u
   sup_inf_right _ _ _
 #align finset.union_distrib_right Finset.inter_union_distrib_right
 
--- 2024-03-22
-@[deprecated] alias inter_distrib_left := inter_union_distrib_left
-@[deprecated] alias inter_distrib_right := union_inter_distrib_right
-@[deprecated] alias union_distrib_left := union_inter_distrib_left
-@[deprecated] alias union_distrib_right := inter_union_distrib_right
+@[deprecated (since := "2024-03-22")] alias inter_distrib_left := inter_union_distrib_left
+@[deprecated (since := "2024-03-22")] alias inter_distrib_right := union_inter_distrib_right
+@[deprecated (since := "2024-03-22")] alias union_distrib_left := union_inter_distrib_left
+@[deprecated (since := "2024-03-22")] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Finset α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -2137,7 +2135,7 @@ theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂
 lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := by
   ext x; simp [and_assoc]
 
-@[deprecated inter_sdiff_assoc] -- 2024-05-01
+@[deprecated inter_sdiff_assoc (since := "2024-05-01")]
 theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := (inter_sdiff_assoc _ _ _).symm
 #align finset.inter_sdiff Finset.inter_sdiff
 
@@ -3115,7 +3113,7 @@ theorem toFinset_cons (a : α) (s : Multiset α) : toFinset (a ::ₘ s) = insert
 
 @[simp]
 theorem toFinset_singleton (a : α) : toFinset ({a} : Multiset α) = {a} := by
-  rw [← cons_zero, toFinset_cons, toFinset_zero, IsLawfulSingleton.insert_emptyc_eq]
+  rw [← cons_zero, toFinset_cons, toFinset_zero, LawfulSingleton.insert_emptyc_eq]
 #align multiset.to_finset_singleton Multiset.toFinset_singleton
 
 @[simp]
