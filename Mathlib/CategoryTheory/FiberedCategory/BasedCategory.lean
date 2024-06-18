@@ -100,7 +100,7 @@ variable (F : 𝒳 ⥤ᵇ 𝒴) {R S : 𝒮} {a b : 𝒳.obj} (f : R ⟶ S) (φ 
 
 /-- For a based functor `F : 𝒳 ⟶ 𝒴`, then whenever an arrow `φ` in `𝒳` lifts some `f` in `𝒮`,
 then `F(φ)` also lifts `f`. -/
-instance pres_IsHomLift [IsHomLift 𝒳.p f φ] : IsHomLift 𝒴.p f (F.map φ) := by
+instance preserves_isHomLift [IsHomLift 𝒳.p f φ] : IsHomLift 𝒴.p f (F.map φ) := by
   apply of_fac 𝒴.p f (F.map φ) (Eq.trans (F.w_obj a) (domain_eq 𝒳.p f φ))
     (Eq.trans (F.w_obj b) (codomain_eq 𝒳.p f φ))
   rw [← Functor.comp_map, congr_hom F.w]
@@ -108,13 +108,13 @@ instance pres_IsHomLift [IsHomLift 𝒳.p f φ] : IsHomLift 𝒴.p f (F.map φ) 
 
 /-- For a based functor `F : 𝒳 ⟶ 𝒴`, and an arrow `φ` in `𝒳`, then `φ` lifts an arrow `f` in `𝒮`
 if `F(φ)` does. -/
-lemma IsHomLift_ofImage [IsHomLift 𝒴.p f (F.map φ)] : IsHomLift 𝒳.p f φ := by
+lemma isHomLift_map [IsHomLift 𝒴.p f (F.map φ)] : IsHomLift 𝒳.p f φ := by
   apply of_fac 𝒳.p f φ  (F.w_obj a ▸ domain_eq 𝒴.p f (F.map φ))
     (F.w_obj b ▸ codomain_eq 𝒴.p f (F.map φ))
   simp [congr_hom F.w.symm, fac 𝒴.p f (F.map φ)]
 
-lemma IsHomLift_iff : IsHomLift 𝒴.p f (F.map φ) ↔ IsHomLift 𝒳.p f φ :=
-  ⟨fun _ => IsHomLift_ofImage F f φ, fun _ => pres_IsHomLift F f φ⟩
+lemma isHomLift_iff : IsHomLift 𝒴.p f (F.map φ) ↔ IsHomLift 𝒳.p f φ :=
+  ⟨fun _ => isHomLift_map F f φ, fun _ => preserves_isHomLift F f φ⟩
 
 end
 
@@ -125,7 +125,7 @@ end BasedFunctor
 underlying functors, such that for all `a : 𝒳`, `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`. -/
 structure BasedNatTrans {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
     (F G : 𝒳 ⥤ᵇ 𝒴) extends CategoryTheory.NatTrans F.toFunctor G.toFunctor where
-  aboveId' : ∀ (a : 𝒳.obj), IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (toNatTrans.app a) := by aesop_cat
+  isHomLift' : ∀ (a : 𝒳.obj), IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (toNatTrans.app a) := by aesop_cat
 
 namespace BasedNatTrans
 
@@ -142,9 +142,9 @@ lemma ext (β : BasedNatTrans F G) (h : α.toNatTrans = β.toNatTrans) : α = β
   cases α; subst h; rfl
 
 instance app_isHomLift (a : 𝒳.obj) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.toNatTrans.app a) :=
-  α.aboveId' a
+  α.isHomLift' a
 
-lemma aboveId {a : 𝒳.obj} {S : 𝒮} (ha : 𝒳.p.obj a = S) :
+lemma isHomLift {a : 𝒳.obj} {S : 𝒮} (ha : 𝒳.p.obj a = S) :
     IsHomLift 𝒴.p (𝟙 S) (α.toNatTrans.app a) := by
   subst ha; infer_instance
 
@@ -154,7 +154,7 @@ end
 @[simps!]
 def id (F : 𝒳 ⥤ᵇ 𝒴) : BasedNatTrans F F where
   toNatTrans := CategoryTheory.NatTrans.id F.toFunctor
-  aboveId' := fun a => of_fac 𝒴.p _ _ (w_obj F a) (w_obj F a) (by simp)
+  isHomLift' := fun a => of_fac 𝒴.p _ _ (w_obj F a) (w_obj F a) (by simp)
 
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
 transformations. -/
@@ -162,7 +162,7 @@ transformations. -/
 def comp {F G H :  𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
     BasedNatTrans F H where
   toNatTrans := CategoryTheory.NatTrans.vcomp α.toNatTrans β.toNatTrans
-  aboveId' := by
+  isHomLift' := by
     intro a
     rw [CategoryTheory.NatTrans.vcomp_app]
     infer_instance
@@ -205,24 +205,24 @@ variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u
 
 /-- The inverse of a based natural transformation whose underlying natural tranformation is an
 isomorphism. -/
-def BasedNatIso {F G : 𝒳 ⥤ᵇ 𝒴} (α : F.toFunctor ≅ G.toFunctor)
-    (aboveId' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
+def mkNatIso {F G : 𝒳 ⥤ᵇ 𝒴} (α : F.toFunctor ≅ G.toFunctor)
+    (isHomLift' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
   hom := { toNatTrans := α.hom }
   inv := {
     toNatTrans := α.inv
-    aboveId' := by
+    isHomLift' := by
       intro a
-      specialize aboveId' a
+      specialize isHomLift' a
       rw [← NatIso.app_inv]
-      rw [← NatIso.app_hom] at aboveId'
+      rw [← NatIso.app_hom] at isHomLift'
       apply IsHomLift.lift_id_inv }
 
 /-- The inverse of a based natural transformation whose underlying natural tranformation carries an
 `IsIso` instance. -/
-noncomputable def BasedNatIso_of_isIso {F G : 𝒳 ⥤ᵇ 𝒴} (α : F.toFunctor ⟶ G.toFunctor)
-    [IsIso α] (aboveId' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.app a)) : F ≅ G where
+noncomputable def mkNatIsIso {F G : 𝒳 ⥤ᵇ 𝒴} (α : F.toFunctor ⟶ G.toFunctor)
+    [IsIso α] (isHomLift' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.app a)) : F ≅ G where
   hom := { toNatTrans := α }
-  inv := { toNatTrans := inv α, aboveId' := fun a => by simp [lift_id_inv_isIso] }
+  inv := { toNatTrans := inv α, isHomLift' := fun a => by simp [lift_id_inv_isIso] }
 
 /-- The identity natural transformation is a based natural isomorphism. -/
 @[simps]
@@ -236,7 +236,7 @@ and natural transformations. -/
 def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F :  𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵}
     (α : G ⟶ H) : BasedFunctor.comp F G ⟶ BasedFunctor.comp F H where
   toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
-  aboveId' := fun a => α.aboveId (F.w_obj a)
+  isHomLift' := fun a => α.isHomLift (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
 functors and natural transformations. -/
@@ -244,7 +244,7 @@ functors and natural transformations. -/
 def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G :  𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G)
     (H : 𝒴 ⥤ᵇ 𝒵) : BasedFunctor.comp F H ⟶ BasedFunctor.comp G H where
   toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
-  aboveId' := fun a => by apply BasedFunctor.pres_IsHomLift
+  isHomLift' := fun a => by apply BasedFunctor.preserves_isHomLift
 
 end
 
