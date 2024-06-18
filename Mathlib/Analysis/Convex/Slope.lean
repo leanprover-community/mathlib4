@@ -267,6 +267,8 @@ theorem ConvexOn.secant_mono_aux3 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
   linarith only [hf.secant_mono_aux1 hx hz hxy hyz]
 #align convex_on.secant_mono_aux3 ConvexOn.secant_mono_aux3
 
+/-- If `f : 𝕜 → 𝕜` is convex, then for any point `a` the slope of the secant line of `f` through `a`
+and `b ≠ a` is monotone with respect to `b`. -/
 theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s) (hx : x ∈ s)
     (hy : y ∈ s) (hxa : x ≠ a) (hya : y ≠ a) (hxy : x ≤ y) :
     (f x - f a) / (x - a) ≤ (f y - f a) / (y - a) := by
@@ -317,6 +319,8 @@ theorem StrictConvexOn.secant_strict_mono_aux3 (hf : StrictConvexOn 𝕜 s f) {x
   linarith only [hf.secant_strict_mono_aux1 hx hz hxy hyz]
 #align strict_convex_on.secant_strict_mono_aux3 StrictConvexOn.secant_strict_mono_aux3
 
+/-- If `f : 𝕜 → 𝕜` is strictly convex, then for any point `a` the slope of the secant line of `f`
+through `a` and `b` is strictly monotone with respect to `b`. -/
 theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s)
     (hx : x ∈ s) (hy : y ∈ s) (hxa : x ≠ a) (hya : y ≠ a) (hxy : x < y) :
     (f x - f a) / (x - a) < (f y - f a) / (y - a) := by
@@ -329,6 +333,8 @@ theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y 
   · exact hf.secant_strict_mono_aux2 ha hy hxa hxy
 #align strict_convex_on.secant_strict_mono StrictConvexOn.secant_strict_mono
 
+/-- If `f : 𝕜 → 𝕜` is strictly concave, then for any point `a` the slope of the secant line of `f`
+through `a` and `b` is strictly antitone with respect to `b`. -/
 theorem StrictConcaveOn.secant_strict_mono (hf : StrictConcaveOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s)
     (hx : x ∈ s) (hy : y ∈ s) (hxa : x ≠ a) (hya : y ≠ a) (hxy : x < y) :
     (f y - f a) / (y - a) < (f x - f a) / (x - a) := by
