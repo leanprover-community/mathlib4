@@ -422,20 +422,15 @@ theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
 
 open Set
 
-set_option quotPrecheck false in
-scoped notation μ "[" X "]" => ∫ x, ↑(X x) ∂μ
-
-scoped notation μ "⟦" s "|" m "⟧" =>
-  MeasureTheory.condexp m μ (indicator s fun ω => (1 : ℝ))
-
 /-- Total probability law using `condexp` as conditional probability. -/
 theorem total_law_condexp [mF : MeasurableSpace F] {Y : α → F} (hY : Measurable Y)
     [IsProbabilityMeasure μ] {A : Set α} (hA : MeasurableSet[mF.comap Y] A)
     [SigmaFinite (μ.trim (measurable_iff_comap_le.mp hY))] :
-    (μ A).toReal = μ[μ⟦A | mF.comap Y⟧] := by
+    (μ A).toReal = ∫ x, (μ[(indicator A fun _ => (1 : ℝ)) | mF.comap Y]) x ∂μ := by
   have hAm0 : MeasurableSet A := (measurable_iff_comap_le.mp hY) A hA
   have total_exp :
-      ∫ x, (μ[A.indicator fun _ ↦ (1 : ℝ)|mF.comap Y]) x ∂μ = μ[A.indicator (fun x ↦ 1)] := by
+      ∫ x, (μ[A.indicator fun _ ↦ (1 : ℝ)|mF.comap Y]) x ∂μ = ∫ x, A.indicator (fun x ↦ 1) x ∂ μ :=
+      by
     have hI : HasFiniteIntegral (A.indicator (fun (_ : α) ↦ (1 : ℝ))) μ := by
       unfold HasFiniteIntegral
       have rmv_norm : ∀ a, ‖A.indicator (fun (_ : α) ↦ (1 : ℝ)) a‖₊ =
