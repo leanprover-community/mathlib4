@@ -3,8 +3,6 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
@@ -52,8 +50,7 @@ open HahnModule
 theorem ext (A B : HVertexOperator Γ R V W) (h : ∀(v : V), A v = B v) :
     A = B := LinearMap.ext h
 
-@[deprecated]
-alias _root_.VertexAlg.HetVertexOperator.ext := ext
+@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.ext := ext
 
 /-- The coefficient of a heterogeneous vertex operator, viewed as a formal power series with
 coefficients in linear maps. -/
@@ -65,14 +62,13 @@ def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
     simp only [map_smul, RingHom.id_apply]
     exact rfl
 
-@[deprecated]
-alias _root_.VertexAlg.coeff := coeff
+@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff := coeff
 
 theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
     ((of R).symm (A v)).coeff.support.IsPWO :=
   ((of R).symm (A v)).isPWO_support'
 
-@[deprecated]
+@[deprecated (since := "2024-06-18")]
 alias _root_.VertexAlg.coeff_isPWOsupport := coeff_isPWOsupport
 
 @[ext]
@@ -81,8 +77,7 @@ theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ 
   ext v n
   exact congrFun (congrArg DFunLike.coe (congrFun h n)) v
 
-@[deprecated]
-alias _root_.VertexAlg.coeff_inj := coeff_inj
+@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.coeff_inj := coeff_inj
 
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
@@ -97,8 +92,7 @@ def of_coeff (f : Γ → V →ₗ[R] W)
     simp only [map_smul, RingHom.id_apply]
     exact rfl
 
-@[deprecated]
-alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
+@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
 end Coeff
 
