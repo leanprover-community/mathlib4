@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! Shifted morphisms
@@ -24,8 +24,8 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C]
-  {M : Type*} [AddMonoid M] [HasShift C M]
+variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
+  {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M] [HasShift E M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,
 this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`.  -/
@@ -120,6 +120,28 @@ lemma zero_comp (a : M) {b c : M} (β : ShiftedHom Y Z b) (h : b + a = c) :
   rw [comp, Limits.zero_comp]
 
 end Preadditive
+
+/-- The action on `ShiftedHom` of a functor which commutes with the shift. -/
+def map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] :
+    ShiftedHom (F.obj X) (F.obj Y) a :=
+  F.map f ≫ (F.commShiftIso a).hom.app Y
+
+@[simp]
+lemma id_map {a : M} (f : ShiftedHom X Y a) : f.map (𝟭 C) = f := by
+  simp [map, Functor.commShiftIso, Functor.CommShift.iso]
+
+--lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
+--    (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by
+--  sorry
+
+lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
+    (h : b + a = c) (F : C ⥤ D) [F.CommShift M] :
+    (f.comp g h).map F = (f.map F).comp (g.map F) h := by
+  dsimp [comp, map]
+  simp only [Functor.map_comp, assoc]
+  erw [← NatTrans.naturality_assoc]
+  simp only [Functor.comp_map, F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
+    ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id, assoc]
 
 end ShiftedHom
 
