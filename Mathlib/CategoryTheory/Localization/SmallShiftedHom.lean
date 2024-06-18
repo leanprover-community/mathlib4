@@ -24,7 +24,12 @@ variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
 
 variable (M) in
 abbrev HasSmallLocalizedShiftedHom : Prop :=
-  ∀ (m : M), MorphismProperty.HasSmallLocalizedHom.{w} W X (Y⟦m⟧)
+  ∀ (a b : M), MorphismProperty.HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦b⟧)
+
+instance [HasSmallLocalizedShiftedHom.{w} W M X Y] (m : M) :
+    MorphismProperty.HasSmallLocalizedHom.{w} W X (Y⟦m⟧) :=
+  (MorphismProperty.hasSmallLocalizedHom_iff_of_isos W
+    ((shiftFunctorZero C M).app X) (Iso.refl (Y⟦m⟧))).1 inferInstance
 
 def SmallShiftedHom [HasSmallLocalizedShiftedHom.{w} W M X Y] (m : M) : Type w :=
   SmallHom W X (Y⟦m⟧)
