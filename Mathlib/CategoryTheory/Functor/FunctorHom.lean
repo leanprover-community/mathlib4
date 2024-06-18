@@ -150,5 +150,3 @@ noncomputable instance enrichedCategory : EnrichedCategory (C ⥤ Type max v' v 
   Hom := functorHom
   id F := natTransEquiv (𝟙 F)
   comp F G H := { app := fun X ⟨f, g⟩ => f.comp g }
-
-end Functor
