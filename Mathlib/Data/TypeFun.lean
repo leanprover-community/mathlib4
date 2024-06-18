@@ -29,6 +29,7 @@ universe u v
 
 /-- The type of uncurried `n`-ary type functions, which take `n` arguments of type `Type u` and
 return a `Type v` -/
+@[nolint checkUnivs] -- The universes do occur separately in the body of the definition
 abbrev TypeFun (n : Nat) : Type ((max u v) + 1) :=
   TypeVec.{u} n → Type v
 
@@ -38,6 +39,7 @@ open TypeVec
 /-- A curried type function of `n` arguments, i.e., `Type u → Type u → ... → Type v`.
 This abbreviation should only be used to talke about such functions where `n` is arbitrary.
 For concrete arities, always prefer the fully written form. -/
+@[nolint checkUnivs] -- The universes do occur separately in the body of the definition
 protected abbrev CurriedTypeFun : Nat → Type ((max u v) + 1)
   /- `CurriedTypeFun 0` can't be just `Type v`, because it's not the right universe.
   Regardless `0`-ary functions are a degenerate case we're not very interested in. -/
