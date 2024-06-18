@@ -1322,12 +1322,6 @@ theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
 #align finset.sum_ite_eq' Finset.sum_ite_eq'
 
 @[to_additive]
-theorem prod_ite_eq_iff [DecidableEq α] (s : Finset α) (a : α) (b : α → β)
-    {p : α → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x ↔ a = x) :
-    (∏ x in s, if p x then b x else 1) = if a ∈ s then b a else 1 :=
-  (prod_ite_eq s a b).symm ▸ prod_congr rfl (fun a ha => if_congr (h a ha) rfl rfl)
-
-@[to_additive]
 theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset α) (f : α → β) :
     ∏ x ∈ if p then s else t, f x = if p then ∏ x ∈ s, f x else ∏ x ∈ t, f x :=
   apply_ite (fun s => ∏ x ∈ s, f x) _ _ _
@@ -2085,8 +2079,7 @@ lemma sum_card_fiberwise_eq_card_filter {κ : Type*} [DecidableEq κ] (s : Finse
   simpa only [card_eq_sum_ones] using sum_fiberwise_eq_sum_filter _ _ _ _
 
 lemma card_filter (p) [DecidablePred p] (s : Finset α) :
-    (filter p s).card = ∑ a ∈ s, if p a then 1 else 0 := by
-  simp [sum_ite]
+    (filter p s).card = ∑ a ∈ s, if p a then 1 else 0 := by simp [sum_ite]
 #align finset.card_filter Finset.card_filter
 
 section Opposite
@@ -2347,7 +2340,7 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
 
 @[to_additive]
 lemma prod_ite_eq_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j)
-    (a : α) : (∏ i, if p i then a else 1) = if ∃ i, p i then a else 1 := by
+    (a : α) : ∏ i, (if p i then a else 1) = if ∃ i, p i then a else 1 := by
   simp [prod_ite_one univ p (by simpa using h)]
 
 variable [DecidableEq ι]

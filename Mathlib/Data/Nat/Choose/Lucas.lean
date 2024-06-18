@@ -13,6 +13,12 @@ This file contains a proof of [Lucas's theorem](https://www.wikiwand.com/en/Luca
 binomial coefficients, which says that for primes `p`, `n` choose `k` is congruent to product of
 `n_i` choose `k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`,
 respectively.
+
+## Main statements
+
+* `lucas_theorem''`: the binomial coefficient `n choose k` is congruent to the
+product of `n_i choose k_i` modulo `p`, where `n_i` and `k_i` are the base-`p`
+digits of `n` and `k`, respectively.
 -/
 
 open Finset hiding choose
@@ -24,7 +30,7 @@ namespace Choose
 variable {n k p : ℕ} [Fact p.Prime]
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) *
-  choose (n / p) (k / p)` modulo `p`. -/
+choose (n / p) (k / p)` modulo `p`. -/
 theorem lucas_theorem : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
     simpa using add_pow_eq_add_pow_mod_mul_pow_add_pow_div _ (X : (ZMod p)[X]) 1
@@ -51,6 +57,9 @@ theorem lucas_theorem : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (
       exact ⟨mod_eq_of_lt h', self_eq_add_left.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]
 
+/-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
+`choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over i < a, multiplied by 
+`choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
 theorem lucas_theorem' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
     ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
   induction a with
@@ -65,7 +74,7 @@ theorem lucas_theorem' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a)
     rfl
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
-  `choose (n / p ^ i % p) (k / p ^ i % p)` over `i` modulo `p`. -/
+`choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over `i` modulo `p`. -/
 theorem lucas_theorem'' {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
     choose n k ≡ ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
   apply (lucas_theorem' a).trans
