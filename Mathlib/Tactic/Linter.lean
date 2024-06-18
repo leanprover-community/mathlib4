@@ -10,3 +10,4 @@ This file is ignored by `Shake`:
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.UnnecessarySyntax
