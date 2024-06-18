@@ -435,8 +435,7 @@ theorem total_law_condexp [mF : MeasurableSpace F] {Y : α → F} (hY : Measurab
     (μ A).toReal = μ[μ⟦A | mF.comap Y⟧] := by
   have hAm0 : MeasurableSet A := (measurable_iff_comap_le.mp hY) A hA
   have total_exp :
-      ∫ x, (μ[A.indicator fun _ ↦ (1 : ℝ)|mF.comap Y]) x ∂μ = μ[A.indicator (fun x ↦ 1)]
-      := by
+      ∫ x, (μ[A.indicator fun _ ↦ (1 : ℝ)|mF.comap Y]) x ∂μ = μ[A.indicator (fun x ↦ 1)] := by
     have hI : HasFiniteIntegral (A.indicator (fun (_ : α) ↦ (1 : ℝ))) μ := by
       unfold HasFiniteIntegral
       have rmv_norm : ∀ a, ‖A.indicator (fun (_ : α) ↦ (1 : ℝ)) a‖₊ =
