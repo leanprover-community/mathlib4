@@ -685,7 +685,7 @@ theorem filter_single (p : ι → Prop) [DecidablePred p] (i : ι) (x : β i) :
   rw [filter_apply, this]
   obtain rfl | hij := Decidable.eq_or_ne i j
   · rfl
-  · rw [single_eq_of_ne hij, ite_self, ite_self]
+  · rw [single_eq_of_ne hij, ite_self, Pi.zero_apply, ite_self]
 #align dfinsupp.filter_single DFinsupp.filter_single
 
 @[simp]
