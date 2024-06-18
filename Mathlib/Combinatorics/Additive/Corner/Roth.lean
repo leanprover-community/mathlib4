@@ -23,7 +23,7 @@ open Finset SimpleGraph TripartiteFromTriangles
 open Function hiding graph
 open Fintype (card)
 
-variable {G : Type*} [AddCommGroup G] [Fintype G] [DecidableEq G] {A B : Finset (G × G)}
+variable {G : Type*} [AddCommGroup G] [Fintype G] {A B : Finset (G × G)}
   {a b c d x y : G} {n : ℕ} {ε : ℝ}
 
 namespace Corners
@@ -55,8 +55,8 @@ private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     simp only [mk_mem_triangleIndices] at ha hb hc
     exact .inl $ hs ⟨hc.1, hb.1, ha.1, hb.2.symm.trans ha.2⟩
 
-private lemma farFromTriangleFree_graph (hε : ε * card G ^ 2 ≤ A.card) :
-    (graph $ triangleIndices A).FarFromTriangleFree (ε / 9) := by
+private lemma farFromTriangleFree_graph [DecidableEq G] (hε : ε * card G ^ 2 ≤ A.card) :
+    (graph <| triangleIndices A).FarFromTriangleFree (ε / 9) := by
   refine farFromTriangleFree _ ?_
   simp_rw [card_triangleIndices, mul_comm_div, Nat.cast_pow, Nat.cast_add]
   ring_nf
@@ -107,7 +107,7 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
   have : A = Prod.map Fin.val Fin.val ''
       (Prod.map Nat.cast Nat.cast '' A : Set (Fin (2 * n).succ × Fin (2 * n).succ)) := by
     rw [Set.image_image, Set.image_congr, Set.image_id]
-    simp only [mem_coe, Nat.succ_eq_add_one, Prod_map, Fin.val_natCast, id_eq, Prod.forall,
+    simp only [mem_coe, Nat.succ_eq_add_one, Prod.map_apply, Fin.val_natCast, id_eq, Prod.forall,
       Prod.mk.injEq, Nat.mod_succ_eq_iff_lt]
     rintro a b hab
     have := hAn hab
