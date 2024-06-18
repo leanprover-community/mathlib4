@@ -187,6 +187,12 @@ theorem quadraticChar_exists_neg_one (hF : ringChar F ≠ 2) : ∃ a, quadraticC
   (FiniteField.exists_nonsquare hF).imp fun _ h₁ ↦ quadraticChar_neg_one_iff_not_isSquare.mpr h₁
 #align quadratic_char_exists_neg_one quadraticChar_exists_neg_one
 
+/-- If `F` has odd characteristic, then `quadraticChar F` takes the value `-1` on some unit. -/
+lemma quadraticChar_exists_neg_one' (hF : ringChar F ≠ 2) : ∃ a : Fˣ, quadraticChar F a = -1 := by
+  refine (fun ⟨a, ha⟩ ↦ ⟨IsUnit.unit ?_, ha⟩) (quadraticChar_exists_neg_one hF)
+  contrapose ha
+  exact ne_of_eq_of_ne ((quadraticChar F).map_nonunit ha) (mt zero_eq_neg.mp one_ne_zero)
+
 /-- If `ringChar F = 2`, then `quadraticChar F` takes the value `1` on nonzero elements. -/
 theorem quadraticChar_eq_one_of_char_two (hF : ringChar F = 2) {a : F} (ha : a ≠ 0) :
     quadraticChar F a = 1 :=
@@ -227,11 +233,16 @@ variable {F}
 
 /-- The quadratic character is nontrivial as a multiplicative character
 when the domain has odd characteristic. -/
-theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial := by
-  rcases quadraticChar_exists_neg_one hF with ⟨a, ha⟩
-  have hu : IsUnit a := by by_contra hf; rw [MulChar.map_nonunit _ hf] at ha; omega
-  exact ⟨hu.unit, (show quadraticChar F a ≠ 1 by rw [ha]; omega)⟩
-#align quadratic_char_is_nontrivial quadraticChar_isNontrivial
+theorem quadraticChar_ne_one (hF : ringChar F ≠ 2) : quadraticChar F ≠ 1 := by
+  rcases quadraticChar_exists_neg_one' hF with ⟨a, ha⟩
+  intro hχ
+  simp only [hχ, one_apply a.isUnit, eq_neg_self_iff, one_ne_zero] at ha
+#align quadratic_char_is_nontrivial quadraticChar_ne_one
+
+set_option linter.deprecated false in
+@[deprecated quadraticChar_ne_one (since := "2024-06-16")]
+theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial :=
+  (isNontrivial_iff _).mpr <| quadraticChar_ne_one hF
 
 open Finset in
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/
@@ -267,7 +278,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
 
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=
-  IsNontrivial.sum_eq_zero (quadraticChar_isNontrivial hF)
+  sum_eq_zero_of_ne_one (quadraticChar_ne_one hF)
 #align quadratic_char_sum_zero quadraticChar_sum_zero
 
 end quadraticChar
