@@ -713,7 +713,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
   · rintro ⟨y, hy⟩
     obtain ⟨y, rfl⟩ := y.mk_surjective
     apply isUnit_of_mul_eq_one _
-      (.mk ⟨y.1, y.3, y.2, (mk_mem_toSpec _ _ _).not.mp hy⟩)
+      (.mk ⟨y.1, y.3, y.2, (mk_mem_toSpec_base_apply _ _ _).not.mp hy⟩)
     apply HomogeneousLocalization.val_injective
     simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, Subtype.coe_eta, val_mul,
       val_mk, id_eq, mk_eq_mk', val_one]
@@ -725,7 +725,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
     · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
       rw [← succ_nsmul', tsub_add_cancel_of_le hm, mul_comm, smul_eq_mul]
     · rw [mul_comm]; exact SetLike.pow_mem_graded _ hb
-    · refine (mk_mem_toSpec _ _ _).not.mpr $ x.1.1.toIdeal.primeCompl.pow_mem hb' m
+    · refine (mk_mem_toSpec_base_apply _ _ _).not.mpr $ x.1.1.toIdeal.primeCompl.pow_mem hb' m
     · apply HomogeneousLocalization.val_injective
       simp only [val_mul, val_mk, RingHom.algebraMap_toAlgebra, map_mk,
         Localization.mk_eq_mk', ← IsLocalization.mk'_mul, IsLocalization.mk'_eq_iff_eq,
@@ -752,7 +752,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
 
     refine ⟨⟨.mk ⟨m * i, ⟨c ^ m, SetLike.pow_mem_graded _ hc⟩, ⟨f ^ i,
       mul_comm m i ▸  SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
-      (mk_mem_toSpec _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hc' _⟩, ?_⟩
+      (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hc' _⟩, ?_⟩
     apply HomogeneousLocalization.val_injective
     simp only [val_mul, val_mk, mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk,
       IsLocalization.mk'_eq_iff_eq, mul_assoc]
@@ -806,7 +806,7 @@ lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
   have : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) := by
     apply SheafedSpace.IsOpenImmersion.of_stalk_iso
     convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).openEmbedding using 1
-    ext; exact toSpec_eq_toSpec 𝒜 _
+    ext; exact toSpec_base_apply_eq 𝒜 _
   suffices IsIso (LocallyRingedSpace.forgetToSheafedSpace.map (toSpec 𝒜 f)) by
     apply isIso_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace
   show IsIso (toSpec 𝒜 f).1
@@ -816,7 +816,7 @@ lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     exact PresheafedSpace.IsOpenImmersion.to_iso _
   rw [TopCat.epi_iff_surjective]
   convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).surjective using 1
-  ext; exact toSpec_eq_toSpec 𝒜 _
+  ext; exact toSpec_base_apply_eq 𝒜 _
 
 end ProjectiveSpectrum.Proj
 
