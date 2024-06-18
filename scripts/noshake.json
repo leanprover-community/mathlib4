@@ -305,7 +305,8 @@
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Geometry.Manifold.PoincareConjecture":
-  ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected"],
+  ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
+   "Mathlib.Util.Superscript"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
