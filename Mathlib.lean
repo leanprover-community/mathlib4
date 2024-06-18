@@ -16,6 +16,7 @@ import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
+import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Order
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
@@ -466,6 +467,9 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.Antidiag.Finsupp
+import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.List
@@ -670,10 +674,12 @@ import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.MulOpposite
 import Mathlib.Algebra.Ring.Subring.Order
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Order
 import Mathlib.Algebra.Ring.Subsemiring.Pointwise
 import Mathlib.Algebra.Ring.ULift
@@ -706,6 +712,7 @@ import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
+import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
@@ -1024,6 +1031,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Group.CocompactMap
 import Mathlib.Analysis.Normed.Group.Completeness
 import Mathlib.Analysis.Normed.Group.Completion
+import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.ControlledClosure
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
@@ -1309,6 +1317,7 @@ import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Extensive
+import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Filtered.Connected
@@ -1613,6 +1622,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
@@ -1836,7 +1846,6 @@ import Mathlib.Control.ULift
 import Mathlib.Control.ULiftable
 import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
-import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Array.ExtractLemmas
 import Mathlib.Data.Array.Lemmas
@@ -1905,7 +1914,6 @@ import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finmap
-import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
@@ -1927,7 +1935,6 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.PImage
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Pointwise
@@ -2442,6 +2449,7 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Algebra.Monoid
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 import Mathlib.Geometry.Manifold.Algebra.Structures
+import Mathlib.Geometry.Manifold.AnalyticManifold
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Geometry.Manifold.Complex
@@ -3506,7 +3514,9 @@ import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.RingTheory.Coalgebra.Hom
 import Mathlib.RingTheory.Complex
-import Mathlib.RingTheory.Congruence
+import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.Congruence.BigOperators
+import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
@@ -3866,12 +3876,12 @@ import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
@@ -4024,6 +4034,7 @@ import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
 import Mathlib.Topology.Algebra.Module.StrongTopology
+import Mathlib.Topology.Algebra.Module.UniformConvergence
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
@@ -4353,6 +4364,7 @@ import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Delaborators
 import Mathlib.Util.DischargerAsTactic
 import Mathlib.Util.Export
+import Mathlib.Util.FormatTable
 import Mathlib.Util.GetAllModules
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
