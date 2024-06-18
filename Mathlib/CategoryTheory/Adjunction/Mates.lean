@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Whiskering
 
+import Mathlib.Tactic.ApplyFun
 
 #align_import category_theory.adjunction.mates from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
 
@@ -44,17 +45,14 @@ mathlib: https://ncatlab.org/nlab/show/six+operations.
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
-
 namespace CategoryTheory
 
 open Category Functor Adjunction NatTrans
 
-variable {C : Type u₁} {D : Type u₂}
-variable [Category.{v₁} C] [Category.{v₂} D]
+section Mates
 
-section Square
-
-variable {E : Type u₃} {F : Type u₄} [Category.{v₃} E] [Category.{v₄} F]
+variable {C : Type u₁} {D : Type u₂}{E : Type u₃} {F : Type u₄}
+variable [Category.{v₁} C] [Category.{v₂} D][Category.{v₃} E] [Category.{v₄} F]
 variable {G : C ⥤ E} {H : D ⥤ F} {L₁ : C ⥤ D} {R₁ : D ⥤ C} {L₂ : E ⥤ F} {R₂ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 
@@ -113,7 +111,7 @@ def transferNatTrans : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R�
       h.naturality, -Functor.map_comp, ← Functor.map_comp_assoc G, R₂.map_comp]
 #align category_theory.transfer_nat_trans CategoryTheory.transferNatTrans
 
--- ER: A new construction with a new name.
+/-- Corresponding natural transformations under the equivalence below are called mates.-/
 @[simps]
 def Mates :
     (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) where
@@ -144,7 +142,6 @@ def Mates :
           ← G.map_comp, right_triangle_components, map_id, id_comp]
 #align category_theory.mates CategoryTheory.Mates
 
-
 -- ER: Note these definitions agree.
 theorem RightMateEqualsTransferNatTrans
     (α : G ⋙ L₂ ⟶ L₁ ⋙ H) :
@@ -163,13 +160,12 @@ theorem transferNatTrans_counit (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (Y : D) :
       f.app _ ≫ H.map (adj₁.counit.app Y) := by
   erw [Functor.map_comp]
   simp
-#align category_theory.transfer_nat_trans_counit CategoryTheory.transferNatTrans_counit
 
+/-- A component of a transposed version of the mates correspondence. -/
 theorem Mates_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
     L₂.map ((Mates adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
       α.app _ ≫ H.map (adj₁.counit.app d) := by
   erw [Functor.map_comp]; simp
-#align category_theory.mates_counit CategoryTheory.Mates_counit
 
 -- ER: Propose to cut and replace with the version below:
 theorem unit_transferNatTrans (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (X : C) :
@@ -182,6 +178,7 @@ theorem unit_transferNatTrans (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (X : C) :
 #align category_theory.unit_transfer_nat_trans CategoryTheory.unit_transferNatTrans
 
 -- ER: I don't get why this is harder than the counit case.
+/- A component of a transposed version of the mates correspondence. -/
 theorem unit_Mates (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (c : C) :
     G.map (adj₁.unit.app c) ≫ (Mates adj₁ adj₂ α).app _ =
       adj₂.unit.app _ ≫ R₂.map (α.app _) := by
@@ -200,12 +197,10 @@ theorem unit_Mates (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (c : C) :
       rw [left_triangle_components]
     }
   simp only [comp_obj, map_id, comp_id]
-#align category_theory.unit_mates CategoryTheory.unit_Mates
 
 -- See library note [dsimp, simp]
-end Square
+end Mates
 
--- ER: A new section proving that the mates bijection commutes with vertical composition of squares.
 section MatesVComp
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
@@ -217,16 +212,19 @@ variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : C ⥤ D}{R₂ : D ⥤ C}
 variable {L₃ : E ⥤ F}{R₃ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
+/-- Squares between left adjoints can be composed "vertically" by pasting. -/
 def LeftAdjointSquare.vcomp :
     (G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁) → (G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) → ((G₁ ⋙ G₂) ⋙ L₃ ⟶ L₁ ⋙ (H₁ ⋙ H₂)) :=
   fun α β ↦ (whiskerLeft G₁ β) ≫ (whiskerRight α H₂)
-#align category_theory.leftadjointsquare.vcomp CategoryTheory.LeftAdjointSquare.vcomp
+#align category_theory.leftadjointsquare_vcomp CategoryTheory.LeftAdjointSquare.vcomp
 
+/-- Squares between right adjoints can be composed "vertically" by pasting. -/
 def RightAdjointSquare.vcomp :
     (R₁ ⋙ G₁ ⟶ H₁ ⋙ R₂) → (R₂ ⋙ G₂ ⟶ H₂ ⋙ R₃) → (R₁ ⋙ (G₁ ⋙ G₂) ⟶ (H₁ ⋙ H₂) ⋙ R₃) :=
   fun α β ↦ (whiskerRight α G₂) ≫ (whiskerLeft H₁ β)
-#align category_theory.rightadjointsquare.vcomp CategoryTheory.RightAdjointSquare.vcomp
+#align category_theory.rightadjointsquare_vcomp CategoryTheory.RightAdjointSquare.vcomp
 
+/-- The mates equivalence commutes with vertical composition. -/
 theorem Mates_vcomp
     (α : G₁ ⋙ L₂ ⟶ L₁ ⋙ H₁) (β : G₂ ⋙ L₃ ⟶ L₂ ⋙ H₂) :
     (Mates (G := G₁ ⋙ G₂) (H := H₁ ⋙ H₂) adj₁ adj₃) (LeftAdjointSquare.vcomp α β) =
@@ -266,8 +264,6 @@ theorem Mates_vcomp
 
 end MatesVComp
 
--- ER: A new section proving that the mates bijection commutes with horizontal composition of
--- squares.
 section MatesHComp
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄} {E : Type u₅} {F : Type u₆}
@@ -279,17 +275,17 @@ variable {L₃ : B ⥤ C}{R₃ : C ⥤ B} {L₄ : E ⥤ F}{R₄ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 variable (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
 
+/-- Squares between left adjoints can be composed "horizontally" by pasting. -/
 def LeftAdjointSquare.hcomp :
     (G ⋙ L₂ ⟶ L₁ ⋙ H) → (H ⋙ L₄ ⟶ L₃ ⋙ K) → (G ⋙ (L₂ ⋙ L₄) ⟶ (L₁ ⋙ L₃) ⋙ K) := fun α β ↦
   (whiskerRight α L₄) ≫ (whiskerLeft L₁ β)
-#align category_theory.leftadjointsquare.hcomp CategoryTheory.LeftAdjointSquare.hcomp
 
+/-- Squares between right adjoints can be composed "horizontally" by pasting. -/
 def RightAdjointSquare.hcomp :
     (R₁ ⋙ G ⟶ H ⋙ R₂) → (R₃ ⋙ H ⟶ K ⋙ R₄) → ((R₃ ⋙ R₁) ⋙ G ⟶ K ⋙ (R₄ ⋙ R₂)) := fun α β ↦
   (whiskerLeft R₃ α) ≫ (whiskerRight β R₂)
-#align category_theory.rightadjointsquare.hcomp CategoryTheory.RightAdjointSquare.hcomp
 
-
+/-- The mates equivalence commutes with horizontal composition of squares. -/
 theorem Mates_hcomp
     (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (β : H ⋙ L₄ ⟶ L₃ ⋙ K) :
     (Mates (adj₁.comp adj₃) (adj₂.comp adj₄)) (LeftAdjointSquare.hcomp α β) =
@@ -312,9 +308,6 @@ theorem Mates_hcomp
 
 end MatesHComp
 
--- ER: Combining the previous sections, we can compose squares of squares and again this commutes
--- with the mates bijection. These results form the basis for an isomorphism of double categories
--- to be proven later.
 section MatesSquareComp
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
@@ -329,13 +322,13 @@ variable {L₄ : E ⥤ F} {R₄ : F ⥤ E} {L₅ : X ⥤ Y} {R₅ : Y ⥤ X} {L�
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 variable (adj₄ : L₄ ⊣ R₄) (adj₅ : L₅ ⊣ R₅) (adj₆ : L₆ ⊣ R₆)
 
+/-- Squares of squares between left adjoints can be composed by iterating vertical and horizontal composition.-/
 def LeftAdjointSquare.comp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
     ((G₁ ⋙ G₂) ⋙ (L₅ ⋙ L₆)) ⟶ ((L₁ ⋙ L₂) ⋙ (K₁ ⋙ K₂)) :=
   LeftAdjointSquare.vcomp (LeftAdjointSquare.hcomp α β) (LeftAdjointSquare.hcomp γ δ)
-#align category_theory.leftadjointsquare.comp CategoryTheory.LeftAdjointSquare.comp
-
+#align category_theory.leftadjointsquare_comp CategoryTheory.LeftAdjointSquare.comp
 
 theorem LeftAdjointSquare.comp_vhcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
@@ -343,6 +336,7 @@ theorem LeftAdjointSquare.comp_vhcomp
     LeftAdjointSquare.comp α β γ δ =
       LeftAdjointSquare.vcomp (LeftAdjointSquare.hcomp α β) (LeftAdjointSquare.hcomp γ δ) := rfl
 
+/-- Horizontal and vertical composition of squares commutes.-/
 theorem LeftAdjointSquare.comp_hvcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
@@ -358,12 +352,13 @@ theorem LeftAdjointSquare.comp_hvcomp
     }
   simp only [comp_obj, Functor.comp_map, assoc]
 
+/-- Squares of squares between right adjoints can be composed by iterating vertical and horizontal composition.-/
 def RightAdjointSquare.comp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
     ((R₂ ⋙ R₁) ⋙ (G₁ ⋙ G₂) ⟶ (K₁ ⋙ K₂) ⋙ (R₆ ⋙ R₅)) :=
   RightAdjointSquare.vcomp (RightAdjointSquare.hcomp α β) (RightAdjointSquare.hcomp γ δ)
-#align category_theory.rightadjointsquare.comp CategoryTheory.RightAdjointSquare.comp
+#align category_theory.rightadjointsquare_comp CategoryTheory.RightAdjointSquare.comp
 
 theorem RightAdjointSquare.comp_vhcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
@@ -371,6 +366,7 @@ theorem RightAdjointSquare.comp_vhcomp
     RightAdjointSquare.comp α β γ δ =
     RightAdjointSquare.vcomp (RightAdjointSquare.hcomp α β) (RightAdjointSquare.hcomp γ δ) := rfl
 
+/-- Horizontal and vertical composition of squares commutes.-/
 theorem RightAdjointSquare.comp_hvcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
@@ -386,6 +382,8 @@ theorem RightAdjointSquare.comp_hvcomp
     }
   simp only [comp_obj, Functor.comp_map, assoc]
 
+/-- The mates equivalence commutes with composition of squares of squares. These results form the basis for an isomorphism of double categories to be proven later.
+-/
 theorem Mates_square
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
@@ -403,23 +401,155 @@ theorem Mates_square
 
 end MatesSquareComp
 
-section Self
+section Conjugates
 
+variable {C : Type u₁} {D : Type u₂}
+variable [Category.{v₁} C] [Category.{v₂} D]
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
-/-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both
-between categories `C`, `D`, there is a bijection between natural transformations `L₂ ⟶ L₁` and
-natural transformations `R₁ ⟶ R₂`. This is defined as a special case of `transferNatTrans`, where
-the two "vertical" functors are identity.
-TODO: Generalise to when the two vertical functors are
-equivalences rather than being exactly `𝟭`.
+/-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both between categories `C`, `D`, there is a
+bijection between natural transformations `L₂ ⟶ L₁` and natural transformations `R₁ ⟶ R₂`. This is defined as a special case of `Mates`, where the two "vertical" functors are identity, modulo composition with the unitors.
+TODO: Generalise to when the two vertical functors are equivalences rather than being exactly `𝟭`.
 
-Furthermore, this bijection preserves (and reflects) isomorphisms,
-i.e. a transformation is an iso iff its image under the bijection
-is an iso, see eg `CategoryTheory.transferNatTransSelf_iso`.
+Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transformation is an iso
+iff its image under the bijection is an iso, see eg `CategoryTheory.transferNatTransSelf_iso`.
 This is in contrast to the general case `transferNatTrans` which
  does not in general have this property.-/
+
+/-- Mates between parallel adjunctions are called conjugates. -/
+def Conjugates : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
+  calc
+    (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
+    _ ≃ _ := Mates adj₁ adj₂
+    _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
+
+/-- A component of a transposed form of the conjugation definition. -/
+theorem Conjugates_counit (α : L₂ ⟶ L₁) (d : D) :
+    L₂.map ((Conjugates adj₁ adj₂ α).app _) ≫ adj₂.counit.app d =
+      α.app _ ≫ adj₁.counit.app d := by
+  dsimp [Conjugates]
+  rw [id_comp, comp_id]
+  have := Mates_counit adj₁ adj₂ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) d
+  dsimp at this
+  rw [this]
+  simp only [comp_id, id_comp]
+
+/-- A component of a transposed form of the conjugation definition. -/
+theorem unit_Conjugates (α : L₂ ⟶ L₁) (c : C) :
+    adj₁.unit.app _ ≫ (Conjugates adj₁ adj₂ α).app _ =
+      adj₂.unit.app c ≫ R₂.map (α.app _) := by
+  dsimp [Conjugates]
+  rw [id_comp, comp_id]
+  have := unit_Mates adj₁ adj₂ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) c
+  dsimp at this
+  rw [this]
+  simp
+
+@[simp]
+theorem Conjugates_id : Conjugates adj₁ adj₁ (𝟙 _) = 𝟙 _ := by
+  ext
+  dsimp [Conjugates, Mates]
+  simp only [comp_id, map_id, id_comp, right_triangle_components]
+
+@[simp]
+theorem Conjugates_symm_id : (Conjugates adj₁ adj₁).symm (𝟙 _) = 𝟙 _ := by
+  rw [Equiv.symm_apply_eq]
+  simp only [Conjugates_id]
+#align category_theory.conjugates_symm_id CategoryTheory.Conjugates_symm_id
+
+theorem Conjugates_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (α : 𝟭 C ⟶ L) (c : C) :
+    (Conjugates adj Adjunction.id α).app c = α.app (R.obj c) ≫ adj.counit.app c := by
+  dsimp [Conjugates, Mates, Adjunction.id]
+  simp only [comp_id, id_comp]
+
+theorem Conjugates_adjunction_id_symm {L R : C ⥤ C} (adj : L ⊣ R) (α : R ⟶ 𝟭 C) (c : C) :
+    ((Conjugates adj Adjunction.id).symm α).app c = adj.unit.app c ≫ α.app (L.obj c) := by
+  dsimp [Conjugates, Mates, Adjunction.id]
+  simp only [comp_id, id_comp]
+end Conjugates
+
+
+section ConjugateComposition
+variable {C : Type u₁} {D : Type u₂}
+variable [Category.{v₁} C] [Category.{v₂} D]
+variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
+
+theorem Conjugates_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
+    Conjugates adj₁ adj₂ α ≫ Conjugates adj₂ adj₃ β =
+      Conjugates adj₁ adj₃ (β ≫ α) := by
+  ext d
+  dsimp [Conjugates, Mates]
+  have vcomp := Mates_vcomp adj₁ adj₂ adj₃
+    (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv)
+    (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
+  have vcompd := congr_app vcomp d
+  dsimp [Mates, LeftAdjointSquare.vcomp, RightAdjointSquare.vcomp] at vcompd
+  simp at vcompd
+  simp only [comp_id, id_comp, assoc, map_comp]
+  rw [vcompd]
+
+-- ER: Warning: swapped order of the arguments.
+theorem Conjugates_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
+    (Conjugates adj₂ adj₃).symm β ≫ (Conjugates adj₁ adj₂).symm α =
+      (Conjugates adj₁ adj₃).symm (α ≫ β) := by
+  rw [Equiv.eq_symm_apply, ← Conjugates_comp _ adj₂]
+  simp only [Equiv.apply_symm_apply]
+
+theorem Conjugates_comm {α : L₂ ⟶ L₁} {β : L₁ ⟶ L₂} (βα : β ≫ α = 𝟙 _) :
+    Conjugates adj₁ adj₂ α ≫ Conjugates adj₂ adj₁ β = 𝟙 _ := by
+  rw [Conjugates_comp, βα, Conjugates_id]
+
+theorem Conjugates_symm_comm {α : R₁ ⟶ R₂}{β : R₂ ⟶ R₁} (αβ : α ≫ β = 𝟙 _) :
+    (Conjugates adj₂ adj₁).symm β ≫ (Conjugates adj₁ adj₂).symm α = 𝟙 _ := by
+  rw [Conjugates_symm_comp, αβ, Conjugates_symm_id]
+
+/-- If `α` is an isomorphism between left adjoints, then its conjugate transformation is an isomorphism.
+The converse is given in `Conjugates_of_iso`.
+-/
+instance Conjugates_iso (α : L₂ ⟶ L₁) [IsIso α] :
+    IsIso (Conjugates adj₁ adj₂ α) :=
+  ⟨⟨Conjugates adj₂ adj₁ (inv α),
+      ⟨Conjugates_comm _ _ (by simp), Conjugates_comm _ _ (by simp)⟩⟩⟩
+
+/-- If `α` is an isomorphism between right adjoints, then its conjugate transformation is an isomorphism.
+The converse is given in `Conjugates_symm_of_iso`.
+-/
+instance Conjugates_symm_iso (α : R₁ ⟶ R₂) [IsIso α] :
+    IsIso ((Conjugates adj₁ adj₂).symm α) :=
+  ⟨⟨(Conjugates adj₂ adj₁).symm (inv α),
+      ⟨Conjugates_symm_comm _ _ (by simp), Conjugates_symm_comm _ _ (by simp)⟩⟩⟩
+
+/-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation is an isomorphism,
+then `α` is an isomorphism.
+The converse is given in `Conjugate_iso`.
+-/
+theorem Conjugate_of_iso (α : L₂ ⟶ L₁) [IsIso (Conjugates adj₁ adj₂ α)] :
+    IsIso α := by
+  suffices IsIso ((Conjugates adj₁ adj₂).symm (Conjugates adj₁ adj₂ α))
+    by simpa using this
+  infer_instance
+
+/--
+If `α` is a natural transformation between right adjoints whose conjugate natural transformation is an isomorphism,
+then `α` is an isomorphism.
+The converse is given in `Conjugates_symm_iso`.
+-/
+theorem Conjugates_symm_of_iso (α : R₁ ⟶ R₂)
+    [IsIso ((Conjugates adj₁ adj₂).symm α)] : IsIso α := by
+  suffices IsIso ((Conjugates adj₁ adj₂) ((Conjugates adj₁ adj₂).symm α))
+    by simpa using this
+  infer_instance
+end ConjugateComposition
+
+section Self
+variable {C : Type u₁} {D : Type u₂}
+variable [Category.{v₁} C] [Category.{v₂} D]
+variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
+
+/-- The old definition to be cut.-/
 def transferNatTransSelf : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
