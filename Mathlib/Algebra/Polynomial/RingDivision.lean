@@ -350,7 +350,7 @@ theorem Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a :=
    fun ha => (ha.map C).dvd⟩
 
 theorem Monic.natDegree_pos : 0 < natDegree p ↔ p ≠ 1 :=
-  Nat.pos_iff_ne_zero.trans (Monic.natDegree_eq_zero hp).not
+  Nat.pos_iff_ne_zero.trans hp.natDegree_eq_zero.not
 
 theorem Monic.degree_pos : 0 < degree p ↔ p ≠ 1 :=
   natDegree_pos_iff_degree_pos.symm.trans hp.natDegree_pos
