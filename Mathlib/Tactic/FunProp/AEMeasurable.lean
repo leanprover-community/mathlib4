@@ -25,10 +25,6 @@ end missing
 
 open Mathlib
 
--- mark definition
-attribute [fun_prop]
-  AEMeasurable
-
 -- lambda rules
 attribute [fun_prop]
   aemeasurable_id'
@@ -37,12 +33,3 @@ attribute [fun_prop]
   -- Measurable.comp_aemeasurable'
   -- AEMeasurable_apply -- is this somewhere?
   -- AEMeasurable_pi -- is this somewhere?
-
--- transitions
-attribute [fun_prop]
-  AEMeasurable.mono'
-  Measurable.aemeasurable
-
-attribute [fun_prop]
-  AEMeasurable.mono'
-  Measurable.aemeasurable

@@ -65,6 +65,7 @@ theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
   ht.mono_measure (restrict_mono h le_rfl)
 #align ae_measurable.mono_set AEMeasurable.mono_set
 
+@[fun_prop]
 protected theorem mono' (h : AEMeasurable f μ) (h' : ν ≪ μ) : AEMeasurable f ν :=
   ⟨h.mk f, h.measurable_mk, h' h.ae_eq_mk⟩
 #align ae_measurable.mono' AEMeasurable.mono'
