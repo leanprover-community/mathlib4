@@ -173,12 +173,12 @@ theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M where
 variable {M}
 
 @[to_additive (attr := simp) neg_mem_addCenter]
-theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
+theorem inv_mem_center [DivisionMonoid M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
   rw [← inv_inj, mul_inv_rev, inv_inv, ha.comm, mul_inv_rev, inv_inv]
-#align set.inv_mem_center Set.inv_mem_center
-#align set.neg_mem_add_center Set.neg_mem_addCenter
+#align set.inv_mem_center Set.inv_mem_centerₓ
+#align set.neg_mem_add_center Set.neg_mem_addCenterₓ
 
 @[to_additive subset_addCenter_add_units]
 theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
@@ -215,29 +215,25 @@ theorem invOf_mem_center [Monoid M] {a : M} [Invertible a] (ha : a ∈ Set.cente
   rw [Semigroup.mem_center_iff] at *
   exact (Commute.invOf_right <| ha ·)
 
-@[simp]
-theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
-  obtain rfl | ha0 := eq_or_ne a 0
-  · rw [inv_zero]
-    exact zero_mem_center M
-  · lift a to Mˣ using IsUnit.mk0 _ ha0
-    simpa only [Units.val_inv_eq_inv_val] using units_inv_mem_center ha
-#align set.inv_mem_center₀ Set.inv_mem_center₀
+@[deprecated inv_mem_center (since := "2024-06-17")]
+theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M :=
+  inv_mem_center ha
+#align set.inv_mem_center₀ Set.inv_mem_centerₓ
 
 @[to_additive (attr := simp) sub_mem_addCenter]
-theorem div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
+theorem div_mem_center [DivisionMonoid M]
+    {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
   exact mul_mem_center ha (inv_mem_center hb)
-#align set.div_mem_center Set.div_mem_center
-#align set.sub_mem_add_center Set.sub_mem_addCenter
+#align set.div_mem_center Set.div_mem_centerₓ
+#align set.sub_mem_add_center Set.sub_mem_addCenterₓ
 
-@[simp]
+@[deprecated div_mem_center (since := "2024-06-17")]
 theorem div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
-    (hb : b ∈ Set.center M) : a / b ∈ Set.center M := by
-  rw [div_eq_mul_inv]
-  exact mul_mem_center ha (inv_mem_center₀ hb)
-#align set.div_mem_center₀ Set.div_mem_center₀
+    (hb : b ∈ Set.center M) : a / b ∈ Set.center M :=
+  div_mem_center ha hb
+#align set.div_mem_center₀ Set.div_mem_centerₓ
 
 end Set
 
