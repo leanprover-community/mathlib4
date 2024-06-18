@@ -96,7 +96,7 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
   smul_def' : ∀ r x, r • x = toRingHom r * x
 #align algebra Algebra
 
-attribute [instance 0] Algebra.toSMul
+attribute [instance 600] Algebra.toSMul
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
