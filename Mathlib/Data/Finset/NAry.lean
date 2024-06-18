@@ -23,7 +23,6 @@ We do not define `Finset.image₃` as its only purpose would be to prove propert
 and `Set.image2` already fulfills this task.
 -/
 
-
 open Function Set
 
 variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*}

@@ -49,8 +49,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       true_and_iff, Complex.arg_lt_pi_iff]
     constructor
     · cases' hxy with hxy hxy
-      · dsimp at hxy; linarith [sq_pos_of_ne_zero _ hxy.ne', sq_nonneg y]
-      · linarith [sq_nonneg x, sq_pos_of_ne_zero _ hxy]
+      · dsimp at hxy; linarith [sq_pos_of_ne_zero hxy.ne', sq_nonneg y]
+      · linarith [sq_nonneg x, sq_pos_of_ne_zero hxy]
     · cases' hxy with hxy hxy
       · exact Or.inl (le_of_lt hxy)
       · exact Or.inr hxy
@@ -86,8 +86,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
-    refine' ContinuousOn.comp (f := Complex.equivRealProd.symm)
-      (g := Complex.arg) (fun z hz => _) _ A
+    refine ContinuousOn.comp (f := Complex.equivRealProd.symm)
+      (g := Complex.arg) (fun z hz => ?_) ?_ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 #align polar_coord polarCoord

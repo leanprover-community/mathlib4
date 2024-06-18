@@ -48,7 +48,7 @@ Roughly speaking, saying that `F` is a quotient of a polynomial functor means th
 elements of `F α` are represented by pairs `⟨a, f⟩`, where `a` is the shape of the object and
 `f` indexes the relevant elements of `α`, in a suitably natural manner.
 -/
-class QPF (F : Type u → Type u) [Functor F] where
+class QPF (F : Type u → Type u) extends Functor F where
   P : PFunctor.{u}
   abs : ∀ {α}, P α → F α
   repr : ∀ {α}, F α → P α
@@ -58,7 +58,7 @@ class QPF (F : Type u → Type u) [Functor F] where
 
 namespace QPF
 
-variable {F : Type u → Type u} [Functor F] [q : QPF F]
+variable {F : Type u → Type u} [q : QPF F]
 
 open Functor (Liftp Liftr)
 
@@ -87,8 +87,8 @@ theorem lawfulFunctor
     (h : ∀ α β : Type u, @Functor.mapConst F _ α _ = Functor.map ∘ Function.const β) :
     LawfulFunctor F :=
   { map_const := @h
-    id_map := @id_map F _ _
-    comp_map := @comp_map F _ _ }
+    id_map := @id_map F _
+    comp_map := @comp_map F _ }
 #align qpf.is_lawful_functor QPF.lawfulFunctor
 
 /-
@@ -242,7 +242,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Define the fixed point as the quotient of trees under the equivalence relation `Wequiv`. -/
 def Wsetoid : Setoid q.P.W :=
-  ⟨Wequiv, @Wequiv.refl _ _ _, @Wequiv.symm _ _ _, @Wequiv.trans _ _ _⟩
+  ⟨Wequiv, @Wequiv.refl _ _, @Wequiv.symm _ _, @Wequiv.trans _ _⟩
 set_option linter.uppercaseLean3 false in
 #align qpf.W_setoid QPF.Wsetoid
 
@@ -251,7 +251,7 @@ attribute [local instance] Wsetoid
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
 -- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
-def Fix (F : Type u → Type u) [Functor F] [q : QPF F] :=
+def Fix (F : Type u → Type u) [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 #align qpf.fix QPF.Fix
 
@@ -299,9 +299,8 @@ theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
   have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by
     apply Quot.sound; apply Wequiv.abs'
     rw [PFunctor.W.dest_mk, abs_map, abs_repr, ← abs_map, PFunctor.map_eq]
-    conv =>
-      rhs
-      simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
+    simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
+    rfl
   rw [this]
   apply Quot.sound
   apply Wrepr_equiv
@@ -354,7 +353,7 @@ theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fi
   rw [← Fix.ind_aux a f]
   apply h
   rw [liftp_iff]
-  refine' ⟨_, _, rfl, _⟩
+  refine ⟨_, _, rfl, ?_⟩
   convert ih
 #align qpf.fix.ind QPF.Fix.ind
 
@@ -365,7 +364,7 @@ Construct the final coalgebra to a qpf.
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [Functor F] [q : QPF F]
+variable {F : Type u → Type u} [q : QPF F]
 
 open Functor (Liftp Liftr)
 
@@ -394,8 +393,8 @@ set_option linter.uppercaseLean3 false in
 #align qpf.Mcongr QPF.Mcongr
 
 /-- coinductive type defined as the final coalgebra of a qpf -/
-def Cofix (F : Type u → Type u) [Functor F] [q : QPF F] :=
-  Quot (@Mcongr F _ q)
+def Cofix (F : Type u → Type u) [q : QPF F] :=
+  Quot (@Mcongr F q)
 #align qpf.cofix QPF.Cofix
 
 instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
@@ -482,7 +481,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
     rw [← Quot.factor_mk_eq _ _ this]
     dsimp [r']
-    rw [@comp_map _ _ q _ _ _ (Quot.mk r), @comp_map _ _ q _ _ _ (Quot.mk r)]
+    rw [@comp_map _ q _ _ _ (Quot.mk r), @comp_map _ q _ _ _ (Quot.mk r)]
     rw [h _ _ r'xy]
   right; exact rxy
 #align qpf.cofix.bisim_rel QPF.Cofix.bisim_rel
@@ -518,8 +517,8 @@ Composition of qpfs.
 -/
 namespace QPF
 
-variable {F₂ : Type u → Type u} [Functor F₂] [q₂ : QPF F₂]
-variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : QPF F₁]
+variable {F₂ : Type u → Type u} [q₂ : QPF F₂]
+variable {F₁ : Type u → Type u} [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
 def comp : QPF (Functor.Comp F₂ F₁) where
@@ -531,7 +530,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
   repr {α} := by
     dsimp [Functor.Comp]
     intro y
-    refine' ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, _⟩
+    refine ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, ?_⟩
     dsimp [PFunctor.comp]
     intro x
     exact (repr ((repr y).2 x.1)).snd x.2
@@ -553,8 +552,8 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     cases' a with b h; dsimp
     symm
     trans
-    symm
-    apply abs_map
+    · symm
+      apply abs_map
     congr
     rw [PFunctor.map_eq]
     dsimp [Function.comp_def]
@@ -573,7 +572,7 @@ We show that if `F` is a qpf and `G` is a suitable quotient of `F`, then `G` is 
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [Functor F] [q : QPF F]
+variable {F : Type u → Type u} [q : QPF F]
 variable {G : Type u → Type u} [Functor G]
 variable {FG_abs : ∀ {α}, F α → G α}
 variable {FG_repr : ∀ {α}, G α → F α}
@@ -598,7 +597,7 @@ Support.
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [Functor F] [q : QPF F]
+variable {F : Type u → Type u} [q : QPF F]
 
 open Functor (Liftp Liftr supp)
 
@@ -632,7 +631,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
     have : Liftp (supp x) x := by rw [h]; intro u; exact id
     rw [liftp_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
-    refine' ⟨a, f, xeq.symm, _⟩
+    refine ⟨a, f, xeq.symm, ?_⟩
     intro a' f' h''
     rintro u ⟨i, _, hfi⟩
     have : u ∈ supp x := by rw [← hfi]; apply h'
@@ -643,7 +642,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
     rw [← f'ieq]
     apply h'
   intro h'
-  refine' ⟨a, f, xeq.symm, _⟩; intro i
+  refine ⟨a, f, xeq.symm, ?_⟩; intro i
   apply h'; rw [mem_supp]
   intro a' f' xeq'
   apply h a' f' xeq'
@@ -686,7 +685,7 @@ theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : �
     rw [← hi]
     apply hf
   intro h'
-  refine' ⟨a, f, rfl, fun i => h' _ _⟩
+  refine ⟨a, f, rfl, fun i => h' _ ?_⟩
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 #align qpf.liftp_iff_of_is_uniform QPF.liftp_iff_of_isUniform

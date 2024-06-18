@@ -1,5 +1,5 @@
 /-
-Copyright © 2024 Frédéric Marbach. All rights reserved.
+Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
@@ -105,8 +105,7 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) :=
     fun z hz =>
-      have zero : D1 0 = D2 0 :=
-        by simp only [map_zero]
+      have zero : D1 0 = D2 0 := by simp only [map_zero]
       have smul : ∀ (r : R), ∀ {x : L}, D1 x = D2 x → D1 (r • x) = D2 (r • x) :=
         fun _ _ hx => by simp only [map_smul, hx]
       have add : ∀ x y, D1 x = D2 x → D1 y = D2 y → D1 (x + y) = D2 (x + y) :=
@@ -291,6 +290,10 @@ instance : LieRing (LieDerivation R L L) where
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
   lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
 
+@[simp] lemma lie_apply (D₁ D₂ : LieDerivation R L L) (x : L) :
+    ⁅D₁, D₂⁆ x = D₁ (D₂ x) - D₂ (D₁ x) :=
+  rfl
+
 end
 
 section
@@ -323,10 +326,33 @@ variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 @[simps!]
 def inner : M →ₗ[R] LieDerivation R L M where
   toFun m :=
-    { __ := (LieModule.toEndomorphism R L M : L →ₗ[R] Module.End R M).flip m
+    { __ := (LieModule.toEnd R L M : L →ₗ[R] Module.End R M).flip m
       leibniz' := by simp }
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
+
+instance instLieRingModule : LieRingModule L (LieDerivation R L M) where
+  bracket x D := inner R L M (D x)
+  add_lie x y D := by simp
+  lie_add x D₁ D₂ := by simp
+  leibniz_lie x y D := by simp
+
+@[simp] lemma lie_lieDerivation_apply (x y : L) (D : LieDerivation R L M) :
+    ⁅x, D⁆ y = ⁅y, D x⁆ :=
+  rfl
+
+@[simp] lemma lie_coe_lieDerivation_apply (x : L) (D : LieDerivation R L M) :
+    ⁅x, (D : L →ₗ[R] M)⁆ = ⁅x, D⁆ := by
+  ext; simp
+
+instance instLieModule : LieModule R L (LieDerivation R L M) where
+  smul_lie t x D := by ext; simp
+  lie_smul t x D := by ext; simp
+
+protected lemma leibniz_lie (x : L) (D₁ D₂ : LieDerivation R L L) :
+    ⁅x, ⁅D₁, D₂⁆⁆ = ⁅⁅x, D₁⁆, D₂⁆ + ⁅D₁, ⁅x, D₂⁆⁆ := by
+  ext y
+  simp [-lie_skew, ← lie_skew (D₁ x) (D₂ y), ← lie_skew (D₂ x) (D₁ y), sub_eq_neg_add]
 
 end Inner
 

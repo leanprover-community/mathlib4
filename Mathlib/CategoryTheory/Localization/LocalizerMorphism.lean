@@ -42,7 +42,7 @@ structure LocalizerMorphism where
   /-- a functor between the two categories -/
   functor : C₁ ⥤ C₂
   /-- the functor is compatible with the `MorphismProperty` -/
-  map : W₁ ⊆ W₂.inverseImage functor
+  map : W₁ ≤ W₂.inverseImage functor
 
 namespace LocalizerMorphism
 
@@ -61,8 +61,16 @@ def comp (Φ : LocalizerMorphism W₁ W₂) (Ψ : LocalizerMorphism W₂ W₃) :
   functor := Φ.functor ⋙ Ψ.functor
   map _ _ _ hf := Ψ.map _ (Φ.map _ hf)
 
-variable (Φ : LocalizerMorphism W₁ W₂) (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁]
-  (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
+variable (Φ : LocalizerMorphism W₁ W₂)
+
+/-- The opposite localizer morphism `LocalizerMorphism W₁.op W₂.op` deduced
+from `Φ : LocalizerMorphism W₁ W₂`. -/
+@[simps]
+def op : LocalizerMorphism W₁.op W₂.op where
+  functor := Φ.functor.op
+  map _ _ _ hf := Φ.map _ hf
+
+variable (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
 lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=
   fun _ _ _ hf => Localization.inverts L₂ W₂ _ (Φ.map _ hf)
@@ -94,53 +102,50 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
 it will be so for any choice of localized categoriees. -/
-noncomputable def isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence := by
-    let E₁ := Localization.uniq L₁ L₁' W₁
-    let E₂ := Localization.uniq L₂ L₂' W₂
-    let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
-      calc
-        L₁ ⋙ G ⋙ E₂.functor ≅ Φ.functor ⋙ L₂ ⋙ E₂.functor :=
-            (Functor.associator _ _ _).symm ≪≫
-              isoWhiskerRight (CatCommSq.iso Φ.functor L₁ L₂ G).symm E₂.functor ≪≫
-              Functor.associator _ _ _
-        _ ≅ Φ.functor ⋙ L₂' := isoWhiskerLeft Φ.functor (compUniqFunctor L₂ L₂' W₂)
-        _ ≅ L₁' ⋙ G' := CatCommSq.iso Φ.functor L₁' L₂' G'
-        _ ≅ L₁ ⋙ E₁.functor ⋙ G' :=
-              isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ Functor.associator _ _ _
-    exact Functor.IsEquivalence.cancelCompLeft E₁.functor G' inferInstance
-      (Functor.IsEquivalence.ofIso
-        (liftNatIso L₁ W₁ _ _ (G ⋙ E₂.functor) (E₁.functor ⋙ G') e) inferInstance)
+lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence := by
+  let E₁ := Localization.uniq L₁ L₁' W₁
+  let E₂ := Localization.uniq L₂ L₂' W₂
+  let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
+    calc
+      L₁ ⋙ G ⋙ E₂.functor ≅ Φ.functor ⋙ L₂ ⋙ E₂.functor :=
+          (Functor.associator _ _ _).symm ≪≫
+            isoWhiskerRight (CatCommSq.iso Φ.functor L₁ L₂ G).symm E₂.functor ≪≫
+            Functor.associator _ _ _
+      _ ≅ Φ.functor ⋙ L₂' := isoWhiskerLeft Φ.functor (compUniqFunctor L₂ L₂' W₂)
+      _ ≅ L₁' ⋙ G' := CatCommSq.iso Φ.functor L₁' L₂' G'
+      _ ≅ L₁ ⋙ E₁.functor ⋙ G' :=
+            isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ Functor.associator _ _ _
+  have := Functor.isEquivalence_of_iso
+    (liftNatIso L₁ W₁ _ _ (G ⋙ E₂.functor) (E₁.functor ⋙ G') e)
+  exact Functor.isEquivalence_of_comp_left E₁.functor G'
 
-lemma nonempty_isEquivalence_iff : Nonempty (G.IsEquivalence) ↔ Nonempty (G'.IsEquivalence) := by
-  constructor
-  · rintro ⟨e⟩
-    exact ⟨Φ.isEquivalence_imp L₁ L₂ G L₁' L₂' G'⟩
-  · rintro ⟨e'⟩
-    exact ⟨Φ.isEquivalence_imp L₁' L₂' G' L₁ L₂ G⟩
+lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
+  ⟨fun _ => Φ.isEquivalence_imp L₁ L₂ G L₁' L₂' G',
+    fun _ => Φ.isEquivalence_imp L₁' L₂' G' L₁ L₂ G⟩
 
 end
 
 /-- Condition that a `LocalizerMorphism` induces an equivalence on the localized categories -/
 class IsLocalizedEquivalence : Prop :=
   /-- the induced functor on the constructed localized categories is an equivalence -/
-  nonempty_isEquivalence : Nonempty ((Φ.localizedFunctor W₁.Q W₂.Q).IsEquivalence)
+  isEquivalence : (Φ.localizedFunctor W₁.Q W₂.Q).IsEquivalence
 
 lemma IsLocalizedEquivalence.mk' [CatCommSq Φ.functor L₁ L₂ G] [G.IsEquivalence] :
     Φ.IsLocalizedEquivalence where
-  nonempty_isEquivalence := by
-    rw [Φ.nonempty_isEquivalence_iff W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q) L₁ L₂ G]
-    exact ⟨inferInstance⟩
+  isEquivalence := by
+    rw [Φ.isEquivalence_iff W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q) L₁ L₂ G]
+    exact inferInstance
 
 /-- If a `LocalizerMorphism` is a localized equivalence, then any compatible functor
 between the localized categories is an equivalence. -/
-noncomputable def isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L₂ G] :
-    G.IsEquivalence := Nonempty.some (by
-  rw [Φ.nonempty_isEquivalence_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
-  exact h.nonempty_isEquivalence)
+lemma isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L₂ G] :
+    G.IsEquivalence := (by
+  rw [Φ.isEquivalence_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
+  exact h.isEquivalence)
 
 /-- If a `LocalizerMorphism` is a localized equivalence, then the induced functor on
 the localized categories is an equivalence -/
-noncomputable instance localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
+instance localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
     (Φ.localizedFunctor L₁ L₂).IsEquivalence :=
   Φ.isEquivalence L₁ L₂ _
 
@@ -157,10 +162,10 @@ lemma IsLocalizedEquivalence.of_isLocalization_of_isLocalization
 an equivalence of categories and that `W₁` and `W₂` essentially correspond to each
 other via this equivalence, then `Φ` is a localized equivalence. -/
 lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
-    (h : W₂ ⊆ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
+    (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
   haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
-    refine' Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
-      (Functor.asEquivalence Φ.functor).symm _ (Φ.inverts W₂.Q)
+    refine Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
+      (Functor.asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
       ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
         Functor.leftUnitor _)
     erw [W₁.isoClosure.inverseImage_equivalence_functor_eq_map_inverse

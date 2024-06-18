@@ -38,6 +38,7 @@ variable {α : Type u} {ι : Sort v}
 
 /-- Class for the `sSup` operator -/
 class SupSet (α : Type*) where
+  /-- Supremum of a set -/
   sSup : Set α → α
 #align has_Sup SupSet
 #align has_Sup.Sup SupSet.sSup
@@ -45,6 +46,7 @@ class SupSet (α : Type*) where
 
 /-- Class for the `sInf` operator -/
 class InfSet (α : Type*) where
+  /-- Infimum of a set -/
   sInf : Set α → α
 #align has_Inf InfSet
 #align has_Inf.Inf InfSet.sInf
@@ -53,12 +55,6 @@ class InfSet (α : Type*) where
 export SupSet (sSup)
 
 export InfSet (sInf)
-
-/-- Supremum of a set -/
-add_decl_doc SupSet.sSup
-
-/-- Infimum of a set -/
-add_decl_doc InfSet.sInf
 
 /-- Indexed supremum -/
 def iSup [SupSet α] (s : ι → α) : α :=
@@ -80,7 +76,7 @@ instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
 
 /-
 Porting note: the code below could replace the `notation3` command
-open Std.ExtendedBinder in
+open Batteries.ExtendedBinder in
 syntax "⨆ " extBinder ", " term:51 : term
 
 macro_rules
@@ -299,3 +295,5 @@ theorem iSup_eq_iUnion (s : ι → Set α) : iSup s = iUnion s :=
 theorem iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
   rfl
 #align set.infi_eq_Inter Set.iInf_eq_iInter
+
+end Set

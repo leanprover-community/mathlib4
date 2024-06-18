@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.LeftExact
 
@@ -67,7 +68,7 @@ instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) :
 def Functor.sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] :
     G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K :=
   ((Lan.adjunction A G.op).comp (sheafificationAdjunction K A)).restrictFullyFaithful
-    (sheafToPresheaf J A) (𝟭 _) (Iso.refl _) (Iso.refl _)
+    (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 #align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Functor.sheafAdjunctionContinuous
 
 end CategoryTheory

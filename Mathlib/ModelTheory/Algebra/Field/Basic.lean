@@ -99,8 +99,7 @@ already have instances for ring operations.
 
 When this is used, it is almost always useful to also add locally the instance
 `compatibleFieldOfModelField` afterwards. -/
-@[reducible]
-noncomputable def fieldOfModelField (K : Type*) [Language.ring.Structure K]
+noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : Field K :=
   letI : DecidableEq K := Classical.decEq K
   letI := addOfRingStructure K
@@ -135,8 +134,7 @@ not already have the ring operations on the Type.
 
 Always add `fieldOfModelField` as a local instance first before using this instance.
   -/
-@[reducible]
-noncomputable def compatibleRingOfModelField (K : Type*) [Language.ring.Structure K]
+noncomputable abbrev compatibleRingOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : CompatibleRing K :=
   compatibleRingOfRingStructure K
 
