@@ -61,7 +61,7 @@ instance : Std.Associative (α := List α) Append.append where
 @[simp] theorem cons_injective {a : α} : Injective (cons a) := fun _ _ => tail_eq_of_cons_eq
 #align list.cons_injective List.cons_injective
 
-#align list.cons_inj List.cons_inj
+#align list.cons_inj List.cons_inj_right
 #align list.cons_eq_cons List.cons_eq_cons
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
@@ -162,7 +162,7 @@ attribute [simp] List.mem_bind
 theorem map_bind (g : β → List γ) (f : α → β) :
     ∀ l : List α, (List.map f l).bind g = l.bind fun a => g (f a)
   | [] => rfl
-  | a :: l => by simp only [cons_bind, map_cons, map_bind _ _ l]
+  | a :: l => by simp only [bind_cons, map_cons, map_bind _ _ l]
 #align list.map_bind List.map_bind
 
 /-! ### length -/
@@ -666,7 +666,7 @@ theorem getLast_congr {l₁ l₂ : List α} (h₁ : l₁ ≠ []) (h₂ : l₂ �
 #align list.last_mem List.getLast_mem
 
 theorem getLast_replicate_succ (m : ℕ) (a : α) :
-    (replicate (m + 1) a).getLast (ne_nil_of_length_eq_succ (length_replicate _ _)) = a := by
+    (replicate (m + 1) a).getLast (ne_nil_of_length_eq_add_one (length_replicate _ _)) = a := by
   simp only [replicate_succ']
   exact getLast_append_singleton _
 #align list.last_replicate_succ List.getLast_replicate_succ
@@ -1515,7 +1515,7 @@ theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = l
 #align list.nth_update_nth_of_lt List.get?_set_eq_of_lt
 #align list.nth_update_nth_ne List.get?_set_ne
 #align list.update_nth_nil List.set_nil
-#align list.update_nth_succ List.set_succ
+#align list.update_nth_succ List.set_cons_succ
 #align list.update_nth_comm List.set_comm
 
 #align list.nth_le_update_nth_eq List.get_set_eq
@@ -1524,7 +1524,7 @@ theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = l
 theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
     (l.set i a)[j] = l[j]'(by simpa using hj) := by
-  rw [← Option.some_inj, ← List.getElem?_eq_getElem, List.getElem?_set_ne _ _ h,
+  rw [← Option.some_inj, ← List.getElem?_eq_getElem, List.getElem?_set_ne h,
     List.getElem?_eq_getElem]
 #align list.nth_le_update_nth_of_ne List.getElem_set_of_ne
 
@@ -1773,7 +1773,11 @@ theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: tak
 
 @[simp]
 theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
-  rw [drop_add, drop_one]
+  rw [← drop_drop, drop_one]
+
+theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
+    l[n] :: l.drop (n + 1) = l.drop n :=
+  (drop_eq_getElem_cons h).symm
 
 theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
     l[n] :: l.drop (n + 1) = l.drop n :=
@@ -2418,10 +2422,10 @@ theorem splitOnP_spec (as : List α) :
   | cons a as' ih =>
     rw [splitOnP_cons, filter]
     by_cases h : p a
-    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj]
+    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj_right]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
-        (append_ne_nil_of_ne_nil_right _ [[]] (cons_ne_nil [] [])), cons_inj]
+        (append_ne_nil_of_ne_nil_right _ [[]] (cons_ne_nil [] [])), cons_inj_right]
       exact ih
 where
   join_zipWith {xs ys : List (List α)} {a : α} (hxs : xs ≠ []) (hys : ys ≠ []) :
@@ -2522,7 +2526,7 @@ theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
     rw [modifyLast.go]
     case x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
     rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
-      nil_append, cons_append, nil_append, cons_inj]
+      nil_append, cons_append, nil_append, cons_inj_right]
     exact modifyLast_append_one _ _ tl
 
 theorem modifyLast_append (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []) :
@@ -2984,12 +2988,13 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
         exact IH
 #align list.monotone_filter_right List.monotone_filter_right
 
-#align list.map_filter List.map_filter
+#align list.map_filter List.filter_map
 
+-- TODO rename to `map_filter` when the deprecated `map_filter` is removed from Lean.
 lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [(· ∘ ·), map_filter, hf.eq_iff]
+  simp [(· ∘ ·), filter_map, hf.eq_iff]
 #align list.map_filter' List.map_filter'
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
@@ -3006,7 +3011,7 @@ lemma filter_attach (l : List α) (p : α → Bool) :
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
     simp_rw [map_map, (· ∘ ·), Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
-      ← map_filter, attach_map_val]
+      ← filter_map, attach_map_val]
 #align list.filter_attach List.filter_attach
 
 #align list.filter_filter List.filter_filter
@@ -3062,8 +3067,6 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   · simp [dropWhile]
   · by_cases hp : p x <;> simp [hp, dropWhile, IH]
 #align list.drop_while_eq_nil_iff List.dropWhile_eq_nil_iff
-
-@[simp] theorem takeWhile_nil : List.takeWhile p [] = [] := rfl
 
 theorem takeWhile_cons {x : α} :
     List.takeWhile p (x :: l) = (match p x with
@@ -3515,7 +3518,9 @@ theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zip
   | cons _ atl =>
     cases bs with
     | nil => rfl
-    | cons _ btl => rw [zipWithLeft, zipWithLeft', cons_inj]; exact @zipLeft_eq_zipLeft' atl btl
+    | cons _ btl =>
+      rw [zipWithLeft, zipWithLeft', cons_inj_right]
+      exact @zipLeft_eq_zipLeft' atl btl
 #align list.zip_left_eq_zip_left' List.zipLeft_eq_zipLeft'
 
 end ZipLeft
