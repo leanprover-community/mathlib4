@@ -38,7 +38,7 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Functor Category IsHomLift
 
-namespace CategoryTheory
+namespace CategoryTheory.Functor
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳] (p : 𝒳 ⥤ 𝒮)
 
@@ -50,7 +50,7 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 cartesian morphism.
 
 See SGA 1 VI 5.1. -/
-class Functor.IsCartesian extends IsHomLift p f φ : Prop where
+class IsCartesian extends IsHomLift p f φ : Prop where
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
 
@@ -58,13 +58,13 @@ class Functor.IsCartesian extends IsHomLift p f φ : Prop where
 strongly cartesian morphism.
 
 See <https://stacks.math.columbia.edu/tag/02XK> -/
-class Functor.IsStronglyCartesian extends IsHomLift p f φ : Prop where
+class IsStronglyCartesian extends IsHomLift p f φ : Prop where
   universal_property' {a' : 𝒳} (g : p.obj a' ⟶ R) (φ' : a' ⟶ b) [IsHomLift p (g ≫ f) φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
 
 end
 
-namespace Functor.IsCartesian
+namespace IsCartesian
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsCartesian p f φ]
 
@@ -143,9 +143,9 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     apply map_uniq
     simp only [Iso.eq_comp_inv, assoc, hτ₂]
 
-end Functor.IsCartesian
+end IsCartesian
 
-namespace Functor.IsStronglyCartesian
+namespace IsStronglyCartesian
 
 section
 
@@ -337,6 +337,6 @@ noncomputable def domainIsoOfBaseIso {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ 
   inv := @map _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (g.inv ≫ ·) h.symm) φ
     (by simp; infer_instance)
 
-end Functor.IsStronglyCartesian
+end IsStronglyCartesian
 
-end CategoryTheory
+end CategoryTheory.Functor
