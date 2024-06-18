@@ -76,7 +76,7 @@ Note that if one of the transformations is an iso, it does not imply the other i
 -/
 @[simps]
 def mateEquiv : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) where
-      toFun α :=
+  toFun α :=
         whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
         whiskerRight (whiskerLeft R₁ α) R₂ ≫
         whiskerRight adj₁.counit (H ⋙ R₂)
