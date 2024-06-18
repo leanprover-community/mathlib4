@@ -86,7 +86,7 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
     else ((if_neg h).symm.ndrec terminalIsTerminal).from _
   naturality U V i := by
     simp only [skyscraperPresheaf_map]; by_cases hV : p₀ ∈ V.unop
-    · have hU : p₀ ∈ U.unop := leOfHom i.unop hV; split_ifs <;>
+    · have hU : p₀ ∈ U.unop := leOfHom i.unop hV; split_ifs
       simp only [eqToHom_trans_assoc, Category.assoc, eqToHom_trans]
     · apply ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext
 #align skyscraper_presheaf_functor.map' SkyscraperPresheafFunctor.map'
@@ -273,11 +273,9 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
     by_cases hV : p₀ ∈ V.unop
     · have hU : p₀ ∈ U.unop := leOfHom inc.unop hV
       split_ifs
-      · erw [← Category.assoc, 𝓕.germ_res inc.unop, Category.assoc, Category.assoc, eqToHom_trans]
-      · aesop_cat
+      erw [← Category.assoc, 𝓕.germ_res inc.unop, Category.assoc, Category.assoc, eqToHom_trans]
     · split_ifs
-      · exact ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext ..
-      · aesop_cat
+      exact ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext ..
 #align stalk_skyscraper_presheaf_adjunction_auxs.to_skyscraper_presheaf StalkSkyscraperPresheafAdjunctionAuxs.toSkyscraperPresheaf
 
 /-- If `f : 𝓕 ⟶ skyscraperPresheaf p₀ c` is a natural transformation, then there is a morphism
