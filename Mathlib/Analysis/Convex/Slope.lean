@@ -245,9 +245,7 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
   · congr 1
     field_simp
     ring
-  · -- Porting note: this `show` wasn't needed in Lean 3
-    show (z - y) / (z - x) + (y - x) / (z - x) = 1
-    field_simp
+  · field_simp
   · field_simp
 #align convex_on.secant_mono_aux1 ConvexOn.secant_mono_aux1
 
@@ -297,9 +295,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
   · congr 1
     field_simp
     ring
-  · -- Porting note: this `show` wasn't needed in Lean 3
-    show (z - y) / (z - x) + (y - x) / (z - x) = 1
-    field_simp
+  · field_simp
   · field_simp
 #align strict_convex_on.secant_strict_mono_aux1 StrictConvexOn.secant_strict_mono_aux1
 
