@@ -712,6 +712,10 @@ lemma toAddCircle_apply (j : ZMod N) :
   conv_lhs => rw [show j = (val j : ℤ) by simp, toAddCircle_coe]
   simp only [natCast_val, intCast_cast]
 
+lemma toAddCircle_eq_zero {j : ZMod N} :
+    toAddCircle j = 0 ↔ j = 0 :=
+  (toAddCircle (N := N)).map_zero ▸ (toAddCircle_injective N).eq_iff
+
 variable (N) in
 lemma toAddCircle_injective : Function.Injective (toAddCircle : ZMod N → _) := by
   intro x y hxy
