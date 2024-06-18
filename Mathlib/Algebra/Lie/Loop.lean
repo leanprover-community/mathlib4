@@ -71,3 +71,14 @@ instance instLieAlgebra : LieAlgebra R (LoopAlgebra R L) :=
 /-- The evaluation module -/
 -- define eval.LieModule
 -/
+
+section CentralExt
+
+-- show that bilinear forms produce 2-cocycles for the loop algebra
+-- define central extensions given by invariant bilinear forms
+-- extend central characters to reps of positive part
+-- induce positive part reps to centrally extended loop algebra
+-- monomial basis of induced rep (needs PBW)
+-- define positive energy reps (positive part acts locally nilpotently)
+
+end CentralExt

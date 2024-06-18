@@ -50,3 +50,7 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
 center. The center condition is equivalent to the kernel being a trivial module for the adjoint
 adjoint action. -/
 def IsCentralExtension (f : M →ₗ⁅R⁆ L) : Prop := Function.Surjective f ∧ LieModule.IsTrivial M f.ker
+
+/-- A Lie algebra homomorphism is module-split if it is surjective and the source is linearly
+isomorphic to the direct sum of the kernel and the target. -/
+def IsModuleSplit (f : M →ₗ⁅R⁆ L) : Prop := Function.Surjective f ∧ Nonempty (M ≃ₗ[R] L × f.ker)

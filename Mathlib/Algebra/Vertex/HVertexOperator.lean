@@ -137,8 +137,8 @@ end Coeff
 
 section Module
 
-variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ']
-  [OrderedCancelAddAction Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V]
+variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [VAdd Γ Γ']
+  [IsOrderedCancelAddAction Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V]
   [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
@@ -328,7 +328,7 @@ theorem subLeft_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : �
       A.coeff (toLex (k - 1, l)) - A.coeff (toLex (k, l - 1)) := by
   rw [subLeft_eq, add_smul, add_coeff_apply]
   ext v
-  simp only [LinearMap.add_apply, coeff_apply, LinearMap.smul_apply, LinearMap.sub_apply]
+  simp only [LinearMap.add_apply, coeff_apply, LinearMap.smul_apply, LinearMap.sub_apply, smul_eq]
   nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]
   rw [sub_zero, HahnModule.single_smul_coeff_add, one_smul, ← toLex_vAdd_of_sub k l 0 1,
     sub_zero, HahnModule.single_smul_coeff_add, neg_one_smul, ← sub_eq_add_neg]

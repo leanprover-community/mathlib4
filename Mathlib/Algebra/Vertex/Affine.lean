@@ -37,7 +37,8 @@ section LoopAlgebra
 --def central character of a representation
 --def positive-energy representation
 
---def affineVertexOperator (x : g) (V : positiveEnergy)
+--def affineVertexOperator (x : g) (V : positiveEnergy) : VertexOperator R V :=
+--  of_coeff R fun n v => x t^n • v
 
 end LoopAlgebra
 

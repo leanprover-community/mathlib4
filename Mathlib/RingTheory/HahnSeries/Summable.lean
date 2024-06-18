@@ -521,41 +521,50 @@ theorem hsum_sub {R : Type*} [Ring R] {s t : SummableFamily Γ R α} :
   rw [← lsum_apply, LinearMap.map_sub, lsum_apply, lsum_apply]
 #align hahn_series.summable_family.hsum_sub HahnSeries.SummableFamily.hsum_sub
 
-/-- Multiplication of summable families - should rewrite in terms of FamilySMul. -/
+/-- Pointwise multiplication of summable families. -/
 def FamilyMul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     (SummableFamily Γ R (α × β)) where
   toFun a := s (a.1) * t (a.2)
   isPWO_iUnion_support' := by
-    apply (s.isPWO_iUnion_support.add t.isPWO_iUnion_support).mono
-    refine Set.Subset.trans (Set.iUnion_mono fun a => support_mul_subset_add_support) ?_
-    simp_all only [Set.iUnion_subset_iff, Prod.forall]
-    exact fun a b => Set.add_subset_add (Set.subset_iUnion_of_subset a fun x y ↦ y)
-      (Set.subset_iUnion_of_subset b fun x y ↦ y)
+    simp_rw [← smul_eq_mul]
+    exact (FamilySMul s t).isPWO_iUnion_support'
   finite_co_support' g := by
-    apply ((addAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
-      _).subset _
-    · exact fun ij _ => Function.support fun a => ((s a.1).coeff ij.1) * ((t a.2).coeff ij.2)
-    · exact fun ij _ => by
-        refine Set.Finite.subset (Set.Finite.prod (s.finite_co_support ij.1)
-          (t.finite_co_support ij.2)) ?_
-        simp only [support_subset_iff, ne_eq, Set.mem_prod, Function.mem_support, Prod.forall]
-        exact fun a b hab => ne_zero_and_ne_zero_of_mul hab
-    · exact fun a ha => by
-        simp only [mul_coeff, ne_eq, Set.mem_setOf_eq] at ha
-        obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero ha
-        simp only [mem_coe, mem_addAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
-          Function.mem_support, exists_prop, Prod.exists]
-        exact ⟨ij.1, ij.2, ⟨⟨a.1, (ne_zero_and_ne_zero_of_mul hij.2).1⟩,
-          ⟨a.2, (ne_zero_and_ne_zero_of_mul hij.2).2⟩, (mem_addAntidiagonal.mp hij.1).2.2⟩, hij.2⟩
+    simp_rw [← smul_eq_mul]
+    exact (FamilySMul s t).finite_co_support' g
+
+theorem familymul_eq_familysmul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
+    FamilyMul s t = FamilySMul s t :=
+  rfl
+
+theorem family_mul_coeff {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) (g : Γ) :
+    (FamilyMul s t).hsum.coeff g = ∑ gh ∈ addAntidiagonal s.isPWO_iUnion_support
+      t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) * (t.hsum.coeff gh.2) := by
+  simp_rw [← smul_eq_mul, familymul_eq_familysmul]
+  exact family_smul_coeff s t g
+
+theorem hsum_family_mul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
+    (FamilyMul s t).hsum = s.hsum * t.hsum := by
+  rw [← smul_eq_mul, familymul_eq_familysmul]
+  exact hsum_family_smul s t
 
 /-!
 /-- A summable family made from a finite collection of summable families. -/
-def piFamily {σ : Type*} [Fintype σ] {R} [CommSemiring R] (α : σ → Type*)
-    (s : Π i : σ, SummableFamily Γ R (α i)) : (SummableFamily Γ R (Π i : σ, α i)) where
-  toFun a := ∏ i : σ, (s i) (a i)
-  isPWO_iUnion_support' := by --induction on σ?
+def piFamily {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
+    (t : Π i : σ, SummableFamily Γ R (α i)) : (SummableFamily Γ R (Π i ∈ s, α i)) where
+  toFun a := by
+    refine ∏ i ∈ s, (t i) (a i ?_)
 
-    sorry
+  isPWO_iUnion_support' := by
+    refine cons_induction ?_ ?_ s
+    · simp_all only [prod_empty]
+      have h : ⋃ (a : (i : σ) → i ∈ (∅ : Finset σ) → α i) , support (1 : HahnSeries Γ R) ⊆ {0} := by
+        simp_all
+      exact Set.Subsingleton.isPWO <| Set.subsingleton_of_subset_singleton h
+    · intro a s has hs
+      simp only at hs
+      simp only [prod_cons]
+--      refine (FamilyMul ?_ ?_).PWO_iUnion_support'
+      sorry
   finite_co_support' := sorry
 -/
 

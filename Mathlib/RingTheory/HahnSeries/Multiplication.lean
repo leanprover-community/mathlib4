@@ -60,6 +60,9 @@ theorem single_zero_one [Zero R] [One R] : single (0 : Γ) (1 : R) = 1 :=
   rfl
 #align hahn_series.single_zero_one HahnSeries.single_zero_one
 
+theorem support_one_subset [Zero R] [One R] : support (1 : HahnSeries Γ R) ⊆ {0} := by
+  simp
+
 @[simp]
 theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries Γ R) = {0} :=
   support_single_of_ne one_ne_zero

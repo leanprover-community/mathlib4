@@ -74,6 +74,7 @@ theorem ncoef_ofForallLTEqZero (f : ℤ → V) (n : ℤ) (h : ∀(m : ℤ), n < 
 
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
+@[simps!]
 noncomputable def VertexOperator.of_coeff (f : ℤ → Module.End R V)
     (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) : VertexOperator R V :=
   HVertexOperator.of_coeff f
