@@ -948,8 +948,7 @@ theorem le_graph_iff {f g : E →ₗ.[R] F} : f.graph ≤ g.graph ↔ f ≤ g :=
 #align linear_pmap.le_graph_iff LinearPMap.le_graph_iff
 
 theorem eq_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) : f = g := by
-  -- Porting note: `ext` → `refine ext ..`
-  refine ext (Submodule.ext fun x => ?_) (fun x y h' => ?_)
+  ext _ _ h'
   · exact mem_domain_iff_of_eq_graph h
   · exact (le_of_le_graph h.le).2 h'
 #align linear_pmap.eq_of_eq_graph LinearPMap.eq_of_eq_graph

@@ -55,9 +55,8 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
 
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
--- Porting note: this lemma was added because `Comma.hom_ext`
+-- Porting note (#5229): this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
--- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
   CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
@@ -424,9 +423,8 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
 
 variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
 
--- Porting note: this lemma was added because `Comma.hom_ext`
+-- Porting note (#5229): this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
--- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext _ _ h (Subsingleton.elim _ _)

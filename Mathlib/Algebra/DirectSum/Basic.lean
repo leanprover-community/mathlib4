@@ -216,7 +216,7 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
 
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
-  -- Porting note: ext applies addHom_ext' here, which isn't what we want.
+  -- Porting note (#11041): ext applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
   simp [toAddMonoid, of]
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique

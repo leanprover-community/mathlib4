@@ -73,7 +73,7 @@ theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) 
 def adj : free ⊣ forget AddCommGroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeAbelianGroup.lift.symm
-      -- Porting note: used to be just `by intros; ext; rfl`.
+      -- Porting note (#11041): used to be just `by intros; ext; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext
@@ -115,7 +115,7 @@ def free : Type u ⥤ GroupCat where
 def adj : free ⊣ forget GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeGroup.lift.symm
-      -- Porting note: used to be just `by intros; ext1; rfl`.
+      -- Porting note (#11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext1
@@ -148,7 +148,7 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
 def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun G A => Abelianization.lift.symm
-      -- Porting note: used to be just `by intros; ext1; rfl`.
+      -- Porting note (#11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext1

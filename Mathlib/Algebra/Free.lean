@@ -479,7 +479,6 @@ variable {α : Type u}
 @[to_additive]
 instance : Semigroup (FreeSemigroup α) where
   mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
-  -- Porting note: replaced ext by FreeSemigroup.ext
   mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext _ _ rfl <| List.append_assoc _ _ _
 
 @[to_additive (attr := simp)]

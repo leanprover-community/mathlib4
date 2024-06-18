@@ -85,7 +85,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk]
       · intro m h₁ h₂
-        -- Porting note: used to be ext x
+        -- Porting note (#11041): used to be ext x
         apply ContinuousMap.ext; intro x
         apply Subtype.ext
         apply Prod.ext

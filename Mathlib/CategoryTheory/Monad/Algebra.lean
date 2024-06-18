@@ -100,7 +100,7 @@ instance : CategoryStruct (Algebra T) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note: Adding this ext lemma to help automation below.
+-- Porting note (#11041): Adding this ext lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 
@@ -373,7 +373,7 @@ instance : CategoryStruct (Coalgebra G) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note: Adding ext lemma to help automation below.
+-- Porting note (#11041): Adding ext lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 

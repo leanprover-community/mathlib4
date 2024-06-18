@@ -154,10 +154,10 @@ def free : Type u ⥤ AlgebraCat.{u} R where
     { carrier := FreeAlgebra R S
       isRing := Algebra.semiringToRing R }
   map f := FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
-  -- Porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
+  -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
   map_id := by intro X; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; rfl
   map_comp := by
-  -- Porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
+  -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
     intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
     -- Porting node: this ↓ `erw` used to be handled by the `simp` below it
     erw [CategoryTheory.coe_comp]
@@ -173,7 +173,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
     { homEquiv := fun X A => (FreeAlgebra.lift _).symm
       -- Relying on `obviously` to fill out these proofs is very slow :(
       homEquiv_naturality_left_symm := by
-        -- Porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
+        -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
         intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
         simp only [free_map, Equiv.symm_symm, FreeAlgebra.lift_ι_apply, CategoryTheory.coe_comp,
           Function.comp_apply, types_comp_apply]

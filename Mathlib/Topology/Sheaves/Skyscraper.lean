@@ -398,8 +398,7 @@ instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
 -/
 def stalkSkyscraperSheafAdjunction [HasColimits C] :
     Sheaf.forget C X ⋙ Presheaf.stalkFunctor _ p₀ ⊣ skyscraperSheafFunctor p₀ where
-  -- Porting note: `ext1` is changed to `Sheaf.Hom.ext`,
-  -- see https://github.com/leanprover-community/mathlib4/issues/5229
+  -- Porting note (#11041): `ext1` is changed to `Sheaf.Hom.ext`,
   homEquiv 𝓕 c :=
     ⟨fun f => ⟨toSkyscraperPresheaf p₀ f⟩, fun g => fromStalk p₀ g.1, fromStalk_to_skyscraper p₀,
       fun g => Sheaf.Hom.ext _ _ <| to_skyscraper_fromStalk _ _⟩
