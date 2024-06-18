@@ -2986,6 +2986,7 @@ import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.MeasureTheory.Group.ZMod
 import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
@@ -4196,6 +4197,7 @@ import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.Instances.TrivSqZeroExt
+import Mathlib.Topology.Instances.ZMod
 import Mathlib.Topology.Irreducible
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.List

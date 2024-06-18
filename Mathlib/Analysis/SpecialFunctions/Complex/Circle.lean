@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.Algebra.Group.AddChar
 
 #align_import analysis.special_functions.complex.circle from "leanprover-community/mathlib"@"f333194f5ecd1482191452c5ea60b37d4d6afa08"
 
@@ -235,3 +236,43 @@ open AddCircle
 lemma isLocalHomeomorph_expMapCircle : IsLocalHomeomorph expMapCircle := by
   have : Fact (0 < 2 * π) := ⟨by positivity⟩
   exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
+
+namespace ZMod
+
+/-!
+### Additive characters valued in the complex circle
+-/
+
+open scoped Real
+
+variable {N : ℕ} [NeZero N]
+
+/-- The additive character from `ZMod N` to the unit circle in `ℂ`, sending `j mod N` to
+`exp (2 * π * I * j / N)`. -/
+noncomputable def toCircle : AddChar (ZMod N) circle where
+  toFun := fun j ↦ (toAddCircle j).toCircle
+  map_add_eq_mul' a b := by simp_rw [map_add, AddCircle.toCircle_add]
+  map_zero_eq_one' := by simp_rw [map_zero, AddCircle.toCircle, ← QuotientAddGroup.mk_zero,
+    Function.Periodic.lift_coe, mul_zero, expMapCircle_zero]
+
+lemma toCircle_coe (j : ℤ) :
+    toCircle (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
+  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_coe,
+    Function.Periodic.lift_coe, expMapCircle_apply]
+  push_cast
+  ring_nf
+
+lemma toCircle_apply (j : ZMod N) :
+    toCircle j = Complex.exp (2 * π * Complex.I * j.val / N) := by
+  rw [← Int.cast_natCast, ← toCircle_coe, natCast_val, intCast_zmod_cast]
+
+/-- The additive character from `ZMod N` to `ℂ`, sending
+`j mod N` to `exp (2 * π * I * j / N)`. -/
+noncomputable def stdAddChar : AddChar (ZMod N) ℂ := circle.subtype.compAddChar toCircle
+
+lemma stdAddChar_coe (j : ℤ) :
+    stdAddChar (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
+  simp only [stdAddChar, MonoidHom.coe_compAddChar, Function.comp_apply,
+    Submonoid.coe_subtype, toCircle_coe]
+
+lemma stdAddChar_apply (j : ZMod N) : stdAddChar j = ↑(toCircle j) := rfl

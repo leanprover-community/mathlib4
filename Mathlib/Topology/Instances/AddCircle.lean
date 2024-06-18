@@ -693,3 +693,32 @@ end ZeroBased
 end AddCircle
 
 end IdentifyIccEnds
+
+namespace ZMod
+
+variable {N : ℕ} [NeZero N]
+
+/-- The `AddMonoidHom` from `ZMod N` to `ℝ / ℤ` sending `j mod N` to `j / N mod 1`. -/
+noncomputable def toAddCircle : ZMod N →+ UnitAddCircle :=
+  lift N ⟨AddMonoidHom.mk' (fun j ↦ ↑(j / N : ℝ)) (by simp [add_div]),
+    by simp [div_self (NeZero.ne _)]⟩
+
+lemma toAddCircle_coe (j : ℤ) :
+    toAddCircle (j : ZMod N) = ↑(j / N : ℝ) := by
+  simp [toAddCircle]
+
+lemma toAddCircle_apply (j : ZMod N) :
+    toAddCircle j = ↑(j.val / N : ℝ) := by
+  conv_lhs => rw [show j = (val j : ℤ) by simp, toAddCircle_coe]
+  simp only [natCast_val, intCast_cast]
+
+variable (N) in
+lemma toAddCircle_injective : Function.Injective (toAddCircle : ZMod N → _) := by
+  intro x y hxy
+  have : (0 : ℝ) < N := Nat.cast_pos.mpr (NeZero.pos _)
+  rwa [toAddCircle_apply, toAddCircle_apply, AddCircle.coe_eq_coe_iff_of_mem_Ico
+    (hp := Real.fact_zero_lt_one) (a := 0), div_left_inj' this.ne', Nat.cast_inj,
+    (val_injective N).eq_iff] at hxy <;>
+  exact ⟨by positivity, by simpa only [zero_add, div_lt_one this, Nat.cast_lt] using val_lt _⟩
+
+end ZMod
