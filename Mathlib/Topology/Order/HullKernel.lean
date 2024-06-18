@@ -43,16 +43,13 @@ lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T �
     have e1 : a ⊓ b ≤ p := inf_le_of_right_le h3
     exact h e1
 
-
-
-#check Ici
-
 open Finset in
-lemma basis2 [OrderTop α] (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
+lemma basis2 [DecidableEq α] [OrderTop α] (F : Finset α) :
+    T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
   rw [coe_upperClosure]
   simp only [compl_iUnion]
   rw [preimage_iInter₂]
-  induction' F using Finset.induction_on with a F' I3 I4
+  induction' F using Finset.induction_on with a F' _ I4
   · simp only [Finset.coe_empty, mem_empty_iff_false, iInter_of_empty,
     iInter_univ, sInf_empty, Ici_top]
     simp only [inf_empty, Ici_top, Set.preimage_compl]
@@ -67,18 +64,16 @@ lemma basis2 [OrderTop α] (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet)
     exact isMax_iff_eq_top.mpr hx
   · simp only [coe_insert, mem_insert_iff, mem_coe,  iInter_iInter_eq_or_left,
       inf_insert, id_eq]
-    --simp at I4
-    --rw [I4]
-    rw [← basis1]
-    rw [← I4]
-    simp
+    rw [← basis1, ← I4]
+    simp only [Set.preimage_compl, mem_coe]
     exact hT
+
 
 end SemilatticeInf
 
 section PrimativeSpectrum
 
-variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
+variable [SemilatticeInf α] [OrderTop α] [TopologicalSpace α] [IsLower α]
 
 variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
 
@@ -103,36 +98,14 @@ lemma test1 [DecidableEq α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T 
     exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
   · intro ha
     cases' ha with F hF
-    use sInf F -- As F is finite, do we need complete?
+    lift F to Finset α using hF.1
+    use Finset.inf F id -- As F is finite, do we need complete?
     rw [← hF.2]
     rw [← preimage_compl]
-    have e1 : Subtype.val '' (Subtype.val (p := T) ⁻¹' (↑(upperClosure F))ᶜ) = T ∩ (upperClosure F)ᶜ := by
-      rw [← (Subtype.image_preimage_coe T (↑(upperClosure F : Set α))ᶜ)]
-      rfl
-    have e3 : T ↓∩ ⋂ i ∈ F, (Ici i)ᶜ =  ⋂ i ∈ F, T ↓∩ (Ici i)ᶜ := by
-      exact preimage_iInter₂
-    have e2 : T ↓∩ (↑(upperClosure F))ᶜ = T ↓∩ (Ici (sInf F))ᶜ  := by
-      rw [coe_upperClosure]
-      simp only [compl_iUnion]
-      rw [preimage_iInter₂]
-      lift F to Finset α using hF.1
-      induction F using Finset.induction_on
-      · simp only [Finset.coe_empty, mem_empty_iff_false, preimage_compl, iInter_of_empty,
-        iInter_univ, sInf_empty, Ici_top]
-        rw [eq_compl_comm]
-        simp only [compl_univ]
-        by_contra hf
-        rw [← Set.not_nonempty_iff_eq_empty] at hf
-        simp at hf
-        cases' hf with x hx
-        simp at hx
-        apply (hT x (Subtype.coe_prop x)).1
-        exact isMax_iff_eq_top.mpr hx
-      · simp only [Finset.coe_insert, mem_insert_iff, Finset.mem_coe, preimage_compl,
-        iInter_iInter_eq_or_left, sInf_insert]
-        sorry
-    rw [← e2]
-    exact id (Eq.symm e1)
+    rw [basis2]
+    simp only [preimage_compl, image_val_compl, Subtype.image_preimage_coe, diff_self_inter]
+    exact fun p a ↦ hT p a
+    --exact id (Eq.symm e1)
 
 /-
 lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ∩ Ici a := by
