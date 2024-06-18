@@ -25,9 +25,3 @@ attribute [fun_prop]
   Measurable.comp'
   measurable_pi_apply
   measurable_pi_lambda
-
--- product
-attribute [fun_prop]
-  Measurable.prod_mk
-  Measurable.fst
-  Measurable.snd

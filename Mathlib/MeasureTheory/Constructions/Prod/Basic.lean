@@ -908,11 +908,13 @@ theorem AEMeasurable.prod_swap [SFinite μ] [SFinite ν] {f : β × α → γ}
   exact hf.comp_measurable measurable_swap
 #align ae_measurable.prod_swap AEMeasurable.prod_swap
 
+@[fun_prop]
 theorem AEMeasurable.fst [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 #align ae_measurable.fst AEMeasurable.fst
 
+@[fun_prop]
 theorem AEMeasurable.snd [SFinite ν] {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd

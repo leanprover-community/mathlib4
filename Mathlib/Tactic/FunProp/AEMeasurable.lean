@@ -40,17 +40,10 @@ attribute [fun_prop]
   -- AEMeasurable_apply -- is this somewhere?
   -- AEMeasurable_pi -- is this somewhere?
 
--- product
-attribute [fun_prop]
-  AEMeasurable.prod_mk
-  -- AEMeasurable.fst
-  -- AEMeasurable.snd
-
 -- transitions
 attribute [fun_prop]
   AEMeasurable.mono'
   Measurable.aemeasurable
-
 
 attribute [fun_prop]
   AEMeasurable.mono'

@@ -763,10 +763,12 @@ theorem measurable_snd {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
 
 variable {m : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
+@[fun_prop]
 theorem Measurable.fst {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).1 :=
   measurable_fst.comp hf
 #align measurable.fst Measurable.fst
 
+@[fun_prop]
 theorem Measurable.snd {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).2 :=
   measurable_snd.comp hf
 #align measurable.snd Measurable.snd
@@ -784,6 +786,7 @@ theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a)
         exact hf₂)
 #align measurable.prod Measurable.prod
 
+@[fun_prop]
 theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace γ} {f : α → β}
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
