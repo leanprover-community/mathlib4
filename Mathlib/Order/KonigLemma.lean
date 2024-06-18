@@ -6,7 +6,6 @@ Authors: Peter Nelson
 import Mathlib.Order.Cover
 import Mathlib.Order.WellFounded
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Finite.Set
 
 /-!
@@ -26,15 +25,17 @@ We defer the graph-theoretic version of the statement for future work.
 
 ## Main Results
 
-- `exists_seq_covby_of_forall_covby_finite` : Kőnig's lemma for well-founded orders.
+* `exists_seq_covby_of_forall_covby_finite` : Kőnig's lemma for well-founded orders.
 
-- `exists_orderEmbedding_covby_of_forall_covby_finite` : Kőnig's lemma, where the sequence
+* `exists_orderEmbedding_covby_of_forall_covby_finite` : Kőnig's lemma, where the sequence
     is given as an `OrderEmbedding` instead of a function.
 
-- `exist_seq_forall_proj_of_forall_finite` : Kőnig's lemma applied to an order on a sigma-type
+* `exist_seq_forall_proj_of_forall_finite` : Kőnig's lemma applied to an order on a sigma-type
   `(i : ℕ) × (α i)`. Useful for applications in Ramsey theory.
 
-TODO - Actually formulate the lemma as a statement about graphs.
+## TODO
+
+Actually formulate the lemma as a statement about graphs.
 
 -/
 
@@ -57,16 +58,16 @@ theorem exists_covby_infinite_Ici_of_infinite_Ici (ha : (Ici a).Infinite)
   exact mem_biUnion hax hxb
 
 /-- The sequence proving the infinity lemma: each term is a pair `⟨a,h⟩`,
-  where `h` is a proof that `Ici a` is infinite, and `a` covers the previous term. -/
+where `h` is a proof that `Ici a` is infinite, and `a` covers the previous term. -/
 noncomputable def konigSeq [OrderBot α] [Infinite α] (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
     (n : ℕ) : {a : α // (Ici a).Infinite } := match n with
   | 0    => ⟨⊥, by simp only [Ici_bot, infinite_univ]⟩
   | n+1  => let p := konigSeq hfin n
-    ⟨_, ((exists_covby_infinite_Ici_of_infinite_Ici p.2 (hfin p.1)).choose_spec).2 ⟩
+    ⟨_, ((exists_covby_infinite_Ici_of_infinite_Ici p.2 (hfin p.1)).choose_spec).2⟩
 
-/-- Kőnig's infinity lemma : if each element in an infinite well-founded order with minimum
+/-- **Kőnig's infinity lemma** : if each element in an infinite well-founded order with minimum
   is covered by only finitely many terms,
-  then there is an infinite chain in which each element is covered by the next. -/
+  then there is an infinite sequence in which each element is covered by the next. -/
 theorem exists_seq_covby_of_forall_covby_finite [OrderBot α] [Infinite α]
     (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) : ∃ f : ℕ → α, f 0 = ⊥ ∧ ∀ i, f i ⋖ f (i+1) :=
   ⟨fun i ↦ konigSeq hfin i, rfl, fun i ↦
@@ -88,9 +89,8 @@ theorem exists_orderEmbedding_covby_of_forall_covby_finite [OrderBot α] [Infini
   In a typical application, the `α i` are function types with increasingly large domains,
   and `π hij (f : α j)` is the restriction of the domain of `f` to that of `α i`.
   In this case, the sequence given by the lemma is essentially a function whose domain
-  is the limit of the `α i`.
-  -/
-theorem exist_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsingleton (α 0)]
+  is the limit of the `α i`. -/
+theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsingleton (α 0)]
     [∀ i, Nonempty (α i)] (π : {i j : ℕ} → (hij : i ≤ j) → α j → α i)
     (π_trans : ∀ ⦃i j k⦄ (hij : i ≤ j) (hjk : j ≤ k) a, (π hij) (π hjk a) = π (hij.trans hjk) a)
     (π_refl : ∀ ⦃i⦄ (a : α i), π rfl.le a = a)
@@ -136,8 +136,8 @@ theorem exist_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsingleto
   let _ : OrderBot αs := {
     bot := ⟨0, Classical.arbitrary _⟩
     bot_le := fun a ↦ by
-      rw [← Subsingleton.elim (α := α 0) (π (zero_le _) a.2) (Classical.arbitrary _)]
-      exact ⟨zero_le _, by simp [π_refl]⟩ }
+      rw [← Subsingleton.elim (α := α 0) (π (Nat.zero_le a.fst) a.2) (Classical.arbitrary _)]
+      exact ⟨Nat.zero_le _, by simp [π_refl]⟩ }
 
   have hfin : ∀ (a : αs), {x | a ⋖ x}.Finite := fun a ↦ by
     simp_rw [hcovby]

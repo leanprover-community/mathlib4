@@ -255,7 +255,7 @@ theorem coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
 theorem toEmbedding_injective : Injective (toEmbedding : r ↪r s → (α ↪ β)) := by
-  rintro ⟨f,-⟩ ⟨g,-⟩; simp
+  rintro ⟨f, -⟩ ⟨g, -⟩; simp
 
 @[simp]
 theorem toEmbedding_inj {f g : r ↪r s} : f.toEmbedding = g.toEmbedding ↔ f = g :=
