@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.DiscreteObjects
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
-import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.DenseSubsite
 /-!
 
 # Discrete objects in sheaf categories.
