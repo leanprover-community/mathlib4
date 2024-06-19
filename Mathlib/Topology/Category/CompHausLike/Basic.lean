@@ -31,10 +31,10 @@ structure CompHausLike where
   /-- The underlying topological space satisfies P. -/
   prop : P toTop
 
-attribute [instance] CompHausLike.is_compact
-attribute [instance] CompHausLike.is_hausdorff
-
 namespace CompHausLike
+
+attribute [instance] is_compact is_hausdorff
+
 
 instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
@@ -50,7 +50,7 @@ instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
 
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
-/-- This wraps the predicate `P` in a typeclass. -/
+/-- This wraps the predicate `P : TopCat → Prop` in a typeclass. -/
 class HasProp : Prop where
   hasProp : P (TopCat.of X)
 
@@ -80,7 +80,7 @@ theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 -- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
-  show TopologicalSpace X.toTop from inferInstance
+  inferInstanceAs (TopologicalSpace X.toTop)
 
 -- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
