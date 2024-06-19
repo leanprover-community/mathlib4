@@ -157,8 +157,8 @@ variable [TopologicalSpace X]
 
 open OrderDual
 
-instance : TopologicalSpace Xᵒᵈ := ‹TopologicalSpace X›
-instance [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹DiscreteTopology X›
+instance OrderDual.instTopologicalSpace : TopologicalSpace Xᵒᵈ := ‹_›
+instance OrderDual.instDiscreteTopology [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹_›
 
 theorem continuous_toDual : Continuous (toDual : X → Xᵒᵈ) := continuous_id
 #align continuous_to_dual continuous_toDual
@@ -183,6 +183,11 @@ theorem nhds_toDual (x : X) : 𝓝 (toDual x) = map toDual (𝓝 x) := rfl
 
 theorem nhds_ofDual (x : X) : 𝓝 (ofDual x) = map ofDual (𝓝 x) := rfl
 #align nhds_of_dual nhds_ofDual
+
+variable [Preorder X] {x : X}
+
+instance OrderDual.instNeBotNhdsWithinIoi [(𝓝[<] x).NeBot] : (𝓝[>] toDual x).NeBot := ‹_›
+instance OrderDual.instNeBotNhdsWithinIio [(𝓝[>] x).NeBot] : (𝓝[<] toDual x).NeBot := ‹_›
 
 end
 
@@ -533,9 +538,8 @@ theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (un
   h.comp (Continuous.Prod.mk_left _)
 #align continuous_uncurry_right Continuous.uncurry_right
 
--- 2024-03-09
-@[deprecated] alias continuous_uncurry_left := Continuous.uncurry_left
-@[deprecated] alias continuous_uncurry_right := Continuous.uncurry_right
+@[deprecated (since := "2024-03-09")] alias continuous_uncurry_left := Continuous.uncurry_left
+@[deprecated (since := "2024-03-09")] alias continuous_uncurry_right := Continuous.uncurry_right
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
   Continuous.uncurry_left x h
@@ -557,6 +561,17 @@ theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
     𝓝[s ×ˢ t] (x, y) = 𝓝[s] x ×ˢ 𝓝[t] y := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
 #align nhds_within_prod_eq nhdsWithin_prod_eq
+
+instance Prod.instNeBotNhdsWithinIio [Preorder X] [Preorder Y] {x : X × Y}
+    [hx₁ : (𝓝[<] x.1).NeBot] [hx₂ : (𝓝[<] x.2).NeBot] : (𝓝[<] x).NeBot := by
+  refine (hx₁.prod hx₂).mono ?_
+  rw [← nhdsWithin_prod_eq]
+  exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
+
+instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
+    [(𝓝[>] x.1).NeBot] [(𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot :=
+  Prod.instNeBotNhdsWithinIio (X := Xᵒᵈ) (Y := Yᵒᵈ)
+    (x := (OrderDual.toDual x.1, OrderDual.toDual x.2))
 
 #noalign continuous_uncurry_of_discrete_topology
 

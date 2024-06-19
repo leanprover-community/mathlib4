@@ -15,7 +15,7 @@ jobs:
     - name: Run script
       id: tech_debt
       run: |
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/technical-debt-counters.sh)" >> "$GITHUB_OUTPUT"
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/technical-debt-metrics.sh)" >> "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1

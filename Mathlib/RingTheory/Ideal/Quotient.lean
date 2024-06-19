@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Quotient
-import Mathlib.RingTheory.Congruence
+import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Tactic.FinCases
 
