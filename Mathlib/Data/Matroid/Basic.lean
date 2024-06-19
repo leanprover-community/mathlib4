@@ -634,7 +634,7 @@ theorem Indep.exists_insert_of_not_mem_maximals (M : Matroid α) ⦃I B : Set α
     exact hne <| hIb.eq_of_subset_indep hII' hI'
   exact hB.1.base_of_maximal fun J hJ hBJ ↦ hB.2 hJ hBJ
 
-lemma Indep.base_of_forall_insert {M : Matroid α} {B : Set α} (hB : M.Indep B)
+theorem Indep.base_of_forall_insert {M : Matroid α} {B : Set α} (hB : M.Indep B)
     (hBmax : ∀ e ∈ M.E \ B, ¬ M.Indep (insert e B)) : M.Base B := by
   refine by_contra fun hnb ↦ ?_
   obtain ⟨B', hB'⟩ := M.exists_base
