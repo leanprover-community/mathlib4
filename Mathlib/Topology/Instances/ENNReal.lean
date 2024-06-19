@@ -1669,6 +1669,8 @@ lemma liminf_const_sub  (f : ι → ℝ≥0∞)
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
+variable {F}
+
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
 lemma liminf_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
     {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
@@ -1722,7 +1724,7 @@ lemma liminf_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
       exact ((toReal_le_toReal (ne_top_of_le_ne_top b_ne_top xs_bdd) b_ne_top).mpr xs_bdd).trans
           (Preorder.le_refl b.toReal)
     · refine ⟨0, by simp only [ge_iff_le, eventually_map, toReal_nonneg, eventually_true]⟩
-  simp [← obs, liminf_toReal_eq F b_ne_top le_b]
+  simp [← obs, liminf_toReal_eq b_ne_top le_b]
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
 lemma limsup_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
@@ -1740,7 +1742,7 @@ lemma limsup_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
       exact ((toReal_le_toReal (ne_top_of_le_ne_top b_ne_top xs_bdd) b_ne_top).mpr xs_bdd).trans
           (Preorder.le_refl b.toReal)
     · refine ⟨0, by simp only [ge_iff_le, eventually_map, toReal_nonneg, eventually_true]⟩
-  simp [← obs, limsup_toReal_eq F b_ne_top le_b]
+  simp [← obs, limsup_toReal_eq b_ne_top le_b]
 
 end LimsupLiminf
 
