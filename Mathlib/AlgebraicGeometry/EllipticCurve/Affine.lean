@@ -645,7 +645,7 @@ lemma addX_eq_addX_negY_sub :
 /-- The formula y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0,
 assuming that P₁ + P₂ + P₃ = O. -/
 lemma cyclic_sum_Y_mul_X_sub_X :
-    letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
+    let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
   simp_rw [slope_of_X_ne hx, negAddY, addX]
   field_simp [sub_ne_zero.mpr hx]
@@ -653,10 +653,10 @@ lemma cyclic_sum_Y_mul_X_sub_X :
 
 /-- The formula
 ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁)),
-where ψ(x,y) = 2y + a₁ x + a₃. -/
+where ψ(x,y) = 2y + a₁x + a₃. -/
 lemma addY_sub_negY_addY :
-    letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
-    letI y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
+    let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
+    let y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
     y₃ - W.negY x₃ y₃ =
       ((y₂ - W.negY x₂ y₂) * (x₁ - x₃) - (y₁ - W.negY x₁ y₁) * (x₂ - x₃)) / (x₂ - x₁) := by
   simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
@@ -695,10 +695,6 @@ lemma zero_def : (zero : W.Point) = 0 :=
 #align weierstrass_curve.point.zero_def WeierstrassCurve.Affine.Point.zero_def
 
 lemma some_ne_zero {x y : R} (h : W.Nonsingular x y) : some h ≠ 0 := by rintro (_|_)
-
-lemma some_eq_some_iff {x₁ x₂ y₁ y₂ : R} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂) :
-    some h₁ = some h₂ ↔ x₁ = x₂ ∧ y₁ = y₂ :=
-  ⟨by rintro (_|_); trivial, by rintro ⟨rfl, rfl⟩; rfl⟩
 
 /-- The negation of a nonsingular rational point on `W`.
 
