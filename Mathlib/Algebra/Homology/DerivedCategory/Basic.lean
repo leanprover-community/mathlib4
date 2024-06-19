@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.Localization
 
@@ -194,5 +195,18 @@ instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).F
 instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
+
+/-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
+their compatibilities with shifts. -/
+noncomputable def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
+  (HomotopyCategory.singleFunctors C).postcomp Qh
+
+/-- The shift functor `C ⥤ DerivedCategory C` which sends `X : C` to the
+single cochain complex with `X` sitting in degree `n : ℤ`. -/
+noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+instance (n : ℤ) : (singleFunctor C n).Additive := by
+  dsimp [singleFunctor, singleFunctors]
+  infer_instance
 
 end DerivedCategory
