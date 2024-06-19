@@ -6,7 +6,6 @@ Authors: David Loeffler
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.NumberTheory.DirichletCharacter.GaussSum
-import Mathlib.Topology.Instances.ZMod
 
 /-!
 # Fourier theory on `ZMod N`
