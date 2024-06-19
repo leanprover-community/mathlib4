@@ -262,6 +262,7 @@ theorem card_parts : h.finpartition.parts.card = min (Fintype.card V) r := by
   rwa [h.not_adj_iff_part_eq]
 
 /-- **Turán's theorem**, forward direction.
+
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
 theorem nonempty_iso_turanGraph : Nonempty (G ≃g turanGraph (Fintype.card V) r) := by
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
