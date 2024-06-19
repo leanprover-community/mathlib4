@@ -259,7 +259,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top {r : ℝ≥0∞} (hr : 1 < 
     Tendsto (fun n ↦ r^n) atTop (𝓝 ∞) := by
   have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹)^n) atTop 0
   simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
-  specialize obs <| ENNReal.inv_lt_one.mpr ha
+  specialize obs <| ENNReal.inv_lt_one.mpr hr
   convert obs
   simp [← ENNReal.inv_pow]
 
