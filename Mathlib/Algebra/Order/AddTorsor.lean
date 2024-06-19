@@ -42,8 +42,8 @@ instance IsOrderedVAdd.toCovariantClassLeft [LE G] [LE P] [VAdd G P] [IsOrderedV
     CovariantClass G P (· +ᵥ ·) (· ≤ ·) where
   elim := fun a _ _ bc ↦ IsOrderedVAdd.vadd_le_vadd_left _ _ bc a
 
-theorem vAdd_le_vAdd' [Preorder G] [Preorder P] [VAdd G P] [IsOrderedVAdd G P] {a b : G} {c d : P} (hab : a ≤ b)
-    (hcd : c ≤ d) : a +ᵥ c ≤ b +ᵥ d :=
+theorem vAdd_le_vAdd' [Preorder G] [Preorder P] [VAdd G P] [IsOrderedVAdd G P] {a b : G} {c d : P}
+    (hab : a ≤ b) (hcd : c ≤ d) : a +ᵥ c ≤ b +ᵥ d :=
   (IsOrderedVAdd.vadd_le_vadd_left _ _ hcd _).trans (IsOrderedVAdd.vadd_le_vadd_right _ _ hab _)
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
@@ -52,7 +52,8 @@ class IsCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop where
   protected right_cancel : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
 
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
-class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] extends IsOrderedVAdd G P : Prop where
+class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] extends
+    IsOrderedVAdd G P : Prop where
   protected le_of_vadd_le_vadd_left : ∀ (a : G) (b c : P), a +ᵥ b ≤ a +ᵥ c → b ≤ c
   protected le_of_vadd_le_vadd_right : ∀ (a b : G) (c : P), a +ᵥ c ≤ b +ᵥ c → a ≤ b
 

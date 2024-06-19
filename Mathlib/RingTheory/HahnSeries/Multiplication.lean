@@ -146,11 +146,10 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd
     isPWO_support' :=
         haveI h :
-          { a : Γ' |
-              (∑ ij ∈ vAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
-                  x.coeff ij.fst • ((of R).symm y).coeff ij.snd) ≠
-                0 } ⊆
-            { a : Γ' | (vAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a).Nonempty } := by
+          { a : Γ' | (∑ ij ∈ vAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
+              x.coeff ij.fst • ((of R).symm y).coeff ij.snd) ≠ 0 } ⊆
+            { a : Γ' | (vAddAntidiagonal x.isPWO_support
+              ((of R).symm y).isPWO_support a).Nonempty } := by
           intro a ha
           contrapose! ha
           simp [not_nonempty_iff_eq_empty.1 ha]
@@ -166,7 +165,8 @@ end SMul
 
 section SMulZeroClass
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Zero R] [AddCommMonoid V]
+variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Zero R]
+  [AddCommMonoid V]
 
 instance instRSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
     SMulZeroClass R (HahnModule Γ R V) :=

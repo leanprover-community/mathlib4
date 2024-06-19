@@ -138,8 +138,8 @@ end Coeff
 section Module
 
 variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [VAdd Γ Γ']
-  [IsOrderedCancelAddAction Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V]
-  [AddCommGroup W] [Module R W]
+  [IsOrderedCancelAddAction Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
+  [Module R V] [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
 def HahnSMul (x : HahnSeries Γ R) (A : HVertexOperator Γ' R V W) :
