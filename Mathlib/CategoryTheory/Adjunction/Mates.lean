@@ -381,6 +381,13 @@ theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
   rw [this]
   simp only [comp_id, id_comp]
 
+/-- A component of a transposed form of the inverse conjugation definition. -/
+theorem conjugateEquiv_counit_symm (α : R₁ ⟶ R₂) (d : D) :
+    L₂.map (α.app _) ≫ adj₂.counit.app d =
+      ((conjugateEquiv adj₁ adj₂).symm α).app _ ≫ adj₁.counit.app d := by
+    conv_lhs => rw [← (conjugateEquiv adj₁ adj₂).right_inv α]
+    exact (conjugateEquiv_counit adj₁ adj₂ ((conjugateEquiv adj₁ adj₂).symm α) d)
+
 /-- A component of a transposed form of the conjugation definition. -/
 theorem unit_conjugateEquiv (α : L₂ ⟶ L₁) (c : C) :
     adj₁.unit.app _ ≫ (conjugateEquiv adj₁ adj₂ α).app _ =
@@ -391,6 +398,13 @@ theorem unit_conjugateEquiv (α : L₂ ⟶ L₁) (c : C) :
   dsimp at this
   rw [this]
   simp
+
+/-- A component of a transposed form of the inverse conjugation definition. -/
+theorem unit_conjugateEquiv_symm (α : R₁ ⟶ R₂) (c : C) :
+    adj₁.unit.app _ ≫ α.app _ =
+      adj₂.unit.app c ≫ R₂.map (((conjugateEquiv adj₁ adj₂).symm α).app _) := by
+    conv_lhs => rw [← (conjugateEquiv adj₁ adj₂).right_inv α]
+    exact (unit_conjugateEquiv adj₁ adj₂ ((conjugateEquiv adj₁ adj₂).symm α) c)
 
 @[simp]
 theorem conjugateEquiv_id : conjugateEquiv adj₁ adj₁ (𝟙 _) = 𝟙 _ := by
