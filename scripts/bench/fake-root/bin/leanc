@@ -6,4 +6,4 @@ for arg in "$@"; do
         MODE=compilation
     fi
 done
-/usr/bin/time -f "\tnative $MODE %es" leanc "$@"
+command time -f "\tnative $MODE %es" leanc "$@"
