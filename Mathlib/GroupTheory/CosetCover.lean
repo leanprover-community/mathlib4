@@ -658,18 +658,9 @@ theorem Group.LeftCosetCover.normalize'_density
     exact { finiteIndex := hx }
   simp only [Function.support_inv (G₀ := ℚ), Finset.coe_univ, Set.subset_univ]
 
-/- This is the problematic to_additive theorem
-Error message :
-|  application type mismatch
-|    One.toOfNat1
-|  argument has type
-|    Zero ↥(c.addSubgroup ↑⟨⟨x✝¹.fst, ⋯⟩, ⟨↑x✝¹.snd, ⋯⟩⟩.fst)
-|  but function has type
-|    [inst : One ↥(c.addSubgroup ↑⟨⟨x✝¹.fst, ⋯⟩, ⟨↑x✝¹.snd, ⋯⟩⟩.fst)] →
-|      OfNat (↥(c.addSubgroup ↑⟨⟨x✝¹.fst, ⋯⟩, ⟨↑x✝¹.snd, ⋯⟩⟩.fst)) 1
--/
+attribute [to_additive_ignore_args 4] Group.LeftCosetCover.subgroup
 
--- @[to_additive]
+@[to_additive]
 theorem Group.LeftCosetCover.normalize_density
     [Finite c.carrier]
     [DecidableEq (Subgroup G)]
@@ -694,7 +685,8 @@ theorem Group.LeftCosetCover.normalize_density
     · exact fun _ _ ↦ rfl
     · exact fun _ _ ↦ rfl
     · intro i _
-      congr 3
+      apply congr_arg Inv.inv
+      congr 2
       rw [normalize_subgroup_eq_core, eq_comm, c.sieve_subgroup_eq_core_iff]
       exact i.1.prop
     · intro i _
