@@ -155,8 +155,7 @@ lemma val_mem_rootsOfUnity_orderOf (χ : MulChar F R) {a : F} (ha : a ≠ 0) :
     ∃ ζ ∈ rootsOfUnity ⟨orderOf χ, χ.orderOf_pos⟩ R, ζ = χ a := by
   have hu : IsUnit (χ a) := ha.isUnit.map χ
   refine ⟨hu.unit, ?_, IsUnit.unit_spec hu⟩
-  rw [mem_rootsOfUnity, PNat.mk_coe]
-  ext
+  rw [mem_rootsOfUnity, PNat.mk_coe, Units.ext_iff]
   push_cast
   rw [IsUnit.unit_spec, ← χ.pow_apply' χ.orderOf_pos.ne', pow_orderOf_eq_one,
     show a = (isUnit_iff_ne_zero.mpr ha).unit by simp only [IsUnit.unit_spec],
@@ -198,8 +197,7 @@ lemma val_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n �
     exact Subalgebra.zero_mem _
   · obtain ⟨ζ, hζ₁, hζ₂⟩ := val_mem_rootsOfUnity_of_pow_eq_one hn hχ h
     rw [← hζ₂]
-    rw [mem_rootsOfUnity] at hζ₁
-    apply_fun ((↑) : Rˣ → R) at hζ₁
+    rw [mem_rootsOfUnity, Units.ext_iff] at hζ₁
     push_cast at hζ₁
     obtain ⟨k, _, hk⟩ := IsPrimitiveRoot.eq_pow_of_pow_eq_one hμ hζ₁ (Nat.pos_of_ne_zero hn)
     rw [← hk]
