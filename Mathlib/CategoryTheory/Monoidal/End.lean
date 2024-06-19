@@ -196,7 +196,7 @@ theorem left_unitality_app (n : M) (X : C) :
 #align category_theory.left_unitality_app CategoryTheory.left_unitality_app
 
 -- Porting note: linter claims `simp can prove it`, but cnot
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem obj_ε_app (n : M) (X : C) :
     (F.obj n).map (F.ε.app X) = (F.map (λ_ n).inv).app X ≫ (F.μIso (𝟙_ M) n).inv.app X := by
   refine Eq.trans ?_ (Category.id_comp _)
@@ -207,7 +207,7 @@ theorem obj_ε_app (n : M) (X : C) :
 #align category_theory.obj_ε_app CategoryTheory.obj_ε_app
 
 -- Porting note: linter claims `simp can prove it`, but cnot
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem obj_ε_inv_app (n : M) (X : C) :
     (F.obj n).map (F.εIso.inv.app X) = (F.μ (𝟙_ M) n).app X ≫ (F.map (λ_ n).hom).app X := by
   rw [← cancel_mono ((F.obj n).map (F.ε.app X)), ← Functor.map_comp]
@@ -249,7 +249,7 @@ theorem associativity_app (m₁ m₂ m₃ : M) (X : C) :
 #align category_theory.associativity_app CategoryTheory.associativity_app
 
 -- Porting note: linter claims `simp can prove it`, but cnot
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) :
     (F.obj m₃).map ((F.μ m₁ m₂).app X) =
       (F.μ m₂ m₃).app ((F.obj m₁).obj X) ≫
@@ -260,7 +260,7 @@ theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) :
 #align category_theory.obj_μ_app CategoryTheory.obj_μ_app
 
 -- Porting note: linter claims `simp can prove it`, but cnot
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem obj_μ_inv_app (m₁ m₂ m₃ : M) (X : C) :
     (F.obj m₃).map ((F.μIso m₁ m₂).inv.app X) =
       (F.μ (m₁ ⊗ m₂) m₃).app X ≫

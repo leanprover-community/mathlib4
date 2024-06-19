@@ -104,11 +104,11 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
 #align nnrat.coe_nonneg NNRat.coe_nonneg
 
 -- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
+@[simp, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
 #align nnrat.coe_zero NNRat.coe_zero
 
 -- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
+@[simp, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
 #align nnrat.coe_one NNRat.coe_one
 
 @[simp, norm_cast]
@@ -122,7 +122,7 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 #align nnrat.coe_mul NNRat.coe_mul
 
 -- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
+@[simp, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
   rfl
 #align nnrat.coe_pow NNRat.coe_pow
 
@@ -157,7 +157,7 @@ theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
 
 -- `cast_pos`, defined in a later file, makes this lemma redundant
-@[simp, norm_cast, nolint simpNF]
+@[simp, norm_cast]
 theorem coe_pos : (0 : ℚ) < q ↔ 0 < q :=
   Iff.rfl
 #align nnrat.coe_pos NNRat.coe_pos
@@ -195,7 +195,7 @@ def coeHom : ℚ≥0 →+* ℚ where
 #align nnrat.coe_hom NNRat.coeHom
 
 -- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
+@[simp, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
 -- See note [no_index around OfNat.ofNat]
@@ -228,13 +228,13 @@ theorem bddBelow_coe (s : Set ℚ≥0) : BddBelow (((↑) : ℚ≥0 → ℚ) '' 
 #align nnrat.bdd_below_coe NNRat.bddBelow_coe
 
 -- `cast_max`, defined in a later file, makes this lemma redundant
-@[simp, norm_cast, nolint simpNF]
+@[simp, norm_cast]
 theorem coe_max (x y : ℚ≥0) : ((max x y : ℚ≥0) : ℚ) = max (x : ℚ) (y : ℚ) :=
   coe_mono.map_max
 #align nnrat.coe_max NNRat.coe_max
 
 -- `cast_max`, defined in a later file, makes this lemma redundant
-@[simp, norm_cast, nolint simpNF]
+@[simp, norm_cast]
 theorem coe_min (x y : ℚ≥0) : ((min x y : ℚ≥0) : ℚ) = min (x : ℚ) (y : ℚ) :=
   coe_mono.map_min
 #align nnrat.coe_min NNRat.coe_min

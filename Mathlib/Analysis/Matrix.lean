@@ -286,7 +286,7 @@ theorem linfty_opNNNorm_def (A : Matrix m n α) :
 
 @[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_def := linfty_opNNNorm_def
 
-@[simp, nolint simpNF] -- Porting note: linter times out
+@[simp] -- Porting note: linter times out
 theorem linfty_opNNNorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   simp
