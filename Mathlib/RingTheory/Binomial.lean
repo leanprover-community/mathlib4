@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Data.Real.Basic
 
 /-!
 # Binomial rings
