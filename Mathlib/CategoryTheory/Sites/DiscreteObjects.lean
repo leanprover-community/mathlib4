@@ -3,7 +3,8 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.DiscreteObjects
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.DenseSubsite
 import Mathlib.CategoryTheory.Sites.PreservesSheafification
@@ -13,35 +14,33 @@ import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 -/
 
+universe w' w v u r s
+
 open CategoryTheory Limits Functor Adjunction Opposite
 
 namespace CategoryTheory.Sheaf
 
 variable {C : Type*} [Category C]
 variable (J : GrothendieckTopology C) (A : Type*) [Category A] [HasWeakSheafify J A]
-  [(constantSheaf J A).Faithful] [(constantSheaf J A).Full] {t : C} (ht : IsTerminal t)
+  [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
+
+noncomputable instance [HasTerminal C] : Coreflective (constantSheaf J A) where
+  adj := (constantSheafAdj J A terminalIsTerminal)
+
+variable {t : C} (ht : IsTerminal t)
 
 /--
 A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
 category to the target category.
 -/
-abbrev IsDiscrete (F : Sheaf J A) : Prop :=
-  haveI := HasDiscreteObjects.mk' _ (constantSheafAdj J A ht)
-  CategoryTheory.IsDiscrete ((sheafSections J A).obj (op t)) F
-
-theorem isDiscrete_iff_isIso_counit_app (F : Sheaf J A) :
-    haveI := HasDiscreteObjects.mk' _ (constantSheafAdj J A ht)
-    F.IsDiscrete ht ↔ IsIso ((constantSheafAdj J A ht).counit.app F) :=
-  CategoryTheory.isDiscrete_iff_isIso_counit_app _ (constantSheafAdj J A ht) _
+abbrev IsDiscrete (F : Sheaf J A) : Prop := IsIso ((constantSheafAdj J A ht).counit.app F)
 
 theorem isDiscrete_iff_mem_essImage (F : Sheaf J A) {t : C} (ht : IsTerminal t) :
-    haveI := HasDiscreteObjects.mk' _ (constantSheafAdj J A ht)
     F.IsDiscrete J A ht ↔ F ∈ (constantSheaf J A).essImage :=
-  CategoryTheory.isDiscrete_iff_mem_essImage _ (constantSheafAdj J A ht) _
+  (constantSheafAdj J A ht).isIso_counit_app_iff_mem_essImage
 
 section
 
-universe w' w v u
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   (A : Type w) [Category.{w'} A]
   [HasWeakSheafify J A]
@@ -105,6 +104,10 @@ lemma isDiscrete_iff (F : Sheaf K A) :
       Functor.Full.of_iso (equivCommuteConstant J A ht K G ht')
     (e.inverse.obj F).IsDiscrete J A ht ↔ IsDiscrete K A ht' F := by
   intro e
+  have : (constantSheaf K A).Faithful :=
+      Functor.Faithful.of_iso (equivCommuteConstant J A ht K G ht')
+  have : (constantSheaf K A).Full :=
+    Functor.Full.of_iso (equivCommuteConstant J A ht K G ht')
   simp only [isDiscrete_iff_mem_essImage]
   constructor
   · intro ⟨Y, ⟨i⟩⟩
@@ -116,7 +119,6 @@ lemma isDiscrete_iff (F : Sheaf K A) :
       (equivCommuteConstant' J A ht K G ht').app _ ≪≫ e.inverse.mapIso i
     exact ⟨_, ⟨j⟩⟩
 
-universe r s
 variable {A : Type w} [Category.{w'} A] {B : Type s} [Category.{r} B] (U : A ⥤ B)
   [HasWeakSheafify J A] [HasWeakSheafify J B]
 variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
@@ -137,7 +139,6 @@ noncomputable def constantCommuteCompose' (X : A) :
 theorem sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
     [h : ((sheafCompose J U).obj F).IsDiscrete J B ht] :
     F.IsDiscrete J A ht := by
-  rw [isDiscrete_iff_isIso_counit_app] at h ⊢
   let j := constantCommuteCompose' J U (F.val.obj ⟨t⟩)
   let fcounit := (constantSheafAdj J A ht).counit.app F
   let fff := (sheafCompose J U).map fcounit
