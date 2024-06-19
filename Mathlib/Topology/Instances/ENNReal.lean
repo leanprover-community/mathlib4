@@ -1715,9 +1715,7 @@ lemma liminf_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
   have obs : (liminf (fun i ↦ (xs i).toReal) F).toNNReal = liminf (fun i ↦ (xs i).toNNReal) F := by
     rw [Real.toNNReal_mono.map_liminf_of_continuousAt
           (fun i ↦ (xs i).toReal) continuous_real_toNNReal.continuousAt ?_ ?_]
-    · congr
-      funext i
-      simp
+    · congr; funext i; simp
     · refine ⟨b.toNNReal, ?_⟩
       simp only [eventually_map]
       filter_upwards [le_b] with i xs_bdd
@@ -1733,9 +1731,7 @@ lemma limsup_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
   have obs : (limsup (fun i ↦ (xs i).toReal) F).toNNReal = limsup (fun i ↦ (xs i).toNNReal) F := by
     rw [Real.toNNReal_mono.map_limsup_of_continuousAt
           (fun i ↦ (xs i).toReal) continuous_real_toNNReal.continuousAt ?_ ?_]
-    · congr
-      funext i
-      simp
+    · congr; funext i; simp
     · refine ⟨b.toNNReal, ?_⟩
       simp only [eventually_map]
       filter_upwards [le_b] with i xs_bdd
