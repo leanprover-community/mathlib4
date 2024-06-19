@@ -911,34 +911,11 @@ instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
     Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim
 
-/-- Addition in a ring localization is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨b * c + d * a, b * d⟩`.
-
-Should not be confused with `AddLocalization.add`, which is defined as
-`⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
--/
-protected irreducible_def add (z w : Localization M) : Localization M :=
-  Localization.liftOn₂ z w (fun a b c d => mk ((b : R) * c + d * a) (b * d))
-    fun {a a' b b' c c' d d'} h1 h2 =>
-    mk_eq_mk_iff.2
-      (by
-        rw [r_eq_r'] at h1 h2 ⊢
-        cases' h1 with t₅ ht₅
-        cases' h2 with t₆ ht₆
-        use t₅ * t₆
-        dsimp only
-        calc ↑t₅ * ↑t₆ * (↑b' * ↑d' * ((b : R) * c + d * a))
-          _ = t₆ * (d' * c) * (t₅ * (b' * b)) + t₅ * (b' * a) * (t₆ * (d' * d)) := by ring
-          _ = t₅ * t₆ * (b * d * (b' * c' + d' * a')) := by rw [ht₆, ht₅]; ring
-          )
-#align localization.add Localization.add
-
-instance : Add (Localization M) :=
-  ⟨Localization.add⟩
-
 theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
     mk ((b : R) * c + (d : R) * a) (b * d) := by
-  show Localization.add (mk a b) (mk c d) = mk _ _
-  simp [Localization.add_def]
+  rw [add_comm (b * c) (d * a), mul_comm b d]
+  exact OreLocalization.oreDiv_add_oreDiv
+
 #align localization.add_mk Localization.add_mk
 
 theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b := by
@@ -947,41 +924,6 @@ theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b 
   simp only [Submonoid.coe_one, Submonoid.coe_mul]
   ring
 #align localization.add_mk_self Localization.add_mk_self
-
-local macro "localization_tac" : tactic =>
-  `(tactic|
-   { intros
-     simp only [add_mk, Localization.mk_mul, ← Localization.mk_zero 1]
-     refine mk_eq_mk_iff.mpr (r_of_eq ?_)
-     simp only [Submonoid.coe_mul]
-     ring })
-
-instance : CommSemiring (Localization M) :=
-  { (show CommMonoidWithZero (Localization M) by infer_instance) with
-    add := (· + ·)
-    nsmul := (· • ·)
-    nsmul_zero := fun x =>
-      Localization.induction_on x fun x => by simp only [smul_mk, zero_nsmul, mk_zero]
-    nsmul_succ := fun n x =>
-      Localization.induction_on x fun x => by simp only [smul_mk, succ_nsmul, add_mk_self]
-    add_assoc := fun m n k =>
-      Localization.induction_on₃ m n k
-        (by localization_tac)
-    zero_add := fun y =>
-      Localization.induction_on y
-        (by localization_tac)
-    add_zero := fun y =>
-      Localization.induction_on y
-        (by localization_tac)
-    add_comm := fun y z =>
-      Localization.induction_on₂ z y
-        (by localization_tac)
-    left_distrib := fun m n k =>
-      Localization.induction_on₃ m n k
-        (by localization_tac)
-    right_distrib := fun m n k =>
-      Localization.induction_on₃ m n k
-        (by localization_tac) }
 
 /-- For any given denominator `b : M`, the map `a ↦ a / b` is an `AddMonoidHom` from `R` to
   `Localization M`-/

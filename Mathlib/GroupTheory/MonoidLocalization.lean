@@ -1848,15 +1848,6 @@ end Submonoid
 
 namespace Localization
 
-/-- The zero element in a Localization is defined as `(0, 1)`.
-
-Should not be confused with `AddLocalization.zero` which is `(0, 0)`. -/
-protected irreducible_def zero : Localization S :=
-  mk 0 1
-#align localization.zero Localization.zero
-
-instance : Zero (Localization S) := ⟨Localization.zero S⟩
-
 variable {S}
 
 theorem mk_zero (x : S) : mk 0 (x : S) = 0 :=
