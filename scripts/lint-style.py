@@ -44,6 +44,7 @@ ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_TAC2 = 10 # imported Lake in Mathlib
 ERR_IBY = 11 # isolated by
+ERR_IWH = 22 # isolated where
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
@@ -315,6 +316,20 @@ def isolated_by_dot_semicolon_check(lines, path):
             prev_line = lines[line_nr - 2][1].rstrip()
             if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
                 errors += [(ERR_IBY, line_nr, path)]
+        elif line.lstrip().startswith("by "):
+            # We also error if the previous line ends on := and the current line starts with "by ".
+            prev_line = newlines[-1][1].rstrip()
+            if prev_line.endswith(":="):
+                # If the previous line is short enough, we can suggest an auto-fix.
+                # Future: error also if it is not: currently, mathlib contains about 30 such
+                # instances which are not obvious to fix.
+                if len(prev_line) <= 97:
+                    errors += [(ERR_IBY, line_nr, path)]
+                    newlines[-1] = (line_nr - 1, prev_line + " by\n")
+                    indent = " " * (len(line) - len(line.lstrip()))
+                    line = f"{indent}{line.lstrip()[3:]}"
+        elif line.lstrip() == "where":
+            errors += [(ERR_IWH, line_nr, path)]
         if line.lstrip().startswith(". "):
             errors += [(ERR_DOT, line_nr, path)]
             line = line.replace(". ", "· ", 1)
@@ -385,6 +400,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_TAC2", "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to allow this linter.")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
+        if errno == ERR_IWH:
+            output_message(path, line_nr, "ERR_IWH", "Line is an isolated where")
         if errno == ERR_DOT:
             output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
         if errno == ERR_SEM:
