@@ -18,7 +18,7 @@ It completely ignores
 * multiple `simpNF`;
 * every `nolint` except for the first.
 -/
-def getNoLintSimp (stx : Syntax) : CommandElabM (Option Syntax) := do
+def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Position)) := do
   -- check if there is a `nolint` and do nothing it there isn't one.
   if stx.isOfKind ``Lean.Parser.Command.attribute then return none
   match stx.find? (·.isOfKind ``Std.Tactic.Lint.nolint) with
@@ -26,7 +26,7 @@ def getNoLintSimp (stx : Syntax) : CommandElabM (Option Syntax) := do
     | some nl =>
       -- check if there is a `simpNF` in the `nolint` and do nothing it there isn't one.
       match nl.find? (· == mkIdent `simpNF) with
-        | none => return default
+        | none => return none
         | some snf =>
           -- here there is a `nolint ... simpNF ...`.
           -- `noLintNumber` is the number of `nolint`s
@@ -34,9 +34,14 @@ def getNoLintSimp (stx : Syntax) : CommandElabM (Option Syntax) := do
             | #[_, .node _ _ nolinted] =>  -- the first `_` is ``atom `nolint``
               nolinted.size
             | _ => 0
+          let fm ← getFileMap
           if noLintNumber == 1
-          then return nl
-          else return snf
+          then
+            let simpNFtailPos := snf.getHeadInfo.getTailPos?
+            return some (nl, fm.toPosition (simpNFtailPos.getD default))
+          else
+            let nolintTailPos := nl.getHeadInfo.getTailPos?
+            return some (snf, fm.toPosition (nolintTailPos.getD default))
 
 /-- `unnecessarySyntax` linter takes as input a `CommandElabM` function `f` assigning to
 a command `cmd` syntax an array of triples `(newCmd, positionStx, message)` consisting of
@@ -60,16 +65,12 @@ def getUnnecessarySyntax (o : Options) : Bool := Linter.getLinterValue linter.un
 
 @[inherit_doc linter.unnecessarySyntax]
 def unnecessarySyntax (f : Syntax → CommandElabM (Array (Syntax × Syntax × MessageData))) :
-    Linter where run cmd := do
+    Linter where run := withSetOptionIn fun cmd => do
   unless getUnnecessarySyntax (← getOptions) do
     return
   let news ← f cmd
-  if let some nls ← getNoLintSimp cmd then
-
+  if let some (nls, pos) ← getNoLintSimp cmd then
     if news.isEmpty then
-      let tailPos := nls.getHeadInfo.getTailPos?
-      let fm ← getFileMap
-      let pos := fm.toPosition (tailPos.getD default)
       Linter.logLint linter.unnecessarySyntax nls m!"`{nls}` can be removed {pos}"
 
 /-- Runs `k`.  If it is successful, return the output, otherwise return the error. -/
@@ -135,7 +136,7 @@ def simpNF (declName : Name) : MetaM (Option MessageData) := do
 abbrev snf (cmd : Syntax) : CommandElabM (Array (Syntax × Syntax × MessageData)) := do
   match ← getNoLintSimp cmd with
     | none => return #[]
-    | some nl =>
+    | some (nl, _) =>
       let (ms, _) ← liftCoreM do Meta.MetaM.run do
         if let some id := cmd.find? (·.isOfKind ``declId) then
           let nm ← realizeGlobalConstNoOverloadWithInfo id[0]
