@@ -1562,7 +1562,7 @@ theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
 For the typical case of quaternions over ℝ, each component will show as a Cauchy sequence due to
 the way Real numbers are represented.
 -/
-unsafe instance [Repr R] {a b : R} : Repr ℍ[R, a, b] where
+instance [Repr R] {a b : R} : Repr ℍ[R, a, b] where
   reprPrec q _ :=
     s!"\{ re := {repr q.re}, imI := {repr q.imI}, imJ := {repr q.imJ}, imK := {repr q.imK} }"
 
