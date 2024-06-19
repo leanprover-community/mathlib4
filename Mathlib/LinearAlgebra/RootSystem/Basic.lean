@@ -99,10 +99,17 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootPairing ι R M N}
     (he : P₁.toLin = P₂.toLin)
     (hr : P₁.root = P₂.root)
-    (hp : P₁.reflection_perm = P₂.reflection_perm)
     (hc : range P₁.coroot = range P₂.coroot) :
     P₁ = P₂ := by
-  suffices P₁.coroot = P₂.coroot by cases' P₁ with p₁; cases' P₂ with p₂; cases p₁; cases p₂; congr
+  have hp : P₁.coroot = P₂.coroot → P₁.reflection_perm = P₂.reflection_perm := by
+    intro _
+    ext i j
+    refine RootPairing.eq_of_root P₁ _ _ ?_
+    nth_rw 2 [hr]
+    rw [root_reflection_perm, root_reflection_perm, reflection_apply, reflection_apply]
+    simp_all
+  suffices P₁.coroot = P₂.coroot by
+    cases' P₁ with p₁; cases' P₂ with p₂; cases p₁; cases p₂; congr; exact hp this
   have := NoZeroSMulDivisors.int_of_charZero R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
@@ -181,7 +188,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     cases' P₁ with P₁
     cases' P₂ with P₂
     congr
-    exact RootPairing.ext he hr (le_antisymm h₁ h₂)
+    exact RootPairing.ext he hr <| Subset.antisymm h₁ h₂
   clear! P₁ P₂
   rintro P₁ P₂ he hr - ⟨i, rfl⟩
   use i
