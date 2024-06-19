@@ -190,7 +190,7 @@ lemma mk_comp_mkInv (f : Y ⟶ X) (hf : W f) [HasSmallLocalizedHom.{w} W Y Y] :
 
 @[simp]
 lemma mkInv_comp_mk (f : Y ⟶ X) (hf : W f) [HasSmallLocalizedHom.{w} W X X] :
-    (mkInv f hf).comp (mk W f)= mk W (𝟙 X) :=
+    (mkInv f hf).comp (mk W f) = mk W (𝟙 X) :=
   (equiv W W.Q).injective (by simp [equiv_comp])
 
 end
