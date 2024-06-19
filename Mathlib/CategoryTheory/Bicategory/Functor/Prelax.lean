@@ -11,19 +11,28 @@ import Mathlib.CategoryTheory.Bicategory.Basic
 # Prelax functors
 
 This file defines lax prefunctors and prelax functors between bicategories. The point of these
-definitions is to give some API that will be helpful in both the development of Lax and Oplax
-functors.
+definitions is to provide some common API that will be helpful in the development of both lax and
+oplax functors.
 
-A lax prefunctor `F` between quivers `B` and `C`, equipped with quiver structures on the hom types,
+## Main definitions
+
+`LaxPreFunctor B C`:
+
+A lax prefunctor `F` between quivers `B` and `C`, equipped with quiver structures on the hom-types,
 consists of
 * a function between objects `F.obj : B ⟶ C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 
-A prelax functor is a lax prefunctor such that `map₂` is a functor. Namely, it satisfies
+`PrelaxFunctor B C`:
+
+A prelax functor `F` between bicategories `B` and `C` is a lax prefunctor such that `map₂` is a
+functor. Namely, it satisfies
 * `F.map₂ (𝟙 f) = 𝟙 (F.map f)`,
 * `F.map₂ (η ≫ θ) = F.map₂ η ≫ F.map₂ θ`.
 
+
+-- TODO: note that coercions have been removed
 -/
 
 namespace CategoryTheory
@@ -50,19 +59,12 @@ structure LaxPreFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiv
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
 #align category_theory.prelax_functor CategoryTheory.LaxPreFunctor
 
--- TODO: understand this
 initialize_simps_projections LaxPreFunctor (+toPrefunctor, -obj, -map)
 
 /-- The prefunctor between the underlying quivers. -/
 add_decl_doc LaxPreFunctor.toPrefunctor
 
 namespace LaxPreFunctor
-
-attribute [coe] CategoryTheory.LaxPreFunctor.toPrefunctor
-
-instance hasCoeToPrefunctor : Coe (LaxPreFunctor B C) (Prefunctor B C) :=
-  ⟨toPrefunctor⟩
-#align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.LaxPreFunctor.hasCoeToPrefunctor
 
 variable (F : LaxPreFunctor B C)
 
@@ -115,11 +117,6 @@ add_decl_doc PrelaxFunctor.toLaxPreFunctor
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
-
-attribute [coe] CategoryTheory.LaxPreFunctor.toPrefunctor
-
-instance hasCoeToLaxPreFunctor : Coe (PrelaxFunctor B C) (LaxPreFunctor B C) :=
-  ⟨toLaxPreFunctor⟩
 
 -- TODO: what simps to include here...?
 /-- The identity prelax functor. -/
