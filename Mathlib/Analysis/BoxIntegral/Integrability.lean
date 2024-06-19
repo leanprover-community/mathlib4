@@ -332,11 +332,11 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
       (ContinuousAt.continuousOn fun _ h ↦ h).aestronglyMeasurable (measurableSet_of_continuousAt f)
     refine this.mono_measure (Measure.le_iff.2 fun s hs ↦ ?_)
     repeat rw [μ.restrict_apply hs]
-    apply le_of_le_of_eq <| μ.mono (Set.inter_subset_left s I)
-    refine measure_eq_measure_of_null_diff (Set.inter_subset_left s v) ?_ |>.symm
+    apply le_of_le_of_eq <| μ.mono s.inter_subset_left
+    refine measure_eq_measure_of_null_diff s.inter_subset_left ?_ |>.symm
     rw [diff_self_inter, Set.diff_eq]
     refine (le_antisymm (zero_le (μ (s ∩ vᶜ))) ?_).symm
-    exact le_trans (μ.mono (Set.inter_subset_right s vᶜ)) (nonpos_iff_eq_zero.2 hc)
+    exact le_trans (μ.mono s.inter_subset_right) (nonpos_iff_eq_zero.2 hc)
   · have : IsFiniteMeasure (μ.restrict (Box.Icc I)) :=
       { measure_univ_lt_top := by simp [I.isCompact_Icc.measure_lt_top (μ := μ)] }
     have : IsFiniteMeasure (μ.restrict I) :=
