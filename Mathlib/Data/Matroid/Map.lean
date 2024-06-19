@@ -19,7 +19,7 @@ one could reasonably ask for;
 for instance, we could map `M : Matroid α` to a `Matroid β` using either
 a function `f : α → β`, a function `f : ↑M.E → β` or indeed a function `f : ↑M.E → ↑E`
 for some `E : Set β`. We attempt to give definitions that capture most reasonable use cases.
-`M : Matroid α` along `f : α → β` to get `N : Matroid β`
+
 `Matroid.map` and `Matroid.comap` are defined in terms of bare functions rather than
 functions defined on subtypes, so are often easier to work in practice than the subtype variants.
 In fact, the statement that `N = Matroid.map M f hf` for some `f : α → β` and `hf : InjOn M.E f`
