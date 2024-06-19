@@ -17,7 +17,7 @@ coefficients.
 
 ## Main results
 
-- `exists_ne_zero_int_vec_norm_le`: Given a non-singular `m × n` matrix `A` with `m < n` the linear
+- `exists_ne_zero_int_vec_norm_le`: Given a non-zero `m × n` matrix `A` with `m < n` the linear
 system it determines has a non-zero integer solution `t` with
 `‖t‖ ≤ ((n * ‖A‖) ^ ((m : ℝ) / (n - m)))`
 
@@ -65,8 +65,6 @@ local notation3 "B" => Nat.floor (((n : ℝ) * ‖A‖) ^ e)
 local notation3 "B'" => fun _ : Fin n => (B : ℤ)
 -- T is the box [0 B]^n
 local notation3 "T" =>  Finset.Icc 0 B'
-
-
 local notation3  "P" => fun i : Fin m => (∑ j : Fin n, B * posPart (A i j))
 local notation3  "N" => fun i : Fin m =>  (∑ j : Fin n, B * (- negPart (A i j)))
 -- S is the box where the image of T goes
@@ -74,11 +72,12 @@ local notation3  "S" => Finset.Icc N P
 
 section preparation
 
-/-  In order to apply Pigeohole we need:
-# Step 1  ∀ v ∈  T, (A.mulVec v) ∈  S
+/- In order to apply Pigeohole we need:
+# Step 1: ∀ v ∈  T, (A.mulVec v) ∈  S
 and
-# Step 2 S.card < T.card
-
+# Step 2: S.card < T.card
+Pigeohole will give different x and y in T with A.mulVec x = A.mulVec y in S
+Their difference is the solution we are looking for
 -/
 
 -- # Step 1: ∀ v ∈  T, (A.mulVec v) ∈  S
@@ -199,8 +198,6 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
           exact hn
   _ = (B + 1) ^ n := by
         rw [← rpow_natCast, ← rpow_add (Nat.cast_add_one_pos B), ← rpow_natCast, sub_add_cancel]
-
---end (2)
 
 end preparation
 
