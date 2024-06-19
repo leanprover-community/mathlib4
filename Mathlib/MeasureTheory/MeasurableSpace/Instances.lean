@@ -32,6 +32,8 @@ instance Nat.instMeasurableSpace : MeasurableSpace ℕ := ⊤
 
 instance Fin.instMeasurableSpace (n : ℕ) : MeasurableSpace (Fin n) := ⊤
 
+instance ZMod.instMeasurableSpace (n : ℕ) : MeasurableSpace (ZMod N) := ⊤
+
 instance Int.instMeasurableSpace : MeasurableSpace ℤ := ⊤
 #align int.measurable_space Int.instMeasurableSpace
 
@@ -56,6 +58,9 @@ instance Nat.instMeasurableSingletonClass : MeasurableSingletonClass ℕ := ⟨f
 #align nat.measurable_singleton_class Nat.instMeasurableSingletonClass
 
 instance Fin.instMeasurableSingletonClass (n : ℕ) : MeasurableSingletonClass (Fin n) :=
+  ⟨fun _ => trivial⟩
+
+instance ZMod.instMeasurableSingletonClass (n : ℕ) : MeasurableSingletonClass (ZMod N) :=
   ⟨fun _ => trivial⟩
 
 instance Int.instMeasurableSingletonClass : MeasurableSingletonClass ℤ := ⟨fun _ => trivial⟩
