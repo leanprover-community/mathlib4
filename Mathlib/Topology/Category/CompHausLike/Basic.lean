@@ -100,17 +100,20 @@ def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.t
     CompHausLike.of _ X
   map f := f
 
+section
+
+variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop)
+
 /-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
-def fullyFaithfulToCompHausLike {P P' : TopCat → Prop}
-    (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) : (toCompHausLike h).FullyFaithful :=
+def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
-    (toCompHausLike h).Full := (fullyFaithfulToCompHausLike h).full
+instance : (toCompHausLike h).Full := (fullyFaithfulToCompHausLike h).full
 
-instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
-    (toCompHausLike h).Faithful := (fullyFaithfulToCompHausLike h).faithful
+instance : (toCompHausLike h).Faithful := (fullyFaithfulToCompHausLike h).faithful
+
+end
 
 variable (P)
 
