@@ -97,6 +97,7 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot �
 
 variable (f)
 
+@[nolint unusedHavesSuffices]
 lemma finite_hasEigenvalue : Set.Finite ⟨f.HasEigenvalue⟩ := by
   have h : minpoly K f ≠ 0 := minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := K) f)
   convert (minpoly K f).rootSet_finite K

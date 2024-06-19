@@ -556,6 +556,7 @@ variable {α}
 -- Porting note (#10756): new lemma
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
+@[nolint unusedHavesSuffices]
 theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, x ⋖ y } := by
   nontriviality α
