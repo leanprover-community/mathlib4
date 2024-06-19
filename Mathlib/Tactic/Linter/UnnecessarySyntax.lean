@@ -20,6 +20,7 @@ It completely ignores
 -/
 def getNoLintSimp (stx : Syntax) : CommandElabM (Option Syntax) := do
   -- check if there is a `nolint` and do nothing it there isn't one.
+  if stx.isOfKind ``Lean.Parser.Command.attribute then return none
   match stx.find? (·.isOfKind ``Std.Tactic.Lint.nolint) with
     | none => return none
     | some nl =>
