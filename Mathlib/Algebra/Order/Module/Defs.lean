@@ -82,9 +82,10 @@ Further, the bundled non-granular typeclasses imply the granular ones like so:
 * `OrderedSMul → PosSMulStrictMono`
 * `OrderedSMul → PosSMulReflectLT`
 
-Unless otherwise stated, all these implications are registered as instances, which means that in practice you should not worry about
-these implications. However, if you encounter a case where you think a statement is true but not
-covered by the current implications, please bring it up on Zulip!
+Unless otherwise stated, all these implications are registered as instances,
+which means that in practice you should not worry about these implications.
+However, if you encounter a case where you think a statement is true but
+not covered by the current implications, please bring it up on Zulip!
 
 ## Implementation notes
 
