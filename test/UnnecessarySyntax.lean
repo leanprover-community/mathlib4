@@ -4,7 +4,7 @@ import Batteries
 set_option linter.unnecessarySyntax false
 
 /--
-warning: `nolint simpNF` can be removed ⟨13, 21⟩
+warning: `nolint simpNF` can be removed [⟨13, 8⟩, ⟨13, 21⟩]
 note: this linter can be disabled with `set_option linter.unnecessarySyntax false`
 -/
 #guard_msgs in
@@ -14,7 +14,7 @@ set_option linter.unnecessarySyntax true in
 theorem imSimp : True := .intro
 
 /--
-warning: `simpNF` can be removed ⟨23, 14⟩
+warning: `simpNF` can be removed [⟨23, 8⟩, ⟨23, 14⟩, ⟨23, 27⟩, ⟨23, 33⟩]
 note: this linter can be disabled with `set_option linter.unnecessarySyntax false`
 -/
 #guard_msgs in

@@ -17,8 +17,19 @@ open Lean Parser Elab Command
 It completely ignores
 * multiple `simpNF`;
 * every `nolint` except for the first.
+
+The linter reports also an array of positions, for ease of replacing.
+
+* If the `nolint` syntax contains just `simpNF`, then it returns the beginning of `nolint` and the
+  ending of `simpNF`.
+  In this case, this whole range can be removed, but then care has to be
+  taken with `,` and possible removing entirely the attribute.
+
+* If the `nolint` syntax contains `simpNF` and more linters, then it return the beginning *and* the
+  ending of both `nolint` and `simpNF`.
+  In this case, this whole second range can be removed.
 -/
-def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Position)) := do
+def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Array Position)) := do
   -- check if there is a `nolint` and do nothing it there isn't one.
   if stx.isOfKind ``Lean.Parser.Command.attribute then return none
   match stx.find? (·.isOfKind ``Std.Tactic.Lint.nolint) with
@@ -35,13 +46,15 @@ def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Position)) :=
               nolinted.size
             | _ => 0
           let fm ← getFileMap
+          let nolintHeadPos := fm.toPosition <| nl.getHeadInfo.getPos?.getD default
+          let simpNFtailPos := fm.toPosition <| snf.getHeadInfo.getTailPos?.getD default
           if noLintNumber == 1
           then
-            let simpNFtailPos := snf.getHeadInfo.getTailPos?
-            return some (nl, fm.toPosition (simpNFtailPos.getD default))
+            return some (nl, #[nolintHeadPos, simpNFtailPos])
           else
-            let nolintTailPos := nl.getHeadInfo.getTailPos?
-            return some (snf, fm.toPosition (nolintTailPos.getD default))
+            let nolintTailPos := fm.toPosition <| nl.getHeadInfo.getTailPos?.getD default
+            let simpNFHeadPos := fm.toPosition <| snf.getHeadInfo.getPos?.getD default
+            return some (snf, #[nolintHeadPos, nolintTailPos, simpNFHeadPos, simpNFtailPos])
 
 /-- `unnecessarySyntax` linter takes as input a `CommandElabM` function `f` assigning to
 a command `cmd` syntax an array of triples `(newCmd, positionStx, message)` consisting of
