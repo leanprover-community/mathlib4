@@ -69,7 +69,8 @@ This is also known as a proper coloring.
 abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
 #align simple_graph.coloring SimpleGraph.Coloring
 
-variable {G} {α β : Type*} (C : G.Coloring α)
+variable {G}
+variable {α β : Type*} (C : G.Coloring α)
 
 theorem Coloring.valid {v w : V} (h : G.Adj v w) : C v ≠ C w :=
   C.map_rel h
@@ -390,7 +391,7 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     by_contra! hi
     let D : G.Coloring {a // a ≠ i} := ⟨fun v ↦ ⟨C v, hi v⟩, (C.valid · <| congr_arg Subtype.val ·)⟩
     classical
-    exact Nat.not_mem_of_lt_sInf ((Nat.pred_lt' <| card_pos_iff.2 ⟨i⟩).trans_le h)
+    exact Nat.not_mem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
       ⟨G.recolorOfEquiv (equivOfCardEq <| by simp [Nat.pred_eq_sub_one]) D⟩
   · simp only [chromaticNumber, Set.mem_setOf_eq, le_iInf_iff, Nat.cast_le, exists_prop]
     rintro i ⟨C⟩

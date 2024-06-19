@@ -726,7 +726,7 @@ theorem Factors.finrank_pow_ramificationIdx [p.IsMaximal]
     finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx (algebraMap R S) p P) =
       ramificationIdx (algebraMap R S) p P * inertiaDeg (algebraMap R S) p P := by
   rw [finrank_prime_pow_ramificationIdx, inertiaDeg_algebraMap]
-  exacts [NeZero.ne _, Factors.ne_bot p P]
+  exacts [Factors.ne_bot p P, NeZero.ne _]
 #align ideal.factors.finrank_pow_ramification_idx Ideal.Factors.finrank_pow_ramificationIdx
 
 instance Factors.finiteDimensional_quotient [IsNoetherian R S] [p.IsMaximal]

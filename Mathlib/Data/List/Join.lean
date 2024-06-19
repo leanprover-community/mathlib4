@@ -118,13 +118,18 @@ theorem drop_sum_join' (L : List (List α)) (i : ℕ) :
 
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
 left with a list of length `1` made of the `i`-th element of the original list. -/
+theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length) :
+    (L.take (i + 1)).drop i = [L[i]] := by
+  induction' L with head tail ih generalizing i
+  · exact (Nat.not_succ_le_zero i h).elim
+  rcases i with _ | i
+  · simp
+  · simpa using ih _ (by simpa using h)
+
+@[deprecated drop_take_succ_eq_cons_getElem (since := "2024-06-11")]
 theorem drop_take_succ_eq_cons_get (L : List α) (i : Fin L.length) :
     (L.take (i + 1)).drop i = [get L i] := by
-  induction' L with head tail ih
-  · exact (Nat.not_succ_le_zero i i.isLt).elim
-  rcases i with ⟨_ | i, hi⟩
-  · simp
-  · simpa using ih ⟨i, Nat.lt_of_succ_lt_succ hi⟩
+  simp [drop_take_succ_eq_cons_getElem]
 
 set_option linter.deprecated false in
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
@@ -147,14 +152,20 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`.
 
-See `List.drop_take_succ_join_eq_get` for the corresponding statement using `List.sum`. -/
+See `List.drop_take_succ_join_eq_getElem` for the corresponding statement using `List.sum`. -/
+theorem drop_take_succ_join_eq_getElem' (L : List (List α)) (i : Nat) (h : i <  L.length) :
+    (L.join.take (Nat.sum ((L.map length).take (i + 1)))).drop (Nat.sum ((L.map length).take i)) =
+      L[i] := by
+  have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
+    simp [map_take, take_take, Nat.min_eq_left]
+  simp only [this, length_map, take_sum_join', drop_sum_join', drop_take_succ_eq_cons_getElem, h,
+    join, append_nil]
+
+@[deprecated drop_take_succ_join_eq_getElem' (since := "2024-06-11")]
 theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
     (L.join.take (Nat.sum ((L.map length).take (i + 1)))).drop (Nat.sum ((L.map length).take i)) =
       get L i := by
-  have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
-    simp [map_take, take_take, Nat.min_eq_left]
-  simp only [this, length_map, take_sum_join', drop_sum_join', drop_take_succ_eq_cons_get,
-    join, append_nil]
+   simp [drop_take_succ_join_eq_getElem']
 
 #noalign list.drop_take_succ_join_eq_nth_le
 #noalign list.sum_take_map_length_lt1
@@ -167,11 +178,11 @@ theorem eq_iff_join_eq (L L' : List (List α)) :
     L = L' ↔ L.join = L'.join ∧ map length L = map length L' := by
   refine ⟨fun H => by simp [H], ?_⟩
   rintro ⟨join_eq, length_eq⟩
-  apply ext_get
+  apply ext_getElem
   · have : length (map length L) = length (map length L') := by rw [length_eq]
     simpa using this
   · intro n h₁ h₂
-    rw [← drop_take_succ_join_eq_get', ← drop_take_succ_join_eq_get', join_eq, length_eq]
+    rw [← drop_take_succ_join_eq_getElem', ← drop_take_succ_join_eq_getElem', join_eq, length_eq]
 #align list.eq_iff_join_eq List.eq_iff_join_eq
 
 theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :

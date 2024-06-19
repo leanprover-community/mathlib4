@@ -146,7 +146,8 @@ theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.morphism_property.Q_inverts CategoryTheory.MorphismProperty.Q_inverts
 
-variable {W} (G : C ⥤ D) (hG : W.IsInvertedBy G)
+variable {W}
+variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
 
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
 @[simps!]

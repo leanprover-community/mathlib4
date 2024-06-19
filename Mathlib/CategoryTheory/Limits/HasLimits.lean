@@ -392,7 +392,8 @@ theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
 
 section Pre
 
-variable (F) [HasLimit F] (E : K ⥤ J) [HasLimit (E ⋙ F)]
+variable (F)
+variable [HasLimit F] (E : K ⥤ J) [HasLimit (E ⋙ F)]
 
 /-- The canonical morphism from the limit of `F` to the limit of `E ⋙ F`.
 -/
@@ -437,7 +438,7 @@ end Pre
 section Post
 
 variable {D : Type u'} [Category.{v'} D]
-variable (F) [HasLimit F] (G : C ⥤ D) [HasLimit (F ⋙ G)]
+variable (F : J ⥤ C) [HasLimit F] (G : C ⥤ D) [HasLimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the limit of `F` to the limit of `F ⋙ G`.
 -/
@@ -982,7 +983,8 @@ theorem HasColimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasColimit F] {G : K �
 
 section Pre
 
-variable (F) [HasColimit F] (E : K ⥤ J) [HasColimit (E ⋙ F)]
+variable (F)
+variable [HasColimit F] (E : K ⥤ J) [HasColimit (E ⋙ F)]
 
 /-- The canonical morphism from the colimit of `E ⋙ F` to the colimit of `F`.
 -/
@@ -1033,7 +1035,8 @@ end Pre
 section Post
 
 variable {D : Type u'} [Category.{v'} D]
-variable (F) [HasColimit F] (G : C ⥤ D) [HasColimit (F ⋙ G)]
+variable (F)
+variable [HasColimit F] (G : C ⥤ D) [HasColimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the colimit of `F ⋙ G`
 to `G` applied to the colimit of `F`.

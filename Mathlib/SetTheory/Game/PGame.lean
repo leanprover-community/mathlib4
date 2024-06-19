@@ -167,7 +167,7 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = 
 /-- Construct a pre-game from list of pre-games describing the available moves for Left and Right.
 -/
 def ofLists (L R : List PGame.{u}) : PGame.{u} :=
-  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L.get i.down) fun j ↦ R.get j.down
+  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L[i.down.1]) fun j ↦ R[j.down.1]
 #align pgame.of_lists SetTheory.PGame.ofLists
 
 theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (Fin L.length) :=
@@ -1270,7 +1270,7 @@ instance : NegZeroClass PGame :=
 @[simp]
 theorem neg_ofLists (L R : List PGame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
-  simp only [ofLists, neg_def, List.get_map, mk.injEq, List.length_map, true_and]
+  simp only [ofLists, neg_def, List.getElem_map, mk.injEq, List.length_map, true_and]
   constructor
   all_goals
     apply hfunext
@@ -1283,6 +1283,7 @@ theorem neg_ofLists (L R : List PGame) :
         simp only [heq_eq_eq]
         rintro rfl
         rfl
+      simp only [heq_eq_eq]
       congr 5
       exact this (List.length_map _ _).symm h
 #align pgame.neg_of_lists SetTheory.PGame.neg_ofLists

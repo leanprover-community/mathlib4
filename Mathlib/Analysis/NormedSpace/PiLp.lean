@@ -182,9 +182,7 @@ theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 #align pi_Lp.edist_eq_sum PiLp.edist_eq_sum
 
-theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := by
-  dsimp [edist]
-  exact if_neg ENNReal.top_ne_zero
+theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := rfl
 #align pi_Lp.edist_eq_supr PiLp.edist_eq_iSup
 
 end Edist
@@ -244,9 +242,7 @@ theorem dist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p α) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 #align pi_Lp.dist_eq_sum PiLp.dist_eq_sum
 
-theorem dist_eq_iSup (f g : PiLp ∞ α) : dist f g = ⨆ i, dist (f i) (g i) := by
-  dsimp [dist]
-  exact if_neg ENNReal.top_ne_zero
+theorem dist_eq_iSup (f g : PiLp ∞ α) : dist f g = ⨆ i, dist (f i) (g i) := rfl
 #align pi_Lp.dist_eq_csupr PiLp.dist_eq_iSup
 
 end Dist
@@ -273,9 +269,7 @@ theorem norm_eq_card (f : PiLp 0 β) : ‖f‖ = {i | ‖f i‖ ≠ 0}.toFinite.
   if_pos rfl
 #align pi_Lp.norm_eq_card PiLp.norm_eq_card
 
-theorem norm_eq_ciSup (f : PiLp ∞ β) : ‖f‖ = ⨆ i, ‖f i‖ := by
-  dsimp [Norm.norm]
-  exact if_neg ENNReal.top_ne_zero
+theorem norm_eq_ciSup (f : PiLp ∞ β) : ‖f‖ = ⨆ i, ‖f i‖ := rfl
 #align pi_Lp.norm_eq_csupr PiLp.norm_eq_ciSup
 
 theorem norm_eq_sum (hp : 0 < p.toReal) (f : PiLp p β) :

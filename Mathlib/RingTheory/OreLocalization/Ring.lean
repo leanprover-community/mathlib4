@@ -245,7 +245,7 @@ protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ =
   · exfalso
     apply h
     simp [hr]
-  · simp only [hr, ↓reduceDite]
+  · simp only [hr, ↓reduceDIte]
     apply OreLocalization.mul_inv ⟨r, _⟩
 #align ore_localization.mul_inv_cancel OreLocalization.mul_inv_cancel
 

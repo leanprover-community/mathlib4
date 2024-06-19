@@ -167,7 +167,7 @@ class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) →
     EffectiveEpiFamily X π
 
-lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{_, _, u} F]
+lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{u} F]
     {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
     (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
     EffectiveEpiFamily X π :=

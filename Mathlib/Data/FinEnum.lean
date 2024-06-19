@@ -50,7 +50,7 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
   card := xs.length
   equiv :=
     ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, xs.get, fun x => by simp,
-      fun i => by ext; simp [List.get_indexOf h']⟩
+      fun i => by ext; simp [List.indexOf_getElem h']⟩
 #align fin_enum.of_nodup_list FinEnum.ofNodupList
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/

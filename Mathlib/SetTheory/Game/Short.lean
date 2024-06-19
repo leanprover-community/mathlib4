@@ -201,13 +201,10 @@ instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd]
 #align pgame.list_short.cons SetTheory.PGame.ListShort.cons
 
 instance listShortGet :
-    ∀ (L : List PGame.{u}) [ListShort L] (i : Fin (List.length L)), Short (List.get L i)
-  | [], _, n => by
-    exfalso
-    rcases n with ⟨_, ⟨⟩⟩;
-  | _::_, ListShort.cons' S _, ⟨0, _⟩ => S
-  | hd::tl, ListShort.cons' _ S, ⟨n + 1, h⟩ =>
-    @listShortGet tl S ⟨n, (add_lt_add_iff_right 1).mp h⟩
+    ∀ (L : List PGame.{u}) [ListShort L] (i : Nat) (h : i < List.length L), Short L[i]
+  | _::_, ListShort.cons' S _, 0, _ => S
+  | _::tl, ListShort.cons' _ S, n + 1, h =>
+    @listShortGet tl S n ((add_lt_add_iff_right 1).mp h)
 #align pgame.list_short_nth_le SetTheory.PGame.listShortGet
 
 instance shortOfLists : ∀ (L R : List PGame) [ListShort L] [ListShort R], Short (PGame.ofLists L R)

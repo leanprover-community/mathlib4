@@ -250,7 +250,8 @@ theorem coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
   rfl
 #align continuous_linear_map.coe_flipₗᵢ ContinuousLinearMap.coe_flipₗᵢ
 
-variable (F σ₁₂) [RingHomIsometric σ₁₂]
+variable (F σ₁₂)
+variable [RingHomIsometric σ₁₂]
 
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.

@@ -103,7 +103,8 @@ open scoped Witt
 
 section PPrime
 
-variable (p) [hp : Fact p.Prime]
+variable (p)
+variable [hp : Fact p.Prime]
 
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
