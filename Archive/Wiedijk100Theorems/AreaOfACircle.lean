@@ -80,14 +80,14 @@ theorem disc_eq_regionBetween :
 
 /-- The disc is a `MeasurableSet`. -/
 theorem measurableSet_disc : MeasurableSet (disc r) := by
-  apply measurableSet_lt <;> apply Continuous.measurable <;> continuity
+  apply measurableSet_lt <;> fun_prop
 #align theorems_100.measurable_set_disc Theorems100.measurableSet_disc
 
 /-- **Area of a Circle**: The area of a disc with radius `r` is `π * r ^ 2`. -/
 theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   let f x := sqrt (r ^ 2 - x ^ 2)
   let F x := (r : ℝ) ^ 2 * arcsin (r⁻¹ * x) + x * sqrt (r ^ 2 - x ^ 2)
-  have hf : Continuous f := by continuity
+  have hf : Continuous f := by fun_prop
   suffices ∫ x in -r..r, 2 * f x = NNReal.pi * r ^ 2 by
     have h : IntegrableOn f (Ioc (-r) r) := hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
     calc

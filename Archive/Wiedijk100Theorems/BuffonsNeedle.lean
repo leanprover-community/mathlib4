@@ -9,6 +9,7 @@ import Mathlib.Probability.Notation
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Tactic.FunProp
 
 /-!
 
@@ -135,12 +136,8 @@ lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) 
   unfold needleCrossesIndicator
   refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
   all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
-  case' l => refine isClosed_le continuous_fst ?_
-  case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
-  all_goals
-    refine Continuous.mul (Continuous.mul ?_ continuous_const) continuous_const
-    simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
-      Continuous.comp Real.continuous_sin continuous_snd]
+  case' l => exact isClosed_le continuous_fst (Continuous.mul (by fun_prop) (by fun_prop))
+  case' r => exact isClosed_le continuous_fst.neg (Continuous.mul (by fun_prop) (by fun_prop))
 
 lemma stronglyMeasurable_needleCrossesIndicator :
     MeasureTheory.StronglyMeasurable (needleCrossesIndicator l) := by
@@ -272,8 +269,7 @@ theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
 -/
 lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
     IntervalIntegrable (fun (θ : ℝ) => min d (θ.sin * l)) ℙ a b := by
-  apply Continuous.intervalIntegrable
-  exact Continuous.min continuous_const (Continuous.mul Real.continuous_sin continuous_const)
+  apply Continuous.intervalIntegrable (by fun_prop)
 
 /--
   This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).
