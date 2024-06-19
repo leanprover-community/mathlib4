@@ -52,8 +52,10 @@ lemma cutoff_succ_aux_isLeast (S : Set (real Z b)) (u : Z)
   have key : (p' : DigitExpansion Z b) (succ u) < (f : DigitExpansion Z b) (succ u) := by
     rw [cutoff_succ_eq_cutoff_add_single, cutoff_succ_eq_cutoff_add_single, hup, H'] at H
     simpa using H
-  refine key.not_le (hmin _ _ hp ?_ rfl)
-  rw [hup, H', hf]
+  refine key.not_le (hmin (p'.val (succ u)) ?_)
+  simp only [S', Set.mem_image]
+  use p'
+  simpa [hp, hup, ← H'] using hf
 
 theorem exists_isLeast_image_cutoff
     (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) (z : Z) :
@@ -62,8 +64,8 @@ theorem exists_isLeast_image_cutoff
   obtain ⟨w, f, hf⟩ := exists_exists_isLeast_image_cutoff S hn h
   cases' le_total z w with hw hw
   · refine' ⟨cutoff z f, _⟩
-    have : cutoff z '' (cutoff w '' S) = cutoff z '' S
-    · ext g
+    have : cutoff z '' (cutoff w '' S) = cutoff z '' S := by
+      ext g
       simp only [Set.mem_image]
       refine' ⟨_, _⟩
       · rintro ⟨n, ⟨m, hm, rfl⟩, rfl⟩
@@ -91,8 +93,8 @@ protected noncomputable def sInf_aux (S : Set (real Z b)) (hn : S.Nonempty) (h :
   bounded' := by
     rintro ⟨x, hx⟩
     obtain ⟨u, hu, hu'⟩ := (exists_isLeast_image_cutoff S hn h (succ x)).choose_spec.left
-    suffices : ∀ y > x, cutoff y (exists_isLeast_image_cutoff S hn h y).choose = cutoff y u
-    · obtain ⟨y, hy, hy'⟩ := u.val.exists_bounded x
+    suffices ∀ y > x, cutoff y (exists_isLeast_image_cutoff S hn h y).choose = cutoff y u by
+      obtain ⟨y, hy, hy'⟩ := u.val.exists_bounded x
       refine absurd ?_ hy'.not_le
       rw [← cutoff_apply_self, ← val_cutoff, ← this y hy, val_cutoff, cutoff_apply_self]
       simpa using (hx y hy).ge
@@ -138,7 +140,7 @@ protected noncomputable def sInf (S : Set (real Z b)) (hn : S.Nonempty) (h : Bdd
     · rw [h0]
       exact AddSubgroup.zero_mem (real Z b)
     have := hne0
-    simp only [ne_eq, FunLike.ne_iff, zero_apply] at this
+    simp only [ne_eq, DFunLike.ne_iff, zero_apply] at this
     obtain ⟨k, hk⟩ := this
     by_cases H : ∃ x, (exists_isLeast_image_cutoff S hn h x).choose.val.Negative
     · obtain ⟨x, -, z, hz⟩ := H
@@ -147,8 +149,7 @@ protected noncomputable def sInf (S : Set (real Z b)) (hn : S.Nonempty) (h : Bdd
         contrapose! hz
         refine ⟨_, hz, ?_⟩
         simp [← hg', val_cutoff, cutoff_apply_lt _ _ _ (lt_succ _), Fin.ext_iff, hb.out.symm]
-      suffices : ∀ y < z, real.sInf_aux S hn h y = b
-      · refine Or.inr (Or.inl ⟨hne0, _, this⟩)
+      suffices ∀ y < z, real.sInf_aux S hn h y = b by exact Or.inr (Or.inl ⟨hne0, _, this⟩)
       intro y hy
       simp only [real.sInf_aux, mk_apply]
       obtain ⟨u, hu, hu'⟩ := (exists_isLeast_image_cutoff S hn h y).choose_spec.left
@@ -190,8 +191,8 @@ protected noncomputable def sInf (S : Set (real Z b)) (hn : S.Nonempty) (h : Bdd
 
 protected lemma sInf_le (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) (f : real Z b)
     (hf : f ∈ S) : real.sInf S hn h ≤ f := by
-  have key : ∀ z, cutoff z (real.sInf S hn h) ≤ cutoff z f
-  · intro z
+  have key : ∀ z, cutoff z (real.sInf S hn h) ≤ cutoff z f := by
+    intro z
     obtain ⟨g, hg, hg'⟩ := (exists_isLeast_image_cutoff S hn h z).choose_spec.left
     have hgf : cutoff z g ≤ cutoff z f := hg'.le.trans <|
       (exists_isLeast_image_cutoff S hn h _).choose_spec.right ⟨f, hf, rfl⟩
@@ -218,14 +219,14 @@ protected lemma sInf_le (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) 
   have hcf := le_antisymm (cutoff_mono z this.le) (key z)
   rw [DigitExpansion.sub_def, ← cutoff_apply_self, ← val_cutoff, ← hcf, val_cutoff,
       cutoff_apply_self, sub_self, zero_sub] at zpos
-  replace zpos : difcar (real.sInf S hn h).val f z = 1
-  · refine (difcar_eq_zero_or_one _ _ z).resolve_left ?_
+  replace zpos : difcar (real.sInf S hn h).val f z = 1 := by
+    refine (difcar_eq_zero_or_one _ _ z).resolve_left ?_
     intro H
     simp [H] at zpos
   rw [difcar_eq_one_iff] at zpos
   obtain ⟨x, -, IH⟩ := zpos
   have hcf' := le_antisymm (cutoff_mono x this.le) (key x)
-  rw [Subtype.ext_iff, FunLike.ext_iff] at hcf'
+  rw [Subtype.ext_iff, DFunLike.ext_iff] at hcf'
   specialize hcf' x
   simp [IH.left.ne'] at hcf'
 

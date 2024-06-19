@@ -113,8 +113,7 @@ theorem real.dense {f g : real Z b} (hfg : f > g) :
     exact if_pos hy
   have ppos : p'.Positive := by
     refine' ⟨fun H => _, x, _⟩
-    · replace H : p' (succ x) = 0
-      · rw [H, zero_apply]
+    · replace H : p' (succ x) = 0 := by rw [H, zero_apply]
       simp [p', hb.out] at H
     · intro y hy
       exact px0 _ hy.le
@@ -122,7 +121,7 @@ theorem real.dense {f g : real Z b} (hfg : f > g) :
   refine' ⟨f - p, ⟨(f - p).prop, succ x, _⟩, _, _⟩
   · intro z hz
     simp only [DigitExpansion.sub_def, AddSubgroup.coeSubtype, AddSubgroup.coe_sub, Subtype.coe_mk,
-      mk_apply, ne_of_gt hz, not_le_of_lt ((lt_trans (lt_succ x)) hz),
+      mk_apply, ne_of_gt hz, not_le_of_lt ((lt_trans (lt_succ x)) hz), p',
       difcar_eq_zero_iff, if_false, sub_self, zero_sub,
       neg_eq_zero, gt_iff_lt]
     intro w hzw
@@ -151,8 +150,7 @@ theorem real.exists_lt_zStar [Zero Z] (f : real Z b) :
       simp
   have qneg : q'.Negative := by
     refine' ⟨fun H => _, 0, fun y hy => _⟩
-    · replace H : q' 0 = 0
-      · rw [H, zero_apply]
+    · replace H : q' 0 = 0 := by rw [H, zero_apply]
       simp only [q', mk_apply, if_pos le_rfl] at H
       rw [← Fin.val_last b, Fin.cast_val_eq_self] at H
       cases b
@@ -161,7 +159,7 @@ theorem real.exists_lt_zStar [Zero Z] (f : real Z b) :
     · simp [q', hy.not_lt]
   let q : real Z b := ⟨q', Or.inr (Or.inl qneg)⟩
   refine' ⟨⟨f - q, (f - q).prop, fun z zpos => _⟩, _⟩
-  · simp only [DigitExpansion.sub_def, not_le_of_lt zpos,
+  · simp only [q', DigitExpansion.sub_def, not_le_of_lt zpos,
       difcar_eq_zero_iff, Subtype.coe_mk, mk_apply, if_false, sub_self, zero_sub,
       neg_eq_zero, gt_iff_lt]
     intro x hx
@@ -236,7 +234,7 @@ lemma neg_val_one_apply_zero : (-(1 : zStar Z b).val) 0 = b := by
   sub_zero] at this
   rw [sub_sub_eq_add_sub, sub_eq_zero, difcar_eq_zero_iff.mpr, add_zero] at this
   · nth_rewrite 1 [AddSubgroup.coe_neg] at this
-    simp only [neg_neg, difcar_self, AddSubgroupClass.coe_neg, sub_neg_eq_add] at this
+    simp only [neg_neg, difcar_self, NegMemClass.coe_neg, sub_neg_eq_add] at this
     rw [add_comm 1, add_eq_zero_iff_eq_neg] at this
     simp [this, neg_eq_iff_add_eq_zero, add_comm]
   · simp only [gt_iff_lt, zero_apply, Fin.not_lt_zero, and_false, exists_const, imp_false,
@@ -251,7 +249,7 @@ lemma neg_val_one_apply_of_le {z : Z} (hz : z ≤ 0) : (-(1 : zStar Z b).val) z 
   rcases hz.eq_or_lt with rfl|hz
   · simp
   · simp only [ne_eq, hz.ne, not_false_eq_true, val_one_apply_ne, zero_apply, zero_sub, neg_sub,
-    AddSubgroupClass.coe_neg, sub_neg_eq_add, zero_add, difcar_self, sub_zero] at this
+    NegMemClass.coe_neg, sub_neg_eq_add, zero_add, difcar_self, sub_zero] at this
     rw [add_eq_zero_iff_neg_eq] at this
     rcases difcar_eq_zero_or_one 0 (-(1 : zStar Z b).val) z with hd|hd
     · rw [difcar_eq_zero_iff] at hd
@@ -341,7 +339,7 @@ lemma one_le_iff_pos {x : zStar Z b} :
         · simp [val_one_apply_ne, hy.ne', x.prop.right _ hy]
       · refine Or.inr ⟨?_, 0, ?_⟩
         · rw [sub_ne_zero]
-          simp only [SetLike.coe_eq_coe, FunLike.ne_iff]
+          simp only [SetLike.coe_eq_coe, DFunLike.ne_iff]
           refine ⟨0, ?_⟩
           simp [hx']
         · intro y hy
@@ -354,7 +352,7 @@ lemma one_le_iff_pos {x : zStar Z b} :
           · simp [val_one_apply_ne, hw]
     · refine Or.inr ⟨?_, z, ?_⟩
       · rw [sub_ne_zero]
-        simp only [SetLike.coe_eq_coe, FunLike.ne_iff]
+        simp only [SetLike.coe_eq_coe, DFunLike.ne_iff]
         refine ⟨z, ?_⟩
         simp [single_apply_of_ne _ _ _ hz.ne', zpos.ne']
       · intro y hy
@@ -439,7 +437,7 @@ lemma single_eq_nsmul_one {x : Z} (k : ℕ) (hk : succ^[k] x = 0) (n : Fin (b + 
     · simp [← hk, Function.iterate_succ']
     · simp only [← hk, Function.iterate_succ, Function.comp_apply, succ_le_iff]
       exact (lt_succ _).trans_le (succ_iterate_mono (Nat.zero_le k) _)
-    rw [pow_succ, mul_assoc, mul_comm, mul_nsmul, ← IH]
+    rw [pow_succ', mul_assoc, mul_comm, mul_nsmul, ← IH]
     simp [Subtype.ext_iff, base_nsmul_single_succ_one_eq_single]
 
 instance : IsSuccArchimedean (zStar Z b) where
@@ -450,12 +448,12 @@ instance : IsSuccArchimedean (zStar Z b) where
       obtain ⟨k, rfl⟩ := this
       induction' k with k IH generalizing x
       · refine ⟨0, ?_⟩
-        simp
+        simp [zero_nsmul]
       · obtain ⟨k', hk'⟩ := @IH (x + 1)
         refine ⟨k' + 1, ?_⟩
-        simpa [succ_nsmul, ← add_assoc] using hk'
+        simpa [succ_nsmul, ← add_assoc, add_right_comm] using hk'
     rcases h.eq_or_lt with rfl|h
-    · exact ⟨0, by simp⟩
+    · exact ⟨0, by simp [zero_nsmul]⟩
     replace h : 0 < y - x := by simp [h]
     rw [← positive_iff] at h
     obtain ⟨z, zpos, hz⟩ := h.exists_least_pos
@@ -501,8 +499,8 @@ lemma exists_nsmul_one_of_nonneg {f : zStar Z b} (hf : 0 ≤ f) : ∃ k : ℕ, f
   clear hf
   refine ⟨k, ?_⟩
   induction' k with k IH
-  · simp
-  · rw [Function.iterate_succ_apply', IH, succ_nsmul']
+  · simp [zero_nsmul]
+  · rw [Function.iterate_succ_apply', IH, succ_nsmul]
     rfl
 
 end zStar
@@ -606,7 +604,7 @@ lemma base_nsmul_shift_eq (f : realHensel Z b) : (b + 1) • shift f = f := by
       rw [hr]
       simp only [map_neg, map_nsmul, inclusion_one, AddSubgroup.coe_neg,
         AddSubmonoidClass.coe_nsmul, AddSubgroup.coe_toAddSubmonoid, smul_neg]
-      simp only [AddSubgroupClass.coe_neg, AddSubmonoidClass.coe_nsmul, smul_neg, shift_neg]
+      simp [NegMemClass.coe_neg, AddSubmonoidClass.coe_nsmul, smul_neg, shift_neg]
       rw [← mul_nsmul, mul_nsmul', zStar.one_def, zStar.val_single,
           ← succ_pred (0 : Z), base_nsmul_single_succ_one_eq_single, shift_nsmul_comm,
           shift_single]

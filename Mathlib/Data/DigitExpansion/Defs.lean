@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Int.SuccPred
+import Mathlib.Order.Fin
 import Mathlib.Tactic.Ring
 
 
@@ -25,7 +26,7 @@ structure DigitExpansion (Z : Type*) [LT Z] (b : ℕ) where
 
 namespace DigitExpansion
 
-instance funLike (Z : Type*) [LT Z] (b : ℕ) : FunLike (DigitExpansion Z b) Z fun _ => Fin (b + 1)
+instance funLike (Z : Type*) [LT Z] (b : ℕ) : FunLike (DigitExpansion Z b) Z (Fin (b + 1))
     where
   coe := DigitExpansion.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩; simp
@@ -35,7 +36,7 @@ variable {Z : Type*} [LT Z] {b : ℕ} (f g : DigitExpansion Z b) (i : Z)
 
 @[ext]
 theorem ext {f g : DigitExpansion Z b} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 
 @[simp]
 theorem toFun_apply : f.toFun i = f i :=
@@ -186,12 +187,12 @@ theorem not_negative_zero :
 lemma not_positive_of_isEmpty {Z : Type*} [IsEmpty Z] [Preorder Z] [SuccOrder Z] [NoMaxOrder Z]
     {b : ℕ} [NeZero b] (f : DigitExpansion Z b) : ¬DigitExpansion.Positive f := by
   rintro ⟨hne, -, -⟩
-  simp [FunLike.ext_iff] at hne
+  simp [DFunLike.ext_iff] at hne
 
 lemma not_negative_of_isEmpty {Z : Type*} [IsEmpty Z] [Preorder Z] [SuccOrder Z] [NoMaxOrder Z]
     {b : ℕ} [NeZero b] (f : DigitExpansion Z b) : ¬DigitExpansion.Negative f := by
   rintro ⟨hne, -, -⟩
-  simp [FunLike.ext_iff] at hne
+  simp [DFunLike.ext_iff] at hne
 
 end sign
 
@@ -206,8 +207,8 @@ def cutoff {Z : Type*} [LT Z] [DecidableRel (α := Z) (· < ·)] {b : ℕ} [hb :
     obtain ⟨w, hwy, hw⟩ := f.exists_bounded y
     specialize hy w hwy
     simp only at hy
-    have : (b : Fin (b + 1)) = Fin.last b
-    · rw [← Fin.val_last b, Fin.cast_val_eq_self]
+    have : (b : Fin (b + 1)) = Fin.last b := by
+      rw [← Fin.val_last b, Fin.cast_val_eq_self]
       simp
     rw [this] at hy hw
     split_ifs at hy
@@ -254,8 +255,7 @@ lemma Negative.negative_cutoff {f : DigitExpansion Z b} (hf : f.Negative) (z : Z
     (f.cutoff z).Negative := by
   obtain ⟨hne, x, hx⟩ := hf
   refine' ⟨λ H => _, min x z, λ y hy => _⟩
-  · replace H : f.cutoff z (min z (pred x)) = 0
-    rw [H, zero_apply]
+  · replace H : f.cutoff z (min z (pred x)) = 0 := by rw [H, zero_apply]
     cases' b with b
     · exact absurd rfl hb.out
     · refine' (Fin.last_pos : 0 < Fin.last (Nat.succ b)).ne _
@@ -330,7 +330,7 @@ lemma single_zero (z : Z) : single z (0 : Fin (b + 1)) = 0 := by
 lemma single_eq_zero_iff {z : Z} {n : Fin (b + 1)} : single z n = 0 ↔ n = 0 := by
   constructor
   · intro H
-    rw [FunLike.ext_iff] at H
+    rw [DFunLike.ext_iff] at H
     simpa using H z
   · simp (config := {contextual := true})
 
@@ -402,7 +402,7 @@ lemma shift_zero [NeZero b] : shift (0 : DigitExpansion Z b) = 0 := rfl
 
 @[simp]
 lemma shift_eq_zero [NeZero b] {f : DigitExpansion Z b} : shift f = 0 ↔ f = 0 :=
-  ⟨fun h ↦ ext fun z ↦ by simpa using FunLike.ext_iff.mp h (succ z) , congr_arg _⟩
+  ⟨fun h ↦ ext fun z ↦ by simpa using DFunLike.ext_iff.mp h (succ z) , congr_arg _⟩
 
 lemma Positive.shift [NeZero b] {f : DigitExpansion Z b} (hf : f.Positive) :
     (shift f).Positive :=

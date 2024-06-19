@@ -3,6 +3,7 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Data.DigitExpansion.Defs
 
 /-!
@@ -15,11 +16,6 @@ import Mathlib.Data.DigitExpansion.Defs
 -- TODO
 theorem Int.neg_mod {a b : ℤ} : -a % b = (b - a) % b := by
   rw [← Int.add_emod_self_left, sub_eq_add_neg]
-
--- TODO
-lemma Fin.pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
-    0 < a :=
-  Nat.pos_of_ne_zero (Fin.val_ne_of_ne h)
 
 -- TODO
 theorem Fin.neg_coe_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
@@ -42,7 +38,6 @@ theorem Succ.rec' {Z : Type*} [LinearOrder Z] [SuccOrder Z] [IsSuccArchimedean Z
     · exact IH _ hmk (Order.le_of_lt_succ hkn')
 
 -- TODO
--- TODO
 lemma Fin.rev_add {n : ℕ} (a b : Fin n) : rev (a + b) = rev a - b := by
   cases' n
   · exact a.elim0
@@ -61,7 +56,7 @@ lemma Fin.lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
     rw [lt_iff_val_lt_val, sub_def]
     simp only
     obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
-    have : n.succ - b = k + 1 := by
+    have : n + 1 - b = k + 1 := by
       simp_rw [hk]
       rw [add_assoc, add_tsub_cancel_left]
     rw [this, Nat.mod_eq_of_lt]
@@ -81,10 +76,6 @@ lemma Fin.add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := b
   cases' n
   · exact a.elim0
   rw [← Fin.rev_lt_rev, Iff.comm, ← Fin.rev_lt_rev, rev_add, lt_sub_iff, rev_rev]
-
--- TODO
-@[simp]
-theorem Fin.neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
 -- TODO
 @[simp]
@@ -115,7 +106,7 @@ instance : Sub (DigitExpansion Z b) :=
             rw [sub_eq_iff_eq_add] at this
             refine' ⟨y, le_of_lt hxy, _⟩
             refine' Or.resolve_right (difcar_eq_zero_or_one _ _ _) fun H => _
-            rw [H, ← Nat.cast_add_one, Fin.nat_cast_self, sub_eq_zero] at this
+            rw [H, ← Nat.cast_add_one, Fin.natCast_self, sub_eq_zero] at this
             exact absurd this hfgy.ne
         suffices ∀ z > w, difcar f g z = 0 ∧ f z = b by
           obtain ⟨z, hwz, hz⟩ := f.exists_bounded w
@@ -155,7 +146,7 @@ theorem coe_sub (z : Z) :
     ((f - g) z : ℤ) = f z - g z - difcar f g z + (b + 1) * difcar f g (pred z) := by
   simp_rw [f.sub_def, Fin.coe_sub]
   simp only [Nat.cast_sub, (g z).is_lt.le, (difcar f g z).is_lt.le, Nat.mod_add_mod,
-    Int.coe_nat_mod, Nat.cast_add, Nat.cast_one]
+    Int.natCast_mod, Nat.cast_add, Nat.cast_one]
   rw [add_sub, add_sub, add_comm, ← add_sub, Int.add_emod_self_left, add_comm, ← add_sub, ← add_sub,
     Int.add_emod_self_left]
   cases b
@@ -174,8 +165,8 @@ theorem coe_sub (z : Z) :
   · simp only [h, difcar_pred_eq_difcar h, Int.neg_mod, sub_self, zero_sub]
     cases' difcar_eq_zero_or_one f g z with hd hd
     · simp [hd, Int.emod_self]
-    · rw [hd, Fin.val_one, ← Nat.cast_sub, ← Int.coe_nat_mod]
-      · simp [eq_neg_add_iff_add_eq, add_comm]
+    · rw [hd, Fin.val_one, ← Nat.cast_sub, ← Int.natCast_mod]
+      · simp [eq_neg_add_iff_add_eq, add_comm, Nat.mod_eq_of_lt]
       · simp [Nat.succ_le_succ_iff]
   · simp only [difcar_pred_eq_zero h, Fin.val_zero, Nat.cast_zero, MulZeroClass.mul_zero, add_zero]
     have h' := h
@@ -250,8 +241,8 @@ protected theorem sub_sub_comm (h : DigitExpansion Z b) :
     intro z
     refine' (abs_sub _ _).trans ((add_le_add (hpq1 _) (hpq1' _)).trans _)
     norm_num
-  replace hr2 : ∀ z, |(p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z))| ≤ 1
-  · intro z
+  replace hr2 : ∀ z, |(p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z))| ≤ 1 := by
+    intro z
     specialize htd z
     rw [H] at htd
     have hr2' := hr2 (pred z)
@@ -269,7 +260,7 @@ protected theorem sub_sub_comm (h : DigitExpansion Z b) :
       suffices (b : ℤ) + 1 < 2 by norm_num [← lt_sub_iff_add_lt, hb.out] at this
       rw [← sub_neg_eq_add _ ((b : ℤ) + 1), ← sub_neg_eq_add _ ((b : ℤ) + 1), sub_lt_iff_lt_add,
         zero_add, lt_neg] at htd
-      exact htd.right.trans_le ((neg_le_abs_self _).trans (hr2 _))
+      exact htd.right.trans_le ((neg_le_abs _).trans (hr2 _))
     · rw [hr, abs_lt, mul_two, ← sub_sub, sub_lt_iff_lt_add, lt_sub_comm, sub_neg_eq_add,
         sub_add_cancel] at htd
       suffices (b : ℤ) + 1 < 2 by norm_num [← lt_sub_iff_add_lt, hb.out] at this
@@ -277,8 +268,8 @@ protected theorem sub_sub_comm (h : DigitExpansion Z b) :
   replace hpq1 :
     ∀ z,
       (p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z)) = 1 →
-        (p z : ℤ) - q z - (p' z - q' z) = 1
-  · intro z hz
+        (p z : ℤ) - q z - (p' z - q' z) = 1 := by
+    intro z hz
     specialize H z
     rw [hz, mul_one] at H
     have hr2' := hr2 (succ z)
@@ -294,8 +285,8 @@ protected theorem sub_sub_comm (h : DigitExpansion Z b) :
   replace hpq1' :
     ∀ z,
       (p' (pred z) : ℤ) - q' (pred z) - (p (pred z) - q (pred z)) = 1 →
-        (p' z : ℤ) - q' z - (p z - q z) = 1
-  · intro z hz
+        (p' z : ℤ) - q' z - (p z - q z) = 1 := by
+    intro z hz
     specialize H z
     rw [← neg_inj, neg_sub] at hz
     rw [hz, mul_neg, mul_one, sub_neg_eq_add] at H
@@ -312,22 +303,22 @@ protected theorem sub_sub_comm (h : DigitExpansion Z b) :
   replace hpq1 :
     ∀ z,
       (p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z)) = 1 →
-        ∀ y ≥ z, (p y : ℤ) - q y - (p' y - q' y) = 1
-  · intro z hz y hy
+        ∀ y ≥ z, (p y : ℤ) - q y - (p' y - q' y) = 1 := by
+    intro z hz y hy
     refine' Succ.rec (hpq1 _ hz) (fun x _ hpx => hpq1 _ _) hy
     rw [pred_succ]
     exact hpx
   replace hpq1' :
     ∀ z,
       (p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z)) = -1 →
-        ∀ y ≥ z, (p y : ℤ) - q y - (p' y - q' y) = -1
-  · intro z hz y hy
+        ∀ y ≥ z, (p y : ℤ) - q y - (p' y - q' y) = -1 := by
+    intro z hz y hy
     rw [eq_comm, neg_eq_iff_eq_neg, eq_comm, neg_sub] at hz ⊢
     refine' Succ.rec (hpq1' _ hz) (fun x _ hpx => hpq1' _ _) hy
     rw [pred_succ]
     exact hpx
-  replace hpq1 : ¬∃ z, (p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z)) = 1
-  · rintro ⟨z, hz⟩
+  replace hpq1 : ¬∃ z, (p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z)) = 1 := by
+    rintro ⟨z, hz⟩
     suffices ∀ y > z, (t' y : ℤ) = b by
       obtain ⟨x, hx, hb⟩ := t'.exists_bounded z
       specialize this x hx
@@ -341,16 +332,16 @@ protected theorem sub_sub_comm (h : DigitExpansion Z b) :
     · simp [hbz]
     · have htz0 : (0 : ℤ) = t y := by
         refine' le_antisymm _ _
-        · rw [← Nat.cast_zero, Nat.cast_le]
+        · rw [← Nat.cast_zero, Nat.cast_le (α := ℤ)]
           exact (t y).zero_le
         rw [sub_eq_iff_eq_add] at H
         rw [H, sub_add, sub_le_comm, sub_zero, add_comm, ← add_sub, le_add_iff_nonneg_right,
-            sub_nonneg, Nat.cast_le]
+            sub_nonneg, Nat.cast_le (α := ℤ)]
         exact (t' y).is_le
       rw [← htz0, zero_sub, neg_eq_iff_eq_neg, eq_comm] at H
       simp [← H]
-  replace hpq1' : ¬∃ z, (p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z)) = -1
-  · rintro ⟨z, hz⟩
+  replace hpq1' : ¬∃ z, (p (pred z) : ℤ) - q (pred z) - (p' (pred z) - q' (pred z)) = -1 := by
+    rintro ⟨z, hz⟩
     suffices ∀ y > z, (t y : ℤ) = b by
       obtain ⟨x, hx, hb⟩ := t.exists_bounded z
       specialize this x hx
@@ -364,16 +355,16 @@ protected theorem sub_sub_comm (h : DigitExpansion Z b) :
     · simp [hbz]
     · have htz0 : (0 : ℤ) = t' y := by
         refine' le_antisymm _ _
-        · rw [← Nat.cast_zero, Nat.cast_le]
+        · rw [← Nat.cast_zero, Nat.cast_le (α := ℤ)]
           exact (t' y).zero_le
         rw [← neg_add', eq_comm, neg_eq_iff_eq_neg, eq_comm, neg_sub, sub_eq_iff_eq_add,
             ← sub_eq_add_neg, ← sub_sub, sub_sub_cancel_left] at H
-        rw [H, add_comm, ← sub_eq_add_neg, sub_le_comm, sub_zero, Nat.cast_le]
+        rw [H, add_comm, ← sub_eq_add_neg, sub_le_comm, sub_zero, Nat.cast_le (α := ℤ)]
         exact (t y).is_le
       rw [← htz0, sub_zero] at H
       simp [H]
-  replace hr2 : ∀ z, (p z : ℤ) - q z - (p' z - q' z) = 0
-  · push_neg at hpq1 hpq1'
+  replace hr2 : ∀ z, (p z : ℤ) - q z - (p' z - q' z) = 0 := by
+    push_neg at hpq1 hpq1'
     intro z
     specialize hr2 (succ z)
     rw [Int.abs_le_one_iff] at hr2
@@ -441,9 +432,11 @@ instance : AddCommGroup (DigitExpansion Z b) where
   sub f g := f - g
   sub_eq_add_neg f g := by
     simp [g.neg_def, f.add_def, DigitExpansion.sub_sub_comm 0, DigitExpansion.sub_zero]
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   add_left_neg f := by
     rw [f.neg_def, DigitExpansion.add_def]
-    simp [DigitExpansion.sub_sub_comm,
+    · simp [DigitExpansion.sub_sub_comm,
       DigitExpansion.sub_sub_comm 0 0 f, DigitExpansion.sub_zero, DigitExpansion.sub_self]
   add_comm _ _ := DigitExpansion.add_comm _ _
 
@@ -452,7 +445,7 @@ theorem Negative.neg_positive {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxO
     [∀ (f g : DigitExpansion Z b) z, Decidable (∃ x > z, f x < g x ∧ ∀ y < x, z < y → f y ≤ g y)]
     {f : DigitExpansion Z b} (hf : f.Negative) : (-f).Positive := by
   refine' ⟨_, _⟩
-  · rw [Ne.def, neg_eq_iff_eq_neg, eq_comm, neg_zero]
+  · rw [Ne.eq_def, neg_eq_iff_eq_neg, eq_comm, neg_zero]
     exact hf.left.symm
   · simp_rw [f.neg_def, DigitExpansion.sub_def]
     obtain ⟨x, hx⟩ := hf.right
@@ -534,7 +527,7 @@ theorem Negative.not_positive (h : f.Negative) : ¬f.Positive := fun H => by
 
 theorem Positive.sub_negative (hf : f.Positive) (hg : g.Negative) : (f - g).Positive := by
   refine' ⟨_, _⟩
-  · rw [Ne.def, sub_eq_zero]
+  · rw [Ne.eq_def, sub_eq_zero]
     rintro rfl
     exact hf.not_negative hg
   · obtain ⟨x, hx⟩ := hf.right
@@ -556,7 +549,7 @@ theorem Positive.sub_negative (hf : f.Positive) (hg : g.Negative) : (f - g).Posi
 
 theorem Positive.neg_negative (hf : f.Positive) : (-f).Negative := by
   refine' ⟨_, _⟩
-  · rw [Ne.def, neg_eq_iff_eq_neg, eq_comm, neg_zero]
+  · rw [Ne.eq_def, neg_eq_iff_eq_neg, eq_comm, neg_zero]
     exact hf.left.symm
   · simp_rw [f.neg_def, DigitExpansion.sub_def]
     obtain ⟨x, hx⟩ := hf.right
@@ -574,7 +567,7 @@ theorem Positive.neg_negative (hf : f.Positive) : (-f).Negative := by
 
 theorem Negative.sub_positive (hf : f.Negative) (hg : g.Positive) : (f - g).Negative := by
   refine' ⟨_, _⟩
-  · rw [Ne.def, sub_eq_zero]
+  · rw [Ne.eq_def, sub_eq_zero]
     rintro rfl
     exact hf.not_positive hg
   · obtain ⟨x, hx⟩ := hf.right
@@ -635,7 +628,7 @@ theorem Positive.sub_positive (hf : f.Positive) (hg : g.Positive) (hne : f ≠ g
   have hd' : (∀ z < x₀, difcar f g z = 0) ↔ g x₀ < f x₀ := by
     rw [← not_iff_not]
     push_neg
-    simp only [le_iff_lt_or_eq, hx₀.left, ← hd, Ne.def, or_false_iff]
+    simp only [le_iff_lt_or_eq, hx₀.left, ← hd, Ne.eq_def, or_false_iff]
     constructor
     · rintro ⟨z, hz, H⟩
       rw [difcar_eq_zero_iff] at H
@@ -655,11 +648,11 @@ theorem Positive.sub_positive (hf : f.Positive) (hg : g.Positive) (hne : f ≠ g
       simp [hb.out]
   refine' hx₀.left.lt_or_lt.symm.imp _ _ <;> intro H
   · refine' ⟨⟨_, x₀, fun y hy => _⟩, ⟨_, H, hx₀.right⟩⟩
-    · rwa [Ne.def, sub_eq_zero]
+    · rwa [Ne.eq_def, sub_eq_zero]
     · rw [← hd'] at H
       simp [DigitExpansion.sub_def, hx₀.right _ hy, H _ hy]
   · refine' ⟨⟨_, x₀, fun y hy => _⟩, _⟩
-    · rwa [Ne.def, sub_eq_zero]
+    · rwa [Ne.eq_def, sub_eq_zero]
     · rw [← hd] at H
       simp only [DigitExpansion.sub_def, hx₀.right _ hy, H _ hy, sub_self, zero_sub]
       rw [neg_eq_iff_eq_neg, eq_comm, Fin.neg_coe_eq_one]
@@ -710,7 +703,7 @@ theorem Negative.sub_negative (hf : f.Negative) (hg : g.Negative) (hne : f ≠ g
   have hd' : (∀ z < x₀, difcar f g z = 0) ↔ g x₀ < f x₀ := by
     rw [← not_iff_not]
     push_neg
-    simp only [le_iff_lt_or_eq, hx₀.left, ← hd, Ne.def, or_false_iff]
+    simp only [le_iff_lt_or_eq, hx₀.left, ← hd, Ne.eq_def, or_false_iff]
     constructor
     · rintro ⟨z, hz, H⟩
       rw [difcar_eq_zero_iff] at H
@@ -730,11 +723,11 @@ theorem Negative.sub_negative (hf : f.Negative) (hg : g.Negative) (hne : f ≠ g
       simp [hb.out]
   refine' hx₀.left.lt_or_lt.symm.imp _ _ <;> intro H
   · refine' ⟨⟨_, x₀, fun y hy => _⟩, ⟨_, H, hx₀.right⟩⟩
-    · rwa [Ne.def, sub_eq_zero]
+    · rwa [Ne.eq_def, sub_eq_zero]
     · rw [← hd'] at H
       simp [DigitExpansion.sub_def, hx₀.right _ hy, H _ hy]
   · refine' ⟨⟨_, x₀, fun y hy => _⟩, _⟩
-    · rwa [Ne.def, sub_eq_zero]
+    · rwa [Ne.eq_def, sub_eq_zero]
     · rw [← hd] at H
       simp only [DigitExpansion.sub_def, hx₀.right _ hy, H _ hy, sub_self, zero_sub]
       rw [neg_eq_iff_eq_neg, Fin.neg_coe_eq_one]
@@ -756,7 +749,7 @@ lemma Positive.positive_or_eq_sub_single {f : DigitExpansion Z b} (hf : f.Positi
   by_cases H : ∃ y > x, 0 < f y
   · obtain ⟨y, hy, ypos⟩ := H
     refine Or.inl ⟨?_, x, ?_⟩
-    · rw [FunLike.ne_iff]
+    · rw [DFunLike.ne_iff]
       rcases eq_or_ne z y with rfl|hy'
       · refine ⟨x, ?_⟩
         simp only [DigitExpansion.sub_def, single_apply_of_ne _ _ _ hy.ne', sub_zero,
@@ -819,7 +812,7 @@ lemma single_add_single_of_le (z : Z) (k l : Fin (b + 1)) (h : (b + 1) < k.val +
   rw [eq_comm, ← sub_eq_iff_eq_add, add_sub_assoc, add_comm, eq_comm, ← sub_eq_iff_eq_add]
   ext w : 1
   rcases eq_or_ne w z with rfl|hw
-  · simp only [DigitExpansion.sub_def, single_apply_self, sub_add_cancel',
+  · simp only [DigitExpansion.sub_def, single_apply_self, sub_add_cancel_left,
     difcar_single_single_self, sub_zero, ne_eq, pred_eq_iff_isMin, not_isMin, not_false_eq_true,
     single_apply_of_ne, zero_sub]
     rw [difcar_eq_zero_iff.mpr]
@@ -879,7 +872,8 @@ lemma nsmul_single_eq_single (z : Z) (n : Fin (b + 1)) :
     neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt]
     intro y _ hy'
     rcases eq_or_ne y z with rfl|hz
-    · simp [Fin.lt_iff_val_lt_val, H, hn', (Nat.le_succ _).not_lt] at hy'
+    · simp [Fin.lt_iff_val_lt_val, H, hn', (Nat.le_succ _).not_lt,
+            Nat.one_mod_of_ne_one, hb.out] at hy'
     · simp [single_apply_of_ne _ _ _ hz.symm] at hy'
 
 lemma base_nsmul_single_one_succ_one_eq_single (z : Z) :
@@ -890,23 +884,23 @@ lemma base_nsmul_single_one_succ_one_eq_single (z : Z) :
   rw [succ_nsmul, this, nsmul_single_eq_single _ b, eq_comm, ← sub_eq_iff_eq_add]
   ext x : 1
   rcases eq_or_ne x (succ z) with rfl|hx
-  · simp only [Fin.cast_nat_eq_last, DigitExpansion.sub_def, ne_eq, pred_eq_iff_isMin, not_isMin,
-    not_false_eq_true, single_apply_of_ne, single_apply_self, zero_sub, Fin.neg_last, sub_eq_self,
-    difcar_eq_zero_iff, gt_iff_lt, (lt_succ z).ne]
+  · rw [DigitExpansion.sub_def, single_apply_self, single_apply_of_ne _ _ _ (lt_succ z).ne,
+        zero_sub, single_apply_self, Fin.natCast_eq_last, neg_sub_left, neg_eq_iff_eq_neg,
+        Fin.neg_last, add_left_eq_self, difcar_eq_zero_iff]
     intro y hy
     simp [single_apply_of_ne _ _ _ hy.ne]
   · rcases eq_or_ne x z with rfl|hz
-    · simp only [Fin.cast_nat_eq_last, DigitExpansion.sub_def, single_apply_self,
+    · simp only [Fin.natCast_eq_last, DigitExpansion.sub_def, single_apply_self,
       single_apply_of_ne _ _ _ hx.symm, sub_zero]
       rw [difcar_eq_one_iff.mpr]
       · simp
       · refine ⟨succ x, lt_succ _, ?_, ?_⟩
-        · simp [Fin.lt_iff_val_lt_val, Nat.pos_of_ne_zero hb.out,
+        · simp [Fin.lt_iff_val_lt_val, Nat.one_mod_of_ne_one, hb.out,
                 single_apply_of_ne _ _ _ (lt_succ _).ne]
         · simp only [lt_succ_iff]
           intro _ h h'
           exact absurd h h'.not_le
-    · simp only [Fin.cast_nat_eq_last, DigitExpansion.sub_def, ne_eq, hz.symm, not_false_eq_true,
+    · simp only [Fin.natCast_eq_last, DigitExpansion.sub_def, ne_eq, hz.symm, not_false_eq_true,
       single_apply_of_ne, hx.symm, sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff]
       intro y hy hy'
       have : y = succ z := by

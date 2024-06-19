@@ -3,8 +3,8 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.DigitExpansion.Add
-import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Defining reals without the use of rationals, the Hensel subgroup
@@ -109,7 +109,7 @@ lemma henselInt_le_hensel [Zero Z] : henselInt Z b ≤ hensel Z b :=
 
 lemma exists_greatest_pos_of_ne_zero {a : hensel Z b} (h : a ≠ 0) :
     ∃ x, 0 < a.val x ∧ ∀ y > x, a.val y = 0 := by
-  rw [ne_eq, Subtype.ext_iff, ← ne_eq, FunLike.ne_iff] at h
+  rw [ne_eq, Subtype.ext_iff, ← ne_eq, DFunLike.ne_iff] at h
   obtain ⟨x, hx⟩ := h
   obtain ⟨l, hl⟩ := a.prop
   have xneg : x ≤ l := by

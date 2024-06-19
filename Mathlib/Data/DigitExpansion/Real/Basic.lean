@@ -3,8 +3,8 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.DigitExpansion.Add
-import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Defining reals without the use of rationals
@@ -16,39 +16,6 @@ Constructing the actual subgroup of the reals.
 -/
 
 open Order
-
--- TODO
-theorem pred_min {Z : Type*} [LinearOrder Z] [PredOrder Z] (x y : Z) :
-    pred (min x y) = min (pred x) (pred y) := by
-  cases' le_total x y with h h
-  · rw [min_eq_left h, min_eq_left]
-    simp [h]
-  · rw [min_eq_right h, min_eq_right]
-    simp [h]
-
-theorem pred_max {Z : Type*} [LinearOrder Z] [PredOrder Z] (x y : Z) :
-    pred (max x y) = max (pred x) (pred y) := by
-  cases' le_total x y with h h
-  · rw [max_eq_right h, max_eq_right]
-    simp [h]
-  · rw [max_eq_left h, max_eq_left]
-    simp [h]
-
-theorem succ_min {Z : Type*} [LinearOrder Z] [SuccOrder Z] (x y : Z) :
-    succ (min x y) = min (succ x) (succ y) := by
-  cases' le_total x y with h h
-  · rw [min_eq_left h, min_eq_left]
-    simp [h]
-  · rw [min_eq_right h, min_eq_right]
-    simp [h]
-
-theorem succ_max {Z : Type*} [LinearOrder Z] [SuccOrder Z] (x y : Z) :
-    succ (max x y) = max (succ x) (succ y) := by
-  cases' le_total x y with h h
-  · rw [max_eq_right h, max_eq_right]
-    simp [h]
-  · rw [max_eq_left h, max_eq_left]
-    simp [h]
 
 variable (Z : Type*) [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] (b : ℕ) [hb : NeZero b]
@@ -127,12 +94,13 @@ instance real.instPartialOrder : PartialOrder (real Z b)
       refine' ⟨Or.inr h, _⟩
       rintro (rfl | H) <;> rw [real.lt_def] at *
       · refine' (_ : (g : DigitExpansion Z b) ≠ g) rfl
-        rw [Ne.def, ← sub_eq_zero]
+        rw [Ne.eq_def, ← sub_eq_zero]
         exact h.left
       · rw [← neg_sub] at H
         exact h.neg_negative.not_positive H
     · rintro ⟨rfl | h, H⟩
       · contrapose! H
+        clear H
         exact Or.inl rfl
       · exact h
   le_antisymm f g := by
@@ -223,13 +191,13 @@ lemma single_zero (z : Z) :
 lemma single_injective (z : Z) :
     Function.Injective (single (b := b) z) := by
   intro n m h
-  simp only [Subtype.ext_iff, val_single, FunLike.ext_iff, ne_eq] at h
+  simp only [Subtype.ext_iff, val_single, DFunLike.ext_iff, ne_eq] at h
   simpa using h z
 
 lemma single_injective_left_of_ne_zero {n : Fin (b + 1)} (hn : n ≠ 0) :
     Function.Injective (single (Z := Z) · n) := by
   intro z x h
-  simp only [Subtype.ext_iff, val_single, FunLike.ext_iff, ne_eq] at h
+  simp only [Subtype.ext_iff, val_single, DFunLike.ext_iff, ne_eq] at h
   specialize h z
   by_contra H
   simp [hn, Ne.symm H] at h z
@@ -237,7 +205,7 @@ lemma single_injective_left_of_ne_zero {n : Fin (b + 1)} (hn : n ≠ 0) :
 lemma single_strict_mono (z : Z) {n m : Fin (b + 1)} (h : n < m) :
     single z n < single z m := by
   refine ⟨?_, z, fun y hy => ?_⟩
-  · rw [FunLike.ne_iff]
+  · rw [DFunLike.ne_iff]
     refine ⟨z, ?_⟩
     simp [DigitExpansion.sub_def, sub_eq_zero, h.ne']
   · rw [DigitExpansion.sub_def, difcar_eq_zero_iff.mpr]
@@ -259,7 +227,7 @@ lemma single_lt_right_iff {z : Z} {n m : Fin (b + 1)} :
 lemma single_strict_anti_left_of_ne_zero {z x : Z} {n : Fin (b + 1)} (hn : n ≠ 0) (h : z < x) :
     single x n < single z n := by
   refine ⟨?_, z, fun y hy => ?_⟩
-  · rw [FunLike.ne_iff]
+  · rw [DFunLike.ne_iff]
     refine ⟨x, ?_⟩
     simp only [val_single, DigitExpansion.sub_def, single_apply_self, zero_apply, ne_eq]
     rw [difcar_eq_zero_iff.mpr, sub_zero, sub_eq_zero]
@@ -269,8 +237,8 @@ lemma single_strict_anti_left_of_ne_zero {z x : Z} {n : Fin (b + 1)} (hn : n ≠
   · rw [DigitExpansion.sub_def, difcar_eq_zero_iff.mpr]
     · simp [hy.ne', (hy.trans h).ne']
     intro w hw H
-    have : x = w
-    · contrapose! H
+    have : x = w := by
+      contrapose! H
       simp [H]
     subst w
     refine ⟨z, h, hy, ?_⟩
@@ -361,8 +329,8 @@ lemma cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     rw [hm' _ hym, hn' _ hyn] at ha'
     simp only [sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt] at ha' ⊢
     intro w hyw hw
-    have hwz : w ≤ z
-    · contrapose! hw
+    have hwz : w ≤ z := by
+      contrapose! hw
       simp [cutoff_apply_lt _ _ _ hw]
     rw [cutoff_apply_le _ _ _ hwz, cutoff_apply_le _ _ _ hwz] at hw
     obtain ⟨u, hu, hu', hu''⟩ := ha' w hyw hw
@@ -417,8 +385,8 @@ lemma cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     rw [hm' _ (hym.trans_le (pred_le _)), hn' _ (hyn.trans_le (pred_le _))] at ha'
     simp only [sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt] at ha' ⊢
     intro w hyw hw
-    have hwz : w ≤ z
-    · contrapose! hw
+    have hwz : w ≤ z := by
+      contrapose! hw
       simp [cutoff_apply_lt _ _ _ hw]
     rw [cutoff_apply_le _ _ _ hwz, cutoff_apply_le _ _ _ hwz] at hw
     obtain ⟨u, hu, hu', hu''⟩ := ha' w hyw hw
@@ -456,16 +424,16 @@ lemma cutoff_mono_left {z z' : Z} (f : real Z b) (h : z ≤ z') :
       simpa using cutoff_mono z' hf'.le
     · obtain ⟨-, x, hx'⟩ := hf'
       simp only [Subtype.ext_iff, val_cutoff, ZeroMemClass.coe_zero] at hf
-      suffices : DigitExpansion.cutoff (b := b) z f (pred (min z x)) = 0
-      · rw [cutoff_apply_le, hx'] at this
+      suffices DigitExpansion.cutoff (b := b) z f (pred (min z x)) = 0 by
+        rw [cutoff_apply_le, hx'] at this
         · simp [Fin.ext_iff, hb.out] at this
         · simp [pred_min]
         · simp [pred_min, pred_le]
       simp [hf]
     · simp only [ZeroMemClass.coe_eq_zero] at hf'
       simp [hf']
-  have hle : ∀ y, (DigitExpansion.cutoff z f.val) y ≤ (DigitExpansion.cutoff z' f.val) y
-  · intro y
+  have hle : ∀ y, (DigitExpansion.cutoff z f.val) y ≤ (DigitExpansion.cutoff z' f.val) y := by
+    intro y
     cases' le_or_lt y z with hyz hyz
     · rw [cutoff_apply_le _ _ _ hyz, cutoff_apply_le _ _ _ (hyz.trans h.le)]
     · simp [cutoff_apply_lt _ _ _ hyz]
@@ -474,8 +442,8 @@ lemma cutoff_mono_left {z z' : Z} (f : real Z b) (h : z ≤ z') :
     refine' le_of_lt ⟨_, pred z, _⟩
     · contrapose! hw
       simp only [val_cutoff] at hw
-      have : difcar (DigitExpansion.cutoff z' f) (DigitExpansion.cutoff (b := b) z f) w = 0
-      · rw [difcar_eq_zero_iff]
+      have : difcar (DigitExpansion.cutoff z' f) (DigitExpansion.cutoff (b := b) z f) w = 0 := by
+        rw [difcar_eq_zero_iff]
         intro u
         simp [(hle u).not_lt]
       rw [← zero_apply w, ← hw, DigitExpansion.sub_def, cutoff_apply_lt _ _ _ hzw,
@@ -510,7 +478,7 @@ lemma le_of_forall_cutoff_le_cutoff {f g : real Z b} (h : ∀ z, cutoff z f ≤ 
   rw [← not_lt]
   intro H
   obtain ⟨hne, z, hz⟩ := id H
-  rw [sub_ne_zero, FunLike.ne_iff] at hne
+  rw [sub_ne_zero, DFunLike.ne_iff] at hne
   obtain ⟨x, hx⟩ := hne
   rw [← cutoff_apply_self f.val, ← val_cutoff, le_antisymm (h _) (cutoff_mono _ H.le),
       val_cutoff, cutoff_apply_self] at hx
@@ -523,13 +491,13 @@ theorem exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case where S
   obtain ⟨f, hf⟩ := id hn
   rcases g.prop with (hg|hg|hg)
   · have hgf := h hf
-    have hf' : DigitExpansion.Positive (f : DigitExpansion Z b)
-    · rw [positive_iff] at hg ⊢
+    have hf' : DigitExpansion.Positive (f : DigitExpansion Z b) := by
+      rw [positive_iff] at hg ⊢
       exact hg.trans_le hgf
     obtain ⟨-, v, hv'⟩ := hf'
     obtain ⟨-, u, hu'⟩ := hg
-    have : cutoff (pred (min u v)) f = cutoff (pred (min u v)) g
-    · ext y
+    have : cutoff (pred (min u v)) f = cutoff (pred (min u v)) g := by
+      ext y
       simp only [ge_iff_le, val_cutoff]
       cases' le_or_lt y (pred (min u v)) with hy hy
       · rw [cutoff_apply_le _ _ _ hy, cutoff_apply_le _ _ _ hy,
@@ -544,8 +512,8 @@ theorem exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case where S
     · obtain ⟨f, hf, hf'⟩ := hS
       obtain ⟨-, v, hv'⟩ := hf'
       obtain ⟨-, u, hu'⟩ := hg
-      have : cutoff (pred (min u v)) f = cutoff (pred (min u v)) g
-      · ext y
+      have : cutoff (pred (min u v)) f = cutoff (pred (min u v)) g := by
+        ext y
         simp only [ge_iff_le, val_cutoff]
         cases' le_or_lt y (pred (min u v)) with hy hy
         · rw [cutoff_apply_le _ _ _ hy, cutoff_apply_le _ _ _ hy,
@@ -556,21 +524,21 @@ theorem exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case where S
       refine' ⟨pred (min u v), cutoff (pred (min u v)) f, ⟨f, hf, rfl⟩, _⟩
       rw [this]
       exact (cutoff_monotone _).mem_lowerBounds_image h
-    · replace hS : ∀ f ∈ S, (f : DigitExpansion Z b).Positive ∨ f = 0
-      · rintro ⟨f, hf'|hf'|hf'⟩ hf
+    · replace hS : ∀ f ∈ S, (f : DigitExpansion Z b).Positive ∨ f = 0 := by
+        rintro ⟨f, hf'|hf'|hf'⟩ hf
         · simp [hf']
         · simpa using hS ⟨⟨_, _⟩, hf, hf'⟩
         · simp [hf']
-      have h0 : 0 ∈ lowerBounds S
-      · intro f hf
+      have h0 : 0 ∈ lowerBounds S := by
+        intro f hf
         rw [real.le_def]
         rcases (hS f hf) with (hf|rfl) <;> simp [hf]
       specialize hS f hf
       rcases hS with (hf|rfl)
       · obtain ⟨-, v, hv'⟩ := hf
         refine' ⟨pred v, cutoff (pred v) f, ⟨f, hf, rfl⟩, _⟩
-        have h0' : cutoff (pred v) f = 0
-        · ext y
+        have h0' : cutoff (pred v) f = 0 := by
+          ext y
           simp only [val_cutoff, ZeroMemClass.coe_zero, zero_apply]
           cases' le_or_lt y (pred v) with hy hy
           · rw [cutoff_apply_le _ _ _ hy, hv' _ (hy.trans_lt _)]
@@ -584,8 +552,8 @@ theorem exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case where S
         exact (cutoff_monotone _).mem_lowerBounds_image h0
   · simp only [ZeroMemClass.coe_eq_zero] at hg
     subst g
-    have : ∀ f ∈ S, (f : DigitExpansion Z b).Positive ∨ f = 0
-    · intro f hf
+    have : ∀ f ∈ S, (f : DigitExpansion Z b).Positive ∨ f = 0 := by
+      intro f hf
       rcases f.prop with hf'|hf'|hf'
       · simp [hf']
       · rw [negative_iff] at hf'
@@ -595,8 +563,8 @@ theorem exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case where S
     rcases this f hf with hf'|rfl
     · obtain ⟨-, v, hv'⟩ := hf'
       refine' ⟨pred v, cutoff (pred v) f, ⟨f, hf, rfl⟩, _⟩
-      have h0' : cutoff (pred v) f = 0
-      · ext y
+      have h0' : cutoff (pred v) f = 0 := by
+        ext y
         simp only [val_cutoff, ZeroMemClass.coe_zero, zero_apply]
         cases' le_or_lt y (pred v) with hy hy
         · rw [cutoff_apply_le _ _ _ hy, hv' _ (hy.trans_lt _)]
@@ -618,8 +586,8 @@ lemma cutoff_succ_eq_cutoff_add_single (f : real Z b) (u : Z) :
   · rw [cutoff_apply_le _ _ _ h, single_apply_of_ne _ _ _ (h.trans_lt (lt_succ _)).ne',
         cutoff_apply_le _ _ _ (h.trans (le_succ _)), difcar_eq_zero_iff.mpr, sub_zero, sub_zero]
     intro x _ H
-    have : x = succ u
-    · contrapose! H
+    have : x = succ u := by
+      contrapose! H
       simp [H.symm]
     simp [this] at H
   · rw [cutoff_apply_lt _ _ _ h]
@@ -628,15 +596,15 @@ lemma cutoff_succ_eq_cutoff_add_single (f : real Z b) (u : Z) :
     · simp only [cutoff_apply_self, single_apply_self, sub_self, zero_sub, neg_eq_zero,
       difcar_eq_zero_iff, gt_iff_lt, ne_eq]
       intro x hx H
-      have : x = succ u
-      · contrapose! H
+      have : x = succ u := by
+        contrapose! H
         simp [H.symm]
       simp [this] at hx
     · rw [cutoff_apply_lt _ _ _ h, single_apply_of_ne _ _ _ h.ne, difcar_eq_zero_iff.mpr]
       · simp
       intro x hx H
-      have : x = succ u
-      · contrapose! H
+      have : x = succ u := by
+        contrapose! H
         simp [H.symm]
       simp [this, (h.trans' (lt_succ _)).not_le] at hx
 
@@ -668,14 +636,14 @@ lemma shift_eq_self_iff {f : real Z b} : shift f = f ↔ f = 0 := by
   · have := h.left
     simp only [ne_eq, ZeroMemClass.coe_eq_zero] at this
     simp only [this, iff_false]
-    rw [Subtype.ext_iff, ← ne_eq, FunLike.ne_iff]
+    rw [Subtype.ext_iff, ← ne_eq, DFunLike.ne_iff]
     refine h.exists_least_pos.imp ?_
     intro x ⟨xpos, hx⟩
     simp [hx (pred x), xpos.ne]
   · have := h.left
     simp only [ne_eq, ZeroMemClass.coe_eq_zero] at this
     simp only [this, iff_false]
-    rw [Subtype.ext_iff, ← ne_eq, FunLike.ne_iff]
+    rw [Subtype.ext_iff, ← ne_eq, DFunLike.ne_iff]
     refine h.exists_least_cap.imp ?_
     intro x ⟨xpos, hx⟩
     simpa [hx (pred x)] using xpos.symm
@@ -744,7 +712,7 @@ lemma shift_shift_add_shift_shift_lt_of_pos {f : real Z b} (hf : 0 < f) :
     rwa [pred_lt_iff, ← succ_le_succ_iff, succ_pred]
   have s1 : ∀ y ≤ succ x, (-shift (shift f)).val y = -1 := by
     intros y hy
-    rw [AddSubgroupClass.coe_neg, val_shift, val_shift, DigitExpansion.neg_def,
+    rw [NegMemClass.coe_neg, val_shift, val_shift, DigitExpansion.neg_def,
         DigitExpansion.sub_def]
     have := s0 y hy
     simp only [val_shift, shift_apply] at this
@@ -760,14 +728,14 @@ lemma shift_shift_add_shift_shift_lt_of_pos {f : real Z b} (hf : 0 < f) :
       simp [Nat.pos_of_ne_zero hb.out]
     · intro y hy hy'
       simp [hy'.not_le] at hy
-  simp only [val_shift, AddSubgroupClass.coe_neg] at s0 s1 sd
+  simp only [val_shift, NegMemClass.coe_neg] at s0 s1 sd
   have : ∀ y ≤ x, (shift (shift f) + shift (shift f)).val y = 0 := by
     intro _ hy
     simp only [AddSubmonoid.coe_add, AddSubgroup.coe_toAddSubmonoid, val_shift, neg_neg, sub_self,
                DigitExpansion.add_def, DigitExpansion.sub_def, zero_apply, zero_sub,
                s0 _ (hy.trans (le_succ _)), s1 _ (hy.trans (le_succ _)), sd _ hy]
   refine ⟨?_, x, ?_⟩
-  · rw [sub_ne_zero,  FunLike.ne_iff]
+  · rw [sub_ne_zero, DFunLike.ne_iff]
     refine ⟨x, ?_⟩
     rw [this _ le_rfl]
     exact xpos.ne'
