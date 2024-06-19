@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Yury Kudryashov All rights reserved.
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
@@ -10,7 +10,7 @@ import Mathlib.Order.Filter.CountableInter
 
 In this file we prove some facts about a filter with countable intersections property on a type with
 a countable family of sets that separates points of the space. The main use case is the
-`MeasureTheory.Measure.ae` filter and a space with countably generated σ-algebra but lemmas apply,
+`MeasureTheory.ae` filter and a space with countably generated σ-algebra but lemmas apply,
 e.g., to the `residual` filter and a T₀ topological space with second countable topology.
 
 To avoid repetition of lemmas for different families of separating sets (measurable sets, open sets,
@@ -168,7 +168,7 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
     | inl hsl => simp only [hx.1.2 s ⟨hsS, hsl⟩, hy.1.2 s ⟨hsS, hsl⟩]
     | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]
   · exact inter_mem
-      (inter_mem hs ((countable_sInter_mem (hSc.mono (inter_subset_left _ _))).2 fun _ h ↦ h.2))
+      (inter_mem hs ((countable_sInter_mem (hSc.mono inter_subset_left)).2 fun _ h ↦ h.2))
       ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem.2 id)
 
 theorem exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Set α → Prop)

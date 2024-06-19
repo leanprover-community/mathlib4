@@ -449,8 +449,8 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
           exact hxy
       · simp only [le_iInf_iff, le_principal_iff]
         intro n
-        refine' mem_iInf_of_mem ((1 / 2) ^ n : ℝ) _
-        refine' mem_iInf_of_mem (by positivity) _
+        refine mem_iInf_of_mem ((1 / 2) ^ n : ℝ) ?_
+        refine mem_iInf_of_mem (by positivity) ?_
         simp only [mem_principal, setOf_subset_setOf, Prod.forall]
         intro x y hxy
         exact apply_eq_of_dist_lt hxy le_rfl }
@@ -848,7 +848,7 @@ theorem dist_le_dist_pi_of_dist_lt {x y : ∀ i, F i} {i : ι} (h : dist x y < (
   simpa only [not_le.2 h, false_or_iff] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 #align pi_countable.dist_le_dist_pi_of_dist_lt PiCountable.dist_le_dist_pi_of_dist_lt
 
-open BigOperators Topology Filter NNReal
+open Topology Filter NNReal
 
 variable (E)
 
@@ -902,22 +902,22 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
           { p : (∀ i : ι, F i) × ∀ i : ι, F i | dist (p.fst i) (p.snd i) < δ }
       · rintro ⟨i, hi⟩
-        refine' mem_iInf_of_mem δ (mem_iInf_of_mem δpos _)
+        refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
         simp only [Prod.forall, imp_self, mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
         simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_range, Finset.mem_coe] at hxy
         calc
           dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
-          _ = (∑ i in K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
+          _ = (∑ i ∈ K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
                 ∑' i : ↑(K : Set ι)ᶜ, min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
             (sum_add_tsum_compl (dist_summable _ _)).symm
-          _ ≤ (∑ i in K, dist (x i) (y i)) +
+          _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
-            refine' add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) _
-            refine' tsum_le_tsum (fun i => min_le_left _ _) _ _
+            refine add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) ?_
+            refine tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
             · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
             · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
-          _ < (∑ _i in K, δ) + ε / 2 := by
+          _ < (∑ _i ∈ K, δ) + ε / 2 := by
             apply add_lt_add_of_le_of_lt _ hK
             refine Finset.sum_le_sum fun i hi => (hxy i ?_).le
             simpa using hi
@@ -926,9 +926,9 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           _ = ε := add_halves _
     · simp only [le_iInf_iff, le_principal_iff]
       intro i ε εpos
-      refine' mem_iInf_of_mem (min ((1 / 2) ^ encode i : ℝ) ε) _
+      refine mem_iInf_of_mem (min ((1 / 2) ^ encode i : ℝ) ε) ?_
       have : 0 < min ((1 / 2) ^ encode i : ℝ) ε := lt_min (by simp) εpos
-      refine' mem_iInf_of_mem this _
+      refine mem_iInf_of_mem this ?_
       simp only [and_imp, Prod.forall, setOf_subset_setOf, lt_min_iff, mem_principal]
       intro x y hn hε
       calc

@@ -169,8 +169,8 @@ lemma ofHom_v (φ : F ⟶ G) (p : ℤ) : (ofHom φ).v p p (add_zero p) = φ.f p 
 
 @[simp]
 lemma ofHom_v_comp_d (φ : F ⟶ G) (p q q' : ℤ) (hpq : p + 0 = q) :
-    (ofHom φ).v p q hpq ≫ G.d q q' = φ.f p ≫ G.d p q' :=
-by simp only [ofHom, ofHoms_v_comp_d]
+    (ofHom φ).v p q hpq ≫ G.d q q' = φ.f p ≫ G.d p q' := by
+  simp only [ofHom, ofHoms_v_comp_d]
 
 @[simp]
 lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q : ℤ) (hpq : p + 0 = q) :

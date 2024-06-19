@@ -27,7 +27,7 @@ a Borel measure `f.measure`.
 noncomputable section
 
 open scoped Classical
-open Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
+open Set Filter Function ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
 
@@ -123,7 +123,7 @@ noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Mono
     change ∀ᶠ y in 𝓝[≥] x, rightLim f y ∈ s
     filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_refl x, xy⟩] with z hz
     apply lus
-    refine' ⟨hlu.1.trans_le (hf.rightLim hz.1), _⟩
+    refine ⟨hlu.1.trans_le (hf.rightLim hz.1), ?_⟩
     obtain ⟨a, za, ay⟩ : ∃ a : ℝ, z < a ∧ a < y := exists_between hz.2
     calc
       rightLim f z ≤ f a := hf.rightLim_le za
@@ -191,7 +191,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     ofReal (f b - f a) ≤ ∑' i, ofReal (f (d i) - f (c i)) := by
   suffices
     ∀ (s : Finset ℕ) (b), Icc a b ⊆ (⋃ i ∈ (s : Set ℕ), Ioo (c i) (d i)) →
-      (ofReal (f b - f a) : ℝ≥0∞) ≤ ∑ i in s, ofReal (f (d i) - f (c i)) by
+      (ofReal (f b - f a) : ℝ≥0∞) ≤ ∑ i ∈ s, ofReal (f (d i) - f (c i)) by
     rcases isCompact_Icc.elim_finite_subcover_image
         (fun (i : ℕ) (_ : i ∈ univ) => @isOpen_Ioo _ _ _ _ (c i) (d i)) (by simpa using ss) with
       ⟨s, _, hf, hs⟩
@@ -354,8 +354,8 @@ theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   exact f.outer_Ioc a b
 #align stieltjes_function.measure_Ioc StieltjesFunction.measure_Ioc
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma. -/
 @[simp, nolint simpNF]
 theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :

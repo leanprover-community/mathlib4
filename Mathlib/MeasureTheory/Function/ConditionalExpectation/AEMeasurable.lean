@@ -59,13 +59,14 @@ namespace AEStronglyMeasurable'
 variable {α β 𝕜 : Type*} {m m0 : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
   {f g : α → β}
 
-theorem congr (hf : AEStronglyMeasurable' m f μ) (hfg : f =ᵐ[μ] g) : AEStronglyMeasurable' m g μ :=
-  by obtain ⟨f', hf'_meas, hff'⟩ := hf; exact ⟨f', hf'_meas, hfg.symm.trans hff'⟩
+theorem congr (hf : AEStronglyMeasurable' m f μ) (hfg : f =ᵐ[μ] g) :
+    AEStronglyMeasurable' m g μ := by
+  obtain ⟨f', hf'_meas, hff'⟩ := hf; exact ⟨f', hf'_meas, hfg.symm.trans hff'⟩
 #align measure_theory.ae_strongly_measurable'.congr MeasureTheory.AEStronglyMeasurable'.congr
 
-set_option autoImplicit true in
-theorem mono (hf : AEStronglyMeasurable' m f μ) (hm : m ≤ m') : AEStronglyMeasurable' m' f μ := by
-  obtain ⟨f', hf'_meas, hff'⟩ := hf; exact ⟨f', hf'_meas.mono hm, hff'⟩
+theorem mono {m'} (hf : AEStronglyMeasurable' m f μ) (hm : m ≤ m') :
+    AEStronglyMeasurable' m' f μ :=
+  let ⟨f', hf'_meas, hff'⟩ := hf; ⟨f', hf'_meas.mono hm, hff'⟩
 
 theorem add [Add β] [ContinuousAdd β] (hf : AEStronglyMeasurable' m f μ)
     (hg : AEStronglyMeasurable' m g μ) : AEStronglyMeasurable' m (f + g) μ := by

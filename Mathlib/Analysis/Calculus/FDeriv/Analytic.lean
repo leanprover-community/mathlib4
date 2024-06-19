@@ -23,7 +23,7 @@ iterated derivatives, in `ContinuousMultilinearMap.iteratedFDeriv_eq`.
 
 open Filter Asymptotics
 
-open scoped ENNReal BigOperators
+open scoped ENNReal
 
 universe u v
 

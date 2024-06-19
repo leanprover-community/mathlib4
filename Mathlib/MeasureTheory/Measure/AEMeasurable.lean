@@ -74,7 +74,7 @@ theorem ae_mem_imp_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) :
   ae_imp_of_ae_restrict h.ae_eq_mk
 #align ae_measurable.ae_mem_imp_eq_mk AEMeasurable.ae_mem_imp_eq_mk
 
-theorem ae_inf_principal_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) : f =ᶠ[μ.ae ⊓ 𝓟 s] h.mk f :=
+theorem ae_inf_principal_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) : f =ᶠ[ae μ ⊓ 𝓟 s] h.mk f :=
   le_ae_restrict h.ae_eq_mk
 #align ae_measurable.ae_inf_principal_eq_mk AEMeasurable.ae_inf_principal_eq_mk
 
@@ -152,8 +152,8 @@ theorem _root_.aemeasurable_iUnion_iff [Countable ι] {s : ι → Set α} :
 @[simp]
 theorem _root_.aemeasurable_union_iff {s t : Set α} :
     AEMeasurable f (μ.restrict (s ∪ t)) ↔
-      AEMeasurable f (μ.restrict s) ∧ AEMeasurable f (μ.restrict t) :=
-  by simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
+      AEMeasurable f (μ.restrict s) ∧ AEMeasurable f (μ.restrict t) := by
+  simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 #align ae_measurable_union_iff aemeasurable_union_iff
 
 @[measurability]
@@ -245,8 +245,8 @@ theorem aemeasurable_const' (h : ∀ᵐ (x) (y) ∂μ, f x = f y) : AEMeasurable
 
 theorem aemeasurable_uIoc_iff [LinearOrder α] {f : α → β} {a b : α} :
     (AEMeasurable f <| μ.restrict <| Ι a b) ↔
-      (AEMeasurable f <| μ.restrict <| Ioc a b) ∧ (AEMeasurable f <| μ.restrict <| Ioc b a) :=
-  by rw [uIoc_eq_union, aemeasurable_union_iff]
+      (AEMeasurable f <| μ.restrict <| Ioc a b) ∧ (AEMeasurable f <| μ.restrict <| Ioc b a) := by
+  rw [uIoc_eq_union, aemeasurable_union_iff]
 #align ae_measurable_uIoc_iff aemeasurable_uIoc_iff
 
 theorem aemeasurable_iff_measurable [μ.IsComplete] : AEMeasurable f μ ↔ Measurable f :=

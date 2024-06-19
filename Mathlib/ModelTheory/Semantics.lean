@@ -396,8 +396,8 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
 theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → Sum β (Fin m)} {v : β → M}
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
-      φ.Realize (Sum.elim v (xs ∘ Fin.castAdd n) ∘ g) (xs ∘ Fin.natAdd m) :=
-  by rw [relabel, realize_mapTermRel_add_castLe] <;> intros <;> simp
+      φ.Realize (Sum.elim v (xs ∘ Fin.castAdd n) ∘ g) (xs ∘ Fin.natAdd m) := by
+  rw [relabel, realize_mapTermRel_add_castLe] <;> intros <;> simp
 #align first_order.language.bounded_formula.realize_relabel FirstOrder.Language.BoundedFormula.realize_relabel
 
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
@@ -479,8 +479,7 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr
   cases' R with R R
-  · -- This used to be `simp` before leanprover/lean4#2644
-    simp; erw [Equiv.sumEmpty_apply_inl]
+  · simp
   · exact isEmptyElim R
 #align first_order.language.bounded_formula.realize_constants_vars_equiv FirstOrder.Language.BoundedFormula.realize_constantsVarsEquiv
 
@@ -846,7 +845,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem model_union_iff {T' : L.Theory} : M ⊨ T ∪ T' ↔ M ⊨ T ∧ M ⊨ T' :=
-  ⟨fun h => ⟨h.mono (T.subset_union_left T'), h.mono (T.subset_union_right T')⟩, fun h =>
+  ⟨fun h => ⟨h.mono Set.subset_union_left, h.mono Set.subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model_union_iff FirstOrder.Language.Theory.model_union_iff

@@ -136,7 +136,7 @@ instance colimitModule : Module R (M F) :=
 { colimitMulAction F,
   colimitSMulWithZero F with
   smul_add := fun r x y => by
-    refine' Quot.induction_on₂ x y _; clear x y; intro x y; cases' x with i x; cases' y with j y
+    refine Quot.induction_on₂ x y ?_; clear x y; intro x y; cases' x with i x; cases' y with j y
     erw [colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j), colimit_smul_mk_eq, smul_add, colimit_smul_mk_eq,
       colimit_smul_mk_eq, colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)

@@ -42,7 +42,7 @@ basis, det, determinant
 
 noncomputable section
 
-open BigOperators Matrix LinearMap Submodule Set Function
+open Matrix LinearMap Submodule Set Function
 
 universe u v w
 
@@ -448,15 +448,14 @@ def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis 
   map_smul' := f.map_smul
   invFun := toLin v' v (toMatrix v v' f)⁻¹
   left_inv x :=
-    calc
-      toLin v' v (toMatrix v v' f)⁻¹ (f x) = toLin v v ((toMatrix v v' f)⁻¹ * toMatrix v v' f) x :=
-        by rw [toLin_mul v v' v, toLin_toMatrix, LinearMap.comp_apply]
+    calc toLin v' v (toMatrix v v' f)⁻¹ (f x)
+      _ = toLin v v ((toMatrix v v' f)⁻¹ * toMatrix v v' f) x := by
+        rw [toLin_mul v v' v, toLin_toMatrix, LinearMap.comp_apply]
       _ = x := by simp [h]
   right_inv x :=
-    calc
-      f (toLin v' v (toMatrix v v' f)⁻¹ x) =
-          toLin v' v' (toMatrix v v' f * (toMatrix v v' f)⁻¹) x :=
-        by rw [toLin_mul v' v v', LinearMap.comp_apply, toLin_toMatrix v v']
+    calc f (toLin v' v (toMatrix v v' f)⁻¹ x)
+      _ = toLin v' v' (toMatrix v v' f * (toMatrix v v' f)⁻¹) x := by
+        rw [toLin_mul v' v v', LinearMap.comp_apply, toLin_toMatrix v v']
       _ = x := by simp [h]
 #align linear_equiv.of_is_unit_det LinearEquiv.ofIsUnitDet
 

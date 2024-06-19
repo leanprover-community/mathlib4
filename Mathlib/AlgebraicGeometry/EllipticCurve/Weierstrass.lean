@@ -74,7 +74,6 @@ algebraic geometry which are not globally defined by a cubic equation valid over
 elliptic curve, weierstrass equation, j invariant
 -/
 
--- Porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
@@ -85,30 +84,25 @@ universe s u v w
 /-- A Weierstrass curve $Y^2 + a_1XY + a_3Y = X^3 + a_2X^2 + a_4X + a_6$ with parameters $a_i$. -/
 @[ext]
 structure WeierstrassCurve (R : Type u) where
-  (a₁ a₂ a₃ a₄ a₆ : R)
+  /-- The `a₁` coefficient of a Weierstrass curve. -/
+  a₁ : R
+  /-- The `a₂` coefficient of a Weierstrass curve. -/
+  a₂ : R
+  /-- The `a₃` coefficient of a Weierstrass curve. -/
+  a₃ : R
+  /-- The `a₄` coefficient of a Weierstrass curve. -/
+  a₄ : R
+  /-- The `a₆` coefficient of a Weierstrass curve. -/
+  a₆ : R
 #align weierstrass_curve WeierstrassCurve
 
 namespace WeierstrassCurve
 
-/-- The `a₁` coefficient of a Weierstrass curve. -/
-add_decl_doc a₁
 
-/-- The `a₂` coefficient of a Weierstrass curve. -/
-add_decl_doc a₂
-
-/-- The `a₃` coefficient of a Weierstrass curve. -/
-add_decl_doc a₃
-
-/-- The `a₄` coefficient of a Weierstrass curve. -/
-add_decl_doc a₄
-
-/-- The `a₆` coefficient of a Weierstrass curve. -/
-add_decl_doc a₆
-
-instance instInhabitedWeierstrassCurve {R : Type u} [Inhabited R] :
+instance instInhabited {R : Type u} [Inhabited R] :
     Inhabited <| WeierstrassCurve R :=
   ⟨⟨default, default, default, default, default⟩⟩
-#align weierstrass_curve.inhabited WeierstrassCurve.instInhabitedWeierstrassCurve
+#align weierstrass_curve.inhabited WeierstrassCurve.instInhabited
 
 variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
@@ -182,22 +176,16 @@ a tuple $(u, r, s, t)$ for some $u \in R^\times$ and some $r, s, t \in R$. As a 
 $\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}$. -/
 @[ext]
 structure VariableChange (R : Type u) [CommRing R] where
-  (u : Rˣ)
-  (r s t : R)
+  /-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
+  u : Rˣ
+  /-- The `r` coefficient of an admissible linear change of variables. -/
+  r : R
+  /-- The `s` coefficient of an admissible linear change of variables. -/
+  s : R
+  /-- The `t` coefficient of an admissible linear change of variables. -/
+  t : R
 
 namespace VariableChange
-
-/-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
-add_decl_doc u
-
-/-- The `r` coefficient of an admissible linear change of variables. -/
-add_decl_doc r
-
-/-- The `s` coefficient of an admissible linear change of variables. -/
-add_decl_doc s
-
-/-- The `t` coefficient of an admissible linear change of variables. -/
-add_decl_doc t
 
 variable (C C' C'' : VariableChange R)
 
@@ -237,7 +225,7 @@ lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
 lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (comp C' C'') := by
   ext <;> simp only [comp, Units.val_mul] <;> ring1
 
-instance instGroupVariableChange : Group (VariableChange R) where
+instance instGroup : Group (VariableChange R) where
   one := id
   inv := inv
   mul := comp
@@ -575,17 +563,13 @@ end WeierstrassCurve
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
 @[ext]
 structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R where
+  /-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
   Δ' : Rˣ
+  /-- The discriminant of `E` is equal to the discriminant of `E` as a Weierstrass curve. -/
   coe_Δ' : Δ' = toWeierstrassCurve.Δ
 #align elliptic_curve EllipticCurve
 
 namespace EllipticCurve
-
-/-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
-add_decl_doc Δ'
-
-/-- The discriminant of `E` is equal to the discriminant of `E` as a Weierstrass curve. -/
-add_decl_doc coe_Δ'
 
 variable {R : Type u} [CommRing R] (E : EllipticCurve R)
 
@@ -680,9 +664,7 @@ lemma coe_inv_map_Δ' : (E.map φ).Δ'⁻¹ = φ ↑E.Δ'⁻¹ :=
 
 @[simp]
 lemma map_j : (E.map φ).j = φ E.j := by
-  simp only [j, map, E.map_c₄]
-  map_simp
-  rfl
+  simp [j, map, E.map_c₄]
 #align elliptic_curve.base_change_j EllipticCurve.map_j
 
 lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :

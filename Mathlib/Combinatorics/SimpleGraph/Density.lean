@@ -30,8 +30,6 @@ Between two finsets of vertices,
 
 open Finset
 
-open BigOperators
-
 variable {𝕜 ι κ α β : Type*}
 
 /-! ### Density of a relation -/
@@ -163,7 +161,7 @@ theorem edgeDensity_empty_right (s : Finset α) : edgeDensity r s ∅ = 0 := by
 #align rel.edge_density_empty_right Rel.edgeDensity_empty_right
 
 theorem card_interedges_finpartition_left [DecidableEq α] (P : Finpartition s) (t : Finset β) :
-    (interedges r s t).card = ∑ a in P.parts, (interedges r a t).card := by
+    (interedges r s t).card = ∑ a ∈ P.parts, (interedges r a t).card := by
   classical
   simp_rw [← P.biUnion_parts, interedges_biUnion_left, id]
   rw [card_biUnion]
@@ -171,7 +169,7 @@ theorem card_interedges_finpartition_left [DecidableEq α] (P : Finpartition s) 
 #align rel.card_interedges_finpartition_left Rel.card_interedges_finpartition_left
 
 theorem card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P : Finpartition t) :
-    (interedges r s t).card = ∑ b in P.parts, (interedges r s b).card := by
+    (interedges r s t).card = ∑ b ∈ P.parts, (interedges r s b).card := by
   classical
   simp_rw [← P.biUnion_parts, interedges_biUnion_right, id]
   rw [card_biUnion]
@@ -180,7 +178,7 @@ theorem card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P :
 
 theorem card_interedges_finpartition [DecidableEq α] [DecidableEq β] (P : Finpartition s)
     (Q : Finpartition t) :
-    (interedges r s t).card = ∑ ab in P.parts ×ˢ Q.parts, (interedges r ab.1 ab.2).card := by
+    (interedges r s t).card = ∑ ab ∈ P.parts ×ˢ Q.parts, (interedges r ab.1 ab.2).card := by
   rw [card_interedges_finpartition_left _ P, sum_product]
   congr; ext
   rw [card_interedges_finpartition_right]
@@ -281,7 +279,7 @@ theorem mk_mem_interedges_comm : (a, b) ∈ interedges r s t ↔ (b, a) ∈ inte
 #align rel.mk_mem_interedges_comm Rel.mk_mem_interedges_comm
 
 theorem card_interedges_comm (s t : Finset α) : (interedges r s t).card = (interedges r t s).card :=
-  Finset.card_congr (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ (swap_mem_interedges_iff hr).2)
+  Finset.card_bij (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ (swap_mem_interedges_iff hr).2)
     (fun _ _ _ _ h ↦ Prod.swap_injective h) fun x h ↦
     ⟨x.swap, (swap_mem_interedges_iff hr).2 h, x.swap_swap⟩
 #align rel.card_interedges_comm Rel.card_interedges_comm

@@ -135,7 +135,7 @@ instance commutator_normal [h₁ : H₁.Normal] [h₂ : H₂.Normal] : Normal �
   suffices h_base : base = Group.conjugatesOfSet base by
     rw [h_base]
     exact Subgroup.normalClosure_normal
-  refine' Set.Subset.antisymm Group.subset_conjugatesOfSet fun a h => _
+  refine Set.Subset.antisymm Group.subset_conjugatesOfSet fun a h => ?_
   simp_rw [Group.mem_conjugatesOfSet_iff, isConj_iff] at h
   rcases h with ⟨b, ⟨c, hc, e, he, rfl⟩, d, rfl⟩
   exact ⟨_, h₁.conj_mem c hc d, _, h₂.conj_mem e he d, (conjugate_commutatorElement c e d).symm⟩

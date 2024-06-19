@@ -3,12 +3,14 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
 -/
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.lucas_lehmer from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
@@ -157,13 +159,15 @@ theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p
 #align lucas_lehmer.s_zmod_eq_s LucasLehmer.sZMod_eq_s
 
 -- These next two don't make good `norm_cast` lemmas.
-theorem Int.coe_nat_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
+theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
   norm_cast
-#align lucas_lehmer.int.coe_nat_pow_pred LucasLehmer.Int.coe_nat_pow_pred
+#align lucas_lehmer.int.coe_nat_pow_pred LucasLehmer.Int.natCast_pow_pred
+
+@[deprecated (since := "2024-05-25")] alias Int.coe_nat_pow_pred := Int.natCast_pow_pred
 
 theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
-  Int.coe_nat_pow_pred 2 p (by decide)
+  Int.natCast_pow_pred 2 p (by decide)
 #align lucas_lehmer.int.coe_nat_two_pow_pred LucasLehmer.Int.coe_nat_two_pow_pred
 
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
@@ -308,13 +312,13 @@ instance : Monoid (X q) :=
 instance : NatCast (X q) where
     natCast := fun n => ⟨n, 0⟩
 
-@[simp] theorem nat_coe_fst (n : ℕ) : (n : X q).fst = (n : ZMod q) := rfl
+@[simp] theorem fst_natCast (n : ℕ) : (n : X q).fst = (n : ZMod q) := rfl
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.nat_coe_fst LucasLehmer.X.nat_coe_fst
+#align lucas_lehmer.X.nat_coe_fst LucasLehmer.X.fst_natCast
 
-@[simp] theorem nat_coe_snd (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
+@[simp] theorem snd_natCast (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.nat_coe_snd LucasLehmer.X.nat_coe_snd
+#align lucas_lehmer.X.nat_coe_snd LucasLehmer.X.snd_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
@@ -361,16 +365,21 @@ instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
   ⟨⟨0, 1, ne_of_apply_ne Prod.fst zero_ne_one⟩⟩
 
 @[simp]
-theorem int_coe_fst (n : ℤ) : (n : X q).fst = (n : ZMod q) :=
+theorem fst_intCast (n : ℤ) : (n : X q).fst = (n : ZMod q) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.int_coe_fst LucasLehmer.X.int_coe_fst
+#align lucas_lehmer.X.int_coe_fst LucasLehmer.X.fst_intCast
 
 @[simp]
-theorem int_coe_snd (n : ℤ) : (n : X q).snd = (0 : ZMod q) :=
+theorem snd_intCast (n : ℤ) : (n : X q).snd = (0 : ZMod q) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.int_coe_snd LucasLehmer.X.int_coe_snd
+#align lucas_lehmer.X.int_coe_snd LucasLehmer.X.snd_intCast
+
+@[deprecated (since := "2024-05-25")] alias nat_coe_fst := fst_natCast
+@[deprecated (since := "2024-05-25")] alias nat_coe_snd := snd_natCast
+@[deprecated (since := "2024-05-25")] alias int_coe_fst := fst_intCast
+@[deprecated (since := "2024-05-25")] alias int_coe_snd := snd_intCast
 
 @[norm_cast]
 theorem coe_mul (n m : ℤ) : ((n * m : ℤ) : X q) = (n : X q) * (m : X q) := by ext <;> simp
@@ -382,8 +391,7 @@ theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_natCast
 
--- 2024-04-05
-@[deprecated] alias coe_nat := coe_natCast
+@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by

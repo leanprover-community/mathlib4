@@ -173,7 +173,7 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
       have B : MeasurableSet {x | g x ≤ N} := measurableSet_le hg measurable_const
       exact (A.inter B).inter (measurable_spanningSets μ p)
     have s_lt_top : μ s < ∞ :=
-      (measure_mono (Set.inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top μ p)
+      (measure_mono (Set.inter_subset_right)).trans_lt (measure_spanningSets_lt_top μ p)
     have A : (∫⁻ x in s, g x ∂μ) + ε * μ s ≤ (∫⁻ x in s, g x ∂μ) + 0 :=
       calc
         (∫⁻ x in s, g x ∂μ) + ε * μ s = (∫⁻ x in s, g x ∂μ) + ∫⁻ _ in s, ε ∂μ := by
@@ -265,19 +265,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg_of_stronglyMeasurable (hfm : Stro
   intro b hb_neg
   let s := {x | f x ≤ b}
   have hs : MeasurableSet s := hfm.measurableSet_le stronglyMeasurable_const
-  have mus : μ s < ∞ := by
-    let c : ℝ≥0 := ⟨|b|, abs_nonneg _⟩
-    have c_pos : (c : ℝ≥0∞) ≠ 0 := by simpa [c, ← NNReal.coe_eq_zero] using hb_neg.ne
-    calc
-      μ s ≤ μ {x | (c : ℝ≥0∞) ≤ ‖f x‖₊} := by
-        apply measure_mono
-        intro x hx
-        simp only [s, Set.mem_setOf_eq] at hx
-        simpa only [c, nnnorm, abs_of_neg hb_neg, abs_of_neg (hx.trans_lt hb_neg), Real.norm_eq_abs,
-          Subtype.mk_le_mk, neg_le_neg_iff, Set.mem_setOf_eq, ENNReal.coe_le_coe, NNReal] using hx
-      _ ≤ (∫⁻ x, ‖f x‖₊ ∂μ) / c :=
-        (meas_ge_le_lintegral_div hfm.aemeasurable.ennnorm c_pos ENNReal.coe_ne_top)
-      _ < ∞ := ENNReal.div_lt_top (ne_of_lt hf.2) c_pos
+  have mus : μ s < ∞ := Integrable.measure_le_lt_top hf hb_neg
   have h_int_gt : (∫ x in s, f x ∂μ) ≤ b * (μ s).toReal := by
     have h_const_le : (∫ x in s, f x ∂μ) ≤ ∫ _ in s, b ∂μ := by
       refine
@@ -296,9 +284,9 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg_of_stronglyMeasurable (hfm : Stro
   · exact absurd hμs_eq_top mus.ne
 #align measure_theory.ae_nonneg_of_forall_set_integral_nonneg_of_strongly_measurable MeasureTheory.ae_nonneg_of_forall_setIntegral_nonneg_of_stronglyMeasurable
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable :=
-  ae_nonneg_of_forall_setIntegral_nonneg_of_stronglyMeasurable -- deprecated on 2024-04-17
+  ae_nonneg_of_forall_setIntegral_nonneg_of_stronglyMeasurable
 
 theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → 0 ≤ ∫ x in s, f x ∂μ) : 0 ≤ᵐ[μ] f := by
@@ -314,9 +302,9 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
       hf_ae.symm.le
 #align measure_theory.ae_nonneg_of_forall_set_integral_nonneg MeasureTheory.ae_nonneg_of_forall_setIntegral_nonneg
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_nonneg_of_forall_set_integral_nonneg :=
-  ae_nonneg_of_forall_setIntegral_nonneg -- deprecated on 2024-04-17
+  ae_nonneg_of_forall_setIntegral_nonneg
 
 theorem ae_le_of_forall_setIntegral_le {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable g μ)
     (hf_le : ∀ s, MeasurableSet s → μ s < ∞ → (∫ x in s, f x ∂μ) ≤ ∫ x in s, g x ∂μ) :
@@ -327,9 +315,8 @@ theorem ae_le_of_forall_setIntegral_le {f g : α → ℝ} (hf : Integrable f μ)
   exact hf_le s hs
 #align measure_theory.ae_le_of_forall_set_integral_le MeasureTheory.ae_le_of_forall_setIntegral_le
 
-@[deprecated]
-alias ae_le_of_forall_set_integral_le :=
-  ae_le_of_forall_setIntegral_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias ae_le_of_forall_set_integral_le := ae_le_of_forall_setIntegral_le
 
 theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter {f : α → ℝ} {t : Set α}
     (hf : IntegrableOn f t μ)
@@ -341,9 +328,9 @@ theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter {f : α → ℝ} {
   rwa [Measure.restrict_apply hs] at h's
 #align measure_theory.ae_nonneg_restrict_of_forall_set_integral_nonneg_inter MeasureTheory.ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_nonneg_restrict_of_forall_set_integral_nonneg_inter :=
-  ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter -- deprecated on 2024-04-17
+  ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter
 
 theorem ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite [SigmaFinite μ] {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -354,12 +341,12 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite [SigmaFinite μ] {
   intro s s_meas _
   exact
     hf_zero _ (s_meas.inter t_meas)
-      (lt_of_le_of_lt (measure_mono (Set.inter_subset_right _ _)) t_lt_top)
+      (lt_of_le_of_lt (measure_mono (Set.inter_subset_right)) t_lt_top)
 #align measure_theory.ae_nonneg_of_forall_set_integral_nonneg_of_sigma_finite MeasureTheory.ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_nonneg_of_forall_set_integral_nonneg_of_sigmaFinite :=
-  ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite -- deprecated on 2024-04-17
+  ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite
 
 theorem AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg {f : α → ℝ}
     (hf : AEFinStronglyMeasurable f μ)
@@ -379,9 +366,9 @@ theorem AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg {f : α �
     exact hf_zero (s ∩ t) (hs.inter hf.measurableSet) hμts
 #align measure_theory.ae_fin_strongly_measurable.ae_nonneg_of_forall_set_integral_nonneg MeasureTheory.AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias AEFinStronglyMeasurable.ae_nonneg_of_forall_set_integral_nonneg :=
-  AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg -- deprecated on 2024-04-17
+  AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg
 
 theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -391,12 +378,12 @@ theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg {f : α → ℝ}
     ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter
       (hf_int_finite t ht (lt_top_iff_ne_top.mpr hμt)) fun s hs _ => ?_
   refine hf_zero (s ∩ t) (hs.inter ht) ?_
-  exact (measure_mono (Set.inter_subset_right s t)).trans_lt (lt_top_iff_ne_top.mpr hμt)
+  exact (measure_mono Set.inter_subset_right).trans_lt (lt_top_iff_ne_top.mpr hμt)
 #align measure_theory.ae_nonneg_restrict_of_forall_set_integral_nonneg MeasureTheory.ae_nonneg_restrict_of_forall_setIntegral_nonneg
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_nonneg_restrict_of_forall_set_integral_nonneg :=
-  ae_nonneg_restrict_of_forall_setIntegral_nonneg -- deprecated on 2024-04-17
+  ae_nonneg_restrict_of_forall_setIntegral_nonneg
 
 theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -420,9 +407,9 @@ theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real {f : α → ℝ}
   exact (hf_zero s hs hμs).le
 #align measure_theory.ae_eq_zero_restrict_of_forall_set_integral_eq_zero_real MeasureTheory.ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_zero_restrict_of_forall_set_integral_eq_zero_real :=
-  ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real -- deprecated on 2024-04-17
+  ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real
 
 end Real
 
@@ -441,9 +428,9 @@ theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero {f : α → E}
     exact ContinuousLinearMap.map_zero _
 #align measure_theory.ae_eq_zero_restrict_of_forall_set_integral_eq_zero MeasureTheory.ae_eq_zero_restrict_of_forall_setIntegral_eq_zero
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_zero_restrict_of_forall_set_integral_eq_zero :=
-  ae_eq_zero_restrict_of_forall_setIntegral_eq_zero -- deprecated on 2024-04-17
+  ae_eq_zero_restrict_of_forall_setIntegral_eq_zero
 
 theorem ae_eq_restrict_of_forall_setIntegral_eq {f g : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -460,9 +447,9 @@ theorem ae_eq_restrict_of_forall_setIntegral_eq {f g : α → E}
   exact ae_eq_zero_restrict_of_forall_setIntegral_eq_zero hfg_int hfg' ht hμt
 #align measure_theory.ae_eq_restrict_of_forall_set_integral_eq MeasureTheory.ae_eq_restrict_of_forall_setIntegral_eq
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_restrict_of_forall_set_integral_eq :=
-  ae_eq_restrict_of_forall_setIntegral_eq -- deprecated on 2024-04-17
+  ae_eq_restrict_of_forall_setIntegral_eq
 
 theorem ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -478,9 +465,9 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f :
   exact ae_eq_zero_restrict_of_forall_setIntegral_eq_zero hf_int_finite hf_zero h_meas_n hμn.ne
 #align measure_theory.ae_eq_zero_of_forall_set_integral_eq_of_sigma_finite MeasureTheory.ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_zero_of_forall_set_integral_eq_of_sigmaFinite :=
-  ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite -- deprecated on 2024-04-17
+  ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite
 
 theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -497,9 +484,9 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α
   exact ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite hfg_int hfg
 #align measure_theory.ae_eq_of_forall_set_integral_eq_of_sigma_finite MeasureTheory.ae_eq_of_forall_setIntegral_eq_of_sigmaFinite
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_of_forall_set_integral_eq_of_sigmaFinite :=
-  ae_eq_of_forall_setIntegral_eq_of_sigmaFinite -- deprecated on 2024-04-17
+  ae_eq_of_forall_setIntegral_eq_of_sigmaFinite
 
 theorem AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -520,9 +507,9 @@ theorem AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α
     exact hf_zero _ (hs.inter hf.measurableSet) hμs
 #align measure_theory.ae_fin_strongly_measurable.ae_eq_zero_of_forall_set_integral_eq_zero MeasureTheory.AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias AEFinStronglyMeasurable.ae_eq_zero_of_forall_set_integral_eq_zero :=
-  AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero -- deprecated on 2024-04-17
+  AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero
 
 theorem AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq {f g : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -539,9 +526,9 @@ theorem AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq {f g : α → E}
   exact (hf.sub hg).ae_eq_zero_of_forall_setIntegral_eq_zero hfg_int hfg
 #align measure_theory.ae_fin_strongly_measurable.ae_eq_of_forall_set_integral_eq MeasureTheory.AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias AEFinStronglyMeasurable.ae_eq_of_forall_set_integral_eq :=
-  AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq -- deprecated on 2024-04-17
+  AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq
 
 theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero (f : Lp E p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -551,9 +538,9 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero (f : Lp E p μ) (hp_ne_zero 
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp.ae_eq_zero_of_forall_set_integral_eq_zero MeasureTheory.Lp.ae_eq_zero_of_forall_setIntegral_eq_zero
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias Lp.ae_eq_zero_of_forall_set_integral_eq_zero :=
-  Lp.ae_eq_zero_of_forall_setIntegral_eq_zero -- deprecated on 2024-04-17
+  Lp.ae_eq_zero_of_forall_setIntegral_eq_zero
 
 theorem Lp.ae_eq_of_forall_setIntegral_eq (f g : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
@@ -566,9 +553,8 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq (f g : Lp E p μ) (hp_ne_zero : p ≠ 
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp.ae_eq_of_forall_set_integral_eq MeasureTheory.Lp.ae_eq_of_forall_setIntegral_eq
 
-@[deprecated]
-alias Lp.ae_eq_of_forall_set_integral_eq :=
-  Lp.ae_eq_of_forall_setIntegral_eq -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias Lp.ae_eq_of_forall_set_integral_eq := Lp.ae_eq_of_forall_setIntegral_eq
 
 theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : m ≤ m0) {f : α → E}
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
@@ -599,9 +585,9 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
     exact hf_zero _ (hs.inter ht_meas) hμs
 #align measure_theory.ae_eq_zero_of_forall_set_integral_eq_of_fin_strongly_measurable_trim MeasureTheory.ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_zero_of_forall_set_integral_eq_of_finStronglyMeasurable_trim :=
-  ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim -- deprecated on 2024-04-17
+  ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim
 
 theorem Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α → E} (hf : Integrable f μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 := by
@@ -616,9 +602,9 @@ theorem Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α → E} (hf :
     exact hf_zero s hs hμs
 #align measure_theory.integrable.ae_eq_zero_of_forall_set_integral_eq_zero MeasureTheory.Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias Integrable.ae_eq_zero_of_forall_set_integral_eq_zero :=
-  Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero -- deprecated on 2024-04-17
+  Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero
 
 theorem Integrable.ae_eq_of_forall_setIntegral_eq (f g : α → E) (hf : Integrable f μ)
     (hg : Integrable g μ)
@@ -632,9 +618,9 @@ theorem Integrable.ae_eq_of_forall_setIntegral_eq (f g : α → E) (hf : Integra
   exact Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero (hf.sub hg) hfg'
 #align measure_theory.integrable.ae_eq_of_forall_set_integral_eq MeasureTheory.Integrable.ae_eq_of_forall_setIntegral_eq
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias Integrable.ae_eq_of_forall_set_integral_eq :=
-  Integrable.ae_eq_of_forall_setIntegral_eq -- deprecated on 2024-04-17
+  Integrable.ae_eq_of_forall_setIntegral_eq
 
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 
@@ -657,9 +643,9 @@ lemma ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero {μ : Measure β} {f : �
   · rw [integral_iUnion g_meas g_disj hf.integrableOn]
     simp [hg]
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_zero_of_forall_set_integral_isClosed_eq_zero :=
-  ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero -- deprecated on 2024-04-17
+  ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero
 
 /-- If an integrable function has zero integral on all compact sets in a sigma-compact space, then
 it is zero almost everwhere. -/

@@ -367,10 +367,10 @@ instance : Lattice (WithBot (Box ι)) :=
     Box.WithBot.inf with
     inf_le_left := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
-      exact inter_subset_left _ _
+      exact inter_subset_left
     inf_le_right := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
-      exact inter_subset_right _ _
+      exact inter_subset_right
     le_inf := fun I J₁ J₂ h₁ h₂ ↦ by
       simp only [← withBotCoe_subset_iff, coe_inf] at *
       exact subset_inter h₁ h₂ }

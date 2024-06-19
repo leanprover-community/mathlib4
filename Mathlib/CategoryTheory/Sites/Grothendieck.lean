@@ -387,7 +387,7 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
   pullback_stable' := by
     rintro X Y S h ⟨Z, f, hf⟩
     rcases hro h f with ⟨W, g, k, comm⟩
-    refine' ⟨_, g, _⟩
+    refine ⟨_, g, ?_⟩
     simp [comm, hf]
   transitive' := by
     rintro X S ⟨Y, f, hf⟩ R h
