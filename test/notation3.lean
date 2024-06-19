@@ -1,6 +1,5 @@
 import Mathlib.Mathport.Notation
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Nat.Defs
 
 set_option pp.unicode.fun true
 set_option autoImplicit true

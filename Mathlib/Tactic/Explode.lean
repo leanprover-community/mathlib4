@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.PrettyPrinter
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
+import Batteries.Lean.Delaborator
 
 /-!
 # Explode command
@@ -102,7 +103,7 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
       { type     := ← addMessageContext <| ← Meta.inferType e
         depth    := depth
         status   := Status.reg
-        thm      := ← addMessageContext <| if fn.isConst then MessageData.ofConst fn else "∀E"
+        thm      := ← addMessageContext <| if fn.isConst then ppConst fn else "∀E"
         deps     := deps
         useAsDep := true }
     return (entry, entries)
@@ -261,7 +262,7 @@ elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermEla
     addCompletionInfo <| .id stx theoremName (danglingDot := false) {} none
     let decl ← getConstInfo theoremName
     let c : Expr := .const theoremName (decl.levelParams.map mkLevelParam)
-    pure (m!"{MessageData.ofConst c} : {decl.type}", decl.value!)
+    pure (m!"{ppConst c} : {decl.type}", decl.value!)
   catch _ =>
     let e ← Term.elabTerm stx none
     Term.synthesizeSyntheticMVarsNoPostponing

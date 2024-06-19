@@ -52,9 +52,8 @@ end
 
 section
 /--
-error: failed to synthesize
+error: failed to synthesize instance
   Semiring R
-use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs in
 variable? [Module R M] => [Module R M]

@@ -136,8 +136,6 @@ class IsDedekindDomain
   extends IsDomain A, IsDedekindRing A : Prop
 #align is_dedekind_domain IsDedekindDomain
 
-attribute [instance 90] IsDedekindDomain.toIsDomain
-
 /-- Make a Dedekind domain from a Dedekind ring given that it is a domain.
 
 `IsDedekindRing` and `IsDedekindDomain` form a cycle in the typeclass hierarchy:

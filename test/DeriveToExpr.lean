@@ -38,9 +38,8 @@ run_cmd Elab.Command.liftTermElabM <|
   Meta.check <| toExpr (Foo.l [Foo.l [], Foo.l [Foo.l []]])
 
 /--
-error: failed to synthesize
+error: failed to synthesize instance
   ToExpr (Bool → Nat)
-use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs in
 inductive Bar

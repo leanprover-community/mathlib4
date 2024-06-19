@@ -6,7 +6,7 @@ Authors: Michael Stoll
 import Mathlib.NumberTheory.DirichletCharacter.Bounds
 import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.LSeries.Basic
-import Mathlib.NumberTheory.LSeries.RiemannZeta
+import Mathlib.NumberTheory.ZetaFunction
 
 /-!
 # The Euler Product for the Riemann Zeta Function and Dirichlet L-Series

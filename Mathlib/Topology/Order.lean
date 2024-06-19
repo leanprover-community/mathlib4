@@ -95,8 +95,7 @@ lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α}
   simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
     tendsto_principal]; rfl
 
-@[deprecated (since := "2023-12-24")]
-alias ⟨_, tendsto_nhds_generateFrom⟩ := tendsto_nhds_generateFrom_iff
+@[deprecated] alias ⟨_, tendsto_nhds_generateFrom⟩ := tendsto_nhds_generateFrom_iff
 #align topological_space.tendsto_nhds_generate_from TopologicalSpace.tendsto_nhds_generateFrom
 
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
@@ -322,7 +321,7 @@ theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t�
   exact fun hs a ha => h _ (hs _ ha)
 #align le_of_nhds_le_nhds le_of_nhds_le_nhds
 
-@[deprecated (since := "2024-03-01")]
+@[deprecated] -- Since 2024-03-01
 alias eq_of_nhds_eq_nhds := TopologicalSpace.ext_nhds
 #align eq_of_nhds_eq_nhds TopologicalSpace.ext_nhds
 
@@ -612,7 +611,7 @@ theorem nhds_nhdsAdjoint_same (a : α) (f : Filter α) :
     exact IsOpen.mem_nhds (fun _ ↦ htf) hat
   · exact sup_le (pure_le_nhds _) ((gc_nhds a).le_u_l f)
 
-@[deprecated (since := "2024-02-10")]
+@[deprecated] -- Since 2024-02-10
 alias nhdsAdjoint_nhds := nhds_nhdsAdjoint_same
 #align nhds_adjoint_nhds nhdsAdjoint_nhds
 
@@ -621,7 +620,7 @@ theorem nhds_nhdsAdjoint_of_ne {a b : α} (f : Filter α) (h : b ≠ a) :
   let _ := nhdsAdjoint a f
   (isOpen_singleton_iff_nhds_eq_pure _).1 <| isOpen_singleton_nhdsAdjoint f h
 
-@[deprecated nhds_nhdsAdjoint_of_ne (since := "2024-02-10")]
+@[deprecated nhds_nhdsAdjoint_of_ne] -- Since 2024-02-10
 theorem nhdsAdjoint_nhds_of_ne (a : α) (f : Filter α) {b : α} (h : b ≠ a) :
     @nhds α (nhdsAdjoint a f) b = pure b :=
   nhds_nhdsAdjoint_of_ne f h
@@ -686,8 +685,7 @@ lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
   rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
   simp only [isOpen_coinduced, preimage_id', subset_def, mem_setOf]
 
-@[deprecated (since := "2023-12-24")]
-alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
+@[deprecated] alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 #align continuous_generated_from continuous_generateFrom
 
 @[continuity]

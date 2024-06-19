@@ -17,7 +17,6 @@ In this file we
 * prove a few lemmas about `iSup`/`iInf`/`Set.iUnion`/`Set.iInter` and natural numbers.
 -/
 
-assert_not_exists MonoidWithZero
 
 open Set
 
@@ -112,7 +111,7 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
   constructor
   · intro H
     rw [eq_Ici_of_nonempty_of_upward_closed (nonempty_of_sInf_eq_succ _) hs, H, mem_Ici, mem_Ici]
-    · exact ⟨le_rfl, k.not_succ_le_self⟩
+    · exact ⟨le_rfl, k.not_succ_le_self⟩;
     · exact k
     · assumption
   · rintro ⟨H, H'⟩
@@ -161,7 +160,7 @@ theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
     obtain hnp | hnp := hn.eq_or_lt
     · exact hnp
     suffices hp : p (sInf { m | p m } - n + n) from (h.subset hp).elim
-    rw [Nat.sub_add_cancel hn]
+    rw [tsub_add_cancel_of_le hn]
     exact csInf_mem (nonempty_of_pos_sInf <| n.zero_le.trans_lt hnp)
   · have hp : ∃ n, n ∈ { m | p m } := ⟨_, hm⟩
     rw [Nat.sInf_def ⟨m, hm⟩, Nat.sInf_def hp]
@@ -173,14 +172,14 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
     sInf { m | p m } + n = sInf { m | p (m - n) } := by
   suffices h₁ : n ≤ sInf {m | p (m - n)} by
     convert sInf_add h₁
-    simp_rw [Nat.add_sub_cancel_right]
+    simp_rw [add_tsub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine
     le_csInf ⟨m + n, ?_⟩ fun b hb ↦
       le_of_not_lt fun hbn ↦
-        ne_of_mem_of_not_mem ?_ (not_mem_of_lt_sInf h) (Nat.sub_eq_zero_of_le hbn.le)
+        ne_of_mem_of_not_mem ?_ (not_mem_of_lt_sInf h) (tsub_eq_zero_of_le hbn.le)
   · dsimp
-    rwa [Nat.add_sub_cancel_right]
+    rwa [add_tsub_cancel_right]
   · exact hb
 #align nat.Inf_add' Nat.sInf_add'
 

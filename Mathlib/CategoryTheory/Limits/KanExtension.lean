@@ -172,12 +172,18 @@ set_option linter.uppercaseLean3 false in
 
 theorem reflective [ι.Full] [ι.Faithful] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
-  simp only [NatTrans.isIso_iff_isIso_app]
-  intro F X
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
+    apply NatIso.isIso_of_isIso_app
+  intro F
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X) by
+    apply NatIso.isIso_of_isIso_app
+  intro X
   dsimp [adjunction, equiv]
   simp only [Category.id_comp]
-  exact ((limit.isLimit _).conePointUniqueUpToIso
-    (limitOfDiagramInitial StructuredArrow.mkIdInitial _)).isIso_hom
+  exact
+    IsIso.of_iso
+      ((limit.isLimit _).conePointUniqueUpToIso
+        (limitOfDiagramInitial StructuredArrow.mkIdInitial _))
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.reflective CategoryTheory.Ran.reflective
 
@@ -319,7 +325,10 @@ def lan [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] : (S ⥤ D) �
   Adjunction.leftAdjointOfEquiv (fun F G => Lan.equiv ι F G) (by {
     intros X' X Y f g
     ext
-    simp [Lan.equiv] })
+    simp [Lan.equiv]
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [Equiv.coe_fn_mk, Equiv.coe_fn_mk]
+    simp })
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan CategoryTheory.lan
 
@@ -345,7 +354,7 @@ theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit
   dsimp [adjunction, equiv]
   simp only [Category.comp_id]
   exact
-    Iso.isIso_hom
+    IsIso.of_iso
       ((colimit.isColimit _).coconePointUniqueUpToIso
           (colimitOfDiagramTerminal CostructuredArrow.mkIdTerminal _)).symm
 set_option linter.uppercaseLean3 false in

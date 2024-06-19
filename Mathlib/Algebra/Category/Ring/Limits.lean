@@ -134,6 +134,7 @@ instance hasLimit : HasLimit F := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u}
 /-- If `J` is `u`-small, `SemiRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J SemiRingCat.{u} where
 
+/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} SemiRingCat.{u} where
   has_limits_of_shape _ _ := { }
@@ -298,6 +299,7 @@ instance hasLimit : HasLimit F := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u}
 /-- If `J` is `u`-small, `CommSemiRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommSemiRingCat.{u} where
 
+/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommSemiRingCat.{u} where
 set_option linter.uppercaseLean3 false in
@@ -429,6 +431,7 @@ instance hasLimit : HasLimit F :=
 /-- If `J` is `u`-small, `RingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J RingCat.{u} where
 
+/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} RingCat.{u} where
 set_option linter.uppercaseLean3 false in
@@ -594,6 +597,7 @@ instance hasLimit : HasLimit F :=
 /-- If `J` is `u`-small, `CommRingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommRingCat.{u} where
 
+/- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of commutative rings has all limits. -/
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommRingCat.{u} where
 set_option linter.uppercaseLean3 false in

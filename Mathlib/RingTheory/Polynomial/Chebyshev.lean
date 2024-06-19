@@ -59,10 +59,7 @@ open Polynomial
 variable (R S : Type*) [CommRing R] [CommRing S]
 
 /-- `T n` is the `n`-th Chebyshev polynomial of the first kind. -/
--- Well-founded definitions are now irreducible by default;
--- as this was implemented before this change,
--- we just set it back to semireducible to avoid needing to change any proofs.
-@[semireducible] noncomputable def T : ℤ → R[X]
+noncomputable def T : ℤ → R[X]
   | 0 => 1
   | 1 => X
   | (n : ℕ) + 2 => 2 * X * T (n + 1) - T n
@@ -134,10 +131,7 @@ theorem T_natAbs (n : ℤ) : T R n.natAbs = T R n := by
 theorem T_neg_two : T R (-2) = 2 * X ^ 2 - 1 := by simp [T_two]
 
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
--- Well-founded definitions are now irreducible by default;
--- as this was implemented before this change,
--- we just set it back to semireducible to avoid needing to change any proofs.
-@[semireducible] noncomputable def U : ℤ → R[X]
+noncomputable def U : ℤ → R[X]
   | 0 => 1
   | 1 => 2 * X
   | (n : ℕ) + 2 => 2 * X * U (n + 1) - U n

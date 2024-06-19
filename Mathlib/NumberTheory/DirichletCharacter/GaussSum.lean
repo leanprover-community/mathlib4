@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.DirichletCharacter.Basic
-import Mathlib.NumberTheory.GaussSum
+import Mathlib.NumberTheory.LegendreSymbol.GaussSum
 
 /-!
 # Gauss sums for Dirichlet characters
 -/
-variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
+variable {N : ℕ+} {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
-open AddChar DirichletCharacter
+open AddChar
 
 lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
     (hd : d ∣ N) (he : e.mulShift d = 1) {u : (ZMod N)ˣ} (hu : ZMod.unitsMap hd u = 1) :
@@ -43,7 +43,7 @@ lemma factorsThrough_of_gaussSum_ne_zero [IsDomain R] {χ : DirichletCharacter R
 
 /-- If `χ` is primitive, but `e` is not, then `gaussSum χ e = 0`. -/
 lemma gaussSum_eq_zero_of_isPrimitive_of_not_isPrimitive [IsDomain R]
-    {χ : DirichletCharacter R N} (hχ : IsPrimitive χ) (he : ¬IsPrimitive e) :
+    {χ : DirichletCharacter R N} (hχ : χ.isPrimitive) (he : ¬e.IsPrimitive) :
     gaussSum χ e = 0 := by
   contrapose! hχ
   rcases e.exists_divisor_of_not_isPrimitive he with ⟨d, hd₁, hd₂, hed⟩
@@ -53,7 +53,7 @@ lemma gaussSum_eq_zero_of_isPrimitive_of_not_isPrimitive [IsDomain R]
 /-- If `χ` is a primitive character, then the function `a ↦ gaussSum χ (e.mulShift a)`, for any
 fixed additive character `e`, is a constant multiple of `χ⁻¹`. -/
 lemma gaussSum_mulShift_of_isPrimitive [IsDomain R] {χ : DirichletCharacter R N}
-    (hχ : IsPrimitive χ) (a : ZMod N) :
+    (hχ : χ.isPrimitive) (a : ZMod N) :
     gaussSum χ (e.mulShift a) = χ⁻¹ a * gaussSum χ e := by
   by_cases ha : IsUnit a
   · conv_rhs => rw [← gaussSum_mulShift χ e ha.unit]

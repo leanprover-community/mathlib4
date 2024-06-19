@@ -1180,19 +1180,19 @@ section CancelCommMonoidWithZero
 variable [CancelCommMonoidWithZero α]
 
 instance instPartialOrder : PartialOrder (Associates α) where
-  le_antisymm := mk_surjective.forall₂.2 fun _a _b hab hba => mk_eq_mk_iff_associated.2 <|
-    associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
+    le_antisymm := mk_surjective.forall₂.2 fun _a _b hab hba => mk_eq_mk_iff_associated.2 <|
+      associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
 instance instOrderedCommMonoid : OrderedCommMonoid (Associates α) where
-  mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
+    mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α) :=
-  { (by infer_instance : CommMonoidWithZero (Associates α)) with
-    mul_left_cancel_of_ne_zero := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
-      rcases Quotient.exact' h with ⟨u, hu⟩
-      have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
-      exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }
+{ (by infer_instance : CommMonoidWithZero (Associates α)) with
+  mul_left_cancel_of_ne_zero := by
+    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
+    rcases Quotient.exact' h with ⟨u, hu⟩
+    have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
+    exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }
 
 theorem _root_.associates_irreducible_iff_prime [DecompositionMonoid α] {p : Associates α} :
     Irreducible p ↔ Prime p := irreducible_iff_prime
@@ -1212,9 +1212,9 @@ theorem one_or_eq_of_le_of_prime {p m : Associates α} (hp : Prime p) (hle : m �
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
 instance : CanonicallyOrderedCommMonoid (Associates α) where
-  exists_mul_of_le h := h
-  le_self_mul _ b := ⟨b, rfl⟩
-  bot_le _ := one_le
+  exists_mul_of_le := fun h => h
+  le_self_mul := fun _ b => ⟨b, rfl⟩
+  bot_le := fun _ => one_le
 
 theorem dvdNotUnit_iff_lt {a b : Associates α} : DvdNotUnit a b ↔ a < b :=
   dvd_and_not_dvd_iff.symm

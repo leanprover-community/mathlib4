@@ -242,11 +242,11 @@ lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
 
 @[simp] lemma toColex_sdiff_le_toColex_sdiff' :
     toColex (s \ t) ≤ toColex (t \ s) ↔ toColex s ≤ toColex t := by
-  simpa using toColex_sdiff_le_toColex_sdiff (inter_subset_left (s₁:=s)) inter_subset_right
+  simpa using toColex_sdiff_le_toColex_sdiff (inter_subset_left s t) (inter_subset_right s t)
 
 @[simp] lemma toColex_sdiff_lt_toColex_sdiff' :
  toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
-  simpa using toColex_sdiff_lt_toColex_sdiff (inter_subset_left (s₁:=s)) inter_subset_right
+  simpa using toColex_sdiff_lt_toColex_sdiff (inter_subset_left s t) (inter_subset_right s t)
 
 end PartialOrder
 

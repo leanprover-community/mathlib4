@@ -19,5 +19,5 @@ def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := 
   withTheReader Term.Context ({ · with ignoreTCFailures := true, errToSorry := false }) <|
     withSynthesizeLight do
       let t ← elabTerm patt expectedType?
-      synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
+      synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
       instantiateMVars t

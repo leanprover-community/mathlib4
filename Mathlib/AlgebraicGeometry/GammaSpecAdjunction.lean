@@ -243,7 +243,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     change t * t' = _ at he
     apply isUnit_of_mul_isUnit_left (y := t')
     rw [he]
-    refine IsLocalization.map_units S (⟨r, ?_⟩ : p.asIdeal.primeCompl)
+    refine' IsLocalization.map_units S (⟨r, _⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
     rw [← toStalk_stalkMap_toΓSpec]
     erw [comp_apply, ← he]
@@ -368,50 +368,12 @@ lemma locallyRingedSpaceAdjunction_counit :
     locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_counit
 
-@[simp]
-lemma locallyRingedSpaceAdjunction_counit_app (R : CommRingCatᵒᵖ) :
-    locallyRingedSpaceAdjunction.counit.app R =
-      (toOpen R.unop ⊤).op := rfl
-
-@[simp]
-lemma locallyRingedSpaceAdjunction_counit_app' (R : Type u) [CommRing R] :
-    locallyRingedSpaceAdjunction.counit.app (op <| CommRingCat.of R) =
-      (toOpen R ⊤).op := rfl
-
-lemma locallyRingedSpaceAdjunction_homEquiv_apply
-    {X : LocallyRingedSpace} {R : CommRingCatᵒᵖ}
-    (f : Γ.rightOp.obj X ⟶ R) :
-    locallyRingedSpaceAdjunction.homEquiv X R f =
-      identityToΓSpec.app X ≫ Spec.locallyRingedSpaceMap f.unop := rfl
-
-lemma locallyRingedSpaceAdjunction_homEquiv_apply'
-    {X : LocallyRingedSpace} {R : Type u} [CommRing R]
-    (f : CommRingCat.of R ⟶ Γ.obj <| op X) :
-    locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) (op f) =
-      identityToΓSpec.app X ≫ Spec.locallyRingedSpaceMap f := rfl
-
-lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
-    {X : LocallyRingedSpace} {R : Type u} [CommRing R]
-    (f : Γ.rightOp.obj X ⟶ op (CommRingCat.of R)) (U) :
-    StructureSheaf.toOpen R U.unop ≫
-      (locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) f).1.c.app U =
-    f.unop ≫ X.presheaf.map (homOfLE le_top).op := by
-  rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
-    NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op,
-    show (toOpen R ⊤) = (toOpen R ⊤).op.unop from rfl,
-    ← locallyRingedSpaceAdjunction_counit_app']
-  simp_rw [← Γ_map_op]
-  rw [← Γ.rightOp_map_unop, ← Category.assoc, ← unop_comp, ← Adjunction.homEquiv_counit,
-    Equiv.symm_apply_apply]
-  rfl
-
 -- Porting Note: Commented
 --attribute [local semireducible] Spec.toLocallyRingedSpace
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
 def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
-  locallyRingedSpaceAdjunction.restrictFullyFaithful
-    Scheme.fullyFaithfulForgetToLocallyRingedSpace (Functor.FullyFaithful.id _)
+  locallyRingedSpaceAdjunction.restrictFullyFaithful Scheme.forgetToLocallyRingedSpace (𝟭 _)
     (NatIso.ofComponents (fun X => Iso.refl _))
     (NatIso.ofComponents (fun X => Iso.refl _))
 #align algebraic_geometry.Γ_Spec.adjunction AlgebraicGeometry.ΓSpec.adjunction
@@ -419,8 +381,7 @@ def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
     ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
-  dsimp only [adjunction]
-  rw [Adjunction.restrictFullyFaithful_homEquiv_apply, Adjunction.homEquiv_unit]
+  dsimp [adjunction, Adjunction.restrictFullyFaithful, equivOfFullyFaithful]
   simp
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
@@ -455,7 +416,7 @@ theorem adjunction_unit_app {X : Scheme} :
 
 instance isIso_locallyRingedSpaceAdjunction_counit :
     IsIso.{u + 1, u + 1} locallyRingedSpaceAdjunction.counit :=
-  (NatIso.op SpecΓIdentity).isIso_inv
+  IsIso.of_iso_inv (NatIso.op SpecΓIdentity)
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
@@ -516,31 +477,20 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
   ΓSpec.adjunction.rightAdjointPreservesLimits
 #align algebraic_geometry.Spec.preserves_limits AlgebraicGeometry.Spec.preservesLimits
 
-/-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
-is fully faithful.-/
-def Spec.fullyFaithfulToLocallyRingedSpace : Spec.toLocallyRingedSpace.FullyFaithful :=
-  ΓSpec.locallyRingedSpaceAdjunction.fullyFaithfulROfIsIsoCounit
-
 /-- Spec is a full functor. -/
-instance : Spec.toLocallyRingedSpace.Full :=
-  Spec.fullyFaithfulToLocallyRingedSpace.full
+instance : Spec.toLocallyRingedSpace.Full  :=
+  ΓSpec.locallyRingedSpaceAdjunction.R_full_of_counit_isIso
 
-/-- Spec is a faithful functor. -/
-instance : Spec.toLocallyRingedSpace.Faithful :=
-  Spec.fullyFaithfulToLocallyRingedSpace.faithful
-
-/-- The functor `Spec : CommRingCatᵒᵖ ⥤ Scheme` is fully faithful.-/
-def Spec.fullyFaithful : Scheme.Spec.FullyFaithful :=
-  ΓSpec.adjunction.fullyFaithfulROfIsIsoCounit
-
-/-- Spec is a full functor. -/
 instance Spec.full : Scheme.Spec.Full  :=
-  Spec.fullyFaithful.full
+  ΓSpec.adjunction.R_full_of_counit_isIso
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
+instance : Spec.toLocallyRingedSpace.Faithful :=
+  ΓSpec.locallyRingedSpaceAdjunction.R_faithful_of_counit_isIso
+
 instance Spec.faithful : Scheme.Spec.Faithful :=
-  Spec.fullyFaithful.faithful
+  ΓSpec.adjunction.R_faithful_of_counit_isIso
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
 instance : Spec.toLocallyRingedSpace.IsRightAdjoint  :=
