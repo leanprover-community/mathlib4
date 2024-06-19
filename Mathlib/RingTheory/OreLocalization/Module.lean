@@ -420,7 +420,7 @@ section
 variable (S M)
 
 /-- The function `m ↦ m / 1` as an `R`-linear map. -/
-def mkLinearMap : M →ₗ[R] LocalizedModule S M := OreLocalization.mkLinearMap S X
+def mkLinearMap : M →ₗ[R] LocalizedModule S M := OreLocalization.mkLinearMap S M
 
 @[simp]
 lemma mkLinearMap_apply (x) : mkLinearMap S M x = .mk x 1 := rfl
