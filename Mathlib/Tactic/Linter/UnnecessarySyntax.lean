@@ -72,8 +72,7 @@ def unnecessarySyntax (f : Syntax → CommandElabM (Array (Syntax × Syntax × M
       Linter.logLint linter.unnecessarySyntax nls m!"`{nls}` can be removed {pos}"
 
 /-- Runs `k`.  If it is successful, return the output, otherwise return the error. -/
-def runOrMessage {α : Type} (k : MetaM α) :
-  MetaM (α ⊕ MessageData) := do
+def runOrMessage {α : Type} (k : MetaM α) : MetaM (α ⊕ MessageData) := do
   try
     return Sum.inl (← k)
   catch e =>
@@ -121,8 +120,8 @@ def simpNF (declName : Name) : MetaM (Option MessageData) := do
                             {← formatLemmas prf1Stats.usedTheorems simpName}\n\
                             Try to change the left-hand side to the simplified term!\n"
                 else if !isConditional && lhs == lhs' then
-                  return m!"Left-hand side does not simplify, when using the simp lemma on itself.\n\
-                            This usually means that it will never apply.\n"
+                  return m!"Left-hand side does not simplify, when using the simp lemma on itself.\
+                            \nThis usually means that it will never apply.\n"
                 else
                   return none
               | .inr m2 =>
