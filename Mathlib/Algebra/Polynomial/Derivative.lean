@@ -227,7 +227,6 @@ theorem derivative_natCast {n : ℕ} : derivative (n : R[X]) = 0 := by
 @[deprecated (since := "2024-04-17")]
 alias derivative_nat_cast := derivative_natCast
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
     derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=
