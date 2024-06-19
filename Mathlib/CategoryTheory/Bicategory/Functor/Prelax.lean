@@ -175,7 +175,7 @@ lemma map₂_inv_hom {f g : a ⟶ b} (η : f ≅ g) :
     F.map₂ η.inv ≫ F.map₂ η.hom = 𝟙 (F.map g) := by
   rw [← F.map₂_comp, Iso.inv_hom_id, F.map₂_id]
 
-@[reassoc, simp]
+@[reassoc]
 lemma map₂_inv_hom_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
     F.map₂ (inv η) ≫ F.map₂ η = 𝟙 (F.map g) := by
   simp
