@@ -1859,15 +1859,33 @@ theorem nnnorm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖₊ ≤ ‖n‖�
 
 end
 
-namespace LipschitzWith
+section PseudoEMetricSpace
+variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
+  {f g : α → E} {s : Set α} {x : α}
 
-variable [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0} {f g : α → E}
+@[to_additive (attr := simp)]
+lemma lipschitzWith_inv_iff : LipschitzWith K f⁻¹ ↔ LipschitzWith K f := by simp [LipschitzWith]
 
-@[to_additive]
-theorem inv (hf : LipschitzWith K f) : LipschitzWith K fun x => (f x)⁻¹ := fun x y =>
-  (edist_inv_inv _ _).trans_le <| hf x y
+@[to_additive (attr := simp)]
+lemma antilipschitzWith_inv_iff : AntilipschitzWith K f⁻¹ ↔ AntilipschitzWith K f := by
+  simp [AntilipschitzWith]
+
+@[to_additive (attr := simp)]
+lemma lipschitzOnWith_inv_iff : LipschitzOnWith K f⁻¹ s ↔ LipschitzOnWith K f s := by
+  simp [LipschitzOnWith]
+
+@[to_additive (attr := simp)]
+lemma locallyLipschitz_inv_iff : LocallyLipschitz f⁻¹ ↔ LocallyLipschitz f := by
+  simp [LocallyLipschitz]
+
+@[to_additive] alias ⟨LipschitzWith.of_inv, LipschitzWith.inv⟩ := lipschitzWith_inv_iff
+@[to_additive] alias ⟨AntilipschitzWith.of_inv, AntilipschitzWith.inv⟩ := antilipschitzWith_inv_iff
+@[to_additive] alias ⟨LipschitzOnWith.of_inv, LipschitzOnWith.inv⟩ := lipschitzOnWith_inv_iff
+@[to_additive] alias ⟨LocallyLipschitz.of_inv, LocallyLipschitz.inv⟩ := locallyLipschitz_inv_iff
 #align lipschitz_with.inv LipschitzWith.inv
 #align lipschitz_with.neg LipschitzWith.neg
+
+namespace LipschitzWith
 
 @[to_additive add]
 theorem mul' (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
@@ -1890,8 +1908,6 @@ theorem div (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
 end LipschitzWith
 
 namespace AntilipschitzWith
-
-variable [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0} {f g : α → E}
 
 @[to_additive]
 theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g) (hK : Kg < Kf⁻¹) :
@@ -1923,6 +1939,7 @@ theorem le_mul_norm_div {f : E → F} (hf : AntilipschitzWith K f) (x y : E) :
 #align antilipschitz_with.le_mul_norm_sub AntilipschitzWith.le_mul_norm_sub
 
 end AntilipschitzWith
+end PseudoEMetricSpace
 
 -- See note [lower instance priority]
 @[to_additive]
