@@ -9,9 +9,36 @@ import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 /-!
 # Ext groups in abelian categories
 
-...
-TODO
-...
+Let `C` be an abelian category (with `C : Type u` and `Category.{v} C`).
+In this file, we introduce the assumption `HasExt.{w} C` which asserts
+that morphisms between single complexes in arbitrary degrees in
+the derived category of `C` are `w`-small. Under this assumption,
+we define `Ext.{w} X Y n : Type w` as shrunk versions of suitable
+types of morphisms in the derived category. In particular, when `C` has
+enough projectives or enough injectives, the property `HasExt.{v} C`
+shall hold (TODO).
+
+Note: in certain situations, `w := v` shall be the preferred
+choice of universe (e.g. if `C := ModuleCat.{v} R` with `R : Type v`).
+However, in the development of the API for Ext-groups, it is important
+to keep a larger degree of generality for universes, as `w < v`
+may happen in certain situations. Indeed, if `X : Scheme.{u}`,
+then the underlying category of the étale site of `X` shall be a large
+category. However, the category `Sheaf X.Etale AddCommGroupCat.{u}`
+shall have good properties (because there is a small category of affine
+schemes with the same category of sheaves), and even though the type of
+morphisms in `Sheaf X.Etale AddCommGroupCat.{u}` shall be
+in `Type (u + 1)`, these types are going to be `u`-small.
+Then, for `C := Sheaf X.etale AddCommGroupCat.{u}`, we will have
+`Category.{u + 1} C`, but `HasExt.{u} C` will hold
+(as `C` has enough injectives). Then, the `Ext` groups between étale
+sheaves over `X` shall be in `Type u`.
+
+## TODO
+* construct the additive structure on `Ext`
+* compute `Ext X Y 0`
+* define the class in `Ext S.X₃ S.X₁ 1` of a short exact short complex `S`
+* construct the long exact sequences of `Ext`.
 
 -/
 
@@ -25,18 +52,21 @@ instance : (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).IsCompatibleWit
 
 open Localization
 
-abbrev HasSmallExt : Prop :=
+/-- The property that morphisms between single complexes in arbitrary degrees are `w`-small
+in the derived category. -/
+abbrev HasExt : Prop :=
   ∀ (X Y : C), HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ
     ((CochainComplex.singleFunctor C 0).obj X) ((CochainComplex.singleFunctor C 0).obj Y)
 
+lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := sorry
+
 variable {C}
 
-variable [HasSmallExt.{w} C]
+variable [HasExt.{w} C]
 
 namespace Abelian
 
-/-- The Ext-groups in an abelian category `C`, defined as a `Type w` when
-`[HasSmallExt.{w} C]`. -/
+/-- The Ext-groups in an abelian category `C`, defined as a `Type w` when `[HasExt.{w} C]`. -/
 def Ext (X Y : C) (n : ℕ) : Type w :=
   SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
     ((CochainComplex.singleFunctor C 0).obj X)
@@ -61,13 +91,17 @@ section
 
 variable [HasDerivedCategory.{w'} C]
 
+-- this is defined in #13876
 instance : (DerivedCategory.Q (C := C)).CommShift ℤ := sorry
 
+/-- When an instance of `[HasDerivedCategory.{w'} C]` is available, this is the bijection
+between `Ext.{w} X Y n` and a type of morphisms in the derived category. -/
 noncomputable def homEquiv {n : ℕ} :
     Ext.{w} X Y n ≃ ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
       ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ) :=
   SmallShiftedHom.equiv (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) DerivedCategory.Q
 
+/-- The morphism in the derived category which corresponds to an element in `Ext X Y a`. -/
 noncomputable abbrev hom {a : ℕ} (α : Ext X Y a) :
     ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
       ((DerivedCategory.singleFunctor C 0).obj Y) (a : ℤ) :=
