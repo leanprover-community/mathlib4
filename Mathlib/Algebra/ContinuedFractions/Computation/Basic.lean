@@ -170,10 +170,10 @@ This is just an intermediate representation and users should not (need to) direc
 it. The setup of rewriting/simplification lemmas that make the definitions easy to use is done in
 `Algebra.ContinuedFractions.Computation.Translations`.
 -/
-protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
+protected def seq1 (v : K) : Seq1 <| IntFractPair K :=
   ⟨IntFractPair.of v, -- the head
     -- take the tail of `IntFractPair.stream` since the first element is already in the head
-    Stream'.Seq.tail
+    Seq'.tail
       -- create a sequence from `IntFractPair.stream`
       ⟨IntFractPair.stream v, -- the underlying stream
         @stream_isSeq _ _ _ v⟩⟩ -- the proof that the stream is a sequence
