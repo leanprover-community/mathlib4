@@ -96,20 +96,20 @@ instance : WellFoundedRelation ℕ∞ where
   rel := (· < ·)
   wf := IsWellFounded.wf
 
+/-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
+def toNat : ℕ∞ → ℕ := WithTop.untop' 0
+
 /-- Homomorphism from `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
-  toFun := WithTop.untop' 0
+  toFun := toNat
   map_one' := rfl
   map_zero' := rfl
   map_mul' := WithTop.untop'_zero_mul
 #align enat.to_nat ENat.toNatHom
 
-/-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
-def toNat : ℕ∞ → ℕ := toNatHom
+@[simp, norm_cast] lemma coe_toNatHom : toNatHom = toNat := rfl
 
-@[simp]
-theorem toNatHom_eq_toNat : toNatHom n = toNat n :=
-  rfl
+lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 
 @[simp]
 theorem toNat_coe (n : ℕ) : toNat n = n :=
