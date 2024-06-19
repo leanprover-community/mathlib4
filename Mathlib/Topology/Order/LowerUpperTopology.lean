@@ -353,7 +353,7 @@ theorem isLowerSet_of_isClosed (h : IsClosed s) : IsLowerSet s :=
 The closure of a singleton `{a}` in the upper topology is the left-infinite right-closed interval
 (-∞,a].
 -/
-@[simp]
+@[simp, nolint simpNF]
 theorem closure_singleton (a : α) : closure {a} = Iic a :=
   IsLower.closure_singleton (α := αᵒᵈ) _
 

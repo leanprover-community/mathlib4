@@ -440,6 +440,7 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F
 #align lagrange.fun_equiv_degree_lt Lagrange.funEquivDegreeLT
 
 -- Porting note: Added `Nat.cast_withBot` rewrites
+@[nolint unusedHavesSuffices]
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
     interpolate t v r = ∑ i ∈ s, interpolate (insert i (t \ s)) v r * Lagrange.basis s v i := by

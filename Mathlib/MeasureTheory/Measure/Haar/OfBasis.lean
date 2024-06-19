@@ -72,7 +72,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
 #align image_parallelepiped image_parallelepiped
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
-@[simp]
+@[simp, nolint unusedHavesSuffices]
 theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     parallelepiped (v ∘ e) = parallelepiped v := by
   simp only [parallelepiped]

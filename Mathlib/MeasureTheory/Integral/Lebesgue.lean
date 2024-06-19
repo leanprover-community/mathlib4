@@ -226,7 +226,7 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
       (∀ x, ↑(φ x) ≤ f x) ∧
         ∀ ψ : α →ₛ ℝ≥0, (∀ x, ↑(ψ x) ≤ f x) → (map (↑) (ψ - φ)).lintegral μ < ε := by
   rw [lintegral_eq_nnreal] at h
-  have := ENNReal.lt_add_right h hε
+  -- have := ENNReal.lt_add_right h hε
   sorry
   -- erw [ENNReal.biSup_add] at this <;> [skip; exact ⟨0, fun x => zero_le _⟩]
   -- simp_rw [lt_iSup_iff, iSup_lt_iff, iSup_le_iff] at this

@@ -172,6 +172,7 @@ section Module
 
 variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 
+@[nolint unusedHavesSuffices]
 theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
     LinearIndependent R fun ji : Σj, ιs j => stdBasis R Ms ji.1 (v ji.1 ji.2) := by

@@ -310,6 +310,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
 
 /-- A family `F` of functions in `C(X, Y)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `X`. -/
+@[nolint unusedHavesSuffices]
 theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2Space Y]
     {ι : Type*} {l : Filter ι} [Filter.NeBot l] (F : ι → C(X, Y)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔

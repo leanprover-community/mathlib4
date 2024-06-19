@@ -149,6 +149,7 @@ def ManyOneEquiv {α β} [Primcodable α] [Primcodable β] (p : α → Prop) (q 
   p ≤₀ q ∧ q ≤₀ p
 #align many_one_equiv ManyOneEquiv
 
+@[nolint docBlame]
 def ManyOneEquiv' {α β} [Primcodable α] [Primcodable β] (p : Set α) (q : Set β) :=
   ManyOneEquiv p.toPred q.toPred
 

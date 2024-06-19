@@ -128,9 +128,9 @@ theorem minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t �
 
 theorem affineIndependent_minCardFinsetOfMemConvexHull :
     AffineIndependent 𝕜 ((↑) : minCardFinsetOfMemConvexHull hx → E) := by
-  let k := (minCardFinsetOfMemConvexHull hx).card - 1
-  have hk : (minCardFinsetOfMemConvexHull hx).card = k + 1 :=
-    (Nat.succ_pred_eq_of_pos (Finset.card_pos.mpr (minCardFinsetOfMemConvexHull_nonempty hx))).symm
+  -- let k := (minCardFinsetOfMemConvexHull hx).card - 1
+  -- have hk : (minCardFinsetOfMemConvexHull hx).card = k + 1 :=
+  --   (Nat.succ_pred_eq_of_pos (Finset.card_pos.mpr (minCardFinsetOfMemConvexHull_nonempty hx))).symm
   classical
   by_contra h
   obtain ⟨p, hp⟩ := mem_convexHull_erase h (mem_minCardFinsetOfMemConvexHull hx)

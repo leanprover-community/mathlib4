@@ -46,6 +46,7 @@ and predicates.
 -/
 structure Set (α : Type u) where
   ofPred ::
+  /-- The predicate defining the set -/
   toPred : α → Prop
 #align set Set
 

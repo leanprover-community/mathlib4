@@ -453,6 +453,7 @@ theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
     simpa [Real.zero_rpow hp.ne'] using Real.zero_rpow hp'
 #align lp.norm_zero lp.norm_zero
 
+@[nolint unusedHavesSuffices]
 theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   refine ⟨fun h => ?_, by rintro rfl; exact norm_zero⟩
   rcases p.trichotomy with (rfl | rfl | hp)

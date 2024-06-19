@@ -336,9 +336,9 @@ is determined by the measure of its intersection with a fundamental domain for t
   its intersection with a fundamental domain for the action of `G`."]
 theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDomain G s μ)
     (t : Set α) (ht : ∀ g : G, (g • t : Set α).toPred =ᵐ[μ] t.toPred) : μ t = Nat.card G • μ (t ∩ s) := by
-  haveI : Fintype G := Fintype.ofFinite G
-  rw [h.measure_eq_tsum]
-  replace ht : ∀ g : G, (g • t ∩ s : Set α) |>.toPred =ᵐ[μ] (t ∩ s : Set α).toPred := fun g => sorry
+  -- haveI : Fintype G := Fintype.ofFinite G
+  -- rw [h.measure_eq_tsum]
+  -- replace ht : ∀ g : G, (g • t ∩ s : Set α) |>.toPred =ᵐ[μ] (t ∩ s : Set α).toPred := fun g => sorry
     -- ae_eq_set_inter (ht g) (ae_eq_refl s)
   -- simp_rw [measure_congr (ht _), tsum_fintype, Finset.sum_const, Nat.card_eq_fintype_card,
     -- Finset.card_univ]

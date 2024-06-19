@@ -181,9 +181,9 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     rintro x ⟨un, ⟨n, rfl⟩, xinun⟩
     suffices ∀ (m : ℕ), x ∈ v m → x ∈ closure (⋃ m' ∈ {m' | m' ≤ m}, u m') by simpa
     intro m xinvm
-    have n_le_m : n ≤ m := by
-      by_contra m_gt_n
-      sorry
+    -- have n_le_m : n ≤ m := by
+      -- by_contra m_gt_n
+      -- sorry
       -- exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvm))
     sorry
     -- exact subset_closure (mem_biUnion n_le_m xinun.1)
@@ -1886,6 +1886,7 @@ lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace
   · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
 
+@[nolint unusedArguments]
 lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
     IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
@@ -2655,6 +2656,7 @@ section LocallyCompact
 variable {H : Type*} [TopologicalSpace H] [LocallyCompactSpace H] [T2Space H]
 
 /-- A locally compact Hausdorff totally disconnected space has a basis with clopen elements. -/
+@[nolint unusedArguments]
 theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     IsTopologicalBasis { s : Set H | IsClopen s } := by
   refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_

@@ -174,7 +174,7 @@ protected theorem mem_closure {s : Set (Filter α)} {l : Filter α} :
     le_principal_iff]
 #align filter.mem_closure Filter.mem_closure
 
-@[simp]
+@[simp, nolint simpNF]
 protected theorem closure_singleton (l : Filter α) : closure {l} = Ici l := by
   ext l'
   simp [Filter.mem_closure, Filter.le_def]

@@ -621,7 +621,7 @@ sub-σ-algebra `m` in a normed space, it suffices to show that
 * the set of functions in `Lp` strongly measurable w.r.t. `m` for which the property holds is
   closed.
 -/
-@[elab_as_elim]
+@[elab_as_elim, nolint unusedHavesSuffices]
 theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
     (h_ind : ∀ (c : F) {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s < ∞),
       P (Lp.simpleFunc.indicatorConst p (hm s hs) hμs.ne c))
