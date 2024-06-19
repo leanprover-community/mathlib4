@@ -643,8 +643,6 @@ theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =
       (sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b + (↑n + 1) * ∫ x in a..b, sin x ^ n) -
         (↑n + 1) * ∫ x in a..b, sin x ^ (n + 2) := by
-  have continuous_sin_pow : ∀ (k : ℕ), (Continuous fun x => sin x ^ k) :=
-    fun k => continuous_sin.pow k
   let C := sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b
   have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ => by ring
   have hu : ∀ x ∈ [[a, b]],
@@ -720,8 +718,6 @@ theorem integral_cos_pow_aux :
     (∫ x in a..b, cos x ^ (n + 2)) =
       (cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a + (n + 1) * ∫ x in a..b, cos x ^ n) -
         (n + 1) * ∫ x in a..b, cos x ^ (n + 2) := by
-  have continuous_cos_pow : ∀ (k : ℕ), (Continuous fun x => cos x ^ k) :=
-    fun k => continuous_cos.pow k
   let C := cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a
   have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ => by ring
   have hu : ∀ x ∈ [[a, b]],
