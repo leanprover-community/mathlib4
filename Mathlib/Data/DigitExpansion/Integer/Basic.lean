@@ -20,6 +20,9 @@ variable (Z : Type*) [Nonempty Z] [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [
 open Order
 
 -- TODO
+/-- Induction principle on a type with a `SuccOrder` and `PredOrder` that is `IsSuccArchimedean`,
+for all elements, given that a motive holds for some element `z`, and if a motive holds
+for an element `x`, it also holds for the `succ` or the `pred` of it. -/
 @[elab_as_elim]
 def succArchimedeanRec {Z : Type*} [LinearOrder Z] [SuccOrder Z] [PredOrder Z]
     [IsSuccArchimedean Z] [NoMinOrder Z] [NoMaxOrder Z]
@@ -638,7 +641,7 @@ lemma exists_shift_nsmul_one_of_nonneg {f : realHensel Z b} (hf : 0 ≤ f) :
   obtain ⟨r, rfl⟩ := zStar.exists_nsmul_one_of_nonneg fpos
   refine ⟨k, r, ?_⟩
   ext : 1
-  rw [←hk]
+  rw [← hk]
   clear hk
   induction' k with k IH
   · simp only [Nat.zero_eq, Function.iterate_zero, id_eq, AddSubmonoidClass.coe_nsmul]
