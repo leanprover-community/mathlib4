@@ -23,15 +23,11 @@ finiteness of the class group for number fields and function fields.
    its integral closure has a finite class group
 -/
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 namespace ClassGroup
 
 open Ring
-
-open scoped BigOperators
 
 section EuclideanDomain
 
@@ -69,7 +65,7 @@ theorem normBound_pos : 0 < normBound abv bS := by
     ext j k
     simp [h, DMatrix.zero_apply]
   simp only [normBound, Algebra.smul_def, eq_natCast]
-  refine mul_pos (Int.natCast_pos.mpr (Nat.factorial_pos _)) ?_
+  apply mul_pos (Int.natCast_pos.mpr (Nat.factorial_pos _))
   refine pow_pos (mul_pos (Int.natCast_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) ?_) _
   refine lt_of_lt_of_le (abv.pos hijk) (Finset.le_max' _ _ ?_)
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
@@ -227,8 +223,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     intro j
     rw [← bS.sum_repr a]
     simp only [μ, qs, rs, Finset.smul_sum, ← Finset.sum_add_distrib]
-    refine
-      Finset.sum_congr rfl fun i _ => ?_
+    refine Finset.sum_congr rfl fun i _ => ?_
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
     rw [← hμ, ← r_eq, ← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
   obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i
@@ -306,7 +301,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (I
     · rw [ClassGroup.mk0_eq_mk0_iff]
       exact ⟨algebraMap _ _ M, b, hM, b_ne_zero, hJ⟩
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ← Ideal.dvd_iff_le]
-    refine' (mul_dvd_mul_iff_left _).mp _
+    apply (mul_dvd_mul_iff_left _).mp _
     swap; · exact mt Ideal.span_singleton_eq_bot.mp b_ne_zero
     rw [Subtype.coe_mk, Ideal.dvd_iff_le, ← hJ, mul_comm]
     apply Ideal.mul_mono le_rfl
@@ -381,7 +376,7 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
 -- Porting note: `this` and `f` below where solved at the end rather than being defined at first.
   have : LinearIndependent R ((Algebra.traceForm K L).dualBasis
       (traceForm_nondegenerate K L) b) := by
-    refine' (Basis.linearIndependent _).restrict_scalars _
+    apply (Basis.linearIndependent _).restrict_scalars
     simp only [Algebra.smul_def, mul_one]
     apply IsFractionRing.injective
   obtain ⟨n, b⟩ :=

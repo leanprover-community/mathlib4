@@ -24,8 +24,6 @@ We define bundled non-unital subsemirings and some standard constructions:
 -/
 
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M : Subsemigroup R)
@@ -517,8 +515,8 @@ section NonUnitalSemiring
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
     (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) :=
-  by with_reducible_and_instances rfl
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) := by
+  with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]

@@ -29,8 +29,6 @@ variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 open Function
 
-open BigOperators
-
 namespace IsLocalization
 
 section

@@ -499,7 +499,6 @@ theorem Right.sign_neg [CovariantClass α α (Function.swap (· + ·)) (· < ·)
 end AddGroup
 
 section LinearOrderedAddCommGroup
-open BigOperators
 
 variable [LinearOrderedAddCommGroup α]
 
@@ -530,8 +529,6 @@ theorem sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
 end Int
 
 open Finset Nat
-
-open BigOperators
 
 /- Porting note: For all the following theorems, needed to add {α : Type u_1} to the assumptions
 because lean4 infers α to live in a different universe u_2 otherwise -/

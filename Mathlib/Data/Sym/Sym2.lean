@@ -185,8 +185,8 @@ theorem congr_left {a b c : α} : s(b, a) = s(c, a) ↔ b = c := by
   simp (config := {contextual := true})
 #align sym2.congr_left Sym2.congr_left
 
-theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
-  by simp
+theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
+  simp
 #align sym2.eq_iff Sym2.eq_iff
 
 theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = q.swap := by
@@ -713,8 +713,9 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
   aesop (rule_sets := [Sym2]) (add norm unfold [Sym2.rec, Quot.rec])
 #align sym2.other_invol' Sym2.other_invol'
 
-theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
-  by classical
+theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) :
+    Mem.other hb = a := by
+  classical
     rw [other_eq_other'] at hb ⊢
     convert other_invol' ha hb using 2
     apply other_eq_other'

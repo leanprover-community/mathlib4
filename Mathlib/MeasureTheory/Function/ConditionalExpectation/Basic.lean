@@ -67,7 +67,7 @@ conditional expectation, conditional expected value
 
 open TopologicalSpace MeasureTheory.Lp Filter
 
-open scoped ENNReal Topology BigOperators MeasureTheory
+open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 

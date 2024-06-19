@@ -45,8 +45,6 @@ Partition
 
 open Multiset
 
-open BigOperators
-
 namespace Nat
 
 /-- A partition of `n` is a multiset of positive integers summing to `n`. -/

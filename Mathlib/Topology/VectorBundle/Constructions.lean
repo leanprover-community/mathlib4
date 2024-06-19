@@ -133,8 +133,8 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
     infer_instance
   continuousOn_coordChange' := by
     rintro _ _ ⟨e₁, e₂, he₁, he₂, rfl⟩ ⟨e₁', e₂', he₁', he₂', rfl⟩
-    refine' (((continuousOn_coordChange 𝕜 e₁ e₁').mono _).prod_mapL 𝕜
-      ((continuousOn_coordChange 𝕜 e₂ e₂').mono _)).congr _ <;>
+    refine (((continuousOn_coordChange 𝕜 e₁ e₁').mono ?_).prod_mapL 𝕜
+      ((continuousOn_coordChange 𝕜 e₂ e₂').mono ?_)).congr ?_ <;>
       dsimp only [baseSet_prod, mfld_simps]
     · mfld_set_tac
     · mfld_set_tac

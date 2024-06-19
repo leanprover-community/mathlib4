@@ -46,9 +46,9 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     split_ifs with h
     · subst h
       simp
-    · -- Adaptation note: after nightly-2024-03-07, the previous sensible proof
-      -- `rw [if_neg h]; simp` fails with "motive not type correct".
-      -- The following is horrible.
+    · #adaptation_note /-- after nightly-2024-03-07, the previous sensible proof
+      `rw [if_neg h]; simp` fails with "motive not type correct".
+      The following is horrible. -/
       convert (id_zero (C := V)).symm
       all_goals simp [if_neg h]
   map_comp f g := by
@@ -175,6 +175,8 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
   dsimp [mkHomFromSingle]
   rw [dif_pos rfl, comp_id]
   rfl
+
+instance (j : ι) : (single V c j).PreservesZeroMorphisms where
 
 end HomologicalComplex
 

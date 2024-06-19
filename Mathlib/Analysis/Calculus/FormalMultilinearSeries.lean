@@ -283,8 +283,6 @@ section Coef
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {s : E}
   {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜} {y : Fin n → 𝕜}
 
-open BigOperators
-
 /-- The `n`th coefficient of `p` when seen as a power series. -/
 def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=
   p n 1
@@ -363,6 +361,17 @@ theorem constFormalMultilinearSeries_apply [NontriviallyNormedField 𝕜] [Norme
     constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
 #align const_formal_multilinear_series_apply constFormalMultilinearSeries_apply
+
+@[simp]
+lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E ]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
+    constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
+  ext n x
+  simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
+    constFormalMultilinearSeries]
+  induction n
+  · simp only [Nat.zero_eq, ContinuousMultilinearMap.curry0_apply]
+  · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
 
 end Const
 

@@ -21,7 +21,7 @@ This content had previously been in `Data.Fintype.Basic`, but was moved here to 
 requiring `Algebra.BigOperators` (and hence many other imports) as a
 dependency of `Fintype`.
 
-However many of the results here really belong in `Algebra.BigOperators.Basic`
+However many of the results here really belong in `Algebra.BigOperators.Group.Finset`
 and should be moved at some point.
 -/
 
@@ -30,8 +30,6 @@ assert_not_exists MulAction
 universe u v
 
 variable {α : Type*} {β : Type*} {γ : Type*}
-
-open BigOperators
 
 namespace Fintype
 

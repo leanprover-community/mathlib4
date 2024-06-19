@@ -102,8 +102,6 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
         MonoidalPreadditive.add_whiskerRight] }
 #align category_theory.monoidal_preadditive_of_faithful CategoryTheory.monoidalPreadditive_of_faithful
 
-open BigOperators
-
 theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) :
     P ◁ ∑ j ∈ s, g j = ∑ j ∈ s, P ◁ g j :=
   map_sum ((tensoringLeft C).obj P).mapAddHom g s

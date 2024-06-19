@@ -6,7 +6,7 @@ Authors: Anne Baanen
 
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!

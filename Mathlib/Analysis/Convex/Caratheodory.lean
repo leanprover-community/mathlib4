@@ -41,8 +41,6 @@ convex hull, caratheodory
 
 open Set Finset
 
-open BigOperators
-
 universe u
 
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]

@@ -24,8 +24,6 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 universe u v
 
-open scoped BigOperators
-
 section IsCoprime
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}
@@ -125,7 +123,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
   induction h using Finset.Nonempty.cons_induction with
   | singleton =>
     simp [exists_apply_eq, Pairwise, Function.onFun]
-  | @cons a t hat h ih =>
+  | cons a t hat h ih =>
     rw [pairwise_cons']
     have mem : ∀ x ∈ t, a ∈ insert a t \ {x} := fun x hx ↦ by
       rw [mem_sdiff, mem_singleton]

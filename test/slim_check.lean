@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Notation
@@ -414,7 +415,6 @@ issue: ⋯ does not hold
     exact test_sorry
   trivial
 
-open scoped BigOperators in
 example (n : ℕ) : true := by
   have : ∑ f : Unit → Fin (n + 1), f () = 0 := by
     success_if_fail_with_msg "
@@ -430,7 +430,6 @@ issue: 1 = 0 does not hold
   trivial
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20question/near/412709012
-open scoped BigOperators in
 /--
 info: Success
 ---

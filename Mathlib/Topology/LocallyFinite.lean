@@ -53,7 +53,7 @@ theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (
 
 theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :
     LocallyFinite (f ∘ g) :=
-  hf.comp_injOn (hg.injOn _)
+  hf.comp_injOn hg.injOn
 #align locally_finite.comp_injective LocallyFinite.comp_injective
 
 theorem _root_.locallyFinite_iff_smallSets :
@@ -85,7 +85,7 @@ protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
       simp only [mem_setOf_eq, iUnion_nonempty_self]
     _ = ⨆ i ∈ {j | (f j ∩ U).Nonempty}, 𝓝[f i ∩ U] a := nhdsWithin_biUnion hfin _ _
     _ ≤ ⨆ i, 𝓝[f i ∩ U] a := iSup₂_le_iSup _ _
-    _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ <| inter_subset_left _ _
+    _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ inter_subset_left
 #align locally_finite.nhds_within_Union LocallyFinite.nhdsWithin_iUnion
 
 theorem continuousOn_iUnion' {g : X → Y} (hf : LocallyFinite f)

@@ -611,16 +611,16 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) :=
   { AddSubmonoid.involutiveNeg with
     neg_mul := fun x y => by
-      refine'
-          le_antisymm (mul_le.2 fun m hm n hn => _)
-            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => _) <;>
+      refine
+          le_antisymm (mul_le.2 fun m hm n hn => ?_)
+            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => ?_) <;>
         simp only [AddSubmonoid.mem_neg, ← neg_mul] at *
       · exact mul_mem_mul hm hn
       · exact mul_mem_mul (neg_mem_neg.2 hm) hn
     mul_neg := fun x y => by
-      refine'
-          le_antisymm (mul_le.2 fun m hm n hn => _)
-            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => _) <;>
+      refine
+          le_antisymm (mul_le.2 fun m hm n hn => ?_)
+            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => ?_) <;>
         simp only [AddSubmonoid.mem_neg, ← mul_neg] at *
       · exact mul_mem_mul hm hn
       · exact mul_mem_mul hm (neg_mem_neg.2 hn) }

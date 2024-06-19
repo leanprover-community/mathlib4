@@ -40,8 +40,6 @@ Bertrand, prime, binomial coefficients
 -/
 
 
-open scoped BigOperators
-
 section Real
 
 open Real

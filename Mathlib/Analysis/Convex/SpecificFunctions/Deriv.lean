@@ -34,7 +34,7 @@ of these could also be switched to elementary proofs, like in
 
 open Real Set
 
-open scoped BigOperators NNReal
+open scoped NNReal
 
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by

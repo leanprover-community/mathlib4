@@ -64,7 +64,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds I x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
     simp only [e.map_source hx', true_and_iff, e.left_inv hx', st hx's, *]
-  refine ((hg.2.comp _ (hf.2.mono (inter_subset_right _ _)) (inter_subset_left _ _)).mono_of_mem
+  refine ((hg.2.comp _ (hf.2.mono inter_subset_right) inter_subset_left).mono_of_mem
     (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
@@ -106,7 +106,7 @@ nonrec theorem SmoothOn.comp {t : Set M'} {g : M' → M''} (hg : SmoothOn I' I''
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContMDiffOn.comp' {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) (s ∩ f ⁻¹' t) :=
-  hg.comp (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp (hf.mono inter_subset_left) inter_subset_right
 #align cont_mdiff_on.comp' ContMDiffOn.comp'
 
 /-- The composition of `C^∞` functions is `C^∞`. -/
@@ -132,7 +132,7 @@ nonrec theorem Smooth.comp {g : M' → M''} (hg : Smooth I' I'' g) (hf : Smooth 
 theorem ContMDiffWithinAt.comp' {t : Set M'} {g : M' → M''} (x : M)
     (hg : ContMDiffWithinAt I' I'' n g t (f x)) (hf : ContMDiffWithinAt I I' n f s x) :
     ContMDiffWithinAt I I'' n (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp x (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp x (hf.mono inter_subset_left) inter_subset_right
 #align cont_mdiff_within_at.comp' ContMDiffWithinAt.comp'
 
 /-- The composition of `C^∞` functions within domains at points is `C^∞`. -/

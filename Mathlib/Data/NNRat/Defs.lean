@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Rat.Order
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -156,7 +156,8 @@ theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
 
-@[simp, norm_cast]
+-- `cast_pos`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_pos : (0 : ℚ) < q ↔ 0 < q :=
   Iff.rfl
 #align nnrat.coe_pos NNRat.coe_pos
@@ -203,7 +204,7 @@ theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
   rfl
 #align nnrat.mk_coe_nat NNRat.mk_natCast
 
-@[deprecated] alias mk_coe_nat := mk_natCast -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
 
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
@@ -226,12 +227,14 @@ theorem bddBelow_coe (s : Set ℚ≥0) : BddBelow (((↑) : ℚ≥0 → ℚ) '' 
   ⟨0, fun _ ⟨q, _, h⟩ ↦ h ▸ q.2⟩
 #align nnrat.bdd_below_coe NNRat.bddBelow_coe
 
-@[simp, norm_cast]
+-- `cast_max`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_max (x y : ℚ≥0) : ((max x y : ℚ≥0) : ℚ) = max (x : ℚ) (y : ℚ) :=
   coe_mono.map_max
 #align nnrat.coe_max NNRat.coe_max
 
-@[simp, norm_cast]
+-- `cast_max`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_min (x y : ℚ≥0) : ((min x y : ℚ≥0) : ℚ) = min (x : ℚ) (y : ℚ) :=
   coe_mono.map_min
 #align nnrat.coe_min NNRat.coe_min
@@ -439,5 +442,11 @@ lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (
 
 lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) := by
   ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
+
+theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
+  rw [← NNRat.coe_lt_coe, Rat.lt_def]; norm_cast
+
+theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
+  rw [← NNRat.coe_le_coe, Rat.le_def]; norm_cast
 
 end NNRat

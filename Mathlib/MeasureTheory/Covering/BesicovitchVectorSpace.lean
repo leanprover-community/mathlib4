@@ -152,7 +152,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
 
 theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
   apply csSup_le
-  · refine' ⟨0, ⟨∅, by simp⟩⟩
+  · refine ⟨0, ⟨∅, by simp⟩⟩
   · rintro _ ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
 #align besicovitch.multiplicity_le Besicovitch.multiplicity_le
@@ -389,8 +389,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     calc
       a.r j - δ ≤ a.r j - a.r j / 4 * δ := by
         gcongr _ - ?_
-        refine' mul_le_of_le_one_left δnonneg _
-        linarith only [C]
+        exact mul_le_of_le_one_left δnonneg (by linarith only [C])
       _ = (1 - δ / 4) * a.r j := by ring
       _ ≤ (1 - δ / 4) * (τ * a.r i) := mul_le_mul_of_nonneg_left H.2 D
       _ ≤ 1 * a.r i := by rw [← mul_assoc]; gcongr

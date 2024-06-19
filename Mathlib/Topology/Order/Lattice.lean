@@ -138,7 +138,7 @@ lemma finset_sup'_nhds [SemilatticeSup L] [ContinuousSup L]
     Tendsto (s.sup' hne f) l (𝓝 (s.sup' hne g)) := by
   induction hne using Finset.Nonempty.cons_induction with
   | singleton => simpa using hs
-  | cons s ha hne ihs =>
+  | cons a s ha hne ihs =>
     rw [forall_mem_cons] at hs
     simp only [sup'_cons, hne]
     exact hs.1.sup_nhds (ihs hs.2)

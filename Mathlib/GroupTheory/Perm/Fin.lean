@@ -37,9 +37,9 @@ theorem Equiv.Perm.decomposeFin_symm_of_one {n : ℕ} (p : Fin (n + 1)) :
   Equiv.Perm.decomposeFin_symm_of_refl p
 #align equiv.perm.decompose_fin_symm_of_one Equiv.Perm.decomposeFin_symm_of_one
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12232
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma.
+See https://github.com/leanprover-community/mathlib4/issues/12232 -/
 @[simp, nolint simpNF]
 theorem Equiv.Perm.decomposeFin_symm_apply_zero {n : ℕ} (p : Fin (n + 1)) (e : Perm (Fin n)) :
     Equiv.Perm.decomposeFin.symm (p, e) 0 = p := by simp [Equiv.Perm.decomposeFin]
@@ -57,9 +57,9 @@ theorem Equiv.Perm.decomposeFin_symm_apply_succ {n : ℕ} (e : Perm (Fin n)) (p 
         swap_apply_def, Ne.symm h]
 #align equiv.perm.decompose_fin_symm_apply_succ Equiv.Perm.decomposeFin_symm_apply_succ
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12232
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma.
+See https://github.com/leanprover-community/mathlib4/issues/12232 -/
 @[simp, nolint simpNF]
 theorem Equiv.Perm.decomposeFin_symm_apply_one {n : ℕ} (e : Perm (Fin (n + 1))) (p : Fin (n + 2)) :
     Equiv.Perm.decomposeFin.symm (p, e) 1 = swap 0 p (e 0).succ := by

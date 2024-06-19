@@ -62,7 +62,7 @@ universe uι uE uH uM uF
 
 open Function Filter FiniteDimensional Set
 
-open scoped Topology Manifold Classical Filter BigOperators
+open scoped Topology Manifold Classical Filter
 
 noncomputable section
 

@@ -30,8 +30,6 @@ Between two finsets of vertices,
 
 open Finset
 
-open BigOperators
-
 variable {𝕜 ι κ α β : Type*}
 
 /-! ### Density of a relation -/

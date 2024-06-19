@@ -3,7 +3,7 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Regular.Basic
 
@@ -67,8 +67,6 @@ theorem IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegul
 end Monoid
 
 section CommMonoid
-
-open BigOperators
 
 variable {ι R : Type*} [CommMonoid R] {s : Finset ι} {f : ι → R}
 
