@@ -755,6 +755,64 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
     rw [mul_left_comm, mul_left_comm y.den.1, ← tsub_add_cancel_of_le (show 1 ≤ m from hm),
       pow_succ, mul_assoc, mul_assoc, e]
 
+/--
+For an element `f ∈ A` with positive degree and a homogeneous ideal in `D(f)`, we have that the
+stalk of `Spec A⁰_ f` at `y` is isomorphic to `A⁰ₓ` where `y` is the point in `Proj` corresponding
+to `x`.
+-/
+def specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x) ≅
+      CommRingCat.of (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+  letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+    (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
+  haveI := isLocalization_atPrime 𝒜 f x f_deg hm
+  (IsLocalization.algEquiv
+    (R := A⁰_ f)
+    (M := ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl)
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
+    (Q := AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)).toRingEquiv.toCommRingCatIso
+
+lemma toStalk_specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    StructureSheaf.toStalk (A⁰_ f) ((toSpec 𝒜 f).1.base x) ≫ (specStalkEquiv 𝒜 f x f_deg hm).hom =
+      (mapId _ <| Submonoid.powers_le.mpr x.2 : (A⁰_ f) →+* AtPrime 𝒜 x.1.1.toIdeal) :=
+  letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+    (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
+  letI := isLocalization_atPrime 𝒜 f x f_deg hm
+  (IsLocalization.algEquiv
+    (R := A⁰_ f)
+    (M := ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl)
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
+    (Q := AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)).toAlgHom.comp_algebraMap
+
+lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
+      (specStalkEquiv 𝒜 f x f_deg hm).hom ≫ (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
+      ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv := by
+  apply IsLocalization.ringHom_ext (R := A⁰_ f) ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
+  refine (toStalk_stalkMap_toSpec _ _ _).trans ?_
+  rw [awayToΓ_ΓToStalk, ← toStalk_specStalkEquiv 𝒜 f x f_deg hm, Category.assoc]
+  rfl
+
+lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    IsIso (toSpec 𝒜 f) := by
+  have (x) : IsIso (PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x) := by
+    rw [stalkMap_toSpec 𝒜 f x f_deg hm]; infer_instance
+  have : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) := by
+    apply SheafedSpace.IsOpenImmersion.of_stalk_iso
+    convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).openEmbedding using 1
+    ext; exact toSpec_base_apply_eq 𝒜 _
+  suffices IsIso (LocallyRingedSpace.forgetToSheafedSpace.map (toSpec 𝒜 f)) by
+    apply isIso_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace
+  show IsIso (toSpec 𝒜 f).1
+  suffices IsIso (SheafedSpace.forgetToPresheafedSpace.map (toSpec 𝒜 f).1) by
+    apply isIso_of_reflects_iso _ SheafedSpace.forgetToPresheafedSpace
+  suffices Epi (SheafedSpace.forgetToPresheafedSpace.map (toSpec 𝒜 f).val).base by
+    exact PresheafedSpace.IsOpenImmersion.to_iso _
+  rw [TopCat.epi_iff_surjective]
+  convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).surjective using 1
+  ext; exact toSpec_base_apply_eq 𝒜 _
+
 end ProjectiveSpectrum.Proj
 
 open ProjectiveSpectrum.Proj in
