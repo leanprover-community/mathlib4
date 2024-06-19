@@ -6,8 +6,6 @@ Authors: Peter Nelson
 import Mathlib.Data.Matroid.Constructions
 import Mathlib.Data.Set.Subset
 
-open Set.Notation
-
 /-!
 # Maps between matroids
 
@@ -100,10 +98,7 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 [1] : E. Aigner-Horev, J. Carmesin, J. Fröhlic, Infinite Matroid Union, arXiv:1111.0602 [math.CO]
 -/
 
-universe u
-
-open Set Function
-
+open Set Function Set.Notation
 namespace Matroid
 variable {α β : Type*} {f : α → β} {E I s : Set α} {M : Matroid α} {N : Matroid β}
 
@@ -652,5 +647,24 @@ lemma restrictSubtype_dual' (hM : M.E = E) : (M.restrictSubtype E)✶ = M✶.res
 lemma map_val_restrictSubtype_ground_eq (M : Matroid α) :
     (M.restrictSubtype M.E).map (↑) Subtype.val_injective.injOn = M := by
   simp
+
+instance [M.Finitary] {X : Set α} : (M.restrictSubtype X).Finitary := by
+  rw [restrictSubtype]; infer_instance
+
+instance [M.FiniteRk] {X : Set α} : (M.restrictSubtype X).FiniteRk := by
+  rw [restrictSubtype]; infer_instance
+
+instance [M.Finite] : (M.restrictSubtype M.E).Finite :=
+  have := M.ground_finite.to_subtype
+  ⟨Finite.ground_finite⟩
+
+instance [M.Nonempty] : (M.restrictSubtype M.E).Nonempty :=
+  have := M.ground_nonempty.coe_sort
+  ⟨by simp⟩
+
+instance [M.RkPos] : (M.restrictSubtype M.E).RkPos := by
+  obtain ⟨B, hB⟩ := (M.restrictSubtype M.E).exists_base
+  have hB' : M.Base ↑B := by simpa using hB.map Subtype.val_injective.injOn
+  exact hB.rkPos_of_nonempty <| by simpa using hB'.nonempty
 
 end restrictSubtype
