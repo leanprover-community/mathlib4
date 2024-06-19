@@ -451,6 +451,14 @@ theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : �
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
 @[simp]
+theorem get!_some [Inhabited α] (a : α) : (some a).get! = a :=
+  rfl
+
+@[simp]
+theorem get!_none [Inhabited α] : (none : Option α).get! = default :=
+  rfl
+
+@[simp]
 lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
   funext
   cases a <;> simp
