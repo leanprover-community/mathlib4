@@ -63,13 +63,13 @@ theorem Coloring.bicoloring_apply_iff_of_walk {α} {G : SimpleGraph α}
 theorem Coloring.bicoloring_apply_iff_of_head_walk {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) (hcu : c u) :
     c v ↔ Even p.length := by
-  rw [Coloring.bicoloring_apply_iff_of_walk c p]
+  rw [c.bicoloring_apply_iff_of_walk p]
   exact iff_true_left hcu
 
 theorem Coloring.bicoloring_apply_iff_of_not_head_walk {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) (hcu : !c u) :
     c v ↔ Odd p.length := by
-  rw [Coloring.bicoloring_apply_iff_of_walk c p, Nat.even_iff_not_odd]
+  rw [c.bicoloring_apply_iff_of_walk p, Nat.even_iff_not_odd]
   simp [(Bool.not_inj hcu : c u = false)]
 
 end SimpleGraph
