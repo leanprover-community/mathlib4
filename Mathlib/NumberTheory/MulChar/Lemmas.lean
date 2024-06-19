@@ -157,8 +157,7 @@ lemma orderOf_dvd_card_sub_one (χ : MulChar F R) : orderOf χ ∣ Fintype.card 
 
 /-- There is always a character on `F` of order `#F-1` with values in a ring that has
 a primitive `(#F-1)`th root of unity. -/
-lemma exists_mulChar_orderOf_eq_card_units [IsDomain R] {ζ : R}
-    (hζ : IsPrimitiveRoot ζ (Monoid.orderUnits F)) :
+lemma exists_mulChar_orderOf_eq_card_units {ζ : R} (hζ : IsPrimitiveRoot ζ (Monoid.orderUnits F)) :
     ∃ χ : MulChar F R, orderOf χ = Fintype.card Fˣ :=
   exists_mulChar_orderOf F (by rw [Fintype.card_units]) hζ
 
