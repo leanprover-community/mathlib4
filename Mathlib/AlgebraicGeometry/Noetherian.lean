@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Geno Racklin Asher.
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.Topology.NoetherianSpace
+import Mathlib.Topology.QuasiSeparated
 
 /-!
 # Noetherian and Locally Noetherian Schemes
@@ -50,7 +53,7 @@ open Opposite AlgebraicGeometry Localization IsLocalization TopologicalSpace
 
 namespace AlgebraicGeometry
 
-/-- A scheme `X` is locally noetherian if `𝒪ₓ(U)` is noetherian for all affine `U`. -/
+/-- A scheme `X` is locally Noetherian if `𝒪ₓ(U)` is Noetherian for all affine `U`. -/
 class IsLocallyNoetherian (X : Scheme) : Prop where
   component_noetherian : ∀ (U: X.affineOpens), IsNoetherianRing (X.presheaf.obj (op U)) :=
     by infer_instance
@@ -124,8 +127,8 @@ end localizationProps
 
 variable {X : Scheme}
 
-/-- If a scheme `X` has a cover by affine opens whose sections are noetherian rings,
-then `X` is locally noetherian. -/
+/-- If a scheme `X` has a cover by affine opens whose sections are Noetherian rings,
+then `X` is locally Noetherian. -/
 theorem isLocallyNoetherian_of_affine_cover (S : Set X.affineOpens)
     (hS : (⋃ i : S, i : Set X) = Set.univ)
     (hS' : ∀ (U : S), IsNoetherianRing (X.presheaf.obj (op U))) : IsLocallyNoetherian X := by
@@ -172,7 +175,7 @@ lemma cover_of_affineOpens : ⋃ i : {_U : X.affineOpens | True}, (i : Set X) = 
   use ⟨U, trivial⟩
   exact hxU
 
-/-- A scheme is locally noetherian if and only if it is covered by affine opens whose sections
+/-- A scheme is locally Noetherian if and only if it is covered by affine opens whose sections
 are noetherian rings.
 
 See [Har77], Proposition II.3.2. -/
@@ -192,3 +195,65 @@ theorem isLocallyNoetherian_iff_affine_cover :
 instance {R : CommRingCat} [IsNoetherianRing R] :
   NoetherianSpace (Scheme.Spec.obj <| op R) := by
   convert PrimeSpectrum.instNoetherianSpace (R := R)
+
+lemma noetherianSpace_of_isAffine [IsAffine X]
+  (hX : IsNoetherianRing <| Scheme.Γ.obj (op X)) :
+  NoetherianSpace X := by
+  let R := Scheme.Γ.obj (op X)
+  let SpecR := Scheme.Spec.obj (op R)
+  suffices f : SpecR.carrier ≃ₜ X.carrier by
+    apply (noetherianSpace_iff_of_homeomorph f).mp
+    infer_instance
+  apply TopCat.homeoOfIso
+  exact CategoryTheory.asIso (Scheme.isoSpec X).symm.hom.val.base
+
+lemma noetherianSpace_of_affineOpen (U : X.affineOpens)
+  (hU : IsNoetherianRing (X.presheaf.obj (op U))) :
+  NoetherianSpace U := by
+  suffices h : IsNoetherianRing (Scheme.Γ.obj { unop := X ∣_ᵤ ↑U }) by
+    exact noetherianSpace_of_isAffine h
+  apply isNoetherianRing_of_ringEquiv (R := X.presheaf.obj (op U))
+  apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
+  exact ((Scheme.restrictFunctorΓ X).app (op U)).symm
+
+/-- Any open immersion `Z ⟶ X` with `X` locally Noetherian is quasi-compact.
+
+[Stacks: Lemma 01OX](https://stacks.math.columbia.edu/tag/01OX) -/
+instance {Z : Scheme} [IsLocallyNoetherian X]
+    {f : Z ⟶ X} [h : IsOpenImmersion f] : QuasiCompact f := by
+  apply (quasiCompact_iff_forall_affine f).mpr
+  intro U hU
+  rw [←Set.preimage_inter_range]
+  apply Inducing.isCompact_preimage'
+  constructor
+  exact h.base_open.induced
+  apply (noetherianSpace_set_iff _).mp
+  apply noetherianSpace_of_affineOpen ⟨U, hU⟩
+  apply IsLocallyNoetherian.component_noetherian
+  exact Set.inter_subset_left
+  exact Set.inter_subset_right
+
+/-- A locally Noetherian scheme is quasi-separated.
+
+[Stacks: Lemma 01OY](https://stacks.math.columbia.edu/tag/01OY) -/
+instance [IsLocallyNoetherian X] : QuasiSeparatedSpace X := by
+  apply (quasiSeparatedSpace_iff_affine X).mpr
+  intro U V
+  let f := U.prop.fromSpec.val.base
+  have hInd := (IsAffineOpen.isOpenImmersion_fromSpec U.prop).base_open.induced
+  apply Iff.mp
+  apply Inducing.isCompact_preimage_iff (f := f)
+  constructor
+  exact hInd
+  rw [IsAffineOpen.fromSpec_range]
+  exact Set.inter_subset_left
+  rw [←Set.preimage_inter_range, IsAffineOpen.fromSpec_range, Set.inter_comm]
+  apply Inducing.isCompact_preimage'
+  constructor
+  exact hInd
+  apply (noetherianSpace_set_iff _).mp
+  apply noetherianSpace_of_affineOpen U
+  apply IsLocallyNoetherian.component_noetherian
+  exact Set.inter_subset_left
+  rw [IsAffineOpen.fromSpec_range]
+  exact Set.inter_subset_left
