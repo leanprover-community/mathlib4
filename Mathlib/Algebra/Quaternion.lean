@@ -862,7 +862,6 @@ theorem ext_iff {a b : ℍ[R]} :
   QuaternionAlgebra.ext_iff a b
 #align quaternion.ext_iff Quaternion.ext_iff
 
-set_option linter.unnecessarySyntax false in
 /-- The imaginary part of a quaternion. -/
 nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 #align quaternion.im Quaternion.im

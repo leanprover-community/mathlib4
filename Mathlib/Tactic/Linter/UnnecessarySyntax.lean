@@ -53,11 +53,18 @@ def unnecessarySyntax (f : Syntax → CommandElabM (Array (Syntax × Syntax × M
 /-- On input the syntax for the modifiers of a declaration, `removePartialModifier` returns
 the pair consisting of the syntax for the modifiers *without* `partial`, as well as the syntax
 for the `partial` node.
-It `partial` is not part of the input syntax, then it returns `default`. -/
+It `partial` is not part of the input syntax, then it returns `default`.
+
+Note: `partial` and `nonrec` share the same syntax node, so care is taken to replace `partial`s
+only and not also `nonrec`s.
+-/
 def removePartialModifier (stx : TSyntax ``declModifiers) : (TSyntax ``declModifiers × Syntax) :=
   match stx.raw with
     | .node si ``declModifiers args =>
-      (⟨.node si ``declModifiers (args.modify 5 (fun _ => mkNullNode))⟩, args.getD 5 default)
+      ( ⟨.node si ``declModifiers (args.modify 5 (fun n =>
+          -- discriminate between `partial` and `nonrec`
+          if let .node _ _ #[.node _ ``Command.partial _] := n then mkNullNode else n))⟩,
+        args.getD 5 default)
     | _ => default
 
 /-- `removePartial cmd` takes as input the `Syntax` `cmd` and

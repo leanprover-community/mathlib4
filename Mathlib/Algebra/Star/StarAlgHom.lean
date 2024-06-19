@@ -860,7 +860,6 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
 #align star_alg_equiv.coe_refl StarAlgEquiv.coe_refl
 
 -- Porting note: changed proof a bit by using `EquivLike` to avoid lots of coercions
-set_option linter.unnecessarySyntax false in
 /-- The inverse of a star algebra isomorphism is a star algebra isomorphism. -/
 @[symm]
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=

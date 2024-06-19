@@ -76,7 +76,6 @@ theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M 
   rfl
 #align tensor_product.algebra_tensor_module.smul_eq_lsmul_rtensor TensorProduct.AlgebraTensorModule.smul_eq_lsmul_rTensor
 
-set_option linter.unnecessarySyntax false in
 /-- Heterobasic version of `TensorProduct.curry`:
 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical

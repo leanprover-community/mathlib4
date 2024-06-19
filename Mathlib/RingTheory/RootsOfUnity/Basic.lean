@@ -156,7 +156,6 @@ theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : roo
   rfl
 #align restrict_roots_of_unity_coe_apply restrictRootsOfUnity_coe_apply
 
-set_option linter.unnecessarySyntax false in
 /-- Restrict a monoid isomorphism to the nth roots of unity. -/
 nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ+) :
     rootsOfUnity n R ≃* rootsOfUnity n S where
