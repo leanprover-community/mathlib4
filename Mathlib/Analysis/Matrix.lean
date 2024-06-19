@@ -55,8 +55,7 @@ open scoped NNReal Matrix
 
 namespace Matrix
 
-variable {R l m n α β : Type*} [Fintype l] [Fintype m] [Fintype n]
-variable {ι : Type*} [Unique ι]
+variable {R l m n α β ι : Type*} [Fintype l] [Fintype m] [Fintype n] [Unique ι]
 
 /-! ### The elementwise supremum norm -/
 
