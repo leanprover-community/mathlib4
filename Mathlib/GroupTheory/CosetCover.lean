@@ -152,6 +152,7 @@ structure AddGroup.LeftCosetCover (G : Type*) [AddGroup G] where
   covers : ⋃ i, offset i +ᵥ (addSubgroup i : Set G) = Set.univ
 
 attribute [to_additive] Group.LeftCosetCover
+attribute [to_additive_ignore_args 4] Group.LeftCosetCover.subgroup
 
 variable {G : Type*} [Group G] (c : Group.LeftCosetCover G)
 
@@ -658,8 +659,6 @@ theorem Group.LeftCosetCover.normalize'_density
     exact { finiteIndex := hx }
   simp only [Function.support_inv (G₀ := ℚ), Finset.coe_univ, Set.subset_univ]
 
-attribute [to_additive_ignore_args 4] Group.LeftCosetCover.subgroup
-
 @[to_additive]
 theorem Group.LeftCosetCover.normalize_density
     [Finite c.carrier]
@@ -700,50 +699,6 @@ theorem Group.LeftCosetCover.normalize_density
     intro hx
     exact { finiteIndex := hx }
   · simp only [Function.support_inv (G₀ := ℚ), Finset.coe_univ, Set.subset_univ]
-
-theorem AddGroup.LeftCosetCover.normalize_density
-    (G : Type*) [AddGroup G] (c : AddGroup.LeftCosetCover G)
-    [Finite c.carrier]
-    [DecidableEq (AddSubgroup G)]
-    [DecidablePred (AddSubgroup.FiniteIndex : AddSubgroup G → Prop)] :
-    AddGroup.LeftCosetCover.density (AddGroup.LeftCosetCover.normalize c)
-      = AddGroup.LeftCosetCover.density c := by
-  have : Fintype c.carrier := Fintype.ofFinite c.carrier
-  have : Fintype (sieve c).carrier := Fintype.ofFinite (sieve c).carrier
-  have : Fintype (normalize c).carrier := Fintype.ofFinite (normalize c).carrier
-  rw [← c.sieve_density]
-  unfold density
-  rw [finsum_eq_finset_sum_of_support_subset (M := ℚ) _ (s := Finset.univ)]
-  rw [finsum_eq_finset_sum_of_support_subset (M := ℚ) _ (s := Finset.univ.filter (fun x => ((sieve c).addSubgroup x).FiniteIndex))]
-  · apply Finset.sum_bij' (α := ℚ) (ι := c.normalize.carrier) (κ := c.sieve.carrier) (s := Finset.univ) (t := Finset.filter (fun x ↦ (c.sieve.addSubgroup x).FiniteIndex) Finset.univ)
-      (f := fun i ↦ ((c.normalize.addSubgroup i).index : ℚ)⁻¹)
-      (g := fun i ↦ ((c.sieve.addSubgroup i).index : ℚ)⁻¹)
-      (fun i _ ↦ ⟨i.1, ⟨i.2, by rw [dif_pos _]; exact i.2.prop⟩⟩)
-      (fun i hi ↦ by
-        simp only [Finset.mem_filter, Finset.mem_univ, true_and, sieve_addSubgroup_finite_index_iff] at hi
-        refine ⟨⟨i.1, by rwa [Set.mem_setOf_eq]⟩,
-          ⟨i.2, by convert i.2.prop; rw [dif_pos hi]⟩⟩)
-    · exact fun _ _ ↦ rfl
-    · exact fun _ _ ↦ rfl
-    · intro i _
-      congr 3
-      rw [normalize_addSubgroup_eq_core, eq_comm, c.sieve_addSubgroup_eq_core_iff]
-      exact i.1.prop
-    · intro i _
-      simp only [Set.mem_setOf_eq, Set.coe_setOf, Finset.mem_filter, Finset.mem_univ, true_and]
-      rw [sieve_addSubgroup_finite_index_iff]
-      exact i.1.prop
-    · exact fun _ _ ↦ Finset.mem_univ _
-  · intro x
-    simp only [Function.support_inv (G₀ := ℚ), Function.mem_support (M := ℚ), ne_eq, Nat.cast_eq_zero (R := ℚ),
-      Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
-    intro hx
-    exact { finiteIndex := hx }
-  · simp only [Function.support_inv (G₀ := ℚ), Finset.coe_univ, Set.subset_univ]
-
-
-set_option linter.toAdditiveExisting false
-attribute [to_additive] Group.LeftCosetCover.normalize_density
 
 @[to_additive]
 theorem Group.LeftCosetCover.disjoint_normalize_of_density_eq_one
