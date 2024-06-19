@@ -8,9 +8,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Topology.Instances.NNReal
+import Mathlib.Analysis.Normed.Group.Lemmas
 import Mathlib.Topology.MetricSpace.DilationEquiv
 
 #align_import analysis.normed.field.basic from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"

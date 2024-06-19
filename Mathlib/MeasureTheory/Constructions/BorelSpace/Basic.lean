@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Topology.GDelta
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.Topology.Instances.EReal
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Lemmas
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 

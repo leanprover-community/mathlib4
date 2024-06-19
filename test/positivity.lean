@@ -1,6 +1,6 @@
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.MeasureTheory.Integral.Bochner
