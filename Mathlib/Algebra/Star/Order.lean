@@ -246,7 +246,7 @@ theorem conjugate_lt_conjugate' {a b : R} (hab : a < b) {c : R} (hc : IsRegular 
 theorem conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < star c * a * c := by
   simpa only [mul_zero, zero_mul] using conjugate_lt_conjugate ha hc
 
-theorem conjugate_pos' {a : R} (ha : 0 < a) {c : R}  (hc : IsRegular c) : 0 < c * a * star c := by
+theorem conjugate_pos' {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < c * a * star c := by
   simpa only [star_star] using conjugate_pos ha hc.star
 
 theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x * x := by
