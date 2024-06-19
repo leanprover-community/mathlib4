@@ -589,13 +589,15 @@ lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
 #align int.eq_one_of_dvd_one Int.eq_one_of_dvd_one
 #align int.dvd_antisymm Int.dvd_antisymm
 
-attribute [simp] Int.dvd_zero
+attribute [simp] Int.dvd_zero Int.dvd_mul_left Int.dvd_mul_right
 
 protected lemma mul_dvd_mul : a ∣ b → c ∣ d → a * c ∣ b * d
   | ⟨e, he⟩, ⟨f, hf⟩ => ⟨e * f, by simp [he, hf, Int.mul_assoc, Int.mul_left_comm, Nat.mul_comm]⟩
 
 protected lemma mul_dvd_mul_left (a : ℤ) (h : b ∣ c) : a * b ∣ a * c := Int.mul_dvd_mul a.dvd_refl h
-protected lemma mul_dvd_mul_right (a : ℤ) (h : b ∣ c) : b * a ∣ c * a := Int.mul_dvd_mul h a.dvd_refl
+
+protected lemma mul_dvd_mul_right (a : ℤ) (h : b ∣ c) : b * a ∣ c * a :=
+  Int.mul_dvd_mul h a.dvd_refl
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
   obtain ⟨e, rfl⟩ := hdiv
@@ -612,13 +614,12 @@ lemma mul_dvd_of_dvd_div (hcb : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
   have ⟨d, hd⟩ := h
   ⟨d, by simpa [Int.mul_comm, Int.mul_left_comm] using Int.eq_mul_of_ediv_eq_left hcb hd⟩
 
-lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
-  if ha : a = 0 then by simp [ha]
-  else
-    have h1 : ∃ d, c = a * b * d := h
-    let ⟨d, hd⟩ := h1
-    have h2 : c / a = b * d := Int.ediv_eq_of_eq_mul_right ha (by simpa [Int.mul_assoc] using hd)
-    show ∃ d, c / a = b * d from ⟨d, h2⟩
+lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a := by
+  obtain rfl | ha := eq_or_ne a 0
+  . simp
+  · obtain ⟨d, rfl⟩ := h
+    simp [Int.mul_assoc, ha]
+#align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
 
 -- TODO: Rename `Nat.dvd_div_iff` to `Nat.dvd_div_iff_mul_dvd`
 @[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
