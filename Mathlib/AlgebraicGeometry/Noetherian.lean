@@ -257,3 +257,94 @@ instance [IsLocallyNoetherian X] : QuasiSeparatedSpace X := by
   exact Set.inter_subset_left
   rw [IsAffineOpen.fromSpec_range]
   exact Set.inter_subset_left
+
+/-- A scheme `X` is Noetherian if it is locally Noetherian and compact. -/
+class IsNoetherian (X : Scheme) extends IsLocallyNoetherian X : Prop where
+  compact : CompactSpace X := by infer_instance
+
+open CategoryTheory Classical in
+/-- A Noetherian scheme has a Noetherian underlying topological space.
+
+[Stacks, Lemma 01OZ](https://stacks.math.columbia.edu/tag/01OZ) -/
+noncomputable instance [h : IsNoetherian X] : NoetherianSpace X := by
+  apply (TopologicalSpace.noetherianSpace_iff_opens X).mpr
+  intro U
+  let S := {_U : X.affineOpens | True}
+  have hS : (⋃ i : S, i : Set X) = Set.univ := cover_of_affineOpens
+  obtain ⟨F, hF⟩ := by
+    apply IsCompact.elim_finite_subcover (h.compact.isCompact_univ) (fun (i : S) => i)
+    rintro ⟨⟨U, hhU⟩, hU⟩
+    exact Opens.isOpen U
+    exact Set.univ_subset_iff.mpr hS
+  have hiNoeth : ∀ i : F, NoetherianSpace i := by
+    intro i
+    apply noetherianSpace_of_affineOpen
+    apply IsLocallyNoetherian.component_noetherian
+  apply isCompact_of_finite_subcover
+  intro ι C hOpen hCov
+  have h : ∀ V : F, ∃ t : Finset ι, (↑V ∩ ↑U) ⊆ ⋃ j ∈ t, C j := by
+    intro V
+    apply IsCompact.elim_finite_subcover
+    let UV := { x : SetLike.coe V.val.val.val | ↑x ∈ ↑V ∩ U.carrier }
+    have : (SetLike.coe V.val.val.val ∩ ↑U) = ↑UV := by
+      ext x
+      simp only [Subtype.forall, Set.setOf_true, Set.iUnion_coe_set, Set.mem_univ, Set.iUnion_true,
+        Set.univ_subset_iff, forall_true_left, Set.mem_inter_iff, SetLike.mem_coe, SetLike.coe_sort_coe,
+        Opens.carrier_eq_coe, SetLike.coe_mem, true_and, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,
+        exists_and_left, exists_prop, exists_eq_right_right, S, UV]
+      apply Iff.intro
+      · intro a
+        simp_all only [and_self]
+      · intro a
+        simp_all only [and_self]
+    rw [this]
+    apply Subtype.isCompact_iff.mp
+    exact (hiNoeth V).isCompact UV
+    exact hOpen
+    trans
+    exact Set.inter_subset_right
+    exact hCov
+  let G := ⋃ i : F, (Classical.choose (h i)).toSet
+  have : Fintype G := Set.fintypeiUnion _
+  use G.toFinset
+  intro x hx
+  obtain ⟨V, hVF, hxV⟩ := Set.mem_iUnion₂.mp <| hF (Set.mem_univ x)
+  have := Set.mem_inter hxV hx
+  apply Set.mem_of_subset_of_mem
+  simp only [Set.mem_toFinset]
+  trans
+  exact (h ⟨V, hVF⟩).choose_spec
+  apply Set.biUnion_mono
+  intro j hj
+  exact Set.mem_iUnion_of_mem ⟨V, hVF⟩ hj
+  exact fun _ _ _ a ↦ a
+  exact Set.mem_inter hxV hx
+
+/-- Any morphism of schemes `f : X ⟶ Y` with `X` Noetherian is quasi-compact.
+
+[Stacks, Lemma 01P0](https://stacks.math.columbia.edu/tag/01P0) -/
+theorem quasiCompact_of_isNoetherian_source {X Y : Scheme} [IsNoetherian X] (f : X ⟶ Y) :
+  QuasiCompact f := ⟨fun _ _ _ => NoetherianSpace.isCompact _⟩
+
+/-- If `R` is a Noetherian ring, `Spec R` is a locally Noetherian scheme. -/
+instance {R : CommRingCat} [IsNoetherianRing R] :
+  IsLocallyNoetherian (Scheme.Spec.obj (op R)) := by
+  let X := Scheme.Spec.obj (op R)
+  apply isLocallyNoetherian_of_affine_cover (S := {⟨⊤, AlgebraicGeometry.topIsAffineOpen X⟩})
+  simp only [Subtype.forall, Set.iUnion_coe_set, Set.mem_singleton_iff,
+    Opens.coe_top, Set.iUnion_iUnion_eq_left, X]
+  simp [Subtype.forall, Set.mem_singleton_iff]
+  apply isNoetherianRing_of_ringEquiv R
+  apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
+  exact CategoryTheory.asIso (toSpecΓ R)
+
+/-- If `R` is a Noetherian ring, `Spec R` is a Noetherian scheme. -/
+instance {R : CommRingCat} [IsNoetherianRing R] :
+  IsNoetherian (Scheme.Spec.obj (op R)) := ⟨⟨CompactSpace.isCompact_univ⟩⟩
+
+/-- A Noetherian scheme has a finite number of irreducible components.
+
+[Stacks, Lemma 0BA8](https://stacks.math.columbia.edu/tag/0BA8) -/
+theorem finite_irreducibleComponents_of_isNoetherian [IsNoetherian X]
+    : (irreducibleComponents X).Finite :=
+  NoetherianSpace.finite_irreducibleComponents
