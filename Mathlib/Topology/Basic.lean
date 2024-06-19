@@ -1273,6 +1273,11 @@ lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t 
   exact forall₂_congr fun U _ ↦
     ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
 
+@[gcongr]
+theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
+  inf_le_inf_left _ (principal_mono.mpr h)
+#align nhds_within_mono nhdsWithin_mono
+
 lemma not_mem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
 
