@@ -333,6 +333,22 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
 
+protected theorem diagonal_of_selfAdjoint [DecidableEq n] [NoZeroDivisors R] (d : n → R)
+    (h : 0 < d):
+    PosDef (diagonal d) :=
+  ⟨isHermitian_diagonal_of_self_adjoint _ (funext fun i => IsSelfAdjoint.of_nonneg <| h.le i),
+    fun x hx => by
+      refine Fintype.sum_pos ?_
+      simp_rw [mulVec_diagonal, ← mul_assoc]
+      refine ⟨?_, ?_⟩
+      · exact fun i => conjugate_nonneg (h.le i) _
+      rw [Pi.lt_def]
+      constructor
+      have : diagonal d *ᵥ x = x ᵥ* diagonal d := funext fun i =>
+        (mulVec_diagonal _ _ i).trans <| (mul_comm _ _).trans <| (vecMul_diagonal _ _ i).symm
+      rw [this]
+      sorry⟩
+
 protected theorem one [DecidableEq n] [NoZeroDivisors R] : PosDef (1 : Matrix n n R) :=
   ⟨isHermitian_one, fun x hx => by simpa only [one_mulVec, dotProduct_star_self_pos_iff]⟩
 
