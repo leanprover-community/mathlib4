@@ -57,13 +57,6 @@ add_decl_doc LaxPreFunctor.toPrefunctor
 
 namespace LaxPreFunctor
 
--- attribute [coe] CategoryTheory.LaxPreFunctor.toPrefunctor
-
--- instance hasCoeToPrefunctor : Coe (LaxPreFunctor B C) (Prefunctor B C) :=
---   ⟨toPrefunctor⟩
-
--- #align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.LaxPreFunctor.hasCoeToPrefunctor
-
 variable (F : LaxPreFunctor B C)
 
 -- Porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
@@ -115,11 +108,6 @@ add_decl_doc PrelaxFunctor.toLaxPreFunctor
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
-
--- attribute [coe] CategoryTheory.LaxPreFunctor.toPrefunctor
-
--- instance hasCoeToLaxPreFunctor : Coe (PrelaxFunctor B C) (LaxPreFunctor B C) :=
---   ⟨toLaxPreFunctor⟩
 
 -- TODO: what simps to include here...?
 /-- The identity prelax functor. -/

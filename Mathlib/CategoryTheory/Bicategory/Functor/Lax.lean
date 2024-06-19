@@ -3,6 +3,7 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.Tactic.CategoryTheory.Slice
 
@@ -13,24 +14,22 @@ A lax functor `F` between bicategories `B` and `C` consists of
 * a function between objects `F.obj : B ⟶ C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
--- TODO: flip arrows?
-* a family of 2-morphisms `F.mapId a : F.map (𝟙 a) ⟶ 𝟙 (F.obj a)`,
-* a family of 2-morphisms `F.mapComp f g : F.map (f ≫ g) ⟶ F.map f ≫ F.map g`, and
+* a family of 2-morphisms `F.mapId a : 𝟙 (F.obj a) ⟶ F.map (𝟙 a)`,
+* a family of 2-morphisms `F.mapComp f g : F.map f ≫ F.map g ⟶ F.map (f ≫ g)`, and
 * certain consistency conditions on them.
 
 ## Main definitions
 
 * `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
-* PSEUDOCORE
+* `CategoryTheory.LaxFunctor.Pseudocore` : a structure on an Lax functor that promotes a
+  Lax functor to a pseudofunctor
 
 ## Future work
 
-Some constructions in the Bicategory library have only been done in terms of lax functors,
-since Lax functors had not yet been added (e.g `FunctorBicategory.lean`).
-
-
-Possible future work would
+Some constructions in the Bicategory library have only been done in terms of oplax functors,
+since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A possible project would
+be to mirror these constructions for lax functors.
 
 -/
 
@@ -103,9 +102,6 @@ attribute [nolint docBlame] CategoryTheory.LaxFunctor.mapId
   CategoryTheory.LaxFunctor.map₂_leftUnitor
   CategoryTheory.LaxFunctor.map₂_rightUnitor
 
--- instance hasCoeToPrelax : Coe (LaxFunctor B C) (PrelaxFunctor B C) :=
---   ⟨toPrelaxFunctor⟩
-
 variable (F : LaxFunctor B C)
 
 @[reassoc]
@@ -150,16 +146,12 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : L
   mapComp_naturality_right := fun f _ _ η => by
     dsimp
     rw [assoc, ← G.map₂_comp, mapComp_naturality_right, G.map₂_comp, mapComp_naturality_right_assoc]
-  -- TODO: this proof might be easier if map₂_assoc is arranged better...
   map₂_associator := fun f g h => by
     dsimp
     slice_rhs 1 3 =>
-      rw [whiskerLeft_comp, assoc, ← mapComp_naturality_right]
-      rw [← map₂_associator_assoc]
+      rw [whiskerLeft_comp, assoc, ← mapComp_naturality_right, ← map₂_associator_assoc]
     slice_rhs 3 5 =>
-      rw [← G.map₂_comp, ← G.map₂_comp]
-      rw [← F.map₂_associator]
-      rw [G.map₂_comp, G.map₂_comp]
+      rw [← G.map₂_comp, ← G.map₂_comp, ← F.map₂_associator, G.map₂_comp, G.map₂_comp]
     slice_lhs 1 3 =>
       rw [comp_whiskerRight, assoc, ← G.mapComp_naturality_left_assoc]
     simp only [assoc]
