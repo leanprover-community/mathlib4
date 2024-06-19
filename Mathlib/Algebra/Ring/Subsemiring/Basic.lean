@@ -862,7 +862,7 @@ of the closure of `s`. -/
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
     (zero : p 0) (one : p 1) (add : ∀ x y, p x → p y → p (x + y))
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨p, @mul⟩, one⟩, @add, zero⟩).2 mem h
+  (@closure_le _ _ _ ⟨⟨⟨⟨p⟩, @mul⟩, one⟩, @add, zero⟩).2 mem h
 #align subsemiring.closure_induction Subsemiring.closure_induction
 
 @[elab_as_elim]

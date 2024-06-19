@@ -44,25 +44,27 @@ Although `Set` is defined as `α → Prop`, this is an implementation detail whi
 relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
 and predicates.
 -/
-def Set (α : Type u) := α → Prop
+structure Set (α : Type u) where
+  ofPred ::
+  toPred : α → Prop
 #align set Set
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
-  p
+  ⟨p⟩
 #align set_of setOf
 
 namespace Set
 
 /-- Membership in a set -/
 protected def Mem (a : α) (s : Set α) : Prop :=
-  s a
+  s.toPred a
 
 instance : Membership α (Set α) :=
   ⟨Set.Mem⟩
 
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
-  funext (fun x ↦ propext (h x))
+  congrArg ofPred <| funext (fun x ↦ propext (h x))
 
 
 /-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
@@ -79,8 +81,8 @@ instance : LE (Set α) :=
 instance : HasSubset (Set α) :=
   ⟨(· ≤ ·)⟩
 
-instance : EmptyCollection (Set α) :=
-  ⟨fun _ ↦ False⟩
+instance : EmptyCollection (Set α) where
+  emptyCollection := ⟨fun _ ↦ False⟩
 
 syntax "{" extBinder " | " term "}" : term
 
@@ -206,8 +208,8 @@ def image (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 instance : Functor Set where map := @Set.image
 
 instance : LawfulFunctor Set where
-  id_map _ := funext fun _ ↦ propext ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
-  comp_map g h _ := funext <| fun c ↦ propext
+  id_map _ := congrArg ofPred <| funext fun _ ↦ propext ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := congrArg ofPred <| funext <| fun c ↦ propext
     ⟨fun ⟨a, ⟨h₁, h₂⟩⟩ ↦ ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      fun ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ ↦ ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl

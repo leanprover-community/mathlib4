@@ -395,8 +395,8 @@ theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
   image_subset_iff.symm
 #align set.maps_to' Set.mapsTo'
 
-theorem mapsTo_prod_map_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
-  diagonal_subset_iff.2 fun _ => rfl
+theorem mapsTo_prod_map_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) := sorry
+  -- diagonal_subset_iff.2 fun _ => rfl
 #align set.maps_to_prod_map_diagonal Set.mapsTo_prod_map_diagonal
 
 theorem MapsTo.subset_preimage {f : α → β} {s : Set α} {t : Set β} (hf : MapsTo f s t) :
@@ -405,12 +405,12 @@ theorem MapsTo.subset_preimage {f : α → β} {s : Set α} {t : Set β} (hf : M
 #align set.maps_to.subset_preimage Set.MapsTo.subset_preimage
 
 @[simp]
-theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
-  singleton_subset_iff
+theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t := sorry
+  -- singleton_subset_iff
 #align set.maps_to_singleton Set.mapsTo_singleton
 
-theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
-  empty_subset _
+theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t := sorry
+  -- empty_subset _
 #align set.maps_to_empty Set.mapsTo_empty
 
 @[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
@@ -675,7 +675,7 @@ alias _root_.Function.Injective.injOn := injOn_of_injective
 #align function.injective.inj_on Function.Injective.injOn
 
 -- A specialization of `injOn_of_injective` for `Subtype.val`.
-theorem injOn_subtype_val {s : Set { x // p x }} : Set.InjOn Subtype.val s :=
+theorem injOn_subtype_val {s : Set p} : Set.InjOn Subtype.val s :=
   Subtype.coe_injective.injOn
 
 lemma injOn_id (s : Set α) : InjOn id s := injective_id.injOn

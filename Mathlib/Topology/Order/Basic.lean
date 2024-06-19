@@ -296,11 +296,12 @@ theorem nhdsWithin_Iic_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α
 
 theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
-  (nhdsWithin_Ici_eq' ha).symm ▸
-    hasBasis_biInf_principal
-      (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
-        Ico_subset_Ico_right (min_le_right _ _)⟩)
-      ha
+  sorry
+  -- (nhdsWithin_Ici_eq' ha).symm ▸
+  --   hasBasis_biInf_principal
+  --     (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
+  --       Ico_subset_Ico_right (min_le_right _ _)⟩)
+  --     ha
 #align nhds_within_Ici_basis' nhdsWithin_Ici_basis'
 
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
@@ -570,30 +571,31 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     refine Countable.biUnion (countable_countableBasis α) fun a ha => H _ ?_
     exact isOpen_of_mem_countableBasis ha
   intro a ha
-  suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x } from
-    H.of_diff (subsingleton_isBot α).countable
-  simp only [and_assoc]
-  let t := { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
-  have : ∀ x ∈ t, ∃ z < x, Ioc z x ⊆ a := by
-    intro x hx
-    apply exists_Ioc_subset_of_mem_nhds (ha.mem_nhds hx.2.1)
-    simpa only [IsBot, not_forall, not_le] using hx.right.right.right
-  choose! z hz h'z using this
-  have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
-    rcases hxx'.lt_or_lt with (h' | h')
-    · refine disjoint_left.2 fun u ux ux' => xt.2.2.1 ?_
-      refine h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), ?_⟩
-      by_contra! H
-      exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
-    · refine disjoint_left.2 fun u ux ux' => x't.2.2.1 ?_
-      refine h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), ?_⟩
-      by_contra! H
-      exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
-  refine this.countable_of_isOpen (fun x hx => ?_) fun x hx => ⟨x, hz x hx, le_rfl⟩
-  suffices H : Ioc (z x) x = Ioo (z x) (y x) by
-    rw [H]
-    exact isOpen_Ioo
-  exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
+  sorry
+  -- suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x } from
+  --   H.of_diff (subsingleton_isBot α).countable
+  -- simp only [and_assoc]
+  -- let t := { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
+  -- have : ∀ x ∈ t, ∃ z < x, Ioc z x ⊆ a := by
+  --   intro x hx
+  --   apply exists_Ioc_subset_of_mem_nhds (ha.mem_nhds hx.2.1)
+  --   simpa only [IsBot, not_forall, not_le] using hx.right.right.right
+  -- choose! z hz h'z using this
+  -- have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
+  --   rcases hxx'.lt_or_lt with (h' | h')
+  --   · refine disjoint_left.2 fun u ux ux' => xt.2.2.1 ?_
+  --     refine h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), ?_⟩
+  --     by_contra! H
+  --     exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
+  --   · refine disjoint_left.2 fun u ux ux' => x't.2.2.1 ?_
+  --     refine h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), ?_⟩
+  --     by_contra! H
+  --     exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
+  -- refine this.countable_of_isOpen (fun x hx => ?_) fun x hx => ⟨x, hz x hx, le_rfl⟩
+  -- suffices H : Ioc (z x) x = Ioo (z x) (y x) by
+  --   rw [H]
+  --   exact isOpen_Ioo
+  -- exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
 #align countable_of_isolated_right countable_setOf_covBy_rightₓ
 

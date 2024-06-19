@@ -249,9 +249,9 @@ theorem of_forall_separating_mem_iff (p : Set β → Prop)
 
 theorem of_eventually_mem_of_forall_separating_preimage (p : Set β → Prop) {s : Set β}
     [HasCountableSeparatingOn β p s] (hf : ∀ᶠ x in l, f x ∈ s) (hg : ∀ᶠ x in l, g x ∈ s)
-    (h : ∀ U : Set β, p U → f ⁻¹' U =ᶠ[l] g ⁻¹' U) : f =ᶠ[l] g :=
+    (h : ∀ U : Set β, p U → (f ⁻¹' U).toPred =ᶠ[l] (g ⁻¹' U).toPred) : f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_mem_iff p hf hg fun U hU ↦ (h U hU).mem_iff
 
 theorem of_forall_separating_preimage (p : Set β → Prop) [HasCountableSeparatingOn β p univ]
-    (h : ∀ U : Set β, p U → f ⁻¹' U =ᶠ[l] g ⁻¹' U) : f =ᶠ[l] g :=
+    (h : ∀ U : Set β, p U → (f ⁻¹' U).toPred =ᶠ[l] (g ⁻¹' U).toPred) : f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_preimage p (s := univ) univ_mem univ_mem h

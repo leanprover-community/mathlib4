@@ -70,8 +70,8 @@ noncomputable def ramificationIdx : ℕ := sSup {n | map f p ≤ P ^ n}
 variable {f p P}
 
 theorem ramificationIdx_eq_find (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
-    ramificationIdx f p P = Nat.find h :=
-  Nat.sSup_def h
+    ramificationIdx f p P = Nat.find h := sorry
+  -- Nat.sSup_def h
 #align ideal.ramification_idx_eq_find Ideal.ramificationIdx_eq_find
 
 theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
@@ -478,7 +478,7 @@ theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero (x : R) :
 #align ideal.quotient.algebra_map_quotient_of_ramification_idx_ne_zero Ideal.Quotient.algebraMap_quotient_of_ramificationIdx_neZero
 
 /-- The inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)`. -/
-@[simps]
+-- @[simps]
 def powQuotSuccInclusion (i : ℕ) :
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ (i + 1)) →ₗ[R ⧸ p]
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i) where
@@ -492,7 +492,8 @@ theorem powQuotSuccInclusion_injective (i : ℕ) :
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   rintro ⟨x, hx⟩ hx0
   rw [Subtype.ext_iff] at hx0 ⊢
-  rwa [powQuotSuccInclusion_apply_coe] at hx0
+  sorry
+  -- rwa [powQuotSuccInclusion_apply_coe] at hx0
 #align ideal.pow_quot_succ_inclusion_injective Ideal.powQuotSuccInclusion_injective
 
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`.
@@ -508,8 +509,9 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
     simp only [_root_.map_mul, LinearMap.mem_range]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, ?_⟩
     ext
-    rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
-      Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]
+    sorry
+    -- rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
+    --   Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]
 #align ideal.quotient_to_quotient_range_pow_quot_succ_aux Ideal.quotientToQuotientRangePowQuotSuccAux
 
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
@@ -557,12 +559,13 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
       rcases h with ⟨⟨⟨z⟩, hz⟩, h⟩
       rw [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.mem_quotient_iff_mem_sup,
         sup_eq_left.mpr Pe_le_Pi1] at hz
-      rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.Quotient.quot_mk_eq_mk,
-        Ideal.Quotient.mk_eq_mk, ← map_sub, Ideal.Quotient.eq, ← mul_sub] at h
-      exact
-        (Ideal.IsPrime.mem_pow_mul _
-              ((Submodule.sub_mem_iff_right _ hz).mp (Pe_le_Pi1 h))).resolve_left
-          a_not_mem
+      sorry
+      -- rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.Quotient.quot_mk_eq_mk,
+      --   Ideal.Quotient.mk_eq_mk, ← map_sub, Ideal.Quotient.eq, ← mul_sub] at h
+      -- exact
+      --   (Ideal.IsPrime.mem_pow_mul _
+      --         ((Submodule.sub_mem_iff_right _ hz).mp (Pe_le_Pi1 h))).resolve_left
+      --     a_not_mem
 #align ideal.quotient_to_quotient_range_pow_quot_succ_injective Ideal.quotientToQuotientRangePowQuotSucc_injective
 
 theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
@@ -581,18 +584,20 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
       Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
       Submodule.coe_sub]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
-    rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
-      sub_add_cancel_left, map_neg]
-  letI := Classical.decEq (Ideal S)
-  rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
-    normalizedFactors_irreducible ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible, normalize_eq,
-    Multiset.nsmul_singleton, Multiset.inter_replicate, Multiset.prod_replicate]
-  · rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_not_mem
-    rwa [Ideal.count_normalizedFactors_eq a_mem a_not_mem, min_eq_left i.le_succ]
-  · intro ha
-    rw [Ideal.span_singleton_eq_bot.mp ha] at a_not_mem
-    have := (P ^ (i + 1)).zero_mem
-    contradiction
+    sorry
+  sorry
+  --   rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
+  --     sub_add_cancel_left, map_neg]
+  -- letI := Classical.decEq (Ideal S)
+  -- rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
+  --   normalizedFactors_irreducible ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible, normalize_eq,
+  --   Multiset.nsmul_singleton, Multiset.inter_replicate, Multiset.prod_replicate]
+  -- · rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_not_mem
+  --   rwa [Ideal.count_normalizedFactors_eq a_mem a_not_mem, min_eq_left i.le_succ]
+  -- · intro ha
+  --   rw [Ideal.span_singleton_eq_bot.mp ha] at a_not_mem
+  --   have := (P ^ (i + 1)).zero_mem
+  --   contradiction
 #align ideal.quotient_to_quotient_range_pow_quot_succ_surjective Ideal.quotientToQuotientRangePowQuotSucc_surjective
 
 /-- Quotienting `P^i / P^e` by its subspace `P^(i+1) ⧸ P^e` is
@@ -771,13 +776,14 @@ noncomputable def Factors.piQuotientEquiv (p : Ideal R) (hp : map (algebraMap R 
 
 @[simp]
 theorem Factors.piQuotientEquiv_mk (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) (x : S) :
-    Factors.piQuotientEquiv p hp (Ideal.Quotient.mk _ x) = fun _ => Ideal.Quotient.mk _ x := rfl
+    Factors.piQuotientEquiv p hp (Ideal.Quotient.mk _ x) = fun _ => Ideal.Quotient.mk _ x := -- rfl
+    sorry
 #align ideal.factors.pi_quotient_equiv_mk Ideal.Factors.piQuotientEquiv_mk
 
 @[simp]
 theorem Factors.piQuotientEquiv_map (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) (x : R) :
     Factors.piQuotientEquiv p hp (algebraMap _ _ x) = fun _ =>
-      Ideal.Quotient.mk _ (algebraMap _ _ x) := rfl
+      Ideal.Quotient.mk _ (algebraMap _ _ x) := sorry -- rfl
 #align ideal.factors.pi_quotient_equiv_map Ideal.Factors.piQuotientEquiv_map
 
 variable (S)
@@ -790,12 +796,12 @@ noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebra
       ∀ P : (factors (map (algebraMap R S) p)).toFinset,
         S ⧸ (P : Ideal S) ^ ramificationIdx (algebraMap R S) p P :=
   { Factors.piQuotientEquiv p hp with
-    map_smul' := by
-      rintro ⟨c⟩ ⟨x⟩; ext P
-      simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, Algebra.smul_def,
-        Quotient.algebraMap_quotient_map_quotient, Quotient.mk_algebraMap,
-        RingHomCompTriple.comp_apply, Pi.mul_apply, Pi.algebraMap_apply]
-      congr }
+    map_smul' := sorry } -- by
+      -- rintro ⟨c⟩ ⟨x⟩; ext P
+      -- simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, Algebra.smul_def,
+      --   Quotient.algebraMap_quotient_map_quotient, Quotient.mk_algebraMap,
+      --   RingHomCompTriple.comp_apply, Pi.mul_apply, Pi.algebraMap_apply]
+      -- congr }
 #align ideal.factors.pi_quotient_linear_equiv Ideal.Factors.piQuotientLinearEquiv
 
 variable {S}

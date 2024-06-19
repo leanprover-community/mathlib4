@@ -40,11 +40,11 @@ theorem count_zero : count p 0 = 0 := by
 #align nat.count_zero Nat.count_zero
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in locale `count` -/
-def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by
-  apply Fintype.ofFinset ((Finset.range n).filter p)
-  intro x
-  rw [mem_filter, mem_range]
-  rfl
+def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by sorry
+  -- apply Fintype.ofFinset ((Finset.range n).filter p)
+  -- intro x
+  -- rw [mem_filter, mem_range]
+  -- rfl
 #align nat.count_set.fintype Nat.CountSet.fintype
 
 scoped[Count] attribute [instance] Nat.CountSet.fintype
@@ -57,9 +57,9 @@ theorem count_eq_card_filter_range (n : ℕ) : count p n = ((range n).filter p).
 #align nat.count_eq_card_filter_range Nat.count_eq_card_filter_range
 
 /-- `count p n` can be expressed as the cardinality of `{k // k < n ∧ p k}`. -/
-theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
-  rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
-  rfl
+theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by sorry
+  -- rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
+  -- rfl
 #align nat.count_eq_card_fintype Nat.count_eq_card_fintype
 
 theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by

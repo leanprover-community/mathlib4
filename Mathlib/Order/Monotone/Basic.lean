@@ -1181,12 +1181,12 @@ theorem StrictMono.id_le {φ : ℕ → ℕ} (h : StrictMono φ) : ∀ n, n ≤ �
 
 end Preorder
 
-theorem Subtype.mono_coe [Preorder α] (t : Set α) : Monotone ((↑) : Subtype t → α) :=
+theorem Subtype.mono_coe [Preorder α] (t : Set α) : Monotone ((↑) : Subtype t.toPred → α) :=
   fun _ _ ↦ id
 #align subtype.mono_coe Subtype.mono_coe
 
 theorem Subtype.strictMono_coe [Preorder α] (t : Set α) :
-    StrictMono ((↑) : Subtype t → α) :=
+    StrictMono ((↑) : Subtype t.toPred → α) :=
   fun _ _ ↦ id
 #align subtype.strict_mono_coe Subtype.strictMono_coe
 

@@ -1413,13 +1413,13 @@ theorem iInf_le_iInf_of_subset {f : β → α} {s t : Set β} : s ⊆ t → ⨅ 
 #align infi_le_infi_of_subset iInf_le_iInf_of_subset
 
 theorem iSup_insert {f : β → α} {s : Set β} {b : β} :
-    ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x :=
-  Eq.trans iSup_union <| congr_arg (fun x => x ⊔ ⨆ x ∈ s, f x) iSup_iSup_eq_left
+    ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x := sorry
+  -- Eq.trans iSup_union <| congr_arg (fun x => x ⊔ ⨆ x ∈ s, f x) iSup_iSup_eq_left
 #align supr_insert iSup_insert
 
 theorem iInf_insert {f : β → α} {s : Set β} {b : β} :
-    ⨅ x ∈ insert b s, f x = f b ⊓ ⨅ x ∈ s, f x :=
-  Eq.trans iInf_union <| congr_arg (fun x => x ⊓ ⨅ x ∈ s, f x) iInf_iInf_eq_left
+    ⨅ x ∈ insert b s, f x = f b ⊓ ⨅ x ∈ s, f x := sorry
+  -- Eq.trans iInf_union <| congr_arg (fun x => x ⊓ ⨅ x ∈ s, f x) iInf_iInf_eq_left
 #align infi_insert iInf_insert
 
 theorem iSup_singleton {f : β → α} {b : β} : ⨆ x ∈ (singleton b : Set β), f x = f b := by simp

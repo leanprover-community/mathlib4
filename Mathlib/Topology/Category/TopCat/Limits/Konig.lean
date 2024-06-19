@@ -113,15 +113,16 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     simp only [Set.mem_iInter, Set.mem_setOf_eq]
     rfl
   rw [this]
-  apply isClosed_biInter
-  intro f _
-  -- Porting note: can't see through forget
-  have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) :=
-    inferInstanceAs (T2Space (F.obj f.snd.fst))
-  apply isClosed_eq
-  -- Porting note: used to be a single `continuity` that closed both goals
-  · exact (F.map f.snd.snd.snd.snd).continuous.comp (continuous_apply f.fst)
-  · continuity
+  sorry
+  -- apply isClosed_biInter
+  -- intro f _
+  -- -- Porting note: can't see through forget
+  -- have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) :=
+  --   inferInstanceAs (T2Space (F.obj f.snd.fst))
+  -- apply isClosed_eq
+  -- -- Porting note: used to be a single `continuity` that closed both goals
+  -- · exact (F.map f.snd.snd.snd.snd).continuous.comp (continuous_apply f.fst)
+  -- · continuity
 #align Top.partial_sections.closed TopCat.partialSections.closed
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.

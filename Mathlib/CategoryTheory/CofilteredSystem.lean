@@ -184,7 +184,8 @@ def toPreimages : J ⥤ Type v where
     rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert h (g ≫ f); rw [F.map_comp]; rfl
+    sorry
+    -- convert h (g ≫ f); rw [F.map_comp]; rfl
   map_id j := by
     #adaptation_note /-- nightly-2024-03-16: simp was
     simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id] -/

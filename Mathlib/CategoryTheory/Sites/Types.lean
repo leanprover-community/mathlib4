@@ -27,7 +27,7 @@ namespace CategoryTheory
 /-- A Grothendieck topology associated to the category of all types.
 A sieve is a covering iff it is jointly surjective. -/
 def typesGrothendieckTopology : GrothendieckTopology (Type u) where
-  sieves α S := ∀ x : α, S fun _ : PUnit => x
+  sieves α := ⟨fun S => ∀ x : α, S fun _ : PUnit => x⟩
   top_mem' _ _ := trivial
   pullback_stable' _ _ _ f hs x := hs (f x)
   transitive' _ _ hs _ hr x := hr (hs x) PUnit.unit

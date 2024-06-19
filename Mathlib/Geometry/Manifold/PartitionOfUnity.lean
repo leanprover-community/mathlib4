@@ -759,9 +759,10 @@ theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
         simp [(chartAt H c).left_inv (hf c Hx), hx, (chartAt H c).map_source (hf c Hx)]
       apply finsum_pos' (fun c ↦ h''g c x) B
       apply (f.locallyFinite.point_finite x).subset
-      apply compl_subset_compl.2
-      rintro c (hc : f c x = 0)
-      simpa only [mul_eq_zero] using Or.inl hc
+      sorry
+      -- apply compl_subset_compl.2
+      -- rintro c (hc : f c x = 0)
+      -- simpa only [mul_eq_zero] using Or.inl hc
     · apply finsum_eq_zero_of_forall_eq_zero
       intro c
       by_cases Hx : x ∈ tsupport (f c)

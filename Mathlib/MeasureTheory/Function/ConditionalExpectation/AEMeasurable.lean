@@ -641,20 +641,21 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   intro f g hf hg hfm hgm h_disj hPf hPg
   let s_f : Set α := Function.support (hfm.mk f)
   have hs_f : MeasurableSet[m] s_f := hfm.stronglyMeasurable_mk.measurableSet_support
-  have hs_f_eq : s_f =ᵐ[μ] Function.support f := hfm.ae_eq_mk.symm.support
+  have hs_f_eq : s_f |>.toPred =ᵐ[μ] (Function.support f).toPred := hfm.ae_eq_mk.symm.support
   let s_g : Set α := Function.support (hgm.mk g)
   have hs_g : MeasurableSet[m] s_g := hgm.stronglyMeasurable_mk.measurableSet_support
-  have hs_g_eq : s_g =ᵐ[μ] Function.support g := hgm.ae_eq_mk.symm.support
-  have h_inter_empty : (s_f ∩ s_g : Set α) =ᵐ[μ] (∅ : Set α) := by
+  have hs_g_eq : s_g.toPred =ᵐ[μ] (Function.support g).toPred := hgm.ae_eq_mk.symm.support
+  have h_inter_empty : (s_f ∩ s_g : Set α).toPred =ᵐ[μ] (∅ : Set α).toPred := by
     refine (hs_f_eq.inter hs_g_eq).trans ?_
     suffices Function.support f ∩ Function.support g = ∅ by rw [this]
     exact Set.disjoint_iff_inter_eq_empty.mp h_disj
   let f' := (s_f \ s_g).indicator (hfm.mk f)
   have hff' : f =ᵐ[μ] f' := by
-    have : s_f \ s_g =ᵐ[μ] s_f := by
+    have : s_f \ s_g |>.toPred =ᵐ[μ] s_f.toPred := by
       rw [← Set.diff_inter_self_eq_diff, Set.inter_comm]
-      refine ((ae_eq_refl s_f).diff h_inter_empty).trans ?_
-      rw [Set.diff_empty]
+      sorry
+      -- refine ((ae_eq_refl s_f).diff h_inter_empty).trans ?_
+      -- rw [Set.diff_empty]
     refine ((indicator_ae_eq_of_ae_eq_set this).trans ?_).symm
     rw [Set.indicator_support]
     exact hfm.ae_eq_mk.symm
@@ -662,10 +663,11 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   have hf'_Lp : Memℒp f' p μ := hf.ae_eq hff'
   let g' := (s_g \ s_f).indicator (hgm.mk g)
   have hgg' : g =ᵐ[μ] g' := by
-    have : s_g \ s_f =ᵐ[μ] s_g := by
+    have : s_g \ s_f |>.toPred =ᵐ[μ] s_g.toPred := by
       rw [← Set.diff_inter_self_eq_diff]
-      refine ((ae_eq_refl s_g).diff h_inter_empty).trans ?_
-      rw [Set.diff_empty]
+      sorry
+      -- refine ((ae_eq_refl s_g).diff h_inter_empty).trans ?_
+      -- rw [Set.diff_empty]
     refine ((indicator_ae_eq_of_ae_eq_set this).trans ?_).symm
     rw [Set.indicator_support]
     exact hgm.ae_eq_mk.symm

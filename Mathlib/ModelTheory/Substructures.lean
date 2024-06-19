@@ -271,7 +271,7 @@ theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s :=
 #align first_order.language.substructure.not_mem_of_not_mem_closure FirstOrder.Language.Substructure.not_mem_of_not_mem_closure
 
 @[simp]
-theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
+theorem closed (S : L.Substructure M) : (closure L).closed.toPred (S : Set M) :=
   congr rfl ((closure L).eq_of_le Set.Subset.rfl fun _x xS => mem_closure.2 fun _T hT => hT xS)
 #align first_order.language.substructure.closed FirstOrder.Language.Substructure.closed
 

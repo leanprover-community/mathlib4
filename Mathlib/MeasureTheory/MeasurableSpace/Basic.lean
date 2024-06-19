@@ -383,7 +383,8 @@ theorem Measurable.measurable_of_countable_ne [MeasurableSingletonClass α] (hf 
     ext x
     simp (config := { contextual := true })
   rw [this]
-  exact (hf ht).inter h.measurableSet.of_compl
+  sorry
+  -- exact (hf ht).inter h.measurableSet.of_compl
 #align measurable.measurable_of_countable_ne Measurable.measurable_of_countable_ne
 
 end MeasurableFunctions
@@ -1237,10 +1238,10 @@ lemma Measurable.or (hp : Measurable p) (hq : Measurable q) : Measurable fun a �
   measurableSet_setOf.1 <| hp.setOf.union hq.setOf
 
 lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a → q a :=
-  measurableSet_setOf.1 <| hp.setOf.himp hq.setOf
+  measurableSet_setOf.1 <| sorry -- hp.setOf.himp hq.setOf
 
 lemma Measurable.iff (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ↔ q a :=
-  measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
+  measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; sorry -- exact hq.setOf.bihimp hp.setOf
 
 lemma Measurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
     Measurable fun a ↦ ∀ i, p i a :=
@@ -1257,15 +1258,15 @@ variable [MeasurableSpace β] {g : β → Set α}
 
 /-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
 random graphs. -/
-instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; infer_instance
+instance Set.instMeasurableSpace : MeasurableSpace (Set α) := sorry --by unfold Set; infer_instance
 
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
-  unfold Set; infer_instance
+  sorry -- unfold Set; infer_instance
 
-lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
+lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := sorry -- measurable_pi_iff
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
-lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
+lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := sorry -- measurable_pi_apply _
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=

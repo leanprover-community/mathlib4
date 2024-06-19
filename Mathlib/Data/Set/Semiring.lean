@@ -187,7 +187,7 @@ section One
 
 variable [One α]
 
-instance : One (SetSemiring α) where one := Set.up (1 : Set α)
+noncomputable instance : One (SetSemiring α) where one := Set.up (1 : Set α)
 
 theorem one_def : (1 : SetSemiring α) = Set.up 1 :=
   rfl
@@ -205,14 +205,14 @@ theorem _root_.Set.up_one : up (1 : Set α) = 1 :=
 
 end One
 
-instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
+noncomputable instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
     Set.mulOneClass with }
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }
 
-instance [Monoid α] : IdemSemiring (SetSemiring α) :=
+noncomputable instance [Monoid α] : IdemSemiring (SetSemiring α) :=
   { (inferInstance : NonAssocSemiring (SetSemiring α)),
     (inferInstance : NonUnitalSemiring (SetSemiring α)),
     (inferInstance : CompleteBooleanAlgebra (Set α)) with }
@@ -220,14 +220,14 @@ instance [Monoid α] : IdemSemiring (SetSemiring α) :=
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalSemiring (SetSemiring α)), Set.commSemigroup with }
 
-instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
+noncomputable instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
   { (inferInstance : IdemSemiring (SetSemiring α)),
     (inferInstance : CommMonoid (Set α)) with }
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
+noncomputable instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
 
-instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
+noncomputable instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
   { (inferInstance : Semiring (SetSemiring α)), (inferInstance : CommMonoid (SetSemiring α)),
     (inferInstance : PartialOrder (SetSemiring α)), (inferInstance : OrderBot (SetSemiring α)),
     (inferInstance : NoZeroDivisors (SetSemiring α)) with

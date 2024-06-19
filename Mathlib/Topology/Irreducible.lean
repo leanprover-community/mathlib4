@@ -128,7 +128,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
 #align irreducible_components_eq_maximals_closed irreducibleComponents_eq_maximals_closed
 
 /-- A maximal irreducible set that contains a given point. -/
-def irreducibleComponent (x : X) : Set X :=
+noncomputable def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 #align irreducible_component irreducibleComponent
 

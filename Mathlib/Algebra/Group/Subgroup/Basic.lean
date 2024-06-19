@@ -490,8 +490,8 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align subgroup.to_add_subgroup Subgroup.toAddSubgroup
-#align subgroup.to_add_subgroup_symm_apply_coe Subgroup.toAddSubgroup_symm_apply_coe
-#align subgroup.to_add_subgroup_apply_coe Subgroup.toAddSubgroup_apply_coe
+-- #align subgroup.to_add_subgroup_symm_apply_coe Subgroup.toAddSubgroup_symm_apply_coe
+-- #align subgroup.to_add_subgroup_apply_coe Subgroup.toAddSubgroup_apply_coe
 
 /-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
@@ -508,8 +508,8 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align add_subgroup.to_subgroup AddSubgroup.toSubgroup
-#align add_subgroup.to_subgroup_apply_coe AddSubgroup.toSubgroup_apply_coe
-#align add_subgroup.to_subgroup_symm_apply_coe AddSubgroup.toSubgroup_symm_apply_coe
+-- #align add_subgroup.to_subgroup_apply_coe AddSubgroup.toSubgroup_apply_coe
+-- #align add_subgroup.to_subgroup_symm_apply_coe AddSubgroup.toSubgroup_symm_apply_coe
 
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/

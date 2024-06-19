@@ -765,12 +765,13 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     simp_rw [setsβ, dif_pos hi_mem]
     exact (h_meas i hi_mem).choose_spec.2.symm
   have h_left_eq : ∀ a, κ a (⋂ i ∈ S, setsΩ i) = κ a (⋂ i ∈ S, (f i) ⁻¹' (setsβ i)) := by
-    intro a
-    congr with x
-    simp_rw [Set.mem_iInter]
-    constructor <;> intro h i hi_mem <;> specialize h i hi_mem
-    · rwa [h_preim i hi_mem] at h
-    · rwa [h_preim i hi_mem]
+    sorry
+    -- intro a
+    -- congr with x
+    -- simp_rw [Set.mem_iInter]
+    -- constructor <;> intro h i hi_mem <;> specialize h i hi_mem
+    -- · rwa [h_preim i hi_mem] at h
+    -- · rwa [h_preim i hi_mem]
   have h_right_eq : ∀ a, (∏ i ∈ S, κ a (setsΩ i)) = ∏ i ∈ S, κ a ((f i) ⁻¹' (setsβ i)) := by
     refine fun a ↦ Finset.prod_congr rfl fun i hi_mem => ?_
     rw [h_preim i hi_mem]
@@ -796,8 +797,8 @@ theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     IndepFun f' g' κ μ := by
   rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   filter_upwards [hf, hg, hfg _ _ ⟨_, hA, rfl⟩ ⟨_, hB, rfl⟩] with a hf' hg' hfg'
-  have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.fun_comp A
-  have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp B
+  have h1 : f ⁻¹' A |>.toPred =ᵐ[κ a] (f' ⁻¹' A).toPred := sorry -- hf'.fun_comp A
+  have h2 : g ⁻¹' B |>.toPred =ᵐ[κ a] (g' ⁻¹' B).toPred := sorry -- hg'.fun_comp B
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
 
 theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}

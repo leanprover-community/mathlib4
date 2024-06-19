@@ -25,7 +25,7 @@ section One
 variable [One M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
 
 @[to_additive]
-theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] t) :
+theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s.toPred =ᶠ[l] t.toPred) :
     mulIndicator s f =ᶠ[l] mulIndicator t g :=
   (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
     by_cases
@@ -91,7 +91,8 @@ theorem mulIndicator_biUnion_finset_eventuallyEq {ι} [One β] (s : ι → Set �
       fun _ ↦ mulIndicator (iUnion s) f a := by
   rw [iUnion_eq_iUnion_finset s]
   apply Monotone.mulIndicator_eventuallyEq_iUnion
-  exact fun _ _ ↦ biUnion_subset_biUnion_left
+  sorry
+  -- exact fun _ _ ↦ biUnion_subset_biUnion_left
 
 @[to_additive]
 theorem tendsto_mulIndicator_biUnion_finset {ι} [One β] (s : ι → Set α) (f : α → β) (a : α) :
@@ -103,7 +104,7 @@ theorem tendsto_mulIndicator_biUnion_finset {ι} [One β] (s : ι → Set α) (f
 @[to_additive]
 protected theorem Filter.EventuallyEq.mulSupport [One β] {f g : α → β} {l : Filter α}
     (h : f =ᶠ[l] g) :
-    Function.mulSupport f =ᶠ[l] Function.mulSupport g :=
+    (Function.mulSupport f).toPred =ᶠ[l] (Function.mulSupport g).toPred :=
   h.preimage ({1}ᶜ : Set β)
 #align filter.eventually_eq.support Filter.EventuallyEq.support
 
@@ -122,13 +123,13 @@ theorem Filter.EventuallyEq.mulIndicator_one [One β] {l : Filter α} {f : α �
 @[to_additive]
 theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α → β}
     (hf : ∀ᶠ x in l, f x ≠ 1) {s t : Set α} (h : s.mulIndicator f =ᶠ[l] t.mulIndicator f) :
-    s =ᶠ[l] t := by
-  have : ∀ {s : Set α}, Function.mulSupport (s.mulIndicator f) =ᶠ[l] s := fun {s} ↦ by
+    s.toPred =ᶠ[l] t.toPred := by
+  have : ∀ {s : Set α}, (Function.mulSupport (s.mulIndicator f)).toPred =ᶠ[l] s.toPred := fun {s} ↦ by
     rw [mulSupport_mulIndicator]
     exact (hf.mono fun x hx ↦ and_iff_left hx).set_eq
   exact this.symm.trans <| h.mulSupport.trans this
 
 @[to_additive]
 theorem Filter.EventuallyEq.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
-    {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s =ᶠ[l] t :=
+    {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s.toPred =ᶠ[l] t.toPred :=
   .of_mulIndicator (eventually_of_forall fun _ ↦ hc) h

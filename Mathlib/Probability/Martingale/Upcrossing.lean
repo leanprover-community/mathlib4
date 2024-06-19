@@ -400,10 +400,11 @@ theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
   change StronglyMeasurable[ℱ n] fun ω =>
     ∑ k ∈ Finset.range N, ({n | lowerCrossingTime a b f N k ω ≤ n} ∩
       {n | n < upperCrossingTime a b f N (k + 1) ω}).indicator 1 n
-  refine Finset.stronglyMeasurable_sum _ fun i _ =>
-    stronglyMeasurable_const.indicator ((hf.isStoppingTime_lowerCrossingTime n).inter ?_)
-  simp_rw [← not_le]
-  exact (hf.isStoppingTime_upperCrossingTime n).compl
+  sorry
+  -- refine Finset.stronglyMeasurable_sum _ fun i _ =>
+  --   stronglyMeasurable_const.indicator ((hf.isStoppingTime_lowerCrossingTime n).inter ?_)
+  -- simp_rw [← not_le]
+  -- exact (hf.isStoppingTime_upperCrossingTime n).compl
 #align measure_theory.adapted.upcrossing_strat_adapted MeasureTheory.Adapted.upcrossingStrat_adapted
 
 theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)

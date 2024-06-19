@@ -44,8 +44,8 @@ rational angles with denominators tending to infinity, then it must be almost em
 -/
 theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     (hs : NullMeasurableSet s volume) {ι : Type*} {l : Filter ι} [l.NeBot] {u : ι → AddCircle T}
-    (hu₁ : ∀ i, (u i +ᵥ s : Set _) =ᵐ[volume] s) (hu₂ : Tendsto (addOrderOf ∘ u) l atTop) :
-    s =ᵐ[volume] (∅ : Set <| AddCircle T) ∨ s =ᵐ[volume] univ := by
+    (hu₁ : ∀ i, (u i +ᵥ s : Set _).toPred =ᵐ[volume] s.toPred) (hu₂ : Tendsto (addOrderOf ∘ u) l atTop) :
+    s.toPred =ᵐ[volume] (∅ : Set <| AddCircle T).toPred ∨ s.toPred =ᵐ[volume] univ.toPred := by
   /- Sketch of proof:
     Assume `T = 1` for simplicity and let `μ` be the Haar measure. We may assume `s` has positive
     measure since otherwise there is nothing to prove. In this case, by Lebesgue's density theorem,
@@ -113,7 +113,7 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
       have hnu : ∀ j, n ^ j • u j = 0 := fun j => by
         rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.natCast_pow, Int.natCast_natAbs, ← abs_pow,
           abs_dvd]
-      have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j => by
+      have hu₁ : ∀ j, (u j +ᵥ s : Set _).toPred =ᵐ[volume] s.toPred := fun j => by
         rw [vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)]
       have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
         simp_rw [hu₀]; exact Nat.tendsto_pow_atTop_atTop_of_one_lt hn

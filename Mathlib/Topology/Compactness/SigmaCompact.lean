@@ -194,7 +194,7 @@ variable [SigmaCompactSpace X]
 open SigmaCompactSpace
 
 /-- A choice of compact covering for a `σ`-compact space, chosen to be monotone. -/
-def compactCovering : ℕ → Set X :=
+noncomputable def compactCovering : ℕ → Set X :=
   Accumulate exists_compact_covering.choose
 #align compact_covering compactCovering
 

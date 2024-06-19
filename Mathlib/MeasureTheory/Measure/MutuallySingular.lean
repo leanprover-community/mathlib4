@@ -53,7 +53,7 @@ theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ 
 #align measure_theory.measure.mutually_singular.mk MeasureTheory.Measure.MutuallySingular.mk
 
 /-- A set such that `μ h.nullSet = 0` and `ν h.nullSetᶜ = 0`. -/
-def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
+noncomputable def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
 
 lemma measurableSet_nullSet (h : μ ⟂ₘ ν) : MeasurableSet h.nullSet := h.choose_spec.1
 

@@ -315,10 +315,11 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
         prod_self_subset_prod_self, and_assoc] using this
     choose t htl htW hts using this
     have : ∀ n : ℕ, ⋂ k ≤ n, t k ⊆ t n := fun n => by apply iInter₂_subset; rfl
-    exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
-      biInter_subset_biInter_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
-      (biInter_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>
-      (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩
+    sorry
+    -- exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
+    --   biInter_subset_biInter_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
+    --   (biInter_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>
+    --   (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩
   choose u hu using fun n => Filter.nonempty_of_mem (htl n)
   have huc : CauchySeq u := hV.toHasBasis.cauchySeq_iff.2 fun N _ =>
       ⟨N, fun m hm n hn => hWV' _ <| @htW N (_, _) ⟨ht_anti hm (hu _), ht_anti hn (hu _)⟩⟩

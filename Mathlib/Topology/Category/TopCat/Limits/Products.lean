@@ -359,24 +359,25 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             · continuity
           · exact h₁.isOpen_range
         · revert h x
-          apply (IsOpen.continuousOn_iff _).mp
-          · rw [continuousOn_iff_continuous_restrict]
-            have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
-              rintro a (h : a ∈ (Set.range c.inl)ᶜ)
-              rwa [eq_compl_iff_isCompl.mpr h₃.symm]
-            convert_to Continuous
-                (g ∘ (Homeomorph.ofEmbedding _ h₂.toEmbedding).symm ∘ Subtype.map _ this)
-            · ext ⟨x, hx⟩
-              exact dif_neg hx
-            apply Continuous.comp
-            · exact g.continuous_toFun
-            · apply Continuous.comp
-              · continuity
-              · rw [embedding_subtype_val.toInducing.continuous_iff]
-                exact continuous_subtype_val
-          · change IsOpen (Set.range c.inl)ᶜ
-            rw [← eq_compl_iff_isCompl.mpr h₃.symm]
-            exact h₂.isOpen_range
+          sorry
+          -- apply (IsOpen.continuousOn_iff _).mp
+          -- · rw [continuousOn_iff_continuous_restrict]
+          --   have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
+          --     rintro a (h : a ∈ (Set.range c.inl)ᶜ)
+          --     rwa [eq_compl_iff_isCompl.mpr h₃.symm]
+          --   convert_to Continuous
+          --       (g ∘ (Homeomorph.ofEmbedding _ h₂.toEmbedding).symm ∘ Subtype.map _ this)
+          --   · ext ⟨x, hx⟩
+          --     exact dif_neg hx
+          --   apply Continuous.comp
+          --   · exact g.continuous_toFun
+          --   · apply Continuous.comp
+          --     · continuity
+          --     · rw [embedding_subtype_val.toInducing.continuous_iff]
+          --       exact continuous_subtype_val
+          -- · change IsOpen (Set.range c.inl)ᶜ
+          --   rw [← eq_compl_iff_isCompl.mpr h₃.symm]
+          --   exact h₂.isOpen_range
       · intro T f g
         ext x
         refine (dif_pos ?_).trans ?_

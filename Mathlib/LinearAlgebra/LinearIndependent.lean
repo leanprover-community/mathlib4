@@ -398,8 +398,8 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
 /-- Every finite subset of a linearly independent set is linearly independent. -/
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     (li : LinearIndependent R ((↑) : s → M)) (t : Finset s) :
-    LinearIndependent R ((↑) : Finset.map (Embedding.subtype s) t → M) := by
-  let f : t.map (Embedding.subtype s) → s := fun x =>
+    LinearIndependent R ((↑) : Finset.map (Embedding.subtype s.toPred) t → M) := by
+  let f : t.map (Embedding.subtype s.toPred) → s := fun x =>
     ⟨x.1, by
       obtain ⟨x, h⟩ := x
       rw [Finset.mem_map] at h
@@ -422,7 +422,7 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype s.toPred)]
   apply H
   apply linearIndependent_finset_map_embedding_subtype _ li
 #align linear_independent_bounded_of_finset_linear_independent_bounded linearIndependent_bounded_of_finset_linearIndependent_bounded
@@ -439,10 +439,10 @@ theorem linearIndependent_comp_subtype {s : Set ι} :
     Set.subset_def, Finset.mem_coe]
   constructor
   · intro h l hl₁ hl₂
-    have := h (l.subtypeDomain s) ((Finsupp.sum_subtypeDomain_index hl₁).trans hl₂)
+    have := h (l.subtypeDomain s.toPred) ((Finsupp.sum_subtypeDomain_index hl₁).trans hl₂)
     exact (Finsupp.subtypeDomain_eq_zero_iff hl₁).1 this
   · intro h l hl
-    refine Finsupp.embDomain_eq_zero.1 (h (l.embDomain <| Function.Embedding.subtype s) ?_ ?_)
+    refine Finsupp.embDomain_eq_zero.1 (h (l.embDomain <| Function.Embedding.subtype s.toPred) ?_ ?_)
     · suffices ∀ i hi, ¬l ⟨i, hi⟩ = 0 → i ∈ s by simpa
       intros
       assumption

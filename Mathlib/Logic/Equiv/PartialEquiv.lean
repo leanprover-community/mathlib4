@@ -275,9 +275,9 @@ def _root_.Equiv.toPartialEquiv (e : α ≃ β) : PartialEquiv α β :=
   e.toPartialEquivOfImageEq univ univ <| by rw [image_univ, e.surjective.range_eq]
 #align equiv.to_local_equiv Equiv.toPartialEquiv
 #align equiv.to_local_equiv_symm_apply Equiv.toPartialEquiv_symm_apply
-#align equiv.to_local_equiv_target Equiv.toPartialEquiv_target
+-- #align equiv.to_local_equiv_target Equiv.toPartialEquiv_target
 #align equiv.to_local_equiv_apply Equiv.toPartialEquiv_apply
-#align equiv.to_local_equiv_source Equiv.toPartialEquiv_source
+-- #align equiv.to_local_equiv_source Equiv.toPartialEquiv_source
 
 instance inhabitedOfEmpty [IsEmpty α] [IsEmpty β] : Inhabited (PartialEquiv α β) :=
   ⟨((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).toPartialEquiv⟩
@@ -988,8 +988,8 @@ def disjointUnion (e e' : PartialEquiv α β) (hs : Disjoint e.source e'.source)
         e'.isImage_source_target_of_disjoint _ hs.symm ht.symm).copy
     _ rfl _ rfl (e.source ∪ e'.source) (ite_left _ _) (e.target ∪ e'.target) (ite_left _ _)
 #align local_equiv.disjoint_union PartialEquiv.disjointUnion
-#align local_equiv.disjoint_union_source PartialEquiv.disjointUnion_source
-#align local_equiv.disjoint_union_target PartialEquiv.disjointUnion_target
+-- #align local_equiv.disjoint_union_source PartialEquiv.disjointUnion_source
+-- #align local_equiv.disjoint_union_target PartialEquiv.disjointUnion_target
 #align local_equiv.disjoint_union_symm_apply PartialEquiv.disjointUnion_symm_apply
 #align local_equiv.disjoint_union_apply PartialEquiv.disjointUnion_apply
 
@@ -1108,7 +1108,7 @@ def transPartialEquiv (e : α ≃ β) (f' : PartialEquiv β γ) : PartialEquiv �
 #align equiv.trans_local_equiv Equiv.transPartialEquiv
 #align equiv.trans_local_equiv_target Equiv.transPartialEquiv_target
 #align equiv.trans_local_equiv_apply Equiv.transPartialEquiv_apply
-#align equiv.trans_local_equiv_source Equiv.transPartialEquiv_source
+-- #align equiv.trans_local_equiv_source Equiv.transPartialEquiv_source
 #align equiv.trans_local_equiv_symm_apply Equiv.transPartialEquiv_symm_apply
 
 theorem transPartialEquiv_eq_trans (e : α ≃ β) (f' : PartialEquiv β γ) :
@@ -1139,7 +1139,7 @@ def transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) : PartialEquiv α γ :=
 #align local_equiv.trans_equiv PartialEquiv.transEquiv
 #align local_equiv.trans_equiv_source PartialEquiv.transEquiv_source
 #align local_equiv.trans_equiv_apply PartialEquiv.transEquiv_apply
-#align local_equiv.trans_equiv_target PartialEquiv.transEquiv_target
+-- #align local_equiv.trans_equiv_target PartialEquiv.transEquiv_target
 #align local_equiv.trans_equiv_symm_apply PartialEquiv.transEquiv_symm_apply
 
 theorem transEquiv_eq_trans (e : PartialEquiv α β) (e' : β ≃ γ) :

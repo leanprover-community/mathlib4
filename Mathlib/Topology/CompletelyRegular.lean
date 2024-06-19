@@ -97,7 +97,8 @@ instance T4Space.instT35Space [T4Space X] : T35Space X := by
   exact {}
 
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
-    SeparatesPoints (Continuous : Set (X → ℝ)) := by
+    SeparatesPoints <| Set.ofPred <| fun (f : X → ℝ) => Continuous f := by
+    -- SeparatesPoints (Continuous : Set (X → ℝ)) := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y

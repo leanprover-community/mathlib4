@@ -283,36 +283,20 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
   hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
     ext p q hpq
     dsimp
-    simp? [Cochain.shift_v'] says
-      simp only [Cochain.δ_shift, δ_snd, Cochain.shift_neg, smul_neg, Cochain.neg_v,
-        shiftFunctor_obj_X', Cochain.units_smul_v, Cochain.shift_v', Cochain.comp_zero_cochain_v,
-        Cochain.ofHom_v, Cochain.units_smul_comp, shiftFunctor_map_f', add_left_neg])
+    simp [Cochain.shift_v'])
   inv := desc _ (n.negOnePow • (inl φ).shift n) ((inr φ)⟦n⟧') (by
     ext p
     dsimp
-    simp? [Cochain.shift_v', smul_smul] says
-      simp only [Int.reduceNeg, δ_units_smul, Cochain.δ_shift, δ_inl, Cochain.ofHom_comp, smul_smul,
-        Int.units_mul_self, one_smul, Cochain.shift_v', Cochain.comp_zero_cochain_v,
-        Cochain.ofHom_v, shiftFunctor_obj_X', shiftFunctor_map_f'])
+    simp [Cochain.shift_v', smul_smul])
   hom_inv_id := by
     ext p
     dsimp
-    simp? [lift_desc_f _ _ _ _ _ _ _ _ (p + 1) rfl, id_X, smul_smul, Cochain.shift_v'] says
-      simp only [Int.reduceNeg, lift_desc_f _ _ _ _ _ _ _ _ (p + 1) rfl, shiftFunctor_obj_X',
-        Cocycle.coe_units_smul, Cocycle.shift_coe, Cochain.units_smul_v, Cochain.shift_v',
-        Linear.comp_units_smul, Linear.units_smul_comp, smul_smul, Int.units_mul_self, one_smul,
-        shiftFunctor_map_f', id_X]
+    simp [lift_desc_f _ _ _ _ _ _ _ _ (p + 1) rfl, id_X, smul_smul, Cochain.shift_v']
   inv_hom_id := by
     ext p
     dsimp
-    simp? [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl,
-        Cochain.shift_v', smul_smul] says
-      simp only [Int.reduceNeg, ext_from_iff _ (p + 1) _ rfl, shiftFunctor_obj_X',
-        inl_v_desc_f_assoc, Cochain.units_smul_v, Cochain.shift_v', Linear.units_smul_comp, comp_id,
-        ext_to_iff _ _ (p + 1) rfl, assoc, lift_f_fst_v,
-        Cocycle.coe_units_smul, Cocycle.shift_coe, Linear.comp_units_smul, inl_v_fst_v, smul_smul,
-        Int.units_mul_self, one_smul, lift_f_snd_v, inl_v_snd_v, smul_zero, and_self,
-        inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, inr_f_snd_v]
+    simp [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl,
+        Cochain.shift_v', smul_smul]
 
 set_option maxHeartbeats 800000 in
 /-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
@@ -371,8 +355,8 @@ namespace Pretriangulated
 the triangle `CochainComplex.mappingCone.triangleh φ` for some morphism of cochain
 complexes `φ`. -/
 def distinguishedTriangles : Set (Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :=
-  fun T => ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
-    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)
+  ⟨fun T => ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
+    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)⟩
 
 variable {C}
 

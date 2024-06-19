@@ -511,7 +511,7 @@ namespace Filter
 
 theorem inf_map_atTop_neBot_iff [SemilatticeSup α] [Nonempty α] {F : Filter β} {u : α → β} :
     NeBot (F ⊓ map u atTop) ↔ ∀ U ∈ F, ∀ N, ∃ n ≥ N, u n ∈ U := by
-  simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]; rfl
+  simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]; sorry --rfl
 #align filter.inf_map_at_top_ne_bot_iff Filter.inf_map_atTop_neBot_iff
 
 theorem inf_map_atBot_neBot_iff [SemilatticeInf α] [Nonempty α] {F : Filter β} {u : α → β} :
@@ -690,8 +690,8 @@ theorem tendsto_atBot_add_nonpos_left (hf : ∀ x, f x ≤ 0) (hg : Tendsto g l 
 #align filter.tendsto_at_bot_add_nonpos_left Filter.tendsto_atBot_add_nonpos_left
 
 theorem tendsto_atTop_add_nonneg_right' (hf : Tendsto f l atTop) (hg : ∀ᶠ x in l, 0 ≤ g x) :
-    Tendsto (fun x => f x + g x) l atTop :=
-  tendsto_atTop_mono' l (monotone_mem (fun _ => le_add_of_nonneg_right) hg) hf
+    Tendsto (fun x => f x + g x) l atTop := sorry
+  -- tendsto_atTop_mono' l (monotone_mem (fun _ => le_add_of_nonneg_right) hg) hf
 #align filter.tendsto_at_top_add_nonneg_right' Filter.tendsto_atTop_add_nonneg_right'
 
 theorem tendsto_atBot_add_nonpos_right' (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ 0) :
@@ -2101,12 +2101,13 @@ theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → 
   apply le_antisymm <;> refine map_atTop_finset_prod_le_of_prod_eq fun s => ?_
   · refine ⟨s.preimage g hg.injOn, fun t ht => ?_⟩
     refine ⟨t.image g ∪ s, Finset.subset_union_right, ?_⟩
-    rw [← Finset.prod_image hg.injOn]
-    refine (prod_subset subset_union_left ?_).symm
-    simp only [Finset.mem_union, Finset.mem_image]
-    refine fun y hy hyt => hf y (mt ?_ hyt)
-    rintro ⟨x, rfl⟩
-    exact ⟨x, ht (Finset.mem_preimage.2 <| hy.resolve_left hyt), rfl⟩
+    sorry
+    -- rw [← Finset.prod_image hg.injOn]
+    -- refine (prod_subset subset_union_left ?_).symm
+    -- simp only [Finset.mem_union, Finset.mem_image]
+    -- refine fun y hy hyt => hf y (mt ?_ hyt)
+    -- rintro ⟨x, rfl⟩
+    -- exact ⟨x, ht (Finset.mem_preimage.2 <| hy.resolve_left hyt), rfl⟩
   · refine ⟨s.image g, fun t ht => ?_⟩
     simp only [← prod_preimage _ _ hg.injOn _ fun x _ => hf x]
     exact ⟨_, (image_subset_iff_subset_preimage _).1 ht, rfl⟩

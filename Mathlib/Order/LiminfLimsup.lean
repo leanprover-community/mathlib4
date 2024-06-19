@@ -707,12 +707,12 @@ theorem liminf_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter 
 
 theorem HasBasis.liminf_eq_sSup_iUnion_iInter {ι ι' : Type*} {f : ι → α} {v : Filter ι}
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) :
-    liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
-  simp_rw [liminf_eq, hv.eventually_iff]
-  congr
-  ext x
-  simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
-    exists_prop]
+    liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by sorry
+  -- simp_rw [liminf_eq, hv.eventually_iff]
+  -- congr
+  -- ext x
+  -- simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
+  --   exists_prop]
 
 theorem HasBasis.liminf_eq_sSup_univ_of_empty {f : ι → α} {v : Filter ι}
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) (i : ι') (hi : p i) (h'i : s i = ∅) :
@@ -1214,7 +1214,8 @@ theorem cofinite.blimsup_set_eq :
   refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose! h
   · simp only [mem_sInter, mem_setOf_eq, not_forall, exists_prop]
     exact ⟨{x}ᶜ, by simpa using h, by simp⟩
-  · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
+  · sorry
+  -- · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
 #align filter.cofinite.blimsup_set_eq Filter.cofinite.blimsup_set_eq
 
 theorem cofinite.bliminf_set_eq : bliminf s cofinite p = { x | { n | p n ∧ x ∉ s n }.Finite } := by
@@ -1329,9 +1330,9 @@ variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 -- The linter erroneously claims that I'm not referring to `c`
 set_option linter.unusedVariables false in
 theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
-    ∀ᶠ a in f, a < b :=
-  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
-  mem_of_superset h fun _a => hcb.trans_le'
+    ∀ᶠ a in f, a < b := sorry
+  -- let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
+  -- mem_of_superset h fun _a => hcb.trans_le'
 set_option linter.uppercaseLean3 false in
 #align filter.lt_mem_sets_of_Limsup_lt Filter.lt_mem_sets_of_limsSup_lt
 

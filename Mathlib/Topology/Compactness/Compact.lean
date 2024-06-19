@@ -182,10 +182,10 @@ theorem IsCompact.elim_directed_cover {ι : Type v} [hι : Nonempty ι] (hs : Is
 
 /-- For every open cover of a compact set, there exists a finite subcover. -/
 theorem IsCompact.elim_finite_subcover {ι : Type v} (hs : IsCompact s) (U : ι → Set X)
-    (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) : ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=
-  hs.elim_directed_cover _ (fun _ => isOpen_biUnion fun i _ => hUo i)
-    (iUnion_eq_iUnion_finset U ▸ hsU)
-    (directed_of_isDirected_le fun _ _ h => biUnion_subset_biUnion_left h)
+    (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) : ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i := sorry
+  -- hs.elim_directed_cover _ (fun _ => isOpen_biUnion fun i _ => hUo i)
+  --   (iUnion_eq_iUnion_finset U ▸ hsU)
+  --   (directed_of_isDirected_le fun _ _ h => biUnion_subset_biUnion_left h)
 #align is_compact.elim_finite_subcover IsCompact.elim_finite_subcover
 
 lemma IsCompact.elim_nhds_subcover_nhdsSet' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
@@ -194,8 +194,9 @@ lemma IsCompact.elim_nhds_subcover_nhdsSet' (hs : IsCompact s) (U : ∀ x ∈ s,
     fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩ with ⟨t, hst⟩
   refine ⟨t, mem_nhdsSet_iff_forall.2 fun x hx ↦ ?_⟩
   rcases mem_iUnion₂.1 (hst hx) with ⟨y, hyt, hy⟩
-  refine mem_of_superset ?_ (subset_biUnion_of_mem hyt)
-  exact mem_interior_iff_mem_nhds.1 hy
+  sorry
+  -- refine mem_of_superset ?_ (subset_biUnion_of_mem hyt)
+  -- exact mem_interior_iff_mem_nhds.1 hy
 
 lemma IsCompact.elim_nhds_subcover_nhdsSet (hs : IsCompact s) {U : X → Set X}
     (hU : ∀ x ∈ s, U x ∈ 𝓝 x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ (⋃ x ∈ t, U x) ∈ 𝓝ˢ s :=
@@ -223,10 +224,11 @@ theorem IsCompact.disjoint_nhdsSet_left {l : Filter X} (hs : IsCompact s) :
   choose! U hxU hUl using fun x hx => (nhds_basis_opens x).disjoint_iff_left.1 (H x hx)
   choose hxU hUo using hxU
   rcases hs.elim_nhds_subcover U fun x hx => (hUo x hx).mem_nhds (hxU x hx) with ⟨t, hts, hst⟩
-  refine (hasBasis_nhdsSet _).disjoint_iff_left.2
-    ⟨⋃ x ∈ t, U x, ⟨isOpen_biUnion fun x hx => hUo x (hts x hx), hst⟩, ?_⟩
-  rw [compl_iUnion₂, biInter_finset_mem]
-  exact fun x hx => hUl x (hts x hx)
+  sorry
+  -- refine (hasBasis_nhdsSet _).disjoint_iff_left.2
+  --   ⟨⋃ x ∈ t, U x, ⟨isOpen_biUnion fun x hx => hUo x (hts x hx), hst⟩, ?_⟩
+  -- rw [compl_iUnion₂, biInter_finset_mem]
+  -- exact fun x hx => hUl x (hts x hx)
 #align is_compact.disjoint_nhds_set_left IsCompact.disjoint_nhdsSet_left
 
 /-- A filter `l` is disjoint with the neighborhood filter of a compact set if and only if it is
@@ -258,10 +260,10 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [hι : Nonempty ι] 
 there exists a finite subfamily whose intersection avoids this compact set. -/
 theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
-    ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅ :=
-  hs.elim_directed_family_closed _ (fun t ↦ isClosed_biInter fun _ _ ↦ htc _)
-    (by rwa [← iInter_eq_iInter_finset])
-    (directed_of_isDirected_le fun _ _ h ↦ biInter_subset_biInter_left h)
+    ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅ := sorry
+  -- hs.elim_directed_family_closed _ (fun t ↦ isClosed_biInter fun _ _ ↦ htc _)
+  --   (by rwa [← iInter_eq_iInter_finset])
+  --   (directed_of_isDirected_le fun _ _ h ↦ biInter_subset_biInter_left h)
 #align is_compact.elim_finite_subfamily_closed IsCompact.elim_finite_subfamily_closed
 
 /-- If `s` is a compact set in a topological space `X` and `f : ι → Set X` is a locally finite

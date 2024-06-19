@@ -97,7 +97,7 @@ variable [Nonempty ι]
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
 theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
-    (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basisSets _root_.id := by
+    (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basisSets.toPred _root_.id := by
   let p := B.toSeminormFamily
   rw [nhds_induced, nhds_pi]
   simp only [map_zero, LinearMap.zero_apply]

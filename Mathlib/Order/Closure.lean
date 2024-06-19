@@ -222,8 +222,8 @@ lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
-    (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
+  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <| sorry
+    -- (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
@@ -454,7 +454,7 @@ def toClosed (x : α) : l.closed :=
 #align lower_adjoint.to_closed LowerAdjoint.toClosed
 
 @[simp]
-theorem closure_le_closed_iff_le (x : α) {y : α} (hy : l.closed y) : u (l x) ≤ y ↔ x ≤ y :=
+theorem closure_le_closed_iff_le (x : α) {y : α} (hy : l.closed.toPred y) : u (l x) ≤ y ↔ x ≤ y :=
   (show l.closureOperator.IsClosed y from hy).closure_le_iff
 #align lower_adjoint.closure_le_closed_iff_le LowerAdjoint.closure_le_closed_iff_le
 

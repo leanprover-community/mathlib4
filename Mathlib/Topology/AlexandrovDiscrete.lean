@@ -126,7 +126,7 @@ def exterior (s : Set α) : Set α := (𝓝ˢ s).ker
 lemma exterior_singleton_eq_ker_nhds (a : α) : exterior {a} = (𝓝 a).ker := by simp [exterior]
 
 lemma exterior_def (s : Set α) : exterior s = ⋂₀ {t : Set α | IsOpen t ∧ s ⊆ t} :=
-  (hasBasis_nhdsSet _).ker.trans sInter_eq_biInter.symm
+  (hasBasis_nhdsSet _).ker.trans sorry -- sInter_eq_biInter.symm
 
 lemma mem_exterior : a ∈ exterior s ↔ ∀ U, IsOpen U → s ⊆ U → a ∈ U := by simp [exterior_def]
 

@@ -41,7 +41,7 @@ variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 
 /-- The “almost everywhere” filter of co-null sets. -/
 def ae (μ : F) : Filter α :=
-  .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
+  .ofCountableUnion ⟨(μ · = 0)⟩  (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht
 #align measure_theory.measure.ae MeasureTheory.ae
 
@@ -135,113 +135,113 @@ theorem ae_le_of_ae_lt {β : Type*} [Preorder β] {f g : α → β} (h : ∀ᵐ 
 #align measure_theory.ae_le_of_ae_lt MeasureTheory.ae_le_of_ae_lt
 
 @[simp]
-theorem ae_eq_empty : s =ᵐ[μ] (∅ : Set α) ↔ μ s = 0 :=
+theorem ae_eq_empty : s.toPred =ᵐ[μ] (∅ : Set α).toPred ↔ μ s = 0 :=
   eventuallyEq_empty.trans <| by simp only [ae_iff, Classical.not_not, setOf_mem_eq]
 #align measure_theory.ae_eq_empty MeasureTheory.ae_eq_empty
 
 -- Porting note: The priority should be higher than `eventuallyEq_univ`.
 @[simp high]
-theorem ae_eq_univ : s =ᵐ[μ] (univ : Set α) ↔ μ sᶜ = 0 :=
+theorem ae_eq_univ : s.toPred =ᵐ[μ] (univ : Set α).toPred ↔ μ sᶜ = 0 :=
   eventuallyEq_univ
 #align measure_theory.ae_eq_univ MeasureTheory.ae_eq_univ
 
-theorem ae_le_set : s ≤ᵐ[μ] t ↔ μ (s \ t) = 0 :=
-  calc
-    s ≤ᵐ[μ] t ↔ ∀ᵐ x ∂μ, x ∈ s → x ∈ t := Iff.rfl
-    _ ↔ μ (s \ t) = 0 := by simp [ae_iff]; rfl
+theorem ae_le_set : s.toPred ≤ᵐ[μ] t.toPred ↔ μ (s \ t) = 0 := sorry
+  -- calc
+  --   s ≤ᵐ[μ] t ↔ ∀ᵐ x ∂μ, x ∈ s → x ∈ t := sorry -- Iff.rfl
+  --   _ ↔ μ (s \ t) = 0 := by simp [ae_iff]; rfl
 #align measure_theory.ae_le_set MeasureTheory.ae_le_set
 
-theorem ae_le_set_inter {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ] t') :
-    (s ∩ s' : Set α) ≤ᵐ[μ] (t ∩ t' : Set α) :=
+theorem ae_le_set_inter {s' t' : Set α} (h : s.toPred ≤ᵐ[μ] t.toPred) (h' : s'.toPred ≤ᵐ[μ] t'.toPred) :
+    (s ∩ s' : Set α).toPred ≤ᵐ[μ] (t ∩ t' : Set α).toPred :=
   h.inter h'
 #align measure_theory.ae_le_set_inter MeasureTheory.ae_le_set_inter
 
-theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ] t') :
-    (s ∪ s' : Set α) ≤ᵐ[μ] (t ∪ t' : Set α) :=
+theorem ae_le_set_union {s' t' : Set α} (h : s.toPred ≤ᵐ[μ] t.toPred) (h' : s'.toPred ≤ᵐ[μ] t'.toPred) :
+    (s ∪ s' : Set α).toPred ≤ᵐ[μ] (t ∪ t' : Set α).toPred :=
   h.union h'
 #align measure_theory.ae_le_set_union MeasureTheory.ae_le_set_union
 
-theorem union_ae_eq_right : (s ∪ t : Set α) =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
+theorem union_ae_eq_right : (s ∪ t : Set α).toPred =ᵐ[μ] t.toPred ↔ μ (s \ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set, union_diff_right,
     diff_eq_empty.2 Set.subset_union_right]
 #align measure_theory.union_ae_eq_right MeasureTheory.union_ae_eq_right
 
-theorem diff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
+theorem diff_ae_eq_self : (s \ t : Set α).toPred =ᵐ[μ] s.toPred ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set, diff_diff_right, diff_diff,
     diff_eq_empty.2 Set.subset_union_right]
 #align measure_theory.diff_ae_eq_self MeasureTheory.diff_ae_eq_self
 
-theorem diff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
+theorem diff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α).toPred =ᵐ[μ] s.toPred :=
   diff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
 #align measure_theory.diff_null_ae_eq_self MeasureTheory.diff_null_ae_eq_self
 
-theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
+theorem ae_eq_set {s t : Set α} : s.toPred =ᵐ[μ] t.toPred ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 #align measure_theory.ae_eq_set MeasureTheory.ae_eq_set
 
 open scoped symmDiff in
 @[simp]
-theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s =ᵐ[μ] t := by
+theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s.toPred =ᵐ[μ] t.toPred := by
   simp [ae_eq_set, symmDiff_def]
 #align measure_theory.measure_symm_diff_eq_zero_iff MeasureTheory.measure_symmDiff_eq_zero_iff
 
 @[simp]
-theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ =ᵐ[μ] tᶜ ↔ s =ᵐ[μ] t := by
+theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ.toPred =ᵐ[μ] tᶜ.toPred ↔ s.toPred =ᵐ[μ] t.toPred := by
   simp only [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]
 #align measure_theory.ae_eq_set_compl_compl MeasureTheory.ae_eq_set_compl_compl
 
-theorem ae_eq_set_compl {s t : Set α} : sᶜ =ᵐ[μ] t ↔ s =ᵐ[μ] tᶜ := by
+theorem ae_eq_set_compl {s t : Set α} : sᶜ.toPred =ᵐ[μ] t.toPred ↔ s.toPred =ᵐ[μ] tᶜ.toPred := by
   rw [← ae_eq_set_compl_compl, compl_compl]
 #align measure_theory.ae_eq_set_compl MeasureTheory.ae_eq_set_compl
 
-theorem ae_eq_set_inter {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
-    (s ∩ s' : Set α) =ᵐ[μ] (t ∩ t' : Set α) :=
+theorem ae_eq_set_inter {s' t' : Set α} (h : s.toPred =ᵐ[μ] t.toPred) (h' : s'.toPred =ᵐ[μ] t'.toPred) :
+    (s ∩ s' : Set α).toPred =ᵐ[μ] (t ∩ t' : Set α).toPred :=
   h.inter h'
 #align measure_theory.ae_eq_set_inter MeasureTheory.ae_eq_set_inter
 
-theorem ae_eq_set_union {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
-    (s ∪ s' : Set α) =ᵐ[μ] (t ∪ t' : Set α) :=
+theorem ae_eq_set_union {s' t' : Set α} (h : s.toPred =ᵐ[μ] t.toPred) (h' : s'.toPred =ᵐ[μ] t'.toPred) :
+    (s ∪ s' : Set α).toPred =ᵐ[μ] (t ∪ t' : Set α).toPred :=
   h.union h'
 #align measure_theory.ae_eq_set_union MeasureTheory.ae_eq_set_union
 
-theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ :=
-  (ae_eq_set_union h (ae_eq_refl t)).trans <| by rw [univ_union]
+theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s.toPred =ᵐ[μ] univ.toPred) : (s ∪ t : Set α).toPred =ᵐ[μ] univ.toPred := sorry
+  -- (ae_eq_set_union h (ae_eq_refl t)).trans sorry -- <| by rw [univ_union]
 #align measure_theory.union_ae_eq_univ_of_ae_eq_univ_left MeasureTheory.union_ae_eq_univ_of_ae_eq_univ_left
 
-theorem union_ae_eq_univ_of_ae_eq_univ_right (h : t =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ := by
-  convert ae_eq_set_union (ae_eq_refl s) h
+theorem union_ae_eq_univ_of_ae_eq_univ_right (h : t.toPred  =ᵐ[μ] univ.toPred ) : (s ∪ t : Set α).toPred  =ᵐ[μ] univ.toPred := by
+  convert ae_eq_set_union (ae_eq_refl s.toPred ) h
   rw [union_univ]
 #align measure_theory.union_ae_eq_univ_of_ae_eq_univ_right MeasureTheory.union_ae_eq_univ_of_ae_eq_univ_right
 
-theorem union_ae_eq_right_of_ae_eq_empty (h : s =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] t := by
-  convert ae_eq_set_union h (ae_eq_refl t)
+theorem union_ae_eq_right_of_ae_eq_empty (h : s.toPred  =ᵐ[μ] (∅ : Set α).toPred ) : (s ∪ t : Set α).toPred  =ᵐ[μ] t.toPred  := by
+  convert ae_eq_set_union h (ae_eq_refl t.toPred )
   rw [empty_union]
 #align measure_theory.union_ae_eq_right_of_ae_eq_empty MeasureTheory.union_ae_eq_right_of_ae_eq_empty
 
-theorem union_ae_eq_left_of_ae_eq_empty (h : t =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] s := by
-  convert ae_eq_set_union (ae_eq_refl s) h
+theorem union_ae_eq_left_of_ae_eq_empty (h : t.toPred  =ᵐ[μ] (∅ : Set α).toPred ) : (s ∪ t : Set α).toPred  =ᵐ[μ] s.toPred  := by
+  convert ae_eq_set_union (ae_eq_refl s.toPred ) h
   rw [union_empty]
 #align measure_theory.union_ae_eq_left_of_ae_eq_empty MeasureTheory.union_ae_eq_left_of_ae_eq_empty
 
-theorem inter_ae_eq_right_of_ae_eq_univ (h : s =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] t := by
-  convert ae_eq_set_inter h (ae_eq_refl t)
+theorem inter_ae_eq_right_of_ae_eq_univ (h : s.toPred  =ᵐ[μ] univ.toPred ) : (s ∩ t : Set α).toPred  =ᵐ[μ] t.toPred  := by
+  convert ae_eq_set_inter h (ae_eq_refl t.toPred )
   rw [univ_inter]
 #align measure_theory.inter_ae_eq_right_of_ae_eq_univ MeasureTheory.inter_ae_eq_right_of_ae_eq_univ
 
-theorem inter_ae_eq_left_of_ae_eq_univ (h : t =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] s := by
-  convert ae_eq_set_inter (ae_eq_refl s) h
+theorem inter_ae_eq_left_of_ae_eq_univ (h : t.toPred  =ᵐ[μ] univ.toPred ) : (s ∩ t : Set α).toPred  =ᵐ[μ] s.toPred  := by
+  convert ae_eq_set_inter (ae_eq_refl s.toPred ) h
   rw [inter_univ]
 #align measure_theory.inter_ae_eq_left_of_ae_eq_univ MeasureTheory.inter_ae_eq_left_of_ae_eq_univ
 
-theorem inter_ae_eq_empty_of_ae_eq_empty_left (h : s =ᵐ[μ] (∅ : Set α)) :
-    (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
-  convert ae_eq_set_inter h (ae_eq_refl t)
+theorem inter_ae_eq_empty_of_ae_eq_empty_left (h : s.toPred  =ᵐ[μ] (∅ : Set α).toPred ) :
+    (s ∩ t : Set α).toPred  =ᵐ[μ] (∅ : Set α).toPred  := by
+  convert ae_eq_set_inter h (ae_eq_refl t.toPred )
   rw [empty_inter]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_left MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_left
 
-theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
-    (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
-  convert ae_eq_set_inter (ae_eq_refl s) h
+theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t.toPred  =ᵐ[μ] (∅ : Set α).toPred ) :
+    (s ∩ t : Set α).toPred  =ᵐ[μ] (∅ : Set α).toPred  := by
+  convert ae_eq_set_inter (ae_eq_refl s.toPred ) h
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
@@ -254,7 +254,7 @@ theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s 
 
 /-- If `s ⊆ t` modulo a set of measure `0`, then `μ s ≤ μ t`. -/
 @[mono]
-theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
+theorem measure_mono_ae (H : s.toPred  ≤ᵐ[μ] t.toPred ) : μ s ≤ μ t :=
   calc
     μ s ≤ μ (s ∪ t) := measure_mono subset_union_left
     _ = μ (t ∪ s \ t) := by rw [union_diff_self, Set.union_comm]
@@ -266,13 +266,13 @@ alias _root_.Filter.EventuallyLE.measure_le := measure_mono_ae
 #align filter.eventually_le.measure_le Filter.EventuallyLE.measure_le
 
 /-- If two sets are equal modulo a set of measure zero, then `μ s = μ t`. -/
-theorem measure_congr (H : s =ᵐ[μ] t) : μ s = μ t :=
+theorem measure_congr (H : s.toPred  =ᵐ[μ] t.toPred ) : μ s = μ t :=
   le_antisymm H.le.measure_le H.symm.le.measure_le
 #align measure_theory.measure_congr MeasureTheory.measure_congr
 
 alias _root_.Filter.EventuallyEq.measure_eq := measure_congr
 #align filter.eventually_eq.measure_eq Filter.EventuallyEq.measure_eq
 
-theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
+theorem measure_mono_null_ae (H : s.toPred  ≤ᵐ[μ] t.toPred ) (ht : μ t = 0) : μ s = 0 :=
   nonpos_iff_eq_zero.1 <| ht ▸ H.measure_le
 #align measure_theory.measure_mono_null_ae MeasureTheory.measure_mono_null_ae

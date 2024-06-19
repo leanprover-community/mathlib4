@@ -133,7 +133,7 @@ theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
   Subsingleton.measurableSet
 #align measure_theory.null_measurable_set.of_subsingleton MeasureTheory.NullMeasurableSet.of_subsingleton
 
-protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
+protected theorem congr (hs : NullMeasurableSet s μ) (h : s.toPred =ᵐ[μ] t.toPred) : NullMeasurableSet t μ :=
   EventuallyMeasurableSet.congr hs h.symm
 #align measure_theory.null_measurable_set.congr MeasureTheory.NullMeasurableSet.congr
 
@@ -219,25 +219,25 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
 #align measure_theory.null_measurable_set.insert MeasureTheory.NullMeasurableSet.insert
 
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐ[μ] s := by
+    ∃ t ⊇ s, MeasurableSet t ∧ t.toPred =ᵐ[μ] s.toPred := by
   rcases h with ⟨t, htm, hst⟩
   refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
   · exact diff_subset_iff.1 (subset_toMeasurable _ _)
-  · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
+  · have : toMeasurable μ (s \ t) |>.toPred =ᵐ[μ] (∅ : Set α).toPred := by simp [ae_le_set.1 hst.le]
     simpa only [union_empty] using hst.symm.union this
 #align measure_theory.null_measurable_set.exists_measurable_superset_ae_eq MeasureTheory.NullMeasurableSet.exists_measurable_superset_ae_eq
 
-theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
+theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s |>.toPred =ᵐ[μ] s.toPred := by
   rw [toMeasurable_def, dif_pos]
   exact (exists_measurable_superset_ae_eq h).choose_spec.2.2
 #align measure_theory.null_measurable_set.to_measurable_ae_eq MeasureTheory.NullMeasurableSet.toMeasurable_ae_eq
 
-theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasurable μ sᶜ)ᶜ =ᵐ[μ] s :=
+theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasurable μ sᶜ)ᶜ.toPred =ᵐ[μ] s.toPred :=
   Iff.mpr ae_eq_set_compl <| toMeasurable_ae_eq h.compl
 #align measure_theory.null_measurable_set.compl_to_measurable_compl_ae_eq MeasureTheory.NullMeasurableSet.compl_toMeasurable_compl_ae_eq
 
 theorem exists_measurable_subset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ t ⊆ s, MeasurableSet t ∧ t =ᵐ[μ] s :=
+    ∃ t ⊆ s, MeasurableSet t ∧ t.toPred =ᵐ[μ] s.toPred :=
   ⟨(toMeasurable μ sᶜ)ᶜ, compl_subset_comm.2 <| subset_toMeasurable _ _,
     (measurableSet_toMeasurable _ _).compl, compl_toMeasurable_compl_ae_eq h⟩
 #align measure_theory.null_measurable_set.exists_measurable_subset_ae_eq MeasureTheory.NullMeasurableSet.exists_measurable_subset_ae_eq
@@ -253,7 +253,7 @@ theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
     (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s)) :
     ∃ t : ι → Set α,
       (∀ i, t i ⊆ s i) ∧
-        (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
+        (∀ i, (s i).toPred =ᵐ[μ] (t i).toPred) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
   choose t ht_sub htm ht_eq using fun i => exists_measurable_subset_ae_eq (h i)
   rcases exists_null_pairwise_disjoint_diff hd with ⟨u, hum, hu₀, hud⟩
   exact

@@ -58,8 +58,9 @@ theorem ofLex_apply (x : Lex (∀ i, β i)) (i : ι) : ofLex x i = x i :=
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   let h' := Pi.lt_def.1 hlt
-  let ⟨i, hi, hl⟩ := hwf.has_min _ h'.2
-  ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_le (h'.1 j) h) hj⟩, hi⟩
+  sorry
+  -- let ⟨i, hi, hl⟩ := hwf.has_min _ h'.2
+  -- ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_le (h'.1 j) h) hj⟩, hi⟩
 #align pi.lex_lt_of_lt_of_preorder Pi.lex_lt_of_lt_of_preorder
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
@@ -74,15 +75,16 @@ theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r)
       rcases eq_or_ne a b with hab | hab
       · exact Or.inr (Or.inl hab)
       · rw [Function.ne_iff] at hab
-        let i := wf.min _ hab
-        have hri : ∀ j, r j i → a j = b j := by
-          intro j
-          rw [← not_imp_not]
-          exact fun h' => wf.not_lt_min _ _ h'
-        have hne : a i ≠ b i := wf.min_mem _ hab
-        cases' trichotomous_of s (a i) (b i) with hi hi
-        exacts [Or.inl ⟨i, hri, hi⟩,
-          Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
+        sorry }
+        -- let i := wf.min _ hab
+        -- have hri : ∀ j, r j i → a j = b j := by
+        --   intro j
+        --   rw [← not_imp_not]
+        --   exact fun h' => wf.not_lt_min _ _ h'
+        -- have hne : a i ≠ b i := wf.min_mem _ hab
+        -- cases' trichotomous_of s (a i) (b i) with hi hi
+        -- exacts [Or.inl ⟨i, hri, hi⟩,
+        --   Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
 #align pi.is_trichotomous_lex Pi.isTrichotomous_lex
 
 instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=

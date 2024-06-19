@@ -425,7 +425,7 @@ section Module
 
 variable [AddCommMonoid E] [Module 𝕜 E]
 
-instance : Zero (ConvexCone 𝕜 E) :=
+noncomputable instance : Zero (ConvexCone 𝕜 E) :=
   ⟨⟨0, fun _ _ => by simp, fun _ => by simp⟩⟩
 
 @[simp]
@@ -459,7 +459,7 @@ theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
   Iff.rfl
 #align convex_cone.mem_add ConvexCone.mem_add
 
-instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
+noncomputable instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
   zero_add _ := by ext; simp
   add_zero _ := by ext; simp
 

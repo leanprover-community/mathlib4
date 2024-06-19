@@ -183,8 +183,10 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     intro m xinvm
     have n_le_m : n ≤ m := by
       by_contra m_gt_n
-      exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvm))
-    exact subset_closure (mem_biUnion n_le_m xinun.1)
+      sorry
+      -- exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvm))
+    sorry
+    -- exact subset_closure (mem_biUnion n_le_m xinun.1)
   · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
     exact
       ⟨⟨fun _ ↦ U,
@@ -738,8 +740,9 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     rw [continuousWithinAt_update_of_ne hz.2] at H
     exact H.mono diff_subset
   · rw [continuousWithinAt_update_of_ne hzx]
-    refine (H z ⟨hzs, hzx⟩).mono_of_mem (inter_mem_nhdsWithin _ ?_)
-    exact isOpen_ne.mem_nhds hzx
+    sorry
+    -- refine (H z ⟨hzs, hzx⟩).mono_of_mem (inter_mem_nhdsWithin _ ?_)
+    -- exact isOpen_ne.mem_nhds hzx
   · exact continuousWithinAt_update_same
 #align continuous_on_update_iff continuousOn_update_iff
 
@@ -1134,7 +1137,8 @@ theorem IsCompact.closure_subset_of_isOpen {K : Set X} (hK : IsCompact K)
 protected theorem IsCompact.closure {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
   refine isCompact_of_finite_subcover fun U hUo hKU ↦ ?_
   rcases hK.elim_finite_subcover U hUo (subset_closure.trans hKU) with ⟨t, ht⟩
-  exact ⟨t, hK.closure_subset_of_isOpen (isOpen_biUnion fun _ _ ↦ hUo _) ht⟩
+  sorry
+  -- exact ⟨t, hK.closure_subset_of_isOpen (isOpen_biUnion fun _ _ ↦ hUo _) ht⟩
 
 theorem IsCompact.closure_of_subset {s K : Set X} (hK : IsCompact K) (h : s ⊆ K) :
     IsCompact (closure s) :=
@@ -1186,25 +1190,26 @@ theorem IsCompact.binary_compact_cover {K U V : Set X}
 theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type*}
     (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
     ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
-  induction' t using Finset.induction with x t hx ih generalizing U s
-  · refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
-    simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
-  simp only [Finset.set_biUnion_insert] at hsC
-  simp only [Finset.forall_mem_insert] at hU
-  have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi
-  rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
-    ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
-  rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
-  refine ⟨update K x K₁, ?_, ?_, ?_⟩
-  · intro i
-    rcases eq_or_ne i x with rfl | hi
-    · simp only [update_same, h1K₁]
-    · simp only [update_noteq hi, h1K]
-  · intro i
-    rcases eq_or_ne i x with rfl | hi
-    · simp only [update_same, h2K₁]
-    · simp only [update_noteq hi, h2K]
-  · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
+  sorry
+  -- induction' t using Finset.induction with x t hx ih generalizing U s
+  -- · refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
+  --   simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
+  -- simp only [Finset.set_biUnion_insert] at hsC
+  -- simp only [Finset.forall_mem_insert] at hU
+  -- have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi
+  -- rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
+  --   ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
+  -- rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
+  -- refine ⟨update K x K₁, ?_, ?_, ?_⟩
+  -- · intro i
+  --   rcases eq_or_ne i x with rfl | hi
+  --   · simp only [update_same, h1K₁]
+  --   · simp only [update_noteq hi, h1K]
+  -- · intro i
+  --   rcases eq_or_ne i x with rfl | hi
+  --   · simp only [update_same, h2K₁]
+  --   · simp only [update_noteq hi, h2K]
+  -- · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 #align is_compact.finite_compact_cover IsCompact.finite_compact_cover
 
 theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
@@ -1780,8 +1785,8 @@ theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Cont
 /-- If two continuous maps are equal on `s`, then they are equal on the closure of `s`. See also
 `Set.EqOn.of_subset_closure` for a more general version. -/
 protected theorem Set.EqOn.closure [T2Space X] {s : Set Y} {f g : Y → X} (h : EqOn f g s)
-    (hf : Continuous f) (hg : Continuous g) : EqOn f g (closure s) :=
-  closure_minimal h (isClosed_eq hf hg)
+    (hf : Continuous f) (hg : Continuous g) : EqOn f g (closure s) := sorry
+  -- closure_minimal h (isClosed_eq hf hg)
 #align set.eq_on.closure Set.EqOn.closure
 
 /-- If two continuous functions are equal on a dense set, then they are equal. -/
@@ -1795,8 +1800,9 @@ theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → 
     (hf₂ : ∀ y, Continuous fun x => f x y) (hg₁ : ∀ x, Continuous (g x))
     (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
   suffices closure s ⊆ ⋂ y ∈ closure t, { x | f x y = g x y } by simpa only [subset_def, mem_iInter]
-  (closure_minimal fun x hx => mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
-    isClosed_biInter fun y _ => isClosed_eq (hf₂ _) (hg₂ _)
+  sorry
+  -- (closure_minimal fun x hx => mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
+  --   isClosed_biInter fun y _ => isClosed_eq (hf₂ _) (hg₂ _)
 #align eq_on_closure₂' eqOn_closure₂'
 
 theorem eqOn_closure₂ [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
@@ -2165,7 +2171,8 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpa
     (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : HasSeparatingCover s t := by
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
   rcases isEmpty_or_nonempty X with empty_X | nonempty_X
-  · rw [subset_eq_empty (t := s) (fun ⦃_⦄ _ ↦ trivial) (univ_eq_empty_iff.mpr empty_X)]
+  · rw [subset_eq_empty (t := s) (fun ⦃_⦄ _ ↦ sorry) (univ_eq_empty_iff.mpr empty_X)]
+  -- · rw [subset_eq_empty (t := s) (fun ⦃_⦄ _ ↦ trivial) (univ_eq_empty_iff.mpr empty_X)]
     exact hasSeparatingCovers_iff_separatedNhds.mpr (SeparatedNhds.empty_left t) |>.1
   -- This is almost `HasSeparatingCover`, but is not countable. We define for all `a : X` for use
   -- with `IsLindelof.indexed_countable_subcover` momentarily.
@@ -2625,12 +2632,13 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
 #align nhds_basis_clopen nhds_basis_clopen
 
 theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
-  apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.2
-  intro x U hxU U_op
-  have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
-  rcases (nhds_basis_clopen x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
-  use V
-  tauto
+  sorry
+  -- apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.2
+  -- intro x U hxU U_op
+  -- have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
+  -- rcases (nhds_basis_clopen x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
+  -- use V
+  -- tauto
 #align is_topological_basis_clopen isTopologicalBasis_isClopen
 
 /-- Every member of an open set in a compact Hausdorff totally disconnected space

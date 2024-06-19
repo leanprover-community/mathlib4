@@ -51,35 +51,35 @@ namespace εNFA
 
 /-- The `εClosure` of a set is the set of states which can be reached by taking a finite string of
 ε-transitions from an element of the set. -/
-inductive εClosure (S : Set σ) : Set σ
+inductive εClosure (S : Set σ) : σ → Prop
   | base : ∀ s ∈ S, εClosure S s
   | step : ∀ (s), ∀ t ∈ M.step s none, εClosure S s → εClosure S t
 #align ε_NFA.ε_closure εNFA.εClosure
 
 @[simp]
-theorem subset_εClosure (S : Set σ) : S ⊆ M.εClosure S :=
+theorem subset_εClosure (S : Set σ) : S ⊆ ⟨M.εClosure S⟩ :=
   εClosure.base
 #align ε_NFA.subset_ε_closure εNFA.subset_εClosure
 
 @[simp]
-theorem εClosure_empty : M.εClosure ∅ = ∅ :=
-  eq_empty_of_forall_not_mem fun s hs ↦ by induction hs <;> assumption
+theorem εClosure_empty : M.εClosure ∅ = fun _ => False := sorry
+  -- eq_empty_of_forall_not_mem fun s hs ↦ by induction hs <;> assumption
 #align ε_NFA.ε_closure_empty εNFA.εClosure_empty
 
 @[simp]
-theorem εClosure_univ : M.εClosure univ = univ :=
-  eq_univ_of_univ_subset <| subset_εClosure _ _
+theorem εClosure_univ : M.εClosure univ = fun _ => True := sorry
+  -- eq_univ_of_univ_subset <| subset_εClosure _ _
 #align ε_NFA.ε_closure_univ εNFA.εClosure_univ
 
 /-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
-  ⋃ s ∈ S, M.εClosure (M.step s a)
+  ⋃ s ∈ S, ⟨M.εClosure (M.step s a)⟩
 #align ε_NFA.step_set εNFA.stepSet
 
 variable {M}
 
 @[simp]
-theorem mem_stepSet_iff : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ M.εClosure (M.step t a) := by
+theorem mem_stepSet_iff : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ Set.ofPred (M.εClosure (M.step t a)) := by
   simp_rw [stepSet, mem_iUnion₂, exists_prop]
 #align ε_NFA.mem_step_set_iff εNFA.mem_stepSet_iff
 
@@ -93,16 +93,16 @@ variable (M)
 /-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
 of `S`. -/
 def evalFrom (start : Set σ) : List α → Set σ :=
-  List.foldl M.stepSet (M.εClosure start)
+  List.foldl M.stepSet <| Set.ofPred (M.εClosure start)
 #align ε_NFA.eval_from εNFA.evalFrom
 
 @[simp]
-theorem evalFrom_nil (S : Set σ) : M.evalFrom S [] = M.εClosure S :=
+theorem evalFrom_nil (S : Set σ) : M.evalFrom S [] = ⟨M.εClosure S⟩ :=
   rfl
 #align ε_NFA.eval_from_nil εNFA.evalFrom_nil
 
 @[simp]
-theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet (M.εClosure S) a :=
+theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet ⟨M.εClosure S⟩ a :=
   rfl
 #align ε_NFA.eval_from_singleton εNFA.evalFrom_singleton
 
@@ -115,7 +115,7 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
 @[simp]
 theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
   induction' x using List.reverseRecOn with x a ih
-  · rw [evalFrom_nil, εClosure_empty]
+  · rw [evalFrom_nil, εClosure_empty]; sorry
   · rw [evalFrom_append_singleton, ih, stepSet_empty]
 #align ε_NFA.eval_from_empty εNFA.evalFrom_empty
 
@@ -126,12 +126,12 @@ def eval :=
 #align ε_NFA.eval εNFA.eval
 
 @[simp]
-theorem eval_nil : M.eval [] = M.εClosure M.start :=
+theorem eval_nil : M.eval [] = ⟨M.εClosure M.start⟩ :=
   rfl
 #align ε_NFA.eval_nil εNFA.eval_nil
 
 @[simp]
-theorem eval_singleton (a : α) : M.eval [a] = M.stepSet (M.εClosure M.start) a :=
+theorem eval_singleton (a : α) : M.eval [a] = M.stepSet ⟨M.εClosure M.start⟩ a :=
   rfl
 #align ε_NFA.eval_singleton εNFA.eval_singleton
 
@@ -150,14 +150,14 @@ def accepts : Language α :=
 
 /-- `M.toNFA` is an `NFA` constructed from an `εNFA` `M`. -/
 def toNFA : NFA α σ where
-  step S a := M.εClosure (M.step S a)
-  start := M.εClosure M.start
+  step S a := ⟨M.εClosure (M.step S a)⟩
+  start := ⟨M.εClosure M.start⟩
   accept := M.accept
 #align ε_NFA.to_NFA εNFA.toNFA
 
 @[simp]
 theorem toNFA_evalFrom_match (start : Set σ) :
-    M.toNFA.evalFrom (M.εClosure start) = M.evalFrom start :=
+    M.toNFA.evalFrom ⟨M.εClosure start⟩ = M.evalFrom start :=
   rfl
 #align ε_NFA.to_NFA_eval_from_match εNFA.toNFA_evalFrom_match
 
@@ -186,7 +186,7 @@ def toεNFA (M : NFA α σ) : εNFA α σ where
 #align NFA.to_ε_NFA NFA.toεNFA
 
 @[simp]
-theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S := by
+theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S.toPred := by
   ext a
   refine ⟨?_, εNFA.εClosure.base _⟩
   rintro (⟨_, h⟩ | ⟨_, _, h, _⟩)

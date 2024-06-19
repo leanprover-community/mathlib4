@@ -156,7 +156,7 @@ This is a special case of https://stacks.math.columbia.edu/tag/00Z9, but followi
 proof (see the comments there).
 -/
 def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
-  sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)
+  sieves X := ⟨fun S => ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)⟩
   top_mem' X Y f := by
     rw [Sieve.pullback_top]
     exact Presieve.isSheafFor_top_sieve P

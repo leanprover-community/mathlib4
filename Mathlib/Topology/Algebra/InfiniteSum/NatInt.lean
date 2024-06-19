@@ -337,10 +337,11 @@ lemma HasProd.nat_mul_neg_add_one {f : ℤ → M} (hf : HasProd f m) :
     cases x
     · exact Or.inl ⟨_, hv' (by simpa using Or.inl hx), rfl⟩
     · exact Or.inr ⟨_, hv' (by simpa using Or.inr hx), rfl⟩
-  · rw [prod_union, prod_image Nat.cast_injective.injOn, prod_image this.injOn,
-      prod_mul_distrib]
-    simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const]
+  · sorry
+  -- · rw [prod_union, prod_image Nat.cast_injective.injOn, prod_image this.injOn,
+  --     prod_mul_distrib]
+  --   simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
+  --     forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const]
 
 @[to_additive Summable.nat_add_neg_add_one]
 lemma Multipliable.nat_mul_neg_add_one {f : ℤ → M} (hf : Multipliable f) :

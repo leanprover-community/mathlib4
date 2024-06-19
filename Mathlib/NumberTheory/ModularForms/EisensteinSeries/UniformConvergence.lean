@@ -148,21 +148,21 @@ section summability
 /-- The function `ℤ ^ 2 → ℝ` given by `x ↦ ‖x‖ ^ (-k)` is summable if `2 < k`. We prove this by
 splitting into boxes using `Finset.box`. -/
 lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
-    Summable fun (x : Fin 2 → ℤ) ↦ ‖x‖ ^ (-k) := by
-  rw [← (finTwoArrowEquiv _).symm.summable_iff, summable_partition _ Int.existsUnique_mem_box]
-  · simp only [finTwoArrowEquiv_symm_apply, Function.comp_def]
-    refine ⟨fun n ↦ (hasSum_fintype (β := box (α := ℤ × ℤ) n) _).summable, ?_⟩
-    suffices Summable fun n : ℕ ↦ ∑' (_ : box (α := ℤ × ℤ) n), (n : ℝ) ^ (-k) by
-      refine this.congr fun n ↦ tsum_congr fun p ↦ ?_
-      simp only [← Int.mem_box.mp p.2, Nat.cast_max, norm_eq_max_natAbs, Matrix.cons_val_zero,
-        Matrix.cons_val_one, Matrix.head_cons]
-    simp only [tsum_fintype, univ_eq_attach, sum_const, card_attach, nsmul_eq_mul]
-    apply ((Real.summable_nat_rpow.mpr (by linarith : 1 - k < -1)).mul_left
-      8).of_norm_bounded_eventually_nat
-    filter_upwards [Filter.eventually_gt_atTop 0] with n hn
-    rw [Int.card_box hn.ne', Real.norm_of_nonneg (by positivity), sub_eq_add_neg,
-      Real.rpow_add (Nat.cast_pos.mpr hn), Real.rpow_one, Nat.cast_mul, Nat.cast_ofNat, mul_assoc]
-  · exact fun n ↦ Real.rpow_nonneg (norm_nonneg _) _
+    Summable fun (x : Fin 2 → ℤ) ↦ ‖x‖ ^ (-k) := by sorry
+  -- rw [← (finTwoArrowEquiv _).symm.summable_iff, summable_partition _ Int.existsUnique_mem_box]
+  -- · simp only [finTwoArrowEquiv_symm_apply, Function.comp_def]
+  --   refine ⟨fun n ↦ (hasSum_fintype (β := box (α := ℤ × ℤ) n) _).summable, ?_⟩
+  --   suffices Summable fun n : ℕ ↦ ∑' (_ : box (α := ℤ × ℤ) n), (n : ℝ) ^ (-k) by
+  --     refine this.congr fun n ↦ tsum_congr fun p ↦ ?_
+  --     simp only [← Int.mem_box.mp p.2, Nat.cast_max, norm_eq_max_natAbs, Matrix.cons_val_zero,
+  --       Matrix.cons_val_one, Matrix.head_cons]
+  --   simp only [tsum_fintype, univ_eq_attach, sum_const, card_attach, nsmul_eq_mul]
+  --   apply ((Real.summable_nat_rpow.mpr (by linarith : 1 - k < -1)).mul_left
+  --     8).of_norm_bounded_eventually_nat
+  --   filter_upwards [Filter.eventually_gt_atTop 0] with n hn
+  --   rw [Int.card_box hn.ne', Real.norm_of_nonneg (by positivity), sub_eq_add_neg,
+  --     Real.rpow_add (Nat.cast_pos.mpr hn), Real.rpow_one, Nat.cast_mul, Nat.cast_ofNat, mul_assoc]
+  -- · exact fun n ↦ Real.rpow_nonneg (norm_nonneg _) _
 
 /-- The sum defining the Eisenstein series (of weight `k` and level `Γ(N)` with congruence
 condition `a : Fin 2 → ZMod N`) converges locally uniformly on `ℍ`. -/

@@ -77,7 +77,7 @@ protected theorem _root_.Set.PairwiseDisjoint.aedisjoint {f : ι → Set α} {s 
   hf.mono' fun _i _j h => h.aedisjoint
 #align set.pairwise_disjoint.ae_disjoint Set.PairwiseDisjoint.aedisjoint
 
-theorem mono_ae (h : AEDisjoint μ s t) (hu : u ≤ᵐ[μ] s) (hv : v ≤ᵐ[μ] t) : AEDisjoint μ u v :=
+theorem mono_ae (h : AEDisjoint μ s t) (hu : u.toPred ≤ᵐ[μ] s.toPred) (hv : v.toPred ≤ᵐ[μ] t.toPred) : AEDisjoint μ u v :=
   measure_mono_null_ae (hu.inter hv) h
 #align measure_theory.ae_disjoint.mono_ae MeasureTheory.AEDisjoint.mono_ae
 
@@ -85,7 +85,7 @@ protected theorem mono (h : AEDisjoint μ s t) (hu : u ⊆ s) (hv : v ⊆ t) : A
   mono_ae h (HasSubset.Subset.eventuallyLE hu) (HasSubset.Subset.eventuallyLE hv)
 #align measure_theory.ae_disjoint.mono MeasureTheory.AEDisjoint.mono
 
-protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ[μ] t) :
+protected theorem congr (h : AEDisjoint μ s t) (hu : u.toPred =ᵐ[μ] s.toPred) (hv : v.toPred =ᵐ[μ] t.toPred) :
     AEDisjoint μ u v :=
   mono_ae h (Filter.EventuallyEq.le hu) (Filter.EventuallyEq.le hv)
 #align measure_theory.ae_disjoint.congr MeasureTheory.AEDisjoint.congr
@@ -120,11 +120,11 @@ theorem union_right (ht : AEDisjoint μ s t) (hu : AEDisjoint μ s u) : AEDisjoi
   union_right_iff.2 ⟨ht, hu⟩
 #align measure_theory.ae_disjoint.union_right MeasureTheory.AEDisjoint.union_right
 
-theorem diff_ae_eq_left (h : AEDisjoint μ s t) : (s \ t : Set α) =ᵐ[μ] s :=
+theorem diff_ae_eq_left (h : AEDisjoint μ s t) : (s \ t : Set α).toPred =ᵐ[μ] s.toPred :=
   @diff_self_inter _ s t ▸ diff_null_ae_eq_self h
 #align measure_theory.ae_disjoint.diff_ae_eq_left MeasureTheory.AEDisjoint.diff_ae_eq_left
 
-theorem diff_ae_eq_right (h : AEDisjoint μ s t) : (t \ s : Set α) =ᵐ[μ] t :=
+theorem diff_ae_eq_right (h : AEDisjoint μ s t) : (t \ s : Set α).toPred =ᵐ[μ] t.toPred :=
   diff_ae_eq_left <| AEDisjoint.symm h
 #align measure_theory.ae_disjoint.diff_ae_eq_right MeasureTheory.AEDisjoint.diff_ae_eq_right
 

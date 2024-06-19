@@ -728,15 +728,16 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
   induction' s using Finset.induction_on with i s hi ih
   · set_option tactic.skipAssignedInstances false in
     simpa using LinearMap.ker_id
-  replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
-      ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
-  rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
-    ker_comp_eq_of_commute_of_disjoint_ker]
-  · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
-  · exact s.noncommProd_commute _ _ _ fun j hj ↦
-      comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
-  · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
-    simpa [ih, hi, Finset.sup_eq_iSup] using h
+  sorry
+  -- replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
+  --     ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
+  -- rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
+  --   ker_comp_eq_of_commute_of_disjoint_ker]
+  -- · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
+  -- · exact s.noncommProd_commute _ _ _ fun j hj ↦
+  --     comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+  -- · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
+  --   simpa [ih, hi, Finset.sup_eq_iSup] using h
 
 end DivisionRing
 

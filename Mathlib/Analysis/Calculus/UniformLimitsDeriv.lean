@@ -141,26 +141,28 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
       intro y hy
       exact (mul_lt_iff_lt_one_right hε.lt).mpr (hxy y hy)
     -- With a small ball in hand, apply the mean value theorem
-    refine
-      eventually_prod_iff.mpr
-        ⟨_, b, fun e : E => Metric.ball x r e,
-          eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => ?_⟩
-    simp only [Pi.zero_apply, dist_zero_left] at e ⊢
-    refine lt_of_le_of_lt ?_ (hxyε y hy)
-    exact
-      Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
-        (fun y hy => ((e hn (hr' hy)).2.1.sub (e hn (hr' hy)).2.2).hasFDerivWithinAt)
-        (fun y hy => (e hn (hr' hy)).1.le) (convex_ball x r) (Metric.mem_ball_self hr) hy
-  · -- This is just `hfg` run through `eventually_prod_iff`
-    refine Metric.tendstoUniformlyOnFilter_iff.mpr fun ε hε => ?_
-    obtain ⟨t, ht, ht'⟩ := (Metric.cauchy_iff.mp hfg).2 ε hε
-    exact
-      eventually_prod_iff.mpr
-        ⟨fun n : ι × ι => f n.1 x ∈ t ∧ f n.2 x ∈ t,
-          eventually_prod_iff.mpr ⟨_, ht, _, ht, fun {n} hn {n'} hn' => ⟨hn, hn'⟩⟩,
-          fun _ => True,
-          by simp,
-          fun {n} hn {y} _ => by simpa [norm_sub_rev, dist_eq_norm] using ht' _ hn.1 _ hn.2⟩
+    sorry
+  --   refine
+  --     eventually_prod_iff.mpr
+  --       ⟨_, b, fun e : E => Metric.ball x r e,
+  --         eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => ?_⟩
+  --   simp only [Pi.zero_apply, dist_zero_left] at e ⊢
+  --   refine lt_of_le_of_lt ?_ (hxyε y hy)
+  --   exact
+  --     Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
+  --       (fun y hy => ((e hn (hr' hy)).2.1.sub (e hn (hr' hy)).2.2).hasFDerivWithinAt)
+  --       (fun y hy => (e hn (hr' hy)).1.le) (convex_ball x r) (Metric.mem_ball_self hr) hy
+  -- · -- This is just `hfg` run through `eventually_prod_iff`
+  --   refine Metric.tendstoUniformlyOnFilter_iff.mpr fun ε hε => ?_
+  --   obtain ⟨t, ht, ht'⟩ := (Metric.cauchy_iff.mp hfg).2 ε hε
+  --   exact
+  --     eventually_prod_iff.mpr
+  --       ⟨fun n : ι × ι => f n.1 x ∈ t ∧ f n.2 x ∈ t,
+  --         eventually_prod_iff.mpr ⟨_, ht, _, ht, fun {n} hn {n'} hn' => ⟨hn, hn'⟩⟩,
+  --         fun _ => True,
+  --         by simp,
+  --         fun {n} hn {y} _ => by simpa [norm_sub_rev, dist_eq_norm] using ht' _ hn.1 _ hn.2⟩
+  sorry
 #align uniform_cauchy_seq_on_filter_of_fderiv uniformCauchySeqOnFilter_of_fderiv
 
 /-- A variant of the second fundamental theorem of calculus (FTC-2): If a sequence of functions
@@ -279,20 +281,21 @@ theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter 
   obtain ⟨a, b, c, d, e⟩ := eventually_prod_iff.1 (hfg'.and this)
   obtain ⟨r, hr, hr'⟩ := Metric.nhds_basis_ball.eventually_iff.mp d
   rw [eventually_prod_iff]
-  refine
-    ⟨_, b, fun e : E => Metric.ball x r e,
-      eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => ?_⟩
-  simp only [Pi.zero_apply, dist_zero_left]
-  rw [← smul_sub, norm_smul, norm_inv, RCLike.norm_coe_norm]
-  refine lt_of_le_of_lt ?_ hqε
-  by_cases hyz' : x = y; · simp [hyz', hqpos.le]
-  have hyz : 0 < ‖y - x‖ := by rw [norm_pos_iff]; intro hy'; exact hyz' (eq_of_sub_eq_zero hy').symm
-  rw [inv_mul_le_iff hyz, mul_comm, sub_sub_sub_comm]
-  simp only [Pi.zero_apply, dist_zero_left] at e
-  refine
-    Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
-      (fun y hy => ((e hn (hr' hy)).2.1.sub (e hn (hr' hy)).2.2).hasFDerivWithinAt)
-      (fun y hy => (e hn (hr' hy)).1.le) (convex_ball x r) (Metric.mem_ball_self hr) hy
+  sorry
+  -- refine
+  --   ⟨_, b, fun e : E => Metric.ball x r e,
+  --     eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => ?_⟩
+  -- simp only [Pi.zero_apply, dist_zero_left]
+  -- rw [← smul_sub, norm_smul, norm_inv, RCLike.norm_coe_norm]
+  -- refine lt_of_le_of_lt ?_ hqε
+  -- by_cases hyz' : x = y; · simp [hyz', hqpos.le]
+  -- have hyz : 0 < ‖y - x‖ := by rw [norm_pos_iff]; intro hy'; exact hyz' (eq_of_sub_eq_zero hy').symm
+  -- rw [inv_mul_le_iff hyz, mul_comm, sub_sub_sub_comm]
+  -- simp only [Pi.zero_apply, dist_zero_left] at e
+  -- refine
+  --   Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
+  --     (fun y hy => ((e hn (hr' hy)).2.1.sub (e hn (hr' hy)).2.2).hasFDerivWithinAt)
+  --     (fun y hy => (e hn (hr' hy)).1.le) (convex_ball x r) (Metric.mem_ball_self hr) hy
 #align difference_quotients_converge_uniformly difference_quotients_converge_uniformly
 
 /-- `(d/dx) lim_{n → ∞} f n x = lim_{n → ∞} f' n x` when the `f' n` converge

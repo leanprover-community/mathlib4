@@ -404,7 +404,7 @@ theorem generateFrom_le_iff {s : Set (Set α)} (m : MeasurableSpace α) :
 @[simp]
 theorem generateFrom_measurableSet [MeasurableSpace α] :
     generateFrom { s : Set α | MeasurableSet s } = ‹_› :=
-  le_antisymm (generateFrom_le fun _ => id) fun _ => measurableSet_generateFrom
+  le_antisymm (generateFrom_le fun _ => id) fun _ => sorry -- measurableSet_generateFrom
 #align measurable_space.generate_from_measurable_set MeasurableSpace.generateFrom_measurableSet
 
 theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
@@ -433,7 +433,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
   on one side and the collection of measurable sets on the other side. -/
 def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | MeasurableSet[m] t } where
   gc _ := generateFrom_le_iff
-  le_l_u _ _ := measurableSet_generateFrom
+  le_l_u _ _ := sorry -- measurableSet_generateFrom
   choice g hg := MeasurableSpace.mkOfClosure g <| le_antisymm hg <| (generateFrom_le_iff _).1 le_rfl
   choice_eq _ _ := mkOfClosure_sets
 #align measurable_space.gi_generate_from MeasurableSpace.giGenerateFrom
@@ -516,7 +516,7 @@ theorem measurableSet_iInf {ι} {m : ι → MeasurableSpace α} {s : Set α} :
 #align measurable_space.measurable_set_infi MeasurableSpace.measurableSet_iInf
 
 theorem measurableSet_sup {m₁ m₂ : MeasurableSpace α} {s : Set α} :
-    MeasurableSet[m₁ ⊔ m₂] s ↔ GenerateMeasurable (MeasurableSet[m₁] ∪ MeasurableSet[m₂]) s :=
+    MeasurableSet[m₁ ⊔ m₂] s ↔ GenerateMeasurable (⟨MeasurableSet[m₁]⟩ ∪ ⟨MeasurableSet[m₂]⟩) s :=
   Iff.rfl
 #align measurable_space.measurable_set_sup MeasurableSpace.measurableSet_sup
 

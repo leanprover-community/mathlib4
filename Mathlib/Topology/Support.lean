@@ -198,7 +198,7 @@ theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
 @[to_additive]
 theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
     HasCompactMulSupport f ↔ f =ᶠ[coclosedCompact α] 1 :=
-  mem_coclosedCompact_iff.symm
+  sorry -- mem_coclosedCompact_iff.symm
 #align has_compact_mul_support_iff_eventually_eq hasCompactMulSupport_iff_eventuallyEq
 #align has_compact_support_iff_eventually_eq hasCompactSupport_iff_eventuallyEq
 

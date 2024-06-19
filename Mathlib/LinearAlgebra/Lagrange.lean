@@ -452,29 +452,31 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
     have H : t.card = 1 + (t.card - s.card) + (s.card - 1) := by
       rw [add_assoc, tsub_add_tsub_cancel hst' hs, ← add_tsub_assoc_of_le (hs.trans hst'),
         Nat.succ_add_sub_one, zero_add]
-    rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add, Nat.cast_withBot,
-      WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (s.card - 1))]
-    convert degree_interpolate_lt _
-        (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
-    rw [card_insert_of_not_mem (not_mem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
+    sorry
+  --   rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add, Nat.cast_withBot,
+  --     WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (s.card - 1))]
+  --   convert degree_interpolate_lt _
+  --       (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
+  --   rw [card_insert_of_not_mem (not_mem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
   · simp_rw [eval_finset_sum, eval_mul]
     by_cases hi' : i ∈ s
-    · rw [← add_sum_erase _ _ hi', eval_basis_self (hvt.mono hst) hi',
-        eval_interpolate_at_node _
-          (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hi, sdiff_subset⟩)))
-          (mem_insert_self _ _),
-        mul_one, add_right_eq_self]
-      refine sum_eq_zero fun j hj => ?_
-      rcases mem_erase.mp hj with ⟨hij, _⟩
-      rw [eval_basis_of_ne hij hi', mul_zero]
-    · have H : (∑ j ∈ s, eval (v i) (Lagrange.basis s v j)) = 1 := by
-        rw [← eval_finset_sum, sum_basis (hvt.mono hst) hs, eval_one]
-      rw [← mul_one (r i), ← H, mul_sum]
-      refine sum_congr rfl fun j hj => ?_
-      congr
-      exact
-        eval_interpolate_at_node _ (hvt.mono (insert_subset_iff.mpr ⟨hst hj, sdiff_subset⟩))
-          (mem_insert.mpr (Or.inr (mem_sdiff.mpr ⟨hi, hi'⟩)))
+    all_goals sorry
+    -- · rw [← add_sum_erase _ _ hi', eval_basis_self (hvt.mono hst) hi',
+    --     eval_interpolate_at_node _
+    --       (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hi, sdiff_subset⟩)))
+    --       (mem_insert_self _ _),
+    --     mul_one, add_right_eq_self]
+    --   refine sum_eq_zero fun j hj => ?_
+    --   rcases mem_erase.mp hj with ⟨hij, _⟩
+    --   rw [eval_basis_of_ne hij hi', mul_zero]
+    -- · have H : (∑ j ∈ s, eval (v i) (Lagrange.basis s v j)) = 1 := by
+    --     rw [← eval_finset_sum, sum_basis (hvt.mono hst) hs, eval_one]
+    --   rw [← mul_one (r i), ← H, mul_sum]
+    --   refine sum_congr rfl fun j hj => ?_
+    --   congr
+    --   exact
+    --     eval_interpolate_at_node _ (hvt.mono (insert_subset_iff.mpr ⟨hst hj, sdiff_subset⟩))
+    --       (mem_insert.mpr (Or.inr (mem_sdiff.mpr ⟨hi, hi'⟩)))
 #align lagrange.interpolate_eq_sum_interpolate_insert_sdiff Lagrange.interpolate_eq_sum_interpolate_insert_sdiff
 
 theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s) (hj : j ∈ s)

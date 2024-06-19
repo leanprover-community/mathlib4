@@ -37,7 +37,7 @@ namespace Scheme
 
 /-- The Zariski pretopology on the category of schemes. -/
 def zariskiPretopology : Pretopology (Scheme.{u}) where
-  coverings Y S := ∃ (U : OpenCover.{u} Y), S = Presieve.ofArrows U.obj U.map
+  coverings Y := ⟨fun S => ∃ (U : OpenCover.{u} Y), S = Presieve.ofArrows U.obj U.map⟩
   has_isos Y X f _ := ⟨openCoverOfIsIso f, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨U, rfl⟩
@@ -54,11 +54,11 @@ abbrev zariskiTopology : GrothendieckTopology (Scheme.{u}) :=
   zariskiPretopology.toGrothendieck
 
 lemma zariskiPretopology_openCover {Y : Scheme.{u}} (U : OpenCover.{u} Y) :
-    zariskiPretopology Y (Presieve.ofArrows U.obj U.map) :=
+    zariskiPretopology Y |>.toPred (Presieve.ofArrows U.obj U.map) :=
   ⟨U, rfl⟩
 
 lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
-    zariskiTopology Y (Sieve.generate (Presieve.ofArrows U.obj U.map)) := by
+    zariskiTopology Y |>.toPred (Sieve.generate (Presieve.ofArrows U.obj U.map)) := by
   let V : OpenCover.{u} Y :=
     { J := Y
       obj := fun y => U.obj (U.f y)

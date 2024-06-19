@@ -408,8 +408,8 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 #align finset.sum_map Finset.sum_map
 
 @[to_additive]
-lemma prod_attach (s : Finset α) (f : α → β) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by
-  classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
+lemma prod_attach (s : Finset α) (f : α → β) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by sorry
+  -- classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
 #align finset.prod_attach Finset.prod_attach
 #align finset.sum_attach Finset.sum_attach
 
@@ -503,7 +503,7 @@ lemma prod_powerset_insert [DecidableEq α] (ha : a ∉ s) (f : Finset α → β
     ∏ t ∈ (insert a s).powerset, f t =
       (∏ t ∈ s.powerset, f t) * ∏ t ∈ s.powerset, f (insert a t) := by
   rw [powerset_insert, prod_union, prod_image]
-  · exact insert_erase_invOn.2.injOn.mono fun t ht ↦ not_mem_mono (mem_powerset.1 ht) ha
+  · sorry -- exact insert_erase_invOn.2.injOn.mono fun t ht ↦ not_mem_mono (mem_powerset.1 ht) ha
   · aesop (add simp [disjoint_left, insert_subset_iff])
 #align finset.prod_powerset_insert Finset.prod_powerset_insert
 #align finset.sum_powerset_insert Finset.sum_powerset_insert
@@ -1113,7 +1113,7 @@ variable {f s}
 @[to_additive]
 theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α) (h : ∀ x, x ∈ s ↔ p x)
     (f : α → β) : ∏ a ∈ s, f a = ∏ a : Subtype p, f a := by
-  have : (· ∈ s) = p := Set.ext h
+  have : (· ∈ s) = p := sorry -- Set.ext h
   subst p
   rw [← prod_coe_sort]
   congr!

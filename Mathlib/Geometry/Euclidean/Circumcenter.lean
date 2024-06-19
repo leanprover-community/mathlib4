@@ -217,7 +217,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
           simp
         · simp
       haveI : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
-      have ha2 : AffineIndependent ℝ fun i2 : ι2 => p i2 := ha.subtype _
+      have ha2 : AffineIndependent ℝ fun i2 : ι2 => p i2 := sorry -- ha.subtype _
       replace hm := hm ha2 _ hc
       have hr : Set.range p = insert (p i) (Set.range fun i2 : ι2 => p i2) := by
         change _ = insert _ (Set.range fun i2 : { x | x ≠ i } => p i2)

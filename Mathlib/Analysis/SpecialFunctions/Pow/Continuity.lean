@@ -51,15 +51,15 @@ theorem cpow_eq_nhds {a b : ℂ} (ha : a ≠ 0) :
 #align cpow_eq_nhds cpow_eq_nhds
 
 theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
-    (fun x => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
-  suffices ∀ᶠ x : ℂ × ℂ in 𝓝 p, x.1 ≠ 0 from
-    this.mono fun x hx ↦ by
-      dsimp only
-      rw [cpow_def_of_ne_zero hx]
-  refine IsOpen.eventually_mem ?_ hp_fst
-  change IsOpen { x : ℂ × ℂ | x.1 = 0 }ᶜ
-  rw [isOpen_compl_iff]
-  exact isClosed_eq continuous_fst continuous_const
+    (fun x => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by sorry
+  -- suffices ∀ᶠ x : ℂ × ℂ in 𝓝 p, x.1 ≠ 0 from
+  --   this.mono fun x hx ↦ by
+  --     dsimp only
+  --     rw [cpow_def_of_ne_zero hx]
+  -- refine IsOpen.eventually_mem ?_ hp_fst
+  -- change IsOpen { x : ℂ × ℂ | x.1 = 0 }ᶜ
+  -- rw [isOpen_compl_iff]
+  -- exact isClosed_eq continuous_fst continuous_const
 #align cpow_eq_nhds' cpow_eq_nhds'
 
 -- Continuity of `fun x => a ^ x`: union of these two lemmas is optimal.

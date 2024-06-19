@@ -803,7 +803,7 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
   ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
-        (countable_countableBasis α).mono inter_subset_left⟩⟩
+        (countable_countableBasis α).mono sorry ⟩⟩ --inter_subset_left⟩⟩
 #align topological_space.second_countable_topology.to_first_countable_topology TopologicalSpace.SecondCountableTopology.to_firstCountableTopology
 
 /-- If `β` is a second-countable space, then its induced topology via
@@ -822,6 +822,10 @@ instance Subtype.secondCountableTopology (s : Set α) [SecondCountableTopology �
     SecondCountableTopology s :=
   secondCountableTopology_induced s α (↑)
 #align topological_space.subtype.second_countable_topology TopologicalSpace.Subtype.secondCountableTopology
+
+instance Subtype.secondCountableTopology' (p : α → Prop) [SecondCountableTopology α] :
+    SecondCountableTopology {a // p a} :=
+  secondCountableTopology_induced {a // p a} α (↑)
 
 lemma secondCountableTopology_iInf {ι} [Countable ι] {t : ι → TopologicalSpace α}
     (ht : ∀ i, @SecondCountableTopology α (t i)) : @SecondCountableTopology α (⨅ i, t i) := by

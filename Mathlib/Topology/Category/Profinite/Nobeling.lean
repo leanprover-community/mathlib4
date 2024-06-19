@@ -985,7 +985,7 @@ The image of the `GoodProducts` for `π C (ord I · < o)` in `LocallyConstant C
 refers to the setting in which we will use this, when we are mapping in `GoodProducts` from a
 smaller set, i.e. when `o` is a smaller ordinal than the one `C` is "contained" in.
 -/
-def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
+noncomputable def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
   (πs C o) '' (range (π C (ord I · < o)))
 
 /--
@@ -1190,7 +1190,7 @@ theorem union_C0C1_eq : (C0 C ho) ∪ (C1 C ho) = C := by
 The intersection of `C0` and the projection of `C1`. We will apply the inductive hypothesis to
 this set.
 -/
-def C' := C0 C ho ∩ π (C1 C ho) (ord I · < o)
+noncomputable def C' := C0 C ho ∩ π (C1 C ho) (ord I · < o)
 
 theorem isClosed_C' : IsClosed (C' C ho) :=
   IsClosed.inter (isClosed_C0 _ hC _) (isClosed_proj _ _ (isClosed_C1 _ hC _))

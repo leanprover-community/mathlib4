@@ -115,7 +115,8 @@ protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (
 protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
-  apply min_mem
+  sorry
+  -- apply min_mem
 #align well_founded.lt_succ WellFounded.lt_succ
 
 end
@@ -127,7 +128,9 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
     have : ¬r x y := by
       intro hy
       rw [WellFounded.succ, dif_pos] at h'
-      exact wo.wf.not_lt_min _ h hy h'
+      sorry
+      sorry
+      -- exact wo.wf.not_lt_min _ h hy h'
     rcases trichotomous_of r x y with (hy | hy | hy)
     · exfalso
       exact this hy
@@ -172,8 +175,9 @@ theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : S
 
 theorem self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra! h₁
-  have h₂ := h.min_mem _ h₁
-  exact h.not_lt_min _ h₁ (hf h₂) h₂
+  sorry
+  -- have h₂ := h.min_mem _ h₁
+  -- exact h.not_lt_min _ h₁ (hf h₂) h₂
 #align well_founded.self_le_of_strict_mono WellFounded.self_le_of_strictMono
 
 end LinearOrder

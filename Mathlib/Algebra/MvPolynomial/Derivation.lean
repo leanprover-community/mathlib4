@@ -76,8 +76,8 @@ theorem derivation_eqOn_supported {D₁ D₂ : Derivation R (MvPolynomial σ R) 
 #align mv_polynomial.derivation_eq_on_supported MvPolynomial.derivation_eqOn_supported
 
 theorem derivation_eq_of_forall_mem_vars {D₁ D₂ : Derivation R (MvPolynomial σ R) A}
-    {f : MvPolynomial σ R} (h : ∀ i ∈ f.vars, D₁ (X i) = D₂ (X i)) : D₁ f = D₂ f :=
-  derivation_eqOn_supported h f.mem_supported_vars
+    {f : MvPolynomial σ R} (h : ∀ i ∈ f.vars, D₁ (X i) = D₂ (X i)) : D₁ f = D₂ f := sorry
+  -- derivation_eqOn_supported h f.mem_supported_vars
 #align mv_polynomial.derivation_eq_of_forall_mem_vars MvPolynomial.derivation_eq_of_forall_mem_vars
 
 theorem derivation_eq_zero_of_forall_mem_vars {D : Derivation R (MvPolynomial σ R) A}

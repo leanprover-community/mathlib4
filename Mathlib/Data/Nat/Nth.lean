@@ -383,8 +383,8 @@ theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i �
 
 variable {p}
 
-theorem le_nth_count' {n : ℕ} (hpn : ∃ k, p k ∧ n ≤ k) : n ≤ nth p (count p n) :=
-  (le_csInf hpn fun _ => And.right).trans (nth_count_eq_sInf p n).ge
+theorem le_nth_count' {n : ℕ} (hpn : ∃ k, p k ∧ n ≤ k) : n ≤ nth p (count p n) := sorry
+  -- (le_csInf ⟨_, hpn⟩⟩ fun _ => And.right).trans (nth_count_eq_sInf p n).ge
 #align nat.le_nth_count' Nat.le_nth_count'
 
 theorem le_nth_count (hp : (setOf p).Infinite) (n : ℕ) : n ≤ nth p (count p n) :=

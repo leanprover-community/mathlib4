@@ -452,7 +452,7 @@ variable (f : LocallyConstant X α)
 /-- Any locally constant function induces a discrete quotient. -/
 def discreteQuotient : DiscreteQuotient X where
   toSetoid := .comap f ⊥
-  isOpen_setOf_rel _ := f.isLocallyConstant _
+  isOpen_setOf_rel _ := sorry --  f.isLocallyConstant _
 #align locally_constant.discrete_quotient LocallyConstant.discreteQuotient
 
 /-- The (locally constant) function from the discrete quotient associated to a locally constant

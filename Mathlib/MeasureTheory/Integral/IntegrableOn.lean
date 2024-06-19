@@ -125,11 +125,11 @@ theorem IntegrableOn.mono_measure (h : IntegrableOn f s ν) (hμ : μ ≤ ν) : 
   h.mono (Subset.refl _) hμ
 #align measure_theory.integrable_on.mono_measure MeasureTheory.IntegrableOn.mono_measure
 
-theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ≤ᵐ[μ] t) : IntegrableOn f s μ :=
+theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s.toPred ≤ᵐ[μ] t.toPred) : IntegrableOn f s μ :=
   h.integrable.mono_measure <| Measure.restrict_mono_ae hst
 #align measure_theory.integrable_on.mono_set_ae MeasureTheory.IntegrableOn.mono_set_ae
 
-theorem IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s =ᵐ[μ] t) : IntegrableOn f s μ :=
+theorem IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s.toPred =ᵐ[μ] t.toPred) : IntegrableOn f s μ :=
   h.mono_set_ae hst.le
 #align measure_theory.integrable_on.congr_set_ae MeasureTheory.IntegrableOn.congr_set_ae
 

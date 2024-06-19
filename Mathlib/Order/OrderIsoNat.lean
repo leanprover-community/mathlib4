@@ -111,7 +111,7 @@ variable (s : Set ℕ) [Infinite s]
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
   (RelEmbedding.orderEmbeddingOfLTEmbedding
     (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
-    (OrderEmbedding.subtype s)
+    (OrderEmbedding.subtype s.toPred)
 #align nat.order_embedding_of_set Nat.orderEmbeddingOfSet
 
 /-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also

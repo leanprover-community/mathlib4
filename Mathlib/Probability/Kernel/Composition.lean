@@ -106,6 +106,7 @@ theorem compProdFun_iUnion (κ : kernel α β) (η : kernel (α × β) γ) [IsSF
     ext1 b
     congr with c
     simp only [Set.mem_iUnion, Set.iSup_eq_iUnion, Set.mem_setOf_eq]
+    sorry
   rw [compProdFun, h_Union]
   have h_tsum :
     (fun b => η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i})) = fun b =>

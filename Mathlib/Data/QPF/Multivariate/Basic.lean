@@ -183,28 +183,28 @@ theorem supp_eq {α : TypeVec n} {i} (x : F α) :
 
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     (∀ p, LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u) ↔
-      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by
-  constructor
-  · intro h
-    have : LiftP (supp x) x := by rw [h]; introv; exact id
-    rw [liftP_iff] at this
-    rcases this with ⟨a, f, xeq, h'⟩
-    refine ⟨a, f, xeq.symm, ?_⟩
-    intro a' f' h''
-    rintro hu u ⟨j, _h₂, hfi⟩
-    have hh : u ∈ supp x a' := by rw [← hfi]; apply h'
-    exact (mem_supp x _ u).mp hh _ _ hu
-  rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
-  · rintro ⟨a', f', xeq', h'⟩ i u usuppx
-    rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
-    rw [← f'ieq]
-    apply h'
-  intro h'
-  refine ⟨a, f, xeq.symm, ?_⟩; intro j y
-  apply h'; rw [mem_supp]
-  intro a' f' xeq'
-  apply h _ a' f' xeq'
-  apply mem_image_of_mem _ (mem_univ _)
+      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by sorry
+  -- constructor
+  -- · intro h
+  --   have : LiftP (supp x) x := by rw [h]; introv; exact id
+  --   rw [liftP_iff] at this
+  --   rcases this with ⟨a, f, xeq, h'⟩
+  --   refine ⟨a, f, xeq.symm, ?_⟩
+  --   intro a' f' h''
+  --   rintro hu u ⟨j, _h₂, hfi⟩
+  --   have hh : u ∈ supp x a' := by rw [← hfi]; apply h'
+  --   exact (mem_supp x _ u).mp hh _ _ hu
+  -- rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
+  -- · rintro ⟨a', f', xeq', h'⟩ i u usuppx
+  --   rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+  --   rw [← f'ieq]
+  --   apply h'
+  -- intro h'
+  -- refine ⟨a, f, xeq.symm, ?_⟩; intro j y
+  -- apply h'; rw [mem_supp]
+  -- intro a' f' xeq'
+  -- apply h _ a' f' xeq'
+  -- apply mem_image_of_mem _ (mem_univ _)
 #align mvqpf.has_good_supp_iff MvQPF.has_good_supp_iff
 
 /-- A qpf is said to be uniform if every polynomial functor

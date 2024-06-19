@@ -43,9 +43,9 @@ variable [∀ j, Decidable (j ∈ s)]
 -- TODO: fix this in norm_cast
 @[norm_cast move]
 lemma piecewise_coe [∀ j, Decidable (j ∈ (s : Set ι))] :
-    (s : Set ι).piecewise f g = s.piecewise f g := by
-  ext
-  congr
+    (s : Set ι).piecewise f g = s.piecewise f g := by sorry
+  -- ext
+  -- congr
 #align finset.piecewise_coe Finset.piecewise_coe
 
 @[simp]

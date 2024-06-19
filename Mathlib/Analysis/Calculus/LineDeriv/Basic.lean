@@ -282,27 +282,27 @@ theorem lineDerivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v :=
   lineDerivWithin_of_mem_nhds (hs.mem_nhds hx)
 
-theorem hasLineDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem hasLineDerivWithinAt_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) :
     HasLineDerivWithinAt 𝕜 f f' s x v ↔ HasLineDerivWithinAt 𝕜 f f' t x v := by
   apply hasDerivWithinAt_congr_set
   let F := fun (t : 𝕜) ↦ x + t • v
   have B : ContinuousAt F 0 := by apply Continuous.continuousAt; continuity
-  have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp [F]
+  have : s.toPred =ᶠ[𝓝 (F 0)] t.toPred := by convert h; simp [F]
   exact B.preimage_mem_nhds this
 
-theorem lineDifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem lineDifferentiableWithinAt_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) :
     LineDifferentiableWithinAt 𝕜 f s x v ↔ LineDifferentiableWithinAt 𝕜 f t x v :=
   ⟨fun h' ↦ ((hasLineDerivWithinAt_congr_set h).1
     h'.hasLineDerivWithinAt).lineDifferentiableWithinAt,
   fun h' ↦ ((hasLineDerivWithinAt_congr_set h.symm).1
     h'.hasLineDerivWithinAt).lineDifferentiableWithinAt⟩
 
-theorem lineDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem lineDerivWithin_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) :
     lineDerivWithin 𝕜 f s x v = lineDerivWithin 𝕜 f t x v := by
   apply derivWithin_congr_set
   let F := fun (t : 𝕜) ↦ x + t • v
   have B : ContinuousAt F 0 := by apply Continuous.continuousAt; continuity
-  have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp [F]
+  have : s.toPred =ᶠ[𝓝 (F 0)] t.toPred := by convert h; simp [F]
   exact B.preimage_mem_nhds this
 
 theorem Filter.EventuallyEq.hasLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :

@@ -57,7 +57,7 @@ namespace LocallyCoverDense
 variable [G.Full] [G.Faithful] (Hld : LocallyCoverDense K G)
 
 theorem pushforward_cover_iff_cover_pullback {X : C} (S : Sieve X) :
-    K _ (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S := by
+    (K _).toPred (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S := by
   constructor
   · intro hS
     exact ⟨⟨_, hS⟩, (Sieve.fullyFaithfulFunctorGaloisCoinsertion G X).u_l_eq S⟩
@@ -70,9 +70,9 @@ then the set `{ T ∩ mor(C) | T ∈ K }` is a grothendieck topology of `C`.
 -/
 @[simps]
 def inducedTopology : GrothendieckTopology C where
-  sieves X S := K _ (S.functorPushforward G)
+  sieves X := ⟨fun S => (K _).toPred (S.functorPushforward G)⟩
   top_mem' X := by
-    change K _ _
+    change (K _).toPred _
     rw [Sieve.functorPushforward_top]
     exact K.top_mem _
   pullback_stable' X Y S f hS := by
@@ -82,7 +82,7 @@ def inducedTopology : GrothendieckTopology C where
       change (S.functorPushforward G) _ ↔ (S.functorPushforward G) _
       rw [G.map_comp]
     rw [this]
-    change K _ _
+    change (K _).toPred _
     apply Hld ⟨_, K.pullback_stable (G.map f) hS⟩
   transitive' X S hS S' H' := by
     apply K.transitive hS

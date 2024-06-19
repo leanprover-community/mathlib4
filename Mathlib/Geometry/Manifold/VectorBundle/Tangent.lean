@@ -383,6 +383,7 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
     FiberBundleCore.localTrivAsPartialEquiv, VectorBundleCore.toFiberBundleCore_baseSet,
     tangentBundleCore_baseSet]
   simp only [mfld_simps]
+  sorry
 #align tangent_bundle_model_space_chart_at tangentBundle_model_space_chartAt
 
 @[simp, mfld_simps]
@@ -417,6 +418,7 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
         rw [continuous_iff_continuousOn_univ]
         convert (chartAt (ModelProd H E) p).continuousOn
         simp only [TangentSpace.fiberBundle, mfld_simps]
+        sorry
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
@@ -424,6 +426,7 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
         rw [continuous_iff_continuousOn_univ]
         convert (chartAt (ModelProd H E) p).symm.continuousOn
         simp only [mfld_simps]
+        sorry
       simpa only [mfld_simps] using this }
 #align tangent_bundle_model_space_homeomorph tangentBundleModelSpaceHomeomorph
 

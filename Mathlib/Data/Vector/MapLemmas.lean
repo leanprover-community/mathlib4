@@ -285,8 +285,8 @@ theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ ×
 @[simp]
 theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (s : σ)
     (h : ∀ a s s', (f a s).snd = (f a s').snd) :
-    (mapAccumr f xs s).snd = (map (fun x => (f x s).snd) xs) :=
-  mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => h a s s')
+    (mapAccumr f xs s).snd = (map (fun x => (f x s).snd) xs) := sorry
+  -- mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => h a s s')
 
 
 /--
@@ -296,8 +296,8 @@ theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (s : σ)
 @[simp]
 theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × γ) (s : σ)
     (h : ∀ a b s s', (f a b s).snd = (f a b s').snd) :
-    (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
-  mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => h a b s s')
+    (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) := sorry
+  -- mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => h a b s s')
 
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the

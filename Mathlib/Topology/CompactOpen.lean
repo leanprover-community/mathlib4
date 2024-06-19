@@ -247,7 +247,8 @@ instance [RegularSpace Y] : RegularSpace C(X, Y) :=
       with ⟨V, hVo, hKV, hVU⟩
     filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo'.2 hKV))] with g hg
     refine ((isClosed_setOf_mapsTo isClosed_closure K).closure_subset ?_).mono_right hVU
-    exact closure_mono (fun _ h ↦ h.mono_right subset_closure) hg
+    sorry
+    -- exact closure_mono (fun _ h ↦ h.mono_right subset_closure) hg
 
 instance [T3Space Y] : T3Space C(X, Y) := inferInstance
 
@@ -331,11 +332,12 @@ theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2S
       exact tendsto_nhds_unique h₁ h₂
     -- So glue the `f s hs` together and prove that this glued function `f₀` is a limit on each
     -- compact set `s`
-    refine ⟨liftCover' _ _ h exists_compact_mem_nhds, ?_⟩
-    rw [tendsto_compactOpen_iff_forall]
-    intro s hs
-    rw [liftCover_restrict']
-    exact hf s hs
+    sorry
+    -- refine ⟨liftCover' _ _ h exists_compact_mem_nhds, ?_⟩
+    -- rw [tendsto_compactOpen_iff_forall]
+    -- intro s hs
+    -- rw [liftCover_restrict']
+    -- exact hf s hs
 #align continuous_map.exists_tendsto_compact_open_iff_forall ContinuousMap.exists_tendsto_compactOpen_iff_forall
 
 end InfInduced

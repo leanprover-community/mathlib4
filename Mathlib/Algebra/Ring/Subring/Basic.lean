@@ -877,7 +877,7 @@ elements of the closure of `s`. -/
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
     (zero : p 0) (one : p 1) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x : R, p x → p (-x))
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨⟨p, @mul⟩, one⟩, @add, zero⟩, @neg⟩).2 Hs h
+  (@closure_le _ _ _ ⟨⟨⟨⟨⟨p⟩, @mul⟩, one⟩, @add, zero⟩, @neg⟩).2 Hs h
 #align subring.closure_induction Subring.closure_induction
 
 @[elab_as_elim]

@@ -839,7 +839,7 @@ theorem indicatorConstLp_empty :
 
 theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
     (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0)
-    (h : indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c) : s =ᵐ[μ] t :=
+    (h : indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c) : s.toPred =ᵐ[μ] t.toPred :=
   .of_indicator_const hc <|
     calc
       s.indicator (fun _ ↦ c) =ᵐ[μ] indicatorConstLp p hs hsμ c := indicatorConstLp_coeFn.symm

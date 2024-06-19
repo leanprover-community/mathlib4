@@ -100,7 +100,7 @@ theorem setIntegral_congr (hs : MeasurableSet s) (h : EqOn f g s) :
 @[deprecated (since := "2024-04-17")]
 alias set_integral_congr := setIntegral_congr
 
-theorem setIntegral_congr_set_ae (hst : s =ᵐ[μ] t) : ∫ x in s, f x ∂μ = ∫ x in t, f x ∂μ := by
+theorem setIntegral_congr_set_ae (hst : s.toPred =ᵐ[μ] t.toPred) : ∫ x in s, f x ∂μ = ∫ x in t, f x ∂μ := by
   rw [Measure.restrict_congr_set hst]
 #align measure_theory.set_integral_congr_set_ae MeasureTheory.setIntegral_congr_set_ae
 
@@ -848,7 +848,7 @@ theorem setIntegral_mono (h : f ≤ g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g
 alias set_integral_mono := setIntegral_mono
 
 theorem setIntegral_mono_set (hfi : IntegrableOn f t μ) (hf : 0 ≤ᵐ[μ.restrict t] f)
-    (hst : s ≤ᵐ[μ] t) : ∫ x in s, f x ∂μ ≤ ∫ x in t, f x ∂μ :=
+    (hst : s.toPred ≤ᵐ[μ] t.toPred) : ∫ x in s, f x ∂μ ≤ ∫ x in t, f x ∂μ :=
   integral_mono_measure (Measure.restrict_mono_ae hst) hf hfi
 #align measure_theory.set_integral_mono_set MeasureTheory.setIntegral_mono_set
 

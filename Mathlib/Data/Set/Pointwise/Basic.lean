@@ -819,27 +819,27 @@ open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
 note [pointwise nat action]. -/
-protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
+protected noncomputable def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 #align set.has_nsmul Set.NSMul
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Set`. See note [pointwise nat action]. -/
 @[to_additive existing]
-protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
+protected noncomputable def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align set.has_npow Set.NPow
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
 addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
-protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
+protected noncomputable def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
   ⟨zsmulRec⟩
 #align set.has_zsmul Set.ZSMul
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
 @[to_additive existing]
-protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
+protected noncomputable def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 #align set.has_zpow Set.ZPow
 

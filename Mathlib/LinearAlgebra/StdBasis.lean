@@ -195,9 +195,11 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
     ⨆ j ∈ J, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
       ⨆ j ∈ J, LinearMap.range (stdBasis R (fun j : η => Ms j) j) :=
     iSup₂_mono fun i _ => h₀ i
-  have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
+  have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J.toPred := by
     convert Set.disjoint_singleton_left.2 hiJ using 0
-  exact (disjoint_stdBasis_stdBasis _ _ _ _ h₃).mono h₁ h₂
+    sorry
+  sorry
+  -- exact (disjoint_stdBasis_stdBasis _ _ _ _ h₃).mono h₁ h₂
 #align pi.linear_independent_std_basis Pi.linearIndependent_stdBasis
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]

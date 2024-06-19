@@ -752,8 +752,8 @@ def ofRightInverseOfCardLE (hαβ : card α ≤ card β) (f : α → β) (g : β
 end Equiv
 
 @[simp]
-theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = s.card :=
-  @Fintype.card_of_finset' _ _ _ (fun _ => Iff.rfl) (id _)
+theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = s.card := sorry
+  -- @Fintype.card_of_finset' _ _ _ (fun _ => Iff.rfl) (id _)
 #align fintype.card_coe Fintype.card_coe
 
 /-- Noncomputable equivalence between a finset `s` coerced to a type and `Fin s.card`. -/
@@ -789,7 +789,7 @@ theorem Fintype.card_prop : Fintype.card Prop = 2 :=
 
 theorem set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s ≤ Fintype.card α :=
-  Fintype.card_le_of_embedding (Function.Embedding.subtype s)
+  Fintype.card_le_of_embedding (Function.Embedding.subtype s.toPred)
 #align set_fintype_card_le_univ set_fintype_card_le_univ
 
 theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :

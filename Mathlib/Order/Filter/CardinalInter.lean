@@ -111,46 +111,46 @@ theorem eventually_cardinal_ball {S : Set ι} (hS : #S < c)
   exact cardinal_bInter_mem hS
 
 theorem EventuallyLE.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
-    (h : ∀ i, s i ≤ᶠ[l] t i) : ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
+    (h : ∀ i, (s i).toPred ≤ᶠ[l] (t i).toPred) : (⋃ i, s i).toPred ≤ᶠ[l] (⋃ i, t i).toPred :=
   ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs => mem_iUnion.2 <|
     (mem_iUnion.1 hs).imp hst
 
 theorem EventuallyEq.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
-    (h : ∀ i, s i =ᶠ[l] t i) : ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
+    (h : ∀ i, (s i).toPred =ᶠ[l] (t i).toPred) : (⋃ i, s i).toPred =ᶠ[l] (⋃ i, t i).toPred :=
   (EventuallyLE.cardinal_iUnion hic fun i => (h i).le).antisymm
     (EventuallyLE.cardinal_iUnion hic fun i => (h i).symm.le)
 
 theorem EventuallyLE.cardinal_bUnion {S : Set ι} (hS : #S < c)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
-    ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, (s i hi).toPred ≤ᶠ[l] (t i hi).toPred) :
+    (⋃ i ∈ S, s i ‹_›).toPred ≤ᶠ[l] (⋃ i ∈ S, t i ‹_›).toPred := by
   simp only [biUnion_eq_iUnion]
   exact EventuallyLE.cardinal_iUnion hS fun i => h i i.2
 
 theorem EventuallyEq.cardinal_bUnion {S : Set ι} (hS : #S < c)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
-    ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, (s i hi).toPred =ᶠ[l] (t i hi).toPred) :
+    (⋃ i ∈ S, s i ‹_›).toPred =ᶠ[l] (⋃ i ∈ S, t i ‹_›).toPred :=
   (EventuallyLE.cardinal_bUnion hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.cardinal_bUnion hS fun i hi => (h i hi).symm.le)
 
 theorem EventuallyLE.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
-    (h : ∀ i, s i ≤ᶠ[l] t i) : ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
+    (h : ∀ i, (s i).toPred ≤ᶠ[l] (t i).toPred) : (⋂ i, s i).toPred ≤ᶠ[l] (⋂ i, t i).toPred :=
   ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs =>
     mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
 
 theorem EventuallyEq.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
-    (h : ∀ i, s i =ᶠ[l] t i) : ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
+    (h : ∀ i, (s i).toPred =ᶠ[l] (t i).toPred) : (⋂ i, s i).toPred =ᶠ[l] (⋂ i, t i).toPred :=
   (EventuallyLE.cardinal_iInter hic fun i => (h i).le).antisymm
     (EventuallyLE.cardinal_iInter hic fun i => (h i).symm.le)
 
 theorem EventuallyLE.cardinal_bInter {S : Set ι} (hS : #S < c)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
-    ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, (s i hi).toPred ≤ᶠ[l] (t i hi).toPred) :
+    (⋂ i ∈ S, s i ‹_›).toPred ≤ᶠ[l] (⋂ i ∈ S, t i ‹_›).toPred := by
   simp only [biInter_eq_iInter]
   exact EventuallyLE.cardinal_iInter hS fun i => h i i.2
 
 theorem EventuallyEq.cardinal_bInter {S : Set ι} (hS : #S < c)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
-    ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, (s i hi).toPred =ᶠ[l] (t i hi).toPred) :
+    (⋂ i ∈ S, s i ‹_›).toPred =ᶠ[l] (⋂ i ∈ S, t i ‹_›).toPred :=
   (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).symm.le)
 
@@ -208,7 +208,7 @@ instance cardinalInter_ofCardinalUnion (l : Set (Set α)) (hc : 2 < c) (h₁ h�
 
 @[simp]
 theorem mem_ofCardinalUnion {l : Set (Set α)} (hc : 2 < c) {hunion hmono s} :
-    s ∈ ofCardinalUnion l hc hunion hmono ↔ l sᶜ :=
+    s ∈ ofCardinalUnion l hc hunion hmono ↔ l.toPred sᶜ :=
   Iff.rfl
 
 instance cardinalInterFilter_principal (s : Set α) : CardinalInterFilter (𝓟 s) c :=
@@ -284,7 +284,7 @@ inductive CardinalGenerateSets : Set α → Prop
 
 /-- `Filter.cardinalGenerate c g` is the greatest `cardinalInterFilter c` containing `g`. -/
 def cardinalGenerate (hc : 2 < c) : Filter α :=
-  ofCardinalInter (CardinalGenerateSets g) hc (fun _ => CardinalGenerateSets.sInter) fun _ _ =>
+  ofCardinalInter ⟨CardinalGenerateSets g⟩ hc (fun _ => CardinalGenerateSets.sInter) fun _ _ =>
     CardinalGenerateSets.superset
 
 lemma cardinalInter_ofCardinalGenerate (hc : 2 < c) :

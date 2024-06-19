@@ -144,7 +144,8 @@ that `η.app A` is an isomorphism.
 def unitCompPartialBijective [Reflective i] (A : C) {B : C} (hB : B ∈ i.essImage) :
     (A ⟶ B) ≃ (i.obj ((reflector i).obj A) ⟶ B) :=
   calc
-    (A ⟶ B) ≃ (A ⟶ i.obj (Functor.essImage.witness hB)) := Iso.homCongr (Iso.refl _) hB.getIso.symm
+    (A ⟶ B) ≃ (A ⟶ i.obj (Functor.essImage.witness hB)) := Iso.homCongr (Iso.refl _)
+      <| Functor.essImage.getIso hB |>.symm
     _ ≃ (i.obj _ ⟶ i.obj (Functor.essImage.witness hB)) := unitCompPartialBijectiveAux _ _
     _ ≃ (i.obj ((reflector i).obj A) ⟶ B) :=
       Iso.homCongr (Iso.refl _) (Functor.essImage.getIso hB)

@@ -235,8 +235,9 @@ theorem isStoppingTime_of_measurableSet_eq [Preorder ι] [Countable ι] {f : Fil
     {τ : Ω → ι} (hτ : ∀ i, MeasurableSet[f i] {ω | τ ω = i}) : IsStoppingTime f τ := by
   intro i
   rw [show {ω | τ ω ≤ i} = ⋃ k ≤ i, {ω | τ ω = k} by ext; simp]
-  refine MeasurableSet.biUnion (Set.to_countable _) fun k hk => ?_
-  exact f.mono hk _ (hτ k)
+  sorry
+  -- refine MeasurableSet.biUnion (Set.to_countable _) fun k hk => ?_
+  -- exact f.mono hk _ (hτ k)
 #align measure_theory.is_stopping_time_of_measurable_set_eq MeasureTheory.isStoppingTime_of_measurableSet_eq
 
 end Countable

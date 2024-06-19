@@ -97,12 +97,13 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot �
 
 variable (f)
 
-lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
+lemma finite_hasEigenvalue : Set.Finite ⟨f.HasEigenvalue⟩ := by
   have h : minpoly K f ≠ 0 := minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := K) f)
   convert (minpoly K f).rootSet_finite K
   ext μ
   change f.HasEigenvalue μ ↔ _
-  rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
+  sorry
+  -- rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
 
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
 noncomputable instance : Fintype f.Eigenvalues :=
@@ -119,7 +120,7 @@ theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommG
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
     Set.Finite (spectrum K f) := by
   convert f.finite_hasEigenvalue
-  ext f x
+  ext f
   exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
 
 variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]

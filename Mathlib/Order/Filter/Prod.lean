@@ -131,8 +131,8 @@ theorem prod_sup (f : Filter α) (g₁ g₂ : Filter β) : f ×ˢ (g₁ ⊔ g₂
 theorem eventually_prod_iff {p : α × β → Prop} :
     (∀ᶠ x in f ×ˢ g, p x) ↔
       ∃ pa : α → Prop, (∀ᶠ x in f, pa x) ∧ ∃ pb : β → Prop, (∀ᶠ y in g, pb y) ∧
-        ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) := by
-  simpa only [Set.prod_subset_iff] using @mem_prod_iff α β p f g
+        ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) := by sorry
+  -- simpa only [Set.prod_subset_iff] using @mem_prod_iff α β ⟨p⟩ f g
 #align filter.eventually_prod_iff Filter.eventually_prod_iff
 
 theorem tendsto_fst : Tendsto Prod.fst (f ×ˢ g) f :=

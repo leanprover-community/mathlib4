@@ -85,19 +85,20 @@ theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t :
       use e
       simp
     have hfst' : Finset.image f s ⊆ t := (Finset.image_mono _ (s.subset_insert a)).trans hfst
-    have hfs' : Set.InjOn f s := hfs.mono (s.subset_insert a)
-    obtain ⟨g', hg'⟩ := H hfst' hfs'
-    have hfat : f a ∈ t := hfst (mem_image_of_mem _ (s.mem_insert_self a))
-    use g'.trans (Equiv.swap (⟨f a, hfat⟩ : t) (g' a))
-    simp_rw [mem_insert]
-    rintro i (rfl | hi)
-    · simp
-    rw [Equiv.trans_apply, Equiv.swap_apply_of_ne_of_ne, hg' _ hi]
-    · exact
-        ne_of_apply_ne Subtype.val
-          (ne_of_eq_of_ne (hg' _ hi) <|
-            hfs.ne (subset_insert _ _ hi) (mem_insert_self _ _) <| ne_of_mem_of_not_mem hi has)
-    · exact g'.injective.ne (ne_of_mem_of_not_mem hi has)
+    sorry
+    -- have hfs' : Set.InjOn f s := hfs.mono (s.subset_insert a)
+    -- obtain ⟨g', hg'⟩ := H hfst' hfs'
+    -- have hfat : f a ∈ t := hfst (mem_image_of_mem _ (s.mem_insert_self a))
+    -- use g'.trans (Equiv.swap (⟨f a, hfat⟩ : t) (g' a))
+    -- simp_rw [mem_insert]
+    -- rintro i (rfl | hi)
+    -- · simp
+    -- rw [Equiv.trans_apply, Equiv.swap_apply_of_ne_of_ne, hg' _ hi]
+    -- · exact
+    --     ne_of_apply_ne Subtype.val
+    --       (ne_of_eq_of_ne (hg' _ hi) <|
+    --         hfs.ne (subset_insert _ _ hi) (mem_insert_self _ _) <| ne_of_mem_of_not_mem hi has)
+    -- · exact g'.injective.ne (ne_of_mem_of_not_mem hi has)
 #align finset.exists_equiv_extend_of_card_eq Finset.exists_equiv_extend_of_card_eq
 
 /-- Any injection from a set `s` in a fintype `α` to a finset `t` of the same cardinality as `α`

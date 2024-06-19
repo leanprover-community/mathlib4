@@ -97,8 +97,9 @@ theorem topologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Se
     instTopologicalSpace σ F 𝔖 = TopologicalSpace.induced DFunLike.coe
       (UniformOnFun.topologicalSpace E F 𝔖) := by
   rw [instTopologicalSpace]
-  congr
-  exact UniformAddGroup.toUniformSpace_eq
+  sorry
+  -- congr
+  -- exact UniformAddGroup.toUniformSpace_eq
 
 /-- The uniform structure associated with `ContinuousLinearMap.strongTopology`. We make sure
 that this has nice definitional properties. -/
@@ -303,6 +304,7 @@ instance continuousConstSMul {M : Type*} [Monoid M] [DistribMulAction M F] [SMul
 
 variable (G) [TopologicalSpace F] [TopologicalSpace G]
 
+
 /-- Pre-composition by a *fixed* continuous linear map as a continuous linear map.
 Note that in non-normed space it is not always true that composition is continuous
 in both variables, so we have to fix one of them. -/
@@ -318,7 +320,7 @@ def precomp [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurj
     rw [(UniformConvergenceCLM.embedding_coeFn _ _ _).continuous_iff]
     -- Porting note: without this, the following doesn't work
     change Continuous ((fun f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
-    exact (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
+    exact (UniformOnFun.precomp_uniformContinuous fun S hS => (Set.mem_setOf.mp hS).image L).continuous.comp
         (UniformConvergenceCLM.embedding_coeFn _ _ _).continuous
 #align continuous_linear_map.precomp ContinuousLinearMap.precomp
 

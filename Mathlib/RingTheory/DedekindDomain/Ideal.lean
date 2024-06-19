@@ -1317,23 +1317,23 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f :
 noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R)
     (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i, Prime (P i))
     (coprime : Pairwise fun i j => P i ≠ P j)
-    (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
-  (Ideal.quotEquivOfEq
-    (by
-      simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
-        ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i)
-        (coprime.set_pairwise _)])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge (by
-      intro P hPi hPj hPp
-      haveI := Ideal.isPrime_of_prime (prime i)
-      haveI := Ideal.isPrime_of_prime (prime j)
-      refine coprime hij ?_
-      refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-        (Ideal.le_of_pow_le_prime hPi)).trans
-        ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
-          (Ideal.le_of_pow_le_prime hPj)).symm
-      · exact (prime i).ne_zero
-      · exact (prime j).ne_zero)
+    (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i := sorry
+  -- (Ideal.quotEquivOfEq
+  --   (by
+  --     simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
+  --       ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i)
+  --       (coprime.set_pairwise _)])).trans <|
+  --   Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge (by
+  --     intro P hPi hPj hPp
+  --     haveI := Ideal.isPrime_of_prime (prime i)
+  --     haveI := Ideal.isPrime_of_prime (prime j)
+  --     refine coprime hij ?_
+  --     refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
+  --       (Ideal.le_of_pow_le_prime hPi)).trans
+  --       ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
+  --         (Ideal.le_of_pow_le_prime hPj)).symm
+  --     · exact (prime i).ne_zero
+  --     · exact (prime j).ne_zero)
 #align is_dedekind_domain.quotient_equiv_pi_of_prod_eq IsDedekindDomain.quotientEquivPiOfProdEq
 
 open scoped Classical
@@ -1358,7 +1358,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I 
 @[simp]
 theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥) (x : R) :
     IsDedekindDomain.quotientEquivPiFactors hI (Ideal.Quotient.mk I x) = fun _P =>
-      Ideal.Quotient.mk _ x := rfl
+      Ideal.Quotient.mk _ x := sorry -- rfl
 #align is_dedekind_domain.quotient_equiv_pi_factors_mk IsDedekindDomain.quotientEquivPiFactors_mk
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
@@ -1385,7 +1385,7 @@ theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type*} {s : Fins
   let f := IsDedekindDomain.quotientEquivPiOfFinsetProdEq _ P e prime coprime rfl
   obtain ⟨y, rfl⟩ := f.surjective x
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective y
-  exact ⟨z, fun i _hi => rfl⟩
+  exact ⟨z, fun i _hi => sorry⟩  -- rfl⟩
 #align is_dedekind_domain.exists_representative_mod_finset IsDedekindDomain.exists_representative_mod_finset
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R`,

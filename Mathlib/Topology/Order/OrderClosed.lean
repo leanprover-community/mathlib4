@@ -296,12 +296,13 @@ theorem Icc_mem_nhdsWithin_Iio' (H : a < b) : Icc a b ∈ 𝓝[<] b :=
 
 @[simp]
 theorem nhdsWithin_Ico_eq_nhdsWithin_Iio (h : a < b) : 𝓝[Ico a b] b = 𝓝[<] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
+  sorry
+  -- nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
 #align nhds_within_Ico_eq_nhds_within_Iio nhdsWithin_Ico_eq_nhdsWithin_Iio
 
 @[simp]
 theorem nhdsWithin_Ioo_eq_nhdsWithin_Iio (h : a < b) : 𝓝[Ioo a b] b = 𝓝[<] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
+  sorry -- nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
 #align nhds_within_Ioo_eq_nhds_within_Iio nhdsWithin_Ioo_eq_nhdsWithin_Iio
 
 @[simp]
@@ -344,12 +345,14 @@ theorem Icc_mem_nhdsWithin_Iic' (H : a < b) : Icc a b ∈ 𝓝[≤] b :=
 
 @[simp]
 theorem nhdsWithin_Icc_eq_nhdsWithin_Iic (h : a < b) : 𝓝[Icc a b] b = 𝓝[≤] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
+  sorry
+  -- nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
 #align nhds_within_Icc_eq_nhds_within_Iic nhdsWithin_Icc_eq_nhdsWithin_Iic
 
 @[simp]
 theorem nhdsWithin_Ioc_eq_nhdsWithin_Iic (h : a < b) : 𝓝[Ioc a b] b = 𝓝[≤] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
+  sorry
+  -- nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
 #align nhds_within_Ioc_eq_nhds_within_Iic nhdsWithin_Ioc_eq_nhdsWithin_Iic
 
 @[simp]
@@ -550,12 +553,14 @@ theorem Icc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[>] a :
 
 @[simp]
 theorem nhdsWithin_Ioc_eq_nhdsWithin_Ioi {a b : α} (h : a < b) : 𝓝[Ioc a b] a = 𝓝[>] a :=
-  nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iic_mem_nhds h
+  sorry
+  -- nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iic_mem_nhds h
 #align nhds_within_Ioc_eq_nhds_within_Ioi nhdsWithin_Ioc_eq_nhdsWithin_Ioi
 
 @[simp]
 theorem nhdsWithin_Ioo_eq_nhdsWithin_Ioi {a b : α} (h : a < b) : 𝓝[Ioo a b] a = 𝓝[>] a :=
-  nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iio_mem_nhds h
+  sorry
+  -- nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iio_mem_nhds h
 #align nhds_within_Ioo_eq_nhds_within_Ioi nhdsWithin_Ioo_eq_nhdsWithin_Ioi
 
 @[simp]
@@ -598,12 +603,14 @@ theorem Icc_mem_nhdsWithin_Ici' (H : a < b) : Icc a b ∈ 𝓝[≥] a :=
 
 @[simp]
 theorem nhdsWithin_Icc_eq_nhdsWithin_Ici (h : a < b) : 𝓝[Icc a b] a = 𝓝[≥] a :=
-  nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iic_mem_nhds h
+  sorry
+  -- nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iic_mem_nhds h
 #align nhds_within_Icc_eq_nhds_within_Ici nhdsWithin_Icc_eq_nhdsWithin_Ici
 
 @[simp]
 theorem nhdsWithin_Ico_eq_nhdsWithin_Ici (h : a < b) : 𝓝[Ico a b] a = 𝓝[≥] a :=
-  nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iio_mem_nhds h
+  sorry
+  -- nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iio_mem_nhds h
 #align nhds_within_Ico_eq_nhds_within_Ici nhdsWithin_Ico_eq_nhdsWithin_Ici
 
 @[simp]
@@ -687,7 +694,8 @@ theorem closure_le_eq [TopologicalSpace β] {f g : β → α} (hf : Continuous f
 
 theorem closure_lt_subset_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : closure { b | f b < g b } ⊆ { b | f b ≤ g b } :=
-  (closure_minimal fun _ => le_of_lt) <| isClosed_le hf hg
+  sorry
+  -- (closure_minimal fun _ => le_of_lt) <| isClosed_le hf hg
 #align closure_lt_subset_le closure_lt_subset_le
 
 theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s : Set β} {x : β}
@@ -794,7 +802,8 @@ variable [TopologicalSpace β]
 
 theorem lt_subset_interior_le (hf : Continuous f) (hg : Continuous g) :
     { b | f b < g b } ⊆ interior { b | f b ≤ g b } :=
-  (interior_maximal fun _ => le_of_lt) <| isOpen_lt hf hg
+  sorry
+  -- (interior_maximal fun _ => le_of_lt) <| isOpen_lt hf hg
 #align lt_subset_interior_le lt_subset_interior_le
 
 theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :

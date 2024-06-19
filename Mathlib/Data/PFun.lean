@@ -90,7 +90,7 @@ theorem dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=
 #align pfun.dom_eq PFun.dom_eq
 
 /-- Evaluate a partial function -/
-def fn (f : α →. β) (a : α) : Dom f a → β :=
+def fn (f : α →. β) (a : α) : Dom f |>.toPred a → β :=
   (f a).get
 #align pfun.fn PFun.fn
 
@@ -238,7 +238,7 @@ theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
 
 theorem bind_defined {α β γ} (p : Set α) {f : α →. β} {g : β → α →. γ} (H1 : p ⊆ f.Dom)
     (H2 : ∀ x, p ⊆ (g x).Dom) : p ⊆ (f >>= g).Dom := fun a ha =>
-  (⟨H1 ha, H2 _ ha⟩ : (f >>= g).Dom a)
+  (⟨H1 ha, H2 _ ha⟩ : (f >>= g).Dom.toPred a)
 #align pfun.bind_defined PFun.bind_defined
 
 /-- First return map. Transforms a partial function `f : α →. β ⊕ α` into the partial function

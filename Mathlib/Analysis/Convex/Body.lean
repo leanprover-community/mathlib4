@@ -105,10 +105,10 @@ instance : Add (ConvexBody V) where
     ⟨K + L, K.convex.add L.convex, K.isCompact.add L.isCompact,
       K.nonempty.add L.nonempty⟩
 
-instance : Zero (ConvexBody V) where
+noncomputable instance : Zero (ConvexBody V) where
   zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
 
-instance : SMul ℕ (ConvexBody V) where
+noncomputable instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
 
 -- Porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
@@ -116,7 +116,7 @@ theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : 
   | 0, _ => rfl
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
 
-instance : AddMonoid (ConvexBody V) :=
+noncomputable instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
@@ -129,10 +129,10 @@ theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
 #align convex_body.coe_zero ConvexBody.coe_zero
 
-instance : Inhabited (ConvexBody V) :=
+noncomputable instance : Inhabited (ConvexBody V) :=
   ⟨0⟩
 
-instance : AddCommMonoid (ConvexBody V) :=
+noncomputable instance : AddCommMonoid (ConvexBody V) :=
   SetLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 end ContinuousAdd

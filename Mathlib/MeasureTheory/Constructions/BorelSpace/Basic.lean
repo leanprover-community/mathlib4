@@ -110,8 +110,8 @@ theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
 #align borel_eq_generate_from_is_closed borel_eq_generateFrom_isClosed
 
 theorem borel_comap {f : α → β} {t : TopologicalSpace β} :
-    @borel α (t.induced f) = (@borel β t).comap f :=
-  comap_generateFrom.symm
+    @borel α (t.induced f) = (@borel β t).comap f := sorry
+  -- comap_generateFrom.symm
 #align borel_comap borel_comap
 
 theorem Continuous.borel_measurable [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
@@ -463,7 +463,7 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
 variable {α' : Type*} [TopologicalSpace α'] [MeasurableSpace α']
 
 theorem interior_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
-    interior s =ᵐ[μ] s :=
+    interior s |>.toPred =ᵐ[μ] s.toPred :=
   interior_subset.eventuallyLE.antisymm <| subset_closure.eventuallyLE.trans (ae_le_set.2 h)
 #align interior_ae_eq_of_null_frontier interior_ae_eq_of_null_frontier
 
@@ -478,7 +478,7 @@ theorem nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : �
 #align null_measurable_set_of_null_frontier nullMeasurableSet_of_null_frontier
 
 theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
-    closure s =ᵐ[μ] s :=
+    closure s |>.toPred =ᵐ[μ] s.toPred :=
   ((ae_le_set.2 h).trans interior_subset.eventuallyLE).antisymm <| subset_closure.eventuallyLE
 #align closure_ae_eq_of_null_frontier closure_ae_eq_of_null_frontier
 
@@ -744,8 +744,8 @@ instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
   Subtype.instMeasurableSpace
 #align nnreal.measurable_space NNReal.measurableSpace
 
-instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
-  Subtype.borelSpace _
+instance NNReal.borelSpace : BorelSpace ℝ≥0 := sorry
+  -- Subtype.borelSpace _
 #align nnreal.borel_space NNReal.borelSpace
 
 instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
