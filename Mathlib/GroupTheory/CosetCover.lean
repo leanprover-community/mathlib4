@@ -148,8 +148,10 @@ structure Group.LeftCosetCover (G : Type*) [Group G] where
 structure AddGroup.LeftCosetCover (G : Type*) [AddGroup G] where
   carrier : Type*
   offset : carrier → G
-  subgroup : carrier → AddSubgroup G
-  covers : ⋃ i, offset i +ᵥ (subgroup i : Set G) = Set.univ
+  addSubgroup : carrier → AddSubgroup G
+  covers : ⋃ i, offset i +ᵥ (addSubgroup i : Set G) = Set.univ
+
+attribute [to_additive] Group.LeftCosetCover
 
 variable {G : Type*} [Group G] (c : Group.LeftCosetCover G)
 
@@ -413,6 +415,7 @@ theorem Group.LeftCosetCover.sieve_subgroup_eq
       then Group.LeftCosetCover.core c
       else c.subgroup k.1 := rfl
 
+
 @[to_additive]
 theorem Group.LeftCosetCover.sieve_subgroup_finite_index_iff
     [Finite c.carrier]
@@ -655,16 +658,18 @@ theorem Group.LeftCosetCover.normalize'_density
     exact { finiteIndex := hx }
   simp only [Function.support_inv (G₀ := ℚ), Finset.coe_univ, Set.subset_univ]
 
-@[to_additive]
-def Group.LeftCosetCover.normalize_to_sieve_carrier
-    [Finite c.carrier]
-    [DecidableEq (Subgroup G)]
-    [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
-    (i : c.normalize.carrier) :
-    c.sieve.carrier :=
-    ⟨i.1, ⟨i.2, by rw [dif_pos _]; exact i.2.prop⟩⟩
+/- This is the problematic to_additive theorem
+Error message :
+|  application type mismatch
+|    One.toOfNat1
+|  argument has type
+|    Zero ↥(c.addSubgroup ↑⟨⟨x✝¹.fst, ⋯⟩, ⟨↑x✝¹.snd, ⋯⟩⟩.fst)
+|  but function has type
+|    [inst : One ↥(c.addSubgroup ↑⟨⟨x✝¹.fst, ⋯⟩, ⟨↑x✝¹.snd, ⋯⟩⟩.fst)] →
+|      OfNat (↥(c.addSubgroup ↑⟨⟨x✝¹.fst, ⋯⟩, ⟨↑x✝¹.snd, ⋯⟩⟩.fst)) 1
+-/
 
-@[to_additive]
+-- @[to_additive]
 theorem Group.LeftCosetCover.normalize_density
     [Finite c.carrier]
     [DecidableEq (Subgroup G)]
@@ -704,7 +709,105 @@ theorem Group.LeftCosetCover.normalize_density
     exact { finiteIndex := hx }
   · simp only [Function.support_inv (G₀ := ℚ), Finset.coe_univ, Set.subset_univ]
 
+theorem AddGroup.LeftCosetCover.normalize_density
+    (G : Type*) [AddGroup G] (c : AddGroup.LeftCosetCover G)
+    [Finite c.carrier]
+    [DecidableEq (AddSubgroup G)]
+    [DecidablePred (AddSubgroup.FiniteIndex : AddSubgroup G → Prop)] :
+    AddGroup.LeftCosetCover.density (AddGroup.LeftCosetCover.normalize c)
+      = AddGroup.LeftCosetCover.density c := by
+  have : Fintype c.carrier := Fintype.ofFinite c.carrier
+  have : Fintype (sieve c).carrier := Fintype.ofFinite (sieve c).carrier
+  have : Fintype (normalize c).carrier := Fintype.ofFinite (normalize c).carrier
+  rw [← c.sieve_density]
+  unfold density
+  rw [finsum_eq_finset_sum_of_support_subset (M := ℚ) _ (s := Finset.univ)]
+  rw [finsum_eq_finset_sum_of_support_subset (M := ℚ) _ (s := Finset.univ.filter (fun x => ((sieve c).addSubgroup x).FiniteIndex))]
+  · apply Finset.sum_bij' (α := ℚ) (ι := c.normalize.carrier) (κ := c.sieve.carrier) (s := Finset.univ) (t := Finset.filter (fun x ↦ (c.sieve.addSubgroup x).FiniteIndex) Finset.univ)
+      (f := fun i ↦ ((c.normalize.addSubgroup i).index : ℚ)⁻¹)
+      (g := fun i ↦ ((c.sieve.addSubgroup i).index : ℚ)⁻¹)
+      (fun i _ ↦ ⟨i.1, ⟨i.2, by rw [dif_pos _]; exact i.2.prop⟩⟩)
+      (fun i hi ↦ by
+        simp only [Finset.mem_filter, Finset.mem_univ, true_and, sieve_addSubgroup_finite_index_iff] at hi
+        refine ⟨⟨i.1, by rwa [Set.mem_setOf_eq]⟩,
+          ⟨i.2, by convert i.2.prop; rw [dif_pos hi]⟩⟩)
+    · exact fun _ _ ↦ rfl
+    · exact fun _ _ ↦ rfl
+    · intro i _
+      congr 3
+      rw [normalize_addSubgroup_eq_core, eq_comm, c.sieve_addSubgroup_eq_core_iff]
+      exact i.1.prop
+    · intro i _
+      simp only [Set.mem_setOf_eq, Set.coe_setOf, Finset.mem_filter, Finset.mem_univ, true_and]
+      rw [sieve_addSubgroup_finite_index_iff]
+      exact i.1.prop
+    · exact fun _ _ ↦ Finset.mem_univ _
+  · intro x
+    simp only [Function.support_inv (G₀ := ℚ), Function.mem_support (M := ℚ), ne_eq, Nat.cast_eq_zero (R := ℚ),
+      Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
+    intro hx
+    exact { finiteIndex := hx }
+  · simp only [Function.support_inv (G₀ := ℚ), Finset.coe_univ, Set.subset_univ]
 
+
+set_option linter.toAdditiveExisting false
+attribute [to_additive] Group.LeftCosetCover.normalize_density
+
+@[to_additive]
+theorem Group.LeftCosetCover.disjoint_normalize_of_density_eq_one
+    [Finite c.carrier]
+    [DecidableEq (Subgroup G)]
+    [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
+    (h : Group.LeftCosetCover.density c = 1) :
+    Set.PairwiseDisjoint { i | (c.subgroup i).FiniteIndex} (fun i ↦ c.offset i • (c.subgroup i : Set G)) := by
+  rw [← Group.LeftCosetCover.normalize_density] at h
+  intro i hi j hj hij cc hi' hj' x hx
+  -- We know the `f k • K k` are pairwise disjoint and need to prove that the `g i • H i` are.
+  rw [Set.mem_setOf_eq] at hi hj
+  simp only [Set.le_eq_subset] at hi' hj'
+  have hk' (i : c.carrier) (hi : (c.subgroup i).FiniteIndex) (hxi : x ∈ c.offset i • (c.subgroup i : Set G)) :
+      ∃ (k : (normalize c).carrier), k.1.1 = i ∧ (normalize c).subgroup k = core c ∧ x ∈ (normalize c).offset k • (core c : Set G) := by
+    rw [(c.eq_iUnion_smul_core i hi)] at hxi
+    obtain ⟨g, hg, rfl⟩ := hxi
+    simp only [Set.mem_iUnion, exists_prop, Subtype.exists, exists_and_right] at hg
+    simp only at hx
+    obtain ⟨k, hk, hk', hk''⟩ := hg
+    refine ⟨⟨⟨i, hi⟩, ⟨k, hk⟩, hk'⟩, rfl, c.normalize_subgroup_eq_core _, ?_⟩
+    simp only [normalize, Set.coe_setOf, Set.mem_setOf_eq, ← smul_eq_mul, smul_assoc]
+    exact Set.smul_mem_smul_set hk''
+  have : Fintype (normalize c).carrier := Fintype.ofFinite _
+  have hcovers : ⋃ i ∈ (Finset.univ :Finset  (normalize c).carrier), (normalize c).offset i • (core c :Set G) = Set.univ := by
+    simp only [Finset.mem_univ, Set.iUnion_true]
+    exact (normalize c).covers
+  have ⟨k₁, hik₁, hk₁, hxk₁⟩ := hk' i hi (hi' hx)
+  have ⟨k₂, hjk₂, hk₂, hxk₂⟩ := hk' j hj (hj' hx)
+  rw [← Set.singleton_subset_iff, ← Set.le_iff_subset] at hxk₁ hxk₂ ⊢
+  apply Subgroup.pairwiseDisjoint_leftCoset_cover_const_of_index_eq hcovers
+    ?_ ?_ ?_ ?_ hxk₁ hxk₂
+  · unfold density at h
+    rw [finsum_eq_finset_sum_of_support_subset (s := Finset.univ)] at h
+    · rw [Finset.sum_congr rfl (g := fun _ ↦ ((core c).index : ℚ)⁻¹)] at h
+      · rw [Finset.sum_const] at h
+        rw [nsmul_eq_mul] at h
+        rw [mul_inv_eq_one₀] at h
+        · simp only [Nat.cast_inj] at h
+          rw [← h]
+          exact Eq.symm (Nat.card_eq_finsetCard Finset.univ)
+        · simp only [ne_eq, Nat.cast_eq_zero]
+          exact (core_finiteIndex c).finiteIndex
+      · rintro ⟨⟨i, x⟩, hi⟩ _
+        rw [normalize_subgroup_eq_core]
+    · simp only [Finset.coe_univ, Set.subset_univ]
+
+  · simp only [Finset.mem_val, Finset.mem_univ]
+    trivial
+  · simp only [Finset.mem_val, Finset.mem_univ]
+    trivial
+  · intro hk
+    apply hij
+    rw [← hik₁, ← hjk₂, hk]
+
+--@[to_additive]
 theorem Group.LeftCosetCover.disjoint_normalize'_of_density_eq_one
     [Finite c.carrier]
     [DecidableEq (Subgroup G)]
@@ -717,7 +820,7 @@ theorem Group.LeftCosetCover.disjoint_normalize'_of_density_eq_one
   rw [Set.mem_setOf_eq] at hi hj
   simp only [Set.le_eq_subset] at hi' hj'
   have hk' (i : c.carrier) (hi : (c.subgroup i).FiniteIndex) (hi' : cc ≤ c.offset i • (c.subgroup i : Set G)) :
-      ∃ (k : (normalize c).carrier), k.1.1 = i ∧ (normalize c).subgroup k = core c ∧ x ∈ (normalize c).offset k • (core c : Set G) := by
+      ∃ (k : (normalize' c).carrier), k.1.1 = i ∧ (normalize' c).subgroup k = core c ∧ x ∈ (normalize' c).offset k • (core c : Set G) := by
     rw [(c.eq_iUnion_smul_core i hi)] at hi'
     obtain ⟨g, hg, rfl⟩ := hi' hx
     simp only [Set.mem_iUnion, exists_prop, Subtype.exists, exists_and_right] at hg
@@ -728,19 +831,20 @@ theorem Group.LeftCosetCover.disjoint_normalize'_of_density_eq_one
          unfold sieve
          simp only [if_pos hi]
          apply core_finiteIndex⟩, rfl, by
-         unfold normalize
+         unfold normalize'
          rw [Group.LeftCosetCover.sieve_subgroup_eq_core_iff]
          exact hi,
-      by unfold normalize sieve
+      by unfold normalize' sieve
          simp only [← smul_eq_mul, smul_assoc]
          exact Set.smul_mem_smul_set hk''⟩
-  have : Finite (normalize c).carrier := normalize_finite c
-  have : Fintype (normalize c).carrier := Fintype.ofFinite (normalize c).carrier
-  have hcovers : ⋃ i ∈ (Finset.univ :Finset  (normalize c).carrier), (normalize c).offset i • (core c :Set G) = Set.univ := by
+  have : Finite (sieve c).carrier := by exact sieve_finite c
+  have : Finite (normalize' c).carrier := sorry
+  have : Fintype (normalize' c).carrier := Fintype.ofFinite _
+  have hcovers : ⋃ i ∈ (Finset.univ :Finset  (normalize' c).carrier), (normalize' c).offset i • (core c :Set G) = Set.univ := by
     simp only [Finset.mem_univ, Set.iUnion_true]
-    convert (normalize c).covers with ⟨⟨i, ⟨s, hs⟩⟩, hi⟩
+    convert (normalize' c).covers with ⟨⟨i, ⟨s, hs⟩⟩, hi⟩
     simp only [Set.mem_setOf_eq, sieve_subgroup_finite_index_iff] at hi
-    unfold normalize
+    unfold normalize'
     rw [eq_comm, sieve_subgroup_eq_core_iff]
     exact hi
   have ⟨k₁, hik₁, hk₁, hxk₁⟩ := hk' i hi hi'
@@ -761,7 +865,7 @@ theorem Group.LeftCosetCover.disjoint_normalize'_of_density_eq_one
           exact (core_finiteIndex c).finiteIndex
       · rintro ⟨⟨i, x⟩, hi⟩ _
         congr
-        unfold normalize
+        unfold normalize'
         simpa only [sieve_subgroup_eq_core_iff, Set.mem_setOf_eq, sieve_subgroup_finite_index_iff] using hi
     · simp only [Finset.coe_univ, Set.subset_univ]
 
