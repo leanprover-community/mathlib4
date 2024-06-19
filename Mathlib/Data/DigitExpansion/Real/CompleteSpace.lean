@@ -78,7 +78,7 @@ instance [Nonempty Z] : Filter.IsCountablyGenerated (uniformity (real Z b)) := b
         rcases eq_or_ne f (single x 1) with rfl|H
         · exact Or.inl rfl
         · refine Or.inr ⟨?_, x, fun y hy ↦ ?_⟩
-          · rw [sub_ne_zero, ne_eq, ←Subtype.ext_iff]
+          · rw [sub_ne_zero, ne_eq, ← Subtype.ext_iff]
             exact H
           · rw [DigitExpansion.sub_def, hx _ hy, val_single, single_apply_of_ne _ _ _ hy.ne',
                 sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff]
@@ -115,8 +115,8 @@ instance [Nonempty Z] : Filter.IsCountablyGenerated (uniformity (real Z b)) := b
       · simpa [← positive_iff] using single_positive_of_ne_zero _ h01
       · rwa [Function.iterate_succ', Function.comp_apply, shift_pos_iff]⟩
 
-noncomputable instance [Nonempty Z] : CompleteSpace (real Z b) :=
-  by inhabit Z; exact
+noncomputable instance [Nonempty Z] : CompleteSpace (real Z b) := by
+  inhabit Z; exact
   UniformSpace.complete_of_cauchySeq_tendsto <| fun a ha ↦
   ⟨⨆ n, sInf {a k | k ≥ n}, by
     intro s hs
