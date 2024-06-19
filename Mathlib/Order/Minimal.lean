@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Finset.Basic
 import Mathlib.Order.Antichain
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.RelIso.Set
-import Mathlib.Data.Finset.Basic
 
 #align_import order.minimal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
