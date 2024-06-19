@@ -31,7 +31,7 @@ The linter reports also an array of positions, for ease of replacing.
 -/
 def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Array Position)) := do
   -- check if there is a `nolint` and do nothing it there isn't one.
-  if stx.isOfKind ``Lean.Parser.Command.attribute then return none
+  if (stx.find? (·.isOfKind ``Lean.Parser.Command.attribute)).isSome then return none
   match stx.find? (·.isOfKind ``Std.Tactic.Lint.nolint) with
     | none => return none
     | some nl =>

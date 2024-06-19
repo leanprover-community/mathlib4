@@ -28,6 +28,11 @@ theorem imSimpToo : True := .intro
 set_option linter.unnecessarySyntax true in
 attribute [nolint simpNF] imSimp
 
+-- the linter ignores `attribute`, even inside an `open ... in`
+#guard_msgs in
+set_option linter.unnecessarySyntax true in
+open Nat in attribute [nolint simpNF] imSimp
+
 -- this lemma should not be labeled as `simp`
 #guard_msgs in
 set_option linter.unnecessarySyntax true in
