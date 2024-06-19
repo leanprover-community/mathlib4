@@ -422,8 +422,8 @@ theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
 
 /-- Total probability law using `condexp` as conditional probability. -/
 theorem integral_condexp_indicator [mF : MeasurableSpace F] {Y : α → F} (hY : Measurable Y)
-    [IsProbabilityMeasure μ] {A : Set α} (hA : MeasurableSet A) :
-    (μ A).toReal = ∫ x, (μ[(A.indicator fun _ ↦ (1 : ℝ)) | mF.comap Y]) x ∂μ := by
+    [IsFiniteMeasure μ] {A : Set α} (hA : MeasurableSet A) :
+    ∫ x, (μ[(A.indicator fun _ ↦ (1 : ℝ)) | mF.comap Y]) x ∂μ = (μ A).toReal := by
   have total_exp : ∫ x, (μ[A.indicator fun _ ↦ (1 : ℝ) | mF.comap Y]) x ∂μ
       = ∫ x, A.indicator (fun x ↦ 1) x ∂ μ :=
     integral_condexp (measurable_iff_comap_le.mp hY) ((integrable_const _).indicator hA)
