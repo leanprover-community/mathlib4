@@ -110,9 +110,9 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   apply Dual.eq_of_preReflection_mapsTo' (P₁.ne_zero i) (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
-  · exact P₁.reflection_mapsto_root i
+  · exact P₁.reflection_mapsTo_root i
   · exact hr ▸ he ▸ P₂.coroot_root_two i
-  · exact hr ▸ he ▸ P₂.reflection_mapsto_root i
+  · exact hr ▸ he ▸ P₂.reflection_mapsTo_root i
 
 /-- This lemma exists to support the definition `RootSystem.mk'` and usually should not be used
 directly. The lemma `RootPairing.coroot_eq_coreflection_of_root_eq_of_span_eq_top` or even
@@ -155,7 +155,7 @@ lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZeroSMulD
     {i j k : ι} (hk : P.root k = P.reflection i (P.root j)) :
     P.coroot k = P.coreflection i (P.coroot j) :=
   coroot_eq_coreflection_of_root_eq_of_span_eq_top' P.toPerfectPairing P.root P.coroot
-    P.coroot_root_two P.reflection_mapsto_root hsp hk
+    P.coroot_root_two P.reflection_mapsTo_root hsp hk
 
 end RootPairing
 
@@ -172,8 +172,7 @@ its roots. -/
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootSystem ι R M N}
     (he : P₁.toLin = P₂.toLin)
-    (hr : P₁.root = P₂.root)
-    (hp : P₁.reflection_perm = P₂.reflection_perm) :
+    (hr : P₁.root = P₂.root) :
     P₁ = P₂ := by
   suffices ∀ P₁ P₂ : RootSystem ι R M N, P₁.toLin = P₂.toLin → P₁.root = P₂.root →
       range P₁.coroot ⊆ range P₂.coroot by
@@ -182,16 +181,16 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     cases' P₁ with P₁
     cases' P₂ with P₂
     congr
-    exact RootPairing.ext he hr hp (le_antisymm h₁ h₂)
+    exact RootPairing.ext he hr (le_antisymm h₁ h₂)
   clear! P₁ P₂
   rintro P₁ P₂ he hr - ⟨i, rfl⟩
   use i
   apply P₁.bijectiveRight.injective
   apply Dual.eq_of_preReflection_mapsTo (P₁.ne_zero i) (finite_range P₁.root) P₁.span_eq_top
   · exact hr ▸ he ▸ P₂.coroot_root_two i
-  · exact hr ▸ he ▸ P₂.reflection_mapsto_root i
+  · exact hr ▸ he ▸ P₂.reflection_mapsTo_root i
   · exact P₁.coroot_root_two i
-  · exact P₁.reflection_mapsto_root i
+  · exact P₁.reflection_mapsTo_root i
 
 /-- In characteristic zero if there is no torsion, to check that a family of roots form a root
 system, we do not need to check that the coroots are stable under reflections since this follows
@@ -213,6 +212,7 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M]
   reflection_perm_root i j := by
     simp only [reflection_in_apply]
     rw [← (exist_root_reflection p root coroot i j hs).choose_spec]
+    exact rfl
   reflection_perm_coroot i j := by
     simp only [reflection_in_apply]
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top' p root coroot hp hs hsp ?_).symm
