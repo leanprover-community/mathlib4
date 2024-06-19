@@ -177,17 +177,20 @@ instance Int.instBinomialRing : BinomialRing ℤ where
 
 end Nat_Int
 
-section Real
-/-- Inductive definition of the multichoose function. -/
-noncomputable def Real.multichoose: ℝ → ℕ → ℝ
-  | _, 0 => 1
-  | r, k+1 => (r+k)/(k+1)*(Real.multichoose r k)
+section Rat_Algebra
 
-noncomputable instance Real.instBinomialRing : BinomialRing ℝ where
+variable {R : Type*} [CommRing R] [CharZero R] [IsLeftCancelMulZero R] [Algebra ℚ R]
+
+/-- Inductive definition of the multichoose function. -/
+noncomputable def multichoose: R → ℕ → R
+  | _, 0 => 1
+  | r, k+1 => ((k+1)⁻¹:ℚ)•(r+k)*(multichoose r k)
+
+noncomputable instance instBinomialRing : BinomialRing R where
   nsmul_right_injective n hn r s hrs := by
-    simp only [nsmul_eq_mul, mul_eq_mul_left_iff, Nat.cast_eq_zero, hn, or_false] at hrs
-    exact hrs
-  multichoose := Real.multichoose
+    simp only [nsmul_eq_mul] at hrs
+    exact (mul_left_cancel₀ (Nat.cast_ne_zero.mpr hn) hrs)
+  multichoose := multichoose
   factorial_nsmul_multichoose r n := by
     induction' n with n ih
     case zero =>
@@ -197,9 +200,12 @@ noncomputable instance Real.instBinomialRing : BinomialRing ℝ where
       rw [Polynomial.ascPochhammer_smeval_eq_eval] at ih
       rw [Polynomial.ascPochhammer_smeval_eq_eval, ascPochhammer_succ_eval, ← ih, multichoose,
         Nat.factorial]
-      field_simp; ring_nf
-end Real
-
+      nth_rewrite 1 [← (one_smul ℚ (multichoose r n))]
+      rw [smul_mul_smul, ← smul_assoc, ← smul_mul_smul]
+      field_simp
+      rw [Algebra.smul_def', map_natCast]
+      ring_nf
+end Rat_Algebra
 section Choose
 
 namespace Ring
