@@ -35,7 +35,6 @@ namespace CompHausLike
 
 attribute [instance] is_compact is_hausdorff
 
-
 instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
 
@@ -84,11 +83,11 @@ instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).
 
 -- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
-  show CompactSpace X.toTop from inferInstance
+  inferInstanceAs (CompactSpace X.toTop)
 
 -- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
-  show T2Space X.toTop from inferInstance
+  inferInstanceAs (T2Space X.toTop)
 
 variable {P}
 
@@ -128,16 +127,16 @@ def fullyFaithfulCompHausLikeToTop : (compHausLikeToTop P).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
 instance : (compHausLikeToTop P).Full  :=
-  show (inducedFunctor _).Full from inferInstance
+  inferInstanceAs (inducedFunctor _).Full
 
 instance : (compHausLikeToTop P).Faithful :=
-  show (inducedFunctor _).Faithful from inferInstance
+  inferInstanceAs (inducedFunctor _).Faithful
 
 instance (X : CompHausLike P) : CompactSpace ((compHausLikeToTop P).obj X) :=
-  show CompactSpace X.toTop from inferInstance
+  inferInstanceAs (CompactSpace X.toTop)
 
 instance (X : CompHausLike P) : T2Space ((compHausLikeToTop P).obj X) :=
-  show T2Space X.toTop from inferInstance
+  inferInstanceAs (T2Space X.toTop)
 
 variable {P}
 
