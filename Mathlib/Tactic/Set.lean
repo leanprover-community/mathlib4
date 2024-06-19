@@ -51,7 +51,8 @@ elab_rules : tactic
     let fvar ← liftMetaTacticAux fun goal ↦ do
       let (fvar, goal) ← (← goal.define a.getId ty vale).intro1P
       pure (fvar, [goal])
-    Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
+    withMainContext <|
+      Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
     if rw.isNone then
       evalTactic (← `(tactic| try rewrite [show $(← Term.exprToSyntax vale) = $a from rfl] at *))
     match h, rev with
