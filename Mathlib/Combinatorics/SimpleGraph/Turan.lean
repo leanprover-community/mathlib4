@@ -110,14 +110,15 @@ theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : G.IsT
   exact hGab <| le_sup_right.trans_eq ((hG.le_iff_eq <| h.sup_edge _ _).1 le_sup_left).symm <|
     (edge_adj ..).2 ⟨Or.inl ⟨rfl, rfl⟩, hab⟩
 
-open Classical in
-lemma exists_IsTuranMaximal : ∃ H : SimpleGraph V, H.IsTuranMaximal r := by
+lemma exists_isTuranMaximal :
+    ∃ H : SimpleGraph V, ∃ _ : DecidableRel H.Adj, H.IsTuranMaximal r := by
+  classical
   let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
   have cn : c.toFinset.Nonempty := ⟨⊥, by
     simp only [Set.toFinset_setOf, mem_filter, mem_univ, true_and, c]
     exact cliqueFree_bot (by omega)⟩
   obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (·.edgeFinset.card) cn
-  use S
+  use S, inferInstance
   rw [Set.mem_toFinset] at Sm
   refine ⟨Sm, ?_⟩
   intro I _ cf
@@ -145,7 +146,7 @@ lemma degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
   omega
 
 /-- In a Turán-maximal graph, non-adjacency is transitive. -/
-lemma transitive_of_not_adj (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
+lemma not_adj_trans (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
   have dst := h.degree_eq_of_not_adj hst
   have dsu := h.degree_eq_of_not_adj hsu
   rw [IsTuranMaximal] at h; contrapose! h; intro cf
@@ -171,16 +172,16 @@ lemma transitive_of_not_adj (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t 
   omega
 
 /-- In a Turán-maximal graph, non-adjacency is an equivalence relation. -/
-theorem equivalence_of_not_adj : Equivalence fun x y ↦ ¬G.Adj x y where
+theorem equivalence_not_adj : Equivalence fun x y ↦ ¬G.Adj x y where
   refl x := by simp
   symm xy := by simp [xy, adj_comm]
   trans xy yz := by
     rw [adj_comm] at xy
-    exact h.transitive_of_not_adj xy yz
+    exact h.not_adj_trans xy yz
 
 /-- The non-adjacency setoid over the vertices of a Turán-maximal graph
-induced by `equivalence_of_not_adj`. -/
-def setoid : Setoid V := ⟨_, h.equivalence_of_not_adj⟩
+induced by `equivalence_not_adj`. -/
+def setoid : Setoid V := ⟨_, h.equivalence_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=
   inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w
