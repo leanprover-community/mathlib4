@@ -1507,8 +1507,8 @@ theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
   ext fun x => mem_union.trans <| by simp
 #align finset.empty_union Finset.empty_union
 
-lemma singleton_union : {a} ∪ s = insert a s := by ext; simp
-lemma union_singleton : s ∪ {a} = insert a s := by ext; simp [or_comm]
+@[simp] lemma singleton_union : {a} ∪ s = insert a s := by ext; simp
+@[simp] lemma union_singleton : s ∪ {a} = insert a s := by ext; simp [or_comm]
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
