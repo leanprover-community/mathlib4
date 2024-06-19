@@ -3,7 +3,6 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -164,7 +163,7 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
         add_le_add (dist_pair_smul _ _ _) (dist_smul_pair _ _ _)
       _ ≤ δ * (δ + dist b 0) + dist a 0 * δ := by
           have : dist b' 0 ≤ δ + dist b 0 := (dist_triangle _ _ _).trans <| add_le_add_right hb.le _
-          mono* <;> apply_rules [dist_nonneg, le_of_lt]
+          gcongr
       _ < ε := hδε
 #align has_bounded_smul.has_continuous_smul BoundedSMul.continuousSMul
 
