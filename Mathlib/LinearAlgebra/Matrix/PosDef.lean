@@ -101,6 +101,24 @@ protected lemma one [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
   ⟨isHermitian_one, fun x => by
     rw [one_mulVec]; exact Fintype.sum_nonneg fun i => star_mul_self_nonneg _⟩
 
+protected theorem natCast [DecidableEq n] (d : ℕ) :
+    PosSemidef (d : Matrix n n R) :=
+  ⟨isHermitian_natCast _, fun x => by
+    simp only [natCast_mulVec, dotProduct_smul]
+    rw [← nsmul_eq_smul_cast]
+    refine nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
+
+protected theorem ofNat [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
+    PosSemidef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+  .natCast d
+
+protected theorem intCast [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
+    PosSemidef (d : Matrix n n R) :=
+  ⟨isHermitian_intCast _, fun x => by
+    simp only [intCast_mulVec, dotProduct_smul]
+    rw [← zsmul_eq_smul_cast]
+    refine zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
+
 protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
     PosSemidef (M ^ k) :=
   match k with
@@ -314,6 +332,27 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
+
+protected theorem one [DecidableEq n] [NoZeroDivisors R] : PosDef (1 : Matrix n n R) :=
+  ⟨isHermitian_one, fun x hx => by simpa only [one_mulVec, dotProduct_star_self_pos_iff]⟩
+
+protected theorem natCast [DecidableEq n] [NoZeroDivisors R] (d : ℕ) (hd : d ≠ 0) :
+    PosDef (d : Matrix n n R) :=
+  ⟨isHermitian_natCast _, fun x hx => by
+    simp only [natCast_mulVec, dotProduct_smul]
+    rw [← nsmul_eq_smul_cast]
+    refine nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+
+protected theorem ofNat [DecidableEq n] [NoZeroDivisors R] (d : ℕ) [d.AtLeastTwo] :
+    PosDef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+  .natCast d (NeZero.ne _)
+
+protected theorem intCast [DecidableEq n] [NoZeroDivisors R] (d : ℤ) (hd : 0 < d) :
+    PosDef (d : Matrix n n R) :=
+  ⟨isHermitian_intCast _, fun x hx => by
+    simp only [intCast_mulVec, dotProduct_smul]
+    rw [← zsmul_eq_smul_cast]
+    refine zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
