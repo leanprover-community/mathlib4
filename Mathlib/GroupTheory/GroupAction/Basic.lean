@@ -244,25 +244,26 @@ lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m
 end Monoid
 
 section Group
-
+namespace FixedPoints
 variable [Group α] [MulDistribMulAction M α]
 
 /-- The subgroup of elements fixed under the whole action. -/
-def FixedPoints.subgroup : Subgroup α where
+def subgroup : Subgroup α where
   __ := submonoid M α
   inv_mem' ha _ := by rw [smul_inv', ha]
 
 /-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
-notation α "^*" M:51 => FixedPoints.subgroup M α
+scoped notation α "^*" M:51 => FixedPoints.subgroup M α
 
 @[simp]
-lemma FixedPoints.mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+lemma mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 @[simp]
-lemma FixedPoints.subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
   rfl
 
+end FixedPoints
 end Group
 
 section AddMonoid
@@ -413,6 +414,10 @@ theorem orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b 
 #align add_action.orbit_rel_apply AddAction.orbitRel_apply
 
 @[to_additive]
+lemma orbitRel_r_apply {a b : α} : (orbitRel G _).r a b ↔ a ∈ orbit G b :=
+  Iff.rfl
+
+@[to_additive]
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
   Setoid.le_def.2 mem_orbit_of_mem_orbit_subgroup
 
@@ -534,6 +539,100 @@ theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
   rfl
 #align mul_action.orbit_rel.quotient.orbit_eq_orbit_out MulAction.orbitRel.Quotient.orbit_eq_orbit_out
 #align add_action.orbit_rel.quotient.orbit_eq_orbit_out AddAction.orbitRel.Quotient.orbit_eq_orbit_out
+
+@[to_additive]
+lemma orbitRel.Quotient.orbit_injective :
+    Injective (orbitRel.Quotient.orbit : orbitRel.Quotient G α → Set α) := by
+  intro x y h
+  simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq', orbit_eq_iff,
+    ← orbitRel_r_apply] at h
+  simpa [← Quotient.eq''] using h
+
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.orbit_inj {x y : orbitRel.Quotient G α} : x.orbit = y.orbit ↔ x = y :=
+  orbitRel.Quotient.orbit_injective.eq_iff
+
+@[to_additive]
+lemma orbitRel.quotient_eq_of_quotient_subgroup_eq {H : Subgroup G} {a b : α}
+    (h : (⟦a⟧ : orbitRel.Quotient H α) = ⟦b⟧) : (⟦a⟧ : orbitRel.Quotient G α) = ⟦b⟧ := by
+  rw [@Quotient.eq] at h ⊢
+  exact mem_orbit_of_mem_orbit_subgroup h
+
+@[to_additive]
+lemma orbitRel.quotient_eq_of_quotient_subgroup_eq' {H : Subgroup G} {a b : α}
+    (h : (Quotient.mk'' a : orbitRel.Quotient H α) = Quotient.mk'' b) :
+    (Quotient.mk'' a : orbitRel.Quotient G α) = Quotient.mk'' b :=
+  orbitRel.quotient_eq_of_quotient_subgroup_eq h
+
+@[to_additive]
+nonrec lemma orbitRel.Quotient.orbit_nonempty (x : orbitRel.Quotient G α) :
+    Set.Nonempty x.orbit := by
+  rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
+  exact orbit_nonempty _
+
+@[to_additive]
+nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
+    Set.MapsTo (g • ·) x.orbit x.orbit := by
+  rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
+  exact mapsTo_smul_orbit g x.out'
+
+@[to_additive]
+instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
+  smul g := (orbitRel.Quotient.mapsTo_smul_orbit g x).restrict _ _ _
+  one_smul a := Subtype.ext (one_smul G (a : α))
+  mul_smul g g' a' := Subtype.ext (mul_smul g g' (a' : α))
+
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.orbit.coe_smul {g : G} {x : orbitRel.Quotient G α} {a : x.orbit} :
+    ↑(g • a) = g • (a : α) :=
+  rfl
+
+@[to_additive]
+instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
+  exists_smul_eq := by
+    induction x using Quotient.inductionOn'
+    rintro ⟨y, yh⟩ ⟨z, zh⟩
+    rw [orbitRel.Quotient.mem_orbit, Quotient.eq''] at yh zh
+    rcases yh with ⟨g, rfl⟩
+    rcases zh with ⟨h, rfl⟩
+    refine ⟨h * g⁻¹, ?_⟩
+    ext
+    simp [mul_smul]
+
+@[to_additive (attr := norm_cast, simp)]
+lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
+    {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h with ⟨g, h⟩
+    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
+      ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    subst h
+    exact MulAction.mem_orbit _ g
+  · rcases h with ⟨g, rfl⟩
+    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
+    exact MulAction.mem_orbit _ g
+
+@[to_additive]
+lemma orbitRel.Quotient.subgroup_quotient_eq_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
+    {a b : x.orbit} : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧ ↔
+      (⟦↑a⟧ : orbitRel.Quotient H α) = ⟦↑b⟧ := by
+  simp_rw [← @Quotient.mk''_eq_mk, Quotient.eq'']
+  exact orbitRel.Quotient.mem_subgroup_orbit_iff.symm
+
+@[to_additive]
+lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Quotient G α}
+    {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
+    (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
+  simp_rw [mem_orbit_symm (a₂ := c)]
+  convert Iff.rfl using 2
+  rw [orbit_eq_iff]
+  suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
+    rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
+       at hb
+    rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
+    convert hb using 1
+    rw [orbit_eq_iff, ← orbitRel_r_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
+  rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 
 variable (G) (α)
 

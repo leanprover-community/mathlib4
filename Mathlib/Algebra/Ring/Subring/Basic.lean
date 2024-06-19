@@ -88,8 +88,7 @@ variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 #align coe_int_mem intCast_mem
 
--- 2024-04-05
-@[deprecated _root_.intCast_mem] alias coe_int_mem := intCast_mem
+@[deprecated _root_.intCast_mem (since := "2024-04-05")] alias coe_int_mem := intCast_mem
 
 namespace SubringClass
 
@@ -766,9 +765,9 @@ section DivisionRing
 variable {K : Type u} [DivisionRing K]
 
 instance instField : Field (center K) where
-  inv a := ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
+  inv a := ⟨a⁻¹, Set.inv_mem_center a.prop⟩
   mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne ha
-  div a b := ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
+  div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
   div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
@@ -1322,8 +1321,6 @@ variable {s : Set R}
 
 -- attribute [local reducible] closure -- Porting note: not available in Lean4
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[elab_as_elim]
 protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :

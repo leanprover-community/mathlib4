@@ -491,7 +491,7 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
 
 /-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
 theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := by
-  have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.Prod_map surjective_mk
+  have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.prodMap surjective_mk
   refine quotientMap_iff.2 ⟨hsurj, fun s ↦ ?_⟩
   refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ ?_⟩
   refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ ?_
@@ -601,7 +601,7 @@ theorem continuousAt_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) �
 theorem continuousOn_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
     {s : Set (SeparationQuotient X × SeparationQuotient Y)} :
     ContinuousOn (uncurry <| lift₂ f hf) s ↔ ContinuousOn (uncurry f) (Prod.map mk mk ⁻¹' s) := by
-  simp_rw [ContinuousOn, (surjective_mk.Prod_map surjective_mk).forall, Prod.forall, Prod.map,
+  simp_rw [ContinuousOn, (surjective_mk.prodMap surjective_mk).forall, Prod.forall, Prod.map,
     continuousWithinAt_lift₂]
   rfl
 #align separation_quotient.continuous_on_lift₂ SeparationQuotient.continuousOn_lift₂

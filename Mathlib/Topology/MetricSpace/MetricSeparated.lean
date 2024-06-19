@@ -88,7 +88,7 @@ theorem union_left {s'} (h : IsMetricSeparated s t) (h' : IsMetricSeparated s' t
 @[simp]
 theorem union_left_iff {s'} :
     IsMetricSeparated (s ∪ s') t ↔ IsMetricSeparated s t ∧ IsMetricSeparated s' t :=
-  ⟨fun h => ⟨h.mono_left (subset_union_left _ _), h.mono_left (subset_union_right _ _)⟩, fun h =>
+  ⟨fun h => ⟨h.mono_left subset_union_left, h.mono_left subset_union_right⟩, fun h =>
     h.1.union_left h.2⟩
 #align is_metric_separated.union_left_iff IsMetricSeparated.union_left_iff
 

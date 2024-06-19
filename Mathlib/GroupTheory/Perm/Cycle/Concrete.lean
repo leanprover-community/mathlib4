@@ -299,7 +299,7 @@ theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   have hm' : ¬orderOf (p.cycleOf x) ∣ m.succ := Nat.not_dvd_of_pos_of_lt m.zero_lt_succ hm
   rw [← hc.support_pow_eq_iff] at hn' hm'
   rw [← Nat.mod_eq_of_lt hn, ← Nat.mod_eq_of_lt hm, ← pow_inj_mod]
-  refine' support_congr _ _
+  refine support_congr ?_ ?_
   · rw [hm', hn']
   · rw [hm']
     intro y hy

@@ -137,15 +137,8 @@ theorem derivative_one : derivative (1 : R[X]) = 0 :=
   derivative_C
 #align polynomial.derivative_one Polynomial.derivative_one
 
-set_option linter.deprecated false in
--- Porting note (#10618): removed `simp`: `simp` can prove it.
-theorem derivative_bit0 {a : R[X]} : derivative (bit0 a) = bit0 (derivative a) := by simp [bit0]
-#align polynomial.derivative_bit0 Polynomial.derivative_bit0
-
-set_option linter.deprecated false in
--- Porting note (#10618): removed `simp`: `simp` can prove it.
-theorem derivative_bit1 {a : R[X]} : derivative (bit1 a) = bit0 (derivative a) := by simp [bit1]
-#align polynomial.derivative_bit1 Polynomial.derivative_bit1
+#noalign polynomial.derivative_bit0
+#noalign polynomial.derivative_bit1
 
 -- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_add {f g : R[X]} : derivative (f + g) = derivative f + derivative g :=
@@ -193,7 +186,7 @@ theorem of_mem_support_derivative {p : R[X]} {n : ℕ} (h : n ∈ p.derivative.s
 
 theorem degree_derivative_lt {p : R[X]} (hp : p ≠ 0) : p.derivative.degree < p.degree :=
   (Finset.sup_lt_iff <| bot_lt_iff_ne_bot.2 <| mt degree_eq_bot.1 hp).2 fun n hp =>
-    lt_of_lt_of_le (WithBot.some_lt_some.2 n.lt_succ_self) <|
+    lt_of_lt_of_le (WithBot.coe_lt_coe.2 n.lt_succ_self) <|
       Finset.le_sup <| of_mem_support_derivative hp
 #align polynomial.degree_derivative_lt Polynomial.degree_derivative_lt
 
@@ -407,8 +400,8 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
   calc
     derivative^[n + 1] (p * q) =
         derivative (∑ k ∈ range n.succ,
-            n.choose k • (derivative^[n - k] p * derivative^[k] q)) :=
-      by rw [Function.iterate_succ_apply', IH]
+            n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
+      rw [Function.iterate_succ_apply', IH]
     _ = (∑ k ∈ range n.succ,
           n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
         ∑ k ∈ range n.succ,
@@ -423,15 +416,15 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
     _ = ((∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
             ∑ k ∈ range n.succ,
               n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
-          1 • (derivative^[n + 1] p * derivative^[0] q) :=
-      by rw [add_comm, add_assoc]
+          1 • (derivative^[n + 1] p * derivative^[0] q) := by
+      rw [add_comm, add_assoc]
     _ = (∑ i ∈ range n.succ,
             (n + 1).choose (i + 1) • (derivative^[n + 1 - (i + 1)] p * derivative^[i + 1] q)) +
-          1 • (derivative^[n + 1] p * derivative^[0] q) :=
-      by simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
+          1 • (derivative^[n + 1] p * derivative^[0] q) := by
+      simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
     _ = ∑ k ∈ range n.succ.succ,
-          n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) :=
-      by rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
+          n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) := by
+      rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
   congr
   refine (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) ?_ ?_)
   · rw [sum_range_succ, Nat.choose_succ_self, zero_smul, add_zero]
@@ -495,7 +488,7 @@ theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
   induction' k with k ih
   · erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
   · rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
-      Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
+      Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul]
     simp [mul_comm, mul_assoc, mul_left_comm]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_pow_eq_nat_cast_mul Polynomial.iterate_derivative_X_pow_eq_natCast_mul

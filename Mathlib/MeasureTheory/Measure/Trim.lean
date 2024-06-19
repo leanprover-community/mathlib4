@@ -59,6 +59,9 @@ theorem le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by
   exact @le_toMeasure_apply _ m _ _ _
 #align measure_theory.le_trim MeasureTheory.le_trim
 
+lemma trim_add {ν : Measure α} (hm : m ≤ m0) : (μ + ν).trim hm = μ.trim hm + ν.trim hm :=
+  @Measure.ext _ m _ _ (fun s hs ↦ by simp [trim_measurableSet_eq hm hs])
+
 theorem measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 :=
   le_antisymm ((le_trim hm).trans (le_of_eq h)) (zero_le _)
 #align measure_theory.measure_eq_zero_of_trim_eq_zero MeasureTheory.measure_eq_zero_of_trim_eq_zero
@@ -114,8 +117,8 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
       spanning := iUnion_spanningSets _ }
   calc
     (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
-        ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) :=
-      by rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurable_spanningSets _ _)]
+        ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
+      rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurable_spanningSets _ _)]
     _ = (μ.trim (hm₂.trans hm)) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
       rw [@trim_trim _ _ μ _ _ hm₂ hm]
     _ < ∞ := measure_spanningSets_lt_top _ _

@@ -36,7 +36,7 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
     ((Pi.basisFun ℂ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hw' i).unit)
   ext1 v
   erw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
-  refine' sum_congr rfl fun j hj => _
+  refine sum_congr rfl fun j hj => ?_
   have hsum : (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hw' i).unit : ℂ) • (Pi.basisFun ℂ ι) i) j =
       v j • w j ^ (-(1 / 2 : ℂ)) := by
     classical

@@ -370,7 +370,7 @@ def insertRec {C : AList β → Sort*} (H0 : C ∅)
   | ⟨[], _⟩ => H0
   | ⟨c :: l, h⟩ => by
     rw [mk_cons_eq_insert]
-    refine' IH _ _ _ _ (insertRec H0 IH _)
+    refine IH _ _ _ ?_ (insertRec H0 IH _)
     exact not_mem_keys_of_nodupKeys_cons h
 #align alist.insert_rec AList.insertRec
 

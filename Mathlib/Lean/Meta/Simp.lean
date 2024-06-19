@@ -157,10 +157,16 @@ def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :
 /--
 Given a simplifier `S : Expr → MetaM Simp.Result`,
 and an expression `e : Expr`, run `S` on the type of `e`, and then
-convert `e` into that simplified type, using a combination of type hints and `Eq.mp`.
+convert `e` into that simplified type,
+using a combination of type hints as well as casting if the proof is not definitional `Eq.mp`.
+
+The optional argument `type?`, if present, must be definitionally equal to the type of `e`.
+When it is specified we simplify this type rather than the inferred type of `e`.
 -/
-def simpType (S : Expr → MetaM Simp.Result) (e : Expr) : MetaM Expr := do
-  match ← S (← inferType e) with
+def simpType (S : Expr → MetaM Simp.Result) (e : Expr) (type? : Option Expr := none) :
+    MetaM Expr := do
+  let type ← type?.getDM (inferType e)
+  match ← S type with
   | ⟨ty', none, _⟩ => mkExpectedTypeHint e ty'
   -- We use `mkExpectedTypeHint` in this branch as well, in order to preserve the binder types.
   | ⟨ty', some prf, _⟩ => mkExpectedTypeHint (← mkEqMP prf e) ty'

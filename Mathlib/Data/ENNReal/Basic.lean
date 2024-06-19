@@ -286,14 +286,9 @@ theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔
   Option.ball_ne_none
 #align ennreal.forall_ne_top ENNReal.forall_ne_top
 
-@[deprecated]
-theorem exists_ne_top' {p : ℝ≥0∞ → Prop} : (∃ (a : ℝ≥0∞) (_ : a ≠ ∞), p a) ↔ ∃ r : ℝ≥0, p r :=
-  Option.bex_ne_none
-#align ennreal.exists_ne_top ENNReal.exists_ne_top'
-
-set_option linter.deprecated false in
-theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r := by
-  simp only [exists_ne_top', ← exists_prop]
+theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r :=
+  Option.exists_ne_none
+#align ennreal.exists_ne_top ENNReal.exists_ne_top
 
 theorem toNNReal_eq_zero_iff (x : ℝ≥0∞) : x.toNNReal = 0 ↔ x = 0 ∨ x = ∞ :=
   WithTop.untop'_eq_self_iff
@@ -673,13 +668,12 @@ theorem natCast_lt_coe {n : ℕ} : n < (r : ℝ≥0∞) ↔ n < r := ENNReal.coe
 theorem coe_lt_natCast {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n := ENNReal.coe_natCast n ▸ coe_lt_coe
 #align ennreal.coe_lt_coe_nat ENNReal.coe_lt_natCast
 
--- 2024-04-05
-@[deprecated] alias coe_nat := coe_natCast
-@[deprecated] alias ofReal_coe_nat := ofReal_natCast
-@[deprecated] alias nat_ne_top := natCast_ne_top
-@[deprecated] alias top_ne_nat := top_ne_natCast
-@[deprecated] alias coe_nat_lt_coe := natCast_lt_coe
-@[deprecated] alias coe_lt_coe_nat := coe_lt_natCast
+@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
+@[deprecated (since := "2024-04-05")] alias ofReal_coe_nat := ofReal_natCast
+@[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
+@[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
+@[deprecated (since := "2024-04-05")] alias coe_nat_lt_coe := natCast_lt_coe
+@[deprecated (since := "2024-04-05")] alias coe_lt_coe_nat := coe_lt_natCast
 
 protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
   lift r to ℝ≥0 using h
@@ -759,8 +753,8 @@ theorem coe_sSup {s : Set ℝ≥0} : BddAbove s → (↑(sSup s) : ℝ≥0∞) =
   WithTop.coe_sSup
 #align ennreal.coe_Sup ENNReal.coe_sSup
 
-theorem coe_sInf {s : Set ℝ≥0} : s.Nonempty → (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
-  WithTop.coe_sInf
+theorem coe_sInf {s : Set ℝ≥0} (hs : s.Nonempty) : (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
+  WithTop.coe_sInf hs (OrderBot.bddBelow s)
 #align ennreal.coe_Inf ENNReal.coe_sInf
 
 theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
@@ -770,7 +764,7 @@ theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
 
 @[norm_cast]
 theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
-  WithTop.coe_iInf f
+  WithTop.coe_iInf (OrderBot.bddBelow _)
 #align ennreal.coe_infi ENNReal.coe_iInf
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
@@ -870,6 +864,7 @@ def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
--- 2023-12-23
-@[deprecated] protected alias ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
-@[deprecated] protected alias ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos
+@[deprecated (since := "2023-12-23")] protected alias
+ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
+@[deprecated (since := "2023-12-23")] protected alias
+ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos

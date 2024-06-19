@@ -54,7 +54,7 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
       let α := #md
       apply not_le_of_lt (Cardinal.cantor α)
       let yp : C := ∏ᶜ fun _ : md => Y
-      refine' _root_.trans _ _
+      apply _root_.trans _ _
       · exact #(X ⟶ yp)
       · apply le_trans (Cardinal.power_le_power_right z)
         rw [Cardinal.power_def]

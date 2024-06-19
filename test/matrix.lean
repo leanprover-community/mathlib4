@@ -4,7 +4,7 @@ https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1
 -/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Qq
 
 open Qq

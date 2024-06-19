@@ -74,10 +74,8 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
   classical
   constructor
   · intro h i x hf hg
-    refine' (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ => _⟩)
-      (update_le_iff.mpr ⟨hg, fun _ _ => _⟩)).1
-    · exact bot_le
-    · exact bot_le
+    exact (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ => bot_le⟩)
+      (update_le_iff.mpr ⟨hg, fun _ _ => bot_le⟩)).1
   · intro h x hf hg i
     apply h i (hf i) (hg i)
 #align pi.disjoint_iff Pi.disjoint_iff

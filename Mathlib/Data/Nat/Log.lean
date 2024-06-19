@@ -30,11 +30,12 @@ namespace Nat
 such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
 --@[pp_nodot] porting note: unknown attribute
 def log (b : ℕ) : ℕ → ℕ
-  | n =>
-    if h : b ≤ n ∧ 1 < b then
-      have : n / b < n := div_lt_self ((Nat.zero_lt_one.trans h.2).trans_le h.1) h.2
-      log b (n / b) + 1
-    else 0
+  | n => if h : b ≤ n ∧ 1 < b then log b (n / b) + 1 else 0
+decreasing_by
+  -- putting this in the def triggers the `unusedHavesSuffices` linter:
+  -- https://github.com/leanprover-community/batteries/issues/428
+  have : n / b < n := div_lt_self ((Nat.zero_lt_one.trans h.2).trans_le h.1) h.2
+  decreasing_trivial
 #align nat.log Nat.log
 
 @[simp]
@@ -105,7 +106,7 @@ theorem lt_pow_iff_log_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : y 
 #align nat.lt_pow_iff_log_lt Nat.lt_pow_iff_log_lt
 
 theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ x ≤ y := by
-  refine' (le_or_lt b 1).elim (fun hb => _) fun hb => (pow_le_iff_le_log hb hy).2 h
+  refine (le_or_lt b 1).elim (fun hb => ?_) fun hb => (pow_le_iff_le_log hb hy).2 h
   rw [log_of_left_le_one hb, Nat.le_zero] at h
   rwa [h, Nat.pow_zero, one_le_iff_ne_zero]
 #align nat.pow_le_of_le_log Nat.pow_le_of_le_log
@@ -180,7 +181,7 @@ theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
 #align nat.pow_log_le_add_one Nat.pow_log_le_add_one
 
 theorem log_monotone {b : ℕ} : Monotone (log b) := by
-  refine' monotone_nat_of_le_succ fun n => _
+  refine monotone_nat_of_le_succ fun n => ?_
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb]
     exact zero_le _
@@ -238,11 +239,13 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
 `k : ℕ` such that `n ≤ b^k`, so if `b^k = n`, it returns exactly `k`. -/
 --@[pp_nodot]
 def clog (b : ℕ) : ℕ → ℕ
-  | n =>
-    if h : 1 < b ∧ 1 < n then
-      have : (n + b - 1) / b < n := add_pred_div_lt h.1 h.2
-      clog b ((n + b - 1) / b) + 1
-    else 0
+  | n => if h : 1 < b ∧ 1 < n then clog b ((n + b - 1) / b) + 1 else 0
+decreasing_by
+  -- putting this in the def triggers the `unusedHavesSuffices` linter:
+  -- https://github.com/leanprover-community/batteries/issues/428
+  have : (n + b - 1) / b < n := add_pred_div_lt h.1 h.2
+  decreasing_trivial
+
 #align nat.clog Nat.clog
 
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n : ℕ) : clog b n = 0 := by
@@ -288,7 +291,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
   induction' x using Nat.strong_induction_on with x ih generalizing y
   cases y
   · rw [Nat.pow_zero]
-    refine' ⟨fun h => (clog_of_right_le_one h b).le, _⟩
+    refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩
     simp_rw [← not_lt]
     contrapose!
     exact clog_pos hb

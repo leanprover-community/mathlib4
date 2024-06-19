@@ -53,6 +53,9 @@ theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ 
   rfl
 #align nat.coe_cast_add_monoid_hom Nat.coe_castAddMonoidHom
 
+lemma _root_.Even.natCast [AddMonoidWithOne α] {n : ℕ} (hn : Even n) : Even (n : α) :=
+  hn.map <| Nat.castAddMonoidHom α
+
 section NonAssocSemiring
 variable [NonAssocSemiring α]
 
@@ -316,8 +319,6 @@ namespace Pi
 
 variable {π : α → Type*} [∀ a, NatCast (π a)]
 
-/- Porting note: manually wrote this instance.
-Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
 instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 
 theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
@@ -329,9 +330,8 @@ theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 #align pi.coe_nat Pi.natCast_def
 
--- 2024-04-05
-@[deprecated] alias nat_apply := natCast_apply
-@[deprecated] alias coe_nat := natCast_def
+@[deprecated (since := "2024-04-05")] alias nat_apply := natCast_apply
+@[deprecated (since := "2024-04-05")] alias coe_nat := natCast_def
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl

@@ -97,6 +97,7 @@ theorem two_mul_card_alternatingGroup [Nontrivial α] :
     2 * card (alternatingGroup α) = card (Perm α) := by
   let this := (QuotientGroup.quotientKerEquivOfSurjective _ (sign_surjective α)).toEquiv
   rw [← Fintype.card_units_int, ← Fintype.card_congr this]
+  simp only [← Nat.card_eq_fintype_card]
   apply (Subgroup.card_eq_card_quotient_mul_card_subgroup _).symm
 #align two_mul_card_alternating_group two_mul_card_alternatingGroup
 

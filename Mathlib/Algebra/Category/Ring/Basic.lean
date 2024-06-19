@@ -331,7 +331,7 @@ instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type*) where
+instance : CoeSort CommSemiRingCat Type* where
   coe X := X.α
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
@@ -487,7 +487,7 @@ instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type*) where
+instance : CoeSort CommRingCat Type* where
   coe X := X.α
 
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
