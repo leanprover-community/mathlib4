@@ -249,15 +249,15 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   one_le_iff_pos.trans pos_iff_ne_zero
 #align enat.one_le_iff_ne_zero ENat.one_le_iff_ne_zero
 
+@[simp] theorem lt_one_iff (n : ℕ∞) : n < 1 ↔ n = 0 := by
+  rw [← not_iff_not, not_lt, one_le_iff_ne_zero]
+
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
 #align enat.le_of_lt_add_one ENat.le_of_lt_add_one
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
-
-@[simp] lemma lt_one_iff (n : ℕ∞) : n < 1 ↔ n = 0 := by
-  rw [← not_iff_not, not_lt, ENat.one_le_iff_ne_zero]
 
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
