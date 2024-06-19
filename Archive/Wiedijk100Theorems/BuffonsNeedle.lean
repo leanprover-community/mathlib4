@@ -128,13 +128,13 @@ noncomputable def N : Ω → ℝ := needleCrossesIndicator l ∘ B
 abbrev needleSpace: Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
 lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
-  simp_rw [MeasureTheory.Measure.volume_eq_prod, MeasureTheory.Measure.prod_prod, Real.volume_Icc,
+  simp_rw [Measure.volume_eq_prod, Measure.prod_prod, Real.volume_Icc,
     ENNReal.ofReal_mul hd.le]
   ring_nf
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
+  refine measurable_const.indicator (IsClosed.measurableSet (IsClosed.inter ?l ?r))
   all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
   case' l => exact isClosed_le continuous_fst (Continuous.mul (by fun_prop) (by fun_prop))
   case' r => exact isClosed_le continuous_fst.neg (Continuous.mul (by fun_prop) (by fun_prop))
@@ -156,9 +156,8 @@ lemma stronglyMeasurable_needleCrossesIndicator :
 
 lemma integrable_needleCrossesIndicator :
     MeasureTheory.Integrable (needleCrossesIndicator l)
-      (Measure.prod
-        (Measure.restrict ℙ (Set.Icc (-d / 2) (d / 2)))
-        (Measure.restrict ℙ (Set.Icc 0 π))) := by
+      ((Measure.restrict ℙ (Set.Icc (-d / 2) (d / 2))).prod
+       (Measure.restrict ℙ (Set.Icc 0 π))) := by
   have needleCrossesIndicator_nonneg p : 0 ≤ needleCrossesIndicator l p := by
     apply Set.indicator_apply_nonneg
     simp only [Pi.one_apply, zero_le_one, implies_true]
