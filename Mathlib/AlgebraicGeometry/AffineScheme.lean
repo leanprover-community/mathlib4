@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Restrict
+import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
 
@@ -70,7 +71,7 @@ def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Scheme.Spec.obj (op <| Sche
 Also see `AffineScheme.of` for a typeclass version. -/
 @[simps]
 def AffineScheme.mk (X : Scheme) (_ : IsAffine X) : AffineScheme :=
-  ⟨X, mem_essImage_of_unit_isIso (adj := ΓSpec.adjunction) _⟩
+  ⟨X, ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 #align algebraic_geometry.AffineScheme.mk AlgebraicGeometry.AffineScheme.mk
 
 /-- Construct an affine scheme from a scheme. Also see `AffineScheme.mk` for a non-typeclass
@@ -87,7 +88,7 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
 
 theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
-    fun _ => mem_essImage_of_unit_isIso (adj := ΓSpec.adjunction) _⟩
+    fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 #align algebraic_geometry.mem_Spec_ess_image AlgebraicGeometry.mem_Spec_essImage
 
 instance isAffineAffineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
