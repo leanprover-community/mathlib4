@@ -40,7 +40,6 @@ import shutil
 ERR_COP = 0 # copyright header
 ERR_MOD = 2 # module docstring
 ERR_LIN = 3 # line length
-ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_TAC2 = 10 # imported Lake in Mathlib
@@ -147,20 +146,6 @@ def annotate_strings(enumerate_lines):
                 yield line_nr, line, *rem, True
                 continue
         yield line_nr, line, *rem, False
-
-def set_option_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line, in_comment, in_string in annotate_strings(annotate_comments(lines)):
-        if line.strip().startswith('set_option') and not in_comment and not in_string:
-            option_prefix = line.strip().split(' ', 2)[1].split('.', 1)[0]
-            # forbidden options: pp, profiler, trace
-            if option_prefix in {'pp', 'profiler', 'trace'}:
-                errors += [(ERR_OPT, line_nr, path)]
-                # skip adding this line to newlines so that we suggest removal
-                continue
-        newlines.append((line_nr, line))
-    return errors, newlines
 
 def line_endings_check(lines, path):
     errors = []
@@ -392,8 +377,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
         if errno == ERR_LIN:
             output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_OPT:
-            output_message(path, line_nr, "ERR_OPT", "Forbidden set_option command")
         if errno == ERR_AUT:
             output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
@@ -433,7 +416,6 @@ def lint(path, fix=False):
                             four_spaces_in_second_line,
                             long_lines_check,
                             isolated_by_dot_semicolon_check,
-                            set_option_check,
                             left_arrow_check,
                             adaptation_note_check,
                             nonterminal_simp_check]:
