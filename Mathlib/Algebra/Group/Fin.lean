@@ -123,9 +123,55 @@ lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
   not_iff_not.1 <| by simp only [lt_def, not_lt, val_fin_le, le_sub_one_iff, le_zero_iff]
 #align fin.sub_one_lt_iff Fin.sub_one_lt_iff
 
+lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
+  cases' n with n
+  · exact a.elim0
+  by_cases h: a < b
+  · simp only [h, iff_true]
+    rw [lt_iff_val_lt_val, sub_def]
+    simp only
+    obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
+    have : n + 1 - b = k + 1 := by
+      simp_rw [hk]
+      rw [Nat.add_assoc, Nat.add_sub_cancel_left]
+    rw [this, Nat.mod_eq_of_lt]
+    · simp
+    · refine' hk.ge.trans_lt' ?_
+      simp [Nat.add_assoc, h]
+  · simp only [h, iff_false]
+    simp only [Fin.not_lt] at h ⊢
+    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le h
+    rw [le_iff_val_le_val, sub_def, hl]
+    simp only
+    rw [Nat.add_right_comm, Nat.add_sub_cancel' b.is_lt.le, Nat.add_mod_left, Nat.mod_eq_of_lt]
+    · simp
+    · refine a.is_lt.trans_le' ?_
+      simp [hl]
+
+@[simp]
+lemma lt_one_iff {n : ℕ} [hn : NeZero n] (x : Fin (n + 1)) : x < 1 ↔ x = 0 := by
+  cases' n
+  · simp at hn
+  simp [Fin.lt_iff_val_lt_val, Fin.ext_iff]
+
 @[simp] lemma neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
 lemma neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
   simp only [natCast_eq_last, neg_last]
+
+lemma rev_add (a b : Fin n) : rev (a + b) = rev a - b := by
+  cases' n
+  · exact a.elim0
+  rw [← last_sub, ← last_sub, sub_add_eq_sub_sub]
+
+lemma rev_sub (a b : Fin n) : rev (a - b) = rev a + b := by
+  cases' n
+  · exact a.elim0
+  rw [← last_sub, ← last_sub, sub_sub_eq_add_sub, add_sub_right_comm]
+
+lemma add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
+  cases' n
+  · exact a.elim0
+  rw [← Fin.rev_lt_rev, Iff.comm, ← Fin.rev_lt_rev, rev_add, lt_sub_iff, rev_rev]
 
 end Fin
