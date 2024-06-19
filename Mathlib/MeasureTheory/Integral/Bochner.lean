@@ -647,6 +647,7 @@ open ContinuousLinearMap
 
 variable (𝕜)
 
+set_option linter.unnecessarySyntax false in
 /-- The Bochner integral in L1 space as a continuous linear map. -/
 nonrec def integralCLM' : (α →₁[μ] E) →L[𝕜] E :=
   (integralCLM' α E 𝕜 μ).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
