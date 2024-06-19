@@ -109,7 +109,7 @@ instance [Nonempty Z] : Filter.IsCountablyGenerated (uniformity (real Z b)) := b
           · simp only [Function.iterate_succ', Function.comp_apply, shift_single, IH]
     · rintro ⟨k, -, hk⟩
       refine ⟨g k, ?_, hk⟩
-      simp only
+      simp only [g]
       clear hk
       induction' k with k IH
       · simpa [← positive_iff] using single_positive_of_ne_zero _ h01
