@@ -14,8 +14,6 @@ import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 -/
 
-universe w' w v u r s
-
 open CategoryTheory Limits Functor Adjunction Opposite
 
 namespace CategoryTheory.Sheaf
@@ -23,9 +21,6 @@ namespace CategoryTheory.Sheaf
 variable {C : Type*} [Category C]
 variable (J : GrothendieckTopology C) (A : Type*) [Category A] [HasWeakSheafify J A]
   [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-
-noncomputable instance [HasTerminal C] : Coreflective (constantSheaf J A) where
-  adj := (constantSheafAdj J A terminalIsTerminal)
 
 variable {t : C} (ht : IsTerminal t)
 
@@ -41,12 +36,12 @@ theorem isDiscrete_iff_mem_essImage (F : Sheaf J A) {t : C} (ht : IsTerminal t) 
 
 section
 
-variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-  (A : Type w) [Category.{w'} A]
+variable {C : Type*} [Category C] (J : GrothendieckTopology C)
+  (A : Type*) [Category A]
   [HasWeakSheafify J A]
   {t : C} (ht : IsTerminal t)
 
-variable {D : Type u} [Category.{v} D] (K : GrothendieckTopology D) [HasWeakSheafify K A]
+variable {D : Type*} [Category D] (K : GrothendieckTopology D) [HasWeakSheafify K A]
 variable (G : C ⥤ D) [G.Full] [G.Faithful]
   [∀ (X : Dᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) A]
   [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K] (ht' : IsTerminal (G.obj t))
@@ -119,7 +114,7 @@ lemma isDiscrete_iff (F : Sheaf K A) :
       (equivCommuteConstant' J A ht K G ht').app _ ≪≫ e.inverse.mapIso i
     exact ⟨_, ⟨j⟩⟩
 
-variable {A : Type w} [Category.{w'} A] {B : Type s} [Category.{r} B] (U : A ⥤ B)
+variable {A : Type*} [Category A] {B : Type*} [Category B] (U : A ⥤ B)
   [HasWeakSheafify J A] [HasWeakSheafify J B]
 variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 variable [(constantSheaf J B).Faithful] [(constantSheaf J B).Full] [J.PreservesSheafification U]
@@ -188,5 +183,8 @@ theorem sheafCompose_preserves_discrete [h : F.IsDiscrete J A ht] :
   exact ⟨U.obj Y, ⟨(constantCommuteCompose J U).symm.app _ ≪≫ (sheafCompose J U).mapIso i⟩⟩
 
 end
+
+-- noncomputable instance [HasTerminal C] : Coreflective (constantSheaf J A) where
+--   adj := (constantSheafAdj J A terminalIsTerminal)
 
 end CategoryTheory.Sheaf
