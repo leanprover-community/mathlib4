@@ -18,7 +18,7 @@ see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
 open Function Set Filter
-open scoped Topology ENNReal Uniformity BigOperators
+open scoped Topology ENNReal Uniformity
 
 section
 
@@ -45,7 +45,7 @@ theorem dist_birkhoffSum_apply_birkhoffSum (f : α → α) (g : α → E) (n : �
 
 theorem dist_birkhoffSum_birkhoffSum_le (f : α → α) (g : α → E) (n : ℕ) (x y : α) :
     dist (birkhoffSum f g n x) (birkhoffSum f g n y) ≤
-      ∑ k in Finset.range n, dist (g (f^[k] x)) (g (f^[k] y)) :=
+      ∑ k ∈ Finset.range n, dist (g (f^[k] x)) (g (f^[k] y)) :=
   dist_sum_sum_le _ _ _
 
 variable (𝕜 : Type*) [RCLike 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
@@ -57,7 +57,7 @@ theorem dist_birkhoffAverage_birkhoffAverage (f : α → α) (g : α → E) (n :
 
 theorem dist_birkhoffAverage_birkhoffAverage_le (f : α → α) (g : α → E) (n : ℕ) (x y : α) :
     dist (birkhoffAverage 𝕜 f g n x) (birkhoffAverage 𝕜 f g n y) ≤
-      (∑ k in Finset.range n, dist (g (f^[k] x)) (g (f^[k] y))) / n :=
+      (∑ k ∈ Finset.range n, dist (g (f^[k] x)) (g (f^[k] y))) / n :=
   (dist_birkhoffAverage_birkhoffAverage _ _ _ _ _ _).trans_le <| by
     gcongr; apply dist_birkhoffSum_birkhoffSum_le
 
@@ -111,9 +111,9 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
   refine mem_uniformity_edist.2 ⟨δ, hδ₀, fun {x y} h n ↦ ?_⟩
   calc
     dist (birkhoffAverage 𝕜 f g n x) (birkhoffAverage 𝕜 f g n y)
-      ≤ (∑ k in Finset.range n, dist (g (f^[k] x)) (g (f^[k] y))) / n :=
+      ≤ (∑ k ∈ Finset.range n, dist (g (f^[k] x)) (g (f^[k] y))) / n :=
       dist_birkhoffAverage_birkhoffAverage_le ..
-    _ ≤ (∑ _k in Finset.range n, ε) / n := by
+    _ ≤ (∑ _k ∈ Finset.range n, ε) / n := by
       gcongr
       refine hδε _ _ ?_
       simpa using (hf.iterate _).edist_le_mul_of_le h.le

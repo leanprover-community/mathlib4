@@ -374,10 +374,16 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   apply R.intro
 #align perfect_closure.nat_cast PerfectClosure.natCast
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast := natCast
+
 theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
   induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, natCast K p 0]
   rfl
 #align perfect_closure.int_cast PerfectClosure.intCast
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast := intCast
 
 theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
@@ -386,6 +392,9 @@ theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = 
     simpa only [zero_add, iterate_fixed (frobenius_natCast K p _)] using H
   rw [natCast K p 0, natCast K p 0, H]
 #align perfect_closure.nat_cast_eq_iff PerfectClosure.natCast_eq_iff
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_eq_iff := natCast_eq_iff
 
 instance instCharP : CharP (PerfectClosure K p) p := by
   constructor; intro x; rw [← CharP.cast_eq_zero_iff K]
@@ -443,7 +452,7 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
-        refine' fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) _
+        refine fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
         rintro - - ⟨n, x⟩
         simp [f.map_frobenius]
       map_one' := f.map_one

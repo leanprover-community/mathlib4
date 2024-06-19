@@ -156,7 +156,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
               ⟨Nonempty.map fun f => i₁.inv ≫ f ≫ i₂.hom,
                 Nonempty.map fun f => i₁.hom ≫ f ≫ i₂.inv⟩)
   le_refl := by
-    refine' Quotient.ind fun a => _
+    refine Quotient.ind fun a => ?_
     exact ⟨𝟙 _⟩
   le_trans a b c := Quotient.inductionOn₃ a b c fun A B C => Nonempty.map2 (· ≫ ·)
 #align category_theory.thin_skeleton.preorder CategoryTheory.ThinSkeleton.preorder

@@ -43,6 +43,7 @@ ERR_LIN = 3 # line length
 ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
+ERR_TAC2 = 10 # imported Lake in Mathlib
 ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
@@ -53,6 +54,7 @@ ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
+ERR_ADN = 25 # the string "Adaptation note"
 
 exceptions = []
 
@@ -74,8 +76,12 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_OPT, path, None)]
         elif errno == "ERR_AUT":
             exceptions += [(ERR_AUT, path, None)]
+        elif errno == "ERR_ADN":
+            exceptions += [(ERR_ADN, path, None)]
         elif errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path, None)]
+        elif errno == "ERR_TAC2":
+            exceptions += [(ERR_TAC2, path, None)]
         elif errno == "ERR_NUM_LIN":
             exceptions += [(ERR_NUM_LIN, path, extra[1])]
         else:
@@ -203,6 +209,8 @@ def four_spaces_in_second_line(lines, path):
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
 
+flexible_tactics = ["rfl", "ring", "aesop", "norm_num", "positivity", "abel", "omega", "linarith", "nlinarith"]
+
 def nonterminal_simp_check(lines, path):
     errors = []
     newlines = []
@@ -219,7 +227,8 @@ def nonterminal_simp_check(lines, path):
             num_spaces = len(line) - len(line.lstrip())
             # Calculate the number of spaces before the first non-space character in the next line
             stripped_next_line = next_line.lstrip()
-            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--") or "rfl" in next_line or "aesop" in next_line):
+
+            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--") or any(f in next_line for f in flexible_tactics)):
                 num_next_spaces = len(next_line) - len(stripped_next_line)
                 # Check if the number of leading spaces is the same
                 if num_spaces == num_next_spaces:
@@ -306,6 +315,8 @@ def banned_import_check(lines, path):
             break
         if imports[1] in ["Mathlib.Tactic"]:
             errors += [(ERR_TAC, line_nr, path)]
+        elif imports[1] == "Lake" or imports[1].startswith("Lake."):
+            errors += [(ERR_TAC2, line_nr, path)]
     return errors, lines
 
 def isolated_by_dot_semicolon_check(lines, path):
@@ -347,6 +358,14 @@ def left_arrow_check(lines, path):
         newlines.append((line_nr, new_line))
     return errors, newlines
 
+def adaptation_note_check(lines, path):
+    errors = []
+    for line_nr, line in lines:
+        # We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
+        if "daptation note" in line:
+            errors += [(ERR_ADN, line_nr, path)]
+    return errors, lines
+
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -379,6 +398,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
             output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
+        if errno == ERR_TAC2:
+            output_message(path, line_nr, "ERR_TAC2", "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to allow this linter.")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_DOT:
@@ -397,6 +418,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
         if errno == ERR_NSP:
             output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
+        if errno == ERR_ADN:
+            output_message(path, line_nr, "ERR_ADN", 'Found the string "Adaptation note:", please use the #adaptation_note command instead')
 
 def lint(path, fix=False):
     global new_exceptions
@@ -412,6 +435,7 @@ def lint(path, fix=False):
                             isolated_by_dot_semicolon_check,
                             set_option_check,
                             left_arrow_check,
+                            adaptation_note_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)

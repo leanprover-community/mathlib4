@@ -9,26 +9,26 @@ import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
 
-example : ContinuousOn foo {0}ᶜ :=
-  by unfold foo; fun_prop (disch:=aesop)
+example : ContinuousOn foo {0}ᶜ := by
+  unfold foo; fun_prop (disch:=aesop)
 
-example (y : ℝ) (hy : y≠0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y :=
-  by fun_prop (disch:=aesop)
+example (y : ℝ) (hy : y≠0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
+  fun_prop (disch:=aesop)
 
 
-example : DifferentiableOn ℝ foo {0}ᶜ :=
-  by unfold foo; fun_prop (disch:=aesop)
+example : DifferentiableOn ℝ foo {0}ᶜ := by
+  unfold foo; fun_prop (disch:=aesop)
 
 example (y : ℝ) (hy : y≠0) :
-    DifferentiableAt ℝ foo y :=
-  by unfold foo; fun_prop (disch:=aesop)
+    DifferentiableAt ℝ foo y := by
+  unfold foo; fun_prop (disch:=aesop)
 
-example {n} : ContDiffOn ℝ n foo {0}ᶜ :=
-  by unfold foo; fun_prop (disch:=aesop)
+example {n} : ContDiffOn ℝ n foo {0}ᶜ := by
+  unfold foo; fun_prop (disch:=aesop)
 
 example {n} (y : ℝ) (hy : y≠0) :
-    ContDiffAt ℝ n foo y :=
-  by unfold foo; fun_prop (disch:=aesop)
+    ContDiffAt ℝ n foo y := by
+  unfold foo; fun_prop (disch:=aesop)
 
 
 -- This theorem is meant to work together with `measurable_of_continuousOn_compl_singleton`
@@ -37,12 +37,12 @@ example {n} (y : ℝ) (hy : y≠0) :
 theorem ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by fun_prop) (by aesop)
 
 -- Notice that no theorems about measuability of log are used. It is infered from continuity.
-example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
-  by fun_prop
+example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
+  fun_prop
 
 -- Notice that no theorems about measuability of log are used. It is infered from continuity.
-example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
-  by fun_prop
+example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
+  fun_prop
 
 
 
@@ -77,5 +77,5 @@ example : AEMeasurable T := by
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : ℕ∞) := by norm_cast
 
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
-    Differentiable ℝ (iteratedDeriv 5 (fun x => f (2*(f (x + x))) + x)) :=
-  by fun_prop (disch:=(exact t1))
+    Differentiable ℝ (iteratedDeriv 5 (fun x => f (2*(f (x + x))) + x)) := by
+  fun_prop (disch:=(exact t1))

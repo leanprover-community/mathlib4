@@ -17,7 +17,7 @@ This file defines H-spaces mainly following the approach proposed by Serre in hi
 spaces with a binary operation `⋀ : X → X → X` that is a homotopic-theoretic weakening of an
 operation what would make `X` into a topological monoid.
 In particular, there exists a "neutral element" `e : X` such that `fun x ↦e ⋀ x` and
-`fun x ↦x ⋀ e` are homotopic to the identity on `X`, see
+`fun x ↦ x ⋀ e` are homotopic to the identity on `X`, see
 [the Wikipedia page of H-spaces](https://en.wikipedia.org/wiki/H-space).
 
 Some notable properties of `H-spaces` are
@@ -195,7 +195,7 @@ theorem qRight_zero_right (t : I) :
   simp only [qRight, coe_zero, add_zero, div_one]
   split_ifs
   · rw [Set.projIcc_of_mem _ ((mul_pos_mem_iff zero_lt_two).2 _)]
-    refine' ⟨t.2.1, _⟩
+    refine ⟨t.2.1, ?_⟩
     tauto
   · rw [(Set.projIcc_eq_right _).2]
     · linarith

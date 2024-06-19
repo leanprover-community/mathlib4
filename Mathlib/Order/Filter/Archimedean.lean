@@ -34,14 +34,23 @@ theorem tendsto_natCast_atTop_iff [StrictOrderedSemiring R] [Archimedean R] {f :
   tendsto_atTop_embedding (fun _ _ => Nat.cast_le) exists_nat_ge
 #align tendsto_coe_nat_at_top_iff tendsto_natCast_atTop_iff
 
+@[deprecated (since := "2024-04-17")]
+alias tendsto_nat_cast_atTop_iff := tendsto_natCast_atTop_iff
+
 theorem tendsto_natCast_atTop_atTop [OrderedSemiring R] [Archimedean R] :
     Tendsto ((↑) : ℕ → R) atTop atTop :=
   Nat.mono_cast.tendsto_atTop_atTop exists_nat_ge
 #align tendsto_coe_nat_at_top_at_top tendsto_natCast_atTop_atTop
 
+@[deprecated (since := "2024-04-17")]
+alias tendsto_nat_cast_atTop_atTop := tendsto_natCast_atTop_atTop
+
 theorem Filter.Eventually.natCast_atTop [OrderedSemiring R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℕ) in atTop, p n :=
   tendsto_natCast_atTop_atTop.eventually h
+
+@[deprecated (since := "2024-04-17")]
+alias Filter.Eventually.nat_cast_atTop := Filter.Eventually.natCast_atTop
 
 @[simp] theorem Int.comap_cast_atTop [StrictOrderedRing R] [Archimedean R] :
     comap ((↑) : ℤ → R) atTop = atTop :=
@@ -62,23 +71,38 @@ theorem tendsto_intCast_atTop_iff [StrictOrderedRing R] [Archimedean R] {f : α 
   rw [← @Int.comap_cast_atTop R, tendsto_comap_iff]; rfl
 #align tendsto_coe_int_at_top_iff tendsto_intCast_atTop_iff
 
+@[deprecated (since := "2024-04-17")]
+alias tendsto_int_cast_atTop_iff := tendsto_intCast_atTop_iff
+
 theorem tendsto_intCast_atBot_iff [StrictOrderedRing R] [Archimedean R] {f : α → ℤ}
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atBot ↔ Tendsto f l atBot := by
   rw [← @Int.comap_cast_atBot R, tendsto_comap_iff]; rfl
 #align tendsto_coe_int_at_bot_iff tendsto_intCast_atBot_iff
+
+@[deprecated (since := "2024-04-17")]
+alias tendsto_int_cast_atBot_iff := tendsto_intCast_atBot_iff
 
 theorem tendsto_intCast_atTop_atTop [StrictOrderedRing R] [Archimedean R] :
     Tendsto ((↑) : ℤ → R) atTop atTop :=
   tendsto_intCast_atTop_iff.2 tendsto_id
 #align tendsto_coe_int_at_top_at_top tendsto_intCast_atTop_atTop
 
+@[deprecated (since := "2024-04-17")]
+alias tendsto_int_cast_atTop_atTop := tendsto_intCast_atTop_atTop
+
 theorem Filter.Eventually.intCast_atTop [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℤ) in atTop, p n := by
   rw [← Int.comap_cast_atTop (R := R)]; exact h.comap _
 
+@[deprecated (since := "2024-04-17")]
+alias Filter.Eventually.int_cast_atTop := Filter.Eventually.intCast_atTop
+
 theorem Filter.Eventually.intCast_atBot [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℤ) in atBot, p n := by
   rw [← Int.comap_cast_atBot (R := R)]; exact h.comap _
+
+@[deprecated (since := "2024-04-17")]
+alias Filter.Eventually.int_cast_atBot := Filter.Eventually.intCast_atBot
 
 @[simp]
 theorem Rat.comap_cast_atTop [LinearOrderedField R] [Archimedean R] :
@@ -99,18 +123,30 @@ theorem tendsto_ratCast_atTop_iff [LinearOrderedField R] [Archimedean R] {f : α
   rw [← @Rat.comap_cast_atTop R, tendsto_comap_iff]; rfl
 #align tendsto_coe_rat_at_top_iff tendsto_ratCast_atTop_iff
 
+@[deprecated (since := "2024-04-17")]
+alias tendsto_rat_cast_atTop_iff := tendsto_ratCast_atTop_iff
+
 theorem tendsto_ratCast_atBot_iff [LinearOrderedField R] [Archimedean R] {f : α → ℚ}
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atBot ↔ Tendsto f l atBot := by
   rw [← @Rat.comap_cast_atBot R, tendsto_comap_iff]; rfl
 #align tendsto_coe_rat_at_bot_iff tendsto_ratCast_atBot_iff
 
+@[deprecated (since := "2024-04-17")]
+alias tendsto_rat_cast_atBot_iff := tendsto_ratCast_atBot_iff
+
 theorem Filter.Eventually.ratCast_atTop [LinearOrderedField R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℚ) in atTop, p n := by
   rw [← Rat.comap_cast_atTop (R := R)]; exact h.comap _
 
+@[deprecated (since := "2024-04-17")]
+alias Filter.Eventually.rat_cast_atTop := Filter.Eventually.ratCast_atTop
+
 theorem Filter.Eventually.ratCast_atBot [LinearOrderedField R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℚ) in atBot, p n := by
   rw [← Rat.comap_cast_atBot (R := R)]; exact h.comap _
+
+@[deprecated (since := "2024-04-17")]
+alias Filter.Eventually.rat_cast_atBot := Filter.Eventually.ratCast_atBot
 
 -- Porting note (#10756): new lemma
 theorem atTop_hasAntitoneBasis_of_archimedean [OrderedSemiring R] [Archimedean R] :
@@ -156,7 +192,7 @@ statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a versio
 given in `Filter.Tendsto.const_mul_atTop`). -/
 theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop := by
-  refine' tendsto_atTop.2 fun b => _
+  refine tendsto_atTop.2 fun b => ?_
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   rw [nsmul_eq_mul'] at hn
   filter_upwards [tendsto_atTop.1 hf (n * max b 0)] with x hx
@@ -175,7 +211,7 @@ statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a versio
 given in `Filter.Tendsto.atTop_mul_const`). -/
 theorem Tendsto.atTop_mul_const' (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop := by
-  refine' tendsto_atTop.2 fun b => _
+  refine tendsto_atTop.2 fun b => ?_
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   have hn' : 1 ≤ (n : R) * r := by rwa [nsmul_eq_mul] at hn
   filter_upwards [tendsto_atTop.1 hf (max b 0 * n)] with x hx
@@ -194,12 +230,12 @@ section LinearOrderedRing
 
 variable [LinearOrderedRing R] [Archimedean R]
 
-/-- See also `Filter.Tendsto.atTop_mul_neg_const` for a version of this lemma for
+/-- See also `Filter.Tendsto.atTop_mul_const_of_neg` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
-theorem Tendsto.atTop_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atTop) :
+theorem Tendsto.atTop_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot := by
   simpa only [tendsto_neg_atTop_iff, mul_neg] using hf.atTop_mul_const' (neg_pos.mpr hr)
-#align filter.tendsto.at_top_mul_neg_const' Filter.Tendsto.atTop_mul_neg_const'
+#align filter.tendsto.at_top_mul_neg_const' Filter.Tendsto.atTop_mul_const_of_neg'
 
 /-- See also `Filter.Tendsto.atBot_mul_const` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
@@ -209,12 +245,18 @@ theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
   exact hf.atTop_mul_const' hr
 #align filter.tendsto.at_bot_mul_const' Filter.Tendsto.atBot_mul_const'
 
-/-- See also `Filter.Tendsto.atBot_mul_neg_const` for a version of this lemma for
+/-- See also `Filter.Tendsto.atBot_mul_const_of_neg` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
-theorem Tendsto.atBot_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atBot) :
+theorem Tendsto.atBot_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop := by
   simpa only [mul_neg, tendsto_neg_atBot_iff] using hf.atBot_mul_const' (neg_pos.2 hr)
-#align filter.tendsto.at_bot_mul_neg_const' Filter.Tendsto.atBot_mul_neg_const'
+#align filter.tendsto.at_bot_mul_neg_const' Filter.Tendsto.atBot_mul_const_of_neg'
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.atTop_mul_neg_const' := Tendsto.atTop_mul_const_of_neg'
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.atBot_mul_neg_const' := Tendsto.atBot_mul_const_of_neg'
 
 end LinearOrderedRing
 
@@ -224,7 +266,7 @@ variable [LinearOrderedCancelAddCommMonoid R] [Archimedean R]
 
 theorem Tendsto.atTop_nsmul_const {f : α → ℕ} (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atTop := by
-  refine' tendsto_atTop.mpr fun s => _
+  refine tendsto_atTop.mpr fun s => ?_
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
   exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (nsmul_le_nsmul_left hr.le ha)
 #align filter.tendsto.at_top_nsmul_const Filter.Tendsto.atTop_nsmul_const
@@ -241,7 +283,7 @@ theorem Tendsto.atTop_nsmul_neg_const {f : α → ℕ} (hr : r < 0) (hf : Tendst
 
 theorem Tendsto.atTop_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atTop := by
-  refine' tendsto_atTop.mpr fun s => _
+  refine tendsto_atTop.mpr fun s => ?_
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
   replace hn : s ≤ (n : ℤ) • r := by simpa
   exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (zsmul_le_zsmul hr.le ha)

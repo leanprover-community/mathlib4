@@ -385,7 +385,7 @@ instance : Insert PSet PSet :=
 instance : Singleton PSet PSet :=
   ⟨fun s => insert s ∅⟩
 
-instance : IsLawfulSingleton PSet PSet :=
+instance : LawfulSingleton PSet PSet :=
   ⟨fun _ => rfl⟩
 
 instance (x y : PSet) : Inhabited (insert x y).Type :=
@@ -619,12 +619,12 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
     have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
-    refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
+    refine @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, ?_⟩ _ ?_
     · dsimp [Arity.Equiv]
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
       exact (Definable.Resp (F ⟦y⟧)).2
-    refine' funext fun q => Quotient.inductionOn q fun x => _
+    refine funext fun q => Quotient.inductionOn q fun x => ?_
     simp_rw [Resp.eval_val, Resp.f]
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
 #align classical.all_definable Classical.allDefinable
@@ -804,7 +804,7 @@ theorem not_nonempty_empty : ¬ZFSet.Nonempty ∅ := by simp [ZFSet.Nonempty]
 
 @[simp]
 theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
-  refine' ⟨_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
+  refine ⟨?_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
   rintro ⟨a, h⟩
   induction a using Quotient.inductionOn
   exact ⟨_, h⟩
@@ -844,7 +844,7 @@ instance : Insert ZFSet ZFSet :=
 instance : Singleton ZFSet ZFSet :=
   ⟨fun x => insert x ∅⟩
 
-instance : IsLawfulSingleton ZFSet ZFSet :=
+instance : LawfulSingleton ZFSet ZFSet :=
   ⟨fun _ => rfl⟩
 
 @[simp]
@@ -1260,7 +1260,7 @@ def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u}
 @[simp]
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     z ∈ pairSep p x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b := by
-  refine' mem_sep.trans ⟨And.right, fun e => ⟨_, e⟩⟩
+  refine mem_sep.trans ⟨And.right, fun e => ⟨?_, e⟩⟩
   rcases e with ⟨a, ax, b, bY, rfl, pab⟩
   simp only [mem_powerset, subset_def, mem_union, pair, mem_pair]
   rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
@@ -1492,10 +1492,10 @@ theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
 theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
   ⟨by
     have H : ∀ x : ZFSet.{u}, @Acc Class.{u} (· ∈ ·) ↑x := by
-      refine' fun a => ZFSet.inductionOn a fun x IH => ⟨_, _⟩
+      refine fun a => ZFSet.inductionOn a fun x IH => ⟨_, ?_⟩
       rintro A ⟨z, rfl, hz⟩
       exact IH z hz
-    refine' fun A => ⟨A, _⟩
+    refine fun A => ⟨A, ?_⟩
     rintro B ⟨x, rfl, _⟩
     exact H x⟩
 #align Class.mem_wf Class.mem_wf
@@ -1659,7 +1659,7 @@ theorem mem_sUnion {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y �
 #align Class.mem_sUnion Class.mem_sUnion
 
 theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z := by
-  refine' ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, _⟩
+  refine ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, ?_⟩
   rintro H - ⟨z, rfl, hxz⟩
   exact H _ hxz
 #align Class.sInter_apply Class.sInter_apply
@@ -1675,11 +1675,11 @@ theorem mem_of_mem_sInter {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) :
 #align Class.mem_of_mem_sInter Class.mem_of_mem_sInter
 
 theorem mem_sInter {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z, z ∈ x → y ∈ z := by
-  refine' ⟨fun hy z => mem_of_mem_sInter hy, fun H => _⟩
+  refine ⟨fun hy z => mem_of_mem_sInter hy, fun H => ?_⟩
   simp_rw [mem_def, sInter_apply]
   obtain ⟨z, hz⟩ := h
   obtain ⟨y, rfl, _⟩ := H z (coe_mem.2 hz)
-  refine' ⟨y, rfl, fun w hxw => _⟩
+  refine ⟨y, rfl, fun w hxw => ?_⟩
   simpa only [coe_mem, coe_apply] using H w (coe_mem.2 hxw)
 #align Class.mem_sInter Class.mem_sInter
 
@@ -1707,7 +1707,6 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
               WellFounded.not_lt_min ZFSet.mem_wf _ hnA hB <| coe_apply.1 hx))
 #align Class.eq_univ_of_powerset_subset Class.eq_univ_of_powerset_subset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
 def iota (A : Class) : Class :=
   ⋃₀ { x | ∀ y, A y ↔ y = x }
@@ -1771,7 +1770,6 @@ theorem choice_mem_aux (y : ZFSet.{u}) (yx : y ∈ x) :
     by_contradiction fun n => h <| by rwa [← (eq_empty y).2 fun z zx => n ⟨z, zx⟩]
 #align Set.choice_mem_aux ZFSet.choice_mem_aux
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem choice_isFunc : IsFunc x (⋃₀ x) (choice x) :=
   (@map_isFunc _ (Classical.allDefinable _) _ _).2 fun y yx =>
     mem_sUnion.2 ⟨y, yx, choice_mem_aux x h y yx⟩
@@ -1787,7 +1785,7 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
   (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
     ext x
     rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
-    refine' ⟨_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
+    refine ⟨?_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), ?_⟩⟩
     · rintro ⟨b, h2⟩
       rw [← ZFSet.eq, ZFSet.mk_out] at h2
       simp [h2]

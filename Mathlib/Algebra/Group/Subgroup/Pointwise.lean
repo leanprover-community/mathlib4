@@ -22,7 +22,8 @@ These actions are available in the `Pointwise` locale.
 
 ## Implementation notes
 
-The pointwise section of this file is almost identical to `GroupTheory/Submonoid/Pointwise.lean`.
+The pointwise section of this file is almost identical to
+the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
 Where possible, try to keep them in sync.
 -/
 
@@ -72,10 +73,10 @@ theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
 theorem closure_toSubmonoid (S : Set G) :
     (closure S).toSubmonoid = Submonoid.closure (S ∪ S⁻¹) := by
   refine le_antisymm (fun x hx => ?_) (Submonoid.closure_le.2 ?_)
-  · refine'
+  · refine
       closure_induction hx
-        (fun x hx => Submonoid.closure_mono (subset_union_left S S⁻¹) (Submonoid.subset_closure hx))
-        (Submonoid.one_mem _) (fun x y hx hy => Submonoid.mul_mem _ hx hy) fun x hx => _
+        (fun x hx => Submonoid.closure_mono subset_union_left (Submonoid.subset_closure hx))
+        (Submonoid.one_mem _) (fun x y hx hy => Submonoid.mul_mem _ hx hy) fun x hx => ?_
     rwa [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
   · simp only [true_and_iff, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
 #align subgroup.closure_to_submonoid Subgroup.closure_toSubmonoid
@@ -172,7 +173,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
   suffices ∃ h, C x h from this.snd
-  refine' iSup_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => _) _ fun x y => _
+  refine iSup_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => ?_) ?_ fun x y => ?_
   · exact ⟨_, hp i _ hx⟩
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -240,10 +241,10 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
   simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
   · rintro ⟨y, hy, z, ⟨hzB, hzC⟩, rfl⟩
-    refine' ⟨_, mul_mem (h hy) hzC⟩
+    refine ⟨?_, mul_mem (h hy) hzC⟩
     exact ⟨y, hy, z, hzB, rfl⟩
   rintro ⟨⟨y, hy, z, hz, rfl⟩, hyz⟩
-  refine' ⟨y, hy, z, ⟨hz, _⟩, rfl⟩
+  refine ⟨y, hy, z, ⟨hz, ?_⟩, rfl⟩
   suffices y⁻¹ * (y * z) ∈ C by simpa
   exact mul_mem (inv_mem (h hy)) hyz
 #align subgroup.mul_inf_assoc Subgroup.mul_inf_assoc
@@ -256,10 +257,10 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
   · rintro ⟨y, ⟨hyA, hyB⟩, z, hz, rfl⟩
-    refine' ⟨A.mul_mem hyA (h hz), _⟩
+    refine ⟨A.mul_mem hyA (h hz), ?_⟩
     exact ⟨y, hyB, z, hz, rfl⟩
   rintro ⟨hyz, y, hy, z, hz, rfl⟩
-  refine' ⟨y, ⟨_, hy⟩, z, hz, rfl⟩
+  refine ⟨y, ⟨?_, hy⟩, z, hz, rfl⟩
   suffices y * z * z⁻¹ ∈ A by simpa
   exact mul_mem hyz (inv_mem (h hz))
 #align subgroup.inf_mul_assoc Subgroup.inf_mul_assoc
@@ -364,7 +365,7 @@ theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
 
 theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · rintro - ⟨g, hg, rfl⟩
     exact ⟨g, hg, rfl⟩
   · rintro p ⟨g, hg, hp⟩
@@ -497,6 +498,10 @@ protected def pointwiseMulAction : MulAction α (AddSubgroup A) where
 #align add_subgroup.pointwise_mul_action AddSubgroup.pointwiseMulAction
 
 scoped[Pointwise] attribute [instance] AddSubgroup.pointwiseMulAction
+
+theorem pointwise_smul_def {a : α} (S : AddSubgroup A) :
+    a • S = S.map (DistribMulAction.toAddMonoidEnd _ _ a) :=
+  rfl
 
 @[simp]
 theorem coe_pointwise_smul (a : α) (S : AddSubgroup A) : ↑(a • S) = a • (S : Set A) :=

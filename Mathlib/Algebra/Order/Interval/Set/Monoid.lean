@@ -25,17 +25,17 @@ namespace Set
 variable {M : Type*} [OrderedCancelAddCommMonoid M] [ExistsAddOfLE M] (a b c d : M)
 
 theorem Ici_add_bij : BijOn (· + d) (Ici a) (Ici (a + d)) := by
-  refine'
-    ⟨fun x h => add_le_add_right (mem_Ici.mp h) _, (add_left_injective d).injOn _, fun _ h => _⟩
+  refine
+    ⟨fun x h => add_le_add_right (mem_Ici.mp h) _, (add_left_injective d).injOn, fun _ h => ?_⟩
   obtain ⟨c, rfl⟩ := exists_add_of_le (mem_Ici.mp h)
   rw [mem_Ici, add_right_comm, add_le_add_iff_right] at h
   exact ⟨a + c, h, by rw [add_right_comm]⟩
 #align set.Ici_add_bij Set.Ici_add_bij
 
 theorem Ioi_add_bij : BijOn (· + d) (Ioi a) (Ioi (a + d)) := by
-  refine'
+  refine
     ⟨fun x h => add_lt_add_right (mem_Ioi.mp h) _, fun _ _ _ _ h => add_right_cancel h, fun _ h =>
-      _⟩
+      ?_⟩
   obtain ⟨c, rfl⟩ := exists_add_of_le (mem_Ioi.mp h).le
   rw [mem_Ioi, add_right_comm, add_lt_add_iff_right] at h
   exact ⟨a + c, h, by rw [add_right_comm]⟩

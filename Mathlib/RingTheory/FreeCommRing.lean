@@ -239,7 +239,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
-    refine' Subring.InClosure.recOn hx _ _ _ _
+    refine Subring.InClosure.recOn hx ?_ ?_ ?_ ?_
     · use 1
       rw [RingHom.map_one]
       norm_cast
@@ -250,7 +250,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [RingHom.map_mul, lift_of, if_pos hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
-      refine' ⟨q + r, _⟩
+      refine ⟨q + r, ?_⟩
       rw [RingHom.map_add, hq, hr]
       norm_cast
   specialize this (of p) hps
@@ -268,7 +268,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
 -- Porting note: Changed `(Subtype.val : s → α)` to `(↑)` in the type
 theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
-  refine' Subring.InClosure.recOn hxs _ _ _ _
+  refine Subring.InClosure.recOn hxs ?_ ?_ ?_ ?_
   · rw [RingHom.map_one]
     rfl
   · rw [map_neg, map_one]
@@ -284,12 +284,12 @@ theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite
     (fun p => ⟨{p}, Set.finite_singleton p, isSupported_of.2 <| Set.mem_singleton _⟩)
     (fun _ _ ⟨s, hfs, hxs⟩ ⟨t, hft, hxt⟩ =>
       ⟨s ∪ t, hfs.union hft,
-        isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
-          (isSupported_upwards hxt <| Set.subset_union_right s t)⟩)
+        isSupported_add (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hxt Set.subset_union_right)⟩)
     fun _ _ ⟨s, hfs, hxs⟩ ⟨t, hft, hxt⟩ =>
     ⟨s ∪ t, hfs.union hft,
-      isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left s t)
-        (isSupported_upwards hxt <| Set.subset_union_right s t)⟩
+      isSupported_mul (isSupported_upwards hxs Set.subset_union_left)
+        (isSupported_upwards hxt Set.subset_union_right)⟩
 #align free_comm_ring.exists_finite_support FreeCommRing.exists_finite_support
 
 theorem exists_finset_support (x : FreeCommRing α) : ∃ s : Finset α, IsSupported x ↑s :=

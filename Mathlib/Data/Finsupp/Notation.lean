@@ -89,6 +89,7 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
         Std.Format.join (f.support.val.unquot.map <|
           fun a => " | " ++ repr a ++ " => " ++ repr (f a))
       if p ≥ leadPrec then Format.paren ret else ret
+#align finsupp.has_repr Finsupp.instRepr
 
 -- lean4#3497 causes a PANIC if we put this in `Mathlib.Data.DFinsupp.Notation` where it belongs
 extend_docs Finsupp.fun₀ after

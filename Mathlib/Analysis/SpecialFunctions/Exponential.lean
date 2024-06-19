@@ -55,7 +55,7 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 
 open Filter RCLike ContinuousMultilinearMap NormedField NormedSpace Asymptotics
 
-open scoped Nat Topology BigOperators ENNReal
+open scoped Nat Topology ENNReal
 
 section AnyFieldAnyAlgebra
 
@@ -97,7 +97,7 @@ theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
   suffices
     (fun h => exp 𝕂 x * (exp 𝕂 (0 + h) - exp 𝕂 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h =>
       exp 𝕂 (x + h) - exp 𝕂 x - exp 𝕂 x • ContinuousLinearMap.id 𝕂 𝔸 h by
-    refine' (IsLittleO.const_mul_left _ _).congr' this (EventuallyEq.refl _ _)
+    refine (IsLittleO.const_mul_left ?_ _).congr' this (EventuallyEq.refl _ _)
     rw [← hasFDerivAt_iff_isLittleO_nhds_zero]
     exact hasFDerivAt_exp_zero_of_radius_pos hpos
   have : ∀ᶠ h in 𝓝 (0 : 𝔸), h ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
@@ -126,8 +126,9 @@ variable {𝕂 : Type*} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `exp 𝕂 x` at any point `x` in the disk of convergence. -/
 theorem hasStrictDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝕂}
-    (hx : x ∈ EMetric.ball (0 : 𝕂) (expSeries 𝕂 𝕂).radius) : HasStrictDerivAt (exp 𝕂) (exp 𝕂 x) x :=
-  by simpa using (hasStrictFDerivAt_exp_of_mem_ball hx).hasStrictDerivAt
+    (hx : x ∈ EMetric.ball (0 : 𝕂) (expSeries 𝕂 𝕂).radius) :
+    HasStrictDerivAt (exp 𝕂) (exp 𝕂 x) x := by
+  simpa using (hasStrictFDerivAt_exp_of_mem_ball hx).hasStrictDerivAt
 #align has_strict_deriv_at_exp_of_mem_ball hasStrictDerivAt_exp_of_mem_ball
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has derivative
@@ -217,7 +218,7 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
 end DerivRCLike
 
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp ℂ := by
-  refine' funext fun x => _
+  refine funext fun x => ?_
   rw [Complex.exp, exp_eq_tsum_div]
   have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat

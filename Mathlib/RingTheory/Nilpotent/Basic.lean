@@ -33,7 +33,7 @@ For the definition of `nilradical`, see `Mathlib.RingTheory.Nilpotent.Lemmas`.
 
 universe u v
 
-open BigOperators Function Set
+open Function Set
 
 variable {R S : Type*} {x y : R}
 
@@ -57,7 +57,7 @@ lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero 
 
 theorem IsNilpotent.isUnit_sub_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
-  refine ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, ?_, ?_⟩, rfl⟩
+  refine ⟨⟨r - 1, -∑ i ∈ Finset.range n, r ^ i, ?_, ?_⟩, rfl⟩
   · simp [mul_geom_sum, hn]
   · simp [geom_sum_mul, hn]
 
@@ -139,7 +139,7 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
 
 protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
-    IsNilpotent (∑ i in s, f i) := by
+    IsNilpotent (∑ i ∈ s, f i) := by
   classical
   induction s using Finset.induction with
   | empty => simp
@@ -153,14 +153,14 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
 
 protected lemma isNilpotent_mul_left_iff (hy : y ∈ nonZeroDivisorsLeft R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
-  refine' ⟨_, h_comm.isNilpotent_mul_left⟩
+  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
   exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
 
 protected lemma isNilpotent_mul_right_iff (hx : x ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent y := by
-  refine' ⟨_, h_comm.isNilpotent_mul_right⟩
+  refine ⟨?_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
   exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
@@ -188,7 +188,7 @@ variable [CommSemiring R] {x y : R}
 
 lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
-    IsNilpotent (∑ i in s, f i) :=
+    IsNilpotent (∑ i ∈ s, f i) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
 
 end CommSemiring

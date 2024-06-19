@@ -55,9 +55,9 @@ protected def scheme (X : LocallyRingedSpace.{u})
   local_affine := by
     intro x
     obtain ⟨R, f, h₁, h₂⟩ := h x
-    refine' ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨_⟩⟩
+    refine ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨?_⟩⟩
     apply LocallyRingedSpace.isoOfSheafedSpaceIso
-    refine' SheafedSpace.forgetToPresheafedSpace.preimageIso _
+    refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
     · exact Opens.openEmbedding _ -- Porting note (#11187): was `infer_instance`
@@ -70,7 +70,8 @@ theorem IsOpenImmersion.isOpen_range {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpe
   H.base_open.isOpen_range
 #align algebraic_geometry.IsOpenImmersion.open_range AlgebraicGeometry.IsOpenImmersion.isOpen_range
 
-@[deprecated] alias IsOpenImmersion.open_range := IsOpenImmersion.isOpen_range -- 2024-03-17
+@[deprecated (since := "2024-03-17")]
+alias IsOpenImmersion.open_range := IsOpenImmersion.isOpen_range
 
 section OpenCover
 
@@ -118,11 +119,11 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
     apply PresheafedSpace.IsOpenImmersion.ofRestrict
   Covers := by
     intro x
-    erw [coe_comp]
+    erw [TopCat.coe_comp] -- now `erw` after #13170
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
-    rw [← TopCat.epi_iff_surjective]
+    erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
     change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
     infer_instance
 #align algebraic_geometry.Scheme.affine_cover AlgebraicGeometry.Scheme.affineCover
@@ -145,7 +146,7 @@ def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X wh
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).1.base
     use z
     erw [comp_apply]
-    rw [hz, hy]
+    erw [hz, hy] -- now `erw` after #13170
   -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
   -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
   IsOpen x := PresheafedSpace.IsOpenImmersion.comp _ _
@@ -174,10 +175,10 @@ def OpenCover.copy {X : Scheme.{u}} (𝒰 : OpenCover X) (J : Type*) (obj : J �
   { J, obj, map
     f := fun x => e₁.symm (𝒰.f x)
     Covers := fun x => by
-      rw [e₂, Scheme.comp_val_base, coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
+      rw [e₂, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
         Set.image_univ, e₁.rightInverse_symm]
       · exact 𝒰.Covers x
-      · rw [← TopCat.epi_iff_surjective]; infer_instance
+      · erw [← TopCat.epi_iff_surjective]; infer_instance -- now `erw` after #13170
     -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
     -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
     IsOpen := fun i => by rw [e₂]; exact PresheafedSpace.IsOpenImmersion.comp _ _ }
@@ -280,7 +281,7 @@ theorem affineBasisCover_is_basis (X : Scheme.{u}) :
         ((X.affineCover.map (X.affineCover.f a)).1.base.continuous_toFun.isOpen_preimage _
           hU) with
       ⟨_, ⟨_, ⟨s, rfl⟩, rfl⟩, hxV, hVU⟩
-    refine' ⟨_, ⟨⟨_, s⟩, rfl⟩, _, _⟩ <;> erw [affineBasisCover_map_range]
+    refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> erw [affineBasisCover_map_range]
     · exact ⟨x, hxV, e⟩
     · rw [Set.image_subset_iff]; exact hVU
 #align algebraic_geometry.Scheme.affine_basis_cover_is_basis AlgebraicGeometry.Scheme.affineBasisCover_is_basis
@@ -432,7 +433,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f
 theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsIso f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) := by
   rw [isIso_iff_isOpenImmersion, IsOpenImmersion.iff_stalk_iso, and_comm, ← and_assoc]
-  refine' and_congr ⟨_, _⟩ Iff.rfl
+  refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
     convert_to
       IsIso
@@ -566,7 +567,7 @@ theorem range_pullback_snd_of_left :
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
     rfl
-  rw [← TopCat.epi_iff_surjective]
+  erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.range_pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_snd_of_left
 
@@ -583,14 +584,14 @@ theorem range_pullback_fst_of_right :
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
     rfl
-  rw [← TopCat.epi_iff_surjective]
+  erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.range_pullback_fst_of_right AlgebraicGeometry.IsOpenImmersion.range_pullback_fst_of_right
 
 theorem range_pullback_to_base_of_left :
     Set.range (pullback.fst ≫ f : pullback f g ⟶ Z).1.base =
       Set.range f.1.base ∩ Set.range g.1.base := by
-  rw [pullback.condition, Scheme.comp_val_base, coe_comp, Set.range_comp,
+  rw [pullback.condition, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp,
     range_pullback_snd_of_left, Opens.carrier_eq_coe,
     Opens.map_obj, Opens.coe_mk, Set.image_preimage_eq_inter_range]
 #align algebraic_geometry.IsOpenImmersion.range_pullback_to_base_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_left
@@ -598,8 +599,9 @@ theorem range_pullback_to_base_of_left :
 theorem range_pullback_to_base_of_right :
     Set.range (pullback.fst ≫ g : pullback g f ⟶ Z).1.base =
       Set.range g.1.base ∩ Set.range f.1.base := by
-  rw [Scheme.comp_val_base, coe_comp, Set.range_comp, range_pullback_fst_of_right, Opens.map_obj,
-    Opens.carrier_eq_coe, Opens.coe_mk, Set.image_preimage_eq_inter_range, Set.inter_comm]
+  rw [Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, range_pullback_fst_of_right,
+    Opens.map_obj, Opens.carrier_eq_coe, Opens.coe_mk, Set.image_preimage_eq_inter_range,
+    Set.inter_comm]
 #align algebraic_geometry.IsOpenImmersion.range_pullback_to_base_of_right AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_right
 
 /-- The universal property of open immersions:
@@ -709,10 +711,10 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
     ext1
     -- Porting note: this `dsimp` was not necessary
     dsimp [Opens.map]
-    refine' Set.image_preimage_eq_inter_range.trans _
+    refine Set.image_preimage_eq_inter_range.trans ?_
     erw [Set.inter_eq_left]
-    refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
-  refine' le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
+    refine Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
+  refine le_trans (Scheme.basicOpen_le _ _) (le_of_eq ?_)
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
 #align algebraic_geometry.Scheme.image_basic_open AlgebraicGeometry.Scheme.image_basicOpen
@@ -739,8 +741,7 @@ def Scheme.OpenCover.pullbackCover {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : 
       show _ = (pullback.fst : pullback f (𝒰.map (𝒰.f (f.1.base x))) ⟶ _).1.base from
         PreservesPullback.iso_hom_fst Scheme.forgetToTop f (𝒰.map (𝒰.f (f.1.base x)))]
     -- Porting note: `rw` to `erw` on this single lemma
-    erw [coe_comp]
-    rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
+    rw [TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
       TopCat.pullback_fst_range]
     · obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
       exact ⟨y, h.symm⟩
@@ -762,8 +763,7 @@ def Scheme.OpenCover.pullbackCover' {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f :
       show _ = (pullback.snd : pullback (𝒰.map (𝒰.f (f.1.base x))) f ⟶ _).1.base from
         PreservesPullback.iso_hom_snd Scheme.forgetToTop (𝒰.map (𝒰.f (f.1.base x))) f]
     -- Porting note: `rw` to `erw` on this single lemma
-    erw [coe_comp]
-    rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
+    rw [TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
       TopCat.pullback_snd_range]
     · obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
       exact ⟨y, h⟩

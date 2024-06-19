@@ -52,7 +52,7 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-open scoped DirectSum BigOperators Pointwise
+open scoped DirectSum Pointwise
 
 open DirectSum SetLike Localization TopCat TopologicalSpace CategoryTheory Opposite
 
@@ -73,7 +73,7 @@ variable {𝒜}
 -/
 def IsFraction {U : Opens (ProjectiveSpectrum.top 𝒜)} (f : ∀ x : U, at x.1) : Prop :=
   ∃ (i : ℕ) (r s : 𝒜 i) (s_nin : ∀ x : U, s.1 ∉ x.1.asHomogeneousIdeal),
-    ∀ x : U, f x = Quotient.mk'' ⟨i, r, s, s_nin x⟩
+    ∀ x : U, f x = .mk ⟨i, r, s, s_nin x⟩
 #align algebraic_geometry.projective_spectrum.structure_sheaf.is_fraction AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.IsFraction
 variable (𝒜)
 
@@ -99,57 +99,58 @@ variable {𝒜}
 
 open Submodule SetLike.GradedMonoid HomogeneousLocalization
 
-theorem zeroMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
+theorem zero_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
     (isLocallyFraction 𝒜).pred (0 : ∀ x : U.unop, at x.1) := fun x =>
   ⟨unop U, x.2, 𝟙 (unop U), ⟨0, ⟨0, zero_mem _⟩, ⟨1, one_mem_graded _⟩, _, fun _ => rfl⟩⟩
-#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.zero_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.zeroMem'
+#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.zero_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.zero_mem'
 
-theorem oneMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
+theorem one_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
     (isLocallyFraction 𝒜).pred (1 : ∀ x : U.unop, at x.1) := fun x =>
   ⟨unop U, x.2, 𝟙 (unop U), ⟨0, ⟨1, one_mem_graded _⟩, ⟨1, one_mem_graded _⟩, _, fun _ => rfl⟩⟩
-#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.one_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.oneMem'
+#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.one_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.one_mem'
 
-theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.1)
+theorem add_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
     (isLocallyFraction 𝒜).pred (a + b) := fun x => by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, hwa, wa⟩
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, hwb, wb⟩
-  refine'
+  refine
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨sb * ra + sa * rb,
         add_mem (add_comm jb ja ▸ mul_mem_graded sb_mem ra_mem : sb * ra ∈ 𝒜 (ja + jb))
           (mul_mem_graded sa_mem rb_mem)⟩,
       ⟨sa * sb, mul_mem_graded sa_mem sb_mem⟩, fun y ↦
         y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩),
-      fun y => _⟩
+      fun y => ?_⟩
   simp only at wa wb
   simp only [Pi.add_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val,
-    add_val, val_mk'', add_mk, add_comm (sa * rb)]
+    val_add, val_mk, add_mk, add_comm (sa * rb)]
   rfl
-#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.add_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.addMem'
+#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.add_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.add_mem'
 
-theorem negMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
+theorem neg_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, nin, hy⟩
-  refine' ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, nin, fun y => _⟩
-  simp only [ext_iff_val, val_mk''] at hy
-  simp only [Pi.neg_apply, ext_iff_val, neg_val, hy, val_mk'', neg_mk]
-#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.neg_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.negMem'
+  refine ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, nin, fun y => ?_⟩
+  simp only [ext_iff_val, val_mk] at hy
+  simp only [Pi.neg_apply, ext_iff_val, val_neg, hy, val_mk, neg_mk]
+#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.neg_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.neg_mem'
 
-theorem mulMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.1)
+theorem mul_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
     (isLocallyFraction 𝒜).pred (a * b) := fun x => by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, hwa, wa⟩
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, hwb, wb⟩
-  refine'
+  refine
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨ra * rb, SetLike.mul_mem_graded ra_mem rb_mem⟩,
       ⟨sa * sb, SetLike.mul_mem_graded sa_mem sb_mem⟩, fun y =>
       y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩),
-      fun y ↦ _⟩
-  simp only [Pi.mul_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val, mul_val, val_mk'', mk_mul]
+      fun y ↦ ?_⟩
+  simp only [Pi.mul_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val, val_mul, val_mk,
+    Localization.mk_mul]
   rfl
-#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.mul_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.mulMem'
+#align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.mul_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.mul_mem'
 
 end SectionSubring
 
@@ -164,11 +165,11 @@ variable {𝒜}
 def sectionsSubring (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
     Subring (∀ x : U.unop, at x.1) where
   carrier := {f | (isLocallyFraction 𝒜).pred f}
-  zero_mem' := zeroMem' U
-  one_mem' := oneMem' U
-  add_mem' := addMem' U _ _
-  neg_mem' := negMem' U _
-  mul_mem' := mulMem' U _ _
+  zero_mem' := zero_mem' U
+  one_mem' := one_mem' U
+  add_mem' := add_mem' U _ _
+  neg_mem' := neg_mem' U _
+  mul_mem' := mul_mem' U _ _
 #align algebraic_geometry.projective_spectrum.structure_sheaf.sections_subring AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.sectionsSubring
 
 end
@@ -202,7 +203,7 @@ set_option linter.uppercaseLean3 false in
 attribute [nolint simpNF]
   AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
 
-/-- Some glue, verifying that that structure presheaf valued in `CommRing` agrees with the `Type`
+/-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
@@ -231,12 +232,23 @@ section
 
 open ProjectiveSpectrum ProjectiveSpectrum.StructureSheaf Opens
 
+section
+variable {U V : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ} (i : V ⟶ U)
+    (s t : (Proj.structureSheaf 𝒜).1.obj V) (x : V.unop)
+
 @[simp]
-theorem Proj.res_apply (U V : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (i : V ⟶ U)
-    (s : (Proj.structureSheaf 𝒜).1.obj V) (x : U.unop) :
-    ((Proj.structureSheaf 𝒜).1.map i s).1 x = (s.1 (i.unop x) : _) :=
-  rfl
+theorem Proj.res_apply (x) : ((Proj.structureSheaf 𝒜).1.map i s).1 x = s.1 (i.unop x) := rfl
 #align algebraic_geometry.res_apply AlgebraicGeometry.Proj.res_apply
+
+@[ext] theorem Proj.ext (h : s.1 = t.1) : s = t := Subtype.ext h
+@[simp] theorem Proj.add_apply : (s + t).1 x = s.1 x + t.1 x := rfl
+@[simp] theorem Proj.mul_apply : (s * t).1 x = s.1 x * t.1 x := rfl
+@[simp] theorem Proj.sub_apply : (s - t).1 x = s.1 x - t.1 x := rfl
+@[simp] theorem Proj.pow_apply (n : ℕ) : (s ^ n).1 x = s.1 x ^ n := rfl
+@[simp] theorem Proj.zero_apply : (0 : (Proj.structureSheaf 𝒜).1.obj V).1 x = 0 := rfl
+@[simp] theorem Proj.one_apply : (1 : (Proj.structureSheaf 𝒜).1.obj V).1 x = 1 := rfl
+
+end
 
 /-- `Proj` of a graded ring as a `SheafedSpace`-/
 def Proj.toSheafedSpace : SheafedSpace CommRingCat where
@@ -267,9 +279,7 @@ def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
     { pt := _
       ι :=
         { app := fun U =>
-            openToLocalization 𝒜 ((OpenNhds.inclusion _).obj U.unop) x U.unop.2
-          -- Porting note: this proof was automatic in mathlib3
-          naturality := fun _ _ _ => rfl } }
+            openToLocalization 𝒜 ((OpenNhds.inclusion _).obj U.unop) x U.unop.2 } }
 #align algebraic_geometry.stalk_to_fiber_ring_hom AlgebraicGeometry.stalkToFiberRingHom
 
 @[simp]
@@ -307,7 +317,7 @@ def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ∀ f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl,
     (Proj.structureSheaf 𝒜).1.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f.den)) :=
   fun f =>
-  ⟨fun y => Quotient.mk'' ⟨f.deg, f.num, f.den, y.2⟩, fun y =>
+  ⟨fun y => HomogeneousLocalization.mk ⟨f.deg, f.num, f.den, y.2⟩, fun y =>
     ⟨ProjectiveSpectrum.basicOpen 𝒜 f.den, y.2,
       ⟨𝟙 _, ⟨f.deg, ⟨f.num, f.den, _, fun _ => rfl⟩⟩⟩⟩⟩
 #align algebraic_geometry.section_in_basic_open AlgebraicGeometry.sectionInBasicOpen
@@ -331,9 +341,8 @@ def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) 
       (homOfLE inf_le_left ≫ homOfLE inf_le_left) (homOfLE inf_le_left ≫ homOfLE inf_le_right)
     apply Subtype.ext
     ext ⟨t, ⟨htf, htg⟩, ht'⟩
-    apply HomogeneousLocalization.val_injective
     rw [Proj.res_apply, Proj.res_apply]
-    simp only [sectionInBasicOpen, HomogeneousLocalization.val_mk'', Localization.mk_eq_mk',
+    simp only [sectionInBasicOpen, HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
       IsLocalization.mk'_eq_iff_eq]
     apply (IsLocalization.map_units (M := t.asHomogeneousIdeal.toIdeal.primeCompl)
       (Localization t.asHomogeneousIdeal.toIdeal.primeCompl) ⟨c, ht'⟩).mul_left_cancel
@@ -349,9 +358,8 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
   refine Presheaf.germ_ext _ V hxV (by exact homOfLE <| fun _ h' ↦ h ⟨_, h'⟩) i ?_
   apply Subtype.ext
   ext ⟨t, ht⟩
-  apply HomogeneousLocalization.val_injective
   rw [Proj.res_apply, Proj.res_apply]
-  simp only [sectionInBasicOpen, HomogeneousLocalization.val_mk'', Localization.mk_eq_mk',
+  simp only [sectionInBasicOpen, HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
     IsLocalization.mk'_eq_iff_eq, e ⟨t, ht⟩]
 
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
@@ -384,8 +392,8 @@ theorem Proj.stalkIso'_germ (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : U)
   stalkToFiberRingHom_germ' 𝒜 U x x.2 s
 
 @[simp]
-theorem Proj.stalkIso'_symm_mk'' (x) (f) :
-    ((Proj.stalkIso' 𝒜 x).symm (Quotient.mk'' f)) = (Proj.structureSheaf 𝒜).presheaf.germ
+theorem Proj.stalkIso'_symm_mk (x) (f) :
+    (Proj.stalkIso' 𝒜 x).symm (.mk f) = (Proj.structureSheaf 𝒜).presheaf.germ
       ⟨x, mem_basicOpen_den _ x f⟩ (sectionInBasicOpen _ x f) := rfl
 
 /-- `Proj` of a graded ring as a `LocallyRingedSpace`-/

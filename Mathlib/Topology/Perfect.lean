@@ -97,7 +97,7 @@ A topological space `X` is said to be perfect if its universe is a perfect set.
 Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
 @[mk_iff perfectSpace_def]
-class PerfectSpace: Prop :=
+class PerfectSpace : Prop :=
   univ_preperfect : Preperfect (Set.univ : Set α)
 
 theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
@@ -167,14 +167,14 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
   obtain ⟨U, xU, Uop, V, yV, Vop, hUV⟩ := exists_open_nhds_disjoint_closure hxy
   use closure (U ∩ C), closure (V ∩ C)
   constructor <;> rw [← and_assoc]
-  · refine' ⟨hC.closure_nhds_inter x xC xU Uop, _⟩
+  · refine ⟨hC.closure_nhds_inter x xC xU Uop, ?_⟩
     rw [hC.closed.closure_subset_iff]
-    exact inter_subset_right _ _
+    exact inter_subset_right
   constructor
-  · refine' ⟨hC.closure_nhds_inter y yC yV Vop, _⟩
+  · refine ⟨hC.closure_nhds_inter y yC yV Vop, ?_⟩
     rw [hC.closed.closure_subset_iff]
-    exact inter_subset_right _ _
-  apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left _ _
+    exact inter_subset_right
+  apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left
 #align perfect.splitting Perfect.splitting
 
 end Preperfect
@@ -192,10 +192,10 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   have Vct : (V ∩ C).Countable := by
     simp only [V, iUnion_inter, mem_sep_iff]
     apply Countable.biUnion
-    · exact Countable.mono (inter_subset_left _ _) bct
-    · exact inter_subset_right _ _
-  refine' ⟨V ∩ C, D, Vct, ⟨_, _⟩, _⟩
-  · refine' hclosed.sdiff (isOpen_biUnion fun _ ↦ _)
+    · exact Countable.mono inter_subset_left bct
+    · exact inter_subset_right
+  refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
+  · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
   · rw [preperfect_iff_nhds]
     intro x xD E xE
@@ -222,7 +222,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
 theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
     (hclosed : IsClosed C) (hunc : ¬C.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ C := by
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
-  refine' ⟨D, ⟨Dperf, _⟩⟩
+  refine ⟨D, ⟨Dperf, ?_⟩⟩
   constructor
   · rw [nonempty_iff_ne_empty]
     by_contra h
@@ -230,7 +230,7 @@ theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTop
     rw [VD] at hunc
     contradiction
   rw [VD]
-  exact subset_union_right _ _
+  exact subset_union_right
 #align exists_perfect_nonempty_of_is_closed_of_not_countable exists_perfect_nonempty_of_isClosed_of_not_countable
 
 end Kernel

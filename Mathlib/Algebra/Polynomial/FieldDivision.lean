@@ -19,7 +19,7 @@ This file starts looking like the ring theory of $R[X]$
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
