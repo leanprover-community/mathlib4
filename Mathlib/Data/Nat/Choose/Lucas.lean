@@ -31,7 +31,7 @@ variable {n k p : ℕ} [Fact p.Prime]
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) *
 choose (n / p) (k / p)` modulo `p`. -/
-theorem lucas_theorem : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
+theorem lucas_theorem :choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
     simpa using add_pow_eq_add_pow_mod_mul_pow_add_pow_div _ (X : (ZMod p)[X]) 1
   simp only [← ZMod.intCast_eq_intCast_iff, Int.cast_mul, Int.cast_ofNat,
@@ -60,8 +60,10 @@ theorem lucas_theorem : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
 `choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over i < a, multiplied by
 `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
-theorem lucas_theorem' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
-    ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
+theorem lucas_theorem' (a : ℕ) :
+    choose n k ≡
+      choose (n / p ^ a) (k / p ^ a) * ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p)
+        [ZMOD p] := by
   induction a with
   | zero => simp
   | succ a ih =>
