@@ -791,12 +791,11 @@ lemma toStalk_specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
 lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
       (specStalkEquiv 𝒜 f x f_deg hm).hom ≫ (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
-      ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv := by
-  apply IsLocalization.ringHom_ext (R := A⁰_ f) ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
-    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
-  refine (toStalk_stalkMap_toSpec _ _ _).trans ?_
-  rw [awayToΓ_ΓToStalk, ← toStalk_specStalkEquiv 𝒜 f x f_deg hm, Category.assoc]
-  rfl
+      ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv :=
+  IsLocalization.ringHom_ext (R := A⁰_ f) ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x)) <|
+    (toStalk_stalkMap_toSpec _ _ _).trans <| by
+    rw [awayToΓ_ΓToStalk, ← toStalk_specStalkEquiv, Category.assoc]; rfl
 
 lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f) := by
@@ -805,17 +804,17 @@ lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
   have : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) := by
     apply SheafedSpace.IsOpenImmersion.of_stalk_iso
     convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).openEmbedding using 1
-    ext; exact toSpec_base_apply_eq 𝒜 _
-  suffices IsIso (LocallyRingedSpace.forgetToSheafedSpace.map (toSpec 𝒜 f)) by
-    apply isIso_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace
+    exact funext <| toSpec_base_apply_eq 𝒜
+  suffices IsIso (LocallyRingedSpace.forgetToSheafedSpace.map (toSpec 𝒜 f)) from
+    isIso_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace
   show IsIso (toSpec 𝒜 f).1
-  suffices IsIso (SheafedSpace.forgetToPresheafedSpace.map (toSpec 𝒜 f).1) by
-    apply isIso_of_reflects_iso _ SheafedSpace.forgetToPresheafedSpace
-  suffices Epi (SheafedSpace.forgetToPresheafedSpace.map (toSpec 𝒜 f).val).base by
-    exact PresheafedSpace.IsOpenImmersion.to_iso _
+  suffices IsIso (SheafedSpace.forgetToPresheafedSpace.map (toSpec 𝒜 f).1) from
+    isIso_of_reflects_iso _ SheafedSpace.forgetToPresheafedSpace
+  suffices Epi (SheafedSpace.forgetToPresheafedSpace.map (toSpec 𝒜 f).1).base from
+    PresheafedSpace.IsOpenImmersion.to_iso _
   rw [TopCat.epi_iff_surjective]
   convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).surjective using 1
-  ext; exact toSpec_base_apply_eq 𝒜 _
+  exact funext <| toSpec_base_apply_eq 𝒜
 
 end ProjectiveSpectrum.Proj
 
