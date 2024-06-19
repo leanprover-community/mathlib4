@@ -171,7 +171,7 @@ lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
 
-lemma mem_essImage_of_counit_isIso [L.Faithful] [L.Full] (A : D)
+lemma mem_essImage_of_counit_isIso (A : D)
     [IsIso (h.counit.app A)] : A ∈ L.essImage :=
   ⟨R.obj A, ⟨asIso (h.counit.app A)⟩⟩
 
@@ -195,7 +195,7 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
     infer_instance
 
 /-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/
-theorem mem_essImage_of_unit_isIso [R.Faithful] [R.Full] (A : C)
+theorem mem_essImage_of_unit_isIso (A : C)
     [IsIso (h.unit.app A)] : A ∈ R.essImage :=
   ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
 #align category_theory.mem_ess_image_of_unit_is_iso CategoryTheory.Adjunction.mem_essImage_of_unit_isIso
