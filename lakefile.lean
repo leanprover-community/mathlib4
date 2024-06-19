@@ -8,6 +8,7 @@ package mathlib where
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩
   ]
+  platformIndependent := true
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -23,7 +24,7 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
 require batteries from git "https://github.com/leanprover-community/batteries" @ "nightly-testing-2024-06-17"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "nightly-testing"
-require aesop from git "https://github.com/leanprover-community/aesop" @ "nightly-testing"
+require aesop from git "https://github.com/leanprover-community/aesop" @ "precompilation"
 require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.36"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "nightly-testing"
 
