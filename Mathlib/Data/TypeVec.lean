@@ -816,4 +816,22 @@ theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n P
   simp [*]
 #align typevec.subtype_val_to_subtype' TypeVec.subtypeVal_toSubtype'
 
+/-! ## HasUncurry instance
+`HasUncurry` allows us to easily convert from idiomatic, curried, type functions,
+to uncurried `TypeVec _ → Type` -/
+section HasUncurry
+open Function (HasUncurry)
+
+instance : HasUncurry (Type v) (TypeVec.{u} 0) (Type v) where
+  uncurry f _ := f
+
+instance {n} {β : Type*} [inst : HasUncurry β (TypeVec.{u} n) (Type v)] :
+    HasUncurry (Type u → β) (TypeVec.{u} (n+1)) (Type v) where
+  uncurry f α := inst.uncurry (f (α Fin2.last)) (α ∘ Fin2.castSucc)
+
+/-- An example with `Sum`, to showcase the variable ordering is as expected. -/
+example (α β : Type) : (↿Sum) ((Fin2.elim0 ::: α) ::: β) = (α ⊕ β) := rfl
+
+end HasUncurry
+
 end TypeVec
