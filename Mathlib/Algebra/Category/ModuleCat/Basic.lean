@@ -228,7 +228,6 @@ theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
   rfl
 #align Module.comp_def ModuleCat.comp_def
 
--- porting note (#10756): added lemma
 @[simp] lemma forget_map (f : M ⟶ N) : (forget (ModuleCat R)).map f = (f : M → N) := rfl
 
 end ModuleCat

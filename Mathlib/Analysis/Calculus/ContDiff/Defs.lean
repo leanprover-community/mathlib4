@@ -1380,7 +1380,6 @@ theorem ContDiffWithinAt.contDiffAt (h : ContDiffWithinAt 𝕜 n f s x) (hx : s 
     ContDiffAt 𝕜 n f x := by rwa [ContDiffAt, ← contDiffWithinAt_inter hx, univ_inter]
 #align cont_diff_within_at.cont_diff_at ContDiffWithinAt.contDiffAt
 
--- Porting note (#10756): new lemma
 theorem ContDiffOn.contDiffAt (h : ContDiffOn 𝕜 n f s) (hx : s ∈ 𝓝 x) :
     ContDiffAt 𝕜 n f x :=
   (h _ (mem_of_mem_nhds hx)).contDiffAt hx
