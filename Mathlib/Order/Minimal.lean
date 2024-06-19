@@ -3,7 +3,6 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Basic
 import Mathlib.Order.Antichain
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.Interval.Set.Basic
@@ -170,14 +169,6 @@ theorem Set.mem_maximals_iff_forall_insert {P : Set α → Prop} (hP : ∀ ⦃s 
   · rw [h hxs (subset_insert _ _)]; apply mem_insert
   exact by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))
 
-theorem Finset.mem_maximals_iff_forall_insert [DecidableEq α] {P : Finset α → Prop} {s : Finset α}
-    (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
-    s ∈ maximals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
-  simp only [mem_maximals_iff, mem_setOf_eq, and_congr_right_iff]
-  refine fun _ ↦ ⟨fun h x hx hxs ↦ hx ?_, fun h t ht hst ↦ hst.antisymm fun x hxt ↦ ?_⟩
-  · rw [h hxs (subset_insert _ _)]; exact mem_insert_self x s
-  exact by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))
-
 theorem Set.mem_minimals_iff_forall_diff_singleton {P : Set α → Prop}
     (hP : ∀ ⦃s t⦄, P s → s ⊆ t → P t) :
     s ∈ minimals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) := by
@@ -185,14 +176,6 @@ theorem Set.mem_minimals_iff_forall_diff_singleton {P : Set α → Prop}
   refine fun _ ↦ ⟨fun h x hx hxs ↦ ?_, fun h t ht hst ↦ Eq.symm <| hst.antisymm (fun x hxs ↦ ?_)⟩
   · rw [(h hxs diff_subset)] at hx; simp at hx
   exact by_contra fun hxt ↦ h x hxs (hP ht (subset_diff_singleton hst hxt))
-
-theorem Finset.mem_minimals_iff_forall_erase [DecidableEq α] {P : Finset α → Prop} {s : Finset α}
-    (hP : ∀ ⦃s t⦄, P s → s ⊆ t → P t) :
-    s ∈ minimals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) := by
-  simp only [mem_minimals_iff, mem_setOf_eq, and_congr_right_iff]
-  refine fun _ ↦ ⟨fun h x hx hxs ↦ ?_, fun h t ht hst ↦ Eq.symm <| hst.antisymm (fun x hxs ↦ ?_)⟩
-  · rw [(h hxs (erase_subset x s))] at hx; simp at hx
-  exact by_contra fun hxt ↦ h x hxs (hP ht <| subset_erase.2 ⟨hst, hxt⟩)
 
 -- Porting note (#10756): new theorem
 theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
