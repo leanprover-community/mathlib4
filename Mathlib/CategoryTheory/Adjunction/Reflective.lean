@@ -229,7 +229,8 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
 #align category_theory.equiv_ess_image_of_reflective CategoryTheory.equivEssImageOfReflective
 
 /--
-A functor is *coreflective*, or *a coreflective inclusion*, if it is fully faithful and left adjoint.
+A functor is *coreflective*, or *a coreflective inclusion*, if it is fully faithful and left
+adjoint.
 -/
 class Coreflective (L : C ⥤ D) extends L.Full, L.Faithful where
   /-- a choice of a right adjoint to `L` -/
