@@ -147,7 +147,7 @@ theorem proj_of_mem {t : ℝ} (ht : t ∈ Icc v.tMin v.tMax) : ↑(v.proj t) = t
   simp only [proj, projIcc_of_mem v.tMin_le_tMax ht]
 #align picard_lindelof.proj_of_mem PicardLindelof.proj_of_mem
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_proj : Continuous v.proj :=
   continuous_projIcc
 #align picard_lindelof.continuous_proj PicardLindelof.continuous_proj
@@ -304,8 +304,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
       refine norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc ?_) ?_
       · -- Porting note: was `continuity`
         refine .mul continuous_const <| .mul (.div_const ?_ _) continuous_const
-        refine .pow (.mul continuous_const <| .abs <| ?_) _
-        exact .sub continuous_id continuous_const
+        fun_prop
       · refine (ae_restrict_mem measurableSet_Ioc).mono fun τ hτ => ?_
         refine (v.lipschitzOnWith (v.proj τ).2).norm_sub_le_of_le (f₁.mem_closedBall _)
             (f₂.mem_closedBall _) ((h _).trans_eq ?_)

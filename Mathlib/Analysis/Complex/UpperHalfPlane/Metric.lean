@@ -280,6 +280,8 @@ theorem le_dist_coe (z w : ℍ) : w.im * (1 - Real.exp (-dist z w)) ≤ dist (z 
     _ ≤ dist (z : ℂ) w := sub_le_iff_le_add.2 <| dist_triangle _ _ _
 #align upper_half_plane.le_dist_coe UpperHalfPlane.le_dist_coe
 
+attribute [fun_prop] UpperHalfPlane.continuous_coe Real.continuous_sqrt
+
 /-- The hyperbolic metric on the upper half plane. We ensure that the projection to
 `TopologicalSpace` is definitionally equal to the subtype topology. -/
 instance : MetricSpace ℍ :=
@@ -288,6 +290,7 @@ instance : MetricSpace ℍ :=
     · refine (@continuous_iff_continuous_dist ℍ ℍ metricSpaceAux.toPseudoMetricSpace _ _).2 ?_
       have : ∀ x : ℍ × ℍ, 2 * √(x.1.im * x.2.im) ≠ 0 := fun x => by positivity
       -- `continuity` fails to apply `Continuous.div`
+      --fun_prop
       apply_rules [Continuous.div, Continuous.mul, continuous_const, Continuous.arsinh,
         Continuous.dist, continuous_coe.comp, continuous_fst, continuous_snd,
         Real.continuous_sqrt.comp, continuous_im.comp]
@@ -345,6 +348,7 @@ instance : ProperSpace ℍ := by
   rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
+#exit
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
   refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   rw [dist_of_re_eq]
