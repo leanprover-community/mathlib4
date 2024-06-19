@@ -32,7 +32,9 @@ functor. Namely, it satisfies
 * `F.map₂ (η ≫ θ) = F.map₂ η ≫ F.map₂ θ`.
 
 
--- TODO: note that coercions have been removed
+-- TODO: note that coercions have been removed + be careful that some #aligns have been
+removed which maybe shouldn't have been.
+
 -/
 
 namespace CategoryTheory
@@ -145,6 +147,7 @@ section
 variable {a b : B}
 
 /-- A prelaxfunctor `F` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms `F.map f ≅ F.map g`. -/
+-- TODO: need all these simp lemmas?
 @[simps!]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
@@ -157,13 +160,23 @@ lemma map₂_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : F.map₂ (inv η) =
   apply IsIso.eq_inv_of_hom_inv_id
   simp [← F.map₂_comp η (inv η)]
 
+@[reassoc, simp]
+lemma map₂_hom_inv {f g : a ⟶ b} (η : f ≅ g) :
+    F.map₂ η.hom ≫ F.map₂ η.inv = 𝟙 (F.map f) := by
+  rw [← F.map₂_comp, Iso.hom_inv_id, F.map₂_id]
+
 @[reassoc]
-lemma map₂_hom_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
+lemma map₂_hom_inv_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
     F.map₂ η ≫ F.map₂ (inv η) = 𝟙 (F.map f) := by
   simp
 
-@[reassoc]
-lemma map₂_inv_hom {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
+@[reassoc, simp]
+lemma map₂_inv_hom {f g : a ⟶ b} (η : f ≅ g) :
+    F.map₂ η.inv ≫ F.map₂ η.hom = 𝟙 (F.map g) := by
+  rw [← F.map₂_comp, Iso.inv_hom_id, F.map₂_id]
+
+@[reassoc, simp]
+lemma map₂_inv_hom_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
     F.map₂ (inv η) ≫ F.map₂ η = 𝟙 (F.map g) := by
   simp
 
