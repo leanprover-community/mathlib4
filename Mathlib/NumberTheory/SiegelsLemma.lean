@@ -5,7 +5,7 @@ Authors: Fabrizio Barroero, Laura Capuano, Amos Turchet
 -/
 import Mathlib.Analysis.Matrix
 import Mathlib.Data.Pi.Interval
-import Mathlib.tactic.rify
+import Mathlib.Tactic.Rify
 
 /-!
 # Siegel's Lemma
@@ -83,7 +83,6 @@ and
 
 -- # Step 1: ∀ v ∈  T, (A.mulVec v) ∈  S
 
-
 private lemma image_T_subset_S : ∀ v ∈ T, (A.mulVec v) ∈ S := by
   intro v hv
   rw [mem_Icc] at hv
@@ -136,7 +135,8 @@ private lemma card_S_eq : (Finset.Icc N P).card = (∏ i : Fin m, (P i - N i + 1
   rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one m n A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
-private lemma one_le_norm_A_of_nezero : 1 ≤ ‖A‖ := by
+/-- The sup norm of a non-zero integer matrix is at lest one  -/
+lemma one_le_norm_A_of_ne_zero : 1 ≤ ‖A‖ := by
   by_contra h
   apply lt_of_not_le at h
   apply hA
@@ -144,68 +144,61 @@ private lemma one_le_norm_A_of_nezero : 1 ≤ ‖A‖ := by
   simp only [zero_apply]
   rw [norm_lt_iff Real.zero_lt_one] at h
   specialize h i j
-  rw [Int.norm_eq_abs, ← Int.cast_abs] at h
+  rw [Int.norm_eq_abs] at h
   norm_cast at h
-  rw [Int.abs_lt_one_iff] at h
-  exact h
+  apply (Int.abs_lt_one_iff.1 h)
 
 -- # Step 2: S.card < T.card
 
 open Real Nat
 
 private lemma card_S_lt_card_T : (S).card < (T).card := by
-  zify
+  zify --this is necessary to use card_S_eq
   rw [card_T_eq, card_S_eq]
-  rify
+  rify --this is necessary because ‖A‖ is a real number
   calc
   ∏ x : Fin m, (∑ x_1 : Fin n, ↑B * ↑(A x x_1)⁺ - ∑ x_1 : Fin n, ↑B * -↑(A x x_1)⁻ + 1)
     ≤ (n * ‖A‖ * B + 1) ^ m := by
-      rw [← Fin.prod_const m (n *  ‖A‖ * B + 1)]
-      apply Finset.prod_le_prod
+      rw [← Fin.prod_const m (n * ‖A‖ * B + 1)] --transform ^m into a product
+      apply Finset.prod_le_prod --two goals
       all_goals intro i _
-      · obtain hp:= N_le_P_add_one m n A i
-        rify at hp
-        linarith [hp]
+      · obtain h:= N_le_P_add_one m n A i
+        rify at h
+        linarith only [h]
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
-        rw [← Finset.sum_add_distrib]
-        have h1 :  ↑n * ‖A‖ * ↑B = ∑ _ : Fin n, ‖A‖ * ↑B := by
-          simp only [sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul]
-          ring
-        rw [h1]
+        have h1 : n * ‖A‖ * B = ∑ _ : Fin n, ‖A‖ * B := by
+          simp only [sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul, (mul_assoc ↑n ‖A‖ ↑B)]
+        rw [h1, ← Finset.sum_add_distrib]
         gcongr with j _
-        simp_rw [← mul_add, ← Int.cast_add, posPart_add_negPart (A i j), mul_comm]
+        rw [← mul_add, ← Int.cast_add, posPart_add_negPart (A i j), mul_comm]
         apply mul_le_mul_of_nonneg_right _ (Nat.cast_nonneg B)
         rw [Int.cast_abs]
         exact norm_entry_le_entrywise_sup_norm A
   _  ≤ (n * ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow]
-        apply pow_le_pow_left (add_nonneg _ (zero_le_one' ℝ)) _
-        exact mul_nonneg (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)) (Nat.cast_nonneg B)
-        rw [mul_add]
-        simp only [mul_one, add_le_add_iff_left]
-        apply Left.one_le_mul_of_le_of_le
-            (by exact_mod_cast Nat.one_le_of_lt hn) _ (Nat.cast_nonneg n)
-        exact one_le_norm_A_of_nezero m n A hA
+        apply pow_le_pow_left (add_nonneg _ (zero_le_one' ℝ)) _ --two goals
+        · exact (mul_nonneg (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)) (Nat.cast_nonneg B))
+        · rw [mul_add]
+          simp only [mul_one, add_le_add_iff_left]
+          exact Left.one_le_mul_of_le_of_le
+              (by exact_mod_cast Nat.one_le_of_lt hn) (one_le_norm_A_of_ne_zero m n A hA)
+              (Nat.cast_nonneg n)
   _ = ((n * ‖A‖) ^ ((m / ((n : ℝ) - m)))) ^ ((n : ℝ) - m)  * (B + 1) ^ m := by
-        rw [mul_left_inj' (pow_ne_zero m (Nat.cast_add_one_ne_zero B))]
-        rw [← rpow_mul (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)), ← Real.rpow_natCast]
+        rw [mul_left_inj' (pow_ne_zero m (Nat.cast_add_one_ne_zero B)),
+          ← rpow_mul (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)), ← Real.rpow_natCast]
         congr
         rw [div_mul_cancel₀]
         apply sub_ne_zero_of_ne
-        norm_cast
-        exact Nat.ne_of_lt' hn
+        exact_mod_cast Nat.ne_of_lt' hn
   _ < (B + 1) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
         rw [mul_lt_mul_right (pow_pos (Nat.cast_add_one_pos B) m)]
-        apply rpow_lt_rpow
+        apply rpow_lt_rpow --three goals
         · exact rpow_nonneg (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)) e
         · exact Nat.lt_floor_add_one ((n * ‖A‖) ^ e)
         · simp only [sub_pos, Nat.cast_lt]
           exact hn
   _ = (B + 1) ^ n := by
-        rw [← rpow_natCast, ← rpow_add, ← rpow_natCast]
-        congr
-        simp only [sub_add_cancel]
-        exact Nat.cast_add_one_pos B
+        rw [← rpow_natCast, ← rpow_add (Nat.cast_add_one_pos B), ← rpow_natCast, sub_add_cancel]
 
 --end (2)
 
@@ -218,32 +211,30 @@ theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0)  : ∃ (t : Fin n 
     (card_S_lt_card_T m n A hn hA_nezero) (image_T_subset_S m n A)
     with ⟨x, hxT, y, hyT, hneq, hfeq⟩
   use x-y
-  -- proof that x - y ≠ 0
-  refine ⟨sub_ne_zero.mpr hneq, ?_, ?_⟩
-  -- x-y is a solution
-  simp only [mulVec_sub, sub_eq_zero, hfeq]
+  -- proofs that x - y ≠ 0 and x-y is a solution
+  refine ⟨sub_ne_zero.mpr hneq, (by simp only [mulVec_sub, sub_eq_zero, hfeq]), ?_⟩
   ---Inequality
   have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * ‖A‖) ^ e :=
       Real.rpow_nonneg (mul_nonneg (Nat.cast_nonneg n) (le_of_lt (norm_pos_iff'.mpr hA_nezero))) e
   rw [← norm_col, norm_le_iff n_mul_norm_A_pow_e_nonneg]
   intro i j
-  rw [Finset.mem_Icc] at hyT
-  rw [Finset.mem_Icc] at hxT
   simp only [col_apply, Pi.sub_apply, ge_iff_le]
   rw [Int.norm_eq_abs, ← Int.cast_abs]
   refine le_trans ?_ (Nat.floor_le n_mul_norm_A_pow_e_nonneg)
   norm_cast
-  rw [abs_le]
+  rw [abs_le]--two goals
+  rw [Finset.mem_Icc] at hyT
+  rw [Finset.mem_Icc] at hxT
   constructor
   · simp only [neg_le_sub_iff_le_add]
     apply le_trans (hyT.2 i)
     norm_cast
     simp only [le_add_iff_nonneg_left]
     exact hxT.1 i
-  · simp only [ tsub_le_iff_right]
+  · simp only [tsub_le_iff_right]
     apply le_trans (hxT.2 i)
     norm_cast
     simp only [le_add_iff_nonneg_right]
     exact hyT.1 i
 
-    end Int.Matrix
+end Int.Matrix
