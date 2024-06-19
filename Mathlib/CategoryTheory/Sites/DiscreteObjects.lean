@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.DenseSubsite
 import Mathlib.CategoryTheory.Sites.PreservesSheafification
@@ -36,10 +35,8 @@ theorem isDiscrete_iff_mem_essImage (F : Sheaf J A) {t : C} (ht : IsTerminal t) 
 
 section
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-  (A : Type*) [Category A]
-  [HasWeakSheafify J A]
-  {t : C} (ht : IsTerminal t)
+variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
+  [HasWeakSheafify J A] {t : C} (ht : IsTerminal t)
 
 variable {D : Type*} [Category D] (K : GrothendieckTopology D) [HasWeakSheafify K A]
 variable (G : C ⥤ D) [G.Full] [G.Faithful]
@@ -183,8 +180,5 @@ theorem sheafCompose_preserves_discrete [h : F.IsDiscrete J A ht] :
   exact ⟨U.obj Y, ⟨(constantCommuteCompose J U).symm.app _ ≪≫ (sheafCompose J U).mapIso i⟩⟩
 
 end
-
--- noncomputable instance [HasTerminal C] : Coreflective (constantSheaf J A) where
---   adj := (constantSheafAdj J A terminalIsTerminal)
 
 end CategoryTheory.Sheaf
