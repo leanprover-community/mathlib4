@@ -192,6 +192,10 @@ theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfN
 theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
   WithTop.zero_lt_top
 
+@[simp]
+theorem zero_ne_top : (0 : ℕ∞) ≠ ⊤ :=
+  zero_lt_top.ne
+
 -- Porting note (#10756): new theorem copied from `WithTop`
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
@@ -251,6 +255,9 @@ theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
+
+@[simp] lemma lt_one_iff (n : ℕ∞) : n < 1 ↔ n = 0 := by
+  rw [← not_iff_not, not_lt, ENat.one_le_iff_ne_zero]
 
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
