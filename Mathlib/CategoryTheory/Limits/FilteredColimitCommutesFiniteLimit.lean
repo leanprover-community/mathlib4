@@ -298,16 +298,16 @@ theorem colimitLimitToLimitColimit_surjective :
         simp only [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, comp_id]
         calc
           F.map ((f, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) : (j, k j) ⟶ (j', k'')) (y j) =
-              F.map ((f, g j ≫ hf f ≫ i f) : (j, k j) ⟶ (j', k'')) (y j) :=
-            by rw [s (𝟙 j) f]
+              F.map ((f, g j ≫ hf f ≫ i f) : (j, k j) ⟶ (j', k'')) (y j) := by
+            rw [s (𝟙 j) f]
           _ =
               F.map ((𝟙 j', i f) : (j', kf f) ⟶ (j', k''))
-                (F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j)) :=
-            by rw [← FunctorToTypes.map_comp_apply, prod_comp, comp_id, assoc]
+                (F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j)) := by
+            rw [← FunctorToTypes.map_comp_apply, prod_comp, comp_id, assoc]
           _ =
               F.map ((𝟙 j', i f) : (j', kf f) ⟶ (j', k''))
-                (F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j')) :=
-            by rw [← wf f]
+                (F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j')) := by
+            rw [← wf f]
           _ = F.map ((𝟙 j', g j' ≫ gf f ≫ i f) : (j', k j') ⟶ (j', k'')) (y j') := by
             rw [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, assoc]
           _ = F.map ((𝟙 j', g j' ≫ gf (𝟙 j') ≫ i (𝟙 j')) : (j', k j') ⟶ (j', k'')) (y j') := by

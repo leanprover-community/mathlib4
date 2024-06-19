@@ -67,7 +67,7 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
       (fun x' => g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' => f x' - f x :=
         hg.isLittleO.comp_tendsto le_rfl
       _ =O[L] fun x' => x' - x := hf.isBigO_sub
-  refine' .of_isLittleO <| this.triangle _
+  refine .of_isLittleO <| this.triangle ?_
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
     _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := eventually_of_forall fun x' => by simp
@@ -113,7 +113,7 @@ theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
 theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp x (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp x (hf.mono inter_subset_left) inter_subset_right
 #align differentiable_within_at.comp' DifferentiableWithinAt.comp'
 
 @[fun_prop]

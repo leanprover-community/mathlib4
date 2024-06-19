@@ -29,7 +29,7 @@ complete if any absolutely convergent series converges in the space.
 CompleteSpace, CauchySeq
 -/
 
-open scoped BigOperators Topology
+open scoped Topology
 open Filter Finset
 
 section Metric
@@ -54,14 +54,14 @@ variable {E : Type*} [NormedAddCommGroup E]
 space.  -/
 lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
     (h : ∀ u : ℕ → E,
-      Summable (‖u ·‖) → ∃ a, Tendsto (fun n => ∑ i in range n, u i) atTop (𝓝 a)) :
+      Summable (‖u ·‖) → ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a)) :
     CompleteSpace E := by
   apply Metric.complete_of_cauchySeq_tendsto
   intro u hu
   obtain ⟨f, hf₁, hf₂⟩ := Metric.exists_subseq_summable_dist_of_cauchySeq u hu
   simp only [dist_eq_norm] at hf₂
   let v n := u (f (n+1)) - u (f n)
-  have hv_sum : (fun n => (∑ i in range n, v i)) = fun n => u (f n) - u (f 0) := by
+  have hv_sum : (fun n => (∑ i ∈ range n, v i)) = fun n => u (f n) - u (f 0) := by
     ext n
     exact sum_range_sub (u ∘ f) n
   obtain ⟨a, ha⟩ := h v hf₂
@@ -75,14 +75,14 @@ lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
 /-- In a complete normed additive group, every absolutely convergent series converges in the
 space.  -/
 lemma NormedAddCommGroup.summable_imp_tendsto_of_complete [CompleteSpace E] (u : ℕ → E)
-    (hu : Summable (‖u ·‖)) : ∃ a, Tendsto (fun n => ∑ i in range n, u i) atTop (𝓝 a) := by
+    (hu : Summable (‖u ·‖)) : ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a) := by
   refine cauchySeq_tendsto_of_complete <| cauchySeq_of_summable_dist ?_
   simp [dist_eq_norm, sum_range_succ, hu]
 
 /-- In a normed additive group, every absolutely convergent series converges in the
 space iff the space is complete.  -/
 lemma NormedAddCommGroup.summable_imp_tendsto_iff_completeSpace :
-    (∀ u : ℕ → E, Summable (‖u ·‖) → ∃ a, Tendsto (fun n => ∑ i in range n, u i) atTop (𝓝 a))
+    (∀ u : ℕ → E, Summable (‖u ·‖) → ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a))
      ↔ CompleteSpace E :=
   ⟨completeSpace_of_summable_imp_tendsto, fun _ u hu => summable_imp_tendsto_of_complete u hu⟩
 

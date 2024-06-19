@@ -117,7 +117,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
       ⟨fun b => @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, IsFreeGroup.of e⟩
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
-    refine' ⟨uncurry F' _, _, _⟩
+    refine ⟨uncurry F' ?_, ?_, ?_⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
         -- Porting note: `MonoidHom.ext_iff` has been deprecated.
         exact DFunLike.ext_iff.mp this
@@ -140,7 +140,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
       apply Functor.hext
       · intro
         apply Unit.ext
-      · refine' ActionCategory.cases _
+      · refine ActionCategory.cases ?_
         intros
         simp only [← this, uncurry_map, curry_apply_left, coe_back, homOfPair.val]
         rfl
@@ -230,7 +230,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       let f' : Labelling (Generators G) X := fun a b e =>
         if h : e ∈ wideSubquiverSymmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
       rcases unique_lift f' with ⟨F', hF', uF'⟩
-      refine' ⟨F'.mapEnd _, _, _⟩
+      refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
           erw [Functor.mapEnd_apply, this, hF']

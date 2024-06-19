@@ -385,9 +385,15 @@ theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id 
   rfl
 #align centroid_hom.coe_nat_cast CentroidHom.coe_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
+
 theorem natCast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
   rfl
 #align centroid_hom.nat_cast_apply CentroidHom.natCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_apply := natCast_apply
 
 @[simp]
 theorem toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
@@ -408,6 +414,9 @@ theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :
 theorem toEnd_natCast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
   rfl
 #align centroid_hom.to_End_nat_cast CentroidHom.toEnd_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias toEnd_nat_cast := toEnd_natCast
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
@@ -600,9 +609,15 @@ theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id 
   rfl
 #align centroid_hom.coe_int_cast CentroidHom.coe_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
+
 theorem intCast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
   rfl
 #align centroid_hom.int_cast_apply CentroidHom.intCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_apply := intCast_apply
 
 @[simp]
 theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
@@ -645,6 +660,9 @@ theorem toEnd_intCast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 #align centroid_hom.to_End_int_cast CentroidHom.toEnd_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias toEnd_int_cast := toEnd_intCast
+
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
     toEnd_smul toEnd_smul toEnd_pow toEnd_natCast toEnd_intCast
@@ -663,7 +681,7 @@ abbrev commRing
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext
-      refine' sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ _)
+      refine sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ ?_)
       rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,
         comp_mul_comm] }
 #align centroid_hom.comm_ring CentroidHom.commRing

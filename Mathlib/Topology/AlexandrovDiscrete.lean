@@ -203,7 +203,7 @@ lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y
   simp [Specializes]
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
-  refine' ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ _⟩
+  refine ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ ?_⟩
   simp_rw [specializes_iff_exterior_subset] at hs
   simp_rw [isOpen_iff_mem_nhds, mem_nhds_iff]
   rintro a ha

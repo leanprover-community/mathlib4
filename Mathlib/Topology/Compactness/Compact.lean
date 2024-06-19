@@ -79,9 +79,9 @@ theorem IsCompact.induction_on (hs : IsCompact s) {p : Set X → Prop} (he : p �
 theorem IsCompact.inter_right (hs : IsCompact s) (ht : IsClosed t) : IsCompact (s ∩ t) := by
   intro f hnf hstf
   obtain ⟨x, hsx, hx⟩ : ∃ x ∈ s, ClusterPt x f :=
-    hs (le_trans hstf (le_principal_iff.2 (inter_subset_left _ _)))
+    hs (le_trans hstf (le_principal_iff.2 inter_subset_left))
   have : x ∈ t := ht.mem_of_nhdsWithin_neBot <|
-    hx.mono <| le_trans hstf (le_principal_iff.2 (inter_subset_right _ _))
+    hx.mono <| le_trans hstf (le_principal_iff.2 inter_subset_right)
   exact ⟨x, ⟨hsx, this⟩, hx⟩
 #align is_compact.inter_right IsCompact.inter_right
 
@@ -303,7 +303,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   exact (htn j).mono (subset_inter hji₀ hji)
 #align is_compact.nonempty_Inter_of_directed_nonempty_compact_closed IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
 
-@[deprecated] -- deprecated on 2024-02-28
+@[deprecated (since := "2024-02-28")]
 alias IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed :=
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
 
@@ -328,7 +328,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (t : �
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed t htd htn htc htcl
 #align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
-@[deprecated] -- deprecated on 2024-02-28
+@[deprecated (since := "2024-02-28")]
 alias IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed :=
   IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
@@ -551,30 +551,45 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   contradiction
 #align exists_subset_nhds_of_is_compact' exists_subset_nhds_of_isCompact'
 
+lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X)
+    (hb : IsTopologicalBasis (Set.range b)) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
+    ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
+  obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion hUo
+  choose f' hf' using hf
+  have : b ∘ f' = f := funext hf'
+  subst this
+  obtain ⟨t, ht⟩ :=
+    hUc.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
+  refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
+  · refine Set.Subset.trans ht ?_
+    simp only [Set.iUnion_subset_iff]
+    intro i hi
+    erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
+    exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, Finset.mem_image_of_mem _ hi⟩
+  · apply Set.iUnion₂_subset
+    rintro i hi
+    obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
+    rw [e]
+    exact Set.subset_iUnion (b ∘ f') j
+
+lemma eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open (b : Set (Set X))
+    (hb : IsTopologicalBasis b) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
+    ∃ s : Finset b, U = s.toSet.sUnion := by
+  have hb' : b = range (fun i ↦ i : b → Set X) := by simp
+  rw [hb'] at hb
+  choose s hs hU using eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U hUc hUo
+  have : Finite s := hs
+  let _ : Fintype s := Fintype.ofFinite _
+  use s.toFinset
+  simp [hU]
+
 /-- If `X` has a basis consisting of compact opens, then an open set in `X` is compact open iff
   it is a finite union of some elements in the basis -/
 theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Set X)
     (hb : IsTopologicalBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i)) (U : Set X) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   constructor
-  · rintro ⟨h₁, h₂⟩
-    obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion h₂
-    choose f' hf' using hf
-    have : b ∘ f' = f := funext hf'
-    subst this
-    obtain ⟨t, ht⟩ :=
-      h₁.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
-    refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
-    · refine Set.Subset.trans ht ?_
-      simp only [Set.iUnion_subset_iff]
-      intro i hi
-      erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
-      exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, Finset.mem_image_of_mem _ hi⟩
-    · apply Set.iUnion₂_subset
-      rintro i hi
-      obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
-      rw [e]
-      exact Set.subset_iUnion (b ∘ f') j
+  · exact fun ⟨h₁, h₂⟩ ↦ eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U h₁ h₂
   · rintro ⟨s, hs, rfl⟩
     constructor
     · exact hs.isCompact_biUnion fun i _ => hb' i
@@ -586,8 +601,8 @@ namespace Filter
 theorem hasBasis_cocompact : (cocompact X).HasBasis IsCompact compl :=
   hasBasis_biInf_principal'
     (fun s hs t ht =>
-      ⟨s ∪ t, hs.union ht, compl_subset_compl.2 (subset_union_left s t),
-        compl_subset_compl.2 (subset_union_right s t)⟩)
+      ⟨s ∪ t, hs.union ht, compl_subset_compl.2 subset_union_left,
+        compl_subset_compl.2 subset_union_right⟩)
     ⟨∅, isCompact_empty⟩
 #align filter.has_basis_cocompact Filter.hasBasis_cocompact
 
@@ -624,8 +639,9 @@ theorem disjoint_cocompact_right (f : Filter X) :
   simp_rw [hasBasis_cocompact.disjoint_iff_right, compl_compl]
   tauto
 
--- deprecated on 2024-02-07: see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`
-@[deprecated] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
+@[deprecated "see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`"
+  (since := "2024-02-07")]
+theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
   (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
 #align nat.cocompact_eq Nat.cocompact_eq
 
@@ -663,8 +679,8 @@ theorem hasBasis_coclosedCompact :
   simp only [Filter.coclosedCompact, iInf_and']
   refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isCompact_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
-  exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
-    compl_subset_compl.2 (subset_union_right _ _)⟩⟩
+  exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 subset_union_left,
+    compl_subset_compl.2 subset_union_right⟩⟩
 #align filter.has_basis_coclosed_compact Filter.hasBasis_coclosedCompact
 
 /-- A set belongs to `coclosedCompact` if and only if the closure of its complement is compact. -/
@@ -676,12 +692,12 @@ theorem mem_coclosedCompact_iff :
       closure_minimal (compl_subset_comm.2 hst) htcl
   · exact ⟨closure sᶜ, ⟨isClosed_closure, h⟩, compl_subset_comm.2 subset_closure⟩
 
-@[deprecated mem_coclosedCompact_iff] -- 2024-02-16
+@[deprecated mem_coclosedCompact_iff (since := "2024-02-16")]
 theorem mem_coclosedCompact : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ tᶜ ⊆ s := by
   simp only [hasBasis_coclosedCompact.mem_iff, and_assoc]
 #align filter.mem_coclosed_compact Filter.mem_coclosedCompact
 
-@[deprecated mem_coclosedCompact_iff] -- 2024-02-16
+@[deprecated mem_coclosedCompact_iff (since := "2024-02-16")]
 theorem mem_coclosed_compact' : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ sᶜ ⊆ t := by
   simp only [hasBasis_coclosedCompact.mem_iff, compl_subset_comm, and_assoc]
 #align filter.mem_coclosed_compact' Filter.mem_coclosed_compact'
@@ -784,11 +800,11 @@ theorem isCompact_univ [h : CompactSpace X] : IsCompact (univ : Set X) :=
 #align is_compact_univ isCompact_univ
 
 theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot f] :
-    ∃ x, ClusterPt x f :=
-  by simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
+    ∃ x, ClusterPt x f := by
+  simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
 #align cluster_point_of_compact exists_clusterPt_of_compactSpace
 
-@[deprecated] -- Since 28 January 2024
+@[deprecated (since := "2024-01-28")]
 alias cluster_point_of_compact := exists_clusterPt_of_compactSpace
 
 nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by

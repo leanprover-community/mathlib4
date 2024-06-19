@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Simon Hudon All rights reserved.
+Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
@@ -69,7 +69,7 @@ theorem map_mk (x : A) : f <$$> Const.mk x = Const.mk x := rfl
 theorem get_map (x : (Const n A) α) : Const.get (f <$$> x) = Const.get x := rfl
 #align mvqpf.const.get_map MvQPF.Const.get_map
 
-instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where
+instance mvqpf : @MvQPF _ (Const n A) where
   P := MvPFunctor.const n A
   abs x := MvPFunctor.const.get x
   repr x := MvPFunctor.const.mk n x

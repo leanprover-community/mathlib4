@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Yury Kudryashov All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
@@ -266,7 +266,7 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
     exact ⟨fun x hx =>
       ⟨fg_le hx, fh_le hx, by
         -- Porting note: `[exact ⟨x, hx⟩, rfl, rfl]` → `[skip, exact ⟨x, hx⟩, skip] <;> rfl`
-        refine' (fg_eq _).symm.trans (fh_eq _) <;> [skip; exact ⟨x, hx⟩; skip] <;> rfl⟩,
+        convert (fg_eq _).symm.trans (fh_eq _) <;> [skip; exact ⟨x, hx⟩; skip] <;> rfl⟩,
       fun x ⟨y, yg, hy⟩ h => by
         apply fg_eq
         exact h⟩
@@ -310,7 +310,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
     simp only [AddSubgroupClass.coe_sub, coe_mk, coe_mk, hxy, ← sub_add, ← sub_sub, sub_self,
       zero_sub, ← H]
     apply neg_add_eq_sub
-  refine' ⟨{ toFun := fg.. }, fg_eq⟩
+  use { toFun := fg, map_add' := ?_, map_smul' := ?_ }, fg_eq
   · rintro ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩
     rw [← add_assoc, add_right_comm (f _), ← map_add, add_assoc, ← map_add]
     apply fg_eq
@@ -344,17 +344,17 @@ theorem sup_apply {f g : E →ₗ.[R] F} (H : ∀ (x : f.domain) (y : g.domain),
 
 protected theorem left_le_sup (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : f ≤ f.sup g h := by
-  refine' ⟨le_sup_left, fun z₁ z₂ hz => _⟩
+  refine ⟨le_sup_left, fun z₁ z₂ hz => ?_⟩
   rw [← add_zero (f _), ← g.map_zero]
-  refine' (sup_apply h _ _ _ _).symm
+  refine (sup_apply h _ _ _ ?_).symm
   simpa
 #align linear_pmap.left_le_sup LinearPMap.left_le_sup
 
 protected theorem right_le_sup (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : g ≤ f.sup g h := by
-  refine' ⟨le_sup_right, fun z₁ z₂ hz => _⟩
+  refine ⟨le_sup_right, fun z₁ z₂ hz => ?_⟩
   rw [← zero_add (g _), ← f.map_zero]
-  refine' (sup_apply h _ _ _ _).symm
+  refine (sup_apply h _ _ _ ?_).symm
   simpa
 #align linear_pmap.right_le_sup LinearPMap.right_le_sup
 
@@ -622,8 +622,8 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     rcases hc (P x).1.1 (P x).1.2 p.1 p.2 with ⟨q, _hqc, hxq, hpq⟩
     -- Porting note: `refine' ..; exacts [inclusion hpq.1 y, hxy, rfl]`
     --               → `refine' .. <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy`
-    refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy
-  refine' ⟨{ toFun := f.. }, _⟩
+    convert (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy
+  use { toFun := f, map_add' := ?_, map_smul' := ?_ }, ?_
   · intro x y
     rcases hc (P x).1.1 (P x).1.2 (P y).1.1 (P y).1.2 with ⟨p, hpc, hpx, hpy⟩
     set x' := inclusion hpx.1 ⟨x, (P x).2⟩
@@ -634,7 +634,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     simp only [RingHom.id_apply]
     rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul]
   · intro p hpc
-    refine' ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
+    refine ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm ?_⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
 
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
@@ -763,8 +763,8 @@ def graph (f : E →ₗ.[R] F) : Submodule R (E × F) :=
   f.toFun.graph.map (f.domain.subtype.prodMap (LinearMap.id : F →ₗ[R] F))
 #align linear_pmap.graph LinearPMap.graph
 
-theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} : x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x :=
-  by simp [graph]
+theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} :
+    x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x := by simp [graph]
 #align linear_pmap.mem_graph_iff' LinearPMap.mem_graph_iff'
 
 @[simp]
@@ -965,7 +965,7 @@ section SubmoduleToLinearPMap
 theorem existsUnique_from_graph {g : Submodule R (E × F)}
     (hg : ∀ {x : E × F} (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) {a : E}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : ∃! b : F, (a, b) ∈ g := by
-  refine' exists_unique_of_exists_of_unique _ _
+  refine exists_unique_of_exists_of_unique ?_ ?_
   · convert ha
     simp
   intro y₁ y₂ hy₁ hy₂
@@ -1054,7 +1054,7 @@ theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
   have hx_fst : x_fst ∈ g.map (LinearMap.fst R E F) := by
     simp only [mem_map, LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
     exact ⟨x_snd, hx⟩
-  refine' ⟨⟨x_fst, hx_fst⟩, Subtype.coe_mk x_fst hx_fst, _⟩
+  refine ⟨⟨x_fst, hx_fst⟩, Subtype.coe_mk x_fst hx_fst, ?_⟩
   rw [toLinearPMap_apply_aux hg]
   exact (existsUnique_from_graph @hg hx_fst).unique (valFromGraph_mem hg hx_fst) hx
 #align submodule.to_linear_pmap_graph_eq Submodule.toLinearPMap_graph_eq

@@ -59,7 +59,9 @@ def of (f : X ⟶ X) : End X := f
 def asHom (f : End X) : X ⟶ X := f
 #align category_theory.End.as_hom CategoryTheory.End.asHom
 
-@[simp] -- Porting note (#11215): TODO: use `of`/`asHom`?
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+@[simp, nolint simpNF] -- Porting note (#11215): TODO: use `of`/`asHom`?
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 #align category_theory.End.one_def CategoryTheory.End.one_def
 
@@ -205,19 +207,26 @@ def mapAut : Aut X →* Aut (f.obj X) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Aut CategoryTheory.Functor.mapAut
 
-/-- `equivOfFullyFaithful f` as an isomorphism between endomorphism monoids. -/
+namespace FullyFaithful
+
+variable {f}
+variable (hf : FullyFaithful f)
+
+/-- `mulEquivEnd` as an isomorphism between endomorphism monoids. -/
 @[simps!]
-noncomputable def mulEquivOfFullyFaithful [Full f] [Faithful f] :
+noncomputable def mulEquivEnd (X : C) :
     End X ≃* End (f.obj X) where
-  toEquiv := equivOfFullyFaithful f
+  toEquiv := hf.homEquiv
   __ := mapEnd X f
 
-/-- `isoEquivOfFullyFaithful f` as an isomorphism between automorphism groups. -/
+/-- `mulEquivAut` as an isomorphism between automorphism groups. -/
 @[simps!]
-noncomputable def autMulEquivOfFullyFaithful [Full f] [Faithful f] :
+noncomputable def autMulEquivOfFullyFaithful (X : C) :
     Aut X ≃* Aut (f.obj X) where
-  toEquiv := isoEquivOfFullyFaithful f
+  toEquiv := hf.isoEquiv
   __ := mapAut X f
+
+end FullyFaithful
 
 end Functor
 

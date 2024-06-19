@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Fin.Interval
+import Mathlib.Order.Interval.Finset.Fin
 
 #align_import data.fintype.fin from "leanprover-community/mathlib"@"759575657f189ccb424b990164c8b1fa9f55cdfe"
 
@@ -43,7 +43,7 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by
   simp only [mem_filter, mem_Ioi, mem_map, mem_univ, true_and_iff, Function.Embedding.coeFn_mk,
     exists_true_left]
   constructor
-  · refine' cases _ _ i
+  · refine cases ?_ ?_ i
     · rintro ⟨⟨⟩⟩
     · intro i hi
       exact ⟨i, succ_lt_succ_iff.mp hi, rfl⟩
@@ -72,7 +72,7 @@ theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
 
 theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : Vector α n) :
     (univ.filter fun i => a = v.get i).card = v.toList.count a := by
-  induction' v using Vector.inductionOn with n x xs hxs
+  induction' v with n x xs hxs
   · simp
   · simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Function.comp,
       Vector.get_cons_succ, hxs, List.count_cons, add_comm (ite (a = x) 1 0)]

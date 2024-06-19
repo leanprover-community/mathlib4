@@ -44,7 +44,7 @@ theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1
 @[simp]
 theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
   have : ∀ t : Set α, a ∈ t → t.indicator (1 : α → ℝ≥0∞) a = 1 := fun t ht => indicator_of_mem ht 1
-  refine' le_antisymm (this univ trivial ▸ _) (this s h ▸ le_dirac_apply)
+  refine le_antisymm (this univ trivial ▸ ?_) (this s h ▸ le_dirac_apply)
   rw [← dirac_apply' a MeasurableSet.univ]
   exact measure_mono (subset_univ s)
 #align measure_theory.measure.dirac_apply_of_mem MeasureTheory.Measure.dirac_apply_of_mem
@@ -114,7 +114,7 @@ end Measure
 
 open Measure
 
-theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ (dirac a).ae ↔ a ∈ s := by
+theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) ↔ a ∈ s := by
   by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, indicator_apply, *]
 #align measure_theory.mem_ae_dirac_iff MeasureTheory.mem_ae_dirac_iff
 
@@ -124,7 +124,7 @@ theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x })
 #align measure_theory.ae_dirac_iff MeasureTheory.ae_dirac_iff
 
 @[simp]
-theorem ae_dirac_eq [MeasurableSingletonClass α] (a : α) : (dirac a).ae = pure a := by
+theorem ae_dirac_eq [MeasurableSingletonClass α] (a : α) : ae (dirac a) = pure a := by
   ext s
   simp [mem_ae_iff, imp_false]
 #align measure_theory.ae_dirac_eq MeasureTheory.ae_dirac_eq

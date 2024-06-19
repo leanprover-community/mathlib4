@@ -219,8 +219,8 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_sInf
 
-theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
-  by simp only [iInf, mem_sInf, Set.forall_mem_range]
+theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} :
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_iInf
 
 @[simp, norm_cast]
@@ -301,7 +301,7 @@ theorem coe_closure_eq_range_term_realize :
     simp only [Term.realize, fun i => Classical.choose_spec (hx i)]⟩
   change _ = (S : Set M)
   rw [← SetLike.ext'_iff]
-  refine' closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => _)
+  refine closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => ?_)
   rintro _ ⟨t, rfl⟩
   exact t.realize_mem _ fun i => hS' i.2
 #align first_order.language.substructure.coe_closure_eq_range_term_realize FirstOrder.Language.Substructure.coe_closure_eq_range_term_realize
@@ -326,7 +326,7 @@ theorem lift_card_closure_le :
     Cardinal.lift.{u, w} #(closure L s) ≤
       max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σi, L.Functions i)) := by
   rw [← lift_umax]
-  refine' lift_card_closure_le_card_term.trans (Term.card_le.trans _)
+  refine lift_card_closure_le_card_term.trans (Term.card_le.trans ?_)
   rw [mk_sum, lift_umax.{w, u}]
 #align first_order.language.substructure.lift_card_closure_le FirstOrder.Language.Substructure.lift_card_closure_le
 
@@ -787,8 +787,8 @@ theorem subset_closure_withConstants : A ⊆ closure (L[[A]]) s := by
 
 theorem closure_withConstants_eq :
     closure (L[[A]]) s =
-      (closure L (A ∪ s)).withConstants ((A.subset_union_left s).trans subset_closure) := by
-  refine' closure_eq_of_le ((A.subset_union_right s).trans subset_closure) _
+      (closure L (A ∪ s)).withConstants ((A.subset_union_left).trans subset_closure) := by
+  refine closure_eq_of_le ((A.subset_union_right).trans subset_closure) ?_
   rw [← (L.lhomWithConstants A).substructureReduct.le_iff_le]
   simp only [subset_closure, reduct_withConstants, closure_le, LHom.coe_substructureReduct,
     Set.union_subset_iff, and_true_iff]

@@ -66,15 +66,15 @@ instance linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (toLex ∘ coeff) coeff_injective
 
 instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
-  refine' (toLex.injective.comp coeff_injective).orderedAddCommGroup _ _ _ _ _ _ _ <;>
+  refine (toLex.injective.comp coeff_injective).orderedAddCommGroup _ ?_ ?_ ?_ ?_ ?_ ?_ <;>
   (first | rfl | intros) <;> funext <;>
   (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
     ← nsmul_eq_mul, ← zsmul_eq_mul]; rfl)
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
-  refine'
-    ⟨_, fun h =>
+  refine
+    ⟨?_, fun h =>
       ⟨p.natTrailingDegree, fun m hm => (coeff_eq_zero_of_lt_natTrailingDegree hm).symm, h⟩⟩
   rintro ⟨n, hn⟩
   convert hn.2
@@ -95,7 +95,7 @@ instance : FloorRing ℤ[ε] :=
     constructor
     · split_ifs with h
       · rintro ⟨_ | n, hn⟩
-        · refine' (sub_one_lt _).trans _
+        · apply (sub_one_lt _).trans _
           simp at hn
           rwa [intCast_coeff_zero] at hn
         · dsimp at hn

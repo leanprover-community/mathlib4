@@ -106,7 +106,7 @@ theorem tendsto_abv_eval₂_atTop {R S k α : Type*} [Semiring R] [Ring S] [Line
     (f : R →+* S) (abv : S → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (hf : f p.leadingCoeff ≠ 0) {l : Filter α} {z : α → S} (hz : Tendsto (abv ∘ z) l atTop) :
     Tendsto (fun x => abv (p.eval₂ f (z x))) l atTop := by
-  revert hf; refine' degree_pos_induction_on p hd _ _ _ <;> clear hd p
+  revert hf; refine degree_pos_induction_on p hd ?_ ?_ ?_ <;> clear hd p
   · rintro _ - hc
     rw [leadingCoeff_mul_X, leadingCoeff_C] at hc
     simpa [abv_mul abv] using hz.const_mul_atTop ((abv_pos abv).2 hc)
@@ -115,8 +115,8 @@ theorem tendsto_abv_eval₂_atTop {R S k α : Type*} [Semiring R] [Ring S] [Line
     simpa [abv_mul abv] using (ihp hf).atTop_mul_atTop hz
   · intro _ a hd ihp hf
     rw [add_comm, leadingCoeff_add_of_degree_lt (degree_C_le.trans_lt hd)] at hf
-    refine' tendsto_atTop_of_add_const_right (abv (-f a)) _
-    refine' tendsto_atTop_mono (fun _ => abv_add abv _ _) _
+    refine tendsto_atTop_of_add_const_right (abv (-f a)) ?_
+    refine tendsto_atTop_mono (fun _ => abv_add abv _ _) ?_
     simpa using ihp hf
 #align polynomial.tendsto_abv_eval₂_at_top Polynomial.tendsto_abv_eval₂_atTop
 
@@ -188,7 +188,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   lift B to ℝ≥0 using hB
   rw [← coe_nnnorm, ← NNReal.coe_pow, NNReal.coe_le_coe, ← nnnormHom_apply, ← MonoidHom.coe_coe,
     MonoidHom.map_multiset_prod]
-  refine' (prod_le_pow_card _ B fun x hx => _).trans_eq (by rw [card_map, hs.2])
+  refine (prod_le_pow_card _ B fun x hx => ?_).trans_eq (by rw [card_map, hs.2])
   obtain ⟨z, hz, rfl⟩ := Multiset.mem_map.1 hx
   exact h3 z (mem_of_le hs.1 hz)
 #align polynomial.coeff_le_of_roots_le Polynomial.coeff_le_of_roots_le
@@ -209,8 +209,8 @@ theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1
       _ ≤ max B 1 ^ d * d.choose (d / 2) := by
         gcongr; exact (i.choose_mono h3).trans (i.choose_le_middle d)
   · rw [eq_one_of_roots_le hB h1 h2 h4, Polynomial.map_one, coeff_one]
-    refine' _root_.trans _
-      (one_le_mul_of_one_le_of_one_le (one_le_pow_of_one_le (le_max_right B 1) d) _)
+    refine _root_.trans ?_
+      (one_le_mul_of_one_le_of_one_le (one_le_pow_of_one_le (le_max_right B 1) d) ?_)
     · split_ifs <;> set_option tactic.skipAssignedInstances false in norm_num
     · exact mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
 #align polynomial.coeff_bdd_of_roots_le Polynomial.coeff_bdd_of_roots_le
