@@ -136,6 +136,7 @@ theorem _root_.Semigroup.mem_center_iff {z : M} :
 variable (M)
 
 -- TODO Add `instance : Decidable (IsMulCentral a)` for `instance decidableMemCenter [Mul M]`
+@[to_additive decidableMemAddCenter]
 instance decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
     DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (Semigroup.mem_center_iff)
 #align set.decidable_mem_center Set.decidableMemCenter
@@ -183,7 +184,7 @@ theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆
 #align set.subset_center_units Set.subset_center_units
 #align set.subset_add_center_add_units Set.subset_addCenter_add_units
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem units_inv_mem_center [Monoid M] {a : Mˣ} (ha : ↑a ∈ Set.center M) :
     ↑a⁻¹ ∈ Set.center M := by
   rw [Semigroup.mem_center_iff] at *
