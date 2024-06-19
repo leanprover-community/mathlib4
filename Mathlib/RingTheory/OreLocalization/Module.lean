@@ -5,7 +5,7 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.Ring
 
 #align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -164,8 +164,6 @@ theorem zero_mk (s : S) : mk (0 : M) s = 0 :=
   OreLocalization.zero_oreDiv _
 #align localized_module.zero_mk LocalizedModule.zero_mk
 
-instance : AddMonoid (LocalizedModule S M) := OreLocalization.instAddMonoidOreLocalization
-
 theorem mk_add_mk' {m1 m2 : M} {s1 s2 : S} :
     mk m1 s1 + mk m2 s2 = mk (s2 • m1 + s1 • m2) (s2 * s1) := rfl
 
@@ -207,8 +205,7 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
       use 1
       simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
 
-example : inferInstanceAs (Monoid <| OreLocalization S R) =
-  inferInstanceAs (Monoid <| LocalizedModule S R) := rfl
+example : OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := rfl
 
 theorem mk_mul_mk' {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s₂ : S} :
     mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₂ * s₁) :=
@@ -364,9 +361,6 @@ theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk 
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
 #align localized_module.mk_cancel_common_right LocalizedModule.mk_cancel_common_right
 
-noncomputable instance isModule' : Module R (LocalizedModule S M) := inferInstance
-#align localized_module.is_module' LocalizedModule.isModule'
-
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := rfl
 #align localized_module.smul'_mk LocalizedModule.smul'_mk
 
@@ -425,9 +419,8 @@ section
 
 variable (S M)
 
-/-- The function `m ↦ m / 1` as an `R`-linear map.
--/
-def mkLinearMap : M →ₗ[R] LocalizedModule S M := OreLocalization.mkLinearMap
+/-- The function `m ↦ m / 1` as an `R`-linear map. -/
+def mkLinearMap : M →ₗ[R] LocalizedModule S M := OreLocalization.mkLinearMap S X
 
 @[simp]
 lemma mkLinearMap_apply (x) : mkLinearMap S M x = .mk x 1 := rfl
