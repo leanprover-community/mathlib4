@@ -200,6 +200,9 @@ theorem mem_essImage_of_unit_isIso [R.Faithful] [R.Full] (A : C)
   ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
 #align category_theory.mem_ess_image_of_unit_is_iso CategoryTheory.Adjunction.mem_essImage_of_unit_isIso
 
+@[deprecated (since := "2024.06.19")] alias _root_.CategoryTheory.mem_essImage_of_unit_isIso :=
+  mem_essImage_of_unit_isIso
+
 lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.obj X) :
     IsIso (h.unit.app Y) :=
   (isIso_unit_app_iff_mem_essImage h).mpr ⟨X, ⟨e.symm⟩⟩
