@@ -298,7 +298,7 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
 
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
     (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
   hB.continuous_iff.2 hf
@@ -553,14 +553,14 @@ theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s :
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 #align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.IsSeparable.of_subtype
 
-@[deprecated] -- Since 2024-02-05
+@[deprecated (since := "2024-02-05")]
 alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
 #align topological_space.is_separable_of_separable_space TopologicalSpace.IsSeparable.of_separableSpace
 
-@[deprecated] -- Since 2024-02-05
+@[deprecated (since := "2024-02-05")]
 alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
@@ -616,6 +616,23 @@ theorem isTopologicalBasis_subtype
     (h : TopologicalSpace.IsTopologicalBasis B) (p : α → Prop) :
     IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
   h.inducing ⟨rfl⟩
+
+section
+variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+
+lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → π i) := by
+  classical
+  refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOpenMap_iff.2 ?_
+  rintro _ ⟨U, s, hU, rfl⟩
+  obtain h | h := ((s : Set ι).pi U).eq_empty_or_nonempty
+  · simp [h]
+  by_cases hi : i ∈ s
+  · rw [eval_image_pi (mod_cast hi) h]
+    exact hU _ hi
+  · rw [eval_image_pi_of_not_mem (mod_cast hi), if_pos h]
+    exact isOpen_univ
+
+end
 
 -- Porting note: moved `DenseRange.separableSpace` up
 

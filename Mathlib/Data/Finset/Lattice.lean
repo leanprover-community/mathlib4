@@ -707,6 +707,17 @@ protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a �
   · exact fun ⟨b, hb, hle⟩ => le_trans hle (le_sup hb)
 #align finset.le_sup_iff Finset.le_sup_iff
 
+protected theorem sup_eq_top_iff {α : Type*} [LinearOrder α] [BoundedOrder α] [Nontrivial α]
+    {s : Finset ι} {f : ι → α} : s.sup f = ⊤ ↔ ∃ b ∈ s, f b = ⊤ := by
+  simp only [← top_le_iff]
+  exact Finset.le_sup_iff bot_lt_top
+
+protected theorem Nonempty.sup_eq_top_iff {α : Type*} [LinearOrder α] [BoundedOrder α]
+    {s : Finset ι} {f : ι → α} (hs : s.Nonempty) : s.sup f = ⊤ ↔ ∃ b ∈ s, f b = ⊤ := by
+  cases subsingleton_or_nontrivial α
+  · simpa [Subsingleton.elim _ (⊤ : α)]
+  · exact Finset.sup_eq_top_iff
+
 @[simp]
 protected theorem lt_sup_iff : a < s.sup f ↔ ∃ b ∈ s, a < f b := by
   apply Iff.intro
@@ -742,6 +753,14 @@ theorem comp_inf_eq_inf_comp_of_is_total [SemilatticeInf β] [OrderTop β] (g : 
 protected theorem inf_le_iff (ha : a < ⊤) : s.inf f ≤ a ↔ ∃ b ∈ s, f b ≤ a :=
   @Finset.le_sup_iff αᵒᵈ _ _ _ _ _ _ ha
 #align finset.inf_le_iff Finset.inf_le_iff
+
+protected theorem inf_eq_bot_iff {α : Type*} [LinearOrder α] [BoundedOrder α] [Nontrivial α]
+    {s : Finset ι} {f : ι → α} : s.inf f = ⊥ ↔ ∃ b ∈ s, f b = ⊥ :=
+  Finset.sup_eq_top_iff (α := αᵒᵈ)
+
+protected theorem Nonempty.inf_eq_bot_iff {α : Type*} [LinearOrder α] [BoundedOrder α]
+    {s : Finset ι} {f : ι → α} (h : s.Nonempty) : s.inf f = ⊥ ↔ ∃ b ∈ s, f b = ⊥ :=
+  h.sup_eq_top_iff (α := αᵒᵈ)
 
 @[simp]
 protected theorem inf_lt_iff : s.inf f < a ↔ ∃ b ∈ s, f b < a :=
@@ -886,7 +905,7 @@ lemma prodMk_sup'_sup' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
     exact ⟨by aesop, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
 
 /-- See also `Finset.prodMk_sup'_sup'`. -/
--- @[simp] -- TODO: Why does `Prod_map` simplify the LHS?
+-- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
 lemma sup'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
     sup' (s ×ˢ t) hst (Prod.map f g) = (sup' s hst.fst f, sup' t hst.snd g) :=
   (prodMk_sup'_sup' _ _ _ _).symm
@@ -1075,7 +1094,7 @@ lemma prodMk_inf'_inf' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
   prodMk_sup'_sup' (α := αᵒᵈ) (β := βᵒᵈ) hs ht _ _
 
 /-- See also `Finset.prodMk_inf'_inf'`. -/
--- @[simp] -- TODO: Why does `Prod_map` simplify the LHS?
+-- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
 lemma inf'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
     inf' (s ×ˢ t) hst (Prod.map f g) = (inf' s hst.fst f, inf' t hst.snd g) :=
   (prodMk_inf'_inf' _ _ _ _).symm
@@ -1432,6 +1451,14 @@ protected theorem max_le {M : WithBot α} {s : Finset α} (st : ∀ a ∈ s, (a 
   Finset.sup_le st
 #align finset.max_le Finset.max_le
 
+@[simp]
+protected lemma max_le_iff {m : WithBot α} {s : Finset α} : s.max ≤ m ↔ ∀ a ∈ s, a ≤ m :=
+  Finset.sup_le_iff
+
+@[simp]
+protected lemma max_eq_top [OrderTop α] {s : Finset α} : s.max = ⊤ ↔ ⊤ ∈ s :=
+  Finset.sup_eq_top_iff.trans <| by simp
+
 /-- Let `s` be a finset in a linear order. Then `s.min` is the minimum of `s` if `s` is not empty,
 and `⊤` otherwise. It belongs to `WithTop α`. If you want to get an element of `α`, see
 `s.min'`. -/
@@ -1469,12 +1496,9 @@ theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a
   min_of_mem h
 #align finset.min_of_nonempty Finset.min_of_nonempty
 
-theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ :=
-  ⟨fun h =>
-    s.eq_empty_or_nonempty.elim id fun H => by
-      let ⟨a, ha⟩ := min_of_nonempty H
-      rw [h] at ha; cases ha; , -- Porting note: error without `done`
-    fun h => h.symm ▸ min_empty⟩
+@[simp]
+theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ := by
+  simp [Finset.min, eq_empty_iff_forall_not_mem]
 #align finset.min_eq_top Finset.min_eq_top
 
 theorem mem_of_min {s : Finset α} : ∀ {a : α}, s.min = a → a ∈ s :=
@@ -1505,6 +1529,14 @@ theorem min_mono {s t : Finset α} (st : s ⊆ t) : t.min ≤ s.min :=
 protected theorem le_min {m : WithTop α} {s : Finset α} (st : ∀ a : α, a ∈ s → m ≤ a) : m ≤ s.min :=
   Finset.le_inf st
 #align finset.le_min Finset.le_min
+
+@[simp]
+protected theorem le_min_iff {m : WithTop α} {s : Finset α} : m ≤ s.min ↔ ∀ a ∈ s, m ≤ a :=
+  Finset.le_inf_iff
+
+@[simp]
+protected theorem min_eq_bot [OrderBot α] {s : Finset α} : s.min = ⊥ ↔ ⊥ ∈ s :=
+  Finset.max_eq_top (α := αᵒᵈ)
 
 /-- Given a nonempty finset `s` in a linear order `α`, then `s.min' h` is its minimum, as an
 element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.min`,

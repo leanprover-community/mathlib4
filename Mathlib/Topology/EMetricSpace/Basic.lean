@@ -1202,7 +1202,7 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
       edist_comm := surjective_mk.forall₂.2 edist_comm,
       edist_triangle := surjective_mk.forall₃.2 edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := comap_injective (surjective_mk.Prod_map surjective_mk) <| by
+      uniformity_edist := comap_injective (surjective_mk.prodMap surjective_mk) <| by
         simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
 
 /-!

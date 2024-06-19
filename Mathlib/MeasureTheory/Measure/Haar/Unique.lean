@@ -387,11 +387,11 @@ lemma haarScalarFactor_pos_of_isHaarMeasure (μ' μ : Measure G) [IsHaarMeasure 
     [IsHaarMeasure μ'] : 0 < haarScalarFactor μ' μ :=
   pos_iff_ne_zero.2 (fun H ↦ by simpa [H] using haarScalarFactor_eq_mul μ' μ μ')
 
-@[deprecated] alias haarScalarFactor_pos_of_isOpenPosMeasure :=
-  haarScalarFactor_pos_of_isHaarMeasure  -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")]
+alias haarScalarFactor_pos_of_isOpenPosMeasure := haarScalarFactor_pos_of_isHaarMeasure
 
-@[deprecated] alias addHaarScalarFactor_pos_of_isOpenPosMeasure :=
-  addHaarScalarFactor_pos_of_isAddHaarMeasure  -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")]
+alias addHaarScalarFactor_pos_of_isOpenPosMeasure := addHaarScalarFactor_pos_of_isAddHaarMeasure
 
 /-!
 ### Uniqueness of measure of sets with compact closure
@@ -677,10 +677,12 @@ lemma isHaarMeasure_eq_of_isProbabilityMeasure [LocallyCompactSpace G] (μ' μ :
   ext s _hs
   simp [A s, ← Z]
 
-@[deprecated] alias haarScalarFactor_eq_one_of_isProbabilityMeasure :=
-  isHaarMeasure_eq_of_isProbabilityMeasure -- deprecated on 2024-02-12
-@[deprecated] alias addHaarScalarFactor_eq_one_of_isProbabilityMeasure :=
-  isAddHaarMeasure_eq_of_isProbabilityMeasure -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")]
+alias haarScalarFactor_eq_one_of_isProbabilityMeasure := isHaarMeasure_eq_of_isProbabilityMeasure
+
+@[deprecated (since := "2024-02-12")]
+alias addHaarScalarFactor_eq_one_of_isProbabilityMeasure :=
+  isAddHaarMeasure_eq_of_isProbabilityMeasure
 
 /-!
 ### Uniqueness of measure of open sets
@@ -893,9 +895,8 @@ lemma isMulLeftInvariant_eq_smul [LocallyCompactSpace G] [SecondCountableTopolog
 #align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isMulLeftInvariant_eq_smul
 #align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddLeftInvariant_eq_smul
 
-@[deprecated] alias isHaarMeasure_eq_smul := isMulLeftInvariant_eq_smul -- deprecated on 2024-02-12
-@[deprecated] alias isAddHaarMeasure_eq_smul :=
-  isAddLeftInvariant_eq_smul -- deprecated on 2024-02-12
+@[deprecated (since := "2024-02-12")] alias isHaarMeasure_eq_smul := isMulLeftInvariant_eq_smul
+@[deprecated (since := "2024-02-12")] alias isAddHaarMeasure_eq_smul := isAddLeftInvariant_eq_smul
 
 /-- An invariant σ-finite measure is absolutely continuous with respect to a Haar measure in a
 second countable group. -/

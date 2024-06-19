@@ -303,7 +303,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   exact (htn j).mono (subset_inter hji₀ hji)
 #align is_compact.nonempty_Inter_of_directed_nonempty_compact_closed IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
 
-@[deprecated] -- deprecated on 2024-02-28
+@[deprecated (since := "2024-02-28")]
 alias IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed :=
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
 
@@ -328,7 +328,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (t : �
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed t htd htn htc htcl
 #align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
-@[deprecated] -- deprecated on 2024-02-28
+@[deprecated (since := "2024-02-28")]
 alias IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed :=
   IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
@@ -639,8 +639,9 @@ theorem disjoint_cocompact_right (f : Filter X) :
   simp_rw [hasBasis_cocompact.disjoint_iff_right, compl_compl]
   tauto
 
--- deprecated on 2024-02-07: see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`
-@[deprecated] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
+@[deprecated "see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`"
+  (since := "2024-02-07")]
+theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
   (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
 #align nat.cocompact_eq Nat.cocompact_eq
 
@@ -691,12 +692,12 @@ theorem mem_coclosedCompact_iff :
       closure_minimal (compl_subset_comm.2 hst) htcl
   · exact ⟨closure sᶜ, ⟨isClosed_closure, h⟩, compl_subset_comm.2 subset_closure⟩
 
-@[deprecated mem_coclosedCompact_iff] -- 2024-02-16
+@[deprecated mem_coclosedCompact_iff (since := "2024-02-16")]
 theorem mem_coclosedCompact : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ tᶜ ⊆ s := by
   simp only [hasBasis_coclosedCompact.mem_iff, and_assoc]
 #align filter.mem_coclosed_compact Filter.mem_coclosedCompact
 
-@[deprecated mem_coclosedCompact_iff] -- 2024-02-16
+@[deprecated mem_coclosedCompact_iff (since := "2024-02-16")]
 theorem mem_coclosed_compact' : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ sᶜ ⊆ t := by
   simp only [hasBasis_coclosedCompact.mem_iff, compl_subset_comm, and_assoc]
 #align filter.mem_coclosed_compact' Filter.mem_coclosed_compact'
@@ -803,7 +804,7 @@ theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot 
   simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
 #align cluster_point_of_compact exists_clusterPt_of_compactSpace
 
-@[deprecated] -- Since 28 January 2024
+@[deprecated (since := "2024-01-28")]
 alias cluster_point_of_compact := exists_clusterPt_of_compactSpace
 
 nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by

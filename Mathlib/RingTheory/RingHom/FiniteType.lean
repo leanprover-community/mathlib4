@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.InvSubmonoid
 
@@ -19,7 +20,7 @@ The main result is `RingHom.finiteType_is_local`.
 
 namespace RingHom
 
-open scoped Pointwise
+open scoped Pointwise TensorProduct
 
 theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType := by
   introv R hf hg
@@ -99,5 +100,15 @@ theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
   RingHom.finiteType_is_local.respectsIso
 #align ring_hom.finite_type_respects_iso RingHom.finiteType_respectsIso
+
+theorem finiteType_stableUnderBaseChange : StableUnderBaseChange @FiniteType := by
+  apply StableUnderBaseChange.mk
+  · exact finiteType_respectsIso
+  · introv h
+    replace h : Algebra.FiniteType R T := by
+      rw [RingHom.FiniteType] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
+    suffices Algebra.FiniteType S (S ⊗[R] T) by
+      rw [RingHom.FiniteType]; convert this; congr; ext; simp_rw [Algebra.smul_def]; rfl
+    infer_instance
 
 end RingHom

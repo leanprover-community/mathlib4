@@ -147,7 +147,7 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
         haveI h :
           { a : Γ' |
               (∑ ij ∈ vAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
-                  x.coeff ij.fst • y.coeff ij.snd) ≠ 0 } ⊆
+                  x.coeff ij.fst • ((of R).symm y).coeff ij.snd) ≠ 0 } ⊆
             { a : Γ' | (vAddAntidiagonal x.isPWO_support
               ((of R).symm y).isPWO_support a).Nonempty } := by
           intro a ha
