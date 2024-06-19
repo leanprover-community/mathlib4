@@ -86,9 +86,7 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z :=
 #align ore_localization.right_distrib OreLocalization.right_distrib
 
 instance : Semiring R[S⁻¹] where
-  __ := inferInstanceAs (Monoid (R[S⁻¹]))
-  zero_mul := OreLocalization.zero_mul
-  mul_zero := OreLocalization.mul_zero
+  __ := inferInstanceAs (MonoidWithZero (R[S⁻¹]))
   left_distrib := OreLocalization.left_distrib
   right_distrib := right_distrib
 

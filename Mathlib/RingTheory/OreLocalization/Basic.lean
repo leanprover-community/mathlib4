@@ -585,6 +585,51 @@ instance : CommMonoid R[S⁻¹] where
 
 end CommMonoid
 
+section Zero
+
+variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [Zero X]
+variable [MulAction R X]
+
+private def zero : X[S⁻¹] := 0 /ₒ 1
+
+instance : Zero X[S⁻¹] :=
+  ⟨zero⟩
+
+protected theorem zero_def : (0 : X[S⁻¹]) = 0 /ₒ 1 :=
+  rfl
+#align ore_localization.zero_def OreLocalization.zero_def
+
+end Zero
+
+section MonoidWithZero
+
+variable {R : Type*} [MonoidWithZero R] {S : Submonoid R} [OreSet S]
+
+@[simp]
+theorem zero_oreDiv' (s : S) : (0 : R) /ₒ s = 0 := by
+  rw [OreLocalization.zero_def, oreDiv_eq_iff]
+  exact ⟨s, 1, by simp [Submonoid.smul_def]⟩
+
+instance : MonoidWithZero R[S⁻¹] where
+  zero_mul x := by
+    induction' x using OreLocalization.ind with r s
+    rw [OreLocalization.zero_def, oreDiv_mul_char 0 r 1 s 0 1 (by simp), zero_mul, one_mul]
+  mul_zero x := by
+    induction' x using OreLocalization.ind with r s
+    rw [OreLocalization.zero_def, mul_div_one, mul_zero, zero_oreDiv', zero_oreDiv']
+
+end MonoidWithZero
+
+section CommMonoidWithZero
+
+variable {R : Type*} [CommMonoidWithZero R] {S : Submonoid R} [OreSet S]
+
+instance : CommMonoidWithZero R[S⁻¹] where
+  __ := inferInstanceAs (MonoidWithZero R[S⁻¹])
+  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+
+end CommMonoidWithZero
+
 section DistribMulAction
 
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [AddMonoid X]
@@ -702,15 +747,6 @@ protected theorem add_assoc (x y z : X[S⁻¹]) : x + y + z = x + (y + z) := by
   · rw [OreLocalization.expand r₂ s₂ ra (ha.symm ▸ (sa * s₁).2)]; congr; ext; exact ha
   · rw [OreLocalization.expand r₃ s₃ rc (hc.symm ▸ (sc * (sa * s₁)).2)]; congr; ext; exact hc
 #align ore_localization.add_assoc OreLocalization.add_assoc
-
-private def zero : X[S⁻¹] := 0 /ₒ 1
-
-instance : Zero X[S⁻¹] :=
-  ⟨zero⟩
-
-protected theorem zero_def : (0 : X[S⁻¹]) = 0 /ₒ 1 :=
-  rfl
-#align ore_localization.zero_def OreLocalization.zero_def
 
 @[simp]
 theorem zero_oreDiv (s : S) : (0 : X) /ₒ s = 0 := by
