@@ -215,7 +215,7 @@ lemma equiv_equiv_symm (L' : C ⥤ D') [L'.IsLocalization W] (G : D ⥤ D')
 
 section
 
-variable {X Y Z : C} [HasSmallLocalizedHom.{w} W X Y]
+variable {X Y Z T : C} [HasSmallLocalizedHom.{w} W X Y]
 
 /-- The element in `SmallHom W X Y` induced by `f : X ⟶ Y`. -/
 noncomputable def mk (f : X ⟶ Y) : SmallHom.{w} W X Y :=
@@ -264,6 +264,26 @@ lemma equiv_comp : equiv W L (α.comp β) = equiv W L α ≫ equiv W L β := by
 lemma mk_comp_mk (f : X ⟶ Y) (g : Y ⟶ Z) :
     (mk W f).comp (mk W g) = mk W (f ≫ g) :=
   (equiv W W.Q).injective (by simp [equiv_comp])
+
+@[simp]
+lemma comp_mk_id (α : SmallHom.{w} W X Y) [HasSmallLocalizedHom.{w} W Y Y] :
+    α.comp (mk W (𝟙 Y)) = α :=
+  (equiv W W.Q).injective (by simp [equiv_comp])
+
+@[simp]
+lemma mk_id_comp (α : SmallHom.{w} W X Y) [HasSmallLocalizedHom.{w} W X X] :
+    (mk W (𝟙 X)).comp α = α :=
+  (equiv W W.Q).injective (by simp [equiv_comp])
+
+variable [HasSmallLocalizedHom.{w} W Z T] [HasSmallLocalizedHom.{w} W X T]
+  [HasSmallLocalizedHom.{w} W Y T]
+
+@[simp]
+lemma comp_assoc (α : SmallHom.{w} W X Y) (β : SmallHom.{w} W Y Z)
+    (γ : SmallHom.{w} W Z T) :
+    (α.comp β).comp γ = α.comp (β.comp γ) := by
+  apply (equiv W W.Q).injective
+  simp only [equiv_comp, assoc]
 
 end
 
