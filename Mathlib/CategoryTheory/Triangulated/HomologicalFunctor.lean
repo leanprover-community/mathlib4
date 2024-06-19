@@ -140,6 +140,18 @@ noncomputable instance (priority := 100) [F.IsHomological] :
 instance (priority := 100) [F.IsHomological] : F.Additive :=
   F.additive_of_preserves_binary_products
 
+lemma isHomological_of_localization (L : C ⥤ D)
+    [L.CommShift ℤ] [L.IsTriangulated] [L.mapArrow.EssSurj] (F : D ⥤ A)
+    (G : C ⥤ A) (e : L ⋙ F ≅ G) [G.IsHomological] :
+    F.IsHomological := by
+  have : F.PreservesZeroMorphisms := preservesZeroMorphisms_of_map_zero_object
+    (F.mapIso L.mapZeroObject.symm ≪≫ e.app _ ≪≫ G.mapZeroObject)
+  have : (L ⋙ F).IsHomological := IsHomological.of_iso e.symm
+  refine IsHomological.mk' _ (fun T hT => ?_)
+  rw [L.distTriang_iff] at hT
+  obtain ⟨T₀, e, hT₀⟩ := hT
+  exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
+
 section
 
 variable [F.IsHomological] [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
@@ -230,7 +242,7 @@ lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
   simp only [mem_homologicalKernel_iff, h₁, ← h₂, ← h₃]
   constructor
   · intro h n
-    obtain ⟨m, rfl⟩ : ∃ (m : ℤ), n = m + 1 := ⟨n - 1, by omega⟩
+    obtain ⟨m, rfl⟩ : ∃ (m : ℤ), n = m + 1 := ⟨n - 1, by simp⟩
     have := (h (m + 1)).1
     have := (h m).2
     apply isIso_of_mono_of_epi

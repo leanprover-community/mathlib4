@@ -234,8 +234,8 @@ instance : OrderedAddCommMonoid ℚ := by infer_instance
 #align rat.num_pos_iff_pos Rat.num_pos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
 
-@[deprecated] alias num_nonneg_iff_zero_le := num_nonneg -- 2024-02-16
-@[deprecated] alias num_pos_iff_pos := num_pos -- 2024-02-16
+@[deprecated (since := "2024-02-16")] alias num_nonneg_iff_zero_le := num_nonneg
+@[deprecated (since := "2024-02-16")] alias num_pos_iff_pos := num_pos
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by

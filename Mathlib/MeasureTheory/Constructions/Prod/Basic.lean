@@ -1036,6 +1036,10 @@ theorem fst_univ : ρ.fst univ = ρ univ := by rw [fst_apply MeasurableSet.univ,
 
 @[simp] theorem fst_zero : fst (0 : Measure (α × β)) = 0 := by simp [fst]
 
+instance [SFinite ρ] : SFinite ρ.fst := by
+  rw [fst]
+  infer_instance
+
 instance fst.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.fst := by
   rw [fst]
   infer_instance
@@ -1083,6 +1087,10 @@ theorem snd_univ : ρ.snd univ = ρ univ := by rw [snd_apply MeasurableSet.univ,
 
 @[simp] theorem snd_zero : snd (0 : Measure (α × β)) = 0 := by simp [snd]
 
+instance [SFinite ρ] : SFinite ρ.snd := by
+  rw [snd]
+  infer_instance
+
 instance snd.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.snd := by
   rw [snd]
   infer_instance
@@ -1116,6 +1124,14 @@ theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : 
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
 #align measure_theory.measure.snd_map_prod_mk MeasureTheory.Measure.snd_map_prod_mk
+
+@[simp] lemma fst_map_swap : (ρ.map Prod.swap).fst = ρ.snd := by
+  rw [Measure.fst, Measure.map_map measurable_fst measurable_swap]
+  rfl
+
+@[simp] lemma snd_map_swap : (ρ.map Prod.swap).snd = ρ.fst := by
+  rw [Measure.snd, Measure.map_map measurable_snd measurable_swap]
+  rfl
 
 end Measure
 
