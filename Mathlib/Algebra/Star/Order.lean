@@ -234,11 +234,19 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   (isSelfAdjoint_zero R).mono hx
 
-theorem conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < star c * a * c := by
-  rw [(conjugate_nonneg ha.le _).lt_iff_ne]
+theorem conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
+    star c * a * c < star c * b * c := by
+  rw [(conjugate_le_conjugate hab.le _).lt_iff_ne]
   intro h
-  rw [← mul_zero (star c), ← zero_mul c, mul_assoc, hc.star.left.eq_iff, hc.right.eq_iff] at h
-  exact ha.ne h
+  rw [hc.right.eq_iff, hc.star.left.eq_iff] at h
+  exact hab.ne h
+
+theorem conjugate_lt_conjugate' {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
+    c * a * star c < c * b * star c := by
+  simpa only [star_star] using conjugate_lt_conjugate hab hc.star
+
+theorem conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < star c * a * c := by
+  simpa only [mul_zero, zero_mul] using conjugate_lt_conjugate ha hc
 
 theorem conjugate_pos' {a : R} (ha : 0 < a) {c : R}  (hc : IsRegular c) : 0 < c * a * star c := by
   simpa only [star_star] using conjugate_pos ha hc.star
