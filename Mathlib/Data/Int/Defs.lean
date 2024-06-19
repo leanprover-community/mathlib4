@@ -616,7 +616,7 @@ lemma mul_dvd_of_dvd_div (hcb : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
 
 lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a := by
   obtain rfl | ha := eq_or_ne a 0
-  . simp
+  · simp
   · obtain ⟨d, rfl⟩ := h
     simp [Int.mul_assoc, ha]
 #align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
