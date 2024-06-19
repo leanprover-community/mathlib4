@@ -515,17 +515,17 @@ theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n �
   split_ifs <;> simp [h]
 #align matrix.diagonal_map Matrix.diagonal_map
 
-theorem map_natCast [DecidableEq n] [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_natCast [DecidableEq n] [AddMonoidWithOne α] [AddMonoidWithOne β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
-theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo]:
     (no_index (OfNat.ofNat d) : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
-theorem map_intCast [DecidableEq n] [AddGroupWithOne α] [AddGroupWithOne β]
+protected theorem map_intCast [DecidableEq n] [AddGroupWithOne α] [AddGroupWithOne β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
@@ -2305,7 +2305,7 @@ theorem conjTranspose_eq_one [DecidableEq n] [Semiring α] [StarRing α] {M : Ma
 @[simp]
 theorem conjTranspose_natCast [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) :
     (d : Matrix n n α)ᴴ = d := by
-  simp [conjTranspose, map_natCast, diagonal_natCast]
+  simp [conjTranspose, Matrix.map_natCast, diagonal_natCast]
 
 @[simp]
 theorem conjTranspose_eq_natCast [DecidableEq n] [Semiring α] [StarRing α]
@@ -2323,13 +2323,12 @@ theorem conjTranspose_ofNat [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ
 theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
     Mᴴ = d ↔ M = d :=
-  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
-    by rw [conjTranspose_natCast]
+  conjTranspose_eq_natCast
 
 @[simp]
 theorem conjTranspose_intCast [DecidableEq n] [Ring α] [StarRing α] (d : ℤ) :
     (d : Matrix n n α)ᴴ = d := by
-  simp [conjTranspose, map_intCast, diagonal_intCast]
+  simp [conjTranspose, Matrix.map_intCast, diagonal_intCast]
 
 @[simp]
 theorem conjTranspose_eq_intCast [DecidableEq n] [Ring α] [StarRing α]
