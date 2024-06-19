@@ -16,10 +16,10 @@ on the affine plane, which is a ring homomorphism (`Polynomial.evalEvalRingHom`)
 the abbreviation `CC` to view a constant in the base ring `R` as a bivariate polynomial.
 -/
 
-/-- The notation `Y` for `X` in the `Polynomial2` scope. -/
+/-- The notation `Y` for `X` in the `Polynomial` scope. -/
 scoped[Polynomial] notation3:max "Y" => Polynomial.X (R := Polynomial _)
 
-/-- The notation `R[X][Y]` for `R[X][X]` in the `Polynomial2` scope. -/
+/-- The notation `R[X][Y]` for `R[X][X]` in the `Polynomial` scope. -/
 scoped[Polynomial] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
 
 namespace Polynomial
