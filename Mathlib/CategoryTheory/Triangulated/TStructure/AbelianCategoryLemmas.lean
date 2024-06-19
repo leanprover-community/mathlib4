@@ -504,6 +504,29 @@ lemma kernelComparisonEpiOfImageComparisonMono (hc : Mono (cokernelComparison f 
 
 namespace CategoryTheory.ShortComplex
 
+variable {S}
+
+lemma exact_iff_epi_abelianImageToKernel : S.Exact ↔ Epi S.abelianImageToKernel := by
+  rw [S.exact_iff_epi_kernel_lift]
+  have eq : kernel.lift S.g S.f S.zero = Abelian.factorThruImage S.f ≫ S.abelianImageToKernel := by
+    rw [← cancel_mono (kernel.ι S.g), assoc, S.abelianImageToKernel_comp_kernel_ι,
+      Abelian.image.fac, kernel.lift_ι]
+  constructor
+  · exact fun _ ↦ epi_of_epi_fac eq.symm
+  · exact fun _ ↦ by rw [eq]; exact epi_comp _ _
+
+lemma exact_iff_isIso_abelianImageToKernel : S.Exact ↔ IsIso S.abelianImageToKernel := by
+  rw [exact_iff_epi_abelianImageToKernel]
+  constructor
+  · exact fun _ ↦ isIso_of_mono_of_epi _
+  · exact fun _ ↦ inferInstance
+
+noncomputable def isoAbelianImageToKernelOfExact (h : S.Exact) :
+    Abelian.image S.f ≅ kernel S.g :=
+  @asIso _ _ _  _ S.abelianImageToKernel (exact_iff_isIso_abelianImageToKernel.mp h)
+
+variable (S)
+
 /-- The 4 composable arrows associated to a short complex. -/
 @[simps!]
 noncomputable def toComposableArrows₄ (S : ShortComplex A) : ComposableArrows A 4 :=
@@ -565,7 +588,22 @@ lemma exact_iff_exact_toComposableArrows₄ (S : ShortComplex A) :
       exact (ShortComplex.exact_iff_epi _ (IsZero.eq_zero_of_tgt (isZero_zero A) _)).mp h.2
       rw [ComposableArrows.isComplex₂_iff]; erw [comp_zero]
 
+noncomputable def LeftHomologyData_ker_f' {S : ShortComplex A} (h : LeftHomologyData S) :
+    kernel h.f' ≅ kernel S.f := by
+  refine (kernelCompMono h.f' h.i).symm.trans ?_
+  simp only [LeftHomologyData.f'_i]
+  exact Iso.refl _
+
+noncomputable def LeftHomologyData__image_f' {S : ShortComplex A}
+    (h : LeftHomologyData S) : Abelian.image h.f' ≅ Abelian.image S.f := by
+  set F' := Abelian.imageStrongEpiMonoFactorisation h.f'
+  refine (image.isoStrongEpiMono F'.e (F'.m ≫ h.i) (f := S.f)
+    (by simp only [MonoFactorisation.fac_assoc, LeftHomologyData.f'_i])).trans
+    (Abelian.imageIsoImage _).symm
+
 end ShortComplex
+
+#exit
 
 /-
 variable {ι : Type*} {c : ComplexShape ι}
