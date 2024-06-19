@@ -754,6 +754,21 @@ theorem Group.LeftCosetCover.disjoint_normalize_of_density_eq_one
     apply hij
     rw [← hik₁, ← hjk₂, hk]
 
+theorem Group.LeftCosetCover.one_le_density
+    [Finite c.carrier]
+    [DecidableEq (Subgroup G)]
+    [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
+    1 ≤ c.density := by
+  rw [← c.normalize_density]
+  unfold density
+  have : Fintype c.normalize.carrier := Fintype.ofFinite c.normalize.carrier
+  have hc : c.core.FiniteIndex := sorry
+  rw [finsum_eq_finset_sum_of_support_subset (s := Finset.univ)]
+  simp_rw [normalize_subgroup_eq_core]
+  simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, ge_iff_le]
+  rw [← mul_le_mul_iff_of_pos_right (a := (Subgroup.index c.core : ℚ)) _]
+  sorry
+
 --@[to_additive]
 theorem Group.LeftCosetCover.disjoint_normalize'_of_density_eq_one
     [Finite c.carrier]
@@ -832,14 +847,53 @@ Then the cosets of subgroups of infinite index may be omitted from the covering.
 @[to_additive]
 theorem Subgroup.leftCoset_cover_filter_FiniteIndex
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
-    ⋃ i ∈ s.filter fun i ↦ (H i).FiniteIndex, g i • (H i : Set G) = Set.univ :=
-  sorry -- (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).1
+    ⋃ i ∈ s.filter fun i ↦ (H i).FiniteIndex, g i • (H i : Set G) = Set.univ := by
+  classical
+  let c : Group.LeftCosetCover G := {
+    carrier := s
+    offset := fun i ↦ g i
+    subgroup := fun i ↦ H i
+    covers := by
+      rw [Set.iUnion_eq_univ_iff]
+      rw [Set.iUnion₂_eq_univ_iff] at covers
+      intro x
+      obtain ⟨i, hi, hi'⟩ := covers x
+      exact ⟨⟨i, hi⟩, hi'⟩ }
+  let hc := c.normalize.covers
+  rw [Set.iUnion₂_eq_univ_iff]
+  simp only [Finset.mem_filter, Finset.coe_mem, true_and, exists_prop]
+  rw [Set.iUnion_eq_univ_iff] at hc
+  intro x
+  obtain ⟨⟨⟨i, hi⟩, ⟨⟨t, ht⟩, ht'⟩⟩, ⟨k, hk, hk'⟩⟩ := hc x
+  simp only [Set.mem_setOf_eq] at hi
+  refine ⟨i.1, ⟨Finset.coe_mem i, hi⟩, ?_⟩
+  simp only [← hk', Set.coe_setOf, Set.mem_setOf_eq]
+  change (g i * t) • _ ∈ _
+  rw [← smul_eq_mul, smul_assoc]
+  apply Set.smul_mem_smul_set
+  simp only [smul_eq_mul, SetLike.mem_coe]
+  apply mul_mem ht
+  rw [Group.LeftCosetCover.normalize_subgroup_eq_core] at hk
+  apply c.core_le hi hk
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`. Then the
 sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
 @[to_additive one_le_sum_inv_index_of_leftCoset_cover]
 theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
-    1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
+    1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ := by
+  classical
+  let c : Group.LeftCosetCover G := {
+    carrier := s
+    offset := fun i ↦ g i
+    subgroup := fun i ↦ H i
+    covers := by
+      rw [Set.iUnion_eq_univ_iff]
+      rw [Set.iUnion₂_eq_univ_iff] at covers
+      intro x
+      obtain ⟨i, hi, hi'⟩ := covers x
+      exact ⟨⟨i, hi⟩, hi'⟩ }
+  have hc : c.density = ∑ i ∈ s, ((H i).index : ℚ)⁻¹ := sorry
+  rw [← hc, ← c.normalize_density]
   sorry
   -- have := Classical.decPred (Subgroup.FiniteIndex : Subgroup G → Prop)
   -- (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2.1
