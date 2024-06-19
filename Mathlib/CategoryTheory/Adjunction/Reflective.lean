@@ -89,12 +89,6 @@ theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : A ∈ i.essImage
   rwa [isIso_unit_app_iff_mem_essImage]
 #align category_theory.functor.ess_image.unit_is_iso CategoryTheory.Functor.essImage.unit_isIso
 
-/-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/
-theorem mem_essImage_of_unit_isIso {L : C ⥤ D} (adj : L ⊣ i) (A : C)
-    [IsIso (adj.unit.app A)] : A ∈ i.essImage :=
-  ⟨L.obj A, ⟨(asIso (adj.unit.app A)).symm⟩⟩
-#align category_theory.mem_ess_image_of_unit_is_iso CategoryTheory.mem_essImage_of_unit_isIso
-
 /-- If `η_A` is a split monomorphism, then `A` is in the reflective subcategory. -/
 theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     [IsSplitMono ((reflectorAdjunction i).unit.app A)] : A ∈ i.essImage := by
@@ -269,10 +263,6 @@ variable {j}
 lemma Functor.essImage.counit_isIso [Coreflective j] {A : D} (h : A ∈ j.essImage) :
     IsIso ((coreflectorAdjunction j).counit.app A) := by
   rwa [isIso_counit_app_iff_mem_essImage]
-
-lemma mem_essImage_of_counit_isIso {R : D ⥤ C} (adj : j ⊣ R) (A : D)
-    [IsIso (adj.counit.app A)] : A ∈ j.essImage :=
-  ⟨R.obj A, ⟨asIso (adj.counit.app A)⟩⟩
 
 lemma mem_essImage_of_counit_isSplitEpi [Coreflective j] {A : D}
     [IsSplitEpi ((coreflectorAdjunction j).counit.app A)] : A ∈ j.essImage := by
