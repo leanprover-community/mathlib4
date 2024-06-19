@@ -238,20 +238,6 @@ lemma sheafComposeIso_inv_fac :
       toSheafify J (P ⋙ F) := by
   rw [← sheafComposeIso_hom_fac, assoc, Iso.hom_inv_id, comp_id]
 
--- lemma sheafifyComposeIso_inv_comm {G : Sheaf J A} (f : (presheafToSheaf J A).obj P ⟶ G) :
---     (sheafifyComposeIso J F P).hom ≫
---       (whiskerRight ((sheafificationAdjunction J A).unit.app G.val) F) =
---       sorry ≫ whiskerRight (sheafifyLift J f.val G.cond) F := by
---   apply sheafify_hom_ext _ _ _ ((sheafCompose J F).obj G).cond
---   simp only [sheafCompose_obj_val, sheafCompose_map_val, sheafComposeIso_hom_fac_assoc]
---   -- let g : sheafify J P ⋙ F ⟶ G.val ⋙ F :=
---   --   whiskerRight ((sheafificationAdjunction J A).counit.app G) F
---   let g := whiskerRight ((sheafificationAdjunction J A).counit.app G).val F
---   -- let g := sheafifyMap J f.val
---   -- simp [sheafify] at g
---   -- simp only [sheafComposeIso_hom_fac_assoc]
---   sorry
-
 end HasSheafCompose
 
 namespace GrothendieckTopology
