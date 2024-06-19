@@ -21,7 +21,9 @@ variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
   {M : Type w'} [AddMonoid M] [HasShift C M] [HasShift C' M] [HasShift D M]
   [W.IsCompatibleWithShift M] [W'.IsCompatibleWithShift M]
 
-namespace MorphismProperty
+namespace Localization
+
+section
 
 variable (X Y : C)
 
@@ -57,16 +59,14 @@ instance hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₄ (m : M) :
   (hasSmallLocalizedHom_iff_of_isos W
     (Iso.refl (X⟦m⟧)) ((shiftFunctorZero C M).app Y)).1 inferInstance
 
-end MorphismProperty
-
-namespace Localization
+end
 
 namespace SmallHom
 
 variable {W}
 variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
-variable {X Y : C} [MorphismProperty.HasSmallLocalizedHom.{w} W X Y]
-    (f : SmallHom.{w} W X Y) (a : M) [MorphismProperty.HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦a⟧)]
+variable {X Y : C} [HasSmallLocalizedHom.{w} W X Y]
+    (f : SmallHom.{w} W X Y) (a : M) [HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦a⟧)]
 
 noncomputable def shift : SmallHom.{w} W (X⟦a⟧) (Y⟦a⟧) :=
   f.map (LocalizerMorphism.mk (shiftFunctor C a)
