@@ -2,7 +2,6 @@
 
 set -exo pipefail
 
-# Install Homebrew
 if ! which brew > /dev/null; then
     # Install Homebrew
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -11,7 +10,7 @@ else
     brew update
 fi
 
-brew install elan-init
+curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
 elan toolchain install stable
 elan default stable
 
