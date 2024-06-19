@@ -47,7 +47,7 @@ scoped [AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H 
 Note that `a` and `b` are `outParam`s,
 so one should not add instances like
 `[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`. -/
-class AddConstMapClass (F : Type*) (G H : outParam (Type*)) [Add G] [Add H]
+class AddConstMapClass (F : Type*) (G H : outParam Type*) [Add G] [Add H]
     (a : outParam G) (b : outParam H) extends DFunLike F G fun _ ↦ H where
   /-- A map of `AddConstMapClass` class semiconjugates shift by `a` to the shift by `b`:
   `∀ x, f (x + a) = f x + b`. -/

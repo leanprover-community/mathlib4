@@ -458,8 +458,9 @@ noncomputable def coeq₃Hom {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : j₂ ⟶ 
         (coeqHom g h ≫ rightToMax (coeq f g) (coeq g h))
 #align category_theory.is_filtered.coeq₃_hom CategoryTheory.IsFiltered.coeq₃Hom
 
-theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h :=
-  by simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
+theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
+    f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h := by
+  simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 #align category_theory.is_filtered.coeq₃_condition₁ CategoryTheory.IsFiltered.coeq₃_condition₁
 
 theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
@@ -884,7 +885,7 @@ theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
 instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
   of_isInitial _ initialIsInitial
 
-@[deprecated] -- 2024-03-11
+@[deprecated (since := "2024-03-11")]
 alias _root_.CategoryTheory.cofiltered_of_hasFiniteLimits := of_hasFiniteLimits
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape

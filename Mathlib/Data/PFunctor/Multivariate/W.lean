@@ -279,8 +279,8 @@ abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ 
 theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) :
     appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
-      P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) :=
-  by rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
+      P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) := by
+  rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
 #align mvpfunctor.map_obj_append1 MvPFunctor.map_objAppend1
 
 /-!

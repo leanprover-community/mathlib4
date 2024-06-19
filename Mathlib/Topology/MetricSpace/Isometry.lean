@@ -1,7 +1,6 @@
 /-
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Isometries of emetric and metric spaces
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
@@ -97,7 +96,7 @@ theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
 
 theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
-  simp only [Prod.edist_eq, hf.edist_eq, hg.edist_eq, Prod_map]
+  simp only [Prod.edist_eq, hf.edist_eq, hg.edist_eq, Prod.map_apply]
 #align isometry.prod_map Isometry.prod_map
 
 theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]

@@ -3,8 +3,7 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Order.Group.PosPart
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Topology.Order.Lattice
 
 #align_import analysis.normed.order.lattice from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
@@ -158,10 +157,10 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
 /-- Let `α` be a normed lattice ordered group. Then the infimum is jointly continuous.
 -/
 instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousInf α := by
-  refine' ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| _⟩
+  refine ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| ?_⟩
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
-  refine' squeeze_zero (fun e => norm_nonneg _) this _
+  refine squeeze_zero (fun e => norm_nonneg _) this ?_
   convert ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
     ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp

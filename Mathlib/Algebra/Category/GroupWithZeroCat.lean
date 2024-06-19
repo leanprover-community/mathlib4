@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.GroupWithZero.WithZero
+import Mathlib.CategoryTheory.Category.Bipointed
 
 #align_import algebra.category.GroupWithZero from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -26,7 +27,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace GroupWithZeroCat
 
-instance : CoeSort GroupWithZeroCat (Type*) :=
+instance : CoeSort GroupWithZeroCat Type* :=
   Bundled.coeSort
 
 instance (X : GroupWithZeroCat) : GroupWithZero X :=
@@ -57,10 +58,8 @@ instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
     apply DFunLike.coe_injective'
     exact h⟩
 
--- Porting note (#10756): added lemma
 lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
 
--- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
@@ -69,7 +68,6 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
     map := fun f => f.toFun }
   forget_faithful := ⟨fun h => DFunLike.coe_injective h⟩
 
--- porting note (#10756): added lemma
 @[simp] lemma forget_map {X Y : GroupWithZeroCat} (f : X ⟶ Y) :
   (forget GroupWithZeroCat).map f = f := rfl
 

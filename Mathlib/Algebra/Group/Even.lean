@@ -32,6 +32,7 @@ This file defines square and even elements in a monoid.
 -/
 
 assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open MulOpposite
 

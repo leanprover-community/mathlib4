@@ -756,32 +756,32 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
 #align category_theory.Module.extend_restrict_scalars_adj.unit ModuleCat.ExtendRestrictScalarsAdj.unit
 
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
-`s ⊗ y ↦ s • y`
--/
+`s ⊗ y ↦ s • y` -/
 @[simps apply]
-def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
-  letI m1 : Module R S := Module.compHom S f
-  letI m2 : Module R Y := Module.compHom Y f
-  refine'
-    {toFun := TensorProduct.lift
-      {toFun := fun s : S => {toFun := fun y : Y => s • y, map_add' := smul_add _, map_smul' := _},
-        map_add' := _, map_smul' := _}, map_add' := _, map_smul' := _}
-  · intros r y
-    dsimp
-    change s • f r • y = f r • s • y
-    rw [← mul_smul, mul_comm, mul_smul]
-  · intros s₁ s₂
-    ext y
-    change (s₁ + s₂) • y = s₁ • y + s₂ • y
-    rw [add_smul]
-  · intros r s
-    ext y
-    change (f r • s) • y = (f r) • s • y
-    rw [smul_eq_mul,mul_smul]
-  · intros
-    rw [map_add]
-  · intro s z
-    dsimp
+def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y where
+  toFun :=
+    letI m1 : Module R S := Module.compHom S f
+    letI m2 : Module R Y := Module.compHom Y f
+    TensorProduct.lift
+    { toFun := fun s : S =>
+      { toFun := fun y : Y => s • y,
+        map_add' := smul_add _
+        map_smul' := fun r y => by
+          change s • f r • y = f r • s • y
+          rw [← mul_smul, mul_comm, mul_smul] },
+      map_add' := fun s₁ s₂ => by
+        ext y
+        change (s₁ + s₂) • y = s₁ • y + s₂ • y
+        rw [add_smul]
+      map_smul' := fun r s => by
+        ext y
+        change (f r • s) • y = (f r) • s • y
+        rw [smul_eq_mul, mul_smul] }
+  map_add' _ _ := by rw [map_add]
+  map_smul' s z := by
+    letI m1 : Module R S := Module.compHom S f
+    letI m2 : Module R Y := Module.compHom Y f
+    dsimp only
     induction' z using TensorProduct.induction_on with s' y z1 z2 ih1 ih2
     · rw [smul_zero, map_zero, smul_zero]
     · rw [ExtendScalars.smul_tmul, LinearMap.coe_mk]

@@ -8,6 +8,7 @@ import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 #align_import topology.category.Top.limits.products from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -62,7 +63,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan �
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ α ≅ TopCat.of (∀ i, α i) :=
+def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit.{v, u} α)
   -- Specifying the universes in `piFanIsLimit` wasn't necessary when we had `TopCatMax` 
 #align Top.pi_iso_pi TopCat.piIsoPi
@@ -72,16 +73,14 @@ theorem piIsoPi_inv_π {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
     (piIsoPi α).inv ≫ Pi.π α i = piπ α i := by simp [piIsoPi]
 #align Top.pi_iso_pi_inv_π TopCat.piIsoPi_inv_π
 
-@[simp]
 theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : ∀ i, α i) :
     (Pi.π α i : _) ((piIsoPi α).inv x) = x i :=
   ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
 #align Top.pi_iso_pi_inv_π_apply TopCat.piIsoPi_inv_π_apply
 
--- Porting note: needing the type ascription on `∏ α : TopCat.{max v u}` is unfortunate.
-@[simp]
+-- Porting note: needing the type ascription on `∏ᶜ α : TopCat.{max v u}` is unfortunate.
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
-    (x : (∏ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i : _) x := by
+    (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i : _) x := by
   have := piIsoPi_inv_π α i
   rw [Iso.inv_comp_eq] at this
   exact ConcreteCategory.congr_hom this x
@@ -129,13 +128,11 @@ theorem sigmaIsoSigma_hom_ι {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
     Sigma.ι α i ≫ (sigmaIsoSigma α).hom = sigmaι α i := by simp [sigmaIsoSigma]
 #align Top.sigma_iso_sigma_hom_ι TopCat.sigmaIsoSigma_hom_ι
 
-@[simp]
 theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).hom ((Sigma.ι α i : _) x) = Sigma.mk i x :=
   ConcreteCategory.congr_hom (sigmaIsoSigma_hom_ι α i) x
 #align Top.sigma_iso_sigma_hom_ι_apply TopCat.sigmaIsoSigma_hom_ι_apply
 
-@[simp]
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i : _) x := by
   rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ← comp_app, Iso.hom_inv_id,
@@ -188,7 +185,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   uniq := by
     intro S m h
     -- Porting note: used to be `ext x`
-    refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
+    refine ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext ?_ ?_)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h
       exact h
@@ -219,7 +216,6 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
 #align Top.prod_iso_prod_hom_snd TopCat.prodIsoProd_hom_snd
 
 -- Porting note: need to force Lean to coerce X × Y to a type
-@[simp]
 theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
     (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x,
     (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by
@@ -257,27 +253,36 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range, ← comp_apply, Limits.prod.map_fst,
-      Limits.prod.map_snd, comp_apply, exists_apply_eq_apply, and_self_iff]
+    simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
+    -- sizable changes in this proof after #13170
+    erw  [← comp_apply, ← comp_apply]
+    simp_rw [Limits.prod.map_fst,
+      Limits.prod.map_snd, comp_apply]
+    exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   · rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     use (prodIsoProd W X).inv (x₁, x₂)
+    change (forget TopCat).map _ _ = _
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
-    · simp only [← comp_apply, Category.assoc]
-      erw [Limits.prod.map_fst]
-      rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
+    · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
+      erw [← comp_apply, Limits.prod.map_fst]
+      change (_ ≫ _ ≫ f) _ = _
+      erw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
       exact hx₁
-    · simp only [← comp_apply, Category.assoc]
-      erw [Limits.prod.map_snd]
-      rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
+    · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
+      erw [← comp_apply, Limits.prod.map_snd]
+      change (_ ≫ _ ≫ g) _ = _
+      erw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
       exact hx₂
 #align Top.range_prod_map TopCat.range_prod_map
 
 theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)
     (hg : Inducing g) : Inducing (Limits.prod.map f g) := by
   constructor
-  simp_rw [prod_topology, induced_inf, induced_compose, ← coe_comp, prod.map_fst, prod.map_snd,
-    coe_comp, ← induced_compose (g := f), ← induced_compose (g := g), ← hf.induced, ← hg.induced]
+  simp_rw [topologicalSpace_coe, prod_topology, induced_inf, induced_compose, ← coe_comp,
+    prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
+  erw [← hf.induced, ← hg.induced] -- now `erw` after #13170
+  rfl -- `rfl` was not needed before #13170
 #align Top.inducing_prod_map TopCat.inducing_prod_map
 
 theorem embedding_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Embedding f)
@@ -297,8 +302,8 @@ protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
 
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
-  refine' Limits.BinaryCofan.isColimitMk (fun s =>
-    {toFun := Sum.elim s.inl s.inr, continuous_toFun := _ }) _ _ _
+  refine Limits.BinaryCofan.isColimitMk (fun s =>
+    {toFun := Sum.elim s.inl s.inr, continuous_toFun := ?_ }) ?_ ?_ ?_
   · apply
       Continuous.sum_elim (BinaryCofan.inl s).continuous_toFun (BinaryCofan.inr s).continuous_toFun
   · intro s
@@ -327,10 +332,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, ?_⟩
-      erw [Set.range_comp, ← eq_compl_iff_isCompl, coe_comp, coe_comp, Set.range_comp _ Sum.inr,
+      erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
-      aesop
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
@@ -377,7 +381,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         ext x
         refine (dif_pos ?_).trans ?_
         · exact ⟨x, rfl⟩
-        · dsimp; conv_lhs => erw [Equiv.ofInjective_symm_apply]
+        · dsimp
+          conv_lhs => erw [Equiv.ofInjective_symm_apply]
+          rfl -- `rfl` was not needed here before #13170
       · intro T f g
         ext x
         refine (dif_neg ?_).trans ?_

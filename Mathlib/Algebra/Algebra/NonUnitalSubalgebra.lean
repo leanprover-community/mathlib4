@@ -22,8 +22,6 @@ In this file we define `NonUnitalSubalgebra`s and the usual operations on them (
 
 universe u u' v v' w w'
 
-open scoped BigOperators
-
 section NonUnitalSubalgebraClass
 
 variable {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
@@ -517,8 +515,8 @@ def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
       @fun a b (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
         (hb : b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A)) =>
       show a * b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A) by
-        refine' Submodule.span_induction ha _ _ _ _
-        · refine' Submodule.span_induction hb _ _ _ _
+        refine Submodule.span_induction ha ?_ ?_ ?_ ?_
+        · refine Submodule.span_induction hb ?_ ?_ ?_ ?_
           · exact fun x (hx : x ∈ NonUnitalSubsemiring.closure s) y
               (hy : y ∈ NonUnitalSubsemiring.closure s) => Submodule.subset_span (mul_mem hy hx)
           · exact fun x _hx => (mul_zero x).symm ▸ Submodule.zero_mem _

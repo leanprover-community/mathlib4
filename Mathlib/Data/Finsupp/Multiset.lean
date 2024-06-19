@@ -19,8 +19,6 @@ promoted to an order isomorphism.
 
 open Finset
 
-open BigOperators
-
 variable {α β ι : Type*}
 
 namespace Finsupp
@@ -56,12 +54,12 @@ theorem toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {
 #align finsupp.to_multiset_single Finsupp.toMultiset_single
 
 theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
-    Finsupp.toMultiset (∑ i in s, f i) = ∑ i in s, Finsupp.toMultiset (f i) :=
+    Finsupp.toMultiset (∑ i ∈ s, f i) = ∑ i ∈ s, Finsupp.toMultiset (f i) :=
   map_sum Finsupp.toMultiset _ _
 #align finsupp.to_multiset_sum Finsupp.toMultiset_sum
 
 theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
-    Finsupp.toMultiset (∑ i in s, single i n) = n • s.val := by
+    Finsupp.toMultiset (∑ i ∈ s, single i n) = n • s.val := by
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
 #align finsupp.to_multiset_sum_single Finsupp.toMultiset_sum_single
 
@@ -106,8 +104,8 @@ theorem toFinset_toMultiset [DecidableEq α] (f : α →₀ ℕ) : f.toMultiset.
 @[simp]
 theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMultiset f).count a = f a :=
   calc
-    (toMultiset f).count a = Finsupp.sum f (fun x n => (n • {x} : Multiset α).count a) :=
-      by rw [toMultiset_apply]; exact map_sum (Multiset.countAddMonoidHom a) _ f.support
+    (toMultiset f).count a = Finsupp.sum f (fun x n => (n • {x} : Multiset α).count a) := by
+      rw [toMultiset_apply]; exact map_sum (Multiset.countAddMonoidHom a) _ f.support
     _ = f.sum fun x n => n * ({x} : Multiset α).count a := by simp only [Multiset.count_nsmul]
     _ = f a * ({a} : Multiset α).count a :=
       sum_eq_single _
@@ -171,8 +169,8 @@ theorem toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + to
 #align multiset.to_finsupp_add Multiset.toFinsupp_add
 
 @[simp]
-theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 :=
-  by ext; rw [toFinsupp_apply, count_singleton, Finsupp.single_eq_pi_single, Pi.single_apply]
+theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 := by
+  ext; rw [toFinsupp_apply, count_singleton, Finsupp.single_eq_pi_single, Pi.single_apply]
 #align multiset.to_finsupp_singleton Multiset.toFinsupp_singleton
 
 @[simp]
@@ -229,8 +227,8 @@ theorem coe_orderIsoMultiset_symm [DecidableEq ι] :
   rfl
 #align finsupp.coe_order_iso_multiset_symm Finsupp.coe_orderIsoMultiset_symm
 
-theorem toMultiset_strictMono : StrictMono (@toMultiset ι) :=
-  by classical exact (@orderIsoMultiset ι _).strictMono
+theorem toMultiset_strictMono : StrictMono (@toMultiset ι) := by
+  classical exact (@orderIsoMultiset ι _).strictMono
 #align finsupp.to_multiset_strict_mono Finsupp.toMultiset_strictMono
 
 theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ => id) < n.sum fun _ => id := by

@@ -29,6 +29,8 @@ stub and only provides rudimentary support.
 subsemigroup
 -/
 
+assert_not_exists MonoidWithZero
+
 variable {ι : Sort*} {M A B : Type*}
 
 section NonAssoc

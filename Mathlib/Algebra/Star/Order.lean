@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Regular.Basic
 
 #align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -178,8 +179,9 @@ theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
   exact ⟨star c * p * c, conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
 #align conjugate_le_conjugate conjugate_le_conjugate
 
-theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star c ≤ c * b * star c :=
-  by simpa only [star_star] using conjugate_le_conjugate hab (star c)
+theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) :
+    c * a * star c ≤ c * b * star c := by
+  simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
 @[simp]
@@ -231,6 +233,15 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
 
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   (isSelfAdjoint_zero R).mono hx
+
+theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x * x := by
+  rw [(star_mul_self_nonneg _).lt_iff_ne]
+  intro h
+  rw [← mul_zero (star x), hx.star.left.eq_iff] at h
+  exact hx.ne_zero h.symm
+
+theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * star x := by
+  simpa using star_mul_self_pos hx.star
 
 end NonUnitalSemiring
 

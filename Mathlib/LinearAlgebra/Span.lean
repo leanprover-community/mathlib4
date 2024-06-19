@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Data.Set.Pointwise.SMul
@@ -205,7 +206,7 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
     (hx : x ∈ span R s) : p x hx := by
   refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) => hc
-  refine'
+  refine
     span_induction hx (fun m hm => ⟨subset_span hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       (fun x y hx hy =>
         Exists.elim hx fun hx' hx =>
@@ -895,7 +896,7 @@ instance : IsModularLattice (Submodule R M) :=
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
     rw [mem_sup]
-    refine' ⟨b, hb, c, mem_inf.2 ⟨hc, _⟩, rfl⟩
+    refine ⟨b, hb, c, mem_inf.2 ⟨hc, ?_⟩, rfl⟩
     rw [← add_sub_cancel_right c b, add_comm]
     apply z.sub_mem haz (xz hb)⟩
 

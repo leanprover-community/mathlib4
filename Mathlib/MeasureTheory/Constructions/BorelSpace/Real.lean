@@ -28,7 +28,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 open Set Filter MeasureTheory MeasurableSpace
 
-open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
+open scoped Classical Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -212,7 +212,7 @@ theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} 
   ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 #align ae_measurable_coe_nnreal_real_iff aemeasurable_coe_nnreal_real_iff
 
-@[deprecated] -- 2024-03-02
+@[deprecated (since := "2024-03-02")]
 alias aEMeasurable_coe_nnreal_real_iff := aemeasurable_coe_nnreal_real_iff
 
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
@@ -271,7 +271,7 @@ theorem measurable_toNNReal : Measurable ENNReal.toNNReal :=
 #align ennreal.measurable_to_nnreal ENNReal.measurable_toNNReal
 
 instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
-  refine' ⟨measurable_of_measurable_nnreal_nnreal _ _ _⟩
+  refine ⟨measurable_of_measurable_nnreal_nnreal ?_ ?_ ?_⟩
   · simp only [← ENNReal.coe_mul, measurable_mul.coe_nnreal_ennreal]
   · simp only [ENNReal.top_mul', ENNReal.coe_eq_zero]
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const
@@ -311,8 +311,8 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   exact measurable_liminf fun n => hf (x n)
 #align measurable_of_tendsto_ennreal' ENNReal.measurable_of_tendsto'
 
--- 2024-03-09
-@[deprecated] alias _root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
+@[deprecated (since := "2024-03-09")] alias
+_root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
 
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
@@ -320,8 +320,8 @@ theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥
   measurable_of_tendsto' atTop hf lim
 #align measurable_of_tendsto_ennreal ENNReal.measurable_of_tendsto
 
--- 2024-03-09
-@[deprecated] alias _root_.measurable_of_tendsto_ennreal := ENNReal.measurable_of_tendsto
+@[deprecated (since := "2024-03-09")] alias
+_root_.measurable_of_tendsto_ennreal := ENNReal.measurable_of_tendsto
 
 /-- A limit (over a general filter) of a.e.-measurable `ℝ≥0∞` valued functions is
 a.e.-measurable. -/
@@ -503,8 +503,8 @@ theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ�
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 #align measurable_of_tendsto_nnreal' NNReal.measurable_of_tendsto'
 
--- 2024-03-09
-@[deprecated] alias _root_.measurable_of_tendsto_nnreal' := NNReal.measurable_of_tendsto'
+@[deprecated (since := "2024-03-09")] alias
+_root_.measurable_of_tendsto_nnreal' := NNReal.measurable_of_tendsto'
 
 /-- A sequential limit of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} (hf : ∀ i, Measurable (f i))
@@ -512,8 +512,8 @@ theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} 
   measurable_of_tendsto' atTop hf lim
 #align measurable_of_tendsto_nnreal NNReal.measurable_of_tendsto
 
--- 2024-03-09
-@[deprecated] alias _root_.measurable_of_tendsto_nnreal := NNReal.measurable_of_tendsto
+@[deprecated (since := "2024-03-09")] alias
+_root_.measurable_of_tendsto_nnreal := NNReal.measurable_of_tendsto
 
 end NNReal
 
@@ -538,7 +538,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
     · exact measurable_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
-    refine fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+    refine fun n => (measure_mono Set.inter_subset_left).trans_lt ?_
     exact measure_spanningSets_lt_top μ n
   refine ⟨sets, fun n => ⟨h_meas n, h_finite n, ?_⟩, ?_⟩
   · exact fun x hx => hx.2
