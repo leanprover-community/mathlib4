@@ -286,10 +286,10 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η 
   invFun f := by
     haveI := Classical.decEq ι
     haveI := fun i => Classical.decEq (η i →₀ N)
-    refine'
+    refine
       onFinset (Finset.sigma f.support fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
-        Finset.mem_sigma.mpr ⟨_, mem_support_iff.mpr hg⟩
-    simp only [Ne.def, DFinsupp.mem_support_toFun]
+        Finset.mem_sigma.mpr ⟨?_, mem_support_iff.mpr hg⟩
+    simp only [Ne, DFinsupp.mem_support_toFun]
     intro h
     dsimp at hg
     rw [h] at hg

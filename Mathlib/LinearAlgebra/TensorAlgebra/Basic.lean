@@ -41,7 +41,6 @@ modulo the additional relations making the inclusion of `M` into an `R`-linear m
 
 
 variable (R : Type*) [CommSemiring R]
-
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 
 namespace TensorAlgebra
@@ -160,6 +159,7 @@ theorem ι_comp_lift {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) 
 theorem lift_ι_apply {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) (x) :
     lift R f (ι R x) = f x := by
   conv_rhs => rw [← ι_comp_lift f]
+  rfl
 #align tensor_algebra.lift_ι_apply TensorAlgebra.lift_ι_apply
 
 @[simp]
@@ -293,7 +293,7 @@ variable {R}
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := lift_ι_apply _ _
@@ -306,7 +306,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
-  rw [← (algebraMap R (TensorAlgebra R M)).map_one, Ne.def, ι_eq_algebraMap_iff]
+  rw [← (algebraMap R (TensorAlgebra R M)).map_one, Ne, ι_eq_algebraMap_iff]
   exact one_ne_zero ∘ And.right
 #align tensor_algebra.ι_ne_one TensorAlgebra.ι_ne_one
 

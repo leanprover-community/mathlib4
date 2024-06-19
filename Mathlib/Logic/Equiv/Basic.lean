@@ -120,7 +120,7 @@ theorem prodCongr_symm (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
 #align equiv.prod_congr_symm Equiv.prodCongr_symm
 
 /-- Type product is commutative up to an equivalence: `α × β ≃ β × α`. This is `Prod.swap` as an
-equivalence.-/
+equivalence. -/
 def prodComm (α β) : α × β ≃ β × α :=
   ⟨Prod.swap, Prod.swap, Prod.swap_swap, Prod.swap_swap⟩
 #align equiv.prod_comm Equiv.prodComm
@@ -353,8 +353,7 @@ def subtypeSum {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} �
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
-@[reducible]
-def sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (Sum α β) :=
+abbrev sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (Sum α β) :=
   Equiv.sumCongr ea eb
 #align equiv.perm.sum_congr Equiv.Perm.sumCongr
 
@@ -616,7 +615,6 @@ def subtypeCongr {p q : α → Prop} [DecidablePred p] [DecidablePred q]
 #align equiv.subtype_congr Equiv.subtypeCongr
 
 variable {p : ε → Prop} [DecidablePred p]
-
 variable (ep ep' : Perm { a // p a }) (en en' : Perm { a // ¬p a })
 
 /-- Combining permutations on `ε` that permute only inside or outside the subtype
@@ -746,13 +744,23 @@ theorem piComm_symm {φ : α → β → Sort*} : (piComm φ).symm = (piComm <| s
 to the type of dependent functions of two arguments (i.e., functions to the space of functions).
 
 This is `Sigma.curry` and `Sigma.uncurry` together as an equiv. -/
-def piCurry {β : α → Sort _} (γ : ∀ a, β a → Sort _) :
+def piCurry {β : α → Type*} (γ : ∀ a, β a → Type*) :
     (∀ x : Σ i, β i, γ x.1 x.2) ≃ ∀ a b, γ a b where
   toFun := Sigma.curry
   invFun := Sigma.uncurry
   left_inv := Sigma.uncurry_curry
   right_inv := Sigma.curry_uncurry
 #align equiv.Pi_curry Equiv.piCurry
+
+-- `simps` overapplies these but `simps (config := .asFn)` under-applies them
+@[simp] theorem piCurry_apply {β : α → Type*} (γ : ∀ a, β a → Type*)
+    (f : ∀ x : Σ i, β i, γ x.1 x.2) :
+    piCurry γ f = Sigma.curry f :=
+  rfl
+
+@[simp] theorem piCurry_symm_apply {β : α → Type*} (γ : ∀ a, β a → Type*) (f : ∀ a b, γ a b) :
+    (piCurry γ).symm f = Sigma.uncurry f :=
+  rfl
 
 end
 
@@ -938,8 +946,7 @@ open Sum
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
 @[simps]
-def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i')
-    where
+def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
   toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
   invFun g := Sum.rec g.1 g.2
   left_inv f := by ext (i | i) <;> rfl
@@ -1313,7 +1320,7 @@ def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Pr
           apply sigmaCongrRight
           intro y
           apply Equiv.symm
-          refine' (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight _)
+          refine (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight ?_)
           intro x
           exact ⟨fun ⟨hp, h'⟩ => congr_arg Subtype.val h', fun h' => ⟨(h x).2 (h'.symm ▸ y.2),
             Subtype.eq h'⟩⟩ }
@@ -1371,6 +1378,14 @@ def subtypeProdEquivProd {p : α → Prop} {q : β → Prop} :
   left_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
   right_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
 #align equiv.subtype_prod_equiv_prod Equiv.subtypeProdEquivProd
+
+/-- A subtype of a `Prod` that depends only on the first component is equivalent to the
+corresponding subtype of the first type times the second type. -/
+def prodSubtypeFstEquivSubtypeProd {p : α → Prop} : {s : α × β // p s.1} ≃ {a // p a} × β where
+  toFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
+  invFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
 def subtypeProdEquivSigmaSubtype (p : α → β → Prop) :
@@ -1546,10 +1561,9 @@ end
 equivalence relation `~`. Let `p₂` be a predicate on the quotient type `α/~`, and `p₁` be the lift
 of this predicate to `α`: `p₁ a ↔ p₂ ⟦a⟧`. Let `~₂` be the restriction of `~` to `{x // p₁ x}`.
 Then `{x // p₂ x}` is equivalent to the quotient of `{x // p₁ x}` by `~₂`. -/
-def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) [s₁ : Setoid α] [s₂ : Setoid (Subtype p₁)]
+def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} {s₂ : Setoid (Subtype p₁)}
     (p₂ : Quotient s₁ → Prop) (hp₂ : ∀ a, p₁ a ↔ p₂ ⟦a⟧)
-    (h : ∀ x y : Subtype p₁, @Setoid.r _ s₂ x y ↔ (x : α) ≈ y) :
-    { x // p₂ x } ≃ Quotient s₂ where
+    (h : ∀ x y : Subtype p₁, s₂.r x y ↔ s₁.r x y) : {x // p₂ x} ≃ Quotient s₂ where
   toFun a :=
     Quotient.hrecOn a.1 (fun a h => ⟦⟨a, (hp₂ _).2 h⟩⟧)
       (fun a b hab => hfunext (by rw [Quotient.sound hab]) fun h₁ h₂ _ =>
@@ -1648,6 +1662,10 @@ theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x
   simp (config := { contextual := true }) [swap_apply_def]
 #align equiv.swap_apply_of_ne_of_ne Equiv.swap_apply_of_ne_of_ne
 
+theorem eq_or_eq_of_swap_apply_ne_self {a b x : α} (h : swap a b x ≠ x) : x = a ∨ x = b := by
+  contrapose! h
+  exact swap_apply_of_ne_of_ne h.1 h.2
+
 @[simp]
 theorem swap_swap (a b : α) : (swap a b).trans (swap a b) = Equiv.refl _ :=
   ext fun _ => swapCore_swapCore _ _ _
@@ -1660,7 +1678,7 @@ theorem symm_swap (a b : α) : (swap a b).symm = swap a b :=
 
 @[simp]
 theorem swap_eq_refl_iff {x y : α} : swap x y = Equiv.refl _ ↔ x = y := by
-  refine' ⟨fun h => (Equiv.refl _).injective _, fun h => h ▸ swap_self _⟩
+  refine ⟨fun h => (Equiv.refl _).injective ?_, fun h => h ▸ swap_self _⟩
   rw [← h, swap_apply_left, h, refl_apply]
 #align equiv.swap_eq_refl_iff Equiv.swap_eq_refl_iff
 
@@ -1671,7 +1689,7 @@ theorem swap_comp_apply {a b x : α} (π : Perm α) :
 #align equiv.swap_comp_apply Equiv.swap_comp_apply
 
 theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (update id j i) i j :=
-  funext fun x => by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id.def]
+  funext fun x => by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id]
 #align equiv.swap_eq_update Equiv.swap_eq_update
 
 theorem comp_swap_eq_update (i j : α) (f : α → β) :
@@ -1989,6 +2007,14 @@ instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCon
   ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
 
 end BinaryOp
+
+section ULift
+
+@[simp]
+theorem ulift_symm_down (x : α) : (Equiv.ulift.{u, v}.symm x).down = x :=
+  rfl
+
+end ULift
 
 end Equiv
 

@@ -35,36 +35,44 @@ noncomputable section
 universe u v v' u₁' w w'
 
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
-
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open BigOperators Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
+open Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 section Quotient
 
+theorem LinearIndependent.sum_elim_of_quotient
+    {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
+    (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
+      LinearIndependent R (Sum.elim (f · : ι₁ → M) g) := by
+  refine .sum_type (hf.map' M'.subtype M'.ker_subtype) (.of_comp M'.mkQ hg) ?_
+  refine disjoint_def.mpr fun x h₁ h₂ ↦ ?_
+  have : x ∈ M' := span_le.mpr (Set.range_subset_iff.mpr fun i ↦ (f i).prop) h₁
+  obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp h₂
+  simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply] at this
+  rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
+
+theorem LinearIndependent.union_of_quotient
+    {M' : Submodule R M} {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val)
+  {t : Set M} (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
+    LinearIndependent (ι := (s ∪ t : _)) R Subtype.val := by
+  refine (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
+    (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' ?_
+  simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]
+
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
-  simp_rw [Module.rank_def]
+  conv_lhs => simp only [Module.rank_def]
   have := nonempty_linearIndependent_set R (M ⧸ M')
   have := nonempty_linearIndependent_set R M'
   rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range.{v, v} _) _ (bddAbove_range.{v, v} _)]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
-  let g : s ⊕ t → M := Sum.elim (f ·) (·)
-  suffices LinearIndependent R g by
-    refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
-    rw [mk_range_eq _ this.injective, mk_sum, lift_id, lift_id]
-  refine .sum_type (.of_comp M'.mkQ ?_) (ht.map' M'.subtype M'.ker_subtype) ?_
-  · convert hs; ext x; exact hf x
-  refine disjoint_def.mpr fun x h₁ h₂ ↦ ?_
-  have : x ∈ M' := span_le.mpr (Set.range_subset_iff.mpr fun i ↦ i.1.2) h₂
-  obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp h₁
-  simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply, hf] at this
-  rw [linearIndependent_iff.mp hs _ this, Finsupp.sum_zero_index]
+  simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
+    (by simpa [Function.comp, hf] using hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective (surjective_quot_mk _)
@@ -118,7 +126,6 @@ theorem rank_add_rank_le_rank_prod [Nontrivial R] :
   convert ← lift_rank_add_lift_rank_le_rank_prod R M M₁ <;> apply lift_id
 
 variable {R M M'}
-
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M'] [Module.Free R M₁]
 
 open Module.Free
@@ -149,10 +156,9 @@ end Prod
 section Finsupp
 
 variable (R M M')
-
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M']
 
-open Module.Free BigOperators
+open Module.Free
 
 @[simp]
 theorem rank_finsupp (ι : Type w) :
@@ -253,7 +259,6 @@ end Finsupp
 section Pi
 
 variable [StrongRankCondition R] [Module.Free R M]
-
 variable [∀ i, AddCommGroup (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.Free R (φ i)]
 
 open Module.Free
@@ -299,8 +304,8 @@ theorem rank_fun {M η : Type u} [Fintype η] [AddCommGroup M] [Module R M] [Mod
 #align rank_fun rank_fun
 
 theorem rank_fun_eq_lift_mul : Module.rank R (η → M) =
-    (Fintype.card η : Cardinal.{max u₁' v}) * Cardinal.lift.{u₁'} (Module.rank R M) :=
-  by rw [rank_pi, Cardinal.sum_const, Cardinal.mk_fintype, Cardinal.lift_natCast]
+    (Fintype.card η : Cardinal.{max u₁' v}) * Cardinal.lift.{u₁'} (Module.rank R M) := by
+  rw [rank_pi, Cardinal.sum_const, Cardinal.mk_fintype, Cardinal.lift_natCast]
 #align rank_fun_eq_lift_mul rank_fun_eq_lift_mul
 
 theorem rank_fun' : Module.rank R (η → R) = Fintype.card η := by
@@ -344,7 +349,6 @@ section TensorProduct
 open TensorProduct
 
 variable [StrongRankCondition S]
-
 variable [Module S M] [Module.Free S M] [Module S M'] [Module.Free S M']
 variable [Module S M₁] [Module.Free S M₁]
 

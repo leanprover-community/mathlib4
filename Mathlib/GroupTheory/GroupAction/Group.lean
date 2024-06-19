@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.Invertible.Basic
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
@@ -21,14 +22,6 @@ universe u v w
 variable {α : Type u} {β : Type v} {γ : Type w}
 
 section MulAction
-
-/-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
-@[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
-instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
-  ⟨fun h => mul_right_cancel (h 1)⟩
-#align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.faithfulSMul
-#align add_right_cancel_monoid.to_has_faithful_vadd AddRightCancelMonoid.faithfulVAdd
-
 section Group
 
 variable [Group α] [MulAction α β]
@@ -87,7 +80,7 @@ def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
 
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
-This generalizes `Function.End.applyMulAction`.-/
+This generalizes `Function.End.applyMulAction`. -/
 instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
   smul f a := f a
   one_smul _ := rfl
@@ -182,7 +175,6 @@ end Group
 section Monoid
 
 variable [Monoid α] [MulAction α β]
-
 variable (c : α) (x y : β) [Invertible c]
 
 @[simp]
@@ -269,7 +261,6 @@ section DistribMulAction
 section Group
 
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
-
 variable (β)
 
 /-- Each element of the group defines an additive monoid isomorphism.
@@ -322,7 +313,6 @@ end DistribMulAction
 section MulDistribMulAction
 
 variable [Group α] [Monoid β] [MulDistribMulAction α β]
-
 variable (β)
 
 /-- Each element of the group defines a multiplicative monoid isomorphism.

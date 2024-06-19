@@ -126,7 +126,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 namespace Field
@@ -150,13 +149,15 @@ instance instNeZeroFinSepDegree [FiniteDimensional F E] : NeZero (finSepDegree F
 as `F`-algebras. -/
 def embEquivOfEquiv (i : E ≃ₐ[F] K) :
     Emb F E ≃ Emb F K := AlgEquiv.arrowCongr i <| AlgEquiv.symm <| by
-  letI : Algebra E K := i.toAlgHom.toRingHom.toAlgebra
+  let _ : Algebra E K := i.toAlgHom.toRingHom.toAlgebra
+  have : Algebra.IsAlgebraic E K := by
+    constructor
+    intro x
+    have h := isAlgebraic_algebraMap (R := E) (A := K) (i.symm.toAlgHom x)
+    rw [show ∀ y : E, (algebraMap E K) y = i.toAlgHom y from fun y ↦ rfl] at h
+    simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgEquiv.apply_symm_apply] using h
   apply AlgEquiv.restrictScalars (R := F) (S := E)
-  apply IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
-  intro x
-  have h := isAlgebraic_algebraMap (R := E) (A := K) (i.symm.toAlgHom x)
-  rw [show ∀ y : E, (algebraMap E K) y = i.toAlgHom y from fun y ↦ rfl] at h
-  simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgEquiv.apply_symm_apply] using h
+  exact IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same `Field.finSepDegree`
 over `F`. -/
@@ -181,7 +182,6 @@ theorem finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := b
 section Tower
 
 variable {F}
-
 variable [Algebra E K] [IsScalarTower F E K]
 
 @[simp]
@@ -205,8 +205,9 @@ Combined with `Field.instInhabitedEmb`, it can be viewed as a stronger version o
 def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
     Emb F E ≃ (E →ₐ[F] K) :=
-  have halg := (topEquiv (F := F) (E := E)).isAlgebraic
+  have : Algebra.IsAlgebraic F (⊤ : IntermediateField F E) :=
     (hS ▸ isAlgebraic_adjoin (S := S) fun x hx ↦ (hK x hx).1)
+  have halg := (topEquiv (F := F) (E := E)).isAlgebraic
   Classical.choice <| Function.Embedding.antisymm
     (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F (S := S) hK (hS ▸ mem_top)) _)
     (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits_codomain _) _)
@@ -220,44 +221,43 @@ theorem finSepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
 
 /-- A random bijection between `Field.Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
 and `K / F` is algebraically closed. -/
-def embEquivOfIsAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
+def embEquivOfIsAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) :=
   embEquivOfAdjoinSplits F E K (adjoin_univ F E) fun s _ ↦
-    ⟨(halg s).isIntegral, IsAlgClosed.splits_codomain _⟩
+    ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
-theorem finSepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
-    finSepDegree F E = Nat.card (E →ₐ[F] K) := Nat.card_congr (embEquivOfIsAlgClosed F E K halg)
+theorem finSepDegree_eq_of_isAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
+    finSepDegree F E = Nat.card (E →ₐ[F] K) := Nat.card_congr (embEquivOfIsAlgClosed F E K)
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic,
 then there is a non-canonical bijection
 `Field.Emb F E × Field.Emb E K ≃ Field.Emb F K`. A corollary of `algHomEquivSigma`. -/
-def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
+def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     Emb F E × Emb E K ≃ Emb F K :=
   let e : ∀ f : E →ₐ[F] AlgebraicClosure K,
       @AlgHom E K _ _ _ _ _ f.toRingHom.toAlgebra ≃ Emb E K := fun f ↦
-    (@embEquivOfIsAlgClosed E K _ _ _ _ _ f.toRingHom.toAlgebra halg).symm
+    (@embEquivOfIsAlgClosed E K _ _ _ _ _ f.toRingHom.toAlgebra).symm
   (algHomEquivSigma (A := F) (B := E) (C := K) (D := AlgebraicClosure K) |>.trans
     (Equiv.sigmaEquivProdOfEquiv e) |>.trans <| Equiv.prodCongrLeft <|
       fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <|
-        (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
-          halg).restrictScalars F).symm
+        (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
+          (AlgebraicClosure E)).restrictScalars F).symm
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law
 $[E:F]_s [K:E]_s = [K:F]_s$. See also `FiniteDimensional.finrank_mul_finrank`. -/
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
-    [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
+    [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     finSepDegree F E * finSepDegree E K = finSepDegree F K := by
-  simpa only [Nat.card_prod] using Nat.card_congr (embProdEmbOfIsAlgebraic F E K halg)
+  simpa only [Nat.card_prod] using Nat.card_congr (embProdEmbOfIsAlgebraic F E K)
 
 end Field
 
 namespace Polynomial
 
 variable {F E}
-
 variable (f : F[X])
 
 /-- The separable degree `Polynomial.natSepDegree` of a polynomial is a natural number,
@@ -345,8 +345,8 @@ theorem natSepDegree_eq_of_isAlgClosed [IsAlgClosed E] :
 
 variable (E) in
 theorem natSepDegree_map : (f.map (algebraMap F E)).natSepDegree = f.natSepDegree := by
-  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure E), aroots_def, map_map]
-  rfl
+  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure E), aroots_def, map_map,
+    ← IsScalarTower.algebraMap_eq]
 
 @[simp]
 theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
@@ -463,7 +463,6 @@ end Polynomial
 namespace Irreducible
 
 variable {F}
-
 variable {f : F[X]}
 
 /-- The separable degree of an irreducible polynomial divides its degree. -/
@@ -502,7 +501,6 @@ namespace Polynomial
 namespace Monic
 
 variable {F}
-
 variable {f : F[X]}
 
 alias natSepDegree_eq_one_iff_of_irreducible' := Irreducible.natSepDegree_eq_one_iff_of_monic'
@@ -535,7 +533,7 @@ theorem eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible (q : ℕ) 
   | prime hq =>
     refine ⟨n, y, (em _).imp id fun hn ⟨z, hy⟩ ↦ ?_, hf⟩
     haveI := expChar_of_injective_ringHom (R := F) C_injective q
-    rw [hf, ← Nat.succ_pred hn, pow_succ', pow_mul, ← hy, frobenius_def, map_pow,
+    rw [hf, ← Nat.succ_pred hn, pow_succ, pow_mul, ← hy, frobenius_def, map_pow,
       ← sub_pow_expChar] at hi
     exact not_irreducible_pow hq.ne_one hi
 
@@ -578,7 +576,6 @@ end Polynomial
 namespace minpoly
 
 variable {F E}
-
 variable (q : ℕ) [hF : ExpChar F q] {x : E}
 
 /-- The minimal polynomial of an element of `E / F` of exponential characteristic `q` has
@@ -686,7 +683,8 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
     simp only at h ⊢
     have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
     set M := L⟮x⟯
-    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
+    have := Algebra.IsAlgebraic.of_finite L M
+    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
       FiniteDimensional.finrank_mul_finrank F L M] at hdvd
   rw [finrank_of_infinite_dimensional hfd]
   exact dvd_zero _
@@ -703,9 +701,10 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
   wlog hfd : FiniteDimensional F E generalizing E with H
   · rw [finrank_of_infinite_dimensional hfd]
     have halg := IsSeparable.isAlgebraic F E
-    obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional halg hfd (finSepDegree F E)
-    haveI : IsSeparable F L := isSeparable_tower_bot_of_isSeparable F L E
-    have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E (halg.tower_top L)
+    obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional hfd (finSepDegree F E)
+    have : IsSeparable F L := isSeparable_tower_bot_of_isSeparable F L E
+    have := (halg.tower_top L)
+    have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E
     rw [H L h] at hd
     by_cases hd' : finSepDegree L E = 0
     · rw [← hd, hd', mul_zero]
@@ -718,7 +717,8 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
       (IsSeparable.separable F x).map_minpoly L
   set M := L⟮x⟯
-  rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
+  have := Algebra.IsAlgebraic.of_finite L M
+  rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
     FiniteDimensional.finrank_mul_finrank F L M] at heq
 
 alias _root_.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
@@ -732,7 +732,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
       (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
     have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.size_pos'
-    rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E (Algebra.IsAlgebraic.of_finite _ E),
+    rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
       FiniteDimensional.finrank_mul_finrank F F⟮x⟯ E] at this
     linarith only [heq, this]⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩
 
@@ -759,7 +759,7 @@ variable {E K} in
 theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScalarTower F E K]
     [IsSeparable F E] {x : K} (hsep : (minpoly E x).Separable) : (minpoly F x).Separable := by
   set f := minpoly E x with hf
-  let E' : IntermediateField F E := adjoin F f.frange
+  let E' : IntermediateField F E := adjoin F f.coeffs
   haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
   have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
@@ -768,14 +768,15 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
   have hzero : aeval x g = 0 := by
     simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=
-    isIntegral_trans (IsSeparable.isAlgebraic F E).isIntegral _ hsep.isIntegral |>.tower_top
+    isIntegral_trans (R := F) (A := E) _ hsep.isIntegral |>.tower_top
   simp_rw [← h, separable_map] at hsep
   replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
   haveI : IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
   haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
   haveI := adjoin.finiteDimensional halg
   haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
-  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯ (IsSeparable.isAlgebraic _ _)
+  have : Algebra.IsAlgebraic E' E'⟮x⟯ := IsSeparable.isAlgebraic _ _
+  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
   rw [finSepDegree_eq_finrank_of_isSeparable F E',
     finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
     FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,

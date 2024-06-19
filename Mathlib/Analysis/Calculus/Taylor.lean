@@ -3,10 +3,10 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Data.Polynomial.Module.Basic
 
 #align_import analysis.calculus.taylor from "leanprover-community/mathlib"@"3a69562db5a458db8322b190ec8d9a8bbd8a5b14"
 
@@ -43,12 +43,11 @@ Taylor polynomial, Taylor's theorem
 -/
 
 
-open scoped BigOperators Interval Topology Nat
+open scoped Interval Topology Nat
 
 open Set
 
 variable {𝕜 E F : Type*}
-
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The `k`th coefficient of the Taylor polynomial. -/
@@ -114,7 +113,7 @@ theorem taylorWithinEval_self (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ : �
 
 theorem taylor_within_apply (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ x : ℝ) :
     taylorWithinEval f n s x₀ x =
-      ∑ k in Finset.range (n + 1), ((k ! : ℝ)⁻¹ * (x - x₀) ^ k) • iteratedDerivWithin k f s x₀ := by
+      ∑ k ∈ Finset.range (n + 1), ((k ! : ℝ)⁻¹ * (x - x₀) ^ k) • iteratedDerivWithin k f s x₀ := by
   induction' n with k hk
   · simp
   rw [taylorWithinEval_succ, Finset.sum_range_succ, hk]
@@ -127,17 +126,18 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
     (hs : UniqueDiffOn ℝ s) (hf : ContDiffOn ℝ n f s) :
     ContinuousOn (fun t => taylorWithinEval f n s t x) s := by
   simp_rw [taylor_within_apply]
-  refine' continuousOn_finset_sum (Finset.range (n + 1)) fun i hi => _
-  refine' (continuousOn_const.mul ((continuousOn_const.sub continuousOn_id).pow _)).smul _
+  refine continuousOn_finset_sum (Finset.range (n + 1)) fun i hi => ?_
+  refine (continuousOn_const.mul ((continuousOn_const.sub continuousOn_id).pow _)).smul ?_
   rw [contDiffOn_iff_continuousOn_differentiableOn_deriv hs] at hf
   cases' hf with hf_left
   specialize hf_left i
   simp only [Finset.mem_range] at hi
-  refine' hf_left _
+  refine hf_left ?_
   simp only [WithTop.coe_le_coe, Nat.cast_le, Nat.lt_succ_iff.mp hi]
 #align continuous_on_taylor_within_eval continuousOn_taylorWithinEval
 
-/-- Helper lemma for calculating the derivative of the monomial that appears in Taylor expansions.-/
+/-- Helper lemma for calculating the derivative of the monomial that appears in Taylor
+expansions. -/
 theorem monomial_has_deriv_aux (t x : ℝ) (n : ℕ) :
     HasDerivAt (fun y => (x - y) ^ (n + 1)) (-(n + 1) * (x - t) ^ n) t := by
   simp_rw [sub_eq_neg_add]
@@ -193,7 +193,7 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
   specialize hk hf.of_succ ((hdiff y hy).mono_of_mem hs')
   convert hk.add (hasDerivWithinAt_taylor_coeff_within hs'_unique
     (nhdsWithin_mono _ h self_mem_nhdsWithin) hf') using 1
-  exact (add_sub_cancel'_right _ _).symm
+  exact (add_sub_cancel _ _).symm
 #align has_deriv_within_at_taylor_within_eval hasDerivWithinAt_taylorWithinEval
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
@@ -248,7 +248,7 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
   use y, hy
   -- The rest is simplifications and trivial calculations
   simp only [taylorWithinEval_self] at h
-  rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_cancel _ (g'_ne y hy)] at h
+  rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_cancel_right₀ _ (g'_ne y hy)] at h
   rw [← h]
   field_simp [g'_ne y hy]
   ring
@@ -267,11 +267,11 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
     ∃ x' ∈ Ioo x₀ x, f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
       iteratedDerivWithin (n + 1) f (Icc x₀ x) x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
   have gcont : ContinuousOn (fun t : ℝ => (x - t) ^ (n + 1)) (Icc x₀ x) := by
-    refine' Continuous.continuousOn _
+    refine Continuous.continuousOn ?_
     exact (continuous_const.sub continuous_id').pow _ -- Porting note: was `continuity`
   have xy_ne : ∀ y : ℝ, y ∈ Ioo x₀ x → (x - y) ^ n ≠ 0 := by
     intro y hy
-    refine' pow_ne_zero _ _
+    refine pow_ne_zero _ ?_
     rw [mem_Ioo] at hy
     rw [sub_ne_zero]
     exact hy.2.ne'
@@ -281,7 +281,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
   rcases taylor_mean_remainder hx hf hf' gcont (fun y _ => monomial_has_deriv_aux y x _) hg' with
     ⟨y, hy, h⟩
   use y, hy
-  simp only [sub_self, zero_pow, Ne.def, Nat.succ_ne_zero, not_false_iff, zero_sub, mul_neg] at h
+  simp only [sub_self, zero_pow, Ne, Nat.succ_ne_zero, not_false_iff, zero_sub, mul_neg] at h
   rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
   field_simp [xy_ne y hy, Nat.factorial]; ring
 #align taylor_mean_remainder_lagrange taylor_mean_remainder_lagrange
@@ -345,7 +345,7 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     exact (hasDerivWithinAt_taylorWithinEval_at_Icc x h (I ht) hf.of_succ hf').mono I
   have := norm_image_sub_le_of_norm_deriv_le_segment' A h' x (right_mem_Icc.2 hx.1)
   simp only [taylorWithinEval_self] at this
-  refine' this.trans_eq _
+  refine this.trans_eq ?_
   -- The rest is a trivial calculation
   rw [abs_of_nonneg (sub_nonneg.mpr hx.1)]
   ring
@@ -360,7 +360,7 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) :
     ∃ C, ∀ x ∈ Icc a b, ‖f x - taylorWithinEval f n (Icc a b) a x‖ ≤ C * (x - a) ^ (n + 1) := by
   rcases eq_or_lt_of_le hab with (rfl | h)
-  · refine' ⟨0, fun x hx => _⟩
+  · refine ⟨0, fun x hx => ?_⟩
     have : x = a := by simpa [← le_antisymm_iff] using hx
     simp [← this]
   -- We estimate by the supremum of the norm of the iterated derivative
@@ -368,6 +368,6 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   use SupSet.sSup (g '' Icc a b) / (n !)
   intro x hx
   rw [div_mul_eq_mul_div₀]
-  refine' taylor_mean_remainder_bound hab hf hx fun y => _
+  refine taylor_mean_remainder_bound hab hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
 #align exists_taylor_mean_remainder_bound exists_taylor_mean_remainder_bound

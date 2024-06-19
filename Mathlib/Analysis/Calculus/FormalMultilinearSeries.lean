@@ -137,9 +137,7 @@ theorem compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u 
 #align formal_multilinear_series.comp_continuous_linear_map_apply FormalMultilinearSeries.compContinuousLinearMap_apply
 
 variable (𝕜) [Ring 𝕜'] [SMul 𝕜 𝕜']
-
 variable [Module 𝕜' E] [ContinuousConstSMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-
 variable [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 
 /-- Reinterpret a formal `𝕜'`-multilinear series as a formal `𝕜`-multilinear series. -/
@@ -284,8 +282,6 @@ section Coef
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {s : E}
   {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜} {y : Fin n → 𝕜}
-
-open BigOperators
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
 def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=

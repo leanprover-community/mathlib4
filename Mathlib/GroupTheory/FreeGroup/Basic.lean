@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.Basic
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Data.List.InsertNth
 
 #align_import group_theory.free_group from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -166,7 +166,7 @@ theorem Step.cons_left_iff {a : α} {b : Bool} :
       simp [*]
     · simp at hL
       rcases hL with ⟨rfl, rfl⟩
-      refine' Or.inl ⟨s' ++ e, Step.not, _⟩
+      refine Or.inl ⟨s' ++ e, Step.not, ?_⟩
       simp
   · rintro (⟨L, h, rfl⟩ | rfl)
     · exact Step.cons h
@@ -345,7 +345,7 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append_iff, List.nil_eq_append] at eq
+  simp [List.cons_eq_append, List.nil_eq_append] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 #align free_group.red.red_iff_irreducible FreeGroup.Red.red_iff_irreducible
@@ -410,8 +410,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 
       have H :
         1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
-          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) :=
-        by ac_rfl
+          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) := by
+        ac_rfl
       rw [H]
       apply Nat.lt_add_of_pos_right
       apply Nat.lt_add_right
@@ -428,7 +428,7 @@ theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n :=
   · exact ⟨0, rfl⟩
   · rcases ih with ⟨n, eq⟩
     exists 1 + n
-    simp [mul_add, eq, (Step.length h₂₃).symm, add_assoc]
+    simp [Nat.mul_add, eq, (Step.length h₂₃).symm, add_assoc]
 #align free_group.red.length FreeGroup.Red.length
 #align free_add_group.red.length FreeAddGroup.Red.length
 
@@ -561,8 +561,8 @@ theorem invRev_length : (invRev L₁).length = L₁.length := by simp [invRev]
 #align free_add_group.neg_rev_length FreeAddGroup.negRev_length
 
 @[to_additive (attr := simp)]
-theorem invRev_invRev : invRev (invRev L₁) = L₁ :=
-  by simp [invRev, List.map_reverse, (· ∘ ·)]
+theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
+  simp [invRev, List.map_reverse, (· ∘ ·)]
 #align free_group.inv_rev_inv_rev FreeGroup.invRev_invRev
 #align free_add_group.neg_rev_neg_rev FreeAddGroup.negRev_negRev
 
@@ -753,8 +753,12 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 #align free_add_group.ext_hom FreeAddGroup.ext_hom
 
 @[to_additive]
+theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
+  lift.apply_symm_apply (MonoidHom.id _)
+
+@[to_additive]
 theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  DFunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
+  DFunLike.congr_fun (lift_of_eq_id α) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
 
@@ -776,6 +780,14 @@ theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   exact ⟨FreeGroup.of a, by simp only [lift.of]⟩
 #align free_group.lift.range_eq_closure FreeGroup.lift.range_eq_closure
 #align free_add_group.lift.range_eq_closure FreeAddGroup.lift.range_eq_closure
+
+/-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
+set of generators equals `⊤`. -/
+@[to_additive (attr := simp)]
+theorem closure_range_of (α) :
+    Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
+  rw [← lift.range_eq_closure, lift_of_eq_id]
+  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
 
 end lift
 
@@ -934,7 +946,7 @@ section Sum
 variable [AddGroup α] (x y : FreeGroup α)
 
 /-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
-free group over `α` to `α`. This is the additive version of `prod`. -/
+free group over `α` to `α`. This is the additive version of `Prod`. -/
 def sum : α :=
   @prod (Multiplicative _) _ x
 #align free_group.sum FreeGroup.sum
@@ -973,8 +985,7 @@ end Sum
 /-- The bijection between the free group on the empty type, and a type with one element. -/
 @[to_additive "The bijection between the additive free group on the empty type, and a type with one
   element."]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
-    where
+def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
@@ -983,8 +994,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
 #align free_add_group.free_add_group_empty_equiv_add_unit FreeAddGroup.freeAddGroupEmptyEquivAddUnit
 
 /-- The bijection between the free group on a singleton, and the integers. -/
-def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
-    where
+def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
     change (FreeGroup Unit →* FreeGroup ℤ)
@@ -1000,10 +1010,10 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   right_inv x :=
     Int.induction_on x (by simp)
       (fun i ih => by
-        simp only [zpow_coe_nat, map_pow, map.of] at ih
+        simp only [zpow_natCast, map_pow, map.of] at ih
         simp [zpow_add, ih])
       (fun i ih => by
-        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
+        simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
 #align free_group.free_group_unit_equiv_int FreeGroup.freeGroupUnitEquivInt
 
@@ -1160,11 +1170,7 @@ theorem reduce.not {p : Prop} :
       simp? [List.length] at this says
         simp only [List.length, zero_add, List.length_append] at this
       rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
-      simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
-      -- Porting note: needed to add this step in #3414.
-      -- This is caused by https://github.com/leanprover/lean4/pull/2146.
-      -- Nevertheless the proof could be cleaned up.
-      cases this
+      omega
     | cons hd tail =>
       cases' hd with y c
       dsimp only
@@ -1174,7 +1180,7 @@ theorem reduce.not {p : Prop} :
       rcases L2 with (_ | ⟨a, L2⟩)
       · injections; subst_vars
         simp at h
-      · refine' @reduce.not _ L1 L2 L3 x' b' _
+      · refine @reduce.not _ L1 L2 L3 x' b' ?_
         injection H with _ H
         rw [r, H]; rfl
 #align free_group.reduce.not FreeGroup.reduce.not

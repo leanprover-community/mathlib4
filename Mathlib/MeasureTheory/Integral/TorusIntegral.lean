@@ -57,14 +57,13 @@ integral, torus
 
 
 variable {n : ℕ}
-
 variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
 
 open Complex Set MeasureTheory Function Filter TopologicalSpace
 
-open scoped Real BigOperators
+open scoped Real
 
 -- Porting note: notation copied from `./DivergenceTheorem`
 local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
@@ -140,7 +139,7 @@ theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusInteg
 theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
     IntegrableOn (fun θ : ℝⁿ => (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
       (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
-  refine' (hf.norm.const_mul (∏ i, |R i|)).mono' _ _
+  refine (hf.norm.const_mul (∏ i, |R i|)).mono' ?_ ?_
   · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; continuity
   simp [norm_smul, map_prod]
 #align torus_integrable.function_integrable TorusIntegrable.function_integrable
@@ -179,7 +178,7 @@ theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
   simpa only [sub_eq_add_neg, ← torusIntegral_neg] using torusIntegral_add hf hg.neg
 #align torus_integral_sub torusIntegral_sub
 
-theorem torusIntegral_smul {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
+theorem torusIntegral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
   simp only [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
 #align torus_integral_smul torusIntegral_smul
@@ -195,13 +194,11 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
     ‖∯ x in T(c, R), f x‖ ≤ ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C :=
   calc
     ‖∯ x in T(c, R), f x‖ ≤ (∏ i, |R i|) * C * (volume (Icc (0 : ℝⁿ) fun _ => 2 * π)).toReal :=
-      norm_set_integral_le_of_norm_le_const' measure_Icc_lt_top measurableSet_Icc fun θ _ =>
+      norm_setIntegral_le_of_norm_le_const' measure_Icc_lt_top measurableSet_Icc fun θ _ =>
         calc
           ‖(∏ i : Fin n, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)‖ =
-              (∏ i : Fin n, |R i|) * ‖f (torusMap c R θ)‖ :=
-            by simp [norm_smul]
-          _ ≤ (∏ i : Fin n, |R i|) * C :=
-            mul_le_mul_of_nonneg_left (hf _) (Finset.prod_nonneg fun _ _ => abs_nonneg _)
+              (∏ i : Fin n, |R i|) * ‖f (torusMap c R θ)‖ := by simp [norm_smul]
+          _ ≤ (∏ i : Fin n, |R i|) * C := mul_le_mul_of_nonneg_left (hf _) <| by positivity
     _ = ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C := by
       simp only [Pi.zero_def, Real.volume_Icc_pi_toReal fun _ => Real.two_pi_pos.le, sub_zero,
         Fin.prod_const, mul_assoc, mul_comm ((2 * π) ^ (n : ℕ))]
@@ -226,7 +223,7 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
     rw [Subsingleton.elim i 0]; rfl
   rw [torusIntegral, circleIntegral, intervalIntegral.integral_of_le Real.two_pi_pos.le,
     Measure.restrict_congr_set Ioc_ae_eq_Icc,
-    ← ((volume_preserving_funUnique (Fin 1) ℝ).symm _).set_integral_preimage_emb
+    ← ((volume_preserving_funUnique (Fin 1) ℝ).symm _).setIntegral_preimage_emb
       (MeasurableEquiv.measurableEmbedding _), H₁, H₂]
   simp [circleMap_zero]
 #align torus_integral_dim1 torusIntegral_dim1
@@ -241,12 +238,12 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
     (volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) => ℝ) i).symm _
   have heπ : (e ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) ×ˢ Icc (0 : ℝⁿ) fun _ => 2 * π :=
     ((OrderIso.piFinSuccAboveIso (fun _ => ℝ) i).symm.preimage_Icc _ _).trans (Icc_prod_eq _ _)
-  rw [torusIntegral, ← hem.map_eq, set_integral_map_equiv, heπ, Measure.volume_eq_prod,
-    set_integral_prod, circleIntegral_def_Icc]
-  · refine' set_integral_congr measurableSet_Icc fun θ _ => _
+  rw [torusIntegral, ← hem.map_eq, setIntegral_map_equiv, heπ, Measure.volume_eq_prod,
+    setIntegral_prod, circleIntegral_def_Icc]
+  · refine setIntegral_congr measurableSet_Icc fun θ _ => ?_
     simp (config := { unfoldPartialApp := true }) only [e, torusIntegral, ← integral_smul,
       deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
-    refine' set_integral_congr measurableSet_Icc fun Θ _ => _
+    refine setIntegral_congr measurableSet_Icc fun Θ _ => ?_
     simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,
       i.insertNth_apply_succAbove, (· ∘ ·)]
     congr 2

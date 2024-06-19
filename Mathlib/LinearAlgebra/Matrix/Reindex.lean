@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 #align_import linear_algebra.matrix.reindex from "leanprover-community/mathlib"@"1cfdf5f34e1044ecb65d10be753008baaf118edf"
 
@@ -31,7 +31,6 @@ namespace Matrix
 open Equiv Matrix
 
 variable {l m n o : Type*} {l' m' n' o' : Type*} {m'' n'' : Type*}
-
 variable (R A : Type*)
 
 section AddCommMonoid

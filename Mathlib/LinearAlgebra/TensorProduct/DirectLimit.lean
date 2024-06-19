@@ -26,9 +26,7 @@ variable {R : Type*} [CommRing R]
 variable {ι : Type*}
 variable [DecidableEq ι] [Preorder ι]
 variable {G : ι → Type*}
-
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 variable (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -45,7 +43,7 @@ given by `gᵢ ⊗ m ↦ [gᵢ] ⊗ m`.
 noncomputable def fromDirectLimit :
     DirectLimit (G · ⊗[R] M) (f ▷ M) →ₗ[R] DirectLimit G f ⊗[R] M :=
   DirectLimit.lift _ _ _ _ (fun _ ↦ (of _ _ _ _ _).rTensor M)
-    fun _ _ _ x ↦ by refine' x.induction_on _ _ _ <;> aesop
+    fun _ _ _ x ↦ by refine x.induction_on ?_ ?_ ?_ <;> aesop
 
 variable {M} in
 @[simp] lemma fromDirectLimit_of_tmul {i : ι} (g : G i) (m : M) :

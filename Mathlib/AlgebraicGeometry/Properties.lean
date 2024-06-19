@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.RingTheory.LocalProperties
@@ -24,6 +24,10 @@ We provide some basic properties of schemes
 -/
 
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
+universe u
+
 open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat
 
 namespace AlgebraicGeometry
@@ -31,7 +35,7 @@ namespace AlgebraicGeometry
 variable (X : Scheme)
 
 instance : T0Space X.carrier := by
-  refine' T0Space.of_open_cover fun x => _
+  refine T0Space.of_open_cover fun x => ?_
   obtain ⟨U, R, ⟨e⟩⟩ := X.local_affine x
   let e' : U.1 ≃ₜ PrimeSpectrum R :=
     homeoOfIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).mapIso e)
@@ -40,7 +44,7 @@ instance : T0Space X.carrier := by
 instance : QuasiSober X.carrier := by
   apply (config := { allowSynthFailures := true })
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).1.base)
-  · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.open_range
+  · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
     exact @OpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
       (X.affineCover.IsOpen i).base_open.toEmbedding).symm.openEmbedding PrimeSpectrum.quasiSober
@@ -56,7 +60,7 @@ attribute [instance] IsReduced.component_reduced
 
 theorem isReducedOfStalkIsReduced [∀ x : X.carrier, _root_.IsReduced (X.presheaf.stalk x)] :
     IsReduced X := by
-  refine' ⟨fun U => ⟨fun s hs => _⟩⟩
+  refine ⟨fun U => ⟨fun s hs => ?_⟩⟩
   apply Presheaf.section_ext X.sheaf U s 0
   intro x
   rw [RingHom.map_zero]
@@ -89,7 +93,7 @@ theorem isReducedOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersi
       Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReducedOfOpenImmersion
 
-instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
+instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
   apply (config := { allowSynthFailures := true }) isReducedOfStalkIsReduced
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
@@ -100,7 +104,7 @@ instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj
 
 theorem affine_isReduced_iff (R : CommRingCat) :
     IsReduced (Scheme.Spec.obj <| op R) ↔ _root_.IsReduced R := by
-  refine' ⟨_, fun h => inferInstance⟩
+  refine ⟨?_, fun h => inferInstance⟩
   intro h
   have : _root_.IsReduced
       (LocallyRingedSpace.Γ.obj (op <| Spec.toLocallyRingedSpace.obj <| op R)) := by
@@ -126,7 +130,7 @@ theorem reduce_to_affine_global (P : ∀ (X : Scheme) (_ : Opens X.carrier), Pro
       (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P X V) → P X U)
     (h₂ : ∀ {X Y} (f : X ⟶ Y) [hf : IsOpenImmersion f],
       ∃ (U : Set X.carrier) (V : Set Y.carrier) (hU : U = ⊤) (hV : V = Set.range f.1.base),
-        P X ⟨U, hU.symm ▸ isOpen_univ⟩ → P Y ⟨V, hV.symm ▸ hf.base_open.open_range⟩)
+        P X ⟨U, hU.symm ▸ isOpen_univ⟩ → P Y ⟨V, hV.symm ▸ hf.base_open.isOpen_range⟩)
     (h₃ : ∀ R : CommRingCat, P (Scheme.Spec.obj <| op R) ⊤) :
     ∀ (X : Scheme) (U : Opens X.carrier), P X U := by
   intro X U
@@ -134,9 +138,9 @@ theorem reduce_to_affine_global (P : ∀ (X : Scheme) (_ : Opens X.carrier), Pro
   intro x
   obtain ⟨_, ⟨j, rfl⟩, hx, i⟩ :=
     X.affineBasisCover_is_basis.exists_subset_of_mem_open (SetLike.mem_coe.2 x.prop) U.isOpen
-  let U' : Opens _ := ⟨_, (X.affineBasisCover.IsOpen j).base_open.open_range⟩
+  let U' : Opens _ := ⟨_, (X.affineBasisCover.IsOpen j).base_open.isOpen_range⟩
   let i' : U' ⟶ U := homOfLE i
-  refine' ⟨U', hx, i', _⟩
+  refine ⟨U', hx, i', ?_⟩
   obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ (X.affineBasisCover.map j)
   apply h₂'
   apply h₃
@@ -157,9 +161,9 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     (s : X.presheaf.obj (op U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
   conv => intro x; rw [RingHom.map_zero]
-  refine' (@reduce_to_affine_global (fun X U =>
+  refine (@reduce_to_affine_global (fun X U =>
      ∀ [IsReduced X] (s : X.presheaf.obj (op U)),
-       X.basicOpen s = ⊥ → ∀ x, (X.sheaf.presheaf.germ x) s = 0) _ _ _) X U s hs
+       X.basicOpen s = ⊥ → ∀ x, (X.sheaf.presheaf.germ x) s = 0) ?_ ?_ ?_) X U s hs
   · intro X U hx hX s hs x
     obtain ⟨V, hx, i, H⟩ := hx x
     specialize H (X.presheaf.map i.op s)
@@ -171,7 +175,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
   · rintro X Y f hf
     have e : f.val.base ⁻¹' Set.range ↑f.val.base = Set.univ := by
       rw [← Set.image_univ, Set.preimage_image_eq _ hf.base_open.inj]
-    refine' ⟨_, _, e, rfl, _⟩
+    refine ⟨_, _, e, rfl, ?_⟩
     rintro H hX s hs ⟨_, x, rfl⟩
     haveI := isReducedOfOpenImmersion f
     specialize H (f.1.c.app _ s) _ ⟨x, by rw [Opens.mem_mk, e]; trivial⟩
@@ -185,15 +189,15 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     replace hs := hs.map (SpecΓIdentity.app R).inv
     -- what the hell?!
     replace hs := @IsNilpotent.eq_zero _ _ _ _ (show _ from ?_) hs
-    rw [Iso.hom_inv_id_apply] at hs
-    rw [hs, map_zero]
+    · rw [Iso.hom_inv_id_apply] at hs
+      rw [hs, map_zero]
     exact @IsReduced.component_reduced _ hX ⊤
 #align algebraic_geometry.eq_zero_of_basic_open_eq_bot AlgebraicGeometry.eq_zero_of_basicOpen_eq_bot
 
 @[simp]
 theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : Opens X.carrier}
     (s : X.presheaf.obj <| op U) : X.basicOpen s = ⊥ ↔ s = 0 := by
-  refine' ⟨eq_zero_of_basicOpen_eq_bot s, _⟩
+  refine ⟨eq_zero_of_basicOpen_eq_bot s, ?_⟩
   rintro rfl
   simp
 #align algebraic_geometry.basic_open_eq_bot_iff AlgebraicGeometry.basicOpen_eq_bot_iff
@@ -240,10 +244,10 @@ instance is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrie
   let e : X.presheaf.obj _ ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
-  apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
-  · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
-  · apply X.toLocallyRingedSpace.component_nontrivial
-  · apply X.toLocallyRingedSpace.component_nontrivial
+  · apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
+    · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
+    · apply X.toLocallyRingedSpace.component_nontrivial
+    · apply X.toLocallyRingedSpace.component_nontrivial
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
@@ -260,7 +264,7 @@ theorem isIntegralOfIsIrreducibleIsReduced [IsReduced X] [H : IrreducibleSpace X
   haveI := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).1
   have : NoZeroDivisors
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
-    refine' ⟨fun {a b} e => _⟩
+    refine ⟨fun {a b} e => ?_⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
     by_contra! h
     obtain ⟨_, ⟨x, hx₁, rfl⟩, ⟨x, hx₂, e'⟩⟩ :=
@@ -269,7 +273,7 @@ theorem isIntegralOfIsIrreducibleIsReduced [IsReduced X] [H : IrreducibleSpace X
     subst e'
     replace e := congr_arg (X.presheaf.germ x) e
     rw [RingHom.map_mul, RingHom.map_zero] at e
-    refine' zero_ne_one' (X.presheaf.stalk x.1) (isUnit_zero_iff.1 _)
+    refine zero_ne_one' (X.presheaf.stalk x.1) (isUnit_zero_iff.1 ?_)
     convert hx₁.mul hx₂
     exact e.symm
   exact NoZeroDivisors.to_isDomain _
@@ -323,7 +327,7 @@ theorem map_injective_of_isIntegral [IsIntegral X] {U V : Opens X.carrier} (i : 
   rw [Scheme.basicOpen_res] at hx
   revert hx
   contrapose!
-  simp_rw [Ne.def, ← Opens.not_nonempty_iff_eq_bot, Classical.not_not]
+  simp_rw [Ne, ← Opens.not_nonempty_iff_eq_bot, Classical.not_not]
   apply nonempty_preirreducible_inter U.isOpen (RingedSpace.basicOpen _ _).isOpen
   simpa using H
 #align algebraic_geometry.map_injective_of_is_integral AlgebraicGeometry.map_injective_of_isIntegral

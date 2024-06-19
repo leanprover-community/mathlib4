@@ -35,8 +35,8 @@ theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1
       add_eq_zero_iff_eq_neg, neg_eq_neg_one_mul, ← div_eq_iff (exp_ne_zero _), ← exp_sub]
     ring_nf
   rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_exists_int, mul_right_comm]
-  refine' exists_congr fun x => _
-  refine' (iff_of_eq <| congr_arg _ _).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
+  refine exists_congr fun x => ?_
+  refine (iff_of_eq <| congr_arg _ ?_).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
   field_simp; ring
 #align complex.cos_eq_zero_iff Complex.cos_eq_zero_iff
 
@@ -104,7 +104,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
 theorem sin_eq_sin_iff {x y : ℂ} :
     sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
   simp only [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, sub_eq_iff_eq_add]
-  refine' exists_congr fun k => or_congr _ _ <;> refine' Eq.congr rfl _ <;> field_simp <;> ring
+  refine exists_congr fun k => or_congr ?_ ?_ <;> refine Eq.congr rfl ?_ <;> field_simp <;> ring
 #align complex.sin_eq_sin_iff Complex.sin_eq_sin_iff
 
 theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ ∃ k : ℤ, k * (2 * π) = x := by
@@ -188,7 +188,7 @@ theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
   rw [← sub_eq_zero]
   field_simp [cos, exp_neg, exp_ne_zero]
-  refine' Eq.congr _ rfl
+  refine Eq.congr ?_ rfl
   ring
 #align complex.cos_eq_iff_quadratic Complex.cos_eq_iff_quadratic
 
@@ -198,11 +198,11 @@ theorem cos_surjective : Function.Surjective cos := by
     rcases exists_quadratic_eq_zero one_ne_zero
         ⟨_, (cpow_nat_inv_pow _ two_ne_zero).symm.trans <| pow_two _⟩ with
       ⟨w, hw⟩
-    refine' ⟨w, _, hw⟩
+    refine ⟨w, ?_, hw⟩
     rintro rfl
     simp only [zero_add, one_ne_zero, mul_zero] at hw
-  refine' ⟨log w / I, cos_eq_iff_quadratic.2 _⟩
-  rw [div_mul_cancel _ I_ne_zero, exp_log w₀]
+  refine ⟨log w / I, cos_eq_iff_quadratic.2 ?_⟩
+  rw [div_mul_cancel₀ _ I_ne_zero, exp_log w₀]
   convert hw using 1
   ring
 #align complex.cos_surjective Complex.cos_surjective

@@ -37,13 +37,13 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
-  refine' this.prod_fiberwise fun k => _
+  refine this.prod_fiberwise fun k => ?_
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]
-  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ', pow_mul, mul_pow, neg_sq, ← two_mul,
+  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, ← two_mul,
     neg_mul, mul_neg, neg_div, add_right_neg, zero_div, add_zero,
-    mul_div_cancel_left _ (two_ne_zero : (2 : ℂ) ≠ 0)]
+    mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
 #align complex.has_sum_cos' Complex.hasSum_cos'
 
 theorem Complex.hasSum_sin' (z : ℂ) :
@@ -55,13 +55,13 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
-  refine' this.prod_fiberwise fun k => _
+  refine this.prod_fiberwise fun k => ?_
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]
-  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ', pow_mul, mul_pow, neg_sq, sub_self,
+  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, sub_self,
     zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,
-    neg_mul, neg_div, mul_assoc, mul_div_cancel_left _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
+    neg_mul, neg_div, mul_assoc, mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
 #align complex.has_sum_sin' Complex.hasSum_sin'
 
 /-- The power series expansion of `Complex.cos`. -/
@@ -75,7 +75,7 @@ theorem Complex.hasSum_cos (z : ℂ) :
 theorem Complex.hasSum_sin (z : ℂ) :
     HasSum (fun n : ℕ => (-1) ^ n * z ^ (2 * n + 1) / ↑(2 * n + 1)!) (Complex.sin z) := by
   convert Complex.hasSum_sin' z using 1
-  simp_rw [mul_pow, pow_succ', pow_mul, Complex.I_sq, ← mul_assoc, mul_div_assoc, div_right_comm,
+  simp_rw [mul_pow, pow_succ, pow_mul, Complex.I_sq, ← mul_assoc, mul_div_assoc, div_right_comm,
     div_self Complex.I_ne_zero, mul_comm _ ((-1 : ℂ) ^ _), mul_one_div, mul_div_assoc, mul_assoc]
 #align complex.has_sum_sin Complex.hasSum_sin
 

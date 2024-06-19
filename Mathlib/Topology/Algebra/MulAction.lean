@@ -74,6 +74,10 @@ section SMul
 variable [SMul M X] [ContinuousSMul M X]
 
 @[to_additive]
+instance : ContinuousSMul (ULift M) X :=
+  ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
+
+@[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
 #align has_continuous_smul.has_continuous_const_smul ContinuousSMul.continuousConstSMul
@@ -139,6 +143,16 @@ instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
       continuous_smul.comp <| continuous_id.prod_map MulOpposite.continuous_unop⟩
 #align mul_opposite.has_continuous_smul MulOpposite.continuousSMul
 #align add_opposite.has_continuous_vadd AddOpposite.continuousVAdd
+
+@[to_additive]
+protected theorem Specializes.smul {a b : M} {x y : X} (h₁ : a ⤳ b) (h₂ : x ⤳ y) :
+    (a • x) ⤳ (b • y) :=
+  (h₁.prod h₂).map continuous_smul
+
+@[to_additive]
+protected theorem Inseparable.smul {a b : M} {x y : X} (h₁ : Inseparable a b)
+    (h₂ : Inseparable x y) : Inseparable (a • x) (b • y) :=
+  (h₁.prod h₂).map continuous_smul
 
 @[to_additive]
 lemma IsCompact.smul_set {k : Set M} {u : Set X} (hk : IsCompact k) (hu : IsCompact u) :
@@ -262,7 +276,7 @@ theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
-  refine' continuousSMul_iInf fun b => _
+  refine continuousSMul_iInf fun b => ?_
   cases b <;> assumption
 #align has_continuous_smul_inf continuousSMul_inf
 #align has_continuous_vadd_inf continuousVAdd_inf
@@ -272,7 +286,6 @@ end LatticeOps
 section AddTorsor
 
 variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
-
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
 /-- An `AddTorsor` for a connected space is a connected space. This is not an instance because

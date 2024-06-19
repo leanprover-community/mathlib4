@@ -3,8 +3,8 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.MeasureTheory.Integral.PeakFunction
+import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 
 /-!
 # Fourier inversion formula
@@ -51,14 +51,14 @@ lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
     Tendsto (fun (c : ℝ) ↦ (∫ v : V, cexp (- c⁻¹ * ‖v‖^2) • f v))
       atTop (𝓝 (∫ v : V, f v)) := by
   apply tendsto_integral_filter_of_dominated_convergence _ _ _ hf.norm
-  · apply eventually_of_forall (fun v ↦ ?_)
+  · filter_upwards with v
     nth_rewrite 2 [show f v = cexp (- (0 : ℝ) * ‖v‖^2) • f v by simp]
     apply (Tendsto.cexp _).smul_const
     exact tendsto_inv_atTop_zero.ofReal.neg.mul_const _
-  · apply eventually_of_forall (fun c ↦ ?_)
-    exact AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable (by continuity)) hf.1
+  · filter_upwards with c using
+      AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable (by continuity)) hf.1
   · filter_upwards [Ici_mem_atTop (0 : ℝ)] with c (hc : 0 ≤ c)
-    apply eventually_of_forall (fun v ↦ ?_)
+    filter_upwards with v
     simp only [ofReal_inv, neg_mul, norm_smul, Complex.norm_eq_abs]
     norm_cast
     conv_rhs => rw [← one_mul (‖f v‖)]
@@ -74,12 +74,12 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
     atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
   have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)
        • (𝓕 f) w)) atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
-    have : Integrable (fun w ↦ 𝐞[⟪w, v⟫] • (𝓕 f) w) := by
+    have : Integrable (fun w ↦ 𝐞 ⟪w, v⟫ • (𝓕 f) w) := by
       have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
       simpa using
-        (VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar B v).1 h'f
+        (VectorFourier.fourierIntegral_convergent_iff Real.continuous_fourierChar B v).2 h'f
     convert tendsto_integral_cexp_sq_smul this using 4 with c w
-    · rw [Real.fourierChar_apply, smul_smul, ← Complex.exp_add, real_inner_comm]
+    · rw [Submonoid.smul_def, Real.fourierChar_apply, smul_smul, ← Complex.exp_add, real_inner_comm]
       congr 3
       simp only [ofReal_mul, ofReal_ofNat]
       ring
@@ -112,7 +112,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
     · exact fun x ↦ by positivity
     · rw [integral_mul_left, GaussianFourier.integral_rexp_neg_mul_sq_norm (by positivity)]
       nth_rewrite 2 [← pow_one π]
-      rw [← rpow_nat_cast, ← rpow_nat_cast, ← rpow_sub pi_pos, ← rpow_mul pi_nonneg,
+      rw [← rpow_natCast, ← rpow_natCast, ← rpow_sub pi_pos, ← rpow_mul pi_nonneg,
         ← rpow_add pi_pos]
       ring_nf
       exact rpow_zero _
@@ -123,7 +123,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
         zero_lt_one |>.comp A |>.const_mul (π ^ (-finrank ℝ V / 2 : ℝ))
       rw [mul_zero] at B
       convert B using 2 with x
-      simp only [neg_mul, one_mul, Function.comp_apply, ← mul_assoc, ← rpow_nat_cast, φ]
+      simp only [neg_mul, one_mul, Function.comp_apply, ← mul_assoc, ← rpow_natCast, φ]
       congr 1
       rw [mul_rpow (by positivity) (by positivity), ← rpow_mul pi_nonneg,
         ← rpow_mul (norm_nonneg _), ← mul_assoc, ← rpow_add pi_pos, mul_comm]
@@ -141,12 +141,12 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
   congr
   rw [ofReal_mul, ofReal_mul, ofReal_exp, ← mul_assoc]
   congr
-  · rw [mul_cpow_ofReal_nonneg pi_nonneg hc.le, ← rpow_nat_cast, ← rpow_mul hc.le, mul_comm,
+  · rw [mul_cpow_ofReal_nonneg pi_nonneg hc.le, ← rpow_natCast, ← rpow_mul hc.le, mul_comm,
       ofReal_cpow pi_nonneg, ofReal_cpow hc.le]
     simp [div_eq_inv_mul]
   · norm_cast
     simp only [one_div, norm_smul, Real.norm_eq_abs, mul_pow, _root_.sq_abs, neg_mul, neg_inj,
-      ← rpow_nat_cast, ← rpow_mul hc.le, mul_assoc]
+      ← rpow_natCast, ← rpow_mul hc.le, mul_assoc]
     norm_num
 
 end Real
@@ -170,3 +170,21 @@ theorem Continuous.fourier_inversion (h : Continuous f)
     𝓕⁻ (𝓕 f) = f := by
   ext v
   exact hf.fourier_inversion h'f h.continuousAt
+
+/-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
+space is integrable, and its Fourier transform `𝓕 f` is also integrable, then `𝓕 (𝓕⁻ f) = f` at
+continuity points of `f`. -/
+theorem MeasureTheory.Integrable.fourier_inversion_inv
+    (hf : Integrable f) (h'f : Integrable (𝓕 f)) {v : V}
+    (hv : ContinuousAt f v) : 𝓕 (𝓕⁻ f) v = f v := by
+  rw [fourierIntegralInv_comm]
+  exact fourier_inversion hf h'f hv
+
+/-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
+space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
+then `𝓕 (𝓕⁻ f) = f`. -/
+theorem Continuous.fourier_inversion_inv (h : Continuous f)
+    (hf : Integrable f) (h'f : Integrable (𝓕 f)) :
+    𝓕 (𝓕⁻ f) = f := by
+  ext v
+  exact hf.fourier_inversion_inv h'f h.continuousAt

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.PDeriv
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.PDeriv
 
 /-!
 # Projective coordinates for Weierstrass curves
@@ -112,7 +112,6 @@ abbrev PointClass (R : Type u) [CommRing R] : Type u :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 /-- The coercion to a Weierstrass curve in affine coordinates. -/
-@[pp_dot]
 abbrev toAffine : Affine R :=
   W
 
@@ -123,7 +122,6 @@ section Equation
 /-- The polynomial $W(X, Y, Z) := Y^2Z + a_1XYZ + a_3YZ^2 - (X^3 + a_2X^2Z + a_4XZ^2 + a_6Z^3)$
 associated to a Weierstrass curve `W` over `R`. This is represented as a term of type
 `MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2` represent $X$, $Y$, and $Z$ respectively. -/
-@[pp_dot]
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   X 1 ^ 2 * X 2 + C W.a₁ * X 0 * X 1 * X 2 + C W.a₃ * X 1 * X 2 ^ 2
     - (X 0 ^ 3 + C W.a₂ * X 0 ^ 2 * X 2 + C W.a₄ * X 0 * X 2 ^ 2 + C W.a₆ * X 2 ^ 3)
@@ -136,7 +134,6 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W.polynomial =
 
 /-- The proposition that a point representative $(x, y, z)$ lies in `W`.
 In other words, $W(x, y, z) = 0$. -/
-@[pp_dot]
 def Equation (P : Fin 3 → R) : Prop :=
   eval P W.polynomial = 0
 
@@ -148,7 +145,7 @@ lemma equation_iff (P : Fin 3 → R) : W.Equation P ↔
 lemma equation_zero (Y : R) : W.Equation ![0, Y, 0] :=
   (W.equation_iff ![0, Y, 0]).mpr <| by matrix_simp; ring1
 
-lemma equation_some (X Y : R) : W.Equation ![X, Y, 1] ↔ W.toAffine.equation X Y := by
+lemma equation_some (X Y : R) : W.Equation ![X, Y, 1] ↔ W.toAffine.Equation X Y := by
   rw [equation_iff, W.toAffine.equation_iff]
   congr! 1 <;> matrix_simp <;> ring1
 
@@ -159,7 +156,6 @@ lemma equation_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.Equation (u • P) ↔ W
   ⟨fun h => by convert this u⁻¹ h; rw [inv_smul_smul], this u⟩
 
 /-- The partial derivative $W_X(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $X$. -/
-@[pp_dot]
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W.polynomial
 
@@ -175,7 +171,6 @@ lemma eval_polynomialX (P : Fin 3 → R) : eval P W.polynomialX =
   eval_simp
 
 /-- The partial derivative $W_Y(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Y$. -/
-@[pp_dot]
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W.polynomial
 
@@ -191,7 +186,6 @@ lemma eval_polynomialY (P : Fin 3 → R) :
   eval_simp
 
 /-- The partial derivative $W_Z(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Z$. -/
-@[pp_dot]
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
   pderiv z W.polynomial
 
@@ -216,7 +210,6 @@ theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W.polynomial =
 
 /-- The proposition that a point representative $(x, y, z)$ in `W` is nonsingular.
 In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$. -/
-@[pp_dot]
 def Nonsingular (P : Fin 3 → R) : Prop :=
   W.Equation P ∧ (eval P W.polynomialX ≠ 0 ∨ eval P W.polynomialY ≠ 0 ∨ eval P W.polynomialZ ≠ 0)
 
@@ -236,7 +229,7 @@ lemma nonsingular_zero [Nontrivial R] : W.Nonsingular ![0, 1, 0] :=
 lemma nonsingular_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) : W.Nonsingular ![0, Y, 0] :=
   (W.nonsingular_iff ![0, Y, 0]).mpr ⟨W.equation_zero Y, by simpa⟩
 
-lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.nonsingular X Y := by
+lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.Nonsingular X Y := by
   rw [nonsingular_iff]
   matrix_simp
   simp only [W.toAffine.nonsingular_iff, equation_some, and_congr_right_iff,
@@ -261,7 +254,6 @@ lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W.Nonsingular P �
 
 /-- The proposition that a point class on `W` is nonsingular. If `P` is a point representative,
 then `W.NonsingularLift ⟦P⟧` is definitionally equivalent to `W.Nonsingular P`. -/
-@[pp_dot]
 def NonsingularLift (P : PointClass R) : Prop :=
   P.lift W.Nonsingular fun _ _ => propext ∘ W.nonsingular_of_equiv
 
@@ -277,7 +269,7 @@ lemma nonsingularLift_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) :
   W.nonsingular_zero' hy
 
 lemma nonsingularLift_some (X Y : R) :
-    W.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W.toAffine.nonsingular X Y :=
+    W.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W.toAffine.Nonsingular X Y :=
   W.nonsingular_some X Y
 
 variable {F : Type u} [Field F] {W : Projective F}
@@ -287,33 +279,35 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
   rw [fin3_def P, hPz] at hP ⊢
   rw [fin3_def Q, hQz] at hQ ⊢
   simp? [nonsingular_iff, equation_iff] at hP hQ says
-    simp only [Fin.isValue, nonsingular_iff, equation_iff, Matrix.cons_val_one, Matrix.head_cons,
-      Matrix.cons_val_two, Matrix.tail_cons, mul_zero, Matrix.cons_val_zero, add_zero, ne_eq,
-      OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_eq_mul, pow_eq_zero_iff, sub_self,
-      not_true_eq_false, false_or] at hP hQ
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, nonsingular_iff,
+      equation_iff, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two, Matrix.tail_cons,
+      mul_zero, Matrix.cons_val_zero, add_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+      zero_pow, zero_eq_mul, pow_eq_zero_iff, not_or, sub_self, not_true_eq_false, false_or]
+    at hP hQ
   simp? [pow_eq_zero hP.left.symm, pow_eq_zero hQ.left.symm] at * says
-    simp only [Fin.isValue, pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-      zero_pow, or_true, not_true_eq_false, mul_zero, zero_mul, add_zero, pow_eq_zero_iff, false_or,
-      true_and, pow_eq_zero hQ.left.symm] at *
-  exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp [div_mul_cancel _ hQ]⟩
+    simp only [Fin.isValue, pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero,
+      not_false_eq_true, zero_pow, not_true_eq_false, and_false, mul_zero, zero_mul, add_zero,
+      pow_eq_zero_iff, false_or, true_and, pow_eq_zero hQ.left.symm, Nat.succ_eq_add_one,
+      Nat.reduceAdd] at *
+  exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp [div_mul_cancel₀ _ hQ]⟩
 
 lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z = 0) :
     P ≈ ![0, 1, 0] :=
   equiv_of_Z_eq_zero h W.nonsingular_zero hPz rfl
 
 lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : P ≈ ![P x / P z, P y / P z, 1] :=
-  ⟨Units.mk0 _ hPz, by simp [← fin3_def P, mul_div_cancel' _ hPz]⟩
+  ⟨Units.mk0 _ hPz, by simp [← fin3_def P, mul_div_cancel₀ _ hPz]⟩
 
 lemma nonsingular_iff_affine_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Nonsingular P ↔ W.toAffine.nonsingular (P x / P z) (P y / P z) :=
+    W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
   (W.nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| W.nonsingular_some ..
 
 lemma nonsingular_of_affine_of_Z_ne_zero {P : Fin 3 → F}
-    (h : W.toAffine.nonsingular (P x / P z) (P y / P z)) (hPz : P z ≠ 0) : W.Nonsingular P :=
+    (h : W.toAffine.Nonsingular (P x / P z) (P y / P z)) (hPz : P z ≠ 0) : W.Nonsingular P :=
   (nonsingular_iff_affine_of_Z_ne_zero hPz).mpr h
 
 lemma nonsingular_affine_of_Z_ne_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z ≠ 0) :
-    W.toAffine.nonsingular (P x / P z) (P y / P z) :=
+    W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
   (nonsingular_iff_affine_of_Z_ne_zero hPz).mp h
 
 end Equation

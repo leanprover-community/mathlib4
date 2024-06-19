@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
 
 #align_import data.pi.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
@@ -17,8 +17,6 @@ order are locally finite and calculates the cardinality of their intervals.
 
 
 open Finset Fintype
-
-open BigOperators
 
 variable {ι : Type*} {α : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
@@ -61,7 +59,7 @@ section LocallyFiniteOrderBot
 variable [∀ i, LocallyFiniteOrderBot (α i)] (b : ∀ i, α i)
 
 instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (∀ i, α i) :=
-  LocallyFiniteOrderTop.ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
+  .ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
     simp_rw [mem_piFinset, mem_Iic, le_def]
 
 theorem card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card :=

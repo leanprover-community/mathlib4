@@ -57,7 +57,7 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
 -- Porting note: Changed A B to outParam to help synthesizing order
-class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMonoid B]
+class ContinuousAddMonoidHomClass (A B : outParam Type*) [AddMonoid A] [AddMonoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
     extends AddMonoidHomClass F A B : Prop where
   /-- Proof of the continuity of the map. -/
@@ -70,7 +70,7 @@ homomorphisms.
 You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
 -- Porting note: Changed A B to outParam to help synthesizing order
 @[to_additive]
-class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
+class ContinuousMonoidHomClass (A B : outParam Type*) [Monoid A] [Monoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
     extends MonoidHomClass F A B : Prop where
   /-- Proof of the continuity of the map. -/
@@ -293,7 +293,7 @@ lemma range_toContinuousMap :
 theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toEmbedding := embedding_toContinuousMap A B
-  closed_range := by
+  isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
     refine .inter (isClosed_singleton.preimage (ContinuousMap.continuous_eval_const 1)) <|
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_

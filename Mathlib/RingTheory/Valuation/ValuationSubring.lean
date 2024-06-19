@@ -5,7 +5,7 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 #align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -127,13 +127,11 @@ instance : ValuationRing A where
       right
       ext
       field_simp
-      ring
     · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
       use ⟨b / a, hh⟩;
       left
       ext
       field_simp
-      ring
 
 instance : Algebra A K :=
   show Algebra A.toSubring K by infer_instance
@@ -353,13 +351,13 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
   · intro hx; by_cases hr : x ∈ R; · exact R.le_ofPrime _ hr
     have : x ≠ 0 := fun h => hr (by rw [h]; exact R.zero_mem)
     replace hr := (R.mem_or_inv_mem x).resolve_left hr
-    · -- Porting note: added `⟨⟩` brackets and reordered goals
-      use 1, ⟨x⁻¹, hr⟩; constructor
-      · field_simp
-      · change (⟨x⁻¹, h hr⟩ : S) ∉ nonunits S
-        rw [mem_nonunits_iff, Classical.not_not]
-        apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
-        ext; field_simp
+    -- Porting note: added `⟨⟩` brackets and reordered goals
+    use 1, ⟨x⁻¹, hr⟩; constructor
+    · field_simp
+    · change (⟨x⁻¹, h hr⟩ : S) ∉ nonunits S
+      rw [mem_nonunits_iff, Classical.not_not]
+      apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
+      ext; field_simp
 #align valuation_subring.of_prime_ideal_of_le ValuationSubring.ofPrime_idealOfLE
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
@@ -375,7 +373,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
       apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
 #align valuation_subring.ideal_of_le_le_of_le ValuationSubring.idealOfLE_le_of_le
 
-/-- The equivalence between coarsenings of a valuation ring and its prime ideals.-/
+/-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
 @[simps]
 def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   toFun P := ⟨ofPrime A P.asIdeal, le_ofPrime _ _⟩
@@ -393,7 +391,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         dsimp at h
         have := idealOfLE_le_of_le A _ _ ?_ ?_ h
         iterate 2 erw [idealOfLE_ofPrime] at this
-        exact this
+        · exact this
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
@@ -629,9 +627,9 @@ def principalUnitGroup : Subgroup Kˣ where
     intro a b ha hb
     -- Porting note: added
     rw [Set.mem_setOf] at ha hb
-    refine' lt_of_le_of_lt _ (max_lt hb ha)
+    refine lt_of_le_of_lt ?_ (max_lt hb ha)
     -- Porting note: `sub_add_sub_cancel` needed some help
-    rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel'_right,
+    rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
       ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel (↑(a * b) : K) _ 1]
     exact A.valuation.map_add _ _
   one_mem' := by simp
@@ -641,12 +639,12 @@ def principalUnitGroup : Subgroup Kˣ where
     conv =>
       lhs
       rw [← mul_one (A.valuation _), ← A.valuation.map_one_add_of_lt ha]
-    rwa [add_sub_cancel'_right, ← Valuation.map_mul, sub_mul, Units.inv_mul, ← neg_sub, one_mul,
+    rwa [add_sub_cancel, ← Valuation.map_mul, sub_mul, Units.inv_mul, ← neg_sub, one_mul,
       Valuation.map_neg]
 #align valuation_subring.principal_unit_group ValuationSubring.principalUnitGroup
 
 theorem principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
-  simpa only [add_sub_cancel'_right] using A.valuation.map_one_add_of_lt h
+  simpa only [add_sub_cancel] using A.valuation.map_one_add_of_lt h
 #align valuation_subring.principal_units_le_units ValuationSubring.principal_units_le_units
 
 theorem mem_principalUnitGroup_iff (x : Kˣ) :
@@ -662,8 +660,8 @@ theorem principalUnitGroup_le_principalUnitGroup {A B : ValuationSubring K} :
     by_cases h_2 : x⁻¹ + 1 = 0
     · rw [add_eq_zero_iff_eq_neg, inv_eq_iff_eq_inv, inv_neg, inv_one] at h_2
       simpa only [h_2] using B.neg_mem _ B.one_mem
-    · rw [← valuation_le_one_iff, ← not_lt, Valuation.one_lt_val_iff _ h_1, ← add_sub_cancel x⁻¹, ←
-        Units.val_mk0 h_2, ← mem_principalUnitGroup_iff] at hx ⊢
+    · rw [← valuation_le_one_iff, ← not_lt, Valuation.one_lt_val_iff _ h_1,
+        ← add_sub_cancel_right x⁻¹, ← Units.val_mk0 h_2, ← mem_principalUnitGroup_iff] at hx ⊢
       simpa only [hx] using @h (Units.mk0 (x⁻¹ + 1) h_2)
   · intro h x hx
     by_contra h_1; exact not_lt.2 (monotone_mapOfLE _ _ h (not_lt.1 h_1)) hx
@@ -710,15 +708,11 @@ def principalUnitGroupEquiv :
   map_mul' x y := rfl
 #align valuation_subring.principal_unit_group_equiv ValuationSubring.principalUnitGroupEquiv
 
--- This was always a bad simp lemma, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
 theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
     (((principalUnitGroupEquiv A a : Aˣ) : A) : K) = (a : Kˣ) :=
   rfl
 #align valuation_subring.principal_unit_group_equiv_apply ValuationSubring.principalUnitGroupEquiv_apply
 
--- This was always a bad simp lemma, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
 theorem principalUnitGroup_symm_apply (a : (Units.map (LocalRing.residue A).toMonoidHom).ker) :
     ((A.principalUnitGroupEquiv.symm a : Kˣ) : K) = ((a : Aˣ) : A) :=
   rfl
@@ -729,6 +723,7 @@ def unitGroupToResidueFieldUnits : A.unitGroup →* (LocalRing.ResidueField A)ˣ
   MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 #align valuation_subring.unit_group_to_residue_field_units ValuationSubring.unitGroupToResidueFieldUnits
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
     (A.unitGroupToResidueFieldUnits x : LocalRing.ResidueField A) =
@@ -772,8 +767,6 @@ theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
       A.unitGroupToResidueFieldUnits := rfl
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units_comp_quotient_group_mk ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk
 
--- This was always a bad simp lemma, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply
     (x : A.unitGroup) :
     A.unitsModPrincipalUnitsEquivResidueFieldUnits.toMonoidHom (QuotientGroup.mk x) =
@@ -789,8 +782,8 @@ the action is by a group. Notably this provides an instances when `G` is `K ≃+
 
 These instances are in the `Pointwise` locale.
 
-The lemmas in this section are copied from `RingTheory/Subring/Pointwise.lean`; try to keep these
-in sync.
+The lemmas in this section are copied from the file `Mathlib.Algebra.Ring.Subring.Pointwise`; try
+to keep these in sync.
 -/
 
 
@@ -826,7 +819,7 @@ theorem pointwise_smul_toSubring (g : G) (S : ValuationSubring K) :
 
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale.
+This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
 def pointwiseMulAction : MulAction G (ValuationSubring K) :=
@@ -840,6 +833,9 @@ open scoped Pointwise
 theorem smul_mem_pointwise_smul (g : G) (x : K) (S : ValuationSubring K) : x ∈ S → g • x ∈ g • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ g • (S : Set K))
 #align valuation_subring.smul_mem_pointwise_smul ValuationSubring.smul_mem_pointwise_smul
+
+instance : CovariantClass G (ValuationSubring K) HSMul.hSMul LE.le :=
+  ⟨fun _ _ _ => Set.image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
     x ∈ g • S ↔ ∃ s : K, s ∈ S ∧ g • s = x :=

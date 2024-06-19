@@ -42,11 +42,8 @@ namespace Orientation
 attribute [local instance] Complex.finrank_real_complex_fact
 
 variable {V V' : Type*}
-
 variable [NormedAddCommGroup V] [NormedAddCommGroup V']
-
 variable [InnerProductSpace ℝ V] [InnerProductSpace ℝ V']
-
 variable [Fact (finrank ℝ V = 2)] [Fact (finrank ℝ V' = 2)] (o : Orientation ℝ V (Fin 2))
 
 local notation "ω" => o.areaForm
@@ -60,7 +57,7 @@ def oangle (x y : V) : Real.Angle :=
 /-- Oriented angles are continuous when the vectors involved are nonzero. -/
 theorem continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
     ContinuousAt (fun y : V × V => o.oangle y.1 y.2) x := by
-  refine' (Complex.continuousAt_arg_coe_angle _).comp _
+  refine (Complex.continuousAt_arg_coe_angle ?_).comp ?_
   · exact o.kahler_ne_zero hx1 hx2
   exact ((continuous_ofReal.comp continuous_inner).add
     ((continuous_ofReal.comp o.areaForm'.continuous₂).mul continuous_const)).continuousAt
@@ -431,7 +428,7 @@ theorem oangle_eq_pi_iff_sameRay_neg {x y : V} :
   · intro h
     by_cases hx : x = 0; · simp [hx, Real.Angle.pi_ne_zero.symm] at h
     by_cases hy : y = 0; · simp [hy, Real.Angle.pi_ne_zero.symm] at h
-    refine' ⟨hx, hy, _⟩
+    refine ⟨hx, hy, ?_⟩
     rw [o.oangle_neg_right hx hy, h, Real.Angle.coe_pi_add_coe_pi]
   · rintro ⟨hx, hy, h⟩
     rwa [o.oangle_neg_right hx hy, ← Real.Angle.sub_coe_pi_eq_add_coe_pi, sub_eq_zero] at h
@@ -450,14 +447,14 @@ or the second is a multiple of the first. -/
 theorem oangle_eq_zero_or_eq_pi_iff_right_eq_smul {x y : V} :
     o.oangle x y = 0 ∨ o.oangle x y = π ↔ x = 0 ∨ ∃ r : ℝ, y = r • x := by
   rw [oangle_eq_zero_iff_sameRay, oangle_eq_pi_iff_sameRay_neg]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with (h | ⟨-, -, h⟩)
     · by_cases hx : x = 0; · simp [hx]
       obtain ⟨r, -, rfl⟩ := h.exists_nonneg_left hx
       exact Or.inr ⟨r, rfl⟩
     · by_cases hx : x = 0; · simp [hx]
       obtain ⟨r, -, hy⟩ := h.exists_nonneg_left hx
-      refine' Or.inr ⟨-r, _⟩
+      refine Or.inr ⟨-r, ?_⟩
       simp [hy]
   · rcases h with (rfl | ⟨r, rfl⟩); · simp
     by_cases hx : x = 0; · simp [hx]
@@ -513,11 +510,11 @@ theorem oangle_add {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
     o.oangle x y + o.oangle y z = o.oangle x z := by
   simp_rw [oangle]
   rw [← Complex.arg_mul_coe_angle, o.kahler_mul y x z]
-  congr 1
-  convert Complex.arg_real_mul _ (_ : 0 < ‖y‖ ^ 2) using 2
-  · norm_cast
-  · have : 0 < ‖y‖ := by simpa using hy
-    positivity
+  · congr 1
+    convert Complex.arg_real_mul _ (_ : 0 < ‖y‖ ^ 2) using 2
+    · norm_cast
+    · have : 0 < ‖y‖ := by simpa using hy
+      positivity
   · exact o.kahler_ne_zero hx hy
   · exact o.kahler_ne_zero hy hz
 #align orientation.oangle_add Orientation.oangle_add
@@ -631,7 +628,6 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
     field_simp
-    ring
   · exact o.kahler_ne_zero hx hy
 #align orientation.inner_eq_norm_mul_norm_mul_cos_oangle Orientation.inner_eq_norm_mul_norm_mul_cos_oangle
 
@@ -641,7 +637,6 @@ theorem cos_oangle_eq_inner_div_norm_mul_norm {x y : V} (hx : x ≠ 0) (hy : y �
     Real.Angle.cos (o.oangle x y) = ⟪x, y⟫ / (‖x‖ * ‖y‖) := by
   rw [o.inner_eq_norm_mul_norm_mul_cos_oangle]
   field_simp [norm_ne_zero_iff.2 hx, norm_ne_zero_iff.2 hy]
-  ring
 #align orientation.cos_oangle_eq_inner_div_norm_mul_norm Orientation.cos_oangle_eq_inner_div_norm_mul_norm
 
 /-- The cosine of the oriented angle between two nonzero vectors equals that of the unoriented
@@ -705,7 +700,7 @@ theorem oangle_eq_of_angle_eq_of_sign_eq {w x y z : V}
     rcases h' with ⟨hwx, hyz⟩
     have hpi : π / 2 ≠ π := by
       intro hpi
-      rw [div_eq_iff, eq_comm, ← sub_eq_zero, mul_two, add_sub_cancel] at hpi
+      rw [div_eq_iff, eq_comm, ← sub_eq_zero, mul_two, add_sub_cancel_right] at hpi
       · exact Real.pi_pos.ne.symm hpi
       · exact two_ne_zero
     have h0wx : w = 0 ∨ x = 0 := by
@@ -727,7 +722,7 @@ theorem angle_eq_iff_oangle_eq_of_sign_eq {w x y z : V} (hw : w ≠ 0) (hx : x �
     (hz : z ≠ 0) (hs : (o.oangle w x).sign = (o.oangle y z).sign) :
     InnerProductGeometry.angle w x = InnerProductGeometry.angle y z ↔
     o.oangle w x = o.oangle y z := by
-  refine' ⟨fun h => o.oangle_eq_of_angle_eq_of_sign_eq h hs, fun h => _⟩
+  refine ⟨fun h => o.oangle_eq_of_angle_eq_of_sign_eq h hs, fun h => ?_⟩
   rw [o.angle_eq_abs_oangle_toReal hw hx, o.angle_eq_abs_oangle_toReal hy hz, h]
 #align orientation.angle_eq_iff_oangle_eq_of_sign_eq Orientation.angle_eq_iff_oangle_eq_of_sign_eq
 
@@ -736,7 +731,7 @@ theorem oangle_eq_angle_of_sign_eq_one {x y : V} (h : (o.oangle x y).sign = 1) :
     o.oangle x y = InnerProductGeometry.angle x y := by
   by_cases hx : x = 0; · exfalso; simp [hx] at h
   by_cases hy : y = 0; · exfalso; simp [hy] at h
-  refine' (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_right _
+  refine (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_right ?_
   intro hxy
   rw [hxy, Real.Angle.sign_neg, neg_eq_iff_eq_neg, ← SignType.neg_iff, ← not_le] at h
   exact h (Real.Angle.sign_coe_nonneg_of_nonneg_of_le_pi (InnerProductGeometry.angle_nonneg _ _)
@@ -749,7 +744,7 @@ theorem oangle_eq_neg_angle_of_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sig
     o.oangle x y = -InnerProductGeometry.angle x y := by
   by_cases hx : x = 0; · exfalso; simp [hx] at h
   by_cases hy : y = 0; · exfalso; simp [hy] at h
-  refine' (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_left _
+  refine (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_left ?_
   intro hxy
   rw [hxy, ← SignType.neg_iff, ← not_le] at h
   exact h (Real.Angle.sign_coe_nonneg_of_nonneg_of_le_pi (InnerProductGeometry.angle_nonneg _ _)
@@ -760,7 +755,7 @@ theorem oangle_eq_neg_angle_of_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sig
 is zero. -/
 theorem oangle_eq_zero_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     o.oangle x y = 0 ↔ InnerProductGeometry.angle x y = 0 := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · simpa [o.angle_eq_abs_oangle_toReal hx hy]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
     rw [h] at ha
@@ -776,7 +771,7 @@ theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
   by_cases hy : y = 0
   · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv, mul_right_eq_self₀, not_or,
       Real.pi_ne_zero]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
     simp [Real.pi_pos.le]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
@@ -791,7 +786,7 @@ theorem eq_zero_or_oangle_eq_iff_inner_eq_zero {x y : V} :
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two, or_iff_right hx, or_iff_right hy]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rwa [o.angle_eq_abs_oangle_toReal hx hy, Real.Angle.abs_toReal_eq_pi_div_two_iff]
   · convert o.oangle_eq_angle_or_eq_neg_angle hx hy using 2 <;> rw [h]
     simp only [neg_div, Real.Angle.coe_neg]
@@ -873,23 +868,23 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
   conv_lhs => enter [1, g]; rw [Fin.exists_fin_two]
   conv_rhs => enter [1, g, 2, 1, i]; tactic => change Fin 2 at i
   conv_rhs => enter [1, g]; rw [Fin.exists_fin_two]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
-    refine' ⟨![m 0 + m 1 * r, m 1], _⟩
+    refine ⟨![m 0 + m 1 * r, m 1], ?_⟩
     change (m 0 + m 1 * r) • x + m 1 • y = 0 ∧ (m 0 + m 1 * r ≠ 0 ∨ m 1 ≠ 0)
     rw [smul_add, smul_smul, ← add_assoc, ← add_smul] at h
-    refine' ⟨h, not_and_or.1 fun h0 => _⟩
+    refine ⟨h, not_and_or.1 fun h0 => ?_⟩
     obtain ⟨h0, h1⟩ := h0
     rw [h1] at h0 hm
     rw [zero_mul, add_zero] at h0
     simp [h0] at hm
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • y = 0 at h
-    refine' ⟨![m 0 - m 1 * r, m 1], _⟩
+    refine ⟨![m 0 - m 1 * r, m 1], ?_⟩
     change (m 0 - m 1 * r) • x + m 1 • (r • x + y) = 0 ∧ (m 0 - m 1 * r ≠ 0 ∨ m 1 ≠ 0)
     rw [sub_smul, smul_add, smul_smul, ← add_assoc, sub_add_cancel]
-    refine' ⟨h, not_and_or.1 fun h0 => _⟩
+    refine ⟨h, not_and_or.1 fun h0 => ?_⟩
     obtain ⟨h0, h1⟩ := h0
     rw [h1] at h0 hm
     rw [zero_mul, sub_zero] at h0
@@ -911,7 +906,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have hc : IsConnected s := isConnected_univ.image _ (continuous_const.prod_mk
     ((continuous_id.smul continuous_const).add continuous_const)).continuousOn
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
-    refine' ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle _ _
+    refine ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
@@ -1058,10 +1053,10 @@ theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ :
       oangle_sign_smul_left, add_comm, oangle_sign_smul_add_smul_right, oangle_rev,
       Real.Angle.sign_neg, sign_mul, mul_neg, mul_neg, neg_mul, mul_assoc]
   · rw [← o.oangle_sign_smul_add_right (r₁ • x + r₂ • y) (r₃ • x + r₄ • y) (-r₃ / r₁), smul_add,
-      smul_smul, smul_smul, div_mul_cancel _ hr₁, neg_smul, ← add_assoc, add_comm (-(r₃ • x)), ←
+      smul_smul, smul_smul, div_mul_cancel₀ _ hr₁, neg_smul, ← add_assoc, add_comm (-(r₃ • x)), ←
       sub_eq_add_neg, sub_add_cancel, ← add_smul, oangle_sign_smul_right,
       oangle_sign_smul_add_smul_left, ← mul_assoc, ← sign_mul, add_mul, mul_assoc, mul_comm r₂ r₁, ←
-      mul_assoc, div_mul_cancel _ hr₁, add_comm, neg_mul, ← sub_eq_add_neg, mul_comm r₄,
+      mul_assoc, div_mul_cancel₀ _ hr₁, add_comm, neg_mul, ← sub_eq_add_neg, mul_comm r₄,
       mul_comm r₃]
 #align orientation.oangle_sign_smul_add_smul_smul_add_smul Orientation.oangle_sign_smul_add_smul_smul_add_smul
 

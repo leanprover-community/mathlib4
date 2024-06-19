@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
 -/
-import Std.Util.LibraryNote
+import Batteries.Util.LibraryNote
 import Mathlib.Mathport.Rename
 
 #align_import algebra.hierarchy_design from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
@@ -84,15 +84,13 @@ when applicable:
 * Definitions for transferring the proof fields of instances along
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
-  We make these definitions `@[reducible]`, see note [reducible non-instances].
+  We make these definitions `abbrev`, see note [reducible non-instances].
   See `Mathlib.Algebra.Group.InjSurj` for more examples.
   ```
-  @[reducible]
-  def Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
+  abbrev Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₁ := ...
 
-  @[reducible]
-  def Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
+  abbrev Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
@@ -109,7 +107,7 @@ when applicable:
   See `Mathlib.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
-  /- When there is a new notion of `Z`-equiv: -/
+  /-- When there is a new notion of `Z`-equiv: -/
   def Equiv.ZEquiv (e : α ≃ β) [Z β] : by { letI := Equiv.Z e, exact α ≃Z β } := ...
   ```
 
@@ -206,4 +204,32 @@ recognize that `Units.Preorder` and `Units.PartialOrder` give rise to the same `
 For example, you might have another class that takes `[LE α]` as an argument, and this argument
 sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
 Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
+-/
+
+library_note "implicit instance arguments"/--
+There are places where typeclass arguments are specified with implicit `{}` brackets instead of
+the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
+arguments to the type of one of the other arguments. When they can be inferred from these other
+arguments, it is faster to use this method than to use type class inference.
+
+For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
+and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
+`[Semiring α] [Semiring β]`.
+-/
+
+library_note "lower instance priority"/--
+Certain instances always apply during type-class resolution. For example, the instance
+`AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
+resolution problems of the form `AddGroup _`, and type-class inference will then do an
+exhaustive search to find a commutative group. These instances take a long time to fail.
+Other instances will only apply if the goal has a certain shape. For example
+`Int.instAddGroupInt : AddGroup ℤ` or
+`Prod.instAddGroup {α β} [AddGroup α] [AddGroup β] : AddGroup (α × β)`. Usually these instances
+will fail quickly, and when they apply, they are almost always the desired instance.
+For this reason, we want the instances of the second type (that only apply in specific cases) to
+always have higher priority than the instances of the first type (that always apply).
+See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1561).
+
+Therefore, if we create an instance that always applies, we set the priority of these instances to
+100 (or something similar, which is below the default value of 1000).
 -/

@@ -23,8 +23,7 @@ open Set Metric
 variable {𝕜 : Type*}
 
 /-- Unit ball in a non unital semi normed ring as a bundled `Subsemigroup`. -/
-def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜
-    where
+def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜 where
   carrier := ball (0 : 𝕜) 1
   mul_mem' hx hy := by
     rw [mem_ball_zero_iff] at *
@@ -52,8 +51,7 @@ theorem coe_mul_unitBall [NonUnitalSeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1
 #align coe_mul_unit_ball coe_mul_unitBall
 
 /-- Closed unit ball in a non unital semi normed ring as a bundled `Subsemigroup`. -/
-def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜
-    where
+def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜 where
   carrier := closedBall 0 1
   mul_mem' hx hy := by
     rw [mem_closedBall_zero_iff] at *
@@ -106,8 +104,7 @@ theorem coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : cl
 #align coe_pow_unit_closed_ball coe_pow_unitClosedBall
 
 /-- Unit sphere in a normed division ring as a bundled `Submonoid`. -/
-def Submonoid.unitSphere (𝕜 : Type*) [NormedDivisionRing 𝕜] : Submonoid 𝕜
-    where
+def Submonoid.unitSphere (𝕜 : Type*) [NormedDivisionRing 𝕜] : Submonoid 𝕜 where
   carrier := sphere (0 : 𝕜) 1
   mul_mem' hx hy := by
     rw [mem_sphere_zero_iff_norm] at *
@@ -197,8 +194,8 @@ instance Metric.sphere.group [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜
 instance Metric.sphere.hasDistribNeg [NormedDivisionRing 𝕜] : HasDistribNeg (sphere (0 : 𝕜) 1) :=
   Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
-instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] : TopologicalGroup (sphere (0 : 𝕜) 1)
-    where
+instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] :
+    TopologicalGroup (sphere (0 : 𝕜) 1) where
   toContinuousMul := (Submonoid.unitSphere 𝕜).continuousMul
   continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 

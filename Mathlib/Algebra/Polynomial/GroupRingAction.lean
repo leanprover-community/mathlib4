@@ -3,9 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 
@@ -25,7 +25,6 @@ open Polynomial
 namespace Polynomial
 
 variable (R : Type*) [Semiring R]
-
 variable {M}
 
 -- Porting note: changed `(· • ·) m` to `HSMul.hSMul m`
@@ -50,7 +49,6 @@ noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
       smul_eq_map R m ▸ Polynomial.map_mul (MulSemiringAction.toRingHom M R m) }
 
 variable {M R}
-
 variable [MulSemiringAction M R]
 
 @[simp]
@@ -86,7 +84,6 @@ section CommRing
 set_option linter.uppercaseLean3 false  -- Porting note: `prod_X_*`
 
 variable (G : Type*) [Group G] [Fintype G]
-
 variable (R : Type*) [CommRing R] [MulSemiringAction G R]
 
 open MulAction
@@ -125,9 +122,7 @@ end CommRing
 namespace MulSemiringActionHom
 
 variable {M}
-
 variable {P : Type*} [CommSemiring P] [MulSemiringAction M P]
-
 variable {Q : Type*} [CommSemiring Q] [MulSemiringAction M Q]
 
 open Polynomial
@@ -137,11 +132,12 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
   toFun := map g
   map_smul' m p :=
     Polynomial.induction_on p
-      (fun b ↦ by rw [smul_C, map_C, coe_fn_coe, g.map_smul, map_C, coe_fn_coe, smul_C])
+      (fun b ↦ by rw [MonoidHom.id_apply, smul_C, map_C, coe_fn_coe, g.map_smul, map_C,
+          coe_fn_coe, smul_C])
       (fun p q ihp ihq ↦ by
         rw [smul_add, Polynomial.map_add, ihp, ihq, Polynomial.map_add, smul_add])
-      fun n b _ ↦ by
-      rw [smul_mul', smul_C, smul_pow', smul_X, Polynomial.map_mul, map_C, Polynomial.map_pow,
+      fun n b _ ↦ by rw [MonoidHom.id_apply, smul_mul', smul_C, smul_pow', smul_X,
+        Polynomial.map_mul, map_C, Polynomial.map_pow,
         map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,
         smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
   -- Porting note: added `.toRingHom`

@@ -44,11 +44,8 @@ section Field
 open Polynomial
 
 variable {K : Type*} [Field K]
-
 variable [Invertible (2 : K)] [Invertible (3 : K)]
-
 variable (a b c d : K)
-
 variable {ω p q r s t : K}
 
 theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
@@ -62,7 +59,7 @@ theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
     intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
   rw [h₁]
-  refine' Eq.congr _ rfl
+  refine Eq.congr ?_ rfl
   have hs_nonzero : s ≠ 0 := by
     contrapose! hp_nonzero with hs_nonzero
     linear_combination -1 * ht + t * hs_nonzero
@@ -140,7 +137,7 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
       a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) := by
         field_simp; ring
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
-        simp only [hb2, hb3]; field_simp; ring
+        simp only [hb2, hb3]; field_simp [ha]; ring
       _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring
   have h₃ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by

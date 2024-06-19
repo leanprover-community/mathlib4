@@ -75,12 +75,52 @@ theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
     CommSq i g.inv h.inv f :=
   ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, p.w]⟩
 
+theorem horiz_inv {f : W ≅ X} {i : Y ≅ Z} (p : CommSq f.hom g h i.hom) :
+    CommSq f.inv h g i.inv :=
+  flip (vert_inv (flip p))
+
+/-- The horizontal composition of two commutative squares as below is a commutative square.
+```
+  W ---f---> X ---f'--> X'
+  |          |          |
+  g          h          h'
+  |          |          |
+  v          v          v
+  Y ---i---> Z ---i'--> Z'
+
+```
+-/
+lemma horiz_comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y} {h : X ⟶ Z}
+    {h' : X' ⟶ Z'} {i : Y ⟶ Z} {i' : Z ⟶ Z'} (hsq₁ : CommSq f g h i) (hsq₂ : CommSq f' h h' i') :
+    CommSq (f ≫ f') g h' (i ≫ i') :=
+  ⟨by rw [← Category.assoc, Category.assoc, ← hsq₁.w, hsq₂.w, Category.assoc]⟩
+
+/-- The vertical composition of two commutative squares as below is a commutative square.
+```
+  W ---f---> X
+  |          |
+  g          h
+  |          |
+  v          v
+  Y ---i---> Z
+  |          |
+  g'         h'
+  |          |
+  v          v
+  Y'---i'--> Z'
+
+```
+-/
+lemma vert_comp {W X Y Y' Z Z' : C} {f : W ⟶ X} {g : W ⟶ Y} {g' : Y ⟶ Y'} {h : X ⟶ Z}
+    {h' : Z ⟶ Z'} {i : Y ⟶ Z} {i' : Y' ⟶ Z'} (hsq₁ : CommSq f g h i) (hsq₂ : CommSq i g' h' i') :
+    CommSq f (g ≫ g') (h ≫ h') i' :=
+  flip (horiz_comp (flip hsq₁) (flip hsq₂))
+
 end CommSq
 
 namespace Functor
 
 variable {D : Type*} [Category D]
-
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
@@ -109,7 +149,7 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/
@@ -125,8 +165,7 @@ namespace LiftStruct
 /-- A `LiftStruct` for a commutative square gives a `LiftStruct` for the
 corresponding square in the opposite category. -/
 @[simps]
-def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op
-    where
+def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op where
   l := l.l.op
   fac_left := by rw [← op_comp, l.fac_right]
   fac_right := by rw [← op_comp, l.fac_left]
@@ -136,8 +175,7 @@ def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op
 gives a `LiftStruct` for the corresponding square in the original category. -/
 @[simps]
 def unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y} {sq : CommSq f i p g}
-    (l : LiftStruct sq) : LiftStruct sq.unop
-    where
+    (l : LiftStruct sq) : LiftStruct sq.unop where
   l := l.l.unop
   fac_left := by rw [← unop_comp, l.fac_right]
   fac_right := by rw [← unop_comp, l.fac_left]
@@ -146,8 +184,7 @@ def unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B �
 /-- Equivalences of `LiftStruct` for a square and the corresponding square
 in the opposite category. -/
 @[simps]
-def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op
-    where
+def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op where
   toFun := op
   invFun := unop
   left_inv := by aesop_cat
@@ -157,8 +194,7 @@ def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op
 /-- Equivalences of `LiftStruct` for a square in the oppositive category and
 the corresponding square in the original category. -/
 def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
-    (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop
-    where
+    (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop where
   toFun := unop
   invFun := op
   left_inv := by aesop_cat

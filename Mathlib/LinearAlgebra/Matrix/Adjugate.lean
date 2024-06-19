@@ -47,10 +47,9 @@ namespace Matrix
 universe u v w
 
 variable {m : Type u} {n : Type v} {α : Type w}
-
 variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m] [CommRing α]
 
-open Matrix BigOperators Polynomial Equiv Equiv.Perm Finset
+open Matrix Polynomial Equiv Equiv.Perm Finset
 
 section Cramer
 
@@ -153,17 +152,17 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
 theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
-    (∑ x in s, cramer A (f x)) = cramer A (∑ x in s, f x) :=
+    (∑ x ∈ s, cramer A (f x)) = cramer A (∑ x ∈ s, f x) :=
   (map_sum (cramer A) ..).symm
 #align matrix.sum_cramer Matrix.sum_cramer
 
 /-- Use linearity of `cramer` and vector evaluation to take `cramer A _ i` out of a summation. -/
 theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
-    (∑ x in s, cramer A (fun j => f j x) i) = cramer A (fun j : n => ∑ x in s, f j x) i :=
+    (∑ x ∈ s, cramer A (fun j => f j x) i) = cramer A (fun j : n => ∑ x ∈ s, f j x) i :=
   calc
-    (∑ x in s, cramer A (fun j => f j x) i) = (∑ x in s, cramer A fun j => f j x) i :=
+    (∑ x ∈ s, cramer A (fun j => f j x) i) = (∑ x ∈ s, cramer A fun j => f j x) i :=
       (Finset.sum_apply i s _).symm
-    _ = cramer A (fun j : n => ∑ x in s, f j x) i := by
+    _ = cramer A (fun j : n => ∑ x ∈ s, f j x) i := by
       rw [sum_cramer, cramer_apply, cramer_apply]
       simp only [updateColumn]
       congr with j
@@ -269,8 +268,8 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
     cramer A b = A.adjugate *ᵥ b := by
   nth_rw 2 [← A.transpose_transpose]
   rw [← adjugate_transpose, adjugate_def]
-  have : b = ∑ i, b i • Pi.single i 1 := by
-    refine' (pi_eq_sum_univ b).trans _
+  have : b = ∑ i, b i • (Pi.single i 1 : n → α) := by
+    refine (pi_eq_sum_univ b).trans ?_
     congr with j
     -- Porting note: needed to help `Pi.smul_apply`
     simp [Pi.single_apply, eq_comm, Pi.smul_apply (b j)]
@@ -341,14 +340,14 @@ theorem adjugate_one : adjugate (1 : Matrix n n α) = 1 := by
 
 @[simp]
 theorem adjugate_diagonal (v : n → α) :
-    adjugate (diagonal v) = diagonal fun i => ∏ j in Finset.univ.erase i, v j := by
+    adjugate (diagonal v) = diagonal fun i => ∏ j ∈ Finset.univ.erase i, v j := by
   ext i j
   simp only [adjugate_def, cramer_apply, diagonal_transpose, of_apply]
   obtain rfl | hij := eq_or_ne i j
   · rw [diagonal_apply_eq, diagonal_updateColumn_single, det_diagonal,
       prod_update_of_mem (Finset.mem_univ _), sdiff_singleton_eq_erase, one_mul]
   · rw [diagonal_apply_ne _ hij]
-    refine' det_eq_zero_of_row_eq_zero j fun k => _
+    refine det_eq_zero_of_row_eq_zero j fun k => ?_
     obtain rfl | hjk := eq_or_ne k j
     · rw [updateColumn_self, Pi.single_eq_of_ne' hij]
     · rw [updateColumn_ne hjk, diagonal_apply_ne' _ hjk]
@@ -386,7 +385,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
   calc
     A'.det * A'.adjugate.det = (A' * adjugate A').det := (det_mul _ _).symm
     _ = A'.det ^ Fintype.card n := by rw [mul_adjugate, det_smul, det_one, mul_one]
-    _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ, h_card]
+    _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ', h_card]
 #align matrix.det_adjugate Matrix.det_adjugate
 
 @[simp]
@@ -470,12 +469,12 @@ theorem isRegular_of_isLeftRegular_det {A : Matrix n n α} (hA : IsLeftRegular A
     IsRegular A := by
   constructor
   · intro B C h
-    refine' hA.matrix _
+    refine hA.matrix ?_
     simp only at h ⊢
     rw [← Matrix.one_mul B, ← Matrix.one_mul C, ← Matrix.smul_mul, ← Matrix.smul_mul, ←
       adjugate_mul, Matrix.mul_assoc, Matrix.mul_assoc, h]
   · intro B C (h : B * A = C * A)
-    refine' hA.matrix _
+    refine hA.matrix ?_
     simp only
     rw [← Matrix.mul_one B, ← Matrix.mul_one C, ← Matrix.mul_smul, ← Matrix.mul_smul, ←
       mul_adjugate, ← Matrix.mul_assoc, ← Matrix.mul_assoc, h]
@@ -486,7 +485,7 @@ theorem adjugate_mul_distrib_aux (A B : Matrix n n α) (hA : IsLeftRegular A.det
   have hAB : IsLeftRegular (A * B).det := by
     rw [det_mul]
     exact hA.mul hB
-  refine' (isRegular_of_isLeftRegular_det hAB).left _
+  refine (isRegular_of_isLeftRegular_det hAB).left ?_
   simp only
   rw [mul_adjugate, Matrix.mul_assoc, ← Matrix.mul_assoc B, mul_adjugate,
     smul_mul, Matrix.one_mul, mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
@@ -510,7 +509,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
     rw [RingHom.map_mul, f'_inv, f'_inv]
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
-    refine' Polynomial.Monic.isRegular _
+    refine Polynomial.Monic.isRegular ?_
     simp only [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
   rw [← f'_adj, ← f'_adj, ← f'_adj, ← f'.map_mul, ←
     adjugate_mul_distrib_aux _ _ (hu A).left (hu B).left, RingHom.map_adjugate,
@@ -555,7 +554,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     mul_left_cancel₀ (det_mvPolynomialX_ne_zero n ℤ)
   apply is_reg.matrix
   simp only
-  rw [smul_smul, ← pow_succ, h_card', det_smul_adjugate_adjugate]
+  rw [smul_smul, ← pow_succ', h_card', det_smul_adjugate_adjugate]
 #align matrix.adjugate_adjugate Matrix.adjugate_adjugate
 
 /-- A weaker version of `Matrix.adjugate_adjugate` that uses `Nontrivial`. -/

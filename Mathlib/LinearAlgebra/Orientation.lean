@@ -36,16 +36,11 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 noncomputable section
 
-open BigOperators
-
 section OrderedCommSemiring
 
 variable (R : Type*) [StrictOrderedCommSemiring R]
-
 variable (M : Type*) [AddCommMonoid M] [Module R M]
-
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-
 variable (ι ι' : Type*)
 
 /-- An orientation of a module, intended to be used when `ι` is a `Fintype` with the same
@@ -143,7 +138,6 @@ end OrderedCommSemiring
 section OrderedCommRing
 
 variable {R : Type*} [StrictOrderedCommRing R]
-
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 @[simp]
@@ -220,9 +214,7 @@ end OrderedCommRing
 section LinearOrderedCommRing
 
 variable {R : Type*} [LinearOrderedCommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable {ι : Type*}
 
 namespace Orientation
@@ -363,9 +355,7 @@ end LinearOrderedCommRing
 section LinearOrderedField
 
 variable {R : Type*} [LinearOrderedField R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable {ι : Type*}
 
 namespace Orientation
@@ -382,7 +372,10 @@ theorem eq_or_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fin
   letI := Classical.decEq ι
   -- Porting note: this needs to be made explicit for the simp below
   have orientation_neg_neg :
-    ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by simp
+      ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by
+    #adaptation_note
+    /-- `set_option maxSynthPendingDepth 2` required after https://github.com/leanprover/lean4/pull/4119 -/
+    set_option maxSynthPendingDepth 2 in simp
   rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
     rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂, orientation_neg_neg]
 #align orientation.eq_or_eq_neg Orientation.eq_or_eq_neg

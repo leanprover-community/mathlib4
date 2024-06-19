@@ -25,11 +25,8 @@ noncomputable section
 open CategoryTheory Category Limits HomologicalComplex
 
 variable {ι : Type*}
-
 variable {V : Type u} [Category.{v} V] [Preadditive V]
-
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-
 variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 
 section
@@ -133,7 +130,7 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
   · congr <;> simp
 #align prev_d_nat prevD_nat
 
--- Porting note: removed @[has_nonempty_instance]
+-- Porting note(#5171): removed @[has_nonempty_instance]
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
 which are zero unless `c.Rel j i`, satisfying the homotopy condition.
 -/
@@ -545,20 +542,20 @@ def mkInductiveAux₂ :
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 #align homotopy.mk_inductive_aux₂ Homotopy.mkInductiveAux₂
 
-theorem mkInductiveAux₂_zero :
+-- Porting note(#11647): during the port we marked these lemmas
+-- with `@[eqns]` to emulate the old Lean 3 behaviour.
+
+@[simp] theorem mkInductiveAux₂_zero :
     mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
       ⟨0, zero ≫ (Q.xPrevIso rfl).inv, mkInductiveAux₂.proof_2 e zero comm_zero⟩ :=
   rfl
 
-theorem mkInductiveAux₂_add_one (n) :
+@[simp] theorem mkInductiveAux₂_add_one (n) :
     mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
       let I := mkInductiveAux₁ e zero one comm_one succ n
       ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv,
         mkInductiveAux₂.proof_5 e zero one comm_one succ n⟩ :=
   rfl
-
-attribute [eqns mkInductiveAux₂_zero mkInductiveAux₂_add_one] mkInductiveAux₂
-attribute [simp] mkInductiveAux₂
 
 theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom =
@@ -585,7 +582,7 @@ def mkInductive : Homotopy e 0 where
   comm i := by
     dsimp
     simp only [add_zero]
-    refine' (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
+    refine (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans ?_
     congr
     · cases i
       · dsimp [fromNext, mkInductiveAux₂]
@@ -683,20 +680,20 @@ def mkCoinductiveAux₂ :
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
 #align homotopy.mk_coinductive_aux₂ Homotopy.mkCoinductiveAux₂
 
-theorem mkCoinductiveAux₂_zero :
+-- Porting note (#11647): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
+
+@[simp] theorem mkCoinductiveAux₂_zero :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =
       ⟨0, (P.xNextIso rfl).hom ≫ zero, mkCoinductiveAux₂.proof_2 e zero comm_zero⟩ :=
   rfl
 
-theorem mkCoinductiveAux₂_add_one (n) :
+@[simp] theorem mkCoinductiveAux₂_add_one (n) :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
       let I := mkCoinductiveAux₁ e zero one comm_one succ n
       ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1,
         mkCoinductiveAux₂.proof_5 e zero one comm_one succ n⟩ :=
   rfl
-
-attribute [eqns mkCoinductiveAux₂_zero mkCoinductiveAux₂_add_one] mkCoinductiveAux₂
-attribute [simp] mkCoinductiveAux₂
 
 theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.1 =
@@ -724,7 +721,7 @@ def mkCoinductive : Homotopy e 0 where
     dsimp
     simp only [add_zero]
     rw [add_comm]
-    refine' (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
+    refine (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans ?_
     congr
     · cases i
       · dsimp [toPrev, mkCoinductiveAux₂]

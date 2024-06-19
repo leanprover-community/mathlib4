@@ -32,7 +32,6 @@ open scoped Polynomial
 section ScaleRoots
 
 variable {A K R S : Type*} [CommRing A] [Field K] [CommRing R] [CommRing S]
-
 variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsFractionRing A K]
 
 open Finsupp IsFractionRing IsLocalization Polynomial
@@ -50,7 +49,7 @@ variable [IsDomain A]
 theorem num_isRoot_scaleRoots_of_aeval_eq_zero [UniqueFactorizationMonoid A] {p : A[X]} {x : K}
     (hr : aeval x p = 0) : IsRoot (scaleRoots p (den A x)) (num A x) := by
   apply isRoot_of_eval₂_map_eq_zero (IsFractionRing.injective A K)
-  refine' scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero _
+  refine scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero ?_
   rw [mk'_num_den]
   exact hr
 #align num_is_root_scale_roots_of_aeval_eq_zero num_isRoot_scaleRoots_of_aeval_eq_zero
@@ -60,7 +59,6 @@ end ScaleRoots
 section RationalRootTheorem
 
 variable {A K : Type*} [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A] [Field K]
-
 variable [Algebra A K] [IsFractionRing A K]
 
 open IsFractionRing IsLocalization Polynomial UniqueFactorizationMonoid
@@ -76,7 +74,7 @@ theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣
     · obtain ⟨u, hu⟩ := (isUnit_den_of_num_eq_zero hr).pow p.natDegree
       rw [← hu] at this
       exact Units.dvd_mul_right.mp this
-    · refine' dvd_of_dvd_mul_left_of_no_prime_factors hr _ this
+    · refine dvd_of_dvd_mul_left_of_no_prime_factors hr ?_ this
       intro q dvd_num dvd_denom_pow hq
       apply hq.not_unit
       exact num_den_reduced A r dvd_num (hq.dvd_of_dvd_pow dvd_denom_pow)
@@ -94,8 +92,8 @@ then the denominator of `r` divides the leading coefficient -/
 theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
     (den A r : A) ∣ p.leadingCoeff := by
   suffices (den A r : A) ∣ p.leadingCoeff * num A r ^ p.natDegree by
-    refine'
-      dvd_of_dvd_mul_left_of_no_prime_factors (mem_nonZeroDivisors_iff_ne_zero.mp (den A r).2) _
+    refine
+      dvd_of_dvd_mul_left_of_no_prime_factors (mem_nonZeroDivisors_iff_ne_zero.mp (den A r).2) ?_
         this
     intro q dvd_den dvd_num_pow hq
     apply hq.not_unit
@@ -105,7 +103,7 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
   intro j hj
   by_cases h : j < p.natDegree
   · rw [coeff_scaleRoots]
-    refine' (dvd_mul_of_dvd_right _ _).mul_right _
+    refine (dvd_mul_of_dvd_right ?_ _).mul_right _
     convert pow_dvd_pow (den A r : A) (Nat.succ_le_iff.mpr (lt_tsub_iff_left.mpr _))
     · exact (pow_one _).symm
     simpa using h
@@ -131,7 +129,7 @@ theorem integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun �
 
 -- See library note [lower instance priority]
 instance (priority := 100) instIsIntegrallyClosed : IsIntegrallyClosed A :=
-  ⟨fun {_} => integer_of_integral⟩
+  (isIntegrallyClosed_iff (FractionRing A)).mpr fun {_} => integer_of_integral
 #align unique_factorization_monoid.is_integrally_closed UniqueFactorizationMonoid.instIsIntegrallyClosed
 
 end UniqueFactorizationMonoid

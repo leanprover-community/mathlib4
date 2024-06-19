@@ -140,10 +140,10 @@ def subterminalInclusion : Subterminals C ⥤ C :=
   fullSubcategoryInclusion _
 #align category_theory.subterminal_inclusion CategoryTheory.subterminalInclusion
 
-instance (C : Type u₁) [Category.{v₁} C] : Full (subterminalInclusion C) :=
+instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Full :=
   FullSubcategory.full _
 
-instance (C : Type u₁) [Category.{v₁} C] : Faithful (subterminalInclusion C) :=
+instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful :=
   FullSubcategory.faithful _
 
 instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=

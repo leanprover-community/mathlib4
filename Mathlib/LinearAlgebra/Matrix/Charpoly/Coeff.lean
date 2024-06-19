@@ -3,8 +3,8 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Data.Polynomial.Expand
-import Mathlib.Data.Polynomial.Laurent
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.RingTheory.Polynomial.Nilpotent
@@ -37,7 +37,7 @@ noncomputable section
 
 universe u v w z
 
-open BigOperators Finset Matrix Polynomial
+open Finset Matrix Polynomial
 
 variable {R : Type u} [CommRing R]
 variable {n G : Type v} [DecidableEq n] [Fintype n]
@@ -62,11 +62,11 @@ theorem charpoly_sub_diagonal_degree_lt :
     (M.charpoly - ∏ i : n, (X - C (M i i))).degree < ↑(Fintype.card n - 1) := by
   rw [charpoly, det_apply', ← insert_erase (mem_univ (Equiv.refl n)),
     sum_insert (not_mem_erase (Equiv.refl n) univ), add_comm]
-  simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id.def, Int.cast_one,
-    Units.val_one, add_sub_cancel, Equiv.coe_refl]
+  simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id, Int.cast_one,
+    Units.val_one, add_sub_cancel_right, Equiv.coe_refl]
   rw [← mem_degreeLT]
   apply Submodule.sum_mem (degreeLT R (Fintype.card n - 1))
-  intro c hc; rw [← C_eq_int_cast, C_mul']
+  intro c hc; rw [← C_eq_intCast, C_mul']
   apply Submodule.smul_mem (degreeLT R (Fintype.card n - 1)) ↑↑(Equiv.Perm.sign c)
   rw [mem_degreeLT]
   apply lt_of_le_of_lt degree_le_natDegree _
@@ -105,12 +105,12 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   -- Porting note: added `↑` in front of `Fintype.card n`
   have h1 : (∏ i : n, (X - C (M i i))).degree = ↑(Fintype.card n) := by
     rw [degree_eq_iff_natDegree_eq_of_pos (Nat.pos_of_ne_zero h), natDegree_prod']
-    simp_rw [natDegree_X_sub_C]
-    rw [← Finset.card_univ, sum_const, smul_eq_mul, mul_one]
+    · simp_rw [natDegree_X_sub_C]
+      rw [← Finset.card_univ, sum_const, smul_eq_mul, mul_one]
     simp_rw [(monic_X_sub_C _).leadingCoeff]
     simp
   rw [degree_add_eq_right_of_degree_lt]
-  exact h1
+  · exact h1
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
@@ -272,7 +272,7 @@ theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Field K] (M : Matrix 
   · rw [charmatrix_apply_ne _ _ _ hij, AlgHom.map_neg, expand_C, coeff_neg, coeff_C]
     split_ifs with m0 mp <;>
       -- Porting note: again, the first `Matrix.` that was `DMatrix.`
-      simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne.def,
+      simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne,
         not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align mat_poly_equiv_eq_X_pow_sub_C matPolyEquiv_eq_X_pow_sub_C
@@ -306,12 +306,11 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   rw [← this]
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
-  · rw [Nat.zero_eq]  -- Porting note: `rw [Nat.zero_eq]` was not present
-    rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
+  · rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
       smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub]
     apply neg_mem  -- Porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
     exact h (c i) i
-  · rw [Nat.succ_eq_one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
+  · rw [add_comm, tsub_self_add, pow_zero, Ideal.one_eq_top]
     exact Submodule.mem_top
 #align coeff_charpoly_mem_ideal_pow Matrix.coeff_charpoly_mem_ideal_pow
 

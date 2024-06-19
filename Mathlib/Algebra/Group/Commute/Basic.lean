@@ -13,6 +13,8 @@ import Mathlib.Algebra.Group.Semiconj.Basic
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 variable {G : Type*}
 
@@ -99,5 +101,44 @@ protected theorem conj_iff (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) �
 protected theorem conj (comm : Commute a b) (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) :=
   (Commute.conj_iff h).mpr comm
 
+@[to_additive (attr := simp)]
+lemma zpow_right (h : Commute a b) (m : ℤ) : Commute a (b ^ m) := SemiconjBy.zpow_right h m
+#align commute.zpow_right Commute.zpow_right
+#align add_commute.zsmul_right AddCommute.zsmul_right
+
+@[to_additive (attr := simp)]
+lemma zpow_left (h : Commute a b) (m : ℤ) : Commute (a ^ m) b := (h.symm.zpow_right m).symm
+#align commute.zpow_left Commute.zpow_left
+#align add_commute.zsmul_left AddCommute.zsmul_left
+
+@[to_additive] lemma zpow_zpow (h : Commute a b) (m n : ℤ) : Commute (a ^ m) (b ^ n) :=
+  (h.zpow_left m).zpow_right n
+#align commute.zpow_zpow Commute.zpow_zpow
+#align add_commute.zsmul_zsmul AddCommute.zsmul_zsmul
+
+variable (a) (m n : ℤ)
+
+@[to_additive] lemma self_zpow : Commute a (a ^ n) := (Commute.refl a).zpow_right n
+#align commute.self_zpow Commute.self_zpow
+#align add_commute.self_zsmul AddCommute.self_zsmul
+
+@[to_additive] lemma zpow_self : Commute (a ^ n) a := (Commute.refl a).zpow_left n
+#align commute.zpow_self Commute.zpow_self
+#align add_commute.zsmul_self AddCommute.zsmul_self
+
+@[to_additive] lemma zpow_zpow_self : Commute (a ^ m) (a ^ n) := (Commute.refl a).zpow_zpow m n
+#align commute.zpow_zpow_self Commute.zpow_zpow_self
+#align add_commute.zsmul_zsmul_self AddCommute.zsmul_zsmul_self
+
 end Group
 end Commute
+
+section Group
+variable [Group G]
+
+@[to_additive] lemma pow_inv_comm (a : G) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
+  (Commute.refl a).inv_left.pow_pow _ _
+#align pow_inv_comm pow_inv_comm
+#align nsmul_neg_comm nsmul_neg_comm
+
+end Group

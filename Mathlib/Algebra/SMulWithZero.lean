@@ -3,7 +3,7 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Prod
@@ -82,8 +82,7 @@ variable [Zero R'] [Zero M'] [SMul R M']
 
 /-- Pullback a `SMulWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
+protected abbrev Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
     SMulWithZero R M' where
   smul := (· • ·)
@@ -93,8 +92,7 @@ protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.
 
 /-- Pushforward a `SMulWithZero` structure along a surjective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
+protected abbrev Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
     SMulWithZero R M' where
   smul := (· • ·)
@@ -128,7 +126,6 @@ instance AddGroup.intSMulWithZero [AddGroup M] : SMulWithZero ℤ M where
 section MonoidWithZero
 
 variable [MonoidWithZero R] [MonoidWithZero R'] [Zero M]
-
 variable (R M)
 
 /-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
@@ -156,7 +153,7 @@ instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `Semiring.toOppositeModule` -/
 instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
-  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
+  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 
 protected lemma MulActionWithZero.subsingleton
@@ -181,17 +178,16 @@ lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 :
 
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
+protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) : MulActionWithZero R M' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 #align function.injective.mul_action_with_zero Function.Injective.mulActionWithZero
 
 /-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Surjective.mulActionWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
-    (smul : ∀ (a : R) (b), f (a • b) = a • f b) : MulActionWithZero R M' :=
+protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom M M')
+    (hf : Function.Surjective f) (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
+    MulActionWithZero R M' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 #align function.surjective.mul_action_with_zero Function.Surjective.mulActionWithZero
 
@@ -216,7 +212,7 @@ theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (
   · simp only [inv_zero, zero_smul]
   obtain rfl | hx := eq_or_ne x 0
   · simp only [inv_zero, smul_zero]
-  · refine' inv_eq_of_mul_eq_one_left _
+  · refine inv_eq_of_mul_eq_one_left ?_
     rw [smul_mul_smul, inv_mul_cancel hc, inv_mul_cancel hx, one_smul]
 #align smul_inv₀ smul_inv₀
 

@@ -14,11 +14,12 @@ import Mathlib.Algebra.Category.GroupCat.FilteredColimits
 Forgetful functors from algebraic categories usually don't preserve colimits. However, they tend
 to preserve _filtered_ colimits.
 
-In this file, we start with a small filtered category `J` and a functor `F : J ⥤ SemiRing`.
-We show that the colimit of `F ⋙ forget₂ SemiRing Mon` (in `Mon`) carries the structure of a
-semiring, thereby showing that the forgetful functor `forget₂ SemiRing Mon` preserves filtered
-colimits. In particular, this implies that `forget SemiRing` preserves filtered colimits.
-Similarly for `CommSemiRing`, `Ring` and `CommRing`.
+In this file, we start with a small filtered category `J` and a functor `F : J ⥤ SemiRingCatMax`.
+We show that the colimit of `F ⋙ forget₂ SemiRingCatMax MonCat` (in `MonCat`)
+carries the structure of a semiring, thereby showing that the forgetful functor
+`forget₂ SemiRingCatMax MonCat` preserves filtered colimits.
+In particular, this implies that `forget SemiRingCatMax` preserves filtered colimits.
+Similarly for `CommSemiRingCat`, `RingCat` and `CommRingCat`.
 
 -/
 
@@ -47,7 +48,7 @@ section
 -- passing around `F` all the time.
 variable {J : Type v} [SmallCategory J] (F : J ⥤ SemiRingCatMax.{v, u})
 
--- This instance is needed below in `colimit_semiring`, during the verification of the
+-- This instance is needed below in `colimitSemiring`, during the verification of the
 -- semiring axioms.
 instance semiringObj (j : J) :
     Semiring (((F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat) ⋙ forget MonCat).obj j) :=
@@ -57,7 +58,7 @@ set_option linter.uppercaseLean3 false in
 
 variable [IsFiltered J]
 
-/-- The colimit of `F ⋙ forget₂ SemiRing Mon` in the category `Mon`.
+/-- The colimit of `F ⋙ forget₂ SemiRingCat MonCat` in the category `MonCat`.
 In the following, we will show that this has the structure of a semiring.
 -/
 abbrev R : MonCatMax.{v, u} :=
@@ -134,7 +135,7 @@ def colimitCocone : Cocone F where
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.colimit_cocone SemiRingCat.FilteredColimits.colimitCocone
 
-/-- The proposed colimit cocone is a colimit in `SemiRing`. -/
+/-- The proposed colimit cocone is a colimit in `SemiRingCat`. -/
 def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   desc t :=
     { (MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
@@ -181,7 +182,7 @@ section
 -- passing around `F` all the time.
 variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommSemiRingCat.{max v u})
 
-/-- The colimit of `F ⋙ forget₂ CommSemiRing SemiRing` in the category `SemiRing`.
+/-- The colimit of `F ⋙ forget₂ CommSemiRingCat SemiRingCat` in the category `SemiRingCat`.
 In the following, we will show that this has the structure of a _commutative_ semiring.
 -/
 abbrev R : SemiRingCatMax.{v, u} :=
@@ -211,7 +212,7 @@ def colimitCocone : Cocone F where
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.colimit_cocone CommSemiRingCat.FilteredColimits.colimitCocone
 
-/-- The proposed colimit cocone is a colimit in `CommSemiRing`. -/
+/-- The proposed colimit cocone is a colimit in `CommSemiRingCat`. -/
 def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   desc t :=
     (SemiRingCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
@@ -257,7 +258,7 @@ section
 -- passing around `F` all the time.
 variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ RingCat.{max v u})
 
-/-- The colimit of `F ⋙ forget₂ Ring SemiRing` in the category `SemiRing`.
+/-- The colimit of `F ⋙ forget₂ RingCat SemiRingCat` in the category `SemiRingCat`.
 In the following, we will show that this has the structure of a ring.
 -/
 abbrev R : SemiRingCat.{max v u} :=
@@ -332,7 +333,7 @@ section
 -- passing around `F` all the time.
 variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{max v u})
 
-/-- The colimit of `F ⋙ forget₂ CommRing Ring` in the category `Ring`.
+/-- The colimit of `F ⋙ forget₂ CommRingCat RingCat` in the category `RingCat`.
 In the following, we will show that this has the structure of a _commutative_ ring.
 -/
 abbrev R : RingCat.{max v u} :=
@@ -361,7 +362,7 @@ def colimitCocone : Cocone F where
 set_option linter.uppercaseLean3 false in
 #align CommRing.filtered_colimits.colimit_cocone CommRingCat.FilteredColimits.colimitCocone
 
-/-- The proposed colimit cocone is a colimit in `CommRing`. -/
+/-- The proposed colimit cocone is a colimit in `CommRingCat`. -/
 def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   desc t :=
     (RingCat.FilteredColimits.colimitCoconeIsColimit.{v, u}

@@ -17,9 +17,6 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 quotient
 -/
 
-set_option autoImplicit true
-
-
 variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
@@ -40,12 +37,11 @@ namespace Quot
 
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
--- mathport name: mk
 @[inherit_doc Quot.mk]
 local notation3:arg "⟦" a "⟧" => Quot.mk _ a
 
 @[elab_as_elim]
-protected theorem induction_on {α : Sort u} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
+protected theorem induction_on {α : Sort*} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
     (h : ∀ a, β (Quot.mk r a)) : β q :=
   ind h q
 
@@ -67,10 +63,10 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
     (fun a ↦ Quot.hrecOn qb (f a) (fun b₁ b₂ pb ↦ cb pb))
     fun a₁ a₂ pa ↦
       Quot.induction_on qb fun b ↦
-        have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) :=
-          by simp [heq_self_iff_true]
-        have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _)) :=
-          by simp [heq_self_iff_true]
+        have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) := by
+          simp [heq_self_iff_true]
+        have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _)) := by
+          simp [heq_self_iff_true]
         (h₁.trans (ca pa)).trans h₂
 #align quot.hrec_on₂ Quot.hrecOn₂
 
@@ -216,7 +212,6 @@ end Quot
 namespace Quotient
 
 variable [sa : Setoid α] [sb : Setoid β]
-
 variable {φ : Quotient sa → Quotient sb → Sort*}
 
 -- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,
@@ -352,6 +347,11 @@ theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
 
+/-- `Quotient.mk` is a surjective function. -/
+theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
+    Function.Surjective (Quotient.mk s) :=
+  Quot.exists_rep
+
 /-- `Quotient.mk'` is a surjective function. -/
 theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
@@ -391,13 +391,13 @@ theorem Quotient.mk_out [Setoid α] (a : α) : ⟦a⟧.out ≈ a :=
 
 theorem Quotient.mk_eq_iff_out [s : Setoid α] {x : α} {y : Quotient s} :
     ⟦x⟧ = y ↔ x ≈ Quotient.out y := by
-  refine' Iff.trans _ Quotient.eq
+  refine Iff.trans ?_ Quotient.eq
   rw [Quotient.out_eq y]
 #align quotient.mk_eq_iff_out Quotient.mk_eq_iff_out
 
 theorem Quotient.eq_mk_iff_out [s : Setoid α] {x : Quotient s} {y : α} :
     x = ⟦y⟧ ↔ Quotient.out x ≈ y := by
-  refine' Iff.trans _ Quotient.eq
+  refine Iff.trans ?_ Quotient.eq
   rw [Quotient.out_eq x]
 #align quotient.eq_mk_iff_out Quotient.eq_mk_iff_out
 

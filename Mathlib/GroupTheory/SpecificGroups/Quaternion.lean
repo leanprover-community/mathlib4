@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Tactic.IntervalCases
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
@@ -183,14 +183,13 @@ theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
   · rw [pow_succ, IH, a_mul_a]
     congr 1
     norm_cast
-    rw [Nat.one_add]
 #align quaternion_group.a_one_pow QuaternionGroup.a_one_pow
 
 -- @[simp] -- Porting note: simp changes this to `a 0 = 1`, so this is no longer a good simp lemma.
 theorem a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
   rw [a_one_pow, one_def]
   congr 1
-  exact ZMod.nat_cast_self _
+  exact ZMod.natCast_self _
 #align quaternion_group.a_one_pow_n QuaternionGroup.a_one_pow_n
 
 @[simp]
@@ -199,8 +198,8 @@ theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 
 @[simp]
 theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
-  rw [pow_succ, pow_succ, sq, xa_mul_xa, xa_mul_a, xa_mul_xa, add_sub_cancel, add_sub_assoc,
-    add_sub_cancel']
+  rw [pow_succ, pow_succ, sq, xa_mul_xa, a_mul_xa, xa_mul_xa,
+    add_sub_cancel_right, add_sub_assoc, sub_sub_cancel]
   norm_cast
   rw [← two_mul]
   simp [one_def]
@@ -218,7 +217,7 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
     injection h with h'
     apply_fun ZMod.val at h'
     apply_fun (· / n) at h'
-    simp only [ZMod.val_nat_cast, ZMod.val_zero, Nat.zero_div, Nat.mod_mul_left_div_self,
+    simp only [ZMod.val_natCast, ZMod.val_zero, Nat.zero_div, Nat.mod_mul_left_div_self,
       Nat.div_self (NeZero.pos n)] at h'
   · norm_num
 #align quaternion_group.order_of_xa QuaternionGroup.orderOf_xa
@@ -226,8 +225,8 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
 /-- In the special case `n = 1`, `Quaternion 1` is a cyclic group (of order `4`). -/
 theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
   apply isCyclic_of_orderOf_eq_card
-  rw [card, mul_one]
-  exact orderOf_xa 0
+  · rw [card, mul_one]
+    exact orderOf_xa 0
 #align quaternion_group.quaternion_group_one_is_cyclic QuaternionGroup.quaternionGroup_one_isCyclic
 
 /-- If `0 < n`, then `a 1` has order `2 * n`.
@@ -248,7 +247,7 @@ theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
   have h1 : (a 1 : QuaternionGroup n) ^ orderOf (a 1) = 1 := pow_orderOf_eq_one _
   rw [a_one_pow] at h1
   injection h1 with h2
-  rw [← ZMod.val_eq_zero, ZMod.val_nat_cast, Nat.mod_eq_of_lt h] at h2
+  rw [← ZMod.val_eq_zero, ZMod.val_natCast, Nat.mod_eq_of_lt h] at h2
   exact absurd h2.symm (orderOf_pos _).ne
 #align quaternion_group.order_of_a_one QuaternionGroup.orderOf_a_one
 
@@ -256,7 +255,7 @@ theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
 -/
 theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
     orderOf (a i) = 2 * n / Nat.gcd (2 * n) i.val := by
-  conv_lhs => rw [← ZMod.nat_cast_zmod_val i]
+  conv_lhs => rw [← ZMod.natCast_zmod_val i]
   rw [← a_one_pow, orderOf_pow, orderOf_a_one]
 #align quaternion_group.order_of_a QuaternionGroup.orderOf_a
 
@@ -272,7 +271,7 @@ theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   · apply Monoid.exponent_dvd_of_forall_pow_eq_one
     rintro (m | m)
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_a]
-      refine' Nat.dvd_trans ⟨gcd (2 * n) m.val, _⟩ (dvd_lcm_left (2 * n) 4)
+      refine Nat.dvd_trans ⟨gcd (2 * n) m.val, ?_⟩ (dvd_lcm_left (2 * n) 4)
       exact (Nat.div_mul_cancel (Nat.gcd_dvd_left (2 * n) m.val)).symm
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_xa]
       exact dvd_lcm_right (2 * n) 4

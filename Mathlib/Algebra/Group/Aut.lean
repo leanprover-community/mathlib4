@@ -27,16 +27,21 @@ equivalences (and other files that use them) before the group structure is defin
 MulAut, AddAut
 -/
 
+-- TODO after #13161
+-- assert_not_exists MonoidWithZero
+assert_not_exists Ring
 
 variable {A : Type*} {M : Type*} {G : Type*}
 
 /-- The group of multiplicative automorphisms. -/
-@[to_additive (attr := reducible) "The group of additive automorphisms."]
+@[reducible, to_additive "The group of additive automorphisms."]
 def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 #align mul_aut MulAut
 #align add_aut AddAut
 
+-- Note that `(attr := reducible)` in `to_additive` currently doesn't work,
+-- so we add the reducible attribute manually.
 attribute [reducible] AddAut
 
 namespace MulAut
@@ -46,19 +51,14 @@ variable (M) [Mul M]
 /-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (MulAut M) := by
-  refine'
-  { mul := fun g h => MulEquiv.trans h g
-    one := MulEquiv.refl M
-    inv := MulEquiv.symm
-    div := fun g h => MulEquiv.trans h.symm g
-    npow := @npowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩
-    zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
-    .. } <;>
-  intros <;>
-  ext <;>
-  try rfl
-  apply Equiv.left_inv
+instance : Group (MulAut M) where
+  mul g h := MulEquiv.trans h g
+  one := MulEquiv.refl _
+  inv := MulEquiv.symm
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+  mul_left_inv := MulEquiv.self_trans_symm
 
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
@@ -106,8 +106,10 @@ theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
 #align mul_aut.inv_apply_self MulAut.inv_apply_self
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
-def toPerm : MulAut M →* Equiv.Perm M := by
-  refine' { toFun := MulEquiv.toEquiv, ..} <;> intros <;> rfl
+def toPerm : MulAut M →* Equiv.Perm M where
+  toFun := MulEquiv.toEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align mul_aut.to_perm MulAut.toPerm
 
 /-- The tautological action by `MulAut M` on `M`.
@@ -173,19 +175,14 @@ variable (A) [Add A]
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance group : Group (AddAut A) := by
-  refine'
-  { mul := fun g h => AddEquiv.trans h g
-    one := AddEquiv.refl A
-    inv := AddEquiv.symm
-    div := fun g h => AddEquiv.trans h.symm g
-    npow := @npowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩
-    zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
-    .. } <;>
-  intros <;>
-  ext <;>
-  try rfl
-  apply Equiv.left_inv
+instance group : Group (AddAut A) where
+  mul g h := AddEquiv.trans h g
+  one := AddEquiv.refl _
+  inv := AddEquiv.symm
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+  mul_left_inv := AddEquiv.self_trans_symm
 #align add_aut.group AddAut.group
 
 instance : Inhabited (AddAut A) :=
@@ -234,8 +231,10 @@ theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
 #align add_aut.inv_apply_self AddAut.inv_apply_self
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
-def toPerm : AddAut A →* Equiv.Perm A := by
-  refine' { toFun := AddEquiv.toEquiv, .. } <;> intros <;> rfl
+def toPerm : AddAut A →* Equiv.Perm A where
+  toFun := AddEquiv.toEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align add_aut.to_perm AddAut.toPerm
 
 /-- The tautological action by `AddAut A` on `A`.

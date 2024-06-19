@@ -8,6 +8,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Support
+import Mathlib.Algebra.Module.ULift
 
 #align_import topology.algebra.const_mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
@@ -76,6 +77,9 @@ variable {M α β : Type*}
 section SMul
 
 variable [TopologicalSpace α] [SMul M α] [ContinuousConstSMul M α]
+
+@[to_additive]
+instance : ContinuousConstSMul (ULift M) α := ⟨fun γ ↦ continuous_const_smul (ULift.down γ)⟩
 
 @[to_additive]
 theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf : Tendsto f l (𝓝 a))
@@ -153,12 +157,20 @@ theorem IsCompact.smul {α β} [SMul α β] [TopologicalSpace β] [ContinuousCon
 #align is_compact.smul IsCompact.smul
 #align is_compact.vadd IsCompact.vadd
 
+@[to_additive]
+theorem Specializes.const_smul {x y : α} (h : x ⤳ y) (c : M) : (c • x) ⤳ (c • y) :=
+  h.map (continuous_const_smul c)
+
+@[to_additive]
+theorem Inseparable.const_smul {x y : α} (h : Inseparable x y) (c : M) :
+    Inseparable (c • x) (c • y) :=
+  h.map (continuous_const_smul c)
+
 end SMul
 
 section Monoid
 
 variable [TopologicalSpace α]
-
 variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
@@ -527,12 +539,12 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
     exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
     f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
-  refine' ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 _⟩
+  refine ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 ?_⟩
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
+    simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 #align t2_space_of_properly_discontinuous_smul_of_t2_space t2Space_of_properlyDiscontinuousSMul_of_t2Space
 #align t2_space_of_properly_discontinuous_vadd_of_t2_space t2Space_of_properlyDiscontinuousVAdd_of_t2Space
@@ -564,7 +576,7 @@ theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝
 
 theorem set_smul_mem_nhds_smul_iff {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x := by
-  refine' ⟨fun h => _, fun h => set_smul_mem_nhds_smul h hc⟩
+  refine ⟨fun h => ?_, fun h => set_smul_mem_nhds_smul h hc⟩
   rw [← inv_smul_smul₀ hc x, ← inv_smul_smul₀ hc s]
   exact set_smul_mem_nhds_smul h (inv_ne_zero hc)
 #align set_smul_mem_nhds_smul_iff set_smul_mem_nhds_smul_iff
@@ -578,7 +590,7 @@ variable {G₀ : Type*} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G�
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by
-  refine' Iff.trans _ (set_smul_mem_nhds_smul_iff hc)
+  refine Iff.trans ?_ (set_smul_mem_nhds_smul_iff hc)
   rw [smul_zero]
 #align set_smul_mem_nhds_zero_iff set_smul_mem_nhds_zero_iff
 

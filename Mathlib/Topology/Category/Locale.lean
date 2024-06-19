@@ -27,7 +27,7 @@ def Locale :=
 
 namespace Locale
 
-instance : CoeSort Locale (Type*) :=
+instance : CoeSort Locale Type* :=
   ⟨fun X => X.unop⟩
 
 instance (X : Locale) : Frame X :=
@@ -56,7 +56,7 @@ def topToLocale : TopCat ⥤ Locale :=
 #align Top_to_Locale topToLocale
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausToLocale.faithful : Faithful (compHausToTop ⋙ topToLocale.{u}) :=
+instance CompHausToLocale.faithful : (compHausToTop ⋙ topToLocale.{u}).Faithful :=
   ⟨fun h => by
     dsimp at h
     exact Opens.comap_injective (Quiver.Hom.op_inj h)⟩

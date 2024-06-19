@@ -40,7 +40,6 @@ section SkewAdjointEndomorphisms
 open LinearMap (BilinForm)
 
 variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (B : BilinForm R M)
 
 -- Porting note: Changed `(f g)` to `{f g}` for convenience in `skewAdjointLieSubalgebra`
@@ -94,7 +93,6 @@ section SkewAdjointMatrices
 open scoped Matrix
 
 variable {R : Type u} {n : Type w} [CommRing R] [DecidableEq n] [Fintype n]
-
 variable (J : Matrix n n R)
 
 theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=

@@ -93,7 +93,6 @@ set_option linter.uppercaseLean3 false in
 namespace Module.Baer
 
 variable {R Q} {M N : Type*} [AddCommGroup M] [AddCommGroup N]
-
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
 
 /-- If we view `M` as a submodule of `N` via the injective linear map `i : M ↪ N`, then a submodule
@@ -138,7 +137,7 @@ instance : Inf (ExtensionOf i f) where
       le := fun x hx =>
         (by
           rcases hx with ⟨x, rfl⟩
-          refine' ⟨X1.le (Set.mem_range_self _), X2.le (Set.mem_range_self _), _⟩
+          refine ⟨X1.le (Set.mem_range_self _), X2.le (Set.mem_range_self _), ?_⟩
           rw [← X1.is_extension x, ← X2.is_extension x] :
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
       is_extension := fun m => X1.is_extension _ }
@@ -177,11 +176,11 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
         chain_linearPMap_of_chain_extensionOf
           hchain) with
     le := by
-      refine' le_trans hnonempty.some.le <|
+      refine le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
-      refine' Eq.trans (hnonempty.some.is_extension m) _
+      refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
       generalize_proofs _ h1
       exact
@@ -242,8 +241,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: helper function. Lean looks for an instance of `Sup (Type u)` when the
 -- right hand side is substituted in directly
-@[reducible]
-def supExtensionOfMaxSingleton (y : N) : Submodule R N :=
+abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 
 variable {f}
@@ -260,14 +258,14 @@ set_option align.precheck false in
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.aux1 Module.Baer.extensionOfMax_adjoin.aux1
 
-/-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`.-/
+/-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`. -/
 def ExtensionOfMaxAdjoin.fst {y : N} (x : supExtensionOfMaxSingleton i f y) :
     (extensionOfMax i f).domain :=
   (extensionOfMax_adjoin.aux1 i x).choose
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.fst Module.Baer.ExtensionOfMaxAdjoin.fst
 
-/-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `snd` pick an arbitrary such `r`.-/
+/-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `snd` pick an arbitrary such `r`. -/
 def ExtensionOfMaxAdjoin.snd {y : N} (x : supExtensionOfMaxSingleton i f y) : R :=
   (extensionOfMax_adjoin.aux1 i x).choose_spec.choose
 set_option linter.uppercaseLean3 false in
@@ -430,7 +428,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
-  refine' Submodule.eq_top_iff'.mpr fun y => _
+  refine Submodule.eq_top_iff'.mpr fun y => ?_
   dsimp
   rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
     Submodule.mem_sup]
@@ -454,9 +452,9 @@ theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
   ⟨g', congr(LinearMap.toAddMonoidHom $hg')⟩
 
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
-linear map from an ideal can be extended, then the module is injective.-/
+linear map from an ideal can be extended, then the module is injective. -/
 protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
-  out := fun X Y _ _ _ _ i hi f ↦ by
+  out X Y _ _ _ _ i hi f := by
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
     exact ⟨h, DFunLike.congr_fun H⟩
 set_option linter.uppercaseLean3 false in
@@ -468,7 +466,7 @@ protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Modu
   let eR := Shrink.linearEquiv R R
   obtain ⟨g', hg'⟩ := Module.Injective.out (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
     (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
-  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa [eI,eR] using hg' (equivShrink I ⟨x, mx⟩)⟩
+  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa [eI, eR] using hg' (equivShrink I ⟨x, mx⟩)⟩
 
 protected theorem iff_injective [Small.{v} R] : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective⟩

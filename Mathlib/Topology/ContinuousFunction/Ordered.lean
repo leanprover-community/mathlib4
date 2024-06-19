@@ -1,11 +1,11 @@
 /-
-Copyright © 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam
 -/
-import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.ProjIcc
 
 #align_import topology.continuous_function.ordered from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
@@ -16,7 +16,6 @@ import Mathlib.Topology.Order.Lattice
 
 
 variable {α : Type*} {β : Type*} {γ : Type*}
-
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 namespace ContinuousMap

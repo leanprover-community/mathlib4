@@ -3,8 +3,8 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Data.Polynomial.Eval
 
 /-!
 # Limits of `P(x) / e ^ x` for a polynomial `P`

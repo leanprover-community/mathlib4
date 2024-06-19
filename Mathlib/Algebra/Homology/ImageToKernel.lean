@@ -29,7 +29,6 @@ universe v u w
 open CategoryTheory CategoryTheory.Limits
 
 variable {ι : Type*}
-
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
 open scoped Classical
@@ -465,7 +464,7 @@ variable [HasEqualizers V]
 /-- `homology f g w` can be computed as the cokernel of `kernel.lift g f w`.
 -/
 def homology'IsoCokernelLift (w : f ≫ g = 0) : homology' f g w ≅ cokernel (kernel.lift g f w) := by
-  refine' homology'IsoCokernelImageToKernel' f g w ≪≫ _
+  refine homology'IsoCokernelImageToKernel' f g w ≪≫ ?_
   have p : factorThruImage f ≫ imageToKernel' f g w = kernel.lift g f w := by
     ext
     simp [imageToKernel']

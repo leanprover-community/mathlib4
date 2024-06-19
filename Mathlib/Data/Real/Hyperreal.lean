@@ -793,11 +793,11 @@ theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) :
 
 theorem st_inv (x : ℝ*) : st x⁻¹ = (st x)⁻¹ := by
   by_cases h0 : x = 0
-  rw [h0, inv_zero, ← coe_zero, st_id_real, inv_zero]
+  · rw [h0, inv_zero, ← coe_zero, st_id_real, inv_zero]
   by_cases h1 : Infinitesimal x
-  rw [((infinitesimal_iff_infinite_inv h0).mp h1).st_eq, h1.st_eq, inv_zero]
+  · rw [((infinitesimal_iff_infinite_inv h0).mp h1).st_eq, h1.st_eq, inv_zero]
   by_cases h2 : Infinite x
-  rw [(infinitesimal_inv_of_infinite h2).st_eq, h2.st_eq, inv_zero]
+  · rw [(infinitesimal_inv_of_infinite h2).st_eq, h2.st_eq, inv_zero]
   exact ((isSt_st' h2).inv h1).st_eq
 #align hyperreal.st_inv Hyperreal.st_inv
 
@@ -818,8 +818,8 @@ theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
   have hy₁' := not_forall.mp (mt infinitesimal_def.2 hy₁)
   let ⟨r₁, hy₁''⟩ := hy₁'
   have hyr : 0 < r₁ ∧ ↑r₁ ≤ y := by
-    rwa [not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
-  rw [← div_mul_cancel r (ne_of_gt hyr.1), coe_mul]
+    rwa [Classical.not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
+  rw [← div_mul_cancel₀ r (ne_of_gt hyr.1), coe_mul]
   exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (le_of_lt (hx 0))
 #align hyperreal.infinite_pos_mul_of_infinite_pos_not_infinitesimal_pos Hyperreal.infinitePos_mul_of_infinitePos_not_infinitesimal_pos
 
