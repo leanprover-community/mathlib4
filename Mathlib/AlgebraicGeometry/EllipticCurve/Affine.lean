@@ -266,10 +266,10 @@ set_option linter.uppercaseLean3 false in
 
 @[deprecated (since := "2024-06-19")] alias eval_polynomial := polynomial_evalEval
 @[deprecated (since := "2024-06-19")] alias eval_polynomial_zero := polynomial_evalEval_zero
-@[deprecated (since := "2024-06-19")] alias eval_polynomial_X := polynomialX_evalEval
-@[deprecated (since := "2024-06-19")] alias eval_polynomial_X_zero := polynomialX_evalEval_zero
-@[deprecated (since := "2024-06-19")] alias eval_polynomial_Y := polynomialY_evalEval
-@[deprecated (since := "2024-06-19")] alias eval_polynomial_Y_zero := polynomialY_evalEval_zero
+@[deprecated (since := "2024-06-19")] alias eval_polynomialX := polynomialX_evalEval
+@[deprecated (since := "2024-06-19")] alias eval_polynomialX_zero := polynomialX_evalEval_zero
+@[deprecated (since := "2024-06-19")] alias eval_polynomialY := polynomialY_evalEval
+@[deprecated (since := "2024-06-19")] alias eval_polynomialY_zero := polynomialY_evalEval_zero
 
 /-- The proposition that an affine point $(x, y)$ in `W` is nonsingular.
 In other words, either $W_X(x, y) \ne 0$ or $W_Y(x, y) \ne 0$.
