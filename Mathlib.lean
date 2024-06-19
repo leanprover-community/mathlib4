@@ -216,7 +216,6 @@ import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Center
-import Mathlib.Algebra.Group.Centralizer
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Commute.Defs
