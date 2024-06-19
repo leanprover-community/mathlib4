@@ -117,13 +117,7 @@ variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 variable [(constantSheaf J B).Faithful] [(constantSheaf J B).Full] [J.PreservesSheafification U]
 variable (F : Sheaf J A) [J.HasSheafCompose U]
 
-noncomputable def constantCommuteCompose :
-    constantSheaf J A ⋙ sheafCompose J U ≅ U ⋙ constantSheaf J B :=
-  Functor.associator _ _ _ ≪≫ (isoWhiskerLeft (const Cᵒᵖ)
-    (sheafComposeNatIso J U (sheafificationAdjunction J A) (sheafificationAdjunction J B)).symm) ≪≫
-    (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (compConstIso _ _).symm _
-
-noncomputable def constantCommuteCompose' (X : A) :
+noncomputable def constantCommuteCompose (X : A) :
     ((constantSheaf J A).obj X).val ⋙ U ≅ ((constantSheaf J B).obj (U.obj X)).val :=
   (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).symm ≪≫
     (presheafToSheaf J B ⋙ sheafToPresheaf J B).mapIso (constComp Cᵒᵖ X U)
@@ -131,7 +125,7 @@ noncomputable def constantCommuteCompose' (X : A) :
 theorem sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
     [h : ((sheafCompose J U).obj F).IsDiscrete J B ht] :
     F.IsDiscrete J A ht := by
-  let j := constantCommuteCompose' J U (F.val.obj ⟨t⟩)
+  let j := constantCommuteCompose J U (F.val.obj ⟨t⟩)
   let fcounit := (constantSheafAdj J A ht).counit.app F
   let fff := (sheafCompose J U).map fcounit
   let gcounit := ((constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F))
@@ -160,7 +154,7 @@ theorem sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
       mkOfUnitCounit_counit, Functor.comp_map]
   have : gcounit.val = j.inv ≫ fff.val := by
     simp only [comp_obj, flip_obj_obj, sheafToPresheaf_obj, sheafCompose_obj_val, id_obj,
-      constantCommuteCompose', Iso.trans_inv, mapIso_inv, Functor.comp_map, sheafToPresheaf_map,
+      constantCommuteCompose, Iso.trans_inv, mapIso_inv, Functor.comp_map, sheafToPresheaf_map,
       Iso.symm_inv, Category.assoc, h, mapIso_hom, j, ← Sheaf.instCategorySheaf_comp_val,
       Iso.map_inv_hom_id_assoc]
   have : j.hom ≫ gcounit.val = fff.val := by simp [this]
@@ -177,7 +171,9 @@ theorem sheafCompose_preserves_discrete [h : F.IsDiscrete J A ht] :
     ((sheafCompose J U).obj F).IsDiscrete J B ht := by
   rw [isDiscrete_iff_mem_essImage] at h ⊢
   obtain ⟨Y, ⟨i⟩⟩ := h
-  exact ⟨U.obj Y, ⟨(constantCommuteCompose J U).symm.app _ ≪≫ (sheafCompose J U).mapIso i⟩⟩
+  exact ⟨U.obj Y, ⟨(fullyFaithfulSheafToPresheaf _ _).preimageIso
+    ((constantCommuteCompose J U Y).symm ≪≫
+      (sheafToPresheaf _ _).mapIso ((sheafCompose J U).mapIso i) )⟩⟩
 
 end
 
