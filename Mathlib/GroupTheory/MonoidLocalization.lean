@@ -390,85 +390,19 @@ section Scalar
 
 variable {R R₁ R₂ : Type*}
 
-/-- Scalar multiplication in a monoid localization is defined as `c • ⟨a, b⟩ = ⟨c • a, b⟩`. -/
-protected irreducible_def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Localization S) :
-  Localization S :=
-    Localization.liftOn z (fun a b ↦ mk (c • a) b)
-      (fun {a a' b b'} h ↦ mk_eq_mk_iff.2 (by
-        let ⟨b, hb⟩ := b
-        let ⟨b', hb'⟩ := b'
-        rw [r_eq_r'] at h ⊢
-        let ⟨t, ht⟩ := h
-        use t
-        dsimp only [Subtype.coe_mk] at ht ⊢
--- TODO: this definition should take `SMulCommClass R M M` instead of `IsScalarTower R M M` if
--- we ever want to generalize to the non-commutative case.
-        haveI : SMulCommClass R M M :=
-          ⟨fun r m₁ m₂ ↦ by simp_rw [smul_eq_mul, mul_comm m₁, smul_mul_assoc]⟩
-        simp only [mul_smul_comm, ht]))
-#align localization.smul Localization.smul
-
-instance instSMulLocalization [SMul R M] [IsScalarTower R M M] : SMul R (Localization S) where
-  smul := Localization.smul
-
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
     c • (mk a b : Localization S) = mk (c • a) b := by
- simp only [HSMul.hSMul, instHSMul, SMul.smul, instSMulLocalization, Localization.smul]
- show liftOn (mk a b) (fun a b => mk (c • a) b) _ = _
- exact liftOn_mk (fun a b => mk (c • a) b) _ a b
-#align localization.smul_mk Localization.smul_mk
+  rw [mk, mk, ← OreLocalization.smul_one_oreDiv_one_smul, OreLocalization.oreDiv_smul_oreDiv]
+  show (c • 1) • a /ₒ (b * 1) = _
+  rw [smul_assoc, one_smul, mul_one]
 
-instance [SMul R₁ M] [SMul R₂ M] [IsScalarTower R₁ M M] [IsScalarTower R₂ M M]
-  [SMulCommClass R₁ R₂ M] : SMulCommClass R₁ R₂ (Localization S) where
-  smul_comm s t := Localization.ind <| Prod.rec fun r x ↦ by simp only [smul_mk, smul_comm s t r]
+-- move me
+instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
+  smul_comm r s x := by
+    rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
 
-instance [SMul R₁ M] [SMul R₂ M] [IsScalarTower R₁ M M] [IsScalarTower R₂ M M] [SMul R₁ R₂]
-  [IsScalarTower R₁ R₂ M] : IsScalarTower R₁ R₂ (Localization S) where
-  smul_assoc s t := Localization.ind <| Prod.rec fun r x ↦ by simp only [smul_mk, smul_assoc s t r]
-
-instance smulCommClass_right {R : Type*} [SMul R M] [IsScalarTower R M M] :
-  SMulCommClass R (Localization S) (Localization S) where
-  smul_comm s :=
-      Localization.ind <|
-        Prod.rec fun r₁ x₁ ↦
-          Localization.ind <|
-            Prod.rec fun r₂ x₂ ↦ by
-              simp only [smul_mk, smul_eq_mul, mk_mul, mul_comm r₁, smul_mul_assoc]
-#align localization.smul_comm_class_right Localization.smulCommClass_right
-
-instance isScalarTower_right {R : Type*} [SMul R M] [IsScalarTower R M M] :
-  IsScalarTower R (Localization S) (Localization S) where
-  smul_assoc s :=
-    Localization.ind <|
-      Prod.rec fun r₁ x₁ ↦
-        Localization.ind <|
-          Prod.rec fun r₂ x₂ ↦ by simp only [smul_mk, smul_eq_mul, mk_mul, smul_mul_assoc]
-#align localization.is_scalar_tower_right Localization.isScalarTower_right
-
-instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsScalarTower R M M] [IsScalarTower Rᵐᵒᵖ M M]
-  [IsCentralScalar R M] : IsCentralScalar R (Localization S) where
-  op_smul_eq_smul s :=
-    Localization.ind <| Prod.rec fun r x ↦ by simp only [smul_mk, op_smul_eq_smul]
-
-instance [Monoid R] [MulAction R M] [IsScalarTower R M M] : MulAction R (Localization S) where
-  one_smul :=
-    Localization.ind <|
-      Prod.rec <| by
-        intros
-        simp only [Localization.smul_mk, one_smul]
-  mul_smul s₁ s₂ :=
-    Localization.ind <|
-      Prod.rec <| by
-        intros
-        simp only [Localization.smul_mk, mul_smul]
-
-instance [Monoid R] [MulDistribMulAction R M] [IsScalarTower R M M] :
-    MulDistribMulAction R (Localization S) where
-  smul_one s := by simp only [← Localization.mk_one, Localization.smul_mk, smul_one]
-  smul_mul s x y :=
-    Localization.induction_on₂ x y <|
-      Prod.rec fun r₁ x₁ ↦
-        Prod.rec fun r₂ x₂ ↦ by simp only [Localization.smul_mk, Localization.mk_mul, smul_mul']
+-- Note: Previously there was a `MulDistribMulAction R (Localization S)`.
+-- It was removed as it is not the correct action.
 
 end Scalar
 
@@ -1850,10 +1784,7 @@ namespace Localization
 
 variable {S}
 
-theorem mk_zero (x : S) : mk 0 (x : S) = 0 :=
-  calc
-    mk 0 x = mk 0 1 := mk_eq_mk_iff.mpr (r_of_eq (by simp))
-    _ = Localization.zero S := (Localization.zero_def S).symm
+theorem mk_zero (x : S) : mk 0 (x : S) = 0 := OreLocalization.zero_oreDiv' _
 
 instance : CommMonoidWithZero (Localization S) where
   zero_mul := fun x ↦ Localization.induction_on x fun y => by

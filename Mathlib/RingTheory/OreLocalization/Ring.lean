@@ -5,7 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
 import Mathlib.RingTheory.OreLocalization.Basic
 
@@ -87,6 +87,7 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z :=
 
 instance : Semiring R[S⁻¹] where
   __ := inferInstanceAs (MonoidWithZero (R[S⁻¹]))
+  __ := inferInstanceAs (AddCommMonoid (R[S⁻¹]))
   left_distrib := OreLocalization.left_distrib
   right_distrib := right_distrib
 
@@ -95,6 +96,31 @@ variable {X : Type*} [AddCommMonoid X] [Module R X]
 instance : Module R[S⁻¹] X[S⁻¹] where
   add_smul := OreLocalization.add_smul
   zero_smul := OreLocalization.zero_smul
+
+instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
+    [IsScalarTower R₀ R X] [IsScalarTower R₀ R R] :
+    Module R₀ X[S⁻¹] where
+  add_smul r s x := by simp only [← smul_one_oreDiv_one_smul, add_smul, ← add_oreDiv]
+  zero_smul x := by rw [← smul_one_oreDiv_one_smul, zero_smul, zero_oreDiv, zero_smul]
+
+/-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
+@[simps!]
+def numeratorRingHom : R →+* R[S⁻¹] where
+  __ := numeratorHom
+  map_zero' := by simp [numeratorHom]
+  map_add' := by simp [numeratorHom]
+
+instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
+  __ := inferInstanceAs (Module R₀ R[S⁻¹])
+  __ := numeratorRingHom.comp (algebraMap R₀ R)
+  commutes' r x := by
+    induction' x using OreLocalization.ind with r₁ s₁
+    dsimp
+    rw [mul_div_one, oreDiv_mul_char _ _ _ _ (algebraMap R₀ R r) s₁ (Algebra.commutes _ _).symm,
+      Algebra.commutes, mul_one]
+  smul_def' r x := by
+    dsimp
+    rw [Algebra.algebraMap_eq_smul_one, ← smul_eq_mul, smul_one_oreDiv_one_smul]
 
 section UMP
 
@@ -259,5 +285,38 @@ instance : DivisionRing R[R⁰⁻¹] where
   qsmul := _
 
 end DivisionRing
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R] {S : Submonoid R} [OreSet S]
+
+instance : CommSemiring R[S⁻¹] where
+  __ := inferInstanceAs (Semiring R[S⁻¹])
+  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] {S : Submonoid R} [OreSet S]
+
+instance : CommRing R[S⁻¹] where
+  __ := inferInstanceAs (Ring R[S⁻¹])
+  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+
+end CommRing
+
+section Field
+
+open nonZeroDivisors
+
+variable {R : Type*} [CommRing R] [Nontrivial R] [NoZeroDivisors R] [OreSet R⁰]
+
+noncomputable
+instance : Field R[R⁰⁻¹] where
+  __ := inferInstanceAs (DivisionRing R[R⁰⁻¹])
+  __ := inferInstanceAs (CommMonoid R[R⁰⁻¹])
+
+end Field
 
 end OreLocalization

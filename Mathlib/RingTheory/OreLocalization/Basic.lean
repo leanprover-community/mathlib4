@@ -449,34 +449,6 @@ theorem mul_div_one {p r : R} {s : S} : (p /ₒ s) * (r /ₒ 1) = (p * r) /ₒ s
   simp [oreDiv_mul_char p r s 1 p 1 (by simp)]
 #align ore_localization.div_one_mul OreLocalization.mul_div_one
 
-@[to_additive]
-instance : SMul R X[S⁻¹] where
-  smul r := liftExpand (fun x s ↦ oreNum r s • x /ₒ (oreDenom r s)) (by
-    intro x r' s h
-    dsimp only
-    rw [← mul_one (oreDenom r s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom _ _),
-      ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
-
-@[to_additive]
-theorem smul_oreDiv (r : R) (x : X) (s : S) : r • (x /ₒ s) = oreNum r s • x /ₒ (oreDenom r s) :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem oreDiv_one_smul (r : R) (x : X[S⁻¹]) : (r /ₒ (1 : S)) • x = r • x := by
-  induction' x using OreLocalization.ind with r s
-  rw [smul_oreDiv, oreDiv_smul_oreDiv, mul_one]
-
-@[to_additive]
-instance : MulAction R X[S⁻¹] where
-  one_smul := OreLocalization.ind fun x s ↦ by
-    rw [← oreDiv_one_smul, ← OreLocalization.one_def, one_smul]
-  mul_smul r r' := OreLocalization.ind fun x s ↦ by
-    rw [← oreDiv_one_smul, ← oreDiv_one_smul, ← oreDiv_one_smul, ← mul_div_one, mul_smul]
-
-@[to_additive]
-instance : IsScalarTower R R[S⁻¹] X[S⁻¹] where
-  smul_assoc a b c := by rw [← oreDiv_one_smul, ← oreDiv_one_smul, smul_smul, smul_eq_mul]
-
 /-- The fraction `s /ₒ 1` as a unit in `R[S⁻¹]`, where `s : S`. -/
 @[to_additive "The difference `s -ₒ 0` as a an additive unit."]
 def numeratorUnit (s : S) : Units R[S⁻¹] where
@@ -565,6 +537,94 @@ theorem universalMulHom_unique (φ : R[S⁻¹] →* T) (huniv : ∀ r : R, φ (n
 end UMP
 
 end Monoid
+
+section SMul
+
+variable {R R' M X : Type*} [Monoid M] {S : Submonoid M} [OreSet S] [MulAction M X]
+variable [SMul R X] [SMul R M] [IsScalarTower R M M] [IsScalarTower R M X]
+variable [SMul R' X] [SMul R' M] [IsScalarTower R' M M] [IsScalarTower R' M X]
+variable [SMul R R'] [IsScalarTower R R' M]
+
+/-- Scalar multiplication in a monoid localization is defined as `c • (a /ₒ s) = (c • a) /ₒ s`. -/
+@[to_additive]
+protected def hsmul (c : R) :
+    X[S⁻¹] → X[S⁻¹] :=
+  liftExpand (fun m s ↦ oreNum (c • 1) s • m /ₒ oreDenom (c • 1) s) (fun r t s ht ↦ by
+    dsimp only
+    rw [← mul_one (oreDenom (c • 1) s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom (c • 1) _),
+      ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
+
+/- Warning: This gives an diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
+at the same monoid twice. -/
+/- Although the definition does not require `IsScalarTower R M X`,
+it does not make sense without it. -/
+@[to_additive (attr := nolint unusedArguments)]
+instance [SMul R X] [SMul R M] [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
+  smul := OreLocalization.hsmul
+
+@[to_additive]
+theorem smul_oreDiv (r : R) (x : X) (s : S) :
+    r • (x /ₒ s) = oreNum (r • 1) s • x /ₒ oreDenom (r • 1) s := rfl
+
+@[to_additive (attr := simp)]
+theorem oreDiv_one_smul (r : M) (x : X[S⁻¹]) : (r /ₒ (1 : S)) • x = r • x := by
+  induction' x using OreLocalization.ind with r' s
+  rw [smul_oreDiv, oreDiv_smul_oreDiv, mul_one, smul_eq_mul, mul_one]
+
+@[to_additive]
+theorem smul_one_smul (r : R) (x : X[S⁻¹]) : (r • 1 : M) • x = r • x := by
+  induction' x using OreLocalization.ind with r' s
+  simp only [smul_oreDiv, smul_eq_mul, mul_one]
+
+@[to_additive]
+theorem smul_one_oreDiv_one_smul (r : R) (x : X[S⁻¹]) :
+    ((r • 1 : M) /ₒ (1 : S)) • x = r • x := by
+  rw [oreDiv_one_smul, smul_one_smul]
+
+@[to_additive]
+instance : IsScalarTower R R' X[S⁻¹] where
+  smul_assoc r m x := by
+    rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul,
+      ← mul_smul, mul_div_one]
+    simp only [smul_eq_mul, mul_one, smul_mul_assoc, smul_assoc, one_mul]
+
+@[to_additive]
+instance [SMulCommClass R R' M] : SMulCommClass R R' X[S⁻¹] where
+  smul_comm r m x := by
+    rw [← smul_one_smul m, ← smul_assoc, smul_comm, smul_assoc, smul_one_smul]
+
+@[to_additive]
+instance : IsScalarTower R M[S⁻¹] X[S⁻¹] where
+  smul_assoc r m x := by
+    rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, ← mul_smul, smul_eq_mul]
+
+@[to_additive]
+instance [SMulCommClass R M M] : SMulCommClass R M[S⁻¹] X[S⁻¹] where
+  smul_comm r x y := by
+    induction' x using OreLocalization.ind with r₁ s₁
+    induction' y using OreLocalization.ind with r₂ s₂
+    rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, smul_smul, smul_smul,
+      mul_div_one, oreDiv_mul_char _ _ _ _ (r • 1) s₁ (by simp), mul_one]
+    simp
+
+@[to_additive]
+instance [SMul Rᵐᵒᵖ M] [SMul Rᵐᵒᵖ X] [IsScalarTower Rᵐᵒᵖ M M] [IsScalarTower Rᵐᵒᵖ M X]
+  [IsCentralScalar R M] : IsCentralScalar R X[S⁻¹] where
+  op_smul_eq_smul r x := by
+    rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, op_smul_eq_smul]
+
+@[to_additive]
+instance {R} [Monoid R] [MulAction R M] [IsScalarTower R M M]
+    [MulAction R X] [IsScalarTower R M X] : MulAction R X[S⁻¹] where
+  one_smul := OreLocalization.ind fun x s ↦ by
+    rw [← smul_one_oreDiv_one_smul, one_smul, ← OreLocalization.one_def, one_smul]
+  mul_smul s₁ s₂ x := by rw [← smul_eq_mul, smul_assoc]
+
+@[to_additive]
+theorem smul_oreDiv_one (r : R) (x : X) : r • (x /ₒ (1 : S)) = (r • x) /ₒ (1 : S) := by
+  rw [← smul_one_oreDiv_one_smul, smul_div_one, smul_assoc, one_smul]
+
+end SMul
 
 section CommMonoid
 
@@ -789,9 +849,11 @@ instance : DistribMulAction R[S⁻¹] X[S⁻¹] where
   smul_zero := OreLocalization.smul_zero
   smul_add := OreLocalization.smul_add
 
-instance : DistribMulAction R X[S⁻¹] where
-  smul_zero _ := by rw [← oreDiv_one_smul, smul_zero]
-  smul_add _ _ _ := by simp only [← oreDiv_one_smul, smul_add]
+instance {R₀} [Monoid R₀] [MulAction R₀ X] [MulAction R₀ R]
+    [IsScalarTower R₀ R X] [IsScalarTower R₀ R R] :
+    DistribMulAction R₀ X[S⁻¹] where
+  smul_zero _ := by rw [← smul_one_oreDiv_one_smul, smul_zero]
+  smul_add _ _ _ := by simp only [← smul_one_oreDiv_one_smul, smul_add]
 
 end DistribMulAction
 

@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 
@@ -943,61 +944,9 @@ theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a => mk a b).
   map_list_sum (mkAddMonoidHom b) l
 #align localization.mk_list_sum Localization.mk_list_sum
 
-theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
-  (mkAddMonoidHom b).map_multiset_sum l
+theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum := by
+  convert (mkAddMonoidHom b).map_multiset_sum l
 #align localization.mk_multiset_sum Localization.mk_multiset_sum
-
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
-    DistribMulAction S (Localization M) where
-  smul_zero s := by simp only [← Localization.mk_zero 1, Localization.smul_mk, smul_zero]
-  smul_add s x y :=
-    Localization.induction_on₂ x y <|
-      Prod.rec fun r₁ x₁ =>
-        Prod.rec fun r₂ x₂ => by
-          simp only [Localization.smul_mk, Localization.add_mk, smul_add, mul_comm _ (s • _),
-            mul_comm _ r₁, mul_comm _ r₂, smul_mul_assoc]
-
-instance {S : Type*} [Semiring S] [MulSemiringAction S R] [IsScalarTower S R R] :
-    MulSemiringAction S (Localization M) :=
-  { inferInstanceAs (MulDistribMulAction S (Localization M)),
-    inferInstanceAs (DistribMulAction S (Localization M)) with }
-
-instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S (Localization M) :=
-  { inferInstanceAs (DistribMulAction S (Localization M)) with
-    zero_smul :=
-      Localization.ind <|
-        Prod.rec <| by
-          intros
-          simp only [Localization.smul_mk, zero_smul, mk_zero]
-    add_smul := fun s₁ s₂ =>
-      Localization.ind <|
-        Prod.rec <| by
-          intros
-          simp only [Localization.smul_mk, add_smul, add_mk_self] }
-
-instance algebra {S : Type*} [CommSemiring S] [Algebra S R] : Algebra S (Localization M) where
-  toRingHom :=
-    RingHom.comp
-      { Localization.monoidOf M with
-        toFun := (monoidOf M).toMap
-        map_zero' := by rw [← mk_zero (1 : M), mk_one_eq_monoidOf_mk]
-        map_add' := fun x y => by
-          simp only [← mk_one_eq_monoidOf_mk, add_mk, Submonoid.coe_one, one_mul, add_comm] }
-      (algebraMap S R)
-  smul_def' s :=
-    Localization.ind <|
-      Prod.rec <| by
-        intro r x
-        dsimp
-        simp only [← mk_one_eq_monoidOf_mk, mk_mul, Localization.smul_mk, one_mul,
-          Algebra.smul_def]
-  commutes' s :=
-    Localization.ind <|
-      Prod.rec <| by
-        intro r x
-        dsimp
-        simp only [← mk_one_eq_monoidOf_mk, mk_mul, Localization.smul_mk, one_mul, mul_one,
-          Algebra.commutes]
 
 instance isLocalization : IsLocalization M (Localization M) where
   map_units' := (Localization.monoidOf M).map_units
@@ -1099,59 +1048,12 @@ variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace Localization
 
-/-- Negation in a ring localization is defined as `-⟨a, b⟩ = ⟨-a, b⟩`. -/
-protected irreducible_def neg (z : Localization M) : Localization M :=
-  Localization.liftOn z (fun a b => mk (-a) b) fun {a b c d} h =>
-    mk_eq_mk_iff.2
-      (by
-        rw [r_eq_r'] at h ⊢
-        cases' h with t ht
-        use t
-        rw [mul_neg, mul_neg, ht]
-        ring_nf)
-#align localization.neg Localization.neg
-
-instance : Neg (Localization M) :=
-  ⟨Localization.neg⟩
-
-theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := by
-  show Localization.neg (mk a b) = mk (-a) b
-  rw [Localization.neg_def]
-  apply liftOn_mk
+theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := OreLocalization.neg_def _ _
 #align localization.neg_mk Localization.neg_mk
 
-instance : CommRing (Localization M) :=
-  { inferInstanceAs (CommSemiring (Localization M)) with
-    zsmul := (· • ·)
-    zsmul_zero' := fun x =>
-      Localization.induction_on x fun x => by simp only [smul_mk, zero_zsmul, mk_zero]
-    zsmul_succ' := fun n x =>
-      Localization.induction_on x fun x => by
-        simp [smul_mk, add_mk_self, -mk_eq_monoidOf_mk', add_smul]
-    zsmul_neg' := fun n x =>
-      Localization.induction_on x fun x => by
-        dsimp only
-        rw [smul_mk, smul_mk, neg_mk, ← neg_smul]
-        rfl
-    neg := Neg.neg
-    sub := fun x y => x + -y
-    sub_eq_add_neg := fun x y => rfl
-    add_left_neg := fun y =>
-      Localization.induction_on y
-        (by
-          intros
-          simp only [add_mk, Localization.mk_mul, neg_mk, ← mk_zero 1]
-          refine mk_eq_mk_iff.mpr (r_of_eq ?_)
-          simp only [Submonoid.coe_mul]
-          ring) }
-
 theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
-    mk ((d : R) * a - b * c) (b * d) :=
-  calc
-    mk a b - mk c d = mk a b + -mk c d := sub_eq_add_neg _ _
-    _ = mk a b + mk (-c) d := by rw [neg_mk]
-    _ = mk (b * -c + d * a) (b * d) := add_mk _ _ _ _
-    _ = mk (d * a - b * c) (b * d) := by congr; ring
+    mk ((d : R) * a - b * c) (b * d) := by
+  rw [sub_eq_add_neg, neg_mk, add_mk, add_comm, mul_neg, ← sub_eq_add_neg]
 #align localization.sub_mk Localization.sub_mk
 
 theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
