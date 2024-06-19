@@ -3,10 +3,8 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
-import Mathlib.MeasureTheory.Measure.WithDensity
+import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
-import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import measure_theory.function.strongly_measurable.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
@@ -141,7 +139,7 @@ theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
 @[deprecated (since := "2024-02-05")]
 alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
 
-@[deprecated StronglyMeasurable.of_finite]
+@[deprecated StronglyMeasurable.of_finite (since := "2024-02-06")]
 theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [TopologicalSpace β]
     (f : α → β) : StronglyMeasurable f :=
   .of_finite f
@@ -307,7 +305,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
       rw [Finset.mem_filter] at hy
       exact hy.2
-    refine (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+    refine (measure_mono Set.inter_subset_left).trans_lt ?_
     have h_lt_top := measure_spanningSets_lt_top (μ.restrict t) n
     rwa [Measure.restrict_apply' ht] at h_lt_top
   · by_cases hxt : x ∈ t
@@ -1069,7 +1067,7 @@ theorem exists_set_sigmaFinite [Zero β] [TopologicalSpace β] [T2Space β]
   · refine ⟨⟨⟨fun n => tᶜ ∪ T n, fun _ => trivial, fun n => ?_, ?_⟩⟩⟩
     · rw [Measure.restrict_apply' (MeasurableSet.iUnion hT_meas), Set.union_inter_distrib_right,
         Set.compl_inter_self t, Set.empty_union]
-      exact (measure_mono (Set.inter_subset_left _ _)).trans_lt (hT_lt_top n)
+      exact (measure_mono Set.inter_subset_left).trans_lt (hT_lt_top n)
     · rw [← Set.union_iUnion tᶜ T]
       exact Set.compl_union_self _
 #align measure_theory.fin_strongly_measurable.exists_set_sigma_finite MeasureTheory.FinStronglyMeasurable.exists_set_sigmaFinite
@@ -1272,7 +1270,7 @@ protected lemma mono_ac (h : ν ≪ μ) (hμ : AEStronglyMeasurable f μ) : AESt
 #align measure_theory.ae_strongly_measurable.mono' MeasureTheory.AEStronglyMeasurable.mono_ac
 #align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.AEStronglyMeasurable.mono_ac
 
-@[deprecated] protected alias mono' := AEStronglyMeasurable.mono_ac
+@[deprecated (since := "2024-02-15")] protected alias mono' := AEStronglyMeasurable.mono_ac
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEStronglyMeasurable f (μ.restrict t)) :
     AEStronglyMeasurable f (μ.restrict s) :=
@@ -1642,11 +1640,6 @@ theorem comp_quasiMeasurePreserving {γ : Type*} {_ : MeasurableSpace γ} {_ : M
   (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
 #align measure_theory.ae_strongly_measurable.comp_quasi_measure_preserving MeasureTheory.AEStronglyMeasurable.comp_quasiMeasurePreserving
 
-theorem comp_measurePreserving {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}
-    {f : γ → α} {μ : Measure γ} {ν : Measure α} (hg : AEStronglyMeasurable g ν)
-    (hf : MeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
-  hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving
-
 theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
     ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by
   refine ⟨range (hf.mk f), hf.stronglyMeasurable_mk.isSeparable_range, ?_⟩
@@ -1707,13 +1700,6 @@ theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩
     exact ⟨g ⁻¹' t, hg.isSeparable_preimage ht, h't⟩
 #align embedding.ae_strongly_measurable_comp_iff Embedding.aestronglyMeasurable_comp_iff
-
-theorem _root_.MeasureTheory.MeasurePreserving.aestronglyMeasurable_comp_iff {β : Type*}
-    {f : α → β} {mα : MeasurableSpace α} {μa : Measure α} {mβ : MeasurableSpace β} {μb : Measure β}
-    (hf : MeasurePreserving f μa μb) (h₂ : MeasurableEmbedding f) {g : β → γ} :
-    AEStronglyMeasurable (g ∘ f) μa ↔ AEStronglyMeasurable g μb := by
-  rw [← hf.map_eq, h₂.aestronglyMeasurable_map_iff]
-#align measure_theory.measure_preserving.ae_strongly_measurable_comp_iff MeasureTheory.MeasurePreserving.aestronglyMeasurable_comp_iff
 
 /-- An almost everywhere sequential limit of almost everywhere strongly measurable functions is
 almost everywhere strongly measurable. -/
@@ -1845,18 +1831,6 @@ theorem smul_measure {R : Type*} [Monoid R] [DistribMulAction R ℝ≥0∞] [IsS
   ⟨h.mk f, h.stronglyMeasurable_mk, ae_smul_measure h.ae_eq_mk c⟩
 #align measure_theory.ae_strongly_measurable.smul_measure MeasureTheory.AEStronglyMeasurable.smul_measure
 
-section NormedSpace
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-theorem _root_.aestronglyMeasurable_smul_const_iff {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
-    AEStronglyMeasurable (fun x => f x • c) μ ↔ AEStronglyMeasurable f μ :=
-  (closedEmbedding_smul_left hc).toEmbedding.aestronglyMeasurable_comp_iff
-#align ae_strongly_measurable_smul_const_iff aestronglyMeasurable_smul_const_iff
-
-end NormedSpace
-
 section MulAction
 
 variable {M G G₀ : Type*}
@@ -1881,59 +1855,6 @@ theorem _root_.aestronglyMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) 
 #align ae_strongly_measurable_const_smul_iff₀ aestronglyMeasurable_const_smul_iff₀
 
 end MulAction
-
-section ContinuousLinearMapNontriviallyNormedField
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
-theorem _root_.StronglyMeasurable.apply_continuousLinearMap {_m : MeasurableSpace α}
-    {φ : α → F →L[𝕜] E}
-    (hφ : StronglyMeasurable φ) (v : F) : StronglyMeasurable fun a => φ a v :=
-  (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_stronglyMeasurable hφ
-#align strongly_measurable.apply_continuous_linear_map StronglyMeasurable.apply_continuousLinearMap
-
-@[measurability]
-theorem apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : AEStronglyMeasurable φ μ) (v : F) :
-    AEStronglyMeasurable (fun a => φ a v) μ :=
-  (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_aestronglyMeasurable hφ
-#align measure_theory.ae_strongly_measurable.apply_continuous_linear_map MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap
-
-theorem _root_.ContinuousLinearMap.aestronglyMeasurable_comp₂ (L : E →L[𝕜] F →L[𝕜] G) {f : α → E}
-    {g : α → F} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
-    AEStronglyMeasurable (fun x => L (f x) (g x)) μ :=
-  L.continuous₂.comp_aestronglyMeasurable₂ hf hg
-#align continuous_linear_map.ae_strongly_measurable_comp₂ ContinuousLinearMap.aestronglyMeasurable_comp₂
-
-end ContinuousLinearMapNontriviallyNormedField
-
-theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] {f : α → ℝ≥0} (hf : Measurable f) {g : α → E} :
-    AEStronglyMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
-      AEStronglyMeasurable (fun x => (f x : ℝ) • g x) μ := by
-  constructor
-  · rintro ⟨g', g'meas, hg'⟩
-    have A : MeasurableSet { x : α | f x ≠ 0 } := (hf (measurableSet_singleton 0)).compl
-    refine ⟨fun x => (f x : ℝ) • g' x, hf.coe_nnreal_real.stronglyMeasurable.smul g'meas, ?_⟩
-    apply @ae_of_ae_restrict_of_ae_restrict_compl _ _ _ { x | f x ≠ 0 }
-    · rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal] at hg'
-      rw [ae_restrict_iff' A]
-      filter_upwards [hg'] with a ha h'a
-      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne, ENNReal.coe_eq_zero] using h'a
-      rw [ha this]
-    · filter_upwards [ae_restrict_mem A.compl] with x hx
-      simp only [Classical.not_not, mem_setOf_eq, mem_compl_iff] at hx
-      simp [hx]
-  · rintro ⟨g', g'meas, hg'⟩
-    refine ⟨fun x => (f x : ℝ)⁻¹ • g' x, hf.coe_nnreal_real.inv.stronglyMeasurable.smul g'meas, ?_⟩
-    rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal]
-    filter_upwards [hg'] with x hx h'x
-    rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
-    simp only [Ne, ENNReal.coe_eq_zero] at h'x
-    simpa only [NNReal.coe_eq_zero, Ne] using h'x
-#align ae_strongly_measurable_with_density_iff aestronglyMeasurable_withDensity_iff
 
 end AEStronglyMeasurable
 

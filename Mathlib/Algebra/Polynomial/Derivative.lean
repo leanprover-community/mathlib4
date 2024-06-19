@@ -137,15 +137,8 @@ theorem derivative_one : derivative (1 : R[X]) = 0 :=
   derivative_C
 #align polynomial.derivative_one Polynomial.derivative_one
 
-set_option linter.deprecated false in
--- Porting note (#10618): removed `simp`: `simp` can prove it.
-theorem derivative_bit0 {a : R[X]} : derivative (bit0 a) = bit0 (derivative a) := by simp [bit0]
-#align polynomial.derivative_bit0 Polynomial.derivative_bit0
-
-set_option linter.deprecated false in
--- Porting note (#10618): removed `simp`: `simp` can prove it.
-theorem derivative_bit1 {a : R[X]} : derivative (bit1 a) = bit0 (derivative a) := by simp [bit1]
-#align polynomial.derivative_bit1 Polynomial.derivative_bit1
+#noalign polynomial.derivative_bit0
+#noalign polynomial.derivative_bit1
 
 -- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_add {f g : R[X]} : derivative (f + g) = derivative f + derivative g :=
@@ -495,7 +488,7 @@ theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
   induction' k with k ih
   · erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
   · rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
-      Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
+      Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul]
     simp [mul_comm, mul_assoc, mul_left_comm]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_pow_eq_nat_cast_mul Polynomial.iterate_derivative_X_pow_eq_natCast_mul

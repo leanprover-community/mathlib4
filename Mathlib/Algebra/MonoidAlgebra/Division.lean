@@ -64,7 +64,7 @@ theorem divOf_apply (g : G) (x : k[G]) (g' : G) : (x /ᵒᶠ g) g' = x (g + g') 
 @[simp]
 theorem support_divOf (g : G) (x : k[G]) :
     (x /ᵒᶠ g).support =
-      x.support.preimage (g + ·) (Function.Injective.injOn (add_right_injective g) _) :=
+      x.support.preimage (g + ·) (Function.Injective.injOn (add_right_injective g)) :=
   rfl
 #align add_monoid_algebra.support_div_of AddMonoidAlgebra.support_divOf
 

@@ -266,7 +266,7 @@ def supClosure : ClosureOperator (Set α) := .ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine ⟨_, ht.mono <| subset_union_left _ _, ?_, sup'_union ht hu _⟩
+    refine ⟨_, ht.mono subset_union_left, ?_, sup'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
   (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetSup'_mem ht fun i hi ↦ hs <| hts hi)
@@ -329,7 +329,7 @@ def infClosure : ClosureOperator (Set α) := ClosureOperator.ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine ⟨_, ht.mono <| subset_union_left _ _, ?_, inf'_union ht hu _⟩
+    refine ⟨_, ht.mono subset_union_left, ?_, inf'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
   (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetInf'_mem ht fun i hi ↦ hs <| hts hi)

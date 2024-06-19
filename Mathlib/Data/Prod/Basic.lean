@@ -19,9 +19,10 @@ It also defines better delaborators for product projections.
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 @[simp]
-theorem Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) :=
-  rfl
-#align prod_map Prod_map
+theorem Prod.map_apply (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) := rfl
+#align prod_map Prod.map_apply
+
+@[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
 
 namespace Prod
 
@@ -304,35 +305,42 @@ namespace Function
 
 variable {f : α → γ} {g : β → δ} {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α} {g₂ : δ → γ}
 
-theorem Injective.Prod_map (hf : Injective f) (hg : Injective g) : Injective (map f g) :=
+theorem Injective.prodMap (hf : Injective f) (hg : Injective g) : Injective (map f g) :=
   fun _ _ h ↦ ext (hf (ext_iff.1 h).1) (hg <| (ext_iff.1 h).2)
-#align function.injective.prod_map Function.Injective.Prod_map
+#align function.injective.prod_map Function.Injective.prodMap
 
-theorem Surjective.Prod_map (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=
+theorem Surjective.prodMap (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=
   fun p ↦
   let ⟨x, hx⟩ := hf p.1
   let ⟨y, hy⟩ := hg p.2
   ⟨(x, y), Prod.ext hx hy⟩
-#align function.surjective.prod_map Function.Surjective.Prod_map
+#align function.surjective.prod_map Function.Surjective.prodMap
 
-theorem Bijective.Prod_map (hf : Bijective f) (hg : Bijective g) : Bijective (map f g) :=
-  ⟨hf.1.Prod_map hg.1, hf.2.Prod_map hg.2⟩
-#align function.bijective.prod_map Function.Bijective.Prod_map
+theorem Bijective.prodMap (hf : Bijective f) (hg : Bijective g) : Bijective (map f g) :=
+  ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2⟩
+#align function.bijective.prod_map Function.Bijective.prodMap
 
-theorem LeftInverse.Prod_map (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) :
+theorem LeftInverse.prodMap (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) :
     LeftInverse (map f₁ g₁) (map f₂ g₂) :=
   fun a ↦ by rw [Prod.map_map, hf.comp_eq_id, hg.comp_eq_id, map_id, id]
-#align function.left_inverse.prod_map Function.LeftInverse.Prod_map
+#align function.left_inverse.prod_map Function.LeftInverse.prodMap
 
-theorem RightInverse.Prod_map :
+theorem RightInverse.prodMap :
     RightInverse f₁ f₂ → RightInverse g₁ g₂ → RightInverse (map f₁ g₁) (map f₂ g₂) :=
-  LeftInverse.Prod_map
-#align function.right_inverse.prod_map Function.RightInverse.Prod_map
+  LeftInverse.prodMap
+#align function.right_inverse.prod_map Function.RightInverse.prodMap
 
-theorem Involutive.Prod_map {f : α → α} {g : β → β} :
+theorem Involutive.prodMap {f : α → α} {g : β → β} :
     Involutive f → Involutive g → Involutive (map f g) :=
-  LeftInverse.Prod_map
-#align function.involutive.prod_map Function.Involutive.Prod_map
+  LeftInverse.prodMap
+#align function.involutive.prod_map Function.Involutive.prodMap
+
+@[deprecated (since := "2024-05-08")] alias Injective.Prod_map := Injective.prodMap
+@[deprecated (since := "2024-05-08")] alias Surjective.Prod_map := Surjective.prodMap
+@[deprecated (since := "2024-05-08")] alias Bijective.Prod_map := Bijective.prodMap
+@[deprecated (since := "2024-05-08")] alias LeftInverse.Prod_map := LeftInverse.prodMap
+@[deprecated (since := "2024-05-08")] alias RightInverse.Prod_map := RightInverse.prodMap
+@[deprecated (since := "2024-05-08")] alias Involutive.Prod_map := Involutive.prodMap
 
 end Function
 
@@ -351,7 +359,7 @@ theorem map_injective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
       fun b₁ b₂ hb => by
       inhabit α
       injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb : _)⟩,
-    fun h => h.1.Prod_map h.2⟩
+    fun h => h.1.prodMap h.2⟩
 #align prod.map_injective Prod.map_injective
 
 @[simp]
@@ -366,7 +374,7 @@ theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → �
       inhabit γ
       obtain ⟨⟨a, b⟩, h⟩ := h (default, d)
       exact ⟨b, congr_arg Prod.snd h⟩⟩,
-    fun h => h.1.Prod_map h.2⟩
+    fun h => h.1.prodMap h.2⟩
 #align prod.map_surjective Prod.map_surjective
 
 @[simp]
@@ -387,7 +395,7 @@ theorem map_leftInverse [Nonempty β] [Nonempty δ] {f₁ : α → β} {g₁ : �
       fun d => by
       inhabit β
       exact congr_arg Prod.snd (h (default, d))⟩,
-    fun h => h.1.Prod_map h.2 ⟩
+    fun h => h.1.prodMap h.2 ⟩
 #align prod.map_left_inverse Prod.map_leftInverse
 
 @[simp]

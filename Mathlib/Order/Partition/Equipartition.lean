@@ -120,7 +120,7 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
   simp_rw [mem_filter, hP.card_small_parts_eq_mod] at es
   let sneg : { x // x ∈ P.parts ∧ ¬x.card = s.card / P.parts.card + 1 } ≃
       { x // x ∈ P.parts ∧ x.card = s.card / P.parts.card } := by
-    apply Equiv.subtypeEquiv (by rfl)
+    apply (Equiv.refl _).subtypeEquiv
     simp only [Equiv.refl_apply, and_congr_right_iff]
     exact fun _ ha ↦ by rw [hP.card_part_eq_average_iff ha, ne_eq]
   replace el : { x : P.parts // x.1.card = s.card / P.parts.card + 1 } ≃

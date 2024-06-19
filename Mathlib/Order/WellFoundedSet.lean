@@ -198,7 +198,7 @@ theorem WellFoundedOn.union (hs : s.WellFoundedOn r) (ht : t.WellFoundedOn r) :
 
 @[simp]
 theorem wellFoundedOn_union : (s ∪ t).WellFoundedOn r ↔ s.WellFoundedOn r ∧ t.WellFoundedOn r :=
-  ⟨fun h => ⟨h.subset <| subset_union_left _ _, h.subset <| subset_union_right _ _⟩, fun h =>
+  ⟨fun h => ⟨h.subset subset_union_left, h.subset subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 #align set.well_founded_on_union Set.wellFoundedOn_union
 
@@ -296,7 +296,7 @@ theorem PartiallyWellOrderedOn.union (hs : s.PartiallyWellOrderedOn r)
 @[simp]
 theorem partiallyWellOrderedOn_union :
     (s ∪ t).PartiallyWellOrderedOn r ↔ s.PartiallyWellOrderedOn r ∧ t.PartiallyWellOrderedOn r :=
-  ⟨fun h => ⟨h.mono <| subset_union_left _ _, h.mono <| subset_union_right _ _⟩, fun h =>
+  ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 #align set.partially_well_ordered_on_union Set.partiallyWellOrderedOn_union
 
@@ -690,8 +690,8 @@ theorem IsWF.min_le_min_of_subset {hs : s.IsWF} {hsn : s.Nonempty} {ht : t.IsWF}
 theorem IsWF.min_union (hs : s.IsWF) (hsn : s.Nonempty) (ht : t.IsWF) (htn : t.Nonempty) :
     (hs.union ht).min (union_nonempty.2 (Or.intro_left _ hsn)) =
       Min.min (hs.min hsn) (ht.min htn) := by
-  refine le_antisymm (le_min (IsWF.min_le_min_of_subset (subset_union_left _ _))
-    (IsWF.min_le_min_of_subset (subset_union_right _ _))) ?_
+  refine le_antisymm (le_min (IsWF.min_le_min_of_subset subset_union_left)
+    (IsWF.min_le_min_of_subset subset_union_right)) ?_
   rw [min_le_iff]
   exact ((mem_union _ _ _).1 ((hs.union ht).min_mem (union_nonempty.2 (.inl hsn)))).imp
     (hs.min_le _) (ht.min_le _)
@@ -875,7 +875,7 @@ theorem fiberProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
     ext x
     simp [f]
   rw [h]
-  apply IsPWO.image_of_monotoneOn (hαβ.mono (inter_subset_left s _))
+  apply IsPWO.image_of_monotoneOn (hαβ.mono inter_subset_left)
   rintro b ⟨-, hb⟩ c ⟨-, hc⟩ hbc
   simp only [mem_preimage, mem_singleton_iff] at hb hc
   have : (ofLex b).1 < (ofLex c).1 ∨ (ofLex b).1 = (ofLex c).1 ∧ f b ≤ f c :=

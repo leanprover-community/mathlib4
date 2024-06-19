@@ -25,10 +25,6 @@ We also introduce typeclasses `HasRightKanExtension L F` and `HasLeftKanExtensio
 which assert the existence of a right or left Kan extension, and chosen Kan extensions
 are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
-## TODO (@joelriou)
-
-* define left/right derived functors as particular cases of Kan extensions
-
 ## References
 * https://ncatlab.org/nlab/show/Kan+extension
 

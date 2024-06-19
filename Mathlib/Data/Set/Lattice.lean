@@ -1555,7 +1555,7 @@ theorem image_iInter {f : α → β} (hf : Bijective f) (s : ι → Set α) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   cases isEmpty_or_nonempty ι
   · simp_rw [iInter_of_empty, image_univ_of_surjective hf.surjective]
-  · exact (hf.injective.injOn _).image_iInter_eq
+  · exact hf.injective.injOn.image_iInter_eq
 #align set.image_Inter Set.image_iInter
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -2091,6 +2091,22 @@ theorem disjoint_sUnion_right {s : Set α} {S : Set (Set α)} :
     Disjoint s (⋃₀S) ↔ ∀ t ∈ S, Disjoint s t :=
   disjoint_sSup_iff
 #align set.disjoint_sUnion_right Set.disjoint_sUnion_right
+
+lemma biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ {ι : Type*} {Es : ι → Set α}
+    (Es_union : ⋃ i, Es i = univ) (Es_disj : Pairwise fun i j ↦ Disjoint (Es i) (Es j))
+    (I : Set ι) :
+    (⋃ i ∈ I, Es i)ᶜ = ⋃ i ∈ Iᶜ, Es i := by
+  ext x
+  obtain ⟨i, hix⟩ : ∃ i, x ∈ Es i := by simp [← mem_iUnion, Es_union]
+  have obs : ∀ (J : Set ι), x ∈ ⋃ j ∈ J, Es j ↔ i ∈ J := by
+    refine fun J ↦ ⟨?_, fun i_in_J ↦ by simpa only [mem_iUnion, exists_prop] using ⟨i, i_in_J, hix⟩⟩
+    intro x_in_U
+    simp only [mem_iUnion, exists_prop] at x_in_U
+    obtain ⟨j, j_in_J, hjx⟩ := x_in_U
+    rwa [show i = j by by_contra i_ne_j; exact Disjoint.ne_of_mem (Es_disj i_ne_j) hix hjx rfl]
+  have obs' : ∀ (J : Set ι), x ∈ (⋃ j ∈ J, Es j)ᶜ ↔ i ∉ J :=
+    fun J ↦ by simpa only [mem_compl_iff, not_iff_not] using obs J
+  rw [obs, obs', mem_compl_iff]
 
 end Set
 

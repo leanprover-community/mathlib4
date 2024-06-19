@@ -448,11 +448,11 @@ theorem adjoin_toSubalgebra (s : Set A) :
 
 @[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
-  (Set.subset_union_left s (star s)).trans Algebra.subset_adjoin
+  Set.subset_union_left.trans Algebra.subset_adjoin
 #align star_subalgebra.subset_adjoin StarAlgebra.subset_adjoin
 
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
-  (Set.subset_union_right s (star s)).trans Algebra.subset_adjoin
+  Set.subset_union_right.trans Algebra.subset_adjoin
 #align star_subalgebra.star_subset_adjoin StarAlgebra.star_subset_adjoin
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
@@ -469,7 +469,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → StarSubalgebra R A
   intro s S
   rw [← toSubalgebra_le_iff, adjoin_toSubalgebra, Algebra.adjoin_le_iff, coe_toSubalgebra]
   exact
-    ⟨fun h => (Set.subset_union_left s _).trans h, fun h =>
+    ⟨fun h => Set.subset_union_left.trans h, fun h =>
       Set.union_subset h fun x hx => star_star x ▸ star_mem (show star x ∈ S from h hx)⟩
 #align star_subalgebra.gc StarAlgebra.gc
 

@@ -3,11 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Data.Nat.ModEq
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.pell_matiyasevic from "leanprover-community/mathlib"@"795b501869b9fa7aa716d5fdadd00c03f983a605"
 

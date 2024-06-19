@@ -242,7 +242,7 @@ should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) : orthogonalProjectionFn s p ∈ s := by
   rw [← mem_coe, ← Set.singleton_subset_iff, ← inter_eq_singleton_orthogonalProjectionFn]
-  exact Set.inter_subset_left _ _
+  exact Set.inter_subset_left
 #align euclidean_geometry.orthogonal_projection_fn_mem EuclideanGeometry.orthogonalProjectionFn_mem
 
 /-- The `orthogonalProjectionFn` lies in the orthogonal
@@ -252,7 +252,7 @@ theorem orthogonalProjectionFn_mem_orthogonal {s : AffineSubspace ℝ P} [Nonemp
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjectionFn s p ∈ mk' p s.directionᗮ := by
   rw [← mem_coe, ← Set.singleton_subset_iff, ← inter_eq_singleton_orthogonalProjectionFn]
-  exact Set.inter_subset_right _ _
+  exact Set.inter_subset_right
 #align euclidean_geometry.orthogonal_projection_fn_mem_orthogonal EuclideanGeometry.orthogonalProjectionFn_mem_orthogonal
 
 /-- Subtracting `p` from its `orthogonalProjectionFn` produces a
