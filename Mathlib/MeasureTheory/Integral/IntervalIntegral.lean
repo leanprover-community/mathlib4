@@ -319,7 +319,6 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 #align interval_integrable.comp_mul_left IntervalIntegrable.comp_mul_left
 
--- Porting note (#10756): new lemma
 theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
       IntervalIntegrable f volume a b :=
