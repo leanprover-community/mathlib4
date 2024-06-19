@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Int.Cast.Prod
-import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
 import Mathlib.Algebra.Order.Ring.Defs
@@ -105,12 +106,12 @@ namespace NonUnitalRingHom
 
 variable (R S) [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
 
-/-- Given non-unital semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`.-/
+/-- Given non-unital semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`. -/
 def fst : R × S →ₙ+* R :=
   { MulHom.fst R S, AddMonoidHom.fst R S with toFun := Prod.fst }
 #align non_unital_ring_hom.fst NonUnitalRingHom.fst
 
-/-- Given non-unital semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`.-/
+/-- Given non-unital semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`. -/
 def snd : R × S →ₙ+* S :=
   { MulHom.snd R S, AddMonoidHom.snd R S with toFun := Prod.snd }
 #align non_unital_ring_hom.snd NonUnitalRingHom.snd
@@ -159,10 +160,9 @@ theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T)
 
 end Prod
 
-section Prod_map
+section prodMap
 
 variable [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring S'] [NonUnitalNonAssocSemiring T]
-
 variable (f : R →ₙ+* R') (g : S →ₙ+* S')
 
 /-- `Prod.map` as a `NonUnitalRingHom`. -/
@@ -184,7 +184,7 @@ theorem prod_comp_prodMap (f : T →ₙ+* R) (g : T →ₙ+* S) (f' : R →ₙ+*
   rfl
 #align non_unital_ring_hom.prod_comp_prod_map NonUnitalRingHom.prod_comp_prodMap
 
-end Prod_map
+end prodMap
 
 end NonUnitalRingHom
 
@@ -192,15 +192,18 @@ namespace RingHom
 
 variable (R S) [NonAssocSemiring R] [NonAssocSemiring S]
 
-/-- Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`.-/
+/-- Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`. -/
 def fst : R × S →+* R :=
   { MonoidHom.fst R S, AddMonoidHom.fst R S with toFun := Prod.fst }
 #align ring_hom.fst RingHom.fst
 
-/-- Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`.-/
+/-- Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`. -/
 def snd : R × S →+* S :=
   { MonoidHom.snd R S, AddMonoidHom.snd R S with toFun := Prod.snd }
 #align ring_hom.snd RingHom.snd
+
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (fst R S) := ⟨(⟨⟨·, 0⟩, rfl⟩)⟩
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (snd R S) := ⟨(⟨⟨0, ·⟩, rfl⟩)⟩
 
 variable {R S}
 
@@ -246,10 +249,9 @@ theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).co
 
 end Prod
 
-section Prod_map
+section prodMap
 
 variable [NonAssocSemiring R'] [NonAssocSemiring S'] [NonAssocSemiring T]
-
 variable (f : R →+* R') (g : S →+* S')
 
 /-- `Prod.map` as a `RingHom`. -/
@@ -271,7 +273,7 @@ theorem prod_comp_prodMap (f : T →+* R) (g : T →+* S) (f' : R →+* R') (g' 
   rfl
 #align ring_hom.prod_comp_prod_map RingHom.prod_comp_prodMap
 
-end Prod_map
+end prodMap
 
 end RingHom
 
@@ -310,7 +312,7 @@ section
 
 variable (R R' S S')
 
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+/-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[simps apply]
 def prodProdProdComm : (R × R') × S × S' ≃+* (R × S) × R' × S' :=
   { AddEquiv.prodProdProdComm R R' S S', MulEquiv.prodProdProdComm R R' S S' with
@@ -398,7 +400,7 @@ instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) 
 instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
   { inferInstanceAs (OrderedSemiring (α × β)), inferInstanceAs (CommSemiring (α × β)) with }
 
--- porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
+-- Porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
 instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
   { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedAddCommGroup (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩

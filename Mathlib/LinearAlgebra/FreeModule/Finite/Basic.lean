@@ -46,9 +46,7 @@ end Ring
 section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
-
 variable [AddCommGroup N] [Module R N] [Module.Free R N]
-
 variable {R}
 
 /-- A free module with a basis indexed by a `Fintype` is finite. -/
@@ -56,7 +54,7 @@ theorem _root_.Module.Finite.of_basis {R M ι : Type*} [Semiring R] [AddCommMono
     [_root_.Finite ι] (b : Basis ι R M) : Module.Finite R M := by
   cases nonempty_fintype ι
   classical
-    refine' ⟨⟨Finset.univ.image b, _⟩⟩
+    refine ⟨⟨Finset.univ.image b, ?_⟩⟩
     simp only [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
 #align module.finite.of_basis Module.Finite.of_basis
 

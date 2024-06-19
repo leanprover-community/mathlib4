@@ -29,7 +29,6 @@ locale.
 universe u v w x
 
 variable {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace ContinuousMap
@@ -46,7 +45,6 @@ structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [Topologi
   right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
 #align continuous_map.homotopy_equiv ContinuousMap.HomotopyEquiv
 
--- mathport name: continuous_map.homotopy_equiv
 scoped infixl:25 " ≃ₕ " => ContinuousMap.HomotopyEquiv
 
 namespace HomotopyEquiv
@@ -54,7 +52,7 @@ namespace HomotopyEquiv
 /-- Coercion of a `HomotopyEquiv` to function. While the Lean 4 way is to unfold coercions, this
 auxiliary definition will make porting of Lean 3 code easier.
 
-Porting note: TODO: drop this definition. -/
+Porting note (#11215): TODO: drop this definition. -/
 @[coe] def toFun' (e : X ≃ₕ Y) : X → Y := e.toFun
 
 instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩

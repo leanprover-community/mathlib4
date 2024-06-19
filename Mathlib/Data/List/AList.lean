@@ -317,6 +317,12 @@ theorem lookup_insert_ne {a a'} {b' : β a'} {s : AList β} (h : a ≠ a') :
   dlookup_kinsert_ne h
 #align alist.lookup_insert_ne AList.lookup_insert_ne
 
+@[simp] theorem lookup_insert_eq_none {l : AList β} {k k' : α} {v : β k} :
+    (l.insert k v).lookup k' = none ↔ (k' ≠ k) ∧ l.lookup k' = none := by
+  by_cases h : k' = k
+  · subst h; simp
+  · simp_all [lookup_insert_ne h]
+
 @[simp]
 theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlookup a := by
   rw [List.toAList, lookup, dlookup_dedupKeys]
@@ -364,7 +370,7 @@ def insertRec {C : AList β → Sort*} (H0 : C ∅)
   | ⟨[], _⟩ => H0
   | ⟨c :: l, h⟩ => by
     rw [mk_cons_eq_insert]
-    refine' IH _ _ _ _ (insertRec H0 IH _)
+    refine IH _ _ _ ?_ (insertRec H0 IH _)
     exact not_mem_keys_of_nodupKeys_cons h
 #align alist.insert_rec AList.insertRec
 
@@ -468,13 +474,13 @@ theorem lookup_union_right {a} {s₁ s₂ : AList β} : a ∉ s₁ → lookup a 
   dlookup_kunion_right
 #align alist.lookup_union_right AList.lookup_union_right
 
---Porting note: removing simp, LHS not in SNF, new theorem added instead.
+-- Porting note: removing simp, LHS not in SNF, new theorem added instead.
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : AList β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   mem_dlookup_kunion
 #align alist.mem_lookup_union AList.mem_lookup_union
 
---Porting note: new theorem, version of `mem_lookup_union` with LHS in simp-normal form
+-- Porting note (#10756): new theorem, version of `mem_lookup_union` with LHS in simp-normal form
 @[simp]
 theorem lookup_union_eq_some {a} {b : β a} {s₁ s₂ : AList β} :
     lookup a (s₁ ∪ s₂) = some b ↔ lookup a s₁ = some b ∨ a ∉ s₁ ∧ lookup a s₂ = some b :=
@@ -485,8 +491,8 @@ theorem mem_lookup_union_middle {a} {b : β a} {s₁ s₂ s₃ : AList β} :
   mem_dlookup_kunion_middle
 #align alist.mem_lookup_union_middle AList.mem_lookup_union_middle
 
-theorem insert_union {a} {b : β a} {s₁ s₂ : AList β} : insert a b (s₁ ∪ s₂) = insert a b s₁ ∪ s₂ :=
-  by ext; simp
+theorem insert_union {a} {b : β a} {s₁ s₂ : AList β} :
+    insert a b (s₁ ∪ s₂) = insert a b s₁ ∪ s₂ := by ext; simp
 #align alist.insert_union AList.insert_union
 
 theorem union_assoc {s₁ s₂ s₃ : AList β} : (s₁ ∪ s₂ ∪ s₃).entries ~ (s₁ ∪ (s₂ ∪ s₃)).entries :=
@@ -514,7 +520,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
       constructor <;> intro h'
       · cases' h' with h' h'
         · right
-          refine' ⟨_, h'⟩
+          refine ⟨?_, h'⟩
           apply h
           rw [keys, ← List.dlookup_isSome, h']
           exact rfl
@@ -522,7 +528,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
           rw [h'.2]
       · cases' h' with h' h'
         · right
-          refine' ⟨_, h'⟩
+          refine ⟨?_, h'⟩
           intro h''
           apply h _ h''
           rw [keys, ← List.dlookup_isSome, h']

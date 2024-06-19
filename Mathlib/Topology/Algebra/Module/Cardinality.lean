@@ -3,6 +3,7 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Module.Card
 import Mathlib.SetTheory.Cardinal.CountableCover
 import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Analysis.SpecificLimits.Normed
@@ -99,7 +100,7 @@ theorem cardinal_eq_of_mem_nhds
     {s : Set E} {x : E} (hs : s ∈ 𝓝 x) : #s = #E := by
   let g := Homeomorph.addLeft x
   let t := g ⁻¹' s
-  have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa using hs)
+  have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa [g] using hs)
   have A : #t = #E := cardinal_eq_of_mem_nhds_zero 𝕜 this
   have B : #t = #s := Cardinal.mk_subtype_of_equiv s g.toEquiv
   rwa [B] at A

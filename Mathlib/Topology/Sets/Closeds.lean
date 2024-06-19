@@ -31,6 +31,7 @@ namespace TopologicalSpace
 
 /-- The type of closed subsets of a topological space. -/
 structure Closeds (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   closed' : IsClosed carrier
 #align topological_space.closeds TopologicalSpace.Closeds
@@ -120,7 +121,7 @@ theorem coe_top : (↑(⊤ : Closeds α) : Set α) = univ :=
   rfl
 #align topological_space.closeds.coe_top TopologicalSpace.Closeds.coe_top
 
-@[simp, norm_cast] -- porting note: new
+@[simp, norm_cast] -- Porting note (#10756): new theorem
 theorem coe_eq_univ {s : Closeds α} : (s : Set α) = univ ↔ s = ⊤ :=
   SetLike.coe_injective.eq_iff' rfl
 
@@ -129,7 +130,7 @@ theorem coe_bot : (↑(⊥ : Closeds α) : Set α) = ∅ :=
   rfl
 #align topological_space.closeds.coe_bot TopologicalSpace.Closeds.coe_bot
 
-@[simp, norm_cast] -- porting note: new
+@[simp, norm_cast] -- Porting note (#10756): new theorem
 theorem coe_eq_empty {s : Closeds α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
@@ -157,7 +158,7 @@ theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Closeds α) (Set α)) _ _
 #align topological_space.closeds.coe_finset_inf TopologicalSpace.Closeds.coe_finset_inf
 
--- porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
+-- Porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
 
 @[simp]
 theorem mem_sInf {S : Set (Closeds α)} {x : α} : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := mem_iInter₂
@@ -285,6 +286,7 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
 
 /-- The type of clopen sets of a topological space. -/
 structure Clopens (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   isClopen' : IsClopen carrier
 #align topological_space.clopens TopologicalSpace.Clopens

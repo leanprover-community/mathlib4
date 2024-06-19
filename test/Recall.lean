@@ -1,4 +1,3 @@
-import Std.Tactic.GuardMsgs
 import Mathlib.Tactic.Recall
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
@@ -27,7 +26,7 @@ error: value mismatch
 has value
   id
 but is expected to have value
-  fun z ↦ CauSeq.lim (Complex.exp' z)
+  fun z ↦ z.exp'.lim
 -/
 #guard_msgs in recall Complex.exp : ℂ → ℂ := id
 

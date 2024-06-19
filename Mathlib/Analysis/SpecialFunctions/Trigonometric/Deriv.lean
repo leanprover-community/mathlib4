@@ -338,7 +338,8 @@ theorem fderivWithin_ccos (hf : DifferentiableWithinAt ℂ f s x) (hxs : UniqueD
   hf.hasFDerivWithinAt.ccos.fderivWithin hxs
 #align fderiv_within_ccos fderivWithin_ccos
 
-@[simp]
+@[simp, nolint simpNF] -- `simp` times out trying to find `Module ℂ (E →L[ℂ] ℂ)`
+-- with all of `Mathlib` opened -- no idea why
 theorem fderiv_ccos (hc : DifferentiableAt ℂ f x) :
     fderiv ℂ (fun x => Complex.cos (f x)) x = -Complex.sin (f x) • fderiv ℂ f x :=
   hc.hasFDerivAt.ccos.fderiv
@@ -749,8 +750,8 @@ theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
 
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   -- Porting note: `by simp; abel` was just `by simp` in mathlib3.
-  refine' strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) _
-  refine' strictMonoOn_of_deriv_pos (convex_Ici _) _ fun x hx => _
+  refine strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) ?_
+  refine strictMonoOn_of_deriv_pos (convex_Ici _) ?_ fun x hx => ?_
   · exact (continuous_sinh.sub continuous_id).continuousOn
   · rw [interior_Ici, mem_Ioi] at hx
     rw [deriv_sub, deriv_sinh, deriv_id'', sub_pos, one_lt_cosh]

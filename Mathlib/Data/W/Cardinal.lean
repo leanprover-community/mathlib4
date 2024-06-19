@@ -35,14 +35,14 @@ namespace WType
 
 open Cardinal
 
--- porting note: `W` is a special name, exceptionally in upper case in Lean3
+-- Porting note: `W` is a special name, exceptionally in upper case in Lean3
 set_option linter.uppercaseLean3 false
 
 theorem cardinal_mk_eq_sum' : #(WType β) = sum (fun a : α => #(WType β) ^ lift.{u} #(β a)) :=
   (mk_congr <| equivSigma β).trans <| by
     simp_rw [mk_sigma, mk_arrow]; rw [lift_id'.{v, u}, lift_umax.{v, u}]
 
-/-- `#(WType β)` is the least cardinal `κ` such that `sum (λ a : α, κ ^ #(β a)) ≤ κ` -/
+/-- `#(WType β)` is the least cardinal `κ` such that `sum (fun a : α ↦ κ ^ #(β a)) ≤ κ` -/
 theorem cardinal_mk_le_of_le' {κ : Cardinal.{max u v}}
     (hκ : (sum fun a : α => κ ^ lift.{u} #(β a)) ≤ κ) :
     #(WType β) ≤ κ := by
@@ -77,7 +77,7 @@ theorem cardinal_mk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
                 (by
                   rw [succ_zero]
                   obtain ⟨a⟩ : Nonempty α := hn
-                  refine' le_trans _ (le_ciSup (bddAbove_range.{_, v} _) a)
+                  refine le_trans ?_ (le_ciSup (bddAbove_range.{_, v} _) a)
                   rw [← power_zero]
                   exact
                     power_le_power_left
@@ -89,7 +89,7 @@ theorem cardinal_mk_eq_sum : #(WType β) = sum (fun a : α => #(WType β) ^ #(β
   cardinal_mk_eq_sum'.trans <| by simp_rw [lift_id]
 #align W_type.cardinal_mk_eq_sum WType.cardinal_mk_eq_sum
 
-/-- `#(WType β)` is the least cardinal `κ` such that `sum (λ a : α, κ ^ #(β a)) ≤ κ` -/
+/-- `#(WType β)` is the least cardinal `κ` such that `sum (fun a : α ↦ κ ^ #(β a)) ≤ κ` -/
 theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ #(β a)) ≤ κ) :
     #(WType β) ≤ κ := cardinal_mk_le_of_le' <| by simp_rw [lift_id]; exact hκ
 #align W_type.cardinal_mk_le_of_le WType.cardinal_mk_le_of_le

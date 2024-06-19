@@ -66,16 +66,14 @@ example : ULiftable IO IO := inferInstance
 
 /-- The most common practical use `ULiftable` (together with `down`), the function `up.{v}` takes
 `x : M.{u} α` and lifts it to `M.{max u v} (ULift.{v} α)` -/
-@[reducible]
-def up {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [ULiftable f g] {α} :
+abbrev up {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [ULiftable f g] {α} :
     f α → g (ULift.{v} α) :=
   (ULiftable.congr Equiv.ulift.symm).toFun
 #align uliftable.up ULiftable.up
 
 /-- The most common practical use of `ULiftable` (together with `up`), the function `down.{v}` takes
 `x : M.{max u v} (ULift.{v} α)` and lowers it to `M.{u} α` -/
-@[reducible]
-def down {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [ULiftable f g] {α} :
+abbrev down {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [ULiftable f g] {α} :
     g (ULift.{v} α) → f α :=
   (ULiftable.congr Equiv.ulift.symm).invFun
 #align uliftable.down ULiftable.down
@@ -104,13 +102,13 @@ def downMap {F : Type max u₀ v₀ → Type u₁} {G : Type u₀ → Type v₁}
   down (Functor.map (ULift.up.{v₀} ∘ f) x : F (ULift β))
 #align uliftable.down_map ULiftable.downMap
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem up_down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : g (ULift.{v₀} α)) : up (down x : f α) = x :=
   (ULiftable.congr Equiv.ulift.symm).right_inv _
 #align uliftable.up_down ULiftable.up_down
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem down_up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : f α) : down (up x : g (ULift.{v₀} α)) = x :=
   (ULiftable.congr Equiv.ulift.symm).left_inv _

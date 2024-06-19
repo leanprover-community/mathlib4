@@ -3,10 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.ULift
+import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Tactic.NormNum
 
 #align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -133,7 +134,6 @@ noncomputable def rootableByOfPowLeftSurj
 section Pi
 
 variable {ι β : Type*} (B : ι → Type*) [∀ i : ι, Pow (B i) β]
-
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
 @[to_additive]
@@ -149,7 +149,6 @@ end Pi
 section Prod
 
 variable {β B B' : Type*} [Pow B β] [Pow B' β]
-
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
 @[to_additive]
@@ -203,7 +202,7 @@ instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [
   div q n := q / n
   div_zero q := by norm_num
   div_cancel {n} q hn := by
-    rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel q (Int.cast_ne_zero.mpr hn)]
+    rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel₀ q (Int.cast_ne_zero.mpr hn)]
 #align divisible_by_int_of_char_zero divisibleByIntOfCharZero
 
 namespace Group
@@ -242,7 +241,7 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     -- Porting note: replaced `norm_num`
-    simpa only [zpow_coe_nat] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
+    simpa only [zpow_natCast] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
 #align group.rootable_by_nat_of_rootable_by_int Group.rootableByNatOfRootableByInt
 #align add_group.divisible_by_nat_of_divisible_by_int AddGroup.divisibleByNatOfDivisibleByInt
 
@@ -252,9 +251,7 @@ section Hom
 
 -- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
-
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
-
 variable (f : A → B)
 
 /--

@@ -62,7 +62,7 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
   have hε' : 0 < ε / 3 := div_pos hε zero_lt_three
   obtain ⟨δ, hδ, h⟩ := exists_forall_sphere_dist_add_le_two_sub E hε'
   set δ' := min (1 / 2) (min (ε / 3) <| δ / 3)
-  refine' ⟨δ', lt_min one_half_pos <| lt_min hε' (div_pos hδ zero_lt_three), fun x hx y hy hxy => _⟩
+  refine ⟨δ', lt_min one_half_pos <| lt_min hε' (div_pos hδ zero_lt_three), fun x hx y hy hxy => ?_⟩
   obtain hx' | hx' := le_or_lt ‖x‖ (1 - δ')
   · rw [← one_add_one_eq_two]
     exact (norm_add_le_of_le hx' hy).trans (sub_add_eq_add_sub _ _ _).le
@@ -99,11 +99,13 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
     _ ≤ 2 - δ + δ' + δ' :=
       (add_le_add_three (h (h₁ _ hx') (h₁ _ hy') hxy') (h₂ _ hx hx'.le) (h₂ _ hy hy'.le))
     _ ≤ 2 - δ' := by
+      dsimp [δ']
       rw [← le_sub_iff_add_le, ← le_sub_iff_add_le, sub_sub, sub_sub]
-      refine' sub_le_sub_left _ _
+      refine sub_le_sub_left ?_ _
       ring_nf
-      rw [← mul_div_cancel' δ three_ne_zero]
-      norm_num -- Porting note: these three extra lines needed to make `exact` work
+      rw [← mul_div_cancel₀ δ three_ne_zero]
+      set_option tactic.skipAssignedInstances false in norm_num
+      -- Porting note: these three extra lines needed to make `exact` work
       have : 3 * (δ / 3) * (1 / 3) = δ / 3 := by linarith
       rw [this, mul_comm]
       gcongr
@@ -116,9 +118,8 @@ theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : �
   · exact ⟨1, one_pos, fun x hx y hy h => (hε.not_le <|
       h.trans <| (norm_sub_le _ _).trans <| add_nonpos (hx.trans hr) (hy.trans hr)).elim⟩
   obtain ⟨δ, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (div_pos hε hr)
-  refine' ⟨δ * r, mul_pos hδ hr, fun x hx y hy hxy => _⟩
+  refine ⟨δ * r, mul_pos hδ hr, fun x hx y hy hxy => ?_⟩
   rw [← div_le_one hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy
-  try infer_instance
   have := h hx hy
   simp_rw [← smul_add, ← smul_sub, norm_smul_of_nonneg (inv_nonneg.2 hr.le), ← div_eq_inv_mul,
     div_le_div_right hr, div_le_iff hr, sub_mul] at this

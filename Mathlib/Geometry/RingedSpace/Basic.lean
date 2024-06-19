@@ -47,8 +47,8 @@ open SheafedSpace
 
 variable (X : RingedSpace)
 
--- Porting note : this was not necessary in mathlib3
-instance : CoeSort RingedSpace (Type*) where
+-- Porting note (#10670): this was not necessary in mathlib3
+instance : CoeSort RingedSpace Type* where
   coe X := X.carrier
 
 /--
@@ -62,11 +62,11 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.germ_exist x.1 g'
   let W := U ⊓ V
   have hxW : x.1 ∈ W := ⟨x.2, hxV⟩
-  -- Porting note : `erw` can't write into `HEq`, so this is replaced with another `HEq` in the
+  -- Porting note: `erw` can't write into `HEq`, so this is replaced with another `HEq` in the
   -- desired form
   replace heq : (X.presheaf.germ ⟨x.val, hxW⟩) ((X.presheaf.map (U.infLELeft V).op) f *
-    (X.presheaf.map (U.infLERight V).op) g) = (X.presheaf.germ ⟨x.val, hxW⟩) 1
-  · dsimp [germ]
+      (X.presheaf.map (U.infLERight V).op) g) = (X.presheaf.germ ⟨x.val, hxW⟩) 1 := by
+    dsimp [germ]
     erw [map_mul, map_one, show X.presheaf.germ ⟨x, hxW⟩ ((X.presheaf.map (U.infLELeft V).op) f) =
       X.presheaf.germ x f from X.presheaf.germ_res_apply (Opens.infLELeft U V) ⟨x.1, hxW⟩ f,
       show X.presheaf.germ ⟨x, hxW⟩ (X.presheaf.map (U.infLERight V).op g) =
@@ -85,33 +85,32 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ x : U, IsUnit (X.presheaf.germ x f)) : IsUnit f := by
   -- We pick a cover of `U` by open sets `V x`, such that `f` is a unit on each `V x`.
   choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x (h x)
-  have hcover : U ≤ iSup V
-  · intro x hxU
-    -- Porting note : in Lean3 `rw` is sufficient
+  have hcover : U ≤ iSup V := by
+    intro x hxU
+    -- Porting note: in Lean3 `rw` is sufficient
     erw [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
   -- Let `g x` denote the inverse of `f` in `U x`.
   choose g hg using fun x : U => IsUnit.exists_right_inv (h_unit x)
-  have ic : IsCompatible (sheaf X).val V g
-  -- swap
-  · intro x y
+  have ic : IsCompatible (sheaf X).val V g := by
+    intro x y
     apply section_ext X.sheaf (V x ⊓ V y)
     rintro ⟨z, hzVx, hzVy⟩
     erw [germ_res_apply, germ_res_apply]
     apply (IsUnit.mul_right_inj (h ⟨z, (iVU x).le hzVx⟩)).mp
-    -- Porting note : now need explicitly typing the rewrites
+    -- Porting note: now need explicitly typing the rewrites
     rw [← show X.presheaf.germ ⟨z, hzVx⟩ (X.presheaf.map (iVU x).op f) =
       X.presheaf.germ ⟨z, ((iVU x) ⟨z, hzVx⟩).2⟩ f from
       X.presheaf.germ_res_apply (iVU x) ⟨z, hzVx⟩ f]
-    -- Porting note : change was not necessary in Lean3
+    -- Porting note: change was not necessary in Lean3
     change X.presheaf.germ ⟨z, hzVx⟩ _ * (X.presheaf.germ ⟨z, hzVx⟩ _) =
       X.presheaf.germ ⟨z, hzVx⟩ _ * X.presheaf.germ ⟨z, hzVy⟩ (g y)
     rw [← RingHom.map_mul,
       congr_arg (X.presheaf.germ (⟨z, hzVx⟩ : V x)) (hg x),
-      -- Porting note : now need explicitly typing the rewrites
+      -- Porting note: now need explicitly typing the rewrites
       show X.presheaf.germ ⟨z, hzVx⟩ (X.presheaf.map (iVU x).op f) =
         X.presheaf.germ ⟨z, ((iVU x) ⟨z, hzVx⟩).2⟩ f from X.presheaf.germ_res_apply _ _ f,
-      -- Porting note : now need explicitly typing the rewrites
+      -- Porting note: now need explicitly typing the rewrites
       ← show X.presheaf.germ ⟨z, hzVy⟩ (X.presheaf.map (iVU y).op f) =
           X.presheaf.germ ⟨z, ((iVU x) ⟨z, hzVx⟩).2⟩ f from
           X.presheaf.germ_res_apply (iVU y) ⟨z, hzVy⟩ f,
@@ -131,14 +130,14 @@ set_option linter.uppercaseLean3 false in
 `x` is a unit.
 -/
 def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
-  -- Porting note : `coe` does not work
+  -- Porting note: `coe` does not work
   carrier := Subtype.val '' { x : U | IsUnit (X.presheaf.germ x f) }
   is_open' := by
     rw [isOpen_iff_forall_mem_open]
     rintro _ ⟨x, hx, rfl⟩
     obtain ⟨V, i, hxV, hf⟩ := X.isUnit_res_of_isUnit_germ U f x hx
     use V.1
-    refine' ⟨_, V.2, hxV⟩
+    refine ⟨?_, V.2, hxV⟩
     intro y hy
     use (⟨y, i.le hy⟩ : U)
     rw [Set.mem_setOf_eq]
@@ -191,14 +190,14 @@ theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj 
     erw [X.presheaf.germ_res_apply _ _ _] at hx
     exact ⟨x.2, g x, hx, rfl⟩
   · rintro ⟨hxV, x, hx, rfl⟩
-    refine' ⟨⟨x, hxV⟩, (_ : IsUnit _), rfl⟩
+    refine ⟨⟨x, hxV⟩, (?_ : IsUnit _), rfl⟩
     erw [X.presheaf.germ_res_apply _ _ _]
     exact hx
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_res AlgebraicGeometry.RingedSpace.basicOpen_res
 
 -- This should fire before `basicOpen_res`.
--- Porting note : this lemma is not in simple normal form because of `basicOpen_res`, as in Lean3
+-- Porting note: this lemma is not in simple normal form because of `basicOpen_res`, as in Lean3
 -- it is specifically said "This should fire before `basic_open_res`", this lemma is marked with
 -- high priority
 @[simp (high)]
@@ -219,7 +218,6 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
   ext1
   dsimp [RingedSpace.basicOpen]
   rw [← Set.image_inter Subtype.coe_injective]
-  congr
   ext x
   simp [map_mul, Set.mem_image]
 set_option linter.uppercaseLean3 false in

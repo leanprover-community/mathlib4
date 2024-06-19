@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yuyang Zhao
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.AlgebraMap
 
 #align_import ring_theory.polynomial.tower from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
@@ -29,11 +29,8 @@ namespace Polynomial
 section Semiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B]
-
 variable [IsScalarTower R A B]
-
 variable {R B}
 
 @[simp]
@@ -51,9 +48,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
-
 variable {R A}
 
 theorem aeval_algebraMap_apply (x : A) (p : R[X]) :

@@ -36,7 +36,7 @@ structure MySubobject (X : Type*) [ObjectTypeclass X] :=
 
 namespace MySubobject
 
-variables {X : Type*} [ObjectTypeclass X] {x : X}
+variable {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
@@ -48,7 +48,7 @@ instance : SetLike (MySubobject X) X :=
 /-- Copy of a `MySubobject` with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. See Note [range copy pattern]. -/
 protected def copy (p : MySubobject X) (s : Set X) (hs : s = ↑p) : MySubobject X :=
-  { carrier := s,
+  { carrier := s
     op_mem' := hs.symm ▸ p.op_mem' }
 
 @[simp] lemma coe_copy (p : MySubobject X) (s : Set X) (hs : s = ↑p) :
@@ -94,7 +94,7 @@ This ensures your subclass will not have issues with synthesis of the `[Mul M]` 
 before the value of `M` is known.
 -/
 @[notation_class * carrier Simps.findCoercionArgs]
-class SetLike (A : Type*) (B : outParam <| Type*) where
+class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
@@ -186,7 +186,7 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
   Subtype.ext_iff_val.symm
 #align set_like.coe_eq_coe SetLike.coe_eq_coe
 
--- porting note: this is not necessary anymore due to the way coercions work
+-- Porting note: this is not necessary anymore due to the way coercions work
 #noalign set_like.coe_mk
 
 @[simp]
@@ -194,10 +194,10 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 #align set_like.coe_mem SetLike.coe_mem
 
-@[aesop 5% apply (rule_sets [SetLike])]
+@[aesop 5% apply (rule_sets := [SetLike])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
--- porting note: removed `@[simp]` because `simpNF` linter complained
+-- Porting note: removed `@[simp]` because `simpNF` linter complained
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 #align set_like.eta SetLike.eta
 

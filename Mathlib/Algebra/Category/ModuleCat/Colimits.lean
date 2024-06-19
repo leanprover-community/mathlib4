@@ -101,12 +101,19 @@ instance : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 noncomputable instance : PreservesColimit F (forget₂ _ AddCommGroupCat) :=
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
 
+noncomputable instance reflectsColimit :
+    ReflectsColimit F (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) :=
+  reflectsColimitOfReflectsIsomorphisms _ _
+
 end HasColimit
 
 variable (J R)
 
 instance hasColimitsOfShape [HasColimitsOfShape J AddCommGroupCat.{w'}] :
     HasColimitsOfShape J (ModuleCat.{w'} R) where
+
+noncomputable instance reflectsColimitsOfShape [HasColimitsOfShape J AddCommGroupCat.{w'}] :
+    ReflectsColimitsOfShape J (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
 
 instance hasColimitsOfSize [HasColimitsOfSize.{v, u} AddCommGroupCat.{w'}] :
     HasColimitsOfSize.{v, u} (ModuleCat.{w'} R) where

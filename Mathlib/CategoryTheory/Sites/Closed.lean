@@ -52,7 +52,6 @@ universe v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-
 variable (J₁ J₂ : GrothendieckTopology C)
 
 namespace GrothendieckTopology
@@ -125,7 +124,7 @@ theorem close_eq_self_of_isClosed {X : C} {S : Sieve X} (hS : J₁.IsClosed S) :
 theorem pullback_close {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
     J₁.close (S.pullback f) = (J₁.close S).pullback f := by
   apply le_antisymm
-  · refine' J₁.le_close_of_isClosed (Sieve.pullback_monotone _ (J₁.le_close S)) _
+  · refine J₁.le_close_of_isClosed (Sieve.pullback_monotone _ (J₁.le_close S)) ?_
     apply J₁.isClosed_pullback _ _ (J₁.close_isClosed _)
   · intro Z g hg
     change _ ∈ J₁ _
@@ -178,7 +177,7 @@ The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
 theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) := by
   intro X S hS
   rw [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · rintro x ⟨M, hM⟩ ⟨N, hN⟩ hM₂ hN₂
     simp only [Functor.closedSieves_obj]
     ext Y f
@@ -217,13 +216,13 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
         rw [show (x (g ≫ f') _).1 = _ from congr_arg Subtype.val (hx f' g hf')]
         apply Sieve.pullback_eq_top_of_mem _ hg
       · apply Sieve.le_pullback_bind S fun Y f hf => (x f hf).1
-    refine' ⟨⟨_, J₁.close_isClosed M⟩, _⟩
-    · intro Y f hf
-      simp only [Functor.closedSieves_obj]
-      ext1
-      dsimp
-      rw [← J₁.pullback_close, this _ hf]
-      apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).2) (J₁.le_close _)
+    refine ⟨⟨_, J₁.close_isClosed M⟩, ?_⟩
+    intro Y f hf
+    simp only [Functor.closedSieves_obj]
+    ext1
+    dsimp
+    rw [← J₁.pullback_close, this _ hf]
+    apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).2) (J₁.le_close _)
 #align category_theory.classifier_is_sheaf CategoryTheory.classifier_isSheaf
 
 /-- If presheaf of `J₁`-closed sieves is a `J₂`-sheaf then `J₁ ≤ J₂`. Note the converse is true by
@@ -240,13 +239,13 @@ theorem le_topology_of_closedSieves_isSheaf {J₁ J₂ : GrothendieckTopology C}
     rw [Subtype.ext_iff] at this
     exact this
   apply (h S hS).isSeparatedFor.ext
-  · intro Y f hf
-    simp only [Functor.closedSieves_obj]
-    ext1
-    dsimp
-    rw [Sieve.pullback_top, ← J₂.pullback_close, S.pullback_eq_top_of_mem hf,
-      J₂.close_eq_top_iff_mem]
-    apply J₂.top_mem
+  intro Y f hf
+  simp only [Functor.closedSieves_obj]
+  ext1
+  dsimp
+  rw [Sieve.pullback_top, ← J₂.pullback_close, S.pullback_eq_top_of_mem hf,
+    J₂.close_eq_top_iff_mem]
+  apply J₂.top_mem
 #align category_theory.le_topology_of_closed_sieves_is_sheaf CategoryTheory.le_topology_of_closedSieves_isSheaf
 
 /-- If being a sheaf for `J₁` is equivalent to being a sheaf for `J₂`, then `J₁ = J₂`. -/

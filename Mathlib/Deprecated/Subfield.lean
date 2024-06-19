@@ -3,6 +3,7 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Deprecated.Subring
 
 #align_import deprecated.subfield from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
@@ -46,7 +47,7 @@ theorem IsSubfield.pow_mem {a : F} {n : ℤ} {s : Set F} (hs : IsSubfield s) (h 
     a ^ n ∈ s := by
   cases' n with n n
   · suffices a ^ (n : ℤ) ∈ s by exact this
-    rw [zpow_ofNat]
+    rw [zpow_natCast]
     exact hs.toIsSubring.toIsSubmonoid.pow_mem h
   · rw [zpow_negSucc]
     exact hs.inv_mem (hs.toIsSubring.toIsSubmonoid.pow_mem h)

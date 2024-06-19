@@ -18,7 +18,8 @@ namespace Meta.FunProp
 open Lean.Parser.Tactic
 
 /-- Tactic to prove function properties -/
-syntax (name := funPropTacStx) "fun_prop" (discharger)? : tactic
+syntax (name := funPropTacStx)
+  "fun_prop" (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
@@ -29,7 +30,7 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
 def funPropTac : Tactic
-  | `(tactic| fun_prop $[$d]?) => do
+  | `(tactic| fun_prop $[$d]? $[[$names,*]]?) => do
 
     let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
       match d with
@@ -39,12 +40,37 @@ def funPropTac : Tactic
         | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
         | _ => pure emptyDischarge
 
+    let namesToUnfold : Array Name :=
+      match names with
+      | none => #[]
+      | .some ns => ns.getElems.map (fun n => n.getId)
+
+    let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
+
     let goal ← getMainGoal
     goal.withContext do
       let goalType ← goal.getType
 
-      let (.some r, _) ← funProp goalType {disch := disch} |>.run {}
-        | throwError "funProp was unable to prove `{← Meta.ppExpr goalType}`"
+      let cfg : Config := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
+      let (r?, s) ← funProp goalType cfg |>.run {}
+      if let .some r := r? then
+        goal.assign r.proof
+      else
+        let mut msg := s!"`fun_prop` was unable to prove `{← Meta.ppExpr goalType}`\n\n"
+        if d.isSome then
+          msg := msg ++ "Try running with a different discharger tactic like \
+          `aesop`, `assumption`, `linarith`, `omega` etc.\n"
+        else
+          msg := msg ++ "Try running with discharger `fun_prop (disch:=aesop)` or with a different \
+          discharger tactic like `assumption`, `linarith`, `omega`.\n"
 
-      goal.assign r.proof
+        msg := msg ++ "Sometimes it is useful to run `fun_prop (disch:=trace_state; sorry)` \
+          which will print all the necessary subgoals for `fun_prop` to succeed.\n"
+        msg := msg ++ "\nPotential issues to fix:"
+        msg := s.msgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
+        msg := msg ++ "\n\nFor more detailed information use \
+          `set_option trace.Meta.Tactic.fun_prop true`"
+        throwError msg
+
+
   | _ => throwUnsupportedSyntax

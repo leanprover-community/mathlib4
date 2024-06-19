@@ -37,13 +37,25 @@ attribute [instance] out
 instance self (R : Type u) [CommRing R] : Algebra.Flat R R where
   out := Module.Flat.self R
 
-variable (R : Type u) (S : Type v) (T : Type w) [CommRing R] [CommRing S] [CommRing T]
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S]
 
 /-- If `T` is a flat `S`-algebra and `S` is a flat `R`-algebra,
 then `T` is a flat `R`-algebra. -/
-theorem comp [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    [Algebra.Flat R S] [Algebra.Flat S T] : Algebra.Flat R T where
+theorem comp (T : Type w) [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Algebra.Flat R S] [Algebra.Flat S T] : Algebra.Flat R T where
   out := Module.Flat.comp R S T
+
+/-- If `S` is a flat `R`-algebra and `T` is any `R`-algebra,
+then `T ⊗[R] S` is a flat `T`-algebra. -/
+instance baseChange (T : Type w) [CommRing T] [Algebra R S] [Algebra R T] [Algebra.Flat R S] :
+    Algebra.Flat T (T ⊗[R] S) where
+  out := Module.Flat.baseChange R T S
+
+/-- A base change of a flat algebra is flat. -/
+theorem isBaseChange [Algebra R S] (R' : Type w) (S' : Type t) [CommRing R'] [CommRing S']
+    [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S'] [IsScalarTower R R' S']
+    [IsScalarTower R S S'] [h : IsPushout R S R' S'] [Algebra.Flat R R'] : Algebra.Flat S S' where
+  out := Module.Flat.isBaseChange R S R' S' h.out
 
 end Algebra.Flat
 

@@ -3,8 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Dedup
-import Mathlib.Data.List.MinMax
+import Mathlib.Data.Multiset.Bind
 
 #align_import data.multiset.fold from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -122,29 +121,15 @@ theorem fold_dedup_idem [DecidableEq α] [hi : Std.IdempotentOp op] (s : Multise
 
 end Fold
 
-section Order
-
-theorem max_le_of_forall_le {α : Type*} [CanonicallyLinearOrderedAddCommMonoid α] (l : Multiset α)
-    (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
-  induction l using Quotient.inductionOn
-  simpa using List.max_le_of_forall_le _ _ h
-#align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le
-
-theorem max_nat_le_of_forall_le (l : Multiset ℕ) (n : ℕ) (h : ∀ x ∈ l, x ≤ n) : l.fold max 0 ≤ n :=
-  max_le_of_forall_le l n h
-#align multiset.max_nat_le_of_forall_le Multiset.max_nat_le_of_forall_le
-
-end Order
-
 open Nat
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
   ⟨(s.map fun a => count a s).fold max 0,
     le_iff_count.2 fun a => by
       rw [count_nsmul]; by_cases h : a ∈ s
-      · refine' le_trans _ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
-        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) :=
-          by simp [le_max_left]
+      · refine le_trans ?_ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
+        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) := by
+          simp [le_max_left]
         rw [cons_erase h] at this
         simpa [mul_succ] using this
       · simp [count_eq_zero.2 h, Nat.zero_le]⟩

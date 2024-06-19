@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Equiv.List
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import data.set.countable from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -26,7 +26,8 @@ sets, countable set
 
 noncomputable section
 
-open Function Set Encodable Classical
+open scoped Classical
+open Function Set Encodable
 
 universe u v w x
 
@@ -95,6 +96,26 @@ theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
     simp [enumerateCountable, Encodable.encodek]⟩
 #align set.subset_range_enumerate Set.subset_range_enumerate
 
+lemma range_enumerateCountable_subset {s : Set α} (h : s.Countable) (default : α) :
+    range (enumerateCountable h default) ⊆ insert default s := by
+  refine range_subset_iff.mpr (fun n ↦ ?_)
+  rw [enumerateCountable]
+  match @decode s (Countable.toEncodable h) n with
+  | none => exact mem_insert _ _
+  | some val => simp
+
+lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : α}
+    (h_mem : default ∈ s) :
+    range (enumerateCountable h default) = s :=
+  subset_antisymm ((range_enumerateCountable_subset h _).trans_eq (insert_eq_of_mem h_mem))
+    (subset_range_enumerate h default)
+
+lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
+    (n : ℕ) :
+    enumerateCountable h default n ∈ s := by
+  conv_rhs => rw [← range_enumerateCountable_of_mem h h_mem]
+  exact mem_range_self n
+
 end Enumerate
 
 theorem Countable.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) (hs : s₂.Countable) : s₁.Countable :=
@@ -136,7 +157,7 @@ theorem countable_univ_iff : (univ : Set α).Countable ↔ Countable α :=
 theorem Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonempty) :
     ∃ f : ℕ → α, s = range f := by
   rcases hc.exists_surjective hs with ⟨f, hf⟩
-  refine' ⟨(↑) ∘ f, _⟩
+  refine ⟨(↑) ∘ f, ?_⟩
   rw [hf.range_comp, Subtype.range_coe]
 #align set.countable.exists_eq_range Set.Countable.exists_eq_range
 
@@ -166,7 +187,7 @@ theorem Countable.preimage_of_injOn {s : Set β} (hs : s.Countable) {f : α → 
 
 protected theorem Countable.preimage {s : Set β} (hs : s.Countable) {f : α → β} (hf : Injective f) :
     (f ⁻¹' s).Countable :=
-  hs.preimage_of_injOn (hf.injOn _)
+  hs.preimage_of_injOn hf.injOn
 #align set.countable.preimage Set.Countable.preimage
 
 theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Prop} (h : ∃ x, p x) :
@@ -174,7 +195,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
       ∃ S : Set α, S.Countable ∧ (∀ s ∈ S, p s) ∧ sSup S = ⊤ := by
   constructor
   · rintro ⟨s, hps, hs⟩
-    refine' ⟨range s, countable_range s, forall_range_iff.2 hps, _⟩
+    refine ⟨range s, countable_range s, forall_mem_range.2 hps, ?_⟩
     rwa [sSup_range]
   · rintro ⟨S, hSc, hps, hS⟩
     rcases eq_empty_or_nonempty S with (rfl | hne)
@@ -183,7 +204,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
       rcases h with ⟨x, hx⟩
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
     · rcases (Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
-      refine' ⟨fun n => s n, fun n => hps _ (s n).coe_prop, _⟩
+      refine ⟨fun n => s n, fun n => hps _ (s n).coe_prop, ?_⟩
       rwa [hs.iSup_comp, ← sSup_eq_iSup']
 #align set.exists_seq_supr_eq_top_iff_countable Set.exists_seq_iSup_eq_top_iff_countable
 
@@ -276,7 +297,7 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   refine (countable_range fun t : Finset s => Subtype.val '' (t : Set s)).mono ?_
   rintro t ⟨ht, hts⟩
   lift t to Set s using hts
-  lift t to Finset s using ht.of_finite_image (Subtype.val_injective.injOn _)
+  lift t to Finset s using ht.of_finite_image Subtype.val_injective.injOn
   exact mem_range_self _
 #align set.countable_set_of_finite_subset Set.countable_setOf_finite_subset
 
