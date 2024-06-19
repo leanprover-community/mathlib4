@@ -5,6 +5,7 @@ Authors: Shing Tak Lam, Yury Kudryashov
 -/
 import Mathlib.Algebra.MvPolynomial.Derivation
 import Mathlib.Algebra.MvPolynomial.Variables
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 #align_import data.mv_polynomial.pderiv from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -77,6 +78,18 @@ theorem pderiv_monomial {i : σ} :
     · simp
 #align mv_polynomial.pderiv_monomial MvPolynomial.pderiv_monomial
 
+lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
+    X i * pderiv i (monomial m r) = m i • monomial m r := by
+  rw [pderiv_monomial, X, monomial_mul, smul_monomial]
+  by_cases h : m i = 0
+  · simp_rw [h, Nat.cast_zero, mul_zero, zero_smul, monomial_zero]
+  congr
+  · ext j; apply Nat.add_sub_of_le
+    obtain rfl|hj := eq_or_ne i j
+    · rw [Finsupp.single_eq_same]; omega
+    · rw [Finsupp.single_eq_of_ne hj]; exact Nat.zero_le _
+  rw [one_mul, mul_comm, nsmul_eq_mul]
+
 theorem pderiv_C {i : σ} : pderiv i (C a) = 0 :=
   derivation_C _ _
 set_option linter.uppercaseLean3 false in
@@ -127,6 +140,36 @@ theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_C_mul MvPolynomial.pderiv_C_mul
 
+theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
+    pderiv i (map φ f) = map φ (pderiv i f) := by
+  apply induction_on f (fun r ↦ by simp) (fun p q hp hq ↦ by simp [hp, hq]) fun p j eq ↦ ?_
+  obtain rfl | h := eq_or_ne j i
+  · simp [eq]
+  · simp [eq, h]
+
 end PDeriv
+
+variable [Fintype σ] [CommSemiring R] {φ : MvPolynomial σ R} {n : ℕ}
+
+open Finset in
+/-- Euler's theorem for weighted homogeneous polynomials. -/
+theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}
+    (h : φ.IsWeightedHomogeneous w n) : ∑ i : σ, w i • (X i * pderiv i φ) = n • φ := by
+  rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
+    Finsupp.supported_eq_span_single] at h
+  refine Submodule.span_induction h ?_ ?_ (fun p q hp hq ↦ ?_) fun r p h ↦ ?_
+  · rintro _ ⟨m, hm, rfl⟩
+    simp_rw [single_eq_monomial, X_mul_pderiv_monomial, smul_smul, ← sum_smul, mul_comm (w _)]
+    congr
+    rwa [Set.mem_setOf, weightedDegree_apply, Finsupp.sum_fintype] at hm
+    intro; apply zero_smul
+  · simp
+  · simp_rw [map_add, left_distrib, smul_add, sum_add_distrib, hp, hq]
+  · simp_rw [(pderiv _).map_smul, nsmul_eq_mul, mul_smul_comm, ← Finset.smul_sum, ← nsmul_eq_mul, h]
+
+/-- Euler's theorem for homogeneous polynomials. -/
+theorem IsHomogeneous.sum_X_mul_pderiv (h : φ.IsHomogeneous n) :
+    ∑ i : σ, X i * pderiv i φ = n • φ := by
+  simp_rw [← h.sum_weight_X_mul_pderiv, Pi.one_apply, one_smul]
 
 end MvPolynomial
