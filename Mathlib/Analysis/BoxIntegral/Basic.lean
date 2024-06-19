@@ -801,33 +801,13 @@ This is true for any volume with bounded variation. -/
 theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
     (hc : ContinuousOn f (Box.Icc I)) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
     Integrable.{u, v, v} I l f μ.toBoxAdditive.toSMul := by
-  have huc := I.isCompact_Icc.uniformContinuousOn_of_continuous hc
-  rw [Metric.uniformContinuousOn_iff_le] at huc
-  refine integrable_iff_cauchy_basis.2 fun ε ε0 => ?_
-  rcases exists_pos_mul_lt ε0 (μ.toBoxAdditive I) with ⟨ε', ε0', hε⟩
-  rcases huc ε' ε0' with ⟨δ, δ0 : 0 < δ, Hδ⟩
-  refine ⟨fun _ _ => ⟨δ / 2, half_pos δ0⟩, fun _ _ _ => rfl, fun c₁ c₂ π₁ π₂ h₁ h₁p h₂ h₂p => ?_⟩
-  simp only [dist_eq_norm, integralSum_sub_partitions _ _ h₁p h₂p, BoxAdditiveMap.toSMul_apply,
-    ← smul_sub]
-  have : ∀ J ∈ π₁.toPrepartition ⊓ π₂.toPrepartition,
-      ‖μ.toBoxAdditive J • (f ((π₁.infPrepartition π₂.toPrepartition).tag J) -
-        f ((π₂.infPrepartition π₁.toPrepartition).tag J))‖ ≤ μ.toBoxAdditive J * ε' := by
-    intro J hJ
-    have : 0 ≤ μ.toBoxAdditive J := ENNReal.toReal_nonneg
-    rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg this, ← dist_eq_norm]
-    refine mul_le_mul_of_nonneg_left ?_ this
-    refine Hδ _ (TaggedPrepartition.tag_mem_Icc _ _) _ (TaggedPrepartition.tag_mem_Icc _ _) ?_
-    rw [← add_halves δ]
-    refine (dist_triangle_left _ _ J.upper).trans (add_le_add (h₁.1 _ ?_ ?_) (h₂.1 _ ?_ ?_))
-    · exact Prepartition.biUnionIndex_mem _ hJ
-    · exact Box.le_iff_Icc.1 (Prepartition.le_biUnionIndex _ hJ) J.upper_mem_Icc
-    · rw [_root_.inf_comm] at hJ
-      exact Prepartition.biUnionIndex_mem _ hJ
-    · rw [_root_.inf_comm] at hJ
-      exact Box.le_iff_Icc.1 (Prepartition.le_biUnionIndex _ hJ) J.upper_mem_Icc
-  refine (norm_sum_le_of_le _ this).trans ?_
-  rw [← Finset.sum_mul, μ.toBoxAdditive.sum_partition_boxes le_top (h₁p.inf h₂p)]
-  exact hε.le
+  apply integrable_of_bounded_and_ae_continuousWithinAt
+  · obtain ⟨C, hC⟩ := (NormedSpace.isBounded_iff_subset_smul_closedBall ℝ E).1
+                        (I.isCompact_Icc.image_of_continuousOn hc).isBounded
+    use ‖C‖, fun x hx ↦ by
+      simpa only [smul_closedUnitBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
+  · refine eventually_of_mem ?_ (fun x hx ↦ hc.continuousWithinAt hx)
+    rw [mem_ae_iff, μ.restrict_apply] <;> simp [MeasurableSet.compl_iff.2 I.measurableSet_Icc]
 #align box_integral.integrable_of_continuous_on BoxIntegral.integrable_of_continuousOn
 
 variable {l}
