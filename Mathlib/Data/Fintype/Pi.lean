@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.Prod
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Fintype.Basic
 
 #align_import data.fintype.pi from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -163,3 +165,84 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
+
+namespace Fin
+variable {n : ℕ} {α : Fin (n + 1) → Type*} {f : ∀ i, α i} {s : ∀ i, Finset (α i)} {p : Fin (n + 1)}
+
+open Fintype
+
+lemma mem_piFinset_iff_zero_tail :
+    f ∈ Fintype.piFinset s ↔ f 0 ∈ s 0 ∧ tail f ∈ piFinset (tail s) := by
+  simp only [Fintype.mem_piFinset, forall_fin_succ, tail]
+
+lemma mem_piFinset_iff_last_init :
+    f ∈ piFinset s ↔ f (last n) ∈ s (last n) ∧ init f ∈ piFinset (init s) := by
+  simp only [Fintype.mem_piFinset, forall_fin_succ', init, and_comm]
+
+lemma mem_piFinset_iff_pivot_removeNth (p : Fin (n + 1)) :
+    f ∈ piFinset s ↔ f p ∈ s p ∧ removeNth p f ∈ piFinset (removeNth p s) := by
+  simp only [Fintype.mem_piFinset, forall_iff_succAbove p, removeNth]
+
+lemma cons_mem_piFinset_cons {x_zero : α 0} {x_tail : (i : Fin n) → α i.succ}
+    {s_zero : Finset (α 0)} {s_tail : (i : Fin n) → Finset (α i.succ)} :
+    cons x_zero x_tail ∈ piFinset (cons s_zero s_tail) ↔
+      x_zero ∈ s_zero ∧ x_tail ∈ piFinset s_tail := by
+  simp_rw [mem_piFinset_iff_zero_tail, cons_zero, tail_cons]
+
+lemma snoc_mem_piFinset_snoc {x_last : α (last n)} {x_init : (i : Fin n) → α i.castSucc}
+    {s_last : Finset (α (last n))} {s_init : (i : Fin n) → Finset (α i.castSucc)} :
+    snoc x_init x_last ∈ piFinset (snoc s_init s_last) ↔
+      x_last ∈ s_last ∧ x_init ∈ piFinset s_init := by
+  simp_rw [mem_piFinset_iff_last_init, init_snoc, snoc_last]
+
+lemma insertNth_mem_piFinset_insertNth {x_pivot : α p} {x_remove : ∀ i, α (succAbove p i)}
+    {s_pivot : Finset (α p)} {s_remove : ∀ i, Finset (α (succAbove p i))} :
+    insertNth p x_pivot x_remove ∈ piFinset (insertNth p s_pivot s_remove) ↔
+      x_pivot ∈ s_pivot ∧ x_remove ∈ piFinset s_remove := by
+  simp [mem_piFinset_iff_pivot_removeNth p]
+
+end Fin
+
+lemma Finset.map_insertNth_filter_piFinset_succAbove {n : ℕ} {k : Fin (n + 1)}
+    {α : Fin (n + 1) → Type*}
+    {p : ((i : Fin n) → α (Fin.succAbove k i)) → Prop} [DecidablePred p]
+    {S : (i : Fin (n + 1)) → Finset (α i)} :
+    ((Fintype.piFinset S).filter fun r ↦ p (fun x ↦ r <| Fin.succAbove k x)).map
+      (Fin.insertNthEquiv α k).toEmbedding
+    = S k ×ˢ (Fintype.piFinset (fun x ↦ S <| Fin.succAbove k x)).filter p := by
+  congr
+  ext ⟨x, f⟩
+  simp? [Fin.forall_iff_succAbove
+        k] says simp only [mem_map_equiv, Fin.insertNthEquiv_symm_apply, mem_filter,
+      Fintype.mem_piFinset, Fin.forall_iff_succAbove k, Fin.insertNth_apply_same,
+      Fin.insertNth_apply_succAbove, mem_product]
+  tauto
+
+-- TODO: Add snoc-y version of this lemma
+lemma Finset.map_piFinSuccAbove_filter_piFinset_tail {n : ℕ} {α : Fin (n + 1) → Type*}
+    {p : ((i : Fin n) → α i.succ) → Prop} [DecidablePred p]
+    {S : (i : Fin (n + 1)) → Finset (α i)} :
+    ((Fintype.piFinset S).filter fun r ↦ p (Fin.tail r)).map
+      (Fin.insertNthEquiv α 0).toEmbedding
+    = S 0 ×ˢ (Fintype.piFinset (Fin.tail S)).filter p :=
+  Finset.map_insertNth_filter_piFinset_succAbove
+
+-- TODO: Add snoc-y version of this lemma
+lemma Finset.filter_piFinset_eq_map_piFinSuccAbove_symm {n : ℕ} {α : Fin (n + 1) → Type*}
+    {p : ((i : Fin n) → α i.succ) → Prop} [DecidablePred p]
+    {S : ∀ i, Finset (α i)} :
+    ((Fintype.piFinset S).filter fun r ↦ p (Fin.tail r))
+    = (S 0 ×ˢ (Fintype.piFinset (Fin.tail S)).filter p).map
+        (Fin.insertNthEquiv α 0).symm.toEmbedding := by
+  rw [← Finset.map_piFinSuccAbove_filter_piFinset_tail, Finset.map_map,
+    Function.Embedding.equiv_toEmbedding_trans_symm_toEmbedding, map_refl]
+
+-- TODO: Add snoc-y version of this lemma
+lemma Finset.card_filter_succ_piFinset_eq {n : ℕ} {α : Fin (n + 1) → Type*}
+    {p : ((i : Fin n) → α i.succ) → Prop} [DecidablePred p]
+    {S : (i : Fin (n + 1)) → Finset (α i)} :
+    ((Fintype.piFinset S).filter fun r ↦ p (Fin.tail r)).card
+    = (S 0).card * ((Fintype.piFinset (Fin.tail S)).filter p).card := by
+  rw [← Finset.card_map ((Fin.insertNthEquiv α 0).toEmbedding),
+    map_piFinSuccAbove_filter_piFinset_tail]
+  exact Finset.card_product (S 0) ((Fintype.piFinset (Fin.tail S)).filter p)

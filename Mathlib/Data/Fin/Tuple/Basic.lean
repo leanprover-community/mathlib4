@@ -19,14 +19,55 @@ We interpret maps `∀ i : Fin n, α i` as `n`-tuples of elements of possibly va
 In this case when `α i` is a constant map, then tuples are isomorphic (but not definitionally equal)
 to `Vector`s.
 
-We define the following operations:
+## Main declarations
 
-* `Fin.tail` : the tail of an `n+1` tuple, i.e., its last `n` entries;
-* `Fin.cons` : adding an element at the beginning of an `n`-tuple, to get an `n+1`-tuple;
-* `Fin.init` : the beginning of an `n+1` tuple, i.e., its first `n` entries;
-* `Fin.snoc` : adding an element at the end of an `n`-tuple, to get an `n+1`-tuple. The name `snoc`
-  comes from `cons` (i.e., adding an element to the left of a tuple) read in reverse order.
-* `Fin.insertNth` : insert an element to a tuple at a given position.
+There are three (main) ways to consider `Fin n` as a subtype of `Fin (n + 1)`, hence three (main)
+ways to move between tuples of length `n` and of length `n + 1` by adding/removing an entry.
+
+### Adding at the start
+
+* `Fin.succ`: Send `i : Fin n` to `i + 1 : Fin (n + 1)`. This is defined in Core.
+* `Fin.cases`: Induction/recursion principle for `Fin`: To prove a property/define a function for
+  all `Fin (n + 1)`, it is enough to prove/define it for `0` and for `i.succ` for all `i : Fin n`.
+  This is defined in Core.
+* `Fin.cons`: Turn a tuple `f : Fin n → α` and an entry `a : α` into a tuple
+  `Fin.cons a f : Fin (n + 1) → α` by adding `a` at the start. In general, tuples can be dependent
+  functions, in which case `f : ∀ i : Fin n, α i.succ` and `a : α 0`. This is a special case of
+  `Fin.cases`.
+* `Fin.tail`: Turn a tuple `f : Fin (n + 1) → α` into a tuple `Fin.tail f : Fin n → α` by forgetting
+  the start. In general, tuples can be dependent functions,
+  in which case `Fin.tail f : ∀ i : Fin n, α i.succ`.
+
+### Adding at the end
+
+* `Fin.castSucc`: Send `i : Fin n` to `i : Fin (n + 1)`. This is defined in Core.
+* **There is currently no equivalent of `Fin.cases`/`Fin.succAboveCases` for adding at the end.**
+* `Fin.snoc`: Turn a tuple `f : Fin n → α` and an entry `a : α` into a tuple
+  `Fin.snoc f a : Fin (n + 1) → α` by adding `a` at the end. In general, tuples can be dependent
+  functions, in which case `f : ∀ i : Fin n, α i.castSucc` and `a : α (last n)`.
+* `Fin.init`: Turn a tuple `f : Fin (n + 1) → α` into a tuple `Fin.init f : Fin n → α` by forgetting
+  the start. In general, tuples can be dependent functions,
+  in which case `Fin.init f : ∀ i : Fin n, α i.castSucc`.
+
+### Adding in the middle
+
+For a **pivot** `p : Fin (n + 1)`,
+* `Fin.succAbove`: Send `i : Fin n` to
+  * `i : Fin (n + 1)` if `i < p`,
+  * `i + 1 : Fin (n + 1)` if `p ≤ i`.
+* `Fin.succAboveCases`: Induction/recursion principle for `Fin`: To prove a property/define a
+  function for all `Fin (n + 1)`, it is enough to prove/define it for `p` and for `p.succAbove i`
+  for all `i : Fin n`.
+* `Fin.insertNth`: Turn a tuple `f : Fin n → α` and an entry `a : α` into a tuple
+  `Fin.insertNth f a : Fin (n + 1) → α` by adding `a` in position `p`. In general, tuples can be
+  dependent functions, in which case `f : ∀ i : Fin n, α (p.succAbove i)` and `a : α p`. This is a
+  special case of `Fin.succAboveCases`.
+* **There is currently no equivalent of `Fin.tail`/`Fin.init` for adding in the middle.**
+
+`p = 0` means we add at the start. `p = last n` means we add at the end.
+
+### Miscellaneous
+
 * `Fin.find p` : returns the first index `n` where `p n` is satisfied, and `none` if it is never
   satisfied.
 * `Fin.append a b` : append two tuples.
@@ -762,6 +803,10 @@ theorem forall_iff_succAbove {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases i h.1 h.2⟩
 #align fin.forall_iff_succ_above Fin.forall_iff_succAbove
 
+/-- Remove the `p`-th entry of a tuple. -/
+def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) :=
+  fun i ↦ f (p.succAbove i)
+
 /-- Insert an element into a tuple at a given position. For `i = 0` see `Fin.cons`,
 for `i = Fin.last n` see `Fin.snoc`. See also `Fin.succAboveCases` for a version elaborated
 as an eliminator. -/
@@ -795,6 +840,15 @@ theorem succAbove_cases_eq_insertNth : @succAboveCases.{u + 1} = @insertNth.{u} 
   rfl
 #align fin.succ_above_cases_eq_insert_nth Fin.succAbove_cases_eq_insertNth
 
+@[simp] lemma removeNth_insertNth (p : Fin (n + 1)) (a : α p) (f : ∀ i, α (succAbove p i)) :
+    removeNth p (insertNth p a f) = f := by ext; unfold removeNth; simp
+
+@[simp] lemma removeNth_zero (f : ∀ i, α i) : removeNth 0 f = tail f := by
+  ext; simp [tail, removeNth]
+
+@[simp] lemma removeNth_last {α : Type*} (f : Fin (n + 1) → α) : removeNth (last n) f = init f := by
+  ext; simp [init, removeNth]
+
 /- Porting note: Had to `unfold comp`. Sometimes, when I use a placeholder, if I try to insert
 what Lean says it synthesized, it gives me a type error anyway. In this case, it's `x` and `p`. -/
 @[simp]
@@ -803,14 +857,14 @@ theorem insertNth_comp_succAbove (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
   funext (by unfold comp; exact insertNth_apply_succAbove i _ _)
 #align fin.insert_nth_comp_succ_above Fin.insertNth_comp_succAbove
 
-theorem insertNth_eq_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
-    i.insertNth x p = q ↔ q i = x ∧ p = fun j ↦ q (i.succAbove j) := by
-  simp [funext_iff, forall_iff_succAbove i, eq_comm]
+theorem insertNth_eq_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
+    insertNth p a f = g ↔ a = g p ∧ f = removeNth p g := by
+  simp [funext_iff, forall_iff_succAbove p, removeNth]
 #align fin.insert_nth_eq_iff Fin.insertNth_eq_iff
 
-theorem eq_insertNth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
-    q = i.insertNth x p ↔ q i = x ∧ p = fun j ↦ q (i.succAbove j) :=
-  eq_comm.trans insertNth_eq_iff
+theorem eq_insertNth_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
+    g = insertNth p a f ↔ g p = a ∧ removeNth p g = f := by
+  simpa [eq_comm] using insertNth_eq_iff
 #align fin.eq_insert_nth_iff Fin.eq_insertNth_iff
 
 /- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
@@ -865,7 +919,7 @@ theorem insertNth_last' (x : β) (p : Fin n → β) :
 @[simp]
 theorem insertNth_zero_right [∀ j, Zero (α j)] (i : Fin (n + 1)) (x : α i) :
     i.insertNth x 0 = Pi.single i x :=
-  insertNth_eq_iff.2 <| by simp [succAbove_ne, Pi.zero_def]
+  insertNth_eq_iff.2 <| by unfold removeNth; simp [succAbove_ne, Pi.zero_def]
 #align fin.insert_nth_zero_right Fin.insertNth_zero_right
 
 lemma insertNth_rev {α : Type*} (i : Fin (n + 1)) (a : α) (f : Fin n → α) (j : Fin (n + 1)) :
@@ -900,7 +954,7 @@ theorem insertNth_binop (op : ∀ j, α j → α j → α j) (i : Fin (n + 1)) (
     (p q : ∀ j, α (i.succAbove j)) :
     (i.insertNth (op i x y) fun j ↦ op _ (p j) (q j)) = fun j ↦
       op j (i.insertNth x p j) (i.insertNth y q j) :=
-  insertNth_eq_iff.2 <| by simp
+  insertNth_eq_iff.2 <| by unfold removeNth; simp
 #align fin.insert_nth_binop Fin.insertNth_binop
 
 @[simp]
@@ -970,21 +1024,9 @@ theorem preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q�
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and_iff, mem_empty_iff_false]
 #align fin.preimage_insert_nth_Icc_of_not_mem Fin.preimage_insertNth_Icc_of_not_mem
 
-/-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
-Functional form of `Equiv.piFinSuccAbove`. -/
-def extractNth (i : Fin (n + 1)) (f : (∀ j, α j)) :
-    α i × ∀ j, α (i.succAbove j) :=
-  (f i, fun j => f (i.succAbove j))
-
 @[simp]
-theorem extractNth_insertNth {i : Fin (n + 1)} (x : α i) (p : ∀ j : Fin n, α (i.succAbove j)) :
-    i.extractNth (i.insertNth x p) = (x, p) := by
-  simp [extractNth]
-
-@[simp]
-theorem insertNth_extractNth {i : Fin (n + 1)} (f : ∀ j, α j) :
-    i.insertNth (i.extractNth f).1 (i.extractNth f).2 = f := by
-  simp [Fin.extractNth, Fin.insertNth_eq_iff]
+theorem insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
+    insertNth p (f p) (removeNth p f) = f := by simp [Fin.insertNth_eq_iff]
 
 end InsertNth
 

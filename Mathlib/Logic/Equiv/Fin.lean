@@ -260,30 +260,34 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
   finSuccEquiv'_symm_none _
 #align fin_succ_equiv_last_symm_none finSuccEquivLast_symm_none
 
-/-- Equivalence between `Π j : Fin (n + 1), α j` and `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
-@[simps (config := .asFn)]
-def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
-    (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
-  toFun f := i.extractNth f
-  invFun f := i.insertNth f.1 f.2
-  left_inv f := by simp
-  right_inv f := by simp
-#align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAbove
-#align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAbove_apply
-#align equiv.pi_fin_succ_above_equiv_symm_apply Equiv.piFinSuccAbove_symm_apply
+/-- Equivalence between `∀ i : Fin (n + 1), α i` and `α p × Π i : Fin n, α (Fin.succAbove p i)`.
 
-/-- Order isomorphism between `Π j : Fin (n + 1), α j` and
-`α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
-def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type u) [∀ i, LE (α i)]
+`Fin.insertNth` as an `Equiv`. -/
+@[simps (config := .asFn)]
+def Fin.insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
+    (∀ j, α j) ≃ α p × ∀ j, α (p.succAbove j) where
+  toFun f := (f p, removeNth p f)
+  invFun f := insertNth p f.1 f.2
+  left_inv f := by simp
+  right_inv f := by ext <;> simp
+#align equiv.pi_fin_succ_above_equiv Fin.insertNthEquiv
+#align equiv.pi_fin_succ_above_equiv_apply Fin.insertNthEquiv_apply
+#align equiv.pi_fin_succ_above_equiv_symm_apply Fin.insertNthEquiv_symm_apply
+
+/-- Order isomorphism between `∀ i : Fin (n + 1), α i` and
+`α p × ∀ i : Fin n, α (Fin.succAbove p i)`.
+
+`Fin.insertNth` as an `OrderIso`. -/
+def Fin.insertNthOrderIso (α : Fin (n + 1) → Type u) [∀ i, LE (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃o α i × ∀ j, α (i.succAbove j) where
-  toEquiv := Equiv.piFinSuccAbove α i
+  toEquiv := insertNthEquiv α i
   map_rel_iff' := Iff.symm i.forall_iff_succAbove
-#align order_iso.pi_fin_succ_above_iso OrderIso.piFinSuccAboveIso
+#align order_iso.pi_fin_succ_above_iso Fin.insertNthOrderIso
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
 @[simps! (config := .asFn)]
 def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  Equiv.piFinSuccAbove (fun _ => β) 0
+  Fin.insertNthEquiv (fun _ => β) 0
 #align equiv.pi_fin_succ Equiv.piFinSucc
 #align equiv.pi_fin_succ_apply Equiv.piFinSucc_apply
 #align equiv.pi_fin_succ_symm_apply Equiv.piFinSucc_symm_apply
@@ -307,11 +311,20 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
   ext i
   exact Fin.cases rfl (fun j ↦ rfl) i
 
-/-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)` which separates out the last
-element of the tuple. -/
+/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n` given by separating out the last element of the tuple.
+
+This is `Fin.snoc` as an `Equiv`. -/
 @[simps! (config := .asFn)]
-def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  Equiv.piFinSuccAbove (fun _ => β) (.last _)
+def Fin.snocEquiv {n : ℕ} (α : Fin (n + 1) → Type*) :
+    (∀ i, α i) ≃ α (.last n) × (∀ i, α (.castSucc i)) where
+  toFun f := ⟨f _, Fin.init f⟩
+  invFun f i := Fin.snoc f.2 f.1 _
+  left_inv f := by simp
+  right_inv f := by simp
+
+@[simp] lemma Fin.insertNthEquiv_last (n : ℕ) (α : Type*) :
+    Fin.insertNthEquiv (fun _ => α) (.last n) = Fin.snocEquiv (fun _ => α) := by
+  ext <;> simp [init]
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n) where
