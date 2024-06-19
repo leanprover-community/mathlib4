@@ -250,6 +250,32 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
   rfl
 #align category_theory.iso.hom_eq_inv CategoryTheory.Iso.hom_eq_inv
 
+/-- The bijection `(Z ⟶ X) ≃ (Z ⟶ Y)` induced by `α : X ≅ Y`. -/
+@[simps]
+def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
+  toFun f := f ≫ α.hom
+  invFun g := g ≫ α.inv
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+/-- The bijection `(X ⟶ Z) ≃ (Y ⟶ Z)` induced by `α : X ≅ Y`. -/
+@[simps]
+def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
+  toFun f := α.inv ≫ f
+  invFun g := α.hom ≫ g
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+/-- The bijection `(X ⟶ Y) ≃ (X' ⟶ Y')` that is induced by isomorphisms
+`e : X ≅ X'` and `e' : Y ≅ Y'`. -/
+@[simps]
+def homEquiv {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y') :
+    (X ⟶ Y) ≃ (X' ⟶ Y') where
+  toFun f := e.inv ≫ f ≫ e'.hom
+  invFun g := e.hom ≫ g ≫ e'.inv
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
 end Iso
 
 /-- `IsIso` typeclass expressing that a morphism is invertible. -/
