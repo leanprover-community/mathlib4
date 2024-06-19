@@ -50,7 +50,6 @@ structure LaxPreFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiv
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
 #align category_theory.prelax_functor CategoryTheory.LaxPreFunctor
 
--- TODO: understand this
 initialize_simps_projections LaxPreFunctor (+toPrefunctor, -obj, -map)
 
 /-- The prefunctor between the underlying quivers. -/
@@ -58,11 +57,12 @@ add_decl_doc LaxPreFunctor.toPrefunctor
 
 namespace LaxPreFunctor
 
-attribute [coe] CategoryTheory.LaxPreFunctor.toPrefunctor
+-- attribute [coe] CategoryTheory.LaxPreFunctor.toPrefunctor
 
-instance hasCoeToPrefunctor : Coe (LaxPreFunctor B C) (Prefunctor B C) :=
-  ⟨toPrefunctor⟩
-#align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.LaxPreFunctor.hasCoeToPrefunctor
+-- instance hasCoeToPrefunctor : Coe (LaxPreFunctor B C) (Prefunctor B C) :=
+--   ⟨toPrefunctor⟩
+
+-- #align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.LaxPreFunctor.hasCoeToPrefunctor
 
 variable (F : LaxPreFunctor B C)
 
@@ -116,10 +116,10 @@ add_decl_doc PrelaxFunctor.toLaxPreFunctor
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
-attribute [coe] CategoryTheory.LaxPreFunctor.toPrefunctor
+-- attribute [coe] CategoryTheory.LaxPreFunctor.toPrefunctor
 
-instance hasCoeToLaxPreFunctor : Coe (PrelaxFunctor B C) (LaxPreFunctor B C) :=
-  ⟨toLaxPreFunctor⟩
+-- instance hasCoeToLaxPreFunctor : Coe (PrelaxFunctor B C) (LaxPreFunctor B C) :=
+--   ⟨toLaxPreFunctor⟩
 
 -- TODO: what simps to include here...?
 /-- The identity prelax functor. -/

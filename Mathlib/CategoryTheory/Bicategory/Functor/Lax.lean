@@ -57,8 +57,8 @@ and do not need to strictly preserve the identity. Instead, there are specified 
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
-structure LaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
-  [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
+structure LaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
+    extends PrelaxFunctor B C where
   mapId (a : B) : 𝟙 (obj a) ⟶ map (𝟙 a)
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map f ≫ map g ⟶ map (f ≫ g)
   mapComp_naturality_left :
@@ -69,12 +69,13 @@ structure LaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
      mapComp f g ≫ map₂ (f ◁ η) = map f ◁ map₂ η ≫ mapComp f g' := by aesop_cat
   map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
+      -- (α_ (map f) (map g) (map h)).inv ≫ mapComp f g ▷ map h ≫ mapComp (f ≫ g) h =
+      -- map f ◁ mapComp g h ≫ mapComp f (g ≫ h) ≫ map₂ (α_ f g h).inv := by aesop_cat
       mapComp f g ▷ map h ≫ mapComp (f ≫ g) h ≫ map₂ (α_ f g h).hom =
       (α_ (map f) (map g) (map h)).hom ≫ map f ◁ mapComp g h ≫ mapComp f (g ≫ h) := by aesop_cat
   map₂_leftUnitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (λ_ f).inv = (λ_ (map f)).inv ≫ mapId a ▷ map f ≫ mapComp (𝟙 a) f := by aesop_cat
-      -- mapId a ▷ map f ≫ mapComp (𝟙 a) f ≫ map₂ (λ_ f).hom = (λ_ (map f)).hom := by aesop_cat
   map₂_rightUnitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).inv = (ρ_ (map f)).inv ≫ map f ◁ mapId b ≫ mapComp f (𝟙 b) := by aesop_cat
@@ -102,10 +103,29 @@ attribute [nolint docBlame] CategoryTheory.LaxFunctor.mapId
   CategoryTheory.LaxFunctor.map₂_leftUnitor
   CategoryTheory.LaxFunctor.map₂_rightUnitor
 
-instance hasCoeToPrelax : Coe (LaxFunctor B C) (PrelaxFunctor B C) :=
-  ⟨toPrelaxFunctor⟩
+-- instance hasCoeToPrelax : Coe (LaxFunctor B C) (PrelaxFunctor B C) :=
+--   ⟨toPrelaxFunctor⟩
 
 variable (F : LaxFunctor B C)
+
+@[reassoc]
+lemma map₂_associator' {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (α_ (F.map f) (F.map g) (F.map h)).inv ≫ F.mapComp f g ▷ F.map h ≫ F.mapComp (f ≫ g) h =
+    F.map f ◁ F.mapComp g h ≫ F.mapComp f (g ≫ h) ≫ F.map₂ (α_ f g h).inv := by
+  rw [Iso.inv_comp_eq, ← F.map₂_associator_assoc, ← F.map₂_comp]
+  simp only [Iso.hom_inv_id, PrelaxFunctor.map₂_id, comp_id]
+
+@[reassoc]
+lemma map₂_leftUnitor' {a b  : B} (f : a ⟶ b) :
+    (λ_ (F.map f)).hom = F.mapId a ▷ F.map f ≫ F.mapComp (𝟙 a) f ≫ F.map₂ (λ_ f).hom := by
+  rw [← @PrelaxFunctor.map₂Iso_hom, ← assoc, ← Iso.comp_inv_eq, ← Iso.eq_inv_comp]
+  simp only [Functor.mapIso_inv, PrelaxFunctor.mapFunctor_map, map₂_leftUnitor]
+
+@[reassoc]
+lemma map₂_rightUnitor' {a b : B} (f : a ⟶ b) :
+    (ρ_ (F.map f)).hom = F.map f ◁ F.mapId b ≫ F.mapComp f (𝟙 b) ≫ F.map₂ (ρ_ f).hom := by
+  rw [← @PrelaxFunctor.map₂Iso_hom, ← assoc, ← Iso.comp_inv_eq, ← Iso.eq_inv_comp]
+  simp only [Functor.mapIso_inv, PrelaxFunctor.mapFunctor_map, map₂_rightUnitor]
 
 /-- The identity lax functor. -/
 @[simps]
@@ -170,5 +190,3 @@ attribute [nolint docBlame] CategoryTheory.LaxFunctor.PseudoCore.mapIdIso
 attribute [simp] PseudoCore.mapIdIso_inv PseudoCore.mapCompIso_inv
 
 end LaxFunctor
-
--- Later: associator API
