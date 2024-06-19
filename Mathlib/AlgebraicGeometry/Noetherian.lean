@@ -305,11 +305,9 @@ noncomputable instance [h : IsNoetherian X] : NoetherianSpace X := by
     exact Set.inter_subset_right
     exact hCov
   let G := ⋃ i : F, (Classical.choose (h i)).toSet
-  have : Fintype G := Set.fintypeiUnion _
   use G.toFinset
   intro x hx
   obtain ⟨V, hVF, hxV⟩ := Set.mem_iUnion₂.mp <| hF (Set.mem_univ x)
-  have := Set.mem_inter hxV hx
   apply Set.mem_of_subset_of_mem
   simp only [Set.mem_toFinset]
   trans
