@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
-import Mathlib.CategoryTheory.Triangulated.Triangulated
+import Mathlib.CategoryTheory.Localization.Triangulated
+import Mathlib.CategoryTheory.Shift.Localization
 
 /-! # Triangulated subcategories
 
@@ -185,6 +186,11 @@ lemma W.unshift {X₁ X₂ : C} {f : X₁ ⟶ X₂} {n : ℤ} (hf : S.W (f⟦n�
   (S.respectsIso_W.arrow_mk_iso_iff
      (Arrow.isoOfNatIso (shiftEquiv C n).unitIso (Arrow.mk f))).2 (hf.shift (-n))
 
+instance : S.W.IsCompatibleWithShift ℤ where
+  condition n := by
+    ext K L f
+    exact ⟨fun hf => hf.unshift, fun hf => hf.shift n⟩
+
 instance [IsTriangulated C] : S.W.IsMultiplicative where
   comp_mem := by
     rw [← isoClosure_W]
@@ -240,6 +246,15 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
       rw [← sub_eq_zero, ← comp_sub, hq, reassoc_of% eq, zero_comp]
+
+instance [IsTriangulated C] : S.W.IsCompatibleWithTriangulation := ⟨by
+  rintro T₁ T₃ mem₁ mem₃ a b ⟨Z₅, g₅, h₅, mem₅, mem₅'⟩ ⟨Z₄, g₄, h₄, mem₄, mem₄'⟩ comm
+  obtain ⟨Z₂, g₂, h₂, mem₂⟩ := distinguished_cocone_triangle (T₁.mor₁ ≫ b)
+  have H := someOctahedron rfl mem₁ mem₄ mem₂
+  have H' := someOctahedron comm.symm mem₅ mem₃ mem₂
+  let φ : T₁ ⟶ T₃ := H.triangleMorphism₁ ≫ H'.triangleMorphism₂
+  exact ⟨φ.hom₃, S.W.comp_mem _ _ (W.mk S H.mem mem₄') (W.mk' S H'.mem mem₅'),
+    by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩
 
 section
 

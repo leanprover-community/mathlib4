@@ -48,10 +48,15 @@ If `R` is a ring of characteristic `p`, then `WittVector p R` is a ring of chara
 The canonical example is `WittVector p (ZMod p)`,
 which is isomorphic to the `p`-adic integers `ℤ_[p]`. -/
 structure WittVector (p : ℕ) (R : Type*) where mk' ::
+  /-- `x.coeff n` is the `n`th coefficient of the Witt vector `x`.
+
+  This concept does not have a standard name in the literature.
+  -/
   coeff : ℕ → R
 #align witt_vector WittVector
 
 -- Porting note: added to make the `p` argument explicit
+/-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
 def WittVector.mk (p : ℕ) {R : Type*} (coeff : ℕ → R) : WittVector p R := mk' coeff
 
 variable {p : ℕ}
@@ -64,15 +69,6 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 namespace WittVector
 
 variable {R : Type*}
-
-/-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
-add_decl_doc WittVector.mk
-
-/-- `x.coeff n` is the `n`th coefficient of the Witt vector `x`.
-
-This concept does not have a standard name in the literature.
--/
-add_decl_doc WittVector.coeff
 
 @[ext]
 theorem ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by

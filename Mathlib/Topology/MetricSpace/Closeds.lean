@@ -223,7 +223,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         simp only [F, and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
         intro _ x hx hx'
         rwa [hx'] at hx
-      · exact SetLike.coe_injective.injOn F
+      · exact SetLike.coe_injective.injOn
     -- `F` is ε-dense
     · obtain ⟨t0, t0s, Dut0⟩ := main u
       have : IsClosed t0 := (fs.subset t0s).isCompact.isClosed

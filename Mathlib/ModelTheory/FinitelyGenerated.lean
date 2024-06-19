@@ -88,7 +88,7 @@ theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
     (hs : (s.map f.toHom).FG) : s.FG := by
   rcases hs with ⟨t, h⟩
   rw [fg_def]
-  refine ⟨f ⁻¹' t, t.finite_toSet.preimage (f.injective.injOn _), ?_⟩
+  refine ⟨f ⁻¹' t, t.finite_toSet.preimage f.injective.injOn, ?_⟩
   have hf : Function.Injective f.toHom := f.injective
   refine map_injective_of_injective hf ?_
   rw [← h, map_closure, Embedding.coe_toHom, image_preimage_eq_of_subset]

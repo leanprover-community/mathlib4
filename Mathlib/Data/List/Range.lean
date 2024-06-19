@@ -84,6 +84,11 @@ theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
   Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
 #align list.pairwise_le_range List.pairwise_le_range
 
+theorem take_range (m n : ℕ) : take m (range n) = range (min m n) := by
+  apply List.ext_get
+  · simp
+  · simp (config := { contextual := true }) [← get_take, Nat.lt_min]
+
 theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp (config := {decide := true}) only [range_eq_range', nodup_range']
 #align list.nodup_range List.nodup_range

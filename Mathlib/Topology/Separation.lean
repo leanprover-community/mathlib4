@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
@@ -19,6 +20,8 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 
 * `SeparatedNhds`: Two `Set`s are separated by neighbourhoods if they are contained in disjoint
   open sets.
+* `HasSeparatingCover`: A set has a countable cover that can be used with
+  `hasSeparatingCovers_iff_separatedNhds` to witness when two `Set`s have `SeparatedNhds`.
 * `T0Space`: A T₀/Kolmogorov space is a space where, for every two points `x ≠ y`,
   there is an open set that contains one, but not the other.
 * `R0Space`: An R₀ space (sometimes called a *symmetric space*) is a topological space
@@ -51,6 +54,12 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
+
+### TODOs
+
+* Add perfectly normal and T6 spaces.
+* Use `hasSeparatingCovers_iff_separatedNhds` to prove that perfectly normal spaces
+  are completely normal.
 
 ## Main results
 
@@ -94,6 +103,12 @@ If the space is also compact:
   is equivalent to being a `TotallySeparatedSpace`.
 * `ConnectedComponents.t2`: `ConnectedComponents X` is T₂ for `X` T₂ and compact.
 
+### Regular spaces
+
+If the space is also Lindelöf:
+
+* `NormalSpace.of_regularSpace_lindelofSpace`: every regular Lindelöf space is normal.
+
 ### T₃ spaces
 
 * `disjoint_nested_nhds`: Given two points `x ≠ y`, we can find neighbourhoods `x ∈ V₁ ⊆ U₁` and
@@ -101,7 +116,10 @@ If the space is also compact:
 
 ## References
 
-https://en.wikipedia.org/wiki/Separation_axiom
+* <https://en.wikipedia.org/wiki/Separation_axiom>
+* <https://en.wikipedia.org/wiki/Normal_space>
+* [Willard's *General Topology*][zbMATH02107988]
+
 -/
 
 
@@ -128,6 +146,55 @@ theorem separatedNhds_iff_disjoint {s t : Set X} : SeparatedNhds s t ↔ Disjoin
 #align separated_nhds_iff_disjoint separatedNhds_iff_disjoint
 
 alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
+
+/-- `HasSeparatingCover`s can be useful witnesses for `SeparatedNhds`. -/
+def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
+  ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
+
+/-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
+and (todo) a perfectly normal space is a completely normal space. -/
+theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
+    HasSeparatingCover s t ∧ HasSeparatingCover t s ↔ SeparatedNhds s t := by
+  constructor
+  · rintro ⟨⟨u, u_cov, u_props⟩, ⟨v, v_cov, v_props⟩⟩
+    have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
+      IsOpen (⋃ n, u₀ n \ closure (a n)) := fun _ _ u₀i_open ↦
+        isOpen_iUnion fun i ↦ (u₀i_open i).sdiff isClosed_closure
+    have cover_lemma : ∀ (h₀ : Set X) (u₀ v₀ : ℕ → Set X),
+        (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
+        (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ≤ n, v₀ m)) :=
+        fun h₀ u₀ v₀ h₀_cov dis x xinh ↦ by
+      rcases h₀_cov xinh with ⟨un , ⟨n, rfl⟩ , xinun⟩
+      simp only [mem_iUnion]
+      refine ⟨n, xinun, ?_⟩
+      simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_setOf_eq, mem_iUnion,
+        exists_false, exists_const, not_false_eq_true]
+    refine
+      ⟨⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
+       ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
+       open_lemma u (fun n ↦ ⋃ m ≤ n, v m) (fun n ↦ (u_props n).1),
+       open_lemma v (fun n ↦ ⋃ m ≤ n, u m) (fun n ↦ (v_props n).1),
+       cover_lemma s u v u_cov (fun n ↦ (v_props n).2),
+       cover_lemma t v u v_cov (fun n ↦ (u_props n).2),
+       ?_⟩
+    rw [Set.disjoint_left]
+    rintro x ⟨un, ⟨n, rfl⟩, xinun⟩
+    suffices ∀ (m : ℕ), x ∈ v m → x ∈ closure (⋃ m' ∈ {m' | m' ≤ m}, u m') by simpa
+    intro m xinvm
+    have n_le_m : n ≤ m := by
+      by_contra m_gt_n
+      exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvm))
+    exact subset_closure (mem_biUnion n_le_m xinun.1)
+  · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
+    exact
+      ⟨⟨fun _ ↦ U,
+        h_sub_U.trans (iUnion_const U).symm.subset,
+        fun _ ↦
+          ⟨U_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) k_sub_V (UV_dis.closure_left V_open)⟩⟩,
+       ⟨fun _ ↦ V,
+        k_sub_V.trans (iUnion_const V).symm.subset,
+        fun _ ↦
+          ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
 
 namespace SeparatedNhds
 
@@ -286,7 +353,7 @@ theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClo
   wlog h : x ∈ U ∧ y ∉ U
   · refine this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
   cases' h with hxU hyU
-  have : s \ U = s := hmin (s \ U) (diff_subset _ _) ⟨y, hy, hyU⟩ (hs.sdiff hUo)
+  have : s \ U = s := hmin (s \ U) diff_subset ⟨y, hy, hyU⟩ (hs.sdiff hUo)
   exact (this.symm.subset hx).2 hxU
 #align minimal_nonempty_closed_subsingleton minimal_nonempty_closed_subsingleton
 
@@ -313,7 +380,7 @@ theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen 
   wlog h : x ∈ U ∧ y ∉ U
   · exact this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
   cases' h with hxU hyU
-  have : s ∩ U = s := hmin (s ∩ U) (inter_subset_left _ _) ⟨x, hx, hxU⟩ (hs.inter hUo)
+  have : s ∩ U = s := hmin (s ∩ U) inter_subset_left ⟨x, hx, hxU⟩ (hs.inter hUo)
   exact hyU (this.symm.subset hy).2
 #align minimal_nonempty_open_subsingleton minimal_nonempty_open_subsingleton
 
@@ -669,7 +736,7 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
   refine and_congr ⟨fun H z hz => ?_, fun H z hzx hzs => ?_⟩ (forall_congr' fun _ => ?_)
   · specialize H z hz.2 hz.1
     rw [continuousWithinAt_update_of_ne hz.2] at H
-    exact H.mono (diff_subset _ _)
+    exact H.mono diff_subset
   · rw [continuousWithinAt_update_of_ne hzx]
     refine (H z ⟨hzs, hzx⟩).mono_of_mem (inter_mem_nhdsWithin _ ?_)
     exact isOpen_ne.mem_nhds hzx
@@ -750,7 +817,7 @@ theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y
   obtain ⟨o, ho, hxo, host⟩ := mem_nhdsWithin.mp ht
   refine mem_nhdsWithin.mpr ⟨o \ {y}, ho.sdiff isClosed_singleton, ⟨hxo, hxy⟩, ?_⟩
   rw [inter_insert_of_not_mem <| not_mem_diff_of_mem (mem_singleton y)]
-  exact (inter_subset_inter (diff_subset _ _) Subset.rfl).trans host
+  exact (inter_subset_inter diff_subset Subset.rfl).trans host
 #align nhds_within_insert_of_ne nhdsWithin_insert_of_ne
 
 /-- If `t` is a subset of `s`, except for one point,
@@ -875,7 +942,7 @@ theorem tendsto_const_nhds_iff [T1Space X] {l : Filter Y} [NeBot l] {c d : X} :
 theorem isOpen_singleton_of_finite_mem_nhds [T1Space X] (x : X)
     {s : Set X} (hs : s ∈ 𝓝 x) (hsf : s.Finite) : IsOpen ({x} : Set X) := by
   have A : {x} ⊆ s := by simp only [singleton_subset_iff, mem_of_mem_nhds hs]
-  have B : IsClosed (s \ {x}) := (hsf.subset (diff_subset _ _)).isClosed
+  have B : IsClosed (s \ {x}) := (hsf.subset diff_subset).isClosed
   have C : (s \ {x})ᶜ ∈ 𝓝 x := B.isOpen_compl.mem_nhds fun h => h.2 rfl
   have D : {x} ∈ 𝓝 x := by simpa only [← diff_eq, diff_diff_cancel_left A] using inter_mem hs C
   rwa [← mem_interior_iff_mem_nhds, ← singleton_subset_iff, subset_interior_iff_isOpen] at D
@@ -990,15 +1057,7 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x 
     disjoint_iff_inter_eq_empty.mpr (by rw [inter_assoc, h', compl_inter_self])⟩
 #align disjoint_nhds_within_of_mem_discrete disjoint_nhdsWithin_of_mem_discrete
 
-/-- Let `X` be a topological space and let `s, t ⊆ X` be two subsets.  If there is an inclusion
-`t ⊆ s`, then the topological space structure on `t` induced by `X` is the same as the one
-obtained by the induced topological space structure on `s`. Use `embedding_inclusion` instead. -/
-@[deprecated embedding_inclusion]
-theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
-    (instTopologicalSpaceSubtype : TopologicalSpace t) =
-      (instTopologicalSpaceSubtype : TopologicalSpace s).induced (Set.inclusion ts) :=
-  (embedding_inclusion ts).induced
-#align topological_space.subset_trans TopologicalSpace.subset_trans
+#align topological_space.subset_trans embedding_inclusionₓ
 
 /-! ### R₁ (preregular) spaces -/
 
@@ -1082,7 +1141,7 @@ theorem IsCompact.closure_of_subset {s K : Set X} (hK : IsCompact K) (h : s ⊆ 
   hK.closure.of_isClosed_subset isClosed_closure (closure_mono h)
 #align is_compact_closure_of_subset_compact IsCompact.closure_of_subset
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias isCompact_closure_of_subset_compact := IsCompact.closure_of_subset
 
 @[simp]
@@ -1091,7 +1150,7 @@ theorem exists_isCompact_superset_iff {s : Set X} :
   ⟨fun ⟨_K, hK, hsK⟩ => hK.closure_of_subset hsK, fun h => ⟨closure s, h, subset_closure⟩⟩
 #align exists_compact_superset_iff exists_isCompact_superset_iff
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias exists_compact_superset_iff := exists_isCompact_superset_iff
 
 /-- If `K` and `L` are disjoint compact sets in an R₁ topological space
@@ -1103,7 +1162,7 @@ theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsComp
   intro x hx y hy h
   exact absurd ((h.mem_closed_iff h'L).2 hy) <| disjoint_left.1 hd hx
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias separatedNhds_of_isCompact_isCompact_isClosed := SeparatedNhds.of_isCompact_isCompact_isClosed
 
 /-- If a compact set is covered by two open sets, then we can cover it by two compact subsets. -/
@@ -1270,7 +1329,7 @@ theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact
   exact ⟨interior K', isOpen_interior, hKK', hK'.closure_of_subset interior_subset⟩
 #align exists_open_superset_and_is_compact_closure exists_isOpen_superset_and_isCompact_closure
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias exists_open_superset_and_isCompact_closure := exists_isOpen_superset_and_isCompact_closure
 
 /-- In a weakly locally compact R₁ space,
@@ -1281,7 +1340,7 @@ theorem exists_isOpen_mem_isCompact_closure (x : X) :
     using exists_isOpen_superset_and_isCompact_closure isCompact_singleton
 #align exists_open_with_compact_closure exists_isOpen_mem_isCompact_closure
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias exists_open_with_compact_closure := exists_isOpen_mem_isCompact_closure
 
 end R1Space
@@ -1765,8 +1824,8 @@ theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y →
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
 #align function.left_inverse.closed_range Function.LeftInverse.isClosed_range
 
-@[deprecated] alias Function.LeftInverse.closed_range :=
-  Function.LeftInverse.isClosed_range -- 2024-03-17
+@[deprecated (since := "2024-03-17")]
+alias Function.LeftInverse.closed_range := Function.LeftInverse.isClosed_range
 
 theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : ClosedEmbedding g :=
@@ -1779,7 +1838,7 @@ theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsC
   exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
 #align is_compact_is_compact_separated SeparatedNhds.of_isCompact_isCompact
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias separatedNhds_of_isCompact_isCompact := SeparatedNhds.of_isCompact_isCompact
 
 section SeparatedFinset
@@ -1789,7 +1848,7 @@ theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoin
   .of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
 #align finset_disjoint_finset_opens_of_t2 SeparatedNhds.of_finset_finset
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias separatedNhds_of_finset_finset := SeparatedNhds.of_finset_finset
 
 theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
@@ -1797,7 +1856,7 @@ theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h 
   mod_cast .of_finset_finset {x} s (Finset.disjoint_singleton_left.mpr h)
 #align point_disjoint_finset_opens_of_t2 SeparatedNhds.of_singleton_finset
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias point_disjoint_finset_opens_of_t2 := SeparatedNhds.of_singleton_finset
 
 end SeparatedFinset
@@ -1873,7 +1932,7 @@ theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
   refine ⟨fun h x hx y hy => ?_, Set.Subsingleton.isPreirreducible⟩
   by_contra e
   obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := t2_separation e
-  exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono <| inter_subset_right _ _).not_disjoint h'
+  exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono inter_subset_right).not_disjoint h'
 #align is_preirreducible_iff_subsingleton isPreirreducible_iff_subsingleton
 
 -- todo: use `alias` + `attribute [protected]` once we get `attribute [protected]`
@@ -1949,7 +2008,7 @@ theorem RegularSpace.of_lift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = �
   Iff.mpr ((regularSpace_TFAE X).out 0 5) h
 #align regular_space.of_lift'_closure RegularSpace.of_lift'_closure
 
-@[deprecated] -- 2024-02-28
+@[deprecated (since := "2024-02-28")]
 alias RegularSpace.ofLift'_closure := RegularSpace.of_lift'_closure
 
 theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set X}
@@ -1958,7 +2017,7 @@ theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {
   .of_lift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
 #align regular_space.of_basis RegularSpace.of_hasBasis
 
-@[deprecated] -- 2024-02-28
+@[deprecated (since := "2024-02-28")]
 alias RegularSpace.ofBasis := RegularSpace.of_hasBasis
 
 theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
@@ -1966,7 +2025,7 @@ theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
   Iff.mpr ((regularSpace_TFAE X).out 0 3) h
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.of_exists_mem_nhds_isClosed_subset
 
-@[deprecated] -- 2024-02-28
+@[deprecated (since := "2024-02-28")]
 alias RegularSpace.ofExistsMemNhdsIsClosedSubset := RegularSpace.of_exists_mem_nhds_isClosed_subset
 
 /-- A weakly locally compact R₁ space is regular. -/
@@ -2097,8 +2156,36 @@ lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
   simpa only [separatedNhds_iff_disjoint, hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
     ht.closure_eq, disjoint_left] using hst
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
+
+/-- This technique to witness `HasSeparatingCover` in regular Lindelöf topological spaces
+will be used to prove regular Lindelöf spaces are normal. -/
+lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpace X]
+    (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : HasSeparatingCover s t := by
+  -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
+  rcases isEmpty_or_nonempty X with empty_X | nonempty_X
+  · rw [subset_eq_empty (t := s) (fun ⦃_⦄ _ ↦ trivial) (univ_eq_empty_iff.mpr empty_X)]
+    exact hasSeparatingCovers_iff_separatedNhds.mpr (SeparatedNhds.empty_left t) |>.1
+  -- This is almost `HasSeparatingCover`, but is not countable. We define for all `a : X` for use
+  -- with `IsLindelof.indexed_countable_subcover` momentarily.
+  have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
+    wlog ains : a ∈ s
+    · exact ⟨∅, isOpen_empty, SeparatedNhds.empty_left t |>.disjoint_closure_left, fun a ↦ ains a⟩
+    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 :).mp r a tᶜ <|
+      t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains)
+    exact
+      ⟨interior n,
+       isOpen_interior,
+       disjoint_left.mpr fun ⦃_⦄ ain ↦
+         nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
+       fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
+  -- By Lindelöf, we may obtain a countable subcover witnessing `HasSeparatingCover`
+  choose u u_open u_dis u_nhd using this
+  obtain ⟨f, f_cov⟩ := s_cl.isLindelof.indexed_countable_subcover
+    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
+  exact ⟨u ∘ f, f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
+
 
 end RegularSpace
 
@@ -2128,7 +2215,7 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
   exact L_compact.closure_of_subset interior_subset
 #align exists_open_between_and_is_compact_closure exists_open_between_and_isCompact_closure
 
-@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace] -- 3 Sep 2023
+@[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace (since := "2023-09-03")]
 theorem locally_compact_of_compact [T2Space X] [CompactSpace X] :
     LocallyCompactSpace X :=
   inferInstance
@@ -2286,51 +2373,18 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
-/-- A regular topological space with second countable topology is a normal space.
+/-- A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
+Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without the
+assumption of Hausdorff). -/
+instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
+    [RegularSpace X] [LindelofSpace X] : NormalSpace X where
+  normal _ _ hcl kcl hkdis :=
+    hasSeparatingCovers_iff_separatedNhds.mp
+    ⟨hcl.HasSeparatingCover kcl hkdis, kcl.HasSeparatingCover hcl (Disjoint.symm hkdis)⟩
 
-TODO: The same is true for a regular Lindelöf space. -/
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
-    [RegularSpace X] [SecondCountableTopology X] : NormalSpace X := by
-  have key : ∀ {s t : Set X}, IsClosed t → Disjoint s t →
-    ∃ U : Set (countableBasis X), (s ⊆ ⋃ u ∈ U, ↑u) ∧ (∀ u ∈ U, Disjoint (closure ↑u) t) ∧
-      ∀ n : ℕ, IsClosed (⋃ (u ∈ U) (_ : Encodable.encode u ≤ n), closure (u : Set X)) := by
-    intro s t hc hd
-    rw [disjoint_left] at hd
-    have : ∀ x ∈ s, ∃ U ∈ countableBasis X, x ∈ U ∧ Disjoint (closure U) t := by
-      intro x hx
-      rcases (isBasis_countableBasis X).exists_closure_subset (hc.compl_mem_nhds (hd hx))
-        with ⟨u, hu, hxu, hut⟩
-      exact ⟨u, hu, hxu, disjoint_left.2 hut⟩
-    choose! U hu hxu hd using this
-    set V : s → countableBasis X := MapsTo.restrict _ _ _ hu
-    refine ⟨range V, ?_, forall_mem_range.2 <| Subtype.forall.2 hd, fun n => ?_⟩
-    · rw [biUnion_range]
-      exact fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, hxu x hx⟩
-    · simp only [← iSup_eq_iUnion, iSup_and']
-      exact (((finite_le_nat n).preimage_embedding (Encodable.encode' _)).subset <|
-        inter_subset_right _ _).isClosed_biUnion fun u _ => isClosed_closure
-  refine { normal := fun s t hs ht hd => ?_ }
-  rcases key ht hd with ⟨U, hsU, hUd, hUc⟩
-  rcases key hs hd.symm with ⟨V, htV, hVd, hVc⟩
-  refine ⟨⋃ u ∈ U, ↑u \ ⋃ (v ∈ V) (_ : Encodable.encode v ≤ Encodable.encode u), closure ↑v,
-    ⋃ v ∈ V, ↑v \ ⋃ (u ∈ U) (_ : Encodable.encode u ≤ Encodable.encode v), closure ↑u,
-    isOpen_biUnion fun u _ => (isOpen_of_mem_countableBasis u.2).sdiff (hVc _),
-    isOpen_biUnion fun v _ => (isOpen_of_mem_countableBasis v.2).sdiff (hUc _),
-    fun x hx => ?_, fun x hx => ?_, ?_⟩
-  · rcases mem_iUnion₂.1 (hsU hx) with ⟨u, huU, hxu⟩
-    refine mem_biUnion huU ⟨hxu, ?_⟩
-    simp only [mem_iUnion]
-    rintro ⟨v, hvV, -, hxv⟩
-    exact (hVd v hvV).le_bot ⟨hxv, hx⟩
-  · rcases mem_iUnion₂.1 (htV hx) with ⟨v, hvV, hxv⟩
-    refine mem_biUnion hvV ⟨hxv, ?_⟩
-    simp only [mem_iUnion]
-    rintro ⟨u, huU, -, hxu⟩
-    exact (hUd u huU).le_bot ⟨hxu, hx⟩
-  · simp only [disjoint_left, mem_iUnion, mem_diff, not_exists, not_and, not_forall, not_not]
-    rintro a ⟨u, huU, hau, haV⟩ v hvV hav
-    rcases le_total (Encodable.encode u) (Encodable.encode v) with hle | hle
-    exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
+    [RegularSpace X] [SecondCountableTopology X] : NormalSpace X :=
+  of_regularSpace_lindelofSpace
 #align normal_space_of_t3_second_countable NormalSpace.of_regularSpace_secondCountableTopology
 
 end NormalSpace
@@ -2349,7 +2403,7 @@ instance (priority := 100) T4Space.t3Space [T4Space X] : T3Space X where
     (disjoint_singleton_right.mpr hxs)).disjoint_nhdsSet
 #align normal_space.t3_space T4Space.t3Space
 
-@[deprecated inferInstance] -- Since 28 Jan 2024
+@[deprecated inferInstance (since := "2024-01-28")]
 theorem T4Space.of_compactSpace_t2Space [CompactSpace X] [T2Space X] :
     T4Space X := inferInstance
 #align normal_of_compact_t2 T4Space.of_compactSpace_t2Space
@@ -2498,7 +2552,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
     -- The x ∈ u case.
     · suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ u
         from Disjoint.left_le_of_le_sup_right hab (huv.mono this hbv)
-      · apply Subset.trans _ (inter_subset_right s u)
+      · apply Subset.trans _ s.inter_subset_right
         exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
           ⟨s ∩ u, H1, mem_inter H.2.1 hxu⟩
     -- If x ∉ u, we get x ∈ v since x ∈ u ∪ v. The rest is then like the x ∈ u case.
@@ -2506,7 +2560,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
         (hab.trans (union_subset_union hau hbv) (mem_iInter.2 fun i => i.2.2)).resolve_left hxu
       suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ v
         from (huv.symm.mono this hau).left_le_of_le_sup_left hab
-      · refine Subset.trans ?_ (inter_subset_right s v)
+      · refine Subset.trans ?_ s.inter_subset_right
         exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
           ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
 #align connected_component_eq_Inter_clopen connectedComponent_eq_iInter_isClopen
@@ -2560,7 +2614,7 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
       have hdir : Directed Superset fun s : N => s.val := by
         rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
-        exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left s t, inter_subset_right s t⟩
+        exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
       have h_nhd : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
         erw [hx, mem_singleton_iff] at y_in
         rwa [y_in]

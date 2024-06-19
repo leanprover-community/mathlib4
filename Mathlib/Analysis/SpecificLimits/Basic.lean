@@ -161,7 +161,9 @@ alias tendsto_pow_atTop_nhds_0_of_lt_1 := tendsto_pow_atTop_nhds_zero_of_lt_one
         exact ⟨n, le_of_lt hn⟩
       · simpa only [← abs_pow]
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
-@[deprecated] alias tendsto_pow_atTop_nhds_0_iff := tendsto_pow_atTop_nhds_zero_iff -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias tendsto_pow_atTop_nhds_0_iff := tendsto_pow_atTop_nhds_zero_iff
 
 theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField 𝕜]
     [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
@@ -170,6 +172,7 @@ theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [LinearOrdere
     ⟨tendsto_pow_atTop_nhds_zero_of_lt_one h₁.le h₂,
       tendsto_principal.2 <| eventually_of_forall fun _ ↦ pow_pos h₁ _⟩
 #align tendsto_pow_at_top_nhds_within_0_of_lt_1 tendsto_pow_atTop_nhdsWithin_zero_of_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhdsWithin_0_of_lt_1 := tendsto_pow_atTop_nhdsWithin_zero_of_lt_one
 
@@ -265,18 +268,20 @@ theorem hasSum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
   (hasSum_iff_tendsto_nat_of_nonneg (pow_nonneg h₁) _).mpr <| by
     simp_all [neg_inv, geom_sum_eq, div_eq_mul_inv]
 #align has_sum_geometric_of_lt_1 hasSum_geometric_of_lt_one
-@[deprecated] alias hasSum_geometric_of_lt_1 := hasSum_geometric_of_lt_one -- 2024-01-31
+@[deprecated (since := "2024-01-31")] alias hasSum_geometric_of_lt_1 := hasSum_geometric_of_lt_one
 
 theorem summable_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Summable fun n : ℕ ↦ r ^ n :=
   ⟨_, hasSum_geometric_of_lt_one h₁ h₂⟩
 #align summable_geometric_of_lt_1 summable_geometric_of_lt_one
-@[deprecated] alias summable_geometric_of_lt_1 := summable_geometric_of_lt_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias summable_geometric_of_lt_1 := summable_geometric_of_lt_one
 
 theorem tsum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (hasSum_geometric_of_lt_one h₁ h₂).tsum_eq
 #align tsum_geometric_of_lt_1 tsum_geometric_of_lt_one
-@[deprecated] alias tsum_geometric_of_lt_1 := tsum_geometric_of_lt_one -- 2024-01-31
+@[deprecated (since := "2024-01-31")] alias tsum_geometric_of_lt_1 := tsum_geometric_of_lt_one
 
 theorem hasSum_geometric_two : HasSum (fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n) 2 := by
   convert hasSum_geometric_of_lt_one _ _ <;> norm_num

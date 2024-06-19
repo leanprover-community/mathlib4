@@ -97,7 +97,7 @@ theorem IsTopologicalBasis.diff_empty {s : Set (Set α)} (h : IsTopologicalBasis
     obtain ⟨t₃, h₃, hs⟩ := h.exists_subset_inter _ h₁ _ h₂ x hx
     exact ⟨t₃, ⟨h₃, Nonempty.ne_empty ⟨x, hs.1⟩⟩, hs⟩
   · rw [h.eq_generateFrom]
-    refine le_antisymm (generateFrom_anti <| diff_subset s _) (le_generateFrom fun t ht => ?_)
+    refine le_antisymm (generateFrom_anti diff_subset) (le_generateFrom fun t ht => ?_)
     obtain rfl | he := eq_or_ne t ∅
     · exact @isOpen_empty _ (generateFrom _)
     · exact .basic t ⟨ht, he⟩
@@ -147,8 +147,8 @@ theorem IsTopologicalBasis.mem_nhds_iff {a : α} {s : Set α} {b : Set (Set α)}
   · simp [and_assoc, and_left_comm]
   · rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
     let ⟨u, hu₁, hu₂, hu₃⟩ := hb.1 _ hs₂ _ ht₂ _ ⟨hs₁, ht₁⟩
-    exact ⟨u, ⟨hu₂, hu₁⟩, le_principal_iff.2 (hu₃.trans (inter_subset_left _ _)),
-      le_principal_iff.2 (hu₃.trans (inter_subset_right _ _))⟩
+    exact ⟨u, ⟨hu₂, hu₁⟩, le_principal_iff.2 (hu₃.trans inter_subset_left),
+      le_principal_iff.2 (hu₃.trans inter_subset_right)⟩
   · rcases eq_univ_iff_forall.1 hb.sUnion_eq a with ⟨i, h1, h2⟩
     exact ⟨i, h2, h1⟩
 #align topological_space.is_topological_basis.mem_nhds_iff TopologicalSpace.IsTopologicalBasis.mem_nhds_iff
@@ -298,11 +298,36 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
 
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
     (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
   hB.continuous_iff.2 hf
 #align topological_space.is_topological_basis.continuous TopologicalSpace.IsTopologicalBasis.continuous
+
+section
+variable [TopologicalSpace β] [Preorder α] [Preorder β] {x : α × β}
+
+open OrderDual
+
+instance Prod.instNeBotNhdsWithinIio [hx₁ : (𝓝[<] x.1).NeBot] [hx₂ : (𝓝[<] x.2).NeBot] :
+    (𝓝[<] x).NeBot := by
+  -- Let's show that every neighborhood of `x` intersect `Iio x`.
+  simp_rw [nhdsWithin_neBot,
+  -- WLOG the neighborhood is the product of neighborhoods `V i` of `x i`.
+    (isTopologicalBasis_opens.prod isTopologicalBasis_opens).mem_nhds_iff] at hx₁ hx₂ ⊢
+  rintro t ⟨U, ⟨U, hU, V, hV, rfl⟩, ⟨hxU, hxV⟩, hUVt⟩
+  classical
+  -- There exist `y ∈ U`, `z ∈ V` such that `y < x.1`, `z < x.2`
+  obtain ⟨y, hyU, hyx⟩ := hx₁ $ hU.mem_nhds hxU
+  obtain ⟨z, hzV, hzx⟩ := hx₂ $ hV.mem_nhds hxV
+  -- Then `(y, z)` is in `U ×ˢ V` and `(y, z) < x`
+  exact ⟨(y, z), hUVt ⟨hyU, hzV⟩, Prod.lt_of_lt_of_le hyx hzx.le⟩
+
+instance Prod.instNeBotNhdsWithinIoi [(𝓝[>] x.1).NeBot] [(𝓝[>] x.2).NeBot] :
+    (𝓝[>] x).NeBot :=
+  Prod.instNeBotNhdsWithinIio (α := αᵒᵈ) (β := βᵒᵈ) (x := (toDual x.1, toDual x.2))
+
+end
 
 variable (α)
 
@@ -553,14 +578,14 @@ theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s :
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 #align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.IsSeparable.of_subtype
 
-@[deprecated] -- Since 2024-02-05
+@[deprecated (since := "2024-02-05")]
 alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
 #align topological_space.is_separable_of_separable_space TopologicalSpace.IsSeparable.of_separableSpace
 
-@[deprecated] -- Since 2024-02-05
+@[deprecated (since := "2024-02-05")]
 alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
@@ -617,6 +642,51 @@ theorem isTopologicalBasis_subtype
     IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
   h.inducing ⟨rfl⟩
 
+section
+variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+
+lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → π i) := by
+  classical
+  refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOpenMap_iff.2 ?_
+  rintro _ ⟨U, s, hU, rfl⟩
+  obtain h | h := ((s : Set ι).pi U).eq_empty_or_nonempty
+  · simp [h]
+  by_cases hi : i ∈ s
+  · rw [eval_image_pi (mod_cast hi) h]
+    exact hU _ hi
+  · rw [eval_image_pi_of_not_mem (mod_cast hi), if_pos h]
+    exact isOpen_univ
+
+open OrderDual
+
+variable  [∀ i, Preorder (π i)] [Nonempty ι] {x : ∀ i, π i}
+
+instance Pi.instNeBotNhdsWithinIio [hx : ∀ i, (𝓝[<] x i).NeBot] : (𝓝[<] x).NeBot := by
+  -- Let's show that every neighborhood of `x` intersect `Iio x`.
+  simp_rw [nhdsWithin_neBot,
+  -- WLOG the neighborhood is the product of neighborhoods `V i` of `x i`.
+    (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).mem_nhds_iff] at hx ⊢
+  rintro t ⟨U, ⟨U, s, hU, rfl⟩, hxU, hUt⟩
+  classical
+  -- `isTopologicalBasis_pi` does not give us a product of open sets but a product of open sets on a
+  -- finset, so we need the following nonsense to make sure every factor is open.
+  let V (i) := if i ∈ s then U i else univ
+  have hV (i) : IsOpen (V i) := by
+    unfold_let; dsimp; split_ifs with hi; exacts [hU _ hi, isOpen_univ]
+  have hVU : pi s V = pi s U := Set.pi_congr rfl fun i hi ↦ if_pos hi
+  have hxV (i) : x i ∈ V i := by unfold_let; dsimp; split_ifs with hi; exacts [hxU _ hi, mem_univ _]
+  rw [← hVU, Set.mem_pi] at hxU
+  rw [← hVU] at hUt
+  -- Now, for every `i` there exists `y i ∈ V i` such that `y i < x i`
+  choose y hyV hyx using fun i ↦ hx i $ (hV i).mem_nhds (hxV i)
+  -- Then `y` is in the product of the `V i` and `y < x`
+  exact ⟨y, hUt fun i _ ↦ hyV i, lt_of_strongLT hyx⟩
+
+instance Pi.instNeBotNhdsWithinIoi [∀ i, (𝓝[>] x i).NeBot] : (𝓝[>] x).NeBot :=
+  Pi.instNeBotNhdsWithinIio (π := fun i ↦ (π i)ᵒᵈ) (x := fun i ↦ toDual (x i))
+
+end
+
 -- Porting note: moved `DenseRange.separableSpace` up
 
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
@@ -637,9 +707,9 @@ theorem Dense.exists_countable_dense_subset_bot_top {α : Type*} [TopologicalSpa
       ∀ x, IsTop x → x ∈ s → x ∈ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
   refine ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, ?_, ?_, ?_, ?_, ?_⟩
-  exacts [inter_subset_right _ _,
-    (htc.union ((countable_isBot α).union (countable_isTop α))).mono (inter_subset_left _ _),
-    htd.mono (subset_inter (subset_union_left _ _) hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,
+  exacts [inter_subset_right,
+    (htc.union ((countable_isBot α).union (countable_isTop α))).mono inter_subset_left,
+    htd.mono (subset_inter subset_union_left hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,
     fun x hx hxs => ⟨Or.inr <| Or.inr hx, hxs⟩]
 #align dense.exists_countable_dense_subset_bot_top Dense.exists_countable_dense_subset_bot_top
 
@@ -754,7 +824,7 @@ theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
   refine ⟨_, ?_, not_mem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
-  exacts [((countable_setOf_finite_subset hb₁).image _).mono (diff_subset _ _), rfl]
+  exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
 #align topological_space.exists_countable_basis TopologicalSpace.exists_countable_basis
 
 /-- A countable topological basis of `α`. -/
@@ -803,7 +873,7 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
   ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
-        (countable_countableBasis α).mono <| inter_subset_left _ _⟩⟩
+        (countable_countableBasis α).mono inter_subset_left⟩⟩
 #align topological_space.second_countable_topology.to_first_countable_topology TopologicalSpace.SecondCountableTopology.to_firstCountableTopology
 
 /-- If `β` is a second-countable space, then its induced topology via

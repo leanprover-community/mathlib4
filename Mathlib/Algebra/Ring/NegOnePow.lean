@@ -75,6 +75,10 @@ lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
   dsimp [negOnePow]
   simp only [zpow_neg, ← inv_zpow, inv_neg, inv_one]
 
+@[simp]
+lemma negOnePow_abs (n : ℤ) : |n|.negOnePow = n.negOnePow := by
+  obtain h|h := abs_choice n <;> simp only [h, negOnePow_neg]
+
 lemma negOnePow_sub (n₁ n₂ : ℤ) :
     (n₁ - n₂).negOnePow = n₁.negOnePow * n₂.negOnePow := by
   simp only [sub_eq_add_neg, negOnePow_add, negOnePow_neg]

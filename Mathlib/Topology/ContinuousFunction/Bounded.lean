@@ -1000,7 +1000,7 @@ theorem norm_normComp : ‖f.normComp‖ = ‖f‖ := by
 #align bounded_continuous_function.norm_norm_comp BoundedContinuousFunction.norm_normComp
 
 theorem bddAbove_range_norm_comp : BddAbove <| Set.range <| norm ∘ f :=
-  (Real.isBounded_iff_bddBelow_bddAbove.mp <| @isBounded_range _ _ _ _ f.normComp).2
+  (@isBounded_range _ _ _ _ f.normComp).bddAbove
 #align bounded_continuous_function.bdd_above_range_norm_comp BoundedContinuousFunction.bddAbove_range_norm_comp
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ := by
@@ -1595,9 +1595,8 @@ instance instLattice : Lattice (α →ᵇ β) := DFunLike.coe_injective.lattice 
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
 @[simp, norm_cast] lemma coe_negPart (f : α →ᵇ β) : ⇑f⁻ = (⇑f)⁻ := rfl
 
--- 2024-02-21
-@[deprecated] alias coeFn_sup := coe_sup
-@[deprecated] alias coeFn_abs := coe_abs
+@[deprecated (since := "2024-02-21")] alias coeFn_sup := coe_sup
+@[deprecated (since := "2024-02-21")] alias coeFn_abs := coe_abs
 
 instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with

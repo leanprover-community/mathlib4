@@ -133,6 +133,10 @@ theorem multipliable_of_finite_mulSupport (h : (mulSupport f).Finite) : Multipli
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
 
 @[to_additive]
+lemma Multipliable.of_finite [Finite β] {f : β → α} : Multipliable f :=
+  multipliable_of_finite_mulSupport <| Set.finite_univ.subset (Set.subset_univ _)
+
+@[to_additive]
 theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1) : HasProd f (f b) :=
   suffices HasProd f (∏ b' ∈ {b}, f b') by simpa using this
   hasProd_prod_of_ne_finset_one <| by simpa [hf]
@@ -490,14 +494,14 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
     rw [mulSupport_comp_eq_preimage, Set.image_preimage_eq_iff.2 hf]
   rw [← Function.comp_def]
   by_cases hf_fin : (mulSupport f).Finite
-  · have hfg_fin : (mulSupport (f ∘ g)).Finite := hf_fin.preimage (hg.injOn _)
+  · have hfg_fin : (mulSupport (f ∘ g)).Finite := hf_fin.preimage hg.injOn
     lift g to γ ↪ β using hg
     simp_rw [tprod_eq_prod' hf_fin.coe_toFinset.ge, tprod_eq_prod' hfg_fin.coe_toFinset.ge,
       comp_apply, ← Finset.prod_map]
     refine Finset.prod_congr (Finset.coe_injective ?_) fun _ _ ↦ rfl
     simp [this]
   · have hf_fin' : ¬ Set.Finite (mulSupport (f ∘ g)) := by
-      rwa [this, Set.finite_image_iff (hg.injOn _)] at hf_fin
+      rwa [this, Set.finite_image_iff hg.injOn] at hf_fin
     simp_rw [tprod_def, if_neg hf_fin, if_neg hf_fin', Multipliable,
       hg.hasProd_iff (mulSupport_subset_iff'.1 hf)]
 
@@ -539,7 +543,7 @@ theorem tprod_image {g : γ → β} (f : β → α) {s : Set γ} (hg : Set.InjOn
 @[to_additive]
 theorem tprod_range {g : γ → β} (f : β → α) (hg : Injective g) :
     ∏' x : Set.range g, f x = ∏' x, f (g x) := by
-  rw [← Set.image_univ, tprod_image f (hg.injOn _)]
+  rw [← Set.image_univ, tprod_image f hg.injOn]
   simp_rw [← comp_apply (g := g), tprod_univ (f ∘ g)]
 #align tsum_range tsum_range
 
@@ -550,7 +554,7 @@ sum of `f a` with `a ∈ s ∖ t`."]
 lemma tprod_setElem_eq_tprod_setElem_diff {f : β → α} (s t : Set β)
     (hf₀ : ∀ b ∈ t, f b = 1) :
     ∏' a : s, f a = ∏' a : (s \ t : Set β), f a :=
-  .symm <| (Set.inclusion_injective (Set.diff_subset s t)).tprod_eq (f := f ∘ (↑)) <|
+  .symm <| (Set.inclusion_injective (t := s) Set.diff_subset).tprod_eq (f := f ∘ (↑)) <|
     mulSupport_subset_iff'.2 fun b hb ↦ hf₀ b <| by simpa using hb
 
 /-- If `f b = 1`, then the product of `f a` with `a ∈ s` is the same as the product of `f a` for

@@ -235,8 +235,8 @@ theorem IndepSets.union_iff {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpac
     {κ : kernel α Ω} {μ : Measure α} :
     IndepSets (s₁ ∪ s₂) s' κ μ ↔ IndepSets s₁ s' κ μ ∧ IndepSets s₂ s' κ μ :=
   ⟨fun h =>
-    ⟨indepSets_of_indepSets_of_le_left h (Set.subset_union_left s₁ s₂),
-      indepSets_of_indepSets_of_le_left h (Set.subset_union_right s₁ s₂)⟩,
+    ⟨indepSets_of_indepSets_of_le_left h Set.subset_union_left,
+      indepSets_of_indepSets_of_le_left h Set.subset_union_right⟩,
     fun h => IndepSets.union h.left h.right⟩
 
 theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
@@ -390,7 +390,7 @@ theorem IndepSets.indep_aux {m₂ m : MeasurableSpace Ω}
     have : t1 ∩ tᶜ = t1 \ (t1 ∩ t) := by
       rw [Set.diff_self_inter, Set.diff_eq_compl_inter, Set.inter_comm]
     rw [this,
-      measure_diff (Set.inter_subset_left _ _) (ht1m.inter (h2 _ ht)) (measure_ne_top (κ a) _),
+      measure_diff Set.inter_subset_left (ht1m.inter (h2 _ ht)) (measure_ne_top (κ a) _),
       measure_compl (h2 _ ht) (measure_ne_top (κ a) t), measure_univ,
       ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, ha]
   · intros f hf_disj hf_meas h
@@ -428,7 +428,7 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω} {μ :
     have : tᶜ ∩ t2 = t2 \ (t ∩ t2) := by
       rw [Set.inter_comm t, Set.diff_self_inter, Set.diff_eq_compl_inter]
     rw [this, Set.inter_comm t t2,
-      measure_diff (Set.inter_subset_left _ _) ((h2 _ ht2).inter (h1 _ ht))
+      measure_diff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht))
         (measure_ne_top (κ a) _),
       Set.inter_comm, ha, measure_compl (h1 _ ht) (measure_ne_top (κ a) t), measure_univ,
       mul_comm (1 - κ a t), ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, mul_comm]
@@ -963,7 +963,13 @@ lemma iIndepFun.indepFun_prod_mk_prod_mk [IsMarkovKernel κ] (hf_indep : iIndepF
   classical
   let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
-  have hg (i j : ι) : Measurable (g i j) := by measurability
+  have hg (i j : ι) : Measurable (g i j) := by
+    -- NB: `measurability proves this, but is slow
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+    simp only [ne_eq, g]
+    apply Measurable.prod
+    · exact measurable_pi_apply _
+    · exact measurable_pi_apply _
   exact (hf_indep.indepFun_finset {i, j} {k, l} (by aesop) hf_meas).comp (hg i j) (hg k l)
 
 end iIndepFun

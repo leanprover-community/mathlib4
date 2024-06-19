@@ -69,7 +69,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
           ‖f p.2 - f p.1 - (f' p.2 - f' p.1)‖ ≤ ε * ‖p.2 - p.1‖ := by
       rintro ⟨u, v⟩ ⟨u_in, v_in⟩
       have conv : Convex ℝ (B ∩ s) := (convex_ball _ _).inter s_conv
-      have diff : DifferentiableOn ℝ f (B ∩ s) := f_diff.mono (inter_subset_right _ _)
+      have diff : DifferentiableOn ℝ f (B ∩ s) := f_diff.mono inter_subset_right
       have bound : ∀ z ∈ B ∩ s, ‖fderivWithin ℝ f (B ∩ s) z - f'‖ ≤ ε := by
         intro z z_in
         have h := hδ z
@@ -87,7 +87,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     refine ContinuousWithinAt.closure_le uv_in ?_ ?_ key
     all_goals
       -- common start for both continuity proofs
-      have : (B ∩ s) ×ˢ (B ∩ s) ⊆ s ×ˢ s := by mono <;> exact inter_subset_right _ _
+      have : (B ∩ s) ×ˢ (B ∩ s) ⊆ s ×ˢ s := by mono <;> exact inter_subset_right
       obtain ⟨u_in, v_in⟩ : u ∈ closure s ∧ v ∈ closure s := by
         simpa [closure_prod_eq] using closure_mono this uv_in
       apply ContinuousWithinAt.mono _ this
