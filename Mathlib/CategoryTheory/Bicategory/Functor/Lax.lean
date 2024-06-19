@@ -23,7 +23,8 @@ A lax functor `F` between bicategories `B` and `C` consists of
 * `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
 * `CategoryTheory.LaxFunctor.Pseudocore` : a structure on an Lax functor that promotes a
-  Lax functor to a pseudofunctor
+  Lax functor to a pseudofunctor (TODO: the correpsonding code in `Pseudofunctor.lean` has not yet
+  been implemented)
 
 ## Future work
 
