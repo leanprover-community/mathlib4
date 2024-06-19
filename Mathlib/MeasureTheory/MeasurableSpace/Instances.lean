@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.Order.Filter.SmallSets
+import Mathlib.Data.Rat.Init
 
 #align_import measure_theory.measurable_space from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -63,4 +63,3 @@ instance Int.instMeasurableSingletonClass : MeasurableSingletonClass ℤ := ⟨f
 
 instance Rat.instMeasurableSingletonClass : MeasurableSingletonClass ℚ := ⟨fun _ => trivial⟩
 #align rat.measurable_singleton_class Rat.instMeasurableSingletonClass
-

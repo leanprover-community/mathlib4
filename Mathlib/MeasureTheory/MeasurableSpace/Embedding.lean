@@ -12,6 +12,18 @@ A measurable equivalence between measurable spaces is an equivalence
 which respects the σ-algebras, that is, for which both directions of
 the equivalence are measurable functions.
 
+## Main definitions
+
+* `MeasurableEmbedding`: a map `f : α → β` is called a *measurable embedding* if it is injective,
+  measurable, and sends measurable sets to measurable sets.
+* `MeasurableEquiv`: an equivalence `α ≃ β` is a *measurable equivalence* if its forward and inverse
+  functions are measurable.
+
+We prove a multitude of elementary lemmas about these, and one more substantial theorem:
+
+* `MeasurableEmbedding.schroederBernstein`: the **measurable Schröder-Bernstein Theorem**: given
+  measurable embeddings `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`.
+
 ## Notation
 
 * We write `α ≃ᵐ β` for measurable equivalences between the measurable spaces `α` and `β`.

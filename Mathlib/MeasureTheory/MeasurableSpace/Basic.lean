@@ -10,6 +10,7 @@ import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
+import Mathlib.Order.Filter.SmallSets
 
 #align_import measure_theory.measurable_space from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
