@@ -82,6 +82,10 @@ If we further assume `m` is positive
   and `Spec A⁰_f` corresponding to the ring map `A⁰_f → Γ(Proj, pbo f)` under the Gamma-Spec
   adjunction defined by sending `s` to the section `x ↦ s` on `pbo f`.
 
+Finally,
+* `AlgebraicGeometry.Proj`: for any `ℕ`-graded ring `A`, `Proj A` is locally affine, hence is a
+  scheme.
+
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
