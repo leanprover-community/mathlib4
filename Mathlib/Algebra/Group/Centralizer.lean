@@ -29,16 +29,13 @@ variable {M : Type*} {S T : Set M}
 
 namespace Set
 
-variable (S)
-
+variable (S) in
 /-- The centralizer of a subset of a magma. -/
 @[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
 def centralizer [Mul M] : Set M :=
   { c | ∀ m ∈ S, m * c = c * m }
 #align set.centralizer Set.centralizer
 #align set.add_centralizer Set.addCentralizer
-
-variable {S}
 
 @[to_additive mem_addCentralizer]
 theorem mem_centralizer_iff [Mul M] {c : M} : c ∈ centralizer S ↔ ∀ m ∈ S, m * c = c * m :=
@@ -52,15 +49,14 @@ instance decidableMemCentralizer [Mul M] [∀ a : M, Decidable <| ∀ b ∈ S, b
 #align set.decidable_mem_centralizer Set.decidableMemCentralizer
 #align set.decidable_mem_add_centralizer Set.decidableMemAddCentralizer
 
-variable (S)
-
+variable (S) in
 @[to_additive (attr := simp) zero_mem_addCentralizer]
 theorem one_mem_centralizer [MulOneClass M] : (1 : M) ∈ centralizer S := by
   simp [mem_centralizer_iff]
 #align set.one_mem_centralizer Set.one_mem_centralizer
 #align set.zero_mem_add_centralizer Set.zero_mem_addCentralizer
 
-variable {S} {a b : M}
+variable {a b : M}
 
 @[to_additive (attr := simp) add_mem_addCentralizer]
 theorem mul_mem_centralizer [Semigroup M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
@@ -104,8 +100,7 @@ theorem centralizer_eq_top_iff_subset {s : Set M} [Semigroup M] :
 #align set.centralizer_eq_top_iff_subset Set.centralizer_eq_top_iff_subset
 #align set.add_centralizer_eq_top_iff_subset Set.addCentralizer_eq_top_iff_subset
 
-variable (M)
-
+variable (M) in
 @[to_additive (attr := simp) addCentralizer_univ]
 theorem centralizer_univ [Semigroup M] : centralizer univ = center M :=
   Subset.antisymm (fun _ ha => Semigroup.mem_center_iff.mpr fun b => ha b (Set.mem_univ b))
@@ -113,20 +108,21 @@ theorem centralizer_univ [Semigroup M] : centralizer univ = center M :=
 #align set.centralizer_univ Set.centralizer_univ
 #align set.add_centralizer_univ Set.addCentralizer_univ
 
-variable {M} (S)
-
+variable (S) in
 @[to_additive (attr := simp) addCentralizer_eq_univ]
 theorem centralizer_eq_univ [CommSemigroup M] : centralizer S = univ :=
   (Subset.antisymm (subset_univ _)) fun x _ y _ => mul_comm y x
 #align set.centralizer_eq_univ Set.centralizer_eq_univ
 #align set.add_centralizer_eq_univ Set.addCentralizer_eq_univ
 
+variable (S) in
 @[to_additive subset_addCentralizer_addCentralizer]
 lemma subset_centralizer_centralizer [Mul M] {s : Set M} : s ⊆ s.centralizer.centralizer := by
   intro x hx
   simp only [Set.mem_centralizer_iff]
   exact fun y hy => (hy x hx).symm
 
+variable (S) in
 @[to_additive (attr := simp) addCentralizer_addCentralizer_addCentralizer]
 lemma centralizer_centralizer_centralizer [Mul M] {s : Set M} :
     s.centralizer.centralizer.centralizer = s.centralizer := by

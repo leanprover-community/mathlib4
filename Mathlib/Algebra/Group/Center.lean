@@ -78,8 +78,9 @@ end IsMulCentral
 namespace Set
 
 section Mul
-variable (M) [Mul M]
+variable [Mul M]
 
+variable (M) in
 /-- The center of a magma. -/
 @[to_additive addCenter " The center of an additive magma. "]
 def center : Set M :=
@@ -87,14 +88,13 @@ def center : Set M :=
 #align set.center Set.center
 #align set.add_center Set.addCenter
 
+variable (M) in
 -- Porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl
 #align set.mem_center_iff Set.mem_center_iff
 #align set.mem_add_center Set.mem_addCenter_iff
-
-variable {M}
 
 @[to_additive (attr := simp) add_mem_addCenter]
 theorem mul_mem_center [Mul M] {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : z₂ ∈ Set.center M) :
@@ -133,8 +133,7 @@ theorem _root_.Semigroup.mem_center_iff {z : M} :
   fun h ↦ ⟨fun _ ↦ (Commute.eq (h _)).symm, fun _ _ ↦ (mul_assoc z _ _).symm,
   fun _ _ ↦ mul_assoc _ z _, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
 
-variable (M)
-
+variable (M) in
 -- TODO Add `instance : Decidable (IsMulCentral a)` for `instance decidableMemCenter [Mul M]`
 @[to_additive decidableMemAddCenter]
 instance decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
@@ -144,8 +143,8 @@ instance decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
 end Semigroup
 
 section CommSemigroup
-variable (M)
 
+variable (M) in
 @[to_additive (attr := simp) addCenter_eq_univ]
 theorem center_eq_univ [CommSemigroup M] : center M = univ :=
   (Subset.antisymm (subset_univ _)) fun _ _ => Semigroup.mem_center_iff.mpr (fun _ => mul_comm _ _)
@@ -154,8 +153,7 @@ theorem center_eq_univ [CommSemigroup M] : center M = univ :=
 
 end CommSemigroup
 
-variable (M)
-
+variable (M) in
 @[to_additive (attr := simp) zero_mem_addCenter]
 theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M where
   comm _  := by rw [one_mul, mul_one]
@@ -164,8 +162,6 @@ theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M where
   right_assoc _ _ := by rw [mul_one, mul_one]
 #align set.one_mem_center Set.one_mem_center
 #align set.zero_mem_add_center Set.zero_mem_addCenter
-
-variable {M}
 
 @[to_additive (attr := simp) neg_mem_addCenter]
 theorem inv_mem_center [DivisionMonoid M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
