@@ -32,7 +32,7 @@ theorem getElem?_iterate (f : α → α) (a : α) :
 
 theorem get?_iterate (f : α → α) (a : α) (n i : ℕ) (h : i < n) :
     get? (iterate f a n) i = f^[i] a := by
-  simp [getElem?_iterate, h]
+  simp only [get?_eq_getElem?, length_iterate, h, Option.some.injEq, getElem?_iterate]
 
 @[simp]
 theorem getElem_iterate (f : α → α) (a : α) (n : ℕ) (i : Nat) (h : i < (iterate f a n).length) :

@@ -73,7 +73,7 @@ alias getD_singleton_default_eq := getElem?_getD_singleton_default_eq
 theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.getD d = d := by
   induction r generalizing n with
   | zero => simp
-  | succ n ih => simp at ih; cases n <;> simp [ih]
+  | succ n ih => simp at ih; cases n <;> simp [ih, replicate_succ]
 #align list.nthd_replicate_default_eq List.getElem?_getD_replicate_default_eqₓ -- argument order
 
 @[deprecated (since := "2024-06-12")]
