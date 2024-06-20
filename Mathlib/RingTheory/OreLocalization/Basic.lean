@@ -334,16 +334,13 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 #align ore_localization.ore_div_mul_char' OreLocalization.oreDivMulChar'
 
-@[to_additive]
-private irreducible_def one (lemma := one_def') : R[S⁻¹] := 1 /ₒ 1
-
 @[to_additive AddOreLocalization.instZeroAddOreLocalization]
 instance : One R[S⁻¹] :=
-  ⟨one⟩
+  ⟨1 /ₒ 1⟩
 
 @[to_additive]
 protected theorem one_def : (1 : R[S⁻¹]) = 1 /ₒ 1 :=
-  one_def'
+  rfl
 #align ore_localization.one_def OreLocalization.one_def
 
 @[to_additive]
@@ -467,7 +464,7 @@ fraction `r /ₒ 1`. -/
   mapping `r : R` to the difference `r -ₒ 0`."]
 def numeratorHom : R →* R[S⁻¹] where
   toFun r := r /ₒ 1
-  map_one' := rfl
+  map_one' := OreLocalization.one_def
   map_mul' _ _ := mul_div_one.symm
 #align ore_localization.numerator_hom OreLocalization.numeratorHom
 
