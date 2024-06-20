@@ -358,7 +358,7 @@ theorem isCoatomic_iff_forall_isCoatomic_Ici [OrderTop α] :
 
 section StronglyAtomic
 
-variable {a b : α}
+variable {α : Type*} {a b : α} [Preorder α]
 
 /-- An order is strongly atomic if every nontrivial interval `[a,b]`
 contains an element covering `a`. -/
