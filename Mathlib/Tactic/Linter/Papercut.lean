@@ -24,29 +24,38 @@ open Lean Elab Command
 
 namespace Mathlib.Linter.Papercut
 
-/-- `getPapercuts e` takes as input an expression `e` and returns an `Option String`,
+/-- `getPapercuts e` takes as input an expression `e` and returns an `Option MessageData`,
 representing a helpful message in case the expression `e` involves certain
 implementation details that may be confusing.
 
 For instance, it flags `Nat.sub`, `Nat.div`, `Int.div` and division by `0`.
 -/
-def getPapercuts (e : Expr) : Meta.MetaM (Option String) := do
+def getPapercuts (e : Expr) : Meta.MetaM (Option MessageData) := do
   let expNat := mkConst ``Nat
   let expInt := mkConst ``Int
   let expZero := mkConst ``Nat.zero
   match e.getAppFnArgs with
-    | (``HSub.hSub, #[n1, n2, n3, _, _, _]) =>
+    | (``HSub.hSub, #[n1, n2, n3, _, a, b]) =>
       if ← [n1, n2, n3].allM (Meta.isDefEq · expNat) then
-        return some "Subtraction in ℕ is actually truncated subtraction: e.g. `1 - 2 = 0`!"
+        return some m!"Subtraction in ℕ is actually truncated subtraction: e.g. `1 - 2 = 0`!\n\
+                       This yields the 'expected' result only when you also prove the inequality\n\
+                       '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
       else return none
-    | (``HDiv.hDiv, #[n1, n2, n3, _, _, zero]) =>
+    | (``HDiv.hDiv, #[n1, n2, n3, a, b, zero]) =>
       let zer ← Meta.mkAppOptM ``OfNat.ofNat #[← instantiateMVars n3, expZero, none]
       if ← Meta.isDefEq zer zero then
-        return some "Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!"
+        return some m!"Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!\n\
+                       This is usually defined to be `0`, to avoid having to constantly prove \
+                       that denominators are non-zero."
       else if ← [n1, n2, n3].allM (Meta.isDefEq · expNat) then
-        return some "Division in ℕ is actually the floor of the division: e.g. `1 / 2 = 0`!"
+        return some m!"Division in ℕ is actually the floor of the division: e.g. `1 / 2 = 0`!\n\
+                       This yields the 'expected' result only when you also prove that \
+                       '{← Meta.ppExpr b}' divides '{← Meta.ppExpr a}'"
       else if ← [n1, n2, n3].allM (Meta.isDefEq · expInt) then
-        return some "Division in ℤ is actually the floor of the division: e.g. `(1 : ℤ) / 2 = 0`!"
+        return some m!"\
+                    Division in ℤ is actually the floor of the division: e.g. `(1 : ℤ) / 2 = 0`!\n\
+                    This yields the 'expected' result only when you also prove that \
+                    '{← Meta.ppExpr b}' divides '{← Meta.ppExpr a}'"
       else return none
     | _ => return none
 
@@ -69,12 +78,12 @@ def isEmpty : InfoTree → Bool
 def papercutLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) do
     return
-  if (← MonadState.get).messages.hasErrors then
+  if (← get).messages.unreported.isEmpty then
     return
   let initInfoTrees ← getResetInfoTrees
   for t in initInfoTrees.toArray do liftTermElabM do
     unless isEmpty t do  -- there is nothing to see if `t` is empty
-    let x ← t.visitM (α := List (Syntax × String))
+    let x ← t.visitM (α := List (Syntax × MessageData))
       (postNode := fun ctx info _ msgs => do
         let msgs := msgs.reduceOption.join
         if let .ofTermInfo ti := info then
