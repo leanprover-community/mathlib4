@@ -686,11 +686,9 @@ instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 -- Porting note: new. This could probably be moved to tests or removed.
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
--- Porting note (#10756): new lemma
 @[simp, norm_cast]
 lemma ofENat_top : ofENat ⊤ = ⊤ := rfl
 
--- Porting note (#10756): new lemma
 @[simp, norm_cast]
 lemma ofENat_coe (n : ℕ) : ofENat n = n := rfl
 
@@ -704,7 +702,6 @@ theorem ofENat_one : ofENat 1 = 1 := rfl
 theorem ofENat_ofNat (n : Nat) [n.AtLeastTwo] : ofENat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   rfl
 
--- Porting note (#10756): new theorem
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
   cases n with

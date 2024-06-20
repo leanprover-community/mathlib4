@@ -88,11 +88,11 @@ instance : SmallCategory (WalkingMulticospan fst snd) where
   assoc := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) (_ | _ | _) <;> rfl
 
-@[simp] -- Porting note (#10756): added simp lemma
+@[simp]
 lemma Hom.id_eq_id (X : WalkingMulticospan fst snd) :
     Hom.id X = 𝟙 X := rfl
 
-@[simp] -- Porting note (#10756): added simp lemma
+@[simp]
 lemma Hom.comp_eq_comp {X Y Z : WalkingMulticospan fst snd}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
@@ -137,10 +137,10 @@ instance : SmallCategory (WalkingMultispan fst snd) where
   assoc := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) (_ | _ | _) <;> rfl
 
-@[simp] -- Porting note (#10756): added simp lemma
+@[simp]
 lemma Hom.id_eq_id (X : WalkingMultispan fst snd) : Hom.id X = 𝟙 X := rfl
 
-@[simp] -- Porting note (#10756): added simp lemma
+@[simp]
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
@@ -576,7 +576,7 @@ theorem snd_app_right (a) : K.ι.app (WalkingMultispan.left a) = I.snd a ≫ K.�
   rfl
 #align category_theory.limits.multicofork.snd_app_right CategoryTheory.Limits.Multicofork.snd_app_right
 
-@[reassoc (attr := simp)] -- Porting note (#10756): added simp lemma
+@[reassoc (attr := simp)]
 lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : I.R) : K₁.π b ≫ f.hom = K₂.π b :=
   f.w _
 
