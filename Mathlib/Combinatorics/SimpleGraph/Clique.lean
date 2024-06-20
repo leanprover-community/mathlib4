@@ -78,7 +78,7 @@ lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 #align simple_graph.is_clique_singleton SimpleGraph.isClique_singleton
 
 theorem IsClique.of_subsingleton {G : SimpleGraph α} (hs : s.Subsingleton) : G.IsClique s :=
-  ht.pairwise G.Adj
+  hs.pairwise G.Adj
 
 lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwise_pair_of_symmetric G.symm
 #align simple_graph.is_clique_pair SimpleGraph.isClique_pair
@@ -132,14 +132,14 @@ theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nont
 theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
     (G.map f).IsClique t ↔ t.Subsingleton ∨ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
   obtain (ht | ht) := t.subsingleton_or_nontrivial
-  · simp [isClique_of_subsingleton _ ht, ht]
+  · simp [IsClique.of_subsingleton, ht]
   simp [isClique_map_iff_of_nontrivial ht, ht.not_subsingleton]
 
 @[simp] theorem isClique_map_image_iff {f : α ↪ β} :
     (G.map f).IsClique (f '' s) ↔ G.IsClique s := by
   rw [isClique_map_iff, f.injective.subsingleton_image_iff]
   obtain (hs | hs) := s.subsingleton_or_nontrivial
-  · simp [hs, isClique_of_subsingleton G hs]
+  · simp [hs, IsClique.of_subsingleton]
   simp [or_iff_right hs.not_subsingleton, Set.image_eq_image f.injective]
 section DecidableEq
 
@@ -160,7 +160,7 @@ theorem isClique_map_finset_iff :
     (G.map f).IsClique t ↔ t.card ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
   obtain (ht | ht) := le_or_lt t.card 1
   · simp only [ht, true_or, iff_true]
-    exact isClique_of_subsingleton _ <| card_le_one.1 ht
+    exact IsClique.of_subsingleton <| card_le_one.1 ht
   rw [isClique_map_finset_iff_of_nontrivial, ← not_lt]
   · simp [ht, Finset.map_eq_image]
   exact Finset.one_lt_card_iff_nontrivial.mp ht
