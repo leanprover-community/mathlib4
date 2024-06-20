@@ -311,7 +311,6 @@ def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
           F.right_unitality, ← F.map_comp_assoc, A.comul_counit]
       comul_assoc := by
         simp_rw [comp_whiskerRight, Category.assoc, F.δ_natural_left_assoc,
-
           MonoidalCategory.whiskerLeft_comp, F.δ_natural_right_assoc,
           ← F.map_comp_assoc, A.comul_assoc, F.map_comp, Category.assoc, F.associativity] }
   map f :=

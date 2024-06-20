@@ -175,7 +175,11 @@ def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := b
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
   { hom := A.one
+<<<<<<< HEAD
     mul_hom := by simp [A.one_mul, unitors_equal] }
+=======
+    mul_hom := by dsimp; simp [A.one_mul, unitors_equal] }
+>>>>>>> conv_monoid
   uniq f := by
     ext
     simp only [trivial_X]
@@ -607,7 +611,7 @@ Projects:
   available in mathlib3#3463)
 * More generally, check that `Mon_ (Mon_ C) ≌ CommMon_ C` when `C` is braided.
 * Check that `Mon_ TopCat ≌ [bundled topological monoids]`.
-* Check that `Mon_ AddCommGroupCat ≌ RingCat`.
+* Check that `Mon_ AddCommGrp ≌ RingCat`.
   (We've already got `Mon_ (ModuleCat R) ≌ AlgebraCat R`,
   in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
 * Can you transport this monoidal structure to `RingCat` or `AlgebraCat R`?

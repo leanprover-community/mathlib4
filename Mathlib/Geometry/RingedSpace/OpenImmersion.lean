@@ -960,6 +960,10 @@ end SheafedSpace.IsOpenImmersion
 
 namespace LocallyRingedSpace.IsOpenImmersion
 
+instance (X : LocallyRingedSpace) {U : TopCat} (f : U ⟶ X.toTopCat) (hf : OpenEmbedding f) :
+    LocallyRingedSpace.IsOpenImmersion (X.ofRestrict hf) :=
+  PresheafedSpace.IsOpenImmersion.ofRestrict X.toPresheafedSpace hf
+
 noncomputable section Pullback
 
 variable {X Y Z : LocallyRingedSpace} (f : X ⟶ Z) (g : Y ⟶ Z)

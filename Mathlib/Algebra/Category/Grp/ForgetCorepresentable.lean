@@ -3,16 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # The forget functor is corepresentable
 
-It is shown that the forget functor `AddCommGroupCat.{u} ⥤ Type u` is corepresentable
-by `ULift ℤ`. Similar results are obtained for the variants `CommGroupCat`, `AddGroupCat`
-and `GroupCat`.
+It is shown that the forget functor `AddCommGrp.{u} ⥤ Type u` is corepresentable
+by `ULift ℤ`. Similar results are obtained for the variants `CommGrp`, `AddGrp`
+and `Grp`.
 
 -/
 
@@ -75,38 +75,38 @@ def fromULiftIntEquiv (α : Type u) [AddGroup α] : (ULift.{u} ℤ →+ α) ≃ 
 
 end AddMonoidHom
 
-/-- The forget functor `GroupCat.{u} ⥤ Type u` is corepresentable. -/
-def GroupCat.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget GroupCat.{u} :=
+/-- The forget functor `Grp.{u} ⥤ Type u` is corepresentable. -/
+def Grp.coyonedaObjIsoForget :
+    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget Grp.{u} :=
   (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeIntEquiv M.α).toIso))
 
-/-- The forget functor `CommGroupCat.{u} ⥤ Type u` is corepresentable. -/
-def CommGroupCat.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget CommGroupCat.{u} :=
+/-- The forget functor `CommGrp.{u} ⥤ Type u` is corepresentable. -/
+def CommGrp.coyonedaObjIsoForget :
+    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget CommGrp.{u} :=
   (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeIntEquiv M.α).toIso))
 
-/-- The forget functor `AddGroupCat.{u} ⥤ Type u` is corepresentable. -/
-def AddGroupCat.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddGroupCat.{u} :=
+/-- The forget functor `AddGrp.{u} ⥤ Type u` is corepresentable. -/
+def AddGrp.coyonedaObjIsoForget :
+    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddGrp.{u} :=
   (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftIntEquiv M.α).toIso))
 
-/-- The forget functor `AddCommGroupCat.{u} ⥤ Type u` is corepresentable. -/
-def AddCommGroupCat.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddCommGroupCat.{u} :=
+/-- The forget functor `AddCommGrp.{u} ⥤ Type u` is corepresentable. -/
+def AddCommGrp.coyonedaObjIsoForget :
+    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddCommGrp.{u} :=
   (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftIntEquiv M.α).toIso))
 
-instance GroupCat.forget_corepresentable :
-    (forget GroupCat.{u}).Corepresentable where
-  has_corepresentation := ⟨_, ⟨GroupCat.coyonedaObjIsoForget⟩⟩
+instance Grp.forget_corepresentable :
+    (forget Grp.{u}).Corepresentable where
+  has_corepresentation := ⟨_, ⟨Grp.coyonedaObjIsoForget⟩⟩
 
-instance CommGroupCat.forget_corepresentable :
-    (forget CommGroupCat.{u}).Corepresentable where
-  has_corepresentation := ⟨_, ⟨CommGroupCat.coyonedaObjIsoForget⟩⟩
+instance CommGrp.forget_corepresentable :
+    (forget CommGrp.{u}).Corepresentable where
+  has_corepresentation := ⟨_, ⟨CommGrp.coyonedaObjIsoForget⟩⟩
 
-instance AddGroupCat.forget_corepresentable :
-    (forget AddGroupCat.{u}).Corepresentable where
-  has_corepresentation := ⟨_, ⟨AddGroupCat.coyonedaObjIsoForget⟩⟩
+instance AddGrp.forget_corepresentable :
+    (forget AddGrp.{u}).Corepresentable where
+  has_corepresentation := ⟨_, ⟨AddGrp.coyonedaObjIsoForget⟩⟩
 
-instance AddCommGroupCat.forget_corepresentable :
-    (forget AddCommGroupCat.{u}).Corepresentable where
-  has_corepresentation := ⟨_, ⟨AddCommGroupCat.coyonedaObjIsoForget⟩⟩
+instance AddCommGrp.forget_corepresentable :
+    (forget AddCommGrp.{u}).Corepresentable where
+  has_corepresentation := ⟨_, ⟨AddCommGrp.coyonedaObjIsoForget⟩⟩

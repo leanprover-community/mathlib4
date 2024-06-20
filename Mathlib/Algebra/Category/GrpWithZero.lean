@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Category.Bipointed
 /-!
 # The category of groups with zero
 
-This file defines `GroupWithZeroCat`, the category of groups with zero.
+This file defines `GrpWithZero`, the category of groups with zero.
 -/
 
 universe u
@@ -20,29 +20,29 @@ universe u
 open CategoryTheory Order
 
 /-- The category of groups with zero. -/
-def GroupWithZeroCat :=
+def GrpWithZero :=
   Bundled GroupWithZero
 set_option linter.uppercaseLean3 false in
-#align GroupWithZero GroupWithZeroCat
+#align GroupWithZero GrpWithZero
 
-namespace GroupWithZeroCat
+namespace GrpWithZero
 
-instance : CoeSort GroupWithZeroCat Type* :=
+instance : CoeSort GrpWithZero Type* :=
   Bundled.coeSort
 
-instance (X : GroupWithZeroCat) : GroupWithZero X :=
+instance (X : GrpWithZero) : GroupWithZero X :=
   X.str
 
-/-- Construct a bundled `GroupWithZeroCat` from a `GroupWithZero`. -/
-def of (α : Type*) [GroupWithZero α] : GroupWithZeroCat :=
+/-- Construct a bundled `GrpWithZero` from a `GroupWithZero`. -/
+def of (α : Type*) [GroupWithZero α] : GrpWithZero :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
-#align GroupWithZero.of GroupWithZeroCat.of
+#align GroupWithZero.of GrpWithZero.of
 
-instance : Inhabited GroupWithZeroCat :=
+instance : Inhabited GrpWithZero :=
   ⟨of (WithZero PUnit)⟩
 
-instance : LargeCategory.{u} GroupWithZeroCat where
+instance : LargeCategory.{u} GrpWithZero where
   Hom X Y := MonoidWithZeroHom X Y
   id X := MonoidWithZeroHom.id X
   comp f g := g.comp f
@@ -50,7 +50,7 @@ instance : LargeCategory.{u} GroupWithZeroCat where
   comp_id := MonoidWithZeroHom.id_comp
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
-instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
+instance {M N : GrpWithZero} : FunLike (M ⟶ N) M N :=
   ⟨fun f => f.toFun, fun f g h => by
     cases f
     cases g
@@ -58,39 +58,36 @@ instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
     apply DFunLike.coe_injective'
     exact h⟩
 
--- Porting note (#10756): added lemma
-lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
+lemma coe_id {X : GrpWithZero} : (𝟙 X : X → X) = id := rfl
 
--- Porting note (#10756): added lemma
-lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
+instance groupWithZeroConcreteCategory : ConcreteCategory GrpWithZero where
   forget :=
   { obj := fun G => G
     map := fun f => f.toFun }
   forget_faithful := ⟨fun h => DFunLike.coe_injective h⟩
 
--- porting note (#10756): added lemma
-@[simp] lemma forget_map {X Y : GroupWithZeroCat} (f : X ⟶ Y) :
-  (forget GroupWithZeroCat).map f = f := rfl
+@[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
+  (forget GrpWithZero).map f = f := rfl
 
-instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
+instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
         map := fun f => ⟨f, f.map_zero', f.map_one'⟩ }
 set_option linter.uppercaseLean3 false in
-#align GroupWithZero.has_forget_to_Bipointed GroupWithZeroCat.hasForgetToBipointed
+#align GroupWithZero.has_forget_to_Bipointed GrpWithZero.hasForgetToBipointed
 
-instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat where
+instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
   forget₂ :=
       { obj := fun X => ⟨ X , _ ⟩
         map := fun f => f.toMonoidHom }
 set_option linter.uppercaseLean3 false in
-#align GroupWithZero.has_forget_to_Mon GroupWithZeroCat.hasForgetToMon
+#align GroupWithZero.has_forget_to_Mon GrpWithZero.hasForgetToMon
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
+def Iso.mk {α β : GrpWithZero.{u}} (e : α ≃* β) : α ≅ β where
   hom := (e : α →*₀ β)
   inv := (e.symm : β →*₀ α)
   hom_inv_id := by
@@ -100,6 +97,6 @@ def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
     ext
     exact e.apply_symm_apply _
 set_option linter.uppercaseLean3 false in
-#align GroupWithZero.iso.mk GroupWithZeroCat.Iso.mk
+#align GroupWithZero.iso.mk GrpWithZero.Iso.mk
 
-end GroupWithZeroCat
+end GrpWithZero

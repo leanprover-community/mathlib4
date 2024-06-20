@@ -28,7 +28,8 @@ variable {M : Comon_ C} {N : Mon_ C}
 instance : One (Conv M N) where
   one := M.counit ≫ N.one
 
-@[simp] theorem one_eq : (1 : Conv M N) = M.counit ≫ N.one := rfl
+@[simp, nolint simpNF] -- This simpNF incorrectly claims this simp lemma can not be applied.
+theorem one_eq : (1 : Conv M N) = M.counit ≫ N.one := rfl
 
 instance : Mul (Conv M N) where
   mul := fun f g => M.comul ≫ f ▷ M.X ≫ N.X ◁ g ≫ N.mul

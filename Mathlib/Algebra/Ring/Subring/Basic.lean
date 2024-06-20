@@ -455,7 +455,6 @@ theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
 
 /-! ## Partial order -/
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl
@@ -765,9 +764,9 @@ section DivisionRing
 variable {K : Type u} [DivisionRing K]
 
 instance instField : Field (center K) where
-  inv a := ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
+  inv a := ⟨a⁻¹, Set.inv_mem_center a.prop⟩
   mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne ha
-  div a b := ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
+  div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
   div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
