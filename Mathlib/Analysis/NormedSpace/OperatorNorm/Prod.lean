@@ -53,14 +53,14 @@ theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ =
         (le_max_right _ _).trans ((f.prod g).le_opNorm x))
 #align continuous_linear_map.op_norm_prod ContinuousLinearMap.opNorm_prod
 
-@[deprecated] alias op_norm_prod := opNorm_prod -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_norm_prod := opNorm_prod
 
 @[simp]
 theorem opNNNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖₊ = ‖(f, g)‖₊ :=
   Subtype.ext <| opNorm_prod f g
 #align continuous_linear_map.op_nnnorm_prod ContinuousLinearMap.opNNNorm_prod
 
-@[deprecated] alias op_nnnorm_prod := opNNNorm_prod -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_nnnorm_prod := opNNNorm_prod
 
 /-- `ContinuousLinearMap.prod` as a `LinearIsometryEquiv`. -/
 def prodₗᵢ (R : Type*) [Semiring R] [Module R F] [Module R G] [ContinuousConstSMul R F]

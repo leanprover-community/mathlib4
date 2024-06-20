@@ -244,44 +244,18 @@ lemma normEDS_odd (m : ℕ) : normEDS b c d (2 * (m + 2) + 1) =
     normEDS b c d (m + 4) * normEDS b c d (m + 2) ^ 3 -
       normEDS b c d (m + 1) * normEDS b c d (m + 3) ^ 3 := by
   repeat erw [normEDS_ofNat]
-  simp only [preNormEDS'_odd, if_neg (m + 2).not_even_two_mul_add_one]
-  by_cases hm : Even m
-  · have hm1 : ¬Even (m + 1) := fun h => Nat.even_add_one.mp h hm
-    have hm2 : Even (m + 2) := Nat.even_add_one.mpr hm1
-    have hm3 : ¬Even (m + 3) := fun h => Nat.even_add_one.mp h hm2
-    have hm4 : Even (m + 4) := Nat.even_add_one.mpr hm3
-    rw [if_pos hm, if_pos hm, if_pos hm4, if_pos hm2, if_neg hm1, if_neg hm3]
-    ring1
-  · have hm1 : Even (m + 1) := Nat.even_add_one.mpr hm
-    have hm2 : ¬Even (m + 2) := fun h => Nat.even_add_one.mp h hm1
-    have hm3 : Even (m + 3) := Nat.even_add_one.mpr hm2
-    have hm4 : ¬Even (m + 4) := fun h => Nat.even_add_one.mp h hm3
-    rw [if_neg hm, if_neg hm, if_neg hm4, if_neg hm2, if_pos hm1, if_pos hm3]
-    ring1
+  simp_rw [preNormEDS'_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add_one, ite_not]
+  split_ifs <;> ring1
 
 lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
     normEDS b c d (m + 2) ^ 2 * normEDS b c d (m + 3) * normEDS b c d (m + 5) -
       normEDS b c d (m + 1) * normEDS b c d (m + 3) * normEDS b c d (m + 4) ^ 2 := by
   repeat erw [normEDS_ofNat]
-  simp only [preNormEDS'_even, if_pos <| even_two_mul _]
-  by_cases hm : Even m
-  · have hm1 : ¬Even (m + 1) := fun h => Nat.even_add_one.mp h hm
-    have hm2 : Even (m + 2) := Nat.even_add_one.mpr hm1
-    have hm3 : ¬Even (m + 3) := fun h => Nat.even_add_one.mp h hm2
-    have hm4 : Even (m + 4) := Nat.even_add_one.mpr hm3
-    have hm5 : ¬Even (m + 5) := fun h => Nat.even_add_one.mp h hm4
-    rw [if_pos hm2, if_neg hm3, if_neg hm5, if_neg hm1, if_pos hm4]
-    ring1
-  · have hm1 : Even (m + 1) := Nat.even_add_one.mpr hm
-    have hm2 : ¬Even (m + 2) := fun h => Nat.even_add_one.mp h hm1
-    have hm3 : Even (m + 3) := Nat.even_add_one.mpr hm2
-    have hm4 : ¬Even (m + 4) := fun h => Nat.even_add_one.mp h hm3
-    have hm5 : Even (m + 5) := Nat.even_add_one.mpr hm4
-    rw [if_neg hm2, if_pos hm3, if_pos hm5, if_pos hm1, if_neg hm4]
-    ring1
+  simp only [preNormEDS'_even, if_pos <| even_two_mul _, Nat.even_add_one, ite_not]
+  split_ifs <;> ring1
 
 @[simp]
-lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
+lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
   rw [normEDS, preNormEDS_neg, Int.natAbs_neg, neg_mul, normEDS]
 
 /-- Strong recursion principle for a normalised EDS: if we have
@@ -291,11 +265,11 @@ lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
-    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
-  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [base0, base2, base4, even _ h])
-    (by rintro (_ | _ | _) h; exacts [base1, base3, odd _ h])
+  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [zero, two, four, even _ h])
+    (by rintro (_ | _ | _) h; exacts [one, three, odd _ h])
 
 /-- Recursion principle for a normalised EDS: if we have
  * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
@@ -306,10 +280,10 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort u}
-    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
     P n :=
-  normEDSRec' base0 base1 base2 base3 base4
+  normEDSRec' zero one two three four
     (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
     (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n

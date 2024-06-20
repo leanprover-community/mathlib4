@@ -3,6 +3,7 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-! ## Proper spaces
@@ -68,7 +69,7 @@ theorem ProperSpace.of_isCompact_closedBall_of_le (R : ℝ)
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
 #align proper_space_of_compact_closed_ball_of_le ProperSpace.of_isCompact_closedBall_of_le
 
-@[deprecated] -- Since 2024-01-31
+@[deprecated (since := "2024-01-31")]
 alias properSpace_of_compact_closedBall_of_le := ProperSpace.of_isCompact_closedBall_of_le
 
 /-- If there exists a sequence of compact closed balls with the same center
@@ -163,3 +164,7 @@ theorem Metric.exists_isLocalMin_mem_ball [PseudoMetricSpace α] [ProperSpace α
   exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
 #align metric.exists_local_min_mem_ball Metric.exists_isLocalMin_mem_ball
+
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := ‹ProperSpace X›

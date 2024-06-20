@@ -735,15 +735,8 @@ theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
   @Tendsto.nsmul_atTop α βᵒᵈ _ l f hf n hn
 #align filter.tendsto.nsmul_at_bot Filter.Tendsto.nsmul_atBot
 
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit0_atTop : Tendsto bit0 (atTop : Filter β) atTop :=
-  tendsto_atTop_add tendsto_id tendsto_id
-#align filter.tendsto_bit0_at_top Filter.tendsto_bit0_atTop
-
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit0_atBot : Tendsto bit0 (atBot : Filter β) atBot :=
-  tendsto_atBot_add tendsto_id tendsto_id
-#align filter.tendsto_bit0_at_bot Filter.tendsto_bit0_atBot
+#noalign filter.tendsto_bit0_at_top
+#noalign filter.tendsto_bit0_at_bot
 
 end OrderedAddCommMonoid
 
@@ -931,10 +924,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] {l : Filter β} {f g : β → α}
 
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit1_atTop : Tendsto bit1 (atTop : Filter α) atTop :=
-  tendsto_atTop_add_nonneg_right tendsto_bit0_atTop fun _ => zero_le_one
-#align filter.tendsto_bit1_at_top Filter.tendsto_bit1_atTop
+#noalign filter.tendsto_bit1_at_top
 
 theorem Tendsto.atTop_mul_atTop (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atTop := by
@@ -1035,14 +1025,6 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 #align filter.tendsto_pow_at_top_iff Filter.tendsto_pow_atTop_iff
 
 end LinearOrderedSemiring
-
--- Porting note (#11215): TODO: make `Odd` and `Even` available here, drop `bit1`
-set_option linter.deprecated false in
-theorem nonneg_of_eventually_pow_nonneg [LinearOrderedRing α] {a : α}
-    (h : ∀ᶠ n in atTop, 0 ≤ a ^ (n : ℕ)) : 0 ≤ a :=
-  let ⟨_n, hn⟩ := (tendsto_bit1_atTop.eventually h).exists
-  pow_bit1_nonneg_iff.1 hn
-#align filter.nonneg_of_eventually_pow_nonneg Filter.nonneg_of_eventually_pow_nonneg
 
 theorem not_tendsto_pow_atTop_atBot [LinearOrderedRing α] :
     ∀ {n : ℕ}, ¬Tendsto (fun x : α => x ^ n) atTop atBot

@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.ModEq
@@ -1305,3 +1306,41 @@ theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrde
 end Prod
 
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
+
+@[simp]
+lemma Nat.cast_card_eq_zero (R) [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by
+  rw [← nsmul_one, card_nsmul_eq_zero]
+#align char_p.cast_card_eq_zero Nat.cast_card_eq_zero
+
+section NonAssocRing
+variable (R : Type*) [NonAssocRing R] [Fintype R] (p : ℕ)
+
+lemma CharP.addOrderOf_one : CharP R (addOrderOf (1 : R)) where
+  cast_eq_zero_iff' n := by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]
+#align char_p.add_order_of_one CharP.addOrderOf_one
+
+variable {R} in
+lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0) : CharP R p where
+  cast_eq_zero_iff' n := by
+    have H : (p : R) = 0 := by rw [← hn, Nat.cast_card_eq_zero]
+    constructor
+    · intro h
+      rw [← Nat.mod_add_div n p, Nat.cast_add, Nat.cast_mul, H, zero_mul, add_zero] at h
+      rw [Nat.dvd_iff_mod_eq_zero]
+      apply hR _ (Nat.mod_lt _ _) h
+      rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
+      exact ⟨0⟩
+    · rintro ⟨n, rfl⟩
+      rw [Nat.cast_mul, H, zero_mul]
+#align char_p_of_ne_zero charP_of_ne_zero
+
+end NonAssocRing
+
+lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fact p.Prime]
+    (hn : card R = p ^ n) (hR : ∀ i ≤ n, (p : R) ^ i = 0 → i = n) : CharP R (p ^ n) := by
+  obtain ⟨c, hc⟩ := CharP.exists R
+  have hcpn : c ∣ p ^ n := by rw [← CharP.cast_eq_zero_iff R c, ← hn, Nat.cast_card_eq_zero]
+  obtain ⟨i, hi, rfl⟩ : ∃ i ≤ n, c = p ^ i := by rwa [Nat.dvd_prime_pow hp.1] at hcpn
+  obtain rfl : i = n := hR i hi $ by rw [← Nat.cast_pow, CharP.cast_eq_zero]
+  assumption
+#align char_p_of_prime_pow_injective charP_of_prime_pow_injective

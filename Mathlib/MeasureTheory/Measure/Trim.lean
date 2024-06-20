@@ -59,6 +59,9 @@ theorem le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by
   exact @le_toMeasure_apply _ m _ _ _
 #align measure_theory.le_trim MeasureTheory.le_trim
 
+lemma trim_add {ν : Measure α} (hm : m ≤ m0) : (μ + ν).trim hm = μ.trim hm + ν.trim hm :=
+  @Measure.ext _ m _ _ (fun s hs ↦ by simp [trim_measurableSet_eq hm hs])
+
 theorem measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 :=
   le_antisymm ((le_trim hm).trans (le_of_eq h)) (zero_le _)
 #align measure_theory.measure_eq_zero_of_trim_eq_zero MeasureTheory.measure_eq_zero_of_trim_eq_zero

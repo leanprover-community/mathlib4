@@ -173,7 +173,7 @@ scoped instance (priority := 100) t5Space : T5Space Γ₀ where
     · rwa [(isOpen_iff.2 (.inl hs)).nhdsSet_eq, disjoint_principal_nhdsSet]
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₃. -/
-@[deprecated t5Space] lemma t3Space : T3Space Γ₀ := inferInstance
+@[deprecated t5Space (since := "2023-03-17")] lemma t3Space : T3Space Γ₀ := inferInstance
 #align with_zero_topology.t3_space WithZeroTopology.t3Space
 
 /-- The topology on a linearly ordered group with zero element adjoined makes it a topological

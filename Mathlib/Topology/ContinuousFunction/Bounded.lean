@@ -1595,9 +1595,8 @@ instance instLattice : Lattice (α →ᵇ β) := DFunLike.coe_injective.lattice 
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
 @[simp, norm_cast] lemma coe_negPart (f : α →ᵇ β) : ⇑f⁻ = (⇑f)⁻ := rfl
 
--- 2024-02-21
-@[deprecated] alias coeFn_sup := coe_sup
-@[deprecated] alias coeFn_abs := coe_abs
+@[deprecated (since := "2024-02-21")] alias coeFn_sup := coe_sup
+@[deprecated (since := "2024-02-21")] alias coeFn_abs := coe_abs
 
 instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with

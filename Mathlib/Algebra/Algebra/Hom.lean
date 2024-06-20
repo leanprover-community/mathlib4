@@ -270,15 +270,8 @@ protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι �
   map_finsupp_sum _ _ _
 #align alg_hom.map_finsupp_sum AlgHom.map_finsupp_sum
 
-set_option linter.deprecated false in
-protected theorem map_bit0 (x) : φ (bit0 x) = bit0 (φ x) :=
-  map_bit0 _ _
-#align alg_hom.map_bit0 AlgHom.map_bit0
-
-set_option linter.deprecated false in
-protected theorem map_bit1 (x) : φ (bit1 x) = bit1 (φ x) :=
-  map_bit1 _ _
-#align alg_hom.map_bit1 AlgHom.map_bit1
+#noalign alg_hom.map_bit0
+#noalign alg_hom.map_bit1
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
