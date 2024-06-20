@@ -175,8 +175,8 @@ protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ →
   · rw [map_add]; exact hp.add hq
   · rw [(pderiv i).map_smul]; exact (weightedHomogeneousSubmodule ..).smul_mem _ h
 
-protected lemma IsHomogeneous.pderiv [AddCancelCommMonoid M] {n : ℕ} {i : σ}
-    (h : φ.IsHomogeneous n) : (pderiv i φ).IsHomogeneous (n - 1) := by
+protected lemma IsHomogeneous.pderiv {n : ℕ} {i : σ} (h : φ.IsHomogeneous n) :
+    (pderiv i φ).IsHomogeneous (n - 1) := by
   obtain _ | n := n
   · rw [← totalDegree_zero_iff_isHomogeneous, totalDegree_eq_zero_iff] at h
     rw [h, pderiv_C]; apply isHomogeneous_zero
