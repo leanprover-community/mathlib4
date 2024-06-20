@@ -509,9 +509,6 @@ section Insert
 
 variable [DecidableEq α]
 
-@[simp]
-theorem insert_nil (a : α) : insert a nil = [a] :=
-  rfl
 #align list.insert_nil List.insert_nil
 
 theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l else a :: l := by

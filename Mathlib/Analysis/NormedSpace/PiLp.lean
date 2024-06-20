@@ -99,7 +99,14 @@ variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
-@[simp]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+
+(It appears to also be unused in Mathlib.)
+-/
+@[simp, nolint simpNF]
 theorem zero_apply : (0 : PiLp p β) i = 0 :=
   rfl
 #align pi_Lp.zero_apply PiLp.zero_apply

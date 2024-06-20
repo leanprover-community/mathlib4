@@ -92,7 +92,7 @@ theorem BlankExtends.refl {Γ} [Inhabited Γ] (l : List Γ) : BlankExtends l l :
 theorem BlankExtends.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
     BlankExtends l₁ l₂ → BlankExtends l₂ l₃ → BlankExtends l₁ l₃ := by
   rintro ⟨i, rfl⟩ ⟨j, rfl⟩
-  exact ⟨i + j, by simp [List.replicate_add]⟩
+  exact ⟨i + j, by simp⟩
 #align turing.blank_extends.trans Turing.BlankExtends.trans
 
 theorem BlankExtends.below_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
