@@ -220,7 +220,7 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
 /-- Generalized loop from a loop by uncurrying $I → (I^{N\setminus\{j\}} → X)$ into $I^N → X$. -/
 @[simps]
 def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
-  ⟨(ContinuousMap.comp ⟨Subtype.val, by continuity⟩ p.toContinuousMap).uncurry.comp
+  ⟨(ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ p.toContinuousMap).uncurry.comp
     (Cube.splitAt i).toContinuousMap,
     by
     rintro y ⟨j, Hj⟩

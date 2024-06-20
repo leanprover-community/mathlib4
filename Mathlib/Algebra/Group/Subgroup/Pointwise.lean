@@ -275,7 +275,6 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
     simp only [mul_assoc, inv_mul_cancel_left]
 #align subgroup.sup_normal Subgroup.sup_normal
 
--- Porting note (#10756): new lemma
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by

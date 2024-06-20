@@ -43,7 +43,6 @@ theorem mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
   rfl
 #align list.map_with_index_nil List.mapIdx_nil
 
--- Porting note (#10756): new theorem.
 protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
     l.oldMapIdxCore f n = l.oldMapIdx fun i a ↦ f (i + n) a := by
   induction' l with hd tl hl generalizing f n
@@ -57,7 +56,6 @@ protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : �
 --   1. Prove that `oldMapIdxCore f (l ++ [e]) = oldMapIdxCore f l ++ [f l.length e]`
 --   2. Prove that `oldMapIdx f (l ++ [e]) = oldMapIdx f l ++ [f l.length e]`
 --   3. Prove list induction using `∀ l e, p [] → (p l → p (l ++ [e])) → p l`
--- Porting note (#10756): new theorem.
 theorem list_reverse_induction (p : List α → Prop) (base : p [])
     (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
   let q := fun l ↦ p (reverse l)
@@ -70,7 +68,6 @@ theorem list_reverse_induction (p : List α → Prop) (base : p [])
   · apply pq; simp only [reverse_nil, base]
   · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
 
--- Porting note (#10756): new theorem.
 protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁ l₂ : List α),
     List.oldMapIdxCore f n (l₁ ++ l₂) =
     List.oldMapIdxCore f n l₁ ++ List.oldMapIdxCore f (n + l₁.length) l₂ := by
@@ -97,7 +94,6 @@ protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (
         simp only [length_append, h]
       rw [Nat.add_assoc]; simp only [Nat.add_comm]
 
--- Porting note (#10756): new theorem.
 protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     List.oldMapIdx f (l ++ [e]) = List.oldMapIdx f l ++ [f l.length e] := by
   intros f l e
@@ -105,7 +101,6 @@ protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (
   rw [List.oldMapIdxCore_append f 0 l [e]]
   simp only [Nat.zero_add]; rfl
 
--- Porting note (#10756): new theorem.
 theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr : Array β),
     mapIdx.go f (l₁ ++ l₂) arr = mapIdx.go f l₂ (List.toArray (mapIdx.go f l₁ arr)) := by
   intros f l₁ l₂ arr
@@ -128,7 +123,6 @@ theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr
       · simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
         simp only [length_append, h]
 
--- Porting note (#10756): new theorem.
 theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array β),
     length (mapIdx.go f l arr) = length l + arr.size := by
   intro f l
@@ -137,7 +131,6 @@ theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array
   · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons];
     simp only [Nat.add_succ, add_zero, Nat.add_comm]
 
--- Porting note (#10756): new theorem.
 theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
   intros f l e
@@ -146,7 +139,6 @@ theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
   simp only [mapIdx.go, Array.size_toArray, mapIdxGo_length, length_nil, Nat.add_zero,
     Array.toList_eq, Array.push_data, Array.data_toArray]
 
--- Porting note (#10756): new theorem.
 protected theorem new_def_eq_old_def :
     ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = List.oldMapIdx f l := by
   intro f
