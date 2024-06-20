@@ -49,7 +49,9 @@ end AddMonoidHom
 as a continuous real-linear map. -/
 def AddEquiv.toRealLinearEquiv (e : E ≃+ F) (h₁ : Continuous e) (h₂ : Continuous e.symm) :
     E ≃L[ℝ] F :=
-  { e, e.toAddMonoidHom.toRealLinearMap h₁ with }
+  { e, e.toAddMonoidHom.toRealLinearMap h₁ with
+    continuous_toFun := by continuity
+    continuous_invFun := by continuity }
 #align add_equiv.to_real_linear_equiv AddEquiv.toRealLinearEquiv
 
 /-- A topological group carries at most one structure of a topological `ℝ`-module, so for any

@@ -171,9 +171,6 @@ def reverse : Flow τ α where
   map_zero' _ := by dsimp; rw [neg_zero, map_zero_apply]
 #align flow.reverse Flow.reverse
 
--- Porting note: add @continuity to Flow.toFun so that these works:
--- Porting note: Homeomorphism.continuous_toFun  : Continuous toFun  := by continuity
--- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
 @[continuity]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
   rw [← curry_uncurry ϕ.toFun]
@@ -184,6 +181,9 @@ theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
 def toHomeomorph (t : τ) : (α ≃ₜ α) where
   toFun := ϕ t
   invFun := ϕ (-t)
+  -- TODO: allow `fun_prop` to prove these
+  continuous_toFun := by continuity
+  continuous_invFun := by continuity
   left_inv x := by rw [← map_add, neg_add_self, map_zero_apply]
   right_inv x := by rw [← map_add, add_neg_self, map_zero_apply]
 #align flow.to_homeomorph Flow.toHomeomorph
