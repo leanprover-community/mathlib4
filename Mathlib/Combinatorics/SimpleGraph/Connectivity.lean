@@ -2294,10 +2294,10 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
 
-lemma mem_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
-    (hv : v ∈ c.supp) (hw : w ∈ H.verts)
-    (hadj : H.Adj v w) : w ∈ c.supp := by
-  rw [← SetLike.mem_coe, Set.mem_image]
+lemma mem_coe_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
+    (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
+    (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
+  rw [Set.mem_image]
   obtain ⟨v' , hv'⟩ := hv
   use ⟨w, hw⟩
   rw [ConnectedComponent.mem_supp_iff]
@@ -2564,6 +2564,9 @@ instance : Decidable G.Connected := by
   rw [connected_iff, ← Finset.univ_nonempty_iff]
   infer_instance
 
+instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
+  c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
+    (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 end Finite
 
 end WalkCounting
