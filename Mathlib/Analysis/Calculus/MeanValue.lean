@@ -113,9 +113,9 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     exact this.mono fun y => le_of_lt
   · rcases exists_between (bound x xab hxB) with ⟨r, hfr, hrB⟩
     specialize hf' x xab r hfr
-    have HB : ∀ᶠ z in 𝓝[>] x, r < slope B x z :=
-      (hasDerivWithinAt_iff_tendsto_slope' <| lt_irrefl x).1 (hB' x xab).Ioi_of_Ici
-        (Ioi_mem_nhds hrB)
+    have HB : ∀ᶠ z in 𝓝[>] x, r < slope B x z := sorry
+      -- -- (hasDerivWithinAt_iff_tendsto_slope' <| lt_irrefl x).1 (hB' x xab).Ioi_of_Ici
+      --   (Ioi_mem_nhds hrB)
     obtain ⟨z, hfz, hzB, hz⟩ : ∃ z, slope f x z < r ∧ r < slope B x z ∧ z ∈ Ioc x y :=
       (hf'.and_eventually (HB.and (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))).exists
     refine ⟨z, ?_, hz⟩

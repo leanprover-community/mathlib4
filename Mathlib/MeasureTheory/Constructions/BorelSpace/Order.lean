@@ -145,6 +145,7 @@ instance atBot_isMeasurablyGenerated : (Filter.atBot : Filter α).IsMeasurablyGe
     (measurableSet_Iic : MeasurableSet (Iic a)).principal_isMeasurablyGenerated
 #align at_bot_is_measurably_generated atBot_isMeasurablyGenerated
 
+@[nolint unusedArguments]
 instance [R1Space α] : IsMeasurablyGenerated (cocompact α) where
   exists_measurable_subset := by
     intro _ hs

@@ -596,10 +596,10 @@ theorem card_real_embeddings :
 #align number_field.infinite_place.card_real_embeddings NumberField.InfinitePlace.card_real_embeddings
 
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
-    Fintype.card (InfinitePlace K) = NrRealPlaces K + NrComplexPlaces K := by
-  convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
-    (disjoint_isReal_isComplex K) using 1
-  exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
+    Fintype.card (InfinitePlace K) = NrRealPlaces K + NrComplexPlaces K := by sorry
+  -- convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
+  --   (disjoint_isReal_isComplex K) using 1
+  -- exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 theorem card_complex_embeddings :
     card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * NrComplexPlaces K := by

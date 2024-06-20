@@ -456,7 +456,7 @@ theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) 
 theorem ContDiffWithinAt.congr_of_eventuallyEq (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x := fun m hm =>
   let ⟨u, hu, p, H⟩ := h m hm
-  ⟨{ x ∈ u | f₁ x = f x }, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨hx, h₁⟩), p,
+  ⟨{ x ∈ u | f₁ x = f x }, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨Set.mem_setOf.mpr hx, h₁⟩), p,
     (H.mono (sep_subset _ _)).congr fun _ => And.right⟩
 #align cont_diff_within_at.congr_of_eventually_eq ContDiffWithinAt.congr_of_eventuallyEq
 
@@ -952,7 +952,7 @@ protected theorem Set.EqOn.iteratedFDerivWithin (hs : EqOn f₁ f s) (n : ℕ) :
   iteratedFDerivWithin_congr hs hx n
 #align set.eq_on.iterated_fderiv_within Set.EqOn.iteratedFDerivWithin
 
-theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
+theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s.toPred =ᶠ[𝓝[{y}ᶜ] x] t.toPred) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t := by
   induction' n with n ihn generalizing x
   · rfl
@@ -961,12 +961,12 @@ theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}�
     rw [(ihn hy).fderivWithin_eq_nhds, fderivWithin_congr_set' _ hy]
 #align iterated_fderiv_within_eventually_congr_set' iteratedFDerivWithin_eventually_congr_set'
 
-theorem iteratedFDerivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) (n : ℕ) :
+theorem iteratedFDerivWithin_eventually_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t :=
   iteratedFDerivWithin_eventually_congr_set' x (h.filter_mono inf_le_left) n
 #align iterated_fderiv_within_eventually_congr_set iteratedFDerivWithin_eventually_congr_set
 
-theorem iteratedFDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) (n : ℕ) :
+theorem iteratedFDerivWithin_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
   (iteratedFDerivWithin_eventually_congr_set h n).self_of_nhds
 #align iterated_fderiv_within_congr_set iteratedFDerivWithin_congr_set
@@ -1124,7 +1124,7 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     DifferentiableWithinAt 𝕜 (iteratedFDerivWithin 𝕜 m f s) s x := by
   rcases h.contDiffOn' (ENat.add_one_le_of_lt hmn) with ⟨u, uo, xu, hu⟩
   set t := insert x s ∩ u
-  have A : t =ᶠ[𝓝[≠] x] s := by
+  have A : t.toPred =ᶠ[𝓝[≠] x] s.toPred := by
     simp only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter']
     rw [← inter_assoc, nhdsWithin_inter_of_mem', ← diff_eq_compl_inter, insert_diff_of_mem,
       diff_eq_compl_inter]

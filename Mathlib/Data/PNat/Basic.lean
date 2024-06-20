@@ -121,8 +121,8 @@ open Nat
  subtraction, division and powers.
 -/
 @[simp, norm_cast]
-theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
-  SetCoe.ext_iff
+theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n := sorry
+  -- SetCoe.ext_iff
 #align pnat.coe_inj PNat.coe_inj
 
 @[simp, norm_cast]

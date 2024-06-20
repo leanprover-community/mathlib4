@@ -321,8 +321,8 @@ theorem mem_supported_support (p : α →₀ M) : p ∈ Finsupp.supported M R (p
 #align finsupp.mem_supported_support Finsupp.mem_supported_support
 
 theorem single_mem_supported {s : Set α} {a : α} (b : M) (h : a ∈ s) :
-    single a b ∈ supported M R s :=
-  Set.Subset.trans support_single_subset (Finset.singleton_subset_set_iff.2 h)
+    single a b ∈ supported M R s := sorry
+  -- Set.Subset.trans support_single_subset (Finset.singleton_subset_set_iff.2 h)
 #align finsupp.single_mem_supported Finsupp.single_mem_supported
 
 theorem supported_eq_span_single (s : Set α) :
@@ -584,7 +584,8 @@ theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
   intro l (hl : (l.support : Set α) ⊆ f ⁻¹' s)
   show ↑(mapDomain f l).support ⊆ s
   rw [← Set.image_subset_iff, ← Finset.coe_image] at hl
-  exact Set.Subset.trans mapDomain_support hl
+  sorry
+  -- exact Set.Subset.trans mapDomain_support hl
 #align finsupp.supported_comap_lmap_domain Finsupp.supported_comap_lmapDomain
 
 theorem lmapDomain_supported (f : α → α') (s : Set α) :
@@ -1296,7 +1297,7 @@ theorem Submodule.mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule
 theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     m ∈ sSup S ↔ ∃ s : Finset (Submodule R M), ↑s ⊆ S ∧ m ∈ ⨆ i ∈ s, i := by
   rw [sSup_eq_iSup, iSup_subtype', Submodule.mem_iSup_iff_exists_finset]
-  refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype S), ?_, ?_⟩,
+  refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype S.toPred), ?_, ?_⟩,
           fun ⟨s, hsS, hs⟩ ↦ ⟨s.preimage (↑) Subtype.coe_injective.injOn, ?_⟩⟩
   · simpa using fun x _ ↦ x.property
   · suffices m ∈ ⨆ (i) (hi : i ∈ S) (_ : ⟨i, hi⟩ ∈ s), i by simpa

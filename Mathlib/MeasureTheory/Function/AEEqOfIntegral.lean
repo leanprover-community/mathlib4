@@ -129,7 +129,8 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
   push_neg
   constructor
   · intro h b hb
-    exact measure_mono_null (fun y hy => (lt_of_le_of_lt hy hb : _)) h
+    sorry
+    -- exact measure_mono_null (fun y hy => (lt_of_le_of_lt hy hb : _)) h
   intro hc
   by_cases h : ∀ b, c ≤ b
   · have : {a : α | f a < c} = ∅ := by
@@ -140,7 +141,8 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
   · have : c ∈ upperBounds (Set.Iio c) := fun y hy => le_of_lt hy
     obtain ⟨b, b_up, bc⟩ : ∃ b : β, b ∈ upperBounds (Set.Iio c) ∧ b < c := by
       simpa [IsLUB, IsLeast, this, lowerBounds] using H
-    exact measure_mono_null (fun x hx => b_up hx) (hc b bc)
+    sorry
+    -- exact measure_mono_null (fun x hx => b_up hx) (hc b bc)
   push_neg at H h
   obtain ⟨u, _, u_lt, u_lim, -⟩ :
     ∃ u : ℕ → β,

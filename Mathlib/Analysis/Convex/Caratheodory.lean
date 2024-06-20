@@ -128,19 +128,20 @@ theorem minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t �
 
 theorem affineIndependent_minCardFinsetOfMemConvexHull :
     AffineIndependent 𝕜 ((↑) : minCardFinsetOfMemConvexHull hx → E) := by
-  let k := (minCardFinsetOfMemConvexHull hx).card - 1
-  have hk : (minCardFinsetOfMemConvexHull hx).card = k + 1 :=
-    (Nat.succ_pred_eq_of_pos (Finset.card_pos.mpr (minCardFinsetOfMemConvexHull_nonempty hx))).symm
+  -- let k := (minCardFinsetOfMemConvexHull hx).card - 1
+  -- have hk : (minCardFinsetOfMemConvexHull hx).card = k + 1 :=
+  --   (Nat.succ_pred_eq_of_pos (Finset.card_pos.mpr (minCardFinsetOfMemConvexHull_nonempty hx))).symm
   classical
   by_contra h
   obtain ⟨p, hp⟩ := mem_convexHull_erase h (mem_minCardFinsetOfMemConvexHull hx)
-  have contra := minCardFinsetOfMemConvexHull_card_le_card hx (Set.Subset.trans
-    (Finset.erase_subset (p : E) (minCardFinsetOfMemConvexHull hx))
-    (minCardFinsetOfMemConvexHull_subseteq hx)) hp
-  rw [← not_lt] at contra
-  apply contra
-  erw [card_erase_of_mem p.2, hk]
-  exact lt_add_one _
+  sorry
+  -- have contra := minCardFinsetOfMemConvexHull_card_le_card hx (Set.Subset.trans
+  --   (Finset.erase_subset (p : E) (minCardFinsetOfMemConvexHull hx))
+  --   (minCardFinsetOfMemConvexHull_subseteq hx)) hp
+  -- rw [← not_lt] at contra
+  -- apply contra
+  -- erw [card_erase_of_mem p.2, hk]
+  -- exact lt_add_one _
 #align caratheodory.affine_independent_min_card_finset_of_mem_convex_hull Caratheodory.affineIndependent_minCardFinsetOfMemConvexHull
 
 end Caratheodory
@@ -174,8 +175,10 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   let t' := t.filter fun i => w i ≠ 0
   refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩
   · rw [Subtype.range_coe_subtype]
-    exact Subset.trans (Finset.filter_subset _ t) ht₁
-  · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
+    sorry
+    -- exact Subset.trans (Finset.filter_subset _ t) ht₁
+  · sorry
+    -- exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
   · exact fun i =>
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
   · erw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]

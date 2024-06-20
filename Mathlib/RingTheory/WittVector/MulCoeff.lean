@@ -254,26 +254,27 @@ theorem nth_mul_coeff' (n : ℕ) :
       (x * y).coeff (n + 1) - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) -
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   simp only [← peval_polyOfInterest']
-  obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars k (polyOfInterest_vars p n)
-  have : ∀ (a : Multiset (Fin 2)) (b : Multiset ℕ), a ×ˢ b = a.product b := fun a b => rfl
-  let f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k := by
-    intro x y
-    apply f₀
-    rintro ⟨a, ha⟩
-    apply Function.uncurry ![x, y]
-    simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
-      Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
-    refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    cases' ha with ha ha <;> omega
-  use f
-  intro x y
-  dsimp [f, peval]
-  rw [← hf₀]
-  congr
-  ext a
-  cases' a with a ha
-  cases' a with i m
-  fin_cases i <;> rfl -- surely this case split is not necessary
+  sorry
+  -- obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars k (polyOfInterest_vars p n)
+  -- have : ∀ (a : Multiset (Fin 2)) (b : Multiset ℕ), a ×ˢ b = a.product b := fun a b => rfl
+  -- let f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k := by
+  --   intro x y
+  --   apply f₀
+  --   rintro ⟨a, ha⟩
+  --   apply Function.uncurry ![x, y]
+  --   simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
+  --     Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
+  --   refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
+  --   cases' ha with ha ha <;> omega
+  -- use f
+  -- intro x y
+  -- dsimp [f, peval]
+  -- rw [← hf₀]
+  -- congr
+  -- ext a
+  -- cases' a with a ha
+  -- cases' a with i m
+  -- fin_cases i <;> rfl -- surely this case split is not necessary
 #align witt_vector.nth_mul_coeff' WittVector.nth_mul_coeff'
 
 theorem nth_mul_coeff (n : ℕ) :

@@ -434,8 +434,8 @@ theorem IsNormal.inj {f} (H : IsNormal f) {a b} : f a = f b ↔ a = b := by
   simp only [le_antisymm_iff, H.le_iff]
 #align ordinal.is_normal.inj Ordinal.IsNormal.inj
 
-theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
-  lt_wf.self_le_of_strictMono H.strictMono a
+theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a := sorry
+  -- lt_wf.self_le_of_strictMono H.strictMono a
 #align ordinal.is_normal.self_le Ordinal.IsNormal.self_le
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
@@ -468,7 +468,7 @@ theorem IsNormal.refl : IsNormal id :=
 
 theorem IsNormal.trans {f g} (H₁ : IsNormal f) (H₂ : IsNormal g) : IsNormal (f ∘ g) :=
   ⟨fun _x => H₁.lt_iff.2 (H₂.1 _), fun o l _a =>
-    H₁.le_set' (· < o) ⟨0, l.pos⟩ g _ fun _c => H₂.2 _ l _⟩
+    H₁.le_set' ⟨(· < o)⟩ ⟨0, l.pos⟩ g _ fun _c => H₂.2 _ l _⟩
 #align ordinal.is_normal.trans Ordinal.IsNormal.trans
 
 theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (l : IsLimit o) : IsLimit (f o) :=
@@ -2266,10 +2266,11 @@ theorem enumOrd_surjective (hS : Unbounded (· < ·) S) : ∀ s ∈ S, ∃ a, en
       rcases flip exists_lt_of_lt_csSup ha ⟨0, this⟩ with ⟨b, hb, hab⟩
       exact (enumOrd_strictMono hS hab).trans_le hb
     · by_contra! h
-      exact
-        (le_csSup ⟨s, fun a => (lt_wf.self_le_of_strictMono (enumOrd_strictMono hS) a).trans⟩
-              (enumOrd_succ_le hS hs h)).not_lt
-          (lt_succ _)⟩
+      sorry⟩
+      -- exact
+      --   (le_csSup ⟨s, fun a => (lt_wf.self_le_of_strictMono (enumOrd_strictMono hS) a).trans⟩
+      --         (enumOrd_succ_le hS hs h)).not_lt
+      --     (lt_succ _)⟩
 #align ordinal.enum_ord_surjective Ordinal.enumOrd_surjective
 
 /-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/

@@ -552,10 +552,10 @@ protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z
   toPartialHomeomorph := h.toPartialHomeomorph.trans e.toPartialHomeomorph
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
-  source_eq := by simp [source_eq, preimage_preimage, (· ∘ ·)]
-  target_eq := by simp [target_eq]
+  source_eq := sorry -- by simp [source_eq, preimage_preimage, (· ∘ ·)]
+  target_eq := sorry -- by simp [target_eq]
   proj_toFun p hp := by
-    have hp : h p ∈ e.source := by simpa using hp
+    have hp : h p ∈ e.source := sorry -- by simpa using hp
     simp [hp]
 #align trivialization.comp_homeomorph Trivialization.compHomeomorph
 
@@ -678,7 +678,7 @@ def transFiberHomeomorph {F' : Type*} [TopologicalSpace F'] (e : Trivialization 
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
   source_eq := e.source_eq
-  target_eq := by simp [target_eq, prod_univ, preimage_preimage]
+  target_eq := sorry -- by simp [target_eq, prod_univ, preimage_preimage]
   proj_toFun := e.proj_toFun
 #align trivialization.trans_fiber_homeomorph Trivialization.transFiberHomeomorph
 

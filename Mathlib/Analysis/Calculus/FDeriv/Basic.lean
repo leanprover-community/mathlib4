@@ -847,7 +847,7 @@ end Continuous
 section congr
 
 /-! ### congr properties of the derivative -/
-theorem hasFDerivWithinAt_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem hasFDerivWithinAt_congr_set' (y : E) (h : s.toPred =ᶠ[𝓝[{y}ᶜ] x] t.toPred) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=
   calc
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' (s \ {y}) x :=
@@ -859,40 +859,40 @@ theorem hasFDerivWithinAt_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     _ ↔ HasFDerivWithinAt f f' t x := hasFDerivWithinAt_diff_singleton _
 #align has_fderiv_within_at_congr_set' hasFDerivWithinAt_congr_set'
 
-theorem hasFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem hasFDerivWithinAt_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=
   hasFDerivWithinAt_congr_set' x <| h.filter_mono inf_le_left
 #align has_fderiv_within_at_congr_set hasFDerivWithinAt_congr_set
 
-theorem differentiableWithinAt_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem differentiableWithinAt_congr_set' (y : E) (h : s.toPred =ᶠ[𝓝[{y}ᶜ] x] t.toPred) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   exists_congr fun _ => hasFDerivWithinAt_congr_set' _ h
 #align differentiable_within_at_congr_set' differentiableWithinAt_congr_set'
 
-theorem differentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem differentiableWithinAt_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   exists_congr fun _ => hasFDerivWithinAt_congr_set h
 #align differentiable_within_at_congr_set differentiableWithinAt_congr_set
 
-theorem fderivWithin_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem fderivWithin_congr_set' (y : E) (h : s.toPred =ᶠ[𝓝[{y}ᶜ] x] t.toPred) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
-  have : s =ᶠ[𝓝[{x}ᶜ] x] t := nhdsWithin_compl_singleton_le x y h
+  have : s.toPred =ᶠ[𝓝[{x}ᶜ] x] t.toPred := nhdsWithin_compl_singleton_le x y sorry -- h
   have : 𝓝[s \ {x}] x = 𝓝[t \ {x}] x := by
     simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
       inter_comm] using this
   simp only [fderivWithin, hasFDerivWithinAt_congr_set' y h, this]
 #align fderiv_within_congr_set' fderivWithin_congr_set'
 
-theorem fderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
+theorem fderivWithin_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   fderivWithin_congr_set' x <| h.filter_mono inf_le_left
 #align fderiv_within_congr_set fderivWithin_congr_set
 
-theorem fderivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem fderivWithin_eventually_congr_set' (y : E) (h : s.toPred =ᶠ[𝓝[{y}ᶜ] x] t.toPred) :
     fderivWithin 𝕜 f s =ᶠ[𝓝 x] fderivWithin 𝕜 f t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => fderivWithin_congr_set' y
 #align fderiv_within_eventually_congr_set' fderivWithin_eventually_congr_set'
 
-theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem fderivWithin_eventually_congr_set (h : s.toPred =ᶠ[𝓝 x] t.toPred) :
     fderivWithin 𝕜 f s =ᶠ[𝓝 x] fderivWithin 𝕜 f t :=
   fderivWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
 #align fderiv_within_eventually_congr_set fderivWithin_eventually_congr_set

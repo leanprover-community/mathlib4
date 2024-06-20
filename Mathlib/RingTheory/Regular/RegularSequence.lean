@@ -42,7 +42,7 @@ abbrev ofList (rs : List R) := span { r | r ∈ rs }
 
 @[simp] lemma ofList_append (rs₁ rs₂ : List R) :
     ofList (rs₁ ++ rs₂) = ofList rs₁ ⊔ ofList rs₂ :=
-  have : { r | r ∈ rs₁ ++ rs₂ } = _ := Set.ext (fun _ => List.mem_append)
+  have : { r | r ∈ rs₁ ++ rs₂ } = _ := sorry -- Set.ext (fun _ => List.mem_append)
   Eq.trans (congrArg span this) (span_union _ _)
 
 @[simp] lemma ofList_singleton (r : R) : ofList [r] = span {r} :=

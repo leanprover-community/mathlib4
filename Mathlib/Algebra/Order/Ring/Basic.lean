@@ -195,14 +195,14 @@ section LinearOrderedSemiring
 variable [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
 
 lemma pow_le_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=
-  (pow_left_strictMonoOn hn).le_iff_le ha hb
+  (pow_left_strictMonoOn hn).le_iff_le (s := Set.ofPred (fun n => 0 ≤ n)) ha hb
 
 lemma pow_lt_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b :=
-  (pow_left_strictMonoOn hn).lt_iff_lt ha hb
+  (pow_left_strictMonoOn hn).lt_iff_lt (s := Set.ofPred (fun n => 0 ≤ n)) ha hb
 
 @[simp]
 lemma pow_left_inj (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
-  (pow_left_strictMonoOn hn).eq_iff_eq ha hb
+  (pow_left_strictMonoOn hn).eq_iff_eq (s := Set.ofPred (fun n => 0 ≤ n)) ha hb
 #align pow_left_inj pow_left_inj
 
 lemma pow_right_injective (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by

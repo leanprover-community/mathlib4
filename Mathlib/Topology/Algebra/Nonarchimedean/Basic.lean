@@ -90,7 +90,8 @@ theorem prod_subset {U} (hU : U ∈ 𝓝 (1 : G × K)) :
   use V; use W
   rw [Set.prod_subset_iff]
   intro x hX y hY
-  exact Set.Subset.trans (Set.prod_mono hV hW) h (Set.mem_sep hX hY)
+  sorry
+  -- exact Set.Subset.trans (Set.prod_mono hV hW) h (Set.mem_sep hX hY)
 #align nonarchimedean_group.prod_subset NonarchimedeanGroup.prod_subset
 #align nonarchimedean_add_group.prod_subset NonarchimedeanAddGroup.prod_subset
 

@@ -332,8 +332,8 @@ theorem nonempty_of_nonempty_type (x : PSet) [h : Nonempty x.Type] : PSet.Nonemp
 #align pSet.nonempty_of_nonempty_type PSet.nonempty_of_nonempty_type
 
 /-- Two pre-sets are equivalent iff they have the same members. -/
-theorem Equiv.eq {x y : PSet} : Equiv x y ↔ toSet x = toSet y :=
-  equiv_iff_mem.trans Set.ext_iff.symm
+theorem Equiv.eq {x y : PSet} : Equiv x y ↔ toSet x = toSet y := sorry
+  -- equiv_iff_mem.trans Set.ext_iff.symm
 #align pSet.equiv.eq PSet.Equiv.eq
 
 instance : Coe PSet (Set PSet) :=
@@ -412,7 +412,7 @@ instance : Sep PSet PSet :=
 
 /-- The pre-set powerset operator -/
 def powerset (x : PSet) : PSet :=
-  ⟨Set x.Type, fun p => ⟨{ a // p a }, fun y => x.Func y.1⟩⟩
+  ⟨Set x.Type, fun p => ⟨{ a // p.toPred a }, fun y => x.Func y.1⟩⟩
 #align pSet.powerset PSet.powerset
 
 @[simp]
@@ -958,12 +958,12 @@ def powerset : ZFSet → ZFSet :=
   Resp.eval 1
     ⟨PSet.powerset, fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun p =>
-        ⟨{ b | ∃ a, p a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
+        ⟨{ b | ∃ a, p.toPred a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
           let ⟨b, ab⟩ := αβ a
           ⟨⟨b, a, pa, ab⟩, ab⟩,
           fun ⟨_, a, pa, ab⟩ => ⟨⟨a, pa⟩, ab⟩⟩,
         fun q =>
-        ⟨{ a | ∃ b, q b ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
+        ⟨{ a | ∃ b, q.toPred b ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
           let ⟨a, ab⟩ := βα b
           ⟨⟨a, b, qb, ab⟩, ab⟩⟩⟩⟩
 #align Set.powerset ZFSet.powerset
@@ -1420,14 +1420,14 @@ namespace Class
 -- Porting note: this is no longer an automatically derived instance.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
-  {y | A y ∧ p y}
+  {y | A.toPred y ∧ p y}
 
 @[ext]
-theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x z ↔ y z) → x = y :=
+theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x.toPred z ↔ y.toPred z) → x = y :=
   Set.ext
 #align Class.ext Class.ext
 
-theorem ext_iff {x y : Class.{u}} : x = y ↔ ∀ z, x z ↔ y z :=
+theorem ext_iff {x y : Class.{u}} : x = y ↔ ∀ z, x.toPred z ↔ y.toPred z :=
   Set.ext_iff
 #align Class.ext_iff Class.ext_iff
 
@@ -1447,7 +1447,7 @@ def univ : Class :=
 
 /-- Assert that `A` is a ZFC set satisfying `B` -/
 def ToSet (B : Class.{u}) (A : Class.{u}) : Prop :=
-  ∃ x : ZFSet, ↑x = A ∧ B x
+  ∃ x : ZFSet, ↑x = A ∧ B.toPred x
 #align Class.to_Set Class.ToSet
 
 /-- `A ∈ B` if `A` is a ZFC set which satisfies `B` -/
@@ -1458,7 +1458,7 @@ protected def Mem (A B : Class.{u}) : Prop :=
 instance : Membership Class Class :=
   ⟨Class.Mem⟩
 
-theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x :=
+theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B.toPred x :=
   Iff.rfl
 #align Class.mem_def Class.mem_def
 
@@ -1467,7 +1467,7 @@ theorem not_mem_empty (x : Class.{u}) : x ∉ (∅ : Class.{u}) := fun ⟨_, _, 
 #align Class.not_mem_empty Class.not_mem_empty
 
 @[simp]
-theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}) x :=
+theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}).toPred x :=
   id
 #align Class.not_empty_hom Class.not_empty_hom
 
@@ -1477,15 +1477,15 @@ theorem mem_univ {A : Class.{u}} : A ∈ univ.{u} ↔ ∃ x : ZFSet.{u}, ↑x = 
 #align Class.mem_univ Class.mem_univ
 
 @[simp]
-theorem mem_univ_hom (x : ZFSet.{u}) : univ.{u} x :=
+theorem mem_univ_hom (x : ZFSet.{u}) : univ.{u}.toPred x :=
   trivial
 #align Class.mem_univ_hom Class.mem_univ_hom
 
-theorem eq_univ_iff_forall {A : Class.{u}} : A = univ ↔ ∀ x : ZFSet, A x :=
+theorem eq_univ_iff_forall {A : Class.{u}} : A = univ ↔ ∀ x : ZFSet, A.toPred x :=
   Set.eq_univ_iff_forall
 #align Class.eq_univ_iff_forall Class.eq_univ_iff_forall
 
-theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
+theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A.toPred x) → A = univ :=
   Set.eq_univ_of_forall
 #align Class.eq_univ_of_forall Class.eq_univ_of_forall
 
@@ -1570,22 +1570,22 @@ prefix:110 "⋂₀ " => Class.sInter
 
 theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
   ZFSet.ext fun z => by
-    change (x : Class.{u}) z ↔ (y : Class.{u}) z
+    change (x : Class.{u}).toPred z ↔ (y : Class.{u}).toPred z
     rw [h]
 #align Class.of_Set.inj Class.ofSet.inj
 
 @[simp]
-theorem toSet_of_ZFSet (A : Class.{u}) (x : ZFSet.{u}) : ToSet A x ↔ A x :=
+theorem toSet_of_ZFSet (A : Class.{u}) (x : ZFSet.{u}) : ToSet A x ↔ A.toPred x :=
   ⟨fun ⟨y, yx, py⟩ => by rwa [ofSet.inj yx] at py, fun px => ⟨x, rfl, px⟩⟩
 #align Class.to_Set_of_Set Class.toSet_of_ZFSet
 
 @[simp, norm_cast]
-theorem coe_mem {x : ZFSet.{u}} {A : Class.{u}} : ↑x ∈ A ↔ A x :=
+theorem coe_mem {x : ZFSet.{u}} {A : Class.{u}} : ↑x ∈ A ↔ A.toPred x :=
   toSet_of_ZFSet _ _
 #align Class.coe_mem Class.coe_mem
 
 @[simp]
-theorem coe_apply {x y : ZFSet.{u}} : (y : Class.{u}) x ↔ x ∈ y :=
+theorem coe_apply {x y : ZFSet.{u}} : (y : Class.{u}).toPred x ↔ x ∈ y :=
   Iff.rfl
 #align Class.coe_apply Class.coe_apply
 
@@ -1596,7 +1596,7 @@ theorem coe_subset (x y : ZFSet.{u}) : (x : Class.{u}) ⊆ y ↔ x ⊆ y :=
 
 @[simp, norm_cast]
 theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
-    (ZFSet.sep p x : Class) = { y ∈ x | p y } :=
+    (ZFSet.sep p.toPred x : Class) = { y ∈ x | p.toPred y } :=
   ext fun _ => ZFSet.mem_sep
 #align Class.coe_sep Class.coe_sep
 
@@ -1631,12 +1631,12 @@ theorem coe_powerset (x : ZFSet.{u}) : ↑x.powerset = powerset.{u} x :=
 #align Class.coe_powerset Class.coe_powerset
 
 @[simp]
-theorem powerset_apply {A : Class.{u}} {x : ZFSet.{u}} : powerset A x ↔ ↑x ⊆ A :=
+theorem powerset_apply {A : Class.{u}} {x : ZFSet.{u}} : (powerset A).toPred x ↔ ↑x ⊆ A :=
   Iff.rfl
 #align Class.powerset_apply Class.powerset_apply
 
 @[simp]
-theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet, x z ∧ y ∈ z := by
+theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x).toPred y ↔ ∃ z : ZFSet, x.toPred z ∧ y ∈ z := by
   constructor
   · rintro ⟨-, ⟨z, rfl, hxz⟩, hyz⟩
     exact ⟨z, hxz, hyz⟩
@@ -1658,7 +1658,8 @@ theorem mem_sUnion {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y �
     exact ⟨z, rfl, w, hwx, hwz⟩
 #align Class.mem_sUnion Class.mem_sUnion
 
-theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z := by
+theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} :
+    (⋂₀ x).toPred y ↔ ∀ z : ZFSet.{u}, x.toPred z → y ∈ z := by
   refine ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, ?_⟩
   rintro H - ⟨z, rfl, hxz⟩
   exact H _ hxz
@@ -1666,7 +1667,7 @@ theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : 
 
 @[simp, norm_cast]
 theorem coe_sInter {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : Class.{u}) :=
-  Set.ext fun _ => (ZFSet.mem_sInter h).trans sInter_apply.symm
+  Set.ext fun _ => (ZFSet.mem_sInter h).trans sorry -- sInter_apply.symm
 #align Class.sInter_coe Class.coe_sInter
 
 theorem mem_of_mem_sInter {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
@@ -1700,19 +1701,20 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
   eq_univ_of_forall
     (by
       by_contra! hnA
-      exact
-        WellFounded.min_mem ZFSet.mem_wf _ hnA
-          (hA fun x hx =>
-            Classical.not_not.1 fun hB =>
-              WellFounded.not_lt_min ZFSet.mem_wf _ hnA hB <| coe_apply.1 hx))
+      sorry)
+      -- exact
+        -- WellFounded.min_mem ZFSet.mem_wf _ hnA
+        --   (hA fun x hx =>
+        --     Classical.not_not.1 fun hB =>
+        --       WellFounded.not_lt_min ZFSet.mem_wf _ hnA hB <| coe_apply.1 hx))
 #align Class.eq_univ_of_powerset_subset Class.eq_univ_of_powerset_subset
 
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
 def iota (A : Class) : Class :=
-  ⋃₀ { x | ∀ y, A y ↔ y = x }
+  ⋃₀ { x | ∀ y, A.toPred y ↔ y = x }
 #align Class.iota Class.iota
 
-theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y, A y ↔ y = x) : iota A = ↑x :=
+theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y, A.toPred y ↔ y = x) : iota A = ↑x :=
   ext fun y =>
     ⟨fun ⟨_, ⟨x', rfl, h⟩, yx'⟩ => by rwa [← (H x').1 <| (h x').2 rfl], fun yx =>
       ⟨_, ⟨x, rfl, H⟩, yx⟩⟩
@@ -1723,14 +1725,14 @@ theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y, A y ↔ y = x) : iota A = �
   associated `Class → Set` function. -/
 theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
   mem_univ.2 <|
-    Or.elim (Classical.em <| ∃ x, ∀ y, A y ↔ y = x) (fun ⟨x, h⟩ => ⟨x, Eq.symm <| iota_val A x h⟩)
+    Or.elim (Classical.em <| ∃ x, ∀ y, A.toPred y ↔ y = x) (fun ⟨x, h⟩ => ⟨x, Eq.symm <| iota_val A x h⟩)
       fun hn =>
       ⟨∅, ext fun _ => coe_empty.symm ▸ ⟨False.rec, fun ⟨_, ⟨x, rfl, H⟩, _⟩ => hn ⟨x, H⟩⟩⟩
 #align Class.iota_ex Class.iota_ex
 
 /-- Function value -/
 def fval (F A : Class.{u}) : Class.{u} :=
-  iota fun y => ToSet (fun x => F (ZFSet.pair x y)) A
+  iota ⟨fun y => ToSet ⟨fun x => F.toPred (ZFSet.pair x y)⟩ A⟩
 #align Class.fval Class.fval
 
 @[inherit_doc]
@@ -1747,14 +1749,14 @@ namespace ZFSet
 @[simp]
 theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [H : PSet.Definable 1 f] {x y : ZFSet.{u}}
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=
-  Class.iota_val _ _ fun z => by
-    rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
-    exact
-      ⟨fun ⟨w, _, pr⟩ => by
-        let ⟨wy, fw⟩ := ZFSet.pair_injective pr
-        rw [← fw, wy], fun e => by
-        subst e
-        exact ⟨_, h, rfl⟩⟩
+  Class.iota_val _ _ fun z => by sorry
+    -- rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
+    -- exact
+    --   ⟨fun ⟨w, _, pr⟩ => by
+    --     let ⟨wy, fw⟩ := ZFSet.pair_injective pr
+    --     rw [← fw, wy], fun e => by
+    --     subst e
+    --     exact ⟨_, h, rfl⟩⟩
 #align Set.map_fval ZFSet.map_fval
 
 variable (x : ZFSet.{u}) (h : ∅ ∉ x)

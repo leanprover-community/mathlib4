@@ -293,8 +293,8 @@ theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsO
 
 end IsMinimal
 
-theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[μ] s)
-    (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s := by
+theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α).toPred =ᵐ[μ] s.toPred)
+    (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α).toPred =ᵐ[μ] s.toPred := by
   obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp hy
   let e : α ≃ α := MulAction.toPermHom G α x
   have he : QuasiMeasurePreserving e μ μ := (measurePreserving_smul x μ).quasiMeasurePreserving
@@ -308,8 +308,8 @@ theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[�
 theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α}
     {m : MeasurableSpace α} [AddGroup G] [AddAction G α] [MeasurableSpace G] [MeasurableVAdd G α]
     {μ : Measure α} [VAddInvariantMeasure G α μ] {x y : G}
-    (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
-    (y +ᵥ s : Set α) =ᵐ[μ] s := by
+    (hs : (x +ᵥ s : Set α).toPred =ᵐ[μ] s.toPred) (hy : y ∈ AddSubgroup.zmultiples x) :
+    (y +ᵥ s : Set α).toPred =ᵐ[μ] s.toPred := by
   letI : MeasurableSpace (Multiplicative G) := inferInstanceAs (MeasurableSpace G)
   letI : SMulInvariantMeasure (Multiplicative G) α μ :=
     ⟨fun g => VAddInvariantMeasure.measure_preimage_vadd (Multiplicative.toAdd g)⟩
@@ -324,7 +324,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
 attribute [to_additive existing] smul_ae_eq_self_of_mem_zpowers
 
 @[to_additive]
-theorem inv_smul_ae_eq_self {x : G} (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
+theorem inv_smul_ae_eq_self {x : G} (hs : (x • s : Set α).toPred =ᵐ[μ] s.toPred) : (x⁻¹ • s : Set α).toPred =ᵐ[μ] s.toPred :=
   smul_ae_eq_self_of_mem_zpowers hs <| inv_mem (Subgroup.mem_zpowers _)
 
 end MeasureTheory

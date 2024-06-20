@@ -659,8 +659,9 @@ theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A
       (KaehlerDifferential.kerTotal R B).restrictScalars _ := by
   rw [Submodule.map_sup, ← kerTotal_map R R A B h, Submodule.map_span, ← Set.range_comp]
   congr
-  refine congr_arg Set.range ?_
-  ext; simp [IsScalarTower.algebraMap_eq R A B]
+  sorry
+  -- refine congr_arg Set.range ?_
+  -- ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 A --→ B

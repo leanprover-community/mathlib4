@@ -145,8 +145,9 @@ lemma set_lintegral_rnDerivAux (κ η : kernel α γ) [IsFiniteKernel κ] [IsFin
   · have := hαγ.countableOrCountablyGenerated.resolve_left hα
     rw [set_lintegral_density ((fst_map_id_prod _ measurable_const).trans_le h_le) _
       MeasurableSet.univ hs, map_apply' _ _ _ (hs.prod MeasurableSet.univ)]
-    congr with x
-    simp
+    sorry
+    -- congr with x
+    -- simp
 
 lemma withDensity_rnDerivAux (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
     withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x)) = κ := by

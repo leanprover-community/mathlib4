@@ -424,21 +424,24 @@ theorem ssubset_iff_subset_ne {s t : Finset α} : s ⊂ t ↔ s ⊆ t ∧ s ≠ 
 #align finset.ssubset_iff_subset_ne Finset.ssubset_iff_subset_ne
 
 theorem ssubset_iff_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₁ ⊂ s₂ ↔ ∃ x ∈ s₂, x ∉ s₁ :=
-  Set.ssubset_iff_of_subset h
+  sorry
+  -- Set.ssubset_iff_of_subset h
 #align finset.ssubset_iff_of_subset Finset.ssubset_iff_of_subset
 
 theorem ssubset_of_ssubset_of_subset {s₁ s₂ s₃ : Finset α} (hs₁s₂ : s₁ ⊂ s₂) (hs₂s₃ : s₂ ⊆ s₃) :
     s₁ ⊂ s₃ :=
-  Set.ssubset_of_ssubset_of_subset hs₁s₂ hs₂s₃
+  sorry
+  -- Set.ssubset_of_ssubset_of_subset hs₁s₂ hs₂s₃
 #align finset.ssubset_of_ssubset_of_subset Finset.ssubset_of_ssubset_of_subset
 
 theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Finset α} (hs₁s₂ : s₁ ⊆ s₂) (hs₂s₃ : s₂ ⊂ s₃) :
     s₁ ⊂ s₃ :=
-  Set.ssubset_of_subset_of_ssubset hs₁s₂ hs₂s₃
+  sorry
+  -- Set.ssubset_of_subset_of_ssubset hs₁s₂ hs₂s₃
 #align finset.ssubset_of_subset_of_ssubset Finset.ssubset_of_subset_of_ssubset
 
-theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x ∈ s₂, x ∉ s₁ :=
-  Set.exists_of_ssubset h
+theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x ∈ s₂, x ∉ s₁ := sorry
+  -- Set.exists_of_ssubset h
 #align finset.exists_of_ssubset Finset.exists_of_ssubset
 
 instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
@@ -506,8 +509,8 @@ theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈
 #align finset.nonempty.bex Finset.Nonempty.exists_mem
 @[deprecated (since := "2024-03-23")] alias Nonempty.bex := Nonempty.exists_mem
 
-theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
-  Set.Nonempty.mono hst hs
+theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty := sorry
+  -- Set.Nonempty.mono hst hs
 #align finset.nonempty.mono Finset.Nonempty.mono
 
 theorem Nonempty.forall_const {s : Finset α} (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
@@ -778,8 +781,8 @@ theorem singleton_subset_set_iff {s : Set α} {a : α} : ↑({a} : Finset α) �
 #align finset.singleton_subset_set_iff Finset.singleton_subset_set_iff
 
 @[simp]
-theorem singleton_subset_iff {s : Finset α} {a : α} : {a} ⊆ s ↔ a ∈ s :=
-  singleton_subset_set_iff
+theorem singleton_subset_iff {s : Finset α} {a : α} : {a} ⊆ s ↔ a ∈ s := sorry
+  -- singleton_subset_set_iff
 #align finset.singleton_subset_iff Finset.singleton_subset_iff
 
 @[simp]
@@ -2599,9 +2602,9 @@ theorem mem_of_mem_filter {s : Finset α} (x : α) (h : x ∈ s.filter p) : x �
 #align finset.mem_of_mem_filter Finset.mem_of_mem_filter
 
 theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x :=
-  ⟨fun h =>
-    let ⟨x, hs, hp⟩ := Set.exists_of_ssubset h
-    ⟨x, hs, mt (fun hp => mem_filter.2 ⟨hs, hp⟩) hp⟩,
+  ⟨fun h => sorry,
+    -- let ⟨x, hs, hp⟩ := Set.exists_of_ssubset h
+    -- ⟨x, hs, mt (fun hp => mem_filter.2 ⟨hs, hp⟩) hp⟩,
     fun ⟨_, hs, hp⟩ => ⟨s.filter_subset _, fun h => hp (mem_filter.1 (h hs)).2⟩⟩
 #align finset.filter_ssubset Finset.filter_ssubset
 

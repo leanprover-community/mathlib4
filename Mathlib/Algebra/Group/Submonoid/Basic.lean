@@ -444,7 +444,7 @@ is preserved under multiplication, then `p` holds for all elements of the closur
       additive closure of `s`."]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x) (one : p 1)
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨p, mul _ _⟩, one⟩).2 mem h
+  (@closure_le _ _ _ ⟨⟨⟨p⟩, mul _ _⟩, one⟩).2 mem h
 #align submonoid.closure_induction Submonoid.closure_induction
 #align add_submonoid.closure_induction AddSubmonoid.closure_induction
 

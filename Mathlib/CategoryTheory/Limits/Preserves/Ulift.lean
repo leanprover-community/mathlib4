@@ -74,12 +74,12 @@ def descSet (ls : Set lc.pt) : Set c.pt := {x | (hc.desc (coconeOfSet ls) x).dow
   diagram in the cocone point lies in `descSet hc ls` if and only if the image of the corresponding
   element in the lifted diagram lie in `ls`. -/
 lemma descSet_spec (s : Set c.pt) (ls : Set lc.pt) :
-    descSet hc ls = s ↔ ∀ j x, lc.ι.app j ⟨x⟩ ∈ ls ↔ c.ι.app j x ∈ s := by
-  refine ⟨?_, fun he ↦ funext fun x ↦ ?_⟩
-  · rintro rfl j x
-    exact (congr_arg ULift.down (congr_fun (hc.fac (coconeOfSet ls) j) x).symm).to_iff
-  · refine (congr_arg ULift.down (congr_fun (hc.uniq (coconeOfSet ls) (⟨· ∈ s⟩) fun j ↦ ?_) x)).symm
-    ext y; exact congr_arg ULift.up (propext (he j y).symm)
+    descSet hc ls = s ↔ ∀ j x, lc.ι.app j ⟨x⟩ ∈ ls ↔ c.ι.app j x ∈ s := by sorry
+  -- refine ⟨?_, fun he ↦ funext fun x ↦ ?_⟩
+  -- · rintro rfl j x
+  --   exact (congr_arg ULift.down (congr_fun (hc.fac (coconeOfSet ls) j) x).symm).to_iff
+  -- · refine (congr_arg ULift.down (congr_fun (hc.uniq (coconeOfSet ls) (⟨· ∈ s⟩) fun j ↦ ?_) x)).symm
+  --   ext y; exact congr_arg ULift.up (propext (he j y).symm)
 
 lemma mem_descSet_singleton {x : lc.pt} {j : J} {y : K.obj j} :
     c.ι.app j y ∈ descSet hc {x} ↔ lc.ι.app j ⟨y⟩ = x :=

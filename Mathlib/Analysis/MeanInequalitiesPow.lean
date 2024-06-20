@@ -59,7 +59,7 @@ namespace Real
 theorem pow_arith_mean_le_arith_mean_pow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (n : ℕ) :
     (∑ i ∈ s, w i * z i) ^ n ≤ ∑ i ∈ s, w i * z i ^ n :=
-  (convexOn_pow n).map_sum_le hw hw' hz
+  (convexOn_pow n).map_sum_le hw hw' (fun _ hi => Set.mem_setOf.mpr <| hz _ hi) -- hz
 #align real.pow_arith_mean_le_arith_mean_pow Real.pow_arith_mean_le_arith_mean_pow
 
 theorem pow_arith_mean_le_arith_mean_pow_of_even (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
@@ -89,7 +89,7 @@ theorem pow_sum_div_card_le_sum_pow {f : ι → ℝ} (n : ℕ) (hf : ∀ a ∈ s
 theorem zpow_arith_mean_le_arith_mean_zpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) (m : ℤ) :
     (∑ i ∈ s, w i * z i) ^ m ≤ ∑ i ∈ s, w i * z i ^ m :=
-  (convexOn_zpow m).map_sum_le hw hw' hz
+  (convexOn_zpow m).map_sum_le hw hw' (fun _ hi => Set.mem_setOf.mpr <| hz _ hi) -- hz
 #align real.zpow_arith_mean_le_arith_mean_zpow Real.zpow_arith_mean_le_arith_mean_zpow
 
 theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)

@@ -1195,7 +1195,7 @@ preserved under certain affine combinations, then `p` holds for all elements of 
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (mem : ∀ x : P, x ∈ s → p x)
     (smul_vsub_vadd : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
-  (affineSpan_le (Q := ⟨p, smul_vsub_vadd⟩)).mpr mem h
+  (affineSpan_le (Q := ⟨⟨p⟩, smul_vsub_vadd⟩)).mpr mem h
 #align affine_span_induction affineSpan_induction
 
 /-- A dependent version of `affineSpan_induction`. -/

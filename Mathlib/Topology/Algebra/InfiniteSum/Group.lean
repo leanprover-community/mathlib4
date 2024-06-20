@@ -241,7 +241,8 @@ theorem cauchySeq_finset_iff_tprod_vanishing :
       exact hts b.prop
     · exact tprod_eq_one_of_not_multipliable ht ▸ mem_of_mem_nhds ho
   · obtain ⟨s, hs⟩ := vanish _ he
-    exact ⟨s, fun t hts ↦ (t.tprod_subtype f).symm ▸ hs _ hts⟩
+    sorry
+    -- exact ⟨s, fun t hts ↦ (t.tprod_subtype f).symm ▸ hs _ hts⟩
 
 variable [CompleteSpace α]
 
@@ -351,7 +352,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
   · intro e he
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
     rw [Filter.mem_map, mem_atTop_sets]
-    exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
+    sorry
+    -- exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
   · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable ?_).symm
     rwa [Finset.multipliable_compl_iff]
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero

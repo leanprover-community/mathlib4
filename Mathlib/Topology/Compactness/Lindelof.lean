@@ -70,7 +70,7 @@ theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop}
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
     (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
-  let f : Filter X := ofCountableUnion p hcountable_union (fun t ht _ hsub ↦ hmono hsub ht)
+  let f : Filter X := ofCountableUnion ⟨p⟩ hcountable_union (fun t ht _ hsub ↦ hmono hsub ht)
   have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa [f] using hnhds)
   rwa [← compl_compl s]
 
@@ -732,4 +732,4 @@ lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : �
 instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
     LindelofSpace {x // p x} := by
   apply isLindelof_iff_LindelofSpace.mp
-  exact HereditarilyLindelof_LindelofSets fun x ↦ p x
+  exact HereditarilyLindelof_LindelofSets ⟨p⟩

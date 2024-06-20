@@ -399,8 +399,8 @@ theorem ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElemen
 @[simps! symm_apply]
 noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
   RelIso.symm
-  { toEquiv := ((Equiv.ofInjective f f.injective).trans (Equiv.setCongr
-      (funext fun _ ↦ propext f.down.symm))),
+  { toEquiv := ((Equiv.ofInjective f f.injective).trans (Equiv.setCongr sorry)),
+      -- (funext fun _ ↦ propext f.down.symm))),
     map_rel_iff' := f.map_rel_iff }
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644

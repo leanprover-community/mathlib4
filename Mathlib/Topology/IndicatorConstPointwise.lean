@@ -106,17 +106,17 @@ for every `x`, we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
 
-lemma tendsto_indicator_const_iff_tendsto_pi_pure'
-    (b : β) (nhd_b : {0}ᶜ ∈ 𝓝 b) (nhd_o : {b}ᶜ ∈ 𝓝 0) :
-    Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
-      ↔ (Tendsto As L <| Filter.pi (pure <| · ∈ A)) := by
-  rw [tendsto_indicator_const_iff_forall_eventually' _ b nhd_b nhd_o, tendsto_pi]
-  simp_rw [tendsto_pure]
-  aesop
-
-lemma tendsto_indicator_const_iff_tendsto_pi_pure [T1Space β] (b : β) [NeZero b] :
-    Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
-      ↔ (Tendsto As L <| Filter.pi (pure <| · ∈ A)) := by
-  rw [tendsto_indicator_const_iff_forall_eventually _ b, tendsto_pi]
-  simp_rw [tendsto_pure]
-  aesop
+-- lemma tendsto_indicator_const_iff_tendsto_pi_pure'
+--     (b : β) (nhd_b : {0}ᶜ ∈ 𝓝 b) (nhd_o : {b}ᶜ ∈ 𝓝 0) :
+--     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
+--       ↔ (Tendsto As L <| Filter.pi (pure <| · ∈ A)) := by
+--   rw [tendsto_indicator_const_iff_forall_eventually' _ b nhd_b nhd_o, tendsto_pi]
+--   simp_rw [tendsto_pure]
+--   aesop
+--
+-- lemma tendsto_indicator_const_iff_tendsto_pi_pure [T1Space β] (b : β) [NeZero b] :
+--     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
+--       ↔ (Tendsto As L <| Filter.pi (pure <| · ∈ A)) := by
+--   rw [tendsto_indicator_const_iff_forall_eventually _ b, tendsto_pi]
+--   simp_rw [tendsto_pure]
+--   aesop

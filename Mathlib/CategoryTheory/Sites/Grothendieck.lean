@@ -346,7 +346,7 @@ theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).
 See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section 2, example (e).
 -/
 def dense : GrothendieckTopology C where
-  sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)
+  sieves X := ⟨fun S => ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)⟩
   top_mem' X Y f := ⟨Y, 𝟙 Y, ⟨⟩⟩
   pullback_stable' := by
     intro X Y S h H Z f
@@ -382,7 +382,7 @@ For the pullback stability condition, we need the right Ore condition to hold.
 See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2, example (f).
 -/
 def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
-  sieves X S := ∃ (Y : _) (f : Y ⟶ X), S f
+  sieves X := ⟨fun S => ∃ (Y : _) (f : Y ⟶ X), S f⟩
   top_mem' X := ⟨_, 𝟙 _, ⟨⟩⟩
   pullback_stable' := by
     rintro X Y S h ⟨Z, f, hf⟩

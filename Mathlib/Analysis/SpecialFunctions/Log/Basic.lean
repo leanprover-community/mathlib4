@@ -367,7 +367,8 @@ theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
 
 @[continuity]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
-  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
+  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx =>
+    ne_of_gt <| Set.mem_setOf.mp hx
 #align real.continuous_log' Real.continuous_log'
 
 theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=

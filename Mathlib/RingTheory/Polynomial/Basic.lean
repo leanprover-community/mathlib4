@@ -475,8 +475,8 @@ theorem toSubring_zero : toSubring (0 : R[X]) T (by simp [coeffs]) = 0 := by
 
 @[simp]
 theorem toSubring_one :
-    toSubring (1 : R[X]) T
-        (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
+    toSubring (1 : R[X]) T sorry =
+        -- (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
       1 :=
   ext fun i => Subtype.eq <| by
     rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,

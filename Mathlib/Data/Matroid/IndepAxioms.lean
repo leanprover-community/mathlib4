@@ -416,7 +416,8 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
     subset_ground {I : Finset α} : (IndepMatroid.ofFinset
       E Indep indep_empty indep_subset indep_aug subset_ground).Indep I ↔ Indep I := by
   simp only [IndepMatroid.ofFinset, ofFinitary_indep, Finset.coe_subset]
-  exact ⟨fun h ↦ h _ Subset.rfl, fun h J hJI ↦ indep_subset h hJI⟩
+  sorry
+  -- exact ⟨fun h ↦ h _ Subset.rfl, fun h J hJI ↦ indep_subset h hJI⟩
 
 /-- This can't be `@[simp]`, because it would cause the more useful
   `Matroid.ofIndepFinset_apply` not to be in simp normal form. -/

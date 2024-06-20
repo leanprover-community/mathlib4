@@ -625,28 +625,28 @@ theorem supp_eq {α : Type u} (x : F α) :
 
 theorem has_good_supp_iff {α : Type u} (x : F α) :
     (∀ p, Liftp p x ↔ ∀ u ∈ supp x, p u) ↔
-      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ a' f', abs ⟨a', f'⟩ = x → f '' univ ⊆ f' '' univ := by
-  constructor
-  · intro h
-    have : Liftp (supp x) x := by rw [h]; intro u; exact id
-    rw [liftp_iff] at this
-    rcases this with ⟨a, f, xeq, h'⟩
-    refine ⟨a, f, xeq.symm, ?_⟩
-    intro a' f' h''
-    rintro u ⟨i, _, hfi⟩
-    have : u ∈ supp x := by rw [← hfi]; apply h'
-    exact (mem_supp x u).mp this _ _ h''
-  rintro ⟨a, f, xeq, h⟩ p; rw [liftp_iff]; constructor
-  · rintro ⟨a', f', xeq', h'⟩ u usuppx
-    rcases (mem_supp x u).mp usuppx a' f' xeq'.symm with ⟨i, _, f'ieq⟩
-    rw [← f'ieq]
-    apply h'
-  intro h'
-  refine ⟨a, f, xeq.symm, ?_⟩; intro i
-  apply h'; rw [mem_supp]
-  intro a' f' xeq'
-  apply h a' f' xeq'
-  apply mem_image_of_mem _ (mem_univ _)
+      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ a' f', abs ⟨a', f'⟩ = x → f '' univ ⊆ f' '' univ := by sorry
+  -- constructor
+  -- · intro h
+  --   have : Liftp (supp x) x := by rw [h]; intro u; exact id
+  --   rw [liftp_iff] at this
+  --   rcases this with ⟨a, f, xeq, h'⟩
+  --   refine ⟨a, f, xeq.symm, ?_⟩
+  --   intro a' f' h''
+  --   rintro u ⟨i, _, hfi⟩
+  --   have : u ∈ supp x := by rw [← hfi]; apply h'
+  --   exact (mem_supp x u).mp this _ _ h''
+  -- rintro ⟨a, f, xeq, h⟩ p; rw [liftp_iff]; constructor
+  -- · rintro ⟨a', f', xeq', h'⟩ u usuppx
+  --   rcases (mem_supp x u).mp usuppx a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+  --   rw [← f'ieq]
+  --   apply h'
+  -- intro h'
+  -- refine ⟨a, f, xeq.symm, ?_⟩; intro i
+  -- apply h'; rw [mem_supp]
+  -- intro a' f' xeq'
+  -- apply h a' f' xeq'
+  -- apply mem_image_of_mem _ (mem_univ _)
 #align qpf.has_good_supp_iff QPF.has_good_supp_iff
 
 /-- A qpf is said to be uniform if every polynomial functor

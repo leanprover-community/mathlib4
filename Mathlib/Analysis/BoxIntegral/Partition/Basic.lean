@@ -246,8 +246,8 @@ theorem iUnion_bot : (⊥ : Prepartition I).iUnion = ∅ :=
   iUnion_eq_empty.2 rfl
 #align box_integral.prepartition.Union_bot BoxIntegral.Prepartition.iUnion_bot
 
-theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
-  subset_biUnion_of_mem h
+theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion := sorry
+  -- subset_biUnion_of_mem h
 #align box_integral.prepartition.subset_Union BoxIntegral.Prepartition.subset_iUnion
 
 theorem iUnion_subset : π.iUnion ⊆ I :=

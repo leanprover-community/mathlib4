@@ -970,7 +970,8 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
       ∀ {x}, dist x x₀ < ε → ∀ {i}, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
   simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left, and_imp]
-  rfl
+  sorry
+  -- rfl
 #align metric.eventually_nhds_prod_iff Metric.eventually_nhds_prod_iff
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods

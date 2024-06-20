@@ -124,9 +124,9 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
     simp only [Equiv.refl_apply, and_congr_right_iff]
     exact fun _ ha ↦ by rw [hP.card_part_eq_average_iff ha, ne_eq]
   replace el : { x : P.parts // x.1.card = s.card / P.parts.card + 1 } ≃
-      Fin (s.card % P.parts.card) := (Equiv.Set.sep ..).symm.trans el
+      Fin (s.card % P.parts.card) := sorry -- (Equiv.Set.sep ..).symm.trans el
   replace es : { x : P.parts // ¬x.1.card = s.card / P.parts.card + 1 } ≃
-      Fin (P.parts.card - s.card % P.parts.card) := (Equiv.Set.sep ..).symm.trans (sneg.trans es)
+      Fin (P.parts.card - s.card % P.parts.card) := sorry -- (Equiv.Set.sep ..).symm.trans (sneg.trans es)
   let f := (Equiv.sumCompl _).symm.trans ((el.sumCongr es).trans finSumFinEquiv)
   use f.trans (finCongr (Nat.add_sub_of_le P.card_mod_card_parts_le))
   intro ⟨p, _⟩

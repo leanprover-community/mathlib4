@@ -205,6 +205,13 @@ instance : Inf (Submodule R M) :=
       add_mem' := by simp (config := { contextual := true }) [add_mem]
       smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
 
+instance : SupSet (Submodule R M) where
+  sSup := fun S ↦
+    { carrier := ⋃ s ∈ S, (s : Set M)
+      zero_mem' := sorry --by simp [zero_mem]
+      add_mem' := sorry -- by simp (config := { contextual := true }) [add_mem]
+      smul_mem' := sorry} -- by simp (config := { contextual := true }) [smul_mem] }
+
 instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with
@@ -216,8 +223,8 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     le_inf := fun _ _ _ ↦ Set.subset_inter
     inf_le_left := fun _ _ ↦ Set.inter_subset_left
     inf_le_right := fun _ _ ↦ Set.inter_subset_right
-    le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
-    sSup_le := fun _ _ hs ↦ sInf_le' hs
+    le_sSup := fun _ _ hs ↦ sorry -- le_sInf' fun _ hq ↦ by exact hq _ hs
+    sSup_le := fun _ _ hs ↦ sorry -- sInf_le' hs
     le_sInf := fun _ _ ↦ le_sInf'
     sInf_le := fun _ _ ↦ sInf_le' }
 #align submodule.complete_lattice Submodule.completeLattice

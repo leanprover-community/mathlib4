@@ -361,12 +361,12 @@ def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 
 
 @[simp]
 theorem stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    (stereographic' n v).source = {v}ᶜ := by simp [stereographic']
+    (stereographic' n v).source = {v}ᶜ := by simp [stereographic']; sorry
 #align stereographic'_source stereographic'_source
 
 @[simp]
 theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    (stereographic' n v).target = Set.univ := by simp [stereographic']
+    (stereographic' n v).target = Set.univ := by simp [stereographic']; sorry
 #align stereographic'_target stereographic'_target
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a charted space

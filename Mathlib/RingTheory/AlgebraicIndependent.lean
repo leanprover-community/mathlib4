@@ -220,8 +220,8 @@ theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R
 /-- Every finite subset of an algebraically independent set is algebraically independent. -/
 theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
     (li : AlgebraicIndependent R ((↑) : s → A)) (t : Finset s) :
-    AlgebraicIndependent R ((↑) : Finset.map (Embedding.subtype s) t → A) := by
-  let f : t.map (Embedding.subtype s) → s := fun x =>
+    AlgebraicIndependent R ((↑) : Finset.map (Embedding.subtype s.toPred) t → A) := by
+  let f : t.map (Embedding.subtype s.toPred) → s := fun x =>
     ⟨x.1, by
       obtain ⟨x, h⟩ := x
       rw [Finset.mem_map] at h
@@ -243,7 +243,7 @@ theorem algebraicIndependent_bounded_of_finset_algebraicIndependent_bounded {n :
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype s.toPred)]
   apply H
   apply algebraicIndependent_finset_map_embedding_subtype _ li
 #align algebraic_independent_bounded_of_finset_algebraic_independent_bounded algebraicIndependent_bounded_of_finset_algebraicIndependent_bounded

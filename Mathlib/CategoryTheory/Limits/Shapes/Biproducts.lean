@@ -923,9 +923,9 @@ variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 `biproduct.toSubtype f p` -/
 @[simps]
 def kernelForkBiproductToSubtype (p : Set K) :
-    LimitCone (parallelPair (biproduct.toSubtype f p) 0) where
+    LimitCone (parallelPair (biproduct.toSubtype f p.toPred) 0) where
   cone :=
-    KernelFork.ofι (biproduct.fromSubtype f pᶜ)
+    KernelFork.ofι (biproduct.fromSubtype f pᶜ.toPred)
       (by
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
@@ -933,7 +933,7 @@ def kernelForkBiproductToSubtype (p : Set K) :
         erw [dif_neg k.2]
         simp only [zero_comp])
   isLimit :=
-    KernelFork.IsLimit.ofι _ _ (fun {W} g _ => g ≫ biproduct.toSubtype f pᶜ)
+    KernelFork.IsLimit.ofι _ _ (fun {W} g _ => g ≫ biproduct.toSubtype f pᶜ.toPred)
       (by
         intro W' g' w
         ext j
@@ -946,13 +946,13 @@ def kernelForkBiproductToSubtype (p : Set K) :
       (by aesop_cat)
 #align category_theory.limits.kernel_fork_biproduct_to_subtype CategoryTheory.Limits.kernelForkBiproductToSubtype
 
-instance (p : Set K) : HasKernel (biproduct.toSubtype f p) :=
+instance (p : Set K) : HasKernel (biproduct.toSubtype f p.toPred) :=
   HasLimit.mk (kernelForkBiproductToSubtype f p)
 
 /-- The kernel of `biproduct.toSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
 @[simps!]
 def kernelBiproductToSubtypeIso (p : Set K) :
-    kernel (biproduct.toSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
+    kernel (biproduct.toSubtype f p.toPred) ≅ ⨁ Subtype.restrict pᶜ.toPred f :=
   limit.isoLimitCone (kernelForkBiproductToSubtype f p)
 #align category_theory.limits.kernel_biproduct_to_subtype_iso CategoryTheory.Limits.kernelBiproductToSubtypeIso
 
@@ -960,9 +960,9 @@ def kernelBiproductToSubtypeIso (p : Set K) :
 `biproduct.fromSubtype f p` -/
 @[simps]
 def cokernelCoforkBiproductFromSubtype (p : Set K) :
-    ColimitCocone (parallelPair (biproduct.fromSubtype f p) 0) where
+    ColimitCocone (parallelPair (biproduct.fromSubtype f p.toPred) 0) where
   cocone :=
-    CokernelCofork.ofπ (biproduct.toSubtype f pᶜ)
+    CokernelCofork.ofπ (biproduct.toSubtype f pᶜ.toPred)
       (by
         ext j k
         simp only [Category.assoc, Pi.compl_apply, biproduct.ι_fromSubtype_assoc,
@@ -971,7 +971,7 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
         · simp only [zero_comp]
         · exact not_not.mpr k.2)
   isColimit :=
-    CokernelCofork.IsColimit.ofπ _ _ (fun {W} g _ => biproduct.fromSubtype f pᶜ ≫ g)
+    CokernelCofork.IsColimit.ofπ _ _ (fun {W} g _ => biproduct.fromSubtype f pᶜ.toPred ≫ g)
       (by
         intro W g' w
         ext j
@@ -983,13 +983,13 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
       (by aesop_cat)
 #align category_theory.limits.cokernel_cofork_biproduct_from_subtype CategoryTheory.Limits.cokernelCoforkBiproductFromSubtype
 
-instance (p : Set K) : HasCokernel (biproduct.fromSubtype f p) :=
+instance (p : Set K) : HasCokernel (biproduct.fromSubtype f p.toPred) :=
   HasColimit.mk (cokernelCoforkBiproductFromSubtype f p)
 
 /-- The cokernel of `biproduct.fromSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
 @[simps!]
 def cokernelBiproductFromSubtypeIso (p : Set K) :
-    cokernel (biproduct.fromSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
+    cokernel (biproduct.fromSubtype f p.toPred) ≅ ⨁ Subtype.restrict pᶜ.toPred f :=
   colimit.isoColimitCocone (cokernelCoforkBiproductFromSubtype f p)
 #align category_theory.limits.cokernel_biproduct_from_subtype_iso CategoryTheory.Limits.cokernelBiproductFromSubtypeIso
 

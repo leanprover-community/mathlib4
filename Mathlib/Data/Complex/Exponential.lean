@@ -1199,6 +1199,9 @@ theorem exp_pos (x : ℝ) : 0 < exp x :=
     exact inv_pos.2 (lt_of_lt_of_le zero_lt_one (one_le_exp (neg_nonneg.2 h)))
 #align real.exp_pos Real.exp_pos
 
+theorem exp_pos_mem (x : ℝ) : exp x ∈ { r | 0 < r } := by
+  simp only [Set.mem_setOf_eq, exp_pos]
+
 lemma exp_nonneg (x : ℝ) : 0 ≤ exp x := x.exp_pos.le
 
 @[simp]

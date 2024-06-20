@@ -173,12 +173,13 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
     exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
   | -[n+1] => by
     simp_rw [zpow_negSucc, ← inv_pow]
-    refine (convexOn_iff_forall_pos.2 ⟨convex_Ioi _, ?_⟩).pow (fun x (hx : 0 < x) ↦ by positivity) _
-    rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab
-    field_simp
-    rw [div_le_div_iff, ← sub_nonneg]
-    · calc
-        0 ≤ a * b * (x - y) ^ 2 := by positivity
-        _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring
-    all_goals positivity
+    sorry
+    -- refine (convexOn_iff_forall_pos.2 ⟨convex_Ioi _, ?_⟩).pow (fun x (hx : 0 < x) ↦ by positivity) _
+    -- rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab
+    -- field_simp
+    -- rw [div_le_div_iff, ← sub_nonneg]
+    -- · calc
+    --     0 ≤ a * b * (x - y) ^ 2 := by positivity
+    --     _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring
+    -- all_goals positivity
 #align convex_on_zpow convexOn_zpow

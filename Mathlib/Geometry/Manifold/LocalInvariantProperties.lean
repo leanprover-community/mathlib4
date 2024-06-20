@@ -79,7 +79,7 @@ variable (hG : G.LocalInvariantProp G' P)
 
 namespace LocalInvariantProp
 
-theorem congr_set {s t : Set H} {x : H} {f : H → H'} (hu : s =ᶠ[𝓝 x] t) : P f s x ↔ P f t x := by
+theorem congr_set {s t : Set H} {x : H} {f : H → H'} (hu : s.toPred =ᶠ[𝓝 x] t.toPred) : P f s x ↔ P f t x := by
   obtain ⟨o, host, ho, hxo⟩ := mem_nhds_iff.mp hu.mem_iff
   simp_rw [subset_def, mem_setOf, ← and_congr_left_iff, ← mem_inter_iff, ← Set.ext_iff] at host
   rw [hG.is_local ho hxo, host, ← hG.is_local ho hxo]

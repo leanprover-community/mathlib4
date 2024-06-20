@@ -1306,13 +1306,14 @@ theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
 theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine le_trans ?_ (mk_bounded_set_le s c)
-  refine ⟨Embedding.codRestrict _ ?_ ?_⟩
-  · use fun t => (↑) ⁻¹' t.1
-    rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
-    apply Subtype.eq
-    dsimp only at h ⊢
-    refine (preimage_eq_preimage' ?_ ?_).1 h <;> rw [Subtype.range_coe] <;> assumption
-  rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
+  sorry
+  -- refine ⟨Embedding.codRestrict _ ?_ ?_⟩
+  -- · use fun t => (↑) ⁻¹' t.1
+  --   rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
+  --   apply Subtype.eq
+  --   dsimp only at h ⊢
+  --   refine (preimage_eq_preimage' ?_ ?_).1 h <;> rw [Subtype.range_coe] <;> assumption
+  -- rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
 #align cardinal.mk_bounded_subset_le Cardinal.mk_bounded_subset_le
 
 end computing

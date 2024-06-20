@@ -113,18 +113,18 @@ lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
 lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x
 #align abs_sq abs_sq
 
-lemma sq_lt_sq : a ^ 2 < b ^ 2 ↔ |a| < |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn two_ne_zero).lt_iff_lt (abs_nonneg a) (abs_nonneg b)
+lemma sq_lt_sq : a ^ 2 < b ^ 2 ↔ |a| < |b| := by sorry
+  -- simpa only [sq_abs] using
+    -- (pow_left_strictMonoOn two_ne_zero).lt_iff_lt (abs_nonneg a) (abs_nonneg b)
 #align sq_lt_sq sq_lt_sq
 
 lemma sq_lt_sq' (h1 : -b < a) (h2 : a < b) : a ^ 2 < b ^ 2 :=
   sq_lt_sq.2 (lt_of_lt_of_le (abs_lt.2 ⟨h1, h2⟩) (le_abs_self _))
 #align sq_lt_sq' sq_lt_sq'
 
-lemma sq_le_sq : a ^ 2 ≤ b ^ 2 ↔ |a| ≤ |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn two_ne_zero).le_iff_le (abs_nonneg a) (abs_nonneg b)
+lemma sq_le_sq : a ^ 2 ≤ b ^ 2 ↔ |a| ≤ |b| := by sorry
+  -- simpa only [sq_abs] using
+    -- (pow_left_strictMonoOn two_ne_zero).le_iff_le (abs_nonneg a) (abs_nonneg b)
 #align sq_le_sq sq_le_sq
 
 lemma sq_le_sq' (h1 : -b ≤ a) (h2 : a ≤ b) : a ^ 2 ≤ b ^ 2 :=

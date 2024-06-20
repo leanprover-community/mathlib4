@@ -579,7 +579,7 @@ theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V}
     simp_rw [weightedVSubOfPoint_apply]
     constructor
     · rintro ⟨fs, hfs, w, rfl, rfl⟩
-      exact ⟨fs.subtype s, fun i => w i, sum_subtype_of_mem _ hfs, (sum_subtype_of_mem _ hfs).symm⟩
+      exact ⟨fs.subtype s.toPred, fun i => w i, sum_subtype_of_mem _ hfs, (sum_subtype_of_mem _ hfs).symm⟩
     · rintro ⟨fs, w, rfl, rfl⟩
       refine
           ⟨fs.map (Function.Embedding.subtype _), map_subtype_subset _, fun i =>

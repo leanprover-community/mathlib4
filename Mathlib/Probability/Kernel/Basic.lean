@@ -59,7 +59,7 @@ namespace ProbabilityTheory
 iff `∀ s : Set β, MeasurableSet s → Measurable (fun a ↦ κ a s)`. -/
 noncomputable def kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     AddSubmonoid (α → Measure β) where
-  carrier := Measurable
+  carrier := ⟨Measurable⟩
   zero_mem' := measurable_zero
   add_mem' hf hg := Measurable.add hf hg
 #align probability_theory.kernel ProbabilityTheory.kernel

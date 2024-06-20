@@ -227,11 +227,11 @@ theorem nonempty_of_nonempty_iUnion_eq_univ
   nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
 theorem setOf_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
-  ext fun _ => mem_iUnion.symm
+  ext fun _ => sorry -- mem_iUnion.symm
 #align set.set_of_exists Set.setOf_exists
 
 theorem setOf_forall (p : ι → β → Prop) : { x | ∀ i, p i x } = ⋂ i, { x | p i x } :=
-  ext fun _ => mem_iInter.symm
+  ext fun _ => sorry -- mem_iInter.symm
 #align set.set_of_forall Set.setOf_forall
 
 theorem iUnion_subset {s : ι → Set α} {t : Set α} (h : ∀ i, s i ⊆ t) : ⋃ i, s i ⊆ t :=
@@ -523,7 +523,7 @@ theorem iInter_union (s : ι → Set β) (t : Set β) : (⋂ i, s i) ∪ t = ⋂
 #align set.Inter_union Set.iInter_union
 
 theorem iUnion_diff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s :=
-  iUnion_inter _ _
+  sorry -- iUnion_inter _ _
 #align set.Union_diff Set.iUnion_diff
 
 theorem diff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i, t i) = ⋂ i, s \ t i := by
@@ -1412,20 +1412,20 @@ Porting note: some lemmas in this section were upgraded from implications to `if
 
 @[simp]
 theorem mapsTo_sUnion {S : Set (Set α)} {t : Set β} {f : α → β} :
-    MapsTo f (⋃₀ S) t ↔ ∀ s ∈ S, MapsTo f s t :=
-  sUnion_subset_iff
+    MapsTo f (⋃₀ S) t ↔ ∀ s ∈ S, MapsTo f s t := sorry
+  -- sUnion_subset_iff
 #align set.maps_to_sUnion Set.mapsTo_sUnion
 
 @[simp]
 theorem mapsTo_iUnion {s : ι → Set α} {t : Set β} {f : α → β} :
-    MapsTo f (⋃ i, s i) t ↔ ∀ i, MapsTo f (s i) t :=
-  iUnion_subset_iff
+    MapsTo f (⋃ i, s i) t ↔ ∀ i, MapsTo f (s i) t := sorry
+  -- iUnion_subset_iff
 #align set.maps_to_Union Set.mapsTo_iUnion
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem mapsTo_iUnion₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β} :
-    MapsTo f (⋃ (i) (j), s i j) t ↔ ∀ i j, MapsTo f (s i j) t :=
-  iUnion₂_subset_iff
+    MapsTo f (⋃ (i) (j), s i j) t ↔ ∀ i j, MapsTo f (s i j) t := sorry
+  -- iUnion₂_subset_iff
 #align set.maps_to_Union₂ Set.mapsTo_iUnion₂
 
 theorem mapsTo_iUnion_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β}

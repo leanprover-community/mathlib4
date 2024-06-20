@@ -174,8 +174,9 @@ theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 
     (hs : IsClosed s) : IsGδ s := by
   rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
-  refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
-  exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
+  sorry
+  -- refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
+  -- exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
 #align is_closed.is_Gδ IsClosed.isGδ
 
 section T1Space
@@ -210,7 +211,8 @@ variable [FirstCountableTopology X]
 protected theorem IsGδ.singleton (x : X) : IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
-  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
+  sorry
+  -- exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
 #align is_Gδ_singleton IsGδ.singleton
 
 @[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton

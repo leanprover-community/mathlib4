@@ -234,11 +234,11 @@ theorem HasGradientAtFilter.isBigO_sub (h : HasGradientAtFilter f f' x L) :
     (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
   HasFDerivAtFilter.isBigO_sub h
 
-theorem hasGradientWithinAt_congr_set' {s t : Set F} (y : F) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem hasGradientWithinAt_congr_set' {s t : Set F} (y : F) (h : s.toPred =ᶠ[𝓝[{y}ᶜ] x] t.toPred) :
     HasGradientWithinAt f f' s x ↔ HasGradientWithinAt f f' t x :=
   hasFDerivWithinAt_congr_set' y h
 
-theorem hasGradientWithinAt_congr_set {s t : Set F} (h : s =ᶠ[𝓝 x] t) :
+theorem hasGradientWithinAt_congr_set {s t : Set F} (h : s.toPred =ᶠ[𝓝 x] t.toPred) :
     HasGradientWithinAt f f' s x ↔ HasGradientWithinAt f f' t x :=
   hasFDerivWithinAt_congr_set h
 

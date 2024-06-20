@@ -39,7 +39,7 @@ isomorphic to an object in the image of the function `F.obj`. In other words, th
 under isomorphism of the function `F.obj`.
 This is the "non-evil" way of describing the image of a functor.
 -/
-def essImage (F : C ⥤ D) : Set D := fun Y => ∃ X : C, Nonempty (F.obj X ≅ Y)
+def essImage (F : C ⥤ D) : Set D := ⟨fun Y => ∃ X : C, Nonempty (F.obj X ≅ Y)⟩
 #align category_theory.functor.ess_image CategoryTheory.Functor.essImage
 
 /-- Get the witnessing object that `Y` is in the subcategory given by `F`. -/
@@ -68,7 +68,7 @@ theorem essImage.ofNatIso {F' : C ⥤ D} (h : F ≅ F') {Y : D} (hY : Y ∈ essI
 
 /-- Isomorphic functors have equal essential images. -/
 theorem essImage_eq_of_natIso {F' : C ⥤ D} (h : F ≅ F') : essImage F = essImage F' :=
-  funext fun _ => propext ⟨essImage.ofNatIso h, essImage.ofNatIso h.symm⟩
+  congrArg Set.ofPred <| funext fun _ => propext ⟨essImage.ofNatIso h, essImage.ofNatIso h.symm⟩
 #align category_theory.functor.ess_image_eq_of_nat_iso CategoryTheory.Functor.essImage_eq_of_natIso
 
 /-- An object in the image is in the essential image. -/
@@ -79,7 +79,7 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
 /-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
 -- Porting note: no hasNonEmptyInstance linter yet
 def EssImageSubcategory (F : C ⥤ D) :=
-  FullSubcategory F.essImage
+  FullSubcategory F.essImage.toPred
 #align category_theory.functor.ess_image_subcategory CategoryTheory.Functor.EssImageSubcategory
 
 -- Porting note: `deriving Category` is not able to derive this instance
@@ -135,7 +135,8 @@ class EssSurj (F : C ⥤ D) : Prop where
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
   mem_essImage := fun ⟨_, hY⟩ =>
-    ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
+    -- ⟨_, sorry⟩
+    ⟨_, ⟨⟨_, _, essImage.getIso hY |>.hom_inv_id, essImage.getIso hY |>.inv_hom_id⟩⟩⟩
 
 variable (F)
 variable [F.EssSurj]

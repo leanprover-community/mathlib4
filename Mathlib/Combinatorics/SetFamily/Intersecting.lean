@@ -200,7 +200,8 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   refine s.strongDownwardInductionOn ?_ this
   rintro s ih _hcard hs
   by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
-  · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
+  · sorry
+  -- · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
   push_neg at h
   obtain ⟨t, ht, hst⟩ := h
   refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans

@@ -180,7 +180,7 @@ preserved under addition and scalar multiplication, then `p` holds for all eleme
 @[elab_as_elim]
 theorem span_induction {p : M → Prop} (h : x ∈ span R s) (mem : ∀ x ∈ s, p x) (zero : p 0)
     (add : ∀ x y, p x → p y → p (x + y)) (smul : ∀ (a : R) (x), p x → p (a • x)) : p x :=
-  ((@span_le (p := ⟨⟨⟨p, by intros x y; exact add x y⟩, zero⟩, smul⟩)) s).2 mem h
+  ((@span_le (p := ⟨⟨⟨⟨p⟩, by intros x y; exact add x y⟩, zero⟩, smul⟩)) s).2 mem h
 #align submodule.span_induction Submodule.span_induction
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`

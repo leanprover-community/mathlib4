@@ -271,7 +271,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     · apply withDensity_absolutelyContinuous
       rwa [measure_toMeasurable]
     rcases hf with ⟨g, hg, hfg⟩
-    have t : {x | f x = 0} =ᵐ[μ.withDensity f] {x | g x = 0} := by
+    have t : {x | f x = 0}.toPred =ᵐ[μ.withDensity f] {x | g x = 0}.toPred := by
       apply withDensity_absolutelyContinuous
       filter_upwards [hfg] with a ha
       rw [eq_iff_iff]
@@ -306,7 +306,7 @@ theorem ae_withDensity_iff_ae_restrict' {p : α → Prop} {f : α → ℝ≥0∞
   rw [ae_withDensity_iff' hf, ae_restrict_iff'₀]
   · simp only [mem_setOf]
   · rcases hf with ⟨g, hg, hfg⟩
-    have nonneg_eq_ae : {x | g x ≠ 0} =ᵐ[μ] {x | f x ≠ 0} := by
+    have nonneg_eq_ae : {x | g x ≠ 0}.toPred =ᵐ[μ] {x | f x ≠ 0}.toPred := by
       filter_upwards [hfg] with a ha
       simp only [eq_iff_iff]
       exact ⟨fun (h : g a ≠ 0) ↦ by rwa [← ha] at h,

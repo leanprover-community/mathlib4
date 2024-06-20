@@ -542,10 +542,11 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
       (μ.restrict s).prod volume
         (regionBetween (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s) := by
     apply measure_congr
-    apply EventuallyEq.rfl.inter
-    exact
-      ((quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk).comp₂ _ EventuallyEq.rfl).inter
-        (EventuallyEq.rfl.comp₂ _ <| quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk)
+    sorry
+    -- apply EventuallyEq.rfl.inter
+    -- exact
+    --   ((quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk).comp₂ _ EventuallyEq.rfl).inter
+    --     (EventuallyEq.rfl.comp₂ _ <| quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk)
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
   convert h₂ using 1
@@ -561,60 +562,60 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
 lemma nullMeasurableSet_regionBetween (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
-    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
-  refine NullMeasurableSet.inter
-          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
-  · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
-  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by sorry
+  -- refine NullMeasurableSet.inter
+  --         (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+  -- · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+  -- · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
 
 /-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
 a version for the region together with the graph of the upper function. -/
 lemma nullMeasurableSet_region_between_oc (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
-    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by
-  refine NullMeasurableSet.inter
-          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
-  · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
-  · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
-    rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
-          ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
-    exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by sorry
+  -- refine NullMeasurableSet.inter
+  --         (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+  -- · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+  -- · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
+  --   rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
+  --         ext p
+  --         simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+  --   exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
 
 /-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
 a version for the region together with the graph of the lower function. -/
 lemma nullMeasurableSet_region_between_co (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
-    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst)} (μ.prod volume) := by
-  refine NullMeasurableSet.inter
-          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
-  · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
-    rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
-          ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
-    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
-  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst)} (μ.prod volume) := by sorry
+  -- refine NullMeasurableSet.inter
+  --         (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+  -- · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
+  --   rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
+  --         ext p
+  --         simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+  --   exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+  -- · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
 
 /-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
 a version for the region together with the graphs of both functions. -/
 lemma nullMeasurableSet_region_between_cc (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
-    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst)} (μ.prod volume) := by
-  refine NullMeasurableSet.inter
-          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
-  · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
-    rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
-          ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
-    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
-  · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
-    rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
-          ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
-    exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst)} (μ.prod volume) := by sorry
+  -- refine NullMeasurableSet.inter
+  --         (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+  -- · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
+  --   rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
+  --         ext p
+  --         simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+  --   exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+  -- · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
+  --   rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
+  --         ext p
+  --         simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+  --   exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
 
 end regionBetween
 

@@ -704,8 +704,8 @@ theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
     rw [Set.mem_Ioi] at hr
     refine
       ⟨wbtw_iff_left_eq_or_right_mem_image_Ici.2
-          (Or.inr (Set.mem_image_of_mem _ (Set.mem_of_mem_of_subset hr Set.Ioi_subset_Ici_self))),
-        hne.symm, ?_⟩
+          (Or.inr (Set.mem_image_of_mem _ (Set.mem_of_mem_of_subset sorry Set.Ioi_subset_Ici_self))),
+        hne.symm, ?_⟩ -- hr
     rw [lineMap_apply, ← @vsub_ne_zero V, vsub_vadd_eq_vsub_sub]
     nth_rw 1 [← one_smul R (y -ᵥ x)]
     rw [← sub_smul, smul_ne_zero_iff, vsub_ne_zero, sub_ne_zero]

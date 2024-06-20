@@ -235,7 +235,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
         ∑ k : s.sym n,
           k.1.1.multinomial *
             (k.1.1.map <| x).noncommProd
-              (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
+              (Multiset.map_set_pairwise <| hc.mono <| sorry ) := by -- mem_sym_iff.1 k.2) := by
   induction' s using Finset.induction with a s ha ih
   · rw [sum_empty]
     rintro (_ | n)
@@ -253,18 +253,19 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
-  intro n; specialize ih (hc.mono <| s.subset_insert a)
-  rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
-  · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
-      (ne_of_mem_of_not_mem hb ha).symm
-  · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
-    refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
-    rw [m.1.1.multinomial_filter_ne a]
-    conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
-    simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
-    rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
-    rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]
-    congr 1; simp_rw [← mul_assoc, Nat.cast_comm]; rfl
+  sorry
+  -- intro n; specialize ih (hc.mono <| s.subset_insert a)
+  -- rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
+  -- · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
+  --     (ne_of_mem_of_not_mem hb ha).symm
+  -- · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
+  --   refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
+  --   rw [m.1.1.multinomial_filter_ne a]
+  --   conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
+  --   simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
+  --   rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
+  --   rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]
+  --   congr 1; simp_rw [← mul_assoc, Nat.cast_comm]; rfl
 #align finset.sum_pow_of_commute Finset.sum_pow_of_commute
 
 

@@ -441,9 +441,10 @@ theorem subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
 #align set.subset_image_symm_diff Set.subset_image_symmDiff
 
 theorem image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
-  Subset.antisymm
-    (Subset.trans (image_inter_subset _ _ _) <| inter_subset_inter_right _ <| image_compl_subset hf)
-    (subset_image_diff f s t)
+  sorry
+  -- Subset.antisymm
+    -- (Subset.trans (image_inter_subset _ _ _) <| inter_subset_inter_right _ <| image_compl_subset hf)
+    -- (subset_image_diff f s t)
 #align set.image_diff Set.image_diff
 
 open scoped symmDiff in
@@ -543,7 +544,7 @@ theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
 #align set.compl_image Set.compl_image
 
 theorem compl_image_set_of {p : Set α → Prop} : compl '' { s | p s } = { s | p sᶜ } :=
-  congr_fun compl_image p
+  congr_fun compl_image ⟨p⟩
 #align set.compl_image_set_of Set.compl_image_set_of
 
 theorem inter_preimage_subset (s : Set α) (t : Set β) (f : α → β) :

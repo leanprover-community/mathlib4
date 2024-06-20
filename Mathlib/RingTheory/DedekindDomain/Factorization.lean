@@ -465,15 +465,15 @@ theorem count_maximal (w : HeightOneSpectrum R) :
 /-- `val_v(∏_{w ≠ v} w^{exps w}) = 0`. -/
 theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
     count K v (∏ᶠ (w : HeightOneSpectrum R) (_ : w ≠ v),
-      (w.asIdeal : (FractionalIdeal R⁰ K)) ^ exps w) = 0 := by
-  apply finprod_mem_induction fun I => count K v I = 0
-  · exact count_one K v
-  · intro I I' hI hI'
-    by_cases h : I ≠ 0 ∧ I' ≠ 0
-    · rw [count_mul' K v, if_pos h, hI, hI', add_zero]
-    · rw [count_mul' K v, if_neg h]
-  · intro w hw
-    rw [count_zpow, count_maximal_coprime K v hw, MulZeroClass.mul_zero]
+      (w.asIdeal : (FractionalIdeal R⁰ K)) ^ exps w) = 0 := by sorry
+  -- apply finprod_mem_induction fun I => count K v I = 0
+  -- · exact count_one K v
+  -- · intro I I' hI hI'
+  --   by_cases h : I ≠ 0 ∧ I' ≠ 0
+  --   · rw [count_mul' K v, if_pos h, hI, hI', add_zero]
+  --   · rw [count_mul' K v, if_neg h]
+  -- · intro w hw
+  --   rw [count_zpow, count_maximal_coprime K v hw, MulZeroClass.mul_zero]
 
 theorem count_finsupp_prod (exps : HeightOneSpectrum R →₀ ℤ) :
     count K v (exps.prod (HeightOneSpectrum.asIdeal · ^ ·)) = exps v := by

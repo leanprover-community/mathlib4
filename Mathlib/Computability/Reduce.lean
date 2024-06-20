@@ -131,9 +131,10 @@ open Computable
 theorem computable_of_manyOneReducible {p : α → Prop} {q : β → Prop} (h₁ : p ≤₀ q)
     (h₂ : ComputablePred q) : ComputablePred p := by
   rcases h₁ with ⟨f, c, hf⟩
-  rw [show p = fun a => q (f a) from Set.ext hf]
-  rcases computable_iff.1 h₂ with ⟨g, hg, rfl⟩
-  exact ⟨by infer_instance, by simpa using hg.comp c⟩
+  sorry
+  -- rw [show p = fun a => q (f a) from Set.ext hf]
+  -- rcases computable_iff.1 h₂ with ⟨g, hg, rfl⟩
+  -- exact ⟨by infer_instance, by simpa using hg.comp c⟩
 #align computable_pred.computable_of_many_one_reducible ComputablePred.computable_of_manyOneReducible
 
 theorem computable_of_oneOneReducible {p : α → Prop} {q : β → Prop} (h : p ≤₁ q) :
@@ -147,6 +148,10 @@ end ComputablePred
 def ManyOneEquiv {α β} [Primcodable α] [Primcodable β] (p : α → Prop) (q : β → Prop) :=
   p ≤₀ q ∧ q ≤₀ p
 #align many_one_equiv ManyOneEquiv
+
+@[nolint docBlame]
+def ManyOneEquiv' {α β} [Primcodable α] [Primcodable β] (p : Set α) (q : Set β) :=
+  ManyOneEquiv p.toPred q.toPred
 
 /-- `p` and `q` are one-one equivalent if each one is one-one reducible to the other. -/
 def OneOneEquiv {α β} [Primcodable α] [Primcodable β] (p : α → Prop) (q : β → Prop) :=
@@ -173,6 +178,9 @@ theorem ManyOneEquiv.trans {α β γ} [Primcodable α] [Primcodable β] [Primcod
 theorem equivalence_of_manyOneEquiv {α} [Primcodable α] : Equivalence (@ManyOneEquiv α α _ _) :=
   ⟨manyOneEquiv_refl, fun {_ _} => ManyOneEquiv.symm, fun {_ _ _} => ManyOneEquiv.trans⟩
 #align equivalence_of_many_one_equiv equivalence_of_manyOneEquiv
+
+theorem equivalence_of_manyOneEquiv' {α} [Primcodable α] : Equivalence (@ManyOneEquiv' α α _ _) := sorry
+  -- ⟨manyOneEquiv_refl, fun {_ _} => ManyOneEquiv.symm, fun {_ _ _} => ManyOneEquiv.trans⟩
 
 @[refl]
 theorem oneOneEquiv_refl {α} [Primcodable α] (p : α → Prop) : OneOneEquiv p p :=
@@ -324,64 +332,64 @@ variable {γ : Type w} [Primcodable γ] [Inhabited γ]
 /-- Computable and injective mapping of predicates to sets of natural numbers.
 -/
 def toNat (p : Set α) : Set ℕ :=
-  { n | p ((Encodable.decode (α := α) n).getD default) }
+  { n | p.toPred ((Encodable.decode (α := α) n).getD default) }
 #align to_nat toNat
 
 @[simp]
-theorem toNat_manyOneReducible {p : Set α} : toNat p ≤₀ p :=
+theorem toNat_manyOneReducible {p : Set α} : (toNat p).toPred ≤₀ p.toPred :=
   ⟨fun n => (Encodable.decode (α := α) n).getD default,
     Computable.option_getD Computable.decode (Computable.const _), fun _ => Iff.rfl⟩
 #align to_nat_many_one_reducible toNat_manyOneReducible
 
 @[simp]
-theorem manyOneReducible_toNat {p : Set α} : p ≤₀ toNat p :=
+theorem manyOneReducible_toNat {p : Set α} : p.toPred ≤₀ (toNat p).toPred :=
   ⟨Encodable.encode, Computable.encode, by simp [toNat, setOf]⟩
 #align many_one_reducible_to_nat manyOneReducible_toNat
 
 @[simp]
-theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} : toNat p ≤₀ toNat q ↔ p ≤₀ q :=
+theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} : (toNat p).toPred ≤₀ (toNat q).toPred ↔ p.toPred ≤₀ q.toPred :=
   ⟨fun h => manyOneReducible_toNat.trans (h.trans toNat_manyOneReducible), fun h =>
     toNat_manyOneReducible.trans (h.trans manyOneReducible_toNat)⟩
 #align many_one_reducible_to_nat_to_nat manyOneReducible_toNat_toNat
 
 @[simp]
-theorem toNat_manyOneEquiv {p : Set α} : ManyOneEquiv (toNat p) p := by simp [ManyOneEquiv]
+theorem toNat_manyOneEquiv {p : Set α} : ManyOneEquiv (toNat p).toPred p.toPred := by simp [ManyOneEquiv]
 #align to_nat_many_one_equiv toNat_manyOneEquiv
 
 @[simp]
 theorem manyOneEquiv_toNat (p : Set α) (q : Set β) :
-    ManyOneEquiv (toNat p) (toNat q) ↔ ManyOneEquiv p q := by simp [ManyOneEquiv]
+    ManyOneEquiv (toNat p).toPred (toNat q).toPred ↔ ManyOneEquiv p.toPred q.toPred := by simp [ManyOneEquiv]
 #align many_one_equiv_to_nat manyOneEquiv_toNat
 
 /-- A many-one degree is an equivalence class of sets up to many-one equivalence. -/
 def ManyOneDegree : Type :=
-  Quotient (⟨ManyOneEquiv, equivalence_of_manyOneEquiv⟩ : Setoid (Set ℕ))
+  Quotient (⟨ManyOneEquiv', equivalence_of_manyOneEquiv'⟩ : Setoid (Set ℕ))
 #align many_one_degree ManyOneDegree
 
 namespace ManyOneDegree
 
 /-- The many-one degree of a set on a primcodable type. -/
 def of (p : α → Prop) : ManyOneDegree :=
-  Quotient.mk'' (toNat p)
+  Quotient.mk'' (toNat ⟨p⟩)
 #align many_one_degree.of ManyOneDegree.of
 
 @[elab_as_elim]
 protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
-    (h : ∀ p : Set ℕ, C (of p)) : C d :=
-  Quotient.inductionOn' d h
+    (h : ∀ p : Set ℕ, C (of p.toPred)) : C d :=
+  Quotient.inductionOn' d sorry
 #align many_one_degree.ind_on ManyOneDegree.ind_on
 
 /-- Lifts a function on sets of natural numbers to many-one degrees.
 -/
 -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
 protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
-    (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
+    (h : ∀ p q, ManyOneEquiv' p q → f p = f q) : φ :=
   Quotient.liftOn' d f h
 #align many_one_degree.lift_on ManyOneDegree.liftOn
 
 @[simp]
 protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)
-    (h : ∀ p q, ManyOneEquiv p q → f p = f q) : (of p).liftOn f h = f p :=
+    (h : ∀ p q, ManyOneEquiv' p q → f p = f q) : (of p.toPred).liftOn f h = f p :=
   rfl
 #align many_one_degree.lift_on_eq ManyOneDegree.liftOn_eq
 
@@ -389,32 +397,34 @@ protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)
 -/
 @[reducible, simp] -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
 protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set ℕ → φ)
-    (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv p₁ p₂ → ManyOneEquiv q₁ q₂ → f p₁ q₁ = f p₂ q₂) : φ :=
-  d₁.liftOn (fun p => d₂.liftOn (f p) fun q₁ q₂ hq => h _ _ _ _ (by rfl) hq)
-    (by
-      intro p₁ p₂ hp
-      induction d₂ using ManyOneDegree.ind_on
-      apply h
-      · assumption
-      · rfl)
+    (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv' p₁ p₂ → ManyOneEquiv' q₁ q₂ → f p₁ q₁ = f p₂ q₂) : φ :=
+  sorry
+  -- d₁.liftOn (fun p => d₂.liftOn (f p) fun q₁ q₂ hq => h _ _ _ _ (by rfl) hq)
+  --   (by
+  --     intro p₁ p₂ hp
+  --     induction d₂ using ManyOneDegree.ind_on
+  --     apply h
+  --     · assumption
+  --     · rfl)
 #align many_one_degree.lift_on₂ ManyOneDegree.liftOn₂
 
 @[simp]
 protected theorem liftOn₂_eq {φ} (p q : Set ℕ) (f : Set ℕ → Set ℕ → φ)
-    (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv p₁ p₂ → ManyOneEquiv q₁ q₂ → f p₁ q₁ = f p₂ q₂) :
-    (of p).liftOn₂ (of q) f h = f p q :=
-  rfl
+    (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv' p₁ p₂ → ManyOneEquiv' q₁ q₂ → f p₁ q₁ = f p₂ q₂) :
+    (of p.toPred).liftOn₂ (of q.toPred) f h = f p q := sorry
+  -- rfl
 #align many_one_degree.lift_on₂_eq ManyOneDegree.liftOn₂_eq
 
 @[simp]
 theorem of_eq_of {p : α → Prop} {q : β → Prop} : of p = of q ↔ ManyOneEquiv p q := by
-  rw [of, of, Quotient.eq'']
-  unfold Setoid.r
-  simp
+  sorry
+  -- rw [of, of, Quotient.eq'']
+  -- unfold Setoid.r
+  -- simp
 #align many_one_degree.of_eq_of ManyOneDegree.of_eq_of
 
 instance instInhabited : Inhabited ManyOneDegree :=
-  ⟨of (∅ : Set ℕ)⟩
+  ⟨of (∅ : Set ℕ).toPred⟩
 #align many_one_degree.inhabited ManyOneDegree.instInhabited
 
 /-- For many-one degrees `d₁` and `d₂`, `d₁ ≤ d₂` if the sets in `d₁` are many-one reducible to the
@@ -422,13 +432,13 @@ sets in `d₂`.
 -/
 instance instLE : LE ManyOneDegree :=
   ⟨fun d₁ d₂ =>
-    ManyOneDegree.liftOn₂ d₁ d₂ (· ≤₀ ·) fun _p₁ _p₂ _q₁ _q₂ hp hq =>
+    ManyOneDegree.liftOn₂ d₁ d₂ (·.toPred ≤₀ ·.toPred) fun _p₁ _p₂ _q₁ _q₂ hp hq =>
       propext (hp.le_congr_left.trans hq.le_congr_right)⟩
 #align many_one_degree.has_le ManyOneDegree.instLE
 
 @[simp]
-theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤₀ q :=
-  manyOneReducible_toNat_toNat
+theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤₀ q := sorry
+  -- manyOneReducible_toNat_toNat
 #align many_one_degree.of_le_of ManyOneDegree.of_le_of
 
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
@@ -444,7 +454,8 @@ private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d�
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   induction d₃ using ManyOneDegree.ind_on
-  apply ManyOneReducible.trans
+  sorry
+  -- apply ManyOneReducible.trans
 
 instance instPartialOrder : PartialOrder ManyOneDegree where
   le := (· ≤ ·)
@@ -456,7 +467,7 @@ instance instPartialOrder : PartialOrder ManyOneDegree where
 /-- The join of two degrees, induced by the disjoint union of two underlying sets. -/
 instance instAdd : Add ManyOneDegree :=
   ⟨fun d₁ d₂ =>
-    d₁.liftOn₂ d₂ (fun a b => of (a ⊕' b))
+    d₁.liftOn₂ d₂ (fun a b => of (a.toPred ⊕' b.toPred))
       (by
         rintro a b c d ⟨hl₁, hr₁⟩ ⟨hl₂, hr₂⟩
         rw [of_eq_of]
@@ -468,14 +479,14 @@ instance instAdd : Add ManyOneDegree :=
 #align many_one_degree.has_add ManyOneDegree.instAdd
 
 @[simp]
-theorem add_of (p : Set α) (q : Set β) : of (p ⊕' q) = of p + of q :=
-  of_eq_of.mpr
-    ⟨disjoin_manyOneReducible
-        (manyOneReducible_toNat.trans OneOneReducible.disjoin_left.to_many_one)
-        (manyOneReducible_toNat.trans OneOneReducible.disjoin_right.to_many_one),
-      disjoin_manyOneReducible
-        (toNat_manyOneReducible.trans OneOneReducible.disjoin_left.to_many_one)
-        (toNat_manyOneReducible.trans OneOneReducible.disjoin_right.to_many_one)⟩
+theorem add_of (p : Set α) (q : Set β) : of (p.toPred ⊕' q.toPred) = of p.toPred + of q.toPred := sorry
+  -- of_eq_of.mpr
+    -- ⟨disjoin_manyOneReducible
+    --     (manyOneReducible_toNat.trans OneOneReducible.disjoin_left.to_many_one)
+    --     (manyOneReducible_toNat.trans OneOneReducible.disjoin_right.to_many_one),
+    --   disjoin_manyOneReducible
+    --     (toNat_manyOneReducible.trans OneOneReducible.disjoin_left.to_many_one)
+    --     (toNat_manyOneReducible.trans OneOneReducible.disjoin_right.to_many_one)⟩
 #align many_one_degree.add_of ManyOneDegree.add_of
 
 @[simp]

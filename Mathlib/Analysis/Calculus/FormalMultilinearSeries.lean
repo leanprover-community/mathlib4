@@ -247,7 +247,7 @@ theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by s
 #align formal_multilinear_series.ne_zero_of_order_ne_zero FormalMultilinearSeries.ne_zero_of_order_ne_zero
 
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
-    p.order = Nat.find hp := by convert Nat.sInf_def hp
+    p.order = Nat.find hp := by convert Nat.sInf_def (s := {n | p n ≠ 0}) hp
 #align formal_multilinear_series.order_eq_find FormalMultilinearSeries.order_eq_find
 
 theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
@@ -265,7 +265,7 @@ theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
 #align formal_multilinear_series.order_eq_zero_iff FormalMultilinearSeries.order_eq_zero_iff
 
 theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 :=
-  Nat.sInf_mem (FormalMultilinearSeries.ne_iff.1 hp)
+  Nat.sInf_mem (s := {n | p n ≠ 0}) (FormalMultilinearSeries.ne_iff.1 hp)
 #align formal_multilinear_series.apply_order_ne_zero FormalMultilinearSeries.apply_order_ne_zero
 
 theorem apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=

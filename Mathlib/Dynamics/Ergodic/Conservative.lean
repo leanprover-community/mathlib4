@@ -92,12 +92,12 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurab
   push_neg at ihN
   rcases ihN with ⟨n, hn, hμn⟩
   set T := s ∩ ⋃ n ≥ N + 1, f^[n] ⁻¹' s
-  have hT : MeasurableSet T :=
-    hs.inter (MeasurableSet.biUnion (to_countable _) fun _ _ => hf.measurable.iterate _ hs)
-  have hμT : μ T = 0 := by
-    convert (measure_biUnion_null_iff <| to_countable _).2 hN
-    rw [← inter_iUnion₂]
-    rfl
+  have hT : MeasurableSet T := sorry
+    -- hs.inter (MeasurableSet.biUnion (to_countable _) fun _ _ => hf.measurable.iterate _ hs)
+  have hμT : μ T = 0 := by sorry
+    -- convert (measure_biUnion_null_iff <| to_countable _).2 hN
+    -- rw [← inter_iUnion₂]
+    -- rfl
   have : μ ((s ∩ f^[n] ⁻¹' s) \ T) ≠ 0 := by rwa [measure_diff_null hμT]
   rcases hf.exists_mem_iterate_mem ((hs.inter (hf.measurable.iterate n hs)).diff hT) this with
     ⟨x, ⟨⟨hxs, _⟩, hxT⟩, m, hm0, ⟨_, hxm⟩, _⟩
@@ -123,8 +123,9 @@ theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ) (hs
   by_contra H
   have : MeasurableSet (s ∩ { x | ∀ m ≥ n, f^[m] x ∉ s }) := by
     simp only [setOf_forall, ← compl_setOf]
-    exact
-      hs.inter (MeasurableSet.biInter (to_countable _) fun m _ => hf.measurable.iterate m hs.compl)
+    sorry
+    -- exact
+      -- hs.inter (MeasurableSet.biInter (to_countable _) fun m _ => hf.measurable.iterate m hs.compl)
   rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
   exact hxn m hmn.lt.le hxm
@@ -141,7 +142,7 @@ theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : Measurabl
 #align measure_theory.conservative.ae_mem_imp_frequently_image_mem MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : MeasurableSet s) :
-    (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } : Set α) =ᵐ[μ] s :=
+    (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } : Set α).toPred =ᵐ[μ] s.toPred :=
   inter_eventuallyEq_left.2 <| hf.ae_mem_imp_frequently_image_mem hs
 #align measure_theory.conservative.inter_frequently_image_mem_ae_eq MeasureTheory.Conservative.inter_frequently_image_mem_ae_eq
 

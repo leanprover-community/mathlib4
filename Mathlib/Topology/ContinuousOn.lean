@@ -119,11 +119,11 @@ theorem mem_nhdsWithin_iff_eventually {s t : Set α} {x : α} :
 #align mem_nhds_within_iff_eventually mem_nhdsWithin_iff_eventually
 
 theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
-    t ∈ 𝓝[s] x ↔ s =ᶠ[𝓝 x] (s ∩ t : Set α) := by
+    t ∈ 𝓝[s] x ↔ s.toPred =ᶠ[𝓝 x] (s ∩ t : Set α).toPred := by
   simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEq_set, mem_inter_iff, iff_self_and]
 #align mem_nhds_within_iff_eventually_eq mem_nhdsWithin_iff_eventuallyEq
 
-theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
+theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s.toPred =ᶠ[𝓝 x] t.toPred :=
   set_eventuallyEq_iff_inf_principal.symm
 #align nhds_within_eq_iff_eventually_eq nhdsWithin_eq_iff_eventuallyEq
 

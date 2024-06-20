@@ -57,13 +57,14 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [Topologi
     have hφ₄ : ∀ x ∈ s, φ x < 1 := fun x hx =>
       (hφ₂ x).trans_lt (gauge_lt_one_of_mem_of_isOpen hs₂ hx)
     refine ⟨⟨φ, ?_⟩, hφ₃, hφ₄⟩
-    refine
-      φ.continuous_of_nonzero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩)
-        (vadd_set_subset_iff.mpr fun x hx => ?_)
-    change φ (-x₀ + x) ≠ 0
-    rw [map_add, map_neg]
-    specialize hφ₄ x hx
-    linarith
+    sorry
+    -- refine
+    --   φ.continuous_of_nonzero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩)
+    --     (vadd_set_subset_iff.mpr fun x hx => ?_)
+    -- change φ (-x₀ + x) ≠ 0
+    -- rw [map_add, map_neg]
+    -- specialize hφ₄ x hx
+    -- linarith
   rintro ⟨x, hx⟩
   obtain ⟨y, rfl⟩ := Submodule.mem_span_singleton.1 hx
   rw [LinearPMap.mkSpanSingleton'_apply]

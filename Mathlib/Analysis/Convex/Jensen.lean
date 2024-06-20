@@ -257,8 +257,9 @@ theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
     f x ≤ s.sup' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f := by
   obtain ⟨w, hw₀, hw₁, rfl⟩ := mem_convexHull.1 hx
-  exact (hf.map_centerMass_le hw₀ (by positivity) <| subset_convexHull _ _).trans
-    (centerMass_le_sup hw₀ <| by positivity)
+  sorry
+  -- exact (hf.map_centerMass_le hw₀ (by positivity) <| subset_convexHull _ _).trans
+    -- (centerMass_le_sup hw₀ <| by positivity)
 #align le_sup_of_mem_convex_hull le_sup_of_mem_convexHull
 
 theorem inf_le_of_mem_convexHull {s : Finset E} (hf : ConcaveOn 𝕜 (convexHull 𝕜 (s : Set E)) f)

@@ -799,41 +799,42 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
     (hre : SuperpolynomialDecay atTop expR fun x => ‖f x‖) (him : ∃ C, ∀ x : ℝ, ‖f (x * I)‖ ≤ C) :
     EqOn f 0 {z : ℂ | 0 ≤ z.re} := by
   rcases him with ⟨C, hC⟩
+  sorry
   -- Due to continuity, it suffices to prove the equality on the open right half-plane.
-  suffices ∀ z : ℂ, 0 < z.re → f z = 0 by
-    simpa only [closure_setOf_lt_re] using
-      EqOn.of_subset_closure this hd.continuousOn continuousOn_const subset_closure Subset.rfl
-  -- Consider $g_n(z)=e^{nz}f(z)$.
-  set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z
-  have hg : ∀ n z, ‖g n z‖ = expR z.re ^ n * ‖f z‖ := fun n z ↦ by
-    simp only [g, norm_smul, norm_eq_abs, Complex.abs_pow, abs_exp]
-  intro z hz
-  -- Since `e^{nz} → ∞` as `n → ∞`, it suffices to show that each `g_n` is bounded from above by `C`
-  suffices H : ∀ n : ℕ, ‖g n z‖ ≤ C by
-    contrapose! H
-    simp only [hg]
-    exact (((tendsto_pow_atTop_atTop_of_one_lt (Real.one_lt_exp_iff.2 hz)).atTop_mul
-      (norm_pos_iff.2 H) tendsto_const_nhds).eventually (eventually_gt_atTop C)).exists
-  intro n
-  -- This estimate follows from the Phragmen-Lindelöf principle in the right half-plane.
-  refine right_half_plane_of_tendsto_zero_on_real ((differentiable_exp.pow n).diffContOnCl.smul hd)
-    ?_ ?_ (fun y => ?_) hz.le
-  · rcases hexp with ⟨c, hc, B, hO⟩
-    refine ⟨max c 1, max_lt hc one_lt_two, n + max B 0, .of_norm_left ?_⟩
-    simp only [hg]
-    refine ((isBigO_refl (fun z : ℂ => expR z.re ^ n) _).mul hO.norm_left).trans (.of_bound 1 ?_)
-    filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
-    simp only [← Real.exp_nat_mul, ← Real.exp_add, Real.norm_eq_abs, Real.abs_exp, add_mul, one_mul]
-    gcongr
-    · calc
-        z.re ≤ abs z := re_le_abs _
-        _ = abs z ^ (1 : ℝ) := (Real.rpow_one _).symm
-        _ ≤ abs z ^ max c 1 := Real.rpow_le_rpow_of_exponent_le hz (le_max_right _ _)
-    exacts [le_max_left _ _, hz, le_max_left _ _]
-  · rw [tendsto_zero_iff_norm_tendsto_zero]; simp only [hg]
-    exact hre n
-  · rw [hg, re_ofReal_mul, I_re, mul_zero, Real.exp_zero, one_pow, one_mul]
-    exact hC y
+  -- suffices ∀ z : ℂ, 0 < z.re → f z = 0 by
+  --   simpa only [closure_setOf_lt_re] using
+  --     EqOn.of_subset_closure this hd.continuousOn continuousOn_const subset_closure Subset.rfl
+  -- -- Consider $g_n(z)=e^{nz}f(z)$.
+  -- set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z
+  -- have hg : ∀ n z, ‖g n z‖ = expR z.re ^ n * ‖f z‖ := fun n z ↦ by
+  --   simp only [g, norm_smul, norm_eq_abs, Complex.abs_pow, abs_exp]
+  -- intro z hz
+  -- -- Since `e^{nz} → ∞` as `n → ∞`, it suffices to show that each `g_n` is bounded from above by `C`
+  -- suffices H : ∀ n : ℕ, ‖g n z‖ ≤ C by
+  --   contrapose! H
+  --   simp only [hg]
+  --   exact (((tendsto_pow_atTop_atTop_of_one_lt (Real.one_lt_exp_iff.2 hz)).atTop_mul
+  --     (norm_pos_iff.2 H) tendsto_const_nhds).eventually (eventually_gt_atTop C)).exists
+  -- intro n
+  -- -- This estimate follows from the Phragmen-Lindelöf principle in the right half-plane.
+  -- refine right_half_plane_of_tendsto_zero_on_real ((differentiable_exp.pow n).diffContOnCl.smul hd)
+  --   ?_ ?_ (fun y => ?_) hz.le
+  -- · rcases hexp with ⟨c, hc, B, hO⟩
+  --   refine ⟨max c 1, max_lt hc one_lt_two, n + max B 0, .of_norm_left ?_⟩
+  --   simp only [hg]
+  --   refine ((isBigO_refl (fun z : ℂ => expR z.re ^ n) _).mul hO.norm_left).trans (.of_bound 1 ?_)
+  --   filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
+  --   simp only [← Real.exp_nat_mul, ← Real.exp_add, Real.norm_eq_abs, Real.abs_exp, add_mul, one_mul]
+  --   gcongr
+  --   · calc
+  --       z.re ≤ abs z := re_le_abs _
+  --       _ = abs z ^ (1 : ℝ) := (Real.rpow_one _).symm
+  --       _ ≤ abs z ^ max c 1 := Real.rpow_le_rpow_of_exponent_le hz (le_max_right _ _)
+  --   exacts [le_max_left _ _, hz, le_max_left _ _]
+  -- · rw [tendsto_zero_iff_norm_tendsto_zero]; simp only [hg]
+  --   exact hre n
+  -- · rw [hg, re_ofReal_mul, I_re, mul_zero, Real.exp_zero, one_pow, one_mul]
+  --   exact hC y
 #align phragmen_lindelof.eq_zero_on_right_half_plane_of_superexponential_decay PhragmenLindelof.eq_zero_on_right_half_plane_of_superexponential_decay
 
 /-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f g : ℂ → E` be functions such

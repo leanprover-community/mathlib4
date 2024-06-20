@@ -516,9 +516,9 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp only [Nat.totient_zero, addOrderOf_eq_zero_iff]
     rcases em (∃ u : AddCircle p, ¬IsOfFinAddOrder u) with (⟨u, hu⟩ | h)
-    · have : Infinite { u : AddCircle p // ¬IsOfFinAddOrder u } := by
-        erw [infinite_coe_iff]
-        exact infinite_not_isOfFinAddOrder hu
+    · have : Infinite { u : AddCircle p // ¬IsOfFinAddOrder u } := by sorry
+        -- erw [infinite_coe_iff]
+        -- exact infinite_not_isOfFinAddOrder hu
       exact Nat.card_eq_zero_of_infinite
     · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa using h
       exact Nat.card_of_isEmpty

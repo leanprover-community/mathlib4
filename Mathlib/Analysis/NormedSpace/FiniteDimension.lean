@@ -287,10 +287,11 @@ theorem isOpen_setOf_linearIndependent {ι : Type*} [Finite ι] :
 theorem isOpen_setOf_nat_le_rank (n : ℕ) :
     IsOpen { f : E →L[𝕜] F | ↑n ≤ (f : E →ₗ[𝕜] F).rank } := by
   simp only [LinearMap.le_rank_iff_exists_linearIndependent_finset, setOf_exists, ← exists_prop]
-  refine isOpen_biUnion fun t _ => ?_
-  have : Continuous fun f : E →L[𝕜] F => fun x : (t : Set E) => f x :=
-    continuous_pi fun x => (ContinuousLinearMap.apply 𝕜 F (x : E)).continuous
-  exact isOpen_setOf_linearIndependent.preimage this
+  sorry
+  -- refine isOpen_biUnion fun t _ => ?_
+  -- have : Continuous fun f : E →L[𝕜] F => fun x : (t : Set E) => f x :=
+  --   continuous_pi fun x => (ContinuousLinearMap.apply 𝕜 F (x : E)).continuous
+  -- exact isOpen_setOf_linearIndependent.preimage this
 #align is_open_set_of_nat_le_rank isOpen_setOf_nat_le_rank
 
 theorem Basis.opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)

@@ -44,7 +44,7 @@ def MulDissociated (s : Set α) : Prop := {t : Finset α | ↑t ⊆ s}.InjOn (�
     fun hs _t ht _u hu htu ↦ hs _ ⟨ht, htu⟩ ⟨hu, rfl⟩⟩
 
 @[to_additive] lemma MulDissociated.subset {t : Set α} (hst : s ⊆ t) (ht : MulDissociated t) :
-    MulDissociated s := ht.mono fun _ ↦ hst.trans'
+    MulDissociated s := ht.mono fun _ ↦ sorry -- hst.trans'
 
 @[to_additive (attr := simp)] lemma mulDissociated_empty : MulDissociated (∅ : Set α) := by
   simp [MulDissociated, subset_empty_iff]
@@ -152,6 +152,7 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
     rw [this]
     exact prod_div_prod_mem_mulSpan ht (subset_insert_iff.1 hu)
   · rw [coe_subset, subset_insert_iff_of_not_mem hau] at hu
-    cases not_mulDissociated_iff_exists_disjoint.2 ⟨t, u, ht, hu, htu⟩ hs'.2
+    sorry
+    -- cases not_mulDissociated_iff_exists_disjoint.2 ⟨t, u, ht, hu, htu⟩ hs'.2
 
 end Finset

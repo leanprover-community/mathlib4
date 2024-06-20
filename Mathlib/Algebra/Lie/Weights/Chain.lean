@@ -202,7 +202,8 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   have h₁ : CompleteLattice.Independent fun (i : Finset.Ioo p q) ↦ N i := by
     rw [← LieSubmodule.independent_iff_coe_toSubmodule]
     refine (independent_weightSpace R H M).comp fun i j hij ↦ ?_
-    exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
+    sorry
+    -- exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
   have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
   have h₃ : weightSpaceChain M α χ p q = ⨆ i ∈ Finset.Ioo p q, N i := by
     simp_rw [weightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]

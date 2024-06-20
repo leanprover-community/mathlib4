@@ -108,7 +108,7 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
 /-- In a space with an inner regular measure, any measurable set coincides almost everywhere with
 its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq [OpensMeasurableSpace α] [InnerRegular μ] (hs : MeasurableSet s) :
-    μ.everywherePosSubset s =ᵐ[μ] s := by
+    μ.everywherePosSubset s |>.toPred =ᵐ[μ] s.toPred := by
   simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact, ENNReal.iSup_eq_zero]
   intro k hk h'k
@@ -118,7 +118,7 @@ lemma everywherePosSubset_ae_eq [OpensMeasurableSpace α] [InnerRegular μ] (hs 
 measure coincides almost everywhere with its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
-    μ.everywherePosSubset s =ᵐ[μ] s := by
+    μ.everywherePosSubset s |>.toPred =ᵐ[μ] s.toPred := by
   have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
     ((measure_mono diff_subset).trans_lt h's.lt_top).ne
   simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
@@ -139,7 +139,7 @@ lemma isEverywherePos_everywherePosSubset
   have A : 0 < μ (u ∩ s) := by
     have : u ∩ s ∈ 𝓝[s] x := by rw [inter_comm]; exact inter_mem_nhdsWithin s u_mem
     exact hx.2 _ this
-  have B : (u ∩ μ.everywherePosSubset s : Set α) =ᵐ[μ] (u ∩ s : Set α) :=
+  have B : (u ∩ μ.everywherePosSubset s : Set α).toPred =ᵐ[μ] (u ∩ s : Set α).toPred :=
     ae_eq_set_inter (ae_eq_refl _) (everywherePosSubset_ae_eq hs)
   rw [← B.measure_eq] at A
   exact A.trans_le (measure_mono hu)
@@ -157,7 +157,7 @@ lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
   have A : 0 < μ (u ∩ s) := by
     have : u ∩ s ∈ 𝓝[s] x := by rw [inter_comm]; exact inter_mem_nhdsWithin s u_mem
     exact hx.2 _ this
-  have B : (u ∩ μ.everywherePosSubset s : Set α) =ᵐ[μ] (u ∩ s : Set α) :=
+  have B : (u ∩ μ.everywherePosSubset s : Set α).toPred =ᵐ[μ] (u ∩ s : Set α).toPred :=
     ae_eq_set_inter (ae_eq_refl _) (everywherePosSubset_ae_eq_of_measure_ne_top hs h's)
   rw [← B.measure_eq] at A
   exact A.trans_le (measure_mono hu)

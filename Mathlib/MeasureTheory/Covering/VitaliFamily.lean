@@ -121,7 +121,7 @@ theorem exists_disjoint_covering_ae :
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
 covering of almost every `s`. -/
-protected def index : Set (α × Set α) :=
+protected noncomputable def index : Set (α × Set α) :=
   h.exists_disjoint_covering_ae.choose
 #align vitali_family.fine_subfamily_on.index VitaliFamily.FineSubfamilyOn.index
 

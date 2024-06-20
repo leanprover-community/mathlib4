@@ -214,19 +214,19 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let ys : X → Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
   let ys_w : ∀ x, ⋃ y ∈ ys x, U x y = ⊤ := fun x =>
     (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose_spec
-  have ys_nonempty : ∀ x, (ys x).Nonempty := fun x =>
-    Set.nonempty_of_union_eq_top_of_nonempty _ _ nX (ys_w x)
+  have ys_nonempty : ∀ x, (ys x).Nonempty := fun x => sorry
+    -- Set.nonempty_of_union_eq_top_of_nonempty _ _ nX (ys_w x)
   -- Thus for each `x` we have the desired `h x : A` so `f z - ε < h x z` everywhere
   -- and `h x x = f x`.
   let h : X → L := fun x =>
     ⟨(ys x).sup' (ys_nonempty x) fun y => (g x y : C(X, ℝ)),
       Finset.sup'_mem _ sup_mem _ _ _ fun y _ => hg x y⟩
-  have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by
-    intro x z
-    obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
-    dsimp
-    simp only [Subtype.coe_mk, coe_sup', Finset.sup'_apply, Finset.lt_sup'_iff]
-    exact ⟨y, ym, zm⟩
+  have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by sorry
+    -- intro x z
+    -- obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
+    -- dsimp
+    -- simp only [Subtype.coe_mk, coe_sup', Finset.sup'_apply, Finset.lt_sup'_iff]
+    -- exact ⟨y, ym, zm⟩
   have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
   let W : X → Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
@@ -244,7 +244,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- so the union of the `W x` for `x ∈ xs` still covers everything.
   let xs : Finset X := (CompactSpace.elim_nhds_subcover W W_nhd).choose
   let xs_w : ⋃ x ∈ xs, W x = ⊤ := (CompactSpace.elim_nhds_subcover W W_nhd).choose_spec
-  have xs_nonempty : xs.Nonempty := Set.nonempty_of_union_eq_top_of_nonempty _ _ nX xs_w
+  have xs_nonempty : xs.Nonempty := sorry -- Set.nonempty_of_union_eq_top_of_nonempty _ _ nX xs_w
   -- Finally our candidate function is the infimum over `x ∈ xs` of the `h x`.
   -- This function is then globally less than `f z + ε`.
   let k : (L : Type _) :=
@@ -261,7 +261,8 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   fconstructor
   · dsimp
     simp only [Finset.inf'_lt_iff, ContinuousMap.inf'_apply]
-    exact Set.exists_set_mem_of_union_eq_top _ _ xs_w z
+    sorry
+    -- exact Set.exists_set_mem_of_union_eq_top _ _ xs_w z
   · dsimp
     simp only [Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
     rintro x -

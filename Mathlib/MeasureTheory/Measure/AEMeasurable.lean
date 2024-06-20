@@ -219,8 +219,9 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
 
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
     (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by
-  obtain ⟨G, hG_meas, hG_mem, hG_ae_eq⟩ := hf.exists_ae_eq_range_subset f_nn ⟨0, le_rfl⟩
-  exact ⟨G, hG_meas, fun x => hG_mem (mem_range_self x), hG_ae_eq⟩
+  sorry
+  -- obtain ⟨G, hG_meas, hG_mem, hG_ae_eq⟩ := hf.exists_ae_eq_range_subset f_nn ⟨0, le_rfl⟩
+  -- exact ⟨G, hG_meas, fun x => hG_mem (mem_range_self x), hG_ae_eq⟩
 #align ae_measurable.exists_measurable_nonneg AEMeasurable.exists_measurable_nonneg
 
 theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s} :

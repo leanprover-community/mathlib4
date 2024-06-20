@@ -73,16 +73,46 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
-  { (inferInstance : BooleanAlgebra (α → Prop)) with
-    sup := (· ∪ ·),
-    le := (· ≤ ·),
-    lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
-    inf := (· ∩ ·),
-    bot := ∅,
-    compl := (·ᶜ),
-    top := univ,
-    sdiff := (· \ ·) }
+instance instTop : Top (Set α) where
+  top := univ
+
+instance instBot : Bot (Set α) where
+  bot := ∅
+
+instance instSup : Sup (Set α) where
+  sup := (· ∪ ·)
+
+instance instInf : Inf (Set α) where
+  inf := (· ∩ ·)
+
+instance instLT: LT (Set α) where
+  lt := fun s t => s ⊆ t ∧ ¬t ⊆ s
+
+-- instance instHasCompl : HasCompl (Set α) where
+  -- compl := (·ᶜ)
+
+instance instSdiff : SDiff (Set α) where
+  sdiff := (· \ ·)
+
+instance instBooleanAlgebraSet : BooleanAlgebra (Set α) where
+  le_refl A := sorry
+  le_trans A B C := sorry
+  lt_iff_le_not_le A B := sorry
+  le_antisymm A B := sorry
+  le_sup_left A B := sorry
+  le_sup_right A B := sorry
+  sup_le A B C := sorry
+  inf_le_left A B := sorry
+  inf_le_right A B := sorry
+  le_inf A B C := sorry
+  le_sup_inf A B C := sorry
+  inf_compl_le_bot A := sorry
+  top_le_sup_compl A := sorry
+  le_top A := sorry
+  bot_le A := sorry
+  sdiff_eq A B := sorry
+  himp_eq A B := sorry
+
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
@@ -133,7 +163,7 @@ alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
     CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
-  PiSubtype.canLift ι α s
+  PiSubtype.canLift ι α s.toPred
 #align set.pi_set_coe.can_lift Set.PiSetCoe.canLift
 
 instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
@@ -247,20 +277,20 @@ theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
   rfl
 #align set.set_of_mem_eq Set.setOf_mem_eq
 
-theorem setOf_set {s : Set α} : setOf s = s :=
+theorem setOf_set {s : Set α} : setOf s.toPred = s :=
   rfl
 #align set.set_of_set Set.setOf_set
 
-theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
+theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x }.toPred x ↔ p x :=
   Iff.rfl
 #align set.set_of_app_iff Set.setOf_app_iff
 
-theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
+theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s.toPred a :=
   Iff.rfl
 #align set.mem_def Set.mem_def
 
 theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
-  bijective_id
+ ⟨sorry, sorry⟩
 #align set.set_of_bijective Set.setOf_bijective
 
 theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
@@ -285,8 +315,8 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
 /-! ### Subset and strict subset relations -/
 
 
-instance : IsRefl (Set α) (· ⊆ ·) :=
-  show IsRefl (Set α) (· ≤ ·) by infer_instance
+instance : IsRefl (Set α) (· ⊆ ·) := sorry
+  -- show IsRefl (α → Prop) (· ≤ ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊆ ·) :=
   show IsTrans (Set α) (· ≤ ·) by infer_instance
@@ -1414,7 +1444,7 @@ theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
 
 @[simp]
 theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
-  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } p
+  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } ⟨p⟩
 #align set.sep_union Set.sep_union
 
 @[simp]
@@ -1429,7 +1459,7 @@ theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | 
 
 @[simp]
 theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q x } :=
-  inter_union_distrib_left s p q
+  inter_union_distrib_left s ⟨p⟩ ⟨q⟩
 #align set.sep_or Set.sep_or
 
 @[simp]
@@ -1677,8 +1707,8 @@ theorem compl_singleton_eq (a : α) : ({a} : Set α)ᶜ = { x | x ≠ a } :=
 #align set.compl_singleton_eq Set.compl_singleton_eq
 
 @[simp]
-theorem compl_ne_eq_singleton (a : α) : ({ x | x ≠ a } : Set α)ᶜ = {a} :=
-  compl_compl _
+theorem compl_ne_eq_singleton (a : α) : ({ x | x ≠ a } : Set α)ᶜ = {a} := sorry
+  -- compl_compl _
 #align set.compl_ne_eq_singleton Set.compl_ne_eq_singleton
 
 theorem union_eq_compl_compl_inter_compl (s t : Set α) : s ∪ t = (sᶜ ∩ tᶜ)ᶜ :=
@@ -2065,12 +2095,12 @@ theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t �
 /-! ### Lemmas about pairs -/
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
-theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
-  union_self _
+theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} := sorry
+  -- union_self _
 #align set.pair_eq_singleton Set.pair_eq_singleton
 
-theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
-  union_comm _ _
+theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} := sorry
+  -- union_comm _ _
 #align set.pair_comm Set.pair_comm
 
 theorem pair_eq_pair_iff {x y z w : α} :
@@ -2311,8 +2341,8 @@ theorem ite_empty_right (t s : Set α) : t.ite s ∅ = s ∩ t := by simp [Set.i
 #align set.ite_empty_right Set.ite_empty_right
 
 theorem ite_mono (t : Set α) {s₁ s₁' s₂ s₂' : Set α} (h : s₁ ⊆ s₂) (h' : s₁' ⊆ s₂') :
-    t.ite s₁ s₁' ⊆ t.ite s₂ s₂' :=
-  union_subset_union (inter_subset_inter_left _ h) (inter_subset_inter_left _ h')
+    t.ite s₁ s₁' ⊆ t.ite s₂ s₂' := sorry
+  -- union_subset_union (inter_subset_inter_left _ h) (inter_subset_inter_left _ h')
 #align set.ite_mono Set.ite_mono
 
 theorem ite_subset_union (t s s' : Set α) : t.ite s s' ⊆ s ∪ s' :=

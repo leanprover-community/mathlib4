@@ -81,6 +81,7 @@ theorem isCompactOperator_iff_exists_mem_nhds_image_subset_compact (f : M₁ →
     ⟨K, hK, mem_of_superset hV (image_subset_iff.mp hVK)⟩⟩
 #align is_compact_operator_iff_exists_mem_nhds_image_subset_compact isCompactOperator_iff_exists_mem_nhds_image_subset_compact
 
+@[nolint unusedArguments]
 theorem isCompactOperator_iff_exists_mem_nhds_isCompact_closure_image [T2Space M₂] (f : M₁ → M₂) :
     IsCompactOperator f ↔ ∃ V ∈ (𝓝 0 : Filter M₁), IsCompact (closure <| f '' V) := by
   rw [isCompactOperator_iff_exists_mem_nhds_image_subset_compact]
@@ -109,6 +110,7 @@ theorem IsCompactOperator.image_subset_compact_of_isVonNBounded {f : M₁ →ₛ
 set_option linter.uppercaseLean3 false in
 #align is_compact_operator.image_subset_compact_of_vonN_bounded IsCompactOperator.image_subset_compact_of_isVonNBounded
 
+@[nolint unusedArguments]
 theorem IsCompactOperator.isCompact_closure_image_of_isVonNBounded [T2Space M₂] {f : M₁ →ₛₗ[σ₁₂] M₂}
     (hf : IsCompactOperator f) {S : Set M₁} (hS : IsVonNBounded 𝕜₁ S) :
     IsCompact (closure <| f '' S) :=

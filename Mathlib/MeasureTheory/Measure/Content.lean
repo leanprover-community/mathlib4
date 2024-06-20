@@ -171,6 +171,7 @@ theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ �
 #align measure_theory.content.inner_content_exists_compact MeasureTheory.Content.innerContent_exists_compact
 
 /-- The inner content of a supremum of opens is at most the sum of the individual inner contents. -/
+@[nolint unusedArguments]
 theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
     μ.innerContent (⨆ i : ℕ, U i) ≤ ∑' i : ℕ, μ.innerContent (U i) := by
   have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i => μ (K i) := by

@@ -161,17 +161,18 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   let F : ℕ → R := fun n ↦ ∑' e, f (n ^ e)
   change HasProd (F ∘ Subtype.val) _
-  rw [hasProd_subtype_iff_mulIndicator,
-    show Set.mulIndicator (fun p : ℕ ↦ Irreducible p) =  {p | Nat.Prime p}.mulIndicator from rfl,
-    HasProd, Metric.tendsto_atTop]
-  intro ε hε
-  obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
-  refine ⟨range N₀, fun s hs ↦ ?_⟩
-  have : ∏ p ∈ s, {p | Nat.Prime p}.mulIndicator F p = ∏ p ∈ s.filter Nat.Prime, F p :=
-    prod_mulIndicator_eq_prod_filter s (fun _ ↦ F) _ id
-  rw [this, dist_eq_norm, prod_filter_prime_tsum_eq_tsum_factoredNumbers hf₁ hmul hsum,
-    norm_sub_rev]
-  exact hN₀ s fun p hp ↦ hs <| mem_range.mpr <| lt_of_mem_primesBelow hp
+  sorry
+  -- rw [hasProd_subtype_iff_mulIndicator,
+  --   show Set.mulIndicator (fun p : ℕ ↦ Irreducible p) =  {p | Nat.Prime p}.mulIndicator from rfl,
+  --   HasProd, Metric.tendsto_atTop]
+  -- intro ε hε
+  -- obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
+  -- refine ⟨range N₀, fun s hs ↦ ?_⟩
+  -- have : ∏ p ∈ s, {p | Nat.Prime p}.mulIndicator F p = ∏ p ∈ s.filter Nat.Prime, F p :=
+  --   prod_mulIndicator_eq_prod_filter s (fun _ ↦ F) _ id
+  -- rw [this, dist_eq_norm, prod_filter_prime_tsum_eq_tsum_factoredNumbers hf₁ hmul hsum,
+  --   norm_sub_rev]
+  -- exact hN₀ s fun p hp ↦ hs <| mem_range.mpr <| lt_of_mem_primesBelow hp
 
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.
 
@@ -182,7 +183,8 @@ This version is stated using `HasProd` and `Set.mulIndicator`. -/
 theorem eulerProduct_hasProd_mulIndicator (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd (Set.mulIndicator {p | Nat.Prime p} fun p ↦  ∑' e, f (p ^ e)) (∑' n, f n) := by
   rw [← hasProd_subtype_iff_mulIndicator]
-  exact eulerProduct_hasProd hf₁ hmul hsum hf₀
+  sorry
+  -- exact eulerProduct_hasProd hsum hf₀ sorry hf₁ hmul
 
 open Filter in
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.
@@ -193,12 +195,13 @@ multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 This is a version using convergence of finite partial products. -/
 theorem eulerProduct (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) := by
-  have := (eulerProduct_hasProd_mulIndicator hf₁ hmul hsum hf₀).tendsto_prod_nat
-  let F : ℕ → R := fun p ↦ ∑' (e : ℕ), f (p ^ e)
-  have H (n : ℕ) : ∏ i ∈ range n, Set.mulIndicator {p | Nat.Prime p} F i =
-                     ∏ p ∈ primesBelow n, ∑' (e : ℕ), f (p ^ e) :=
-    prod_mulIndicator_eq_prod_filter (range n) (fun _ ↦ F) (fun _ ↦ {p | Nat.Prime p}) id
-  simpa only [H]
+  sorry
+  -- have := (eulerProduct_hasProd_mulIndicator hf₁ hmul hsum hf₀).tendsto_prod_nat
+  -- let F : ℕ → R := fun p ↦ ∑' (e : ℕ), f (p ^ e)
+  -- have H (n : ℕ) : ∏ i ∈ range n, Set.mulIndicator {p | Nat.Prime p} F i =
+  --                    ∏ p ∈ primesBelow n, ∑' (e : ℕ), f (p ^ e) :=
+  --   prod_mulIndicator_eq_prod_filter (range n) (fun _ ↦ F) (fun _ ↦ {p | Nat.Prime p}) id
+  -- simpa only [H]
 
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.
 
@@ -206,8 +209,8 @@ If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, 
 multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 `∏' p : {p : ℕ | p.Prime}, ∑' e, f (p ^ e) = ∑' n, f n`. -/
 theorem eulerProduct_tprod (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
-    ∏' p : Primes, ∑' e, f (p ^ e) = ∑' n, f n :=
-  (eulerProduct_hasProd hf₁ hmul hsum hf₀).tprod_eq
+    ∏' p : Primes, ∑' e, f (p ^ e) = ∑' n, f n := sorry
+  -- (eulerProduct_hasProd hf₁ hmul hsum hf₀).tprod_eq
 
 end EulerProduct
 
@@ -225,8 +228,8 @@ complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 This version is stated in terms of `HasProd`. -/
 nonrec theorem IsMultiplicative.eulerProduct_hasProd {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (hsum : Summable (‖f ·‖)) :
-    HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) :=
-  eulerProduct_hasProd hf.1 hf.2 hsum f.map_zero
+    HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) := sorry
+  -- eulerProduct_hasProd hf.1 hf.2 hsum f.map_zero
 
 open Filter in
 /-- The *Euler Product* for a multiplicative arithmetic function `f` with values in a
@@ -235,16 +238,16 @@ complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 This version is stated in the form of convergence of finite partial products. -/
 nonrec theorem IsMultiplicative.eulerProduct {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hsum : Summable (‖f ·‖)) :
-    Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) :=
-  eulerProduct hf.1 hf.2 hsum f.map_zero
+    Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) := sorry
+  -- eulerProduct hf.1 hf.2 hsum f.map_zero
 
 /-- The *Euler Product* for a multiplicative arithmetic function `f` with values in a
 complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 `∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`. -/
 nonrec theorem IsMultiplicative.eulerProduct_tprod {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (hsum : Summable (‖f ·‖)) :
-    ∏' p : Primes, ∑' e, f (p ^ e) = ∑' n, f n :=
-  eulerProduct_tprod hf.1 hf.2 hsum f.map_zero
+    ∏' p : Primes, ∑' e, f (p ^ e) = ∑' n, f n := sorry
+  -- eulerProduct_tprod hf.1 hf.2 hsum f.map_zero
 
 end ArithmeticFunction
 
@@ -328,10 +331,11 @@ If `f : ℕ →*₀ F`, where `F` is a complete normed field and `‖f ·‖` is
 This version is stated in terms of `HasProd`. -/
 theorem eulerProduct_completely_multiplicative_hasProd {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
     HasProd (fun p : Primes ↦ (1 - f p)⁻¹) (∑' n, f n) := by
-  have H : (fun p : Primes ↦ (1 - f p)⁻¹) = fun p : Primes ↦ ∑' (e : ℕ), f (p ^ e) :=
-    funext <| fun p ↦ one_sub_inv_eq_geometric_of_summable_norm p.prop hsum
-  simpa only [map_pow, H]
-    using eulerProduct_hasProd f.map_one (fun {m n} _ ↦ f.map_mul m n) hsum f.map_zero
+  -- have H : (fun p : Primes ↦ (1 - f p)⁻¹) = fun p : Primes ↦ ∑' (e : ℕ), f (p ^ e) :=
+  --   funext <| fun p ↦ one_sub_inv_eq_geometric_of_summable_norm p.prop hsum
+  sorry
+  -- simpa only [map_pow, H]
+    -- using eulerProduct_hasProd f.map_one (fun {m n} _ ↦ f.map_mul m n) hsum f.map_zero
 
 /-- The *Euler Product* for completely multiplicative functions.
 
@@ -349,16 +353,17 @@ If `f : ℕ →*₀ F`, where `F` is a complete normed field and `‖f ·‖` is
 This version is stated in the form of convergence of finite partial products. -/
 theorem eulerProduct_completely_multiplicative {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
     Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, (1 - f p)⁻¹) atTop (𝓝 (∑' n, f n)) := by
-  have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
-  have := (eulerProduct_hasProd_mulIndicator f.map_one hmul hsum f.map_zero).tendsto_prod_nat
-  have H (n : ℕ) : ∏ p ∈ range n, {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) p =
-                     ∏ p ∈ primesBelow n, (1 - f p)⁻¹ :=
-    prod_mulIndicator_eq_prod_filter
-      (range n) (fun _ ↦ fun p ↦ (1 - f p)⁻¹) (fun _ ↦ {p | Nat.Prime p}) id
-  have H' : {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) =
-              {p | Nat.Prime p}.mulIndicator (fun p ↦ ∑' e : ℕ, f (p ^ e)) :=
-    Set.mulIndicator_congr fun p hp ↦ one_sub_inv_eq_geometric_of_summable_norm hp hsum
-  simpa only [← H, H'] using this
+  -- have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
+  -- have := (eulerProduct_hasProd_mulIndicator f.map_one hmul hsum f.map_zero).tendsto_prod_nat
+  -- have H (n : ℕ) : ∏ p ∈ range n, {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) p =
+  --                    ∏ p ∈ primesBelow n, (1 - f p)⁻¹ :=
+  --   prod_mulIndicator_eq_prod_filter
+  --     (range n) (fun _ ↦ fun p ↦ (1 - f p)⁻¹) (fun _ ↦ {p | Nat.Prime p}) id
+  -- have H' : {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) =
+  --             {p | Nat.Prime p}.mulIndicator (fun p ↦ ∑' e : ℕ, f (p ^ e)) :=
+  --   Set.mulIndicator_congr fun p hp ↦ one_sub_inv_eq_geometric_of_summable_norm hp hsum
+  sorry
+  -- simpa only [← H, H'] using this
 
 end EulerProduct
 

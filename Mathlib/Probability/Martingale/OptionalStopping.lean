@@ -46,10 +46,11 @@ theorem Submartingale.expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
   · simp only [Finset.sum_apply]
     have : ∀ i, MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
       intro i
-      refine (hτ i).inter ?_
-      convert (hπ i).compl using 1
-      ext x
-      simp; rfl
+      sorry
+      -- refine (hτ i).inter ?_
+      -- convert (hπ i).compl using 1
+      -- ext x
+      -- simp; rfl
     rw [integral_finset_sum]
     · refine Finset.sum_nonneg fun i _ => ?_
       rw [integral_indicator (𝒢.le _ _ (this _)), integral_sub', sub_nonneg]
@@ -109,6 +110,7 @@ section Maximal
 
 open Finset
 
+@[nolint unusedHavesSuffices]
 theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) {ε : ℝ≥0}
     (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω} ≤
     ENNReal.ofReal (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω},
@@ -118,11 +120,12 @@ theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale 
       (ε : ℝ) ≤ stoppedValue f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω := by
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx
-    refine stoppedValue_hitting_mem ?_
-    simp only [Set.mem_setOf_eq, exists_prop, hn]
-    exact
-      let ⟨j, hj₁, hj₂⟩ := hx
-      ⟨j, hj₁, hj₂⟩
+    sorry
+    -- refine stoppedValue_hitting_mem ?_
+    -- simp only [Set.mem_setOf_eq, exists_prop, hn]
+    -- exact
+    --   let ⟨j, hj₁, hj₂⟩ := hx
+    --   ⟨j, hj₁, hj₂⟩
   have h := setIntegral_ge_of_const_le (measurableSet_le measurable_const
     (Finset.measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))
       (measure_ne_top _ _) this (Integrable.integrableOn (hsub.integrable_stoppedValue

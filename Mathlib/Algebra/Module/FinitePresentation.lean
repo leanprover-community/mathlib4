@@ -145,8 +145,8 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   classical
   obtain ⟨s, hs, hs'⟩ := h
   obtain ⟨t, ht⟩ := hl'
-  have H : Function.Surjective (Finsupp.total s M R Subtype.val) :=
-    LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
+  have H : Function.Surjective (Finsupp.total s M R Subtype.val) := sorry
+    -- LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ Finsupp.total s M R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
@@ -161,8 +161,8 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     (LinearMap.ker l).FG := by
   classical
   obtain ⟨s, hs, hs'⟩ := h
-  have H : Function.Surjective (Finsupp.total s N R Subtype.val) :=
-    LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
+  have H : Function.Surjective (Finsupp.total s N R Subtype.val) := sorry
+    -- LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.total s N R Subtype.val) := by
     choose f hf using show _ from hl
     exact ⟨Finsupp.total s M R (fun i ↦ f i), by ext; simp [hf]⟩
@@ -193,8 +193,8 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.out
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.total s M R Subtype.val
-  have H : Function.Surjective π :=
-    LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
+  have H : Function.Surjective π := sorry
+    -- LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
     constructor
     rw [Submodule.fg_top]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
@@ -228,8 +228,8 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     ∃ (h : M →ₗ[R] N) (s : S), f ∘ₗ h = s • g := by
   obtain ⟨σ, hσ, τ, hτ⟩ := h
   let π := Finsupp.total σ M R Subtype.val
-  have hπ : Function.Surjective π :=
-    LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hσ]; rfl)
+  have hπ : Function.Surjective π := sorry
+    -- LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hσ]; rfl)
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=

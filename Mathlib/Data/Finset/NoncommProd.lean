@@ -167,8 +167,8 @@ theorem noncommProd_cons' (s : Multiset α) (a : α) (comm) :
 @[to_additive]
 theorem noncommProd_add (s t : Multiset α) (comm) :
     noncommProd (s + t) comm =
-      noncommProd s (comm.mono <| subset_of_le <| s.le_add_right t) *
-        noncommProd t (comm.mono <| subset_of_le <| t.le_add_left s) := by
+      noncommProd s sorry * -- (comm.mono <| subset_of_le <| s.le_add_right t) *
+        noncommProd t sorry := by -- (comm.mono <| subset_of_le <| t.le_add_left s) := by
   rcases s with ⟨⟩
   rcases t with ⟨⟩
   simp

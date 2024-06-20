@@ -680,7 +680,7 @@ elements of the closure of `s`. -/
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
     (zero : p 0) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x : R, p x → p (-x))
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨⟨p, add _ _⟩, zero⟩, mul _ _⟩, neg _⟩).2 mem h
+  (@closure_le _ _ _ ⟨⟨⟨⟨⟨p⟩, add _ _⟩, zero⟩, mul _ _⟩, neg _⟩).2 mem h
 
 /-- The difference with `NonUnitalSubring.closure_induction` is that this acts on the
 subtype. -/

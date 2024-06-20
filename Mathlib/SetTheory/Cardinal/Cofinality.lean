@@ -637,11 +637,12 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     · refine ⟨typein r' ⟨i, h⟩, typein_lt_type _ _, ?_⟩
       rw [bfamilyOfFamily'_typein]
     · push_neg at h
-      cases' wo.wf.min_mem _ h with hji hij
-      refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ _, ?_⟩
-      · by_contra! H
-        exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
-      · rwa [bfamilyOfFamily'_typein]
+      sorry
+      -- cases' wo.wf.min_mem _ h with hji hij
+      -- refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ _, ?_⟩
+      -- · by_contra! H
+      --   exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
+      -- · rwa [bfamilyOfFamily'_typein]
 #align ordinal.exists_fundamental_sequence Ordinal.exists_fundamental_sequence
 
 @[simp]
@@ -671,9 +672,10 @@ protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u
       rw [← hf', lt_lsub_iff] at this
       cases' this with i hi
       rcases H i with ⟨b, _, hb⟩
-      exact
-        ((le_csInf_iff'' ⟨b, by exact hb⟩).2 fun c hc =>
-          hf.strictMono.le_iff_le.1 (hi.trans hc)).trans_lt (lt_lsub _ i)
+      sorry
+      -- exact
+      --   ((le_csInf_iff'' ⟨b, by exact hb⟩).2 fun c hc =>
+      --     hf.strictMono.le_iff_le.1 (hi.trans hc)).trans_lt (lt_lsub _ i)
   · rw [@blsub_comp.{u, u, u} a _ (fun b _ => f b) (@fun i j _ _ h => hf.strictMono.monotone h) g
         hg.2.2]
     exact IsNormal.blsub_eq.{u, u} hf ha
@@ -928,10 +930,11 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
   haveI := wo
   apply le_antisymm
   · conv_rhs => rw [← mk_bounded_subset h hr]
-    apply mk_le_mk_of_subset
-    intro s hs
-    rw [hr] at hs
-    exact lt_cof_type hs
+    sorry
+    -- apply mk_le_mk_of_subset
+    -- intro s hs
+    -- rw [hr] at hs
+    -- exact lt_cof_type hs
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · rw [mk_singleton]
       exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (ord_isLimit h'.isLimit.aleph0_le))

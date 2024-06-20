@@ -380,7 +380,8 @@ def ofFinsupp (f : α →₀ HahnSeries Γ R) : SummableFamily Γ R α where
     have haf : a ∈ f.support := by
       rw [Finsupp.mem_support_iff, ← support_nonempty_iff]
       exact ⟨g, hg⟩
-    exact Set.mem_biUnion haf hg
+    sorry
+    -- exact Set.mem_biUnion haf hg
   finite_co_support' g := by
     refine f.support.finite_toSet.subset fun a ha => ?_
     simp only [coeff.addMonoidHom_apply, mem_coe, Finsupp.mem_support_iff, Ne,

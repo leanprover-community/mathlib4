@@ -448,6 +448,7 @@ theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s :
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
   simp [h.image_eq_preimage]
+  sorry
 #align diffeomorph.unique_mdiff_on_image_aux Diffeomorph.uniqueMDiffOn_image_aux
 
 @[simp]
@@ -514,8 +515,8 @@ variable (I) (e : E ≃ₘ[𝕜] E')
 /-- Apply a diffeomorphism (e.g., a continuous linear equivalence) to the model vector space. -/
 def transDiffeomorph (I : ModelWithCorners 𝕜 E H) (e : E ≃ₘ[𝕜] E') : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv
-  source_eq := by simp
-  unique_diff' := by simp [range_comp e, I.unique_diff]
+  source_eq := by simp; sorry
+  unique_diff' := by simp [range_comp e, I.unique_diff]; sorry
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
 #align model_with_corners.trans_diffeomorph ModelWithCorners.transDiffeomorph

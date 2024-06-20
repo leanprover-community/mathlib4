@@ -1180,7 +1180,7 @@ theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordina
 -- TODO: Can we remove this definition and just use `(typein.principalSeg r).subrelIso` directly?
 /-- A well order `r` is order isomorphic to the set of ordinals smaller than `type r`. -/
 @[simps]
-def enumIso (r : α → α → Prop) [IsWellOrder α r] : Subrel (· < ·) (· < type r) ≃r r :=
+def enumIso (r : α → α → Prop) [IsWellOrder α r] : Subrel (· < ·) ⟨(· < type r)⟩ ≃r r :=
   { (typein.principalSeg r).subrelIso with
     toFun := fun x ↦ enum r x.1 x.2
     invFun := fun x ↦ ⟨typein r x, typein_lt_type r x⟩ }

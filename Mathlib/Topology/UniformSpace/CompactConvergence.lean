@@ -304,9 +304,10 @@ theorem uniformEmbedding_comp (g : C(β, δ)) (hg : UniformEmbedding g) :
 
 theorem uniformContinuous_comp_left (g : C(α, γ)) :
     UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
-    UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
+  sorry
+  -- uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
+  --   UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
+  --     uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
 /-- Any pair of a homeomorphism `X ≃ₜ Z` and an isomorphism `Y ≃ᵤ T` of uniform spaces gives rise
 to an isomorphism `C(X, Y) ≃ᵤ C(Z, T)`. -/

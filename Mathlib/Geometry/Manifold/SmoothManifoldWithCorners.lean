@@ -1033,8 +1033,8 @@ theorem extend_preimage_inter_eq :
 
 -- Porting note: an `aux` lemma that is no longer needed. Delete?
 theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
-      ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
+    ((f.extend I).symm ⁻¹' s ∩ range I : Set _).toPred =ᶠ[𝓝 (f.extend I x)]
+      ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _).toPred := by
   rw [f.extend_target, inter_assoc, inter_comm (range I)]
   conv =>
     congr
@@ -1047,7 +1047,7 @@ theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (h
 
 theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
     (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
+    ((f.extend I).symm ⁻¹' s ∩ range I : Set _).toPred =ᶠ[𝓝 (f.extend I x)] (f.extend I '' s).toPred := by
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin _ _ hx,
     map_extend_nhdsWithin_eq_image_of_subset _ _ hx hs]
 #align local_homeomorph.extend_symm_preimage_inter_range_eventually_eq PartialHomeomorph.extend_symm_preimage_inter_range_eventuallyEq

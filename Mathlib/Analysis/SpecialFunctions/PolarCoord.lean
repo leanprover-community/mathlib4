@@ -107,7 +107,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
   Measure.prod.instIsAddHaarMeasure _ _
 
-theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
+theorem polarCoord_source_ae_eq_univ : polarCoord.source.toPred =ᵐ[volume] univ.toPred := by
   have A : polarCoord.sourceᶜ ⊆ LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) := by
     intro x hx
     simp only [polarCoord_source, compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_lt,

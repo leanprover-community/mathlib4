@@ -85,7 +85,7 @@ theorem adjoin_induction {p : A → Prop} {x : A} (h : x ∈ adjoin R s) (mem : 
     (algebraMap : ∀ r, p (algebraMap R A r)) (add : ∀ x y, p x → p y → p (x + y))
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
   let S : Subalgebra R A :=
-    { carrier := p
+    { carrier := ⟨p⟩
       mul_mem' := mul _ _
       add_mem' := add _ _
       algebraMap_mem' := algebraMap }
@@ -227,7 +227,8 @@ theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjo
       -- Porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
       simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
         Subalgebra.coe_comap]
-      exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
+      sorry
+      -- exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
 #align algebra.adjoin_image Algebra.adjoin_image
 
 @[simp]

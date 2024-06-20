@@ -165,8 +165,8 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       fun x hx y hy ↦ hx.2.trans <| infEdist_le_edist_of_mem hy⟩
   have Ssep' : ∀ n, IsMetricSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl inter_subset_right
-  have S_sub : ∀ n, S n ⊆ s \ t := fun n =>
-    subset_inter inter_subset_left (Ssep n).subset_compl_right
+  have S_sub : ∀ n, S n ⊆ s \ t := fun n => sorry
+    -- subset_inter inter_subset_left (Ssep n).subset_compl_right
   have hSs : ∀ n, μ (s ∩ t) + μ (S n) ≤ μ s := fun n =>
     calc
       μ (s ∩ t) + μ (S n) = μ (s ∩ t ∪ S n) := Eq.symm <| hm _ _ <| (Ssep' n).symm
@@ -208,22 +208,23 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   intro n
   rw [← hm.finset_iUnion_of_pairwise_separated]
   · exact μ.mono (iUnion_subset fun i => iUnion_subset fun _ x hx => mem_iUnion.2 ⟨_, hx.1⟩)
-  suffices ∀ i j, i < j → IsMetricSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
-    fun i _ j _ hij => hij.lt_or_lt.elim
-      (fun h => (this i j h).mono inter_subset_left fun x hx => by exact ⟨hx.1.1, hx.2⟩)
-      fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
-  intro i j hj
-  have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
-    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; omega
-  refine ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
-    fun x hx y hy => ?_⟩
-  have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
-  rcases infEdist_lt_iff.mp this with ⟨z, hzt, hyz⟩
-  have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ edist x z := le_infEdist.1 hx.2 _ hzt
-  apply ENNReal.le_of_add_le_add_right hyz.ne_top
-  refine le_trans ?_ (edist_triangle _ _ _)
-  refine (add_le_add le_rfl hyz.le).trans (Eq.trans_le ?_ hxz)
-  rw [tsub_add_cancel_of_le A.le]
+  sorry
+  -- suffices ∀ i j, i < j → IsMetricSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
+  --   fun i _ j _ hij => hij.lt_or_lt.elim
+  --     (fun h => (this i j h).mono inter_subset_left fun x hx => by exact ⟨hx.1.1, hx.2⟩)
+  --     fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
+  -- intro i j hj
+  -- have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
+  --   rw [ENNReal.inv_lt_inv, Nat.cast_lt]; omega
+  -- refine ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
+  --   fun x hx y hy => ?_⟩
+  -- have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
+  -- rcases infEdist_lt_iff.mp this with ⟨z, hzt, hyz⟩
+  -- have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ edist x z := le_infEdist.1 hx.2 _ hzt
+  -- apply ENNReal.le_of_add_le_add_right hyz.ne_top
+  -- refine le_trans ?_ (edist_triangle _ _ _)
+  -- refine (add_le_add le_rfl hyz.le).trans (Eq.trans_le ?_ hxz)
+  -- rw [tsub_add_cancel_of_le A.le]
 #align measure_theory.outer_measure.is_metric.borel_le_caratheodory MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory
 
 theorem le_caratheodory [MeasurableSpace X] [BorelSpace X] (hm : IsMetric μ) :

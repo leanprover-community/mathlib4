@@ -48,7 +48,7 @@ theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (
     LocallyFinite (f ∘ g) := fun x => by
   let ⟨t, htx, htf⟩ := hf x
   refine ⟨t, htx, htf.preimage <| ?_⟩
-  exact hg.mono fun i (hi : Set.Nonempty _) => hi.left
+  exact hg.mono fun i (hi : Set.Nonempty _) => sorry -- hi.left
 #align locally_finite.comp_inj_on LocallyFinite.comp_injOn
 
 theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :

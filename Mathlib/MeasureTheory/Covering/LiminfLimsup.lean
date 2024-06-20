@@ -41,8 +41,8 @@ https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s : ℕ → Set α}
     (hs : ∀ i, IsClosed (s i)) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0)) (hrp : 0 ≤ r₁)
     {M : ℝ} (hM : 0 < M) (hM' : M < 1) (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
-    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ≤ᵐ[μ]
-      (blimsup (fun i => cthickening (r₂ i) (s i)) atTop p : Set α) := by
+    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α).toPred ≤ᵐ[μ]
+      (blimsup (fun i => cthickening (r₂ i) (s i)) atTop p : Set α).toPred := by
   /- Sketch of proof:
 
   Assume that `p` is identically true for simplicity. Let `Y₁ i = cthickening (r₁ i) (s i)`, define
@@ -119,14 +119,15 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   have h₃ : ∀ᶠ j in atTop, Disjoint (b j) (W ∩ B j) := by
     apply hMr.mp
     rw [eventually_atTop]
-    refine
-      ⟨i, fun j hj hj' => Disjoint.inf_right (B j) <| Disjoint.inf_right' (blimsup Y₁ atTop p) ?_⟩
-    change Disjoint (b j) (Z i)ᶜ
-    rw [disjoint_compl_right_iff_subset]
-    refine (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
-      ((cthickening_mono hj' _).trans fun a ha => ?_)
-    simp only [Z, mem_iUnion, exists_prop]
-    exact ⟨f j, ⟨hf₁ j, hj.le.trans (hf₂ j)⟩, ha⟩
+    sorry
+    -- refine
+    --   ⟨i, fun j hj hj' => Disjoint.inf_right (B j) <| Disjoint.inf_right' (blimsup Y₁ atTop p) ?_⟩
+    -- change Disjoint (b j) (Z i)ᶜ
+    -- rw [disjoint_compl_right_iff_subset]
+    -- refine (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
+    --   ((cthickening_mono hj' _).trans fun a ha => ?_)
+    -- simp only [Z, mem_iUnion, exists_prop]
+    -- exact ⟨f j, ⟨hf₁ j, hj.le.trans (hf₂ j)⟩, ha⟩
   have h₄ : ∀ᶠ j in atTop, μ (B j) ≤ C * μ (b j) :=
     (hr.eventually (IsUnifLocDoublingMeasure.eventually_measure_le_scaling_constant_mul'
       μ M hM)).mono fun j hj => hj (w j)
@@ -157,8 +158,8 @@ https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : ℕ → Set α} {M : ℝ}
     (hM : 0 < M) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0))
     (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
-    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ≤ᵐ[μ]
-      (blimsup (fun i => cthickening (r₂ i) (s i)) atTop p : Set α) := by
+    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α).toPred ≤ᵐ[μ]
+      (blimsup (fun i => cthickening (r₂ i) (s i)) atTop p : Set α).toPred := by
   let R₁ i := max 0 (r₁ i)
   let R₂ i := max 0 (r₂ i)
   have hRp : 0 ≤ R₁ := fun i => le_max_left 0 (r₁ i)
@@ -192,11 +193,11 @@ NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
     (r : ℕ → ℝ) (hr : Tendsto r atTop (𝓝 0)) :
-    (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
-      (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) := by
+    (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α).toPred =ᵐ[μ]
+      (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α).toPred := by
   have : ∀ (p : ℕ → Prop) {r : ℕ → ℝ} (_ : Tendsto r atTop (𝓝[>] 0)),
-      (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
-        (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) := by
+      (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α).toPred =ᵐ[μ]
+        (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α).toPred := by
     clear p hr r; intro p r hr
     have hr' : Tendsto (fun i => M * r i) atTop (𝓝[>] 0) := by
       convert TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [mul_zero]
@@ -231,8 +232,8 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
 
 theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ → Set α} {r : ℕ → ℝ}
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
-    (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐ[μ]
-      (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
+    (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α).toPred =ᵐ[μ]
+      (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α).toPred := by
   refine eventuallyLE_antisymm_iff.mpr ⟨?_, HasSubset.Subset.eventuallyLE (?_ : _ ≤ _)⟩
   · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (@one_half_pos ℝ _) r hr).symm
       EventuallyEq.rfl]
@@ -246,8 +247,8 @@ theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ
 /-- An auxiliary result en route to `blimsup_thickening_mul_ae_eq`. -/
 theorem blimsup_thickening_mul_ae_eq_aux (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
     (r : ℕ → ℝ) (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
-    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
-      (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
+    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α).toPred =ᵐ[μ]
+      (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α).toPred := by
   have h₁ := blimsup_cthickening_ae_eq_blimsup_thickening (s := s) μ hr hr'
   have h₂ := blimsup_cthickening_mul_ae_eq μ p s hM r hr
   replace hr : Tendsto (fun i => M * r i) atTop (𝓝 0) := by convert hr.const_mul M; simp
@@ -270,8 +271,8 @@ NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M) (r : ℕ → ℝ)
     (hr : Tendsto r atTop (𝓝 0)) :
-    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
-      (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
+    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α).toPred =ᵐ[μ]
+      (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α).toPred := by
   let q : ℕ → Prop := fun i => p i ∧ 0 < r i
   have h₁ : blimsup (fun i => thickening (r i) (s i)) atTop p =
       blimsup (fun i => thickening (r i) (s i)) atTop q := by

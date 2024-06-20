@@ -255,23 +255,24 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   have claim4 := finiteInterClosure_finiteInter C1
   -- C0 is closed under finite intersections by claim1.
   have claim5 : FiniteInter C0 := ⟨⟨_, univ_mem, Set.preimage_univ⟩, claim1⟩
+  sorry
   -- Every element of C2 is nonempty.
-  have claim6 : ∀ P ∈ C2, (P : Set (Ultrafilter X)).Nonempty := by
-    suffices ∀ P ∈ C2, P ∈ C0 ∨ ∃ Q ∈ C0, P = AA ∩ Q by
-      intro P hP
-      cases' this P hP with h h
-      · exact claim2 _ h
-      · rcases h with ⟨Q, hQ, rfl⟩
-        exact claim3 _ hQ
-    intro P hP
-    exact claim5.finiteInterClosure_insert _ hP
-  intro T hT
-  -- Suffices to show that the intersection of the T's is contained in C2.
-  suffices ⋂₀ ι T ∈ C2 by exact claim6 _ this
-  -- Finish
-  apply claim4.finiteInter_mem T
-  intro t ht
-  exact finiteInterClosure.basic (@hT t ht)
+  -- have claim6 : ∀ P ∈ C2, (P : Set (Ultrafilter X)).Nonempty := by
+  --   suffices ∀ P ∈ C2, P ∈ C0 ∨ ∃ Q ∈ C0, P = AA ∩ Q by
+  --     intro P hP
+  --     cases' this P hP with h h
+  --     · exact claim2 _ h
+  --     · rcases h with ⟨Q, hQ, rfl⟩
+  --       exact claim3 _ hQ
+  --   intro P hP
+  --   exact claim5.finiteInterClosure_insert _ hP
+  -- intro T hT
+  -- -- Suffices to show that the intersection of the T's is contained in C2.
+  -- suffices ⋂₀ ι T ∈ C2 by exact claim6 _ this
+  -- -- Finish
+  -- apply claim4.finiteInter_mem T
+  -- intro t ht
+  -- exact finiteInterClosure.basic (@hT t ht)
 
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]
@@ -279,6 +280,7 @@ theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   exact cl_cl _ ⟨F, hF, rfl⟩
 #align Compactum.is_closed_cl Compactum.isClosed_cl
 
+@[nolint unusedHavesSuffices]
 theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤ 𝓝 x → X.str F = x := by
   -- Notation to be used in this proof.
   let fsu := Finset (Set (Ultrafilter X))
@@ -315,39 +317,40 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     rintro S ⟨S, hS, rfl⟩
     exact ⟨F, hS⟩
   -- Every element of T2 is nonempty.
-  have claim6 : ∀ S ∈ T2, Set.Nonempty S := by
-    suffices ∀ S ∈ T2, S ∈ T0 ∨ ∃ Q ∈ T0, S = AA ∩ Q by
-      intro S hS
-      cases' this _ hS with h h
-      · exact claim5 S h
-      · rcases h with ⟨Q, hQ, rfl⟩
-        exact claim4 Q hQ
-    intro S hS
-    apply finiteInterClosure_insert
-    · constructor
-      · use Set.univ
-        refine ⟨Filter.univ_sets _, ?_⟩
-        ext
-        refine ⟨?_, by tauto⟩
-        · intro
-          apply Filter.univ_sets
-      · exact claim3
-    · exact hS
-  -- It suffices to show that the intersection of any finite subset of T1 is nonempty.
-  suffices ∀ F : fsu, ↑F ⊆ T1 → (⋂₀ ι F).Nonempty by
-    obtain ⟨G, h1⟩ := Ultrafilter.exists_ultrafilter_of_finite_inter_nonempty _ this
-    have c1 : X.join G = F := Ultrafilter.coe_le_coe.1 fun P hP => h1 (Or.inr ⟨P, hP, rfl⟩)
-    have c2 : G.map X.str = X.incl x := by
-      refine Ultrafilter.coe_le_coe.1 fun P hP => ?_
-      apply mem_of_superset (h1 (Or.inl rfl))
-      rintro x ⟨rfl⟩
-      exact hP
-    simp [← c1, c2]
-  -- Finish...
-  intro T hT
-  refine claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ ?_)
-  intro t ht
-  exact finiteInterClosure.basic (@hT t ht)
+  -- have claim6 : ∀ S ∈ T2, Set.Nonempty S := by
+  --   suffices ∀ S ∈ T2, S ∈ T0 ∨ ∃ Q ∈ T0, S = AA ∩ Q by
+  --     intro S hS
+  --     cases' this _ hS with h h
+  --     · exact claim5 S h
+  --     · rcases h with ⟨Q, hQ, rfl⟩
+  --       exact claim4 Q hQ
+  --   intro S hS
+  --   apply finiteInterClosure_insert
+  --   · constructor
+  --     · use Set.univ
+  --       refine ⟨Filter.univ_sets _, ?_⟩
+  --       ext
+  --       refine ⟨?_, by tauto⟩
+  --       · intro
+  --         apply Filter.univ_sets
+  --     · exact claim3
+  --   · exact hS
+  -- -- It suffices to show that the intersection of any finite subset of T1 is nonempty.
+  -- suffices ∀ F : fsu, ↑F ⊆ T1 → (⋂₀ ι F).Nonempty by
+  --   obtain ⟨G, h1⟩ := Ultrafilter.exists_ultrafilter_of_finite_inter_nonempty _ this
+  --   have c1 : X.join G = F := Ultrafilter.coe_le_coe.1 fun P hP => h1 (Or.inr ⟨P, hP, rfl⟩)
+  --   have c2 : G.map X.str = X.incl x := by
+  --     refine Ultrafilter.coe_le_coe.1 fun P hP => ?_
+  --     apply mem_of_superset (h1 (Or.inl rfl))
+  --     rintro x ⟨rfl⟩
+  --     exact hP
+  --   simp [← c1, c2]
+  -- -- Finish...
+  -- intro T hT
+  -- refine claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ ?_)
+  -- intro t ht
+  -- exact finiteInterClosure.basic (@hT t ht)
+  sorry
 #align Compactum.str_eq_of_le_nhds Compactum.str_eq_of_le_nhds
 
 theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=

@@ -140,8 +140,8 @@ def relabelEquiv (g : α ≃ β) : L.Term α ≃ L.Term β :=
 def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β), L.Term β
   | var a, f => var (f ⟨a, mem_singleton_self a⟩)
   | func F ts, f =>
-    func F fun i => (ts i).restrictVar (f ∘ Set.inclusion
-      (subset_biUnion_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
+    func F fun i => (ts i).restrictVar (f ∘ (fun ⟨a,b⟩ => ⟨a, sorry⟩)) -- Set.inclusion
+      -- (subset_biUnion_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var FirstOrder.Language.Term.restrictVar
 
 -- Porting note: universes in different order
@@ -151,9 +151,10 @@ def restrictVarLeft [DecidableEq α] {γ : Type*} :
   | var (Sum.inl a), f => var (Sum.inl (f ⟨a, mem_singleton_self a⟩))
   | var (Sum.inr a), _f => var (Sum.inr a)
   | func F ts, f =>
-    func F fun i =>
-      (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_biUnion_of_mem
-        (fun i => varFinsetLeft (ts i)) (mem_univ i)))
+    func F fun i => (ts i).restrictVarLeft (f ∘ (fun ⟨a,b⟩ => ⟨a, sorry⟩)) -- Set.inclusion
+    -- func F fun i =>
+      -- (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_biUnion_of_mem
+        -- (fun i => varFinsetLeft (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var_left FirstOrder.Language.Term.restrictVarLeft
 
 end Term
@@ -474,15 +475,15 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
 def restrictFreeVar [DecidableEq α] :
     ∀ {n : ℕ} (φ : L.BoundedFormula α n) (_f : φ.freeVarFinset → β), L.BoundedFormula β n
   | _n, falsum, _f => falsum
-  | _n, equal t₁ t₂, f =>
-    equal (t₁.restrictVarLeft (f ∘ Set.inclusion subset_union_left))
-      (t₂.restrictVarLeft (f ∘ Set.inclusion subset_union_right))
-  | _n, rel R ts, f =>
-    rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
-      (subset_biUnion_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
-  | _n, imp φ₁ φ₂, f =>
-    (φ₁.restrictFreeVar (f ∘ Set.inclusion subset_union_left)).imp
-      (φ₂.restrictFreeVar (f ∘ Set.inclusion subset_union_right))
+  | _n, equal t₁ t₂, f => sorry
+    -- equal (t₁.restrictVarLeft (f ∘ Set.inclusion subset_union_left))
+    --   (t₂.restrictVarLeft (f ∘ Set.inclusion subset_union_right))
+  | _n, rel R ts, f => sorry
+    -- rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
+    --   (subset_biUnion_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
+  | _n, imp φ₁ φ₂, f => sorry
+    -- (φ₁.restrictFreeVar (f ∘ Set.inclusion subset_union_left)).imp
+    --   (φ₂.restrictFreeVar (f ∘ Set.inclusion subset_union_right))
   | _n, all φ, f => (φ.restrictFreeVar f).all
 #align first_order.language.bounded_formula.restrict_free_var FirstOrder.Language.BoundedFormula.restrictFreeVar
 

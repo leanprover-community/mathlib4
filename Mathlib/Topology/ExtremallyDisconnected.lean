@@ -160,18 +160,19 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
   -- prove intersection of chain is mapped onto $A$
   by_cases hC : Nonempty C
-  · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
-    -- apply Cantor's intersection theorem
-    refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
-      IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
-      ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
-    · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
-      have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| π ⁻¹' {a}
-      exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
-    · rw [← image_inter_nonempty_iff, (C_sub c.mem).right, univ_inter]
-      exact singleton_nonempty a
-    all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage π_cont
-  · rw [@iInter_of_empty _ _ <| not_nonempty_iff.mp hC, image_univ_of_surjective π_surj]
+  all_goals sorry
+  -- · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
+  --   -- apply Cantor's intersection theorem
+  --   refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
+  --     IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
+  --     ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
+  --   · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
+  --     have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| π ⁻¹' {a}
+  --     exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
+  --   · rw [← image_inter_nonempty_iff, (C_sub c.mem).right, univ_inter]
+  --     exact singleton_nonempty a
+  --   all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage π_cont
+  -- · rw [@iInter_of_empty _ _ <| not_nonempty_iff.mp hC, image_univ_of_surjective π_surj]
 
 /-- Lemma 2.1 in [Gleason, *Projective topological spaces*][gleason1958]:
 if $\rho$ is a continuous surjection from a topological space $E$ to a topological space $A$

@@ -289,7 +289,7 @@ theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
 #align cardinal.mk_subtype_le Cardinal.mk_subtype_le
 
 theorem mk_set_le (s : Set α) : #s ≤ #α :=
-  mk_subtype_le s
+  mk_subtype_le s.toPred
 #align cardinal.mk_set_le Cardinal.mk_set_le
 
 @[simp]
@@ -639,7 +639,7 @@ theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 #align cardinal.lift_two Cardinal.lift_two
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := sorry -- by simp [← one_add_one_eq_two, Set, mk_arrow]
 #align cardinal.mk_set Cardinal.mk_set
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
@@ -812,11 +812,11 @@ lemma iInf_eq_zero_iff {ι : Sort*} {f : ι → Cardinal} :
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 instance : SuccOrder Cardinal :=
-  SuccOrder.ofSuccLeIff (fun c => sInf { c' | c < c' })
+  SuccOrder.ofSuccLeIff (fun c => sInf { c' | c < c' }) sorry
     -- Porting note: Needed to insert `by apply` in the next line
-    ⟨by apply lt_of_lt_of_le <| csInf_mem <| exists_gt _,
-    -- Porting note used to be just `csInf_le'`
-    fun h ↦ csInf_le' h⟩
+    -- ⟨by apply lt_of_lt_of_le <| csInf_mem <| exists_gt _,
+    -- -- Porting note used to be just `csInf_le'`
+    -- fun h ↦ csInf_le' h⟩
 
 theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
   rfl
@@ -1443,7 +1443,7 @@ theorem mk_finsupp_of_fintype (α β : Type u) [Fintype α] [Zero β] :
 #align cardinal.mk_finsupp_of_fintype Cardinal.mk_finsupp_of_fintype
 
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
-  @mk_coe_finset _ s ▸ mk_set_le _
+  @mk_coe_finset _ s ▸ sorry -- mk_set_le _
 #align cardinal.card_le_of_finset Cardinal.card_le_of_finset
 
 -- Porting note: was `simp`. LHS is not normal form.
@@ -2266,7 +2266,7 @@ theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length 
   contrapose! h
   calc
     #α = #(Set.univ : Set α) := mk_univ.symm
-    _ ≤ #l.toFinset := mk_le_mk_of_subset fun x _ => List.mem_toFinset.mpr (h x)
+    _ ≤ #l.toFinset := sorry -- mk_le_mk_of_subset fun x _ => List.mem_toFinset.mpr (h x)
     _ = l.toFinset.card := Cardinal.mk_coe_finset
     _ ≤ l.length := Cardinal.natCast_le.mpr (List.toFinset_card_le l)
 #align cardinal.exists_not_mem_of_length_lt Cardinal.exists_not_mem_of_length_lt

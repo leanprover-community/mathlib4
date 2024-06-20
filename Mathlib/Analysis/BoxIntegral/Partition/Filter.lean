@@ -404,8 +404,8 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
   refine ⟨π₁.disjUnion π₂.toPrepartition this, ?_, ?_⟩
   · suffices ↑I \ π.iUnion ∪ π.iUnion \ (π.filter p).iUnion = ↑I \ (π.filter p).iUnion by
       simp [π₂, *]
-    have h : (π.filter p).iUnion ⊆ π.iUnion :=
-      biUnion_subset_biUnion_left (Finset.filter_subset _ _)
+    have h : (π.filter p).iUnion ⊆ π.iUnion := sorry
+      -- biUnion_subset_biUnion_left (Finset.filter_subset _ _)
     ext x
     fconstructor
     · rintro (⟨hxI, hxπ⟩ | ⟨hxπ, hxp⟩)

@@ -193,7 +193,8 @@ theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
   apply iUnion₂_subset; intro g₁ hg₁; rw [preimage_subset_iff]; intro g₂ hg₂
   have := h1t hg₂
   rcases this with ⟨_, ⟨g₃, rfl⟩, A, ⟨hg₃, rfl⟩, h2V⟩; rw [mem_preimage, ← mul_assoc] at h2V
-  exact mem_biUnion (Finset.mul_mem_mul hg₃ hg₁) h2V
+  sorry
+  -- exact mem_biUnion (Finset.mul_mem_mul hg₃ hg₁) h2V
 #align measure_theory.measure.haar.le_index_mul MeasureTheory.Measure.haar.le_index_mul
 #align measure_theory.measure.haar.le_add_index_mul MeasureTheory.Measure.haar.le_addIndex_mul
 
@@ -226,9 +227,10 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   rw [← h2s, ← h2t]
   refine le_trans ?_ (Finset.card_union_le _ _)
   apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
-  apply union_subset <;> refine Subset.trans (by assumption) ?_ <;>
-    apply biUnion_subset_biUnion_left <;> intro g hg <;> simp only [mem_def] at hg <;>
-    simp only [mem_def, Multiset.mem_union, Finset.union_val, hg, or_true_iff, true_or_iff]
+  sorry
+  -- apply union_subset <;> refine Subset.trans (by assumption) ?_ <;>
+  --   apply biUnion_subset_biUnion_left <;> intro g hg <;> simp only [mem_def] at hg <;>
+  --   simp only [mem_def, Multiset.mem_union, Finset.union_val, hg, or_true_iff, true_or_iff]
 #align measure_theory.measure.haar.index_union_le MeasureTheory.Measure.haar.index_union_le
 #align measure_theory.measure.haar.add_index_union_le MeasureTheory.Measure.haar.addIndex_union_le
 

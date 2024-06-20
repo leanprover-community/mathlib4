@@ -774,7 +774,7 @@ theorem basis_iff_mem_maximals (hX : X ⊆ M.E := by aesop_mat):
   rw [Basis, and_iff_left hX]
 
 theorem basis_iff_mem_maximals_Prop (hX : X ⊆ M.E := by aesop_mat):
-    M.Basis I X ↔ I ∈ maximals (· ⊆ ·) (fun I ↦ M.Indep I ∧ I ⊆ X) :=
+    M.Basis I X ↔ I ∈ maximals (· ⊆ ·) ⟨fun I ↦ M.Indep I ∧ I ⊆ X⟩ :=
   basis_iff_mem_maximals
 
 theorem Indep.basis_of_maximal_subset (hI : M.Indep I) (hIX : I ⊆ X)

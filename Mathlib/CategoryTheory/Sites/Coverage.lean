@@ -85,7 +85,7 @@ lemma factorsThruAlong_id {X : C} (S T : Presieve X) :
 
 lemma factorsThru_of_le {X : C} (S T : Presieve X) (h : S ≤ T) :
     S.FactorsThru T :=
-  fun Y g hg => ⟨Y, 𝟙 _, g, h _ hg, by simp⟩
+  fun Y g hg => ⟨Y, 𝟙 _, g, h _ _ hg, by simp⟩
 
 lemma le_of_factorsThru_sieve {X : C} (S : Presieve X) (T : Sieve X) (h : S.FactorsThru T) :
     S ≤ T := by
@@ -216,7 +216,7 @@ associated Grothendieck topology is pullback stable, and so an additional constr
 in the inductive construction is not needed.
 -/
 def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
-  sieves := saturate K
+  sieves X := ⟨saturate K X⟩
   top_mem' := .top
   pullback_stable' := by
     intro X Y S f hS

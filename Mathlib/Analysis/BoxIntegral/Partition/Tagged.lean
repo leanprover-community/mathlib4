@@ -85,8 +85,8 @@ theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   rw [Box.mem_coe, mem_toPrepartition, exists_prop]
 #align box_integral.tagged_prepartition.mem_Union BoxIntegral.TaggedPrepartition.mem_iUnion
 
-theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
-  subset_biUnion_of_mem h
+theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion := sorry
+  -- subset_biUnion_of_mem h
 #align box_integral.tagged_prepartition.subset_Union BoxIntegral.TaggedPrepartition.subset_iUnion
 
 theorem iUnion_subset : π.iUnion ⊆ I :=

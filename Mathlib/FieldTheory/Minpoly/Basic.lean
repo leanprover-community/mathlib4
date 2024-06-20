@@ -36,7 +36,7 @@ For example, if `V` is a `𝕜`-vector space for some field `𝕜` and `f : V �
 the minimal polynomial of `f` is `minpoly 𝕜 f`.
 -/
 noncomputable def minpoly (x : B) : A[X] :=
-  if hx : IsIntegral A x then degree_lt_wf.min _ hx else 0
+  if hx : IsIntegral A x then degree_lt_wf.min {p | Monic p ∧ eval₂ _ x p = 0} hx else 0
 #align minpoly minpoly
 
 end MinPolyDef
@@ -52,7 +52,7 @@ variable {x : B}
 theorem monic (hx : IsIntegral A x) : Monic (minpoly A x) := by
   delta minpoly
   rw [dif_pos hx]
-  exact (degree_lt_wf.min_mem _ hx).1
+  exact (degree_lt_wf.min_mem {p | Monic p ∧ eval₂ _ x p = 0} hx).1
 #align minpoly.monic minpoly.monic
 
 /-- A minimal polynomial is nonzero. -/
@@ -87,7 +87,7 @@ variable (A x)
 theorem aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
   split_ifs with hx
-  · exact (degree_lt_wf.min_mem _ hx).2
+  · exact (degree_lt_wf.min_mem {p | Monic p ∧ eval₂ _ x p = 0} hx).2
   · exact aeval_zero _
 #align minpoly.aeval minpoly.aeval
 
@@ -137,7 +137,7 @@ it is the monic polynomial with smallest degree that has `x` as its root. -/
 theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p := by
   delta minpoly; split_ifs with hx
-  · exact le_of_not_lt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
+  · exact le_of_not_lt (degree_lt_wf.not_lt_min {p | Monic p ∧ eval₂ _ x p = 0} hx ⟨pmonic, hp⟩)
   · simp only [degree_zero, bot_le]
 #align minpoly.min minpoly.min
 

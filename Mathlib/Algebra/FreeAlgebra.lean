@@ -570,7 +570,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
     (a : FreeAlgebra R X) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from X
   let s : Subalgebra R (FreeAlgebra R X) :=
-    { carrier := C
+    { carrier := ⟨C⟩
       mul_mem' := h_mul _ _
       add_mem' := h_add _ _
       algebraMap_mem' := h_grade0 }

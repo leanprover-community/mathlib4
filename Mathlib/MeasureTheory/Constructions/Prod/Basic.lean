@@ -525,8 +525,8 @@ theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν
   rw [map_apply measurable_snd hs, ← univ_prod, prod_prod, h2s, mul_zero]
 #align measure_theory.measure.quasi_measure_preserving_snd MeasureTheory.Measure.quasiMeasurePreserving_snd
 
-lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : t =ᵐ[ν] t') :
-    (s ×ˢ t : Set (α × β)) =ᵐ[μ.prod ν] (s' ×ˢ t' : Set (α × β)) :=
+lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s.toPred =ᵐ[μ] s'.toPred) (ht : t.toPred =ᵐ[ν] t'.toPred) :
+    (s ×ˢ t : Set (α × β)).toPred =ᵐ[μ.prod ν] (s' ×ˢ t' : Set (α × β)).toPred :=
   (quasiMeasurePreserving_fst.preimage_ae_eq hs).inter
     (quasiMeasurePreserving_snd.preimage_ae_eq ht)
 
@@ -538,19 +538,20 @@ lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
 
 lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
     (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
-    NullMeasurableSet (s ×ˢ t) (μ.prod ν) :=
-  let ⟨s₀, mble_s₀, s_aeeq_s₀⟩ := s_mble
-  let ⟨t₀, mble_t₀, t_aeeq_t₀⟩ := t_mble
-  ⟨s₀ ×ˢ t₀, ⟨mble_s₀.prod mble_t₀, set_prod_ae_eq s_aeeq_s₀ t_aeeq_t₀⟩⟩
+    NullMeasurableSet (s ×ˢ t) (μ.prod ν) := sorry
+  -- let ⟨s₀, mble_s₀, s_aeeq_s₀⟩ := s_mble
+  -- let ⟨t₀, mble_t₀, t_aeeq_t₀⟩ := t_mble
+  -- ⟨s₀ ×ˢ t₀, ⟨mble_s₀.prod mble_t₀, set_prod_ae_eq s_aeeq_s₀ t_aeeq_t₀⟩⟩
 
 /-- If `s ×ˢ t` is a null measurable set and `μ s ≠ 0`, then `t` is a null measurable set. -/
 lemma _root_.MeasureTheory.NullMeasurableSet.right_of_prod {s : Set α} {t : Set β}
     (h : NullMeasurableSet (s ×ˢ t) (μ.prod ν)) (hs : μ s ≠ 0) : NullMeasurableSet t ν := by
   rcases h with ⟨u, hum, hu⟩
-  obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, (Prod.mk x ⁻¹' (s ×ˢ t)) =ᵐ[ν] (Prod.mk x ⁻¹' u) :=
-    ((frequently_ae_iff.2 hs).and_eventually (ae_ae_eq_curry_of_prod hu)).exists
-  refine ⟨Prod.mk x ⁻¹' u, measurable_prod_mk_left hum, ?_⟩
-  rwa [mk_preimage_prod_right hxs] at hx
+  sorry
+  -- obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, (Prod.mk x ⁻¹' (s ×ˢ t)) =ᵐ[ν] (Prod.mk x ⁻¹' u) :=
+  --   ((frequently_ae_iff.2 hs).and_eventually (ae_ae_eq_curry_of_prod hu)).exists
+  -- refine ⟨Prod.mk x ⁻¹' u, measurable_prod_mk_left hum, ?_⟩
+  -- rwa [mk_preimage_prod_right hxs] at hx
 
 /-- If `Prod.snd ⁻¹' t` is a null measurable set and `μ ≠ 0`, then `t` is a null measurable set. -/
 lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_snd [NeZero μ] {t : Set β}

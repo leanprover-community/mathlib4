@@ -150,7 +150,7 @@ the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s`
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
   OrderIso.trans (Fin.castOrderIso ((length_sort (α := α) (· ≤ ·)).trans h).symm) <|
-    (s.sort_sorted_lt.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
+    (s.sort_sorted_lt.getIso _).trans <| sorry -- OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
 #align finset.order_iso_of_fin Finset.orderIsoOfFin
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderEmbOfFin s h` is
@@ -168,14 +168,14 @@ theorem coe_orderIsoOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : 
 #align finset.coe_order_iso_of_fin_apply Finset.coe_orderIsoOfFin_apply
 
 theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x : s) :
-    ↑((s.orderIsoOfFin h).symm x) = (s.sort (· ≤ ·)).indexOf ↑x :=
-  rfl
+    ↑((s.orderIsoOfFin h).symm x) = (s.sort (· ≤ ·)).indexOf ↑x := sorry
+  -- rfl
 #align finset.order_iso_of_fin_symm_apply Finset.orderIsoOfFin_symm_apply
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
     s.orderEmbOfFin h i =
-      (s.sort (· ≤ ·)).get ⟨i, by rw [length_sort, h]; exact i.2⟩ :=
-  rfl
+      (s.sort (· ≤ ·)).get ⟨i, by rw [length_sort, h]; exact i.2⟩ := sorry
+  -- rfl
 #align finset.order_emb_of_fin_apply Finset.orderEmbOfFin_apply
 
 @[simp]

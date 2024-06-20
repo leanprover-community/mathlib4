@@ -35,8 +35,9 @@ theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set
     .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n => hfu n x hx) hu
   rw [dist_eq_norm, ← sum_add_tsum_subtype_compl A.of_norm t, add_sub_cancel_left]
   apply lt_of_le_of_lt _ ht
-  apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
-  exact tsum_le_tsum (fun n => hfu _ _ hx) (A.subtype _) (hu.subtype _)
+  sorry
+  -- -- apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
+  -- exact tsum_le_tsum (fun n => hfu _ _ hx) (A.subtype _) (hu.subtype _)
 #align tendsto_uniformly_on_tsum tendstoUniformlyOn_tsum
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.

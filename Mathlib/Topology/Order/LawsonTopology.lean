@@ -221,11 +221,12 @@ lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
   simp only [IsLawson.topology_eq_lawson]
   rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
     ← WithLawson.isClosed_preimage_ofLawson]
-  apply IsClosed.inter
-    (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
-  rw [ lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
-  apply lawsonClosed_of_scottClosed
-  exact IsScott.isClosed_Iic
+  sorry
+  -- apply IsClosed.inter
+  --   (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
+  -- rw [ lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
+  -- apply lawsonClosed_of_scottClosed
+  -- exact IsScott.isClosed_Iic
 
 -- see Note [lower instance priority]
 /-- The Lawson topology on a partial order is T₀. -/

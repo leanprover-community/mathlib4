@@ -198,7 +198,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
     (a : TensorAlgebra R M) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (TensorAlgebra R M) :=
-    { carrier := C
+    { carrier := ⟨C⟩
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }

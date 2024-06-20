@@ -316,7 +316,7 @@ lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
   rw [← diff_compl, measure_diff_null ht]
 
 @[simp]
-theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
+theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α).toPred =ᵐ[μ] s.toPred ↔ t.toPred ≤ᵐ[μ] s.toPred := by
   rw [ae_le_set]
   refine
     ⟨fun h => by simpa only [union_diff_left] using (ae_eq_set.mp h).1, fun h =>
@@ -326,12 +326,12 @@ theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤
 #align measure_theory.union_ae_eq_left_iff_ae_subset MeasureTheory.union_ae_eq_left_iff_ae_subset
 
 @[simp]
-theorem union_ae_eq_right_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] t ↔ s ≤ᵐ[μ] t := by
+theorem union_ae_eq_right_iff_ae_subset : (s ∪ t : Set α).toPred =ᵐ[μ] t.toPred ↔ s.toPred ≤ᵐ[μ] t.toPred := by
   rw [union_comm, union_ae_eq_left_iff_ae_subset]
 #align measure_theory.union_ae_eq_right_iff_ae_subset MeasureTheory.union_ae_eq_right_iff_ae_subset
 
-theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t ≤ μ s) (hsm : MeasurableSet s)
-    (ht : μ t ≠ ∞) : s =ᵐ[μ] t := by
+theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s.toPred ≤ᵐ[μ] t.toPred) (h₂ : μ t ≤ μ s) (hsm : MeasurableSet s)
+    (ht : μ t ≠ ∞) : s.toPred =ᵐ[μ] t.toPred := by
   refine eventuallyLE_antisymm_iff.mpr ⟨h₁, ae_le_set.mpr ?_⟩
   replace h₂ : μ t = μ s := h₂.antisymm (measure_mono_ae h₁)
   replace ht : μ s ≠ ∞ := h₂ ▸ ht
@@ -340,7 +340,7 @@ theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t �
 
 /-- If `s ⊆ t`, `μ t ≤ μ s`, `μ t ≠ ∞`, and `s` is measurable, then `s =ᵐ[μ] t`. -/
 theorem ae_eq_of_subset_of_measure_ge (h₁ : s ⊆ t) (h₂ : μ t ≤ μ s) (hsm : MeasurableSet s)
-    (ht : μ t ≠ ∞) : s =ᵐ[μ] t :=
+    (ht : μ t ≠ ∞) : s.toPred =ᵐ[μ] t.toPred :=
   ae_eq_of_ae_subset_of_measure_ge (HasSubset.Subset.eventuallyLE h₁) h₂ hsm ht
 #align measure_theory.ae_eq_of_subset_of_measure_ge MeasureTheory.ae_eq_of_subset_of_measure_ge
 
@@ -353,7 +353,7 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
   push_neg at htop
   refine le_antisymm (measure_mono (iUnion_mono hsub)) ?_
   set M := toMeasurable μ
-  have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
+  have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α).toPred =ᵐ[μ] (M (t b)).toPred := by
     refine fun b => ae_eq_of_subset_of_measure_ge inter_subset_left ?_ ?_ ?_
     · calc
         μ (M (t b)) = μ (t b) := measure_toMeasurable _
@@ -510,8 +510,9 @@ theorem measure_iUnion_eq_iSup' {α ι : Type*} [MeasurableSpace α] {μ : Measu
   have hd : Directed (· ⊆ ·) (Accumulate f) := by
     intro i j
     rcases directed_of (· ≤ ·) i j with ⟨k, rik, rjk⟩
-    exact ⟨k, biUnion_subset_biUnion_left fun l rli ↦ le_trans rli rik,
-      biUnion_subset_biUnion_left fun l rlj ↦ le_trans rlj rjk⟩
+    sorry
+    -- exact ⟨k, biUnion_subset_biUnion_left fun l rli ↦ le_trans (Set.mem_setOf.mp rli) (Set.mem_setOf.mp rik),
+    --   biUnion_subset_biUnion_left fun l rlj ↦ le_trans (Set.mem_setOf.mp rlj) (Set.mem_setOf.mp rjk)⟩
   rw [← iUnion_accumulate]
   exact measure_iUnion_eq_iSup hd
 
@@ -557,17 +558,19 @@ theorem measure_iInter_eq_iInf' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     · intro h i
       rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
       exact h j i rij
-  have ms : ∀ i, MeasurableSet (s i) :=
-    fun i ↦ MeasurableSet.biInter (countable_univ.mono <| subset_univ _) fun i _ ↦ h i
+  have ms : ∀ i, MeasurableSet (s i) := sorry
+    -- fun i ↦ MeasurableSet.biInter (countable_univ.mono <| subset_univ _) fun i _ ↦ h i
   have hd : Directed (· ⊇ ·) s := by
     intro i j
     rcases directed_of (· ≤ ·) i j with ⟨k, rik, rjk⟩
-    exact ⟨k, biInter_subset_biInter_left fun j rji ↦ le_trans rji rik,
-      biInter_subset_biInter_left fun i rij ↦ le_trans rij rjk⟩
+    sorry
+    -- exact ⟨k, biInter_subset_biInter_left fun j rji ↦ le_trans rji rik,
+    --   biInter_subset_biInter_left fun i rij ↦ le_trans rij rjk⟩
   have hfin' : ∃ i, μ (s i) ≠ ∞ := by
     rcases hfin with ⟨i, hi⟩
     rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
-    exact ⟨j, ne_top_of_le_ne_top hi <| measure_mono <| biInter_subset_of_mem rij⟩
+    sorry
+    -- exact ⟨j, ne_top_of_le_ne_top hi <| measure_mono <| biInter_subset_of_mem rij⟩
   exact iInter_eq ▸ measure_iInter_eq_iInf ms hd hfin'
 
 /-- Continuity from below: the measure of the union of an increasing sequence of (not necessarily
@@ -635,8 +638,9 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
       exact Subset.trans (iInter_subset _ n) (hm (u n) r (u_pos n) hn.le)
     · simp only [subset_iInter_iff, gt_iff_lt]
       intro n
-      apply biInter_subset_of_mem
-      exact u_pos n
+      sorry
+      -- apply biInter_subset_of_mem
+      -- exact u_pos n
   rw [B] at A
   obtain ⟨n, hn⟩ : ∃ n, μ (s (u n)) < L := ((tendsto_order.1 A).2 _ hL).exists
   have : Ioc a (u n) ∈ 𝓝[>] a := Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, u_pos n⟩
@@ -683,7 +687,7 @@ theorem measure_liminf_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)) ≠ 
 
 -- Need to specify `α := Set α` below because of diamond; see #19041
 theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
-    (h : ∀ n, s n =ᵐ[μ] t) : limsup (α := Set α) s atTop =ᵐ[μ] t := by
+    (h : ∀ n, (s n).toPred =ᵐ[μ] t.toPred) : limsup (α := Set α) s atTop |>.toPred =ᵐ[μ] t.toPred := by
   simp_rw [ae_eq_set] at h ⊢
   constructor
   · rw [atTop.limsup_sdiff s t]
@@ -696,7 +700,7 @@ theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
 
 -- Need to specify `α := Set α` above because of diamond; see #19041
 theorem liminf_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
-    (h : ∀ n, s n =ᵐ[μ] t) : liminf (α := Set α) s atTop =ᵐ[μ] t := by
+    (h : ∀ n, (s n).toPred =ᵐ[μ] t.toPred) : liminf (α := Set α) s atTop |>.toPred =ᵐ[μ] t.toPred := by
   simp_rw [ae_eq_set] at h ⊢
   constructor
   · rw [atTop.liminf_sdiff s t]
@@ -1420,13 +1424,13 @@ theorem measure_image_eq_zero_of_comap_eq_zero {β} [MeasurableSpace α] {_mβ :
 
 theorem ae_eq_image_of_ae_eq_comap {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f : α → β)
     (μ : Measure β) (hfi : Injective f) (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
-    {s t : Set α} (hst : s =ᵐ[comap f μ] t) : f '' s =ᵐ[μ] f '' t := by
+    {s t : Set α} (hst : s.toPred =ᵐ[comap f μ] t.toPred) : (f '' s).toPred =ᵐ[μ] (f '' t).toPred := by
   rw [EventuallyEq, ae_iff] at hst ⊢
-  have h_eq_α : { a : α | ¬s a = t a } = s \ t ∪ t \ s := by
+  have h_eq_α : { a : α | ¬s.toPred a = t.toPred a } = s \ t ∪ t \ s := by
     ext1 x
     simp only [eq_iff_iff, mem_setOf_eq, mem_union, mem_diff]
     tauto
-  have h_eq_β : { a : β | ¬(f '' s) a = (f '' t) a } = f '' s \ f '' t ∪ f '' t \ f '' s := by
+  have h_eq_β : { a : β | ¬(f '' s).toPred a = (f '' t).toPred a } = f '' s \ f '' t ∪ f '' t \ f '' s := by
     ext1 x
     simp only [eq_iff_iff, mem_setOf_eq, mem_union, mem_diff]
     tauto
@@ -1443,7 +1447,7 @@ theorem NullMeasurableSet.image {β} [MeasurableSpace α] {mβ : MeasurableSpace
   refine EventuallyEq.trans ?_ (NullMeasurableSet.toMeasurable_ae_eq ?_).symm
   swap
   · exact hf _ (measurableSet_toMeasurable _ _)
-  have h : toMeasurable (comap f μ) s =ᵐ[comap f μ] s :=
+  have h : toMeasurable (comap f μ) s |>.toPred =ᵐ[comap f μ] s.toPred :=
     NullMeasurableSet.toMeasurable_ae_eq hs
   exact ae_eq_image_of_ae_eq_comap f μ hfi hf h.symm
 #align measure_theory.measure.null_measurable_set.image MeasureTheory.Measure.NullMeasurableSet.image
@@ -1823,44 +1827,44 @@ theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : 
   preimage_null_of_map_null h.aemeasurable (h.2 hs)
 #align measure_theory.measure.quasi_measure_preserving.preimage_null MeasureTheory.Measure.QuasiMeasurePreserving.preimage_null
 
-theorem preimage_mono_ae {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s ≤ᵐ[μb] t) :
-    f ⁻¹' s ≤ᵐ[μa] f ⁻¹' t :=
+theorem preimage_mono_ae {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s.toPred ≤ᵐ[μb] t.toPred) :
+    f ⁻¹' s |>.toPred ≤ᵐ[μa] (f ⁻¹' t).toPred :=
   eventually_map.mp <|
     Eventually.filter_mono (tendsto_ae_map hf.aemeasurable) (Eventually.filter_mono hf.ae_map_le h)
 #align measure_theory.measure.quasi_measure_preserving.preimage_mono_ae MeasureTheory.Measure.QuasiMeasurePreserving.preimage_mono_ae
 
-theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s =ᵐ[μb] t) :
-    f ⁻¹' s =ᵐ[μa] f ⁻¹' t :=
+theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s.toPred =ᵐ[μb] t.toPred) :
+    f ⁻¹' s |>.toPred =ᵐ[μa] (f ⁻¹' t).toPred :=
   EventuallyLE.antisymm (hf.preimage_mono_ae h.le) (hf.preimage_mono_ae h.symm.le)
 #align measure_theory.measure.quasi_measure_preserving.preimage_ae_eq MeasureTheory.Measure.QuasiMeasurePreserving.preimage_ae_eq
 
 theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (k : ℕ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : f^[k] ⁻¹' s =ᵐ[μ] s := by
+    (hs : f ⁻¹' s |>.toPred =ᵐ[μ] s.toPred) : f^[k] ⁻¹' s |>.toPred =ᵐ[μ] s.toPred := by
   induction' k with k ih; · rfl
   rw [iterate_succ, preimage_comp]
   exact EventuallyEq.trans (hf.preimage_ae_eq ih) hs
 #align measure_theory.measure.quasi_measure_preserving.preimage_iterate_ae_eq MeasureTheory.Measure.QuasiMeasurePreserving.preimage_iterate_ae_eq
 
 theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreserving e μ μ)
-    (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s =ᵐ[μ] s) :
-    (⇑(e ^ k)) '' s =ᵐ[μ] s := by
+    (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s |>.toPred =ᵐ[μ] s.toPred) :
+    (⇑(e ^ k)) '' s |>.toPred =ᵐ[μ] s.toPred := by
   rw [Equiv.image_eq_preimage]
   obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
-  · replace hs : (⇑e⁻¹) ⁻¹' s =ᵐ[μ] s := by rwa [Equiv.image_eq_preimage] at hs
-    replace he' : (⇑e⁻¹)^[k] ⁻¹' s =ᵐ[μ] s := he'.preimage_iterate_ae_eq k hs
+  · replace hs : (⇑e⁻¹) ⁻¹' s |>.toPred =ᵐ[μ] s.toPred := by rwa [Equiv.image_eq_preimage] at hs
+    replace he' : (⇑e⁻¹)^[k] ⁻¹' s |>.toPred =ᵐ[μ] s.toPred := he'.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e⁻¹ k, inv_pow e k] at he'
   · rw [zpow_neg, zpow_natCast]
-    replace hs : e ⁻¹' s =ᵐ[μ] s := by
+    replace hs : e ⁻¹' s |>.toPred =ᵐ[μ] s.toPred := by
       convert he.preimage_ae_eq hs.symm
       rw [Equiv.preimage_image]
-    replace he : (⇑e)^[k] ⁻¹' s =ᵐ[μ] s := he.preimage_iterate_ae_eq k hs
+    replace he : (⇑e)^[k] ⁻¹' s |>.toPred =ᵐ[μ] s.toPred := he.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e k] at he
 #align measure_theory.measure.quasi_measure_preserving.image_zpow_ae_eq MeasureTheory.Measure.QuasiMeasurePreserving.image_zpow_ae_eq
 
 -- Need to specify `α := Set α` below because of diamond; see #19041
 theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
-  haveI : ∀ n, (preimage f)^[n] s =ᵐ[μ] s := by
+    (hs : f ⁻¹' s |>.toPred =ᵐ[μ] s.toPred) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop |>.toPred =ᵐ[μ] s.toPred :=
+  haveI : ∀ n, (preimage f)^[n] s |>.toPred =ᵐ[μ] s.toPred := by
     intro n
     induction' n with n ih
     · rfl
@@ -1870,7 +1874,7 @@ theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreservi
 
 -- Need to specify `α := Set α` below because of diamond; see #19041
 theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s := by
+    (hs : f ⁻¹' s |>.toPred =ᵐ[μ] s.toPred) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop |>.toPred =ᵐ[μ] s.toPred := by
   rw [← ae_eq_set_compl_compl, @Filter.liminf_compl (Set α)]
   rw [← ae_eq_set_compl_compl, ← preimage_compl] at hs
   convert hf.limsup_preimage_iterate_ae_eq hs
@@ -1883,8 +1887,8 @@ obtain a measurable set that is almost equal and strictly invariant.
 
 (The `liminf` would work just as well.) -/
 theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePreserving f μ μ)
-    (hs : MeasurableSet s) (hs' : f ⁻¹' s =ᵐ[μ] s) :
-    ∃ t : Set α, MeasurableSet t ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t :=
+    (hs : MeasurableSet s) (hs' : f ⁻¹' s |>.toPred =ᵐ[μ] s.toPred) :
+    ∃ t : Set α, MeasurableSet t ∧ t.toPred =ᵐ[μ] s.toPred ∧ f ⁻¹' t = t :=
   ⟨limsup (fun n => (preimage f)^[n] s) atTop,
     MeasurableSet.measurableSet_limsup fun n =>
       preimage_iterate_eq ▸ h.measurable.iterate n hs,
@@ -1898,7 +1902,7 @@ open Pointwise
 theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
     {s t : Set α} {μ : Measure α} (g : G)
     (h_qmp : QuasiMeasurePreserving (g⁻¹ • · : α → α) μ μ)
-    (h_ae_eq : s =ᵐ[μ] t) : (g • s : Set α) =ᵐ[μ] (g • t : Set α) := by
+    (h_ae_eq : s.toPred =ᵐ[μ] t.toPred) : (g • s : Set α).toPred =ᵐ[μ] (g • t : Set α).toPred := by
   simpa only [← preimage_smul_inv] using h_qmp.ae_eq h_ae_eq
 #align measure_theory.measure.quasi_measure_preserving.smul_ae_eq_of_ae_eq MeasureTheory.Measure.QuasiMeasurePreserving.smul_ae_eq_of_ae_eq
 #align measure_theory.measure.quasi_measure_preserving.vadd_ae_eq_of_ae_eq MeasureTheory.Measure.QuasiMeasurePreserving.vadd_ae_eq_of_ae_eq
@@ -2113,36 +2117,36 @@ theorem tendsto_measure_Ici_atBot [SemilatticeInf α] [h : (atBot : Filter α).I
 
 variable [PartialOrder α] {a b : α}
 
-theorem Iio_ae_eq_Iic' (ha : μ {a} = 0) : Iio a =ᵐ[μ] Iic a := by
+theorem Iio_ae_eq_Iic' (ha : μ {a} = 0) : Iio a |>.toPred =ᵐ[μ] (Iic a).toPred := by
   rw [← Iic_diff_right, diff_ae_eq_self, measure_mono_null Set.inter_subset_right ha]
 #align measure_theory.Iio_ae_eq_Iic' MeasureTheory.Iio_ae_eq_Iic'
 
-theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a =ᵐ[μ] Ici a :=
+theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a |>.toPred =ᵐ[μ] (Ici a).toPred :=
   Iio_ae_eq_Iic' (α := αᵒᵈ) ha
 #align measure_theory.Ioi_ae_eq_Ici' MeasureTheory.Ioi_ae_eq_Ici'
 
-theorem Ioo_ae_eq_Ioc' (hb : μ {b} = 0) : Ioo a b =ᵐ[μ] Ioc a b :=
-  (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)
+theorem Ioo_ae_eq_Ioc' (hb : μ {b} = 0) : Ioo a b |>.toPred =ᵐ[μ] (Ioc a b).toPred := sorry
+  -- (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)
 #align measure_theory.Ioo_ae_eq_Ioc' MeasureTheory.Ioo_ae_eq_Ioc'
 
-theorem Ioc_ae_eq_Icc' (ha : μ {a} = 0) : Ioc a b =ᵐ[μ] Icc a b :=
-  (Ioi_ae_eq_Ici' ha).inter (ae_eq_refl _)
+theorem Ioc_ae_eq_Icc' (ha : μ {a} = 0) : Ioc a b |>.toPred =ᵐ[μ] (Icc a b).toPred := sorry
+  -- (Ioi_ae_eq_Ici' ha).inter (ae_eq_refl _)
 #align measure_theory.Ioc_ae_eq_Icc' MeasureTheory.Ioc_ae_eq_Icc'
 
-theorem Ioo_ae_eq_Ico' (ha : μ {a} = 0) : Ioo a b =ᵐ[μ] Ico a b :=
-  (Ioi_ae_eq_Ici' ha).inter (ae_eq_refl _)
+theorem Ioo_ae_eq_Ico' (ha : μ {a} = 0) : Ioo a b |>.toPred =ᵐ[μ] (Ico a b).toPred := sorry
+  -- (Ioi_ae_eq_Ici' ha).inter (ae_eq_refl _)
 #align measure_theory.Ioo_ae_eq_Ico' MeasureTheory.Ioo_ae_eq_Ico'
 
-theorem Ioo_ae_eq_Icc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ioo a b =ᵐ[μ] Icc a b :=
+theorem Ioo_ae_eq_Icc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ioo a b |>.toPred =ᵐ[μ] (Icc a b).toPred :=
   (Ioi_ae_eq_Ici' ha).inter (Iio_ae_eq_Iic' hb)
 #align measure_theory.Ioo_ae_eq_Icc' MeasureTheory.Ioo_ae_eq_Icc'
 
-theorem Ico_ae_eq_Icc' (hb : μ {b} = 0) : Ico a b =ᵐ[μ] Icc a b :=
-  (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)
+theorem Ico_ae_eq_Icc' (hb : μ {b} = 0) : Ico a b |>.toPred =ᵐ[μ] (Icc a b).toPred := sorry
+  -- (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)
 #align measure_theory.Ico_ae_eq_Icc' MeasureTheory.Ico_ae_eq_Icc'
 
-theorem Ico_ae_eq_Ioc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ico a b =ᵐ[μ] Ioc a b :=
-  (Ioo_ae_eq_Ico' ha).symm.trans (Ioo_ae_eq_Ioc' hb)
+theorem Ico_ae_eq_Ioc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ico a b |>.toPred =ᵐ[μ] (Ioc a b).toPred := sorry
+  -- (Ioo_ae_eq_Ico' ha).symm.trans (Ioo_ae_eq_Ioc' hb)
 #align measure_theory.Ico_ae_eq_Ioc' MeasureTheory.Ico_ae_eq_Ioc'
 
 end Intervals

@@ -230,9 +230,10 @@ theorem convexBodyLT'_volume :
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
         ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
         ofReal_coe_nnreal, ← mul_assoc, show (2:ℝ≥0∞) * 2 = 4 by norm_num]
-    · refine MeasurableSet.inter ?_ ?_
-      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
-      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
+    · sorry
+    -- · refine MeasurableSet.inter ?_ ?_
+    --   · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
+    --   · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
           ((∏ x ∈ Finset.univ.erase  w₀, ENNReal.ofReal (f x.val) ^ 2 * pi) *

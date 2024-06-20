@@ -146,7 +146,7 @@ theorem laverage_congr {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ⨍⁻ x, 
   simp only [laverage_eq, lintegral_congr_ae h]
 #align measure_theory.laverage_congr MeasureTheory.laverage_congr
 
-theorem setLaverage_congr (h : s =ᵐ[μ] t) : ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in t, f x ∂μ := by
+theorem setLaverage_congr (h : s.toPred =ᵐ[μ] t.toPred) : ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in t, f x ∂μ := by
   simp only [setLaverage_eq, set_lintegral_congr h, measure_congr h]
 #align measure_theory.set_laverage_congr MeasureTheory.setLaverage_congr
 
@@ -362,7 +362,7 @@ theorem average_congr {f g : α → E} (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = �
   simp only [average_eq, integral_congr_ae h]
 #align measure_theory.average_congr MeasureTheory.average_congr
 
-theorem setAverage_congr (h : s =ᵐ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
+theorem setAverage_congr (h : s.toPred =ᵐ[μ] t.toPred) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
   simp only [setAverage_eq, setIntegral_congr_set_ae h, measure_congr h]
 #align measure_theory.set_average_congr MeasureTheory.setAverage_congr
 

@@ -111,7 +111,7 @@ namespace GrothendieckTopology
 /-- The Grothendieck topology on the category `Over X` for any `X : C` that is
 induced by a Grothendieck topology on `C`. -/
 def over (X : C) : GrothendieckTopology (Over X) where
-  sieves Y S := Sieve.overEquiv Y S ∈ J Y.left
+  sieves Y := ⟨fun S => Sieve.overEquiv Y S ∈ J Y.left⟩
   top_mem' Y := by
     change _ ∈ J Y.left
     simp

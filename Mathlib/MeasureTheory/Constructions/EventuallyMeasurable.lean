@@ -38,7 +38,7 @@ variable {α : Type*} (m : MeasurableSpace α) (l : Filter α) [CountableInterFi
 /-- The `MeasurableSpace` of sets which are measurable with respect to a given σ-algebra `m`
 on `α`, modulo a given σ-filter `l` on `α`. -/
 def EventuallyMeasurableSpace : MeasurableSpace α where
-  MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
+  MeasurableSet' s := ∃ t, MeasurableSet t ∧ s.toPred =ᶠ[l] t.toPred
   measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
   measurableSet_compl := fun s ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
   measurableSet_iUnion s hs := by
@@ -65,7 +65,7 @@ theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasura
 /-- A set which is `EventuallyEq` to an `EventuallyMeasurableSet`
 is an `EventuallyMeasurableSet`. -/
 theorem EventuallyMeasurableSet.congr
-    (ht : EventuallyMeasurableSet m l t) (hst : s =ᶠ[l] t) : EventuallyMeasurableSet m l s := by
+    (ht : EventuallyMeasurableSet m l t) (hst : s.toPred =ᶠ[l] t.toPred) : EventuallyMeasurableSet m l s := by
   rcases ht with ⟨t', ht', htt'⟩
   exact ⟨t', ht', hst.trans htt'⟩
 

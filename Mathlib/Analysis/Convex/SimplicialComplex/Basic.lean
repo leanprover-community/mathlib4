@@ -183,7 +183,7 @@ theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     (vertex_mem_convexHull_iff
           (K.down_closed hs (Finset.singleton_subset_iff.2 hxs) <| singleton_ne_empty _) ht).1
       (h (subset_convexHull 𝕜 (↑s) hxs)),
-    convexHull_mono⟩
+    sorry⟩ -- convexHull_mono⟩
 #align geometry.simplicial_complex.face_subset_face_iff Geometry.SimplicialComplex.face_subset_face_iff
 
 /-! ### Facets -/

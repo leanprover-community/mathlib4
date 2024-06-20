@@ -80,7 +80,7 @@ lemma measurableSet_countableGeneratingSet [MeasurableSpace α] [CountablyGenera
   exact measurableSet_generateFrom hs
 
 /-- A countable sequence of sets generating the measurable space. -/
-def natGeneratingSequence (α : Type*) [MeasurableSpace α] [CountablyGenerated α] : ℕ → (Set α) :=
+noncomputable def natGeneratingSequence (α : Type*) [MeasurableSpace α] [CountablyGenerated α] : ℕ → (Set α) :=
   enumerateCountable (countable_countableGeneratingSet (α := α)) ∅
 
 lemma generateFrom_natGeneratingSequence (α : Type*) [m : MeasurableSpace α]

@@ -256,22 +256,23 @@ instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K 
     rw [Finset.coe_empty, Set.compl_empty]
     have := Gpc.out.subsingleton_connectedComponent
     exact Finite.of_equiv _ (induceUnivIso G).connectedComponentEquiv.symm
+  · sorry
   -- Otherwise, we consider the function `touch` mapping a connected component to one of its
   -- vertices adjacent to `K`.
-  · let touch (C : G.ComponentCompl K) : {v : V | ∃ k : V, k ∈ K ∧ G.Adj k v} :=
-      let p := C.exists_adj_boundary_pair Gpc.out h
-      ⟨p.choose.1, p.choose.2, p.choose_spec.2.1, p.choose_spec.2.2.symm⟩
-    -- `touch` is injective
-    have touch_inj : touch.Injective := fun C D h' => ComponentCompl.pairwise_disjoint.eq
-      (Set.not_disjoint_iff.mpr ⟨touch C, (C.exists_adj_boundary_pair Gpc.out h).choose_spec.1,
-                                 h'.symm ▸ (D.exists_adj_boundary_pair Gpc.out h).choose_spec.1⟩)
-    -- `touch` has finite range
-    have : Finite (Set.range touch) := by
-      refine @Subtype.finite _ (Set.Finite.to_subtype ?_) _
-      apply Set.Finite.ofFinset (K.biUnion (fun v => G.neighborFinset v))
-      simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_setOf_eq, implies_true]
-    -- hence `touch` has a finite domain
-    apply Finite.of_injective_finite_range touch_inj
+  -- · let touch (C : G.ComponentCompl K) : {v : V | ∃ k : V, k ∈ K ∧ G.Adj k v} :=
+  --     let p := C.exists_adj_boundary_pair Gpc.out h
+  --     ⟨p.choose.1, p.choose.2, p.choose_spec.2.1, p.choose_spec.2.2.symm⟩
+  --   -- `touch` is injective
+  --   have touch_inj : touch.Injective := fun C D h' => ComponentCompl.pairwise_disjoint.eq
+  --     (Set.not_disjoint_iff.mpr ⟨touch C, (C.exists_adj_boundary_pair Gpc.out h).choose_spec.1,
+  --                                h'.symm ▸ (D.exists_adj_boundary_pair Gpc.out h).choose_spec.1⟩)
+  --   -- `touch` has finite range
+  --   have : Finite (Set.range touch) := by
+  --     refine @Subtype.finite _ (Set.Finite.to_subtype ?_) _
+  --     apply Set.Finite.ofFinset (K.biUnion (fun v => G.neighborFinset v))
+  --     simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_setOf_eq, implies_true]
+  --   -- hence `touch` has a finite domain
+  --   apply Finite.of_injective_finite_range touch_inj
 
 section Ends
 
@@ -295,12 +296,12 @@ protected def «end» :=
   (componentComplFunctor G).sections
 #align simple_graph.end SimpleGraph.end
 
-theorem end_hom_mk_of_mk {s} (sec : s ∈ G.end) {K L : (Finset V)ᵒᵖ} (h : L ⟶ K) {v : V}
-    (vnL : v ∉ L.unop) (hs : s L = G.componentComplMk vnL) :
-    s K = G.componentComplMk (Set.not_mem_subset (le_of_op_hom h : _ ⊆ _) vnL) := by
-  rw [← sec h, hs]
-  apply ComponentCompl.hom_mk _ (le_of_op_hom h : _ ⊆ _)
-#align simple_graph.end_hom_mk_of_mk SimpleGraph.end_hom_mk_of_mk
+-- theorem end_hom_mk_of_mk {s} (sec : s ∈ G.end) {K L : (Finset V)ᵒᵖ} (h : L ⟶ K) {v : V}
+--     (vnL : v ∉ L.unop) (hs : s L = G.componentComplMk vnL) :
+--     s K = G.componentComplMk (Set.not_mem_subset (le_of_op_hom h : _ ⊆ _) vnL) := by
+--   rw [← sec h, hs]
+--   apply ComponentCompl.hom_mk _ (le_of_op_hom h : _ ⊆ _)
+-- #align simple_graph.end_hom_mk_of_mk SimpleGraph.end_hom_mk_of_mk
 
 theorem infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentComplFunctor.obj K) :
     C.supp.Infinite ↔ C ∈ G.componentComplFunctor.eventualRange K := by

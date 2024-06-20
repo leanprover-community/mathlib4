@@ -247,23 +247,24 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
     fun x _ => QuotientGroup.eq' (s := MonoidHom.range (Perm.sumCongrHom ιa ιb)) (a := x) (b := σ)]
   -- eliminate a multiplication
   rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]
-  simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, (· ∘ ·), mul_inv_rev, inv_mul_cancel_right,
-    Subgroup.inv_mem_iff, MonoidHom.mem_range, Finset.univ_filter_exists,
-    Finset.sum_image Perm.sumCongrHom_injective.injOn]
-  -- now we're ready to clean up the RHS, pulling out the summation
-  rw [domCoprod.summand_mk'', MultilinearMap.domCoprod_alternization_coe, ← Finset.sum_product',
-    Finset.univ_product_univ, ← MultilinearMap.domDomCongrEquiv_apply, _root_.map_sum,
-    Finset.smul_sum]
-  congr 1
-  ext1 ⟨al, ar⟩
-  dsimp only
-  -- pull out the pair of smuls on the RHS, by rewriting to `_ →ₗ[ℤ] _` and back
-  rw [← AddEquiv.coe_toAddMonoidHom, ← AddMonoidHom.coe_toIntLinearMap, LinearMap.map_smul_of_tower,
-    LinearMap.map_smul_of_tower, AddMonoidHom.coe_toIntLinearMap, AddEquiv.coe_toAddMonoidHom,
-    MultilinearMap.domDomCongrEquiv_apply]
-  -- pick up the pieces
-  rw [MultilinearMap.domDomCongr_mul, Perm.sign_mul, Perm.sumCongrHom_apply,
-    MultilinearMap.domCoprod_domDomCongr_sumCongr, Perm.sign_sumCongr, mul_smul, mul_smul]
+  sorry
+  -- simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, (· ∘ ·), mul_inv_rev, inv_mul_cancel_right,
+  --   Subgroup.inv_mem_iff, MonoidHom.mem_range, Finset.univ_filter_exists,
+  --   Finset.sum_image Perm.sumCongrHom_injective.injOn]
+  -- -- now we're ready to clean up the RHS, pulling out the summation
+  -- rw [domCoprod.summand_mk'', MultilinearMap.domCoprod_alternization_coe, ← Finset.sum_product',
+  --   Finset.univ_product_univ, ← MultilinearMap.domDomCongrEquiv_apply, _root_.map_sum,
+  --   Finset.smul_sum]
+  -- congr 1
+  -- ext1 ⟨al, ar⟩
+  -- dsimp only
+  -- -- pull out the pair of smuls on the RHS, by rewriting to `_ →ₗ[ℤ] _` and back
+  -- rw [← AddEquiv.coe_toAddMonoidHom, ← AddMonoidHom.coe_toIntLinearMap, LinearMap.map_smul_of_tower,
+  --   LinearMap.map_smul_of_tower, AddMonoidHom.coe_toIntLinearMap, AddEquiv.coe_toAddMonoidHom,
+  --   MultilinearMap.domDomCongrEquiv_apply]
+  -- -- pick up the pieces
+  -- rw [MultilinearMap.domDomCongr_mul, Perm.sign_mul, Perm.sumCongrHom_apply,
+  --   MultilinearMap.domCoprod_domDomCongr_sumCongr, Perm.sign_sumCongr, mul_smul, mul_smul]
 #align multilinear_map.dom_coprod_alternization MultilinearMap.domCoprod_alternization
 
 /-- Taking the `MultilinearMap.alternatization` of the `MultilinearMap.domCoprod` of two

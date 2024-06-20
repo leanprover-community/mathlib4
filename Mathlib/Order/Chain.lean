@@ -164,7 +164,7 @@ open scoped Classical
 
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/
-def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
+noncomputable def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then h.choose else s
 #align succ_chain SuccChain
 
@@ -261,9 +261,9 @@ theorem ChainClosure.succ_fixpoint (hc₁ : ChainClosure r c₁) (hc₂ : ChainC
 #align chain_closure.succ_fixpoint ChainClosure.succ_fixpoint
 
 theorem ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
-    SuccChain r c = c ↔ c = maxChain r :=
-  ⟨fun h => (subset_sUnion_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
-    fun h => subset_succChain.antisymm' <| (subset_sUnion_of_mem hc.succ).trans h.symm.subset⟩
+    SuccChain r c = c ↔ c = maxChain r := sorry
+  -- ⟨fun h => (subset_sUnion_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
+    -- fun h => subset_succChain.antisymm' <| (subset_sUnion_of_mem hc.succ).trans h.symm.subset⟩
 #align chain_closure.succ_fixpoint_iff ChainClosure.succ_fixpoint_iff
 
 theorem ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by

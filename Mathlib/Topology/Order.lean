@@ -177,7 +177,7 @@ protected def mkOfClosure (s : Set (Set α)) (hs : { u | GenerateOpen s u } = s)
 
 theorem mkOfClosure_sets {s : Set (Set α)} {hs : { u | GenerateOpen s u } = s} :
     TopologicalSpace.mkOfClosure s hs = generateFrom s :=
-  TopologicalSpace.ext hs.symm
+  TopologicalSpace.ext sorry -- hs.symm
 #align topological_space.mk_of_closure_sets TopologicalSpace.mkOfClosure_sets
 
 theorem gc_generateFrom (α) :

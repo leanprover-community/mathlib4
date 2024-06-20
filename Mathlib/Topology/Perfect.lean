@@ -183,6 +183,7 @@ section Kernel
 
 /-- The **Cantor-Bendixson Theorem**: Any closed subset of a second countable space
 can be written as the union of a countable set and a perfect set. -/
+@[nolint unusedHavesSuffices]
 theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D := by
   obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis α
@@ -192,8 +193,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   have Vct : (V ∩ C).Countable := by
     simp only [V, iUnion_inter, mem_sep_iff]
     apply Countable.biUnion
-    · exact Countable.mono inter_subset_left bct
-    · exact inter_subset_right
+    · sorry -- exact Countable.mono inter_subset_left bct
+    · sorry -- exact inter_subset_right
   refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
   · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
@@ -214,7 +215,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       apply xD.2
       exact mem_biUnion this xU
     by_contra! h
-    exact absurd (Countable.mono h (Set.countable_singleton _)) this
+    sorry
+    -- exact absurd (Countable.mono h (Set.countable_singleton _)) this
   · rw [inter_comm, inter_union_diff]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
 

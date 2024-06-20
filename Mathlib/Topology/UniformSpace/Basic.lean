@@ -1491,7 +1491,7 @@ theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f 
 theorem tendsto_of_uniformContinuous_subtype [UniformSpace α] [UniformSpace β] {f : α → β}
     {s : Set α} {a : α} (hf : UniformContinuous fun x : s => f x.val) (ha : s ∈ 𝓝 a) :
     Tendsto f (𝓝 a) (𝓝 (f a)) := by
-  rw [(@map_nhds_subtype_coe_eq_nhds α _ s a (mem_of_mem_nhds ha) ha).symm]
+  rw [(@map_nhds_subtype_coe_eq_nhds α _ s.toPred a (mem_of_mem_nhds ha) ha).symm]
   exact tendsto_map' hf.continuous.continuousAt
 #align tendsto_of_uniform_continuous_subtype tendsto_of_uniformContinuous_subtype
 

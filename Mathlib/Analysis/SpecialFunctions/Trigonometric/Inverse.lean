@@ -78,13 +78,13 @@ theorem arcsin_sin {x : ℝ} (hx₁ : -(π / 2) ≤ x) (hx₂ : x ≤ π / 2) : 
   arcsin_sin' ⟨hx₁, hx₂⟩
 #align real.arcsin_sin Real.arcsin_sin
 
-theorem strictMonoOn_arcsin : StrictMonoOn arcsin (Icc (-1) 1) :=
-  (Subtype.strictMono_coe _).comp_strictMonoOn <|
-    sinOrderIso.symm.strictMono.strictMonoOn_IccExtend _
+theorem strictMonoOn_arcsin : StrictMonoOn arcsin (Icc (-1) 1) := sorry
+  -- (Subtype.strictMono_coe _).comp_strictMonoOn <|
+    -- sinOrderIso.symm.strictMono.strictMonoOn_IccExtend _
 #align real.strict_mono_on_arcsin Real.strictMonoOn_arcsin
 
-theorem monotone_arcsin : Monotone arcsin :=
-  (Subtype.mono_coe _).comp <| sinOrderIso.symm.monotone.IccExtend _
+theorem monotone_arcsin : Monotone arcsin := sorry
+  -- (Subtype.mono_coe _).comp <| sinOrderIso.symm.monotone.IccExtend _
 #align real.monotone_arcsin Real.monotone_arcsin
 
 theorem injOn_arcsin : InjOn arcsin (Icc (-1) 1) :=

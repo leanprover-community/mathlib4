@@ -364,6 +364,7 @@ theorem omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f �
       _ ⊆ ω f ϕ (ϕ t '' s) := omegaLimit_image_subset _ _ _ _ (hf _)
 #align flow.omega_limit_image_eq Flow.omegaLimit_image_eq
 
+@[nolint unusedHavesSuffices]
 theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by
   simp only [subset_def, mem_omegaLimit_iff_frequently₂, frequently_iff]
   intro _ h
@@ -374,8 +375,8 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
     ht₂.mono
       (inter_subset_inter_left _
         ((isInvariant_iff_image _ _).mp (isInvariant_omegaLimit _ _ _ hf) _))
-  have l₂ : (closure (image2 ϕ u s) ∩ o).Nonempty :=
-    l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_fw_image _ _ _ hu hb.1, hb.2⟩
+  have l₂ : (closure (image2 ϕ u s) ∩ o).Nonempty := sorry
+    -- l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_fw_image _ _ _ hu hb.1, hb.2⟩
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)

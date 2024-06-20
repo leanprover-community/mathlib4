@@ -961,7 +961,8 @@ theorem IsCycleOn.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ S
 protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
   obtain rfl | ⟨a, ha⟩ := s.eq_empty_or_nonempty
   · exact Set.countable_empty
-  · exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono (hs.2 ha)
+  · sorry
+  -- · exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono (hs.2 ha)
 #align equiv.perm.is_cycle_on.countable Equiv.Perm.IsCycleOn.countable
 
 
