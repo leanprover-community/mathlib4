@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
-import Std.Tactic.Where
+import Batteries.Tactic.Where
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
@@ -18,6 +18,7 @@ import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.CC
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
@@ -27,7 +28,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear_
-import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Congrm
@@ -46,6 +47,7 @@ import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Hint
+import Mathlib.Tactic.ITauto
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
@@ -121,8 +123,6 @@ open Lean Parser.Tactic
 /- S -/ syntax "destruct " term : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- B -/ syntax (name := cc) "cc" : tactic
-
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
 /- S -/ syntax (name := async) "async " tacticSeq : tactic
@@ -186,10 +186,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 /- S -/ syntax (name := induction'') "induction''" casesTarget
   (fixingClause <|> generalizingClause)? (" with" (ppSpace colGt withPattern)+)? : tactic
 
-syntax termList := " [" term,* "]"
-/- B -/ syntax (name := itauto) "itauto" (" *" <|> termList)? : tactic
-/- B -/ syntax (name := itauto!) "itauto!" (" *" <|> termList)? : tactic
-
 /- B -/ syntax (name := obviously) "obviously" : tactic
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
@@ -222,8 +218,8 @@ syntax termList := " [" term,* "]"
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 
-/- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> (ppSpace term)) (location)? :
-  tactic
+/- B -/ syntax (name := equivRw) "equiv_rw" (config)?
+  ((" [" term,* "]") <|> (ppSpace term)) (location)? : tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? ppSpace term : tactic
 
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (location)? : tactic

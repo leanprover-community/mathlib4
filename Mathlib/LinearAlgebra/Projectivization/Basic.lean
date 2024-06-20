@@ -112,7 +112,7 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
   · rintro ⟨a, ha⟩
     exact ⟨a, ha⟩
   · rintro ⟨a, ha⟩
-    refine' ⟨Units.mk0 a fun c => hv.symm _, ha⟩
+    refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
     rwa [c, zero_smul] at ha
 #align projectivization.mk_eq_mk_iff' Projectivization.mk_eq_mk_iff'
 
@@ -136,6 +136,7 @@ theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
 
 theorem submodule_eq (v : ℙ K V) : v.submodule = K ∙ v.rep := by
   conv_lhs => rw [← v.mk_rep]
+  rfl
 #align projectivization.submodule_eq Projectivization.submodule_eq
 
 theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by

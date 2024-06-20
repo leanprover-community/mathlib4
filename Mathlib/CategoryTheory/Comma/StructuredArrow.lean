@@ -275,13 +275,13 @@ instance proj_reflectsIsomorphisms : (proj S T).ReflectsIsomorphisms where
 open CategoryTheory.Limits
 
 /-- The identity structured arrow is initial. -/
-def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj Y))) where
+noncomputable def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj Y))) where
   desc c := homMk (T.preimage c.pt.hom)
   uniq c m _ := by
     apply CommaMorphism.ext
     · aesop_cat
     · apply T.map_injective
-      simpa only [homMk_right, T.image_preimage, ← w m] using (Category.id_comp _).symm
+      simpa only [homMk_right, T.map_preimage, ← w m] using (Category.id_comp _).symm
 #align category_theory.structured_arrow.mk_id_initial CategoryTheory.StructuredArrow.mkIdInitial
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
@@ -302,14 +302,14 @@ instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.EssSurj] : (pre S F G).EssSurj :
   show (Comma.preRight _ _ _).EssSurj from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
-noncomputable def isEquivalencePre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence] :
+instance isEquivalence_pre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence] :
     (pre S F G).IsEquivalence :=
-  Comma.isEquivalencePreRight _ _ _
+  Comma.isEquivalence_preRight _ _ _
 
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
-def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
-    where
+def post (S : C) (F : B ⥤ C) (G : C ⥤ D) :
+    StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G) where
   obj X := StructuredArrow.mk (G.map X.hom)
   map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
@@ -318,15 +318,41 @@ instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : (post S F G).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
 
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Faithful] : (post S F G).Full where
-  preimage {_ _} f := homMk f.right (G.map_injective (by simpa using f.w.symm))
+  map_surjective f := ⟨homMk f.right (G.map_injective (by simpa using f.w.symm)), by aesop_cat⟩
 
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] : (post S F G).EssSurj where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
 /-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
-noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
-    (post S F G).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
+    (post S F G).IsEquivalence where
+
+section
+
+variable {L : D} {R : C ⥤ D} {L' : B} {R' : A ⥤ B} {F : C ⥤ A} {G : D ⥤ B}
+  (α : L' ⟶ G.obj L) (β : R ⋙ G ⟶ F ⋙ R')
+
+/-- The functor `StructuredArrow L R ⥤ StructuredArrow L' R'` that is deduced from
+a natural transformation `R ⋙ G ⟶ F ⋙ R'` and a morphism `L' ⟶ G.obj L.` -/
+@[simps!]
+def map₂ : StructuredArrow L R ⥤ StructuredArrow L' R' :=
+  Comma.map (F₁ := 𝟭 (Discrete PUnit)) (Discrete.natTrans (fun _ => α)) β
+
+instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
+  apply Comma.faithful_map
+
+instance full_map₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
+  apply Comma.full_map
+
+instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
+  apply Comma.essSurj_map
+
+noncomputable instance isEquivalenceMap₂
+    [F.IsEquivalence] [G.Faithful] [G.Full] [IsIso α] [IsIso β] :
+    (map₂ α β).IsEquivalence := by
+  apply Comma.isEquivalenceMap
+
+end
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -613,13 +639,13 @@ instance proj_reflectsIsomorphisms : (proj S T).ReflectsIsomorphisms where
 open CategoryTheory.Limits
 
 /-- The identity costructured arrow is terminal. -/
-def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.obj Y))) where
+noncomputable def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.obj Y))) where
   lift c := homMk (S.preimage c.pt.hom)
   uniq := by
     rintro c m -
     ext
     apply S.map_injective
-    simpa only [homMk_left, S.image_preimage, ← w m] using (Category.comp_id _).symm
+    simpa only [homMk_left, S.map_preimage, ← w m] using (Category.comp_id _).symm
 #align category_theory.costructured_arrow.mk_id_terminal CategoryTheory.CostructuredArrow.mkIdTerminal
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
@@ -640,9 +666,9 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.EssSurj] : (pre F G S).EssSurj :
   show (Comma.preLeft _ _ _).EssSurj from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/
-noncomputable def isEquivalencePre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence] :
+instance isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence] :
     (pre F G S).IsEquivalence :=
-  Comma.isEquivalencePreLeft _ _ _
+  Comma.isEquivalence_preLeft _ _ _
 
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
 @[simps]
@@ -656,15 +682,41 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : (post F G S).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Faithful] : (post F G S).Full where
-  preimage {_ _} f := homMk f.left (G.map_injective (by simpa using f.w))
+  map_surjective f := ⟨homMk f.left (G.map_injective (by simpa using f.w)), by aesop_cat⟩
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Full] : (post F G S).EssSurj where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
 /-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
-noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
-    (post F G S).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
+    (post F G S).IsEquivalence where
+
+section
+
+variable {U : A ⥤ B} {V : B} {F : C ⥤ A} {G : D ⥤ B}
+  (α : F ⋙ U ⟶ S ⋙ G) (β : G.obj T ⟶ V)
+
+/-- The functor `CostructuredArrow S T ⥤ CostructuredArrow U V` that is deduced from
+a natural transformation `F ⋙ U ⟶ S ⋙ G` and a morphism `G.obj T ⟶ V` -/
+@[simps!]
+def map₂ : CostructuredArrow S T ⥤ CostructuredArrow U V :=
+  Comma.map (F₂ := 𝟭 (Discrete PUnit)) α (Discrete.natTrans (fun _ => β))
+
+instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
+  apply Comma.faithful_map
+
+instance full_map₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
+  apply Comma.full_map
+
+instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
+  apply Comma.essSurj_map
+
+noncomputable instance isEquivalenceMap₂
+    [F.IsEquivalence] [G.Faithful] [G.Full] [IsIso α] [IsIso β] :
+    (map₂ α β).IsEquivalence := by
+  apply Comma.isEquivalenceMap
+
+end
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -795,8 +847,7 @@ category of structured arrows `op d ⟶ F.op.obj c` to the category of costructu
 -/
 @[simps]
 def toCostructuredArrow' (F : C ⥤ D) (d : D) :
-    (StructuredArrow (op d) F.op)ᵒᵖ ⥤ CostructuredArrow F d
-    where
+    (StructuredArrow (op d) F.op)ᵒᵖ ⥤ CostructuredArrow F d where
   obj X := @CostructuredArrow.mk _ _ _ _ _ (unop X.unop.right) F X.unop.hom.unop
   map f :=
     CostructuredArrow.homMk f.unop.right.unop
@@ -816,8 +867,8 @@ category of costructured arrows `F.obj c ⟶ d` to the category of structured ar
 `op d ⟶ F.op.obj c`.
 -/
 @[simps]
-def toStructuredArrow (F : C ⥤ D) (d : D) : (CostructuredArrow F d)ᵒᵖ ⥤ StructuredArrow (op d) F.op
-    where
+def toStructuredArrow (F : C ⥤ D) (d : D) :
+    (CostructuredArrow F d)ᵒᵖ ⥤ StructuredArrow (op d) F.op where
   obj X := @StructuredArrow.mk _ _ _ _ _ (op X.unop.left) F.op X.unop.hom.op
   map f :=
     StructuredArrow.homMk f.unop.left.op
@@ -832,8 +883,8 @@ category of costructured arrows `F.op.obj c ⟶ op d` to the category of structu
 `d ⟶ F.obj c`.
 -/
 @[simps]
-def toStructuredArrow' (F : C ⥤ D) (d : D) : (CostructuredArrow F.op (op d))ᵒᵖ ⥤ StructuredArrow d F
-    where
+def toStructuredArrow' (F : C ⥤ D) (d : D) :
+    (CostructuredArrow F.op (op d))ᵒᵖ ⥤ StructuredArrow d F where
   obj X := @StructuredArrow.mk _ _ _ _ _ (unop X.unop.left) F X.unop.hom.unop
   map f :=
     StructuredArrow.homMk f.unop.left.unop

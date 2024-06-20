@@ -200,7 +200,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
   constructor
   · rintro ⟨y, hy⟩
     cases' h : y with a f
-    refine' ⟨a, fun i => (f i).val, _, fun i => (f i).property⟩
+    refine ⟨a, fun i => (f i).val, ?_, fun i => (f i).property⟩
     rw [← hy, h, map_eq_map, PFunctor.map_eq]
     congr
   rintro ⟨a, f, xeq, pf⟩
