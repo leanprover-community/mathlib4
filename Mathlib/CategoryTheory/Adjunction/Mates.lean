@@ -351,8 +351,8 @@ section conjugateEquiv
 
 variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₂} D]
-variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
-variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
+variable {L₁ L₂ : C ⥤ D} {R₁ R₂ : D ⥤ C}
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 
 /-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both between categories `C`, `D`, there is a
 bijection between natural transformations `L₂ ⟶ L₁` and natural transformations `R₁ ⟶ R₂`. This is
@@ -361,7 +361,7 @@ composition with the unitors. Corresponding natural transformations are called `
 TODO: Generalise to when the two vertical functors are equivalences rather than being exactly `𝟭`.
 
 Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transformation is an iso
-iff its image under the bijection is an iso, see eg `CategoryTheory.conjugateEquiv_iso`.
+iff its image under the bijection is an iso, see eg `CategoryTheory.conjugateIsoEquiv`.
 This is in contrast to the general case `mateEquiv` which does not in general have this property.
 -/
 def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
@@ -464,6 +464,15 @@ theorem conjugateEquiv_symm_comm {α : R₁ ⟶ R₂}{β : R₂ ⟶ R₁} (αβ 
     (conjugateEquiv adj₂ adj₁).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α = 𝟙 _ := by
   rw [conjugateEquiv_symm_comp, αβ, conjugateEquiv_symm_id]
 
+end ConjugateComposition
+
+section ConjugateIsomorphism
+
+variable {C : Type u₁} {D : Type u₂}
+variable [Category.{v₁} C] [Category.{v₂} D]
+variable {L₁ L₂ : C ⥤ D} {R₁ R₂ : D ⥤ C}
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
+
 /-- If `α` is an isomorphism between left adjoints, then its conjugate transformation is an
 isomorphism. The converse is given in `conjugateEquiv_of_iso`.
 -/
@@ -506,7 +515,7 @@ noncomputable def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
-end ConjugateComposition
+end ConjugateIsomorphism
 
 section IteratedmateEquiv
 variable {A : Type u₁} {B : Type u₂}{C : Type u₃} {D : Type u₄}
