@@ -80,7 +80,7 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
     MetaM (Expr × Option Level) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
-    mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
+    mkHomElementwise type' (← mkExpectedTypeHint (mkAppN pf fvars) type') fun eqPf instConcr? => do
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then

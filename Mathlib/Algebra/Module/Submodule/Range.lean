@@ -324,7 +324,9 @@ theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
     map p'.subtype (range <| inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
 #align submodule.map_subtype_range_of_le Submodule.map_subtype_range_inclusion
 
-/-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N` -/
+/-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
+
+See also `Submodule.mapIic`. -/
 def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } where
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q
@@ -348,6 +350,16 @@ theorem map_subtype_embedding_eq (p' : Submodule R p) :
     MapSubtype.orderEmbedding p p' = map p.subtype p' :=
   rfl
 #align submodule.map_subtype_embedding_eq Submodule.map_subtype_embedding_eq
+
+/-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`. -/
+def mapIic [Semiring R] [AddCommMonoid M] [Module R M] (p : Submodule R M) :
+    Submodule R p ≃o Set.Iic p :=
+  Submodule.MapSubtype.relIso p
+
+@[simp] lemma coe_mapIic_apply [Semiring R] [AddCommMonoid M] [Module R M]
+    (p : Submodule R M) (q : Submodule R p) :
+    (p.mapIic q : Submodule R M) = q.map p.subtype :=
+  rfl
 
 end AddCommMonoid
 
@@ -390,7 +402,7 @@ def submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule 
 theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O), y ∈ N ∧ ϕ ⟨y, yO⟩ = x := by
-  refine' Submodule.mem_map.trans ⟨_, _⟩ <;> simp_rw [Submodule.mem_comap]
+  refine Submodule.mem_map.trans ⟨?_, ?_⟩ <;> simp_rw [Submodule.mem_comap]
   · rintro ⟨⟨y, yO⟩, yN : y ∈ N, h⟩
     exact ⟨y, yO, yN, h⟩
   · rintro ⟨y, yO, yN, h⟩
@@ -400,7 +412,7 @@ theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Su
 theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} (hNO : N ≤ O) {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
-  refine' mem_submoduleImage.trans ⟨_, _⟩
+  refine mem_submoduleImage.trans ⟨?_, ?_⟩
   · rintro ⟨y, yO, yN, h⟩
     exact ⟨y, yN, h⟩
   · rintro ⟨y, yN, h⟩

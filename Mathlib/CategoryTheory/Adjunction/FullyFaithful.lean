@@ -112,33 +112,13 @@ noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L �
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_R_unit_iso_of_is_iso_counit CategoryTheory.Adjunction.whiskerLeftRUnitIsoOfIsIsoCounit
 
-/-- If the unit is an isomorphism, then the left adjoint is full-/
-lemma L_full_of_unit_isIso [IsIso h.unit] : L.Full where
-  map_surjective {X Y} f := ⟨h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y), by simp⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.L_full_of_unit_is_iso CategoryTheory.Adjunction.L_full_of_unit_isIso
+/-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
+noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful where
+  preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 
-/-- If the unit is an isomorphism, then the left adjoint is faithful-/
-theorem L_faithful_of_unit_isIso [IsIso h.unit] : L.Faithful :=
-  ⟨fun {X Y f g} H => by
-    rw [← (h.homEquiv X (L.obj Y)).apply_eq_iff_eq] at H
-    simpa using H =≫ inv (h.unit.app Y)⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.L_faithful_of_unit_is_iso CategoryTheory.Adjunction.L_faithful_of_unit_isIso
-
-/-- If the counit is an isomorphism, then the right adjoint is full-/
-lemma R_full_of_counit_isIso [IsIso h.counit] : R.Full where
-  map_surjective {X Y} f := ⟨inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f, by simp⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.R_full_of_counit_is_iso CategoryTheory.Adjunction.R_full_of_counit_isIso
-
-/-- If the counit is an isomorphism, then the right adjoint is faithful-/
-theorem R_faithful_of_counit_isIso [IsIso h.counit] : R.Faithful :=
-  ⟨fun {X Y f g} H => by
-    rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
-    simpa using inv (h.counit.app X) ≫= H⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.R_faithful_of_counit_is_iso CategoryTheory.Adjunction.R_faithful_of_counit_isIso
+/-- If the counit is an isomorphism, then the right adjoint is fully faithful. -/
+noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful where
+  preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
 
 instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerLeft L h.counit) := by
@@ -179,6 +159,9 @@ set_option linter.uppercaseLean3 false in
 instance [L.Faithful] [L.Full] {Y : C} : IsIso (h.counit.app (L.obj Y)) :=
   isIso_of_hom_comp_eq_id _ (h.left_triangle_components Y)
 
+instance [L.Faithful] [L.Full] {Y : D} : IsIso (R.map (h.counit.app Y)) :=
+  isIso_of_hom_comp_eq_id _ (h.right_triangle_components Y)
+
 lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     IsIso (h.counit.app X) ↔ X ∈ L.essImage := by
   constructor
@@ -188,12 +171,19 @@ lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
 
+lemma mem_essImage_of_counit_isIso (A : D)
+    [IsIso (h.counit.app A)] : A ∈ L.essImage :=
+  ⟨R.obj A, ⟨asIso (h.counit.app A)⟩⟩
+
 lemma isIso_counit_app_of_iso [L.Faithful] [L.Full] {X : D} {Y : C} (e : X ≅ L.obj Y) :
     IsIso (h.counit.app X) :=
   (isIso_counit_app_iff_mem_essImage h).mpr ⟨Y, ⟨e.symm⟩⟩
 
 instance [R.Faithful] [R.Full] {Y : D} : IsIso (h.unit.app (R.obj Y)) :=
   isIso_of_comp_hom_eq_id _ (h.right_triangle_components Y)
+
+instance [R.Faithful] [R.Full] {X : C} : IsIso (L.map (h.unit.app X)) :=
+  isIso_of_comp_hom_eq_id _ (h.left_triangle_components X)
 
 lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
     IsIso (h.unit.app Y) ↔ Y ∈ R.essImage := by
@@ -203,6 +193,15 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
   · rintro ⟨_, ⟨i⟩⟩
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
+
+/-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/
+theorem mem_essImage_of_unit_isIso (A : C)
+    [IsIso (h.unit.app A)] : A ∈ R.essImage :=
+  ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
+#align category_theory.mem_ess_image_of_unit_is_iso CategoryTheory.Adjunction.mem_essImage_of_unit_isIso
+
+@[deprecated (since := "2024-06-19")] alias _root_.CategoryTheory.mem_essImage_of_unit_isIso :=
+  mem_essImage_of_unit_isIso
 
 lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.obj X) :
     IsIso (h.unit.app Y) :=

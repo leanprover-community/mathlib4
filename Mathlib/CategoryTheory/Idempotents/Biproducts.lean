@@ -76,7 +76,7 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
       { has_biproduct := fun F => by
           apply hasBiproduct_of_total (Biproducts.bicone F)
           simp only [hom_ext_iff]
-          refine' biproduct.hom_ext' _ _ (fun j => _)
+          refine biproduct.hom_ext' _ _ (fun j => ?_)
           simp only [Biproducts.bicone_pt_X, sum_hom, comp_f, Biproducts.bicone_π_f,
             biproduct.bicone_π, biproduct.map_π, Biproducts.bicone_ι_f, biproduct.ι_map, assoc,
             idem_assoc, id_eq, Biproducts.bicone_pt_p, comp_sum]
@@ -131,13 +131,13 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
     apply biprod.hom_ext'
     · rw [biprod.inl_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_right_eq_self, ← assoc]
-      refine' (_ =≫ _).trans zero_comp
+      refine (?_ =≫ _).trans zero_comp
       ext
       simp only [comp_f, toKaroubi_obj_X, decompId_i_f, decompId_p_f,
         complement_p, comp_sub, comp_id, idem, sub_self, instZero_zero]
     · rw [biprod.inr_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_left_eq_self, ← assoc]
-      refine' (_ =≫ _).trans zero_comp
+      refine (?_ =≫ _).trans zero_comp
       ext
       simp only [complement_X, comp_f, decompId_i_f, complement_p,
         decompId_p_f, sub_comp, id_comp, idem, sub_self, instZero_zero]

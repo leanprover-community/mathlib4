@@ -141,8 +141,8 @@ def mk' (f : α → α) (hf₁ : Monotone f) (hf₂ : ∀ x, x ≤ f x) (hf₃ :
 /-- Convenience constructor for a closure operator using the weaker minimality axiom:
 `x ≤ f y → f x ≤ f y`, which is sometimes easier to prove in practice. -/
 @[simps]
-def mk₂ (f : α → α) (hf : ∀ x, x ≤ f x) (hmin : ∀ ⦃x y⦄, x ≤ f y → f x ≤ f y) : ClosureOperator α
-    where
+def mk₂ (f : α → α) (hf : ∀ x, x ≤ f x) (hmin : ∀ ⦃x y⦄, x ≤ f y → f x ≤ f y) :
+    ClosureOperator α where
   toFun := f
   monotone' _ y hxy := hmin (hxy.trans (hf y))
   le_closure' := hf
@@ -573,8 +573,7 @@ end LowerAdjoint
 /-- Every Galois connection induces a lower adjoint. -/
 @[simps]
 def GaloisConnection.lowerAdjoint [Preorder α] [Preorder β] {l : α → β} {u : β → α}
-    (gc : GaloisConnection l u) : LowerAdjoint u
-    where
+    (gc : GaloisConnection l u) : LowerAdjoint u where
   toFun := l
   gc' := gc
 #align galois_connection.lower_adjoint GaloisConnection.lowerAdjoint

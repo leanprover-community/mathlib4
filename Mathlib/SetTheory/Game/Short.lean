@@ -160,9 +160,9 @@ theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omeg
     constructor
     all_goals
       rw [← Cardinal.ord_aleph0]
-      refine'
+      refine
         Cardinal.lsub_lt_ord_of_isRegular.{u, u} Cardinal.isRegular_aleph0
-          (Cardinal.lt_aleph0_of_finite _) fun i => _
+          (Cardinal.lt_aleph0_of_finite _) fun i => ?_
       rw [Cardinal.ord_aleph0]
     · apply ihl
     · apply ihr
@@ -266,7 +266,7 @@ Instances for the two projections separately are provided below.
 def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     constructor
-    · refine' @decidable_of_iff' _ _ mk_le_mk (id _)
+    · refine @decidable_of_iff' _ _ mk_le_mk (id ?_)
       apply @And.decidable _ _ ?_ ?_
       · apply @Fintype.decidableForallFintype xl _ ?_ _
         intro i
@@ -274,7 +274,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
       · apply @Fintype.decidableForallFintype yr _ ?_ _
         intro i
         apply (leLFDecidable _ _).2
-    · refine' @decidable_of_iff' _ _ mk_lf_mk (id _)
+    · refine @decidable_of_iff' _ _ mk_lf_mk (id ?_)
       apply @Or.decidable _ _ ?_ ?_
       · apply @Fintype.decidableExistsFintype yl _ ?_ _
         intro i

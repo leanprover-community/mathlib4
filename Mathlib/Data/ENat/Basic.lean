@@ -83,7 +83,7 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 #align enat.coe_sub ENat.coe_sub
 
 -- Eligible for dsimp
-@[simp, nolint simpNF] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+@[simp] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 #align enat.coe_mul ENat.coe_mul
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
@@ -123,18 +123,16 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 -- Porting note (#11445): new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
   | none => top
   | Option.some a => coe a
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
     @recTopCoe C d f ⊤ = d :=
   rfl
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
@@ -154,7 +152,6 @@ theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a
     @recTopCoe C d f (no_index (OfNat.ofNat x)) = f (OfNat.ofNat x) :=
   rfl
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
   nofun
@@ -164,7 +161,6 @@ theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
 theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a : ℕ∞)) :=
   nofun
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
@@ -174,7 +170,6 @@ theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
 theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℕ∞)) ≠ ⊤ :=
   nofun
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   WithTop.top_sub_coe
@@ -192,7 +187,6 @@ theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfN
 theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
   WithTop.zero_lt_top
 
--- Porting note (#10756): new theorem copied from `WithTop`
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 
@@ -216,13 +210,13 @@ theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + 
 
 theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
-  induction m using ENat.recTopCoe
+  induction m
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 #align enat.to_nat_sub ENat.toNat_sub
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
-  induction m using ENat.recTopCoe <;> simp [hn.symm]
+  induction m <;> simp [hn.symm]
 #align enat.to_nat_eq_iff ENat.toNat_eq_iff
 
 @[simp]

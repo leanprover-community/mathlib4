@@ -52,12 +52,7 @@ def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! b ∈ c, a ∈ b) : Setoid α 
   iseqv.symm := fun {x _y} h s hs hy => by
     obtain ⟨t, ⟨ht, hx⟩, _⟩ := H x
     rwa [eq_of_mem_eqv_class H hs hy ht (h t ht hx)]
-  iseqv.trans := fun {_x y z} h1 h2 s hs hx => by
-    obtain ⟨t, ⟨ht, hy⟩, _⟩ := H y
-    obtain ⟨t', ⟨ht', hy'⟩, _⟩ := H z
-    have hst : s = t := eq_of_mem_eqv_class H hs (h1 _ hs hx) ht hy
-    have htt' : t = t' := eq_of_mem_eqv_class H ht (h2 _ ht hy) ht' hy'
-    rwa [hst, htt']
+  iseqv.trans := fun {_x y z} h1 h2 s hs hx => h2 s hs (h1 s hs hx)
 #align setoid.mk_classes Setoid.mkClasses
 
 /-- Makes the equivalence classes of an equivalence relation. -/
@@ -230,6 +225,15 @@ theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
   eqv_classes_disjoint hc.2
 #align setoid.is_partition.pairwise_disjoint Setoid.IsPartition.pairwiseDisjoint
 
+lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
+    (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
+    Setoid.IsPartition s := by
+  refine ⟨h₃, fun a ↦ exists_unique_of_exists_of_unique (h₂ a) ?_⟩
+  intro b₁ b₂ hb₁ hb₂
+  apply h₁.elim hb₁.1 hb₂.1
+  simp only [Set.not_disjoint_iff]
+  exact ⟨a, hb₁.2, hb₂.2⟩
+
 theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃₀ c = Set.univ :=
   Set.eq_univ_of_forall fun x =>
     Set.mem_sUnion.2 <|
@@ -265,8 +269,7 @@ instance Partition.le : LE (Subtype (@IsPartition α)) :=
 
 /-- Defining a partial order on partitions as the partial order on their induced
     equivalence relations. -/
-instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α))
-    where
+instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
   le := (· ≤ ·)
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
@@ -281,8 +284,7 @@ variable (α)
 
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
   partitions of `α` into subsets. -/
-protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C }
-    where
+protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
   toFun r := ⟨r.classes, empty_not_mem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
@@ -348,8 +350,7 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
     (dis : Pairwise fun i j => Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
-    (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s
-    where
+    (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s where
   eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec
@@ -525,7 +526,7 @@ theorem piecewise_bij {β : Type*} {f : ι → α → β}
     intro x hx
     rw [hg, piecewise_apply, hs.mem_iff_index_eq.mp hx]
   have hg_inj : InjOn g (⋃ i, s i) := by
-    refine injOn_of_injective ?_ (⋃ (i : ι), s i)
+    refine injOn_of_injective ?_
     refine piecewise_inj hs (fun i ↦ BijOn.injOn (hf i)) ?h_disjoint
     simp only [fun i ↦ BijOn.image_eq (hf i)]
     rintro i - j - hij

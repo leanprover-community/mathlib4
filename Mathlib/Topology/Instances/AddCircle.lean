@@ -70,7 +70,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   let d := toIcoDiv hp a x • p
   have hd := toIcoMod_mem_Ico hp a x
   simp_rw [subset_def, mem_inter_iff]
-  refine' ⟨_, ⟨l + d, min (a + p) u + d, _, fun x => id⟩, fun y => _⟩ <;>
+  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x => id⟩, fun y => ?_⟩ <;>
     simp_rw [← sub_mem_Ioo_iff_left, mem_Ioo, lt_min_iff]
   · exact ⟨hxI.1, hd.2, hxI.2⟩
   · rintro ⟨h, h'⟩
@@ -212,7 +212,7 @@ variable {p a}
 
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
-  refine' ⟨fun h => _, by tauto⟩
+  refine ⟨fun h => ?_, by tauto⟩
   suffices (⟨x, hx⟩ : Ico a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
   apply_fun equivIco p a at h
   rw [← (equivIco p a).right_inv ⟨x, hx⟩, ← (equivIco p a).right_inv ⟨y, hy⟩]
@@ -405,7 +405,7 @@ variable {p}
 theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜) : AddCircle p) = n := by
   rw [addOrderOf_eq_iff h]
   replace h : 0 < (n : 𝕜) := Nat.cast_pos.2 h
-  refine' ⟨_, fun m hn h0 => _⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
+  refine ⟨?_, fun m hn h0 => ?_⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
   · rw [mul_div_cancel₀ _ h.ne', coe_period]
   rw [coe_eq_zero_of_pos_iff p hp.out (mul_pos (Nat.cast_pos.2 h0) <| div_pos hp.out h)]
   rintro ⟨k, hk⟩
@@ -451,7 +451,7 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by
-  refine' ⟨QuotientAddGroup.induction_on' u fun k hk => _, _⟩
+  refine ⟨QuotientAddGroup.induction_on' u fun k hk => ?_, ?_⟩
   · rintro ⟨m, _, h₁, rfl⟩
     exact addOrderOf_div_of_gcd_eq_one h h₁
   have h0 := addOrderOf_nsmul_eq_zero (k : AddCircle p)
@@ -466,7 +466,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
     rw [coe_add, ← Int.cast_natCast, han, zsmul_eq_mul, mul_div_right_comm, eq_comm,
       add_left_eq_self, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
-  refine' ⟨(a % n).toNat, _, _, he⟩
+  refine ⟨(a % n).toNat, ?_, ?_, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
   · have := (gcd_mul_addOrderOf_div_eq p (Int.toNat (a % ↑n)) h).trans
@@ -492,7 +492,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
   Equiv.symm <|
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
-        refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
+        refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
         · simp_rw [Subtype.ext_iff] at h
           rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_natCast m₁,
             ← Int.cast_natCast m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
@@ -503,7 +503,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'
           rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]
-          refine' Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨_, _⟩) <;>
+          refine Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨?_, ?_⟩) <;>
             apply (Int.sub_le_self _ <| Nat.cast_nonneg _).trans_lt (Nat.cast_lt.2 _)
           exacts [m₁.2.1, m₂.2.1]
         obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
@@ -559,7 +559,6 @@ section UnitAddCircle
 
 instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
 
-/- ./././Mathport/Syntax/Translate/Command.lean:328:31: unsupported: @[derive] abbrev -/
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
@@ -674,7 +673,7 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
 theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (a + p))
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIco p a f) := by
   rw [liftIco_eq_lift_Icc hf]
-  refine' Continuous.comp _ (homeoIccQuot p a).continuous_toFun
+  refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
   exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
 #align add_circle.lift_Ico_continuous AddCircle.liftIco_continuous
 

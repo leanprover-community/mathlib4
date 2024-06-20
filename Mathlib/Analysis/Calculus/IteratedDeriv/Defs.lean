@@ -45,7 +45,7 @@ iterated Fréchet derivative.
 
 noncomputable section
 
-open scoped Classical Topology BigOperators
+open scoped Classical Topology
 
 open Filter Asymptotics Set
 

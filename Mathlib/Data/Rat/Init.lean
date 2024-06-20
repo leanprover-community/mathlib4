@@ -69,11 +69,11 @@ instance Rat.instNNRatCast : NNRatCast ℚ := ⟨Subtype.val⟩
 namespace NNRat
 
 /-- The numerator of a nonnegative rational. -/
-@[pp_dot] def num (q : ℚ≥0) : ℕ := (q : ℚ).num.natAbs
+def num (q : ℚ≥0) : ℕ := (q : ℚ).num.natAbs
 #align nnrat.num NNRat.num
 
 /-- The denominator of a nonnegative rational. -/
-@[pp_dot] def den (q : ℚ≥0) : ℕ := (q : ℚ).den
+def den (q : ℚ≥0) : ℕ := (q : ℚ).den
 #align nnrat.denom NNRat.den
 
 @[simp] lemma num_mk (q : ℚ) (hq : 0 ≤ q) : num ⟨q, hq⟩ = q.num.natAbs := rfl

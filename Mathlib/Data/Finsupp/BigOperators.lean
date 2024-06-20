@@ -3,7 +3,7 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finset.Pairwise
 
@@ -41,7 +41,7 @@ theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
   induction' l with hd tl IH
   · simp
   · simp only [List.sum_cons, Finset.union_comm]
-    refine' Finsupp.support_add.trans (Finset.union_subset_union _ IH)
+    refine Finsupp.support_add.trans (Finset.union_subset_union ?_ IH)
     rfl
 #align list.support_sum_subset List.support_sum_subset
 
@@ -119,7 +119,7 @@ theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
     convert Multiset.support_sum_eq s.1 this
     exact (Finset.sum_val _).symm
   obtain ⟨l, hl, hn⟩ : ∃ l : List (ι →₀ M), l.toFinset = s ∧ l.Nodup := by
-    refine' ⟨s.toList, _, Finset.nodup_toList _⟩
+    refine ⟨s.toList, ?_, Finset.nodup_toList _⟩
     simp
   subst hl
   rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff_pairwise, ←
