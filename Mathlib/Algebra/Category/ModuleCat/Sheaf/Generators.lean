@@ -19,8 +19,8 @@ universe u v' u'
 open CategoryTheory Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
-  [HasWeakSheafify J AddCommGroupCat.{u}] [J.WEqualsLocallyBijective AddCommGroupCat.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGroupCat.{u})]
+  [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
+  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 
 namespace SheafOfModules
 
