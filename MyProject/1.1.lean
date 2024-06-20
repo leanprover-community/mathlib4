@@ -15,14 +15,20 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.MeasureTheory.Measure.NullMeasurable
+
+
+
 
 open MeasureTheory
 open ENNReal
 open Set
 open Function
 open scoped BigOperators
+open Finset
 
---defining partition given measure
+--defining partition given measure, disjointness defined measure-theoretically
+-- cover for now is defined in the set-theoretic sense
 
 structure partition {α : Type*} (m : MeasurableSpace α) (μ : Measure α) [IsProbabilityMeasure μ] :=
   f : ℕ → Set α         -- A function from natural numbers to sets of terms in α
@@ -36,14 +42,20 @@ structure finpart {α : Type*} (m : MeasurableSpace α) (μ : Measure α) [IsPro
   (f : Fin n → Set α)          -- A function from finite sets of size n to sets of terms in α
   (measurable : ∀ i : Fin n, MeasurableSet (f i))  -- Each set is measurable
   (disjoint : ∀ i j, i ≠ j → μ (f i ∩ f j) = 0)  -- The sets are pairwise disjoint
-  (cover : (⋃ i, f i) = Set.univ)  -- The union of all sets covers the entire space
+  (cover : (⋃ i ∈ Finset.univ, f i) = Set.univ)  -- The union of all sets covers the entire space
+
+structure finpart' {α : Type*} (m : MeasurableSpace α) (μ : Measure α) [IsProbabilityMeasure μ] (n: ℕ):=
+  (f : Fin n → Set α)          -- A function from finite sets of size n to sets of terms in α
+  (measurable : ∀ i : Fin n, MeasurableSet (f i))  -- Each set is measurable
+  (disjoint : ∀ i j, i ≠ j → μ (f i ∩ f j) = 0)  -- The sets are pairwise disjoint
+  (cover : (⋃ i , f i) = Set.univ)  -- The union of all sets covers the entire space
 
 
 
 
---defining a function which given a finite partition give back
---the countable partition whit tail of empty sets
---
+--defining a function which given a finite partition gives back
+--the countable partition whith a tail of empty sets
+
 
 def finpart_to_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (n : ℕ) (fp : finpart m μ n) : partition m μ
@@ -69,58 +81,39 @@ def finpart_to_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α}
     · tauto
     · intro h;dsimp; rw[← fp.cover] at h; rcases mem_iUnion.mp h with ⟨a, ha⟩
       rw[mem_iUnion]
-      use a; simp only [dif_pos a.is_lt]; exact ha
-
-#check finpart_to_partition
---A pairing function to map pairs of natural numbers to a single natural number
-
-def pairing_function (k : ℕ × ℕ) : ℕ := (k.1 + k.2) * (k.1 + k.2 + 1) / 2 + k.2
-
-#check pairing_function
-
--- An inverse of the pairing function to retrieve pairs from a single natural number
-def inverse_pairing_function (k : ℕ) : ℕ × ℕ :=
-  let w := Nat.floor (Nat.sqrt (8 * k + 1) - 1) / 2
-  let t := w * (w + 1) / 2
-  (w - (k - t), k - t)
+      rcases mem_iUnion.mp ha with ⟨b, hb⟩
+      use a; simp only [dif_pos a.is_lt]; exact hb
 
 
 
-theorem stupid: LeftInverse (inverse_pairing_function) pairing_function:= by
-  intro x;unfold pairing_function;unfold inverse_pairing_function;dsimp
-  sorry
 
-theorem stupid': RightInverse (inverse_pairing_function) pairing_function := by
-  sorry
-
---defining functin that takes two partitions and gives the refinement partition
-
+--defining function that takes two partitions and gives the refinement partition
 
 def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p1 p2 : partition m μ) : partition m μ :=
-{ f := λ k ↦ let (i, j) := inverse_pairing_function k
+{ f := λ k ↦ let (i, j) := Nat.pairEquiv.invFun k
   p1.f i ∩ p2.f j
-  --f := λ k ↦ p1.f (inverse_pairing_function k).1  ∩ p2.f (inverse_pairing_function k).1
   measurable := by
     intro k
-    let i := (inverse_pairing_function k).1
-    let j := (inverse_pairing_function k).2
+    let i := (Nat.pairEquiv.invFun k).1
+    let j := (Nat.pairEquiv.invFun k).2
     dsimp only
     exact MeasurableSet.inter (p1.measurable i) (p2.measurable j)
   disjoint := by
-    intro i j hij
-    dsimp
-    let (i1, j1) := inverse_pairing_function i
-    let (i2, j2) := inverse_pairing_function j
+    intro i j hij;dsimp
+    let i1 := (Nat.pairEquiv.invFun i).1
+    let j1 := (Nat.pairEquiv.invFun i).2
+    let i2 := (Nat.pairEquiv.invFun j).1
+    let j2 := (Nat.pairEquiv.invFun j).2
     by_cases h : i1 = i2 ∧ j1 = j2
     · exfalso; have h':(i1,j1)=(i2,j2):= by
         rw[h.1,h.2]
-      have : inverse_pairing_function i = inverse_pairing_function j := by
-        sorry
-      have h :pairing_function (inverse_pairing_function i)= pairing_function (inverse_pairing_function j):= by
+      have : Nat.pairEquiv.invFun i = Nat.pairEquiv.invFun j := by
+        exact h'
+      have h : Nat.pairEquiv.toFun (Nat.pairEquiv.invFun i)= Nat.pairEquiv.toFun (Nat.pairEquiv.invFun j):= by
         rw[this]
-      have h1 : pairing_function (inverse_pairing_function i)=i:= by exact stupid' _
-      have h2 : pairing_function (inverse_pairing_function j)=j:= by exact stupid' _
+      have h1 : Nat.pairEquiv.toFun (Nat.pairEquiv.invFun i) = i := by exact Nat.pairEquiv.right_inv _
+      have h2 : Nat.pairEquiv.toFun (Nat.pairEquiv.invFun j) = j := by exact  Nat.pairEquiv.right_inv _
       rw[h1,h2] at h
       exact hij h
     · simp only [Set.inter_comm, Set.inter_assoc]
@@ -134,20 +127,19 @@ def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [Is
     constructor
     · intro _
       exact Set.mem_univ x
-    · intro h; dsimp; have h': x ∈ univ := by tauto
+    · intro h;dsimp; have h':= h
       rw [← p1.cover]at h; rw[← p2.cover] at h'
       rcases mem_iUnion.mp h with ⟨i, hi⟩
       rcases mem_iUnion.mp h' with ⟨j, hj⟩
       rw[mem_iUnion]
-      use (pairing_function (i, j))
-      constructor
-      rw[stupid];exact hi
-      rw[stupid]; exact hj
+      use (Nat.pairEquiv.toFun (i, j))
+      simp [Nat.pairEquiv.left_inv]
+      exact ⟨hi, hj⟩
 }
 
+
+
 noncomputable section
-
-
 
 --defining entropy and conditional entropy
 
@@ -163,8 +155,7 @@ noncomputable section
 -∑ i in Finset.univ,
    (μ (fp.f i)).toReal* Real.log ((μ (fp.f i)).toReal)
 
-
-
+-- defining conditional entropy
 
 def conmet_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ) (g : partition m μ): ℝ :=
@@ -183,7 +174,6 @@ end section
 
 
 
---maximal entropy theorem
 noncomputable section
 
 def φ (x : ℝ) : ℝ :=
@@ -191,6 +181,58 @@ x * Real.log x
 
 end section
 
+
+
+
+
+
+#check MeasureTheory.measure_iUnion₀
+#check MeasureTheory.measure_biUnion_finset₀
+#check MeasureTheory.measure_biUnion_finset
+
+
+--useful lemmas
+
+theorem addone {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+ (p : partition m μ) : (μ (⋃ i, p.f i)) = ∑' i , μ (p.f i) := by
+  apply MeasureTheory.measure_iUnion₀
+  · intro x y
+    exact p.disjoint x y
+  · intro i-- (h : MeasurableSet s) :
+    exact  MeasurableSet.nullMeasurableSet (p.measurable i)
+--Toreal? or no.
+
+theorem addone' {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+(n : ℕ) (fp : finpart m μ n) : (μ (⋃ i ∈ Finset.univ, fp.f i)) = ∑ i ∈ Finset.univ, μ (fp.f i) := by
+  apply MeasureTheory.measure_biUnion_finset₀
+  · intro x _ s _ hxs
+    exact fp.disjoint x s hxs
+  · intro b _
+    exact MeasurableSet.nullMeasurableSet (fp.measurable b)
+
+
+theorem equiv {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+ (n : ℕ) (fp : finpart m μ n): (μ (⋃ i ∈ Finset.univ, fp.f i)).toReal =∑ i ∈ Finset.univ,(μ (fp.f i)).toReal := by
+  have h: (∑ i ∈ Finset.univ,(μ (fp.f i))).toReal=∑ i ∈ Finset.univ,(μ (fp.f i)).toReal := by
+    refine toReal_sum ?hf
+    intro a _
+    exact (measure_lt_top μ (fp.f a)).ne
+  rw [← addone' n fp]  at h
+  exact h
+
+
+
+
+
+
+
+
+
+
+#check @_root_.mul_lt_mul_left
+#check mul_lt_mul_left
+
+--maximal entropy theorem
 
 theorem max_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
 (n : ℕ) (fp : finpart m μ n) :(met_entropy' n fp  ≤ Real.log n) ∧ (met_entropy' n fp = Real.log (n) ↔
@@ -202,25 +244,46 @@ by
       rw[← mul_assoc]
       obtain (rfl | hn) := eq_zero_or_pos n
       · simp
-      · simp [toReal_inv, mul_inv_cancel <| show (n : ℝ) ≠ 0 by norm_cast; omega]
+      · simp [toReal_inv, mul_inv_cancel <| show (n : ℝ) ≠ 0 by norm_cast; linarith]
     · push_neg at h
       rcases h with ⟨a,b⟩
       simp [met_entropy']
       obtain (rfl | hn) := eq_zero_or_pos n
       · simp
-      · have h: -1/(n:ℝ) *Real.log (n:ℝ) = 1/(n:ℝ) * Real.log (1/(n:ℝ)) := by
+      · have : n ≠ 0 := by linarith[hn]
+        have h: -1/(n:ℝ) *Real.log (n:ℝ) = 1/(n:ℝ) * Real.log (1/(n:ℝ)) := by
           field_simp
-          simp [Real.log_inv, mul_inv_cancel <| show (n : ℝ) ≠ 0 by norm_cast; omega]
-        have h': 1/(n:ℝ) * Real.log (1/(n:ℝ))= φ (1/(n:ℝ)) := by
+          simp [Real.log_inv, mul_inv_cancel <| show (n : ℝ) ≠ 0 by norm_cast]
+        have h1: 1/(n:ℝ) * Real.log (1/(n:ℝ))= φ (1/(n:ℝ)) := by
           tauto
-        have: 1/(n:ℝ) = 1/(n:ℝ)*(∑ i in Finset.univ, (μ (fp.f i)).toReal) := by
+        have h2: (∑ i in Finset.univ, (μ (fp.f i)).toReal)=1 := by
+          rw[← equiv]; rw [fp.cover]; simp
+        have h3: 1/(n:ℝ) = 1/(n:ℝ)*(∑ i in Finset.univ, (μ (fp.f i)).toReal) := by
+          rw[h2,mul_one]
+        have h4: φ (1/(n:ℝ))= φ (1/(n:ℝ)*(∑ i in Finset.univ, (μ (fp.f i)).toReal)) := by
+          nth_rewrite 1[h3]
+          rfl
+        have h5: φ ((∑ i in Finset.univ, 1/(n:ℝ)*(μ (fp.f i)).toReal)) = φ ((1/(n:ℝ)) * (∑ i in Finset.univ, (μ (fp.f i)).toReal)) := by
+          rw[mul_sum]
+        have h6: sconvex_on' (Ici (0:ℝ)) φ := by
           sorry
-        sorry
-  · constructor
-    ·
+        let t : Fin n → ℝ := λ i ↦ 1 / n
+        have h7: φ ((∑ i in Finset.univ, (t i)*(μ (fp.f i)).toReal)) = φ ((∑ i in Finset.univ, 1/(n:ℝ)*(μ (fp.f i)).toReal)) := by
+          exact rfl
+        have h8: φ ((∑ i in Finset.univ, (t i)*(μ (fp.f i)).toReal)) <  ∑ i in Finset.univ, (t i) * φ ((μ (fp.f i)).toReal) := by
+          apply (h6 n)
+          · intro s; simp [zero_le (μ (fp.f s))]
+          · intro s; change 0 ≤ 1 / (n : ℝ);simp
+          · change ∑ i : Fin n, 1 / (n : ℝ) = 1
+            simp[mul_inv_cancel,this]
+        have h9:  ∑ i in Finset.univ, (t i) * φ ((μ (fp.f i)).toReal) = ∑ i in Finset.univ, 1/(n:ℝ) * φ ((μ (fp.f i)).toReal):= by
+          exact rfl
+        rw[h7,h9,h5,h2,mul_one,← mul_sum] at h8;unfold φ at h8
+        have : 0 < 1 / (n : ℝ) := by
+          sorry
+        apply (mul_lt_mul_left.mp (1 / (n : ℝ)) ((1 / ↑n).log_) ( ∑ i : Fin n, (μ (fp.f i)).toReal * (μ (fp.f i)).toReal.log) this).mp at h8
 
 
-    · sorry
 
 
 
@@ -229,7 +292,7 @@ by
 
 
 
-
+            --simp [mul_inv_cancel <| show (n : ℝ) ≠ 0 by linarith [hn]]
 
 
 
@@ -237,10 +300,11 @@ by
 -- in this next section we indtroduce information function
 -- and prove proposition 1.7
 
---function extracting the set in the partition containing desired point
+
 noncomputable section
 
 --information funciton
+
 def info {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ) (x : α) :ℝ := by
     have h: x ∈ univ := by tauto
@@ -248,15 +312,15 @@ def info {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityM
     choose a b using h
     exact (-Real.log (μ (p.f (a))).toReal)
 
+-- conditional information function
 
 def cond_info {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ) (s : partition m μ) (x : α) :ℝ := by
-  have h: x ∈ univ := by tauto
-  have h': x ∈ univ := by tauto
-  rw[← p.cover] at h; rw[mem_iUnion] at h
-  rw[← s.cover] at h'; rw[mem_iUnion] at h'
-  choose a b using h
-  choose c d using h'
+  have h: x ∈ Set.univ := by tauto
+  have h':= h
+  rw[← p.cover] at h; rw[mem_iUnion] at h;rw[← s.cover] at h'; rw[mem_iUnion] at h'
+  choose a _ using h
+  choose c _ using h'
   exact (-Real.log (μ ((p.f (a)) ∩ s.f (c))).toReal/(μ (s.f (c))).toReal)
 
 -- should introduce a conditional in case the measure in denominator is zero
@@ -266,6 +330,7 @@ end section
 theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ): met_entropy p = ∫ x, info p x ∂μ := by
   sorry
+
 
 theorem info_add {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ) (s : partition m μ) (t : partition m μ) :
@@ -294,55 +359,6 @@ theorem ent_subadd {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsPr
   conmet_entropy (refine_partition p s) (t) ≤ conmet_entropy p t +  conmet_entropy s t := by
     sorry
 
-
-
-
-
-
-
-
-
-
-
-
-variable {α : Type*} [LinearOrderedField α] [OrderedAddCommGroup α] [Module α α] [OrderedSMul α α]
-
-#check Fin.elim0
-
-
-
-def convex_on' (s : Set ℝ ) (f : ℝ → ℝ) : Prop :=
-∀ (n : ℕ) (x : Fin n → ℝ ) (t : Fin n → ℝ),
-  (∀ i , x i ∈ s) →
-  (∀ i, 0 ≤ t i) →
-  (∑ i, t i = 1) →
-  f (∑ i, t i * x i) ≤ ∑ i, t i * f (x i)
-
-
-
-
-
-variable {a b : ℝ} {f : ℝ → ℝ}
-
-
-
-
-
-
-theorem convex_combination_inequality
-  {f : ℝ → ℝ} {a b : ℝ} (hf : ConvexOn ℝ  (Icc a b) f)
-  {n : ℕ} {x : Fin n → ℝ} {t : Fin n → ℝ}
-  (hx : ∀ i, x i ∈ Icc a b) (ht : ∀ i, t i ∈ Icc 0 1)
-  (ht_sum : ∑ i, t i = 1) :
-  f (∑ i, t i * x i) ≤ ∑ i, t i * f (x i) := by
-  -- We'll proceed by induction on `n`.
-    induction' n with n ih
-  -- Base case: n = 0
-    · exfalso; have h': ∑ i : Fin 0, t i = (0 : ℝ) := by
-        simp only [Fin.sum_univ_zero, Finset.sum_empty, MulZeroClass.mul_zero]
-      rw[ht_sum] at h'; have: (1 : ℝ) ≠ 0 := by norm_num
-      exact this h'
-    · sorry
 end
 
 
