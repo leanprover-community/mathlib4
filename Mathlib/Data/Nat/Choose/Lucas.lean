@@ -39,16 +39,11 @@ theorem lucas_theorem :choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k
     Polynomial.map_pow, Polynomial.map_add, Polynomial.map_one, map_X, decompose]
   simp only [add_pow, one_pow, mul_one, ← pow_mul, sum_mul_sum]
   conv_lhs =>
-    arg 1; arg 2; ext k; arg 2; ext k'
+    enter [1, 2, k, 2, k']
     rw [← mul_assoc, mul_right_comm _ _ (X ^ (p * k')), ← pow_add, mul_assoc, ← cast_mul]
-  simp only [finset_sum_coeff, coeff_mul_natCast, coeff_X_pow, ite_mul, zero_mul, ← cast_mul]
-  rw [← sum_product', sum_ite_eq_iff (range (n % p + 1) ×ˢ range (n / p + 1)) (k % p, k / p)]
-  · simp_rw [mem_product, mem_range]
-    split_ifs with h
-    · simp
-    · rw [not_and_or, lt_succ, not_le, not_lt] at h
-      cases h with | _ h => simp [choose_eq_zero_of_lt h]
-  · intro ⟨x₁, x₂⟩ hx
+  have h_iff : ∀ x ∈ range (n % p + 1) ×ˢ range (n / p + 1),
+      k = x.1 + p * x.2 ↔ (k % p, k / p) = x := by
+    intro ⟨x₁, x₂⟩ hx
     rw [Prod.mk.injEq]
     constructor <;> intro h
     · simp only [mem_product, mem_range] at hx
@@ -56,19 +51,22 @@ theorem lucas_theorem :choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k
       rw [h, add_mul_mod_self_left, add_mul_div_left _ _ Fin.size_pos', eq_comm (b := x₂)]
       exact ⟨mod_eq_of_lt h', self_eq_add_left.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]
+  simp only [finset_sum_coeff, coeff_mul_natCast, coeff_X_pow, ite_mul, zero_mul, ← cast_mul]
+  rw [← sum_product', sum_congr rfl (fun a ha ↦ if_congr (h_iff a ha) rfl rfl), sum_ite_eq]
+  split_ifs with h
+  · simp
+  · rw [mem_product, mem_range, mem_range, not_and_or, lt_succ, not_le, not_lt] at h
+    cases h <;> simp [choose_eq_zero_of_lt (by tauto)]
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
 `choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over i < a, multiplied by
 `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
 theorem lucas_theorem' (a : ℕ) :
-    choose n k ≡
-      choose (n / p ^ a) (k / p ^ a) * ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p)
-        [ZMOD p] := by
-  induction a with
-  | zero => simp
-  | succ a ih =>
-    apply ih.trans
-    clear ih
+    choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
+      ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] :=
+  match a with
+  | Nat.zero => by simp
+  | Nat.succ a => (lucas_theorem' a).trans <| by
     rw [prod_range_succ, cast_mul, ← mul_assoc, mul_right_comm]
     gcongr
     apply lucas_theorem.trans
