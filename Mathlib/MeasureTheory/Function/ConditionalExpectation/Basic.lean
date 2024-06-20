@@ -235,6 +235,12 @@ theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] :
   simp only [condexp_undef hf, Pi.zero_apply, integral_zero, integral_undef hf]
 #align measure_theory.integral_condexp MeasureTheory.integral_condexp
 
+/-- Total probability law using `condexp` as conditional probability. -/
+theorem integral_condexp_indicator [mF : MeasurableSpace F] {Y : α → F} (hY : Measurable Y)
+    [SigmaFinite (μ.trim hY.comap_le)] {A : Set α} (hA : MeasurableSet A) :
+    ∫ x, (μ[(A.indicator fun _ ↦ (1 : ℝ)) | mF.comap Y]) x ∂μ = (μ A).toReal := by
+  rw [integral_condexp, integral_indicator hA, setIntegral_const, smul_eq_mul, mul_one]
+
 /-- **Uniqueness of the conditional expectation**
 If a function is a.e. `m`-measurable, verifies an integrability condition and has same integral
 as `f` on all `m`-measurable sets, then it is a.e. equal to `μ[f|hm]`. -/
@@ -419,11 +425,5 @@ theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
       hgs_bound hgs
   exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (eventually_of_forall hn_eq)
 #align measure_theory.tendsto_condexp_unique MeasureTheory.tendsto_condexp_unique
-
-/-- Total probability law using `condexp` as conditional probability. -/
-theorem integral_condexp_indicator [mF : MeasurableSpace F] {Y : α → F} (hY : Measurable Y)
-    [SigmaFinite (μ.trim hY.comap_le)] {A : Set α} (hA : MeasurableSet A) :
-    ∫ x, (μ[(A.indicator fun _ ↦ (1 : ℝ)) | mF.comap Y]) x ∂μ = (μ A).toReal := by
-  rw [integral_condexp, integral_indicator hA, setIntegral_const, smul_eq_mul, mul_one]
 
 end MeasureTheory
