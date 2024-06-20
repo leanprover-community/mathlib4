@@ -49,13 +49,6 @@ lemma shiftFunctor_comp_inverts (a : A) :
     W.IsInvertedBy (shiftFunctor C a ⋙ L) := fun _ _ f hf =>
   Localization.inverts L W _ (by simpa only [iff] using hf)
 
-lemma inverseImage (F : D ⥤ C) [HasShift D A] [F.CommShift A] (hW : W.RespectsIso) :
-    (W.inverseImage F).IsCompatibleWithShift A where
-  condition a := by
-    ext X Y f
-    simp only [inverseImage_iff, ← iff W (F.map f) a]
-    exact hW.arrow_mk_iso_iff (Arrow.isoOfNatIso (F.commShiftIso a) f)
-
 end IsCompatibleWithShift
 
 end MorphismProperty

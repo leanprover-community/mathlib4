@@ -50,9 +50,6 @@ variable (C : Type u) [Category.{v} C] [Abelian C]
 
 open Localization
 
-instance : (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
-  sorry
-
 /-- The property that morphisms between single complexes in arbitrary degrees are `w`-small
 in the derived category. -/
 abbrev HasExt : Prop :=
