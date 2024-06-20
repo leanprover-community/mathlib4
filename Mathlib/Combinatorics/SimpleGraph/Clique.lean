@@ -77,7 +77,7 @@ lemma isClique_empty : G.IsClique ∅ := by simp
 lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 #align simple_graph.is_clique_singleton SimpleGraph.isClique_singleton
 
-theorem isClique_subsingleton (G : SimpleGraph α) (ht : s.Subsingleton) : G.IsClique s :=
+theorem isClique_of_subsingleton (G : SimpleGraph α) (ht : s.Subsingleton) : G.IsClique s :=
   ht.pairwise G.Adj
 
 lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwise_pair_of_symmetric G.symm
@@ -132,22 +132,15 @@ theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nont
 theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
     (G.map f).IsClique t ↔ t.Subsingleton ∨ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
   obtain (ht | ht) := t.subsingleton_or_nontrivial
-  · simp [isClique_subsingleton _ ht, ht]
+  · simp [isClique_of_subsingleton _ ht, ht]
   simp [isClique_map_iff_of_nontrivial ht, ht.not_subsingleton]
 
 @[simp] theorem isClique_map_image_iff {f : α ↪ β} :
     (G.map f).IsClique (f '' s) ↔ G.IsClique s := by
   rw [isClique_map_iff, f.injective.subsingleton_image_iff]
   obtain (hs | hs) := s.subsingleton_or_nontrivial
-  · simp [hs, isClique_subsingleton G hs]
+  · simp [hs, isClique_of_subsingleton G hs]
   simp [or_iff_right hs.not_subsingleton, Set.image_eq_image f.injective]
-
-theorem isClique_of_card_le_one (G : SimpleGraph α) {t : Finset α} (ht : t.card ≤ 1) :
-    G.IsClique t := by
-  apply isClique_subsingleton
-  rw [Finset.card_le_one_iff_subsingleton_coe] at ht
-  exact (Set.subsingleton_coe _).1 ht
-
 section DecidableEq
 
 variable [DecidableEq β] {f : α ↪ β} {t : Finset β}
@@ -158,7 +151,7 @@ theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
   · rw [isClique_map_iff_of_nontrivial (by simpa)]
     rintro ⟨s, hs, hst⟩
     obtain ⟨s, rfl⟩ := Set.Finite.exists_finset_coe <|
-      (show s.Finite from Set.Finite.of_finite_image (f := f) (by simp [hst]) (f.injective.injOn _))
+      (show s.Finite from Set.Finite.of_finite_image (by simp [hst]) f.injective.injOn)
     exact ⟨s,hs, Finset.coe_inj.1 (by simpa)⟩
   rintro ⟨s, hs, rfl⟩
   simpa using hs.map (f := f)
@@ -166,7 +159,8 @@ theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
 theorem isClique_map_finset_iff :
     (G.map f).IsClique t ↔ t.card ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
   obtain (ht | ht) := le_or_lt t.card 1
-  · simp [ht, isClique_of_card_le_one]
+  · simp only [ht, true_or, iff_true]
+    exact isClique_of_subsingleton _ <| card_le_one.1 ht
   rw [isClique_map_finset_iff_of_nontrivial, ← not_lt]
   · simp [ht, Finset.map_eq_image]
   exact Finset.one_lt_card_iff_nontrivial.mp ht
