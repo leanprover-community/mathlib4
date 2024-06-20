@@ -25,8 +25,8 @@ universe u
 
 namespace ModuleCat
 
-/-- The forgetful functor from `ℤ` modules to `AddCommGroupCat` is full. -/
-instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGroupCat.{u}).Full where
+/-- The forgetful functor from `ℤ` modules to `AddCommGrp` is full. -/
+instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrp.{u}).Full where
   map_surjective {A B}
     -- `AddMonoidHom.toIntLinearMap` doesn't work here because `A` and `B` are not
     -- definitionally equal to the canonical `AddCommGroup.intModule` module
@@ -40,17 +40,17 @@ instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGroupCa
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_AddCommGroup_full ModuleCat.forget₂_addCommGroup_full
 
-/-- The forgetful functor from `ℤ` modules to `AddCommGroupCat` is essentially surjective. -/
-instance forget₂_addCommGroupCat_essSurj : (forget₂ (ModuleCat ℤ) AddCommGroupCat.{u}).EssSurj where
+/-- The forgetful functor from `ℤ` modules to `AddCommGrp` is essentially surjective. -/
+instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) AddCommGrp.{u}).EssSurj where
   mem_essImage A :=
     ⟨ModuleCat.of ℤ A,
       ⟨{  hom := 𝟙 A
           inv := 𝟙 A }⟩⟩
 set_option linter.uppercaseLean3 false in
-#align Module.forget₂_AddCommGroup_ess_surj ModuleCat.forget₂_addCommGroupCat_essSurj
+#align Module.forget₂_AddCommGroup_ess_surj ModuleCat.forget₂_addCommGrp_essSurj
 
 noncomputable instance forget₂AddCommGroupIsEquivalence :
-    (forget₂ (ModuleCat ℤ) AddCommGroupCat.{u}).IsEquivalence where
+    (forget₂ (ModuleCat ℤ) AddCommGrp.{u}).IsEquivalence where
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_AddCommGroup_is_equivalence ModuleCat.forget₂AddCommGroupIsEquivalence
 
