@@ -463,7 +463,7 @@ section
 variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
 
 lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
-    ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
+    ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A) (by continuity)‖₊ := by
   rw [ContinuousLinearMap.opNNNorm_eq_of_bounds _ (linfty_opNNNorm_mulVec _) fun N hN => ?_]
   rw [linfty_opNNNorm_def]
   refine Finset.sup_le fun i _ => ?_
@@ -485,7 +485,7 @@ lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
 alias linfty_op_nnnorm_eq_op_nnnorm := linfty_opNNNorm_eq_opNNNorm
 
 lemma linfty_opNorm_eq_opNorm (A : Matrix m n α) :
-    ‖A‖ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖ :=
+    ‖A‖ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A) (by continuity)‖ :=
   congr_arg NNReal.toReal (linfty_opNNNorm_eq_opNNNorm A)
 
 @[deprecated (since := "2024-02-02")] alias linfty_op_norm_eq_op_norm := linfty_opNorm_eq_opNorm
