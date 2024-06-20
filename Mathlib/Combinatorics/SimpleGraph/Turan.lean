@@ -194,8 +194,7 @@ lemma not_adj_iff_part_eq : ¬G.Adj s t ↔ h.finpartition.part s = h.finpartiti
   rw [← Finpartition.mem_part_ofSetoid_iff_rel]
   let fp := h.finpartition
   change t ∈ fp.part s ↔ fp.part s = fp.part t
-  refine ⟨fun c ↦ fp.eq_of_mem_parts ?_ ?_ c ?_, fun c ↦ c ▸ fp.mem_part (mem_univ t)⟩ <;>
-    simp [fp.part_mem, fp.mem_part]
+  rw [fp.mem_part_iff_part_eq_part (mem_univ t) (mem_univ s), eq_comm]
 
 lemma degree_eq_card_sub_part_card : G.degree s = Fintype.card V - (h.finpartition.part s).card :=
   calc
@@ -216,16 +215,16 @@ theorem isEquipartition : h.finpartition.IsEquipartition := by
   obtain ⟨large, hl, small, hs, ineq⟩ := hn
   obtain ⟨w, hw⟩ := fp.nonempty_of_mem_parts hl
   obtain ⟨v, hv⟩ := fp.nonempty_of_mem_parts hs
-  have large_eq := fp.eq_of_mem_parts hl (fp.part_mem (mem_univ w)) hw (fp.mem_part (mem_univ w))
-  have small_eq := fp.eq_of_mem_parts hs (fp.part_mem (mem_univ v)) hv (fp.mem_part (mem_univ v))
   apply absurd h
   rw [IsTuranMaximal]; push_neg; intro cf
   use G.replaceVertex v w, inferInstance, cf.replaceVertex v w
+  have large_eq := fp.part_eq_of_mem hl hw
+  have small_eq := fp.part_eq_of_mem hs hv
   have ha : G.Adj v w := by
-    by_contra hn; rw [h.not_adj_iff_part_eq, ← small_eq, ← large_eq] at hn
+    by_contra hn; rw [h.not_adj_iff_part_eq, small_eq, large_eq] at hn
     rw [hn] at ineq; omega
   rw [G.card_edgeFinset_replaceVertex_of_adj ha,
-    degree_eq_card_sub_part_card h, ← small_eq, degree_eq_card_sub_part_card h, ← large_eq]
+    degree_eq_card_sub_part_card h, small_eq, degree_eq_card_sub_part_card h, large_eq]
   have : large.card ≤ Fintype.card V := by simpa using card_le_card large.subset_univ
   omega
 
