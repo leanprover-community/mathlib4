@@ -2163,7 +2163,7 @@ def recOn
     (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ConnectedComponent.sound p.reachable ▸ f u = f v) :
     motive c :=
-  Quot.recOn c f (fun u v r => r.elim_path fun p => h u v p p.2)
+  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.2
 
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
@@ -2294,10 +2294,10 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
 
-lemma mem_coe_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
-    (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
-    (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
-  rw [Set.mem_image]
+lemma mem_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
+    (hv : v ∈ c.supp) (hw : w ∈ H.verts)
+    (hadj : H.Adj v w) : w ∈ c.supp := by
+  rw [← SetLike.mem_coe, Set.mem_image]
   obtain ⟨v' , hv'⟩ := hv
   use ⟨w, hw⟩
   rw [ConnectedComponent.mem_supp_iff]

@@ -36,7 +36,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 * Tutte's Theorem
 
-* Hall's Marriage Theorem (see `Combinatorics.Hall.Basic`)
+* Hall's Marriage Theorem (see Combinatorics.Hall.Basic)
 -/
 
 open Function
@@ -136,7 +136,6 @@ lemma IsMatching.induce_connectedComponent (h : M.IsMatching) (c : ConnectedComp
   simp only [induce_adj, Set.mem_inter_iff, hv, ConnectedComponent.mem_supp_iff, and_self, and_imp,
     true_and, ConnectedComponent.eq, hw, hvw, M.edge_vert hvw.symm, (M.adj_sub hvw).symm.reachable]
   exact fun _ _ _ ↦ hw _
-
 
 lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMatching)
     (c : ConnectedComponent G) : (M.induce c.supp).IsMatching := by
