@@ -440,9 +440,6 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G}
 
 variable (G)
 
-example (B : Set X) (k : G) (hk : k ∈ stabilizer G B) (a : X) (ha : a ∈ B) :
-  k • a ∈ B  :=
-  hk.symm ▸ Set.smul_mem_smul_set ha
 
 /-- Order equivalence between blocks in X containing a point a
  and subgroups of G containing the stabilizer of a (Wielandt, th. 7.5)-/
