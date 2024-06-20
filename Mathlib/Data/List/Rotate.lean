@@ -245,16 +245,17 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
       exacts [hm', hlt.le, hm]
     · rwa [Nat.sub_lt_iff_lt_add hm, length_drop, Nat.sub_add_cancel hlt.le]
 
-theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
-    (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
-  simp [getElem?_rotate, hml]
-#align list.nth_rotate List.get?_rotate
-
 theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :
     (l.rotate n)[k] =
       l[(k + n) % l.length]'(mod_lt _ (length_rotate l n ▸ k.zero_le.trans_lt h)) := by
   rw [← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem, getElem?_rotate]
   exact h.trans_eq (length_rotate _ _)
+
+theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
+    (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
+  simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
+  rw [← getElem?_eq_getElem]
+#align list.nth_rotate List.get?_rotate
 
 -- Porting note (#10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :

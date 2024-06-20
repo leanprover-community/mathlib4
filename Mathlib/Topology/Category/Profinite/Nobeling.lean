@@ -1263,8 +1263,7 @@ theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   intro y
   ext x
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.sub_apply]
-  simp only [continuous_CC'₀, continuous_CC'₁, LocallyConstant.coe_comap, continuous_projRestrict,
-    Function.comp_apply, sub_eq_zero]
+  simp only [Pi.zero_apply, sub_eq_zero]
   congr 1
   ext i
   dsimp [CC'₀, CC'₁, ProjRestrict, Proj]

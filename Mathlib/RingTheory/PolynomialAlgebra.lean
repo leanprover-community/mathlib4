@@ -293,9 +293,9 @@ theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ
 theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv (p • (1 : Matrix n n R[X])) = p.map (algebraMap R (Matrix n n R)) := by
   ext m i j
-  simp only [coeff_map, one_apply, algebraMap_matrix_apply, mul_boole, Pi.smul_apply,
-    matPolyEquiv_coeff_apply]
-  split_ifs <;> simp <;> rename_i h <;> simp [h]
+  simp only [matPolyEquiv_coeff_apply, smul_apply, one_apply, smul_eq_mul, mul_ite, mul_one,
+    mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.id.map_eq_id, RingHom.id_apply]
+  split_ifs <;> simp
 #align mat_poly_equiv_smul_one matPolyEquiv_smul_one
 
 @[simp]

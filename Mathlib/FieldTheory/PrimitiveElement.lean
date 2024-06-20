@@ -62,7 +62,6 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
   · rw [hx]
     exact F⟮α.val⟯.zero_mem
   · obtain ⟨n, hn⟩ := Set.mem_range.mp (hα (Units.mk0 x hx))
-    simp only at hn
     rw [show x = α ^ n by norm_cast; rw [hn, Units.val_mk0]]
     exact zpow_mem (mem_adjoin_simple_self F (E := E) ↑α) n
 #align field.exists_primitive_element_of_finite_top Field.exists_primitive_element_of_finite_top
