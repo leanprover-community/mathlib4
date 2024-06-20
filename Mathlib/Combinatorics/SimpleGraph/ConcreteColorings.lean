@@ -48,9 +48,9 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
   · simpa only [pathGraph_two_eq_top, chromaticNumber_top] using
       chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
 
-theorem Coloring.bicoloring_apply_iff_of_walk {α} {G : SimpleGraph α}
+theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
-    c v ↔ (c u ↔ Even p.length) := by
+    Even p.length ↔ (c u ↔ c v) := by
   induction p with
   | nil => simp
   | @cons u v w h p ih =>
@@ -59,6 +59,18 @@ theorem Coloring.bicoloring_apply_iff_of_walk {α} {G : SimpleGraph α}
       rw [← not_iff, ← Bool.eq_iff_iff]
       exact c.valid h
     tauto
+
+theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
+    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    Odd p.length ↔ (¬c u ↔ c v) := by
+  rw [Nat.odd_iff_not_even, c.even_length_iff_congr p]
+  tauto
+
+theorem Coloring.bicoloring_apply_iff_of_walk {α} {G : SimpleGraph α}
+    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    c v ↔ (c u ↔ Even p.length) := by
+  rw [iff_left_comm, iff_assoc, Iff.comm]
+  exact c.even_length_iff_congr p
 
 theorem Coloring.bicoloring_apply_iff_of_head_walk {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) (hcu : c u) :
