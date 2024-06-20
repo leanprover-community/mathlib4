@@ -60,6 +60,11 @@ register_option linter.papercut : Bool := {
 @[inherit_doc Mathlib.Linter.Papercut.linter.papercut]
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.papercut o
 
+/-- Avoids context-free `InfoTree` node in `InfoTree.visitM`. -/
+def isEmpty : InfoTree → Bool
+  | .node _ is => is.isEmpty
+  | _ => false
+
 @[inherit_doc Mathlib.Linter.Papercut.linter.papercut]
 def papercutLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) do
@@ -68,6 +73,7 @@ def papercutLinter : Linter where run := withSetOptionIn fun _stx => do
     return
   let initInfoTrees ← getResetInfoTrees
   for t in initInfoTrees.toArray do liftTermElabM do
+    unless isEmpty t do  -- there is nothing to see if `t` is empty
     let x ← t.visitM (α := List (Syntax × String))
       (postNode := fun ctx info _ msgs => do
         let msgs := msgs.reduceOption.join
