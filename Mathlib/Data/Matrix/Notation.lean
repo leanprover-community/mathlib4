@@ -139,12 +139,12 @@ theorem cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
     vecCons v B i j = vecCons (v j) (fun i => B i j) i := by refine Fin.cases ?_ ?_ i <;> simp
 #align matrix.cons_val' Matrix.cons_val'
 
-@[simp, nolint simpNF] -- Porting note: LHS does not simplify.
+@[simp] -- Porting note: LHS does not simplify.
 theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B i j) = vecHead B j :=
   rfl
 #align matrix.head_val' Matrix.head_val'
 
-@[simp, nolint simpNF] -- Porting note: LHS does not simplify.
+@[simp] -- Porting note: LHS does not simplify.
 theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
     (vecTail fun i => B i j) = fun i => vecTail B i j := rfl
 #align matrix.tail_val' Matrix.tail_val'
