@@ -39,23 +39,16 @@ def getPapercuts (e : Expr) : Meta.MetaM (Option MessageData) := do
   let expZero := mkConst ``Nat.zero
   match e.getAppFnArgs with
     | (``HSub.hSub, #[n1, n2, n3, _, a, b]) =>
-      if ← [n1, n2, n3].allM (Meta.isDefEq · expNat) then
-        return some m!"Subtraction in ℕ is actually truncated subtraction: e.g. `1 - 2 = 0`!\n\
-                       This yields the 'expected' result only when you also prove the inequality\n\
+      let begn := m!"Subtraction in {← Meta.ppExpr n1} is actually truncated subtraction: e.g."
+      let endn := m!"This yields the 'expected' result only when you also prove the inequality\n\
                        '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
-      else if ← [n1, n2, n3].allM (Meta.isDefEq · expENNReal) then
-        return some m!"Subtraction in ℝ≥0∞ is actually truncated subtraction: e.g. `e - π = 0`!\n\
-                       This yields the 'expected' result only when you also prove the inequality\n\
-                       '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
-      else if ← [n1, n2, n3].allM (Meta.isDefEq · expNNReal) then
-        return some m!"Subtraction in ℝ≥0 is actually truncated subtraction: e.g. `e - π = 0`!\n\
-                       This yields the 'expected' result only when you also prove the inequality\n\
-                       '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
-      else if ← [n1, n2, n3].allM (Meta.isDefEq · expNNRat) then
-        return some m!"Subtraction in ℚ≥0 is actually truncated subtraction: e.g. `2⁻¹ - 1 = 0`!\n\
-                       This yields the 'expected' result only when you also prove the inequality\n\
-                       '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
-      else return none
+      let mddl := ← do
+        if ← [n1, n2, n3].allM (Meta.isDefEq · expNat)     then return some " `1 - 2 = 0`!\n" else
+        if ← [n1, n2, n3].allM (Meta.isDefEq · expENNReal) then return some " `e - π = 0`!\n" else
+        if ← [n1, n2, n3].allM (Meta.isDefEq · expNNReal)  then return some " `e - π = 0`!\n" else
+        if ← [n1, n2, n3].allM (Meta.isDefEq · expNNRat)   then return some " `2⁻¹ - 1 = 0`!\n"
+        else return none
+      if let some mddl := mddl then return some m!"{begn}{mddl}{endn}" else return none
     | (``HDiv.hDiv, #[n1, n2, n3, _, a, b]) =>
       -- `mkAppOptM` may fail to find an `OfNat` instance, in that case, we do not report anything
       let zer ←
