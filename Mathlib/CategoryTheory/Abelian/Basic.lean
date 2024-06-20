@@ -5,6 +5,7 @@ Authors: Markus Himmel, Johan Commelin, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
@@ -201,8 +202,8 @@ def normalMonoCategory : NormalMonoCategory C where
         have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
           ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
             = Fork.ι s := ?_
-        refine' isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux _
-        · intro A g hg
+        · refine isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux ?_
+          intro A g hg
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
         · intro A
@@ -227,9 +228,9 @@ def normalEpiCategory : NormalEpiCategory C where
         have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
           inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
           colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
-        refine' isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
-                inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux _
-        · intro A g hg
+        · refine isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
+                  inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux ?_
+          intro A g hg
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
         · intro A
@@ -394,7 +395,7 @@ See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
   convert
-    IsIso.of_iso
+    Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
   ext
@@ -497,6 +498,44 @@ theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f =
   (monoIsKernelOfCokernel _ (colimit.isColimit _)).fac (KernelFork.ofι _ hg)
     WalkingParallelPair.zero
 #align category_theory.abelian.mono_lift_comp CategoryTheory.Abelian.monoLift_comp
+
+section
+
+variable {D : Type*} [Category D] [HasZeroMorphisms D]
+
+/-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphism
+admitting a cokernel such that `F` preserves this cokernel and `F.map i` is a mono,
+then `F.map X` identifies to the kernel of `F.map (cokernel.π i)`. -/
+noncomputable def isLimitMapConeOfKernelForkOfι
+    {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Mono (F.map i)]
+    [PreservesColimit (parallelPair i 0) F] :
+    IsLimit (F.mapCone (KernelFork.ofι i (cokernel.condition i))) := by
+  let e : parallelPair (cokernel.π (F.map i)) 0 ≅ parallelPair (cokernel.π i) 0 ⋙ F :=
+    parallelPair.ext (Iso.refl _) (asIso (cokernelComparison i F)) (by simp) (by simp)
+  refine IsLimit.postcomposeInvEquiv e _ ?_
+  let hi := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (F.map i))
+  refine IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) ?_)
+  change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
+  rw [Category.comp_id, Category.id_comp]
+
+/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphisms
+admitting a kernel such that `F` preserves this kernel and `F.map p` is an epi,
+then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
+noncomputable def isColimitMapCoconeOfCokernelCoforkOfπ
+    {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Epi (F.map p)]
+    [PreservesLimit (parallelPair p 0) F] :
+    IsColimit (F.mapCocone (CokernelCofork.ofπ p (kernel.condition p))) := by
+  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 :=
+    parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
+  refine IsColimit.precomposeInvEquiv e _ ?_
+  let hp := Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (F.map p))
+  refine IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) ?_)
+  change F.map p ≫ 𝟙 _ = 𝟙 _ ≫ F.map p
+  rw [Category.comp_id, Category.id_comp]
+
+end
 
 end CokernelOfKernel
 

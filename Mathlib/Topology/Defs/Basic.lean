@@ -12,7 +12,7 @@ import Mathlib.Tactic.FunProp
 # Basic definitions about topological spaces
 
 This file contains definitions about topology that do not require imports
-other than `Mathlib/Data/Set/Lattice`.
+other than `Mathlib.Data.Set.Lattice`.
 
 ## Main definitions
 
@@ -32,7 +32,7 @@ other than `Mathlib/Data/Set/Lattice`.
 
 * `interior s`: the *interior* of a set `s` is the maximal open set that is included in `s`.
 
-* `closure s`: the *closure* of a set `s` is the minimal closed that that includes `s`.
+* `closure s`: the *closure* of a set `s` is the minimal closed set that includes `s`.
 
 * `frontier s`: the *frontier* of a set is the set difference `closure s \ interior s`.
   A point `x` belongs to `frontier s`, if any neighborhood of `x`

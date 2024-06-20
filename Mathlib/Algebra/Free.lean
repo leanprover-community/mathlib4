@@ -8,6 +8,7 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.AdaptationNote
 
 #align_import algebra.free from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -85,11 +86,11 @@ theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f �
 
 end FreeMagma
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. --/
 /-- Lifts a function `α → β` to a magma homomorphism `FreeMagma α → β` given a magma `β`. -/
 def FreeMagma.liftAux {α : Type u} {β : Type v} [Mul β] (f : α → β) : FreeMagma α → β
   | FreeMagma.of x => f x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
-  -- instead of `x * y`.
   | mul x y => liftAux f x * liftAux f y
 #align free_magma.lift_aux FreeMagma.liftAux
 
@@ -207,12 +208,12 @@ end Category
 
 end FreeMagma
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+  instead of `x * y`. -/
 /-- `FreeMagma` is traversable. -/
 protected def FreeMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) : FreeMagma α → m (FreeMagma β)
   | FreeMagma.of x => FreeMagma.of <$> F x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
-  -- instead of `x * y`.
   | mul x y => (· * ·) <$> x.traverse F <*> y.traverse F
 #align free_magma.traverse FreeMagma.traverse
 
@@ -293,11 +294,11 @@ end Category
 end FreeMagma
 
 -- Porting note: changed String to Lean.Format
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. -/
 /-- Representation of an element of a free magma. -/
 protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → Lean.Format
   | FreeMagma.of x => repr x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
-  -- instead of `x * y`.
   | mul x y => "( " ++ x.repr ++ " * " ++ y.repr ++ " )"
 #align free_magma.repr FreeMagma.repr
 
@@ -312,11 +313,11 @@ attribute [to_additive existing] FreeMagma.repr
 @[to_additive]
 instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. -/
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
   | FreeMagma.of _x => 1
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
-  -- instead of `x * y`.
   | mul x y => x.length + y.length
 #align free_magma.length FreeMagma.length
 
@@ -374,7 +375,7 @@ theorem quot_mk_assoc_left (x y z w : α) :
 @[to_additive]
 instance : Semigroup (AssocQuotient α) where
   mul x y := by
-    refine' Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) _ _
+    refine Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) ?_ ?_
     · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
       · exact quot_mk_assoc_left _ _ _ _
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]

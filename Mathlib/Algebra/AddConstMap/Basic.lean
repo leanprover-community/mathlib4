@@ -3,17 +3,19 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Maps (semi)conjugating a shift to a shift
 
-Denote by \(S^1\) the unit circle `UnitAddCircle`.
-A common way to study a self-map \(f\colon S^1\to S^1\) of degree `1`
-is to lift it to a map \(\tilde f\colon \mathbb R\to \mathbb R\)
-such that \(\tilde f(x + 1) = \tilde f(x)+1\) for all `x`.
+Denote by $S^1$ the unit circle `UnitAddCircle`.
+A common way to study a self-map $f\colon S^1\to S^1$ of degree `1`
+is to lift it to a map $\tilde f\colon \mathbb R\to \mathbb R$
+such that $\tilde f(x + 1) = \tilde f(x)+1$ for all `x`.
 
 In this file we define a structure and a typeclass
 for bundled maps satisfying `f (x + a) = f x + b`.
@@ -21,7 +23,7 @@ for bundled maps satisfying `f (x + a) = f x + b`.
 We use parameters `a` and `b` instead of `1` to accomodate for two use cases:
 
 - maps between circles of different lengths;
-- self-maps \(f\colon S^1\to  S^1\) of degree other than one,
+- self-maps $f\colon S^1\to  S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
 
@@ -45,7 +47,7 @@ scoped [AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H 
 Note that `a` and `b` are `outParam`s,
 so one should not add instances like
 `[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`. -/
-class AddConstMapClass (F : Type*) (G H : outParam (Type*)) [Add G] [Add H]
+class AddConstMapClass (F : Type*) (G H : outParam Type*) [Add G] [Add H]
     (a : outParam G) (b : outParam H) extends DFunLike F G fun _ ↦ H where
   /-- A map of `AddConstMapClass` class semiconjugates shift by `a` to the shift by `b`:
   `∀ x, f (x + a) = f x + b`. -/

@@ -201,7 +201,7 @@ section UniformAddCommGroup
 
 variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
 
-instance : AddCommGroup (Completion α) :=
+instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
     add_comm := fun a b ↦
       Completion.induction_on₂ a b

@@ -24,8 +24,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 /-- The associator functor `(C × D) × E ⥤ C × (D × E)`.
 -/
 @[simps]
-def associator : (C × D) × E ⥤ C × D × E
-    where
+def associator : (C × D) × E ⥤ C × D × E where
   obj X := (X.1.1, (X.1.2, X.2))
   map := @fun _ _ f => (f.1.1, (f.1.2, f.2))
 #align category_theory.prod.associator CategoryTheory.prod.associator
@@ -33,8 +32,7 @@ def associator : (C × D) × E ⥤ C × D × E
 /-- The inverse associator functor `C × (D × E) ⥤ (C × D) × E `.
 -/
 @[simps]
-def inverseAssociator : C × D × E ⥤ (C × D) × E
-    where
+def inverseAssociator : C × D × E ⥤ (C × D) × E where
   obj X := ((X.1, X.2.1), X.2.2)
   map := @fun _ _ f => ((f.1, f.2.1), f.2.2)
 #align category_theory.prod.inverse_associator CategoryTheory.prod.inverseAssociator

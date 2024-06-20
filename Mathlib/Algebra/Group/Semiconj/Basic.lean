@@ -13,6 +13,9 @@ import Mathlib.Algebra.Group.Basic
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 namespace SemiconjBy
 variable {G : Type*}
 
@@ -50,6 +53,15 @@ variable [Group G] {a x y : G}
 @[to_additive] alias ⟨_, inv_right⟩ := inv_right_iff
 #align semiconj_by.inv_right SemiconjBy.inv_right
 #align add_semiconj_by.neg_right AddSemiconjBy.neg_right
+
+@[to_additive (attr := simp)] lemma zpow_right (h : SemiconjBy a x y) :
+    ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
+  | (n : ℕ)    => by simp [zpow_natCast, h.pow_right n]
+  | .negSucc n => by
+    simp only [zpow_negSucc, inv_right_iff]
+    apply pow_right h
+#align semiconj_by.zpow_right SemiconjBy.zpow_right
+#align add_semiconj_by.zsmul_right AddSemiconjBy.zsmul_right
 
 end Group
 end SemiconjBy

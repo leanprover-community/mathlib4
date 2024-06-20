@@ -3,8 +3,8 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
-import Mathlib.Data.Nat.Parity
 
 #align_import combinatorics.simple_graph.trails from "leanprover-community/mathlib"@"edaaaa4a5774e6623e0ddd919b2f2db49c65add4"
 
@@ -44,8 +44,7 @@ variable {V : Type*} {G : SimpleGraph V}
 namespace Walk
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
-@[reducible]
-def IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (Sym2 V) :=
+abbrev IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (Sym2 V) :=
   ⟨p.edges, h.edges_nodup⟩
 #align simple_graph.walk.is_trail.edges_finset SimpleGraph.Walk.IsTrail.edgesFinset
 
@@ -102,7 +101,7 @@ theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsT
 theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
   ⟨ fun h => p.edges_subset_edgeSet h
-  , fun he => by apply List.count_pos_iff_mem.mp; simpa using (h e he).ge ⟩
+  , fun he => by simpa [Nat.succ_le] using (h e he).ge ⟩
 #align simple_graph.walk.is_eulerian.mem_edges_iff SimpleGraph.Walk.IsEulerian.mem_edges_iff
 
 /-- The edge set of an Eulerian graph is finite. -/

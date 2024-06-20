@@ -43,7 +43,7 @@ section
 /-- `LocallyBoundedMapClass F α β` states that `F` is a type of bounded maps.
 
 You should extend this class when you extend `LocallyBoundedMap`. -/
-class LocallyBoundedMapClass (F : Type*) (α β : outParam <| Type*) [Bornology α]
+class LocallyBoundedMapClass (F : Type*) (α β : outParam Type*) [Bornology α]
     [Bornology β] [FunLike F α β] : Prop where
   /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
   cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
@@ -152,8 +152,7 @@ theorem id_apply (a : α) : LocallyBoundedMap.id α a = a :=
 #align locally_bounded_map.id_apply LocallyBoundedMap.id_apply
 
 /-- Composition of `LocallyBoundedMap`s as a `LocallyBoundedMap`. -/
-def comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : LocallyBoundedMap α γ
-    where
+def comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : LocallyBoundedMap α γ where
   toFun := f ∘ g
   comap_cobounded_le' :=
     comap_comap.ge.trans <| (comap_mono f.comap_cobounded_le').trans g.comap_cobounded_le'

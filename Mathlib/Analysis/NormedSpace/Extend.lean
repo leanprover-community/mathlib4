@@ -115,8 +115,8 @@ theorem norm_extendTo𝕜'_bound (fr : F →L[ℝ] ℝ) (x : F) :
   rw [← mul_le_mul_left (norm_pos_iff.2 h), ← sq]
   calc
     ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := fr.toLinearMap.norm_extendTo𝕜'_apply_sq x
-    _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := (le_abs_self _)
-    _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := (le_opNorm _ _)
+    _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := le_abs_self _
+    _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := le_opNorm _ _
     _ = ‖(lm x : 𝕜)‖ * (‖fr‖ * ‖x‖) := by rw [norm_smul, norm_conj, mul_left_comm]
 #align continuous_linear_map.norm_extend_to_𝕜'_bound ContinuousLinearMap.norm_extendTo𝕜'_bound
 
@@ -135,7 +135,7 @@ theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : F →
     opNorm_le_bound _ (norm_nonneg _) fun x =>
       calc
         ‖fr x‖ = ‖re (fr.extendTo𝕜' x : 𝕜)‖ := congr_arg norm (fr.extendTo𝕜'_apply_re x).symm
-        _ ≤ ‖(fr.extendTo𝕜' x : 𝕜)‖ := (abs_re_le_norm _)
+        _ ≤ ‖(fr.extendTo𝕜' x : 𝕜)‖ := abs_re_le_norm _
         _ ≤ ‖(fr.extendTo𝕜' : F →L[𝕜] 𝕜)‖ * ‖x‖ := le_opNorm _ _
 #align continuous_linear_map.norm_extend_to_𝕜' ContinuousLinearMap.norm_extendTo𝕜'
 

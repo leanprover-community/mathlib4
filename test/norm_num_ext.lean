@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2021 Mario Carneiro All rights reserved.
+Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
@@ -326,8 +326,6 @@ section big_operators
 
 variable {α : Type _} [CommRing α]
 
-open BigOperators
-
 -- Lists:
 -- `by decide` closes the three goals below.
 example : ([1, 2, 1, 3]).sum = 7 := by norm_num (config := {decide := true}) only
@@ -354,37 +352,37 @@ example : Finset.prod
     (fun x ↦ x) =
   12 := by norm_num1
 
-example (f : ℕ → α) : ∏ i in Finset.range 0, f i = 1 := by norm_num1
+example (f : ℕ → α) : ∏ i ∈ Finset.range 0, f i = 1 := by norm_num1
 example (f : Fin 0 → α) : ∏ i : Fin 0, f i = 1 := by norm_num1
 example (f : Fin 0 → α) : ∑ i : Fin 0, f i = 0 := by norm_num1
-example (f : ℕ → α) : ∑ i in (∅ : Finset ℕ), f i = 0 := by norm_num1
+example (f : ℕ → α) : ∑ i ∈ (∅ : Finset ℕ), f i = 0 := by norm_num1
 example : ∑ i : Fin 3, 1 = 3 := by norm_num1
 /-
 example : ∑ i : Fin 3, (i : ℕ) = 3 := by norm_num1
 example : ((0 : Fin 3) : ℕ) = 0 := by norm_num1
 example (f : Fin 3 → α) : ∑ i : Fin 3, f i = f 0 + f 1 + f 2 := by norm_num <;> ring
 example (f : Fin 4 → α) : ∑ i : Fin 4, f i = f 0 + f 1 + f 2 + f 3 := by norm_num <;> ring
-example (f : ℕ → α) : ∑ i in {0, 1, 2}, f i = f 0 + f 1 + f 2 := by norm_num; ring
-example (f : ℕ → α) : ∑ i in {0, 2, 2, 3, 1, 0}, f i = f 0 + f 1 + f 2 + f 3 := by norm_num; ring
-example (f : ℕ → α) : ∑ i in {0, 2, 2 - 3, 3 - 1, 1, 0}, f i = f 0 + f 1 + f 2 := by norm_num; ring
+example (f : ℕ → α) : ∑ i ∈ {0, 1, 2}, f i = f 0 + f 1 + f 2 := by norm_num; ring
+example (f : ℕ → α) : ∑ i ∈ {0, 2, 2, 3, 1, 0}, f i = f 0 + f 1 + f 2 + f 3 := by norm_num; ring
+example (f : ℕ → α) : ∑ i ∈ {0, 2, 2 - 3, 3 - 1, 1, 0}, f i = f 0 + f 1 + f 2 := by norm_num; ring
 -/
-example : ∑ i in Finset.range 10, i = 45 := by norm_num1
-example : ∑ i in Finset.range 10, (i^2 : ℕ) = 285 := by norm_num1
-example : ∏ i in Finset.range 4, ((i+1)^2 : ℕ) = 576 := by norm_num1
+example : ∑ i ∈ Finset.range 10, i = 45 := by norm_num1
+example : ∑ i ∈ Finset.range 10, (i^2 : ℕ) = 285 := by norm_num1
+example : ∏ i ∈ Finset.range 4, ((i+1)^2 : ℕ) = 576 := by norm_num1
 /-
-example : (∑ i in Finset.Icc 5 10, (i^2 : ℕ)) = 355 := by norm_num
-example : (∑ i in Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num
-example : (∑ i in Finset.Ioc 5 10, (i^2 : ℕ)) = 330 := by norm_num
-example : (∑ i in Finset.Ioo 5 10, (i^2 : ℕ)) = 230 := by norm_num
-example : (∑ i : ℤ in Finset.Ioo (-5) 5, i^2) = 60 := by norm_num
-example (f : ℕ → α) : ∑ i in Finset.mk {0, 1, 2} dec_trivial, f i = f 0 + f 1 + f 2 :=
-  by norm_num; ring
+example : (∑ i ∈ Finset.Icc 5 10, (i^2 : ℕ)) = 355 := by norm_num
+example : (∑ i ∈ Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num
+example : (∑ i ∈ Finset.Ioc 5 10, (i^2 : ℕ)) = 330 := by norm_num
+example : (∑ i ∈ Finset.Ioo 5 10, (i^2 : ℕ)) = 230 := by norm_num
+example : (∑ i ∈ Finset.Ioo (-5) 5, i^2) = 60 := by norm_num
+example (f : ℕ → α) : ∑ i ∈ Finset.mk {0, 1, 2} dec_trivial, f i = f 0 + f 1 + f 2 := by
+  norm_num; ring
 -/
 
 -- Combined with other `norm_num` extensions:
-example : ∏ i in Finset.range 9, Nat.sqrt (i + 1) = 96 := by norm_num1
--- example : ∏ i in {1, 4, 9, 16}, Nat.sqrt i = 24 := by norm_num1
--- example : ∏ i in Finset.Icc 0 8, Nat.sqrt (i + 1) = 96 := by norm_num1
+example : ∏ i ∈ Finset.range 9, Nat.sqrt (i + 1) = 96 := by norm_num1
+-- example : ∏ i ∈ {1, 4, 9, 16}, Nat.sqrt i = 24 := by norm_num1
+-- example : ∏ i ∈ Finset.Icc 0 8, Nat.sqrt (i + 1) = 96 := by norm_num1
 
 -- Nested operations:
 -- example : ∑ i : Fin 2, ∑ j : Fin 2, ![![0, 1], ![2, 3]] i j = 6 := by norm_num1

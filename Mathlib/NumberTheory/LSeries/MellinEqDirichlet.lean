@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-import Mathlib.Analysis.PSeries
 /-!
 # Dirichlet series as Mellin transforms
 
@@ -24,7 +23,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     (hF : ∀ t ∈ Ioi 0, HasSum (fun i ↦ a i * rexp (-p i * t)) (F t))
     (h_sum : Summable fun i ↦ ‖a i‖ / (p i) ^ s.re) :
     HasSum (fun i ↦ Gamma s * a i / p i ^ s) (mellin F s) := by
-  simp_rw [mellin, smul_eq_mul, ← set_integral_congr measurableSet_Ioi
+  simp_rw [mellin, smul_eq_mul, ← setIntegral_congr measurableSet_Ioi
     (fun t ht ↦ congr_arg _ (hF t ht).tsum_eq), ← tsum_mul_left]
   convert hasSum_integral_of_summable_integral_norm
     (F := fun i t ↦ t ^ (s - 1) * (a i * rexp (-p i * t))) (fun i ↦ ?_) ?_ using 2 with i
@@ -44,8 +43,8 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
       (fun t (ht : 0 < t) ↦ ?_) measurableSet_Ioi).const_mul _
     simp_rw [mul_comm (↑(rexp _) : ℂ), ← mul_assoc, neg_mul, ofReal_mul]
     rw [mul_cpow_ofReal_nonneg hpi.le ht.le, ← mul_assoc, one_div, inv_mul_cancel, one_mul]
-    · rw [Ne.def, cpow_eq_zero_iff, not_and_or]
-      exact Or.inl (ofReal_ne_zero.mpr hpi.ne')
+    rw [Ne, cpow_eq_zero_iff, not_and_or]
+    exact Or.inl (ofReal_ne_zero.mpr hpi.ne')
   · -- summability of integrals of norms
     apply Summable.of_norm
     convert h_sum.mul_left (Real.Gamma s.re) using 2 with i
@@ -57,7 +56,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     have := Real.integral_rpow_mul_exp_neg_mul_Ioi hs hpi
     simp_rw [← neg_mul (p i), one_div, inv_rpow hpi.le, ← div_eq_inv_mul] at this
     rw [norm_of_nonneg (integral_nonneg (fun _ ↦ norm_nonneg _)), ← this]
-    refine set_integral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+    refine setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
     rw [norm_mul, norm_real, Real.norm_eq_abs, Real.abs_exp, Complex.norm_eq_abs,
       abs_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
 
@@ -120,7 +119,7 @@ lemma hasSum_mellin_pi_mul_sq {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → ℂ
   convert hasSum_mellin_pi_mul₀ (fun i ↦ sq_nonneg (r i)) hs' hF ?_ using 3 with i
   · rw [← neg_div, Gammaℝ_def]
   · rw [← _root_.sq_abs, ofReal_pow, ← cpow_nat_mul']
-    ring_nf
+    · ring_nf
     all_goals rw [arg_ofReal_of_nonneg (abs_nonneg _)]; linarith [pi_pos]
   · convert h_sum using 3 with i
     rw [← _root_.sq_abs, ← rpow_natCast_mul (abs_nonneg _), div_ofNat_re, Nat.cast_ofNat,

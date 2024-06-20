@@ -132,7 +132,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
       nth_rewrite 2 [← add_zero ‖R • x‖] at e1
       rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
       rw [le_antisymm_iff]
-      refine' ⟨_, norm_nonneg _⟩
+      refine ⟨?_, norm_nonneg _⟩
       rwa [← mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1
   have QP_eq_QPQ : Q * P = Q * P * Q := by
     have e1 : P * (1 - Q) = P * (1 - Q) - (Q * P - Q * P * Q) :=
@@ -141,14 +141,14 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
         _ = P * (1 - Q) - (Q * P - Q * P * Q) := by noncomm_ring
     rwa [eq_sub_iff_add_eq, add_right_eq_self, sub_eq_zero] at e1
   show P * Q = Q * P
-  · rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
+  rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
 #align is_Lprojection.commute IsLprojection.commute
 
 theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P * Q) := by
-  refine' ⟨IsIdempotentElem.mul_of_commute (h₁.commute h₂) h₁.proj h₂.proj, _⟩
+  refine ⟨IsIdempotentElem.mul_of_commute (h₁.commute h₂) h₁.proj h₂.proj, ?_⟩
   intro x
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · calc
       ‖x‖ = ‖(P * Q) • x + (x - (P * Q) • x)‖ := by rw [add_sub_cancel ((P * Q) • x) x]
       _ ≤ ‖(P * Q) • x‖ + ‖x - (P * Q) • x‖ := by apply norm_add_le

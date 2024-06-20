@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.ring.aut from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -30,8 +30,7 @@ RingAut
 
 
 /-- The group of ring automorphisms. -/
-@[reducible]
-def RingAut (R : Type*) [Mul R] [Add R] :=
+abbrev RingAut (R : Type*) [Mul R] [Add R] :=
   RingEquiv R R
 #align ring_aut RingAut
 
@@ -43,54 +42,38 @@ variable (R : Type*) [Mul R] [Add R]
 
 /-- The group operation on automorphisms of a ring is defined by
 `fun g h => RingEquiv.trans h g`.
-This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
--/
+This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`. -/
 instance : Group (RingAut R) where
   mul g h := RingEquiv.trans h g
   one := RingEquiv.refl R
   inv := RingEquiv.symm
-  mul_assoc := by intros; rfl
-  one_mul := by intros; rfl
-  mul_one := by intros; rfl
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
   mul_left_inv := RingEquiv.self_trans_symm
-/- Porting note: was by
-  refine_struct
-    { mul := fun g h => RingEquiv.trans h g
-      one := RingEquiv.refl R
-      inv := RingEquiv.symm
-      div := _
-      npow := @npowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
-      zpow :=
-        @zpowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
-          ⟨RingEquiv.symm⟩ } <;>
-    intros <;>
-    ext <;>
-    try rfl <;>
-    apply Equiv.left_inv
- -/
 
 instance : Inhabited (RingAut R) :=
   ⟨1⟩
 
 /-- Monoid homomorphism from ring automorphisms to additive automorphisms. -/
-def toAddAut : RingAut R →* AddAut R := by
-  refine'
-  { toFun := RingEquiv.toAddEquiv
-    .. } <;> (intros; rfl)
+def toAddAut : RingAut R →* AddAut R where
+  toFun := RingEquiv.toAddEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align ring_aut.to_add_aut RingAut.toAddAut
 
 /-- Monoid homomorphism from ring automorphisms to multiplicative automorphisms. -/
-def toMulAut : RingAut R →* MulAut R := by
-  refine'
-  { toFun := RingEquiv.toMulEquiv
-    .. } <;> (intros; rfl)
+def toMulAut : RingAut R →* MulAut R where
+  toFun := RingEquiv.toMulEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align ring_aut.to_mul_aut RingAut.toMulAut
 
 /-- Monoid homomorphism from ring automorphisms to permutations. -/
-def toPerm : RingAut R →* Equiv.Perm R := by
-  refine'
-  { toFun := RingEquiv.toEquiv
-    .. } <;> (intros; rfl)
+def toPerm : RingAut R →* Equiv.Perm R where
+  toFun := RingEquiv.toEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align ring_aut.to_perm RingAut.toPerm
 
 end mul_add

@@ -222,8 +222,7 @@ theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b 
   calc
     (a + b + a * b) * (a + c + a * c) =
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
-          (a * b * c + a * a * b * c) :=
-      by ring
+          (a * b * c + a * a * b * c) := by ring
     _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
 
 #align boolean_ring.le_sup_inf_aux BooleanRing.le_sup_inf_aux
@@ -248,7 +247,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
     top := 1
-    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, (add_comm a 1),
+    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
                                                      add_assoc, add_self, add_zero]
     bot := 0
     bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
@@ -303,9 +302,8 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
 #align of_boolalg_sdiff ofBoolAlg_sdiff
 
 private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
-  calc
-    (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
-      by ring
+  calc (a + b + a * b) * (1 + a * b)
+    _ = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) := by ring
     _ = a + b := by simp only [mul_self, add_self, add_zero]
 
 @[simp]
@@ -434,8 +432,7 @@ following data:
 * `-a` unfolds to `a`
 * `0` unfolds to `⊥`
 -/
-@[reducible]
-def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
+abbrev GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
     NonUnitalCommRing α where
   add := (· ∆ ·)
   add_assoc := symmDiff_assoc
@@ -470,8 +467,7 @@ variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 * `0` unfolds to `⊥`
 * `1` unfolds to `⊤`
 -/
-@[reducible]
-def BooleanAlgebra.toBooleanRing : BooleanRing α where
+abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   __ := GeneralizedBooleanAlgebra.toNonUnitalCommRing
   one := ⊤
   one_mul := top_inf_eq

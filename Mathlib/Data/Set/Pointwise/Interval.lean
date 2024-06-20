@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Intervals.UnorderedInterval
-import Mathlib.Data.Set.Intervals.Monoid
+import Mathlib.Order.Interval.Set.UnorderedInterval
+import Mathlib.Algebra.Order.Interval.Set.Monoid
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
@@ -496,11 +496,11 @@ theorem image_sub_const_Ioo : (fun x => x - a) '' Ioo b c = Ioo (b - a) (c - a) 
 
 
 theorem Iic_add_bij : BijOn (· + a) (Iic b) (Iic (b + a)) :=
-  image_add_const_Iic a b ▸ ((add_left_injective _).injOn _).bijOn_image
+  image_add_const_Iic a b ▸ (add_left_injective _).injOn.bijOn_image
 #align set.Iic_add_bij Set.Iic_add_bij
 
 theorem Iio_add_bij : BijOn (· + a) (Iio b) (Iio (b + a)) :=
-  image_add_const_Iio a b ▸ ((add_left_injective _).injOn _).bijOn_image
+  image_add_const_Iio a b ▸ (add_left_injective _).injOn.bijOn_image
 #align set.Iio_add_bij Set.Iio_add_bij
 
 end OrderedAddCommGroup

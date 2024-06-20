@@ -3,8 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 import Mathlib.CategoryTheory.Sites.Equivalence
 /-!
 
@@ -35,39 +34,9 @@ theorem precoherent : Precoherent D := e.inverse.reflects_precoherent
 instance [EssentiallySmall C] :
     Precoherent (SmallModel C) := (equivSmallModel C).precoherent
 
-/--
-Transferring the coherent topology along an equivalence of categories gives the coherent topology.
--/
-theorem precoherent_eq : haveI := precoherent e
-    (e.locallyCoverDense (coherentTopology C)).inducedTopology =
-    coherentTopology D := by
-  ext _ S
-  haveI := precoherent e
-  simp only [LocallyCoverDense.inducedTopology]
-  change (Sieve.functorPushforward e.inverse S) ∈ sieves _ _ ↔ _
-  simp only [coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily]
-  constructor
-  · intro ⟨α, _, Y, π, _, h⟩
-    refine ⟨α, inferInstance, _, fun b ↦ e.functor.map (π b) ≫ e.counit.app _, ?_, ?_⟩
-    · have : EffectiveEpiFamily _ fun i ↦ (e.functor.map (π i)) :=
-        ⟨⟨effectiveEpiFamilyStructOfEquivalence e Y π⟩⟩
-      infer_instance
-    · intro a
-      obtain ⟨_, _, _, h₁, h₂⟩ := h a
-      simp only [h₂, Functor.map_comp, fun_inv_map, Functor.comp_obj, Functor.id_obj,
-        Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
-      rw [← Category.assoc]
-      exact Sieve.downward_closed S h₁ _
-  · intro ⟨α, _, Y, π, _, h⟩
-    refine ⟨α, inferInstance, _, fun b ↦ e.unitInv.app _ ≫ e.inverse.map (π b), ?_, ?_⟩
-    · have : EffectiveEpiFamily (fun a ↦ (𝟭 C).obj _) fun i ↦ (e.inverse.map (π i)) :=
-        ⟨⟨effectiveEpiFamilyStructOfEquivalence e.symm Y π⟩⟩
-      infer_instance
-    · exact fun a ↦ ⟨Y a, π a, e.unitInv.app _, h a, rfl⟩
-
 instance : haveI := precoherent e
     e.TransportsGrothendieckTopology (coherentTopology C) (coherentTopology D) where
-  eq_inducedTopology := e.precoherent_eq.symm
+  eq_inducedTopology := coherentTopology.eq_induced e.inverse
 
 variable (A : Type*) [Category A]
 
@@ -95,8 +64,9 @@ The coherent sheaf condition on an essentially small site can be checked after p
 the equivalence with a small category.
 -/
 theorem precoherent_isSheaf_iff_of_essentiallySmall [EssentiallySmall C] (F : Cᵒᵖ ⥤ A) :
-    IsSheaf (coherentTopology C) F ↔ IsSheaf (coherentTopology (SmallModel C))
-    ((equivSmallModel C).inverse.op ⋙ F) := precoherent_isSheaf_iff _ _ _
+    IsSheaf (coherentTopology C) F ↔
+      IsSheaf (coherentTopology (SmallModel C)) ((equivSmallModel C).inverse.op ⋙ F) :=
+  precoherent_isSheaf_iff _ _ _
 
 end Coherent
 
@@ -110,31 +80,9 @@ theorem preregular : Preregular D := e.inverse.reflects_preregular
 instance [EssentiallySmall C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular
 
-/--
-Transferring the regular topology along an equivalence of categories gives the regular topology.
--/
-theorem preregular_eq : haveI := preregular e
-    (e.locallyCoverDense (regularTopology C)).inducedTopology =
-    regularTopology D := by
-  ext _ S
-  haveI := preregular e
-  simp only [LocallyCoverDense.inducedTopology]
-  change (Sieve.functorPushforward e.inverse S) ∈ sieves _ _ ↔ _
-  simp only [regularTopology.mem_sieves_iff_hasEffectiveEpi]
-  constructor
-  · intro ⟨Y, π, _, h⟩
-    refine ⟨_, e.functor.map π ≫ e.counit.app _, inferInstance, ?_⟩
-    obtain ⟨_, _, _, h₁, h₂⟩ := h
-    simp only [h₂, Functor.map_comp, fun_inv_map, Functor.comp_obj, Functor.id_obj,
-      Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
-    rw [← Category.assoc]
-    exact Sieve.downward_closed S h₁ _
-  · intro ⟨Y, π, _, h⟩
-    exact ⟨_, e.unitInv.app _ ≫ e.inverse.map π, inferInstance, Y, π, e.unitInv.app _, h, rfl⟩
-
 instance : haveI := preregular e
     e.TransportsGrothendieckTopology (regularTopology C) (regularTopology D) where
-  eq_inducedTopology := e.preregular_eq.symm
+  eq_inducedTopology := regularTopology.eq_induced e.inverse
 
 variable (A : Type*) [Category A]
 

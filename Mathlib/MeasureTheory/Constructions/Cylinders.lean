@@ -171,7 +171,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
     cylinder s S = ∅ ↔ S = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by (rw [h]; exact cylinder_empty _)⟩
   by_contra hS
-  rw [← Ne.def, ← nonempty_iff_ne_empty] at hS
+  rw [← Ne, ← nonempty_iff_ne_empty] at hS
   let f := hS.some
   have hf : f ∈ S := hS.choose_spec
   classical

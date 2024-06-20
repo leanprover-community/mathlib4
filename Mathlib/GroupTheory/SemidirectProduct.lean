@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Logic.Function.Basic
 
 #align_import group_theory.semidirect_product from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
@@ -214,8 +214,8 @@ variable (f₁ : N →* H) (f₂ : G →* H)
 
 /-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H`  -/
 def lift (f₁ : N →* H) (f₂ : G →* H)
-    (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁) : N ⋊[φ] G →* H
-    where
+    (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁) :
+    N ⋊[φ] G →* H where
   toFun a := f₁ a.1 * f₂ a.2
   map_one' := by simp
   map_mul' a b := by

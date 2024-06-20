@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 #align_import measure_theory.function.strongly_measurable.lp from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -44,7 +44,7 @@ theorem Memℒp.finStronglyMeasurable_of_stronglyMeasurable (hf : Memℒp f p μ
   haveI : SeparableSpace (Set.range f ∪ {0} : Set G) :=
     hf_meas.separableSpace_range_union_singleton
   let fs := SimpleFunc.approxOn f hf_meas.measurable (Set.range f ∪ {0}) 0 (by simp)
-  refine' ⟨fs, _, _⟩
+  refine ⟨fs, ?_, ?_⟩
   · have h_fs_Lp : ∀ n, Memℒp (fs n) p μ :=
       SimpleFunc.memℒp_approxOn_range hf_meas.measurable hf
     exact fun n => (fs n).measure_support_lt_top_of_memℒp (h_fs_Lp n) hp_ne_zero hp_ne_top

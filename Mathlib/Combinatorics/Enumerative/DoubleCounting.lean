@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import combinatorics.double_counting from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -31,8 +31,6 @@ and `t`.
 
 
 open Finset Function Relator
-
-open BigOperators
 
 variable {α β : Type*}
 
@@ -79,7 +77,7 @@ theorem mem_bipartiteAbove {b : β} : b ∈ t.bipartiteAbove r a ↔ b ∈ t ∧
 #align finset.mem_bipartite_above Finset.mem_bipartiteAbove
 
 theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
-    (∑ a in s, (t.bipartiteAbove r a).card) = ∑ b in t, (s.bipartiteBelow r b).card := by
+    (∑ a ∈ s, (t.bipartiteAbove r a).card) = ∑ b ∈ t, (s.bipartiteBelow r b).card := by
   simp_rw [card_eq_sum_ones, bipartiteAbove, bipartiteBelow, sum_filter]
   exact sum_comm
 #align finset.sum_card_bipartite_above_eq_sum_card_bipartite_below Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow
@@ -90,8 +88,8 @@ theorem card_mul_le_card_mul [∀ a b, Decidable (r a b)]
     (hm : ∀ a ∈ s, m ≤ (t.bipartiteAbove r a).card)
     (hn : ∀ b ∈ t, (s.bipartiteBelow r b).card ≤ n) : s.card * m ≤ t.card * n :=
   calc
-    _ ≤ ∑ a in s, (t.bipartiteAbove r a).card := s.card_nsmul_le_sum _ _ hm
-    _ = ∑ b in t, (s.bipartiteBelow r b).card :=
+    _ ≤ ∑ a ∈ s, (t.bipartiteAbove r a).card := s.card_nsmul_le_sum _ _ hm
+    _ = ∑ b ∈ t, (s.bipartiteBelow r b).card :=
       sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow _
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
 #align finset.card_mul_le_card_mul Finset.card_mul_le_card_mul

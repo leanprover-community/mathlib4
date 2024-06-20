@@ -19,8 +19,6 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-open BigOperators
-
 universe w v u
 
 namespace ModuleCat
