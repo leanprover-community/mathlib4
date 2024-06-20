@@ -2184,7 +2184,7 @@ instance : Bot (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
         haveI := discreteTopology_bot α
-        continuity
+        fun_prop
       continuous_inv := continuous_bot }⟩
 
 @[to_additive (attr := simp)]

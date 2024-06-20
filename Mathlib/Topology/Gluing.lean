@@ -386,8 +386,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
-  -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
-  have : Continuous (h.t i j) := map_continuous (self := ContinuousMap.toContinuousMapClass) _
+  have : Continuous (h.t i j) := by fun_prop
   set_option tactic.skipAssignedInstances false in
   exact ((Continuous.subtype_mk (by fun_prop) _).prod_mk (by fun_prop)).subtype_mk _
 
@@ -453,11 +452,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun i j => (Opens.map <| Opens.inclusion _).obj (U j)
-      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
-        -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
-        refine Continuous.subtype_mk ?_ ?_
-        refine Continuous.subtype_mk ?_ ?_
-        continuity⟩
+      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
       V_id := fun i => by
         ext
         -- Porting note: no longer needed `cases U i`!
