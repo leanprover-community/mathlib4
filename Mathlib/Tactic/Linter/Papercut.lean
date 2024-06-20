@@ -41,7 +41,7 @@ def getPapercuts (e : Expr) : Meta.MetaM (Option MessageData) := do
     | (``HSub.hSub, #[n1, n2, n3, _, a, b]) =>
       let begn := m!"Subtraction in {← Meta.ppExpr n1} is actually truncated subtraction: e.g."
       let endn := m!"This yields the 'expected' result only when you also prove the inequality\n\
-                       '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
+                    '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
       let mddl := ← do
         if ← [n1, n2, n3].allM (Meta.isDefEq · expNat)     then return some " `1 - 2 = 0`!\n" else
         if ← [n1, n2, n3].allM (Meta.isDefEq · expENNReal) then return some " `e - π = 0`!\n" else
@@ -58,16 +58,14 @@ def getPapercuts (e : Expr) : Meta.MetaM (Option MessageData) := do
       if ← Meta.isDefEq zer b then
         return some m!"Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!\n\
                        This is allowed (and often defined to be `0`) to avoid having to constantly \
-                       prove that denominators are non-zero."
-      else if ← [n1, n2, n3].allM (Meta.isDefEq · expNat) then
-        return some m!"Division in ℕ is actually the floor of the division: e.g. `1 / 2 = 0`!\n\
-                       This yields the 'expected' result only when you also prove that \
-                       '{← Meta.ppExpr b}' divides '{← Meta.ppExpr a}'"
-      else if ← [n1, n2, n3].allM (Meta.isDefEq · expInt) then
-        return some m!"\
-                    Division in ℤ is actually the floor of the division: e.g. `(1 : ℤ) / 2 = 0`!\n\
-                    This yields the 'expected' result only when you also prove that \
+                       prove that denominators are non-zero." else
+      let begn := m!"Division in {← Meta.ppExpr n1} is actually the floor of the division: e.g."
+      let endn := m!"This yields the 'expected' result only when you also prove that \
                     '{← Meta.ppExpr b}' divides '{← Meta.ppExpr a}'"
+      if ← [n1, n2, n3].allM (Meta.isDefEq · expNat) then
+        return some m!"{begn} `1 / 2 = 0`!\n{endn}"
+      else if ← [n1, n2, n3].allM (Meta.isDefEq · expInt) then
+        return some m!"{begn} `(1 : ℤ) / 2 = 0`!\n{endn}"
       else return none
     | _ => return none
 
