@@ -128,12 +128,12 @@ theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
 section deprecated
 set_option linter.deprecated false
 
-@[norm_cast, deprecated]
+@[norm_cast, deprecated (since := "2022-11-22")]
 theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
   Int.cast_add _ _
 #align int.cast_bit0 Int.cast_bit0
 
-@[norm_cast, deprecated]
+@[norm_cast, deprecated (since := "2022-11-22")]
 theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) := by
   rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
 #align int.cast_bit1 Int.cast_bit1

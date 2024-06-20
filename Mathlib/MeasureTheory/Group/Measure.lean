@@ -471,7 +471,7 @@ theorem measure_preimage_inv (μ : Measure G) [IsInvInvariant μ] (A : Set G) :
 
 @[to_additive]
 instance inv.instSigmaFinite (μ : Measure G) [SigmaFinite μ] : SigmaFinite μ.inv :=
-  (MeasurableEquiv.inv G).sigmaFinite_map ‹_›
+  (MeasurableEquiv.inv G).sigmaFinite_map
 #align measure_theory.measure.inv.measure_theory.sigma_finite MeasureTheory.Measure.inv.instSigmaFinite
 #align measure_theory.measure.neg.measure_theory.sigma_finite MeasureTheory.Measure.neg.instSigmaFinite
 

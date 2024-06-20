@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Category.HeytAlg
+import Mathlib.Order.Hom.CompleteLattice
 
 #align_import order.category.BoolAlg from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
@@ -115,3 +116,10 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
     forget₂ BoolAlg BddDistLat ⋙ BddDistLat.dual :=
   rfl
 #align BoolAlg_dual_comp_forget_to_BddDistLat boolAlg_dual_comp_forget_to_bddDistLat
+
+/-- The powerset functor. `Set` as a contravariant functor. -/
+@[simps]
+def typeToBoolAlgOp : Type u ⥤ BoolAlgᵒᵖ where
+  obj X := op $ BoolAlg.of (Set X)
+  map {X Y} f := Quiver.Hom.op
+    (CompleteLatticeHom.setPreimage f : BoundedLatticeHom (Set Y) (Set X))

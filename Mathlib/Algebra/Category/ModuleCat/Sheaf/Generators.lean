@@ -38,8 +38,8 @@ variable (M N P : SheafOfModules.{u} R)
 
 section
 
-variable [HasWeakSheafify J AddCommGroupCat.{u}] [J.WEqualsLocallyBijective AddCommGroupCat.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGroupCat.{u})]
+variable [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
+  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 
 /-- The type of sections which generate a sheaf of modules. -/
 structure GeneratingSections where
@@ -93,9 +93,9 @@ end GeneratingSections
 
 end
 
-variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGroupCat.{u}]
-  [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGroupCat.{u}]
-  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGroupCat.{u})]
+variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGrp.{u}]
+  [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrp.{u}]
+  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrp.{u})]
 
 /-- The data of generating sections of the restriction of a sheaf of modules
 over a covering of the terminal object. -/

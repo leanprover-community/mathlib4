@@ -576,6 +576,14 @@ theorem subset_image_iff {t : Set β} :
     fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
   rwa [image_preimage_inter, inter_eq_left]
 
+@[simp]
+lemma exists_subset_image_iff {p : Set β → Prop} : (∃ t ⊆ f '' s, p t) ↔ ∃ t ⊆ s, p (f '' t) := by
+  simp [subset_image_iff]
+
+@[simp]
+lemma forall_subset_image_iff {p : Set β → Prop} : (∀ t ⊆ f '' s, p t) ↔ ∀ t ⊆ s, p (f '' t) := by
+  simp [subset_image_iff]
+
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
   refine Iff.symm <| (Iff.intro (image_subset f)) fun h => ?_
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf]
@@ -805,10 +813,12 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
   rw [← exists_range_iff, range_image]; rfl
 #align set.exists_subset_range_and_iff Set.exists_subset_range_and_iff
 
+@[deprecated exists_subset_range_and_iff (since := "2024-06-06")]
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
 #align set.exists_subset_range_iff Set.exists_subset_range_iff
 
+@[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
   rw [← forall_mem_range, range_image]; rfl
@@ -1002,20 +1012,8 @@ theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c}
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
     range (Subtype.map f h) = (↑) ⁻¹' (f '' { x | p x }) := by
   ext ⟨x, hx⟩
-  rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
-  apply Iff.intro
-  · rintro ⟨a, b, hab⟩
-    rw [Subtype.map, Subtype.mk.injEq] at hab
-    use a
-    trivial
-  · rintro ⟨a, b, hab⟩
-    use a
-    use b
-    rw [Subtype.map, Subtype.mk.injEq]
-    exact hab
-  -- Porting note: `simp_rw` fails here
-  -- simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map, Subtype.coe_mk,
-  --   mem_set_of, exists_prop]
+  simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map]
+  simp only [Subtype.mk.injEq, exists_prop, mem_setOf_eq]
 #align set.range_subtype_map Set.range_subtype_map
 
 theorem image_swap_eq_preimage_swap : image (@Prod.swap α β) = preimage Prod.swap :=

@@ -23,7 +23,7 @@ open Finset SimpleGraph TripartiteFromTriangles
 open Function hiding graph
 open Fintype (card)
 
-variable {G : Type*} [AddCommGroup G] [Fintype G] [DecidableEq G] {A B : Finset (G × G)}
+variable {G : Type*} [AddCommGroup G] [Fintype G] {A B : Finset (G × G)}
   {a b c d x y : G} {n : ℕ} {ε : ℝ}
 
 namespace Corners
@@ -55,8 +55,8 @@ private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     simp only [mk_mem_triangleIndices] at ha hb hc
     exact .inl $ hs ⟨hc.1, hb.1, ha.1, hb.2.symm.trans ha.2⟩
 
-private lemma farFromTriangleFree_graph (hε : ε * card G ^ 2 ≤ A.card) :
-    (graph $ triangleIndices A).FarFromTriangleFree (ε / 9) := by
+private lemma farFromTriangleFree_graph [DecidableEq G] (hε : ε * card G ^ 2 ≤ A.card) :
+    (graph <| triangleIndices A).FarFromTriangleFree (ε / 9) := by
   refine farFromTriangleFree _ ?_
   simp_rw [card_triangleIndices, mul_comm_div, Nat.cast_pow, Nat.cast_add]
   ring_nf

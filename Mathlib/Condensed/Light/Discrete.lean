@@ -12,9 +12,9 @@ import Mathlib.Condensed.Light.Basic
 
 # Discrete-underlying adjunction
 
-Given a well-behaved concrete category `C`, we define a functor `C ⥤ LightCondensed C` which
-associates to an object of `C` the corresponding "discrete" condensed object
-(see `LightCondensed.discrete`).
+Given a category `C` with sheafification with respect to the coherent topology on light profinite
+sets, we define a functor `C ⥤ LightCondensed C` which associates to an object of `C` the
+corresponding "discrete" light condensed object (see `LightCondensed.discrete`).
 
 In `LightCondensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the
 forgetful functor from `Condensed C` to `C`.
