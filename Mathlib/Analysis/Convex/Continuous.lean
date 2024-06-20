@@ -64,10 +64,16 @@ lemma exists_mem_interior_convexHull_finset (hs : s ∈ 𝓝 x) :
 
 variable {f : E → ℝ}
 
-protected lemma ConvexOn.locallyLipschitzOn (hf : ConvexOn ℝ univ f) :
+protected lemma ConvexOn.locallyLipschitzOn (hf : ConvexOn ℝ s f) :
     LocallyLipschitzOn (intrinsicInterior ℝ s) f := by
   classical
-  rintro x hx
+  simp only [LocallyLipschitzOn, mem_intrinsicInterior, coe_affineSpan, Subtype.exists,
+    exists_and_right, exists_eq_right, forall_exists_index]
+  rintro x hx hx'
+  obtain ⟨t, ht⟩ := exists_mem_interior_convexHull_finset $ mem_interior_iff_mem_nhds.1 hx'
+
+  simp only [mem_intrinsicInterior, coe_affineSpan, Subtype.exists, exists_and_right,
+    exists_eq_right] at hx
   -- refine isOpen_interior.continuousOn_iff.2 (fun x hx, _),
   -- obtain ⟨t, hxt, hts⟩ := isOpen_interior.exists_mem_interior_convexHull_finset hx,
   -- set M := t.sup' (convexHull_nonempty_iff.1 $ nonempty.mono interior_subset ⟨x, hxt⟩) f,
@@ -78,11 +84,23 @@ protected lemma ConvexOn.locallyLipschitzOn (hf : ConvexOn ℝ univ f) :
   -- sorry,
   sorry
 
-protected lemma ConcaveOn.locallyLipschitzOn (hf : ConcaveOn ℝ univ f) :
-    LocallyLipschitzOn f := by simpa using hf.neg.locallyLipschitz
+protected lemma ConcaveOn.locallyLipschitzOn (hf : ConcaveOn ℝ s f) :
+    LocallyLipschitzOn (intrinsicInterior ℝ s) f := by simpa using hf.neg.locallyLipschitzOn
+
+protected lemma ConvexOn.locallyLipschitz (hf : ConvexOn ℝ univ f) : LocallyLipschitz f := by
+  simpa using hf.locallyLipschitzOn
+
+protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : LocallyLipschitz f := by
+  simpa using hf.locallyLipschitzOn
 
 protected lemma ConvexOn.continuousOn (hf : ConvexOn ℝ s f) :
     ContinuousOn f (intrinsicInterior ℝ s) := hf.locallyLipschitzOn.continuousOn
 
 protected lemma ConcaveOn.continuousOn (hf : ConcaveOn ℝ s f) :
     ContinuousOn f (intrinsicInterior ℝ s) := hf.locallyLipschitzOn.continuousOn
+
+protected lemma ConvexOn.continuous (hf : ConvexOn ℝ univ f) : Continuous f :=
+  hf.locallyLipschitz.continuous
+
+protected lemma ConcaveOn.continuous (hf : ConcaveOn ℝ univ f) : Continuous f :=
+  hf.locallyLipschitz.continuous

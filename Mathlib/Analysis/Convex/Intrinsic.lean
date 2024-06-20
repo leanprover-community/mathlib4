@@ -108,6 +108,24 @@ theorem subset_intrinsicClosure : s ⊆ intrinsicClosure 𝕜 s :=
   fun x hx => ⟨⟨x, subset_affineSpan _ _ hx⟩, subset_closure hx, rfl⟩
 #align subset_intrinsic_closure subset_intrinsicClosure
 
+lemma intrinsicInterior_eq_interior_of_span (hs : affineSpan 𝕜 s = ⊤) :
+    intrinsicInterior 𝕜 s = interior s := by
+  set f : affineSpan 𝕜 s ≃ₜ P := .trans (.setCongr (congr_arg SetLike.coe hs)) (.Set.univ _)
+  change f '' interior (f ⁻¹' s) = interior s
+  rw [f.image_interior, f.image_preimage]
+
+lemma intrinsicFrontier_eq_frontier_of_span (hs : affineSpan 𝕜 s = ⊤) :
+    intrinsicFrontier 𝕜 s = frontier s := by
+  set f : affineSpan 𝕜 s ≃ₜ P := .trans (.setCongr (congr_arg SetLike.coe hs)) (.Set.univ _)
+  change f '' frontier (f ⁻¹' s) = frontier s
+  rw [f.image_frontier, f.image_preimage]
+
+lemma intrinsicClosure_eq_closure_of_span (hs : affineSpan 𝕜 s = ⊤) :
+    intrinsicClosure 𝕜 s = closure s := by
+  set f : affineSpan 𝕜 s ≃ₜ P := .trans (.setCongr (congr_arg SetLike.coe hs)) (.Set.univ _)
+  change f '' closure (f ⁻¹' s) = closure s
+  rw [f.image_closure, f.image_preimage]
+
 @[simp]
 theorem intrinsicInterior_empty : intrinsicInterior 𝕜 (∅ : Set P) = ∅ := by simp [intrinsicInterior]
 #align intrinsic_interior_empty intrinsicInterior_empty
@@ -119,6 +137,15 @@ theorem intrinsicFrontier_empty : intrinsicFrontier 𝕜 (∅ : Set P) = ∅ := 
 @[simp]
 theorem intrinsicClosure_empty : intrinsicClosure 𝕜 (∅ : Set P) = ∅ := by simp [intrinsicClosure]
 #align intrinsic_closure_empty intrinsicClosure_empty
+
+@[simp] lemma intrinsicInterior_univ : intrinsicInterior 𝕜 (univ : Set P) = univ := by
+  simp [intrinsicInterior]
+
+@[simp] lemma intrinsicFrontier_univ : intrinsicFrontier 𝕜 (univ : Set P) = ∅ := by
+  simp [intrinsicFrontier]
+
+@[simp] lemma intrinsicClosure_univ : intrinsicClosure 𝕜 (univ : Set P) = univ := by
+  simp [intrinsicClosure]
 
 @[simp]
 theorem intrinsicClosure_nonempty : (intrinsicClosure 𝕜 s).Nonempty ↔ s.Nonempty :=
@@ -148,6 +175,8 @@ theorem intrinsicClosure_singleton (x : P) : intrinsicClosure 𝕜 ({x} : Set P)
   simpa only [intrinsicClosure, preimage_coe_affineSpan_singleton, closure_univ, image_univ,
     Subtype.range_coe] using coe_affineSpan_singleton _ _ _
 #align intrinsic_closure_singleton intrinsicClosure_singleton
+
+
 
 /-!
 Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
