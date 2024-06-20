@@ -294,22 +294,16 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
         simp [← @IH n ls hm, Nat.min_eq_left, Nat.le_of_lt hm]
 #align list.prefix_take_le_iff List.prefix_take_le_iff
 
-theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
-  constructor
-  · rintro ⟨L, hL⟩
-    simp only [cons_append] at hL
-    injection hL with hLLeft hLRight
-    exact ⟨hLLeft, ⟨L, hLRight⟩⟩
-  · rintro ⟨rfl, h⟩
-    rwa [prefix_cons_inj]
-#align list.cons_prefix_iff List.cons_prefix_iff
+#align list.cons_prefix_iff List.cons_prefix_cons
+
+@[deprecated] alias cons_prefix_iff := cons_prefix_cons
 
 protected theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.map f := by
   induction' l₁ with hd tl hl generalizing l₂
   · simp only [nil_prefix, map_nil]
   · cases' l₂ with hd₂ tl₂
     · simpa only using eq_nil_of_prefix_nil h
-    · rw [cons_prefix_iff] at h
+    · rw [cons_prefix_cons] at h
       simp only [List.map_cons, h, prefix_cons_inj, hl, map]
 #align list.is_prefix.map List.IsPrefix.map
 
@@ -319,7 +313,7 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
   · simp only [nil_prefix, filterMap_nil]
   · cases' l₂ with hd₂ tl₂
     · simpa only using eq_nil_of_prefix_nil h
-    · rw [cons_prefix_iff] at h
+    · rw [cons_prefix_cons] at h
       rw [← @singleton_append _ hd₁ _, ← @singleton_append _ hd₂ _, filterMap_append,
         filterMap_append, h.left, prefix_append_right_inj]
       exact hl h.right

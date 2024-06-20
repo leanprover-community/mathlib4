@@ -600,10 +600,6 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
 
 /-! ### empty -/
 
--- Porting note: this does not work as desired
--- attribute [simp] List.isEmpty
-
-theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;> simp [isEmpty]
 #align list.empty_iff_eq_nil List.isEmpty_iff_eq_nil
 
 /-! ### dropLast -/
@@ -919,14 +915,6 @@ theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
 
 end deprecated
 
--- Porting note: List.modifyHead has @[simp], and Lean 4 treats this as
--- an invitation to unfold modifyHead in any context,
--- not just use the equational lemmas.
-
--- @[simp]
-@[simp 1100, nolint simpNF]
-theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
-    (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
 #align list.modify_head_modify_head List.modifyHead_modifyHead
 
 /-! ### Induction from the right -/
