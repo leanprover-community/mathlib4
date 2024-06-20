@@ -5,8 +5,8 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 
 import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
-import Mathlib.Algebra.Category.GroupCat.EpiMono
+import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+import Mathlib.Algebra.Category.Grp.EpiMono
 
 /-!
 
@@ -17,32 +17,32 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 ## Implementation notes
 
-This file is split from `Mathlib.Algebra.GroupCat.Injective` is to prevent import loop.
-This file's dependency imports `Mathlib.Algebra.GroupCat.Injective`.
+This file is split from `Mathlib.Algebra.Grp.Injective` is to prevent import loop.
+This file's dependency imports `Mathlib.Algebra.Grp.Injective`.
 -/
 
 open CategoryTheory
 
 universe u
 
-namespace AddCommGroupCat
+namespace AddCommGrp
 
 open CharacterModule
 
-instance enoughInjectives : EnoughInjectives AddCommGroupCat.{u} where
+instance enoughInjectives : EnoughInjectives AddCommGrp.{u} where
   presentation A_ := Nonempty.intro
     { J := of <| (CharacterModule A_) → ULift.{u} (AddCircle (1 : ℚ))
       injective := injective_of_divisible _
       f := ⟨⟨fun a i ↦ ULift.up (i a), by aesop⟩, by aesop⟩
-      mono := (AddCommGroupCat.mono_iff_injective _).mpr <| (injective_iff_map_eq_zero _).mpr
+      mono := (AddCommGrp.mono_iff_injective _).mpr <| (injective_iff_map_eq_zero _).mpr
         fun a h0 ↦ eq_zero_of_character_apply (congr_arg ULift.down <| congr_fun h0 ·) }
 
-end AddCommGroupCat
+end AddCommGrp
 
 
-namespace CommGroupCat
+namespace CommGrp
 
-instance enoughInjectives : EnoughInjectives CommGroupCat.{u} :=
+instance enoughInjectives : EnoughInjectives CommGrp.{u} :=
   EnoughInjectives.of_equivalence commGroupAddCommGroupEquivalence.functor
 
-end CommGroupCat
+end CommGrp

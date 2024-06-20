@@ -53,10 +53,6 @@ theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
   cases k <;> simp [ofFn.go, getElem_ofFn_go (i := i)]
   congr 2; omega
 
-theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
-    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
-  simp [getElem_ofFn_go]
-
 @[simp]
 theorem getElem_ofFn {n} (f : Fin n → α) (i : Nat) (h : i < (ofFn f).length) :
     (ofFn f)[i] = f ⟨i, by simp_all⟩ := by
