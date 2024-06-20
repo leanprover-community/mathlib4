@@ -88,6 +88,8 @@ def isEmpty : InfoTree → Bool
 def papercutLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) do
     return
+  if (← get).messages.unreported.isEmpty then
+    return
   try
     let initInfoTrees ← getResetInfoTrees
     for t in initInfoTrees.toArray do liftTermElabM do
