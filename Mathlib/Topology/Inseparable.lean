@@ -384,7 +384,7 @@ lemma specializingMap_iff_closure_singleton (hf : Continuous f) :
     Relation.fibration_iff_image_Iic hf.specialization_monotone
 
 lemma specializingMap_iff_isClosed_image_closure_singleton (hf : Continuous f) :
-  SpecializingMap f ↔ ∀ x, IsClosed (f '' closure {x}) := by
+    SpecializingMap f ↔ ∀ x, IsClosed (f '' closure {x}) := by
   refine ⟨fun h x ↦ ?_, fun h ↦ specializingMap_iff_stableUnderSpecialization_image_singleton.mpr
     (fun x ↦ (h x).stableUnderSpecialization)⟩
   rw [(specializingMap_iff_closure_singleton hf).mp h x]
