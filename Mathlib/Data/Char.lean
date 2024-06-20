@@ -3,9 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Order.Defs
-import Mathlib.Data.Nat.Defs
+import Mathlib.Tactic.SplitIfs
 
 #align_import data.char from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -30,5 +30,7 @@ instance : LinearOrder Char where
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   decidableLE := inferInstance
+  -- XXX why needed?
+  compare_eq_compareOfLessAndEq := fun a b => rfl
 
 #align char.of_nat_to_nat Char.ofNat_toNat
