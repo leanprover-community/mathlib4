@@ -453,7 +453,9 @@ theorem compRightContinuousMap_apply {X Y : Type*} (T : Type*) [TopologicalSpace
 def compRightHomeomorph {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
     [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : X ≃ₜ Y) : C(Y, T) ≃ₜ C(X, T) where
   toFun := compRightContinuousMap T f.toContinuousMap
+  continuous_toFun := by continuity
   invFun := compRightContinuousMap T f.symm.toContinuousMap
+  continuous_invFun := by continuity
   left_inv g := ext fun _ => congr_arg g (f.apply_symm_apply _)
   right_inv g := ext fun _ => congr_arg g (f.symm_apply_apply _)
 #align continuous_map.comp_right_homeomorph ContinuousMap.compRightHomeomorph
