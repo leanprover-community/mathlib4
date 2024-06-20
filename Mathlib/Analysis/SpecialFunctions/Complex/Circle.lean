@@ -255,7 +255,7 @@ noncomputable def toCircle : AddChar (ZMod N) circle where
   map_zero_eq_one' := by simp_rw [map_zero, AddCircle.toCircle, ← QuotientAddGroup.mk_zero,
     Function.Periodic.lift_coe, mul_zero, expMapCircle_zero]
 
-lemma toCircle_coe (j : ℤ) :
+lemma toCircle_intCast (j : ℤ) :
     toCircle (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
   rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_coe,
     Function.Periodic.lift_coe, expMapCircle_apply]

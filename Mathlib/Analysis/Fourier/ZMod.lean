@@ -15,7 +15,7 @@ Basic definitions and properties of the discrete Fourier transform for functions
 ### Main definitions and results
 
 * `ZMod.dft`: the Fourier transform with respect to the standard additive character
-  `ZMod.stdAddChar`(mapping `j mod N` to `exp (2 * π * I * j / N)`). The notation `𝓕`, scoped in
+  `ZMod.stdAddChar` (mapping `j mod N` to `exp (2 * π * I * j / N)`). The notation `𝓕`, scoped in
   namespace `ZMod`, is available for this.
 * `DirichletCharacter.fourierTransform_eq_inv_mul_gaussSum`: the discrete Fourier transform of a
   primitive Dirichlet character `χ` is a Gauss sum times `χ⁻¹`.
