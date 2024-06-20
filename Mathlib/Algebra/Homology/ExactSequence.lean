@@ -21,7 +21,7 @@ in the applications it would usually be more convenient to use individual
 lemmas expressing the exactness at a particular object.
 
 This implementation is a refactor of `exact_seq` with appeared in the
-Liquid Tensor Experiement as a property of lists in `Arrow C`.
+Liquid Tensor Experiment as a property of lists in `Arrow C`.
 
 -/
 
