@@ -87,26 +87,20 @@ attribute [refl] Iff.refl
 attribute [trans] Iff.trans
 attribute [symm] Iff.symm
 
-theorem iff_iff_of (h : a) : (a ↔ b) ↔ b :=
-  Iff.intro (fun h₁ => h₁.mp h) (fun h₁ => (iff_true_right h₁).mpr h)
-
-theorem iff_iff_ne_of_ne (h : ¬a) : (a ↔ b) ↔ ¬b :=
-  Iff.intro (fun h₁ => (iff_false_right h).mp h₁.symm) (fun h₁ => (iff_false_right h₁).mpr h)
-
 theorem ne_iff_iff_iff_ne : (¬a ↔ b) ↔ (a ↔ ¬b) := by
   match Classical.em a with
-  | Or.inl ha => simp only [iff_iff_of ha, iff_iff_ne_of_ne (not_not_intro ha)]
-  | Or.inr ha => simp only [iff_iff_of ha, iff_iff_ne_of_ne ha, Classical.not_not]
+  | Or.inl ha => simp only [iff_true_left ha, iff_false_left (not_not_intro ha)]
+  | Or.inr ha => simp only [iff_true_left ha, iff_false_left ha, Classical.not_not]
 
 theorem iff_assoc : (a ↔ (b ↔ c)) ↔ ((a ↔ b) ↔ c) := by
   match Classical.em a with
-  | Or.inl ha => simp only [iff_iff_of ha]
-  | Or.inr ha => simp only [iff_iff_ne_of_ne ha, Classical.not_iff]
+  | Or.inl ha => simp only [iff_true_left ha]
+  | Or.inr ha => simp only [iff_false_left ha, Classical.not_iff]
 
 theorem iff_left_comm : (a ↔ (b ↔ c)) ↔ (b ↔ (a ↔ c)) := by
   match Classical.em a with
-  | Or.inl ha => simp only [iff_iff_of ha]
-  | Or.inr ha => simp only [iff_iff_ne_of_ne ha, Classical.not_iff, ne_iff_iff_iff_ne]
+  | Or.inl ha => simp only [iff_true_left ha]
+  | Or.inr ha => simp only [iff_false_left ha, Classical.not_iff, ne_iff_iff_iff_ne]
 
 -- This is needed for `calc` to work with `iff`.
 instance : Trans Iff Iff Iff where
