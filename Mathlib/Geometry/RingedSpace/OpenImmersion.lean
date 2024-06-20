@@ -53,7 +53,6 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 
 -/
 
--- Porting note: due to `PresheafedSpace`, `SheafedSpace` and `LocallyRingedSpace`
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace CategoryTheory Opposite

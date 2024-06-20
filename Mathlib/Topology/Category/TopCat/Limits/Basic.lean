@@ -16,7 +16,6 @@ Further, these limits and colimits are preserved by the forgetful functor --- th
 underlying types are just the limits in the category of types.
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
