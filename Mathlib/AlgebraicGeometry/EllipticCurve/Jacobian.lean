@@ -114,6 +114,8 @@ local macro "pderiv_simp" : tactic =>
 
 variable {R : Type u} [CommRing R] {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
 
+open scoped nonZeroDivisors
+
 section Jacobian
 
 /-! ### Jacobian coordinates -/
@@ -125,7 +127,7 @@ lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, 
   ⟨rfl, rfl, rfl⟩
 
 lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
-  (FinVec.map_eq _ _).symm
+  (FinVec.map_eq ..).symm
 
 /-- The scalar multiplication on a point representative. -/
 scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
@@ -164,7 +166,7 @@ variable (W') in
 abbrev toAffine : Affine R :=
   W'
 
-lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (mem : Q z ∈ nonZeroDivisors R) :
+lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (mem : Q z ∈ R⁰) :
     P ≈ Q ↔ P = Q := by
   refine ⟨?_, by rintro rfl; exact Setoid.refl _⟩
   rintro ⟨u, rfl⟩
@@ -235,6 +237,21 @@ associated to a Weierstrass curve `W'` over `R`. This is represented as a term o
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   X 1 ^ 2 + C W'.a₁ * X 0 * X 1 * X 2 + C W'.a₃ * X 1 * X 2 ^ 3
     - (X 0 ^ 3 + C W'.a₂ * X 0 ^ 2 * X 2 ^ 2 + C W'.a₄ * X 0 * X 2 ^ 4 + C W'.a₆ * X 2 ^ 6)
+
+lemma isWeightedHomogeneous_polynomial : W'.polynomial.IsWeightedHomogeneous ![2, 3, 1] 6 := by
+  rw [← mem_weightedHomogeneousSubmodule]
+  refine sub_mem (add_mem (add_mem ?_ ?_) ?_) (add_mem (add_mem (add_mem ?_ ?_) ?_) ?_)
+  · exact (isWeightedHomogeneous_X _ _ _).pow _
+  · exact (((isWeightedHomogeneous_C ..).mul <| isWeightedHomogeneous_X ..).mul <|
+      isWeightedHomogeneous_X ..).mul (isWeightedHomogeneous_X ..)
+  · exact ((isWeightedHomogeneous_C ..).mul <| isWeightedHomogeneous_X ..).mul <|
+      (isWeightedHomogeneous_X ..).pow _
+  · exact (isWeightedHomogeneous_X _ _ _).pow _
+  · exact ((isWeightedHomogeneous_C ..).mul <| (isWeightedHomogeneous_X ..).pow _).mul <|
+      (isWeightedHomogeneous_X ..).pow _
+  · exact ((isWeightedHomogeneous_C ..).mul <| isWeightedHomogeneous_X ..).mul <|
+      (isWeightedHomogeneous_X ..).pow _
+  · exact (isWeightedHomogeneous_C ..).mul <| (isWeightedHomogeneous_X ..).pow _
 
 lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
     P y ^ 2 + W'.a₁ * P x * P y * P z + W'.a₃ * P y * P z ^ 3
@@ -351,6 +368,17 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
   rw [polynomialZ_eq]
   eval_simp
 
+lemma polynomial_relation (P : Fin 3 → R) :
+    6 * eval P W'.polynomial =
+      2 * P x * eval P W'.polynomialX +
+      3 * P y * eval P W'.polynomialY +
+      P z * eval P W'.polynomialZ := by
+  rw [← eval_C (f := P) 6, ← eval_mul, show C (6 : R) = (6 : ℕ) by rfl, ← nsmul_eq_mul,
+    ← isWeightedHomogeneous_polynomial.sum_weight_X_mul_pderiv, Fin.sum_univ_three]
+  simp_rw [nsmul_eq_mul, eval_add, eval_mul, eval_X, mul_assoc, fin3_def_ext, Nat.cast_one,
+    ← C_1, eval_C, one_mul]
+  congr <;> apply eval_C
+
 variable (W') in
 /-- The proposition that a point representative $(x, y, z)$ in `W'` is nonsingular.
 In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$.
@@ -405,11 +433,14 @@ lemma nonsingular_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z ^ 2) (P y / P z ^ 3) :=
   (nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| nonsingular_some ..
 
-lemma nonsingular_iff_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Nonsingular P ↔ W.Equation P ∧ (eval P W.polynomialX ≠ 0 ∨ eval P W.polynomialY ≠ 0) := by
-  rw [nonsingular_of_Z_ne_zero hPz, Affine.Nonsingular, ← equation_of_Z_ne_zero hPz,
-    ← eval_polynomialX_of_Z_ne_zero hPz, div_ne_zero_iff, and_iff_left <| pow_ne_zero 4 hPz,
-    ← eval_polynomialY_of_Z_ne_zero hPz, div_ne_zero_iff, and_iff_left <| pow_ne_zero 3 hPz]
+lemma nonsingular_iff_of_Z_mem_nonZeroDivisors {P : Fin 3 → R} (hPz : P z ∈ R⁰) :
+    W'.Nonsingular P ↔ W'.Equation P ∧ (eval P W'.polynomialX ≠ 0 ∨ eval P W'.polynomialY ≠ 0) := by
+  rw [Nonsingular, ← or_assoc]
+  refine ⟨fun h ↦ ⟨h.1, ?_⟩, fun h ↦ ⟨h.1, .inl h.2⟩⟩
+  contrapose! h; refine fun eqn ↦ ⟨h, ?_⟩
+  rw [Equation] at eqn; apply_fun (6 * ·) at eqn
+  simp_rw [polynomial_relation, h.1, h.2, mul_zero, zero_add] at eqn
+  rwa [mul_left_mem_nonZeroDivisors_eq_zero_iff hPz] at eqn
 
 lemma X_ne_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Nonsingular P)
     (hPz : P z = 0) : P x ≠ 0 := by
@@ -536,15 +567,15 @@ lemma Y_ne_negY_of_Y_ne' [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equatio
   contrapose! hy
   linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY P Q hx + Q z ^ 3 * hy - hy'
 
-lemma Y_eq_negY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
+lemma Y_eq_negY_of_Y_eq {P Q : Fin 3 → R} (hQz : Q z ∈ R⁰)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) : P y = W'.negY P :=
-  mul_left_injective₀ (pow_ne_zero 3 hQz) <| by
+  (mul_cancel_left_mem_nonZeroDivisors <| pow_mem hQz 3).mp <| by
     linear_combination (norm := ring1) -Y_sub_Y_add_Y_sub_negY P Q hx + hy + hy'
 
-lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → F} (hPz : P z ≠ 0) (hy : P y = W.negY P) :
-    W.Nonsingular P ↔ W.Equation P ∧ eval P W.polynomialX ≠ 0 := by
-  rw [nonsingular_iff_of_Z_ne_zero hPz, show eval P W.polynomialY = P y - W.negY P by
+lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → R} (hPz : P z ∈ R⁰) (hy : P y = W'.negY P) :
+    W'.Nonsingular P ↔ W'.Equation P ∧ eval P W'.polynomialX ≠ 0 := by
+  rw [nonsingular_iff_of_Z_mem_nonZeroDivisors hPz, show eval P W'.polynomialY = P y - W'.negY P by
       rw [negY, eval_polynomialY]; ring1, hy, sub_self, ne_self_iff_false, or_false]
 
 end Negation
@@ -571,15 +602,16 @@ lemma dblU_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) : W'.dblU P = -3 * P x
   rw [dblU_eq, hPz]
   ring1
 
-lemma dblU_ne_zero_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
-    (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
-    (hy' : P y * Q z ^ 3 = W.negY Q * P z ^ 3) : W.dblU P ≠ 0 :=
+lemma dblU_ne_zero_of_Y_eq {P Q : Fin 3 → R} (hP : W'.Nonsingular P) (hPz : P z ∈ R⁰)
+    (hQz : Q z ∈ R⁰) (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
+    (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) : W'.dblU P ≠ 0 :=
   ((nonsingular_iff_of_Y_eq_negY hPz <| Y_eq_negY_of_Y_eq hQz hx hy hy').mp hP).right
 
 lemma isUnit_dblU_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W.negY Q * P z ^ 3) : IsUnit (W.dblU P) :=
-  (dblU_ne_zero_of_Y_eq hP hPz hQz hx hy hy').isUnit
+  (dblU_ne_zero_of_Y_eq hP (mem_nonZeroDivisors_of_ne_zero hPz)
+    (mem_nonZeroDivisors_of_ne_zero hQz) hx hy hy').isUnit
 
 variable (W') in
 /-- The $Z$-coordinate of the doubling of a point representative. -/
@@ -593,7 +625,7 @@ lemma dblZ_smul (P : Fin 3 → R) (u : R) : W'.dblZ (u • P) = u ^ 4 * W'.dblZ 
 lemma dblZ_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) : W'.dblZ P = 0 := by
   rw [dblZ, hPz, zero_mul]
 
-lemma dblZ_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
+lemma dblZ_of_Y_eq {P Q : Fin 3 → R} (hQz : Q z ∈ R⁰)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) : W'.dblZ P = 0 := by
   rw [dblZ, Y_eq_negY_of_Y_eq hQz hx hy hy', sub_self, mul_zero]
@@ -643,7 +675,7 @@ lemma dblX_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
   linear_combination (norm := (rw [dblX, dblU_of_Z_eq_zero hPz, negY_of_Z_eq_zero hPz, hPz]; ring1))
     -8 * P x * (equation_of_Z_eq_zero hPz).mp hP
 
-lemma dblX_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
+lemma dblX_of_Y_eq {P Q : Fin 3 → R} (hQz : Q z ∈ R⁰)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) : W'.dblX P = W'.dblU P ^ 2 := by
   rw [dblX, Y_eq_negY_of_Y_eq hQz hx hy hy']
@@ -677,7 +709,7 @@ lemma negDblY_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0
       (rw [negDblY, dblU_of_Z_eq_zero hPz, dblX_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hPz]; ring1))
     (8 * (equation_of_Z_eq_zero hPz).mp hP - 12 * P x ^ 3) * (equation_of_Z_eq_zero hPz).mp hP
 
-lemma negDblY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
+lemma negDblY_of_Y_eq {P Q : Fin 3 → R} (hQz : Q z ∈ R⁰)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) : W'.negDblY P = (-W'.dblU P) ^ 3 := by
   rw [negDblY, dblX_of_Y_eq hQz hx hy hy', Y_eq_negY_of_Y_eq hQz hx hy hy']
@@ -712,7 +744,7 @@ lemma dblY_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.dblY P = (P x ^ 2) ^ 3 := by
   erw [dblY, negDblY_of_Z_eq_zero hP hPz, dblZ_of_Z_eq_zero hPz, negY_of_Z_eq_zero rfl, neg_neg]
 
-lemma dblY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
+lemma dblY_of_Y_eq {P Q : Fin 3 → R} (hQz : Q z ∈ R⁰)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) : W'.dblY P = W'.dblU P ^ 3 := by
   erw [dblY, dblZ_of_Y_eq hQz hx hy hy', negY_of_Z_eq_zero rfl, negDblY_of_Y_eq hQz hx hy hy',
@@ -739,15 +771,15 @@ lemma dblXYZ_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0)
   erw [dblXYZ, dblX_of_Z_eq_zero hP hPz, dblY_of_Z_eq_zero hP hPz, dblZ_of_Z_eq_zero hPz, smul_fin3,
     mul_one, mul_one, mul_zero]
 
-lemma dblXYZ_of_Y_eq' [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
+lemma dblXYZ_of_Y_eq' {P Q : Fin 3 → R} (hQz : Q z ∈ R⁰)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) :
     W'.dblXYZ P = ![W'.dblU P ^ 2, W'.dblU P ^ 3, 0] := by
   rw [dblXYZ, dblX_of_Y_eq hQz hx hy hy', dblY_of_Y_eq hQz hx hy hy', dblZ_of_Y_eq hQz hx hy hy']
 
-lemma dblXYZ_of_Y_eq {P Q : Fin 3 → F} (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
-    (hy : P y * Q z ^ 3 = Q y * P z ^ 3) (hy' : P y * Q z ^ 3 = W.negY Q * P z ^ 3) :
-    W.dblXYZ P = W.dblU P • ![1, 1, 0] := by
+lemma dblXYZ_of_Y_eq {P Q : Fin 3 → R} (hQz : Q z ∈ R⁰) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
+    (hy : P y * Q z ^ 3 = Q y * P z ^ 3) (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) :
+    W'.dblXYZ P = W'.dblU P • ![1, 1, 0] := by
   erw [dblXYZ_of_Y_eq' hQz hx hy hy', smul_fin3, mul_one, mul_one, mul_zero]
 
 lemma dblXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
@@ -1210,7 +1242,8 @@ lemma add_of_Z_eq_zero_right {P Q : Fin 3 → R} (hQ : W'.Equation Q) (hPz : P z
 lemma add_of_Y_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W.negY Q * P z ^ 3) : W.add P Q = W.dblU P • ![1, 1, 0] := by
-  rw [add, if_pos <| equiv_of_X_eq_of_Y_eq hPz hQz hx hy, dblXYZ_of_Y_eq hQz hx hy hy']
+  rw [add, if_pos <| equiv_of_X_eq_of_Y_eq hPz hQz hx hy,
+    dblXYZ_of_Y_eq (mem_nonZeroDivisors_of_ne_zero hQz) hx hy hy']
 
 lemma add_of_Y_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 3) :
