@@ -49,5 +49,5 @@ instance Infinite.sigma_of_left {β : α → Type*} [Infinite α] [∀ a, Nonemp
   Infinite.of_surjective Sigma.fst Sigma.fst_surjective
 
 theorem Infinite.sigma_of_right {β : α → Type*} {a : α} [Infinite (β a)] :
-    Infinite ((a : α) × (β a)) :=
+    Infinite ((a : α) × β a) :=
   Infinite.of_injective (f := fun x ↦ ⟨a,x⟩) fun _ _ ↦ by simp
