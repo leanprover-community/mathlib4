@@ -6,6 +6,7 @@ Authors: Joseph Myers, Yury Kudryashov
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.Topology.MetricSpace.IsometricSMul
 
 #align_import analysis.normed.group.add_torsor from "leanprover-community/mathlib"@"837f72de63ad6cd96519cde5f1ffd5ed8d280ad0"
 
