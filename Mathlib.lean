@@ -3773,8 +3773,6 @@ import Mathlib.SetTheory.Surreal.Dyadic
 import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.Tactic
-import Mathlib.Tactic
-import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.ApplyAt
