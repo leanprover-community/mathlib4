@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Bijections between morphisms in two localized categories
@@ -101,6 +102,13 @@ lemma homMap_homMap (f : L₁.obj X ⟶ L₁.obj Y) :
       Functor.associator _ _ _)]
   dsimp
   simp only [Functor.map_comp, assoc, comp_id, id_comp]
+
+lemma homMap_add (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
+    (f g : L₁.obj X ⟶ L₁.obj Y) [Preadditive D₁] [Preadditive D₂] [G.Additive]:
+    Φ.homMap L₁ L₂ (f + g) =
+      Φ.homMap L₁ L₂ f + Φ.homMap L₁ L₂ g := by
+  simp only [Φ.homMap_apply L₁ L₂ G e, Functor.map_add,
+    Preadditive.add_comp, Preadditive.comp_add]
 
 end LocalizerMorphism
 
