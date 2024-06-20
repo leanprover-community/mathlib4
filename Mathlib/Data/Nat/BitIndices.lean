@@ -3,94 +3,117 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Colex
+import Batteries.Data.List.Pairwise
+import Mathlib.Data.Nat.Bitwise
+import Mathlib.Algebra.BigOperators.Ring.List
+import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Algebra.Star.Order
+import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Indexes
+import Mathlib.Algebra.Order.Sub.Defs
+
+-- #synth OrderedAddCommMonoid ℕ
 
 /-!
 # Bit Indices
 
-Given `n : ℕ`, we define `Nat.bitIndices n`, which is the `Finset` of indices of `1`s in the
-binary expansion of `n`. We show that this function is the inverse of `fun s ↦ ∑ i in s, 2^i`,
-and therefore that it gives an order isomorphism from `ℕ` to `Colex ℕ`.
+Given `n : ℕ`, we define `Nat.bitIndices n`, which is the `List` of indices of `1`s in the
+binary expansion of `n`. If `s : Finset ℕ` and `n = ∑ i in s, 2^i`, then
+`Nat.bitIndices n` is the sorted list of elements of `s`.
 
-The latter proof uses the machinery in `Combinatorics.Colex`, which is why this doesn't appear
-in an earlier file. The implementation of `Nat.bitIndices` is a direct recursive definition,
-which is definitionally cleaner than the other option of using `Nat.bits` and the `List` API.
+The lemma `twoPowSum_bitIndices` proves that summing `2 ^ i` over this list gives `n`.
+This is used in `Combinatorics.colex` to construct a bijection `equivBitIndices : ℕ ≃ Finset ℕ`.
 
 TODO : Relate the material in this file to `Nat.digits` and `Nat.bits`.
 -/
 
-open Finset BigOperators
-
+open List
 namespace Nat
 
-variable {a n : ℕ} {s : Finset ℕ}
+variable {a n : ℕ}
 
-/-- The function which maps the natural number `∑ i in s, 2^i` to the Finset `s`. -/
-def bitIndices (n : ℕ) : Finset ℕ := by
+/-- The function which maps each natural number `∑ i in s, 2^i` to the list of
+elements of `s` in increasing order. -/
+def bitIndices (n : ℕ) : List ℕ := by
   induction' n using binaryRec with b _ s
-  · exact ∅
+  · exact []
   cases b
-  · exact s.map (addRightEmbedding 1)
-  · exact (s.map (addRightEmbedding 1)).cons 0 (by simp)
+  · exact s.map (· + 1)
+  exact (s.map (· + 1)).cons 0
 
-@[simp] theorem bitIndices_zero : bitIndices 0 = ∅ := rfl
+@[simp] theorem bitIndices_zero : bitIndices 0 = [] := by rfl
 
-@[simp] theorem bitIndices_one : bitIndices 1 = {0} := rfl
+@[simp] theorem bitIndices_one : bitIndices 1 = [0] := by rfl
 
 theorem bitIndices_bit_true (n : ℕ) :
-    bitIndices (bit true n) = ((bitIndices n).map (addRightEmbedding 1)).cons 0 (by simp) :=
+    bitIndices (bit true n) = ((bitIndices n).map (· + 1)).cons 0 :=
   binaryRec_eq rfl _ _
 
 theorem bitIndices_bit_false (n : ℕ) :
-    bitIndices (bit false n) = (bitIndices n).map (addRightEmbedding 1) :=
+    bitIndices (bit false n) = ((bitIndices n).map (· + 1)) :=
   binaryRec_eq rfl _ _
 
-@[simp] theorem bitIndices_two_mul_add (n : ℕ) : bitIndices (2*n + 1) =
-    ((bitIndices n).map (addRightEmbedding 1)).cons 0 (by simp) := by
+@[simp] theorem bitIndices_two_mul_add_one (n : ℕ) : bitIndices (2 * n + 1) =
+    ((bitIndices n).map (· + 1)).cons 0 := by
   rw [← bitIndices_bit_true, bit_true, bit1_val]
 
-@[simp] theorem bitIndices_two_mul (n : ℕ) : bitIndices (2*n) =
-    (bitIndices n).map (addRightEmbedding 1) := by
+@[simp] theorem bitIndices_two_mul (n : ℕ) : bitIndices (2 * n) =
+    (bitIndices n).map (· + 1) := by
   rw [← bitIndices_bit_false, bit_false, bit0_val]
 
-@[simp] theorem bitIndices_two_pow (k : ℕ) : bitIndices (2^k) = {k} := by
-  induction' k using Nat.recAux with k ih; rfl
-  rw [pow_add, pow_one, mul_comm, bitIndices_two_mul, ih, map_singleton, addRightEmbedding_apply]
+@[simp] theorem bitIndices_sorted {n : ℕ} : n.bitIndices.Sorted (· < ·) := by
+  induction' n using binaryRec with b n hs; simp
+  suffices List.Pairwise (fun a b ↦ a < b) n.bitIndices by
+    cases b <;> simpa [List.Sorted, bit_false, bit0_val, bit_true, bit1_val, List.pairwise_map]
+  exact List.Pairwise.imp (by simp) hs
 
-theorem twoPowSum_bitIndices (n : ℕ) : ∑ i in n.bitIndices, 2 ^ i = n := by
+@[simp] theorem bitIndices_two_pow_mul (k n : ℕ) :
+    bitIndices (2^k * n) = (bitIndices n).map (· + k) := by
+  induction' k with k ih; simp
+  rw [add_comm, pow_add, pow_one, mul_assoc, bitIndices_two_mul, ih, List.map_map, comp_add_right]
+  simp [add_comm (a := 1)]
+
+@[simp] theorem bitIndices_two_pow (k : ℕ) : bitIndices (2^k) = [k] := by
+  rw [← mul_one (a := 2^k), bitIndices_two_pow_mul]; simp
+
+@[simp] theorem twoPowSum_bitIndices (n : ℕ) : (n.bitIndices.map (fun i ↦ 2 ^ i)).sum = n := by
   induction' n using binaryRec with b n hs; rfl
-  have ih : ∑ i in bitIndices n, 2 ^ (i+1) = 2 * n := by simp [pow_add, ← sum_mul, hs, mul_comm 2]
+  have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
+    ext i; simp [pow_add, mul_comm]
   cases b
-  · simp [bitIndices_bit_false, bit0_val, ih]
-  simp [bitIndices_bit_true, ih, bit1_val, add_comm 1]
+  · simpa [hrw, bit0_val, List.sum_map_mul_left]
+  simp [bit1_val, hrw, List.sum_map_mul_left, hs, add_comm (a := 1)]
 
-theorem lt_geomSum_of_mem (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n^i :=
-  (lt_pow_self hn a).trans_le (single_le_sum (by simp) hi)
+/-- Together with `Nat.twoPowSum_bitIndices`, this implies a bijection between `ℕ` and `Finset ℕ`.
+See `Finset.equivBitIndices` for this bijection. -/
+theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
+    (L.map (fun i ↦ 2^i)).sum.bitIndices = L := by
+  cases' L with a L; rfl
+  obtain ⟨haL, hL⟩ := sorted_cons.1 hL
+  simp_rw [Nat.lt_iff_add_one_le] at haL
+  have h' : ∃ (L₀ : List ℕ), L₀.Sorted (· < ·) ∧ L = L₀.map (· + a + 1) := by
+    refine ⟨L.map (· - (a+1)), ?_, ?_⟩
+    · rwa [Sorted, pairwise_map, Pairwise.and_mem,
+        Pairwise.iff (S := fun x y ↦ x ∈ L ∧ y ∈ L ∧ x < y), ← Pairwise.and_mem]
+      simp only [and_congr_right_iff]
+      exact fun x y hx _ ↦ by rw [tsub_lt_tsub_iff_right (haL _ hx)]
+    have h' : ∀ x ∈ L, ((fun x ↦ x + a + 1) ∘ (fun x ↦ x - (a + 1))) x = x := fun x hx ↦ by
+      simp only [add_assoc, Function.comp_apply]; rw [tsub_add_cancel_of_le (haL _ hx)]
+    simp [List.map_congr h']
+  obtain ⟨L₀, hL₀, rfl⟩ := h'
+  have _ : L₀.length < (a :: (L₀.map (· + a + 1))).length := by simp
+  have hrw : (fun i ↦ 2 ^ i) ∘ (fun x ↦ x + a + 1) = fun i ↦ 2 ^ a * (2 * 2 ^ i) := by
+    ext x; simp only [Function.comp_apply, pow_add, pow_one]; ac_rfl
+  simp only [List.map_cons, List.map_map, List.sum_map_mul_left, List.sum_cons, hrw]
+  nth_rw 1 [← mul_one (a := 2 ^ a)]
+  rw [← mul_add, bitIndices_two_pow_mul, add_comm, bitIndices_two_mul_add_one,
+    bitIndices_twoPowsum hL₀]
+  simp [add_comm (a := 1), add_assoc]
+termination_by L.length
 
 theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2^a ≤ n := by
   rw [← twoPowSum_bitIndices n]
-  exact single_le_sum (by simp) ha
+  exact List.single_le_sum (by simp) _ (by simpa)
 
 theorem not_mem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
   fun h ↦ (lt_two_pow n).not_le <| two_pow_le_of_mem_bitIndices h
-
-theorem bitIndices_twoPowSum (s : Finset ℕ) : bitIndices (∑ i in s, 2^i) = s := by
-  rw [← (geomSum_injective rfl.le).eq_iff, twoPowSum_bitIndices]
-
-/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i in s, 2^i` to `s`.-/
-@[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
-  toFun := bitIndices
-  invFun s := ∑ i in s, 2^i
-  left_inv := twoPowSum_bitIndices
-  right_inv := bitIndices_twoPowSum
-
-/-- The equivalence `Nat.equivBitIndices` enumerates `Finset ℕ` in colexicographic order. -/
-@[simps] def orderIsoColex : ℕ ≃o Colex ℕ where
-  toFun n := Colex.toColex (equivBitIndices n)
-  invFun s := equivBitIndices.symm s.ofColex
-  left_inv n := equivBitIndices.symm_apply_apply n
-  right_inv s :=  Finset.toColex_inj.2 (equivBitIndices.apply_symm_apply s.ofColex)
-  map_rel_iff' := by
-    simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le), twoPowSum_bitIndices]
-
-end Nat
