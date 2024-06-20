@@ -328,7 +328,7 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   obtain lt | le := lt_or_le j ω.length
   · simp only [get?_eq_getElem?, getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · simp only [get?_eq_getElem?, getElem?_eq_none.mpr le]
+  · simp only [get?_eq_getElem?, getElem?_eq_none le]
     simp
 
 theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
@@ -339,7 +339,7 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   obtain lt | le := lt_or_le j ω.length
   · simp only [get?_eq_getElem?, getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · simp only [get?_eq_getElem?, getElem?_eq_none.mpr le]
+  · simp only [get?_eq_getElem?, getElem?_eq_none le]
     simp
 
 theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω) {t : W}
