@@ -54,8 +54,7 @@ with domain restricted to some subset of the semiring of coefficients.
 -/
 @[simps]
 def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
-  -- Porting note: Old proof was `⟨fun x : X => p.toContinuousMap x, by continuity⟩`
-  ⟨fun x : X => p.toContinuousMap x, Continuous.comp (by continuity) (by continuity)⟩
+  ⟨fun x : X => p.toContinuousMap x, by fun_prop⟩
 #align polynomial.to_continuous_map_on Polynomial.toContinuousMapOn
 
 open ContinuousMap in
