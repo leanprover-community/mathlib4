@@ -380,7 +380,7 @@ instance : AddCommMonoid (CentroidHom α) :=
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
-@[simp, norm_cast, nolint simpNF]
+@[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
 #align centroid_hom.coe_nat_cast CentroidHom.coe_natCast

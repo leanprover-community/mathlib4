@@ -1901,7 +1901,7 @@ theorem not_mem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
 #align finset.not_mem_erase Finset.not_mem_erase
 
 -- While this can be solved by `simp`, this lemma is eligible for `dsimp`
-@[nolint simpNF, simp]
+@[simp]
 theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
 #align finset.erase_empty Finset.erase_empty
