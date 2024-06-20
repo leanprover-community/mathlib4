@@ -497,14 +497,10 @@ theorem Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid
   rw [Sigma.subtype_ext_iff]
   simp only [Subtype.mk_eq_mk, Subtype.coe_mk]
   apply And.intro _ hab
-  refine' ExistsUnique.unique (hc.2 b) _ _
-  simp only [exists_unique_iff_exists, exists_prop]
-  exact ⟨hx, ha⟩
-  simp only [exists_unique_iff_exists, exists_prop]
-  exact ⟨hy, hb⟩
+  exact ExistsUnique.unique (hc.2 b) ⟨hx, ha⟩ ⟨hy, hb⟩
   -- surjectivity
   intro a
-  obtain ⟨x, ⟨hx, ha : a ∈ x, _⟩, _⟩ := hc.2 a
+  obtain ⟨x, ⟨hx, ha : a ∈ x⟩, _⟩ := hc.2 a
   use ⟨⟨x, hx⟩, ⟨a, ha⟩⟩
 
 theorem Set.ncard_coe {α : Type*} (s : Set α) :
@@ -592,9 +588,8 @@ theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Fin
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
   cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne
-  · suffices (⋂ (k : G) (_ : a ∈ k • B), k • B) = Set.univ by
-      rw [this]; apply top_IsBlock
-    simp only [Set.iInter_eq_univ]
+  · convert isBlock_top X
+    simp only [Set.top_eq_univ, Set.iInter_eq_univ]
     intro k hk; exfalso
     rw [hfB_e] at hk; simpa only [Set.smul_set_empty] using hk
 
