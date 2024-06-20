@@ -128,7 +128,7 @@ open CategoryTheory Action
 
 section Rep
 
-variable {k : Type u} [CommRing k] {G : GroupCat.{u}}
+variable {k : Type u} [CommRing k] {G : Grp.{u}}
 
 theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
@@ -156,7 +156,7 @@ end Rep
 
 section FdRep
 
-variable {k : Type u} [Field k] {G : GroupCat.{u}}
+variable {k : Type u} [Field k] {G : Grp.{u}}
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
