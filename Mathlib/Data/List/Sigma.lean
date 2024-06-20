@@ -557,7 +557,7 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
     else by simp [ha₁, mt mem_keys_of_mem_keys_kerase ha₁]
 #align list.kerase_comm List.kerase_comm
 
-theorem sizeOf_kerase {α} {β : α → Type*} [DecidableEq α] [SizeOf (Sigma β)] (x : α)
+theorem sizeOf_kerase [DecidableEq α] [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with y ys
@@ -668,7 +668,7 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
     exact h
 #align list.lookup_dedupkeys List.dlookup_dedupKeys
 
-theorem sizeOf_dedupKeys {α} {β : α → Type*} [DecidableEq α] [SizeOf (Sigma β)]
+theorem sizeOf_dedupKeys [DecidableEq α] [SizeOf (Sigma β)]
     (xs : List (Sigma β)) : SizeOf.sizeOf (dedupKeys xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with x xs
@@ -771,7 +771,6 @@ theorem dlookup_kunion_right {a} {l₁ l₂ : List (Sigma β)} (h : a ∉ l₁.k
   | cons _ _ ih => simp_all [not_or]
 #align list.lookup_kunion_right List.dlookup_kunion_right
 
--- Porting note: removing simp, LHS not in normal form, added new version
 theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     b ∈ dlookup a (kunion l₁ l₂) ↔ b ∈ dlookup a l₁ ∨ a ∉ l₁.keys ∧ b ∈ dlookup a l₂ := by
   induction l₁ generalizing l₂ with
@@ -787,7 +786,6 @@ theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
       simp [h₁, h₂]
 #align list.mem_lookup_kunion List.mem_dlookup_kunion
 
--- Porting note (#10756): new theorem, alternative version of `mem_dlookup_kunion` for simp
 @[simp]
 theorem dlookup_kunion_eq_some {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     dlookup a (kunion l₁ l₂) = some b ↔
