@@ -20,10 +20,6 @@ open CategoryTheory Category Limits ZeroObject
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
-lemma Option.eq_none_or_eq_some {ι : Type*} (x : Option ι) :
-    x = none ∨ ∃ y, x = some y := by
-  cases x <;> aesop
-
 namespace HomologicalComplex
 
 variable {C : Type*} [Category C] [HasZeroObject C] [HasZeroMorphisms C]
