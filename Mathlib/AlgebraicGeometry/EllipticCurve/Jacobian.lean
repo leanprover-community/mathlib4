@@ -65,8 +65,8 @@ notation `![x, y, z]`. However, `P` is not syntactically equivalent to the expan
 `![P x, P y, P z]`, so the lemmas `fin3_def` and `fin3_def_ext` can be used to convert between the
 two forms. The equivalence of two point representatives `P` and `Q` is implemented as an equivalence
 of orbits of the action of `Rˣ`, or equivalently that there is some unit `u` of `R` such that
-`P = u • Q`. However, `u • Q` is not syntactically equal to `![u² * Q x, u³ * Q y, u * Q z]`,
-so the lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms.
+`P = u • Q`. However, `u • Q` is not syntactically equal to `![u² * Q x, u³ * Q y, u * Q z]`, so the
+lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms.
 
 ## References
 
