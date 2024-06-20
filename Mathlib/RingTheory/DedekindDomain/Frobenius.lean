@@ -349,14 +349,8 @@ lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x^(Fintype.card (A⧸
     rw [← smul_sub]
     nth_rw 3 [ ← fact3]
     suffices (x - y A Q ^ n) ∈ Q by
-      exact?
-    rw [smul_mem_smul]
-    simp
-    skip
-    sorry
-
-/- maths proof:
-
-2) σ is x ^ #A/P mod Q
-3) Application to number fields
--/
+      exact Ideal.smul_mem_pointwise_smul_iff.mpr this
+    rw [← Ideal.Quotient.coe_eq_coe_iff_sub_mem]
+    rw [← hn2]
+    rw [← fact2]
+    norm_cast
