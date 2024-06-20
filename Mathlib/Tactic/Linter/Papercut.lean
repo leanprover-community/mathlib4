@@ -53,9 +53,8 @@ def getPapercuts (e : Expr) : MetaM (Option MessageData) := do
         else return none
       if let some mddl := mddl then return some m!"{begn}{mddl}{endn}" else return none
     | (``HDiv.hDiv, #[n1, n2, n3, _, a, b]) =>
-      -- `mkAppOptM` may fail to find an `OfNat` instance, in that case, we do not report anything
-      let zer := (← mkAppOptM ``OfNat.ofNat #[← instantiateMVars n3, expZero, none] <|>
-                  return default)
+      -- `mkAppOptM` may fail to find an `OfNat` instance, but we `try ... catch` everything!
+      let zer ← mkAppOptM ``OfNat.ofNat #[← instantiateMVars n3, expZero, none]
       if zer == default then return none else
       if ← isDefEq zer b then
         return some m!"Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!\n\
@@ -89,23 +88,27 @@ def isEmpty : InfoTree → Bool
 def papercutLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) do
     return
-  let initInfoTrees ← getResetInfoTrees
-  for t in initInfoTrees.toArray do liftTermElabM do
-    unless isEmpty t do  -- there is nothing to see if `t` is empty
-    let x ← t.visitM (α := List (Syntax × MessageData))
-      (postNode := fun ctx info _ msgs => do
-        let msgs := msgs.reduceOption.join
-        if let .ofTermInfo ti := info then
-          withMCtx ctx.mctx <| withLCtx ti.lctx {} do
-            if let some msg ← getPapercuts ti.expr then
+  try
+    let initInfoTrees ← getResetInfoTrees
+    for t in initInfoTrees.toArray do liftTermElabM do
+      unless isEmpty t do  -- there is nothing to see if `t` is empty
+      let x ← t.visitM (α := List (Syntax × MessageData))
+        (postNode := fun ctx info _ msgs => do
+          let msgs := msgs.reduceOption.join
+          let next? ← OptionT.run do
+            let .ofTermInfo ti := info | failure
+            withMCtx ctx.mctx <| withLCtx ti.lctx {} do
+              let msg ← OptionT.mk <| getPapercuts ti.expr
               let next := (ti.stx, msg)
-              if !(msgs.map fun d => d.1.getPos?).contains next.1.getPos? then
-                return next :: msgs
-              else return msgs
-            else return msgs
-        else return msgs
-       )
-    for (stx, msg) in x.getD [] do
-      Linter.logLint linter.papercut stx m!"{msg}"
+              if (msgs.map fun d => d.1.getPos?).contains next.1.getPos? then
+                failure
+              return next
+          if let .some next := next? then
+            return next :: msgs
+          else
+            return msgs       )
+      for (stx, msg) in x.getD [] do
+        Linter.logLint linter.papercut stx m!"{msg}"
+    catch _ => return
 
 initialize addLinter papercutLinter
