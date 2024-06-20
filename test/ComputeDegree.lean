@@ -212,7 +212,7 @@ example : natDegree ((5 * X * C 3 : _root_.Rat[X]) ^ 4) ≤ 4 := by compute_degr
 
 example : natDegree ((C a * X) ^ 4) ≤ 4 := by compute_degree
 
-example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree; rfl
+example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree
 
 example : natDegree ((X : ℤ[X]) ^ 4) ≤ 40 := by compute_degree!
 

@@ -391,8 +391,7 @@ theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_natCast
 
--- 2024-04-05
-@[deprecated] alias coe_nat := coe_natCast
+@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by

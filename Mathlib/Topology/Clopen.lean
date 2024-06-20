@@ -125,11 +125,9 @@ theorem isClopen_discrete [DiscreteTopology X] (s : Set X) : IsClopen s :=
   ⟨isClosed_discrete _, isOpen_discrete _⟩
 #align is_clopen_discrete isClopen_discrete
 
--- Porting note (#10756): new lemma
 theorem isClopen_range_inl : IsClopen (range (Sum.inl : X → X ⊕ Y)) :=
   ⟨isClosed_range_inl, isOpen_range_inl⟩
 
--- Porting note (#10756): new lemma
 theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
   ⟨isClosed_range_inr, isOpen_range_inr⟩
 

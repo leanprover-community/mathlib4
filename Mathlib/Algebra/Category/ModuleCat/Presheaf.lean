@@ -39,7 +39,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 described as a presheaf of abelian groups, and the extra data of the action at each object,
 and a condition relating functoriality and scalar multiplication. -/
 structure PresheafOfModules (R : Cᵒᵖ ⥤ RingCat.{u}) where
-  presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v}
+  presheaf : Cᵒᵖ ⥤ AddCommGrp.{v}
   module : ∀ X : Cᵒᵖ, Module (R.obj X) (presheaf.obj X) := by infer_instance
   map_smul : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (x : presheaf.obj X),
     presheaf.map f (r • x) = R.map f r • presheaf.map f x := by aesop_cat
@@ -115,6 +115,13 @@ namespace Hom
 
 variable {P Q T : PresheafOfModules R}
 
+variable (P) in
+@[simp]
+lemma id_hom : Hom.hom (𝟙 P) = 𝟙 _ := rfl
+
+@[simp, reassoc]
+lemma comp_hom (f : P ⟶ Q) (g : Q ⟶ T) : (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
 /--
 The `(X : Cᵒᵖ)`-component of morphism between presheaves of modules
 over a presheaf of rings `R`, as an `R.obj X`-linear map. -/
@@ -146,7 +153,7 @@ variable {P Q}
 
 instance : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
   intros
-  simp only [NatTrans.app_add, AddCommGroupCat.hom_add_apply, map_smul, smul_add])⟩
+  simp only [NatTrans.app_add, AddCommGrp.hom_add_apply, map_smul, smul_add])⟩
 
 @[simp]
 lemma add_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f + g).app X = f.app X + g.app X := rfl
@@ -194,7 +201,7 @@ variable (R)
 to presheaves of abelian groups.
 -/
 @[simps obj]
-def toPresheaf : PresheafOfModules.{v} R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat.{v}) where
+def toPresheaf : PresheafOfModules.{v} R ⥤ (Cᵒᵖ ⥤ AddCommGrp.{v}) where
   obj P := P.presheaf
   map f := f.hom
 
@@ -342,9 +349,9 @@ variable (M : CorePresheafOfModules R)
 
 /-- The presheaf of abelian groups attached to a `CorePresheafOfModules R`. -/
 @[simps]
-def presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v} where
-  obj X := AddCommGroupCat.of (M.obj X)
-  map f := AddCommGroupCat.ofHom (M.map f).toAddMonoidHom
+def presheaf : Cᵒᵖ ⥤ AddCommGrp.{v} where
+  obj X := AddCommGrp.of (M.obj X)
+  map f := AddCommGrp.ofHom (M.map f).toAddMonoidHom
 
 instance (X : Cᵒᵖ) : Module (R.obj X) (M.presheaf.obj X) := M.module X
 
