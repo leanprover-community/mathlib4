@@ -77,7 +77,7 @@ we define `mapEmbedding` and `mapEquiv` separately from `map`.
 
 For finite matroids, both maps and comaps are a special case of a construction of
 Perfect (1969) in which a matroid structure can be transported across an arbitrary
-bipartite graph that doesn't correspond to a function at all [See Oxley, Thm 11.2.12].
+bipartite graph that may not correspond to a function at all [See Oxley, Thm 11.2.12].
 It would have been nice to use this more general construction as a basis for the definition
 of both `Matroid.map` and `Matroid.comap`.
 
@@ -133,7 +133,6 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       have hinj : InjOn f (insert e B) := by
         rw [injOn_insert (fun heB ↦ hfe (mem_image_of_mem f heB))]; exact ⟨hBmax.1.2, hfe⟩
       rw [hBmax.2 hi.1 hinj <| subset_insert _ _] at hfe; simp at hfe
-
 
     obtain ⟨_, ⟨⟨e, he, rfl⟩, he'⟩, hei⟩ := Indep.exists_insert_of_not_base (by simpa) h₁ h₂
     have heI : e ∉ I := fun heI ↦ he' (mem_image_of_mem f heI)
@@ -602,7 +601,7 @@ end mapEquiv
 
 section restrictSubtype
 
-variable {E X I : Set α} {M N : Matroid α}
+variable {E X I : Set α} {M : Matroid α}
 
 /-- Given `M : Matroid α` and `X : Set α`, the restriction of `M` to `X`,
 viewed as a matroid on type `X` with ground set `univ`.
@@ -624,7 +623,7 @@ lemma restrictSubtype_inter_indep_iff :
     (M.restrictSubtype X).Indep (X ↓∩ I) ↔ M.Indep (X ∩ I) := by
   simp [restrictSubtype, Subtype.val_injective.injOn]
 
-lemma eq_of_restrictSubtype_eq (hM : M.E = E) (hN : N.E = E)
+lemma eq_of_restrictSubtype_eq {N : Matroid α} (hM : M.E = E) (hN : N.E = E)
     (h : M.restrictSubtype E = N.restrictSubtype E) : M = N := by
   subst hM
   refine eq_of_indep_iff_indep_forall (by rw [hN]) (fun I hI ↦ ?_)
