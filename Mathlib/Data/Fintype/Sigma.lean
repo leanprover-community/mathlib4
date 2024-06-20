@@ -45,7 +45,7 @@ instance PSigma.instFintype : Fintype (Σ' i, κ i) := .ofEquiv _ (Equiv.psigmaE
 #align finset.univ_sigma_univ Finset.univ_sigma_univ
 
 instance Infinite.sigma_of_left {β : α → Type*} [Infinite α] [∀ a, Nonempty (β a)] :
-    Infinite ((a : α) × (β a)) :=
+    Infinite ((a : α) × β a) :=
   Infinite.of_surjective Sigma.fst Sigma.fst_surjective
 
 theorem Infinite.sigma_of_right {β : α → Type*} {a : α} [Infinite (β a)] :
