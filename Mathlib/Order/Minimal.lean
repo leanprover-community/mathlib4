@@ -162,6 +162,7 @@ theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
     x ∈ maximals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x < y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· < ·)
 
+<<<<<<< HEAD
 theorem Set.mem_maximals_iff_forall_insert {P : Set α → Prop} (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
     s ∈ maximals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
   simp only [mem_maximals_iff, mem_setOf_eq, and_congr_right_iff]
@@ -178,10 +179,11 @@ theorem Set.mem_minimals_iff_forall_diff_singleton {P : Set α → Prop}
   exact by_contra fun hxt ↦ h x hxs (hP ht (subset_diff_singleton hst hxt))
 
 -- Porting note (#10756): new theorem
+=======
+>>>>>>> master
 theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
--- Porting note (#10756): new theorem
 theorem minimals_of_symm [IsSymm α r] : minimals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 

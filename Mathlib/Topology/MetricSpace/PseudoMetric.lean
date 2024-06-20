@@ -1155,7 +1155,6 @@ open Metric
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
--- Porting note (#10756): new theorem
 theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     ⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
