@@ -177,7 +177,6 @@ theorem Set.mem_minimals_iff_forall_diff_singleton {P : Set α → Prop}
   · rw [(h hxs diff_subset)] at hx; simp at hx
   exact by_contra fun hxt ↦ h x hxs (hP ht (subset_diff_singleton hst hxt))
 
--- Porting note (#10756): new theorem
 theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
