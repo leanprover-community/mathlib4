@@ -111,9 +111,6 @@ section
 
 variable [HasDerivedCategory.{w'} C]
 
--- this is defined in #13876
-instance : (DerivedCategory.Q (C := C)).CommShift ℤ := sorry
-
 /-- When an instance of `[HasDerivedCategory.{w'} C]` is available, this is the bijection
 between `Ext.{w} X Y n` and a type of morphisms in the derived category. -/
 noncomputable def homEquiv {n : ℕ} :
