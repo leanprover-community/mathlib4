@@ -17,7 +17,7 @@ For instance,
 * `3 - 5 = 0` (`Nat`-subtraction is truncated subtraction),
 * `3 / 5 = 0` (`Nat`-division is rounded division),
 * `(3 : ℤ) / 5 = 0` (`Int.sub` is truncated subtraction),
-* `x / 0 = 0` for mot types (division by `0` equals `0`).
+* `x / 0 = 0` for most types (division by `0` equals `0`).
 -/
 
 open Lean Elab Command
