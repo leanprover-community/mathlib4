@@ -29,7 +29,7 @@ we prove that they coincide and study their properties (notably convergence).
 -/
 
 
-open scoped BigOperators Classical Topology
+open scoped Classical Topology
 
 open Finset Filter
 

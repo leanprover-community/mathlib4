@@ -44,7 +44,7 @@ theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafi
   ⟨by
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
     refine ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv => ⟨?_, ?_⟩⟩ <;> apply mem_of_superset hv <;>
-      simp [inter_subset_right a b],
+      simp [inter_subset_right],
     eq_univ_of_univ_subset <| subset_sUnion_of_mem <| ⟨univ, eq_univ_of_forall fun u => univ_mem⟩,
     rfl⟩
 #align ultrafilter_basis_is_basis ultrafilterBasis_is_basis
@@ -295,7 +295,7 @@ end Extension
 theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
   fun γ tγ h₁ h₂ f hf => by
   trans f x; swap; on_goal 1 => symm
-  all_goals refine' ultrafilter_extend_eq_iff.mpr (le_trans (map_mono _) (hf.tendsto _))
+  all_goals refine ultrafilter_extend_eq_iff.mpr (le_trans (map_mono ?_) (hf.tendsto _))
   · apply pure_le_nhds
   · exact ux
 #align convergent_eqv_pure convergent_eqv_pure

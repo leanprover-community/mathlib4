@@ -143,10 +143,10 @@ def isColimitCoimage (h : Exact f g) :
       (CokernelCofork.ofπ (Abelian.coimage.π g) (Abelian.comp_coimage_π_eq_zero h.1) :
         CokernelCofork f) := by
   rw [exact_iff] at h
-  refine' CokernelCofork.IsColimit.ofπ _ _
+  refine CokernelCofork.IsColimit.ofπ _ _
     (fun u hu => cokernel.desc (kernel.ι g) u
       (by rw [← cokernel.π_desc f u hu, ← Category.assoc, h.2, zero_comp]))
-    (by aesop_cat) _
+    (by aesop_cat) ?_
   intros _ _ _ _ hm
   ext
   rw [hm, cokernel.π_desc]
@@ -331,7 +331,7 @@ instance (priority := 100) reflectsExactSequencesOfPreservesZeroMorphismsOfFaith
     ReflectsExactSequences F where
   reflects {X Y Z} f g hfg := by
     rw [Abelian.exact_iff, ← F.map_comp, F.map_eq_zero_iff] at hfg
-    refine' (Abelian.exact_iff _ _).2 ⟨hfg.1, F.zero_of_map_zero _ _⟩
+    refine (Abelian.exact_iff _ _).2 ⟨hfg.1, F.zero_of_map_zero _ ?_⟩
     obtain ⟨k, hk⟩ :=
       kernel.lift' (F.map g) (F.map (kernel.ι g))
         (by simp only [← F.map_comp, kernel.condition, CategoryTheory.Functor.map_zero])

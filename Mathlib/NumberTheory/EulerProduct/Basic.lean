@@ -53,7 +53,7 @@ lemma Summable.norm_lt_one {F : Type*} [NormedField F] [CompleteSpace F] {f : â„
 
 open scoped Topology
 
-open Nat Finset BigOperators
+open Nat Finset
 
 section General
 

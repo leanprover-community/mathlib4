@@ -51,7 +51,7 @@ private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C)
   · rw [IsClosed.closure_subset_iff hC.closed]
     apply inter_subset_right
   rw [EMetric.diam_closure]
-  apply le_trans (EMetric.diam_mono (inter_subset_left _ _))
+  apply le_trans (EMetric.diam_mono inter_subset_left)
   convert EMetric.diam_ball (x := x)
   rw [mul_comm, ENNReal.div_mul_cancel] <;> norm_num
 

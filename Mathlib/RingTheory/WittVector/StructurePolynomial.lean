@@ -101,8 +101,6 @@ variable {p : ℕ} {R : Type*} {idx : Type*} [CommRing R]
 
 open scoped Witt
 
-open scoped BigOperators
-
 section PPrime
 
 variable (p) [hp : Fact p.Prime]
@@ -144,8 +142,8 @@ theorem wittStructureRat_prop (Φ : MvPolynomial idx ℚ) (n : ℕ) :
   calc
     bind₁ (wittStructureRat p Φ) (W_ ℚ n) =
         bind₁ (fun k => bind₁ (fun i => (rename (Prod.mk i)) (W_ ℚ k)) Φ)
-          (bind₁ (xInTermsOfW p ℚ) (W_ ℚ n)) :=
-      by rw [bind₁_bind₁]; exact eval₂Hom_congr (RingHom.ext_rat _ _) rfl rfl
+          (bind₁ (xInTermsOfW p ℚ) (W_ ℚ n)) := by
+      rw [bind₁_bind₁]; exact eval₂Hom_congr (RingHom.ext_rat _ _) rfl rfl
     _ = bind₁ (fun i => rename (Prod.mk i) (W_ ℚ n)) Φ := by
       rw [bind₁_xInTermsOfW_wittPolynomial p _ n, bind₁_X_right]
 #align witt_structure_rat_prop wittStructureRat_prop

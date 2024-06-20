@@ -3,7 +3,7 @@ Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.Algebra.Ring.Equiv
 
@@ -68,13 +68,10 @@ instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
 instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- Porting note (#10756): added lemma
 lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : SemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note (#10756): added lemma
 @[simp] lemma forget_map {X Y : SemiRingCat} (f : X ⟶ Y) :
     (forget SemiRingCat).map f = (f : X → Y) := rfl
 
@@ -180,7 +177,7 @@ instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
     let i := asIso ((forget SemiRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    exact e.toSemiRingCatIso.isIso_hom
 
 end SemiRingCat
 
@@ -215,13 +212,10 @@ instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
 instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- Porting note (#10756): added lemma
 lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
 
--- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : RingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note (#10756): added lemma
 @[simp] lemma forget_map {X Y : RingCat} (f : X ⟶ Y) : (forget RingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : RingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -301,14 +295,14 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
 set_option linter.uppercaseLean3 false in
 #align Ring.has_forget_to_SemiRing RingCat.hasForgetToSemiRingCat
 
-instance hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat where
+instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
   -- can't use BundledHom.mkHasForget₂, since AddCommGroup is an induced category
   forget₂ :=
-    { obj := fun R => AddCommGroupCat.of R
+    { obj := fun R => AddCommGrp.of R
       -- Porting note: use `(_ := _)` similar to above.
       map := fun {R₁ R₂} f => RingHom.toAddMonoidHom (α := R₁) (β := R₂) f }
 set_option linter.uppercaseLean3 false in
-#align Ring.has_forget_to_AddCommGroup RingCat.hasForgetToAddCommGroupCat
+#align Ring.has_forget_to_AddCommGroup RingCat.hasForgetToAddCommGrp
 
 end RingCat
 
@@ -331,7 +325,7 @@ instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type*) where
+instance : CoeSort CommSemiRingCat Type* where
   coe X := X.α
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
@@ -353,13 +347,10 @@ instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- Porting note (#10756): added lemma
 lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommSemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note (#10756): added lemma
 @[simp] lemma forget_map {X Y : CommSemiRingCat} (f : X ⟶ Y) :
   (forget CommSemiRingCat).map f = (f : X → Y) := rfl
 
@@ -464,7 +455,7 @@ instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
     let i := asIso ((forget CommSemiRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    exact ⟨e.toSemiRingCatIso.isIso_hom.1⟩
 
 end CommSemiRingCat
 
@@ -487,7 +478,7 @@ instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type*) where
+instance : CoeSort CommRingCat Type* where
   coe X := X.α
 
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
@@ -506,13 +497,10 @@ instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
 instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- Porting note (#10756): added lemma
 lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
 
--- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note (#10756): added lemma
 @[simp] lemma forget_map {X Y : CommRingCat} (f : X ⟶ Y) :
     (forget CommRingCat).map f = (f : X → Y) := rfl
 
@@ -703,7 +691,7 @@ instance RingCat.forget_reflects_isos : (forget RingCat.{u}).ReflectsIsomorphism
     let i := asIso ((forget RingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toRingCatIso).1⟩
+    exact e.toRingCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_reflects_isos RingCat.forget_reflects_isos
 
@@ -712,7 +700,7 @@ instance CommRingCat.forget_reflects_isos : (forget CommRingCat.{u}).ReflectsIso
     let i := asIso ((forget CommRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toCommRingCatIso).1⟩
+    exact e.toCommRingCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_reflects_isos CommRingCat.forget_reflects_isos
 
@@ -734,7 +722,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: This was the case in mathlib3, perhaps it is different now?
 attribute [local instance] reflectsIsomorphisms_forget₂
 
-example : (forget₂ RingCat AddCommGroupCat).ReflectsIsomorphisms := by infer_instance
+example : (forget₂ RingCat AddCommGrp).ReflectsIsomorphisms := by infer_instance
 
 /-!
 `@[simp]` lemmas for `RingHom.comp` and categorical identities.

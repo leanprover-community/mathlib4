@@ -16,8 +16,6 @@ This file contains the results concerning the interaction of finset big operator
 rings.
 -/
 
-open scoped BigOperators
-
 variable {ι R : Type*}
 
 namespace Finset
@@ -191,7 +189,7 @@ lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
-@[deprecated] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum -- 2024-02-14
+@[deprecated (since := "2024-02-14")] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
 
 nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :

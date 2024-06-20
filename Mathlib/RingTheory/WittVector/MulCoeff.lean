@@ -42,8 +42,6 @@ local notation "𝕄" => MvPolynomial (Fin 2 × ℕ) ℤ
 
 open Finset MvPolynomial
 
-open scoped BigOperators
-
 /--
 ```
 (∑ i ∈ range n, (y.coeff i)^(p^(n-i)) * p^i.val) *

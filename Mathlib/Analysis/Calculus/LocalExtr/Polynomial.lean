@@ -31,8 +31,6 @@ polynomial, Rolle's Theorem, root
 
 namespace Polynomial
 
-open scoped BigOperators
-
 /-- The number of roots of a real polynomial `p` is at most the number of roots of its derivative
 that are not roots of `p` plus one. -/
 theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]) :
@@ -53,7 +51,7 @@ one. -/
 theorem card_roots_toFinset_le_derivative (p : ℝ[X]) :
     p.roots.toFinset.card ≤ p.derivative.roots.toFinset.card + 1 :=
   p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ.trans <|
-    add_le_add_right (Finset.card_mono <| Finset.sdiff_subset _ _) _
+    add_le_add_right (Finset.card_mono Finset.sdiff_subset) _
 #align polynomial.card_roots_to_finset_le_derivative Polynomial.card_roots_toFinset_le_derivative
 
 /-- The number of roots of a real polynomial (counted with multiplicities) is at most the number of
@@ -83,7 +81,7 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
       exact (Finset.mem_sdiff.1 hx).1
     _ = Multiset.card (derivative p).roots + 1 := by
       rw [← add_assoc, ← Finset.sum_union Finset.disjoint_sdiff, Finset.union_sdiff_self_eq_union, ←
-        Multiset.toFinset_sum_count_eq, ← Finset.sum_subset (Finset.subset_union_right _ _)]
+        Multiset.toFinset_sum_count_eq, ← Finset.sum_subset Finset.subset_union_right]
       intro x _ hx₂
       simpa only [Multiset.mem_toFinset, Multiset.count_eq_zero] using hx₂
 #align polynomial.card_roots_le_derivative Polynomial.card_roots_le_derivative

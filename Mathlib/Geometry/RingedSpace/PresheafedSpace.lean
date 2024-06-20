@@ -64,7 +64,7 @@ attribute [coe] PresheafedSpace.carrier
 
 -- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
 -- in downstream files.
-instance : CoeSort (PresheafedSpace C) (Type*) where coe := fun X => X.carrier
+instance : CoeSort (PresheafedSpace C) Type* where coe := fun X => X.carrier
 
 -- Porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
@@ -333,18 +333,18 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.sheaf_iso_of_iso AlgebraicGeometry.PresheafedSpace.sheafIsoOfIso
 
 instance base_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
-  IsIso.of_iso ((forget _).mapIso (asIso f))
+  ((forget _).mapIso (asIso f)).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.base_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.base_isIso_of_iso
 
 instance c_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.c :=
-  IsIso.of_iso (sheafIsoOfIso (asIso f))
+  (sheafIsoOfIso (asIso f)).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.c_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.c_isIso_of_iso
 
 /-- This could be used in conjunction with `CategoryTheory.NatIso.isIso_of_isIso_app`. -/
 theorem isIso_of_components (f : X ⟶ Y) [IsIso f.base] [IsIso f.c] : IsIso f :=
-  IsIso.of_iso (isoOfComponents (asIso f.base) (asIso f.c).symm)
+  (isoOfComponents (asIso f.base) (asIso f.c).symm).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.is_iso_of_components AlgebraicGeometry.PresheafedSpace.isIso_of_components
 

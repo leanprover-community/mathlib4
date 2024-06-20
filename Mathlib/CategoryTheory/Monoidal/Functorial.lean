@@ -70,11 +70,11 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
         (α_ (F X) (F Y) (F Z)).hom ≫ F X ◁ μ Y Z ≫ μ X (Y ⊗ Z) := by
     aesop_cat
   /-- left unitality -/
-  left_unitality : ∀ X : C, (λ_ (F X)).hom = ε ▷ F X ≫ μ (𝟙_ C) X ≫ map F (λ_ X).hom :=
-    by aesop_cat
+  left_unitality : ∀ X : C, (λ_ (F X)).hom = ε ▷ F X ≫ μ (𝟙_ C) X ≫ map F (λ_ X).hom := by
+    aesop_cat
   /-- right unitality -/
-  right_unitality : ∀ X : C, (ρ_ (F X)).hom = F X ◁ ε ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom :=
-    by aesop_cat
+  right_unitality : ∀ X : C, (ρ_ (F X)).hom = F X ◁ ε ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom := by
+    aesop_cat
 #align category_theory.lax_monoidal CategoryTheory.LaxMonoidal
 
 /-- An unbundled description of lax monoidal functors. -/
