@@ -45,6 +45,12 @@ in the localized category with respect to a class of morphisms `W`. -/
 abbrev HasSmallLocalizedShiftedHom : Prop :=
   ∀ (a b : M), HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦b⟧)
 
+variable (M) in
+lemma hasSmallLocalizedShiftedHom_iff (L : C ⥤ D) [L.IsLocalization W] (X Y : C) :
+    HasSmallLocalizedShiftedHom.{w} W M X Y ↔
+      ∀ (a b : M), Small.{w} ((L.obj X)⟦a⟧ ⟶ (L.obj Y)⟦b⟧) := by
+  sorry
+
 variable [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
 variable (M) in

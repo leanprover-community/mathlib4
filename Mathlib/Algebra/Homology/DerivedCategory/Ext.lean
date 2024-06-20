@@ -48,9 +48,10 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
 
-instance : (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := sorry
-
 open Localization
+
+instance : (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
+  sorry
 
 /-- The property that morphisms between single complexes in arbitrary degrees are `w`-small
 in the derived category. -/
@@ -58,7 +59,26 @@ abbrev HasExt : Prop :=
   ∀ (X Y : C), HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ
     ((CochainComplex.singleFunctor C 0).obj X) ((CochainComplex.singleFunctor C 0).obj Y)
 
-lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := sorry
+-- TODO: when the canonical t-structure is formalized, replace `n : ℤ` by `n : ℕ`
+lemma hasExt_iff [HasDerivedCategory.{w'} C] :
+    HasExt.{w} C ↔ ∀ (X Y : C) (n : ℤ), Small.{w}
+      ((DerivedCategory.singleFunctor C 0).obj X ⟶
+        (((DerivedCategory.singleFunctor C 0).obj Y)⟦n⟧)) := by
+  dsimp [HasExt]
+  simp only [hasSmallLocalizedShiftedHom_iff _ _ DerivedCategory.Q]
+  constructor
+  · intro h X Y n
+    exact (small_congr ((shiftFunctorZero _ ℤ).app
+      ((DerivedCategory.singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
+  · intro h X Y a b
+    refine (small_congr ?_).1 (h X Y (b - a))
+    exact (Functor.FullyFaithful.ofFullyFaithful
+      (shiftFunctor _ a)).homEquiv.trans
+      ((shiftFunctorAdd' _ _ _ _ (Int.sub_add_cancel b a)).symm.app _).homToEquiv
+
+lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := by
+  rw [hasExt_iff.{w}]
+  infer_instance
 
 variable {C}
 
