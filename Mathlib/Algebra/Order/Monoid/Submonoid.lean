@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.ZeroLEOne
 
 /-!

@@ -17,6 +17,9 @@ import Mathlib.Tactic.Spread
 # Group structures on the multiplicative and additive opposites
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 variable {α : Type*}
 
 namespace MulOpposite
@@ -256,8 +259,8 @@ theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x :=
 #align add_opposite.op_sub AddOpposite.op_sub
 
 @[to_additive (attr := simp)]
-theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
-  by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
+theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y := by
+  simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
 #align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
 #align add_opposite.semiconj_by_op AddOpposite.addSemiconjBy_op
 

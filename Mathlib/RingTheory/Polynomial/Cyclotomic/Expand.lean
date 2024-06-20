@@ -42,26 +42,26 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
   suffices expand ℤ p (cyclotomic n ℤ) = cyclotomic (n * p) ℤ * cyclotomic n ℤ by
     rw [← map_cyclotomic_int, ← map_expand, this, Polynomial.map_mul, map_cyclotomic_int,
       map_cyclotomic]
-  refine' eq_of_monic_of_dvd_of_natDegree_le ((cyclotomic.monic _ ℤ).mul (cyclotomic.monic _ ℤ))
-    ((cyclotomic.monic n ℤ).expand hp.pos) _ _
-  · refine' (IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast _ _
+  refine eq_of_monic_of_dvd_of_natDegree_le ((cyclotomic.monic _ ℤ).mul (cyclotomic.monic _ ℤ))
+    ((cyclotomic.monic n ℤ).expand hp.pos) ?_ ?_
+  · refine (IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast _ _
       (IsPrimitive.mul (cyclotomic.isPrimitive (n * p) ℤ) (cyclotomic.isPrimitive n ℤ))
-      ((cyclotomic.monic n ℤ).expand hp.pos).isPrimitive).2 _
+      ((cyclotomic.monic n ℤ).expand hp.pos).isPrimitive).2 ?_
     rw [Polynomial.map_mul, map_cyclotomic_int, map_cyclotomic_int, map_expand, map_cyclotomic_int]
-    refine' IsCoprime.mul_dvd (cyclotomic.isCoprime_rat fun h => _) _ _
+    refine IsCoprime.mul_dvd (cyclotomic.isCoprime_rat fun h => ?_) ?_ ?_
     · replace h : n * p = n * 1 := by simp [h]
       exact Nat.Prime.ne_one hp (mul_left_cancel₀ hnpos.ne' h)
     · have hpos : 0 < n * p := mul_pos hnpos hp.pos
       have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne'
       rw [cyclotomic_eq_minpoly_rat hprim hpos]
-      refine' minpoly.dvd ℚ _ _
+      refine minpoly.dvd ℚ _ ?_
       rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
         @isRoot_cyclotomic_iff]
       convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
       rw [Nat.mul_div_cancel _ (Nat.Prime.pos hp)]
     · have hprim := Complex.isPrimitiveRoot_exp _ hnpos.ne.symm
       rw [cyclotomic_eq_minpoly_rat hprim hnpos]
-      refine' minpoly.dvd ℚ _ _
+      refine minpoly.dvd ℚ _ ?_
       rw [aeval_def, ← eval_map, map_expand, expand_eval, ← IsRoot.def, ←
         cyclotomic_eq_minpoly_rat hprim hnpos, map_cyclotomic, @isRoot_cyclotomic_iff]
       exact IsPrimitiveRoot.pow_of_prime hprim hp hdiv
@@ -82,12 +82,12 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
   haveI := NeZero.of_pos hzero
   suffices expand ℤ p (cyclotomic n ℤ) = cyclotomic (n * p) ℤ by
     rw [← map_cyclotomic_int, ← map_expand, this, map_cyclotomic_int]
-  refine' eq_of_monic_of_dvd_of_natDegree_le (cyclotomic.monic _ ℤ)
-    ((cyclotomic.monic n ℤ).expand hp.pos) _ _
+  refine eq_of_monic_of_dvd_of_natDegree_le (cyclotomic.monic _ ℤ)
+    ((cyclotomic.monic n ℤ).expand hp.pos) ?_ ?_
   · have hpos := Nat.mul_pos hzero hp.pos
     have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne.symm
     rw [cyclotomic_eq_minpoly hprim hpos]
-    refine' minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) _
+    refine minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) ?_
     rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
     convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
@@ -168,7 +168,7 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
     (Polynomial.cyclotomic (p ^ k * m) R).IsRoot μ ↔ IsPrimitiveRoot μ m := by
   rcases k.eq_zero_or_pos with (rfl | hk)
   · rw [pow_zero, one_mul, isRoot_cyclotomic_iff]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [IsRoot.def, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow]
       at h
     replace h := pow_eq_zero h

@@ -24,8 +24,6 @@ universe u v
 variable {α : Type u}
 namespace ULift
 
--- Porting note: All these instances used `refine_struct` and `pi_instance_derive_field`
-
 instance mulZeroClass [MulZeroClass α] : MulZeroClass (ULift α) :=
   { zero := (0 : ULift α), mul := (· * ·), zero_mul := fun _ => (Equiv.ulift).injective (by simp),
     mul_zero := fun _ => (Equiv.ulift).injective (by simp) }

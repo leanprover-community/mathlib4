@@ -31,7 +31,7 @@ variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 open Polynomial
 
-open Polynomial BigOperators
+open Polynomial
 
 /-- The Rees algebra of an ideal `I`, defined as the subalgebra of `R[X]` whose `i`-th coefficient
 falls in `I ^ i`. -/

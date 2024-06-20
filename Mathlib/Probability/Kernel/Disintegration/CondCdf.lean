@@ -209,9 +209,8 @@ lemma setIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (
     filter_upwards [preCDF_le_one ρ] with a ha
     exact (ha r).trans_lt ENNReal.one_lt_top
 
-@[deprecated]
-alias set_integral_preCDF_fst :=
-  setIntegral_preCDF_fst -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_preCDF_fst := setIntegral_preCDF_fst
 
 lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r univ).toReal := by
@@ -382,9 +381,8 @@ theorem setIntegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x :
   (isCondKernelCDF_condCDF ρ).setIntegral () hs x
 #align probability_theory.set_integral_cond_cdf ProbabilityTheory.setIntegral_condCDF
 
-@[deprecated]
-alias set_integral_condCDF :=
-  setIntegral_condCDF -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condCDF := setIntegral_condCDF
 
 theorem integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
     ∫ a, condCDF ρ a x ∂ρ.fst = (ρ (univ ×ˢ Iic x)).toReal :=
@@ -414,9 +412,9 @@ theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
   rw [Measure.measurable_measure]
   refine fun s hs => ?_
   -- Porting note: supplied `C`
-  refine' MeasurableSpace.induction_on_inter
+  refine MeasurableSpace.induction_on_inter
     (C := fun s => Measurable fun b ↦ StieltjesFunction.measure (condCDF ρ b) s)
-    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ hs
+    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
   · simp only [measure_empty, measurable_const]
   · rintro S ⟨u, rfl⟩
     simp_rw [measure_condCDF_Iic ρ _ u]

@@ -123,7 +123,6 @@ def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
   { u | ∀ {j j'} (f : j ⟶ j'), F.map f (u j) = u j' }
 #align category_theory.functor.sections CategoryTheory.Functor.sections
 
--- Porting note (#10756): added this simp lemma
 @[simp]
 lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
@@ -272,7 +271,7 @@ See <https://stacks.math.columbia.edu/tag/003C>.
 theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩
-    refine' Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => _
+    refine Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => ?_
     rw [← Equiv.ulift.symm.injective.comp_left.eq_iff]
     apply H
     change ULift.up ∘ g₁ ∘ f = ULift.up ∘ g₂ ∘ f
@@ -387,7 +386,7 @@ namespace CategoryTheory
 /-- A morphism in `Type u` is an isomorphism if and only if it is bijective. -/
 theorem isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f :=
   Iff.intro (fun _ => (asIso f : X ≅ Y).toEquiv.bijective) fun b =>
-    IsIso.of_iso (Equiv.ofBijective f b).toIso
+    (Equiv.ofBijective f b).toIso.isIso_hom
 #align category_theory.is_iso_iff_bijective CategoryTheory.isIso_iff_bijective
 
 instance : SplitEpiCategory (Type u) where

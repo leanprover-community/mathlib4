@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Units
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.free_monoid.basic from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -231,7 +231,6 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
 #align free_monoid.lift FreeMonoid.lift
 #align free_add_monoid.lift FreeAddMonoid.lift
 
--- Porting note (#10756): new theorem
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
   prodAux_eq _

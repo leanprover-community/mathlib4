@@ -22,7 +22,6 @@ import Mathlib.Topology.Sheaves.Stalks
 
 -/
 
--- Porting note: all aligns here start with `Top.`
 set_option linter.uppercaseLean3 false
 
 open scoped nonZeroDivisors
@@ -37,7 +36,7 @@ namespace Presheaf
 
 variable {X : TopCat.{w}} {C : Type u} [Category.{v} C] [ConcreteCategory C]
 
-attribute [local instance 1000] ConcreteCategory.hasCoeToSort
+attribute [local instance 1000] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf [∀ X : C, MulOneClass X] [∀ X Y : C, MonoidHomClass (X ⟶ Y) X Y]

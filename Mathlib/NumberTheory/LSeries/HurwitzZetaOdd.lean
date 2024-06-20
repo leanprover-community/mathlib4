@@ -28,7 +28,7 @@ Of course, we cannot *define* these functions by the above formulae (since exist
 analytic continuation is not at all obvious); we in fact construct them as Mellin transforms of
 various versions of the Jacobi theta function.
 
-## Main definitions and theorems
+## Main definitions and theorems
 
 * `completedHurwitzZetaOdd`: the completed Hurwitz zeta function
 * `completedSinZeta`: the completed cosine zeta function
@@ -45,6 +45,8 @@ noncomputable section
 open Complex hiding abs_of_nonneg
 open Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate
+
+namespace HurwitzZeta
 
 section kernel_defs
 /-!
@@ -327,6 +329,8 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
     oddKernel_functional_equation a, one_div x, one_div x⁻¹, inv_rpow (le_of_lt hx), one_div,
     inv_inv]
 
+end FEPair
+
 /-!
 ## Definition of the completed odd Hurwitz zeta function
 -/
@@ -541,7 +545,7 @@ lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   · simp only [Nat.cast_zero, Int.sign_zero, Int.cast_zero, mul_zero, zero_mul, neg_zero,
       sub_self, zero_div, zero_add]
 
-/-- Reformulation of `hasSum_nat_cosZeta` using `LSeriesHasSum`. -/
+/-- Reformulation of `hasSum_nat_sinZeta` using `LSeriesHasSum`. -/
 lemma LSeriesHasSum_sin (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     LSeriesHasSum (Real.sin <| 2 * π * a * ·) s (sinZeta a s) := by
   refine (hasSum_nat_sinZeta a hs).congr_fun (fun n ↦ ?_)
@@ -574,3 +578,5 @@ lemma sinZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -
   rw [← Gammaℂ, sinZeta, (by ring : 1 - s + 1 = 2 - s), div_eq_mul_inv, inv_Gammaℝ_two_sub hs,
     completedSinZeta_one_sub, hurwitzZetaOdd, ← div_eq_mul_inv, ← mul_div_assoc, ← mul_div_assoc,
     mul_comm]
+
+end HurwitzZeta

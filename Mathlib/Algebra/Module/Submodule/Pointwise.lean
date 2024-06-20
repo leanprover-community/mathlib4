@@ -35,11 +35,11 @@ These actions are available in the `Pointwise` locale.
 ## Implementation notes
 
 For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
-section `set_acting_on_submodules` does not have a counterpart in
-`Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+section `set_acting_on_submodules` does not have a counterpart in the file
+`Mathlib.Algebra.Group.Submonoid.Pointwise`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
-lemmas from `Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
 -/
 
 
@@ -182,7 +182,9 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
   rfl
 #align submodule.add_eq_sup Submodule.add_eq_sup
 
-@[simp]
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+@[simp, nolint simpNF]
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
@@ -311,7 +313,7 @@ to prove:
 - for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
 - `P 0`.
 
-To invoke this induction principal, use `induction x, hx using Submodule.set_smul_inductionOn` where
+To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`
 
 When we consider subset of `R` acting on `M`
@@ -379,8 +381,8 @@ instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 
--- 2024-03-31
-@[deprecated smul_mono_right] theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
+@[deprecated smul_mono_right (since := "2024-03-31")]
+theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
     s • p ≤ s • q :=
   smul_mono_right s le
 
@@ -393,16 +395,29 @@ lemma set_smul_le_of_le_le {s t : Set S} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
   le_trans (set_smul_mono_left _ le_set) <| smul_mono_right _ le_submodule
 
+lemma set_smul_eq_iSup [SMulCommClass S R M] (s : Set S) (N : Submodule R M) :
+    s • N = ⨆ (a ∈ s), a • N := by
+  refine Eq.trans (congrArg sInf ?_) csInf_Ici
+  simp_rw [← Set.Ici_def, iSup_le_iff, @forall_comm M]
+  exact Set.ext fun _ => forall₂_congr (fun _ _ => Iff.symm map_le_iff_le_comap)
+
+theorem set_smul_span [SMulCommClass S R M] (s : Set S) (t : Set M) :
+    s • span R t = span R (s • t) := by
+  simp_rw [set_smul_eq_iSup, smul_span, iSup_span, Set.iUnion_smul_set]
+
+theorem span_set_smul [SMulCommClass S R M] (s : Set S) (t : Set M) :
+    span R (s • t) = s • span R t := (set_smul_span s t).symm
+
 variable {s N} in
 /--
-Induction principal for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
+Induction principle for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
 to prove:
 - for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
 - for all `r` and `m ∈ s • N`, `P (r • n)`;
 - for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
 - `P 0`.
 
-To invoke this induction principal, use `induction x, hx using Submodule.set_smul_inductionOn` where
+To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`
 -/
 @[elab_as_elim]
@@ -525,17 +540,6 @@ protected def pointwiseSetMulAction [SMulCommClass R R M] :
         mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
-
--- TODO: `r • N` should be generalized to allow `r` to be an element of `S`.
-lemma set_smul_eq_iSup [SMulCommClass R R M] :
-    sR • N = ⨆ (r ∈ sR), r • N :=
-  set_smul_eq_of_le _ _ _
-    (fun r m hr hm => (show r • N ≤ _ by
-      rw [iSup_subtype', ← sSup_range]
-      exact le_sSup ⟨⟨r, hr⟩, rfl⟩) ⟨_, hm, rfl⟩) <| by
-    rw [iSup_subtype', ← sSup_range, sSup_le_iff]
-    rintro _ ⟨⟨x, hx⟩, rfl⟩ _ ⟨y, hy, rfl⟩
-    exact mem_set_smul_of_mem_mem (mem1 := hx) (mem2 := hy)
 
 -- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/

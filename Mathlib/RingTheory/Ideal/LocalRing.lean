@@ -81,8 +81,8 @@ theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPri
   of_unique_max_ideal
     (by
       rcases h with ⟨P, ⟨hPnonzero, hPnot_top, _⟩, hPunique⟩
-      refine' ⟨P, ⟨⟨hPnot_top, _⟩⟩, fun M hM => hPunique _ ⟨_, Ideal.IsMaximal.isPrime hM⟩⟩
-      · refine' Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM _
+      refine ⟨P, ⟨⟨hPnot_top, ?_⟩⟩, fun M hM => hPunique _ ⟨?_, Ideal.IsMaximal.isPrime hM⟩⟩
+      · refine Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM ?_
         exact (hPunique _ ⟨ne_bot_of_gt hPM, Ideal.IsMaximal.isPrime hM⟩).symm
       · rintro rfl
         exact hPnot_top (hM.1.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))
@@ -188,11 +188,14 @@ theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Functio
     apply f.isUnit_map)
 #align local_ring.of_surjective' LocalRing.of_surjective'
 
+theorem maximalIdeal_le_jacobson (I : Ideal R) :
+    LocalRing.maximalIdeal R ≤ I.jacobson :=
+  le_sInf fun _ ⟨_, h⟩ => le_of_eq (LocalRing.eq_maximalIdeal h).symm
+
 theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
-    I.jacobson = LocalRing.maximalIdeal R := by
-  apply le_antisymm
-  · exact sInf_le ⟨LocalRing.le_maximalIdeal h, LocalRing.maximalIdeal.isMaximal R⟩
-  · exact le_sInf fun J (hJ : I ≤ J ∧ J.IsMaximal) => le_of_eq (LocalRing.eq_maximalIdeal hJ.2).symm
+    I.jacobson = LocalRing.maximalIdeal R :=
+  le_antisymm (sInf_le ⟨le_maximalIdeal h, maximalIdeal.isMaximal R⟩)
+              (maximalIdeal_le_jacobson I)
 #align local_ring.jacobson_eq_maximal_ideal LocalRing.jacobson_eq_maximalIdeal
 
 end LocalRing

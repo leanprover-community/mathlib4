@@ -49,7 +49,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
 `-π / 2 < z.re < π / 2` and `z ≠ π / 2`). -/
 lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re)
     (h₂ : z.re ≤ π / 2) : cos z ≠ 0 := by
-  refine' cos_ne_zero_iff.mpr (fun k ↦ _)
+  refine cos_ne_zero_iff.mpr (fun k ↦ ?_)
   rw [ne_eq, ext_iff, not_and_or] at h₀ ⊢
   norm_cast at h₀ ⊢
   cases' h₀ with nr ni
@@ -120,7 +120,7 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
-  refine' this.prod_fiberwise fun k => _
+  refine this.prod_fiberwise fun k => ?_
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),

@@ -473,8 +473,8 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     haveI : MemTrivializationAtlas e := ⟨he⟩
     haveI : MemTrivializationAtlas e' := ⟨he'⟩
     rw [mem_smoothFiberwiseLinear_iff]
-    refine' ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
-      smoothOn_symm_coordChangeL IB e e', _⟩
+    refine ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
+      smoothOn_symm_coordChangeL IB e e', ?_⟩
     refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
     · simp only [e.symm_trans_source_eq e', FiberwiseLinear.partialHomeomorph, trans_toPartialEquiv,
         symm_toPartialEquiv]
@@ -633,12 +633,12 @@ instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E�
   smoothOn_coordChangeL := by
     rintro _ _ ⟨e₁, e₂, i₁, i₂, rfl⟩ ⟨e₁', e₂', i₁', i₂', rfl⟩
     rw [SmoothOn]
-    refine' ContMDiffOn.congr _ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
-    refine' ContMDiffOn.clm_prodMap _ _
-    · refine' (smoothOn_coordChangeL IB e₁ e₁').mono _
+    refine ContMDiffOn.congr ?_ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
+    refine ContMDiffOn.clm_prodMap ?_ ?_
+    · refine (smoothOn_coordChangeL IB e₁ e₁').mono ?_
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac
-    · refine' (smoothOn_coordChangeL IB e₂ e₂').mono _
+    · refine (smoothOn_coordChangeL IB e₂ e₂').mono ?_
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac
 #align bundle.prod.smooth_vector_bundle Bundle.Prod.smoothVectorBundle
@@ -703,7 +703,7 @@ theorem smoothVectorBundle : @SmoothVectorBundle
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { smoothOn_coordChangeL := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-      refine' (a.smoothOn_smoothCoordChange he he').congr _
+      refine (a.smoothOn_smoothCoordChange he he').congr ?_
       intro b hb
       ext v
       rw [a.smoothCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,

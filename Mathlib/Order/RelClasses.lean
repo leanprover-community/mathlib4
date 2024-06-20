@@ -3,7 +3,7 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 -/
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
@@ -564,23 +564,15 @@ theorem unbounded_of_isEmpty [IsEmpty α] {r : α → α → Prop} (s : Set α) 
 
 end Set
 
-namespace Prod
+namespace Order.Preimage
 
-instance isRefl_preimage_fst {r : α → α → Prop} [IsRefl α r] : IsRefl (α × α) (Prod.fst ⁻¹'o r) :=
-  ⟨fun a => refl_of r a.1⟩
+instance instIsRefl {r : α → α → Prop} [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
+  ⟨fun a => refl_of r (f a)⟩
 
-instance isRefl_preimage_snd {r : α → α → Prop} [IsRefl α r] : IsRefl (α × α) (Prod.snd ⁻¹'o r) :=
-  ⟨fun a => refl_of r a.2⟩
-
-instance isTrans_preimage_fst {r : α → α → Prop} [IsTrans α r] :
-    IsTrans (α × α) (Prod.fst ⁻¹'o r) :=
+instance instIsTrans {r : α → α → Prop} [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
   ⟨fun _ _ _ => trans_of r⟩
 
-instance isTrans_preimage_snd {r : α → α → Prop} [IsTrans α r] :
-    IsTrans (α × α) (Prod.snd ⁻¹'o r) :=
-  ⟨fun _ _ _ => trans_of r⟩
-
-end Prod
+end Order.Preimage
 
 /-! ### Strict-non strict relations -/
 
