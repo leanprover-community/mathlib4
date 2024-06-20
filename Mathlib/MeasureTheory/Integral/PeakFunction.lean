@@ -479,7 +479,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
       atTop (𝓝 (f 0)) := by
     apply tendsto_integral_comp_smul_smul_of_integrable hφ h'φ h If
     have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
-    have B : ContinuousAt (fun x ↦ x₀ - x) 0 := Continuous.continuousAt (by continuity)
+    have B : ContinuousAt (fun x ↦ x₀ - x) 0 := by fun_prop
     exact A.comp B
   simp only [f, sub_zero] at this
   convert this using 2 with c
