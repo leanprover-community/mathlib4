@@ -108,16 +108,19 @@ def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
 
 /-! # The trivial bimonoid -/
 
+/-- The trivial bimonoid object. -/
 @[simps!]
-def trivial : Bimon_ C := Comon_.trivial (C := Mon_ C)
+def trivial : Bimon_ C := Comon_.trivial (Mon_ C)
 
+/-- The bimonoid morphism from the trivial bimonoid to any bimonoid. -/
 @[simps]
 def trivial_to (A : Bimon_ C) : trivial C ⟶ A :=
   { hom := (default : Mon_.trivial C ⟶ A.X), }
 
+/-- The bimonoid morphism from any bimonoid to the trivial bimonoid. -/
 @[simps!]
-def to_trivial (A : Bimon_ C) : A ⟶ Comon_.trivial (Mon_ C) :=
-  (default : @Quiver.Hom (Comon_ (Mon_ C)) _ A _)
+def to_trivial (A : Bimon_ C) : A ⟶ trivial C :=
+  (default : @Quiver.Hom (Comon_ (Mon_ C)) _ A (Comon_.trivial (Mon_ C)))
 
 /-! # Additional lemmas -/
 
