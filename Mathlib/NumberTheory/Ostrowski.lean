@@ -240,7 +240,7 @@ lemma abs_p_eq_p_minus_t : ∃ (t : ℝ), 0 < t ∧ f p = p ^ (-t) := by
   If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value.
 -/
 theorem equiv_padic_of_bounded (bdd: ∀ n : ℕ, f n ≤ 1) (hf_nontriv : f ≠ 1) :
-∃ p, ∃ (hp : Fact (Nat.Prime p)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
+    ∃ p, ∃ (hp : Fact (Nat.Prime p)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   obtain ⟨p, hfp, hmin⟩ := p_exists bdd hf_nontriv
   have hprime : Prime p := p_is_prime p hfp.1 hfp.2 hmin
   use p
@@ -264,7 +264,7 @@ theorem equiv_padic_of_bounded (bdd: ∀ n : ℕ, f n ≤ 1) (hf_nontriv : f ≠
     rw [hnpm]
     simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, mul_ring_norm_eq_padic_norm,
       padicNorm.padicNorm_p_of_prime, Rat.cast_inv, Rat.cast_natCast, inv_pow]
-    rw [not_divisible_norm_one bdd p hfp.1 hfp.2 m hpm, h.2]
+    rw [not_divisible_norm_one bdd p hfp.1 hfp.2 hmin m hpm, h.2]
     rw [← padicNorm.nat_eq_one_iff] at hpm
     rw [hpm]
     simp only [mul_one, Rat.cast_one]
