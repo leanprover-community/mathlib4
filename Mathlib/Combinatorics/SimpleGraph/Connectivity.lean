@@ -2369,7 +2369,7 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
 
-lemma mem_coe_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
+lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
     (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
     (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
   rw [Set.mem_image]
