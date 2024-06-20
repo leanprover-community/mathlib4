@@ -32,6 +32,8 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
+open private Simp.dischargeUsingAssumption? from Lean.Meta.Tactic.Simp.Rewrite
+
 /-- Discharge strategy for the `field_simp` tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
@@ -61,7 +63,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
 
     -- Discharge strategy 4: Use the simplifier
     let ctx ← readThe Simp.Context
-    let usedTheorems := (← get).usedTheorems
+    let stats : Simp.Stats := { (← get) with }
 
     -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
     -- does not explicitly call `simp` recursively like this. It's unclear to me
@@ -69,10 +71,10 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
     --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
     --   3) some other reason?
-    let ⟨simpResult, usedTheorems'⟩ ←
+    let ⟨simpResult, stats'⟩ ←
       simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } #[(← Simp.getSimprocs)]
-        discharge usedTheorems
-    set {(← get) with usedTheorems := usedTheorems'}
+        discharge stats
+    set { (← get) with usedTheorems := stats'.usedTheorems, diag := stats'.diag }
     if simpResult.expr.isConstOf ``True then
       try
         return some (← mkOfEqTrue (← simpResult.getProof))

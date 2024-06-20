@@ -54,11 +54,9 @@ lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
 ### The Taylor polynomials of the logarithm
 -/
 
-open BigOperators
-
 /-- The `n`th Taylor polynomial of `log` at `1`, as a function `ℂ → ℂ` -/
 noncomputable
-def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j in Finset.range n, (-1) ^ (j + 1) * z ^ j / j
+def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j ∈ Finset.range n, (-1) ^ (j + 1) * z ^ j / j
 
 lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
   funext
@@ -76,7 +74,7 @@ lemma logTaylor_at_zero (n : ℕ) : logTaylor n 0 = 0 := by
   | succ n ih => simpa [logTaylor_succ, ih] using ne_or_eq n 0
 
 lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
-    HasDerivAt (logTaylor (n + 1)) (∑ j in Finset.range n, (-1) ^ j * z ^ j) z := by
+    HasDerivAt (logTaylor (n + 1)) (∑ j ∈ Finset.range n, (-1) ^ j * z ^ j) z := by
   induction n with
   | zero => simp [logTaylor_succ, logTaylor_zero, Pi.add_def, hasDerivAt_const]
   | succ n ih =>
@@ -89,7 +87,6 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
       simp_rw [div_eq_mul_inv]
       convert HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
       field_simp [Nat.cast_add_one_ne_zero n]
-      ring
     convert HasDerivAt.const_mul _ this using 2
     ring
 
@@ -106,7 +103,7 @@ lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane
     simp only [H, add_right_neg] at hz
     exact slitPlane_ne_zero hz rfl
   simp_rw [← mul_pow, neg_one_mul, geom_sum_eq hz', ← neg_add', div_neg, add_comm z]
-  field_simp [add_comm z 1 ▸ slitPlane_ne_zero hz]
+  field_simp [slitPlane_ne_zero hz]
 
 /-- Give a bound on `‖(1 + t * z)⁻¹‖` for `0 ≤ t ≤ 1` and `‖z‖ < 1`. -/
 lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz : ‖z‖ < 1) :

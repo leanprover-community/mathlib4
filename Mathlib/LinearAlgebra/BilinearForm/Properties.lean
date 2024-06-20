@@ -33,8 +33,6 @@ Bilinear form,
 -/
 
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 universe u v w
@@ -44,7 +42,6 @@ variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Modu
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 variable {M' M'' : Type*}
 variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
-
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap
@@ -55,8 +52,7 @@ namespace BilinForm
 
 
 /-- The proposition that a bilinear form is reflexive -/
-def IsRefl (B : BilinForm R M) : Prop :=
-  ∀ x y : M, B x y = 0 → B y x = 0
+def IsRefl (B : BilinForm R M) : Prop := LinearMap.IsRefl B
 #align bilin_form.is_refl LinearMap.BilinForm.IsRefl
 
 namespace IsRefl
@@ -94,8 +90,7 @@ theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
 #align bilin_form.is_refl_neg LinearMap.BilinForm.isRefl_neg
 
 /-- The proposition that a bilinear form is symmetric -/
-def IsSymm (B : BilinForm R M) : Prop :=
-  ∀ x y : M, B x y = B y x
+def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm B
 #align bilin_form.is_symm LinearMap.BilinForm.IsSymm
 
 namespace IsSymm
@@ -148,26 +143,18 @@ theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
 #align bilin_form.is_symm_iff_flip' LinearMap.BilinForm.isSymm_iff_flip
 
 /-- The proposition that a bilinear form is alternating -/
-def IsAlt (B : BilinForm R M) : Prop :=
-  ∀ x : M, B x x = 0
+def IsAlt (B : BilinForm R M) : Prop := LinearMap.IsAlt B
 #align bilin_form.is_alt LinearMap.BilinForm.IsAlt
 
 namespace IsAlt
 
-theorem self_eq_zero (H : B.IsAlt) (x : M) : B x x = 0 :=
-  H x
+theorem self_eq_zero (H : B.IsAlt) (x : M) : B x x = 0 := LinearMap.IsAlt.self_eq_zero H x
 #align bilin_form.is_alt.self_eq_zero LinearMap.BilinForm.IsAlt.self_eq_zero
 
-theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := by
-  have H1 : B₁ (x + y) (x + y) = 0 := self_eq_zero H (x + y)
-  rw [add_left, add_right, add_right, self_eq_zero H, self_eq_zero H, zero_add, add_zero,
-    add_eq_zero_iff_neg_eq] at H1
-  exact H1
+theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := LinearMap.IsAlt.neg H x y
 #align bilin_form.is_alt.neg_eq LinearMap.BilinForm.IsAlt.neg_eq
 
-theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := by
-  intro x y h
-  rw [← neg_eq H, h, neg_zero]
+theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := LinearMap.IsAlt.isRefl H
 #align bilin_form.is_alt.is_refl LinearMap.BilinForm.IsAlt.isRefl
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
@@ -407,7 +394,7 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     B.Nondegenerate ↔ LinearMap.ker B = ⊥ := by
   rw [LinearMap.ker_eq_bot']
   constructor <;> intro h
-  · refine' fun m hm => h _ fun x => _
+  · refine fun m hm => h _ fun x => ?_
     rw [hm]
     rfl
   · intro m hm
@@ -417,14 +404,13 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
 #align bilin_form.nondegenerate_iff_ker_eq_bot LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot
 
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
-    LinearMap.ker (BilinForm.toLin B) = ⊥ :=
-  nondegenerate_iff_ker_eq_bot.mp h
+    LinearMap.ker B = ⊥ := nondegenerate_iff_ker_eq_bot.mp h
 #align bilin_form.nondegenerate.ker_eq_bot LinearMap.BilinForm.Nondegenerate.ker_eq_bot
 
 theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
     Function.Injective B.compLeft := fun φ ψ h => by
   ext w
-  refine' eq_of_sub_eq_zero (b _ _)
+  refine eq_of_sub_eq_zero (b _ ?_)
   intro v
   rw [sub_left, ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
 #align bilin_form.comp_left_injective LinearMap.BilinForm.compLeft_injective
@@ -440,8 +426,7 @@ section FiniteDimensional
 variable [FiniteDimensional K V]
 
 /-- Given a nondegenerate bilinear form `B` on a finite-dimensional vector space, `B.toDual` is
-the linear equivalence between a vector space and its dual with the underlying linear map
-`B.toLin`. -/
+the linear equivalence between a vector space and its dual. -/
 noncomputable def toDual (B : BilinForm K V) (b : B.Nondegenerate) : V ≃ₗ[K] Module.Dual K V :=
   B.linearEquivOfInjective (LinearMap.ker_eq_bot.mp <| b.ker_eq_bot)
     Subspace.dual_finrank_eq.symm
@@ -498,7 +483,7 @@ theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Bas
 
 theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : B.IsSymm)
     (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 := by
-  rw [sym, apply_dualBasis_left]
+  rw [sym.eq, apply_dualBasis_left]
 #align bilin_form.apply_dual_basis_right LinearMap.BilinForm.apply_dualBasis_right
 
 @[simp]
@@ -507,8 +492,7 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
-  simp_rw [BilinForm.toLin_apply, apply_dualBasis_left, ← B.flip_apply,
-    apply_dualBasis_left, @eq_comm _ i j]
+  simp_rw [apply_dualBasis_left, ← B.flip_apply, apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]
 lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
@@ -528,10 +512,10 @@ end DualBasis
 section LinearAdjoints
 
 /-- Given bilinear forms `B₁, B₂` where `B₂` is nondegenerate, `symmCompOfNondegenerate`
-is the linear map `B₂.toLin⁻¹ ∘ B₁.toLin`. -/
+is the linear map `B₂ ∘ B₁`. -/
 noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B₂.Nondegenerate) :
     V →ₗ[K] V :=
-  (B₂.toDual b₂).symm.toLinearMap.comp (BilinForm.toLin B₁)
+  (B₂.toDual b₂).symm.toLinearMap.comp B₁
 #align bilin_form.symm_comp_of_nondegenerate LinearMap.BilinForm.symmCompOfNondegenerate
 
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
@@ -540,7 +524,6 @@ theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinF
   erw [symmCompOfNondegenerate]
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, DFunLike.coe_fn_eq]
   erw [LinearEquiv.apply_symm_apply (B₂.toDual b₂)]
-  rfl
 #align bilin_form.comp_symm_comp_of_nondegenerate_apply LinearMap.BilinForm.comp_symmCompOfNondegenerate_apply
 
 @[simp]

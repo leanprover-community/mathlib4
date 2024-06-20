@@ -29,7 +29,7 @@ example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule := by
   with_reducible_and_instances rfl
 
 -- fails `with_reducible_and_instances` #10906
-example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraComplexInstSemiringComplex := by
+example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
@@ -242,14 +242,14 @@ section ZMod
 variable {p : ℕ} [Fact p.Prime]
 
 example :
-    @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.instFieldZMod p)) =
+    @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.instField p)) =
       ZMod.commRing p := by
   with_reducible_and_instances rfl
 
 example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) := by
   with_reducible_and_instances rfl
 
-example : ZMod.commRing 0 = Int.instCommRingInt := by
+example : ZMod.commRing 0 = Int.instCommRing := by
   with_reducible_and_instances rfl
 
 end ZMod
@@ -267,7 +267,7 @@ section complexToReal
 
 -- fails `with_reducible_and_instances` #10906
 -- the two ways to get `Algebra ℝ ℂ` are definitionally equal
-example : (Algebra.id ℂ).complexToReal = Complex.instAlgebraComplexInstSemiringComplex := rfl
+example : (Algebra.id ℂ).complexToReal = Complex.instAlgebraOfReal := rfl
 
 -- fails `with_reducible_and_instances` #10906
 /- The complexification of an `ℝ`-algebra `A` (i.e., `ℂ ⊗[ℝ] A`) is a `ℂ`-algebra. Viewing this

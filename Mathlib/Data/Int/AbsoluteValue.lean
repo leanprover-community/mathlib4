@@ -3,10 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Int.Units
 import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import data.int.absolute_value from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"
@@ -34,6 +33,9 @@ theorem AbsoluteValue.map_units_int (abv : AbsoluteValue ℤ S) (x : ℤˣ) : ab
 theorem AbsoluteValue.map_units_intCast [Nontrivial R] (abv : AbsoluteValue R S) (x : ℤˣ) :
     abv ((x : ℤ) : R) = 1 := by rcases Int.units_eq_one_or x with (rfl | rfl) <;> simp
 #align absolute_value.map_units_int_cast AbsoluteValue.map_units_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias AbsoluteValue.map_units_int_cast := AbsoluteValue.map_units_intCast
 
 @[simp]
 theorem AbsoluteValue.map_units_int_smul (abv : AbsoluteValue R S) (x : ℤˣ) (y : R) :

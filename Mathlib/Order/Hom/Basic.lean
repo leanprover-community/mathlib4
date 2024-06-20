@@ -1234,7 +1234,7 @@ section LatticeIsos
 
 theorem OrderIso.map_bot' [LE α] [PartialOrder β] (f : α ≃o β) {x : α} {y : β} (hx : ∀ x', x ≤ x')
     (hy : ∀ y', y ≤ y') : f x = y := by
-  refine' le_antisymm _ (hy _)
+  refine le_antisymm ?_ (hy _)
   rw [← f.apply_symm_apply y, f.map_rel_iff]
   apply hx
 #align order_iso.map_bot' OrderIso.map_bot'
@@ -1264,7 +1264,7 @@ theorem OrderEmbedding.le_map_sup [SemilatticeSup α] [SemilatticeSup β] (f : �
 
 theorem OrderIso.map_inf [SemilatticeInf α] [SemilatticeInf β] (f : α ≃o β) (x y : α) :
     f (x ⊓ y) = f x ⊓ f y := by
-  refine' (f.toOrderEmbedding.map_inf_le x y).antisymm _
+  refine (f.toOrderEmbedding.map_inf_le x y).antisymm ?_
   apply f.symm.le_iff_le.1
   simpa using f.symm.toOrderEmbedding.map_inf_le (f x) (f y)
 #align order_iso.map_inf OrderIso.map_inf

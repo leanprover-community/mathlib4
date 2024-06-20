@@ -167,7 +167,7 @@ instance mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
   have : ∀ s : σ, ∃ c : C, Ideal.Quotient.mk I c = f (MvPolynomial.X s) := fun s =>
     Ideal.Quotient.mk_surjective _
   choose g hg using this
-  refine' ⟨MvPolynomial.aeval g, _⟩
+  refine ⟨MvPolynomial.aeval g, ?_⟩
   ext s
   rw [← hg, AlgHom.comp_apply, MvPolynomial.aeval_X]
   rfl
@@ -205,12 +205,13 @@ variable {R S : Type u} [CommRing R] [CommSemiring S]
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
 variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
     (hg : f.kerSquareLift.comp g = AlgHom.id R A) : FormallySmooth R A := by
   constructor
   intro C _ _ I hI i
   let l : P ⧸ (RingHom.ker f.toRingHom) ^ 2 →ₐ[R] C := by
-    refine' Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) _
+    refine Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) ?_
     have : RingHom.ker f ≤ I.comap (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) := by
       rintro x (hx : f x = 0)
       have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
@@ -239,9 +240,9 @@ theorem iff_split_surjection [FormallySmooth R P] :
       ⟨Submodule.Quotient.mk (hf x).choose, (hf x).choose_spec⟩
     have sqz : RingHom.ker f.kerSquareLift.toRingHom ^ 2 = 0 := by
       rw [AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square, Ideal.zero_eq_bot]
-    refine'
+    refine
       ⟨FormallySmooth.lift _ ⟨2, sqz⟩ (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom,
-        _⟩
+        ?_⟩
     ext x
     have :=
       (Ideal.quotientKerAlgEquivOfSurjective surj).toAlgHom.congr_arg
@@ -252,6 +253,7 @@ theorem iff_split_surjection [FormallySmooth R P] :
     -- rw [AlgEquiv.apply_symm_apply] at this
     erw [AlgEquiv.apply_symm_apply] at this
     conv_rhs => rw [← this, AlgHom.id_apply]
+    rfl
     -- Porting note: lean3 was not finished here:
     -- obtain ⟨y, e⟩ :=
     --   Ideal.Quotient.mk_surjective
@@ -279,7 +281,7 @@ instance base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   intro C _ _ I hI f
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
-  refine' ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) _, _⟩
+  refine ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) ?_, ?_⟩
   · exact FormallySmooth.lift I ⟨2, hI⟩ ((f.restrictScalars R).comp TensorProduct.includeRight)
   · apply AlgHom.restrictScalars_injective R
     apply TensorProduct.ext'
@@ -313,7 +315,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }
   use this
   apply AlgHom.coe_ringHom_injective
-  refine' IsLocalization.ringHom_ext M _
+  refine IsLocalization.ringHom_ext M ?_
   ext
   simp
 #align algebra.formally_smooth.of_is_localization Algebra.FormallySmooth.of_isLocalization
@@ -324,7 +326,7 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
   letI := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
   letI : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
   let f : Sₘ →ₐ[Rₘ] Q := by
-    refine' { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := _ }
+    refine { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := ?_ }
     intro r
     change
       (RingHom.comp (FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) : Sₘ →+* Q)
@@ -332,7 +334,7 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
           r =
         algebraMap _ _ r
     congr 1
-    refine' IsLocalization.ringHom_ext M _
+    refine IsLocalization.ringHom_ext M ?_
     rw [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq,
       AlgHom.comp_algebraMap]
   use f

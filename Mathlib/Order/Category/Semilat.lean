@@ -43,7 +43,7 @@ structure SemilatInfCat : Type (u + 1) where
 
 namespace SemilatSupCat
 
-instance : CoeSort SemilatSupCat (Type*) :=
+instance : CoeSort SemilatSupCat Type* :=
   ⟨SemilatSupCat.X⟩
 
 attribute [instance] isSemilatticeSup isOrderBot
@@ -98,7 +98,7 @@ end SemilatSupCat
 
 namespace SemilatInfCat
 
-instance : CoeSort SemilatInfCat (Type*) :=
+instance : CoeSort SemilatInfCat Type* :=
   ⟨SemilatInfCat.X⟩
 
 attribute [instance] isSemilatticeInf isOrderTop

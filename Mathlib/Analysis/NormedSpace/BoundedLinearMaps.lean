@@ -56,7 +56,7 @@ artifact, really.
 
 noncomputable section
 
-open BigOperators Topology
+open Topology
 
 open Filter (Tendsto)
 
@@ -113,13 +113,13 @@ theorem id : IsBoundedLinearMap 𝕜 fun x : E => x :=
 #align is_bounded_linear_map.id IsBoundedLinearMap.id
 
 theorem fst : IsBoundedLinearMap 𝕜 fun x : E × F => x.1 := by
-  refine' (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => _
+  refine (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => ?_
   rw [one_mul]
   exact le_max_left _ _
 #align is_bounded_linear_map.fst IsBoundedLinearMap.fst
 
 theorem snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
-  refine' (LinearMap.snd 𝕜 E F).isLinear.with_bound 1 fun x => _
+  refine (LinearMap.snd 𝕜 E F).isLinear.with_bound 1 fun x => ?_
   rw [one_mul]
   exact le_max_right _ _
 #align is_bounded_linear_map.snd IsBoundedLinearMap.snd
@@ -217,24 +217,18 @@ operation. -/
 theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
-      p.1.prod p.2 :=
-  { map_add := fun p₁ p₂ => by
-      ext1 m
-      rfl
-    map_smul := fun c p => by
-      ext1 m
-      rfl
-    bound :=
-      ⟨1, zero_lt_one, fun p => by
-        rw [one_mul]
-        apply ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) _
-        intro m
-        rw [ContinuousMultilinearMap.prod_apply, norm_prod_le_iff]
-        constructor
-        · exact (p.1.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_fst_le p)
-            (Finset.prod_nonneg fun i _ => norm_nonneg _))
-        · exact (p.2.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_snd_le p)
-            (Finset.prod_nonneg fun i _ => norm_nonneg _))⟩ }
+      p.1.prod p.2 where
+  map_add p₁ p₂ := by ext : 1; rfl
+  map_smul c p := by ext : 1; rfl
+  bound := by
+    refine ⟨1, zero_lt_one, fun p ↦ ?_⟩
+    rw [one_mul]
+    apply ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) _
+    intro m
+    rw [ContinuousMultilinearMap.prod_apply, norm_prod_le_iff]
+    constructor
+    · exact (p.1.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_fst_le p) <| by positivity)
+    · exact (p.2.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_snd_le p) <| by positivity)
 #align is_bounded_linear_map_prod_multilinear isBoundedLinearMap_prod_multilinear
 
 /-- Given a fixed continuous linear map `g`, associating to a continuous multilinear map `f` the
@@ -242,11 +236,11 @@ continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operati
 theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
     IsBoundedLinearMap 𝕜 fun f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F =>
       f.compContinuousLinearMap fun _ => g := by
-  refine'
+  refine
     IsLinearMap.with_bound
       ⟨fun f₁ f₂ => by ext; rfl,
         fun c f => by ext; rfl⟩
-      (‖g‖ ^ Fintype.card ι) fun f => _
+      (‖g‖ ^ Fintype.card ι) fun f => ?_
   apply ContinuousMultilinearMap.opNorm_le_bound _ _ _
   · apply_rules [mul_nonneg, pow_nonneg, norm_nonneg]
   intro m
@@ -558,7 +552,7 @@ spaces is an open subset of the space of linear maps between them.
 
 protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F)) := by
   rw [isOpen_iff_mem_nhds, forall_mem_range]
-  refine' fun e => IsOpen.mem_nhds _ (mem_range_self _)
+  refine fun e => IsOpen.mem_nhds ?_ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
   have h_O : Continuous O := isBoundedBilinearMap_comp.continuous_right
   convert show IsOpen (O ⁻¹' { x | IsUnit x }) from Units.isOpen.preimage h_O using 1

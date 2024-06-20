@@ -60,12 +60,12 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
   · rw [codisjoint_iff_le_sup]
     intro x _hx
     obtain hp | hn := (le_refl (0 : ℤ)).le_or_le x
-    exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
-    exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
+    · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
+    · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 #align counterexample.with_sign.is_compl Counterexample.withSign.isCompl
 
 def withSign.independent : CompleteLattice.Independent withSign := by
-  refine'
+  apply
     (CompleteLattice.independent_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
   intro i
   fin_cases i <;> simp

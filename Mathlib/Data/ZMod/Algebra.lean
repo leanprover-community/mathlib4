@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 
 #align_import data.zmod.algebra from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -26,8 +26,7 @@ variable {n : ℕ} (m : ℕ) [CharP R m]
 
 /-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n`.
 See note [reducible non-instances]. -/
-@[reducible]
-def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
+abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
   { ZMod.castHom h R with
     smul := fun a r => cast a * r
     commutes' := fun a r =>
@@ -43,8 +42,7 @@ end
 /-- The `zmod p`-algebra structure on a ring of characteristic `p`. This is not an
 instance since it creates a diamond with `algebra.id`.
 See note [reducible non-instances]. -/
-@[reducible]
-def algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
+abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
 #align zmod.algebra ZMod.algebra
 

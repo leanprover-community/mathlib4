@@ -25,17 +25,13 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
 
--- Porting note: these imports are no longer needed
---import Mathlib.Tactic.ApplyFun
---import Mathlib.Tactic.Squeeze
-
 noncomputable section
 
 universe u v w
 
 namespace Matrix
 
-open BigOperators Finset Matrix Polynomial
+open Finset Matrix Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable {m n : Type*} [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n]
@@ -112,8 +108,8 @@ theorem charpoly_reindex (e : n ≃ m)
 
 lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
     (M.map f).charpoly = M.charpoly.map f := by
-  rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det]
-  rfl
+  rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det,
+    RingHom.mapMatrix_apply]
 
 @[simp]
 lemma charpoly_fromBlocks_zero₁₂ :

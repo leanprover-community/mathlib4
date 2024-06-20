@@ -26,7 +26,7 @@ irreducible factors over `L` have degree `1`.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 universe u v w
 
@@ -144,9 +144,9 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.splits_X Polynomial.splits_X
 
 theorem splits_prod {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
-    (∀ j ∈ t, (s j).Splits i) → (∏ x in t, s x).Splits i := by
+    (∀ j ∈ t, (s j).Splits i) → (∏ x ∈ t, s x).Splits i := by
   classical
-  refine' Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => _
+  refine Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => ?_
   rw [Finset.forall_mem_insert] at ht; rw [Finset.prod_insert hat]
   exact splits_mul i ht.1 (ih ht.2)
 #align polynomial.splits_prod Polynomial.splits_prod
@@ -265,12 +265,12 @@ theorem splits_mul_iff {f g : K[X]} (hf : f ≠ 0) (hg : g ≠ 0) :
 #align polynomial.splits_mul_iff Polynomial.splits_mul_iff
 
 theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
-    (∀ j ∈ t, s j ≠ 0) → ((∏ x in t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
+    (∀ j ∈ t, s j ≠ 0) → ((∏ x ∈ t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
   classical
-  refine'
+  refine
     Finset.induction_on t (fun _ =>
         ⟨fun _ _ h => by simp only [Finset.not_mem_empty] at h, fun _ => splits_one i⟩)
-      fun a t hat ih ht => _
+      fun a t hat ih ht => ?_
   rw [Finset.forall_mem_insert] at ht ⊢
   rw [Finset.prod_insert hat, splits_mul_iff i ht.1 (Finset.prod_ne_zero_iff.2 ht.2), ih ht.2]
 #align polynomial.splits_prod_iff Polynomial.splits_prod_iff
@@ -373,7 +373,7 @@ theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
     (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
     f ∈ Polynomial.lifts (algebraMap R K) := by
   rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
-  refine' Subring.multiset_prod_mem _ _ fun P hP => _
+  refine Subring.multiset_prod_mem _ _ fun P hP => ?_
   obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
   exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
 #align polynomial.mem_lift_of_splits_of_roots_mem_range Polynomial.mem_lift_of_splits_of_roots_mem_range
@@ -395,7 +395,7 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
       rw [irreducible_iff_prime] at hp
       rw [hs, ← Multiset.prod_toList] at hdp
       obtain hd | hd := hp.2.2 _ _ hdp
-      · refine' (hp.2.1 <| isUnit_of_dvd_unit hd _).elim
+      · refine (hp.2.1 <| isUnit_of_dvd_unit hd ?_).elim
         exact isUnit_C.2 ((leadingCoeff_ne_zero.2 hf0).isUnit.map i)
       · obtain ⟨q, hq, hd⟩ := hp.dvd_prod_iff.1 hd
         obtain ⟨a, _, rfl⟩ := Multiset.mem_map.1 (Multiset.mem_toList.1 hq)

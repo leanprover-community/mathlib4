@@ -110,8 +110,8 @@ theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
 #align finset.inf_sigma Finset.inf_sigma
 
 theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
-    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
-  by simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
+    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ := by
+  simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
 
 theorem _root_.biSup_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : ∀ i, α i → β) : ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=
@@ -168,7 +168,7 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
       rw [sigmaLift, dif_pos rfl, mem_map]
       exact ⟨_, hx, by simp [Sigma.ext_iff]⟩
   · rw [sigmaLift, dif_neg h]
-    refine' iff_of_false (not_mem_empty _) _
+    refine iff_of_false (not_mem_empty _) ?_
     rintro ⟨⟨⟩, ⟨⟩, _⟩
     exact h rfl
 #align finset.mem_sigma_lift Finset.mem_sigmaLift
@@ -176,7 +176,7 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
 theorem mk_mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (i : ι) (a : α i) (b : β i)
     (x : γ i) : (⟨i, x⟩ : Sigma γ) ∈ sigmaLift f ⟨i, a⟩ ⟨i, b⟩ ↔ x ∈ f a b := by
   rw [sigmaLift, dif_pos rfl, mem_map]
-  refine' ⟨_, fun hx => ⟨_, hx, rfl⟩⟩
+  refine ⟨?_, fun hx => ⟨_, hx, rfl⟩⟩
   rintro ⟨x, hx, _, rfl⟩
   exact hx
 #align finset.mk_mem_sigma_lift Finset.mk_mem_sigmaLift
