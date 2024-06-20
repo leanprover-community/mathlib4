@@ -384,6 +384,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
           ⟨x, by
             rw [pullback_fst_range]
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩
+        continuous_invFun := by continuity
         left_inv := fun ⟨_, _⟩ => rfl
         right_inv := fun x => rfl }
   convert (isoOfHomeo esto).isIso_hom
@@ -398,6 +399,7 @@ theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (h
           ⟨x, by
             rw [pullback_snd_range]
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩
+        continuous_invFun := by continuity
         left_inv := fun ⟨_, _⟩ => rfl
         right_inv := fun x => rfl }
   convert (isoOfHomeo esto).isIso_hom
