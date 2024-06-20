@@ -22,8 +22,8 @@ and say `Q` is a maximal ideal of `B` dividing `P` of `A`. This file contains th
 construction of an element `Frob Q` in `Gal(L/K)`, and a proof that
 modulo `Q` it raises elements to the power `q := |A/P|`.
 
-More generally, our theory works in the "ABKL" setting, with `B/A` a finite extension of
-Dedekind domains, and the corresponding extension `L/K` of fields of fractions is
+More generally, our theory works in the "AKLB" setting, with `B/A` a finite extension of
+integral domains, and the corresponding extension `L/K` of fields of fractions is
 assumed finite and Galois. Given `Q/P` a compatible pair of maximal ideals, under the
 assumption that `A/P` is a finite field of size `q`, we construct an element `Frob_Q`
 in `Gal(L/K)` and prove:
@@ -80,21 +80,6 @@ i.e. supply the finiteness typeclasses and descent hypothesis in this case.
 
 variable (A : Type*) [CommRing A] {B : Type*} [CommRing B] [Algebra A B]
 
--- -- PR #13294
--- variable {α : Type*} in
--- instance Ideal.pointwiseMulSemiringAction
---     [Monoid α] [MulSemiringAction α B] : MulSemiringAction α (Ideal B) where
---   smul a I := Ideal.map (MulSemiringAction.toRingHom _ _ a) I
---   one_smul I :=
---     congr_arg (I.map ·) (RingHom.ext <| one_smul α) |>.trans I.map_id
---   mul_smul _a₁ _a₂ I :=
---     congr_arg (I.map ·) (RingHom.ext <| mul_smul _ _) |>.trans (I.map_map _ _).symm
---   smul_one a := by simp only [Ideal.one_eq_top]; exact Ideal.map_top _
---   smul_mul a I J := Ideal.map_mul _ I J
---   smul_add a I J := Ideal.map_sup _ I J
---   smul_zero a := Ideal.map_bot
--- 3993
-
 open scoped Pointwise -- to get Galois action on ideals
 
 -- should be in #13294?
@@ -104,6 +89,9 @@ lemma Ideal.map_eq_comap_symm [Group α] [MulSemiringAction α B] (J : Ideal B) 
   J.map_comap_of_equiv (MulSemiringAction.toRingEquiv α B σ)
 
 namespace ArithmeticFrobenius
+
+namespace Abstract -- stuff in here is auxiliary variables etc, general stuff which will
+-- work in number field and function field settings.
 /-
 
 ## Auxiliary variables
@@ -128,7 +116,8 @@ variable [Fintype (B ≃ₐ[A] B)] [DecidableEq (Ideal B)]
 /-- An element `y` of `B` exists, which is congruent to `b` mod `Q`
 and to 0 mod all Galois conjugates of `Q` (if any).-/
 lemma exists_y :
-    ∃ y : B, (y : B ⧸ Q) = g Q ∧ ∀ Q' : Ideal B, Q' ∈ MulAction.orbit (B ≃ₐ[A] B) Q → Q' ≠ Q → y ∈ Q' := by
+    ∃ y : B, (y : B ⧸ Q) = g Q ∧ ∀ Q' :
+    Ideal B, Q' ∈ MulAction.orbit (B ≃ₐ[A] B) Q → Q' ≠ Q → y ∈ Q' := by
   let O : Set (Ideal B) := MulAction.orbit (B ≃ₐ[A] B) Q
   have hO' : Finite (O : Type _) := Set.finite_range _
   have hmax (I : O) : Ideal.IsMaximal (I : Ideal B) := by
@@ -227,18 +216,20 @@ lemma m_spec' : (m A Q isGalois).map (algebraMap A B) = F A Q := by
 -- Amelia's trick to insert "let P be the ideal under Q" into the typeclass system
 variable (P : Ideal A) [P.IsMaximal] [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A⧸P) (B⧸Q)]
 
--- want to move from eval₂?
-lemma m.mod_P_y_eq_zero : (m A Q isGalois).eval₂ (algebraMap A (B⧸Q)) (algebraMap B (B⧸Q) (y A Q)) = 0 := by
-  rw [show algebraMap A (B⧸Q) = (algebraMap B (B⧸Q)).comp (algebraMap A B) from IsScalarTower.algebraMap_eq A B (B ⧸ Q)]
-  rw [←eval₂_map]
-  change eval₂ _ _ (m A Q isGalois : B[X]) = _
-  simp [m_spec A Q isGalois, eval_map, F.y_eq_zero]
+-- -- want to move from eval₂?
+-- lemma m.mod_P_y_eq_zero : (m A Q isGalois).eval₂ (algebraMap A (B⧸Q)) (algebraMap B (B⧸Q) (y A Q)) = 0 := by
+--   rw [show algebraMap A (B⧸Q) = (algebraMap B (B⧸Q)).comp (algebraMap A B) from IsScalarTower.algebraMap_eq A B (B ⧸ Q)]
+--   rw [←eval₂_map]
+--   change eval₂ _ _ (m A Q isGalois : B[X]) = _
+--   simp [m_spec A Q isGalois, eval_map, F.y_eq_zero]
+
+-- should be elsewhere
+lemma _root_.Algebra.cast_eq_algebraMap {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
+    (a : A) : (a : B) = algebraMap A B a := rfl
 
 lemma m.y_mod_P_eq_zero : Polynomial.aeval (↑(y A Q) : B ⧸ Q) (m A Q isGalois) = 0 := by
-  rw [← aeval_map_algebraMap B, m_spec']
-  -- why can't I do this with a `rw`?
-  change aeval (algebraMap B (B⧸Q) (y A Q)) _ = _
-  rw [aeval_algebraMap_apply, coe_aeval_eq_eval, F.y_eq_zero A Q, map_zero]
+  rw [← aeval_map_algebraMap B, m_spec', Algebra.cast_eq_algebraMap, aeval_algebraMap_apply, coe_aeval_eq_eval,
+    F.y_eq_zero A Q, map_zero]
 
 
 noncomputable abbrev mmodP := (m A Q isGalois).map (algebraMap A (A⧸P))
@@ -252,38 +243,59 @@ open scoped Polynomial
 --   rw [CharP.charP_iff_prime_eq_zero h₁]
 --   simpa only [ne_eq, PNat.ne_zero, not_false_eq_true, pow_eq_zero_iff] using this
 
--- mathlib
-lemma _root_.Polynomial.eval₂_pow_card (k : Type*) [Field k] [Fintype k] (f : k[X])
+-- -- mathlib
+-- lemma _root_.Polynomial.eval₂_pow_card (k : Type*) [Field k] [Fintype k] (f : k[X])
+--     (L : Type*) [CommRing L] [Algebra k L]
+--     (t : L) : f.eval₂ (algebraMap k L) (t^(Fintype.card k)) =
+--               (f.eval₂ (algebraMap k L) t)^(Fintype.card k) := by
+--   simp_rw [← Polynomial.aeval_def] -- `eval₂ (algebraMap k L)` is just `aeval`
+--   rw [← map_pow, ← FiniteField.expand_card, Polynomial.expand_aeval]
+
+lemma _root_.Polynomial.aeval_pow_card (k : Type*) [Field k] [Fintype k] (f : k[X])
     (L : Type*) [CommRing L] [Algebra k L]
-    (t : L) : f.eval₂ (algebraMap k L) (t^(Fintype.card k)) =
-              (f.eval₂ (algebraMap k L) t)^(Fintype.card k) := by
-  simp_rw [← Polynomial.aeval_def] -- `eval₂ (algebraMap k L)` is just `aeval`
+    (t : L) : aeval (t^(Fintype.card k)) f =
+              (aeval t f)^(Fintype.card k) := by
   rw [← map_pow, ← FiniteField.expand_card, Polynomial.expand_aeval]
 
 variable [Fintype (A⧸P)]
 -- (m-bar)(y^q)=0 in B/Q
-lemma m.mod_P_y_pow_q_eq_zero :
-    (m A Q isGalois).eval₂ (algebraMap A (B⧸Q)) ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P)))
-    = 0 := by
-  suffices ((m A Q isGalois).map (algebraMap A (A⧸P))).eval₂ (algebraMap (A⧸P) (B⧸Q))
-    ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) = 0 by
-    rwa [eval₂_map, ← IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q)] at this
+-- lemma m.mod_P_y_pow_q_eq_zero :
+--     (m A Q isGalois).eval₂ (algebraMap A (B⧸Q)) ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P)))
+--     = 0 := by
+--   suffices ((m A Q isGalois).map (algebraMap A (A⧸P))).eval₂ (algebraMap (A⧸P) (B⧸Q))
+--     ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) = 0 by
+--     rwa [eval₂_map, ← IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q)] at this
+--   let foobar : Field (A⧸P) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient P).mp ‹_›).toField
+--   rw [eval₂_pow_card, eval₂_map, ← IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q), m.mod_P_y_eq_zero, zero_pow]
+--   exact Fintype.card_ne_zero
+
+lemma m.mod_P_y_pow_q_eq_zero' :
+    aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P)))  (m A Q isGalois) = 0 := by
+  rw [← aeval_map_algebraMap (B⧸Q)]
   let foobar : Field (A⧸P) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient P).mp ‹_›).toField
-  rw [eval₂_pow_card, eval₂_map, ← IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q), m.mod_P_y_eq_zero, zero_pow]
+  rw [aeval_map_algebraMap, ← aeval_map_algebraMap (A⧸P), aeval_pow_card,
+    ← Algebra.cast_eq_algebraMap, aeval_map_algebraMap, m.y_mod_P_eq_zero, zero_pow]
   exact Fintype.card_ne_zero
 
-lemma F.mod_Q_y_pow_q_eq_zero : (F A Q).eval₂ (algebraMap B (B⧸Q)) ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) = 0 := by
-  rw [← m_spec' A Q isGalois, eval₂_map]--, m.mod_P_y_pow_q_eq_zero]
-  rw [← IsScalarTower.algebraMap_eq A B (B ⧸ Q), m.mod_P_y_pow_q_eq_zero]
+-- lemma F.mod_Q_y_pow_q_eq_zero : (F A Q).eval₂ (algebraMap B (B⧸Q)) ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) = 0 := by
+--   rw [← m_spec' A Q isGalois, eval₂_map]--, m.mod_P_y_pow_q_eq_zero]
+--   rw [← IsScalarTower.algebraMap_eq A B (B ⧸ Q), m.mod_P_y_pow_q_eq_zero]
+
+lemma F.mod_Q_y_pow_q_eq_zero' : aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) (F A Q) = 0 := by
+  rw [← m_spec' A Q isGalois, aeval_map_algebraMap, m.mod_P_y_pow_q_eq_zero']
+
+lemma _root_.Polynomial.aeval_finset_prod.{u, v, y} {R : Type u} {S : Type v} {ι : Type y}
+    [CommSemiring R] [CommSemiring S] [Algebra R S] (s : Finset ι) (g : ι → R[X]) (x : S) :
+  aeval x (∏ i ∈ s, g i) = (∏ i ∈ s, aeval x (g i)) := eval₂_finset_prod (algebraMap R S) s g x
 
 lemma exists_Frob : ∃ σ : B ≃ₐ[A] B, σ (y A Q) - (y A Q) ^ (Fintype.card (A⧸P)) ∈ Q := by
-  have := F.mod_Q_y_pow_q_eq_zero A Q isGalois P
+  have := F.mod_Q_y_pow_q_eq_zero' A Q isGalois P
   rw [F_spec] at this
-  rw [eval₂_finset_prod] at this
+  rw [aeval_finset_prod] at this
   rw [Finset.prod_eq_zero_iff] at this
   obtain ⟨σ, -, hσ⟩ := this
   use σ
-  simp only [Ideal.Quotient.algebraMap_eq, AlgEquiv.smul_def, eval₂_sub, eval₂_X, eval₂_C,
+  simp only [Ideal.Quotient.algebraMap_eq, AlgEquiv.smul_def, map_sub, aeval_X, aeval_C,
     sub_eq_zero] at hσ
   exact (Submodule.Quotient.eq Q).mp (hσ.symm)
 
