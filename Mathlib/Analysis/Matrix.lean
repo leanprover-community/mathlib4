@@ -76,7 +76,6 @@ protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
--- Porting note (#10756): new theorem (along with all the uses of this lemma below)
 theorem norm_def (A : Matrix m n α) : ‖A‖ = ‖fun i j => A i j‖ := rfl
 
 /-- The norm of a matrix is the sup of the sup of the nnnorm of the entries -/
@@ -84,7 +83,6 @@ lemma norm_eq_sup_sup_nnnorm (A : Matrix m n α) :
     ‖A‖ = Finset.sup Finset.univ fun i ↦ Finset.sup Finset.univ fun j ↦ ‖A i j‖₊ := by
   simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def]
 
--- Porting note (#10756): new theorem (along with all the uses of this lemma below)
 theorem nnnorm_def (A : Matrix m n α) : ‖A‖₊ = ‖fun i j => A i j‖₊ := rfl
 
 theorem norm_le_iff {r : ℝ} (hr : 0 ≤ r) {A : Matrix m n α} : ‖A‖ ≤ r ↔ ∀ i j, ‖A i j‖ ≤ r := by
@@ -286,7 +284,7 @@ theorem linfty_opNNNorm_def (A : Matrix m n α) :
 
 @[deprecated (since := "2024-02-02")] alias linfty_op_nnnorm_def := linfty_opNNNorm_def
 
-@[simp, nolint simpNF] -- Porting note: linter times out
+@[simp]
 theorem linfty_opNNNorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   simp

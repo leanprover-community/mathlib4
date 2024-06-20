@@ -431,16 +431,22 @@ example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
 example (a : E) (h : a = a) : 1 ≤ 2 := by nlinarith
 end
 
+-- Note: This takes a huge amount of time with the Fourier-Motzkin oracle
+example (a1 a2 a3 b1 b2 b3 c1 c2 c3 d1 d2 d3 : ℕ)
+    (h1 : a1 + a2 + a3 = b1 + b2 + b3)
+    (h2 : c1 + c2 + c3 = d1 + d2 + d3) :
+    a1 * c1 + a2 * c1 + a3 * c1 + a1 * c2 + a2 * c2 + a3 * c2 + a1 * c3 + a2 * c3 + a3 * c3 =
+    b1 * d1 + b2 * d1 + b3 * d1 + b1 * d2 + b2 * d2 + b3 * d2 + b1 * d3 + b2 * d3 + b3 * d3 := by
+  nlinarith --(config := { oracle := some .fourierMotzkin })
+
+-- This should not be slower than the example below with the Fourier-Motzkin oracle
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
   nlinarith
 
--- note: faster than the simplex algorithm (the default oracle for `linarith`)
--- TODO: make the simplex algorithm able to work with sparse matrices. This should speed up
--- `nlinarith` because it passes large and sparse matrices to the oracle.
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
-  nlinarith (config := { oracle := some .fourierMotzkin })
+  nlinarith (config := { oracle := .fourierMotzkin })
 
 section
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
@@ -663,7 +669,7 @@ example (a b c d e : ℚ)
     (hd : a + b + c + 2 * d + e = 7)
     (he : a + b + c + d + 2 * e = 8) :
     e = 3 := by
-  linarith (config := { oracle := some .fourierMotzkin })
+  linarith (config := { oracle := .fourierMotzkin })
 
 -- TODO: still broken with Fourier-Motzkin
 /--
@@ -696,4 +702,4 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     -x8 + x7 - x5 + x1 < 0 →
     x7 - x5 < 0 → False := by
   intros
-  linarith (config := { oracle := some .fourierMotzkin })
+  linarith (config := { oracle := .fourierMotzkin })
