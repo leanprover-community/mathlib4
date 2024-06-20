@@ -14,15 +14,16 @@ I will explain the proof of Riesz' Theorem to the computer.
 This theorem asserts that if a real normed vector space has a compact ball, then the space
 is finite-dimensional.
 
-We prove the contrapositive: if the space is not finite-dimensional, we will construct a sequence
-in the ball of radius `2` whose points are all at distance at least `1`, contradicting the
-compactness of the ball.
+We prove the contrapositive: if the space is not finite-dimensional, we will construct
+a sequence in the ball of radius `2` whose points are all at distance at least `1`,
+contradicting the compactness of the ball.
 
-We construct the sequence by induction. Assume that the first `n` points `xᵢ` have been constructed.
-They span a subspace `F` which is finite-dimensional and therefore complete (by equivalence of
-norms), hence closed. Let `x ∉ F`. Denote by `d` its distance to `F` (which is positive by
-closedness). Let us choose `y ∈ F` with `dist x y < 2 d`. I claim that `d⁻¹ * (x - y)` can be
-chosen as the next point of the sequence. Its norm is indeed at most `2`. Moreover, as `x∩ ∈ F`, we
+We construct the sequence by induction. Assume that the first `n` points `xᵢ`
+have been constructed. They span a subspace `F` which is finite-dimensional and
+therefore complete (by equivalence of norms), hence closed. Let `x ∉ F`. Denote by `d`
+its distance to `F` (which is positive by closedness). Let us choose `y ∈ F`
+with `dist x y < 2 d`. I claim that `d⁻¹ * (x - y)` can be chosen as the next point
+of the sequence. Its norm is indeed at most `2`. Moreover, as `x∩ ∈ F`, we
 have `y + d * xᵢ ∈ F`. Therefore,
 `d ≤ dist x (y + d * xᵢ)`, i.e., `d ≤ ‖d * (d⁻¹ * (x - y) - xᵢ)‖`,
 which gives `1 ≤ ‖d⁻¹ * (x - y) - xᵢ‖` as claimed.
@@ -35,22 +36,23 @@ open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- Given a closed subspace which is not the whole space, one can find a point with norm at most `2`
-which is at distance `1` of every point in the subspace. -/
+/-- Given a closed subspace which is not the whole space, one can find a point with
+norm at most `2` which is at distance `1` of every point in the subspace. -/
 lemma exists_point_away_from_subspace
     (F : Submodule ℝ E) (hF : ∃ x, x ∉ F) (hFc : IsClosed (F : Set E)) :
     ∃ (z : E), ‖z‖ < 2 ∧ (∀ y ∈ F, 1 ≤ ‖z - y‖) := by
-  obtain ⟨x, x_pas_dans_F⟩ := hF
+  obtain ⟨x, x_not_in_F⟩ := hF
   let d := infDist x F
   have hFn : (F : Set E).Nonempty := ⟨0, F.zero_mem⟩
-  have d_pos : 0 < d := (IsClosed.not_mem_iff_infDist_pos hFc hFn).1 x_pas_dans_F
+  have d_pos : 0 < d := (IsClosed.not_mem_iff_infDist_pos hFc hFn).1 x_not_in_F
   obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < 2 * d := by
     apply (infDist_lt_iff hFn).1
-    exact lt_two_mul_self d_pos
-    -- linarith
+    -- exact lt_two_mul_self d_pos
+    linarith
   let z := d⁻¹ • (x - y₀)
   have Nz : ‖z‖ < 2 := by
-    simpa [z, norm_smul, abs_of_nonneg d_pos.le, ← div_eq_inv_mul, div_lt_iff d_pos, ← dist_eq_norm]
+    simpa [z, norm_smul, abs_of_nonneg d_pos.le, ← div_eq_inv_mul, div_lt_iff d_pos,
+      ← dist_eq_norm]
   have I : ∀ y ∈ F, 1 ≤ ‖z - y‖ := by
     intro y hyF
     have A : d ≤ dist x (y₀ + d • y) := by
@@ -65,8 +67,9 @@ lemma exists_point_away_from_subspace
       _ = ‖z - y‖                    := by simp_rw [z, smul_sub, smul_smul, B, one_smul]
   exact ⟨z, Nz, I⟩
 
-/-- In an infinite-dimensional real normed vector space, given a finite number of points, one can
-find a point with norm at most `2` whose distance to all these points is at least `1`. -/
+/-- In an infinite-dimensional real normed vector space, given a finite number of
+points, one can find a point with norm at most `2` whose distance to all these
+points is at least `1`. -/
 lemma exists_point_away_from_finite
     (s : Set E) (hs : Set.Finite s) (h : ¬(FiniteDimensional ℝ E)) :
     ∃ (z : E), ‖z‖ < 2 ∧ (∀ y ∈ s, 1 ≤ ‖z - y‖) := by
@@ -83,8 +86,8 @@ lemma exists_point_away_from_finite
     exists_point_away_from_subspace F hF Fclosed
   exact ⟨x, x_lt_2, fun y hy ↦ hx _ (Submodule.subset_span hy)⟩
 
-/-- In an infinite-dimensional real normed vector space, one can find a sequence of points of norm
-at most `2`, all of them separated by at least `1`. -/
+/-- In an infinite-dimensional real normed vector space, one can find a sequence
+of points of norm at most `2`, all of them separated by at least `1`. -/
 lemma exists_sequence_separated (h : ¬(FiniteDimensional ℝ E)) :
     ∃ (u : ℕ → E), (∀ n, ‖u n‖ < 2) ∧ (∀ m n, m ≠ n → 1 ≤ ‖u n - u m‖) := by
   have : IsSymm E (fun (x y : E) ↦ 1 ≤ ‖y - x‖) := by
@@ -97,8 +100,10 @@ lemma exists_sequence_separated (h : ¬(FiniteDimensional ℝ E)) :
   intro s _hs
   exact exists_point_away_from_finite (s : Set E) s.finite_toSet h
 
-/-- Consider a real normed  vector space in which the closed ball of radius `2` is compact. Then
-this space is finite-dimensional. -/
+#lint
+
+/-- Consider a real normed  vector space in which the closed ball of radius `2`
+is compact. Then this space is finite-dimensional. -/
 theorem my_riesz_version (h : IsCompact (closedBall (0 : E) 2)) :
     FiniteDimensional ℝ E := by
   by_contra hfin
@@ -121,18 +126,21 @@ theorem my_riesz_version (h : IsCompact (closedBall (0 : E) 2)) :
     exact (φmono (Nat.lt_succ_self N)).ne
   _ < 1 := hN (N+1) (Nat.le_succ N)
 
-/- The proof is over. It takes roughly 100 lines, 10 times more than the informal proof. This is
-quite typical.  -/
+/- The proof is over. It takes roughly 100 lines, 10 times more than the informal
+proof. This is quite typical.  -/
 
 theorem the_real_riesz_version
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace 𝕜] {r : ℝ}
     (r_pos : 0 < r)  {c : F} (hc : IsCompact (closedBall c r)) :
     FiniteDimensional 𝕜 F :=
-  .of_isCompact_closedBall 𝕜 r_pos hc
--- by exact?
+  -- .of_isCompact_closedBall 𝕜 r_pos hc
+   by exact FiniteDimensional.of_isCompact_closedBall 𝕜 r_pos hc
 
-/- Pour l'énoncé précédent :
+/- For the previous statement: -/
+/-
+theorem my_riesz_version' (h : IsCompact (closedBall (0 : E) 2)) :
+    FiniteDimensional ℝ E := by
   have : (0 : ℝ) < 2 := zero_lt_two
   exact?
 -/
@@ -152,8 +160,8 @@ False.elim h
 
 /- We can try unfolding the definitions to see if they look reasonable. -/
 
-#check IsCompact
 #check FiniteDimensional
+#check IsCompact
 
 /- We can try to see if the definitions make it possible to prove reasonable theorems. -/
 
