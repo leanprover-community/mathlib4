@@ -86,7 +86,7 @@ variable [HasExt.{w} C]
 
 namespace Abelian
 
-/-- The Ext-groups in an abelian category `C`, defined as a `Type w` when `[HasExt.{w} C]`. -/
+/-- A Ext-group in an abelian category `C`, defined as a `Type w` when `[HasExt.{w} C]`. -/
 def Ext (X Y : C) (n : ℕ) : Type w :=
   SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
     ((CochainComplex.singleFunctor C 0).obj X)
