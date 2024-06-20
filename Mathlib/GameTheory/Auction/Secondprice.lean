@@ -143,20 +143,18 @@ noncomputable def maxBidExcluding (i : a.I) : ℝ := Finset.sup' (Finset.erase F
 (Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial)) b
 
 /--The second highest bid: the highest bid excluding the winner’s bid.-/
-noncomputable def Secondprice : ℝ := maxBidExcluding b (winner b)
+noncomputable def secondPrice : ℝ := maxBidExcluding b (winner b)
 
 namespace Secondprice
 
 /-- The bid of the winner is always greater than or equal to the second highest bid. -/
-lemma winnerbid_ge_second : Secondprice b ≤ b (winner b) := by
-  rw [bid_winner_eq_maxBid b]
-  exact Finset.sup'_mono b (Finset.subset_univ _)
-    (Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial))
-
-/-- The bid of the winner is always greater than or equal to the second highest bid. -/
-lemma maxBidExcluding_le_maxBid {i : a.I}(b : a.I → ℝ): maxBidExcluding b i ≤ maxBid b := by
+lemma maxBidExcluding_le_maxBid {i : a.I} (b : a.I → ℝ) : maxBidExcluding b i ≤ maxBid b := by
   apply Finset.sup'_mono
   exact Finset.subset_univ (Finset.erase Finset.univ i)
+
+/-- The bid of the winner is always greater than or equal to the second highest bid. -/
+lemma winnerbid_ge_second : secondPrice b ≤ maxBid b := by
+  exact maxBidExcluding_le_maxBid b
 
 /-- If `i` is not the winner, then the highest bid excluding `i` is equal to the highest bid. -/
 lemma maxBidExcluding_eq_maxBid_if_loser {i : a.I} (H : i ≠ winner b) :
@@ -169,21 +167,21 @@ lemma maxBidExcluding_eq_maxBid_if_loser {i : a.I} (H : i ≠ winner b) :
 
 /-- Defines the utility of participant `i`,
 which is their valuation minus the second highest bid if `i` is the winner, otherwise, it's 0. -/
-noncomputable def utility (i : a.I) : ℝ := if i = winner b then a.v i - Secondprice b else 0
+noncomputable def utility (i : a.I) : ℝ := if i = winner b then a.v i - secondPrice b else 0
 
 variable {i : a.I}
 /-- If `i` is the winner, then their utility is their valuation minus the second highest bid. -/
-lemma utility_winner (H: i = winner b) : utility b i = a.v i - Secondprice b:= by
+lemma utility_winner (H: i = winner b) : utility b i = a.v i - secondPrice b:= by
   rw [utility]; simp only [ite_true, H]
 
 /-- If `i` is not the winner, then their utility is 0. -/
-lemma utility_loser (H : i≠ winner b) : utility b i = 0 := by
+lemma utility_loser (H : i ≠ winner b) : utility b i = 0 := by
   rw [utility]; simp only [ite_false, H]
 
 /-- utility is non-negative if the bid equals the valuation. -/
 lemma utility_nneg (i : a.I) (H : b i = a.v i) : 0 ≤ utility b i := by
   rcases eq_or_ne i (winner b) with rfl | H2
-  · rw [utility, if_pos rfl, ← H, bid_winner_eq_maxBid b, sub_nonneg, Secondprice]
+  · rw [utility, if_pos rfl, ← H, bid_winner_eq_maxBid b, sub_nonneg, secondPrice]
     exact maxBidExcluding_le_maxBid b
   · rw [utility, if_neg H2]
 
@@ -193,9 +191,9 @@ theorem valuation_is_dominant (i : a.I) : dominant utility i (a.v i) := by
   have key : maxBidExcluding (Function.update b i (a.v i)) i = maxBidExcluding b i :=
     (Finset.sup'_congr _ rfl fun j hj ↦ dif_neg (Finset.ne_of_mem_erase hj))
   by_cases h1 : i = winner b
-  · rw [utility_winner b h1, Secondprice, ← h1, ← key]
+  · rw [utility_winner b h1, secondPrice, ← h1, ← key]
     by_cases h2 : i = winner (Function.update b i (a.v i))
-    · rw [utility_winner _ h2, sub_le_sub_iff_left, Secondprice, ← h2]
+    · rw [utility_winner _ h2, sub_le_sub_iff_left, secondPrice, ← h2]
     · rw [utility_loser _ h2, sub_nonpos, maxBidExcluding_eq_maxBid_if_loser _ h2]
       conv_lhs => rw [← Function.update_same i (a.v i) b]
       exact Finset.le_sup' _ (Finset.mem_univ i)
