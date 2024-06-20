@@ -269,7 +269,8 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
 #align clifford_algebra.even_to_neg CliffordAlgebra.evenToNeg
 
 -- Porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
-@[simp]
+set_option linter.unnecessarySyntax false in
+@[simp, nolint simpNF]
 theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
     evenToNeg Q Q' h ((even.ι Q).bilin m₁ m₂) = -(even.ι Q').bilin m₁ m₂ :=
   even.lift_ι _ _ m₁ m₂
