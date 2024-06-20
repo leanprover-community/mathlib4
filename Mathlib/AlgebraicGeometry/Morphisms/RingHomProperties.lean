@@ -205,6 +205,8 @@ theorem affineLocally_iff_affineOpens_le
     · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
 #align algebraic_geometry.affine_locally_iff_affine_opens_le AlgebraicGeometry.affineLocally_iff_affineOpens_le
 
+-- The `IsLocalization` is not necessary, but Lean errors if it is omitted.
+@[nolint unusedHavesSuffices]
 theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.RespectsIso @P)
     (h₂ : RingHom.LocalizationPreserves @P) {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y)
     (r : Y.presheaf.obj (op ⊤)) (H : sourceAffineLocally (@P) f)

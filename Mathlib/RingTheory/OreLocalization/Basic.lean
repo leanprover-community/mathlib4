@@ -545,8 +545,8 @@ variable [SMul R X] [SMul R M] [IsScalarTower R M M] [IsScalarTower R M X]
 variable [SMul R' X] [SMul R' M] [IsScalarTower R' M M] [IsScalarTower R' M X]
 variable [SMul R R'] [IsScalarTower R R' M]
 
-/-- Scalar multiplication in a monoid localization is defined as `c • (a /ₒ s) = (c • a) /ₒ s`. -/
-@[to_additive]
+/-- Scalar multiplication in a monoid localization. -/
+@[to_additive "Vector addition in an additive monoid localization."]
 protected def hsmul (c : R) :
     X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun m s ↦ oreNum (c • 1) s • m /ₒ oreDenom (c • 1) s) (fun r t s ht ↦ by
