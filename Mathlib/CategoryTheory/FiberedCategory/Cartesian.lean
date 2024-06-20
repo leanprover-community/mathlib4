@@ -184,7 +184,7 @@ noncomputable def map : a' ⟶ a :=
 instance map_isHomLift : IsHomLift p g (map p f φ hf' φ') :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.1
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma fac : (map p f φ hf' φ') ≫ φ = φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.2
 
