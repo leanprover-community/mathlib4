@@ -60,8 +60,10 @@ scoped infixr:26 " ⥤ᵇ " => BasedFunctor
 
 namespace BasedFunctor
 
+initialize_simps_projections BasedFunctor (+toFunctor, -obj, -map)
+
 /-- The identity based functor. -/
-@[simps toFunctor]
+@[simps]
 def id (𝒳 : BasedCategory.{v₂, u₂} 𝒮) : 𝒳 ⥤ᵇ 𝒳 where
   toFunctor := 𝟭 𝒳.obj
 
@@ -71,7 +73,7 @@ variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u
 scoped notation "𝟭" => BasedFunctor.id
 
 /-- The composition of two based functors. -/
-@[simps toFunctor]
+@[simps]
 def comp {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) (G : 𝒴 ⥤ᵇ 𝒵) : 𝒳 ⥤ᵇ 𝒵 where
   toFunctor := F.toFunctor ⋙ G.toFunctor
   w := by rw [Functor.assoc, G.w, F.w]
@@ -138,6 +140,8 @@ open BasedFunctor
 
 variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
 
+initialize_simps_projections BasedNatTrans (+toNatTrans, -app)
+
 section
 
 variable {F G : 𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G)
@@ -156,14 +160,14 @@ lemma isHomLift {a : 𝒳.obj} {S : 𝒮} (ha : 𝒳.p.obj a = S) :
 end
 
 /-- The identity natural transformation is a `BasedNatTrans`. -/
-@[simps toNatTrans]
+@[simps]
 def id (F : 𝒳 ⥤ᵇ 𝒴) : BasedNatTrans F F where
   toNatTrans := CategoryTheory.NatTrans.id F.toFunctor
   isHomLift' := fun a => of_fac 𝒴.p _ _ (w_obj F a) (w_obj F a) (by simp)
 
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
 transformations. -/
-@[simps toNatTrans]
+@[simps]
 def comp {F G H : 𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
     BasedNatTrans F H where
   toNatTrans := CategoryTheory.NatTrans.vcomp α.toNatTrans β.toNatTrans
