@@ -63,7 +63,7 @@ open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quive
 /-- `IsFreeGroupoid.Generators G` is a type synonym for `G`. We think of this as
 the vertices of the generating quiver of `G` when `G` is free. We can't use `G` directly,
 since `G` already has a quiver instance from being a groupoid. -/
--- Porting note: @[nolint has_nonempty_instance]
+-- Porting note(#5171): @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def IsFreeGroupoid.Generators (G) [Groupoid G] :=
   G
@@ -117,7 +117,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
       ⟨fun b => @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, IsFreeGroup.of e⟩
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
-    refine' ⟨uncurry F' _, _, _⟩
+    refine ⟨uncurry F' ?_, ?_, ?_⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
         -- Porting note: `MonoidHom.ext_iff` has been deprecated.
         exact DFunLike.ext_iff.mp this
@@ -140,7 +140,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
       apply Functor.hext
       · intro
         apply Unit.ext
-      · refine' ActionCategory.cases _
+      · refine ActionCategory.cases ?_
         intros
         simp only [← this, uncurry_map, curry_apply_left, coe_back, homOfPair.val]
         rfl
@@ -205,8 +205,8 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
     extends to a functor on the whole groupoid. -/
 @[simps]
-def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) : G ⥤ CategoryTheory.SingleObj X
-    where
+def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
+    G ⥤ CategoryTheory.SingleObj X where
   obj _ := ()
   map p := f (loopOfHom T p)
   map_id := by
@@ -230,7 +230,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       let f' : Labelling (Generators G) X := fun a b e =>
         if h : e ∈ wideSubquiverSymmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
       rcases unique_lift f' with ⟨F', hF', uF'⟩
-      refine' ⟨F'.mapEnd _, _, _⟩
+      refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
           erw [Functor.mapEnd_apply, this, hF']

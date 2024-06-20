@@ -83,7 +83,7 @@ theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there
 is a natural linear map from `L` to the endomorphisms of `M` leaving `N` invariant. -/
 def lieSubmoduleInvariant : L →ₗ[R] Submodule.compatibleMaps N.toSubmodule N.toSubmodule :=
-  LinearMap.codRestrict _ (LieModule.toEndomorphism R L M) fun _ _ => N.lie_mem
+  LinearMap.codRestrict _ (LieModule.toEnd R L M) fun _ _ => N.lie_mem
 #align lie_submodule.quotient.lie_submodule_invariant LieSubmodule.Quotient.lieSubmoduleInvariant
 
 variable (N)
@@ -127,6 +127,7 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
     · apply lie_mem_left R L I (x₁ - y₁) y₂ h₁⟩
 #align lie_submodule.quotient.lie_quotient_has_bracket LieSubmodule.Quotient.lieQuotientHasBracket
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L ⧸ I)⁆ :=
   rfl
@@ -189,7 +190,7 @@ theorem surjective_mk' : Function.Surjective (mk' N) := surjective_quot_mk _
 theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
 
 instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
-  Submodule.Quotient.isNoetherian (N : Submodule R M)
+  inferInstanceAs (IsNoetherian R (M ⧸ (N : Submodule R M)))
 
 -- Porting note: LHS simplifies @[simp]
 theorem mk_eq_zero {m : M} : mk' N m = 0 ↔ m ∈ N :=
@@ -219,8 +220,8 @@ theorem lieModuleHom_ext ⦃f g : M ⧸ N →ₗ⁅R,L⁆ M⦄ (h : f.comp (mk' 
   LieModuleHom.ext fun x => Quotient.inductionOn' x <| LieModuleHom.congr_fun h
 #align lie_submodule.quotient.lie_module_hom_ext LieSubmodule.Quotient.lieModuleHom_ext
 
-lemma toEndomorphism_comp_mk' (x : L) :
-    LieModule.toEndomorphism R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEndomorphism R L M x :=
+lemma toEnd_comp_mk' (x : L) :
+    LieModule.toEnd R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEnd R L M x :=
   rfl
 
 end Quotient

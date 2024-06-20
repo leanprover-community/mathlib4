@@ -51,7 +51,7 @@ namespace ShrinkingLemma
 This type is equipped with the following partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
 and `v i = v' i` for `i ∈ v.carrier`. We will use Zorn's lemma to prove that this type has
 a maximal element, then show that the maximal element must have `carrier = univ`. -/
--- Porting note: @[nolint has_nonempty_instance] is not here yet
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 @[ext] structure PartialRefinement (u : ι → Set X) (s : Set X) where
   /-- A family of sets that form a partial refinement of `u`. -/
   toFun : ι → Set X
@@ -181,10 +181,10 @@ theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i
   have C : IsClosed (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) :=
     IsClosed.inter hs (isClosed_biInter fun _ _ => isClosed_compl_iff.2 <| v.isOpen _)
   rcases normal_exists_closure_subset C (v.isOpen i) I with ⟨vi, ovi, hvi, cvi⟩
-  refine' ⟨⟨update v i vi, insert i v.carrier, _, _, _, _⟩, _, _⟩
+  refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_, ?_, ?_⟩, ?_, ?_⟩
   · intro j
     rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
-  · refine' fun x hx => mem_iUnion.2 _
+  · refine fun x hx => mem_iUnion.2 ?_
     rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
       rwa [update_noteq hji]
@@ -199,7 +199,7 @@ theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i
   · intro j hj
     rw [mem_insert_iff, not_or] at hj
     rw [update_noteq hj.1, v.apply_eq hj.2]
-  · refine' ⟨subset_insert _ _, fun j hj => _⟩
+  · refine ⟨subset_insert _ _, fun j hj => ?_⟩
     exact (update_noteq (ne_of_mem_of_not_mem hj hi) _ _).symm
   · exact fun hle => hi (hle.1 <| mem_insert _ _)
 #align shrinking_lemma.partial_refinement.exists_gt ShrinkingLemma.PartialRefinement.exists_gt

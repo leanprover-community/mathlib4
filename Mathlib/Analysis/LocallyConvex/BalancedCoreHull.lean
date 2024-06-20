@@ -53,7 +53,7 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
 
-/-- The largest balanced subset of `s`.-/
+/-- The largest balanced subset of `s`. -/
 def balancedCore (s : Set E) :=
   ⋃₀ { t : Set E | Balanced 𝕜 t ∧ t ⊆ s }
 #align balanced_core balancedCore
@@ -63,7 +63,7 @@ def balancedCoreAux (s : Set E) :=
   ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
 #align balanced_core_aux balancedCoreAux
 
-/-- The smallest balanced superset of `s`.-/
+/-- The smallest balanced superset of `s`. -/
 def balancedHull (s : Set E) :=
   ⋃ (r : 𝕜) (_ : ‖r‖ ≤ 1), r • s
 #align balanced_hull balancedHull
@@ -95,7 +95,7 @@ theorem balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) 
 #align balanced_core_balanced balancedCore_balanced
 
 /-- The balanced core of `t` is maximal in the sense that it contains any balanced subset
-`s` of `t`.-/
+`s` of `t`. -/
 theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆ t) :
     s ⊆ balancedCore 𝕜 t :=
   subset_sUnion_of_mem ⟨hs, h⟩
@@ -184,9 +184,9 @@ theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
 #align balanced_core_aux_balanced balancedCoreAux_balanced
 
 theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ balancedCoreAux 𝕜 s := by
-  refine' fun x hx => mem_balancedCoreAux_iff.2 fun r hr => _
+  refine fun x hx => mem_balancedCoreAux_iff.2 fun r hr => ?_
   rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.mp <| zero_lt_one.trans_le hr)]
-  refine' h (ht.smul_mem _ hx)
+  refine h (ht.smul_mem ?_ hx)
   rw [norm_inv]
   exact inv_le_one hr
 #align balanced_core_aux_maximal balancedCoreAux_maximal
@@ -197,17 +197,17 @@ theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCo
 
 theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
     balancedCore 𝕜 s = ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s := by
-  refine' balancedCore_subset_balancedCoreAux.antisymm _
-  refine' (balancedCoreAux_balanced _).subset_balancedCore_of_subset (balancedCoreAux_subset s)
+  refine balancedCore_subset_balancedCoreAux.antisymm ?_
+  refine (balancedCoreAux_balanced ?_).subset_balancedCore_of_subset (balancedCoreAux_subset s)
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
 #align balanced_core_eq_Inter balancedCore_eq_iInter
 
 theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ ≤ 1 → a • s ⊆ t) :
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
-  refine' subset_iInter₂ fun a ha => _
+  refine subset_iInter₂ fun a ha => ?_
   rw [← smul_inv_smul₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha) s]
-  refine' smul_set_mono (hst _ _)
+  refine smul_set_mono (hst _ ?_)
   rw [norm_inv]
   exact inv_le_one ha
 #align subset_balanced_core subset_balancedCore
@@ -227,8 +227,8 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Topolo
 protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) := by
   by_cases h : (0 : E) ∈ U
   · rw [balancedCore_eq_iInter h]
-    refine' isClosed_iInter fun a => _
-    refine' isClosed_iInter fun ha => _
+    refine isClosed_iInter fun a => ?_
+    refine isClosed_iInter fun ha => ?_
     have ha' := lt_of_lt_of_le zero_lt_one ha
     rw [norm_pos_iff] at ha'
     exact isClosedMap_smul_of_ne_zero ha' U hU
@@ -251,10 +251,10 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
   rw [norm_pos_iff] at hy₀
   have : y • V ∈ 𝓝 (0 : E) := (set_smul_mem_nhds_zero_iff hy₀).mpr hV
   -- It remains to show that `y • V ⊆ balancedCore 𝕜 U`
-  refine' Filter.mem_of_superset this (subset_balancedCore (mem_of_mem_nhds hU) fun a ha => _)
+  refine Filter.mem_of_superset this (subset_balancedCore (mem_of_mem_nhds hU) fun a ha => ?_)
   rw [smul_smul]
   rintro _ ⟨z, hz, rfl⟩
-  refine' hrVU _ _ _ hz
+  refine hrVU _ _ ?_ hz
   rw [norm_mul, ← one_mul r]
   exact mul_lt_mul' ha hyr (norm_nonneg y) one_pos
 #align balanced_core_mem_nhds_zero balancedCore_mem_nhds_zero
@@ -270,9 +270,9 @@ theorem nhds_basis_balanced :
 
 theorem nhds_basis_closed_balanced [RegularSpace E] :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ Balanced 𝕜 s) id := by
-  refine'
-    (closed_nhds_basis 0).to_hasBasis (fun s hs => _) fun s hs => ⟨s, ⟨hs.1, hs.2.1⟩, rfl.subset⟩
-  refine' ⟨balancedCore 𝕜 s, ⟨balancedCore_mem_nhds_zero hs.1, _⟩, balancedCore_subset s⟩
+  refine
+    (closed_nhds_basis 0).to_hasBasis (fun s hs => ?_) fun s hs => ⟨s, ⟨hs.1, hs.2.1⟩, rfl.subset⟩
+  refine ⟨balancedCore 𝕜 s, ⟨balancedCore_mem_nhds_zero hs.1, ?_⟩, balancedCore_subset s⟩
   exact ⟨hs.2.balancedCore, balancedCore_balanced s⟩
 #align nhds_basis_closed_balanced nhds_basis_closed_balanced
 

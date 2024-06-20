@@ -17,9 +17,6 @@ This file provides a `Computation` type where `Computation α` is the type of
 unbounded computations returning `α`.
 -/
 
-set_option autoImplicit true
-
-
 open Function
 
 universe u v w
@@ -50,7 +47,6 @@ def pure (a : α) : Computation α :=
 instance : CoeTC α (Computation α) :=
   ⟨pure⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- note [use has_coe_t]
 /-- `think c` is the computation that delays for one "tick" and then performs
   computation `c`. -/
@@ -217,7 +213,7 @@ set_option linter.uppercaseLean3 false in
   If `f b = inl a` then `corec f b = pure a`, and if `f b = inl b'` then
   `corec f b = think (corec f b')`. -/
 def corec (f : β → Sum α β) (b : β) : Computation α := by
-  refine' ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => _⟩
+  refine ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => ?_⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (Sum.inr b)).2 n = some a'
   revert h; generalize Sum.inr b = o; revert o
@@ -271,7 +267,6 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
--- mathport name: «expr ~ »
 /-- bisimilarity relation-/
 local infixl:50 " ~ " => R
 
@@ -405,7 +400,7 @@ theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ =
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
   apply Subtype.eq; funext n
   induction' h : s.val n with _; · rfl
-  refine' absurd _ H; exact ⟨⟨_, _, h.symm⟩⟩
+  refine absurd ?_ H; exact ⟨⟨_, _, h.symm⟩⟩
 #align computation.eq_empty_of_not_terminates Computation.eq_empty_of_not_terminates
 
 theorem thinkN_mem {s : Computation α} {a} : ∀ n, a ∈ thinkN s n ↔ a ∈ s
@@ -430,7 +425,6 @@ def Promises (s : Computation α) (a : α) : Prop :=
   ∀ ⦃a'⦄, a' ∈ s → a = a'
 #align computation.promises Computation.Promises
 
--- mathport name: «expr ~> »
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
   may not terminate, if it does, then the result is `a`. -/
 scoped infixl:50 " ~> " => Promises
@@ -580,7 +574,7 @@ theorem of_results_think {s : Computation α} {a n} (h : Results (think s) a n) 
 theorem results_think_iff {s : Computation α} {a n} : Results (think s) a (n + 1) ↔ Results s a n :=
   ⟨fun h => by
     let ⟨n', r, e⟩ := of_results_think h
-    injection e with h'; rw [Nat.add, Nat.add] at h'; rwa [h'], results_think⟩
+    injection e with h'; rwa [h'], results_think⟩
 #align computation.results_think_iff Computation.results_think_iff
 
 theorem results_thinkN {s : Computation α} {a m} :
@@ -752,7 +746,7 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
 -- Porting note: used to use `rw [bind_pure]`
 @[simp]
 theorem bind_pure' (s : Computation α) : bind s pure = s := by
-  apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure) ∧ c₂ = s
+  apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s pure ∧ c₂ = s
   · intro c₁ c₂ h
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
@@ -924,8 +918,7 @@ instance instAlternativeComputation : Alternative Computation :=
 @[simp]
 theorem ret_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a :=
   destruct_eq_pure <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.ret_orelse Computation.ret_orElse
 
@@ -933,8 +926,7 @@ theorem ret_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a
 @[simp]
 theorem orElse_pure (c₁ : Computation α) (a : α) : (think c₁ <|> pure a) = pure a :=
   destruct_eq_pure <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.orelse_ret Computation.orElse_pure
 
@@ -942,8 +934,7 @@ theorem orElse_pure (c₁ : Computation α) (a : α) : (think c₁ <|> pure a) =
 @[simp]
 theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) = think (c₁ <|> c₂) :=
   destruct_eq_think <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.orelse_think Computation.orElse_think
 
@@ -969,7 +960,6 @@ def Equiv (c₁ c₂ : Computation α) : Prop :=
   ∀ a, a ∈ c₁ ↔ a ∈ c₂
 #align computation.equiv Computation.Equiv
 
--- mathport name: «expr ~ »
 /-- equivalence relation for computations-/
 scoped infixl:50 " ~ " => Equiv
 
@@ -1237,14 +1227,17 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
   | Sum.inr ca, Sum.inr cb => C ca cb
 #align computation.lift_rel_aux Computation.LiftRelAux
 
+variable {R : α → β → Prop} {C : Computation α → Computation β → Prop}
+
 -- Porting note: was attribute [simp] LiftRelAux
 -- but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
-@[simp] lemma liftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
-@[simp] lemma liftRelAux_inl_inr {cb} :
+@[simp] lemma liftRelAux_inl_inl {a : α} {b : β} :
+  LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
+@[simp] lemma liftRelAux_inl_inr {a : α} {cb} :
     LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
   rfl
-@[simp] lemma liftRelAux_inr_inl {ca} :
+@[simp] lemma liftRelAux_inr_inl {b : β} {ca} :
     LiftRelAux R C (Sum.inr ca) (Sum.inl b) = ∃ a, a ∈ ca ∧ R a b :=
   rfl
 @[simp] lemma liftRelAux_inr_inr {ca cb} :

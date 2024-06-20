@@ -184,7 +184,7 @@ def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (g
 #align stream.apply Stream'.apply
 
 infixl:75 " ⊛ " => apply
--- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
+-- Porting note: "input as \o*" was here but doesn't work for the above notation
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
 def nats : Stream' Nat := fun n => n

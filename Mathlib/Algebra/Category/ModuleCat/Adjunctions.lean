@@ -57,8 +57,8 @@ def adj : free R ⊣ forget (ModuleCat.{u} R) :=
             (Finsupp.sum_mapDomain_index_addMonoidHom fun y => (smulAddHom R M).flip (g y)).symm }
 #align Module.adj ModuleCat.adj
 
-instance : IsRightAdjoint (forget (ModuleCat.{u} R)) :=
-  ⟨_, adj R⟩
+instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
+  (adj R).isRightAdjoint
 
 end
 
@@ -193,7 +193,7 @@ instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
   (associativity := associativity R)
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
-  refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
+  refine ⟨⟨Finsupp.lapply PUnit.unit, ⟨?_, ?_⟩⟩⟩
   · -- Porting note (#11041): broken ext
     apply LinearMap.ext_ring
     -- Porting note (#10959): simp used to be able to close this goal
@@ -238,7 +238,7 @@ universe v u
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
--- Porting note: Removed has_nonempty_instance nolint
+-- Porting note(#5171): Removed has_nonempty_instance nolint; linter not ported yet
 @[nolint unusedArguments]
 def Free (_ : Type*) (C : Type u) :=
   C

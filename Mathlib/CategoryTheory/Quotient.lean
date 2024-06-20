@@ -115,13 +115,10 @@ def functor : C ⥤ Quotient r where
   map := @fun _ _ f ↦ Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance fullFunctor : Full (functor r) where
-  preimage := @fun X Y f ↦ Quot.out f
-  witness f := by
-    dsimp [functor]
-    simp
+instance full_functor : (functor r).Full where
+  map_surjective f:= ⟨Quot.out f, by simp [functor]⟩
 
-instance essSurj_functor : EssSurj (functor r) where
+instance essSurj_functor : (functor r).EssSurj where
   mem_essImage Y :=
     ⟨Y.as, ⟨eqToIso (by
             ext
@@ -275,11 +272,11 @@ def natIsoLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ≅ Quoti
 variable (D)
 
 instance full_whiskeringLeft_functor :
-    Full ((whiskeringLeft C _ D).obj (functor r)) where
-  preimage := natTransLift r
+    ((whiskeringLeft C _ D).obj (functor r)).Full where
+  map_surjective f := ⟨natTransLift r f, by aesop_cat⟩
 
 instance faithful_whiskeringLeft_functor :
-    Faithful ((whiskeringLeft C _ D).obj (functor r)) := ⟨by apply natTrans_ext⟩
+    ((whiskeringLeft C _ D).obj (functor r)).Faithful := ⟨by apply natTrans_ext⟩
 
 end Quotient
 

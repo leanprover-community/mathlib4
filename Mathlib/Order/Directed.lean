@@ -57,7 +57,7 @@ variable {r r'}
 
 theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
   simp only [DirectedOn, Directed, Subtype.exists, exists_and_left, exists_prop, Subtype.forall]
-  exact ball_congr fun x _ => by simp [And.comm, and_assoc]
+  exact forall₂_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
 alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed

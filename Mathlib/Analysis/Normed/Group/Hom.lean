@@ -28,7 +28,7 @@ theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when 
 
 noncomputable section
 
-open NNReal BigOperators
+open NNReal
 
 -- TODO: migrate to the new morphism / morphism_class style
 /-- A morphism of seminormed abelian groups is a bounded group homomorphism. -/
@@ -189,7 +189,7 @@ theorem SurjectiveOnWith.mono {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup
 
 theorem SurjectiveOnWith.exists_pos {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup V₂} {C : ℝ}
     (h : f.SurjectiveOnWith K C) : ∃ C' > 0, f.SurjectiveOnWith K C' := by
-  refine' ⟨|C| + 1, _, _⟩
+  refine ⟨|C| + 1, ?_, ?_⟩
   · linarith [abs_nonneg C]
   · apply h.mono
     linarith [le_abs_self C]
@@ -434,7 +434,7 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V�
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
-  refine' norm_id_of_nontrivial_seminorm V _
+  refine norm_id_of_nontrivial_seminorm V ?_
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align normed_add_group_hom.norm_id NormedAddGroupHom.norm_id
@@ -506,7 +506,7 @@ instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
           have := dist_smul_pair r (f x) (f 0)
           rw [map_zero, smul_zero, dist_zero_right, dist_zero_right] at this
           rw [mul_assoc]
-          refine' this.trans _
+          refine this.trans ?_
           gcongr
           exact hb x⟩ }
 
@@ -616,12 +616,12 @@ def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
 
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) :
-    ⇑(∑ i in s, f i) = ∑ i in s, (f i : V₁ → V₂) :=
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : V₁ → V₂) :=
   map_sum coeAddHom f s
 #align normed_add_group_hom.coe_sum NormedAddGroupHom.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) (v : V₁) :
-    (∑ i in s, f i) v = ∑ i in s, f i v := by simp only [coe_sum, Finset.sum_apply]
+    (∑ i ∈ s, f i) v = ∑ i ∈ s, f i v := by simp only [coe_sum, Finset.sum_apply]
 #align normed_add_group_hom.sum_apply NormedAddGroupHom.sum_apply
 
 /-! ### Module structure on normed group homs -/
@@ -821,8 +821,8 @@ def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
 namespace NormNoninc
 
 theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 := by
-  refine' ⟨fun h => _, fun h => fun v => _⟩
-  · refine' opNorm_le_bound _ zero_le_one fun v => _
+  refine ⟨fun h => ?_, fun h => fun v => ?_⟩
+  · refine opNorm_le_bound _ zero_le_one fun v => ?_
     simpa [one_mul] using h v
   · simpa using le_of_opNorm_le f h v
 #align normed_add_group_hom.norm_noninc.norm_noninc_iff_norm_le_one NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one
@@ -897,8 +897,7 @@ variable {f g}
 `NormedAddGroupHom V₁ (f.equalizer g)`. -/
 @[simps]
 def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
-    NormedAddGroupHom V₁ (f.equalizer g)
-    where
+    NormedAddGroupHom V₁ (f.equalizer g) where
   toFun v :=
     ⟨φ v,
       show (f - g) (φ v) = 0 by
@@ -921,8 +920,8 @@ theorem ι_comp_lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ)
 /-- The lifting property of the equalizer as an equivalence. -/
 @[simps]
 def liftEquiv :
-    { φ : NormedAddGroupHom V₁ V // f.comp φ = g.comp φ } ≃ NormedAddGroupHom V₁ (f.equalizer g)
-    where
+    { φ : NormedAddGroupHom V₁ V // f.comp φ = g.comp φ } ≃
+      NormedAddGroupHom V₁ (f.equalizer g) where
   toFun φ := lift φ φ.prop
   invFun ψ := ⟨(ι f g).comp ψ, by rw [← comp_assoc, ← comp_assoc, comp_ι_eq]⟩
   left_inv φ := by simp

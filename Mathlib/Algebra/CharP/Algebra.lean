@@ -3,9 +3,9 @@ Copyright (c) 2021 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.FreeAlgebra
+import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import algebra.char_p.algebra from "leanprover-community/mathlib"@"96782a2d6dcded92116d8ac9ae48efb41d46a27c"
 
