@@ -358,7 +358,7 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : Q.parts.card �
     have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
     choose f hP hf using this
     rw [← card_attach]
-    refine card_le_card_of_inj_on (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ ?_
+    refine card_le_card_of_injOn (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ ?_
     exact
       Subtype.coe_injective
         (Q.disjoint.elim b.2 c.2 fun H ↦

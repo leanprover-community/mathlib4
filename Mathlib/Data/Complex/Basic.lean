@@ -336,6 +336,15 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal']
 #align complex.equiv_real_prod_symm_apply Complex.equivRealProd_symm_apply
 
+/-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
+@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
+  { equivRealProd with map_add' := by simp }
+#align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
+
+theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
+    equivRealProdAddHom.symm p = p.1 + p.2 * I := equivRealProd_symm_apply p
+
 /-! ### Commutative ring instance and lemmas -/
 
 

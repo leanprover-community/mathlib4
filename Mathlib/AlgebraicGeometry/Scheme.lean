@@ -178,6 +178,10 @@ instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
   forgetToLocallyRingedSpace.map_isIso f
 #align algebraic_geometry.Scheme.is_LocallyRingedSpace_iso AlgebraicGeometry.Scheme.is_locallyRingedSpace_iso
 
+instance val_base_isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.1.base :=
+  Scheme.forgetToTop.map_isIso f
+#align algebraic_geometry.Scheme.val_base_is_iso AlgebraicGeometry.Scheme.val_base_isIso
+
 -- Porting note: need an extra instance here.
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.val
