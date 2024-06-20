@@ -165,7 +165,7 @@ theorem isClique_map_finset_iff :
   · simp [ht, Finset.map_eq_image]
   exact Finset.one_lt_card_iff_nontrivial.mp ht
 
-protected theorem IsClique.finset_map {f : α ↪ β} {s : Finset α} (h : G.IsClique s) :
+protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsClique s) :
     (G.map f).IsClique (s.map f) := by
   simpa
 
