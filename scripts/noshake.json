@@ -309,6 +309,7 @@
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
   "Mathlib.Data.List.TFAE": ["Batteries.Tactic.Classical"],
+  "Mathlib.Data.List.ProdSigma": ["Mathlib.Data.List.Basic"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
