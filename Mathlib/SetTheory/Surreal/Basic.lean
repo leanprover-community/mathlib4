@@ -39,10 +39,6 @@ One can also map all the ordinals into the surreals!
 
 - Define the field structure on the surreals.
 
-## References
-
-* [Conway, *On numbers and games*][conway2001]
-* [Schleicher, Stoll, *An introduction to Conway's games and numbers*][schleicher_stoll]
 -/
 
 
@@ -439,19 +435,19 @@ This section carries out the main inductive argument that proves the following t
 * P2: multiplying a numeric pregame by equivalent numeric pregames results in equivalent pregames,
 * P3: the product of two positive numeric pregames is positive (`mul_pos`).
 
-This is Theorem 8 in [conway2001], or Theorem 3.8 in [schleicher_stoll]. P1 allows us to define
+This is Theorem 8 in [Conway2001], or Theorem 3.8 in [SchleicherStoll]. P1 allows us to define
 multiplication as an operation on numeric pregames, P2 says that this is well-defined as an
-operation on the quotient by `pgame.equiv`, namely the surreal numbers, and P3 is an axiom that
-needs to be satisfied for the surreals to be a `ordered_ring`.
+operation on the quotient by `PGame.Equiv`, namely the surreal numbers, and P3 is an axiom that
+needs to be satisfied for the surreals to be a `OrderedRing`.
 
 We follow the proof in [schleicher_stoll], except that we use the well-foundedness of
-the hydra relation `cut_expand` on `multiset pgame` instead of the argument based
+the hydra relation `CutExpand` on `Multiset PGame` instead of the argument based
 on a depth function in the paper.
 
 In the argument, P3 is stated with four variables `x₁`, `x₂`, `y₁`, `y₂` satisfying `x₁ < x₂` and
 `y₁ < y₂`, and says that `x₁ * y₂ + x₂ * x₁ < x₁ * y₁ + x₂ * y₂`, which is equivalent to
 `0 < x₂ - x₁ → 0 < y₂ - y₁ → 0 < (x₂ - x₁) * (y₂ - y₁)`, i.e.
-`@mul_pos pgame _ (x₂ - x₁) (y₂ - y₁)`. It has to be stated in this form and not in terms of
+`@mul_pos PGame _ (x₂ - x₁) (y₂ - y₁)`. It has to be stated in this form and not in terms of
 `mul_pos` because we need to show show P1, P2 and (a specialized form of) P3 simultaneously, and
 for example `P1 x y` will be deduced from P3 with variables taking values simpler than `x` or `y`
 (among other induction hypotheses), but if you subtract two pregames simpler than `x` or `y`,
@@ -459,16 +455,16 @@ the result may no longer be simpler.
 
 The specialized version of P3 is called P4, which takes only three arguments `x₁`, `x₂`, `y` and
 requires that `y₂ = y` or `-y` and that `y₁` is a left option of `y₂`. After P1, P2 and P4 are
-shown, a further inductive argument (this time using the `game_add` relation) proves P3 in full.
+shown, a further inductive argument (this time using the `GameAdd` relation) proves P3 in full.
 
 Our proof features a clear separation into components/submodules:
 * calculation (e.g. ...),
 * specialize induction hypothesis to a form easier to apply
-  (that direct takes in `is_option` arguments),
+  (that direct takes in `IsOption` arguments),
 * application of specialized indution hypothesis,
 * symmetry verification,
-* verification of `cut_expand` relations,
-* `numeric`ity of options (filled in at the last moment ).
+* verification of `CutExpand` relations,
+* `Numeric`ity of options (filled in at the last moment ).
 and we utilize symmetry (permutation and negation of arguments) to minimize calculation.
 
   strategy: extract specialized versions of the induction hypothesis that easier to apply
@@ -479,7 +475,13 @@ and we utilize symmetry (permutation and negation of arguments) to minimize calc
   the negation symmetries).
 
   add the numeric hypothesis only at the last moment ..
-  -/
+
+## References
+
+* [Conway, *On numbers and games*][Conway2001]
+* [Schleicher, Stoll, *An introduction to Conway's games and numbers*][SchleicherStoll]
+
+-/
 
 open SetTheory
 open Game

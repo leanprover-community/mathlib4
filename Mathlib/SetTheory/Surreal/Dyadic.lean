@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Basic
 
@@ -224,7 +225,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
 #align surreal.dyadic_aux Surreal.dyadic_aux
 
 /-- The additive monoid morphism `dyadicMap` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
-def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
+noncomputable def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
   toFun x :=
     (Localization.liftOn x fun x y => x • powHalf (Submonoid.log y)) <| by
       intro m₁ m₂ n₁ n₂ h₁
