@@ -393,6 +393,28 @@ instance : IsTotalPreorder α (· ≤ ·) where
   trans := @le_trans _ _
   total := le_total
 
+theorem isStrictWeakOrder_of_isTotalPreorder {α : Sort u} {le : α → α → Prop} {lt : α → α → Prop}
+    [DecidableRel le] [IsTotalPreorder α le] (h : ∀ a b, lt a b ↔ ¬le b a) :
+    IsStrictWeakOrder α lt :=
+  { trans := fun a b c hab hbc =>
+      have nba : ¬le b a := Iff.mp (h _ _) hab
+      have ncb : ¬le c b := Iff.mp (h _ _) hbc
+      have hab : le a b := Or.resolve_left (total_of le b a) nba
+      have nca : ¬le c a := fun hca : le c a =>
+        have hcb : le c b := trans_of le hca hab
+        absurd hcb ncb
+      Iff.mpr (h _ _) nca
+    irrefl := fun a hlt => absurd (refl_of le a) (Iff.mp (h _ _) hlt)
+    incomp_trans := fun a b c ⟨nab, nba⟩ ⟨nbc, ncb⟩ =>
+      have hba : le b a := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nab)
+      have hab : le a b := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nba)
+      have hcb : le c b := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nbc)
+      have hbc : le b c := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) ncb)
+      have hac : le a c := trans_of le hab hbc
+      have hca : le c a := trans_of le hcb hba
+      And.intro (fun n => absurd hca (Iff.mp (h _ _) n)) fun n => absurd hac (Iff.mp (h _ _) n) }
+#align is_strict_weak_order_of_is_total_preorder isStrictWeakOrder_of_isTotalPreorder
+
 -- TODO(Leo): decide whether we should keep this instance or not
 instance isStrictWeakOrder_of_linearOrder : IsStrictWeakOrder α (· < ·) :=
   have : IsTotalPreorder α (· ≤ ·) := by infer_instance -- Porting note: added
