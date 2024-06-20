@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Cover.Open
 
 #align_import algebraic_geometry.gluing from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 

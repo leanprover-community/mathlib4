@@ -79,7 +79,11 @@ theorem comul_counit_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) 
 
 @[reassoc] theorem comul_assoc_flip :
     M.comul ≫ (M.comul ▷ M.X) = M.comul ≫ (M.X ◁ M.comul) ≫ (α_ M.X M.X M.X).inv := by
+<<<<<<< HEAD
   simp
+=======
+  simp [← comul_assoc]
+>>>>>>> conv_monoid
 
 /-- A morphism of comonoid objects. -/
 @[ext]
@@ -311,7 +315,6 @@ def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
           F.right_unitality, ← F.map_comp_assoc, A.comul_counit]
       comul_assoc := by
         simp_rw [comp_whiskerRight, Category.assoc, F.δ_natural_left_assoc,
-
           MonoidalCategory.whiskerLeft_comp, F.δ_natural_right_assoc,
           ← F.map_comp_assoc, A.comul_assoc, F.map_comp, Category.assoc, F.associativity] }
   map f :=
