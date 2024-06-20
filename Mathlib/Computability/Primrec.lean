@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Data.List.GetD
 
 #align_import computability.primrec from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
@@ -782,7 +783,7 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
     refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
-    rw [List.get?_map, List.indexOf_get? (m a), Option.map_some']
+    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_indexOf  (m a), Option.map_some']
 #align primrec.dom_fintype Primrec.dom_fintype
 
 -- Porting note: These are new lemmas
@@ -1148,7 +1149,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
   suffices Primrec₂ fun a n => (List.range n).map (f a) from
     Primrec₂.option_some_iff.1 <|
       (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a n => by
-        simp [List.get?_range (Nat.lt_succ_self n)]
+        simp [List.getElem?_range (Nat.lt_succ_self n)]
   Primrec₂.option_some_iff.1 <|
     (nat_rec (const (some []))
           (to₂ <|

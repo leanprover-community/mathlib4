@@ -151,19 +151,9 @@ lemma le_of_pred_lt : ∀ {m}, pred m < n → m ≤ n
 
 lemma lt_iff_add_one_le : m < n ↔ m + 1 ≤ n := by rw [succ_le_iff]
 #align nat.lt_iff_add_one_le Nat.lt_iff_add_one_le
-
--- Just a restatement of `Nat.lt_succ_iff` using `+1`.
-lemma lt_add_one_iff : m < n + 1 ↔ m ≤ n := Nat.lt_succ_iff
-#align nat.lt_add_one_iff Nat.lt_add_one_iff
-
 -- A flipped version of `lt_add_one_iff`.
 lemma lt_one_add_iff : m < 1 + n ↔ m ≤ n := by simp only [Nat.add_comm, Nat.lt_succ_iff]
 #align nat.lt_one_add_iff Nat.lt_one_add_iff
-
--- This is true reflexively, by the definition of `≤` on ℕ,
--- but it's still useful to have, to convince Lean to change the syntactic type.
-lemma add_one_le_iff : m + 1 ≤ n ↔ m < n := Iff.rfl
-#align nat.add_one_le_iff Nat.add_one_le_iff
 
 lemma one_add_le_iff : 1 + m ≤ n ↔ m < n := by simp only [Nat.add_comm, add_one_le_iff]
 #align nat.one_add_le_iff Nat.one_add_le_iff
@@ -329,7 +319,7 @@ lemma add_eq_three_iff :
 #align nat.add_eq_three_iff Nat.add_eq_three_iff
 
 lemma le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
-  rw [Nat.le_iff_lt_or_eq, lt_add_one_iff]
+  rw [Nat.le_iff_lt_or_eq, Nat.lt_add_one_iff]
 #align nat.le_add_one_iff Nat.le_add_one_iff
 
 lemma le_and_le_add_one_iff : n ≤ m ∧ m ≤ n + 1 ↔ m = n ∨ m = n + 1 := by
@@ -432,9 +422,6 @@ protected lemma le_of_mul_le_mul_right (h : a * c ≤ b * c) (hc : 0 < c) : a �
 
 protected alias mul_sub := Nat.mul_sub_left_distrib
 protected alias sub_mul := Nat.mul_sub_right_distrib
-
-protected lemma mul_sub_one (a b : ℕ) : a * (b - 1) = a * b - a := by rw [Nat.mul_sub, Nat.mul_one]
-protected lemma sub_one_mul (a b : ℕ) : (a - 1) * b = a * b - b := by rw [Nat.sub_mul, Nat.one_mul]
 
 set_option push_neg.use_distrib true in
 /-- The product of two natural numbers is greater than 1 if and only if
@@ -1588,7 +1575,7 @@ private lemma sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     simp only [IsSqrt, sqrt, h, ite_false]
     refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _ ?_⟩
     simp only [Nat.mul_add, Nat.add_mul, Nat.one_mul, Nat.mul_one, ← Nat.add_assoc]
-    rw [lt_add_one_iff, Nat.add_assoc, ← Nat.mul_two]
+    rw [Nat.lt_add_one_iff, Nat.add_assoc, ← Nat.mul_two]
     refine le_trans (Nat.le_of_eq (div_add_mod' (n + 2) 2).symm) ?_
     rw [Nat.add_comm, Nat.add_le_add_iff_right, add_mod_right]
     simp only [Nat.zero_lt_two, add_div_right, succ_mul_succ]

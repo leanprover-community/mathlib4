@@ -23,7 +23,6 @@ Mathlib/Computability/Primrec.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1
 Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2071 lines, try to split it up
 Mathlib/Computability/TuringMachine.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2817 lines, try to split it up
 Mathlib/Data/Array/Basic.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/BinaryHeap.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/ByteArray.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/Complex/Exponential.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1758 lines, try to split it up
 Mathlib/Data/DFinsupp/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2371 lines, try to split it up

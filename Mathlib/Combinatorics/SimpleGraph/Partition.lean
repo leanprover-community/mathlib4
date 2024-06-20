@@ -79,7 +79,8 @@ def Partitionable (n : ℕ) : Prop := ∃ P : G.Partition, P.PartsCardLe n
 
 namespace Partition
 
-variable {G} (P : G.Partition)
+variable {G}
+variable (P : G.Partition)
 
 /-- The part in the partition that `v` belongs to -/
 def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
