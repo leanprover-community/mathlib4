@@ -511,7 +511,7 @@ theorem toOpen_unit_app_val_c_app {X : Scheme} (U) :
 set_option maxHeartbeats 800000 in
 @[reassoc (attr := simp)]
 theorem toOpen_unit_app_val_c_app' {X : Scheme}
-  (U : Opens (PrimeSpectrum (X.presheaf.obj (op ⊤)))) :
+    (U : Opens (PrimeSpectrum (X.presheaf.obj (op ⊤)))) :
   toOpen (X.presheaf.obj (op ⊤)) U ≫ (adjunction.unit.app X).val.c.app (op U) =
     X.presheaf.map (homOfLE (by exact le_top)).op :=
   ΓSpec.toOpen_unit_app_val_c_app (op U)
