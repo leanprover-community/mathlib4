@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Jack Cheverton.
+Authors: Kyle Miller, Jack Cheverton
 -/
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
@@ -272,6 +272,3 @@ end Decidable
 
 end Order
 end Digraph
-
-#lint
-#check @Digraph.instNontrivial /- argument 2 a : V -/
