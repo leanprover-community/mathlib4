@@ -86,8 +86,7 @@ noncomputable def extend : HomologicalComplex C c' where
       · rw [extend.d_none_eq_zero K _ _ hj', comp_zero]
       · obtain hk'|⟨k, hk⟩ := (e.r k').eq_none_or_eq_some
         · rw [extend.d_none_eq_zero' K _ _ hk', comp_zero]
-        · rw [extend.d_eq K hi hj,
-            extend.d_eq K hj hk, assoc, assoc,
+        · rw [extend.d_eq K hi hj, extend.d_eq K hj hk, assoc, assoc,
             Iso.inv_hom_id_assoc, K.d_comp_d_assoc, zero_comp, comp_zero]
 
 /-- The isomorphism `(K.extend e).X i' ≅ K.X i` when `e.f i = i'`. -/
