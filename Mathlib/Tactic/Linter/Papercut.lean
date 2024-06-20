@@ -44,9 +44,12 @@ def getPapercuts (e : Expr) : MetaM (Option MessageData) := do
                     '{← ppExpr b} ≤ {← ppExpr a}'"
       let mddl := ← do
         if ← [n1, n2, n3].allM (isDefEq · expNat)     then return some " `1 - 2 = 0`!\n" else
-        if ← [n1, n2, n3].allM (isDefEq · expENNReal) then return some " `e - π = 0`!\n" else
-        if ← [n1, n2, n3].allM (isDefEq · expNNReal)  then return some " `e - π = 0`!\n" else
-        if ← [n1, n2, n3].allM (isDefEq · expNNRat)   then return some " `2⁻¹ - 1 = 0`!\n"
+        if (← [n1, n2, n3].allM (isDefEq · expENNReal) <|> return false) then
+          return some " `e - π = 0`!\n" else
+        if (← [n1, n2, n3].allM (isDefEq · expNNReal) <|> return false) then
+          return some " `e - π = 0`!\n" else
+        if (← [n1, n2, n3].allM (isDefEq · expNNRat) <|> return false) then
+          return some " `2⁻¹ - 1 = 0`!\n"
         else return none
       if let some mddl := mddl then return some m!"{begn}{mddl}{endn}" else return none
     | (``HDiv.hDiv, #[n1, n2, n3, _, a, b]) =>
