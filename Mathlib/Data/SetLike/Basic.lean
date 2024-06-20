@@ -109,6 +109,7 @@ variable {A : Type*} {B : Type*} [i : SetLike A B]
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
+/-- Membership for `SetLike A B` is defined as membership in the image of `SetLike.coe`. -/
 @[reducible] protected def Mem (x : B) (p : A) : Prop := x ∈ (p : Set B)
 
 instance (priority := 100) instMembership : Membership B A := ⟨SetLike.Mem⟩
