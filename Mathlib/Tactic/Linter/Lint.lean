@@ -87,7 +87,7 @@ If `stx` is an `alias` or an `export`, then it extracts an `ident`, instead of a
 partial
 def getIds : Syntax → Array Syntax
   | .node _ `Batteries.Tactic.Alias.alias args => args[2:3]
-  | .node _ ``Lean.Parser.Command.export args => args[3:4]
+  | .node _ ``Lean.Parser.Command.export args => (args[3:4] : Array Syntax).map (·[0])
   | stx@(.node _ _ args) =>
     ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
