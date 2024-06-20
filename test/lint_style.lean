@@ -25,6 +25,15 @@ set_option pp.all true
 
 set_option linter.setOption false in
 /--
+warning: Forbidden set_option `profiler`; please remove
+note: this linter can be disabled with `set_option linter.setOption false`
+-/
+#guard_msgs in
+set_option linter.setOption true in
+set_option profiler false
+
+set_option linter.setOption false in
+/--
 warning: Forbidden set_option `pp.all`; please remove
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
@@ -34,12 +43,12 @@ set_option pp.all false
 
 set_option linter.setOption false in
 /--
-warning: Forbidden set_option `pp.raw.maxDepth`; please remove
+warning: Forbidden set_option `profiler.threshold`; please remove
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
 set_option linter.setOption true in
-set_option pp.raw.maxDepth 32
+set_option profiler.threshold 50
 
 set_option linter.setOption false in
 /--

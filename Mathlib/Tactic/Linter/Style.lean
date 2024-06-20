@@ -60,9 +60,9 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if let some (head) := stx.find? is_set_option then
       if let some (name) := parse_set_option head then
-        -- Drop a leading backtick.
-        let name := (toString name).drop 1
-        if name.startsWith "pp." || name.startsWith "profiler." || name.startsWith "trace." then
+        -- Drop a leading backtick and determine the first component of the option name.
+        let firstComponent := (((toString name).drop 1).splitOn ".").get! 0
+        if #["pp", "profiler", "trace"].contains firstComponent then
           Linter.logLint linter.setOption head m!"Forbidden set_option `{name}`; please remove"
 
 initialize addLinter setOptionLinter
