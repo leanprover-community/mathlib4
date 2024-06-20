@@ -461,7 +461,7 @@ theorem replicate_right_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
   (replicate_right_injective hn).eq_iff
 #align list.replicate_right_inj List.replicate_right_inj
 
-@[simp] theorem replicate_right_inj' {a b : α} : ∀ {n},
+theorem replicate_right_inj' {a b : α} : ∀ {n},
     replicate n a = replicate n b ↔ n = 0 ∨ a = b
   | 0 => by simp
   | n + 1 => (replicate_right_inj n.succ_ne_zero).trans <| by simp only [n.succ_ne_zero, false_or]
@@ -471,7 +471,7 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
   LeftInverse.injective (length_replicate · a)
 #align list.replicate_left_injective List.replicate_left_injective
 
-@[simp] theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a ↔ n = m :=
+theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a ↔ n = m :=
   (replicate_left_injective a).eq_iff
 #align list.replicate_left_inj List.replicate_left_inj
 
@@ -684,11 +684,13 @@ theorem getLast?_cons_cons (a b : α) (l : List α) :
     getLast? (a :: b :: l) = getLast? (b :: l) := rfl
 
 @[simp]
-theorem getLast?_isNone : ∀ {l : List α}, (getLast? l).isNone ↔ l = []
+theorem getLast?_eq_none : ∀ {l : List α}, getLast? l = none ↔ l = []
   | [] => by simp
   | [a] => by simp
-  | a :: b :: l => by simp [@getLast?_isNone (b :: l)]
-#align list.last'_is_none List.getLast?_isNone
+  | a :: b :: l => by simp [@getLast?_eq_none (b :: l)]
+#align list.last'_is_none List.getLast?_eq_none
+
+@[deprecated (since := "2024-06-20")] alias getLast?_isNone := getLast?_eq_none
 
 @[simp]
 theorem getLast?_isSome : ∀ {l : List α}, l.getLast?.isSome ↔ l ≠ []
