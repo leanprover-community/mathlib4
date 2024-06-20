@@ -22,7 +22,7 @@ for some `E : Set β`. We attempt to give definitions that capture most reasonab
 
 `Matroid.map` and `Matroid.comap` are defined in terms of bare functions rather than
 functions defined on subtypes, so are often easier to work in practice than the subtype variants.
-In fact, the statement that `N = Matroid.map M f hf` for some `f : α → β` and `hf : InjOn M.E f`
+In fact, the statement that `N = Matroid.map M f _` for some `f : α → β`
 is equivalent to the existence of an isomorphism from `M` to `N`,
 except in the trivial degenerate case where `M` is an empty matroid on a nonempty type and `N`
 is an empty matroid on an empty type.
@@ -35,7 +35,7 @@ In the definitions below, `M` and `N` are matroids on `α` and `β` respectively
 * For `f : α → β`, `Matroid.comap N f` is the matroid on `α` with ground set `f ⁻¹' N.E`
   in which each `I` is independent if and only if `f` is injective on `I` and
   `f '' I` is independent in `N`.
-  (If `x` is a nonloop of `N`, then `f ⁻¹' {x}` is a parallel class of `N.comap f`)
+  (For each nonloop `x` of `N`, the set `f ⁻¹' {x}` is a parallel class of `N.comap f`)
 
 * `Matroid.comapOn N f E` is the restriction of `N.comap f` to `E` for some `E : Set α`.
 
@@ -337,7 +337,7 @@ end mapSetEmbedding
 
 section map
 
-/-- Given an injective function `f` on `M.E`, the isomorphic copy of `M` whose independent sets
+/-- Given a function `f` that is injective on `M.E`, the copy of `M` in `β` whose independent sets
 are the images of those in `M`. If `β` is a nonempty type, then `N : Matroid β` is a map of `M`
 if and only if `M` and `N` are isomorphic. -/
 def map (M : Matroid α) (f : α → β) (hf : InjOn f M.E) : Matroid β := Matroid.ofExistsMatroid
