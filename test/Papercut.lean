@@ -1,12 +1,12 @@
 import Mathlib.Tactic.Linter.Papercut
 import Mathlib.Algebra.Field.Rat
-
+import Mathlib.Data.ENNReal.Basic
 /--
 warning: declaration uses 'sorry'
 ---
 warning: Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!
-This is usually defined to be `0`, to avoid having to constantly prove that
-denominators are non-zero.
+This is allowed (and often defined to be `0`) to avoid having to constantly
+prove that denominators are non-zero.
 note: this linter can be disabled with `set_option linter.papercut false`
 -/
 #guard_msgs in
@@ -25,6 +25,55 @@ note: this linter can be disabled with `set_option linter.papercut false`
 set_option linter.papercut true in
 example (x y : Nat) : x - y = 0 := sorry
 
+open scoped ENNReal in
+/--
+warning: declaration uses 'sorry'
+---
+warning: Subtraction in ℝ≥0∞ is actually truncated subtraction: e.g. `e - π = 0`!
+This yields the 'expected' result only when you also prove the inequality
+'y ≤ x'
+note: this linter can be disabled with `set_option linter.papercut false`
+-/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : ℝ≥0∞) : x - y = 0 := sorry
+
+open scoped NNReal in
+/--
+warning: declaration uses 'sorry'
+---
+warning: Subtraction in ℝ≥0 is actually truncated subtraction: e.g. `e - π = 0`!
+This yields the 'expected' result only when you also prove the inequality
+'y ≤ x'
+note: this linter can be disabled with `set_option linter.papercut false`
+-/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : ℝ≥0) : x - y = 0 := sorry
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: Subtraction in ℚ≥0 is actually truncated subtraction: e.g. `2⁻¹ - 1 = 0`!
+This yields the 'expected' result only when you also prove the inequality
+'y ≤ x'
+note: this linter can be disabled with `set_option linter.papercut false`
+-/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : ℚ≥0) : x - y = 0 := sorry
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: Division in ℕ is actually the floor of the division: e.g. `1 / 2 = 0`!
+This yields the 'expected' result only when you also prove that 'y' divides 'x'
+note: this linter can be disabled with `set_option linter.papercut false`
+-/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : Nat) : x / y = 0 := sorry
+
 -- the linter emits no warning if the proof is complete.
 #guard_msgs in
 set_option linter.papercut true in
@@ -34,8 +83,8 @@ example (x : Nat) : x / 0 = 0 := x.div_zero
 warning: declaration uses 'sorry'
 ---
 warning: Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!
-This is usually defined to be `0`, to avoid having to constantly prove that
-denominators are non-zero.
+This is allowed (and often defined to be `0`) to avoid having to constantly
+prove that denominators are non-zero.
 note: this linter can be disabled with `set_option linter.papercut false`
 -/
 #guard_msgs in
@@ -46,7 +95,8 @@ example (x : Nat) : x / 0 = 0 := sorry
 warning: declaration uses 'sorry'
 ---
 warning: Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!
-This is usually defined to be `0`, to avoid having to constantly prove that denominators are non-zero.
+This is allowed (and often defined to be `0`) to avoid having to constantly
+prove that denominators are non-zero.
 note: this linter can be disabled with `set_option linter.papercut false`
 -/
 #guard_msgs in
