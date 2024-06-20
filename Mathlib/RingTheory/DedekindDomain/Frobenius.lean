@@ -149,6 +149,14 @@ lemma y_spec : ((y A Q : B) : B ⧸ Q) = g Q ∧
 
 lemma y_mod_Q : Ideal.Quotient.mk Q (y A Q) = g Q := (y_spec A Q).1
 
+open scoped algebraMap
+
+#synth Coe B (B⧸Q)
+
+--example (b : B) : (Ideal.Quotient.mk Q : B →+* (B⧸Q)) b = ↑b := by with_reducible_and_instances rfl
+
+lemma y_mod_Q' : (((y A Q) : B) : B⧸Q) = (g Q : B⧸Q) := (y_spec A Q).1
+
 lemma y_not_in_Q : (y A Q) ∉ Q :=
   mt Ideal.Quotient.eq_zero_iff_mem.mpr <| y_mod_Q A Q ▸ (g Q).ne_zero
 
@@ -191,14 +199,13 @@ lemma F.descent (h : ∀ b : B, (∀ σ : B ≃ₐ[A] B, σ • b = b) → ∃ a
   use (∑ x ∈ (F A Q).support, (monomial x) (f' ((F A Q).coeff x)))
   ext N
   push_cast
-  simp_rw [finset_sum_coeff, ← lcoeff_apply, lcoeff_apply, coeff_monomial]
-  simp only [Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not, f']
-  symm
+  simp_rw [finset_sum_coeff, ← lcoeff_apply, lcoeff_apply, coeff_monomial,
+    Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not, f']
   split
-  · next h => exact h
+  · next h => exact h.symm
   · next h1 =>
     rw [dif_pos <| fun σ ↦ ?_]
-    · refine hf ?_ ?_
+    · refine (hf ?_ ?_).symm
     · nth_rw 2 [← F.smul_eq_self σ]
       rfl
 
@@ -224,11 +231,9 @@ lemma m.y_mod_P_eq_zero : Polynomial.aeval (↑(y A Q) : B ⧸ Q) (m A Q isGaloi
   rw [← aeval_map_algebraMap B, m_spec', Algebra.cast_eq_algebraMap, aeval_algebraMap_apply,
     coe_aeval_eq_eval, F.y_eq_zero A Q, map_zero]
 
-
-noncomputable abbrev mmodP := (m A Q isGalois).map (algebraMap A (A⧸P))
-
 open scoped Polynomial
 
+-- should be elsewhere
 lemma _root_.Polynomial.aeval_pow_card (k : Type*) [Field k] [Fintype k] (f : k[X])
     (L : Type*) [CommRing L] [Algebra k L]
     (t : L) : aeval (t^(Fintype.card k)) f =
@@ -239,11 +244,9 @@ variable [Fintype (A⧸P)]
 
 lemma m.mod_P_y_pow_q_eq_zero' :
     aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P)))  (m A Q isGalois) = 0 := by
-  rw [← aeval_map_algebraMap (B⧸Q)]
   let foobar : Field (A⧸P) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient P).mp ‹_›).toField
-  rw [aeval_map_algebraMap, ← aeval_map_algebraMap (A⧸P), aeval_pow_card,
-    ← Algebra.cast_eq_algebraMap, aeval_map_algebraMap, m.y_mod_P_eq_zero, zero_pow]
-  exact Fintype.card_ne_zero
+  rw [← aeval_map_algebraMap (A⧸P), aeval_pow_card, ← Algebra.cast_eq_algebraMap,
+    aeval_map_algebraMap, m.y_mod_P_eq_zero, zero_pow Fintype.card_ne_zero]
 
 lemma F.mod_Q_y_pow_q_eq_zero' :
     aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) (F A Q) = 0 := by
@@ -255,9 +258,7 @@ lemma _root_.Polynomial.aeval_finset_prod.{u, v, y} {R : Type u} {S : Type v} {�
 
 lemma exists_Frob : ∃ σ : B ≃ₐ[A] B, σ (y A Q) - (y A Q) ^ (Fintype.card (A⧸P)) ∈ Q := by
   have := F.mod_Q_y_pow_q_eq_zero' A Q isGalois P
-  rw [F_spec] at this
-  rw [aeval_finset_prod] at this
-  rw [Finset.prod_eq_zero_iff] at this
+  rw [F_spec, aeval_finset_prod, Finset.prod_eq_zero_iff] at this
   obtain ⟨σ, -, hσ⟩ := this
   use σ
   simp only [Ideal.Quotient.algebraMap_eq, AlgEquiv.smul_def, map_sub, aeval_X, aeval_C,
@@ -279,17 +280,9 @@ lemma Frob_Q : Frob A Q isGalois P • Q = Q := by
   simp only [sub_sub_cancel] at this
   apply y_not_in_Q A Q <| Ideal.IsPrime.mem_of_pow_mem (show Q.IsPrime by infer_instance) _ this
 
+-- move
 lemma _root_.Ideal.Quotient.coe_eq_coe_iff_sub_mem {R : Type*} [CommRing R] {I : Ideal R}
     (x y : R) : (x : R ⧸ I) = y ↔ x - y ∈ I := Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _
-
-lemma coething (A B : Type*) [CommSemiring A] [Ring B] [Algebra A B] (a : A) (n : ℕ) :
-    (a ^ n : A) = (a : B) ^ n := by
-  --change algebraMap A B a ^ n = algebraMap A B (a ^ n)
-  --symm
-  exact map_pow _ _ _
---  simp only [map_pow]
-
---attribute [norm_cast] map_pow
 
 lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x^(Fintype.card (A⧸P)) ∈ Q := by
   by_cases hx : x ∈ Q
@@ -299,35 +292,24 @@ lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x^(Fintype.card (A⧸
     rw [Ideal.map_eq_comap_symm, Ideal.mem_comap]
     convert hx
     exact inv_smul_smul _ _
-  ·
-    have foo : (x : B ⧸ Q) ≠ 0 :=
+  · letI : Field (B ⧸ Q) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient Q).mp ‹_›).toField
+    let xbar : (B ⧸ Q)ˣ := Units.mk0 (x : B ⧸ Q) <|
       mt (fun h ↦ (Submodule.Quotient.mk_eq_zero Q).mp h) hx
-    let baz : Field (B⧸Q) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient Q).mp ‹_›).toField
-    let xbar : (B ⧸ Q)ˣ := Units.mk0 (x : B ⧸ Q) foo
     obtain ⟨n, (hn : g Q ^ n = xbar)⟩ := g_spec Q xbar
     have hn2 : (g Q : B ⧸ Q) ^ n = xbar := by exact_mod_cast hn
     change _ = (x : B ⧸ Q) at hn2
-    rw [← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
-    change ((Frob A Q isGalois P) x : B ⧸ Q) = x ^ Fintype.card (A ⧸ P)
-    rw [← hn2]
+    rw [← Ideal.Quotient.coe_eq_coe_iff_sub_mem]
     push_cast
-    have fact1 := Frob_spec A Q isGalois P
-    have fact2 : y A Q = (g Q : B⧸Q) := y_mod_Q A Q
-    rw [← fact2]
-    rw [← Ideal.Quotient.coe_eq_coe_iff_sub_mem] at fact1
-    push_cast at fact1
-    rw [pow_right_comm]
-    rw [← fact1]
+    rw [← hn2]
+    have := Frob_spec A Q isGalois P
+    rw [← Ideal.Quotient.coe_eq_coe_iff_sub_mem] at this
+    push_cast at this
+    rw [← y_mod_Q' A Q, pow_right_comm, ← this]
     norm_cast
-    rw [Ideal.Quotient.coe_eq_coe_iff_sub_mem]
-    have fact3 := Frob_Q A Q isGalois P
-    rw [← smul_pow']
+    rw [Ideal.Quotient.coe_eq_coe_iff_sub_mem, ← smul_pow']
     change (Frob A Q isGalois P) • x - _ ∈ _
     rw [← smul_sub]
-    nth_rw 3 [ ← fact3]
-    suffices (x - y A Q ^ n) ∈ Q by
-      exact Ideal.smul_mem_pointwise_smul_iff.mpr this
-    rw [← Ideal.Quotient.coe_eq_coe_iff_sub_mem]
-    rw [← hn2]
-    rw [← fact2]
+    nth_rw 3 [ ← Frob_Q A Q isGalois P]
+    rw [Ideal.smul_mem_pointwise_smul_iff, ← Ideal.Quotient.coe_eq_coe_iff_sub_mem,
+      ← hn2, ← y_mod_Q A Q]
     norm_cast
