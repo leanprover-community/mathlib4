@@ -13,24 +13,27 @@ A configurable linter that flags `Syntax` uses that are unnecessary.
 
 open Lean Parser Elab Command
 
+/-- converts a `String.Range` to the corresponding pair of positions. -/
+def Lean.FileMap.rangeToPositions (fm : FileMap) (rg : String.Range) : Position × Position :=
+  (fm.toPosition <| rg.start, fm.toPosition <| rg.stop)
 /-- todo: this only removes a `simpNF` from the *first* `nolint ... simpNF ...` in `@[...]`.
 It completely ignores
 * multiple `simpNF`;
 * every `nolint` except for the first.
 
 The linter reports also an array of positions, for ease of replacing.
+It always reports first the beginning and the end of the `nolint ...` block.
 
-* If the `nolint` syntax contains just `simpNF`, then it returns the beginning of `nolint` and the
-  ending of `simpNF`.
+* If the `nolint` syntax contains just `simpNF`, then it returns nothing else.
   In this case, this whole range can be removed, but then care has to be
-  taken with `,` and possible removing entirely the attribute.
+  taken with `,` and possibly removing entirely the attribute.
 
-* If the `nolint` syntax contains `simpNF` and more linters, then it return the beginning *and* the
-  ending of both `nolint` and `simpNF`.
+* If the `nolint` syntax contains more than just a single `simpNF`, then it also returns
+  the beginning and the ending of `simpNF`.
   In this case, this whole second range can be removed.
 -/
-def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Array Position)) := do
-  -- check if there is a `nolint` and do nothing it there isn't one.
+def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Array (Position × Position))) := do
+  -- check if there is a `nolint` and do nothing if there isn't one.
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.attribute)).isSome then return none
   match stx.find? (·.isOfKind ``Std.Tactic.Lint.nolint) with
     | none => return none
@@ -46,15 +49,12 @@ def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Array Positio
               nolinted.size
             | _ => 0
           let fm ← getFileMap
-          let nolintHeadPos := fm.toPosition <| nl.getHeadInfo.getPos?.getD default
-          let simpNFtailPos := fm.toPosition <| snf.getHeadInfo.getTailPos?.getD default
+          let nlPositions := fm.rangeToPositions (nl.getRange?.getD default)
           if noLintNumber == 1
           then
-            return some (nl, #[nolintHeadPos, simpNFtailPos])
+            return some (nl, #[nlPositions])
           else
-            let nolintTailPos := fm.toPosition <| nl.getHeadInfo.getTailPos?.getD default
-            let simpNFHeadPos := fm.toPosition <| snf.getHeadInfo.getPos?.getD default
-            return some (snf, #[nolintHeadPos, nolintTailPos, simpNFHeadPos, simpNFtailPos])
+            return some (snf, #[nlPositions, fm.rangeToPositions (snf.getRange?.getD default)])
 
 /-- `unnecessarySyntax` linter takes as input a `CommandElabM` function `f` assigning to
 a command `cmd` syntax an array of triples `(newCmd, positionStx, message)` consisting of

@@ -4,7 +4,7 @@ import Batteries
 set_option linter.unnecessarySyntax false
 
 /--
-warning: `nolint simpNF` can be removed [⟨13, 8⟩, ⟨13, 21⟩]
+warning: `nolint simpNF` can be removed [(⟨13, 8⟩, ⟨13, 21⟩)]
 note: this linter can be disabled with `set_option linter.unnecessarySyntax false`
 -/
 #guard_msgs in
@@ -14,13 +14,13 @@ set_option linter.unnecessarySyntax true in
 theorem imSimp : True := .intro
 
 /--
-warning: `simpNF` can be removed [⟨23, 8⟩, ⟨23, 14⟩, ⟨23, 27⟩, ⟨23, 33⟩]
+warning: `simpNF` can be removed [(⟨23, 8⟩, ⟨23, 33⟩), (⟨23, 27⟩, ⟨23, 33⟩)]
 note: this linter can be disabled with `set_option linter.unnecessarySyntax false`
 -/
 #guard_msgs in
 -- this lemma is perfectly reasonable as a simp lemma, `nolint simpNF` is unnecessary
 set_option linter.unnecessarySyntax true in
-@[simp, nolint simpVarHead simpNF ]
+@[simp, nolint simpVarHead simpNF]
 theorem imSimpToo : True := .intro
 
 -- the linter ignores `attribute`
