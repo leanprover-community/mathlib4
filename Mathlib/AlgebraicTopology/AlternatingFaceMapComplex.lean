@@ -130,8 +130,9 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem obj_d_eq (X : SimplicialObject C) (n : ℕ) :
-    (AlternatingFaceMapComplex.obj X).d (n + 1) n = ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i :=
-  by apply ChainComplex.of_d
+    (AlternatingFaceMapComplex.obj X).d (n + 1) n
+      = ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i := by
+  apply ChainComplex.of_d
 #align algebraic_topology.alternating_face_map_complex.obj_d_eq AlgebraicTopology.AlternatingFaceMapComplex.obj_d_eq
 
 variable {X} {Y}

@@ -20,8 +20,6 @@ universe u v
 
 open Finset
 
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30:
-  infer kinds are unsupported in Lean 4: #[`Equiv] [] -/
 /-- `FinEnum α` means that `α` is finite and can be enumerated in some order,
   i.e. `α` has an explicit bijection with `Fin n` for some n. -/
 class FinEnum (α : Sort*) where
@@ -105,7 +103,6 @@ instance punit : FinEnum PUnit :=
   ofList [PUnit.unit] fun x => by cases x; simp
 #align fin_enum.punit FinEnum.punit
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
   ofList (toList α ×ˢ toList β) fun x => by cases x; simp
 #align fin_enum.prod FinEnum.prod
@@ -172,7 +169,7 @@ instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
 
 instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinEnum { x // p x } :=
   ofList ((toList α).filterMap fun x => if h : p x then some ⟨_, h⟩ else none)
-    (by rintro ⟨x, h⟩; simp; exists x; simp [*])
+    (by rintro ⟨x, h⟩; simpa)
 #align fin_enum.subtype.fin_enum FinEnum.Subtype.finEnum
 
 instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Sigma β) :=

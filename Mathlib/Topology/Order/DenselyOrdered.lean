@@ -410,8 +410,8 @@ theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set 
     ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∉ t) ∧ ∀ x, IsTop x → x ∉ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
   refine ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), ?_, ?_, ?_, fun x hx => ?_, fun x hx => ?_⟩
-  · exact (diff_subset _ _).trans hts
-  · exact htc.mono (diff_subset _ _)
+  · exact diff_subset.trans hts
+  · exact htc.mono diff_subset
   · exact htd.diff_finite ((subsingleton_isBot α).finite.union (subsingleton_isTop α).finite)
   · simp [hx]
   · simp [hx]

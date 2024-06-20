@@ -3,9 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Logic.Pairwise

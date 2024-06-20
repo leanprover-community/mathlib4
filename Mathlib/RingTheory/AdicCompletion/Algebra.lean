@@ -156,6 +156,11 @@ theorem mk_smul_mk (r : R) (x : M) :
       = r • Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x :=
   rfl
 
+theorem val_smul_eq_evalₐ_smul (n : ℕ) (r : AdicCompletion I R)
+    (x : M ⧸ (I ^ n • ⊤ : Submodule R M)) : r.val n • x = evalₐ I n r • x := by
+  apply induction_on I R r (fun r ↦ ?_)
+  exact Quotient.inductionOn' x (fun x ↦ rfl)
+
 instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) :=
   Function.Surjective.moduleLeft (Ideal.Quotient.mk (I • ⊤ : Ideal R))
     Ideal.Quotient.mk_surjective (fun _ _ ↦ rfl)

@@ -232,9 +232,9 @@ theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set �
   apply ae_of_mem_of_ae_of_mem_inter_Ioo
   intro a b as bs _
   obtain ⟨g, hg, gf⟩ : ∃ g : ℝ → ℝ, Monotone g ∧ EqOn f g (s ∩ Icc a b) :=
-    (hf.mono (inter_subset_left s (Icc a b))).exists_monotone_extension
-      (hf.map_bddBelow (inter_subset_left _ _) ⟨a, fun x hx => hx.2.1, as⟩)
-      (hf.map_bddAbove (inter_subset_left _ _) ⟨b, fun x hx => hx.2.2, bs⟩)
+    (hf.mono inter_subset_left).exists_monotone_extension
+      (hf.map_bddBelow inter_subset_left ⟨a, fun x hx => hx.2.1, as⟩)
+      (hf.map_bddAbove inter_subset_left ⟨b, fun x hx => hx.2.2, bs⟩)
   filter_upwards [hg.ae_differentiableAt] with x hx
   intro h'x
   apply hx.differentiableWithinAt.congr_of_eventuallyEq _ (gf ⟨h'x.1, h'x.2.1.le, h'x.2.2.le⟩)

@@ -105,7 +105,7 @@ lemma sum_mul_boole (s : Finset ι) (f : ι → α) (i : ι) :
 #align finset.sum_mul_boole Finset.sum_mul_boole
 
 lemma sum_boole_mul (s : Finset ι) (f : ι → α) (i : ι) :
-    ∑ j ∈ s, ite (i = j) 1 0 * f i = ite (i ∈ s) (f i) 0 := by simp
+    ∑ j ∈ s, ite (i = j) 1 0 * f j = ite (i ∈ s) (f i) 0 := by simp
 #align finset.sum_boole_mul Finset.sum_boole_mul
 
 end NonAssocSemiring

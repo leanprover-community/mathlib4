@@ -15,8 +15,6 @@ This file defines monoid with zero, group with zero, and related structure insta
 
 assert_not_exists DenselyOrdered
 
--- Porting note: All these instances used `refine_struct` and `pi_instance_derive_field`
-
 open Function Pi
 
 variable {ι : Type*} {α : ι → Type*}

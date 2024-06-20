@@ -581,7 +581,7 @@ theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ /
     simp_rw [mem_ball_zero_iff, norm_neg]
     exact fun _ => id
 
-@[deprecated gauge_ball] -- 2023-07-24
+@[deprecated gauge_ball (since := "2023-07-24")]
 theorem gauge_ball' (hr : 0 < r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ / r :=
   gauge_ball hr.le x
 #align gauge_ball gauge_ball'

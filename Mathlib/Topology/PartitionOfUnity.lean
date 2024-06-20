@@ -217,7 +217,7 @@ theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M
   have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
     funext fun _ => (Pi.smul_apply' _ _ _).symm
   rw [ρ.coe_finsupport x₀, this, support_smul]
-  exact inter_subset_left _ _
+  exact inter_subset_left
 
 end finsupport
 
