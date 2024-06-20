@@ -60,8 +60,8 @@ be this `σ`.
 
 ## The proof
 
-We know `σ y ≡ y ^ q ≠ 0 mod Q`. Hence `σ y ∉ Q`, and thus `y ∉ σ⁻¹ Q`. But `y ∈ Q'` for all nontrivial
-conjugates `Q'` of `Q`, hence `σ⁻¹ Q = Q` and thus `Q` is `σ`-stable.
+We know `σ y ≡ y ^ q ≠ 0 mod Q`. Hence `σ y ∉ Q`, and thus `y ∉ σ⁻¹ Q`. But `y ∈ Q'` for all
+nontrivial conjugates `Q'` of `Q`, hence `σ⁻¹ Q = Q` and thus `Q` is `σ`-stable.
 
 Hence `σ` induces a field automorphism of `B/Q` and we know it's `x ↦ x^q` on a generator,
 so it's `x ↦ x^q` on everything.
@@ -216,40 +216,18 @@ lemma m_spec' : (m A Q isGalois).map (algebraMap A B) = F A Q := by
 -- Amelia's trick to insert "let P be the ideal under Q" into the typeclass system
 variable (P : Ideal A) [P.IsMaximal] [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A⧸P) (B⧸Q)]
 
--- -- want to move from eval₂?
--- lemma m.mod_P_y_eq_zero : (m A Q isGalois).eval₂ (algebraMap A (B⧸Q)) (algebraMap B (B⧸Q) (y A Q)) = 0 := by
---   rw [show algebraMap A (B⧸Q) = (algebraMap B (B⧸Q)).comp (algebraMap A B) from IsScalarTower.algebraMap_eq A B (B ⧸ Q)]
---   rw [←eval₂_map]
---   change eval₂ _ _ (m A Q isGalois : B[X]) = _
---   simp [m_spec A Q isGalois, eval_map, F.y_eq_zero]
-
 -- should be elsewhere
 lemma _root_.Algebra.cast_eq_algebraMap {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
     (a : A) : (a : B) = algebraMap A B a := rfl
 
 lemma m.y_mod_P_eq_zero : Polynomial.aeval (↑(y A Q) : B ⧸ Q) (m A Q isGalois) = 0 := by
-  rw [← aeval_map_algebraMap B, m_spec', Algebra.cast_eq_algebraMap, aeval_algebraMap_apply, coe_aeval_eq_eval,
-    F.y_eq_zero A Q, map_zero]
+  rw [← aeval_map_algebraMap B, m_spec', Algebra.cast_eq_algebraMap, aeval_algebraMap_apply,
+    coe_aeval_eq_eval, F.y_eq_zero A Q, map_zero]
 
 
 noncomputable abbrev mmodP := (m A Q isGalois).map (algebraMap A (A⧸P))
 
 open scoped Polynomial
-
--- lemma barg (K : Type*) [Field K] [Fintype K] : ∃ p n : ℕ, p.Prime ∧ Fintype.card K = p ^ n ∧ CharP K p := by
---   obtain ⟨p, n, h₁, h₂⟩ := FiniteField.card' K
---   refine ⟨p, n.val, h₁, h₂, ?_⟩
---   have : (p ^ n.val : K) = 0 := mod_cast h₂ ▸ Nat.cast_card_eq_zero K
---   rw [CharP.charP_iff_prime_eq_zero h₁]
---   simpa only [ne_eq, PNat.ne_zero, not_false_eq_true, pow_eq_zero_iff] using this
-
--- -- mathlib
--- lemma _root_.Polynomial.eval₂_pow_card (k : Type*) [Field k] [Fintype k] (f : k[X])
---     (L : Type*) [CommRing L] [Algebra k L]
---     (t : L) : f.eval₂ (algebraMap k L) (t^(Fintype.card k)) =
---               (f.eval₂ (algebraMap k L) t)^(Fintype.card k) := by
---   simp_rw [← Polynomial.aeval_def] -- `eval₂ (algebraMap k L)` is just `aeval`
---   rw [← map_pow, ← FiniteField.expand_card, Polynomial.expand_aeval]
 
 lemma _root_.Polynomial.aeval_pow_card (k : Type*) [Field k] [Fintype k] (f : k[X])
     (L : Type*) [CommRing L] [Algebra k L]
@@ -258,16 +236,6 @@ lemma _root_.Polynomial.aeval_pow_card (k : Type*) [Field k] [Fintype k] (f : k[
   rw [← map_pow, ← FiniteField.expand_card, Polynomial.expand_aeval]
 
 variable [Fintype (A⧸P)]
--- (m-bar)(y^q)=0 in B/Q
--- lemma m.mod_P_y_pow_q_eq_zero :
---     (m A Q isGalois).eval₂ (algebraMap A (B⧸Q)) ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P)))
---     = 0 := by
---   suffices ((m A Q isGalois).map (algebraMap A (A⧸P))).eval₂ (algebraMap (A⧸P) (B⧸Q))
---     ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) = 0 by
---     rwa [eval₂_map, ← IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q)] at this
---   let foobar : Field (A⧸P) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient P).mp ‹_›).toField
---   rw [eval₂_pow_card, eval₂_map, ← IsScalarTower.algebraMap_eq A (A ⧸ P) (B ⧸ Q), m.mod_P_y_eq_zero, zero_pow]
---   exact Fintype.card_ne_zero
 
 lemma m.mod_P_y_pow_q_eq_zero' :
     aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P)))  (m A Q isGalois) = 0 := by
@@ -277,11 +245,8 @@ lemma m.mod_P_y_pow_q_eq_zero' :
     ← Algebra.cast_eq_algebraMap, aeval_map_algebraMap, m.y_mod_P_eq_zero, zero_pow]
   exact Fintype.card_ne_zero
 
--- lemma F.mod_Q_y_pow_q_eq_zero : (F A Q).eval₂ (algebraMap B (B⧸Q)) ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) = 0 := by
---   rw [← m_spec' A Q isGalois, eval₂_map]--, m.mod_P_y_pow_q_eq_zero]
---   rw [← IsScalarTower.algebraMap_eq A B (B ⧸ Q), m.mod_P_y_pow_q_eq_zero]
-
-lemma F.mod_Q_y_pow_q_eq_zero' : aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) (F A Q) = 0 := by
+lemma F.mod_Q_y_pow_q_eq_zero' :
+    aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) (F A Q) = 0 := by
   rw [← m_spec' A Q isGalois, aeval_map_algebraMap, m.mod_P_y_pow_q_eq_zero']
 
 lemma _root_.Polynomial.aeval_finset_prod.{u, v, y} {R : Type u} {S : Type v} {ι : Type y}
@@ -314,8 +279,8 @@ lemma Frob_Q : Frob A Q isGalois P • Q = Q := by
   simp only [sub_sub_cancel] at this
   apply y_not_in_Q A Q <| Ideal.IsPrime.mem_of_pow_mem (show Q.IsPrime by infer_instance) _ this
 
-lemma _root_.Ideal.Quotient.coe_eq_coe_iff_sub_mem {R : Type*} [CommRing R] {I : Ideal R} (x y : R) :
-  (x : R ⧸ I) = y ↔ x - y ∈ I := Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _
+lemma _root_.Ideal.Quotient.coe_eq_coe_iff_sub_mem {R : Type*} [CommRing R] {I : Ideal R}
+    (x y : R) : (x : R ⧸ I) = y ↔ x - y ∈ I := Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _
 
 lemma coething (A B : Type*) [CommSemiring A] [Ring B] [Algebra A B] (a : A) (n : ℕ) :
     (a ^ n : A) = (a : B) ^ n := by
@@ -337,7 +302,7 @@ lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x^(Fintype.card (A⧸
   ·
     have foo : (x : B ⧸ Q) ≠ 0 :=
       mt (fun h ↦ (Submodule.Quotient.mk_eq_zero Q).mp h) hx
-    let foobar : Field (B⧸Q) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient Q).mp ‹_›).toField
+    let baz : Field (B⧸Q) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient Q).mp ‹_›).toField
     let xbar : (B ⧸ Q)ˣ := Units.mk0 (x : B ⧸ Q) foo
     obtain ⟨n, (hn : g Q ^ n = xbar)⟩ := g_spec Q xbar
     have hn2 : (g Q : B ⧸ Q) ^ n = xbar := by exact_mod_cast hn
