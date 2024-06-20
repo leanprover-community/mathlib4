@@ -68,20 +68,7 @@ lemma basis2 [DecidableEq α] [OrderTop α] (F : Finset α) :
     simp only [Set.preimage_compl, mem_coe]
     exact hT
 
-
-end SemilatticeInf
-
-section PrimativeSpectrum
-
-variable [SemilatticeInf α] [OrderTop α] [TopologicalSpace α] [IsLower α]
-
-variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
-
-
-
-
-
-lemma test1 [DecidableEq α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
+lemma isBasis1 [DecidableEq α] [OrderTop α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
   rw [IsLower.lowerBasis]
   ext R
@@ -105,16 +92,34 @@ lemma test1 [DecidableEq α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T 
     rw [basis2]
     simp only [preimage_compl, image_val_compl, Subtype.image_preimage_coe, diff_self_inter]
     exact fun p a ↦ hT p a
-    --exact id (Eq.symm e1)
 
-/-
-lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ∩ Ici a := by
+end SemilatticeInf
+
+section PrimativeSpectrum
+
+variable [CompleteLattice α] [TopologicalSpace α] [IsLower α] [DecidableEq α]
+
+variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
+
+
+lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor
   · intro h
-    sorry
-  · --intro h
-    --cases' h with a ha
-    exact False.elim β
--/
+    have e1 : S = ⋃₀ {s | s ∈ {S | ∃ a, T \ Ici a = S} ∧ s ⊆ S} := by
+      apply IsTopologicalBasis.open_eq_sUnion'
+      apply isBasis1
+       -- (isBasis1 T hT) h
+  · intro h
+    cases' h with a ha
+    -- rw [IsOpen, TopologicalSpace.IsOpen]
+    -- rw [instTopologicalSpaceSubtype]
+    -- rw [induced]
+    -- simp only
+    use (Ici a)ᶜ
+    constructor
+    · simp only [isOpen_compl_iff]
+      exact isClosed_Ici
+    · rw [ha]
+
 
 end PrimativeSpectrum
