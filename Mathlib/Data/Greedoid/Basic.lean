@@ -47,7 +47,7 @@ class Exchange {α : Type*} (Sys : Finset (Finset α)) : Prop :=
 
 instance {α : Type*} [DecidableEq α] :
     @DecidablePred (Finset (Finset α)) ExchangeProperty :=
-  fun Sys => by unfold ExchangeProperty; infer_instance
+  λ Sys ↦ by unfold ExchangeProperty; infer_instance
 
 /-- The accessible property of greedoid -/
 def AccessibleProperty {α : Type*} (Sys : Finset (Finset α)) : Prop :=
@@ -83,10 +83,10 @@ protected def Greedoid.mem (s : Finset α) (G : Greedoid α) := s ∈ G.feasible
 instance : Membership (Finset α) (Greedoid α) :=
   ⟨Greedoid.mem⟩
 
-instance [DecidableEq α] {G : Greedoid α} : DecidablePred (fun s => s ∈ G) := fun s =>
+instance [DecidableEq α] {G : Greedoid α} : DecidablePred (λ s ↦ s ∈ G) := λ s ↦
   if h : s ∈ G.feasible_set
     then isTrue h
-    else isFalse fun h' => h h'
+    else isFalse λ h' ↦ h h'
 
 end Greedoid
 
@@ -102,20 +102,20 @@ theorem eq_of_veq : ∀ {G₁ G₂ : Greedoid α},
 
 @[simp]
 theorem feasible_set_injective :
-    Function.Injective (fun G : Greedoid α => (G.ground_set, G.feasible_set)) :=
-  fun _ _ => by simp; exact eq_of_veq
+    Function.Injective (λ G : Greedoid α ↦ (G.ground_set, G.feasible_set)) :=
+  λ _ _ ↦ by simp; exact eq_of_veq
 
 @[simp]
 theorem feasible_set_inj {G₁ G₂ : Greedoid α} :
     G₁.ground_set = G₂.ground_set ∧ G₁.feasible_set = G₂.feasible_set ↔ G₁ = G₂ :=
-  ⟨fun h => by apply eq_of_veq <;> simp [h], fun h => by simp [h]⟩
+  ⟨λ h ↦ by apply eq_of_veq <;> simp [h], λ h ↦ by simp [h]⟩
 
-instance [DecidableEq α] : DecidableEq (Greedoid α) := fun G₁ G₂ =>
+instance [DecidableEq α] : DecidableEq (Greedoid α) := λ G₁ G₂ ↦
   if h₁ : G₁.ground_set = G₂.ground_set
     then if h₂ : G₁.feasible_set = G₂.feasible_set
       then isTrue (eq_of_veq h₁ h₂)
-      else isFalse (fun h' => h₂ (h' ▸ rfl))
-    else isFalse (fun h' => h₁ (h' ▸ rfl))
+      else isFalse (λ h' ↦ h₂ (h' ▸ rfl))
+    else isFalse (λ h' ↦ h₁ (h' ▸ rfl))
 
 variable {G : Greedoid α}
 
@@ -143,6 +143,8 @@ end Membership
 
 @[simp]
 theorem greedoid_nonempty : G.feasible_set.Nonempty := ⟨∅, G.contains_emptyset⟩
+
+instance : Nonempty G.feasible_set := ⟨∅, G.contains_emptyset⟩
 
 section Exchange
 
@@ -179,7 +181,7 @@ theorem exchangeProperty_exists_feasible_superset_add_element_feasible'
     · use s₂; simp [*]
       rw [eq_of_subset_of_card_le (cons_subset.2 ⟨h, hs₂⟩) (by simp at hs₄; simp [hs₄])]
       exact hs₁
-    · rcases ih hs₁ (fun _ h => by apply Or.elim (hs₃ _ h) <;> tauto) (by omega) (by simp [*])
+    · rcases ih hs₁ (λ _ h ↦ by apply Or.elim (hs₃ _ h) <;> tauto) (by omega) (by simp [*])
         with ⟨t, ht₁, ht₂, ht₃, ht₄, ht₅⟩
       use t; simp_all [Finset.Subset.trans hs₂]
 
@@ -200,7 +202,7 @@ theorem accessible_nonempty_contains_emptyset'
     ∅ ∈ Sys := by
   induction n generalizing s with
   | zero => exact card_eq_zero.mp hn.symm ▸ hs
-  | succ n ih =>
+  | succ _ ih =>
     rcases Accessible.accessible hs (by rw [← Finset.card_ne_zero]; omega)
       with ⟨t, _, _, ht⟩
     exact ih ht (by omega)
@@ -222,7 +224,7 @@ theorem induction_on_accessible' [Nonempty Sys]
   | zero => exact card_eq_zero.mp hn.symm ▸ empty
   | succ n ih =>
     rcases Accessible.accessible hs (by rw [← Finset.card_ne_zero]; omega)
-      with ⟨t, ht₁, ht₂, ht₃⟩
+      with ⟨_, ht₁, ht₂, ht₃⟩
     exact insert hs ht₃ ht₁ ht₂ (ih _ ht₃ (by omega))
 
 -- TODO: Find better name.
@@ -244,7 +246,7 @@ theorem construction_on_accessible [Nonempty Sys]
   | insert h₁ _ h₂ h₃ h₄ =>
     rcases h₄ with ⟨l, h₄, h₅, h₆⟩
     rcases ssubset_iff_exists_cons_subset.mp
-      ⟨h₂, fun h' => by have := subset_antisymm h' h₂ ▸ h₃; omega⟩ with ⟨a, ha₁, ha₂⟩
+      ⟨h₂, λ h' ↦ by have := subset_antisymm h' h₂ ▸ h₃; omega⟩ with ⟨a, ha₁, ha₂⟩
     use a :: l
     have hal : (a :: l).Nodup := by
       simp [h₄]; intro h'; apply ha₁; rw [Finset.mem_def, ← h₅]; exact h'
@@ -254,8 +256,23 @@ theorem construction_on_accessible [Nonempty Sys]
     intro l' h₇; use ⟨Multiset.ofList l', Nodup.sublist (IsSuffix.sublist h₇) hal⟩
     simp; rw [suffix_cons_iff] at h₇; apply Or.elim h₇ <;> intro h₇
     · simp [h₇, has, h₁]
-    · rcases h₆ l' h₇ with ⟨t, ht₁, ht₂⟩; simp only [ht₁, ht₂]
+    · rcases h₆ l' h₇ with ⟨_, ht₁, ht₂⟩; simp only [ht₁, ht₂]
 
 end Accessible
+
+/-- To prove a proposition on each feasible set `s : Finset α` of a greedoid `G : Greedoid α`,
+    it suffices to prove it for the emptyset, and to show that if it holds for some `t ∈ G`,
+    then it holds for `s = cons a t _` which `s ∈ G`. -/
+protected theorem induction_on {p : Finset α → Prop} (empty : p ∅)
+    (insert : ∀ ⦃a : α⦄ {t : Finset α} (ha : a ∉ t), cons a t ha ∈ G → p t → p (cons a t ha))
+    {s : Finset α} (hs : s ∈ G) :
+    p s := by
+  induction s , hs using induction_on_accessible with
+  | empty => exact empty
+  | insert h₁ _ h₂ h₃ h₄ =>
+    rcases ssubset_iff_exists_cons_subset.mp (Finset.ssubset_iff_subset_ne.mpr
+      ⟨h₂, λ h ↦ by simp [h] at h₃⟩) with ⟨_, _, ha⟩
+    have h := eq_of_subset_of_card_le ha (le_of_eq (by simp [h₃]))
+    exact h.symm ▸ insert _ (h ▸ h₁) h₄
 
 end Greedoid
