@@ -37,12 +37,13 @@ structure Edit where
   range : String.Range
   deriving ToJson, FromJson
 
-def runRefactoring (_cmd : TSyntax `command) : CommandElabM (List Edit) := do
-  -- INSERT LEAN CODE HERE
-  panic! "no refactoring active, edit Refactor/Main.lean to add one"
-  -- let `(command| #align $_ $_) := cmd | return []
-  -- let some range := cmd.raw.getRange? | return []
-  -- pure [⟨"", range⟩]
+def runRefactoring (cmd : TSyntax `command) : CommandElabM (List Edit) := do
+  unless (cmd.raw.find? (·.isOfKind ``Lean.Parser.Command.docComment)).isNone do return []
+  match (cmd.raw.find? (·.isOfKind ``Lean.Parser.Command.theorem)) with
+    | none => return []
+    | some thm => return [
+      { replacement := "lemma"
+        range := (thm.getHead?.getD default).getRange?.get! }]
 
 open System (FilePath)
 variable (srcSearchPath : SearchPath) (pkg : Name) in
