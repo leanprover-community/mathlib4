@@ -100,4 +100,23 @@ theorem isOpenImmersion_stableUnderBaseChange :
     intro X Y Z f g H; infer_instance
 #align algebraic_geometry.is_open_immersion_stable_under_base_change AlgebraicGeometry.isOpenImmersion_stableUnderBaseChange
 
+lemma isomorphisms_isLocalAtTarget :
+    PropertyIsLocalAtTarget (MorphismProperty.isomorphisms _) := by
+  constructor
+  · exact MorphismProperty.RespectsIso.isomorphisms _
+  · rintro X Y f U h
+    have : IsIso f := h
+    delta morphismRestrict MorphismProperty.isomorphisms
+    infer_instance
+  · intros X Y f 𝒰 h
+    simp only [MorphismProperty.isomorphisms] at h
+    have h := h -- why?
+    rw [MorphismProperty.isomorphisms, isIso_iff_isOpenImmersion,
+      IsOpenImmersion.openCover_iff 𝒰, TopCat.epi_iff_surjective]
+    refine ⟨fun _ ↦ inferInstance, fun x ↦ ?_⟩
+    obtain ⟨y, e⟩ := 𝒰.Covers x
+    use (inv (Limits.pullback.snd (f := f) (g := 𝒰.map (𝒰.f x))) ≫ Limits.pullback.fst).1.base y
+    rwa [← Scheme.comp_val_base_apply, Category.assoc, Limits.pullback.condition,
+      IsIso.inv_hom_id_assoc]
+
 end AlgebraicGeometry

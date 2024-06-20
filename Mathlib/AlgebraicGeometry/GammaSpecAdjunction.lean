@@ -488,6 +488,34 @@ theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
   exact this
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
+lemma adjunction_unit_map_basicOpen (X : Scheme) (r : X.presheaf.obj (op ⊤)) :
+    (ΓSpec.adjunction.unit.app X ⁻¹ᵁ (PrimeSpectrum.basicOpen r)) = X.basicOpen r := by
+  rw [← basicOpen_eq_of_affine]
+  erw [Scheme.preimage_basicOpen]
+  congr
+  rw [ΓSpec.adjunction_unit_app_app_top]
+  erw [← comp_apply]
+  simp
+
+theorem toOpen_unit_app_val_c_app {X : Scheme} (U) :
+    StructureSheaf.toOpen _ _ ≫ (ΓSpec.adjunction.unit.app X).val.c.app U =
+      X.presheaf.map (homOfLE (by exact le_top)).op := by
+  rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
+    NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op]
+  show (ΓSpec.adjunction.counit.app (Scheme.Γ.rightOp.obj X)).unop ≫
+    (Scheme.Γ.rightOp.map (ΓSpec.adjunction.unit.app X)).unop ≫ _ = _
+  rw [← Category.assoc, ← unop_comp, ΓSpec.adjunction.left_triangle_components]
+  dsimp
+  exact Category.id_comp _
+
+set_option maxHeartbeats 800000 in
+@[reassoc (attr := simp)]
+theorem toOpen_unit_app_val_c_app' {X : Scheme}
+  (U : Opens (PrimeSpectrum (X.presheaf.obj (op ⊤)))) :
+  toOpen (X.presheaf.obj (op ⊤)) U ≫ (adjunction.unit.app X).val.c.app (op U) =
+    X.presheaf.map (homOfLE (by exact le_top)).op :=
+  ΓSpec.toOpen_unit_app_val_c_app (op U)
+
 end ΓSpec
 
 @[reassoc]

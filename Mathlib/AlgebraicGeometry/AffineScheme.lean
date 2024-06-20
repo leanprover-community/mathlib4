@@ -171,6 +171,16 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
 
 end AffineScheme
 
+lemma isIso_of_isAffine_isIso {X Y : Scheme} [hX : IsAffine X] [hY : IsAffine Y] (f : X ⟶ Y)
+    [hf : IsIso (f.1.c.app (op ⊤))] : IsIso f := by
+  rw [← mem_Spec_essImage] at hX hY
+  let f' : (⟨X, hX⟩ : AffineScheme) ⟶ ⟨Y, hY⟩ := f
+  have : IsIso (AffineScheme.Γ.map f'.op) := hf
+  have : AffineScheme.Γ.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
+  have := isIso_of_reflects_iso f'.op AffineScheme.Γ
+  have := isIso_of_op f'
+  exact Functor.map_isIso AffineScheme.forgetToScheme f'
+
 /-- An open subset of a scheme is affine if the open subscheme is affine. -/
 def IsAffineOpen {X : Scheme} (U : Opens X) : Prop :=
   IsAffine (X ∣_ᵤ U)
