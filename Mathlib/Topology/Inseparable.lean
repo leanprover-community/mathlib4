@@ -424,7 +424,7 @@ Relation.fibration_iff_isUpperSet_image
 alias StableUnderGeneralization.image := GeneralizingMap.stableUnderGeneralization_image
 
 lemma GeneralizingMap.stableUnderGeneralization_range (h : GeneralizingMap f) :
-  StableUnderGeneralization (range f) :=
+    StableUnderGeneralization (range f) :=
 @image_univ _ _ f ▸ stableUnderGeneralization_univ.image h
 
 /-!
