@@ -1,5 +1,32 @@
+/-
+Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kyle Miller, Jack Cheverton.
+-/
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
+
+/-!
+# Digraphs
+
+This module defines directed graphs on a vertex type `V`.
+
+## Main definitions
+
+* `Digraph` is a structure for the relation
+
+* `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `Digraph` forms a
+  `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
+  of the complete graph.
+
+## Todo
+
+* The implementation of digraphs is currently incomplete. It was originally created by Kyle Miller
+using an older version of Mathlib. This version of the module is being ported into the current
+version of Mathlib by Jack Cheverton. Furthermore, new additions to the module are being made
+based on what has been added to SimpleGraph since the original implementation of Digraph was
+created.
+-/
 
 open Finset Function
 
@@ -10,19 +37,13 @@ The relation describes which pairs of vertices are adjacent.
 -/
 @[ext]
 structure Digraph (V : Type u) where
+  /-- The adjacency relation of a digraph. -/
   Adj : V → V → Prop
-
-
--- JACK: This might have been deprecated? check Mathlib/Tactic/ProjectionNotation.lean
---pp_extended_field_notation Digraph.Adj
 
 noncomputable instance {V : Type u} [Fintype V] : Fintype (Digraph V) := by
   classical exact Fintype.ofInjective Digraph.Adj Digraph.ext
 
-
-/-- Constructor for digraphs using a symmetric irreflexive boolean function. -/
--- Fix this for directed graphs
-
+/-- Constructor for digraphs using a boolean function. -/
 @[simps]
 def Digraph.mk' {V : Type u} :
     (V → V → Bool) ↪ Digraph V where
@@ -34,7 +55,6 @@ def Digraph.mk' {V : Type u} :
     funext v w
     simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
 
-
 /-- Construct the digraph induced by the given relation. -/
 def Digraph.fromRel {V : Type u} (r : V → V → Prop) : Digraph V where
   Adj a b := a ≠ b ∧ (r a b ∨ r b a)
@@ -44,9 +64,9 @@ theorem Digraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
     (Digraph.fromRel r).Adj v w ↔ v ≠ w ∧ (r v w ∨ r w v) :=
   Iff.rfl
 
-/-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices
+/-- The complete graph on a type `V` is the digraph with all pairs of distinct vertices
 adjacent. In `Mathlib`, this is usually referred to as `⊤`. -/
-def Digraph.completeGraph (V : Type u) : Digraph V where Adj _ _ := True
+def Digraph.completeGraph (V : Type u) : Digraph V where Adj := ⊤
 
 /-- The graph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. -/
 def Digraph.emptyGraph (V : Type u) : Digraph V where Adj _ _ := False
@@ -202,7 +222,7 @@ instance (V : Type u) : Inhabited (Digraph V) :=
   ⟨⊥⟩
 
 /-
--- This is false. Check if we should prove ¬ Unique instead of just getting rid of it
+-- JACK: This is false. Check if we should prove ¬ Unique instead of just getting rid of it
 instance [Subsingleton V] : Unique (Digraph V) where
   default := ⊥
   uniq G := by
@@ -216,13 +236,9 @@ instance [Nontrivial V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
   rw [← completeGraph_eq_top, ← emptyGraph_eq_bot, Digraph.completeGraph, Digraph.emptyGraph]
   simp only [ne_eq, mk.injEq]
-  rw [@funext_iff]
-  simp only [forall_const]
-  rw [@funext_iff]
-  simp only [eq_iff_iff, iff_true, forall_const, not_false_eq_true]
-
+  exact not_isTop_iff_ne_top.mp fun a_1 ↦ a_1 Eq a a rfl
   /-
-  Original proof doesn't compile in this case, I don't know how to modify it to make it work:
+  JACK: Original proof doesn't compile in this case, I don't know how to modify it to make it work:
 
   ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [← adj_inj, Function.funext_iff, bot_adj,
     top_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩⟩
@@ -255,4 +271,7 @@ instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
 end Decidable
 
 end Order
+end Digraph
 
+#lint
+#check @Digraph.instNontrivial /- argument 2 a : V -/
