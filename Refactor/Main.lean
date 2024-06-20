@@ -38,6 +38,7 @@ structure Edit where
   deriving ToJson, FromJson
 
 def runRefactoring (cmd : TSyntax `command) : CommandElabM (List Edit) := do
+  unless (← getEnv).header.moduleNames.contains `Mathlib.Tactic.Lemma do return []
   unless (cmd.raw.find? (·.isOfKind ``Lean.Parser.Command.docComment)).isNone do return []
   match (cmd.raw.find? (·.isOfKind ``Lean.Parser.Command.theorem)) with
     | none => return []
