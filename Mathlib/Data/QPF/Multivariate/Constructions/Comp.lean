@@ -22,8 +22,7 @@ namespace MvQPF
 
 open MvFunctor
 
-variable {n m : ℕ} (F : TypeVec.{u} n → Type*) [fF : MvFunctor F] [q : MvQPF F]
-  (G : Fin2 n → TypeVec.{u} m → Type u) [fG : ∀ i, MvFunctor <| G i] [q' : ∀ i, MvQPF <| G i]
+variable {n m : ℕ} (F : TypeVec.{u} n → Type*) (G : Fin2 n → TypeVec.{u} m → Type u)
 
 /-- Composition of an `n`-ary functor with `n` `m`-ary
 functors gives us one `m`-ary functor -/
@@ -55,6 +54,9 @@ protected theorem mk_get (x : Comp F G α) : Comp.mk (Comp.get x) = x := rfl
 protected theorem get_mk (x : F fun i ↦ G i α) : Comp.get (Comp.mk x) = x := rfl
 #align mvqpf.comp.get_mk MvQPF.Comp.get_mk
 
+section
+variable [MvFunctor F] [∀ i, MvFunctor <| G i]
+
 /-- map operation defined on a vector of functors -/
 protected def map' : (fun i : Fin2 n ↦ G i α) ⟹ fun i : Fin2 n ↦ G i β := fun _i ↦ map f
 #align mvqpf.comp.map' MvQPF.Comp.map'
@@ -64,7 +66,7 @@ protected def map : (Comp F G) α → (Comp F G) β :=
   (map fun _i ↦ map f : (F fun i ↦ G i α) → F fun i ↦ G i β)
 #align mvqpf.comp.map MvQPF.Comp.map
 
-instance : MvFunctor (Comp F G) where map := Comp.map
+instance : MvFunctor (Comp F G) where map f := Comp.map f
 
 theorem map_mk (x : F fun i ↦ G i α) :
     f <$$> Comp.mk x = Comp.mk ((fun i (x : G i α) ↦ f <$$> x) <$$> x) := rfl
@@ -74,7 +76,9 @@ theorem get_map (x : Comp F G α) :
     Comp.get (f <$$> x) = (fun i (x : G i α) ↦ f <$$> x) <$$> Comp.get x := rfl
 #align mvqpf.comp.get_map MvQPF.Comp.get_map
 
-instance : MvQPF (Comp F G) where
+end
+
+instance [MvQPF F] [∀ i, MvQPF <| G i] : MvQPF (Comp F G) where
   P := MvPFunctor.comp (P F) fun i ↦ P <| G i
   abs := Comp.mk ∘ (map fun i ↦ abs) ∘ abs ∘ MvPFunctor.comp.get
   repr {α} := MvPFunctor.comp.mk ∘ repr ∘

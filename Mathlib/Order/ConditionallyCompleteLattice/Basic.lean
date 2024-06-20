@@ -104,13 +104,10 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddB
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_sInf'
 
--- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
--- does not need `rfl`.
 @[norm_cast]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
-  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp]
-  rfl
+  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
 #align with_top.coe_infi WithTop.coe_iInf
 
 theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
@@ -121,12 +118,10 @@ theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
   · rintro ⟨x, _, ⟨⟩⟩
 #align with_top.coe_Sup' WithTop.coe_sSup'
 
--- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
--- does not need `rfl`.
 @[norm_cast]
 theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
-    rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp]; rfl
+  rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
 #align with_top.coe_supr WithTop.coe_iSup
 
 @[simp]
@@ -979,6 +974,12 @@ lemma Set.Iic_ciInf [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) :
 lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
     Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
   Iic_ciInf (α := αᵒᵈ) hf
+
+lemma sup_eq_top_of_top_mem [OrderTop α] (h : ⊤ ∈ s) : sSup s = ⊤ :=
+  top_unique <| le_csSup (OrderTop.bddAbove s) h
+
+lemma inf_eq_bot_of_bot_mem [OrderBot α] (h : ⊥ ∈ s) : sInf s = ⊥ :=
+  bot_unique <| csInf_le (OrderBot.bddBelow s) h
 
 end ConditionallyCompleteLattice
 

@@ -289,7 +289,7 @@ theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
 
 set_option linter.deprecated false in
 /-- A variant of `List.nthLe_rotate` useful for rewrites from right to left. -/
-@[deprecated get_eq_get_rotate]
+@[deprecated get_eq_get_rotate (since := "2023-03-26")]
 theorem nthLe_rotate' (l : List α) (n k : ℕ) (hk : k < l.length) :
     (l.rotate n).nthLe ((l.length - n % l.length + k) % l.length)
         ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_le (length_rotate _ _).ge) =
