@@ -183,7 +183,7 @@ theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) ×
 #align continuous_map.continuous_eval' ContinuousMap.continuous_eval
 #align continuous_map.continuous_eval ContinuousMap.continuous_eval
 
-@[deprecated] alias continuous_eval' := continuous_eval
+@[deprecated (since := "2023-12-26")] alias continuous_eval' := continuous_eval
 
 /-- Evaluation of a continuous map `f` at a point `x` is continuous in `f`.
 
@@ -282,7 +282,8 @@ theorem compactOpen_eq_iInf_induced :
   rfl
 #align continuous_map.compact_open_eq_Inf_induced ContinuousMap.compactOpen_eq_iInf_induced
 
-@[deprecated] alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
+@[deprecated (since := "2024-03-05")]
+alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
     𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
@@ -290,7 +291,8 @@ theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
   simp only [nhds_iInf, nhds_induced]
 #align continuous_map.nhds_compact_open_eq_Inf_nhds_induced ContinuousMap.nhds_compactOpen_eq_iInf_nhds_induced
 
-@[deprecated] alias nhds_compactOpen_eq_sInf_nhds_induced := nhds_compactOpen_eq_iInf_nhds_induced
+@[deprecated (since := "2024-03-05")]
+alias nhds_compactOpen_eq_sInf_nhds_induced := nhds_compactOpen_eq_iInf_nhds_induced
 
 theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set X) :
@@ -382,13 +384,13 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
 #align continuous_map.curry_apply ContinuousMap.curry_apply
 
 /-- Auxiliary definition, see `ContinuousMap.curry` and `Homeomorph.curry`. -/
-@[deprecated ContinuousMap.curry]
+@[deprecated ContinuousMap.curry (since := "2024-03-05")]
 def curry' (f : C(X × Y, Z)) (a : X) : C(Y, Z) := curry f a
 #align continuous_map.curry' ContinuousMap.curry'
 
 set_option linter.deprecated false in
 /-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
-@[deprecated ContinuousMap.curry]
+@[deprecated ContinuousMap.curry (since := "2024-03-05")]
 theorem continuous_curry' (f : C(X × Y, Z)) : Continuous (curry' f) := (curry f).continuous
 #align continuous_map.continuous_curry' ContinuousMap.continuous_curry'
 

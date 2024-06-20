@@ -1034,11 +1034,10 @@ theorem inter_union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) �
   sup_inf_right _ _ _
 #align set.union_distrib_right Set.inter_union_distrib_right
 
--- 2024-03-22
-@[deprecated] alias inter_distrib_left := inter_union_distrib_left
-@[deprecated] alias inter_distrib_right := union_inter_distrib_right
-@[deprecated] alias union_distrib_left := union_inter_distrib_left
-@[deprecated] alias union_distrib_right := inter_union_distrib_right
+@[deprecated (since := "2024-03-22")] alias inter_distrib_left := inter_union_distrib_left
+@[deprecated (since := "2024-03-22")] alias inter_distrib_right := union_inter_distrib_right
+@[deprecated (since := "2024-03-22")] alias union_distrib_left := union_inter_distrib_left
+@[deprecated (since := "2024-03-22")] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Set α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -1349,23 +1348,6 @@ set_option backward.synthInstance.canonInstances false in -- See https://github.
 theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl⟩ :=
   rfl
 #align set.default_coe_singleton Set.default_coe_singleton
-
-/-! ### Lemmas about pairs -/
-
-
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
-theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
-  union_self _
-#align set.pair_eq_singleton Set.pair_eq_singleton
-
-theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
-  union_comm _ _
-#align set.pair_comm Set.pair_comm
-
-theorem pair_eq_pair_iff {x y z w : α} :
-    ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp [subset_antisymm_iff, insert_subset_iff]; aesop
-#align set.pair_eq_pair_iff Set.pair_eq_pair_iff
 
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
 
@@ -2069,9 +2051,58 @@ theorem mem_diff_singleton_empty {t : Set (Set α)} : s ∈ t \ {∅} ↔ s ∈ 
   mem_diff_singleton.trans <| and_congr_right' nonempty_iff_ne_empty.symm
 #align set.mem_diff_singleton_empty Set.mem_diff_singleton_empty
 
+theorem subset_insert_iff {s t : Set α} {x : α} :
+    s ⊆ insert x t ↔ s ⊆ t ∨ (x ∈ s ∧ s \ {x} ⊆ t) := by
+  rw [← diff_singleton_subset_iff]
+  by_cases hx : x ∈ s
+  · rw [and_iff_right hx, or_iff_right_of_imp diff_subset.trans]
+  rw [diff_singleton_eq_self hx, or_iff_left_of_imp And.right]
+
 theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t ∪ t \ s ∪ s ∩ t :=
   sup_eq_sdiff_sup_sdiff_sup_inf
 #align set.union_eq_diff_union_diff_union_inter Set.union_eq_diff_union_diff_union_inter
+
+/-! ### Lemmas about pairs -/
+
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
+theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
+  union_self _
+#align set.pair_eq_singleton Set.pair_eq_singleton
+
+theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
+  union_comm _ _
+#align set.pair_comm Set.pair_comm
+
+theorem pair_eq_pair_iff {x y z w : α} :
+    ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
+  simp [subset_antisymm_iff, insert_subset_iff]; aesop
+#align set.pair_eq_pair_iff Set.pair_eq_pair_iff
+
+theorem pair_diff_left (hne : a ≠ b) : ({a, b} : Set α) \ {a} = {b} := by
+  rw [insert_diff_of_mem _ (mem_singleton a), diff_singleton_eq_self (by simpa)]
+
+theorem pair_diff_right (hne : a ≠ b) : ({a, b} : Set α) \ {b} = {a} := by
+  rw [pair_comm, pair_diff_left hne.symm]
+
+theorem pair_subset_iff : {a, b} ⊆ s ↔ a ∈ s ∧ b ∈ s := by
+  rw [insert_subset_iff, singleton_subset_iff]
+
+theorem pair_subset (ha : a ∈ s) (hb : b ∈ s) : {a, b} ⊆ s :=
+  pair_subset_iff.2 ⟨ha,hb⟩
+
+theorem subset_pair_iff : s ⊆ {a, b} ↔ ∀ x ∈ s, x = a ∨ x = b := by
+  simp [subset_def]
+
+theorem subset_pair_iff_eq {x y : α} : s ⊆ {x, y} ↔ s = ∅ ∨ s = {x} ∨ s = {y} ∨ s = {x, y} := by
+  refine ⟨?_, by rintro (rfl | rfl | rfl | rfl) <;> simp [pair_subset_iff]⟩
+  rw [subset_insert_iff, subset_singleton_iff_eq, subset_singleton_iff_eq,
+    ← subset_empty_iff (s := s \ {x}), diff_subset_iff, union_empty, subset_singleton_iff_eq]
+  have h : x ∈ s → {y} = s \ {x} → s = {x,y} := fun h₁ h₂ ↦ by simp [h₁, h₂]
+  tauto
+
+theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
+    s ⊆ {a, b} ↔ s = {a} ∨ s = {b} ∨ s = {a, b} := by
+  rw [Set.subset_pair_iff_eq, or_iff_right]; exact hs.ne_empty
 
 /-! ### Symmetric difference -/
 

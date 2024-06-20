@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Damiano Testa
 -/
 import Cli.Basic
+import Lake.CLI.Main
 import Mathlib.Util.GetAllModules
 
 /-!
@@ -14,6 +15,22 @@ This file declares a command to gather all Lean files from a folder into a singl
 -/
 
 open Lean System.FilePath
+
+open Lake in
+/-- `getLeanLibs` returns the names (as an `Array` of `String`s) of all the libraries
+on which the current project depends.
+If the current project is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and
+it includes `Mathlib/Tactic`. -/
+def getLeanLibs : IO (Array String) := do
+  let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
+  let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
+  let ws ← MonadError.runEIO (MainM.runLogIO (loadWorkspace config)).toEIO
+  let package := ws.root
+  let libs := (package.leanLibs.map (·.name)).map (·.toString)
+  return if package.name == `mathlib then
+    libs.erase "Cache" |>.erase "LongestPole" |>.push ("Mathlib".push pathSeparator ++ "Tactic")
+  else
+    libs
 
 open IO.FS IO.Process Name Cli in
 /-- Implementation of the `mk_all` command line program.

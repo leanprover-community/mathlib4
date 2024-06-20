@@ -320,11 +320,11 @@ def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val where
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by aesop) m₀ (by simp)).symm
 
-instance : Presheaf.IsLocallyInjective J (toSheafify α φ).hom :=
-  by dsimp; infer_instance
+instance : Presheaf.IsLocallyInjective J (toSheafify α φ).hom := by
+  dsimp; infer_instance
 
-instance : Presheaf.IsLocallySurjective J (toSheafify α φ).hom :=
-  by dsimp; infer_instance
+instance : Presheaf.IsLocallySurjective J (toSheafify α φ).hom := by
+  dsimp; infer_instance
 
 variable [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
 

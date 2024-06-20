@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Mathport.Rename
+import Batteries.Data.Thunk
 
 /-!
 # Basic facts about `Thunk`.
@@ -14,14 +15,6 @@ set_option autoImplicit true
 namespace Thunk
 
 #align thunk.mk Thunk.mk
-
--- Porting note: Added `Thunk.ext` to get `ext` tactic to work.
-@[ext]
-theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
-  have ⟨_⟩ := a
-  have ⟨_⟩ := b
-  congr
-  exact funext fun _ ↦ eq
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
   intro a b

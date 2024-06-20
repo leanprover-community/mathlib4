@@ -893,7 +893,7 @@ lemma smul_neg_iff_of_neg_left (ha : a < 0) : a • b < 0 ↔ 0 < b := by
 end PosSMulStrictMono
 
 /-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)]
+lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β]
     {b₁ b₂ : α} {a d : β} (hab : b₁ ≤ b₂) (hcd : a ≤ d) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
   obtain ⟨b₂, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd
@@ -903,15 +903,15 @@ lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β] [ContravariantClass β 
 #align smul_add_smul_le_smul_add_smul smul_add_smul_le_smul_add_smul
 
 /-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)]
+lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β]
     {b₁ b₂ : α} {a d : β} (hba : b₂ ≤ b₁) (hdc : d ≤ a) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
   rw [add_comm (b₁ • d), add_comm (b₁ • a)]
   exact smul_add_smul_le_smul_add_smul hba hdc
 #align smul_add_smul_le_smul_add_smul' smul_add_smul_le_smul_add_smul'
 
 /-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
-    [ContravariantClass β β (· + ·) (· < ·)] {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
+lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β]
+    {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
     b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
   obtain ⟨b₂, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
@@ -921,8 +921,8 @@ lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β] [CovariantClass �
 #align smul_add_smul_lt_smul_add_smul smul_add_smul_lt_smul_add_smul
 
 /-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
-    [ContravariantClass β β (· + ·) (· < ·)] {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
+lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β]
+    {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
     b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
   rw [add_comm (b₁ • d), add_comm (b₁ • a)]
   exact smul_add_smul_lt_smul_add_smul hba hdc
