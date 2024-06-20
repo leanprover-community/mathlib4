@@ -18,7 +18,6 @@ This file contains two equivalences:
   by sending `X : CommGrp` to `Additive X` and `Y : AddCommGrp` to `Multiplicative Y`.
 -/
 
--- Porting note: everything is upper case
 set_option linter.uppercaseLean3 false
 
 open CategoryTheory
