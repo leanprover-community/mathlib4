@@ -187,7 +187,7 @@ theorem Countable.preimage_of_injOn {s : Set β} (hs : s.Countable) {f : α → 
 
 protected theorem Countable.preimage {s : Set β} (hs : s.Countable) {f : α → β} (hf : Injective f) :
     (f ⁻¹' s).Countable :=
-  hs.preimage_of_injOn (hf.injOn _)
+  hs.preimage_of_injOn hf.injOn
 #align set.countable.preimage Set.Countable.preimage
 
 theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Prop} (h : ∃ x, p x) :
@@ -297,7 +297,7 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   refine (countable_range fun t : Finset s => Subtype.val '' (t : Set s)).mono ?_
   rintro t ⟨ht, hts⟩
   lift t to Set s using hts
-  lift t to Finset s using ht.of_finite_image (Subtype.val_injective.injOn _)
+  lift t to Finset s using ht.of_finite_image Subtype.val_injective.injOn
   exact mem_range_self _
 #align set.countable_set_of_finite_subset Set.countable_setOf_finite_subset
 

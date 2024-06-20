@@ -263,8 +263,8 @@ theorem log_nonempty {b x : Ordinal} (h : 1 < b) : { o : Ordinal | x < b ^ o }.N
   ⟨_, succ_le_iff.1 (right_le_opow _ h)⟩
 #align ordinal.log_nonempty Ordinal.log_nonempty
 
-theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) : log b x = pred (sInf { o | x < b ^ o }) :=
-  by simp only [log, dif_pos h]
+theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) :
+    log b x = pred (sInf { o | x < b ^ o }) := by simp only [log, dif_pos h]
 #align ordinal.log_def Ordinal.log_def
 
 theorem log_of_not_one_lt_left {b : Ordinal} (h : ¬1 < b) (x : Ordinal) : log b x = 0 := by

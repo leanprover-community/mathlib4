@@ -144,7 +144,7 @@ variable (J : GrothendieckTopology C)
 /-- The type of `1`-hypercovers of an object `S : C` in a category equipped with a
 Grothendieck topology `J`. This can be constructed from a covering of `S` and
 a covering of the fibre products of the objects in this covering (see `OneHypercover.mk'`). -/
-structure OneHypercover (S : C) extends PreOneHypercover S where
+structure OneHypercover (S : C) extends PreOneHypercover.{w} S where
   mem₀ : toPreOneHypercover.sieve₀ ∈ J S
   mem₁ (i₁ i₂ : I₀) ⦃W : C⦄ (p₁ : W ⟶ X i₁) (p₂ : W ⟶ X i₂) (w : p₁ ≫ f i₁ = p₂ ≫ f i₂) :
     toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W

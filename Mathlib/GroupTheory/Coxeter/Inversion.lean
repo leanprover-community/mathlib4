@@ -270,7 +270,7 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
 
 theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
     ((ris ω).getD j 1) * ((ris ω).getD j 1) = 1 := by
-  simp [getD_rightInvSeq, mul_assoc]
+  simp_rw [getD_rightInvSeq, mul_assoc]
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
     simp [← mul_assoc]
@@ -279,7 +279,7 @@ theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
 
 theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
     ((lis ω).getD j 1) * ((lis ω).getD j 1) = 1 := by
-  simp [getD_leftInvSeq, mul_assoc]
+  simp_rw [getD_leftInvSeq, mul_assoc]
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
     simp [← mul_assoc]

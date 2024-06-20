@@ -24,7 +24,7 @@ This file defines extra structures on `CancelCommMonoidWithZero`s, including `Is
 * `gcdMonoid_of_lcm`, `gcdMonoid_of_exists_lcm`, `normalizedGCDMonoid_of_lcm`,
   `normalizedGCDMonoid_of_exists_lcm`
 
-For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `RingTheory.Int.Basic`.
+For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib.Algebra.GCDMonoid.Nat`.
 
 ## Implementation Notes
 
@@ -485,8 +485,9 @@ theorem gcd_mul_right [NormalizedGCDMonoid α] (a b c : α) :
 #align gcd_mul_right gcd_mul_right
 
 @[simp]
-theorem gcd_mul_right' [GCDMonoid α] (a b c : α) : Associated (gcd (b * a) (c * a)) (gcd b c * a) :=
-  by simp only [mul_comm, gcd_mul_left']
+theorem gcd_mul_right' [GCDMonoid α] (a b c : α) :
+    Associated (gcd (b * a) (c * a)) (gcd b c * a) := by
+  simp only [mul_comm, gcd_mul_left']
 #align gcd_mul_right' gcd_mul_right'
 
 theorem gcd_eq_left_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize a = a) :

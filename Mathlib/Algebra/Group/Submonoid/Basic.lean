@@ -579,8 +579,9 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
 #align add_submonoid.supr_eq_closure AddSubmonoid.iSup_eq_closure
 
 @[to_additive]
-theorem disjoint_def {p₁ p₂ : Submonoid M} : Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 :=
-  by simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
+theorem disjoint_def {p₁ p₂ : Submonoid M} :
+    Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 := by
+  simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
 #align submonoid.disjoint_def Submonoid.disjoint_def
 #align add_submonoid.disjoint_def AddSubmonoid.disjoint_def
 

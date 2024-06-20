@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Restrict
+import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
 
@@ -70,7 +71,7 @@ def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Scheme.Spec.obj (op <| Sche
 Also see `AffineScheme.of` for a typeclass version. -/
 @[simps]
 def AffineScheme.mk (X : Scheme) (_ : IsAffine X) : AffineScheme :=
-  ⟨X, mem_essImage_of_unit_isIso (adj := ΓSpec.adjunction) _⟩
+  ⟨X, ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 #align algebraic_geometry.AffineScheme.mk AlgebraicGeometry.AffineScheme.mk
 
 /-- Construct an affine scheme from a scheme. Also see `AffineScheme.mk` for a non-typeclass
@@ -87,7 +88,7 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
 
 theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
-    fun _ => mem_essImage_of_unit_isIso (adj := ΓSpec.adjunction) _⟩
+    fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 #align algebraic_geometry.mem_Spec_ess_image AlgebraicGeometry.mem_Spec_essImage
 
 instance isAffineAffineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
@@ -229,7 +230,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     rw [← ΓSpec.adjunction_unit_app_app_top X]
     rfl
   · dsimp
-    refine' (Scheme.preimage_basicOpen _ _).trans _
+    refine (Scheme.preimage_basicOpen _ _).trans ?_
     congr 1
     exact IsIso.inv_hom_id_apply _ _
 #align algebraic_geometry.Scheme.map_prime_spectrum_basic_open_of_affine AlgebraicGeometry.Scheme.map_PrimeSpectrum_basicOpen_of_affine
@@ -325,9 +326,9 @@ theorem fromSpec_base_preimage :
   exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
 #align algebraic_geometry.is_affine_open.from_Spec_base_preimage AlgebraicGeometry.IsAffineOpen.fromSpec_base_preimage
 
--- Adaptation note: 2024-04-23
--- The backwards compatibility flags don't help here.
-set_option maxHeartbeats 800000 in
+#adaptation_note /-- 2024-04-23
+The backwards compatibility flags don't help here. -/
+set_option maxHeartbeats 400000 in
 -- Doesn't build without the `IsAffine` instance but the linter complains
 @[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :
@@ -542,7 +543,7 @@ theorem isLocalization_stalk'
   rw [iff_iff_eq]
   congr 2
   rw [RingHom.algebraMap_toAlgebra]
-  refine' (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hy⟩).trans _
+  refine (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hy⟩).trans ?_
   rw [IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 

@@ -164,8 +164,8 @@ theorem coe_multilinearMap_injective :
 -- @[simp]
 theorem coe_multilinearMap_mk (f : (ι → M) → N) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁, h₂⟩, h₃⟩ : M [⋀^ι]→ₗ[R] N) : MultilinearMap R (fun _ : ι => M) N) =
-      ⟨f, @h₁, @h₂⟩ :=
-  by simp
+      ⟨f, @h₁, @h₂⟩ := by
+  simp
 #align alternating_map.coe_multilinear_map_mk AlternatingMap.coe_multilinearMap_mk
 
 end Coercions

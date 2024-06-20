@@ -94,7 +94,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   continuousOn_coordChange i j := by
     refine (contDiffOn_fderiv_coord_change I i j).continuousOn.comp
       ((i.1.continuousOn_extend I).mono ?_) ?_
-    · rw [i.1.extend_source]; exact inter_subset_left _ _
+    · rw [i.1.extend_source]; exact inter_subset_left
     simp_rw [← i.1.extend_image_source_inter, mapsTo_image]
   coordChange_comp := by
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v
@@ -400,8 +400,9 @@ theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
 #align tangent_bundle_model_space_coe_chart_at_symm tangentBundle_model_space_coe_chartAt_symm
 
 theorem tangentBundleCore_coordChange_model_space (x x' z : H) :
-    (tangentBundleCore I H).coordChange (achart H x) (achart H x') z = ContinuousLinearMap.id 𝕜 E :=
-  by ext v; exact (tangentBundleCore I H).coordChange_self (achart _ z) z (mem_univ _) v
+    (tangentBundleCore I H).coordChange (achart H x) (achart H x') z =
+    ContinuousLinearMap.id 𝕜 E := by
+  ext v; exact (tangentBundleCore I H).coordChange_self (achart _ z) z (mem_univ _) v
 #align tangent_bundle_core_coord_change_model_space tangentBundleCore_coordChange_model_space
 
 variable (H)

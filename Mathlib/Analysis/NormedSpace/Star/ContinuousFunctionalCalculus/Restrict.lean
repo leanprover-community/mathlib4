@@ -254,7 +254,7 @@ protected theorem cfc (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S))
         exact ⟨_, this⟩
       · rintro ⟨y, rfl⟩
         rw [Set.mem_preimage]
-        refine' ⟨⟨algebraMap R S y, quasispectrum.algebraMap_mem S y.prop⟩, _⟩
+        refine ⟨⟨algebraMap R S y, quasispectrum.algebraMap_mem S y.prop⟩, ?_⟩
         simp only [nonUnitalStarAlgHom_postcomp_apply, NonUnitalStarAlgHom.coe_coe,
           Function.comp_apply, comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
         congr

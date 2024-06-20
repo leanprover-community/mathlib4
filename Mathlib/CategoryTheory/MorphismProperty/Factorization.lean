@@ -72,7 +72,7 @@ def comp : MorphismProperty C := fun _ _ f => Nonempty (MapFactorizationData W�
 lemma comp_eq_top_iff : W₁.comp W₂ = ⊤ ↔ HasFactorization W₁ W₂ := by
   constructor
   · intro h
-    refine' ⟨fun f => _⟩
+    refine ⟨fun f => ?_⟩
     have : W₁.comp W₂ f := by simp only [h, top_apply]
     exact ⟨this.some⟩
   · intro
@@ -103,6 +103,16 @@ attribute [reassoc (attr := simp)] fac
 @[reassoc (attr := simp)]
 lemma fac_app {f : Arrow C} : data.i.app f ≫ data.p.app f = f.hom := by
   rw [← NatTrans.comp_app, fac,Arrow.leftToRight_app]
+
+/-- If `W₁ ≤ W₁'` and `W₂ ≤ W₂'`, then a functorial factorization for `W₁` and `W₂` induces
+a functorial factorization for `W₁'` and `W₂'`. -/
+def ofLE {W₁' W₂' : MorphismProperty C} (le₁ : W₁ ≤ W₁') (le₂ : W₂ ≤ W₂') :
+    FunctorialFactorizationData W₁' W₂' where
+  Z := data.Z
+  i := data.i
+  p := data.p
+  hi f := le₁ _ (data.hi f)
+  hp f := le₂ _ (data.hp f)
 
 /-- The term in `FactorizationData W₁ W₂` that is deduced from a functorial factorization. -/
 def factorizationData : FactorizationData W₁ W₂ := fun f =>
