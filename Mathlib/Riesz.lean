@@ -47,8 +47,8 @@ lemma exists_point_away_from_subspace
   have d_pos : 0 < d := (IsClosed.not_mem_iff_infDist_pos hFc hFn).1 x_not_in_F
   obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < 2 * d := by
     apply (infDist_lt_iff hFn).1
-    -- exact lt_two_mul_self d_pos
-    linarith
+    exact lt_two_mul_self d_pos
+    -- linarith
   let z := d⁻¹ • (x - y₀)
   have Nz : ‖z‖ < 2 := by
     simpa [z, norm_smul, abs_of_nonneg d_pos.le, ← div_eq_inv_mul, div_lt_iff d_pos,
@@ -100,9 +100,7 @@ lemma exists_sequence_separated (h : ¬(FiniteDimensional ℝ E)) :
   intro s _hs
   exact exists_point_away_from_finite (s : Set E) s.finite_toSet h
 
-#lint
-
-/-- Consider a real normed  vector space in which the closed ball of radius `2`
+/-- Consider a real normed vector space in which the closed ball of radius `2`
 is compact. Then this space is finite-dimensional. -/
 theorem my_riesz_version (h : IsCompact (closedBall (0 : E) 2)) :
     FiniteDimensional ℝ E := by
@@ -134,8 +132,8 @@ theorem the_real_riesz_version
     [NormedSpace 𝕜 F] [CompleteSpace 𝕜] {r : ℝ}
     (r_pos : 0 < r)  {c : F} (hc : IsCompact (closedBall c r)) :
     FiniteDimensional 𝕜 F :=
-  -- .of_isCompact_closedBall 𝕜 r_pos hc
-   by exact FiniteDimensional.of_isCompact_closedBall 𝕜 r_pos hc
+  .of_isCompact_closedBall 𝕜 r_pos hc
+  -- by exact?
 
 /- For the previous statement: -/
 /-
@@ -151,12 +149,12 @@ good? With wrong definitions, one could prove anything. -/
 def IsSGCompact {α : Type*} (_s : Set α) : Prop := False
 
 theorem riesz_with_isSGCompact (h : IsSGCompact (closedBall (0 : E) 2)) :
-  FiniteDimensional ℝ E :=
-False.elim h
+    FiniteDimensional ℝ E :=
+  False.elim h
 
 theorem antiriesz_with_isSGCompact (h : IsSGCompact (closedBall (0 : E) 2)) :
-  ¬(FiniteDimensional ℝ E) :=
-False.elim h
+    ¬(FiniteDimensional ℝ E) :=
+  False.elim h
 
 /- We can try unfolding the definitions to see if they look reasonable. -/
 
@@ -172,4 +170,4 @@ example (n : ℕ) : IsCompact (closedBall (0 : Fin n → ℝ) 1) := isCompact_cl
 example : ¬(IsCompact (Set.univ : Set ℝ)) := noncompact_univ ℝ
 
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] :
-  ¬(IsCompact (Set.univ : Set E)) := noncompact_univ E
+    ¬(IsCompact (Set.univ : Set E)) := noncompact_univ E
