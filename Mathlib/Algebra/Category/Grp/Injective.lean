@@ -3,7 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
+import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Module.Injective
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Topology.Instances.AddCircle
@@ -19,10 +19,10 @@ groups and that the category of abelian groups has enough injective objects.
 
 ## Main results
 
-- `AddCommGroupCat.injective_of_divisible` : a divisible group is also an injective object.
-- `AddCommGroupCat.enoughInjectives` : the category of abelian groups (written additively) has
+- `AddCommGrp.injective_of_divisible` : a divisible group is also an injective object.
+- `AddCommGrp.enoughInjectives` : the category of abelian groups (written additively) has
   enough injectives.
-- `CommGroupCat.enoughInjectives` : the category of abelian group (written multiplicatively) has
+- `CommGrp.enoughInjectives` : the category of abelian group (written multiplicatively) has
   enough injectives.
 
 ## Implementation notes
@@ -57,21 +57,21 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
   rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g,
     SetLike.mk_smul_mk]
 
-namespace AddCommGroupCat
+namespace AddCommGrp
 
 theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
-    Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
-  ((forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.map_injective_iff ⟨A⟩).symm
+    Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
+  ((forget₂ (ModuleCat ℤ) AddCommGrp).asEquivalence.map_injective_iff ⟨A⟩).symm
 #noalign AddCommGroup.injective_of_injective_as_module
 #noalign AddCommGroup.injective_as_module_of_injective_as_Ab
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
-    Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
+    Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
   (injective_as_module_iff A).mp <|
     Module.injective_object_of_injective_module (inj := (Module.Baer.of_divisible A).injective)
-#align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
+#align AddCommGroup.injective_of_divisible AddCommGrp.injective_of_divisible
 
 instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   injective_of_divisible _
 
-end AddCommGroupCat
+end AddCommGrp
