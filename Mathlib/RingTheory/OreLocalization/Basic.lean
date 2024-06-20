@@ -334,13 +334,16 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 #align ore_localization.ore_div_mul_char' OreLocalization.oreDivMulChar'
 
+@[to_additive]
+private irreducible_def one (lemma := one_def') : R[S⁻¹] := 1 /ₒ 1
+
 @[to_additive AddOreLocalization.instZeroAddOreLocalization]
 instance : One R[S⁻¹] :=
-  ⟨1 /ₒ 1⟩
+  ⟨one⟩
 
 @[to_additive]
 protected theorem one_def : (1 : R[S⁻¹]) = 1 /ₒ 1 :=
-  rfl
+  one_def'
 #align ore_localization.one_def OreLocalization.one_def
 
 @[to_additive]
@@ -650,13 +653,13 @@ section Zero
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [Zero X]
 variable [MulAction R X]
 
-private def zero : X[S⁻¹] := 0 /ₒ 1
+private irreducible_def zero (lemma := zero_def') : X[S⁻¹] := 0 /ₒ 1
 
 instance : Zero X[S⁻¹] :=
   ⟨zero⟩
 
 protected theorem zero_def : (0 : X[S⁻¹]) = 0 /ₒ 1 :=
-  rfl
+  zero_def'
 #align ore_localization.zero_def OreLocalization.zero_def
 
 end Zero
@@ -742,7 +745,7 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [this, hc, mul_assoc]
 
 /-- The addition on the Ore localization. -/
-private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
+private irreducible_def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
   Quotient.lift (fun rs : X × S => add' rs.1 rs.2 x)
     (by
       rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨sb, rb, hb, hb'⟩
@@ -767,13 +770,13 @@ instance : Add X[S⁻¹] :=
 theorem oreDiv_add_oreDiv {r r' : X} {s s' : S} :
     r /ₒ s + r' /ₒ s' =
       (oreDenom (s : R) s' • r + oreNum (s : R) s' • r') /ₒ (oreDenom (s : R) s' * s) :=
-  rfl
+  show add _ _ = _ by rw [add_def]; rfl
 #align ore_localization.ore_div_add_ore_div OreLocalization.oreDiv_add_oreDiv
 
 theorem oreDiv_add_char' {r r' : X} (s s' : S) (rb : R) (sb : R)
     (h : sb * s = rb * s') (h' : sb * s ∈ S) :
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ ⟨sb * s, h'⟩ :=
-  add''_char r s r' s' rb sb h h'
+  show add _ _ = _ by rw [add_def]; exact add''_char r s r' s' rb sb h h'
 
 /-- A characterization of the addition on the Ore localizaion, allowing for arbitrary Ore
 numerator and Ore denominator. -/
