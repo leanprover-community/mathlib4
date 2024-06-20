@@ -31,13 +31,28 @@ implementation details that may be confusing.
 For instance, it flags `Nat.sub`, `Nat.div`, `Int.div` and division by `0`.
 -/
 def getPapercuts (e : Expr) : Meta.MetaM (Option MessageData) := do
-  let expNat := mkConst ``Nat
-  let expInt := mkConst ``Int
+  let expNat     := mkConst ``Nat
+  let expInt     := mkConst ``Int
+  let expNNRat   := mkConst `NNRat
+  let expNNReal  := mkConst `NNReal
+  let expENNReal := mkConst `ENNReal
   let expZero := mkConst ``Nat.zero
   match e.getAppFnArgs with
     | (``HSub.hSub, #[n1, n2, n3, _, a, b]) =>
       if ← [n1, n2, n3].allM (Meta.isDefEq · expNat) then
         return some m!"Subtraction in ℕ is actually truncated subtraction: e.g. `1 - 2 = 0`!\n\
+                       This yields the 'expected' result only when you also prove the inequality\n\
+                       '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
+      else if ← [n1, n2, n3].allM (Meta.isDefEq · expENNReal) then
+        return some m!"Subtraction in ℝ≥0∞ is actually truncated subtraction: e.g. `e - π = 0`!\n\
+                       This yields the 'expected' result only when you also prove the inequality\n\
+                       '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
+      else if ← [n1, n2, n3].allM (Meta.isDefEq · expNNReal) then
+        return some m!"Subtraction in ℝ≥0 is actually truncated subtraction: e.g. `e - π = 0`!\n\
+                       This yields the 'expected' result only when you also prove the inequality\n\
+                       '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
+      else if ← [n1, n2, n3].allM (Meta.isDefEq · expNNRat) then
+        return some m!"Subtraction in ℚ≥0 is actually truncated subtraction: e.g. `2⁻¹ - 1 = 0`!\n\
                        This yields the 'expected' result only when you also prove the inequality\n\
                        '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
       else return none

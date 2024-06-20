@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Linter.Papercut
 import Mathlib.Algebra.Field.Rat
-
+import Mathlib.Data.ENNReal.Basic
 /--
 warning: declaration uses 'sorry'
 ---
@@ -24,6 +24,44 @@ note: this linter can be disabled with `set_option linter.papercut false`
 #guard_msgs in
 set_option linter.papercut true in
 example (x y : Nat) : x - y = 0 := sorry
+
+open scoped ENNReal in
+/--
+warning: declaration uses 'sorry'
+---
+warning: Subtraction in ℝ≥0∞ is actually truncated subtraction: e.g. `e - π = 0`!
+This yields the 'expected' result only when you also prove the inequality
+'y ≤ x'
+note: this linter can be disabled with `set_option linter.papercut false`
+-/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : ℝ≥0∞) : x - y = 0 := sorry
+
+open scoped NNReal in
+/--
+warning: declaration uses 'sorry'
+---
+warning: Subtraction in ℝ≥0 is actually truncated subtraction: e.g. `e - π = 0`!
+This yields the 'expected' result only when you also prove the inequality
+'y ≤ x'
+note: this linter can be disabled with `set_option linter.papercut false`
+-/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : ℝ≥0) : x - y = 0 := sorry
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: Subtraction in ℚ≥0 is actually truncated subtraction: e.g. `2⁻¹ - 1 = 0`!
+This yields the 'expected' result only when you also prove the inequality
+'y ≤ x'
+note: this linter can be disabled with `set_option linter.papercut false`
+-/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : ℚ≥0) : x - y = 0 := sorry
 
 /--
 warning: declaration uses 'sorry'
