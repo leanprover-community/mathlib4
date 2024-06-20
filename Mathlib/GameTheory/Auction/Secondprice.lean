@@ -152,10 +152,6 @@ lemma maxBidExcluding_le_maxBid {i : a.I} (b : a.I → ℝ) : maxBidExcluding b 
   apply Finset.sup'_mono
   exact Finset.subset_univ (Finset.erase Finset.univ i)
 
-/-- The bid of the winner is always greater than or equal to the second highest bid. -/
-lemma winnerbid_ge_second : secondPrice b ≤ maxBid b := by
-  exact maxBidExcluding_le_maxBid b
-
 /-- If `i` is not the winner, then the highest bid excluding `i` is equal to the highest bid. -/
 lemma maxBidExcluding_eq_maxBid_if_loser {i : a.I} (H : i ≠ winner b) :
     maxBidExcluding b i = maxBid b := by
@@ -170,6 +166,7 @@ which is their valuation minus the second highest bid if `i` is the winner, othe
 noncomputable def utility (i : a.I) : ℝ := if i = winner b then a.v i - secondPrice b else 0
 
 variable {i : a.I}
+
 /-- If `i` is the winner, then their utility is their valuation minus the second highest bid. -/
 lemma utility_winner (H: i = winner b) : utility b i = a.v i - secondPrice b:= by
   rw [utility]; simp only [ite_true, H]
