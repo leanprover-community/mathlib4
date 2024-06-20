@@ -499,6 +499,13 @@ theorem conjugateEquiv_symm_of_iso (α : R₁ ⟶ R₂)
     by simpa using this
   infer_instance
 
+/-- Thus conjugation defines an equivalence between natural isomorphisms. -/
+noncomputable def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
+  toFun α := asIso (conjugateEquiv adj₁ adj₂ α.hom)
+  invFun β := asIso ((conjugateEquiv adj₁ adj₂).symm β.hom)
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
 end ConjugateComposition
 
 section IteratedmateEquiv
