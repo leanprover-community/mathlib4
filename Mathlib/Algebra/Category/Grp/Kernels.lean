@@ -3,21 +3,21 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn
 -/
-import Mathlib.Algebra.Category.GroupCat.EpiMono
-import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # The concrete (co)kernels in the category of abelian groups are categorical (co)kernels.
 -/
 
-namespace AddCommGroupCat
+namespace AddCommGrp
 
 open AddMonoidHom CategoryTheory Limits QuotientAddGroup
 
 universe u
 
-variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
+variable {G H : AddCommGrp.{u}} (f : G ⟶ H)
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
@@ -44,4 +44,4 @@ def cokernelIsColimit : IsColimit <| cokernelCocone f :=
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
       (cancel_epi _).mp <| by simpa only [parallelPair_obj_one] using h)
 
-end AddCommGroupCat
+end AddCommGrp

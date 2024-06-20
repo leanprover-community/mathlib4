@@ -338,7 +338,7 @@ theorem fderivWithin_ccos (hf : DifferentiableWithinAt ℂ f s x) (hxs : UniqueD
   hf.hasFDerivWithinAt.ccos.fderivWithin hxs
 #align fderiv_within_ccos fderivWithin_ccos
 
-@[simp, nolint simpNF] -- `simp` times out trying to find `Module ℂ (E →L[ℂ] ℂ)`
+@[simp] -- `simp` times out trying to find `Module ℂ (E →L[ℂ] ℂ)`
 -- with all of `Mathlib` opened -- no idea why
 theorem fderiv_ccos (hc : DifferentiableAt ℂ f x) :
     fderiv ℂ (fun x => Complex.cos (f x)) x = -Complex.sin (f x) • fderiv ℂ f x :=

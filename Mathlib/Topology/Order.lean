@@ -293,7 +293,7 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 theorem denseRange_discrete {ι : Type*} {f : ι → α} : DenseRange f ↔ Surjective f := by
   rw [DenseRange, dense_discrete, range_iff_surjective]
 
-@[nontriviality, continuity]
+@[nontriviality, continuity, fun_prop]
 theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : Continuous f :=
   continuous_def.2 fun _ _ => isOpen_discrete _
 #align continuous_of_discrete_topology continuous_of_discreteTopology
@@ -690,7 +690,7 @@ lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
 alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 #align continuous_generated_from continuous_generateFrom
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
   continuous_iff_le_induced.2 le_rfl
 #align continuous_induced_dom continuous_induced_dom
@@ -794,12 +794,12 @@ theorem continuous_iInf_rng {t₁ : TopologicalSpace α} {t₂ : ι → Topologi
   simp only [continuous_iff_coinduced_le, le_iInf_iff]
 #align continuous_infi_rng continuous_iInf_rng
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_bot {t : TopologicalSpace β} : Continuous[⊥, t] f :=
   continuous_iff_le_induced.2 bot_le
 #align continuous_bot continuous_bot
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_top {t : TopologicalSpace α} : Continuous[t, ⊤] f :=
   continuous_iff_coinduced_le.2 le_top
 #align continuous_top continuous_top

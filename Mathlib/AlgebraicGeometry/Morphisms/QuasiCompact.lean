@@ -44,7 +44,7 @@ class QuasiCompact (f : X ⟶ Y) : Prop where
 #align algebraic_geometry.quasi_compact AlgebraicGeometry.QuasiCompact
 
 theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.1.base :=
-  ⟨fun ⟨h⟩ => ⟨by continuity, h⟩, fun h => ⟨h.2⟩⟩
+  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
 #align algebraic_geometry.quasi_compact_iff_spectral AlgebraicGeometry.quasiCompact_iff_spectral
 
 /-- The `AffineTargetMorphismProperty` corresponding to `QuasiCompact`, asserting that the
@@ -70,10 +70,7 @@ instance quasiCompactComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCom
   intro U hU hU'
   rw [Scheme.comp_val_base, TopCat.coe_comp, Set.preimage_comp]
   apply QuasiCompact.isCompact_preimage
-  · exact Continuous.isOpen_preimage (by
-    -- Porting note: `continuity` failed
-    -- see https://github.com/leanprover-community/mathlib4/issues/5030
-      exact Scheme.Hom.continuous g) _ hU
+  · exact Continuous.isOpen_preimage (by fun_prop) _ hU
   apply QuasiCompact.isCompact_preimage <;> assumption
 #align algebraic_geometry.quasi_compact_comp AlgebraicGeometry.quasiCompactComp
 

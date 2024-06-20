@@ -334,7 +334,7 @@ theorem toBoolAlg_mul (a b : α) : toBoolAlg (a * b) = toBoolAlg a ⊓ toBoolAlg
 #align to_boolalg_mul toBoolAlg_mul
 
 -- `toBoolAlg_add` simplifies the LHS but this lemma is eligible to `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg a ⊔ toBoolAlg b :=
   rfl
 #align to_boolalg_add_add_mul toBoolAlg_add_add_mul
@@ -492,7 +492,7 @@ theorem ofBoolRing_one : ofBoolRing (1 : AsBoolRing α) = ⊤ :=
 #align of_boolring_one ofBoolRing_one
 
 -- `sub_eq_add` proves this lemma but it is eligible for `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem ofBoolRing_neg (a : AsBoolRing α) : ofBoolRing (-a) = ofBoolRing a :=
   rfl
 #align of_boolring_neg ofBoolRing_neg
@@ -503,7 +503,7 @@ theorem ofBoolRing_add (a b : AsBoolRing α) : ofBoolRing (a + b) = ofBoolRing a
 #align of_boolring_add ofBoolRing_add
 
 -- `sub_eq_add` simplifies the LHS but this lemma is eligible for `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem ofBoolRing_sub (a b : AsBoolRing α) : ofBoolRing (a - b) = ofBoolRing a ∆ ofBoolRing b :=
   rfl
 #align of_boolring_sub ofBoolRing_sub
