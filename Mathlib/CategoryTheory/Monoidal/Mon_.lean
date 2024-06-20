@@ -175,11 +175,7 @@ def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := b
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
   { hom := A.one
-<<<<<<< HEAD
     mul_hom := by simp [A.one_mul, unitors_equal] }
-=======
-    mul_hom := by dsimp; simp [A.one_mul, unitors_equal] }
->>>>>>> conv_monoid
   uniq f := by
     ext
     simp only [trivial_X]
