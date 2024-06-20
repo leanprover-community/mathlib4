@@ -327,8 +327,8 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a' =
       ∑ ij ∈ DFinsupp.support a ×ˢ DFinsupp.support a',
-        DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) :=
-  by simp only [mul_eq_dfinsupp_sum, DFinsupp.sum, Finset.sum_product]
+        DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) := by
+  simp only [mul_eq_dfinsupp_sum, DFinsupp.sum, Finset.sum_product]
 #align direct_sum.mul_eq_sum_support_ghas_mul DirectSum.mul_eq_sum_support_ghas_mul
 
 end Semiring

@@ -375,8 +375,8 @@ example : (∑ i ∈ Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num
 example : (∑ i ∈ Finset.Ioc 5 10, (i^2 : ℕ)) = 330 := by norm_num
 example : (∑ i ∈ Finset.Ioo 5 10, (i^2 : ℕ)) = 230 := by norm_num
 example : (∑ i ∈ Finset.Ioo (-5) 5, i^2) = 60 := by norm_num
-example (f : ℕ → α) : ∑ i ∈ Finset.mk {0, 1, 2} dec_trivial, f i = f 0 + f 1 + f 2 :=
-  by norm_num; ring
+example (f : ℕ → α) : ∑ i ∈ Finset.mk {0, 1, 2} dec_trivial, f i = f 0 + f 1 + f 2 := by
+  norm_num; ring
 -/
 
 -- Combined with other `norm_num` extensions:

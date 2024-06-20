@@ -49,7 +49,7 @@ theorem cardinal_mk_lift_le_mul :
   refine lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le g fun f => ?_
   rw [lift_le_aleph0, le_aleph0_iff_set_countable]
   suffices MapsTo (↑) (g ⁻¹' {f}) (f.rootSet A) from
-    this.countable_of_injOn (Subtype.coe_injective.injOn _) (f.rootSet_finite A).countable
+    this.countable_of_injOn Subtype.coe_injective.injOn (f.rootSet_finite A).countable
   rintro x (rfl : g x = f)
   exact mem_rootSet.2 ⟨hg₁ x, hg₂ x⟩
 #align algebraic.cardinal_mk_lift_le_mul Algebraic.cardinal_mk_lift_le_mul

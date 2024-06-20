@@ -109,7 +109,7 @@ instance haveLebesgueDecomposition_smul_real (s : SignedMeasure α) (μ : Measur
   · lift r to ℝ≥0 using hr
     exact s.haveLebesgueDecomposition_smul μ _
   · rw [not_le] at hr
-    refine'
+    refine
       { posPart := by
           rw [toJordanDecomposition_smul_real, JordanDecomposition.real_smul_posPart_neg _ _ hr]
           infer_instance
@@ -189,13 +189,21 @@ variable {s t : SignedMeasure α}
 @[measurability]
 theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
   rw [rnDeriv_def]
-  measurability
+  -- Note. `measurabilty` proves this, but is very slow
+  apply Measurable.add
+  · exact ((Measure.measurable_rnDeriv _ μ).ennreal_toNNReal).coe_nnreal_real
+  · rw [measurable_neg_iff]
+    exact (Measure.measurable_rnDeriv _ μ).ennreal_toNNReal.coe_nnreal_real
+
 #align measure_theory.signed_measure.measurable_rn_deriv MeasureTheory.SignedMeasure.measurable_rnDeriv
 
 theorem integrable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Integrable (rnDeriv s μ) μ := by
   refine Integrable.sub ?_ ?_ <;>
     · constructor
-      · apply Measurable.aestronglyMeasurable; measurability
+      · -- NB: `measurability` proves this, but is very slow
+        -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+        exact (((Measure.measurable_rnDeriv _ μ
+          ).ennreal_toNNReal).coe_nnreal_real).aestronglyMeasurable
       exact hasFiniteIntegral_toReal_of_lintegral_ne_top (lintegral_rnDeriv_lt_top _ μ).ne
 #align measure_theory.signed_measure.integrable_rn_deriv MeasureTheory.SignedMeasure.integrable_rnDeriv
 
@@ -277,14 +285,14 @@ private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ}
   rw [mutuallySingular_ennreal_iff] at htμ
   change _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ) at htμ
   rw [VectorMeasure.equivMeasure.right_inv, totalVariation_mutuallySingular_iff] at htμ
-  refine'
+  refine
     { posPart := by
         use ⟨t.toJordanDecomposition.posPart, fun x => ENNReal.ofReal (f x)⟩
-        refine' ⟨hf.ennreal_ofReal, htμ.1, _⟩
+        refine ⟨hf.ennreal_ofReal, htμ.1, ?_⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
       negPart := by
         use ⟨t.toJordanDecomposition.negPart, fun x => ENNReal.ofReal (-f x)⟩
-        refine' ⟨hf.neg.ennreal_ofReal, htμ.2, _⟩
+        refine ⟨hf.neg.ennreal_ofReal, htμ.2, ?_⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd] }
 
 theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
@@ -306,10 +314,15 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
   rw [singularPart, ← t.toSignedMeasure_toJordanDecomposition,
     JordanDecomposition.toSignedMeasure]
   congr
-  · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := by measurability
+  -- NB: `measurability` proves this `have`, but is slow.
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+  · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := hf.real_toNNReal.coe_nnreal_ennreal
     refine eq_singularPart hfpos htμ.1 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
-  · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) := by measurability
+  · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) :=
+      -- NB: `measurability` proves this, but is slow.
+      -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+      (measurable_neg_iff.mpr hf).real_toNNReal.coe_nnreal_ennreal
     refine eq_singularPart hfneg htμ.2 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
 

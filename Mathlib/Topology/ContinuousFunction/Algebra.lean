@@ -114,10 +114,16 @@ theorem coe_natCast [NatCast β] (n : ℕ) : ((n : C(α, β)) : α → β) = n :
   rfl
 #align continuous_map.coe_nat_cast ContinuousMap.coe_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
+
 @[simp]
 theorem natCast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :=
   rfl
 #align continuous_map.nat_cast_apply ContinuousMap.natCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_apply := natCast_apply
 
 /-! ### `Int.cast` -/
 
@@ -129,10 +135,16 @@ theorem coe_intCast [IntCast β] (n : ℤ) : ((n : C(α, β)) : α → β) = n :
   rfl
 #align continuous_map.coe_int_cast ContinuousMap.coe_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
+
 @[simp]
 theorem intCast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
   rfl
 #align continuous_map.int_cast_apply ContinuousMap.intCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_apply := intCast_apply
 
 /-! ### `nsmul` and `pow` -/
 
@@ -332,7 +344,7 @@ instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, �
 @[to_additive]
 instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(α, β) :=
   ⟨by
-    refine' continuous_of_continuous_uncurry _ _
+    refine continuous_of_continuous_uncurry _ ?_
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
       continuous_eval.comp (continuous_fst.prod_map continuous_id)
     have h2 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.snd x.snd :=
@@ -601,7 +613,7 @@ instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
 instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
     ContinuousSMul R C(α, M) :=
   ⟨by
-    refine' continuous_of_continuous_uncurry _ _
+    refine continuous_of_continuous_uncurry _ ?_
     have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
       continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩
@@ -1107,3 +1119,25 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
 #align homeomorph.comp_star_alg_equiv' Homeomorph.compStarAlgEquiv'
 
 end Homeomorph
+
+/-! ### Evaluation as a bundled map -/
+
+variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
+variable [Algebra S R] [TopologicalSpace R] [TopologicalSemiring R]
+
+/-- Evaluation of continuous maps at a point, bundled as an algebra homomorphism. -/
+@[simps]
+def ContinuousMap.evalAlgHom (x : X) : C(X, R) →ₐ[S] R where
+  toFun f := f x
+  map_zero' := rfl
+  map_one' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+  commutes' _ := rfl
+
+/-- Evaluation of continuous maps at a point, bundled as a star algebra homomorphism. -/
+@[simps!]
+def ContinuousMap.evalStarAlgHom [StarRing R] [ContinuousStar R] (x : X) :
+    C(X, R) →⋆ₐ[S] R :=
+  { ContinuousMap.evalAlgHom S R x with
+    map_star' := fun _ => rfl }

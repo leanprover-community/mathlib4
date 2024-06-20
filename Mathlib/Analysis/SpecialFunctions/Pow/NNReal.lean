@@ -132,6 +132,9 @@ theorem rpow_natCast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
   NNReal.eq <| by simpa only [coe_rpow, coe_pow] using Real.rpow_natCast x n
 #align nnreal.rpow_nat_cast NNReal.rpow_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias rpow_nat_cast := rpow_natCast
+
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
@@ -570,6 +573,9 @@ theorem rpow_natCast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
   · simp [coe_rpow_of_nonneg _ (Nat.cast_nonneg n)]
 #align ennreal.rpow_nat_cast ENNReal.rpow_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias rpow_nat_cast := rpow_natCast
+
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
@@ -579,6 +585,9 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
 lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
+
+@[deprecated (since := "2024-04-17")]
+alias rpow_int_cast := rpow_intCast
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align ennreal.rpow_two ENNReal.rpow_two

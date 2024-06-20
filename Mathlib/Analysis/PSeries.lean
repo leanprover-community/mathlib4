@@ -348,10 +348,16 @@ theorem not_summable_natCast_inv : ¬Summable (fun n => n⁻¹ : ℕ → ℝ) :=
   simpa
 #align real.not_summable_nat_cast_inv Real.not_summable_natCast_inv
 
+@[deprecated (since := "2024-04-17")]
+alias not_summable_nat_cast_inv := not_summable_natCast_inv
+
 /-- Harmonic series is not unconditionally summable. -/
 theorem not_summable_one_div_natCast : ¬Summable (fun n => 1 / n : ℕ → ℝ) := by
   simpa only [inv_eq_one_div] using not_summable_natCast_inv
 #align real.not_summable_one_div_nat_cast Real.not_summable_one_div_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias not_summable_one_div_nat_cast := not_summable_one_div_natCast
 
 /-- **Divergence of the Harmonic Series** -/
 theorem tendsto_sum_range_one_div_nat_succ_atTop :
@@ -394,7 +400,7 @@ variable {α : Type*} [LinearOrderedField α]
 set_option tactic.skipAssignedInstances false in
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i ∈ Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by
-  refine' Nat.le_induction _ _ n h
+  refine Nat.le_induction ?_ ?_ n h
   · simp only [Ioc_self, sum_empty, sub_self, le_refl]
   intro n hn IH
   rw [sum_Ioc_succ_top hn]

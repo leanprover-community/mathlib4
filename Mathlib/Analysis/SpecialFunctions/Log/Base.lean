@@ -418,6 +418,9 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
     exact Int.zpow_log_le_self hb hr
 #align real.floor_logb_nat_cast Real.floor_logb_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias floor_logb_nat_cast := floor_logb_natCast
+
 theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
     ⌈logb b r⌉ = Int.clog b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -430,6 +433,9 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
     refine (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le ?_
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)
 #align real.ceil_logb_nat_cast Real.ceil_logb_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias ceil_logb_nat_cast := ceil_logb_natCast
 
 @[simp]
 theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨ x = 1 ∨ x = -1 := by

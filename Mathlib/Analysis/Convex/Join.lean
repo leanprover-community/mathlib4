@@ -118,8 +118,8 @@ theorem convexJoin_subset (hs : s ⊆ u) (ht : t ⊆ u) (hu : Convex 𝕜 u) : c
 #align convex_join_subset convexJoin_subset
 
 theorem convexJoin_subset_convexHull (s t : Set E) : convexJoin 𝕜 s t ⊆ convexHull 𝕜 (s ∪ t) :=
-  convexJoin_subset ((subset_union_left _ _).trans <| subset_convexHull _ _)
-      ((subset_union_right _ _).trans <| subset_convexHull _ _) <|
+  convexJoin_subset (subset_union_left.trans <| subset_convexHull _ _)
+      (subset_union_right.trans <| subset_convexHull _ _) <|
     convex_convexHull _ _
 #align convex_join_subset_convex_hull convexJoin_subset_convexHull
 
@@ -169,8 +169,8 @@ theorem convexJoin_right_comm (s t u : Set E) :
 
 theorem convexJoin_convexJoin_convexJoin_comm (s t u v : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) (convexJoin 𝕜 u v) =
-      convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) :=
-  by simp_rw [← convexJoin_assoc, convexJoin_right_comm]
+      convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) := by
+  simp_rw [← convexJoin_assoc, convexJoin_right_comm]
 #align convex_join_convex_join_convex_join_comm convexJoin_convexJoin_convexJoin_comm
 
 -- Porting note: moved 3 lemmas from below to golf

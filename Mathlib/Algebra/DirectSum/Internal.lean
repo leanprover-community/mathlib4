@@ -68,6 +68,9 @@ theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     exact add_mem n_ih (SetLike.one_mem_graded _)
 #align set_like.nat_cast_mem_graded SetLike.natCast_mem_graded
 
+@[deprecated (since := "2024-04-17")]
+alias SetLike.nat_cast_mem_graded := SetLike.natCast_mem_graded
+
 theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
@@ -76,6 +79,9 @@ theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
   · rw [Int.cast_negSucc]
     exact neg_mem (SetLike.natCast_mem_graded _ _)
 #align set_like.int_cast_mem_graded SetLike.intCast_mem_graded
+
+@[deprecated (since := "2024-04-17")]
+alias SetLike.int_cast_mem_graded := SetLike.intCast_mem_graded
 
 section DirectSum
 
@@ -231,7 +237,7 @@ theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι)
     swap
     · simp_rw [ZeroMemClass.coe_zero, zero_mul, ite_self]
       exact DFinsupp.sum_zero
-    · rw [DFinsupp.sum, Finset.sum_ite_of_false _ _ fun x _ H => _, Finset.sum_const_zero]
+    · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_right i x).trans_eq H)
 #align direct_sum.coe_of_mul_apply_of_not_le DirectSum.coe_of_mul_apply_of_not_le
 
@@ -243,7 +249,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
     swap
     · simp_rw [ZeroMemClass.coe_zero, mul_zero, ite_self]
       exact DFinsupp.sum_zero
-    · rw [DFinsupp.sum, Finset.sum_ite_of_false _ _ fun x _ H => _, Finset.sum_const_zero]
+    · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_left i x).trans_eq H)
 #align direct_sum.coe_mul_of_apply_of_not_le DirectSum.coe_mul_of_apply_of_not_le
 

@@ -289,7 +289,7 @@ theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter 
   have hyz : 0 < ‖y - x‖ := by rw [norm_pos_iff]; intro hy'; exact hyz' (eq_of_sub_eq_zero hy').symm
   rw [inv_mul_le_iff hyz, mul_comm, sub_sub_sub_comm]
   simp only [Pi.zero_apply, dist_zero_left] at e
-  refine'
+  refine
     Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
       (fun y hy => ((e hn (hr' hy)).2.1.sub (e hn (hr' hy)).2.2).hasFDerivWithinAt)
       (fun y hy => (e hn (hr' hy)).1.le) (convex_ball x r) (Metric.mem_ball_self hr) hy
@@ -388,7 +388,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     have hnx : 0 < ‖n.2 - x‖ := by
       rw [norm_pos_iff]; intro hx'; exact hx (eq_of_sub_eq_zero hx').symm
     rw [inv_mul_le_iff hnx, mul_comm]
-    simp only [Function.comp_apply, Prod_map]
+    simp only [Function.comp_apply, Prod.map_apply]
     rw [norm_sub_rev]
     exact (f' n.1 x - g' x).le_opNorm (n.2 - x)
 #align has_fderiv_at_of_tendsto_uniformly_on_filter hasFDerivAt_of_tendstoUniformlyOnFilter

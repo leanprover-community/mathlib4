@@ -61,8 +61,8 @@ namespace IsAdjMatrix
 variable {A : Matrix V V α}
 
 @[simp]
-theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) : ¬A i i = 1 :=
-  by simp [h.apply_diag i]
+theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) :
+    ¬A i i = 1 := by simp [h.apply_diag i]
 #align matrix.is_adj_matrix.apply_diag_ne Matrix.IsAdjMatrix.apply_diag_ne
 
 @[simp]
@@ -253,8 +253,8 @@ theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
 
 theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} {a : α}
-    (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a :=
-  by simp [hd v]
+    (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a := by
+  simp [hd v]
 #align simple_graph.adj_matrix_mul_vec_const_apply_of_regular SimpleGraph.adjMatrix_mulVec_const_apply_of_regular
 
 theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :

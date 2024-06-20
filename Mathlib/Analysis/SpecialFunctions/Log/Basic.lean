@@ -224,9 +224,15 @@ theorem log_natCast_nonneg (n : ℕ) : 0 ≤ log n := by
     have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
+@[deprecated (since := "2024-04-17")]
+alias log_nat_cast_nonneg := log_natCast_nonneg
+
 theorem log_neg_natCast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
   rw [← log_neg_eq_log, neg_neg]
   exact log_natCast_nonneg _
+
+@[deprecated (since := "2024-04-17")]
+alias log_neg_nat_cast_nonneg := log_neg_natCast_nonneg
 
 theorem log_intCast_nonneg (n : ℤ) : 0 ≤ log n := by
   cases lt_trichotomy 0 n with
@@ -240,6 +246,9 @@ theorem log_intCast_nonneg (n : ℤ) : 0 ≤ log n := by
           have : (1 : ℝ) ≤ -n := by rw [← neg_zero, ← lt_neg] at hn; exact mod_cast hn
           rw [← log_neg_eq_log]
           exact log_nonneg this
+
+@[deprecated (since := "2024-04-17")]
+alias log_int_cast_nonneg := log_intCast_nonneg
 
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
 #align real.strict_mono_on_log Real.strictMonoOn_log
@@ -381,7 +390,6 @@ theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s
     simp [ih hf.2, log_mul hf.1 (Finset.prod_ne_zero_iff.2 hf.2)]
 #align real.log_prod Real.log_prod
 
--- Porting note (#10756): new theorem
 protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
   log_prod _ _ fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀

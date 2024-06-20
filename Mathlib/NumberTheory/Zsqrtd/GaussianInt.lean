@@ -142,6 +142,9 @@ theorem toComplex_inj {x y : ℤ[i]} : (x : ℂ) = y ↔ x = y := by
   cases x; cases y; simp [toComplex_def₂]
 #align gaussian_int.to_complex_inj GaussianInt.toComplex_inj
 
+lemma toComplex_injective : Function.Injective GaussianInt.toComplex :=
+  fun ⦃_ _⦄ ↦ toComplex_inj.mp
+
 @[simp]
 theorem toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
   rw [← toComplex_zero, toComplex_inj]
@@ -152,10 +155,16 @@ theorem intCast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : �
   rw [Zsqrtd.norm, normSq]; simp
 #align gaussian_int.nat_cast_real_norm GaussianInt.intCast_real_norm
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_real_norm := intCast_real_norm
+
 @[simp]
 theorem intCast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x : ℂ) := by
   cases x; rw [Zsqrtd.norm, normSq]; simp
 #align gaussian_int.nat_cast_complex_norm GaussianInt.intCast_complex_norm
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_complex_norm := intCast_complex_norm
 
 theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
   Zsqrtd.norm_nonneg (by norm_num) _
@@ -173,13 +182,15 @@ theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
   Int.natAbs_of_nonneg (norm_nonneg _)
 #align gaussian_int.abs_coe_nat_norm GaussianInt.abs_natCast_norm
 
--- 2024-04-05
-@[deprecated] alias abs_coe_nat_norm := abs_natCast_norm
+@[deprecated (since := "2024-04-05")] alias abs_coe_nat_norm := abs_natCast_norm
 
 @[simp]
 theorem natCast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
   rw [← Int.cast_natCast, abs_natCast_norm]
 #align gaussian_int.nat_cast_nat_abs_norm GaussianInt.natCast_natAbs_norm
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_natAbs_norm := natCast_natAbs_norm
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
     x.norm.natAbs = x.re.natAbs * x.re.natAbs + x.im.natAbs * x.im.natAbs :=

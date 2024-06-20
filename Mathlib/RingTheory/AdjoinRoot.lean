@@ -854,8 +854,8 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :
     AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g)) =
       Ideal.Quotient.mk (Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]))
-      (g.map (Ideal.Quotient.mk I)) :=
-  by rw [AdjoinRoot.quotEquivQuotMap_apply, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of]
+      (g.map (Ideal.Quotient.mk I)) := by
+  rw [AdjoinRoot.quotEquivQuotMap_apply, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of]
 #align adjoin_root.quot_equiv_quot_map_apply_mk AdjoinRoot.quotEquivQuotMap_apply_mk
 
 theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :

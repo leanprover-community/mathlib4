@@ -625,8 +625,6 @@ namespace List
 
 variable {α : Type*}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Auxiliary for `List.splitWrtComposition`. -/
 def splitWrtCompositionAux : List α → List ℕ → List (List α)
   | _, [] => []
@@ -645,8 +643,6 @@ def splitWrtComposition (l : List α) (c : Composition n) : List (List α) :=
 -- Porting note: can't refer to subeqn in Lean 4 this way, and seems to definitionally simp
 --attribute [local simp] splitWrtCompositionAux.equations._eqn_1
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[local simp]
 theorem splitWrtCompositionAux_cons (l : List α) (n ns) :
     l.splitWrtCompositionAux (n::ns) = take n l::(drop n l).splitWrtCompositionAux ns := by
@@ -801,7 +797,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       have A : (1 + (i - 1) : ℕ) = (i : ℕ) := by
         rw [add_comm]
         exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
-      refine' ⟨⟨i - 1, _⟩, _, _⟩
+      refine ⟨⟨i - 1, ?_⟩, ?_, ?_⟩
       · have : (i : ℕ) < n + 1 := i.2
         simp? [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this says
           simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this

@@ -114,8 +114,8 @@ theorem HasDerivWithinAt.inner {f g : ℝ → E} {f' g' : E} {s : Set ℝ} {x : 
 
 theorem HasDerivAt.inner {f g : ℝ → E} {f' g' : E} {x : ℝ} :
     HasDerivAt f f' x → HasDerivAt g g' x →
-      HasDerivAt (fun t => ⟪f t, g t⟫) (⟪f x, g'⟫ + ⟪f', g x⟫) x :=
-  by simpa only [← hasDerivWithinAt_univ] using HasDerivWithinAt.inner 𝕜
+      HasDerivAt (fun t => ⟪f t, g t⟫) (⟪f x, g'⟫ + ⟪f', g x⟫) x := by
+  simpa only [← hasDerivWithinAt_univ] using HasDerivWithinAt.inner 𝕜
 #align has_deriv_at.inner HasDerivAt.inner
 
 theorem DifferentiableWithinAt.inner (hf : DifferentiableWithinAt ℝ f s x)
@@ -378,7 +378,7 @@ variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ 
 theorem PartialHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
   suffices ContDiff ℝ n fun x : E => (√(1 + ‖x‖ ^ 2 : ℝ))⁻¹ from this.smul contDiff_id
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
-  refine' ContDiff.inv _ fun x => Real.sqrt_ne_zero'.mpr (h x)
+  refine ContDiff.inv ?_ fun x => Real.sqrt_ne_zero'.mpr (h x)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
 
 theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
@@ -387,15 +387,15 @@ theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
   suffices ContDiffAt ℝ n (fun y : E => (√(1 - ‖y‖ ^ 2 : ℝ))⁻¹) y from this.smul contDiffAt_id
   have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
     rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
-  refine' ContDiffAt.inv _ (Real.sqrt_ne_zero'.mpr h)
-  refine' (contDiffAt_sqrt h.ne').comp y _
+  refine ContDiffAt.inv ?_ (Real.sqrt_ne_zero'.mpr h)
+  refine (contDiffAt_sqrt h.ne').comp y ?_
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
 
 theorem Homeomorph.contDiff_unitBall : ContDiff ℝ n fun x : E => (unitBall x : E) :=
   PartialHomeomorph.contDiff_univUnitBall
 #align cont_diff_homeomorph_unit_ball Homeomorph.contDiff_unitBall
 
-@[deprecated PartialHomeomorph.contDiffOn_univUnitBall_symm]
+@[deprecated PartialHomeomorph.contDiffOn_univUnitBall_symm (since := "2023-07-26")]
 theorem Homeomorph.contDiffOn_unitBall_symm {f : E → E}
     (h : ∀ (y) (hy : y ∈ ball (0 : E) 1), f y = Homeomorph.unitBall.symm ⟨y, hy⟩) :
     ContDiffOn ℝ n f <| ball 0 1 :=

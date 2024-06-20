@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 This file contains some lemmas on factorials in combination with big operators.
 
 While in terms of semantics they could be in the `Basic.lean` file, importing
-`Algebra.BigOperators.Basic` leads to a cyclic import.
+`Algebra.BigOperators.Group.Finset` leads to a cyclic import.
 
 -/
 

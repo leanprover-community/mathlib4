@@ -65,12 +65,7 @@ theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
 
 @[simp]
 theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
-  -- Porting note: added as this doesn't do anything in `simp_rw` any more
-  rw [affineSegment]
-  -- Note: when adding "simp made no progress" in lean4#2336,
-  -- had to change `lineMap_same` to `lineMap_same _`. Not sure why?
-  -- Porting note: added `_ _` and `Function.const`
-  simp_rw [lineMap_same _, AffineMap.coe_const _ _, Function.const,
+  simp_rw [affineSegment, lineMap_same, AffineMap.coe_const, Function.const,
     (Set.nonempty_Icc.mpr zero_le_one).image_const]
 #align affine_segment_same affineSegment_same
 
@@ -871,7 +866,7 @@ theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} :
     · exact Or.inr (Or.inr (wbtw_smul_vadd_smul_vadd_of_nonneg_of_nonpos _ _ hz0.le hy0.le))
   · simp
   · rcases lt_trichotomy tz 0 with (hz0 | rfl | hz0)
-    · refine' Or.inr (Or.inr (wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg _ _ hz0.le hy0.le))
+    · refine Or.inr (Or.inr (wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg _ _ hz0.le hy0.le))
     · simp
     · rw [wbtw_comm (z := x)]
       rw [← or_assoc]
