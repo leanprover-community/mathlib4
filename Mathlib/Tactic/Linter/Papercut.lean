@@ -62,7 +62,7 @@ def getPapercuts (e : Expr) : Meta.MetaM (Option MessageData) := do
 /-- The "papercut" linter emits a warning on certain quirks of the basic
 definitions. -/
 register_option linter.papercut : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the papercut linter"
 }
 
@@ -77,8 +77,6 @@ def isEmpty : InfoTree → Bool
 @[inherit_doc Mathlib.Linter.Papercut.linter.papercut]
 def papercutLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) do
-    return
-  if (← get).messages.unreported.isEmpty then
     return
   let initInfoTrees ← getResetInfoTrees
   for t in initInfoTrees.toArray do liftTermElabM do
