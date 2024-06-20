@@ -151,6 +151,15 @@ theorem _root_.Real.comap_toNNReal_atTop : comap Real.toNNReal atTop = atTop := 
   filter_upwards [preimage_mem_comap (Ioi_mem_atTop a.toNNReal)] with x hx
   exact (Real.toNNReal_lt_toNNReal_iff_of_nonneg ha.le).1 hx
 
+@[simp]
+theorem _root_.Real.tendsto_toNNReal_atTop_iff {l : Filter α} {f : α → ℝ} :
+    Tendsto (fun x ↦ (f x).toNNReal) l atTop ↔ Tendsto f l atTop := by
+  rw [← Real.comap_toNNReal_atTop, tendsto_comap_iff]
+  rfl
+
+theorem _root_.Real.tendsto_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :=
+  Real.tendsto_toNNReal_atTop_iff.2 tendsto_id
+
 theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]; rfl
 #align nnreal.nhds_zero NNReal.nhds_zero
