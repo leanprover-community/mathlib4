@@ -55,7 +55,7 @@ lemma crossEdges_self (p : P.parts) : G.crossEdges s(p, p) =
       Function.Embedding.coeFn_mk] at f
     simp only [Sym2.map_pair_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at q
     rcases q with ⟨qx, qy⟩ | ⟨qx, qy⟩ <;> (subst qx qy; refine ⟨by simpa only [adj_comm], ?_, ?_⟩)
-    all_goals exact P.eq_of_mem_parts (P.part_mem (mem_univ _)) mp (P.mem_part (mem_univ _)) ‹_›
+    all_goals exact P.part_eq_of_mem mp ‹_›
 
 lemma crossEdges_eq_biUnion (p q : P.parts) : G.crossEdges s(p, q) =
     q.1.biUnion fun b ↦ (p.1.filter (G.Adj · b)).map (Sym2.congrEmb b) := by
@@ -72,17 +72,10 @@ lemma crossEdges_eq_biUnion (p q : P.parts) : G.crossEdges s(p, q) =
     · use a, ca ▸ P.mem_part (mem_univ a), b
       have := cb ▸ P.mem_part (mem_univ b)
       tauto
-  · obtain ⟨x, hx, y, ⟨hy, adj⟩, ⟨cx, cy⟩ | ⟨cx, cy⟩⟩ := j
-    · rw [cx] at adj hx
-      rw [cy] at adj hy
-      refine ⟨adj.symm, Or.inr ⟨?_, ?_⟩⟩
-      · exact P.eq_of_mem_parts (P.part_mem (mem_univ a)) q.2 (P.mem_part (mem_univ a)) hx
-      · exact P.eq_of_mem_parts (P.part_mem (mem_univ b)) p.2 (P.mem_part (mem_univ b)) hy
-    · rw [cx] at adj hx
-      rw [cy] at adj hy
-      refine ⟨adj, Or.inl ⟨?_, ?_⟩⟩
-      · exact P.eq_of_mem_parts (P.part_mem (mem_univ a)) p.2 (P.mem_part (mem_univ a)) hy
-      · exact P.eq_of_mem_parts (P.part_mem (mem_univ b)) q.2 (P.mem_part (mem_univ b)) hx
+  · obtain ⟨x, hx, y, ⟨hy, adj⟩, ⟨cx, cy⟩ | ⟨cx, cy⟩⟩ := j <;>
+      (rw [cx] at adj hx; rw [cy] at adj hy)
+    · exact ⟨adj.symm, Or.inr ⟨P.part_eq_of_mem q.2 hx, P.part_eq_of_mem p.2 hy⟩⟩
+    · exact ⟨adj, Or.inl ⟨P.part_eq_of_mem p.2 hy, P.part_eq_of_mem q.2 hx⟩⟩
 
 theorem pairwiseDisjoint_crossEdges :
     (Set.univ : Set (Sym2 P.parts)).PairwiseDisjoint G.crossEdges := by
