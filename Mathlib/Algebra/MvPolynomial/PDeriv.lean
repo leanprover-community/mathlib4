@@ -78,17 +78,19 @@ theorem pderiv_monomial {i : σ} :
     · simp
 #align mv_polynomial.pderiv_monomial MvPolynomial.pderiv_monomial
 
+lemma _root_.Finsupp.sub_add_single_one_cancel {m : σ →₀ ℕ} {i : σ} (hi : m i ≠ 0) :
+    (m - single i 1) + single i 1 = m := by
+  ext j; apply Nat.sub_add_cancel
+  obtain rfl|hj := eq_or_ne i j
+  · rw [Finsupp.single_eq_same]; omega
+  · rw [Finsupp.single_eq_of_ne hj]; exact Nat.zero_le _
+
 lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
     X i * pderiv i (monomial m r) = m i • monomial m r := by
   rw [pderiv_monomial, X, monomial_mul, smul_monomial]
   by_cases h : m i = 0
   · simp_rw [h, Nat.cast_zero, mul_zero, zero_smul, monomial_zero]
-  congr
-  · ext j; apply Nat.add_sub_of_le
-    obtain rfl|hj := eq_or_ne i j
-    · rw [Finsupp.single_eq_same]; omega
-    · rw [Finsupp.single_eq_of_ne hj]; exact Nat.zero_le _
-  rw [one_mul, mul_comm, nsmul_eq_mul]
+  rw [one_mul, mul_comm, nsmul_eq_mul, add_comm, sub_add_single_one_cancel h]
 
 theorem pderiv_C {i : σ} : pderiv i (C a) = 0 :=
   derivation_C _ _
@@ -149,10 +151,41 @@ theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R}
 
 end PDeriv
 
-variable [Fintype σ] [CommSemiring R] {φ : MvPolynomial σ R} {n : ℕ}
+lemma weightedDegree_sub_single_add {M} [AddCommMonoid M] {w : σ → M} {m : σ →₀ ℕ} {i : σ}
+    (hi : m i ≠ 0) : (weightedDegree w) (m - .single i 1) + w i = weightedDegree w m := by
+  conv_rhs => rw [← sub_add_single_one_cancel hi, weightedDegree_apply]
+  rw [sum_add_index', sum_single_index, one_smul, weightedDegree_apply]
+  exacts [zero_smul .., fun _ ↦ zero_smul .., fun _ _ _ ↦ add_smul ..]
+
+variable {M} [CommSemiring R] {φ : MvPolynomial σ R}
+
+protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ → M} {n n' : M} {i : σ}
+    (h : φ.IsWeightedHomogeneous w n) (h' : n' + w i = n) :
+    (pderiv i φ).IsWeightedHomogeneous w n' := by
+  rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
+    Finsupp.supported_eq_span_single] at h
+  refine Submodule.span_induction h ?_ ?_ (fun p q hp hq ↦ ?_) fun r p h ↦ ?_
+  · rintro _ ⟨m, hm, rfl⟩
+    simp_rw [single_eq_monomial, pderiv_monomial, one_mul]
+    by_cases hi : m i = 0
+    · rw [hi, Nat.cast_zero, monomial_zero]; apply isWeightedHomogeneous_zero
+    convert isWeightedHomogeneous_monomial ..
+    rw [← add_right_cancel_iff (a := w i), h', ← hm, weightedDegree_sub_single_add hi]
+  · rw [map_zero]; apply isWeightedHomogeneous_zero
+  · rw [map_add]; exact hp.add hq
+  · rw [(pderiv i).map_smul]; exact (weightedHomogeneousSubmodule ..).smul_mem _ h
+
+protected lemma IsHomogeneous.pderiv [AddCancelCommMonoid M] {n : ℕ} {i : σ}
+    (h : φ.IsHomogeneous n) : (pderiv i φ).IsHomogeneous (n - 1) := by
+  obtain _ | n := n
+  · rw [← totalDegree_zero_iff_isHomogeneous, totalDegree_eq_zero_iff] at h
+    rw [h, pderiv_C]; apply isHomogeneous_zero
+  · exact IsWeightedHomogeneous.pderiv h rfl
+
+variable [Fintype σ] {n : ℕ}
 
 open Finset in
-/-- Euler's theorem for weighted homogeneous polynomials. -/
+/-- Euler's identity for weighted homogeneous polynomials. -/
 theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}
     (h : φ.IsWeightedHomogeneous w n) : ∑ i : σ, w i • (X i * pderiv i φ) = n • φ := by
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
@@ -167,7 +200,7 @@ theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}
   · simp_rw [map_add, left_distrib, smul_add, sum_add_distrib, hp, hq]
   · simp_rw [(pderiv _).map_smul, nsmul_eq_mul, mul_smul_comm, ← Finset.smul_sum, ← nsmul_eq_mul, h]
 
-/-- Euler's theorem for homogeneous polynomials. -/
+/-- Euler's identity for homogeneous polynomials. -/
 theorem IsHomogeneous.sum_X_mul_pderiv (h : φ.IsHomogeneous n) :
     ∑ i : σ, X i * pderiv i φ = n • φ := by
   simp_rw [← h.sum_weight_X_mul_pderiv, Pi.one_apply, one_smul]
