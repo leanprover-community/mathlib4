@@ -3,13 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Ideal.LocalRing
 
 #align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
@@ -688,7 +688,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       ext m f <;> simp [e]
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
-    exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
+    exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
 variable {R M N} in
 lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
@@ -741,7 +741,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
 
 -- Porting note: replace use_finite_instance tactic
 open Lean.Elab.Tactic in
-/-- Try using `Set.to_finite` to dispatch a `Set.finite` goal. -/
+/-- Try using `Set.toFinite` to dispatch a `Set.Finite` goal. -/
 def evalUseFiniteInstance : TacticM Unit := do
   evalTactic (← `(tactic| intros; apply Set.toFinite))
 
@@ -1710,8 +1710,19 @@ theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [Finite
 theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)} :
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
-    fun _ ↦ have := Basis.dual_finite (R := K) (M := W)
-    FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
+    fun _ ↦ by
+      #adaptation_note
+      /--
+      After https://github.com/leanprover/lean4/pull/4119
+      the `Free K W` instance isn't found unless we use `set_option maxSynthPendingDepth 2`, or add
+      explicit instances:
+      ```
+      have := Free.of_divisionRing K ↥W
+      have := Basis.dual_finite (R := K) (M := W)
+      ```
+      -/
+      set_option maxSynthPendingDepth 2 in
+      exact FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order

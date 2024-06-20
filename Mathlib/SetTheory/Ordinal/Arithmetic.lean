@@ -326,13 +326,13 @@ theorem limitRecOn_zero {C} (H₁ H₂ H₃) : @limitRecOn C 0 H₁ H₂ H₃ = 
 @[simp]
 theorem limitRecOn_succ {C} (o H₁ H₂ H₃) :
     @limitRecOn C (succ o) H₁ H₂ H₃ = H₂ o (@limitRecOn C o H₁ H₂ H₃) := by
-  rw [limitRecOn, SuccOrder.limitRecOn_succ _ _ (not_isMax _)]; rfl
+  simp_rw [limitRecOn, SuccOrder.limitRecOn_succ _ _ (not_isMax _)]
 #align ordinal.limit_rec_on_succ Ordinal.limitRecOn_succ
 
 @[simp]
 theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
     @limitRecOn C o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn C x H₁ H₂ H₃ := by
-  rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ h.isSuccLimit, dif_neg h.1]; rfl
+  simp_rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ h.isSuccLimit, dif_neg h.1]
 #align ordinal.limit_rec_on_limit Ordinal.limitRecOn_limit
 
 instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=

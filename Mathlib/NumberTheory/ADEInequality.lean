@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Interval
-import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
 

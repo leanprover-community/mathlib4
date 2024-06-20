@@ -430,6 +430,12 @@ lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right $ 
 protected lemma le_of_mul_le_mul_right (h : a * c ≤ b * c) (hc : 0 < c) : a ≤ b :=
   Nat.le_of_mul_le_mul_left (by simpa [Nat.mul_comm]) hc
 
+protected alias mul_sub := Nat.mul_sub_left_distrib
+protected alias sub_mul := Nat.mul_sub_right_distrib
+
+protected lemma mul_sub_one (a b : ℕ) : a * (b - 1) = a * b - a := by rw [Nat.mul_sub, Nat.mul_one]
+protected lemma sub_one_mul (a b : ℕ) : (a - 1) * b = a * b - b := by rw [Nat.sub_mul, Nat.one_mul]
+
 set_option push_neg.use_distrib true in
 /-- The product of two natural numbers is greater than 1 if and only if
   at least one of them is greater than 1 and both are positive. -/
@@ -605,6 +611,12 @@ lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (
     Nat.mul_left_comm x, ← Nat.mul_assoc b, Nat.mul_div_cancel_left _ (Nat.mul_pos hb hd)]
 #align nat.div_mul_div_comm Nat.div_mul_div_comm
 
+protected lemma mul_div_mul_comm (hba : b ∣ a) (hdc : d ∣ c) : a * c / (b * d) = a / b * (c / d) :=
+  (div_mul_div_comm hba hdc).symm
+#align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm
+
+@[deprecated (since := "2024-05-29")] alias mul_div_mul_comm_of_dvd_dvd := Nat.mul_div_mul_comm
+
 lemma eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
   eq_zero_of_mul_le hn <| by
     rw [Nat.mul_comm]; exact (Nat.le_div_iff_mul_le' (Nat.lt_of_lt_of_le (by decide) hn)).1 h
@@ -625,13 +637,13 @@ lemma eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 := eq_zero_of_le_div (Nat.le_
 
 lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := by
   rw [Nat.le_div_iff_mul_le Nat.two_pos]
-  rw [Nat.div_lt_iff_lt_mul Nat.two_pos, Nat.mul_sub_right_distrib, Nat.lt_sub_iff_add_lt,
+  rw [Nat.div_lt_iff_lt_mul Nat.two_pos, Nat.sub_mul, Nat.lt_sub_iff_add_lt,
     Nat.mul_two a] at h
   exact Nat.le_of_lt (Nat.lt_of_add_lt_add_left h)
 #align nat.le_half_of_half_lt_sub Nat.le_half_of_half_lt_sub
 
 lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := by
-  rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
+  rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.sub_mul, Nat.sub_le_iff_le_add,
     Nat.mul_two, Nat.add_le_add_iff_left] at h
   rw [← Nat.mul_div_left b Nat.two_pos]
   exact Nat.div_le_div_right h
@@ -741,6 +753,9 @@ protected lemma pow_le_pow_iff_left {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n �
 protected lemma pow_lt_pow_iff_left (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b := by
   simp only [← Nat.not_le, Nat.pow_le_pow_iff_left hn]
 #align nat.pow_lt_iff_lt_left Nat.pow_lt_pow_iff_left
+
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
+@[deprecated (since := "2023-12-23")] alias pow_le_iff_le_left := Nat.pow_le_pow_iff_left
 
 lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_left hn]
@@ -1023,7 +1038,7 @@ Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_indu
 def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) : P m := by
   revert h hP
-  refine' leRecOn' mn _ _
+  refine leRecOn' mn ?_ ?_
   · intro n mn ih h hP
     apply ih
     · exact fun k hk ↦ h k (Nat.lt.step hk)
@@ -1127,11 +1142,12 @@ protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
 protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
   rw [Nat.pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
 
-@[deprecated div_mul_div_comm (since := "2024-05-29")]
-lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :
-    a * c / (b * d) = a / b * (c / d) :=
-  (div_mul_div_comm hba hdc).symm
-#align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
+lemma le_iff_ne_zero_of_dvd (ha : a ≠ 0) (hab : a ∣ b) : a ≤ b ↔ b ≠ 0 where
+  mp := by rw [← Nat.pos_iff_ne_zero] at ha ⊢; exact Nat.lt_of_lt_of_le ha
+  mpr hb := Nat.le_of_dvd (Nat.pos_iff_ne_zero.2 hb) hab
+
+lemma div_ne_zero_iff_of_dvd (hba : b ∣ a) : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [Nat.div_ne_zero_iff, Nat.le_iff_ne_zero_of_dvd, *]
 
 @[simp] lemma mul_mod_mod (a b c : ℕ) : (a * (b % c)) % c = a * b % c := by
   rw [mul_mod, mod_mod, ← mul_mod]
@@ -1178,6 +1194,13 @@ lemma not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
   · exact Nat.not_lt.2 (Nat.le_mul_of_pos_right _ hk) h2
 #align nat.not_dvd_of_pos_of_lt Nat.not_dvd_of_pos_of_lt
 
+lemma eq_of_dvd_of_lt_two_mul (ha : a ≠ 0) (hdvd : b ∣ a) (hlt : a < 2 * b) : a = b := by
+  obtain ⟨_ | _ | c, rfl⟩ := hdvd
+  · simp at ha
+  · exact Nat.mul_one _
+  · rw [Nat.mul_comm] at hlt
+    cases Nat.not_le_of_lt hlt (Nat.mul_le_mul_right _ (by omega))
+
 lemma mod_eq_iff_lt (hn : n ≠ 0) : m % n = m ↔ m < n :=
   ⟨fun h ↦ by rw [← h]; exact mod_lt _ $ Nat.pos_iff_ne_zero.2 hn, mod_eq_of_lt⟩
 #align nat.mod_eq_iff_lt Nat.mod_eq_iff_lt
@@ -1207,7 +1230,7 @@ protected lemma div_mod_unique (h : 0 < b) :
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/
 lemma sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
   rw [← Nat.mod_add_div m k, ← Nat.mod_add_div n k, ← h, ← Nat.sub_sub,
-    Nat.add_sub_cancel_left, ← Nat.mul_sub_left_distrib k, Nat.mul_mod_right]
+    Nat.add_sub_cancel_left, ← k.mul_sub, Nat.mul_mod_right]
 #align nat.sub_mod_eq_zero_of_mod_eq Nat.sub_mod_eq_zero_of_mod_eq
 
 @[simp] lemma one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
@@ -1446,9 +1469,9 @@ lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := b
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
 lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
     (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) ↔ ¬a ∣ n := by
-  refine'
+  refine
     ⟨fun ⟨k, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2, fun han =>
-      ⟨n / a, ⟨lt_of_le_of_ne (mul_div_le n a) _, lt_mul_div_succ _ ha⟩⟩⟩
+      ⟨n / a, ⟨lt_of_le_of_ne (mul_div_le n a) ?_, lt_mul_div_succ _ ha⟩⟩⟩
   exact mt (⟨n / a, Eq.symm ·⟩) han
 #align nat.not_dvd_iff_between_consec_multiples Nat.not_dvd_iff_between_consec_multiples
 
@@ -1664,7 +1687,7 @@ lemma sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n := sqrt_add_eq' n (zero_le _)
 lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| lt_succ_of_le <|
   succ_le_succ <| le_trans (sqrt_le_add n) <| Nat.add_le_add_right
-    (by refine' add_le_add (Nat.mul_le_mul_right _ _) _ <;> exact Nat.le_add_right _ 2) _
+    (by refine add_le_add (Nat.mul_le_mul_right _ ?_) ?_ <;> exact Nat.le_add_right _ 2) _
 #align nat.sqrt_succ_le_succ_sqrt Nat.sqrt_succ_le_succ_sqrt
 
 lemma exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
@@ -1746,7 +1769,7 @@ lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
 
 lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 := by
-  refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ _⟩
+  refine (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ ?_⟩
   cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 #align nat.find_comp_succ Nat.find_comp_succ

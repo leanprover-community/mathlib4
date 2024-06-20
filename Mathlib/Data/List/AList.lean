@@ -370,7 +370,7 @@ def insertRec {C : AList β → Sort*} (H0 : C ∅)
   | ⟨[], _⟩ => H0
   | ⟨c :: l, h⟩ => by
     rw [mk_cons_eq_insert]
-    refine' IH _ _ _ _ (insertRec H0 IH _)
+    refine IH _ _ _ ?_ (insertRec H0 IH _)
     exact not_mem_keys_of_nodupKeys_cons h
 #align alist.insert_rec AList.insertRec
 
@@ -480,7 +480,6 @@ theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : AList β} :
   mem_dlookup_kunion
 #align alist.mem_lookup_union AList.mem_lookup_union
 
--- Porting note (#10756): new theorem, version of `mem_lookup_union` with LHS in simp-normal form
 @[simp]
 theorem lookup_union_eq_some {a} {b : β a} {s₁ s₂ : AList β} :
     lookup a (s₁ ∪ s₂) = some b ↔ lookup a s₁ = some b ∨ a ∉ s₁ ∧ lookup a s₂ = some b :=

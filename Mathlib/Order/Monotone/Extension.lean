@@ -29,14 +29,14 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
       of `f` to the left of `x` for `x ≥ a`. -/
     rcases hl with ⟨a, ha⟩
     have hu' : ∀ x, BddAbove (f '' (Iic x ∩ s)) := fun x =>
-      hu.mono (image_subset _ (inter_subset_right _ _))
+      hu.mono (image_subset _ inter_subset_right)
     let g : α → β := fun x => if Disjoint (Iic x) s then a else sSup (f '' (Iic x ∩ s))
     have hgs : EqOn f g s := by
       intro x hx
       simp only [g]
       have : IsGreatest (Iic x ∩ s) x := ⟨⟨right_mem_Iic, hx⟩, fun y hy => hy.1⟩
       rw [if_neg this.nonempty.not_disjoint,
-        ((h.mono <| inter_subset_right _ _).map_isGreatest this).csSup_eq]
+        ((h.mono inter_subset_right).map_isGreatest this).csSup_eq]
     refine ⟨g, fun x y hxy => ?_, hgs⟩
     by_cases hx : Disjoint (Iic x) s <;> by_cases hy : Disjoint (Iic y) s <;>
       simp only [g, if_pos, if_neg, not_false_iff, *, refl]

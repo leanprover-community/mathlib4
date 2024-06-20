@@ -538,7 +538,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
     · exact measurable_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
-    refine fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+    refine fun n => (measure_mono Set.inter_subset_left).trans_lt ?_
     exact measure_spanningSets_lt_top μ n
   refine ⟨sets, fun n => ⟨h_meas n, h_finite n, ?_⟩, ?_⟩
   · exact fun x hx => hx.2

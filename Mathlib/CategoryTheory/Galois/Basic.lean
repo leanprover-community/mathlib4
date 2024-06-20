@@ -77,8 +77,8 @@ namespace PreGaloisCategory
 class FiberFunctor {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
     (F : C ⥤ FintypeCat.{w}) where
   /-- `F` preserves terminal objects (G4). -/
-  preservesTerminalObjects : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F :=
-    by infer_instance
+  preservesTerminalObjects : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F := by
+    infer_instance
   /-- `F` preserves pullbacks (G4). -/
   preservesPullbacks : PreservesLimitsOfShape WalkingCospan F := by infer_instance
   /-- `F` preserves finite coproducts (G5). -/
@@ -157,6 +157,16 @@ instance : F.Faithful where
 end FiberFunctor
 
 variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
+
+/-- The canonical action of `Aut F` on the fiber of each object. -/
+instance (X : C) : MulAction (Aut F) (F.obj X) where
+  smul σ x := σ.hom.app X x
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
+    σ • x = σ.hom.app X x :=
+  rfl
 
 /-- An object is initial if and only if its fiber is empty. -/
 lemma initial_iff_fiber_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
