@@ -203,7 +203,7 @@ lemma equation_iff (x y : R) :
 
 @[simp]
 lemma equation_zero : W.Equation 0 0 ↔ W.a₆ = 0 := by
-  rw [Equation, polynomial_evalEval_zero, neg_eq_zero]
+  rw [Equation, evalEval_polynomial_zero, neg_eq_zero]
 #align weierstrass_curve.equation_zero WeierstrassCurve.Affine.equation_zero
 
 lemma equation_iff_variableChange (x y : R) :
