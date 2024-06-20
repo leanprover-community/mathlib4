@@ -103,6 +103,13 @@ instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
   add_smul r s x := by simp only [← smul_one_oreDiv_one_smul, add_smul, ← add_oreDiv]
   zero_smul x := by rw [← smul_one_oreDiv_one_smul, zero_smul, zero_oreDiv, zero_smul]
 
+@[simp]
+lemma nsuml_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
+    letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
+    HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
+  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
+  exact congr($(AddCommMonoid.natModule.unique.2 inst).smul n x)
+
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
 def numeratorRingHom : R →+* R[S⁻¹] where
@@ -186,10 +193,18 @@ end Semiring
 section Ring
 
 variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
+variable {X : Type*} [AddCommGroup X] [Module R X]
 
 instance : Ring R[S⁻¹] where
   __ := inferInstanceAs (Semiring R[S⁻¹])
   __ := inferInstanceAs (AddGroup R[S⁻¹])
+
+@[simp]
+lemma zsuml_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
+    letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
+    HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
+  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
+  exact congr($(AddCommGroup.intModule.unique.2 inst).smul n x)
 
 open nonZeroDivisors
 
