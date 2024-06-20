@@ -630,7 +630,7 @@ lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
-  rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
+  rw [← Nat.lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, Nat.pow_succ] at h2
   refine not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?

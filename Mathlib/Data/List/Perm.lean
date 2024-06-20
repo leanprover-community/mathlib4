@@ -590,7 +590,7 @@ theorem Perm.drop_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ y
     have h₀ : n = xs.length - n' := by rwa [Nat.sub_sub_self]
     have h₁ : n' ≤ xs.length := Nat.sub_le ..
     have h₂ : xs.drop n = (xs.reverse.take n').reverse := by
-      rw [reverse_take _ h₁, h₀, reverse_reverse]
+      rw [take_reverse _ h₁, h₀, reverse_reverse]
     rw [h₂]
     apply (reverse_perm _).trans
     rw [inter_reverse]
@@ -696,7 +696,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (permutations'Aux b l).bind (permutations'Aux a) := by
   induction' l with c l ih
   · simp [swap]
-  simp only [permutations'Aux, cons_bind, map_cons, map_map, cons_append]
+  simp only [permutations'Aux, bind_cons, map_cons, map_map, cons_append]
   apply Perm.swap'
   have :
     ∀ a b,

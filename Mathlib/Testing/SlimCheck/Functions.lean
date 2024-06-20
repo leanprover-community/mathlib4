@@ -490,7 +490,7 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
     | nil => simp only [List.zip_nil_right, List.map_nil]
     | cons xs_hd xs_tl xs_ih =>
       simp only [true_and_iff, Prod.toSigma, eq_self_iff_true, Sigma.eta, List.zip_cons_cons,
-        List.map, List.cons_inj]
+        List.map, List.cons_inj_right]
       exact xs_ih
   revert hperm hnodup
   rw [hxs]; intros hperm hnodup

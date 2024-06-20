@@ -299,9 +299,9 @@ theorem leftInvSeq_take (ω : List B) (j : ℕ) :
     lis (ω.take j) = (lis ω).take j := by
   obtain le | ge := Nat.le_or_ge j ω.length
   · simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
-    rw [List.reverse_take j (by simpa)]
+    rw [List.take_reverse j (by simpa)]
     nth_rw 1 [← List.reverse_reverse ω]
-    rw [List.reverse_take j (by simpa)]
+    rw [List.take_reverse j (by simpa)]
     simp [rightInvSeq_drop]
   · rw [take_length_le ge, take_length_le (by simpa)]
 
