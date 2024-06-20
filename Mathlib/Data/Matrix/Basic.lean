@@ -520,9 +520,10 @@ protected theorem map_natCast [DecidableEq n] [AddMonoidWithOne α] [AddMonoidWi
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
+-- See note [no_index around OfNat.ofNat]
 protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
-    {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo]:
-    (no_index (OfNat.ofNat d) : Matrix n n α).map f = diagonal (fun _ => f d) :=
+    {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
+    (no_index (OfNat.ofNat d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
 protected theorem map_intCast [DecidableEq n] [AddGroupWithOne α] [AddGroupWithOne β]
@@ -2095,15 +2096,17 @@ theorem transpose_eq_natCast [DecidableEq n] [AddMonoidWithOne α] {M : Matrix n
     Mᵀ = d ↔ M = d :=
   transpose_eq_diagonal
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem transpose_ofNat [DecidableEq n] [AddMonoidWithOne α] (d : ℕ) [d.AtLeastTwo] :
     (no_index (OfNat.ofNat d) : Matrix n n α)ᵀ = OfNat.ofNat d :=
   transpose_natCast _
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem transpose_eq_ofNat [DecidableEq n] [AddMonoidWithOne α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
-    Mᵀ = d ↔ M = d :=
+    Mᵀ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
   transpose_eq_diagonal
 
 @[simp]
@@ -2314,15 +2317,17 @@ theorem conjTranspose_eq_natCast [DecidableEq n] [Semiring α] [StarRing α]
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
     by rw [conjTranspose_natCast]
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_ofNat [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) [d.AtLeastTwo] :
     (no_index (OfNat.ofNat d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
   conjTranspose_natCast _
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
-    Mᴴ = d ↔ M = d :=
+    Mᴴ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
   conjTranspose_eq_natCast
 
 @[simp]
