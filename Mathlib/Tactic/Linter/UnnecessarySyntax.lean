@@ -32,7 +32,8 @@ It always reports first the beginning and the end of the `nolint ...` block.
   the beginning and the ending of `simpNF`.
   In this case, this whole second range can be removed.
 -/
-def getNoLintSimp (stx : Syntax) : CommandElabM (Option (Syntax × Array (Position × Position))) := do
+def getNoLintSimp (stx : Syntax) :
+    CommandElabM (Option (Syntax × Array (Position × Position))) := do
   -- check if there is a `nolint` and do nothing if there isn't one.
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.attribute)).isSome then return none
   match stx.find? (·.isOfKind ``Std.Tactic.Lint.nolint) with
