@@ -102,3 +102,9 @@ note: this linter can be disabled with `set_option linter.papercut false`
 #guard_msgs in
 set_option linter.papercut true in
 example (x : Int) : x / 0 = 0 := sorry
+
+-- check that a missing `OfNat` instance does not make the linter produce an error
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+set_option linter.papercut true in
+example {R} [Zero R] [Div R] (x : R) : x / 0 = 0 := sorry

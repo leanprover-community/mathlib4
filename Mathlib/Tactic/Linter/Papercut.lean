@@ -54,9 +54,8 @@ def getPapercuts (e : Expr) : MetaM (Option MessageData) := do
       if let some mddl := mddl then return some m!"{begn}{mddl}{endn}" else return none
     | (``HDiv.hDiv, #[n1, n2, n3, _, a, b]) =>
       -- `mkAppOptM` may fail to find an `OfNat` instance, in that case, we do not report anything
-      let zer ←
-        try mkAppOptM ``OfNat.ofNat #[← instantiateMVars n3, expZero, none]
-        catch _e => return default
+      let zer := (← mkAppOptM ``OfNat.ofNat #[← instantiateMVars n3, expZero, none] <|>
+                  return default)
       if zer == default then return none else
       if ← isDefEq zer b then
         return some m!"Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!\n\
