@@ -41,12 +41,16 @@ def getPapercuts (e : Expr) : Meta.MetaM (Option MessageData) := do
                        This yields the 'expected' result only when you also prove the inequality\n\
                        '{← Meta.ppExpr b} ≤ {← Meta.ppExpr a}'"
       else return none
-    | (``HDiv.hDiv, #[n1, n2, n3, a, b, zero]) =>
-      let zer ← Meta.mkAppOptM ``OfNat.ofNat #[← instantiateMVars n3, expZero, none]
-      if ← Meta.isDefEq zer zero then
+    | (``HDiv.hDiv, #[n1, n2, n3, _, a, b]) =>
+      -- `mkAppOptM` may fail to find an `OfNat` instance, in that case, we do not report anything
+      let zer ←
+        try Meta.mkAppOptM ``OfNat.ofNat #[← instantiateMVars n3, expZero, none]
+        catch _e => return default
+      if zer == default then return none else
+      if ← Meta.isDefEq zer b then
         return some m!"Division by `0` is usually defined to be zero: e.g. `3 / 0 = 0`!\n\
-                       This is usually defined to be `0`, to avoid having to constantly prove \
-                       that denominators are non-zero."
+                       This is allowed (and often defined to be `0`) to avoid having to constantly \
+                       prove that denominators are non-zero."
       else if ← [n1, n2, n3].allM (Meta.isDefEq · expNat) then
         return some m!"Division in ℕ is actually the floor of the division: e.g. `1 / 2 = 0`!\n\
                        This yields the 'expected' result only when you also prove that \
