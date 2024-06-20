@@ -287,7 +287,7 @@ theorem fromSpec_image_top :
 protected theorem isCompact :
     IsCompact (U : Set X) := by
   convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec.1.base PrimeSpectrum.compactSpace.1
-    ((fromSpec hU).val.base.2) -- Porting note: `continuity` can't do this
+    (by fun_prop)
   convert hU.fromSpec_range.symm
   exact Set.image_univ
 #align algebraic_geometry.is_affine_open.is_compact AlgebraicGeometry.IsAffineOpen.isCompact
