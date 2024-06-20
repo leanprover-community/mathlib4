@@ -264,7 +264,7 @@ lemma toCircle_intCast (j : ℤ) :
 
 lemma toCircle_apply (j : ZMod N) :
     toCircle j = Complex.exp (2 * π * Complex.I * j.val / N) := by
-  rw [← Int.cast_natCast, ← toCircle_coe, natCast_val, intCast_zmod_cast]
+  rw [← Int.cast_natCast, ← toCircle_intCast, natCast_val, intCast_zmod_cast]
 
 /-- The additive character from `ZMod N` to `ℂ`, sending
 `j mod N` to `exp (2 * π * I * j / N)`. -/
@@ -273,6 +273,6 @@ noncomputable def stdAddChar : AddChar (ZMod N) ℂ := circle.subtype.compAddCha
 lemma stdAddChar_coe (j : ℤ) :
     stdAddChar (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
   simp only [stdAddChar, MonoidHom.coe_compAddChar, Function.comp_apply,
-    Submonoid.coe_subtype, toCircle_coe]
+    Submonoid.coe_subtype, toCircle_intCast]
 
 lemma stdAddChar_apply (j : ZMod N) : stdAddChar j = ↑(toCircle j) := rfl
