@@ -61,29 +61,35 @@ scoped infixr:26 " ⥤ᵇ " => BasedFunctor
 namespace BasedFunctor
 
 /-- The identity based functor. -/
-@[simps!]
+@[simps toFunctor]
 def id (𝒳 : BasedCategory.{v₂, u₂} 𝒮) : 𝒳 ⥤ᵇ 𝒳 where
   toFunctor := 𝟭 𝒳.obj
 
 variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
 
+/-- Notation for the identity functor on a based category. -/
+scoped notation "𝟭" => BasedFunctor.id
+
 /-- The composition of two based functors. -/
-@[simps!]
+@[simps toFunctor]
 def comp {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) (G : 𝒴 ⥤ᵇ 𝒵) : 𝒳 ⥤ᵇ 𝒵 where
   toFunctor := F.toFunctor ⋙ G.toFunctor
   w := by rw [Functor.assoc, G.w, F.w]
 
+/-- Notation for composition of based functors. -/
+scoped infixr:80 " ⋙ " => BasedFunctor.comp
+
 @[simp]
-lemma comp_id (F : 𝒳 ⥤ᵇ 𝒴) : comp F (id 𝒴) = F :=
+lemma comp_id (F : 𝒳 ⥤ᵇ 𝒴) :  F ⋙ 𝟭 𝒴 = F :=
   rfl
 
 @[simp]
-lemma id_comp (F : 𝒳 ⥤ᵇ 𝒴) : comp (id 𝒳) F = F :=
+lemma id_comp (F : 𝒳 ⥤ᵇ 𝒴) : 𝟭 𝒳 ⋙ F = F :=
   rfl
 
 @[simp]
 lemma comp_assoc {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {𝒜 : BasedCategory.{v₅, u₅} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴)
-    (G : 𝒴 ⥤ᵇ 𝒵) (H : 𝒵 ⥤ᵇ 𝒜) : comp (comp F G) H = comp F (comp G H) :=
+    (G : 𝒴 ⥤ᵇ 𝒵) (H : 𝒵 ⥤ᵇ 𝒜) : (F ⋙ G) ⋙ H = F ⋙ (G ⋙ H) :=
   rfl
 
 @[simp]
@@ -150,14 +156,14 @@ lemma isHomLift {a : 𝒳.obj} {S : 𝒮} (ha : 𝒳.p.obj a = S) :
 end
 
 /-- The identity natural transformation is a `BasedNatTrans`. -/
-@[simps!]
+@[simps toNatTrans]
 def id (F : 𝒳 ⥤ᵇ 𝒴) : BasedNatTrans F F where
   toNatTrans := CategoryTheory.NatTrans.id F.toFunctor
   isHomLift' := fun a => of_fac 𝒴.p _ _ (w_obj F a) (w_obj F a) (by simp)
 
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
 transformations. -/
-@[simps!]
+@[simps toNatTrans]
 def comp {F G H : 𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
     BasedNatTrans F H where
   toNatTrans := CategoryTheory.NatTrans.vcomp α.toNatTrans β.toNatTrans
@@ -166,31 +172,16 @@ def comp {F G H : 𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans
     rw [CategoryTheory.NatTrans.vcomp_app]
     infer_instance
 
-@[simps!]
+@[simps]
 instance homCategory (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) :
     Category (𝒳 ⥤ᵇ 𝒴) where
   Hom := BasedNatTrans
   id := BasedNatTrans.id
   comp := BasedNatTrans.comp
 
-variable (F : 𝒳 ⥤ᵇ 𝒴)
-
-@[simp]
-lemma id_toNatTrans : (𝟙 F : F ⟶ F).toNatTrans = CategoryTheory.NatTrans.id F.toFunctor :=
-  rfl
-
-variable {F} {G : 𝒳 ⥤ᵇ 𝒴}
-
 @[ext]
-lemma homCategory.ext (α β : F ⟶ G) (h : α.toNatTrans = β.toNatTrans) : α = β :=
+lemma homCategory.ext {F G : 𝒳 ⥤ᵇ 𝒴} (α β : F ⟶ G) (h : α.toNatTrans = β.toNatTrans) : α = β :=
   BasedNatTrans.ext α β h
-
-
-@[simp]
-lemma comp_toNatTrans {H : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) (β : G ⟶ H) :
-    (α ≫ β : F ⟶ H).toNatTrans = (α.toNatTrans ≫ β.toNatTrans : F.toFunctor ⟶ H.toFunctor) :=
-  rfl
-
 
 end BasedNatTrans
 
@@ -231,24 +222,24 @@ def BasedNatIso.id (F : 𝒳 ⥤ᵇ 𝒴) : F ≅ F where
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
 and natural transformations. -/
-@[simps!]
+@[simps toNatTrans]
 def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵}
-    (α : G ⟶ H) : BasedFunctor.comp F G ⟶ BasedFunctor.comp F H where
+    (α : G ⟶ H) : F ⋙ G ⟶ F ⋙ H where
   toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
   isHomLift' := fun a => α.isHomLift (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
 functors and natural transformations. -/
-@[simps!]
+@[simps toNatTrans]
 def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G)
-    (H : 𝒴 ⥤ᵇ 𝒵) : BasedFunctor.comp F H ⟶ BasedFunctor.comp G H where
+    (H : 𝒴 ⥤ᵇ 𝒵) : F ⋙ H ⟶ G ⋙ H where
   toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
   isHomLift' := fun a => by apply BasedFunctor.preserves_isHomLift
 
 end
 
 /-- The category of based categories. -/
-@[simps!]
+@[simps]
 instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
   Hom := BasedFunctor
   id := id
@@ -257,7 +248,7 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
 /-- The bicategory of based categories. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   Hom 𝒳 𝒴 :=  𝒳 ⥤ᵇ 𝒴
-  id 𝒳 := id 𝒳
+  id 𝒳 := 𝟭 𝒳
   comp F G := BasedFunctor.comp F G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴
   whiskerLeft {𝒳 𝒴 𝒵} F {G H} α := whiskerLeft F α
