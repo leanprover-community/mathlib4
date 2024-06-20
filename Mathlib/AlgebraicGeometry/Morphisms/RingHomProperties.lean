@@ -214,6 +214,7 @@ theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.Respe
   specialize H ⟨_, U.2.imageIsOpenImmersion (X.ofRestrict _)⟩
   letI i1 : Algebra (Y.presheaf.obj <| Opposite.op ⊤) (Localization.Away r) :=
     OreLocalization.instAlgebra
+  have : IsLocalization.Away r (Localization.Away r) := inferInstance
   exact (h₁.ofRestrict_morphismRestrict_iff f r
     ((Scheme.Hom.opensFunctor
       (X.ofRestrict ((Opens.map f.1.base).obj <| Y.basicOpen r).openEmbedding)).obj U.1)

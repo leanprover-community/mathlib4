@@ -104,7 +104,7 @@ instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
   zero_smul x := by rw [← smul_one_oreDiv_one_smul, zero_smul, zero_oreDiv, zero_smul]
 
 @[simp]
-lemma nsuml_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
+lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
@@ -200,7 +200,7 @@ instance : Ring R[S⁻¹] where
   __ := inferInstanceAs (AddGroup R[S⁻¹])
 
 @[simp]
-lemma zsuml_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
+lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
