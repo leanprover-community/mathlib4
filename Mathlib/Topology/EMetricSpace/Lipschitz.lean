@@ -95,10 +95,6 @@ lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : Loca
 @[simp] lemma locallyLipschitzOn_univ : LocallyLipschitzOn univ f ↔ LocallyLipschitz f := by
   simp [LocallyLipschitzOn, LocallyLipschitz]
 
-@[simp] lemma lipschitzWith_restrict : LipschitzWith K (s.restrict f) ↔ LipschitzOnWith K f s := by
-  simp only [LipschitzOnWith, LipschitzWith, SetCoe.forall', restrict, Subtype.edist_eq]
-
-@[deprecated lipschitzWith_restrict (since := "2024-06-20")]
 theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K (s.restrict f) := by
   simp only [LipschitzOnWith, LipschitzWith, SetCoe.forall', restrict, Subtype.edist_eq]
 #align lipschitz_on_with_iff_restrict lipschitzOnWith_iff_restrict
@@ -107,24 +103,26 @@ theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K
     LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
   simp only [LipschitzOnWith, LipschitzWith, Subtype.forall, restrict, Subtype.edist_eq]; aesop
 
-@[simp]
-lemma locallyLipschitz_restrict : LocallyLipschitz (s.restrict f) ↔ LocallyLipschitzOn s f := by
+lemma locallyLipschitzOn_iff_restrict :
+    LocallyLipschitzOn s f ↔ LocallyLipschitz (s.restrict f) := by
   simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall', restrict, Subtype.edist_eq,
-    lipschitzWith_restrict, lipschitzOnWith_restrict, nhds_subtype_eq_comap_nhdsWithin, mem_comap]
+    ← lipschitzOnWith_iff_restrict, lipschitzOnWith_restrict, nhds_subtype_eq_comap_nhdsWithin, mem_comap]
   congr! with x K
   constructor
+  · rintro ⟨t, ht, hft⟩
+    exact ⟨_, ⟨t, ht, Subset.rfl⟩, hft.mono $ inter_subset_right.trans $ image_preimage_subset ..⟩
   · rintro ⟨t, ⟨u, hu, hut⟩, hft⟩
     exact ⟨s ∩ u, Filter.inter_mem self_mem_nhdsWithin hu,
       hft.mono fun x hx ↦ ⟨hx.1, ⟨x, hx.1⟩, hut hx.2, rfl⟩⟩
-  · rintro ⟨t, ht, hft⟩
-    exact ⟨_, ⟨t, ht, Subset.rfl⟩, hft.mono $ inter_subset_right.trans $ image_preimage_subset ..⟩
 
 alias ⟨LipschitzOnWith.to_restrict, _⟩ := lipschitzOnWith_iff_restrict
-alias ⟨_, LocallyLipschitzOn.restrict⟩ := locallyLipschitz_restrict
+alias ⟨LocallyLipschitzOn.restrict, _⟩ := locallyLipschitzOn_iff_restrict
 #align lipschitz_on_with.to_restrict LipschitzOnWith.to_restrict
 
-theorem MapsTo.lipschitzOnWith_iff_restrict {t : Set β} (h : MapsTo f s t) :
-    LipschitzOnWith K f s ↔ LipschitzWith K (h.restrict f s t) := lipschitzWith_restrict.symm
+theorem MapsTo.lipschitzOnWith_iff_restrict [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
+    {f : α → β} {s : Set α} {t : Set β} (h : MapsTo f s t) :
+    LipschitzOnWith K f s ↔ LipschitzWith K (h.restrict f s t) :=
+  _root_.lipschitzOnWith_iff_restrict
 #align maps_to.lipschitz_on_with_iff_restrict MapsTo.lipschitzOnWith_iff_restrict
 
 alias ⟨LipschitzOnWith.to_restrict_mapsTo, _⟩ := MapsTo.lipschitzOnWith_iff_restrict
@@ -254,7 +252,7 @@ protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : L
 
 theorem comp_lipschitzOnWith {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} {s : Set α}
     (hf : LipschitzWith Kf f) (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (Kf * Kg) (f ∘ g) s :=
-  lipschitzWith_restrict.1 <| hf.comp hg.to_restrict
+  lipschitzOnWith_iff_restrict.mpr <| hf.comp hg.to_restrict
 #align lipschitz_with.comp_lipschitz_on_with LipschitzWith.comp_lipschitzOnWith
 
 protected theorem prod_fst : LipschitzWith 1 (@Prod.fst α β) :=
@@ -354,7 +352,7 @@ theorem edist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x
 
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
-  lipschitzWith_restrict.1 <| hg.to_restrict.comp (hf.to_restrict_mapsTo hmaps)
+  lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.to_restrict_mapsTo hmaps)
 #align lipschitz_on_with.comp LipschitzOnWith.comp
 
 /-- If `f` and `g` are Lipschitz on `s`, so is the induced map `f × g` to the product type. -/
