@@ -108,7 +108,7 @@ theorem log_surjective : Function.Surjective log := by
 
 theorem log_bijective : Function.Bijective log := ⟨log_injective, log_surjective⟩
 
-/-- `log` as an order isomorphism. --/
+/-- `log` as an order isomorphism. -/
 noncomputable def log_OrderIso : ℝ≥0∞ ≃o EReal :=
   StrictMono.orderIsoOfSurjective log log_strictMono log_surjective
 
@@ -217,7 +217,7 @@ end Morphism
 
 section Continuity
 
-/-- `log` as an homeomorphism. --/
+/-- `log` as an homeomorphism. -/
 noncomputable def log_Homeomorph : ℝ≥0∞ ≃ₜ EReal := OrderIso.toHomeomorph log_OrderIso
 
 @[continuity, fun_prop]
