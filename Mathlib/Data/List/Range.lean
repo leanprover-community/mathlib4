@@ -266,7 +266,7 @@ theorem ranges_length (l : List ℕ) :
   | cons a l hl => -- (a :: l)
     simp only [map, length_range, map_map, cons.injEq, true_and]
     conv_rhs => rw [← hl]
-    apply map_congr
+    apply map_congr_left
     intro s _
     simp only [Function.comp_apply, length_map]
 

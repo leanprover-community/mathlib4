@@ -1193,7 +1193,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
     s = t → (∀ x ∈ t, f x = g x) → map f s = map g t := by
   rintro rfl h
   induction s using Quot.inductionOn
-  exact congr_arg _ (List.map_congr h)
+  exact congr_arg _ (List.map_congr_left h)
 #align multiset.map_congr Multiset.map_congr
 
 theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
@@ -1978,6 +1978,11 @@ theorem filter_zero : filter p 0 = 0 :=
   rfl
 #align multiset.filter_zero Multiset.filter_zero
 
+#adaptation_note
+/--
+Please re-enable the linter once we moved to `nightly-2024-06-22` or later.
+-/
+set_option linter.deprecated false in
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
   Quot.inductionOn s fun _l h => congr_arg ofList <| filter_congr' <| by simpa using h
