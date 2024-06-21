@@ -380,6 +380,21 @@ lines, and deduce that if `f` is convex then its derivative is monotone (and sim
 convexity / strict monotonicity).
 -/
 
+section slope
+
+variable {𝕜 : Type*} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜} {x : 𝕜}
+
+lemma ConvexOn.slope_mono (hfc : ConvexOn 𝕜 s f) (hx : x ∈ s) : MonotoneOn (slope f x) (s \ {x}) :=
+  (slope_fun_def_field f _).symm ▸ fun _ hy _ hz hz' ↦ hfc.secant_mono hx (mem_of_mem_diff hy)
+    (mem_of_mem_diff hz) (not_mem_of_mem_diff hy :) (not_mem_of_mem_diff hz :) hz'
+
+lemma ConcaveOn.slope_anti (hfc : ConcaveOn 𝕜 s f) (hx : x ∈ s) :
+    AntitoneOn (slope f x) (s \ {x}) := by
+  rw [← neg_neg f, slope_neg_fun]
+  exact (ConvexOn.slope_mono hfc.neg hx).neg
+
+end slope
+
 namespace ConvexOn
 
 variable {S : Set ℝ} {f : ℝ → ℝ} {x y f' : ℝ}
