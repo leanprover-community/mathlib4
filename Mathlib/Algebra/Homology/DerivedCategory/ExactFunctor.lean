@@ -8,9 +8,9 @@ import Mathlib.Algebra.Homology.DerivedCategory.Basic
 /-!
 # An exact functor induces a functor on derived categories
 
-In this file, we show that if `F : C ⥤ D` is an exact functor between
+In this file, we show that if `F : C₁ ⥤ C₂` is an exact functor between
 abelian categories, then there is an induced functor
-`F.mapDerivedCategory : DerivedCategory C ⥤ DerivedCategory D`.
+`F.mapDerivedCategory : DerivedCategory C₁ ⥤ DerivedCategory C₂`.
 
 ## TODO
 * show that `F.mapDerivedCategory` is a triangulated functor
