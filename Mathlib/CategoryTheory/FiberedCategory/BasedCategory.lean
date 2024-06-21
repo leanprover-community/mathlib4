@@ -169,8 +169,7 @@ def id (F : 𝒳 ⥤ᵇ 𝒴) : BasedNatTrans F F where
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
 transformations. -/
 @[simps]
-def comp {F G H : 𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
-    BasedNatTrans F H where
+def comp {F G H : 𝒳 ⥤ᵇ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) : BasedNatTrans F H where
   toNatTrans := CategoryTheory.NatTrans.vcomp α.toNatTrans β.toNatTrans
   isHomLift' := by
     intro a
@@ -249,16 +248,16 @@ variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
 and natural transformations. -/
 @[simps toNatTrans]
-def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵}
-    (α : G ⟶ H) : F ⋙ G ⟶ F ⋙ H where
+def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵} (α : G ⟶ H) :
+    F ⋙ G ⟶ F ⋙ H where
   toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
   isHomLift' := fun a ↦ α.isHomLift (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
 functors and natural transformations. -/
 @[simps toNatTrans]
-def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G)
-    (H : 𝒴 ⥤ᵇ 𝒵) : F ⋙ H ⟶ G ⋙ H where
+def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) (H : 𝒴 ⥤ᵇ 𝒵) :
+    F ⋙ H ⟶ G ⋙ H where
   toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
   isHomLift' := fun _ ↦ BasedFunctor.preserves_isHomLift _ _ _
 
