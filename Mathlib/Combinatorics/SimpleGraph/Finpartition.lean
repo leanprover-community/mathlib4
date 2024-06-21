@@ -43,9 +43,8 @@ lemma crossEdges_self (p : P.parts) : G.crossEdges s(p, p) =
   ext e
   obtain ⟨p, mp⟩ := p
   refine e.inductionOn fun x y ↦ ?_
-  simp only [crossEdges, Sym2.map_pair_eq, mem_filter, Set.mem_toFinset, mem_edgeSet, Sym2.eq,
-    Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, or_self, coe_sort_coe, mem_map,
-    Function.Embedding.coeFn_mk]
+  simp_rw [crossEdges, Sym2.map_pair_eq, mem_filter, mem_map, Sym2.map_pair_eq, Sym2.eq_iff,
+    or_self, mem_edgeFinset, mem_edgeSet, Function.Embedding.coeFn_mk]
   constructor <;> intro h
   · have mx : x ∈ p := h.2.1 ▸ P.mem_part (mem_univ x)
     have my : y ∈ p := h.2.2 ▸ P.mem_part (mem_univ y)
@@ -53,9 +52,8 @@ lemma crossEdges_self (p : P.parts) : G.crossEdges s(p, p) =
     simp [Function.Embedding.subtype, h.1]
   · rw [Sym2.exists] at h
     obtain ⟨⟨x, mx⟩, ⟨y, my⟩, f, q⟩ := h
-    simp only [mem_edgeSet, comap_adj, coe_sort_coe, Function.Embedding.subtype,
-      Function.Embedding.coeFn_mk] at f
-    simp only [Sym2.map_pair_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at q
+    rw [mem_edgeSet, comap_adj, Function.Embedding.subtype, Function.Embedding.coeFn_mk] at f
+    rw [Sym2.map_pair_eq, Sym2.eq_iff] at q
     rcases q with ⟨qx, qy⟩ | ⟨qx, qy⟩ <;> (subst qx qy; refine ⟨by simpa only [adj_comm], ?_, ?_⟩)
     all_goals exact P.part_eq_of_mem mp ‹_›
 
@@ -64,9 +62,8 @@ lemma crossEdges_eq_biUnion (p q : P.parts) : G.crossEdges s(p, q) =
       ⟨(s(b, ·)), fun _ _ c ↦ Sym2.congr_right.mp c⟩ := by
   ext e
   refine e.inductionOn fun a b ↦ ?_
-  simp only [crossEdges, Sym2.map_pair_eq, mem_filter, Set.mem_toFinset, mem_edgeSet, Sym2.eq,
-    Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, mem_biUnion, mem_map,
-    Function.Embedding.coeFn_mk]
+  simp only [crossEdges, Sym2.map_pair_eq, mem_filter, Set.mem_toFinset, mem_edgeSet, Sym2.eq_iff,
+    mem_biUnion, mem_map, Function.Embedding.coeFn_mk]
   refine ⟨fun j ↦ ?_, fun j ↦ ?_⟩
   · obtain ⟨adj, ⟨ca, cb⟩ | ⟨ca, cb⟩⟩ := j
     · use b, cb ▸ P.mem_part (mem_univ b), a
@@ -106,8 +103,7 @@ theorem disjiUnion_crossEdges : (univ : Finset (Sym2 P.parts)).disjiUnion G.cros
   refine e.inductionOn fun x y ↦ ?_
   simp_rw [disjiUnion_eq_biUnion, mem_biUnion, mem_univ, crossEdges, mem_filter, Set.mem_toFinset,
     mem_edgeSet, Sym2.map_pair_eq, true_and, exists_and_left, Sym2.exists, Sym2.map_pair_eq,
-    Sym2.eq, Sym2.rel_iff', Prod.swap_prod_mk, Subtype.exists, exists_prop,
-    and_iff_left_iff_imp, Prod.mk.injEq]
+    Sym2.eq_iff, Subtype.exists, exists_prop, and_iff_left_iff_imp]
   exact fun _ ↦ ⟨P.part x, P.part_mem (mem_univ x), P.part y, P.part_mem (mem_univ y), by tauto⟩
 
 theorem card_edgeFinset_eq_sum_crossEdges_card :
