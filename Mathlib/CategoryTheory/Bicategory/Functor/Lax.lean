@@ -113,6 +113,20 @@ lemma map₂_associator_inv {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶
   simp only [Iso.hom_inv_id, PrelaxFunctor.map₂_id, comp_id]
 
 @[reassoc]
+lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    F.mapComp f g ▷ F.map h ≫ F.mapComp (f ≫ g) h = (α_ (F.map f) (F.map g) (F.map h)).hom ≫
+    F.map f ◁ F.mapComp g h ≫ F.mapComp f (g ≫ h) ≫ F.map₂ (α_ f g h).inv := by
+  rw [← F.map₂_associator_assoc, ← F.map₂_comp]
+  simp only [Iso.hom_inv_id, PrelaxFunctor.map₂_id, comp_id]
+
+@[reassoc]
+lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    F.map f ◁ F.mapComp g h ≫ F.mapComp f (g ≫ h) =
+    (α_ (F.map f) (F.map g) (F.map h)).inv ≫ F.mapComp f g ▷ F.map h ≫
+    F.mapComp (f ≫ g) h ≫ F.map₂ (α_ f g h).hom := by
+  simp only [map₂_associator, Iso.inv_hom_id_assoc]
+
+@[reassoc]
 lemma map₂_leftUnitor_hom {a b  : B} (f : a ⟶ b) :
     (λ_ (F.map f)).hom = F.mapId a ▷ F.map f ≫ F.mapComp (𝟙 a) f ≫ F.map₂ (λ_ f).hom := by
   rw [← @PrelaxFunctor.map₂Iso_hom, ← assoc, ← Iso.comp_inv_eq, ← Iso.eq_inv_comp]
