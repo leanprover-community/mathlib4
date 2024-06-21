@@ -7,6 +7,7 @@ Authors: Paul Lezeau, Calle Sönne
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 /-!
 # The bicategory of based categories
@@ -187,7 +188,55 @@ instance homCategory (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCateg
 lemma homCategory.ext {F G : 𝒳 ⥤ᵇ 𝒴} (α β : F ⟶ G) (h : α.toNatTrans = β.toNatTrans) : α = β :=
   BasedNatTrans.ext α β h
 
+@[simps]
+def forgetful (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) :
+    (𝒳 ⥤ᵇ 𝒴) ⥤ (𝒳.obj ⥤ 𝒴.obj) where
+  obj := fun F ↦ F.toFunctor
+  map := fun α ↦ α.toNatTrans
+
+instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
+  reflects {F G} α _ := by
+    constructor
+    use {
+      toNatTrans := inv ((forgetful 𝒳 𝒴).map α)
+      isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
+    aesop
+
 end BasedNatTrans
+
+namespace BasedNatIso
+
+open BasedNatTrans
+
+variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
+
+/-- The identity natural transformation is a based natural isomorphism. -/
+@[simps]
+def id (F : 𝒳 ⥤ᵇ 𝒴) : F ≅ F where
+  hom := 𝟙 F
+  inv := 𝟙 F
+
+variable {F G : 𝒳 ⥤ᵇ 𝒴}
+
+/-- The inverse of a based natural transformation whose underlying natural tranformation is an
+isomorphism. -/
+def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
+    (isHomLift' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
+  hom := { toNatTrans := α.hom }
+  inv := {
+    toNatTrans := α.inv
+    isHomLift' := fun a ↦ by
+      have : 𝒴.p.IsHomLift (𝟙 (𝒳.p.obj a)) (α.app a).hom := (NatIso.app_hom α a) ▸ isHomLift' a
+      rw [← NatIso.app_inv]
+      apply IsHomLift.lift_id_inv }
+
+/-- Any based natural transformation whose underlying natural transformation is an isomorphism is
+itself an isomorphism. -/
+instance isIso_of_toNatIsIso (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] : IsIso α :=
+  have : IsIso ((forgetful 𝒳 𝒴).map α) := by simp_all
+  Functor.ReflectsIsomorphisms.reflects (forgetful 𝒳 𝒴) α
+
+end BasedNatIso
 
 namespace BasedCategory
 
@@ -196,36 +245,6 @@ open BasedFunctor BasedNatTrans
 section
 
 variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
-
-/-- The inverse of a based natural transformation whose underlying natural tranformation is an
-isomorphism. -/
-def mkNatIso {F G : 𝒳 ⥤ᵇ 𝒴} (α : F.toFunctor ≅ G.toFunctor)
-    (isHomLift' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
-  hom := { toNatTrans := α.hom }
-  inv := {
-    toNatTrans := α.inv
-    isHomLift' := by
-      intro a
-      specialize isHomLift' a
-      rw [← NatIso.app_inv]
-      rw [← NatIso.app_hom] at isHomLift'
-      apply IsHomLift.lift_id_inv }
-
-/-- Any based natural transformation whose underlying natural transformation is an isomorphism is
-itself an isomorphism. -/
-instance isIso_of_toNatIsIso {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] :
-    IsIso α where
-  out := by
-    use {
-      toNatTrans := inv (X := F.toFunctor) α.toNatTrans
-      isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
-    aesop
-
-/-- The identity natural transformation is a based natural isomorphism. -/
-@[simps]
-def BasedNatIso.id (F : 𝒳 ⥤ᵇ 𝒴) : F ≅ F where
-  hom := 𝟙 F
-  inv := 𝟙 F
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
 and natural transformations. -/
