@@ -294,7 +294,7 @@ theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
 
 end Relation
 
-section operations
+section add_and_sum
 
 open Filter BigOperators Set
 
@@ -322,7 +322,6 @@ lemma isBoundedUnder_le_add [Add R]
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
 lemma isBoundedUnder_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R] {r : R → R → Prop}
-    [CovariantClass R R (fun a b ↦ a + b) r] [CovariantClass R R (fun a b ↦ b + a) r]
     (hr : ∀ (v₁ v₂ : α → R), f.IsBoundedUnder r v₁ → f.IsBoundedUnder r v₂
       → f.IsBoundedUnder r (v₁ + v₂)) (hr₀ : r 0 0)
     {u : κ → α → R} (s : Finset κ) :
@@ -349,11 +348,11 @@ lemma isBoundedUnder_ge_sum {κ : Type*} [DecidableEq κ] [AddCommMonoid R]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≥ ·) (u k)) →
       f.IsBoundedUnder (· ≥ ·) (∑ k ∈ s, u k) := by
-  have aux : CovariantClass R R (fun a b ↦ a + b) (· ≥ ·) :=
+  haveI aux : CovariantClass R R (fun a b ↦ a + b) (· ≥ ·) :=
     { elim := fun x _ _ hy ↦ add_le_add_left hy x }
   apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_ge_add) le_rfl
 
-end operations
+end add_and_sum
 
 section Nonempty
 variable [Preorder α] [Nonempty α] {f : Filter β} {u : β → α}
