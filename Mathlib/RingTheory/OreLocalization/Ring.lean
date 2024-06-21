@@ -211,6 +211,7 @@ variable [NoZeroDivisors R]
 
 /-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
+@[irreducible]
 protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
   liftExpand
     (fun r s =>
@@ -234,8 +235,8 @@ instance inv' : Inv R[R⁰⁻¹] :=
 protected theorem inv_def {r : R} {s : R⁰} :
     (r /ₒ s)⁻¹ =
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
-      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩ :=
-  rfl
+      else s /ₒ ⟨r, fun _ => eq_zero_of_ne_zero_of_mul_right_eq_zero hr⟩ := by
+  with_unfolding_all rfl
 #align ore_localization.inv_def OreLocalization.inv_def
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
@@ -246,7 +247,7 @@ protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ =
     apply h
     simp [hr]
   · simp only [hr, ↓reduceDite]
-    apply OreLocalization.mul_inv ⟨r, _⟩
+    with_unfolding_all apply OreLocalization.mul_inv ⟨r, _⟩
 #align ore_localization.mul_inv_cancel OreLocalization.mul_inv_cancel
 
 protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by

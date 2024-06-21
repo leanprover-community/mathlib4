@@ -2168,18 +2168,18 @@ variable (R) [CommMonoid R] (S : Submonoid R)
 /-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
 protected def localizationMap : S.LocalizationMap R[S⁻¹] where
   toFun := numeratorHom
-  map_one' := rfl
+  map_one' := by with_unfolding_all rfl
   map_mul' r₁ r₂ := by simp
   map_units' := numerator_isUnit
   surj' z := by
     induction' z using OreLocalization.ind with r s
     use (r, s); dsimp
-    rw [numeratorHom_apply, numeratorHom_apply, OreLocalization.expand' r 1 s]
+    erw [numeratorHom_apply, numeratorHom_apply, OreLocalization.expand' r 1 s]
     simp only [mul_div_one, mul_one, Submonoid.smul_def, smul_eq_mul, mul_comm r]
   exists_of_eq r₁ r₂ := by
     dsimp
     intro h
-    rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
+    erw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
     rcases h with ⟨u, v, h₁, h₂⟩
     dsimp at h₂
     rw [mul_one, mul_one] at h₂
