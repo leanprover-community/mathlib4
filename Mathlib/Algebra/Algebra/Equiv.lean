@@ -222,21 +222,21 @@ theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
 #align alg_equiv.commutes AlgEquiv.commutes
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-@[deprecated _root_.map_smul (since := "2024-06-20")]
-theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
-  _root_.map_smul _ _ _
+@[deprecated map_smul (since := "2024-06-20")]
+protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
+  map_smul _ _ _
 #align alg_equiv.map_smul AlgEquiv.map_smul
 
-@[deprecated _root_.map_sum (since := "2023-12-26")]
-nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
+@[deprecated map_sum (since := "2023-12-26")]
+protected theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
     e (∑ x ∈ s, f x) = ∑ x ∈ s, e (f x) :=
   map_sum e f s
 #align alg_equiv.map_sum AlgEquiv.map_sum
 
-@[deprecated _root_.map_finsupp_sum (since := "2024-06-20")]
-theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
+@[deprecated map_finsupp_sum (since := "2024-06-20")]
+protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.sum g) = f.sum fun i b => e (g i b) :=
-  _root_.map_finsupp_sum _ _ _
+  map_finsupp_sum _ _ _
 #align alg_equiv.map_finsupp_sum AlgEquiv.map_finsupp_sum
 
 -- Porting note: Added [coe] attribute
@@ -572,7 +572,7 @@ theorem ofBijective_apply {f : A₁ →ₐ[R] A₂} {hf : Function.Bijective f} 
 def toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ₗ[R] A₂ :=
   { e with
     toFun := e
-    map_smul' := _root_.map_smul e
+    map_smul' := map_smul e
     invFun := e.symm }
 #align alg_equiv.to_linear_equiv AlgEquiv.toLinearEquiv
 #align alg_equiv.to_linear_equiv_apply AlgEquiv.toLinearEquiv_apply
@@ -770,11 +770,11 @@ instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 
 instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
-  smul_comm r e a := (_root_.map_smul e r a).symm
+  smul_comm r e a := (map_smul e r a).symm
 #align alg_equiv.apply_smul_comm_class AlgEquiv.apply_smulCommClass
 
 instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
-  smul_comm e r a := _root_.map_smul e r a
+  smul_comm e r a := map_smul e r a
 #align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
 
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
@@ -833,16 +833,16 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
-@[deprecated _root_.map_prod (since := "2024-06-20")]
-theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
+@[deprecated map_prod (since := "2024-06-20")]
+protected theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
     e (∏ x ∈ s, f x) = ∏ x ∈ s, e (f x) :=
-  _root_.map_prod _ f s
+  map_prod _ f s
 #align alg_equiv.map_prod AlgEquiv.map_prod
 
-@[deprecated _root_.map_finsupp_prod (since := "2024-06-20")]
-theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
+@[deprecated map_finsupp_prod (since := "2024-06-20")]
+protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.prod g) = f.prod fun i a => e (g i a) :=
-  _root_.map_finsupp_prod _ f g
+  map_finsupp_prod _ f g
 #align alg_equiv.map_finsupp_prod AlgEquiv.map_finsupp_prod
 
 end CommSemiring
