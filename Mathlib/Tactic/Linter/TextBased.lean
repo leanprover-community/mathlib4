@@ -35,6 +35,9 @@ inductive StyleError where
 inductive ErrorFormat
   /-- Produce style error output aimed at humans: no error code, clickable file name -/
   | humanReadable : ErrorFormat
+  /-- Produce an entry in the style-exceptions file: mention the error code, slightly uglier
+  than humand-readable output -/
+  | exceptionsFile : ErrorFormat
   /-- Produce output suitable for Github error annotations: in particular,
   duplicate the file path, line number and error code -/
   | github : ErrorFormat
@@ -46,6 +49,8 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
     match style with
     | ErrorFormat.github =>
         s!"file contains {current_size} lines (at most {size_limit} allowed), try to split it up"
+    | ErrorFormat.exceptionsFile =>
+        s!"{size_limit} file contains {current_size} lines, try to split it up"
     | ErrorFormat.humanReadable => s!"file contains {current_size} lines, try to split it up"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
@@ -90,6 +95,9 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     let nr := errctx.lineNumber
     let code := errctx.error.errorCode
     s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {error_message}"
+  | ErrorFormat.exceptionsFile =>
+    -- Produce an entry in the exceptions file: with error code and "line" in front of the number.
+    s!"{errctx.path} : line {errctx.lineNumber} : {errctx.error.errorCode} : {error_message}"
   | ErrorFormat.humanReadable =>
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {error_message}"
@@ -211,7 +219,10 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
 open Cli in
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
+  let errorStyle := match (args.hasFlag "github", args.hasFlag "update") with
+    | (true, _) => ErrorFormat.github
+    | (false, true) => ErrorFormat.exceptionsFile
+    | (false, false) => ErrorFormat.humanReadable
   let mut number_error_files : UInt32 := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     let n ← lintAllFiles (mkFilePath [s]) errorStyle
@@ -229,6 +240,7 @@ def lint_style : Cmd := `[Cli|
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
+    update;     "Print errors for the style exceptions file: mutually exclusive with the above"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
