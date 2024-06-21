@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Basic
+import Cli.Basic
 import Mathlib.Init.Data.Nat.Notation
 
 /-!
@@ -30,10 +31,22 @@ inductive StyleError where
   | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) : StyleError
   deriving BEq
 
+/-- How to format style errors -/
+inductive ErrorFormat
+  /-- Produce style error output aimed at humans: no error code, clickable file name -/
+  | humanReadable : ErrorFormat
+  /-- Produce output suitable for Github error annotations: in particular,
+  duplicate the file path, line number and error code -/
+  | github : ErrorFormat
+  deriving BEq
+
 /-- Create the underlying error message for a given `StyleError`. -/
-def StyleError.errorMessage (err : StyleError) : String := match err with
+def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String := match err with
   | StyleError.fileTooLong current_size size_limit =>
-      s!"{size_limit} file contains {current_size} lines, try to split it up"
+    match style with
+    | ErrorFormat.github =>
+        s!"file contains {current_size} lines (at most {size_limit} allowed), try to split it up"
+    | ErrorFormat.humanReadable => s!"file contains {current_size} lines, try to split it up"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -65,14 +78,21 @@ instance : BEq ErrorContext where
       -- We normalise errors before comparing them.
       && (ctx.error).normalise == (ctx'.error).normalise
 
-/-- Output the formatted error message, containing its context. -/
-def outputMessage (errctx : ErrorContext) : String :=
-  -- We are outputting for github: duplicate file path, line number and error code,
-  -- so that they are also visible in the plain text output.
-  let path := errctx.path
-  let nr := errctx.lineNumber
-  let code := errctx.error.errorCode
-  s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errctx.error.errorMessage}"
+/-- Output the formatted error message, containing its context.
+`style` specifies if the error should be formatted for humans or for github output matchers -/
+def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
+  let error_message := errctx.error.errorMessage style
+  match style with
+  | ErrorFormat.github =>
+   -- We are outputting for github: duplicate file path, line number and error code,
+    -- so that they are also visible in the plain text output.
+    let path := errctx.path
+    let nr := errctx.lineNumber
+    let code := errctx.error.errorCode
+    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {error_message}"
+  | ErrorFormat.humanReadable =>
+    -- Print for humans: clickable file name and omit the error code
+    s!"error: {errctx.path}:{errctx.lineNumber}: {error_message}"
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
@@ -111,10 +131,11 @@ def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run d
   -- We treat all lines starting with "--" as a comment and ignore them.
   Array.filterMap (parse?_errorContext ·) (lines.filter (fun line ↦ !line.startsWith "--"))
 
-/-- Print information about all errors encountered to standard output. -/
-def formatErrors (errors : Array ErrorContext) : IO Unit := do
+/-- Print information about all errors encountered to standard output.
+`style` specifies if we print errors for humand or github consumption. -/
+def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit := do
   for e in errors do
-    IO.println (outputMessage e)
+    IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
 return an array of all style errors with line numbers. -/
@@ -150,8 +171,9 @@ end
 
 /-- Read a file, apply all text-based linters and print formatted errors.
 Return `true` if there were new errors (and `false` otherwise).
-`sizeLimit` is any pre-existing limit on this file's size. -/
-def lintFile (path : FilePath) (sizeLimit : Option ℕ) : IO Bool := do
+`sizeLimit` is any pre-existing limit on this file's size.
+`style` specifies if errors should be formatted for github or human consumption. -/
+def lintFile (path : FilePath) (sizeLimit : Option ℕ) (style : ErrorFormat) : IO Bool := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
@@ -159,13 +181,14 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) : IO Bool := do
     return false
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
     let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
-    formatErrors arr
+    formatErrors arr style
     return true
   return false
 
 /-- Lint all files referenced in a given import-only file.
-Return the number of files which had new style errors. -/
-def lintAllFiles (path : FilePath) : IO UInt32 := do
+Return the number of files which had new style errors.
+`style` specifies if errors should be formatted for github or human consumption. -/
+def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
   -- Read all module names from the file at `path`.
   let allModules ← IO.FS.lines path
   -- Read the style exceptions file.
@@ -181,14 +204,32 @@ def lintAllFiles (path : FilePath) : IO UInt32 := do
     let size_limits := (style_exceptions.filter (·.path == path)).filterMap (fun errctx ↦
       match errctx.error with
       | StyleError.fileTooLong _ limit => some limit)
-    if ← lintFile path (size_limits.get? 0) then
+    if ← lintFile path (size_limits.get? 0) style then
       number_error_files := number_error_files + 1
   return number_error_files
 
-/-- The entry point to the `lake exe lint_style` command. -/
-def main : IO UInt32 := do
-  let mut number_error_files := 0
+open Cli in
+/-- Implementation of the `lint_style` command line program. -/
+def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
+  let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
+  let mut number_error_files : UInt32 := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (mkFilePath [s])
+    let n ← lintAllFiles (mkFilePath [s]) errorStyle
     number_error_files := number_error_files + n
-  return number_error_files
+   return number_error_files
+
+open Cli in
+/-- Setting up command line options and help text for `lake exe lint_style`. -/
+-- so far, no help options or so: perhaps that is fine?
+def lint_style : Cmd := `[Cli|
+  lint_style VIA lintStyleCli; ["0.0.1"]
+  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
+  Print errors about any unexpected style errors to standard output."
+
+  FLAGS:
+    github;     "Print errors in a format suitable for github problem matchers\n\
+                 otherwise, produce human-readable output"
+]
+
+/-- The entry point to the `lake exe lint_style` command. -/
+def main (args : List String) : IO UInt32 := do lint_style.validate args
