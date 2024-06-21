@@ -88,6 +88,42 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
   ComonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
 #align category_theory.adjunction.adj_to_comonad_iso CategoryTheory.Adjunction.adjToComonadIso
 
+/--
+Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
+unit is an isomorphism.
+-/
+lemma isIso_unit_of_abstract_iso  (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit := by
+  suffices IsIso (adj.unit ≫ i.hom) from IsIso.of_isIso_comp_right adj.unit i.hom
+  refine ⟨(adj.toMonad.transport i).μ, ?_, ?_⟩
+  · ext X; exact (adj.toMonad.transport i).right_unit X
+  · rw [NatTrans.id_comm]; ext X; exact (adj.toMonad.transport i).right_unit X
+
+/--
+Given an adjunction `L ⊣ R`, if `L ⋙ R` is isomorphic to the identity functor, then `L` is
+fully faithful.
+-/
+noncomputable def fullyFaithfulLOfCompIsoId (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : L.FullyFaithful :=
+  haveI := adj.isIso_unit_of_abstract_iso i
+  adj.fullyFaithfulLOfIsIsoUnit
+
+/--
+Given an adjunction `L ⊣ R`, if `R ⋙ L` is abstractly isomorphic to the identity functor, then the
+counit is an isomorphism.
+-/
+lemma isIso_counit_of_abstract_iso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : IsIso adj.counit := by
+  suffices IsIso (j.inv ≫ adj.counit) from IsIso.of_isIso_comp_left j.inv adj.counit
+  refine ⟨(adj.toComonad.transport j).δ, ?_, ?_⟩
+  · rw [NatTrans.id_comm]; ext X; exact (adj.toComonad.transport j).right_counit X
+  · ext X; exact (adj.toComonad.transport j).right_counit X
+
+/--
+Given an adjunction `L ⊣ R`, if `R ⋙ L` is isomorphic to the identity functor, then `R` is
+fully faithful.
+-/
+noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R.FullyFaithful :=
+  haveI := adj.isIso_counit_of_abstract_iso j
+  adj.fullyFaithfulROfIsIsoCounit
+
 end Adjunction
 
 /-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
