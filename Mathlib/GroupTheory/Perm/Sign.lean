@@ -462,6 +462,11 @@ theorem sign_prod_list_swap {l : List (Perm α)} (hl : ∀ g ∈ l, IsSwap g) :
   rw [← List.prod_replicate, ← h₁, List.prod_hom _ (@sign α _ _)]
 #align equiv.perm.sign_prod_list_swap Equiv.Perm.sign_prod_list_swap
 
+@[simp]
+theorem sign_abs (f : Perm α) :
+    |(Equiv.Perm.sign f : ℤ)| = 1 := by
+  rw [Int.abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
+
 variable (α)
 
 theorem sign_surjective [Nontrivial α] : Function.Surjective (sign : Perm α → ℤˣ) := fun a =>
