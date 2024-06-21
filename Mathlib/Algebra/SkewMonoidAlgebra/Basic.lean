@@ -187,8 +187,8 @@ theorem single_zero_right (a : G) : single a (0 : k) = 0 := by
   ext; simp only [Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply, toFinsupp_zero]
 
 @[simp]
-theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
-  by ext; simp only [Finsupp.single_add, Finsupp.coe_add, Pi.add_apply, toFinsupp_add]
+theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ := by
+  ext; simp only [Finsupp.single_add, Finsupp.coe_add, Pi.add_apply, toFinsupp_add]
 
 theorem single_zero (a : G) : (single a 0 : SkewMonoidAlgebra k G) = 0 := by
   rw [ofFinsupp_eq_zero, Finsupp.single_zero]
