@@ -252,9 +252,6 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
--- Porting note (#10756): added the following section with simp lemmas because `simp` fails
--- to apply the corresponding lemmas in the namespace `Pi`.
--- (e.g. `Pi.zero_apply` used on `OfNat.ofNat 0 i j`)
 section
 
 @[simp]
@@ -2350,7 +2347,7 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
 #adaptation_note /-- nightly-2024-04-01
 The simpNF linter now times out on this lemma.
 See https://github.com/leanprover-community/mathlib4/issues/12231 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
