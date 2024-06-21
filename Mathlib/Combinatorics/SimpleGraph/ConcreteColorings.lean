@@ -6,6 +6,7 @@ Authors: Iván Renison
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Logic.Lemmas
 import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!

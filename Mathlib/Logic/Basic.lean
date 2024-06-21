@@ -481,21 +481,6 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 #align decidable_of_iff' decidable_of_iff'
 #align decidable_of_bool decidable_of_bool
 
-theorem iff_assoc {a b c : Prop} : (a ↔ (b ↔ c)) ↔ ((a ↔ b) ↔ c) := by
-  match Classical.em a with
-  | Or.inl ha => simp only [iff_true_left ha]
-  | Or.inr ha => simp only [iff_false_left ha, Classical.not_iff]
-
-theorem iff_left_comm {a b c : Prop} : (a ↔ (b ↔ c)) ↔ (b ↔ (a ↔ c)) := by
-  match Classical.em a with
-  | Or.inl ha => simp only [iff_true_left ha]
-  | Or.inr ha => simp only [iff_false_left ha, Classical.not_iff, Iff.comm, iff_not_comm]
-
-theorem iff_right_comm {a b c : Prop} : ((a ↔ b) ↔ c) ↔ ((a ↔ c) ↔ b) := by
-  match Classical.em a with
-  | Or.inl ha => simp only [iff_true_left ha, Iff.comm]
-  | Or.inr ha => simp only [iff_false_left ha, Iff.comm, iff_not_comm]
-
 /-! ### De Morgan's laws -/
 
 #align decidable.not_and_distrib Decidable.not_and_iff_or_not_not
