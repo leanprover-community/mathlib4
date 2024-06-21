@@ -118,7 +118,7 @@ lemma map_d (b : B) : map fac (d b) = d (g' b) := by
   have := RingHom.isScalarTower_toAlgebra_comp g f' _ rfl
   have := RingHom.isScalarTower_toAlgebra_comp f g' _ fac.symm
   have := RingHom.smulCommClass_toAlgebra g' f'
-  apply _root_.KaehlerDifferential.map_D
+  exact _root_.KaehlerDifferential.map_D A A' B B' b
 
 end KaehlerDifferential
 
