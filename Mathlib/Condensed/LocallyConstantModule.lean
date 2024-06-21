@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Sites.Discrete
+import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.Condensed.LocallyConstant
 import Mathlib.Condensed.Module
 import Mathlib.Condensed.Light.Module
@@ -12,6 +13,20 @@ open CategoryTheory LocallyConstant CompHausLike Functor Category Functor Opposi
 namespace CategoryTheory
 
 variable {C D : Type*} [Category C] [Category D]
+
+namespace Sheaf
+
+variable {A B : Type*} [Category A] [Category B] (e : C ≌ D) (F : A ⥤ B)
+  (J : GrothendieckTopology C) [HasSheafify J A]
+  (K : GrothendieckTopology D) [HasSheafify K A]
+  [K.PreservesSheafification F] [e.TransportsGrothendieckTopology J K]
+
+lemma transportPreservesSheafification : J.PreservesSheafification F where
+  le := by
+    sorry
+    -- rw [← J.W_inverseImage_whiskeringLeft (G := e.inverse)]
+
+end Sheaf
 
 open Iso
 
@@ -141,62 +156,30 @@ def functor :
 
 end Condensed.LocallyConstantModule
 
-namespace CondensedMod
+namespace CondensedMod.LocallyConstant
 
 variable (R : Type (u+1)) [Ring R]
 
-abbrev LocallyConstant.functorToPresheaves : ModuleCat.{u+1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
+abbrev functorToPresheaves : ModuleCat.{u+1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
   Condensed.LocallyConstantModule.functorToPresheaves.{u+1, u} R
 
-abbrev LocallyConstant.functor : ModuleCat R ⥤ CondensedMod.{u} R :=
+abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
   Condensed.LocallyConstantModule.functor.{u+1, u} R
     (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
-noncomputable def LocallyConstant.functorIsoDiscreteOne' (M : ModuleCat.{u+1} R) :
+noncomputable def functorIsoDiscreteAux' (M : ModuleCat.{u+1} R) :
     M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) where
   hom := constₗ R
   inv := evalₗ R PUnit.unit
 
-def aux_map {M N : ModuleCat.{u+1} R} (f : M ⟶ N) :
-  ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M) ⟶
-    ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) N) := mapₗ R f
-
-lemma LocallyConstant.functorIsoDiscreteOne'_w {M N : ModuleCat.{u+1} R} (f : M ⟶ N) :
-    (functorIsoDiscreteOne' R M).inv ≫ f = aux_map R f ≫ (functorIsoDiscreteOne' R N).inv :=
-  rfl
-
-lemma LocallyConstant.functorIsoDiscreteOne'_w' {M N : ModuleCat.{u+1} R} (f : M ⟶ N) :
-    f ≫ (functorIsoDiscreteOne' R N).hom = (functorIsoDiscreteOne' R M).hom ≫ aux_map R f :=
-  rfl
-
-def aux_map_of {M N : ModuleCat.{u+1} R} (f :
-    ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M) ⟶
-      ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) N)) :
-  M ⟶ N where
-    toFun x := (f (constₗ R x)).toFun PUnit.unit
-    map_add' := by aesop
-    map_smul' := by aesop
-
-lemma LocallyConstant.functorIsoDiscreteOne'_w_of {M N : ModuleCat.{u+1} R} (f :
-    ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M) ⟶
-      ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) N)) :
-    (functorIsoDiscreteOne' R M).hom ≫ f = aux_map_of R f ≫ (functorIsoDiscreteOne' R N).hom :=
-  rfl
-
-lemma LocallyConstant.functorIsoDiscreteOne'_w'_of {M N : ModuleCat.{u+1} R} (f :
-    ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M) ⟶
-      ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) N)) :
-    f ≫ (functorIsoDiscreteOne' R N).inv = (functorIsoDiscreteOne' R M).inv ≫ aux_map_of R f :=
-  rfl
-
-noncomputable def LocallyConstant.functorIsoDiscreteOne (M : ModuleCat R) :
+noncomputable def functorIsoDiscreteAux (M : ModuleCat R) :
     (Condensed.discrete _).obj M ≅ (Condensed.discrete _).obj
       (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) :=
-  (Condensed.discrete _).mapIso (functorIsoDiscreteOne' R M)
+  (Condensed.discrete _).mapIso (functorIsoDiscreteAux' R M)
 
 instance (M : ModuleCat R) : IsIso ((Condensed.forget R).map
     ((Condensed.discreteUnderlyingAdj (ModuleCat R)).counit.app
-      ((CondensedMod.LocallyConstant.functor R).obj M))) := by
+      ((functor R).obj M))) := by
   erw [Sheaf.constantCommuteComposeApp_counit_comp]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   change Sheaf.IsDiscrete _ _ _
@@ -209,16 +192,16 @@ instance (M : ModuleCat R) : IsIso ((Condensed.forget R).map
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
 
-noncomputable def LocallyConstant.functorIsoDiscrete_components (M : ModuleCat R) :
+noncomputable def functorIsoDiscrete_components (M : ModuleCat R) :
     (Condensed.discrete _).obj M ≅ (functor R).obj M := by
   have : (Condensed.forget R).ReflectsIsomorphisms :=
     inferInstanceAs (sheafCompose _ _).ReflectsIsomorphisms
-  refine (functorIsoDiscreteOne R M) ≪≫ (@asIso _ _ _ _ ?_ ?_)
+  refine (functorIsoDiscreteAux R M) ≪≫ (@asIso _ _ _ _ ?_ ?_)
   · exact (Condensed.discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M)
   · apply this.reflects
 
 open Condensed.LocallyConstantModule in
-noncomputable def LocallyConstant.functorIsoDiscrete : functor R ≅ Condensed.discrete _ := by
+noncomputable def functorIsoDiscrete : functor R ≅ Condensed.discrete _ := by
   refine NatIso.ofComponents (fun M ↦ (functorIsoDiscrete_components R M).symm) ?_
   intro M N f
   dsimp
@@ -233,24 +216,21 @@ noncomputable def LocallyConstant.functorIsoDiscrete : functor R ≅ Condensed.d
   apply Sheaf.hom_ext
   simp only [comp_obj, Condensed.underlying_obj, functor_obj_val, functorToPresheaves_obj_obj,
     coe_of, Condensed.discrete_obj, Functor.comp_map, Condensed.underlying_map,
-    functorToPresheaves_map_app, Condensed.discrete_map, functorIsoDiscreteOne, mapIso_inv,
+    functorToPresheaves_map_app, Condensed.discrete_map, functorIsoDiscreteAux, mapIso_inv,
     ← Functor.map_comp]
   rfl
 
-noncomputable def LocallyConstant.compIsoId :
+noncomputable def compIsoId :
     (functor R) ⋙ (Condensed.underlying (ModuleCat R)) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun M ↦ (functorIsoDiscreteOne' R _).symm
+  NatIso.ofComponents fun M ↦ (functorIsoDiscreteAux' R _).symm
 
-noncomputable def LocallyConstant.adjunction : functor R ⊣ Condensed.underlying (ModuleCat R) :=
+noncomputable def adjunction : functor R ⊣ Condensed.underlying (ModuleCat R) :=
   Adjunction.ofNatIsoLeft (Condensed.discreteUnderlyingAdj _) (functorIsoDiscrete R).symm
 
-noncomputable def LocallyConstant.fullyFaithfulFunctor :
+noncomputable def fullyFaithfulFunctor :
     (functor R).FullyFaithful := (adjunction R).fullyFaithfulLOfCompIsoId (compIsoId R)
 
-instance : (LocallyConstant.functor R).Faithful :=
-  Functor.Faithful.of_comp_iso (LocallyConstant.compIsoId R)
-
-end CondensedMod
+end CondensedMod.LocallyConstant
 
 namespace LightCondMod
 
@@ -260,6 +240,84 @@ abbrev LocallyConstant.functor : ModuleCat R ⥤ LightCondMod.{u} R :=
   Condensed.LocallyConstantModule.functor.{u, u} R
     (fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)
 
-def LocallyConstant.functorIsoDiscrete : functor R ≅ LightCondensed.discrete _ := sorry
+abbrev functorToPresheaves : ModuleCat.{u} R ⥤ (LightProfinite.{u}ᵒᵖ ⥤ ModuleCat R) :=
+  Condensed.LocallyConstantModule.functorToPresheaves.{u, u} R
+
+abbrev functor : ModuleCat R ⥤ LightCondMod.{u} R :=
+  Condensed.LocallyConstantModule.functor.{u, u} R
+    (fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)
+
+noncomputable def functorIsoDiscreteAux' (M : ModuleCat.{u} R) :
+    M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) where
+  hom := constₗ R
+  inv := evalₗ R PUnit.unit
+
+noncomputable def functorIsoDiscreteAux (M : ModuleCat R) :
+    (LightCondensed.discrete _).obj M ≅ (LightCondensed.discrete _).obj
+      (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) :=
+  (LightCondensed.discrete _).mapIso (functorIsoDiscreteAux' R M)
+
+instance (J : GrothendieckTopology (SmallModel LightProfinite.{u})) : HasSheafify J (ModuleCat R) :=
+  inferInstance
+
+instance : HasSheafify (coherentTopology LightProfinite) (ModuleCat R) :=
+  inferInstance
+
+instance : (coherentTopology LightProfinite).PreservesSheafification
+    (CategoryTheory.forget (ModuleCat R)) := sorry
+
+instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
+    ((LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app
+      ((functor R).obj M))) := by
+  erw [Sheaf.constantCommuteComposeApp_counit_comp]
+  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+  change Sheaf.IsDiscrete _ _ _
+  have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
+    inferInstanceAs (LightCondensed.discrete _).Faithful
+  have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
+    inferInstanceAs (LightCondensed.discrete _).Full
+  rw [Sheaf.isDiscrete_iff_mem_essImage]
+  change _ ∈ (LightCondensed.discrete _).essImage
+  rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
+  exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
+
+noncomputable def functorIsoDiscrete_components (M : ModuleCat R) :
+    (LightCondensed.discrete _).obj M ≅ (functor R).obj M := by
+  have : (LightCondensed.forget R).ReflectsIsomorphisms :=
+    inferInstanceAs (sheafCompose _ _).ReflectsIsomorphisms
+  refine (functorIsoDiscreteAux R M) ≪≫ (@asIso _ _ _ _ ?_ ?_)
+  · exact (LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M)
+  · apply this.reflects
+
+open Condensed.LocallyConstantModule in
+noncomputable def functorIsoDiscrete : functor R ≅ LightCondensed.discrete _ := by
+  refine NatIso.ofComponents (fun M ↦ (functorIsoDiscrete_components R M).symm) ?_
+  intro M N f
+  dsimp
+  rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
+  dsimp [functorIsoDiscrete_components]
+  rw [Category.assoc, ← Iso.eq_inv_comp]
+  erw [← (LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.naturality]
+  change _ ≫ ((LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app
+    (((functor R).obj N))) = _
+  simp only [← assoc]
+  congr 1
+  rw [← Iso.comp_inv_eq]
+  apply Sheaf.hom_ext
+  simp only [comp_obj, LightCondensed.underlying_obj, functor_obj_val, functorToPresheaves_obj_obj,
+    coe_of, LightCondensed.discrete_obj, Functor.comp_map, LightCondensed.underlying_map,
+    functorToPresheaves_map_app, LightCondensed.discrete_map, functorIsoDiscreteAux, mapIso_inv,
+    ← Functor.map_comp]
+  rfl
+
+noncomputable def compIsoId :
+    (functor R) ⋙ (LightCondensed.underlying (ModuleCat R)) ≅ 𝟭 _ :=
+  NatIso.ofComponents fun M ↦ (functorIsoDiscreteAux' R _).symm
+
+noncomputable def adjunction : functor R ⊣ LightCondensed.underlying (ModuleCat R) :=
+  Adjunction.ofNatIsoLeft (LightCondensed.discreteUnderlyingAdj _) (functorIsoDiscrete R).symm
+
+noncomputable def fullyFaithfulFunctor :
+    (functor R).FullyFaithful := (adjunction R).fullyFaithfulLOfCompIsoId (compIsoId R)
 
 end LightCondMod
