@@ -6,15 +6,27 @@ Authors: Jon Bannon, Jireh Loreaux
 
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 
+/-!
+
+# Eigenvalues, Eigenvectors and Spectrum for Matrices
+
+This file collects results about eigenvectors, eigenvalues and spectrum specific to matrices.
+
+## Tags
+eigenspace, eigenvector, eigenvalue, eigen, spectrum, matrices, matrix
+
+-/
+
 section SpectrumDiagonal
 
 variable {R : Type*} [Field R] {n : Type*} [DecidableEq n][Fintype n]
 
+open Matrix
 open Module.End
 
 /--  Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
-lemma Matrix.hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
-    Module.End.HasEigenvector (Matrix.toLin' (diagonal d)) (d i) (Pi.basisFun R n i) := by
+lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
+    Module.End.HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) := by
   constructor
   · rw [mem_eigenspace_iff]
     ext j
@@ -25,7 +37,7 @@ lemma Matrix.hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
   · rw [Function.ne_iff]; simp
 
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
-lemma Matrix.hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
+lemma hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
     HasEigenvalue (toLin' (diagonal d)) μ ↔ ∃ i, d i = μ := by
   have (i : n) : HasEigenvalue (toLin' (diagonal d)) (d i) := by
     exact hasEigenvalue_of_hasEigenvector <| hasEigenvector_toLin'_diagonal d i
@@ -48,11 +60,11 @@ lemma Matrix.hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
     exact this i
 
 /-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/
-lemma Matrix.spectrum_diagonal (d : n → R) :
+lemma spectrum_diagonal (d : n → R) :
     spectrum R (diagonal d) = Set.range d := by
   ext μ
-  rw [← AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv <| Pi.basisFun R n),
+  rw [← AlgEquiv.spectrum_eq (toLinAlgEquiv <| Pi.basisFun R n),
     ← hasEigenvalue_iff_mem_spectrum, Set.mem_range]
-  exact Matrix.hasEigenvalue_toLin'_diagonal_iff d
+  exact hasEigenvalue_toLin'_diagonal_iff d
 
 end SpectrumDiagonal
