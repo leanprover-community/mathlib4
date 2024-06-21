@@ -433,12 +433,10 @@ lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
   · simp [cfc_apply_of_not_predicate a ha]
 
 open Finset in
-lemma cfc_sum {ι : Type*} (f : ι → R → R) (s : Finset ι)
-    (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a)) :
-    cfc (∑ i in s, f i)  a = ∑ i in s, cfc (f i) a := by
-  rw [← sum_coe_sort s, ← sum_coe_sort s]
-  have hf' : ∀ i : {x : ι // x ∈ s}, ContinuousOn (f i) (spectrum R a) := fun ⟨i, hi⟩ => hf i hi
-  exact cfc_sum_univ a _ hf'
+lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R) (a : A)
+    (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    cfc (∑ i, f i) a = ∑ i, cfc (f i) a :=
+  cfc_sum f a _ fun i _ ↦ hf i
 
 lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
