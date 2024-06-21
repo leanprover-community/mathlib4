@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Order.Irreducible
 import Mathlib.Data.Set.Subset
+import Mathlib.Order.Interval.Set.Monotone
 
 /-!
 # Hull-Kernel Topology
@@ -18,6 +19,12 @@ open TopologicalSpace
 open Topology
 open Set
 open Set.Notation
+
+lemma test {C D T : Set α} (h : C ⊆ D) : T ∩ C ⊆ T ∩ D := by
+  apply inter_subset_inter (le_refl _) h
+
+
+lemma inter_subset_inter' {C D T : Set α} (h : C ⊆ D) : T ↓∩ C ⊆ T ↓∩ D := fun _ b ↦ h b
 
 section SemilatticeInf
 
@@ -103,13 +110,34 @@ variable [CompleteLattice α] [TopologicalSpace α] [IsLower α] [DecidableEq α
 variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
 
 
+
+
+lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
+  rw [le_antisymm_iff]
+  constructor
+  · simp only [preimage_compl, le_eq_subset, sUnion_subset_iff, mem_setOf_eq, forall_exists_index,
+    and_imp, forall_apply_eq_imp_iff₂, compl_subset_compl]
+    intro a ha
+    apply inter_subset_inter'
+    apply antitone_Ici
+    exact CompleteLattice.le_sSup S a ha
+  · simp only [preimage_compl, le_eq_subset]
+    intro a ha
+    simp only [mem_sUnion, mem_setOf_eq, exists_exists_and_eq_and, mem_compl_iff, mem_preimage,
+      mem_Ici]
+    simp at ha
+    exact ha
+
+
 lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor
   · intro h
-    have e1 : S = ⋃₀ {s | s ∈ {S | ∃ a, T \ Ici a = S} ∧ s ⊆ S} := by
-      apply IsTopologicalBasis.open_eq_sUnion'
-      apply isBasis1
-       -- (isBasis1 T hT) h
+    let
+    have e1 : S = ⋃₀ {s | s ∈ {t : Set T | ∃ a, T \ Ici a = t ∧ t ⊆ S}} := by
+      simp_rw [exists_and_right, mem_setOf_eq]
+      exact IsTopologicalBasis.open_eq_sUnion' (isBasis1 T hT) h
+
+
   · intro h
     cases' h with a ha
     -- rw [IsOpen, TopologicalSpace.IsOpen]
