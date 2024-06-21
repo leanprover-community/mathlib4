@@ -190,8 +190,7 @@ theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0) : ∃ t : Fin n �
   refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
   --Inequality
   have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * ‖A‖) ^ e := by positivity
-  have : ‖x - y‖ = ‖col (Fin 1) (x - y)‖ := by exact Eq.symm (norm_col (x - y))
-  rw [this, norm_le_iff n_mul_norm_A_pow_e_nonneg]
+  rw [← norm_col (ι := Unit), norm_le_iff n_mul_norm_A_pow_e_nonneg]
   intro i j
   simp only [col_apply, Pi.sub_apply]
   rw [Int.norm_eq_abs, ← Int.cast_abs]
