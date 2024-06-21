@@ -10,7 +10,8 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 # Eigenvalues, Eigenvectors and Spectrum for Matrices
 
-This file collects results about eigenvectors, eigenvalues and spectrum specific to matrices.
+This file collects results about eigenvectors, eigenvalues and spectrum specific to matrices
+over a field.
 
 ## Tags
 eigenspace, eigenvector, eigenvalue, eigen, spectrum, matrices, matrix
@@ -19,22 +20,26 @@ eigenspace, eigenvector, eigenvalue, eigen, spectrum, matrices, matrix
 
 section SpectrumDiagonal
 
-variable {R : Type*} [Field R] {n : Type*} [DecidableEq n][Fintype n]
+variable {R : Type*} [Field R] {n : Type*} [DecidableEq n] [Fintype n] (M : Type*)
+  [AddCommGroup M] [Module R M]
 
 open Matrix
 open Module.End
 
-/--  Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
-lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
-    Module.End.HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) := by
+/-- Basis vectors are eigenvectors of associated diagonal linear operator. -/
+lemma hasEigenvector_toLin_basis_diagonal (d : n → R) (i : n) (b : Basis n R M) :
+    Module.End.HasEigenvector (toLin b b (diagonal d)) (d i) (b i) := by
   constructor
-  · rw [mem_eigenspace_iff]
-    ext j
+  · refine mem_eigenspace_iff.mpr ?left.a
     simp only [diagonal, Pi.basisFun_apply, toLin'_apply, mulVec_stdBasis_apply, transpose_apply,
       of_apply, Pi.smul_apply, LinearMap.stdBasis_apply', smul_eq_mul, mul_ite, mul_one, mul_zero]
-    split_ifs
     all_goals simp_all
-  · rw [Function.ne_iff]; simp
+  · exact Basis.ne_zero b i
+
+/--  Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
+lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
+    Module.End.HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) :=
+  hasEigenvector_toLin_basis_diagonal (d : n → R) (i : n) (b := Pi.basisFun R n)
 
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
 lemma hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
