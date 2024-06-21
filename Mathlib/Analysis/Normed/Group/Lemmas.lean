@@ -13,33 +13,10 @@ import Mathlib.Topology.Sequences
 #align_import analysis.normed.group.basic from "leanprover-community/mathlib"@"41bef4ae1254365bc190aee63b947674d2977f01"
 
 /-!
-# Normed (semi)groups
+# Further lemmas about normed groups
 
-In this file we define 10 classes:
-
-* `Norm`, `NNNorm`: auxiliary classes endowing a type `α` with a function `norm : α → ℝ`
-  (notation: `‖x‖`) and `nnnorm : α → ℝ≥0` (notation: `‖x‖₊`), respectively;
-* `Seminormed...Group`: A seminormed (additive) (commutative) group is an (additive) (commutative)
-  group with a norm and a compatible pseudometric space structure:
-  `∀ x y, dist x y = ‖x / y‖` or `∀ x y, dist x y = ‖x - y‖`, depending on the group operation.
-* `Normed...Group`: A normed (additive) (commutative) group is an (additive) (commutative) group
-  with a norm and a compatible metric space structure.
-
-We also prove basic properties of (semi)normed groups and provide some instances.
-
-## TODO
-This file is huge; move material into separate files,
-such as `Mathlib/Analysis/Normed/Group/Lemmas.lean`.
-
-## Notes
-
-The current convention `dist x y = ‖x - y‖` means that the distance is invariant under right
-addition, but actions in mathlib are usually from the left. This means we might want to change it to
-`dist x y = ‖-x + y‖`.
-
-The normed group hierarchy would lend itself well to a mixin design (that is, having
-`SeminormedGroup` and `SeminormedAddGroup` not extend `Group` and `AddGroup`), but we choose not
-to for performance concerns.
+This file contains further lemmas about normed groups, requiring heavier imports than
+`Mathlib/Analysis/Normed/Group/Basic.lean`.
 
 ## Tags
 
