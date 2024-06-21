@@ -75,7 +75,6 @@ Mathlib/MeasureTheory/Integral/FundThmCalculus.lean : line 1 : ERR_NUM_LIN : 180
 Mathlib/MeasureTheory/Integral/Lebesgue.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2032 lines, try to split it up
 Mathlib/MeasureTheory/Integral/SetIntegral.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1778 lines, try to split it up
 Mathlib/MeasureTheory/Integral/SetToL1.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1815 lines, try to split it up
-Mathlib/MeasureTheory/MeasurableSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2267 lines, try to split it up
 Mathlib/MeasureTheory/Measure/MeasureSpace.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2243 lines, try to split it up
 Mathlib/MeasureTheory/Measure/Typeclasses.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1619 lines, try to split it up
 Mathlib/Order/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1556 lines, try to split it up
