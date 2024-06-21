@@ -170,11 +170,9 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
           div_mul_cancel₀]
         exact sub_ne_zero_of_ne (mod_cast hn.ne')
   _ < (B + 1) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
-        rw [mul_lt_mul_right (pow_pos (Nat.cast_add_one_pos B) m)]
-        apply rpow_lt_rpow --three goals
-        · exact rpow_nonneg (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)) e
+        gcongr
+        · exact sub_pos.mpr (mod_cast hn)
         · exact Nat.lt_floor_add_one ((n * ‖A‖) ^ e)
-        · simpa only [sub_pos, Nat.cast_lt] using hn
   _ = (B + 1) ^ n := by
         rw [← rpow_natCast, ← rpow_add (Nat.cast_add_one_pos B), ← rpow_natCast, sub_add_cancel]
 
