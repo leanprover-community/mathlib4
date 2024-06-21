@@ -319,18 +319,17 @@ lemma cfcₙ_add : cfcₙ (fun x ↦ f x + g x) a = cfcₙ f a + cfcₙ g a := b
   · simp [cfcₙ_apply_of_not_predicate a ha]
 
 open Finset in
-lemma cfcₙ_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R) (hf : ∀ i, ContinuousOn (f i) (σₙ R a))
-    (hf0 : ∀ i, f i 0 = 0) :
-    cfcₙ (∑ i, f i) a = ∑ i, cfcₙ (f i) a := by
+lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
+    (hf0 : ∀ i ∈ s, f i 0 = 0 := by cfc_zero_tac) :
+    cfcₙ (∑ i in s, f i) a = ∑ i in s, cfcₙ (f i) a := by
   by_cases ha : p a
-  · have hsum : univ.sum f = fun z => ∑ i, f i z := by ext; simp
-    have hf' : ContinuousOn (univ.sum f) (σₙ R a) := by
-      rw [hsum]
-      exact continuousOn_finset_sum univ fun i _ => hf i
-    have hf0' : (univ.sum f) 0 = 0 := by
-      rw [sum_apply]
-      exact sum_eq_zero fun i _ => hf0 i
-    rw [cfcₙ_apply_pi a ha f hf hf0, ← map_sum, cfcₙ_apply _ a hf' hf0']
+  · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
+    have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
+      rw [sum_coe_sort s, hsum]
+      exact continuousOn_finset_sum s fun i hi => hf i hi
+    rw [← sum_coe_sort s, ← sum_coe_sort s]
+    rw [cfcₙ_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfcₙ_apply _ a hf']
     congr 1
     ext
     simp
