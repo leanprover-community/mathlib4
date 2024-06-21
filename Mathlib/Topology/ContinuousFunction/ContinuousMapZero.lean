@@ -194,7 +194,7 @@ lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
   rfl
 
-/-- Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
+/-- Coercion to a function as an `AddMonoidHom`. Similar to `ContinuousMap.coeFnAddMonoidHom`. -/
 def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
   toFun f := f
   map_zero' := coe_zero
