@@ -18,11 +18,15 @@ of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 * `Subgroup.leftCoset_cover_filter_FiniteIndex`
   the cosets of subgroups of infinite index may be omitted from the covering.
 
-* `Subgroup.one_le_sum_inv_index_of_leftCoset_cover` :
-  the sum of the inverses of the indexes of the $C_i$ is greater than or equal to $1$.
-
 * `Subgroup.exists_index_le_card_of_leftCoset_cover` :
   the index of (at least) one of these subgroups does not exceed $n$.
+
+* `Subgroup.one_le_sum_inv_index_of_leftCoset_cover` :
+  the sum of the inverses of the indexes of the $C_i$ is greater than or equal to 1.
+
+* `Subgroup.pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one`
+  If the sum of the inverses of the indexes of the subgroups $C_i$ is equal to 1,
+  then the cosets of the subgroups of finite index are pairwise disjoint.
 
 A corollary of `Subgroup.exists_finiteIndex_of_leftCoset_cover` is:
 
@@ -67,14 +71,9 @@ theorem Subgroup.exists_leftTransversal_of_FiniteIndex
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
 @[to_additive]
-theorem Subgroup.mem_leftCoset_iff (g h : G) :
-    g ∈ h • (H : Set G) ↔ (g : G ⧸ H) = (h : G ⧸ H) := by
-  rw [_root_.mem_leftCoset_iff, eq_comm, SetLike.mem_coe, QuotientGroup.eq]
-
-@[to_additive]
 theorem Subgroup.leftCoset_cover_const_iff_surjOn :
     ⋃ i ∈ s, g i • (H : Set G) = Set.univ ↔ Set.SurjOn (g · : ι → G ⧸ H) s Set.univ := by
-  simp [Set.eq_univ_iff_forall, _root_.mem_leftCoset_iff, Set.SurjOn,
+  simp [Set.eq_univ_iff_forall, mem_leftCoset_iff, Set.SurjOn,
     QuotientGroup.forall_mk, QuotientGroup.eq]
 
 variable (hcovers : ⋃ i ∈ s, g i • (H : Set G) = Set.univ)
@@ -111,9 +110,9 @@ theorem Subgroup.pairwiseDisjoint_leftCoset_cover_const_of_index_eq
       intro i hi j hj h' c hi' hj' x hx
       specialize hi' hx
       specialize hj' hx
-      rw [Subgroup.mem_leftCoset_iff] at hi' hj'
+      rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hi' hj'
       rw [ne_eq, ← Subtype.mk.injEq (p := (· ∈ (s : Set ι))) i hi j hj] at h'
-      exact h' <| this.injective <| by simp only [← hi', ← hj']
+      exact h' <| this.injective <| by simp only [hi', hj']
     rw [Fintype.bijective_iff_surjective_and_card]
     constructor
     · rwa [leftCoset_cover_const_iff_surjOn, Set.surjOn_iff_surjective] at hcovers
@@ -139,18 +138,18 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgrou
     -- Every left coset of `H j` is contained in a finite union of
     -- left cosets of the other subgroups `H k ≠ H j` of the covering.
     have ⟨x, hx⟩ : ∃ (x : G), ∀ i ∈ s, H i = H j → (g i : G ⧸ H i) ≠ ↑x := by
-      simpa [Set.eq_univ_iff_forall, _root_.mem_leftCoset_iff, ← QuotientGroup.eq] using hcovers'
+      simpa [Set.eq_univ_iff_forall, mem_leftCoset_iff, ← QuotientGroup.eq] using hcovers'
     replace hx : ∀ (y : G), y • (H j : Set G) ⊆
         ⋃ i ∈ s.filter (H · ≠ H j), (y * x⁻¹ * g i) • (H i : Set G) := by
       intro y z hz
       simp_rw [Finset.mem_filter, Set.mem_iUnion]
       have ⟨i, hi, hmem⟩ : ∃ i ∈ s, x * (y⁻¹ * z) ∈ g i • (H i : Set G) :=
         by simpa using Set.eq_univ_iff_forall.mp hcovers (x * (y⁻¹ * z))
-      rw [_root_.mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hmem
+      rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hmem
       refine ⟨i, ⟨hi, fun hij => hx i hi hij ?_⟩, ?_⟩
       · rwa [hmem, eq_comm, QuotientGroup.eq, hij, inv_mul_cancel_left,
-          ← SetLike.mem_coe, ← _root_.mem_leftCoset_iff]
-      · simpa [_root_.mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hmem
+          ← SetLike.mem_coe, ← mem_leftCoset_iff]
+      · simpa [mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hmem
     -- Thus `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
     let κ := ↥(s.filter (H · ≠ H j)) × Option ↥(s.filter (H · = H j))
@@ -330,7 +329,7 @@ theorem Subgroup.pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
     ∑ i ∈ s, ((H i).index : ℚ)⁻¹ = 1 →
       Set.PairwiseDisjoint (s.filter (fun i => (H i).FiniteIndex))
         (fun i ↦ g i • (H i : Set G)) :=
-  (leftCoset_cover_filter_FiniteIndex_aux hcovers).2.2
+  (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2.2
 
 /-- B. H. Neumann Lemma :
 If a finite family of cosets of subgroups covers the group, then at least one
