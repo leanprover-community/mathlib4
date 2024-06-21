@@ -211,7 +211,6 @@ lemma constantCommuteComposeApp_counit_comp (F : Sheaf J A) :
         (constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F) := by
   simp [← constantCommuteComposeApp_counit_comp']
 
-
 /-- Auxiliary lemma for `sheafCompose_reflects_discrete`. -/
 private lemma sheafifyComposeIso_comp_constantSheafAdj_counit :
   (sheafifyComposeIso J U ((const Cᵒᵖ).obj (F.val.obj { unop := t }))).hom ≫
