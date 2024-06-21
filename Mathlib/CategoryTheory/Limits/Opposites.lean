@@ -39,11 +39,10 @@ variable {J : Type u₂} [Category.{v₂} J]
 #align category_theory.limits.is_limit_cocone_unop CategoryTheory.Limits.IsColimit.unop
 #align category_theory.limits.is_colimit_cone_unop CategoryTheory.Limits.IsLimit.unop
 
--- 2024-03-26
-@[deprecated] alias isLimitCoconeOp := IsColimit.op
-@[deprecated] alias isColimitConeOp := IsLimit.op
-@[deprecated] alias isLimitCoconeUnop := IsColimit.unop
-@[deprecated] alias isColimitConeUnop := IsLimit.unop
+@[deprecated (since := "2024-03-26")] alias isLimitCoconeOp := IsColimit.op
+@[deprecated (since := "2024-03-26")] alias isColimitConeOp := IsLimit.op
+@[deprecated (since := "2024-03-26")] alias isLimitCoconeUnop := IsColimit.unop
+@[deprecated (since := "2024-03-26")] alias isColimitConeUnop := IsLimit.unop
 
 /-- Turn a colimit for `F : J ⥤ Cᵒᵖ` into a limit for `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]

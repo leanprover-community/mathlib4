@@ -39,9 +39,10 @@ import shutil
 
 ERR_MOD = 2 # module docstring
 ERR_LIN = 3 # line length
-ERR_OPT = 6 # set_option
 ERR_TAC = 9 # imported Mathlib.Tactic
+ERR_TAC2 = 10 # imported Lake in Mathlib
 ERR_IBY = 11 # isolated by
+ERR_IWH = 22 # isolated where
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
@@ -49,7 +50,6 @@ ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
-ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
 ERR_ADN = 25 # the string "Adaptation note"
 
@@ -73,8 +73,10 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_ADN, path, None)]
         elif errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path, None)]
+        elif errno == "ERR_TAC2":
+            exceptions += [(ERR_TAC2, path, None)]
         elif errno == "ERR_NUM_LIN":
-            exceptions += [(ERR_NUM_LIN, path, extra[1])]
+            pass # maintained by the Lean style linter now
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
             sys.exit(1)
@@ -138,20 +140,6 @@ def annotate_strings(enumerate_lines):
                 yield line_nr, line, *rem, True
                 continue
         yield line_nr, line, *rem, False
-
-def set_option_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line, in_comment, in_string in annotate_strings(annotate_comments(lines)):
-        if line.strip().startswith('set_option') and not in_comment and not in_string:
-            option_prefix = line.strip().split(' ', 2)[1].split('.', 1)[0]
-            # forbidden options: pp, profiler, trace
-            if option_prefix in {'pp', 'profiler', 'trace'}:
-                errors += [(ERR_OPT, line_nr, path)]
-                # skip adding this line to newlines so that we suggest removal
-                continue
-        newlines.append((line_nr, line))
-    return errors, newlines
 
 def line_endings_check(lines, path):
     errors = []
@@ -286,6 +274,8 @@ def banned_import_check(lines, path):
             break
         if imports[1] in ["Mathlib.Tactic"]:
             errors += [(ERR_TAC, line_nr, path)]
+        elif imports[1] == "Lake" or imports[1].startswith("Lake."):
+            errors += [(ERR_TAC2, line_nr, path)]
     return errors, lines
 
 def isolated_by_dot_semicolon_check(lines, path):
@@ -299,6 +289,20 @@ def isolated_by_dot_semicolon_check(lines, path):
             prev_line = lines[line_nr - 2][1].rstrip()
             if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
                 errors += [(ERR_IBY, line_nr, path)]
+        elif line.lstrip().startswith("by "):
+            # We also error if the previous line ends on := and the current line starts with "by ".
+            prev_line = newlines[-1][1].rstrip()
+            if prev_line.endswith(":="):
+                # If the previous line is short enough, we can suggest an auto-fix.
+                # Future: error also if it is not: currently, mathlib contains about 30 such
+                # instances which are not obvious to fix.
+                if len(prev_line) <= 97:
+                    errors += [(ERR_IBY, line_nr, path)]
+                    newlines[-1] = (line_nr - 1, prev_line + " by\n")
+                    indent = " " * (len(line) - len(line.lstrip()))
+                    line = f"{indent}{line.lstrip()[3:]}"
+        elif line.lstrip() == "where":
+            errors += [(ERR_IWH, line_nr, path)]
         if line.lstrip().startswith(". "):
             errors += [(ERR_DOT, line_nr, path)]
             line = line.replace(". ", "· ", 1)
@@ -359,12 +363,14 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
         if errno == ERR_LIN:
             output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_OPT:
-            output_message(path, line_nr, "ERR_OPT", "Forbidden set_option command")
         if errno == ERR_TAC:
             output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
+        if errno == ERR_TAC2:
+            output_message(path, line_nr, "ERR_TAC2", "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to allow this linter.")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
+        if errno == ERR_IWH:
+            output_message(path, line_nr, "ERR_IWH", "Line is an isolated where")
         if errno == ERR_DOT:
             output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
         if errno == ERR_SEM:
@@ -396,7 +402,6 @@ def lint(path, fix=False):
                             four_spaces_in_second_line,
                             long_lines_check,
                             isolated_by_dot_semicolon_check,
-                            set_option_check,
                             left_arrow_check,
                             adaptation_note_check,
                             nonterminal_simp_check]:
@@ -404,21 +409,6 @@ def lint(path, fix=False):
             format_errors(errs)
 
         if not import_only_check(newlines, path):
-            # Check for too long files: either longer than 1500 lines, or not covered by an exception.
-            # Each exception contains a "watermark". If the file is longer than that, we also complain.
-            if len(lines) > 1500:
-                ex = [e for e in exceptions if e[1] == path.resolve()]
-                if ex:
-                    (_ERR_NUM, _path, watermark) = list(ex)[0]
-                    assert int(watermark) > 500 # protect against parse error
-                    is_too_long = len(lines) > int(watermark)
-                else:
-                    is_too_long = True
-                if is_too_long:
-                    new_exceptions = True
-                    # add up to 200 lines of slack, so simple PRs don't trigger this right away
-                    watermark = len(lines) // 100 * 100 + 200
-                    output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
             format_errors(errs)
             errs, newlines = banned_import_check(newlines, path)

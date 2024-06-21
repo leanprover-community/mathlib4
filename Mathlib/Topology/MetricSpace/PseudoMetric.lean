@@ -1155,7 +1155,6 @@ open Metric
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
--- Porting note (#10756): new theorem
 theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     ⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
@@ -1187,12 +1186,7 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
     uniformity_edist := Metric.uniformity_edist }
 #align pseudo_metric_space.to_pseudo_emetric_space PseudoMetricSpace.toPseudoEMetricSpace
 
-/-- Expressing the uniformity in terms of `edist` -/
-@[deprecated _root_.uniformity_basis_edist]
-protected theorem Metric.uniformity_basis_edist :
-    (𝓤 α).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => { p | edist p.1 p.2 < ε } :=
-  uniformity_basis_edist
-#align pseudo_metric.uniformity_basis_edist Metric.uniformity_basis_edist
+#align pseudo_metric.uniformity_basis_edist uniformity_basis_edist
 
 /-- In a pseudometric space, an open ball of infinite radius is the whole space -/
 theorem Metric.eball_top_eq_univ (x : α) : EMetric.ball x ∞ = Set.univ :=
@@ -2099,3 +2093,7 @@ theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
 #align lebesgue_number_lemma_of_metric_sUnion lebesgue_number_lemma_of_metric_sUnion
+
+instance [PseudoMetricSpace X] : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
+instance [PseudoMetricSpace X] : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
+instance [PseudoMetricSpace X] : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›

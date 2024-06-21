@@ -291,6 +291,37 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
     (Cofan.ext (@asIso _ _ _ _ _ hc) (fun _ => colimit.ι_desc _ _))
 
+lemma Cofan.isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
+    IsIso (Sigma.desc c.inj) ↔ Nonempty (IsColimit c) := by
+  refine ⟨fun h ↦ ⟨isColimitOfIsIsoSigmaDesc c⟩, fun ⟨hc⟩ ↦ ?_⟩
+  have : IsIso (((coproductIsCoproduct f).coconePointUniqueUpToIso hc).hom ≫ hc.desc c) := by
+    simp; infer_instance
+  convert this
+  ext
+  simp only [colimit.ι_desc, mk_pt, mk_ι_app, IsColimit.coconePointUniqueUpToIso,
+    coproductIsCoproduct, colimit.cocone_x, Functor.mapIso_hom, IsColimit.uniqueUpToIso_hom,
+    Cocones.forget_map, IsColimit.descCoconeMorphism_hom, IsColimit.ofIsoColimit_desc,
+    Cocones.ext_inv_hom, Iso.refl_inv, colimit.isColimit_desc, Category.id_comp,
+    IsColimit.desc_self, Category.comp_id]
+  rfl
+
+/-- A coproduct of coproducts is a coproduct -/
+def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
+    {β : α → Type*} {Y : (a : α) → β a → C} (π : (a : α) → (b : β a) → Y a b ⟶ X a)
+      (hs : ∀ a, IsColimit (Cofan.mk (X a) (π a))) :
+        IsColimit (Cofan.mk (f := fun ⟨a,b⟩ => Y a b) c.pt
+          (fun (⟨a, b⟩ : Σ a, _) ↦ π a b ≫ c.inj a)) := by
+  refine mkCofanColimit _ ?_ ?_ ?_
+  · exact fun t ↦ hc.desc (Cofan.mk _ fun a ↦ (hs a).desc (Cofan.mk t.pt (fun b ↦ t.inj ⟨a, b⟩)))
+  · intro t ⟨a, b⟩
+    simp only [mk_pt, cofan_mk_inj, Category.assoc]
+    erw [hc.fac, (hs a).fac]
+    rfl
+  · intro t m h
+    refine hc.hom_ext fun ⟨a⟩ ↦ (hs a).hom_ext fun ⟨b⟩ ↦ ?_
+    erw [hc.fac, (hs a).fac]
+    simpa using h ⟨a, b⟩
+
 /-- Construct a morphism between categorical products (indexed by the same type)
 from a family of morphisms between the factors.
 -/
