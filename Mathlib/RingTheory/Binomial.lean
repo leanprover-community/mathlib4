@@ -176,15 +176,6 @@ instance Int.instBinomialRing : BinomialRing ℤ where
 
 end Nat_Int
 
-section Rat_Algebra
-
-variable {R : Type*} [CommRing R] [CharZero R] [IsLeftCancelMulZero R] [Algebra ℚ R]
-
-/-- Inductive definition of the multichoose function. -/
-noncomputable def multichoose: R → ℕ → R
-  | _, 0 => 1
-  | r, k+1 => ((k+1)⁻¹:ℚ)•(r+k)*(multichoose r k)
-
 noncomputable instance instBinomialRing : BinomialRing R where
   nsmul_right_injective n hn r s hrs := by
     simp only [nsmul_eq_mul] at hrs
