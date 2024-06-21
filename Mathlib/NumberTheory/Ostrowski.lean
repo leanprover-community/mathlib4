@@ -57,22 +57,6 @@ lemma equiv_on_Nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n)^c = 
       (apply_nonneg f _), h x.den, ← MulRingNorm.apply_natAbs_eq,← MulRingNorm.apply_natAbs_eq,
       h (natAbs x.num)]
 
-
-/-- The p-adic norm on ℚ. -/
-def mulRingNorm_padic (p : ℕ) [hp : Fact (Nat.Prime p)] : MulRingNorm ℚ :=
-{ toFun     := λ x : ℚ => (padicNorm p x : ℝ),
-  map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
-  add_le'   := by simp only; norm_cast; exact fun r s => padicNorm.triangle_ineq r s
-  neg'      := by simp only [eq_self_iff_true, forall_const, padicNorm.neg];
-  eq_zero_of_map_eq_zero' := by simp only [Rat.cast_eq_zero]; apply padicNorm.zero_of_padicNorm_eq_zero
-  map_one' := by simp only [ne_eq, one_ne_zero, not_false_eq_true, padicNorm.eq_zpow_of_nonzero,
-    padicValRat.one, neg_zero, zpow_zero, Rat.cast_one]
-  map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, forall_const]
-}
-
-@[simp] lemma mul_ring_norm_eq_padic_norm (p : ℕ) [Fact (Nat.Prime p)] (r : ℚ) :
-  mulRingNorm_padic p r = padicNorm p r := rfl
-
 /-!
 Throughout this file, `f` is an arbitrary absolute value.
 -/
@@ -81,16 +65,34 @@ variable {f : MulRingNorm ℚ}
 open Rat.MulRingNorm
 section Nonarchimedean
 
--- ## Non-archimedean: step 1 define `p = smallest n s. t. 0 < |n| < 1`
+/-- The mulRingNorm correspondint to the p-adic norm on ℚ. -/
+def mulRingNorm_padic (p : ℕ) [hp : Fact (Nat.Prime p)] : MulRingNorm ℚ :=
+{ toFun     := fun x : ℚ ↦ (padicNorm p x : ℝ),
+  map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
+  add_le'   := by simp only; norm_cast; exact fun r s ↦ padicNorm.triangle_ineq r s
+  neg'      := by simp only [eq_self_iff_true, forall_const, padicNorm.neg];
+  eq_zero_of_map_eq_zero' := by
+    simp only [Rat.cast_eq_zero]
+    apply padicNorm.zero_of_padicNorm_eq_zero
+  map_one' := by simp only [ne_eq, one_ne_zero, not_false_eq_true, padicNorm.eq_zpow_of_nonzero,
+    padicValRat.one, neg_zero, zpow_zero, Rat.cast_one]
+  map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, forall_const]
+}
+
+@[simp] lemma mulRingNorm_eq_padic_norm (p : ℕ) [Fact (Nat.Prime p)] (r : ℚ) :
+  mulRingNorm_padic p r = padicNorm p r := rfl
+
+-- ## Step 1: define `p = smallest n s. t. 0 < |n| < 1`
+
+variable (hf_nontriv : f ≠ 1) (bdd : ∀ n : ℕ, f n ≤ 1)
 
 /-- There exists a minimal positive integer with absolute value smaller than 1 -/
-lemma p_exists (bdd: ∀ n : ℕ, f n ≤ 1) (hf_nontriv : f ≠ 1) : ∃ (p : ℕ), (0 < f p ∧ f p < 1) ∧
+lemma exists_smallest_Nat_zero_lt_mulRingNorm_lt_one : ∃ (p : ℕ), (0 < f p ∧ f p < 1) ∧
     ∀ (m : ℕ), 0 < f m ∧ f m < 1 → p ≤ m := by
-  -- there is a positive integer with absolute value different from one
+  -- There is a positive integer with absolute value different from one
   have hn : ∃ (n : ℕ), n ≠ 0 ∧ f n ≠ 1 := by
-    by_contra h
+    by_contra! h
     apply hf_nontriv
-    push_neg at h
     apply eq_on_Nat_iff_eq.1
     intro n
     by_cases hn0 : n=0
@@ -99,19 +101,16 @@ lemma p_exists (bdd: ∀ n : ℕ, f n ≤ 1) (hf_nontriv : f ≠ 1) : ∃ (p : �
     · push_neg at hn0
       simp only [MulRingNorm.apply_one, Nat.cast_eq_zero, hn0, ↓reduceIte, h n hn0]
   obtain ⟨n, hn1, hn2⟩ := hn
-  set P := {m : ℕ | 0 < f ↑m ∧ f ↑m < 1}
-  have hPnonempty : Set.Nonempty P := by
+  set P := {m : ℕ | 0 < f ↑m ∧ f ↑m < 1} -- p is going to be the minimum of this set
+  have hP : Set.Nonempty P := by
     use n
     exact ⟨map_pos_of_ne_zero f (Nat.cast_ne_zero.mpr hn1), lt_of_le_of_ne (bdd n) hn2⟩
   use sInf P
-  refine ⟨Nat.sInf_mem hPnonempty, ?_⟩
+  refine ⟨Nat.sInf_mem hP, ?_⟩
   intro m hm
   exact Nat.sInf_le hm
 
--- ## Non-archimedean case: Step 2. p is prime
-
-variable (bdd: ∀ n : ℕ, f n ≤ 1)  (p : ℕ)  (hp0 : 0 < f p)  (hp1 : f p < 1)
-  (hmin : ∀ (m : ℕ), 0 < f m ∧ f m < 1 → p ≤ m)
+-- ## Step 2: p is prime
 
 private lemma one_lt_of_ne_zero_one {a : ℕ} (ne_0 : a ≠ 0) (ne_1 : a ≠ 1) : 1 < a := by
   rcases a with _ | a
@@ -119,56 +118,57 @@ private lemma one_lt_of_ne_zero_one {a : ℕ} (ne_0 : a ≠ 0) (ne_1 : a ≠ 1) 
   · rw [Nat.succ_ne_succ, ← pos_iff_ne_zero] at ne_1
     exact Nat.succ_lt_succ ne_1
 
+variable (p : ℕ) (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ (m : ℕ), 0 < f m ∧ f m < 1 → p ≤ m)
+
  /-- The minimal positive integer with absolute value smaller than 1 is a prime number-/
-lemma p_is_prime : (Prime p) := by
+lemma is_prime_of_smallest_Nat_zero_lt_mulRingNorm_lt_one : (Prime p) := by
   rw [← Nat.irreducible_iff_prime]
-  constructor
+  constructor -- Two goals: p is not a unit and any product giving p must contain a unit
   · rw [Nat.isUnit_iff]
     intro p1
     simp only [p1, Nat.cast_one, map_one, lt_self_iff_false] at hp1
   · intro a b hab
     rw [Nat.isUnit_iff, Nat.isUnit_iff]
-    by_contra con
-    push_neg at con
+    by_contra! con
     obtain ⟨a_neq_1, b_neq_1⟩ := con
     apply not_le_of_lt hp1
-    rw [hab]
-    simp only [Nat.cast_mul, map_mul]
-    have neq_0 {a b : ℕ} (hab : p = a * b) : a ≠ 0 := by
+    /- GOAL: If p = a * b and a and b are both different form one, f p will be at least 1 giving
+    a contradiction -/
+    rw [hab, Nat.cast_mul, map_mul]
+    have hneq_0 {a b : ℕ} (hab : p = a * b) : a ≠ 0 := by
       intro an0
       rw [an0, zero_mul] at hab
       rw [hab] at hp0
       rw_mod_cast [map_zero] at hp0
-      simp only [lt_self_iff_false] at hp0
+      exact (lt_self_iff_false 0).mp hp0
     have one_le_f (a b : ℕ) (hab : p = a * b) (one_lt_b : 1 < b) : 1 ≤ f a := by
-      by_contra ca
-      apply lt_of_not_ge at ca
-      apply (@not_le_of_gt _ _ p a)
+      by_contra! ca
+      apply @not_le_of_gt _ _ p a
       · rw [hab, gt_iff_lt]
-        exact lt_mul_of_one_lt_right ((pos_iff_ne_zero ).2 (neq_0 hab)) one_lt_b
+        exact lt_mul_of_one_lt_right (pos_iff_ne_zero.2 (hneq_0 hab)) one_lt_b
       · apply hmin
-        refine ⟨?_ ,ca⟩
+        refine ⟨?_, ca⟩
         apply map_pos_of_ne_zero
-        exact_mod_cast (neq_0 hab)
+        exact_mod_cast hneq_0 hab
     have hba : p = b * a := by
       rw [mul_comm]
       exact hab
     apply one_le_mul_of_one_le_of_one_le
-    · exact one_le_f a b hab (one_lt_of_ne_zero_one (neq_0 hba) b_neq_1)
-    · exact one_le_f b a hba (one_lt_of_ne_zero_one (neq_0 hab) a_neq_1)
+    · exact one_le_f a b hab (one_lt_of_ne_zero_one (hneq_0 hba) b_neq_1)
+    · exact one_le_f b a hba (one_lt_of_ne_zero_one (hneq_0 hab) a_neq_1)
 
--- ## Step 3
-/-- a natural number not divible by p has absolute value 1 -/
-lemma not_divisible_norm_one (m : ℕ) (hpm : ¬ p ∣ m ) : f m = 1 := by
-  rw [le_antisymm_iff]
-  refine ⟨bdd m, ?_ ⟩
-  by_contra hm
-  apply lt_of_not_le at hm
+-- ## Step 3: if p does not divide m, then |m|=1
+
+/-- A natural number not divible by p has absolute value 1 -/
+lemma mulRingNorm_eq_one_of_not_dvd (m : ℕ) (hpm : ¬ p ∣ m) : f m = 1 := by
+  apply le_antisymm (bdd m)
+  by_contra! hm
   set M := (f p) ⊔ (f m) with hM
-  set k := Nat.ceil (Real.logb  M (1/2)) + 1 with hk
+  set k := Nat.ceil (Real.logb  M (1/2)) + 1 with hk --check if this is optimal
   have hcopr : IsCoprime (p ^ k : ℤ) (m ^ k) := by
     apply IsCoprime.pow (Nat.Coprime.isCoprime _)
-    rw [Nat.Prime.coprime_iff_not_dvd (Prime.nat_prime (p_is_prime p hp0 hp1 hmin))]
+    rw [Nat.Prime.coprime_iff_not_dvd
+      (Prime.nat_prime (is_prime_of_smallest_Nat_zero_lt_mulRingNorm_lt_one p hp0 hp1 hmin))]
     exact_mod_cast hpm
   obtain ⟨a, b, bezout⟩ := hcopr
   have le_half x (hx0 : 0 < x) (hx1 : x < 1) (hxM : x ≤ M) : x ^ k < 1/2 := by
@@ -177,12 +177,15 @@ lemma not_divisible_norm_one (m : ℕ) (hpm : ¬ p ∣ m ) : f m = 1 := by
     _ < x ^ Real.logb M (1 / 2) := by
       apply Real.rpow_lt_rpow_of_exponent_gt hx0 hx1
       rw [hk]
-      apply lt_of_le_of_lt (Nat.le_ceil (Real.logb M (1/2)))
-      norm_cast
-      exact lt_add_one ⌈Real.logb M (1 / 2)⌉₊
+      push_cast
+      exact lt_add_of_le_of_pos (Nat.le_ceil (M.logb (1 / 2))) Real.zero_lt_one
     _ ≤ x ^ Real.logb x (1/2) := by
       apply Real.rpow_le_rpow_of_exponent_ge hx0 (le_of_lt hx1)
+      simp only [one_div, Real.logb_inv, neg_le_neg_iff]
       simp only [← Real.log_div_log]
+      apply div_le_div
+
+
       ring_nf
       simp only [one_div, Real.log_inv, neg_mul, neg_le_neg_iff]
       rw [mul_le_mul_left (Real.log_pos one_lt_two)]
@@ -194,38 +197,34 @@ lemma not_divisible_norm_one (m : ℕ) (hpm : ¬ p ∣ m ) : f m = 1 := by
         · rw [hM, lt_sup_iff]
           left
           exact hp0
-    _ = 1/2 := by
-      rw [Real.rpow_logb hx0 (ne_of_lt hx1)]
-      simp only [one_div, inv_pos, Nat.ofNat_pos]
+    _ = 1/2 := Real.rpow_logb hx0 (ne_of_lt hx1) one_half_pos
   apply lt_irrefl (1 : ℝ)
   calc
-    (1:ℝ) = f 1 := by rw [map_one]
-    _ = f (a * p ^ k + b * m ^ k) := by
-      rw_mod_cast [bezout]
-      norm_cast
-    _ ≤ f (a * p ^ k) + f (b * m ^ k) := f.add_le' (a * p ^ k) (b * m ^ k)
-    _ ≤ 1 * (f p) ^ k + 1 * (f m) ^ k := by
-      simp only [map_mul, map_pow, le_refl]
-      gcongr
-      all_goals rw [← MulRingNorm.apply_natAbs_eq]; apply bdd
-    _ = (f p) ^ k + (f m) ^ k := by simp only [one_mul]
-    _ < 1 := by
-      rw [← add_halves (a:=1)]
-      apply add_lt_add
-      · apply le_half (f ↑p) hp0 hp1
-        exact le_sup_left
-      · apply le_half (f m) _ hm le_sup_right
-        apply map_pos_of_ne_zero
-        intro m0
-        apply hpm
-        rw_mod_cast [m0]
-        exact dvd_zero p
+  1 = f 1 := Eq.symm (map_one f)
+  _ = f (a * p ^ k + b * m ^ k) := by rw_mod_cast [bezout]; norm_cast
+  _ ≤ f (a * p ^ k) + f (b * m ^ k) := f.add_le' (a * p ^ k) (b * m ^ k)
+  _ ≤ 1 * (f p) ^ k + 1 * (f m) ^ k := by
+    simp only [map_mul, map_pow, le_refl]
+    gcongr
+    all_goals rw [← MulRingNorm.apply_natAbs_eq]; apply bdd
+  _ = (f p) ^ k + (f m) ^ k := by simp only [one_mul]
+  _ < 1 := by
+    rw [← add_halves (a:=1)]
+    apply add_lt_add
+    · exact le_half (f ↑p) hp0 hp1 le_sup_left
+    · apply le_half (f m) _ hm le_sup_right
+      apply map_pos_of_ne_zero
+      intro m0
+      apply hpm
+      rw_mod_cast [m0]
+      exact dvd_zero p
 
--- ## Non-archimedean case: step 4
+-- ## Step 4: |p|=p ^ (-t) for some positive real t
 
 lemma abs_p_eq_p_minus_t : ∃ (t : ℝ), 0 < t ∧ f p = p ^ (-t) := by
   use - Real.logb p (f p)
-  have pprime : Nat.Prime p := (Prime.nat_prime (p_is_prime p hp0 hp1 hmin))
+  have pprime : Nat.Prime p :=
+    (Prime.nat_prime (is_prime_of_smallest_Nat_zero_lt_mulRingNorm_lt_one p hp0 hp1 hmin))
   constructor
   · rw [Left.neg_pos_iff]
     apply Real.logb_neg _ hp0 hp1
@@ -235,14 +234,14 @@ lemma abs_p_eq_p_minus_t : ∃ (t : ℝ), 0 < t ∧ f p = p ^ (-t) := by
     apply (Real.rpow_logb (by exact_mod_cast Nat.Prime.pos pprime) _ hp0).symm
     simp only [ne_eq, Nat.cast_eq_one,Nat.Prime.ne_one pprime, not_false_eq_true]
 
--- ## Non-archimedean case: end goal
+-- ## Nonarchimedean case: end goal
 /--
   If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value.
 -/
 theorem equiv_padic_of_bounded (bdd: ∀ n : ℕ, f n ≤ 1) (hf_nontriv : f ≠ 1) :
     ∃ p, ∃ (hp : Fact (Nat.Prime p)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
-  obtain ⟨p, hfp, hmin⟩ := p_exists bdd hf_nontriv
-  have hprime : Prime p := p_is_prime p hfp.1 hfp.2 hmin
+  obtain ⟨p, hfp, hmin⟩ := exists_smallest_Nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
+  have hprime : Prime p := is_prime_of_smallest_Nat_zero_lt_mulRingNorm_lt_one p hfp.1 hfp.2 hmin
   use p
   have hprime_fact : Fact (Nat.Prime p) := fact_iff.2 (Prime.nat_prime hprime)
   use (hprime_fact)
@@ -262,9 +261,9 @@ theorem equiv_padic_of_bounded (bdd: ∀ n : ℕ, f n ≤ 1) (hf_nontriv : f ≠
     rcases Nat.exists_eq_pow_mul_and_not_dvd hn p (Nat.Prime.ne_one (Prime.nat_prime hprime))
       with ⟨ e, m, hpm, hnpm⟩
     rw [hnpm]
-    simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, mul_ring_norm_eq_padic_norm,
+    simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, mulRingNorm_eq_padic_norm,
       padicNorm.padicNorm_p_of_prime, Rat.cast_inv, Rat.cast_natCast, inv_pow]
-    rw [not_divisible_norm_one bdd p hfp.1 hfp.2 hmin m hpm, h.2]
+    rw [mulRingNorm_eq_one_of_not_dvd bdd p hfp.1 hfp.2 hmin m hpm, h.2]
     rw [← padicNorm.nat_eq_one_iff] at hpm
     rw [hpm]
     simp only [mul_one, Rat.cast_one]
