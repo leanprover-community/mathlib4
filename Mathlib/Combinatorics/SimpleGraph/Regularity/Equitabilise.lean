@@ -46,7 +46,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
           (Q.parts.filter fun i => card i = m + 1).card = b := by
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
-  · refine' ⟨⊥, by simp, _, by simpa using hs.symm⟩
+  · refine ⟨⊥, by simp, ?_, by simpa [Finset.filter_true_of_mem] using hs.symm⟩
     simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id, and_assoc,
       sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
@@ -68,10 +68,10 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
       ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = s.card - n := by
     rw [hn, ← hs]
     split_ifs with h <;> rw [tsub_mul, one_mul]
-    · refine' ⟨m_pos, le_succ _, le_add_right (Nat.le_mul_of_pos_left _ ‹0 < a›), _⟩
+    · refine ⟨m_pos, le_succ _, le_add_right (Nat.le_mul_of_pos_left _ ‹0 < a›), ?_⟩
       rw [tsub_add_eq_add_tsub (Nat.le_mul_of_pos_left _ h)]
-    · refine' ⟨succ_pos', le_rfl,
-        le_add_left (Nat.le_mul_of_pos_left _ <| hab.resolve_left ‹¬0 < a›), _⟩
+    · refine ⟨succ_pos', le_rfl,
+        le_add_left (Nat.le_mul_of_pos_left _ <| hab.resolve_left ‹¬0 < a›), ?_⟩
       rw [← add_tsub_assoc_of_le (Nat.le_mul_of_pos_left _ <| hab.resolve_left ‹¬0 < a›)]
   /- We will call the inductive hypothesis on a partition of `s \ t` for a carefully chosen `t ⊆ s`.
     To decide which, however, we must distinguish the case where all parts of `P` have size `m` (in
@@ -87,10 +87,10 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     obtain ⟨R, hR₁, _, hR₃⟩ :=
       @ih (s \ t) (sdiff_ssubset hts ‹t.Nonempty›) (if 0 < a then a - 1 else a)
         (if 0 < a then b else b - 1) (P.avoid t) hcard
-    refine' ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel hts), _, _, _⟩
+    refine ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel hts), ?_, ?_, ?_⟩
     · simp only [extend_parts, mem_insert, forall_eq_or_imp, and_iff_left hR₁, htn, hn]
       exact ite_eq_or_eq _ _ _
-    · exact fun x hx => (card_le_card <| sdiff_subset _ _).trans (Nat.lt_succ_iff.1 <| h _ hx)
+    · exact fun x hx => (card_le_card sdiff_subset).trans (Nat.lt_succ_iff.1 <| h _ hx)
     simp_rw [extend_parts, filter_insert, htn, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
@@ -106,24 +106,25 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   obtain ⟨R, hR₁, hR₂, hR₃⟩ :=
     @ih (s \ t) (sdiff_ssubset (htu.trans <| P.le hu₁) ht) (if 0 < a then a - 1 else a)
       (if 0 < a then b else b - 1) (P.avoid t) hcard
-  refine' ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel <| htu.trans <| P.le hu₁), _, _, _⟩
+  refine
+    ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel <| htu.trans <| P.le hu₁), ?_, ?_, ?_⟩
   · simp only [mem_insert, forall_eq_or_imp, extend_parts, and_iff_left hR₁, htn, hn]
     exact ite_eq_or_eq _ _ _
   · conv in _ ∈ _ => rw [← insert_erase hu₁]
     simp only [and_imp, mem_insert, forall_eq_or_imp, Ne, extend_parts]
-    refine' ⟨_, fun x hx => (card_le_card _).trans <| hR₂ x _⟩
+    refine ⟨?_, fun x hx => (card_le_card ?_).trans <| hR₂ x ?_⟩
     · simp only [filter_insert, if_pos htu, biUnion_insert, mem_erase, id]
       obtain rfl | hut := eq_or_ne u t
-      · rw [sdiff_eq_empty_iff_subset.2 (subset_union_left _ _)]
+      · rw [sdiff_eq_empty_iff_subset.2 subset_union_left]
         exact bot_le
-      refine'
-        (card_le_card fun i => _).trans
+      refine
+        (card_le_card fun i => ?_).trans
           (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
       -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
       simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
         id, not_or]
       exact fun hi₁ hi₂ hi₃ =>
-        ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans <| sdiff_subset _ _⟩
+        ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans sdiff_subset⟩
     · apply sdiff_subset_sdiff Subset.rfl (biUnion_subset_biUnion_of_subset_left _ _)
       exact filter_subset_filter _ (subset_insert _ _)
     simp only [avoid, ofErase, mem_erase, mem_image, bot_eq_empty]
@@ -169,7 +170,7 @@ theorem card_filter_equitabilise_big :
 
 theorem card_filter_equitabilise_small (hm : m ≠ 0) :
     ((P.equitabilise h).parts.filter fun u : Finset α => u.card = m).card = a := by
-  refine' (mul_eq_mul_right_iff.1 <| (add_left_inj (b * (m + 1))).1 _).resolve_right hm
+  refine (mul_eq_mul_right_iff.1 <| (add_left_inj (b * (m + 1))).1 ?_).resolve_right hm
   rw [h, ← (P.equitabilise h).sum_card_parts]
   have hunion :
     (P.equitabilise h).parts =
@@ -180,7 +181,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
   nth_rw 2 [hunion]
   rw [sum_union, sum_const_nat fun x hx => (mem_filter.1 hx).2,
     sum_const_nat fun x hx => (mem_filter.1 hx).2, P.card_filter_equitabilise_big]
-  refine' disjoint_filter_filter' _ _ _
+  refine disjoint_filter_filter' _ _ ?_
   intro x ha hb i h
   apply succ_ne_self m _
   exact (hb i h).symm.trans (ha i h)
@@ -208,9 +209,9 @@ theorem exists_equipartition_card_eq (hn : n ≠ 0) (hs : n ≤ s.card) :
     rw [tsub_mul, mul_add, ← add_assoc,
       tsub_add_cancel_of_le (Nat.mul_le_mul_right _ (mod_lt _ hn).le), mul_one, add_comm,
       mod_add_div]
-  refine'
+  refine
     ⟨(indiscrete (card_pos.1 <| hn.trans_le hs).ne_empty).equitabilise this,
-      equitabilise_isEquipartition, _⟩
+      equitabilise_isEquipartition, ?_⟩
   rw [card_parts_equitabilise _ _ (Nat.div_pos hs hn).ne', tsub_add_cancel_of_le (mod_lt _ hn).le]
 #align finpartition.exists_equipartition_card_eq Finpartition.exists_equipartition_card_eq
 

@@ -53,7 +53,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
 
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
-  refine' ⟨_, fun h => h.map <| Ideal.Quotient.mk I⟩
+  refine ⟨?_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x
   apply Ideal.IsNilpotent.induction_on (R := R) (S := R) I hI <;> clear hI I
   swap

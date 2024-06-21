@@ -21,7 +21,7 @@ Then we define two sorting algorithms:
 
 open List.Perm
 
-universe uu
+universe u
 
 namespace List
 
@@ -32,7 +32,7 @@ namespace List
 
 section Sorted
 
-variable {α : Type uu} {r : α → α → Prop} {a : α} {l : List α}
+variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
 
 /-- `Sorted r l` is the same as `List.Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/
@@ -167,7 +167,7 @@ end Sorted
 
 section Monotone
 
-variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
+variable {n : ℕ} {α : Type u} [Preorder α] {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
@@ -182,7 +182,7 @@ strictly monotone. -/
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
 /-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-@[deprecated sorted_le_ofFn_iff] -- 2023-01-10
+@[deprecated sorted_le_ofFn_iff (since := "2023-01-10")]
 theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
@@ -194,7 +194,7 @@ end Monotone
 
 section sort
 
-variable {α : Type uu} (r : α → α → Prop) [DecidableRel r]
+variable {α : Type u} (r : α → α → Prop) [DecidableRel r]
 
 local infixl:50 " ≼ " => r
 

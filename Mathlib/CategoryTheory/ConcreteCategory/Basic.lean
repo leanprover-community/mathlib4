@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Types
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import category_theory.concrete_category.basic from "leanprover-community/mathlib"@"311ef8c4b4ae2804ea76b8a611bc5ea1d9c16872"
 
@@ -38,11 +36,12 @@ related work.
 -/
 
 
-universe w w' v v' u u'
+universe w w' v v' v'' u u' u''
+
+assert_not_exists CategoryTheory.CommSq
+assert_not_exists CategoryTheory.Adjunction
 
 namespace CategoryTheory
-
-open CategoryTheory.Limits
 
 /-- A concrete category is a category `C` with a fixed faithful functor `Forget : C ⥤ Type`.
 
@@ -95,6 +94,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 -- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 #noalign category_theory.forget_obj_eq_coe
 
+/-- In any concrete category, `(forget C).map` is injective. -/
 abbrev ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
   coe f := (forget C).map f
   coe_injective' _ _ h := (forget C).map_injective h
@@ -146,51 +146,6 @@ theorem ConcreteCategory.congr_arg {X Y : C} (f : X ⟶ Y) {x x' : X} (h : x = x
   congrArg (f : X → Y) h
 #align category_theory.concrete_category.congr_arg CategoryTheory.ConcreteCategory.congr_arg
 
-/-- In any concrete category, injective morphisms are monomorphisms. -/
-theorem ConcreteCategory.mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
-    Mono f :=
-  (forget C).mono_of_mono_map ((mono_iff_injective f).2 i)
-#align category_theory.concrete_category.mono_of_injective CategoryTheory.ConcreteCategory.mono_of_injective
-
-theorem ConcreteCategory.injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
-    [PreservesLimitsOfShape WalkingCospan (forget C)] : Function.Injective f :=
-  (mono_iff_injective ((forget C).map f)).mp inferInstance
-#align category_theory.concrete_category.injective_of_mono_of_preserves_pullback CategoryTheory.ConcreteCategory.injective_of_mono_of_preservesPullback
-
-theorem ConcreteCategory.mono_iff_injective_of_preservesPullback {X Y : C} (f : X ⟶ Y)
-    [PreservesLimitsOfShape WalkingCospan (forget C)] : Mono f ↔ Function.Injective f :=
-  ((forget C).mono_map_iff_mono _).symm.trans (mono_iff_injective _)
-#align category_theory.concrete_category.mono_iff_injective_of_preserves_pullback CategoryTheory.ConcreteCategory.mono_iff_injective_of_preservesPullback
-
-/-- In any concrete category, surjective morphisms are epimorphisms. -/
-theorem ConcreteCategory.epi_of_surjective {X Y : C} (f : X ⟶ Y) (s : Function.Surjective f) :
-    Epi f :=
-  (forget C).epi_of_epi_map ((epi_iff_surjective f).2 s)
-#align category_theory.concrete_category.epi_of_surjective CategoryTheory.ConcreteCategory.epi_of_surjective
-
-theorem ConcreteCategory.surjective_of_epi_of_preservesPushout {X Y : C} (f : X ⟶ Y) [Epi f]
-    [PreservesColimitsOfShape WalkingSpan (forget C)] : Function.Surjective f :=
-  (epi_iff_surjective ((forget C).map f)).mp inferInstance
-#align category_theory.concrete_category.surjective_of_epi_of_preserves_pushout CategoryTheory.ConcreteCategory.surjective_of_epi_of_preservesPushout
-
-theorem ConcreteCategory.epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
-    [PreservesColimitsOfShape WalkingSpan (forget C)] : Epi f ↔ Function.Surjective f :=
-  ((forget C).epi_map_iff_epi _).symm.trans (epi_iff_surjective _)
-#align category_theory.concrete_category.epi_iff_surjective_of_preserves_pushout CategoryTheory.ConcreteCategory.epi_iff_surjective_of_preservesPushout
-
-theorem ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    Function.Bijective ((forget C).map f) := by
-  rw [← isIso_iff_bijective]
-  infer_instance
-#align category_theory.concrete_category.bijective_of_is_iso CategoryTheory.ConcreteCategory.bijective_of_isIso
-
-/-- If the forgetful functor of a concrete category reflects isomorphisms, being an isomorphism
-is equivalent to being bijective. -/
-theorem ConcreteCategory.isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
-    {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective ((forget C).map f) := by
-  rw [← CategoryTheory.isIso_iff_bijective]
-  exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
-
 @[simp]
 theorem ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶ Y) : CoeFun.coe f = f := rfl
 #align category_theory.concrete_category.has_coe_to_fun_Type CategoryTheory.ConcreteCategory.hasCoeToFun_Type
@@ -229,26 +184,6 @@ instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [Concret
   HasForget₂.forget_comp.faithful_of_comp
 #align category_theory.forget₂_faithful CategoryTheory.forget₂_faithful
 
-instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
-    [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
-    (forget₂ C D).PreservesMonomorphisms :=
-  have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
-    simp only [HasForget₂.forget_comp]
-    infer_instance
-  Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
-#align category_theory.forget₂_preserves_monomorphisms CategoryTheory.forget₂_preservesMonomorphisms
-
-instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
-    [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
-    (forget₂ C D).PreservesEpimorphisms :=
-  have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by
-    simp only [HasForget₂.forget_comp]
-    infer_instance
-  Functor.preservesEpimorphisms_of_preserves_of_reflects _ (forget D)
-#align category_theory.forget₂_preserves_epimorphisms CategoryTheory.forget₂_preservesEpimorphisms
-
 instance InducedCategory.concreteCategory {C : Type u} {D : Type u'}
     [Category.{v'} D] [ConcreteCategory.{w} D] (f : C → D) :
       ConcreteCategory (InducedCategory D f) where
@@ -279,11 +214,22 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCatego
     [Category.{v'} D] [ConcreteCategory.{w} D]
     (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) : HasForget₂ C D
-    where
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) :
+    HasForget₂ C D where
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
 #align category_theory.has_forget₂.mk' CategoryTheory.HasForget₂.mk'
+
+/-- Composition of `HasForget₂` instances. -/
+@[reducible]
+def HasForget₂.trans (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C]
+    (D : Type u') [Category.{v'} D] [ConcreteCategory.{w} D]
+    (E : Type u'') [Category.{v''} E] [ConcreteCategory.{w} E]
+    [HasForget₂ C D] [HasForget₂ D E] : HasForget₂ C E where
+  forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
+  forget_comp := by
+    show (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
+    simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
     it is prone to creating type class resolution loops. -/
@@ -292,5 +238,11 @@ def hasForgetToType (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
   forget₂ := forget C
   forget_comp := Functor.comp_id _
 #align category_theory.has_forget_to_Type CategoryTheory.hasForgetToType
+
+@[simp]
+lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] [ConcreteCategory D]
+    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) :
+    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
+  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
 
 end CategoryTheory

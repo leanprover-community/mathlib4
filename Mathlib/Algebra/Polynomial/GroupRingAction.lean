@@ -3,9 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 
@@ -81,7 +81,7 @@ theorem smul_eval [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
 end Polynomial
 
 section CommRing
-set_option linter.uppercaseLean3 false  -- Porting note: `prod_X_*`
+set_option linter.uppercaseLean3 false
 
 variable (G : Type*) [Group G] [Fintype G]
 variable (R : Type*) [CommRing R] [MulSemiringAction G R]

@@ -71,7 +71,7 @@ theorem inner_left_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) 
 
 /-- A vector is in `(𝕜 ∙ u)ᗮ` iff it is orthogonal to `u`. -/
 theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 := by
-  refine' ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), _⟩
+  refine ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), ?_⟩
   intro hv w hw
   rw [mem_span_singleton] at hw
   obtain ⟨c, rfl⟩ := hw
@@ -199,8 +199,8 @@ theorem bot_orthogonal_eq_top : (⊥ : Submodule 𝕜 E)ᗮ = ⊤ := by
 
 @[simp]
 theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
-  refine'
-    ⟨_, by
+  refine
+    ⟨?_, by
       rintro rfl
       exact bot_orthogonal_eq_top⟩
   intro h

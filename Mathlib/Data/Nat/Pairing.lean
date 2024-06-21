@@ -3,8 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Data.Set.Lattice
 
 #align_import data.nat.pairing from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -24,6 +24,7 @@ It has the advantage of being monotone in both directions and sending `⟦0, n^2
 `⟦0, n - 1⟧²`.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Prod Decidable Function
 
@@ -195,8 +196,6 @@ end CompleteLattice
 
 namespace Set
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     ⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd = (⋃ n, s n) ×ˢ ⋃ n, t n := by
   rw [← Set.iUnion_prod]

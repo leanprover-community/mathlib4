@@ -495,7 +495,7 @@ def closedsEmbedding (R : Type*) [CommSemiring R] :
 #align prime_spectrum.closeds_embedding PrimeSpectrum.closedsEmbedding
 
 theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField R := by
-  refine' ⟨_, fun h => _⟩
+  refine ⟨?_, fun h => ?_⟩
   · intro h
     have hbot : Ideal.IsPrime (⊥ : Ideal R) := Ideal.bot_prime
     exact
@@ -504,7 +504,7 @@ theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField
           (Ring.ne_bot_of_isMaximal_of_not_isField <|
             (isClosed_singleton_iff_isMaximal _).1 (T1Space.t1 ⟨⊥, hbot⟩))
           (by aesop))
-  · refine' ⟨fun x => (isClosed_singleton_iff_isMaximal x).2 _⟩
+  · refine ⟨fun x => (isClosed_singleton_iff_isMaximal x).2 ?_⟩
     by_cases hx : x.asIdeal = ⊥
     · letI := h.toSemifield
       exact hx.symm ▸ Ideal.bot_isMaximal
@@ -530,7 +530,7 @@ theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) 
       constructor
       · simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ←
           Ideal.span_singleton_mul_span_singleton]
-        refine' fun h x y h' => h _ _ _
+        refine fun h x y h' => h _ _ ?_
         rw [← hI.radical_le_iff] at h' ⊢
         simpa only [Ideal.radical_inf, Ideal.radical_mul] using h'
       · simp_rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
@@ -687,11 +687,11 @@ theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) wh
       ← @isClosed_compl_iff (PrimeSpectrum S)
         ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
       isClosed_iff_zeroLocus]
-    refine' fun s =>
+    refine fun s =>
       ⟨fun ⟨F, hF⟩ =>
         ⟨zeroLocus (f ⁻¹' F), ⟨f ⁻¹' F, rfl⟩, by
           rw [preimage_comap_zeroLocus, Function.Surjective.image_preimage hf, hF]⟩,
-        _⟩
+        ?_⟩
     rintro ⟨-, ⟨F, rfl⟩, hF⟩
     exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
 #align prime_spectrum.comap_inducing_of_surjective PrimeSpectrum.comap_inducing_of_surjective
@@ -721,27 +721,27 @@ theorem comap_singleton_isClosed_of_surjective (f : R →+* S) (hf : Function.Su
 theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegral)
     (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
     IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
+  have := (isClosed_singleton_iff_isMaximal x).1 hx
   (isClosed_singleton_iff_isMaximal _).2
-    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal <|
-      (isClosed_singleton_iff_isMaximal x).1 hx)
+    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal)
 #align prime_spectrum.comap_singleton_is_closed_of_is_integral PrimeSpectrum.comap_singleton_isClosed_of_isIntegral
 
 theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
     comap f '' zeroLocus I = zeroLocus (I.comap f) := by
   simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
-  refine' fun p => ⟨_, fun h_I_p => _⟩
+  refine fun p => ⟨?_, fun h_I_p => ?_⟩
   · rintro ⟨p, hp, rfl⟩ a ha
     exact hp ha
   · have hp : ker f ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
-    refine' ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx => _, _⟩
+    refine ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx => ?_, ?_⟩
     · obtain ⟨x', rfl⟩ := hf x
       exact Ideal.mem_map_of_mem f (h_I_p hx)
     · ext x
       rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
-      refine' ⟨_, fun hx => ⟨x, hx, rfl⟩⟩
+      refine ⟨?_, fun hx => ⟨x, hx, rfl⟩⟩
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
-      refine' p.asIdeal.sub_mem hx' (hp _)
+      refine p.asIdeal.sub_mem hx' (hp ?_)
       rwa [mem_ker, map_sub, sub_eq_zero]
 #align prime_spectrum.image_comap_zero_locus_eq_zero_locus_comap PrimeSpectrum.image_comap_zeroLocus_eq_zeroLocus_comap
 
@@ -839,7 +839,7 @@ theorem isTopologicalBasis_basic_opens :
   · rintro p U hp ⟨s, hs⟩
     rw [← compl_compl U, Set.mem_compl_iff, ← hs, mem_zeroLocus, Set.not_subset] at hp
     obtain ⟨f, hfs, hfp⟩ := hp
-    refine' ⟨basicOpen f, ⟨f, rfl⟩, hfp, _⟩
+    refine ⟨basicOpen f, ⟨f, rfl⟩, hfp, ?_⟩
     rw [← Set.compl_subset_compl, ← hs, basicOpen_eq_zeroLocus_compl, compl_compl]
     exact zeroLocus_anti_mono (Set.singleton_subset_iff.mpr hfs)
 #align prime_spectrum.is_topological_basis_basic_opens PrimeSpectrum.isTopologicalBasis_basic_opens
@@ -884,6 +884,10 @@ theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectru
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
   exact isCompact_range (map_continuous _)
 #align prime_spectrum.is_compact_basic_open PrimeSpectrum.isCompact_basicOpen
+
+lemma comap_basicOpen (f : R →+* S) (x : R) :
+    TopologicalSpace.Opens.comap (comap f) (basicOpen x) = basicOpen (f x) :=
+  rfl
 
 end BasicOpen
 

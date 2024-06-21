@@ -34,7 +34,7 @@ We also define completed versions of these functions with nicer functional equat
 modified versions with a subscript `0`, which are entire functions differing from the above by
 multiples of `1 / s` and `1 / (1 - s)`.
 
-## Main definitions and theorems
+## Main definitions and theorems
 * `hurwitzZetaEven` and `cosZeta`: the zeta functions
 * `completedHurwitzZetaEven` and `completedCosZeta`: completed variants
 * `differentiableAt_hurwitzZetaEven` and `differentiableAt_cosZeta`:
@@ -47,6 +47,8 @@ multiples of `1 / s` and `1 / (1 - s)`.
 noncomputable section
 
 open Complex Filter Topology Asymptotics Real Set Classical MeasureTheory
+
+namespace HurwitzZeta
 
 section kernel_defs
 /-!
@@ -95,8 +97,7 @@ lemma cosKernel_def (a x : ℝ) : ↑(cosKernel ↑a x) = jacobiTheta₂ a (I * 
 
 lemma cosKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : cosKernel a x = 0 := by
   induction' a using QuotientAddGroup.induction_on' with a'
-  rw [← ofReal_inj, cosKernel_def, jacobiTheta₂_undef, ofReal_zero]
-  rwa [I_mul_im, ofReal_re]
+  rw [← ofReal_inj, cosKernel_def, jacobiTheta₂_undef _ (by rwa [I_mul_im, ofReal_re]), ofReal_zero]
 
 /-- For `a = 0`, both kernels agree. -/
 lemma evenKernel_eq_cosKernel_of_zero : evenKernel 0 = cosKernel 0 := by
@@ -174,7 +175,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     ring_nf
     simp only [I_sq, mul_neg, neg_mul, mul_one]
   simp only [this]
-  exact (hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])).mul_left _
+  apply (hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])).mul_left
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t)) ↑(cosKernel a t) := by
@@ -186,7 +187,7 @@ lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     ring_nf
     simp only [I_sq, mul_neg, neg_mul, mul_one, sub_eq_add_neg]
   simp only [this]
-  exact hasSum_jacobiTheta₂_term a (by rwa [I_mul_im, ofReal_re] : 0 < im (I * t))
+  exact hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])
 
 /-- Modified version of `hasSum_int_evenKernel` omitting the constant term at `∞`. -/
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
@@ -237,7 +238,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 `a = 0` and `L = 0` otherwise. -/
 lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
     (evenKernel a · - (if a = 0 then 1 else 0)) =O[atTop] (rexp <| -p * ·) := by
-  obtain ⟨b, _, rfl⟩ := a.eq_coe_Ico
+  induction' a using QuotientAddGroup.induction_on with b
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_zero_sub b
   refine ⟨p, hp, (EventuallyEq.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
@@ -545,7 +546,8 @@ lemma hasSum_nat_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℤ ↦ Gammaℝ s / (↑|n + a| : ℂ) ^ s / 2) (completedHurwitzZetaEven a s) := by
   have hF (t : ℝ) (ht : 0 < t) : HasSum (fun n : ℤ ↦ if n + a = 0 then 0
-      else (1 / 2 : ℂ) * rexp (-π * (n + a) ^ 2 * t)) ((evenKernel a t - _) / 2) := by
+      else (1 / 2 : ℂ) * rexp (-π * (n + a) ^ 2 * t))
+      ((evenKernel a t - (if (a : UnitAddCircle) = 0 then 1 else 0 : ℝ)) / 2) := by
     refine (ofReal_sub .. ▸ (hasSum_ofReal.mpr (hasSum_int_evenKernel₀ a ht)).div_const
       2).congr_fun fun n ↦ ?_
     split_ifs
@@ -802,3 +804,5 @@ lemma cosZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
     hurwitzZetaEven_def_of_ne_or_ne (Or.inr (by simpa using hs 1))]
   generalize Gammaℂ s * cos (π * s / 2) = A -- speeds up ring_nf call
   ring_nf
+
+end HurwitzZeta

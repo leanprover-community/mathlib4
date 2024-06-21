@@ -111,8 +111,9 @@ theorem lcm_mono (h : s₁ ⊆ s₂) : s₁.lcm f ∣ s₂.lcm f :=
   lcm_dvd fun _ hb ↦ dvd_lcm (h hb)
 #align finset.lcm_mono Finset.lcm_mono
 
-theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) : (s.image g).lcm f = s.lcm (f ∘ g) :=
-  by classical induction' s using Finset.induction with c s _ ih <;> simp [*]
+theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
+    (s.image g).lcm f = s.lcm (f ∘ g) := by
+  classical induction' s using Finset.induction with c s _ ih <;> simp [*]
 #align finset.lcm_image Finset.lcm_image
 
 theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
@@ -199,8 +200,9 @@ theorem gcd_mono (h : s₁ ⊆ s₂) : s₂.gcd f ∣ s₁.gcd f :=
   dvd_gcd fun _ hb ↦ gcd_dvd (h hb)
 #align finset.gcd_mono Finset.gcd_mono
 
-theorem gcd_image [DecidableEq β] {g : γ → β} (s : Finset γ) : (s.image g).gcd f = s.gcd (f ∘ g) :=
-  by classical induction' s using Finset.induction with c s _ ih <;> simp [*]
+theorem gcd_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
+    (s.image g).gcd f = s.gcd (f ∘ g) := by
+  classical induction' s using Finset.induction with c s _ ih <;> simp [*]
 #align finset.gcd_image Finset.gcd_image
 
 theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
@@ -229,9 +231,9 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     trans ((s.filter fun x ↦ f x = 0) ∪ s.filter fun x ↦ (f x ≠ 0)).gcd f
     · rw [filter_union_filter_neg_eq]
     rw [gcd_union]
-    refine' Eq.trans (_ : _ = GCDMonoid.gcd (0 : α) _) (_ : GCDMonoid.gcd (0 : α) _ = _)
+    refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
     · exact (gcd (filter (fun x => (f x ≠ 0)) s) f)
-    · refine' congr (congr rfl <| s.induction_on _ _) (by simp)
+    · refine congr (congr rfl <| s.induction_on ?_ ?_) (by simp)
       · simp
       · intro a s _ h
         rw [filter_insert]
@@ -241,7 +243,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
 
 nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
   classical
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     · intro b t _ h
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_left]
@@ -250,7 +252,7 @@ nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a *
 
 nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
   classical
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     · intro b t _ h
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_right]
@@ -269,12 +271,12 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     ∃ g : β → α, (∀ b ∈ s, f b = s.gcd f * g b) ∧ s.gcd g = 1 := by
   classical
     by_cases h : ∀ x ∈ s, f x = (0 : α)
-    · refine' ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], _⟩
+    · refine ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], ?_⟩
       rw [gcd_eq_gcd_image, image_const hs, gcd_singleton, id, normalize_one]
     · choose g' hg using @gcd_dvd _ _ _ _ s f
       push_neg at h
-      refine' ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ _,
-          extract_gcd' f _ h fun b hb ↦ _⟩
+      refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
+          extract_gcd' f _ h fun b hb ↦ ?_⟩
       · simp only [hb, hg, dite_true]
       rw [dif_pos hb, hg hb]
 #align finset.extract_gcd Finset.extract_gcd
@@ -285,7 +287,7 @@ variable [Div α] [MulDivCancelClass α] {f : ι → α} {s : Finset ι} {i : ι
 then the `gcd` of `(f i) / d` is equal to `1`. -/
 lemma gcd_div_eq_one (his : i ∈ s) (hfi : f i ≠ 0) : s.gcd (fun j ↦ f j / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨i, his⟩
-  refine' (Finset.gcd_congr rfl fun a ha ↦ _).trans hg
+  refine (Finset.gcd_congr rfl fun a ha ↦ ?_).trans hg
   rw [he a ha, mul_div_cancel_left₀]
   exact mt Finset.gcd_eq_zero_iff.1 fun h ↦ hfi <| h i his
 #align finset.nat.gcd_div_eq_one Finset.gcd_div_eq_one
@@ -313,7 +315,7 @@ theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) := by
   classical
     revert h
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     intro b s _ hi h
     rw [gcd_insert, gcd_insert, gcd_comm (f b), ← gcd_assoc,

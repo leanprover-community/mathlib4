@@ -154,8 +154,7 @@ theorem lie_skew : -⁅y, x⁆ = ⁅x, y⁆ := by
 #align lie_skew lie_skew
 
 /-- Every Lie algebra is a module over itself. -/
-instance lieAlgebraSelfModule : LieModule R L L
-    where
+instance lieAlgebraSelfModule : LieModule R L L where
   smul_lie t x m := by rw [← lie_skew, ← lie_skew x m, LieAlgebra.lie_smul, smul_neg]
   lie_smul := by apply LieAlgebra.lie_smul
 #align lie_algebra_self_module lieAlgebraSelfModule
@@ -247,8 +246,7 @@ theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = �
   rfl
 #align lie_hom.lie_apply LieHom.lie_apply
 
-instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N)
-    where
+instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N) where
   smul_lie t x f := by
     ext n
     simp only [smul_sub, smul_lie, LinearMap.smul_apply, LieHom.lie_apply, LinearMap.map_smul]

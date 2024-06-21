@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Tactic.Common
 
 #align_import group_theory.perm.basic from "leanprover-community/mathlib"@"b86832321b586c6ac23ef8cdef6a7a27e42b13bd"
 
@@ -25,14 +26,21 @@ variable {α : Type u} {β : Type v}
 
 namespace Perm
 
+instance instOne : One (Perm α) where one := Equiv.refl _
+instance instMul : Mul (Perm α) where mul f g := Equiv.trans g f
+instance instInv : Inv (Perm α) where inv := Equiv.symm
+instance instPowNat : Pow (Perm α) ℕ where
+  pow f n := ⟨f^[n], f.symm^[n], f.left_inv.iterate _, f.right_inv.iterate _⟩
+
 instance permGroup : Group (Perm α) where
-  mul f g := Equiv.trans g f
-  one := Equiv.refl α
-  inv := Equiv.symm
   mul_assoc f g h := (trans_assoc _ _ _).symm
   one_mul := trans_refl
   mul_one := refl_trans
   mul_left_inv := self_trans_symm
+  npow n f := f ^ n
+  npow_succ n f := coe_fn_injective $ Function.iterate_succ _ _
+  zpow := zpowRec fun n f ↦ f ^ n
+  zpow_succ' n f := coe_fn_injective $ Function.iterate_succ _ _
 #align equiv.perm.perm_group Equiv.Perm.permGroup
 
 @[simp]
@@ -100,11 +108,10 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 @[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
 #align equiv.perm.coe_mul Equiv.Perm.coe_mul
 
-@[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+@[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 #align equiv.perm.coe_pow Equiv.Perm.coe_pow
 
-@[simp] lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := (coe_pow _ _).symm
+@[simp] lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
 #align equiv.perm.iterate_eq_pow Equiv.Perm.iterate_eq_pow
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=

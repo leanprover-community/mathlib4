@@ -72,8 +72,8 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       fun h => h ^ 2 := by
   -- it suffices to check that the expression is bounded by `ε * ((‖v‖ + ‖w‖) * ‖w‖) * h^2` for
   -- small enough `h`, for any positive `ε`.
-  refine' IsLittleO.trans_isBigO
-    (isLittleO_iff.2 fun ε εpos => _) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
+  refine IsLittleO.trans_isBigO
+    (isLittleO_iff.2 fun ε εpos => ?_) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
   -- consider a ball of radius `δ` around `x` in which the Taylor approximation for `f''` is
   -- good up to `δ`.
   rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff] at hx
@@ -112,7 +112,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   have g_deriv : ∀ t ∈ Icc (0 : ℝ) 1, HasDerivWithinAt g (g' t) (Icc 0 1) t := by
     intro t ht
     apply_rules [HasDerivWithinAt.sub, HasDerivWithinAt.add]
-    · refine' (hf _ _).comp_hasDerivWithinAt _ _
+    · refine (hf _ ?_).comp_hasDerivWithinAt _ ?_
       · exact xt_mem t ht
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.const_add, HasDerivAt.smul_const,
         hasDerivAt_mul_const]
@@ -147,7 +147,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       _ ≤ ε * ‖h • v + (t * h) • w‖ * ‖h • w‖ := by
         apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
         have H : x + h • v + (t * h) • w ∈ Metric.ball x δ ∩ interior s := by
-          refine' ⟨_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
+          refine ⟨?_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
           rw [add_assoc, add_mem_ball_iff_norm]
           exact I.trans_lt hδ
         simpa only [mem_setOf_eq, add_assoc x, add_sub_cancel_left] using sδ H
@@ -270,7 +270,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : x + (4 : ℝ) • (z + (0 : ℝ) • m) = y := by simp [hz]
     rw [← this]
-    refine' tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add _
+    refine tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add ?_
     exact continuousAt_id.smul continuousAt_const
   have B : ∀ m : E, ∀ᶠ t in 𝓝[>] (0 : ℝ), x + (4 : ℝ) • (z + t • m) ∈ interior s := by
     intro m

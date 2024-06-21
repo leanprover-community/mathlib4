@@ -25,7 +25,7 @@ noncomputable section
 
 open Finsupp Finset AddMonoidAlgebra
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -44,10 +44,7 @@ theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q
   exact Finsupp.add_apply _ _ _
 #align polynomial.coeff_add Polynomial.coeff_add
 
-set_option linter.deprecated false in
-@[simp]
-theorem coeff_bit0 (p : R[X]) (n : ℕ) : coeff (bit0 p) n = bit0 (coeff p n) := by simp [bit0]
-#align polynomial.coeff_bit0 Polynomial.coeff_bit0
+#noalign polynomial.coeff_bit0
 
 @[simp]
 theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
@@ -76,8 +73,7 @@ theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.suppor
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
 def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
-    (f : ℕ → A →ₗ[R] M) : A[X] →ₗ[R] M
-    where
+    (f : ℕ → A →ₗ[R] M) : A[X] →ₗ[R] M where
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
@@ -106,9 +102,17 @@ theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
 
 @[simp]
 theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
-    coeff (∑ b in s, f b) n = ∑ b in s, coeff (f b) n :=
+    coeff (∑ b ∈ s, f b) n = ∑ b ∈ s, coeff (f b) n :=
   map_sum (lcoeff R n) _ _
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
+
+lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
+    l.sum.coeff n = (l.map (lcoeff R n)).sum :=
+  map_list_sum (lcoeff R n) _
+
+lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) :
+    (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
+  simp_rw [coeff_list_sum, List.map_map, Function.comp, lcoeff_apply]
 
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
@@ -121,7 +125,7 @@ theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
 by using `Finset.Nat.sum_antidiagonal_eq_sum_range_succ`. -/
 theorem coeff_mul (p q : R[X]) (n : ℕ) :
-    coeff (p * q) n = ∑ x in antidiagonal n, coeff p x.1 * coeff q x.2 := by
+    coeff (p * q) n = ∑ x ∈ antidiagonal n, coeff p x.1 * coeff q x.2 := by
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp_rw [← ofFinsupp_mul, coeff]
   exact AddMonoidAlgebra.mul_apply_antidiagonal p q n _ Finset.mem_antidiagonal
@@ -263,15 +267,16 @@ theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
 #align polynomial.coeff_mul_X_pow Polynomial.coeff_mul_X_pow
 
 @[simp]
-theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) : coeff (Polynomial.X ^ n * p) (d + n) = coeff p d :=
-  by rw [(commute_X_pow p n).eq, coeff_mul_X_pow]
+theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :
+    coeff (Polynomial.X ^ n * p) (d + n) = coeff p d := by
+  rw [(commute_X_pow p n).eq, coeff_mul_X_pow]
 #align polynomial.coeff_X_pow_mul Polynomial.coeff_X_pow_mul
 
 theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :
     (p * X ^ n).coeff d = ite (n ≤ d) (p.coeff (d - n)) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 #align polynomial.coeff_mul_X_pow' Polynomial.coeff_mul_X_pow'
@@ -355,7 +360,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
     choose c hc using h
     classical
       let c' : ℕ → R := fun i => if i ∈ φ.support then c i else 0
-      let ψ : R[X] := ∑ i in φ.support, monomial i (c' i)
+      let ψ : R[X] := ∑ i ∈ φ.support, monomial i (c' i)
       use ψ
       ext i
       simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
@@ -366,17 +371,8 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
         rwa [mul_zero]
 #align polynomial.C_dvd_iff_dvd_coeff Polynomial.C_dvd_iff_dvd_coeff
 
-set_option linter.deprecated false in
-theorem coeff_bit0_mul (P Q : R[X]) (n : ℕ) : coeff (bit0 P * Q) n = 2 * coeff (P * Q) n := by
-  -- Porting note: `two_mul` is required.
-  simp [bit0, add_mul, two_mul]
-#align polynomial.coeff_bit0_mul Polynomial.coeff_bit0_mul
-
-set_option linter.deprecated false in
-theorem coeff_bit1_mul (P Q : R[X]) (n : ℕ) :
-    coeff (bit1 P * Q) n = 2 * coeff (P * Q) n + coeff Q n := by
-  simp [bit1, add_mul, coeff_bit0_mul]
-#align polynomial.coeff_bit1_mul Polynomial.coeff_bit1_mul
+#noalign polynomial.coeff_bit0_mul
+#noalign polynomial.coeff_bit1_mul
 
 theorem smul_eq_C_mul (a : R) : a • p = C a * p := by simp [ext_iff]
 #align polynomial.smul_eq_C_mul Polynomial.smul_eq_C_mul
@@ -396,6 +392,9 @@ theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff
   simp only [coeff_natCast_ite, ite_true]
 #align polynomial.nat_cast_coeff_zero Polynomial.natCast_coeff_zero
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_coeff_zero := natCast_coeff_zero
+
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
@@ -407,10 +406,16 @@ theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     rfl
 #align polynomial.nat_cast_inj Polynomial.natCast_inj
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_inj := natCast_inj
+
 @[simp]
 theorem intCast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
   cases i <;> simp
 #align polynomial.int_cast_coeff_zero Polynomial.intCast_coeff_zero
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_coeff_zero := intCast_coeff_zero
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
@@ -421,6 +426,9 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
   · rintro rfl
     rfl
 #align polynomial.int_cast_inj Polynomial.intCast_inj
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_inj := intCast_inj
 
 end cast
 

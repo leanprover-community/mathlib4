@@ -255,8 +255,7 @@ theorem ad_conj {R : Type*} [Rack R] (x y : R) : act' (x ◃ y) = act' x * act' 
 
 /-- The opposite rack, swapping the roles of `◃` and `◃⁻¹`.
 -/
-instance oppositeRack : Rack Rᵐᵒᵖ
-    where
+instance oppositeRack : Rack Rᵐᵒᵖ where
   act x y := op (invAct (unop x) (unop y))
   self_distrib := by
     intro x y z
@@ -321,8 +320,7 @@ theorem self_invAct_eq_iff_eq {x y : R} : x ◃⁻¹ x = y ◃⁻¹ y ↔ x = y 
 /-- The map `x ↦ x ◃ x` is a bijection.  (This has applications for the
 regular isotopy version of the Reidemeister I move for knot diagrams.)
 -/
-def selfApplyEquiv (R : Type*) [Rack R] : R ≃ R
-    where
+def selfApplyEquiv (R : Type*) [Rack R] : R ≃ R where
   toFun x := x ◃ x
   invFun x := x ◃⁻¹ x
   left_inv x := by simp
@@ -382,8 +380,7 @@ instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=
 #align shelf_hom.inhabited ShelfHom.inhabited
 
 /-- The composition of shelf homomorphisms -/
-def comp (g : S₂ →◃ S₃) (f : S₁ →◃ S₂) : S₁ →◃ S₃
-    where
+def comp (g : S₂ →◃ S₃) (f : S₁ →◃ S₂) : S₁ →◃ S₃ where
   toFun := g.toFun ∘ f.toFun
   map_act' := by simp
 #align shelf_hom.comp ShelfHom.comp
@@ -430,8 +427,7 @@ the corresponding inner automorphism.
 abbrev Conj (G : Type*) := G
 #align quandle.conj Quandle.Conj
 
-instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G)
-    where
+instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G) where
   act x := @MulAut.conj G _ x
   self_distrib := by
     intro x y z
@@ -458,8 +454,7 @@ theorem conj_swap {G : Type*} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x
 
 /-- `Conj` is functorial
 -/
-def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G →◃ Conj H
-    where
+def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G →◃ Conj H where
   toFun := f
   map_act' := by simp
 #align quandle.conj.map Quandle.Conj.map
@@ -489,8 +484,7 @@ theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAc
   simp
 #align quandle.dihedral_act.inv Quandle.dihedralAct.inv
 
-instance (n : ℕ) : Quandle (Dihedral n)
-    where
+instance (n : ℕ) : Quandle (Dihedral n) where
   act := dihedralAct n
   self_distrib := by
     intro x y z
@@ -511,8 +505,7 @@ namespace Rack
 /-- This is the natural rack homomorphism to the conjugation quandle of the group `R ≃ R`
 that acts on the rack.
 -/
-def toConj (R : Type*) [Rack R] : R →◃ Quandle.Conj (R ≃ R)
-    where
+def toConj (R : Type*) [Rack R] : R →◃ Quandle.Conj (R ≃ R) where
   toFun := act'
   map_act' := by
     intro x y
@@ -653,8 +646,7 @@ theorem PreEnvelGroupRel.trans {R : Type u} [Rack R] {a b c : PreEnvelGroup R} :
   | ⟨rab⟩, ⟨rbc⟩ => (rab.trans rbc).rel
 #align rack.pre_envel_group_rel.trans Rack.PreEnvelGroupRel.trans
 
-instance PreEnvelGroup.setoid (R : Type*) [Rack R] : Setoid (PreEnvelGroup R)
-    where
+instance PreEnvelGroup.setoid (R : Type*) [Rack R] : Setoid (PreEnvelGroup R) where
   r := PreEnvelGroupRel R
   iseqv := by
     constructor
@@ -670,8 +662,7 @@ def EnvelGroup (R : Type*) [Rack R] :=
 
 -- Define the `Group` instances in two steps so `inv` can be inferred correctly.
 -- TODO: is there a non-invasive way of defining the instance directly?
-instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R)
-    where
+instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul a b :=
     Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun a b a' b' ⟨ha⟩ ⟨hb⟩ =>
       Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
@@ -695,8 +686,7 @@ instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
 /-- The canonical homomorphism from a rack to its enveloping group.
 Satisfies universal properties given by `toEnvelGroup.map` and `toEnvelGroup.univ`.
 -/
-def toEnvelGroup (R : Type*) [Rack R] : R →◃ Quandle.Conj (EnvelGroup R)
-    where
+def toEnvelGroup (R : Type*) [Rack R] : R →◃ Quandle.Conj (EnvelGroup R) where
   toFun x := ⟦incl x⟧
   map_act' := @fun x y => Quotient.sound (PreEnvelGroupRel'.act_incl x y).symm.rel
 #align rack.to_envel_group Rack.toEnvelGroup
@@ -740,8 +730,7 @@ end toEnvelGroup.mapAux
 More precisely, the `EnvelGroup` functor is left adjoint to `Quandle.Conj`.
 -/
 def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
-    (R →◃ Quandle.Conj G) ≃ (EnvelGroup R →* G)
-    where
+    (R →◃ Quandle.Conj G) ≃ (EnvelGroup R →* G) where
   toFun f :=
     { toFun := fun x =>
         Quotient.liftOn x (toEnvelGroup.mapAux f) fun a b ⟨hab⟩ =>
