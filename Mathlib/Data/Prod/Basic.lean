@@ -18,8 +18,6 @@ It also defines better delaborators for product projections.
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
-@[simp]
-theorem Prod.map_apply (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) := rfl
 #align prod_map Prod.map_apply
 
 @[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
