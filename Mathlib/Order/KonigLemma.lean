@@ -3,10 +3,8 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Order.Atoms
-import Mathlib.Order.WellFounded
-import Mathlib.Data.Set.Finite
 import Mathlib.Data.Finite.Set
+import Mathlib.Order.Atoms.Finite
 
 /-!
 # Kőnig's infinity lemma
@@ -17,7 +15,7 @@ It has links to computability and proof theory, and
 is often applied when the graph is a tree whose vertices encode some other types of object.
 
 For applications of this form, it is convenient to state the lemma
-in terms of covers in a well-founded order rather than a graph;
+in terms of covers in a strongly atomic order rather than a graph;
 in this setting, the proof is almost trivial.
 In this file, we prove the lemma in this order-theoretic way,
 and also give a formulation that is convenient for applications in Ramsey theory.
@@ -25,13 +23,13 @@ We defer the graph-theoretic version of the statement for future work.
 
 ## Main Results
 
-* `exists_seq_covby_of_forall_covby_finite` : Kőnig's lemma for well-founded orders.
+* `exists_seq_covby_of_forall_covby_finite` : Kőnig's lemma for strongly atomic orders.
 
 * `exists_orderEmbedding_covby_of_forall_covby_finite` : Kőnig's lemma, where the sequence
     is given as an `OrderEmbedding` instead of a function.
 
 * `exist_seq_forall_proj_of_forall_finite` : Kőnig's lemma applied to an order on a sigma-type
-  `(i : ℕ) × (α i)`. Useful for applications in Ramsey theory.
+  `(i : ℕ) × α i`. Useful for applications in Ramsey theory.
 
 ## TODO
 
@@ -40,38 +38,40 @@ Actually formulate the lemma as a statement about graphs.
 -/
 
 open Set
+section Sequence
 
 variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {a b : α}
 
-theorem exists_covby_infinite_Ici_of_infinite_Ici (ha : (Ici a).Infinite)
-    (hfin : {x | a ⋖ x}.Finite) : ∃ b, a ⋖ b ∧ (Ici b).Infinite := by
-  by_contra! h
-  refine ((hfin.biUnion (t := Ici) (by simpa using h)).subset (fun b hb ↦ ?_)).not_infinite
-    (ha.diff (finite_singleton a))
-  obtain ⟨x, hax, hxb⟩ := (hb.1.lt_of_ne (Ne.symm hb.2)).exists_covby_le
-  exact mem_biUnion hax hxb
-
 /-- The sequence proving the infinity lemma: each term is a pair `⟨a,h⟩`,
 where `h` is a proof that `Ici a` is infinite, and `a` covers the previous term. -/
-noncomputable def konigSeq [OrderBot α] [Infinite α] (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
-    (n : ℕ) : {a : α // (Ici a).Infinite } := match n with
-  | 0    => ⟨⊥, by simp only [Ici_bot, infinite_univ]⟩
-  | n+1  => let p := konigSeq hfin n
+noncomputable def konigSeq (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) (hb : (Ici b).Infinite) :
+    ℕ → {a : α // (Ici a).Infinite}
+  | 0    => ⟨b, hb⟩
+  | n+1  => let p := konigSeq hfin hb n
     ⟨_, ((exists_covby_infinite_Ici_of_infinite_Ici p.2 (hfin p.1)).choose_spec).2⟩
 
-/-- **Kőnig's infinity lemma** : if each element in an infinite well-founded order with minimum
-is covered by only finitely many terms,
-then there is an infinite sequence in which each element is covered by the next. -/
-theorem exists_seq_covby_of_forall_covby_finite [OrderBot α] [Infinite α]
-    (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) : ∃ f : ℕ → α, f 0 = ⊥ ∧ ∀ i, f i ⋖ f (i+1) :=
-  ⟨fun i ↦ konigSeq hfin i, rfl, fun i ↦
-    (exists_covby_infinite_Ici_of_infinite_Ici ((konigSeq hfin i).2 ) (hfin _)).choose_spec.1⟩
+/-- **Kőnig's infinity lemma** : if each element in an infinite strongly atomic order
+is covered by only finitely many others, and `b` is an element with infinitely many things above it,
+then there is a sequence starting with `b` in which each element is covered by the next. -/
+theorem exists_seq_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
+    (hb : (Ici b).Infinite) : ∃ f : ℕ → α, f 0 = b ∧ ∀ i, f i ⋖ f (i+1) :=
+  ⟨fun i ↦ konigSeq hfin hb i, rfl, fun i ↦
+    (exists_covby_infinite_Ici_of_infinite_Ici ((konigSeq hfin hb i).2 ) (hfin _)).choose_spec.1⟩
 
 /-- The sequence given by Kőnig's lemma as an order embedding -/
-theorem exists_orderEmbedding_covby_of_forall_covby_finite [OrderBot α] [Infinite α]
-    (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) : ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ ∀ i, f i ⋖ f (i+1) := by
-  obtain ⟨f, hf⟩ := exists_seq_covby_of_forall_covby_finite hfin
+theorem exists_orderEmbedding_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
+    (hb : (Ici b).Infinite) : ∃ f : ℕ ↪o α, f 0 = b ∧ ∀ i, f i ⋖ f (i+1) := by
+  obtain ⟨f, hf⟩ := exists_seq_covby_of_forall_covby_finite hfin hb
   exact ⟨OrderEmbedding.ofStrictMono f (strictMono_nat_of_lt_succ (fun i ↦ (hf.2 i).lt)), hf⟩
+
+/-- A version of Kőnig's lemma where the sequence starts at the minimum of an infinite order.  -/
+theorem exists_orderEmbedding_covby_of_forall_covby_finite_of_bot [OrderBot α] [Infinite α]
+    (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) : ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ ∀ i, f i ⋖ f (i+1) :=
+  exists_orderEmbedding_covby_of_forall_covby_finite hfin (by simpa using infinite_univ)
+
+end Sequence
+
+section Graded
 
 /-- A formulation of Kőnig's infinity lemma, useful in applications.
 Given a sequence `α 0, α 1, ...` of nonempty types with `α 0` a subsingleton,
@@ -88,10 +88,10 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsinglet
     [∀ i, Nonempty (α i)] (π : {i j : ℕ} → (hij : i ≤ j) → α j → α i)
     (π_trans : ∀ ⦃i j k⦄ (hij : i ≤ j) (hjk : j ≤ k) a, (π hij) (π hjk a) = π (hij.trans hjk) a)
     (π_refl : ∀ ⦃i⦄ (a : α i), π rfl.le a = a)
-    (hfin : ∀ i a, {b : α (i+1) | π (Nat.le_add_right i 1) b = a}.Finite ):
-    ∃ f : (i : ℕ) → (α i), ∀ ⦃i j⦄ (hij : i ≤ j), π hij (f j) = f i := by
+    (hfin : ∀ i a, {b : α (i+1) | π (Nat.le_add_right i 1) b = a}.Finite ) :
+    ∃ f : (i : ℕ) → α i, ∀ ⦃i j⦄ (hij : i ≤ j), π hij (f j) = f i := by
 
-  set αs := (i : ℕ) × (α i)
+  set αs := (i : ℕ) × α i
 
   let _ : PartialOrder (αs) := {
     le := fun a b ↦ ∃ h, π h b.2 = a.2
@@ -99,56 +99,44 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsinglet
     le_trans := fun _ _ c h h' ↦ ⟨h.1.trans h'.1, by rw [← π_trans h.1 h'.1 c.2, h'.2, h.2]⟩
     le_antisymm := by
       rintro ⟨i,a⟩ ⟨j,b⟩ ⟨hij : i ≤ j, hab : π hij b = a⟩ ⟨hji : j ≤ i, hba : π hji a = b⟩
-      cases hij.antisymm hji
-      ext; rfl
-      simp only [heq_eq_eq]
-      rwa [← π_refl a] }
-
-  have hsm : StrictMono (fun (x : αs) ↦ x.1) := by
-    rintro ⟨i,a⟩ ⟨j,b⟩
-    simp only [lt_iff_le_and_ne, forall_exists_index, ne_eq, and_imp,
-      (show ∀ a b : αs, a ≤ b ↔ ∃ h, π h b.2 = a.2 from fun _ _ ↦ Iff.rfl)]
-    rintro h (rfl : π h b = a) hne; refine ⟨h, ?_⟩
-    rintro rfl
-    simp [π_refl] at hne
-
-  have _ := WellFoundedLT.of_strictMono hsm
+      obtain rfl := hij.antisymm hji
+      rw [show a = b by rwa [π_refl] at hba] }
 
   have hcovby : ∀ {a b : αs}, a ⋖ b ↔ a ≤ b ∧ a.1 + 1 = b.1 := by
-    simp_rw [covBy_iff_lt_and_eq_or_eq]
-    refine @fun a b ↦ ⟨fun ⟨h,h'⟩ ↦ ⟨h.le, ?_⟩, fun ⟨h,h'⟩ ↦ ⟨h.lt_of_ne ?_, fun c hac hcb ↦ ?_⟩⟩
-    · obtain (h1 | h1) := h'
-        ⟨_, π (hsm h) b.2⟩ ⟨Nat.le_add_right a.1 1, by simp [π_trans, h.le.2]⟩ ⟨hsm h, by simp⟩
-      · apply_fun (fun x ↦ x.1) at h1; simp at h1
-      rw [← h1]
-    · rintro rfl; simp at h'
-    obtain (h_eq | hlt) := (hsm.monotone hac).eq_or_lt
-    · exact .inl <| hac.antisymm' ⟨h_eq.symm.le, by simp [← hac.2, π_refl, π_trans]⟩
-    have hbc := (h'.symm.le.trans <| Nat.add_one_le_iff.2 hlt)
-    exact .inr <| hcb.antisymm ⟨hbc, by simp [← hcb.2, π_trans, π_refl]⟩
+    simp only [covBy_iff_lt_and_eq_or_eq, lt_iff_le_and_ne, ne_eq, Sigma.forall, and_assoc,
+      and_congr_right_iff, or_iff_not_imp_left]
+    rintro i a j b ⟨h : i ≤ j, rfl : π h b = a⟩
+    refine ⟨fun ⟨hne, h'⟩ ↦ ?_, ?_⟩
+    · have hle' : i + 1 ≤ j := h.lt_of_ne <| by rintro rfl; simp [π_refl] at hne
+      exact congr_arg Sigma.fst <| h' (i+1) (π hle' b) ⟨by simp, by rw [π_trans]⟩ ⟨hle', by simp⟩
+        (fun h ↦ by apply_fun Sigma.fst at h; simp at h)
+    rintro rfl
+    refine ⟨fun h ↦ by apply_fun Sigma.fst at h; simp at h, ?_⟩
+    rintro j c ⟨hij : i ≤ j, hcb : π _ c = π _ b⟩ ⟨hji : j ≤ i + 1, rfl : π hji b = c⟩ hne
+    replace hne := show i ≠ j by rintro rfl; exact hne rfl
+    obtain rfl := hji.antisymm (hij.lt_of_ne hne)
+    rw [π_refl]
 
-  let _ : OrderBot αs := {
-    bot := ⟨0, Classical.arbitrary _⟩
-    bot_le := fun a ↦ by
-      rw [← Subsingleton.elim (α := α 0) (π (Nat.zero_le a.fst) a.2) (Classical.arbitrary _)]
-      exact ⟨Nat.zero_le _, by simp [π_refl]⟩ }
+  have _ : IsStronglyAtomic αs := by
+    simp_rw [isStronglyAtomic_iff, lt_iff_le_and_ne, hcovby]
+    rintro ⟨i, a⟩ ⟨j, b⟩ ⟨⟨hij : i ≤ j, h2 : π hij b = a⟩, hne⟩
+    have hle : i + 1 ≤ j := hij.lt_of_ne (by rintro rfl; simp [← h2, π_refl] at hne)
+    refine ⟨⟨_, π hle b⟩, ⟨⟨by simp, by rw [π_trans, ← h2]⟩,by simp⟩, ⟨hle, by simp⟩⟩
 
-  have hfin : ∀ (a : αs), {x | a ⋖ x}.Finite := fun a ↦ by
-    simp_rw [hcovby]
-    set f : {x // a ≤ x ∧ a.1 + 1 = x.1} → α (a.1+1) := fun x ↦ π x.2.2.le x.1.2
-    have : Finite (range f) := by
-      refine (hfin a.1 a.2).subset ?_
-      rintro _ ⟨⟨⟨i,x⟩,hx,(rfl : a.1 + 1 = i)⟩,h,rfl⟩
-      simp [f, π_refl, hx.2]
-    apply Finite.of_injective_finite_range (f := f)
-    rintro ⟨⟨i,b⟩, ⟨hb, (rfl : a.1 + 1 = i)⟩⟩ ⟨⟨j,c⟩, ⟨hc, (rfl : a.1 +1 = j)⟩⟩ h
-    ext; rfl
-    simpa [π_refl, f] using h
+  let _ : OrderBot αs := OrderBot.mk (toBot := ⟨0, Classical.arbitrary _⟩)
+    fun _ ↦ ⟨Nat.zero_le _, Subsingleton.elim _ _⟩
 
-  obtain ⟨f, hf0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite hfin
+  have hfin : ∀ (a : αs), {x | a ⋖ x}.Finite := by
+    refine fun ⟨i,a⟩ ↦ ((hfin i a).image (fun b ↦ ⟨_,b⟩)).subset ?_
+    simp only [hcovby, subset_def, mem_setOf_eq, mem_image, and_imp, Sigma.forall]
+    exact fun j b ⟨_, _⟩ hj ↦ ⟨π hj.le b, by rwa [π_trans], by cases hj; rw [π_refl]⟩
+
+  obtain ⟨f, hf0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite_of_bot hfin
   have hr : ∀ i, (f i).1 = i :=
-    Nat.recAux (by rw [hf0]; rfl) (fun i ih ↦ by rw [← (hcovby.1 (hf i)).2, ih])
+    Nat.rec (by rw [hf0]; rfl) (fun i ih ↦ by rw [← (hcovby.1 (hf i)).2, ih])
 
   refine ⟨fun i ↦ by rw [← hr i]; exact (f i).2, fun i j hij ↦ ?_⟩
   convert (f.monotone hij).2 <;>
   simp [hr]
+
+end Graded
