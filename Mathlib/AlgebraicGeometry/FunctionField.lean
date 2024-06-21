@@ -84,7 +84,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     [hX : IrreducibleSpace X.carrier] [IrreducibleSpace Y.carrier] :
     f.1.base (genericPoint X.carrier : _) = (genericPoint Y.carrier : _) := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert (genericPoint_spec X.carrier).image (show Continuous f.1.base by continuity)
+  convert (genericPoint_spec X.carrier).image (show Continuous f.1.base by fun_prop)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
