@@ -16,7 +16,7 @@ respectively.
 
 ## Main statements
 
-* `lucas_theorem''`: the binomial coefficient `n choose k` is congruent to the
+* `choose_modEq_prod_range_choose`: the binomial coefficient `n choose k` is congruent to the
 product of `n_i choose k_i` modulo `p`, where `n_i` and `k_i` are the base-`p`
 digits of `n` and `k`, respectively.
 -/
