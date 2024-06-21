@@ -13,15 +13,15 @@ to the extended nonnegative reals `ℝ≥0∞`. The function takes values
 in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 
 ## Main definitions
-- `log`: The extension of the real logarithm to `ℝ≥0∞`.
-- `log_OrderIso`, `log_equiv`: `log` seen respectively
+- `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
+- `ENNReal.log_OrderIso`, `ENNReal.log_equiv`: `log` seen respectively
 as an order isomorphism and an homeomorphism.
 
 ## Main Results
 - `log_strictMono`: `log` is increasing;
-- `log_injective`, `log_surjective`, `log_bijective`: `log` is
+- `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
   injective, surjective, and bijective;
-- `log_mul_add`, `log_pow`, `log_pow`: `log` satisfy
+- `ENNReal.log_mul_add`, `ENNReal.log_pow`, `ENNReal.log_pow`: `log` satisfy
 the identities `log (x * y) = log x + log y` and `log (x * y) = y * log x`
 (with either `y ∈ ℕ` or `y ∈ ℝ`).
 
