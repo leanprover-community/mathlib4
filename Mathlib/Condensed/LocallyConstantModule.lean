@@ -9,67 +9,99 @@ universe w u
 
 open CategoryTheory LocallyConstant CompHausLike Functor Category Functor Opposite
 
-namespace CategoryTheory.Adjunction
+namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R)
-    (i : L ⋙ R ≅ 𝟭 C)
+variable {C D : Type*} [Category C] [Category D]
 
-lemma isIso_unit_of_abstract_iso' : IsIso adj.unit := by
-  let T := adj.toMonad
-  let M := T.toMon
-  letI := endofunctorMonoidalCategory C
-  have : M.one = adj.unit := rfl
-  let M' : Mon_ (C ⥤ C) := {
-    X := 𝟭 C
-    one := 𝟙 _
-    mul := by-- i.inv ≫ whiskerRight M.one (L ⋙ R) ≫ M.mul ≫ i.hom
-      refine (i.inv ◫ adj.unit) ≫ M.mul ≫ i.hom
-    one_mul := by sorry
-      -- erw [MonoidalCategory.whiskerRight_id, assoc]
-      -- change 𝟙 _ ≫ _ ≫ _ = _
-      -- simp only [assoc, id_comp]
-      -- change 𝟙 _ ≫ _ = _
-      -- simp
-      -- change _ = 𝟙 _
-      -- slice_lhs 2 3 =>
-      --   erw [M.one_mul]
-      -- change _ ≫ 𝟙 _ ≫ _ = _
-      -- simp
-    mul_one := by sorry
-      -- erw [MonoidalCategory.id_whiskerLeft, assoc]
-      -- change 𝟙 _ ≫ _ ≫ _ = _
-      -- simp only [assoc, id_comp]
-      -- change 𝟙 _ ≫ _ = _
-      -- simp
-      -- change _ = 𝟙 _
-      -- slice_lhs 2 3 =>
-      --   erw [M.one_mul]
-      -- change _ ≫ 𝟙 _ ≫ _ = _
-      -- simp
-    mul_assoc := sorry
-  }
+open Iso
+
+namespace Monad
+
+def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C where
+  toFunctor := F
+  η' := T.η ≫ i.hom
+  μ' := (i.inv ◫ i.inv) ≫ T.μ ≫ i.hom
+  left_unit' X := by
+    simp only [Functor.id_obj, NatTrans.comp_app, comp_obj, NatTrans.hcomp_app, Category.assoc,
+      hom_inv_id_app_assoc]
+    slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
+    simp
+  right_unit' X := by
+    simp only [id_obj, NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
+      Category.assoc, NatTrans.naturality_assoc]
+    slice_lhs 2 4 =>
+      simp only [← T.map_comp]
+    simp
+  assoc' X := by
+    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Category.assoc, Functor.map_comp,
+      NatTrans.naturality_assoc, hom_inv_id_app_assoc, NatIso.cancel_natIso_inv_left]
+    slice_lhs 4 5 => rw [← T.map_comp]
+    simp only [hom_inv_id_app, Functor.map_id, id_comp]
+    slice_lhs 1 2 => rw [← T.map_comp]
+    simp only [Functor.map_comp, Category.assoc]
+    congr 1
+    simp only [← Category.assoc, NatIso.cancel_natIso_hom_right]
+    rw [← T.μ.naturality]
+    simp [T.assoc X]
+
+end Monad
+
+namespace Comonad
+
+def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad C where
+  toFunctor := F
+  ε' := i.inv ≫ T.ε
+  δ' := i.inv ≫ T.δ ≫ (i.hom ◫ i.hom)
+  right_counit' X := by
+    simp only [id_obj, comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
+    slice_lhs 4 5 => rw [← F.map_comp]
+    simp only [hom_inv_id_app, Functor.map_id, id_comp, ← i.hom.naturality]
+    slice_lhs 2 3 => rw [T.right_counit]
+    simp
+  coassoc' X := by
+    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc,
+      NatTrans.naturality_assoc, Functor.comp_map, hom_inv_id_app_assoc,
+      NatIso.cancel_natIso_inv_left]
+    slice_lhs 3 4 => rw [← F.map_comp]
+    simp only [hom_inv_id_app, Functor.map_id, id_comp, assoc]
+    rw [← i.hom.naturality_assoc, ← T.coassoc_assoc]
+    simp only [NatTrans.naturality_assoc]
+    congr 3
+    simp only [← Functor.map_comp, i.hom.naturality]
+
+end Comonad
+
+lemma NatTrans.id_comm (α β : 𝟭 C ⟶ 𝟭 C) : α ≫ β = β ≫ α := by
+  ext X
+  exact (α.naturality (β.app X)).symm
+
+namespace Adjunction
+
+variable {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C)
+
+lemma isIso_unit_of_abstract_iso : IsIso adj.unit := by
   suffices IsIso (adj.unit ≫ i.hom) from IsIso.of_isIso_comp_right adj.unit i.hom
-  sorry
-  -- refine ⟨i.hom ≫ (i.inv ◫ adj.unit) ≫ M.mul ≫ i.hom, ?_, ?_⟩
-  -- · sorry
-  -- · sorry
+  refine ⟨(adj.toMonad.transport i).μ, ?_, ?_⟩
+  · ext X; exact (adj.toMonad.transport i).right_unit X
+  · rw [NatTrans.id_comm]; ext X; exact (adj.toMonad.transport i).right_unit X
 
-def transferIso : L ⊣ R := Adjunction.mkOfUnitCounit {
-  unit := i.inv
-  counit := adj.counit
-  left_triangle := sorry
-  right_triangle := sorry }
+noncomputable def fullyFaithfulLOfCompIsoId : L.FullyFaithful :=
+  haveI := adj.isIso_unit_of_abstract_iso i
+  adj.fullyFaithfulLOfIsIsoUnit
 
-lemma isIso_unit_of_abstract_iso : IsIso ((adj.transferIso i).unit) :=
-  inferInstanceAs (IsIso i.inv)
+variable (j : R ⋙ L ≅ 𝟭 D)
 
-noncomputable def fullyFaithfulLOfLRIsoId : L.FullyFaithful :=
-  have := adj.isIso_unit_of_abstract_iso i
-  (adj.transferIso i).fullyFaithfulLOfIsIsoUnit
+lemma isIso_counit_of_abstract_iso : IsIso adj.counit := by
+  suffices IsIso (j.inv ≫ adj.counit) from IsIso.of_isIso_comp_left j.inv adj.counit
+  refine ⟨(adj.toComonad.transport j).δ, ?_, ?_⟩
+  · rw [NatTrans.id_comm]; ext X; exact (adj.toComonad.transport j).right_counit X
+  · ext X; exact (adj.toComonad.transport j).right_counit X
+
+noncomputable def fullyFaithfulROfCompIsoId : R.FullyFaithful :=
+  haveI := adj.isIso_counit_of_abstract_iso j
+  adj.fullyFaithfulROfIsIsoCounit
 
 end CategoryTheory.Adjunction
-
-#exit
 
 attribute [local instance] ConcreteCategory.instFunLike
 
@@ -213,73 +245,10 @@ noncomputable def LocallyConstant.adjunction : functor R ⊣ Condensed.underlyin
   Adjunction.ofNatIsoLeft (Condensed.discreteUnderlyingAdj _) (functorIsoDiscrete R).symm
 
 noncomputable def LocallyConstant.fullyFaithfulFunctor :
-    (functor R).FullyFaithful := (adjunction R).fullyFaithfulLOfLRIsoId (compIsoId R)
+    (functor R).FullyFaithful := (adjunction R).fullyFaithfulLOfCompIsoId (compIsoId R)
 
 instance : (LocallyConstant.functor R).Faithful :=
   Functor.Faithful.of_comp_iso (LocallyConstant.compIsoId R)
-
-open Condensed.LocallyConstantModule in
-noncomputable def LocallyConstant.fullyFaithfulFunctorToPresheaves :
-    (functorToPresheaves R).FullyFaithful where
-  preimage f := (functorIsoDiscreteOne' R _).hom ≫ (f.app ⟨CompHaus.of PUnit.{u+1}⟩) ≫
-    (functorIsoDiscreteOne' R _).inv
-  map_preimage {M N} f := by
-    simp only [coe_of, functorToPresheaves_obj_obj, Functor.map_comp]
-    let LC := functorToPresheaves R
-    set iM := (functorIsoDiscreteOne' R M)
-    set iN := (functorIsoDiscreteOne' R N)
-    let pt : CompHausᵒᵖ := ⟨CompHaus.of PUnit.{u+1}⟩
-    change LC.map _ ≫ LC.map (f.app pt) ≫ LC.map _ = _
-    ext S (g : LocallyConstant _ _)
-    simp only [functorToPresheaves_obj_obj, coe_of, NatTrans.comp_app, ModuleCat.coe_comp,
-      Function.comp_apply]
-    apply LocallyConstant.ext
-    sorry
-    -- intro x
-    -- have :
-    --   (((LC.map iN.inv).app S) (((LC.map (f.app pt)).app S) (((LC.map iM.hom).app S) g))).toFun x = iN.inv ((f.app pt) (iM.hom (g x))) := rfl
-    -- simp only [coe_of, functorToPresheaves_obj_obj, toFun_eq_coe] at this
-    -- rw [this]
-    -- let s : unop S ⟶ unop pt := (CompHaus.isTerminalPUnit.from (unop S))
-    -- have hh : (LC.obj M).map s.op ≫ f.app S = f.app pt ≫ (LC.obj N).map s.op  :=
-    --   f.naturality s.op
-    -- have hM : (LC.obj M).map s.op = iM.inv ≫ (constₗ R) := rfl
-    -- have hN : (LC.obj N).map s.op = iN.inv ≫ (constₗ R) := rfl
-    -- rw [hM, hN] at hh
-
-    -- have := LinearMap.congr_fun hh (iM.hom (g x))
-    -- simp only [functorToPresheaves_obj_obj, op_unop, coe_of, functorIsoDiscreteOne', assoc, iM,
-    --   iN] at this
-    -- erw [LocallyConstant.coe_mk, LocallyConstant.coe_mk]
-    -- erw [this]
-    -- ext S : 2 -- (g : LocallyConstant _ _)
-    -- simp only [functorToPresheaves_obj_obj, coe_of, NatTrans.comp_app]
-
-    -- let gg : (LC.obj ((LC.obj M).obj S)).obj pt ⟶ (LC.obj ((LC.obj N).obj S)).obj pt :=
-    --   (LC.map (f.app S)).app pt
-    -- have : (LC.obj ((LC.obj _).obj _)).map _ ≫ (LC.map (f.app S)).app S =
-    --     (LC.map (f.app S)).app pt ≫ (LC.obj ((LC.obj _).obj _)).map _ :=
-    --   (LC.map (f.app S)).naturality s.op
-    -- have h : (LC.obj ((LC.obj M).obj pt)).map s.op ≫ (LC.map (f.app pt)).app S =
-    --     (LC.map (f.app pt)).app pt ≫ (LC.obj ((LC.obj N).obj pt)).map s.op :=
-    --   (LC.map (f.app pt)).naturality s.op
-    -- replace this : CommSq _ _ _ _ := ⟨this⟩
-    -- replace h : CommSq _ _ _ _ := ⟨h⟩
-    -- replace hh : CommSq _ _ _ _ := ⟨hh⟩
-    -- replace hh := (LC.map_commSq hh)
-    -- replace hh := NatTrans.congr_app hh.w S
-    -- simp only [functorToPresheaves_obj_obj, op_unop, NatTrans.comp_app, coe_of] at hh
-    -- replace hh : CommSq _ _ _ _ := ⟨hh⟩
-    -- have hhhh := (h.horiz_comp hh).w
-
-  preimage_map _ := rfl
-
-noncomputable def LocallyConstant.fullyFaithfulFunctor' :
-    (functor R).FullyFaithful :=
-  haveI : (sheafToPresheaf (coherentTopology CompHaus) (ModuleCat R)).Faithful :=
-    (fullyFaithfulSheafToPresheaf _ _).faithful
-  FullyFaithful.ofCompFaithful (G := sheafToPresheaf (coherentTopology CompHaus) (ModuleCat R))
-    (fullyFaithfulFunctorToPresheaves R)
 
 end CondensedMod
 
