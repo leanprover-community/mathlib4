@@ -216,7 +216,7 @@ lemma kernelImageComparison_compat (hcoker : IsIso (cokernelComparison S.f F)) :
     ShortComplex.map_X₂, ShortComplex.map_f, kernel.lift_ι]
 
 lemma image_compat : (Abelian.imageIsoImage f).inv ≫ Abelian.image.ι f =
-    Limits.image.ι f := by sorry
+    Limits.image.ι f := by aesop_cat
 
 namespace CategoryTheory.ShortComplex
 
@@ -602,14 +602,3 @@ noncomputable def LeftHomologyData__image_f' {S : ShortComplex A}
     (Abelian.imageIsoImage _).symm
 
 end ShortComplex
-
-#exit
-
-/-
-variable {ι : Type*} {c : ComplexShape ι}
-
-def HomologicalComplex.homologyIsoCokernelAbelianImageToKernel (S : HomologicalComplex A c)
-    {i j k : ι} (hij : i = c.prev j) (hjk : k = c.next j) :
-  S.homology j ≅ Limits.cokernel
-  (ShortComplex.abelianImageToKernel (ShortComplex.mk (S.d i j) (S.d j k) sorry)) := sorry
--/
