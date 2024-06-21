@@ -36,6 +36,94 @@ universe v v₁ v₂ u₁ u₂ u
 
 open CategoryTheory
 
+-- should be moved to `Algebra.Algebra.Defs`
+section
+
+lemma RingHom.isScalarTower_toAlgebra_comp {A B C : Type*}
+    [CommSemiring A] [CommSemiring B] [CommSemiring C]
+    (f : A →+* B) (g : B →+* C) (h : A →+* C) (fac : g.comp f = h) :
+    letI := RingHom.toAlgebra f
+    letI := RingHom.toAlgebra g
+    letI := RingHom.toAlgebra h
+    IsScalarTower A B C := by
+  letI := RingHom.toAlgebra f
+  letI := RingHom.toAlgebra g
+  letI := RingHom.toAlgebra h
+  constructor
+  intro a b c
+  change g (f a * b) * c = h a * (g b * c)
+  simp only [← fac, map_mul, coe_comp, Function.comp_apply, mul_assoc]
+
+lemma RingHom.smulCommClass_toAlgebra
+    {A B C : Type*} [CommSemiring A] [CommSemiring B] [CommSemiring C]
+    (g : B →+* C) (h : A →+* C)  :
+    letI := RingHom.toAlgebra g
+    letI := RingHom.toAlgebra h
+    SMulCommClass A B C := by
+  letI := RingHom.toAlgebra g
+  letI := RingHom.toAlgebra h
+  constructor
+  intro a b c
+  change h a * (g b * c) = g b * (h a * c)
+  rw [← mul_assoc, mul_comm (h a) (g b), mul_assoc]
+
+end
+
+-- should be moved a new file `Algebra.Category.ModuleCat.Differentials.Basic`
+namespace CommRingCat
+
+variable {A B A' B' : CommRingCat.{u}} {f : A ⟶ B} {f' : A' ⟶ B'}
+  {g : A ⟶ A'} {g' : B ⟶ B'} (fac : g ≫ f' = f ≫ g')
+
+-- TODO(?): Define `ModuleCat.Derivation M f`
+
+variable (f) in
+noncomputable def KaehlerDifferential : ModuleCat.{u} B :=
+  letI := f.toAlgebra
+  ModuleCat.of B (_root_.KaehlerDifferential A B)
+
+namespace KaehlerDifferential
+
+noncomputable def d (b : B) : KaehlerDifferential f :=
+  letI := f.toAlgebra
+  KaehlerDifferential.D A B b
+
+@[ext]
+lemma ext {M : ModuleCat B} {α β : KaehlerDifferential f ⟶ M}
+    (h : ∀ (b : B), α (d b) = β (d b)) : α = β := by
+  sorry
+
+noncomputable def map :
+    KaehlerDifferential f ⟶
+      (ModuleCat.restrictScalars g').obj (KaehlerDifferential f') :=
+  letI := f.toAlgebra
+  letI := f'.toAlgebra
+  letI := g.toAlgebra
+  letI := g'.toAlgebra
+  letI := (g ≫ f').toAlgebra
+  have := RingHom.isScalarTower_toAlgebra_comp g f' _ rfl
+  have := RingHom.isScalarTower_toAlgebra_comp f g' _ fac.symm
+  have := RingHom.smulCommClass_toAlgebra g' f'
+  { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
+    map_add' := by simp
+    map_smul' := by simp }
+
+@[simp]
+lemma map_d (b : B) : map fac (d b) = d (g' b) := by
+  letI := f.toAlgebra
+  letI := f'.toAlgebra
+  letI := g.toAlgebra
+  letI := g'.toAlgebra
+  letI := (f'.comp g).toAlgebra
+  have := RingHom.isScalarTower_toAlgebra_comp g f' _ rfl
+  have := RingHom.isScalarTower_toAlgebra_comp f g' _ fac.symm
+  have := RingHom.smulCommClass_toAlgebra g' f'
+  apply _root_.KaehlerDifferential.map_D
+
+end KaehlerDifferential
+
+end CommRingCat
+
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace PresheafOfModules
@@ -113,21 +201,8 @@ namespace DifferentialsConstruction
 /-- Auxiliary definition for `relativeDifferentials'`. -/
 noncomputable def relativeDifferentials'BundledCore :
     BundledCorePresheafOfModules.{u} (R ⋙ forget₂ _ _) where
-  obj X :=
-    letI := (φ'.app X).toAlgebra
-    ModuleCat.of (R.obj X) (Ω[(R.obj X)⁄(S'.obj X)])
-  map {X Y} f :=
-    letI := (φ'.app X).toAlgebra
-    letI := (φ'.app Y).toAlgebra
-    letI := (R.map f).toAlgebra
-    letI := (S'.map f).toAlgebra
-    letI := ((φ'.app Y).comp (S'.map f)).toAlgebra
-    have : IsScalarTower (S'.obj X) (R.obj X) (R.obj Y) := sorry
-    have : IsScalarTower ↑(S'.obj X) ↑(S'.obj Y) ↑(R.obj Y) := sorry
-    have : SMulCommClass ↑(S'.obj Y) ↑(R.obj X) ↑(R.obj Y) := sorry
-    KaehlerDifferential.map (S'.obj X) (S'.obj Y) (R.obj X) (R.obj Y)
-  map_id := sorry
-  map_comp := sorry
+  obj X := CommRingCat.KaehlerDifferential (φ'.app X)
+  map f := CommRingCat.KaehlerDifferential.map (φ'.naturality f)
 
 /-- The presheaf of relative differentials of a morphism of presheaves of
 commutative rings. -/
@@ -140,7 +215,7 @@ noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' whe
   d {X} := AddMonoidHom.mk' (fun x =>
     letI := (φ'.app X).toAlgebra
     KaehlerDifferential.D (S'.obj X) (R.obj X) x) (by simp)
-  d_map := sorry
+  d_map {X Y} f x := sorry
   d_app := sorry
 
 /-- The derivation `derivation' φ'` is universal. -/
