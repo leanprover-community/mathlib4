@@ -217,7 +217,7 @@ end Morphism
 
 section Continuity
 
-/-- `log` as an homeomorphism. -/
+/-- `log` as a homeomorphism. -/
 noncomputable def log_Homeomorph : ℝ≥0∞ ≃ₜ EReal := OrderIso.toHomeomorph log_OrderIso
 
 @[continuity, fun_prop]
