@@ -39,7 +39,8 @@ noncomputable def mapDerivedCategoryFactors :
       F.mapHomologicalComplex (ComplexShape.up ℤ) ⋙ DerivedCategory.Q :=
   F.mapHomologicalComplexUpToQuasiIsoFactors _
 
-noncomputable instance : Localization.Lifting DerivedCategory.Q
+noncomputable instance :
+    Localization.Lifting DerivedCategory.Q
       (HomologicalComplex.quasiIso C₁ (ComplexShape.up ℤ))
       (F.mapHomologicalComplex _ ⋙ DerivedCategory.Q) F.mapDerivedCategory :=
   ⟨F.mapDerivedCategoryFactors⟩
@@ -51,7 +52,8 @@ noncomputable def mapDerivedCategoryFactorsh :
       F.mapHomotopyCategory (ComplexShape.up ℤ) ⋙ DerivedCategory.Qh :=
   F.mapHomologicalComplexUpToQuasiIsoFactorsh _
 
-noncomputable instance : Localization.Lifting DerivedCategory.Qh
+noncomputable instance :
+    Localization.Lifting DerivedCategory.Qh
       (HomotopyCategory.quasiIso C₁ (ComplexShape.up ℤ))
       (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh) F.mapDerivedCategory :=
   ⟨F.mapDerivedCategoryFactorsh⟩
