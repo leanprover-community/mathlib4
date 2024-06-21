@@ -27,6 +27,9 @@ We defer the graph-theoretic version of the statement for future work.
 * `exists_orderEmbedding_covby_of_forall_covby_finite` : Kőnig's lemma, where the sequence
     is given as an `OrderEmbedding` instead of a function.
 
+* `exists_orderEmbedding_covby_of_forall_covby_finite_of_bot` : Kőnig's lemma where the sequence
+    starts at the minimum of an infinite type.
+
 * `exist_seq_forall_proj_of_forall_finite` : Kőnig's lemma applied to an order on a sigma-type
   `(i : ℕ) × α i`. Useful for applications in Ramsey theory.
 
