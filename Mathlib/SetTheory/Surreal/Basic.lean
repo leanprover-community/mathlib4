@@ -583,19 +583,19 @@ lemma P1_of_lt (h₁ : P3 x₃ x₂ y₂ y₃) (h₂ : P3 x₁ x₃ y₂ y₁) :
   convert add_lt_add h₁ h₂ using 1 <;> abel
 
 /-- The type of lists of arguments for P1, P2, and P4. -/
-inductive args : Type (u+1)
-| P1 (x y : PGame.{u}) : args
-| P24 (x₁ x₂ y : PGame.{u}) : args
+inductive Args : Type (u+1)
+| P1 (x y : PGame.{u}) : Args
+| P24 (x₁ x₂ y : PGame.{u}) : Args
 
 
 /-- The multiset associated to a list of arguments. -/
-def args.to_multiset : args → Multiset PGame
-| (args.P1 x y) => {x, y}
-| (args.P24 x₁ x₂ y) => {x₁, x₂, y}
+def Args.toMultiset : Args → Multiset PGame
+| (Args.P1 x y) => {x, y}
+| (Args.P24 x₁ x₂ y) => {x₁, x₂, y}
 
 
 /-- A list of arguments is numeric if all the arguments are. -/
-def args.numeric (a : args) := ∀ x ∈ a.to_multiset, Numeric x
+def Args.Numeric (a : Args) := ∀ x ∈ a.toMultiset, SetTheory.PGame.Numeric x
 
 
 open Relation
@@ -603,7 +603,7 @@ open Relation
 /-- The relation specifying when a list of (pregame) arguments is considered simpler than another:
   `args_rel a₁ a₂` is true if `a₁`, considered as a multiset, can be obtained from `a₂` by
   repeatedly removing a pregame from `a₂` and adding back one or two options of the pregame.  -/
-def args_rel := InvImage (TransGen $ CutExpand IsOption) args.to_multiset
+def args_rel := InvImage (TransGen $ CutExpand IsOption) Args.toMultiset
 
 /-- `args_rel` is well-founded. -/
 --theorem args_rel_wf : well_founded args_rel := inv_image.wf _ wf_is_option.cut_expand.trans_gen
@@ -611,13 +611,13 @@ theorem args_rel_wf : WellFounded args_rel := InvImage.wf _ wf_isOption.cutExpan
 
 
 /-- The statement that we will be shown by induction using the well-founded relation `args_rel`. -/
-def P124 : args → Prop
-| (args.P1 x y) => Numeric (x * y)
-| (args.P24 x₁ x₂ y) => P24 x₁ x₂ y
+def P124 : Args → Prop
+| (Args.P1 x y) => Numeric (x * y)
+| (Args.P24 x₁ x₂ y) => P24 x₁ x₂ y
 
 
 /-- The property that all arguments are numeric is leftward-closed under `args_rel`. -/
-lemma args_rel.numeric_closed {a' a} : args_rel a' a → a.numeric → a'.numeric := by
+lemma args_rel.numeric_closed {a' a} : args_rel a' a → a.Numeric → a'.Numeric := by
   exact TransGen.closed2 $ @cutExpand_closed _ IsOption ⟨wf_isOption.isIrrefl.1⟩ _ Numeric.isOption
 
 /-- A specialized induction hypothesis used to prove P1. -/
@@ -638,27 +638,27 @@ lemma ih1_negy : ih1 x y → ih1 x (-y) :=
 
 /-! #### Specialize `ih` to obtain specialized induction hypotheses for P1 -/
 
-variable (ih : ∀ a, args_rel a (args.P1 x y) → P124 a)
+variable (ih : ∀ a, args_rel a (Args.P1 x y) → P124 a)
 
 lemma ihnx (h : IsOption x' x) : (x' * y).Numeric :=
-  ih (args.P1 x' y) $ TransGen.single $ cutExpand_pair_left h
+  ih (Args.P1 x' y) $ TransGen.single $ cutExpand_pair_left h
 
 lemma ihny (h : IsOption y' y) : (x * y').Numeric :=
-  ih (args.P1 x y') $ TransGen.single $ cutExpand_pair_right h
+  ih (Args.P1 x y') $ TransGen.single $ cutExpand_pair_right h
 
 lemma ihnxy (hx : IsOption x' x) (hy : IsOption y' y) : (x' * y').Numeric :=
-  ih (args.P1 x' y') $ TransGen.tail (TransGen.single $ cutExpand_pair_right hy) $
+  ih (Args.P1 x' y') $ TransGen.tail (TransGen.single $ cutExpand_pair_right hy) $
     cutExpand_pair_left hx
 
 lemma ih1xy : ih1 x y := by
-  rintro x₁ x₂ y' h₁ h₂ (rfl|hy) <;> apply ih (args.P24 _ _ _)
+  rintro x₁ x₂ y' h₁ h₂ (rfl|hy) <;> apply ih (Args.P24 _ _ _)
   swap
   refine TransGen.tail ?_ (cutExpand_pair_right hy)
   all_goals { exact TransGen.single (cutExpand_double_left h₁ h₂) }
 
 lemma ih1yx : ih1 y x :=
   ih1xy $ by
-    simp_rw [args_rel, InvImage, args.to_multiset, Multiset.pair_comm] at ih ⊢
+    simp_rw [args_rel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih ⊢
     exact ih
 
 lemma P3_of_ih (hy : Numeric y) (ihyx : ih1 y x) (i k l) :
@@ -762,12 +762,12 @@ def ih4 (x₁ x₂ y : PGame) : Prop :=
 
 /-! #### Specialize `ih'` to obtain specialized induction hypotheses for P2 and P4 -/
 
-variable (ih' : ∀ a, args_rel a (args.P24 x₁ x₂ y) → P124 a)
+variable (ih' : ∀ a, args_rel a (Args.P24 x₁ x₂ y) → P124 a)
 
 lemma ih₁₂ : ih24 x₁ x₂ y := by
   rw [ih24]
   refine (fun z => ⟨?_, ?_, ?_⟩) <;> (
-    refine fun h => ih' (args.P24 _ _ _) (TransGen.single ?_)
+    refine fun h => ih' (Args.P24 _ _ _) (TransGen.single ?_)
   )
   · exact (cutExpand_add_right {y}).2 (cutExpand_pair_left h)
   · exact (cutExpand_add_left {x₁}).2 (cutExpand_pair_left h)
@@ -775,7 +775,7 @@ lemma ih₁₂ : ih24 x₁ x₂ y := by
 
 
 lemma ih₂₁ : ih24 x₂ x₁ y := ih₁₂ (by
-  simp_rw [args_rel, InvImage, args.to_multiset, Multiset.pair_comm] at ih' ⊢
+  simp_rw [args_rel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih' ⊢
   suffices {x₁, y, x₂} = {x₂, y, x₁} by rwa [← this]
   dsimp [← Multiset.singleton_add] at ih' ⊢
   abel
@@ -785,7 +785,7 @@ lemma ih4_of_ih : ih4 x₁ x₂ y := by
   refine (fun z w h => ⟨?_, ?_⟩) <;> (
     intro h'
     apply (
-      ih' (args.P24 _ _ _)
+      ih' (Args.P24 _ _ _)
       (TransGen.tail (TransGen.single _) (
         (cutExpand_add_left {x₁}).2  (cutExpand_pair_right h)
       )
@@ -797,7 +797,7 @@ lemma ih4_of_ih : ih4 x₁ x₂ y := by
 
 lemma numeric_of_ih : (x₁ * y).Numeric ∧ (x₂ * y).Numeric := by
   constructor <;> (
-    refine ih' (args.P1 _ _) (TransGen.single ?_)
+    refine ih' (Args.P1 _ _) (TransGen.single ?_)
   )
   exact (cutExpand_add_right {y}).2 $ (cutExpand_add_left {x₁}).2 cutExpand_zero
   exact (cutExpand_add_right {x₂, y}).2 cutExpand_zero
@@ -926,7 +926,7 @@ theorem P3_of_lt {y₁ y₂} (h : ∀ i, ih3 x₁ (x₂.moveLeft i) x₂ y₁ y�
         exact neg_le_neg (le_iff_game_le.1 hi) }
 
 /-- The main chunk of Theorem 8 in [conway2001] / Theorem 3.8 in [schleicher_stoll]. -/
-theorem main (a : args) : a.numeric → P124 a := by
+theorem main (a : Args) : a.Numeric → P124 a := by
   apply args_rel_wf.induction a
   intros a ih ha
   replace ih : ∀ a', args_rel a' a → P124 a' := fun a' hr => ih a' hr (hr.numeric_closed ha)
@@ -934,7 +934,7 @@ theorem main (a : args) : a.numeric → P124 a := by
   · /- P1 -/
     case _ x y =>
     simp [P124]
-    simp [args.numeric, args.to_multiset] at ha
+    simp [Args.Numeric, Args.toMultiset] at ha
     exact P1_of_ih ih (ha.1) (ha.2)
   · case _ x₁ x₂ y =>
     have h₁₂ := ih₁₂ ih
@@ -946,7 +946,7 @@ theorem main (a : args) : a.numeric → P124 a := by
     constructor
     · /- P2 -/
       intro he
-      simp [args.numeric, args.to_multiset] at ha
+      simp [Args.Numeric, Args.toMultiset] at ha
       apply Quot.sound
       constructor
       · exact mul_right_le_of_equiv ha.1 ha.2.1 h₁₂ h₂₁ he
@@ -978,12 +978,12 @@ variable {x x₁ x₂ y y₁ y₂ : PGame.{u}}
   (hx : x.Numeric) (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric)
   (hy : y.Numeric) (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
 
-theorem Numeric.mul : Numeric (x * y) := main (args.P1 x y) $ by
-  simp [args.numeric, args.to_multiset]
+theorem Numeric.mul : Numeric (x * y) := main (Args.P1 x y) $ by
+  simp [Args.Numeric, Args.toMultiset]
   tauto
 
-theorem P24 : P24 x₁ x₂ y := main (args.P24 x₁ x₂ y) $ by
-  simp [args.numeric, args.to_multiset]
+theorem P24 : P24 x₁ x₂ y := main (Args.P24 x₁ x₂ y) $ by
+  simp [Args.Numeric, Args.toMultiset]
   tauto
 
 theorem Equiv.mul_congr_left (he : x₁ ≈ x₂) : x₁ * y ≈ x₂ * y :=
