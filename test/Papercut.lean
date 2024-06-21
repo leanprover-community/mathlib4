@@ -63,6 +63,12 @@ note: this linter can be disabled with `set_option linter.papercut false`
 set_option linter.papercut true in
 example (x y : ℚ≥0) : x - y = 0 := sorry
 
+-- if `y ≤ x` is in context, then `x - y` does not trigger the linter
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : ℚ≥0) {hxy : y ≤ x} : x - y = 0 := sorry
+
 /--
 warning: declaration uses 'sorry'
 ---
@@ -73,6 +79,12 @@ note: this linter can be disabled with `set_option linter.papercut false`
 #guard_msgs in
 set_option linter.papercut true in
 example (x y : Nat) : x / y = 0 := sorry
+
+-- if `y ∣ x` is in context, then `x / y` does not trigger the linter
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+set_option linter.papercut true in
+example (x y : Nat) (_ : y ∣ x): x / y = 0 := sorry
 
 -- the linter emits no warning if the proof is complete.
 #guard_msgs in
