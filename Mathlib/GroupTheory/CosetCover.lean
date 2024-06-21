@@ -143,8 +143,8 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgrou
         ⋃ i ∈ s.filter (H · ≠ H j), (y * x⁻¹ * g i) • (H i : Set G) := by
       intro y z hz
       simp_rw [Finset.mem_filter, Set.mem_iUnion]
-      have ⟨i, hi, hmem⟩ : ∃ i ∈ s, x * (y⁻¹ * z) ∈ g i • (H i : Set G) :=
-        by simpa using Set.eq_univ_iff_forall.mp hcovers (x * (y⁻¹ * z))
+      have ⟨i, hi, hmem⟩ : ∃ i ∈ s, x * (y⁻¹ * z) ∈ g i • (H i : Set G) := by
+        simpa using Set.eq_univ_iff_forall.mp hcovers (x * (y⁻¹ * z))
       rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hmem
       refine ⟨i, ⟨hi, fun hij => hx i hi hij ?_⟩, ?_⟩
       · rwa [hmem, eq_comm, QuotientGroup.eq, hij, inv_mul_cancel_left,
