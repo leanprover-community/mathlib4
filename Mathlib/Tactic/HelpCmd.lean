@@ -93,7 +93,12 @@ syntax withPosition("#help " colGt (&"attr" <|> &"attribute")
 private def elabHelpAttr (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
   let mut decls : Lean.RBMap _ _ compare := {}
-  for (name, decl) in ← attributeMapRef.get do
+  /-
+  #adaptation_note
+  On nightly-2024-06-21, added the `.toList` here:
+  without it the requisite `ForIn` instance can't be found.
+  -/
+  for (name, decl) in (← attributeMapRef.get).toList do
     let name := name.toString false
     if let some id := id then
       if !id.isPrefixOf name then
