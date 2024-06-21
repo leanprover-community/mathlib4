@@ -19,7 +19,7 @@ We spell those lemmas out with `dite` and `ite` rather than the `if then else` n
 would result in less delta-reduced statements.
 -/
 
-theorem iff_assoc {a b c : Prop} : (a ↔ (b ↔ c)) ↔ ((a ↔ b) ↔ c) := by tauto
+theorem iff_assoc {a b c : Prop} : ((a ↔ b) ↔ c) ↔ (a ↔ (b ↔ c)) := by tauto
 theorem iff_left_comm {a b c : Prop} : (a ↔ (b ↔ c)) ↔ (b ↔ (a ↔ c)) := by tauto
 theorem iff_right_comm {a b c : Prop} : ((a ↔ b) ↔ c) ↔ ((a ↔ c) ↔ b) := by tauto
 

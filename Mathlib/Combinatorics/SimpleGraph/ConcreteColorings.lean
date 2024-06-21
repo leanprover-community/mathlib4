@@ -68,7 +68,7 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
 theorem Coloring.bicoloring_apply_iff_of_walk {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     c v ↔ (c u ↔ Even p.length) := by
-  rw [iff_left_comm, iff_assoc, Iff.comm]
+  rw [iff_left_comm, ← iff_assoc, Iff.comm]
   exact c.even_length_iff_congr p
 
 theorem Coloring.bicoloring_apply_iff_of_head_walk {α} {G : SimpleGraph α}
