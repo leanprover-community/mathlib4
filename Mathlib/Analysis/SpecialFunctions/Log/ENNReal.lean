@@ -15,7 +15,7 @@ in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 
 ## Main definitions
 - `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
-- `ENNReal.log_OrderIso`, `ENNReal.log_equiv`: `log` seen respectively
+- `ENNReal.log_orderIso`, `ENNReal.log_equiv`: `log` seen respectively
 as an order isomorphism and an homeomorphism.
 
 ## Main Results
@@ -109,7 +109,7 @@ theorem log_surjective : Function.Surjective log := by
 theorem log_bijective : Function.Bijective log := ⟨log_injective, log_surjective⟩
 
 /-- `log` as an order isomorphism. -/
-noncomputable def log_OrderIso : ℝ≥0∞ ≃o EReal :=
+noncomputable def log_orderIso : ℝ≥0∞ ≃o EReal :=
   StrictMono.orderIsoOfSurjective log log_strictMono log_surjective
 
 @[simp]
@@ -126,7 +126,7 @@ theorem log_eq_one_iff {x : ℝ≥0∞} : log x = 0 ↔ x = 1 := log_one ▸ @lo
 theorem log_eq_top_iff {x : ℝ≥0∞} : log x = ⊤ ↔ x = ⊤ := log_top ▸ @log_eq_iff x ⊤
 
 @[simp]
-theorem log_lt_iff_lt {x y : ℝ≥0∞} : log x < log y ↔ x < y := OrderIso.lt_iff_lt log_OrderIso
+theorem log_lt_iff_lt {x y : ℝ≥0∞} : log x < log y ↔ x < y := OrderIso.lt_iff_lt log_orderIso
 
 @[simp]
 theorem log_bot_lt_iff {x : ℝ≥0∞} : ⊥ < log x ↔ 0 < x := log_zero ▸ @log_lt_iff_lt 0 x
@@ -141,7 +141,7 @@ theorem log_lt_one_iff {x : ℝ≥0∞} : log x < 0 ↔ x < 1 := log_one ▸ @lo
 theorem log_one_lt_iff {x : ℝ≥0∞} : 0 < log x ↔ 1 < x := log_one ▸ @log_lt_iff_lt 1 x
 
 @[simp]
-theorem log_le_iff_le {x y : ℝ≥0∞} : log x ≤ log y ↔ x ≤ y := OrderIso.le_iff_le log_OrderIso
+theorem log_le_iff_le {x y : ℝ≥0∞} : log x ≤ log y ↔ x ≤ y := OrderIso.le_iff_le log_orderIso
 
 @[simp]
 theorem log_le_one_iff (x : ℝ≥0∞) : log x ≤ 0 ↔ x ≤ 1 := log_one ▸ @log_le_iff_le x 1
@@ -218,7 +218,7 @@ end Morphism
 section Continuity
 
 /-- `log` as a homeomorphism. -/
-noncomputable def log_Homeomorph : ℝ≥0∞ ≃ₜ EReal := OrderIso.toHomeomorph log_OrderIso
+noncomputable def log_Homeomorph : ℝ≥0∞ ≃ₜ EReal := OrderIso.toHomeomorph log_orderIso
 
 @[continuity, fun_prop]
 theorem log_continuous : Continuous log := Homeomorph.continuous log_Homeomorph
