@@ -8,6 +8,7 @@ import Mathlib.Topology.Instances.EReal
 
 /-!
 # Extended nonnegative real logarithm
+
 We define `log` as an extension of the logarithm of a positive real
 to the extended nonnegative reals `ℝ≥0∞`. The function takes values
 in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
