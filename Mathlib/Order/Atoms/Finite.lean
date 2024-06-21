@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Finite
+import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Atoms
 
 #align_import order.atoms.finite from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
@@ -90,3 +90,19 @@ instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [F
 #align finite.to_is_atomic Finite.to_isAtomic
 
 end Fintype
+
+section LocallyFinite
+
+variable [Preorder α] [LocallyFiniteOrder α]
+
+instance : IsStronglyAtomic α where
+  exists_covBy_le_of_lt a b hab := by
+    obtain ⟨x, hxmem, hx⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
+      ⟨b, by simpa [LocallyFiniteOrder.finset_mem_Ioc]⟩
+    simp only [LocallyFiniteOrder.finset_mem_Ioc, and_imp] at hxmem hx
+    exact ⟨x, ⟨hxmem.1, fun c hac hcx ↦ hx _ hac (hcx.le.trans hxmem.2) hcx⟩, hxmem.2⟩
+
+instance : IsStronglyCoatomic α := by
+  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance
+
+end LocallyFinite

@@ -565,7 +565,6 @@ theorem natCast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_natCas
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_comp := natCast_comp
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
   natCast_comp
@@ -786,7 +785,6 @@ protected theorem map_natCast (n : ℕ) : (n : R[X]).map f = n :=
 @[deprecated (since := "2024-04-17")]
 alias map_nat_cast := map_natCast
 
--- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
