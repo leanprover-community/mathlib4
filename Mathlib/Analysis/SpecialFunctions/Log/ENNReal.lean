@@ -221,7 +221,7 @@ section Continuity
 noncomputable def log_Homeomorph : ℝ≥0∞ ≃ₜ EReal := OrderIso.toHomeomorph log_OrderIso
 
 @[continuity, fun_prop]
-theorem log_Continuous : Continuous log := Homeomorph.continuous log_Homeomorph
+theorem log_continuous : Continuous log := Homeomorph.continuous log_Homeomorph
 
 end Continuity
 
