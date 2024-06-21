@@ -46,6 +46,9 @@ class Quiver (V : Type u) where
 #align quiver Quiver
 #align quiver.hom Quiver.Hom
 
+-- We make `Quiver.Hom` reducible to enable dot notations on instances of Quiver.
+attribute [reducible] Quiver.Hom
+
 /--
 Notation for the type of edges/arrows/morphisms between a given source and target
 in a quiver or category.
