@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.Order.Atoms.Finite
+import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Combinatorics.SimpleGraph.Metric
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Tactic.Linarith
 
 /-!
 # Kőnig's infinity lemma
@@ -142,3 +146,87 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsinglet
   simp [hr]
 
 end Graded
+
+section Graph
+
+namespace SimpleGraph
+
+variable {V : Type*} {x y : V} {G : SimpleGraph V} {W : G.Walk x y}
+
+-- def IsShortestPath (P : G.Path x y) := ∀ (Q : G.Path x y), P.1.length ≤ Q.1.length
+
+-- lemma Reachable.exists_shortestPath (h : G.Reachable x y) :
+--     ∃ (P : G.Path x y), IsShortestPath P := by
+--   classical
+--   have hs : {n : ℕ | ∃ (P : G.Path x y), P.1.length = n}.Nonempty := ⟨_, h.some.toPath , rfl⟩
+--   obtain ⟨P, hP⟩ := Nat.sInf_mem hs
+--   exact ⟨P, fun Q ↦ hP ▸ Nat.sInf_le ⟨Q, rfl⟩⟩
+def Walk.IsShortest (W : G.Walk x y) := W.length = G.dist x y
+
+lemma Walk.IsShortest.length_eq (hW : W.IsShortest) : W.length = G.dist x y := hW
+
+lemma Walk.isShortest_of_le (hW : W.length ≤ G.dist x y) : W.IsShortest :=
+    hW.antisymm <| dist_le _
+
+lemma Walk.IsShortest.takeUntil [DecidableEq V] (hW : W.IsShortest) (hG : G.Connected)
+    {a : V} (ha : a ∈ W.support) : (W.takeUntil a ha).IsShortest := by
+  refine isShortest_of_le ?_
+  have h := congr_arg Walk.length <| W.take_spec ha
+  rw [length_append, hW.length_eq] at h
+  linarith [dist_le (W.dropUntil a ha), (hG.dist_triangle (u := x) (v := a) (w := y))]
+
+lemma Walk.IsShortest.dropUntil [DecidableEq V] (hW : W.IsShortest) (hG : G.Connected)
+    {a : V} (ha : a ∈ W.support) : (W.dropUntil a ha).IsShortest := by
+  sorry
+
+
+  -- rw [IsShortest, ← congr_arg Walk.length <| W.take_spec ha]
+
+def distToLE (G : SimpleGraph V) (hG : G.Connected) (a : V) : PartialOrder V where
+  le x y := ∃ W : G.Walk a y, W.IsShortest ∧ x ∈ W.support
+  le_refl x := ⟨_, (hG.exists_walk_of_dist a x).choose_spec, by simp⟩
+  le_trans := by
+    classical
+    rintro x y z ⟨P, hP, hxP⟩ ⟨Q, hQ, hyQ⟩
+    refine ⟨P.append (Q.dropUntil _ hyQ), Walk.isShortest_of_le ?_, by simp [hxP]⟩
+    rw [Walk.length_append, ← hQ, ← congr_arg Walk.length <| Q.take_spec hyQ,
+      Walk.length_append, Nat.add_le_add_iff_right]
+    exact hP.le.trans <| dist_le _
+  le_antisymm := by
+    classical
+    rintro x y ⟨P, hP, hxP⟩ ⟨Q, hQ, hxQ⟩
+    suffices h' : (Q.dropUntil y hxQ).length = 0 from (Walk.eq_of_length_eq_zero h').symm
+    have hcon := congr_arg Walk.length <| Q.take_spec hxQ
+    rw [Walk.length_append] at hcon
+    linarith [dist_le <| Q.takeUntil _ hxQ, P.length_takeUntil_le hxP, dist_le <| P.takeUntil _ hxP,
+      hP.le, hQ.le]
+
+lemma Walk.IsShortest.distToLE {a : V} {W : G.Walk a y} (hW : IsShortest W) (hG : G.Connected)
+    (hx : x ∈ W.support) :
+    let _ := distToLE G hG a
+    x ≤ y :=
+  ⟨W, hW, hx⟩
+
+
+
+theorem distToLE_covby_iff (G : SimpleGraph V) (hG : G.Connected) (a : V) :
+    let _ := distToLE G hG a
+    x ⋖ y ↔ ∃ (W : G.Walk a x), W.IsShortest ∧ ∃ (hxy : G.Adj x y), (W.concat hxy).IsShortest := by
+  classical
+  simp only [@covBy_iff_lt_and_eq_or_eq _ (distToLE G hG a), lt_iff_le_and_ne]
+  constructor
+  · rintro ⟨⟨⟨P, hP, hxP⟩, hne⟩, h'⟩
+    refine ⟨P.takeUntil _ hxP, hP.takeUntil hG hxP, ?_⟩
+    set z := (P.dropUntil _ hxP).sndOfNotNil sorry with hz_def
+    have hz : z ∈ P.support := by
+      simp [hz_def]
+      have : z ∈ (P.dropUntil x hxP).support := by exact?
+
+    have := h' z
+
+
+example (G : SimpleGraph V) (hG : G.LocallyFinite) (hconn : G.Connected) (v : V) :
+    ∃ (f : ℕ ↪ V), f 0 = v ∧ ∀ i, G.Adj (f i) (f (i+1)) := by
+  _
+
+end Graph
