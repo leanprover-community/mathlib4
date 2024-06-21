@@ -9,6 +9,26 @@ import Mathlib.RingTheory.Kaehler.Basic
 /-!
 # The presheaf of differentials of a presheaf of modules
 
+In this file, we define the type `M.Derivation φ` of derivations
+with values in a presheaf of `R`-modules `M` relative to
+a morphism of `φ : S ⟶ F.op ⋙ R` of presheaves of commutative rings
+over categories `C` and `D` that are related by a functor `F : C ⥤ D`.
+We formalize the notion of universal derivation.
+
+Geometrically, if `f : X ⟶ S` is a morphisms of schemes (or more generally
+a morphism of commutative ringed spaces), we would like to apply
+these definitions where `F` is the pullback functors from open subsets of `S`
+to open subsets of `X` and `φ` is the morphism $O_S ⟶ f_* O_X$.
+
+In order to prove that there exists a universal derivation, the target
+of which shall be called the presheaf of relative differentials of `φ`,
+we shall first study the case where `F` is the identity functor.
+Then, the general case (TODO) shall be obtained by observing that
+derivations for `S ⟶ F.op ⋙ R` identify to derivations
+for `S' ⟶ R` where `S'` is the pullback of presheaf of
+commutative rings `S` via `F` (the data is the same: it suffices
+to show that the two vanishing conditions `d_app` are equivalent).
+
 -/
 
 
@@ -69,6 +89,8 @@ structure Universal where
 
 end Derivation
 
+/-- The property that there exists a universal derivation for
+a morphism of presheaves of commutative rings `S ⟶ F.op ⋙ R`. -/
 class HasDifferentials : Prop where
   exists_universal_derivation : ∃ (M : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
       (d : M.Derivation φ), Nonempty d.Universal
@@ -88,6 +110,7 @@ end Derivation'
 
 namespace DifferentialsConstruction
 
+/-- Auxiliary definition for `relativeDifferentials'`. -/
 noncomputable def relativeDifferentials'BundledCore :
     BundledCorePresheafOfModules.{u} (R ⋙ forget₂ _ _) where
   obj X :=
@@ -106,11 +129,24 @@ noncomputable def relativeDifferentials'BundledCore :
   map_id := sorry
   map_comp := sorry
 
+/-- The presheaf of relative differentials of a morphism of presheaves of
+commutative rings. -/
 noncomputable def relativeDifferentials' :
     PresheafOfModules.{u} (R ⋙ forget₂ _ _) :=
   (relativeDifferentials'BundledCore φ').toPresheafOfModules
 
-def derivation' : (relativeDifferentials' φ').Derivation' φ' := sorry
+/-- The universal derivation. -/
+noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' where
+  d {X} := AddMonoidHom.mk' (fun x =>
+    letI := (φ'.app X).toAlgebra
+    KaehlerDifferential.D (S'.obj X) (R.obj X) x) (by simp)
+  d_map := sorry
+  d_app := sorry
+
+/-- The derivation `derivation' φ'` is universal. -/
+def isUniversal' : (derivation' φ').Universal := sorry
+
+instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'⟩⟩
 
 end DifferentialsConstruction
 
