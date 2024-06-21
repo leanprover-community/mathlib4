@@ -20,7 +20,7 @@ of the parts. This specialisation is intended for proving Turán's theorem
 
 ## Main statements
 
-* `G.crossEdges se`, given the superedge `se : Sym2 P.parts`, returns the finset of all edges of `G`
+* `G.crossEdges se`: given the superedge `se : Sym2 P.parts`, returns the finset of all edges of `G`
   under said superedge.
 * `SimpleGraph.card_edgeFinset_eq_sum_crossEdges_card`: the superedges partition `G`'s edges.
 * `SimpleGraph.card_edgeFinset_bipartition`: special case of the above theorem for `P` comprising
@@ -116,9 +116,9 @@ theorem card_edgeFinset_eq_sum_crossEdges_card :
 
 variable {K : Finset V}
 
-/-- A two-part finpartition defined by one of the parts; the other part is its complement.
+/-- A bipartition defined by one part, the other part being its complement.
 Both parts must be non-empty. -/
-def twoPartFinpartition (h1 : K ≠ ∅) (h2 : K ≠ univ) : Finpartition (univ : Finset V) where
+def bipartition (h1 : K ≠ ∅) (h2 : K ≠ univ) : Finpartition (univ : Finset V) where
   parts := {K, Kᶜ}
   supIndep := by
     let x := (nonempty_iff_ne_empty.mpr h1).choose
@@ -141,25 +141,21 @@ theorem card_edgeFinset_bipartition : G.edgeFinset.card = (G.induce K).edgeFinse
     ext a b
     obtain ⟨_, hx⟩ := a
     simp at hx
+  have t4 : (induce (↑Kᶜ) G).edgeFinset.card = (induce (↑K)ᶜ G).edgeFinset.card := by
+    apply Iso.card_edgeFinset_eq
+    rw [← coe_compl]
   by_cases h1 : K = ∅
   · subst h1; simp [t1]
   by_cases h2 : K = univ
-  · subst h2
-    rw [compl_univ, sum_empty, add_zero, t2, t3, add_zero]
-  let P2 := twoPartFinpartition h1 h2
-  simp_rw [G.card_edgeFinset_eq_sum_crossEdges_card (P := P2), P2, twoPartFinpartition,
-    Sym2.univ_pair]
+  · subst h2; rw [compl_univ, sum_empty, add_zero, t2, t3, add_zero]
+  let P2 := bipartition h1 h2
+  simp_rw [G.card_edgeFinset_eq_sum_crossEdges_card (P := P2), P2, bipartition, Sym2.univ_pair]
   have nc : K ≠ Kᶜ := by
     let x := (nonempty_iff_ne_empty.mpr h1).choose
     haveI : Nontrivial (Finset V) := ⟨{x}, ∅, singleton_ne_empty x⟩
     exact ne_compl_self
-  rw [sum_insert (by simp [nc]), sum_insert (by simp [nc]), sum_singleton, crossEdges_self,
-    crossEdges_self, card_map, card_map, add_assoc]
-  dsimp only
-  rw [Nat.add_left_cancel_iff]
-  have t4 : (induce (↑Kᶜ) G).edgeFinset.card = (induce (↑K)ᶜ G).edgeFinset.card := by
-    apply Iso.card_edgeFinset_eq
-    rw [← coe_compl]
-  rw [t4, Nat.add_right_cancel_iff, G.card_crossEdges_eq_sum_of_ne (by simp [nc])]
+  rw [sum_insert (by simp [nc]), sum_insert (by simp [nc]), sum_singleton,
+    crossEdges_self, crossEdges_self, card_map, card_map, add_assoc, t4,
+    G.card_crossEdges_eq_sum_of_ne (by simp [nc])]
 
 end SimpleGraph
