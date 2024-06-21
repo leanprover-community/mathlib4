@@ -153,7 +153,7 @@ See [Har77], Proposition II.3.2. -/
 theorem isLocallyNoetherian_iff_affine_cover :
     IsLocallyNoetherian X ↔
     ∃ (S : Set X.affineOpens), (⨆ i : S, i : Opens X) = ⊤ ∧
-  ∀ (U : S), IsNoetherianRing (X.presheaf.obj (op U)) :=
+    ∀ (U : S), IsNoetherianRing (X.presheaf.obj (op U)) :=
   ⟨fun h => by
     let S : Set X.affineOpens := Set.univ
     have hS : ⨆ s : S, (s : Opens X) = ⊤ := by
@@ -172,7 +172,7 @@ instance {R : CommRingCat} [IsNoetherianRing R] :
 
 lemma noetherianSpace_of_isAffine [IsAffine X]
     (hX : IsNoetherianRing <| Scheme.Γ.obj (op X)) :
-  NoetherianSpace X := by
+    NoetherianSpace X := by
   let R := Scheme.Γ.obj (op X)
   let SpecR := Scheme.Spec.obj (op R)
   suffices f : SpecR.carrier ≃ₜ X.carrier by
@@ -183,7 +183,7 @@ lemma noetherianSpace_of_isAffine [IsAffine X]
 
 lemma noetherianSpace_of_affineOpen (U : X.affineOpens)
     (hU : IsNoetherianRing (X.presheaf.obj (op U))) :
-  NoetherianSpace U := by
+    NoetherianSpace U := by
   suffices h : IsNoetherianRing (Scheme.Γ.obj { unop := X ∣_ᵤ ↑U }) by
     exact noetherianSpace_of_isAffine h
   apply isNoetherianRing_of_ringEquiv (R := X.presheaf.obj (op U))
@@ -312,7 +312,7 @@ instance (priority := 100) quasiCompact_of_isNoetherian_source {X Y : Scheme}
 
 /-- If `R` is a Noetherian ring, `Spec R` is a locally Noetherian scheme. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :
-  IsLocallyNoetherian (Scheme.Spec.obj (op R)) := by
+    IsLocallyNoetherian (Scheme.Spec.obj (op R)) := by
   let X := Scheme.Spec.obj (op R)
   apply isLocallyNoetherian_of_affine_cover (S := {⟨⊤, AlgebraicGeometry.topIsAffineOpen X⟩})
   simp only [ciSup_unique, Set.default_coe_singleton]
