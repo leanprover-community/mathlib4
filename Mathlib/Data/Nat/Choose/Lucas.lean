@@ -16,9 +16,8 @@ respectively.
 
 ## Main statements
 
-* `choose_modEq_prod_range_choose`: the binomial coefficient `n choose k` is congruent to the
-product of `n_i choose k_i` modulo `p`, where `n_i` and `k_i` are the base-`p`
-digits of `n` and `k`, respectively.
+* `lucas_theorem`: the binomial coefficient `n choose k` is congruent to the product of `n_i choose
+k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
 
 open Finset hiding choose
@@ -29,8 +28,8 @@ namespace Choose
 
 variable {n k p : ℕ} [Fact p.Prime]
 
-/-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) *
-choose (n / p) (k / p)` modulo `p`. -/
+/-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`
+modulo `p`. -/
 theorem choose_modEq_choose_mod_mul_choose_div :
     choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
@@ -59,9 +58,8 @@ theorem choose_modEq_choose_mod_mul_choose_div :
   · rw [mem_product, mem_range, mem_range, not_and_or, lt_succ, not_le, not_lt] at h
     cases h <;> simp [choose_eq_zero_of_lt (by tauto)]
 
-/-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
-`choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over i < a, multiplied by
-`choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
+/-- For primes `p`, `choose n k` is congruent to the product of `choose (⌊n / p ^ i⌋ % p)
+(⌊k / p ^ i⌋ % p)` over i < a, multiplied by `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
 theorem choose_modEq_choose_mul_prod_range_choose (a : ℕ) :
     choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
       ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] :=
@@ -83,5 +81,4 @@ theorem choose_modEq_prod_range_choose {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k 
     choose, cast_one, one_mul, cast_prod]
   rfl
 
-alias lucas_theorem := choose_modEq_choose_mod_mul_choose_div
-alias lucas_theorem' := choose_modEq_prod_range_choose
+alias lucas_theorem := choose_modEq_prod_range_choose
