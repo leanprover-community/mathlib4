@@ -187,9 +187,9 @@ instance homCategory (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCateg
 lemma homCategory.ext {F G : 𝒳 ⥤ᵇ 𝒴} (α β : F ⟶ G) (h : α.toNatTrans = β.toNatTrans) : α = β :=
   BasedNatTrans.ext α β h
 
-@[simps]
 /-- The forgetful functor from the category of based functors `𝒳 ⥤ᵇ 𝒴` to the category of
 functors of underlying categories, `𝒳.obj ⥤ 𝒴.obj`. -/
+@[simps]
 def forgetful (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) :
     (𝒳 ⥤ᵇ 𝒴) ⥤ (𝒳.obj ⥤ 𝒴.obj) where
   obj := fun F ↦ F.toFunctor
