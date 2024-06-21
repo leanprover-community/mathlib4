@@ -36,22 +36,6 @@ attribute [local instance] Matrix.seminormedAddCommGroup
 
 open Matrix Finset
 
-section generalMatrices
-
-variable {m n α : Type*} [Fintype m] [Fintype n] [SeminormedAddCommGroup α]
-
-lemma exists_entry_norm_eq_norm_Matrix [Nonempty m] [Nonempty n] (A : Matrix m n α) :
-    ∃ (i : m) (j : n), ‖A‖ = ‖A i j‖₊ := by
-  simp only [norm_eq_sup_sup_nnnorm]
-  rcases Finset.exists_mem_eq_sup univ univ_nonempty (fun i => univ.sup fun j => ‖A i j‖₊)
-    with ⟨i, hi⟩
-  use i
-  rcases Finset.exists_mem_eq_sup univ univ_nonempty (fun j => ‖A i j‖₊) with ⟨j, hj⟩
-  use j
-  rw [hi.2, hj.2]
-
-end generalMatrices
-
 namespace Int.Matrix
 
 variable (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) (v : Fin n → ℤ) (hn : m < n)
@@ -61,83 +45,81 @@ variable (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) (v : Fin n → ℤ) (hn : 
 
 local notation3 "e" => m / ((n : ℝ) - m) --exponent
 local notation3 "B" => Nat.floor (((n : ℝ) * ‖A‖) ^ e)
--- B' is the vector with all components = B
+--B' is the vector with all components = B
 local notation3 "B'" => fun _ : Fin n => (B : ℤ)
--- T is the box [0 B]^n
+--T is the box [0 B]^n
 local notation3 "T" =>  Finset.Icc 0 B'
-local notation3  "P" => fun i : Fin m => (∑ j : Fin n, B * posPart (A i j))
-local notation3  "N" => fun i : Fin m =>  (∑ j : Fin n, B * (- negPart (A i j)))
--- S is the box where the image of T goes
+local notation3  "P" => fun i : Fin m => ∑ j : Fin n, B * posPart (A i j)
+local notation3  "N" => fun i : Fin m =>  ∑ j : Fin n, B * (- negPart (A i j))
+--S is the box where the image of T goes
 local notation3  "S" => Finset.Icc N P
 
 section preparation
 
 /- In order to apply Pigeohole we need:
-# Step 1: ∀ v ∈  T, (A.mulVec v) ∈  S
+# Step 1: ∀ v ∈  T, A *ᵥ v ∈  S
 and
 # Step 2: S.card < T.card
 Pigeohole will give different x and y in T with A.mulVec x = A.mulVec y in S
 Their difference is the solution we are looking for
 -/
 
--- # Step 1: ∀ v ∈  T, (A.mulVec v) ∈  S
+--# Step 1: ∀ v ∈  T, A *ᵥ v ∈  S
 
-private lemma image_T_subset_S : ∀ v ∈ T, (A.mulVec v) ∈ S := by
+private lemma image_T_subset_S : ∀ v ∈ T, A *ᵥ v ∈ S := by
   intro v hv
   rw [mem_Icc] at hv
   rw [mem_Icc]
   have mulVec_def : A.mulVec v =
-      fun i => Finset.sum univ fun (j : (Fin n)) => A i j * v j := by rfl
-  rw [mulVec_def] -- unfold def of MulVec
-  refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩ -- 2 goals
-  all_goals simp only [mul_neg]
-  all_goals gcongr (∑ _ : Fin n, ?_) with j _ -- get rid of sums
-  all_goals rw [← mul_comm (v j)] -- move A i j to the right of the products
-  all_goals by_cases hsign : 0 ≤ A i j   --we have to distinguish cases: we have now 4 goals
+      fun i ↦ Finset.sum univ fun j : Fin n ↦ A i j * v j := by rfl
+  rw [mulVec_def] --unfold def of MulVec
+  refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩ --2 goals
+  all_goals
+    simp only [mul_neg]
+    gcongr ∑ _ : Fin n, ?_ with j _ --get rid of sums
+    rw [← mul_comm (v j)] --move A i j to the right of the products
+    rcases le_total 0 (A i j) with hsign | hsign--we have to distinguish cases: we have now 4 goals
   · rw [negPart_eq_zero.2 hsign]
     exact mul_nonneg (hv.1 j) hsign
-  · rw [not_le] at hsign
-    rw [negPart_eq_neg.2 (le_of_lt hsign)]
+  · rw [negPart_eq_neg.2 hsign]
     simp only [mul_neg, neg_neg]
-    exact mul_le_mul_of_nonpos_right (hv.2 j) (le_of_lt hsign)
-  · rw [posPart_eq_self.2  hsign]
+    exact mul_le_mul_of_nonpos_right (hv.2 j) hsign
+  · rw [posPart_eq_self.2 hsign]
     exact mul_le_mul_of_nonneg_right (hv.2 j) hsign
-  · rw [not_le] at hsign
-    rw [posPart_eq_zero.2 (le_of_lt hsign)]
-    exact mul_nonpos_of_nonneg_of_nonpos (hv.1 j) (le_of_lt hsign)
+  · rw [posPart_eq_zero.2 hsign]
+    exact mul_nonpos_of_nonneg_of_nonpos (hv.1 j) hsign
 
 --# Preparation for Step 2
 
-private lemma card_T_eq : (T).card = (B+1)^n := by
-   rw [Pi.card_Icc 0 B']
-   simp only [Pi.zero_apply, Int.card_Icc, sub_zero, Int.toNat_ofNat_add_one, prod_const, card_fin]
-
-variable  (hA : A ≠ 0 )
+private lemma card_T_eq : (T).card = (B + 1) ^ n := by
+  rw [Pi.card_Icc 0 B']
+  simp only [Pi.zero_apply, Int.card_Icc, sub_zero, Int.toNat_ofNat_add_one, prod_const, card_fin]
 
 --This lemma is necessary to be able to apply the formula (Icc a b).card = b + 1 - a
-private lemma N_le_P_add_one : ∀ i : Fin m, N i ≤ P i + 1 := by
-  intro i
-  calc N i ≤ 0 := by
-              apply Finset.sum_nonpos
-              intro j _
-              simp only [mul_neg, Left.neg_nonpos_iff]
-              exact mul_nonneg (Nat.cast_nonneg B) (negPart_nonneg (A i j))
-         _ ≤ P i + 1 := by
-              apply le_trans (Finset.sum_nonneg _) (Int.le_add_one (le_refl P i))
-              intro j _
-              exact mul_nonneg (Nat.cast_nonneg B) (posPart_nonneg (A i j))
+private lemma N_le_P_add_one (i : Fin m) : N i ≤ P i + 1 := by
+  calc N i
+  _ ≤ 0 := by
+    apply Finset.sum_nonpos
+    intro j _
+    simp only [mul_neg, Left.neg_nonpos_iff]
+    exact mul_nonneg (Nat.cast_nonneg B) (negPart_nonneg (A i j))
+  _ ≤ P i + 1 := by
+    apply le_trans (Finset.sum_nonneg _) (Int.le_add_one (le_refl P i))
+    intro j _
+    exact mul_nonneg (Nat.cast_nonneg B) (posPart_nonneg (A i j))
 
-private lemma card_S_eq : (Finset.Icc N P).card = (∏ i : Fin m, (P i - N i + 1)):= by
+private lemma card_S_eq : (Finset.Icc N P).card = ∏ i : Fin m, (P i - N i + 1) := by
   rw [Pi.card_Icc N P, Nat.cast_prod]
   congr
   ext i
   rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one m n A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
-/-- The sup norm of a non-zero integer matrix is at lest one  -/
+variable  (hA : A ≠ 0)
+
+/--The sup norm of a non-zero integer matrix is at lest one  -/
 lemma one_le_norm_A_of_ne_zero : 1 ≤ ‖A‖ := by
-  by_contra h
-  apply lt_of_not_le at h
+  by_contra! h
   apply hA
   ext i j
   simp only [zero_apply]
@@ -145,9 +127,9 @@ lemma one_le_norm_A_of_ne_zero : 1 ≤ ‖A‖ := by
   specialize h i j
   rw [Int.norm_eq_abs] at h
   norm_cast at h
-  apply (Int.abs_lt_one_iff.1 h)
+  exact Int.abs_lt_one_iff.1 h
 
--- # Step 2: S.card < T.card
+--# Step 2: S.card < T.card
 
 open Real Nat
 
@@ -161,12 +143,12 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
       rw [← Fin.prod_const m (n * ‖A‖ * B + 1)] --transform ^m into a product
       apply Finset.prod_le_prod --two goals
       all_goals intro i _
-      · obtain h:= N_le_P_add_one m n A i
+      · have h := N_le_P_add_one m n A i
         rify at h
         linarith only [h]
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
         have h1 : n * ‖A‖ * B = ∑ _ : Fin n, ‖A‖ * B := by
-          simp only [sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul, (mul_assoc ↑n ‖A‖ ↑B)]
+          simp only [sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul, mul_assoc ↑n ‖A‖ ↑B]
         rw [h1, ← Finset.sum_add_distrib]
         gcongr with j _
         rw [← mul_add, ← Int.cast_add, posPart_add_negPart (A i j), mul_comm]
@@ -176,53 +158,49 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
   _  ≤ (n * ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow]
         apply pow_le_pow_left (add_nonneg _ (zero_le_one' ℝ)) _ --two goals
-        · exact (mul_nonneg (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)) (Nat.cast_nonneg B))
+        · exact mul_nonneg (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)) (Nat.cast_nonneg B)
         · rw [mul_add]
           simp only [mul_one, add_le_add_iff_left]
           exact Left.one_le_mul_of_le_of_le
               (by exact_mod_cast Nat.one_le_of_lt hn) (one_le_norm_A_of_ne_zero m n A hA)
               (Nat.cast_nonneg n)
-  _ = ((n * ‖A‖) ^ ((m / ((n : ℝ) - m)))) ^ ((n : ℝ) - m)  * (B + 1) ^ m := by
+  _ = ((n * ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m)  * (B + 1) ^ m := by
         rw [mul_left_inj' (pow_ne_zero m (Nat.cast_add_one_ne_zero B)),
-          ← rpow_mul (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)), ← Real.rpow_natCast]
-        congr
-        rw [div_mul_cancel₀]
-        apply sub_ne_zero_of_ne
-        exact_mod_cast Nat.ne_of_lt' hn
+          ← rpow_mul (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)), ← Real.rpow_natCast,
+          div_mul_cancel₀]
+        exact sub_ne_zero_of_ne (mod_cast hn.ne')
   _ < (B + 1) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
         rw [mul_lt_mul_right (pow_pos (Nat.cast_add_one_pos B) m)]
         apply rpow_lt_rpow --three goals
         · exact rpow_nonneg (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)) e
         · exact Nat.lt_floor_add_one ((n * ‖A‖) ^ e)
-        · simp only [sub_pos, Nat.cast_lt]
-          exact hn
+        · simpa only [sub_pos, Nat.cast_lt] using hn
   _ = (B + 1) ^ n := by
         rw [← rpow_natCast, ← rpow_add (Nat.cast_add_one_pos B), ← rpow_natCast, sub_add_cancel]
 
 end preparation
 
-theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0)  : ∃ (t : Fin n → ℤ), t ≠ 0 ∧
-    A.mulVec t = 0 ∧ ‖t‖ ≤ ((n * ‖A‖)^((m : ℝ) / (n - m))) := by
+theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0) : ∃ t : Fin n → ℤ, t ≠ 0 ∧
+    A *ᵥ t = 0 ∧ ‖t‖ ≤ ((n * ‖A‖) ^ ((m : ℝ) / (n - m))) := by
   --Pigeonhole
   rcases Finset.exists_ne_map_eq_of_card_lt_of_maps_to
     (card_S_lt_card_T m n A hn hA_nezero) (image_T_subset_S m n A)
     with ⟨x, hxT, y, hyT, hneq, hfeq⟩
-  use x-y
-  -- proofs that x - y ≠ 0 and x-y is a solution
-  refine ⟨sub_ne_zero.mpr hneq, (by simp only [mulVec_sub, sub_eq_zero, hfeq]), ?_⟩
-  ---Inequality
-  have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * ‖A‖) ^ e :=
-      Real.rpow_nonneg (mul_nonneg (Nat.cast_nonneg n) (le_of_lt (norm_pos_iff'.mpr hA_nezero))) e
-  rw [← norm_col, norm_le_iff n_mul_norm_A_pow_e_nonneg]
+  --proofs that x - y ≠ 0 and x-y is a solution
+  refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
+  --Inequality
+  have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * ‖A‖) ^ e := by positivity
+  have : ‖x - y‖ = ‖col (Fin 1) (x - y)‖ := by exact Eq.symm (norm_col (x - y))
+  rw [this, norm_le_iff n_mul_norm_A_pow_e_nonneg]
   intro i j
-  simp only [col_apply, Pi.sub_apply, ge_iff_le]
+  simp only [col_apply, Pi.sub_apply]
   rw [Int.norm_eq_abs, ← Int.cast_abs]
   refine le_trans ?_ (Nat.floor_le n_mul_norm_A_pow_e_nonneg)
   norm_cast
-  rw [abs_le]--two goals
+  rw [abs_le]
   rw [Finset.mem_Icc] at hyT
   rw [Finset.mem_Icc] at hxT
-  constructor
+  constructor--two goals
   · simp only [neg_le_sub_iff_le_add]
     apply le_trans (hyT.2 i)
     norm_cast
