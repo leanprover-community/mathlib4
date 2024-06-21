@@ -847,10 +847,9 @@ theorem prod_top : (prod ⊤ ⊤ : Submodule R (M × M')) = ⊤ := by ext; simp
 theorem prod_bot : (prod ⊥ ⊥ : Submodule R (M × M')) = ⊥ := by ext ⟨x, y⟩; simp [Prod.zero_eq_mk]
 #align submodule.prod_bot Submodule.prod_bot
 
--- Porting note: Added nonrec
-nonrec theorem prod_mono {p p' : Submodule R M} {q q' : Submodule R M'} :
+theorem prod_mono {p p' : Submodule R M} {q q' : Submodule R M'} :
     p ≤ p' → q ≤ q' → prod p q ≤ prod p' q' :=
-  prod_mono
+  Set.prod_mono
 #align submodule.prod_mono Submodule.prod_mono
 
 @[simp]
