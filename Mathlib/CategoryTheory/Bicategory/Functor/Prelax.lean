@@ -139,7 +139,6 @@ variable {a b : B}
 @[simps!]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
-
 instance map₂_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : IsIso (F.map₂ η) :=
   (F.map₂Iso (asIso η)).isIso_hom
 
