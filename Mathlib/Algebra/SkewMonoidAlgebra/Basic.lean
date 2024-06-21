@@ -22,8 +22,6 @@ In particular, this means that unlike in `Mathlib.Algebra.MonoidAlgebra.Basic`, 
 need to be a monoid for most of our uses.
 -/
 
-set_option autoImplicit false
-
 noncomputable section
 
 section
@@ -741,7 +739,7 @@ open BigOperators
 
 theorem mul_apply_antidiagonal [Monoid G] (f g : SkewMonoidAlgebra k G) [MulSemiringAction G k]
     (x : G) (s : Finset (G × G)) (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) :
-    (f * g) x = ∑ p in s, f p.1 * p.1 • g p.2:= by
+    (f * g) x = ∑ p in s, f p.1 * p.1 • g p.2 := by
   classical
   let F : G × G → k := fun p => if p.1 * p.2 = x then f p.1 * p.1 • g p.2 else 0
   calc
@@ -1091,7 +1089,7 @@ instance algebra {A : Type*} [Semiring A] [MulSemiringAction G A] [Algebra k A]
         RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, single_one_mul_apply, mul_single_one_apply,
         smul_algebraMap, Algebra.commutes]
          }
---SMulCommClass.smul_triv
+
 @[simp]
 theorem coe_algebraMap {A : Type*} [Semiring A] [Algebra k A] [MulSemiringAction G A]
     [SMulCommClass G k A] :
@@ -1141,7 +1139,7 @@ theorem algHom_ext' ⦃φ₁ φ₂ : AlgHom k (SkewMonoidAlgebra k G) A⦄
     φ₁ = φ₂ :=  algHom_ext <| DFunLike.congr_fun h
 
 variable (k G A)
--- _ (algebraMap k k _)
+
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
   `SkewMonoidAlgebra k G →ₐ[k] A`. -/
 def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
@@ -1229,7 +1227,6 @@ instance commSemiring [CommSemiring k] [CommMonoid G] [MulSemiringAction G k]
       rw [mul_comm, mul_comm (a.toFinsupp y) _] }
 
 end CommSemiring
-
 
 section equivMapDomain
 
