@@ -28,11 +28,9 @@ the identities `log (x * y) = log x + log y` and `log (x * y) = y * log x`
 ## Tags
 ENNReal, EReal, logarithm
 -/
-
 namespace ENNReal
 
 /-! ### Definition -/
-
 section Definition
 
 /--
@@ -40,7 +38,7 @@ The logarithm function defined on the extended nonnegative reals `ℝ≥0∞`
 to the extended reals `EReal`. Coincides with the usual logarithm function
 and with `Real.log` on positive reals, and takes values `log 0 = ⊥` and `log ⊤ = ⊤`.
 Conventions about multiplication in `ℝ≥0∞` and addition in `EReal` make the identity
-`log (x * y) = log x + log y` unconditionnal. --/
+`log (x * y) = log x + log y` unconditional. --/
 noncomputable def log (x : ℝ≥0∞) : EReal :=
   if x = 0 then ⊥
     else if x = ⊤ then ⊤
@@ -69,25 +67,24 @@ theorem log_of_nNReal {x : NNReal} (h : x ≠ 0) :
 end Definition
 
 /-! ### Monotonicity -/
-
 section Monotonicity
 
 theorem log_strictMono : StrictMono log := by
   intro x y h
   unfold log
   rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
-  . rcases ENNReal.trichotomy y with (rfl | rfl | y_real)
-    . exfalso; exact lt_irrefl 0 h
-    . simp
-    . simp [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).1),
+  · rcases ENNReal.trichotomy y with (rfl | rfl | y_real)
+    · exfalso; exact lt_irrefl 0 h
+    · simp
+    · simp [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).1),
       ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).2, EReal.bot_lt_coe]
-  . exfalso; exact (ne_top_of_lt h) (Eq.refl ⊤)
-  . simp only [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).1),
+  · exfalso; exact (ne_top_of_lt h) (Eq.refl ⊤)
+  · simp only [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).1),
       ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).2]
     rcases ENNReal.trichotomy y with (rfl | rfl | y_real)
-    . exfalso; rw [← ENNReal.bot_eq_zero] at h; exact not_lt_bot h
-    . simp
-    . simp only [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).1), ↓reduceIte,
+    · exfalso; rw [← ENNReal.bot_eq_zero] at h; exact not_lt_bot h
+    · simp
+    · simp only [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).1), ↓reduceIte,
         ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).2, EReal.coe_lt_coe_iff]
       apply Real.log_lt_log x_real
       exact (ENNReal.toReal_lt_toReal (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).2)
