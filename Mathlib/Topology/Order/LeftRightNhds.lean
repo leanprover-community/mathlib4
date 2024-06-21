@@ -404,16 +404,7 @@ theorem nhds_basis_Ioo_pos_of_pos [NoMaxOrder α] {a : α} (ha : 0 < a) :
 
 end LinearOrderedAddCommGroup
 
-@[deprecated image_neg (since := "2023-02-05")]
-theorem preimage_neg [AddGroup α] : preimage (Neg.neg : α → α) = image (Neg.neg : α → α) :=
-  funext fun _ => image_neg.symm
-#align preimage_neg preimage_neg
-
-@[deprecated "use `Filter.map_neg` from `Mathlib.Order.Filter.Pointwise`" (since :="2023-02-05")]
-theorem Filter.map_neg_eq_comap_neg [AddGroup α] :
-    map (Neg.neg : α → α) = comap (Neg.neg : α → α) :=
-  funext fun _ => map_eq_comap_of_inverse (funext neg_neg) (funext neg_neg)
-#align filter.map_neg_eq_comap_neg Filter.map_neg_eq_comap_neg
+#align preimage_neg Set.image_negₓ
 
 namespace Set.OrdConnected
 
