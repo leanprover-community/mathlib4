@@ -58,9 +58,6 @@ namespace Presheaf
 @[simp] theorem comp_app {P Q R : Presheaf C X} (f : P ⟶ Q) (g : Q ⟶ R) :
     (f ≫ g).app U = f.app U ≫ g.app U := rfl
 
--- Porting note (#10756): added an `ext` lemma,
--- since `NatTrans.ext` can not see through the definition of `Presheaf`.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
     f = g := by
@@ -103,8 +100,8 @@ attribute[aesop safe destruct (rule_sets := [Restrict])] Eq.trans_le
 attribute[aesop safe -50 (rule_sets := [Restrict])] Aesop.BuiltinRules.assumption
 
 example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_ : v 1 = v 2)
-    (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y :=
-  by restrict_tac
+    (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y := by
+  restrict_tac
 
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
@@ -202,8 +199,8 @@ set_option linter.uppercaseLean3 false in
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
     (h : f = g) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq h ℱ).hom.app U =
-      ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) :=
-  by simp [pushforwardEq]
+      ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) := by
+  simp [pushforwardEq]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq_hom_app TopCat.Presheaf.pushforwardEq_hom_app
 
@@ -347,7 +344,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
     { lift := fun s ↦ by
         fapply CostructuredArrow.homMk
         · change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
-          refine' (homOfLE _).op
+          refine (homOfLE ?_).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [autoParam, eq_iff_true_of_subsingleton]

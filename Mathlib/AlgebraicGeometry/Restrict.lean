@@ -64,7 +64,7 @@ instance ΓRestrictAlgebra {X : Scheme.{u}} {Y : TopCat.{u}} {f : Y ⟶ X} (hf :
 lemma Scheme.map_basicOpen' (X : Scheme.{u}) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
     U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
     (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
-  refine' (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
+  refine (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans ?_
   erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
   rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
     op_id, CategoryTheory.Functor.map_id]
@@ -182,7 +182,7 @@ def Scheme.restrictRestrictComm (X : Scheme.{u}) (U V : Opens X.carrier) :
     X ∣_ᵤ U ∣_ᵤ ιOpens U ⁻¹ᵁ V ≅ X ∣_ᵤ V ∣_ᵤ ιOpens V ⁻¹ᵁ U := by
   refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _ ≫ ιOpens V) ?_
   simp only [Scheme.restrict_carrier, Scheme.ofRestrict_val_base, Scheme.comp_coeBase,
-    CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
+    TopCat.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
   dsimp
   rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range,
@@ -194,7 +194,7 @@ def Scheme.restrictRestrict (X : Scheme.{u}) (U : Opens X.carrier) (V : Opens (X
     X ∣_ᵤ U ∣_ᵤ V ≅ X ∣_ᵤ U.openEmbedding.isOpenMap.functor.obj V := by
   refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _) ?_
   simp only [Scheme.restrict_carrier, Scheme.ofRestrict_val_base, Scheme.comp_coeBase,
-    CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
+    TopCat.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
   rfl
 
@@ -225,8 +225,8 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsI
     (H := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance))
     (Y.ofRestrict _) _
   dsimp [restrict]
-  rw [coe_comp, Set.range_comp, Opens.coe_inclusion, Subtype.range_val, Subtype.range_coe]
-  refine' @Set.image_preimage_eq _ _ f.1.base U.1 _
+  rw [Set.range_comp, Subtype.range_val, Subtype.range_coe]
+  refine @Set.image_preimage_eq _ _ f.1.base U.1 ?_
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 #align algebraic_geometry.Scheme.restrict_map_iso AlgebraicGeometry.Scheme.restrictMapIso
@@ -236,7 +236,7 @@ section MorphismRestrict
 /-- Given a morphism `f : X ⟶ Y` and an open set `U ⊆ Y`, we have `X ×[Y] U ≅ X |_{f ⁻¹ U}` -/
 def pullbackRestrictIsoRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     pullback f (Scheme.ιOpens U) ≅ X ∣_ᵤ f ⁻¹ᵁ U := by
-  refine' IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) _
+  refine IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) ?_
   rw [IsOpenImmersion.range_pullback_fst_of_right]
   dsimp [Opens.coe_inclusion, Scheme.restrict]
   rw [Subtype.range_val, Subtype.range_coe]
@@ -280,8 +280,8 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens 
     IsPullback (f ∣_ U) (Scheme.ιOpens (f ⁻¹ᵁ U)) (Scheme.ιOpens U) f := by
   delta morphismRestrict
   rw [← Category.id_comp f]
-  refine'
-    (IsPullback.of_horiz_isIso ⟨_⟩).paste_horiz
+  refine
+    (IsPullback.of_horiz_isIso ⟨?_⟩).paste_horiz
       (IsPullback.of_hasPullback f (Y.ofRestrict U.openEmbedding)).flip
   -- Porting note: changed `rw` to `erw`
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
@@ -321,7 +321,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Op
   ext x
   constructor
   · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).1.base _ ∈ V, rfl⟩
-    refine' ⟨⟨_, hx⟩, _, rfl⟩
+    refine ⟨⟨_, hx⟩, ?_, rfl⟩
     -- Porting note: this rewrite was not necessary
     rw [SetLike.mem_coe]
     convert hx'
@@ -329,7 +329,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Op
     refine Subtype.ext ?_
     exact (morphismRestrict_base_coe f U ⟨x, hx⟩).symm
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
-    refine' ⟨⟨_, hx⟩, (_ : (f ∣_ U).1.base ⟨x, hx⟩ ∈ V.1), rfl⟩
+    refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).1.base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
     -- Porting note: `ext1` is compiling
     refine Subtype.ext ?_
@@ -377,7 +377,7 @@ def morphismRestrictOpensRange
     pullback.map _ _ _ _ (𝟙 _) e.hom (𝟙 _) (by rw [Category.comp_id, Category.id_comp])
       (by rw [Category.comp_id, IsOpenImmersion.isoOfRangeEq_hom_fac])
   symm
-  refine' Arrow.isoMk (asIso t ≪≫ pullbackRestrictIsoRestrict f V) e _
+  refine Arrow.isoMk (asIso t ≪≫ pullbackRestrictIsoRestrict f V) e ?_
   rw [Iso.trans_hom, asIso_hom, ← Iso.comp_inv_eq, ← cancel_mono g, Arrow.mk_hom, Arrow.mk_hom,
     Category.assoc, Category.assoc, Category.assoc, IsOpenImmersion.isoOfRangeEq_inv_fac,
     ← pullback.condition, morphismRestrict_ι,
@@ -419,7 +419,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Open
         (f ∣_ U ∣_
           (Y ∣_ᵤ U).basicOpen (Y.presheaf.map (eqToHom U.openEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
-  refine' morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ _
+  refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
   have e := Scheme.preimage_basicOpen (Y.ofRestrict U.openEmbedding) r
   erw [Scheme.ofRestrict_val_c_app, Opens.adjunction_counit_app_self, eqToHom_op] at e
   rw [← (Y.restrict U.openEmbedding).basicOpen_res_eq _ (eqToHom U.inclusion_map_eq_top).op]
@@ -439,7 +439,7 @@ def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x) 
     Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).1 x) ≅
       Arrow.mk (PresheafedSpace.stalkMap f.1 x.1) := by
   fapply Arrow.isoMk'
-  · refine' Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ _
+  · refine Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ ?_
     apply Inseparable.of_eq
     exact morphismRestrict_base_coe f U x
   · exact X.restrictStalkIso (Opens.openEmbedding _) _

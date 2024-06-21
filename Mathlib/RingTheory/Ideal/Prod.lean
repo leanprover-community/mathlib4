@@ -53,7 +53,7 @@ theorem ideal_prod_eq (I : Ideal (R × S)) :
   rintro ⟨r, s⟩
   rw [mem_prod, mem_map_iff_of_surjective (RingHom.fst R S) Prod.fst_surjective,
     mem_map_iff_of_surjective (RingHom.snd R S) Prod.snd_surjective]
-  refine' ⟨fun h => ⟨⟨_, ⟨h, rfl⟩⟩, ⟨_, ⟨h, rfl⟩⟩⟩, _⟩
+  refine ⟨fun h => ⟨⟨_, ⟨h, rfl⟩⟩, ⟨_, ⟨h, rfl⟩⟩⟩, ?_⟩
   rintro ⟨⟨⟨r, s'⟩, ⟨h₁, rfl⟩⟩, ⟨⟨r', s⟩, ⟨h₂, rfl⟩⟩⟩
   simpa using I.add_mem (I.mul_mem_left (1, 0) h₁) (I.mul_mem_left (0, 1) h₂)
 #align ideal.ideal_prod_eq Ideal.ideal_prod_eq
@@ -81,7 +81,7 @@ theorem map_snd_prod (I : Ideal R) (J : Ideal S) : map (RingHom.snd R S) (prod I
 @[simp]
 theorem map_prodComm_prod :
     map ((RingEquiv.prodComm : R × S ≃+* S × R) : R × S →+* S × R) (prod I J) = prod J I := by
-  refine' Trans.trans (ideal_prod_eq _) _
+  refine Trans.trans (ideal_prod_eq _) ?_
   simp [map_map]
 #align ideal.map_prod_comm_prod Ideal.map_prodComm_prod
 

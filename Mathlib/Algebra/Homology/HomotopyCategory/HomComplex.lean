@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
@@ -169,8 +169,8 @@ lemma ofHom_v (φ : F ⟶ G) (p : ℤ) : (ofHom φ).v p p (add_zero p) = φ.f p 
 
 @[simp]
 lemma ofHom_v_comp_d (φ : F ⟶ G) (p q q' : ℤ) (hpq : p + 0 = q) :
-    (ofHom φ).v p q hpq ≫ G.d q q' = φ.f p ≫ G.d p q' :=
-by simp only [ofHom, ofHoms_v_comp_d]
+    (ofHom φ).v p q hpq ≫ G.d q q' = φ.f p ≫ G.d p q' := by
+  simp only [ofHom, ofHoms_v_comp_d]
 
 @[simp]
 lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q : ℤ) (hpq : p + 0 = q) :
@@ -562,10 +562,16 @@ open HomComplex
 
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
-@[simps! X d_apply]
-def HomComplex : CochainComplex AddCommGroupCat ℤ where
-  X i := AddCommGroupCat.of (Cochain F G i)
-  d i j := AddCommGroupCat.ofHom (δ_hom ℤ F G i j)
+-- We also constructed the `d_apply` lemma using `@[simps]`
+-- until we made `AddCommGrp.coe_of` a simp lemma,
+-- after which the simp normal form linter complains.
+-- It was not used a simp lemma in Mathlib.
+-- Possible solution: higher priority function coercions that remove the `of`?
+-- @[simp]
+@[simps! X]
+def HomComplex : CochainComplex AddCommGrp ℤ where
+  X i := AddCommGrp.of (Cochain F G i)
+  d i j := AddCommGrp.ofHom (δ_hom ℤ F G i j)
   shape _ _ hij := by ext; apply δ_shape _ _ hij
   d_comp_d' _ _ _ _ _  := by ext; apply δ_δ
 

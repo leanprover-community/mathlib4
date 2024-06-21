@@ -37,7 +37,7 @@ by a sequence of simple functions.
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
 open scoped Classical
-open Topology ENNReal MeasureTheory BigOperators
+open Topology ENNReal MeasureTheory
 
 variable {α β ι E F 𝕜 : Type*}
 
@@ -115,7 +115,7 @@ theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) 
 
 theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e)) :
     Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
-  refine' (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => _
+  refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => ?_
   rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
   rw [edist_comm] at hN
   exact ⟨N, trivial, fun n hn => (edist_nearestPt_le e x hn).trans_lt hN⟩
@@ -158,11 +158,11 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
   simp (config := { iota := false }) only [approxOn, coe_comp]
-  refine' tendsto_nearestPt (closure_minimal _ isClosed_closure hx)
+  refine tendsto_nearestPt (closure_minimal ?_ isClosed_closure hx)
   simp (config := { iota := false }) only [Nat.range_casesOn, closure_union, range_comp]
   exact
     Subset.trans (image_closure_subset_closure_image continuous_subtype_val)
-      (subset_union_right _ _)
+      subset_union_right
 #align measure_theory.simple_func.tendsto_approx_on MeasureTheory.SimpleFunc.tendsto_approxOn
 
 theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)

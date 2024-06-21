@@ -38,8 +38,6 @@ and `q` is notation for the cardinality of `K`.
 
 universe u v
 
-open scoped BigOperators
-
 section FiniteField
 
 open MvPolynomial
@@ -56,9 +54,9 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     (h : f.totalDegree < (q - 1) * Fintype.card σ) : ∑ x, eval x f = 0 := by
   haveI : DecidableEq K := Classical.decEq K
   calc
-    ∑ x, eval x f = ∑ x : σ → K, ∑ d in f.support, f.coeff d * ∏ i, x i ^ d i := by
+    ∑ x, eval x f = ∑ x : σ → K, ∑ d ∈ f.support, f.coeff d * ∏ i, x i ^ d i := by
       simp only [eval_eq']
-    _ = ∑ d in f.support, ∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i := sum_comm
+    _ = ∑ d ∈ f.support, ∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i := sum_comm
     _ = 0 := sum_eq_zero ?_
   intro d hd
   obtain ⟨i, hi⟩ : ∃ i, d i < q - 1 := f.exists_degree_lt (q - 1) h hd
@@ -86,8 +84,8 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
       uniq := fun ⟨j, h⟩ => Subtype.val_injective h }
   calc
     (∏ j : σ, (e a : σ → K) j ^ d j) =
-        (e a : σ → K) i ^ d i * ∏ j : { j // j ≠ i }, (e a : σ → K) j ^ d j :=
-      by rw [← e'.prod_comp, Fintype.prod_sum_type, univ_unique, prod_singleton]; rfl
+        (e a : σ → K) i ^ d i * ∏ j : { j // j ≠ i }, (e a : σ → K) j ^ d j := by
+      rw [← e'.prod_comp, Fintype.prod_sum_type, univ_unique, prod_singleton]; rfl
     _ = a ^ d i * ∏ j : { j // j ≠ i }, (e a : σ → K) j ^ d j := by
       rw [Equiv.subtypeEquivCodomain_symm_apply_eq]
     _ = a ^ d i * ∏ j, x₀ j ^ d j := congr_arg _ (Fintype.prod_congr _ _ ?_)
@@ -107,23 +105,23 @@ in finitely many variables (`X s`, `s : σ`) over a finite field of characterist
 Assume that the sum of the total degrees of the `f i` is less than the cardinality of `σ`.
 Then the number of common solutions of the `f i` is divisible by `p`. -/
 theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomial σ K}
-    (h : (∑ i in s, (f i).totalDegree) < Fintype.card σ) :
+    (h : (∑ i ∈ s, (f i).totalDegree) < Fintype.card σ) :
     p ∣ Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 } := by
   have hq : 0 < q - 1 := by rw [← Fintype.card_units, Fintype.card_pos_iff]; exact ⟨1⟩
   let S : Finset (σ → K) := { x ∈ univ | ∀ i ∈ s, eval x (f i) = 0 }.toFinset
   have hS : ∀ x : σ → K, x ∈ S ↔ ∀ i : ι, i ∈ s → eval x (f i) = 0 := by
     intro x
     simp only [S, Set.toFinset_setOf, mem_univ, true_and, mem_filter]
-  /- The polynomial `F = ∏ i in s, (1 - (f i)^(q - 1))` has the nice property
+  /- The polynomial `F = ∏ i ∈ s, (1 - (f i)^(q - 1))` has the nice property
     that it takes the value `1` on elements of `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}`
     while it is `0` outside that locus.
     Hence the sum of its values is equal to the cardinality of
     `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}` modulo `p`. -/
-  let F : MvPolynomial σ K := ∏ i in s, (1 - f i ^ (q - 1))
+  let F : MvPolynomial σ K := ∏ i ∈ s, (1 - f i ^ (q - 1))
   have hF : ∀ x, eval x F = if x ∈ S then 1 else 0 := by
     intro x
     calc
-      eval x F = ∏ i in s, eval x (1 - f i ^ (q - 1)) := eval_prod s _ x
+      eval x F = ∏ i ∈ s, eval x (1 - f i ^ (q - 1)) := eval_prod s _ x
       _ = if x ∈ S then 1 else 0 := ?_
     simp only [(eval x).map_sub, (eval x).map_pow, (eval x).map_one]
     split_ifs with hx
@@ -148,10 +146,10 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   -- It remains to verify the crucial assumption of this machine
   show F.totalDegree < (q - 1) * Fintype.card σ
   calc
-    F.totalDegree ≤ ∑ i in s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finset_prod s _
-    _ ≤ ∑ i in s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_
+    F.totalDegree ≤ ∑ i ∈ s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finset_prod s _
+    _ ≤ ∑ i ∈ s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_
     -- see ↓
-    _ = (q - 1) * ∑ i in s, (f i).totalDegree := (mul_sum ..).symm
+    _ = (q - 1) * ∑ i ∈ s, (f i).totalDegree := (mul_sum ..).symm
     _ < (q - 1) * Fintype.card σ := by rwa [mul_lt_mul_left hq]
   -- Now we prove the remaining step from the preceding calculation
   show (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree

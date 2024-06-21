@@ -84,13 +84,9 @@ function so that `mk 1` is the power series with all coefficients equal to one.
 theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
   rw [mul_comm, ext_iff]
   intro n
-  by_cases hn : n = 0
-  · subst hn
-    simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one, constantCoeff_X, sub_zero,
-      one_mul, coeff_one, ↓reduceIte]
-    rfl
-  · rw [show n = n - 1 + 1 by exact (Nat.succ_pred hn).symm, sub_mul]
-    simp
+  cases n with
+  | zero => simp
+  | succ n => simp [sub_mul]
 
 /--
 Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
@@ -102,10 +98,12 @@ theorem mk_one_pow_eq_mk_choose_add :
   induction d with
   | zero => ext; simp
   | succ d hd =>
-      ext n; rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
-      simp_rw [coeff_mk, Pi.one_apply, one_mul]; norm_cast
-      rw [Finset.sum_antidiagonal_choose_add, ← Nat.choose_succ_succ]; congr
-      exact add_right_comm d n 1
+      ext n
+      rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
+      simp_rw [coeff_mk, Pi.one_apply, one_mul]
+      norm_cast
+      rw [Finset.sum_antidiagonal_choose_add, ← Nat.choose_succ_succ, Nat.succ_eq_add_one,
+        add_right_comm]
 
 /--
 The power series `mk fun n => Nat.choose (d + n) d`, whose multiplicative inverse is
@@ -245,7 +243,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     by convert this using 1 <;> ring
   congr 1
   rw [← map_natCast (algebraMap ℚ A) (n.choose x), ← map_mul, ← map_mul]
-  refine' RingHom.congr_arg _ _
+  refine RingHom.congr_arg _ ?_
   rw [mul_one_div (↑(n.choose x) : ℚ), one_div_mul_one_div]
   symm
   rw [div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]

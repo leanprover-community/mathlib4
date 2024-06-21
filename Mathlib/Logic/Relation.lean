@@ -191,7 +191,7 @@ variable {rα rβ}
   accessible under `rα`, then `f a` is accessible under `rβ`. -/
 theorem _root_.Acc.of_fibration (fib : Fibration rα rβ f) {a} (ha : Acc rα a) : Acc rβ (f a) := by
   induction' ha with a _ ih
-  refine' Acc.intro (f a) fun b hr ↦ _
+  refine Acc.intro (f a) fun b hr ↦ ?_
   obtain ⟨a', hr', rfl⟩ := fib hr
   exact ih a' hr'
 #align acc.of_fibration Acc.of_fibration
@@ -225,7 +225,7 @@ lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b 
     Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
   ext a b
   simp_rw [Relation.Map, Function.comp_apply, ← exists_and_right, @exists_comm γ, @exists_comm δ]
-  refine' exists₂_congr fun a b ↦ ⟨_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
+  refine exists₂_congr fun a b ↦ ⟨?_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
   rintro ⟨_, _, ⟨hab, rfl, rfl⟩, h⟩
   exact ⟨hab, h⟩
 #align relation.map_map Relation.map_map
@@ -443,14 +443,14 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
   ⟨trans_right⟩
 
 theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
-  refine' ⟨fun h ↦ _, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
+  refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
   cases' h with _ hac b _ hab hbc
   · exact ⟨_, by rfl, hac⟩
   · exact ⟨_, hab.to_reflTransGen, hbc⟩
 #align relation.trans_gen.tail'_iff Relation.TransGen.tail'_iff
 
 theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
-  refine' ⟨fun h ↦ _, fun ⟨b, hab, hbc⟩ ↦ head' hab hbc⟩
+  refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ head' hab hbc⟩
   induction h with
   | single hac => exact ⟨_, hac, by rfl⟩
   | tail _ hbc IH =>
@@ -462,7 +462,7 @@ end TransGen
 
 theorem _root_.Acc.TransGen (h : Acc r a) : Acc (TransGen r) a := by
   induction' h with x _ H
-  refine' Acc.intro x fun y hy ↦ _
+  refine Acc.intro x fun y hy ↦ ?_
   cases' hy with _ hyx z _ hyz hzx
   exacts [H y hyx, (H z hzx).inv hyz]
 #align acc.trans_gen Acc.TransGen
@@ -557,7 +557,7 @@ theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a 
 #align relation.refl_trans_gen_iff_eq Relation.reflTransGen_iff_eq
 
 theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ TransGen r a b := by
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · cases' h with c _ hac hcb
     · exact Or.inl rfl
     · exact Or.inr (TransGen.tail' hac hcb)

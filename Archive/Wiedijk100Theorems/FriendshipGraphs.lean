@@ -41,7 +41,7 @@ be phrased in terms of counting walks.
 -/
 
 
-open scoped Classical BigOperators
+open scoped Classical
 
 namespace Theorems100
 
@@ -317,7 +317,7 @@ theorem existsPolitician_of_degree_le_two (hd : G.IsRegularOfDegree d) (h : d â‰
     ExistsPolitician G := by
   interval_cases d
   iterate 2 apply existsPolitician_of_degree_le_one hG hd; norm_num
-  Â· exact existsPolitician_of_degree_eq_two hG hd
+  exact existsPolitician_of_degree_eq_two hG hd
 #align theorems_100.friendship.exists_politician_of_degree_le_two Theorems100.Friendship.existsPolitician_of_degree_le_two
 
 end Friendship

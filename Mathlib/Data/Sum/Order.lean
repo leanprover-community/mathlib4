@@ -174,7 +174,7 @@ instance instPreorderSum : Preorder (Sum α β) :=
     le_refl := fun x => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,
     lt_iff_le_not_le := fun a b => by
-      refine' ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, _⟩, _⟩
+      refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩)
         · exact hba.not_lt (inl_lt_inl_iff.1 hab)
         · exact hba.not_lt (inr_lt_inr_iff.1 hab)
@@ -382,7 +382,7 @@ instance preorder : Preorder (α ⊕ₗ β) :=
     le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
     le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
     lt_iff_le_not_le := fun a b => by
-      refine' ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, _⟩, _⟩
+      refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
         · exact hba.not_lt (inl_lt_inl_iff.1 hab)
         · exact hba.not_lt (inr_lt_inr_iff.1 hab)
@@ -740,12 +740,12 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
-    rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [elim_inr, lex_inl_inl, none_le]
-    · simp only [elim_inr, elim_inl, Lex.sep, none_le]
+    cases' a <;> cases' b
+    · simp only [elim_inr, lex_inl_inl, bot_le, le_rfl]
+    · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
-    · simp only [elim_inl, lex_inr_inr, some_le_some]
+    · simp only [elim_inl, lex_inr_inr, coe_le_coe]
   ⟩
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
 
@@ -781,15 +781,13 @@ namespace WithTop
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_none]
-    rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [lex_inr_inr, le_none]
+      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
+    cases' a <;> cases' b
+    · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _
-    · simp only [Lex.sep, le_none]
-    · simp only [lex_inl_inl, some_le_some]
-
-  ⟩
+    · simp only [Lex.sep, le_top]
+    · simp only [lex_inl_inl, coe_le_coe]⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit
 
 @[simp]

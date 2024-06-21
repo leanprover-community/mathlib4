@@ -27,8 +27,6 @@ submodule, subspace, linear map
 
 open Function
 
-open BigOperators
-
 universe u'' u' u v w
 
 variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
@@ -232,12 +230,12 @@ theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h
   p.toSubMulAction.smul_of_tower_mem r h
 #align submodule.smul_of_tower_mem Submodule.smul_of_tower_mem
 
-protected theorem sum_mem {t : Finset ι} {f : ι → M} : (∀ c ∈ t, f c ∈ p) → (∑ i in t, f i) ∈ p :=
+protected theorem sum_mem {t : Finset ι} {f : ι → M} : (∀ c ∈ t, f c ∈ p) → (∑ i ∈ t, f i) ∈ p :=
   sum_mem
 #align submodule.sum_mem Submodule.sum_mem
 
 theorem sum_smul_mem {t : Finset ι} {f : ι → M} (r : ι → R) (hyp : ∀ c ∈ t, f c ∈ p) :
-    (∑ i in t, r i • f i) ∈ p :=
+    (∑ i ∈ t, r i • f i) ∈ p :=
   sum_mem fun i hi => smul_mem _ _ (hyp i hi)
 #align submodule.sum_smul_mem Submodule.sum_smul_mem
 
@@ -495,6 +493,24 @@ theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
 end IsDomain
 
 end Submodule
+
+namespace SubmoduleClass
+
+instance (priority := 75) module' {T : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
+    [Module R M] [SMul S R] [Module S M] [IsScalarTower S R M] [SetLike T M] [AddSubmonoidClass T M]
+    [SMulMemClass T R M] (t : T) : Module S t where
+  one_smul _ := by ext; simp
+  mul_smul _ _ _ := by ext; simp [mul_smul]
+  smul_zero _ := by ext; simp
+  zero_smul _ := by ext; simp
+  add_smul _ _ _ := by ext; simp [add_smul]
+  smul_add _ _ _ := by ext; simp [smul_add]
+
+instance (priority := 75) module [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+    [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Module R s :=
+  module' s
+
+end SubmoduleClass
 
 namespace Submodule
 

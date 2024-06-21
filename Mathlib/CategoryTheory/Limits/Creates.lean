@@ -522,7 +522,7 @@ def createsLimitOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimit K F] : Crea
   lifts c t :=
     { liftedCone := liftLimit ((IsLimit.postcomposeInvEquiv (isoWhiskerLeft K h : _) c).symm t)
       validLift := by
-        refine' (IsLimit.mapConeEquiv h _).uniqueUpToIso t
+        refine (IsLimit.mapConeEquiv h ?_).uniqueUpToIso t
         apply IsLimit.ofIsoLimit _ (liftedLimitMapsToOriginal _).symm
         apply (IsLimit.postcomposeInvEquiv _ _).symm t }
   toReflectsLimit := reflectsLimitOfNatIso _ h
@@ -561,7 +561,7 @@ def createsColimitOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimit K F] : 
   lifts c t :=
     { liftedCocone := liftColimit ((IsColimit.precomposeHomEquiv (isoWhiskerLeft K h : _) c).symm t)
       validLift := by
-        refine' (IsColimit.mapCoconeEquiv h _).uniqueUpToIso t
+        refine (IsColimit.mapCoconeEquiv h ?_).uniqueUpToIso t
         apply IsColimit.ofIsoColimit _ (liftedColimitMapsToOriginal _).symm
         apply (IsColimit.precomposeHomEquiv _ _).symm t }
   toReflectsColimit := reflectsColimitOfNatIso _ h
