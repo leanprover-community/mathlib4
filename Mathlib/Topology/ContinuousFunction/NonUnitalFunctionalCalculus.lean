@@ -200,11 +200,12 @@ variable (ha : p a := by cfc_tac)
 lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.restrict⟩, hf0⟩ := by
   rw [cfcₙ_def, dif_pos ⟨ha, hf, hf0⟩]
 
-lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (hf : ∀ i, ContinuousOn (f i) (σₙ R a))
-    (hf0 : ∀ i, f i 0 = 0) :
+lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_tac)
+    (hf : ∀ i, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
+    (hf0 : ∀ i, f i 0 = 0 := by cfc_zero_tac) :
     (fun i => cfcₙ (f i) a) = (fun i => cfcₙHom (a := a) ha ⟨⟨_, (hf i).restrict⟩, hf0 i⟩) := by
   ext i
-  simp only [cfcₙ_apply (f i) a]
+  simp only [cfcₙ_apply (f i) a (hf i) (hf0 i)]
 
 lemma cfcₙ_apply_of_not_and_and {f : R → R} (a : A)
     (ha : ¬ (p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0)) :
