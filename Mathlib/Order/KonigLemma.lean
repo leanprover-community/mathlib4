@@ -3,7 +3,7 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Order.Cover
+import Mathlib.Order.Atoms
 import Mathlib.Order.WellFounded
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Finite.Set
@@ -41,20 +41,14 @@ Actually formulate the lemma as a statement about graphs.
 
 open Set
 
-variable {α : Type*} [PartialOrder α] [WellFoundedLT α] {a b : α}
-
-theorem exists_covby_of_lt (hab : a < b) : ∃ x, a ⋖ x ∧ x ≤ b := by
-  refine ⟨WellFounded.min wellFounded_lt (Ioc a b) ⟨b, hab,rfl.le⟩, ?_⟩
-  have hmem := (WellFounded.min_mem wellFounded_lt (Ioc a b) ⟨b, hab,rfl.le⟩)
-  exact ⟨⟨hmem.1,fun c hac hlt ↦ WellFounded.not_lt_min wellFounded_lt
-    (Ioc a b) ⟨b, hab,rfl.le⟩ ⟨hac, hlt.le.trans hmem.2⟩ hlt ⟩, hmem.2⟩
+variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {a b : α}
 
 theorem exists_covby_infinite_Ici_of_infinite_Ici (ha : (Ici a).Infinite)
     (hfin : {x | a ⋖ x}.Finite) : ∃ b, a ⋖ b ∧ (Ici b).Infinite := by
   by_contra! h
   refine ((hfin.biUnion (t := Ici) (by simpa using h)).subset (fun b hb ↦ ?_)).not_infinite
     (ha.diff (finite_singleton a))
-  obtain ⟨x, hax, hxb⟩ := exists_covby_of_lt (hb.1.lt_of_ne (Ne.symm hb.2))
+  obtain ⟨x, hax, hxb⟩ := (hb.1.lt_of_ne (Ne.symm hb.2)).exists_covby_le
   exact mem_biUnion hax hxb
 
 /-- The sequence proving the infinity lemma: each term is a pair `⟨a,h⟩`,
@@ -66,8 +60,8 @@ noncomputable def konigSeq [OrderBot α] [Infinite α] (hfin : ∀ (a : α), {x 
     ⟨_, ((exists_covby_infinite_Ici_of_infinite_Ici p.2 (hfin p.1)).choose_spec).2⟩
 
 /-- **Kőnig's infinity lemma** : if each element in an infinite well-founded order with minimum
-  is covered by only finitely many terms,
-  then there is an infinite sequence in which each element is covered by the next. -/
+is covered by only finitely many terms,
+then there is an infinite sequence in which each element is covered by the next. -/
 theorem exists_seq_covby_of_forall_covby_finite [OrderBot α] [Infinite α]
     (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) : ∃ f : ℕ → α, f 0 = ⊥ ∧ ∀ i, f i ⋖ f (i+1) :=
   ⟨fun i ↦ konigSeq hfin i, rfl, fun i ↦
@@ -80,16 +74,16 @@ theorem exists_orderEmbedding_covby_of_forall_covby_finite [OrderBot α] [Infini
   exact ⟨OrderEmbedding.ofStrictMono f (strictMono_nat_of_lt_succ (fun i ↦ (hf.2 i).lt)), hf⟩
 
 /-- A formulation of Kőnig's infinity lemma, useful in applications.
-  Given a sequence `α 0, α 1, ...` of nonempty types with `α 0` a subsingleton,
-  and a well-behaved family of projections `π : α j → α i` for all `i ≤ j`,
-  if each term in each `α i` is the projection of only finitely many terms in `α (i+1)`,
-  then we can find a sequence `(f 0 : α 0), (f 1 : α 1), ...`
-  where `f i` is the projection of `f j` for all `i ≤ j`.
+Given a sequence `α 0, α 1, ...` of nonempty types with `α 0` a subsingleton,
+and a well-behaved family of projections `π : α j → α i` for all `i ≤ j`,
+if each term in each `α i` is the projection of only finitely many terms in `α (i+1)`,
+then we can find a sequence `(f 0 : α 0), (f 1 : α 1), ...`
+where `f i` is the projection of `f j` for all `i ≤ j`.
 
-  In a typical application, the `α i` are function types with increasingly large domains,
-  and `π hij (f : α j)` is the restriction of the domain of `f` to that of `α i`.
-  In this case, the sequence given by the lemma is essentially a function whose domain
-  is the limit of the `α i`. -/
+In a typical application, the `α i` are function types with increasingly large domains,
+and `π hij (f : α j)` is the restriction of the domain of `f` to that of `α i`.
+In this case, the sequence given by the lemma is essentially a function whose domain
+is the limit of the `α i`. -/
 theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Subsingleton (α 0)]
     [∀ i, Nonempty (α i)] (π : {i j : ℕ} → (hij : i ≤ j) → α j → α i)
     (π_trans : ∀ ⦃i j k⦄ (hij : i ≤ j) (hjk : j ≤ k) a, (π hij) (π hjk a) = π (hij.trans hjk) a)
