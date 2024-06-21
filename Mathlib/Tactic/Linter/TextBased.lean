@@ -60,8 +60,6 @@ def StyleError.normalise (err : StyleError) : StyleError := match err with
 /-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
 instance : BEq ErrorContext where
   beq ctx ctx' :=
-      -- XXX: `lint-style.py` was calling `resolve()` on the path before before comparing them
-      -- should we also do so?
       ctx.path == ctx'.path
       -- We completely ignore line numbers of errors. Not sure if this is best.
       -- We normalise errors before comparing them.
@@ -102,9 +100,10 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | _ => none
       -- Omit the line number, as we don't use it anyway.
       return (err.map fun e ↦ (ErrorContext.mk e 0 path))
-    -- XXX: print an error on any lines which don't match the particular format.
-    | _ => -- IO.println s!"Invalid input file: line {line} doesn't match any particular format"
-      none
+    -- It would be nice to print an error on any line which doesn't match the above format,
+    -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
+    -- anyway as the style exceptions file is mostly automatically generated.
+    | _ => none
 
 /-- Parse all style exceptions for a line of input.
 Return an array of all exceptions which could be parsed: invalid input is ignored. -/
@@ -142,9 +141,8 @@ def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Optio
     | some mark => lines.size > mark
     | none => true
     if is_larger then
-      -- We add about 200 lines of slack to the current file size:
-      -- small PRs will be unperturbed, but sufficiently large PRs will get nudged towards
-      -- splitting up this file.
+      -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
+      -- but sufficiently large PRs will get nudged towards splitting up this file.
       return some (StyleError.fileTooLong lines.size ((Nat.div lines.size 100) * 100 + 200))
   none
 
