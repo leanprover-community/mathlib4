@@ -343,14 +343,6 @@ structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCo
   definite : ∀ x, inner x x = 0 → x = 0
 #align inner_product_space.core InnerProductSpace.Core
 
-instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F] [Module 𝕜 F]
-    (c : InnerProductSpace.Core 𝕜 F) : PreInnerProductSpace 𝕜 F where
-  inner := c.inner
-  conj_symm := c.conj_symm
-  nonneg_re := c.nonneg_re
-  add_left := c.add_left
-  smul_left := c.smul_left
-
 /- We set `InnerProductSpace.Core` to be a class as we will use it as such in the construction
 of the normed space structure that it produces. However, all the instances we will use will be
 local to this proof. -/
