@@ -25,6 +25,14 @@ Since `cfc Real.exp` and `cfc Complex.exp` are strictly less general than `Norme
 `NormedSpace.exp` to functions defined via the CFC.
 -/
 
+instance instTopologicalSemiring {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    [LocallyCompactSpace α] [NonUnitalSemiring β] [TopologicalSemiring β] :
+    TopologicalSemiring C(α, β) where
+
+instance instTopologicalRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    [LocallyCompactSpace α] [NonUnitalRing β] [TopologicalRing β] :
+    TopologicalRing C(α, β) where
+
 namespace CFC
 
 section exp
@@ -56,6 +64,12 @@ variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [StarOrderedRing A]
   [TopologicalSpace A] [TopologicalRing A] [Algebra ℝ A]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
   [UniqueContinuousFunctionalCalculus ℝ A]
+
+lemma exp_continuousMap_eq {α : Type*} [TopologicalSpace α] [LocallyCompactSpace α] (f : C(α, ℝ)) :
+    NormedSpace.exp ℝ f = ⟨NormedSpace.exp ℝ ∘ f, by sorry⟩ := by
+  ext a
+  sorry
+
 
 -- Need some way of relating power series to the CFC
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a) :
