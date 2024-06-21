@@ -302,7 +302,7 @@ instance (priority := 100) IsNoetherian.noetherianSpace [h : IsNoetherian X] :
     NoetherianSpace X := by
   apply TopologicalSpace.noetherian_univ_iff.mp
   obtain ⟨t, ht, hN⟩ := isNoetherian_iff_finite_affine_cover.mp h
-  rw [←ht]
+  rw [← ht]
   suffices ∀ U : t, NoetherianSpace U by
     apply NoetherianSpace.iUnion
   intro U
