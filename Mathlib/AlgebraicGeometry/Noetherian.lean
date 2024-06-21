@@ -8,6 +8,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.QuasiSeparated
@@ -63,24 +64,6 @@ section localizationProps
 variable {R : Type u} [CommRing R] (S : Finset R) (hS : Ideal.span (α := R) S = ⊤)
   (hN : ∀ s : S, IsNoetherianRing (Away (M := R) s))
 
-lemma ideal_eq_iInf_away (I : Ideal R) :
-    I = ⨅ f ∈ S, (I.map (algebraMap R (Away f))).comap (algebraMap R (Away f)) := by
-  apply le_antisymm
-  · simp only [le_iInf₂_iff, ← Ideal.map_le_iff_le_comap, le_refl, implies_true]
-  · intro x hx
-    apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ _ hS
-    rintro ⟨s, hs⟩
-    simp only [Ideal.mem_iInf, Ideal.mem_comap] at hx
-    obtain ⟨⟨y, ⟨_, n, rfl⟩⟩, e⟩ :=
-      (IsLocalization.mem_map_algebraMap_iff (.powers s) _).mp (hx s hs)
-    dsimp only at e
-    rw [← map_mul, IsLocalization.eq_iff_exists (.powers s)] at e
-    obtain ⟨⟨_, m, rfl⟩, e⟩ := e
-    use m + n
-    dsimp at e ⊢
-    rw [pow_add, mul_assoc, ← mul_comm x, e]
-    exact I.mul_mem_left _ y.2
-
 lemma biInf_eq_iInf (f : R -> Ideal R) : ⨅ s ∈ S, f s = ⨅ s : S, f s := by
   ext
   simp only [Ideal.mem_iInf, Subtype.forall]
@@ -113,14 +96,14 @@ theorem noetherianRing_of_away : IsNoetherianRing R := by
   use N
   have hN : ∀ s : S, minN s ≤ N := fun s => Finset.le_sup s.prop
   intro n hn
-  rw [ideal_eq_iInf_away S _ (I N), ideal_eq_iInf_away S _ (I n),
+  rw [IsLocalization.ideal_eq_iInf_comap_map_away hS (I N),
+      IsLocalization.ideal_eq_iInf_comap_map_away hS (I n),
       biInf_eq_iInf, biInf_eq_iInf]
   apply iInf_congr
   intro s
   congr 1
   rw [← hSuit s N (hN s)]
   exact hSuit s n <| Nat.le_trans (hN s) hn
-  assumption'
 
 end localizationProps
 
