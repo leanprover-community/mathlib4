@@ -63,7 +63,8 @@ lemma preimage_val_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   rw [eq_univ_iff_forall, Subtype.forall]
   exact h
 
-lemma inter_subset_inter' {C D T : Set α} (h : C ⊆ D) : T ↓∩ C ⊆ T ↓∩ D := fun _ b ↦ h b
+lemma preimage_val_subset_preimage_val {C D T : Set α} (h : C ⊆ D) : T ↓∩ C ⊆ T ↓∩ D :=
+  fun _ b ↦ h b
 
 lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
   erw [sUnion_image]

@@ -140,7 +140,7 @@ lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ 
   · simp only [preimage_compl, le_eq_subset, sUnion_subset_iff, mem_setOf_eq, forall_exists_index,
     and_imp, forall_apply_eq_imp_iff₂, compl_subset_compl]
     intro a ha
-    apply Set.inter_subset_inter'
+    apply Set.preimage_val_subset_preimage_val
     apply antitone_Ici
     exact CompleteLattice.le_sSup S a ha
   · simp only [preimage_compl, le_eq_subset]
@@ -168,5 +168,23 @@ lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := b
       exact isClosed_Ici
     · rw [ha]
 
+variable (S : (Set T)ᵒᵈ)
+
+#check (↑(OrderDual.ofDual S) : (Set α))
+
+theorem PrimativeSpectrum.gc : GaloisConnection (β := (Set T)ᵒᵈ) (fun a => T ↓∩ (Ici a))
+    (fun S =>  sInf (↑(OrderDual.ofDual S) : (Set α))) := by
+  rw [GaloisConnection]
+  intros a S
+  constructor
+  · intro h
+    sorry
+    --simp? at h
+
+    --simp
+  --simp?
+  · intro h
+
+#check GaloisConnection
 
 end PrimativeSpectrum
