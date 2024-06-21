@@ -834,7 +834,7 @@ lemma map_polynomial : (W.map f).toAffine.polynomial = W.polynomial.map (mapRing
   simp only [polynomial]
   map_simp
 
-lemma baseChange_polynomial_evalEval_X_Y :
+lemma evalEval_baseChange_polynomial_X_Y :
     (W.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W.polynomial := by
   rw [baseChange, toAffine, map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
 

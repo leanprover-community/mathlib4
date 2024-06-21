@@ -3,7 +3,7 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.RingTheory.AdjoinRoot
 
 /-!
 # Bivariate polynomials
@@ -45,9 +45,13 @@ lemma evalEvalRingHom_eq [CommSemiring R] (x : R) :
     evalEvalRingHom x = eval₂RingHom (evalRingHom x) := by
   ext <;> simp
 
-lemma eval₂_evalRingHom [CommSemiring R] (x y : R) (p : R[X][Y]) :
-    eval₂ (evalRingHom x) y p = evalEval x y p := by
-  rw [← coe_evalEvalRingHom, evalEvalRingHom_eq]; rfl
+lemma eval₂_evalRingHom [CommSemiring R] (x : R) :
+    eval₂ (evalRingHom x) = evalEval x := by
+  ext1; rw [← coe_evalEvalRingHom, evalEvalRingHom_eq, coe_eval₂RingHom]
+
+lemma map_evalRingHom_eval [CommSemiring R] (x y : R) (p : R[X][Y]) :
+    (p.map <| evalRingHom x).eval y = p.evalEval x y := by
+  rw [eval_map, eval₂_evalRingHom]
 
 section
 
@@ -94,3 +98,18 @@ lemma eval_C_X_eval₂_map_C_X {p : R[X][Y]} :
 end
 
 end Polynomial
+
+open Polynomial
+
+namespace AdjoinRoot
+
+variable {R : Type*} [CommRing R] {x y : R} {p : R[X][Y]} (h : p.evalEval x y = 0)
+
+@[simps!]
+def evalEval : AdjoinRoot p →+* R :=
+  lift (evalRingHom x) y <| eval₂_evalRingHom x ▸ h
+
+lemma evalEval_eq (g : R[X][Y]) : evalEval h (mk p g) = g.evalEval x y := by
+  erw [AdjoinRoot.lift_mk, eval₂_evalRingHom]
+
+end AdjoinRoot
