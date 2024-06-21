@@ -107,6 +107,8 @@ instance : IsStronglyCoatomic α := by
 
 end LocallyFinite
 
+section IsStronglyAtomic
+
 variable [PartialOrder α] {a : α}
 
 theorem exists_covby_infinite_Ici_of_infinite_Ici [IsStronglyAtomic α]
@@ -123,3 +125,5 @@ theorem exists_covby_infinite_Iic_of_infinite_Iic [IsStronglyCoatomic α]
     ∃ b, b ⋖ a ∧ (Set.Iic b).Infinite := by
   simp_rw [← toDual_covBy_toDual_iff (α := α)] at hfin ⊢
   exact exists_covby_infinite_Ici_of_infinite_Ici (α := αᵒᵈ) ha hfin
+
+end IsStronglyAtomic
