@@ -65,8 +65,7 @@ def Hom (X Y : Scheme) : Type* :=
 instance : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
 
--- porting note (#10688): added to ease automation
-@[continuity]
+@[continuity, fun_prop]
 lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
 /-- The structure sheaf of a scheme. -/
@@ -177,6 +176,10 @@ instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     @IsIso LocallyRingedSpace _ _ _ f :=
   forgetToLocallyRingedSpace.map_isIso f
 #align algebraic_geometry.Scheme.is_LocallyRingedSpace_iso AlgebraicGeometry.Scheme.is_locallyRingedSpace_iso
+
+instance val_base_isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.1.base :=
+  Scheme.forgetToTop.map_isIso f
+#align algebraic_geometry.Scheme.val_base_is_iso AlgebraicGeometry.Scheme.val_base_isIso
 
 -- Porting note: need an extra instance here.
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
