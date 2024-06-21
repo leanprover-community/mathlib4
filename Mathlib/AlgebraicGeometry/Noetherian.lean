@@ -167,7 +167,7 @@ theorem isLocallyNoetherian_iff_affine_cover :
 
 /-- If `R` is a noetherian ring, `Spec R` is a noetherian topological space. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :
-  NoetherianSpace (Scheme.Spec.obj <| op R) := by
+    NoetherianSpace (Scheme.Spec.obj <| op R) := by
   convert PrimeSpectrum.instNoetherianSpace (R := R)
 
 lemma noetherianSpace_of_isAffine [IsAffine X]
