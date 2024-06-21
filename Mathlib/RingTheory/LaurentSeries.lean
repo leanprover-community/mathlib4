@@ -382,7 +382,7 @@ theorem coe_smul (r : F) : ((r • f : RatFunc F) : LaurentSeries F) = r • (f 
 
 -- Porting note: removed `norm_cast` because "badly shaped lemma, rhs can't start with coe"
 -- even though `single 1 1` is a bundled function application, not a "real" coercion
-@[simp, nolint simpNF] -- Added `simpNF` to avoid timeout #8386
+@[simp]
 theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
   rw [coe_num_denom, num_X, denom_X, Polynomial.coe_X, -- Porting note: removed `coe_C`
      Polynomial.coe_one,

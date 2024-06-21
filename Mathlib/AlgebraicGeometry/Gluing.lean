@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Cover.Open
 
 #align_import algebraic_geometry.gluing from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
@@ -406,7 +406,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
   intro x hx
   rw [𝒰.gluedCover.isOpen_iff] at hU
   use 𝒰.fromGlued.val.base '' U ∩ Set.range (𝒰.map (𝒰.f x)).1.base
-  use Set.inter_subset_left _ _
+  use Set.inter_subset_left
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
     apply (show IsOpenImmersion (𝒰.map (𝒰.f x)) from inferInstance).base_open.isOpenMap
@@ -418,9 +418,8 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_map AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_map
 
 theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base :=
-  -- Porting note: the continuity argument used to be `by continuity`
   openEmbedding_of_continuous_injective_open
-    (ContinuousMap.continuous_toFun _) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
+    (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_embedding AlgebraicGeometry.Scheme.OpenCover.fromGlued_openEmbedding
 
 instance : Epi 𝒰.fromGlued.val.base := by

@@ -16,13 +16,14 @@ a functor `F : C₁ ⥤ C₂ ⥤ D`, we define an isomorphism of cochain complex
 - `CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F y` of type
 `mapBifunctor K₁ (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦y⟧` for `y : ℤ`.
 
-## TODO
-
-- obtain various compatibilities
+In the lemma `CochainComplex.mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso`, we obtain
+that the two ways to deduce an isomorphism
+`mapBifunctor (K₁⟦x⟧) (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦x + y⟧` differ by the sign
+`(x * y).negOnePow`.
 
 -/
 
-open CategoryTheory Limits
+open CategoryTheory Category Limits
 
 variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
 
@@ -58,16 +59,18 @@ section
 variable [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
   (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ)
   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms] (x : ℤ)
-  [HasMapBifunctor K₁ K₂ F] [HasMapBifunctor (K₁⟦x⟧) K₂ F]
-  [HomologicalComplex₂.HasTotal ((HomologicalComplex₂.shiftFunctor₁ D x).obj
-    (((F.mapBifunctorHomologicalComplex _ _ ).obj K₁).obj K₂)) (ComplexShape.up ℤ)]
+  [HasMapBifunctor K₁ K₂ F]
 
 /-- Auxiliary definition for `mapBifunctorShift₁Iso`. -/
+@[simps! hom_f_f inv_f_f]
 def mapBifunctorHomologicalComplexShift₁Iso :
     ((F.mapBifunctorHomologicalComplex _ _).obj (K₁⟦x⟧)).obj K₂ ≅
     (HomologicalComplex₂.shiftFunctor₁ D x).obj
       (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂) :=
   HomologicalComplex.Hom.isoOfComponents (fun i₁ => Iso.refl _)
+
+instance : HasMapBifunctor (K₁⟦x⟧) K₂ F :=
+  HomologicalComplex₂.hasTotal_of_iso (mapBifunctorHomologicalComplexShift₁Iso K₁ K₂ F x).symm _
 
 /-- The canonical isomorphism `mapBifunctor (K₁⟦x⟧) K₂ F ≅ (mapBifunctor K₁ K₂ F)⟦x⟧`.
 This isomorphism does not involve signs. -/
@@ -83,18 +86,19 @@ section
 variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
   (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ)
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive] (y : ℤ)
-  [HasMapBifunctor K₁ K₂ F] [HasMapBifunctor K₁ (K₂⟦y⟧) F]
-  [HomologicalComplex₂.HasTotal
-    ((HomologicalComplex₂.shiftFunctor₂ D y).obj
-      (((F.mapBifunctorHomologicalComplex _ _ ).obj K₁).obj K₂)) (ComplexShape.up ℤ)]
+  [HasMapBifunctor K₁ K₂ F]
 
 /-- Auxiliary definition for `mapBifunctorShift₂Iso`. -/
+@[simps! hom_f_f inv_f_f]
 def mapBifunctorHomologicalComplexShift₂Iso :
     ((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj (K₂⟦y⟧) ≅
     (HomologicalComplex₂.shiftFunctor₂ D y).obj
       (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂) :=
   HomologicalComplex.Hom.isoOfComponents
     (fun i₁ => HomologicalComplex.Hom.isoOfComponents (fun i₂ => Iso.refl _))
+
+instance : HasMapBifunctor K₁ (K₂⟦y⟧) F :=
+  HomologicalComplex₂.hasTotal_of_iso (mapBifunctorHomologicalComplexShift₂Iso K₁ K₂ F y).symm _
 
 /-- The canonical isomorphism `mapBifunctor K₁ (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦y⟧`.
 This isomorphism involves signs: on the summand `(F.obj (K₁.X p)).obj (K₂.X q)`, it is given
@@ -104,6 +108,37 @@ noncomputable def mapBifunctorShift₂Iso :
   HomologicalComplex₂.total.mapIso
     (mapBifunctorHomologicalComplexShift₂Iso K₁ K₂ F y) (ComplexShape.up ℤ) ≪≫
     (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂).totalShift₂Iso y
+
+end
+
+section
+
+variable [Preadditive C₁] [Preadditive C₂] [Preadditive D]
+  (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ)
+  (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).Additive] (x y : ℤ)
+  [HasMapBifunctor K₁ K₂ F]
+
+lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
+    mapBifunctorShift₁Iso K₁ (K₂⟦y⟧) F x ≪≫
+      (CategoryTheory.shiftFunctor _ x).mapIso (mapBifunctorShift₂Iso K₁ K₂ F y) =
+      (x * y).negOnePow • (mapBifunctorShift₂Iso (K₁⟦x⟧) K₂ F y ≪≫
+        (CategoryTheory.shiftFunctor _ y).mapIso (mapBifunctorShift₁Iso K₁ K₂ F x) ≪≫
+          (shiftFunctorComm (CochainComplex D ℤ) x y).app _) := by
+  ext1
+  dsimp [mapBifunctorShift₁Iso, mapBifunctorShift₂Iso]
+  rw [Functor.map_comp, Functor.map_comp, assoc, assoc, assoc,
+    ← HomologicalComplex₂.totalShift₁Iso_hom_naturality_assoc,
+    HomologicalComplex₂.totalShift₁Iso_hom_totalShift₂Iso_hom,
+    ← HomologicalComplex₂.totalShift₂Iso_hom_naturality_assoc,
+    Linear.comp_units_smul, Linear.comp_units_smul,
+    smul_left_cancel_iff,
+    ← HomologicalComplex₂.total.map_comp_assoc,
+    ← HomologicalComplex₂.total.map_comp_assoc,
+    ← HomologicalComplex₂.total.map_comp_assoc]
+  congr 2
+  ext a b
+  dsimp [HomologicalComplex₂.shiftFunctor₁₂CommIso]
+  simp only [id_comp]
 
 end
 

@@ -764,7 +764,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
     simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
-lemma Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions :
+lemma Localization.essSurj_mapArrow :
     L.mapArrow.EssSurj where
   mem_essImage f := by
     have := Localization.essSurj L W
@@ -972,10 +972,10 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
     simp only [← cancel_epi (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
-lemma Localization.essSurj_mapArrow_of_hasRightCalculusofFractions :
+lemma Localization.essSurj_mapArrow_of_hasRightCalculusOfFractions :
     L.mapArrow.EssSurj where
   mem_essImage f := by
-    have := Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions L.op W.op
+    have := Localization.essSurj_mapArrow L.op W.op
     obtain ⟨g, ⟨e⟩⟩ : ∃ (g : _), Nonempty (L.op.mapArrow.obj g ≅ Arrow.mk f.hom.op) :=
       ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
     exact ⟨Arrow.mk g.hom.unop, ⟨Arrow.isoMk (Arrow.rightFunc.mapIso e.symm).unop

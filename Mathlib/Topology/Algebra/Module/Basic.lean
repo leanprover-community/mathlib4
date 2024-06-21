@@ -521,7 +521,7 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
   LinearMap.CompatibleSMul.map_smul (f : M₁ →ₗ[S] M₂) c x
 #align continuous_linear_map.map_smul_of_tower ContinuousLinearMap.map_smul_of_tower
 
-@[deprecated _root_.map_sum]
+@[deprecated _root_.map_sum (since := "2023-09-16")]
 protected theorem map_sum {ι : Type*} (f : M₁ →SL[σ₁₂] M₂) (s : Finset ι) (g : ι → M₁) :
     f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
   map_sum ..
@@ -1462,21 +1462,17 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 #align continuous_linear_map.has_sub ContinuousLinearMap.sub
 
-instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
-  refine'
-    { ContinuousLinearMap.addCommMonoid with
-      neg := (-·)
-      sub := (· - ·)
-      sub_eq_add_neg := _
-      nsmul := (· • ·)
-      zsmul := (· • ·)
-      zsmul_zero' := fun f => by ext; simp
-      zsmul_succ' := fun n f => by ext; simp [add_smul, add_comm]
-      zsmul_neg' := fun n f => by ext; simp [Nat.succ_eq_add_one, add_smul]
-      .. } <;>
-    { intros
-      ext
-      apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm, sub_eq_add_neg] }
+instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
+  __ := ContinuousLinearMap.addCommMonoid
+  neg := (-·)
+  sub := (· - ·)
+  sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
+  nsmul := (· • ·)
+  zsmul := (· • ·)
+  zsmul_zero' f := by ext; simp
+  zsmul_succ' n f := by ext; simp [add_smul, add_comm]
+  zsmul_neg' n f := by ext; simp [Nat.succ_eq_add_one, add_smul]
+  add_left_neg _ := by ext; apply add_left_neg
 #align continuous_linear_map.add_comm_group ContinuousLinearMap.addCommGroup
 
 theorem sub_apply (f g : M →SL[σ₁₂] M₂) (x : M) : (f - g) x = f x - g x :=
@@ -2758,7 +2754,7 @@ instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [C
   have quot : QuotientMap fun au : R × M => (au.1, S.mkQ au.2) :=
     IsOpenMap.to_quotientMap (IsOpenMap.id.prod S.isOpenMap_mkQ)
       (continuous_id.prod_map continuous_quot_mk)
-      (Function.surjective_id.Prod_map <| surjective_quot_mk _)
+      (Function.surjective_id.prodMap <| surjective_quot_mk _)
   rw [quot.continuous_iff]
   exact continuous_quot_mk.comp continuous_smul
 #align submodule.has_continuous_smul_quotient Submodule.continuousSMul_quotient

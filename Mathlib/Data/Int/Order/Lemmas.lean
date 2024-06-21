@@ -12,7 +12,8 @@ import Mathlib.Algebra.Order.Ring.Abs
 
 The distinction between this file and `Data.Int.Order.Basic` is not particularly clear.
 They are separated by now to minimize the porting requirements for tactics during the transition to
-mathlib4. Now that `Data.Rat.Order` has been ported, please feel free to reorganize these two files.
+mathlib4. Now that `Algebra.Order.Ring.Rat` has been ported, please feel free to reorganize these
+two files.
 -/
 
 open Function Nat
