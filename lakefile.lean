@@ -68,6 +68,11 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
+/-- `lake exe update_deprecations` automatically updates deprecations. -/
+lean_exe update_deprecations where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
 and then calculates the longest pole
