@@ -458,5 +458,4 @@ def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad 
 
 end Comonad
 
-
 end CategoryTheory
