@@ -186,10 +186,10 @@ def toLax : LaxFunctor B C where
   mapId := fun a => (F.mapId a).inv
   mapComp := fun f g => (F.mapComp f g).inv
   map₂_leftUnitor f := by
-    rw [←F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
+    rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
     simp
   map₂_rightUnitor f := by
-    rw [←F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
+    rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
     simp
 
 instance hasCoeToLax : Coe (Pseudofunctor B C) (LaxFunctor B C) :=
