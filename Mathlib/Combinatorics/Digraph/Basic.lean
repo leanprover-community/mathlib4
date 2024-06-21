@@ -75,7 +75,7 @@ def Digraph.emptyGraph (V : Type u) : Digraph V where Adj _ _ := False
 if and only if they are not from the same side.
 Any bipartite graph may be regarded as a subgraph of one of these. -/
 @[simps]
-def completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
+def Digraph.completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
 
 namespace Digraph
