@@ -20,12 +20,6 @@ open Topology
 open Set
 open Set.Notation
 
-lemma test {C D T : Set α} (h : C ⊆ D) : T ∩ C ⊆ T ∩ D := by
-  apply inter_subset_inter (le_refl _) h
-
-
-lemma inter_subset_inter' {C D T : Set α} (h : C ⊆ D) : T ↓∩ C ⊆ T ↓∩ D := fun _ b ↦ h b
-
 section SemilatticeInf
 
 variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
@@ -101,6 +95,34 @@ lemma isBasis1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } 
     simp only [preimage_compl, image_val_compl, Subtype.image_preimage_coe, diff_self_inter]
     exact fun p a ↦ hT p a
 
+lemma isBasis1' : IsTopologicalBasis { S : Set T | ∃ (a : α), T ↓∩ (Ici a)ᶜ = S } := by
+  convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
+  rw [IsLower.lowerBasis]
+  ext R
+  --simp only [mem_setOf_eq, mem_image, exists_exists_and_eq_and, preimage_compl]
+  simp only [preimage_compl, mem_setOf_eq, mem_image, exists_exists_and_eq_and]
+  constructor
+  · intro ha
+    cases' ha with a ha'
+    use {a}
+    simp  [mem_setOf_eq]
+    rw [← (Function.Injective.preimage_image Subtype.val_injective R)]
+    rw [← ha']
+    --rw [← preimage_compl]
+    simp [preimage_compl, preimage_diff, Subtype.coe_preimage_self]
+    exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
+  · intro ha
+    cases' ha with F hF
+    lift F to Finset α using hF.1
+    use Finset.inf F id -- As F is finite, do we need complete?
+    rw [← hF.2]
+    rw [← preimage_compl]
+    rw [← basis2]
+    simp [preimage_compl, image_val_compl, Subtype.image_preimage_coe, diff_self_inter]
+    rfl
+    exact fun p a ↦ hT p a
+
+
 end SemilatticeInf
 
 section PrimativeSpectrum
@@ -118,7 +140,7 @@ lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ 
   · simp only [preimage_compl, le_eq_subset, sUnion_subset_iff, mem_setOf_eq, forall_exists_index,
     and_imp, forall_apply_eq_imp_iff₂, compl_subset_compl]
     intro a ha
-    apply inter_subset_inter'
+    apply Set.inter_subset_inter'
     apply antitone_Ici
     exact CompleteLattice.le_sSup S a ha
   · simp only [preimage_compl, le_eq_subset]
@@ -132,18 +154,14 @@ lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ 
 lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor
   · intro h
-    let
-    have e1 : S = ⋃₀ {s | s ∈ {t : Set T | ∃ a, T \ Ici a = t ∧ t ⊆ S}} := by
-      simp_rw [exists_and_right, mem_setOf_eq]
-      exact IsTopologicalBasis.open_eq_sUnion' (isBasis1 T hT) h
-
-
+    let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
+    use sSup R
+    rw [← basis3]
+    rw [IsTopologicalBasis.open_eq_sUnion' (isBasis1' T hT) h]
+    simp only [preimage_compl, mem_setOf_eq, R]
+    aesop
   · intro h
     cases' h with a ha
-    -- rw [IsOpen, TopologicalSpace.IsOpen]
-    -- rw [instTopologicalSpaceSubtype]
-    -- rw [induced]
-    -- simp only
     use (Ici a)ᶜ
     constructor
     · simp only [isOpen_compl_iff]
