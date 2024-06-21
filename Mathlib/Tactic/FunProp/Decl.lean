@@ -107,6 +107,11 @@ fun_prop bug: expression {← ppExpr e} matches multiple function properties
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
+/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x => f x y z` -/
+def isFunPropGoal (e : Expr) : MetaM Bool := do
+  forallTelescope e fun _ b =>
+  return (← getFunProp? b).isSome
+
 /-- Returns function property declaration from `e = P f`. -/
 def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do
   match ← getFunProp? e with
