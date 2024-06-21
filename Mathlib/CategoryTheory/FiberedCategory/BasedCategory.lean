@@ -275,7 +275,7 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   Hom 𝒳 𝒴 :=  𝒳 ⥤ᵇ 𝒴
   id 𝒳 := 𝟭 𝒳
-  comp F G := BasedFunctor.comp F G
+  comp F G := F ⋙ G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴
   whiskerLeft {𝒳 𝒴 𝒵} F {G H} α := whiskerLeft F α
   whiskerRight {𝒳 𝒴 𝒵} F G α H := whiskerRight α H
