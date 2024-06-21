@@ -43,9 +43,10 @@ lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T �
     have e1 : a ⊓ b ≤ p := inf_le_of_right_le h3
     exact h e1
 
+variable [DecidableEq α] [OrderTop α]
+
 open Finset in
-lemma basis2 [DecidableEq α] [OrderTop α] (F : Finset α) :
-    T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
+lemma basis2  (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
   rw [coe_upperClosure]
   simp only [compl_iUnion]
   rw [preimage_iInter₂]
@@ -68,7 +69,7 @@ lemma basis2 [DecidableEq α] [OrderTop α] (F : Finset α) :
     simp only [Set.preimage_compl, mem_coe]
     exact hT
 
-lemma isBasis1 [DecidableEq α] [OrderTop α] : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
+lemma isBasis1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
   rw [IsLower.lowerBasis]
   ext R
