@@ -24,16 +24,14 @@ normed group
 -/
 
 
-variable {𝓕 𝕜 α ι κ E F G : Type*}
+variable {𝕜 α E F : Type*}
 
-open Filter Function Metric Bornology
-open scoped ENNReal Filter NNReal Uniformity Pointwise Topology
+open Filter Finset
+open scoped NNReal Uniformity Topology
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
-
-open Finset
+variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a : E}
 
 @[to_additive]
 theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s : Set E)) {b : ℕ → ℝ}
