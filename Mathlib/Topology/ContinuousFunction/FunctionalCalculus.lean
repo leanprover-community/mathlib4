@@ -417,15 +417,16 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
   · simp [cfc_apply_of_not_predicate a ha]
 
 open Finset in
-lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R)
-    (hf : ∀ i, ContinuousOn (f i) (spectrum R a)) :
-    cfc (∑ i, f i) a = ∑ i, cfc (f i) a := by
+lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    cfc (∑ i in s, f i)  a = ∑ i in s, cfc (f i) a := by
   by_cases ha : p a
-  · have hsum : univ.sum f = fun z => ∑ i, f i z := by ext; simp
-    have hf' : ContinuousOn (univ.sum f) (spectrum R a) := by
-      rw [hsum]
-      refine continuousOn_finset_sum univ fun i _ => hf i
-    rw [cfc_apply_pi a ha f hf, ← map_sum, cfc_apply _ a ha hf']
+  · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
+    have hf' : ContinuousOn (∑ i : s, f i) (spectrum R a) := by
+      rw [sum_coe_sort s, hsum]
+      exact continuousOn_finset_sum s fun i hi => hf i hi
+    rw [← sum_coe_sort s, ← sum_coe_sort s]
+    rw [cfc_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
     congr 1
     ext
     simp
