@@ -240,7 +240,7 @@ def lint_style : Cmd := `[Cli|
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
-    update;     "Print errors for the style exceptions file: mutually exclusive with the above"
+    update;     "Print errors solely for the style exceptions file"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
