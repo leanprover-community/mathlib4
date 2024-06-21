@@ -205,6 +205,15 @@ variable (M : Subfield L)
 
 end valuedfield
 
+section TrivialValuation
+
+class Valuation.IsTrivial {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) : Prop where
+  val_eq_one_of_ne_zero : ∀ x : R, x ≠ 0 → v x = 1
+
+instance [vL.v.IsTrivial] : DiscreteTopology L := sorry
+
+end TrivialValuation
+
 section krasner
 
 open Algebra
@@ -229,9 +238,9 @@ theorem krasner {x y : L} (hx : (minpoly K x).Separable) (hy : IsIntegral K y) (
 
 instance id : IsKrasner L L := sorry
 
-instance of_discrete : sorry := sorry
+instance of_isTrivial [vL.v.IsTrivial] : IsKrasner K L := sorry
 
-theorem of_complete [u : UniformSpace K] [c : CompleteSpace K] [vL.v.RankOne] (h : Embedding (algebraMap K L)) : IsKrasner K L := by
+theorem of_completeSpace [u : UniformSpace K] [c : CompleteSpace K] [vL.v.RankOne] (h : Embedding (algebraMap K L)) (nontriv : ∃ r : K, vL.v algebraMap r ≠ 0 ∧ algebraMap r ≠ 1) : IsKrasner K L := by
   constructor
   intro x y xsep hyK hxy
   let z := x - y
@@ -239,7 +248,12 @@ theorem of_complete [u : UniformSpace K] [c : CompleteSpace K] [vL.v.RankOne] (h
   let FDM := IntermediateField.adjoin.finiteDimensional hyK
   let I'' : UniformAddGroup M := inferInstanceAs (UniformAddGroup M.toSubfield)
   let vK : Valued K Γ := Valued.mk' (vL.v.comap (algebraMap K L))
-  let vKrankone : vK.v.RankOne := Valuation.RankOne.comap vL.v
+  push_neg at htriv
+  let vKrankone : vK.v.RankOne := {
+    hom := Valuation.RankOne.hom vL.v
+    strictMono' := Valuation.RankOne.strictMono vL.v
+    nontrivial' := nontriv
+  }
   let NFK : NormedField K := vK.toNormedField
   let NNFK : NontriviallyNormedField K := {
     NFK with
