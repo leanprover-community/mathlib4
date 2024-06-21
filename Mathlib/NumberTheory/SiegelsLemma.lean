@@ -31,7 +31,7 @@ system it determines has a non-zero integer solution `t` with
 See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysilverman00].
 -/
 
-/- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
+/-We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 open Matrix Finset
@@ -49,10 +49,10 @@ local notation3 "B" => Nat.floor (((n : ℝ) * ‖A‖) ^ e)
 local notation3 "B'" => fun _ : Fin n => (B : ℤ)
 --T is the box [0 B]^n
 local notation3 "T" =>  Finset.Icc 0 B'
-local notation3  "P" => fun i : Fin m => ∑ j : Fin n, B * posPart (A i j)
-local notation3  "N" => fun i : Fin m =>  ∑ j : Fin n, B * (- negPart (A i j))
+local notation3 "P" => fun i : Fin m => ∑ j : Fin n, B * posPart (A i j)
+local notation3 "N" => fun i : Fin m => ∑ j : Fin n, B * (- negPart (A i j))
 --S is the box where the image of T goes
-local notation3  "S" => Finset.Icc N P
+local notation3 "S" => Finset.Icc N P
 
 section preparation
 
@@ -186,7 +186,7 @@ theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0) : ∃ t : Fin n �
   rcases Finset.exists_ne_map_eq_of_card_lt_of_maps_to
     (card_S_lt_card_T m n A hn hA_nezero) (image_T_subset_S m n A)
     with ⟨x, hxT, y, hyT, hneq, hfeq⟩
-  --proofs that x - y ≠ 0 and x-y is a solution
+  --proofs that x - y ≠ 0 and x - y is a solution
   refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
   --Inequality
   have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * ‖A‖) ^ e := by positivity
@@ -199,7 +199,7 @@ theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0) : ∃ t : Fin n �
   rw [abs_le]
   rw [Finset.mem_Icc] at hyT
   rw [Finset.mem_Icc] at hxT
-  constructor--two goals
+  constructor --two goals
   · simp only [neg_le_sub_iff_le_add]
     apply le_trans (hyT.2 i)
     norm_cast
