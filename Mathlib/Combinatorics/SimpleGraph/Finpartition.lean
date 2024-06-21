@@ -23,7 +23,7 @@ of the parts. This specialisation is intended for proving Turán's theorem
 * `G.crossEdges se`, given the superedge `se : Sym2 P.parts`, returns the finset of all edges of `G`
   under said superedge.
 * `SimpleGraph.card_edgeFinset_eq_sum_crossEdges_card`: the superedges partition `G`'s edges.
-* `SimpleGraph.edgeFinset_decompose_card`: special case of the above theorem for `P` comprising
+* `SimpleGraph.card_edgeFinset_bipartition`: special case of the above theorem for `P` comprising
   two parts.
 -/
 
@@ -43,7 +43,9 @@ lemma crossEdges_self (p : P.parts) : G.crossEdges s(p, p) =
   ext e
   obtain ⟨p, mp⟩ := p
   refine e.inductionOn fun x y ↦ ?_
-  simp [crossEdges]
+  simp only [crossEdges, Sym2.map_pair_eq, mem_filter, Set.mem_toFinset, mem_edgeSet, Sym2.eq,
+    Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, or_self, coe_sort_coe, mem_map,
+    Function.Embedding.coeFn_mk]
   constructor <;> intro h
   · have mx : x ∈ p := h.2.1 ▸ P.mem_part (mem_univ x)
     have my : y ∈ p := h.2.2 ▸ P.mem_part (mem_univ y)
@@ -58,11 +60,12 @@ lemma crossEdges_self (p : P.parts) : G.crossEdges s(p, p) =
     all_goals exact P.part_eq_of_mem mp ‹_›
 
 lemma crossEdges_eq_biUnion (p q : P.parts) : G.crossEdges s(p, q) =
-    q.1.biUnion fun b ↦ (p.1.filter (G.Adj · b)).map (Sym2.congrEmb b) := by
+    q.1.biUnion fun b ↦ (p.1.filter (G.Adj · b)).map
+      ⟨(s(b, ·)), fun _ _ c ↦ Sym2.congr_right.mp c⟩ := by
   ext e
   refine e.inductionOn fun a b ↦ ?_
   simp only [crossEdges, Sym2.map_pair_eq, mem_filter, Set.mem_toFinset, mem_edgeSet, Sym2.eq,
-    Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, Sym2.congrEmb, mem_biUnion, mem_map,
+    Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, mem_biUnion, mem_map,
     Function.Embedding.coeFn_mk]
   refine ⟨fun j ↦ ?_, fun j ↦ ?_⟩
   · obtain ⟨adj, ⟨ca, cb⟩ | ⟨ca, cb⟩⟩ := j
@@ -76,6 +79,17 @@ lemma crossEdges_eq_biUnion (p q : P.parts) : G.crossEdges s(p, q) =
       (rw [cx] at adj hx; rw [cy] at adj hy)
     · exact ⟨adj.symm, Or.inr ⟨P.part_eq_of_mem q.2 hx, P.part_eq_of_mem p.2 hy⟩⟩
     · exact ⟨adj, Or.inl ⟨P.part_eq_of_mem p.2 hy, P.part_eq_of_mem q.2 hx⟩⟩
+
+lemma card_crossEdges_eq_sum_of_ne {p q : P.parts} (h : p ≠ q) :
+    (G.crossEdges s(p, q)).card = ∑ b in q.1, (p.1.filter (G.Adj · b)).card := by
+  rw [crossEdges_eq_biUnion, card_biUnion]
+  · simp
+  · simp_rw [disjoint_iff_ne, mem_map, mem_filter, forall_exists_index, and_imp,
+      Function.Embedding.coeFn_mk]
+    intro _ m₁ _ _ l _ _ _ _ e₁ _ _ m₂ _ e₂; subst e₁ e₂
+    simp_rw [Ne, Sym2.eq_iff, l, false_and, false_or, not_and]
+    intro z; subst z; have := P.eq_of_mem_parts q.2 p.2 m₁ m₂
+    aesop
 
 theorem pairwiseDisjoint_crossEdges :
     (Set.univ : Set (Sym2 P.parts)).PairwiseDisjoint G.crossEdges := by
@@ -116,20 +130,8 @@ def twoPartFinpartition (h1 : K ≠ ∅) (h2 : K ≠ univ) : Finpartition (univ 
     push_neg
     exact ⟨h1.symm, ((compl_eq_empty_iff K).ne.symm.mp h2).symm⟩
 
-lemma univ_two : (univ : Finset (Sym2 { x // x ∈ ({K, Kᶜ} : Finset (Finset V)) })) =
-    { s(⟨K, by simp⟩, ⟨K, by simp⟩),
-      s(⟨K, by simp⟩, ⟨Kᶜ, by simp⟩),
-      s(⟨Kᶜ, by simp⟩, ⟨Kᶜ, by simp⟩) } := by
-  ext pair
-  simp only [mem_univ, mem_insert, mem_singleton, true_iff]
-  refine pair.inductionOn fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_
-  simp only [mem_insert, mem_singleton] at hx hy
-  rcases hx with hx | hx <;> rcases hy with hy | hy
-  all_goals simp [hx, hy]
-
-theorem edgeFinset_decompose_card : G.edgeFinset.card = (G.induce K).edgeFinset.card +
-    ∑ b in Kᶜ, (K.filter (G.Adj · b)).card +
-    (G.induce Kᶜ).edgeFinset.card := by
+theorem card_edgeFinset_bipartition : G.edgeFinset.card = (G.induce K).edgeFinset.card +
+    ∑ b in Kᶜ, (K.filter (G.Adj · b)).card + (G.induce Kᶜ).edgeFinset.card := by
   have t1 : (G.induce (∅ : Finset V).toSetᶜ).edgeFinset.card = G.edgeFinset.card := by
     convert G.induceUnivIso.card_edgeFinset_eq <;> simp
   have t2 : (G.induce (univ : Finset V)).edgeFinset.card = G.edgeFinset.card := by
@@ -145,7 +147,8 @@ theorem edgeFinset_decompose_card : G.edgeFinset.card = (G.induce K).edgeFinset.
   · subst h2
     rw [compl_univ, sum_empty, add_zero, t2, t3, add_zero]
   let P2 := twoPartFinpartition h1 h2
-  simp_rw [G.card_edgeFinset_eq_sum_crossEdges_card (P := P2), P2, twoPartFinpartition, univ_two]
+  simp_rw [G.card_edgeFinset_eq_sum_crossEdges_card (P := P2), P2, twoPartFinpartition,
+    Sym2.univ_pair]
   have nc : K ≠ Kᶜ := by
     let x := (nonempty_iff_ne_empty.mpr h1).choose
     haveI : Nontrivial (Finset V) := ⟨{x}, ∅, singleton_ne_empty x⟩
@@ -157,11 +160,6 @@ theorem edgeFinset_decompose_card : G.edgeFinset.card = (G.induce K).edgeFinset.
   have t4 : (induce (↑Kᶜ) G).edgeFinset.card = (induce (↑K)ᶜ G).edgeFinset.card := by
     apply Iso.card_edgeFinset_eq
     rw [← coe_compl]
-  rw [t4, Nat.add_right_cancel_iff, crossEdges_eq_biUnion, card_biUnion]
-  · simp
-  · clear t1 t2 t3 t4
-    simp_rw [disjoint_iff_ne, mem_map, mem_filter, forall_exists_index, and_imp,
-      Sym2.congrEmb, Function.Embedding.coeFn_mk]
-    aesop
+  rw [t4, Nat.add_right_cancel_iff, G.card_crossEdges_eq_sum_of_ne (by simp [nc])]
 
 end SimpleGraph
