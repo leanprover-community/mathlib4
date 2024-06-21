@@ -34,12 +34,11 @@ namespace ENNReal
 /-! ### Definition -/
 section Definition
 
-/--
-The logarithm function defined on the extended nonnegative reals `ℝ≥0∞`
+/-- The logarithm function defined on the extended nonnegative reals `ℝ≥0∞`
 to the extended reals `EReal`. Coincides with the usual logarithm function
 and with `Real.log` on positive reals, and takes values `log 0 = ⊥` and `log ⊤ = ⊤`.
 Conventions about multiplication in `ℝ≥0∞` and addition in `EReal` make the identity
-`log (x * y) = log x + log y` unconditional. --/
+`log (x * y) = log x + log y` unconditional. -/
 noncomputable def log (x : ℝ≥0∞) : EReal :=
   if x = 0 then ⊥
     else if x = ⊤ then ⊤
