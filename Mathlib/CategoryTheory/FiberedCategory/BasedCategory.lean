@@ -203,6 +203,9 @@ instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
       isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
     aesop
 
+instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X:=F.toFunctor) α.toNatTrans := by
+  rw [← forgetful_map]; infer_instance
+
 end BasedNatTrans
 
 namespace BasedNatIso
@@ -231,9 +234,7 @@ def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
       rw [← NatIso.app_inv]
       apply IsHomLift.lift_id_inv }
 
-/-- Any based natural transformation whose underlying natural transformation is an isomorphism is
-itself an isomorphism. -/
-instance isIso_of_toNatIsIso (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] : IsIso α :=
+lemma isIso_of_toNatIsIso (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] : IsIso α :=
   have : IsIso ((forgetful 𝒳 𝒴).map α) := by simp_all
   Functor.ReflectsIsomorphisms.reflects (forgetful 𝒳 𝒴) α
 
