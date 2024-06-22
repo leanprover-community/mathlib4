@@ -223,6 +223,7 @@ jobs:
           PR: ${{ github.event.number }}
         run: |
           #PR="${{ github.event.pull_request.number }}"
+          echo "github.event.pull_request.number: ${{ github.event.pull_request.number }}"
           echo "GITHUB_REFs"
           echo "${GITHUB_REF#\*/}"
           echo "${GITHUB_REF}"
