@@ -18,16 +18,17 @@ build_yml() {
   cat <<EOF
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
-on: [workflow_call]  # allow this workflow to be called from other workflows
-  push:
-    branches-ignore:
-      # ignore tmp branches used by bors
-      - 'staging.tmp*'
-      - 'trying.tmp*'
-      - 'staging*.tmp'
-      - 'nolints'
-      # ignore staging branch used by bors, this is handled by bors.yml
-      - 'staging'
+on:
+  workflow_call:  # allow this workflow to be called from other workflows
+    push:
+      branches-ignore:
+        # ignore tmp branches used by bors
+        - 'staging.tmp*'
+        - 'trying.tmp*'
+        - 'staging*.tmp'
+        - 'nolints'
+        # ignore staging branch used by bors, this is handled by bors.yml
+        - 'staging'
   merge_group:
 
 name: continuous integration
@@ -40,10 +41,11 @@ bors_yml() {
   cat <<EOF
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
-on: [workflow_call]  # allow this workflow to be called from other workflows
-  push:
-    branches:
-      - staging
+on:
+  workflow_call:  # allow this workflow to be called from other workflows
+    push:
+      branches:
+        - staging
 
 name: continuous integration (staging)
 EOF
@@ -55,14 +57,15 @@ build_fork_yml() {
   cat <<EOF
 # The jobs in this file run on GitHub-hosted workers and will only be run from external forks
 
-on: [workflow_call]  # allow this workflow to be called from other workflows
-  push:
-    branches-ignore:
-      # ignore tmp branches used by bors
-      - 'staging.tmp*'
-      - 'trying.tmp*'
-      - 'staging*.tmp'
-      - 'nolints'
+on:
+  workflow_call:  # allow this workflow to be called from other workflows
+    push:
+      branches-ignore:
+        # ignore tmp branches used by bors
+        - 'staging.tmp*'
+        - 'trying.tmp*'
+        - 'staging*.tmp'
+        - 'nolints'
 
 name: continuous integration (mathlib forks)
 EOF

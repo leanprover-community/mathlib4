@@ -6,10 +6,11 @@
 # Forks of mathlib and other projects should be able to use build_fork.yml directly
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
-on: [workflow_call]  # allow this workflow to be called from other workflows
-  push:
-    branches:
-      - staging
+on:
+  workflow_call:  # allow this workflow to be called from other workflows
+    push:
+      branches:
+        - staging
 
 name: continuous integration (staging)
 

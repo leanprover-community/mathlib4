@@ -6,14 +6,15 @@
 # Forks of mathlib and other projects should be able to use build_fork.yml directly
 # The jobs in this file run on GitHub-hosted workers and will only be run from external forks
 
-on: [workflow_call]  # allow this workflow to be called from other workflows
-  push:
-    branches-ignore:
-      # ignore tmp branches used by bors
-      - 'staging.tmp*'
-      - 'trying.tmp*'
-      - 'staging*.tmp'
-      - 'nolints'
+on:
+  workflow_call:  # allow this workflow to be called from other workflows
+    push:
+      branches-ignore:
+        # ignore tmp branches used by bors
+        - 'staging.tmp*'
+        - 'trying.tmp*'
+        - 'staging*.tmp'
+        - 'nolints'
 
 name: continuous integration (mathlib forks)
 
