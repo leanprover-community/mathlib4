@@ -79,7 +79,7 @@ instance isReduced_stalk_of_isReduced [IsReduced X] (x : X.carrier) :
   replace e' := (IsNilpotent.mk _ _ e').eq_zero (R := X.presheaf.obj <| op V)
   erw [← ConcreteCategory.congr_hom (X.presheaf.germ_res iU ⟨x, hxV⟩) s]
   rw [comp_apply, e', map_zero]
-#align algebraic_geometry.stalk_is_reduced_of_reduced AlgebraicGeometry.stalk_isReduced_of_reduced
+#align algebraic_geometry.stalk_is_reduced_of_reduced AlgebraicGeometry.isReduced_stalk_of_isReduced
 
 theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [IsReduced Y] : IsReduced X := by
@@ -227,7 +227,7 @@ instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X 
     infer_instance
   · haveI : Nonempty U := by simpa
     infer_instance
-#align algebraic_geometry.is_reduced_of_is_integral AlgebraicGeometry.isReducedOfIsIntegral
+#align algebraic_geometry.is_reduced_of_is_integral AlgebraicGeometry.isReduced_of_isIntegral
 
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrier := by
   by_contra H
