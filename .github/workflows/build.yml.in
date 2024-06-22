@@ -1,5 +1,4 @@
-name: default
-on: [workflow_call]
+
 jobs:
   # Cancels previous runs of jobs in this file
   cancel:
