@@ -168,23 +168,29 @@ lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := b
       exact isClosed_Ici
     · rw [ha]
 
-variable (S : (Set T)ᵒᵈ)
-
-#check (↑(OrderDual.ofDual S) : (Set α))
-
 theorem PrimativeSpectrum.gc : GaloisConnection (β := (Set T)ᵒᵈ) (fun a => T ↓∩ (Ici a))
     (fun S =>  sInf (↑(OrderDual.ofDual S) : (Set α))) := by
   rw [GaloisConnection]
   intros a S
   constructor
   · intro h
+    simp only at h
+    simp
+    intro b hbT hbS
+    --have e1 (c : T) (h1: c ∈ S) : c ∈ T ↓∩ Ici a :=
     sorry
+
     --simp? at h
 
     --simp
   --simp?
   · intro h
-
-#check GaloisConnection
+    simp at h
+    intro b hbS
+    rw [mem_preimage]
+    rw [mem_Ici]
+    apply h
+    exact hbS
+    exact Subtype.coe_prop b
 
 end PrimativeSpectrum
