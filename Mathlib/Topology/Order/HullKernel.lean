@@ -196,49 +196,6 @@ lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici 
     exact ha
   exact fun p a ↦ hT p a
 
-
-
-/-
-lemma isOpen_iff' (S : Set T) : IsOpen S ↔ S = T ↓∩ (Ici (sSup {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}))ᶜ := by
-  constructor
-  · intro h
-    let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
-
-    rw [← basis3]
-    simp only [preimage_compl, mem_setOf_eq]
-    rw [IsTopologicalBasis.open_eq_sUnion' (isBasis1' T hT) h]
-    simp  [preimage_compl, mem_setOf_eq]
-    aesop
-  · intro h
-    use (Ici (sSup {a | T ↓∩ (Ici a)ᶜ ⊆ S}))ᶜ
-    constructor
-    · simp only [isOpen_compl_iff]
-      exact isClosed_Ici
-    · exact id (Eq.symm h)
--/
-
-theorem PrimativeSpectrum.gc : GaloisConnection (β := (Set T)ᵒᵈ) (fun a => T ↓∩ (Ici a))
-    (fun S =>  sInf (↑(OrderDual.ofDual S) : (Set α))) := by
-  rw [GaloisConnection]
-  intros a S
-  constructor
-  · intro h
-    simp only at h
-    simp only [le_sInf_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-      forall_exists_index]
-    intro b hbT hbS
-    rw [← mem_Ici]
-    apply h hbS
-  · intro h
-    simp only [le_sInf_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-      forall_exists_index] at h
-    intro b hbS
-    rw [mem_preimage]
-    rw [mem_Ici]
-    apply h
-    exact hbS
-    exact Subtype.coe_prop b
-
 theorem PrimativeSpectrum.gc' : GaloisConnection (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : (Set α))))
     (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) := by
