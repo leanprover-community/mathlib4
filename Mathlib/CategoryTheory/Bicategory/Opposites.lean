@@ -49,7 +49,7 @@ theorem bop_inj_iff (x y : B) : bop x = bop y ↔ x = y :=
   bop_injective.eq_iff
 
 @[simp]
-theorem unmop_inj_iff (x y : Bᴮᵒᵖ) : unbop x = unbop y ↔ x = y :=
+theorem unbop_inj_iff (x y : Bᴮᵒᵖ) : unbop x = unbop y ↔ x = y :=
   unbop_injective.eq_iff
 
 @[simp]
@@ -132,27 +132,11 @@ namespace Bicategory.Opposite
 instance homCategory (a b : Bᴮᵒᵖ) : Quiver (a ⟶ b) where
   Hom := fun f g => (f.unbop ⟶ g.unbop)ᴮᵒᵖ
 
-def bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.bop ⟶ g.bop :=
+abbrev bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.bop ⟶ g.bop :=
   Bicategory.Opposite.bop η
 
-def unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ⟶ g) : f.unbop ⟶ g.unbop :=
+abbrev unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ⟶ g) : f.unbop ⟶ g.unbop :=
   Bicategory.Opposite.unbop η
-
-theorem bop2_inj {a b : B} {f g : a ⟶ b} :
-    Function.Injective (bop2 : (f ⟶ g) → (f.bop ⟶ g.bop)) :=
-  fun _ _ H => congr_arg unbop2 H
-
-theorem unbop2_inj {a b : Bᴮᵒᵖ} {f g : a ⟶ b} :
-    Function.Injective (unbop2 : (f ⟶ g) → (f.unbop ⟶ g.unbop)) :=
-  fun _ _ H => congr_arg bop2 H
-
--- TODO: iff versions of these?
-
-@[simp]
-theorem unbop_bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : unbop2 (bop2 η) = η := rfl
-
-@[simp]
-theorem bop_unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ⟶ g) : bop2 (unbop2 η) = η := rfl
 
 -- @[simps] here causes a loop!!!!
 instance homCategory.Opposite {a b : Bᴮᵒᵖ} : Category.{w} (a ⟶ b) where
@@ -187,27 +171,28 @@ theorem unbop2_id_bop {a b : B} {f : a ⟶ b} : unbop2 (𝟙 f.bop) = 𝟙 f :=
 theorem bop2_id_unbop {a b : Bᴮᵒᵖ} {f : a ⟶ b} : bop2 (𝟙 f.unbop) = 𝟙 f :=
   rfl
 
+@[simps]
+def bopFunctor (a b : B) : (a ⟶ b) ⥤ (bop b ⟶ bop a) where
+  obj f := f.bop
+  map η := bop2 η
+
+@[simps]
+def unbopFunctor (a b : Bᴮᵒᵖ) : (a ⟶ b) ⥤ (unbop b ⟶ unbop a) where
+  obj f := f.unbop
+  map η := unbop2 η
+
 end Bicategory.Opposite
 
 namespace CategoryTheory.Iso
 
 open Bicategory.Opposite
 
-/-- The opposite natural isomorphism  -/
-@[simps]
-protected def bop2 {a b : B} {f g : a ⟶ b} (η : f ≅ g) : f.bop ≅ g.bop where
-  hom := bop2 η.hom
-  inv := bop2 η.inv
-  hom_inv_id := unbop2_inj <| by simp
-  inv_hom_id := unbop2_inj <| by simp
+@[simps!]
+abbrev bop2 {a b : B} {f g : a ⟶ b} (η : f ≅ g) : f.bop ≅ g.bop := (bopFunctor a b).mapIso η
 
-/-- The natural isomorphism obtained from a natural isomorphism in `Bᴮᵒᵖ` -/
-@[simps]
-protected def unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : f.unbop ≅ g.unbop where
-  hom := unbop2 η.hom
-  inv := unbop2 η.inv
-  hom_inv_id := bop2_inj <| by simp
-  inv_hom_id := bop2_inj <| by simp
+@[simps!]
+abbrev unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : f.unbop ≅ g.unbop :=
+  (unbopFunctor a b).mapIso η
 
 @[simp]
 theorem unbop2_bop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop2.bop2 = η := by (ext; rfl)
@@ -215,46 +200,55 @@ theorem unbop2_bop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop
 @[simp]
 theorem unbop2_bop {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop2.bop2 = η := by (ext; rfl)
 
--- TODO: more iso API? removeOp?
+-- TODO: MAKE ABBREV?? (if I have some bop functor yeah)
+-- /-- The opposite natural isomorphism  -/
+-- @[simps]
+-- protected def bop2 {a b : B} {f g : a ⟶ b} (η : f ≅ g) : f.bop ≅ g.bop where
+--   hom := bop2 η.hom
+--   inv := bop2 η.inv
+--   hom_inv_id := unbop2_inj <| by simp
+--   inv_hom_id := unbop2_inj <| by simp
+
+-- /-- The natural isomorphism obtained from a natural isomorphism in `Bᴮᵒᵖ` -/
+-- @[simps]
+-- protected def unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : f.unbop ≅ g.unbop where
+--   hom := unbop2 η.hom
+--   inv := unbop2 η.inv
+--   hom_inv_id := bop2_inj <| by simp
+--   inv_hom_id := bop2_inj <| by simp
 
 end CategoryTheory.Iso
 
 namespace Bicategory.Opposite
 
-/-- The 1-dual bicategory `Cᵒᵖ`
+/-- The 1-dual bicategory `Bᴮᵒᵖ`
 
 See ...
 -/
 @[simps!]
 instance bicategory : Bicategory.{w, v} Bᴮᵒᵖ where
-  -- Need to break these out and add lemmas for them probably?
   id := fun a => (𝟙 a.unbop).bop
   comp := fun f g => (g.unbop ≫ f.unbop).bop
   whiskerLeft f g h η := bop2 ((unbop2 η) ▷ f.unbop)
   whiskerRight η h := bop2 (h.unbop ◁ (unbop2 η))
+  -- I'm not sure why I need to do `by exact` here...
   associator f g h := by exact (Bicategory.associator h.unbop g.unbop f.unbop).symm.bop2
-  -- TODO: alternative is to use leftUnitor + symm
   leftUnitor f := by exact (Bicategory.rightUnitor f.unbop).bop2
   rightUnitor f := by exact (Bicategory.leftUnitor f.unbop).bop2
-  whiskerLeft_id f g := unbop2_inj <| Bicategory.id_whiskerRight g.unbop f.unbop
-  whiskerLeft_comp f g h i η θ := unbop2_inj <|
+  whiskerLeft_id f g := unbop_injective <| Bicategory.id_whiskerRight g.unbop f.unbop
+  whiskerLeft_comp f g h i η θ := unbop_injective <|
     Bicategory.comp_whiskerRight (unbop2 η) (unbop2 θ) f.unbop
-  id_whiskerLeft η := unbop2_inj <| whiskerRight_id (unbop2 η)
-  comp_whiskerLeft {a b c d} f g {h h'} η := unbop2_inj <|
+  id_whiskerLeft η := unbop_injective <| whiskerRight_id (unbop2 η)
+  comp_whiskerLeft {a b c d} f g {h h'} η := unbop_injective <|
     whiskerRight_comp (unbop2 η) g.unbop f.unbop
-  id_whiskerRight f g := unbop2_inj <| Bicategory.whiskerLeft_id g.unbop f.unbop
-  comp_whiskerRight η θ i := unbop2_inj <| Bicategory.whiskerLeft_comp i.unbop (unbop2 η) (unbop2 θ)
-  whiskerRight_id η := unbop2_inj <| id_whiskerLeft (unbop2 η)
-  whiskerRight_comp η g h := unbop2_inj <| comp_whiskerLeft h.unbop g.unbop (unbop2 η)
-  whisker_assoc f g g' η i := by apply unbop2_inj; simp
-  whisker_exchange η θ := by apply unbop2_inj; simp [(whisker_exchange (unbop2 θ) (unbop2 η)).symm]
-  pentagon f g h i := by apply unbop2_inj; simp
-  triangle f g := by apply unbop2_inj; simp
+  id_whiskerRight f g := unbop_injective <| Bicategory.whiskerLeft_id g.unbop f.unbop
+  comp_whiskerRight η θ i := unbop_injective <|
+    Bicategory.whiskerLeft_comp i.unbop (unbop2 η) (unbop2 θ)
+  whiskerRight_id η := unbop_injective <| id_whiskerLeft (unbop2 η)
+  whiskerRight_comp η g h := unbop_injective <| comp_whiskerLeft h.unbop g.unbop (unbop2 η)
+  whisker_assoc f g g' η i := by apply unbop_injective; simp
+  whisker_exchange η θ := by apply unbop_injective; simp [(whisker_exchange _ _).symm]
+  pentagon f g h i := by apply unbop_injective; simp
+  triangle f g := by apply unbop_injective; simp
 
 end Bicategory.Opposite
-
-/-
-TODO:
-- simp lemmas
-
--/
