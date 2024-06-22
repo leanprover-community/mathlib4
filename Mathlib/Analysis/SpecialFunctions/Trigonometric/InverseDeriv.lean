@@ -81,7 +81,7 @@ theorem hasDerivWithinAt_arcsin_Iic {x : ℝ} (h : x ≠ 1) :
 
 theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Ici x) x ↔ x ≠ -1 := by
-  refine' ⟨_, fun h => (hasDerivWithinAt_arcsin_Ici h).differentiableWithinAt⟩
+  refine ⟨?_, fun h => (hasDerivWithinAt_arcsin_Ici h).differentiableWithinAt⟩
   rintro h rfl
   have : sin ∘ arcsin =ᶠ[𝓝[≥] (-1 : ℝ)] id := by
     filter_upwards [Icc_mem_nhdsWithin_Ici ⟨le_rfl, neg_lt_self (zero_lt_one' ℝ)⟩] with x using
@@ -92,7 +92,7 @@ theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
 
 theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Iic x) x ↔ x ≠ 1 := by
-  refine' ⟨fun h => _, fun h => (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
+  refine ⟨fun h => ?_, fun h => (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
   rw [← neg_neg x, ← image_neg_Ici] at h
   have := (h.comp (-x) differentiableWithinAt_id.neg (mapsTo_image _ _)).neg
   simpa [(· ∘ ·), differentiableWithinAt_arcsin_Ici] using this
@@ -187,7 +187,7 @@ theorem contDiffOn_arccos {n : ℕ∞} : ContDiffOn ℝ n arccos {-1, 1}ᶜ :=
 
 theorem contDiffAt_arccos_iff {x : ℝ} {n : ℕ∞} :
     ContDiffAt ℝ n arccos x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 := by
-  refine' Iff.trans ⟨fun h => _, fun h => _⟩ contDiffAt_arcsin_iff <;>
+  refine Iff.trans ⟨fun h => ?_, fun h => ?_⟩ contDiffAt_arcsin_iff <;>
     simpa [arccos] using (contDiffAt_const (c := π / 2)).sub h
 #align real.cont_diff_at_arccos_iff Real.contDiffAt_arccos_iff
 

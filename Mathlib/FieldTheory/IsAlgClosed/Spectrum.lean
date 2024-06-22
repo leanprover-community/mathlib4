@@ -97,7 +97,7 @@ assuming `[Nontrivial A]`, is `{k}` where `p = Polynomial.C k`. -/
 theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
     (hdeg : 0 < degree p) : σ (aeval a p) = (eval · p) '' σ a := by
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`
-  refine' Set.eq_of_subset_of_subset (fun k hk => _) (subset_polynomial_aeval a p)
+  refine Set.eq_of_subset_of_subset (fun k hk => ?_) (subset_polynomial_aeval a p)
   -- write `C k - p` product of linear factors and a constant; show `C k - p ≠ 0`.
   have hprod := eq_prod_roots_of_splits_id (IsAlgClosed.splits (C k - p))
   have h_ne : C k - p ≠ 0 := ne_zero_of_degree_gt <| by
@@ -120,9 +120,9 @@ is nonempty instead of assuming the degree of the polynomial is positive. -/
 theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
     (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
   nontriviality A
-  refine' Or.elim (le_or_gt (degree p) 0) (fun h => _) (map_polynomial_aeval_of_degree_pos a p)
-  · rw [eq_C_of_degree_le_zero h]
-    simp only [Set.image_congr, eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
+  refine Or.elim (le_or_gt (degree p) 0) (fun h => ?_) (map_polynomial_aeval_of_degree_pos a p)
+  rw [eq_C_of_degree_le_zero h]
+  simp only [Set.image_congr, eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
 #align spectrum.map_polynomial_aeval_of_nonempty spectrum.map_polynomial_aeval_of_nonempty
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/

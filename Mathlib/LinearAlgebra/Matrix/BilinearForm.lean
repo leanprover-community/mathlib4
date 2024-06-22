@@ -52,8 +52,6 @@ section Matrix
 
 variable {n o : Type*}
 
-open BigOperators
-
 open Finset LinearMap Matrix
 
 open Matrix
@@ -62,7 +60,7 @@ open Matrix
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) :=
-  LinearMap.toBilin (Matrix.toLinearMap₂'Aux _ _ M)
+  Matrix.toLinearMap₂'Aux _ _ M
 #align matrix.to_bilin'_aux Matrix.toBilin'Aux
 
 theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
@@ -75,7 +73,7 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ :=
-  (LinearMap.toMatrix₂Aux b b) ∘ₗ BilinForm.toLinHom
+  LinearMap.toMatrix₂Aux b b
 #align bilin_form.to_matrix_aux BilinForm.toMatrixAux
 
 @[simp]
@@ -91,11 +89,8 @@ theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R�
     -- Porting note: had to hint the base ring even though it should be clear from context...
     Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₂ := R₂)
       (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
-  rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux, coe_comp, Function.comp_apply,
+  rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux,
     toLinearMap₂'Aux_toMatrix₂Aux]
-  ext x y
-  simp only [coe_comp, coe_single, Function.comp_apply, toBilin_apply]
-  rfl
 #align to_bilin'_aux_to_matrix_aux toBilin'Aux_toMatrixAux
 
 section ToMatrix'
@@ -236,7 +231,7 @@ variable [DecidableEq n] (b : Basis n R₂ M₂)
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
 noncomputable def BilinForm.toMatrix : BilinForm R₂ M₂ ≃ₗ[R₂] Matrix n n R₂ :=
-  BilinForm.toLin ≪≫ₗ (LinearMap.toMatrix₂ b b)
+  LinearMap.toMatrix₂ b b
 #align bilin_form.to_matrix BilinForm.toMatrix
 
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
@@ -282,7 +277,6 @@ theorem Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₂ n) = Matrix.t
 theorem BilinForm.toMatrix_basisFun :
     BilinForm.toMatrix (Pi.basisFun R₂ n) = BilinForm.toMatrix' := by
   rw [BilinForm.toMatrix, BilinForm.toMatrix', LinearMap.toMatrix₂_basisFun]
-  rfl
 #align bilin_form.to_matrix_basis_fun BilinForm.toMatrix_basisFun
 
 @[simp]
@@ -343,11 +337,8 @@ theorem BilinForm.toMatrix_mul (B : BilinForm R₂ M₂) (M : Matrix n n R₂) :
 theorem Matrix.toBilin_comp (M : Matrix n n R₂) (P Q : Matrix n o R₂) :
     (Matrix.toBilin b M).comp (toLin c b P) (toLin c b Q) = Matrix.toBilin c (Pᵀ * M * Q) := by
   ext x y
-  rw [Matrix.toBilin,
-    BilinForm.toMatrix, Matrix.toBilin, BilinForm.toMatrix, LinearEquiv.trans_symm,
-    LinearEquiv.trans_symm, toMatrix₂_symm, BilinForm.toLin_symm, LinearEquiv.trans_apply,
-    toMatrix₂_symm, BilinForm.toLin_symm, LinearEquiv.trans_apply,
-    ← Matrix.toLinearMap₂_compl₁₂ b b c c]
+  rw [Matrix.toBilin, BilinForm.toMatrix, Matrix.toBilin, BilinForm.toMatrix, toMatrix₂_symm,
+    toMatrix₂_symm, ← Matrix.toLinearMap₂_compl₁₂ b b c c]
   simp
 #align matrix.to_bilin_comp Matrix.toBilin_comp
 

@@ -20,7 +20,7 @@ complement is convex.
 -/
 
 
-open Set BigOperators
+open Set
 
 variable {𝕜 E ι : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
@@ -35,7 +35,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
   obtain rfl | haz' := haz.eq_or_lt
   · rw [zero_add] at habz
     rw [zero_smul, zero_add, habz, one_smul]
-    refine' ⟨v, by apply right_mem_segment, segment_subset_convexHull _ _ hv⟩ <;> simp
+    refine ⟨v, by apply right_mem_segment, segment_subset_convexHull ?_ ?_ hv⟩ <;> simp
   obtain ⟨av, bv, hav, hbv, habv, rfl⟩ := hv
   obtain rfl | hav' := hav.eq_or_lt
   · rw [zero_add] at habv
@@ -89,14 +89,14 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
             disjoint_sUnion_left.2 fun c hc => (hcS hc).2⟩,
           fun s => subset_sUnion_of_mem⟩)
       s ⟨hs, hst⟩
-  refine'
-    ⟨C, hC.1, convex_iff_segment_subset.2 fun x hx y hy z hz hzC => _, hsC, hC.2.subset_compl_left⟩
+  refine
+    ⟨C, hC.1, convex_iff_segment_subset.2 fun x hx y hy z hz hzC => ?_, hsC, hC.2.subset_compl_left⟩
   suffices h : ∀ c ∈ Cᶜ, ∃ a ∈ C, (segment 𝕜 c a ∩ t).Nonempty by
     obtain ⟨p, hp, u, hu, hut⟩ := h x hx
     obtain ⟨q, hq, v, hv, hvt⟩ := h y hy
-    refine'
+    refine
       not_disjoint_segment_convexHull_triple hz hu hv
-        (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min _ hC.1)
+        (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min ?_ hC.1)
     simp [insert_subset_iff, hp, hq, singleton_subset_iff.2 hzC]
   rintro c hc
   by_contra! h
