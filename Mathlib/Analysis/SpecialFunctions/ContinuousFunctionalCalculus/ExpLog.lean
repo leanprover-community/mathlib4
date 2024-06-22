@@ -33,10 +33,9 @@ instance instTopologicalRing {α : Type*} {β : Type*} [TopologicalSpace α] [To
     [LocallyCompactSpace α] [NonUnitalRing β] [TopologicalRing β] :
     TopologicalRing C(α, β) where
 
-theorem tsum_apply' {α : Type*} {ι : Type*} {β : Type*} [AddCommMonoid β] [TopologicalSpace β]
-    [T2Space β] {f : ι → α → β} {x : α} (hf : Summable f) :
-    tsum (fun (i : ι) => f i) x = ∑' (i : ι), f i x := tsum_apply hf
-
+--theorem tsum_apply' {α : Type*} {ι : Type*} {β : Type*} [AddCommMonoid β] [TopologicalSpace β]
+--    [T2Space β] {f : ι → α → β} {x : α} (hf : Summable f) :
+--    tsum (fun (i : ι) => f i) x = ∑' (i : ι), f i x := tsum_apply hf
 
 namespace CFC
 
@@ -60,6 +59,13 @@ variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [StarOrderedRing A]
 --@[simp]
 --lemma real_exp_algebraMap {r : ℝ} : real_exp (algebraMap ℝ A r) = algebraMap ℝ A (Real.exp r) := by
 --  sorry
+
+@[simp]
+lemma isSelfAdjoint_cfc {a : A} {f : ℝ → ℝ} : IsSelfAdjoint (cfc f a) := by
+  by_cases htriv : IsSelfAdjoint a ∧ ContinuousOn f (spectrum ℝ a)
+  · exact cfc_predicate f a htriv.1 htriv.2
+  · rw [cfc_apply_of_not_and a htriv]
+    exact isSelfAdjoint_zero A
 
 end exp
 
@@ -131,8 +137,7 @@ variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRi
 
 noncomputable def log (a : A) : A := cfc Real.log a
 
-lemma log_isSelfAdjoint {a : A} : IsSelfAdjoint (log a) := by
-  sorry
+lemma isSelfAdjoint_log {a : A} : IsSelfAdjoint (log a) := isSelfAdjoint_cfc
 
 lemma log_exp {a : A} (ha : IsSelfAdjoint a) : log (NormedSpace.exp ℝ a) = a := by
   unfold log
@@ -146,15 +151,20 @@ lemma log_exp {a : A} (ha : IsSelfAdjoint a) : log (NormedSpace.exp ℝ a) = a :
   rw [← real_exp_eq_normedSpace_exp ha, ← cfc_comp Real.log Real.exp a ha hcont]
   rw [hcomp, cfc_id (R := ℝ) a ha]
 
-lemma exp_log {a : A} (ha₁ : IsSelfAdjoint a) (ha₂ : ContinuousOn Real.log (spectrum ℝ a)): NormedSpace.exp ℝ (log a) = a := by
-  have hcont : ContinuousOn Real.exp (Real.log '' spectrum ℝ a) :=
-    Continuous.continuousOn Real.continuous_exp
-  have h₁ : IsSelfAdjoint (log a) := by
-    unfold log
-
+lemma exp_log {a : A} (ha₁ : ∀ x ∈ spectrum ℝ a, 0 < x) : NormedSpace.exp ℝ (log a) = a := by
+  have ha₁' : IsSelfAdjoint a := by
     sorry
-  rw [← real_exp_eq_normedSpace_exp h₁, log, ← cfc_comp Real.exp Real.log a ha₁ hcont ha₂]
-  sorry
+  have ha₂ : ContinuousOn Real.log (spectrum ℝ a) := by
+    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
+    rw [Set.mem_compl_singleton_iff]
+    exact ne_of_gt <| ha₁ x hx
+  have hcont : ContinuousOn Real.exp (Real.log '' spectrum ℝ a) := by fun_prop
+  rw [← real_exp_eq_normedSpace_exp isSelfAdjoint_log,
+      log, ← cfc_comp Real.exp Real.log a ha₁' hcont ha₂]
+  conv_rhs => rw [← cfc_id (R := ℝ) a ha₁']
+  refine cfc_congr ?_
+  intro x hx
+  simp only [Function.comp_apply, Real.exp_log (ha₁ x hx), id_eq]
 
 @[simp] lemma log_one : log (1 : A) = 0 := by
   sorry
