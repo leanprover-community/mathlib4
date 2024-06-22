@@ -232,6 +232,7 @@ jobs:
 
           echo "Message: ${ddiff}"
           echo "Branch name: ${BRANCH_NAME}"
+          echo "PR: ${PR}"
 
           git checkout "${BRANCH_NAME}"
           currentHash="$(git rev-parse HEAD)"
