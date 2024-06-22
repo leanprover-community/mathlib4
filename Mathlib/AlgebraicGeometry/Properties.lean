@@ -66,7 +66,7 @@ theorem isReduced_of_isReduced_stalk [∀ x : X.carrier, _root_.IsReduced (X.pre
   rw [RingHom.map_zero]
   change X.presheaf.germ x s = 0
   exact (hs.map _).eq_zero
-#align algebraic_geometry.is_reduced_of_stalk_is_reduced AlgebraicGeometry.isReducedOfStalkIsReduced
+#align algebraic_geometry.is_reduced_of_stalk_is_reduced AlgebraicGeometry.isReduced_of_isReduced_stalk
 
 instance isReduced_stalk_of_isReduced [IsReduced X] (x : X.carrier) :
     _root_.IsReduced (X.presheaf.stalk x) := by
@@ -118,7 +118,7 @@ theorem isReduced_of_isAffine_isReduced [IsAffine X]
   haveI : IsReduced (Scheme.Spec.obj (op (Scheme.Γ.obj (op X)))) := by
     rw [affine_isReduced_iff]; exact h
   isReduced_of_isOpenImmersion X.isoSpec.hom
-#align algebraic_geometry.is_reduced_of_is_affine_is_reduced AlgebraicGeometry.isReducedOfIsAffineIsReduced
+#align algebraic_geometry.is_reduced_of_is_affine_is_reduced AlgebraicGeometry.isReduced_of_isAffine_isReduced
 
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
@@ -256,7 +256,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carr
       exacts [hS h, hT h]
     · intro x
       exact x.rec (by contradiction)
-#align algebraic_geometry.is_irreducible_of_is_integral AlgebraicGeometry.is_irreducible_of_isIntegral
+#align algebraic_geometry.is_irreducible_of_is_integral AlgebraicGeometry.irreducibleSpace_of_isIntegral
 
 theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : IrreducibleSpace X.carrier] :
     IsIntegral X := by
