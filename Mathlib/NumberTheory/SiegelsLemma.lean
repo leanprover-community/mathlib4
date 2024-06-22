@@ -153,14 +153,10 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
         rw [posPart_add_negPart (A i j), Int.cast_abs]
         exact norm_entry_le_entrywise_sup_norm A
   _  ≤ (n * ‖A‖) ^ m * (B + 1) ^ m := by
-        rw [← mul_pow]
-        apply pow_le_pow_left (add_nonneg _ (zero_le_one' ℝ)) _ --two goals
-        · exact mul_nonneg (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)) (Nat.cast_nonneg B)
-        · rw [mul_add]
-          simp only [mul_one, add_le_add_iff_left]
-          exact Left.one_le_mul_of_le_of_le
-              (by exact_mod_cast Nat.one_le_of_lt hn) (one_le_norm_A_of_ne_zero m n A hA)
-              (Nat.cast_nonneg n)
+        rw [← mul_pow, mul_add, mul_one]
+        gcongr
+        have H : 1 ≤ (n : ℝ) := mod_cast (hm.trans hn)
+        exact one_le_mul_of_one_le_of_one_le H <| one_le_norm_A_of_ne_zero m n A hA
   _ = ((n * ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m)  * (B + 1) ^ m := by
         congr 1
         rw [← rpow_mul (mul_nonneg n.cast_nonneg (norm_nonneg A)), ← Real.rpow_natCast, div_mul_cancel₀]
