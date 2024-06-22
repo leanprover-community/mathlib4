@@ -289,19 +289,22 @@ def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) 
       exact image_val_mono e1
     exact le_of_le_of_eq e2 (id (Eq.symm hS)))
 
-/-
+
 lemma kh1 (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
-  rw [ (GaloisInsertion.l_u_eq (PrimativeSpectrum.gi hG))]
+  conv_rhs => rw [← (OrderDual.ofDual_toDual a),
+    ← (GaloisInsertion.l_u_eq (PrimativeSpectrum.gi hG) a)]
+  rfl
+
 
 lemma hk1 (hG : OrderGenerate T) (C : Set T) (h : IsClosed C) :
     (PrimativeSpectrum.gc' T).closureOperator C = C := by
   have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff T hT C).mp h
   cases' e1 with a ha
-
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
   rw [ha]
--/
+  rw [kh1]
+  exact hG
 
 
 lemma testhk (S : Set T) : (PrimativeSpectrum.gc' T).closureOperator S = T ↓∩ (Ici (sInf S)) := by
