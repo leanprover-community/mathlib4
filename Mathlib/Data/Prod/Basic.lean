@@ -67,20 +67,20 @@ theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b
 theorem map_apply' (f : α → γ) (g : β → δ) (p : α × β) : map f g p = (f p.1, g p.2) :=
   rfl
 
-@[simp] theorem map_fst (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).1 = f p.1 :=
-  rfl
 #align prod.map_fst Prod.map_fst
-
-@[simp] theorem map_snd (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).2 = g p.2 :=
-  rfl
 #align prod.map_snd Prod.map_snd
 
+#adaptation_note
+/--
+After `nightly-2024-06-23`, the explicitness of `map_fst` and `map_snd` will be fixed and we can
+change this back to `funext <| map_fst f g`. Also in `map_snd'` below.
+-/
 theorem map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ Prod.fst :=
-  funext <| map_fst f g
+  funext <| @map_fst (f := f) (g := g)
 #align prod.map_fst' Prod.map_fst'
 
 theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
-  funext <| map_snd f g
+  funext <| @map_snd (f := f) (g := g)
 #align prod.map_snd' Prod.map_snd'
 
 /-- Composing a `Prod.map` with another `Prod.map` is equal to
@@ -130,7 +130,7 @@ theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
 #align prod.ext Prod.ext
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
-  funext fun p ↦ ext (map_fst f g p) (map_snd f g p)
+  funext fun _ ↦ ext map_fst map_snd
 #align prod.map_def Prod.map_def
 
 theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
