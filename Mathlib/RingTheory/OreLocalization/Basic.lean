@@ -399,11 +399,17 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) :=
   OreLocalization.mul_smul x y z
 #align ore_localization.mul_assoc OreLocalization.mul_assoc
 
+/-- `npow` of `OreLocalization` -/
+@[to_additive (attr := irreducible) "`nsmul` of `AddOreLocalization`"]
+protected def npow : ℕ → R[S⁻¹] → R[S⁻¹] := npowRec
+
+unseal OreLocalization.npow in
 @[to_additive]
 instance : Monoid R[S⁻¹] where
   one_mul := OreLocalization.one_mul
   mul_one := OreLocalization.mul_one
   mul_assoc := OreLocalization.mul_assoc
+  npow := OreLocalization.npow
 
 @[to_additive]
 instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
