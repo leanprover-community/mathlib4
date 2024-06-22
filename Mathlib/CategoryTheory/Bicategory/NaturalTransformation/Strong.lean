@@ -115,9 +115,13 @@ variable (F : OplaxFunctor B C)
 
 /-- The identity oplax natural transformation. -/
 -- TODO: fix this simps call. Should simplify to oplax, then use those lemmas?
-@[simps!]
+@[simps!?]
 def id : StrongNatTrans F F :=
   mkOfOplax (OplaxNatTrans.id F) { naturality := λ f ↦ (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm }
+
+@[simp]
+lemma id.toOplax : (id F).toOplax = OplaxNatTrans.id F :=
+  rfl
 
 instance : Inhabited (StrongNatTrans F F) :=
   ⟨id F⟩
