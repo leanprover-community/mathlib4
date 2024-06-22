@@ -503,7 +503,8 @@ theorem AffineTargetMorphismProperty.diagonal_respectsIso (P : AffineTargetMorph
     apply H
 #align algebraic_geometry.affine_target_morphism_property.diagonal_respects_iso AlgebraicGeometry.AffineTargetMorphismProperty.diagonal_respectsIso
 
-theorem diagonal_targetAffineLocally_of_openCover (P : AffineTargetMorphismProperty) (hP : P.IsLocal)
+theorem diagonal_targetAffineLocally_of_openCover
+    (P : AffineTargetMorphismProperty) (hP : P.IsLocal)
     {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y) [∀ i, IsAffine (𝒰.obj i)]
     (𝒰' : ∀ i, Scheme.OpenCover.{u} (pullback f (𝒰.map i))) [∀ i j, IsAffine ((𝒰' i).obj j)]
     (h𝒰' : ∀ i j k, P (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) pullback.snd)) :
@@ -679,14 +680,16 @@ lemma MorphismProperty.topologically_propertyIsLocalAtTarget
       rw [← morphismRestrict_base]
       exact hf i
 
-@[deprecated (since := "2024-06-22")]
-alias AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal :=
-    AffineTargetMorphismProperty.IsLocal.targetAffineLocally_isLocal
+namespace AffineTargetMorphismProperty.IsLocal
 
-open AffineTargetMorphismProperty.IsLocal in
 @[deprecated (since := "2024-06-22")]
-alias AffineTargetMorphismProperty.IsLocal.targetAffineLocallyPullbackFstOfRightOfStableUnderBaseChange :=
-  AffineTargetMorphismProperty.IsLocal.targetAffineLocally_pullback_fst_of_right_of_stableUnderBaseChange
+alias targetAffineLocallyIsLocal := targetAffineLocally_isLocal
+
+@[deprecated (since := "2024-06-22")]
+alias targetAffineLocallyPullbackFstOfRightOfStableUnderBaseChange :=
+  targetAffineLocally_pullback_fst_of_right_of_stableUnderBaseChange
+
+end AffineTargetMorphismProperty.IsLocal
 
 @[deprecated (since := "2024-06-22")]
 alias diagonalTargetAffineLocallyOfOpenCover := diagonal_targetAffineLocally_of_openCover
