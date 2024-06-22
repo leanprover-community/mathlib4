@@ -335,12 +335,13 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 #align ore_localization.ore_div_mul_char' OreLocalization.oreDivMulChar'
 
-@[irreducible]
-private def one : R[S⁻¹] := 1 /ₒ 1
+/-- `1` in the localization, defined as `1 /ₒ 1`. -/
+@[to_additive (attr := irreducible) "`0` in the additive localization, defined as `0 -ₒ 0`."]
+protected def one : R[S⁻¹] := 1 /ₒ 1
 
 @[to_additive AddOreLocalization.instZeroAddOreLocalization]
 instance : One R[S⁻¹] :=
-  ⟨one⟩
+  ⟨OreLocalization.one⟩
 
 @[to_additive]
 protected theorem one_def : (1 : R[S⁻¹]) = 1 /ₒ 1 := by

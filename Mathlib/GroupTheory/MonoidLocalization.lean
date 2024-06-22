@@ -279,6 +279,7 @@ theorem mk_mul (a c : M) (b d : S) : mk a b * mk c d = mk (a * c) (b * d) :=
 #align localization.mk_mul Localization.mk_mul
 #align add_localization.mk_add AddLocalization.mk_add
 
+unseal OreLocalization.one in
 @[to_additive]
 theorem mk_one : mk 1 (1 : S) = 1 := OreLocalization.one_def
 #align localization.mk_one Localization.mk_one
