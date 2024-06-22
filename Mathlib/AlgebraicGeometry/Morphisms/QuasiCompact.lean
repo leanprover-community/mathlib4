@@ -88,7 +88,7 @@ theorem isCompact_open_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set
       ∃ s : Set (X.presheaf.obj (op ⊤)),
         s.Finite ∧ U = ⋃ (i : X.presheaf.obj (op ⊤)) (_ : i ∈ s), X.basicOpen i :=
   (isBasis_basicOpen X).isCompact_open_iff_eq_finite_iUnion _
-    (fun _ => ((isAffineOpen_top _).basicOpenIsAffine _).isCompact) _
+    (fun _ => ((isAffineOpen_top _).basicOpen _).isCompact) _
 #align algebraic_geometry.is_compact_open_iff_eq_basic_open_union AlgebraicGeometry.isCompact_open_iff_eq_basicOpen_union
 
 theorem quasiCompact_iff_forall_affine :
@@ -136,7 +136,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
       convert Set.subset_iUnion₂ (s := fun (U : X.affineOpens) (_ : U ∈ s) => (U : Set X.carrier))
         V V.prop using 1
     erw [← X.toLocallyRingedSpace.toRingedSpace.basicOpen_res this.op]
-    exact IsAffineOpen.basicOpenIsAffine V.1.prop _
+    exact IsAffineOpen.basicOpen V.1.prop _
   haveI : Finite s := hs.to_subtype
   refine ⟨Set.range g, Set.finite_range g, ?_⟩
   refine (Set.inter_eq_right.mpr

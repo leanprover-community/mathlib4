@@ -265,7 +265,7 @@ instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
   intro i' _
   change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
   rw [← Scheme.basicOpen_mul]
-  exact ((isAffineOpen_top _).basicOpenIsAffine _).isCompact
+  exact ((isAffineOpen_top _).basicOpen _).isCompact
 #align algebraic_geometry.quasi_separated_space_of_is_affine AlgebraicGeometry.quasiSeparatedSpace_of_isAffine
 
 theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : Opens X.carrier} (hU : IsAffineOpen U) :
