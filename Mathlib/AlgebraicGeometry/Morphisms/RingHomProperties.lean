@@ -339,7 +339,7 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme.{u}} (f : X ⟶ Y)
   · rw [Set.eq_univ_iff_forall]
     intro x
     rw [Set.mem_iUnion]
-    exact ⟨⟨_, 𝒰.f x, rfl⟩, 𝒰.Covers x⟩
+    exact ⟨⟨_, 𝒰.f x, rfl⟩, 𝒰.covers x⟩
   · rintro ⟨_, i, rfl⟩
     specialize H i
     rw [← hP.respectsIso.cancel_right_isIso _

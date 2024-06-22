@@ -203,7 +203,7 @@ theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : 
   · rw [Set.eq_univ_iff_forall]
     simp only [Set.mem_iUnion]
     intro x
-    exact ⟨⟨_, ⟨𝒰.f x, rfl⟩⟩, 𝒰.Covers x⟩
+    exact ⟨⟨_, ⟨𝒰.f x, rfl⟩⟩, 𝒰.covers x⟩
   · rintro ⟨_, i, rfl⟩
     specialize h𝒰 i
     rw [← P.toProperty_apply] at h𝒰 ⊢
@@ -248,7 +248,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
   · intro H
     refine ⟨Y.carrier, fun x => (Scheme.Hom.opensRange <| Y.affineCover.map x),
       ?_, fun i => isAffineOpen_opensRange _, ?_⟩
-    · rw [eq_top_iff]; intro x _; erw [Opens.mem_iSup]; exact ⟨x, Y.affineCover.Covers x⟩
+    · rw [eq_top_iff]; intro x _; erw [Opens.mem_iSup]; exact ⟨x, Y.affineCover.covers x⟩
     · intro i; exact H ⟨_, isAffineOpen_opensRange _⟩
   tfae_finish
 #align algebraic_geometry.affine_target_morphism_property.is_local.affine_open_cover_tfae AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE

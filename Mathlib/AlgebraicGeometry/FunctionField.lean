@@ -177,7 +177,7 @@ instance [IsIntegral X] (x : X.carrier) :
     ⟨Set.range (X.affineCover.map x).1.base,
       PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
   have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.map x)
-  let x : U := ⟨x, X.affineCover.Covers x⟩
+  let x : U := ⟨x, X.affineCover.covers x⟩
   have : Nonempty U := ⟨x⟩
   let M := (hU.primeIdealOf x).asIdeal.primeCompl
   have := hU.isLocalization_stalk x

@@ -49,7 +49,7 @@ instance : QuasiSober X := by
     exact @OpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
       (X.affineCover.IsOpen i).base_open.toEmbedding).symm.openEmbedding PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
-    intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.Covers x⟩
+    intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
@@ -152,7 +152,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X.carrier), Prop)
     (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X.carrier), P X x → P Y (f.1.base x)) :
     ∀ (X : Scheme) (x : X.carrier), P X x := by
   intro X x
-  obtain ⟨y, e⟩ := X.affineCover.Covers x
+  obtain ⟨y, e⟩ := X.affineCover.covers x
   convert h₂ (X.affineCover.map (X.affineCover.f x)) y _
   · rw [e]
   apply h₁
