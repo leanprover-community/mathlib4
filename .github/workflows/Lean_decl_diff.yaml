@@ -7,16 +7,15 @@ on:
 
 jobs:
   Lean_decl_diff:
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-    name: summarize_declarations
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ## fetch the whole repository, useful to find a common fork
-          fetch-depth: 0
-      - name: Lean-diff
-        run: |
-          git checkout master
-          git checkout -
-          ./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})"
+    - name: checkout
+      uses: actions/checkout@v4
+      with:
+        ## fetch the whole repository, useful to find a common fork
+        fetch-depth: 0
+    - name: Lean-diff
+      run: |
+        git checkout master
+        git checkout -
+        ./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})"
