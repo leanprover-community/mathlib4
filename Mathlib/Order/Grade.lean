@@ -348,3 +348,6 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
   (GradeOrder.liftLeft _ Int.natCast_strictMono) fun _ _ => CovBy.intCast
 #align grade_order.nat_to_int GradeOrder.natToInt
+
+instance [GradeOrder ℕ α] : WellFoundedLT α :=
+  WellFoundedLT.of_strictMono (f := grade ℕ) grade_strictMono
