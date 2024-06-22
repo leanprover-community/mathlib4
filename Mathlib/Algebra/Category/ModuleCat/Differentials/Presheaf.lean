@@ -130,7 +130,7 @@ lemma relativeDifferentials'_obj (X : Dᵒᵖ) :
     (relativeDifferentials' φ').obj X =
       CommRingCat.KaehlerDifferential (φ'.app X) := rfl
 
--- Note: `d_app` cannot be a simp lemma because `dsimp` would
+-- Note: this cannot be a simp lemma because `dsimp` would
 -- simplify the composition of functors `R ⋙ forget₂ _ _`
 lemma relativeDifferentials'_map_apply {X Y : Dᵒᵖ} (f : X ⟶ Y)
     (x : CommRingCat.KaehlerDifferential (φ'.app X)) :
