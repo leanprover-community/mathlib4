@@ -8,20 +8,24 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
-# Oplax natural transformations
+# Strong natural transformations
 
-Just as there are natural transformations between functors, there are oplax natural transformations
-between oplax functors. The equality in the naturality of natural transformations is replaced by a
-specified 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` in the case of oplax natural
-transformations.
+A strong natural transformation is an oplax natural transformation such that each component 2-cell
+is an isomorphism.
 
 ## Main definitions
 
-* `StrongNatTrans F G` : oplax natural transformations between oplax functors `F` and `G`
-* `StrongNatTrans.vcomp η θ` : the vertical composition of oplax natural transformations `η`
+* `StrongNatTrans F G` : strong natural transformations between oplax functors `F` and `G`
+* `mkOfOplax η η'` : given an oplax natural transformation `η` such that each component 2-cell
+  is an isomorphism, `mkOfOplax` gives the corresponding strong natural transformation
+* `StrongNatTrans.vcomp η θ` : the vertical composition of strong natural transformations `η`
   and `θ`
-* `StrongNatTrans.category F G` : the category structure on the oplax natural transformations
-  between `F` and `G`
+* `StrongNatTrans.category F G` : a category structure on pseudofunctors between `F` and `G`,
+  where the morphisms are strong natural transformations.
+
+## TODO
+To avoid choices, maybe define these to be between pseudofunctors?
+
 -/
 
 namespace CategoryTheory
