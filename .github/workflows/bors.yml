@@ -81,89 +81,89 @@ jobs:
           fi
 
       # The Hoskinson runners may not have jq installed, so do that now.
-      - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@v1.0.1
+      #- name: 'Setup jq'
+      #  uses: dcarbone/install-jq-action@v1.0.1
 
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+      #- name: install elan
+      #  run: |
+      #    set -o pipefail
+      #    curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+      #    ./elan-init -y --default-toolchain none
+      #    echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - uses: actions/checkout@v4
-        with:
-          ## fetch the whole repository, useful to find a common fork
-          fetch-depth: 0
+      #- uses: actions/checkout@v4
+      #  with:
+      #    ## fetch the whole repository, useful to find a common fork
+      #    fetch-depth: 0
 
-      - name: If using a lean-pr-release toolchain, uninstall
-        run: |
-          if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
-            elan toolchain uninstall "$(cat lean-toolchain)"
-          fi
+      #- name: If using a lean-pr-release toolchain, uninstall
+      #  run: |
+      #    if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+      #      printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
+      #      elan toolchain uninstall "$(cat lean-toolchain)"
+      #    fi
 
-      - name: print lean and lake versions
-        run: |
-          lean --version
-          lake --version
+      #- name: print lean and lake versions
+      #  run: |
+      #    lean --version
+      #    lake --version
 
-      - name: build cache
-        run: |
-          lake build cache
+      #- name: build cache
+      #  run: |
+      #    lake build cache
 
-      - name: prune ProofWidgets .lake
-        run: |
-          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
-          # but also `.oleans`, which may have been built with the wrong toolchain.
-          # This removes them.
-          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
-          rm -rf .lake/packages/proofwidgets/.lake/build/lib
-          rm -rf .lake/packages/proofwidgets/.lake/build/ir
+      #- name: prune ProofWidgets .lake
+      #  run: |
+      #    # The ProofWidgets release contains not just the `.js` (which we need in order to build)
+      #    # but also `.oleans`, which may have been built with the wrong toolchain.
+      #    # This removes them.
+      #    # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
+      #    rm -rf .lake/packages/proofwidgets/.lake/build/lib
+      #    rm -rf .lake/packages/proofwidgets/.lake/build/ir
 
-      - name: get cache
-        id: get
-        run: |
-          lake exe cache clean
-          lake exe cache get
+      #- name: get cache
+      #  id: get
+      #  run: |
+      #    lake exe cache clean
+      #    lake exe cache get
 
-      - name: build mathlib
-        id: build
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+      #- name: build mathlib
+      #  id: build
+      #  uses: liskin/gh-problem-matcher-wrap@v3
+      #  with:
+      #    linters: gcc
+      #    run: |
+      #      bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
-      - name: upload cache
-        # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
-        # but not if any earlier step failed or was cancelled.
-        # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
-        if: ${{ always() && steps.get.outcome == 'success' }}
-        run: |
-          # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
-          # lake exe cache commit || true
-          # run this in CI if it gets an incorrect lake hash for existing cache files somehow
-          # lake exe cache put!
-          # do not try to upload files just downloaded
-          lake exe cache put-unpacked
-        env:
-          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+      #- name: upload cache
+      #  # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
+      #  # but not if any earlier step failed or was cancelled.
+      #  # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
+      #  if: ${{ always() && steps.get.outcome == 'success' }}
+      #  run: |
+      #    # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
+      #    # lake exe cache commit || true
+      #    # run this in CI if it gets an incorrect lake hash for existing cache files somehow
+      #    # lake exe cache put!
+      #    # do not try to upload files just downloaded
+      #    lake exe cache put-unpacked
+      #  env:
+      #    MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
+      #    MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
-      - name: check the cache
-        run: |
-          # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
-          # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
-          if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            lake exe cache clean!
-            rm -rf .lake/build/lib/Mathlib
-            lake exe cache get || (sleep 1; lake exe cache get)
-            lake build --no-build
-          fi
+      #- name: check the cache
+      #  run: |
+      #    # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
+      #    # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
+      #    if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+      #      lake exe cache clean!
+      #      rm -rf .lake/build/lib/Mathlib
+      #      lake exe cache get || (sleep 1; lake exe cache get)
+      #      lake build --no-build
+      #    fi
 
-      - name: Lean-diff
-        run: |
-          git checkout master
-          git checkout -
-          ./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})"
+      #- name: Lean-diff
+      #  run: |
+      #    git checkout master
+      #    git checkout -
+      #    ./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})"
