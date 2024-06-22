@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Sites.Discrete
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.Condensed.LocallyConstant
@@ -5,6 +10,13 @@ import Mathlib.Condensed.Module
 import Mathlib.Condensed.Light.Module
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.CategoryTheory.Monad.EquivMon
+/-!
+
+# Discrete condensed `R`-modules
+
+This file proves a condensed `R`-module is discrete if and only if the underlying condensed set is
+(both for light condensed and condensed).
+-/
 
 universe w u
 
