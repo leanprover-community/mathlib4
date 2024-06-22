@@ -9,8 +9,8 @@ import Mathlib.Algebra.Homology.Additive
 /-!
 # The restriction functor of an embedding of complex shapes
 
-Given `c` and `c'` complex shapes on two types, and `e : c.Embedding c'`,
-we define the restriction functor
+Given `c` and `c'` complex shapes on two types, and `e : c.Embedding c'` 
+(satisfying `[e.IsRelIff]`), we define the restriction functor
 `e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`.
 
 -/
