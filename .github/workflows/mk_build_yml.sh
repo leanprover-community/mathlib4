@@ -18,7 +18,7 @@ build_yml() {
   cat <<EOF
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
-on:
+on: [workflow_call]  # allow this workflow to be called from other workflows
   push:
     branches-ignore:
       # ignore tmp branches used by bors
@@ -40,7 +40,7 @@ bors_yml() {
   cat <<EOF
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
-on:
+on: [workflow_call]  # allow this workflow to be called from other workflows
   push:
     branches:
       - staging
@@ -55,7 +55,7 @@ build_fork_yml() {
   cat <<EOF
 # The jobs in this file run on GitHub-hosted workers and will only be run from external forks
 
-on:
+on: [workflow_call]  # allow this workflow to be called from other workflows
   push:
     branches-ignore:
       # ignore tmp branches used by bors
