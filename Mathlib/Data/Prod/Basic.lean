@@ -61,6 +61,12 @@ theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b
   rfl
 #align prod.map_mk Prod.map_mk
 
+-- I'm skeptical about having this as a `simp` lemma, despite it having been in the past
+-- as it destructures the pair. See `map_app`, `map_fst`, and `map_snd` for slightly weaker
+-- lemmas in the `simp` set.
+theorem map_apply' (f : α → γ) (g : β → δ) (p : α × β) : map f g p = (f p.1, g p.2) :=
+  rfl
+
 @[simp] theorem map_fst (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).1 = f p.1 :=
   rfl
 #align prod.map_fst Prod.map_fst
