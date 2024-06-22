@@ -18,6 +18,8 @@ variable {C D : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preaddit
 
 variable (C)
 
+namespace Triangulated 
+
 structure FilteredTriangulated where
   s : MonoidalFunctor (Discrete ℤ) (C ⥤ C)
   s_commshift : ∀ (n : ℤ), (s.obj {as := n}).CommShift ℤ
@@ -240,7 +242,7 @@ lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
   · apply F.mem_of_isGE
   · apply F.mem_of_isLE
 
-lemma zero_of_isLE_of_isGE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+lemma zero_of_isGE_of_isLE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
     (_ : F.IsGE X n₁) (_ : F.IsLE Y n₀) : f = 0 :=
   F.zero f n₀ n₁ h
 
