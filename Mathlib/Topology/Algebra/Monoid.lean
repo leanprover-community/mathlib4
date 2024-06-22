@@ -563,7 +563,7 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
 #align tendsto_list_prod tendsto_list_prod
 #align tendsto_list_sum tendsto_list_sum
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := fun_prop)]
 theorem continuous_list_prod {f : ι → X → M} (l : List ι) (h : ∀ i ∈ l, Continuous (f i)) :
     Continuous fun a => (l.map fun i => f i a).prod :=
   continuous_iff_continuousAt.2 fun x =>
@@ -584,7 +584,7 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
 #align continuous_on_list_prod continuousOn_list_prod
 #align continuous_on_list_sum continuousOn_list_sum
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := fun_prop)]
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
   | 0 => by simpa using continuous_const
   | k + 1 => by
@@ -612,7 +612,7 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 -- To properly fix this, we should make sure that `continuity` applies its
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
 -- is quite an invasive change.
-@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow
