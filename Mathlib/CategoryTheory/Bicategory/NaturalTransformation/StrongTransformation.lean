@@ -24,7 +24,17 @@ is an isomorphism.
   where the morphisms are strong natural transformations.
 
 ## TODO
-To avoid choices, maybe define these to be between pseudofunctors?
+
+After having defined lax functors, we should define 3 different types of strong natural
+transformations:
+* strong natural transformations between oplax functors (as defined here)
+* strong natural transformations between lax functors
+* strong natural transformations between pseudofunctors. From these types of strong natural
+  transformations, we can define the underlying natural transformations between the underlying
+  oplax resp. lax functors. Many properties can then be inferred from these.
+
+## References
+* [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
 
