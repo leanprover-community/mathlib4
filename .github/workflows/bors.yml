@@ -5,13 +5,12 @@
 
 # Forks of mathlib and other projects should be able to use build_fork.yml directly
 # The jobs in this file run on self-hosted workers and will not be run from external forks
+name: continuous integration (staging)
 
 on:
   push:
     branches:
       - staging
-
-name: continuous integration (staging)
 
 jobs:
   # Cancels previous runs of jobs in this file

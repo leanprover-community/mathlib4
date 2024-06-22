@@ -18,6 +18,8 @@ build_yml() {
   cat <<EOF
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
+name: continuous integration
+
 on:
   push:
     branches-ignore:
@@ -29,8 +31,6 @@ on:
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
   merge_group:
-
-name: continuous integration
 EOF
   include 1 pr == "" ubuntu-latest
 }
@@ -39,13 +39,12 @@ bors_yml() {
   header
   cat <<EOF
 # The jobs in this file run on self-hosted workers and will not be run from external forks
+name: continuous integration (staging)
 
 on:
   push:
     branches:
       - staging
-
-name: continuous integration (staging)
 EOF
   include 1 bors == "" bors
 }
@@ -54,6 +53,7 @@ build_fork_yml() {
   header
   cat <<EOF
 # The jobs in this file run on GitHub-hosted workers and will only be run from external forks
+name: continuous integration (mathlib forks)
 
 on:
   push:
@@ -63,8 +63,6 @@ on:
       - 'trying.tmp*'
       - 'staging*.tmp'
       - 'nolints'
-
-name: continuous integration (mathlib forks)
 EOF
   include 0 ubuntu-latest != " (fork)" ubuntu-latest
 }
