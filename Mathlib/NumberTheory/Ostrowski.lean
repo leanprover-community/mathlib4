@@ -63,7 +63,10 @@ Throughout this file, `f` is an arbitrary absolute value.
 variable {f : MulRingNorm ℚ}
 
 open Rat.MulRingNorm
-section Nonarchimedean
+
+section Non_archimedean
+
+-- ## Non-archimedean case
 
 /-- The mulRingNorm corresponding to the p-adic norm on ℚ. -/
 def mulRingNorm_padic (p : ℕ) [hp : Fact (Nat.Prime p)] : MulRingNorm ℚ :=
@@ -223,7 +226,7 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ (t : ℝ), 0 < t ∧ f p = p ^ (-t
     apply (rpow_logb (by exact_mod_cast Nat.Prime.pos pprime) _ hp0).symm
     simp only [ne_eq, Nat.cast_eq_one,Nat.Prime.ne_one pprime, not_false_eq_true]
 
--- ## Nonarchimedean case: end goal
+-- ## Non-archimedean case: end goal
 /--
   If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value.
 -/
@@ -261,6 +264,6 @@ theorem mulRingNorm_equiv_padic_of_bounded :
       mul_inv_cancel (by linarith only [h.1]), neg_mul, one_mul, rpow_neg (Nat.cast_nonneg p),
       rpow_natCast]
 
-end Nonarchimedean
+end Non_archimedean
 
 end Rat.MulRingNorm
