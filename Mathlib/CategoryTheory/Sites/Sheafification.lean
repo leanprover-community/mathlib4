@@ -43,6 +43,8 @@ class HasSheafify : Prop where
   isRightAdjoint : HasWeakSheafify J A
   isLeftExact : Nonempty (PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint))
 
+attribute [instance] HasSheafify.isRightAdjoint
+
 instance [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
 
 noncomputable section

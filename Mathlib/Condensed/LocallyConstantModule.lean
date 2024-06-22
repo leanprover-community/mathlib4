@@ -14,20 +14,6 @@ namespace CategoryTheory
 
 variable {C D : Type*} [Category C] [Category D]
 
-namespace Sheaf
-
-variable {A B : Type*} [Category A] [Category B] (e : C ≌ D) (F : A ⥤ B)
-  (J : GrothendieckTopology C) [HasSheafify J A]
-  (K : GrothendieckTopology D) [HasSheafify K A]
-  [K.PreservesSheafification F] [e.TransportsGrothendieckTopology J K]
-
-lemma transportPreservesSheafification : J.PreservesSheafification F where
-  le := by
-    sorry
-    -- rw [← J.W_inverseImage_whiskeringLeft (G := e.inverse)]
-
-end Sheaf
-
 open Iso
 
 namespace Monad
@@ -156,9 +142,11 @@ def functor :
 
 end Condensed.LocallyConstantModule
 
-namespace CondensedMod.LocallyConstant
+namespace CondensedMod
 
 variable (R : Type (u+1)) [Ring R]
+
+namespace LocallyConstant
 
 abbrev functorToPresheaves : ModuleCat.{u+1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
   Condensed.LocallyConstantModule.functorToPresheaves.{u+1, u} R
@@ -230,15 +218,49 @@ noncomputable def adjunction : functor R ⊣ Condensed.underlying (ModuleCat R) 
 noncomputable def fullyFaithfulFunctor :
     (functor R).FullyFaithful := (adjunction R).fullyFaithfulLOfCompIsoId (compIsoId R)
 
-end CondensedMod.LocallyConstant
+instance : (functor R).Faithful := (fullyFaithfulFunctor R).faithful
+
+instance : (functor R).Full := (fullyFaithfulFunctor R).full
+
+instance : (Condensed.discrete (ModuleCat R)).Faithful :=
+  Functor.Faithful.of_iso (functorIsoDiscrete R)
+
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Faithful :=
+  inferInstanceAs (Condensed.discrete (ModuleCat R)).Faithful
+
+instance : (Condensed.discrete (ModuleCat R)).Full :=
+  Functor.Full.of_iso (functorIsoDiscrete R)
+
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Full :=
+  inferInstanceAs (Condensed.discrete (ModuleCat R)).Full
+
+instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
+  inferInstanceAs (Condensed.discrete (Type (u + 1))).Faithful
+
+instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
+  inferInstanceAs (Condensed.discrete (Type (u + 1))).Full
+
+end LocallyConstant
+
+abbrev _root_.CondensedSet.IsDiscrete (M : CondensedSet.{u}) :=
+  Sheaf.IsDiscrete (coherentTopology CompHaus) CompHaus.isTerminalPUnit M
+
+abbrev IsDiscrete (M : CondensedMod R) :=
+  Sheaf.IsDiscrete (coherentTopology CompHaus) CompHaus.isTerminalPUnit M
+
+lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
+    IsDiscrete R M ↔ CondensedSet.IsDiscrete ((Condensed.forget R).obj M) :=
+  Sheaf.isDiscrete_iff_forget (coherentTopology CompHaus) CompHaus.isTerminalPUnit
+    (CategoryTheory.forget (ModuleCat R)) M
+
+
+end CondensedMod
 
 namespace LightCondMod
 
 variable (R : Type u) [Ring R]
 
-abbrev LocallyConstant.functor : ModuleCat R ⥤ LightCondMod.{u} R :=
-  Condensed.LocallyConstantModule.functor.{u, u} R
-    (fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)
+namespace LocallyConstant
 
 abbrev functorToPresheaves : ModuleCat.{u} R ⥤ (LightProfinite.{u}ᵒᵖ ⥤ ModuleCat R) :=
   Condensed.LocallyConstantModule.functorToPresheaves.{u, u} R
@@ -257,14 +279,17 @@ noncomputable def functorIsoDiscreteAux (M : ModuleCat R) :
       (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) :=
   (LightCondensed.discrete _).mapIso (functorIsoDiscreteAux' R M)
 
-instance (J : GrothendieckTopology (SmallModel LightProfinite.{u})) : HasSheafify J (ModuleCat R) :=
+instance : HasSheafify (coherentTopology LightProfinite) (ModuleCat R) :=
+  haveI : ∀ (J : GrothendieckTopology (SmallModel LightProfinite.{u})),
+      HasSheafify J (ModuleCat R) :=
+    inferInstance
   inferInstance
 
-instance : HasSheafify (coherentTopology LightProfinite) (ModuleCat R) :=
-  inferInstance
+instance : HasWeakSheafify (coherentTopology LightProfinite) (ModuleCat R) :=
+  HasSheafify.isRightAdjoint
 
 instance : (coherentTopology LightProfinite).PreservesSheafification
-    (CategoryTheory.forget (ModuleCat R)) := sorry
+    (CategoryTheory.forget (ModuleCat R)) := inferInstance
 
 instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
     ((LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app
@@ -319,5 +344,40 @@ noncomputable def adjunction : functor R ⊣ LightCondensed.underlying (ModuleCa
 
 noncomputable def fullyFaithfulFunctor :
     (functor R).FullyFaithful := (adjunction R).fullyFaithfulLOfCompIsoId (compIsoId R)
+
+instance : (functor R).Faithful := (fullyFaithfulFunctor R).faithful
+
+instance : (functor R).Full := (fullyFaithfulFunctor R).full
+
+instance : (LightCondensed.discrete (ModuleCat R)).Faithful :=
+  Functor.Faithful.of_iso (functorIsoDiscrete R)
+
+instance : (constantSheaf (coherentTopology LightProfinite) (ModuleCat R)).Faithful :=
+  inferInstanceAs (LightCondensed.discrete (ModuleCat R)).Faithful
+
+instance : (LightCondensed.discrete (ModuleCat R)).Full :=
+  Functor.Full.of_iso (functorIsoDiscrete R)
+
+instance : (constantSheaf (coherentTopology LightProfinite) (ModuleCat R)).Full :=
+  inferInstanceAs (LightCondensed.discrete (ModuleCat R)).Full
+
+instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
+  inferInstanceAs (LightCondensed.discrete (Type u)).Faithful
+
+instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
+  inferInstanceAs (LightCondensed.discrete (Type u)).Full
+
+end LocallyConstant
+
+abbrev _root_.LightCondSet.IsDiscrete (M : LightCondSet.{u}) :=
+  Sheaf.IsDiscrete (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
+
+abbrev IsDiscrete (M : LightCondMod R) :=
+  Sheaf.IsDiscrete (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
+
+lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
+    IsDiscrete R M ↔ LightCondSet.IsDiscrete ((LightCondensed.forget R).obj M) :=
+  Sheaf.isDiscrete_iff_forget (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit
+    (CategoryTheory.forget (ModuleCat R)) M
 
 end LightCondMod
