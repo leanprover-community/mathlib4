@@ -242,7 +242,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
         intro V hV
         rw [Scheme.preimage_basicOpen] at hV
         subst hV
-        exact U.2.ιOpens_preimage (Scheme.Γ.map f.op r.1)
+        exact U.2.ιOpens_basicOpen_preimage (Scheme.Γ.map f.op r.1)
 #align algebraic_geometry.source_affine_locally_is_local AlgebraicGeometry.sourceAffineLocally_isLocal
 
 variable (hP : RingHom.PropertyIsLocal @P)
