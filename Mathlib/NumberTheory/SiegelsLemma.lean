@@ -162,9 +162,8 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
               (by exact_mod_cast Nat.one_le_of_lt hn) (one_le_norm_A_of_ne_zero m n A hA)
               (Nat.cast_nonneg n)
   _ = ((n * ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m)  * (B + 1) ^ m := by
-        rw [mul_left_inj' (pow_ne_zero m (Nat.cast_add_one_ne_zero B)),
-          ← rpow_mul (mul_nonneg (Nat.cast_nonneg n) (norm_nonneg A)), ← Real.rpow_natCast,
-          div_mul_cancel₀]
+        congr 1
+        rw [← rpow_mul (mul_nonneg n.cast_nonneg (norm_nonneg A)), ← Real.rpow_natCast, div_mul_cancel₀]
         exact sub_ne_zero_of_ne (mod_cast hn.ne')
   _ < (B + 1) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
         gcongr
