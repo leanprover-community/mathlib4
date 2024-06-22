@@ -367,10 +367,6 @@ theorem fromSpec_image_basicOpen :
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.range_fromSpec]
   exact Scheme.basicOpen_le _ _
 
--- Porting note: linter complains that LHS is not in simp-normal-form. However, the error provided
--- by linter seems to tell me that left hand side should be changed in to something exactly the same
--- as before. I am not sure if this is caused by LHS being written with all explicit argument,
--- I am not sure if this is intentional or not.
 @[simp]
 theorem basicOpen_fromSpec_app :
     (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen (hU.fromSpec.app U f) = PrimeSpectrum.basicOpen f := by
