@@ -194,7 +194,6 @@ def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : Ope
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.restrict AlgebraicGeometry.SheafedSpace.restrict
 
-
 /-- The map from the restriction of a presheafed space.
 -/
 @[simps!]
