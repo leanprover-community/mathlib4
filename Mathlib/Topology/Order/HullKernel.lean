@@ -7,7 +7,7 @@ import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Order.Irreducible
 import Mathlib.Data.Set.Subset
 import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Sets.Closeds
+import Mathlib.Order.Closure
 
 /-!
 # Hull-Kernel Topology
@@ -267,6 +267,8 @@ theorem PrimativeSpectrum.gc' : GaloisConnection (α := Set T) (β := αᵒᵈ)
 that `a` is the inf of `S`. -/
 def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = sInf (S : Set α)
 
+variable {T}
+
 /--
 When `T` is order generating, the kernel and the hull form a Galois insertion
 -/
@@ -288,20 +290,19 @@ def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) 
     exact le_of_le_of_eq e2 (id (Eq.symm hS)))
 
 /-
+lemma kh1 (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
+  rw [ (GaloisInsertion.l_u_eq (PrimativeSpectrum.gi hG))]
+
 lemma hk1 (hG : OrderGenerate T) (C : Set T) (h : IsClosed C) :
     (PrimativeSpectrum.gc' T).closureOperator C = C := by
+  have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff T hT C).mp h
+  cases' e1 with a ha
+
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
-  have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff T hT C).mp h
-  cases' e1 with c hc
-  rw [hc]
+  rw [ha]
 -/
 
-lemma test (S R : Set α) (h : ∀ (a : α), a ∈ S ↔ a ∈ R) : S = R := by
-  exact ext h
-
-lemma test' (S R : Set α) (h : S = R) : ∀ (a : α), a ∈ S ↔ a ∈ R := by
-  exact fun a ↦ Eq.to_iff (congrArg (Membership.mem a) h)
 
 lemma testhk (S : Set T) : (PrimativeSpectrum.gc' T).closureOperator S = T ↓∩ (Ici (sInf S)) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
