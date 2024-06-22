@@ -26,6 +26,9 @@ as an order isomorphism and an homeomorphism.
 the identities `log (x * y) = log x + log y` and `log (x ^ y) = y * log x`
 (with either `y ∈ ℕ` or `y ∈ ℝ`).
 
+## TODO
+- Define `exp` on `ℝ≥0∞` and prove its basic properties.
+
 ## Tags
 ENNReal, EReal, logarithm
 -/
