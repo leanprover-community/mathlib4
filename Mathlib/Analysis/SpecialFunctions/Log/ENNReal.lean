@@ -19,7 +19,7 @@ in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 as an order isomorphism and an homeomorphism.
 
 ## Main Results
-- `log_strictMono`: `log` is increasing;
+- `ENNReal.log_strictMono`: `log` is increasing;
 - `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
   injective, surjective, and bijective;
 - `ENNReal.log_mul_add`, `ENNReal.log_pow`, `ENNReal.log_rpow`: `log` satisfy
