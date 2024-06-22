@@ -361,7 +361,7 @@ def ΓSpecIso : Γ(𝖲𝗉𝖾𝖼 R, ⊤) ≅ R := SpecΓIdentity.app R
 
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-  𝖲𝗉𝖾𝖼(f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
+    𝖲𝗉𝖾𝖼(f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
 
 -- The RHS is not necessarily simpler than the LHS, but this direction coincides with the simp
 -- direction of `NatTrans.naturality`.
