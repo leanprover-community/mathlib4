@@ -96,7 +96,7 @@ lemma sub_TendstoInMeasure' [Dist E] {f : ι → α → E}  {g : α → E} {u v:
   fun ε hε => Tendsto.mono_left (hg ε hε) huv
 
 lemma subseqTendsto_of_TendstoInMeasure [Dist E] {f : ℕ → α → E}  {g : α → E} {ns : ℕ → ℕ} (hns : StrictMono ns)
-(hg :  TendstoInMeasure μ f atTop g) : TendstoInMeasure μ (f ∘ ns) atTop g :=
+    (hg :  TendstoInMeasure μ f atTop g) : TendstoInMeasure μ (f ∘ ns) atTop g :=
   by
   intro ε hε
   apply Filter.Tendsto.comp (hg ε hε) (StrictMono.tendsto_atTop hns)
