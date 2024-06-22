@@ -221,7 +221,7 @@ def finYonedaIso' : toProfinite.op ⋙ F ≅ finYoneda F := by
   congr
 
 def isoCompToProfinite : toProfinite.op ⋙ F ≅ toProfinite.op ⋙
-  (locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of PUnit.{u+1}⟩))) :=
+    (locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of PUnit.{u+1}⟩))) :=
   finYonedaIso' F ≪≫ (finYonedaIso F).symm
 
 def isoLanDiscrete (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
