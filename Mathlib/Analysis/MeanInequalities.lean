@@ -45,7 +45,7 @@ The inequality says that the harmonic mean of a tuple of positive numbers is les
 to their geometric mean. We prove the weighted version of this inequality: if $w$ and $z$
 are two positive vectors and $\sum_{i\in s} w_i=1$, then
 $$
-1/(\sum_{i\in s} w_i/z_i)  ≤ \prod_{i\in s} z_i^{w_i}
+1/(\sum_{i\in s} w_i/z_i) ≤ \prod_{i\in s} z_i^{w_i}
 $$
 The classical version is proven as a special case of this inequality for $w_i=\frac{1}{n}$.
 
