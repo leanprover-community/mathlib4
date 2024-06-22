@@ -33,6 +33,11 @@ instance instTopologicalRing {α : Type*} {β : Type*} [TopologicalSpace α] [To
     [LocallyCompactSpace α] [NonUnitalRing β] [TopologicalRing β] :
     TopologicalRing C(α, β) where
 
+theorem tsum_apply' {α : Type*} {ι : Type*} {β : Type*} [AddCommMonoid β] [TopologicalSpace β]
+    [T2Space β] {f : ι → α → β} {x : α} (hf : Summable f) :
+    tsum (fun (i : ι) => f i) x = ∑' (i : ι), f i x := tsum_apply hf
+
+
 namespace CFC
 
 section exp
@@ -60,21 +65,34 @@ end exp
 
 section NormedSpace
 
-variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [StarOrderedRing A]
-  [TopologicalSpace A] [TopologicalRing A] [Algebra ℝ A]
+variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRing A]
+  [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
   [UniqueContinuousFunctionalCalculus ℝ A]
 
-lemma exp_continuousMap_eq {α : Type*} [TopologicalSpace α] [LocallyCompactSpace α] (f : C(α, ℝ)) :
-    NormedSpace.exp ℝ f = ⟨NormedSpace.exp ℝ ∘ f, by sorry⟩ := by
+variable {b : A}
+
+open NormedSpace in
+lemma exp_continuousMap_eq {α : Type*} [TopologicalSpace α] [CompactSpace α] (f : C(α, ℝ)) :
+    exp ℝ f = (⟨Real.exp ∘ f, Continuous.comp Real.continuous_exp f.continuous⟩ : C(α, ℝ)) := by
+  simp_rw [Real.exp_eq_exp_ℝ]
   ext a
-  sorry
+  simp only [Function.comp_apply, NormedSpace.exp, FormalMultilinearSeries.sum]
+  have h_sum := NormedSpace.expSeries_summable (𝕂 := ℝ) f
+  simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
+  simp [NormedSpace.exp_eq_tsum]
 
-
--- Need some way of relating power series to the CFC
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a) :
     real_exp a = NormedSpace.exp ℝ a := by
-  sorry
+  have h₁ : a = cfc (R := ℝ) id a := by exact Eq.symm (cfc_id ℝ a ha)
+  conv_rhs => rw [h₁, cfc_apply (id : ℝ → ℝ) a ha]
+  unfold real_exp
+  let myhom := cfcHom (R := ℝ) (a := a) ha
+  have h₃ : Continuous myhom := (cfcHom_closedEmbedding ha).continuous
+  simp_rw [← NormedSpace.map_exp ℝ myhom h₃, cfc_apply Real.exp a ha, myhom]
+  congr 1
+  ext
+  simp [exp_continuousMap_eq]
 
 end NormedSpace
 
