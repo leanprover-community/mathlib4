@@ -44,21 +44,15 @@ section Sequence
 
 variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {a b : α}
 
-/-- The sequence proving the infinity lemma: each term is a pair `⟨a,h⟩`,
-where `h` is a proof that `Ici a` is infinite, and `a` covers the previous term. -/
-noncomputable def konigSeq (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) (hb : (Ici b).Infinite) :
-    ℕ → {a : α // (Ici a).Infinite}
-  | 0    => ⟨b, hb⟩
-  | n+1  => let p := konigSeq hfin hb n
-    ⟨_, ((exists_covby_infinite_Ici_of_infinite_Ici p.2 (hfin p.1)).choose_spec).2⟩
-
 /-- **Kőnig's infinity lemma** : if each element in an infinite strongly atomic order
 is covered by only finitely many others, and `b` is an element with infinitely many things above it,
 then there is a sequence starting with `b` in which each element is covered by the next. -/
 theorem exists_seq_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
     (hb : (Ici b).Infinite) : ∃ f : ℕ → α, f 0 = b ∧ ∀ i, f i ⋖ f (i+1) :=
-  ⟨fun i ↦ konigSeq hfin hb i, rfl, fun i ↦
-    (exists_covby_infinite_Ici_of_infinite_Ici ((konigSeq hfin hb i).2 ) (hfin _)).choose_spec.1⟩
+  let h := fun a : {a : α // (Ici a).Infinite} ↦
+    exists_covby_infinite_Ici_of_infinite_Ici a.2 (hfin a)
+  let ks : ℕ → {a : α // (Ici a).Infinite} := Nat.rec ⟨b, hb⟩ fun _ a ↦ ⟨_, (h a).choose_spec.2⟩
+  ⟨fun i ↦ (ks i).1, by simp [ks], fun i ↦ by simpa using (h (ks i)).choose_spec.1⟩
 
 /-- The sequence given by Kőnig's lemma as an order embedding -/
 theorem exists_orderEmbedding_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
