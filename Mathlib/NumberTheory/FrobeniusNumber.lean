@@ -74,7 +74,7 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
       obtain ⟨a, ha⟩ := modEq_zero_iff_dvd.mp x.2.1
       obtain ⟨b, hb⟩ := (modEq_iff_dvd' key).mp x.2.2
       exact ⟨a, b, by rw [mul_comm, ← ha, mul_comm, ← hb, Nat.add_sub_of_le key]⟩
-    refine' ModEq.le_of_lt_add x.2.2 (lt_of_le_of_lt _ (add_lt_add_right hk n))
+    refine ModEq.le_of_lt_add x.2.2 (lt_of_le_of_lt ?_ (add_lt_add_right hk n))
     rw [Nat.sub_add_cancel (le_tsub_of_add_le_left hmn)]
     exact
       ModEq.le_of_lt_add

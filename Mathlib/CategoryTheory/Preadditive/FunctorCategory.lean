@@ -15,8 +15,6 @@ then `C ⥤ D` is also preadditive.
 
 -/
 
-open BigOperators
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits Preadditive
@@ -127,7 +125,7 @@ theorem app_units_zsmul (X : C) (α : F ⟶ G) (n : ℤˣ) : (n • α).app X = 
 
 @[simp]
 theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
-    (∑ i in s, α i).app X = ∑ i in s, (α i).app X := by
+    (∑ i ∈ s, α i).app X = ∑ i ∈ s, (α i).app X := by
   simp only [← appHom_apply, map_sum]
 #align category_theory.nat_trans.app_sum CategoryTheory.NatTrans.app_sum
 

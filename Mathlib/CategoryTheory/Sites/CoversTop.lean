@@ -60,7 +60,7 @@ lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c
     (h : ∀ (i : I), f ≫ c.π.app (Opposite.op (Y i)) =
       g ≫ c.π.app (Opposite.op (Y i))) :
     f = g := by
-  refine' hc.hom_ext (fun Z => F.2.hom_ext (hY.cover Z.unop) _ _ _)
+  refine hc.hom_ext (fun Z => F.2.hom_ext (hY.cover Z.unop) _ _ ?_)
   rintro ⟨W, a, ⟨i, ⟨b⟩⟩⟩
   simpa using h i =≫ F.1.map b.op
 

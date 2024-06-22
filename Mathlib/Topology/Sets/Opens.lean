@@ -100,7 +100,7 @@ protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).
   Set.nonempty_coe_sort
 #align topological_space.opens.nonempty_coe_sort TopologicalSpace.Opens.nonempty_coeSort
 
--- Porting note (#10756): new lemma; todo: prove it for a `SetLike`?
+-- TODO: should this theorem be proved for a `SetLike`?
 protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x, x ∈ U :=
   Iff.rfl
 
@@ -186,7 +186,6 @@ theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
 
 @[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
 
--- Porting note (#10756): new lemma
 @[simp, norm_cast]
 theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
@@ -198,7 +197,6 @@ theorem coe_top : ((⊤ : Opens α) : Set α) = Set.univ :=
 
 @[simp] theorem mk_univ : (⟨univ, isOpen_univ⟩ : Opens α) = ⊤ := rfl
 
--- Porting note (#10756): new lemma
 @[simp, norm_cast]
 theorem coe_eq_univ {U : Opens α} : (U : Set α) = univ ↔ U = ⊤ :=
   SetLike.coe_injective.eq_iff' rfl
@@ -305,7 +303,7 @@ theorem isBasis_iff_nbhd {B : Set (Opens α)} :
     dsimp at H₂
     subst H₂
     exact hsV
-  · refine' isTopologicalBasis_of_isOpen_of_nhds _ _
+  · refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
     · rintro sU ⟨U, -, rfl⟩
       exact U.2
     · intro x sU hx hsU
@@ -345,7 +343,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
 theorem isCompactElement_iff (s : Opens α) :
     CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by
   rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff]
-  refine' ⟨_, fun H ι U hU => _⟩
+  refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
     refine ⟨t, Set.Subset.trans ht ?_⟩

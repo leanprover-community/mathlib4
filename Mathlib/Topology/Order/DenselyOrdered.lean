@@ -263,7 +263,7 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
     obtain ⟨x, ⟨hxa : a ≤ x, hxb : x < b⟩, hxt : Ioo x b ⊆ t⟩ :=
       (mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset h).mp ht
     obtain ⟨y, hxy, hyb⟩ := exists_between hxb
-    refine' mem_of_superset (mem_atTop ⟨y, hs ⟨hxa.trans_lt hxy, hyb⟩⟩) _
+    refine mem_of_superset (mem_atTop ⟨y, hs ⟨hxa.trans_lt hxy, hyb⟩⟩) ?_
     rintro ⟨z, hzs⟩ (hyz : y ≤ z)
     exact hts (hxt ⟨hxy.trans_le hyz, hb hzs⟩)
   · intro hu
@@ -291,8 +291,8 @@ theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a <
 theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
     map ((↑) : s → α) atBot = 𝓝[>] a := by
   -- the elaborator gets stuck without `(... : _)`
-  refine' (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
-    fun b' hb' => _ : _)
+  refine (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
+    fun b' hb' => ?_ : _)
   simpa only [OrderDual.exists, dual_Ioo] using hs b' hb'
 #align map_coe_at_bot_of_Ioo_subset map_coe_atBot_of_Ioo_subset
 
@@ -409,9 +409,9 @@ theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set 
     (hs : Dense s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∉ t) ∧ ∀ x, IsTop x → x ∉ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
-  refine' ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), _, _, _, fun x hx => _, fun x hx => _⟩
-  · exact (diff_subset _ _).trans hts
-  · exact htc.mono (diff_subset _ _)
+  refine ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), ?_, ?_, ?_, fun x hx => ?_, fun x hx => ?_⟩
+  · exact diff_subset.trans hts
+  · exact htc.mono diff_subset
   · exact htd.diff_finite ((subsingleton_isBot α).finite.union (subsingleton_isTop α).finite)
   · simp [hx]
   · simp [hx]

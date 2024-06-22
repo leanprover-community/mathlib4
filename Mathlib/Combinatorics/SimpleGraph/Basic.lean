@@ -565,7 +565,7 @@ which is necessary since when `v = w` the existential
 `∃ (e ∈ G.edgeSet), v ∈ e ∧ w ∈ e` is satisfied by every edge
 incident to `v`. -/
 theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.edgeSet, v ∈ e ∧ w ∈ e := by
-  refine' ⟨fun _ => ⟨G.ne_of_adj ‹_›, s(v, w), by simpa⟩, _⟩
+  refine ⟨fun _ => ⟨G.ne_of_adj ‹_›, s(v, w), by simpa⟩, ?_⟩
   rintro ⟨hne, e, he, hv⟩
   rw [Sym2.mem_and_mem_iff hne] at hv
   subst e
@@ -738,7 +738,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine' (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm _
+  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 #align simple_graph.incidence_set_inter_incidence_set_of_adj SimpleGraph.incidenceSet_inter_incidenceSet_of_adj
@@ -774,15 +774,16 @@ theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w 
   simp [incidenceSet]
 #align simple_graph.mem_incidence_set SimpleGraph.mem_incidenceSet
 
-theorem mem_incidence_iff_neighbor {v w : V} : s(v, w) ∈ G.incidenceSet v ↔ w ∈ G.neighborSet v :=
-  by simp only [mem_incidenceSet, mem_neighborSet]
+theorem mem_incidence_iff_neighbor {v w : V} :
+    s(v, w) ∈ G.incidenceSet v ↔ w ∈ G.neighborSet v := by
+  simp only [mem_incidenceSet, mem_neighborSet]
 #align simple_graph.mem_incidence_iff_neighbor SimpleGraph.mem_incidence_iff_neighbor
 
 theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : v ∈ e) :
     G.incidenceSet v ∩ G.incidenceSet (Sym2.Mem.other h) = {e} := by
   ext e'
   simp only [incidenceSet, Set.mem_sep_iff, Set.mem_inter_iff, Set.mem_singleton_iff]
-  refine' ⟨fun h' => _, _⟩
+  refine ⟨fun h' => ?_, ?_⟩
   · rw [← Sym2.other_spec h]
     exact (Sym2.mem_and_mem_iff (edge_other_ne G he h).symm).mp ⟨h'.1.2, h'.2.2⟩
   · rintro rfl
@@ -846,12 +847,12 @@ theorem not_mem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w :=
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet v :=
-  Set.inter_subset_left _ _
+  Set.inter_subset_left
 #align simple_graph.common_neighbors_subset_neighbor_set_left SimpleGraph.commonNeighbors_subset_neighborSet_left
 
 theorem commonNeighbors_subset_neighborSet_right (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet w :=
-  Set.inter_subset_right _ _
+  Set.inter_subset_right
 #align simple_graph.common_neighbors_subset_neighbor_set_right SimpleGraph.commonNeighbors_subset_neighborSet_right
 
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :

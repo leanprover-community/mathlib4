@@ -41,7 +41,7 @@ be phrased in terms of counting walks.
 -/
 
 
-open scoped Classical BigOperators
+open scoped Classical
 
 namespace Theorems100
 

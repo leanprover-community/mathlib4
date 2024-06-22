@@ -37,7 +37,7 @@ universe w w' u u' v v'
 
 variable {R : Type u} {R' : Type u'} {M M₁ : Type v} {M' : Type v'}
 
-open BigOperators Cardinal Submodule Function Set
+open Cardinal Submodule Function Set
 
 section Module
 
@@ -265,7 +265,7 @@ theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
   apply le_trans
   swap
   · apply Cardinal.lift_le.mpr
-    refine' le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
+    refine le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
@@ -334,8 +334,8 @@ theorem rank_top : Module.rank R (⊤ : Submodule R M) = Module.rank R M :=
 variable {R M}
 
 theorem rank_range_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
-    Module.rank R (LinearMap.range f) = Module.rank R M' :=
-  by rw [LinearMap.range_eq_top.2 h, rank_top]
+    Module.rank R (LinearMap.range f) = Module.rank R M' := by
+  rw [LinearMap.range_eq_top.2 h, rank_top]
 #align rank_range_of_surjective rank_range_of_surjective
 
 theorem rank_submodule_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
@@ -364,7 +364,7 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
     rw [Cardinal.mk_le_one_iff_set_subsingleton]
     apply subsingleton_of_subsingleton
   intro w hw
-  refine' ⟨⟨{0}, _⟩, _⟩
+  refine ⟨⟨{0}, ?_⟩, ?_⟩
   · rw [linearIndependent_iff']
     intros
     exact Subsingleton.elim _ _

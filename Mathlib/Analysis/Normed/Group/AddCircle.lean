@@ -59,11 +59,11 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = |t|⁻¹ * z
   constructor
   · rintro ⟨y, hy, rfl⟩
-    refine' ⟨t⁻¹ * y, _, by rw [abs_mul, abs_inv]⟩
+    refine ⟨t⁻¹ * y, ?_, by rw [abs_mul, abs_inv]⟩
     rw [← inv_mul_cancel_left₀ ht x, ← inv_mul_cancel_left₀ ht p, ← mul_sub]
     exact aux hy
   · rintro ⟨w, hw, hw'⟩
-    refine' ⟨t * w, _, by rw [← (eq_inv_mul_iff_mul_eq₀ ht').mp hw', abs_mul]⟩
+    refine ⟨t * w, ?_, by rw [← (eq_inv_mul_iff_mul_eq₀ ht').mp hw', abs_mul]⟩
     rw [← mul_sub]
     exact aux hw
 #align add_circle.norm_coe_mul AddCircle.norm_coe_mul
@@ -99,9 +99,9 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
   apply le_antisymm
   · simp_rw [Real.norm_eq_abs, csInf_le_iff h₁ h₂, le_min_iff]
     intro b h
-    refine'
-      ⟨mem_lowerBounds.1 h _ ⟨fract x, _, abs_fract⟩,
-        mem_lowerBounds.1 h _ ⟨fract x - 1, _, by rw [abs_sub_comm, abs_one_sub_fract]⟩⟩
+    refine
+      ⟨mem_lowerBounds.1 h _ ⟨fract x, ?_, abs_fract⟩,
+        mem_lowerBounds.1 h _ ⟨fract x - 1, ?_, by rw [abs_sub_comm, abs_one_sub_fract]⟩⟩
     · simp only [mem_setOf, fract, sub_eq_self, QuotientAddGroup.mk_sub,
         QuotientAddGroup.eq_zero_iff, intCast_mem_zmultiples_one]
     · simp only [mem_setOf, fract, sub_eq_self, QuotientAddGroup.mk_sub,
@@ -140,7 +140,7 @@ theorem norm_half_period_eq : ‖(↑(p / 2) : AddCircle p)‖ = |p| / 2 := by
 #align add_circle.norm_half_period_eq AddCircle.norm_half_period_eq
 
 theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |x| ↔ |x| ≤ |p| / 2 := by
-  refine' ⟨fun hx => hx ▸ norm_le_half_period p hp, fun hx => _⟩
+  refine ⟨fun hx => hx ▸ norm_le_half_period p hp, fun hx => ?_⟩
   suffices ∀ p : ℝ, 0 < p → |x| ≤ p / 2 → ‖(x : AddCircle p)‖ = |x| by
     -- Porting note: replaced `lt_trichotomy` which had trouble substituting `p = 0`.
     rcases hp.symm.lt_or_lt with (hp | hp)
@@ -243,6 +243,9 @@ theorem norm_div_natCast {m n : ℕ} :
   have : p⁻¹ * (↑m / ↑n * p) = ↑m / ↑n := by rw [mul_comm _ p, inv_mul_cancel_left₀ hp.out.ne.symm]
   rw [norm_eq' p hp.out, this, abs_sub_round_div_natCast_eq]
 #align add_circle.norm_div_nat_cast AddCircle.norm_div_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias norm_div_nat_cast := norm_div_natCast
 
 theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u) :
     ∃ k : ℕ, ‖u‖ = p * (k / addOrderOf u) := by

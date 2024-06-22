@@ -211,24 +211,22 @@ namespace CategoryTheory.Iso
 
 /-- Build a `AlgEquiv` from an isomorphism in the category `AlgebraCat R`. -/
 @[simps]
-def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
-  toFun := i.hom
-  invFun := i.inv
-  left_inv x := by
-    -- Porting note: was `by tidy`
-    change (i.hom ≫ i.inv) x = x
-    simp only [hom_inv_id]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [id_apply]
-  right_inv x := by
-    -- Porting note: was `by tidy`
-    change (i.inv ≫ i.hom) x = x
-    simp only [inv_hom_id]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [id_apply]
-  map_add' := by aesop
-  map_mul' := by aesop
-  commutes' := i.hom.commutes -- Porting note: was `by tidy`
+def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
+  { i.hom with
+    toFun := i.hom
+    invFun := i.inv
+    left_inv := fun x => by
+      -- Porting note: was `by tidy`
+      change (i.hom ≫ i.inv) x = x
+      simp only [hom_inv_id]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [id_apply]
+    right_inv := fun x => by
+      -- Porting note: was `by tidy`
+      change (i.inv ≫ i.hom) x = x
+      simp only [inv_hom_id]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [id_apply] }
 #align category_theory.iso.to_alg_equiv CategoryTheory.Iso.toAlgEquiv
 
 end CategoryTheory.Iso
@@ -250,5 +248,18 @@ instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsI
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩
+    exact e.toAlgebraIso.isIso_hom
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos
+
+/-!
+`@[simp]` lemmas for `AlgHom.comp` and categorical identities.
+-/
+
+@[simp] theorem AlgHom.comp_id_algebraCat
+    {R} [CommRing R] {G : AlgebraCat.{u} R} {H : Type u} [Ring H] [Algebra R H] (f : G →ₐ[R] H) :
+    f.comp (𝟙 G) = f :=
+  Category.id_comp (AlgebraCat.ofHom f)
+@[simp] theorem AlgHom.id_algebraCat_comp
+    {R} [CommRing R] {G : Type u} [Ring G] [Algebra R G] {H : AlgebraCat.{u} R} (f : G →ₐ[R] H) :
+    AlgHom.comp (𝟙 H) f = f :=
+  Category.comp_id (AlgebraCat.ofHom f)

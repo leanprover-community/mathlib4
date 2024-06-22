@@ -60,7 +60,7 @@ theorem mem_nonMemberSubfamily : s ∈ 𝒜.nonMemberSubfamily a ↔ s ∈ 𝒜 
 @[simp]
 theorem mem_memberSubfamily : s ∈ 𝒜.memberSubfamily a ↔ insert a s ∈ 𝒜 ∧ a ∉ s := by
   simp_rw [memberSubfamily, mem_image, mem_filter]
-  refine' ⟨_, fun h => ⟨insert a s, ⟨h.1, by simp⟩, erase_insert h.2⟩⟩
+  refine ⟨?_, fun h => ⟨insert a s, ⟨h.1, by simp⟩, erase_insert h.2⟩⟩
   rintro ⟨s, ⟨hs1, hs2⟩, rfl⟩
   rw [insert_erase hs2]
   exact ⟨hs1, not_mem_erase _ _⟩
@@ -240,17 +240,17 @@ open FinsetFamily
 original, or it's not in the original but it's the compression of something in the original. -/
 theorem mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ 𝒜 ∨ s ∉ 𝒜 ∧ insert a s ∈ 𝒜 := by
   simp_rw [compression, mem_disjUnion, mem_filter, mem_image, and_comm (a := (¬ s ∈ 𝒜))]
-  refine'
+  refine
     or_congr_right
       (and_congr_left fun hs =>
-        ⟨_, fun h => ⟨_, h, erase_insert <| insert_ne_self.1 <| ne_of_mem_of_not_mem h hs⟩⟩)
+        ⟨?_, fun h => ⟨_, h, erase_insert <| insert_ne_self.1 <| ne_of_mem_of_not_mem h hs⟩⟩)
   rintro ⟨t, ht, rfl⟩
   rwa [insert_erase (erase_ne_self.1 (ne_of_mem_of_not_mem ht hs).symm)]
 #align down.mem_compression Down.mem_compression
 
 theorem erase_mem_compression (hs : s ∈ 𝒜) : s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem, and_self_iff]
-  refine' (em _).imp_right fun h => ⟨h, _⟩
+  refine (em _).imp_right fun h => ⟨h, ?_⟩
   rwa [insert_erase (erase_ne_self.1 (ne_of_mem_of_not_mem hs h).symm)]
 #align down.erase_mem_compression Down.erase_mem_compression
 
@@ -272,7 +272,7 @@ theorem mem_compression_of_insert_mem_compression (h : insert a s ∈ 𝓓 a �
 @[simp]
 theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a 𝒜) = 𝓓 a 𝒜 := by
   ext s
-  refine' mem_compression.trans ⟨_, fun h => Or.inl ⟨h, erase_mem_compression_of_mem_compression h⟩⟩
+  refine mem_compression.trans ⟨?_, fun h => Or.inl ⟨h, erase_mem_compression_of_mem_compression h⟩⟩
   rintro (h | h)
   · exact h.1
   · cases h.1 (mem_compression_of_insert_mem_compression h.2)

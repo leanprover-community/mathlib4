@@ -44,7 +44,7 @@ theorem sin_lt (h : 0 < x) : sin x < x := by
   rw [sub_le_iff_le_add', hx] at this
   apply this.trans_lt
   rw [sub_add, sub_lt_self_iff, sub_pos, div_eq_mul_inv (x ^ 3)]
-  refine' mul_lt_mul' _ (by norm_num) (by norm_num) (pow_pos h 3)
+  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   norm_num
 #align real.sin_lt Real.sin_lt
@@ -139,10 +139,10 @@ theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < s
   have hx : |x| = x := abs_of_nonneg h.le
   have := neg_le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
   rw [le_sub_iff_add_le, hx] at this
-  refine' lt_of_lt_of_le _ this
+  refine lt_of_lt_of_le ?_ this
   have : x ^ 3 / ↑4 - x ^ 3 / ↑6 = x ^ 3 * 12⁻¹ := by norm_num [div_eq_mul_inv, ← mul_sub]
   rw [add_comm, sub_add, sub_neg_eq_add, sub_lt_sub_iff_left, ← lt_sub_iff_add_lt', this]
-  refine' mul_lt_mul' _ (by norm_num) (by norm_num) (pow_pos h 3)
+  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   norm_num
 #align real.sin_gt_sub_cube Real.sin_gt_sub_cube
@@ -218,7 +218,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
       abs_of_nonneg (tan_nonneg_of_nonneg_of_le_pi_div_two hy1.le hy2'.le)]
     exact Real.lt_tan hy1 hy2'
   · -- Easy case : `π / 2 ≤ y ≤ 3 * π / 2`
-    refine' lt_of_le_of_lt _ (one_div_pos.mpr <| sqrt_pos_of_pos hy3)
+    refine lt_of_le_of_lt ?_ (one_div_pos.mpr <| sqrt_pos_of_pos hy3)
     exact cos_nonpos_of_pi_div_two_le_of_le hy1' (by linarith [pi_pos])
 #align real.cos_lt_one_div_sqrt_sq_add_one Real.cos_lt_one_div_sqrt_sq_add_one
 
