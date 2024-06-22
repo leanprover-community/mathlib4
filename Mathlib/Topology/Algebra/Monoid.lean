@@ -494,7 +494,6 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
 #align submonoid.topological_closure Submonoid.topologicalClosure
 #align add_submonoid.topological_closure AddSubmonoid.topologicalClosure
 
--- Porting note (#10756): new lemma
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
     (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
