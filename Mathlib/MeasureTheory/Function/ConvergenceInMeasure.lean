@@ -78,7 +78,7 @@ def TendstoInMeasure' [Dist E] {_ : MeasurableSpace α} (μ : Measure α) (f : �
   ∀ ε, 0 < ε → Tendsto (ENNReal.toNNReal ∘ (fun i => (μ { x | ε ≤ dist (f i x) (g x) }))) l (nhds 0)
 
 theorem TendstoInMeasure_of_FiniteMeasure [Dist E] {_ : MeasurableSpace α} {μ : Measure α}
-[hfin: MeasureTheory.IsFiniteMeasure μ] {f : ι → α → E} {l : Filter ι} {g : α → E} :
+    [hfin: MeasureTheory.IsFiniteMeasure μ] {f : ι → α → E} {l : Filter ι} {g : α → E} :
 TendstoInMeasure μ f l g ↔ TendstoInMeasure' μ f l g := by
   have hfin : ∀ ε, ∀ i, μ { x | ε ≤ dist (f i x) (g x) } ≠ ⊤ := by
     exact fun ε i ↦ (measure_ne_top μ {x | ε ≤ dist (f i x) (g x)})
