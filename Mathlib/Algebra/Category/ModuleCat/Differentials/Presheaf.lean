@@ -166,6 +166,7 @@ noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' whe
     rw [relativeDifferentials'_map_apply, AddMonoidHom.mk'_apply,
       AddMonoidHom.mk'_apply, CommRingCat.KaehlerDifferential.map_d]
 
+/-- The derivation `derivation' φ'` is universal. -/
 noncomputable def isUniversal' : (derivation' φ').Universal where
   desc {M} {d' : M.Derivation' φ'} := Hom.mk'' (fun X ↦ (d'.app X).desc) (fun X Y f ↦
     CommRingCat.KaehlerDifferential.ext (fun b ↦ by
