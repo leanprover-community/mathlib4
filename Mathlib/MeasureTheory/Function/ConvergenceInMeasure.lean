@@ -320,7 +320,7 @@ section
 
 /- An auxiliary lemma for a proof by contradiction in exists_seq_tendstoInMeasure_atTop_iff -/
 lemma false_of_Tendsto_of_boundBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: (0 : ℝ) < δ)
-(hf1 : Tendsto f atTop (nhds 0)) (hf2 : ∀ n, δ ≤ (f n) ) : False := by
+    (hf1 : Tendsto f atTop (nhds 0)) (hf2 : ∀ n, δ ≤ (f n) ) : False := by
   have h : ∀ x : ℝ≥0, x.toReal = dist x 0 := by
     intro x
     rw [NNReal.dist_eq x 0, NNReal.coe_zero, sub_zero, NNReal.abs_eq]
