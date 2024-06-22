@@ -264,6 +264,14 @@
   "Mathlib.Tactic.CC.Addition":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.Basic": ["Batteries", "Mathlib.Tactic.Linter.OldObtain"],
+  "Mathlib.Tactic.Bound":
+  ["Mathlib.Analysis.Analytic.Basic",
+   "Mathlib.Tactic.Bound.Attribute",
+   "Mathlib.Tactic.Bound.Init"],
+  "Mathlib.Tactic.Bound.Attribute":
+  ["Mathlib.Init.ZeroOne",
+  "Mathlib.Tactic.Bound.Init"],
+  "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
