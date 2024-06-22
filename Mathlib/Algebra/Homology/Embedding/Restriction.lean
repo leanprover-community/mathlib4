@@ -36,7 +36,7 @@ def restriction : HomologicalComplex C c where
 /-- The isomorphism `(K.restriction e).X i ≅ K.X i'` when `e.f i = i'`. -/
 def restrictionXIso {i : ι} {i' : ι'} (h : e.f i = i') :
     (K.restriction e).X i ≅ K.X i' :=
-  eqToIso (by subst h; rfl)
+  eqToIso (h ▸ rfl)
 
 @[reassoc]
 lemma restriction_d_eq {i j : ι} {i' j' : ι'} (hi : e.f i = i') (hj : e.f j = j') :
