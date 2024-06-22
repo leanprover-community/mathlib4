@@ -11,7 +11,10 @@ import Mathlib.RingTheory.Kaehler.Basic
 # The differentials of a morphism in the category of commutative rings
 
 In this file, given a morphism `f : A ⟶ B` in the category `CommRingCat`,
-we introduce the definition `CommRingCat.KaehlerDifferential f : ModuleCat B`.
+and `M : ModuleCat B`, we define the type `M.Derivation f` of
+derivations with values in `M` relative to `f`.
+We also construct the module of differentials
+`CommRingCat.KaehlerDifferential f : ModuleCat B` and the corresponding derivation:
 
 -/
 
@@ -23,8 +26,8 @@ namespace ModuleCat
 
 variable {A B : CommRingCat.{u}} (M : ModuleCat.{v} B) (f : A ⟶ B)
 
-/-- The type of derivations of a `B`-module `M` relative to a morphism
-`f : A ⟶ B` in the category `CommRingCat`. -/
+/-- The type of derivations with values in a `B`-module `M` relative
+to a morphism `f : A ⟶ B` in the category `CommRingCat`. -/
 nonrec def Derivation : Type _ :=
   letI := f.toAlgebra
   letI := Module.compHom M f
@@ -91,8 +94,8 @@ noncomputable def KaehlerDifferential : ModuleCat.{u} B :=
 namespace KaehlerDifferential
 
 variable (f) in
-/-- The (universal derivation) in `(KaehlerDifferential f).Derivation f` when `f : A ⟶ B`
-is a morphism in the category `CommRingCat`. -/
+/-- The (universal) derivation in `(KaehlerDifferential f).Derivation f`
+when `f : A ⟶ B` is a morphism in the category `CommRingCat`. -/
 noncomputable def D : (KaehlerDifferential f).Derivation f :=
   letI := f.toAlgebra
   ModuleCat.Derivation.mk

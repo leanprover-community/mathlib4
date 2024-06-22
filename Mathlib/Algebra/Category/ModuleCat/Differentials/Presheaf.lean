@@ -26,7 +26,7 @@ of which shall be called the presheaf of relative differentials of `φ`,
 we first study the case where `F` is the identity functor.
 In this case where we have a morphism of presheaves of commutative
 rings `φ' : S' ⟶ R`, we construct a derivation
-`DifferentialsConstruction.derivation'` which is universal (TODO).
+`DifferentialsConstruction.derivation'` which is universal.
 Then, the general case (TODO) shall be obtained by observing that
 derivations for `S ⟶ F.op ⋙ R` identify to derivations
 for `S' ⟶ R` where `S'` is the pullback by `F` of the presheaf of
