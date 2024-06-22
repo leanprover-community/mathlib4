@@ -762,13 +762,13 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
   simp only [mem_map, mem_div_iff_forall_mul_mem]
   constructor
   · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-    exact ⟨x * y, hx _ hy, h.map_mul x y⟩
+    exact ⟨x * y, hx _ hy, map_mul h x y⟩
   · rintro hx
     refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective
-    erw [h.map_mul, h.apply_symm_apply, hxz]
+    erw [map_mul, h.apply_symm_apply, hxz]
 #align submodule.map_div Submodule.map_div
 
 end Quotient
