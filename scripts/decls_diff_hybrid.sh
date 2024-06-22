@@ -20,7 +20,7 @@ currentHash="$(git rev-parse HEAD)"
 getDecls () {
   # we check out the script that is in the current branch
   git checkout "${currentHash}" "${scr}"
-  lake exe cache get
+  lake exe cache get > /dev/null
   sed 's=^--\(list_decls\)=\1=' "${scr}" |
     lake env lean --stdin
 }

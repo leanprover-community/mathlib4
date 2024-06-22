@@ -213,6 +213,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: ${{ github.head_ref }}
+          PR: ${{ github.event.number }}
         run: |
           PR="${{ github.event.pull_request.number }}"
           title="### Lean decl diff"
@@ -234,7 +235,7 @@ jobs:
 
           git checkout "${BRANCH_NAME}"
           currentHash="$(git rev-parse HEAD)"
-          hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
+          hashURL="https://github.com/${{ github.repository }}/pull/${PR}/commits/${currentHash}"
 
           message="$(printf '%s [%s](%s)\n\n%s\n\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${ddiff}")"
 
