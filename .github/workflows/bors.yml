@@ -7,10 +7,9 @@
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
 on:
-  workflow_call:  # allow this workflow to be called from other workflows
-    push:
-      branches:
-        - staging
+  push:
+    branches:
+      - staging
 
 name: continuous integration (staging)
 
