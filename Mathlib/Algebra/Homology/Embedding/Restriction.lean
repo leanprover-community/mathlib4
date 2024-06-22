@@ -62,7 +62,7 @@ lemma restrictionMap_f' {i : ι} {i' : ι'} (hi : e.f i = i') :
 variable (K)
 
 @[simp]
-lemma restrictionMap_id : restrictionMap (𝟙 K) e = 𝟙 _ := by aesop_cat
+lemma restrictionMap_id : restrictionMap (𝟙 K) e = 𝟙 _ := rfl
 
 @[simp, reassoc]
 lemma restrictionMap_comp :
