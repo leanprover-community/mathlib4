@@ -52,10 +52,19 @@ attribute [instance] LE_closedUnderIsomorphisms GE_closedUnderIsomorphisms
 variable {C}
 variable (F : FilteredTriangulated C)
 
+set_option quotPrecheck false in
+/-- shifting an object `X` by `n` is obtained by the notation `X⟪n⟫` -/
+notation -- Any better notational suggestions?
+X "⟪" n "⟫" => (@shiftFunctor C _ _ _ {shift := F.s} n).obj X
+
+set_option quotPrecheck false in
+/-- shifting a morphism `f` by `n` is obtained by the notation `f⟪n⟫'` -/
+notation f "⟪" n "⟫'" => (@shiftFunctor C _ _ _ {shift := F.s} n).map f
+
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     ∃ (X Y : C) (_ : (F.GE n₁).P X) (_ : (F.LE n₀).P Y) (f : X ⟶ A) (g : A ⟶ Y)
       (h : Y ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
-  obtain ⟨X, Y, hX, hY, f, g, h, mem⟩ := F.exists_triangle_one_zero ((F.s.obj {as := -n₀}).obj A)
+  obtain ⟨X, Y, hX, hY, f, g, h, mem⟩ := F.exists_triangle_one_zero (A⟪-n₀⟫)
   let T := (@Functor.mapTriangle _ _ _ _ _ _ (F.s.obj {as := n₀}) (F.s_commshift n₀)).obj
     (Triangle.mk f g h)
   let e := (@shiftEquiv' C _ _ _ {shift := F.s} (-n₀) n₀ (by rw [add_left_neg])).unitIso.symm.app A
@@ -185,27 +194,27 @@ lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q) [F.IsGE X q] : F.IsGE X p w
   ge := GE_antitone F hpq _ (F.mem_of_isGE X q)
 
 lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsLE X n] :
-    F.IsLE ((F.s.obj {as := a}).obj X) n' :=
+    F.IsLE (X⟪a⟫) n' :=
   ⟨F.LE_shift n a n' hn' X (F.mem_of_isLE X n)⟩
 
 lemma isGE_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsGE X n] :
-    F.IsGE ((F.s.obj {as := a}).obj X) n' :=
+    F.IsGE (X⟪a⟫) n' :=
   ⟨F.GE_shift n a n' hn' X (F.mem_of_isGE X n)⟩
 
-lemma isLE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsLE ((F.s.obj {as := a}).obj X) n'] :
+lemma isLE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsLE (X⟪a⟫) n'] :
     F.IsLE X n := by
-  have h := F.isLE_shift ((F.s.obj {as := a}).obj X) n' (-a) n (by linarith)
-  exact F.isLE_of_iso (show (F.s.obj { as := -a }).obj ((F.s.obj { as := a }).obj X) ≅ X from
+  have h := F.isLE_shift (X⟪a⟫) n' (-a) n (by linarith)
+  exact F.isLE_of_iso (show ((X⟪a⟫)⟪-a⟫) ≅ X from
   (@shiftEquiv C _ _ _ {shift := F.s} a).unitIso.symm.app X) n
 
-lemma isGE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsGE ((F.s.obj {as := a}).obj X) n'] :
+lemma isGE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n = n') [F.IsGE (X⟪a⟫) n'] :
     F.IsGE X n := by
-  have h := F.isGE_shift ((F.s.obj {as := a}).obj X) n' (-a) n (by linarith)
-  exact F.isGE_of_iso (show (F.s.obj { as := -a }).obj ((F.s.obj { as := a }).obj X) ≅ X from
+  have h := F.isGE_shift (X⟪a⟫) n' (-a) n (by linarith)
+  exact F.isGE_of_iso (show ((X⟪a⟫)⟪-a⟫) ≅ X from
   (@shiftEquiv C _ _ _ {shift := F.s} a).unitIso.symm.app X) n
 
 lemma isLE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n = n') :
-    F.IsLE ((F.s.obj {as := a}).obj X) n' ↔ F.IsLE X n := by
+    F.IsLE (X⟪a⟫) n' ↔ F.IsLE X n := by
   constructor
   · intro
     exact F.isLE_of_shift X n a n' hn'
@@ -213,79 +222,96 @@ lemma isLE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n = n') :
     exact F.isLE_shift X n a n' hn'
 
 lemma isGE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n = n') :
-    F.IsGE ((F.s.obj {as := a}).obj X) n' ↔ F.IsGE X n := by
+    F.IsGE (X⟪a⟫) n' ↔ F.IsGE X n := by
   constructor
   · intro
     exact F.isGE_of_shift X n a n' hn'
   · intro
     exact F.isGE_shift X n a n' hn'
 
-#exit
-
 lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
     [F.IsGE X n₁] [F.IsLE Y n₀] : f = 0 := by
   have := F.isLE_shift Y n₀ (-n₀) 0 (by simp only [add_left_neg])
   have := F.isGE_shift X n₁ (-n₀) (n₁-n₀) (by linarith)
-  have := F.isGE_of_GE ((F.s.obj {as := -n₀}).obj X) 1 (n₁-n₀) (by linarith)
+  have := F.isGE_of_GE (X⟪-n₀⟫) 1 (n₁-n₀) (by linarith)
   apply (@shiftFunctor C _ _ _ {shift := F.s} (-n₀)).map_injective
   simp only [Functor.map_zero]
   apply F.zero'
   · apply F.mem_of_isGE
-  · sorry
-
-#exit
-
-  apply (shiftFunctor C n₀).map_injective
-  simp only [Functor.map_zero]
-  apply t.zero'
-  · apply t.mem_of_isLE
-  · apply t.mem_of_isGE
-
-#exit
+  · apply F.mem_of_isLE
 
 lemma zero_of_isLE_of_isGE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
-    (_ : t.IsLE X n₀) (_ : t.IsGE Y n₁) : f = 0 :=
-  t.zero f n₀ n₁ h
+    (_ : F.IsGE X n₁) (_ : F.IsLE Y n₀) : f = 0 :=
+  F.zero f n₀ n₁ h
 
 lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
-    [t.IsLE X n₀] [t.IsGE X n₁] : IsZero X := by
+    [F.IsGE X n₁] [F.IsLE X n₀] : IsZero X := by
   rw [IsZero.iff_id_eq_zero]
-  exact t.zero _ n₀ n₁ h
+  exact F.zero _ n₀ n₁ h
 
-def heart (X : C) : Prop := t.LE 0 X ∧ t.GE 0 X
+def core (X : C) : Prop := (F.LE 0).P X ∧ (F.GE 0).P X
 
-lemma mem_heart_iff (X : C) :
-    t.heart X ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
+lemma mem_core_iff (X : C) :
+    F.core X ↔ F.IsLE X 0 ∧ F.IsGE X 0 := by
   constructor
   · rintro ⟨h₁, h₂⟩
     exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
   · rintro ⟨h₁, h₂⟩
-    exact ⟨t.mem_of_isLE _ _, t.mem_of_isGE _ _⟩
+    exact ⟨F.mem_of_isLE _ _, F.mem_of_isGE _ _⟩
 
-instance : ClosedUnderIsomorphisms t.heart where
+def tCore : Triangulated.Subcategory C where
+  P := F.core
+  zero' := by
+    existsi 0, isZero_zero C
+    rw [mem_core_iff]
+    exact ⟨inferInstance, inferInstance⟩
+  shift X n hX := by
+    rw [mem_core_iff] at hX ⊢
+    have := hX.1; have := hX.2
+    exact ⟨inferInstance, inferInstance⟩
+  ext₂' T dT hT₁ hT₃ := by
+    apply le_isoClosure
+    rw [mem_core_iff] at hT₁ hT₃ ⊢
+    constructor
+    · exact @LE_ext₂ _ _ _ _ _ _ _ F T dT 0 hT₁.1 hT₃.1
+    · exact @GE_ext₂ _ _ _ _ _ _ _ F T dT 0 hT₁.2 hT₃.2
+
+lemma mem_tCore_iff (X : C) :
+    F.tCore.P X ↔ F.IsLE X 0 ∧ F.IsGE X 0 := by
+  constructor
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨F.mem_of_isLE _ _, F.mem_of_isGE _ _⟩
+
+instance : ClosedUnderIsomorphisms F.tCore.P where
   of_iso {X Y} e hX := by
-    rw [mem_heart_iff] at hX ⊢
+    rw [mem_tCore_iff] at hX ⊢
     have := hX.1
     have := hX.2
     constructor
-    · exact t.isLE_of_iso e 0
-    · exact t.isGE_of_iso e 0
+    · exact F.isLE_of_iso e 0
+    · exact F.isGE_of_iso e 0
 
--- this should be refactored by requiring a type class [t.HasHeart]
--- which would involve a fully faithful functor `H ⥤ C` whose essential image is `t.heart`
+abbrev Core' := F.tCore.category
 
-abbrev Heart' := FullSubcategory t.heart
+abbrev ιCore' : F.Core' ⥤ C := fullSubcategoryInclusion _
 
-abbrev ιHeart' : t.Heart' ⥤ C := fullSubcategoryInclusion _
+instance : Functor.Additive F.ιCore' := sorry
+
+instance : Functor.Full F.ιCore' := sorry
+
+instance : Functor.Faithful F.ιCore' := sorry
 
 
-instance (X : t.Heart') : t.IsLE (t.ιHeart'.obj X) 0 := ⟨X.2.1⟩
-instance (X : t.Heart') : t.IsGE (t.ιHeart'.obj X) 0 := ⟨X.2.2⟩
-instance (X : t.Heart') : t.IsLE X.1 0 := ⟨X.2.1⟩
-instance (X : t.Heart') : t.IsGE X.1 0 := ⟨X.2.2⟩
+instance (X : F.Core') : F.IsLE (F.ιCore'.obj X) 0 := ⟨X.2.1⟩
+instance (X : F.Core') : F.IsGE (F.ιCore'.obj X) 0 := ⟨X.2.2⟩
+instance (X : F.Core') : F.IsLE X.1 0 := ⟨X.2.1⟩
+instance (X : F.Core') : F.IsGE X.1 0 := ⟨X.2.2⟩
 
-lemma ιHeart_obj_mem_heart (X : t.Heart') : t.heart (t.ιHeart'.obj X) := X.2
+lemma ιCore_obj_mem_core (X : F.Core') : F.core (F.ιCore'.obj X) := X.2
 
+/-
 def ιHeartDegree (n : ℤ) : t.Heart' ⥤ C :=
   t.ιHeart' ⋙ shiftFunctor C (-n)
 
@@ -293,8 +319,9 @@ noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ sh
   Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (shiftFunctorCompIsoId C (-n) n (add_left_neg n)) ≪≫
     Functor.rightUnitor _
+-/
 
-class HasHeart where
+class HasCore where
   H : Type*
   [cat : Category H]
   [preadditive : Preadditive H]
@@ -302,11 +329,11 @@ class HasHeart where
   additive_ι : ι.Additive := by infer_instance
   fullι : ι.Full := by infer_instance
   faithful_ι : ι.Faithful := by infer_instance
-  hι : ι.essImage = setOf t.heart := by simp
+  hι : ι.essImage = setOf F.tCore.P := by simp
 
-def hasHeartFullSubcategory : t.HasHeart where
-  H := FullSubcategory t.heart
-  ι := fullSubcategoryInclusion t.heart
+def hasCoreFullSubcategory : F.HasCore where
+  H := F.Core'
+  ι := F.ιCore'
   hι := by
     ext X
     simp only [Set.mem_setOf_eq]
@@ -315,69 +342,73 @@ def hasHeartFullSubcategory : t.HasHeart where
       refine ClosedUnderIsomorphisms.of_iso (Functor.essImage.getIso h ) ?_
       exact (Functor.essImage.witness h).2
     · intro h
-      change (fullSubcategoryInclusion t.heart).obj ⟨X, h⟩ ∈ _
+      change (fullSubcategoryInclusion F.core).obj ⟨X, h⟩ ∈ _
       exact Functor.obj_mem_essImage _ _
 
-variable [ht : t.HasHeart]
+variable [ht : F.HasCore]
 
-def Heart := ht.H
+def Core := ht.H
 
-instance : Category t.Heart := ht.cat
+instance : Category F.Core := ht.cat
 
-def ιHeart : t.Heart ⥤ C := ht.ι
+def ιCore : F.Core ⥤ C := ht.ι
 
-instance : Preadditive t.Heart := ht.preadditive
-instance : t.ιHeart.Full := ht.fullι
-instance : t.ιHeart.Faithful := ht.faithful_ι
-instance : t.ιHeart.Additive := ht.additive_ι
+instance : Preadditive F.Core := ht.preadditive
+instance : F.ιCore.Full := ht.fullι
+instance : F.ιCore.Faithful := ht.faithful_ι
+instance : F.ιCore.Additive := ht.additive_ι
 
-lemma ιHeart_obj_mem (X : t.Heart) : t.heart (t.ιHeart.obj X) := by
-  change (t.ιHeart.obj X) ∈ setOf t.heart
+-- Add instances saying that the core is triangulated and the inclusion is a triangulated functor.
+
+lemma ιCore_obj_mem (X : F.Core) : F.tCore.P (F.ιCore.obj X) := by
+  change (F.ιCore.obj X) ∈ setOf F.tCore.P
   rw [← ht.hι]
-  exact t.ιHeart.obj_mem_essImage X
+  exact F.ιCore.obj_mem_essImage X
 
-instance (X : t.Heart) : t.IsLE (t.ιHeart.obj X) 0 :=
-  ⟨(t.ιHeart_obj_mem X).1⟩
+instance (X : F.Core) : F.IsLE (F.ιCore.obj X) 0 :=
+  ⟨(F.ιCore_obj_mem X).1⟩
 
-instance (X : t.Heart) : t.IsGE (t.ιHeart.obj X) 0 :=
-  ⟨(t.ιHeart_obj_mem X).2⟩
+instance (X : F.Core) : F.IsGE (F.ιCore.obj X) 0 :=
+  ⟨(F.ιCore_obj_mem X).2⟩
 
-lemma mem_essImage_ιHeart_iff (X : C) :
-    X ∈ t.ιHeart.essImage ↔ t.heart X := by
-  dsimp [ιHeart]
+lemma mem_essImage_ιCore_iff (X : C) :
+    X ∈ F.ιCore.essImage ↔ F.tCore.P X := by
+  dsimp [ιCore]
   rw [ht.hι, Set.mem_setOf_eq]
 
-noncomputable def heartMk (X : C) (hX : t.heart X) : t.Heart :=
-  Functor.essImage.witness ((t.mem_essImage_ιHeart_iff X).2 hX)
+noncomputable def coreMk (X : C) (hX : F.tCore.P X) : F.Core :=
+  Functor.essImage.witness ((F.mem_essImage_ιCore_iff X).2 hX)
 
-noncomputable def ιHeartObjHeartMkIso (X : C) (hX : t.heart X) :
-    t.ιHeart.obj (t.heartMk X hX) ≅ X :=
-  Functor.essImage.getIso ((t.mem_essImage_ιHeart_iff X).2 hX)
+noncomputable def ιCoreObjCoreMkIso (X : C) (hX : F.tCore.P X) :
+    F.ιCore.obj (F.coreMk X hX) ≅ X :=
+  Functor.essImage.getIso ((F.mem_essImage_ιCore_iff X).2 hX)
 
 @[simps obj]
-noncomputable def liftHeart {D : Type*} [Category D]
-    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) :
-    D ⥤ t.Heart where
-  obj X := t.heartMk (F.obj X) (hF X)
-  map {X Y} f := t.ιHeart.preimage ((t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
-      (t.ιHeartObjHeartMkIso _ (hF Y)).inv)
-  map_id X := t.ιHeart.map_injective (by simp)
-  map_comp f g := t.ιHeart.map_injective (by simp)
+noncomputable def liftCore {D : Type*} [Category D]
+    (G : D ⥤ C) (hF : ∀ (X : D), F.tCore.P (G.obj X)) :
+    D ⥤ F.Core where
+  obj X := F.coreMk (G.obj X) (hF X)
+  map {X Y} f := F.ιCore.preimage ((F.ιCoreObjCoreMkIso _ (hF X)).hom ≫ G.map f ≫
+      (F.ιCoreObjCoreMkIso _ (hF Y)).inv)
+  map_id X := F.ιCore.map_injective (by simp)
+  map_comp f g := F.ιCore.map_injective (by simp)
 
 @[simp, reassoc]
-lemma ιHeart_map_liftHeart_map {D : Type*} [Category D]
-    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) {X Y : D} (f : X ⟶ Y) :
-    t.ιHeart.map ((t.liftHeart F hF).map f) =
-      (t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
-        (t.ιHeartObjHeartMkIso _ (hF Y)).inv := by
-  simp [liftHeart]
+lemma ιCore_map_liftCore_map {D : Type*} [Category D]
+    (G : D ⥤ C) (hF : ∀ (X : D), F.tCore.P (G.obj X)) {X Y : D} (f : X ⟶ Y) :
+    F.ιCore.map ((F.liftCore G hF).map f) =
+      (F.ιCoreObjCoreMkIso _ (hF X)).hom ≫ G.map f ≫
+        (F.ιCoreObjCoreMkIso _ (hF Y)).inv := by
+  simp [liftCore]
 
-noncomputable def liftHeartιHeart {D : Type*} [Category D]
-    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) :
-    t.liftHeart F hF ⋙ t.ιHeart ≅ F :=
-  NatIso.ofComponents (fun X => t.ιHeartObjHeartMkIso _ (hF X)) (by aesop_cat)
+noncomputable def liftCoreιCore {D : Type*} [Category D]
+    (G : D ⥤ C) (hF : ∀ (X : D), F.tCore.P (G.obj X)) :
+    F.liftCore G hF ⋙ F.ιCore ≅ G :=
+  NatIso.ofComponents (fun X => F.ιCoreObjCoreMkIso _ (hF X)) (by aesop_cat)
 
-end TStructure
+end FilteredTriangulated
+
+#exit
 
 namespace Subcategory
 
