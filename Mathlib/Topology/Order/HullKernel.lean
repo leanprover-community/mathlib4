@@ -29,21 +29,16 @@ variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
 
 lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T ↓∩ (Ici (a ⊓ b))ᶜ) := by
   ext p
-  simp only [preimage_compl, mem_inter_iff, mem_compl_iff, mem_preimage, mem_Ici]
-  rw [← not_or]
+  simp only [preimage_compl, mem_inter_iff, mem_compl_iff, mem_preimage, mem_Ici, ← not_or]
   constructor
   · intro h
     by_contra h2
-    have e1 : a ≤ ↑p ∨ b ≤ ↑p := by
-      apply (hT p (Subtype.coe_prop p)).2  h2
-    exact h e1
+    exact h ((hT p (Subtype.coe_prop p)).2  h2)
   · intros h
     by_contra h2
     cases' h2 with h1 h3
-    have e1 : a ⊓ b ≤ p := inf_le_of_left_le h1
-    exact h e1
-    have e1 : a ⊓ b ≤ p := inf_le_of_right_le h3
-    exact h e1
+    · exact h (inf_le_of_left_le h1)
+    · exact h (inf_le_of_right_le h3)
 
 variable [DecidableEq α] [OrderTop α]
 
@@ -53,18 +48,12 @@ lemma basis2  (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓�
   simp only [compl_iUnion]
   rw [preimage_iInter₂]
   induction' F using Finset.induction_on with a F' _ I4
-  · simp only [Finset.coe_empty, mem_empty_iff_false, iInter_of_empty,
-    iInter_univ, sInf_empty, Ici_top]
-    simp only [inf_empty, Ici_top, Set.preimage_compl]
-    rw [eq_compl_comm]
-    simp only [Set.compl_univ]
+  · simp only [Finset.coe_empty, mem_empty_iff_false, iInter_of_empty, iInter_univ, sInf_empty,
+      Ici_top, inf_empty, Ici_top, Set.preimage_compl, eq_compl_comm, Set.compl_univ]
     by_contra hf
-    rw [← Set.not_nonempty_iff_eq_empty] at hf
-    simp at hf
+    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
     cases' hf with x hx
-    simp at hx
-    apply (hT x (Subtype.coe_prop x)).1
-    exact isMax_iff_eq_top.mpr hx
+    exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr hx)
   · simp only [coe_insert, mem_insert_iff, mem_coe,  iInter_iInter_eq_or_left,
       inf_insert, id_eq]
     rw [← basis1, ← I4]
@@ -196,7 +185,7 @@ lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici 
     exact ha
   exact fun p a ↦ hT p a
 
-theorem PrimativeSpectrum.gc' : GaloisConnection (α := Set T) (β := αᵒᵈ)
+theorem PrimativeSpectrum.gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : (Set α))))
     (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) := by
   rw [GaloisConnection]
@@ -232,7 +221,7 @@ When `T` is order generating, the kernel and the hull form a Galois insertion
 def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : (Set α))))
     (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) :=
-  (PrimativeSpectrum.gc' T).toGaloisInsertion fun a ↦ (by
+  (PrimativeSpectrum.gc T).toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
     cases' hG a with S hS
     have e1 : S ⊆ T ↓∩ Ici (OrderDual.ofDual a) := by
@@ -254,7 +243,7 @@ lemma kh1 (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a :
 
 
 lemma hk1 (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
-    (PrimativeSpectrum.gc' T).closureOperator C = C := by
+    (PrimativeSpectrum.gc T).closureOperator C = C := by
   have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff T hT C).mp h
   cases' e1 with a ha
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
@@ -264,7 +253,7 @@ lemma hk1 (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
   exact hG
 
 
-lemma testhk (S : Set T) : (PrimativeSpectrum.gc' T).closureOperator S = T ↓∩ (Ici (sInf S)) := by
+lemma testhk (S : Set T) : (PrimativeSpectrum.gc T).closureOperator S = T ↓∩ (Ici (sInf S)) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
@@ -297,7 +286,7 @@ lemma testhk2 (hG : OrderGenerate T) (S : Set T) :
 
 theorem hull_kernel (hG : OrderGenerate T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator =
-      (PrimativeSpectrum.gc' T).closureOperator := by
+      (PrimativeSpectrum.gc T).closureOperator := by
   ext S a
   rw [testhk, testhk2]
   exact fun p a ↦ hT p a
