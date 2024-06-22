@@ -182,7 +182,7 @@ end ZeroObject
 
 section
 
-variable {J : Type*} [Category J] [HasZeroObject D] [HasZeroMorphisms D]
+variable (J : Type*) [Category J] [HasZeroObject D] [HasZeroMorphisms D]
   (G : C ⥤ D) (hG : IsZero G)
 
 /-- A zero functor preserves limits. -/
