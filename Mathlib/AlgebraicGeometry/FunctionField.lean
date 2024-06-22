@@ -136,7 +136,7 @@ instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain 
 instance {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
     IsIntegral (X.restrict U.openEmbedding) :=
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU
-  isIntegralOfOpenImmersion (X.ofRestrict U.openEmbedding)
+  isIntegral_of_isOpenImmersion (X.ofRestrict U.openEmbedding)
 
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : Opens X.carrier}
     (hU : IsAffineOpen U) [h : Nonempty U] :
@@ -161,7 +161,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   haveI : IsAffine _ := hU
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU'
   haveI : IsIntegral (X.restrict U.openEmbedding) :=
-    @isIntegralOfIsAffineIsDomain _ _ _
+    @isIntegral_of_isAffine_of_isDomain _ _ _
       (by dsimp; rw [Opens.openEmbedding_obj_top]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X.carrier, _⟩ using 1
