@@ -30,26 +30,27 @@ open CategoryTheory Bicategory Opposite
 
 
 /-- The type of objects of the 1-cell opposite of a bicategory `B` -/
-structure Bicategory.opposite (B : Type u) :=
-  /-- The canonical map `Bᴮᵒᵖ` -/
-  unbop : B
+structure Bicategory.Opposite (B : Type u) where
+  /-- The object of `Bᴮᵒᵖ` that represents `b : B` -/  bop ::
+  /-- The object of `B` that represents `b : Bᴮᵒᵖ` -/ unbop : B
 
-namespace Bicategory.opposite
+namespace Bicategory.Opposite
 
 variable {B : Type u}
 
-notation:max B "ᴮᵒᵖ" => Bicategory.opposite B
+@[inherit_doc]
+notation:max B "ᴮᵒᵖ" => Bicategory.Opposite B
 
-def bop (a : B) : Bᴮᵒᵖ := ⟨a⟩
+theorem bop_injective : Function.Injective (bop : B → Bᴮᵒᵖ) := fun _ _ => congr_arg Opposite.unbop
 
-theorem bop_injective : Function.Injective (bop : B → Bᴮᵒᵖ) := fun _ _ => congr_arg opposite.unbop
+theorem unbop_injective : Function.Injective (unbop : Bᴮᵒᵖ → B) := fun _ _ h => congrArg bop h
 
-theorem unbop_injective : Function.Injective (unbop : Bᴮᵒᵖ → B) := fun ⟨_⟩⟨_⟩ => by simp
-
-theorem bop_inj_iff (x y : B) : bop x = bop y ↔ x = y := bop_injective.eq_iff
+theorem bop_inj_iff (x y : B) : bop x = bop y ↔ x = y :=
+  bop_injective.eq_iff
 
 @[simp]
-theorem unmop_inj_iff (x y : Bᴮᵒᵖ) : unbop x = unbop y ↔ x = y := unbop_injective.eq_iff
+theorem unmop_inj_iff (x y : Bᴮᵒᵖ) : unbop x = unbop y ↔ x = y :=
+  unbop_injective.eq_iff
 
 @[simp]
 theorem bop_unbop (a : Bᴮᵒᵖ) : bop (unbop a) = a :=
@@ -59,43 +60,83 @@ theorem bop_unbop (a : Bᴮᵒᵖ) : bop (unbop a) = a :=
 theorem unbop_bop (a : B) : unbop (bop a) = a :=
   rfl
 
--- TODO: could have more api here, see Data.Opposite
+/-- The type-level equivalence between a type and its opposite. -/
+def equivToOpposite : B ≃ Bᴮᵒᵖ where
+  toFun := bop
+  invFun := unbop
+  left_inv := unop_op -- todo whyyy is this typo OK??
+  right_inv := bop_unbop
 
-end Bicategory.opposite
+theorem bop_surjective : Function.Surjective (bop : B → Bᴮᵒᵖ) := equivToOpposite.surjective
 
-open Bicategory.opposite
+theorem unbop_surjective : Function.Surjective (unbop : Bᴮᵒᵖ → B) := equivToOpposite.symm.surjective
+
+@[simp]
+theorem equivToBopposite_coe : (equivToOpposite : B → Bᴮᵒᵖ) = bop :=
+  rfl
+
+@[simp]
+theorem equivToBopposite_symm_coe : (equivToOpposite.symm : Bᴮᵒᵖ → B) = unbop :=
+  rfl
+
+theorem bop_eq_iff_eq_unbop {x : B} {y} : bop x = y ↔ x = unbop y :=
+  equivToOpposite.apply_eq_iff_eq_symm_apply
+
+theorem unbop_eq_iff_eq_bop {x} {y : B} : unbop x = y ↔ x = bop y :=
+  equivToOpposite.symm.apply_eq_iff_eq_symm_apply
+
+end Bicategory.Opposite
 
 variable {B : Type u} [Bicategory.{w, v} B]
 
+section
+
+-- renaming to make bop_inj and unbop_inj work... TODO
+open Bicategory.Opposite renaming bop → bop', unbop → unbop'
+
 /-- `Bᴮᵒᵖ` reverses the 1-morphisms in `B` -/
 instance Hom : Quiver (Bᴮᵒᵖ) where
-  Hom := fun a b => (unbop b ⟶ unbop a)ᴮᵒᵖ
+  Hom := fun a b => (unbop' b ⟶ unbop' a)ᴮᵒᵖ
 
+namespace Quiver.Hom
 /-- The opposite of a 1-morphism in `B`. -/
-def Quiver.Hom.bop {a b : B} (f : a ⟶ b) : bop b ⟶ bop a := ⟨f⟩
+def bop {a b : B} (f : a ⟶ b) : bop' b ⟶ bop' a := ⟨f⟩
 
 /-- Given a 1-morhpism in `Bᴮᵒᵖ`, we can take the "unopposite" back in `B`. -/
-def Quiver.Hom.unbop {a b : Bᴮᵒᵖ} (f : a ⟶ b) : unbop b ⟶ unbop a :=
-  Bicategory.opposite.unbop f
+def unbop {a b : Bᴮᵒᵖ} (f : a ⟶ b) : unbop' b ⟶ unbop' a :=
+  Bicategory.Opposite.unbop f
 
--- TODO: op/unop inj can be added here
+-- theorem bop_inj {X Y : B} :
+--     Function.Injective (bop : (X ⟶ Y) → (bop' X ⟶ bop' Y)) :=
+--   fun _ _ H => congr_arg Quiver.Hom.unbop H
+
+-- theorem unbop_inj {X Y : Bᴮᵒᵖ} :
+--     Function.Injective (Quiver.Hom.unbop : (X ⟶ Y) → (unbop' X ⟶ unbop' Y)) :=
+--   fun _ _ H => congr_arg Quiver.Hom.mop H
+
 @[simp]
-theorem Quiver.Hom.unbop_bop {X Y : B} (f : X ⟶ Y) : f.bop.unbop = f :=
+theorem unbop_bop {X Y : B} (f : X ⟶ Y) : f.bop.unbop = f :=
   rfl
 
 @[simp]
-theorem Quiver.Hom.bop_unbop {X Y : Bᴮᵒᵖ} (f : X ⟶ Y) : f.unbop.bop = f :=
+theorem bop_unbop {X Y : Bᴮᵒᵖ} (f : X ⟶ Y) : f.unbop.bop = f :=
   rfl
+
+end Quiver.Hom
+
+end
+
+namespace Bicategory.Opposite
 
 /-- `Bᴮᵒᵖ` preserves the direction of all 2-morphisms in `B` -/
 instance homCategory (a b : Bᴮᵒᵖ) : Quiver (a ⟶ b) where
   Hom := fun f g => (f.unbop ⟶ g.unbop)ᴮᵒᵖ
 
 def bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.bop ⟶ g.bop :=
-  Bicategory.opposite.bop η
+  Bicategory.Opposite.bop η
 
 def unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ⟶ g) : f.unbop ⟶ g.unbop :=
-  Bicategory.opposite.unbop η
+  Bicategory.Opposite.unbop η
 
 theorem bop2_inj {a b : B} {f g : a ⟶ b} :
     Function.Injective (bop2 : (f ⟶ g) → (f.bop ⟶ g.bop)) :=
@@ -114,7 +155,7 @@ theorem unbop_bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : unbop2 (bop2 η) =
 theorem bop_unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ⟶ g) : bop2 (unbop2 η) = η := rfl
 
 -- @[simps] here causes a loop!!!!
-instance homCategory.opposite {a b : Bᴮᵒᵖ} : Category.{w} (a ⟶ b) where
+instance homCategory.Opposite {a b : Bᴮᵒᵖ} : Category.{w} (a ⟶ b) where
   id := fun f => bop2 (𝟙 f.unbop)
   comp := fun η θ => bop2 ((unbop2 η) ≫ (unbop2 θ))
   -- TODO: why do I need to specify Category.id_comp here...
@@ -146,7 +187,11 @@ theorem unbop2_id_bop {a b : B} {f : a ⟶ b} : unbop2 (𝟙 f.bop) = 𝟙 f :=
 theorem bop2_id_unbop {a b : Bᴮᵒᵖ} {f : a ⟶ b} : bop2 (𝟙 f.unbop) = 𝟙 f :=
   rfl
 
+end Bicategory.Opposite
+
 namespace CategoryTheory.Iso
+
+open Bicategory.Opposite
 
 /-- The opposite natural isomorphism  -/
 @[simps]
@@ -174,12 +219,14 @@ theorem unbop2_bop {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop2
 
 end CategoryTheory.Iso
 
+namespace Bicategory.Opposite
+
 /-- The 1-dual bicategory `Cᵒᵖ`
 
 See ...
 -/
 @[simps!]
-instance Bicategory.Opposite : Bicategory.{w, v} Bᴮᵒᵖ where
+instance bicategory : Bicategory.{w, v} Bᴮᵒᵖ where
   -- Need to break these out and add lemmas for them probably?
   id := fun a => (𝟙 a.unbop).bop
   comp := fun f g => (g.unbop ≫ f.unbop).bop
@@ -204,11 +251,10 @@ instance Bicategory.Opposite : Bicategory.{w, v} Bᴮᵒᵖ where
   pentagon f g h i := by apply unbop2_inj; simp
   triangle f g := by apply unbop2_inj; simp
 
+end Bicategory.Opposite
 
 /-
 TODO:
 - simp lemmas
-- compatability with LocallyDiscrete
--- Want a functor between them?
 
 -/
