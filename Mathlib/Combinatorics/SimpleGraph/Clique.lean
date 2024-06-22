@@ -214,7 +214,7 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
 #align simple_graph.is_n_clique.map SimpleGraph.IsNClique.map
 
 theorem isNClique_map_iff [DecidableEq β] (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
-    (G.map f).IsNClique n t ↔ ∃ (s : Finset α), G.IsNClique n s ∧ s.map f = t := by
+    (G.map f).IsNClique n t ↔ ∃ s : Finset α, G.IsNClique n s ∧ s.map f = t := by
   rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
     or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
   constructor
