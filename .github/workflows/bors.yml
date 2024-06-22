@@ -210,10 +210,34 @@ jobs:
           fi
 
       - name: decl-diff
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref }}
         run: |
+          PR="${{ github.event.pull_request.number }}"
+          title="### Lean decl diff"
+
           git checkout master
           git checkout -
-          ./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})" > "${GITHUB_STEP_SUMMARY}"
+          ddiff="$(./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})")"
+
+          ## Import count comment
+          importCount=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
+          if [ "$(printf '%s' "${ddiff}" | wc -l)" -gt 12 ]
+          then
+            ddiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "${title}" "${ddiff}")"
+          else
+            ddiff="$(printf '%s\n\n%s\n' "${title}" "${ddiff}")"
+          fi
+
+          git checkout "${BRANCH_NAME}"
+          currentHash="$(git rev-parse HEAD)"
+          hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
+
+          message="$(printf '%s [%s](%s)\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${importCount}" "${declDiff}")"
+
+          ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
+
 
       - name: build archive
         id: archive
