@@ -148,11 +148,9 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
         have h1 : n * ‖A‖ * B = ∑ _ : Fin n, ‖A‖ * B := by
           simp only [sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul, mul_assoc ↑n ‖A‖ ↑B]
-        rw [h1, ← Finset.sum_add_distrib]
+        simp_rw [h1, ← Finset.sum_add_distrib, ← mul_add, mul_comm ‖A‖, ← Int.cast_add]
         gcongr with j _
-        rw [← mul_add, ← Int.cast_add, posPart_add_negPart (A i j), mul_comm]
-        apply mul_le_mul_of_nonneg_right _ (Nat.cast_nonneg B)
-        rw [Int.cast_abs]
+        rw [posPart_add_negPart (A i j), Int.cast_abs]
         exact norm_entry_le_entrywise_sup_norm A
   _  ≤ (n * ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow]
