@@ -339,7 +339,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
 @[to_additive (attr := irreducible) "`0` in the additive localization, defined as `0 -ₒ 0`."]
 protected def one : R[S⁻¹] := 1 /ₒ 1
 
-@[to_additive AddOreLocalization.instZeroAddOreLocalization]
+@[to_additive]
 instance : One R[S⁻¹] :=
   ⟨OreLocalization.one⟩
 
@@ -655,11 +655,13 @@ section Zero
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [Zero X]
 variable [MulAction R X]
 
+
+/-- `0` in the localization, defined as `0 /ₒ 1`. -/
 @[irreducible]
-private def zero : X[S⁻¹] := 0 /ₒ 1
+protected def zero : X[S⁻¹] := 0 /ₒ 1
 
 instance : Zero X[S⁻¹] :=
-  ⟨zero⟩
+  ⟨OreLocalization.zero⟩
 
 protected theorem zero_def : (0 : X[S⁻¹]) = 0 /ₒ 1 := by
   with_unfolding_all rfl
