@@ -508,7 +508,7 @@ theorem toOpen_unit_app_val_c_app {X : Scheme.{u}} (U) :
 
 @[reassoc (attr := simp)]
 theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ(X, ⊤))) :
-  toOpen Γ(X, ⊤) U ≫ (adjunction.unit.app X).val.c.app (op U) =
+    toOpen Γ(X, ⊤) U ≫ (adjunction.unit.app X).val.c.app (op U) =
     X.presheaf.map (homOfLE (by exact le_top)).op :=
   ΓSpec.toOpen_unit_app_val_c_app (op U)
 
