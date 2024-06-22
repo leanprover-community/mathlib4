@@ -330,7 +330,7 @@ lemma false_of_Tendsto_of_boundBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: 
 end
 
 lemma forall_seq_tendstoInMeasure_atTop {u : Filter ι} {v : Filter κ} {f : ι → α → E} {g : α → E}
-{ns : κ → ι} (hfg : TendstoInMeasure μ f u g) (hns : Tendsto ns v u) :
+    {ns : κ → ι} (hfg : TendstoInMeasure μ f u g) (hns : Tendsto ns v u) :
 TendstoInMeasure μ (fun n => f (ns n)) v g :=
   fun ε hε => (hfg ε hε).comp hns
 
