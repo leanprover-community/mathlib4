@@ -3,25 +3,33 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+
+import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Opposite bicategories
 
-We provide a bicategory instance on `Cᵒᵖ` given a bicategory instance on `C`.
-The morphisms `X ⟶ Y` in `Cᵒᵖ` are the morphisms `Y ⟶ X` in `C`.
-The natural transformations `F ⟶ G` in `Cᵒᵖ` are the natural transformations `unop F ⟶ unop G` in
-`C`, in other words the directions of natural transformations are preserved.
+We construct the 1-cell opposite of a bicategory `B`, called `Bᴮᵒᵖ`. It is defined as follows
+* The objects of `Bᴮᵒᵖ` correspond to objects of `B`.
+* The morphisms `X ⟶ Y` in `Bᴮᵒᵖ` are the morphisms `Y ⟶ X` in `B`.
+* The 2-morphisms `f ⟶ g` in `Bᴮᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
+  directions of the 2-morphisms are preserved.
 
-We also provide various lemmas in going between `LocallyDiscrete Cᵒᵖ` and `(LocallyDiscrete C)ᵒᵖ`.
 
 # Remarks
 There are multiple notions of opposite categories for bicategories.
-- There is `Cᵒᵖ` as defined above, also known as the "1-cell dual".
-- There is the "2-cell dual", `Cᶜᵒ` where only the natural transformations are reversed
-- There is the "bi-dual" `Cᶜᵒᵒᵖ` where the directions of both the morphisms and the natural
+- There is 1-cell dual `Bᴮᵒᵖ` as defined above.
+- There is the 2-cell dual, `Cᶜᵒ` where only the natural transformations are reversed
+- There is the bi-dual `Cᶜᵒᵒᵖ` where the directions of both the morphisms and the natural
   transformations are reversed.
+
+## TODO
+
+Provide various lemmas in going between `LocallyDiscrete Cᵒᵖ` and `(LocallyDiscrete C)ᵒᵖ`.
+Define the natural pseudofunctor from `B` to `Bᴮᵒᵖ`.
+Expand API (do after I have started using it)
+
 -/
 
 universe w v u
@@ -132,9 +140,11 @@ namespace Bicategory.Opposite
 instance homCategory (a b : Bᴮᵒᵖ) : Quiver (a ⟶ b) where
   Hom := fun f g => (f.unbop ⟶ g.unbop)ᴮᵒᵖ
 
+/-- The 1-cell opposite of a natural transformation `η : f ⟶ g` in `B`.  -/
 abbrev bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.bop ⟶ g.bop :=
   Bicategory.Opposite.bop η
 
+/-- The 1-cell opposite of a natural transformation `η : f ⟶ g` in `Bᴮᵒᵖ`.  -/
 abbrev unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ⟶ g) : f.unbop ⟶ g.unbop :=
   Bicategory.Opposite.unbop η
 
@@ -171,11 +181,15 @@ theorem unbop2_id_bop {a b : B} {f : a ⟶ b} : unbop2 (𝟙 f.bop) = 𝟙 f :=
 theorem bop2_id_unbop {a b : Bᴮᵒᵖ} {f : a ⟶ b} : bop2 (𝟙 f.unbop) = 𝟙 f :=
   rfl
 
+/-- The natural functor from the hom-category `a ⟶ b` in `B` to its bicategorical opposite
+`bop b ⟶ bop a`. -/
 @[simps]
 def bopFunctor (a b : B) : (a ⟶ b) ⥤ (bop b ⟶ bop a) where
   obj f := f.bop
   map η := bop2 η
 
+/-- The functor from the hom-category `a ⟶ b` in `Bᴮᵒᵖ` to its bicategorical opposite
+`unbop b ⟶ unbop a`. -/
 @[simps]
 def unbopFunctor (a b : Bᴮᵒᵖ) : (a ⟶ b) ⥤ (unbop b ⟶ unbop a) where
   obj f := f.unbop
@@ -187,9 +201,11 @@ namespace CategoryTheory.Iso
 
 open Bicategory.Opposite
 
+/-- A 2-isomorphism in `B` gives a 2-isomorphism in `Bᴮᵒᵖ` -/
 @[simps!]
 abbrev bop2 {a b : B} {f g : a ⟶ b} (η : f ≅ g) : f.bop ≅ g.bop := (bopFunctor a b).mapIso η
 
+/-- A 2-isomorphism in `Bᴮᵒᵖ` gives a 2-isomorphism in `Bᴮ` -/
 @[simps!]
 abbrev unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : f.unbop ≅ g.unbop :=
   (unbopFunctor a b).mapIso η
@@ -200,30 +216,17 @@ theorem unbop2_bop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop
 @[simp]
 theorem unbop2_bop {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop2.bop2 = η := by (ext; rfl)
 
--- TODO: MAKE ABBREV?? (if I have some bop functor yeah)
--- /-- The opposite natural isomorphism  -/
--- @[simps]
--- protected def bop2 {a b : B} {f g : a ⟶ b} (η : f ≅ g) : f.bop ≅ g.bop where
---   hom := bop2 η.hom
---   inv := bop2 η.inv
---   hom_inv_id := unbop2_inj <| by simp
---   inv_hom_id := unbop2_inj <| by simp
-
--- /-- The natural isomorphism obtained from a natural isomorphism in `Bᴮᵒᵖ` -/
--- @[simps]
--- protected def unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : f.unbop ≅ g.unbop where
---   hom := unbop2 η.hom
---   inv := unbop2 η.inv
---   hom_inv_id := bop2_inj <| by simp
---   inv_hom_id := bop2_inj <| by simp
-
 end CategoryTheory.Iso
 
 namespace Bicategory.Opposite
 
-/-- The 1-dual bicategory `Bᴮᵒᵖ`
+/-- The 1-cell dual bicategory `Bᴮᵒᵖ`.
 
-See ...
+It is defined as follows.
+* The objects of `Bᴮᵒᵖ` correspond to objects of `B`.
+* The morphisms `X ⟶ Y` in `Bᴮᵒᵖ` are the morphisms `Y ⟶ X` in `B`.
+* The 2-morphisms `f ⟶ g` in `Bᴮᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
+  directions of the 2-morphisms are preserved.
 -/
 @[simps!]
 instance bicategory : Bicategory.{w, v} Bᴮᵒᵖ where
@@ -250,5 +253,7 @@ instance bicategory : Bicategory.{w, v} Bᴮᵒᵖ where
   whisker_exchange η θ := by apply unbop_injective; simp [(whisker_exchange _ _).symm]
   pentagon f g h i := by apply unbop_injective; simp
   triangle f g := by apply unbop_injective; simp
+
+-- TODO: initialize simps projections here...
 
 end Bicategory.Opposite
