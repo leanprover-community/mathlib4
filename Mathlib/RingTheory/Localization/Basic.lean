@@ -906,8 +906,9 @@ open IsLocalization
 section
 
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
-  uniq a := show a = mk 1 1 from
-    Localization.induction_on a fun _ => by
+  uniq a := by
+    with_unfolding_all show a = mk 1 1
+    exact Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim
 
 theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
