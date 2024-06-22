@@ -1810,6 +1810,9 @@ import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
+import Mathlib.Condensed.Dev.Colimit
+import Mathlib.Condensed.Dev.Discrete
+import Mathlib.Condensed.Dev.Extend
 import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
