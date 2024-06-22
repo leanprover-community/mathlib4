@@ -66,7 +66,7 @@ lemma restrictionMap_id : restrictionMap (𝟙 K) e = 𝟙 _ := by aesop_cat
 
 @[simp, reassoc]
 lemma restrictionMap_comp :
-    restrictionMap (φ ≫ φ') e = restrictionMap φ e ≫ restrictionMap φ' e := by aesop_cat
+    restrictionMap (φ ≫ φ') e = restrictionMap φ e ≫ restrictionMap φ' e := rfl
 
 end HomologicalComplex
 
