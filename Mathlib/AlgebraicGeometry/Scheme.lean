@@ -91,7 +91,7 @@ this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
 abbrev Hom.app {X Y : Scheme.{u}} (f : Hom X Y) (U : Opens Y) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.1.c.app (op U)
 
-@[reassoc]
+@[reassoc (attr := simp)]
 abbrev Hom.naturality {X Y : Scheme.{u}} (f : Hom X Y) {U V : Opens Y} (i : op V ⟶ op U) :
     Y.presheaf.map i ≫ f.app U = f.app V ≫ X.presheaf.map ((Opens.map f.1.base).map i.unop).op :=
   f.1.c.naturality i
@@ -202,6 +202,13 @@ theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 
 @[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
 @[deprecated (since := "2024-06-23")] alias comp_val_c_app_assoc := comp_app_assoc
+
+theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
+    g.appLE U V e₁ ≫ f.appLE V W e₂ =
+      (f ≫ g).appLE U W (e₂.trans ((Opens.map f.1.base).map (homOfLE e₁)).le) := by
+  dsimp [Hom.appLE]
+  rw [Category.assoc, f.naturality_assoc, ← Functor.map_comp]
+  rfl
 
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.app U = g.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)).op := by
