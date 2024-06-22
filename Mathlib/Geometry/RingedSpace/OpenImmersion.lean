@@ -202,7 +202,8 @@ instance (U : Opens X) : IsIso (H.invApp U) := by delta invApp; infer_instance
 theorem inv_invApp (U : Opens X) :
     inv (H.invApp U) =
       f.c.app (op (H.openFunctor.obj U)) ≫
-        X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) := by
+        X.presheaf.map
+          (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) := by
   rw [← cancel_epi (H.invApp U), IsIso.hom_inv_id]
   delta invApp
   simp [← Functor.map_comp]
