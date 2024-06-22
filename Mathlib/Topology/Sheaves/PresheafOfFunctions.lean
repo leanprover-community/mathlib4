@@ -142,7 +142,9 @@ set_option linter.uppercaseLean3 false in
 this is a ring homomorphism (with respect to the pointwise ring operations on functions). -/
 def map (X : TopCat.{u}ᵒᵖ) {R S : TopCommRingCat.{u}} (φ : R ⟶ S) :
     continuousFunctions X R ⟶ continuousFunctions X S where
-  toFun g := g ≫ (forget₂ TopCommRingCat TopCat).map φ
+  toFun g :=
+    letI g : (unop X) ⟶ (forget₂ TopCommRingCat TopCat).obj R := g
+    g ≫ (forget₂ TopCommRingCat TopCat).map φ
   -- Porting note: `ext` tactic does not work, since Lean can't see through `R ⟶ S` is just
   -- continuous ring homomorphism
   map_one' := ContinuousMap.ext fun _ => φ.1.map_one

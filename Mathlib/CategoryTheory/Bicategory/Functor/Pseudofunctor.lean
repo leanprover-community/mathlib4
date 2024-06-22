@@ -215,6 +215,7 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
 instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
+set_option maxHeartbeats 400000 in
 /-- Composition of pseudofunctors. -/
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
   { (F : PrelaxFunctor B C).comp
