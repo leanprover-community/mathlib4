@@ -115,6 +115,8 @@ theorem log_bijective : Function.Bijective log := ⟨log_injective, log_surjecti
 noncomputable def log_orderIso : ℝ≥0∞ ≃o EReal :=
   StrictMono.orderIsoOfSurjective log log_strictMono log_surjective
 
+@[simp] lemma log_orderIso_apply (x : ℝ≥0∞) : log_orderIso x = log x := rfl
+
 @[simp]
 theorem log_eq_iff {x y : ℝ≥0∞} : log x = log y ↔ x = y :=
   Iff.intro (@log_injective x y) (fun h ↦ by rw [h])
@@ -221,10 +223,12 @@ end Morphism
 section Continuity
 
 /-- `log` as a homeomorphism. -/
-noncomputable def log_Homeomorph : ℝ≥0∞ ≃ₜ EReal := OrderIso.toHomeomorph log_orderIso
+noncomputable def log_homeomorph : ℝ≥0∞ ≃ₜ EReal := OrderIso.toHomeomorph log_orderIso
+
+@[simp] theorem log_homeomorph_apply (x : ℝ≥0∞) : log_homeomorph x = log x := rfl
 
 @[continuity, fun_prop]
-theorem log_continuous : Continuous log := Homeomorph.continuous log_Homeomorph
+theorem log_continuous : Continuous log := Homeomorph.continuous log_homeomorph
 
 end Continuity
 
