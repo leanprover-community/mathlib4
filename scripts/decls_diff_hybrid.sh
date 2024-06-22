@@ -45,5 +45,5 @@ processDeclsInOneCommit "${commit2}" "${temp2}"
 # restore the cache in the initial branch
 lake exe cache get
 
-printf 'Declarations only in %s\n%s\n\n' "${commit1}" "$(comm -23 <(sort "${temp1}") <(sort "${temp2}"))"
-printf 'Declarations only in %s\n%s\n\n' "${commit2}" "$(comm -13 <(sort "${temp1}") <(sort "${temp2}"))"
+printf 'Declarations only in %s\n%s\n\n' "${commit1}" "$(comm -23 <(sort "${temp1}") <(sort "${temp2}"))" | head
+printf 'Declarations only in %s\n%s\n\n' "${commit2}" "$(comm -13 <(sort "${temp1}") <(sort "${temp2}"))" | head
