@@ -350,7 +350,7 @@ lemma subseq_of_notTendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (nhds (0 
 /- TendstoInMeasure is equivalent to a proof  that every subsequence has another subsequence
 which converges almost surely. -/
 theorem exists_seq_tendstoInMeasure_atTop_iff
-(hfin : MeasureTheory.IsFiniteMeasure μ) {f : ℕ → α → E}
+    (hfin : MeasureTheory.IsFiniteMeasure μ) {f : ℕ → α → E}
 (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} : (TendstoInMeasure μ f atTop g) ↔
 ∀ (ns : ℕ → ℕ) (_ : StrictMono ns), ∃ (ns' : ℕ → ℕ) (_ : StrictMono ns'), ∀ᵐ (ω : α) ∂μ,
 Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (nhds (g ω)) := by
