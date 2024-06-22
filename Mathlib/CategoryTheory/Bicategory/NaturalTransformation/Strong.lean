@@ -15,11 +15,11 @@ is an isomorphism.
 
 ## Main definitions
 
-* `StrongNatTrans F G` : strong natural transformations between oplax functors `F` and `G`
+* `StrongNatTrans F G` : strong natural transformations between oplax functors `F` and `G`.
 * `mkOfOplax η η'` : given an oplax natural transformation `η` such that each component 2-cell
-  is an isomorphism, `mkOfOplax` gives the corresponding strong natural transformation
+  is an isomorphism, `mkOfOplax` gives the corresponding strong natural transformation.
 * `StrongNatTrans.vcomp η θ` : the vertical composition of strong natural transformations `η`
-  and `θ`
+  and `θ`.
 * `StrongNatTrans.category F G` : a category structure on pseudofunctors between `F` and `G`,
   where the morphisms are strong natural transformations.
 
@@ -27,8 +27,8 @@ is an isomorphism.
 
 After having defined lax functors, we should define 3 different types of strong natural
 transformations:
-* strong natural transformations between oplax functors (as defined here)
-* strong natural transformations between lax functors
+* strong natural transformations between oplax functors (as defined here).
+* strong natural transformations between lax functors.
 * strong natural transformations between pseudofunctors. From these types of strong natural
   transformations, we can define the underlying natural transformations between the underlying
   oplax resp. lax functors. Many properties can then be inferred from these.
@@ -114,8 +114,7 @@ variable (F : OplaxFunctor B C)
 
 
 /-- The identity oplax natural transformation. -/
--- TODO: fix this simps call. Should simplify to oplax, then use those lemmas?
-@[simps!?]
+@[simps!]
 def id : StrongNatTrans F F :=
   mkOfOplax (OplaxNatTrans.id F) { naturality := λ f ↦ (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm }
 
@@ -181,7 +180,6 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 end
 
 /-- Vertical composition of oplax natural transformations. -/
--- TODO: think about simps here.
 @[simps!]
 def vcomp (η : StrongNatTrans F G) (θ : StrongNatTrans G H) : StrongNatTrans F H :=
   mkOfOplax (OplaxNatTrans.vcomp η.toOplax θ.toOplax)
