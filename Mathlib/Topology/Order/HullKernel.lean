@@ -7,6 +7,7 @@ import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Order.Irreducible
 import Mathlib.Data.Set.Subset
 import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Hull-Kernel Topology
@@ -189,5 +190,40 @@ theorem PrimativeSpectrum.gc : GaloisConnection (β := (Set T)ᵒᵈ) (fun a => 
     apply h
     exact hbS
     exact Subtype.coe_prop b
+
+theorem PrimativeSpectrum.gc' : GaloisConnection (α := Set T) (β := αᵒᵈ) (fun S => OrderDual.toDual (sInf (S : (Set α))))
+    (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) := by
+  rw [GaloisConnection]
+  intros S a
+  constructor
+  · intro h
+    intro b hbS
+    rw [mem_preimage, mem_Ici]
+    rw [← OrderDual.ofDual_le_ofDual] at h
+    simp at h
+    apply h
+    exact hbS
+    exact Subtype.coe_prop b
+  · intro h
+    simp at h
+    rw [← OrderDual.ofDual_le_ofDual]
+    rw [OrderDual.ofDual_toDual]
+    simp
+    intros b hbT hbS
+    rw [← mem_Ici]
+    apply h hbS
+
+
+
+
+
+#check TopologicalSpace.Closeds.gc.closureOperator
+#check (TopologicalSpace.Closeds.gc (α := T)).closureOperator
+#check (PrimativeSpectrum.gc' T).closureOperator
+#check (PrimativeSpectrum.gc T).dual.closureOperator
+
+#check (TopologicalSpace.Closeds.gc (α := T)).closureOperator = (PrimativeSpectrum.gc' T).closureOperator
+
+#check (TopologicalSpace.Closeds.gc (α := T)).closureOperator = (PrimativeSpectrum.gc T).dual.closureOperator
 
 end PrimativeSpectrum
