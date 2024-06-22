@@ -49,6 +49,7 @@ variable {S : Cᵒᵖ ⥤ CommRingCat.{u}} {F : C ⥤ D} {S' R : Dᵒᵖ ⥤ Com
 
 /-- Given a morphism of presheaves of commutative rings `φ : S ⟶ F.op ⋙ R`,
 this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`. -/
+@[ext]
 structure Derivation where
   /-- the underlying additive map `R.obj X →+ M.obj X` of a derivation -/
   d {X : Dᵒᵖ} : R.obj X →+ M.obj X
@@ -64,6 +65,10 @@ namespace Derivation
 attribute [simp] d_mul d_map
 
 variable {M N φ}
+
+lemma congr_d {d d' : M.Derivation φ} (h : d = d') {X : Dᵒᵖ} (b : R.obj X) :
+    d.d b = d'.d b := by rw [h]
+
 variable (d : M.Derivation φ)
 
 @[simp] lemma d_one (X : Dᵒᵖ) : d.d (X := X) 1 = 0 := by
@@ -104,10 +109,19 @@ abbrev Derivation' : Type _ := M.Derivation (F := 𝟭 D) φ'
 
 namespace Derivation'
 
+variable {M φ'}
+
 @[simp]
 nonrec lemma d_app (d : M.Derivation' φ') {X : Dᵒᵖ} (a : S'.obj X) :
     d.d (φ'.app X a) = 0 :=
   d.d_app _
+
+noncomputable nonrec def app (d : M.Derivation' φ') (X : Dᵒᵖ) : (M.obj X).Derivation (φ'.app X) :=
+  ModuleCat.Derivation.mk (fun b ↦ d.d b)
+
+@[simp]
+lemma app_apply (d : M.Derivation' φ') {X : Dᵒᵖ} (b : R.obj X):
+    (d.app X).d b = d.d b := rfl
 
 end Derivation'
 
@@ -130,12 +144,18 @@ lemma relativeDifferentials'_obj (X : Dᵒᵖ) :
     (relativeDifferentials' φ').obj X =
       CommRingCat.KaehlerDifferential (φ'.app X) := rfl
 
--- Note: `d_app` cannot be a simp lemma because `dsimp` would
+-- Note: this cannot be a simp lemma because `dsimp` would
 -- simplify the composition of functors `R ⋙ forget₂ _ _`
 lemma relativeDifferentials'_map_apply {X Y : Dᵒᵖ} (f : X ⟶ Y)
     (x : CommRingCat.KaehlerDifferential (φ'.app X)) :
     (relativeDifferentials' φ').map f x =
         CommRingCat.KaehlerDifferential.map (φ'.naturality f) x := rfl
+
+lemma relativeDifferentials'_map_d {X Y : Dᵒᵖ} (f : X ⟶ Y)
+    (x : R.obj X) :
+    (relativeDifferentials' φ').map f (CommRingCat.KaehlerDifferential.d x) =
+      CommRingCat.KaehlerDifferential.d (R.map f x) := by
+  rw [relativeDifferentials'_map_apply, CommRingCat.KaehlerDifferential.map_d]
 
 /-- The universal derivation. -/
 noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' where
@@ -144,13 +164,21 @@ noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' whe
     rw [relativeDifferentials'_map_apply, AddMonoidHom.mk'_apply,
       AddMonoidHom.mk'_apply, CommRingCat.KaehlerDifferential.map_d]
 
-/-
-TODO :
-
-def isUniversal' : (derivation' φ').Universal := sorry
+noncomputable def isUniversal' : (derivation' φ').Universal where
+  desc {M} {d' : M.Derivation' φ'} := Hom.mk'' (fun X ↦ (d'.app X).desc) (fun X Y f ↦
+    CommRingCat.KaehlerDifferential.ext (fun b ↦ by
+      dsimp [ModuleCat.ofHom]
+      erw [restrictionApp_apply, restrictionApp_apply]
+      simp only [relativeDifferentials'_map_d, ModuleCat.Derivation.desc_d,
+        d'.app_apply, d'.d_map]))
+  fac {M} {d' : M.Derivation' φ'} := by
+    ext X b
+    apply ModuleCat.Derivation.desc_d
+  postcomp_injective {M} α β h := by
+    ext1 X
+    exact CommRingCat.KaehlerDifferential.ext (Derivation.congr_d h)
 
 instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'⟩⟩
--/
 
 end DifferentialsConstruction
 

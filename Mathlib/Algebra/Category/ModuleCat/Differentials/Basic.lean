@@ -15,9 +15,67 @@ we introduce the definition `CommRingCat.KaehlerDifferential f : ModuleCat B`.
 
 -/
 
-universe u
+universe v u
 
 open CategoryTheory
+
+namespace ModuleCat
+
+variable {A B : CommRingCat.{u}} (M : ModuleCat.{v} B) (f : A ⟶ B)
+
+/-- The type of derivations of a `B`-module `M` relative to a morphism
+`f : A ⟶ B` in the category `CommRingCat`. -/
+nonrec def Derivation : Type _ :=
+  letI := f.toAlgebra
+  letI := Module.compHom M f
+  Derivation A B M
+
+namespace Derivation
+
+variable {M f}
+
+/-- Constructor for `ModuleCat.Derivation`. -/
+def mk (d : B → M) (d_add : ∀ (b b' : B), d (b + b') = d b + d b' := by simp)
+    (d_mul : ∀ (b b' : B), d (b * b') = b • d b' + b' • d b := by simp)
+    (d_map : ∀ (a : A), d (f a) = 0 := by simp) :
+    M.Derivation f :=
+  letI := f.toAlgebra
+  letI := Module.compHom M f
+  { toFun := d
+    map_add' := d_add
+    map_smul' := fun a b ↦ by
+      dsimp
+      erw [d_mul, d_map, smul_zero, add_zero]
+      rfl
+    map_one_eq_zero' := by
+      dsimp
+      rw [← f.map_one, d_map]
+    leibniz' := d_mul }
+
+variable (D : M.Derivation f)
+
+/-- The underlying map `B → M` of a derivation `M.Derivation f` when `M : ModuleCat B`
+and `f : A ⟶ B` is a morphism in `CommRingCat`. -/
+def d (b : B) : M :=
+  letI := f.toAlgebra
+  letI := Module.compHom M f
+  _root_.Derivation.toLinearMap D b
+
+@[simp]
+lemma d_add (b b' : B) : D.d (b + b') = D.d b + D.d b' := by simp [d]
+
+@[simp]
+lemma d_mul (b b' : B) : D.d (b * b') = b • D.d b' + b' • D.d b := by simp [d]
+
+@[simp]
+lemma d_map (a : A) : D.d (f a) = 0 := by
+  letI := f.toAlgebra
+  letI := Module.compHom M f
+  exact D.map_algebraMap a
+
+end Derivation
+
+end ModuleCat
 
 namespace CommRingCat
 
@@ -32,22 +90,18 @@ noncomputable def KaehlerDifferential : ModuleCat.{u} B :=
 
 namespace KaehlerDifferential
 
-/-- When `f : A ⟶ B` is a morphism in the category `CommRingCat, this is the
+variable (f) in
+/-- The (universal derivation) in `(KaehlerDifferential f).Derivation f` when `f : A ⟶ B`
+is a morphism in the category `CommRingCat`. -/
+noncomputable def D : (KaehlerDifferential f).Derivation f :=
+  letI := f.toAlgebra
+  ModuleCat.Derivation.mk
+    (fun b ↦ _root_.KaehlerDifferential.D A B b) (by simp) (by simp)
+      (_root_.KaehlerDifferential.D A B).map_algebraMap
+
+/-- When `f : A ⟶ B` is a morphism in the category `CommRingCat`, this is the
 differential map `B → KaehlerDifferential f`. -/
-noncomputable def d (b : B) : KaehlerDifferential f :=
-  letI := f.toAlgebra
-  KaehlerDifferential.D A B b
-
-@[simp]
-lemma d_add (b b' : B) : d (f := f) (b + b') = d b + d b' := by simp [d]
-
-@[simp]
-lemma d_mul (b b' : B) : d (f := f) (b * b') = b • d b' + b' • d b := by simp [d]
-
-@[simp]
-lemma d_map (a : A) : d (f := f) (f a) = 0 := by
-  letI := f.toAlgebra
-  exact (KaehlerDifferential.D A B).map_algebraMap a
+noncomputable abbrev d (b : B) : KaehlerDifferential f := (D f).d b
 
 @[ext]
 lemma ext {M : ModuleCat B} {α β : KaehlerDifferential f ⟶ M}
@@ -94,3 +148,35 @@ lemma map_d (b : B) : map fac (d b) = d (g' b) := by
 end KaehlerDifferential
 
 end CommRingCat
+
+lemma Module.isScalarTower_compHom (M : Type*) {A B : Type*}
+    [CommSemiring B] [CommSemiring A] [AddCommMonoid M] [Module B M] (f : A →+* B)  :
+    letI := f.toAlgebra; letI := Module.compHom M f; IsScalarTower A B M := by
+  letI := f.toAlgebra
+  letI := Module.compHom M f
+  constructor
+  intro a b m
+  exact (smul_smul (f a) b m).symm
+
+namespace ModuleCat.Derivation
+
+variable {A B : CommRingCat.{u}} {f : A ⟶ B}
+  {M : ModuleCat.{u} B} (D : M.Derivation f)
+
+/-- Given `f : A ⟶ B` a morphism in the category `CommRingCat`, `M : ModuleCat B`,
+and `D : M.Derivation f`, this is the induced
+morphism `CommRingCat.KaehlerDifferential f ⟶ M`. -/
+noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
+  letI := f.toAlgebra
+  letI := Module.compHom M f
+  letI := Module.isScalarTower_compHom M f
+  D.liftKaehlerDifferential
+
+@[simp]
+lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by
+  letI := f.toAlgebra
+  letI := Module.compHom M f
+  letI := Module.isScalarTower_compHom M f
+  apply D.liftKaehlerDifferential_comp_D
+
+end ModuleCat.Derivation
