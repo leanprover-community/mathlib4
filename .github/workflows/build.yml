@@ -19,7 +19,8 @@ on:
   merge_group:
 
 name: continuous integration
-
+name: default
+on: [workflow_call]  # allow this workflow to be called from other workflows
 jobs:
   # Cancels previous runs of jobs in this file
   cancel:
