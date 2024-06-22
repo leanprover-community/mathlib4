@@ -1,10 +1,10 @@
 name: Lean_decl_diff
 
-on:
-  workflow_run:
-    workflows: ["continuous integration"]
-    types:
-      - completed
+#on:
+#  workflow_run:
+#    workflows: ["continuous integration"]
+#    types:
+#      - completed
 
 jobs:
   Lean_decl_diff_dep:
