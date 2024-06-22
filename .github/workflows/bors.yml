@@ -13,7 +13,7 @@ on:
 
 name: continuous integration (staging)
 name: default
-on: [workflow_call]  # allow this workflow to be called from other workflows
+on: [workflow_call]
 jobs:
   # Cancels previous runs of jobs in this file
   cancel:
