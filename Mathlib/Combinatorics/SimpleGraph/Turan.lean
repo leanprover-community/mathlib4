@@ -41,6 +41,7 @@ show that the graph is isomorphic to the Turán graph for the given parameters.
 open Finset
 
 namespace SimpleGraph
+
 variable {V : Type*} [Fintype V] [DecidableEq V] (G H : SimpleGraph V) [DecidableRel G.Adj]
   {n r : ℕ}
 
