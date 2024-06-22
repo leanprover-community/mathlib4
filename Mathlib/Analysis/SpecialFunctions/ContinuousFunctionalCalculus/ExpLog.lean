@@ -63,40 +63,41 @@ lemma real_exp_algebraMap {r : ℝ} : real_exp (algebraMap ℝ A r) = algebraMap
 
 end exp
 
-section NormedSpace
+section RCLikeNormed
 
-variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRing A]
-  [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-  [UniqueContinuousFunctionalCalculus ℝ A]
+variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRing A]
+  [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+  [ContinuousFunctionalCalculus 𝕜 p]
+  [UniqueContinuousFunctionalCalculus 𝕜 A]
 
 variable {b : A}
 
+-- MOVEME
 open NormedSpace in
-lemma exp_continuousMap_eq {α : Type*} [TopologicalSpace α] [CompactSpace α] (f : C(α, ℝ)) :
-    exp ℝ f = (⟨Real.exp ∘ f, Continuous.comp Real.continuous_exp f.continuous⟩ : C(α, ℝ)) := by
-  simp_rw [Real.exp_eq_exp_ℝ]
+lemma exp_continuousMap_eq {α : Type*} [TopologicalSpace α] [CompactSpace α] (f : C(α, 𝕜)) :
+    exp 𝕜 f = (⟨exp 𝕜 ∘ f, Continuous.comp exp_continuous f.continuous⟩ : C(α, 𝕜)) := by
+  --simp_rw [Real.exp_eq_exp_ℝ]
   ext a
   simp only [Function.comp_apply, NormedSpace.exp, FormalMultilinearSeries.sum]
-  have h_sum := NormedSpace.expSeries_summable (𝕂 := ℝ) f
+  have h_sum := NormedSpace.expSeries_summable (𝕂 := 𝕜) f
   simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
   simp [NormedSpace.exp_eq_tsum]
 
-lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a) :
-    real_exp a = NormedSpace.exp ℝ a := by
-  have h₁ : a = cfc (R := ℝ) id a := by exact Eq.symm (cfc_id ℝ a ha)
-  conv_rhs => rw [h₁, cfc_apply (id : ℝ → ℝ) a ha]
-  unfold real_exp
-  let myhom := cfcHom (R := ℝ) (a := a) ha
+open NormedSpace in
+lemma exp_eq_normedSpace_exp {a : A} (ha : p a) :
+    cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
+  have h₁ : a = cfc (R := 𝕜) id a := by exact Eq.symm (cfc_id 𝕜 a ha)
+  conv_rhs => rw [h₁, cfc_apply (id : 𝕜 → 𝕜) a ha]
+  --unfold real_exp
+  let myhom := cfcHom (R := 𝕜) (a := a) ha
   have h₃ : Continuous myhom := (cfcHom_closedEmbedding ha).continuous
-  simp_rw [← NormedSpace.map_exp ℝ myhom h₃, cfc_apply Real.exp a ha, myhom]
+  have h₄ : ContinuousOn (exp 𝕜 : 𝕜 → 𝕜) (spectrum 𝕜 a) := Continuous.continuousOn exp_continuous
+  simp_rw [← map_exp 𝕜 myhom h₃, cfc_apply (exp 𝕜 : 𝕜 → 𝕜) a ha, myhom]
   congr 1
   ext
   simp [exp_continuousMap_eq]
 
-end NormedSpace
-
-
+end RCLikeNormed
 
 section log
 
