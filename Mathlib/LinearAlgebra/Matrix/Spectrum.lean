@@ -8,6 +8,7 @@ import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.Analysis.NormedSpace.Star.Matrix
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import linear_algebra.matrix.spectrum from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -56,28 +57,17 @@ lemma mulVec_eigenvectorBasis (j : n) :
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
-/-- Eigenvalues of a Hermitian matrix, coerced, belong to the spectrum of the associated
-`toEuclideanLin`. -/
+/--Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc.toEuclideanLin -/
 theorem ofReal_eigenvalue_mem_spectrum_toEuclideanLin (i : n) :
-    (hA.eigenvalues i : 𝕜) ∈ spectrum 𝕜 (toEuclideanLin A) :=
+    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
-
-/-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dim module.
-Compare with `LinearMap.toContinuousLinearMap`, the linear equivalence version of this result.-/
-def Module.End.toContinuousLinearMap.{v} (E : Type v) [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) where
-  __ := LinearMap.toContinuousLinearMap
-  map_mul' _ _ := rfl
-  commutes' _ := rfl
 
 /--Spectrum of a Hermitian matrix equals the spectrum as a EuclideanLin. -/
 theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
-  AlgEquiv.spectrum_eq
-    (AlgEquiv.trans
-      ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜] EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :
-          Matrix n n 𝕜 ≃ₐ[𝕜] EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)
-      (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm)
-    _
+  AlgEquiv.spectrum_eq ((AlgEquiv.trans ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜]
+  EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) : Matrix n n 𝕜 ≃ₐ[𝕜]
+  EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
+  (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm) _
 
 /--Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
 theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
