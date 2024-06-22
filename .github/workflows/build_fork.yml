@@ -213,7 +213,7 @@ jobs:
             lake build --no-build
           fi
 
-      - name: Lean-diff
+      - name: decl-diff
         run: |
           git checkout master
           git checkout -
