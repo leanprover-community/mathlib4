@@ -233,6 +233,9 @@ jobs:
             ddiff="$(printf '%s\n\n%s\n' "${title}" "${ddiff}")"
           fi
 
+          echo "Message: ${ddiff}"
+          echo "Branch name: ${BRANCH_NAME}"
+
           git checkout "${BRANCH_NAME}"
           currentHash="$(git rev-parse HEAD)"
           hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
