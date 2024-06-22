@@ -920,9 +920,14 @@ protected theorem add_left_neg (x : X[S⁻¹]) : -x + x = 0 := by
   induction' x using OreLocalization.ind with r s; simp
 #align ore_localization.add_left_neg OreLocalization.add_left_neg
 
+/-- `zsmul` of `OreLocalization` -/
+@[irreducible]
+protected def zsmul : ℤ → X[S⁻¹] → X[S⁻¹] := zsmulRec
+
+unseal OreLocalization.zsmul in
 instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
   add_left_neg := OreLocalization.add_left_neg
-  zsmul := zsmulRec
+  zsmul := OreLocalization.zsmul
 
 end AddGroup
 
