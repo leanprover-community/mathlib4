@@ -1313,13 +1313,97 @@ theorem of_stalk_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) (hf : OpenEmbeddin
     LocallyRingedSpace.IsOpenImmersion f :=
   SheafedSpace.IsOpenImmersion.of_stalk_iso hf (H := stalk_iso)
 
+end OfStalkIso
+
+section
+
+variable {X Y : LocallyRingedSpace} {f : X ⟶ Y} (H : IsOpenImmersion f)
+
+@[simp]
+theorem isoRestrict_hom_ofRestrict : H.isoRestrict.hom ≫ Y.ofRestrict _ = f := by
+  ext1
+  dsimp [isoRestrict, isoOfSheafedSpaceIso]
+  apply_fun SheafedSpace.forgetToPresheafedSpace.map using CategoryTheory.Functor.map_injective _
+  rw [Functor.map_comp, SheafedSpace.forgetToPresheafedSpace.map_preimage]
+  exact SheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict H
+
+@[simp]
+theorem isoRestrict_inv_ofRestrict : H.isoRestrict.inv ≫ f = Y.ofRestrict _ := by
+  ext1
+  dsimp [isoRestrict, isoOfSheafedSpaceIso]
+  apply_fun SheafedSpace.forgetToPresheafedSpace.map using CategoryTheory.Functor.map_injective _
+  rw [Functor.map_comp, SheafedSpace.forgetToPresheafedSpace.map_preimage]
+  exact SheafedSpace.IsOpenImmersion.isoRestrict_inv_ofRestrict H
+
+
+/-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
+noncomputable def invApp (U : Opens X) :
+    X.presheaf.obj (op U) ⟶ Y.presheaf.obj (op (H.openFunctor.obj U)) :=
+  PresheafedSpace.IsOpenImmersion.invApp H U
+
+@[simp, reassoc]
+theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
+    X.presheaf.map i ≫ H.invApp (unop V) =
+      H.invApp (unop U) ≫ Y.presheaf.map (H.openFunctor.op.map i) :=
+  PresheafedSpace.IsOpenImmersion.inv_naturality H i
+
+instance (U : Opens X) : IsIso (H.invApp U) := by delta invApp; infer_instance
+
+theorem inv_invApp (U : Opens X) :
+    inv (H.invApp U) =
+      f.1.c.app (op (H.openFunctor.obj U)) ≫
+        X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
+  PresheafedSpace.IsOpenImmersion.inv_invApp H U
+
+@[simp, reassoc, elementwise]
+theorem invApp_app (U : Opens X) :
+    H.invApp U ≫ f.1.c.app (op (H.openFunctor.obj U)) =
+      X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
+  PresheafedSpace.IsOpenImmersion.invApp_app H U
+
+@[simp, reassoc]
+theorem app_invApp (U : Opens Y) :
+    f.1.c.app (op U) ≫ H.invApp ((Opens.map f.1.base).obj U) =
+      Y.presheaf.map
+        ((homOfLE (Set.image_preimage_subset f.1.base U.1)).op :
+          op U ⟶ op (H.openFunctor.obj ((Opens.map f.1.base).obj U))) :=
+  PresheafedSpace.IsOpenImmersion.app_invApp H U
+
+/-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
+@[reassoc]
+theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.1.base) :
+    f.1.c.app (op U) ≫ H.invApp ((Opens.map f.1.base).obj U) =
+      Y.presheaf.map
+        (eqToHom
+            (by
+              apply le_antisymm
+              · exact Set.image_preimage_subset f.1.base U.1
+              · rw [← SetLike.coe_subset_coe]
+                refine LE.le.trans_eq ?_ (@Set.image_preimage_eq_inter_range _ _ f.1.base U.1).symm
+                exact Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op :=
+  PresheafedSpace.IsOpenImmersion.app_invApp H U
+
+instance ofRestrict {X : TopCat} (Y : LocallyRingedSpace) {f : X ⟶ Y.carrier}
+    (hf : OpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) :=
+  PresheafedSpace.IsOpenImmersion.ofRestrict _ hf
+
+@[elementwise, simp]
+theorem ofRestrict_invApp (X : LocallyRingedSpace) {Y : TopCat}
+    {f : Y ⟶ TopCat.of X.carrier} (h : OpenEmbedding f) (U : Opens (X.restrict h).carrier) :
+    (LocallyRingedSpace.IsOpenImmersion.ofRestrict X h).invApp U = 𝟙 _ :=
+  PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ h U
+
+instance stalk_iso [IsOpenImmersion f] (x : X) :
+    IsIso (LocallyRingedSpace.stalkMap f x) :=
+  PresheafedSpace.IsOpenImmersion.stalk_iso x
+
 theorem to_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.1.base] :
     IsIso f := by
   suffices IsIso (LocallyRingedSpace.forgetToSheafedSpace.map f) from
     isIso_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace
   exact SheafedSpace.IsOpenImmersion.to_iso f.1
 
-end OfStalkIso
+end
 
 end LocallyRingedSpace.IsOpenImmersion
 
