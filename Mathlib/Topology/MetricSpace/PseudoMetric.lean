@@ -1117,6 +1117,13 @@ theorem tendsto_atTop' [Nonempty β] [SemilatticeSup β] [NoMaxOrder β] {u : β
     simp only [true_and, gt_iff_lt, mem_Ioi, mem_ball]
 #align metric.tendsto_at_top' Metric.tendsto_atTop'
 
+/-- This variant can be useful for proofs by contradiction.
+-/
+lemma false_of_Tendsto_of_boundBelow  [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} {δ : ℝ} (hδ: (0 : ℝ) < δ) (hu1 : Tendsto u atTop (nhds a)) (hu2 : ∃ᶠ n in atTop, δ ≤ dist (u n) a ) : False := by
+  revert hu2
+  simp only [imp_false, Filter.not_frequently, not_le, eventually_atTop, ge_iff_le]
+  exact mem_atTop_sets.mp (hu1 (Metric.ball_mem_nhds a hδ))
+
 theorem isOpen_singleton_iff {α : Type*} [PseudoMetricSpace α] {x : α} :
     IsOpen ({x} : Set α) ↔ ∃ ε > 0, ∀ y, dist y x < ε → y = x := by
   simp [isOpen_iff, subset_singleton_iff, mem_ball]

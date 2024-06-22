@@ -9,6 +9,7 @@ import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.T5
+import Mathlib.Data.ENNReal.Basic
 
 #align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
 
@@ -80,6 +81,11 @@ theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   embedding_coe.continuous
 #align ennreal.continuous_coe ENNReal.continuous_coe
 
+lemma tendsto_coe_id {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto (fun (x : NNReal) => (x : ENNReal))
+    (nhds a.toNNReal) (nhds a) := by
+  nth_rewrite 2 [← coe_toNNReal ha]
+  exact ContinuousAt.tendsto (Continuous.continuousAt continuous_coe)
+
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
     (Continuous fun a => (f a : ℝ≥0∞)) ↔ Continuous f :=
   embedding_coe.continuous_iff.symm
@@ -119,6 +125,18 @@ theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ∞) :
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
 #align ennreal.tendsto_to_nnreal ENNReal.tendsto_toNNReal
+
+theorem tendsto_toNNReal_iff {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι} {a : ℝ≥0∞} (ha : a ≠ ⊤) (hf : ∀ x, f x ≠ ⊤): Tendsto f u (nhds a) ↔ Tendsto (ENNReal.toNNReal ∘ f ) u (nhds (ENNReal.toNNReal a)) := by
+  constructor
+  · exact fun h =>  Filter.Tendsto.comp (ENNReal.tendsto_toNNReal ha) h
+  · intro h
+    have h2 := Filter.Tendsto.comp (tendsto_coe_id ha) h
+    rw [coe_of_fun_toNNReal hf] at h2
+    exact h2
+
+theorem tendsto_toNNReal_iff' {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι} {a : ℝ≥0} (hf : ∀ x, f x ≠ ⊤): Tendsto f u (nhds a) ↔ Tendsto (ENNReal.toNNReal ∘ f ) u (nhds a) := by
+  rw [← @toNNReal_coe a]
+  exact tendsto_toNNReal_iff coe_ne_top hf
 
 theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥0∞}
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
