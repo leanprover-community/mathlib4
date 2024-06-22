@@ -1,9 +1,11 @@
+name: Lean_decl_diff
 on:
   workflow_run:
     workflows: ["Build"]
     types:
       - completed
 
+jobs:
   Lean_decl_diff:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: summarize_declarations
