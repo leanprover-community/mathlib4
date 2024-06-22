@@ -327,12 +327,12 @@ set_option maxHeartbeats 400000 in
 -- Doesn't build without the `IsAffine` instance but the linter complains
 @[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :
-    Scheme.SpecΓIdentity.hom.app Γ(X, U) ≫ hU.fromSpec.1.c.app (op U) =
+    (Scheme.ΓSpecIso Γ(X, U)).hom ≫ hU.fromSpec.app U =
       (𝖲𝗉𝖾𝖼 Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
   have : IsAffine _ := hU
   delta IsAffineOpen.fromSpec Scheme.isoSpec
-  rw [Scheme.comp_val_c_app, Scheme.comp_val_c_app, SpecΓIdentity_hom_app_presheaf_obj,
-    Scheme.ofRestrict_val_c_app_self]
+  rw [Scheme.comp_val_c_app, Scheme.comp_val_c_app, ΓSpecIso_obj_hom,
+    Scheme.ofRestrict_app_self]
   simp only [Category.assoc]
   dsimp only [asIso_inv, Functor.op_obj, unop_op]
   rw [← Functor.map_comp_assoc, ← op_comp, eqToHom_trans, Scheme.eq_restrict_presheaf_map_eqToHom,
@@ -342,22 +342,21 @@ theorem SpecΓIdentity_hom_app_fromSpec :
 
 @[elementwise]
 theorem fromSpec_app_self :
-    hU.fromSpec.1.c.app (op U) = Scheme.SpecΓIdentity.inv.app Γ(X, U) ≫
-    (𝖲𝗉𝖾𝖼 Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
-  rw [← hU.SpecΓIdentity_hom_app_fromSpec, ← NatTrans.comp_app_assoc, Iso.inv_hom_id,
-    NatTrans.id_app, Category.id_comp]
+    hU.fromSpec.app U = (Scheme.ΓSpecIso Γ(X, U)).inv ≫
+      (𝖲𝗉𝖾𝖼 Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
+  rw [← hU.SpecΓIdentity_hom_app_fromSpec, Iso.inv_hom_id_assoc]
 #align algebraic_geometry.is_affine_open.from_Spec_app_eq AlgebraicGeometry.IsAffineOpen.fromSpec_app_self
 
 theorem fromSpec_preimage_basicOpen' :
     hU.fromSpec ⁻¹ᵁ X.basicOpen f =
-      (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen (Scheme.SpecΓIdentity.inv.app Γ(X, U) f) := by
+      (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen ((Scheme.ΓSpecIso Γ(X, U)).inv f) := by
   rw [Scheme.preimage_basicOpen, hU.fromSpec_app_self]
   exact Scheme.basicOpen_res_eq _ _ (eqToHom hU.fromSpec_preimage_self).op
 #align algebraic_geometry.is_affine_open.opens_map_from_Spec_basic_open AlgebraicGeometry.IsAffineOpen.fromSpec_preimage_basicOpen'
 
 theorem fromSpec_preimage_basicOpen :
     hU.fromSpec ⁻¹ᵁ X.basicOpen f = PrimeSpectrum.basicOpen f := by
-  rw [fromSpec_preimage_basicOpen', ← basicOpen_eq_of_affine, NatIso.app_inv]
+  rw [fromSpec_preimage_basicOpen', ← basicOpen_eq_of_affine]
 #align algebraic_geometry.is_affine_open.from_Spec_map_basic_open AlgebraicGeometry.IsAffineOpen.fromSpec_preimage_basicOpen
 
 theorem fromSpec_image_basicOpen :
@@ -372,9 +371,9 @@ theorem fromSpec_image_basicOpen :
 -- by linter seems to tell me that left hand side should be changed in to something exactly the same
 -- as before. I am not sure if this is caused by LHS being written with all explicit argument,
 -- I am not sure if this is intentional or not.
-@[simp, nolint simpNF]
+@[simp]
 theorem basicOpen_fromSpec_app :
-    (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen (hU.fromSpec.1.c.app (op U) f) = PrimeSpectrum.basicOpen f := by
+    (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen (hU.fromSpec.app U f) = PrimeSpectrum.basicOpen f := by
   rw [← hU.fromSpec_preimage_basicOpen, Scheme.preimage_basicOpen]
 #align algebraic_geometry.is_affine_open.basic_open_from_Spec_app AlgebraicGeometry.IsAffineOpen.basicOpen_fromSpec_app
 
@@ -386,14 +385,14 @@ theorem basicOpen :
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 #align algebraic_geometry.is_affine_open.basic_open_is_affine AlgebraicGeometry.IsAffineOpen.basicOpen
 
-theorem ιOpens_preimage (r : Γ(X, ⊤)):
+theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)):
     IsAffineOpen (Scheme.ιOpens (X.basicOpen r) ⁻¹ᵁ U) := by
   apply (Scheme.ιOpens (X.basicOpen r)).isAffineOpen_iff_of_isOpenImmersion.mp
   dsimp [Scheme.Hom.opensFunctor, PresheafedSpace.IsOpenImmersion.openFunctor]
   rw [Opens.functor_obj_map_obj, Opens.openEmbedding_obj_top, inf_comm,
     ← Scheme.basicOpen_res _ _ (homOfLE le_top).op]
   exact hU.basicOpen _
-#align algebraic_geometry.is_affine_open.map_restrict_basic_open AlgebraicGeometry.IsAffineOpen.ιOpens_preimage
+#align algebraic_geometry.is_affine_open.map_restrict_basic_open AlgebraicGeometry.IsAffineOpen.ιOpens_basicOpen_preimage
 
 theorem exists_basicOpen_le {V : Opens X} (x : V) (h : ↑x ∈ U) :
     ∃ f : Γ(X, U), X.basicOpen f ≤ V ∧ ↑x ∈ X.basicOpen f := by
@@ -445,10 +444,9 @@ theorem isLocalization_basicOpen :
   dsimp [CommRingCat.ofHom, RingHom.algebraMap_toAlgebra]
   change X.presheaf.map _ ≫ basicOpenSectionsToAffine hU f = _
   delta basicOpenSectionsToAffine
-  rw [hU.fromSpec.val.c.naturality_assoc, hU.fromSpec_app_self]
+  rw [hU.fromSpec.naturality_assoc, hU.fromSpec_app_self]
   simp only [Category.assoc, ← Functor.map_comp, ← op_comp]
   apply StructureSheaf.toOpen_res
-  exact homOfLE le_top
 #align algebraic_geometry.is_localization_basic_open AlgebraicGeometry.IsAffineOpen.isLocalization_basicOpen
 
 instance _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
@@ -535,7 +533,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.b
   congr 2
   rw [RingHom.algebraMap_toAlgebra]
   refine (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hy⟩).trans ?_
-  rw [IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
+  rw [← Scheme.Hom.app, IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 
 -- Porting note: I have split this into two lemmas
@@ -666,6 +664,6 @@ alias IsAffineOpen.opensFunctor_map_basicOpen := IsAffineOpen.fromSpec_image_bas
 @[deprecated (since := "2024-06-21")]
 alias IsAffineOpen.basicOpenIsAffine := IsAffineOpen.basicOpen
 @[deprecated (since := "2024-06-21")]
-alias IsAffineOpen.mapRestrictBasicOpen := IsAffineOpen.ιOpens_preimage
+alias IsAffineOpen.mapRestrictBasicOpen := IsAffineOpen.ιOpens_basicOpen_preimage
 
 end AlgebraicGeometry

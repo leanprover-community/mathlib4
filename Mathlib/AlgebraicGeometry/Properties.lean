@@ -98,7 +98,7 @@ instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (𝖲𝗉�
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
-  rw [show (Scheme.Spec.obj <| op R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
+  rw [show (𝖲𝗉𝖾𝖼 R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
   exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
     (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
@@ -108,8 +108,9 @@ theorem affine_isReduced_iff (R : CommRingCat) :
   intro h
   have : _root_.IsReduced
       (LocallyRingedSpace.Γ.obj (op <| Spec.toLocallyRingedSpace.obj <| op R)) := by
-    change _root_.IsReduced ((Scheme.Spec.obj <| op R).presheaf.obj <| op ⊤); infer_instance
-  exact isReduced_of_injective (toSpecΓ R) (asIso <| toSpecΓ R).commRingCatIsoToRingEquiv.injective
+    change _root_.IsReduced Γ(𝖲𝗉𝖾𝖼 R, ⊤); infer_instance
+  exact isReduced_of_injective (Scheme.SpecΓIdentity.inv.app R)
+    (Scheme.SpecΓIdentity.app R).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.affine_is_reduced_iff AlgebraicGeometry.affine_isReduced_iff
 
 theorem isReduced_of_isAffine_isReduced [IsAffine X] [h : _root_.IsReduced Γ(X, ⊤)] :
@@ -310,7 +311,7 @@ theorem affine_isIntegral_iff (R : CommRingCat) :
 
 theorem isIntegral_of_isAffine_of_isDomain [IsAffine X] [Nonempty X]
     [h : IsDomain Γ(X, ⊤)] : IsIntegral X :=
-  haveI : IsIntegral (Scheme.Spec.obj (op (Scheme.Γ.obj (op X)))) := by
+  haveI : IsIntegral (𝖲𝗉𝖾𝖼 (Scheme.Γ.obj (op X))) := by
     rw [affine_isIntegral_iff]; exact h
   isIntegral_of_isOpenImmersion X.isoSpec.hom
 #align algebraic_geometry.is_integral_of_is_affine_is_domain AlgebraicGeometry.isIntegral_of_isAffine_of_isDomain

@@ -445,7 +445,7 @@ theorem adjunction_counit_app' {R : CommRingCatᵒᵖ} :
 
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
-    ΓSpec.adjunction.counit.app R = (Scheme.SpecΓIdentity.inv.app (unop R)).op := by
+    ΓSpec.adjunction.counit.app R = (Scheme.ΓSpecIso (unop R)).inv.op := by
   rw [adjunction_counit_app']
   rfl
 
@@ -469,22 +469,22 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
 
 @[simp]
 theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
-    (ΓSpec.adjunction.unit.app X).1.c.app (op ⊤) = Scheme.SpecΓIdentity.hom.app Γ(X, ⊤) := by
+    (ΓSpec.adjunction.unit.app X).app ⊤ = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
   have := ΓSpec.adjunction.left_triangle_components X
   dsimp at this
   rw [← IsIso.eq_comp_inv] at this
   simp only [adjunction_counit_app, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
     Scheme.Γ_obj, Category.id_comp] at this
-  rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, NatIso.inv_inv_app]
+  rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
 @[simp]
 theorem adjunction_unit_app_Spec (R : CommRingCat.{u}) :
-    adjunction.unit.app (𝖲𝗉𝖾𝖼 R) = 𝖲𝗉𝖾𝖼(Scheme.SpecΓIdentity.hom.app R) := by
+    adjunction.unit.app (𝖲𝗉𝖾𝖼 R) = 𝖲𝗉𝖾𝖼((Scheme.ΓSpecIso R).hom) := by
   have := ΓSpec.adjunction.right_triangle_components (op R)
   dsimp at this
   rwa [adjunction_counit_app, ← IsIso.eq_comp_inv, Category.id_comp,
-    ← Functor.map_inv, ← op_inv, NatIso.inv_inv_app] at this
+    ← Functor.map_inv, ← op_inv, IsIso.Iso.inv_inv] at this
 
 lemma adjunction_unit_map_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
     (ΓSpec.adjunction.unit.app X ⁻¹ᵁ (PrimeSpectrum.basicOpen r)) = X.basicOpen r := by
@@ -492,8 +492,7 @@ lemma adjunction_unit_map_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
   erw [Scheme.preimage_basicOpen]
   congr
   rw [ΓSpec.adjunction_unit_app_app_top]
-  erw [← comp_apply]
-  simp
+  exact Iso.inv_hom_id_apply _ _
 
 theorem toOpen_unit_app_val_c_app {X : Scheme.{u}} (U) :
     StructureSheaf.toOpen _ _ ≫ (ΓSpec.adjunction.unit.app X).val.c.app U =
@@ -506,28 +505,28 @@ theorem toOpen_unit_app_val_c_app {X : Scheme.{u}} (U) :
   dsimp
   exact Category.id_comp _
 
+-- Warning: this LHS of this lemma breaks the structure-sheaf abstraction.
 @[reassoc (attr := simp)]
 theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ(X, ⊤))) :
-    toOpen Γ(X, ⊤) U ≫ (adjunction.unit.app X).val.c.app (op U) =
-    X.presheaf.map (homOfLE (by exact le_top)).op :=
+    toOpen Γ(X, ⊤) U ≫ (adjunction.unit.app X).app U =
+      X.presheaf.map (homOfLE (by exact le_top)).op :=
   ΓSpec.toOpen_unit_app_val_c_app (op U)
 
 end ΓSpec
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem SpecΓIdentity_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ Scheme.SpecΓIdentity.hom.app _ =
+    𝖲𝗉𝖾𝖼(f).app ⊤ ≫ Scheme.SpecΓIdentity.hom.app _ =
       Scheme.SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
 
-theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme.{u}} (U : Opens X) :
-    Scheme.SpecΓIdentity.hom.app Γ(X, U) =
+theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : Opens X) :
+    (Scheme.ΓSpecIso Γ(X, U)).hom =
       Scheme.Γ.map (𝖲𝗉𝖾𝖼(X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫
-      (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).val.c.app (op ⊤) ≫
+      (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).app ⊤ ≫
       X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
-  rw [ΓSpec.adjunction_unit_app_app_top]
-  dsimp [-SpecΓIdentity_hom_app]
-  rw [SpecΓIdentity_naturality_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
-    op_id, CategoryTheory.Functor.map_id, Category.comp_id]
+  dsimp [-Scheme.SpecΓIdentity_hom_app]
+  rw [ΓSpec.adjunction_unit_app_app_top] -- why can't simp find this
+  simp
 
 /-! Immediate consequences of the adjunction. -/
 
@@ -558,7 +557,7 @@ def Spec.fullyFaithful : Scheme.Spec.FullyFaithful :=
   ΓSpec.adjunction.fullyFaithfulROfIsIsoCounit
 
 /-- Spec is a full functor. -/
-instance Spec.full : Scheme.Spec.Full  :=
+instance Spec.full : Scheme.Spec.Full :=
   Spec.fullyFaithful.full
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
@@ -567,10 +566,10 @@ instance Spec.faithful : Scheme.Spec.Faithful :=
   Spec.fullyFaithful.faithful
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
-instance : Spec.toLocallyRingedSpace.IsRightAdjoint  :=
+instance : Spec.toLocallyRingedSpace.IsRightAdjoint :=
   (ΓSpec.locallyRingedSpaceAdjunction).isRightAdjoint
 
-instance : Scheme.Spec.IsRightAdjoint  :=
+instance : Scheme.Spec.IsRightAdjoint :=
   (ΓSpec.adjunction).isRightAdjoint
 
 instance : Reflective Spec.toLocallyRingedSpace where

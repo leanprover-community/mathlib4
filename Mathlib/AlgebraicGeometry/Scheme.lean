@@ -86,6 +86,16 @@ protected abbrev sheaf (X : Scheme) :=
 instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
+/-- Given a morphism of schemes `f : X ⟶ Y`, and open `U ⊆ Y`,
+this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
+abbrev Hom.app {X Y : Scheme.{u}} (f : Hom X Y) (U : Opens Y) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
+  f.1.c.app (op U)
+
+@[reassoc]
+abbrev Hom.naturality {X Y : Scheme.{u}} (f : Hom X Y) {U V : Opens Y} (i : op V ⟶ op U) :
+    Y.presheaf.map i ≫ f.app U = f.app V ≫ X.presheaf.map ((Opens.map f.1.base).map i.unop).op :=
+  f.1.c.naturality i
+
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
 def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
@@ -126,10 +136,8 @@ theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
 #align algebraic_geometry.Scheme.id_val_base AlgebraicGeometry.Scheme.id_val_base
 
 @[simp]
-theorem id_app {X : Scheme} (U : (Opens X)ᵒᵖ) :
-    (𝟙 X : _).val.c.app U =
-      X.presheaf.map (eqToHom (by induction' U with U; cases U; rfl)) :=
-  PresheafedSpace.id_c_app X.toPresheafedSpace U
+theorem id_app {X : Scheme} (U : Opens X) :
+    (𝟙 X : _).app U = 𝟙 _ := rfl
 #align algebraic_geometry.Scheme.id_app AlgebraicGeometry.Scheme.id_app
 
 @[reassoc]
@@ -156,20 +164,22 @@ theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X)
 #align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
-theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
-    (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app _ :=
+theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+    (f ≫ g).app U = g.app U ≫ f.app _ :=
   rfl
-#align algebraic_geometry.Scheme.comp_val_c_app AlgebraicGeometry.Scheme.comp_val_c_app
+#align algebraic_geometry.Scheme.comp_val_c_app AlgebraicGeometry.Scheme.comp_app
+
+@[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
 
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
-    f.val.c.app U = g.val.c.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)) := by
+    f.app U = g.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)).op := by
   subst e; dsimp; simp
 #align algebraic_geometry.Scheme.congr_app AlgebraicGeometry.Scheme.congr_app
 
 theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) :
-    f.val.c.app (op U) =
+    f.app U =
       Y.presheaf.map (eqToHom e.symm).op ≫
-        f.val.c.app (op V) ≫
+        f.app V ≫
           X.presheaf.map (eqToHom (congr_arg (Opens.map f.val.base).obj e)).op := by
   rw [← IsIso.inv_comp_eq, ← Functor.map_inv, f.val.c.naturality, Presheaf.pushforwardObj_map]
   cases e
@@ -177,7 +187,7 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
 
 theorem eqToHom_c_app {X Y : Scheme} (e : X = Y) (U) :
-    (eqToHom e).val.c.app U = eqToHom (by subst e; rfl) := by subst e; rfl
+    (eqToHom e).app U = eqToHom (by subst e; rfl) := by subst e; rfl
 
 -- Porting note: in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
 -- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
@@ -199,27 +209,27 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.val
   NatIso.isIso_app_of_isIso _ _
 
-@[simp]
-theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X) :
-    (inv f).val.c.app (op U) =
-      X.presheaf.map
-          (eqToHom <| by rw [IsIso.hom_inv_id]; ext1; rfl :
-              (Opens.map (f ≫ inv f).1.base).obj U ⟶ U).op ≫
-        inv (f.val.c.app (op <| (Opens.map _).obj U)) := by
-  rw [IsIso.eq_comp_inv]
-  erw [← Scheme.comp_val_c_app]
-  rw [Scheme.congr_app (IsIso.hom_inv_id f), Scheme.id_app, ← Functor.map_comp, eqToHom_trans,
-    eqToHom_op]
-#align algebraic_geometry.Scheme.inv_val_c_app AlgebraicGeometry.Scheme.inv_val_c_app
+instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
+  haveI := PresheafedSpace.c_isIso_of_iso f.val
+  NatIso.isIso_app_of_isIso _ _
 
-theorem inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    (inv f).val.c.app (op ⊤) = inv (f.val.c.app (op ⊤)) := by simp
+@[simp]
+theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X) :
+    (inv f).app U =
+      X.presheaf.map (eqToHom (show (f ≫ inv f) ⁻¹ᵁ U = U by rw [IsIso.hom_inv_id]; rfl)).op ≫
+        inv (f.app ((inv f) ⁻¹ᵁ U)) := by
+  rw [IsIso.eq_comp_inv, ← Scheme.comp_app, Scheme.congr_app (IsIso.hom_inv_id f),
+    Scheme.id_app, Category.id_comp]
+#align algebraic_geometry.Scheme.inv_val_c_app AlgebraicGeometry.Scheme.inv_app
+
+theorem inv_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    (inv f).app ⊤ = inv (f.app ⊤) := by simp
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
-abbrev Hom.appLe {X Y : Scheme} (f : X ⟶ Y) {V : Opens X} {U : Opens Y}
+abbrev Hom.appLe {X Y : Scheme} (f : Hom X Y) {V : Opens X} {U : Opens Y}
     (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
-  f.1.c.app (op U) ≫ X.presheaf.map (homOfLE e).op
+  f.app U ≫ X.presheaf.map (homOfLE e).op
 #align algebraic_geometry.Scheme.hom.app_le AlgebraicGeometry.Scheme.Hom.appLe
 
 /-- The spectrum of a commutative ring, as a scheme.
@@ -280,11 +290,11 @@ lemma Spec_obj_presheaf (R) : (𝖲𝗉𝖾𝖼 R).presheaf = (Spec.structureShe
 lemma Spec_map_base : 𝖲𝗉𝖾𝖼(f).1.base = PrimeSpectrum.comap f := rfl
 
 set_option maxHeartbeats 800000 in
-lemma Spec_map_c_app (U) :
-    𝖲𝗉𝖾𝖼(f).1.c.app (op U) = StructureSheaf.comap f U (𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ U) le_rfl := rfl
+lemma Spec_map_app (U) :
+    𝖲𝗉𝖾𝖼(f).app U = StructureSheaf.comap f U (𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ U) le_rfl := rfl
 
 lemma Spec_map_appLE {U V} (e : U ≤ 𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ V) :
-    Hom.appLe 𝖲𝗉𝖾𝖼(f) e = StructureSheaf.comap f V U e := rfl
+    𝖲𝗉𝖾𝖼(f).appLe e = StructureSheaf.comap f V U e := rfl
 
 end
 
@@ -316,7 +326,7 @@ theorem Γ_def : Γ = (inducedFunctor Scheme.toLocallyRingedSpace).op ⋙ Locall
 #align algebraic_geometry.Scheme.Γ_def AlgebraicGeometry.Scheme.Γ_def
 
 @[simp]
-theorem Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = (unop X).presheaf.obj (op ⊤) :=
+theorem Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = Γ(unop X, ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_obj AlgebraicGeometry.Scheme.Γ_obj
 
@@ -325,21 +335,45 @@ theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = Γ(X, ⊤) :=
 #align algebraic_geometry.Scheme.Γ_obj_op AlgebraicGeometry.Scheme.Γ_obj_op
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.1.c.app (op ⊤) :=
+theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.app ⊤ :=
   rfl
 #align algebraic_geometry.Scheme.Γ_map AlgebraicGeometry.Scheme.Γ_map
 
-theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.1.c.app (op ⊤) :=
+theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.app ⊤ :=
   rfl
 #align algebraic_geometry.Scheme.Γ_map_op AlgebraicGeometry.Scheme.Γ_map_op
 
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as an isomorphism. -/
--- This is not marked simp to respect the abstraction
-@[simps! (config := .lemmasOnly) hom_app inv_app]
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1}
     (fun R => asIso (StructureSheaf.toOpen R ⊤))
     (fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f)
+
+variable (R : CommRingCat.{u})
+
+/-- The global sections of `𝖲𝗉𝖾𝖼 R` is isomorphic to `R`. -/
+def ΓSpecIso : Γ(𝖲𝗉𝖾𝖼 R, ⊤) ≅ R := SpecΓIdentity.app R
+
+@[simp] lemma SpecΓIdentity_app : SpecΓIdentity.app R = ΓSpecIso R := rfl
+@[simp] lemma SpecΓIdentity_hom_app : SpecΓIdentity.hom.app R = (ΓSpecIso R).hom := rfl
+@[simp] lemma SpecΓIdentity_inv_app : SpecΓIdentity.inv.app R = (ΓSpecIso R).inv := rfl
+
+@[reassoc (attr := simp)]
+lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
+  𝖲𝗉𝖾𝖼(f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
+
+-- The RHS is not necessarily simpler than the LHS, but this direction coincides with the simp
+-- direction of `NatTrans.naturality`.
+@[reassoc (attr := simp)]
+lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
+  f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ 𝖲𝗉𝖾𝖼(f).app ⊤ := SpecΓIdentity.inv.naturality f
+
+-- This is not marked simp to respect the abstraction
+lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
+
+lemma toOpen_eq (U) :
+  (by exact StructureSheaf.toOpen R U) =
+    (ΓSpecIso R).inv ≫ (𝖲𝗉𝖾𝖼 R).presheaf.map (homOfLE le_top).op := rfl
 
 section BasicOpen
 
@@ -393,7 +427,7 @@ lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
 
 @[simp]
 theorem preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y} (r : Γ(Y, U)) :
-    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.1.c.app (op U) r) :=
+    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.app U r) :=
   LocallyRingedSpace.preimage_basicOpen f r
 #align algebraic_geometry.Scheme.preimage_basic_open AlgebraicGeometry.Scheme.preimage_basicOpen
 
@@ -420,7 +454,7 @@ end BasicOpen
 end Scheme
 
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
-    (𝖲𝗉𝖾𝖼 R).basicOpen ((Scheme.SpecΓIdentity.app R).inv f) = PrimeSpectrum.basicOpen f := by
+    (𝖲𝗉𝖾𝖼 R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
   ext x
   erw [Scheme.mem_basicOpen_top]
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
@@ -434,14 +468,13 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
 
 @[simp]
 theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(𝖲𝗉𝖾𝖼 R, ⊤)) :
-    (𝖲𝗉𝖾𝖼 R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.SpecΓIdentity.app R).hom f) := by
-  convert basicOpen_eq_of_affine ((Scheme.SpecΓIdentity.app R).hom f)
-  exact (Iso.hom_inv_id_apply (Scheme.SpecΓIdentity.app R) f).symm
+    (𝖲𝗉𝖾𝖼 R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.ΓSpecIso R).hom f) := by
+  convert basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
+  exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 #align algebraic_geometry.basic_open_eq_of_affine' AlgebraicGeometry.basicOpen_eq_of_affine'
 
 theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U = V) (W) :
-    𝖲𝗉𝖾𝖼(X.presheaf.map (eqToHom h).op).val.c.app W =
-      eqToHom (by cases h; induction W using Opposite.rec'; dsimp; simp) := by
+    𝖲𝗉𝖾𝖼(X.presheaf.map (eqToHom h).op).app W = eqToHom (by cases h; dsimp; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h
