@@ -216,6 +216,11 @@ jobs:
           PR: ${{ github.event.number }}
         run: |
           #PR="${{ github.event.pull_request.number }}"
+          echo "GITHUB_REFs"
+          echo "${GITHUB_REF#\*/}"
+          echo "${GITHUB_REF}"
+          echo "Branch name: ${BRANCH_NAME}"
+          echo "PR: ${PR}"
           title="### Lean decl diff"
 
           git checkout master
@@ -231,8 +236,6 @@ jobs:
           fi
 
           echo "Message: ${ddiff}"
-          echo "Branch name: ${BRANCH_NAME}"
-          echo "PR: ${PR}"
 
           git checkout "${BRANCH_NAME}"
           currentHash="$(git rev-parse HEAD)"
