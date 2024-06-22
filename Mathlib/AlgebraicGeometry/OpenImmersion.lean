@@ -440,16 +440,19 @@ abbrev _root_.AlgebraicGeometry.Scheme.Hom.opensFunctor {X Y : Scheme.{u}} (f : 
   H.openFunctor
 #align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
 
+/-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
+scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
+
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
 def _root_.AlgebraicGeometry.Scheme.Hom.invApp {X Y : Scheme.{u}} (f : X ⟶ Y)
     [H : IsOpenImmersion f] (U) :
-    X.presheaf.obj (op U) ⟶ Y.presheaf.obj (op (f.opensFunctor.obj U)) :=
+    Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
   H.invApp U
 #align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
 
 theorem app_eq_inv_app_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U) :
-    (Opens.map f.1.base).obj V = (Opens.map fg.1.base).obj (g.opensFunctor.obj V) := by
+    f ⁻¹ᵁ V = fg ⁻¹ᵁ (g ''ᵁ V) := by
   subst H
   rw [Scheme.comp_val_base, Opens.map_comp_obj]
   congr 1
@@ -482,8 +485,7 @@ theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersi
             (eqToHom <|
                 IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux _ _ _
                   (IsOpenImmersion.lift_fac f g H).symm V).op :=
-  -- Porting note: `(lift_fac ...).symm` was done by unification magic in Lean3.
-  IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ (lift_fac _ _ H).symm _
+  IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
 #align algebraic_geometry.IsOpenImmersion.lift_app AlgebraicGeometry.IsOpenImmersion.lift_app
 
 end IsOpenImmersion
@@ -491,8 +493,8 @@ end IsOpenImmersion
 namespace Scheme
 
 theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f] {U : Opens X}
-    (r : X.presheaf.obj (op U)) :
-    f.opensFunctor.obj (X.basicOpen r) = Y.basicOpen (Scheme.Hom.invApp f U r) := by
+    (r : Γ(X, U)) :
+    f ''ᵁ X.basicOpen r = Y.basicOpen (Scheme.Hom.invApp f U r) := by
   have e := Scheme.preimage_basicOpen f (Scheme.Hom.invApp f U r)
   rw [Scheme.Hom.invApp] at e
   -- Porting note (#10691): was `rw`
