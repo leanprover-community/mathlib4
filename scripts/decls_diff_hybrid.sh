@@ -11,14 +11,15 @@ commit1="${1}"
 commit2="${2}"
 temp1='tempDecls1.txt'
 temp2='tempDecls2.txt'
+currentHash="$(git rev-parse HEAD)"
 
 # `getDecls`
 # 1. retrieves the script file from either master or the PR commit
 # 2. gets the cache
 # 3. in the lean-script file, removes `--` before `list_decls` and parses the lean file
 getDecls () {
-  # ideally, the script is in master, but in development it would be in `adomani/decl_diff_in_lean`
-  git checkout master "${scr}" || git checkout adomani/decl_diff_in_lean "${scr}"
+  # we check out the script that is in the current branch
+  git checkout "${currentHash}" "${scr}"
   lake exe cache get
   sed 's=^--\(list_decls\)=\1=' "${scr}" |
     lake env lean --stdin
