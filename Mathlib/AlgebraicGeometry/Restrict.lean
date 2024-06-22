@@ -144,7 +144,7 @@ theorem Scheme.restrictFunctor_map_app {U V : Opens X} (i : U ⟶ V) (W : Opens 
       X.presheaf.map (homOfLE <| X.restrictFunctor_map_app_aux i W).op := by
   have e₁ :=
     Scheme.congr_app (X.restrictFunctor_map_ofRestrict i) (ιOpens V ''ᵁ W)
-  rw [Scheme.comp_val_c_app] at e₁
+  rw [Scheme.comp_app] at e₁
   -- Porting note: `Opens.map_functor_eq` need more help
   have e₂ := (X.restrictFunctor.map i).1.naturality (eqToHom <| W.map_functor_eq (U := V)).op
   rw [← IsIso.eq_inv_comp] at e₂
@@ -334,7 +334,7 @@ theorem morphismRestrict_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V :
     (f ∣_ U).app V = f.app (Scheme.ιOpens U ''ᵁ V) ≫
         X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U V)).op := by
   have := Scheme.congr_app (morphismRestrict_ι f U) (Scheme.ιOpens U ''ᵁ V)
-  rw [Scheme.comp_val_c_app, Scheme.comp_val_c_app_assoc] at this
+  rw [Scheme.comp_app, Scheme.comp_app_assoc] at this
   have e : Scheme.ιOpens U ⁻¹ᵁ (Scheme.ιOpens U ''ᵁ V) = V := by
     ext1; exact Set.preimage_image_eq _ Subtype.coe_injective
   have : _ ≫ X.presheaf.map _ = _ :=

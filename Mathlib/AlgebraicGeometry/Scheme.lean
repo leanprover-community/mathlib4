@@ -170,6 +170,7 @@ theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 #align algebraic_geometry.Scheme.comp_val_c_app AlgebraicGeometry.Scheme.comp_app
 
 @[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
+@[deprecated (since := "2024-06-23")] alias comp_val_c_app_assoc := comp_app_assoc
 
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.app U = g.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)).op := by

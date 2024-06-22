@@ -331,7 +331,7 @@ theorem SpecΓIdentity_hom_app_fromSpec :
       (𝖲𝗉𝖾𝖼 Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
   have : IsAffine _ := hU
   delta IsAffineOpen.fromSpec Scheme.isoSpec
-  rw [Scheme.comp_val_c_app, Scheme.comp_val_c_app, ΓSpecIso_obj_hom,
+  rw [Scheme.comp_app, Scheme.comp_app, ΓSpecIso_obj_hom,
     Scheme.ofRestrict_app_self]
   simp only [Category.assoc]
   dsimp only [asIso_inv, Functor.op_obj, unop_op]
