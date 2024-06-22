@@ -1810,6 +1810,7 @@ import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.LocallyConstant
+import Mathlib.Condensed.LocallyConstantModule
 import Mathlib.Condensed.Module
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
