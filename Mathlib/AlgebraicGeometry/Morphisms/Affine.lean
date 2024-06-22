@@ -31,13 +31,14 @@ class IsAffineHom {X Y : Scheme} (f : X ⟶ Y) : Prop where
 @[simps]
 def affinePreimage {X Y : Scheme} (f : X ⟶ Y) [IsAffineHom f] (U : Y.affineOpens) :
     X.affineOpens :=
-⟨f ⁻¹ᵁ U.1, IsAffineHom.isAffine_preimage _ U.prop⟩
+  ⟨f ⁻¹ᵁ U.1, IsAffineHom.isAffine_preimage _ U.prop⟩
 
 instance (priority := 900) [IsIso f] : IsAffineHom f :=
-⟨fun _ hU ↦ hU.map_isIso f⟩
+  ⟨fun _ hU ↦ hU.map_isIso f⟩
 
 instance (priority := 900) [IsAffineHom f] : QuasiCompact f :=
-(quasiCompact_iff_forall_affine f).mpr (fun U hU ↦ (IsAffineHom.isAffine_preimage U hU).isCompact)
+  (quasiCompact_iff_forall_affine f).mpr
+    (fun U hU ↦ (IsAffineHom.isAffine_preimage U hU).isCompact)
 
 instance [IsAffineHom f] [IsAffineHom g] : IsAffineHom (f ≫ g) := by
   constructor
@@ -53,16 +54,16 @@ instance : MorphismProperty.IsMultiplicative @IsAffineHom where
 
 /-- The `AffineTargetMorphismProperty` corresponding to affine morphisms. -/
 def IsAffineHom.affineProperty : AffineTargetMorphismProperty :=
-fun X _ _ _  ↦ IsAffine X
+  fun X _ _ _  ↦ IsAffine X
 
 @[simp] lemma IsAffineHom.affineProperty_toProperty :
-  AffineTargetMorphismProperty.toProperty IsAffineHom.affineProperty f ↔
-    IsAffine Y ∧ IsAffine X := by
+    AffineTargetMorphismProperty.toProperty IsAffineHom.affineProperty f ↔
+      IsAffine Y ∧ IsAffine X := by
   delta AffineTargetMorphismProperty.toProperty IsAffineHom.affineProperty; simp
 
 lemma isAffineHom_iff_affineProperty :
     IsAffineHom f ↔ targetAffineLocally IsAffineHom.affineProperty f :=
-(isAffineHom_iff f).trans ⟨fun H U ↦ H U U.prop, fun H U hU ↦ H ⟨U, hU⟩⟩
+  (isAffineHom_iff f).trans ⟨fun H U ↦ H U U.prop, fun H U hU ↦ H ⟨U, hU⟩⟩
 
 lemma isAffineHom_eq_affineProperty :
     @IsAffineHom = targetAffineLocally IsAffineHom.affineProperty := by
