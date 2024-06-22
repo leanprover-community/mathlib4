@@ -6,7 +6,7 @@ on:
       - completed
 
 jobs:
-  Lean_decl_diff:
+  Lean_decl_diff_dep:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
