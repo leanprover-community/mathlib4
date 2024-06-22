@@ -201,10 +201,11 @@ theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, 
 variable {P : Type*} [AddCommMonoid P] [Module R P]
 variable (f : M →ₗ[R] P)
 
-theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
+theorem FG.map {R : Type*} {S : Type*} {M : Type*} [Semiring R] [Semiring S] {σ : R →+* S}
+    [RingHomSurjective σ] [AddCommMonoid M] [Module R M] {P : Type*} [AddCommMonoid P] [Module S P]
+    (f : M →ₛₗ[σ] P) {N : Submodule R M} (hs : N.FG) : (Submodule.map f N).FG :=
   let ⟨t, ht⟩ := fg_def.1 hs
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
-#align submodule.fg.map Submodule.FG.map
 
 variable {f}
 
