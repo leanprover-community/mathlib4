@@ -1,7 +1,7 @@
 name: Lean_decl_diff
 on:
   workflow_run:
-    workflows: ["continuous integration (mathlib forks)"]
+    workflows: ["continuous integration"]
     types:
       - completed
 
