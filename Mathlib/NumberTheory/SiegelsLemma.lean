@@ -141,8 +141,7 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
   ∏ x : Fin m, (∑ x_1 : Fin n, ↑B * ↑(A x x_1)⁺ - ∑ x_1 : Fin n, ↑B * -↑(A x x_1)⁻ + 1)
     ≤ (n * ‖A‖ * B + 1) ^ m := by
       rw [← Fin.prod_const m (n * ‖A‖ * B + 1)] --transform ^m into a product
-      apply Finset.prod_le_prod --two goals
-      all_goals intro i _
+      refine Finset.prod_le_prod (fun i _ ↦ ?_) (fun i _ ↦ ?_)
       · have h := N_le_P_add_one m n A i
         rify at h
         linarith only [h]
