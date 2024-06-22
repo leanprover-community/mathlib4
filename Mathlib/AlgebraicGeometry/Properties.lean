@@ -186,7 +186,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
       exact H
   · intro R hX s hs x
     erw [basicOpen_eq_of_affine', PrimeSpectrum.basicOpen_eq_bot_iff] at hs
-    replace hs := hs.map (SpecΓIdentity.app R).inv
+    replace hs := hs.map (Scheme.SpecΓIdentity.app R).inv
     -- what the hell?!
     replace hs := @IsNilpotent.eq_zero _ _ _ _ (show _ from ?_) hs
     · rw [Iso.hom_inv_id_apply] at hs
