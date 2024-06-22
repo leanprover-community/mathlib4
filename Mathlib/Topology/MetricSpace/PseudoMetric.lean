@@ -1147,9 +1147,22 @@ nonrec theorem _root_.DenseRange.exists_dist_lt {β : Type*} {f : β → α} (hf
   exists_range_iff.1 (hf.exists_dist_lt x hε)
 #align dense_range.exists_dist_lt DenseRange.exists_dist_lt
 
+/-- (Pseudo) metric space has discrete `UniformSpace` structure
+iff the distances between distinct points are uniformly bounded away from zero. -/
+protected lemma uniformSpace_eq_bot :
+    ‹PseudoMetricSpace α›.toUniformSpace = ⊥ ↔
+      ∃ r : ℝ, 0 < r ∧ Pairwise (r ≤ dist · · : α → α → Prop) := by
+  simp only [uniformity_basis_dist.uniformSpace_eq_bot, mem_setOf_eq, not_lt]
+
 end Metric
 
 open Metric
+
+/-- If the distances between distinct points in a (pseudo) metric space
+are uniformly bounded away from zero, then the space has discrete topology. -/
+lemma DiscreteTopology.of_forall_le_dist {α} [PseudoMetricSpace α] {r : ℝ} (hpos : 0 < r)
+    (hr : Pairwise (r ≤ dist · · : α → α → Prop)) : DiscreteTopology α :=
+  ⟨by rw [Metric.uniformSpace_eq_bot.2 ⟨r, hpos, hr⟩, UniformSpace.toTopologicalSpace_bot]⟩
 
 /- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
