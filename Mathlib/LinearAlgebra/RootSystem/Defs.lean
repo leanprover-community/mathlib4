@@ -173,11 +173,10 @@ lemma root_reflection_perm (j : ι) :
     P.root (P.reflection_perm i j) = (P.reflection i) (P.root j) :=
   (P.reflection_perm_root i j).symm
 
-theorem reflection_mapsTo_root : MapsTo (P.reflection i) (range P.root) (range P.root) := by
-  intro x hx
-  obtain ⟨j, hj⟩ := hx
-  rw [← hj, ← P.root_reflection_perm i j]
-  exact mem_range_self (P.reflection_perm i j)
+theorem mapsTo_reflection_root :
+    MapsTo (P.reflection i) (range P.root) (range P.root) := by
+  rintro - ⟨j, rfl⟩
+  exact P.root_reflection_perm i j ▸ mem_range_self (P.reflection_perm i j)
 
 lemma reflection_apply (x : M) :
     P.reflection i x = x - (P.toLin x (P.coroot i)) • P.root i :=
@@ -193,19 +192,13 @@ lemma reflection_apply_self :
   Module.reflection_apply_self (P.coroot_root_two i)
 
 @[simp]
-lemma reflection_same (x : M) : P.reflection i (P.reflection i x) = x :=
+lemma reflection_same (x : M) :
+    P.reflection i (P.reflection i x) = x :=
   Module.involutive_reflection (P.coroot_root_two i) x
 
-lemma reflection_mul (x : M) :
-    (P.reflection i * P.reflection j) x = P.reflection i (P.reflection j x) := rfl
-
-lemma reflection_invOn_self : InvOn (P.reflection i) (P.reflection i) (range P.root)
-    (range P.root) := by
-  constructor <;>
-    exact fun x _ => Module.involutive_reflection (P.coroot_root_two i) x
-
-lemma bijOn_reflection_root : BijOn (P.reflection i) (range P.root) (range P.root) :=
-  InvOn.bijOn (reflection_invOn_self P i) (P.reflection_mapsTo_root i) (P.reflection_mapsTo_root i)
+lemma bijOn_reflection_root :
+    BijOn (P.reflection i) (range P.root) (range P.root) :=
+  Module.bijOn_reflection_of_mapsTo _ <| P.mapsTo_reflection_root i
 
 @[simp]
 lemma reflection_image_eq :
@@ -216,9 +209,22 @@ lemma reflection_image_eq :
 def coreflection : N ≃ₗ[R] N :=
   Module.reflection (P.root_coroot_two i)
 
+@[simp]
+lemma coroot_reflection_perm (j : ι) :
+    P.coroot (P.reflection_perm i j) = (P.coreflection i) (P.coroot j) :=
+  (P.reflection_perm_coroot i j).symm
+
+theorem mapsTo_coreflection_coroot :
+    MapsTo (P.coreflection i) (range P.coroot) (range P.coroot) := by
+  rintro - ⟨j, rfl⟩
+  exact P.coroot_reflection_perm i j ▸ mem_range_self (P.reflection_perm i j)
 
 lemma coreflection_apply (f : N) :
     P.coreflection i f = f - (P.toLin (P.root i) f) • P.coroot i :=
+  rfl
+
+lemma coreflection_apply_coroot :
+    P.coreflection i (P.coroot j) = P.coroot j - (P.pairing i j) • P.coroot i :=
   rfl
 
 @[simp]
@@ -226,16 +232,10 @@ lemma coreflection_apply_self :
     P.coreflection i (P.coroot i) = - P.coroot i :=
   Module.reflection_apply_self (P.flip.coroot_root_two i)
 
-lemma coreflection_eq_flip_reflection (f : N) : P.coreflection i f = P.flip.reflection i f :=
-  rfl
-
 @[simp]
-lemma coreflection_self (x : N) : P.coreflection i (P.coreflection i x) = x :=
-  reflection_same P.flip i x
-
-lemma coreflection_invOn_self :
-    InvOn (P.coreflection i) (P.coreflection i) (range P.coroot) (range P.coroot) :=
-  reflection_invOn_self P.flip i
+lemma coreflection_same (x : N) :
+    P.coreflection i (P.coreflection i x) = x :=
+  Module.involutive_reflection (P.flip.coroot_root_two i) x
 
 lemma bijOn_coreflection_coroot : BijOn (P.coreflection i) (range P.coroot) (range P.coroot) :=
   bijOn_reflection_root P.flip i
@@ -245,10 +245,20 @@ lemma coreflection_image_eq :
     P.coreflection i '' (range P.coroot) = range P.coroot :=
   (P.bijOn_coreflection_coroot i).image_eq
 
+lemma coreflection_eq_flip_reflection :
+    P.coreflection i = P.flip.reflection i :=
+  rfl
+
 lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
   ext n m
   simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
+
+lemma coroot_eq_coreflection_of_root_eq
+    {i j k : ι} (hk : P.root k = P.reflection i (P.root j)) :
+    P.coroot k = P.coreflection i (P.coroot j) := by
+  rw [← P.root_reflection_perm, EmbeddingLike.apply_eq_iff_eq] at hk
+  rw [← P.coroot_reflection_perm, hk]
 
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
@@ -293,44 +303,10 @@ lemma IsOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
 lemma IsOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [Commute, SemiconjBy]
   ext v
-  simp_all only [IsOrthogonal, reflection_mul, reflection_apply, smul_sub]
-  simp_all only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply,
-    root_coroot_eq_pairing, smul_eq_mul, mul_zero, sub_zero]
-  exact sub_right_comm v ((P.toLin v) (P.coroot j) • P.root j)
-      ((P.toLin v) (P.coroot i) • P.root i)
+  replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
+  erw [LinearMap.mul_apply, LinearMap.mul_apply]
+  simp only [LinearEquiv.coe_coe, reflection_apply, map_sub, map_smul, root_coroot_eq_pairing,
+    zero_smul, sub_zero, h]
+  abel
 
 end RootPairing
-
-section reflection_perm
-
-variable {ι R M N}
-variable (P : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N) (i j : ι)
-
-theorem exist_root_reflection
-    (h : ∀ i, MapsTo (preReflection (root i) (P.toLin.flip (coroot i))) (range root) (range root)) :
-    ∃ k, (preReflection (root i) (P.toLin.flip (coroot i))) (root j) = root k := by
-  refine exists_range_iff.mp <| exists_eq_right'.mpr ?_
-  simp_all only [mapsTo_range_iff, mem_range]
-
-theorem root_reflection_comp_self (hp : ∀ i, P.toLin (root i) (coroot i) = 2)
-    (h : ∀ i, MapsTo (preReflection (root i) (P.toLin.flip (coroot i))) (range root) (range root)) :
-    (exist_root_reflection P root coroot i
-      (exist_root_reflection P root coroot i j h).choose h).choose = j := by
-  refine (Embedding.injective root) ?_
-  rw [← (exist_root_reflection P root coroot i _ h).choose_spec,
-    ← (exist_root_reflection P root coroot i j h).choose_spec]
-  simp_all only [mapsTo_range_iff, mem_range]
-  apply involutive_preReflection
-  exact hp i
-
-/-- The bijection on the indexing set induced by reflection. -/
-@[simps]
-def reflection_in (P : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N)
-    (hp : ∀ i, P.toLin (root i) (coroot i) = 2) (hs : ∀ i, MapsTo (preReflection (root i)
-    (P.toLin.flip (coroot i))) (range root) (range root)) : ι ≃ ι where
-  toFun j := (exist_root_reflection P root coroot i j hs).choose
-  invFun j := (exist_root_reflection P root coroot i j hs).choose
-  left_inv j := root_reflection_comp_self P root coroot i j hp hs
-  right_inv j := root_reflection_comp_self P root coroot i j hp hs
-
-end reflection_perm
