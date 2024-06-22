@@ -111,6 +111,7 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
   exact congr($(AddCommMonoid.natModule.unique.2 inst).smul n x)
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
+unseal OreLocalization.zero in
 @[simps!]
 def numeratorRingHom : R →+* R[S⁻¹] where
   __ := numeratorHom
