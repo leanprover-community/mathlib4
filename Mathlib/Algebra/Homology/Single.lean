@@ -103,10 +103,8 @@ variable (V)
 noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
   NatIso.ofComponents (singleObjXSelf c j) (fun {A B} f => by simp [single_map_f_self])
 
-lemma isZero_single_comp_eval (j i : ι) (hi : i ≠ j) : IsZero (single V c j ⋙ eval V c i) := by
-  rw [Functor.isZero_iff]
-  intro A
-  exact isZero_single_obj_X c _ _ _ hi
+lemma isZero_single_comp_eval (j i : ι) (hi : i ≠ j) : IsZero (single V c j ⋙ eval V c i) :=
+  Functor.isZero _ (fun _ ↦ isZero_single_obj_X c _ _ _ hi)
 
 variable {V c}
 
