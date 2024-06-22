@@ -192,6 +192,17 @@ jobs:
             lake build --no-build
           fi
 
+      - name: Lean-diff
+        steps:
+          - uses: actions/checkout@v4
+            with:
+              ## fetch the whole repository, useful to find a common fork
+              fetch-depth: 0
+          - run: |
+              git checkout master
+              git checkout -
+              ./scripts/list_decls.lean "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})"
+
       - name: build archive
         id: archive
         run: |
