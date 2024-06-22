@@ -207,8 +207,8 @@ lemma Scheme.restrictRestrict_inv_restrict_restrict (X : Scheme.{u}) (U : Opens 
 /-- If `U = V`, then `X ∣_ U` is isomorphic to `X ∣_ V`. -/
 noncomputable
 def Scheme.restrictIsoOfEq (X : Scheme.{u}) {U V : Opens X} (e : U = V) :
-    X ∣_ᵤ U ≅ X ∣_ᵤ V := by
-  exact IsOpenImmersion.isoOfRangeEq (ιOpens U) (ιOpens V) (by rw [e])
+    X ∣_ᵤ U ≅ X ∣_ᵤ V :=
+  IsOpenImmersion.isoOfRangeEq (ιOpens U) (ιOpens V) (by rw [e])
 
 end
 
@@ -309,8 +309,7 @@ theorem morphismRestrict_val_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y)
 #align algebraic_geometry.morphism_restrict_val_base AlgebraicGeometry.morphismRestrict_val_base
 
 theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
-    (f ⁻¹ᵁ U).openEmbedding.isOpenMap.functor.obj ((f ∣_ U) ⁻¹ᵁ V) =
-      f ⁻¹ᵁ (U.openEmbedding.isOpenMap.functor.obj V) := by
+    Scheme.ιOpens (f ⁻¹ᵁ U) ''ᵁ ((f ∣_ U) ⁻¹ᵁ V) = f ⁻¹ᵁ (Scheme.ιOpens U ''ᵁ V) := by
   ext1
   ext x
   constructor
@@ -330,31 +329,33 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Op
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 #align algebraic_geometry.image_morphism_restrict_preimage AlgebraicGeometry.image_morphismRestrict_preimage
 
+open Scheme in
 theorem morphismRestrict_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
-    (f ∣_ U).app V = f.app (Scheme.ιOpens U ''ᵁ V) ≫
+    (f ∣_ U).app V = f.app (ιOpens U ''ᵁ V) ≫
         X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U V)).op := by
   have := Scheme.congr_app (morphismRestrict_ι f U) (Scheme.ιOpens U ''ᵁ V)
-  rw [Scheme.comp_app, Scheme.comp_app_assoc] at this
-  have e : Scheme.ιOpens U ⁻¹ᵁ (Scheme.ιOpens U ''ᵁ V) = V := by
-    ext1; exact Set.preimage_image_eq _ Subtype.coe_injective
-  have : _ ≫ X.presheaf.map _ = _ :=
-      (((f ∣_ U).naturality (eqToHom e).op).symm.trans ?_).trans this
-  · rw [← IsIso.eq_comp_inv, ← Functor.map_inv, Category.assoc] at this
-    rw [this]
+  simp only [restrict_presheaf_obj, Hom.app_eq_appLE, eqToHom_op, Hom.appLE_map]
+  simp only [comp_coeBase, Opens.map_comp_obj, restrict_presheaf_obj,
+    Hom.app_eq_appLE, comp_appLE, ofRestrict_appLE, Hom.appLE_map, eqToHom_op,
+    restrict_presheaf_map, eqToHom_unop] at this
+  have e : ιOpens U ⁻¹ᵁ (ιOpens U ''ᵁ V) = V := by
     congr 1
-    erw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
-    congr 1
-  · change Y.presheaf.map _ ≫ _ = Y.presheaf.map _ ≫ _
-    congr 1
+    exact Opens.ext (Set.preimage_image_eq _ Subtype.coe_injective)
+  have e' : (f ∣_ U) ⁻¹ᵁ V = (f ∣_ U) ⁻¹ᵁ ιOpens U ⁻¹ᵁ ιOpens U ''ᵁ V := by rw [e]
+  rw [← (f ∣_ U).appLE_map' _ e', ← (f ∣_ U).map_appLE' _ e, Scheme.restrict_presheaf_map,
+    Scheme.restrict_presheaf_map, this, Hom.appLE_map]
 #align algebraic_geometry.morphism_restrict_c_app AlgebraicGeometry.morphismRestrict_app
+
+theorem morphismRestrict_app' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
+    (f ∣_ U).app V = f.appLE _ _ (image_morphismRestrict_preimage f U V).le :=
+  morphismRestrict_app f U V
 
 theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     Scheme.Γ.map (f ∣_ U).op =
       Y.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op ≫
         f.app U ≫ X.presheaf.map (eqToHom (f ⁻¹ᵁ U).openEmbedding_obj_top).op := by
-  rw [Scheme.Γ_map_op, morphismRestrict_app f U ⊤, f.val.c.naturality_assoc]
-  erw [← X.presheaf.map_comp]
-  congr
+  rw [Scheme.Γ_map_op, morphismRestrict_app f U ⊤, f.naturality_assoc, ← X.presheaf.map_comp]
+  rfl
 #align algebraic_geometry.Γ_map_morphism_restrict AlgebraicGeometry.Γ_map_morphismRestrict
 
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change

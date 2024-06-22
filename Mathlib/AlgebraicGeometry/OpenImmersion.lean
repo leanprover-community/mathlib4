@@ -79,6 +79,56 @@ def Scheme.Hom.opensRange {X Y : Scheme.{u}} (f : Hom X Y) [H : IsOpenImmersion 
   ⟨_, H.base_open.isOpen_range⟩
 #align algebraic_geometry.Scheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
 
+namespace Scheme.Hom
+
+variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]
+
+/-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
+abbrev opensFunctor : Opens X ⥤ Opens Y :=
+  H.openFunctor
+#align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
+
+/-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
+scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
+
+/-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
+def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
+  H.invApp U
+#align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
+
+instance (U) : IsIso (f.invApp U) := inferInstanceAs (IsIso <| H.invApp U)
+
+@[reassoc (attr := simp)]
+theorem invApp_naturality {U V : Opens X} (i : op U ⟶ op V) :
+    X.presheaf.map i ≫ f.invApp V = f.invApp U ≫ Y.presheaf.map (f.opensFunctor.op.map i) :=
+  PresheafedSpace.IsOpenImmersion.inv_naturality _ _
+
+theorem inv_invApp (U) :
+    inv (f.invApp U) = f.app (f ''ᵁ U) ≫ X.presheaf.map
+      (eqToHom (Opens.ext <| by exact (Set.preimage_image_eq U.1 H.base_open.inj).symm)).op :=
+  (PresheafedSpace.IsOpenImmersion.inv_invApp H U).trans (by rw [eqToHom_op])
+
+@[reassoc (attr := simp)]
+theorem app_invApp (U) :
+    f.app U ≫ f.invApp (f ⁻¹ᵁ U) =
+      Y.presheaf.map (homOfLE (Set.image_preimage_subset f.1.base U.1)).op :=
+  PresheafedSpace.IsOpenImmersion.app_invApp _ _
+
+/-- A variant of `app_invApp` that gives an `eqToHom` instead of `homOfLE`. -/
+@[reassoc (attr := simp)]
+theorem app_invApp' (U) (hU : U ≤ f.opensRange) :
+    f.app U ≫ f.invApp (f ⁻¹ᵁ U) =
+      Y.presheaf.map (eqToHom (Opens.ext <| by simpa [Set.image_preimage_eq_inter_range])).op :=
+  PresheafedSpace.IsOpenImmersion.app_invApp _ _
+
+@[reassoc (attr := simp)]
+theorem invApp_app (U) :
+    f.invApp U ≫ f.app (f ''ᵁ U) = X.presheaf.map
+      (eqToHom (Opens.ext <| by exact Set.preimage_image_eq U.1 H.base_open.inj)).op :=
+  (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
+
+end Scheme.Hom
+
 namespace Scheme
 
 instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
@@ -163,35 +213,48 @@ end ToScheme
 
 end PresheafedSpace.IsOpenImmersion
 
+section Restrict
+
+variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f)
+
 /-- The restriction of a Scheme along an open embedding. -/
-@[simps! (config := .lemmasOnly) carrier, simps! presheaf_map presheaf_obj]
-def Scheme.restrict {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f) :
-    Scheme :=
+@[simps! (config := .lemmasOnly) carrier, simps! presheaf_obj]
+def Scheme.restrict : Scheme :=
   { PresheafedSpace.IsOpenImmersion.toScheme X (X.toPresheafedSpace.ofRestrict h) with
     toPresheafedSpace := X.toPresheafedSpace.restrict h }
 #align algebraic_geometry.Scheme.restrict AlgebraicGeometry.Scheme.restrict
 
-lemma Scheme.restrict_toPresheafedSpace
-    {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f) :
+lemma Scheme.restrict_toPresheafedSpace :
     (X.restrict h).toPresheafedSpace = X.toPresheafedSpace.restrict h := rfl
 
 /-- The canonical map from the restriction to the subspace. -/
 @[simps! val_base, simps! (config := .lemmasOnly) val_c_app]
-def Scheme.ofRestrict {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X}
-    (h : OpenEmbedding f) : X.restrict h ⟶ X :=
+def Scheme.ofRestrict : X.restrict h ⟶ X :=
   X.toLocallyRingedSpace.ofRestrict h
 #align algebraic_geometry.Scheme.ofRestrict AlgebraicGeometry.Scheme.ofRestrict
 
 @[simp]
-lemma Scheme.ofRestrict_app {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X}
-    (h : OpenEmbedding f) (V) :
+lemma Scheme.ofRestrict_app (V) :
     (X.ofRestrict h).app V = X.presheaf.map (h.isOpenMap.adjunction.counit.app V).op  :=
   Scheme.ofRestrict_val_c_app X h (op V)
 
-instance IsOpenImmersion.ofRestrict {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X}
-    (h : OpenEmbedding f) : IsOpenImmersion (X.ofRestrict h) :=
+instance IsOpenImmersion.ofRestrict : IsOpenImmersion (X.ofRestrict h) :=
   show PresheafedSpace.IsOpenImmersion (X.toPresheafedSpace.ofRestrict h) by infer_instance
 #align algebraic_geometry.IsOpenImmersion.ofRestrict AlgebraicGeometry.IsOpenImmersion.ofRestrict
+
+@[simp]
+lemma Scheme.ofRestrict_appLE (V W e) :
+    (X.ofRestrict h).appLE V W e = X.presheaf.map
+      (homOfLE (show X.ofRestrict h ''ᵁ _ ≤ _ by exact Set.image_subset_iff.mpr e)).op := by
+  dsimp [Hom.appLE]
+  exact (X.presheaf.map_comp _ _).symm
+
+@[simp]
+lemma Scheme.restrict_presheaf_map (V W) (i : V ⟶ W) :
+    (X.restrict h).presheaf.map i = X.presheaf.map (homOfLE (show X.ofRestrict h ''ᵁ W.unop ≤
+      X.ofRestrict h ''ᵁ V.unop from Set.image_subset _ i.unop.le)).op := rfl
+
+end Restrict
 
 namespace IsOpenImmersion
 
@@ -446,56 +509,6 @@ lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
   lift_fac _ _ (le_of_eq e.symm)
 
 end IsOpenImmersion
-
-namespace Scheme.Hom
-
-variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]
-
-/-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-abbrev opensFunctor : Opens X ⥤ Opens Y :=
-  H.openFunctor
-#align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
-
-/-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
-scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
-
-/-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
-def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
-  H.invApp U
-#align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
-
-instance (U) : IsIso (f.invApp U) := inferInstanceAs (IsIso <| H.invApp U)
-
-@[reassoc (attr := simp)]
-theorem invApp_naturality {U V : Opens X} (i : op U ⟶ op V) :
-    X.presheaf.map i ≫ f.invApp V = f.invApp U ≫ Y.presheaf.map (f.opensFunctor.op.map i) :=
-  PresheafedSpace.IsOpenImmersion.inv_naturality _ _
-
-theorem inv_invApp (U) :
-    inv (f.invApp U) = f.app (f ''ᵁ U) ≫ X.presheaf.map
-      (eqToHom (Opens.ext <| by exact (Set.preimage_image_eq U.1 H.base_open.inj).symm)).op :=
-  (PresheafedSpace.IsOpenImmersion.inv_invApp H U).trans (by rw [eqToHom_op])
-
-@[reassoc (attr := simp)]
-theorem app_invApp (U) :
-    f.app U ≫ f.invApp (f ⁻¹ᵁ U) =
-      Y.presheaf.map (homOfLE (Set.image_preimage_subset f.1.base U.1)).op :=
-  PresheafedSpace.IsOpenImmersion.app_invApp _ _
-
-/-- A variant of `app_invApp` that gives an `eqToHom` instead of `homOfLE`. -/
-@[reassoc (attr := simp)]
-theorem app_invApp' (U) (hU : U ≤ f.opensRange) :
-    f.app U ≫ f.invApp (f ⁻¹ᵁ U) =
-      Y.presheaf.map (eqToHom (Opens.ext <| by simpa [Set.image_preimage_eq_inter_range])).op :=
-  PresheafedSpace.IsOpenImmersion.app_invApp _ _
-
-@[reassoc (attr := simp)]
-theorem invApp_app (U) :
-    f.invApp U ≫ f.app (f ''ᵁ U) = X.presheaf.map
-      (eqToHom (Opens.ext <| by exact Set.preimage_image_eq U.1 H.base_open.inj)).op :=
-  (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
-
-end Scheme.Hom
 
 theorem IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux
     {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)

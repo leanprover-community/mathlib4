@@ -86,46 +86,59 @@ protected abbrev sheaf (X : Scheme) :=
 instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
+namespace Hom
+
+variable {X Y : Scheme.{u}} (f : Hom X Y) {U U' : Opens Y} {V V' : Opens X}
+
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open `U ⊆ Y`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
-abbrev Hom.app {X Y : Scheme.{u}} (f : Hom X Y) (U : Opens Y) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
+abbrev app (U : Opens Y) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.1.c.app (op U)
 
 @[reassoc (attr := simp)]
-abbrev Hom.naturality {X Y : Scheme.{u}} (f : Hom X Y) {U V : Opens Y} (i : op V ⟶ op U) :
-    Y.presheaf.map i ≫ f.app U = f.app V ≫ X.presheaf.map ((Opens.map f.1.base).map i.unop).op :=
+abbrev naturality (i : op U' ⟶ op U) :
+    Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.1.base).map i.unop).op :=
   f.1.c.naturality i
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
-def Hom.appLE {X Y : Scheme} (f : Hom X Y) (U : Opens Y) (V : Opens X)
-    (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
+def appLE (U : Opens Y) (V : Opens X) (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
   f.app U ≫ X.presheaf.map (homOfLE e).op
 #align algebraic_geometry.Scheme.hom.app_le AlgebraicGeometry.Scheme.Hom.appLE
 
 @[reassoc (attr := simp)]
-lemma Hom.appLE_map {X Y : Scheme} (f : Hom X Y) {V' V : Opens X} {U : Opens Y}
-    (e : V ≤ f ⁻¹ᵁ U) (i : op V ⟶ op V') :
+lemma appLE_map (e : V ≤ f ⁻¹ᵁ U) (i : op V ⟶ op V') :
     f.appLE U V e ≫ X.presheaf.map i = f.appLE U V' (i.unop.le.trans e) := by
   rw [Hom.appLE, Category.assoc, ← Functor.map_comp]
   rfl
 
+@[reassoc]
+lemma appLE_map' (e : V ≤ f ⁻¹ᵁ U) (i : V = V') :
+    f.appLE U V' (i ▸ e) ≫ X.presheaf.map (eqToHom i).op = f.appLE U V e :=
+  appLE_map _ _ _
+
 @[reassoc (attr := simp)]
-lemma Hom.map_appLE {X Y : Scheme} (f : Hom X Y) {V : Opens X} {U' U : Opens Y}
-    (e : V ≤ f ⁻¹ᵁ U) (i : op U' ⟶ op U) :
+lemma map_appLE (e : V ≤ f ⁻¹ᵁ U) (i : op U' ⟶ op U) :
     Y.presheaf.map i ≫ f.appLE U V e =
       f.appLE U' V (e.trans ((Opens.map f.1.base).map i.unop).le) := by
   rw [Hom.appLE, f.naturality_assoc, ← Functor.map_comp]
   rfl
 
-lemma Hom.app_eq_appLE {X Y : Scheme} (f : Hom X Y) {U : Opens Y} :
+@[reassoc]
+lemma map_appLE' (e : V ≤ f ⁻¹ᵁ U) (i : U' = U) :
+    Y.presheaf.map (eqToHom i).op ≫ f.appLE U' V (i ▸ e) = f.appLE U V e :=
+  map_appLE _ _ _
+
+lemma app_eq_appLE {U : Opens Y} :
     f.app U = f.appLE U _ le_rfl := by
   simp [Hom.appLE]
 
-lemma Hom.appLE_congr {X Y : Scheme} (f : Hom X Y) {U U' : Opens Y} {V V' : Opens X}
-    (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
-    (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V') :
-    P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by subst e₁; subst e₂; rfl
+lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
+    (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop) :
+    P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by
+  subst e₁; subst e₂; rfl
+
+end Hom
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
@@ -209,6 +222,11 @@ theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e�
   dsimp [Hom.appLE]
   rw [Category.assoc, f.naturality_assoc, ← Functor.map_comp]
   rfl
+
+@[simp, reassoc] -- reassoc lemma does not need `simp`
+theorem comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V e) :
+    (f ≫ g).appLE U V e = g.app U ≫ f.appLE _ V e := by
+  rw [g.app_eq_appLE, appLE_comp_appLE]
 
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.app U = g.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)).op := by

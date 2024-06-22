@@ -161,15 +161,17 @@ theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally 
 #align algebraic_geometry.affine_locally_respects_iso AlgebraicGeometry.affineLocally_respectsIso
 
 open Scheme in
-theorem affineLocally_iff_affineOpens_le
-    (hP : RingHom.RespectsIso @P) {X Y : Scheme.{u}} (f : X ⟶ Y) :
+theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} (@P) f ↔
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), P (f.appLe e) := by
+      ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), P (f.appLE U V e) := by
   apply forall_congr'
   intro U
   delta sourceAffineLocally
-  simp_rw [op_comp, Scheme.Γ.map_comp, Γ_map_morphismRestrict, Category.assoc, Scheme.Γ_map_op,
-    hP.cancel_left_isIso (Y.presheaf.map (eqToHom _).op)]
+  conv_lhs =>
+    intro U
+    rw [op_comp, Scheme.Γ.map_comp, Γ_map_morphismRestrict, Category.assoc, Category.assoc,
+      Scheme.Γ_map_op, ofRestrict_app, restrict_presheaf_map, Hom.app_eq_appLE, Hom.map_appLE_assoc,
+      Hom.appLE_map_assoc, Hom.appLE_map]
   constructor
   · intro H V e
     let U' := f ⁻¹ᵁ U.1
@@ -181,46 +183,29 @@ theorem affineLocally_iff_affineOpens_le
       apply (ιOpens U').isAffineOpen_iff_of_isOpenImmersion.mp
       rw [e'']
       exact V.2
-    have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, h⟩
-    rw [Scheme.ofRestrict_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp,
-      ← op_comp] at this
-    rw [← hP.cancel_right_isIso (f.appLe e) (X.presheaf.map (eqToHom e'').op),
-      Category.assoc, ← X.presheaf.map_comp]
-    convert this using 1
-    congr!
-    -- · dsimp; convert this using 1
-    --   congr 1
-    --   rw [X.presheaf.map_comp]
-    --   swap
-    --   · dsimp only [Functor.op, unop_op]
-    --     rw [Opens.openEmbedding_obj_top]
-    --     congr 1
-    --     exact e''.symm
-    --   · simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
-    --     congr 1
+    refine (f.appLE_congr _ _ ?_ ?_).mp (H ⟨ιOpens U' ⁻¹ᵁ V, h⟩)
+    · exact U.1.openEmbedding_obj_top
+    · show ιOpens U' ''ᵁ ιOpens (ιOpens U' ⁻¹ᵁ ↑V) ''ᵁ ⊤ = V
+      rw [Opens.openEmbedding_obj_top, e'']
   · intro H V
-    specialize H ⟨_, V.2.image_of_isOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc]
-    · convert H
-      simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
-      congr 1
-    · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
+    specialize H ⟨_, V.2.image_of_isOpenImmersion (ιOpens _)⟩ (Subtype.coe_image_subset _ _)
+    refine (f.appLE_congr _ _ ?_ ?_).mp H
+    · exact U.1.openEmbedding_obj_top.symm
+    · show ιOpens (f ⁻¹ᵁ ↑U) ''ᵁ V = ιOpens (f ⁻¹ᵁ ↑U) ''ᵁ (ιOpens V ''ᵁ ⊤)
+      rw [Opens.openEmbedding_obj_top]
 #align algebraic_geometry.affine_locally_iff_affine_opens_le AlgebraicGeometry.affineLocally_iff_affineOpens_le
 
 theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.RespectsIso @P)
     (h₂ : RingHom.LocalizationPreserves @P) {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y)
-    (r : Y.presheaf.obj (op ⊤)) (H : sourceAffineLocally (@P) f)
-    (U : (X.restrict ((Opens.map f.1.base).obj <| Y.basicOpen r).openEmbedding).affineOpens) :
-    P (Scheme.Γ.map ((X.restrict ((Opens.map f.1.base).obj <|
-      Y.basicOpen r).openEmbedding).ofRestrict U.1.openEmbedding ≫ f ∣_ Y.basicOpen r).op) := by
-  specialize H ⟨_, U.2.image_of_isOpenImmersion (X.ofRestrict _)⟩
-  letI i1 : Algebra (Y.presheaf.obj <| Opposite.op ⊤) (Localization.Away r) := Localization.algebra
-  exact (h₁.ofRestrict_morphismRestrict_iff f r
-    ((Scheme.Hom.opensFunctor
-      (X.ofRestrict ((Opens.map f.1.base).obj <| Y.basicOpen r).openEmbedding)).obj U.1)
-    (IsAffineOpen.image_of_isOpenImmersion U.2
-      (X.ofRestrict ((Opens.map f.1.base).obj <| Y.basicOpen r).openEmbedding))
-    (Opens.ext (Set.preimage_image_eq _ Subtype.coe_injective).symm)).mpr (h₂.away r H)
+    (r : Γ(Y, ⊤)) (H : sourceAffineLocally (@P) f)
+    (U : (X ∣_ᵤ f ⁻¹ᵁ Y.basicOpen r).affineOpens) :
+    P (Scheme.Γ.map (Scheme.ιOpens U.1 ≫ f ∣_ Y.basicOpen r).op) := by
+  simp?
+  -- specialize H ⟨_, U.2.image_of_isOpenImmersion (Scheme.ιOpens _)⟩
+  -- letI i1 : Algebra Γ(Y, ⊤) (Localization.Away r) := Localization.algebra
+  -- exact (h₁.ofRestrict_morphismRestrict_iff f r (Scheme.ιOpens (f ⁻¹ᵁ Y.basicOpen r) ''ᵁ U.1)
+  --   (U.2.image_of_isOpenImmersion (Scheme.ιOpens (f ⁻¹ᵁ Y.basicOpen r)))
+  --   (Opens.ext (Set.preimage_image_eq _ Subtype.coe_injective).symm)).mpr (h₂.away r H)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Scheme_restrict_basic_open_of_localization_preserves AlgebraicGeometry.scheme_restrict_basicOpen_of_localizationPreserves
 
