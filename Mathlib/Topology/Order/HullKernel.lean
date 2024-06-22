@@ -151,6 +151,17 @@ lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ 
     simp at ha
     exact ha
 
+lemma closed_basis3 (S : Set α) : ⋂₀ { T ↓∩ (Ici a) | a ∈ S } = T ↓∩ (Ici (sSup S)) := by
+  rw [← compl_inj_iff]
+  rw [← preimage_compl]
+  rw [compl_sInter]
+  rw [← basis3]
+  apply congrArg sUnion
+  --simp only [preimage_compl]
+  aesop
+
+
+
 
 lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor
@@ -168,6 +179,43 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
     · simp only [isOpen_compl_iff]
       exact isClosed_Ici
     · rw [ha]
+
+lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici a) := by
+  rw [← isOpen_compl_iff]
+  rw [isOpen_iff]
+  constructor
+  · intros h
+    cases' h with a ha
+    use a
+    rw [preimage_compl, compl_inj_iff] at ha
+    exact ha
+  · intros h
+    cases' h with a ha
+    use a
+    rw [preimage_compl, compl_inj_iff]
+    exact ha
+  exact fun p a ↦ hT p a
+
+
+
+/-
+lemma isOpen_iff' (S : Set T) : IsOpen S ↔ S = T ↓∩ (Ici (sSup {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}))ᶜ := by
+  constructor
+  · intro h
+    let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
+
+    rw [← basis3]
+    simp only [preimage_compl, mem_setOf_eq]
+    rw [IsTopologicalBasis.open_eq_sUnion' (isBasis1' T hT) h]
+    simp  [preimage_compl, mem_setOf_eq]
+    aesop
+  · intro h
+    use (Ici (sSup {a | T ↓∩ (Ici a)ᶜ ⊆ S}))ᶜ
+    constructor
+    · simp only [isOpen_compl_iff]
+      exact isClosed_Ici
+    · exact id (Eq.symm h)
+-/
 
 theorem PrimativeSpectrum.gc : GaloisConnection (β := (Set T)ᵒᵈ) (fun a => T ↓∩ (Ici a))
     (fun S =>  sInf (↑(OrderDual.ofDual S) : (Set α))) := by
@@ -191,7 +239,8 @@ theorem PrimativeSpectrum.gc : GaloisConnection (β := (Set T)ᵒᵈ) (fun a => 
     exact hbS
     exact Subtype.coe_prop b
 
-theorem PrimativeSpectrum.gc' : GaloisConnection (α := Set T) (β := αᵒᵈ) (fun S => OrderDual.toDual (sInf (S : (Set α))))
+theorem PrimativeSpectrum.gc' : GaloisConnection (α := Set T) (β := αᵒᵈ)
+    (fun S => OrderDual.toDual (sInf (S : (Set α))))
     (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) := by
   rw [GaloisConnection]
   intros S a
@@ -208,22 +257,80 @@ theorem PrimativeSpectrum.gc' : GaloisConnection (α := Set T) (β := αᵒᵈ) 
     simp at h
     rw [← OrderDual.ofDual_le_ofDual]
     rw [OrderDual.ofDual_toDual]
-    simp
+    simp only [le_sInf_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+      forall_exists_index]
     intros b hbT hbS
     rw [← mem_Ici]
     apply h hbS
 
+/-- `T` is said to order generate `α` if, for every `a` in `α`, there exists a subset of `T` such
+that `a` is the inf of `S`. -/
+def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = sInf (S : Set α)
 
+def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
+    (fun S => OrderDual.toDual (sInf (S : (Set α))))
+    (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) :=
+  (PrimativeSpectrum.gc' T).toGaloisInsertion fun a ↦ (by
+    rw [OrderDual.le_toDual]
+    cases' hG a with S hS
+    have e1 : S ⊆ T ↓∩ Ici (OrderDual.ofDual a) := by
+      intros c hcS
+      rw [mem_preimage, mem_Ici]
+      rw [hS]
+      apply CompleteSemilatticeInf.sInf_le
+      exact mem_image_of_mem Subtype.val hcS
+    have e2 : sInf (T ↓∩ Ici (OrderDual.ofDual a) : Set α) ≤ sInf (S : Set α) := by
+      apply sInf_le_sInf
+      exact image_val_mono e1
+    exact le_of_le_of_eq e2 (id (Eq.symm hS)))
 
+/-
+lemma hk1 (hG : OrderGenerate T) (C : Set T) (h : IsClosed C) :
+    (PrimativeSpectrum.gc' T).closureOperator C = C := by
+  simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
+  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
+  have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff T hT C).mp h
+  cases' e1 with c hc
+  rw [hc]
+-/
 
+lemma test (S R : Set α) (h : ∀ (a : α), a ∈ S ↔ a ∈ R) : S = R := by
+  exact ext h
 
-#check TopologicalSpace.Closeds.gc.closureOperator
-#check (TopologicalSpace.Closeds.gc (α := T)).closureOperator
-#check (PrimativeSpectrum.gc' T).closureOperator
-#check (PrimativeSpectrum.gc T).dual.closureOperator
+lemma test' (S R : Set α) (h : S = R) : ∀ (a : α), a ∈ S ↔ a ∈ R := by
+  exact fun a ↦ Eq.to_iff (congrArg (Membership.mem a) h)
 
-#check (TopologicalSpace.Closeds.gc (α := T)).closureOperator = (PrimativeSpectrum.gc' T).closureOperator
+lemma testhk (S : Set T) : (PrimativeSpectrum.gc' T).closureOperator S = T ↓∩ (Ici (sInf S)) := by
+  simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
+  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
-#check (TopologicalSpace.Closeds.gc (α := T)).closureOperator = (PrimativeSpectrum.gc T).dual.closureOperator
+/-
+theorem hull_kernel : (TopologicalSpace.Closeds.gc (α := T)).closureOperator =
+    (PrimativeSpectrum.gc' T).closureOperator := by
+  ext S a
+  rw [testhk]
+  simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, toDual_sInf, ofDual_sSup,
+    mem_preimage]
+  --rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
+  --rw [← mem_preimage]
+  --rw [←  closed_basis3 ]
+  --apply congrArg
+  --apply fun a ↦ Eq.to_iff (congrArg (Membership.mem a) _ _)
+  rw [closure]
+  simp_rw [isClosed_iff]
+  --rw [closed_basis3 ]
+  simp?
+  constructor
+  · intro h
+  · intro h a ha
+  rw [← OrderDual.toDual_symm_eq ]
+  simp only [OrderDual.toDual_symm_eq, mem_Ici]
+
+  --simp_rw []
+  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
+  simp only [mem_sInter, mem_setOf_eq, and_imp, forall_exists_index, forall_eq_apply_imp_iff,
+    mem_preimage, mem_Ici, preimage_id_eq, id_eq]
+  simp_rw [OrderDual.ofDual_toDual]
+-/
 
 end PrimativeSpectrum
