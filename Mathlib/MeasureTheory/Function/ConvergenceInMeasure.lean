@@ -67,7 +67,7 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
 
 -- The ae-limit is ae-unique. (This must already be in Mathlib somewhere, but I did not find it...)
 theorem ae_unique_of_ae_limit {α ι E : Type*} [TopologicalSpace E] [T2Space E] {x : MeasurableSpace α} {μ : Measure α} {g h : α → E} {f : ι → α → E} {l : Filter ι} [l.NeBot]
-(hg : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (g ω))) (hh
+    (hg : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (g ω))) (hh
 : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (h ω))) : g =ᵐ[μ] h := by
   filter_upwards [hg, hh] with ω hg1 hh1
   exact tendsto_nhds_unique hg1 hh1
