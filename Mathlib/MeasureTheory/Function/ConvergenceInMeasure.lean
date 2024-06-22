@@ -92,7 +92,7 @@ TendstoInMeasure μ f l g ↔ TendstoInMeasure' μ f l g := by
 
 -- Convergence in measure is stable under taking subsequences.
 lemma sub_TendstoInMeasure' [Dist E] {f : ι → α → E}  {g : α → E} {u v: Filter ι} (huv : v ≤ u)
-(hg :  TendstoInMeasure μ f u g) : TendstoInMeasure μ f v g :=
+    (hg :  TendstoInMeasure μ f u g) : TendstoInMeasure μ f v g :=
   fun ε hε => Tendsto.mono_left (hg ε hε) huv
 
 lemma subseqTendsto_of_TendstoInMeasure [Dist E] {f : ℕ → α → E}  {g : α → E} {ns : ℕ → ℕ} (hns : StrictMono ns)
