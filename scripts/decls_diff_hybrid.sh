@@ -33,14 +33,17 @@ processDeclsInOneCommit () {
     printf 'File `%s` already exist, please rename and try again\n' "${2}"
     exit 1
   fi
+  printf 'Checking out %s\n' "${1}"
   git checkout "${1}"
   getDecls > "${2}"
   git switch -
 }
 
+printf 'processDeclsInOneCommit %s" %s"\n' "${commit1}" "${temp1}"
 # save the declarations in `commit1` to `tempDecls1.txt`
 processDeclsInOneCommit "${commit1}" "${temp1}"
 # save the declarations in `commit2` to `tempDecls2.txt`
+printf 'processDeclsInOneCommit %s" %s"\n' "${commit2}" "${temp2}"
 processDeclsInOneCommit "${commit2}" "${temp2}"
 # restore the cache in the initial branch
 lake exe cache get
