@@ -402,6 +402,13 @@ alias dist_eq_norm := dist_eq_norm_sub
 alias dist_eq_norm' := dist_eq_norm_sub'
 #align dist_eq_norm' dist_eq_norm'
 
+@[to_additive of_forall_le_norm]
+lemma DiscreteTopology.of_forall_le_norm' (hpos : 0 < r) (hr : ∀ x : E, x ≠ 1 → r ≤ ‖x‖) :
+    DiscreteTopology E :=
+  .of_forall_le_dist hpos fun x y hne ↦ by
+    simp only [dist_eq_norm_div]
+    exact hr _ (div_ne_one.2 hne)
+
 @[to_additive (attr := simp)]
 theorem dist_one_right (a : E) : dist a 1 = ‖a‖ := by rw [dist_eq_norm_div, div_one]
 #align dist_one_right dist_one_right

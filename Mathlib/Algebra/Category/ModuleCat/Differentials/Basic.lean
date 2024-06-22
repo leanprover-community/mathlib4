@@ -71,10 +71,10 @@ lemma d_add (b b' : B) : D.d (b + b') = D.d b + D.d b' := by simp [d]
 lemma d_mul (b b' : B) : D.d (b * b') = b • D.d b' + b' • D.d b := by simp [d]
 
 @[simp]
-lemma d_map (a : A) : D.d (f a) = 0 := by
+lemma d_map (a : A) : D.d (f a) = 0 :=
   letI := f.toAlgebra
   letI := Module.compHom M f
-  exact D.map_algebraMap a
+  D.map_algebraMap a
 
 end Derivation
 
