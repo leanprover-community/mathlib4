@@ -189,17 +189,13 @@ variable (J : Type*) [Category J] [HasZeroObject D] [HasZeroMorphisms D]
 def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G where
   preservesLimit {K} := ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
-    refine IsLimit.ofIsZero _ ?_ (hG _)
-    apply (K ⋙ G).isZero (fun X ↦ hG _)⟩
+    exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
 
 /-- A zero functor preserves colimits. -/
 def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G where
-  preservesColimit := ⟨fun hc => by
+  preservesColimit {K} := ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
-    refine IsColimit.ofIsZero _ ?_ (hG _)
-    rw [Functor.isZero_iff]
-    intro X
-    apply hG⟩
+    exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
 
 end
 
