@@ -648,9 +648,9 @@ theorem of_affine_open_cover {X : Scheme} (V : X.affineOpens) (S : Set X.affineO
   exact ⟨_, hf₁ ⟨x, hx⟩⟩
 #align algebraic_geometry.of_affine_open_cover AlgebraicGeometry.of_affine_open_cover
 
-@[deprecated (since := "2024-06-21")]
+@[deprecated (since := "2024-06-21"), nolint defLemma]
 alias isAffineAffineScheme := isAffine_affineScheme
-@[deprecated (since := "2024-06-21")]
+@[deprecated (since := "2024-06-21"), nolint defLemma]
 alias SpecIsAffine := isAffine_Spec
 @[deprecated (since := "2024-06-21")]
 alias isAffineOfIso := isAffine_of_isIso
@@ -658,15 +658,15 @@ alias isAffineOfIso := isAffine_of_isIso
 alias rangeIsAffineOpenOfOpenImmersion := isAffineOpen_opensRange
 @[deprecated (since := "2024-06-21")]
 alias topIsAffineOpen := isAffineOpen_top
-@[deprecated (since := "2024-06-21")]
+@[deprecated (since := "2024-06-21"), nolint defLemma]
 alias Scheme.affineCoverIsAffine := Scheme.isAffine_affineCover
-@[deprecated (since := "2024-06-21")]
+@[deprecated (since := "2024-06-21"), nolint defLemma]
 alias Scheme.affineBasisCoverIsAffine := Scheme.isAffine_affineBasisCover
 @[deprecated (since := "2024-06-21")]
 alias IsAffineOpen.fromSpec_range := IsAffineOpen.range_fromSpec
 @[deprecated (since := "2024-06-21")]
 alias IsAffineOpen.imageIsOpenImmersion := IsAffineOpen.image_of_isOpenImmersion
-@[deprecated (since := "2024-06-21")]
+@[deprecated (since := "2024-06-21"), nolint defLemma]
 alias Scheme.quasi_compact_of_affine := Scheme.compactSpace_of_isAffine
 @[deprecated (since := "2024-06-21")]
 alias IsAffineOpen.fromSpec_base_preimage := IsAffineOpen.fromSpec_preimage_self
