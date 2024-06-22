@@ -335,7 +335,7 @@ TendstoInMeasure μ (fun n => f (ns n)) v g :=
   fun ε hε => (hfg ε hε).comp hns
 
 lemma subseq_of_notTendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (nhds (0 : ℝ≥0))) :
-∃ ε > 0, ∃ (ns : ℕ → ℕ) (_ : StrictMono ns), ∀ n, ε ≤ (f (ns n)).toReal :=
+    ∃ ε > 0, ∃ (ns : ℕ → ℕ) (_ : StrictMono ns), ∀ n, ε ≤ (f (ns n)).toReal :=
   by
   rw [Filter.not_tendsto_iff_exists_frequently_nmem] at h
   rcases h with ⟨A, ⟨hA1, hA2⟩⟩
