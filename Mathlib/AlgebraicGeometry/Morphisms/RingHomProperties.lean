@@ -197,7 +197,7 @@ theorem affineLocally_iff_affineOpens_le
       · simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
         congr 1
   · intro H V
-    specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
+    specialize H ⟨_, V.2.image_of_isOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc]
     · convert H
       simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
@@ -211,12 +211,12 @@ theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.Respe
     (U : (X.restrict ((Opens.map f.1.base).obj <| Y.basicOpen r).openEmbedding).affineOpens) :
     P (Scheme.Γ.map ((X.restrict ((Opens.map f.1.base).obj <|
       Y.basicOpen r).openEmbedding).ofRestrict U.1.openEmbedding ≫ f ∣_ Y.basicOpen r).op) := by
-  specialize H ⟨_, U.2.imageIsOpenImmersion (X.ofRestrict _)⟩
+  specialize H ⟨_, U.2.image_of_isOpenImmersion (X.ofRestrict _)⟩
   letI i1 : Algebra (Y.presheaf.obj <| Opposite.op ⊤) (Localization.Away r) := Localization.algebra
   exact (h₁.ofRestrict_morphismRestrict_iff f r
     ((Scheme.Hom.opensFunctor
       (X.ofRestrict ((Opens.map f.1.base).obj <| Y.basicOpen r).openEmbedding)).obj U.1)
-    (IsAffineOpen.imageIsOpenImmersion U.2
+    (IsAffineOpen.image_of_isOpenImmersion U.2
       (X.ofRestrict ((Opens.map f.1.base).obj <| Y.basicOpen r).openEmbedding))
     (Opens.ext (Set.preimage_image_eq _ Subtype.coe_injective).symm)).mpr (h₂.away r H)
 set_option linter.uppercaseLean3 false in

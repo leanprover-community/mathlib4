@@ -137,7 +137,7 @@ theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := 
   erw [Set.mem_empty_iff_false]
   rw [false_iff_iff]
   exact fun x => isEmptyElim (show (⊥_ Scheme).carrier from x.choose)
-#align algebraic_geometry.bot_is_affine_open AlgebraicGeometry.bot_isAffineOpen
+#align algebraic_geometry.bot_is_affine_open AlgebraicGeometry.isAffineOpen_bot
 
 instance : HasStrictInitialObjects Scheme :=
   hasStrictInitialObjects_of_initial_is_strict fun A f => by infer_instance
