@@ -367,13 +367,13 @@ lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 -- direction of `NatTrans.naturality`.
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-  f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ 𝖲𝗉𝖾𝖼(f).app ⊤ := SpecΓIdentity.inv.naturality f
+    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ 𝖲𝗉𝖾𝖼(f).app ⊤ := SpecΓIdentity.inv.naturality f
 
 -- This is not marked simp to respect the abstraction
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
 
 lemma toOpen_eq (U) :
-  (by exact StructureSheaf.toOpen R U) =
+    (by exact StructureSheaf.toOpen R U) =
     (ΓSpecIso R).inv ≫ (𝖲𝗉𝖾𝖼 R).presheaf.map (homOfLE le_top).op := rfl
 
 section BasicOpen
