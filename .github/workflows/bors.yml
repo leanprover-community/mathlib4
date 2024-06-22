@@ -213,7 +213,7 @@ jobs:
         run: |
           git checkout master
           git checkout -
-          ./scripts/list_decls.lean "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})"
+          ./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})"
 
       - name: build archive
         id: archive
