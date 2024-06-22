@@ -195,16 +195,17 @@ theorem isLocallyNoetherian_iff_affine_cover' :
     apply isLocallyNoetherian_of_affine_cover S
     rw [← Scheme.OpenCover.iSup_opensRange C]
     rw [← iSup_range, ← iSup_image]
-    simp only [Scheme.Γ_obj, Subtype.range_coe_subtype, Set.image_univ, Set.mem_range, Set.image_id',
-      Set.mem_setOf_eq, iSup_exists, Opens.iSup_mk, Opens.carrier_eq_coe, Set.iUnion_iUnion_eq',
-      Scheme.Hom.opensRange_coe, S, fS]
+    simp only [Scheme.Γ_obj, Subtype.range_coe_subtype, Set.image_univ, Set.mem_range,
+      Set.image_id', Set.mem_setOf_eq, iSup_exists, Opens.iSup_mk, Opens.carrier_eq_coe,
+      Set.iUnion_iUnion_eq', Scheme.Hom.opensRange_coe, S, fS]
     intro ⟨U, ⟨i, hi⟩⟩
     have : X.presheaf.obj (op U) ≅ Scheme.Γ.obj (op <| C.obj i) := by
       trans
       exact ((Scheme.restrictFunctorΓ X).app (op U)).symm
       subst hi
       have h := (C.IsOpen i).isoRestrict
-      have : (C.obj i).presheaf.obj (op ⊤) ≅ (X.restrict (C.IsOpen i).base_open).presheaf.obj (op ⊤) := by
+      have : (C.obj i).presheaf.obj (op ⊤) ≅
+          (X.restrict (C.IsOpen i).base_open).presheaf.obj (op ⊤) := by
         rw [← Scheme.Γ_obj, ← Scheme.Γ_obj]
         apply Functor.mapIso
         apply Iso.op
@@ -213,7 +214,8 @@ theorem isLocallyNoetherian_iff_affine_cover' :
       swap
       exact this.symm
       simp only [Scheme.restrict_presheaf_obj]
-      let hEq (U V : Opens X) (h : U.carrier = V.carrier) : X.presheaf.obj (op U) ≅ X.presheaf.obj (op V) := by
+      let hEq (U V : Opens X) (h : U.carrier = V.carrier) :
+          X.presheaf.obj (op U) ≅ X.presheaf.obj (op V) := by
         have : U = V := Opens.ext h
         subst this
         exact Iso.refl _
