@@ -44,7 +44,7 @@ processDeclsInOneCommit "${commit1}" "${temp1}"
 # save the declarations in `commit2` to `tempDecls2.txt`
 processDeclsInOneCommit "${commit2}" "${temp2}"
 # restore the cache in the initial branch
-lake exe cache get
+lake exe cache get > /dev/null
 
 printf 'Declarations only in %s\n%s\n\n' "${commit1}" "$(comm -23 <(sort "${temp1}") <(sort "${temp2}"))"
 printf 'Declarations only in %s\n%s\n\n' "${commit2}" "$(comm -13 <(sort "${temp1}") <(sort "${temp2}"))"
