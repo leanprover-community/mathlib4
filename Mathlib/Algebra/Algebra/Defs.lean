@@ -253,6 +253,34 @@ theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i 
   rfl
 #align ring_hom.algebra_map_to_algebra RingHom.algebraMap_toAlgebra
 
+lemma RingHom.isScalarTower_toAlgebra_comp {A B C : Type*}
+    [CommSemiring A] [CommSemiring B] [CommSemiring C]
+    (f : A →+* B) (g : B →+* C) (h : A →+* C) (fac : g.comp f = h) :
+    letI := RingHom.toAlgebra f
+    letI := RingHom.toAlgebra g
+    letI := RingHom.toAlgebra h
+    IsScalarTower A B C := by
+  letI := RingHom.toAlgebra f
+  letI := RingHom.toAlgebra g
+  letI := RingHom.toAlgebra h
+  constructor
+  intro a b c
+  change g (f a * b) * c = h a * (g b * c)
+  simp only [← fac, map_mul, coe_comp, Function.comp_apply, mul_assoc]
+
+lemma RingHom.smulCommClass_toAlgebra {A B C : Type*}
+    [CommSemiring A] [CommSemiring B] [CommSemiring C]
+    (g : B →+* C) (h : A →+* C)  :
+    letI := RingHom.toAlgebra g
+    letI := RingHom.toAlgebra h
+    SMulCommClass A B C := by
+  letI := RingHom.toAlgebra g
+  letI := RingHom.toAlgebra h
+  constructor
+  intro a b c
+  change h a * (g b * c) = g b * (h a * c)
+  rw [← mul_assoc, mul_comm (h a) (g b), mul_assoc]
+
 namespace Algebra
 
 variable {R : Type u} {S : Type v} {A : Type w} {B : Type*}
