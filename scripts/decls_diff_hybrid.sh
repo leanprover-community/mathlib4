@@ -10,7 +10,7 @@ scr=scripts/list_decls.lean
 commit1="${1}"
 commit2="${2}"
 temp1='tempDecls1.txt'
-temp1='tempDecls2.txt'
+temp2='tempDecls2.txt'
 
 # `getDecls`
 # 1. retrieves the script file from either master or the PR commit
@@ -47,6 +47,6 @@ printf 'processDeclsInOneCommit %s" %s"\n' "${commit2}" "${temp2}"
 processDeclsInOneCommit "${commit2}" "${temp2}"
 # restore the cache in the initial branch
 lake exe cache get
-
-printf 'Declarations only in %s\n%s\n\n' "${commit1}" "$(comm -23 <(sort "${temp1}") <(sort "${temp2}"))" | head
+sort "${temp1}" | head
+printf 'Declarations only in %s\n%s\n\n' "${commit1}" "$(comm -23 <(sort "${temp1}") <(sort "${temp1}"))" | head
 printf 'Declarations only in %s\n%s\n\n' "${commit2}" "$(comm -13 <(sort "${temp1}") <(sort "${temp2}"))" | head
