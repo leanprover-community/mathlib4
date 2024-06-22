@@ -140,18 +140,6 @@ lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ 
     simp at ha
     exact ha
 
-lemma closed_basis3 (S : Set α) : ⋂₀ { T ↓∩ (Ici a) | a ∈ S } = T ↓∩ (Ici (sSup S)) := by
-  rw [← compl_inj_iff]
-  rw [← preimage_compl]
-  rw [compl_sInter]
-  rw [← basis3]
-  apply congrArg sUnion
-  --simp only [preimage_compl]
-  aesop
-
-
-
-
 lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor
   · intro h
