@@ -151,7 +151,7 @@ lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ 
     exact ha
 
 
-lemma test (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
+lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor
   · intro h
     let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
@@ -175,17 +175,14 @@ theorem PrimativeSpectrum.gc : GaloisConnection (β := (Set T)ᵒᵈ) (fun a => 
   constructor
   · intro h
     simp only at h
-    simp
+    simp only [le_sInf_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+      forall_exists_index]
     intro b hbT hbS
-    --have e1 (c : T) (h1: c ∈ S) : c ∈ T ↓∩ Ici a :=
-    sorry
-
-    --simp? at h
-
-    --simp
-  --simp?
+    rw [← mem_Ici]
+    apply h hbS
   · intro h
-    simp at h
+    simp only [le_sInf_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+      forall_exists_index] at h
     intro b hbS
     rw [mem_preimage]
     rw [mem_Ici]
