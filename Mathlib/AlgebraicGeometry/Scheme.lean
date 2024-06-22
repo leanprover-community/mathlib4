@@ -96,6 +96,37 @@ abbrev Hom.naturality {X Y : Scheme.{u}} (f : Hom X Y) {U V : Opens Y} (i : op V
     Y.presheaf.map i ≫ f.app U = f.app V ≫ X.presheaf.map ((Opens.map f.1.base).map i.unop).op :=
   f.1.c.naturality i
 
+/-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
+this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
+def Hom.appLE {X Y : Scheme} (f : Hom X Y) (U : Opens Y) (V : Opens X)
+    (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
+  f.app U ≫ X.presheaf.map (homOfLE e).op
+#align algebraic_geometry.Scheme.hom.app_le AlgebraicGeometry.Scheme.Hom.appLE
+
+@[reassoc (attr := simp)]
+lemma Hom.appLE_map {X Y : Scheme} (f : Hom X Y) {V' V : Opens X} {U : Opens Y}
+    (e : V ≤ f ⁻¹ᵁ U) (i : op V ⟶ op V') :
+    f.appLE U V e ≫ X.presheaf.map i = f.appLE U V' (i.unop.le.trans e) := by
+  rw [Hom.appLE, Category.assoc, ← Functor.map_comp]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma Hom.map_appLE {X Y : Scheme} (f : Hom X Y) {V : Opens X} {U' U : Opens Y}
+    (e : V ≤ f ⁻¹ᵁ U) (i : op U' ⟶ op U) :
+    Y.presheaf.map i ≫ f.appLE U V e =
+      f.appLE U' V (e.trans ((Opens.map f.1.base).map i.unop).le) := by
+  rw [Hom.appLE, f.naturality_assoc, ← Functor.map_comp]
+  rfl
+
+lemma Hom.app_eq_appLE {X Y : Scheme} (f : Hom X Y) {U : Opens Y} :
+    f.app U = f.appLE U _ le_rfl := by
+  simp [Hom.appLE]
+
+lemma Hom.appLE_congr {X Y : Scheme} (f : Hom X Y) {U U' : Opens Y} {V V' : Opens X}
+    (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
+    (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V') :
+    P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by subst e₁; subst e₂; rfl
+
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
 def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
@@ -226,13 +257,6 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X) :
 theorem inv_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).app ⊤ = inv (f.app ⊤) := by simp
 
-/-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
-this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
-abbrev Hom.appLe {X Y : Scheme} (f : Hom X Y) {V : Opens X} {U : Opens Y}
-    (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
-  f.app U ≫ X.presheaf.map (homOfLE e).op
-#align algebraic_geometry.Scheme.hom.app_le AlgebraicGeometry.Scheme.Hom.appLe
-
 /-- The spectrum of a commutative ring, as a scheme.
 -/
 def specObj (R : CommRingCat) : Scheme where
@@ -295,7 +319,7 @@ lemma Spec_map_app (U) :
     𝖲𝗉𝖾𝖼(f).app U = StructureSheaf.comap f U (𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ U) le_rfl := rfl
 
 lemma Spec_map_appLE {U V} (e : U ≤ 𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ V) :
-    𝖲𝗉𝖾𝖼(f).appLe e = StructureSheaf.comap f V U e := rfl
+    𝖲𝗉𝖾𝖼(f).appLE V U e = StructureSheaf.comap f V U e := rfl
 
 end
 

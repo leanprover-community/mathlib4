@@ -46,14 +46,14 @@ namespace RingHom
 
 variable {P}
 theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y]
-    (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
+    (f : X ⟶ Y) (r : Γ(Y, ⊤)) :
     P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔
-    P (@IsLocalization.Away.map (Y.presheaf.obj (Opposite.op ⊤)) _
-      (Y.presheaf.obj (Opposite.op <| Y.basicOpen r)) _ _ (X.presheaf.obj (Opposite.op ⊤)) _
-      (X.presheaf.obj (Opposite.op <| X.basicOpen (Scheme.Γ.map f.op r))) _ _
+    P (@IsLocalization.Away.map Γ(Y, ⊤) _
+      Γ(Y, Y.basicOpen r) _ _ Γ(X, ⊤) _
+      Γ(X, X.basicOpen (Scheme.Γ.map f.op r)) _ _
       (Scheme.Γ.map f.op) r _ <| @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)) := by
   rw [Γ_map_morphismRestrict, hP.cancel_left_isIso, hP.cancel_right_isIso,
-    ← hP.cancel_right_isIso (f.val.c.app (Opposite.op (Y.basicOpen r)))
+    ← hP.cancel_right_isIso (f.app (Y.basicOpen r))
       (X.presheaf.map (eqToHom (Scheme.preimage_basicOpen f r).symm).op), ← eq_iff_iff]
   congr
   delta IsLocalization.Away.map
@@ -62,7 +62,7 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAf
   haveI i1 := @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)
   -- Porting note: needs to be very explicit here
   convert
-    (@IsLocalization.map_comp (hy := ‹_ ≤ _›) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
+    (@IsLocalization.map_comp (hy := ‹_ ≤ _›) Γ(Y, Y.basicOpen r)
     _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
   change Y.presheaf.map _ ≫ _ = _ ≫ X.presheaf.map _
   rw [f.val.c.naturality_assoc]
@@ -71,7 +71,7 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAf
 #align ring_hom.respects_iso.basic_open_iff RingHom.RespectsIso.basicOpen_iff
 
 theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAffine X]
-    [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
+    [IsAffine Y] (f : X ⟶ Y) (r : Γ(Y, ⊤)) :
     P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔ P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
   refine (hP.basicOpen_iff _ _).trans ?_
   -- Porting note: was a one line term mode proof, but this `dsimp` is vital so the term mode
@@ -84,7 +84,7 @@ theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Sche
 RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine := RespectsIso.basicOpen_iff_localization
 
 theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P) {X Y : Scheme.{u}}
-    [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) (U : Opens X.carrier)
+    [IsAffine Y] (f : X ⟶ Y) (r : Γ(Y, ⊤)) (U : Opens X.carrier)
     (hU : IsAffineOpen U) {V : Opens _}
     (e : V = (Scheme.ιOpens <| f ⁻¹ᵁ Y.basicOpen r) ⁻¹ᵁ U) :
     P (Scheme.Γ.map (Scheme.ιOpens V ≫ f ∣_ Y.basicOpen r).op) ↔
@@ -130,7 +130,7 @@ namespace AlgebraicGeometry
 /-- For `P` a property of ring homomorphisms, `sourceAffineLocally P` holds for `f : X ⟶ Y`
 whenever `P` holds for the restriction of `f` on every affine open subset of `X`. -/
 def sourceAffineLocally : AffineTargetMorphismProperty := fun X _ f _ =>
-  ∀ U : X.affineOpens, P (Scheme.Γ.map (X.ofRestrict U.1.openEmbedding ≫ f).op)
+  ∀ U : X.affineOpens, P (Scheme.Γ.map (Scheme.ιOpens U ≫ f).op)
 #align algebraic_geometry.source_affine_locally AlgebraicGeometry.sourceAffineLocally
 
 /-- For `P` a property of ring homomorphisms, `affineLocally P` holds for `f : X ⟶ Y` if for each
@@ -160,11 +160,11 @@ theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally 
   targetAffineLocally_respectsIso (sourceAffineLocally_respectsIso h)
 #align algebraic_geometry.affine_locally_respects_iso AlgebraicGeometry.affineLocally_respectsIso
 
+open Scheme in
 theorem affineLocally_iff_affineOpens_le
     (hP : RingHom.RespectsIso @P) {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} (@P) f ↔
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ (Opens.map f.1.base).obj U.1),
-      P (Scheme.Hom.appLe f e) := by
+    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), P (f.appLe e) := by
   apply forall_congr'
   intro U
   delta sourceAffineLocally
@@ -172,30 +172,32 @@ theorem affineLocally_iff_affineOpens_le
     hP.cancel_left_isIso (Y.presheaf.map (eqToHom _).op)]
   constructor
   · intro H V e
-    let U' := (Opens.map f.val.base).obj U.1
-    have e'' : (Scheme.Hom.opensFunctor (X.ofRestrict U'.openEmbedding)).obj
-        (X.ofRestrict U'.openEmbedding⁻¹ᵁ V) = V := by
+    let U' := f ⁻¹ᵁ U.1
+    have e'' : ιOpens U' ''ᵁ ιOpens U' ⁻¹ᵁ V = V := by
       ext1; refine Set.image_preimage_eq_inter_range.trans (Set.inter_eq_left.mpr ?_)
       erw [Subtype.range_val]
       exact e
-    have h : X.ofRestrict U'.openEmbedding ⁻¹ᵁ ↑V ∈ Scheme.affineOpens (X.restrict _) := by
-      apply (X.ofRestrict U'.openEmbedding).isAffineOpen_iff_of_isOpenImmersion.mp
-      -- Porting note: was convert V.2
+    have h : ιOpens U' ⁻¹ᵁ ↑V ∈ Scheme.affineOpens (X ∣_ᵤ U') := by
+      apply (ιOpens U').isAffineOpen_iff_of_isOpenImmersion.mp
       rw [e'']
-      convert V.2
+      exact V.2
     have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, h⟩
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
-      ← X.presheaf.map_comp]
-    · dsimp; convert this using 1
-      congr 1
-      rw [X.presheaf.map_comp]
-      swap
-      · dsimp only [Functor.op, unop_op]
-        rw [Opens.openEmbedding_obj_top]
-        congr 1
-        exact e''.symm
-      · simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
-        congr 1
+    rw [Scheme.ofRestrict_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp,
+      ← op_comp] at this
+    rw [← hP.cancel_right_isIso (f.appLe e) (X.presheaf.map (eqToHom e'').op),
+      Category.assoc, ← X.presheaf.map_comp]
+    convert this using 1
+    congr!
+    -- · dsimp; convert this using 1
+    --   congr 1
+    --   rw [X.presheaf.map_comp]
+    --   swap
+    --   · dsimp only [Functor.op, unop_op]
+    --     rw [Opens.openEmbedding_obj_top]
+    --     congr 1
+    --     exact e''.symm
+    --   · simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
+    --     congr 1
   · intro H V
     specialize H ⟨_, V.2.image_of_isOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc]
