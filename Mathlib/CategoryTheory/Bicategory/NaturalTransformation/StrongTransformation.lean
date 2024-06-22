@@ -38,11 +38,15 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-/-- If `η` is an oplax natural transformation between `F` and `G`, we have a 1-morphism
-`η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
-`η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism `f : a ⟶ b`.
-These 2-morphisms satisfies the naturality condition, and preserve the identities and
-the compositions modulo some adjustments of domains and codomains of 2-morphisms.
+/-- A strong natural transformation between oplax functors `F` and `G` is a natural transformation
+that is "natural up to 2-isomorphisms".
+
+More precisely, it consists of the following:
+* a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
+* a 2-isomorphism `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
+`f : a ⟶ b`.
+* These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
+compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
 structure StrongNatTrans (F G : OplaxFunctor B C) where
   app (a : B) : F.obj a ⟶ G.obj a
@@ -83,14 +87,14 @@ def toOplax {F G : OplaxFunctor B C} (η : StrongNatTrans F G) : OplaxNatTrans F
   naturality f := (η.naturality f).hom
 
 /-- Construct a strong natural transformation from an oplax natural transformation whose
-... is an isomorphism. -/
+naturality 2-cell is an isomorphism. -/
 def mkOfOplax {F G : OplaxFunctor B C} (η : OplaxNatTrans F G) (η' : OplaxNatTrans.StrongCore η) :
     StrongNatTrans F G where
   app := η.app
   naturality := η'.naturality
 
 /-- Construct a strong natural transformation from an oplax natural transformation whose
-... is an isomorphism. -/
+naturality 2-cell is an isomorphism. -/
 noncomputable def mkOfOplax' {F G : OplaxFunctor B C} (η : OplaxNatTrans F G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongNatTrans F G where
   app := η.app
@@ -114,7 +118,6 @@ section
 
 variable {a b c : B} {a' : C}
 
--- TODO: are these even needed if toOplax API is good?
 @[reassoc (attr := simp)]
 theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
     f ◁ G.map₂ β ▷ θ.app b ≫ f ◁ (θ.naturality h).hom =
