@@ -601,23 +601,22 @@ def Args.Numeric (a : Args) := ∀ x ∈ a.toMultiset, SetTheory.PGame.Numeric x
 open Relation
 
 /-- The relation specifying when a list of (pregame) arguments is considered simpler than another:
-  `args_rel a₁ a₂` is true if `a₁`, considered as a multiset, can be obtained from `a₂` by
+  `ArgsRel a₁ a₂` is true if `a₁`, considered as a multiset, can be obtained from `a₂` by
   repeatedly removing a pregame from `a₂` and adding back one or two options of the pregame.  -/
-def args_rel := InvImage (TransGen $ CutExpand IsOption) Args.toMultiset
+def ArgsRel := InvImage (TransGen $ CutExpand IsOption) Args.toMultiset
 
-/-- `args_rel` is well-founded. -/
---theorem args_rel_wf : well_founded args_rel := inv_image.wf _ wf_is_option.cut_expand.trans_gen
-theorem args_rel_wf : WellFounded args_rel := InvImage.wf _ wf_isOption.cutExpand.transGen
+/-- `ArgsRel` is well-founded. -/
+theorem argsRel_wf : WellFounded ArgsRel := InvImage.wf _ wf_isOption.cutExpand.transGen
 
 
-/-- The statement that we will be shown by induction using the well-founded relation `args_rel`. -/
+/-- The statement that we will be shown by induction using the well-founded relation `ArgsRel`. -/
 def P124 : Args → Prop
 | (Args.P1 x y) => Numeric (x * y)
 | (Args.P24 x₁ x₂ y) => P24 x₁ x₂ y
 
 
-/-- The property that all arguments are numeric is leftward-closed under `args_rel`. -/
-lemma args_rel.numeric_closed {a' a} : args_rel a' a → a.Numeric → a'.Numeric := by
+/-- The property that all arguments are numeric is leftward-closed under `ArgsRel`. -/
+lemma ArgsRel.numeric_closed {a' a} : ArgsRel a' a → a.Numeric → a'.Numeric := by
   exact TransGen.closed2 $ @cutExpand_closed _ IsOption ⟨wf_isOption.isIrrefl.1⟩ _ Numeric.isOption
 
 /-- A specialized induction hypothesis used to prove P1. -/
@@ -638,7 +637,7 @@ lemma ih1_negy : ih1 x y → ih1 x (-y) :=
 
 /-! #### Specialize `ih` to obtain specialized induction hypotheses for P1 -/
 
-variable (ih : ∀ a, args_rel a (Args.P1 x y) → P124 a)
+variable (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a)
 
 lemma ihnx (h : IsOption x' x) : (x' * y).Numeric :=
   ih (Args.P1 x' y) $ TransGen.single $ cutExpand_pair_left h
@@ -658,7 +657,7 @@ lemma ih1xy : ih1 x y := by
 
 lemma ih1yx : ih1 y x :=
   ih1xy $ by
-    simp_rw [args_rel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih ⊢
+    simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih ⊢
     exact ih
 
 lemma P3_of_ih (hy : Numeric y) (ihyx : ih1 y x) (i k l) :
@@ -762,7 +761,7 @@ def ih4 (x₁ x₂ y : PGame) : Prop :=
 
 /-! #### Specialize `ih'` to obtain specialized induction hypotheses for P2 and P4 -/
 
-variable (ih' : ∀ a, args_rel a (Args.P24 x₁ x₂ y) → P124 a)
+variable (ih' : ∀ a, ArgsRel a (Args.P24 x₁ x₂ y) → P124 a)
 
 lemma ih₁₂ : ih24 x₁ x₂ y := by
   rw [ih24]
@@ -775,7 +774,7 @@ lemma ih₁₂ : ih24 x₁ x₂ y := by
 
 
 lemma ih₂₁ : ih24 x₂ x₁ y := ih₁₂ (by
-  simp_rw [args_rel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih' ⊢
+  simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih' ⊢
   suffices {x₁, y, x₂} = {x₂, y, x₁} by rwa [← this]
   dsimp [← Multiset.singleton_add] at ih' ⊢
   abel
@@ -927,9 +926,9 @@ theorem P3_of_lt {y₁ y₂} (h : ∀ i, ih3 x₁ (x₂.moveLeft i) x₂ y₁ y�
 
 /-- The main chunk of Theorem 8 in [conway2001] / Theorem 3.8 in [schleicher_stoll]. -/
 theorem main (a : Args) : a.Numeric → P124 a := by
-  apply args_rel_wf.induction a
+  apply argsRel_wf.induction a
   intros a ih ha
-  replace ih : ∀ a', args_rel a' a → P124 a' := fun a' hr => ih a' hr (hr.numeric_closed ha)
+  replace ih : ∀ a', ArgsRel a' a → P124 a' := fun a' hr => ih a' hr (hr.numeric_closed ha)
   cases a
   · /- P1 -/
     case _ x y =>
