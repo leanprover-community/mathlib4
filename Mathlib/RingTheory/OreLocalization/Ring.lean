@@ -115,8 +115,8 @@ unseal OreLocalization.zero in
 @[simps!]
 def numeratorRingHom : R →+* R[S⁻¹] where
   __ := numeratorHom
-  map_zero' := by simp [numeratorHom]
-  map_add' := by simp [numeratorHom]
+  map_zero' := OreLocalization.zero_def
+  map_add' _ _ := add_oreDiv.symm
 
 instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
   __ := inferInstanceAs (Module R₀ R[S⁻¹])
