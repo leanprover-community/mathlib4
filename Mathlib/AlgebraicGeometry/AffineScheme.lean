@@ -276,7 +276,7 @@ theorem fromSpec_image_top : hU.fromSpec ''ᵁ ⊤ = U :=
 #align algebraic_geometry.is_affine_open.from_Spec_image_top AlgebraicGeometry.IsAffineOpen.fromSpec_image_top
 
 @[simp]
-theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (fromSpec_range hU)
+theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (range_fromSpec hU)
 
 protected theorem isCompact :
     IsCompact (U : Set X) := by
