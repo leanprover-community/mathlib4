@@ -7,7 +7,7 @@ import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Order.Irreducible
 import Mathlib.Data.Set.Subset
 import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Order.Closure
+import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Hull-Kernel Topology
@@ -296,7 +296,7 @@ lemma kh1 (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a :
   rfl
 
 
-lemma hk1 (hG : OrderGenerate T) (C : Set T) (h : IsClosed C) :
+lemma hk1 (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
     (PrimativeSpectrum.gc' T).closureOperator C = C := by
   have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff T hT C).mp h
   cases' e1 with a ha
@@ -311,33 +311,39 @@ lemma testhk (S : Set T) : (PrimativeSpectrum.gc' T).closureOperator S = T ↓�
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
-/-
-theorem hull_kernel : (TopologicalSpace.Closeds.gc (α := T)).closureOperator =
-    (PrimativeSpectrum.gc' T).closureOperator := by
-  ext S a
-  rw [testhk]
-  simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, toDual_sInf, ofDual_sSup,
-    mem_preimage]
-  --rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
-  --rw [← mem_preimage]
-  --rw [←  closed_basis3 ]
-  --apply congrArg
-  --apply fun a ↦ Eq.to_iff (congrArg (Membership.mem a) _ _)
+lemma testhk2 (hG : OrderGenerate T) (S : Set T) :
+    (TopologicalSpace.Closeds.gc (α := T)).closureOperator S  = T ↓∩ (Ici (sInf S)) := by
+  simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure]
   rw [closure]
-  simp_rw [isClosed_iff]
-  --rw [closed_basis3 ]
-  simp?
+  rw [le_antisymm_iff]
+  have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ (T ↓∩ Ici (sInf ↑S)) := by
+      constructor
+      · rw [isClosed_iff]
+        use sInf ↑S
+        exact hT
+      · have e2 : (S : Set α) ⊆ Ici (sInf (S : Set α)) := by
+          intro b hbS
+          simp only [mem_Ici]
+          apply CompleteSemilatticeInf.sInf_le
+          exact hbS
+        exact image_subset_iff.mp e2
   constructor
-  · intro h
-  · intro h a ha
-  rw [← OrderDual.toDual_symm_eq ]
-  simp only [OrderDual.toDual_symm_eq, mem_Ici]
+  · exact fun ⦃a⦄ a ↦ a (T ↓∩ Ici (sInf ↑S)) e1
+  · simp_rw [le_eq_subset, subset_sInter_iff]
+    intro R hR
+    simp only [mem_setOf_eq] at hR
+    rw [← (hk1 hT hG hR.1)]
+    rw [← testhk]
+    apply ClosureOperator.monotone
+    simp only [le_eq_subset]
+    apply hR.2
 
-  --simp_rw []
-  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
-  simp only [mem_sInter, mem_setOf_eq, and_imp, forall_exists_index, forall_eq_apply_imp_iff,
-    mem_preimage, mem_Ici, preimage_id_eq, id_eq]
-  simp_rw [OrderDual.ofDual_toDual]
--/
+theorem hull_kernel (hG : OrderGenerate T) :
+    (TopologicalSpace.Closeds.gc (α := T)).closureOperator =
+      (PrimativeSpectrum.gc' T).closureOperator := by
+  ext S a
+  rw [testhk, testhk2]
+  exact fun p a ↦ hT p a
+  exact hG
 
 end PrimativeSpectrum
