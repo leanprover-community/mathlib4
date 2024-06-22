@@ -170,14 +170,14 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
 #align algebraic_geometry.function_field_is_fraction_ring_of_is_affine_open AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen
 
 instance (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
-  AlgebraicGeometry.SpecIsAffine _
+  AlgebraicGeometry.isAffine_Spec _
 
 instance [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
       PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
-  have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
+  have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.map x)
   let x : U := ⟨x, X.affineCover.Covers x⟩
   have : Nonempty U := ⟨x⟩
   let M := (hU.primeIdealOf x).asIdeal.primeCompl

@@ -274,7 +274,7 @@ theorem isOpenImmersionCat_comp_of_sourceAffineLocally (h₁ : RingHom.RespectsI
   rw [← h₁.cancel_right_isIso _
     (Scheme.Γ.map (IsOpenImmersion.isoOfRangeEq (Y.ofRestrict _) f _).hom.op),
     ← Functor.map_comp, ← op_comp]
-  · convert h₂ ⟨_, rangeIsAffineOpenOfOpenImmersion f⟩ using 3
+  · convert h₂ ⟨_, isAffineOpen_opensRange f⟩ using 3
     · rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
       exact Subtype.range_coe
 #align algebraic_geometry.is_open_immersion_comp_of_source_affine_locally AlgebraicGeometry.isOpenImmersionCat_comp_of_sourceAffineLocally
@@ -291,7 +291,7 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme.{u}} (f : X ⟶ Y)
     (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, P (Scheme.Γ.map (𝒰.map i ≫ f).op)) :
     sourceAffineLocally (@P) f := by
   let S i := (⟨⟨Set.range (𝒰.map i).1.base, (𝒰.IsOpen i).base_open.isOpen_range⟩,
-    rangeIsAffineOpenOfOpenImmersion (𝒰.map i)⟩ : X.affineOpens)
+    isAffineOpen_opensRange (𝒰.map i)⟩ : X.affineOpens)
   intro U
   -- Porting note: here is what we are eliminating into Lean
   apply of_affine_open_cover
@@ -360,7 +360,7 @@ theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
           P (Scheme.Γ.map (g ≫ f).op)] := by
   tfae_have 1 → 4
   · intro H U g _ hg
-    specialize H ⟨⟨_, hg.base_open.isOpen_range⟩, rangeIsAffineOpenOfOpenImmersion g⟩
+    specialize H ⟨⟨_, hg.base_open.isOpen_range⟩, isAffineOpen_opensRange g⟩
     rw [← hP.respectsIso.cancel_right_isIso _ (Scheme.Γ.map (IsOpenImmersion.isoOfRangeEq g
       (X.ofRestrict (Opens.openEmbedding ⟨_, hg.base_open.isOpen_range⟩))
       Subtype.range_coe.symm).hom.op),
@@ -446,7 +446,7 @@ theorem isLocal_sourceAffineLocally : (sourceAffineLocally @P).IsLocal :=
 #align ring_hom.property_is_local.is_local_source_affine_locally RingHom.PropertyIsLocal.isLocal_sourceAffineLocally
 
 theorem is_local_affineLocally : PropertyIsLocalAtTarget (affineLocally @P) :=
-  hP.isLocal_sourceAffineLocally.targetAffineLocallyIsLocal
+  hP.isLocal_sourceAffineLocally.targetAffineLocally_isLocal
 #align ring_hom.property_is_local.is_local_affine_locally RingHom.PropertyIsLocal.is_local_affineLocally
 
 theorem affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y)

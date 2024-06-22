@@ -50,7 +50,7 @@ theorem isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmers
   infer_instance
 #align algebraic_geometry.is_open_immersion_respects_iso AlgebraicGeometry.isOpenImmersion_respectsIso
 
-theorem isOpenImmersion_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImmersion := by
+theorem isOpenImmersion_isLocalAtTarget : PropertyIsLocalAtTarget @IsOpenImmersion := by
   constructor
   · exact isOpenImmersion_respectsIso
   · intros; infer_instance

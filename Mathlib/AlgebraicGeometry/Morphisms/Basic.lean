@@ -48,7 +48,7 @@ satisfies the assumptions of the affine communication lemma
   `targetAffineLocally P f`, then `P.IsLocal`.
 - `AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.affine_target_iff`:
   If `Y` is affine and `f : X ⟶ Y`, then `targetAffineLocally P f ↔ P f` provided `P.IsLocal`.
-- `AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal` :
+- `AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.targetAffineLocally_isLocal` :
   If `P.IsLocal`, then `PropertyIsLocalAtTarget (targetAffineLocally P)`.
 - `AlgebraicGeometry.PropertyIsLocalAtTarget.openCover_TFAE`:
   If `PropertyIsLocalAtTarget P`, then `P f` iff there exists an open cover `{ Uᵢ }` of `Y`

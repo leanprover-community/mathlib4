@@ -44,7 +44,7 @@ instance : HasTerminal Scheme :=
   hasTerminal_of_hasTerminal_of_preservesLimit Scheme.Spec
 
 instance : IsAffine (⊤_ Scheme.{u}) :=
-  isAffineOfIso (PreservesTerminal.iso Scheme.Spec).inv
+  isAffine_of_isIso (PreservesTerminal.iso Scheme.Spec).inv
 
 instance : HasFiniteLimits Scheme :=
   hasFiniteLimits_of_hasTerminal_and_pullbacks
@@ -117,7 +117,7 @@ noncomputable def specPunitIsInitial : IsInitial (Scheme.Spec.obj (op <| CommRin
 #align algebraic_geometry.Spec_punit_is_initial AlgebraicGeometry.specPunitIsInitial
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X.carrier] : IsAffine X :=
-  isAffineOfIso
+  isAffine_of_isIso
     (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Scheme.Spec.obj (op <| CommRingCat.of PUnit)))
 #align algebraic_geometry.is_affine_of_is_empty AlgebraicGeometry.isAffine_of_isEmpty
 
@@ -130,8 +130,8 @@ instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
   ⟨fun x => ((initial.to Scheme.empty : _).1.base x).elim⟩
 #align algebraic_geometry.initial_is_empty AlgebraicGeometry.initial_isEmpty
 
-theorem bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
-  convert rangeIsAffineOpenOfOpenImmersion (initial.to X)
+theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
+  convert isAffineOpen_opensRange (initial.to X)
   ext
   -- Porting note: added this `erw` to turn LHS to `False`
   erw [Set.mem_empty_iff_false]
