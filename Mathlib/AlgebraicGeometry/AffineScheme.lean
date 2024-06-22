@@ -336,8 +336,9 @@ theorem SpecΓIdentity_hom_app_fromSpec :
   simp only [Category.assoc]
   dsimp only [asIso_inv, Functor.op_obj, unop_op]
   rw [← Functor.map_comp_assoc, ← op_comp, eqToHom_trans, Scheme.eq_restrict_presheaf_map_eqToHom,
-    NatTrans.naturality_assoc, Scheme.inv_app_top, IsIso.hom_inv_id_assoc]
-  simp only [eqToHom_map, eqToHom_op, Scheme.Spec_map_presheaf_map_eqToHom, eqToHom_trans]
+    Scheme.Hom.naturality_assoc, Scheme.inv_app_top, IsIso.hom_inv_id_assoc]
+  simp only [eqToHom_map, eqToHom_op,
+    Scheme.Spec_map_presheaf_map_eqToHom, eqToHom_trans, eqToHom_unop]
 #align algebraic_geometry.is_affine_open.Spec_Γ_identity_hom_app_from_Spec AlgebraicGeometry.IsAffineOpen.SpecΓIdentity_hom_app_fromSpec
 
 @[elementwise]
@@ -348,8 +349,7 @@ theorem fromSpec_app_self :
 #align algebraic_geometry.is_affine_open.from_Spec_app_eq AlgebraicGeometry.IsAffineOpen.fromSpec_app_self
 
 theorem fromSpec_preimage_basicOpen' :
-    hU.fromSpec ⁻¹ᵁ X.basicOpen f =
-      (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen ((Scheme.ΓSpecIso Γ(X, U)).inv f) := by
+    hU.fromSpec ⁻¹ᵁ X.basicOpen f = (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen ((Scheme.ΓSpecIso Γ(X, U)).inv f) := by
   rw [Scheme.preimage_basicOpen, hU.fromSpec_app_self]
   exact Scheme.basicOpen_res_eq _ _ (eqToHom hU.fromSpec_preimage_self).op
 #align algebraic_geometry.is_affine_open.opens_map_from_Spec_basic_open AlgebraicGeometry.IsAffineOpen.fromSpec_preimage_basicOpen'
