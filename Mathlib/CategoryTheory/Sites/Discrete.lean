@@ -43,28 +43,30 @@ category to the target category.
 -/
 abbrev IsDiscrete (F : Sheaf J A) : Prop := IsIso ((constantSheafAdj J A ht).counit.app F)
 
-theorem isDiscrete_of_iso {F : Sheaf J A} {X : A}
+lemma isDiscrete_of_iso {F : Sheaf J A} {X : A}
     (i : F ≅ (constantSheaf J A).obj X) : IsDiscrete J ht F :=
   isIso_counit_app_of_iso _ i
 
-theorem isDiscrete_iff_mem_essImage (F : Sheaf J A) :
+lemma isDiscrete_iff_mem_essImage (F : Sheaf J A) :
     F.IsDiscrete J ht ↔ F ∈ (constantSheaf J A).essImage :=
   (constantSheafAdj J A ht).isIso_counit_app_iff_mem_essImage
 
-theorem isDiscrete_iff_mem_essImage' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
-    [L.Full] [L.Faithful] (X : Sheaf J A) :
-    -- haveI : U.HasDiscreteObjects := Functor.HasDiscreteObjects.mk' _ adj
-    IsDiscrete J ht X ↔ X ∈ L.essImage := by
-  -- haveI := Functor.HasDiscreteObjects.mk' _ adj
-  refine ⟨fun h ↦ ⟨X.val.obj ⟨t⟩, ⟨?_⟩⟩, fun ⟨Y, ⟨i⟩⟩ ↦ ?_⟩
-  · sorry
-  · sorry
+lemma isDiscrete_iff_mem_essImage' {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
+    (F : Sheaf J A) :
+    IsDiscrete J ht F ↔ F ∈ L.essImage := by
+  let e : L ≅ constantSheaf J A := adj.leftAdjointUniq (constantSheafAdj _ _ ht)
+  refine ⟨fun h ↦ ⟨F.val.obj ⟨t⟩, ⟨?_⟩⟩, fun ⟨Y, ⟨i⟩⟩ ↦ ?_⟩
+  · exact e.app _ ≪≫ asIso ((constantSheafAdj _ _ ht).counit.app _)
+  · rw [isDiscrete_iff_mem_essImage]
+    exact ⟨Y, ⟨e.symm.app _ ≪≫ i⟩⟩
 
--- theorem isDiscrete_iff_isIso_counit_app' {L : D ⥤ C} (adj : L ⊣ U) [L.Full] [L.Faithful] (X : C) :
---     haveI : U.HasDiscreteObjects := Functor.HasDiscreteObjects.mk' _ adj
---     IsDiscrete U X ↔ IsIso (adj.counit.app X) := by
---   rw [isIso_counit_app_iff_mem_essImage]
---   exact isDiscrete_iff_mem_essImage _ adj _
+lemma isDiscrete_iff_isIso_counit_app {L : A ⥤ Sheaf J A} (adj : L ⊣ (sheafSections J A).obj ⟨t⟩)
+    (F : Sheaf J A) :
+    IsDiscrete J ht F ↔ IsIso (adj.counit.app F) := by
+  have : L.Faithful := Functor.Faithful.of_iso (adj.leftAdjointUniq (constantSheafAdj _ _ ht)).symm
+  have : L.Full := Functor.Full.of_iso (adj.leftAdjointUniq (constantSheafAdj _ _ ht)).symm
+  rw [isIso_counit_app_iff_mem_essImage]
+  exact isDiscrete_iff_mem_essImage' _ _ adj _
 
 section Equivalence
 

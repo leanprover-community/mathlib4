@@ -12,18 +12,6 @@ open CategoryTheory Limits Functor FintypeCat
 
 attribute [local instance] ConcreteCategory.instFunLike
 
-namespace Condensed
-
-variable {C : Type*} [Category C]
-  [HasWeakSheafify (coherentTopology CompHaus) C] (X : Condensed C)
-  -- `(s : C ⥤ Type _) [PreservesSheafification s] [ReflectsIsomorphisms s]`, etc.
-  -- Then we can define `Condensed.IsDiscrete` the same way as `CondensedSet.IsDiscrete` 
-  -- below, and prove that a condensed object of this form is discrete iff its "underlying"
-  -- condensed set is.
-  -- I specifically have in mind the case when `C` is `ModuleCat R`.
-
-end Condensed
-
 namespace CondensedSet
 
 section Terminal
@@ -108,20 +96,17 @@ theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
         (IsColimit <| (profiniteToCompHaus.op ⋙ X.val).mapCocone S.asLimitCone.op)
     ] := by
   tfae_have 1 ↔ 2
-  · exact Iff.rfl--isDiscrete_iff_isIso_counit_app _ (Condensed.discreteUnderlyingAdj _) _
+  · exact Iff.rfl -- TODO: remove `2` in the list
   tfae_have 1 ↔ 3
   · exact Sheaf.isDiscrete_iff_mem_essImage _ _ _
   tfae_have 1 ↔ 4
-  · sorry
-    -- exact Sheaf.isDiscrete_iff_mem_essImage' _ _ CondensedSet.LocallyConstant.adjunction _
+  · exact Sheaf.isDiscrete_iff_mem_essImage' _ _ CondensedSet.LocallyConstant.adjunction _
   tfae_have 1 ↔ 5
-  · sorry
-    -- exact isDiscrete_iff_isIso_counit_app _ Condensed.LocallyConstant.adjunction _
+  · exact Sheaf.isDiscrete_iff_isIso_counit_app _ _ CondensedSet.LocallyConstant.adjunction _
   tfae_have 1 ↔ 6
-  · sorry
-    -- exact (Sheaf.isDiscrete_iff (coherentTopology Profinite) (Type (u+1))
-    --   Profinite.isTerminalPUnit  (coherentTopology CompHaus) profiniteToCompHaus
-    --   CompHaus.isTerminalPUnit _).symm
+  · exact (Sheaf.isDiscrete_iff_of_equivalence (coherentTopology Profinite)
+      Profinite.isTerminalPUnit  (coherentTopology CompHaus) profiniteToCompHaus
+      CompHaus.isTerminalPUnit _).symm
   tfae_have 7 → 4
   · intro h
     exact isDiscrete_of_isColimit_mapCone X (fun S ↦ (h S).some)
@@ -131,3 +116,5 @@ theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
       ((sheafToPresheaf _ _).mapIso i))
       (isColimitLocallyConstantPresheaf Y S)⟩
   tfae_finish
+
+end CondensedSet
