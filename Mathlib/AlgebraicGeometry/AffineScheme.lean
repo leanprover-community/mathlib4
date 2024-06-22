@@ -189,7 +189,7 @@ instance {Y : Scheme.{u}} (U : Y.affineOpens) :
   U.property
 
 theorem isAffineOpen_opensRange {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
-    [H : IsOpenImmersion f] : IsAffineOpen f.opensRange := by
+    [H : IsOpenImmersion f] : IsAffineOpen (Scheme.Hom.opensRange f) := by
   refine isAffine_of_isIso (IsOpenImmersion.isoOfRangeEq f (Y.ofRestrict _) ?_).inv
   exact Subtype.range_val.symm
 #align algebraic_geometry.range_is_affine_open_of_open_immersion AlgebraicGeometry.isAffineOpen_opensRange

@@ -64,6 +64,8 @@ structure PrimeSpectrum [CommSemiring R] where
   isPrime : asIdeal.IsPrime
 #align prime_spectrum PrimeSpectrum
 
+@[deprecated (since := "2024-06-22")] alias PrimeSpectrum.IsPrime := PrimeSpectrum.isPrime
+
 attribute [instance] PrimeSpectrum.isPrime
 
 namespace PrimeSpectrum
