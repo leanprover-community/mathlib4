@@ -219,7 +219,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref }}
           PR: ${{ github.event.number }}
         run: |
-          PR="${{ github.event.pull_request.number }}"
+          #PR="${{ github.event.pull_request.number }}"
           title="### Lean decl diff"
 
           git checkout master
