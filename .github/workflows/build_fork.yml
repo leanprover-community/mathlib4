@@ -140,6 +140,9 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/checkout@v4
+        with:
+          ## fetch the whole repository, useful to find a common fork
+          fetch-depth: 0
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -209,6 +212,12 @@ jobs:
             lake exe cache get || (sleep 1; lake exe cache get)
             lake build --no-build
           fi
+
+      - name: decl-diff
+        run: |
+          git checkout master
+          git checkout -
+          ./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})" > "${GITHUB_STEP_SUMMARY}"
 
       - name: build archive
         id: archive
