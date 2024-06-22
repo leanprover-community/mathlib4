@@ -267,6 +267,9 @@ theorem PrimativeSpectrum.gc' : GaloisConnection (α := Set T) (β := αᵒᵈ)
 that `a` is the inf of `S`. -/
 def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = sInf (S : Set α)
 
+/--
+When `T` is order generating, the kernel and the hull form a Galois insertion
+-/
 def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : (Set α))))
     (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) :=
