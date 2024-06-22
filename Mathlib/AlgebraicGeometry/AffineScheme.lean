@@ -354,7 +354,6 @@ theorem fromSpec_map_basicOpen' :
   exact Scheme.basicOpen_res_eq _ _ (eqToHom hU.fromSpec_base_preimage).op
 #align algebraic_geometry.is_affine_open.opens_map_from_Spec_basic_open AlgebraicGeometry.IsAffineOpen.fromSpec_map_basicOpen'
 
-@[simp]
 theorem fromSpec_map_basicOpen :
     hU.fromSpec ⁻¹ᵁ X.basicOpen f = PrimeSpectrum.basicOpen f := by
   rw [fromSpec_map_basicOpen', ← basicOpen_eq_of_affine, NatIso.app_inv]
@@ -372,7 +371,7 @@ theorem opensFunctor_map_basicOpen :
 -- by linter seems to tell me that left hand side should be changed in to something exactly the same
 -- as before. I am not sure if this is caused by LHS being written with all explicit argument,
 -- I am not sure if this is intentional or not.
-@[simp]
+@[simp, nolint simpNF]
 theorem basicOpen_fromSpec_app :
     (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen (hU.fromSpec.1.c.app (op U) f) = PrimeSpectrum.basicOpen f := by
   rw [← hU.fromSpec_map_basicOpen, Scheme.preimage_basicOpen]

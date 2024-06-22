@@ -440,7 +440,7 @@ abbrev _root_.AlgebraicGeometry.Scheme.Hom.opensFunctor {X Y : Scheme.{u}} (f : 
   H.openFunctor
 #align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
 
-variable (U : Opens X) in
+/-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
 
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/

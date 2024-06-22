@@ -70,7 +70,7 @@ instance : Category Scheme :=
 scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
   (Opens.map (f : LocallyRingedSpace.Hom _ _).val.base).obj U
 
-/-- `Γ(X, U)` is notation for `Γ(X, U)`. -/
+/-- `Γ(X, U)` is notation for `X.presheaf.obj (op U)`. -/
 scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
   (PresheafedSpace.presheaf (SheafedSpace.toPresheafedSpace
     (LocallyRingedSpace.toSheafedSpace (Scheme.toLocallyRingedSpace X)))).obj (op U)
@@ -263,7 +263,10 @@ def Spec : CommRingCatᵒᵖ ⥤ Scheme where
   map_comp f g := by simp [specMap_comp]
 #align algebraic_geometry.Scheme.Spec AlgebraicGeometry.Scheme.Spec
 
+/-- `𝖲𝗉𝖾𝖼 R` is notation for `Sceme.Spec.obj (op R)`. -/
 scoped[AlgebraicGeometry] notation3 "𝖲𝗉𝖾𝖼 " R:20 => Scheme.Spec.obj (op R)
+
+/-- `𝖲𝗉𝖾𝖼(f)` is notation for `Sceme.Spec.map f.op`. -/
 scoped[AlgebraicGeometry] notation3 "𝖲𝗉𝖾𝖼(" f ")" => Scheme.Spec.map (Quiver.Hom.op f)
 
 section
