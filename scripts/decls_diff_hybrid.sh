@@ -19,7 +19,7 @@ currentHash="$(git rev-parse HEAD)"
 # 3. in the lean-script file, removes `--` before `list_decls` and parses the lean file
 getDecls () {
   # we check out the script that is in the current branch
-  git checkout "${currentHash}" "${scr}"
+  git checkout -q "${currentHash}" "${scr}"
   lake exe cache get > /dev/null
   sed 's=^--\(list_decls\)=\1=' "${scr}" |
     lake env lean --stdin
@@ -34,9 +34,9 @@ processDeclsInOneCommit () {
     printf 'File `%s` already exist, please rename and try again\n' "${2}"
     exit 1
   fi
-  git checkout "${1}"
+  git checkout -q "${1}"
   getDecls > "${2}"
-  git switch -
+  git switch -q -
 }
 
 # save the declarations in `commit1` to `tempDecls1.txt`

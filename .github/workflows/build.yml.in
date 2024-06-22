@@ -201,16 +201,6 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref }}
           PR: ${{ github.event.number }}
         run: |
-          #PR="${{ github.event.pull_request.number }}"
-          echo "github.event.number: ${{ github.event.number }}"
-          echo "github.event.issue.number: ${{ github.event.issue.number }}"
-          echo "github.event.pull_request.number: ${{ github.event.pull_request.number }}"
-          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
-          echo "GITHUB_REFs"
-          echo "${GITHUB_REF#\*/}"
-          echo "${GITHUB_REF}"
-          echo "Branch name: ${BRANCH_NAME}"
-          echo "PR: ${PR}"
           title="### Lean decl diff"
 
           git checkout master
