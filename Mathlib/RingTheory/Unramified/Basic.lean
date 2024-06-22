@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.QuotientNilpotent
@@ -27,10 +28,6 @@ under `R`-algebra homomorphisms and compositions.
 
 We show that unramified is stable under algebra isomorphisms, composition and
 localization at an element.
-
-# TODO
-
-- Show that unramified is stable under base change.
 
 -/
 
@@ -266,13 +263,16 @@ theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R 
 section Comp
 
 variable (R A B)
-variable [Algebra A B] [IsScalarTower R A B]
 
 /-- Unramified is stable under composition. -/
-theorem comp [Unramified R A] [Unramified A B] : Unramified R B where
+theorem comp [Algebra A B] [IsScalarTower R A B] [Unramified R A] [Unramified A B] :
+    Unramified R B where
   formallyUnramified := FormallyUnramified.comp R A B
   finiteType := FiniteType.trans (S := A) Unramified.finiteType
     Unramified.finiteType
+
+/-- Unramified is stable under base change. -/
+instance baseChange [Unramified R A] : Unramified B (B ⊗[R] A) where
 
 end Comp
 

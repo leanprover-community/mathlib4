@@ -865,11 +865,9 @@ theorem ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
   ciSup_unique (α := αᵒᵈ)
 #align infi_unique ciInf_unique
 
--- Porting note (#10756): new lemma
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
   @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
--- Porting note (#10756): new lemma
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 

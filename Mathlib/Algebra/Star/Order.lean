@@ -234,11 +234,24 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   (isSelfAdjoint_zero R).mono hx
 
+theorem conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
+    star c * a * c < star c * b * c := by
+  rw [(conjugate_le_conjugate hab.le _).lt_iff_ne, hc.right.ne_iff, hc.star.left.ne_iff]
+  exact hab.ne
+
+theorem conjugate_lt_conjugate' {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
+    c * a * star c < c * b * star c := by
+  simpa only [star_star] using conjugate_lt_conjugate hab hc.star
+
+theorem conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < star c * a * c := by
+  simpa only [mul_zero, zero_mul] using conjugate_lt_conjugate ha hc
+
+theorem conjugate_pos' {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < c * a * star c := by
+  simpa only [star_star] using conjugate_pos ha hc.star
+
 theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x * x := by
-  rw [(star_mul_self_nonneg _).lt_iff_ne]
-  intro h
-  rw [← mul_zero (star x), hx.star.left.eq_iff] at h
-  exact hx.ne_zero h.symm
+  rw [(star_mul_self_nonneg _).lt_iff_ne, ← mul_zero (star x), hx.star.left.ne_iff]
+  exact hx.ne_zero.symm
 
 theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * star x := by
   simpa using star_mul_self_pos hx.star
