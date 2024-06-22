@@ -155,7 +155,8 @@ lemma sheafComposeNatIso_app_counit (P : Sheaf J A) :
         ((sheafificationAdjunction J A).counit.app P) =
           (sheafificationAdjunction J B).counit.app ((sheafCompose J U).obj P) := by
   simp only [sheafToPresheaf_obj, Functor.comp_obj, whiskeringRight_obj_obj, Functor.id_obj,
-    sheafComposeNatIso, sheafComposeNatTrans, sheafCompose_obj_val, sheafificationAdjunction_unit_app, asIso_hom]
+    sheafComposeNatIso, sheafComposeNatTrans, sheafCompose_obj_val,
+    sheafificationAdjunction_unit_app, asIso_hom]
   erw [Adjunction.homEquiv_counit]
   apply Sheaf.hom_ext
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj P).cond
