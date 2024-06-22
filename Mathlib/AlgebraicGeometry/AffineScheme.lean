@@ -362,7 +362,7 @@ theorem fromSpec_preimage_basicOpen :
 
 theorem fromSpec_image_basicOpen :
     hU.fromSpec ''ᵁ (PrimeSpectrum.basicOpen f) = X.basicOpen f := by
-  rw [← hU.fromSpec_map_basicOpen]
+  rw [← hU.fromSpec_preimage_basicOpen]
   ext1
   change hU.fromSpec.val.base '' (hU.fromSpec.val.base ⁻¹' (X.basicOpen f : Set X)) = _
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.range_fromSpec]
