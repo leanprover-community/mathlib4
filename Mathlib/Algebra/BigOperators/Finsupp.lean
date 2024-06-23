@@ -644,6 +644,13 @@ lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀
   simp_rw [Fin.sum_univ_succ, cons_zero, cons_succ]
   congr
 
+@[to_additive]
+lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] [Zero M] [CommMonoid N]
+    {f : α →₀ M} {g : α → M → N} {n₁ n₂ : N}
+    (h : ∃ a ∈ f.support, g a (f a) * n₁ = g a (f a) * n₂) :
+    f.prod g * n₁ = f.prod g * n₂ :=
+  Finset.prod_mul_eq_prod_mul_of_exists h
+
 end Finsupp
 
 theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=

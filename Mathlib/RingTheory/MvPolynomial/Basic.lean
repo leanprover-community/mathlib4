@@ -169,6 +169,21 @@ instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
 
 end Degree
 
+section Algebra
+
+variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+/-- If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra. -/
+noncomputable instance : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
+  (MvPolynomial.map (algebraMap R S)).toAlgebra
+
+@[simp]
+lemma algebraMap_def :
+    algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
+  rfl
+
+end Algebra
+
 end MvPolynomial
 
 -- this is here to avoid import cycle issues
