@@ -112,7 +112,7 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
     exact h _ _
 #align flow.ext Flow.ext
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
     {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
   ϕ.cont'.comp (ht.prod_mk hf)
@@ -181,9 +181,9 @@ theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
 def toHomeomorph (t : τ) : (α ≃ₜ α) where
   toFun := ϕ t
   invFun := ϕ (-t)
-  -- TODO: allow `fun_prop` to prove these
-  continuous_toFun := by continuity
-  continuous_invFun := by continuity
+  -- TODO: can the `dsimp only` be removed?
+  continuous_toFun := by dsimp only; fun_prop
+  continuous_invFun := by dsimp only; fun_prop
   left_inv x := by rw [← map_add, neg_add_self, map_zero_apply]
   right_inv x := by rw [← map_add, add_neg_self, map_zero_apply]
 #align flow.to_homeomorph Flow.toHomeomorph
