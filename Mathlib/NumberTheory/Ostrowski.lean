@@ -89,7 +89,7 @@ def mulRingNorm_padic (p : ℕ) [hp : Fact (Nat.Prime p)] : MulRingNorm ℚ :=
 
 variable (hf_nontriv : f ≠ 1) (bdd : ∀ n : ℕ, f n ≤ 1)
 
-/-- There exists a minimal positive integer with absolute value smaller than 1 -/
+/-- There exists a minimal positive integer with absolute value smaller than 1. -/
 lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ f p < 1) ∧
     ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m := by
   -- There is a positive integer with absolute value different from one
