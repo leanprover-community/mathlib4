@@ -295,7 +295,7 @@ structure AffineOpenCover (X : Scheme.{u}) where
   /-- the ring associated to a component of an affine open cover -/
   obj : J → CommRingCat.{u}
   /-- the embedding of subschemes to `X` -/
-  map : ∀ j : J, Spec.obj (.op <| obj j) ⟶ X
+  map : ∀ j : J, Spec (obj j) ⟶ X
   /-- given a point of `x : X`, `f x` is the index of the subscheme which contains `x`  -/
   f : X.carrier → J
   /-- the subschemes covers `X` -/
