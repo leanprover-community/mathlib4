@@ -882,7 +882,7 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
 theorem isoRestrict_hom_ofRestrict : H.isoRestrict.hom ≫ Y.ofRestrict _ = f :=
   PresheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict H
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoRestrict_inv_ofRestrict : H.isoRestrict.inv ≫ f = Y.ofRestrict _ :=
   PresheafedSpace.IsOpenImmersion.isoRestrict_inv_ofRestrict H
 
@@ -891,7 +891,7 @@ noncomputable def invApp (U : Opens X) :
     X.presheaf.obj (op U) ⟶ Y.presheaf.obj (op (H.openFunctor.obj U)) :=
   PresheafedSpace.IsOpenImmersion.invApp H U
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
     X.presheaf.map i ≫ H.invApp (unop V) =
       H.invApp (unop U) ≫ Y.presheaf.map (H.openFunctor.op.map i) :=
@@ -911,7 +911,7 @@ theorem invApp_app (U : Opens X) :
       X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app H U
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
     f.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
       Y.presheaf.map
@@ -1319,21 +1319,17 @@ section
 
 variable {X Y : LocallyRingedSpace} {f : X ⟶ Y} (H : IsOpenImmersion f)
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoRestrict_hom_ofRestrict : H.isoRestrict.hom ≫ Y.ofRestrict _ = f := by
   ext1
   dsimp [isoRestrict, isoOfSheafedSpaceIso]
-  apply_fun SheafedSpace.forgetToPresheafedSpace.map using CategoryTheory.Functor.map_injective _
+  apply SheafedSpace.forgetToPresheafedSpace.map_injective
   rw [Functor.map_comp, SheafedSpace.forgetToPresheafedSpace.map_preimage]
   exact SheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict H
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoRestrict_inv_ofRestrict : H.isoRestrict.inv ≫ f = Y.ofRestrict _ := by
-  ext1
-  dsimp [isoRestrict, isoOfSheafedSpaceIso]
-  apply_fun SheafedSpace.forgetToPresheafedSpace.map using CategoryTheory.Functor.map_injective _
-  rw [Functor.map_comp, SheafedSpace.forgetToPresheafedSpace.map_preimage]
-  exact SheafedSpace.IsOpenImmersion.isoRestrict_inv_ofRestrict H
+  simp only [← isoRestrict_hom_ofRestrict H, Iso.inv_hom_id_assoc]
 
 
 /-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
@@ -1341,7 +1337,7 @@ noncomputable def invApp (U : Opens X) :
     X.presheaf.obj (op U) ⟶ Y.presheaf.obj (op (H.openFunctor.obj U)) :=
   PresheafedSpace.IsOpenImmersion.invApp H U
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
     X.presheaf.map i ≫ H.invApp (unop V) =
       H.invApp (unop U) ≫ Y.presheaf.map (H.openFunctor.op.map i) :=
@@ -1361,7 +1357,7 @@ theorem invApp_app (U : Opens X) :
       X.presheaf.map (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.inj])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app H U
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
     f.1.c.app (op U) ≫ H.invApp ((Opens.map f.1.base).obj U) =
       Y.presheaf.map
