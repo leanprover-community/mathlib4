@@ -84,7 +84,7 @@ theorem switch {j : Fin h} (α : K) : House α = (Finset.max' (toFinset (⇑Comp
 def c := @maxFinFunMatrix K _ _ B⁻¹ * h
 
 theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
-  @c K _ _ * House (algebraMap (𝓞 K) K α) := by
+    @c K _ _ * House (algebraMap (𝓞 K) K α) := by
 
   intros i
 
