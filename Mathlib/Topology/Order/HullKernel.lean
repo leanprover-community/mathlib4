@@ -25,7 +25,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
 
-variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
+variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
 lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T ↓∩ (Ici (a ⊓ b))ᶜ) := by
   ext p
@@ -60,36 +60,10 @@ lemma basis2  (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓�
     simp only [Set.preimage_compl, mem_coe]
     exact hT
 
-lemma isBasis1 : IsTopologicalBasis { S : Set T | ∃ (a : α), T \ Ici a = S } := by
-  convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
-  rw [IsLower.lowerBasis]
-  ext R
-  simp only [mem_setOf_eq, mem_image, exists_exists_and_eq_and, preimage_compl]
-  constructor
-  · intro ha
-    cases' ha with a ha'
-    use {a}
-    simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, true_and]
-    rw [← (Function.Injective.preimage_image Subtype.val_injective R)]
-    rw [← ha']
-    rw [← preimage_compl]
-    simp only [preimage_compl, preimage_diff, Subtype.coe_preimage_self]
-    exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
-  · intro ha
-    cases' ha with F hF
-    lift F to Finset α using hF.1
-    use Finset.inf F id -- As F is finite, do we need complete?
-    rw [← hF.2]
-    rw [← preimage_compl]
-    rw [basis2]
-    simp only [preimage_compl, image_val_compl, Subtype.image_preimage_coe, diff_self_inter]
-    exact fun p a ↦ hT p a
-
 lemma isBasis1' : IsTopologicalBasis { S : Set T | ∃ (a : α), T ↓∩ (Ici a)ᶜ = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
   rw [IsLower.lowerBasis]
   ext R
-  --simp only [mem_setOf_eq, mem_image, exists_exists_and_eq_and, preimage_compl]
   simp only [preimage_compl, mem_setOf_eq, mem_image, exists_exists_and_eq_and]
   constructor
   · intro ha
@@ -146,7 +120,7 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
     let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
     use sSup R
     rw [← basis3]
-    rw [IsTopologicalBasis.open_eq_sUnion' (isBasis1' T hT) h]
+    rw [IsTopologicalBasis.open_eq_sUnion' (isBasis1' hT) h]
     simp only [preimage_compl, mem_setOf_eq, R]
     aesop
   · intro h
