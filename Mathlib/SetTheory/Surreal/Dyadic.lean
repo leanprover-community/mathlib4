@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Basic
 
