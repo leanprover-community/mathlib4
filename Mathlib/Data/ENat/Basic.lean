@@ -89,11 +89,8 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
 @[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
 
-theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℕ∞)^n = ⊤ := by
-  apply Nat.le_induction (P := fun m : ℕ ↦ fun _ : 1 ≤ m ↦ (⊤ : ℕ∞) ^ m = ⊤) (pow_one ⊤) _ _ n_pos
-  intro m _ h
-  simp only [pow_add, h, pow_one]
-  exact WithTop.top_mul_top
+theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℕ∞)^n = ⊤ := WithTop.top_pow n_pos
+#align enat.top_pow ENat.top_pow
 
 instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
 #align enat.can_lift ENat.canLift
