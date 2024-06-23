@@ -69,14 +69,14 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
 -- The ae-limit is ae-unique.
 theorem ae_unique_of_ae_limit {α ι E : Type*} [TopologicalSpace E] [T2Space E] {x : MeasurableSpace α} {μ : Measure α} {g h : α → E} {f : ι → α → E} {l : Filter ι} [l.NeBot]
     (hg : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (g ω))) (hh
-: ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (h ω))) : g =ᵐ[μ] h := by
+    : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (h ω))) : g =ᵐ[μ] h := by
   filter_upwards [hg, hh] with ω hg1 hh1
   exact tendsto_nhds_unique hg1 hh1
 
 /-- This notion is helpful for finite measures since we don't have to deal with the
 possibility that some set measures to ∞ -/
 def TendstoInMeasure' [Dist E] {_ : MeasurableSpace α} (μ : Measure α) (f : ι → α → E)
-  (l : Filter ι) (g : α → E) : Prop :=
+    (l : Filter ι) (g : α → E) : Prop :=
   ∀ ε, 0 < ε → Tendsto (ENNReal.toNNReal ∘ (fun i => (μ { x | ε ≤ dist (f i x) (g x) }))) l (nhds 0)
 
 theorem TendstoInMeasure_of_FiniteMeasure [Dist E] {_ : MeasurableSpace α} {μ : Measure α}
@@ -151,8 +151,7 @@ theorem sub_TendstoInMeasure' {f : ι → α → E}  {g : α → E} {u v: Filter
   fun ε hε => Tendsto.mono_left (hg ε hε) huv
 
 lemma subseqTendsto_of_TendstoInMeasure {f : ℕ → α → E}  {g : α → E} {ns : ℕ → ℕ} (hns : StrictMono ns)
-    (hg :  TendstoInMeasure μ f atTop g) : TendstoInMeasure μ (f ∘ ns) atTop g :=
-  by
+    (hg :  TendstoInMeasure μ f atTop g) : TendstoInMeasure μ (f ∘ ns) atTop g := by
   intro ε hε
   apply Filter.Tendsto.comp (hg ε hε) (StrictMono.tendsto_atTop hns)
 
@@ -330,7 +329,16 @@ lemma false_of_Tendsto_of_boundBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: 
     intro x
     rw [NNReal.dist_eq x 0, NNReal.coe_zero, sub_zero, NNReal.abs_eq]
   simp_rw [h] at hf2
-  apply Metric.false_of_Tendsto_of_boundBelow hδ (Tendsto.comp (NNReal.tendsto_coe'.mpr ⟨Preorder.le_refl 0, fun ⦃_⦄ a ↦ a ⟩) hf1) hf2
+  apply Metric.false_of_Tendsto_of_boundBelow hδ (Tendsto.comp (NNReal.tendsto_coe'.mpr ⟨Preorder.le_refl 0, fun ⦃_⦄ a ↦ a ⟩) hf1) _
+  refine frequently_atTop'.mpr ?_
+  intro n
+  use n+1
+  simp only [gt_iff_lt, lt_add_iff_pos_right, zero_lt_one, Function.comp_apply, dist_zero_right,
+    Real.norm_eq_abs, NNReal.abs_eq, true_and]
+  have h : ∀ n, dist (f n) 0 = f n := by
+    exact fun n ↦ Eq.symm (Real.ext_cauchy (congrArg Real.cauchy (h (f n))))
+  rw [← h]
+  exact hf2 (n+1)
 
 end
 
