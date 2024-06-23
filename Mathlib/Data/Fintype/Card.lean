@@ -783,7 +783,7 @@ theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : 
 
 /-- We can shrink a set `s` to any smaller size. -/
 lemma FinseT.exists_superset_card_eq [Fintype α] {n : ℕ} {s : Finset α} (hsn : s.card ≤ n)
-      (hnα : n ≤ Fintype.card α) :
+    (hnα : n ≤ Fintype.card α) :
     ∃ t, s ⊆ t ∧ t.card = n := by simpa using exists_subsuperset_card_eq s.subset_univ hsn hnα
 
 @[simp]
