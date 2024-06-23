@@ -322,7 +322,8 @@ protected def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
   map_comp f g := by simp
 #align algebraic_geometry.Scheme.Spec AlgebraicGeometry.Scheme.Spec
 
-lemma SpecMap_eqToHom {R S : CommRingCat} (e : R = S) : SpecMap (eqToHom e) = eqToHom (e ▸ rfl) := by
+lemma SpecMap_eqToHom {R S : CommRingCat} (e : R = S) :
+    SpecMap (eqToHom e) = eqToHom (e ▸ rfl) := by
   subst e; exact SpecMap_id _
 
 instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (SpecMap f) :=
