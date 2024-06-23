@@ -196,18 +196,22 @@ theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A�
   fun _ _ h => ext <| RingEquiv.congr_fun h
 #align alg_equiv.coe_ring_equiv_injective AlgEquiv.coe_ringEquiv_injective
 
+@[deprecated map_add (since := "2024-06-20")]
 protected theorem map_add : ∀ x y, e (x + y) = e x + e y :=
   map_add e
 #align alg_equiv.map_add AlgEquiv.map_add
 
+@[deprecated map_zero (since := "2024-06-20")]
 protected theorem map_zero : e 0 = 0 :=
   map_zero e
 #align alg_equiv.map_zero AlgEquiv.map_zero
 
+@[deprecated map_mul (since := "2024-06-20")]
 protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
   map_mul e
 #align alg_equiv.map_mul AlgEquiv.map_mul
 
+@[deprecated map_one (since := "2024-06-20")]
 protected theorem map_one : e 1 = 1 :=
   map_one e
 #align alg_equiv.map_one AlgEquiv.map_one
@@ -218,19 +222,21 @@ theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
 #align alg_equiv.commutes AlgEquiv.commutes
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x := by
-  simp only [Algebra.smul_def, map_mul, commutes]
+@[deprecated map_smul (since := "2024-06-20")]
+protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
+  map_smul _ _ _
 #align alg_equiv.map_smul AlgEquiv.map_smul
 
-@[deprecated _root_.map_sum (since := "2023-12-26")]
-nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
+@[deprecated map_sum (since := "2023-12-26")]
+protected theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
     e (∑ x ∈ s, f x) = ∑ x ∈ s, e (f x) :=
   map_sum e f s
 #align alg_equiv.map_sum AlgEquiv.map_sum
 
-theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
+@[deprecated map_finsupp_sum (since := "2024-06-20")]
+protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.sum g) = f.sum fun i b => e (g i b) :=
-  _root_.map_sum e _ _
+  map_finsupp_sum _ _ _
 #align alg_equiv.map_finsupp_sum AlgEquiv.map_finsupp_sum
 
 -- Porting note: Added [coe] attribute
@@ -241,8 +247,8 @@ The `simp` normal form is to use the coercion of the `AlgHomClass.coeTC` instanc
 @[coe]
 def toAlgHom : A₁ →ₐ[R] A₂ :=
   { e with
-    map_one' := e.map_one
-    map_zero' := e.map_zero }
+    map_one' := map_one e
+    map_zero' := map_zero e }
 #align alg_equiv.to_alg_hom AlgEquiv.toAlgHom
 
 @[simp]
@@ -268,6 +274,7 @@ theorem coe_ringHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = (
   rfl
 #align alg_equiv.coe_ring_hom_commutes AlgEquiv.coe_ringHom_commutes
 
+@[deprecated map_pow (since := "2024-06-20")]
 protected theorem map_pow : ∀ (x : A₁) (n : ℕ), e (x ^ n) = e x ^ n :=
   map_pow _
 #align alg_equiv.map_pow AlgEquiv.map_pow
@@ -565,7 +572,7 @@ theorem ofBijective_apply {f : A₁ →ₐ[R] A₂} {hf : Function.Bijective f} 
 def toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ₗ[R] A₂ :=
   { e with
     toFun := e
-    map_smul' := e.map_smul
+    map_smul' := map_smul e
     invFun := e.symm }
 #align alg_equiv.to_linear_equiv AlgEquiv.toLinearEquiv
 #align alg_equiv.to_linear_equiv_apply AlgEquiv.toLinearEquiv_apply
@@ -648,8 +655,8 @@ protected def ofLinearEquiv_symm.aux := (ofLinearEquiv l map_one map_mul).symm
 theorem ofLinearEquiv_symm :
     (ofLinearEquiv l map_one map_mul).symm =
       ofLinearEquiv l.symm
-        (ofLinearEquiv_symm.aux l map_one map_mul).map_one
-        (ofLinearEquiv_symm.aux l map_one map_mul).map_mul :=
+        (_root_.map_one <| ofLinearEquiv_symm.aux l map_one map_mul)
+        (_root_.map_mul <| ofLinearEquiv_symm.aux l map_one map_mul) :=
   rfl
 #align alg_equiv.of_linear_equiv_symm AlgEquiv.ofLinearEquiv_symm
 
@@ -745,10 +752,10 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
 This generalizes `Function.End.applyMulAction`. -/
 instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ where
   smul := (· <| ·)
-  smul_zero := AlgEquiv.map_zero
-  smul_add := AlgEquiv.map_add
-  smul_one := AlgEquiv.map_one
-  smul_mul := AlgEquiv.map_mul
+  smul_zero := map_zero
+  smul_add := map_add
+  smul_one := map_one
+  smul_mul := map_mul
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 #align alg_equiv.apply_mul_semiring_action AlgEquiv.applyMulSemiringAction
@@ -763,19 +770,19 @@ instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 
 instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
-  smul_comm r e a := (e.map_smul r a).symm
+  smul_comm r e a := (map_smul e r a).symm
 #align alg_equiv.apply_smul_comm_class AlgEquiv.apply_smulCommClass
 
 instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
-  smul_comm e r a := e.map_smul r a
+  smul_comm e r a := map_smul e r a
 #align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
 
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
   smul := fun f => Units.map f
   one_smul := fun x => by ext; rfl
   mul_smul := fun x y z => by ext; rfl
-  smul_mul := fun x y z => by ext; exact x.map_mul _ _
-  smul_one := fun x => by ext; exact x.map_one
+  smul_mul := fun x y z => by ext; exact map_mul x _ _
+  smul_one := fun x => by ext; exact map_one x
 
 @[simp]
 theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
@@ -826,14 +833,14 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
--- Porting note: Added nonrec
-nonrec theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
+@[deprecated map_prod (since := "2024-06-20")]
+protected theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
     e (∏ x ∈ s, f x) = ∏ x ∈ s, e (f x) :=
   map_prod _ f s
 #align alg_equiv.map_prod AlgEquiv.map_prod
 
--- Porting note: Added nonrec
-nonrec theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
+@[deprecated map_finsupp_prod (since := "2024-06-20")]
+protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.prod g) = f.prod fun i a => e (g i a) :=
   map_finsupp_prod _ f g
 #align alg_equiv.map_finsupp_prod AlgEquiv.map_finsupp_prod
@@ -845,10 +852,12 @@ section Ring
 variable [CommSemiring R] [Ring A₁] [Ring A₂]
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
+@[deprecated map_neg (since := "2024-06-20")]
 protected theorem map_neg (x) : e (-x) = -e x :=
   map_neg e x
 #align alg_equiv.map_neg AlgEquiv.map_neg
 
+@[deprecated map_sub (since := "2024-06-20")]
 protected theorem map_sub (x y) : e (x - y) = e x - e y :=
   map_sub e x y
 #align alg_equiv.map_sub AlgEquiv.map_sub
