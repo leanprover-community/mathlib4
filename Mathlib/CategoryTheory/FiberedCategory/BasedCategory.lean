@@ -234,7 +234,7 @@ def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
       rw [← NatIso.app_inv]
       apply IsHomLift.lift_id_inv }
 
-lemma isIso_of_toNatIsIso (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] : IsIso α :=
+lemma isIso_of_toNatTrans_isIso (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] : IsIso α :=
   have : IsIso ((forgetful 𝒳 𝒴).map α) := by simp_all
   Functor.ReflectsIsomorphisms.reflects (forgetful 𝒳 𝒴) α
 
