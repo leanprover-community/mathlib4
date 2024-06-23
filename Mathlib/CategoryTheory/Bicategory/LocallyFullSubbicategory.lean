@@ -31,27 +31,38 @@ open scoped Bicategory
 universe w v u w₁ v₁ u₁
 
 variable {B : Type u} [CategoryStruct.{v} B] (C : Type u₁) [Bicategory.{w₁, v₁} C]
--- NEED some comparison of Hom's here too!
-variable (F : B → C) --(F' : (a : B) × (b : B) × (a ⟶ b) → (F a ⟶ F b))
+
+-- TODO: F' needs to respect compositions!! (i.e. F needs to be a prefunctor)
+-- TODO: maybe not...?
+variable (F : Prefunctor B C)
 
 /-- `InducedBicategory B C`, where `F : B → C`, is a typeclass synonym for `B`,
 which provides a bicategory structure so that the 2-morphisms `X ⟶ Y` are the 2-morphisms
 in `C` from `F X` to `F Y`.
 -/
-def InducedBicategory (_F : B → C) : Type u :=
-  B
+-- TODO: make this a structure...
+structure InducedBicategory (_F : Prefunctor B C) : Type u :=
+  as : B
+
+namespace InducedBicategory
 
 variable {C}
 
-instance InducedBicategory.hasCoeToSort {α : Sort*} [CoeSort C α] :
+instance hasCoeToSort {α : Sort*} [CoeSort C α] :
     CoeSort (InducedBicategory C F) α :=
-  ⟨fun c ↦ F c⟩
+  ⟨fun c ↦ F.obj c.1⟩
+
+instance categoryStruct : CategoryStruct (InducedBicategory C F) where
+  Hom a b := InducedCategory (F.obj a.1 ⟶ F.obj b.1) (F.map (X := a.1) (Y := b.1))
+  id a := 𝟙 a.1
+  comp f g := f ≫ g
 
 -- TODO: fix universe
-instance InducedBicategory.bicategory : Bicategory.{w₁, v} (InducedBicategory C F) where
-  toCategoryStruct := by unfold InducedBicategory; infer_instance
-  homCategory := sorry
-  whiskerLeft := sorry
+instance bicategory : Bicategory.{w₁, v} (InducedBicategory C F) where
+  toCategoryStruct := categoryStruct F
+  homCategory a b := InducedCategory.category (F.map (X := a.1) (Y:=b.1))
+  -- Need "F" pre'oplax here (so mapId + mapComp + nothing else?)
+  whiskerLeft {a b c} f {g h} η := ((F.map f) ◁ η)
   whiskerRight := sorry
   associator := sorry
   leftUnitor := sorry
@@ -70,6 +81,8 @@ instance InducedBicategory.bicategory : Bicategory.{w₁, v} (InducedBicategory 
   triangle := sorry
   -- -- TODO: bad definition here?
   -- toCategoryStruct := by unfold InducedBicategory; infer_instance
+
+end InducedBicategory
 
 end Bicategory
 
