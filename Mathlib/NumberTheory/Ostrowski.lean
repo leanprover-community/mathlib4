@@ -93,7 +93,7 @@ variable (hf_nontriv : f ≠ 1) (bdd : ∀ n : ℕ, f n ≤ 1)
 lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ f p < 1) ∧
     ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m := by
   -- There is a positive integer with absolute value different from one
-  have hn : ∃ (n : ℕ), n ≠ 0 ∧ f n ≠ 1 := by
+  have hn : ∃ n : ℕ, n ≠ 0 ∧ f n ≠ 1 := by
     by_contra! h
     apply hf_nontriv
     apply eq_on_Nat_iff_eq.1
