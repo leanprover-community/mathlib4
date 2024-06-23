@@ -20,6 +20,7 @@ See note [foundational algebra order theory].
 -/
 
 namespace Nat
+variable {m n : ℕ}
 
 /-! ### Instances -/
 

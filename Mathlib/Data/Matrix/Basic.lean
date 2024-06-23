@@ -5,8 +5,8 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.Pi

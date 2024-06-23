@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Logic.Encodable.Basic
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import logic.denumerable from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 

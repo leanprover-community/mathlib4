@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.finset.nat_antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

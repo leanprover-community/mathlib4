@@ -121,9 +121,8 @@ theorem is_greatest' {a b : α} {m : ℕ} (h : Finite a b) (hm : get (multiplici
 #align multiplicity.is_greatest' multiplicity.is_greatest'
 
 theorem pos_of_dvd {a b : α} (hfin : Finite a b) (hdiv : a ∣ b) :
-    0 < (multiplicity a b).get hfin := by
-  refine zero_lt_iff.2 fun h => ?_
-  simpa [hdiv] using is_greatest' hfin (lt_one_iff.mpr h)
+    0 < (multiplicity a b).get hfin :=
+  pos_iff_ne_zero.2 fun h ↦ by simpa [hdiv] using is_greatest' hfin (lt_one_iff.2 h)
 #align multiplicity.pos_of_dvd multiplicity.pos_of_dvd
 
 theorem unique {a b : α} {k : ℕ} (hk : a ^ k ∣ b) (hsucc : ¬a ^ (k + 1) ∣ b) :

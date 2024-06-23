@@ -8,7 +8,6 @@ import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linarith
 
 /-!
 # Series of a relation

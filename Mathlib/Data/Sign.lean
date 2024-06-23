@@ -6,6 +6,7 @@ Authors: Eric Rodriguez
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!

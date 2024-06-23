@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Card
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.multiset.fintype from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 

@@ -6,6 +6,8 @@ Authors: Anne Baanen, Floris van Doorn
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic.Linarith
 
 #align_import algebra.big_operators.norm_num from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

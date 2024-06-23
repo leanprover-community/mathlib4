@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Order.Interval.Finset .Nat
 
 #align_import wiedijk_100_theorems.ascending_descending_sequences from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 

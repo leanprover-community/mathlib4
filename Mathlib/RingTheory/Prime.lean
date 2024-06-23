@@ -7,6 +7,7 @@ import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import ring_theory.prime from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 

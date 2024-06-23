@@ -11,6 +11,8 @@ import Mathlib.Data.Multiset.Nodup
 # Erasing duplicates in a multiset.
 -/
 
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists NeZero.one_le
 
 namespace Multiset
 
