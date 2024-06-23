@@ -57,7 +57,8 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
   | StyleError.copyright none => "Malformed or missing copyright header"
   | StyleError.authors =>
     "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
-  | StyleError.adaptationNote => "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
+  | StyleError.adaptationNote =>
+    "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
   | StyleError.fileTooLong current_size size_limit =>
     match style with
     | ErrorFormat.github =>
