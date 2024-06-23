@@ -213,8 +213,8 @@ theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
   rfl
 #align algebraic_geometry.Scheme.comp_val_c_app AlgebraicGeometry.Scheme.comp_app
 
-@[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
-@[deprecated (since := "2024-06-23")] alias comp_val_c_app_assoc := comp_app_assoc
+alias comp_val_c_app := comp_app
+alias comp_val_c_app_assoc := comp_app_assoc
 
 theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
     g.appLE U V e₁ ≫ f.appLE V W e₂ =
@@ -286,24 +286,24 @@ end Scheme
 
 /-- The spectrum of a commutative ring, as a scheme.
 -/
-def Spec (R : CommRingCat) : Scheme where
+def specObj (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
-#align algebraic_geometry.Scheme.Spec_obj AlgebraicGeometry.Spec
+#align algebraic_geometry.Scheme.Spec_obj AlgebraicGeometry.specObj
 
 theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
-    (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
+    (specObj R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
 #align algebraic_geometry.Scheme.Spec_obj_to_LocallyRingedSpace AlgebraicGeometry.Spec_toLocallyRingedSpace
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of schemes.
 -/
-def SpecMap {R S : CommRingCat} (f : R ⟶ S) : Spec S ⟶ Spec R :=
+def SpecMap {R S : CommRingCat} (f : R ⟶ S) : specObj S ⟶ specObj R :=
   (Spec.locallyRingedSpaceMap f : Spec.locallyRingedSpaceObj S ⟶ Spec.locallyRingedSpaceObj R)
 #align algebraic_geometry.Scheme.Spec_map AlgebraicGeometry.SpecMap
 
 @[simp]
-theorem SpecMap_id (R : CommRingCat) : SpecMap (𝟙 R) = 𝟙 (Spec R) :=
+theorem SpecMap_id (R : CommRingCat) : SpecMap (𝟙 R) = 𝟙 (specObj R) :=
   Spec.locallyRingedSpaceMap_id R
 #align algebraic_geometry.Scheme.Spec_map_id AlgebraicGeometry.SpecMap_id
 
@@ -314,8 +314,8 @@ theorem SpecMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 #align algebraic_geometry.Scheme.Spec_map_comp AlgebraicGeometry.SpecMap_comp
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes. -/
-protected def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
-  obj R := Spec (unop R)
+def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
+  obj R := specObj (unop R)
   map f := SpecMap f.unop
   map_id R := by simp
   map_comp f g := by simp
@@ -339,9 +339,9 @@ section
 variable {R S : CommRingCat} (f : R ⟶ S)
 
 -- The lemmas below are not tagged simp to respect the abstraction.
-lemma Spec_obj_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
-lemma Spec_obj_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
-lemma Spec_obj_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
+lemma Spec_obj_carrier (R : CommRingCat.{u}) : (specObj R).carrier = PrimeSpectrum R := rfl
+lemma Spec_obj_sheaf (R : CommRingCat.{u}) : (specObj R).sheaf = Spec.structureSheaf R := rfl
+lemma Spec_obj_presheaf (R : CommRingCat.{u}) : (specObj R).presheaf = (Spec.structureSheaf R).1 := rfl
 lemma SpecMap_base : (SpecMap f).1.base = PrimeSpectrum.comap f := rfl
 
 set_option maxHeartbeats 800000 in
