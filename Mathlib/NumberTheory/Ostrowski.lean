@@ -173,7 +173,7 @@ lemma mulRingNorm_eq_one_of_not_dvd (m : ℕ) (hpm : ¬ p ∣ m) : f m = 1 := by
   have le_half x (hx0 : 0 < x) (hx1 : x < 1) (hxM : x ≤ M) : x ^ k < 1/2 := by
     calc
     x ^ k = x ^ (k : ℝ) := by norm_cast
-    _ < x ^ M.logb (1/2) := by
+    _ < x ^ M.logb (1 / 2) := by
       apply rpow_lt_rpow_of_exponent_gt hx0 hx1
       rw [hk]
       push_cast
