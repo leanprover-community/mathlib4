@@ -6,6 +6,7 @@ Authors: Calle Sönne
 
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.EqToHom
 
 /-!
 
@@ -30,28 +31,24 @@ open scoped Bicategory
 
 universe w v u w₁ v₁ u₁
 
-variable {B : Type u} [CategoryStruct.{v} B] (C : Type u₁) [Bicategory.{w₁, v₁} C]
+variable (B : Type u) [CategoryStruct.{v} B] (C : Type u₁) [Bicategory.{w₁, v₁} C]
 
 -- TODO: F' needs to respect compositions!! (i.e. F needs to be a prefunctor)
 -- TODO: maybe not...?
-variable (F : Prefunctor B C)
 
 /-- `InducedBicategory B C`, where `F : B → C`, is a typeclass synonym for `B`,
 which provides a bicategory structure so that the 2-morphisms `X ⟶ Y` are the 2-morphisms
 in `C` from `F X` to `F Y`.
 -/
--- TODO: make this a structure...
-structure InducedBicategory (_F : Prefunctor B C) : Type u :=
-  as : B
 
-structure InducedBicategory' where
-  obj : Type u
-  categoryStruct : CategoryStruct.{v} obj
-  -- TODO: hom as above or sth
-  F : Prefunctor obj C
-  -- commute w/ comp
-  mapComp : ∀ {a b c : obj} (f : a ⟶ b) (g : b ⟶ c), F.map (f ≫ g) ≅ F.map f ≫ F.map g
-  mapId : ∀ {a : obj}, F.map (𝟙 a) ≅ 𝟙 (F.obj a)
+structure FunctorStruct extends Prefunctor B C where
+  map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) = map f ≫ map g
+  map_id : ∀ {a : B}, map (𝟙 a) = 𝟙 (obj a)
+
+variable {B}
+variable (F : FunctorStruct B C)
+
+def InducedBicategory (_F : FunctorStruct B C) : Type u := B
   -- respects associators etc
 
 
@@ -62,21 +59,31 @@ variable {C}
 
 instance hasCoeToSort {α : Sort*} [CoeSort C α] :
     CoeSort (InducedBicategory C F) α :=
-  ⟨fun c ↦ F.obj c.1⟩
+  ⟨fun c ↦ F.obj c⟩
 
 instance categoryStruct : CategoryStruct (InducedBicategory C F) where
-  Hom a b := InducedCategory (F.obj a.1 ⟶ F.obj b.1) (F.map (X := a.1) (Y := b.1))
-  id a := 𝟙 a.1
-  comp f g := f ≫ g
+  Hom a b := InducedCategory (F.obj a ⟶ F.obj b) (F.map (X := a) (Y := b))
+  id a := let a' : B := a; 𝟙 a'
+  comp {a b c} f g := by
+    let a' : B := a
+    let b' : B := b
+    let f' : a' ⟶ b' := f
+    -- TODO: dangerous?
+    apply f' ≫ g
 
 -- TODO: fix universe
 instance bicategory : Bicategory.{w₁, v} (InducedBicategory C F) where
   toCategoryStruct := categoryStruct F
-  homCategory a b := InducedCategory.category (F.map (X := a.1) (Y:=b.1))
+  homCategory a b := InducedCategory.category (F.map (X := a) (Y:=b))
   -- Need "F" "PseudoStruct" here (so mapId + mapComp + coherences + no 2-morphisms)
-  whiskerLeft {a b c} f {g h} η := ((F.map f) ◁ η)
-  whiskerRight := sorry
-  associator f g h := α_ (F.map f) (F.map g) (F.map h)
+  whiskerLeft {a b c} f {g h} η := by
+    apply eqToHom (F.map_comp f g) ≫ ((F.map f) ◁ η) ≫ eqToHom (F.map_comp f h).symm
+  whiskerRight {a b c f g} η h := by
+    apply eqToHom (F.map_comp f h) ≫ (η ▷(F.map h)) ≫ eqToHom (F.map_comp g h).symm
+  associator f g h := by
+    apply eqToIso (show
+        F.map ((f ≫ g) ≫ h) = (F.map f ≫ F.map g) ≫ F.map h by simp [F.map_comp]) ≪≫
+      α_ (F.map f) (F.map g) (F.map h) ≪≫ eqToIso (show F.map f ≫ F.map g ≫ F.map h = F.map (f ≫ g ≫ h) by simp [F.map_comp])
   leftUnitor := sorry
   rightUnitor := sorry
   whiskerLeft_id := sorry
