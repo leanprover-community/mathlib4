@@ -233,10 +233,9 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ (t : ℝ), 0 < t ∧ f p = p ^ (-t
 theorem mulRingNorm_equiv_padic_of_bounded :
     ∃ p, ∃ (hp : Fact (Nat.Prime p)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_smallest_Nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
-  use p
-  have hprime : Prime p := is_prime_of_smallest_Nat_zero_lt_mulRingNorm_lt_one p hfp.1 hfp.2 hmin
-  have hprime_fact : Fact (Nat.Prime p) := fact_iff.2 (Prime.nat_prime hprime)
-  use (hprime_fact)
+  have hprime := is_prime_of_smallest_Nat_zero_lt_mulRingNorm_lt_one p hfp.1 hfp.2 hmin
+  have hprime_fact : Fact (Nat.Prime p) := ⟨hprime⟩
+  use p, hprime_fact
   obtain ⟨t, h⟩ := exists_pos_mulRingNorm_eq_pow_neg p hfp.1 hfp.2 hmin
   rw [← equiv_on_Nat_iff_equiv]
   use (t⁻¹)
