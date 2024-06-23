@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Cli.Basic
 import Mathlib.Init.Data.Nat.Notation
 
 /-!
@@ -18,9 +17,10 @@ All of these have been rewritten from the `lint-style.py` script.
 For now, this only contains the linters for the copyright and author headers and large files:
 further linters will be ported in subsequent PRs.
 
+An executable running all these linters is defined in `scripts/lint_style.lean`.
 -/
 
-open Lean Elab System
+open System
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
@@ -291,33 +291,3 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
     if ← lintFile path (sizeLimits.get? 0) styleExceptions style then
       numberErrorFiles := numberErrorFiles + 1
   return numberErrorFiles
-
-open Cli in
-/-- Implementation of the `lint_style` command line program. -/
-def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  let errorStyle := match (args.hasFlag "github", args.hasFlag "update") with
-    | (true, _) => ErrorFormat.github
-    | (false, true) => ErrorFormat.exceptionsFile
-    | (false, false) => ErrorFormat.humanReadable
-  let mut numberErrorFiles : UInt32 := 0
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (mkFilePath [s]) errorStyle
-    numberErrorFiles := numberErrorFiles + n
-  return numberErrorFiles
-
-open Cli in
-/-- Setting up command line options and help text for `lake exe lint_style`. -/
--- so far, no help options or so: perhaps that is fine?
-def lint_style : Cmd := `[Cli|
-  lint_style VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
-  Print errors about any unexpected style errors to standard output."
-
-  FLAGS:
-    github;     "Print errors in a format suitable for github problem matchers\n\
-                 otherwise, produce human-readable output"
-    update;     "Print errors solely for the style exceptions file"
-]
-
-/-- The entry point to the `lake exe lint_style` command. -/
-def main (args : List String) : IO UInt32 := do lint_style.validate args
