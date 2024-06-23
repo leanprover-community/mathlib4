@@ -194,6 +194,16 @@ lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
   rfl
 
+/-- Coercion to a function as an `AddMonoidHom`. Similar to `ContinuousMap.coeFnAddMonoidHom`. -/
+def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
+  toFun f := f
+  map_zero' := coe_zero
+  map_add' f g := by simp
+
+@[simp] lemma coe_sum {ι : Type*} (s : Finset ι)
+    (f : ι → C(X, R)₀) : ⇑(s.sum f) = s.sum (fun i => ⇑(f i)) :=
+  map_sum coeFnAddMonoidHom f s
+
 end Semiring
 
 section Ring
