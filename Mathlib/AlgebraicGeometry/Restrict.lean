@@ -356,9 +356,16 @@ theorem morphismRestrict_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V :
     Scheme.restrict_presheaf_map, this, Hom.appLE_map]
 #align algebraic_geometry.morphism_restrict_c_app AlgebraicGeometry.morphismRestrict_app
 
+@[simp]
 theorem morphismRestrict_app' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     (f ∣_ U).app V = f.appLE _ _ (image_morphismRestrict_preimage f U V).le :=
   morphismRestrict_app f U V
+
+@[simp]
+theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V W e) :
+    (f ∣_ U).appLE V W e = f.appLE (Scheme.ιOpens U ''ᵁ V) (Scheme.ιOpens (f ⁻¹ᵁ U) ''ᵁ W)
+      ((Set.image_subset _ e).trans (image_morphismRestrict_preimage f U V).le) := by
+  rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.restrict_presheaf_map, Scheme.Hom.appLE_map]
 
 theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     Scheme.Γ.map (f ∣_ U).op =

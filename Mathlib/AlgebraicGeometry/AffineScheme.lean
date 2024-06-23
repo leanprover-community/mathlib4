@@ -99,8 +99,11 @@ instance isAffine_affineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
   ⟨Functor.essImage.unit_isIso X.property⟩
 #align algebraic_geometry.is_affine_AffineScheme AlgebraicGeometry.isAffine_affineScheme
 
-instance isAffine_Spec (R : CommRingCat) : IsAffine (Spec R) :=
+instance (R : CommRingCatᵒᵖ) : IsAffine (Scheme.Spec.obj R) :=
   AlgebraicGeometry.isAffine_affineScheme ⟨_, Scheme.Spec.obj_mem_essImage R⟩
+
+instance isAffine_Spec (R : CommRingCat) : IsAffine (Spec R) :=
+  AlgebraicGeometry.isAffine_affineScheme ⟨_, Scheme.Spec.obj_mem_essImage (op R)⟩
 #align algebraic_geometry.Spec_is_affine AlgebraicGeometry.isAffine_Spec
 
 theorem isAffine_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] [h : IsAffine Y] : IsAffine X := by
@@ -250,7 +253,7 @@ variable {X Y : Scheme.{u}} {U : Opens X} (hU : IsAffineOpen U) (f : Γ(X, U))
 def fromSpec :
     (Spec Γ(X, U)) ⟶ X :=
   haveI : IsAffine (X ∣_ᵤ U) := hU
-  Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op).op ≫
+  Spec (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op) ≫
     (X ∣_ᵤ U).isoSpec.inv ≫ Scheme.ιOpens U
 #align algebraic_geometry.is_affine_open.from_Spec AlgebraicGeometry.IsAffineOpen.fromSpec
 
@@ -320,10 +323,14 @@ def _root_.AlgebraicGeometry.IsOpenImmersion.affineOpensEquiv (f : X ⟶ Y) [H :
 
 /-- The affine open sets of an open subscheme
 corresponds to the affine open sets containing in the subset. -/
-@[simps!]
-def affineOpensRestrict {X : Scheme.{u}} (U : Opens X) :
+@[simps! apply_coe_coe]
+def _root_.AlgebraicGeometry.affineOpensRestrict {X : Scheme.{u}} (U : Opens X) :
     (X ∣_ᵤ U).affineOpens ≃ { V : X.affineOpens // V ≤ U } :=
   (IsOpenImmersion.affineOpensEquiv (Scheme.ιOpens U)).trans (Equiv.subtypeEquivProp (by simp))
+
+@[simp]
+def _root_.AlgebraicGeometry.affineOpensRestrict_symm_apply_coe {X : Scheme.{u}} (U : Opens X) (V) :
+    ((affineOpensRestrict U).symm V).1 = Scheme.ιOpens U ⁻¹ᵁ V := rfl
 
 instance (priority := 100) _root_.AlgebraicGeometry.Scheme.compactSpace_of_isAffine
     (X : Scheme) [IsAffine X] :
@@ -355,8 +362,8 @@ theorem SpecΓIdentity_hom_app_fromSpec :
   dsimp only [asIso_inv, Functor.op_obj, unop_op]
   rw [← Functor.map_comp_assoc, ← op_comp, eqToHom_trans, Scheme.eq_restrict_presheaf_map_eqToHom,
     Scheme.Hom.naturality_assoc, Scheme.inv_app_top, IsIso.hom_inv_id_assoc]
-  simp only [eqToHom_map, eqToHom_op,
-    Scheme.Spec_map_presheaf_map_eqToHom, eqToHom_trans, eqToHom_unop]
+  simp only [eqToHom_op, eqToHom_map, Scheme.Spec_eqToHom, eqToHom_unop,
+    Scheme.Spec_map_presheaf_map_eqToHom, eqToHom_trans]
 #align algebraic_geometry.is_affine_open.Spec_Γ_identity_hom_app_from_Spec AlgebraicGeometry.IsAffineOpen.SpecΓIdentity_hom_app_fromSpec
 
 @[elementwise]
@@ -394,8 +401,8 @@ theorem basicOpen_fromSpec_app :
 theorem basicOpen :
     IsAffineOpen (X.basicOpen f) := by
   rw [← hU.fromSpec_image_basicOpen, Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion]
-  convert isAffineOpen_opensRange (Scheme.Spec.map
-    (CommRingCat.ofHom <| algebraMap Γ(X, U) (Localization.Away f)).op)
+  convert isAffineOpen_opensRange
+    (Spec (CommRingCat.ofHom <| algebraMap Γ(X, U) (Localization.Away f)))
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 #align algebraic_geometry.is_affine_open.basic_open_is_affine AlgebraicGeometry.IsAffineOpen.basicOpen
 
@@ -479,6 +486,20 @@ instance _root_.AlgebraicGeometry.Γ_restrict_isLocalization
   (isAffineOpen_top X).isLocalization_of_eq_basicOpen r _ (Opens.openEmbedding_obj_top _)
 #align algebraic_geometry.Γ_restrict_is_localization AlgebraicGeometry.Γ_restrict_isLocalization
 
+lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U)
+    {V : Opens X} (hV : IsAffineOpen V) (e) (r : Γ(Y, U)) :
+    letI := hU.isLocalization_basicOpen r
+    letI := hV.isLocalization_basicOpen (f.appLE U V e r)
+    f.appLE (Y.basicOpen r) (X.basicOpen (f.appLE U V e r))
+      (by simpa [Scheme.Hom.appLE] using X.basicOpen_restrict _ _) =
+        IsLocalization.Away.map _ _ (f.appLE U V e) r := by
+  letI := hU.isLocalization_basicOpen r
+  letI := hV.isLocalization_basicOpen (f.appLE U V e r)
+  apply IsLocalization.ringHom_ext (.powers r)
+  rw [← CommRingCat.comp_eq_ring_hom_comp, IsLocalization.Away.map, IsLocalization.map_comp,
+    RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
+    Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
+
 theorem basicOpen_basicOpen_is_basicOpen (g : Γ(X, X.basicOpen f)) :
     ∃ f' : Γ(X, U), X.basicOpen f' = X.basicOpen g := by
   have := isLocalization_basicOpen hU f
@@ -511,7 +532,7 @@ theorem _root_.AlgebraicGeometry.exists_basicOpen_le_affine_inter
 noncomputable def primeIdealOf (x : U) :
     PrimeSpectrum Γ(X, U) :=
   ((@Scheme.isoSpec (X ∣_ᵤ U) hU).hom ≫
-    Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op).op).1.base x
+    Spec (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).1.base x
 #align algebraic_geometry.is_affine_open.prime_ideal_of AlgebraicGeometry.IsAffineOpen.primeIdealOf
 
 theorem fromSpec_primeIdealOf (x : U) :
@@ -521,10 +542,10 @@ theorem fromSpec_primeIdealOf (x : U) :
   -- unnecessary, indeed, the linter did not like it, so I just use `elementwise_of%` instead of
   -- adding the corresponding lemma in `Scheme.lean` file
   erw [← elementwise_of% Scheme.comp_val_base] -- now `erw` after #13170
-  simp only [Scheme.Γ_obj, unop_op, Scheme.restrict_presheaf_obj, Category.assoc, ←
-    Functor.map_comp_assoc, ← op_comp, ← Functor.map_comp, eqToHom_trans, eqToHom_refl, op_id,
-    CategoryTheory.Functor.map_id, Category.id_comp, Iso.hom_inv_id_assoc,
-    Scheme.ofRestrict_val_base, Scheme.restrict_carrier, Opens.coe_inclusion]
+  simp only [Scheme.restrict_carrier, Scheme.restrict_presheaf_obj, unop_op, Category.assoc, ←
+    Scheme.Spec_comp_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl, op_id,
+    CategoryTheory.Functor.map_id, Scheme.Spec_id, Category.id_comp, Iso.hom_inv_id_assoc,
+    Scheme.ofRestrict_val_base]
   rfl -- `rfl` was not needed before #13170
 #align algebraic_geometry.is_affine_open.from_Spec_prime_ideal_of AlgebraicGeometry.IsAffineOpen.fromSpec_primeIdealOf
 

@@ -343,6 +343,9 @@ instance {R S : CommRingCat} : HasSpec (R ⟶ S) (Spec S ⟶ Spec R) where
 @[reassoc, simp] lemma Spec_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     Spec (f ≫ g) = Spec g ≫ Spec f := Scheme.Spec.map_comp g.op f.op
 
+lemma Spec_eqToHom {R S : CommRingCat} (e : R = S) : Spec (eqToHom e) = eqToHom (e ▸ rfl) := by
+  subst e; exact Spec_id _
+
 instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (Spec f) :=
   inferInstanceAs (IsIso <| Scheme.Spec.map f.op)
 

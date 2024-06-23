@@ -461,8 +461,8 @@ instance affine_hasPullback {A B C : CommRingCat}
     (f : Spec A ⟶ Spec C)
     (g : Spec B ⟶ Spec C) : HasPullback f g := by
   rw [← Scheme.Spec.map_preimage f, ← Scheme.Spec.map_preimage g]
-  exact
-    ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit Spec (Spec.preimage f) (Spec.preimage g)⟩⟩⟩
+  exact ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit
+    Scheme.Spec (Scheme.Spec.preimage f) (Scheme.Spec.preimage g)⟩⟩⟩
 #align algebraic_geometry.Scheme.pullback.affine_has_pullback AlgebraicGeometry.Scheme.Pullback.affine_hasPullback
 
 theorem affine_affine_hasPullback {B C : CommRingCat} {X : Scheme}
@@ -503,10 +503,10 @@ instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
     (f : X ⟶ Z) (g : Y ⟶ Z) [IsAffine X] [IsAffine Y] [IsAffine Z] :
     IsAffine (pullback f g) :=
   isAffine_of_isIso
-    (pullback.map f g (Spec (Γ.map f.op))) (Spec (Γ.map g.op))
+    (pullback.map f g (Spec (Γ.map f.op)) (Spec (Γ.map g.op))
         (ΓSpec.adjunction.unit.app X) (ΓSpec.adjunction.unit.app Y) (ΓSpec.adjunction.unit.app Z)
         (ΓSpec.adjunction.unit.naturality f) (ΓSpec.adjunction.unit.naturality g) ≫
-      (PreservesPullback.iso Spec _ _).inv)
+      (PreservesPullback.iso Scheme.Spec _ _).inv)
 
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/
 @[simps! J obj map]
