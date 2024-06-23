@@ -310,28 +310,29 @@ instance of_isIso (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsStronglyCocar
 /-- A strongly cartesian arrow lying over an isomorphism is an isomorphism. -/
 lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCocartesian p f φ] [IsIso f] : IsIso φ := by
   subst_hom_lift p f φ; clear a b R S
-  -- Let `φ` be the morphism induced by applying universal property to `𝟙 b` lying over `f⁻¹ ≫ f`.
-  let φ' := map p (p.map φ) φ (IsIso.inv_hom_id (p.map φ)).symm (𝟙 b)
+  -- TODO: fix comment...
+  -- Let `φ'` be the morphism induced by applying universal property to `𝟙 a` lying over `f ≫ f⁻¹`.
+  let φ' := map p (p.map φ) φ (IsIso.hom_inv_id (p.map φ)).symm (𝟙 a)
   use φ'
-  -- `φ' ≫ φ = 𝟙 b` follows immediately from the universal property.
-  have inv_hom : φ' ≫ φ = 𝟙 b := fac p (p.map φ) φ _ (𝟙 b)
-  refine ⟨?_, inv_hom⟩
-  -- We will now show that `φ ≫ φ' = 𝟙 a` by showing that `(φ ≫ φ') ≫ φ = 𝟙 a ≫ φ`.
-  have h₁ : IsHomLift p (𝟙 (p.obj a)) (φ  ≫ φ') := by
-    rw [← IsIso.hom_inv_id (p.map φ)]
+  -- `φ ≫ φ' = 𝟙 a` follows immediately from the universal property.
+  have inv_hom : φ ≫ φ' = 𝟙 a := fac p (p.map φ) φ _ (𝟙 a)
+  refine ⟨inv_hom, ?_⟩
+  -- We will now show that `φ' ≫ φ = 𝟙 b` by showing that `φ ≫ (φ' ≫ φ) = φ ≫ 𝟙 b`.
+  have h₁ : IsHomLift p (𝟙 (p.obj b)) (φ' ≫ φ) := by
+    rw [← IsIso.inv_hom_id (p.map φ)]
     apply IsHomLift.comp
-  apply IsStronglyCocartesian.ext p (p.map φ) φ (𝟙 (p.obj a))
-  simp only [assoc, inv_hom, comp_id, id_comp]
+  apply IsStronglyCocartesian.ext p (p.map φ) φ (𝟙 (p.obj b))
+  simp only [← assoc, inv_hom, comp_id, id_comp]
 
 end
 
 /-- The canonical isomorphism between the domains of two strongly cartesian arrows lying over
 isomorphic objects. -/
-noncomputable def domainIsoOfBaseIso {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f' : R' ⟶ S}
-  {g : R' ≅ R} (h : f' = g.hom ≫ f) (φ : a ⟶ b) (φ' : a ⟶ b') [IsStronglyCocartesian p f φ]
-    [IsStronglyCocartesian p f' φ'] : a' ≅ a where
+noncomputable def codomainIsoOfBaseIso {R S S' : 𝒮} {a b b' : 𝒳} {f : R ⟶ S} {f' : R ⟶ S'}
+  {g : S ≅ S'} (h : f' = f ≫ g.hom) (φ : a ⟶ b) (φ' : a ⟶ b') [IsStronglyCocartesian p f φ]
+    [IsStronglyCocartesian p f' φ'] : b ≅ b' where
   hom := map p f φ h φ'
-  inv := @map _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (g.inv ≫ ·) h.symm) φ
+  inv := @map _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (· ≫ g.inv) h.symm) φ
     (by simp; infer_instance)
 
 end IsStronglyCocartesian
