@@ -69,44 +69,53 @@ variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
 namespace PrimitiveSpectrum
 
+-- b ⊓ c ≤ a → b ≤ a ∨ c ≤ a
+
+/- The set of relative-closed sets of the form `T ↓∩ (Ici a)` for some `a` in `α` is closed under
+pairwise union. -/
+lemma ici_union_ici_eq (a b : α) :
+    (T ↓∩ (Ici a)) ∪ (T ↓∩ (Ici b)) = (T ↓∩ (Ici (a ⊓ b))) := by
+  ext p
+  constructor
+  · intro h
+    cases' h with h1 h3
+    · exact inf_le_of_left_le h1
+    · exact inf_le_of_right_le h3
+  · intro h
+    exact ((hT p (Subtype.coe_prop p)).2) h
+
+
 /- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
 pairwise intersection. -/
 lemma ici_compl_inter_ici_compl_eq (a b : α) :
     (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T ↓∩ (Ici (a ⊓ b))ᶜ) := by
-  ext p
-  simp only [preimage_compl, mem_inter_iff, mem_compl_iff, mem_preimage, mem_Ici, ← not_or]
-  constructor
-  · intro h
-    by_contra h2
-    exact h ((hT p (Subtype.coe_prop p)).2  h2)
-  · intros h
-    by_contra h2
-    cases' h2 with h1 h3
-    · exact h (inf_le_of_left_le h1)
-    · exact h (inf_le_of_right_le h3)
+  rw [preimage_compl, preimage_compl, preimage_compl, ← (ici_union_ici_eq hT), compl_union]
 
 variable [DecidableEq α] [OrderTop α]
+
+/- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
+relative-closed set of the form `T ↓∩ (Ici a)` where `a = ⊓ F`. -/
+open Finset in
+lemma upperClosureFinite_eq  (F : Finset α) :
+    T ↓∩ (↑(upperClosure F.toSet)) = T ↓∩ (Ici (inf F id)) := by
+  rw [coe_upperClosure]
+  induction' F using Finset.induction_on with a F' _ I4
+  · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
+      inf_empty, Ici_top]
+    symm
+    by_contra hf
+    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
+    cases' hf with x hx
+    exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr hx)
+  · simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
+      preimage_iUnion, inf_insert, id_eq, ← (ici_union_ici_eq hT), ← I4]
 
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
 set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⊓ F`. -/
 open Finset in
 lemma upperClosureFiniteCompl_eq  (F : Finset α) :
     T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
-  rw [coe_upperClosure]
-  simp only [compl_iUnion]
-  rw [preimage_iInter₂]
-  induction' F using Finset.induction_on with a F' _ I4
-  · simp only [Finset.coe_empty, mem_empty_iff_false, iInter_of_empty, iInter_univ, sInf_empty,
-      Ici_top, inf_empty, Ici_top, Set.preimage_compl, eq_compl_comm, Set.compl_univ]
-    by_contra hf
-    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
-    cases' hf with x hx
-    exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr hx)
-  · simp only [coe_insert, mem_insert_iff, mem_coe,  iInter_iInter_eq_or_left,
-      inf_insert, id_eq]
-    rw [← ici_compl_inter_ici_compl_eq, ← I4]
-    simp only [Set.preimage_compl, mem_coe]
-    exact hT
+  rw [Set.preimage_compl, Set.preimage_compl, (upperClosureFinite_eq hT)]
 
 /-
 The relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for `a` in `α` form a basis for the relative
@@ -130,7 +139,7 @@ lemma relativeLowerIsTopologicalBasis :
     cases' ha with F hF
     lift F to Finset α using hF.1
     use Finset.inf F id
-    rw [← hF.2, ← preimage_compl, ← (upperClosureFiniteCompl_eq hT)]
+    rw [← (upperClosureFinite_eq hT), ← hF.2]
     rfl
 
 end PrimitiveSpectrum
@@ -145,22 +154,26 @@ variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
 namespace PrimitiveSpectrum
 
+lemma sInter_Ici_eq (S : Set α) : ⋂₀ { T ↓∩ (Ici a) | a ∈ S } = T ↓∩ (Ici (sSup S)) := by
+  rw [le_antisymm_iff]
+  constructor
+  · intro a ha
+    simp only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      mem_preimage, mem_Ici] at ha
+    simp only [mem_preimage, mem_Ici, sSup_le_iff]
+    exact fun b a ↦ ha b a
+  · simp only [le_eq_subset, subset_sInter_iff, mem_setOf_eq, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+    intro a ha
+    exact Set.preimage_val_subset_preimage_val (antitone_Ici (CompleteLattice.le_sSup S a ha))
+
 /- When `α` is complete, the relative basis for the Lower topology is also closed under arbitary
 unions.-/
 lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
-  rw [le_antisymm_iff]
-  constructor
-  · simp only [preimage_compl, le_eq_subset, sUnion_subset_iff, mem_setOf_eq, forall_exists_index,
-    and_imp, forall_apply_eq_imp_iff₂, compl_subset_compl]
-    intro a ha
-    exact Set.preimage_val_subset_preimage_val (antitone_Ici (CompleteLattice.le_sSup S a ha))
-  · simp only [preimage_compl, le_eq_subset]
-    intro a ha
-    simp only [mem_sUnion, mem_setOf_eq, exists_exists_and_eq_and, mem_compl_iff, mem_preimage,
-      mem_Ici]
-    simp only [mem_compl_iff, mem_preimage, mem_Ici, sSup_le_iff, not_forall,
-      Classical.not_imp] at ha
-    exact bex_def.mp ha
+  rw [Set.preimage_compl, ← sInter_Ici_eq, compl_sInter, sUnion_eq_compl_sInter_compl]
+  simp only [preimage_compl, sInter_image, mem_setOf_eq, iInter_exists, biInter_and',
+    iInter_iInter_eq_right, compl_compl, compl_iInter, sUnion_image, iUnion_exists, biUnion_and',
+    iUnion_iUnion_eq_right]
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
