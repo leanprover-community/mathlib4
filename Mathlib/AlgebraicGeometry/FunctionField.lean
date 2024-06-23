@@ -148,7 +148,7 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
   delta IsAffineOpen.primeIdealOf
   convert
     genericPoint_eq_of_isOpenImmersion
-      ((X ∣_ᵤ U).isoSpec.hom ≫ Spec (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op))
+      ((X ∣_ᵤ U).isoSpec.hom ≫ SpecMap (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op))
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion (Scheme.ιOpens U)).symm

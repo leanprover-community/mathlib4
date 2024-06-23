@@ -253,7 +253,7 @@ variable {X Y : Scheme.{u}} {U : Opens X} (hU : IsAffineOpen U) (f : Γ(X, U))
 def fromSpec :
     (Spec Γ(X, U)) ⟶ X :=
   haveI : IsAffine (X ∣_ᵤ U) := hU
-  Spec (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op) ≫
+  SpecMap (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op) ≫
     (X ∣_ᵤ U).isoSpec.inv ≫ Scheme.ιOpens U
 #align algebraic_geometry.is_affine_open.from_Spec AlgebraicGeometry.IsAffineOpen.fromSpec
 
@@ -363,7 +363,7 @@ theorem SpecΓIdentity_hom_app_fromSpec :
   dsimp only [asIso_inv, Functor.op_obj, unop_op]
   rw [← Functor.map_comp_assoc, ← op_comp, eqToHom_trans, Scheme.eq_restrict_presheaf_map_eqToHom,
     Scheme.Hom.naturality_assoc, Scheme.inv_app_top, IsIso.hom_inv_id_assoc]
-  simp only [eqToHom_op, eqToHom_map, Scheme.Spec_eqToHom, eqToHom_unop,
+  simp only [eqToHom_op, eqToHom_map, SpecMap_eqToHom, eqToHom_unop,
     Scheme.Spec_map_presheaf_map_eqToHom, eqToHom_trans]
 #align algebraic_geometry.is_affine_open.Spec_Γ_identity_hom_app_from_Spec AlgebraicGeometry.IsAffineOpen.SpecΓIdentity_hom_app_fromSpec
 
@@ -403,7 +403,7 @@ theorem basicOpen :
     IsAffineOpen (X.basicOpen f) := by
   rw [← hU.fromSpec_image_basicOpen, Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion]
   convert isAffineOpen_opensRange
-    (Spec (CommRingCat.ofHom <| algebraMap Γ(X, U) (Localization.Away f)))
+    (SpecMap (CommRingCat.ofHom <| algebraMap Γ(X, U) (Localization.Away f)))
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 #align algebraic_geometry.is_affine_open.basic_open_is_affine AlgebraicGeometry.IsAffineOpen.basicOpen
 
@@ -533,7 +533,7 @@ theorem _root_.AlgebraicGeometry.exists_basicOpen_le_affine_inter
 noncomputable def primeIdealOf (x : U) :
     PrimeSpectrum Γ(X, U) :=
   ((@Scheme.isoSpec (X ∣_ᵤ U) hU).hom ≫
-    Spec (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).1.base x
+    SpecMap (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).1.base x
 #align algebraic_geometry.is_affine_open.prime_ideal_of AlgebraicGeometry.IsAffineOpen.primeIdealOf
 
 theorem fromSpec_primeIdealOf (x : U) :
@@ -544,8 +544,8 @@ theorem fromSpec_primeIdealOf (x : U) :
   -- adding the corresponding lemma in `Scheme.lean` file
   erw [← elementwise_of% Scheme.comp_val_base] -- now `erw` after #13170
   simp only [Scheme.restrict_carrier, Scheme.restrict_presheaf_obj, unop_op, Category.assoc, ←
-    Scheme.Spec_comp_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl, op_id,
-    CategoryTheory.Functor.map_id, Scheme.Spec_id, Category.id_comp, Iso.hom_inv_id_assoc,
+    SpecMap_comp_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl, op_id,
+    CategoryTheory.Functor.map_id, SpecMap_id, Category.id_comp, Iso.hom_inv_id_assoc,
     Scheme.ofRestrict_val_base]
   rfl -- `rfl` was not needed before #13170
 #align algebraic_geometry.is_affine_open.from_Spec_prime_ideal_of AlgebraicGeometry.IsAffineOpen.fromSpec_primeIdealOf
