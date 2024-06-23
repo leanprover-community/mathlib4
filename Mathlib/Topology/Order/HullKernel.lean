@@ -69,7 +69,8 @@ variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
 namespace PrimitiveSpectrum
 
-/- The set of-/
+/- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
+pairwise intersection. -/
 lemma ici_compl_inter_ici_compl_eq (a b : α) :
     (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T ↓∩ (Ici (a ⊓ b))ᶜ) := by
   ext p
