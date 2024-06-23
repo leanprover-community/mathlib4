@@ -118,7 +118,7 @@ private lemma one_lt_of_ne_zero_one {a : ℕ} (ne_0 : a ≠ 0) (ne_1 : a ≠ 1) 
   · rw [Nat.succ_ne_succ, ← pos_iff_ne_zero] at ne_1
     exact Nat.succ_lt_succ ne_1
 
-variable (p : ℕ) (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ (m : ℕ), 0 < f m ∧ f m < 1 → p ≤ m)
+variable (p : ℕ) (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
 
  /-- The minimal positive integer with absolute value smaller than 1 is a prime number-/
 lemma is_prime_of_smallest_Nat_zero_lt_mulRingNorm_lt_one : Prime p := by
