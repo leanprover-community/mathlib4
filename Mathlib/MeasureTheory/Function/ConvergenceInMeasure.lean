@@ -67,9 +67,10 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
 #align measure_theory.tendsto_in_measure_iff_norm MeasureTheory.tendstoInMeasure_iff_norm
 
 -- The ae-limit is ae-unique.
-theorem ae_unique_of_ae_limit {α ι E : Type*} [TopologicalSpace E] [T2Space E] {x : MeasurableSpace α} {μ : Measure α} {g h : α → E} {f : ι → α → E} {l : Filter ι} [l.NeBot]
-    (hg : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (g ω))) (hh
-    : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (h ω))) : g =ᵐ[μ] h := by
+theorem ae_unique_of_ae_limit {α ι E : Type*} [TopologicalSpace E] [T2Space E]
+    {x : MeasurableSpace α} {μ : Measure α} {g h : α → E} {f : ι → α → E} {l : Filter ι} [l.NeBot]
+    (hg : ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (g ω))) (hh :
+    ∀ᵐ ω ∂μ, Filter.Tendsto (fun i => f i ω) l (nhds (h ω))) : g =ᵐ[μ] h := by
   filter_upwards [hg, hh] with ω hg1 hh1
   exact tendsto_nhds_unique hg1 hh1
 
@@ -148,8 +149,9 @@ theorem sub_TendstoInMeasure' {f : ι → α → E}  {g : α → E} {u v: Filter
     (hg :  TendstoInMeasure μ f u g) : TendstoInMeasure μ f v g :=
   fun ε hε => Tendsto.mono_left (hg ε hε) huv
 
-lemma subseqTendsto_of_TendstoInMeasure {f : ℕ → α → E}  {g : α → E} {ns : ℕ → ℕ} (hns : StrictMono ns)
-    (hg :  TendstoInMeasure μ f atTop g) : TendstoInMeasure μ (f ∘ ns) atTop g := by
+lemma subseqTendsto_of_TendstoInMeasure {f : ℕ → α → E}  {g : α → E} {ns : ℕ → ℕ}
+    (hns : StrictMono ns) (hg :  TendstoInMeasure μ f atTop g) :
+    TendstoInMeasure μ (f ∘ ns) atTop g := by
   intro ε hε
   apply Filter.Tendsto.comp (hg ε hε) (StrictMono.tendsto_atTop hns)
 
@@ -327,7 +329,8 @@ lemma false_of_Tendsto_of_boundBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: 
     intro x
     rw [NNReal.dist_eq x 0, NNReal.coe_zero, sub_zero, NNReal.abs_eq]
   simp_rw [h] at hf2
-  apply Metric.false_of_Tendsto_of_boundBelow hδ (Tendsto.comp (NNReal.tendsto_coe'.mpr ⟨Preorder.le_refl 0, fun ⦃_⦄ a ↦ a ⟩) hf1) _
+  apply Metric.false_of_Tendsto_of_boundBelow
+    hδ (Tendsto.comp (NNReal.tendsto_coe'.mpr ⟨Preorder.le_refl 0, fun ⦃_⦄ a ↦ a ⟩) hf1) _
   refine frequently_atTop'.mpr ?_
   intro n
   use n+1
@@ -377,7 +380,8 @@ theorem exists_seq_tendstoInMeasure_atTop_iff     (hfin : MeasureTheory.IsFinite
   · rw [← not_imp_not]
     intros h1
     push_neg
-    obtain h2 : ∃ (ε : ℝ) (_ : 0 < ε), ¬ (Tendsto (fun n => (μ { x | ε ≤ dist (f n x) (g x) }).toNNReal) atTop (nhds 0)) := by
+    obtain h2 : ∃ (ε : ℝ) (_ : 0 < ε),
+      ¬(Tendsto (fun n => (μ { x | ε ≤ dist (f n x) (g x) }).toNNReal) atTop (nhds 0)) := by
       · by_contra h3
         apply h1
         push_neg at h3
@@ -396,7 +400,8 @@ theorem exists_seq_tendstoInMeasure_atTop_iff     (hfin : MeasureTheory.IsFinite
     rw [TendstoInMeasure_of_FiniteMeasure] at h8
     exfalso
     revert h7
-    apply false_of_Tendsto_of_boundBelow_aux (fun n => (μ {x | ε ≤ dist (f (ns (ns' n)) x) (g x)}).toNNReal) δ hδ (h8 ε hε)
+    apply false_of_Tendsto_of_boundBelow_aux
+      (fun n => (μ {x | ε ≤ dist (f (ns (ns' n)) x) (g x)}).toNNReal) δ hδ (h8 ε hε)
 
 end ExistsSeqTendstoAe
 
@@ -406,9 +411,11 @@ variable [MetricSpace E]
 variable {f : ℕ → α → E} {g h : α → E}
 
 -- The LimitInMeasure is ae unique
-theorem ae_unique_of_limitInMeasure' (hg : TendstoInMeasure μ f atTop g) (hh : TendstoInMeasure μ f atTop h) : g =ᵐ[μ] h := by
+theorem ae_unique_of_limitInMeasure' (hg : TendstoInMeasure μ f atTop g)
+    (hh : TendstoInMeasure μ f atTop h) : g =ᵐ[μ] h := by
   obtain ⟨ns,h1,h1'⟩ := TendstoInMeasure.exists_seq_tendsto_ae hg
-  obtain ⟨ns', h2, h2'⟩ := TendstoInMeasure.exists_seq_tendsto_ae (subseqTendsto_of_TendstoInMeasure h1 hh)
+  obtain ⟨ns', h2, h2'⟩ :=
+    TendstoInMeasure.exists_seq_tendsto_ae (subseqTendsto_of_TendstoInMeasure h1 hh)
   obtain h4 : ∀ᵐ (x : α) ∂μ, Tendsto (fun i ↦ f (ns (ns' i)) x) atTop (nhds (g x)) := by
     filter_upwards [h1'] with ω h
     apply Filter.Tendsto.comp h (StrictMono.tendsto_atTop h2)
@@ -417,7 +424,8 @@ theorem ae_unique_of_limitInMeasure' (hg : TendstoInMeasure μ f atTop g) (hh : 
 
 -- Same as above but with a more general filter on ι
 theorem ae_unique_of_limitInMeasure {g h : α → E} {f : ι → α → E}  {u : Filter ι} [NeBot u]
-    [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g) (hh : TendstoInMeasure μ f u h) : g =ᵐ[μ] h := by
+    [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g) (hh : TendstoInMeasure μ f u h) :
+    g =ᵐ[μ] h := by
   obtain ⟨ns,h1,h1'⟩ := TendstoInMeasure.exists_seq_tendstoInMeasure_atTop hg
   exact ae_unique_of_limitInMeasure' (f := f ∘ ns) h1' (subseq_TendstoInMeasure' h1 hh)
 
