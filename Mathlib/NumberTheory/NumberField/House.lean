@@ -1,4 +1,19 @@
+/-
+Copyright (c) 2024 Michail Karatarakis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michail Karatarakis
+-/
+
 import Mathlib.NumberTheory.NumberField.Embeddings
+
+/-!
+# House of an algebraic number
+This file defines the house of an algebraic number `α`, which is
+the largest modulus of its conjugates.
+
+## Tags
+number field, algebraic number, house
+-/
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional Matrix
   Set Algebra Polynomial Basis Finset
@@ -150,6 +165,6 @@ theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
             use i
             use j
        _ =  c' * h * House  (algebraMap (𝓞 K) K α) := by
-        rw [sum_const, Finset.card_fin, nsmul_eq_mul, ←mul_assoc, mul_comm ↑h (maxFinFunMat B⁻¹)]
+        rw [sum_const, Finset.card_fin, nsmul_eq_mul, ← mul_assoc, mul_comm ↑h (maxFinFunMat B⁻¹)]
 
 end section
