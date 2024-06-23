@@ -24,7 +24,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 # Main results
 
 * Pretty much every topological property is preserved under homeomorphisms.
-* `Homeomorph.homeomorphOfContinuousOpen`: A continuous bijection that is
+* `Equiv.toHomeomorphOfContinuousOpen`: A continuous bijection that is
   an open map is a homeomorphism.
 
 -/
@@ -260,13 +260,6 @@ protected theorem embedding (h : X ≃ₜ Y) : Embedding h :=
   ⟨h.inducing, h.injective⟩
 #align homeomorph.embedding Homeomorph.embedding
 
-/-- Homeomorphism given an embedding. -/
-noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ Set.range f where
-  continuous_toFun := hf.continuous.subtype_mk _
-  continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
-  toEquiv := Equiv.ofInjective f hf.inj
-#align homeomorph.of_embedding Homeomorph.ofEmbedding
-
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.inducing.secondCountableTopology
@@ -474,16 +467,66 @@ theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
   exact ⟨fun _ => h.symm.openEmbedding.locallyCompactSpace,
     fun _ => h.closedEmbedding.locallyCompactSpace⟩
 
-/-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
-def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
-  continuous_toFun := h₁
-  continuous_invFun := by
-    rw [continuous_def]
-    intro s hs
-    convert ← h₂ s hs using 1
-    apply e.image_eq_preimage
+/-- An equiv between topological spaces respecting openness is a homeomorphism. -/
+@[simps toEquiv]
+def _root_.Equiv.toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
   toEquiv := e
-#align homeomorph.homeomorph_of_continuous_open Homeomorph.homeomorphOfContinuousOpen
+  continuous_toFun := continuous_def.2 fun s ↦ (he _).2
+  continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
+
+@[simp] lemma _root_.Equiv.coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl
+lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
+
+@[simp] lemma _root_.Equiv.toHomeomorph_refl :
+  (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+
+@[simp] lemma _root_.Equiv.toHomeomorph_symm (e : X ≃ Y) (he) :
+  (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
+
+lemma _root_.Equiv.toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
+    (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =
+    (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
+
+/-- An inducing equiv between topological spaces is a homeomorphism. -/
+@[simps]
+def _root_.Equiv.toHomeomorphOfInducing (f : X ≃ Y) (hf : Inducing f) : X ≃ₜ Y :=
+  { f with
+    toFun := f
+    invFun := f.symm
+    continuous_toFun := hf.continuous
+    continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
+#align equiv.to_homeomorph_of_inducing Equiv.toHomeomorphOfInducing
+
+/-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
+@[simps!]
+def _root_.Equiv.toHomeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
+    X ≃ₜ Y :=
+  e.toHomeomorphOfInducing <|
+    openEmbedding_of_continuous_injective_open h₁ e.injective h₂ |>.toInducing
+#align homeomorph.homeomorph_of_continuous_open Equiv.toHomeomorphOfContinuousOpen
+
+@[deprecated] -- May 20th 2024
+alias homeomorphOfContinuousOpen := _root_.Equiv.toHomeomorphOfContinuousOpen
+
+/-- An embedding is an homeomorphism onto its range. -/
+@[simps! apply_coe]
+noncomputable def _root_.Embedding.toHomeomorph {f : X → Y} (hf : Embedding f) :
+    X ≃ₜ Set.range f :=
+  Equiv.ofInjective f hf.inj |>.toHomeomorphOfInducing <|
+    inducing_subtype_val.of_comp_iff.mp hf.toInducing
+#align homeomorph.of_embedding Embedding.toHomeomorph
+
+@[deprecated] -- May 20th 2024
+alias ofEmbedding := _root_.Embedding.toHomeomorph
+
+/-- A surjective embedding is a homeomorphism. -/
+@[simps! apply]
+noncomputable def _root_.Embedding.toHomeomorphOfSurjective {f : X → Y}  (hf : Embedding f)
+    (hsurj : Function.Surjective f) : X ≃ₜ Y :=
+  Equiv.ofBijective f ⟨hf.inj, hsurj⟩ |>.toHomeomorphOfInducing hf.toInducing
+
+@[deprecated] -- May 20th 2024
+alias _root_.Embedding.toHomeomeomorph_of_surjective := Embedding.toHomeomorphOfSurjective
 
 @[simp]
 theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
@@ -686,10 +729,10 @@ section Distrib
 
 /-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
 def sumProdDistrib : Sum X Y × Z ≃ₜ Sum (X × Z) (Y × Z) :=
-  Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
-        ((continuous_inl.prod_map continuous_id).sum_elim
-          (continuous_inr.prod_map continuous_id)) <|
+  .symm <|
+    (Equiv.sumProdDistrib X Y Z).symm.toHomeomorphOfContinuousOpen
+      ((continuous_inl.prod_map continuous_id).sum_elim
+        (continuous_inr.prod_map continuous_id)) <|
       (isOpenMap_inl.prod IsOpenMap.id).sum_elim (isOpenMap_inr.prod IsOpenMap.id)
 #align homeomorph.sum_prod_distrib Homeomorph.sumProdDistrib
 
@@ -702,8 +745,8 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 /-- `(Σ i, X i) × Y` is homeomorphic to `Σ i, (X i × Y)`. -/
 def sigmaProdDistrib : (Σi, X i) × Y ≃ₜ Σi, X i × Y :=
-  Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
+  .symm <|
+    (Equiv.sigmaProdDistrib X Y).symm.toHomeomorphOfContinuousOpen
       (continuous_sigma fun _ => continuous_sigmaMk.fst'.prod_mk continuous_snd)
       (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prod IsOpenMap.id)
 #align homeomorph.sigma_prod_distrib Homeomorph.sigmaProdDistrib
@@ -808,39 +851,6 @@ def funSplitAt : (ι → Y) ≃ₜ Y × ({ j // j ≠ i } → Y) :=
 end
 
 end Homeomorph
-
-namespace Equiv
-variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
-/-- An equiv between topological spaces respecting openness is a homeomorphism. -/
-@[simps toEquiv]
-def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
-  toEquiv := e
-  continuous_toFun := continuous_def.2 fun s ↦ (he _).2
-  continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
-
-@[simp] lemma coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl
-lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
-
-@[simp] lemma toHomeomorph_refl :
-  (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
-
-@[simp] lemma toHomeomorph_symm (e : X ≃ Y) (he) :
-  (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
-
-lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
-    (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =
-    (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
-
-/-- An inducing equiv between topological spaces is a homeomorphism. -/
-@[simps toEquiv] -- Porting note (#11215): TODO: was `@[simps]`
-def toHomeomorphOfInducing (f : X ≃ Y) (hf : Inducing f) : X ≃ₜ Y :=
-  { f with
-    continuous_toFun := hf.continuous
-    continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
-#align equiv.to_homeomorph_of_inducing Equiv.toHomeomorphOfInducing
-
-end Equiv
 
 namespace Continuous
 
