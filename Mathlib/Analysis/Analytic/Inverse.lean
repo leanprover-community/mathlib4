@@ -353,7 +353,7 @@ analytic function. Another option would be to compute explicitly its terms (with
 coefficients) to obtain an explicit geometric bound, but this would be very painful.
 
 Instead, we will use the above intuition, but in a slightly different form, with finite sums and an
-induction. I learnt this trick in [pöschel2017siegelsternberg]. Let
+induction. I learnt this trick in [poeschel2017siegelsternberg]. Let
 $S_n = \sum_{k=1}^n Q_k a^k$ (where `a` is a positive real parameter to be chosen suitably small).
 The above computation but with finite sums shows that
 
