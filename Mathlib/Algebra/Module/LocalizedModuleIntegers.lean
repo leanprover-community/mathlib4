@@ -31,14 +31,10 @@ open Function
 
 namespace IsLocalizedModule
 
-section
-
 /-- Given `x : M'`, `M'` a localization of `M` via `f`, `IsInteger f x` iff `x` is in the image of
 the localization map `f`. -/
 def IsInteger (x : M') : Prop :=
   x ∈ LinearMap.range f
-
-end
 
 lemma isInteger_zero : IsInteger f (0 : M') :=
   Submodule.zero_mem _
