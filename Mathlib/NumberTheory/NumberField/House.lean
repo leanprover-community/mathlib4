@@ -69,7 +69,7 @@ theorem hnewsets {j : Fin h} (α : K) : (Set.range fun σ : (Fin h) → K →+* 
 abbrev House (α : K) : ℝ := (Complex.abs '' rootSet (minpoly ℚ α) ℂ).toFinset.max' (hmax α)
 
 theorem hmax' {j : Fin h} (α : K) :
-  (toFinset (⇑Complex.abs '' range fun σ : Fin h → K →+* ℂ => σ j α)).Nonempty := by
+    (toFinset (⇑Complex.abs '' range fun σ : Fin h → K →+* ℂ => σ j α)).Nonempty := by
   rw [toFinset_nonempty]; apply Set.Nonempty.image; apply range_nonempty
 
 theorem switch {j : Fin h} (α : K) : House α = (Finset.max' (toFinset (⇑Complex.abs ''
