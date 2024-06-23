@@ -1265,7 +1265,7 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
     (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N) :
     Basis (Fin (n + 1)) R M :=
   have span_b : Submodule.span R (Set.range (N.subtype ∘ b)) = N := by
-    rw [Set.range_comp, Submodule.span_image, b.span_eq, Submodule.map_subtype_top]
+    rw [Set.range_comp, Submodule.span_image (R := R), b.span_eq, Submodule.map_subtype_top]
   Basis.mk (v := Fin.cons y (N.subtype ∘ b))
     ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).fin_cons' _ _
       (by

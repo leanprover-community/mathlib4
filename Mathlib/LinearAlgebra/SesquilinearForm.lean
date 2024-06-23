@@ -125,8 +125,8 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
   dsimp only [IsOrtho]
   constructor <;> intro H
-  · rw [map_smulₛₗ, H, smul_zero]
-  · rw [map_smulₛₗ, smul_eq_zero] at H
+  · rw [map_smulₛₗ (N := K), H, smul_zero]
+  · rw [map_smulₛₗ (N := K), smul_eq_zero] at H
     cases' H with H H
     · simp at H
       exfalso
@@ -391,7 +391,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
   suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
-  rw [isOrtho_def, map_smulₛₗ] at h
+  rw [isOrtho_def, map_smulₛₗ (N := K)] at h
   exact Or.elim (smul_eq_zero.mp h)
       (fun y ↦ by simpa using y)
       (fun hfalse ↦ False.elim <| hx hfalse)
