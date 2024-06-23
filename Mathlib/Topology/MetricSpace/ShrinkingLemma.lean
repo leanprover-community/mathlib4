@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 import Mathlib.Topology.ShrinkingLemma
 
 #align_import topology.metric_space.shrinking_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

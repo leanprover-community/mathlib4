@@ -6,6 +6,7 @@ Authors: Vincent Beffara
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 #align_import analysis.complex.open_mapping from "leanprover-community/mathlib"@"f9dd3204df14a0749cd456fac1e6849dfe7d2b88"
 
