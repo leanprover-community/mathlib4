@@ -21,10 +21,10 @@ def maxFinFun {s γ : Type _} [Fintype s] [Nonempty s] (f : Π _ : s, γ) [Linea
   simp only [Set.image_univ, Set.toFinset_range, Finset.image_nonempty]
   exact Finset.univ_nonempty
 
-/-- `maxFinFunMatrix` takes a matrix `B` of size `finrank ℚ K` and returns the maximum
+/-- `maxFinFunMat` takes a matrix `B` of size `finrank ℚ K` and returns the maximum
   absolute value of its entries. This is done by first finding the maximum absolute value of the
   entries in each row, and then finding the maximum of those row maxima. -/
-noncomputable def maxFinFunMatrix (B : Matrix (Fin (finrank ℚ K)) (Fin (finrank ℚ K)) ℂ) := by
+noncomputable def maxFinFunMat (B : Matrix (Fin (finrank ℚ K)) (Fin (finrank ℚ K)) ℂ) := by
   letI : Nonempty (Fin (finrank ℚ K)) := Fin.pos_iff_nonempty.mp (finrank_pos)
   apply maxFinFun (fun i => maxFinFun (fun j => Complex.abs (B i j)))
 
@@ -81,14 +81,14 @@ theorem switch {j : Fin h} (α : K) : House α = (Finset.max' (toFinset (⇑Comp
 
 /-- `c` is defined as the product of the maximum absolute value of the entries of the
  inverse of the matrix `B` and  `h`. -/
-def c := @maxFinFunMatrix K _ _ B⁻¹ * h
+def c := @maxFinFunMat K _ _ B⁻¹ * h
 
 theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
   @c K _ _ * House (algebraMap (𝓞 K) K α) := by
 
   intros i
 
-  let c' := @maxFinFunMatrix K _ _ B⁻¹
+  let c' := @maxFinFunMat K _ _ B⁻¹
 
   calc Complex.abs (b.repr α i) = Complex.abs (∑ j, B⁻¹ i j *  σ _ (algebraMap (𝓞 K) K α)) := by
     {
@@ -101,7 +101,7 @@ theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
            (discr_not_zero_of_basis ℚ ( reindex (integralBasis K) f.symm))
         exact invertibleOfIsUnitDet _ (Ne.isUnit this)
 
-      have getBmatrixEntries : B⁻¹.mulVec (fun j => σ j (algebraMap (𝓞 K) K α)) i = b.repr α i := by
+      have getEntries : B⁻¹.mulVec (fun j => σ j (algebraMap (𝓞 K) K α)) i = b.repr α i := by
         have : (fun j => σ j (algebraMap (𝓞 K) K α)) = B *ᵥ fun {i} => (b.repr α) i := by
           ext j
           nth_rewrite 1 [← sum_repr b α]
@@ -117,7 +117,7 @@ theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
           intros i
           rw [mul_comm]
         rw [matricesMulLeft this]
-      rw [← getBmatrixEntries]
+      rw [← getEntries]
       rfl
       }
        _ ≤ ∑ _, c' * Complex.abs (σ _ (algebraMap (𝓞 K) K α)) := by
@@ -130,12 +130,12 @@ theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
            · apply sum_le_sum
              intros j _
              apply mul_le_mul_of_nonneg_right
-             · simp only [c', maxFinFunMatrix, maxFinFun, max' ,image_univ, toFinset_range, id_eq,
+             · simp only [c', maxFinFunMat, maxFinFun, max' ,image_univ, toFinset_range, id_eq,
                  sup'_image, Function.comp_apply, le_sup'_iff, Finset.mem_univ, true_and]
                use i
                use j
              · exact AbsoluteValue.nonneg Complex.abs _
-       _ ≤ ∑ _, c' * House  (algebraMap (𝓞 K) K α) := by
+       _ ≤ ∑ _, c' * House (algebraMap (𝓞 K) K α) := by
           apply sum_le_sum
           intros j _
           apply mul_le_mul_of_nonneg_left
@@ -144,12 +144,12 @@ theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
             simp only [toFinset_image, toFinset_range, Finset.mem_image, Finset.mem_univ, true_and,
               exists_exists_eq_and]
             use σ
-          · simp only [c', maxFinFunMatrix, maxFinFun, max', image_univ, toFinset_range, id_eq,
-              sup'_image, Function.comp_apply, le_sup'_iff, Finset.mem_univ, apply_nonneg, and_self,
-              exists_const, true_and]
+          · simp only [c', maxFinFunMat, maxFinFun, max', image_univ, toFinset_range, id_eq,
+            sup'_image, Function.comp_apply, le_sup'_iff, Finset.mem_univ, apply_nonneg, and_self,
+            exists_const, true_and]
             use i
             use j
-       _ =  c' * h * House  (algebraMap (𝓞 K) K α) := by
-        rw [sum_const, Finset.card_fin, nsmul_eq_mul, ←mul_assoc, mul_comm ↑h (maxFinFunMatrix B⁻¹)]
+       _ =  c' * h * House (algebraMap (𝓞 K) K α) := by
+        rw [sum_const, Finset.card_fin, nsmul_eq_mul, ←mul_assoc, mul_comm ↑h (maxFinFunMat B⁻¹)]
 
 end section
