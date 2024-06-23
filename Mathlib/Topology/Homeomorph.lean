@@ -40,9 +40,9 @@ variable {X : Type*} {Y : Type*} {Z : Type*}
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
-  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_toFun : Continuous toFun := by dsimp only; fun_prop
   /-- The inverse map of a homeomorphism is a continuous function. -/
-  continuous_invFun : Continuous invFun := by fun_prop
+  continuous_invFun : Continuous invFun := by dsimp only; fun_prop
 #align homeomorph Homeomorph
 
 @[inherit_doc]
