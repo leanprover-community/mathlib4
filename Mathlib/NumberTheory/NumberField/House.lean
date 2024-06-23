@@ -150,6 +150,6 @@ theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
             use i
             use j
        _ =  c' * h * House  (algebraMap (𝓞 K) K α) := by
-        rw [sum_const, Finset.card_fin, nsmul_eq_mul, ←mul_assoc, mul_comm ↑h (maxFinFunMatrix B⁻¹)]
+        rw [sum_const, Finset.card_fin, nsmul_eq_mul, ← mul_assoc, mul_comm ↑h (maxFinFunMatrix B⁻¹)]
 
 end section
