@@ -359,8 +359,8 @@ theorem _root_.Matrix.posDef_diagonal_iff [DecidableEq n] [NoZeroDivisors R] [No
   refine ⟨fun h i => ?_, .diagonal⟩
   have := h.2 (Pi.single i 1)
   simp only [mulVec_single, mul_one, dotProduct_diagonal', Pi.star_apply, Pi.single_eq_same,
-    star_one, one_mul, Function.ne_iff] at this
-  refine this ⟨i, by simp⟩
+    star_one, one_mul, Function.ne_iff, Pi.zero_apply] at this
+  exact this ⟨i, by simp⟩
 
 protected theorem one [DecidableEq n] [NoZeroDivisors R] : PosDef (1 : Matrix n n R) :=
   ⟨isHermitian_one, fun x hx => by simpa only [one_mulVec, dotProduct_star_self_pos_iff]⟩
