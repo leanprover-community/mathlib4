@@ -68,7 +68,7 @@ lemma small_of_hasSmallLocalizedHom [HasSmallLocalizedHom.{w} W X Y] :
 lemma hasSmallLocalizedHom_iff_of_isos {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y') :
     HasSmallLocalizedHom.{w} W X Y ↔ HasSmallLocalizedHom.{w} W X' Y' := by
   simp only [hasSmallLocalizedHom_iff W W.Q]
-  exact small_congr (Iso.homEquiv (W.Q.mapIso e) (W.Q.mapIso e'))
+  exact small_congr (Iso.homCongr (W.Q.mapIso e) (W.Q.mapIso e'))
 
 end
 
@@ -211,7 +211,7 @@ variable [HasSmallLocalizedHom.{w} W₁ X Y]
 noncomputable def smallHomMap (f : SmallHom.{w} W₁ X Y) :
     SmallHom.{w'} W₂ (Φ.functor.obj X) (Φ.functor.obj Y) :=
   (SmallHom.equiv W₂ W₂.Q).symm
-    (Iso.homEquiv ((CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm.app _)
+    (Iso.homCongr ((CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm.app _)
       ((CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm.app _)
       ((Φ.localizedFunctor W₁.Q W₂.Q).map ((SmallHom.equiv W₁ W₁.Q) f)))
 

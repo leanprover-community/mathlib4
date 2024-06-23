@@ -266,16 +266,6 @@ def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
-/-- The bijection `(X ⟶ Y) ≃ (X' ⟶ Y')` that is induced by isomorphisms
-`e : X ≅ X'` and `e' : Y ≅ Y'`. -/
-@[simps]
-def homEquiv {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y') :
-    (X ⟶ Y) ≃ (X' ⟶ Y') where
-  toFun f := e.inv ≫ f ≫ e'.hom
-  invFun g := e.hom ≫ g ≫ e'.inv
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-
 end Iso
 
 /-- `IsIso` typeclass expressing that a morphism is invertible. -/

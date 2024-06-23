@@ -77,6 +77,9 @@ lemma isClique_empty : G.IsClique ∅ := by simp
 lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 #align simple_graph.is_clique_singleton SimpleGraph.isClique_singleton
 
+theorem IsClique.of_subsingleton {G : SimpleGraph α} (hs : s.Subsingleton) : G.IsClique s :=
+  hs.pairwise G.Adj
+
 lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwise_pair_of_symmetric G.symm
 #align simple_graph.is_clique_pair SimpleGraph.isClique_pair
 
@@ -100,12 +103,6 @@ theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := Set.Pairw
 theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pairwise.mono h
 #align simple_graph.is_clique.subset SimpleGraph.IsClique.subset
 
-protected theorem IsClique.map {s : Set α} (h : G.IsClique s) {f : α ↪ β} :
-    (G.map f).IsClique (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
-  exact ⟨a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
-#align simple_graph.is_clique.map SimpleGraph.IsClique.map
-
 @[simp]
 theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
   Set.pairwise_bot_iff
@@ -113,6 +110,66 @@ theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Su
 
 alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 #align simple_graph.is_clique.subsingleton SimpleGraph.IsClique.subsingleton
+
+protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).IsClique (f '' s) := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
+  exact ⟨a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
+#align simple_graph.is_clique.map SimpleGraph.IsClique.map
+
+theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nontrivial) :
+    (G.map f).IsClique t ↔ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
+  refine ⟨fun h ↦ ⟨f ⁻¹' t, ?_, ?_⟩, by rintro ⟨x, hs, rfl⟩; exact hs.map⟩
+  · rintro x (hx : f x ∈ t) y (hy : f y ∈ t) hne
+    obtain ⟨u,v, huv, hux, hvy⟩ := h hx hy (by simpa)
+    rw [EmbeddingLike.apply_eq_iff_eq] at hux hvy
+    rwa [← hux, ← hvy]
+  rw [Set.image_preimage_eq_iff]
+  intro x hxt
+  obtain ⟨y,hyt, hyne⟩ := ht.exists_ne x
+  obtain ⟨u,v, -, rfl, rfl⟩ := h hyt hxt hyne
+  exact Set.mem_range_self _
+
+theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
+    (G.map f).IsClique t ↔ t.Subsingleton ∨ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
+  obtain (ht | ht) := t.subsingleton_or_nontrivial
+  · simp [IsClique.of_subsingleton, ht]
+  simp [isClique_map_iff_of_nontrivial ht, ht.not_subsingleton]
+
+@[simp] theorem isClique_map_image_iff {f : α ↪ β} :
+    (G.map f).IsClique (f '' s) ↔ G.IsClique s := by
+  rw [isClique_map_iff, f.injective.subsingleton_image_iff]
+  obtain (hs | hs) := s.subsingleton_or_nontrivial
+  · simp [hs, IsClique.of_subsingleton]
+  simp [or_iff_right hs.not_subsingleton, Set.image_eq_image f.injective]
+section DecidableEq
+
+variable [DecidableEq β] {f : α ↪ β} {t : Finset β}
+
+theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
+    (G.map f).IsClique t ↔ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
+  constructor
+  · rw [isClique_map_iff_of_nontrivial (by simpa)]
+    rintro ⟨s, hs, hst⟩
+    obtain ⟨s, rfl⟩ := Set.Finite.exists_finset_coe <|
+      (show s.Finite from Set.Finite.of_finite_image (by simp [hst]) f.injective.injOn)
+    exact ⟨s,hs, Finset.coe_inj.1 (by simpa)⟩
+  rintro ⟨s, hs, rfl⟩
+  simpa using hs.map (f := f)
+
+theorem isClique_map_finset_iff :
+    (G.map f).IsClique t ↔ t.card ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
+  obtain (ht | ht) := le_or_lt t.card 1
+  · simp only [ht, true_or, iff_true]
+    exact IsClique.of_subsingleton <| card_le_one.1 ht
+  rw [isClique_map_finset_iff_of_nontrivial, ← not_lt]
+  · simp [ht, Finset.map_eq_image]
+  exact Finset.one_lt_card_iff_nontrivial.mp ht
+
+protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsClique s) :
+    (G.map f).IsClique (s.map f) := by
+  simpa
+
+end DecidableEq
 
 end Clique
 
@@ -155,6 +212,16 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
     (G.map f).IsNClique n (s.map f) :=
   ⟨by rw [coe_map]; exact h.1.map, (card_map _).trans h.2⟩
 #align simple_graph.is_n_clique.map SimpleGraph.IsNClique.map
+
+theorem isNClique_map_iff [DecidableEq β] (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
+    (G.map f).IsNClique n t ↔ ∃ s : Finset α, G.IsNClique n s ∧ s.map f = t := by
+  rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
+    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
+  constructor
+  · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
+    simp [isNClique_iff, hs]
+  rintro ⟨s, hs, rfl⟩
+  simp [hs.card_eq, hs.clique]
 
 @[simp]
 theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n := by
@@ -296,6 +363,14 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
 theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n → H.CliqueFree n := by
   intro h; contrapose h
   exact not_cliqueFree_of_top_embedding <| f.comp (topEmbeddingOfNotCliqueFree h)
+
+@[simp] theorem cliqueFree_map_iff {f : α ↪ β} [DecidableEq β] [Nonempty α] :
+    (G.map f).CliqueFree n ↔ G.CliqueFree n := by
+  obtain (hle | hlt) := le_or_lt n 1
+  · obtain (rfl | rfl) := Nat.le_one_iff_eq_zero_or_eq_one.1 hle
+    · simp [CliqueFree]
+    simp [CliqueFree, show ∃ (_ : β), True from ⟨f (Classical.arbitrary _), trivial⟩]
+  simp [CliqueFree, isNClique_map_iff hlt]
 
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by

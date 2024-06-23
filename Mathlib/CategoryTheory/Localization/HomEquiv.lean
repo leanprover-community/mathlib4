@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+import Mathlib.CategoryTheory.Conj
 
 /-!
 # Bijections between morphisms in two localized categories
@@ -44,7 +45,7 @@ are localization functors for `W₁` and `W₂`, then this is the induced map
 for all objects `X` and `Y`. -/
 noncomputable def homMap (f : L₁.obj X ⟶ L₁.obj Y) :
     L₂.obj (Φ.functor.obj X) ⟶ L₂.obj (Φ.functor.obj Y) :=
-  Iso.homEquiv ((CatCommSq.iso _ _ _ _).symm.app _) ((CatCommSq.iso _ _ _ _).symm.app _)
+  Iso.homCongr ((CatCommSq.iso _ _ _ _).symm.app _) ((CatCommSq.iso _ _ _ _).symm.app _)
     ((Φ.localizedFunctor L₁ L₂).map f)
 
 @[simp]
@@ -96,7 +97,7 @@ lemma homMap_homMap (f : L₁.obj X ⟶ L₁.obj Y) :
   let e' : Ψ.functor ⋙ L₃ ≅ L₂ ⋙ G' := CatCommSq.iso _ _ _ _
   rw [Φ.homMap_apply L₁ L₂ G e, Ψ.homMap_apply L₂ L₃ G' e',
     (Φ.comp Ψ).homMap_apply L₁ L₃ (G ⋙ G')
-    (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e' ≪≫
+      (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e' ≪≫
       (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight e _ ≪≫
       Functor.associator _ _ _)]
   dsimp
