@@ -71,7 +71,8 @@ theorem card_mono : Monotone (@card α) := by apply card_le_card
 
 @[simp] lemma card_eq_zero : s.card = 0 ↔ s = ∅ := card_eq_zero.trans val_eq_zero
 lemma card_ne_zero : s.card ≠ 0 ↔ s.Nonempty := card_eq_zero.ne.trans nonempty_iff_ne_empty.symm
-lemma card_pos : 0 < s.card ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
+@[simp] lemma card_pos : 0 < s.card ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
+@[simp] lemma one_le_card : 1 ≤ s.card ↔ s.Nonempty := card_pos
 #align finset.card_eq_zero Finset.card_eq_zero
 #align finset.card_pos Finset.card_pos
 
