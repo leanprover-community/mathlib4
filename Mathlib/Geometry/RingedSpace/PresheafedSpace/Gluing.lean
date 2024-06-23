@@ -63,6 +63,8 @@ open TopologicalSpace CategoryTheory Opposite
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
+open AlgebraicGeometry.PresheafedSpace.IsOpenImmersion
+
 open CategoryTheory.GlueData
 
 namespace AlgebraicGeometry
@@ -219,8 +221,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     simp_rw [Category.assoc]
     erw [IsOpenImmersion.inv_naturality, IsOpenImmersion.inv_naturality_assoc,
       IsOpenImmersion.app_inv_app'_assoc]
-    · simp_rw [← (𝖣.V (k, i)).presheaf.map_comp, eqToHom_map (Functor.op _), eqToHom_op,
-        eqToHom_trans]
+    · simp_rw [← (𝖣.V (k, i)).presheaf.map_comp]; rfl
     rintro x ⟨y, -, eq⟩
     replace eq := ConcreteCategory.congr_arg (𝖣.t i k).base eq
     change ((π₂ i, j, k) ≫ D.t i k).base y = (D.t k i ≫ D.t i k).base x at eq
@@ -250,7 +251,7 @@ variable [HasLimits C]
 
 theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     (Opens.map (𝖣.ι j).base).obj ((D.ι_openEmbedding i).isOpenMap.functor.obj U) =
-      (D.f_open j i).openFunctor.obj
+      (openFunctor (D.f j i)).obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
   ext1
   dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe]
@@ -618,9 +619,8 @@ theorem ι_isoPresheafedSpace_inv (i : D.J) :
 
 instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoPresheafedSpace_inv]
-  -- Porting note: was `inferInstance`
-  refine PresheafedSpace.IsOpenImmersion.comp (hf := ?_) (hg := inferInstance)
-  apply PresheafedSpace.GlueData.ιIsOpenImmersion
+  have := D.toPresheafedSpaceGlueData.ιIsOpenImmersion i
+  infer_instance
 #align algebraic_geometry.SheafedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.SheafedSpaceₓ.GlueData.ιIsOpenImmersion
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
