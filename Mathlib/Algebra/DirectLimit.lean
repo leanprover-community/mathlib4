@@ -615,9 +615,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
               symm
               apply FreeCommRing.of_cons⟩)
         (fun s ⟨i, x, ih⟩ => ⟨i, -x, by
-          -- Porting note: Lean 3 was `of _ _ _`; Lean 4 is not as good at unification
-          -- here as Lean 3 is, for some reason.
-          rw [(of G f i).map_neg, ih]
+          rw [(of G _ _).map_neg, ih]
           rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j

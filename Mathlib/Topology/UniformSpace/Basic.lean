@@ -1324,6 +1324,14 @@ theorem toTopologicalSpace_comap {f : α → β} {u : UniformSpace β} :
   rfl
 #align to_topological_space_comap UniformSpace.toTopologicalSpace_comap
 
+lemma uniformSpace_eq_bot {u : UniformSpace α} : u = ⊥ ↔ idRel ∈ 𝓤[u] :=
+  le_bot_iff.symm.trans le_principal_iff
+
+protected lemma _root_.Filter.HasBasis.uniformSpace_eq_bot {ι p} {s : ι → Set (α × α)}
+    {u : UniformSpace α} (h : 𝓤[u].HasBasis p s) :
+    u = ⊥ ↔ ∃ i, p i ∧ Pairwise fun x y : α ↦ (x, y) ∉ s i := by
+  simp [uniformSpace_eq_bot, h.mem_iff, subset_def, Pairwise, not_imp_not]
+
 theorem toTopologicalSpace_bot : @UniformSpace.toTopologicalSpace α ⊥ = ⊥ := rfl
 #align to_topological_space_bot UniformSpace.toTopologicalSpace_bot
 

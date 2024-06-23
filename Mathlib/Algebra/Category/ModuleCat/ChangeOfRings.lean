@@ -44,7 +44,7 @@ Let `R, S` be rings and `f : R →+* S`
 
 suppress_compilation
 
-set_option linter.uppercaseLean3 false -- Porting note: Module
+set_option linter.uppercaseLean3 false
 
 open CategoryTheory Limits
 

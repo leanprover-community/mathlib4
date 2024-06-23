@@ -446,7 +446,7 @@ def carrier.asHomogeneousIdeal : HomogeneousIdeal 𝒜 :=
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.as_homogeneous_ideal AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.asHomogeneousIdeal
 
 theorem carrier.denom_not_mem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
-  q.IsPrime.ne_top <|
+  q.isPrime.ne_top <|
     (Ideal.eq_top_iff_one _).mpr
       (by
         convert rid m
