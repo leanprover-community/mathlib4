@@ -158,7 +158,7 @@ lemma is_prime_of_smallest_Nat_zero_lt_mulRingNorm_lt_one : Prime p := by
 
 open Real
 
-/-- A natural number not divible by p has absolute value 1 -/
+/-- A natural number not divible by p has absolute value 1. -/
 lemma mulRingNorm_eq_one_of_not_dvd (m : ℕ) (hpm : ¬ p ∣ m) : f m = 1 := by
   apply le_antisymm (bdd m)
   by_contra! hm
