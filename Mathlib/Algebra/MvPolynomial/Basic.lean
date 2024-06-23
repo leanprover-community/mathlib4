@@ -1539,7 +1539,6 @@ theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
   eval₂_X _ _ _
 #align mv_polynomial.aeval_X MvPolynomial.aeval_X
 
-@[simp]
 theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=
   eval₂_C _ _ _
 #align mv_polynomial.aeval_C MvPolynomial.aeval_C
