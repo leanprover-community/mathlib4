@@ -5,6 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Basic
 
 #align_import topology.metric_space.algebra from "leanprover-community/mathlib"@"14d34b71b6d896b6e5f1ba2ec9124b9cd1f90fca"
 

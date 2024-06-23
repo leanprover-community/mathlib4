@@ -3,7 +3,8 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.PseudoMetric.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric.Induced
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -20,7 +21,7 @@ TODO (anyone): Add "Main results" section.
 
 ## Implementation notes
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
-for `PseudoMetricSpace`s in `PseudoMetric.lean`.
+for `PseudoMetricSpace`s in `PseudoMetric.Basic.lean`.
 
 ## Tags
 
@@ -270,70 +271,6 @@ instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
     MetricSpace (Subtype p) :=
   .induced Subtype.val Subtype.coe_injective ‹_›
 #align subtype.metric_space Subtype.metricSpace
-
-@[to_additive]
-instance {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
-  MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
-
-instance : MetricSpace Empty where
-  dist _ _ := 0
-  dist_self _ := rfl
-  dist_comm _ _ := rfl
-  edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
-  eq_of_dist_eq_zero _ := Subsingleton.elim _ _
-  dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
-  toUniformSpace := inferInstance
-  uniformity_dist := Subsingleton.elim _ _
-
-instance : MetricSpace PUnit.{u + 1} where
-  dist _ _ := 0
-  dist_self _ := rfl
-  dist_comm _ _ := rfl
-  edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
-  eq_of_dist_eq_zero _ := Subsingleton.elim _ _
-  dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
-  toUniformSpace := inferInstance
-  uniformity_dist := by
-    simp (config := { contextual := true }) [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
-
-section Real
-
-/-- Instantiate the reals as a metric space. -/
-instance Real.metricSpace : MetricSpace ℝ := .ofT0PseudoMetricSpace ℝ
-#align real.metric_space Real.metricSpace
-
-end Real
-
-section NNReal
-
-instance : MetricSpace ℝ≥0 :=
-  Subtype.metricSpace
-
-end NNReal
-
-instance [MetricSpace β] : MetricSpace (ULift β) :=
-  MetricSpace.induced ULift.down ULift.down_injective ‹_›
-
-section Prod
-
-instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) := .ofT0PseudoMetricSpace _
-#align prod.metric_space_max Prod.metricSpaceMax
-
-end Prod
-
-section Pi
-
-open Finset
-
-variable {π : β → Type*} [Fintype β] [∀ b, MetricSpace (π b)]
-
-/-- A finite product of metric spaces is a metric space, with the sup distance. -/
-instance metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
-#align metric_space_pi metricSpacePi
-
-end Pi
 
 namespace Metric
 

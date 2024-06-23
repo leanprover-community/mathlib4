@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
+import Mathlib.Topology.Metrizable.Instances
 
 #align_import measure_theory.function.strongly_measurable.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
