@@ -104,13 +104,10 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddB
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_sInf'
 
--- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
--- does not need `rfl`.
 @[norm_cast]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
-  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp]
-  rfl
+  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
 #align with_top.coe_infi WithTop.coe_iInf
 
 theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
@@ -121,12 +118,10 @@ theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
   · rintro ⟨x, _, ⟨⟩⟩
 #align with_top.coe_Sup' WithTop.coe_sSup'
 
--- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
--- does not need `rfl`.
 @[norm_cast]
 theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
-    rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp]; rfl
+  rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
 #align with_top.coe_supr WithTop.coe_iSup
 
 @[simp]
@@ -870,11 +865,9 @@ theorem ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
   ciSup_unique (α := αᵒᵈ)
 #align infi_unique ciInf_unique
 
--- Porting note (#10756): new lemma
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
   @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
--- Porting note (#10756): new lemma
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
