@@ -52,6 +52,16 @@ lemma Scheme.eq_restrict_presheaf_map_eqToHom {X : Scheme.{u}} (U : Opens X) {V 
   X.presheaf.map (eqToHom e).op =
     (X ∣_ᵤ U).presheaf.map (eqToHom <| U.openEmbedding.functor_obj_injective e).op := rfl
 
+@[simp]
+lemma opensRange_ιOpens {X : Scheme.{u}} (U : Opens X) : (Scheme.ιOpens U).opensRange = U :=
+  Opens.ext Subtype.range_val
+
+/-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
+@[simps!]
+def opensRestrict {X : Scheme.{u}} (U : Opens X) :
+    Opens (X ∣_ᵤ U) ≃ { V : Opens X // V ≤ U } :=
+  (IsOpenImmersion.opensEquiv (Scheme.ιOpens U)).trans (Equiv.subtypeEquivProp (by simp))
+
 instance ΓRestrictAlgebra {X : Scheme.{u}} {Y : TopCat.{u}} {f : Y ⟶ X} (hf : OpenEmbedding f) :
     Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op <| X.restrict hf)) :=
   (Scheme.Γ.map (X.ofRestrict hf).op).toAlgebra

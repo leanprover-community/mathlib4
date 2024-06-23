@@ -318,6 +318,13 @@ def _root_.AlgebraicGeometry.IsOpenImmersion.affineOpensEquiv (f : X ⟶ Y) [H :
   left_inv _ := Subtype.ext (Opens.ext (Set.preimage_image_eq _ H.base_open.inj))
   right_inv U := Subtype.ext (Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2)))
 
+/-- The affine open sets of an open subscheme
+corresponds to the affine open sets containing in the subset. -/
+@[simps!]
+def affineOpensRestrict {X : Scheme.{u}} (U : Opens X) :
+    (X ∣_ᵤ U).affineOpens ≃ { V : X.affineOpens // V ≤ U } :=
+  (IsOpenImmersion.affineOpensEquiv (Scheme.ιOpens U)).trans (Equiv.subtypeEquivProp (by simp))
+
 instance (priority := 100) _root_.AlgebraicGeometry.Scheme.compactSpace_of_isAffine
     (X : Scheme) [IsAffine X] :
     CompactSpace X :=
