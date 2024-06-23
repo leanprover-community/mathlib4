@@ -480,7 +480,7 @@ theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
 
 @[simp]
 theorem adjunction_unit_app_Spec (R : CommRingCat.{u}) :
-    adjunction.unit.app (𝖲𝗉𝖾𝖼 R) = 𝖲𝗉𝖾𝖼((Scheme.ΓSpecIso R).hom) := by
+    adjunction.unit.app (Spec R) = Spec ((Scheme.ΓSpecIso R).hom) := by
   have := ΓSpec.adjunction.right_triangle_components (op R)
   dsimp at this
   rwa [adjunction_counit_app, ← IsIso.eq_comp_inv, Category.id_comp,
@@ -516,12 +516,12 @@ end ΓSpec
 
 @[reassoc (attr := simp)]
 theorem SpecΓIdentity_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    𝖲𝗉𝖾𝖼(f).app ⊤ ≫ Scheme.SpecΓIdentity.hom.app _ =
+    (Spec f).app ⊤ ≫ Scheme.SpecΓIdentity.hom.app _ =
       Scheme.SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
 
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : Opens X) :
     (Scheme.ΓSpecIso Γ(X, U)).hom =
-      Scheme.Γ.map (𝖲𝗉𝖾𝖼(X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫
+      Scheme.Γ.map (Spec (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫
       (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).app ⊤ ≫
       X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
   dsimp [-Scheme.SpecΓIdentity_hom_app]

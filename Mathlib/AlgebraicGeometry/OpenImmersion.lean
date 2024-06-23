@@ -144,7 +144,7 @@ def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion
 namespace Scheme
 
 instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
-    IsOpenImmersion 𝖲𝗉𝖾𝖼(CommRingCat.ofHom (algebraMap R (Localization.Away f))) := by
+    IsOpenImmersion (Spec (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) := by
   apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
   · exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
   · intro x
@@ -153,15 +153,15 @@ instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
 
 theorem exists_affine_mem_range_and_range_subset
     {X : Scheme.{u}} {x : X} {U : Opens X} (hxU : x ∈ U) :
-    ∃ (R : CommRingCat) (f : 𝖲𝗉𝖾𝖼 R ⟶ X),
+    ∃ (R : CommRingCat) (f : Spec R ⟶ X),
       IsOpenImmersion f ∧ x ∈ Set.range f.1.base ∧ Set.range f.1.base ⊆ U := by
   obtain ⟨⟨V, hxV⟩, R, ⟨e⟩⟩ := X.2 x
   have : e.hom.1.base ⟨x, hxV⟩ ∈ (Opens.map (e.inv.1.base ≫ V.inclusion)).obj U :=
     show ((e.hom ≫ e.inv).1.base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
   obtain ⟨_, ⟨_, ⟨r : R, rfl⟩, rfl⟩, hr, hr'⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this (Opens.is_open' _)
-  let f : 𝖲𝗉𝖾𝖼 (.of (Localization.Away r)) ⟶ X :=
-    𝖲𝗉𝖾𝖼(CommRingCat.ofHom (algebraMap R (Localization.Away r))) ≫ (e.inv ≫ X.ofRestrict _ : _)
+  let f : Spec (.of (Localization.Away r)) ⟶ X :=
+    Spec (CommRingCat.ofHom (algebraMap R (Localization.Away r))) ≫ (e.inv ≫ X.ofRestrict _ : _)
   refine ⟨.of (Localization.Away r), f, inferInstance, ?_⟩
   rw [Scheme.comp_val_base, LocallyRingedSpace.comp_val, SheafedSpace.comp_base, TopCat.coe_comp,
     Set.range_comp]

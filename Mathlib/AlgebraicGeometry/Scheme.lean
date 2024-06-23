@@ -38,6 +38,15 @@ open Opposite
 
 namespace AlgebraicGeometry
 
+/-- Notation typeclass for `Spec`. -/
+class HasSpec (A : Type*) (B : outParam Type*) where
+  spec : A → B
+
+attribute[reducible] HasSpec.spec
+
+/-- Notation for `Spec`. See `Scheme.Spec` instead. -/
+alias Spec := HasSpec.spec
+
 /-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
 so that the restriction of `X` to `U` is isomorphic,
@@ -313,43 +322,47 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 
-The simp normal form should be `Scheme.Spec.obj (op R)` (with the notation `𝖲𝗉𝖾𝖼 R`) and
-`Scheme.Spec.map f.op` (with the notation `𝖲𝗉𝖾𝖼(f)`).
+The simp normal form should be `Scheme.Spec.obj (op R)` (with the notation `Spec R`) and
+`Scheme.Spec.map f.op` (with the notation `Spec f`).
 -/
-def Spec : CommRingCatᵒᵖ ⥤ Scheme where
+protected def Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := specObj (unop R)
   map f := specMap f.unop
   map_id R := by simp
   map_comp f g := by simp [specMap_comp]
 #align algebraic_geometry.Scheme.Spec AlgebraicGeometry.Scheme.Spec
 
-/-- `𝖲𝗉𝖾𝖼 R` is notation for `Sceme.Spec.obj (op R)`. -/
-scoped[AlgebraicGeometry] notation3 "𝖲𝗉𝖾𝖼 " R:20 => Scheme.Spec.obj (op R)
+instance : HasSpec CommRingCat.{u} Scheme.{u} where
+  spec R := Scheme.Spec.obj (op R)
 
-/-- `𝖲𝗉𝖾𝖼(f)` is notation for `Sceme.Spec.map f.op`. -/
-scoped[AlgebraicGeometry] notation3 "𝖲𝗉𝖾𝖼(" f ")" => Scheme.Spec.map (Quiver.Hom.op f)
+instance {R S : CommRingCat} : HasSpec (R ⟶ S) (Spec S ⟶ Spec R) where
+  spec f := Scheme.Spec.map f.op
+
+@[simp] lemma Spec_id (R : CommRingCat) : Spec (𝟙 R) = 𝟙 _ := Scheme.Spec.map_id _
+
+@[reassoc, simp] lemma Spec_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+    Spec (f ≫ g) = Spec g ≫ Spec f := Scheme.Spec.map_comp g.op f.op
 
 section
 
 variable {R S : CommRingCat} (f : R ⟶ S)
 
 -- The lemmas below are not tagged simp to respect the abstraction.
-lemma Spec_obj_carrier (R) : (𝖲𝗉𝖾𝖼 R).carrier = PrimeSpectrum R := rfl
-lemma Spec_obj_sheaf (R) : (𝖲𝗉𝖾𝖼 R).sheaf = Spec.structureSheaf R := rfl
-lemma Spec_obj_presheaf (R) : (𝖲𝗉𝖾𝖼 R).presheaf = (Spec.structureSheaf R).1 := rfl
-lemma Spec_map_base : 𝖲𝗉𝖾𝖼(f).1.base = PrimeSpectrum.comap f := rfl
+lemma Spec_obj_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
+lemma Spec_obj_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
+lemma Spec_obj_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
+lemma Spec_map_base : (Spec f).1.base = PrimeSpectrum.comap f := rfl
 
 set_option maxHeartbeats 800000 in
 lemma Spec_map_app (U) :
-    𝖲𝗉𝖾𝖼(f).app U = StructureSheaf.comap f U (𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ U) le_rfl := rfl
+    (Spec f).app U = StructureSheaf.comap f U (Spec f ⁻¹ᵁ U) le_rfl := rfl
 
-lemma Spec_map_appLE {U V} (e : U ≤ 𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ V) :
-    𝖲𝗉𝖾𝖼(f).appLE V U e = StructureSheaf.comap f V U e := rfl
+lemma Spec_map_appLE {U V} (e : U ≤ Spec f ⁻¹ᵁ V) :
+    (Spec f).appLE V U e = StructureSheaf.comap f V U e := rfl
 
 end
 
-/-- The empty scheme.
--/
+/-- The empty scheme. -/
 @[simps]
 def empty : Scheme where
   carrier := TopCat.of PEmpty
@@ -401,8 +414,8 @@ def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
 
 variable (R : CommRingCat.{u})
 
-/-- The global sections of `𝖲𝗉𝖾𝖼 R` is isomorphic to `R`. -/
-def ΓSpecIso : Γ(𝖲𝗉𝖾𝖼 R, ⊤) ≅ R := SpecΓIdentity.app R
+/-- The global sections of `Spec R` is isomorphic to `R`. -/
+def ΓSpecIso : Γ(Spec R, ⊤) ≅ R := SpecΓIdentity.app R
 
 @[simp] lemma SpecΓIdentity_app : SpecΓIdentity.app R = ΓSpecIso R := rfl
 @[simp] lemma SpecΓIdentity_hom_app : SpecΓIdentity.hom.app R = (ΓSpecIso R).hom := rfl
@@ -410,20 +423,20 @@ def ΓSpecIso : Γ(𝖲𝗉𝖾𝖼 R, ⊤) ≅ R := SpecΓIdentity.app R
 
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    𝖲𝗉𝖾𝖼(f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
+    (Spec f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
 
 -- The RHS is not necessarily simpler than the LHS, but this direction coincides with the simp
 -- direction of `NatTrans.naturality`.
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ 𝖲𝗉𝖾𝖼(f).app ⊤ := SpecΓIdentity.inv.naturality f
+    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec f).app ⊤ := SpecΓIdentity.inv.naturality f
 
 -- This is not marked simp to respect the abstraction
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
 
 lemma toOpen_eq (U) :
     (by exact StructureSheaf.toOpen R U) =
-    (ΓSpecIso R).inv ≫ (𝖲𝗉𝖾𝖼 R).presheaf.map (homOfLE le_top).op := rfl
+    (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
 section BasicOpen
 
@@ -504,7 +517,7 @@ end BasicOpen
 end Scheme
 
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
-    (𝖲𝗉𝖾𝖼 R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
+    (Spec R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
   ext x
   simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top, Opens.coe_top]
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
@@ -517,14 +530,14 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
 #align algebraic_geometry.basic_open_eq_of_affine AlgebraicGeometry.basicOpen_eq_of_affine
 
 @[simp]
-theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(𝖲𝗉𝖾𝖼 R, ⊤)) :
-    (𝖲𝗉𝖾𝖼 R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.ΓSpecIso R).hom f) := by
+theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
+    (Spec R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.ΓSpecIso R).hom f) := by
   convert basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 #align algebraic_geometry.basic_open_eq_of_affine' AlgebraicGeometry.basicOpen_eq_of_affine'
 
 theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U = V) (W) :
-    𝖲𝗉𝖾𝖼(X.presheaf.map (eqToHom h).op).app W = eqToHom (by cases h; dsimp; simp) := by
+    (Spec (X.presheaf.map (eqToHom h).op)).app W = eqToHom (by cases h; dsimp; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h

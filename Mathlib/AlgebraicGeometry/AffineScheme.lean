@@ -248,7 +248,7 @@ variable {X Y : Scheme.{u}} {U : Opens X} (hU : IsAffineOpen U) (f : Γ(X, U))
 
 /-- The open immersion `Spec Γ(X, U) ⟶ X` for an affine `U`. -/
 def fromSpec :
-    (𝖲𝗉𝖾𝖼 Γ(X, U)) ⟶ X :=
+    (Spec Γ(X, U)) ⟶ X :=
   haveI : IsAffine (X ∣_ᵤ U) := hU
   Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op).op ≫
     (X ∣_ᵤ U).isoSpec.inv ≫ Scheme.ιOpens U
@@ -346,7 +346,7 @@ set_option maxHeartbeats 400000 in
 @[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :
     (Scheme.ΓSpecIso Γ(X, U)).hom ≫ hU.fromSpec.app U =
-      (𝖲𝗉𝖾𝖼 Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
+      (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
   have : IsAffine _ := hU
   delta IsAffineOpen.fromSpec Scheme.isoSpec
   rw [Scheme.comp_app, Scheme.comp_app, ΓSpecIso_obj_hom,
@@ -362,12 +362,12 @@ theorem SpecΓIdentity_hom_app_fromSpec :
 @[elementwise]
 theorem fromSpec_app_self :
     hU.fromSpec.app U = (Scheme.ΓSpecIso Γ(X, U)).inv ≫
-      (𝖲𝗉𝖾𝖼 Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
+      (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
   rw [← hU.SpecΓIdentity_hom_app_fromSpec, Iso.inv_hom_id_assoc]
 #align algebraic_geometry.is_affine_open.from_Spec_app_eq AlgebraicGeometry.IsAffineOpen.fromSpec_app_self
 
 theorem fromSpec_preimage_basicOpen' :
-    hU.fromSpec ⁻¹ᵁ X.basicOpen f = (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen ((Scheme.ΓSpecIso Γ(X, U)).inv f) := by
+    hU.fromSpec ⁻¹ᵁ X.basicOpen f = (Spec Γ(X, U)).basicOpen ((Scheme.ΓSpecIso Γ(X, U)).inv f) := by
   rw [Scheme.preimage_basicOpen, hU.fromSpec_app_self]
   exact Scheme.basicOpen_res_eq _ _ (eqToHom hU.fromSpec_preimage_self).op
 #align algebraic_geometry.is_affine_open.opens_map_from_Spec_basic_open AlgebraicGeometry.IsAffineOpen.fromSpec_preimage_basicOpen'
@@ -387,7 +387,7 @@ theorem fromSpec_image_basicOpen :
 
 @[simp]
 theorem basicOpen_fromSpec_app :
-    (𝖲𝗉𝖾𝖼 Γ(X, U)).basicOpen (hU.fromSpec.app U f) = PrimeSpectrum.basicOpen f := by
+    (Spec Γ(X, U)).basicOpen (hU.fromSpec.app U f) = PrimeSpectrum.basicOpen f := by
   rw [← hU.fromSpec_preimage_basicOpen, Scheme.preimage_basicOpen]
 #align algebraic_geometry.is_affine_open.basic_open_from_Spec_app AlgebraicGeometry.IsAffineOpen.basicOpen_fromSpec_app
 
@@ -432,9 +432,9 @@ theorem exists_basicOpen_le {V : Opens X} (x : V) (h : ↑x ∈ U) :
 this is the canonical map `Γ(𝒪ₓ, D(f)) ⟶ Γ(Spec 𝒪ₓ(U), D(f))`
 This is an isomorphism, as witnessed by an `IsIso` instance. -/
 def basicOpenSectionsToAffine :
-    Γ(X, X.basicOpen f) ⟶ Γ(𝖲𝗉𝖾𝖼 Γ(X, U), PrimeSpectrum.basicOpen f) :=
+    Γ(X, X.basicOpen f) ⟶ Γ(Spec Γ(X, U), PrimeSpectrum.basicOpen f) :=
   hU.fromSpec.1.c.app (op <| X.basicOpen f) ≫
-    (𝖲𝗉𝖾𝖼 Γ(X, U)).presheaf.map (eqToHom <| (hU.fromSpec_preimage_basicOpen f).symm).op
+    (Spec Γ(X, U)).presheaf.map (eqToHom <| (hU.fromSpec_preimage_basicOpen f).symm).op
 #align algebraic_geometry.basic_open_sections_to_affine AlgebraicGeometry.IsAffineOpen.basicOpenSectionsToAffine
 
 instance basicOpenSectionsToAffine_isIso :

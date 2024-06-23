@@ -93,29 +93,29 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImm
       Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReduced_of_isOpenImmersion
 
-instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (𝖲𝗉𝖾𝖼 R) := by
+instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
   apply (config := { allowSynthFailures := true }) isReduced_of_isReduced_stalk
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
-  rw [show (𝖲𝗉𝖾𝖼 R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
+  rw [show (Spec R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
   exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
     (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
 theorem affine_isReduced_iff (R : CommRingCat) :
-    IsReduced (𝖲𝗉𝖾𝖼 R) ↔ _root_.IsReduced R := by
+    IsReduced (Spec R) ↔ _root_.IsReduced R := by
   refine ⟨?_, fun h => inferInstance⟩
   intro h
   have : _root_.IsReduced
       (LocallyRingedSpace.Γ.obj (op <| Spec.toLocallyRingedSpace.obj <| op R)) := by
-    change _root_.IsReduced Γ(𝖲𝗉𝖾𝖼 R, ⊤); infer_instance
+    change _root_.IsReduced Γ(Spec R, ⊤); infer_instance
   exact isReduced_of_injective (Scheme.ΓSpecIso R).inv
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.affine_is_reduced_iff AlgebraicGeometry.affine_isReduced_iff
 
 theorem isReduced_of_isAffine_isReduced [IsAffine X] [h : _root_.IsReduced Γ(X, ⊤)] :
     IsReduced X :=
-  haveI : IsReduced (𝖲𝗉𝖾𝖼 (Scheme.Γ.obj (op X))) := by
+  haveI : IsReduced (Spec (Scheme.Γ.obj (op X))) := by
     rw [affine_isReduced_iff]; exact h
   isReduced_of_isOpenImmersion X.isoSpec.hom
 #align algebraic_geometry.is_reduced_of_is_affine_is_reduced AlgebraicGeometry.isReduced_of_isAffine_isReduced
@@ -134,7 +134,7 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : Opens X), Prop)
     (h₂ : ∀ (X Y) (f : X ⟶ Y) [hf : IsOpenImmersion f],
       ∃ (U : Set X) (V : Set Y) (hU : U = ⊤) (hV : V = Set.range f.1.base),
         P ⟨U, hU.symm ▸ isOpen_univ⟩ → P ⟨V, hV.symm ▸ hf.base_open.isOpen_range⟩)
-    (h₃ : ∀ R : CommRingCat, P (X := 𝖲𝗉𝖾𝖼 R) ⊤) : P U := by
+    (h₃ : ∀ R : CommRingCat, P (X := Spec R) ⊤) : P U := by
   apply h₁
   intro x
   obtain ⟨_, ⟨j, rfl⟩, hx, i⟩ :=
@@ -295,21 +295,21 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenIm
     Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
 #align algebraic_geometry.is_integral_of_open_immersion AlgebraicGeometry.isIntegral_of_isOpenImmersion
 
-instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (𝖲𝗉𝖾𝖼 R) := by
+instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (Spec R) := by
   convert PrimeSpectrum.irreducibleSpace (R := R)
 
-instance {R : CommRingCat} [IsDomain R] : IsIntegral (𝖲𝗉𝖾𝖼 R) :=
+instance {R : CommRingCat} [IsDomain R] : IsIntegral (Spec R) :=
   isIntegral_of_irreducibleSpace_of_isReduced _
 
 theorem affine_isIntegral_iff (R : CommRingCat) :
-    IsIntegral (𝖲𝗉𝖾𝖼 R) ↔ IsDomain R :=
-  ⟨fun _ => MulEquiv.isDomain Γ(𝖲𝗉𝖾𝖼 R, ⊤)
+    IsIntegral (Spec R) ↔ IsDomain R :=
+  ⟨fun _ => MulEquiv.isDomain Γ(Spec R, ⊤)
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv.toMulEquiv, fun _ => inferInstance⟩
 #align algebraic_geometry.affine_is_integral_iff AlgebraicGeometry.affine_isIntegral_iff
 
 theorem isIntegral_of_isAffine_of_isDomain [IsAffine X] [Nonempty X]
     [h : IsDomain Γ(X, ⊤)] : IsIntegral X :=
-  haveI : IsIntegral (𝖲𝗉𝖾𝖼 (Scheme.Γ.obj (op X))) := by
+  haveI : IsIntegral (Spec (Scheme.Γ.obj (op X))) := by
     rw [affine_isIntegral_iff]; exact h
   isIntegral_of_isOpenImmersion X.isoSpec.hom
 #align algebraic_geometry.is_integral_of_is_affine_is_domain AlgebraicGeometry.isIntegral_of_isAffine_of_isDomain
