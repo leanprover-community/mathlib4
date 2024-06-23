@@ -27,7 +27,11 @@ variable [SemilatticeInf α] [TopologicalSpace α] [IsLower α]
 
 variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
-lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T ↓∩ (Ici (a ⊓ b))ᶜ) := by
+namespace PrimitiveSpectrum
+
+/- The set of-/
+lemma ici_compl_inter_ici_compl_eq (a b : α) :
+    (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T ↓∩ (Ici (a ⊓ b))ᶜ) := by
   ext p
   simp only [preimage_compl, mem_inter_iff, mem_compl_iff, mem_preimage, mem_Ici, ← not_or]
   constructor
@@ -42,8 +46,11 @@ lemma basis1 (a b : α) : (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T �
 
 variable [DecidableEq α] [OrderTop α]
 
+/- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
+set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⊓ F`. -/
 open Finset in
-lemma basis2  (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
+lemma upperClosureFiniteCompl_eq  (F : Finset α) :
+    T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
   rw [coe_upperClosure]
   simp only [compl_iUnion]
   rw [preimage_iInter₂]
@@ -56,11 +63,16 @@ lemma basis2  (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓�
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr hx)
   · simp only [coe_insert, mem_insert_iff, mem_coe,  iInter_iInter_eq_or_left,
       inf_insert, id_eq]
-    rw [← basis1, ← I4]
+    rw [← ici_compl_inter_ici_compl_eq, ← I4]
     simp only [Set.preimage_compl, mem_coe]
     exact hT
 
-lemma isBasis1' : IsTopologicalBasis { S : Set T | ∃ (a : α), T ↓∩ (Ici a)ᶜ = S } := by
+/-
+The relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for `a` in `α` form a basis for the relative
+Lower topology.
+-/
+lemma relativeLowerIsTopologicalBasis :
+    IsTopologicalBasis { S : Set T | ∃ (a : α), T ↓∩ (Ici a)ᶜ = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
   ext R
   simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
@@ -77,8 +89,10 @@ lemma isBasis1' : IsTopologicalBasis { S : Set T | ∃ (a : α), T ↓∩ (Ici a
     cases' ha with F hF
     lift F to Finset α using hF.1
     use Finset.inf F id
-    rw [← hF.2, ← preimage_compl, ← (basis2 hT)]
+    rw [← hF.2, ← preimage_compl, ← (upperClosureFiniteCompl_eq hT)]
     rfl
+
+end PrimitiveSpectrum
 
 end SemilatticeInf
 
@@ -88,7 +102,11 @@ variable [CompleteLattice α] [TopologicalSpace α] [IsLower α] [DecidableEq α
 
 variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
-lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
+namespace PrimitiveSpectrum
+
+/- When `α` is complete, the relative basis for the Lower topology is also closed under arbitary
+unions.-/
+lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
   rw [le_antisymm_iff]
   constructor
   · simp only [preimage_compl, le_eq_subset, sUnion_subset_iff, mem_setOf_eq, forall_exists_index,
@@ -103,12 +121,15 @@ lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ 
       Classical.not_imp] at ha
     exact bex_def.mp ha
 
+/- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
+`T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
 lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor
   · intro h
     let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
     use sSup R
-    rw [← basis3, IsTopologicalBasis.open_eq_sUnion' (isBasis1' hT) h]
+    rw [← sUnion_Ici_Compl_eq,
+      IsTopologicalBasis.open_eq_sUnion' (relativeLowerIsTopologicalBasis hT) h]
     aesop
   · intro h
     cases' h with a ha
@@ -118,6 +139,8 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
       exact isClosed_Ici
     · rw [ha]
 
+/- When `α` is complete, a set is Lower topology relative-closed if and only if it is of the form
+`T ↓∩ (Ici a)` for some `a` in `α`.-/
 lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici a) := by
   rw [← isOpen_compl_iff, (isOpen_iff hT)]
   constructor
@@ -132,21 +155,26 @@ lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici 
     rw [preimage_compl, compl_inj_iff]
     exact ha
 
-theorem PrimativeSpectrum.gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
-    (fun S => OrderDual.toDual (sInf (S : (Set α))))
-    (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) := fun S a => by
+/- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ (Ici a)` (hull) form an Antitone Galois
+connection betwen the subsets of `T` and `α`. -/
+open OrderDual in
+theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
+    (fun S => toDual (sInf (S : (Set α)))) (fun a => T ↓∩ (Ici (ofDual a))) := fun S a => by
   constructor
   · intro h b hbS
     rw [mem_preimage, mem_Ici]
-    rw [← OrderDual.ofDual_le_ofDual] at h
-    simp only [toDual_sInf, ofDual_sSup, le_sInf_iff, mem_preimage, OrderDual.ofDual_toDual,
-      mem_image, Subtype.exists, exists_and_right, exists_eq_right, forall_exists_index] at h
+    rw [← ofDual_le_ofDual] at h
+    simp only [toDual_sInf, ofDual_sSup, le_sInf_iff, mem_preimage, ofDual_toDual, mem_image,
+      Subtype.exists, exists_and_right, exists_eq_right, forall_exists_index] at h
     exact h _ (Subtype.coe_prop b) hbS
   · intro h
     simp only [toDual_sInf, sSup_le_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
-      exists_eq_right, ← OrderDual.ofDual_le_ofDual, forall_exists_index, OrderDual.forall,
-      OrderDual.ofDual_toDual]
+      exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
     exact fun b _ hbS => h hbS
+
+lemma gc_closureOperator_eq (S : Set T) : gc.closureOperator S = T ↓∩ (Ici (sInf S)) := by
+  simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
+  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
 variable (T)
 
@@ -155,14 +183,15 @@ that `a` is the inf of `S`. -/
 def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = sInf (S : Set α)
 
 variable {T}
+variable (hG : OrderGenerate T)
 
 /--
 When `T` is order generating, the kernel and the hull form a Galois insertion
 -/
-def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
+def gi : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : (Set α))))
     (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) :=
-  PrimativeSpectrum.gc.toGaloisInsertion fun a ↦ (by
+  gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
     cases' hG a with S hS
     have e1 : S ⊆ T ↓∩ Ici (OrderDual.ofDual a) := by
@@ -171,24 +200,18 @@ def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) 
       exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS)
     exact le_of_le_of_eq (sInf_le_sInf (image_val_mono e1)) (id (Eq.symm hS)))
 
-lemma kh1 (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
+lemma kernel_hull_eq (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
   conv_rhs => rw [← (OrderDual.ofDual_toDual a),
-    ← (GaloisInsertion.l_u_eq (PrimativeSpectrum.gi hG) a)]
+    ← (GaloisInsertion.l_u_eq (gi hG) a)]
   rfl
 
-
-lemma hk1 (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
-    PrimativeSpectrum.gc.closureOperator C = C := by
+lemma gc_closureOperator_of_isClosed {C : Set T} (h : IsClosed C) : gc.closureOperator C = C := by
   cases' ((isClosed_iff hT C).mp h) with a ha
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq, ha,
-    (kh1 hG)]
+    (kernel_hull_eq hG)]
 
-lemma testhk (S : Set T) : PrimativeSpectrum.gc.closureOperator S = T ↓∩ (Ici (sInf S)) := by
-  simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
-  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
-
-lemma testhk2 (hG : OrderGenerate T) (S : Set T) :
+lemma lowerTopology_closureOperator_eq (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S  = T ↓∩ (Ici (sInf S)) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ (T ↓∩ Ici (sInf ↑S)) := by
@@ -200,13 +223,14 @@ lemma testhk2 (hG : OrderGenerate T) (S : Set T) :
   · exact fun ⦃a⦄ a ↦ a (T ↓∩ Ici (sInf ↑S)) e1
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
-    rw [← (hk1 hT hG hR.1), ← testhk]
+    rw [← (gc_closureOperator_of_isClosed hT hG hR.1), ← gc_closureOperator_eq]
     exact ClosureOperator.monotone _ hR.2
 
-theorem hull_kernel (hG : OrderGenerate T) :
-    (TopologicalSpace.Closeds.gc (α := T)).closureOperator =
-      PrimativeSpectrum.gc.closureOperator := by
+theorem lowerTopology_closureOperator_eq_gc_closureOperator :
+    (TopologicalSpace.Closeds.gc (α := T)).closureOperator = gc.closureOperator := by
   ext S a
-  rw [testhk, (testhk2 hT hG)]
+  rw [gc_closureOperator_eq, (lowerTopology_closureOperator_eq hT hG)]
+
+end PrimitiveSpectrum
 
 end PrimativeSpectrum
