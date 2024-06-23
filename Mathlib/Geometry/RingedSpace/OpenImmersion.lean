@@ -878,7 +878,7 @@ abbrev openFunctor :=
 noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
   SheafedSpace.isoMk <| PresheafedSpace.IsOpenImmersion.isoRestrict H
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem isoRestrict_hom_ofRestrict : H.isoRestrict.hom ≫ Y.ofRestrict _ = f :=
   PresheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict H
 
