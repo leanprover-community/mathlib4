@@ -1,0 +1,26 @@
+name: Lean_decl_diff
+
+on:
+  workflow_run:
+    workflows:
+      - "continuous integration"
+    types:
+      - completed
+
+jobs:
+  Lean_decl_diff_dep:
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+      with:
+        ## fetch the whole repository, useful to find a common fork
+        fetch-depth: 0
+    - name: Lean-diff
+      run: |
+        git checkout master
+        git checkout -
+        ./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})"
