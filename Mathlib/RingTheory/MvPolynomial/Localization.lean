@@ -22,6 +22,8 @@ namespace MvPolynomial
 variable {σ R : Type*} [CommRing R] (M : Submonoid R)
 variable (S : Type*) [CommRing S] [Algebra R S] [IsLocalization M S]
 
+attribute [local instance] algebraMvPolynomial
+
 /--
 If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
 is the localization of `MvPolynomial σ R` at `M.map MvPolynomial.C`.
@@ -56,8 +58,7 @@ instance isLocalization : IsLocalization (M.map <| C (σ := σ))
     · ext m
       simp only [coeff_C_mul]
       by_cases h : m ∈ p.support ∪ q.support
-      · apply Finset.prod_mul_eq_prod_mul_of_exists
-        use m, h, hc m
+      · exact Finset.prod_mul_eq_prod_mul_of_exists m h (hc m)
       · simp only [Finset.mem_union, mem_support_iff, ne_eq, not_or, Decidable.not_not] at h
         rw [h.left, h.right]
 

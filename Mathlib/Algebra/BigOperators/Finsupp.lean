@@ -647,9 +647,10 @@ lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀
 @[to_additive]
 lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] [Zero M] [CommMonoid N]
     {f : α →₀ M} {g : α → M → N} {n₁ n₂ : N}
-    (h : ∃ a ∈ f.support, g a (f a) * n₁ = g a (f a) * n₂) :
+    (a : α) (ha : a ∈ f.support)
+    (h : g a (f a) * n₁ = g a (f a) * n₂) :
     f.prod g * n₁ = f.prod g * n₂ :=
-  Finset.prod_mul_eq_prod_mul_of_exists h
+  Finset.prod_mul_eq_prod_mul_of_exists a ha h
 
 end Finsupp
 
