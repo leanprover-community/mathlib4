@@ -937,9 +937,9 @@ def torsionBy : AddSubgroup A :=
   (Submodule.torsionBy ℤ A n).toAddSubgroup
 
 @[inherit_doc]
-scoped notation:max A"["n"]" => torsionBy A n
+scoped notation:max (priority := high) A"["n"]" => torsionBy A n
 
-lemma torsionBy_negative_eq : A[-n] = A[n] := by
+lemma torsionBy_neg : A[-n] = A[n] := by
   ext a
   simp
 
