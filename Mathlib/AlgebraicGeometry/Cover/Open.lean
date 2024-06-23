@@ -65,7 +65,7 @@ variable [∀ x, HasPullback (𝒰.map x ≫ f) g]
 /-- The affine cover of a scheme. -/
 def affineCover (X : Scheme.{u}) : OpenCover X where
   J := X.carrier
-  obj x := Spec.obj <| Opposite.op (X.local_affine x).choose_spec.choose
+  obj x := Spec (X.local_affine x).choose_spec.choose
   map x :=
     ((X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _ : _)
   f x := x
