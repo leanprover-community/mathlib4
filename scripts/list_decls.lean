@@ -34,4 +34,4 @@ macro "list_decls!" : command => `(list_decls !)
 
 end ListDecls
 
---list_decls !
+--list_decls
