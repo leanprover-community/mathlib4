@@ -64,9 +64,9 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp <| φ.eventually_iSup_ker_pow_eq
     use n
     ext x
-    rw [zero_apply, ← mem_ker, ← hn n le_rfl]
+    rw [zero_apply, ← mem_ker (R := R), ← hn n le_rfl]
     obtain ⟨k, hk⟩ := h x
-    rw [← mem_ker] at hk
+    rw [← mem_ker (R := R)] at hk
     exact Submodule.mem_iSup_of_mem _ hk
   tfae_have 2 ↔ 4
   · rw [← φ.charpoly_natDegree, φ.charpoly_monic.eq_X_pow_iff_natTrailingDegree_eq_natDegree]

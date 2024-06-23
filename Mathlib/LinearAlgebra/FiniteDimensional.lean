@@ -244,7 +244,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
         rw [Set.card_image_of_injective _ Subtype.coe_injective, ← finrank_eq_card_basis bS, ←
             finrank_eq_card_basis b, h])
   rw [← b.span_eq, b_eq, Basis.coe_extend, Subtype.range_coe, ← this, ← Submodule.coeSubtype,
-    span_image]
+    span_image (R := K)]
   have := bS.span_eq
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
   rw [this, Submodule.map_top (Submodule.subtype S), range_subtype]
@@ -825,7 +825,7 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     Function.Injective f ↔ Function.Surjective f := by
   have := finrank_range_add_finrank_ker f
-  rw [← ker_eq_bot, ← range_eq_top]; refine ⟨fun h => ?_, fun h => ?_⟩
+  rw [← ker_eq_bot, ← range_eq_top (R := K)]; refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [h, finrank_bot, add_zero, H] at this
     exact eq_top_of_finrank_eq this
   · rw [h, finrank_top, H] at this

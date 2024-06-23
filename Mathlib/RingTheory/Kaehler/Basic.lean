@@ -562,7 +562,8 @@ theorem KaehlerDifferential.kerTotal_eq :
 
 theorem KaehlerDifferential.total_surjective :
     Function.Surjective (Finsupp.total S (Ω[S⁄R]) S (KaehlerDifferential.D R S)) := by
-  rw [← LinearMap.range_eq_top, Finsupp.range_total, KaehlerDifferential.span_range_derivation]
+  rw [← LinearMap.range_eq_top (R := S), Finsupp.range_total,
+    KaehlerDifferential.span_range_derivation]
 #align kaehler_differential.total_surjective KaehlerDifferential.total_surjective
 
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
@@ -706,7 +707,7 @@ open IsScalarTower (toAlgHom)
 theorem KaehlerDifferential.map_surjective_of_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.map R S A B) := by
-  rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← @Submodule.restrictScalars_top A B,
+  rw [← LinearMap.range_eq_top (R := A), _root_.eq_top_iff, ← @Submodule.restrictScalars_top A B,
     ← KaehlerDifferential.span_range_derivation, Submodule.restrictScalars_span _ _ h,
     Submodule.span_le]
   rintro _ ⟨x, rfl⟩

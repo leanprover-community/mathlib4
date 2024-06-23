@@ -140,12 +140,12 @@ instance dual_nonempty [M.Nonempty] : M✶.Nonempty :=
   ⟨M.ground_nonempty⟩
 
 @[simp] theorem dual_base_iff (hB : B ⊆ M.E := by aesop_mat) : M✶.Base B ↔ M.Base (M.E \ B) := by
-  rw [base_compl_iff_mem_maximals_disjoint_base (by aesop_mat), base_iff_maximal_indep,
+  rw [base_compl_iff_mem_maximals_disjoint_base .., base_iff_maximal_indep,
     dual_indep_iff_exists', mem_maximals_setOf_iff]
   simp [dual_indep_iff_exists']
 
 theorem dual_base_iff' : M✶.Base B ↔ M.Base (M.E \ B) ∧ B ⊆ M.E :=
-  (em (B ⊆ M.E)).elim (fun h ↦ by rw [dual_base_iff (by aesop_mat), and_iff_left h])
+  (em (B ⊆ M.E)).elim (fun h ↦ by rw [dual_base_iff .., and_iff_left h])
     (fun h ↦ iff_of_false (h ∘ (fun h' ↦ h'.subset_ground)) (h ∘ And.right))
 
 theorem setOf_dual_base_eq : {B | M✶.Base B} = (fun X ↦ M.E \ X) '' {B | M.Base B} := by
@@ -157,7 +157,7 @@ theorem setOf_dual_base_eq : {B | M✶.Base B} = (fun X ↦ M.E \ X) '' {B | M.B
 
 @[simp] theorem dual_dual (M : Matroid α) : M✶✶ = M :=
   eq_of_base_iff_base_forall rfl (fun B (h : B ⊆ M.E) ↦
-    by rw [dual_base_iff (by aesop_mat), dual_base_iff (by aesop_mat), dual_ground,
+    by rw [dual_base_iff .., dual_base_iff .., dual_ground,
       diff_diff_cancel_left h])
 
 theorem dual_involutive : Function.Involutive (dual : Matroid α → Matroid α) := dual_dual
@@ -178,12 +178,12 @@ theorem Base.compl_base_of_dual (h : M✶.Base B) : M.Base (M.E \ B) :=
   (dual_base_iff'.1 h).1
 
 theorem Base.compl_base_dual (h : M.Base B) : M✶.Base (M.E \ B) := by
-  rwa [dual_base_iff (by aesop_mat), diff_diff_cancel_left h.subset_ground]
+  rwa [dual_base_iff .., diff_diff_cancel_left h.subset_ground]
 
 theorem Base.compl_inter_basis_of_inter_basis (hB : M.Base B) (hBX : M.Basis (B ∩ X) X) :
     M✶.Basis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
   refine Indep.basis_of_forall_insert ?_ inter_subset_right (fun e he ↦ ?_)
-  · rw [dual_indep_iff_exists (by aesop_mat)]
+  · rw [dual_indep_iff_exists ..]
     exact ⟨B, hB, disjoint_of_subset_left inter_subset_left disjoint_sdiff_left⟩
   simp only [diff_inter_self_eq_diff, mem_diff, not_and, not_not, imp_iff_right he.1.1] at he
   simp_rw [dual_dep_iff_forall, insert_subset_iff, and_iff_right he.1.1,
@@ -209,10 +209,10 @@ theorem Base.inter_basis_iff_compl_inter_basis_dual (hB : M.Base B) (hX : X ⊆ 
 
 theorem base_iff_dual_base_compl (hB : B ⊆ M.E := by aesop_mat) :
     M.Base B ↔ M✶.Base (M.E \ B) := by
-  rw [dual_base_iff (by aesop_mat), diff_diff_cancel_left hB]
+  rw [dual_base_iff .., diff_diff_cancel_left hB]
 
 theorem ground_not_base (M : Matroid α) [h : RkPos M✶] : ¬M.Base M.E := by
-  rwa [rkPos_iff_empty_not_base, dual_base_iff (by aesop_mat), diff_empty] at h
+  rwa [rkPos_iff_empty_not_base, dual_base_iff .., diff_empty] at h
 
 theorem Base.ssubset_ground [h : RkPos M✶] (hB : M.Base B) : B ⊂ M.E :=
   hB.subset_ground.ssubset_of_ne (by rintro rfl; exact M.ground_not_base hB)

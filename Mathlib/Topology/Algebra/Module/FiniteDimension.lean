@@ -145,7 +145,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
       rw [← LinearMap.ker_eq_bot]
       exact Submodule.ker_liftQ_eq_bot _ _ _ (le_refl _)
     have hs : Function.Surjective ((LinearMap.ker l).liftQ l (le_refl _)) := by
-      rw [← LinearMap.range_eq_top, Submodule.range_liftQ]
+      rw [← LinearMap.range_eq_top (R := 𝕜), Submodule.range_liftQ]
       exact Submodule.eq_top_of_finrank_eq ((finrank_self 𝕜).symm ▸ this)
     let φ : (E ⧸ LinearMap.ker l) ≃ₗ[𝕜] 𝕜 :=
       LinearEquiv.ofBijective ((LinearMap.ker l).liftQ l (le_refl _)) ⟨hi, hs⟩

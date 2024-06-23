@@ -1621,7 +1621,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
 
   -- Rewrite `this` using exact sequence manipulations to conclude that a term is in the range of
   -- the linear map `πs`:
-  rw [← LinearMap.sub_mem_ker_iff, ← hse] at this
+  rw [← LinearMap.sub_mem_ker_iff (R := ℤ), ← hse] at this
   obtain ⟨(n : LocallyConstant (π C (ord I · < o)) ℤ), hn⟩ := this
   rw [eq_sub_iff_add_eq] at hn
   have hn' := h₁ (Submodule.mem_top : n ∈ ⊤)

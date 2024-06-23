@@ -111,7 +111,7 @@ theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisecto
 
 @[simp] theorem perpBisector_eq_top : perpBisector p₁ p₂ = ⊤ ↔ p₁ = p₂ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ perpBisector_self _⟩
-  rw [← left_mem_perpBisector, h]
+  rw [← left_mem_perpBisector (V := V), h]
   trivial
 
 @[simp] theorem perpBisector_ne_bot : perpBisector p₁ p₂ ≠ ⊥ := by

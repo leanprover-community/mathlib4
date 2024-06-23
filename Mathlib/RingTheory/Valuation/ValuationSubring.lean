@@ -335,7 +335,6 @@ theorem idealOfLE_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     idealOfLE A (ofPrime A P) (le_ofPrime A P) = P := by
   refine Ideal.ext (fun x => ?_)
   apply IsLocalization.AtPrime.to_map_mem_maximal_iff
-  exact localRing (ofPrime A P)
 #align valuation_subring.ideal_of_le_of_prime ValuationSubring.idealOfLE_ofPrime
 
 @[simp]

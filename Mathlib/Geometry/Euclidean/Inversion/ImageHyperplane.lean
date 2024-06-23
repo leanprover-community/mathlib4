@@ -55,7 +55,7 @@ theorem preimage_inversion_perpBisector_inversion (hR : R ≠ 0) (hy : y ≠ c) 
 
 theorem preimage_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R ⁻¹' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
-  rw [← dist_inversion_center, ← preimage_inversion_perpBisector_inversion hR,
+  rw [← dist_inversion_center (R := R), ← preimage_inversion_perpBisector_inversion hR,
     inversion_inversion] <;> simp [*]
 
 theorem image_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :

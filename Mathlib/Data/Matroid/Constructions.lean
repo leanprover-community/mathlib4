@@ -102,7 +102,7 @@ theorem eq_loopyOn_iff : M = loopyOn E ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X 
 
 @[simp] theorem loopyOn_basis_iff : (loopyOn E).Basis I X ↔ I = ∅ ∧ X ⊆ E :=
   ⟨fun h ↦ ⟨loopyOn_indep_iff.mp h.indep, h.subset_ground⟩,
-    by rintro ⟨rfl, hX⟩; rw [basis_iff (by aesop_mat)]; simp⟩
+    by rintro ⟨rfl, hX⟩; rw [basis_iff ..]; simp⟩
 
 instance : FiniteRk (loopyOn E) :=
   ⟨⟨∅, loopyOn_base_iff.2 rfl, finite_empty⟩⟩
@@ -210,7 +210,7 @@ theorem uniqueBaseOn_indep_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).Indep J ↔ 
 
 theorem uniqueBaseOn_basis_iff (hI : I ⊆ E) (hX : X ⊆ E) :
     (uniqueBaseOn I E).Basis J X ↔ J = X ∩ I := by
-  rw [basis_iff_mem_maximals (by aesop_mat)]
+  rw [basis_iff_mem_maximals ..]
   simp_rw [uniqueBaseOn_indep_iff', ← subset_inter_iff, ← le_eq_subset, Iic_def, maximals_Iic,
     mem_singleton_iff, inter_eq_self_of_subset_left hI, inter_comm I]
 
@@ -222,7 +222,7 @@ theorem uniqueBaseOn_inter_basis (hI : I ⊆ E) (hX : X ⊆ E) :
     (uniqueBaseOn I E)✶ = uniqueBaseOn (E \ I) E := by
   rw [← uniqueBaseOn_inter_ground_eq]
   refine eq_of_base_iff_base_forall rfl (fun B (hB : B ⊆ E) ↦ ?_)
-  rw [dual_base_iff (by aesop_mat), uniqueBaseOn_base_iff inter_subset_right,
+  rw [dual_base_iff .., uniqueBaseOn_base_iff inter_subset_right,
     uniqueBaseOn_base_iff diff_subset, uniqueBaseOn_ground]
   exact ⟨fun h ↦ by rw [← diff_diff_cancel_left hB, h, diff_inter_self_eq_diff],
     fun h ↦ by rw [h, inter_comm I]; simp⟩

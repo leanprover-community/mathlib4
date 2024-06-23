@@ -1417,7 +1417,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
     (hf : Function.Surjective f.range.subtype.dualMap) :
     LinearMap.range f.dualMap = f.ker.dualAnnihilator := by
   have rr_surj : Function.Surjective f.rangeRestrict := by
-    rw [← range_eq_top, range_rangeRestrict]
+    rw [← range_eq_top (R := R), range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
   convert this using 1
   -- Porting note (#11036): broken dot notation lean4#1910
@@ -1494,7 +1494,7 @@ lemma eq_of_ker_eq_of_apply_eq {f g : Module.Dual K V₁} (x : V₁)
   obtain ⟨y, hy, z, hz, rfl⟩ : ∃ᵉ (y ∈ LinearMap.ker f) (z ∈ p), y + z = v := by
     have : v ∈ (⊤ : Submodule K V₁) := Submodule.mem_top
     rwa [← (isCompl_ker_of_disjoint_of_ne_bot hf hpf hp).sup_eq_top, Submodule.mem_sup] at this
-  have hy' : g y = 0 := by rwa [← LinearMap.mem_ker, ← h]
+  have hy' : g y = 0 := by rwa [← LinearMap.mem_ker (R := K), ← h]
   replace hy : f y = 0 := by rwa [LinearMap.mem_ker] at hy
   obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hz
   simp [h', hy, hy']
@@ -1524,7 +1524,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker (f : V₁ →ₗ[K] V₂) :
 @[simp]
 theorem dualMap_surjective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Surjective f.dualMap ↔ Function.Injective f := by
-  rw [← LinearMap.range_eq_top, range_dualMap_eq_dualAnnihilator_ker,
+  rw [← LinearMap.range_eq_top (R := K), range_dualMap_eq_dualAnnihilator_ker,
       ← Submodule.dualAnnihilator_bot, Subspace.dualAnnihilator_inj, LinearMap.ker_eq_bot]
 #align linear_map.dual_map_surjective_iff LinearMap.dualMap_surjective_iff
 
@@ -1643,7 +1643,7 @@ theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
 theorem dualMap_injective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Injective f.dualMap ↔ Function.Surjective f := by
   refine ⟨Function.mtr fun not_surj inj ↦ ?_, dualMap_injective_of_surjective⟩
-  rw [← range_eq_top, ← Ne, ← lt_top_iff_ne_top] at not_surj
+  rw [← range_eq_top (R := K), ← Ne, ← lt_top_iff_ne_top] at not_surj
   obtain ⟨φ, φ0, range_le_ker⟩ := (range f).exists_le_ker_of_lt_top not_surj
   exact φ0 (inj <| ext fun x ↦ range_le_ker ⟨x, rfl⟩)
 #align linear_map.dual_map_injective_iff LinearMap.dualMap_injective_iff
