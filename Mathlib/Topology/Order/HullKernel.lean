@@ -119,8 +119,7 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
     · rw [ha]
 
 lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici a) := by
-  rw [← isOpen_compl_iff]
-  rw [isOpen_iff]
+  rw [← isOpen_compl_iff, (isOpen_iff hT)]
   constructor
   · intros h
     cases' h with a ha
@@ -132,31 +131,22 @@ lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici 
     use a
     rw [preimage_compl, compl_inj_iff]
     exact ha
-  exact fun p a ↦ hT p a
 
 theorem PrimativeSpectrum.gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : (Set α))))
-    (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) := by
-  rw [GaloisConnection]
-  intros S a
+    (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) := fun S a => by
   constructor
-  · intro h
-    intro b hbS
+  · intro h b hbS
     rw [mem_preimage, mem_Ici]
     rw [← OrderDual.ofDual_le_ofDual] at h
-    simp at h
-    apply h
-    exact hbS
-    exact Subtype.coe_prop b
+    simp only [toDual_sInf, ofDual_sSup, le_sInf_iff, mem_preimage, OrderDual.ofDual_toDual,
+      mem_image, Subtype.exists, exists_and_right, exists_eq_right, forall_exists_index] at h
+    exact h _ (Subtype.coe_prop b) hbS
   · intro h
-    simp at h
-    rw [← OrderDual.ofDual_le_ofDual]
-    rw [OrderDual.ofDual_toDual]
-    simp only [le_sInf_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-      forall_exists_index]
-    intros b hbT hbS
-    rw [← mem_Ici]
-    apply h hbS
+    simp only [toDual_sInf, sSup_le_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
+      exists_eq_right, ← OrderDual.ofDual_le_ofDual, forall_exists_index, OrderDual.forall,
+      OrderDual.ofDual_toDual]
+    exact fun b _ hbS => h hbS
 
 variable (T)
 
@@ -177,15 +167,9 @@ def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) 
     cases' hG a with S hS
     have e1 : S ⊆ T ↓∩ Ici (OrderDual.ofDual a) := by
       intros c hcS
-      rw [mem_preimage, mem_Ici]
-      rw [hS]
-      apply CompleteSemilatticeInf.sInf_le
-      exact mem_image_of_mem Subtype.val hcS
-    have e2 : sInf (T ↓∩ Ici (OrderDual.ofDual a) : Set α) ≤ sInf (S : Set α) := by
-      apply sInf_le_sInf
-      exact image_val_mono e1
-    exact le_of_le_of_eq e2 (id (Eq.symm hS)))
-
+      rw [mem_preimage, mem_Ici, hS]
+      exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS)
+    exact le_of_le_of_eq (sInf_le_sInf (image_val_mono e1)) (id (Eq.symm hS)))
 
 lemma kh1 (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
   conv_rhs => rw [← (OrderDual.ofDual_toDual a),
@@ -195,14 +179,10 @@ lemma kh1 (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a :
 
 lemma hk1 (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
     PrimativeSpectrum.gc.closureOperator C = C := by
-  have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff hT C).mp h
-  cases' e1 with a ha
+  cases' ((isClosed_iff hT C).mp h) with a ha
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
-  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
-  rw [ha]
-  rw [kh1]
-  exact hG
-
+  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq, ha,
+    (kh1 hG)]
 
 lemma testhk (S : Set T) : PrimativeSpectrum.gc.closureOperator S = T ↓∩ (Ici (sInf S)) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
@@ -210,37 +190,23 @@ lemma testhk (S : Set T) : PrimativeSpectrum.gc.closureOperator S = T ↓∩ (Ic
 
 lemma testhk2 (hG : OrderGenerate T) (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S  = T ↓∩ (Ici (sInf S)) := by
-  simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure]
-  rw [closure]
-  rw [le_antisymm_iff]
+  simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ (T ↓∩ Ici (sInf ↑S)) := by
       constructor
-      · rw [isClosed_iff]
+      · rw [(isClosed_iff hT)]
         use sInf ↑S
-        exact hT
-      · have e2 : (S : Set α) ⊆ Ici (sInf (S : Set α)) := by
-          intro b hbS
-          simp only [mem_Ici]
-          apply CompleteSemilatticeInf.sInf_le
-          exact hbS
-        exact image_subset_iff.mp e2
+      · exact image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)
   constructor
   · exact fun ⦃a⦄ a ↦ a (T ↓∩ Ici (sInf ↑S)) e1
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
-    simp only [mem_setOf_eq] at hR
-    rw [← (hk1 hT hG hR.1)]
-    rw [← testhk]
-    apply ClosureOperator.monotone
-    simp only [le_eq_subset]
-    apply hR.2
+    rw [← (hk1 hT hG hR.1), ← testhk]
+    exact ClosureOperator.monotone _ hR.2
 
 theorem hull_kernel (hG : OrderGenerate T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator =
       PrimativeSpectrum.gc.closureOperator := by
   ext S a
-  rw [testhk, testhk2]
-  exact fun p a ↦ hT p a
-  exact hG
+  rw [testhk, (testhk2 hT hG)]
 
 end PrimativeSpectrum
