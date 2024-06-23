@@ -13,6 +13,3 @@ open Mathlib
 
 -- lambda rules: these two are currently missing
 -- attribute [fun_prop] AEMeasurable_apply AEMeasurable_pi
-
--- product: these are currently not valid fun_prop theorems!
--- attribute [fun_prop] AEMeasurable.fst AEMeasurable.snd
