@@ -176,6 +176,8 @@ def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ S
       congr 1)
 #align algebraic_geometry.Scheme.restrict_functor_Γ AlgebraicGeometry.Scheme.restrictFunctorΓ
 
+/-- Given an open immersion `f : U ⟶ X`, the isomorphism between global sections
+  of `U` and the sections of `X` at the image of `f`. -/
 noncomputable
 def Scheme.openImmersionΓ {U X : Scheme} (f : U ⟶ X) [h : IsOpenImmersion f] :
     Scheme.Γ.obj (op <| U) ≅ X.presheaf.obj (op <| Scheme.Hom.opensRange f) := by
