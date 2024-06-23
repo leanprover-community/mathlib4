@@ -131,7 +131,8 @@ theorem exists_omega_seq_succ_prop (oLim : IsLimit o) {P : Ordinal → Ordinal �
     exact ⟨C, hC⟩
   let H₃ : (w : Ordinal) → w < ω → w.IsLimit → ((o' : Ordinal) → o' < w → (Iio o)) → (Iio o) :=
     fun w _ _ _ ↦ ⟨0, oLim.pos⟩
-  let f : Π p < ω, Iio o := @boundedLimitRec' (α := Iio o) ω ⟨r + 1, oLim.succ_lt rlto⟩ H₂ H₃
+  let f : Π p < ω, Iio o := @boundedLimitRec' (α := Iio o) ω omega_isLimit
+    ⟨r + 1, oLim.succ_lt rlto⟩ H₂ H₃
   use f
   constructor <;> try constructor
   intro n hn
