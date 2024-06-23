@@ -9,8 +9,10 @@ import Mathlib.Topology.Bornology.Constructions
 /-!
 # Induced pseudo metric spaces
 
-Construct a pseudometric space structure by pulling back a pseudometric space structure along a function.
+Construct a pseudometric space structure by pulling back a pseudometric space structure along a
+function.
 -/
+
 open Set Filter Bornology Metric
 
 universe u
