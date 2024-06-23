@@ -503,8 +503,11 @@ lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choos
 lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
 
 lemma part_eq_of_mem (ht : t ∈ P.parts) (hat : a ∈ t) : P.part a = t := by
-  refine P.eq_of_mem_parts (P.part_mem ?_) ht (P.mem_part ?_) hat <;>
-  exact mem_of_subset (P.le ht) hat
+  apply P.eq_of_mem_parts (P.part_mem _) ht (P.mem_part _) hat <;> exact mem_of_subset (P.le ht) hat
+
+lemma mem_part_iff_part_eq_part {b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    a ∈ P.part b ↔ P.part a = P.part b :=
+  ⟨fun c ↦ (P.part_eq_of_mem (P.part_mem hb) c), fun c ↦ c ▸ P.mem_part ha⟩
 
 theorem part_surjOn : Set.SurjOn P.part s P.parts := fun p hp ↦ by
   obtain ⟨x, hx⟩ := P.nonempty_of_mem_parts hp
