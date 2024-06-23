@@ -12,6 +12,46 @@ import Mathlib.Topology.Sets.Closeds
 /-!
 # Hull-Kernel Topology
 
+Let `α` be a `CompleteLattice` and let `T` be a subset of `α`. The relative `Topology.lower` on `T`
+takes on a particularly simple form when every element of `T` is `InfPrime` in `α`. In this case,
+the relative-open sets are exactly the setsof the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.
+
+The pair of maps `S → ⊓ S` and `a → T ↓∩ (Ici a)` are often refered to as the kernel and the hull.
+They form an antitone Galois connection betwen the subsets of `T` and `α`. When `α` can be generated
+from `T` by taking infs, this becomes a Galois insertion and the topological closure coincides with
+the closure arising from the Galois insertion. For this reason the relative lower topology on `T` is
+often refered to as the hull-kernel topology. The names Jacobson topology and structure topology
+also occur in the liturature.
+
+## Main statements
+
+- `PrimitiveSpectrum.relativeLowerIsTopologicalBasis` - the sets `T ↓∩ (Ici a)` form a basis for the
+  relative lower topology on `T`.
+- `PrimitiveSpectrum.isOpen_iff` - for a complete lattice, the sets `T ↓∩ (Ici a)` are the relative
+  topology.
+- `PrimitiveSpectrum.gc` - the kernel and the hull form a Galois connection
+- `PrimitiveSpectrum.gi` - when `T` generates `α`, the Galois connection becomes an insertion.
+- `PrimitiveSpectrum.lowerTopology_closureOperator_eq_gc_closureOperator` - relative lower topology
+  closure coincides with the "hull-kernel" closure arising from the Galois insertion.
+
+## Implementation notes
+
+The antitone Galois connection from `Set T` to `α` is implemented as a monitone Galois connection
+between `Set T` to `αᵒᵈ`.
+
+## Motivation
+
+The motivating example for the study of a set `T` of prime elements which generate `α` is the
+primitive spectrum of the lattice of M-ideals of a Banach space.
+
+## References
+
+* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
+
+## Tags
+
+lower topology, hull-kernel topology, Jacobson topology, structure topology, primitive spectrum
+
 -/
 
 variable {α}
@@ -155,7 +195,7 @@ lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici 
     rw [preimage_compl, compl_inj_iff]
     exact ha
 
-/- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ (Ici a)` (hull) form an Antitone Galois
+/- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ (Ici a)` (hull) form an antitone Galois
 connection betwen the subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
