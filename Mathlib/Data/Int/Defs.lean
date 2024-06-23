@@ -621,7 +621,6 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a := by
     simp [Int.mul_assoc, ha]
 #align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
 
--- TODO: Rename `Nat.dvd_div_iff` to `Nat.dvd_div_iff_mul_dvd`
 @[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
   ⟨mul_dvd_of_dvd_div hbc, dvd_div_of_mul_dvd⟩
 
