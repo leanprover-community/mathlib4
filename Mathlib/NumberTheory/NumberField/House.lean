@@ -64,7 +64,7 @@ def basisMatrixTranspose : Matrix (Fin h) (Fin h) ℂ := ((embeddingsMatrixReind
     ((Fintype.equivFinOfCardEq (card K ℂ)).symm.trans (RingHom.equivRatAlgHom)))).transpose
 
 theorem embeddings_matrix_reindex_eq_basis_matrix_transpose :
-  ((embeddingsMatrixReindex ℚ ℂ (fun i => ((reindex (integralBasis K)
+    ((embeddingsMatrixReindex ℚ ℂ (fun i => ((reindex (integralBasis K)
     ((Fintype.equivFinOfCardEq (card K ℂ)).symm.trans
     (equivOfCardEq ((card K ℂ).trans (finrank_eq_card_basis (integralBasis K))))).symm) i))
       ((Fintype.equivFinOfCardEq (card K ℂ)).symm.trans (RingHom.equivRatAlgHom)))) =
@@ -92,7 +92,7 @@ theorem rootSet_abs_nonempty' {j : Fin h} (α : K) :
   rw [toFinset_nonempty]; apply Set.Nonempty.image; apply range_nonempty
 
 theorem house_modulus_eq_max {j : Fin h} (α : K) :
-  House α = (Finset.max' (toFinset (⇑Complex.abs ''
+    House α = (Finset.max' (toFinset (⇑Complex.abs ''
     (Set.range fun σ : (Fin h) → K →+* ℂ => σ j α))) (rootSet_abs_nonempty' α)) := by
   apply Finset.max'_eq_of_eq (rootSet_abs_nonempty α) (rootSet_abs_nonempty' α)
   rw [toFinset_inj.mpr (congrArg (Set.image ⇑Complex.abs) (range_embeddings_eq α))]
