@@ -8,6 +8,7 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Order.Filter.Archimedean
 
 #align_import topology.instances.int from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
