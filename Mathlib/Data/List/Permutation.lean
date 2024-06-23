@@ -255,7 +255,7 @@ theorem permutationsAux_append (is is' ts : List α) :
     permutationsAux (is ++ ts) is' =
       (permutationsAux is is').map (· ++ ts) ++ permutationsAux ts (is.reverse ++ is') := by
   induction' is with t is ih generalizing is'; · simp
-  simp only [foldr_permutationsAux2, ih, bind_map, cons_append, permutationsAux_cons, map_append,
+  simp only [foldr_permutationsAux2, ih, map_bind, cons_append, permutationsAux_cons, map_append,
     reverse_cons, append_assoc, singleton_append]
   congr 2
   funext _

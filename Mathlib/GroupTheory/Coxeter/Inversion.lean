@@ -378,7 +378,7 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   have : List.map (fun x ↦ x⁻¹) (ris ω.reverse) = ris ω.reverse := calc
     List.map (fun x ↦ x⁻¹) (ris ω.reverse)
     _ = List.map id (ris ω.reverse)             := by
-        apply List.map_congr
+        apply List.map_congr_left
         intro t ht
         exact (cs.isReflection_of_mem_rightInvSeq _ ht).inv
     _ = ris ω.reverse                           := map_id _

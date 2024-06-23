@@ -2409,7 +2409,7 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 @[simp]
 theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
     ∑ a in l.toFinset, l.count a = l.length := by
-  simpa using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
+  simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
 end List
 

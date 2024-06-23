@@ -488,7 +488,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
   | b::l, n+1, hl => by
     rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos _ (by simp)]
     congr 1
-    refine List.filter_congr' ?_
+    refine List.filter_congr ?_
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]

@@ -419,7 +419,7 @@ theorem tails_append :
 -- the lemma names `inits_eq_tails` and `tails_eq_inits` are like `sublists_eq_sublists'`
 theorem inits_eq_tails : ∀ l : List α, l.inits = (reverse <| map reverse <| tails <| reverse l)
   | [] => by simp
-  | a :: l => by simp [inits_eq_tails l, map_eq_map_iff, reverse_map]
+  | a :: l => by simp [inits_eq_tails l, map_inj_left, ← map_reverse]
 #align list.inits_eq_tails List.inits_eq_tails
 
 theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| inits <| reverse l)
@@ -429,22 +429,22 @@ theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| i
 
 theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, reverse_map]
+  simp [reverse_involutive.comp_self, ← map_reverse]
 #align list.inits_reverse List.inits_reverse
 
 theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, reverse_map]
+  simp [reverse_involutive.comp_self, ← map_reverse]
 #align list.tails_reverse List.tails_reverse
 
 theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, reverse_map]
+  simp [reverse_involutive.comp_self, ← map_reverse]
 #align list.map_reverse_inits List.map_reverse_inits
 
 theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, reverse_map]
+  simp [reverse_involutive.comp_self, ← map_reverse]
 #align list.map_reverse_tails List.map_reverse_tails
 
 @[simp]

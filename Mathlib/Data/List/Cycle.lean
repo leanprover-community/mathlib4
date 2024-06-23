@@ -378,7 +378,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   cases' l with hd tl
   · simp at hx
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
-      rw [length_cons, Nat.succ_eq_add_one] at hn
+      rw [length_cons] at hn
       rw [add_assoc, add_comm 1, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
     simp only [length_cons, Nat.succ_sub_succ_eq_sub, Nat.sub_zero, Nat.succ_eq_add_one, this]
 #align list.prev_next List.prev_next
@@ -391,7 +391,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   cases' l with hd tl
   · simp at hx
   · have : (n + length tl + 1) % (length tl + 1) = n := by
-      rw [length_cons, Nat.succ_eq_add_one] at hn
+      rw [length_cons] at hn
       rw [add_assoc, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
     simp [this]
 #align list.next_prev List.next_prev
