@@ -5,6 +5,7 @@
 
 # Forks of mathlib and other projects should be able to use build_fork.yml directly
 # The jobs in this file run on GitHub-hosted workers and will only be run from external forks
+name: continuous integration (mathlib forks)
 
 on:
   push:
@@ -14,8 +15,6 @@ on:
       - 'trying.tmp*'
       - 'staging*.tmp'
       - 'nolints'
-
-name: continuous integration (mathlib forks)
 
 jobs:
   # Cancels previous runs of jobs in this file

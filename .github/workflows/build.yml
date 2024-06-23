@@ -5,6 +5,7 @@
 
 # Forks of mathlib and other projects should be able to use build_fork.yml directly
 # The jobs in this file run on self-hosted workers and will not be run from external forks
+name: continuous integration
 
 on:
   push:
@@ -17,8 +18,6 @@ on:
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
   merge_group:
-
-name: continuous integration
 
 jobs:
   # Cancels previous runs of jobs in this file
