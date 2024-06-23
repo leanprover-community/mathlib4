@@ -7,6 +7,7 @@
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
 on:
+  pull_request:
   push:
     branches-ignore:
       # ignore tmp branches used by bors
@@ -143,6 +144,9 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/checkout@v4
+        with:
+          ## fetch the whole repository, useful to find a common fork
+          fetch-depth: 0
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -212,6 +216,37 @@ jobs:
             lake exe cache get || (sleep 1; lake exe cache get)
             lake build --no-build
           fi
+
+      - name: decl-diff
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref }}
+          PR: ${{ github.event.number }}
+        run: |
+          title="### Lean declaration difference"
+
+          git checkout master
+          git checkout -
+
+          ## Lean declarations diff comment
+          ddiff="$(./scripts/decls_diff_hybrid.sh "${{ github.sha }}" "$(git merge-base master ${{ github.sha }})")"
+          if [ "$(printf '%s' "${ddiff}" | wc -l)" -gt 12 ]
+          then
+            ddiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "Report" "${ddiff}")"
+          #else
+          #  ddiff="$(printf '%s\n\n%s\n' "${title}" "${ddiff}")"
+          fi
+
+          echo "Message: ${ddiff}"
+
+          git checkout "${BRANCH_NAME}"
+          currentHash="$(git rev-parse HEAD)"
+          hashURL="https://github.com/${{ github.repository }}/pull/${PR}/commits/${currentHash}"
+
+          message="$(printf '%s [%s](%s)\n\n%s\n\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${ddiff}")"
+
+          ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
+
 
       - name: build archive
         id: archive

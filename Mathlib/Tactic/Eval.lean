@@ -16,7 +16,7 @@ in the interpreter, and interpolates it into the expression.
 
 open Qq Lean Elab Term
 
-namespace Mathlib.Meta
+namespace Mathlib.Meta.Another
 
 /--
 `eval% x` evaluates the term `x : X` in the interpreter, and then injects the resulting expression.
@@ -42,4 +42,4 @@ unsafe def elabEvalExpr : Lean.Elab.Term.TermElab
   Lean.Meta.evalExpr Expr q(Expr) ee (safety := .unsafe)
 | _ => fun _ => Elab.throwUnsupportedSyntax
 
-end Mathlib.Meta
+end Mathlib.Meta.Another
