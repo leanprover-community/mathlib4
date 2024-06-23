@@ -51,7 +51,6 @@ ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NSP = 20 # non-terminal simp
-ERR_ADN = 25 # the string "Adaptation note"
 
 exceptions = []
 
@@ -331,14 +330,6 @@ def left_arrow_check(lines, path):
         newlines.append((line_nr, new_line))
     return errors, newlines
 
-def adaptation_note_check(lines, path):
-    errors = []
-    for line_nr, line in lines:
-        # We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
-        if "daptation note" in line:
-            errors += [(ERR_ADN, line_nr, path)]
-    return errors, lines
-
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -387,8 +378,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
         if errno == ERR_NSP:
             output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
-        if errno == ERR_ADN:
-            output_message(path, line_nr, "ERR_ADN", 'Found the string "Adaptation note:", please use the #adaptation_note command instead')
 
 def lint(path, fix=False):
     global new_exceptions
@@ -403,7 +392,6 @@ def lint(path, fix=False):
                             long_lines_check,
                             isolated_by_dot_semicolon_check,
                             left_arrow_check,
-                            adaptation_note_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
