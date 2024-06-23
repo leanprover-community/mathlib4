@@ -42,7 +42,7 @@ integral, center mass, average value
 
 open ENNReal MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Function
 
-open scoped Topology BigOperators ENNReal Convex
+open scoped Topology ENNReal Convex
 
 variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
@@ -188,8 +188,8 @@ theorem measure_mul_setLaverage (f : α → ℝ≥0∞) (h : μ s ≠ ∞) :
 
 theorem laverage_union (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ) :
     ⨍⁻ x in s ∪ t, f x ∂μ =
-      μ s / (μ s + μ t) * ⨍⁻ x in s, f x ∂μ + μ t / (μ s + μ t) * ⨍⁻ x in t, f x ∂μ :=
-  by rw [restrict_union₀ hd ht, laverage_add_measure, restrict_apply_univ, restrict_apply_univ]
+      μ s / (μ s + μ t) * ⨍⁻ x in s, f x ∂μ + μ t / (μ s + μ t) * ⨍⁻ x in t, f x ∂μ := by
+  rw [restrict_union₀ hd ht, laverage_add_measure, restrict_apply_univ, restrict_apply_univ]
 #align measure_theory.laverage_union MeasureTheory.laverage_union
 
 theorem laverage_union_mem_openSegment (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)

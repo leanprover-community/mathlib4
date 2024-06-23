@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
 import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.RingTheory.LocalProperties
 
@@ -109,6 +110,9 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
     have h := surjective_stalkMap (f ≫ g) x
     erw [Scheme.comp_val, PresheafedSpace.stalkMap.comp] at h
     exact Function.Surjective.of_comp h
+
+instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
+  isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
 
 end IsClosedImmersion
 

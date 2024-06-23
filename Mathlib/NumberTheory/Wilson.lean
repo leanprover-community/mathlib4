@@ -29,7 +29,7 @@ This could be generalized to similar results about finite abelian groups.
 
 open Finset Nat FiniteField ZMod
 
-open scoped BigOperators Nat
+open scoped Nat
 
 namespace ZMod
 
@@ -40,7 +40,7 @@ variable (p : ℕ) [Fact p.Prime]
 theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
   refine
     calc
-      ((p - 1)! : ZMod p) = ∏ x in Ico 1 (succ (p - 1)), (x : ZMod p) := by
+      ((p - 1)! : ZMod p) = ∏ x ∈ Ico 1 (succ (p - 1)), (x : ZMod p) := by
         rw [← Finset.prod_Ico_id_eq_factorial, prod_natCast]
       _ = ∏ x : (ZMod p)ˣ, (x : ZMod p) := ?_
       _ = -1 := by
@@ -70,7 +70,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
 #align zmod.wilsons_lemma ZMod.wilsons_lemma
 
 @[simp]
-theorem prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
+theorem prod_Ico_one_prime : ∏ x ∈ Ico 1 p, (x : ZMod p) = -1 := by
   -- Porting note: was `conv in Ico 1 p =>`
   conv =>
     congr

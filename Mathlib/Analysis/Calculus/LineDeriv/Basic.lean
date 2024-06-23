@@ -47,7 +47,7 @@ on the direction would make them barely usable:
 
 noncomputable section
 
-open scoped Topology BigOperators Filter ENNReal NNReal
+open scoped Topology Filter ENNReal NNReal
 
 open Filter Asymptotics Set
 
@@ -535,8 +535,8 @@ theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDer
   · simp [lineDeriv_zero]
   by_cases H : LineDifferentiableAt 𝕜 f x v
   · exact (H.hasLineDerivAt.smul c).lineDeriv
-  · have H' : ¬ (LineDifferentiableAt 𝕜 f x (c • v)) :=
-      by simpa [lineDifferentiableAt_smul_iff hc] using H
+  · have H' : ¬ (LineDifferentiableAt 𝕜 f x (c • v)) := by
+      simpa [lineDifferentiableAt_smul_iff hc] using H
     simp [lineDeriv_zero_of_not_lineDifferentiableAt, H, H']
 
 theorem lineDeriv_neg : lineDeriv 𝕜 f x (-v) = - lineDeriv 𝕜 f x v := by

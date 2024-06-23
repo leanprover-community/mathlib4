@@ -36,7 +36,7 @@ It's possibly interesting to have
 (whose `card` is `mulEnergy s t`) as a standalone definition.
 -/
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable {α : Type*} [DecidableEq α]
 
@@ -94,7 +94,7 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
   refine
-    card_le_card_of_inj_on (@fun x => ((x.1, x.1), x.2, x.2)) (by
+    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by
     -- Porting note: changed this from a `simp` proof without `only` because of a timeout
       simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
         implies_true]) fun a _ b _ => ?_
@@ -138,7 +138,7 @@ variable {s t}
   card_equiv (.prodProdProdComm _ _ _ _) (by simp [and_and_and_comm])
 
 @[to_additive] lemma mulEnergy_eq_sum_sq' (s t : Finset α) :
-    Eₘ[s, t] = ∑ a in s * t, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
+    Eₘ[s, t] = ∑ a ∈ s * t, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
   simp_rw [mulEnergy_eq_card_filter, sq, ← card_product]
   rw [← card_disjiUnion]
   -- The `swap`, `ext` and `simp` calls significantly reduce heartbeats
@@ -160,11 +160,11 @@ variable {s t}
 lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
     ((s ×ˢ t).filter fun (a, b) ↦ a * b ∈ u).card ^ 2 ≤ u.card * Eₘ[s, t] := by
   calc
-    _ = (∑ c in u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card) ^ 2 := by
+    _ = (∑ c ∈ u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card) ^ 2 := by
         rw [← sum_card_fiberwise_eq_card_filter]
-    _ ≤ u.card * ∑ c in u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
+    _ ≤ u.card * ∑ c ∈ u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
         simpa using sum_mul_sq_le_sq_mul_sq (R := ℕ) _ 1 _
-    _ ≤ u.card * ∑ c in s * t, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
+    _ ≤ u.card * ∑ c ∈ s * t, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
         refine mul_le_mul_left' (sum_le_sum_of_ne_zero ?_) _
         aesop (add simp [filter_eq_empty_iff]) (add unsafe mul_mem_mul)
     _ = u.card * Eₘ[s, t] := by rw [mulEnergy_eq_sum_sq']

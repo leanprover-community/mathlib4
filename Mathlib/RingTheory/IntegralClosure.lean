@@ -34,7 +34,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 
 
 open scoped Classical
-open BigOperators Polynomial Submodule
+open Polynomial Submodule
 
 section Ring
 
@@ -346,7 +346,7 @@ theorem RingHom.IsIntegralElem.of_mem_closure {x y z : S} (hx : f.IsIntegralElem
   rw [← Algebra.adjoin_union_coe_submodule, Set.singleton_union] at this
   exact
     IsIntegral.of_mem_of_fg (Algebra.adjoin R {x, y}) this z
-      (Algebra.mem_adjoin_iff.2 <| Subring.closure_mono (Set.subset_union_right _ _) hz)
+      (Algebra.mem_adjoin_iff.2 <| Subring.closure_mono Set.subset_union_right hz)
 #align ring_hom.is_integral_of_mem_closure RingHom.IsIntegralElem.of_mem_closure
 
 nonrec theorem IsIntegral.of_mem_closure {x y z : A} (hx : IsIntegral R x) (hy : IsIntegral R y)
@@ -567,12 +567,12 @@ theorem IsIntegral.multiset_sum {s : Multiset A} (h : ∀ x ∈ s, IsIntegral R 
 #align is_integral.multiset_sum IsIntegral.multiset_sum
 
 theorem IsIntegral.prod {α : Type*} {s : Finset α} (f : α → A) (h : ∀ x ∈ s, IsIntegral R (f x)) :
-    IsIntegral R (∏ x in s, f x) :=
+    IsIntegral R (∏ x ∈ s, f x) :=
   (integralClosure R A).prod_mem h
 #align is_integral.prod IsIntegral.prod
 
 theorem IsIntegral.sum {α : Type*} {s : Finset α} (f : α → A) (h : ∀ x ∈ s, IsIntegral R (f x)) :
-    IsIntegral R (∑ x in s, f x) :=
+    IsIntegral R (∑ x ∈ s, f x) :=
   (integralClosure R A).sum_mem h
 #align is_integral.sum IsIntegral.sum
 
@@ -602,7 +602,7 @@ variable (p : R[X]) (x : S)
 
 /-- The monic polynomial whose roots are `p.leadingCoeff * x` for roots `x` of `p`. -/
 noncomputable def normalizeScaleRoots (p : R[X]) : R[X] :=
-  ∑ i in p.support,
+  ∑ i ∈ p.support,
     monomial i (if i = p.natDegree then 1 else p.coeff i * p.leadingCoeff ^ (p.natDegree - 1 - i))
 #align normalize_scale_roots normalizeScaleRoots
 

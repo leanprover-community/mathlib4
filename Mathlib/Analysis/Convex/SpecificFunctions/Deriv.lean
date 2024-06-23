@@ -34,7 +34,7 @@ of these could also be switched to elementary proofs, like in
 
 open Real Set
 
-open scoped BigOperators NNReal
+open scoped NNReal
 
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
@@ -56,9 +56,9 @@ theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
 
 theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCommRing β] {f : α → β}
     [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x => f x ≤ 0).card) :
-    0 ≤ ∏ x in s, f x :=
+    0 ≤ ∏ x ∈ s, f x :=
   calc
-    0 ≤ ∏ x in s, (if f x ≤ 0 then (-1 : β) else 1) * f x :=
+    0 ≤ ∏ x ∈ s, (if f x ≤ 0 then (-1 : β) else 1) * f x :=
       Finset.prod_nonneg fun x _ => by
         split_ifs with hx
         · simp [hx]
@@ -70,7 +70,7 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCom
 #align finset.prod_nonneg_of_card_nonpos_even Finset.prod_nonneg_of_card_nonpos_even
 
 theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
-    0 ≤ ∏ k in Finset.range n, (m - k) := by
+    0 ≤ ∏ k ∈ Finset.range n, (m - k) := by
   rcases hn with ⟨n, rfl⟩
   induction' n with n ihn
   · simp
@@ -86,7 +86,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
 #align int_prod_range_nonneg int_prod_range_nonneg
 
 theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
-    0 < ∏ k in Finset.range n, (m - k) := by
+    0 < ∏ k ∈ Finset.range n, (m - k) := by
   refine (int_prod_range_nonneg m n hn).lt_of_ne fun h => hm ?_
   rw [eq_comm, Finset.prod_eq_zero_iff] at h
   obtain ⟨a, ha, h⟩ := h

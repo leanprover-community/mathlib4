@@ -43,7 +43,6 @@ is less than `ε`.
 
 
 open Finset
-open scoped BigOperators
 
 variable {α 𝕜 : Type*} [LinearOrderedField 𝕜]
 
@@ -301,8 +300,8 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     ((P.sparsePairs G ε).biUnion fun (U, V) ↦ G.interedges U V).card ≤
       ε * (A.card + P.parts.card) ^ 2 := by
   calc
-    _ ≤ ∑ UV in P.sparsePairs G ε, ((G.interedges UV.1 UV.2).card : 𝕜) := mod_cast card_biUnion_le
-    _ ≤ ∑ UV in P.sparsePairs G ε, ε * (UV.1.card * UV.2.card) := ?_
+    _ ≤ ∑ UV ∈ P.sparsePairs G ε, ((G.interedges UV.1 UV.2).card : 𝕜) := mod_cast card_biUnion_le
+    _ ≤ ∑ UV ∈ P.sparsePairs G ε, ε * (UV.1.card * UV.2.card) := ?_
     _ ≤ _ := sum_le_sum_of_subset_of_nonneg (filter_subset _ _) fun i _ _ ↦ by positivity
     _ = _ := (mul_sum _ _ _).symm
     _ ≤ _ := mul_le_mul_of_nonneg_left ?_ hε
@@ -375,7 +374,7 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
 
 lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP : P.IsEquipartition)
     (hG : P.IsUniform G ε) :
-    ∑ i in P.nonUniforms G ε, (i.1.card * i.2.card : 𝕜) < ε * (A.card + P.parts.card) ^ 2 := by
+    ∑ i ∈ P.nonUniforms G ε, (i.1.card * i.2.card : 𝕜) < ε * (A.card + P.parts.card) ^ 2 := by
   calc
     _ ≤ (P.nonUniforms G ε).card • (↑(A.card / P.parts.card + 1) : 𝕜) ^ 2 :=
       sum_le_card_nsmul _ _ _ ?_
@@ -396,7 +395,7 @@ lemma IsEquipartition.sum_nonUniforms_lt (hA : A.Nonempty) (hε : 0 < ε) (hP : 
     (hG : P.IsUniform G ε) :
     ((P.nonUniforms G ε).biUnion fun (U, V) ↦ U ×ˢ V).card < 4 * ε * A.card ^ 2 := by
   calc
-    _ ≤ ∑ i in P.nonUniforms G ε, (i.1.card * i.2.card : 𝕜) := by
+    _ ≤ ∑ i ∈ P.nonUniforms G ε, (i.1.card * i.2.card : 𝕜) := by
         norm_cast; simp_rw [← card_product]; exact card_biUnion_le
     _ < _ := hP.sum_nonUniforms_lt' hA hε hG
     _ ≤ ε * (A.card + A.card) ^ 2 := by gcongr; exact P.card_parts_le_card

@@ -418,6 +418,9 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
     exact Int.zpow_log_le_self hb hr
 #align real.floor_logb_nat_cast Real.floor_logb_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias floor_logb_nat_cast := floor_logb_natCast
+
 theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
     ⌈logb b r⌉ = Int.clog b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -431,6 +434,9 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)
 #align real.ceil_logb_nat_cast Real.ceil_logb_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias ceil_logb_nat_cast := ceil_logb_natCast
+
 @[simp]
 theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨ x = 1 ∨ x = -1 := by
   simp_rw [logb, div_eq_zero_iff, log_eq_zero]
@@ -438,10 +444,9 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 #align real.logb_eq_zero Real.logb_eq_zero
 
 -- TODO add other limits and continuous API lemmas analogous to those in Log.lean
-open BigOperators
 
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
-    logb b (∏ i in s, f i) = ∑ i in s, logb b (f i) := by
+    logb b (∏ i ∈ s, f i) = ∑ i ∈ s, logb b (f i) := by
   classical
     induction' s using Finset.induction_on with a s ha ih
     · simp

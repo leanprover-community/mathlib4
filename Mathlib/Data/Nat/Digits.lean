@@ -566,11 +566,11 @@ lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p):
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
-open BigOperators Finset
+open Finset
 
 theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
     (L : List ℕ) {h_nonempty} (h_ne_zero : L.getLast h_nonempty ≠ 0) (h_lt : ∀ l ∈ L, l < p) :
-    (p - 1) * ∑ i in range L.length, (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
+    (p - 1) * ∑ i ∈ range L.length, (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · induction' L with hd tl ih
     · simp [ofDigits]
@@ -589,7 +589,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
-        rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
+        rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
             ← this, sum_Ico_consecutive _  h₁ <| (le_add_right tl.length 1),
             ← sum_Ico_add _ 0 tl.length 1,
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
@@ -604,13 +604,13 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
     · simp [ofDigits]
 
 theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
-    (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
+    (p - 1) * ∑ i ∈ range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
     · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
           (fun l a ↦ digits_lt_base h a)
-      · refine' (digits_len p n h hn).symm
+      · refine (digits_len p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
   · simp
   · simp [lt_one_iff.mp h]
@@ -795,7 +795,7 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
       simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
       exact ih trivial
-@[deprecated] alias to_digits_core_lens_eq_aux:= toDigitsCore_lens_eq_aux -- 2024-02-19
+@[deprecated (since := "2024-02-19")] alias to_digits_core_lens_eq_aux:= toDigitsCore_lens_eq_aux
 
 lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
@@ -812,7 +812,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
       have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
       apply toDigitsCore_lens_eq_aux
       exact lens_eq
-@[deprecated] alias to_digits_core_lens_eq:= toDigitsCore_lens_eq -- 2024-02-19
+@[deprecated (since := "2024-02-19")] alias to_digits_core_lens_eq:= toDigitsCore_lens_eq
 
 lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
@@ -843,7 +843,7 @@ lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
         have _ : b ^ 1 = b := by simp only [Nat.pow_succ, pow_zero, Nat.one_mul]
         have _ : n < b := ‹b ^ 1 = b› ▸ hlt
         simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
-@[deprecated] alias to_digits_core_length := toDigitsCore_length -- 2024-02-19
+@[deprecated (since := "2024-02-19")] alias to_digits_core_length := toDigitsCore_length
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string

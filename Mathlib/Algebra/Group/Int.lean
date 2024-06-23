@@ -3,7 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Nat
+import Mathlib.Data.Int.Sqrt
 import Mathlib.Tactic.Common
 
 #align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
@@ -19,6 +21,7 @@ See note [foundational algebra order theory].
 
 assert_not_exists Ring
 assert_not_exists DenselyOrdered
+assert_not_exists Set.range
 
 open Nat
 
@@ -86,7 +89,7 @@ lemma toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * 
 
 end Multiplicative
 
-/-! ### Units -/
+/-! #### Units -/
 
 variable {u v : ℤ}
 
@@ -177,6 +180,92 @@ lemma eq_one_or_neg_one_of_mul_eq_neg_one (h : u * v = -1) : u = 1 ∨ u = -1 :=
   Or.elim (eq_one_or_neg_one_of_mul_eq_neg_one' h) (fun H => Or.inl H.1) fun H => Or.inr H.1
 #align int.eq_one_or_neg_one_of_mul_eq_neg_one Int.eq_one_or_neg_one_of_mul_eq_neg_one
 
+/-! #### Parity -/
+
+variable {m n : ℤ}
+
+@[simp] lemma emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+  cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
+#align int.mod_two_ne_one Int.emod_two_ne_one
+
+@[simp] lemma one_emod_two : (1 : Int) % 2 = 1 := rfl
+
+-- `EuclideanDomain.mod_eq_zero` uses (2 ∣ n) as normal form
+@[local simp] lemma emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+  cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
+#align int.mod_two_ne_zero Int.emod_two_ne_zero
+
+lemma even_iff : Even n ↔ n % 2 = 0 where
+  mp := fun ⟨m, hm⟩ ↦ by simp [← Int.two_mul, hm]
+  mpr h := ⟨n / 2, (emod_add_ediv n 2).symm.trans (by simp [← Int.two_mul, h])⟩
+#align int.even_iff Int.even_iff
+
+lemma not_even_iff : ¬Even n ↔ n % 2 = 1 := by rw [even_iff, emod_two_ne_zero]
+#align int.not_even_iff Int.not_even_iff
+
+@[simp] lemma two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
+  (even_iff_exists_two_nsmul _).symm.not.trans not_even_iff
+#align int.two_dvd_ne_zero Int.two_dvd_ne_zero
+
+instance : DecidablePred (Even : ℤ → Prop) := fun _ ↦ decidable_of_iff _ even_iff.symm
+
+/-- `IsSquare` can be decided on `ℤ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℤ → Prop) :=
+  fun m ↦ decidable_of_iff' (sqrt m * sqrt m = m) <| by
+    simp_rw [← exists_mul_self m, IsSquare, eq_comm]
+
+@[simp] lemma not_even_one : ¬Even (1 : ℤ) := by simp [even_iff]
+#align int.not_even_one Int.not_even_one
+
+@[parity_simps] lemma even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
+  cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
+  cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
+  simp [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
+#align int.even_add Int.even_add
+
+lemma two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by simp [add_emod]
+#align int.two_not_dvd_two_mul_add_one Int.two_not_dvd_two_mul_add_one
+
+@[parity_simps]
+lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by simp [sub_eq_add_neg, parity_simps]
+#align int.even_sub Int.even_sub
+
+@[parity_simps] lemma even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
+#align int.even_add_one Int.even_add_one
+
+@[parity_simps] lemma even_sub_one : Even (n - 1) ↔ ¬Even n := by simp [even_sub]
+
+@[parity_simps] lemma even_mul : Even (m * n) ↔ Even m ∨ Even n := by
+  cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
+  cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
+  simp [even_iff, h₁, h₂, Int.mul_emod]
+#align int.even_mul Int.even_mul
+
+@[parity_simps] lemma even_pow {n : ℕ} : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
+  induction' n with n ih <;> simp [*, even_mul, pow_succ]; tauto
+#align int.even_pow Int.even_pow
+
+lemma even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and_iff_left h
+#align int.even_pow' Int.even_pow'
+
+@[simp, norm_cast] lemma even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
+  rw_mod_cast [even_iff, Nat.even_iff]
+#align int.even_coe_nat Int.even_coe_nat
+
+lemma two_mul_ediv_two_of_even : Even n → 2 * (n / 2) = n :=
+  fun h ↦ Int.mul_ediv_cancel' ((even_iff_exists_two_nsmul _).mp h)
+#align int.two_mul_div_two_of_even Int.two_mul_ediv_two_of_even
+
+lemma ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
+  fun h ↦ Int.ediv_mul_cancel ((even_iff_exists_two_nsmul _).mp h)
+#align int.div_two_mul_two_of_even Int.ediv_two_mul_two_of_even
+
+-- Here are examples of how `parity_simps` can be used with `Int`.
+example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
+  simp (config := {decide := true}) [*, (by decide : ¬2 = 0), parity_simps]
+
+example : ¬Even (25394535 : ℤ) := by decide
+
 end Int
 
 -- TODO: Do we really need this lemma? This is just `smul_eq_mul`
@@ -185,6 +274,3 @@ lemma zsmul_int_int (a b : ℤ) : a • b = a * b := rfl
 
 lemma zsmul_int_one (n : ℤ) : n • (1 : ℤ) = n := mul_one _
 #align zsmul_int_one zsmul_int_one
-
-assert_not_exists Set.range
-assert_not_exists Ring

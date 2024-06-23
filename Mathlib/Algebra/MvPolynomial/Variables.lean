@@ -45,8 +45,6 @@ noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v}
@@ -146,7 +144,7 @@ theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars 
 are a subset of the union of the sets of variables of each polynomial.
 -/
 theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPolynomial σ R) :
-    (∏ i in s, f i).vars ⊆ s.biUnion fun i => (f i).vars := by
+    (∏ i ∈ s, f i).vars ⊆ s.biUnion fun i => (f i).vars := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -180,7 +178,7 @@ section Sum
 variable {ι : Type*} (t : Finset ι) (φ : ι → MvPolynomial σ R)
 
 theorem vars_sum_subset [DecidableEq σ] :
-    (∑ i in t, φ i).vars ⊆ Finset.biUnion t fun i => (φ i).vars := by
+    (∑ i ∈ t, φ i).vars ⊆ Finset.biUnion t fun i => (φ i).vars := by
   classical
   induction t using Finset.induction_on with
   | empty => simp
@@ -192,7 +190,7 @@ theorem vars_sum_subset [DecidableEq σ] :
 #align mv_polynomial.vars_sum_subset MvPolynomial.vars_sum_subset
 
 theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
-    (∑ i in t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
+    (∑ i ∈ t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
   classical
   induction t using Finset.induction_on with
   | empty => simp
