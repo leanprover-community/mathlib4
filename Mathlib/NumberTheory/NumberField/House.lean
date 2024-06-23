@@ -8,7 +8,7 @@ variable {K : Type*} [Field K] [NumberField K]
 local notation "h" => finrank ℚ K
 
 theorem matricesMulLeft {u v : Fin h → ℂ} {M : Matrix (Fin h) (Fin h) ℂ} [Invertible M]
-  (hM : u = M.mulVec v) : M⁻¹.mulVec u = v := by
+    (hM : u = M.mulVec v) : M⁻¹.mulVec u = v := by
   simp only [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
 
 theorem max0fEqSets {γ : Type _} [LinearOrder γ] {s t : Finset γ} (hs : s.Nonempty)
