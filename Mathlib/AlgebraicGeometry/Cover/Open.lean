@@ -428,7 +428,7 @@ def affineBasisCoverRing (X : Scheme.{u}) (i : X.affineBasisCover.J) : CommRingC
 #align algebraic_geometry.Scheme.affine_basis_cover_ring AlgebraicGeometry.Scheme.affineBasisCoverRing
 
 theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.J) :
-    X.affineBasisCover.obj i = Spec.obj (op <| X.affineBasisCoverRing i) :=
+    X.affineBasisCover.obj i = Spec (X.affineBasisCoverRing i) :=
   rfl
 #align algebraic_geometry.Scheme.affine_basis_cover_obj AlgebraicGeometry.Scheme.affineBasisCover_obj
 
