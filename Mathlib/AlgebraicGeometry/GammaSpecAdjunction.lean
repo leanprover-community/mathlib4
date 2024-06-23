@@ -409,51 +409,49 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
 --attribute [local semireducible] Spec.toLocallyRingedSpace
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
-def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
-  locallyRingedSpaceAdjunction.restrictFullyFaithful
-    Scheme.fullyFaithfulForgetToLocallyRingedSpace (Functor.FullyFaithful.id _)
-    (NatIso.ofComponents (fun X => Iso.refl _))
-    (NatIso.ofComponents (fun X => Iso.refl _))
+def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
+  homEquiv X Y := locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y
+  unit :=
+  { app := fun X ↦ locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace
+    naturality := fun _ _ f ↦ locallyRingedSpaceAdjunction.{u}.unit.naturality f }
+  counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
+  homEquiv_unit := rfl
+  homEquiv_counit := rfl
 #align algebraic_geometry.Γ_Spec.adjunction AlgebraicGeometry.ΓSpec.adjunction
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
-    ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
-  dsimp only [adjunction]
-  rw [Adjunction.restrictFullyFaithful_homEquiv_apply, Adjunction.homEquiv_unit]
-  simp
+    ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
 theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :
-    ΓSpec.adjunction.homEquiv X R = locallyRingedSpaceAdjunction.homEquiv X.1 R :=
-  Equiv.ext fun f => adjunction_homEquiv_apply f
+    ΓSpec.adjunction.homEquiv X R = locallyRingedSpaceAdjunction.homEquiv X.1 R := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv AlgebraicGeometry.ΓSpec.adjunction_homEquiv
 
 theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : X ⟶ Scheme.Spec.obj R) :
-    (ΓSpec.adjunction.homEquiv X R).symm f = (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f :=
-  by rw [adjunction_homEquiv]; rfl
+    (ΓSpec.adjunction.homEquiv X R).symm f =
+      (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem adjunction_counit_app' {R : CommRingCatᵒᵖ} :
-    ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by
-  rw [← Adjunction.homEquiv_symm_id, ← Adjunction.homEquiv_symm_id,
-    adjunction_homEquiv_symm_apply]
-  rfl
+    ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_counit_app AlgebraicGeometry.ΓSpec.adjunction_counit_app'
 
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
-    ΓSpec.adjunction.counit.app R = (Scheme.SpecΓIdentity.inv.app (unop R)).op := by
-  rw [adjunction_counit_app']
-  rfl
+    ΓSpec.adjunction.counit.app R = (Scheme.SpecΓIdentity.inv.app (unop R)).op := rfl
 
 -- This is not a simp lemma to respect the abstraction
 theorem adjunction_unit_app {X : Scheme} :
-    ΓSpec.adjunction.unit.app X = locallyRingedSpaceAdjunction.unit.app X.1 := by
-  rw [← Adjunction.homEquiv_id, ← Adjunction.homEquiv_id, adjunction_homEquiv_apply]; rfl
+    ΓSpec.adjunction.unit.app X = locallyRingedSpaceAdjunction.unit.app X.1 := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app AlgebraicGeometry.ΓSpec.adjunction_unit_app
+
+@[reassoc (attr := simp)]
+theorem adjunction_unit_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    f ≫ ΓSpec.adjunction.unit.app Y = ΓSpec.adjunction.unit.app X ≫ SpecMap (f.app ⊤) :=
+  ΓSpec.adjunction.unit.naturality f
 
 instance isIso_locallyRingedSpaceAdjunction_counit :
     IsIso.{u + 1, u + 1} locallyRingedSpaceAdjunction.counit :=
@@ -529,6 +527,14 @@ theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme.{u}} (U : Opens X) :
   rw [SpecΓIdentity_naturality_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
     op_id, CategoryTheory.Functor.map_id, Category.comp_id]
 
+theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : Opens X) :
+    (Scheme.ΓSpecIso Γ(X, U)).hom =
+      Scheme.Γ.map (SpecMap (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫
+        (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).app ⊤ ≫
+          X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
+  dsimp [-Scheme.SpecΓIdentity_hom_app]
+  rw [ΓSpec.adjunction_unit_app_app_top] -- why can't simp find this
+  simp
 /-! Immediate consequences of the adjunction. -/
 
 
@@ -566,6 +572,36 @@ instance Spec.full : Scheme.Spec.Full  :=
 instance Spec.faithful : Scheme.Spec.Faithful :=
   Spec.fullyFaithful.faithful
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
+
+section
+
+variable {R S : CommRingCat.{u}} {φ ψ : R ⟶ S} (f : Spec S ⟶ Spec R)
+
+lemma SpecMap_inj : SpecMap φ = SpecMap ψ ↔ φ = ψ := by
+  rw [iff_comm, ← Quiver.Hom.op_inj.eq_iff, ← Scheme.Spec.map_injective.eq_iff]
+  rfl
+
+lemma SpecMap_injective {R S : CommRingCat} : Function.Injective (SpecMap : (R ⟶ S) → _) :=
+  fun _ _ ↦ SpecMap_inj.mp
+
+/-- The preimage under Spec. -/
+def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
+
+@[simp] lemma SpecMap_preimage : SpecMap (Spec.preimage f) = f := Scheme.Spec.map_preimage f
+
+variable (φ) in
+@[simp] lemma preimage_SpecMap : Spec.preimage (SpecMap φ) = φ :=
+  SpecMap_injective (SpecMap_preimage (SpecMap φ))
+
+/-- Spec is fully faithful -/
+@[simps]
+def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
+  toFun := Spec.preimage
+  invFun := SpecMap
+  left_inv := SpecMap_preimage
+  right_inv := preimage_SpecMap
+
+end
 
 instance : Spec.toLocallyRingedSpace.IsRightAdjoint  :=
   (ΓSpec.locallyRingedSpaceAdjunction).isRightAdjoint

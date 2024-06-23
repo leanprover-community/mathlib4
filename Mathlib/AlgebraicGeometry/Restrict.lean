@@ -52,6 +52,16 @@ lemma Scheme.eq_restrict_presheaf_map_eqToHom {X : Scheme.{u}} (U : Opens X) {V 
   X.presheaf.map (eqToHom e).op =
     (X ∣_ᵤ U).presheaf.map (eqToHom <| U.openEmbedding.functor_obj_injective e).op := rfl
 
+@[simp]
+lemma opensRange_ιOpens {X : Scheme.{u}} (U : Opens X) : (Scheme.ιOpens U).opensRange = U :=
+  Opens.ext Subtype.range_val
+
+/-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
+@[simps!]
+def opensRestrict {X : Scheme.{u}} (U : Opens X) :
+    Opens (X ∣_ᵤ U) ≃ { V : Opens X // V ≤ U } :=
+  (IsOpenImmersion.opensEquiv (Scheme.ιOpens U)).trans (Equiv.subtypeEquivProp (by simp))
+
 instance ΓRestrictAlgebra {X : Scheme.{u}} {Y : TopCat.{u}} {f : Y ⟶ X} (hf : OpenEmbedding f) :
     Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op <| X.restrict hf)) :=
   (Scheme.Γ.map (X.ofRestrict hf).op).toAlgebra
@@ -350,6 +360,17 @@ theorem morphismRestrict_c_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V
   · change Y.presheaf.map _ ≫ _ = Y.presheaf.map _ ≫ _
     congr 1
 #align algebraic_geometry.morphism_restrict_c_app AlgebraicGeometry.morphismRestrict_c_app
+
+@[simp]
+theorem morphismRestrict_app' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
+    (f ∣_ U).app V = f.appLE _ _ (image_morphismRestrict_preimage f U V).le :=
+  morphismRestrict_c_app f U V
+
+@[simp]
+theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V W e) :
+    (f ∣_ U).appLE V W e = f.appLE (Scheme.ιOpens U ''ᵁ V) (Scheme.ιOpens (f ⁻¹ᵁ U) ''ᵁ W)
+      ((Set.image_subset _ e).trans (image_morphismRestrict_preimage f U V).le) := by
+  rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.restrict_presheaf_map, Scheme.Hom.appLE_map]
 
 theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     Scheme.Γ.map (f ∣_ U).op =
