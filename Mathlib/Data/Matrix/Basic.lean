@@ -252,9 +252,6 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
--- Porting note (#10756): added the following section with simp lemmas because `simp` fails
--- to apply the corresponding lemmas in the namespace `Pi`.
--- (e.g. `Pi.zero_apply` used on `OfNat.ofNat 0 i j`)
 section
 
 @[simp]
@@ -515,17 +512,18 @@ theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n �
   split_ifs <;> simp [h]
 #align matrix.diagonal_map Matrix.diagonal_map
 
-theorem map_natCast [DecidableEq n] [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_natCast [DecidableEq n] [AddMonoidWithOne α] [AddMonoidWithOne β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
-theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
-    {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo]:
-    (no_index (OfNat.ofNat d) : Matrix n n α).map f = diagonal (fun _ => f d) :=
+-- See note [no_index around OfNat.ofNat]
+protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
+    {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
+    (no_index (OfNat.ofNat d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-theorem map_intCast [DecidableEq n] [AddGroupWithOne α] [AddGroupWithOne β]
+protected theorem map_intCast [DecidableEq n] [AddGroupWithOne α] [AddGroupWithOne β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
@@ -2095,15 +2093,17 @@ theorem transpose_eq_natCast [DecidableEq n] [AddMonoidWithOne α] {M : Matrix n
     Mᵀ = d ↔ M = d :=
   transpose_eq_diagonal
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem transpose_ofNat [DecidableEq n] [AddMonoidWithOne α] (d : ℕ) [d.AtLeastTwo] :
     (no_index (OfNat.ofNat d) : Matrix n n α)ᵀ = OfNat.ofNat d :=
   transpose_natCast _
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem transpose_eq_ofNat [DecidableEq n] [AddMonoidWithOne α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
-    Mᵀ = d ↔ M = d :=
+    Mᵀ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
   transpose_eq_diagonal
 
 @[simp]
@@ -2305,7 +2305,7 @@ theorem conjTranspose_eq_one [DecidableEq n] [Semiring α] [StarRing α] {M : Ma
 @[simp]
 theorem conjTranspose_natCast [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) :
     (d : Matrix n n α)ᴴ = d := by
-  simp [conjTranspose, map_natCast, diagonal_natCast]
+  simp [conjTranspose, Matrix.map_natCast, diagonal_natCast]
 
 @[simp]
 theorem conjTranspose_eq_natCast [DecidableEq n] [Semiring α] [StarRing α]
@@ -2314,22 +2314,23 @@ theorem conjTranspose_eq_natCast [DecidableEq n] [Semiring α] [StarRing α]
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
     by rw [conjTranspose_natCast]
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_ofNat [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) [d.AtLeastTwo] :
     (no_index (OfNat.ofNat d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
   conjTranspose_natCast _
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
-    Mᴴ = d ↔ M = d :=
-  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
-    by rw [conjTranspose_natCast]
+    Mᴴ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
+  conjTranspose_eq_natCast
 
 @[simp]
 theorem conjTranspose_intCast [DecidableEq n] [Ring α] [StarRing α] (d : ℤ) :
     (d : Matrix n n α)ᴴ = d := by
-  simp [conjTranspose, map_intCast, diagonal_intCast]
+  simp [conjTranspose, Matrix.map_intCast, diagonal_intCast]
 
 @[simp]
 theorem conjTranspose_eq_intCast [DecidableEq n] [Ring α] [StarRing α]
@@ -2440,7 +2441,7 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
 #adaptation_note /-- nightly-2024-04-01
 The simpNF linter now times out on this lemma.
 See https://github.com/leanprover-community/mathlib4/issues/12231 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp

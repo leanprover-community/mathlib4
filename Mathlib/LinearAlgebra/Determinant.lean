@@ -390,7 +390,7 @@ theorem det_trans (f g : M ≃ₗ[R] M) :
   map_mul _ g f
 #align linear_equiv.det_trans LinearEquiv.det_trans
 
-@[simp, nolint simpNF]
+@[simp]
 theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det f⁻¹ :=
   map_inv _ f
 #align linear_equiv.det_symm LinearEquiv.det_symm

@@ -7,8 +7,10 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+
 #align_import ring_theory.etale from "leanprover-community/mathlib"@"73f96237417835f148a1f7bc1ff55f67119b7166"
 
 /-!
@@ -25,11 +27,6 @@ and that it is stable under `R`-algebra homomorphisms and compositions.
 
 We show that smooth is stable under algebra isomorphisms, composition and
 localization at an element.
-
-
-# TODO
-
-- Show that smooth is stable under base change.
 
 -/
 
@@ -384,12 +381,14 @@ theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Smooth R A wh
 section Comp
 
 variable (R A B)
-variable [Algebra A B] [IsScalarTower R A B]
 
 /-- Smooth is stable under composition. -/
-theorem comp [Smooth R A] [Smooth A B] : Smooth R B where
+theorem comp [Algebra A B] [IsScalarTower R A B] [Smooth R A] [Smooth A B] : Smooth R B where
   formallySmooth := FormallySmooth.comp R A B
   finitePresentation := FinitePresentation.trans R A B
+
+/-- Smooth is stable under base change. -/
+instance baseChange [Smooth R A] : Smooth B (B ⊗[R] A) where
 
 end Comp
 

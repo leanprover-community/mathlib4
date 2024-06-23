@@ -97,7 +97,7 @@ theorem periodic_expMapCircle : Periodic expMapCircle (2 * π) := fun z =>
 #adaptation_note /-- nightly-2024-04-14
 The simpNF linter now times out on this lemma.
 See https://github.com/leanprover-community/mathlib4/issues/12229 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem expMapCircle_two_pi : expMapCircle (2 * π) = 1 :=
   periodic_expMapCircle.eq.trans expMapCircle_zero
 #align exp_map_circle_two_pi expMapCircle_two_pi
