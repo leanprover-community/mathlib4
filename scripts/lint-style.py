@@ -37,10 +37,8 @@ import sys
 import re
 import shutil
 
-ERR_COP = 0 # copyright header
 ERR_MOD = 2 # module docstring
 ERR_LIN = 3 # line length
-ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_TAC2 = 10 # imported Lake in Mathlib
 ERR_IBY = 11 # isolated by
@@ -52,7 +50,6 @@ ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
-ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
 ERR_ADN = 25 # the string "Adaptation note"
 
@@ -66,16 +63,12 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
-        if errno == "ERR_COP":
-            exceptions += [(ERR_COP, path, None)]
-        elif errno == "ERR_MOD":
+        if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
         elif errno == "ERR_LIN":
             exceptions += [(ERR_LIN, path, None)]
         elif errno == "ERR_OPT":
             exceptions += [(ERR_OPT, path, None)]
-        elif errno == "ERR_AUT":
-            exceptions += [(ERR_AUT, path, None)]
         elif errno == "ERR_ADN":
             exceptions += [(ERR_ADN, path, None)]
         elif errno == "ERR_TAC":
@@ -83,7 +76,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         elif errno == "ERR_TAC2":
             exceptions += [(ERR_TAC2, path, None)]
         elif errno == "ERR_NUM_LIN":
-            exceptions += [(ERR_NUM_LIN, path, extra[1])]
+            pass # maintained by the Lean style linter now
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
             sys.exit(1)
@@ -251,34 +244,14 @@ def regular_check(lines, path):
     errors = []
     copy_started = False
     copy_done = False
-    copy_start_line_nr = 1
-    copy_lines = ""
     for line_nr, line in lines:
         if not copy_started and line == "\n":
-            errors += [(ERR_COP, copy_start_line_nr, path)]
             continue
         if not copy_started and line == "/-\n":
             copy_started = True
-            copy_start_line_nr = line_nr
             continue
-        if not copy_started:
-            errors += [(ERR_COP, line_nr, path)]
         if copy_started and not copy_done:
-            copy_lines += line
-            if "Author" in line:
-                # Validating names is not a reasonable thing to do,
-                # so we just look for the two common variations:
-                # using ' and ' between names, and a '.' at the end of line.
-                if ((not line.startswith("Authors: ")) or
-                    ("  " in line) or
-                    (" and " in line) or
-                    (line[-2] == '.')):
-                    errors += [(ERR_AUT, line_nr, path)]
             if line == "-/\n":
-                if ((not "Copyright" in copy_lines) or
-                    (not "Apache" in copy_lines) or
-                    (not "Authors: " in copy_lines)):
-                    errors += [(ERR_COP, copy_start_line_nr, path)]
                 copy_done = True
             continue
         if copy_done and line == "\n":
@@ -386,14 +359,10 @@ def format_errors(errors):
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
-        if errno == ERR_COP:
-            output_message(path, line_nr, "ERR_COP", "Malformed or missing copyright header")
         if errno == ERR_MOD:
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
         if errno == ERR_LIN:
             output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_AUT:
-            output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
             output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
         if errno == ERR_TAC2:
@@ -440,21 +409,6 @@ def lint(path, fix=False):
             format_errors(errs)
 
         if not import_only_check(newlines, path):
-            # Check for too long files: either longer than 1500 lines, or not covered by an exception.
-            # Each exception contains a "watermark". If the file is longer than that, we also complain.
-            if len(lines) > 1500:
-                ex = [e for e in exceptions if e[1] == path.resolve()]
-                if ex:
-                    (_ERR_NUM, _path, watermark) = list(ex)[0]
-                    assert int(watermark) > 500 # protect against parse error
-                    is_too_long = len(lines) > int(watermark)
-                else:
-                    is_too_long = True
-                if is_too_long:
-                    new_exceptions = True
-                    # add up to 200 lines of slack, so simple PRs don't trigger this right away
-                    watermark = len(lines) // 100 * 100 + 200
-                    output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
             format_errors(errs)
             errs, newlines = banned_import_check(newlines, path)
