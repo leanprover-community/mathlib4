@@ -390,8 +390,8 @@ lemma ConvexOn.slope_mono (hfc : ConvexOn 𝕜 s f) (hx : x ∈ s) : MonotoneOn 
   (slope_fun_def_field f _).symm ▸ fun _ hy _ hz hz' ↦ hfc.secant_mono hx (mem_of_mem_diff hy)
     (mem_of_mem_diff hz) (not_mem_of_mem_diff hy :) (not_mem_of_mem_diff hz :) hz'
 
-/-- If `f : 𝕜 → 𝕜` is concave on `s`, then for any point `a ∈ s` the slope of the secant line of `f`
-through `a` is antitone on `s \ {a}`. -/
+/-- If `f : 𝕜 → 𝕜` is concave on `s`, then for any point `x ∈ s` the slope of the secant line of `f`
+through `x` is antitone on `s \ {x}`. -/
 lemma ConcaveOn.slope_anti (hfc : ConcaveOn 𝕜 s f) (hx : x ∈ s) :
     AntitoneOn (slope f x) (s \ {x}) := by
   rw [← neg_neg f, slope_neg_fun]
