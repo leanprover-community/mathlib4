@@ -50,7 +50,14 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: lint
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: "run style linters: Python ones and their Lean rewrite"
         run: |
           ./scripts/lint-style.sh
 
@@ -82,23 +89,6 @@ jobs:
 
       - name: check that workflows were consistent
         run: git diff --exit-code
-
-  summarize_declarations:
-    if: github.repository == 'leanprover-community/mathlib4'
-    name: summarize_declarations
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ## fetch the whole repository, useful to find a common fork
-          fetch-depth: 0
-      - name: print_lost_declarations
-        run: |
-          ## back and forth to settle a "detached head" (maybe?)
-          git checkout -q master
-          git checkout -q -
-          printf '###  Summary\n\n' > "${GITHUB_STEP_SUMMARY}"
-          ./scripts/no_lost_declarations.sh >> "${GITHUB_STEP_SUMMARY}"
 
   build:
     if: github.repository == 'leanprover-community/mathlib4'

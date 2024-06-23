@@ -22,7 +22,6 @@ import Mathlib.Topology.Sheaves.Stalks
 
 -/
 
--- Porting note: all aligns here start with `Top.`
 set_option linter.uppercaseLean3 false
 
 open scoped nonZeroDivisors

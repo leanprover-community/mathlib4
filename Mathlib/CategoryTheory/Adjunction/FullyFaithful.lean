@@ -171,6 +171,10 @@ lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
 
+lemma mem_essImage_of_counit_isIso (A : D)
+    [IsIso (h.counit.app A)] : A ∈ L.essImage :=
+  ⟨R.obj A, ⟨asIso (h.counit.app A)⟩⟩
+
 lemma isIso_counit_app_of_iso [L.Faithful] [L.Full] {X : D} {Y : C} (e : X ≅ L.obj Y) :
     IsIso (h.counit.app X) :=
   (isIso_counit_app_iff_mem_essImage h).mpr ⟨Y, ⟨e.symm⟩⟩
@@ -189,6 +193,15 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
   · rintro ⟨_, ⟨i⟩⟩
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
+
+/-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/
+theorem mem_essImage_of_unit_isIso (A : C)
+    [IsIso (h.unit.app A)] : A ∈ R.essImage :=
+  ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
+#align category_theory.mem_ess_image_of_unit_is_iso CategoryTheory.Adjunction.mem_essImage_of_unit_isIso
+
+@[deprecated (since := "2024-06-19")] alias _root_.CategoryTheory.mem_essImage_of_unit_isIso :=
+  mem_essImage_of_unit_isIso
 
 lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.obj X) :
     IsIso (h.unit.app Y) :=
