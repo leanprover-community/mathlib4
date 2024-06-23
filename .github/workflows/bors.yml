@@ -226,8 +226,8 @@ jobs:
           if [ "$(printf '%s' "${ddiff}" | wc -l)" -gt 12 ]
           then
             ddiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "Report" "${ddiff}")"
-          else
-            ddiff="$(printf '%s\n\n%s\n' "${title}" "${ddiff}")"
+          #else
+          #  ddiff="$(printf '%s\n\n%s\n' "${title}" "${ddiff}")"
           fi
 
           echo "Message: ${ddiff}"
