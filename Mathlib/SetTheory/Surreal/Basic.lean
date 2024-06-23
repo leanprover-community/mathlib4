@@ -590,8 +590,8 @@ inductive Args : Type (u+1)
 
 /-- The multiset associated to a list of arguments. -/
 def Args.toMultiset : Args → Multiset PGame
-| (Args.P1 x y) => {x, y}
-| (Args.P24 x₁ x₂ y) => {x₁, x₂, y}
+  | (Args.P1 x y) => {x, y}
+  | (Args.P24 x₁ x₂ y) => {x₁, x₂, y}
 
 
 /-- A list of arguments is numeric if all the arguments are. -/
@@ -611,8 +611,8 @@ theorem argsRel_wf : WellFounded ArgsRel := InvImage.wf _ wf_isOption.cutExpand.
 
 /-- The statement that we will be shown by induction using the well-founded relation `ArgsRel`. -/
 def P124 : Args → Prop
-| (Args.P1 x y) => Numeric (x * y)
-| (Args.P24 x₁ x₂ y) => P24 x₁ x₂ y
+  | (Args.P1 x y) => Numeric (x * y)
+  | (Args.P24 x₁ x₂ y) => P24 x₁ x₂ y
 
 
 /-- The property that all arguments are numeric is leftward-closed under `ArgsRel`. -/
@@ -907,7 +907,7 @@ lemma ih3_of_ih (h24 : ih24 x₁ x₂ y) (h4 : ih4 x₁ x₂ y) (hl : mul_option
   ⟨(h4 $ ml j).2 $ ml i, h24.1, mul_option_lt_mul_iff_P3.1 $ @hl i j, fun l => (h24.2 l).1 _⟩
 
 lemma P3_of_le_left {y₁ y₂} (i) (h : ih3 x₁ (x₂.moveLeft i) x₂ y₁ y₂)
-  (hl : x₁ ≤ x₂.moveLeft i) : P3 x₁ x₂ y₁ y₂ := by
+    (hl : x₁ ≤ x₂.moveLeft i) : P3 x₁ x₂ y₁ y₂ := by
   obtain (hl|he) := lt_or_equiv_of_le hl
   · exact (h.2.2.2 hl).trans h.2.2.1
   · rw [P3, h.1 he, h.2.1 he]
@@ -1005,7 +1005,7 @@ theorem P3_of_lt_of_lt (hx : x₁ < x₂) (hy : y₁ < y₂) : P3 x₁ x₂ y₁
   induction t using (wf_isOption.prod_gameAdd wf_isOption).induction with
   | _ t ih =>
     let ⟨x₁, x₂⟩ := t
-    simp
+    simp only
     intro hx₁ hx₂ hx
     refine P3_of_lt ?_ ?_ hx <;> (
       intro i
