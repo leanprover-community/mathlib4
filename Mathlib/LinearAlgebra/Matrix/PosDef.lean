@@ -373,6 +373,12 @@ protected theorem natCast [DecidableEq n] [NoZeroDivisors R] (d : ℕ) (hd : d �
     rw [← nsmul_eq_smul_cast]
     refine nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
+@[simp]
+theorem _root_.Matrix.posDef_natCast_iff [DecidableEq n] [NoZeroDivisors R]
+    [Nonempty n] [Nontrivial R] {d : ℕ} :
+    PosDef (d : Matrix n n R) ↔ 0 < (d : R) :=
+  posDef_diagonal_iff.trans <| by simp
+
 protected theorem ofNat [DecidableEq n] [NoZeroDivisors R] (d : ℕ) [d.AtLeastTwo] :
     PosDef (no_index (OfNat.ofNat d) : Matrix n n R) :=
   .natCast d (NeZero.ne _)
