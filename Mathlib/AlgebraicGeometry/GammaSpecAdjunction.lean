@@ -514,11 +514,6 @@ theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ
 
 end ΓSpec
 
-@[reassoc (attr := simp)]
-theorem SpecΓIdentity_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    (Spec f).app ⊤ ≫ Scheme.SpecΓIdentity.hom.app _ =
-      Scheme.SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
-
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : Opens X) :
     (Scheme.ΓSpecIso Γ(X, U)).hom =
       Scheme.Γ.map (Spec (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫

@@ -118,7 +118,7 @@ theorem app_invApp (U) :
   PresheafedSpace.IsOpenImmersion.app_invApp _ _
 
 /-- A variant of `app_invApp` that gives an `eqToHom` instead of `homOfLE`. -/
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem app_invApp' (U) (hU : U ≤ f.opensRange) :
     f.app U ≫ f.invApp (f ⁻¹ᵁ U) =
       Y.presheaf.map (eqToHom (Opens.ext <| by simpa [Set.image_preimage_eq_inter_range])).op :=

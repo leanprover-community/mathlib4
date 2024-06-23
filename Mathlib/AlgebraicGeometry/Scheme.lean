@@ -40,12 +40,13 @@ namespace AlgebraicGeometry
 
 /-- Notation typeclass for `Spec`. -/
 class HasSpec (A : Type*) (B : outParam Type*) where
-  spec : A → B
+  /-- The `Spec` operator for `HasSpec` class. -/
+  Spec : A → B
 
-attribute[reducible] HasSpec.spec
+attribute[reducible] HasSpec.Spec
 
 /-- Notation for `Spec`. See `Scheme.Spec` instead. -/
-alias Spec := HasSpec.spec
+alias Spec := HasSpec.Spec
 
 /-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
@@ -104,8 +105,8 @@ this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
 abbrev app (U : Opens Y) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.1.c.app (op U)
 
-@[reassoc (attr := simp)]
-abbrev naturality (i : op U' ⟶ op U) :
+@[reassoc]
+lemma naturality (i : op U' ⟶ op U) :
     Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.1.base).map i.unop).op :=
   f.1.c.naturality i
 
@@ -333,10 +334,10 @@ protected def Spec : CommRingCatᵒᵖ ⥤ Scheme where
 #align algebraic_geometry.Scheme.Spec AlgebraicGeometry.Scheme.Spec
 
 instance : HasSpec CommRingCat.{u} Scheme.{u} where
-  spec R := Scheme.Spec.obj (op R)
+  Spec R := Scheme.Spec.obj (op R)
 
 instance {R S : CommRingCat} : HasSpec (R ⟶ S) (Spec S ⟶ Spec R) where
-  spec f := Scheme.Spec.map f.op
+  Spec f := Scheme.Spec.map f.op
 
 @[simp] lemma Spec_id (R : CommRingCat) : Spec (𝟙 R) = 𝟙 _ := Scheme.Spec.map_id _
 
