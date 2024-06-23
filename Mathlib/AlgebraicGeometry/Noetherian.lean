@@ -207,7 +207,7 @@ theorem isLocallyNoetherian_iff_affine_cover' :
 /-- A scheme is locally Noetherian if it has an open cover by
 locally Noetherian schemes. -/
 theorem isLocallyNoetherian_of_openCover (C : Scheme.OpenCover.{u, u} X)
-  (hC : ∀ (i : C.J), IsLocallyNoetherian (C.obj i)) :
+    (hC : ∀ (i : C.J), IsLocallyNoetherian (C.obj i)) :
     IsLocallyNoetherian X := by
   let C' := Scheme.OpenCover.affineRefinement C
   let m := Scheme.OpenCover.fromAffineRefinement C
