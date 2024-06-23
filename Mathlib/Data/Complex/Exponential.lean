@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Tactic.Bound.Attribute
 
 #align_import data.complex.exponential from "leanprover-community/mathlib"@"a8b2226cfb0a79f5986492053fc49b1a0c6aeffb"
 
@@ -1193,12 +1194,14 @@ private theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ ex
 theorem one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_one_le_exp_of_nonneg hx]
 #align real.one_le_exp Real.one_le_exp
 
+@[bound]
 theorem exp_pos (x : ℝ) : 0 < exp x :=
   (le_total 0 x).elim (lt_of_lt_of_le zero_lt_one ∘ one_le_exp) fun h => by
     rw [← neg_neg x, Real.exp_neg]
     exact inv_pos.2 (lt_of_lt_of_le zero_lt_one (one_le_exp (neg_nonneg.2 h)))
 #align real.exp_pos Real.exp_pos
 
+@[bound]
 lemma exp_nonneg (x : ℝ) : 0 ≤ exp x := x.exp_pos.le
 
 @[simp]
@@ -1224,7 +1227,7 @@ theorem exp_monotone : Monotone exp :=
   exp_strictMono.monotone
 #align real.exp_monotone Real.exp_monotone
 
-@[gcongr]
+@[gcongr, bound]
 theorem exp_le_exp_of_le {x y : ℝ} (h : x ≤ y) : exp x ≤ exp y := exp_monotone h
 
 @[simp]
@@ -1254,6 +1257,9 @@ theorem exp_eq_one_iff : exp x = 1 ↔ x = 0 :=
 @[simp]
 theorem one_lt_exp_iff {x : ℝ} : 1 < exp x ↔ 0 < x := by rw [← exp_zero, exp_lt_exp]
 #align real.one_lt_exp_iff Real.one_lt_exp_iff
+
+@[bound]
+lemma one_lt_exp_of_pos {x : ℝ} : 0 < x → 1 < exp x := one_lt_exp_iff.mpr
 
 @[simp]
 theorem exp_lt_one_iff {x : ℝ} : exp x < 1 ↔ x < 0 := by rw [← exp_zero, exp_lt_exp]

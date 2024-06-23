@@ -117,6 +117,7 @@ theorem rpow_def_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℝ) :
   split_ifs with h <;> simp [rpow_def, *]; exact rpow_def_of_neg (lt_of_le_of_ne hx h) _
 #align real.rpow_def_of_nonpos Real.rpow_def_of_nonpos
 
+@[bound]
 theorem rpow_pos_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : 0 < x ^ y := by
   rw [rpow_def_of_pos hx]; apply exp_pos
 #align real.rpow_pos_of_pos Real.rpow_pos_of_pos
@@ -166,6 +167,7 @@ theorem zero_rpow_nonneg (x : ℝ) : 0 ≤ (0 : ℝ) ^ x := by
   by_cases h : x = 0 <;> simp [h, zero_le_one]
 #align real.zero_rpow_nonneg Real.zero_rpow_nonneg
 
+@[bound]
 theorem rpow_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : 0 ≤ x ^ y := by
   rw [rpow_def_of_nonneg hx]; split_ifs <;>
     simp only [zero_le_one, le_refl, le_of_lt (exp_pos _)]
@@ -176,6 +178,7 @@ theorem abs_rpow_of_nonneg {x y : ℝ} (hx_nonneg : 0 ≤ x) : |x ^ y| = |x| ^ y
   rw [abs_eq_self.mpr hx_nonneg, abs_eq_self.mpr h_rpow_nonneg]
 #align real.abs_rpow_of_nonneg Real.abs_rpow_of_nonneg
 
+@[bound]
 theorem abs_rpow_le_abs_rpow (x y : ℝ) : |x ^ y| ≤ |x| ^ y := by
   rcases le_or_lt 0 x with hx | hx
   · rw [abs_rpow_of_nonneg hx]
@@ -535,7 +538,7 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 -/
 
 
-@[gcongr]
+@[gcongr, bound]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
   rw [le_iff_eq_or_lt] at hx; cases' hx with hx hx
   · rw [← hx, zero_rpow (ne_of_gt hz)]
@@ -548,7 +551,7 @@ theorem strictMonoOn_rpow_Ici_of_exponent_pos {r : ℝ} (hr : 0 < r) :
     StrictMonoOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
   fun _ ha _ _ hab => rpow_lt_rpow ha hab hr
 
-@[gcongr]
+@[gcongr, bound]
 theorem rpow_le_rpow {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z := by
   rcases eq_or_lt_of_le h₁ with (rfl | h₁'); · rfl
   rcases eq_or_lt_of_le h₂ with (rfl | h₂'); · simp
@@ -849,6 +852,15 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
   rcases lt_or_eq_of_le hb₁ with hb₁ | rfl
   case inl => exact (strictAnti_rpow_of_base_lt_one hb₀ hb₁).antitone
   case inr => intro _ _ _; simp
+
+/-- Guessing rule for the `bound` tactic: when trying to prove `x ^ y ≤ x ^ z`, we can either assume
+`1 ≤ x` or `0 < x ≤ 1`. -/
+@[bound]
+lemma rpow_le_rpow_of_exponent_le_or_ge {x y z : ℝ}
+    (h : 1 ≤ x ∧ y ≤ z ∨ 0 < x ∧ x ≤ 1 ∧ z ≤ y) : x ^ y ≤ x ^ z := by
+  rcases h with ⟨x1, yz⟩ | ⟨x0, x1, zy⟩
+  · exact Real.rpow_le_rpow_of_exponent_le x1 yz
+  · exact Real.rpow_le_rpow_of_exponent_ge x0 x1 zy
 
 end Real
 

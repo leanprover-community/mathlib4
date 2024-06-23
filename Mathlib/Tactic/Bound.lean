@@ -5,12 +5,16 @@ Authors: Geoffrey Irving
 -/
 
 import Aesop
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.NormNum.Core
 
 /-!
 ## The `bound` tactic
@@ -88,8 +92,7 @@ Currently the two types of guessing rules are
 We close numerical goals with `norm_num` and `linarith`.
 -/
 
-open Parser
-open Lean Elab Meta Term Mathlib.Tactic Mathlib.Meta Syntax
+open Lean Elab Meta Term Mathlib.Tactic Syntax
 open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 
 namespace Bound
@@ -111,12 +114,6 @@ Once Aesop can do general terms directly, we can remove these:
   https://github.com/leanprover-community/aesop/issues/107
 -/
 
-lemma NNReal.coe_pos_of_lt {r : NNReal} : 0 < r → 0 < (r : ℝ) :=
-  NNReal.coe_pos.mpr
-
-lemma NNReal.coe_lt_coe_of_lt {r₁ r₂ : NNReal} : r₁ < r₂ → (r₁ : ℝ) < r₂ :=
-  NNReal.coe_lt_coe.mpr
-
 lemma mul_lt_mul_left_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] [Preorder α]
     [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) : b < c → a * b < a * c :=
   (mul_lt_mul_left a0).mpr
@@ -132,12 +129,6 @@ lemma one_lt_div_of_pos_of_lt {α : Type} [LinearOrderedSemifield α] {a b : α}
 lemma div_lt_one_of_pos_of_lt {α : Type} [LinearOrderedSemifield α] {a b : α} (b0 : 0 < b) :
     a < b → a / b < 1 :=
   (div_lt_one b0).mpr
-
-lemma ENNReal.ofReal_pos_of_pos {p : ℝ} : 0 < p → 0 < ENNReal.ofReal p :=
-  ENNReal.ofReal_pos.mpr
-
-lemma Real.one_lt_exp_of_pos {x : ℝ} : 0 < x → 1 < Real.exp x :=
-  Real.one_lt_exp_iff.mpr
 
 lemma Nat.cast_pos_of_pos {R : Type} [OrderedSemiring R] [Nontrivial R] {n : ℕ} :
     0 < n → 0 < (n : R) :=
@@ -156,36 +147,30 @@ lemma Nat.one_le_cast_of_le {α : Type} [AddCommMonoidWithOne α] [PartialOrder 
 attribute [bound] le_refl
 
 -- 0 ≤, 0 <
-attribute [bound] sq_nonneg Nat.cast_nonneg NNReal.coe_nonneg abs_nonneg AbsoluteValue.nonneg
-  norm_nonneg dist_nonneg Nat.zero_lt_succ Real.exp_pos Real.exp_nonneg Real.pi_pos Real.pi_nonneg
+attribute [bound] sq_nonneg Nat.cast_nonneg abs_nonneg AbsoluteValue.nonneg Nat.zero_lt_succ
   Int.ceil_lt_add_one pow_pos pow_nonneg sub_nonneg_of_le sub_pos_of_lt inv_nonneg_of_nonneg
-  inv_pos_of_pos NNReal.coe_pos_of_lt Real.sqrt_pos_of_pos ENNReal.ofReal_pos_of_pos Real.log_pos
-  Real.rpow_nonneg Real.log_nonneg tsub_pos_of_lt mul_pos mul_nonneg div_pos div_nonneg add_nonneg
-  Real.rpow_pos_of_pos
+  inv_pos_of_pos tsub_pos_of_lt mul_pos mul_nonneg div_pos div_nonneg add_nonneg
 
 -- 1 ≤, ≤ 1
 attribute [bound] inv_le_one Nat.one_le_cast_of_le one_le_pow_of_one_le pow_le_one
   one_le_mul_of_one_le_of_one_le div_le_one_of_le mul_inv_le_one_of_le inv_mul_le_one_of_le
 
 -- ≤
-attribute [bound] le_abs_self norm_smul_le Int.le_ceil neg_abs_le Complex.abs_re_le_abs
-  Complex.abs_im_le_abs Real.abs_rpow_le_abs_rpow Real.exp_le_exp_of_le neg_le_neg Real.sqrt_le_sqrt
-  Real.one_lt_exp_of_pos tsub_le_tsub_right Real.log_le_log ENNReal.ofReal_le_ofReal pow_le_pow_left
-  Real.rpow_le_rpow div_le_div_of_nonneg_right mul_le_mul_of_nonneg_left mul_le_mul_of_nonneg_right
-  div_le_self le_add_of_nonneg_right le_add_of_nonneg_left inv_le_inv_of_le le_self_pow_of_pos
-  le_mul_of_one_le_right mul_le_of_le_one_right le_div_self Finset.sum_le_sum sub_le_sub add_le_add
-  div_le_div mul_le_mul
+attribute [bound] le_abs_self Int.le_ceil neg_abs_le neg_le_neg tsub_le_tsub_right
+  pow_le_pow_left div_le_div_of_nonneg_right mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right div_le_self le_add_of_nonneg_right le_add_of_nonneg_left
+  inv_le_inv_of_le le_self_pow_of_pos le_mul_of_one_le_right mul_le_of_le_one_right le_div_self
+  Finset.sum_le_sum sub_le_sub add_le_add div_le_div mul_le_mul
 
 -- Triangle inequalities
-attribute [bound] dist_triangle AbsoluteValue.le_add
-  AbsoluteValue.le_sub AbsoluteValue.add_le AbsoluteValue.sub_le_add
-  AbsoluteValue.abs_abv_sub_le_abv_sub norm_sub_le norm_sum_le
+attribute [bound] AbsoluteValue.le_add AbsoluteValue.le_sub AbsoluteValue.add_le
+  AbsoluteValue.sub_le_add AbsoluteValue.abs_abv_sub_le_abv_sub
 
 -- <
-attribute [bound] Nat.cast_pos_of_pos NNReal.coe_lt_coe_of_lt neg_lt_neg Real.sqrt_lt_sqrt
-  sub_lt_sub_left sub_lt_sub_right add_lt_add_left add_lt_add_right mul_lt_mul_left_of_pos_of_lt
-  mul_lt_mul_right_of_pos_of_lt div_lt_div_of_pos_left div_lt_div_of_pos_right pow_lt_pow_left
-  Real.rpow_lt_rpow div_lt_self one_lt_div_of_pos_of_lt div_lt_one_of_pos_of_lt
+attribute [bound] Nat.cast_pos_of_pos neg_lt_neg sub_lt_sub_left sub_lt_sub_right add_lt_add_left
+  add_lt_add_right mul_lt_mul_left_of_pos_of_lt mul_lt_mul_right_of_pos_of_lt div_lt_div_of_pos_left
+  div_lt_div_of_pos_right pow_lt_pow_left div_lt_self one_lt_div_of_pos_of_lt
+  div_lt_one_of_pos_of_lt
 
 -- min and max
 attribute [bound] min_le_right min_le_left le_max_left le_max_right le_min max_le lt_min max_lt
@@ -199,9 +184,6 @@ attribute [bound] zero_le_one zero_lt_one zero_le_two zero_lt_two
 
 -- Bound applies `le_of_lt` to all hypotheses
 attribute [bound_forward] le_of_lt
-
--- Power series have positive radius
-attribute [bound_forward] HasFPowerSeriesOnBall.r_pos
 
 /-!
 ### Guessing rules: when we don't know how to recurse
@@ -224,13 +206,6 @@ lemma pow_le_pow_right_of_le_one_or_one_le {R : Type} [OrderedSemiring R] {a : R
   · exact pow_le_pow_right a1 nm
   · exact pow_le_pow_of_le_one a0 a1 mn
 
-/-- Branch on `1 ≤ x ∨ x ≤ 1` for `x^y` -/
-lemma Real.rpow_le_rpow_of_exponent_le_or_ge {x y z : ℝ}
-    (h : 1 ≤ x ∧ y ≤ z ∨ 0 < x ∧ x ≤ 1 ∧ z ≤ y) : x ^ y ≤ x ^ z := by
-  rcases h with ⟨x1, yz⟩ | ⟨x0, x1, zy⟩
-  · exact Real.rpow_le_rpow_of_exponent_le x1 yz
-  · exact Real.rpow_le_rpow_of_exponent_ge x0 x1 zy
-
 -- Register guessing rules
 attribute [bound]
   -- Which side of the `max` should we use as the lower bound?
@@ -241,7 +216,6 @@ attribute [bound]
   min_lt_of_left_lt_or_right_lt
   -- Given `a^m ≤ a^n`, is `1 ≤ a` or `a ≤ 1`?
   pow_le_pow_right_of_le_one_or_one_le
-  Real.rpow_le_rpow_of_exponent_le_or_ge
 
 end Guessing
 
@@ -252,7 +226,7 @@ end Guessing
 /-- Close numerical goals with `norm_num` -/
 def boundNormNum : Aesop.RuleTac :=
   Aesop.SingleRuleTac.toRuleTac fun i => do
-    let tac := do NormNum.elabNormNum .missing .missing .missing
+    let tac := do Mathlib.Meta.NormNum.elabNormNum .missing .missing .missing
     let goals ← Lean.Elab.Tactic.run i.goal tac |>.run'
     if !goals.isEmpty then failure
     return (#[], none, some .hundred)

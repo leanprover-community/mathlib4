@@ -60,6 +60,7 @@
   "Mathlib.Tactic.Attr.Core",
   "Mathlib.Tactic.Attr.Register",
   "Mathlib.Tactic.Basic",
+  "Mathlib.Tactic.Bound.Attribute",
   "Mathlib.Tactic.ByContra",
   "Mathlib.Tactic.CC",
   "Mathlib.Tactic.CancelDenoms",
@@ -266,6 +267,9 @@
   "Mathlib.Tactic.Basic": ["Batteries", "Mathlib.Tactic.Linter.OldObtain"],
   "Mathlib.Tactic.Bound":
   ["Mathlib.Analysis.Analytic.Basic",
+   "Mathlib.Algebra.Order.AbsoluteValue",
+   "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+   "Mathlib.Algebra.Order.Floor",
    "Mathlib.Tactic.Bound.Attribute",
    "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Bound.Attribute":

@@ -166,10 +166,12 @@ theorem pi_le_four : π ≤ 4 :=
       _ = 4 / 2 := by norm_num)
 #align real.pi_le_four Real.pi_le_four
 
+@[bound]
 theorem pi_pos : 0 < π :=
   lt_of_lt_of_le (by norm_num) two_le_pi
 #align real.pi_pos Real.pi_pos
 
+@[bound]
 theorem pi_nonneg : 0 ≤ π :=
   pi_pos.le
 

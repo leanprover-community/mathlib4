@@ -156,12 +156,14 @@ theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :
   map_zpow₀ Complex.abs z n
 #align complex.abs_zpow Complex.abs_zpow
 
+@[bound]
 theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ Complex.abs z :=
   Real.abs_le_sqrt <| by
     rw [normSq_apply, ← sq]
     exact le_add_of_nonneg_right (mul_self_nonneg _)
 #align complex.abs_re_le_abs Complex.abs_re_le_abs
 
+@[bound]
 theorem abs_im_le_abs (z : ℂ) : |z.im| ≤ Complex.abs z :=
   Real.abs_le_sqrt <| by
     rw [normSq_apply, ← sq, ← sq]
