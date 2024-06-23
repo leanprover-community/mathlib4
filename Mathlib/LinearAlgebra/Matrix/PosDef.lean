@@ -351,7 +351,7 @@ protected theorem diagonal_of_pos [DecidableEq n] [NoZeroDivisors R] (d : n → 
       simp_rw [mulVec_diagonal, ← mul_assoc, Pi.lt_def]
       obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
       exact ⟨fun i => conjugate_nonneg (h i).le _,
-        i, conjugate_pos (h _) _ (isRegular_of_ne_zero hi)⟩⟩
+        i, conjugate_pos (h _) (isRegular_of_ne_zero hi)⟩⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_diagonal_iff [DecidableEq n] [NoZeroDivisors R] [Nontrivial R]
