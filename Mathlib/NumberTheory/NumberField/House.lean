@@ -103,7 +103,7 @@ theorem house_modulus_eq_max {j : Fin h} (α : K) :
  inverse of the matrix `B` and  `h`. -/
 def c := @Matrix.maxAbsEntry K _ _ basisMatrixTranspose⁻¹ * h
 
-theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (basisReindex.repr α i) ≤
+theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs (basisReindex.repr α i) ≤
     @c K _ _ * House (algebraMap (𝓞 K) K α) := by
 
   intros i
