@@ -74,7 +74,7 @@ instance {X : Scheme} (r : X.presheaf.obj (op ⊤)) :
   constructor
   intros U hU
   fapply (Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion (Scheme.ιOpens _)).mp
-  convert hU.basicOpenIsAffine (X.presheaf.map (homOfLE le_top).op r)
+  convert hU.basicOpen (X.presheaf.map (homOfLE le_top).op r)
   rw [X.basicOpen_res]
   ext1
   refine Set.image_preimage_eq_inter_range.trans ?_
@@ -104,9 +104,9 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set (X.presheaf.obj (op �
   refine (hs₂ i (hs' i.2)).isQuasiSeparated _ _ Set.inter_subset_right
     (U.1.2.inter (X.basicOpen _).2) ?_ Set.inter_subset_right (V.1.2.inter (X.basicOpen _).2) ?_
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
-    exact (U.2.basicOpenIsAffine _).isCompact
+    exact (U.2.basicOpen _).isCompact
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
-    exact (V.2.basicOpenIsAffine _).isCompact
+    exact (V.2.basicOpen _).isCompact
 
 lemma isAffineOpen_of_isAffineOpen_basicOpen (s : Set (X.presheaf.obj (op ⊤)))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
@@ -129,7 +129,7 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen (s : Set (X.presheaf.obj (op ⊤)))
       exact hs₂ _ i.2
     · show IsAffineOpen _
       simp only [← basicOpen_eq_of_affine]
-      exact (topIsAffineOpen (Scheme.Spec.obj (op _))).basicOpenIsAffine _
+      exact (isAffineOpen_top (Scheme.Spec.obj (op _))).basicOpen _
     · rw [morphismRestrict_c_app]
       apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
       convert isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
@@ -141,13 +141,13 @@ lemma IsAffineHom.affineProperty_isLocal : affineProperty.IsLocal := by
   · apply AffineTargetMorphismProperty.respectsIso_mk
     · rintro X Y Z e _ _ H
       have : IsAffine _ := H
-      exact isAffineOfIso e.hom
+      exact isAffine_of_isIso e.hom
     · exact fun _ _ _ ↦ id
   · intro X Y _ f r H
     have : IsAffine X := H
     show IsAffineOpen _
     rw [Scheme.preimage_basicOpen]
-    exact (topIsAffineOpen X).basicOpenIsAffine _
+    exact (isAffineOpen_top X).basicOpen _
   · intro X Y H f S hS hS'
     apply_fun Ideal.map (f.1.c.app (op ⊤)) at hS
     rw [Ideal.map_span, Ideal.map_top] at hS
@@ -158,7 +158,7 @@ lemma IsAffineHom.affineProperty_isLocal : affineProperty.IsLocal := by
 open IsAffineHom in
 lemma isAffineHom_isLocalAtTarget :
     PropertyIsLocalAtTarget @IsAffineHom :=
-isAffineHom_eq_affineProperty ▸ affineProperty_isLocal.targetAffineLocallyIsLocal
+isAffineHom_eq_affineProperty ▸ affineProperty_isLocal.targetAffineLocally_isLocal
 
 lemma IsAffineHom.affineProperty_stableUnderBaseChange :
     affineProperty.StableUnderBaseChange := by
