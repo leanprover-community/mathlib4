@@ -458,6 +458,9 @@ theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 
 @[simp] theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
+theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℝ≥0∞)^n = ⊤ := WithTop.top_pow n_pos
+#align ennreal.top_pow ENNReal.top_pow
+
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
 instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
   ⟨le_rfl⟩
