@@ -5,9 +5,10 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
+import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 
 /-!
-# The bicategory of oplax functors between two bicategories
+# The bicategory of pseudofunctors between two bicategories
 
 Given bicategories `B` and `C`, we give a bicategory structure on `Pseudofunctor B C` whose
 * objects are pseudofunctors,
@@ -25,67 +26,57 @@ open scoped Bicategory
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-variable {F G H I : OplaxFunctor B C}
 
-namespace OplaxNatTrans
+namespace StrongNatTrans
 
-/-- Left whiskering of an oplax natural transformation and a modification. -/
+-- TODO: these hold for oplax functors too (but then we don't have bicategory structure)
+variable {F G H I : Pseudofunctor B C}
+
+-- TODO: need locally fully faithful sub-bicategory structure/API....
+
+/-- Left whiskering of a strong natural transformation and a modification. -/
 @[simps]
-def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι where
-  app a := η.app a ◁ Γ.app a
-  naturality {a b} f := by
-    dsimp
-    rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
-    simp
-#align category_theory.oplax_nat_trans.whisker_left CategoryTheory.OplaxNatTrans.whiskerLeft
+def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι :=
+  OplaxNatTrans.whiskerLeft η.toOplax Γ
 
 /-- Right whiskering of an oplax natural transformation and a modification. -/
 @[simps]
-def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι where
-  app a := Γ.app a ▷ ι.app a
-  naturality {a b} f := by
-    dsimp
-    simp_rw [assoc, ← associator_inv_naturality_left, whisker_exchange_assoc]
-    simp
-#align category_theory.oplax_nat_trans.whisker_right CategoryTheory.OplaxNatTrans.whiskerRight
+def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι :=
+  OplaxNatTrans.whiskerRight Γ ι.toOplax
 
 /-- Associator for the vertical composition of oplax natural transformations. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
-@[simps!]
+-- @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
-  ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by aesop_cat)
-#align category_theory.oplax_nat_trans.associator CategoryTheory.OplaxNatTrans.associator
+  sorry
+  -- OplaxNatTrans.associator η.toOplax θ.toOplax ι.toOplax
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
   ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by aesop_cat)
-#align category_theory.oplax_nat_trans.left_unitor CategoryTheory.OplaxNatTrans.leftUnitor
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
   ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by aesop_cat)
-#align category_theory.oplax_nat_trans.right_unitor CategoryTheory.OplaxNatTrans.rightUnitor
 
-end OplaxNatTrans
+end StrongNatTrans
 
 variable (B C)
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
--- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
-instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
-  whiskerLeft {F G H} η _ _ Γ := OplaxNatTrans.whiskerLeft η Γ
-  whiskerRight {F G H} _ _ Γ η := OplaxNatTrans.whiskerRight Γ η
-  associator {F G H} I := OplaxNatTrans.associator
-  leftUnitor {F G} := OplaxNatTrans.leftUnitor
-  rightUnitor {F G} := OplaxNatTrans.rightUnitor
+instance Pseudofunctor.bicategory : Bicategory (Pseudofunctor B C) where
+  whiskerLeft {F G H} η _ _ Γ := StrongNatTrans.whiskerLeft η Γ
+  whiskerRight {F G H} _ _ Γ η := StrongNatTrans.whiskerRight Γ η
+  associator {F G H} I := StrongNatTrans.associator
+  leftUnitor {F G} := StrongNatTrans.leftUnitor
+  rightUnitor {F G} := StrongNatTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by
     ext
     exact whisker_exchange _ _
-#align category_theory.oplax_functor.bicategory CategoryTheory.OplaxFunctor.bicategory
 
 end CategoryTheory
