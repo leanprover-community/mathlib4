@@ -309,6 +309,9 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
     else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩
 #align ordinal.zero_or_succ_or_limit Ordinal.zero_or_succ_or_limit
 
+theorem isLimit_of_not_succ_of_ne_zero {o : Ordinal} (h : ¬∃ a, o = succ a) (h' : o ≠ 0) :
+    IsLimit o := ((zero_or_succ_or_limit o).resolve_left h').resolve_left h
+
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
 @[elab_as_elim]
@@ -334,6 +337,74 @@ theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
     @limitRecOn C o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn C x H₁ H₂ H₃ := by
   simp_rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ h.isSuccLimit, dif_neg h.1]
 #align ordinal.limit_rec_on_limit Ordinal.limitRecOn_limit
+
+@[elab_as_elim]
+def boundedLimitRec {l : Ordinal} (hLim : l.IsLimit) {C : Π o < l, Sort*} (H₁ : C 0 hLim.pos)
+    (H₂ : ∀ o, (h : o < l) → C o h → C (o + 1) (hLim.succ_lt h))
+    (H₃ : ∀ o, (h : o < l) → IsLimit o → (∀ o', (h' : o' < o) → C o' (h'.trans h)) → C o h)
+    (o : Ordinal) (h : o < l) : C o h := by
+  have := limitRecOn (C := fun o ↦ if h : o < l then C o h else C 0 hLim.pos) o
+    (by convert H₁; simp only [dite_eq_right_iff, implies_true])
+    (fun o ih ↦ if ho : o < l then by
+        simp only [ho, reduceDite, hLim.succ_lt] at ih ⊢; exact H₂ o ho ih
+      else by
+        have aux : ¬ (succ o < l) := fun h : succ o < l ↦ ho <| (lt_succ o).trans h
+        simp only [aux, reduceDite]; exact H₁)
+    (fun o oLim ih ↦ by
+      by_cases ho : o < l
+      · simp only [ho, reduceDite]
+        have ih' : ((o' : Ordinal) → (h' : o' < o) → C o' (h'.trans ho)) := fun o' ho' ↦ by
+          have := ih o' ho'
+          simp [ho'.trans ho] at this
+          exact this
+        have := H₃ o ho oLim ih'
+        exact this
+      simp only [ho, reduceDite]; exact H₁)
+  simp_rw [dif_pos h] at this
+  exact this
+
+@[simp]
+theorem boundedLimitRec_zero {l} (lLim : l.IsLimit) {C} (H₁ H₂ H₃) :
+    @boundedLimitRec l lLim C H₁ H₂ H₃ 0 lLim.pos = H₁ := by
+  simp_all only [boundedLimitRec, limitRecOn_zero, id_eq,
+    eq_mpr_eq_cast, eq_mp_eq_cast, cast_cast, cast_eq]
+
+@[simp]
+theorem boundedLimitRec_succ {l} (lLim : l.IsLimit) {C} (o ho H₁ H₂ H₃) :
+    @boundedLimitRec l lLim C H₁ H₂ H₃ (succ o) (lLim.succ_lt ho) = H₂ o ho
+    (@boundedLimitRec l lLim C H₁ H₂ H₃ o ho) := by
+  simp_all only [boundedLimitRec, eq_mpr_eq_cast, eq_mp_eq_cast,
+    limitRecOn_succ, dite_true, cast_cast, cast_eq]
+
+@[simp]
+theorem boundedLimitRec_limit {l : Ordinal} (lLim : l.IsLimit) {C} (o oltl H₁ H₂ H₃ oLim) :
+    @boundedLimitRec l lLim C H₁ H₂ H₃ o oltl = H₃ o oltl oLim (fun x hx ↦
+    @boundedLimitRec l lLim C H₁ H₂ H₃ x (hx.trans oltl)) := by
+  simp_all only [boundedLimitRec, eq_mpr_eq_cast, eq_mp_eq_cast, limitRecOn_limit,
+    dite_true, cast_cast, cast_eq]
+
+def boundedLimitRec' {α : Sort*} (l : Ordinal) (H₁ : α) (H₂ : ∀ o, o < l → α → α)
+    (H₃ : ∀ o, o < l → IsLimit o → (∀ o' < o, α) → α) (o : Ordinal) (_ : o < l) : α :=
+  limitRecOn (C := fun _ ↦ α) o
+  H₁ (fun o ih ↦ (if h : o < l then H₂ o h ih else H₁))
+  (fun o ho ih ↦ (if h : o < l then H₃ o h ho ih else H₁))
+
+@[simp]
+theorem boundedLimitRec'_zero {α} (l H₁ H₂ H₃ h) :
+    @boundedLimitRec' α l H₁ H₂ H₃ 0 h = H₁ := by
+  simp_all only [boundedLimitRec', limitRecOn_zero]
+
+@[simp]
+theorem boundedLimitRec'_succ {α} (l o H₁ H₂ H₃ h) :
+    @boundedLimitRec' α l H₁ H₂ H₃ (succ o) h = H₂ o (lt_of_le_of_lt (le_succ o) h)
+    (@boundedLimitRec' α l H₁ H₂ H₃ o (lt_of_le_of_lt (le_succ o) h)) := by
+  simp only [boundedLimitRec', limitRecOn_succ, lt_of_le_of_lt (le_succ o) h, reduceDite]
+
+@[simp]
+theorem boundedLimitRec'_limit {α} (l o h H₁ H₂ H₃ oLim) :
+    @boundedLimitRec' α l H₁ H₂ H₃ o h = H₃ o h oLim fun x hx ↦
+    @boundedLimitRec' α l H₁ H₂ H₃ x (hx.trans h) := by
+  simp_all only [boundedLimitRec', limitRecOn_limit, reduceDite]
 
 instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
