@@ -132,7 +132,8 @@ end Defs
 
 section Forward
 
-variable {G} {s t u : V} (h : G.IsTuranMaximal r)
+variable {G}
+variable {s t u : V} (h : G.IsTuranMaximal r)
 
 namespace IsTuranMaximal
 
