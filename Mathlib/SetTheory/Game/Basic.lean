@@ -519,7 +519,6 @@ theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
   Quot.sound (mulNegRelabelling x y).equiv
 #align pgame.quot_mul_neg SetTheory.PGame.quot_mul_neg
 
-@[simp]
 theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧: Game) := by simp
 
 @[simp]
