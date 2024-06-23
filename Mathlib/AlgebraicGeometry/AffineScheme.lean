@@ -389,7 +389,7 @@ theorem basicOpen :
 theorem ιOpens_preimage (r : Γ(X, ⊤)):
     IsAffineOpen (Scheme.ιOpens (X.basicOpen r) ⁻¹ᵁ U) := by
   apply (Scheme.ιOpens (X.basicOpen r)).isAffineOpen_iff_of_isOpenImmersion.mp
-  dsimp [Scheme.Hom.opensFunctor, SheafedSpace.IsOpenImmersion.openFunctor]
+  dsimp [Scheme.Hom.opensFunctor, LocallyRingedSpace.IsOpenImmersion.openFunctor]
   rw [Opens.functor_obj_map_obj, Opens.openEmbedding_obj_top, inf_comm,
     ← Scheme.basicOpen_res _ _ (homOfLE le_top).op]
   exact hU.basicOpen _
@@ -408,7 +408,7 @@ theorem exists_basicOpen_le {V : Opens X} (x : V) (h : ↑x ∈ U) :
     rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op,
       ← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
       op_id, CategoryTheory.Functor.map_id, Scheme.Hom.invApp]
-    erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
+    erw [LocallyRingedSpace.IsOpenImmersion.ofRestrict_invApp]
     congr
   use X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r
   rw [← this]
