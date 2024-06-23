@@ -1727,7 +1727,7 @@ namespace Complex
 #adaptation_note /-- nightly-2024-04-01
 The simpNF linter now times out on this lemma.
 See https://github.com/leanprover-community/mathlib4/issues/12230 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
   simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
