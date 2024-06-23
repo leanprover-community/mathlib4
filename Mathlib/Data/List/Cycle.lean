@@ -69,8 +69,8 @@ theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x �
   by_cases h : x = y
   · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
   · rw [nextOr, nextOr, IH]
-    · simpa [h] using x_mem
     · simpa using x_ne
+    · simpa [h] using x_mem
 #align list.next_or_eq_next_or_of_mem_of_ne List.nextOr_eq_nextOr_of_mem_of_ne
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
@@ -165,8 +165,8 @@ theorem next_ne_head_ne_getLast (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : 
     next (y :: l) x h = next l x (by simpa [hy] using h) := by
   rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
   · rwa [getLast_cons] at hx
-    exact ne_nil_of_mem (by assumption)
   · rwa [getLast_cons] at hx
+    exact ne_nil_of_mem (by assumption)
 #align list.next_ne_head_ne_last List.next_ne_head_ne_getLast
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)

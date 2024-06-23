@@ -220,8 +220,8 @@ def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
     X →ₑ[χ] Z :=
   ⟨g ∘ f, fun m x =>
     calc
-      g (f (m • x)) = g (φ m • f x) := by rw [map_smulₛₗ]
-      _ = ψ (φ m) • g (f x) := by rw [map_smulₛₗ]
+      g (f (m • x)) = g (φ m • f x) := by rw [map_smulₛₗ (N := N)]
+      _ = ψ (φ m) • g (f x) := by rw [map_smulₛₗ (N := P)]
       _ = (ψ ∘ φ) m • g (f x) := rfl
       _ = χ m • g (f x) := by rw [κ.comp_eq] ⟩
 #align mul_action_hom.comp MulActionHom.comp
@@ -278,7 +278,7 @@ def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' �
     calc
       g (m • x) = g (m • f (g x)) := by rw [h₂]
       _ = g ((φ (φ' m)) • f (g x)) := by rw [k]
-      _ = g (f (φ' m • g x)) := by rw [map_smulₛₗ]
+      _ = g (f (φ' m • g x)) := by rw [map_smulₛₗ (N := N)]
       _ = φ' m • g x := by rw [h₁]
 #align mul_action_hom.inverse MulActionHom.inverse'
 

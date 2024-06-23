@@ -89,7 +89,7 @@ section restrict
       exact hBIB'.trans (union_subset_union_left _ (subset_inter hIY hI.subset_ground))
 
     have hi : M✶.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
-      rw [dual_indep_iff_exists]
+      rw [dual_indep_iff_exists (by aesop_mat)]
       exact ⟨B, hB, disjoint_of_subset_right subset_union_left disjoint_sdiff_left⟩
 
     have h_eq := hI'.eq_of_subset_indep hi hss
@@ -177,7 +177,8 @@ instance restrict_finitary [Finitary M] (R : Set α) : Finitary (M ↾ R) := by
   (base_restrict_iff h.subset_ground).mpr h
 
 theorem Basis.basis_restrict_of_subset (hI : M.Basis I X) (hXY : X ⊆ Y) : (M ↾ Y).Basis I X := by
-  rwa [← base_restrict_iff, M.restrict_restrict_eq hXY, base_restrict_iff]
+  rwa [← base_restrict_iff (by aesop_mat), M.restrict_restrict_eq hXY,
+    base_restrict_iff (by aesop_mat)]
 
 theorem basis'_restrict_iff : (M ↾ R).Basis' I X ↔ M.Basis' I (X ∩ R) ∧ I ⊆ R := by
   simp_rw [Basis', mem_maximals_setOf_iff, restrict_indep_iff, subset_inter_iff, and_imp]; tauto
@@ -193,7 +194,7 @@ theorem basis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
     (M ↾ R).Basis I X ↔ M.Basis I X ∧ X ⊆ R := by
   rw [basis_restrict_iff', and_congr_left_iff]
   intro hXR
-  rw [← basis'_iff_basis_inter_ground, basis'_iff_basis]
+  rw [← basis'_iff_basis_inter_ground, basis'_iff_basis (by aesop_mat)]
 
 theorem restrict_eq_restrict_iff (M M' : Matroid α) (X : Set α) :
     M ↾ X = M' ↾ X ↔ ∀ I, I ⊆ X → (M.Indep I ↔ M'.Indep I) := by
@@ -349,19 +350,24 @@ theorem finite_setOf_restriction (M : Matroid α) [M.Finite] : {N | N ≤r M}.Fi
     by rintro _ ⟨R, hR, rfl⟩; exact ⟨_, hR, rfl⟩
 
 theorem Indep.of_restriction (hI : N.Indep I) (hNM : N ≤r M) : M.Indep I := by
-  obtain ⟨R, -, rfl⟩ := hNM; exact hI.of_restrict
+  obtain ⟨R, -, rfl⟩ := hNM
+  exact hI.of_restrict
 
 theorem Indep.indep_restriction (hI : M.Indep I) (hNM : N ≤r M) (hIN : I ⊆ N.E) : N.Indep I := by
-  obtain ⟨R, -, rfl⟩ := hNM; simpa [hI]
+  obtain ⟨R, -, rfl⟩ := hNM
+  simpa [hI]
 
 theorem Basis.basis_restriction (hI : M.Basis I X) (hNM : N ≤r M) (hX : X ⊆ N.E) : N.Basis I X := by
-  obtain ⟨R, hR, rfl⟩ := hNM; rwa [basis_restrict_iff, and_iff_left (show X ⊆ R from hX)]
+  obtain ⟨R, hR, rfl⟩ := hNM
+  rwa [basis_restrict_iff (by aesop_mat), and_iff_left (show X ⊆ R from hX)]
 
 theorem Basis.of_restriction (hI : N.Basis I X) (hNM : N ≤r M) : M.Basis I X := by
-  obtain ⟨R, hR, rfl⟩ := hNM; exact ((basis_restrict_iff hR).1 hI).1
+  obtain ⟨R, hR, rfl⟩ := hNM
+  exact ((basis_restrict_iff hR).1 hI).1
 
 theorem Base.basis_of_restriction (hI : N.Base I) (hNM : N ≤r M) : M.Basis I N.E := by
-  obtain ⟨R, hR, rfl⟩ := hNM; rwa [base_restrict_iff] at hI
+  obtain ⟨R, hR, rfl⟩ := hNM
+  rwa [base_restrict_iff (by aesop_mat)] at hI
 
 theorem Dep.of_restriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
   obtain ⟨R, hR, rfl⟩ := hNM
@@ -388,7 +394,8 @@ variable {B J : Set α} {e : α}
 
 theorem Basis.transfer (hIX : M.Basis I X) (hJX : M.Basis J X) (hXY : X ⊆ Y) (hJY : M.Basis J Y) :
     M.Basis I Y := by
-  rw [← base_restrict_iff]; rw [← base_restrict_iff] at hJY
+  rw [← base_restrict_iff (by aesop_mat)]
+  rw [← base_restrict_iff (by aesop_mat)] at hJY
   exact hJY.base_of_basis_superset hJX.subset (hIX.basis_restrict_of_subset hXY)
 
 theorem Basis.basis_of_basis_of_subset_of_subset (hI : M.Basis I X) (hJ : M.Basis J Y) (hJX : J ⊆ X)
@@ -401,12 +408,13 @@ theorem Indep.exists_basis_subset_union_basis (hI : M.Indep I) (hIX : I ⊆ X) (
     ∃ I', M.Basis I' X ∧ I ⊆ I' ∧ I' ⊆ I ∪ J := by
   obtain ⟨I', hI', hII', hI'IJ⟩ :=
     (hI.indep_restrict_of_subset hIX).exists_base_subset_union_base (Basis.base_restrict hJ)
-  rw [base_restrict_iff] at hI'
+  rw [base_restrict_iff (by aesop_mat)] at hI'
   exact ⟨I', hI', hII', hI'IJ⟩
 
 theorem Indep.exists_insert_of_not_basis (hI : M.Indep I) (hIX : I ⊆ X) (hI' : ¬M.Basis I X)
     (hJ : M.Basis J X) : ∃ e ∈ J \ I, M.Indep (insert e I) := by
-  rw [← base_restrict_iff] at hI'; rw [← base_restrict_iff] at hJ
+  rw [← base_restrict_iff (by aesop_mat)] at hI'
+  rw [← base_restrict_iff (by aesop_mat)] at hJ
   obtain ⟨e, he, hi⟩ := (hI.indep_restrict_of_subset hIX).exists_insert_of_not_base hI' hJ
   exact ⟨e, he, (restrict_indep_iff.mp hi).1⟩
 
@@ -416,11 +424,12 @@ theorem Basis.base_of_base_subset (hIX : M.Basis I X) (hB : M.Base B) (hBX : B �
 theorem Basis.exchange (hIX : M.Basis I X) (hJX : M.Basis J X) (he : e ∈ I \ J) :
     ∃ f ∈ J \ I, M.Basis (insert f (I \ {e})) X := by
   obtain ⟨y,hy, h⟩ := hIX.restrict_base.exchange hJX.restrict_base he
-  exact ⟨y, hy, by rwa [base_restrict_iff] at h⟩
+  exact ⟨y, hy, by rwa [base_restrict_iff (by aesop_mat)] at h⟩
 
 theorem Basis.eq_exchange_of_diff_eq_singleton (hI : M.Basis I X) (hJ : M.Basis J X)
     (hIJ : I \ J = {e}) : ∃ f ∈ J \ I, J = insert f I \ {e} := by
-  rw [← base_restrict_iff] at hI hJ; exact hI.eq_exchange_of_diff_eq_singleton hJ hIJ
+  rw [← base_restrict_iff (by aesop_mat)] at hI hJ;
+  exact hI.eq_exchange_of_diff_eq_singleton hJ hIJ
 
 theorem Basis'.encard_eq_encard (hI : M.Basis' I X) (hJ : M.Basis' J X) : I.encard = J.encard := by
   rw [← base_restrict_iff'] at hI hJ; exact hI.card_eq_card_of_base hJ

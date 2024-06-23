@@ -800,7 +800,18 @@ theorem Indep.basis_self (h : M.Indep I) : M.Basis I I :=
 theorem Basis.dep_of_ssubset (hI : M.Basis I X) (hIY : I ⊂ Y) (hYX : Y ⊆ X) : M.Dep Y := by
   have : X ⊆ M.E := hI.subset_ground
   rw [← not_indep_iff]
-  exact fun hY ↦ hIY.ne (hI.eq_of_subset_indep hY hIY.subset hYX)
+  · exact fun hY ↦ hIY.ne (hI.eq_of_subset_indep hY hIY.subset hYX)
+  · #adaptation_note
+    /--
+    The auto-param argument of
+    ```
+    Matroid.basis_iff (hX : X ⊆ M.E := by aesop_mat)
+    ```
+    is not firing here after https://github.com/leanprover/lean4/pull/2793 and we need to invoke it
+    manually. This is by design (see comment in `Lean.Meta.postprocessAppMVars`), so I suggest this
+    adaptation note does not need to persist.
+    -/
+    aesop_mat
 
 theorem Basis.insert_dep (hI : M.Basis I X) (he : e ∈ X \ I) : M.Dep (insert e I) :=
   hI.dep_of_ssubset (ssubset_insert he.2) (insert_subset he.1 hI.subset)
@@ -821,7 +832,18 @@ theorem Indep.subset_basis_of_subset (hI : M.Indep I) (hIX : I ⊆ X) (hX : X �
   obtain ⟨J, ⟨(hJ : M.Indep J),hIJ,hJX⟩, hJmax⟩ := M.maximality X hX I hI hIX
   use J
   rw [and_iff_left hIJ, basis_iff, and_iff_right hJ, and_iff_right hJX]
-  exact fun K hK hJK hKX ↦ hJK.antisymm (hJmax ⟨hK, hIJ.trans hJK, hKX⟩ hJK)
+  · exact fun K hK hJK hKX ↦ hJK.antisymm (hJmax ⟨hK, hIJ.trans hJK, hKX⟩ hJK)
+  · #adaptation_note
+    /--
+    The auto-param argument of
+    ```
+    Matroid.basis_iff (hX : X ⊆ M.E := by aesop_mat)
+    ```
+    is not firing here after https://github.com/leanprover/lean4/pull/2793 and we need to invoke it
+    manually. This is by design (see comment in `Lean.Meta.postprocessAppMVars`), so I suggest this
+    adaptation note does not need to persist.
+    -/
+    aesop_mat
 
 theorem Indep.subset_basis'_of_subset (hI : M.Indep I) (hIX : I ⊆ X) :
     ∃ J, M.Basis' J X ∧ I ⊆ J := by
@@ -967,7 +989,18 @@ theorem Basis'.inter_eq_of_subset_indep (hI : M.Basis' I X) (hIJ : I ⊆ J) (hJ 
 theorem Base.basis_of_subset (hX : X ⊆ M.E := by aesop_mat) (hB : M.Base B) (hBX : B ⊆ X) :
     M.Basis B X := by
   rw [basis_iff, and_iff_right hB.indep, and_iff_right hBX]
-  exact fun J hJ hBJ _ ↦ hB.eq_of_subset_indep hJ hBJ
+  · exact fun J hJ hBJ _ ↦ hB.eq_of_subset_indep hJ hBJ
+  · #adaptation_note
+    /--
+    The auto-param argument of
+    ```
+    Matroid.basis_iff (hX : X ⊆ M.E := by aesop_mat)
+    ```
+    is not firing here after https://github.com/leanprover/lean4/pull/2793 and we need to invoke it
+    manually. This is by design (see comment in `Lean.Meta.postprocessAppMVars`), so I suggest this
+    adaptation note does not need to persist.
+    -/
+    aesop_mat
 
 theorem exists_basis_disjoint_basis_of_subset (M : Matroid α) {X Y : Set α} (hXY : X ⊆ Y)
     (hY : Y ⊆ M.E := by aesop_mat) : ∃ I J, M.Basis I X ∧ M.Basis (I ∪ J) Y ∧ Disjoint X J := by

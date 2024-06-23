@@ -260,7 +260,7 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
     · norm_cast
       rw [← PartENat.coe_le_coe, PartENat.natCast_get, ← multiplicity.pow_dvd_iff_le_multiplicity,
         Nat.cast_pow]
-      exact mod_cast hz
+    · exact mod_cast hz
     · exact mod_cast hp.1.one_lt
 #align padic_norm.dvd_iff_norm_le padicNorm.dvd_iff_norm_le
 

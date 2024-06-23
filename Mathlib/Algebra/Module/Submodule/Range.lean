@@ -435,7 +435,7 @@ variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂)
 #align linear_map.range_range_restrict LinearMap.range_rangeRestrict
 
 theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
-  rw [← range_eq_top, range_rangeRestrict]
+  rw [← range_eq_top (R := R), range_rangeRestrict]
 
 @[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
 #align linear_map.ker_range_restrict LinearMap.ker_rangeRestrict
