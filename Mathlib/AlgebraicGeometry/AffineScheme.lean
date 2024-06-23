@@ -610,27 +610,28 @@ Then `P` holds for every affine open of `X`.
 
 This is also known as the **Affine communication lemma** in [*The rising sea*][RisingSea]. -/
 @[elab_as_elim]
-theorem of_affine_open_cover {X : Scheme} (V : X.affineOpens) (S : Set X.affineOpens)
-    {P : X.affineOpens → Prop}
-    (hP₁ : ∀ (U : X.affineOpens) (f : Γ(X, U)), P U → P (X.affineBasicOpen f))
-    (hP₂ :
+theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
+    {ι} (U : ι → X.affineOpens) (iSup_U : (⨆ i, U i : Opens X) = ⊤)
+    (V : X.affineOpens)
+    (basicOpen : ∀ (U : X.affineOpens) (f : Γ(X, U)), P U → P (X.affineBasicOpen f))
+    (openCover :
       ∀ (U : X.affineOpens) (s : Finset (Γ(X, U)))
         (_ : Ideal.span (s : Set (Γ(X, U))) = ⊤),
         (∀ f : s, P (X.affineBasicOpen f.1)) → P U)
-    (hS : (⋃ i : S, i : Set X) = Set.univ) (hS' : ∀ U : S, P U) : P V := by
+    (hU : ∀ i, P (U i)) : P V := by
   classical
   have : ∀ (x : V.1), ∃ f : Γ(X, V), ↑x ∈ X.basicOpen f ∧ P (X.affineBasicOpen f) := by
     intro x
-    obtain ⟨W, hW⟩ := Set.mem_iUnion.mp (by simpa only [← hS] using Set.mem_univ (x : X))
-    obtain ⟨f, g, e, hf⟩ := exists_basicOpen_le_affine_inter V.prop W.1.prop x ⟨x.prop, hW⟩
+    obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (show x.1 ∈ (⨆ i, U i : Opens X) from iSup_U ▸ trivial)
+    obtain ⟨f, g, e, hf⟩ := exists_basicOpen_le_affine_inter V.prop (U i).prop x ⟨x.prop, hi⟩
     refine ⟨f, hf, ?_⟩
-    convert hP₁ _ g (hS' W) using 1
+    convert basicOpen _ g (hU i) using 1
     ext1
     exact e
   choose f hf₁ hf₂ using this
   suffices Ideal.span (Set.range f) = ⊤ by
     obtain ⟨t, ht₁, ht₂⟩ := (Ideal.span_eq_top_iff_finite _).mp this
-    apply hP₂ V t ht₂
+    apply openCover V t ht₂
     rintro ⟨i, hi⟩
     obtain ⟨x, rfl⟩ := ht₁ hi
     exact hf₂ x

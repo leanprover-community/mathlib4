@@ -166,21 +166,21 @@ structure AffineTargetMorphismProperty.IsLocal (P : AffineTargetMorphismProperty
 /-- Specialization of `ConcreteCategory.id_apply` because `simp` can't see through the defeq. -/
 @[local simp] lemma CommRingCat.id_apply (R : CommRingCat) (x : R) : 𝟙 R x = x := rfl
 
-theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : P.IsLocal)
+theorem targetAffineLocally_of_openCover {P : AffineTargetMorphismProperty} (hP : P.IsLocal)
     {X Y : Scheme} (f : X ⟶ Y) (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)]
     (h𝒰 : ∀ i, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) :
     targetAffineLocally P f := by
   classical
-  let S i := (⟨_, isAffineOpen_opensRange (𝒰.map i)⟩ : Y.affineOpens)
+  let S i : Y.affineOpens := ⟨_, isAffineOpen_opensRange (𝒰.map i)⟩
   intro U
-  apply of_affine_open_cover (P := _) U (Set.range S)
-  · intro U r h
+  induction U using of_affine_open_cover S 𝒰.iSup_opensRange with
+  | basicOpen U r h =>
     haveI : IsAffine _ := U.2
     have := hP.2 (f ∣_ U.1)
     replace this := this (Y.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r) h
     rw [← P.toProperty_apply] at this ⊢
     exact (hP.1.arrow_mk_iso_iff (morphismRestrictRestrictBasicOpen f _ r)).mp this
-  · intro U s hs H
+  | openCover U s hs H =>
     haveI : IsAffine _ := U.2
     apply hP.3 (f ∣_ U.1) (s.image (Y.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op))
     · apply_fun Ideal.comap (Y.presheaf.map (eqToHom U.1.openEmbedding_obj_top.symm).op) at hs
@@ -200,15 +200,11 @@ theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : 
       specialize H ⟨r, hr'⟩
       rw [← P.toProperty_apply] at H ⊢
       exact (hP.1.arrow_mk_iso_iff (morphismRestrictRestrictBasicOpen f _ r)).mpr H
-  · rw [Set.eq_univ_iff_forall]
-    simp only [Set.mem_iUnion]
-    intro x
-    exact ⟨⟨_, ⟨𝒰.f x, rfl⟩⟩, 𝒰.covers x⟩
-  · rintro ⟨_, i, rfl⟩
+  | hU i =>
     specialize h𝒰 i
     rw [← P.toProperty_apply] at h𝒰 ⊢
     exact (hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr h𝒰
-#align algebraic_geometry.target_affine_locally_of_open_cover AlgebraicGeometry.targetAffineLocallyOfOpenCover
+#align algebraic_geometry.target_affine_locally_of_open_cover AlgebraicGeometry.targetAffineLocally_of_openCover
 
 open List in
 theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
@@ -234,7 +230,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
   tfae_have 3 → 2
   · exact fun H => ⟨Y.affineCover, inferInstance, H Y.affineCover⟩
   tfae_have 2 → 1
-  · rintro ⟨𝒰, h𝒰, H⟩; exact targetAffineLocallyOfOpenCover hP f 𝒰 H
+  · rintro ⟨𝒰, h𝒰, H⟩; exact targetAffineLocally_of_openCover hP f 𝒰 H
   tfae_have 5 → 2
   · rintro ⟨ι, U, hU, hU', H⟩
     refine ⟨Y.openCoverOfSuprEqTop U hU, hU', ?_⟩
