@@ -227,10 +227,13 @@ end ToScheme
 
 end PresheafedSpace.IsOpenImmersion
 
+section Restrict
+
+variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f)
+
 /-- The restriction of a Scheme along an open embedding. -/
-@[simps! (config := .lemmasOnly) carrier, simps! presheaf_map presheaf_obj]
-def Scheme.restrict {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f) :
-    Scheme :=
+@[simps! (config := .lemmasOnly) carrier, simps! presheaf_obj]
+def Scheme.restrict : Scheme :=
   { PresheafedSpace.IsOpenImmersion.toScheme X (X.toPresheafedSpace.ofRestrict h) with
     toPresheafedSpace := X.toPresheafedSpace.restrict h }
 #align algebraic_geometry.Scheme.restrict AlgebraicGeometry.Scheme.restrict
@@ -266,10 +269,7 @@ lemma Scheme.restrict_presheaf_map (V W) (i : V ⟶ W) :
     (X.restrict h).presheaf.map i = X.presheaf.map (homOfLE (show X.ofRestrict h ''ᵁ W.unop ≤
       X.ofRestrict h ''ᵁ V.unop from Set.image_subset _ i.unop.le)).op := rfl
 
-instance IsOpenImmersion.ofRestrict {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X}
-    (h : OpenEmbedding f) : IsOpenImmersion (X.ofRestrict h) :=
-  show PresheafedSpace.IsOpenImmersion (X.toPresheafedSpace.ofRestrict h) by infer_instance
-#align algebraic_geometry.IsOpenImmersion.ofRestrict AlgebraicGeometry.IsOpenImmersion.ofRestrict
+end Restrict
 
 namespace IsOpenImmersion
 
@@ -523,22 +523,6 @@ lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
     [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) :
     (isoOfRangeEq f g e).inv ≫ f = g :=
   lift_fac _ _ (le_of_eq e.symm)
-
-/-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-abbrev _root_.AlgebraicGeometry.Scheme.Hom.opensFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
-    [H : IsOpenImmersion f] : Opens X ⥤ Opens Y :=
-  H.openFunctor
-#align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
-
-/-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
-scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
-
-/-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
-def _root_.AlgebraicGeometry.Scheme.Hom.invApp {X Y : Scheme.{u}} (f : X ⟶ Y)
-    [H : IsOpenImmersion f] (U) :
-    Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
-  H.invApp U
-#align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
 
 theorem app_eq_inv_app_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U) :
