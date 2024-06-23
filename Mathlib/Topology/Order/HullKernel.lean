@@ -62,30 +62,23 @@ lemma basis2  (F : Finset α) : T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓�
 
 lemma isBasis1' : IsTopologicalBasis { S : Set T | ∃ (a : α), T ↓∩ (Ici a)ᶜ = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
-  rw [IsLower.lowerBasis]
   ext R
-  simp only [preimage_compl, mem_setOf_eq, mem_image, exists_exists_and_eq_and]
+  simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
   constructor
   · intro ha
     cases' ha with a ha'
     use {a}
-    simp  [mem_setOf_eq]
-    rw [← (Function.Injective.preimage_image Subtype.val_injective R)]
-    rw [← ha']
-    --rw [← preimage_compl]
-    simp [preimage_compl, preimage_diff, Subtype.coe_preimage_self]
+    rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
+    simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,
+      Subtype.image_preimage_coe, diff_self_inter, preimage_diff, Subtype.coe_preimage_self,
+      true_and]
     exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
   · intro ha
     cases' ha with F hF
     lift F to Finset α using hF.1
-    use Finset.inf F id -- As F is finite, do we need complete?
-    rw [← hF.2]
-    rw [← preimage_compl]
-    rw [← basis2]
-    simp [preimage_compl, image_val_compl, Subtype.image_preimage_coe, diff_self_inter]
+    use Finset.inf F id
+    rw [← hF.2, ← preimage_compl, ← (basis2 hT)]
     rfl
-    exact fun p a ↦ hT p a
-
 
 end SemilatticeInf
 
@@ -93,10 +86,7 @@ section PrimativeSpectrum
 
 variable [CompleteLattice α] [TopologicalSpace α] [IsLower α] [DecidableEq α]
 
-variable (T : Set α) (hT : ∀ p ∈ T, InfPrime p)
-
-
-
+variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
 lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
   rw [le_antisymm_iff]
@@ -104,30 +94,27 @@ lemma basis3 (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ 
   · simp only [preimage_compl, le_eq_subset, sUnion_subset_iff, mem_setOf_eq, forall_exists_index,
     and_imp, forall_apply_eq_imp_iff₂, compl_subset_compl]
     intro a ha
-    apply Set.preimage_val_subset_preimage_val
-    apply antitone_Ici
-    exact CompleteLattice.le_sSup S a ha
+    exact Set.preimage_val_subset_preimage_val (antitone_Ici (CompleteLattice.le_sSup S a ha))
   · simp only [preimage_compl, le_eq_subset]
     intro a ha
     simp only [mem_sUnion, mem_setOf_eq, exists_exists_and_eq_and, mem_compl_iff, mem_preimage,
       mem_Ici]
-    simp at ha
-    exact ha
+    simp only [mem_compl_iff, mem_preimage, mem_Ici, sSup_le_iff, not_forall,
+      Classical.not_imp] at ha
+    exact bex_def.mp ha
 
 lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
   constructor
   · intro h
     let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
     use sSup R
-    rw [← basis3]
-    rw [IsTopologicalBasis.open_eq_sUnion' (isBasis1' hT) h]
-    simp only [preimage_compl, mem_setOf_eq, R]
+    rw [← basis3, IsTopologicalBasis.open_eq_sUnion' (isBasis1' hT) h]
     aesop
   · intro h
     cases' h with a ha
     use (Ici a)ᶜ
     constructor
-    · simp only [isOpen_compl_iff]
+    · rw [isOpen_compl_iff]
       exact isClosed_Ici
     · rw [ha]
 
@@ -171,6 +158,8 @@ theorem PrimativeSpectrum.gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
     rw [← mem_Ici]
     apply h hbS
 
+variable (T)
+
 /-- `T` is said to order generate `α` if, for every `a` in `α`, there exists a subset of `T` such
 that `a` is the inf of `S`. -/
 def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = sInf (S : Set α)
@@ -183,7 +172,7 @@ When `T` is order generating, the kernel and the hull form a Galois insertion
 def PrimativeSpectrum.gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : (Set α))))
     (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) :=
-  (PrimativeSpectrum.gc T).toGaloisInsertion fun a ↦ (by
+  PrimativeSpectrum.gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
     cases' hG a with S hS
     have e1 : S ⊆ T ↓∩ Ici (OrderDual.ofDual a) := by
@@ -205,8 +194,8 @@ lemma kh1 (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a :
 
 
 lemma hk1 (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
-    (PrimativeSpectrum.gc T).closureOperator C = C := by
-  have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff T hT C).mp h
+    PrimativeSpectrum.gc.closureOperator C = C := by
+  have e1 : ∃ (a : α), C = T ↓∩ (Ici a) := (isClosed_iff hT C).mp h
   cases' e1 with a ha
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
@@ -215,7 +204,7 @@ lemma hk1 (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
   exact hG
 
 
-lemma testhk (S : Set T) : (PrimativeSpectrum.gc T).closureOperator S = T ↓∩ (Ici (sInf S)) := by
+lemma testhk (S : Set T) : PrimativeSpectrum.gc.closureOperator S = T ↓∩ (Ici (sInf S)) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
@@ -248,7 +237,7 @@ lemma testhk2 (hG : OrderGenerate T) (S : Set T) :
 
 theorem hull_kernel (hG : OrderGenerate T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator =
-      (PrimativeSpectrum.gc T).closureOperator := by
+      PrimativeSpectrum.gc.closureOperator := by
   ext S a
   rw [testhk, testhk2]
   exact fun p a ↦ hT p a
