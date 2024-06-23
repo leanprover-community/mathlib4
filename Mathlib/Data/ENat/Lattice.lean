@@ -45,4 +45,28 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 @[norm_cast] lemma coe_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) :=
   WithTop.coe_iInf (OrderBot.bddBelow _)
 
+variable {s : Set ℕ∞}
+
+lemma sSup_eq_zero : sSup s = 0 ↔ s = {0} ∨ s = ∅ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← bot_eq_zero, sSup_eq_bot, bot_eq_zero] at h
+    by_cases h' : s = ∅
+    · apply Or.inr h'
+    · apply Or.inl
+      ext x
+      refine ⟨h x, fun hx ↦ ?_⟩
+      subst hx
+      obtain ⟨u, hu⟩ := nonempty_def.mp <| nonempty_iff_ne_empty.mpr h'
+      exact h u hu ▸ hu
+  · cases' h with h h
+    · exact h ▸ sSup_singleton
+    · exact h ▸ sSup_empty
+
+
+lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
+  refine ⟨fun h ↦ ?_, inf_eq_bot_of_bot_mem⟩
+  rw [← bot_eq_zero, sInf_eq_bot] at h
+  obtain ⟨n , hn₁, hn₂⟩  := h 1 (by decide)
+  exact lt_one_iff_eq_zero.mp hn₂ ▸ hn₁
+
 end ENat
