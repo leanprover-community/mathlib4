@@ -1257,6 +1257,7 @@ import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation
 import Mathlib.CategoryTheory.Bicategory.SingleObj
 import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.Bicategory.Subbicategory
 import Mathlib.CategoryTheory.CatCommSq
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.Bipointed
