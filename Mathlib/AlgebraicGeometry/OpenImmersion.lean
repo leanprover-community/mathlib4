@@ -82,7 +82,7 @@ theorem openEmbedding : OpenEmbedding f.1.base :=
 
 /-- The image of an open immersion as an open set. -/
 @[simps]
-def opensRange {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f] : Opens Y :=
+def opensRange {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f] : Opens Y :=
   ⟨_, H.base_open.isOpen_range⟩
 #align algebraic_geometry.Scheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
 

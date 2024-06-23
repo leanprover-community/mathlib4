@@ -418,7 +418,7 @@ def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
 variable (R : CommRingCat.{u})
 
 /-- The global sections of `Spec R` is isomorphic to `R`. -/
-def ΓSpecIso : Γ(Spec R, ⊤) ≅ R := SpecΓIdentity.app R
+def ΓSpecIso : Γ(𝖲𝗉𝖾𝖼 R, ⊤) ≅ R := SpecΓIdentity.app R
 
 lemma SpecΓIdentity_app : SpecΓIdentity.app R = ΓSpecIso R := rfl
 lemma SpecΓIdentity_hom_app : SpecΓIdentity.hom.app R = (ΓSpecIso R).hom := rfl
@@ -439,7 +439,7 @@ lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
 
 lemma toOpen_eq (U) :
     (by exact StructureSheaf.toOpen R U) =
-    (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
+    (ΓSpecIso R).inv ≫ (𝖲𝗉𝖾𝖼 R).presheaf.map (homOfLE le_top).op := rfl
 
 section BasicOpen
 
