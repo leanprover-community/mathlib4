@@ -384,8 +384,8 @@ section slope
 
 variable {𝕜 : Type*} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜} {x : 𝕜}
 
-/-- If `f : 𝕜 → 𝕜` is convex on `s`, then for any point `a ∈ s` the slope of the secant line of `f`
-through `a` is monotone on `s \ {a}`. -/
+/-- If `f : 𝕜 → 𝕜` is convex on `s`, then for any point `x ∈ s` the slope of the secant line of `f`
+through `x` is monotone on `s \ {x}`. -/
 lemma ConvexOn.slope_mono (hfc : ConvexOn 𝕜 s f) (hx : x ∈ s) : MonotoneOn (slope f x) (s \ {x}) :=
   (slope_fun_def_field f _).symm ▸ fun _ hy _ hz hz' ↦ hfc.secant_mono hx (mem_of_mem_diff hy)
     (mem_of_mem_diff hz) (not_mem_of_mem_diff hy :) (not_mem_of_mem_diff hz :) hz'
