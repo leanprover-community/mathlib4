@@ -98,18 +98,16 @@ lemma sub_TendstoInMeasure' [Dist E] {f : ι → α → E}  {g : α → E} {u v:
   fun ε hε => Tendsto.mono_left (hg ε hε) huv
 
 lemma subseqTendsto_of_TendstoInMeasure [Dist E] {f : ℕ → α → E}  {g : α → E} {ns : ℕ → ℕ}
-  (hns : StrictMono ns) (hg :  TendstoInMeasure μ f atTop g) :
-  TendstoInMeasure μ (f ∘ ns) atTop g :=
-  by
+    (hns : StrictMono ns) (hg :  TendstoInMeasure μ f atTop g) :
+    TendstoInMeasure μ (f ∘ ns) atTop g := by
   intro ε hε
   apply Filter.Tendsto.comp (hg ε hε) (StrictMono.tendsto_atTop hns)
 
 lemma subseq_TendstoInMeasure' [Dist E] {f : ι → α → E}  {g : α → E} {u : Filter ι}
-  {v : Filter κ} {ns : κ → ι} (hns : Tendsto ns v u) (hg :  TendstoInMeasure μ f u g) :
-  TendstoInMeasure μ (f ∘ ns) v g := by
+    {v : Filter κ} {ns : κ → ι} (hns : Tendsto ns v u) (hg :  TendstoInMeasure μ f u g) :
+    TendstoInMeasure μ (f ∘ ns) v g := by
   intro ε hε
   apply Filter.Tendsto.comp (hg ε hε) hns
-
 
 namespace TendstoInMeasure
 
@@ -157,7 +155,7 @@ lemma subseqTendsto_of_TendstoInMeasure {f : ℕ → α → E}  {g : α → E} {
 
 lemma subseq_TendstoInMeasure' {f : ι → α → E}  {g : α → E} {u : Filter ι} {v : Filter κ}
     {ns : κ → ι} (hns : Tendsto ns v u) (hg :  TendstoInMeasure μ f u g) :
-  TendstoInMeasure μ (f ∘ ns) v g := by
+    TendstoInMeasure μ (f ∘ ns) v g := by
   intro ε hε
   apply Filter.Tendsto.comp (hg ε hε) hns
 
@@ -342,14 +340,13 @@ lemma false_of_Tendsto_of_boundBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: 
 
 end
 
-lemma forall_seq_tendstoInMeasure_atTop {u : Filter ι} {v : Filter κ} {f : ι → α → E} {g : α → E}
-    {ns : κ → ι} (hfg : TendstoInMeasure μ f u g) (hns : Tendsto ns v u) :
-TendstoInMeasure μ (fun n => f (ns n)) v g :=
+lemma forall_seq_tendstoInMeasure_atTop {u : Filter ι} {v : Filter κ} {f : ι → α → E}
+    {g : α → E} {ns : κ → ι} (hfg : TendstoInMeasure μ f u g) (hns : Tendsto ns v u) :
+    TendstoInMeasure μ (fun n => f (ns n)) v g :=
   fun ε hε => (hfg ε hε).comp hns
 
 lemma subseq_of_notTendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (nhds (0 : ℝ≥0))) :
-    ∃ ε > 0, ∃ (ns : ℕ → ℕ) (_ : StrictMono ns), ∀ n, ε ≤ (f (ns n)).toReal :=
-  by
+    ∃ ε > 0, ∃ (ns : ℕ → ℕ) (_ : StrictMono ns), ∀ n, ε ≤ (f (ns n)).toReal := by
   rw [Filter.not_tendsto_iff_exists_frequently_nmem] at h
   rcases h with ⟨A, ⟨hA1, hA2⟩⟩
   rw [Metric.mem_nhds_iff] at hA1
@@ -362,11 +359,11 @@ lemma subseq_of_notTendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (nhds (0 
 
 /- TendstoInMeasure is equivalent to a proof  that every subsequence has another subsequence
 which converges almost surely. -/
-theorem exists_seq_tendstoInMeasure_atTop_iff
-    (hfin : MeasureTheory.IsFiniteMeasure μ) {f : ℕ → α → E}
-(hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} : (TendstoInMeasure μ f atTop g) ↔
-∀ (ns : ℕ → ℕ) (_ : StrictMono ns), ∃ (ns' : ℕ → ℕ) (_ : StrictMono ns'), ∀ᵐ (ω : α) ∂μ,
-Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (nhds (g ω)) := by
+theorem exists_seq_tendstoInMeasure_atTop_iff     (hfin : MeasureTheory.IsFiniteMeasure μ)
+    {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
+    (TendstoInMeasure μ f atTop g) ↔
+    ∀ (ns : ℕ → ℕ) (_ : StrictMono ns), ∃ (ns' : ℕ → ℕ) (_ : StrictMono ns'), ∀ᵐ (ω : α) ∂μ,
+    Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (nhds (g ω)) := by
   rw [TendstoInMeasure_of_FiniteMeasure]
   constructor
   · intros hfg ns hns
