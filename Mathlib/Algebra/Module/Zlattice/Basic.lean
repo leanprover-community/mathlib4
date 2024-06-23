@@ -587,9 +587,9 @@ def Basis.ofZlatticeBasis :
   let e :=  Basis.indexEquiv (Free.chooseBasis ℤ L) b
   have : Fintype ι := Fintype.ofEquiv _ e
   refine basisOfTopLeSpanOfCardEqFinrank (L.subtype.toIntLinearMap ∘ b) ?_ ?_
-  · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
-      top_le_iff, AddMonoidHom.coe_toIntLinearMap_range, AddSubgroup.subtype_range,
-      AddSubgroup.coe_toIntSubmodule, hs.span_top]
+  · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span (R := ℤ), Basis.span_eq,
+      Submodule.map_top, top_le_iff, AddMonoidHom.coe_toIntLinearMap_range,
+      AddSubgroup.subtype_range, AddSubgroup.coe_toIntSubmodule, hs.span_top]
   · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, Zlattice.rank K L]
 
 @[simp]
