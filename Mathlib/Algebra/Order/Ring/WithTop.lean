@@ -167,6 +167,14 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithTop α) = a ^ n := rfl
 
+theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : WithTop α)^n = ⊤ := by
+  apply Nat.le_induction (P := fun m : ℕ ↦ fun _ : 1 ≤ m ↦
+    (⊤ : WithTop α) ^ m = ⊤) (pow_one ⊤) _ _ n_pos
+  intro m _ h
+  simp only [pow_add, h, pow_one]
+  exact top_mul_top
+#align withtop.top_pow WithTop.top_pow
+
 end MonoidWithZero
 
 instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
