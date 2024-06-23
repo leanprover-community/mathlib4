@@ -48,13 +48,17 @@ def PosSemidef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M *ᵥ x)
 #align matrix.pos_semidef Matrix.PosSemidef
 
+protected theorem PosSemidef.diagonal [DecidableEq n] {d : n → R} (h : 0 ≤ d) :
+    PosSemidef (diagonal d) :=
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i),
+    fun x => by
+      refine Fintype.sum_nonneg fun i => ?_
+      simpa only [mulVec_diagonal, ← mul_assoc] using conjugate_nonneg (h i) _⟩
+
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
 lemma posSemidef_diagonal_iff [DecidableEq n] {d : n → R} :
     PosSemidef (diagonal d) ↔ (∀ i : n, 0 ≤ d i) := by
-  refine ⟨fun ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), ?_⟩
-  refine fun hd ↦ ⟨isHermitian_diagonal_iff.2 fun i ↦ IsSelfAdjoint.of_nonneg (hd i), ?_⟩
-  refine fun x ↦ Finset.sum_nonneg fun i _ ↦ ?_
-  simpa only [mulVec_diagonal, mul_assoc] using conjugate_nonneg (hd i) _
+  refine ⟨fun ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), .diagonal⟩
 
 namespace PosSemidef
 
@@ -118,6 +122,11 @@ protected theorem intCast [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
     simp only [intCast_mulVec, dotProduct_smul]
     rw [← zsmul_eq_smul_cast]
     refine zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
+
+@[simp]
+protected theorem _root_.Matrix.posSemidef_intCast_iff [DecidableEq n] [Nonempty n] (d : ℤ) :
+    PosSemidef (d : Matrix n n R) ↔ 0 ≤ (d : R) :=
+  posSemidef_diagonal_iff.trans <| by simp [Pi.le_def]
 
 protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
     PosSemidef (M ^ k) :=
@@ -333,21 +342,26 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
 
-protected theorem diagonal_of_selfAdjoint [DecidableEq n] [NoZeroDivisors R] (d : n → R)
-    (h : 0 < d):
+protected theorem diagonal_of_pos [DecidableEq n] [NoZeroDivisors R] (d : n → R)
+    (h : ∀ i, 0 < d i) :
     PosDef (diagonal d) :=
-  ⟨isHermitian_diagonal_of_self_adjoint _ (funext fun i => IsSelfAdjoint.of_nonneg <| h.le i),
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i).le,
     fun x hx => by
       refine Fintype.sum_pos ?_
-      simp_rw [mulVec_diagonal, ← mul_assoc]
-      refine ⟨?_, ?_⟩
-      · exact fun i => conjugate_nonneg (h.le i) _
-      rw [Pi.lt_def]
-      constructor
-      have : diagonal d *ᵥ x = x ᵥ* diagonal d := funext fun i =>
-        (mulVec_diagonal _ _ i).trans <| (mul_comm _ _).trans <| (vecMul_diagonal _ _ i).symm
-      rw [this]
-      sorry⟩
+      simp_rw [mulVec_diagonal, ← mul_assoc, Pi.lt_def]
+      obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
+      exact ⟨fun i => conjugate_nonneg (h i).le _,
+        i, conjugate_pos (h _) _ (isRegular_of_ne_zero hi)⟩⟩
+
+@[simp]
+theorem _root_.Matrix.posDef_diagonal_iff [DecidableEq n] [NoZeroDivisors R] [Nontrivial R]
+    {d : n → R} :
+    PosDef (diagonal d) ↔ ∀ i, 0 < d i := by
+  refine ⟨fun h i => ?_, PosDef.diagonal_of_pos _⟩
+  have := h.2 (Pi.single i 1)
+  simp only [mulVec_single, mul_one, dotProduct_diagonal', Pi.star_apply, Pi.single_eq_same,
+    star_one, one_mul, Function.ne_iff] at this
+  refine this ⟨i, by simp⟩
 
 protected theorem one [DecidableEq n] [NoZeroDivisors R] : PosDef (1 : Matrix n n R) :=
   ⟨isHermitian_one, fun x hx => by simpa only [one_mulVec, dotProduct_star_self_pos_iff]⟩
@@ -369,6 +383,12 @@ protected theorem intCast [DecidableEq n] [NoZeroDivisors R] (d : ℤ) (hd : 0 <
     simp only [intCast_mulVec, dotProduct_smul]
     rw [← zsmul_eq_smul_cast]
     refine zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+
+@[simp]
+theorem _root_.Matrix.posDef_intCast_iff [DecidableEq n] [NoZeroDivisors R]
+    [Nonempty n] [Nontrivial R] {d : ℤ} :
+    PosDef (d : Matrix n n R) ↔ 0 < (d : R) :=
+  posDef_diagonal_iff.trans <| by simp
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
