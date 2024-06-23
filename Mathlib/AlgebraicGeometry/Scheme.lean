@@ -348,10 +348,10 @@ section
 variable {R S : CommRingCat} (f : R ⟶ S)
 
 -- The lemmas below are not tagged simp to respect the abstraction.
-lemma Spec_obj_carrier (R : CommRingCat.{u}) : (𝖲𝗉𝖾𝖼 R).carrier = PrimeSpectrum R := rfl
-lemma Spec_obj_sheaf (R : CommRingCat.{u}) : (𝖲𝗉𝖾𝖼 R).sheaf = Spec.structureSheaf R := rfl
-lemma Spec_obj_presheaf (R : CommRingCat.{u}) : (𝖲𝗉𝖾𝖼 R).presheaf = (Spec.structureSheaf R).1 := rfl
-lemma SpecMap_base : (SpecMap f).1.base = PrimeSpectrum.comap f := rfl
+lemma Spec_obj_carrier (R) : (𝖲𝗉𝖾𝖼 R).carrier = PrimeSpectrum R := rfl
+lemma Spec_obj_sheaf (R) : (𝖲𝗉𝖾𝖼 R).sheaf = Spec.structureSheaf R := rfl
+lemma Spec_obj_presheaf (R) : (𝖲𝗉𝖾𝖼 R).presheaf = (Spec.structureSheaf R).1 := rfl
+lemma Spec_map_base : 𝖲𝗉𝖾𝖼(f).1.base = PrimeSpectrum.comap f := rfl
 
 set_option maxHeartbeats 800000 in
 lemma SpecMap_app (U) :
