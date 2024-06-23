@@ -258,7 +258,7 @@ def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) 
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
 functors and natural transformations. -/
-@[simps toNatTrans]
+@[simps]
 def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) (H : 𝒴 ⥤ᵇ 𝒵) :
     F ⋙ H ⟶ G ⋙ H where
   toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
