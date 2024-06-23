@@ -481,7 +481,7 @@ theorem adjunction_unit_app_Spec (R : CommRingCat.{u}) :
     adjunction.unit.app (𝖲𝗉𝖾𝖼 R) = 𝖲𝗉𝖾𝖼(Scheme.SpecΓIdentity.hom.app R) := by
   have := ΓSpec.adjunction.right_triangle_components (op R)
   dsimp at this
-  rwa [adjunction_counit_app, ← IsIso.eq_comp_inv, Category.id_comp,
+  rwa [← IsIso.eq_comp_inv, Category.id_comp,
     ← Functor.map_inv, ← op_inv, NatIso.inv_inv_app] at this
 
 lemma adjunction_unit_map_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
@@ -527,14 +527,6 @@ theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme.{u}} (U : Opens X) :
   rw [SpecΓIdentity_naturality_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
     op_id, CategoryTheory.Functor.map_id, Category.comp_id]
 
-theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : Opens X) :
-    (Scheme.ΓSpecIso Γ(X, U)).hom =
-      Scheme.Γ.map (SpecMap (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op)).op ≫
-        (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).app ⊤ ≫
-          X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
-  dsimp [-Scheme.SpecΓIdentity_hom_app]
-  rw [ΓSpec.adjunction_unit_app_app_top] -- why can't simp find this
-  simp
 /-! Immediate consequences of the adjunction. -/
 
 
@@ -575,7 +567,7 @@ instance Spec.faithful : Scheme.Spec.Faithful :=
 
 section
 
-variable {R S : CommRingCat.{u}} {φ ψ : R ⟶ S} (f : Spec S ⟶ Spec R)
+variable {R S : CommRingCat.{u}} {φ ψ : R ⟶ S} (f : 𝖲𝗉𝖾𝖼 S ⟶ 𝖲𝗉𝖾𝖼 R)
 
 lemma SpecMap_inj : SpecMap φ = SpecMap ψ ↔ φ = ψ := by
   rw [iff_comm, ← Quiver.Hom.op_inj.eq_iff, ← Scheme.Spec.map_injective.eq_iff]
@@ -595,7 +587,7 @@ variable (φ) in
 
 /-- Spec is fully faithful -/
 @[simps]
-def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
+def Spec.homEquiv {R S : CommRingCat} : (𝖲𝗉𝖾𝖼 S ⟶ 𝖲𝗉𝖾𝖼 R) ≃ (R ⟶ S) where
   toFun := Spec.preimage
   invFun := SpecMap
   left_inv := SpecMap_preimage
