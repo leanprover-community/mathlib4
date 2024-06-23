@@ -342,8 +342,7 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
 
-protected theorem diagonal_of_pos [DecidableEq n] [NoZeroDivisors R] (d : n → R)
-    (h : ∀ i, 0 < d i) :
+protected theorem diagonal [DecidableEq n] [NoZeroDivisors R] {d : n → R} (h : ∀ i, 0 < d i) :
     PosDef (diagonal d) :=
   ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i).le,
     fun x hx => by
@@ -357,7 +356,7 @@ protected theorem diagonal_of_pos [DecidableEq n] [NoZeroDivisors R] (d : n → 
 theorem _root_.Matrix.posDef_diagonal_iff [DecidableEq n] [NoZeroDivisors R] [Nontrivial R]
     {d : n → R} :
     PosDef (diagonal d) ↔ ∀ i, 0 < d i := by
-  refine ⟨fun h i => ?_, PosDef.diagonal_of_pos _⟩
+  refine ⟨fun h i => ?_, .diagonal⟩
   have := h.2 (Pi.single i 1)
   simp only [mulVec_single, mul_one, dotProduct_diagonal', Pi.star_apply, Pi.single_eq_same,
     star_one, one_mul, Function.ne_iff] at this
