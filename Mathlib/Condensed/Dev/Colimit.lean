@@ -5,6 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Condensed.Dev.Extend
 import Mathlib.Condensed.LocallyConstant
+/-!
+
+# The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
+-/
 
 
 universe u

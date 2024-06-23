@@ -5,6 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Condensed.Dev.Colimit
 import Mathlib.Condensed.LocallyConstantModule
+/-!
+
+# Characterizing discrete condensed sets.
+-/
 
 universe u
 
