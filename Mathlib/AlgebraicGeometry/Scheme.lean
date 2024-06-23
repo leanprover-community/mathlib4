@@ -180,8 +180,10 @@ theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
 #align algebraic_geometry.Scheme.id_val_base AlgebraicGeometry.Scheme.id_val_base
 
 @[simp]
-theorem id_app {X : Scheme} (U : Opens X) :
-    (𝟙 X : _).app U = 𝟙 _ := rfl
+theorem id_app {X : Scheme} (U : (Opens X)ᵒᵖ) :
+    (𝟙 X : _).val.c.app U =
+      X.presheaf.map (eqToHom (by induction' U with U; cases U; rfl)) :=
+  PresheafedSpace.id_c_app X.toPresheafedSpace U
 #align algebraic_geometry.Scheme.id_app AlgebraicGeometry.Scheme.id_app
 
 @[reassoc]
@@ -208,13 +210,10 @@ theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X)
 #align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
-theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
-    (f ≫ g).app U = g.app U ≫ f.app _ :=
+theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+    (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app _ :=
   rfl
 #align algebraic_geometry.Scheme.comp_val_c_app AlgebraicGeometry.Scheme.comp_app
-
-alias comp_val_c_app := comp_app
-alias comp_val_c_app_assoc := comp_app_assoc
 
 theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
     g.appLE U V e₁ ≫ f.appLE V W e₂ =
