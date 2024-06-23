@@ -39,8 +39,6 @@ import shutil
 
 ERR_MOD = 2 # module docstring
 ERR_LIN = 3 # line length
-ERR_TAC = 9 # imported Mathlib.Tactic
-ERR_TAC2 = 10 # imported Lake in Mathlib
 ERR_IBY = 11 # isolated by
 ERR_IWH = 22 # isolated where
 ERR_DOT = 12 # isolated or low focusing dot
@@ -67,11 +65,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         elif errno == "ERR_LIN":
             exceptions += [(ERR_LIN, path, None)]
         elif errno == "ERR_ADN":
-            pass # maintained by the Lean style linter now
-        elif errno == "ERR_TAC":
-            exceptions += [(ERR_TAC, path, None)]
-        elif errno == "ERR_TAC2":
-            exceptions += [(ERR_TAC2, path, None)]
+            pass # maintained by the Lean style Linter now
         elif errno == "ERR_NUM_LIN":
             pass # maintained by the Lean style linter now
         else:
@@ -352,10 +346,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
         if errno == ERR_LIN:
             output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_TAC:
-            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
-        if errno == ERR_TAC2:
-            output_message(path, line_nr, "ERR_TAC2", "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to allow this linter.")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_IWH:
