@@ -338,11 +338,13 @@ theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
   simp_rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ h.isSuccLimit, dif_neg h.1]
 #align ordinal.limit_rec_on_limit Ordinal.limitRecOn_limit
 
+/-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
+  added to all cases. The final term's domain is the ordinals below `l`. -/
 @[elab_as_elim]
 def boundedLimitRec {l : Ordinal} (hLim : l.IsLimit) {C : Π o < l, Sort*} (H₁ : C 0 hLim.pos)
     (H₂ : ∀ o, (h : o < l) → C o h → C (o + 1) (hLim.succ_lt h))
-    (H₃ : ∀ o, (h : o < l) → IsLimit o → (∀ o', (h' : o' < o) → C o' (h'.trans h)) → C o h)
-    (o : Ordinal) (h : o < l) : C o h := by
+    (H₃ : ∀ o, (h : o < l) → IsLimit o → (∀ o', (h' : o' < o) → C o' (h'.trans h)) → C o h) :
+    (o : Ordinal) → (h : o < l) → C o h := fun o h ↦ by
   have := limitRecOn (C := fun o ↦ if h : o < l then C o h else C 0 hLim.pos) o
     (by convert H₁; simp only [dite_eq_right_iff, implies_true])
     (fun o ih ↦ if ho : o < l then by
@@ -383,9 +385,11 @@ theorem boundedLimitRec_limit {l : Ordinal} (lLim : l.IsLimit) {C} (o oltl H₁ 
   simp_all only [boundedLimitRec, eq_mpr_eq_cast, eq_mp_eq_cast, limitRecOn_limit,
     dite_true, cast_cast, cast_eq]
 
+/-- Bounded recursion on the ordinals with a constant return type. Similar to `boundedLimitRec`,
+  but with a constant motive function. Useful for defining function to ordinals. -/
 def boundedLimitRec' {α : Sort*} (l : Ordinal) (H₁ : α) (H₂ : ∀ o, o < l → α → α)
-    (H₃ : ∀ o, o < l → IsLimit o → (∀ o' < o, α) → α) (o : Ordinal) (_ : o < l) : α :=
-  limitRecOn (C := fun _ ↦ α) o
+    (H₃ : ∀ o, o < l → IsLimit o → (∀ o' < o, α) → α) : (o : Ordinal) → o < l → α :=
+  fun o _ ↦ limitRecOn (C := fun _ ↦ α) o
   H₁ (fun o ih ↦ (if h : o < l then H₂ o h ih else H₁))
   (fun o ho ih ↦ (if h : o < l then H₃ o h ho ih else H₁))
 

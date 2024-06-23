@@ -12,14 +12,13 @@ This file sets up the basic theory of clubs (closed and unbounded sets) and stat
 
 ## Main definitions
 
-* `IsClosed`: A set of ordinals is closed in `o` if all of its elements are less than `o`
-  and it contains all of its accumulation points under `o`.
+* `IsClosed`: A set of ordinals is closed in `o` if all of its elements are
+  less than `o` and it contains all of its accumulation points below `o`.
 * `IsClub`: A set of ordinals is a club in `o` if it is closed in `o` and unbounded in `o`.
 
 ## Main results
 
 * `isClub_sInter`: The intersection of fewer than `o.cof` clubs in `o` is a club in `o`.
-
 -/
 
 noncomputable section
@@ -30,15 +29,22 @@ universe u
 
 namespace Ordinal
 
+/-- A set of ordinals is unbounded in an ordinal if it
+  is a subset of it and it is an unbounded set in it. -/
 def IsUnbounded (S : Set Ordinal) (o : Ordinal) : Prop :=
   S ⊆ (Iio o) ∧ (∀ p < o, ∃ s ∈ S, p < s)
 
+/-- A positive ordinal is an accumulation point of a set of ordinals if there
+  are elements in the set arbitrarily close to the ordinal from below. -/
 def IsAcc (o : Ordinal) (S : Set Ordinal) : Prop :=
   0 < o ∧ (∀ p < o, ∃ s ∈ S, s < o ∧ p < s)
 
+/-- A set of ordinals is closed in an ordinals if it is a subset of it
+  and it contains all of its accumulation points below the ordinal. -/
 def IsClosed (S : Set Ordinal) (o : Ordinal) : Prop :=
   S ⊆ (Iio o) ∧ (∀ p < o, IsAcc p S → p ∈ S)
 
+/-- A set of ordinals is a club in an ordinal if it is closed and unbounded in it. -/
 def IsClub (S : Set Ordinal) (o : Ordinal) : Prop :=
   IsClosed S o ∧ IsUnbounded S o
 
@@ -70,10 +76,8 @@ theorem isClosed_sInter_of_isClosed (hS : S.Nonempty) (h : ∀ C ∈ S, IsClosed
     intro C CmemS
     exact (h C CmemS).2 p plto (isAcc_of_subset (sInter_subset_of_mem CmemS) pAcc)⟩
 
-/--
-Given less than `o.cof` unbounded sets in `o` and some `q < o`, there is a `q < p < o`
-such that `Ioo q p` contains an element of every unbounded set.
--/
+/-- Given less than `o.cof` unbounded sets in `o` and some `q < o`, there is a `q < p < o`
+  such that `Ioo q p` contains an element of every unbounded set. -/
 theorem exists_above_of_lt_cof {p : Ordinal} (hp : p < o) (hSemp : Nonempty S)
     (hSunb : ∀ U ∈ S, IsUnbounded U o) (hScard : #S < Cardinal.lift.{u + 1, u} o.cof) :
     ∃ q, q < o ∧ p < q ∧ (∀ U ∈ S, (U ∩ Ioo p q).Nonempty) := by
@@ -112,12 +116,10 @@ theorem exists_above_of_lt_cof {p : Ordinal} (hp : p < o) (hSemp : Nonempty S)
     exact lift_lt.mp <| fUlift ▸ (this.1)
     exact lift_lt.mp <| hq' ▸ (fUlift ▸ this).2
 
-/--
-Given a limit ordinal `o` and a property on pairs of ordinals `P`, such that
-for any `p < o` there is a `q < o` above `p` so that `P p q`, we can construct
-an increasing `ω`-sequence below `o` that satisfies `P` between every 2 consecutive elements.
-Additionaly, the sequence can begin arbitrarily high in `o`. That is, above any `r < o`.
--/
+/-- Given a limit ordinal `o` and a property on pairs of ordinals `P`, such that
+  for any `p < o` there is a `q < o` above `p` so that `P p q`, we can construct
+  an increasing `ω`-sequence below `o` that satisfies `P` between every 2 consecutive elements.
+  Additionaly, the sequence can begin arbitrarily high in `o`. That is, above any `r < o`. -/
 theorem exists_omega_seq_succ_prop (oLim : IsLimit o) {P : Ordinal → Ordinal → Prop}
     (hP : ∀ p < o, ∃ q < o, (p < q ∧ P p q)) {r} (rlto : r < o) : ∃ f : Π p < ω, (Iio o),
     (∀ i : Ordinal.{u}, (hi : i < ω) → P (f i hi) (f (i + 1) (omega_isLimit.2 i hi)))
@@ -142,10 +144,9 @@ theorem exists_omega_seq_succ_prop (oLim : IsLimit o) {P : Ordinal → Ordinal �
     exact (choose_spec pf).casesOn fun _ x ↦ x.casesOn fun x _ ↦ x
   simp [f]
 
-/--
-If between every 2 consecutive elements of an increasing `δ`-sequence there is an element of `C`,
-and `δ` is a limit ordinal, then the supremum of the sequence is an accumulation point of `C`.
--/
+/-- If between every 2 consecutive elements of an increasing `δ`-sequence
+  there is an element of `C`, and `δ` is a limit ordinal,
+  then the supremum of the sequence is an accumulation point of `C`. -/
 theorem isAcc_bsup_of_between {δ : Ordinal} (C : Set Ordinal) (δLim : δ.IsLimit)
     (s : Π o < δ, Ordinal) (sInc : ∀ o, (h : o < δ) → s o h < s (o + 1) (δLim.succ_lt h))
     (h : ∀ o, (h : o < δ) → (C ∩ Ioo (s o h) (s (o + 1) (δLim.succ_lt h))).Nonempty) :
@@ -160,9 +161,7 @@ theorem isAcc_bsup_of_between {δ : Ordinal} (C : Set Ordinal) (δLim : δ.IsLim
   use q; use qmemC
   exact ⟨lt_of_lt_of_le qmemIoo.2 (le_bsup _ _ _), plt.trans qmemIoo.1⟩
 
-/--
-The intersection of less than `o.cof` clubs in `o` is a club in `o`.
--/
+/-- The intersection of less than `o.cof` clubs in `o` is a club in `o`. -/
 theorem isClub_sInter (hCof : ℵ₀ < o.cof) (hS : ∀ C ∈ S, IsClub C o) (hSemp : S.Nonempty)
     (Scard : #S < Cardinal.lift.{u + 1, u} o.cof) : IsClub (⋂₀ S) o := by
   refine' ⟨isClosed_sInter_of_isClosed hSemp (fun C CmemS ↦ (hS C CmemS).1), _⟩
