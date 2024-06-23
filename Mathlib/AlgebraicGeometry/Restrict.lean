@@ -225,9 +225,7 @@ end
 /-- The restriction of an isomorphism onto an open set. -/
 noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f]
     (U : Opens Y) : X ∣_ᵤ f ⁻¹ᵁ U ≅ Y ∣_ᵤ U := by
-  apply IsOpenImmersion.isoOfRangeEq (f := X.ofRestrict _ ≫ f)
-    (H := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance))
-    (Y.ofRestrict _) _
+  apply IsOpenImmersion.isoOfRangeEq (f := X.ofRestrict _ ≫ f) (Y.ofRestrict _) _
   dsimp [restrict]
   rw [Set.range_comp, Subtype.range_val, Subtype.range_coe]
   refine @Set.image_preimage_eq _ _ f.1.base U.1 ?_
