@@ -694,11 +694,7 @@ theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
   ext ⟨ii, ix⟩ ⟨ji, jx⟩
   simp only [transpose_apply, blockDiagonal'_apply]
-  split_ifs with h -- Porting note: was split_ifs <;> cc
-  · subst h; rfl
-  · simp_all only [not_true]
-  · simp_all only [not_true]
-  · rfl
+  split_ifs <;> cc
 #align matrix.block_diagonal'_transpose Matrix.blockDiagonal'_transpose
 
 @[simp]
