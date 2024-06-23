@@ -14,14 +14,14 @@ import Mathlib.Topology.Sets.Closeds
 
 Let `α` be a `CompleteLattice` and let `T` be a subset of `α`. The relative `Topology.lower` on `T`
 takes on a particularly simple form when every element of `T` is `InfPrime` in `α`. In this case,
-the relative-open sets are exactly the setsof the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.
+the relative-open sets are exactly the sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.
 
-The pair of maps `S → ⊓ S` and `a → T ↓∩ (Ici a)` are often refered to as the kernel and the hull.
-They form an antitone Galois connection betwen the subsets of `T` and `α`. When `α` can be generated
+The pair of maps `S → ⊓ S` and `a → T ↓∩ (Ici a)` are often referred to as the kernel and the hull.
+They form an antitone Galois connection between the subsets of `T` and `α`. When `α` can be generated
 from `T` by taking infs, this becomes a Galois insertion and the topological closure coincides with
 the closure arising from the Galois insertion. For this reason the relative lower topology on `T` is
-often refered to as the hull-kernel topology. The names Jacobson topology and structure topology
-also occur in the liturature.
+often refereed to as the hull-kernel topology. The names Jacobson topology and structure topology
+also occur in the literature.
 
 ## Main statements
 
