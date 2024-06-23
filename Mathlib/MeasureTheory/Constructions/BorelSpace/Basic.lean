@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Topology.GDelta
 import Mathlib.MeasureTheory.Group.Arithmetic
+import Mathlib.Topology.GDelta
 import Mathlib.Topology.Instances.EReal
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Instances.Rat
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 

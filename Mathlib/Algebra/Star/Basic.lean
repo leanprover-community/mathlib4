@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Group.Invertible.Defs
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Field.Opposite
@@ -337,7 +338,6 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
     star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
@@ -585,6 +585,39 @@ theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
   have : (star (⅟ r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
   rw [this, star_one, one_mul]
 #align star_inv_of star_invOf
+
+
+section Regular
+
+protected theorem IsLeftRegular.star [Mul R] [StarMul R] {x : R} (hx : IsLeftRegular x) :
+    IsRightRegular (star x) :=
+  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+
+protected theorem IsRightRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRightRegular x) :
+    IsLeftRegular (star x) :=
+  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+
+protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) :
+    IsRegular (star x) :=
+  ⟨hx.right.star, hx.left.star⟩
+
+@[simp]
+theorem isRightRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsRightRegular (star x) ↔ IsLeftRegular x :=
+  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+
+@[simp]
+theorem isLeftRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsLeftRegular (star x) ↔ IsRightRegular x :=
+  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+
+@[simp]
+theorem isRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsRegular (star x) ↔ IsRegular x := by
+  rw [isRegular_iff, isRegular_iff, isRightRegular_star_iff, isLeftRegular_star_iff, and_comm]
+
+end Regular
+
 
 namespace MulOpposite
 

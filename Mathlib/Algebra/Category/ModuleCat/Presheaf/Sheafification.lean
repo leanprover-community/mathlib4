@@ -29,13 +29,13 @@ open CategoryTheory Category Limits
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
   {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.val)
   [Presheaf.IsLocallyInjective J α] [Presheaf.IsLocallySurjective J α]
-  [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
+  [J.WEqualsLocallyBijective AddCommGrp.{v}]
 
 namespace PresheafOfModules
 
 section
 
-variable [HasWeakSheafify J AddCommGroupCat.{v}]
+variable [HasWeakSheafify J AddCommGrp.{v}]
 
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
@@ -43,7 +43,7 @@ the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfM
 @[simps! (config := .lemmasOnly) map]
 noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R where
   obj M₀ := sheafify α (CategoryTheory.toSheafify J M₀.presheaf)
-  map f := sheafifyMap _ _ _ f ((presheafToSheaf J AddCommGroupCat).map f.hom) (by simp)
+  map f := sheafifyMap _ _ _ f ((presheafToSheaf J AddCommGrp).map f.hom) (by simp)
   map_id M₀ := by
     ext1
     apply (toPresheaf _).map_injective
@@ -57,14 +57,14 @@ noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules
 forgets the module structures. -/
 noncomputable def sheafificationCompToSheaf :
     sheafification.{v} α ⋙ SheafOfModules.toSheaf _ ≅
-      toPresheaf _ ⋙ presheafToSheaf J AddCommGroupCat :=
+      toPresheaf _ ⋙ presheafToSheaf J AddCommGrp :=
   Iso.refl _
 
 /-- The sheafification of presheaves of modules commutes with the functor which
 forgets the module structures. -/
 noncomputable def sheafificationCompForgetCompToPresheaf :
     sheafification.{v} α ⋙ SheafOfModules.forget _ ⋙ toPresheaf _ ≅
-      toPresheaf _ ⋙ presheafToSheaf J AddCommGroupCat ⋙ sheafToPresheaf J AddCommGroupCat :=
+      toPresheaf _ ⋙ presheafToSheaf J AddCommGrp ⋙ sheafToPresheaf J AddCommGrp :=
   Iso.refl _
 
 /-- The bijection between types of morphisms which is part of the adjunction
@@ -85,7 +85,7 @@ lemma sheafificationHomEquiv_hom
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (sheafificationHomEquiv α f).hom =
-      (sheafificationAdjunction J AddCommGroupCat).homEquiv P.presheaf
+      (sheafificationAdjunction J AddCommGrp).homEquiv P.presheaf
         ((SheafOfModules.toSheaf _).obj F) ((SheafOfModules.toSheaf _).map f) := by
   rw [sheafificationHomEquiv_hom', Adjunction.homEquiv_unit]
   dsimp
@@ -94,10 +94,10 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (g : P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :
     (SheafOfModules.toSheaf _).map ((sheafificationHomEquiv α).symm g) =
-      (((sheafificationAdjunction J AddCommGroupCat).homEquiv
+      (((sheafificationAdjunction J AddCommGrp).homEquiv
         P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm g.hom) := by
   obtain ⟨f, rfl⟩ := (sheafificationHomEquiv α).surjective g
-  apply ((sheafificationAdjunction J AddCommGroupCat).homEquiv _ _).injective
+  apply ((sheafificationAdjunction J AddCommGrp).homEquiv _ _).injective
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
   rfl
 
@@ -134,11 +134,11 @@ end
 
 section
 
-variable [HasSheafify J AddCommGroupCat.{v}]
+variable [HasSheafify J AddCommGrp.{v}]
 
 noncomputable instance :
     PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
-  compPreservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGroupCat)
+  compPreservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrp)
 
 instance : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomorphisms :=
   inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
