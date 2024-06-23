@@ -46,12 +46,12 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
   fun j hj => by
   rw [assoc, SimplicialObject.δ_comp_σ_of_gt', Fin.pred_succ, v.comp_δ_eq_zero_assoc _ _ hj,
     zero_comp]
-  · dsimp
-    rw [Fin.lt_iff_val_lt_val, Fin.val_succ]
-    linarith
   · intro hj'
     simp only [hnbq, add_comm b, add_assoc, hj', Fin.val_zero, zero_add, add_le_iff_nonpos_right,
       nonpos_iff_eq_zero, add_eq_zero, false_and] at hj
+  · dsimp
+    rw [Fin.lt_iff_val_lt_val, Fin.val_succ]
+    linarith
 #align algebraic_topology.dold_kan.higher_faces_vanish.comp_σ AlgebraicTopology.DoldKan.HigherFacesVanish.comp_σ
 
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :

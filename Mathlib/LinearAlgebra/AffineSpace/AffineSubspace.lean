@@ -1522,7 +1522,7 @@ variable (f : P₁ →ᵃ[k] P₂)
 @[simp]
 theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
-  rw [vectorSpan_def, vectorSpan_def, f.image_vsub_image, Submodule.span_image]
+  rw [vectorSpan_def, vectorSpan_def, f.image_vsub_image, Submodule.span_image (R := k)]
   -- Porting note: Lean unfolds things too far with `simp` here.
 #align affine_map.vector_span_image_eq_submodule_map AffineMap.vectorSpan_image_eq_submodule_map
 

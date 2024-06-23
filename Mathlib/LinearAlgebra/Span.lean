@@ -653,14 +653,15 @@ theorem span_image' [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂
 
 theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : F) {x : M}
     {s : Set M} (h : x ∈ Submodule.span R s) : f x ∈ Submodule.span R₂ (f '' s) := by
-  rw [Submodule.span_image]
+  rw [Submodule.span_image (R := R)]
   exact Submodule.mem_map_of_mem h
 #align submodule.apply_mem_span_image_of_mem_span Submodule.apply_mem_span_image_of_mem_span
 
 theorem apply_mem_span_image_iff_mem_span [RingHomSurjective σ₁₂] {f : F} {x : M}
     {s : Set M} (hf : Function.Injective f) :
     f x ∈ Submodule.span R₂ (f '' s) ↔ x ∈ Submodule.span R s := by
-  rw [← Submodule.mem_comap, ← Submodule.map_span, Submodule.comap_map_eq_of_injective hf]
+  rw [← Submodule.mem_comap (R := R), ← Submodule.map_span (R := R),
+    Submodule.comap_map_eq_of_injective hf]
 
 @[simp]
 theorem map_subtype_span_singleton {p : Submodule R M} (x : p) :
@@ -942,7 +943,7 @@ lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂]
 @[simp] lemma _root_.LinearMap.surjective_domRestrict_iff
     {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} (hf : Surjective f) :
     Surjective (f.domRestrict S) ↔ S ⊔ LinearMap.ker f = ⊤ := by
-  rw [← LinearMap.range_eq_top] at hf ⊢
+  rw [← LinearMap.range_eq_top (R := R)] at hf ⊢
   rw [← hf]
   exact LinearMap.range_domRestrict_eq_range_iff
 
@@ -1087,7 +1088,7 @@ variable {F : Type*} {σ₁₂ : R →+* R₂} [FunLike F M M₂] [SemilinearMap
 
 /-- Two linear maps are equal on `Submodule.span s` iff they are equal on `s`. -/
 theorem eqOn_span_iff {s : Set M} {f g : F} : Set.EqOn f g (span R s) ↔ Set.EqOn f g s := by
-  rw [← le_eqLocus, span_le]; rfl
+  rw [← le_eqLocus (R := R), span_le]; rfl
 
 /-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
 

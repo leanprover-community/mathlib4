@@ -873,8 +873,8 @@ def LinearIndependent.totalEquiv (hv : LinearIndependent R v) :
       rw [← Finsupp.range_total]
       rw [LinearMap.mem_range]
       apply mem_range_self l
-  · rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict, ←
-      LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
+  · rw [← LinearMap.range_eq_top (R := R), LinearMap.range_eq_map, LinearMap.map_codRestrict,
+      ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
     rw [Finsupp.range_total]
 #align linear_independent.total_equiv LinearIndependent.totalEquiv
 #align linear_independent.total_equiv_symm_apply LinearIndependent.totalEquiv_symm_apply
