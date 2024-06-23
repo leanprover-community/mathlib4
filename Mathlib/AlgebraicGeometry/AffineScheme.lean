@@ -329,7 +329,8 @@ def _root_.AlgebraicGeometry.affineOpensRestrict {X : Scheme.{u}} (U : Opens X) 
   (IsOpenImmersion.affineOpensEquiv (Scheme.ιOpens U)).trans (Equiv.subtypeEquivProp (by simp))
 
 @[simp]
-lemma _root_.AlgebraicGeometry.affineOpensRestrict_symm_apply_coe {X : Scheme.{u}} (U : Opens X) (V) :
+lemma _root_.AlgebraicGeometry.affineOpensRestrict_symm_apply_coe
+    {X : Scheme.{u}} (U : Opens X) (V) :
     ((affineOpensRestrict U).symm V).1 = Scheme.ιOpens U ⁻¹ᵁ V := rfl
 
 instance (priority := 100) _root_.AlgebraicGeometry.Scheme.compactSpace_of_isAffine
