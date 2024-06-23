@@ -262,6 +262,9 @@ lemma cfcₙ_map_quasispectrum : σₙ R (cfcₙ f a) = f '' σₙ R a := by
 lemma cfcₙ_predicate : p (cfcₙ f a) :=
   cfcₙ_apply f a ▸ cfcₙHom_predicate (A := A) ha _
 
+lemma cfcₙ_predicate_of_cfcₙ_nontriv (hp : p 0 := by cfc_tac) : p (cfcₙ f a) :=
+  cfcₙ_cases p a f hp fun _ h0 ha => cfcₙHom_predicate ha ⟨_, h0⟩
+
 lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     cfcₙ f a = cfcₙ g a := by
   by_cases h : p a ∧ ContinuousOn g (σₙ R a) ∧ g 0 = 0
@@ -432,6 +435,26 @@ lemma cfcₙ_comp_star (hf : ContinuousOn f (star '' (σₙ R a)) := by cfc_cont
 lemma eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a := by cfc_tac) :
     a = 0 := by
   simpa [cfcₙ_id R a] using cfcₙ_congr (a := a) (f := id) (g := fun _ : R ↦ 0) fun x ↦ by simp_all
+
+lemma quasispectrum_zero_eq_of_cfcₙ_nontriv (hp : p 0 := by cfc_tac) :
+    σₙ R (0 : A) = {0} := by
+  have h₁ : (0 : A) = cfcₙ (fun (_ : R) => 0) (0 : A) := Eq.symm (cfcₙ_const_zero R 0)
+  conv_lhs => rw [h₁]
+  have h₂ : ContinuousOn (fun (_ : R) ↦ (0 : R)) (σₙ R (0 : A)) := by fun_prop
+  have h₃ : (fun (_ : R) ↦ (0 : R)) 0 = 0 := by simp
+  rw [cfcₙ_map_quasispectrum (fun _ => 0) 0 h₂ h₃ hp]
+  exact Set.Nonempty.image_const (⟨0, quasispectrum.zero_mem R 0⟩) _
+
+@[simp] lemma cfcₙ_apply_zero {f : R → R} : cfcₙ f (0 : A) = 0 := by
+  by_cases hf0 : f 0 = 0
+  · by_cases hp : p 0
+    · have h₁ : (0 : A) = cfcₙ (0 : R → R) 0 := by simp
+      conv_rhs => rw [h₁]
+      refine cfcₙ_congr fun x hx => ?_
+      rw [quasispectrum_zero_eq_of_cfcₙ_nontriv, Set.mem_singleton_iff] at hx
+      simp [hx, hf0]
+    · exact cfcₙ_apply_of_not_predicate 0 hp
+  · exact cfcₙ_apply_of_not_map_zero 0 hf0
 
 end CFCn
 
