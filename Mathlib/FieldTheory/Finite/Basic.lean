@@ -533,6 +533,12 @@ theorem pow_card_sub_one_eq_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a �
     rwa [ZMod.card p] at h
 #align zmod.pow_card_sub_one_eq_one ZMod.pow_card_sub_one_eq_one
 
+lemma pow_card_sub_one {p : ℕ} [Fact p.Prime] (a : ZMod p) :
+    a ^ (p - 1) = if a ≠ 0 then 1 else 0 := by
+  split_ifs with ha
+  · exact pow_card_sub_one_eq_one ha
+  · simp [of_not_not ha, (Fact.out : p.Prime).one_lt, tsub_eq_zero_iff_le]
+
 theorem orderOf_units_dvd_card_sub_one {p : ℕ} [Fact p.Prime] (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
   orderOf_dvd_of_pow_eq_one <| units_pow_card_sub_one_eq_one _ _
 #align zmod.order_of_units_dvd_card_sub_one ZMod.orderOf_units_dvd_card_sub_one
