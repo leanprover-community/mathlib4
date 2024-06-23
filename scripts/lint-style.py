@@ -25,7 +25,7 @@ absolute path.
 This script can also be used to regenerate the list of allowed / ignored style
 exceptions by redirecting the output to ``style-exceptions.txt``. Use:
 
-    $ ./scripts/update-style-exceptions.sh
+    $ lake exe lint_style --regenerate
 
 to perform this update.
 """
