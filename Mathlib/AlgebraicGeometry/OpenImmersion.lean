@@ -109,7 +109,7 @@ theorem invApp_naturality {U V : Opens X} (i : op U ⟶ op V) :
 theorem inv_invApp (U) :
     inv (f.invApp U) = f.app (f ''ᵁ U) ≫ X.presheaf.map
       (eqToHom (Opens.ext <| by exact (Set.preimage_image_eq U.1 H.base_open.inj).symm)).op :=
-  (PresheafedSpace.IsOpenImmersion.inv_invApp H U).trans (by rw [eqToHom_op])
+  (PresheafedSpace.IsOpenImmersion.inv_invApp f.1 U).trans (by rw [eqToHom_op])
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U) :
