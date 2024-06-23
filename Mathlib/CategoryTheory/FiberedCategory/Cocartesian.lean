@@ -55,7 +55,7 @@ class IsCocartesian extends IsHomLift p f φ : Prop where
 /-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
 strongly cartesian morphism. -/
 class IsStronglyCocartesian extends IsHomLift p f φ : Prop where
-  universal_property' {b' : 𝒳} (g : S ⟶ p.obj b) (φ' : a ⟶ b') [IsHomLift p (f ≫ g) φ'] :
+  universal_property' {b' : 𝒳} (g : S ⟶ p.obj b') (φ' : a ⟶ b') [IsHomLift p (f ≫ g) φ'] :
       ∃! χ : b ⟶ b', IsHomLift p g χ ∧ φ ≫ χ = φ'
 
 end
@@ -118,28 +118,28 @@ noncomputable def domainUniqueUpToIso {b' : 𝒳} (φ' : a ⟶ b') [IsCocartesia
     apply IsCocartesian.ext p (p.map φ') φ'
     simp only [fac_assoc, fac, comp_id]
 
-/-- Precomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
-instance of_iso_comp {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 R) φ'.hom] :
+/-- Postcomposing a cocartesian morphism with an isomorphism lifting the identity is cartesian. -/
+instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
     IsCocartesian p f (φ ≫ φ'.hom) where
   universal_property := by
     intro c ψ hψ
     use φ'.inv ≫ IsCocartesian.map p f φ ψ
     refine ⟨⟨inferInstance, by simp⟩, ?_⟩
     rintro τ ⟨hτ₁, hτ₂⟩
-    rw [Iso.eq_comp_inv]
+    rw [Iso.eq_inv_comp]
     apply map_uniq
-    simp only [assoc, hτ₂]
+    exact ((assoc φ _ _) ▸ hτ₂)
 
-/-- Postcomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
-instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
-    IsCocartesian p f (φ ≫ φ'.hom) where
+/-- Precomposing a cocartesian morphism with an isomorphism lifting the identity is cartesian. -/
+instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
+    IsCocartesian p f (φ'.hom ≫ φ) where
   universal_property := by
     intro c ψ hψ
-    use IsCocartesian.map p f φ (ψ ≫ φ'.inv)
+    use IsCocartesian.map p f φ (φ'.inv ≫ ψ)
     refine ⟨⟨inferInstance, by simp⟩, ?_⟩
     rintro τ ⟨hτ₁, hτ₂⟩
     apply map_uniq
-    simp only [Iso.eq_comp_inv, assoc, hτ₂]
+    simp only [Iso.eq_inv_comp, ← assoc, hτ₂]
 
 end IsCocartesian
 
@@ -153,18 +153,18 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsStronglyCocar
 
 This lemma is more flexible with respect to non-definitional equalities than the field
 `universal_property'` of `IsStronglyCocartesian`. -/
-lemma universal_property {R' : 𝒮} {b' : 𝒳} (g : R' ⟶ R) (f' : R' ⟶ S) (hf' : f' = g ≫ f)
-    (φ' : a ⟶ b') [IsHomLift p f' φ'] : ∃! χ : b ⟶ b', IsHomLift p g χ ∧ χ ≫ φ = φ' := by
+lemma universal_property {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S') (f' : R ⟶ S') (hf' : f' = f ≫ g)
+    (φ' : a ⟶ b') [IsHomLift p f' φ'] : ∃! χ : b ⟶ b', IsHomLift p g χ ∧ φ ≫ χ = φ' := by
   subst_hom_lift p f' φ'; clear a b R S
-  have : p.IsHomLift (g ≫ f) φ' := (hf' ▸ inferInstance)
+  have : p.IsHomLift (f ≫ g) φ' := (hf' ▸ inferInstance)
   apply IsStronglyCocartesian.universal_property' f
 
 instance isCocartesian_of_isStronglyCocartesian [p.IsStronglyCocartesian f φ] : p.IsCocartesian f φ where
-  universal_property := fun φ' => universal_property p f φ (𝟙 R) f (by simp) φ'
+  universal_property := fun φ' => universal_property p f φ (𝟙 S) f (comp_id f).symm φ'
 
 section
 
-variable {R' : 𝒮} {b' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f) (φ' : a ⟶ b')
+variable {S' : 𝒮} {b' : 𝒳} {g : S ⟶ S'} {f' : R ⟶ S'} (hf' : f' = f ≫ g) (φ' : a ⟶ b')
   [IsHomLift p f' φ']
 
 /-- Given a diagram
@@ -183,7 +183,7 @@ instance map_isHomLift : IsHomLift p g (map p f φ hf' φ') :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.1
 
 @[reassoc (attr := simp)]
-lemma fac : (map p f φ hf' φ') ≫ φ = φ' :=
+lemma fac : φ ≫ (map p f φ hf' φ') = φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.2
 
 /-- Given a diagram
@@ -195,7 +195,7 @@ R' --g--> R --f--> S
 ```
 such that `φ` is strongly cartesian, and morphisms`φ' : a' ⟶ b` and `ψ : b ⟶ b'` such that
 `g ≫ ψ = φ'`. Then `ψ` is the map induced by the universal property. -/
-lemma map_uniq (ψ : b ⟶ b') [IsHomLift p g ψ] (hψ : ψ ≫ φ = φ') : ψ = map p f φ hf' φ' :=
+lemma map_uniq (ψ : b ⟶ b') [IsHomLift p g ψ] (hψ : φ ≫ ψ = φ') : ψ = map p f φ hf' φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').2 ψ ⟨inferInstance, hψ⟩
 
 end
@@ -209,15 +209,15 @@ R' --g--> R --f--> S
 ```
 such that `φ` is strongly cartesian, and morphisms `ψ ψ' : b ⟶ b'` such that
 `g ≫ ψ = φ' = g ≫ ψ'`. Then we have that `ψ = ψ'`. -/
-protected lemma ext {R' : 𝒮} {b' : 𝒳} (g : R' ⟶ R) {ψ ψ' : b ⟶ b'} [IsHomLift p g ψ]
-    [IsHomLift p g ψ'] (h : ψ ≫ φ = ψ' ≫ φ) : ψ = ψ' := by
-  rw [map_uniq p f φ (g := g) rfl (ψ ≫ φ) ψ rfl, map_uniq p f φ (g := g) rfl (ψ ≫ φ) ψ' h.symm]
+protected lemma ext {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S') {ψ ψ' : b ⟶ b'} [IsHomLift p g ψ]
+    [IsHomLift p g ψ'] (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
+  rw [map_uniq p f φ (g := g) rfl (φ ≫ ψ) ψ rfl, map_uniq p f φ (g := g) rfl (φ ≫ ψ) ψ' h.symm]
 
 @[simp]
-lemma map_self : map p f φ (id_comp f).symm φ = 𝟙 a := by
+lemma map_self : map p f φ (comp_id f).symm φ = 𝟙 b := by
   subst_hom_lift p f φ; symm
   apply map_uniq
-  simp only [id_comp]
+  simp only [comp_id]
 
 /-- The composition of two induced maps is also an induced map. In other words, given diagrams
 ```
@@ -228,14 +228,15 @@ R'' --g'--> R' --g--> R --f--> S          R' --f'--> S          R'' --f''--> S
 ```
 such that `φ` and `φ'` are strongly cartesian morphisms. Then composing the induced map from
 `a'' ⟶ a'` with the induced map from `b ⟶ b'` gives the induced map from `a'' ⟶ a`. -/
-@[simp]
-lemma map_comp_map {R' R'' : 𝒮} {a' a'' : 𝒳} {f' : R' ⟶ S} {f'' : R'' ⟶ S} {g : R' ⟶ R}
-    {g' : R'' ⟶ R'} (H : f' = g ≫ f) (H' : f'' = g' ≫ f') (φ' : a ⟶ b') (φ'' : a'' ⟶ b)
+-- TODO: add to normal version!!
+@[reassoc (attr := simp)]
+lemma map_comp_map {S' S'' : 𝒮} {b' b'' : 𝒳} {f' : R ⟶ S'} {f'' : R ⟶ S''} {g : S ⟶ S'}
+    {g' : S' ⟶ S''} (H : f' = f ≫ g) (H' : f'' = f' ≫ g') (φ' : a ⟶ b') (φ'' : a ⟶ b'')
     [IsStronglyCocartesian p f' φ'] [IsHomLift p f'' φ''] :
-    map p f' φ' H' φ'' ≫ map p f φ H φ' =
-      map p f φ (show f'' = (g' ≫ g) ≫ f by rwa [assoc, ← H]) φ'' := by
+    map p f φ H φ' ≫ map p f' φ' H' φ'' =
+      map p f φ (show f'' = f ≫ (g ≫ g') by rwa [← assoc, ← H]) φ'' := by
   apply map_uniq p f φ
-  simp only [assoc, fac]
+  simp only [fac_assoc, fac]
 
 end
 
@@ -254,14 +255,14 @@ Then the composite `φ ≫ ψ` is also strongly cartesian. -/
 instance comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p g ψ] :
     IsStronglyCocartesian p (f ≫ g) (φ ≫ ψ) where
   universal_property' := by
-    intro a' h τ hτ
-    use map p f φ (f' := h ≫ f) rfl (map p g ψ (assoc h f g).symm τ)
+    intro c' h τ hτ
+    use map p g ψ (f' := g ≫ h) rfl <| map p f φ (assoc f g h) τ
     refine ⟨⟨inferInstance, ?_⟩, ?_⟩
-    · rw [← assoc, fac, fac]
+    · simp only [assoc, fac]
     · intro π' ⟨hπ'₁, hπ'₂⟩
       apply map_uniq
       apply map_uniq
-      simp only [assoc, hπ'₂]
+      simp only [← hπ'₂, assoc]
 
 /-- Given two commutative squares
 ```
@@ -271,19 +272,20 @@ v        v        v
 R --f--> S --g--> T
 ```
 such that `φ ≫ ψ` and `ψ` are strongly cartesian, then so is `φ`. -/
-protected lemma of_comp [IsStronglyCocartesian p g ψ] [IsStronglyCocartesian p (f ≫ g) (φ ≫ ψ)]
-    [IsHomLift p f φ] : IsStronglyCocartesian p f φ where
+-- TODO: check statement in stronglycart also...
+protected lemma of_comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p (f ≫ g) (φ ≫ ψ)]
+    [IsHomLift p g ψ] : IsStronglyCocartesian p g ψ where
   universal_property' := by
-    intro a' h τ hτ
-    have h₁ : IsHomLift p (h ≫ f ≫ g) (τ ≫ ψ) := by simpa using IsHomLift.comp p (h ≫ f) _ τ ψ
-    /- We get a morphism `π : b ⟶ b'` such that `π ≫ φ ≫ ψ` = `τ = ψ` from the universal property
-    of `φ ≫ ψ`. -/
-    use map p (f ≫ g) (φ ≫ ψ) (f' := h ≫ f ≫ g) rfl (τ ≫ ψ)
-    -- This will be the morphism induced by `φ`.
+    intro c' h τ hτ
+    have h₁ : IsHomLift p (f ≫ g ≫ h) (φ ≫ τ) := by simpa using IsHomLift.comp p f (g ≫ h) φ τ
+    -- TODO: this comment needs fixing in strongly cartesian
+    /- We get a morphism `π : c ⟶ c'` such that `(φ ≫ ψ) ≫ π = φ ≫ τ` from the universal property
+    of `φ ≫ ψ`. This will be the morphism induced by `φ`. -/
+    use map p (f ≫ g) (φ ≫ ψ) (f' := f ≫ g ≫ h) (assoc f g h).symm (φ ≫ τ)
     refine ⟨⟨inferInstance, ?_⟩, ?_⟩
-    /- The fact that `π ≫ φ = τ` follows from `π ≫ φ ≫ ψ = τ ≫ ψ` and the universal property of
-    `ψ`. -/
-    · apply IsStronglyCocartesian.ext p g ψ (h ≫ f) (by simp)
+    /- The fact that `ψ ≫ π = τ` follows from `φ ≫ ψ ≫ π = φ ≫ τ` and the universal property of
+    `φ`. -/
+    · apply IsStronglyCocartesian.ext p f φ (g ≫ h) <| by simp only [← assoc, fac]
     -- Finally, eq_of_fac of `π` comes from the universal property of `φ ≫ ψ`.
     · intro π' ⟨hπ'₁, hπ'₂⟩
       apply map_uniq
@@ -297,10 +299,10 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S)
 
 instance of_iso (φ : a ≅ b) [IsHomLift p f φ.hom] : IsStronglyCocartesian p f φ.hom where
   universal_property' := by
-    intro a' g τ hτ
-    use τ ≫ φ.inv
+    intro b' g τ hτ
+    use φ.inv ≫ τ
     refine ⟨?_, by aesop_cat⟩
-    simpa using (IsHomLift.comp p (g ≫ f) (isoOfIsoLift p f φ).inv τ φ.inv)
+    simpa [← assoc] using (IsHomLift.comp p (isoOfIsoLift p f φ).inv (f ≫ g) φ.inv τ)
 
 instance of_isIso (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsStronglyCocartesian p f φ :=
   @IsStronglyCocartesian.of_iso _ _ _ _ p _ _ _ _ f (asIso φ) (by aesop)
