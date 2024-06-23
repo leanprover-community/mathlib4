@@ -7,12 +7,15 @@ Authors: Michael Rothgang
 import Lean.Elab.Command
 import Lean.Linter.Util
 
-/-! ## The `oldObtain` linter, against stream-of-conciousness `obtain`
+/-!
+# The `oldObtain` linter, against stream-of-conciousness `obtain`
 
 The `oldObtain` linter flags any occurrences of "stream-of-conciousness" `obtain`,
 i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 
-**Example.** There are six different kinds of `obtain` uses. In one example, they look like this.
+## Example
+
+There are six different kinds of `obtain` uses. In one example, they look like this.
 ```
 theorem foo : True := by
   -- These cases are fine.
@@ -28,7 +31,9 @@ theorem foo : True := by
 ```
 We allow the first four (since an explicit proof is provided), but lint against the last two.
 
-**Why is this bad?** This is similar to removing all uses of `Tactic.Replace` and `Tactic.Have`
+## Why is this bad?
+
+This is similar to removing all uses of `Tactic.Replace` and `Tactic.Have`
 from mathlib: in summary,
 - this version is a Lean3-ism, which can be unlearned now
 - the syntax `obtain foo : type := proof` is slightly shorter;
