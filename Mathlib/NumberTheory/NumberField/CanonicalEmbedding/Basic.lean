@@ -147,7 +147,7 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
-  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  rw [← Submodule.map_span (R := ℤ), ← SetLike.mem_coe, Submodule.map_coe]
   rw [← RingHom.map_range, Subring.mem_map, Set.mem_image]
   simp only [SetLike.mem_coe, mem_span_integralBasis K]
   rfl
