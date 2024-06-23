@@ -572,7 +572,7 @@ lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
   case anti =>
     refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitz⟩ <;>
     simp only [LinearMap.range_eq_top, LinearMapClass.ker_eq_bot, h.1, h.2]
-  case surj => rwa [← LinearMap.range_eq_top, ← closed_range_of_antilipschitz hf]
+  case surj => rwa [← LinearMap.range_eq_top (R := 𝕜), ← closed_range_of_antilipschitz hf]
 
 lemma _root_.AntilipschitzWith.completeSpace_range_clm {f : E →SL[σ] F} {c : ℝ≥0}
     (hf : AntilipschitzWith c f) : CompleteSpace (LinearMap.range f) :=

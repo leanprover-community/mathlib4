@@ -114,7 +114,7 @@ theorem Basis.le_span'' {ι : Type*} [Fintype ι] (b : Basis ι R M) {w : Set M}
   · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
   · apply Surjective.comp (g := b.repr.toLinearMap)
     · apply LinearEquiv.surjective
-    rw [← LinearMap.range_eq_top, Finsupp.range_total]
+    rw [← LinearMap.range_eq_top (R := R), Finsupp.range_total]
     simpa using s
 #align basis.le_span'' Basis.le_span''
 

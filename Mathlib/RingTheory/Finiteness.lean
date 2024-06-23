@@ -203,7 +203,7 @@ variable (f : M →ₗ[R] P)
 
 theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   let ⟨t, ht⟩ := fg_def.1 hs
-  fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
+  fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image (R := R), ht.2]⟩
 #align submodule.fg.map Submodule.FG.map
 
 variable {f}
@@ -215,7 +215,7 @@ theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {
     Submodule.map_injective_of_injective hf <| by
       rw [map_span, Finset.coe_preimage, Set.image_preimage_eq_inter_range,
         Set.inter_eq_self_of_subset_left, ht]
-      rw [← LinearMap.range_coe, ← span_le, ht, ← map_top]
+      rw [← LinearMap.range_coe (R := R), ← span_le, ht, ← map_top]
       exact map_mono le_top⟩
 #align submodule.fg_of_fg_map_injective Submodule.fg_of_fg_map_injective
 
@@ -576,7 +576,7 @@ variable (R M) in
 lemma exists_fin' [Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
-  rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
+  rw [← LinearMap.range_eq_top (R := R), Basis.constr_range, hs]
 
 theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
   ⟨by
@@ -738,7 +738,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     | tmul x y =>
       -- Porting note: new TC reminder
       haveI : IsScalarTower R A (TensorProduct R A M) := TensorProduct.isScalarTower_left
-      rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
+      rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image (R := R), hs,
         Submodule.map_top, LinearMap.range_coe]
       change _ ∈ Submodule.span A (Set.range <| TensorProduct.mk R A M 1)
       rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul']

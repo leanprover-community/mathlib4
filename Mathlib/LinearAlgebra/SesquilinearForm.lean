@@ -782,7 +782,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum]
   apply Finset.sum_eq_zero
   rintro j -
-  rw [map_smulₛₗ]
+  rw [map_smulₛₗ (N := R)]
   suffices B (v i) (v j) = 0 by rw [this, smul_zero]
   obtain rfl | hij := eq_or_ne i j
   · exact ho

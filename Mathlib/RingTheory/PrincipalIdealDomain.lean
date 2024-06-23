@@ -392,7 +392,7 @@ variable [Module R M] [Module R N]
 theorem Submodule.IsPrincipal.of_comap (f : M →ₗ[R] N) (hf : Function.Surjective f)
     (S : Submodule R N) [hI : IsPrincipal (S.comap f)] : IsPrincipal S :=
   ⟨⟨f (IsPrincipal.generator (S.comap f)), by
-      rw [← Set.image_singleton, ← Submodule.map_span, IsPrincipal.span_singleton_generator,
+      rw [← Set.image_singleton, ← Submodule.map_span (R := R), IsPrincipal.span_singleton_generator,
         Submodule.map_comap_eq_of_surjective hf]⟩⟩
 #align submodule.is_principal.of_comap Submodule.IsPrincipal.of_comap
 

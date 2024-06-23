@@ -528,35 +528,13 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
 theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
   cases' finite_or_infinite α with h h
   · have hft := Fintype.ofFinite α
-    rw [ncard_eq_toFinset_card, Finite.toFinset_univ, Finset.card_univ, Nat.card_eq_fintype_card]
-    #adaptation_note
-    /--
-    The auto-param argument of
-    ```
-    Set.ncard_eq_toFinset_card.{u_1} {α : Type u_1} (s : Set α) (hs : s.Finite := by toFinite_tac)
-    ```
-    is not firing here after https://github.com/leanprover/lean4/pull/2793 and we need to invoke it
-    manually. This is by design (see comment in `Lean.Meta.postprocessAppMVars`), so I suggest this
-    adaptation note does not need to persist.
-    -/
-    exact toFinite univ
+    rw [ncard_eq_toFinset_card .., Finite.toFinset_univ, Finset.card_univ, Nat.card_eq_fintype_card]
   rw [Nat.card_eq_zero_of_infinite, Infinite.ncard]
   exact infinite_univ
 #align set.ncard_univ Set.ncard_univ
 
 @[simp] theorem ncard_empty (α : Type*) : (∅ : Set α).ncard = 0 := by
-  rw [ncard_eq_zero]
-  #adaptation_note
-  /--
-  The auto-param argument of
-  ```
-  Set.ncard_eq_zero (hs : s.Finite := by toFinite_tac) : s.ncard = 0 ↔ s = ∅
-  ```
-  is not firing here after https://github.com/leanprover/lean4/pull/2793 and we need to invoke it
-  manually. This is by design (see comment in `Lean.Meta.postprocessAppMVars`), so I suggest this
-  adaptation note does not need to persist.
-  -/
-  exact toFinite ∅
+  rw [ncard_eq_zero ..]
 #align set.ncard_empty Set.ncard_empty
 
 theorem ncard_pos (hs : s.Finite := by toFinite_tac) : 0 < s.ncard ↔ s.Nonempty := by
@@ -621,19 +599,7 @@ theorem ncard_le_ncard_insert (a : α) (s : Set α) : s.ncard ≤ (insert a s).n
 #align set.ncard_le_ncard_insert Set.ncard_le_ncard_insert
 
 @[simp] theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
-  rw [ncard_insert_of_not_mem, ncard_singleton]; simpa
-  #adaptation_note
-  /--
-  The auto-param argument of
-  ```
-  Set.ncard_insert_of_not_mem (h : a ∉ s) (hs : s.Finite := by toFinite_tac) :
-      (insert a s).ncard = s.ncard + 1
-  ```
-  is not firing here after https://github.com/leanprover/lean4/pull/2793 and we need to invoke it
-  manually. This is by design (see comment in `Lean.Meta.postprocessAppMVars`), so I suggest this
-  adaptation note does not need to persist.
-  -/
-  exact toFinite {b}
+  rw [ncard_insert_of_not_mem .., ncard_singleton]; simpa
 #align set.card_doubleton Set.ncard_pair
 
 @[simp] theorem ncard_diff_singleton_add_one {a : α} (h : a ∈ s)
@@ -1089,19 +1055,8 @@ theorem ncard_le_one_iff_subset_singleton [Nonempty α]
 
 /-- A `Set` of a subsingleton type has cardinality at most one. -/
 theorem ncard_le_one_of_subsingleton [Subsingleton α] (s : Set α) : s.ncard ≤ 1 := by
-  rw [ncard_eq_toFinset_card]
+  rw [ncard_eq_toFinset_card ..]
   exact Finset.card_le_one_of_subsingleton _
-  #adaptation_note
-  /--
-  The auto-param argument of
-  ```
-  Set.ncard_eq_toFinset_card.{u_1} {α : Type u_1} (s : Set α) (hs : s.Finite := by toFinite_tac)
-  ```
-  is not firing here after https://github.com/leanprover/lean4/pull/2793 and we need to invoke it
-  manually. This is by design (see comment in `Lean.Meta.postprocessAppMVars`), so I suggest this
-  adaptation note does not need to persist.
-  -/
-  exact toFinite s
 #align ncard_le_one_of_subsingleton Set.ncard_le_one_of_subsingleton
 
 theorem one_lt_ncard (hs : s.Finite := by toFinite_tac) :
