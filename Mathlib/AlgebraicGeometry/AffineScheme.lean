@@ -307,6 +307,17 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
   · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
 
+/-- The affine open sets of an open subscheme corresponds to
+the affine open sets containing in the image. -/
+@[simps]
+def _root_.AlgebraicGeometry.IsOpenImmersion.affineOpensEquiv (f : X ⟶ Y) [H : IsOpenImmersion f] :
+    X.affineOpens ≃ { U : Y.affineOpens // U ≤ f.opensRange } where
+  toFun U := ⟨⟨f ''ᵁ U, U.2.image_of_isOpenImmersion f⟩, Set.image_subset_range _ _⟩
+  invFun U := ⟨f ⁻¹ᵁ U, f.isAffineOpen_iff_of_isOpenImmersion.mp (by
+    rw [show f ''ᵁ f ⁻¹ᵁ U = U from Opens.ext (Set.image_preimage_eq_of_subset U.2)]; exact U.1.2)⟩
+  left_inv _ := Subtype.ext (Opens.ext (Set.preimage_image_eq _ H.base_open.inj))
+  right_inv U := Subtype.ext (Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2)))
+
 instance (priority := 100) _root_.AlgebraicGeometry.Scheme.compactSpace_of_isAffine
     (X : Scheme) [IsAffine X] :
     CompactSpace X :=

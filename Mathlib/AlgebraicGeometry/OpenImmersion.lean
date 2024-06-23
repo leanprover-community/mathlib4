@@ -73,15 +73,18 @@ theorem IsOpenImmersion.isOpen_range {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpe
 @[deprecated (since := "2024-03-17")]
 alias IsOpenImmersion.open_range := IsOpenImmersion.isOpen_range
 
-/-- The image of an open immersion as an open set. -/
-@[simps]
-def Scheme.Hom.opensRange {X Y : Scheme.{u}} (f : Hom X Y) [H : IsOpenImmersion f] : Opens Y :=
-  ⟨_, H.base_open.isOpen_range⟩
-#align algebraic_geometry.Scheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
-
 namespace Scheme.Hom
 
 variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]
+
+theorem openEmbedding : OpenEmbedding f.1.base :=
+  H.base_open
+
+/-- The image of an open immersion as an open set. -/
+@[simps]
+def opensRange : Opens Y :=
+  ⟨_, f.openEmbedding.isOpen_range⟩
+#align algebraic_geometry.Scheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor : Opens X ⥤ Opens Y :=
@@ -128,6 +131,15 @@ theorem invApp_app (U) :
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
 end Scheme.Hom
+
+/-- The open sets of an open subscheme corresponds to the open sets containing in the image. -/
+@[simps]
+def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Opens X ≃ { U : Opens Y // U ≤ f.opensRange } where
+  toFun U := ⟨f ''ᵁ U, Set.image_subset_range _ _⟩
+  invFun U := f ⁻¹ᵁ U
+  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.openEmbedding.inj)
+  right_inv U := Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2))
 
 namespace Scheme
 

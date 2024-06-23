@@ -153,13 +153,13 @@ structure AffineTargetMorphismProperty.IsLocal (P : AffineTargetMorphismProperty
   RespectsIso : P.toProperty.RespectsIso
   /-- `P` is stable under restriction to basic open set of global sections. -/
   toBasicOpen :
-    ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj <| op ⊤),
+    ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (r : Γ(Y, ⊤)),
       P f → @P _ _ (f ∣_ Y.basicOpen r) ((isAffineOpen_top Y).basicOpen _)
   /-- `P` for `f` if `P` holds for `f` restricted to basic sets of a spanning set of the global
     sections -/
   ofBasicOpenCover :
-    ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (s : Finset (Y.presheaf.obj <| op ⊤))
-      (_ : Ideal.span (s : Set (Y.presheaf.obj <| op ⊤)) = ⊤),
+    ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (s : Finset Γ(Y, ⊤))
+      (_ : Ideal.span (s : Set Γ(Y, ⊤)) = ⊤),
       (∀ r : s, @P _ _ (f ∣_ Y.basicOpen r.1) ((isAffineOpen_top Y).basicOpen _)) → P f
 #align algebraic_geometry.affine_target_morphism_property.is_local AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal
 
@@ -313,7 +313,7 @@ structure PropertyIsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
   /-- `P` respects isomorphisms. -/
   RespectsIso : P.RespectsIso
   /-- If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ U` for any `U`. -/
-  restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier), P f → P (f ∣_ U)
+  restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y), P f → P (f ∣_ U)
   /-- If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.  -/
   of_openCover :
     ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y),
@@ -322,8 +322,8 @@ structure PropertyIsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
 
 lemma propertyIsLocalAtTarget_of_morphismRestrict (P : MorphismProperty Scheme)
     (hP₁ : P.RespectsIso)
-    (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y.carrier), P f → P (f ∣_ U))
-    (hP₃ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y.carrier)
+    (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y), P f → P (f ∣_ U))
+    (hP₃ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y)
       (_ : iSup U = ⊤), (∀ i, P (f ∣_ U i)) → P f) :
     PropertyIsLocalAtTarget P where
   RespectsIso := hP₁

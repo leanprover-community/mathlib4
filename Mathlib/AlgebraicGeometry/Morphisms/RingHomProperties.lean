@@ -161,6 +161,17 @@ theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally 
 #align algebraic_geometry.affine_locally_respects_iso AlgebraicGeometry.affineLocally_respectsIso
 
 open Scheme in
+theorem Γ_ιOpens_morphismRestrict_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (U V) :
+    P (Γ.map (ιOpens V ≫ f ∣_ U).op) ↔ P (f.appLE U (ιOpens _ ''ᵁ V)
+      ((Set.image_subset_range _ _).trans Subtype.range_val.subset)) := by
+  simp only [Γ_obj, restrict_presheaf_obj, op_comp, Γ_map, unop_comp, Quiver.Hom.unop_op, comp_app,
+    Opens.map_top, ofRestrict_val_base, morphismRestrict_app', ofRestrict_app, TopCat.coe_of,
+    Functor.id_obj, Opens.coe_inclusion, Functor.comp_obj, restrict_presheaf_map, Hom.appLE_map]
+  apply f.appLE_congr
+  · exact U.openEmbedding_obj_top
+  · rw [Opens.openEmbedding_obj_top]
+
+open Scheme in
 theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} (@P) f ↔
       ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), P (f.appLE U V e) := by
@@ -168,10 +179,8 @@ theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
   intro U
   delta sourceAffineLocally
   conv_lhs =>
-    intro U
-    rw [op_comp, Scheme.Γ.map_comp, Γ_map_morphismRestrict, Category.assoc, Category.assoc,
-      Scheme.Γ_map_op, ofRestrict_app, restrict_presheaf_map, Hom.app_eq_appLE, Hom.map_appLE_assoc,
-      Hom.appLE_map_assoc, Hom.appLE_map]
+    intro V
+    rw [Γ_ιOpens_morphismRestrict_iff (P := P) f U V]
   constructor
   · intro H V e
     let U' := f ⁻¹ᵁ U.1
@@ -183,24 +192,25 @@ theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
       apply (ιOpens U').isAffineOpen_iff_of_isOpenImmersion.mp
       rw [e'']
       exact V.2
-    refine (f.appLE_congr _ _ ?_ ?_).mp (H ⟨ιOpens U' ⁻¹ᵁ V, h⟩)
-    · exact U.1.openEmbedding_obj_top
-    · show ιOpens U' ''ᵁ ιOpens (ιOpens U' ⁻¹ᵁ ↑V) ''ᵁ ⊤ = V
-      rw [Opens.openEmbedding_obj_top, e'']
+    exact (f.appLE_congr _ rfl e'' _).mp (H ⟨ιOpens U' ⁻¹ᵁ V, h⟩)
   · intro H V
-    specialize H ⟨_, V.2.image_of_isOpenImmersion (ιOpens _)⟩ (Subtype.coe_image_subset _ _)
-    refine (f.appLE_congr _ _ ?_ ?_).mp H
-    · exact U.1.openEmbedding_obj_top.symm
-    · show ιOpens (f ⁻¹ᵁ ↑U) ''ᵁ V = ιOpens (f ⁻¹ᵁ ↑U) ''ᵁ (ιOpens V ''ᵁ ⊤)
-      rw [Opens.openEmbedding_obj_top]
+    exact H ⟨_, V.2.image_of_isOpenImmersion (ιOpens _)⟩ (Subtype.coe_image_subset _ _)
 #align algebraic_geometry.affine_locally_iff_affine_opens_le AlgebraicGeometry.affineLocally_iff_affineOpens_le
 
+set_option maxHeartbeats 0 in
 theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.RespectsIso @P)
     (h₂ : RingHom.LocalizationPreserves @P) {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y)
     (r : Γ(Y, ⊤)) (H : sourceAffineLocally (@P) f)
     (U : (X ∣_ᵤ f ⁻¹ᵁ Y.basicOpen r).affineOpens) :
     P (Scheme.Γ.map (Scheme.ιOpens U.1 ≫ f ∣_ Y.basicOpen r).op) := by
-  simp?
+  rw [Γ_ιOpens_morphismRestrict_iff (P := P)]
+  -- simp only [Scheme.Γ_obj, Scheme.restrict_presheaf_obj, op_comp, Scheme.Γ_map, unop_comp,
+  --   Quiver.Hom.unop_op, Scheme.comp_app, Opens.map_top, Scheme.ofRestrict_val_base,
+  --   morphismRestrict_app', Scheme.ofRestrict_app, TopCat.coe_of, Functor.id_obj,
+  --   Opens.coe_inclusion, Functor.comp_obj, Scheme.restrict_presheaf_map, Scheme.Hom.appLE_map]
+  -- rw [f.appLE_congr _ ((Y.basicOpen r).openEmbedding_obj_top)
+  --   (show _ = Scheme.ιOpens (f ⁻¹ᵁ Y.basicOpen r) ''ᵁ (Scheme.ιOpens U ''ᵁ ⊤) from rfl) P]
+  -- rw [Scheme.ofRestrict_val_base, Opens.openEmbedding_obj_top]
   -- specialize H ⟨_, U.2.image_of_isOpenImmersion (Scheme.ιOpens _)⟩
   -- letI i1 : Algebra Γ(Y, ⊤) (Localization.Away r) := Localization.algebra
   -- exact (h₁.ofRestrict_morphismRestrict_iff f r (Scheme.ιOpens (f ⁻¹ᵁ Y.basicOpen r) ''ᵁ U.1)
