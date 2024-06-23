@@ -8,11 +8,11 @@ variable {K : Type*} [Field K] [NumberField K]
 local notation "h" => finrank ℚ K
 
 theorem matricesMulLeft {u v : Fin h → ℂ} {M : Matrix (Fin h) (Fin h) ℂ} [Invertible M]
-  (hM : u = M.mulVec v) : M⁻¹.mulVec u = v := by
+    (hM : u = M.mulVec v) : M⁻¹.mulVec u = v := by
   simp only [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
 
 theorem max0fEqSets {γ : Type _} [LinearOrder γ] {s t : Finset γ} (hs : s.Nonempty)
-  (ht : t.Nonempty) (hst : s = t) : s.max' hs = t.max' ht := by simp_rw [hst]
+    (ht : t.Nonempty) (hst : s = t) : s.max' hs = t.max' ht := by simp_rw [hst]
 
 /-- `maxFinFun` takes a function `f` from a finite and nonempty type `s` to a
   linearly ordered type `γ`, and returns the maximum value of `f` over all elements of `s`. -/
@@ -69,7 +69,7 @@ theorem hnewsets {j : Fin h} (α : K) : (Set.range fun σ : (Fin h) → K →+* 
 abbrev House (α : K) : ℝ := (Complex.abs '' rootSet (minpoly ℚ α) ℂ).toFinset.max' (hmax α)
 
 theorem hmax' {j : Fin h} (α : K) :
-  (toFinset (⇑Complex.abs '' range fun σ : Fin h → K →+* ℂ => σ j α)).Nonempty := by
+    (toFinset (⇑Complex.abs '' range fun σ : Fin h → K →+* ℂ => σ j α)).Nonempty := by
   rw [toFinset_nonempty]; apply Set.Nonempty.image; apply range_nonempty
 
 theorem switch {j : Fin h} (α : K) : House α = (Finset.max' (toFinset (⇑Complex.abs ''
@@ -84,7 +84,7 @@ theorem switch {j : Fin h} (α : K) : House α = (Finset.max' (toFinset (⇑Comp
 def c := @maxFinFunMat K _ _ B⁻¹ * h
 
 theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
-  @c K _ _ * House (algebraMap (𝓞 K) K α) := by
+    @c K _ _ * House (algebraMap (𝓞 K) K α) := by
 
   intros i
 
@@ -149,7 +149,7 @@ theorem remark (α : 𝓞 K) : ∀ i, Complex.abs (b.repr α i) ≤
             exists_const, true_and]
             use i
             use j
-       _ =  c' * h * House (algebraMap (𝓞 K) K α) := by
+       _ =  c' * h * House  (algebraMap (𝓞 K) K α) := by
         rw [sum_const, Finset.card_fin, nsmul_eq_mul, ←mul_assoc, mul_comm ↑h (maxFinFunMat B⁻¹)]
 
 end section
