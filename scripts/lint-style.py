@@ -66,10 +66,8 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_MOD, path, None)]
         elif errno == "ERR_LIN":
             exceptions += [(ERR_LIN, path, None)]
-        elif errno == "ERR_OPT":
-            exceptions += [(ERR_OPT, path, None)]
         elif errno == "ERR_ADN":
-            exceptions += [(ERR_ADN, path, None)]
+            pass # maintained by the Lean style linter now
         elif errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path, None)]
         elif errno == "ERR_TAC2":
