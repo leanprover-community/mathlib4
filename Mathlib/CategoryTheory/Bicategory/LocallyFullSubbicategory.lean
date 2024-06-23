@@ -44,6 +44,18 @@ in `C` from `F X` to `F Y`.
 structure InducedBicategory (_F : Prefunctor B C) : Type u :=
   as : B
 
+structure InducedBicategory' where
+  obj : Type u
+  categoryStruct : CategoryStruct.{v} obj
+  -- TODO: hom as above or sth
+  F : Prefunctor obj C
+  -- commute w/ comp
+  mapComp : ∀ {a b c : obj} (f : a ⟶ b) (g : b ⟶ c), F.map (f ≫ g) ≅ F.map f ≫ F.map g
+  mapId : ∀ {a : obj}, F.map (𝟙 a) ≅ 𝟙 (F.obj a)
+  -- respects associators etc
+
+
+
 namespace InducedBicategory
 
 variable {C}
@@ -61,10 +73,10 @@ instance categoryStruct : CategoryStruct (InducedBicategory C F) where
 instance bicategory : Bicategory.{w₁, v} (InducedBicategory C F) where
   toCategoryStruct := categoryStruct F
   homCategory a b := InducedCategory.category (F.map (X := a.1) (Y:=b.1))
-  -- Need "F" pre'oplax here (so mapId + mapComp + nothing else?)
+  -- Need "F" "PseudoStruct" here (so mapId + mapComp + coherences + no 2-morphisms)
   whiskerLeft {a b c} f {g h} η := ((F.map f) ◁ η)
   whiskerRight := sorry
-  associator := sorry
+  associator f g h := α_ (F.map f) (F.map g) (F.map h)
   leftUnitor := sorry
   rightUnitor := sorry
   whiskerLeft_id := sorry
