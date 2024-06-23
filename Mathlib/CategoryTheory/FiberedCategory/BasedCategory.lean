@@ -250,7 +250,7 @@ variable {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
 and natural transformations. -/
-@[simps toNatTrans]
+@[simps]
 def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
   toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
