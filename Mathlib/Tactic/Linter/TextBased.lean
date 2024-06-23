@@ -78,32 +78,29 @@ def StyleError.normalise (err : StyleError) : StyleError := match err with
 /-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
 instance : BEq ErrorContext where
   beq ctx ctx' :=
-      -- XXX: `lint-style.py` was calling `resolve()` on the path before before comparing them
-      -- should we also do so?
       ctx.path == ctx'.path
       -- We completely ignore line numbers of errors. Not sure if this is best.
       -- We normalise errors before comparing them.
       && (ctx.error).normalise == (ctx'.error).normalise
 
 /-- Output the formatted error message, containing its context.
-
 `style` specifies if the error should be formatted for humans or for github output matchers -/
 def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
   let error_message := errctx.error.errorMessage style
   match style with
   | ErrorFormat.github =>
-    -- We are outputting for github: duplicate file path, line number and error code,
+   -- We are outputting for github: duplicate file path, line number and error code,
     -- so that they are also visible in the plain text output.
     let path := errctx.path
     let nr := errctx.lineNumber
     let code := errctx.error.errorCode
     s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {error_message}"
-  | ErrorFormat.humanReadable =>
-    -- Print for humans: clickable file name and omit the error code
-    s!"error: {errctx.path}:{errctx.lineNumber} {error_message}"
   | ErrorFormat.exceptionsFile =>
     -- Produce an entry in the exceptions file: with error code and "line" in front of the number.
     s!"{errctx.path} : line {errctx.lineNumber} : {errctx.error.errorCode} : {error_message}"
+  | ErrorFormat.humanReadable =>
+    -- Print for humans: clickable file name and omit the error code
+    s!"error: {errctx.path}:{errctx.lineNumber}: {error_message}"
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
@@ -131,9 +128,10 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | _ => none
       -- Omit the line number, as we don't use it anyway.
       return (err.map fun e ↦ (ErrorContext.mk e 0 path))
-    -- XXX: print an error on any lines which don't match the particular format.
-    | _ => -- IO.println s!"Invalid input file: line {line} doesn't match any particular format"
-      none
+    -- It would be nice to print an error on any line which doesn't match the above format,
+    -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
+    -- anyway as the style exceptions file is mostly automatically generated.
+    | _ => none
 
 /-- Parse all style exceptions for a line of input.
 Return an array of all exceptions which could be parsed: invalid input is ignored. -/
@@ -142,7 +140,6 @@ def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run d
   Array.filterMap (parse?_errorContext ·) (lines.filter (fun line ↦ !line.startsWith "--"))
 
 /-- Print information about all errors encountered to standard output.
-
 `style` specifies if we print errors for humand or github consumption. -/
 def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit := do
   for e in errors do
@@ -173,141 +170,64 @@ def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Optio
     | some mark => lines.size > mark
     | none => true
     if is_larger then
-      -- We add about 200 lines of slack to the current file size:
-      -- small PRs will be unperturbed, but sufficiently large PRs will get nudged towards
-      -- splitting up this file.
+      -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
+      -- but sufficiently large PRs will get nudged towards splitting up this file.
       return some (StyleError.fileTooLong lines.size ((Nat.div lines.size 100) * 100 + 200))
   none
 
 end
 
-/-- All text-based linters registered in this file. -/
-def allLinters : Array TextbasedLinter := Array.mk
-  []
-
-/-- Controls what kind of output this programme produces. -/
-inductive OutputSetting : Type
-  /-- Print any style error to standard output (the default) -/
-  | print (style : ErrorFormat)
-  /-- Append all new errors to the style exceptions file (and print them?),
-  leaving existing ones intact -/
-  | append
-  /-- Regenerate the whole style exceptions file -/
-  | regenerate
-  deriving BEq
-
-/-- Append a given string at the end of an existing file. -/
--- XXX: move this to `Init.System.IO.lean` in Lean core
-def IO.FS.appendToFile (fname : FilePath) (content : String) : IO Unit := do
-  let previous_content ← IO.FS.readFile fname
-  IO.FS.writeFile fname (previous_content ++ content)
-
-/-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
-`sizeLimit` is any pre-existing limit on this file's size. -/
-def lintFile (path : FilePath) (sizeLimit : Option ℕ) : IO (Array ErrorContext) := do
+/-- Read a file, apply all text-based linters and print formatted errors.
+Return `true` if there were new errors (and `false` otherwise).
+`sizeLimit` is any pre-existing limit on this file's size.
+`style` specifies if errors should be formatted for github or human consumption. -/
+def lintFile (path : FilePath) (sizeLimit : Option ℕ) (style : ErrorFormat) : IO Bool := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if isImportsOnlyFile lines then
-    return #[]
+    return false
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
-    let err := ErrorContext.mk (StyleError.fileTooLong n limit) 1 path
-    return Array.mkArray1 err
-  return #[]
-
-/-- Apply text-based linters to a list of files.
-Print formatted errors and possibly update the style exceptions file accordingly.
-Return the number of files which had unexpected style errors.
-`mode` specifies what kind of output this script should produce. -/
-def lintFiles (files : Array FilePath) (mode : OutputSetting) : IO UInt32 := do
-  let exceptions_filePath := mkFilePath ["scripts", "style-exceptions.txt"]
-  let mut styleExceptions := #[]
-  if mode != OutputSetting.regenerate then
-    -- Read the style exceptions file.
-    let exception_lines ← IO.FS.lines exceptions_filePath
-    styleExceptions := parseStyleExceptions exception_lines
-  let mut number_error_files : UInt32 := 0
-  let mut all_unexpected_errors : Array ErrorContext := #[]
-  for file in files do
-    -- Find the size limit for this given file.
-    -- If several size limits are given (unlikely in practice), we use the first one.
-    let size_limits := (styleExceptions.filter (·.path == file)).filterMap (fun errctx ↦
-      match errctx.error with
-      | StyleError.fileTooLong _ limit => some limit)
-    let errors ← lintFile file (size_limits.get? 0)
-    if errors.size > 0 then
-      number_error_files := number_error_files + 1
-      all_unexpected_errors := all_unexpected_errors.append errors
-  match mode with
-  | OutputSetting.print style => formatErrors all_unexpected_errors style
-    -- XXX: should these also print the errors? if yes, only for humans, I guess!
-  | OutputSetting.append =>
-    if all_unexpected_errors.size > 0 then
-      let formatted := (all_unexpected_errors.map
-        (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
-      IO.FS.appendToFile exceptions_filePath s!"{"\n".intercalate formatted}\n"
-  | OutputSetting.regenerate =>
-    -- Empty the style exceptions file first: `writeFile` overwrites previous contents.
-    IO.FS.writeFile exceptions_filePath s!""
-    let python_output ← IO.Process.run { cmd := "./scripts/print_style_errors.sh" }
-    let this_output := "\n".intercalate (all_unexpected_errors.map
-      (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
-    IO.FS.writeFile exceptions_filePath s!"{python_output}{this_output}\n"
-  return number_error_files
+    let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
+    formatErrors arr style
+    return true
+  return false
 
 /-- Lint all files referenced in a given import-only file.
 Return the number of files which had new style errors.
-`mode` specifies what kind of output this script should produce. -/
-def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
-  -- Read all module names from the file at `path` and convert to file paths.
+`style` specifies if errors should be formatted for github or human consumption. -/
+def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
+  -- Read all module names from the file at `path`.
   let allModules ← IO.FS.lines path
-  let paths := allModules.map (fun mod ↦
-    (mkFilePath ((mod.stripPrefix "import ").split fun c ↦ (c == '.'))).addExtension "lean"
-  )
-  let n ← lintFiles paths mode
-  if n > 0 && mode matches OutputSetting.print _ then
-    IO.println s!"error: found {n} new style errors\n\
-      run `lake exe lint_style --update` to ignore all of them"
-  return n
+  -- Read the style exceptions file.
+  let exceptions_file ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
+  let mut style_exceptions := parseStyleExceptions exceptions_file
+  let mut number_error_files := 0
+  for module in allModules do
+    let module := module.stripPrefix "import "
+    -- Convert the module name to a file name, then lint that file.
+    let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
+    -- Find the size limit for this given file.
+    -- If several size limits are given (unlikely in practice), we use the first one.
+    let size_limits := (style_exceptions.filter (·.path == path)).filterMap (fun errctx ↦
+      match errctx.error with
+      | StyleError.fileTooLong _ limit => some limit)
+    if ← lintFile path (size_limits.get? 0) style then
+      number_error_files := number_error_files + 1
+  return number_error_files
 
 open Cli in
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  if args.hasFlag "update" && args.hasFlag "regenerate" then
-    IO.println "invalid options: the --update and --regenerate flags are mutually exclusive"
-    return 2
-  else if args.variableArgs.size > 0 && args.hasFlag "regenerate" then
-    IO.println "invalid options: the --regenerate flag can only be used when linting all files"
-  else if args.variableArgs.size > 0 && args.hasFlag "libraries" then
-    IO.println "invalid options: the libraries argument cannot be combined with linting individual files"
-
-  let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
-  let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "regenerate") with
-  | (true, false) => OutputSetting.append
-  | (false, true) => OutputSetting.regenerate
-  | (false, false) | (true, true) => OutputSetting.print errorStyle
+  let errorStyle := match (args.hasFlag "github", args.hasFlag "update") with
+    | (true, _) => ErrorFormat.github
+    | (false, true) => ErrorFormat.exceptionsFile
+    | (false, false) => ErrorFormat.humanReadable
   let mut number_error_files : UInt32 := 0
-  let files := args.variableArgsAs! String
-  if files.size > 0 then
-    -- Only lint the specified files.
-    for filename in files do
-      if !(← FilePath.pathExists filename) then
-        IO.println s!"invalid input: file {filename} does not exist"
-        return 2
-    let paths := files.map (fun fname ↦ mkFilePath [fname])
-    number_error_files := number_error_files + (← lintFiles paths mode)
-  else
-    let mut libraries := (args.flags.filter (·.flag.longName == "libraries")).map (·.value)
-    if libraries.size == 0 then
-      libraries := #["Mathlib", "Archive", "Counterexamples"]
-    -- When regenerating the exceptions, we have to be careful to not over-write one collection
-    -- of errors in the first turn: down-grade all but the first output setting to `append`.
-    number_error_files ← lintAllFiles (mkFilePath [s!"{libraries.get! 0}.lean"]) mode
-    let mode' := if mode == OutputSetting.regenerate then OutputSetting.append else mode
-    for libname in libraries.extract 1 libraries.size do
-      let n ← lintAllFiles (mkFilePath [s!"{libname}.lean"]) mode'
-      number_error_files := number_error_files + n
-  return number_error_files
+  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
+    let n ← lintAllFiles (mkFilePath [s]) errorStyle
+    number_error_files := number_error_files + n
+   return number_error_files
 
 open Cli in
 /-- Setting up command line options and help text for `lake exe lint_style`. -/
@@ -320,16 +240,8 @@ def lint_style : Cmd := `[Cli|
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
-    update;     "Append all new errors to the current list of exceptions \
-                 (leaving existing entries untouched)"
-    regenerate; "Regenerate the file of style exceptions: \
-                 add entries for all current errors and update or remove all obsolete ones"
-    libraries : Array String; "Audit all files in precisely these libraries\
-      If no value is provided, we use the libraries Mathlib, Archive and Counterexamples"
-
-  ARGS:
-    ...files : String; "Only lint these file(s)"
+    update;     "Print errors solely for the style exceptions file"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
-def main (args : List String) : IO UInt32 := lint_style.validate args
+def main (args : List String) : IO UInt32 := do lint_style.validate args

@@ -73,12 +73,11 @@ lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnecti
 lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisConnection _ _).symm
 #align nnreal.le_sqrt_iff NNReal.le_sqrt_iff_sq_le
 
--- 2024-02-14
-@[deprecated] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
-@[deprecated] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
-@[deprecated] alias sqrt_le_iff := sqrt_le_iff_le_sq
-@[deprecated] alias le_sqrt_iff := le_sqrt_iff_sq_le
-@[deprecated] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
+@[deprecated (since := "2024-02-14")] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
+@[deprecated (since := "2024-02-14")] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
+@[deprecated (since := "2024-02-14")] alias sqrt_le_iff := sqrt_le_iff_le_sq
+@[deprecated (since := "2024-02-14")] alias le_sqrt_iff := le_sqrt_iff_sq_le
+@[deprecated (since := "2024-02-14")] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
 
 @[simp] lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 := by simp [sqrt_eq_iff_eq_sq]
 #align nnreal.sqrt_eq_zero NNReal.sqrt_eq_zero
