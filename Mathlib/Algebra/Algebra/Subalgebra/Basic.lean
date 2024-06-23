@@ -202,9 +202,8 @@ protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [A
   intCast_mem S n
 #align subalgebra.coe_int_mem Subalgebra.intCast_mem
 
--- 2024-04-05
-@[deprecated natCast_mem] alias coe_nat_mem := Subalgebra.natCast_mem
-@[deprecated intCast_mem] alias coe_int_mem := Subalgebra.intCast_mem
+@[deprecated natCast_mem (since := "2024-04-05")] alias coe_nat_mem := Subalgebra.natCast_mem
+@[deprecated intCast_mem (since := "2024-04-05")] alias coe_int_mem := Subalgebra.intCast_mem
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
