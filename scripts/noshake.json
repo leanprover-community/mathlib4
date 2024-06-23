@@ -61,6 +61,7 @@
   "Mathlib.Tactic.Attr.Register",
   "Mathlib.Tactic.Basic",
   "Mathlib.Tactic.ByContra",
+  "Mathlib.Tactic.CC",
   "Mathlib.Tactic.CancelDenoms",
   "Mathlib.Tactic.Cases",
   "Mathlib.Tactic.CasesM",
