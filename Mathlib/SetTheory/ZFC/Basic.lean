@@ -59,7 +59,6 @@ respectively as "`Set`" and "ZFC set".
 Prove `ZFSet.mapDefinableAux` computably.
 -/
 
--- Porting note: Lean 3 uses `Set` for `ZFSet`.
 set_option linter.uppercaseLean3 false
 
 universe u v

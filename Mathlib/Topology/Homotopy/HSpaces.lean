@@ -48,7 +48,7 @@ particular, only has an instance of `MulOneClass`).
 * [J.-P. Serre, *Homologie singulière des espaces fibrés. Applications*,
   Ann. of Math (2) 1951, 54, 425–505][serre1951]
 -/
--- Porting note: `HSpace` already contains an upper case letter
+
 set_option linter.uppercaseLean3 false
 universe u v
 
@@ -174,7 +174,7 @@ def qRight (p : I × I) : I :=
 
 theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
-    Continuous.div (by continuity) (by continuity) fun x => (add_pos zero_lt_one).ne'
+    Continuous.div (by fun_prop) (by fun_prop) fun x ↦ (add_pos zero_lt_one).ne'
 #align unit_interval.continuous_Q_right unitInterval.continuous_qRight
 
 theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
