@@ -499,6 +499,8 @@ end SetTheory.PGame.Numeric
 
 namespace Surreal.Multiplication
 
+/-- The nontrivial part of P1 says that the left options of `x * y` are less than the right options,
+  and this is the general form of these statements. -/
 def P1 (x₁ x₂ x₃ y₁ y₂ y₃ : PGame) :=
   ⟦x₁ * y₁⟧ + ⟦x₂ * y₂⟧ - ⟦x₁ * y₂⟧ < ⟦x₃ * y₁⟧ + ⟦x₂ * y₃⟧ - (⟦x₃ * y₃⟧: Game)
 
