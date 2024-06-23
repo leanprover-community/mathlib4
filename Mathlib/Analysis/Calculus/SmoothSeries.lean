@@ -26,7 +26,7 @@ We also give versions of these statements which are localized to a set.
 
 open Set Metric TopologicalSpace Function Asymptotics Filter
 
-open scoped Topology NNReal BigOperators
+open scoped Topology NNReal
 
 variable {α β 𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
@@ -46,10 +46,10 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
     (hx : x ∈ s) : Summable fun n => f n x := by
   haveI := Classical.decEq α
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
-  have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i in t, f' i x) atTop s :=
+  have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i ∈ t, f' i x) atTop s :=
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn
   -- Porting note: Lean 4 failed to find `f` by unification
-  refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i in t, f i x)
+  refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i ∈ t, f i x)
     hs h's A (fun t y hy => ?_) hx₀ hx hf0
   exact HasFDerivAt.sum fun i _ => hf i y hy
 #align summable_of_summable_has_fderiv_at_of_is_preconnected summable_of_summable_hasFDerivAt_of_isPreconnected
@@ -75,7 +75,7 @@ theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
     (hx : x ∈ s) : HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
   classical
     have A :
-      ∀ x : E, x ∈ s → Tendsto (fun t : Finset α => ∑ n in t, f n x) atTop (𝓝 (∑' n, f n x)) := by
+      ∀ x : E, x ∈ s → Tendsto (fun t : Finset α => ∑ n ∈ t, f n x) atTop (𝓝 (∑' n, f n x)) := by
       intro y hy
       apply Summable.hasSum
       exact summable_of_summable_hasFDerivAt_of_isPreconnected hu hs h's hf hf' hx₀ hf0 hy
@@ -234,7 +234,7 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
   constructor
   · intro m hm
     rw [iteratedFDeriv_tsum hf hv h'f hm]
-    refine' continuous_tsum _ (hv m hm) _
+    refine continuous_tsum ?_ (hv m hm) ?_
     · intro i
       exact ContDiff.continuous_iteratedFDeriv hm (hf i)
     · intro n x
@@ -276,18 +276,18 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         exact (WithTop.coe_le_coe.2 hi).trans hm
       eventually_cofinite.2 A
     let T : Finset α := ht.toFinset
-    have : (fun x => ∑' i, f i x) = (fun x => ∑ i in T, f i x) +
+    have : (fun x => ∑' i, f i x) = (fun x => ∑ i ∈ T, f i x) +
         fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
-      refine' (sum_add_tsum_subtype_compl _ T).symm
-      refine' .of_norm_bounded_eventually _ (hv 0 (zero_le _)) _
+      refine (sum_add_tsum_subtype_compl ?_ T).symm
+      refine .of_norm_bounded_eventually _ (hv 0 (zero_le _)) ?_
       filter_upwards [h'f 0 (zero_le _)] with i hi
       simpa only [norm_iteratedFDeriv_zero] using hi x
     rw [this]
     apply (ContDiff.sum fun i _ => (hf i).of_le hm).add
     have h'u : ∀ k : ℕ, (k : ℕ∞) ≤ m → Summable (v k ∘ ((↑) : { i // i ∉ T } → α)) := fun k hk =>
       (hv k (hk.trans hm)).subtype _
-    refine' contDiff_tsum (fun i => (hf i).of_le hm) h'u _
+    refine contDiff_tsum (fun i => (hf i).of_le hm) h'u ?_
     rintro k ⟨i, hi⟩ x hk
     simp only [t, T, Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
       exists_prop, not_exists, not_and, not_lt] at hi

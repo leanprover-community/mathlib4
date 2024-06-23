@@ -154,7 +154,7 @@ noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (hv₁ : (associated (R := K) Q).IsOrthoᵢ v) :
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
-  refine' ⟨iso, fun m => _⟩
+  refine ⟨iso, fun m => ?_⟩
   convert iso.map_app m
   rw [basisRepr_eq_of_iIsOrtho _ _ hv₁]
 #align quadratic_form.isometry_weighted_sum_squares QuadraticForm.isometryEquivWeightedSumSquares

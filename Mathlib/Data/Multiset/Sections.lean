@@ -11,6 +11,7 @@ import Mathlib.Data.Multiset.Bind
 # Sections of a multiset
 -/
 
+assert_not_exists Ring
 
 namespace Multiset
 
@@ -60,18 +61,12 @@ theorem mem_sections {s : Multiset (Multiset α)} :
     ∀ {a}, a ∈ Sections s ↔ s.Rel (fun s a => a ∈ s) a := by
   induction s using Multiset.induction_on with
   | empty => simp
-  | cons ih => simp [ih, rel_cons_left, eq_comm]
+  | cons _ _ ih => simp [ih, rel_cons_left, eq_comm]
 #align multiset.mem_sections Multiset.mem_sections
 
 theorem card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=
   Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
 #align multiset.card_sections Multiset.card_sections
-
-theorem prod_map_sum [CommSemiring α] {s : Multiset (Multiset α)} :
-    prod (s.map sum) = sum ((Sections s).map prod) :=
-  Multiset.induction_on s (by simp) fun a s ih => by
-    simp [ih, map_bind, sum_map_mul_left, sum_map_mul_right]
-#align multiset.prod_map_sum Multiset.prod_map_sum
 
 end Sections
 

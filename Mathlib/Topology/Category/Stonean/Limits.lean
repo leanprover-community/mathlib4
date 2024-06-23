@@ -105,7 +105,7 @@ lemma finiteCoproduct.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stone
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
-  refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
+  refine OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding ?_
   convert finiteCoproduct.openEmbedding_ι Z a
   ext x
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
@@ -160,7 +160,7 @@ def pullback : Stonean where
     dsimp at U
     have h : IsClopen (f ⁻¹' (Set.range i)) := by
       constructor
-      · refine' IsClosed.preimage f.continuous _
+      · refine IsClosed.preimage f.continuous ?_
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
         exact IsCompact.image isCompact_univ i.continuous
@@ -274,9 +274,9 @@ def pullbackIsoPullback : Stonean.pullback f hi ≅
       pullback.hom_ext f hi _ _ (by simp only [pullback.cone_pt, Category.assoc, pullback.lift_fst,
         limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.id_comp])
     inv_hom_id := by
-      refine' Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
+      refine Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
         Limits.pullback.snd Limits.pullback.condition ≫ Limits.pullback.lift
-        (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) _ _
+        (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) ?_ ?_
       · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
           pullback.lift_fst, Category.id_comp]
       · rw [Category.id_comp, Category.assoc, Limits.pullback.lift_snd, pullback.lift_snd] }

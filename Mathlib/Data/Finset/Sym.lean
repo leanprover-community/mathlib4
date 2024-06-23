@@ -189,10 +189,10 @@ theorem sym_succ : s.sym (n + 1) = s.sup fun a ↦ (s.sym n).image <| Sym.cons a
 @[simp]
 theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
   induction' n with n ih
-  · refine' mem_singleton.trans ⟨_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
+  · refine mem_singleton.trans ⟨?_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
     rintro rfl
     exact fun a ha ↦ (Finset.not_mem_empty _ ha).elim
-  refine' mem_sup.trans ⟨_, fun h ↦ _⟩
+  refine mem_sup.trans ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, ha, he⟩ b hb
     rw [mem_image] at he
     obtain ⟨m, he, rfl⟩ := he
@@ -263,7 +263,7 @@ theorem sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).sym n = s.sym n ∩ t.
 
 @[simp]
 theorem sym_union (s t : Finset α) (n : ℕ) : s.sym n ∪ t.sym n ⊆ (s ∪ t).sym n :=
-  union_subset (sym_mono (subset_union_left s t) n) (sym_mono (subset_union_right s t) n)
+  union_subset (sym_mono subset_union_left n) (sym_mono subset_union_right n)
 #align finset.sym_union Finset.sym_union
 
 theorem sym_fill_mem (a : α) {i : Fin (n + 1)} {m : Sym α (n - i)} (h : m ∈ s.sym (n - i)) :
@@ -282,13 +282,13 @@ theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
   in 1-1 correspondence with the disjoint union of the `n - i`th symmetric powers of `s`,
   for `0 ≤ i ≤ n`. -/
 @[simps]
-def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.sym (n - i)
-    where
+def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.sym (n - i) where
   toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦ by
-    refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
+    refine Function.Injective.sigma_map (β₂ := ?_) (f₂ := ?_)
+        (Function.injective_id) (fun i ↦ ?_) ?_
     · exact fun i ↦ Sym α (n - i)
     swap
     · exact Subtype.coe_injective

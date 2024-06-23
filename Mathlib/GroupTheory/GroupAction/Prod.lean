@@ -29,6 +29,8 @@ https://leanprover.zulipchat.com/#narrow/near/316087838
 This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
 
+assert_not_exists MonoidWithZero
+
 variable {M N P E α β : Type*}
 
 namespace Prod

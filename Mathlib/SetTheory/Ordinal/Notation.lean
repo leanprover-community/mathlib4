@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Init.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.Tactic.NormNum
 
 #align_import set_theory.ordinal.notation from "leanprover-community/mathlib"@"b67044ba53af18680e1dd246861d9584e968495d"
 
@@ -153,7 +155,7 @@ theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
 #align onote.repr_one ONote.repr_one
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
-  refine' le_trans _ (le_add_right _ _)
+  refine le_trans ?_ (le_add_right _ _)
   simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e) omega_pos).2 (natCast_le.2 n.2)
 #align onote.omega_le_oadd ONote.omega_le_oadd
 
@@ -220,7 +222,7 @@ theorem NFBelow.oadd {e n a b} : NF e → NFBelow a (repr e) → repr e < b → 
 #align onote.NF_below.oadd ONote.NFBelow.oadd
 
 theorem NFBelow.fst {e n a b} (h : NFBelow (ONote.oadd e n a) b) : NF e := by
-  (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact ⟨⟨_, h₁⟩⟩)
+  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact ⟨⟨_, h₁⟩⟩
 #align onote.NF_below.fst ONote.NFBelow.fst
 
 theorem NF.fst {e n a} : NF (oadd e n a) → NF e
@@ -228,7 +230,7 @@ theorem NF.fst {e n a} : NF (oadd e n a) → NF e
 #align onote.NF.fst ONote.NF.fst
 
 theorem NFBelow.snd {e n a b} (h : NFBelow (ONote.oadd e n a) b) : NFBelow a (repr e) := by
-  (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₂)
+  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₂
 #align onote.NF_below.snd ONote.NFBelow.snd
 
 theorem NF.snd' {e n a} : NF (oadd e n a) → NFBelow a (repr e)
@@ -248,7 +250,7 @@ instance NF.oadd_zero (e n) [h : NF e] : NF (ONote.oadd e n 0) :=
 #align onote.NF.oadd_zero ONote.NF.oadd_zero
 
 theorem NFBelow.lt {e n a b} (h : NFBelow (ONote.oadd e n a) b) : repr e < b := by
-  (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₃)
+  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₃
 #align onote.NF_below.lt ONote.NFBelow.lt
 
 theorem NFBelow_zero : ∀ {o}, NFBelow o 0 ↔ o = 0
@@ -274,7 +276,7 @@ theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
 
 theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : NFBelow o b₂ := by
   induction' h with _ e n a eb b h₁ h₂ h₃ _ _ <;> constructor
-  exacts[h₁, h₂, lt_of_lt_of_le h₃ bb]
+  exacts [h₁, h₂, lt_of_lt_of_le h₃ bb]
 #align onote.NF_below.mono ONote.NFBelow.mono
 
 theorem NF.below_of_lt {e n a b} (H : repr e < b) :
@@ -298,7 +300,7 @@ instance nf_ofNat (n) : NF (ofNat n) :=
   ⟨⟨_, nfBelow_ofNat n⟩⟩
 #align onote.NF_of_nat ONote.nf_ofNat
 
-instance nf_one : NF 1 := by (rw [← ofNat_one]; infer_instance)
+instance nf_one : NF 1 := by rw [← ofNat_one]; infer_instance
 #align onote.NF_one ONote.nf_one
 
 theorem oadd_lt_oadd_1 {e₁ n₁ o₁ e₂ n₂ o₂} (h₁ : NF (oadd e₁ n₁ o₁)) (h : e₁ < e₂) :
@@ -310,7 +312,7 @@ theorem oadd_lt_oadd_1 {e₁ n₁ o₁ e₂ n₂ o₂} (h₁ : NF (oadd e₁ n�
 theorem oadd_lt_oadd_2 {e o₁ o₂ : ONote} {n₁ n₂ : ℕ+} (h₁ : NF (oadd e n₁ o₁)) (h : (n₁ : ℕ) < n₂) :
     oadd e n₁ o₁ < oadd e n₂ o₂ := by
   simp only [lt_def, repr]
-  refine' lt_of_lt_of_le ((add_lt_add_iff_left _).2 h₁.snd'.repr_lt) (le_trans _ (le_add_right _ _))
+  refine lt_of_lt_of_le ((add_lt_add_iff_left _).2 h₁.snd'.repr_lt) (le_trans ?_ (le_add_right _ _))
   rwa [← mul_succ,Ordinal.mul_le_mul_iff_left (opow_pos _ omega_pos), succ_le_iff, natCast_lt]
 #align onote.oadd_lt_oadd_2 ONote.oadd_lt_oadd_2
 
@@ -553,9 +555,9 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
       · simp [Nat.succPNat]
         rw [(tsub_eq_iff_eq_add_of_le <| le_of_lt <| Nat.lt_of_sub_eq_succ mn).1 mn, add_comm,
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
-        refine'
+        refine
           (Ordinal.sub_eq_of_add_eq <|
-              add_absorp h₂.snd'.repr_lt <| le_trans _ (le_add_right _ _)).symm
+              add_absorp h₂.snd'.repr_lt <| le_trans ?_ (le_add_right _ _)).symm
         simpa using mul_le_mul_left' (natCast_le.2 <| Nat.succ_pos _) _
     · exact
         (Ordinal.sub_eq_of_add_eq <|
@@ -596,7 +598,7 @@ theorem oadd_mul_nfBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a
     · haveI := h₁.fst
       haveI := h₂.fst
       apply NFBelow.oadd
-      infer_instance
+      · infer_instance
       · rwa [repr_add]
       · rw [repr_add, add_lt_add_iff_left]
         exact h₂.lt
@@ -717,11 +719,11 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
       haveI := h.snd
       simp only [split_eq_scale_split' h', and_imp]
       have : 1 + (e - 1) = e := by
-        refine' repr_inj.1 _
+        refine repr_inj.1 ?_
         simp only [repr_add, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
           repr_sub]
         have := mt repr_inj.1 e0
-        refine' Ordinal.add_sub_cancel_of_le _
+        refine Ordinal.add_sub_cancel_of_le ?_
         have := one_le_iff_ne_zero.2 this
         exact this
       intros
@@ -746,11 +748,11 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
       have : (ω : Ordinal.{0}) ^ repr e = ω ^ (1 : Ordinal.{0}) * ω ^ (repr e - 1) := by
         have := mt repr_inj.1 e0
         rw [← opow_add, Ordinal.add_sub_cancel_of_le (one_le_iff_ne_zero.2 this)]
-      refine' ⟨NF.oadd (by infer_instance) _ _, _⟩
+      refine ⟨NF.oadd (by infer_instance) _ ?_, ?_⟩
       · simp at this ⊢
-        refine'
+        refine
           IH₁.below_of_lt'
-            ((Ordinal.mul_lt_mul_iff_left omega_pos).1 <| lt_of_le_of_lt (le_add_right _ m') _)
+            ((Ordinal.mul_lt_mul_iff_left omega_pos).1 <| lt_of_le_of_lt (le_add_right _ m') ?_)
         rw [← this, ← IH₂]
         exact h.snd'.repr_lt
       · rw [this]
@@ -849,8 +851,10 @@ theorem scale_opowAux (e a0 a : ONote) [NF e] [NF a0] [NF a] :
     by_cases h : m = 0
     · simp [h, opowAux, mul_add, opow_add, mul_assoc, scale_opowAux _ _ _ k]
     · -- Porting note: rewrote proof
-      rw [opowAux]; swap; assumption
-      rw [opowAux]; swap; assumption
+      rw [opowAux]; swap
+      · assumption
+      rw [opowAux]; swap
+      · assumption
       rw [repr_add, repr_scale, scale_opowAux _ _ _ k]
       simp only [repr_add, repr_scale, opow_add, mul_assoc, zero_add, mul_add]
 #align onote.scale_opow_aux ONote.scale_opowAux
@@ -863,7 +867,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   have No := Ne.oadd n (Na.below_of_lt' h)
   have := omega_le_oadd e n a
   rw [repr] at this
-  refine' le_antisymm _ (opow_le_opow_left _ this)
+  refine le_antisymm ?_ (opow_le_opow_left _ this)
   apply (opow_le_of_limit ((opow_pos _ omega_pos).trans_le this).ne' omega_isLimit).2
   intro b l
   have := (No.below_of_lt (lt_succ _)).repr_lt
@@ -912,13 +916,13 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   have Rl : R < ω ^ (repr a0 * succ ↑k) := by
     by_cases k0 : k = 0
     · simp [R, k0]
-      refine' lt_of_lt_of_le _ (opow_le_opow_right omega_pos (one_le_iff_ne_zero.2 e0))
+      refine lt_of_lt_of_le ?_ (opow_le_opow_right omega_pos (one_le_iff_ne_zero.2 e0))
       cases' m with m <;> simp [opowAux, omega_pos]
       rw [← add_one_eq_succ, ← Nat.cast_succ]
       apply nat_lt_omega
     · rw [opow_mul]
       exact IH.1 k0
-  refine' ⟨fun _ => _, _⟩
+  refine ⟨fun _ => ?_, ?_⟩
   · rw [RR, ← opow_mul _ _ (succ k.succ)]
     have e0 := Ordinal.pos_iff_ne_zero.2 e0
     have rr0 : 0 < repr a0 + repr a0 := lt_of_lt_of_le e0 (le_add_left _ _)
@@ -926,16 +930,16 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · simp [opow_mul, opow_add, mul_assoc]
       rw [Ordinal.mul_lt_mul_iff_left ω00, ← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
-      refine' mul_lt_omega_opow rr0 this (nat_lt_omega _)
-      simpa using (add_lt_add_iff_left (repr a0)).2 e0
-    · refine'
+      · exact mul_lt_omega_opow rr0 this (nat_lt_omega _)
+      · simpa using (add_lt_add_iff_left (repr a0)).2 e0
+    · exact
         lt_of_lt_of_le Rl
           (opow_le_opow_right omega_pos <|
             mul_le_mul_left' (succ_le_succ_iff.2 (natCast_le.2 (le_of_lt k.lt_succ_self))) _)
   calc
     (ω0 ^ (k.succ : Ordinal)) * α' + R'
-    _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) :=
-        by rw [natCast_succ, RR, ← mul_assoc]
+    _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) := by
+        rw [natCast_succ, RR, ← mul_assoc]
     _ = ((ω0 ^ (k : Ordinal)) * α' + R) * α' + ((ω0 ^ (k : Ordinal)) * α' + R) * m := ?_
     _ = (α' + m) ^ succ (k.succ : Ordinal) := by rw [← mul_add, natCast_succ, opow_succ, IH.2]
   congr 1
@@ -945,7 +949,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       add_mul_limit _ (isLimit_iff_omega_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
       @mul_omega_dvd n (natCast_pos.2 n.pos) (nat_lt_omega _) _ αd]
     apply @add_absorp _ (repr a0 * succ ↑k)
-    · refine' principal_add_omega_opow _ _ Rl
+    · refine principal_add_omega_opow _ ?_ Rl
       rw [opow_mul, opow_succ, Ordinal.mul_lt_mul_iff_left ω00]
       exact No.snd'.repr_lt
     · have := mul_le_mul_left' (one_le_iff_pos.2 <| natCast_pos.2 n.pos) (ω0 ^ succ (k : Ordinal))
@@ -979,10 +983,10 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
           opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add, mul_one,
           add_zero, one_opow, npow_eq_pow]
       rw [opow_add, opow_mul, opow_omega, add_one_eq_succ]
-      congr
-      conv_lhs =>
-        dsimp [(· ^ ·)]
-        simp [Pow.pow, opow, Ordinal.succ_ne_zero]
+      · congr
+        conv_lhs =>
+          dsimp [(· ^ ·)]
+          simp [Pow.pow, opow, Ordinal.succ_ne_zero]
       · simpa [Nat.one_le_iff_ne_zero]
       · rw [← Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩
@@ -1034,7 +1038,7 @@ private theorem exists_lt_add {α} [hα : Nonempty α] {o : Ordinal} {f : α →
   · obtain ⟨i⟩ := id hα
     exact ⟨i, h.trans_le (le_add_right _ _)⟩
   · rw [← Ordinal.add_sub_cancel_of_le h', add_lt_add_iff_left] at h
-    refine' (H h).imp fun i H => _
+    refine (H h).imp fun i H => ?_
     rwa [← Ordinal.add_sub_cancel_of_le h', add_lt_add_iff_left]
 
 private theorem exists_lt_mul_omega' {o : Ordinal} ⦃a⦄ (h : a < o * ω) :
@@ -1104,34 +1108,34 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
     · decide
     · exact ⟨rfl, inferInstance⟩
     · have := opow_pos (repr a') omega_pos
-      refine'
+      refine
         ⟨mul_isLimit this omega_isLimit, fun i =>
-          ⟨this, _, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega'⟩
+          ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega'⟩
       rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
       apply nat_lt_omega
     · have := opow_pos (repr a') omega_pos
-      refine'
-        ⟨add_isLimit _ (mul_isLimit this omega_isLimit), fun i => ⟨this, _, _⟩,
+      refine
+        ⟨add_isLimit _ (mul_isLimit this omega_isLimit), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega'⟩
       · rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega
-      · refine' fun H => H.fst.oadd _ (NF.below_of_lt' _ (@NF.oadd_zero _ _ (iha.2 H.fst)))
+      · refine fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (iha.2 H.fst)))
         rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega
     · rcases iha with ⟨h1, h2, h3⟩
-      refine' ⟨opow_isLimit one_lt_omega h1, fun i => _, exists_lt_omega_opow' one_lt_omega h1 h3⟩
+      refine ⟨opow_isLimit one_lt_omega h1, fun i => ?_, exists_lt_omega_opow' one_lt_omega h1 h3⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
       exact ⟨h4, h5, fun H => @NF.oadd_zero _ _ (h6 H.fst)⟩
     · rcases iha with ⟨h1, h2, h3⟩
-      refine'
-        ⟨add_isLimit _ (opow_isLimit one_lt_omega h1), fun i => _,
+      refine
+        ⟨add_isLimit _ (opow_isLimit one_lt_omega h1), fun i => ?_,
           exists_lt_add (exists_lt_omega_opow' one_lt_omega h1 h3)⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
-      refine' ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' _ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
+      refine ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
       rwa [repr, ← zero_def, repr, add_zero, PNat.one_coe, Nat.cast_one, mul_one,
         opow_lt_opow_iff_right one_lt_omega]
-  · refine'
-      ⟨by rw [repr, ihb.1, add_succ, repr], fun H => H.fst.oadd _ (NF.below_of_lt' _ (ihb.2 H.snd))⟩
+  · refine ⟨by
+      rw [repr, ihb.1, add_succ, repr], fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (ihb.2 H.snd))⟩
     have := H.snd'.repr_lt
     rw [ihb.1] at this
     exact (lt_succ _).trans this
@@ -1318,7 +1322,7 @@ theorem cmp_compares : ∀ a b : NONote, (cmp a b).Compares a b
   | ⟨a, ha⟩, ⟨b, hb⟩ => by
     dsimp [cmp]
     have := ONote.cmp_compares a b
-    cases h: ONote.cmp a b <;> simp only [h] at this <;> try exact this
+    cases h : ONote.cmp a b <;> simp only [h] at this <;> try exact this
     exact Subtype.mk_eq_mk.2 this
 #align nonote.cmp_compares NONote.cmp_compares
 

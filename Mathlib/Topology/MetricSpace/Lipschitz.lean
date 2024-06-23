@@ -392,7 +392,7 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
   let g := fun y : α => iInf fun x : s => f x + K * dist y x
   have B : ∀ y : α, BddBelow (range fun x : s => f x + K * dist y x) := fun y => by
     rcases hs with ⟨z, hz⟩
-    refine' ⟨f z - K * dist y z, _⟩
+    refine ⟨f z - K * dist y z, ?_⟩
     rintro w ⟨t, rfl⟩
     dsimp
     rw [sub_le_iff_le_add, add_assoc, ← mul_add, add_comm (dist y t)]
@@ -400,11 +400,11 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
       f z ≤ f t + K * dist z t := hf.le_add_mul hz t.2
       _ ≤ f t + K * (dist y z + dist y t) := by gcongr; apply dist_triangle_left
   have E : EqOn f g s := fun x hx => by
-    refine' le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) _
+    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) ?_
     simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using ciInf_le (B x) ⟨x, hx⟩
-  refine' ⟨g, LipschitzWith.of_le_add_mul K fun x y => _, E⟩
+  refine ⟨g, LipschitzWith.of_le_add_mul K fun x y => ?_, E⟩
   rw [← sub_le_iff_le_add]
-  refine' le_ciInf fun z => _
+  refine le_ciInf fun z => ?_
   rw [sub_le_iff_le_add]
   calc
     g x ≤ f z + K * dist x z := ciInf_le (B x) _

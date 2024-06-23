@@ -71,7 +71,9 @@ variable {ι : Type*}
 /-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
 structure Box (ι : Type*) where
+  /-- coordinates of the lower and upper corners of the box -/
   (lower upper : ι → ℝ)
+  /-- Each lower coordinate is less than its upper coordinate: i.e., the box is non-empty -/
   lower_lt_upper : ∀ i, lower i < upper i
 #align box_integral.box BoxIntegral.Box
 
@@ -96,6 +98,8 @@ instance : Membership (ι → ℝ) (Box ι) :=
   ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
 -- Porting note: added
+/-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
+where `lower` and `upper` are this box' corners. -/
 @[coe]
 def toSet (I : Box ι) : Set (ι → ℝ) := { x | x ∈ I }
 
@@ -267,6 +271,7 @@ In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)`
 -/
 
 -- Porting note: added
+/-- The set underlying this box: `⊥` is mapped to `∅`. -/
 @[coe]
 def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
 
@@ -293,13 +298,13 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
-  induction I using WithBot.recBotCoe <;> simp [WithBot.coe_eq_coe]
+  induction I <;> simp [WithBot.coe_eq_coe]
 #align box_integral.box.bUnion_coe_eq_coe BoxIntegral.Box.biUnion_coe_eq_coe
 
 @[simp, norm_cast]
 theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := by
-  induction I using WithBot.recBotCoe; · simp
-  induction J using WithBot.recBotCoe; · simp [subset_empty_iff]
+  induction I; · simp
+  induction J; · simp [subset_empty_iff]
   simp [le_def]
 #align box_integral.box.with_bot_coe_subset_iff BoxIntegral.Box.withBotCoe_subset_iff
 
@@ -346,10 +351,10 @@ instance WithBot.inf : Inf (WithBot (Box ι)) :=
 
 @[simp]
 theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (I : Set _) ∩ J := by
-  induction I using WithBot.recBotCoe
+  induction I
   · change ∅ = _
     simp
-  induction J using WithBot.recBotCoe
+  induction J
   · change ∅ = _
     simp
   change ((mk' _ _ : WithBot (Box ι)) : Set (ι → ℝ)) = _
@@ -362,10 +367,10 @@ instance : Lattice (WithBot (Box ι)) :=
     Box.WithBot.inf with
     inf_le_left := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
-      exact inter_subset_left _ _
+      exact inter_subset_left
     inf_le_right := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
-      exact inter_subset_right _ _
+      exact inter_subset_right
     le_inf := fun I J₁ J₂ h₁ h₂ ↦ by
       simp only [← withBotCoe_subset_iff, coe_inf] at *
       exact subset_inter h₁ h₂ }

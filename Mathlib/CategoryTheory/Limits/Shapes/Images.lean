@@ -6,6 +6,7 @@ Authors: Scott Morrison, Markus Himmel
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 #align_import category_theory.limits.shapes.images from "leanprover-community/mathlib"@"563aed347eb59dc4181cb732cda0d124d736eaa3"
 
@@ -116,8 +117,8 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
 
 /-- Any mono factorisation of `f` gives a mono factorisation of `f ≫ g` when `g` is a mono. -/
 @[simps]
-def compMono (F : MonoFactorisation f) {Y' : C} (g : Y ⟶ Y') [Mono g] : MonoFactorisation (f ≫ g)
-    where
+def compMono (F : MonoFactorisation f) {Y' : C} (g : Y ⟶ Y') [Mono g] :
+    MonoFactorisation (f ≫ g) where
   I := F.I
   m := F.m ≫ g
   m_mono := mono_comp _ _
@@ -127,8 +128,8 @@ def compMono (F : MonoFactorisation f) {Y' : C} (g : Y ⟶ Y') [Mono g] : MonoFa
 /-- A mono factorisation of `f ≫ g`, where `g` is an isomorphism,
 gives a mono factorisation of `f`. -/
 @[simps]
-def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorisation (f ≫ g)) : MonoFactorisation f
-    where
+def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorisation (f ≫ g)) :
+    MonoFactorisation f where
   I := F.I
   m := F.m ≫ inv g
   m_mono := mono_comp _ _
@@ -137,8 +138,7 @@ def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorisation (f ≫ g)
 
 /-- Any mono factorisation of `f` gives a mono factorisation of `g ≫ f`. -/
 @[simps]
-def isoComp (F : MonoFactorisation f) {X' : C} (g : X' ⟶ X) : MonoFactorisation (g ≫ f)
-    where
+def isoComp (F : MonoFactorisation f) {X' : C} (g : X' ⟶ X) : MonoFactorisation (g ≫ f) where
   I := F.I
   m := F.m
   e := g ≫ F.e
@@ -147,8 +147,8 @@ def isoComp (F : MonoFactorisation f) {X' : C} (g : X' ⟶ X) : MonoFactorisatio
 /-- A mono factorisation of `g ≫ f`, where `g` is an isomorphism,
 gives a mono factorisation of `f`. -/
 @[simps]
-def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)) : MonoFactorisation f
-    where
+def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)) :
+    MonoFactorisation f where
   I := F.I
   m := F.m
   e := inv g ≫ F.e
@@ -631,8 +631,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
 #align category_theory.limits.has_image_comp_iso CategoryTheory.Limits.hasImage_comp_iso
 
 /-- Postcomposing by an isomorphism induces an isomorphism on the image. -/
-def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g)
-    where
+def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where
   hom := image.lift (Image.monoFactorisation (f ≫ g)).ofCompIso
   inv := image.lift ((Image.monoFactorisation f).compMono g)
 #align category_theory.limits.image.comp_iso CategoryTheory.Limits.image.compIso
@@ -790,8 +789,8 @@ abbrev image.map : image f.hom ⟶ image g.hom :=
   (HasImageMap.imageMap sq).map
 #align category_theory.limits.image.map CategoryTheory.Limits.image.map
 
-theorem image.factor_map : factorThruImage f.hom ≫ image.map sq = sq.left ≫ factorThruImage g.hom :=
-  by simp
+theorem image.factor_map :
+    factorThruImage f.hom ≫ image.map sq = sq.left ≫ factorThruImage g.hom := by simp
 #align category_theory.limits.image.factor_map CategoryTheory.Limits.image.factor_map
 
 theorem image.map_ι : image.map sq ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by simp
@@ -969,8 +968,8 @@ section HasStrongEpiImages
 variable [HasImages C]
 
 /-- A category with strong epi images has image maps. -/
-instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages C] : HasImageMaps C
-    where
+instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages C] :
+    HasImageMaps C where
   has_image_map {f} {g} st :=
     HasImageMap.mk
       { map :=
@@ -1029,6 +1028,19 @@ theorem image.isoStrongEpiMono_inv_comp_mono {I' : C} (e : X ⟶ I') (m : I' ⟶
     [StrongEpi e] [Mono m] : (image.isoStrongEpiMono e m comm).inv ≫ m = image.ι f :=
   image.lift_fac _
 #align category_theory.limits.image.iso_strong_epi_mono_inv_comp_mono CategoryTheory.Limits.image.isoStrongEpiMono_inv_comp_mono
+
+open MorphismProperty
+
+variable (C)
+
+/-- A category with strong epi mono factorisations admits functorial epi/mono factorizations. -/
+noncomputable def functorialEpiMonoFactorizationData :
+    FunctorialFactorizationData (epimorphisms C) (monomorphisms C) where
+  Z := im
+  i := { app := fun f => factorThruImage f.hom }
+  p := { app := fun f => image.ι f.hom }
+  hi _ := epimorphisms.infer_property _
+  hp _ := monomorphisms.infer_property _
 
 end CategoryTheory.Limits
 
