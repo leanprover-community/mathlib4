@@ -12,7 +12,7 @@ theorem matricesMulLeft {u v : Fin h → ℂ} {M : Matrix (Fin h) (Fin h) ℂ} [
   simp only [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
 
 theorem max0fEqSets {γ : Type _} [LinearOrder γ] {s t : Finset γ} (hs : s.Nonempty)
-  (ht : t.Nonempty) (hst : s = t) : s.max' hs = t.max' ht := by simp_rw [hst]
+    (ht : t.Nonempty) (hst : s = t) : s.max' hs = t.max' ht := by simp_rw [hst]
 
 /-- `maxFinFun` takes a function `f` from a finite and nonempty type `s` to a
   linearly ordered type `γ`, and returns the maximum value of `f` over all elements of `s`. -/
