@@ -67,9 +67,8 @@ section
 
 variable {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ']
 
--- arrow --> morphism. added and after comma. Change φ' to lift f!!
-/-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and a morphism
-`φ' : a ⟶ b'` also lifting `f`, then `IsCocartesian.map f φ φ'` is the morphism `b ⟶ b'` lying
+/-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
+`φ' : a ⟶ b'` which also lifts `f`, then `IsCocartesian.map f φ φ'` is the morphism `b ⟶ b'` lying
 over `𝟙 S` obtained from the universal property of `φ`. -/
 protected noncomputable def map : b ⟶ b' :=
   Classical.choose <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ'
@@ -81,10 +80,9 @@ instance map_isHomLift : IsHomLift p (𝟙 S) (IsCocartesian.map p f φ φ') :=
 lemma fac : φ ≫ IsCocartesian.map p f φ φ' = φ' :=
   (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.2
 
--- TODO: this documentation is not good in the cartesian file!
-/-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and a morphism
-`φ' : a ⟶ b'` lifting `f`. Then any morphism `ψ : b ⟶ b'` lifting `𝟙 S` such that `g ≫ ψ = φ'`.
-Then `ψ` equals the map induced by the universal property of `φ`. -/
+/-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
+`φ' : a ⟶ b'` which also lifts `f`. Then any morphism `ψ : b ⟶ b'` lifting `𝟙 S` such that
+`g ≫ ψ = φ'` must equal the map induced by the universal property of `φ`. -/
 lemma map_uniq (ψ : b ⟶ b') [IsHomLift p (𝟙 S) ψ] (hψ : φ ≫ ψ = φ') :
     ψ = IsCocartesian.map p f φ φ' :=
   (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').2
@@ -92,7 +90,6 @@ lemma map_uniq (ψ : b ⟶ b') [IsHomLift p (𝟙 S) ψ] (hψ : φ ≫ ψ = φ')
 
 end
 
--- arrow --> morphism. CHANGE g to φ!
 /-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and two morphisms
 `ψ ψ' : b ⟶ b'` lifting `𝟙 S` such that `φ ≫ ψ = φ ≫ ψ'`. Then we must have `ψ = ψ'`. -/
 protected lemma ext {b' : 𝒳} (ψ ψ' : b ⟶ b') [IsHomLift p (𝟙 S) ψ] [IsHomLift p (𝟙 S) ψ']
@@ -190,7 +187,6 @@ lemma fac : φ ≫ (map p f φ hf' φ') = φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.2
 
 
--- REMOVED and!!
 /-- Given a diagram
 ```
 a --φ--> b        b'
@@ -224,9 +220,7 @@ lemma map_self : map p f φ (comp_id f).symm φ = 𝟙 b := by
   apply map_uniq
   simp only [comp_id]
 
--- TODO: change induced map name
 /-- The composition of two `IsCocartesian.map` is also given by `IsCocartesian.map`. -/
--- TODO: add to normal version!!
 @[reassoc (attr := simp)]
 lemma map_comp_map {S' S'' : 𝒮} {b' b'' : 𝒳} {f' : R ⟶ S'} {f'' : R ⟶ S''} {g : S ⟶ S'}
     {g' : S' ⟶ S''} (H : f' = f ≫ g) (H' : f'' = f' ≫ g') (φ' : a ⟶ b') (φ'' : a ⟶ b'')
@@ -270,13 +264,11 @@ v        v        v
 R --f--> S --g--> T
 ```
 such that `φ ≫ ψ` and `φ` are strongly cocartesian, then so is `ψ`. -/
--- TODO: check proof in stronglycart
 protected lemma of_comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p (f ≫ g) (φ ≫ ψ)]
     [IsHomLift p g ψ] : IsStronglyCocartesian p g ψ where
   universal_property' := by
     intro c' h τ hτ
     have h₁ : IsHomLift p (f ≫ g ≫ h) (φ ≫ τ) := by simpa using IsHomLift.comp p f (g ≫ h) φ τ
-    -- TODO: this comment needs fixing in strongly cartesian
     /- We get a morphism `π : c ⟶ c'` such that `(φ ≫ ψ) ≫ π = φ ≫ τ` from the universal property
     of `φ ≫ ψ`. This will be the morphism induced by `φ`. -/
     use map p (f ≫ g) (φ ≫ ψ) (f' := f ≫ g ≫ h) (assoc f g h).symm (φ ≫ τ)
