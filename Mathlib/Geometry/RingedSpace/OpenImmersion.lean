@@ -150,7 +150,8 @@ instance mono : Mono f := by
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.mono AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.mono
 
 /-- The composition of two open immersions is an open immersion. -/
-instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] : IsOpenImmersion (f ≫ g) where
+instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
+    IsOpenImmersion (f ≫ g) where
   base_open := hg.base_open.comp H.base_open
   c_iso U := by
     generalize_proofs h
