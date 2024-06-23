@@ -19,7 +19,6 @@ build_yml() {
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
 on:
-  pull_request:
   push:
     branches-ignore:
       # ignore tmp branches used by bors
@@ -42,7 +41,6 @@ bors_yml() {
 # The jobs in this file run on self-hosted workers and will not be run from external forks
 
 on:
-  pull_request:
   push:
     branches:
       - staging
@@ -58,7 +56,6 @@ build_fork_yml() {
 # The jobs in this file run on GitHub-hosted workers and will only be run from external forks
 
 on:
-  pull_request:
   push:
     branches-ignore:
       # ignore tmp branches used by bors
