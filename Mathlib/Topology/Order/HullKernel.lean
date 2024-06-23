@@ -156,16 +156,15 @@ namespace PrimitiveSpectrum
 
 lemma sInter_Ici_eq (S : Set α) : ⋂₀ { T ↓∩ (Ici a) | a ∈ S } = T ↓∩ (Ici (sSup S)) := by
   rw [le_antisymm_iff]
-  constructor
-  · intro a ha
-    simp only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-      mem_preimage, mem_Ici] at ha
-    simp only [mem_preimage, mem_Ici, sSup_le_iff]
-    exact fun b a ↦ ha b a
-  · simp only [le_eq_subset, subset_sInter_iff, mem_setOf_eq, forall_exists_index, and_imp,
+  simp only [le_eq_subset, subset_sInter_iff, mem_setOf_eq, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
-    intro a ha
-    exact Set.preimage_val_subset_preimage_val (antitone_Ici (CompleteLattice.le_sSup S a ha))
+  exact ⟨fun a ha => by
+      simp only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      mem_preimage, mem_Ici] at ha
+      simp only [mem_preimage, mem_Ici, sSup_le_iff]
+      exact fun b a ↦ ha b a,
+    fun a ha =>
+      Set.preimage_val_subset_preimage_val (antitone_Ici (CompleteLattice.le_sSup S a ha))⟩
 
 /- When `α` is complete, the relative basis for the Lower topology is also closed under arbitary
 unions.-/
