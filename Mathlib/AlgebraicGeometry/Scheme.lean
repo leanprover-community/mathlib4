@@ -364,7 +364,8 @@ end
 
 namespace Scheme
 
-/-- The empty scheme. -/
+/-- The empty scheme.
+-/
 @[simps]
 def empty : Scheme where
   carrier := TopCat.of PEmpty
@@ -391,7 +392,7 @@ theorem Γ_def : Γ = (inducedFunctor Scheme.toLocallyRingedSpace).op ⋙ Locall
 #align algebraic_geometry.Scheme.Γ_def AlgebraicGeometry.Scheme.Γ_def
 
 @[simp]
-theorem Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = Γ(unop X, ⊤) :=
+theorem Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = (unop X).presheaf.obj (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_obj AlgebraicGeometry.Scheme.Γ_obj
 
@@ -400,7 +401,7 @@ theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = Γ(X, ⊤) :=
 #align algebraic_geometry.Scheme.Γ_obj_op AlgebraicGeometry.Scheme.Γ_obj_op
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.app ⊤ :=
+theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.1.c.app (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_map AlgebraicGeometry.Scheme.Γ_map
 
@@ -419,9 +420,9 @@ variable (R : CommRingCat.{u})
 /-- The global sections of `Spec R` is isomorphic to `R`. -/
 def ΓSpecIso : Γ(Spec R, ⊤) ≅ R := SpecΓIdentity.app R
 
-@[simp] lemma SpecΓIdentity_app : SpecΓIdentity.app R = ΓSpecIso R := rfl
-@[simp] lemma SpecΓIdentity_hom_app : SpecΓIdentity.hom.app R = (ΓSpecIso R).hom := rfl
-@[simp] lemma SpecΓIdentity_inv_app : SpecΓIdentity.inv.app R = (ΓSpecIso R).inv := rfl
+lemma SpecΓIdentity_app : SpecΓIdentity.app R = ΓSpecIso R := rfl
+lemma SpecΓIdentity_hom_app : SpecΓIdentity.hom.app R = (ΓSpecIso R).hom := rfl
+lemma SpecΓIdentity_inv_app : SpecΓIdentity.inv.app R = (ΓSpecIso R).inv := rfl
 
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
