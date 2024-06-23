@@ -164,7 +164,7 @@ theorem affineLocally_iff_affineOpens_le
     (hP : RingHom.RespectsIso @P) {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} (@P) f ↔
     ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ (Opens.map f.1.base).obj U.1),
-      P (Scheme.Hom.appLe f e) := by
+      P (f.appLE _ _ e) := by
   apply forall_congr'
   intro U
   delta sourceAffineLocally
