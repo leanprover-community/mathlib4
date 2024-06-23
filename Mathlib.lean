@@ -1038,13 +1038,16 @@ import Mathlib.Analysis.Normed.Group.ControlledClosure
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Analysis.Normed.Group.Int
 import Mathlib.Analysis.Normed.Group.Lemmas
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Group.Quotient
+import Mathlib.Analysis.Normed.Group.Rat
 import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 import Mathlib.Analysis.Normed.Group.SemiNormedGrp.Completion
 import Mathlib.Analysis.Normed.Group.SemiNormedGrp.Kernels
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
@@ -3229,6 +3232,7 @@ import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.NumberTheory.Rayleigh
+import Mathlib.NumberTheory.SiegelsLemma
 import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.SumPrimeReciprocals
