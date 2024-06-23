@@ -238,7 +238,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X â
 
 /-- An open immersion induces an isomorphism from the domain onto the image -/
 def isoRestrict : X â‰… (Z.restrict H.base_open : _) where
-__ := (LocallyRingedSpace.IsOpenImmersion.isoRestrict f)
+  __ := (LocallyRingedSpace.IsOpenImmersion.isoRestrict f)
 #align algebraic_geometry.IsOpenImmersion.iso_restrict AlgebraicGeometry.IsOpenImmersion.isoRestrict
 
 local notation "forget" => Scheme.forgetToLocallyRingedSpace
