@@ -62,7 +62,6 @@ lemma sSup_eq_zero : sSup s = 0 ↔ s = {0} ∨ s = ∅ := by
     · exact h ▸ sSup_singleton
     · exact h ▸ sSup_empty
 
-
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
   refine ⟨fun h ↦ ?_, inf_eq_bot_of_bot_mem⟩
   rw [← bot_eq_zero, sInf_eq_bot] at h
