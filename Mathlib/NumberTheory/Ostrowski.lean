@@ -178,7 +178,7 @@ lemma mulRingNorm_eq_one_of_not_dvd (m : ℕ) (hpm : ¬ p ∣ m) : f m = 1 := by
       rw [hk]
       push_cast
       exact lt_add_of_le_of_pos (Nat.le_ceil (M.logb (1 / 2))) zero_lt_one
-    _ ≤ x ^ x.logb (1/2) := by
+    _ ≤ x ^ x.logb (1 / 2) := by
       apply rpow_le_rpow_of_exponent_ge hx0 (le_of_lt hx1)
       simp only [one_div, logb_inv, neg_le_neg_iff, ← log_div_log, Real.log_inv, neg_div,
         ← div_neg, hM]
