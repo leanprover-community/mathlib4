@@ -699,11 +699,11 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
         map (cons b ∘ cons c) (permutations'Aux a l) ++
           map (cons c) ((permutations'Aux a l).bind (permutations'Aux b)) := by
     intros a' b'
-    simp only [map_bind, permutations'Aux]
+    simp only [bind_map, permutations'Aux]
     show List.bind (permutations'Aux _ l) (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
     refine (bind_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
-    rw [← map_eq_bind, ← bind_map]
+    rw [← map_eq_bind, ← map_bind]
     exact Perm.refl _
   refine (((this _ _).append_left _).trans ?_).trans ((this _ _).append_left _).symm
   rw [← append_assoc, ← append_assoc]

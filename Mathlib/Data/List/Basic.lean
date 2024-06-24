@@ -159,11 +159,7 @@ attribute [simp] List.mem_bind
 
 #align list.bind_map List.bind_mapₓ -- implicits order
 
-theorem map_bind (g : β → List γ) (f : α → β) :
-    ∀ l : List α, (List.map f l).bind g = l.bind fun a => g (f a)
-  | [] => rfl
-  | a :: l => by simp only [bind_cons, map_cons, map_bind _ _ l]
-#align list.map_bind List.map_bind
+#align list.map_bind List.bind_map
 
 /-! ### length -/
 
@@ -570,12 +566,6 @@ theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a 
 
 #align list.length_reverse List.length_reverse
 
--- Porting note: This one was @[simp] in mathlib 3,
--- but Lean contains a competing simp lemma reverse_map.
--- For now we remove @[simp] to avoid simplification loops.
--- TODO: Change Lean lemma to match mathlib 3?
-theorem map_reverse (f : α → β) (l : List α) : map f (reverse l) = reverse (map f l) :=
-  (reverse_map f l).symm
 #align list.map_reverse List.map_reverse
 
 theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
@@ -858,8 +848,6 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
 theorem head_mem {l : List α} : ∀ (h : l ≠ nil), l.head h ∈ l := by
   cases l <;> simp
 
-@[simp]
-theorem head?_map (f : α → β) (l) : head? (map f l) = (head? l).map f := by cases l <;> rfl
 #align list.head'_map List.head?_map
 
 theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail = l.tail ++ l' := by
@@ -1556,42 +1544,18 @@ theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
 
 #align list.map_nil List.map_nil
 
-theorem map_eq_foldr (f : α → β) (l : List α) : map f l = foldr (fun a bs => f a :: bs) [] l := by
-  induction l <;> simp [*]
 #align list.map_eq_foldr List.map_eq_foldr
 
-theorem map_congr {f g : α → β} : ∀ {l : List α}, (∀ x ∈ l, f x = g x) → map f l = map g l
-  | [], _ => rfl
-  | a :: l, h => by
-    let ⟨h₁, h₂⟩ := forall_mem_cons.1 h
-    rw [map, map, h₁, map_congr h₂]
-#align list.map_congr List.map_congr
+@[deprecated (since := "2024-06-21")] alias map_congr := map_congr_left
+#align list.map_congr List.map_congr_left
 
-theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ ∀ x ∈ l, f x = g x := by
-  refine ⟨?_, map_congr⟩; intro h x hx
-  rw [mem_iff_getElem] at hx; rcases hx with ⟨n, hn, rfl⟩
-  rw [getElem_map_rev f, getElem_map_rev g]
-  congr!
-#align list.map_eq_map_iff List.map_eq_map_iff
+@[deprecated (since := "2024-06-21")] alias map_eq_map_iff := map_inj_left
+#align list.map_eq_map_iff List.map_inj_left
 
-theorem map_concat (f : α → β) (a : α) (l : List α) :
-    map f (concat l a) = concat (map f l) (f a) := by
-  induction l <;> [rfl; simp only [*, concat_eq_append, cons_append, map, map_append]]
 #align list.map_concat List.map_concat
-
 #align list.map_id'' List.map_id'
-
-theorem map_id'' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
-  simp [show f = id from funext h]
 #align list.map_id' List.map_id''
-
-theorem eq_nil_of_map_eq_nil {f : α → β} {l : List α} (h : map f l = nil) : l = nil :=
-  eq_nil_of_length_eq_zero <| by rw [← length_map l f, h]; rfl
 #align list.eq_nil_of_map_eq_nil List.eq_nil_of_map_eq_nil
-
-@[simp]
-theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (map (map f) L) := by
-  induction L <;> [rfl; simp only [*, join, map, map_append]]
 #align list.map_join List.map_join
 
 theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (pure ∘ f) = map f l :=
@@ -1605,7 +1569,7 @@ theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) 
 
 theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
     List.bind l f = List.bind l g :=
-  (congr_arg List.join <| map_congr h : _)
+  (congr_arg List.join <| map_congr_left h : _)
 #align list.bind_congr List.bind_congr
 
 theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
@@ -1699,34 +1663,10 @@ theorem map_bijective_iff {f : α → β} : Bijective (map f) ↔ Bijective f :=
 
 end map_bijectivity
 
-theorem map_filter_eq_foldr (f : α → β) (p : α → Bool) (as : List α) :
-    map f (filter p as) = foldr (fun a bs => bif p a then f a :: bs else bs) [] as := by
-  induction' as with head tail
-  · rfl
-  · simp only [foldr]
-    cases hp : p head <;> simp [filter, *]
 #align list.map_filter_eq_foldr List.map_filter_eq_foldr
-
-theorem getLast_map (f : α → β) {l : List α} (hl : l ≠ []) :
-    (l.map f).getLast (mt eq_nil_of_map_eq_nil hl) = f (l.getLast hl) := by
-  induction' l with l_hd l_tl l_ih
-  · apply (hl rfl).elim
-  · cases l_tl
-    · simp
-    · simpa using l_ih _
 #align list.last_map List.getLast_map
-
-theorem map_eq_replicate_iff {l : List α} {f : α → β} {b : β} :
-    l.map f = replicate l.length b ↔ ∀ x ∈ l, f x = b := by
-  simp [eq_replicate]
 #align list.map_eq_replicate_iff List.map_eq_replicate_iff
-
-@[simp] theorem map_const (l : List α) (b : β) : map (const α b) l = replicate l.length b :=
-  map_eq_replicate_iff.mpr fun _ _ => rfl
 #align list.map_const List.map_const
-
-@[simp] theorem map_const' (l : List α) (b : β) : map (fun _ => b) l = replicate l.length b :=
-  map_const l b
 #align list.map_const' List.map_const'
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (const α b₂) l) :
@@ -1968,27 +1908,10 @@ theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) =
 #align list.reverse_foldl List.reverse_foldl
 
 #align list.foldl_map List.foldl_map
-
 #align list.foldr_map List.foldr_map
-
-theorem foldl_map' {α β : Type u} (g : α → β) (f : α → α → α) (f' : β → β → β) (a : α) (l : List α)
-    (h : ∀ x y, f' (g x) (g y) = g (f x y)) :
-    List.foldl f' (g a) (l.map g) = g (List.foldl f a l) := by
-  induction l generalizing a
-  · simp
-  · simp [*, h]
 #align list.foldl_map' List.foldl_map'
-
-theorem foldr_map' {α β : Type u} (g : α → β) (f : α → α → α) (f' : β → β → β) (a : α) (l : List α)
-    (h : ∀ x y, f' (g x) (g y) = g (f x y)) :
-    List.foldr f' (g a) (l.map g) = g (List.foldr f a l) := by
-  induction l generalizing a
-  · simp
-  · simp [*, h]
 #align list.foldr_map' List.foldr_map'
-
 #align list.foldl_hom List.foldl_hom
-
 #align list.foldr_hom List.foldr_hom
 
 theorem foldl_hom₂ (l : List ι) (f : α → β → γ) (op₁ : α → ι → α) (op₂ : β → ι → β)
