@@ -105,12 +105,8 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
 @[to_additive probabilitymeasure_of_probabilitymeasures_conv]
 instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : Measure M)
     [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
-    IsProbabilityMeasure (μ ∗ ν) := by
-  apply MeasureTheory.isProbabilityMeasure_map
-  -- NB. `measurability` proves this, but is really slow
-  -- XXX: make `fun_prop` able to prove this
-  exact AEMeasurable.mul (measurable_fst.comp_aemeasurable' aemeasurable_id')
-    (measurable_snd.comp_aemeasurable' aemeasurable_id')
+    IsProbabilityMeasure (μ ∗ ν) :=
+  MeasureTheory.isProbabilityMeasure_map (by fun_prop)
 
 end Measure
 
