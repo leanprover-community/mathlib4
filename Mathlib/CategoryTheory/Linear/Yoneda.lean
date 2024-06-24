@@ -73,7 +73,7 @@ theorem whiskering_linearYoneda :
 
 @[simp]
 theorem whiskering_linearYoneda₂ :
-    linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) =
+    linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) =
       preadditiveYoneda :=
   rfl
 #align category_theory.whiskering_linear_yoneda₂ CategoryTheory.whiskering_linearYoneda₂
@@ -87,7 +87,7 @@ theorem whiskering_linearCoyoneda :
 @[simp]
 theorem whiskering_linearCoyoneda₂ :
     linearCoyoneda R C ⋙
-        (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) =
+        (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) =
       preadditiveCoyoneda :=
   rfl
 #align category_theory.whiskering_linear_coyoneda₂ CategoryTheory.whiskering_linearCoyoneda₂
