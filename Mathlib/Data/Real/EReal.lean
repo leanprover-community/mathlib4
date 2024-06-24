@@ -1131,7 +1131,7 @@ theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
   exact mul_top_of_pos h
 #align ereal.top_mul_of_pos EReal.top_mul_of_pos
 
-/--The product of two positive extended real numbers is positive.-/
+/-- The product of two positive extended real numbers is positive. -/
 @[simp]
 theorem mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
   induction' a using EReal.rec with a
