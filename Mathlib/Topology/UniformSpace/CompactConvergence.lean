@@ -274,7 +274,7 @@ theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
   exact ⟨n, hn₂, h n hn₁ V hV⟩
 #align continuous_map.tendsto_iff_tendsto_locally_uniformly ContinuousMap.tendsto_iff_tendstoLocallyUniformly
 
-@[deprecated tendsto_iff_tendstoLocallyUniformly]
+@[deprecated tendsto_iff_tendstoLocallyUniformly (since := "2023-09-03")]
 theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
     TendstoLocallyUniformly (fun i a => F i a) f p :=
   tendsto_iff_tendstoLocallyUniformly.1 h

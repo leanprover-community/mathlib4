@@ -3,6 +3,8 @@ Copyright (c) 2023 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour, Nima Rasekh
 -/
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
@@ -25,9 +27,6 @@ get a characterisation of finite effective epimorphic families.
   epimorphic are all equivalent.
 
 As a consequence, we obtain instances that `Stonean` is precoherent and preregular.
-
-- TODO: Write API for reflecting effective epimorphisms and deduce the contents of this file by
-  abstract nonsense from the corresponding results for `CompHaus`.
 
 -/
 
@@ -75,11 +74,27 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
-instance : Preregular Stonean where
-  exists_fac := by
-    intro X Y Z f π hπ
-    have := epiOfEffectiveEpi π
-    exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
+instance : Stonean.toCompHaus.PreservesEffectiveEpis where
+  preserves f h :=
+    ((CompHaus.effectiveEpi_tfae f).out 0 2).mpr (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
+
+instance : Stonean.toCompHaus.ReflectsEffectiveEpis where
+  reflects f h :=
+    ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae f).out 0 2).mp h)
+
+/--
+An effective presentation of an `X : CompHaus` with respect to the inclusion functor from `Stonean`
+-/
+noncomputable def stoneanToCompHausEffectivePresentation (X : CompHaus) :
+    Stonean.toCompHaus.EffectivePresentation X where
+  p := X.presentation
+  f := CompHaus.presentation.π X
+  effectiveEpi := ((CompHaus.effectiveEpi_tfae _).out 0 1).mpr (inferInstance : Epi _)
+
+instance : Stonean.toCompHaus.EffectivelyEnough where
+  presentation X := ⟨stoneanToCompHausEffectivePresentation X⟩
+
+instance : Preregular Stonean := Stonean.toCompHaus.reflects_preregular
 
 example : Precoherent Stonean.{u} := inferInstance
 
@@ -98,33 +113,11 @@ theorem effectiveEpiFamily_tfae
     simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
   tfae_have 1 → 2
   · intro; infer_instance
-  tfae_have 3 → 2
-  · intro e
-    rw [epi_iff_surjective]
-    intro b
-    obtain ⟨t, x, h⟩ := e b
-    refine ⟨Sigma.ι X t x, ?_⟩
-    change (Sigma.ι X t ≫ Sigma.desc π) x = _
-    simpa using h
-  tfae_have 2 → 3
-  · intro e; rw [epi_iff_surjective] at e
-    let i : ∐ X ≅ finiteCoproduct X :=
-      (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
-    intro b
-    obtain ⟨t, rfl⟩ := e b
-    let q := i.hom t
-    refine ⟨q.1,q.2,?_⟩
-    have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
-    rw [this]
-    show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
-    suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
-      rw [this]; rfl
-    rw [Iso.inv_comp_eq]
-    apply colimit.hom_ext
-    rintro ⟨a⟩
-    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
-      colimit.comp_coconePointUniqueUpToIso_hom_assoc]
-    ext; rfl
+  tfae_have 3 ↔ 1
+  · erw [((CompHaus.effectiveEpiFamily_tfae
+      (fun a ↦ Stonean.toCompHaus.obj (X a)) (fun a ↦ Stonean.toCompHaus.map (π a))).out 2 0 : )]
+    exact ⟨fun h ↦ Stonean.toCompHaus.finite_effectiveEpiFamily_of_map _ _ h,
+      fun _ ↦ inferInstance⟩
   tfae_finish
 
 theorem effectiveEpiFamily_of_jointly_surjective
@@ -133,14 +126,5 @@ theorem effectiveEpiFamily_of_jointly_surjective
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
     EffectiveEpiFamily X π :=
   ((effectiveEpiFamily_tfae X π).out 2 0).mp surj
-
-open CompHaus Functor
-
-theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
-    {α : Type} [Finite α] {B : Stonean.{u}}
-    {X : α → Stonean.{u}} {π : (a : α) → (X a ⟶ B)} (H : EffectiveEpiFamily X π) :
-    EffectiveEpiFamily (toCompHaus.obj <| X ·) (toCompHaus.map <| π ·) := by
-  refine ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => ?_)
-  exact (((effectiveEpiFamily_tfae _ _).out 0 2).1 H : ∀ _, ∃ _, _) _
 
 end Stonean

@@ -245,10 +245,11 @@ theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [Topolog
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_r_def _).symm
 #align uniform_space.ring_sep_rel UniformSpace.inseparableSetoid_ring
 
-@[deprecated] -- 2024-03-09
+@[deprecated (since := "2024-03-09")]
 alias ring_sep_rel := inseparableSetoid_ring
 
-@[deprecated UniformSpace.inseparableSetoid_ring] -- 2024-02-16 Equality of types is evil
+-- Equality of types is evil
+@[deprecated UniformSpace.inseparableSetoid_ring (since := "2024-02-16")]
 theorem ring_sep_quot (α : Type u) [r : CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     SeparationQuotient α = (α ⧸ (⊥ : Ideal α).closure) := by
   rw [SeparationQuotient, @inseparableSetoid_ring α r]
