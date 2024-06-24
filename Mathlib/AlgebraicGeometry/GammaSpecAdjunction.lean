@@ -450,7 +450,7 @@ theorem adjunction_unit_app {X : Scheme} :
 
 @[reassoc (attr := simp)]
 theorem adjunction_unit_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    f ≫ ΓSpec.adjunction.unit.app Y = ΓSpec.adjunction.unit.app X ≫ SpecMap (f.app ⊤) :=
+    f ≫ ΓSpec.adjunction.unit.app Y = ΓSpec.adjunction.unit.app X ≫ specMap (f.app ⊤) :=
   ΓSpec.adjunction.unit.naturality f
 
 instance isIso_locallyRingedSpaceAdjunction_counit :
@@ -569,29 +569,29 @@ section
 
 variable {R S : CommRingCat.{u}} {φ ψ : R ⟶ S} (f : 𝖲𝗉𝖾𝖼 S ⟶ 𝖲𝗉𝖾𝖼 R)
 
-lemma SpecMap_inj : SpecMap φ = SpecMap ψ ↔ φ = ψ := by
+lemma SpecMap_inj : specMap φ = specMap ψ ↔ φ = ψ := by
   rw [iff_comm, ← Quiver.Hom.op_inj.eq_iff, ← Scheme.Spec.map_injective.eq_iff]
   rfl
 
-lemma SpecMap_injective {R S : CommRingCat} : Function.Injective (SpecMap : (R ⟶ S) → _) :=
+lemma SpecMap_injective {R S : CommRingCat} : Function.Injective (specMap : (R ⟶ S) → _) :=
   fun _ _ ↦ SpecMap_inj.mp
 
 /-- The preimage under Spec. -/
 def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
 
-@[simp] lemma SpecMap_preimage : SpecMap (Spec.preimage f) = f := Scheme.Spec.map_preimage f
+@[simp] lemma SpecMap_preimage : specMap (Spec.preimage f) = f := Scheme.Spec.map_preimage f
 
 variable (φ) in
-@[simp] lemma preimage_SpecMap : Spec.preimage (SpecMap φ) = φ :=
-  SpecMap_injective (SpecMap_preimage (SpecMap φ))
+@[simp] lemma preimage_specMap : Spec.preimage (specMap φ) = φ :=
+  SpecMap_injective (SpecMap_preimage (specMap φ))
 
 /-- Spec is fully faithful -/
 @[simps]
 def Spec.homEquiv {R S : CommRingCat} : (𝖲𝗉𝖾𝖼 S ⟶ 𝖲𝗉𝖾𝖼 R) ≃ (R ⟶ S) where
   toFun := Spec.preimage
-  invFun := SpecMap
+  invFun := specMap
   left_inv := SpecMap_preimage
-  right_inv := preimage_SpecMap
+  right_inv := preimage_specMap
 
 end
 
