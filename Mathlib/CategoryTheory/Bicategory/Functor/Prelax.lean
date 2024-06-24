@@ -26,14 +26,14 @@ consists of
 
 `PrelaxFunctor B C`:
 
-A prelax functor `F` between bicategories `B` and `C` is a lax prefunctor such that `map₂` is a
-functor. Namely, it satisfies
+A prelax functor `F` between bicategories `B` and `C` is a lax prefunctor such that the associated
+prefunctors between the hom types are all functors. In other words, it is a `LaxPreFunctor` that
+satisfies
 * `F.map₂ (𝟙 f) = 𝟙 (F.map f)`,
 * `F.map₂ (η ≫ θ) = F.map₂ η ≫ F.map₂ θ`.
 
-
--- TODO: note that coercions have been removed + be careful that some #aligns have been
-removed which maybe shouldn't have been.
+`mkOfHomFunctor`: constructs a `PrelaxFunctor` from a map on objects and functors between the
+corresponding hom types.
 
 -/
 
