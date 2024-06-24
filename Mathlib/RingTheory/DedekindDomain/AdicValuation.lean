@@ -450,7 +450,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl
 
-@[simp]
+@[simp, nolint simpNF]
 theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K) :
     (↑(r • x) : v.adicCompletion K) = r • (x : v.adicCompletion K) :=
   rfl

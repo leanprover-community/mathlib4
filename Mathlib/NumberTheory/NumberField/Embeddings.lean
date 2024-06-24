@@ -636,7 +636,7 @@ theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
   rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
 
 /-- The restriction of an infinite place along an embedding. -/
-def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
+def comap {k K : Type*} [Field k] [Field K] (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
     by { ext x; show _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
 

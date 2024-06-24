@@ -789,7 +789,7 @@ theorem setToL1S_smul_real (T : Set α → E →L[ℝ] F)
 theorem setToL1S_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     [NormedSpace 𝕜 F] (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
-    (f : α →₁ₛ[μ] E) : setToL1S T (c • f) = c • setToL1S T f := by
+    (f : α →₁ₛ[μ] E) : setToL1S T (c • f : simpleFunc E 1 μ) = c • setToL1S T f := by
   simp_rw [setToL1S]
   rw [← SimpleFunc.setToSimpleFunc_smul T h_add h_smul c (SimpleFunc.integrable f)]
   refine SimpleFunc.setToSimpleFunc_congr T h_zero h_add (SimpleFunc.integrable _) ?_

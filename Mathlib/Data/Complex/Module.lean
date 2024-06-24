@@ -190,14 +190,14 @@ end Complex
 
 /- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
-instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
+instance (priority := 90) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
   RestrictScalars.module ℝ ℂ E
 #align module.complex_to_real Module.complexToReal
 
 /- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
-instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
+instance (priority := 90) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
     Algebra ℝ A :=
   RestrictScalars.algebra ℝ ℂ A
 

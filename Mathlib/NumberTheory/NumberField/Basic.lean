@@ -167,7 +167,7 @@ variable {K}
 
 This is a convenient abbreviation for `NoZeroSMulDivisors.algebraMap_injective`.
 -/
-lemma coe_injective : Function.Injective (algebraMap (𝓞 K) K) :=
+lemma coe_injective {K : Type*} [Field K] : Function.Injective (algebraMap (𝓞 K) K) :=
   NoZeroSMulDivisors.algebraMap_injective _ _
 
 /-- The canonical map from `𝓞 K` to `K` is injective.

@@ -201,7 +201,7 @@ lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p 
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 #align set_like.eta SetLike.eta
 
-instance (priority := 100) instPartialOrder : PartialOrder A :=
+instance (priority := 50) instPartialOrder : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
     le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
 

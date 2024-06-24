@@ -210,7 +210,6 @@ theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 ‚à
     rw [‚Üê hd.card_support_mul, h3]
     exact (c * g').support.card_le_univ
   rw [le_antisymm (two_le_of_mem_cycleType hn) hn2]
-  rfl
 #align equiv.perm.is_three_cycle_sq_of_three_mem_cycle_type_five Equiv.Perm.isThreeCycle_sq_of_three_mem_cycleType_five
 
 end Equiv.Perm

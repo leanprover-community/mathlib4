@@ -888,6 +888,7 @@ theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z�
   rw [ContinuousMultilinearMap.mkPiRing, norm_smulRight, norm_mkPiAlgebra, one_mul]
 #align continuous_multilinear_map.norm_mk_pi_field ContinuousMultilinearMap.norm_mkPiRing
 
+set_option maxSynthPendingDepth 2 in
 variable (𝕜 E G) in
 /-- Continuous bilinear map realizing `(f, z) ↦ f.smulRight z`. -/
 def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
@@ -953,6 +954,7 @@ variable (𝕜 E G G')
 
 set_option linter.uppercaseLean3 false
 
+set_option maxSynthPendingDepth 2 in
 /-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled continuous bilinear map. -/
 def compContinuousMultilinearMapL :
     (G →L[𝕜] G') →L[𝕜] ContinuousMultilinearMap 𝕜 E G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
@@ -1230,6 +1232,7 @@ theorem norm_compContinuousLinearMapLRight_le (g : ContinuousMultilinearMap 𝕜
 
 variable (𝕜 E E₁ G)
 
+set_option maxSynthPendingDepth 2 in
 open Function in
 /-- If `f` is a collection of continuous linear maps, then the construction
 `ContinuousMultilinearMap.compContinuousLinearMap`
@@ -1251,6 +1254,7 @@ noncomputable def compContinuousLinearMapMultilinear :
     convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
 
+set_option maxSynthPendingDepth 2 in
 /-- If `f` is a collection of continuous linear maps, then the construction
 `ContinuousMultilinearMap.compContinuousLinearMap`
 sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)` is continuous-linear in `g` and

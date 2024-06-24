@@ -242,12 +242,14 @@ lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
       · intro a u hu
         rw [lie_smul]
         exact Submodule.smul_mem _ a hu
-    · simp
+    · intros m _
+      rw [zero_lie m]
+      exact Submodule.zero_mem (M := A ⊗[R] M) _
     · intro x y hx hy m' hm'
-      rw [add_lie]
+      rw [add_lie x y m']
       exact Submodule.add_mem _ (hx _ hm') (hy _ hm')
     · intro a x hx m' hm'
-      rw [smul_lie]
+      rw [smul_lie a x m']
       exact Submodule.smul_mem _ a (hx _ hm')
 
 end LieSubmodule
