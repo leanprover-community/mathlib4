@@ -527,14 +527,9 @@ theorem TransGen.closed {p : α → α → Prop} :
   TransGen.lift' id
 #align relation.trans_gen.closed Relation.TransGen.closed
 
-lemma TransGen.closed2 {P : α → Prop} (dc : ∀ {a b}, r a b → P b → P a)
-    {a b : α} (h : TransGen r a b) : P b → P a := by
-  rw [forall_comm] at dc
-  have := h.head_induction_on (P := fun a _ => P b → P a) (@dc b)
-  apply this
-  intro a c rac _ pbc pb
-  specialize pbc pb
-  exact dc c a rac pbc
+lemma TransGen.closed' {P : α → Prop} (dc : ∀ {a b}, r a b → P b → P a)
+    {a b : α} (h : TransGen r a b) : P b → P a :=
+  h.head_induction_on dc fun hr _ hi ↦ dc hr ∘ hi
 
 theorem TransGen.mono {p : α → α → Prop} :
     (∀ a b, r a b → p a b) → TransGen r a b → TransGen p a b :=
