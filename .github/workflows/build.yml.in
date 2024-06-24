@@ -118,9 +118,6 @@ jobs:
           lean --version
           lake --version
 
-      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run: lake exe mk_all
-
       - name: build cache
         run: |
           lake build cache
@@ -146,7 +143,7 @@ jobs:
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+            bash -o pipefail -c "lake exe mk_all || echo "There are unaccounted files, but I am not failing yet!"; env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
@@ -201,6 +198,9 @@ jobs:
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+
+      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        run: lake exe mk_all
 
       - name: check for noisy stdout lines
         id: noisy
