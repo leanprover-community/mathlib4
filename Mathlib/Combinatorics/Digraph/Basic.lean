@@ -236,13 +236,27 @@ instance [Nontrivial V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
   rw [← completeGraph_eq_top, ← emptyGraph_eq_bot, Digraph.completeGraph, Digraph.emptyGraph]
   simp only [ne_eq, mk.injEq]
-  exact not_isTop_iff_ne_top.mp fun a_1 ↦ a_1 Eq a a rfl
+  push_neg
+  rw [@ne_iff]
+  simp only [Pi.top_apply, ne_eq, exists_const]
+  push_neg
+  rw [@ne_iff]
+  simp only [Pi.top_apply, Prop.top_eq_true, ne_eq, eq_iff_iff, iff_true, not_false_eq_true,
+    exists_const]
+
   /-
-  JACK: Original proof doesn't compile in this case, I don't know how to modify it to make it work:
+  rw [← completeGraph_eq_top, ← emptyGraph_eq_bot, Digraph.completeGraph, Digraph.emptyGraph]
+  simp only [ne_eq, mk.injEq]
+  -/
+  /-
+  --JACK: Original proof doesn't compile in this case, I don't know how to modify it to make it work:
 
   ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [← adj_inj, Function.funext_iff, bot_adj,
     top_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩⟩
   -/
+
+#check V
+#check Digraph V
 
 section Decidable
 
