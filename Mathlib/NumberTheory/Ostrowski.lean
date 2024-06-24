@@ -186,28 +186,41 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
   If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value.
 -/
 theorem mulRingNorm_equiv_padic_of_bounded :
-    ∃ p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
+    ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
   have hprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact (p.Prime) := ⟨hprime⟩
-  use p, hprime_fact
   obtain ⟨t, h⟩ := exists_pos_mulRingNorm_eq_pow_neg hfp.1 hfp.2 hmin
-  rw [← equiv_on_nat_iff_equiv]
-  refine ⟨t⁻¹, by simp only [inv_pos, h.1], fun n ↦ ?_⟩
-  have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
-  rcases eq_or_ne n 0 with rfl | hn -- Separate cases n=0 and n ≠ 0
-  · simp only [Nat.cast_zero, map_zero, ne_eq, ht, not_false_eq_true, zero_rpow]
-  · /- Any natural number can be written as a power of p times a natural number not divisible
-    by p  -/
-    rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hprime.ne_one with ⟨e, m, hpm, rfl⟩
-    simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, mulRingNorm_eq_padic_norm,
-      padicNorm.padicNorm_p_of_prime, Rat.cast_inv, Rat.cast_natCast, inv_pow,
-      mulRingNorm_eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hpm, h.2]
-    rw [← padicNorm.nat_eq_one_iff] at hpm
-    simp only [← rpow_natCast, p.cast_nonneg, ← rpow_mul, mul_one, ← rpow_neg, hpm, cast_one]
-    congr
-    field_simp [h.1.ne']
-    ring
+  simp_rw [← equiv_on_nat_iff_equiv]
+  use p
+  constructor -- 2 goals: MulRingNorm.equiv f (mulRingNorm_padic p) and p is unique.
+  · use hprime_fact
+    refine ⟨t⁻¹, by simp only [inv_pos, h.1], fun n ↦ ?_⟩
+    have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
+    rcases eq_or_ne n 0 with rfl | hn -- Separate cases n=0 and n ≠ 0
+    · simp only [Nat.cast_zero, map_zero, ne_eq, ht, not_false_eq_true, zero_rpow]
+    · /- Any natural number can be written as a power of p times a natural number not divisible
+      by p  -/
+      rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hprime.ne_one with ⟨e, m, hpm, rfl⟩
+      simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, mulRingNorm_eq_padic_norm,
+        padicNorm.padicNorm_p_of_prime, Rat.cast_inv, Rat.cast_natCast, inv_pow,
+        mulRingNorm_eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hpm, h.2]
+      rw [← padicNorm.nat_eq_one_iff] at hpm
+      simp only [← rpow_natCast, p.cast_nonneg, ← rpow_mul, mul_one, ← rpow_neg, hpm, cast_one]
+      congr
+      field_simp [h.1.ne']
+      ring
+  · intro q ⟨hq_prime, h_equiv⟩
+    by_contra! hne
+    apply Prime.ne_one (Nat.Prime.prime (Fact.elim hq_prime))
+    rw [ne_comm, ← Nat.coprime_primes hprime (Fact.elim hq_prime),
+      Nat.Prime.coprime_iff_not_dvd hprime] at hne
+    rcases h_equiv with ⟨c, _, h_eq⟩
+    have h_eq' := h_eq q
+    simp only [mulRingNorm_eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hne, one_rpow,
+      mulRingNorm_eq_padic_norm, padicNorm.padicNorm_p_of_prime, cast_inv, cast_natCast, eq_comm,
+      inv_eq_one] at h_eq'
+    norm_cast at h_eq'
 
 end Non_archimedean
 
