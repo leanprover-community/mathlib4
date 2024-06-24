@@ -214,13 +214,7 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   map₂_right_unitor f := by dsimp; simp
 #align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
 
--- TODO: clean up
--- -- `comp` is near the `maxHeartbeats` limit (and seems to go over in CI),
--- -- so we defer creating its `@[simp]` lemmas until a separate command.
--- attribute [simps] comp
-
-/-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
--/
+/-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
 def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor

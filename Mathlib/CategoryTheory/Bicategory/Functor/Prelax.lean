@@ -68,6 +68,15 @@ add_decl_doc LaxPreFunctor.toPrefunctor
 
 namespace LaxPreFunctor
 
+/-- Construct a lax prefunctor from a map on objects, and prefunctors between the corresponding
+hom types. -/
+@[simps]
+def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a ⟶ b) (F a ⟶ F b)) :
+    LaxPreFunctor B C where
+  obj := F
+  map {a b} := (F' a b).obj
+  map₂ {a b} := (F' a b).map
+
 variable (F : LaxPreFunctor B C)
 
 -- Porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
@@ -110,6 +119,8 @@ structure PrelaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 
 namespace PrelaxFunctor
 
+initialize_simps_projections PrelaxFunctor (+toLaxPreFunctor, -obj, -map, -map₂)
+
 attribute [simp] map₂_id
 attribute [reassoc] map₂_comp
 attribute [simp] map₂_comp
@@ -120,9 +131,17 @@ add_decl_doc PrelaxFunctor.toLaxPreFunctor
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
--- TODO: what simps to include here...?
+/-- Construct a prelax functor from a map on objects, and functors between the corresponding
+hom types. -/
+@[simps]
+def mkOfHomFunctors (F : B → C) (F' : (a : B) → (b : B) → (a ⟶ b) ⥤ (F a ⟶ F b)) :
+    PrelaxFunctor B C where
+  toLaxPreFunctor := LaxPreFunctor.mkOfHomPrefunctors F fun a b => (F' a b).toPrefunctor
+  map₂_id {a b} := (F' a b).map_id
+  map₂_comp {a b} := (F' a b).map_comp
+
 /-- The identity prelax functor. -/
-@[simps!]
+@[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : PrelaxFunctor B B where
   toLaxPreFunctor := LaxPreFunctor.id B
 
@@ -132,7 +151,7 @@ instance : Inhabited (LaxPreFunctor B B) :=
 variable (F : PrelaxFunctor B C)
 
 /-- Composition of prelax functors. -/
-@[simps!]
+@[simps]
 def comp (G : PrelaxFunctor C D) : PrelaxFunctor B D where
   toLaxPreFunctor := LaxPreFunctor.comp F.toLaxPreFunctor G.toLaxPreFunctor
 
@@ -142,12 +161,16 @@ def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) where
   obj f := F.map f
   map η := F.map₂ η
 
+@[simp]
+lemma mkOfHomFunctors_mapFunctor (F : B → C) (F' : (a : B) → (b : B) → (a ⟶ b) ⥤ (F a ⟶ F b))
+    (a b : B) : (mkOfHomFunctors F F').mapFunctor a b = F' a b :=
+  rfl
+
 section
 
 variable {a b : B}
 
 /-- A prelaxfunctor `F` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms `F.map f ≅ F.map g`. -/
--- TODO: need all these simp lemmas?
 @[simps!]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
