@@ -56,16 +56,14 @@ variable (α) [Nonempty α]
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊥` of a finite nonempty `SemilatticeInf`. -/
-@[reducible]
-def toOrderBot [SemilatticeInf α] : OrderBot α where
+abbrev toOrderBot [SemilatticeInf α] : OrderBot α where
   bot := univ.inf' univ_nonempty id
   bot_le a := inf'_le _ <| mem_univ a
 #align fintype.to_order_bot Fintype.toOrderBot
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
-@[reducible]
-def toOrderTop [SemilatticeSup α] : OrderTop α where
+abbrev toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
   -- Porting note: needed to make `id` explicit
   le_top a := le_sup' id <| mem_univ a
@@ -73,8 +71,7 @@ def toOrderTop [SemilatticeSup α] : OrderTop α where
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊤` and `⊥` of a finite nonempty `Lattice`. -/
-@[reducible]
-def toBoundedOrder [Lattice α] : BoundedOrder α :=
+abbrev toBoundedOrder [Lattice α] : BoundedOrder α :=
   { toOrderBot α, toOrderTop α with }
 #align fintype.to_bounded_order Fintype.toBoundedOrder
 
@@ -88,8 +85,7 @@ open scoped Classical
 
 -- See note [reducible non-instances]
 /-- A finite bounded lattice is complete. -/
-@[reducible]
-noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
+noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
   __ := ‹Lattice α›
   __ := ‹BoundedOrder α›
   sSup := fun s => s.toFinset.sup id
@@ -103,8 +99,7 @@ noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLat
 -- Porting note: `convert` doesn't work as well as it used to.
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
-@[reducible]
-noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
+noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice α where
   __ := toCompleteLattice α
   iInf_sup_le_sup_sInf := fun a s => by
@@ -121,23 +116,21 @@ noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α]
 
 -- See note [reducible non-instances]
 /-- A finite bounded linear order is complete. -/
-@[reducible]
-noncomputable def toCompleteLinearOrder [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
+noncomputable abbrev toCompleteLinearOrder
+    [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
   { toCompleteLattice α, ‹LinearOrder α› with }
 #align fintype.to_complete_linear_order Fintype.toCompleteLinearOrder
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete. -/
-@[reducible]
-noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
+noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
 #align fintype.to_complete_boolean_algebra Fintype.toCompleteBooleanAlgebra
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete and atomic. -/
-@[reducible]
-noncomputable def toCompleteAtomicBooleanAlgebra [BooleanAlgebra α] :
+noncomputable abbrev toCompleteAtomicBooleanAlgebra [BooleanAlgebra α] :
     CompleteAtomicBooleanAlgebra α :=
   (toCompleteBooleanAlgebra α).toCompleteAtomicBooleanAlgebra
 
@@ -150,8 +143,7 @@ variable (α) [Nonempty α]
 -- See note [reducible non-instances]
 /-- A nonempty finite lattice is complete. If the lattice is already a `BoundedOrder`, then use
 `Fintype.toCompleteLattice` instead, as this gives definitional equality for `⊥` and `⊤`. -/
-@[reducible]
-noncomputable def toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice α :=
+noncomputable abbrev toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice α :=
   @toCompleteLattice _ _ _ <| @toBoundedOrder α _ ⟨Classical.arbitrary α⟩ _
 #align fintype.to_complete_lattice_of_nonempty Fintype.toCompleteLatticeOfNonempty
 
@@ -159,8 +151,7 @@ noncomputable def toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice α 
 /-- A nonempty finite linear order is complete. If the linear order is already a `BoundedOrder`,
 then use `Fintype.toCompleteLinearOrder` instead, as this gives definitional equality for `⊥` and
 `⊤`. -/
-@[reducible]
-noncomputable def toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α :=
+noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α :=
   { toCompleteLatticeOfNonempty α, ‹LinearOrder α› with }
 #align fintype.to_complete_linear_order_of_nonempty Fintype.toCompleteLinearOrderOfNonempty
 
@@ -217,19 +208,19 @@ theorem Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Fi
 
 theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
-  refine' ⟨M, fun a ha => _⟩
+  refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 #align fintype.bdd_above_range Finite.bddAbove_range
 
 theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
-  refine' ⟨M, fun a ha => _⟩
+  refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
-@[deprecated] alias Directed.fintype_le := Directed.finite_le
-@[deprecated] alias Fintype.exists_le := Finite.exists_le
-@[deprecated] alias Fintype.exists_ge := Finite.exists_ge
-@[deprecated] alias Fintype.bddAbove_range := Finite.bddAbove_range
-@[deprecated] alias Fintype.bddBelow_range := Finite.bddBelow_range
+@[deprecated (since := "2024-01-16")] alias Directed.fintype_le := Directed.finite_le
+@[deprecated (since := "2024-01-16")] alias Fintype.exists_le := Finite.exists_le
+@[deprecated (since := "2024-01-16")] alias Fintype.exists_ge := Finite.exists_ge
+@[deprecated (since := "2024-01-16")] alias Fintype.bddAbove_range := Finite.bddAbove_range
+@[deprecated (since := "2024-01-16")] alias Fintype.bddBelow_range := Finite.bddBelow_range

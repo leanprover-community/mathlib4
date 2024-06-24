@@ -49,7 +49,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       rintro - ⟨r, r_in, s, s_in, rfl⟩
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
-        _ < γ₀ * γ₀ := (mul_lt_mul₀ r_in s_in)
+        _ < γ₀ * γ₀ := mul_lt_mul₀ r_in s_in
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
@@ -147,9 +147,8 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
-  rcases Units.exists_iff_ne_zero.mpr h with ⟨γ, hx⟩
-  use γ
-  rw [hx]
+  use Units.mk0 _ h
+  rw [Units.val_mk0]
   intro y y_in
   exact Valuation.map_eq_of_sub_lt _ y_in
 #align valued.loc_const Valued.loc_const

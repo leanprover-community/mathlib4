@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
@@ -500,8 +500,8 @@ This lemma says that $φ$ is $G$-linear.
 -/
 theorem dualTensorHom_comm (g : G) :
     dualTensorHom k V W ∘ₗ TensorProduct.map (ρV.dual g) (ρW g) =
-      (linHom ρV ρW) g ∘ₗ dualTensorHom k V W :=
-  by ext; simp [Module.Dual.transpose_apply]
+      (linHom ρV ρW) g ∘ₗ dualTensorHom k V W := by
+  ext; simp [Module.Dual.transpose_apply]
 #align representation.dual_tensor_hom_comm Representation.dualTensorHom_comm
 
 end LinearHom

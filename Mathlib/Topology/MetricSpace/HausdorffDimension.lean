@@ -274,7 +274,7 @@ theorem exists_mem_nhdsWithin_lt_dimH_of_lt_dimH {s : Set X} {r : ℝ≥0∞} (h
   rcases countable_cover_nhdsWithin htx with ⟨S, hSs, hSc, hSU⟩
   calc
     dimH s ≤ dimH (⋃ x ∈ S, t x) := dimH_mono hSU
-    _ = ⨆ x ∈ S, dimH (t x) := (dimH_bUnion hSc _)
+    _ = ⨆ x ∈ S, dimH (t x) := dimH_bUnion hSc _
     _ ≤ r := iSup₂_le fun x hx => htr x <| hSs hx
 set_option linter.uppercaseLean3 false in
 #align exists_mem_nhds_within_lt_dimH_of_lt_dimH exists_mem_nhdsWithin_lt_dimH_of_lt_dimH
@@ -361,7 +361,7 @@ theorem dimH_image_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ�
   rcases countable_cover_nhdsWithin htn with ⟨u, hus, huc, huU⟩
   replace huU := inter_eq_self_of_subset_left huU; rw [inter_iUnion₂] at huU
   rw [← huU, image_iUnion₂, dimH_bUnion huc, dimH_bUnion huc]; simp only [ENNReal.iSup_div]
-  exact iSup₂_mono fun x hx => ((hC x (hus hx)).mono (inter_subset_right _ _)).dimH_image_le hr
+  exact iSup₂_mono fun x hx => ((hC x (hus hx)).mono inter_subset_right).dimH_image_le hr
 set_option linter.uppercaseLean3 false in
 #align dimH_image_le_of_locally_holder_on dimH_image_le_of_locally_holder_on
 
@@ -521,7 +521,7 @@ theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
   · rw [← ENNReal.coe_natCast]
     have : μH[Fintype.card ι] (Metric.ball x r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
       rw [hausdorffMeasure_pi_real, Real.volume_pi_ball _ hr]
-    refine dimH_of_hausdorffMeasure_ne_zero_ne_top ?_ ?_ <;> rw [NNReal.coe_nat_cast, this]
+    refine dimH_of_hausdorffMeasure_ne_zero_ne_top ?_ ?_ <;> rw [NNReal.coe_natCast, this]
     · simp [pow_pos (mul_pos (zero_lt_two' ℝ) hr)]
     · exact ENNReal.ofReal_ne_top
 set_option linter.uppercaseLean3 false in
@@ -573,6 +573,16 @@ theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ Real.dimH_univ
 
+variable {E}
+
+lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ}
+    (hd : finrank ℝ E < d) : (μH[d] : Measure E) = 0 := by
+  lift d to ℝ≥0 using (Nat.cast_nonneg _).trans hd.le
+  rw [← measure_univ_eq_zero]
+  apply hausdorffMeasure_of_dimH_lt
+  rw [dimH_univ_eq_finrank]
+  exact mod_cast hd
+
 end Real
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
@@ -612,7 +622,7 @@ real normed space is at most the dimension of its domain as a vector space over 
 theorem ContDiff.dimH_range_le {f : E → F} (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
   calc
     dimH (range f) = dimH (f '' univ) := by rw [image_univ]
-    _ ≤ dimH (univ : Set E) := (h.contDiffOn.dimH_image_le convex_univ Subset.rfl)
+    _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le convex_univ Subset.rfl
     _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
 set_option linter.uppercaseLean3 false in
 #align cont_diff.dimH_range_le ContDiff.dimH_range_le

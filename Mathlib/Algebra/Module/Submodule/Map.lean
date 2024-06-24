@@ -23,7 +23,7 @@ import Mathlib.Algebra.Module.Submodule.LinearMap
 submodule, subspace, linear map, pushforward, pullback
 -/
 
-open Function BigOperators Pointwise Set
+open Function Pointwise Set
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
@@ -419,6 +419,7 @@ theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submo
     (le_inf (map_mono inf_le_left) (map_le_iff_le_comap.2 inf_le_right))
 #align submodule.map_inf_eq_map_inf_comap Submodule.map_inf_eq_map_inf_comap
 
+@[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
   ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
 #align submodule.map_comap_subtype Submodule.map_comap_subtype

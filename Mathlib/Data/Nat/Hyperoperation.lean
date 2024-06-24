@@ -3,8 +3,8 @@ Copyright (c) 2023 Mark Andrew Gerads. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
 -/
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Nat.Parity
 
 #align_import data.nat.hyperoperation from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -75,7 +75,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
     -- Porting note: was `ring`
     dsimp only
     nth_rewrite 1 [← mul_one m]
-    rw [← mul_add, add_comm, Nat.succ_eq_add_one]
+    rw [← mul_add, add_comm]
 #align hyperoperation_two hyperoperation_two
 
 @[simp]

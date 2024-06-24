@@ -48,7 +48,7 @@ open SheafedSpace
 variable (X : RingedSpace)
 
 -- Porting note (#10670): this was not necessary in mathlib3
-instance : CoeSort RingedSpace (Type*) where
+instance : CoeSort RingedSpace Type* where
   coe X := X.carrier
 
 /--
@@ -137,7 +137,7 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     rintro _ ⟨x, hx, rfl⟩
     obtain ⟨V, i, hxV, hf⟩ := X.isUnit_res_of_isUnit_germ U f x hx
     use V.1
-    refine' ⟨_, V.2, hxV⟩
+    refine ⟨?_, V.2, hxV⟩
     intro y hy
     use (⟨y, i.le hy⟩ : U)
     rw [Set.mem_setOf_eq]
@@ -190,7 +190,7 @@ theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj 
     erw [X.presheaf.germ_res_apply _ _ _] at hx
     exact ⟨x.2, g x, hx, rfl⟩
   · rintro ⟨hxV, x, hx, rfl⟩
-    refine' ⟨⟨x, hxV⟩, (_ : IsUnit _), rfl⟩
+    refine ⟨⟨x, hxV⟩, (?_ : IsUnit _), rfl⟩
     erw [X.presheaf.germ_res_apply _ _ _]
     exact hx
 set_option linter.uppercaseLean3 false in

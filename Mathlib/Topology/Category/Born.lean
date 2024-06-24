@@ -27,7 +27,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Born
 
-instance : CoeSort Born (Type*) :=
+instance : CoeSort Born Type* :=
   Bundled.coeSort
 
 instance (X : Born) : Bornology X :=

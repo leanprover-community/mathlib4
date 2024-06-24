@@ -176,7 +176,7 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 @[simp]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   classical
-    refine' dif_neg _
+    refine dif_neg ?_
     push_neg
     intro
     apply Nat.noConfusion
@@ -205,7 +205,7 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 @[simp]
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
   classical
-    refine' dif_neg _
+    refine dif_neg ?_
     push_neg
     intro
     apply Nat.noConfusion
@@ -314,7 +314,7 @@ noncomputable def zero [HasZeroObject V] : HomologicalComplex V c where
 #align homological_complex.zero HomologicalComplex.zero
 
 theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) := by
-  refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   all_goals
     ext
     dsimp [zero]
@@ -331,6 +331,20 @@ theorem congr_hom {C D : HomologicalComplex V c} {f g : C ⟶ D} (w : f = g) (i 
     f.f i = g.f i :=
   congr_fun (congr_arg Hom.f w) i
 #align homological_complex.congr_hom HomologicalComplex.congr_hom
+
+lemma mono_of_mono_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    (hφ : ∀ i, Mono (φ.f i)) : Mono φ where
+  right_cancellation g h eq := by
+    ext i
+    rw [← cancel_mono (φ.f i)]
+    exact congr_hom eq i
+
+lemma epi_of_epi_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    (hφ : ∀ i, Epi (φ.f i)) : Epi φ where
+  left_cancellation g h eq := by
+    ext i
+    rw [← cancel_epi (φ.f i)]
+    exact congr_hom eq i
 
 section
 
@@ -502,8 +516,9 @@ set_option linter.uppercaseLean3 false in
 #align homological_complex.X_prev_iso_self_comp_d_to HomologicalComplex.xPrevIsoSelf_comp_dTo
 
 @[reassoc (attr := simp)]
-theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) : C.dFrom i ≫ (C.xNextIso r).hom = C.d i j :=
-  by simp [C.dFrom_eq r]
+theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) :
+    C.dFrom i ≫ (C.xNextIso r).hom = C.d i j := by
+  simp [C.dFrom_eq r]
 set_option linter.uppercaseLean3 false in
 #align homological_complex.d_from_comp_X_next_iso HomologicalComplex.dFrom_comp_xNextIso
 
@@ -575,7 +590,7 @@ theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
 #align homological_complex.hom.iso_of_components_app HomologicalComplex.Hom.isoOfComponents_app
 
 theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
-  IsIso.of_iso (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n))
+  (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n)).isIso_hom
 #align homological_complex.hom.is_iso_of_components HomologicalComplex.Hom.isIso_of_components
 
 /-! Lemmas relating chain maps and `dTo`/`dFrom`. -/

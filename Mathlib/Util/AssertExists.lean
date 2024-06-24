@@ -19,7 +19,7 @@ Implement `assert_instance` and `assert_no_instance`
 -/
 
 section
-open Lean Elab Meta
+open Lean Elab Meta Command
 
 /--
 `assert_exists n` is a user command that asserts that a declaration named `n` exists
@@ -30,7 +30,7 @@ Be careful to use names (e.g. `Rat`) rather than notations (e.g. `ℚ`).
 elab "assert_exists " n:ident : command => do
   -- this throws an error if the user types something ambiguous or
   -- something that doesn't exist, otherwise succeeds
-  let _ ← resolveGlobalConstNoOverloadWithInfo n
+  let _ ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
 
 /--
 `assert_not_exists n` is a user command that asserts that a declaration named `n` *does not exist*
@@ -49,7 +49,7 @@ In this case, you should refactor your work
 You should *not* delete the `assert_not_exists` statement without careful discussion ahead of time.
 -/
 elab "assert_not_exists " n:ident : command => do
-  let decl ← try resolveGlobalConstNoOverloadWithInfo n catch _ => return
+  let decl ← try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n catch _ => return
   let env ← getEnv
   let c ← mkConstWithLevelParams decl
   let msg ← (do

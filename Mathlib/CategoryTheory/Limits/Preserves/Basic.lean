@@ -134,32 +134,32 @@ def isColimitOfPreserves (F : C ⥤ D) {c : Cocone K} (t : IsColimit c) [Preserv
 
 instance preservesLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
     Subsingleton (PreservesLimit K F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr!; apply Subsingleton.elim
 #align category_theory.limits.preserves_limit_subsingleton CategoryTheory.Limits.preservesLimit_subsingleton
 
 instance preservesColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
     Subsingleton (PreservesColimit K F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr!; apply Subsingleton.elim
 #align category_theory.limits.preserves_colimit_subsingleton CategoryTheory.Limits.preservesColimit_subsingleton
 
 instance preservesLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
     Subsingleton (PreservesLimitsOfShape J F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr!; apply Subsingleton.elim
 #align category_theory.limits.preserves_limits_of_shape_subsingleton CategoryTheory.Limits.preservesLimitsOfShape_subsingleton
 
 instance preservesColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
     Subsingleton (PreservesColimitsOfShape J F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr!; apply Subsingleton.elim
 #align category_theory.limits.preserves_colimits_of_shape_subsingleton CategoryTheory.Limits.preservesColimitsOfShape_subsingleton
 
 instance preserves_limits_subsingleton (F : C ⥤ D) :
     Subsingleton (PreservesLimitsOfSize.{w', w} F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!; apply Subsingleton.elim
 #align category_theory.limits.preserves_limits_subsingleton CategoryTheory.Limits.preserves_limits_subsingleton
 
 instance preserves_colimits_subsingleton (F : C ⥤ D) :
     Subsingleton (PreservesColimitsOfSize.{w', w} F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!; apply Subsingleton.elim
 #align category_theory.limits.preserves_colimits_subsingleton CategoryTheory.Limits.preserves_colimits_subsingleton
 
 instance idPreservesLimits : PreservesLimitsOfSize.{w', w} (𝟭 C) where
@@ -270,9 +270,9 @@ def preservesLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J 
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
-        refine' Cones.ext (Iso.refl _) fun j => _
-        · dsimp
-          simp [equ, ← Functor.map_comp] }
+        refine Cones.ext (Iso.refl _) fun j => ?_
+        dsimp
+        simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_limits_of_shape_of_equiv CategoryTheory.Limits.preservesLimitsOfShapeOfEquiv
 
 /-- A functor preserving larger limits also preserves smaller limits. -/
@@ -339,9 +339,9 @@ def preservesColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : 
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
-        refine' Cocones.ext (Iso.refl _) fun j => _
-        · dsimp
-          simp [equ, ← Functor.map_comp] }
+        refine Cocones.ext (Iso.refl _) fun j => ?_
+        dsimp
+        simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_colimits_of_shape_of_equiv CategoryTheory.Limits.preservesColimitsOfShapeOfEquiv
 
 /-- A functor preserving larger colimits also preserves smaller colimits. -/
@@ -460,32 +460,32 @@ def isColimitOfReflects (F : C ⥤ D) {c : Cocone K} (t : IsColimit (F.mapCocone
 #align category_theory.limits.is_colimit_of_reflects CategoryTheory.Limits.isColimitOfReflects
 
 instance reflectsLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (ReflectsLimit K F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr!; apply Subsingleton.elim
 #align category_theory.limits.reflects_limit_subsingleton CategoryTheory.Limits.reflectsLimit_subsingleton
 
 instance
   reflectsColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (ReflectsColimit K F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr!; apply Subsingleton.elim
 #align category_theory.limits.reflects_colimit_subsingleton CategoryTheory.Limits.reflectsColimit_subsingleton
 
 instance reflectsLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
     Subsingleton (ReflectsLimitsOfShape J F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr!; apply Subsingleton.elim
 #align category_theory.limits.reflects_limits_of_shape_subsingleton CategoryTheory.Limits.reflectsLimitsOfShape_subsingleton
 
 instance reflectsColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
     Subsingleton (ReflectsColimitsOfShape J F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr!; apply Subsingleton.elim
 #align category_theory.limits.reflects_colimits_of_shape_subsingleton CategoryTheory.Limits.reflectsColimitsOfShape_subsingleton
 
 instance
   reflects_limits_subsingleton (F : C ⥤ D) : Subsingleton (ReflectsLimitsOfSize.{w', w} F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!; apply Subsingleton.elim
 #align category_theory.limits.reflects_limits_subsingleton CategoryTheory.Limits.reflects_limits_subsingleton
 
 instance reflects_colimits_subsingleton (F : C ⥤ D) :
     Subsingleton (ReflectsColimitsOfSize.{w', w} F) := by
-  constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!
+  constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!; apply Subsingleton.elim
 #align category_theory.limits.reflects_colimits_subsingleton CategoryTheory.Limits.reflects_colimits_subsingleton
 
 -- see Note [lower instance priority]
@@ -676,8 +676,8 @@ def reflectsLimitsOfShapeOfReflectsIsomorphisms {G : C ⥤ D} [G.ReflectsIsomorp
 limits.
 -/
 def reflectsLimitsOfReflectsIsomorphisms {G : C ⥤ D} [G.ReflectsIsomorphisms]
-    [HasLimitsOfSize.{w', w} C] [PreservesLimitsOfSize.{w', w} G] : ReflectsLimitsOfSize.{w', w} G
-    where
+    [HasLimitsOfSize.{w', w} C] [PreservesLimitsOfSize.{w', w} G] :
+    ReflectsLimitsOfSize.{w', w} G where
   reflectsLimitsOfShape := reflectsLimitsOfShapeOfReflectsIsomorphisms
 #align category_theory.limits.reflects_limits_of_reflects_isomorphisms CategoryTheory.Limits.reflectsLimitsOfReflectsIsomorphisms
 
@@ -811,7 +811,7 @@ instance fullyFaithfulReflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSiz
                 (Cones.functoriality K F).preimage (t.liftConeMorphism _)) <| by
               apply fun s m => (Cones.functoriality K F).map_injective _
               intro s m
-              rw [Functor.image_preimage]
+              rw [Functor.map_preimage]
               apply t.uniq_cone_morphism } }
 #align category_theory.limits.fully_faithful_reflects_limits CategoryTheory.Limits.fullyFaithfulReflectsLimits
 
@@ -825,7 +825,7 @@ instance fullyFaithfulReflectsColimits [F.Full] [F.Faithful] :
                 (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <| by
               apply fun s m => (Cocones.functoriality K F).map_injective _
               intro s m
-              rw [Functor.image_preimage]
+              rw [Functor.map_preimage]
               apply t.uniq_cocone_morphism }}
 #align category_theory.limits.fully_faithful_reflects_colimits CategoryTheory.Limits.fullyFaithfulReflectsColimits
 

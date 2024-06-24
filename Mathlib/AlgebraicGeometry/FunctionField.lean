@@ -15,9 +15,11 @@ This is a field when the scheme is integral.
 
 ## Main definition
 * `AlgebraicGeometry.Scheme.functionField`: The function field of an integral scheme.
-* `Algebraic_geometry.germToFunctionField`: The canonical map from a component into the function
-  field. This map is injective.
+* `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
+  function field. This map is injective.
 -/
+
+-- Explicit universe annotations were used in this file to improve perfomance #12737
 
 set_option linter.uppercaseLean3 false
 
@@ -56,8 +58,9 @@ noncomputable instance [IsIntegral X] : Field X.functionField := by
   have hs : genericPoint X.carrier ∈ RingedSpace.basicOpen _ s := by
     rw [← SetLike.mem_coe, (genericPoint_spec X.carrier).mem_open_set_iff, Set.top_eq_univ,
       Set.univ_inter, Set.nonempty_iff_ne_empty, Ne, ← Opens.coe_bot, ← SetLike.ext'_iff]
-    erw [basicOpen_eq_bot_iff]
-    exacts [ha, (RingedSpace.basicOpen _ _).isOpen]
+    · erw [basicOpen_eq_bot_iff]
+      exact ha
+    · exact (RingedSpace.basicOpen _ _).isOpen
   have := (X.presheaf.germ ⟨_, hs⟩).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
   rwa [TopCat.Presheaf.germ_res_apply] at this
 
@@ -67,7 +70,7 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : Opens X.carrier} (x : U
   intro y hy
   rw [← (X.presheaf.germ x).map_zero] at hy
   obtain ⟨W, hW, iU, iV, e⟩ := X.presheaf.germ_eq _ x.prop x.prop _ _ hy
-  cases show iU = iV from Subsingleton.elim _ _
+  cases Subsingleton.elim iU iV
   haveI : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
 #align algebraic_geometry.germ_injective_of_is_integral AlgebraicGeometry.germ_injective_of_isIntegral
@@ -81,15 +84,13 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     [hX : IrreducibleSpace X.carrier] [IrreducibleSpace Y.carrier] :
     f.1.base (genericPoint X.carrier : _) = (genericPoint Y.carrier : _) := by
   apply ((genericPoint_spec Y).eq _).symm
-  -- Porting note: the continuity argument used to be `by continuity`
-  convert (genericPoint_spec X.carrier).image
-    (show Continuous f.1.base from ContinuousMap.continuous_toFun _)
+  convert (genericPoint_spec X.carrier).image (show Continuous f.1.base by fun_prop)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
-  rw [Set.univ_inter, Set.image_univ]
-  apply PreirreducibleSpace.isPreirreducible_univ (X := Y.carrier)
-  exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
+  · rw [Set.univ_inter, Set.image_univ]
+  · apply PreirreducibleSpace.isPreirreducible_univ (X := Y.carrier)
+  · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
 #align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersion
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X.carrier] (x : X.carrier) :
@@ -106,7 +107,7 @@ instance functionField_isScalarTower [IrreducibleSpace X.carrier] (U : Opens X.c
   rw [X.presheaf.germ_stalkSpecializes]
 #align algebraic_geometry.function_field_is_scalar_tower AlgebraicGeometry.functionField_isScalarTower
 
-noncomputable instance (R : CommRingCat) [IsDomain R] :
+noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Scheme.Spec.obj <| op R).functionField :=
   RingHom.toAlgebra <| by change CommRingCat.of R ⟶ _; apply StructureSheaf.toStalk
 
@@ -117,12 +118,12 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
   rw [isGenericPoint_def]
   rw [← PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure, PrimeSpectrum.vanishingIdeal_singleton]
   rw [Set.top_eq_univ, ← PrimeSpectrum.zeroLocus_singleton_zero]
-  rfl
+  simp_rw [Submodule.zero_eq_bot, Submodule.bot_coe]
 #align algebraic_geometry.generic_point_eq_bot_of_affine AlgebraicGeometry.genericPoint_eq_bot_of_affine
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Scheme.Spec.obj <| op R).functionField := by
-  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint _)
+  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint (Scheme.Spec.obj (op R)))
   delta IsFractionRing IsLocalization.AtPrime
   -- Porting note: `congr` does not work for `Iff`
   apply Eq.to_iff
@@ -135,7 +136,7 @@ instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain 
 instance {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
     IsIntegral (X.restrict U.openEmbedding) :=
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU
-  isIntegralOfOpenImmersion (X.ofRestrict U.openEmbedding)
+  isIntegral_of_isOpenImmersion (X.ofRestrict U.openEmbedding)
 
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : Opens X.carrier}
     (hU : IsAffineOpen U) [h : Nonempty U] :
@@ -160,7 +161,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   haveI : IsAffine _ := hU
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU'
   haveI : IsIntegral (X.restrict U.openEmbedding) :=
-    @isIntegralOfIsAffineIsDomain _ _ _
+    @isIntegral_of_isAffine_of_isDomain _ _ _
       (by dsimp; rw [Opens.openEmbedding_obj_top]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X.carrier, _⟩ using 1
@@ -169,14 +170,14 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
 #align algebraic_geometry.function_field_is_fraction_ring_of_is_affine_open AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen
 
 instance (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
-  AlgebraicGeometry.SpecIsAffine _
+  AlgebraicGeometry.isAffine_Spec _
 
 instance [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
       PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
-  have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
+  have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.map x)
   let x : U := ⟨x, X.affineCover.Covers x⟩
   have : Nonempty U := ⟨x⟩
   let M := (hU.primeIdealOf x).asIdeal.primeCompl

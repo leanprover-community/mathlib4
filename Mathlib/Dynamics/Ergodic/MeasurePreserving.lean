@@ -34,7 +34,6 @@ variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [Measur
 namespace MeasureTheory
 
 open Measure Function Set
-open scoped BigOperators
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
@@ -115,14 +114,14 @@ protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
 
 protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasurePreserving e μb μc) :
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
-  refine' ⟨fun hg => _, fun hg => h.comp hg⟩
+  refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
   convert (MeasurePreserving.symm e h).comp hg
   simp [← Function.comp.assoc e.symm e g]
 #align measure_theory.measure_preserving.comp_left_iff MeasureTheory.MeasurePreserving.comp_left_iff
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
-  refine' ⟨fun hg => _, fun hg => hg.comp h⟩
+  refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
   convert hg.comp (MeasurePreserving.symm e h)
   simp [Function.comp.assoc g e e.symm]
 #align measure_theory.measure_preserving.comp_right_iff MeasureTheory.MeasurePreserving.comp_right_iff
@@ -153,9 +152,9 @@ open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : MeasurableSet s) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
-  induction' n with n ih; simp
+  induction' n with n ih; · simp
   simp only [add_smul, one_smul, ← n.add_one]
-  refine' le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih _)
+  refine le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih ?_)
   replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff <| hf.measurable hs
   rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
@@ -166,7 +165,7 @@ theorem exists_mem_iterate_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f
     ∃ x ∈ s, ∃ m ∈ Set.Ioo 0 n, f^[m] x ∈ s := by
   have A : ∀ m, MeasurableSet (f^[m] ⁻¹' s) := fun m ↦ (hf.iterate m).measurable hs
   have B : ∀ m, μ (f^[m] ⁻¹' s) = μ s := fun m ↦ (hf.iterate m).measure_preimage hs
-  have : μ (univ : Set α) < ∑ m in Finset.range n, μ (f^[m] ⁻¹' s) := by simpa [B]
+  have : μ (univ : Set α) < ∑ m ∈ Finset.range n, μ (f^[m] ⁻¹' s) := by simpa [B]
   obtain ⟨i, hi, j, hj, hij, x, hxi : f^[i] x ∈ s, hxj : f^[j] x ∈ s⟩ :
       ∃ i < n, ∃ j < n, i ≠ j ∧ (f^[i] ⁻¹' s ∩ f^[j] ⁻¹' s).Nonempty := by
     simpa using exists_nonempty_inter_of_measure_univ_lt_sum_measure μ (fun m _ ↦ A m) this

@@ -3,6 +3,7 @@ Copyright (c) 2024 Emilie Burgun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.Data.Set.Pointwise.SMul

@@ -38,8 +38,6 @@ Sesquilinear form, Sesquilinear map,
 -/
 
 
-open BigOperators
-
 variable {R R₁ R₂ R₃ M M₁ M₂ M₃ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type*}
 
 namespace LinearMap
@@ -192,14 +190,14 @@ theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
 #align linear_map.is_refl.flip_is_refl_iff LinearMap.IsRefl.flip_isRefl_iff
 
 theorem ker_flip_eq_bot (H : B.IsRefl) (h : LinearMap.ker B = ⊥) : LinearMap.ker B.flip = ⊥ := by
-  refine' ker_eq_bot'.mpr fun _ hx ↦ ker_eq_bot'.mp h _ _
+  refine ker_eq_bot'.mpr fun _ hx ↦ ker_eq_bot'.mp h _ ?_
   ext
   exact H _ _ (LinearMap.congr_fun hx _)
 #align linear_map.is_refl.ker_flip_eq_bot LinearMap.IsRefl.ker_flip_eq_bot
 
 theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) :
     LinearMap.ker B = ⊥ ↔ LinearMap.ker B.flip = ⊥ := by
-  refine' ⟨ker_flip_eq_bot H, fun h ↦ _⟩
+  refine ⟨ker_flip_eq_bot H, fun h ↦ ?_⟩
   exact (congr_arg _ B.flip_flip.symm).trans (ker_flip_eq_bot (flip_isRefl_iff.mpr H) h)
 #align linear_map.is_refl.ker_eq_bot_iff_ker_flip_eq_bot LinearMap.IsRefl.ker_eq_bot_iff_ker_flip_eq_bot
 
@@ -251,6 +249,7 @@ theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.fl
     rw [← h, flip_apply, RingHom.id_apply]
   intro x y
   conv_lhs => rw [h]
+  rfl
 #align linear_map.is_symm_iff_eq_flip LinearMap.isSymm_iff_eq_flip
 
 end Symmetric
@@ -349,8 +348,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear maps this d
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁
-    where
+def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁ where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
   zero_mem' x _ := B.isOrtho_zero_right x
   add_mem' hx hy n hn := by
@@ -388,7 +386,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
     (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
   rw [← Finset.coe_singleton]
-  refine' eq_bot_iff.2 fun y h ↦ _
+  refine eq_bot_iff.2 fun y h ↦ ?_
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
@@ -662,7 +660,7 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft := by
   intro x hx
   rw [← e₁.symm.map_eq_zero_iff]
-  refine' h (e₁.symm x) fun y ↦ _
+  refine h (e₁.symm x) fun y ↦ ?_
   specialize hx (e₂ y)
   simp only [LinearEquiv.arrowCongr_apply, LinearEquiv.symm_apply_apply,
     LinearEquiv.map_eq_zero_iff] at hx
@@ -745,14 +743,14 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module 
 
 theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
-  refine' ⟨hB', _⟩
+  refine ⟨hB', ?_⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separatingLeft_iff_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerate_of_separatingLeft
 
 theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingRight) : B.Nondegenerate := by
-  refine' ⟨_, hB'⟩
+  refine ⟨?_, hB'⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separatingRight_iff_flip_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_right LinearMap.IsRefl.nondegenerate_of_separatingRight
@@ -760,18 +758,18 @@ theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M�
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
 that is `Disjoint W (W.orthogonalBilin B)`. -/
-theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
+theorem nondegenerate_restrict_of_disjoint_orthogonal {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     {W : Submodule R M} (hW : Disjoint W (W.orthogonalBilin B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
-  refine' (hB.domRestrict W).nondegenerate_of_separatingLeft _
+  refine (hB.domRestrict W).nondegenerate_of_separatingLeft ?_
   rintro ⟨x, hx⟩ b₁
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R]
-  refine' hW.le_bot ⟨hx, fun y hy ↦ _⟩
+  refine hW.le_bot ⟨hx, fun y hy ↦ ?_⟩
   specialize b₁ ⟨y, hy⟩
   simp_rw [domRestrict₁₂_apply] at b₁
   rw [hB.ortho_comm]
   exact b₁
-#align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerateRestrictOfDisjointOrthogonal
+#align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerate_restrict_of_disjoint_orthogonal
 
 /-- An orthogonal basis with respect to a left-separating bilinear map has no self-orthogonal
 elements. -/
@@ -779,7 +777,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
     {B : M →ₛₗ[I] M →ₛₗ[I'] M₁} {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingLeft)
     (i : n) : ¬B.IsOrtho (v i) (v i) := by
   intro ho
-  refine' v.ne_zero i (hB (v i) fun m ↦ _)
+  refine v.ne_zero i (hB (v i) fun m ↦ ?_)
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum]
   apply Finset.sum_eq_zero
@@ -833,7 +831,7 @@ theorem IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroSMulDivisor
     (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight := by
   rw [isOrthoᵢ_flip] at hO
   rw [← flip_separatingLeft]
-  refine' IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO fun i ↦ _
+  refine IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO fun i ↦ ?_
   rw [isOrtho_flip]
   exact h i
 set_option linter.uppercaseLean3 false in
