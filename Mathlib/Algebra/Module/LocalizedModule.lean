@@ -776,6 +776,7 @@ theorem fromLocalizedModule'_mk (m : M) (s : S) :
   rfl
 #align is_localized_module.from_localized_module'_mk IsLocalizedModule.fromLocalizedModule'_mk
 
+@[simp high] -- Needs to have higher priority than fromLocalizedModule'_mk
 lemma fromLocalizedModule'_mk_one (m : M) :
     fromLocalizedModule' S f (LocalizedModule.mk m 1) = f m := by
   have : (map_units f (1 : S)).unit = 1 := by ext; simp
@@ -1169,8 +1170,7 @@ lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ ↑
   repeat rw [← CompatibleSMul.map_smul, smul'_mk, ← Submonoid.mk_smul, mk_cancel]
   rw [coe_comp, coe_coe, Function.comp_apply, iso_apply, fromLocalizedModule'_mk_one, map_apply]
   have one : (isUnit_one (M := Module.End R (LocalizedModule S M₁))).unit = 1 := by ext; simp
-  have one_inv : (isUnit_one (M := Module.End R M₁')).unit⁻¹ = 1 := by rw [inv_eq_one]; ext; simp
-  simp [map, lift, iso_localizedModule_eq_refl, lift_mk, one, one_inv]
+  simp [map, lift, iso_localizedModule_eq_refl, lift_mk, one]
 
 end IsLocalizedModule
 
