@@ -829,7 +829,7 @@ section
 variable {X Y : SheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-abbrev opensFunctor :=
+abbrev opensFunctor : Opens X ⥤ Opens Y :=
   H.base_open.isOpenMap.functor
 
 /-- An open immersion `f : X ⟶ Y` induces an isomorphism `X ≅ Y|_{f(X)}`. -/
