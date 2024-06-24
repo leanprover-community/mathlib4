@@ -33,7 +33,7 @@ universe u v w
 
 noncomputable section
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 open Polynomial
 
@@ -64,7 +64,7 @@ def spanEval : Ideal (MvPolynomial (MonicIrreducible k) k) :=
 splitting field of the product of the polynomials sending each indeterminate `x_f` represented by
 the polynomial `f` in the finset to a root of `f`. -/
 def toSplittingField (s : Finset (MonicIrreducible k)) :
-    MvPolynomial (MonicIrreducible k) k →ₐ[k] SplittingField (∏ x in s, x : k[X]) :=
+    MvPolynomial (MonicIrreducible k) k →ₐ[k] SplittingField (∏ x ∈ s, x : k[X]) :=
   MvPolynomial.aeval fun f =>
     if hf : f ∈ s then
       rootOfSplits _
@@ -129,7 +129,6 @@ instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
   (toAdjoinMonic k).toAlgebra
 #align algebraic_closure.adjoin_monic.algebra AlgebraicClosure.AdjoinMonic.algebra
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 -- Porting note: In the statement, the type of `C` had to be made explicit.
 theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk _).comp
     (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl

@@ -51,7 +51,7 @@ Legendre, p-adic
 
 open Finset Nat multiplicity
 
-open BigOperators Nat
+open Nat
 
 namespace Nat
 
@@ -106,20 +106,20 @@ theorem multiplicity_pow_self {p n : ℕ} (hp : p.Prime) : multiplicity p (p ^ n
 The multiplicity of a prime in `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
-    ∀ {n b : ℕ}, log p n < b → multiplicity p n ! = (∑ i in Ico 1 b, n / p ^ i : ℕ)
+    ∀ {n b : ℕ}, log p n < b → multiplicity p n ! = (∑ i ∈ Ico 1 b, n / p ^ i : ℕ)
   | 0, b, _ => by simp [Ico, hp.multiplicity_one]
   | n + 1, b, hb =>
     calc
       multiplicity p (n + 1)! = multiplicity p n ! + multiplicity p (n + 1) := by
         rw [factorial_succ, hp.multiplicity_mul, add_comm]
-      _ = (∑ i in Ico 1 b, n / p ^ i : ℕ) +
+      _ = (∑ i ∈ Ico 1 b, n / p ^ i : ℕ) +
             ((Finset.Ico 1 b).filter fun i => p ^ i ∣ n + 1).card := by
         rw [multiplicity_factorial hp ((log_mono_right <| le_succ _).trans_lt hb), ←
           multiplicity_eq_card_pow_dvd hp.ne_one (succ_pos _) hb]
-      _ = (∑ i in Ico 1 b, (n / p ^ i + if p ^ i ∣ n + 1 then 1 else 0) : ℕ) := by
+      _ = (∑ i ∈ Ico 1 b, (n / p ^ i + if p ^ i ∣ n + 1 then 1 else 0) : ℕ) := by
         rw [sum_add_distrib, sum_boole]
         simp
-      _ = (∑ i in Ico 1 b, (n + 1) / p ^ i : ℕ) :=
+      _ = (∑ i ∈ Ico 1 b, (n + 1) / p ^ i : ℕ) :=
         congr_arg _ <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
 #align nat.prime.multiplicity_factorial Nat.Prime.multiplicity_factorial
 
@@ -172,7 +172,7 @@ theorem multiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
-    p ^ r ∣ n ! ↔ r ≤ ∑ i in Ico 1 b, n / p ^ i := by
+    p ^ r ∣ n ! ↔ r ≤ ∑ i ∈ Ico 1 b, n / p ^ i := by
   rw [← PartENat.coe_le_coe, ← hp.multiplicity_factorial hbn, ← pow_dvd_iff_le_multiplicity]
 #align nat.prime.pow_dvd_factorial_iff Nat.Prime.pow_dvd_factorial_iff
 
@@ -183,15 +183,15 @@ theorem multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
 #align nat.prime.multiplicity_factorial_le_div_pred Nat.Prime.multiplicity_factorial_le_div_pred
 
 theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
-    ∑ i in Finset.Ico 1 b, n / p ^ i =
-      ((∑ i in Finset.Ico 1 b, k / p ^ i) + ∑ i in Finset.Ico 1 b, (n - k) / p ^ i) +
+    ∑ i ∈ Finset.Ico 1 b, n / p ^ i =
+      ((∑ i ∈ Finset.Ico 1 b, k / p ^ i) + ∑ i ∈ Finset.Ico 1 b, (n - k) / p ^ i) +
         ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
   calc
-    ∑ i in Finset.Ico 1 b, n / p ^ i = ∑ i in Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
+    ∑ i ∈ Finset.Ico 1 b, n / p ^ i = ∑ i ∈ Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
       simp only [add_tsub_cancel_of_le hkn]
-    _ = ∑ i in Finset.Ico 1 b,
-          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) :=
-      by simp only [Nat.add_div (pow_pos hp.pos _)]
+    _ = ∑ i ∈ Finset.Ico 1 b,
+          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) := by
+      simp only [Nat.add_div (pow_pos hp.pos _)]
     _ = _ := by simp [sum_add_distrib, sum_boole]
 #align nat.prime.multiplicity_choose_aux Nat.Prime.multiplicity_choose_aux
 

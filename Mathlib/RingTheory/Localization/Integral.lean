@@ -30,7 +30,7 @@ commutative ring, field of fractions
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 variable [Algebra R S] {P : Type*} [CommRing P]
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace IsLocalization
 
@@ -67,7 +67,7 @@ theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
 /-- `integerNormalization g` normalizes `g` to have integer coefficients
 by clearing the denominators -/
 noncomputable def integerNormalization (p : S[X]) : R[X] :=
-  ∑ i in p.support, monomial i (coeffIntegerNormalization M p i)
+  ∑ i ∈ p.support, monomial i (coeffIntegerNormalization M p i)
 #align is_localization.integer_normalization IsLocalization.integerNormalization
 
 @[simp]
@@ -194,7 +194,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommR
   refine ⟨p.map (algebraMap R Rₘ) * C b, ⟨?_, ?_⟩⟩
   · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
     rwa [leadingCoeff_map_of_leadingCoeff_ne_zero (algebraMap R Rₘ)]
-    refine' fun hfp => zero_ne_one
+    refine fun hfp => zero_ne_one
       (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
   · refine eval₂_mul_eq_zero_of_left _ _ _ ?_
     erw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]

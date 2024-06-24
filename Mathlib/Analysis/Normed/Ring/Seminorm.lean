@@ -125,7 +125,7 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine' (if_pos h).trans_le (mul_nonneg _ _) <;>
+        · refine (if_pos h).trans_le (mul_nonneg ?_ ?_) <;>
             · change _ ≤ ite _ _ _
               split_ifs
               exacts [le_rfl, zero_le_one]
@@ -145,7 +145,7 @@ section Ring
 variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
-  refine'
+  refine
     ⟨fun h =>
       ne_zero_iff.mpr
         ⟨1, by
@@ -388,3 +388,11 @@ lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) 
       f (n + 1) ≤ f (n) + f 1 := f.add_le' ↑n 1
       _ = f (n) + 1 := by rw [map_one]
       _ ≤ n + 1 := add_le_add_right hn 1
+
+open Int
+
+/-- A multiplicative norm composed with the absolute value on integers equals the norm itself. -/
+lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) =
+    f x := by
+  obtain ⟨n, rfl | rfl⟩ := eq_nat_or_neg x <;>
+  simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]

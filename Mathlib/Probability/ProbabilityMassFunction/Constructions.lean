@@ -34,7 +34,7 @@ noncomputable section
 variable {α β γ : Type*}
 
 open scoped Classical
-open BigOperators NNReal ENNReal
+open NNReal ENNReal
 
 section Map
 
@@ -153,12 +153,12 @@ section OfFinset
 
 /-- Given a finset `s` and a function `f : α → ℝ≥0∞` with sum `1` on `s`,
   such that `f a = 0` for `a ∉ s`, we get a `PMF`. -/
-def ofFinset (f : α → ℝ≥0∞) (s : Finset α) (h : ∑ a in s, f a = 1)
+def ofFinset (f : α → ℝ≥0∞) (s : Finset α) (h : ∑ a ∈ s, f a = 1)
     (h' : ∀ (a) (_ : a ∉ s), f a = 0) : PMF α :=
   ⟨f, h ▸ hasSum_sum_of_ne_finset_zero h'⟩
 #align pmf.of_finset PMF.ofFinset
 
-variable {f : α → ℝ≥0∞} {s : Finset α} (h : ∑ a in s, f a = 1) (h' : ∀ (a) (_ : a ∉ s), f a = 0)
+variable {f : α → ℝ≥0∞} {s : Finset α} (h : ∑ a ∈ s, f a = 1) (h' : ∀ (a) (_ : a ∉ s), f a = 0)
 
 @[simp]
 theorem ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl

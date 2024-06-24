@@ -250,7 +250,7 @@ instance instUniformSpace : UniformSpace (SeparationQuotient α) where
     exact @hUt (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩
   nhds_eq_comap_uniformity := surjective_mk.forall.2 fun x ↦ comap_injective surjective_mk <| by
     conv_lhs => rw [comap_mk_nhds_mk, nhds_eq_comap_uniformity, ← comap_map_mk_uniformity]
-    simp only [Filter.comap_comap, Function.comp, Prod_map]
+    simp only [Filter.comap_comap, Function.comp, Prod.map_apply]
 
 theorem uniformity_eq : 𝓤 (SeparationQuotient α) = (𝓤 α).map (Prod.map mk mk) := rfl
 #align uniform_space.uniformity_quotient SeparationQuotient.uniformity_eq

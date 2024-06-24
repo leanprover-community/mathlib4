@@ -27,7 +27,7 @@ def CompleteLat :=
 
 namespace CompleteLat
 
-instance : CoeSort CompleteLat (Type*) :=
+instance : CoeSort CompleteLat Type* :=
   Bundled.coeSort
 
 instance (X : CompleteLat) : CompleteLattice X :=

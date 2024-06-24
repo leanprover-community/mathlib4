@@ -34,6 +34,8 @@ We also produce the following instances:
 
 -/
 
+assert_not_exists DenselyOrdered
+
 variable {M : Type*}
 
 /-- A mixin for power-associative multiplication. -/

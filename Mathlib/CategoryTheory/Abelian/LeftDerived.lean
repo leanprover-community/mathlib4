@@ -37,6 +37,16 @@ and show how to compute the components.
 * `Functor.fromLeftDerivedZero`: the natural transformation `F.leftDerived 0 ⟶ F`,
   which is an isomorphism when `F` is right exact (i.e. preserves finite colimits),
   see also `Functor.leftDerivedZeroIsoSelf`.
+
+## TODO
+
+* refactor `Functor.leftDerived` (and `Functor.rightDerived`) when the necessary
+material enters mathlib: derived categories, injective/projective derivability
+structures, existence of derived functors from derivability structures.
+Eventually, we shall get a right derived functor
+`F.leftDerivedFunctorMinus : DerivedCategory.Minus C ⥤ DerivedCategory.Minus D`,
+and `F.leftDerived` shall be redefined using `F.leftDerivedFunctorMinus`.
+
 -/
 
 universe v u

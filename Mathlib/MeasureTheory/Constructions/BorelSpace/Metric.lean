@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Thickening
+import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+import Mathlib.Topology.MetricSpace.Thickening
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -26,7 +27,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
-open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
+open scoped Classical Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 

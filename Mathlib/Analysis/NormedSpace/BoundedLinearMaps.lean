@@ -56,7 +56,7 @@ artifact, really.
 
 noncomputable section
 
-open BigOperators Topology
+open Topology
 
 open Filter (Tendsto)
 

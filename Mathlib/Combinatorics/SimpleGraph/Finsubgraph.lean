@@ -61,7 +61,7 @@ instance : Sup G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
 
 instance : Inf G.Finsubgraph :=
-  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset <| inter_subset_left _ _⟩⟩
+  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
 
 instance : DistribLattice G.Finsubgraph :=
   Subtype.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl

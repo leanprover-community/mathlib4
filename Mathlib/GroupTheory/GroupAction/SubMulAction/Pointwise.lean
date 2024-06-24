@@ -88,7 +88,7 @@ instance mulOneClass : MulOneClass (SubMulAction R M) where
   one_mul a := by
     ext x
     simp only [mem_mul, mem_one, smul_mul_assoc, exists_exists_eq_and, one_mul]
-    refine' ⟨_, fun hx => ⟨1, x, hx, one_smul _ _⟩⟩
+    refine ⟨?_, fun hx => ⟨1, x, hx, one_smul _ _⟩⟩
     rintro ⟨r, y, hy, rfl⟩
     exact smul_mem _ _ hy
 

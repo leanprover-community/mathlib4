@@ -133,9 +133,9 @@ theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
 #align unit_interval.coe_symm_eq unitInterval.coe_symm_eq
 
 -- Porting note: Proof used to be `by continuity!`
-@[continuity]
-theorem continuous_symm : Continuous σ :=
-  (continuous_const.add continuous_induced_dom.neg).subtype_mk _
+@[continuity, fun_prop]
+theorem continuous_symm : Continuous σ := by
+  apply Continuous.subtype_mk (by fun_prop)
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
 /-- `unitInterval.symm` as a `Homeomorph`. -/
@@ -148,11 +148,8 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
--- 2024-02-27
-@[deprecated] alias involutive_symm := symm_involutive
-
--- 2024-02-27
-@[deprecated] alias bijective_symm := symm_bijective
+@[deprecated (since := "2024-02-27")] alias involutive_symm := symm_involutive
+@[deprecated (since := "2024-02-27")] alias bijective_symm := symm_bijective
 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]

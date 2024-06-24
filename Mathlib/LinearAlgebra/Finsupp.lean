@@ -47,7 +47,6 @@ function with finite support, module, linear algebra
 noncomputable section
 
 open Set LinearMap Submodule
-open BigOperators
 
 namespace Finsupp
 
@@ -297,7 +296,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
   carrier := { p | ↑p.support ⊆ s }
   add_mem' {p q} hp hq := by
     classical
-    refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
+    refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
   zero_mem' := by
     simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
@@ -408,8 +407,9 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
-theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
-  by erw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq]; rfl
+theorem supported_union (s t : Set α) :
+    supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
+  erw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq]; rfl
 #align finsupp.supported_union Finsupp.supported_union
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :
@@ -417,8 +417,9 @@ theorem supported_iInter {ι : Type*} (s : ι → Set α) :
   Submodule.ext fun x => by simp [mem_supported, subset_iInter_iff]
 #align finsupp.supported_Inter Finsupp.supported_iInter
 
-theorem supported_inter (s t : Set α) : supported M R (s ∩ t) = supported M R s ⊓ supported M R t :=
-  by rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
+theorem supported_inter (s t : Set α) :
+    supported M R (s ∩ t) = supported M R s ⊓ supported M R t := by
+  rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
 #align finsupp.supported_inter Finsupp.supported_inter
 
 theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
@@ -640,7 +641,7 @@ sending `l : β →₀ M` to the finitely supported function from `α` to `M` gi
 
 This is the linear version of `Finsupp.comapDomain`. -/
 def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M where
-  toFun l := Finsupp.comapDomain f l (hf.injOn _)
+  toFun l := Finsupp.comapDomain f l hf.injOn
   map_add' x y := by ext; simp
   map_smul' c x := by ext; simp
 #align finsupp.lcomap_domain Finsupp.lcomapDomain
@@ -814,8 +815,8 @@ theorem mem_span_image_iff_total {s : Set α} {x : M} :
 
 theorem total_option (v : Option α → M) (f : Option α →₀ R) :
     Finsupp.total (Option α) M R v f =
-      f none • v none + Finsupp.total α M R (v ∘ Option.some) f.some :=
-  by rw [total_apply, sum_option_index_smul, total_apply]; simp
+      f none • v none + Finsupp.total α M R (v ∘ Option.some) f.some := by
+  rw [total_apply, sum_option_index_smul, total_apply]; simp
 #align finsupp.total_option Finsupp.total_option
 
 theorem total_total {α β : Type*} (A : α → M) (B : β → α →₀ R) (f : β →₀ R) :
@@ -865,8 +866,8 @@ theorem total_comp (f : α' → α) :
 
 theorem total_comapDomain (f : α → α') (l : α' →₀ R) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) :
     Finsupp.total α M R v (Finsupp.comapDomain f l hf) =
-      (l.support.preimage f hf).sum fun i => l (f i) • v i :=
-  by rw [Finsupp.total_apply]; rfl
+      (l.support.preimage f hf).sum fun i => l (f i) • v i := by
+  rw [Finsupp.total_apply]; rfl
 #align finsupp.total_comap_domain Finsupp.total_comapDomain
 
 theorem total_onFinset {s : Finset α} {f : α → R} (g : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) :
@@ -1296,7 +1297,7 @@ theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     m ∈ sSup S ↔ ∃ s : Finset (Submodule R M), ↑s ⊆ S ∧ m ∈ ⨆ i ∈ s, i := by
   rw [sSup_eq_iSup, iSup_subtype', Submodule.mem_iSup_iff_exists_finset]
   refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype S), ?_, ?_⟩,
-          fun ⟨s, hsS, hs⟩ ↦ ⟨s.preimage (↑) (Subtype.coe_injective.injOn _), ?_⟩⟩
+          fun ⟨s, hsS, hs⟩ ↦ ⟨s.preimage (↑) Subtype.coe_injective.injOn, ?_⟩⟩
   · simpa using fun x _ ↦ x.property
   · suffices m ∈ ⨆ (i) (hi : i ∈ S) (_ : ⟨i, hi⟩ ∈ s), i by simpa
     rwa [iSup_subtype']
@@ -1304,7 +1305,7 @@ theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     simpa only [Finset.mem_preimage, iSup_subtype, iSup_and', this]
 
 theorem mem_span_finset {s : Finset M} {x : M} :
-    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i in s, f i • i = x :=
+    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i ∈ s, f i • i = x :=
   ⟨fun hx =>
     let ⟨v, hvs, hvx⟩ :=
       (Finsupp.mem_span_image_iff_total _).1

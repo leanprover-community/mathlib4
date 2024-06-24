@@ -196,6 +196,25 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.R
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 #align setoid.eq_top_iff Setoid.eq_top_iff
 
+lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
+    letI := sInf S
+    x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
+
+lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
+    Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s.Rel x y := by
+  simp
+  rfl
+
+/-- The map induced between quotients by a setoid inequality. -/
+def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
+  Quotient.map' id h
+
+/-- The map from the quotient of the infimum of a set of setoids into the quotient
+by an element of this set. -/
+def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
+    Quotient (sInf S) → Quotient s :=
+  Setoid.map_of_le fun _ _ a ↦ a s h
+
 /-- The inductively defined equivalence closure of a binary relation r is the infimum
     of the set of all equivalence relations containing r. -/
 theorem eqvGen_eq (r : α → α → Prop) :
@@ -457,16 +476,16 @@ end Setoid
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
     forall_const]
-  refine' (surjective_quotient_mk' _).forall.trans (forall_congr' fun a => _)
-  refine' (surjective_quotient_mk' _).forall.trans (forall_congr' fun b => _)
+  refine (surjective_quotient_mk' _).forall.trans (forall_congr' fun a => ?_)
+  refine (surjective_quotient_mk' _).forall.trans (forall_congr' fun b => ?_)
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
   rfl
 #align quotient.subsingleton_iff Quotient.subsingleton_iff
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) ↔ EqvGen r = ⊤ := by
   simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
-  refine' (surjective_quot_mk _).forall.trans (forall_congr' fun a => _)
-  refine' (surjective_quot_mk _).forall.trans (forall_congr' fun b => _)
+  refine (surjective_quot_mk _).forall.trans (forall_congr' fun a => ?_)
+  refine (surjective_quot_mk _).forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
   simp only [forall_const, le_Prop_eq, Pi.top_apply, Prop.top_eq_true, true_implies]
 #align quot.subsingleton_iff Quot.subsingleton_iff

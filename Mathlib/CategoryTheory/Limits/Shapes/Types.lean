@@ -73,14 +73,14 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
 @[simp 1001]
 theorem pi_map_π_apply {β : Type v} [Small.{u} β] {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
+    (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) :=
   Limit.map_π_apply.{v, u} _ _ _
 #align category_theory.limits.types.pi_map_π_apply CategoryTheory.Limits.Types.pi_map_π_apply
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) := by
+    (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) := by
   simp
 #align category_theory.limits.types.pi_map_π_apply' CategoryTheory.Limits.Types.pi_map_π_apply'
 
@@ -246,8 +246,8 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
 explicit binary product functor given by the product type.
 -/
 noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor : Type u ⥤ _) := by
-  refine' NatIso.ofComponents (fun X => _) (fun _ => _)
-  · refine' NatIso.ofComponents (fun Y => _) (fun _ => _)
+  refine NatIso.ofComponents (fun X => ?_) (fun _ => ?_)
+  · refine NatIso.ofComponents (fun Y => ?_) (fun _ => ?_)
     · exact ((limit.isLimit _).conePointUniqueUpToIso (binaryProductLimit X Y)).symm
     · apply Limits.prod.hom_ext <;> simp <;> rfl
   · ext : 2
@@ -361,7 +361,7 @@ noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range f)ᶜ → Y)) := by
   apply Nonempty.some
   rw [binaryCofan_isColimit_iff]
-  refine' ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, _⟩
+  refine ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, ?_⟩
   symm
   rw [← eq_compl_iff_isCompl]
   exact Subtype.range_val
@@ -381,7 +381,7 @@ def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
 #align category_theory.limits.types.product_limit_cone CategoryTheory.Limits.Types.productLimitCone
 
 /-- The categorical product in `TypeMax.{v, u}` is the type theoretic product `Π j, F j`. -/
-noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ F ≅ ∀ j, F j :=
+noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ᶜ F ≅ ∀ j, F j :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 #align category_theory.limits.types.product_iso CategoryTheory.Limits.Types.productIso
 
@@ -426,7 +426,7 @@ noncomputable def productLimitCone :
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
-    (∏ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
+    (∏ᶜ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
 @[simp]
@@ -492,7 +492,7 @@ The converse of `unique_of_type_equalizer`.
 noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X, f x = y) :
     IsLimit (Fork.ofι _ w) :=
   Fork.IsLimit.mk' _ fun s => by
-    refine' ⟨fun i => _, _, _⟩
+    refine ⟨fun i => ?_, ?_, ?_⟩
     · apply Classical.choose (t (s.ι i) _)
       apply congr_fun s.condition i
     · funext i

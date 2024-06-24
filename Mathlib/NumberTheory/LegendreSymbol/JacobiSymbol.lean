@@ -113,8 +113,9 @@ theorem one_right (a : ℤ) : J(a | 1) = 1 := by
 
 /-- The Legendre symbol `legendreSym p a` with an integer `a` and a prime number `p`
 is the same as the Jacobi symbol `J(a | p)`. -/
-theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legendreSym p a = J(a | p) :=
-  by simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
+theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) :
+    legendreSym p a = J(a | p) := by
+  simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
 #align legendre_sym.to_jacobi_sym jacobiSym.legendreSym.to_jacobiSym
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
@@ -362,7 +363,8 @@ theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
     J(a / 4 | b) = J(a | b) := by
   obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha4
   have : Int.gcd (2 : ℕ) b = 1 := by
-    rw [Int.coe_nat_gcd, ← b.mod_add_div 2, hb2, Nat.gcd_add_mul_left_right, Nat.gcd_one_right]
+    rw [Int.gcd_natCast_natCast, ← b.mod_add_div 2, hb2, Nat.gcd_add_mul_left_right,
+      Nat.gcd_one_right]
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     (by decide : (4 : ℤ) = (2 : ℕ) ^ 2), jacobiSym.sq_one' this, one_mul]
 
@@ -584,7 +586,7 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
   split <;> rename_i hba
   · suffices J(a | b) = 0 by simp [this]
     refine eq_zero_iff.mpr ⟨fun h ↦ absurd (h ▸ hb1) (by decide), ?_⟩
-    rwa [Int.coe_nat_gcd, Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero hba)]
+    rwa [Int.gcd_natCast_natCast, Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero hba)]
   rw [IH (b % a) (b.mod_lt ha0) (Nat.mod_two_ne_zero.mp ha2) (lt_of_le_of_ne ha0 (Ne.symm ha1))]
   simp only [Int.natCast_mod, ← mod_left]
   rw [← quadratic_reciprocity_if (Nat.mod_two_ne_zero.mp ha2) hb2]

@@ -191,7 +191,7 @@ proofs or statements do not apply directly.
 [Bogachev, Measure Theory, volume 2, Theorem 7.11.1][bogachev2007]
 -/
 
-open Set Filter ENNReal Topology NNReal BigOperators TopologicalSpace
+open Set Filter ENNReal Topology NNReal TopologicalSpace
 
 namespace MeasureTheory
 
@@ -414,7 +414,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
         (∀ n, A' n ⊆ s n) ∧ Pairwise (Disjoint on A') ∧ A = ⋃ n, A' n := by
     refine
       ⟨fun n => A ∩ disjointed s n, fun n => hA.inter (MeasurableSet.disjointed hm _), fun n =>
-        (inter_subset_right _ _).trans (disjointed_subset _ _),
+        inter_subset_right.trans (disjointed_subset _ _),
         (disjoint_disjointed s).mono fun k l hkl => hkl.mono inf_le_right inf_le_right, ?_⟩
     rw [← inter_iUnion, iUnion_disjointed, univ_subset_iff.mp h'', inter_univ]
   rcases ENNReal.exists_pos_sum_of_countable' (tsub_pos_iff_lt.2 hr).ne' ℕ with ⟨δ, δ0, hδε⟩
@@ -424,7 +424,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
     have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
     have Ht : μ.restrict (s n) (A n) ≠ ∞ := by
       rw [H₁]
-      exact ((measure_mono ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
+      exact ((measure_mono (inter_subset_left.trans (subset_iUnion A n))).trans_lt HA).ne
     rcases (A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
     rw [H₁, H₁, inter_eq_self_of_subset_left (hAs _)] at hU
     exact ⟨U ∩ s n, subset_inter hAU (hAs _), hUo.inter (h' n), hU⟩
@@ -495,15 +495,15 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
   have hfin : ∀ {s}, μ s ≠ ∞ := @(measure_ne_top μ)
   suffices ∀ s, MeasurableSet s → ∀ ε, ε ≠ 0 → ∃ F, F ⊆ s ∧ ∃ U, U ⊇ s ∧
       IsClosed F ∧ IsOpen U ∧ μ s ≤ μ F + ε ∧ μ U ≤ μ s + ε by
-    refine'
-      { outerRegular := fun s hs r hr => _
+    refine
+      { outerRegular := fun s hs r hr => ?_
         innerRegular := H }
     rcases exists_between hr with ⟨r', hsr', hr'r⟩
     rcases this s hs _ (tsub_pos_iff_lt.2 hsr').ne' with ⟨-, -, U, hsU, -, hUo, -, H⟩
     refine ⟨U, hsU, hUo, ?_⟩
     rw [add_tsub_cancel_of_le hsr'.le] at H
     exact H.trans_lt hr'r
-  refine' MeasurableSet.induction_on_open _ _ _
+  apply MeasurableSet.induction_on_open
   /- The proof is by measurable induction: we should check that the property is true for the empty
     set, for open sets, and is stable by taking the complement and by taking countable disjoint
     unions. The point of the property we are proving is that it is stable by taking complements
@@ -515,9 +515,9 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
   -- check for complements
   · rintro s hs H ε hε
     rcases H ε hε with ⟨F, hFs, U, hsU, hFc, hUo, hF, hU⟩
-    refine'
+    refine
       ⟨Uᶜ, compl_subset_compl.2 hsU, Fᶜ, compl_subset_compl.2 hFs, hUo.isClosed_compl,
-        hFc.isOpen_compl, _⟩
+        hFc.isOpen_compl, ?_⟩
     simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and_iff]
   -- check for disjoint unions
   · intro s hsd hsm H ε ε0
@@ -527,21 +527,21 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     -- the approximating closed set is constructed by considering finitely many sets `s i`, which
     -- cover all the measure up to `ε/2`, approximating each of these by a closed set `F i`, and
     -- taking the union of these (finitely many) `F i`.
-    have : Tendsto (fun t => (∑ k in t, μ (s k)) + ε / 2) atTop (𝓝 <| μ (⋃ n, s n) + ε / 2) := by
+    have : Tendsto (fun t => (∑ k ∈ t, μ (s k)) + ε / 2) atTop (𝓝 <| μ (⋃ n, s n) + ε / 2) := by
       rw [measure_iUnion hsd hsm]
       exact Tendsto.add ENNReal.summable.hasSum tendsto_const_nhds
     rcases (this.eventually <| lt_mem_nhds <| ENNReal.lt_add_right hfin ε0').exists with ⟨t, ht⟩
     -- the approximating open set is constructed by taking for each `s n` an approximating open set
     -- `U n` with measure at most `μ (s n) + δ n` for a summable `δ`, and taking the union of these.
-    refine'
+    refine
       ⟨⋃ k ∈ t, F k, iUnion_mono fun k => iUnion_subset fun _ => hFs _, ⋃ n, U n, iUnion_mono hsU,
-        isClosed_biUnion_finset fun k _ => hFc k, isOpen_iUnion hUo, ht.le.trans _, _⟩
+        isClosed_biUnion_finset fun k _ => hFc k, isOpen_iUnion hUo, ht.le.trans ?_, ?_⟩
     · calc
-        (∑ k in t, μ (s k)) + ε / 2 ≤ ((∑ k in t, μ (F k)) + ∑ k in t, δ k) + ε / 2 := by
+        (∑ k ∈ t, μ (s k)) + ε / 2 ≤ ((∑ k ∈ t, μ (F k)) + ∑ k ∈ t, δ k) + ε / 2 := by
           rw [← sum_add_distrib]
           gcongr
           apply hF
-        _ ≤ (∑ k in t, μ (F k)) + ε / 2 + ε / 2 := by
+        _ ≤ (∑ k ∈ t, μ (F k)) + ε / 2 + ε / 2 := by
           gcongr
           exact (ENNReal.sum_le_tsum _).trans hδε.le
         _ = μ (⋃ k ∈ t, F k) + ε := by
@@ -596,7 +596,7 @@ theorem isCompact_isClosed {X : Type*} [TopologicalSpace X] [SigmaCompactSpace X
     exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (compactCovering_subset _ h)
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
-  exact ⟨_, inter_subset_left _ _, hBc n, hn⟩
+  exact ⟨_, inter_subset_left, hBc n, hn⟩
 #align measure_theory.measure.inner_regular.is_compact_is_closed MeasureTheory.Measure.InnerRegularWRT.isCompact_isClosed
 
 /-- If `μ` is inner regular for measurable finite measure sets with respect to some class of sets,
@@ -610,21 +610,21 @@ lemma restrict (h : InnerRegularWRT μ p (fun s ↦ MeasurableSet s ∧ μ s ≠
     have : r < μ ((toMeasurable μ (s ∩ A)) ∩ s) := by
       apply hr.trans_le
       rw [restrict_apply s_meas]
-      exact measure_mono <| subset_inter (subset_toMeasurable μ (s ∩ A)) (inter_subset_left _ _)
+      exact measure_mono <| subset_inter (subset_toMeasurable μ (s ∩ A)) inter_subset_left
     refine h ⟨(measurableSet_toMeasurable _ _).inter s_meas, ?_⟩ _ this
     apply (lt_of_le_of_lt _ hs.lt_top).ne
     rw [← measure_toMeasurable (s ∩ A)]
-    exact measure_mono (inter_subset_left _ _)
-  refine ⟨K, K_subs.trans (inter_subset_right _ _), pK, ?_⟩
+    exact measure_mono inter_subset_left
+  refine ⟨K, K_subs.trans inter_subset_right, pK, ?_⟩
   calc
   r < μ K := rK
   _ = μ.restrict (toMeasurable μ (s ∩ A)) K := by
     rw [restrict_apply' (measurableSet_toMeasurable μ (s ∩ A))]
     congr
     apply (inter_eq_left.2 ?_).symm
-    exact K_subs.trans (inter_subset_left _ _)
+    exact K_subs.trans inter_subset_left
   _ = μ.restrict (s ∩ A) K := by rwa [restrict_toMeasurable]
-  _ ≤ μ.restrict A K := Measure.le_iff'.1 (restrict_mono (inter_subset_right _ _) le_rfl) K
+  _ ≤ μ.restrict A K := Measure.le_iff'.1 (restrict_mono inter_subset_right le_rfl) K
 
 /-- If `μ` is inner regular for measurable finite measure sets with respect to some class of sets,
 then its restriction to any finite measure set is also inner regular for measurable sets with
@@ -647,8 +647,8 @@ lemma of_sigmaFinite [SigmaFinite μ] :
     exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (monotone_spanningSets μ h)
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
-  refine ⟨s ∩ B n, inter_subset_left _ _, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
-  exact ((measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top μ n)).ne
+  refine ⟨s ∩ B n, inter_subset_left, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
+  exact ((measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top μ n)).ne
 
 end InnerRegularWRT
 
@@ -1004,7 +1004,7 @@ theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]
   intro V hV r hr
   have R : restrict μ A V ≠ ∞ := by
     rw [restrict_apply hV.measurableSet]
-    exact ((measure_mono (inter_subset_right _ _)).trans_lt h'A.lt_top).ne
+    exact ((measure_mono inter_subset_right).trans_lt h'A.lt_top).ne
   exact MeasurableSet.exists_lt_isCompact_of_ne_top hV.measurableSet R hr
 
 end Regular

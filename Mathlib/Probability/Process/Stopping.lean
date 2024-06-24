@@ -35,7 +35,7 @@ stopping time, stochastic process
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
+open scoped Classical MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -314,7 +314,7 @@ protected def measurableSpace (hτ : IsStoppingTime f τ) : MeasurableSpace Ω w
   measurableSet_empty i := (Set.empty_inter {ω | τ ω ≤ i}).symm ▸ @MeasurableSet.empty _ (f i)
   measurableSet_compl s hs i := by
     rw [(_ : sᶜ ∩ {ω | τ ω ≤ i} = (sᶜ ∪ {ω | τ ω ≤ i}ᶜ) ∩ {ω | τ ω ≤ i})]
-    · refine' MeasurableSet.inter _ _
+    · refine MeasurableSet.inter ?_ ?_
       · rw [← Set.compl_inter]
         exact (hs i).compl
       · exact hτ i
@@ -887,7 +887,7 @@ section StoppedValueOfMemFinset
 variable {μ : Measure Ω} {τ σ : Ω → ι} {E : Type*} {p : ℝ≥0∞} {u : ι → Ω → E}
 
 theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ s) :
-    stoppedValue u τ = ∑ i in s, Set.indicator {ω | τ ω = i} (u i) := by
+    stoppedValue u τ = ∑ i ∈ s, Set.indicator {ω | τ ω = i} (u i) := by
   ext y
   rw [stoppedValue, Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
   suffices Finset.filter (fun i => y ∈ {ω : Ω | τ ω = i}) s = ({τ y} : Finset ι) by
@@ -901,13 +901,13 @@ theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι} (hbdd : 
 
 theorem stoppedValue_eq' [Preorder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid E] {N : ι}
     (hbdd : ∀ ω, τ ω ≤ N) :
-    stoppedValue u τ = ∑ i in Finset.Iic N, Set.indicator {ω | τ ω = i} (u i) :=
+    stoppedValue u τ = ∑ i ∈ Finset.Iic N, Set.indicator {ω | τ ω = i} (u i) :=
   stoppedValue_eq_of_mem_finset fun ω => Finset.mem_Iic.mpr (hbdd ω)
 #align measure_theory.stopped_value_eq' MeasureTheory.stoppedValue_eq'
 
 theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : Finset ι} (n : ι)
     (hbdd : ∀ ω, τ ω < n → τ ω ∈ s) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
-      ∑ i in s.filter (· < n), Set.indicator {ω | τ ω = i} (u i) := by
+      ∑ i ∈ s.filter (· < n), Set.indicator {ω | τ ω = i} (u i) := by
   ext ω
   rw [Pi.add_apply, Finset.sum_apply]
   rcases le_or_lt n (τ ω) with h | h
@@ -930,7 +930,7 @@ theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : 
 
 theorem stoppedProcess_eq'' [LinearOrder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid E] (n : ι) :
     stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
-      ∑ i in Finset.Iio n, Set.indicator {ω | τ ω = i} (u i) := by
+      ∑ i ∈ Finset.Iio n, Set.indicator {ω | τ ω = i} (u i) := by
   have h_mem : ∀ ω, τ ω < n → τ ω ∈ Finset.Iio n := fun ω h => Finset.mem_Iio.mpr h
   rw [stoppedProcess_eq_of_mem_finset n h_mem]
   congr with i
@@ -983,7 +983,7 @@ theorem memℒp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu :
   rw [stoppedProcess_eq_of_mem_finset n hbdd]
   refine Memℒp.add ?_ ?_
   · exact Memℒp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)
-  · suffices Memℒp (fun ω => ∑ i in s.filter (· < n), {a : Ω | τ a = i}.indicator (u i) ω) p μ by
+  · suffices Memℒp (fun ω => ∑ i ∈ s.filter (· < n), {a : Ω | τ a = i}.indicator (u i) ω) p μ by
       convert this using 1; ext1 ω; simp only [Finset.sum_apply]
     refine memℒp_finset_sum _ fun i _ => Memℒp.indicator ?_ (hu i)
     exact ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)
@@ -1055,7 +1055,7 @@ variable {f : Filtration ℕ m} {u : ℕ → Ω → β} {τ π : Ω → ℕ}
 
 theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
-      (∑ i in Finset.Ico (τ ω) (π ω), (u (i + 1) - u i)) ω := by
+      (∑ i ∈ Finset.Ico (τ ω) (π ω), (u (i + 1) - u i)) ω := by
   ext ω
   rw [Finset.sum_Ico_eq_sub _ (hle ω), Finset.sum_range_sub, Finset.sum_range_sub]
   simp [stoppedValue]
@@ -1063,7 +1063,7 @@ theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) :
 
 theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
-      (∑ i in Finset.range (N + 1), Set.indicator {ω | τ ω ≤ i ∧ i < π ω} (u (i + 1) - u i)) ω := by
+      (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω ≤ i ∧ i < π ω} (u (i + 1) - u i)) ω := by
   rw [stoppedValue_sub_eq_sum hle]
   ext ω
   simp only [Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
@@ -1078,19 +1078,19 @@ section AddCommMonoid
 variable [AddCommMonoid β]
 
 theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u τ = fun x =>
-    (∑ i in Finset.range (N + 1), Set.indicator {ω | τ ω = i} (u i)) x :=
+    (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω = i} (u i)) x :=
   stoppedValue_eq_of_mem_finset fun ω => Finset.mem_range_succ_iff.mpr (hbdd ω)
 #align measure_theory.stopped_value_eq MeasureTheory.stoppedValue_eq
 
 theorem stoppedProcess_eq (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
-    ∑ i in Finset.range n, Set.indicator {ω | τ ω = i} (u i) := by
+    ∑ i ∈ Finset.range n, Set.indicator {ω | τ ω = i} (u i) := by
   rw [stoppedProcess_eq'' n]
   congr with i
   rw [Finset.mem_Iio, Finset.mem_range]
 #align measure_theory.stopped_process_eq MeasureTheory.stoppedProcess_eq
 
 theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n + 1 ≤ τ a} (u n) +
-    ∑ i in Finset.range (n + 1), Set.indicator {a | τ a = i} (u i) := by
+    ∑ i ∈ Finset.range (n + 1), Set.indicator {a | τ a = i} (u i) := by
   have : {a | n ≤ τ a}.indicator (u n) =
       {a | n + 1 ≤ τ a}.indicator (u n) + {a | τ a = n}.indicator (u n) := by
     ext x

@@ -15,8 +15,8 @@ This is a field when the scheme is integral.
 
 ## Main definition
 * `AlgebraicGeometry.Scheme.functionField`: The function field of an integral scheme.
-* `Algebraic_geometry.germToFunctionField`: The canonical map from a component into the function
-  field. This map is injective.
+* `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
+  function field. This map is injective.
 -/
 
 -- Explicit universe annotations were used in this file to improve perfomance #12737
@@ -70,7 +70,7 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : Opens X.carrier} (x : U
   intro y hy
   rw [← (X.presheaf.germ x).map_zero] at hy
   obtain ⟨W, hW, iU, iV, e⟩ := X.presheaf.germ_eq _ x.prop x.prop _ _ hy
-  cases show iU = iV from Subsingleton.elim _ _
+  cases Subsingleton.elim iU iV
   haveI : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
 #align algebraic_geometry.germ_injective_of_is_integral AlgebraicGeometry.germ_injective_of_isIntegral
@@ -84,9 +84,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     [hX : IrreducibleSpace X.carrier] [IrreducibleSpace Y.carrier] :
     f.1.base (genericPoint X.carrier : _) = (genericPoint Y.carrier : _) := by
   apply ((genericPoint_spec Y).eq _).symm
-  -- Porting note: the continuity argument used to be `by continuity`
-  convert (genericPoint_spec X.carrier).image
-    (show Continuous f.1.base from ContinuousMap.continuous_toFun _)
+  convert (genericPoint_spec X.carrier).image (show Continuous f.1.base by fun_prop)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
@@ -120,7 +118,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
   rw [isGenericPoint_def]
   rw [← PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure, PrimeSpectrum.vanishingIdeal_singleton]
   rw [Set.top_eq_univ, ← PrimeSpectrum.zeroLocus_singleton_zero]
-  rfl
+  simp_rw [Submodule.zero_eq_bot, Submodule.bot_coe]
 #align algebraic_geometry.generic_point_eq_bot_of_affine AlgebraicGeometry.genericPoint_eq_bot_of_affine
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
@@ -138,7 +136,7 @@ instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain 
 instance {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
     IsIntegral (X.restrict U.openEmbedding) :=
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU
-  isIntegralOfOpenImmersion (X.ofRestrict U.openEmbedding)
+  isIntegral_of_isOpenImmersion (X.ofRestrict U.openEmbedding)
 
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : Opens X.carrier}
     (hU : IsAffineOpen U) [h : Nonempty U] :
@@ -163,7 +161,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   haveI : IsAffine _ := hU
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU'
   haveI : IsIntegral (X.restrict U.openEmbedding) :=
-    @isIntegralOfIsAffineIsDomain _ _ _
+    @isIntegral_of_isAffine_of_isDomain _ _ _
       (by dsimp; rw [Opens.openEmbedding_obj_top]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X.carrier, _⟩ using 1
@@ -172,14 +170,14 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
 #align algebraic_geometry.function_field_is_fraction_ring_of_is_affine_open AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen
 
 instance (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
-  AlgebraicGeometry.SpecIsAffine _
+  AlgebraicGeometry.isAffine_Spec _
 
 instance [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
       PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
-  have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
+  have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.map x)
   let x : U := ⟨x, X.affineCover.Covers x⟩
   have : Nonempty U := ⟨x⟩
   let M := (hU.primeIdealOf x).asIdeal.primeCompl

@@ -101,7 +101,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     · refine ⟨hne, (isLUB_of_mem_closure ?_ h).csSup_eq hne⟩
       exact fun x hx => hx.2
   tfae_have 3 → 4
-  · exact fun h => ⟨_, inter_subset_left _ _, h.1, bddAbove_Iic.mono (inter_subset_right _ _), h.2⟩
+  · exact fun h => ⟨_, inter_subset_left, h.1, bddAbove_Iic.mono inter_subset_right, h.2⟩
   tfae_have 4 → 5
   · rintro ⟨t, hts, hne, hbdd, rfl⟩
     have hlub : IsLUB t (sSup t) := isLUB_csSup hne hbdd
@@ -131,8 +131,8 @@ theorem mem_closure_iff_sup :
 
 theorem mem_closed_iff_sup (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
-      (∀ i, f i ∈ s) ∧ sup.{u, u} f = a :=
-  by rw [← mem_closure_iff_sup, hs.closure_eq]
+      (∀ i, f i ∈ s) ∧ sup.{u, u} f = a := by
+  rw [← mem_closure_iff_sup, hs.closure_eq]
 #align ordinal.mem_closed_iff_sup Ordinal.mem_closed_iff_sup
 
 theorem mem_closure_iff_bsup :
@@ -145,8 +145,8 @@ theorem mem_closure_iff_bsup :
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
-        (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a :=
-  by rw [← mem_closure_iff_bsup, hs.closure_eq]
+        (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a := by
+  rw [← mem_closure_iff_bsup, hs.closure_eq]
 #align ordinal.mem_closed_iff_bsup Ordinal.mem_closed_iff_bsup
 
 theorem isClosed_iff_sup :
