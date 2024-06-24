@@ -37,7 +37,7 @@ variable {x y : ℝ}
 to `log |x|` for `x < 0`, and to `0` for `0`. We use this unconventional extension to
 `(-∞, 0]` as it gives the formula `log (x * y) = log x + log y` for all nonzero `x` and `y`, and
 the derivative of `log` is `1/x` away from `0`. -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 noncomputable def log (x : ℝ) : ℝ :=
   if hx : x = 0 then 0 else expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩
 #align real.log Real.log
