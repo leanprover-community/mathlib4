@@ -51,23 +51,6 @@ an action is preprimitive iff the stabilizers of points are maximal subgroups.
 - `IsPreprimitive.isQuasipreprimitive`
 preprimitive actions are quasipreprimitive
 
-## Particular results for actions on finite types
-
-- `isPreprimitive_of_primeCard` :
-a pretransitive action on a finite type of prime cardinal is preprimitive
-
-- `isPreprimitive_of_large_image`
-Given an equivariant map from a preprimitive action,
-if the image is at least twice the codomain, then the codomain is preprimitive
-
-- `Rudio`
-Theorem of Rudio :
-Given a preprimitive action of a group `G` on `X`, a finite `A : set X`
-and two points, find a translate of `A` that contains one of them
-and not the other one.
-The proof relies on `is_block.of_subset` that itself requires finiteness of `A`,
-but I don't know whether the theorem does…
-
 -/
 
 open Pointwise
