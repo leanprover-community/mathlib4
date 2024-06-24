@@ -113,7 +113,7 @@ noncomputable def mkOfOplax' {F G : OplaxFunctor B C} (η : OplaxNatTrans F G)
 variable (F : OplaxFunctor B C)
 
 
-/-- The identity oplax natural transformation. -/
+/-- The identity strong natural transformation. -/
 @[simps!]
 def id : StrongNatTrans F F :=
   mkOfOplax (OplaxNatTrans.id F) { naturality := λ f ↦ (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm }
@@ -179,7 +179,7 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 
 end
 
-/-- Vertical composition of oplax natural transformations. -/
+/-- Vertical composition of strong natural transformations. -/
 @[simps!]
 def vcomp (η : StrongNatTrans F G) (θ : StrongNatTrans G H) : StrongNatTrans F H :=
   mkOfOplax (OplaxNatTrans.vcomp η.toOplax θ.toOplax)
