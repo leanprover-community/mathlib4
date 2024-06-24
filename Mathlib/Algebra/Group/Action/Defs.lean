@@ -554,7 +554,7 @@ lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
 end Monoid
 end
 
-instance instSMulCommClass_of_commMonoid
+lemma instSMulCommClass_of_commMonoid
     {A B G : Type*} [CommMonoid G] [SMul A G] [SMul B G]
     [IsScalarTower A G G] [IsScalarTower B G G] :
     SMulCommClass A B G where
