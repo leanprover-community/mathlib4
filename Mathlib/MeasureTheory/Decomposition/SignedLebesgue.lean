@@ -7,7 +7,6 @@ import Mathlib.MeasureTheory.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Decomposition.Jordan
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
-import Mathlib.Tactic.FunProp.Measurable
 
 /-!
 # Lebesgue decomposition

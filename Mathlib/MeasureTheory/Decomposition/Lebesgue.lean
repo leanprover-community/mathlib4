@@ -6,7 +6,6 @@ Authors: Kexing Ying
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Decomposition.SignedHahn
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.Tactic.FunProp.Measurable
 
 #align_import measure_theory.decomposition.lebesgue from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 
