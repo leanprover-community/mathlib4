@@ -237,8 +237,7 @@ lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
   suffices Submodule.map (Algebra.linearMap R₁ K) I.num ≤ 1 from
     this <| (den_mul_self_eq_num I).symm ▸ smul_mem_pointwise_smul i I.den I.coeToSubmodule hi
   convert map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top, bot_eq_zero])
-  simp only [bot_eq_zero, ne_eq, Ideal.one_eq_top, le_top, Submodule.map_top]
-  rfl
+  rw [Ideal.one_eq_top, Submodule.map_top, one_eq_range]
 
 lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := by
   by_cases hI : I = ⊥
@@ -248,9 +247,9 @@ lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := b
     exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
 
 lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ := by
-  have := (FractionalIdeal.coeIdeal_ne_zero (K := K)).2 (hI ∘ num_eq_zero_iff.1)
+  have : coeIdeal I.num ≠ 0 := (coeIdeal_ne_zero (K := K)).2 (hI ∘ num_eq_zero_iff.1)
   rw [← bot_eq_zero] at this
-  exact lt_of_lt_of_le (Ne.bot_lt' this.symm) I.num_le_mul_inv
+  exact lt_of_lt_of_le this.bot_lt I.num_le_mul_inv
 
 noncomputable instance : InvOneClass (FractionalIdeal R₁⁰ K) := { inv_one := div_one }
 
