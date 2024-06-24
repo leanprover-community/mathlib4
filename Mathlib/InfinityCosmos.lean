@@ -190,6 +190,8 @@ def of (C : Type u) [ReflQuiver.{v + 1} C] : ReflQuiv.{v, u} :=
 instance : Inhabited ReflQuiv :=
   ⟨ReflQuiv.of (Discrete default)⟩
 
+@[simp] theorem of_val (C : Type u) [ReflQuiver C] : (ReflQuiv.of C) = C := rfl
+
 /-- Category structure on `ReflQuiv` -/
 instance category : LargeCategory.{max v u} ReflQuiv.{v, u} where
   Hom C D := ReflPrefunctor C D
@@ -297,6 +299,16 @@ def SSet.oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
   map_id X := by simp; rfl
   map_comp f g := by simp; rfl
 
+def OneTruncation.ofNerve (C : Cat) :
+    ReflQuiv.of (OneTruncation (nerve C)) ≅ ReflQuiv.of C where
+  hom := {
+    obj := by simp []
+    map := sorry
+  }
+  inv := sorry
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
 theorem opstuff (V : SSet) {m n p} {α : [m] ⟶ [n]} {β : [n] ⟶ [p]} {γ : [m] ⟶ [p]} {φ} :
@@ -345,6 +357,9 @@ theorem HoRel.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation V)
   cases hZ
   congr! <;> apply Subtype.ext <;> assumption
 
+theorem Cat.id_eq (C : Cat) : 𝟙 C = 𝟭 C := rfl
+theorem Cat.comp_eq {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) : F ≫ G = F ⋙ G := rfl
+
 def SSet.hoFunctor : SSet.{u} ⥤ Cat.{u,u} where
   obj V := Cat.of (Quotient (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation V))) (HoRel (V := V)))
   map {S T} F := Quotient.lift _ ((by exact (SSet.oneTruncation ⋙ Cat.freeRefl).map F) ⋙ Quotient.functor _)
@@ -361,27 +376,16 @@ def SSet.hoFunctor : SSet.{u} ⥤ Cat.{u,u} where
       · exact congrFun (F.naturality (op δ1)) φ
       · exact congrFun (F.naturality (op δ2)) φ
       · exact congrFun (F.naturality (op δ0)) φ)
-  map_id X := by
-    stop
+  map_id S := by
+    apply Quotient.lift_unique'
     simp
-    symm
-    apply Quotient.lift_unique
-    refine (Functor.comp_id _).trans <| (Functor.id_comp _).symm.trans ?_
-    congr 1
-    exact (free.map_id X.toQuiv).symm
-  map_comp {X Y Z} f g := by
-    stop
+    simp [Quotient.lift_spec]
+    exact Eq.trans (Functor.id_comp ..) (Functor.comp_id _).symm
+  map_comp {S T U} F G := by
+    apply Quotient.lift_unique'
     simp
-    symm
-    apply Quotient.lift_unique
-    have : free.map (f ≫ g).toPrefunctor =
-        free.map (X := X.toQuiv) (Y := Y.toQuiv) f.toPrefunctor ⋙
-        free.map (X := Y.toQuiv) (Y := Z.toQuiv) g.toPrefunctor := by
-      show _ = _ ≫ _
-      rw [← Functor.map_comp]; rfl
-    rw [this]; simp [Functor.assoc]
-    show _ ⋙ _ ⋙ _ = _
-    rw [← Functor.assoc, Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
+    rw [Quotient.lift_spec, Cat.comp_eq, Cat.comp_eq, ← Functor.assoc, Functor.assoc,
+      Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
 
 def reflectiveOfCounitIso {C D} [Category C] [Category D] (R : D ⥤ C) (L : C ⥤ D) (adj : L ⊣ R)
   (h : IsIso adj.counit) : Reflective R where
@@ -390,7 +394,19 @@ def reflectiveOfCounitIso {C D} [Category C] [Category D] (R : D ⥤ C) (L : C �
   map_injective := sorry
   map_surjective := sorry
 
-def nerveAdjunction : SSet.hoFunctor ⊣ nerveFunctor := sorry
+def nerveAdjunction : SSet.hoFunctor ⊣ nerveFunctor where
+  homEquiv V C := {
+    toFun := fun F => by
+      have : _ ⟶ (_ : Cat) := Quotient.functor _ ⋙ F
+      have : OneTruncation V ⥤rq C := ReflQuiv.adj.homEquiv (ReflQuiv.of (OneTruncation V)) C this
+      have : ReflQuiv.of (OneTruncation (nerveFunctor.obj C)) ≅ ReflQuiv.of C := OneTruncation.ofNerve _
+      sorry
+    invFun := sorry
+    left_inv := sorry
+    right_inv := sorry
+  }
+  unit := sorry
+  counit := sorry
 
 instance : Reflective nerveFunctor.{u,u} :=
   reflectiveOfCounitIso _ SSet.hoFunctor.{u,u} nerveAdjunction <| by
