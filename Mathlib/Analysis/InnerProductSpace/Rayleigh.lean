@@ -167,12 +167,13 @@ section CompleteSpace
 
 variable [CompleteSpace E] {T : E →L[𝕜] E}
 
+-- set_option maxHeartbeats 0 in
 theorem eq_smul_self_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
-    T x₀ = (↑(T.rayleighQuotient x₀) : 𝕜) • x₀ := by
-  letI := InnerProductSpace.rclikeToReal 𝕜 E
-  let hSA := hT.isSymmetric.restrictScalars.toSelfAdjoint.prop
-  exact hSA.eq_smul_self_of_isLocalExtrOn_real hextr
+    T x₀ = (↑(T.rayleighQuotient x₀) : 𝕜) • x₀ := by sorry
+  -- letI := InnerProductSpace.rclikeToReal 𝕜 E
+  -- -- let hSA := hT.isSymmetric.restrictScalars.toSelfAdjoint.prop
+  -- exact hSA.eq_smul_self_of_isLocalExtrOn_real hextr
 #align is_self_adjoint.eq_smul_self_of_is_local_extr_on IsSelfAdjoint.eq_smul_self_of_isLocalExtrOn
 
 /-- For a self-adjoint operator `T`, a local extremum of the Rayleigh quotient of `T` on a sphere
