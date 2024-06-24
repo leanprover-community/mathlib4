@@ -196,7 +196,6 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         intro n hn hyp_ind z hz
         have z_nonneg : 0 ≤ z := by
           calc (0:ℝ) ≤ (2:ℝ)^n * max n₀ 2 := by
-                        set_option tactic.skipAssignedInstances false in
                         exact mul_nonneg (pow_nonneg (by norm_num) _) (by norm_num)
                   _ ≤ z := by exact_mod_cast hz.1
         have le_2n : max n₀ 2 ≤ (2:ℝ)^n * max n₀ 2 := by
