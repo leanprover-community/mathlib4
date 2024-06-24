@@ -263,8 +263,7 @@ def OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X)
   Covers x := by
     rw [IsOpenImmersion.range_pullback_to_base_of_left]
     exact ⟨𝒰₁.Covers x, 𝒰₂.Covers x⟩
-  -- Porting note: was automatic
-  IsOpen x := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := (𝒰₁.IsOpen _))
+  IsOpen x := inferInstance
 #align algebraic_geometry.Scheme.open_cover.inter AlgebraicGeometry.Scheme.OpenCover.inter
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
