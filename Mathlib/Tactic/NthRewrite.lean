@@ -23,11 +23,11 @@ of each of the `m` equalities `eqᵢ`in that order. Occurrences are counted begi
 Occurrences are counted beginning with `1`. For example,
 ```lean
 example (h : a = 1) : a + a + a + a + a = 5 := by
-  nth_rewrite 3 [h]
+  nth_rewrite 2 [h]
 /-
 a: ℕ
 h: a = 1
-⊢ a + a + 1 + a + a = 5
+⊢ a + 1 + a + a + a = 5
 -/
 ```
 Notice that the second occurrence of `a` from the left has been rewritten by `nth_rewrite`.
