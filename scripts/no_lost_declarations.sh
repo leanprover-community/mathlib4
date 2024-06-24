@@ -18,9 +18,9 @@ else
 fi |
   ## purge `@[...]`, to attempt to catch declaration names
   sed 's=@\[[^]]*\] ==; s=noncomputable ==; s=nonrec ==; s=protected ==' |
-  ## extract lines that begin with '[+-]' followed by the input `theorem` or `lemma`
-  ## in the `git diff`
-  awk -v regex="^[+-]${begs}" 'BEGIN{ paired=0; added=0; removed=0 }
+  ## extract lines that begin with '[+-]' followed by the input `theorem`, `lemma`,...
+  ## and then a space in the `git diff`
+  awk -v regex="^[+-]${begs} " 'BEGIN{ paired=0; added=0; removed=0 }
     /^--- a\//    { minusFile=$2 }  ## the path to the old file
     /^\+\+\+ b\// { plusFile=$2 }   ## the path to the new file
     ($0 ~ regex){
