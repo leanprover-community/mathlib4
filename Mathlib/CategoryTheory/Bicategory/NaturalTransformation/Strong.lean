@@ -199,7 +199,6 @@ end
 
 section
 
--- TODO: move up?
 open OplaxNatTrans
 
 /-- Category structure on the strong natural transformations between pseudofunctors. -/
@@ -209,40 +208,10 @@ instance homcategory (F G : Pseudofunctor B C) : Category (F ⟶ G) where
   id η := Modification.id η.toOplax
   comp := Modification.vcomp
 
--- Porting note: duplicating the `ext` lemma.
--- TODO: needed?
 @[ext]
 lemma ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
     m = n :=
   OplaxNatTrans.ext w
-
--- -- TODO: ARE THESE NEEDED?
--- @[simp]
--- lemma Modification.id_app' {X : B} {F G : Pseudofunctor B C} (α : F ⟶ G) :
---     Modification.app (𝟙 α) X = 𝟙 (α.app X) := rfl
-
--- @[simp]
--- lemma Modification.comp_app' {X : B} {F G : Pseudofunctor B C} {α β γ : F ⟶ G}
---     (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
---   rfl
-
--- -- TODO: I might need this one!
--- -- /-- Construct a modification isomorphism between oplax natural transformations
--- -- by giving object level isomorphisms, and checking naturality only in the forward direction.
--- -- -/
--- @[simps]
--- def ModificationIso.ofComponents {F G : Pseudofunctor B C} {η θ : F ⟶ G}
---     (app : ∀ a, η.app a ≅ θ.app a)
---     (naturality : ∀ {a b} (f : a ⟶ b),
---       F.map f ◁ (app b).hom ≫ (θ.naturality f).hom = (η.naturality f).hom ≫ (app a).hom ▷ G.map f) :
---     η ≅ θ where
---   hom := { app := fun a => (app a).hom }
---   inv :=
---     { app := fun a => (app a).inv
---       naturality := fun {a b} f => by
---         rw [←whiskerRightIso_inv, Iso.eq_comp_inv, assoc]
---         rw [←whiskerLeftIso_inv, Iso.inv_comp_eq]
---         apply (naturality f).symm }
 
 end
 
