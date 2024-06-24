@@ -37,8 +37,6 @@ variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism
-
-
 namespace IsRightDerivabilityStructure
 
 section
