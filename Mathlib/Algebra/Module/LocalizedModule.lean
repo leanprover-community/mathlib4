@@ -1131,24 +1131,16 @@ lemma map_comp (h : M →ₗ[R] N) : (map S f g h) ∘ₗ f = g ∘ₗ h :=
 lemma map_apply (h : M →ₗ[R] N) (x) : map S f g h (f x) = g (h x) :=
   lift_apply S f (g ∘ₗ h) (IsLocalizedModule.map_units g) x
 
-open LocalizedModule
+open LocalizedModule LinearEquiv LinearMap
 
 variable (M)
 
 /-- The linear map `(LocalizedModule S M) → (LocalizedModule S M)` from `iso` is the identity. -/
-lemma iso_localizedModule_eq_refl :
-    iso S (LocalizedModule.mkLinearMap S M) = LinearEquiv.refl R (LocalizedModule S M) := by
+lemma iso_localizedModule_eq_refl : iso S (mkLinearMap S M) = refl R (LocalizedModule S M) := by
   let f := mkLinearMap S M
   obtain ⟨e, _, univ⟩ := is_universal S f f (map_units f)
-  have eq1 : iso S f = e :=
-    univ (iso S f) <| (LinearEquiv.eq_toLinearMap_symm_comp f f).1 <|
-      (iso_symm_comp S f).symm
-  have eq2 : LinearEquiv.refl R (LocalizedModule S M) = e :=
-    univ (LinearEquiv.refl R (LocalizedModule S M)) (by simp)
-  ext x
-  calc
-    (iso S f) x = e x            := by rw [← eq1, LinearEquiv.coe_coe, iso_apply]
-              _ = (LinearEquiv.refl R (LocalizedModule S M)) x := by simp [← eq2]
+  rw [← toLinearMap_inj, univ (iso S f) ((eq_toLinearMap_symm_comp f f).1 (iso_symm_comp S f).symm)]
+  exact Eq.symm <| univ (refl R (LocalizedModule S M)) (by simp)
 
 variable {M₀ M₀'} [AddCommGroup M₀] [AddCommGroup M₀'] [Module R M₀] [Module R M₀']
 variable (f₀ : M₀  →ₗ[R] M₀') [IsLocalizedModule S f₀]
@@ -1159,39 +1151,32 @@ variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
 lemma map_LocalizedModules (g : M₀ →ₗ[R] M₁) (m : M₀) (s : S) :
     ((map S (mkLinearMap S M₀) (mkLinearMap S M₁)) g)
     (LocalizedModule.mk m s) = LocalizedModule.mk (g m) s := by
-  let hs := map.proof_4 S (mkLinearMap S M₁) s
-  have : hs.unit.inv (LocalizedModule.mk (g m) 1) = LocalizedModule.mk (g m) s := by
-    calc
-      hs.unit.inv (LocalizedModule.mk (g m) 1)
-        = hs.unit.inv ((mkLinearMap S M₁) (g m)) := rfl
-      _ = (iso S _) (LocalizedModule.mk (g m) s) := by apply iso_apply_mk S
-      _ = LocalizedModule.mk (g m) s             := by simp [iso_localizedModule_eq_refl]
+  have := (iso_apply_mk S (mkLinearMap S M₁) (g m) s).symm
+  rw [iso_localizedModule_eq_refl, refl_apply] at this
   simpa [map, lift, iso_localizedModule_eq_refl S M₀]
 
 lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ ↑(iso S f₀) =
     (iso S f₁) ∘ₗ (map S (mkLinearMap S M₀) (mkLinearMap S M₁)) g := by
-  ext ⟨m, s⟩
-  rw [(show Quot.mk Setoid.r (m, s) = LocalizedModule.mk m s by rfl)]
+  ext x
+  refine induction_on (fun m s ↦ ?_) x
   have hs : IsUnit ((algebraMap R (Module.End R M₁')) ↑s) := map_units f₁ s
   have : Function.Injective (hs.unit : Module.End R M₁') := by
     refine Function.injective_iff_hasLeftInverse.2 ⟨hs.unit.inv, fun x ↦ ?_⟩
     change (hs.unit⁻¹ * hs.unit.1) x = x
-    rw [IsUnit.unit_spec, IsUnit.val_inv_mul, LinearMap.one_apply]
+    rw [IsUnit.unit_spec, IsUnit.val_inv_mul, one_apply]
   apply this
   rw [IsUnit.unit_spec, Module.algebraMap_end_apply, Module.algebraMap_end_apply]
-  have : ((s : R) • m) = s • m := by exact rfl
-  repeat rw [← LinearMap.CompatibleSMul.map_smul, smul'_mk, this, mk_cancel]
-  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, iso_apply,
-    fromLocalizedModule'_mk_one, map_apply, map, lift, iso_localizedModule_eq_refl]
-  have : (map_one (algebraMap R (Module.End R (LocalizedModule S M₁))) ▸
-    map_units (mkLinearMap S M₁) (1 : S)).unit = 1 := by ext; simp
-  simp [lift_mk, this, fromLocalizedModule'_mk_one, -fromLocalizedModule'_mk]
+  repeat rw [← CompatibleSMul.map_smul, smul'_mk, ← Submonoid.mk_smul, mk_cancel]
+  rw [coe_comp, coe_coe, Function.comp_apply, iso_apply, fromLocalizedModule'_mk_one, map_apply]
+  have one : (isUnit_one (M := Module.End R (LocalizedModule S M₁))).unit = 1 := by ext; simp
+  have one_inv : (isUnit_one (M := Module.End R M₁')).unit⁻¹ = 1 := by rw [inv_eq_one]; ext; simp
+  simp [map, lift, iso_localizedModule_eq_refl, lift_mk, one, one_inv]
 
 end IsLocalizedModule
 
 namespace LocalizedModule
 
-open IsLocalizedModule
+open IsLocalizedModule LocalizedModule Function Submonoid
 
 variable {M₀ M₀'} [AddCommGroup M₀] [Module R M₀]
 variable {M₁ M₁'} [AddCommGroup M₁] [Module R M₁]
@@ -1199,25 +1184,23 @@ variable {M₂ M₂'} [AddCommGroup M₂] [Module R M₂]
 
 /-- Localization of modules is an exact functor, proven here for `LocalizedModule`.
 See `IsLocalizedModule.map_exact` for the more general version. -/
-lemma map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Function.Exact g h) :
-    Function.Exact
-    (map S (LocalizedModule.mkLinearMap S M₀) (LocalizedModule.mkLinearMap S M₁) g)
-    (map S (LocalizedModule.mkLinearMap S M₁) (LocalizedModule.mkLinearMap S M₂) h) := by
-  intro y
-  refine ⟨fun hy ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
-  · rcases y with ⟨m, s⟩
-    rw [(show Quot.mk Setoid.r (m, s) = LocalizedModule.mk m s by rfl),
-      map_LocalizedModules, ← zero_mk 1, mk_eq, one_smul] at hy
-    simp only [smul_zero, Subtype.exists, Submonoid.mk_smul] at hy
-    rcases hy with ⟨a, aS, ha⟩
-    rw [← LinearMap.map_smul, ex (a • m)] at ha
-    rcases ha with ⟨x, hx⟩
-    use LocalizedModule.mk x (⟨a, aS⟩ * s)
-    rw [map_LocalizedModules, hx]
-    exact mk_cancel_common_left ⟨a, aS⟩ s m
-  · rcases x with ⟨m, s⟩
-    rw [← hx, (show Quot.mk Setoid.r (m, s) = LocalizedModule.mk m s by rfl),
-      map_LocalizedModules, map_LocalizedModules, (ex (g m)).2 ⟨m, rfl⟩, zero_mk]
+lemma map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Exact g h) :
+    Exact (map S (mkLinearMap S M₀) (mkLinearMap S M₁) g)
+    (map S (mkLinearMap S M₁) (mkLinearMap S M₂) h) :=
+  fun y ↦ Iff.intro
+    (induction_on
+      (fun m s hy ↦ by
+        rw [map_LocalizedModules, ← zero_mk 1, mk_eq, one_smul, smul_zero] at hy
+        obtain ⟨a, aS, ha⟩ := Subtype.exists.1 hy
+        rw [smul_zero, mk_smul, ← LinearMap.map_smul, ex (a • m)] at ha
+        rcases ha with ⟨x, hx⟩
+        use mk x (⟨a, aS⟩ * s)
+        rw [map_LocalizedModules, hx, ← mk_cancel_common_left ⟨a, aS⟩ s m, mk_smul])
+      y)
+    fun ⟨x, hx⟩ ↦ by
+      revert hx
+      refine induction_on (fun m s hx ↦ ?_) x
+      rw [← hx, map_LocalizedModules, map_LocalizedModules, (ex (g m)).2 ⟨m, rfl⟩, zero_mk]
 
 end LocalizedModule
 
