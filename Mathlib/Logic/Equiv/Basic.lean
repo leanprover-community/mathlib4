@@ -17,6 +17,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.CC
 
 #align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -1607,18 +1608,7 @@ theorem swapCore_self (r a : α) : swapCore a a r = r := by
 #align equiv.swap_core_self Equiv.swapCore_self
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swapCore
-  -- Porting note: cc missing.
-  -- `casesm` would work here, with `casesm _ = _, ¬ _ = _`,
-  -- if it would just continue past failures on hypotheses matching the pattern
-  split_ifs with h₁ h₂ h₃ h₄ h₅
-  · subst h₁; exact h₂
-  · subst h₁; rfl
-  · cases h₃ rfl
-  · exact h₄.symm
-  · cases h₅ rfl
-  · cases h₅ rfl
-  · rfl
+  unfold swapCore; split_ifs <;> cc
 #align equiv.swap_core_swap_core Equiv.swapCore_swapCore
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by

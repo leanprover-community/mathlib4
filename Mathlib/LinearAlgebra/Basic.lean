@@ -75,7 +75,7 @@ theorem isLinearMap_add [Semiring R] [AddCommMonoid M] [Module R M] :
   apply IsLinearMap.mk
   · intro x y
     simp only [Prod.fst_add, Prod.snd_add]
-    abel -- Porting Note: was cc
+    abel
   · intro x y
     simp [smul_add]
 #align is_linear_map.is_linear_map_add IsLinearMap.isLinearMap_add
