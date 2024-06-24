@@ -43,7 +43,10 @@ theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
   unfold mconv
   rw [MeasureTheory.Measure.dirac_prod, map_map]
   · simp only [Function.comp_def, one_mul, map_id']
-  all_goals { measurability }
+  · -- NB. `measurability` proves this, but is slow
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+    exact Measurable.mul measurable_fst measurable_snd
+  measurability
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
 @[to_additive (attr := simp)]
@@ -52,7 +55,14 @@ theorem mconv_dirac_one [MeasurableMul₂ M]
   unfold mconv
   rw [MeasureTheory.Measure.prod_dirac, map_map]
   · simp only [Function.comp_def, mul_one, map_id']
-  all_goals { measurability }
+  · -- NB. `measurability` proves this, but is slow
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+    exact Measurable.mul measurable_fst measurable_snd
+  -- NB. `measurability` proves this, but is slow
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+  apply Measurable.prod
+  · apply measurable_id'
+  · exact measurable_const
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
 @[to_additive (attr := simp) conv_zero]
@@ -71,14 +81,18 @@ theorem mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : M
     [SFinite ν] [SFinite ρ] : μ ∗ (ν + ρ) = μ ∗ ν + μ ∗ ρ := by
   unfold mconv
   rw [prod_add, map_add]
-  measurability
+  -- NB. `measurability` proves this, but is pretty slow
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+  exact Measurable.mul measurable_fst measurable_snd
 
 @[to_additive add_conv]
 theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
     [SFinite ν] [SFinite ρ] : (μ + ν) ∗ ρ = μ ∗ ρ + ν ∗ ρ := by
   unfold mconv
   rw [add_prod, map_add]
-  measurability
+  -- NB. `measurability` proves this, but is pretty slow
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+  exact Measurable.mul measurable_fst measurable_snd
 
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
 @[to_additive conv_comm]
@@ -87,7 +101,10 @@ theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul
   unfold mconv
   rw [← prod_swap, map_map]
   · simp [Function.comp_def, mul_comm]
-  all_goals { measurability }
+  · -- NB. `measurability` proves this, but is pretty slow
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+    exact Measurable.mul measurable_fst measurable_snd
+  measurability
 
 /-- Convolution of SFinite maps is SFinite. -/
 @[to_additive sfinite_conv_of_sfinite]
@@ -107,7 +124,10 @@ instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : 
     [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (μ ∗ ν) := by
   apply MeasureTheory.isProbabilityMeasure_map
-  measurability
+  -- NB. `measurability` proves this, but is really slow
+  -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+  exact AEMeasurable.mul (measurable_fst.comp_aemeasurable' aemeasurable_id')
+    (measurable_snd.comp_aemeasurable' aemeasurable_id')
 
 end Measure
 

@@ -45,7 +45,7 @@ instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
 #align finsupp.antidiagonal_filter_snd_eq Finset.filter_snd_eq_antidiagonal
 
 -- nolint as this is for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
 #align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 

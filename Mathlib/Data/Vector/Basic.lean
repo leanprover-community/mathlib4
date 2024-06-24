@@ -439,13 +439,15 @@ theorem mmap_cons {m} [Monad m] {α β} (f : α → m β) (a) :
   | _, ⟨_, rfl⟩ => rfl
 #align vector.mmap_cons Vector.mmap_cons
 
-/-- Define `C v` by induction on `v : Vector α n`.
+/--
+Define `C v` by induction on `v : Vector α n`.
 
 This function has two arguments: `nil` handles the base case on `C nil`,
 and `cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)`.
 
-This can be used as `induction v using Vector.inductionOn`. -/
-@[elab_as_elim]
+It is used as the default induction principle for the `induction` tactic.
+-/
+@[elab_as_elim, induction_eliminator]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
   -- Porting note: removed `generalizing`: already generalized
@@ -468,9 +470,6 @@ theorem inductionOn_cons {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (x
     (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) :
     (x ::ᵥ v).inductionOn nil cons = cons (v.inductionOn nil cons : C v) :=
   rfl
-
--- check that the above works with `induction ... using`
-example (v : Vector α n) : True := by induction v using Vector.inductionOn <;> trivial
 
 variable {β γ : Type*}
 
@@ -717,7 +716,7 @@ variable {α β γ : Type u}
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector α n) :
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
-  induction' x using Vector.inductionOn with n x xs ih
+  induction' x with n x xs ih
   · simp! [cast, *, functor_norm]
     rfl
   · rw [Vector.traverse_def, ih]
@@ -733,7 +732,7 @@ variable (η : ApplicativeTransformation F G)
 
 protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
-  induction' x using Vector.inductionOn with n x xs ih
+  induction' x with n x xs ih
   · simp! [functor_norm, cast, η.preserves_pure]
   · rw [Vector.traverse_def, Vector.traverse_def, ← ih, η.preserves_seq, η.preserves_map]
     rfl
