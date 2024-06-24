@@ -682,6 +682,14 @@ def IsColimit.ofIsZero (c : Cocone F) (hF : IsZero F) (hc : IsZero c.pt) : IsCol
   fac _ j := (F.isZero_iff.1 hF j).eq_of_src _ _
   uniq _ _ _ := hc.eq_of_src _ _
 
+lemma IsLimit.isZero_pt {c : Cone F} (hc : IsLimit c) (hF : IsZero F) : IsZero c.pt :=
+  (isZero_zero C).of_iso (IsLimit.conePointUniqueUpToIso hc
+    (IsLimit.ofIsZero (Cone.mk 0 0) hF (isZero_zero C)))
+
+lemma IsColimit.isZero_pt {c : Cocone F} (hc : IsColimit c) (hF : IsZero F) : IsZero c.pt :=
+  (isZero_zero C).of_iso (IsColimit.coconePointUniqueUpToIso hc
+    (IsColimit.ofIsZero (Cocone.mk 0 0) hF (isZero_zero C)))
+
 end
 
 end CategoryTheory.Limits

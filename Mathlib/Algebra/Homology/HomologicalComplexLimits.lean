@@ -202,14 +202,14 @@ noncomputable instance : PreservesLimitsOfShape J (single C c i) :=
     by_cases h : j = i
     · subst h
       exact preservesLimitsOfShapeOfNatIso (singleCompEvalIsoSelf C c j).symm
-    · exact Functor.preservesLimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h))
+    · exact Functor.preservesLimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h) _)
 
 noncomputable instance : PreservesColimitsOfShape J (single C c i) :=
   preservesColimitsOfShapeOfEval _ (fun j => by
     by_cases h : j = i
     · subst h
       exact preservesColimitsOfShapeOfNatIso (singleCompEvalIsoSelf C c j).symm
-    · exact Functor.preservesColimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h))
+    · exact Functor.preservesColimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h) _)
 
 noncomputable instance : PreservesFiniteLimits (single C c i) := ⟨by intros; infer_instance⟩
 
