@@ -72,7 +72,7 @@ theorem IsPartition.of_orbits :
     exact Set.Nonempty.ne_empty (MulAction.orbit_nonempty a) ha
   intro a; use orbit G a
   constructor
-  · simp only [Set.mem_range_self, mem_orbit_self, exists_unique_iff_exists, exists_true_left]
+  · simp only [Set.mem_range, exists_apply_eq_apply, mem_orbit_self, and_self]
   · simp only [Set.mem_range, exists_unique_iff_exists, exists_prop, and_imp, forall_exists_index,
       forall_apply_eq_imp_iff']
     rintro B b ⟨rfl⟩ ha
@@ -304,7 +304,7 @@ theorem IsBlock.iff_of_subtype_val {C : SubMulAction G X} {B : Set C} :
   apply or_congr (Set.image_eq_image Subtype.coe_injective).symm
   simp only [Set.disjoint_iff, Set.subset_empty_iff]
   erw [←
-    Set.InjOn.image_inter (Set.injOn_of_injective Subtype.coe_injective _)
+    Set.InjOn.image_inter (Set.injOn_of_injective Subtype.coe_injective)
       (Set.subset_univ _) (Set.subset_univ _)]
   simp only [Set.image_eq_empty]
 
@@ -415,8 +415,7 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
       use b
     use g • B
     constructor
-    · simp only [Set.mem_range, exists_apply_eq_apply, exists_unique_iff_exists, exists_true_left]
-      exact hg
+    · simp only [Set.mem_range, exists_apply_eq_apply, true_and, hg]
     · simp only [Set.mem_range, exists_unique_iff_exists, exists_prop, and_imp, forall_exists_index,
         forall_apply_eq_imp_iff']
       intro B' g' hg' ha
@@ -484,13 +483,13 @@ theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
   simp only [Set.le_eq_subset]
   intro hb'
   suffices g ∈ H by
-    rw [← Subgroup.coe_mk H g this, ← Subgroup.smul_def]
+    rw [← Subgroup.coe_mk H g this, ← Submonoid.smul_def]
     apply smul_orbit_subset
-  rw [Set.mem_smul_set_iff_inv_smul_mem, Subgroup.smul_def, ← MulAction.mul_smul] at hb'
+  rw [Set.mem_smul_set_iff_inv_smul_mem, Submonoid.smul_def, ← MulAction.mul_smul] at hb'
   obtain ⟨k : ↥H, hk⟩ := hb'
   simp only at hk
   rw [MulAction.mul_smul, ← smul_eq_iff_eq_inv_smul, ← inv_inv (h : G), ← smul_eq_iff_eq_inv_smul, ←
-    MulAction.mul_smul, Subgroup.smul_def, ← MulAction.mul_smul] at hk
+    MulAction.mul_smul, Submonoid.smul_def, ← MulAction.mul_smul] at hk
   rw [← mem_stabilizer_iff] at hk
   let hk' := hH hk
   rw [Subgroup.mul_mem_cancel_right, Subgroup.mul_mem_cancel_left] at hk'
@@ -521,7 +520,7 @@ theorem IsBlock.orbit_stabilizer_eq
   constructor
   · rintro ⟨k, rfl⟩
     let z := mem_stabilizer_iff.mp (SetLike.coe_mem k)
-    rw [← Subgroup.smul_def] at z
+    rw [← Submonoid.smul_def] at z
     let zk : k • a ∈ k • B := Set.smul_mem_smul_set_iff.mpr ha
     rw [z] at zk; exact zk
   · intro hx
@@ -545,12 +544,12 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G}
       rw [smul_eq_iff_eq_inv_smul] at hk
       apply hH
       rw [mem_stabilizer_iff]; rw [MulAction.mul_smul]
-      rw [← Subgroup.smul_def]; exact hk.symm
+      rw [← Submonoid.smul_def]; exact hk.symm
     rw [← hg]
     simp only [Set.smul_mem_smul_set_iff, mem_orbit_self]
   intro hg
   rw [mem_stabilizer_iff]
-  rw [← Subgroup.coe_mk H g hg, ← Subgroup.smul_def]
+  rw [← Subgroup.coe_mk H g hg, ← Submonoid.smul_def]
   apply smul_orbit
 
 variable (G)
@@ -607,15 +606,11 @@ theorem Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid
   rw [Sigma.subtype_ext_iff]
   simp only [Subtype.mk_eq_mk, Subtype.coe_mk]
   apply And.intro _ hab
-  refine' ExistsUnique.unique (hc.2 b) _ _
-  simp only [exists_unique_iff_exists, exists_prop]
-  exact ⟨hx, ha⟩
-  simp only [exists_unique_iff_exists, exists_prop]
-  exact ⟨hy, hb⟩
+  refine' ExistsUnique.unique (hc.2 b) ⟨hx, ha⟩ ⟨hy, hb⟩
   -- surjectivity
   intro a
-  obtain ⟨x, ⟨hx, ha : a ∈ x, _⟩, _⟩ := hc.2 a
-  use ⟨⟨x, hx⟩, ⟨a, ha⟩⟩
+  obtain ⟨x, ⟨hx, ha : a ∈ x⟩, _⟩ := hc.2 a
+  exact ⟨⟨⟨x, hx⟩, ⟨a, ha⟩⟩, rfl⟩
 
 theorem Set.ncard_coe {α : Type*} (s : Set α) :
     s.ncard = Set.ncard (Set.univ : Set (Set.Elem s)) := by
