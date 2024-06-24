@@ -803,13 +803,13 @@ def KaehlerDifferential.kerToTensor :
 /-- The map `I/I² → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 noncomputable
 def KaehlerDifferential.kerCotangentToTensor :
-    (RingHom.ker (algebraMap A B)).Cotangent →ₗ[A] B ⊗[A] Ω[A⁄R] := by
-  refine Submodule.liftQ _ (kerToTensor R A B) (iSup_le_iff.mpr ?_)
-  simp only [Submodule.map_le_iff_le_comap, Subtype.forall]
-  rintro x hx y -
-  simp only [Submodule.mem_comap, LinearMap.lsmul_apply, LinearMap.mem_ker, map_smul,
-    kerToTensor_apply, TensorProduct.smul_tmul', ← algebraMap_eq_smul_one,
-    (RingHom.mem_ker _).mp hx, TensorProduct.zero_tmul]
+    (RingHom.ker (algebraMap A B)).Cotangent →ₗ[A] B ⊗[A] Ω[A⁄R] :=
+  Submodule.liftQ _ (kerToTensor R A B) (iSup_le_iff.mpr (by
+    simp only [Submodule.map_le_iff_le_comap, Subtype.forall]
+    rintro x hx y -
+    simp only [Submodule.mem_comap, LinearMap.lsmul_apply, LinearMap.mem_ker, map_smul,
+      kerToTensor_apply, TensorProduct.smul_tmul', ← algebraMap_eq_smul_one,
+      (RingHom.mem_ker _).mp hx, TensorProduct.zero_tmul]))
 
 @[simp]
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
