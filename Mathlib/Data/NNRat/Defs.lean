@@ -338,7 +338,7 @@ theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := 
 end Rat
 
 /-- The absolute value on `ℚ` as a map to `ℚ≥0`. -/
---@[pp_nodot]  -- Porting note: Commented out.
+@[pp_nodot]
 def Rat.nnabs (x : ℚ) : ℚ≥0 :=
   ⟨abs x, abs_nonneg x⟩
 #align rat.nnabs Rat.nnabs

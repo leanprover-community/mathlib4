@@ -715,10 +715,12 @@ theorem measurable_snd {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
 
 variable {m : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
+@[fun_prop]
 theorem Measurable.fst {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).1 :=
   measurable_fst.comp hf
 #align measurable.fst Measurable.fst
 
+@[fun_prop]
 theorem Measurable.snd {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).2 :=
   measurable_snd.comp hf
 #align measurable.snd Measurable.snd
@@ -736,6 +738,7 @@ theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a)
         exact hf₂)
 #align measurable.prod Measurable.prod
 
+@[fun_prop]
 theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace γ} {f : α → β}
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
@@ -914,7 +917,7 @@ theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Mea
     MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
 #align measurable_pi_iff measurable_pi_iff
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
   measurable_pi_iff.1 measurable_id a
 #align measurable_pi_apply measurable_pi_apply
@@ -925,7 +928,7 @@ theorem Measurable.eval {a : δ} {g : α → ∀ a, π a} (hg : Measurable g) :
   (measurable_pi_apply a).comp hg
 #align measurable.eval Measurable.eval
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
