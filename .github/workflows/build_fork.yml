@@ -137,13 +137,16 @@ jobs:
           lake --version
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        id: mk_all
         run: lake exe mk_all
 
       - name: build cache
+        if: ${{ always() && steps.mk_all.outcome == 'success' || steps.mk_all.outcome == 'failure' }}
         run: |
           lake build cache
 
       - name: prune ProofWidgets .lake
+        if: ${{ always() && steps.mk_all.outcome == 'success' || steps.mk_all.outcome == 'failure' }}
         run: |
           # The ProofWidgets release contains not just the `.js` (which we need in order to build)
           # but also `.oleans`, which may have been built with the wrong toolchain.
@@ -153,12 +156,14 @@ jobs:
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
 
       - name: get cache
+        if: ${{ always() && steps.mk_all.outcome == 'success' || steps.mk_all.outcome == 'failure' }}
         id: get
         run: |
           lake exe cache clean
           lake exe cache get
 
       - name: build mathlib
+        if: ${{ always() && steps.mk_all.outcome == 'success' || steps.mk_all.outcome == 'failure' }}
         id: build
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
@@ -183,6 +188,7 @@ jobs:
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: check the cache
+        if: ${{ always() && steps.get.outcome == 'success' }}
         run: |
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
