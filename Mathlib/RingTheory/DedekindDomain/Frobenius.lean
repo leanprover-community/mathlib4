@@ -39,24 +39,24 @@ Examples where these hypotheses hold are:
 3) Finite Galois extensions of finite fields L/K where B/A=L/K and Q/P=0/0 (recovering the
 classical theory of Frobenius elements)
 
-Note that if `Q` is ramified, there is more than one choice of `Frob_Q` which works;
-for example if `L=ℚ(i)` and `K=ℚ` then both the identity and complex conjugation
-work for `Frob Q` if `Q=(1+i)`, and `Frob` returns a random one (i.e. it's opaque; all we know
-is that it satisfies the two properties).
+Note that if `Q` is ramified, there is more than one choice of `Frob_Q` satisfying the defining
+equations; for example if `L=ℚ(i)` and `K=ℚ` then both the identity and complex conjugation
+work for `Frob Q` if `Q=(1+i)`. In this situation `Frob` returns a random one (i.e. it's opaque;
+all we know is that it satisfies the two properties).
 
 ## The construction
 
 We follow a proof in a footnote of a book by Milne. **TODO** which book
 
 The Galois orbit of `Q` consists of `Q` and possibly some other primes `Q'`. The unit group
-`(B/Q)ˣ` is finite and hence cyclic; so by the Chinese Remainder Theorem we may choose y ∈ B
-which reduces to a generator mod Q and to 0 modulo all other Q' in the Galois orbit of Q.
+`(B/Q)ˣ` is finite and hence cyclic; so by the Chinese Remainder Theorem we may choose `y ∈ B`
+which reduces to a generator mod `Q` and to 0 modulo all other `Q'` in the Galois orbit of `Q`.
 
 The polynomial `F = ∏ (X - σ y)`, the product running over `σ` in the Galois group, is in `B[X]`
 and is Galois-stable so is in fact in `A[X]`. Hence if `Fbar` is `F mod Q`
 then `Fbar` has coefficients in `A/P=𝔽_q` and thus `Fbar(y^q)=Fbar(y)^q=0`, meaning that `y^q`
-is a root of `F` mod `Q` and thus congruent to `σ y mod Q` for some `σ`. We define `Frob Q` to
-be this `σ`.
+is a root of `F` mod `Q` and thus congruent mod `Q` to `σ y` for some `σ`. We define `Frob Q` to
+be this `σ` (more precisely, any such `σ`).
 
 ## The proof
 
@@ -82,16 +82,12 @@ variable (A : Type*) [CommRing A] {B : Type*} [CommRing B] [Algebra A B]
 
 open scoped Pointwise -- to get Galois action on ideals
 
--- should be in #13294?
-variable {α : Type*} in
-lemma Ideal.map_eq_comap_symm [Group α] [MulSemiringAction α B] (J : Ideal B) (σ : α) :
-    σ • J = J.comap (MulSemiringAction.toRingHom _ _ σ⁻¹) :=
-  J.map_comap_of_equiv (MulSemiringAction.toRingEquiv α B σ)
-
 namespace ArithmeticFrobenius
 
 namespace Abstract -- stuff in here is auxiliary variables etc, general stuff which will
--- work in number field and function field settings.
+-- work in number field and function field settings. This namespace is full of junk
+-- like `y_spec` and `F_spec` which are auxiliary constructions needed for `Frob` and
+-- which we will never need again.
 /-
 
 ## Auxiliary variables
@@ -114,7 +110,7 @@ lemma g_spec : ∀ (z : (B ⧸ Q)ˣ), z ∈ Submonoid.powers (g Q) :=
 variable [Fintype (B ≃ₐ[A] B)] [DecidableEq (Ideal B)]
 
 /-- An element `y` of `B` exists, which is congruent to `b` mod `Q`
-and to 0 mod all Galois conjugates of `Q` (if any).-/
+and to `0` mod all other Galois conjugates of `Q` (if any).-/
 lemma exists_y :
     ∃ y : B, (y : B ⧸ Q) = g Q ∧ ∀ Q' :
     Ideal B, Q' ∈ MulAction.orbit (B ≃ₐ[A] B) Q → Q' ≠ Q → y ∈ Q' := by
@@ -151,20 +147,16 @@ lemma y_mod_Q : Ideal.Quotient.mk Q (y A Q) = g Q := (y_spec A Q).1
 
 open scoped algebraMap
 
-#synth Coe B (B⧸Q)
-
---example (b : B) : (Ideal.Quotient.mk Q : B →+* (B⧸Q)) b = ↑b := by with_reducible_and_instances rfl
-
-lemma y_mod_Q' : (((y A Q) : B) : B⧸Q) = (g Q : B⧸Q) := (y_spec A Q).1
+lemma y_mod_Q' : (((y A Q) : B) : B ⧸ Q) = (g Q : B ⧸ Q) := y_mod_Q A Q
 
 lemma y_not_in_Q : (y A Q) ∉ Q :=
   mt Ideal.Quotient.eq_zero_iff_mem.mpr <| y_mod_Q A Q ▸ (g Q).ne_zero
 
 open Polynomial BigOperators
 
-/-- `F : B[X]` defined to be a product of linear factors `(X - τ • α)`; where
-`τ` runs over `L ≃ₐ[K] L`, and `α : B` is an element which generates `(B ⧸ Q)ˣ`
-and lies in `τ • Q` for all `τ ∉ (decomposition_subgroup_Ideal'  A K L B Q)`.-/
+/-- `F : B[X]` is defined to be a product of linear factors `(X - τ • y)`; where
+`τ` runs over `B ≃ₐ[A] B`, and `y : B` is an element which generates `(B ⧸ Q)ˣ`
+and lies in `τ • Q` for all `τ • Q ≠ Q`.-/
 noncomputable abbrev F : B[X] := ∏ τ : B ≃ₐ[A] B, (X - C (τ • (y A Q)))
 
 lemma F_spec : F A Q = ∏ τ : B ≃ₐ[A] B, (X - C (τ • (y A Q))) := rfl
@@ -188,7 +180,8 @@ noncomputable local instance : Algebra A[X] B[X] :=
   RingHom.toAlgebra (Polynomial.mapRingHom (Algebra.toRingHom))
 
 @[simp, norm_cast]
-lemma coe_monomial (n : ℕ) (a : A) : ((monomial n a : A[X]) : B[X]) = monomial n (a : B) :=
+lemma _root_.Polynomial.coe_monomial (n : ℕ) (a : A) :
+    ((monomial n a : A[X]) : B[X]) = monomial n (a : B) :=
   map_monomial _
 
 lemma F.descent (h : ∀ b : B, (∀ σ : B ≃ₐ[A] B, σ • b = b) → ∃ a : A, b = a) :
@@ -223,29 +216,18 @@ lemma m_spec' : (m A Q isGalois).map (algebraMap A B) = F A Q := by
 -- Amelia's trick to insert "let P be the ideal under Q" into the typeclass system
 variable (P : Ideal A) [P.IsMaximal] [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A⧸P) (B⧸Q)]
 
--- should be elsewhere
-lemma _root_.Algebra.cast_eq_algebraMap {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
-    (a : A) : (a : B) = algebraMap A B a := rfl
-
 lemma m.y_mod_P_eq_zero : Polynomial.aeval (↑(y A Q) : B ⧸ Q) (m A Q isGalois) = 0 := by
-  rw [← aeval_map_algebraMap B, m_spec', Algebra.cast_eq_algebraMap, aeval_algebraMap_apply,
+  rw [← aeval_map_algebraMap B, m_spec', algebraMap.coe_def, aeval_algebraMap_apply,
     coe_aeval_eq_eval, F.y_eq_zero A Q, map_zero]
 
 open scoped Polynomial
-
--- should be elsewhere
-lemma _root_.Polynomial.aeval_pow_card (k : Type*) [Field k] [Fintype k] (f : k[X])
-    (L : Type*) [CommRing L] [Algebra k L]
-    (t : L) : aeval (t^(Fintype.card k)) f =
-              (aeval t f)^(Fintype.card k) := by
-  rw [← map_pow, ← FiniteField.expand_card, Polynomial.expand_aeval]
 
 variable [Fintype (A⧸P)]
 
 lemma m.mod_P_y_pow_q_eq_zero' :
     aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P)))  (m A Q isGalois) = 0 := by
   let foobar : Field (A⧸P) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient P).mp ‹_›).toField
-  rw [← aeval_map_algebraMap (A⧸P), aeval_pow_card, ← Algebra.cast_eq_algebraMap,
+  rw [← aeval_map_algebraMap (A⧸P), FiniteField.aeval_pow_card, ← algebraMap.coe_def,
     aeval_map_algebraMap, m.y_mod_P_eq_zero, zero_pow Fintype.card_ne_zero]
 
 lemma F.mod_Q_y_pow_q_eq_zero' :
@@ -280,9 +262,10 @@ lemma Frob_Q : Frob A Q isGalois P • Q = Q := by
   simp only [sub_sub_cancel] at this
   apply y_not_in_Q A Q <| Ideal.IsPrime.mem_of_pow_mem (show Q.IsPrime by infer_instance) _ this
 
--- move
+-- **TODO** move. This is problematic because Algebra.cast and Ideal.Quotient.mk are two
+-- distinct coercions from R to R/I.
 lemma _root_.Ideal.Quotient.coe_eq_coe_iff_sub_mem {R : Type*} [CommRing R] {I : Ideal R}
-    (x y : R) : (x : R ⧸ I) = y ↔ x - y ∈ I := Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _
+    (x y : R) : (Algebra.cast x : R ⧸ I) = y ↔ x - y ∈ I := Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _
 
 lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x^(Fintype.card (A⧸P)) ∈ Q := by
   by_cases hx : x ∈ Q

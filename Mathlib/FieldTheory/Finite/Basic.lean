@@ -393,6 +393,10 @@ theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
   rw [hn, ← map_expand_pow_char, frobenius_pow hn, RingHom.one_def, map_id]
 #align finite_field.expand_card FiniteField.expand_card
 
+lemma aeval_pow_card (f : K[X]) {L : Type*} [CommRing L] [Algebra K L] (t : L) :
+    aeval (t ^ (Fintype.card K)) f = (aeval t f) ^ (Fintype.card K) := by
+  rw [← map_pow, ← FiniteField.expand_card, Polynomial.expand_aeval]
+
 end FiniteField
 
 namespace ZMod

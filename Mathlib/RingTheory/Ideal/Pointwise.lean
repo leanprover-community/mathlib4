@@ -108,6 +108,11 @@ theorem pointwise_smul_subset_iff {a : M} {S T : Ideal R} : a • S ≤ T ↔ S 
 theorem subset_pointwise_smul_iff {a : M} {S T : Ideal R} : S ≤ a • T ↔ a⁻¹ • S ≤ T := by
   rw [← pointwise_smul_le_pointwise_smul_iff (a := a⁻¹), inv_smul_smul]
 
+-- TODO: other variants?
+lemma map_eq_comap_symm (J : Ideal R) (σ : M) :
+    σ • J = J.comap (MulSemiringAction.toRingHom _ _ σ⁻¹) :=
+  J.map_comap_of_equiv (MulSemiringAction.toRingEquiv M R σ)
+
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 
 end Group

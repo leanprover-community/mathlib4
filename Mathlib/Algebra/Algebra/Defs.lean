@@ -125,6 +125,8 @@ section CommSemiringSemiring
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
+theorem coe_def (r : R) : (r : A) = algebraMap R A r := rfl
+
 @[simp, norm_cast]
 theorem coe_zero : (↑(0 : R) : A) = 0 :=
   map_zero (algebraMap R A)
