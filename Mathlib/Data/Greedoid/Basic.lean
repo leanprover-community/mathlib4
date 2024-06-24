@@ -139,6 +139,9 @@ theorem mem_exchange
     ∃ x ∈ s₁, ∃ h : x ∉ s₂, cons x s₂ h ∈ G :=
   G.exchange_property hs₁ hs₂ hs
 
+instance [DecidableEq α] : DecidablePred (· ∈ G) := λ x ↦ by
+  infer_instance
+
 end Membership
 
 @[simp]
