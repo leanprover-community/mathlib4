@@ -10,7 +10,23 @@ import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 # Affine morphisms of schemes
 
-A morphism of schemes `f : X ⟶ Y` is affine if the preimage of affine opens are affine.
+A morphism of schemes `f : X ⟶ Y` is affine if the preimage
+of an arbitrary affine open subset of `Y` is affine.
+
+It is equivalent to ask only that `Y` is covered by affine opens whose preimage is affine.
+
+## Main results
+
+- `AlgebraicGeometry.IsAffineHom`: The class of affine morphisms.
+- `AlgebraicGeometry.isAffineOpen_of_isAffineOpen_basicOpen`:
+  If `s` is a spanning set of `Γ(X, U)`, such that each `X.basicOpen i` is affine,
+  then `U` is also affine.
+- `AlgebraicGeometry.isAffineHom_isLocalAtTarget`: Affine morphisms are local at the target.
+- `AlgebraicGeometry.isAffineHom_stableUnderBaseChange`:
+  Affine morphisms are stable under base change.
+- `AlgebraicGeometry.isAffineHom_iff_isAffine`:
+
+
 
 -/
 
@@ -22,7 +38,8 @@ namespace AlgebraicGeometry
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
-/-- A morphism of schemes `X ⟶ Y` is affine if the preimages of affine open sets are affine. -/
+/-- A morphism of schemes `X ⟶ Y` is affine if
+the preimage of any affine open subset of `Y` is affine. -/
 @[mk_iff]
 class IsAffineHom {X Y : Scheme} (f : X ⟶ Y) : Prop where
   isAffine_preimage : ∀ U : Opens Y, IsAffineOpen U → IsAffineOpen (f ⁻¹ᵁ U)
@@ -69,7 +86,7 @@ lemma isAffineHom_eq_affineProperty :
     @IsAffineHom = targetAffineLocally IsAffineHom.affineProperty := by
   ext; exact isAffineHom_iff_affineProperty _
 
-instance {X : Scheme} (r : X.presheaf.obj (op ⊤)) :
+instance {X : Scheme} (r : Γ(X, ⊤)) :
     IsAffineHom (Scheme.ιOpens (X.basicOpen r)) := by
   constructor
   intros U hU
@@ -90,13 +107,30 @@ lemma iSup_basicOpen_eq_top_of_span_eq_top {X : Scheme} (s : Set (X.presheaf.obj
   simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.map_coe, Opens.coe_mk, Set.mem_iUnion,
     Set.mem_preimage]
 
-lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set (X.presheaf.obj (op ⊤)))
+lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
+    (hs : Ideal.span s = ⊤) : (⨆ i ∈ s, X.basicOpen i) = U := by
+  let i : Γ(X, U) ≅ Γ(X, Scheme.ιOpens U ''ᵁ ⊤) :=
+    X.presheaf.mapIso (eqToIso U.openEmbedding_obj_top).op
+  have := iSup_basicOpen_eq_top_of_span_eq_top (X := X ∣_ᵤ U) (i.hom '' s)
+    (by rw [← Ideal.map_span i.hom, hs, Ideal.map_top])
+  refine Eq.trans ?_ (congr(Scheme.ιOpens U ''ᵁ $(this)).trans U.openEmbedding_obj_top)
+  ext1
+  simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk, Scheme.restrict_presheaf_obj,
+    Set.mem_image, iSup_exists, Set.biUnion_and', Set.iUnion_iUnion_eq_right,
+    IsOpenMap.functor_obj_coe, Scheme.ofRestrict_val_base, Set.image_iUnion₂]
+  congr! with f _
+  have := (Scheme.image_basicOpen (Scheme.ιOpens U) (i.hom f)).symm
+  refine Eq.trans ?_ (congr_arg (↑) this)
+  rw [Scheme.Hom.invApp, PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
+  simp [i, CommRingCat.id_apply]
+
+lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     QuasiSeparatedSpace X := by
   rw [quasiSeparatedSpace_iff_affine]
   intros U V
   obtain ⟨s', hs', e⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
-  rw [← Set.inter_univ (_ ∩ _), ← Opens.coe_top, ← iSup_basicOpen_eq_top_of_span_eq_top _ e,
+  rw [← Set.inter_univ (_ ∩ _), ← Opens.coe_top, ← iSup_basicOpen_of_span_eq_top _ _ e,
     ← iSup_subtype'', Opens.coe_iSup, Set.inter_iUnion]
   apply isCompact_iUnion
   intro i
@@ -108,13 +142,13 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set (X.presheaf.obj (op �
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
     exact (V.2.basicOpen _).isCompact
 
-lemma isAffineOpen_of_isAffineOpen_basicOpen (s : Set (X.presheaf.obj (op ⊤)))
+lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     IsAffine X := by
   have : QuasiSeparatedSpace X := isAffineOpen_of_isAffineOpen_basicOpen_aux s hs hs₂
   have : CompactSpace X := by
     obtain ⟨s', hs', e⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
-    rw [← isCompact_univ_iff, ← Opens.coe_top, ← iSup_basicOpen_eq_top_of_span_eq_top _ e]
+    rw [← isCompact_univ_iff, ← Opens.coe_top, ← iSup_basicOpen_of_span_eq_top _ _ e]
     simp only [Finset.mem_coe, Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk]
     apply s'.isCompact_biUnion
     exact fun i hi ↦ (hs₂ _ (hs' hi)).isCompact
@@ -136,6 +170,22 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen (s : Set (X.presheaf.obj (op ⊤)))
       refine congr(IsIso ((ΓSpec.adjunction.unit.app X).val.c.app (op $(?_))))
       rw [Opens.openEmbedding_obj_top]
 
+/--
+If `s` is a spanning set of `Γ(X, U)`, such that each `X.basicOpen i` is affine, then `U` is also
+affine.
+-/
+lemma isAffineOpen_of_isAffineOpen_basicOpen (U) (s : Set Γ(X, U))
+    (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
+    IsAffineOpen U := by
+  let i : Γ(X, U) ≅ Γ(X, Scheme.ιOpens U ''ᵁ ⊤) :=
+    X.presheaf.mapIso (eqToIso U.openEmbedding_obj_top).op
+  apply isAffine_of_isAffineOpen_basicOpen (i.hom '' s)
+  · rw [← Ideal.map_span i.hom, hs, Ideal.map_top]
+  · rintro _ ⟨j, hj, rfl⟩
+    rw [← (Scheme.ιOpens _).isAffineOpen_iff_of_isOpenImmersion, Scheme.image_basicOpen]
+    rw [Scheme.Hom.invApp, PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
+    simpa [CommRingCat.id_apply, i] using hs₂ j hj
+
 lemma IsAffineHom.affineProperty_isLocal : affineProperty.IsLocal := by
   constructor
   · apply AffineTargetMorphismProperty.respectsIso_mk
@@ -151,7 +201,7 @@ lemma IsAffineHom.affineProperty_isLocal : affineProperty.IsLocal := by
   · intro X Y H f S hS hS'
     apply_fun Ideal.map (f.1.c.app (op ⊤)) at hS
     rw [Ideal.map_span, Ideal.map_top] at hS
-    apply isAffineOpen_of_isAffineOpen_basicOpen _ hS
+    apply isAffine_of_isAffineOpen_basicOpen _ hS
     have : ∀ i : S, IsAffineOpen (f⁻¹ᵁ Y.basicOpen i.1) := hS'
     simpa [Scheme.preimage_basicOpen] using this
 
