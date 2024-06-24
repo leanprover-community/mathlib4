@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Category.Cat
 
 namespace CategoryTheory
 
-open Category Bicategory
+open Category Bicategory Bicategory.Opposite
 
 open Bicategory
 
@@ -33,13 +33,16 @@ variable {B : Type u₁} [LocallySmallBicategory.{v₁} B]
 #check precomp
 
 def representable (x : B) : Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁} := {
-  obj := fun y => Cat.of (y ⟶ ⟨x⟩)
-  map := fun {a b} f => (precomp _ f)
-  map₂ := sorry,
-  mapId := sorry,
+  obj := fun y => Cat.of ((unbop y) ⟶ x)
+  -- TODO: need to take op this functor
+  map := fun {a b} f => (precomp x f.unbop)
+  -- from "precomposing"?
+  map₂ := fun {a b f g} η => ⟨((unbop2 η) ▷ ·), by sorry⟩
+  map₂_id := sorry
+  map₂_comp := sorry
+  mapId := fun a => by dsimp; apply leftUnitorNatIso _ (unbop a)
+  -- something something associatorNatIso
   mapComp := sorry,
-  map₂_id := sorry,
-  map₂_comp := sorry,
   map₂_whisker_left := sorry,
   map₂_whisker_right := sorry,
   map₂_associator := sorry,
