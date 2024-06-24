@@ -542,7 +542,7 @@ theorem app_eq_invApp_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U �
             (eqToHom <| IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux f g fg H V).op := by
   subst H
   rw [Scheme.comp_val_c_app, Category.assoc, Scheme.Hom.invApp,
-    PresheafedSpace.IsOpenImmersion.invApp_app_assoc, f.val.c.naturality_assoc,
+    LocallyRingedSpace.IsOpenImmersion.invApp_app_assoc, f.val.c.naturality_assoc,
     TopCat.Presheaf.pushforwardObj_map, ← Functor.map_comp]
   convert (Category.comp_id <| f.1.c.app (op V)).symm
   convert Y.presheaf.map_id _
