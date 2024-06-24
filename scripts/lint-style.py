@@ -255,20 +255,6 @@ def regular_check(lines, path):
             break
     return errors, lines
 
-def banned_import_check(lines, path):
-    errors = []
-    for line_nr, line, is_comment in annotate_comments(lines):
-        if is_comment:
-            continue
-        imports = line.split()
-        if imports[0] != "import":
-            break
-        if imports[1] in ["Mathlib.Tactic"]:
-            errors += [(ERR_TAC, line_nr, path)]
-        elif imports[1] == "Lake" or imports[1].startswith("Lake."):
-            errors += [(ERR_TAC2, line_nr, path)]
-    return errors, lines
-
 def isolated_by_dot_semicolon_check(lines, path):
     errors = []
     newlines = []
@@ -386,8 +372,6 @@ def lint(path, fix=False):
 
         if not import_only_check(newlines, path):
             errs, newlines = regular_check(newlines, path)
-            format_errors(errs)
-            errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:
