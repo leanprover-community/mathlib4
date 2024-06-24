@@ -24,6 +24,8 @@ open CategoryTheory
 
 namespace ModuleCat
 
+attribute [local instance] IsScalarTower.of_compHom
+
 variable {A B : CommRingCat.{u}} (M : ModuleCat.{v} B) (f : A ⟶ B)
 
 /-- The type of derivations with values in a `B`-module `M` relative
