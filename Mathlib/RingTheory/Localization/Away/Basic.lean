@@ -112,13 +112,14 @@ variable {B : Type*} [CommRing B] [Algebra R B]
 variable (Aₚ : Type*) [CommRing Aₚ] [Algebra A Aₚ] [Algebra R Aₚ] [IsScalarTower R A Aₚ]
 variable (Bₚ : Type*) [CommRing Bₚ] [Algebra B Bₚ] [Algebra R Bₚ] [IsScalarTower R B Bₚ]
 
-/-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map `Aₐ →ₐ[R] Bₐ`. -/
+/-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
+`Aₐ →ₐ[R] Bₐ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
   ⟨map Aₚ Bₚ f.toRingHom a, by
     intro r
     simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, MonoidHom.coe_coe, IsScalarTower.algebraMap_eq R A Aₚ, RingHom.coe_comp,
-      Function.comp_apply, ← IsLocalization.mk'_one (M := Submonoid.powers a) Aₚ]
+      MonoidHom.toOneHom_coe, MonoidHom.coe_coe, IsScalarTower.algebraMap_eq R A Aₚ,
+      RingHom.coe_comp, Function.comp_apply, ← IsLocalization.mk'_one (M := Submonoid.powers a) Aₚ]
     simp only [map, RingHom.coe_coe, map_mk', AlgHom.commutes, OneMemClass.coe_one, map_one]
     erw [IsLocalization.mk'_one]
     rw [IsScalarTower.algebraMap_eq R B Bₚ]
