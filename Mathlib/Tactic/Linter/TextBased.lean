@@ -69,8 +69,10 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
   | StyleError.copyright none => "Malformed or missing copyright header"
   | StyleError.authors =>
     "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
-  | StyleError.adaptationNote => "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
-  | StyleError.broadImport BroadImports.TacticFolder => "Files in mathlib cannot import the whole tactic folder"
+  | StyleError.adaptationNote =>
+    "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
+  | StyleError.broadImport BroadImports.TacticFolder =>
+    "Files in mathlib cannot import the whole tactic folder"
   | StyleError.broadImport BroadImports.Lake =>
       "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see \
       e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
