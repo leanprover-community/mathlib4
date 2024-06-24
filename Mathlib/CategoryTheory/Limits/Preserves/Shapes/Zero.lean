@@ -25,7 +25,7 @@ We provide the following results:
 -/
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -182,8 +182,8 @@ end ZeroObject
 
 section
 
-variable (J : Type*) [Category J] [HasZeroObject D] [HasZeroMorphisms D]
-  (G : C ⥤ D) (hG : IsZero G)
+variable [HasZeroObject D] [HasZeroMorphisms D]
+  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category J]
 
 /-- A zero functor preserves limits. -/
 def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G where
@@ -196,6 +196,14 @@ def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G where
   preservesColimit {K} := ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
     exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
+
+/-- A zero functor preserves limits. -/
+def preservesLimitsOfSizeOfIsZero : PreservesLimitsOfSize.{v, u} G where
+  preservesLimitsOfShape := G.preservesLimitsOfShapeOfIsZero hG _
+
+/-- A zero functor preserves colimits. -/
+def preservesColimitsOfSizeOfIsZero : PreservesColimitsOfSize.{v, u} G where
+  preservesColimitsOfShape := G.preservesColimitsOfShapeOfIsZero hG _
 
 end
 
