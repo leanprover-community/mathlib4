@@ -1250,7 +1250,7 @@ noncomputable def isoRestrict {X Y : LocallyRingedSpace} (f : X ⟶ Y)
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor {X Y : LocallyRingedSpace} (f : X ⟶ Y)
-    [H : LocallyRingedSpace.IsOpenImmersion f] :=
+    [H : LocallyRingedSpace.IsOpenImmersion f] : Opens X ⥤ Opens Y :=
   H.base_open.isOpenMap.functor
 
 section OfStalkIso
