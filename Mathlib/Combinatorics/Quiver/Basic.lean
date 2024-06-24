@@ -66,10 +66,10 @@ namespace Prefunctor
 -- Porting note: added during port.
 -- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
-lemma mk_obj {V : Type*} [Quiver V] {obj : V → V} {map} {X : V} :
+lemma mk_obj {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X : V} :
     (Prefunctor.mk obj map).obj X = obj X := rfl
 
-lemma mk_map {V : Type*} [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
+lemma mk_map {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X Y : V} {f : X ⟶ Y} :
     (Prefunctor.mk obj map).map f = map f := rfl
 
 @[ext]

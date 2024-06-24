@@ -113,6 +113,9 @@ theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
   · simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
   · rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
 
+@[deprecated (since := "2024-04-17")]
+alias smeval_nat_cast := smeval_natCast
+
 @[simp]
 theorem smeval_smul (r : R) : (r • p).smeval x = r • p.smeval x := by
   induction p using Polynomial.induction_on' with
@@ -145,6 +148,23 @@ theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) :
 
 end Module
 
+section Neg
+
+variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R S] (p q : R[X])
+  (x : S)
+
+@[simp]
+theorem smeval_neg : (-p).smeval x = - p.smeval x := by
+  have h : (p + -p).smeval x = 0 := by rw [add_neg_self, smeval_zero]
+  rw [smeval_add, add_eq_zero_iff_neg_eq] at h
+  exact id h.symm
+
+@[simp]
+theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
+  rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
+
+end Neg
+
 section NatPowAssoc
 
 /-!
@@ -155,7 +175,7 @@ the defining structures independently.  For non-associative power-associative al
 octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ] [NatPowAssoc S]`.
 -/
 
-variable (R : Type*) [CommSemiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
+variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ]
   [NatPowAssoc S] (x : S)
 
@@ -167,6 +187,9 @@ theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeva
   | h_monomial n a =>
     intro n
     rw [smeval_monomial, smeval_monomial, nsmul_eq_mul, smul_eq_mul, Nat.cast_mul, Nat.cast_npow]
+
+@[deprecated (since := "2024-04-17")]
+alias smeval_at_nat_cast := smeval_at_natCast
 
 theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
   induction p using Polynomial.induction_on' with

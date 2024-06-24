@@ -46,6 +46,9 @@ See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` 
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 universe u v w
 
 open Function
@@ -88,7 +91,7 @@ class VAdd (G : Type u) (P : Type v) where
 #align has_vadd VAdd
 
 /-- Type class for the `-ᵥ` notation. -/
-class VSub (G : outParam (Type*)) (P : Type*) where
+class VSub (G : outParam Type*) (P : Type*) where
   /-- `a -ᵥ b` computes the difference of `a` and `b`. The meaning of this notation is
   type-dependent, but it is intended to be used for additive torsors. -/
   vsub : P → P → G
@@ -582,10 +585,6 @@ monoids. To work, it has to map fields to fields. This means that we should also
 fields to the multiplicative structure `Monoid`, which could solve defeq problems for powers if
 needed. These problems do not come up in practice, so most of the time we will not need to adjust
 the `npow` field when defining multiplicative objects.
-
-A basic theory for the power function on monoids and the `ℕ`-action on additive monoids is built in
-the file `Algebra.GroupPower.Basic`. For now, we only register the most basic properties that we
-need right away.
 -/
 
 
@@ -1030,9 +1029,8 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align coe_nat_zsmul natCast_zsmul
 #align of_nat_zsmul natCast_zsmul
 
--- 2024-03-20
-@[deprecated] alias zpow_coe_nat := zpow_natCast
-@[deprecated] alias coe_nat_zsmul := natCast_zsmul
+@[deprecated (since := "2024-03-20")] alias zpow_coe_nat := zpow_natCast
+@[deprecated (since := "2024-03-20")] alias coe_nat_zsmul := natCast_zsmul
 
 -- See note [no_index around OfNat.ofNat]
 @[to_additive ofNat_zsmul]
@@ -1164,8 +1162,8 @@ theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
 #align neg_eq_of_add_eq_zero_right neg_eq_of_add_eq_zero_right
 
 @[to_additive]
-theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
-  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
+theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a := by
+  rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
 #align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
 #align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
 
@@ -1237,8 +1235,8 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_self a) h
 
 @[to_additive (attr := simp)]
-theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
-  by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
+theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
+  rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
 #align mul_right_inv mul_right_inv
 #align add_right_neg add_right_neg
 
@@ -1249,26 +1247,26 @@ theorem mul_inv_self (a : G) : a * a⁻¹ = 1 :=
 #align add_neg_self add_neg_self
 
 @[to_additive (attr := simp)]
-theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
-  by rw [← mul_assoc, mul_left_inv, one_mul]
+theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b := by
+  rw [← mul_assoc, mul_left_inv, one_mul]
 #align inv_mul_cancel_left inv_mul_cancel_left
 #align neg_add_cancel_left neg_add_cancel_left
 
 @[to_additive (attr := simp)]
-theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b :=
-  by rw [← mul_assoc, mul_right_inv, one_mul]
+theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b := by
+  rw [← mul_assoc, mul_right_inv, one_mul]
 #align mul_inv_cancel_left mul_inv_cancel_left
 #align add_neg_cancel_left add_neg_cancel_left
 
 @[to_additive (attr := simp)]
-theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
-  by rw [mul_assoc, mul_right_inv, mul_one]
+theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a := by
+  rw [mul_assoc, mul_right_inv, mul_one]
 #align mul_inv_cancel_right mul_inv_cancel_right
 #align add_neg_cancel_right add_neg_cancel_right
 
 @[to_additive (attr := simp)]
-theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
-  by rw [mul_assoc, mul_left_inv, mul_one]
+theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
+  rw [mul_assoc, mul_left_inv, mul_one]
 #align inv_mul_cancel_right inv_mul_cancel_right
 #align neg_add_cancel_right neg_add_cancel_right
 

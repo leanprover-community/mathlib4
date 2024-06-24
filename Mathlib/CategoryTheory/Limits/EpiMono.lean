@@ -50,7 +50,7 @@ lemma mono_iff_isIso_fst : Mono f ↔ IsIso c.fst := by
   constructor
   · intro h
     obtain ⟨φ, hφ₁, hφ₂⟩ := PullbackCone.IsLimit.lift' hc (𝟙 X) (𝟙 X) (by simp)
-    refine' ⟨φ, PullbackCone.IsLimit.hom_ext hc _ _, hφ₁⟩
+    refine ⟨φ, PullbackCone.IsLimit.hom_ext hc ?_ ?_, hφ₁⟩
     · dsimp
       simp only [assoc, hφ₁, id_comp, comp_id]
     · dsimp
@@ -94,7 +94,7 @@ lemma epi_iff_isIso_inl : Epi f ↔ IsIso c.inl := by
   constructor
   · intro h
     obtain ⟨φ, hφ₁, hφ₂⟩ := PushoutCocone.IsColimit.desc' hc (𝟙 Y) (𝟙 Y) (by simp)
-    refine' ⟨φ, hφ₁, PushoutCocone.IsColimit.hom_ext hc _ _⟩
+    refine ⟨φ, hφ₁, PushoutCocone.IsColimit.hom_ext hc ?_ ?_⟩
     · dsimp
       simp only [comp_id, reassoc_of% hφ₁]
     · dsimp

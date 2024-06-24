@@ -100,7 +100,7 @@ theorem coeff_mirror (n : ℕ) :
 --TODO: Extract `Finset.sum_range_rev_at` lemma.
 theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
   simp_rw [eval_eq_sum_range, one_pow, mul_one, mirror_natDegree]
-  refine' Finset.sum_bij_ne_zero _ _ _ _ _
+  refine Finset.sum_bij_ne_zero ?_ ?_ ?_ ?_ ?_
   · exact fun n _ _ => revAt (p.natDegree + p.natTrailingDegree) n
   · intro n hn hp
     rw [Finset.mem_range_succ_iff] at *
@@ -110,7 +110,7 @@ theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
   · exact fun n₁ _ _ _ _ _ h => by rw [← @revAt_invol _ n₁, h, revAt_invol]
   · intro n hn hp
     use revAt (p.natDegree + p.natTrailingDegree) n
-    refine' ⟨_, _, revAt_invol⟩
+    refine ⟨?_, ?_, revAt_invol⟩
     · rw [Finset.mem_range_succ_iff] at *
       rw [revAt_le (hn.trans (Nat.le_add_right _ _))]
       rw [tsub_le_iff_tsub_le, add_comm, add_tsub_cancel_right]
@@ -161,8 +161,8 @@ theorem mirror_leadingCoeff : p.mirror.leadingCoeff = p.trailingCoeff := by
 theorem coeff_mul_mirror :
     (p * p.mirror).coeff (p.natDegree + p.natTrailingDegree) = p.sum fun n => (· ^ 2) := by
   rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
-  refine'
-    (Finset.sum_congr rfl fun n hn => _).trans
+  refine
+    (Finset.sum_congr rfl fun n hn => ?_).trans
       (p.sum_eq_of_subset (fun _ ↦ (· ^ 2)) (fun _ ↦ zero_pow two_ne_zero) fun n hn ↦
           Finset.mem_range_succ_iff.mpr
             ((le_natDegree_of_mem_supp n hn).trans (Nat.le_add_right _ _))).symm

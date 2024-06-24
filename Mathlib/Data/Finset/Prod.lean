@@ -22,6 +22,7 @@ This file defines finset constructions on the product type `α × β`. Beware no
   `a, b ∈ s` and `a ≠ b`.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Multiset
 
@@ -92,10 +93,12 @@ theorem product_subset_product (hs : s ⊆ s') (ht : t ⊆ t') : s ×ˢ t ⊆ s'
   mem_product.2 ⟨hs (mem_product.1 h).1, ht (mem_product.1 h).2⟩
 #align finset.product_subset_product Finset.product_subset_product
 
+@[gcongr]
 theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
   product_subset_product hs (Subset.refl _)
 #align finset.product_subset_product_left Finset.product_subset_product_left
 
+@[gcongr]
 theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
 #align finset.product_subset_product_right Finset.product_subset_product_right
@@ -337,11 +340,7 @@ theorem diag_card : (diag s).card = s.card := by
 
 @[simp]
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
-  suffices (diag s).card + (offDiag s).card = s.card * s.card by
-    conv_rhs => { rw [← s.diag_card] }
-    simp only [diag_card] at *
-    rw [tsub_eq_of_eq_add_rev]
-    rw [this]
+  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; omega
   by rw [← card_product, diag, offDiag]
      conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
 #align finset.off_diag_card Finset.offDiag_card

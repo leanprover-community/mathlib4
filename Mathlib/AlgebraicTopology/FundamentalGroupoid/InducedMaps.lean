@@ -194,8 +194,8 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
     (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 (fromTop x))) ≫
       hcast (H.apply_one x).symm.symm := by
   dsimp only [prodToProdTopI, uhpath01, hcast]
-  refine' (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
-    (FundamentalGroupoid.ext _ _ <| H.apply_one x).symm).mpr _
+  refine (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
+    (FundamentalGroupoid.ext _ _ <| H.apply_one x).symm).mpr ?_
   simp only [id_eq_path_refl, prodToProdTop_map, Path.Homotopic.prod_lift, map_eq, ←
     Path.Homotopic.map_lift]
   apply Path.Homotopic.hpath_hext; intro; rfl

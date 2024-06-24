@@ -18,8 +18,6 @@ universe u v w
 
 open TensorProduct
 
-open BigOperators
-
 open TensorProduct
 
 open Algebra.TensorProduct
@@ -92,13 +90,15 @@ theorem invFun_zero : invFun R A n 0 = 0 := by simp [invFun]
 #align matrix_equiv_tensor.inv_fun_zero MatrixEquivTensor.invFun_zero
 
 @[simp]
-theorem invFun_add (M N : Matrix n n A) : invFun R A n (M + N) = invFun R A n M + invFun R A n N :=
-  by simp [invFun, add_tmul, Finset.sum_add_distrib]
+theorem invFun_add (M N : Matrix n n A) :
+    invFun R A n (M + N) = invFun R A n M + invFun R A n N := by
+  simp [invFun, add_tmul, Finset.sum_add_distrib]
 #align matrix_equiv_tensor.inv_fun_add MatrixEquivTensor.invFun_add
 
 @[simp]
-theorem invFun_smul (a : A) (M : Matrix n n A) : invFun R A n (a • M) = a ⊗ₜ 1 * invFun R A n M :=
-  by simp [invFun, Finset.mul_sum]
+theorem invFun_smul (a : A) (M : Matrix n n A) :
+    invFun R A n (a • M) = a ⊗ₜ 1 * invFun R A n M := by
+  simp [invFun, Finset.mul_sum]
 #align matrix_equiv_tensor.inv_fun_smul MatrixEquivTensor.invFun_smul
 
 @[simp]

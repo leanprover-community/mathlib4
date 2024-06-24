@@ -148,7 +148,7 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     apply @tendsto_atTop_of_eventually_const _ _ _ _ _ _ _ N
     intro n n_large
     have key : x ∉ thickening ε E := by simpa only [thickening, mem_setOf_eq, not_lt] using ε_lt.le
-    refine' le_antisymm _ bot_le
+    refine le_antisymm ?_ bot_le
     apply (thickenedIndicatorAux_mono (lt_of_abs_lt (hN n n_large)).le E x).trans
     exact (thickenedIndicatorAux_zero ε_pos E key).le
 #align thickened_indicator_aux_tendsto_indicator_closure thickenedIndicatorAux_tendsto_indicator_closure
@@ -252,8 +252,8 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   intro x
   rw [show indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
         (indicator (closure E) (fun _ => (1 : ℝ≥0∞)) x).toNNReal
-      by refine' (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
-  refine' Tendsto.comp (tendsto_toNNReal _) (key x)
+      by refine (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
+  refine Tendsto.comp (tendsto_toNNReal ?_) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]
 #align thickened_indicator_tendsto_indicator_closure thickenedIndicator_tendsto_indicator_closure
 

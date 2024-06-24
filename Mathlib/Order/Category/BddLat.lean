@@ -34,7 +34,7 @@ structure BddLat where
 
 namespace BddLat
 
-instance : CoeSort BddLat (Type*) :=
+instance : CoeSort BddLat Type* :=
   ⟨fun X => X.toLat⟩
 
 instance (X : BddLat) : Lattice X :=

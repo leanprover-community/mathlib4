@@ -45,7 +45,7 @@ measurable function, arithmetic operator
 -/
 
 open MeasureTheory
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 universe u v
 variable {α : Type*}
@@ -411,7 +411,7 @@ theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [Measurab
     ext1 x
     simp only [Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_eq_right']
   rw [this]
-  refine' MeasurableSet.iUnion fun j => MeasurableSet.inter _ _
+  refine MeasurableSet.iUnion fun j => MeasurableSet.inter ?_ ?_
   · exact hf (measurableSet_singleton j)
   · exact hg (measurableSet_singleton j)
 #align measurable_set_eq_fun_of_countable measurableSet_eq_fun_of_countable
@@ -419,8 +419,8 @@ theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [Measurab
 theorem ae_eq_trim_of_measurable {α E} {m m0 : MeasurableSpace α} {μ : Measure α}
     [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E] [MeasurableSub₂ E]
     (hm : m ≤ m0) {f g : α → E} (hf : Measurable[m] f) (hg : Measurable[m] g) (hfg : f =ᵐ[μ] g) :
-    f =ᶠ[@Measure.ae α m (μ.trim hm)] g := by
-  rwa [Filter.EventuallyEq, @ae_iff _ m, trim_measurableSet_eq hm _]
+    f =ᵐ[μ.trim hm] g := by
+  rwa [Filter.EventuallyEq, ae_iff, trim_measurableSet_eq hm _]
   exact @MeasurableSet.compl α _ m (@measurableSet_eq_fun α m E _ _ _ _ _ _ hf hg)
 #align ae_eq_trim_of_measurable ae_eq_trim_of_measurable
 
@@ -519,6 +519,32 @@ theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
   ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv ▸ hs.inv⟩
 
 end Inv
+
+@[to_additive]
+theorem Measurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+    [MeasurableMul₂ G] [MeasurableInv G] {f g : α → G} (hf : Measurable f) :
+    Measurable (f * g) ↔ Measurable g :=
+  ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
+    fun h ↦ hf.mul h⟩
+
+@[to_additive]
+theorem AEMeasurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+    [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure α} {f g : α → G} (hf : AEMeasurable f μ) :
+    AEMeasurable (f * g) μ ↔ AEMeasurable g μ :=
+  ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
+    fun h ↦ hf.mul h⟩
+
+@[to_additive]
+theorem Measurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+    [MeasurableMul₂ G] [MeasurableInv G] {f g : α → G} (hf : Measurable f) :
+    Measurable (g * f) ↔ Measurable g :=
+  mul_comm g f ▸ Measurable.mul_iff_right hf
+
+@[to_additive]
+theorem AEMeasurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+    [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure α} {f g : α → G} (hf : AEMeasurable f μ) :
+    AEMeasurable (g * f) μ ↔ AEMeasurable g μ :=
+  mul_comm g f ▸ AEMeasurable.mul_iff_right hf
 
 /-- `DivInvMonoid.Pow` is measurable. -/
 instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
@@ -700,7 +726,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     [MeasurableAdd₂ M] : MeasurableSMul₂ ℕ M :=
   ⟨by
     suffices Measurable fun p : M × ℕ => p.2 • p.1 by apply this.comp measurable_swap
-    refine' measurable_from_prod_countable fun n => _
+    refine measurable_from_prod_countable fun n => ?_
     induction' n with n ih
     · simp only [Nat.zero_eq, zero_smul, ← Pi.zero_def, measurable_zero]
     · simp only [succ_nsmul]
@@ -712,7 +738,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     [MeasurableAdd₂ M] [MeasurableNeg M] : MeasurableSMul₂ ℤ M :=
   ⟨by
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
-    refine' measurable_from_prod_countable fun n => _
+    refine measurable_from_prod_countable fun n => ?_
     induction' n with n n ih
     · simp only [Int.ofNat_eq_coe, natCast_zsmul]
       exact measurable_const_smul _
@@ -948,21 +974,21 @@ theorem Multiset.aemeasurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, 
 
 @[to_additive (attr := measurability)]
 theorem Finset.measurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable (∏ i in s, f i) :=
+    Measurable (∏ i ∈ s, f i) :=
   Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
 #align finset.measurable_prod' Finset.measurable_prod'
 #align finset.measurable_sum' Finset.measurable_sum'
 
 @[to_additive (attr := measurability)]
 theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun a => ∏ i in s, f i a := by
+    Measurable fun a => ∏ i ∈ s, f i a := by
   simpa only [← Finset.prod_apply] using s.measurable_prod' hf
 #align finset.measurable_prod Finset.measurable_prod
 #align finset.measurable_sum Finset.measurable_sum
 
 @[to_additive (attr := measurability)]
 theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
-    AEMeasurable (∏ i in s, f i) μ :=
+    AEMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aemeasurable_prod' _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
@@ -971,7 +997,7 @@ theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurabl
 
 @[to_additive (attr := measurability)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
-    AEMeasurable (fun a => ∏ i in s, f i a) μ := by
+    AEMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
 #align finset.ae_measurable_prod Finset.aemeasurable_prod
 #align finset.ae_measurable_sum Finset.aemeasurable_sum

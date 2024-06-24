@@ -124,11 +124,11 @@ This property is equivalent to the definition of `FrechetUrysohnSpace`, see
 `FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto`. -/
 theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : X} {b : Y} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 b) := by
-  refine'
+  refine
     ⟨fun hf u hu => hf.comp hu, fun h =>
-      ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 _⟩
+      ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 ?_⟩
   rintro s ⟨hbs, hsc⟩
-  refine' ⟨closure (f ⁻¹' s), ⟨mt _ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
+  refine ⟨closure (f ⁻¹' s), ⟨mt ?_ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
   rw [← seqClosure_eq_closure]
   rintro ⟨u, hus, hu⟩
   exact hsc.mem_of_tendsto (h u hu) (eventually_of_forall hus)
@@ -143,8 +143,8 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
   refine ⟨fun s x hcx => ?_⟩
   by_cases hx : x ∈ s;
   · exact subset_seqClosure hx
-  · obtain ⟨u, hux, hus⟩ : ∃ u : ℕ → X, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s
-    · simpa only [ContinuousAt, hx, tendsto_nhds_true, (· ∘ ·), ← not_frequently, exists_prop,
+  · obtain ⟨u, hux, hus⟩ : ∃ u : ℕ → X, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s := by
+      simpa only [ContinuousAt, hx, tendsto_nhds_true, (· ∘ ·), ← not_frequently, exists_prop,
         ← mem_closure_iff_frequently, hcx, imp_false, not_forall, not_not, not_false_eq_true,
         not_true_eq_false] using h (· ∉ s) x
     rcases extraction_of_frequently_atTop hus with ⟨φ, φ_mono, hφ⟩
@@ -290,10 +290,10 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
     simp only [not_subset, mem_iUnion₂, not_exists, exists_prop] at h
     simpa only [forall_and, forall_mem_image, not_and] using seq_of_forall_finite_exists h
-  refine' ⟨u, u_in, fun x _ φ hφ huφ => _⟩
-  obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V
-  · exact huφ.cauchySeq.mem_entourage V_in
-  · exact hu (φ <| N + 1) (φ N) (hφ <| lt_add_one N) (hN (N + 1) N N.le_succ le_rfl)
+  refine ⟨u, u_in, fun x _ φ hφ huφ => ?_⟩
+  obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V :=
+    huφ.cauchySeq.mem_entourage V_in
+  exact hu (φ <| N + 1) (φ N) (hφ <| lt_add_one N) (hN (N + 1) N N.le_succ le_rfl)
 #align is_seq_compact.totally_bounded IsSeqCompact.totallyBounded
 
 variable [IsCountablyGenerated (𝓤 X)]
@@ -324,8 +324,8 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
       ⟨N, fun m hm n hn => hWV' _ <| @htW N (_, _) ⟨ht_anti hm (hu _), ht_anti hn (hu _)⟩⟩
   rcases hs.exists_tendsto (fun n => hts n (hu n)) huc with ⟨x, hxs, hx⟩
   refine ⟨x, hxs, (nhds_basis_uniformity' hV.toHasBasis).ge_iff.2 fun N _ => ?_⟩
-  obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ ball x (W N)
-  · exact ((eventually_ge_atTop N).and (hx <| ball_mem_nhds x (hW N))).exists
+  obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ ball x (W N) :=
+    ((eventually_ge_atTop N).and (hx <| ball_mem_nhds x (hW N))).exists
   refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, hn, htW N ?_⟩
   exact ⟨ht_anti hNn (hu n), ht_anti hNn hy⟩
 #align is_seq_compact.is_complete IsSeqCompact.isComplete
@@ -335,7 +335,7 @@ protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
   isCompact_iff_totallyBounded_isComplete.2 ⟨hs.totallyBounded, hs.isComplete⟩
 #align is_seq_compact.is_compact IsSeqCompact.isCompact
 
-/-- A version of Bolzano-Weistrass: in a uniform space with countably generated uniformity filter
+/-- A version of Bolzano-Weierstrass: in a uniform space with countably generated uniformity filter
 (e.g., in a metric space), a set is compact if and only if it is sequentially compact. -/
 protected theorem UniformSpace.isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩

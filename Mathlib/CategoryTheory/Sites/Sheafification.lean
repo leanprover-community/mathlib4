@@ -222,4 +222,12 @@ instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit
   NatIso.isIso_of_isIso_app _
 #align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
+variable (J D)
+
+/-- The natural isomorphism `𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D`. -/
+@[simps!]
+noncomputable def sheafificationNatIso :
+    𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D :=
+  NatIso.ofComponents (fun P => sheafificationIso P) (by aesop_cat)
+
 end CategoryTheory

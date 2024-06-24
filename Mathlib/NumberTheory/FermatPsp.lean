@@ -92,7 +92,7 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
     -- Since `k` divides `b`, `k` also divides any power of `b` except `b ^ 0`. Therefore, it
     -- suffices to show that `n - 1` isn't zero. However, we know that `n - 1` isn't zero because we
     -- assumed `2 ≤ n` when doing `by_cases`.
-    refine' dvd_of_mul_right_dvd (dvd_pow_self (k * j) _)
+    refine dvd_of_mul_right_dvd (dvd_pow_self (k * j) ?_)
     omega
   -- If `n = 1`, then it follows trivially that `n` is coprime with `b`.
   · rw [show n = 1 by omega]
@@ -125,7 +125,7 @@ theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : 
 /-- All composite numbers are Fermat pseudoprimes to base 1.
 -/
 theorem fermatPsp_base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatPsp n 1 := by
-  refine' ⟨show n ∣ 1 ^ (n - 1) - 1 from _, h₂, h₁⟩
+  refine ⟨show n ∣ 1 ^ (n - 1) - 1 from ?_, h₂, h₁⟩
   exact show 0 = 1 ^ (n - 1) - 1 by
     set_option tactic.skipAssignedInstances false in norm_num ▸ dvd_zero n
 #align fermat_psp.base_one Nat.fermatPsp_base_one
@@ -222,7 +222,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     simpa only [one_pow, pow_mul] using nat_sub_dvd_pow_sub_pow _ 1 p
   -- We know that `A * B` is not prime, and that `1 < A * B`. Since two conditions of being
   -- pseudoprime are satisfied, we only need to show that `A * B` is probable prime to base `b`
-  refine' ⟨_, AB_not_prime, hi_AB⟩
+  refine ⟨?_, AB_not_prime, hi_AB⟩
   -- Used to prove that `2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1)`.
   have ha₁ : (b ^ 2 - 1) * (A * B - 1) = b * (b ^ (p - 1) - 1) * (b ^ p + b) := by
     apply_fun fun x => x * (b ^ 2 - 1) at AB_id
@@ -371,7 +371,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
 
 theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.atTop, FermatPsp n b := by
   -- Based on the proof of `Nat.frequently_atTop_modEq_one`
-  refine' Filter.frequently_atTop.2 fun n => _
+  refine Filter.frequently_atTop.2 fun n => ?_
   obtain ⟨p, hp⟩ := exists_infinite_pseudoprimes h n
   exact ⟨p, hp.2, hp.1⟩
 #align fermat_psp.frequently_at_top_fermat_psp Nat.frequently_atTop_fermatPsp
