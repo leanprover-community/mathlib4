@@ -103,11 +103,11 @@ class PreservesEffectiveEpiFamilies (F : C ⥤ D) : Prop where
   A functor preserves effective epimorphic families if it maps effective epimorphic families to
   effective epimorphic families.
   -/
-  preserves : ∀ {α : Type*} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π],
+  preserves : ∀ {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π],
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))
 
-instance map_effectiveEpiFamily (F : C ⥤ D) [F.PreservesEffectiveEpiFamilies]
-    {α : Type*} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π] :
+instance map_effectiveEpiFamily (F : C ⥤ D) [PreservesEffectiveEpiFamilies.{u} F]
+    {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π] :
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) :=
   PreservesEffectiveEpiFamilies.preserves X π
 
@@ -128,7 +128,8 @@ instance map_finite_effectiveEpiFamily (F : C ⥤ D) [F.PreservesFiniteEffective
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) :=
   PreservesFiniteEffectiveEpiFamilies.preserves X π
 
-instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesFiniteEffectiveEpiFamilies F where
+instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies.{0} F] :
+    PreservesFiniteEffectiveEpiFamilies F where
   preserves _ _ := inferInstance
 
 instance (F : C ⥤ D) [PreservesFiniteEffectiveEpiFamilies F] : PreservesEffectiveEpis F where
@@ -191,7 +192,8 @@ lemma finite_effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsFiniteEffectiveEpi
     EffectiveEpiFamily X π :=
   ReflectsFiniteEffectiveEpiFamilies.reflects X π h
 
-instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsFiniteEffectiveEpiFamilies F where
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{0} F] :
+    ReflectsFiniteEffectiveEpiFamilies F where
   reflects _ _ h := by
     have := F.effectiveEpiFamily_of_map _ _ h
     infer_instance

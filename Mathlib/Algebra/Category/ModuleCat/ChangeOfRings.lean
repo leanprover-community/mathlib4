@@ -50,7 +50,7 @@ open CategoryTheory Limits
 
 namespace ModuleCat
 
-universe v u₁ u₂ u₃
+universe v u₁ u₂ u₃ w
 
 namespace RestrictScalars
 
@@ -619,11 +619,11 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
 #align category_theory.Module.restrict_coextend_scalars_adj ModuleCat.restrictCoextendScalarsAdj
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    (restrictScalars f).IsLeftAdjoint  :=
+    (restrictScalars.{max u₂ w} f).IsLeftAdjoint  :=
   (restrictCoextendScalarsAdj f).isLeftAdjoint
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    (coextendScalars f).IsRightAdjoint  :=
+    (coextendScalars.{u₁, u₂, max u₂ w} f).IsRightAdjoint  :=
   (restrictCoextendScalarsAdj f).isRightAdjoint
 
 namespace ExtendRestrictScalarsAdj
@@ -858,11 +858,11 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
 #align category_theory.Module.extend_restrict_scalars_adj ModuleCat.extendRestrictScalarsAdj
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    (extendScalars f).IsLeftAdjoint :=
+    (extendScalars.{u₁, u₂, max u₂ w} f).IsLeftAdjoint :=
   (extendRestrictScalarsAdj f).isLeftAdjoint
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    (restrictScalars f).IsRightAdjoint :=
+    (restrictScalars.{max u₂ w, u₁, u₂} f).IsRightAdjoint :=
   (extendRestrictScalarsAdj f).isRightAdjoint
 
 noncomputable instance preservesLimitRestrictScalars

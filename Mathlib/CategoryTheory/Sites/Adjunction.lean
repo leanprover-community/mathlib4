@@ -20,10 +20,10 @@ namespace CategoryTheory
 
 open GrothendieckTopology CategoryTheory Limits Opposite
 
-universe v u
+universe v₁ v₂ u₁ u₂
 
-variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable {D : Type*} [Category D]
+variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
+variable {D : Type u₂} [Category.{v₂} D]
 variable {E : Type*} [Category E]
 variable {F : D ⥤ E} {G : E ⥤ D}
 variable [HasWeakSheafify J D]
@@ -116,24 +116,24 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 
 section ForgetToType
 
-variable [ConcreteCategory D] [HasSheafCompose J (forget D)]
+variable [ConcreteCategory.{max u₁ v₁, v₂, u₂} D] [HasSheafCompose.{v₁, v₂, max u₁ v₁, u₁, u₂, (max u₁ v₁) + 1} J (forget.{max u₁ v₁, v₂, u₂} D)]
 
 /-- This is the functor sending a sheaf of types `X` to the sheafification of `X ⋙ G`. -/
-abbrev composeAndSheafifyFromTypes (G : Type max v u ⥤ D) : SheafOfTypes J ⥤ Sheaf J D :=
+abbrev composeAndSheafifyFromTypes (G : Type max v₁ u₁ ⥤ D) : SheafOfTypes J ⥤ Sheaf J D :=
   (sheafEquivSheafOfTypes J).inverse ⋙ composeAndSheafify _ G
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_and_sheafify_from_types CategoryTheory.Sheaf.composeAndSheafifyFromTypes
 
 /-- A variant of the adjunction between sheaf categories, in the case where the right adjoint
 is the forgetful functor to sheaves of types. -/
-def adjunctionToTypes {G : Type max v u ⥤ D} (adj : G ⊣ forget D) :
+def adjunctionToTypes {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
     composeAndSheafifyFromTypes J G ⊣ sheafForget J :=
   (sheafEquivSheafOfTypes J).symm.toAdjunction.comp (adjunction J adj)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types CategoryTheory.Sheaf.adjunctionToTypes
 
 @[simp]
-theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
+theorem adjunctionToTypes_unit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D)
     (Y : SheafOfTypes J) :
     ((adjunctionToTypes J adj).unit.app Y).val =
       (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
@@ -145,7 +145,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
 
 @[simp]
-theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
+theorem adjunctionToTypes_counit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D)
     (X : Sheaf J D) :
     ((adjunctionToTypes J adj).counit.app X).val =
       sheafifyLift J ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
@@ -159,10 +159,7 @@ theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ f
     NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
   simp
 
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction_to_types_counit_app_val CategoryTheory.Sheaf.adjunctionToTypes_counit_app_val
-
-instance [(forget D).IsRightAdjoint ] : (sheafForget J : Sheaf J D ⥤ _).IsRightAdjoint  :=
+instance [(forget D).IsRightAdjoint] : (sheafForget (D := D) J).IsRightAdjoint :=
   (adjunctionToTypes J (Adjunction.ofIsRightAdjoint (forget D))).isRightAdjoint
 
 end ForgetToType

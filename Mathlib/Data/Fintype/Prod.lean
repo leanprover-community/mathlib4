@@ -85,14 +85,14 @@ instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivia
 #align pi.infinite_of_left Pi.infinite_of_left
 
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/
-theorem Pi.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite <| π i]
+theorem Pi.infinite_of_exists_right {ι : Sort _} {π : ι → Sort _} (i : ι) [Infinite <| π i]
     [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) :=
   let ⟨m⟩ := @Pi.instNonempty ι π _
   Infinite.of_injective _ (update_injective m i)
 #align pi.infinite_of_exists_right Pi.infinite_of_exists_right
 
 /-- See `Pi.infinite_of_exists_right` for the case that only one `π i` is infinite. -/
-instance Pi.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, Infinite <| π i] [Nonempty ι] :
+instance Pi.infinite_of_right {ι : Sort _} {π : ι → Type _} [∀ i, Infinite <| π i] [Nonempty ι] :
     Infinite (∀ i : ι, π i) :=
   Pi.infinite_of_exists_right (Classical.arbitrary ι)
 #align pi.infinite_of_right Pi.infinite_of_right
@@ -103,7 +103,8 @@ instance Function.infinite_of_left {ι π : Sort _} [Nontrivial π] [Infinite ι
 #align function.infinite_of_left Function.infinite_of_left
 
 /-- Non-dependent version of `Pi.infinite_of_exists_right` and `Pi.infinite_of_right`. -/
-instance Function.infinite_of_right {ι π : Sort _} [Infinite π] [Nonempty ι] : Infinite (ι → π) :=
+instance Function.infinite_of_right {ι : Sort _} {π : Type _} [Infinite π] [Nonempty ι] :
+    Infinite (ι → π) :=
   Pi.infinite_of_right
 #align function.infinite_of_right Function.infinite_of_right
 
