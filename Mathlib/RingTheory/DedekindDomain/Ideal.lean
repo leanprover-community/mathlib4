@@ -240,16 +240,14 @@ lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
   rw [Ideal.one_eq_top, Submodule.map_top, one_eq_range]
 
 lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := by
-  by_cases hI : I = ⊥
-  · rw [hI, bot_eq_zero, num_zero_eq <| NoZeroSMulDivisors.algebraMap_injective R₁ K, zero_mul]
+  by_cases hI : I = 0
+  · rw [hI, num_zero_eq <| NoZeroSMulDivisors.algebraMap_injective R₁ K, zero_mul]
     rfl
   · rw [mul_comm, ← den_mul_self_eq_num']
     exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
 
-lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ := by
-  have : coeIdeal I.num ≠ 0 := (coeIdeal_ne_zero (K := K)).2 (hI ∘ num_eq_zero_iff.1)
-  rw [← bot_eq_zero] at this
-  exact lt_of_lt_of_le this.bot_lt I.num_le_mul_inv
+lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ :=
+  lt_of_lt_of_le (coeIdeal_ne_zero.2 (hI ∘ num_eq_zero_iff.1)).bot_lt I.num_le_mul_inv
 
 noncomputable instance : InvOneClass (FractionalIdeal R₁⁰ K) := { inv_one := div_one }
 
