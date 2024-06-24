@@ -70,7 +70,7 @@ the next `nth_rewrite` with `h` rewrites this `a`.
 /-
 a b: ℕ
 h: a = a + b
-⊢ a + a + (a + b) + a + a = 0
+⊢ a + a + (a + b + b) + a + a = 0
 -/
 ```
 This new instance of `a` also turns out to be the third _occurrence_ of `a`.  Therefore,
