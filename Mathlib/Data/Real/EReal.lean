@@ -810,7 +810,6 @@ theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
 
 /--For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
 if and only if `x` is not `⊥`.-/
-@[simp]
 theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
   constructor <;> intro h
   · by_contra h'
@@ -828,7 +827,6 @@ theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
 
 /--For any extended real number `x`, the sum of `x` and `⊤` is equal to `⊤`
 if and only if `x` is not `⊥`.-/
-@[simp]
 theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by
   constructor <;> intro h
   · by_contra h'
@@ -1134,6 +1132,7 @@ theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
 #align ereal.top_mul_of_pos EReal.top_mul_of_pos
 
 /--The product of two positive extended real numbers is positive.-/
+@[simp]
 theorem mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
   induction' a using EReal.rec with a
   · exfalso; exact not_lt_bot ha
