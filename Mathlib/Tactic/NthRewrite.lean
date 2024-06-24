@@ -55,8 +55,8 @@ h: a = a + b
 ⊢ a + a + (a + b + b) + a + a = 0
 -/
 ```
-Here, the first `nth_rewrite` with `h` introduces an additional occurrence of `a` in the goal. That is,
-the goal state after the first rewrite looks like below
+Here, the first `nth_rewrite` with `h` introduces an additional occurrence of `a` in the goal.
+That is, the goal state after the first rewrite looks like below
 ```lean
 /-
 a b: ℕ
