@@ -503,7 +503,7 @@ instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
     (f : X ⟶ Z) (g : Y ⟶ Z) [IsAffine X] [IsAffine Y] [IsAffine Z] :
     IsAffine (pullback f g) :=
   isAffine_of_isIso
-    (pullback.map f g (SpecMap (Γ.map f.op)) (SpecMap (Γ.map g.op))
+    (pullback.map f g (Spec.map (Γ.map f.op)) (Spec.map (Γ.map g.op))
         (ΓSpec.adjunction.unit.app X) (ΓSpec.adjunction.unit.app Y) (ΓSpec.adjunction.unit.app Z)
         (ΓSpec.adjunction.unit.naturality f) (ΓSpec.adjunction.unit.naturality g) ≫
       (PreservesPullback.iso Scheme.Spec _ _).inv)
