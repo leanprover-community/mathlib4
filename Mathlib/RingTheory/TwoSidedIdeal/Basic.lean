@@ -26,6 +26,10 @@ open MulOpposite
 
 section definitions
 
+/--
+A two-sided ideal of a ring `R` is a subset of `R` that contains `0` and is closed under addition,
+negation, and absorbs multiplication on both sides.
+-/
 abbrev TwoSidedIdeal (R : Type*) [NonUnitalNonAssocRing R] := RingCon R
 
 end definitions
@@ -119,3 +123,5 @@ instance addCommGroup : AddCommGroup I :=
 end NonUnitalNonAssocRing
 
 end TwoSidedIdeal
+
+#lint
