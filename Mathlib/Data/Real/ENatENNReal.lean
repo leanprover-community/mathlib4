@@ -118,7 +118,7 @@ theorem toENNReal_max (m n : ℕ∞) : ↑(max m n) = (max m n : ℝ≥0∞) :=
 
 @[simp]
 theorem toENNReal_sub (m n : ℕ∞) : ↑(m - n) = (m - n : ℝ≥0∞) :=
-  WithTop.map_sub Nat.cast_tsub Nat.cast_zero m n
+  WithTop.map_sub Nat.cast_tsub (by exact Nat.cast_zero) m n
 #align enat.coe_ennreal_sub ENat.toENNReal_sub
 
 end ENat
