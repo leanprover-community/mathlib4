@@ -820,7 +820,7 @@ theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
     case h_top => rfl
     case h_real r => exact top_add_of_ne_bot h
 
-/--For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`.-/
+/-- For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`. -/
 @[simp]
 theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
   rw [add_comm, top_add_of_ne_bot h]
