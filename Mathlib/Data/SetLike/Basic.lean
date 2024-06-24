@@ -102,14 +102,17 @@ class SetLike (A : Type*) (B : outParam Type*) where
 #align set_like SetLike
 
 attribute [coe] SetLike.coe
+
 namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
-instance (priority := 100) instMembership : Membership B A :=
-  ⟨fun x p => x ∈ (p : Set B)⟩
+/-- Membership for `SetLike A B` is defined as membership in the image of `SetLike.coe`. -/
+@[reducible] protected def Mem (x : B) (p : A) : Prop := x ∈ (p : Set B)
+
+instance (priority := 100) instMembership : Membership B A := ⟨SetLike.Mem⟩
 
 instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩
