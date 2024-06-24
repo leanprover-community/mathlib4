@@ -308,6 +308,19 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
 
 end
 
+/-- A structure on an Oplax natural transformation that promotes it to a strong natural
+transformation.
+
+See `StrongNatTrans.mkOfOplax`. -/
+structure StrongCore {F G : OplaxFunctor B C} (η : OplaxNatTrans F G) where
+  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
+  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
+
+attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.StrongCore.naturality
+  CategoryTheory.OplaxNatTrans.StrongCore.naturality_hom
+
+attribute [simp] StrongCore.naturality_hom
+
 end OplaxNatTrans
 
 end CategoryTheory
