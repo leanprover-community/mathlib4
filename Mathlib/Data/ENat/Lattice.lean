@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.ENat.Basic
+import Mathlib.Order.CompletePartialOrder
 
 #align_import data.enat.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -47,20 +48,8 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 
 variable {s : Set ℕ∞}
 
-lemma sSup_eq_zero : sSup s = 0 ↔ s = {0} ∨ s = ∅ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← bot_eq_zero, sSup_eq_bot, bot_eq_zero] at h
-    by_cases h' : s = ∅
-    · apply Or.inr h'
-    · apply Or.inl
-      ext x
-      refine ⟨h x, fun hx ↦ ?_⟩
-      subst hx
-      obtain ⟨u, hu⟩ := nonempty_def.mp <| nonempty_iff_ne_empty.mpr h'
-      exact h u hu ▸ hu
-  · cases' h with h h
-    · exact h ▸ sSup_singleton
-    · exact h ▸ sSup_empty
+lemma sSup_eq_zero : sSup s = 0 ↔ s = ∅ ∨ s = {0} := by
+  rw [← bot_eq_zero, sSup_eq_bot']
 
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
   refine ⟨fun h ↦ ?_, inf_eq_bot_of_bot_mem⟩

@@ -55,9 +55,6 @@ instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}
 
-lemma bot_eq_zero : ⊥ = (0 : ℕ∞) :=
-  rfl
-
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
 @[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
@@ -248,8 +245,8 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   one_le_iff_pos.trans pos_iff_ne_zero
 #align enat.one_le_iff_ne_zero ENat.one_le_iff_ne_zero
 
-lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 := by
-  rw [← not_le, one_le_iff_ne_zero.not, not_not]
+lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
+  not_le.symm.trans one_le_iff_ne_zero.not_left
 
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
