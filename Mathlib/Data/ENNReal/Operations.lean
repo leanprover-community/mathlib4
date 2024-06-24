@@ -219,7 +219,7 @@ theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 #align ennreal.top_mul_top ENNReal.top_mul_top
 
 -- Porting note (#11215): TODO: assume `n ≠ 0` instead of `0 < n`
-theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ∞) ^ n = ⊤ := WithTop.top_pow n_pos
+theorem top_pow {n : ℕ} (n_pos : 0 < n) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow n_pos
 #align ennreal.top_pow ENNReal.top_pow
 
 theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
