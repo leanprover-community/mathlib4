@@ -209,6 +209,8 @@ theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
   swap_injective.eq_iff
 #align prod.swap_inj Prod.swap_inj
 
+theorem map_comp_swap (f g : α → α) : Prod.map f g ∘ Prod.swap = Prod.swap ∘ Prod.map g f := rfl
+
 theorem eq_iff_fst_eq_snd_eq : ∀ {p q : α × β}, p = q ↔ p.1 = q.1 ∧ p.2 = q.2
   | ⟨p₁, p₂⟩, ⟨q₁, q₂⟩ => by simp
 #align prod.eq_iff_fst_eq_snd_eq Prod.eq_iff_fst_eq_snd_eq
