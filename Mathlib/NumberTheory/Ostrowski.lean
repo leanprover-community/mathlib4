@@ -34,33 +34,28 @@ open Int
 variable {f g : MulRingNorm ℚ}
 
 /-- Values of a multiplicative norm of the rationals coincide on ℕ if and only if they coincide
-on ℤ. -/
-lemma eq_on_Nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
+on `ℤ`. -/
+lemma eq_on_nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ a n⟩
   obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;>
   simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map, h n]
 
 /-- Values of a multiplicative norm of the rationals are determined by the values on the natural
 numbers. -/
-lemma eq_on_Nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
+lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
   refine ⟨fun h ↦ ?_, fun h n ↦ congrFun (congrArg DFunLike.coe h) ↑n⟩
   ext z
-  rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_Nat_iff_eq_on_Int.mp h]
+  rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_nat_iff_eq_on_Int.mp h]
 
 /-- The equivalence class of a multiplicative norm on the rationals is determined by its values on
 the natural numbers. -/
-lemma equiv_on_Nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n)^c = g n)) ↔
+lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n) ^ c = g n)) ↔
     f.equiv g := by
     refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, ?_⟩⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, fun n ↦ by rw [← h]⟩⟩⟩
     ext x
     rw [← Rat.num_div_den x, map_div₀, map_div₀, Real.div_rpow (apply_nonneg f _)
       (apply_nonneg f _), h x.den, ← MulRingNorm.apply_natAbs_eq,← MulRingNorm.apply_natAbs_eq,
       h (natAbs x.num)]
-
-/-!
-Throughout this file, `f` is an arbitrary absolute value.
--/
-variable {f : MulRingNorm ℚ}
 
 open Rat.MulRingNorm
 
@@ -95,7 +90,7 @@ lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ 
   -- There is a positive integer with absolute value different from one.
   obtain ⟨n, hn1, hn2⟩ : ∃ n : ℕ, n ≠ 0 ∧ f n ≠ 1 := by
     contrapose! hf_nontriv
-    rw [← eq_on_Nat_iff_eq]
+    rw [← eq_on_nat_iff_eq]
     intro n
     rcases eq_or_ne n 0 with rfl | hn0
     · simp only [Nat.cast_zero, map_zero]
@@ -107,7 +102,7 @@ lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ 
 
 -- ## Step 2: p is prime
 
-variable (p : ℕ) (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
+variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
 
  /-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
 lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
@@ -145,7 +140,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   obtain ⟨a, b, bezout⟩ : IsCoprime (p ^ k : ℤ) (m ^ k) := by
     apply IsCoprime.pow (Nat.Coprime.isCoprime _)
     exact (Nat.Prime.coprime_iff_not_dvd
-      (is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one p hp0 hp1 hmin)).2 hpm
+      (is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin)).2 hpm
   have le_half {x} (hx0 : 0 < x) (hx1 : x < 1) (hxM : x ≤ M) : x ^ k < 1 / 2 := by
     calc
     x ^ k = x ^ (k : ℝ) := (rpow_natCast x k).symm
@@ -180,7 +175,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
 
 /-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
 lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
-  have pprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one p hp0 hp1 hmin
+  have pprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin
   refine ⟨- logb p (f p), Left.neg_pos_iff.2 <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
   rw [neg_neg]
   refine (rpow_logb (mod_cast pprime.pos) ?_ hp0).symm
@@ -193,11 +188,11 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
 theorem mulRingNorm_equiv_padic_of_bounded :
     ∃ p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
-  have hprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one p hfp.1 hfp.2 hmin
+  have hprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact (p.Prime) := ⟨hprime⟩
   use p, hprime_fact
-  obtain ⟨t, h⟩ := exists_pos_mulRingNorm_eq_pow_neg p hfp.1 hfp.2 hmin
-  rw [← equiv_on_Nat_iff_equiv]
+  obtain ⟨t, h⟩ := exists_pos_mulRingNorm_eq_pow_neg hfp.1 hfp.2 hmin
+  rw [← equiv_on_nat_iff_equiv]
   refine ⟨t⁻¹, by simp only [inv_pos, h.1], fun n ↦ ?_⟩
   have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
   rcases eq_or_ne n 0 with rfl | hn -- Separate cases n=0 and n ≠ 0
@@ -207,7 +202,7 @@ theorem mulRingNorm_equiv_padic_of_bounded :
     rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hprime.ne_one with ⟨e, m, hpm, rfl⟩
     simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, mulRingNorm_eq_padic_norm,
       padicNorm.padicNorm_p_of_prime, Rat.cast_inv, Rat.cast_natCast, inv_pow,
-      mulRingNorm_eq_one_of_not_dvd bdd p hfp.1 hfp.2 hmin hpm, h.2]
+      mulRingNorm_eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hpm, h.2]
     rw [← padicNorm.nat_eq_one_iff] at hpm
     simp only [← rpow_natCast, p.cast_nonneg, ← rpow_mul, mul_one, ← rpow_neg, hpm, cast_one]
     congr
