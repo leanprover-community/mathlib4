@@ -80,10 +80,8 @@ instance bicategory : Bicategory.{w₁, v} (InducedBicategory C F) where
     apply eqToHom (F.map_comp f g) ≫ ((F.map f) ◁ η) ≫ eqToHom (F.map_comp f h).symm
   whiskerRight {a b c f g} η h := by
     apply eqToHom (F.map_comp f h) ≫ (η ▷(F.map h)) ≫ eqToHom (F.map_comp g h).symm
-  associator f g h := by
-    apply eqToIso (show
-        F.map ((f ≫ g) ≫ h) = (F.map f ≫ F.map g) ≫ F.map h by simp [F.map_comp]) ≪≫
-      α_ (F.map f) (F.map g) (F.map h) ≪≫ eqToIso (show F.map f ≫ F.map g ≫ F.map h = F.map (f ≫ g ≫ h) by simp [F.map_comp])
+  associator f g h :=
+    { α_ (F.map f) (F.map g) (F.map h) with }
   leftUnitor := sorry
   rightUnitor := sorry
   whiskerLeft_id := sorry
