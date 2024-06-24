@@ -14,7 +14,7 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Transvections
 
-Transvections are matrices of the form `1 + StdBasisMatrix i j c`, where `StdBasisMatrix i j c`
+Transvections are matrices of the form `1 + stdBasisMatrix i j c`, where `stdBasisMatrix i j c`
 is the basic matrix with a `c` at position `(i, j)`. Multiplying by such a transvection on the left
 (resp. on the right) amounts to adding `c` times the `j`-th row to the `i`-th row
 (resp `c` times the `i`-th column to the `j`-th column). Therefore, they are useful to present
@@ -29,7 +29,7 @@ form by operations on its rows and columns, a variant of Gauss' pivot algorithm.
 
 ## Main definitions and results
 
-* `Transvection i j c` is the matrix equal to `1 + StdBasisMatrix i j c`.
+* `transvection i j c` is the matrix equal to `1 + stdBasisMatrix i j c`.
 * `TransvectionStruct n R` is a structure containing the data of `i, j, c` and a proof that
   `i ≠ j`. These are often easier to manipulate than straight matrices, especially in inductive
   arguments.
@@ -75,9 +75,9 @@ section Transvection
 
 variable {R n} (i j : n)
 
-/-- The transvection matrix `Transvection i j c` is equal to the identity plus `c` at position
-`(i, j)`. Multiplying by it on the left (as in `Transvection i j c * M`) corresponds to adding
-`c` times the `j`-th line of `M` to its `i`-th line. Multiplying by it on the right corresponds
+/-- The transvection matrix `transvection i j c` is equal to the identity plus `c` at position
+`(i, j)`. Multiplying by it on the left (as in `transvection i j c * M`) corresponds to adding
+`c` times the `j`-th row of `M` to its `i`-th row. Multiplying by it on the right corresponds
 to adding `c` times the `i`-th column to the `j`-th column. -/
 def transvection (c : R) : Matrix n n R :=
   1 + Matrix.stdBasisMatrix i j c

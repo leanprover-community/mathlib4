@@ -59,7 +59,7 @@ theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r
   · rw [closedBall_eq_empty.2 hr, Icc_eq_empty_of_lt]
     calc ⌊(x : ℝ) + r⌋₊ ≤ ⌊(x : ℝ)⌋₊ := floor_mono <| by linarith
     _ < ⌈↑x - r⌉₊ := by
-      rw [floor_coe, Nat.lt_ceil]
+      rw [floor_natCast, Nat.lt_ceil]
       linarith
 #align nat.closed_ball_eq_Icc Nat.closedBall_eq_Icc
 

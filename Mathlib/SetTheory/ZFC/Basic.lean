@@ -59,7 +59,6 @@ respectively as "`Set`" and "ZFC set".
 Prove `ZFSet.mapDefinableAux` computably.
 -/
 
--- Porting note: Lean 3 uses `Set` for `ZFSet`.
 set_option linter.uppercaseLean3 false
 
 universe u v
@@ -385,7 +384,7 @@ instance : Insert PSet PSet :=
 instance : Singleton PSet PSet :=
   ⟨fun s => insert s ∅⟩
 
-instance : IsLawfulSingleton PSet PSet :=
+instance : LawfulSingleton PSet PSet :=
   ⟨fun _ => rfl⟩
 
 instance (x y : PSet) : Inhabited (insert x y).Type :=
@@ -844,7 +843,7 @@ instance : Insert ZFSet ZFSet :=
 instance : Singleton ZFSet ZFSet :=
   ⟨fun x => insert x ∅⟩
 
-instance : IsLawfulSingleton ZFSet ZFSet :=
+instance : LawfulSingleton ZFSet ZFSet :=
   ⟨fun _ => rfl⟩
 
 @[simp]

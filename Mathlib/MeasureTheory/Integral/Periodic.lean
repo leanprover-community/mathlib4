@@ -65,9 +65,9 @@ noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
   { QuotientAddGroup.measurableSpace _ with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
 #align add_circle.measure_space AddCircle.measureSpace
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
-@[simp, nolint simpNF]
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma. -/
+@[simp]
 protected theorem measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal.ofReal T := by
   dsimp [volume]
   rw [← PositiveCompacts.coe_top]
