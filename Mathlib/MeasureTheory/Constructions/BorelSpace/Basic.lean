@@ -501,6 +501,7 @@ instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is measurable. -/
+@[fun_prop]
 theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f :=
   hf.borel_measurable.mono OpensMeasurableSpace.borel_le (le_of_eq <| BorelSpace.measurable_eq)
 #align continuous.measurable Continuous.measurable
@@ -594,6 +595,7 @@ theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
   f.continuous.measurable
 #align continuous_map.measurable ContinuousMap.measurable
 
+@[fun_prop]
 theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
     (hf : ContinuousOn f {a}ᶜ) : Measurable f :=
   measurable_of_measurable_on_compl_singleton a

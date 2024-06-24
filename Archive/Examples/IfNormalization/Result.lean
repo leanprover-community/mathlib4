@@ -29,16 +29,6 @@ attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjo
   List.disjoint
 
 /-!
-Adding these lemmas to the simp set allows Lean to handle the termination proof automatically.
--/
-attribute [local simp] Nat.lt_add_one_iff le_add_of_le_right max_add_add_right max_mul_mul_left
-
-/-!
-Some further simp lemmas for handling if-then-else statements.
--/
-attribute [local simp] apply_ite ite_eq_iff'
-
-/-!
 Simp lemmas for `eval`.
 We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we know the shape of `i`.
 -/
@@ -58,7 +48,6 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
   | var _ => 1
   | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
 
-set_option tactic.skipAssignedInstances false in
 /-- Normalizes the expression at the same time as assigning all variables in
 `e` to the literal booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
@@ -82,7 +71,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp? says simp only [apply_ite, eval_ite_var, Option.elim, ite_eq_iff']
+          simp only [apply_ite, eval_ite_var]
           cases hfv : f v
           · simp_all
             congr
