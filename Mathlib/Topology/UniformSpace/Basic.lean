@@ -1124,9 +1124,9 @@ nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : �
 then its `n`-th iterate `T^[n]` is also uniformly continuous.-/
 theorem UniformContinuous.iterate [UniformSpace β] (T : β → β) (n : ℕ) (h : UniformContinuous T) :
     UniformContinuous T^[n] := by
-  induction' n with n hn
-  · exact uniformContinuous_id
-  · exact Function.iterate_succ _ _ ▸ UniformContinuous.comp hn h
+  induction n with
+  | zero => exact uniformContinuous_id
+  | succ n hn => exact Function.iterate_succ _ _ ▸ UniformContinuous.comp hn h
 
 theorem Filter.HasBasis.uniformContinuous_iff {ι'} [UniformSpace β] {p : ι → Prop}
     {s : ι → Set (α × α)} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
