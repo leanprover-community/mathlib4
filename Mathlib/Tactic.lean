@@ -71,7 +71,6 @@ import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Differentiable
 import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Tactic.FunProp.Measurable
 import Mathlib.Tactic.FunProp.Mor
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
 import Mathlib.Tactic.FunProp.StateList
