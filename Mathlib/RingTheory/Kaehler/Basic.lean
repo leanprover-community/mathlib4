@@ -733,6 +733,7 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
   exact IsBaseChange.lift_eq _ _ _
 #align kaehler_differential.map_base_change_tmul KaehlerDifferential.mapBaseChange_tmul
 
+set_option synthInstance.maxHeartbeats 40000 in
 lemma KaehlerDifferential.range_mapBaseChange :
     LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
   apply le_antisymm
