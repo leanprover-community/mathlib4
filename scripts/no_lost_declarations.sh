@@ -132,5 +132,5 @@ instance (priority := high) {to be a nameless} instance :=
 def testingLongDiff1 im a def
 def testingLongDiff2 im a def
 def testingLongDiff3 im a def
-def testingLongDiff4 im a def
+@[trying to fool you] instance. the messing dot
 ReferenceTest
