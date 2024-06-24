@@ -30,6 +30,9 @@ inductive StyleError where
   | copyright (context : Option String)
   /-- Malformed authors line in the copyright header -/
   | authors
+  /-- The bare string "Adaptation note" (or variants thereof): instead, the
+  #adaptation_note command should be used. -/
+  | adaptationNote
   /-- The current file was too large: this error contains the current number of lines
   as well as a size limit (slightly larger). On future runs, this linter will allow this file
   to grow up to this limit. -/
@@ -51,9 +54,11 @@ inductive ErrorFormat
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String := match err with
   | StyleError.copyright (some context) => s!"Malformed or missing copyright header: {context}"
-  | StyleError.copyright none => s!"Malformed or missing copyright header"
+  | StyleError.copyright none => "Malformed or missing copyright header"
   | StyleError.authors =>
     "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
+  | StyleError.adaptationNote =>
+    "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
   | StyleError.fileTooLong current_size size_limit =>
     match style with
     | ErrorFormat.github =>
@@ -68,6 +73,7 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
 def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.copyright _ => "ERR_COP"
   | StyleError.authors => "ERR_AUT"
+  | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.fileTooLong _ _ => "ERR_NUM_LIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -132,6 +138,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- NB: keep this in sync with `normalise` above!
         | "ERR_COP" => some (StyleError.copyright "")
         | "ERR_AUT" => some (StyleError.authors)
+        | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_NUM_LIN" =>
           -- Parse the error message in the script. `none` indicates invalid input.
           match (error_message.get? 0, error_message.get? 3) with
@@ -214,6 +221,17 @@ def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
         output := output.push (StyleError.authors, 4)
   return output
 
+/-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
+def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  let mut lineNumber := 1
+  for line in lines do
+    -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
+    if line.containsSubstr "daptation note" then
+      errors := errors.push (StyleError.adaptationNote, lineNumber)
+    lineNumber := lineNumber + 1
+  return errors
+
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -240,7 +258,9 @@ def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Optio
 end
 
 /-- All text-based linters registered in this file. -/
-def allLinters : Array TextbasedLinter := #[copyrightHeaderLinter]
+def allLinters : Array TextbasedLinter := #[
+    copyrightHeaderLinter, adaptationNoteLinter
+  ]
 
 /-- Read a file, apply all text-based linters and print the formatted errors.
 `sizeLimit` is any pre-existing limit on this file's size.
