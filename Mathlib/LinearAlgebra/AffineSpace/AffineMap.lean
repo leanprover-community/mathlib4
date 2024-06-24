@@ -188,7 +188,6 @@ theorem coe_const (p : P2) : ⇑(const k P1 p) = Function.const P1 p :=
   rfl
 #align affine_map.coe_const AffineMap.coe_const
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem const_apply (p : P2) (q : P1) : (const k P1 p) q = p := rfl
 
