@@ -1,0 +1,12 @@
+/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+
+/-!
+This file only serves the purpose of existing and not being in the import all files.
+-/
+namespace Test
+
+def am_I_needed? : Bool := true
