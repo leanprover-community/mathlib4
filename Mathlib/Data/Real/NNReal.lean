@@ -151,7 +151,7 @@ noncomputable example : Inv ℝ≥0 := by infer_instance
 
 noncomputable example : Div ℝ≥0 := by infer_instance
 
-example : LE ℝ≥0 := by infer_instance
+noncomputable example : LE ℝ≥0 := by infer_instance
 
 example : Bot ℝ≥0 := by infer_instance
 
@@ -433,7 +433,7 @@ noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
 -- will be noncomputable, everything else should not be.
 example : OrderBot ℝ≥0 := by infer_instance
 
-example : PartialOrder ℝ≥0 := by infer_instance
+noncomputable example : PartialOrder ℝ≥0 := by infer_instance
 
 noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 

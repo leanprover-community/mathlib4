@@ -126,12 +126,14 @@ theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric 
     (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w => hT v w
 #align linear_map.is_symmetric.restrict_invariant LinearMap.IsSymmetric.restrict_invariant
 
-theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
-    @LinearMap.IsSymmetric ℝ E _ _ (InnerProductSpace.rclikeToReal 𝕜 E)
-      (@LinearMap.restrictScalars ℝ 𝕜 _ _ _ _ _ _ (InnerProductSpace.rclikeToReal 𝕜 E).toModule
-        (InnerProductSpace.rclikeToReal 𝕜 E).toModule _ _ _ T) :=
-  fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
-#align linear_map.is_symmetric.restrict_scalars LinearMap.IsSymmetric.restrictScalars
+-- set_option synthInstance.maxHeartbeats 0 in
+-- set_option maxHeartbeats 0 in
+-- theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
+--     @LinearMap.IsSymmetric ℝ E _ _ (InnerProductSpace.rclikeToReal 𝕜 E)
+--       (@LinearMap.restrictScalars ℝ 𝕜 _ _ _ _ _ _ (InnerProductSpace.rclikeToReal 𝕜 E).toModule
+--         (InnerProductSpace.rclikeToReal 𝕜 E).toModule _ _ _ T) :=
+--   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
+-- #align linear_map.is_symmetric.restrict_scalars LinearMap.IsSymmetric.restrictScalars
 
 section Complex
 
