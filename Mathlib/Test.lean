@@ -8,3 +8,5 @@ Authors: Damiano Testa
 This file only serves the purpose of existing and not being in the import all files.
 -/
 namespace Test
+
+def am_I_needed? : Bool := true
