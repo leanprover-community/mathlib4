@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.Module.LocalizedModuleIntegers
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.LocalProperties
 
 /-!
@@ -145,3 +146,28 @@ theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
   let f (g : t) : M →ₗ[R] LocalizedModule (Submonoid.powers g.val) M :=
     LocalizedModule.mkLinearMap (Submonoid.powers g.val) M
   of_localizationSpan' t ht f H
+
+end Module.Finite
+
+variable {R : Type u} [CommRing R] {S : Type v} [CommRing S] {f : R →+* S}
+
+/--
+To check that the kernel of a ring homomorphism is finitely generated,
+it suffices to check this after localizing at a spanning set of the source.
+-/
+lemma RingHom.ker_FG_of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
+    (H : ∀ g : t, (RingHom.ker (Localization.awayMap f g.val)).FG) :
+    (RingHom.ker f).FG := by
+  apply Module.Finite.iff_fg.mp
+  have hfin (g : t) :
+    Module.Finite (Localization.Away g.val) (RingHom.ker (Localization.awayMap f g.val)) :=
+      Module.Finite.iff_fg.mpr (H g)
+  have hT (g : t) : Submonoid.map f (Submonoid.powers g.val) = Submonoid.powers (f g.val) :=
+    Submonoid.map_powers f g.val
+  have hy (g : t) : Submonoid.powers g.val ≤ Submonoid.comap f (Submonoid.powers (f g.val)) :=
+    (hT g).symm ▸ Submonoid.le_comap_map (Submonoid.powers g.val)
+  let k (g : t) :=
+    RingHom.toKerIsLocalization (Localization.Away g.val) (Localization.Away (f g.val)) f (hy g)
+  have (g : t) := RingHom.toKerIsLocalization_isLocalizedModule (Localization.Away (f g.val)) f
+    (S := Localization.Away g.val) (hT g)
+  exact Module.Finite.of_localizationSpan' t ht k hfin
