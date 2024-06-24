@@ -51,12 +51,8 @@ theorem isMaximal_iff {K : Subgroup G} :
     · exact hK.ne_top
     · intro H g hKH hgK hgH
       apply (isMaximal_def.1 hK).2
-      rw [← Ne.le_iff_lt]
-      exact hKH
-      · rw [Ne.def]
-        intro z
-        rw [z] at hgK
-        exact hgK hgH
+      rw [lt_iff_le_and_ne]
+      exact ⟨hKH, Ne.symm (ne_of_mem_of_not_mem' hgH hgK)⟩
   · rintro ⟨hG, hmax⟩
     constructor; constructor;
     · assumption
