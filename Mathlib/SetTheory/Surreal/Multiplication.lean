@@ -6,12 +6,6 @@ Authors: Mario Carneiro, Scott Morrison, Violeta Hernández Palacios, Junyan Xu,
 import Mathlib.Logic.Hydra
 import Mathlib.SetTheory.Surreal.Basic
 
-universe u
-
-open SetTheory
-open Game
-open PGame
-
 /-!
 ### Surreal multiplication
 
@@ -70,6 +64,8 @@ and we utilize symmetry (permutation and negation of arguments) to minimize calc
 * [Schleicher, Stoll, *An introduction to Conway's games and numbers*][SchleicherStoll]
 
 -/
+
+universe u
 
 open SetTheory
 open Game
