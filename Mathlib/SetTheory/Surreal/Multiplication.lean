@@ -340,12 +340,11 @@ lemma ih₁₂ : ih24 x₁ x₂ y := by
   · exact (cutExpand_add_left {x₁}).2 (cutExpand_pair_left h)
   · exact (cutExpand_add_left {x₁}).2 (cutExpand_pair_right h)
 
-lemma ih₂₁ : ih24 x₂ x₁ y := ih₁₂ (by
+lemma ih₂₁ : ih24 x₂ x₁ y := ih₁₂ <| by
   simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih' ⊢
   suffices {x₁, y, x₂} = {x₂, y, x₁} by rwa [← this]
   dsimp [← Multiset.singleton_add] at ih' ⊢
   abel
-)
 
 lemma ih4_of_ih : ih4 x₁ x₂ y := by
   refine (fun z w h => ⟨?_, ?_⟩) <;> (
@@ -362,9 +361,8 @@ lemma ih4_of_ih : ih4 x₁ x₂ y := by
   )
 
 lemma numeric_of_ih : (x₁ * y).Numeric ∧ (x₂ * y).Numeric := by
-  constructor <;> (
+  constructor <;>
     refine ih' (Args.P1 _ _) (TransGen.single ?_)
-  )
   exact (cutExpand_add_right {y}).2 $ (cutExpand_add_left {x₁}).2 cutExpand_zero
   exact (cutExpand_add_right {x₂, y}).2 cutExpand_zero
 
