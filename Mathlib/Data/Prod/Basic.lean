@@ -209,7 +209,7 @@ theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
   swap_injective.eq_iff
 #align prod.swap_inj Prod.swap_inj
 
-/--For two functions `f` and `g` of type `α → α`, the composition of `Prod.map f g` with `Prod.swap`
+/--For two functions `f` and `g`, the composition of `Prod.map f g` with `Prod.swap`
 is equal to the composition of `Prod.swap` with `Prod.map g f`.-/
 theorem map_comp_swap (f : α → β) (g : γ → δ) :
     Prod.map f g ∘ Prod.swap = Prod.swap ∘ Prod.map g f := rfl
