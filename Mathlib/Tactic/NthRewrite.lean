@@ -35,20 +35,17 @@ Notice that the second occurrence of `a` from the left has been rewritten by `nt
 If a term `t` is introduced by rewriting with `eqᵢ`, then this instance of `t` will be counted
 as an _occurrence_ of `t` for all subsequent rewrites of `t` with `eqⱼ` for `j > i`. This behaviour
 is illustrated by the example below
-
 ```lean
 example (h : a = a + b) : a + a + a + a + a = 0 := by
-  nth_rewrite 3 [h, h, h, h]
-
+  nth_rewrite 3 [h, h]
 /-
 a b: ℕ
 h: a = a + b
-⊢ a + a + (a + b + b + b + b) + a + a = 0
+⊢ a + a + (a + b + b) + a + a = 0
 -/
 ```
 In this example, the first `nth_rewrite` with `h` introduces an additional occurrence of `a` in
 the goal. That is, the goal state after the first rewrite looks like below
-
 ```lean
 /-
 a b: ℕ
@@ -84,7 +81,6 @@ syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (lo
 `nth_rw` is a variant of `nth_rewrite` that also tries to close the goal by trying `rfl` afterwards.
 `nth_rw n [eq₁, eq₂,..., eqₘ]` will rewrite the `n`ᵗʰ _occurrence_ of each of the `m` equalities
 `eqᵢ`in that order. Occurrences are counted beginning with `1`. For example,
-
 ```lean
 example (h : a = 1) : a + a + a + a + a = 5 := by
   nth_rw 2 [h]
@@ -94,26 +90,22 @@ h: a = 1
 ⊢ a + 1 + a + a + a = 5
 -/
 ```
-
 Notice that the second occurrence of `a` from the left has been rewritten by `nth_rewrite`.
 
 If a term `t` is introduced by rewriting with `eqᵢ`, then this instance of `t` will be counted as an
 _occurrence_ of `t` for all subsequent rewrites of `t` with `eqⱼ` for `j > i`. This behaviour is
 illustrated by the example below
-
 ```lean
 example (h : a = a + b) : a + a + a + a + a = 0 := by
-  nth_rw 3 [h, h, h, h]
+  nth_rw 3 [h, h]
 /-
 a b: ℕ
 h: a = a + b
-⊢ a + a + (a + b + b + b + b) + a + a = 0
+⊢ a + a + (a + b + b) + a + a = 0
 -/
 ```
-
 In this example, the first `nth_rw` with `h` introduces an additional occurrence of `a` in
 the goal. That is, the goal state after the first rewrite looks like below
-
 ```lean
 /-
 a b: ℕ
