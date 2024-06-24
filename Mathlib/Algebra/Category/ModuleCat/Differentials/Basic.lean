@@ -22,9 +22,9 @@ universe v u
 
 open CategoryTheory
 
-namespace ModuleCat
+attribute [local instance] IsScalarTower.of_compHom SMulCommClass.of_commMonoid
 
-attribute [local instance] IsScalarTower.of_compHom
+namespace ModuleCat
 
 variable {A B : CommRingCat.{u}} (M : ModuleCat.{v} B) (f : A ⟶ B)
 
