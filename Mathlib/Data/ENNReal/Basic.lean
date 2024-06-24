@@ -421,7 +421,7 @@ lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 #noalign ennreal.coe_bit1
 
 -- See note [no_index around OfNat.ofNat]
-@[simp, norm_cast] -- Porting note (#10756): new theorem
+@[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
 
