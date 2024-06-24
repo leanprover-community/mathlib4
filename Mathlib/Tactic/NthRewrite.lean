@@ -21,7 +21,7 @@ open Lean Elab Tactic Meta Parser.Tactic
 expression to be rewritten. `nth_rewrite n [eq₁, eq₂, ..., eqₘ]` will rewrite the `n`ᵗʰ _occurrence_
 of each of the `m` equalities `eqᵢ`in that order. Occurrences are counted beginning with `1`.
 If a term `t` is introduced by rewriting with `eqᵢ`, then this instance of `t` will be counted
-as an _occurrence_ of `t`for all subsequent rewrites of `t` with `eqⱼ` for `j > i`.
+as an _occurrence_ of `t` for all subsequent rewrites of `t` with `eqⱼ` for `j > i`.
 
 Note: The occurrences are counted beginning with `1` and not `0`, this is different than in
 mathlib3. The translation will be handled by mathport. -/
