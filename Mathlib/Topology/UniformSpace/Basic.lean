@@ -1120,6 +1120,13 @@ nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : �
   hg.comp hf
 #align uniform_continuous.comp UniformContinuous.comp
 
+theorem uniformContinuous_ite [UniformSpace β] (T : β → β) (n : ℕ) (h : UniformContinuous T) :
+    UniformContinuous T^[n] := by
+  induction' n with n hn
+  · exact uniformContinuous_id
+  · exact Function.iterate_succ _ _ ▸ UniformContinuous.comp hn h
+#align uniform_continuous_ite uniformContinuous_ite
+
 theorem Filter.HasBasis.uniformContinuous_iff {ι'} [UniformSpace β] {p : ι → Prop}
     {s : ι → Set (α × α)} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} :
