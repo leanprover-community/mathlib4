@@ -22,6 +22,15 @@ further linters will be ported in subsequent PRs.
 
 open Lean Elab System
 
+/-- Different kinds of "broad imports" that are linted against. -/
+inductive BroadImports
+  /-- Importing the entire "Mathlib.Tactic" folder -/
+  | TacticFolder
+  /-- Importing any module in `Lake`, unless carefully measured
+  This has caused unexpected regressions in the past. -/
+  | Lake
+deriving BEq
+
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
@@ -33,11 +42,14 @@ inductive StyleError where
   /-- The bare string "Adaptation note" (or variants thereof): instead, the
   #adaptation_note command should be used. -/
   | adaptationNote
+  /-- Lint against "too broad" imports, such as `Mathlib.Tactic` or any module in `Lake`
+  (unless carefully measured) -/
+  | broadImport (module : BroadImports)
   /-- The current file was too large: this error contains the current number of lines
   as well as a size limit (slightly larger). On future runs, this linter will allow this file
   to grow up to this limit. -/
   | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) : StyleError
-  deriving BEq
+deriving BEq
 
 /-- How to format style errors -/
 inductive ErrorFormat
@@ -59,6 +71,12 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
     "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
   | StyleError.adaptationNote =>
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
+  | StyleError.broadImport BroadImports.TacticFolder =>
+    "Files in mathlib cannot import the whole tactic folder"
+  | StyleError.broadImport BroadImports.Lake =>
+      "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see \
+      e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
+      benchmark it. If this is fine, feel free to allow this linter."
   | StyleError.fileTooLong current_size size_limit =>
     match style with
     | ErrorFormat.github =>
@@ -74,6 +92,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.copyright _ => "ERR_COP"
   | StyleError.authors => "ERR_AUT"
   | StyleError.adaptationNote => "ERR_ADN"
+  | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.fileTooLong _ _ => "ERR_NUM_LIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -81,7 +100,7 @@ and the path to the file. -/
 structure ErrorContext where
   /-- The underlying `StyleError`-/
   error : StyleError
-  /-- The line number of the error -/
+  /-- The line number of the error (1-based) -/
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
@@ -139,6 +158,12 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_COP" => some (StyleError.copyright "")
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_IMP" =>
+          -- XXX tweak exceptions messages to ease parsing?
+          if (error_message.get! 0).containsSubstr "tactic" then
+            some (StyleError.broadImport BroadImports.TacticFolder)
+          else
+            some (StyleError.broadImport BroadImports.Lake)
         | "ERR_NUM_LIN" =>
           -- Parse the error message in the script. `none` indicates invalid input.
           match (error_message.get? 0, error_message.get? 3) with
@@ -230,6 +255,34 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
     if line.containsSubstr "daptation note" then
       errors := errors.push (StyleError.adaptationNote, lineNumber)
     lineNumber := lineNumber + 1
+  return errors
+
+/-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
+def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  -- All import statements must be placed "at the beginning" of the file:
+  -- we can have any number of blank lines, imports and single or multi-line comments.
+  -- Doc comments, however, are not allowed: there is no item they could document.
+  let mut inDocComment : Bool := False
+  let mut lineNumber := 1
+  for line in lines do
+    if inDocComment then
+      if line.endsWith "-/" then
+        inDocComment := False
+    else
+      -- If `line` is just a single-line comment (starts with "--"), we just continue.
+      if line.startsWith "/-" then
+        inDocComment := True
+      else if let some (rest) := line.dropPrefix? "import " then
+          -- If there is any in-line or beginning doc comment on that line, trim that.
+          -- Small hack: just split the string on space, "/" and "-":
+          -- none of these occur in module names, so this is safe.
+          if let some name := ((toString rest).split (" /-".contains ·)).head? then
+            if name == "Mathlib.Tactic" then
+              errors := errors.push (StyleError.broadImport BroadImports.TacticFolder, lineNumber)
+            else if name == "Lake" || name.startsWith "Lake." then
+              errors := errors.push (StyleError.broadImport BroadImports.Lake, lineNumber)
+      lineNumber := lineNumber + 1
   return errors
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
