@@ -221,16 +221,9 @@ theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
 instance (V : Type u) : Inhabited (Digraph V) :=
   ⟨⊥⟩
 
-/-
--- JACK: This is false. Check if we should prove ¬ Unique instead of just getting rid of it
-instance [Subsingleton V] : Unique (Digraph V) where
+instance [IsEmpty V] : Unique (Digraph V) where
   default := ⊥
-  uniq G := by
-    ext a b
-    have := Subsingleton.elim a b
-    simp [this]
--/
-
+  uniq G := by ext1; congr!
 
 instance [Nontrivial V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
@@ -243,20 +236,6 @@ instance [Nontrivial V] : Nontrivial (Digraph V) := by
   rw [@ne_iff]
   simp only [Pi.top_apply, Prop.top_eq_true, ne_eq, eq_iff_iff, iff_true, not_false_eq_true,
     exists_const]
-
-  /-
-  rw [← completeGraph_eq_top, ← emptyGraph_eq_bot, Digraph.completeGraph, Digraph.emptyGraph]
-  simp only [ne_eq, mk.injEq]
-  -/
-  /-
-  --JACK: Original proof doesn't compile in this case, I don't know how to modify it to make it work:
-
-  ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [← adj_inj, Function.funext_iff, bot_adj,
-    top_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩⟩
-  -/
-
-#check V
-#check Digraph V
 
 section Decidable
 
