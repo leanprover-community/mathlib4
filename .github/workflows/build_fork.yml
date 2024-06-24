@@ -188,6 +188,7 @@ jobs:
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: check the cache
+        if: ${{ always() && steps.get.outcome == 'success' }}
         run: |
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
