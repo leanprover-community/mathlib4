@@ -217,16 +217,11 @@ theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
 #align algebraic_geometry.is_basis_affine_open AlgebraicGeometry.isBasis_affine_open
 
 theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i: Opens X) = ⊤ := by
-  apply Opens.coe_eq_univ.mp
+  apply Opens.ext
   rw [Opens.coe_iSup]
-  apply Set.eq_univ_iff_forall.mpr
-  intro x
-  apply Set.mem_iUnion.mpr
-  have hx : x ∈ (⊤ : Opens X) := trivial
-  obtain ⟨U, hU, hxU, _⟩ :=
-    TopologicalSpace.Opens.isBasis_iff_nbhd.mp
-    (isBasis_affine_open X) hx
-  exact ⟨⟨U, hU⟩, hxU⟩
+  apply IsTopologicalBasis.sUnion_eq
+  rw [← Set.image_eq_range]
+  exact isBasis_affine_open X
 
 theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     (X : Scheme) [IsAffine X] (f : Scheme.Γ.obj (op X)) :

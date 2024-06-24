@@ -21,24 +21,24 @@ giving definitions, equivalent conditions, and basic properties.
 
 ## Main definitions
 
-* `AlgebraicGeometry.IsLocallyNoetherian`: a scheme is locally Noetherian
+* `AlgebraicGeometry.IsLocallyNoetherian`: A scheme is locally Noetherian
   if the components of the structure sheaf at each affine open are Noetherian rings.
 
-* `AlgebraicGeometry.IsNoetherian`: a scheme is Noetherian if it is locally Noetherian
+* `AlgebraicGeometry.IsNoetherian`: A scheme is Noetherian if it is locally Noetherian
   and compact as a topological space.
 
 ## Main results
 
-* `AlgebraicGeometry.isLocallyNoetherian_iff_affine_cover`: a scheme is locally Noetherian
+* `AlgebraicGeometry.isLocallyNoetherian_iff_affine_cover`: A scheme is locally Noetherian
   if and only if it is covered by affine opens whose sections are Noetherian rings.
 
-* `AlgebraicGeometry.IsLocallyNoetherian.quasiSeparatedSpace`: a locally Noetherian scheme is
+* `AlgebraicGeometry.IsLocallyNoetherian.quasiSeparatedSpace`: A locally Noetherian scheme is
   quasi-separated.
 
-* `AlgebraicGeometry.isNoetherian_iff_finite_affine_cover`: a scheme is Noetherian
+* `AlgebraicGeometry.isNoetherian_iff_finite_affine_cover`: A scheme is Noetherian
   if and only if it is covered by finitely many affine opens whose sections are Noetherian rings.
 
-* `AlgebraicGeometry.IsNoetherian.noetherianSpace`: a Noetherian scheme is
+* `AlgebraicGeometry.IsNoetherian.noetherianSpace`: A Noetherian scheme is
   topologically a Noetherian space.
 
 ## References
@@ -404,8 +404,8 @@ instance (priority := 100) IsNoetherian.noetherianSpace [h : IsNoetherian X] :
 /-- Any morphism of schemes `f : X ⟶ Y` with `X` Noetherian is quasi-compact.
 
 [Stacks, Lemma 01P0](https://stacks.math.columbia.edu/tag/01P0) -/
-instance (priority := 100) quasiCompact_of_isNoetherian_source {X Y : Scheme}
-    [IsNoetherian X] (f : X ⟶ Y) : QuasiCompact f :=
+instance (priority := 100) quasiCompact_of_noetherianSpace_source {X Y : Scheme}
+    [NoetherianSpace X] (f : X ⟶ Y) : QuasiCompact f :=
   ⟨fun _ _ _ => NoetherianSpace.isCompact _⟩
 
 /-- If `R` is a Noetherian ring, `Spec R` is a locally Noetherian scheme. -/
