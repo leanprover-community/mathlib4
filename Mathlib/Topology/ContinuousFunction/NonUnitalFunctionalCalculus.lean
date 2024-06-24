@@ -71,6 +71,7 @@ class NonUnitalContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outPara
     [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
+  predicate_zero : p 0
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A,
     ClosedEmbedding φ ∧ φ ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a ∧
       (∀ f, σₙ R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
@@ -137,6 +138,10 @@ lemma cfcₙHom_map_quasispectrum (f : C(σₙ R a, R)₀) :
 lemma cfcₙHom_predicate (f : C(σₙ R a, R)₀) :
     p (cfcₙHom ha f) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2 f
+
+variable (R) in
+lemma cfcₙ_predicate_zero : p 0 :=
+  NonUnitalContinuousFunctionalCalculus.predicate_zero (R := R)
 
 lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueNonUnitalContinuousFunctionalCalculus R A]
     (φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ₁ : Continuous φ)
@@ -583,6 +588,7 @@ variable [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable [h_cpct : ∀ a : A, CompactSpace (spectrum R a)]
 
 instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctionalCalculus R p where
+  predicate_zero := cfc_predicate_zero R
   exists_cfc_of_predicate a ha := by
     have h_cpct' : CompactSpace (quasispectrum R a) := by
       specialize h_cpct a
