@@ -47,7 +47,6 @@ def pure (a : α) : Computation α :=
 instance : CoeTC α (Computation α) :=
   ⟨pure⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- note [use has_coe_t]
 /-- `think c` is the computation that delays for one "tick" and then performs
   computation `c`. -/

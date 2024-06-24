@@ -49,7 +49,7 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class RCLike (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K,
+class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
@@ -876,18 +876,31 @@ lemma nonpos_iff_exists_ofReal : z ≤ 0 ↔ ∃ x ≤ (0 : ℝ), x = z := by
 lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
   simp_rw [neg_iff (K := K), ext_iff (K := K)]; aesop
 
-@[simp]
+@[simp, norm_cast]
 lemma ofReal_le_ofReal {x y : ℝ} : (x : K) ≤ (y : K) ↔ x ≤ y := by
   rw [le_iff_re_im]
   simp
 
-@[simp]
+@[simp, norm_cast]
+lemma ofReal_lt_ofReal {x y : ℝ} : (x : K) < (y : K) ↔ x < y := by
+  rw [lt_iff_re_im]
+  simp
+
+@[simp, norm_cast]
 lemma ofReal_nonneg {x : ℝ} : 0 ≤ (x : K) ↔ 0 ≤ x := by
   rw [← ofReal_zero, ofReal_le_ofReal]
 
-@[simp]
+@[simp, norm_cast]
 lemma ofReal_nonpos {x : ℝ} : (x : K) ≤ 0 ↔ x ≤ 0 := by
   rw [← ofReal_zero, ofReal_le_ofReal]
+
+@[simp, norm_cast]
+lemma ofReal_pos {x : ℝ} : 0 < (x : K) ↔ 0 < x := by
+  rw [← ofReal_zero, ofReal_lt_ofReal]
+
+@[simp, norm_cast]
+lemma ofReal_lt_zero {x : ℝ} : (x : K) < 0 ↔ x < 0 := by
+  rw [← ofReal_zero, ofReal_lt_ofReal]
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)

@@ -270,14 +270,12 @@ theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
     lt_of_le_of_lt h (lt_succ_self _)⟩
 #align nat.subtype.lt_succ_iff_le Nat.Subtype.lt_succ_iff_le
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Returns the `n`-th element of a set, according to the usual ordering of `ℕ`. -/
 def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
   | 0 => ⊥
   | n + 1 => succ (ofNat s n)
 #align nat.subtype.of_nat Nat.Subtype.ofNat
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
   | x => fun hx => by
     set t : List s :=
@@ -290,7 +288,7 @@ theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = 
       simpa using hmt.mp (List.maximum_mem hmax)
     cases' hmax : List.maximum t with m
     · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
-      rwa [← List.maximum_eq_none.1 hmax, hmt]
+      rwa [← List.maximum_eq_bot.1 hmax, hmt]
     cases' ofNat_surjective_aux m.2 with a ha
     refine ⟨a + 1, le_antisymm ?_ ?_⟩ <;> rw [ofNat]
     · refine succ_le_of_lt ?_
@@ -326,7 +324,6 @@ private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· 
 
 open Finset
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]

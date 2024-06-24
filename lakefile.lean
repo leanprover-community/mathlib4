@@ -35,6 +35,8 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 @[default_target]
 lean_lib Mathlib
 
+-- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
+-- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
 lean_lib Archive
@@ -66,6 +68,10 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
+/-- `lake exe lint_style` runs text-based style linters. -/
+lean_exe lint_style where
+  root := `Mathlib.Tactic.Linter.TextBased
+
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
 and then calculates the longest pole
@@ -81,7 +87,7 @@ https://github.com/leanprover/lean4/issues/4121 is resolved.
 
 You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
 -/
-@[test_runner]
+@[test_driver]
 lean_exe test where
   srcDir := "scripts"
 

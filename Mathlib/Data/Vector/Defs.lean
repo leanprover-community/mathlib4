@@ -3,9 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Common
 
 
@@ -240,7 +238,7 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 #align vector.to_list_mk Mathlib.Vector.toList_mk
 
 /-- A nil vector maps to a nil list. -/
-@[simp, nolint simpNF] -- Porting note (#10618): simp can prove this in the future
+@[simp] -- Porting note (#10618): simp can prove this in the future
 theorem toList_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Mathlib.Vector.toList_nil

@@ -89,7 +89,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       rw [ha, mul_left_comm, mul_assoc, Nat.mul_div_cancel_left _ two_pos,
         Nat.mul_div_cancel_left _ two_pos, mul_right_comm, pow_mul, (hpo.pow.mul _).neg_one_pow,
         pow_mul, hpo.pow.neg_one_pow]
-      refine' Nat.Even.sub_odd _ (even_two_mul _) odd_one
+      refine Nat.Even.sub_odd ?_ (even_two_mul _) odd_one
       rw [mul_left_comm, ← ha]
       exact one_le_mul (one_le_pow _ _ hp.1.pos) (succ_le_iff.2 <| tsub_pos_of_lt hp.1.one_lt)
   · have H := congr_arg (@derivative K _) (cyclotomic_prime_pow_mul_X_pow_sub_one K p k)
@@ -196,7 +196,7 @@ theorem discr_prime_pow_eq_unit_mul_pow [IsCyclotomicExtension {p ^ k} K L]
     ∃ (u : ℤˣ) (n : ℕ), discr K (hζ.powerBasis K).basis = u * p ^ n := by
   rw [discr_prime_pow hζ hirr]
   by_cases heven : Even ((p ^ k : ℕ).totient / 2)
-  · refine' ⟨1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
+  · exact ⟨1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
   · exact ⟨-1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by
       rw [(odd_iff_not_even.2 heven).neg_one_pow]; norm_num⟩
 #align is_cyclotomic_extension.discr_prime_pow_eq_unit_mul_pow IsCyclotomicExtension.discr_prime_pow_eq_unit_mul_pow

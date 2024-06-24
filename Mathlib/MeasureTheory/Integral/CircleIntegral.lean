@@ -294,11 +294,10 @@ theorem ContinuousOn.circleIntegrable {f : ℂ → E} {c : ℂ} {R : ℝ} (hR : 
   ContinuousOn.circleIntegrable' <| (_root_.abs_of_nonneg hR).symm ▸ hf
 #align continuous_on.circle_integrable ContinuousOn.circleIntegrable
 
+#adaptation_note /-- nightly-2024-04-01: the simpNF linter now times out on this lemma. -/
 /-- The function `fun z ↦ (z - w) ^ n`, `n : ℤ`, is circle integrable on the circle with center `c`
 and radius `|R|` if and only if `R = 0` or `0 ≤ n`, or `w` does not belong to this circle. -/
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
-@[simp, nolint simpNF]
+@[simp]
 theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     CircleIntegrable (fun z => (z - w) ^ n) c R ↔ R = 0 ∨ 0 ≤ n ∨ w ∉ sphere c |R| := by
   constructor
@@ -332,9 +331,9 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
           sub_ne_zero.2 <| ne_of_mem_of_not_mem hz hw).circleIntegrable']
 #align circle_integrable_sub_zpow_iff circleIntegrable_sub_zpow_iff
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
-@[simp, nolint simpNF]
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma. -/
+@[simp]
 theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
     CircleIntegrable (fun z => (z - w)⁻¹) c R ↔ R = 0 ∨ w ∉ sphere c |R| := by
   simp only [← zpow_neg_one, circleIntegrable_sub_zpow_iff]; norm_num
@@ -542,9 +541,9 @@ theorem cauchyPowerSeries_apply (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) (w
 theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) :
     ‖cauchyPowerSeries f c R n‖ ≤
       ((2 * π)⁻¹ * ∫ θ : ℝ in (0)..2 * π, ‖f (circleMap c R θ)‖) * |R|⁻¹ ^ n :=
-  calc
-    ‖cauchyPowerSeries f c R n‖ = (2 * π)⁻¹ * ‖∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ :=
-      by simp [cauchyPowerSeries, norm_smul, Real.pi_pos.le]
+  calc ‖cauchyPowerSeries f c R n‖
+    _ = (2 * π)⁻¹ * ‖∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ := by
+      simp [cauchyPowerSeries, norm_smul, Real.pi_pos.le]
     _ ≤ (2 * π)⁻¹ * ∫ θ in (0)..2 * π, ‖deriv (circleMap c R) θ •
         (circleMap c R θ - c)⁻¹ ^ n • (circleMap c R θ - c)⁻¹ • f (circleMap c R θ)‖ :=
       (mul_le_mul_of_nonneg_left

@@ -123,8 +123,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
             exact zero_le_two
           _ =
               ‖(2 : ℝ) • (u - half • (wq + wp))‖ * ‖(2 : ℝ) • (u - half • (wq + wp))‖ +
-                ‖wp - wq‖ * ‖wp - wq‖ :=
-            by simp [norm_smul]
+                ‖wp - wq‖ * ‖wp - wq‖ := by simp [norm_smul]
           _ = ‖a + b‖ * ‖a + b‖ + ‖a - b‖ * ‖a - b‖ := by
             rw [smul_sub, smul_smul, mul_one_div_cancel (_root_.two_ne_zero : (2 : ℝ) ≠ 0), ←
               one_add_one_eq_two, add_smul]
@@ -239,7 +238,6 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
-            set_option tactic.skipAssignedInstances false in
             exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
           _ ≤ p := eq₁
       linarith
@@ -635,8 +633,8 @@ theorem orthogonalProjection_singleton {v : E} (w : E) :
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((orthogonalProjection (𝕜 ∙ v) w) : E) =
-      (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v :=
-    by simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -ofReal_pow]
+      (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
+    simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -ofReal_pow]
   convert key using 1 <;> field_simp [hv']
 #align orthogonal_projection_singleton orthogonalProjection_singleton
 

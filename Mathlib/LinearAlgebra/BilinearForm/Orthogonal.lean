@@ -70,18 +70,18 @@ theorem IsRefl.ortho_comm (H : B.IsRefl) {x y : M} : IsOrtho B x y ↔ IsOrtho B
 #align bilin_form.is_refl.ortho_comm LinearMap.BilinForm.IsRefl.ortho_comm
 
 theorem IsAlt.ortho_comm (H : B₁.IsAlt) {x y : M₁} : IsOrtho B₁ x y ↔ IsOrtho B₁ y x :=
-  H.isRefl.ortho_comm
+  LinearMap.IsAlt.ortho_comm H
 #align bilin_form.is_alt.ortho_comm LinearMap.BilinForm.IsAlt.ortho_comm
 
 theorem IsSymm.ortho_comm (H : B.IsSymm) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
-  H.isRefl.ortho_comm
+  LinearMap.IsSymm.ortho_comm H
 #align bilin_form.is_symm.ortho_comm LinearMap.BilinForm.IsSymm.ortho_comm
 
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.IsOrtho` -/
 def iIsOrtho {n : Type w} (B : BilinForm R M) (v : n → M) : Prop :=
-  Pairwise (B.IsOrtho on v)
+  B.IsOrthoᵢ v
 set_option linter.uppercaseLean3 false in
 #align bilin_form.is_Ortho LinearMap.BilinForm.iIsOrtho
 

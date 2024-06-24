@@ -45,7 +45,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 @[mk_iff]
 class QuasiSeparated (f : X ⟶ Y) : Prop where
   /-- A morphism is `QuasiSeparated` if diagonal map is quasi-compact. -/
-  diagonalQuasiCompact : QuasiCompact (pullback.diagonal f)
+  diagonalQuasiCompact : QuasiCompact (pullback.diagonal f) := by infer_instance
 #align algebraic_geometry.quasi_separated AlgebraicGeometry.QuasiSeparated
 
 /-- The `AffineTargetMorphismProperty` corresponding to `QuasiSeparated`, asserting that the
@@ -109,8 +109,8 @@ theorem quasi_compact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsA
     simp_rw [isCompact_iff_compactSpace] at H
     exact
       @Homeomorph.compactSpace _ _ _ _
-        (H ⟨⟨_, h₁.base_open.isOpen_range⟩, rangeIsAffineOpenOfOpenImmersion _⟩
-          ⟨⟨_, h₂.base_open.isOpen_range⟩, rangeIsAffineOpenOfOpenImmersion _⟩)
+        (H ⟨⟨_, h₁.base_open.isOpen_range⟩, isAffineOpen_opensRange _⟩
+          ⟨⟨_, h₂.base_open.isOpen_range⟩, isAffineOpen_opensRange _⟩)
         e.symm
 #align algebraic_geometry.quasi_compact_affine_property_iff_quasi_separated_space AlgebraicGeometry.quasi_compact_affineProperty_iff_quasiSeparatedSpace
 
@@ -140,8 +140,7 @@ theorem QuasiSeparated.affineProperty_isLocal : QuasiSeparated.affineProperty.Is
 #align algebraic_geometry.quasi_separated.affine_property_is_local AlgebraicGeometry.QuasiSeparated.affineProperty_isLocal
 
 instance (priority := 900) quasiSeparatedOfMono {X Y : Scheme} (f : X ⟶ Y) [Mono f] :
-    QuasiSeparated f :=
-  ⟨inferInstance⟩
+    QuasiSeparated f where
 #align algebraic_geometry.quasi_separated_of_mono AlgebraicGeometry.quasiSeparatedOfMono
 
 instance quasiSeparated_isStableUnderComposition :
@@ -187,10 +186,10 @@ theorem QuasiSeparated.affine_openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
   exact this
 #align algebraic_geometry.quasi_separated.affine_open_cover_tfae AlgebraicGeometry.QuasiSeparated.affine_openCover_TFAE
 
-theorem QuasiSeparated.is_local_at_target : PropertyIsLocalAtTarget @QuasiSeparated :=
+theorem QuasiSeparated.isLocalAtTarget : PropertyIsLocalAtTarget @QuasiSeparated :=
   quasiSeparated_eq_affineProperty_diagonal.symm ▸
-    QuasiCompact.affineProperty_isLocal.diagonal.targetAffineLocallyIsLocal
-#align algebraic_geometry.quasi_separated.is_local_at_target AlgebraicGeometry.QuasiSeparated.is_local_at_target
+    QuasiCompact.affineProperty_isLocal.diagonal.targetAffineLocally_isLocal
+#align algebraic_geometry.quasi_separated.is_local_at_target AlgebraicGeometry.QuasiSeparated.isLocalAtTarget
 
 open List in
 theorem QuasiSeparated.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
@@ -205,7 +204,7 @@ theorem QuasiSeparated.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
           QuasiSeparated (pullback.snd : pullback f g ⟶ _),
         ∃ (ι : Type u) (U : ι → Opens Y.carrier) (_ : iSup U = ⊤),
           ∀ i, QuasiSeparated (f ∣_ U i)] :=
-  QuasiSeparated.is_local_at_target.openCover_TFAE f
+  QuasiSeparated.isLocalAtTarget.openCover_TFAE f
 #align algebraic_geometry.quasi_separated.open_cover_tfae AlgebraicGeometry.QuasiSeparated.openCover_TFAE
 
 theorem quasiSeparated_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
@@ -229,7 +228,7 @@ theorem QuasiSeparated.affine_openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.Op
 
 theorem QuasiSeparated.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y) (f : X ⟶ Y) :
     QuasiSeparated f ↔ ∀ i, QuasiSeparated (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
-  QuasiSeparated.is_local_at_target.openCover_iff f 𝒰
+  QuasiSeparated.isLocalAtTarget.openCover_iff f 𝒰
 #align algebraic_geometry.quasi_separated.open_cover_iff AlgebraicGeometry.QuasiSeparated.openCover_iff
 
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated g] :
@@ -266,7 +265,7 @@ instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
   intro i' _
   change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
   rw [← Scheme.basicOpen_mul]
-  exact ((topIsAffineOpen _).basicOpenIsAffine _).isCompact
+  exact ((isAffineOpen_top _).basicOpen _).isCompact
 #align algebraic_geometry.quasi_separated_space_of_is_affine AlgebraicGeometry.quasiSeparatedSpace_of_isAffine
 
 theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : Opens X.carrier} (hU : IsAffineOpen U) :
@@ -373,7 +372,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     intro S hS U hU hSU f x
     -- We know that such `y₁, n₁` exists on `S` by the induction hypothesis.
     obtain ⟨n₁, y₁, hy₁⟩ :=
-      hU (hSU.of_subset <| Set.subset_union_left _ _) (X.presheaf.map (homOfLE le_sup_left).op f)
+      hU (hSU.of_subset Set.subset_union_left) (X.presheaf.map (homOfLE le_sup_left).op f)
         (X.presheaf.map (homOfLE _).op x)
     -- · rw [X.basicOpen_res]; exact inf_le_right
     -- We know that such `y₂, n₂` exists on `U` since `U` is affine.
@@ -385,7 +384,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     -- Since `S ∪ U` is quasi-separated, `S ∩ U` can be covered by finite affine opens.
     obtain ⟨s, hs', hs⟩ :=
       (isCompact_open_iff_eq_finset_affine_union _).mp
-        ⟨hSU _ _ (Set.subset_union_left _ _) S.2 hS (Set.subset_union_right _ _) U.1.2
+        ⟨hSU _ _ Set.subset_union_left S.2 hS Set.subset_union_right U.1.2
             U.2.isCompact,
           (S ⊓ U.1).2⟩
     haveI := hs'.to_subtype
@@ -393,15 +392,13 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : Opens X.carrier) := by ext1; simpa using hs
     have hs₁ : ∀ i : s, i.1.1 ≤ S := by
       intro i; change (i : Opens X.carrier) ≤ S
-      refine' le_trans _ inf_le_left; swap
-      · exact U.1
+      refine le_trans ?_ (inf_le_left (b := U.1))
       erw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
       intro i; change (i : Opens X.carrier) ≤ U
-      refine' le_trans _ inf_le_right; swap
-      · exact S
+      refine le_trans ?_ (inf_le_right (a := S))
       erw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
