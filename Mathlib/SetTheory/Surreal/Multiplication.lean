@@ -74,16 +74,16 @@ open WellFounded
 
 namespace Surreal.Multiplication
 
-/-- The nontrivial part of P1 says that the left options of `x * y` are less than the right options,
-  and this is the general form of these statements. -/
+/-- The nontrivial part of P1 in [SchleicherStoll] says that the left options of `x * y`
+  are less than the right options, and this is the general form of these statements. -/
 def P1 (x₁ x₂ x₃ y₁ y₂ y₃ : PGame) :=
-  ⟦x₁ * y₁⟧ + ⟦x₂ * y₂⟧ - ⟦x₁ * y₂⟧ < ⟦x₃ * y₁⟧ + ⟦x₂ * y₃⟧ - (⟦x₃ * y₃⟧: Game)
+  ⟦x₁ * y₁⟧ + ⟦x₂ * y₂⟧ - ⟦x₁ * y₂⟧ < ⟦x₃ * y₁⟧ + ⟦x₂ * y₃⟧ - (⟦x₃ * y₃⟧ : Game)
 
 /-- The proposition P2, without numeric assumptions. -/
-def P2 (x₁ x₂ y : PGame) := x₁ ≈ x₂ → ⟦x₁ * y⟧ = (⟦x₂ * y⟧: Game)
+def P2 (x₁ x₂ y : PGame) := x₁ ≈ x₂ → ⟦x₁ * y⟧ = (⟦x₂ * y⟧ : Game)
 
 /-- The proposition P3, without the `x₁ < x₂` and `y₁ < y₂` assumptions. -/
-def P3 (x₁ x₂ y₁ y₂ : PGame) := ⟦x₁ * y₂⟧ + ⟦x₂ * y₁⟧ < ⟦x₁ * y₁⟧ + (⟦x₂ * y₂⟧: Game)
+def P3 (x₁ x₂ y₁ y₂ : PGame) := ⟦x₁ * y₂⟧ + ⟦x₂ * y₁⟧ < ⟦x₁ * y₁⟧ + (⟦x₂ * y₂⟧ : Game)
 
 /-- The proposition P4, without numeric assumptions. In the references, the second part of the
   conjunction is stated as `∀ j, P3 x₁ x₂ y (y.moveRight j)`, which is equivalent to our statement
@@ -135,18 +135,17 @@ lemma P4_negy : P4 x₁ x₂ y ↔ P4 x₁ x₂ (-y) := by
 lemma P24_negx : P24 x₁ x₂ y ↔ P24 (-x₂) (-x₁) y := by rw [P24, P24, P2_negx, P4_negx]
 lemma P24_negy : P24 x₁ x₂ y ↔ P24 x₁ x₂ (-y) := by rw [P24, P24, P2_negy, P4_negy]
 
-
 /-! #### Explicit calculations necessary for the main proof -/
 
 lemma mul_option_lt_iff_P1 {i j k l} :
-    (⟦mul_option x y i k⟧: Game) < -⟦mul_option x (-y) j l⟧ ↔
+    (⟦mul_option x y i k⟧ : Game) < -⟦mul_option x (-y) j l⟧ ↔
     P1 (x.moveLeft i) x (x.moveLeft j) y (y.moveLeft k) (-(-y).moveLeft l) := by
   dsimp [mul_option, P1]
   convert Iff.rfl using 2
   simp only [neg_sub', neg_add, quot_mul_neg, neg_neg]
 
 lemma mul_option_lt_mul_iff_P3 {i j} :
-    ⟦mul_option x y i j⟧ < (⟦x * y⟧: Game) ↔ P3 (x.moveLeft i) x (y.moveLeft j) y := by
+    ⟦mul_option x y i j⟧ < (⟦x * y⟧ : Game) ↔ P3 (x.moveLeft i) x (y.moveLeft j) y := by
   dsimp [mul_option]
   exact sub_lt_iff_lt_add'
 
@@ -164,16 +163,13 @@ inductive Args : Type (u+1)
 | P1 (x y : PGame.{u}) : Args
 | P24 (x₁ x₂ y : PGame.{u}) : Args
 
-
 /-- The multiset associated to a list of arguments. -/
 def Args.toMultiset : Args → Multiset PGame
   | (Args.P1 x y) => {x, y}
   | (Args.P24 x₁ x₂ y) => {x₁, x₂, y}
 
-
 /-- A list of arguments is numeric if all the arguments are. -/
 def Args.Numeric (a : Args) := ∀ x ∈ a.toMultiset, SetTheory.PGame.Numeric x
-
 
 open Relation
 
@@ -185,20 +181,18 @@ def ArgsRel := InvImage (TransGen $ CutExpand IsOption) Args.toMultiset
 /-- `ArgsRel` is well-founded. -/
 theorem argsRel_wf : WellFounded ArgsRel := InvImage.wf _ wf_isOption.cutExpand.transGen
 
-
 /-- The statement that we will be shown by induction using the well-founded relation `ArgsRel`. -/
 def P124 : Args → Prop
   | (Args.P1 x y) => Numeric (x * y)
   | (Args.P24 x₁ x₂ y) => P24 x₁ x₂ y
 
-
 /-- The property that all arguments are numeric is leftward-closed under `ArgsRel`. -/
-lemma ArgsRel.numeric_closed {a' a} : ArgsRel a' a → a.Numeric → a'.Numeric := by
-  exact TransGen.closed2 $ @cutExpand_closed _ IsOption ⟨wf_isOption.isIrrefl.1⟩ _ Numeric.isOption
+lemma ArgsRel.numeric_closed {a' a} : ArgsRel a' a → a.Numeric → a'.Numeric :=
+  TransGen.closed2 $ @cutExpand_closed _ IsOption ⟨wf_isOption.isIrrefl.1⟩ _ Numeric.isOption
 
 /-- A specialized induction hypothesis used to prove P1. -/
 def ih1 (x y: PGame) : Prop :=
-    ∀ ⦃x₁ x₂ y'⦄, IsOption x₁ x → IsOption x₂ x → (y' = y ∨ IsOption y' y) → P24 x₁ x₂ y'
+  ∀ ⦃x₁ x₂ y'⦄, IsOption x₁ x → IsOption x₂ x → (y' = y ∨ IsOption y' y) → P24 x₁ x₂ y'
 
 /-! #### Symmetry properties of `ih1` -/
 
@@ -252,10 +246,10 @@ section
 variable (ihxy : ih1 x y) (ihyx : ih1 y x)
 
 lemma mul_option_lt_of_lt (i j k l) (h : x.moveLeft i < x.moveLeft j) :
-    (⟦mul_option x y i k⟧: Game) < -⟦mul_option x (-y) j l⟧ :=
+    (⟦mul_option x y i k⟧ : Game) < -⟦mul_option x (-y) j l⟧ :=
   mul_option_lt_iff_P1.2 $ P1_of_lt (P3_of_ih hy ihyx j k l) $ ((P24_of_ih ihxy i j).2 h).1 k
 
-lemma mul_option_lt (i j k l) : (⟦mul_option x y i k⟧: Game) < -⟦mul_option x (-y) j l⟧ := by
+lemma mul_option_lt (i j k l) : (⟦mul_option x y i k⟧ : Game) < -⟦mul_option x (-y) j l⟧ := by
   obtain (h|h|h) := lt_or_equiv_or_gt (hx.moveLeft i) (hx.moveLeft j)
   { exact mul_option_lt_of_lt hy ihxy ihyx i j k l h }
   { have ml := @IsOption.moveLeft
@@ -316,7 +310,7 @@ theorem P1_of_ih : (x * y).Numeric := by
   rw [mk_mul_moveRight_inl]
   pick_goal 4
   rw [mk_mul_moveRight_inr]
-  all_goals (
+  all_goals
     apply Numeric.sub
     apply Numeric.add
     apply ihnx ih
@@ -324,9 +318,7 @@ theorem P1_of_ih : (x * y).Numeric := by
     apply ihny ih
     pick_goal 3
     apply ihnxy ih
-  )
-  all_goals { solve_by_elim [IsOption.mk_left, IsOption.mk_right] }
-
+  all_goals solve_by_elim [IsOption.mk_left, IsOption.mk_right]
 
 /-- A specialized induction hypothesis used to prove P2 and P4. -/
 def ih24 (x₁ x₂ y: PGame) : Prop :=
@@ -342,13 +334,11 @@ variable (ih' : ∀ a, ArgsRel a (Args.P24 x₁ x₂ y) → P124 a)
 
 lemma ih₁₂ : ih24 x₁ x₂ y := by
   rw [ih24]
-  refine (fun z => ⟨?_, ?_, ?_⟩) <;> (
+  refine (fun z => ⟨?_, ?_, ?_⟩) <;>
     refine fun h => ih' (Args.P24 _ _ _) (TransGen.single ?_)
-  )
   · exact (cutExpand_add_right {y}).2 (cutExpand_pair_left h)
   · exact (cutExpand_add_left {x₁}).2 (cutExpand_pair_left h)
   · exact (cutExpand_add_left {x₁}).2 (cutExpand_pair_right h)
-
 
 lemma ih₂₁ : ih24 x₂ x₁ y := ih₁₂ (by
   simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih' ⊢
@@ -378,7 +368,6 @@ lemma numeric_of_ih : (x₁ * y).Numeric ∧ (x₂ * y).Numeric := by
   exact (cutExpand_add_right {y}).2 $ (cutExpand_add_left {x₁}).2 cutExpand_zero
   exact (cutExpand_add_right {x₂, y}).2 cutExpand_zero
 
-
 /-- Symmetry properties of `ih24`. -/
 lemma ih24_neg : ih24 x₁ x₂ y → ih24 (-x₂) (-x₁) y ∧ ih24 x₁ x₂ (-y) := by
   simp_rw [ih24, ← P24_negy, isOption_neg]
@@ -406,7 +395,7 @@ lemma ih4_neg : ih4 x₁ x₂ y → ih4 (-x₂) (-x₁) y ∧ ih4 x₁ x₂ (-y)
     tauto
 
 lemma mul_option_lt_mul_of_equiv (hn : x₁.Numeric) (h : ih24 x₁ x₂ y) (he : x₁ ≈ x₂) (i j) :
-    ⟦mul_option x₁ y i j⟧ < (⟦x₂ * y⟧: Game) := by
+    ⟦mul_option x₁ y i j⟧ < (⟦x₂ * y⟧ : Game) := by
   convert sub_lt_iff_lt_add'.2 ((((@h _).1 $ IsOption.moveLeft i).2 _).1 j) using 1
   { rw [← ((@h _).2.2 $ IsOption.moveLeft j).1 he]
     rfl
@@ -414,7 +403,6 @@ lemma mul_option_lt_mul_of_equiv (hn : x₁.Numeric) (h : ih24 x₁ x₂ y) (he 
   { rw [← lt_congr_right he]
     apply hn.moveLeft_lt
   }
-
 
 /-- P2 follows from specialized induction hypotheses ("one half" of the equality). -/
 theorem mul_right_le_of_equiv (h₁ : x₁.Numeric) (h₂ : x₂.Numeric)
@@ -441,9 +429,8 @@ theorem mul_right_le_of_equiv (h₁ : x₁.Numeric) (h₂ : x₂.Numeric)
       symm at he'
       apply mul_option_lt_mul_of_equiv h₂.neg (ih24_neg h₁₂).1 he'
 
-
 /-- The statement that all left options of `x * y` of the first kind are less than itself. -/
-def mul_options_lt_mul (x y: PGame) : Prop := ∀ ⦃i j⦄, ⟦mul_option x y i j⟧ < (⟦x * y⟧: Game)
+def mul_options_lt_mul (x y: PGame) : Prop := ∀ ⦃i j⦄, ⟦mul_option x y i j⟧ < (⟦x * y⟧ : Game)
 
 /-- That the left options of `x * y` are less than itself and the right options are greater, which
   is part of the condition that `x * y` is numeric, is equivalent to the conjunction of various
@@ -543,7 +530,6 @@ theorem main (a : Args) : a.Numeric → P124 a := by
       )
       exact (ih24_neg h₁₂y).1
       exact (ih4_neg h4y).1
-
 
 end Surreal.Multiplication
 
