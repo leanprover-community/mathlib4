@@ -123,5 +123,3 @@ instance addCommGroup : AddCommGroup I :=
 end NonUnitalNonAssocRing
 
 end TwoSidedIdeal
-
-#lint
