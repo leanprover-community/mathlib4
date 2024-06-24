@@ -65,7 +65,7 @@ jobs:
         fi
 
         ## Declarations' diff comment
-        declDiff=$(./scripts/decls_diff.sh short)
+        declDiff=$(./scripts/decls_diff.sh)
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
