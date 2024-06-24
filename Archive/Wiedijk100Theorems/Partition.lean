@@ -3,10 +3,10 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
+import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order

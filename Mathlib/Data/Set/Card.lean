@@ -558,7 +558,7 @@ theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
 #align set.nonempty_of_ncard_ne_zero Set.nonempty_of_ncard_ne_zero
 
 @[simp] theorem ncard_singleton (a : α) : ({a} : Set α).ncard = 1 := by
-  simp [ncard, ncard_eq_toFinset_card]
+  simpa [ncard, encard_singleton] using ENat.toNat_coe 1
 #align set.ncard_singleton Set.ncard_singleton
 
 theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 := by

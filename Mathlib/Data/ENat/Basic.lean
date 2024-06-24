@@ -83,7 +83,7 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 #align enat.coe_sub ENat.coe_sub
 
 -- Eligible for dsimp
-@[simp, nolint simpNF] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+@[simp] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 #align enat.coe_mul ENat.coe_mul
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
@@ -97,12 +97,19 @@ instance : WellFoundedRelation ℕ∞ where
   wf := IsWellFounded.wf
 
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
-def toNat : MonoidWithZeroHom ℕ∞ ℕ where
-  toFun := WithTop.untop' 0
+def toNat : ℕ∞ → ℕ := WithTop.untop' 0
+
+/-- Homomorphism from `ℕ∞` to `ℕ` sending `∞` to `0`. -/
+def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
+  toFun := toNat
   map_one' := rfl
   map_zero' := rfl
   map_mul' := WithTop.untop'_zero_mul
-#align enat.to_nat ENat.toNat
+#align enat.to_nat ENat.toNatHom
+
+@[simp, norm_cast] lemma coe_toNatHom : toNatHom = toNat := rfl
+
+lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 
 @[simp]
 theorem toNat_coe (n : ℕ) : toNat n = n :=
@@ -128,13 +135,11 @@ def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : �
   | none => top
   | Option.some a => coe a
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
     @recTopCoe C d f ⊤ = d :=
   rfl
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
@@ -154,7 +159,6 @@ theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a
     @recTopCoe C d f (no_index (OfNat.ofNat x)) = f (OfNat.ofNat x) :=
   rfl
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
   nofun
@@ -164,7 +168,6 @@ theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
 theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a : ℕ∞)) :=
   nofun
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
@@ -174,7 +177,6 @@ theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
 theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℕ∞)) ≠ ⊤ :=
   nofun
 
--- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   WithTop.top_sub_coe
@@ -192,7 +194,6 @@ theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfN
 theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
   WithTop.zero_lt_top
 
--- Porting note (#10756): new theorem copied from `WithTop`
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 
