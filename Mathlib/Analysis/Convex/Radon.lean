@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Mathlib.Analysis.Convex.Combination
+import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Topology.Separation
-import Mathlib.Data.Set.Card
 
 /-!
 # Radon's theorem on convex sets
@@ -32,11 +32,10 @@ namespace Convex
 
 variable {ι 𝕜 E : Type*} [DecidableEq ι] [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
-/--
-**Radon's theorem on convex sets**.
+/-- **Radon's theorem on convex sets**.
+
 Any family `f` of affine dependent vectors contains a set `I` with the property that convex hulls of
-`I` and `Iᶜ` intersect nontrivially.
--/
+`I` and `Iᶜ` intersect nontrivially. -/
 theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
     ∃ I, (convexHull 𝕜 (f '' I) ∩ convexHull 𝕜 (f '' Iᶜ)).Nonempty := by
   rw [affineIndependent_iff] at h
@@ -71,21 +70,20 @@ variable [FiniteDimensional 𝕜 E]
 private lemma helly_theorem_corner {F : ι → Set E} [Fintype ι] [DecidableEq ι]
     (h_card_small : Fintype.card ι ≤ finrank 𝕜 E + 1)
     (h_inter : ∀ I : Finset ι, I.card ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
-    (⋂ i : ι, F i).Nonempty := by
+    (⋂ i, F i).Nonempty := by
   rw [show ⋂ i, F i = ⋂ i ∈ Finset.univ, F i by simp]
   apply h_inter Finset.univ
   rw [Finset.card_univ]
   exact h_card_small
 
-/--
-**Helly's theorem** for finite families of convex sets.
+/-- **Helly's theorem** for finite families of convex sets.
+
 If `F` is a finite family of convex sets in a vector space of finite dimension `d`, and any
-`k ≤ d + 1` sets of `F` intersect nontrivially, then all sets of `F` intersect nontrivially.
--/
+`k ≤ d + 1` sets of `F` intersect nontrivially, then all sets of `F` intersect nontrivially. -/
 theorem helly_theorem' {F : ι → Set E} [Fintype ι]
-    (h_convex : ∀ i : ι, Convex 𝕜 (F i))
+    (h_convex : ∀ i, Convex 𝕜 (F i))
     (h_inter : ∀ I : Finset ι, I.card ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
-    (⋂ i : ι, F i).Nonempty := by
+    (⋂ i, F i).Nonempty := by
   obtain h_card | h_card := lt_or_le (Fintype.card ι) (finrank 𝕜 E + 1)
   · exact helly_theorem_corner (le_of_lt h_card) h_inter
   generalize hn : Fintype.card ι = n
@@ -138,27 +136,25 @@ theorem helly_theorem' {F : ι → Set E} [Fintype ι]
     exact fun h' ↦ hj (h' ▸ hi)
   · apply Set.Nonempty.some_mem
 
-/--
-**Helly's theorem** for finite families of convex sets in its classical form.
+/-- **Helly's theorem** for finite families of convex sets in its classical form.
+
 If `F` is a family of `n` convex sets in a vector space of finite dimension `d`, with `n ≥ d + 1`,
-and any `d + 1` sets of `F` intersect nontrivially, then all sets of `F` intersect nontrivially.
--/
+and any `d + 1` sets of `F` intersect nontrivially, then all sets of `F` intersect nontrivially. -/
 theorem helly_theorem {F : ι → Set E} [Fintype ι]
     (h_card : finrank 𝕜 E + 1 ≤ Fintype.card ι)
-    (h_convex : ∀ i : ι, Convex 𝕜 (F i))
+    (h_convex : ∀ i, Convex 𝕜 (F i))
     (h_inter : ∀ I : Finset ι, I.card = finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
-    (⋂ i : ι, F i).Nonempty := by
+    (⋂ i, F i).Nonempty := by
   apply helly_theorem' h_convex
   intro I hI
   obtain ⟨J, hJ_ss, hJ_card⟩ := Fintype.exists_superset_card_eq hI h_card
   apply Set.Nonempty.mono <| biInter_mono hJ_ss (by intro _ _; rfl)
   exact h_inter J hJ_card
 
-/--
-**Helly's theorem** for finite sets of convex sets.
+/-- **Helly's theorem** for finite sets of convex sets.
+
 If `F` is a finite set of convex sets in a vector space of finite dimension `d`, and any `k ≤ d + 1`
-sets from `F` intersect nontrivially, then all sets from `F` intersect nontrivially.
--/
+sets from `F` intersect nontrivially, then all sets from `F` intersect nontrivially. -/
 theorem helly_theorem_set' {F : Finset (Set E)}
     (h_convex : ∀ X ∈ F, Convex 𝕜 X)
     (h_inter : ∀ G : Finset (Set E), G ⊆ F → G.card ≤ finrank 𝕜 E + 1 → (⋂₀ G : Set E).Nonempty) :
@@ -176,11 +172,11 @@ theorem helly_theorem_set' {F : Finset (Set E)}
     · apply le_trans Finset.card_image_le
       assumption
 
-/--
-**Helly's theorem** for finite sets of convex sets in its classical form.
+/-- **Helly's theorem** for finite sets of convex sets in its classical form.
+
 If `F` is a finite set of convex sets in a vector space of finite dimension `d`, with `n ≥ d + 1`,
-and any `d + 1` sets from `F` intersect nontrivially, then all sets from `F` intersect nontrivially.
--/
+and any `d + 1` sets from `F` intersect nontrivially,
+then all sets from `F` intersect nontrivially. -/
 theorem helly_theorem_set {F : Finset (Set E)}
     (h_card : finrank 𝕜 E + 1 ≤ F.card)
     (h_convex : ∀ X ∈ F, Convex 𝕜 X)
@@ -194,15 +190,14 @@ theorem helly_theorem_set {F : Finset (Set E)}
   apply Set.Nonempty.mono this
   exact h_inter J hJ_ss (by omega)
 
-/--
-**Helly's theorem** for families of compact convex sets.
+/-- **Helly's theorem** for families of compact convex sets.
+
 If `F` is a family of compact convex sets in a vector space of finite dimension `d`, and any
-`k ≤ d + 1` sets of `F` intersect nontrivially, then all sets of `F` intersect nontrivially.
--/
+`k ≤ d + 1` sets of `F` intersect nontrivially, then all sets of `F` intersect nontrivially. -/
 theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set E}
-    (h_convex : ∀ i : ι, Convex 𝕜 (F i)) (h_compact : ∀ i : ι, IsCompact (F i))
+    (h_convex : ∀ i, Convex 𝕜 (F i)) (h_compact : ∀ i, IsCompact (F i))
     (h_inter : ∀ I : Finset ι, I.card ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
-    (⋂ i : ι, F i).Nonempty := by
+    (⋂ i, F i).Nonempty := by
   /- If `ι` is empty the statement is trivial. -/
   cases' isEmpty_or_nonempty ι with _ h_nonempty
   simp only [iInter_of_empty, Set.univ_nonempty]
@@ -225,17 +220,16 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
   · intro I
     simpa using h_fin ({i0} ∪ I)
 
-/--
-**Helly's theorem** for families of compact convex sets in its classical form.
+/-- **Helly's theorem** for families of compact convex sets in its classical form.
+
 If `F` is a (possibly infinite) family of more than `d + 1` compact convex sets in a vector space of
 finite dimension `d`, and any `d + 1` sets of `F` intersect nontrivially,
-then all sets of `F` intersect nontrivially.
--/
+then all sets of `F` intersect nontrivially. -/
 theorem helly_theorem_compact [TopologicalSpace E] [T2Space E] {F : ι → Set E}
     (h_card : finrank 𝕜 E + 1 ≤ PartENat.card ι)
-    (h_convex : ∀ i : ι, Convex 𝕜 (F i)) (h_compact : ∀ i : ι, IsCompact (F i))
+    (h_convex : ∀ i, Convex 𝕜 (F i)) (h_compact : ∀ i, IsCompact (F i))
     (h_inter : ∀ I : Finset ι, I.card = finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
-    (⋂ i : ι, F i).Nonempty := by
+    (⋂ i, F i).Nonempty := by
   apply helly_theorem_compact' h_convex h_compact
   intro I hI_card
   have hJ : ∃ J : Finset ι, I ⊆ J ∧ J.card = finrank 𝕜 E + 1 := by
@@ -250,11 +244,10 @@ theorem helly_theorem_compact [TopologicalSpace E] [T2Space E] {F : ι → Set E
   apply Set.Nonempty.mono <| biInter_mono hJ_ss (by intro _ _; rfl)
   exact h_inter J hJ_card
 
-/--
-**Helly's theorem** for sets of compact convex sets.
+/-- **Helly's theorem** for sets of compact convex sets.
+
 If `F` is a set of compact convex sets in a vector space of finite dimension `d`, and any
-`k ≤ d + 1` sets from `F` intersect nontrivially, then all sets from `F` intersect nontrivially.
--/
+`k ≤ d + 1` sets from `F` intersect nontrivially, then all sets from `F` intersect nontrivially. -/
 theorem helly_theorem_set_compact' [TopologicalSpace E] [T2Space E] {F : Set (Set E)}
     (h_convex : ∀ X ∈ F, Convex 𝕜 X) (h_compact : ∀ X ∈ F, IsCompact X)
     (h_inter : ∀ G : Finset (Set E), (G : Set (Set E)) ⊆ F → G.card ≤ finrank 𝕜 E + 1 →
@@ -273,12 +266,11 @@ theorem helly_theorem_set_compact' [TopologicalSpace E] [T2Space E] {F : Set (Se
     · apply le_trans Finset.card_image_le
       assumption
 
-/--
-**Helly's theorem** for sets of compact convex sets in its classical version.
+/-- **Helly's theorem** for sets of compact convex sets in its classical version.
+
 If `F` is a (possibly infinite) set of more than `d + 1` compact convex sets in a vector space of
 finite dimension `d`, and any `d + 1` sets from `F` intersect nontrivially,
-then all sets from `F` intersect nontrivially.
--/
+then all sets from `F` intersect nontrivially. -/
 theorem helly_theorem_set_compact [TopologicalSpace E] [T2Space E] {F : Set (Set E)}
     (h_card : finrank 𝕜 E + 1 ≤ F.encard)
     (h_convex : ∀ X ∈ F, Convex 𝕜 X) (h_compact : ∀ X ∈ F, IsCompact X)
@@ -287,10 +279,8 @@ theorem helly_theorem_set_compact [TopologicalSpace E] [T2Space E] {F : Set (Set
     (⋂₀ (F : Set (Set E))).Nonempty := by
   apply helly_theorem_set_compact' h_convex h_compact
   intro I hI_ss hI_card
-  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (hkt := h_card) (hsk := by
-    simp only [encard_coe_eq_coe_finsetCard]
-    rwa [← ENat.coe_one, ← ENat.coe_add, Nat.cast_le]
-  )
+  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (hkt := h_card)
+    (by simpa only [encard_coe_eq_coe_finsetCard, ← ENat.coe_one, ← ENat.coe_add, Nat.cast_le])
   apply Set.Nonempty.mono <| sInter_mono (by simpa [hI_ss])
   have hJ_fin : Fintype J := Set.Finite.fintype <| Set.finite_of_encard_eq_coe hJ_card
   let J' := J.toFinset
