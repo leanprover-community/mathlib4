@@ -116,7 +116,7 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 
 section ForgetToType
 
-variable [ConcreteCategory.{max u₁ v₁, v₂, u₂} D] [HasSheafCompose.{v₁, v₂, max u₁ v₁, u₁, u₂, (max u₁ v₁) + 1} J (forget.{max u₁ v₁, v₂, u₂} D)]
+variable [ConcreteCategory D] [HasSheafCompose J (forget D)]
 
 /-- This is the functor sending a sheaf of types `X` to the sheafification of `X ⋙ G`. -/
 abbrev composeAndSheafifyFromTypes (G : Type max v₁ u₁ ⥤ D) : SheafOfTypes J ⥤ Sheaf J D :=
