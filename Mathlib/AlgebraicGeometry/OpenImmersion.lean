@@ -88,7 +88,7 @@ def opensRange {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f] :
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor : Opens X ⥤ Opens Y :=
-  PresheafedSpace.IsOpenImmersion.opensFunctor f.1
+  LocallyRingedSpace.IsOpenImmersion.opensFunctor f
 #align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
 
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
@@ -96,7 +96,7 @@ scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensF
 
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
 def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
-  PresheafedSpace.IsOpenImmersion.invApp f.1 U
+  LocallyRingedSpace.IsOpenImmersion.invApp f U
 #align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
 
 instance (U) : IsIso (f.invApp U) := inferInstanceAs
