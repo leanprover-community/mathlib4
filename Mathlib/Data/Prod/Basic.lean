@@ -61,9 +61,8 @@ theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b
   rfl
 #align prod.map_mk Prod.map_mk
 
--- I'm skeptical about having this as a `simp` lemma, despite it having been in the past
--- as it destructures the pair. See `map_apply`, `map_fst`, and `map_snd` for slightly weaker
--- lemmas in the `simp` set.
+-- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.
+--  See `map_apply`, `map_fst`, and `map_snd` for slightly weaker lemmas in the `simp` set.
 theorem map_apply' (f : α → γ) (g : β → δ) (p : α × β) : map f g p = (f p.1, g p.2) :=
   rfl
 
@@ -130,7 +129,7 @@ theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
 #align prod.ext Prod.ext
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
-  funext fun p ↦ ext (map_fst f g p) (map_snd f g p)
+  funext fun _ ↦ ext map_fst map_snd
 #align prod.map_def Prod.map_def
 
 theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
