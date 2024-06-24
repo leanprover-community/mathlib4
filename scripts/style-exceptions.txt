@@ -124,7 +124,7 @@ Mathlib/Topology/Category/Profinite/Nobeling.lean : line 1 : ERR_NUM_LIN : 2000 
 Mathlib/Topology/Constructions.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1797 lines, try to split it up
 Mathlib/Topology/ContinuousFunction/Bounded.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1683 lines, try to split it up
 Mathlib/Topology/Instances/ENNReal.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1711 lines, try to split it up
-Mathlib/Topology/MetricSpace/PseudoMetric.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2124 lines, try to split it up
+Mathlib/Topology/MetricSpace/Pseudo/Defs.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1650 lines, try to split it up
 Mathlib/Topology/PartialHomeomorph.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1546 lines, try to split it up
 Mathlib/Topology/Separation.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2662 lines, try to split it up
 Mathlib/Topology/UniformSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2001 lines, try to split it up
