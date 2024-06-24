@@ -88,7 +88,7 @@ def opensRange {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f] :
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor : Opens X ⥤ Opens Y :=
-  H.openFunctor
+  H.opensFunctor
 #align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
 
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
