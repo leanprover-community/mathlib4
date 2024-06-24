@@ -367,8 +367,8 @@ open Preadditive
 variable (G : C ⥤ D) [G.Additive]
 
 lemma map_δ :
-  (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
-    NatTrans.app (Functor.commShiftIso (Functor.mapHomologicalComplex G (ComplexShape.up ℤ)) 1).hom K =
+    (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
+      NatTrans.app (Functor.commShiftIso (Functor.mapHomologicalComplex G (ComplexShape.up ℤ)) 1).hom K =
     (mapHomologicalComplexIso φ G).hom ≫
       (triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).mor₃ := by
   ext n
