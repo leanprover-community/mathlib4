@@ -146,9 +146,9 @@ section
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
 @[simp]
-lemma OplaxFunctor.map₂_eqToHom (F : OplaxFunctor B C) {a b : B} {f g : a ⟶ b} (h : f = g) :
+lemma PrelaxFunctor.map₂_eqToHom (F : PrelaxFunctor B C) {a b : B} {f g : a ⟶ b} (h : f = g) :
     F.map₂ (eqToHom h) = eqToHom (F.congr_map h) := by
-  subst h; simp only [eqToHom_refl, OplaxFunctor.map₂_id]
+  subst h; simp only [eqToHom_refl, PrelaxFunctor.map₂_id]
 
 end
 
