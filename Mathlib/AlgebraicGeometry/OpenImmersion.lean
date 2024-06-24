@@ -88,7 +88,7 @@ def opensRange {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f] :
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor : Opens X ⥤ Opens Y :=
-  IsOpenImmersion.opensFunctor f
+  PresheafedSpace.IsOpenImmersion.opensFunctor f.1
 #align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
 
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
@@ -96,10 +96,11 @@ scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensF
 
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
 def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
-  H.invApp U
+  PresheafedSpace.IsOpenImmersion.invApp f.1 U
 #align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
 
-instance (U) : IsIso (f.invApp U) := inferInstanceAs (IsIso <| H.invApp U)
+instance (U) : IsIso (f.invApp U) := inferInstanceAs
+  (IsIso <| PresheafedSpace.IsOpenImmersion.invApp f.1 U)
 
 @[reassoc (attr := simp)]
 theorem invApp_naturality {U V : Opens X} (i : op U ⟶ op V) :
@@ -109,7 +110,7 @@ theorem invApp_naturality {U V : Opens X} (i : op U ⟶ op V) :
 theorem inv_invApp (U) :
     inv (f.invApp U) = f.app (f ''ᵁ U) ≫ X.presheaf.map
       (eqToHom (Opens.ext <| by exact (Set.preimage_image_eq U.1 H.base_open.inj).symm)).op :=
-  (PresheafedSpace.IsOpenImmersion.inv_invApp H U).trans (by rw [eqToHom_op])
+  (PresheafedSpace.IsOpenImmersion.inv_invApp f.1 U).trans (by rw [eqToHom_op])
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U) :
@@ -541,7 +542,7 @@ theorem app_eq_invApp_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U �
             (eqToHom <| IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux f g fg H V).op := by
   subst H
   rw [Scheme.comp_val_c_app, Category.assoc, Scheme.Hom.invApp,
-    LocallyRingedSpace.IsOpenImmersion.invApp_app_assoc, f.val.c.naturality_assoc,
+    PresheafedSpace.IsOpenImmersion.invApp_app_assoc, f.val.c.naturality_assoc,
     TopCat.Presheaf.pushforwardObj_map, ← Functor.map_comp]
   convert (Category.comp_id <| f.1.c.app (op V)).symm
   convert Y.presheaf.map_id _
