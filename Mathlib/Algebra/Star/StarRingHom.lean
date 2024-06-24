@@ -372,10 +372,14 @@ theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B) = e := ext fun _ => rfl
 
+/-- Auxilliary definition to avoid looping in `dsimp` with `StarRingEquiv.symm_mk`. -/
+protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅) :=
+  (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm
+
 @[simp]
 theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm =
-      { (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm with
+      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ with
         toFun := f'
         invFun := f } :=
   rfl
