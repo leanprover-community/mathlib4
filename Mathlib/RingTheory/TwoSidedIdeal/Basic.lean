@@ -14,25 +14,29 @@ import Mathlib.RingTheory.Congruence.Basic
 In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-ideal of a ring.
 
 ## Main definitions and results
-* `RingCon.setLike`: Every `I : RingCon R` can be interpreted as a set of `R` where `x ∈ I` if and
-  only if `I x 0`. In this sense, two-sided-ideals of `R` are exactly `RingCon R`.
-
-* `RingCon.addCommGroup`: when viewing `I : RingCon R` as a set, it is an abelian group.
+* `TwoSidedIdeal`: For any `NonUnitalNonAssocRing R`, `TwoSidedIdeal R` is the exactly `RingCon R`.
+* `TwoSidedIdeal.setLike`: Every `I : TwoSidedIdeal R` can be interpreted as a set of `R` where
+  `x ∈ I` if and only if `I x 0`.
+* `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
 
 
 -/
 
 open MulOpposite
 
-section ideal
+section definitions
 
-namespace RingCon
+abbrev TwoSidedIdeal (R : Type*) [NonUnitalNonAssocRing R] := RingCon R
+
+end definitions
+
+namespace TwoSidedIdeal
 
 section NonUnitalNonAssocRing
 
-variable {R : Type*} [NonUnitalNonAssocRing R] (I : RingCon R)
+variable {R : Type*} [NonUnitalNonAssocRing R] (I : TwoSidedIdeal R)
 
-instance setLike : SetLike (RingCon R) R where
+instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t r 0}
   coe_injective' t₁ t₂ (h : {x | _} = {x | _}) := by
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
@@ -55,17 +59,17 @@ lemma rel_iff (x y : R) : I x y ↔ x - y ∈ I := by
 the coercion from two-sided-ideals to sets is an order embedding
 -/
 @[simps]
-def coeOrderEmbedding : RingCon R ↪o Set R where
+def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
   toFun := SetLike.coe
   inj' := SetLike.coe_injective
   map_rel_iff' {I J} := ⟨fun h x y hxy => by
     convert J.add (h <| sub_self y ▸ I.sub hxy (I.refl y)) (J.refl y) <;>
     abel, fun h _ h' => h h'⟩
 
-lemma le_iff {I J : RingCon R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :=
+lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :=
   coeOrderEmbedding.map_rel_iff.symm
 
-lemma lt_iff (I J : RingCon R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := by
+lemma lt_iff (I J : TwoSidedIdeal R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := by
   rw [lt_iff_le_and_ne, Set.ssubset_iff_subset_ne, le_iff]
   simp
 
@@ -85,16 +89,16 @@ lemma nsmul_mem {x} (n : ℕ) (hx : x ∈ I) : n • x ∈ I := by simpa using I
 
 lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := by simpa using I.zsmul _ hx
 
-instance : AddSubgroupClass (RingCon R) R where
+instance : AddSubgroupClass (TwoSidedIdeal R) R where
   zero_mem := zero_mem
   add_mem := @add_mem _ _
   neg_mem := @neg_mem _ _
 
-instance : SMulMemClass (RingCon R) R R where
-  smul_mem _ _ h := RingCon.mul_mem_left _ _ _ h
+instance : SMulMemClass (TwoSidedIdeal R) R R where
+  smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h
 
-instance : SMulMemClass (RingCon R) Rᵐᵒᵖ R where
-  smul_mem _ _ h := RingCon.mul_mem_right _ _ _ h
+instance : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
+  smul_mem _ _ h := TwoSidedIdeal.mul_mem_right _ _ _ h
 
 instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 
@@ -114,6 +118,4 @@ instance addCommGroup : AddCommGroup I :=
 
 end NonUnitalNonAssocRing
 
-end RingCon
-
-end ideal
+end TwoSidedIdeal
