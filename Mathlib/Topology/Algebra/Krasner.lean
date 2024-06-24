@@ -200,6 +200,8 @@ instance : TotallySeparatedSpace L := sorry
 
 instance (R : Type*) [Ring R] [UniformSpace R] [UniformAddGroup R] (M : Subring R) : UniformAddGroup M := sorry
 
+instance : NontriviallyNormedField ()
+
 variable (M : Subfield L)
 #synth UniformAddGroup M
 
@@ -240,7 +242,7 @@ instance id : IsKrasner L L := sorry
 
 instance of_isTrivial [vL.v.IsTrivial] : IsKrasner K L := sorry
 
-theorem of_completeSpace [u : UniformSpace K] [c : CompleteSpace K] [vL.v.RankOne] (h : Embedding (algebraMap K L)) (nontriv : ∃ r : K, vL.v algebraMap r ≠ 0 ∧ algebraMap r ≠ 1) : IsKrasner K L := by
+theorem of_completeSpace [u : UniformSpace K] [c : CompleteSpace K] [vL.v.RankOne] (h : Embedding (algebraMap K L)) (nontriv : ∃ r : K, vL.v (algebraMap K L r) ≠ 0 ∧ vL.v (algebraMap K L r) ≠ 1) : IsKrasner K L := by
   constructor
   intro x y xsep hyK hxy
   let z := x - y
@@ -248,7 +250,6 @@ theorem of_completeSpace [u : UniformSpace K] [c : CompleteSpace K] [vL.v.RankOn
   let FDM := IntermediateField.adjoin.finiteDimensional hyK
   let I'' : UniformAddGroup M := inferInstanceAs (UniformAddGroup M.toSubfield)
   let vK : Valued K Γ := Valued.mk' (vL.v.comap (algebraMap K L))
-  push_neg at htriv
   let vKrankone : vK.v.RankOne := {
     hom := Valuation.RankOne.hom vL.v
     strictMono' := Valuation.RankOne.strictMono vL.v
