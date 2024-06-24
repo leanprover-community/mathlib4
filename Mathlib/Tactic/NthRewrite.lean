@@ -75,9 +75,6 @@ h: a = a + b
 ```
 This new instance of `a` also turns out to be the third _occurrence_ of `a`.  Therefore,
 the next `nth_rewrite` with `h` rewrites this `a`.
-
-Note: The occurrences are counted beginning with `1` and not `0`, this is different from
-mathlib3. The translation will be handled by mathport.
 -/
 syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (location)? : tactic
 
