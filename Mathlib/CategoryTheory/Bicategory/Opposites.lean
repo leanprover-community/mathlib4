@@ -104,6 +104,7 @@ open Bicategory.Opposite renaming bop → bop', unbop → unbop'
 
 /-- `Bᴮᵒᵖ` reverses the 1-morphisms in `B` -/
 instance Hom : Quiver (Bᴮᵒᵖ) where
+  -- TODO: maybe this here should be ᵒᵖ? So that we can get some of that API (like op of a functor)
   Hom := fun a b => (unbop' b ⟶ unbop' a)ᴮᵒᵖ
 
 namespace Quiver.Hom
