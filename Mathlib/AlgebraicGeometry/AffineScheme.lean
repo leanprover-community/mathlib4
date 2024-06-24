@@ -428,8 +428,8 @@ theorem exists_basicOpen_le {V : Opens X} (x : V) (h : ↑x ∈ U) :
     refine (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans ?_
     rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op,
       ← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
-      op_id, CategoryTheory.Functor.map_id, Scheme.Hom.invApp,
-      PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
+      op_id, CategoryTheory.Functor.map_id, Scheme.Hom.invApp]
+    erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
     congr
   use X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r
   rw [← this]
