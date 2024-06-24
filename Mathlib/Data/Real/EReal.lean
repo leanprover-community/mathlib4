@@ -825,8 +825,8 @@ theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
 theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
   rw [add_comm, top_add_of_ne_bot h]
 
-/--For any extended real number `x`, the sum of `x` and `⊤` is equal to `⊤`
-if and only if `x` is not `⊥`.-/
+/-- For any extended real number `x`, the sum of `x` and `⊤` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
 theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by
   constructor <;> intro h
   · by_contra h'
