@@ -366,17 +366,6 @@ open Preadditive
 
 variable (G : C ⥤ D) [G.Additive]
 
-lemma map_inr :
-    (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (inr φ) ≫
-      (mapHomologicalComplexIso φ G).hom =
-    inr ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).map φ) := by
-  ext n
-  dsimp [mapHomologicalComplexIso]
-  rw [mapHomologicalComplexXIso_eq φ G n (n+1) rfl, mappingCone.ext_to_iff _ _ _ rfl]
-  simp only [Functor.mapHomologicalComplex_obj_X, mapHomologicalComplexXIso'_hom, comp_add, add_comp, assoc,
-    inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero, add_zero, inl_v_snd_v, inr_f_snd_v, zero_add, ← G.map_comp,
-    G.map_zero, G.map_id, and_self]
-
 lemma map_δ :
   (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
     NatTrans.app (Functor.commShiftIso (Functor.mapHomologicalComplex G (ComplexShape.up ℤ)) 1).hom K =
@@ -392,15 +381,30 @@ lemma map_δ :
   rw [Cochain.rightShift_v _ 1 0 (by linarith) n n (by linarith) (n+1) (by linarith)]
   simp
 
+/-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
+additive functor, then the image by `G` of the triangle `triangle φ` identifies to
+the triangle associated to the image of `φ` by `G`. -/
 noncomputable def mapTriangleIso :
     (G.mapHomologicalComplex (ComplexShape.up ℤ)).mapTriangle.obj (triangle φ) ≅
       triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) := by
-  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G)
-    (by aesop_cat) _ _
+  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G)
+    (by aesop_cat) ?_ ?_
   · dsimp
     rw [map_inr, id_comp]
   · dsimp
     simp only [CategoryTheory.Functor.map_id, comp_id, map_δ]
+
+/-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
+additive functor, then the image by `G` of the triangle `triangleh φ` identifies to
+the triangle associated to the image of `φ` by `G`. -/
+noncomputable def mapTrianglehIso :
+    (G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.obj (triangleh φ) ≅
+      triangleh ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) :=
+  (Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
+    (Functor.mapTriangleIso (G.mapHomotopyCategoryFactors (ComplexShape.up ℤ))).app _ ≪≫
+    (Functor.mapTriangleCompIso _ _).app _ ≪≫
+    (HomotopyCategory.quotient D (ComplexShape.up ℤ)).mapTriangle.mapIso
+      (CochainComplex.mappingCone.mapTriangleIso φ G)
 
 end
 
@@ -519,12 +523,7 @@ instance (G : C ⥤ D) [G.Additive] :
     (G.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated where
   map_distinguished := by
     rintro T ⟨K, L, f, ⟨e⟩⟩
-    refine ⟨_, _, (G.mapHomologicalComplex (ComplexShape.up ℤ)).map f, ⟨?_⟩⟩
-    exact (G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.mapIso e ≪≫
-      (Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
-      (Functor.mapTriangleIso (G.mapHomotopyCategoryFactors (ComplexShape.up ℤ))).app _ ≪≫
-      (Functor.mapTriangleCompIso _ _).app _ ≪≫
-      (quotient D (ComplexShape.up ℤ)).mapTriangle.mapIso
-        (CochainComplex.mappingCone.mapTriangleIso f G)
+    exact ⟨_, _, _, ⟨(G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.mapIso e ≪≫
+      CochainComplex.mappingCone.mapTrianglehIso f G⟩⟩
 
 end HomotopyCategory
