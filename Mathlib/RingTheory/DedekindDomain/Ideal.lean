@@ -240,30 +240,17 @@ lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
   simp only [bot_eq_zero, ne_eq, Ideal.one_eq_top, le_top, Submodule.map_top]
   rfl
 
-lemma inv_ne_bot {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : I⁻¹ ≠ ⊥ := by
-  have inj : Function.Injective (algebraMap R₁ K) := NoZeroSMulDivisors.algebraMap_injective R₁ K
-  rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at inj
-  intro h
-  have := den_mem_inv hI
-  suffices (algebraMap R₁ K) I.den = 0 from nonZeroDivisors.coe_ne_zero I.den (inj I.den this)
-  rwa [h, bot_eq_zero, mem_zero_iff] at this
-
 lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := by
   by_cases hI : I = ⊥
-  · suffices I.num = 0 by
-      rw [this]
-      intro x hx
-      suffices x = 0 by simp only [this, val_eq_coe, coe_mul, Submodule.zero_mem]
-      simpa only [zero_eq_bot, coeIdeal_bot, val_eq_coe, coe_zero, Submodule.mem_bot] using hx
-    rw [hI, bot_eq_zero]
-    exact num_zero_eq <| NoZeroSMulDivisors.algebraMap_injective R₁ K
-  rw [mul_comm, ← den_mul_self_eq_num']
-  exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
+  · rw [hI, bot_eq_zero, num_zero_eq <| NoZeroSMulDivisors.algebraMap_injective R₁ K, zero_mul]
+    rfl
+  · rw [mul_comm, ← den_mul_self_eq_num']
+    exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
 
-lemma mul_inv_ne_bot {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : I * I⁻¹ ≠ ⊥ := by
+lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ := by
   have := (FractionalIdeal.coeIdeal_ne_zero (K := K)).2 (hI ∘ num_eq_zero_iff.1)
   rw [← bot_eq_zero] at this
-  exact ne_of_gt <| gt_of_ge_of_gt I.num_le_mul_inv (Ne.bot_lt' this.symm)
+  exact lt_of_lt_of_le (Ne.bot_lt' this.symm) I.num_le_mul_inv
 
 noncomputable instance : InvOneClass (FractionalIdeal R₁⁰ K) := { inv_one := div_one }
 
