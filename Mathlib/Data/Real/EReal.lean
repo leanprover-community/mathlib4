@@ -808,6 +808,11 @@ theorem top_add_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
   · exact top_add_coe _
   · exact top_add_top
 
+/--For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`.-/
+@[simp]
+theorem ne_bot_add_top {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
+  rw [add_comm, top_add_ne_bot h]
+
 @[simp]
 theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
   rfl
