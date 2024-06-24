@@ -802,7 +802,7 @@ theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ :=
 
 /--For any extended real number `x` which is not `⊥`, the sum of `⊤` and `x` is equal to `⊤`.-/
 @[simp]
-theorem top_add_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
+theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
   induction x using EReal.rec
   · exfalso; exact h (Eq.refl ⊥)
   · exact top_add_coe _
@@ -810,8 +810,21 @@ theorem top_add_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
 
 /--For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`.-/
 @[simp]
-theorem ne_bot_add_top {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
-  rw [add_comm, top_add_ne_bot h]
+theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
+  rw [add_comm, top_add_of_ne_bot h]
+
+/--For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
+then their sum is also greater than `0`.-/
+@[simp]
+theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by
+  induction a using EReal.rec
+  · exfalso; exact not_lt_bot ha
+  · induction b using EReal.rec
+    · exfalso; exact not_lt_bot hb
+    · norm_cast at *; exact Left.add_pos ha hb
+    · exact add_top_of_ne_bot (Ne.symm (ne_of_lt (lt_trans bot_lt_zero ha))) ▸ hb
+  · rw [top_add_of_ne_bot (Ne.symm (ne_of_lt (lt_trans bot_lt_zero hb)))]
+    exact ha
 
 @[simp]
 theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
