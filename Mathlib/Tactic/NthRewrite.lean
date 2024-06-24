@@ -20,7 +20,7 @@ open Lean Elab Tactic Meta Parser.Tactic
 /-- `nth_rewrite` is a variant of `rewrite` that only changes the `n`ᵗʰ _occurrence_ of the
 expression to be rewritten. `nth_rewrite n [eq₁, eq₂, ..., eqₘ]` will rewrite the `n`ᵗʰ _occurrence_
 of each of the `m` equalities `eqᵢ`in that order. Occurrences are counted beginning with `1`.
-Occurrences are counted beginning with `1`. For example,
+For example,
 ```lean
 example (h : a = 1) : a + a + a + a + a = 5 := by
   nth_rewrite 2 [h]
