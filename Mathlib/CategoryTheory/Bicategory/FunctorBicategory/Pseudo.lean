@@ -7,6 +7,11 @@ Authors: Calle Sönne
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 
+-- probably optional?
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.CategoryTheory.Bicategory.Coherence
+
 /-!
 # The bicategory of pseudofunctors between two bicategories
 
@@ -48,24 +53,26 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 -- @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
-  sorry
-  -- OplaxNatTrans.associator η.toOplax θ.toOplax ι.toOplax
+  { OplaxNatTrans.associator η.toOplax θ.toOplax ι.toOplax with}
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
-  ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by aesop_cat)
+  { OplaxNatTrans.leftUnitor η.toOplax with }
+  --OplaxNatTrans.ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by aesop_cat)
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
-  ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by aesop_cat)
+  { OplaxNatTrans.rightUnitor η.toOplax with }
 
 end StrongNatTrans
 
 variable (B C)
+
+#check Bicategory.comp_whiskerLeft
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
 @[simps!]
@@ -75,8 +82,9 @@ instance Pseudofunctor.bicategory : Bicategory (Pseudofunctor B C) where
   associator {F G H} I := StrongNatTrans.associator
   leftUnitor {F G} := StrongNatTrans.leftUnitor
   rightUnitor {F G} := StrongNatTrans.rightUnitor
-  whisker_exchange {a b c f g h i} η θ := by
-    ext
-    exact whisker_exchange _ _
+  whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
+  pentagon f g h i := by ext; exact pentagon _ _ _ _
+  triangle f g := by ext; exact triangle _ _
+
 
 end CategoryTheory

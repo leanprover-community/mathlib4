@@ -226,20 +226,23 @@ lemma Modification.comp_app' {X : B} {F G : Pseudofunctor B C} {α β γ : F ⟶
     (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
   rfl
 
+-- TODO: I might need this one!
 -- /-- Construct a modification isomorphism between oplax natural transformations
 -- by giving object level isomorphisms, and checking naturality only in the forward direction.
 -- -/
--- @[simps]
--- def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
---     (naturality :
---       ∀ {a b} (f : a ⟶ b),
---         F.map f ◁ (app b).hom ≫ θ.naturality f = η.naturality f ≫ (app a).hom ▷ G.map f) :
---     η ≅ θ where
---   hom := { app := fun a => (app a).hom }
---   inv :=
---     { app := fun a => (app a).inv
---       naturality := fun {a b} f => by
---         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
+@[simps]
+def ModificationIso.ofComponents {F G : Pseudofunctor B C} {η θ : F ⟶ G}
+    (app : ∀ a, η.app a ≅ θ.app a)
+    (naturality : ∀ {a b} (f : a ⟶ b),
+      F.map f ◁ (app b).hom ≫ (θ.naturality f).hom = (η.naturality f).hom ≫ (app a).hom ▷ G.map f) :
+    η ≅ θ where
+  hom := { app := fun a => (app a).hom }
+  inv :=
+    { app := fun a => (app a).inv
+      naturality := fun {a b} f => by
+        rw [←whiskerRightIso_inv, Iso.eq_comp_inv, assoc]
+        rw [←whiskerLeftIso_inv, Iso.inv_comp_eq]
+        apply (naturality f).symm }
 
 end
 
