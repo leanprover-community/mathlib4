@@ -10,4 +10,5 @@ This file is ignored by `shake`:
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.Papercut
 import Mathlib.Tactic.Linter.Style
