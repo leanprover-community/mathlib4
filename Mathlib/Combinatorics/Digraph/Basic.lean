@@ -229,11 +229,9 @@ instance [Nontrivial V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
   rw [← completeGraph_eq_top, ← emptyGraph_eq_bot, Digraph.completeGraph, Digraph.emptyGraph]
   simp only [ne_eq, mk.injEq]
-  push_neg
-  rw [@ne_iff]
+  rw [← @Ne.eq_def, @ne_iff]
   simp only [Pi.top_apply, ne_eq, exists_const]
-  push_neg
-  rw [@ne_iff]
+  rw [← @Ne.eq_def, @ne_iff]
   simp only [Pi.top_apply, Prop.top_eq_true, ne_eq, eq_iff_iff, iff_true, not_false_eq_true,
     exists_const]
 
