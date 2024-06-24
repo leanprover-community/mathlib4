@@ -189,7 +189,7 @@ theorem isLocallyNoetherian_iff_affine_cover' :
     exact ((Scheme.restrictFunctorΓ X).app (op U)).symm
   · rintro ⟨C, ⟨hCAff, hCNoeth⟩⟩
     let fS i : X.affineOpens := ⟨Scheme.Hom.opensRange (C.map i), by
-      apply rangeIsAffineOpenOfOpenImmersion
+      apply isAffineOpen_opensRange
     ⟩
     let S : Set X.affineOpens := { fS i | i : C.J }
     apply isLocallyNoetherian_of_affine_cover S
@@ -216,12 +216,12 @@ theorem isLocallyNoetherian_of_openCover (C : Scheme.OpenCover.{u, u} X)
   constructor
   · intro i
     rw [Scheme.AffineOpenCover.openCover_obj]
-    exact SpecIsAffine _
+    exact isAffine_Spec _
   · intro i
     let X := (C.obj (m.idx i))
     let U : X.affineOpens := ⟨Scheme.Hom.opensRange (m.app i), by
-      convert rangeIsAffineOpenOfOpenImmersion (m.app i)
-      exact SpecIsAffine _
+      convert isAffineOpen_opensRange (m.app i)
+      exact isAffine_Spec _
     ⟩
     have hNoeth: IsNoetherianRing (X.presheaf.obj (op U)) := by
       apply (hC (m.idx i)).component_noetherian
@@ -285,9 +285,9 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
   apply Inducing.isCompact_preimage_iff (f := f)
   constructor
   exact hInd
-  rw [IsAffineOpen.fromSpec_range]
+  rw [IsAffineOpen.range_fromSpec]
   exact Set.inter_subset_left
-  rw [← Set.preimage_inter_range, IsAffineOpen.fromSpec_range, Set.inter_comm]
+  rw [← Set.preimage_inter_range, IsAffineOpen.range_fromSpec, Set.inter_comm]
   apply Inducing.isCompact_preimage'
   constructor
   exact hInd
@@ -295,7 +295,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
   apply noetherianSpace_of_affineOpen U
   apply IsLocallyNoetherian.component_noetherian
   exact Set.inter_subset_left
-  rw [IsAffineOpen.fromSpec_range]
+  rw [IsAffineOpen.range_fromSpec]
   exact Set.inter_subset_left
 
 /-- A scheme `X` is Noetherian if it is locally Noetherian and compact. -/
@@ -412,7 +412,7 @@ instance (priority := 100) quasiCompact_of_noetherianSpace_source {X Y : Scheme}
 instance {R : CommRingCat} [IsNoetherianRing R] :
     IsLocallyNoetherian (Scheme.Spec.obj (op R)) := by
   let X := Scheme.Spec.obj (op R)
-  apply isLocallyNoetherian_of_affine_cover (S := {⟨⊤, AlgebraicGeometry.topIsAffineOpen X⟩})
+  apply isLocallyNoetherian_of_affine_cover (S := {⟨⊤, AlgebraicGeometry.isAffineOpen_top X⟩})
   simp only [ciSup_unique, Set.default_coe_singleton]
   rintro ⟨_, rfl⟩
   apply isNoetherianRing_of_ringEquiv R
@@ -422,7 +422,7 @@ instance {R : CommRingCat} [IsNoetherianRing R] :
 instance (priority := 100) {R : CommRingCat}
     [h : IsLocallyNoetherian (Scheme.Spec.obj (op R))] : IsNoetherianRing R := by
   let X := Scheme.Spec.obj (op R)
-  have := h.component_noetherian ⟨⊤, AlgebraicGeometry.topIsAffineOpen X⟩
+  have := h.component_noetherian ⟨⊤, AlgebraicGeometry.isAffineOpen_top X⟩
   -- suffices R ≅ X.presheaf.obj (op ⊤) by
   apply isNoetherianRing_of_ringEquiv (X.presheaf.obj (op ⊤))
   apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
