@@ -87,7 +87,7 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
-instance (priority := 900) smul : SMul R s :=
+instance (priority := 50) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 #align set_like.has_smul SetLike.smul
 #align set_like.has_vadd SetLike.vadd
@@ -145,7 +145,7 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
-instance (priority := 900) smul' : SMul M s where
+instance (priority := 50) smul' : SMul M s where
   smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
 
 @[to_additive (attr := simp, norm_cast)]
