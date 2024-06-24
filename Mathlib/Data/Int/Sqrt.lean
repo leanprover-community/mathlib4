@@ -22,7 +22,7 @@ namespace Int
 /-- `sqrt z` is the square root of an integer `z`. If `z` is positive, it returns the largest
 integer `r` such that `r * r ≤ n`. If it is negative, it returns `0`. For example, `sqrt (-1) = 0`,
 `sqrt 1 = 1`, `sqrt 2 = 1` -/
--- @[pp_nodot] porting note: unknown attribute
+@[pp_nodot]
 def sqrt (z : ℤ) : ℤ :=
   Nat.sqrt <| Int.toNat z
 #align int.sqrt Int.sqrt

@@ -84,7 +84,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     [hX : IrreducibleSpace X.carrier] [IrreducibleSpace Y.carrier] :
     f.1.base (genericPoint X.carrier : _) = (genericPoint Y.carrier : _) := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert (genericPoint_spec X.carrier).image (show Continuous f.1.base by continuity)
+  convert (genericPoint_spec X.carrier).image (show Continuous f.1.base by fun_prop)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
@@ -136,7 +136,7 @@ instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain 
 instance {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
     IsIntegral (X.restrict U.openEmbedding) :=
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU
-  isIntegralOfOpenImmersion (X.ofRestrict U.openEmbedding)
+  isIntegral_of_isOpenImmersion (X.ofRestrict U.openEmbedding)
 
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : Opens X.carrier}
     (hU : IsAffineOpen U) [h : Nonempty U] :
@@ -161,7 +161,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   haveI : IsAffine _ := hU
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU'
   haveI : IsIntegral (X.restrict U.openEmbedding) :=
-    @isIntegralOfIsAffineIsDomain _ _ _
+    @isIntegral_of_isAffine_of_isDomain _ _ _
       (by dsimp; rw [Opens.openEmbedding_obj_top]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X.carrier, _⟩ using 1
@@ -170,14 +170,14 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
 #align algebraic_geometry.function_field_is_fraction_ring_of_is_affine_open AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen
 
 instance (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
-  AlgebraicGeometry.SpecIsAffine _
+  AlgebraicGeometry.isAffine_Spec _
 
 instance [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
       PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
-  have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
+  have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.map x)
   let x : U := ⟨x, X.affineCover.Covers x⟩
   have : Nonempty U := ⟨x⟩
   let M := (hU.primeIdealOf x).asIdeal.primeCompl
