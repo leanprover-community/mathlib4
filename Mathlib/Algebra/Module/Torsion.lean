@@ -946,16 +946,23 @@ lemma torsionBy_neg : A[-n] = A[n] := by
 variable {A} {n : ℕ}
 
 @[simp]
-lemma nsmul_torsionBy (x : A[n]) : n • x = 0 :=
+lemma torsionBy.nsmul (x : A[n]) : n • x = 0 :=
   nsmul_eq_smul_cast ℤ n x ▸ Submodule.smul_torsionBy ..
 
-lemma mod_nsmul_torsionBy_eq_nsmul (m : A[n]) (s : ℕ) :
-    (s % n) • m = s • m := by
-  nth_rewrite 2 [← Nat.div_add_mod s n]
-  rw [add_smul, self_eq_add_left, mul_comm, mul_smul, nsmul_torsionBy, smul_zero]
+lemma torsionBy.nsmul_iff {x : A} :
+    x ∈ A[n] ↔ n • x = 0 :=
+  nsmul_eq_smul_cast ℤ n x ▸ Submodule.mem_torsionBy_iff ..
+
+lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n])  :
+    s • x = (s % n) • x :=
+  nsmul_eq_mod_nsmul s (torsionBy.nsmul x)
+
+lemma torsionBy.mod_self_nsmul' (s : ℕ) {x : A} (h : x ∈ A[n]) :
+    s • x = (s % n) • x :=
+  nsmul_eq_mod_nsmul s (torsionBy.nsmul_iff.mp h)
 
 /-- For a natural number `n`, the `n`-torsion subgroup of `A` is a `ZMod n` module. -/
 def moduleZModTorsionBy : Module (ZMod n) A[n] :=
-  AddCommGroup.zmodModule nsmul_torsionBy
+  AddCommGroup.zmodModule torsionBy.nsmul
 
 end AddSubgroup
