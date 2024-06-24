@@ -528,12 +528,6 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
           simp }
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
-        -- Porting note: double dsimp seems odd
-        set_option tactic.skipAssignedInstances false in
-        dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
-          RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-          MonoidHom.coe_coe, ZeroHom.coe_mk, smul_eq_mul, id_eq, eq_mpr_eq_cast, cast_eq,
-          Functor.comp_obj]
         rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
         dsimp
         rw [smul_add]
