@@ -103,6 +103,14 @@ theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop
 
 end RelEmbedding
 
+/-- This might not be the most natural place for this instance. -/
+instance OrderEmbedding.infinite {α β : Type*} [Preorder α] [Nonempty α] [Nonempty (α ↪o ℕ)]
+    [Nonempty β] [Preorder β] [NoMaxOrder β] : Infinite (α ↪o β) :=
+  let f1 := Classical.arbitrary (α ↪o ℕ)
+  let f2 := Classical.arbitrary (ℕ ↪o β)
+  Infinite.of_injective (fun i ↦ f1.trans <| (OrderEmbedding.addRight i).trans f2) fun _ _ h ↦ by
+    simpa using congrFun (congr_arg (fun f : (α ↪o β) ↦ (f : α → β)) h) (Classical.arbitrary α)
+
 namespace Nat
 
 variable (s : Set ℕ) [Infinite s]
@@ -161,6 +169,18 @@ theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : 
     exacts [⟨Nat.orderEmbeddingOfSet (e ⁻¹' s), Or.inl fun n => (Nat.Subtype.ofNat (e ⁻¹' s) _).2⟩,
       ⟨Nat.orderEmbeddingOfSet (e ⁻¹' t), Or.inr fun n => (Nat.Subtype.ofNat (e ⁻¹' t) _).2⟩]
 #align nat.exists_subseq_of_forall_mem_union Nat.exists_subseq_of_forall_mem_union
+
+theorem orderEmbedding_apply_add_le_add_apply (f : ℕ ↪o ℕ) (x d : ℕ) : f x + d ≤ f (x+d) := by
+  induction' d with d hd; rfl
+  rw [← add_assoc, Nat.add_one_le_iff, ← add_assoc]
+  exact hd.trans_lt <| by simp
+
+theorem orderEmbedding_apply_eq_self_of_le (f : ℕ ↪o ℕ) {x y : ℕ} (hx : f x ≤ x) (hyx : y ≤ x) :
+    f y = y := by
+  obtain ⟨d,rfl⟩ := exists_add_of_le hyx
+  refine (f.strictMono.id_le _).antisymm' ?_
+  rw [← add_le_add_iff_right d]
+  exact (Nat.orderEmbedding_apply_add_le_add_apply _ _ _).trans hx
 
 end Nat
 
