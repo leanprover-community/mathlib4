@@ -22,6 +22,8 @@ universe v u
 
 open CategoryTheory
 
+attribute [local instance] IsScalarTower.of_compHom SMulCommClass.of_commMonoid
+
 namespace ModuleCat
 
 variable {A B : CommRingCat.{u}} (M : ModuleCat.{v} B) (f : A ⟶ B)
@@ -129,9 +131,8 @@ noncomputable def map :
   letI := g.toAlgebra
   letI := g'.toAlgebra
   letI := (g ≫ f').toAlgebra
-  have := RingHom.isScalarTower_toAlgebra_comp g f' _ rfl
-  have := RingHom.isScalarTower_toAlgebra_comp f g' _ fac.symm
-  have := RingHom.smulCommClass_toAlgebra g' f'
+  have : IsScalarTower A A' B' := IsScalarTower.of_algebraMap_eq' rfl
+  have := IsScalarTower.of_algebraMap_eq' fac
   { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
     map_add' := by simp
     map_smul' := by simp }
@@ -143,23 +144,13 @@ lemma map_d (b : B) : map fac (d b) = d (g' b) := by
   letI := g.toAlgebra
   letI := g'.toAlgebra
   letI := (f'.comp g).toAlgebra
-  have := RingHom.isScalarTower_toAlgebra_comp g f' _ rfl
-  have := RingHom.isScalarTower_toAlgebra_comp f g' _ fac.symm
-  have := RingHom.smulCommClass_toAlgebra g' f'
+  have : IsScalarTower A A' B' := IsScalarTower.of_algebraMap_eq' rfl
+  have := IsScalarTower.of_algebraMap_eq' fac
   exact _root_.KaehlerDifferential.map_D A A' B B' b
 
 end KaehlerDifferential
 
 end CommRingCat
-
-lemma Module.isScalarTower_compHom (M : Type*) {A B : Type*}
-    [CommSemiring B] [CommSemiring A] [AddCommMonoid M] [Module B M] (f : A →+* B)  :
-    letI := f.toAlgebra; letI := Module.compHom M f; IsScalarTower A B M := by
-  letI := f.toAlgebra
-  letI := Module.compHom M f
-  constructor
-  intro a b m
-  exact (smul_smul (f a) b m).symm
 
 namespace ModuleCat.Derivation
 
@@ -172,14 +163,12 @@ morphism `CommRingCat.KaehlerDifferential f ⟶ M`. -/
 noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
   letI := f.toAlgebra
   letI := Module.compHom M f
-  letI := Module.isScalarTower_compHom M f
   D.liftKaehlerDifferential
 
 @[simp]
 lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by
   letI := f.toAlgebra
   letI := Module.compHom M f
-  letI := Module.isScalarTower_compHom M f
   apply D.liftKaehlerDifferential_comp_D
 
 end ModuleCat.Derivation
