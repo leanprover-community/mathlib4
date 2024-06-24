@@ -368,17 +368,17 @@ variable (G : C ⥤ D) [G.Additive]
 
 lemma map_δ :
     (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
-      NatTrans.app (Functor.commShiftIso (Functor.mapHomologicalComplex G (ComplexShape.up ℤ)) 1).hom K =
+      NatTrans.app ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).commShiftIso  1).hom K =
     (mapHomologicalComplexIso φ G).hom ≫
       (triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).mor₃ := by
   ext n
   dsimp [mapHomologicalComplexIso]
   rw [mapHomologicalComplexXIso_eq φ G n (n+1) rfl, mapHomologicalComplexXIso'_hom]
-  simp only [Functor.mapHomologicalComplex_obj_X, add_comp, assoc, inl_v_triangle_mor₃_f, shiftFunctor_obj_X,
-    shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero,
-    add_zero]
+  simp only [Functor.mapHomologicalComplex_obj_X, add_comp, assoc, inl_v_triangle_mor₃_f,
+    shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv,
+    comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, add_zero]
   dsimp [triangle]
-  rw [Cochain.rightShift_v _ 1 0 (by linarith) n n (by linarith) (n+1) (by linarith)]
+  rw [Cochain.rightShift_v _ 1 0 (by omega) n n (by omega) (n + 1) (by omega)]
   simp
 
 /-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
