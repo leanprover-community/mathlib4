@@ -137,7 +137,9 @@ jobs:
           lake --version
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run: lake exe mk_all
+        run: |
+          lake update UpdateDeprecations
+          lake exe mk_all
 
       - name: build cache
         run: |
@@ -164,7 +166,7 @@ jobs:
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+            bash -o pipefail -c "lake update UpdateDeprecations ; lake build ; lake exe update_deprecations ; env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)

@@ -120,6 +120,10 @@ theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) �
 @[deprecated (since := "2024-01-14")] alias comp_const_right := comp_const
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
+def Injectiv' (f : α → β) : Prop :=
+  ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
+
+@[deprecated Injectiv']
 def Injective (f : α → β) : Prop :=
   ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
 #align function.injective Function.Injective

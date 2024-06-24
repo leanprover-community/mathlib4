@@ -27,6 +27,7 @@ require aesop from git "https://github.com/leanprover-community/aesop" @ "master
 require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.36"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
+require UpdateDeprecations from git "https://github.com/adomani/UpdateDeprecations" @ "master"
 
 /-!
 ## Mathlib libraries
