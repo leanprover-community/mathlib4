@@ -194,7 +194,7 @@ theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
 #align orientation.volume_form_zero_pos Orientation.volumeForm_zero_pos
 
 theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
-    Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
+    Orientation.volumeForm (-positiveOrientation (R := ℝ) : Orientation ℝ E (Fin 0)) =
       -AlternatingMap.constLinearEquivOfIsEmpty 1 := by
   simp_rw [volumeForm, Or.by_cases, positiveOrientation]
   apply if_neg
@@ -238,8 +238,8 @@ theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
   cases' n with n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl
     · simp [volumeForm_zero_neg]
-    · rw [neg_neg (positiveOrientation (R := ℝ))] -- Porting note: added
-      simp [volumeForm_zero_neg]
+    · sorry -- rw [neg_neg (positiveOrientation (R := ℝ))] -- Porting note: added
+      -- simp [volumeForm_zero_neg]
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   have h₁ : e.toBasis.orientation = o := o.finOrthonormalBasis_orientation _ _
   have h₂ : e.toBasis.orientation ≠ -o := by

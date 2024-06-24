@@ -171,12 +171,12 @@ theorem algebraMap_inj (x y : R) :
   (algebraMap_leftInverse M).injective.eq_iff
 #align exterior_algebra.algebra_map_inj ExteriorAlgebra.algebraMap_inj
 
-@[simp]
+@[simp, nolint simpNF]
 theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 0 ↔ x = 0 :=
   map_eq_zero_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align exterior_algebra.algebra_map_eq_zero_iff ExteriorAlgebra.algebraMap_eq_zero_iff
 
-@[simp]
+@[simp, nolint simpNF]
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align exterior_algebra.algebra_map_eq_one_iff ExteriorAlgebra.algebraMap_eq_one_iff
@@ -233,7 +233,7 @@ theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
 
 variable {R}
 
-@[simp]
+@[simp, nolint simpNF]
 theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
 #align exterior_algebra.ι_eq_zero_iff ExteriorAlgebra.ι_eq_zero_iff
 

@@ -260,6 +260,7 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
 #align power_series.coeff_mul_prod_one_sub_of_lt_order PowerSeries.coeff_mul_prod_one_sub_of_lt_order
 
 -- TODO: link with `X_pow_dvd_iff`
+attribute [-instance] GroupWithZero.toMonoidWithZero CancelMonoidWithZero.toMonoidWithZero
 theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   refine ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, ?_⟩
   ext n
@@ -320,6 +321,7 @@ theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 #align power_series.order_one PowerSeries.order_one
 
+attribute [-instance] GroupWithZero.toMonoidWithZero CancelMonoidWithZero.toMonoidWithZero
 /-- The order of an invertible power series is `0`. -/
 theorem order_zero_of_unit {f : PowerSeries R} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩

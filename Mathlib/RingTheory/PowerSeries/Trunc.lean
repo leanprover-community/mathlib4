@@ -181,6 +181,7 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) := by
   rw [trunc_trunc_mul, trunc_mul_trunc]
 
+attribute [-instance] GroupWithZero.toMonoidWithZero CancelMonoidWithZero.toMonoidWithZero
 @[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
     trunc n ((trunc n f : R⟦X⟧) ^ a) = trunc n (f ^ a) := by
   induction a with

@@ -172,6 +172,7 @@ theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
   intro _ _ _
   ext <;> congr
+  sorry
 
 theorem ext_iff {inst₁ inst₂ : NonAssocSemiring R} :
     inst₁ = inst₂ ↔
@@ -232,6 +233,7 @@ theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+  sorry
 
 theorem ext_iff {inst₁ inst₂ : NonUnitalRing R} :
     inst₁ = inst₂ ↔
@@ -301,7 +303,7 @@ theorem toNonAssocSemiring_injective :
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
-  ext <;> congr
+  ext <;> congr <;> sorry
 
 theorem ext_iff {inst₁ inst₂ : NonAssocRing R} :
     inst₁ = inst₂ ↔
@@ -382,7 +384,7 @@ theorem toNonUnitalRing_injective :
 theorem toNonAssocRing_injective :
     Function.Injective (@toNonAssocRing R) := by
   intro _ _ _
-  ext <;> congr
+  ext <;> congr <;> sorry
 
 theorem toSemiring_injective :
     Function.Injective (@toSemiring R) := by

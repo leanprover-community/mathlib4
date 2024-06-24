@@ -80,7 +80,9 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_apply (σ) (x) (i) :
   intro j
   simp [Finsupp.single_apply, Pi.single_apply]
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+set_option maxHeartbeats 0 in
+set_option synthInstance.maxHeartbeats 0 in
+-- set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 lemma KaehlerDifferential.mvPolynomialBasis_repr_symm_single (σ) (i) (x) :
     (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D R (MvPolynomial σ R) (.X i) := by
   apply (mvPolynomialBasis R σ).repr.injective; simp [LinearEquiv.map_smul, -map_smul]

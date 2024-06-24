@@ -266,6 +266,7 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries 
 #noalign power_series.coe_bit0
 #noalign power_series.coe_bit1
 
+attribute [-instance] GroupWithZero.toMonoidWithZero CancelMonoidWithZero.toMonoidWithZero
 @[norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _

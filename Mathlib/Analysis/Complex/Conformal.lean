@@ -47,6 +47,7 @@ section ConformalIntoComplexNormed
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E] {z : ℂ}
   {g : ℂ →L[ℝ] E} {f : ℂ → E}
 
+attribute [-instance] Module.complexToReal
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap (map.restrictScalars ℝ) := by
   have minor₁ : ‖map 1‖ ≠ 0 := by simpa only [ext_ring_iff, Ne, norm_eq_zero] using nonzero

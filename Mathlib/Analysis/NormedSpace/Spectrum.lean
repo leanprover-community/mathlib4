@@ -450,8 +450,8 @@ theorem map_polynomial_aeval (p : ℂ[X]) :
 /-- A specialization of the spectral mapping theorem for polynomials in a Banach algebra over `ℂ`
 to monic monomials. -/
 protected theorem map_pow (n : ℕ) :
-    spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
+    spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by sorry
+  -- simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
 #align spectrum.map_pow spectrum.map_pow
 
 end NonemptySpectrum

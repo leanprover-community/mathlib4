@@ -142,6 +142,7 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
     simp (config := { contextual := true }) [Ne.symm hn]
 #align hahn_series.of_power_series_X HahnSeries.ofPowerSeries_X
 
+attribute [-instance] GroupWithZero.toMonoidWithZero CancelMonoidWithZero.toMonoidWithZero
 theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
   simp

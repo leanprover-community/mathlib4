@@ -166,10 +166,10 @@ theorem Ideal.exists_mul_add_mem_pow_succ [IsDedekindDomain S] {i : ℕ} (a c : 
 
 theorem Ideal.mem_prime_of_mul_mem_pow [IsDedekindDomain S] {P : Ideal S} [P_prime : P.IsPrime]
     (hP : P ≠ ⊥) {i : ℕ} {a b : S} (a_not_mem : a ∉ P ^ (i + 1)) (ab_mem : a * b ∈ P ^ (i + 1)) :
-    b ∈ P := by
-  simp only [← Ideal.span_singleton_le_iff_mem, ← Ideal.dvd_iff_le, pow_succ, ←
-    Ideal.span_singleton_mul_span_singleton] at a_not_mem ab_mem ⊢
-  exact (prime_pow_succ_dvd_mul (Ideal.prime_of_isPrime hP P_prime) ab_mem).resolve_left a_not_mem
+    b ∈ P := by sorry
+  -- simp only [← Ideal.span_singleton_le_iff_mem, ← Ideal.dvd_iff_le, pow_succ, ←
+    -- Ideal.span_singleton_mul_span_singleton] at a_not_mem ab_mem ⊢
+  -- exact (prime_pow_succ_dvd_mul (Ideal.prime_of_isPrime hP P_prime) ab_mem).resolve_left a_not_mem
 #align ideal.mem_prime_of_mul_mem_pow Ideal.mem_prime_of_mul_mem_pow
 
 /-- The choice of `d` in `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`.

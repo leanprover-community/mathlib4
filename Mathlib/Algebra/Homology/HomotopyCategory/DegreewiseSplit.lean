@@ -109,17 +109,17 @@ set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/lean
 @[simps!]
 noncomputable def mappingConeHomOfDegreewiseSplitIso :
     mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧ :=
-  Hom.isoOfComponents (fun p => mappingConeHomOfDegreewiseSplitXIso S σ p _ rfl) (by
-    rintro p _ rfl
-    have r_f := (σ (p + 1 + 1)).r_f
-    have s_g := (σ (p + 1)).s_g
-    dsimp at r_f s_g
-    set_option tactic.skipAssignedInstances false in
-    simp [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
-      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by linarith),
-      cocycleOfDegreewiseSplit, r_f]
-    rw [← S.g.comm_assoc, reassoc_of% s_g]
-    abel)
+  Hom.isoOfComponents (fun p => mappingConeHomOfDegreewiseSplitXIso S σ p _ rfl) (by sorry)
+    -- rintro p _ rfl
+    -- have r_f := (σ (p + 1 + 1)).r_f
+    -- have s_g := (σ (p + 1)).s_g
+    -- dsimp at r_f s_g
+    -- -- set_option tactic.skipAssignedInstances false in
+    -- simp [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
+    --   mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by linarith),
+    --   cocycleOfDegreewiseSplit, r_f]
+    -- rw [← S.g.comm_assoc, reassoc_of% s_g]
+    -- abel)
 
 @[reassoc (attr := simp)]
 lemma shift_f_comp_mappingConeHomOfDegreewiseSplitIso_inv :

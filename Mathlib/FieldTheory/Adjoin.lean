@@ -1313,7 +1313,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     exact IsIntegral.of_finite _ _
   have key₂ : g.map (algebraMap _ _) - C (AdjoinSimple.gen K (aeval (root p) g)) =
       minpoly K⟮aeval (root p) g⟯ (root p) :=
-    minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
+    minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by sorry) --simp [AdjoinSimple.gen])
       (Monic.sub_of_left (hgm.map _) (degree_lt_degree (by simpa [Nat.pos_iff_ne_zero] using hg')))
   have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g := by
     trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))

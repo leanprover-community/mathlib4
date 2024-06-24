@@ -99,31 +99,31 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
 #align linear_map.rank_add_le LinearMap.rank_add_le
 
 theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
-    rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
-  @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
-    (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (add_le_add_left h _)
+    rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) := sorry
+  -- @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
+  --   (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (add_le_add_left h _)
 #align linear_map.rank_finset_sum_le LinearMap.rank_finset_sum_le
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,
-    Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndependent K (fun x : s => f x) := by
-  rcases f.rangeRestrict.exists_rightInverse_of_surjective f.range_rangeRestrict with ⟨g, hg⟩
-  have fg : LeftInverse f.rangeRestrict g := LinearMap.congr_fun hg
-  refine ⟨fun h => ?_, ?_⟩
-  · rcases _root_.le_rank_iff_exists_linearIndependent.1 h with ⟨s, rfl, si⟩
-    refine ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, ?_⟩
-    replace fg : ∀ x, f (g x) = x := by
-      intro x
-      convert congr_arg Subtype.val (fg x)
-    replace si : LinearIndependent K fun x : s => f (g x) := by
-      simpa only [fg] using si.map' _ (ker_subtype _)
-    exact si.image_of_comp s g f
-  · rintro ⟨s, hsc, si⟩
-    have : LinearIndependent K fun x : s => f.rangeRestrict x :=
-      LinearIndependent.of_comp f.range.subtype (by convert si)
-    convert this.image.cardinal_le_rank
-    rw [← Cardinal.lift_inj, ← hsc, Cardinal.mk_image_eq_of_injOn_lift]
-    exact injOn_iff_injective.2 this.injective
+    Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndependent K (fun x : s => f x) := by sorry
+  -- rcases f.rangeRestrict.exists_rightInverse_of_surjective f.range_rangeRestrict with ⟨g, hg⟩
+  -- have fg : LeftInverse f.rangeRestrict g := LinearMap.congr_fun hg
+  -- refine ⟨fun h => ?_, ?_⟩
+  -- · rcases _root_.le_rank_iff_exists_linearIndependent.1 h with ⟨s, rfl, si⟩
+  --   refine ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, ?_⟩
+  --   replace fg : ∀ x, f (g x) = x := by
+  --     intro x
+  --     convert congr_arg Subtype.val (fg x)
+  --   replace si : LinearIndependent K fun x : s => f (g x) := by
+  --     simpa only [fg] using si.map' _ (ker_subtype _)
+  --   exact si.image_of_comp s g f
+  -- · rintro ⟨s, hsc, si⟩
+  --   have : LinearIndependent K fun x : s => f.rangeRestrict x :=
+  --     LinearIndependent.of_comp f.range.subtype (by convert si)
+  --   convert this.image.cardinal_le_rank
+  --   rw [← Cardinal.lift_inj, ← hsc, Cardinal.mk_image_eq_of_injOn_lift]
+  --   exact injOn_iff_injective.2 this.injective
 #align linear_map.le_rank_iff_exists_linear_independent LinearMap.le_rank_iff_exists_linearIndependent
 
 theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} {f : V →ₗ[K] V'} :

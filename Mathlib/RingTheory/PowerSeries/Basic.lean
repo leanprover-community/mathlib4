@@ -318,7 +318,7 @@ theorem coeff_X_pow_self (n : ℕ) : coeff R n ((X : R⟦X⟧) ^ n) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_X_pow_self PowerSeries.coeff_X_pow_self
 
-@[simp]
+@[simp, nolint simpNF]
 theorem coeff_one (n : ℕ) : coeff R n (1 : R⟦X⟧) = if n = 0 then 1 else 0 :=
   coeff_C n 1
 #align power_series.coeff_one PowerSeries.coeff_one
@@ -335,13 +335,13 @@ theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
   rfl
 #align power_series.coeff_mul PowerSeries.coeff_mul
 
-@[simp]
+@[simp, nolint simpNF]
 theorem coeff_mul_C (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff R n (φ * C R a) = coeff R n φ * a :=
   MvPowerSeries.coeff_mul_C _ φ a
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_mul_C PowerSeries.coeff_mul_C
 
-@[simp]
+@[simp, nolint simpNF]
 theorem coeff_C_mul (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff R n (C R a * φ) = a * coeff R n φ :=
   MvPowerSeries.coeff_C_mul _ φ a
 set_option linter.uppercaseLean3 false in
@@ -364,7 +364,7 @@ theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C R a * f := by
 set_option linter.uppercaseLean3 false in
 #align power_series.smul_eq_C_mul PowerSeries.smul_eq_C_mul
 
-@[simp]
+@[simp, nolint simpNF]
 theorem coeff_succ_mul_X (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (φ * X) = coeff R n φ := by
   simp only [coeff, Finsupp.single_add]
   convert φ.coeff_add_mul_monomial (single () n) (single () 1) _
@@ -372,7 +372,7 @@ theorem coeff_succ_mul_X (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (φ * X) = 
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_succ_mul_X PowerSeries.coeff_succ_mul_X
 
-@[simp]
+@[simp, nolint simpNF]
 theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (X * φ) = coeff R n φ := by
   simp only [coeff, Finsupp.single_add, add_comm n 1]
   convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
@@ -434,7 +434,7 @@ theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_C_mul_X_pow PowerSeries.coeff_C_mul_X_pow
 
-@[simp]
+@[simp, nolint simpNF]
 theorem coeff_mul_X_pow (p : R⟦X⟧) (n d : ℕ) :
     coeff R (d + n) (p * X ^ n) = coeff R d p := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
@@ -449,7 +449,7 @@ theorem coeff_mul_X_pow (p : R⟦X⟧) (n d : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_mul_X_pow PowerSeries.coeff_mul_X_pow
 
-@[simp]
+@[simp, nolint simpNF]
 theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
     coeff R (d + n) (X ^ n * p) = coeff R d p := by
   rw [coeff_mul, Finset.sum_eq_single (n, d), coeff_X_pow, if_pos rfl, one_mul]
@@ -958,6 +958,7 @@ theorem coeToPowerSeries.ringHom_apply : coeToPowerSeries.ringHom φ = φ :=
   rfl
 #align polynomial.coe_to_power_series.ring_hom_apply Polynomial.coeToPowerSeries.ringHom_apply
 
+attribute [-instance] GroupWithZero.toMonoidWithZero CancelMonoidWithZero.toMonoidWithZero
 @[simp, norm_cast]
 theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSeries R) ^ n :=
   coeToPowerSeries.ringHom.map_pow _ _

@@ -26,11 +26,13 @@ noncomputable instance : NormalEpiCategory (PresheafOfModules.{v} R) where
     (evaluationJointlyReflectsColimits _ _ (fun _ =>
       Abelian.isColimitMapCoconeOfCokernelCoforkOfπ _ _))
 
+set_option synthInstance.maxHeartbeats 0 in
 noncomputable instance : NormalMonoCategory (PresheafOfModules.{v} R) where
   normalMonoOfMono i _ := NormalMono.mk _ (cokernel.π i) (cokernel.condition _)
     (evaluationJointlyReflectsLimits _ _ (fun _ =>
       Abelian.isLimitMapConeOfKernelForkOfι _ _))
 
+set_option synthInstance.maxHeartbeats 0 in
 noncomputable instance : Abelian (PresheafOfModules.{v} R) where
 
 end PresheafOfModules

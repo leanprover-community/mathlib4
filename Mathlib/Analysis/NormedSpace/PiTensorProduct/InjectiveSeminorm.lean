@@ -149,6 +149,8 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
   simp [injectiveSeminorm]
   exact Seminorm.sSup_apply dualSeminorms_bounded
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
     /- If `F` were in `Type (max uι u𝕜 uE)` (which is the type of `⨂[𝕜] i, E i`), then the

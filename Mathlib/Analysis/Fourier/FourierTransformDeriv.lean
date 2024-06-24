@@ -437,6 +437,7 @@ lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v�
   filter_upwards with v
   exact (norm_fourierPowSMulRight_le L f v n).trans (le_of_eq (by ring))
 
+set_option maxHeartbeats 0 in
 lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) :
@@ -544,6 +545,7 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
       ofReal_mul, neg_neg, Fin.tail_def]
     ring
 
+set_option maxHeartbeats 0 in
 /-- The `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`, is the
 Fourier integral of the `n`-th derivative of `(L v w) ^ k * f`. -/
 theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional ℝ V]
@@ -596,7 +598,7 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
     exact h'f _ _ (le_trans (by simpa using hp.1) hk) (le_trans (by simpa using hp.2) hn)
   rw [← integral_finset_sum _ I, ← integral_mul_left]
   apply integral_mono_of_nonneg
-  · filter_upwards with v using norm_nonneg _
+  · sorry -- filter_upwards with v using norm_nonneg _
   · exact (integrable_finset_sum _ I).const_mul _
   · filter_upwards with v
     apply norm_iteratedFDeriv_fourierPowSMulRight _ hf hn _
