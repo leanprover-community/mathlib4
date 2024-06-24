@@ -640,7 +640,7 @@ lemma A33 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (T : ℝ) (h
   have hN2 := hN n hn x hx
   simp [dist_eq_norm] at hN2
   rw [AbsoluteValue.map_sub] at hN2
-  have := Complex.abs_re_le_abs ((f n x) - g x)
+  have := Complex.abs_re_le_abs ((f n x)- g x)
   have h3 := le_of_abs_le this
   have h4 := le_trans h3 hN2.le
   simp at h4
@@ -656,6 +656,7 @@ lemma A3 (f : ℕ → ℂ → ℂ) (g : ℂ → ℂ) (K : Set ℂ) (hf : Tendsto
   simp at hf
   have hf2 := hf (1) (by exact Real.zero_lt_one)
   obtain ⟨N, hN⟩ := hf2
+
 
 
 
