@@ -79,37 +79,55 @@ instance : (forget.{v} R).Faithful := (fullyFaithfulForget R).faithful
 
 instance : (forget.{v} R).Full := (fullyFaithfulForget R).full
 
+instance : (forget.{v} R).ReflectsIsomorphisms := (fullyFaithfulForget R).reflectsIsomorphisms
+
 /-- Evaluation on an object `X` gives a functor
 `SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
 def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
   forget _ ⋙ PresheafOfModules.evaluation _ X
 
-/-- The forget functor `SheafOfModules R ⥤ Sheaf J AddCommGroupCat`. -/
+/-- The forget functor `SheafOfModules R ⥤ Sheaf J AddCommGrp`. -/
 @[simps]
-def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGroupCat.{v} where
+def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrp.{v} where
   obj M := ⟨_, M.isSheaf⟩
   map f := { val := f.val.hom }
 
 /-- The canonical isomorphism between
-`SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGroupCat.{v}`
+`SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v}`
 and `SheafOfModules.forget R ⋙ PresheafOfModules.toPresheaf R.val`. -/
 def toSheafCompSheafToPresheafIso :
-    toSheaf R ⋙ sheafToPresheaf J AddCommGroupCat.{v} ≅
+    toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v} ≅
       forget R ⋙ PresheafOfModules.toPresheaf R.val := Iso.refl _
 
 instance : (toSheaf.{v} R).Faithful :=
   Functor.Faithful.of_comp_iso (toSheafCompSheafToPresheafIso.{v} R)
 
+instance (M N : SheafOfModules.{v} R) : AddCommGroup (M ⟶ N) :=
+  (fullyFaithfulForget R).homEquiv.addCommGroup
+
+@[simp]
+lemma add_val {M N : SheafOfModules.{v} R} (f g : M ⟶ N) :
+    (f + g).val = f.val + g.val := rfl
+
+instance : Preadditive (SheafOfModules.{v} R) where
+  add_comp := by intros; ext1; dsimp; simp only [Preadditive.add_comp]
+  comp_add := by intros; ext1; dsimp; simp only [Preadditive.comp_add]
+
+instance : (forget R).Additive where
+
+instance : (toSheaf R).Additive where
+
+
 /-- The type of sections of a sheaf of modules. -/
 abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
 
-variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGroupCat.{u})]
+variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 
 /-- The obvious free sheaf of modules of rank `1`. -/
 @[simps]
 def unit : SheafOfModules R where
   val := PresheafOfModules.unit R.val
-  isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGroupCat.{u})).obj R).cond
+  isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGrp.{u})).obj R).cond
 
 variable {R}
 
@@ -129,7 +147,7 @@ namespace PresheafOfModules
 variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M₁ M₂ : PresheafOfModules.{v} R}
     (f : M₁ ⟶ M₂) {N : PresheafOfModules.{v} R}
     (hN : Presheaf.IsSheaf J N.presheaf)
-    [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
+    [J.WEqualsLocallyBijective AddCommGrp.{v}]
     [Presheaf.IsLocallySurjective J f.hom]
     [Presheaf.IsLocallyInjective J f.hom]
 
