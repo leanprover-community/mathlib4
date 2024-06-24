@@ -146,6 +146,7 @@ property `p : A → Prop` if
   `cfcHom : C(spectrum R a, R) →⋆ₐ[R] A` sending the (restriction of) the identity map to `a`.
 + `cfcHom` is a closed embedding for which the spectrum of the image of function `f` is its range.
 + `cfcHom` preserves the property `p`.
++ `p 0` is true, which ensures among other things that `p ≠ fun _ ↦ False`.
 
 The property `p` is marked as an `outParam` so that the user need not specify it. In practice,
 
@@ -159,7 +160,7 @@ prevents diamonds or problems arising from multiple instances. -/
 class ContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
     [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
-  exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(spectrum R a, R) →⋆ₐ[R] A,
+  exists_cfc_of_predicate : p 0 ∧ ∀ a, p a → ∃ φ : C(spectrum R a, R) →⋆ₐ[R] A,
     ClosedEmbedding φ ∧ φ ((ContinuousMap.id R).restrict <| spectrum R a) = a ∧
       (∀ f, spectrum R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
 
@@ -215,24 +216,27 @@ While `ContinuousFunctionalCalculus` is stated in terms of these homomorphisms, 
 user should instead prefer `cfc` over `cfcHom`.
 -/
 noncomputable def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
-  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate.2 a ha).choose
 
 lemma cfcHom_closedEmbedding :
     ClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
-  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate.2 a ha).choose_spec.1
 
 lemma cfcHom_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=
-  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate.2 a ha).choose_spec.2.1
 
 /-- The **spectral mapping theorem** for the continuous functional calculus. -/
 lemma cfcHom_map_spectrum (f : C(spectrum R a, R)) :
     spectrum R (cfcHom ha f) = Set.range f :=
-  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.1 f
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate.2 a ha).choose_spec.2.2.1 f
 
 lemma cfcHom_predicate (f : C(spectrum R a, R)) :
     p (cfcHom ha f) :=
-  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2 f
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate.2 a ha).choose_spec.2.2.2 f
+
+lemma cfcHom_predicate_zero : p 0 :=
+  ContinuousFunctionalCalculus.exists_cfc_of_predicate (R := R) |>.1
 
 lemma cfcHom_eq_of_continuous_of_map_id [UniqueContinuousFunctionalCalculus R A]
     (φ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ₁ : Continuous φ)
@@ -343,8 +347,24 @@ lemma cfc_id' : cfc (fun x : R ↦ x) a = a := cfc_id R a
 lemma cfc_map_spectrum : spectrum R (cfc f a) = f '' spectrum R a := by
   simp [cfc_apply f a, cfcHom_map_spectrum (p := p)]
 
+lemma cfc_const (r : R) (a : A) (ha : p a := by cfc_tac) :
+    cfc (fun _ ↦ r) a = algebraMap R A r := by
+  rw [cfc_apply (fun _ : R ↦ r) a, ← AlgHomClass.commutes (cfcHom ha (p := p)) r]
+  congr
+
 lemma cfc_predicate : p (cfc f a) :=
   cfc_apply f a ▸ cfcHom_predicate (A := A) ha _
+
+variable (R) in
+lemma cfc_predicate_zero : p 0 :=
+  cfcHom_predicate_zero (R := R)
+
+lemma cfc_predicate_algebraMap (r : R) : p (algebraMap R A r) :=
+  cfc_const r (0 : A) (cfc_predicate_zero R) ▸ cfc_predicate (fun _ ↦ r) 0 (cfc_predicate_zero R)
+
+variable (R) in
+lemma cfc_predicate_one : p 1 :=
+  map_one (algebraMap R A) ▸ cfc_predicate_algebraMap (1 : R)
 
 lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     cfc f a = cfc g a := by
@@ -369,11 +389,6 @@ lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
 variable {a f g} in
 lemma cfc_eq_cfc_iff_eqOn : cfc f a = cfc g a ↔ (spectrum R a).EqOn f g :=
   ⟨eqOn_of_cfc_eq_cfc, cfc_congr⟩
-
-lemma cfc_const (r : R) (a : A) (ha : p a := by cfc_tac) :
-    cfc (fun _ ↦ r) a = algebraMap R A r := by
-  rw [cfc_apply (fun _ : R ↦ r) a, ← AlgHomClass.commutes (cfcHom ha (p := p)) r]
-  congr
 
 variable (R)
 
