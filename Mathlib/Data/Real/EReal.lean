@@ -837,8 +837,8 @@ theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by
     case h_top => rfl
     case h_real r => exact top_add_of_ne_bot h
 
-/--For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
-then their sum is also greater than `0`.-/
+/-- For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
+then their sum is also greater than `0`. -/
 @[simp]
 theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by
   induction a using EReal.rec
