@@ -744,15 +744,15 @@ end Order
 
 section FG
 
-variable {R : Type*} [CommRing R] [Nontrivial R]
+variable {R : Type*} [CommRing R] [Nontrivial R] {S : Submonoid R}
 variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [NoZeroSMulDivisors R P]
 
 /-- The fractional ideals of a Noetherian ring are finitely generated. -/
-lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (I : FractionalIdeal R⁰ P) :
+lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (hS : S ≤ R⁰) (I : FractionalIdeal S P) :
     FG I.coeToSubmodule := by
   have := hR.noetherian I.num
-  rw [← Submodule.fg_top] at this ⊢
-  exact Submodule.fg_of_linearEquiv (I.equivNum (nonZeroDivisors.coe_ne_zero I.den)) this
+  rw [← fg_top] at this ⊢
+  exact fg_of_linearEquiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩) this
 
 end FG
 
