@@ -129,7 +129,7 @@ theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
 #align prod.ext Prod.ext
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
-  funext fun _ ↦ ext map_fst map_snd
+  funext fun p ↦ ext (map_fst f g p) (map_snd f g p)
 #align prod.map_def Prod.map_def
 
 theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
