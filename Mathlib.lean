@@ -984,6 +984,7 @@ import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
 import Mathlib.Analysis.InnerProductSpace.MeanErgodic
+import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Analysis.InnerProductSpace.OfNorm
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
