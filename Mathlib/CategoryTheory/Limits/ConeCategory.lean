@@ -24,6 +24,7 @@ instance of `Cone`, please refer to `CategoryTheory/Limits/Cones.lean`.
 
 -/
 
+suppress_compilation
 
 namespace CategoryTheory.Limits
 
@@ -44,7 +45,7 @@ def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.
 /-- If `F` has a limit, then the limit projections can be interpreted as structured arrows
     `limit F ⟶ F.obj -`. -/
 @[simps]
-noncomputable def limit.toStructuredArrow (F : J ⥤ C) [HasLimit F] :
+def limit.toStructuredArrow (F : J ⥤ C) [HasLimit F] :
     J ⥤ StructuredArrow (limit F) F where
   obj j := StructuredArrow.mk (limit.π F j)
   map f := StructuredArrow.homMk f
@@ -96,7 +97,7 @@ def Cone.toUnder {F : J ⥤ C} (c : Cone F) :
 
 /-- The limit cone for `F : J ⥤ C` lifts to a cocone in `Under (limit F)` with cone point
     `𝟙 (limit F)`. This is automatically also a limit cone. -/
-noncomputable def limit.toUnder (F : J ⥤ C) [HasLimit F] :
+def limit.toUnder (F : J ⥤ C) [HasLimit F] :
     Cone (limit.toStructuredArrow F ⋙ StructuredArrow.toUnder _ _) where
   pt := Under.mk (𝟙 (limit F))
   π := { app := fun j => Under.homMk (limit.π F j) (by simp) }
@@ -220,7 +221,7 @@ def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ Costructured
 /-- If `F` has a colimit, then the colimit inclusions can be interpreted as costructured arrows
     `F.obj - ⟶ colimit F`. -/
 @[simps]
-noncomputable def colimit.toCostructuredArrow (F : J ⥤ C) [HasColimit F] :
+def colimit.toCostructuredArrow (F : J ⥤ C) [HasColimit F] :
     J ⥤ CostructuredArrow F (colimit F) where
   obj j := CostructuredArrow.mk (colimit.ι F j)
   map f := CostructuredArrow.homMk f
@@ -273,7 +274,7 @@ def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
 /-- The colimit cocone for `F : J ⥤ C` lifts to a cocone in `Over (colimit F)` with cone point
     `𝟙 (colimit F)`. This is automatically also a colimit cocone. -/
 @[simps]
-noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
+def colimit.toOver (F : J ⥤ C) [HasColimit F] :
     Cocone (colimit.toCostructuredArrow F ⋙ CostructuredArrow.toOver _ _) where
   pt := Over.mk (𝟙 (colimit F))
   ι := { app := fun j => Over.homMk (colimit.ι F j) (by simp) }

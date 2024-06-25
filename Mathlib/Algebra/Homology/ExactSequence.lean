@@ -33,7 +33,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 /-- The composable arrows associated to a short complex. -/
 @[simps!]
-def ShortComplex.toComposableArrows (S : ShortComplex C) : ComposableArrows C 2 :=
+noncomputable def ShortComplex.toComposableArrows (S : ShortComplex C) : ComposableArrows C 2 :=
   ComposableArrows.mk₂ S.f S.g
 
 namespace ComposableArrows
@@ -81,14 +81,14 @@ variable (S)
 
 /-- The short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
 that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
+noncomputable abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
     (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
     ShortComplex C :=
   ShortComplex.mk (S.map' i j) (S.map' j k) (hS.zero' i j k)
 
 /-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
 when we know that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+noncomputable abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by omega) :
     ShortComplex C :=
   S.sc' hS i (i + 1) (i + 2)
 

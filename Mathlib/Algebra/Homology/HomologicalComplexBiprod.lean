@@ -35,7 +35,7 @@ instance (i : ι) : HasColimit ((pair K L) ⋙ (eval C c i)) := by
 
 instance : HasBinaryBiproduct K L := HasBinaryBiproduct.of_hasBinaryProduct _ _
 
-instance (i : ι) : PreservesBinaryBiproduct K L (eval C c i) :=
+noncomputable instance (i : ι) : PreservesBinaryBiproduct K L (eval C c i) :=
   preservesBinaryBiproductOfPreservesBinaryProduct _
 
 /-- The canonical isomorphism `(K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`. -/

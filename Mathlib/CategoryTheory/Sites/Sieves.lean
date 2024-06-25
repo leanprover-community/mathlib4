@@ -56,7 +56,7 @@ abbrev category {X : C} (P : Presieve X) :=
   FullSubcategory fun f : Over X => P f.hom
 
 /-- Construct an object of `P.category`. -/
-abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.category :=
+noncomputable abbrev categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.category :=
   ⟨Over.mk f, hf⟩
 
 /-- Given a sieve `S` on `X : C`, its associated diagram `S.diagram` is defined to be

@@ -245,7 +245,7 @@ namespace RightHomologyData
 
 /-- A right homology data for a short complex `S` induces a left homology data for `S.op`. -/
 @[simps]
-def op (h : S.RightHomologyData) : S.op.LeftHomologyData where
+noncomputable def op (h : S.RightHomologyData) : S.op.LeftHomologyData where
   K := Opposite.op h.Q
   H := Opposite.op h.H
   i := h.p.op
@@ -261,7 +261,7 @@ def op (h : S.RightHomologyData) : S.op.LeftHomologyData where
 /-- A right homology data for a short complex `S` in the opposite category
 induces a left homology data for `S.unop`. -/
 @[simps]
-def unop {S : ShortComplex Cᵒᵖ} (h : S.RightHomologyData) : S.unop.LeftHomologyData where
+noncomputable def unop {S : ShortComplex Cᵒᵖ} (h : S.RightHomologyData) : S.unop.LeftHomologyData where
   K := Opposite.unop h.Q
   H := Opposite.unop h.H
   i := h.p.unop
@@ -280,7 +280,7 @@ namespace LeftHomologyData
 
 /-- A left homology data for a short complex `S` induces a right homology data for `S.op`. -/
 @[simps]
-def op (h : S.LeftHomologyData) : S.op.RightHomologyData where
+noncomputable def op (h : S.LeftHomologyData) : S.op.RightHomologyData where
   Q := Opposite.op h.K
   H := Opposite.op h.H
   p := h.i.op
@@ -296,7 +296,7 @@ def op (h : S.LeftHomologyData) : S.op.RightHomologyData where
 /-- A left homology data for a short complex `S` in the opposite category
 induces a right homology data for `S.unop`. -/
 @[simps]
-def unop {S : ShortComplex Cᵒᵖ} (h : S.LeftHomologyData) : S.unop.RightHomologyData where
+noncomputable def unop {S : ShortComplex Cᵒᵖ} (h : S.LeftHomologyData) : S.unop.RightHomologyData where
   Q := Opposite.unop h.K
   H := Opposite.unop h.H
   p := h.i.unop

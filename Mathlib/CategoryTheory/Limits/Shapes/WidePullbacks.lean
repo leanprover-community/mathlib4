@@ -28,6 +28,8 @@ pullbacks and finite wide pullbacks.
 
 universe w w' v u
 
+suppress_compilation
+
 open CategoryTheory CategoryTheory.Limits Opposite
 
 namespace CategoryTheory.Limits

@@ -180,7 +180,7 @@ variable {S}
 
 /-- A homology data for a short complex `S` induces a homology data for `S.op`. -/
 @[simps]
-def op (h : S.HomologyData) : S.op.HomologyData where
+noncomputable def op (h : S.HomologyData) : S.op.HomologyData where
   left := h.right.op
   right := h.left.op
   iso := h.iso.op
@@ -189,7 +189,7 @@ def op (h : S.HomologyData) : S.op.HomologyData where
 /-- A homology data for a short complex `S` in the opposite category
 induces a homology data for `S.unop`. -/
 @[simps]
-def unop {S : ShortComplex Cᵒᵖ} (h : S.HomologyData) : S.unop.HomologyData where
+noncomputable def unop {S : ShortComplex Cᵒᵖ} (h : S.HomologyData) : S.unop.HomologyData where
   left := h.right.unop
   right := h.left.unop
   iso := h.iso.unop
