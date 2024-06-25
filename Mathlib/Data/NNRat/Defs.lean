@@ -104,11 +104,11 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
 #align nnrat.coe_nonneg NNRat.coe_nonneg
 
 -- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
+@[simp, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
 #align nnrat.coe_zero NNRat.coe_zero
 
 -- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
+@[simp, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
 #align nnrat.coe_one NNRat.coe_one
 
 @[simp, norm_cast]
@@ -122,7 +122,7 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 #align nnrat.coe_mul NNRat.coe_mul
 
 -- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
+@[simp, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
   rfl
 #align nnrat.coe_pow NNRat.coe_pow
 
@@ -156,7 +156,8 @@ theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
 
-@[simp, norm_cast]
+-- `cast_pos`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_pos : (0 : ℚ) < q ↔ 0 < q :=
   Iff.rfl
 #align nnrat.coe_pos NNRat.coe_pos
@@ -194,7 +195,7 @@ def coeHom : ℚ≥0 →+* ℚ where
 #align nnrat.coe_hom NNRat.coeHom
 
 -- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
+@[simp, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
 -- See note [no_index around OfNat.ofNat]
@@ -203,7 +204,7 @@ theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
   rfl
 #align nnrat.mk_coe_nat NNRat.mk_natCast
 
-@[deprecated] alias mk_coe_nat := mk_natCast -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
 
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
@@ -226,12 +227,14 @@ theorem bddBelow_coe (s : Set ℚ≥0) : BddBelow (((↑) : ℚ≥0 → ℚ) '' 
   ⟨0, fun _ ⟨q, _, h⟩ ↦ h ▸ q.2⟩
 #align nnrat.bdd_below_coe NNRat.bddBelow_coe
 
-@[simp, norm_cast]
+-- `cast_max`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_max (x y : ℚ≥0) : ((max x y : ℚ≥0) : ℚ) = max (x : ℚ) (y : ℚ) :=
   coe_mono.map_max
 #align nnrat.coe_max NNRat.coe_max
 
-@[simp, norm_cast]
+-- `cast_max`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_min (x y : ℚ≥0) : ((min x y : ℚ≥0) : ℚ) = min (x : ℚ) (y : ℚ) :=
   coe_mono.map_min
 #align nnrat.coe_min NNRat.coe_min
@@ -335,7 +338,7 @@ theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := 
 end Rat
 
 /-- The absolute value on `ℚ` as a map to `ℚ≥0`. -/
---@[pp_nodot]  -- Porting note: Commented out.
+@[pp_nodot]
 def Rat.nnabs (x : ℚ) : ℚ≥0 :=
   ⟨abs x, abs_nonneg x⟩
 #align rat.nnabs Rat.nnabs
@@ -439,5 +442,11 @@ lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (
 
 lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) := by
   ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
+
+theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
+  rw [← NNRat.coe_lt_coe, Rat.lt_def]; norm_cast
+
+theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
+  rw [← NNRat.coe_le_coe, Rat.le_def]; norm_cast
 
 end NNRat

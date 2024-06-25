@@ -71,7 +71,8 @@ theorem card_mono : Monotone (@card α) := by apply card_le_card
 
 @[simp] lemma card_eq_zero : s.card = 0 ↔ s = ∅ := card_eq_zero.trans val_eq_zero
 lemma card_ne_zero : s.card ≠ 0 ↔ s.Nonempty := card_eq_zero.ne.trans nonempty_iff_ne_empty.symm
-lemma card_pos : 0 < s.card ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
+@[simp] lemma card_pos : 0 < s.card ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
+@[simp] lemma one_le_card : 1 ≤ s.card ↔ s.Nonempty := card_pos
 #align finset.card_eq_zero Finset.card_eq_zero
 #align finset.card_pos Finset.card_pos
 
@@ -253,7 +254,7 @@ end ToMLListultiset
 
 namespace Finset
 
-variable {s t : Finset α} {f : α → β} {n : ℕ}
+variable {s t u : Finset α} {f : α → β} {n : ℕ}
 
 @[simp]
 theorem length_toList (s : Finset α) : s.toList.length = s.card := by
@@ -441,15 +442,16 @@ See `Fintype.card_bijective` for the version where `s` and `t` are `univ`. -/
 lemma card_bijective (e : α → β) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t) :
     s.card = t.card := card_equiv (.ofBijective e he) hst
 
-end bij
-
-theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t)
-    (f_inj : ∀ a₁ ∈ s, ∀ a₂ ∈ s, f a₁ = f a₂ → a₁ = a₂) : s.card ≤ t.card := by
+lemma card_le_card_of_injOn (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : (s : Set α).InjOn f) :
+    s.card ≤ t.card := by
   classical
   calc
     s.card = (s.image f).card := (card_image_of_injOn f_inj).symm
     _      ≤ t.card           := card_le_card <| image_subset_iff.2 hf
-#align finset.card_le_card_of_inj_on Finset.card_le_card_of_inj_on
+@[deprecated (since := "2024-06-01")] alias card_le_card_of_inj_on := card_le_card_of_injOn
+
+lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : t.card ≤ s.card := by
+  classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
 -/
@@ -457,41 +459,34 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : t.card < s.
     (hf : ∀ a ∈ s, f a ∈ t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
   by_contra! hz
-  refine hc.not_le (card_le_card_of_inj_on f hf ?_)
+  refine hc.not_le (card_le_card_of_injOn f hf ?_)
   intro x hx y hy
   contrapose
   exact hz x hx y hy
 #align finset.exists_ne_map_eq_of_card_lt_of_maps_to Finset.exists_ne_map_eq_of_card_lt_of_maps_to
 
-theorem le_card_of_inj_on_range (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
+lemma le_card_of_inj_on_range (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
     (f_inj : ∀ i < n, ∀ j < n, f i = f j → i = j) : n ≤ s.card :=
   calc
     n = card (range n) := (card_range n).symm
-    _ ≤ s.card := card_le_card_of_inj_on f (by simpa only [mem_range]) (by simpa only [mem_range])
+    _ ≤ s.card := card_le_card_of_injOn f (by simpa only [mem_range]) (by simpa)
 #align finset.le_card_of_inj_on_range Finset.le_card_of_inj_on_range
 
-theorem surj_on_of_inj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
+lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : t.card ≤ s.card) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   classical
-  intro b hb
   have h : (s.attach.image fun a : { a // a ∈ s } => f a a.prop).card = s.card := by
-    rw [← @card_attach _ s]
-    apply card_image_of_injective
+    rw [← @card_attach _ s, card_image_of_injective]
     intro ⟨_, _⟩ ⟨_, _⟩ h
     exact Subtype.eq <| hinj _ _ _ _ h
-  have h' : image (fun a : { a // a ∈ s } => f a a.prop) s.attach = t := by
-    apply eq_of_subset_of_card_le
-    · intro b h
-      obtain ⟨_, _, rfl⟩ := mem_image.1 h
-      apply hf
-    · simp [hst, h]
-  rw [← h'] at hb
-  obtain ⟨a, _, rfl⟩ := mem_image.1 hb
-  use a, a.2
+  obtain rfl : image (fun a : { a // a ∈ s } => f a a.prop) s.attach = t :=
+    eq_of_subset_of_card_le (image_subset_iff.2 $ by simpa) (by simp [hst, h])
+  simp only [mem_image, mem_attach, true_and, Subtype.exists, forall_exists_index]
+  exact fun b a ha hb ↦ ⟨a, ha, hb.symm⟩
 #align finset.surj_on_of_inj_on_of_card_le Finset.surj_on_of_inj_on_of_card_le
 
-theorem inj_on_of_surj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
+theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : s.card ≤ t.card) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) : a₁ = a₂ :=
   haveI : Inhabited { x // x ∈ s } := ⟨⟨a₁, ha₁⟩⟩
@@ -511,6 +506,8 @@ theorem inj_on_of_surj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf :
     (leftInverse_of_surjective_of_rightInverse hsg (rightInverse_surjInv _)).injective
   Subtype.ext_iff_val.1 (@hif ⟨a₁, ha₁⟩ ⟨a₂, ha₂⟩ (Subtype.eq ha₁a₂))
 #align finset.inj_on_of_surj_on_of_card_le Finset.inj_on_of_surj_on_of_card_le
+
+end bij
 
 @[simp]
 theorem card_disjUnion (s t : Finset α) (h) : (s.disjUnion t h).card = s.card + t.card :=
@@ -577,8 +574,8 @@ theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ 
 theorem le_card_sdiff (s t : Finset α) : t.card - s.card ≤ card (t \ s) :=
   calc
     card t - card s ≤ card t - card (s ∩ t) :=
-      Nat.sub_le_sub_left (card_le_card (inter_subset_left s t)) _
-    _ = card (t \ (s ∩ t)) := (card_sdiff (inter_subset_right s t)).symm
+      Nat.sub_le_sub_left (card_le_card inter_subset_left) _
+    _ = card (t \ (s ∩ t)) := (card_sdiff inter_subset_right).symm
     _ ≤ card (t \ s) := by rw [sdiff_inter_self_right t s]
 #align finset.le_card_sdiff Finset.le_card_sdiff
 
@@ -604,6 +601,14 @@ lemma card_inter_add_card_sdiff (s t : Finset α) :
     (s ∩ t).card + (s \ t).card = s.card := by
   rw [add_comm, card_sdiff_add_card_inter]
 
+/-- **Pigeonhole principle** for two finsets inside an ambient finset. -/
+theorem inter_nonempty_of_card_lt_card_add_card (hts : t ⊆ s) (hus : u ⊆ s)
+    (hstu : s.card < t.card + u.card) : (t ∩ u).Nonempty := by
+  contrapose! hstu
+  calc
+    _ = (t ∪ u).card := by simp [← card_union_add_card_inter, not_nonempty_iff_eq_empty.1 hstu]
+    _ ≤ s.card := by gcongr; exact union_subset hts hus
+
 end Lattice
 
 theorem filter_card_add_filter_neg_card_eq_card
@@ -613,39 +618,42 @@ theorem filter_card_add_filter_neg_card_eq_card
   rw [← card_union_of_disjoint (disjoint_filter_filter_neg _ _ _), filter_union_filter_neg_eq]
 #align finset.filter_card_add_filter_neg_card_eq_card Finset.filter_card_add_filter_neg_card_eq_card
 
+/-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
+set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
+lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : s.card ≤ n) (hnt : n ≤ t.card) :
+    ∃ u, s ⊆ u ∧ u ⊆ t ∧ card u = n := by
+  classical
+  obtain ⟨k, hk⟩ := Nat.le.dest hnt
+  clear hnt
+  induction' k with k ih generalizing t
+  · exact ⟨t, hst, Subset.rfl, hk.symm⟩
+  obtain ⟨a, ha⟩ : (t \ s).Nonempty := by rw [← card_pos, card_sdiff hst]; omega
+  replace hst : s ⊆ t.erase a := subset_erase.2 ⟨hst, (mem_sdiff.1 ha).2⟩
+  replace hk : n + k = card (erase t a) := by rw [card_erase_of_mem (mem_sdiff.1 ha).1]; omega
+  obtain ⟨u, hsu, hut, hu⟩ := ih hst hk
+  exact ⟨u, hsu, hut.trans (erase_subset ..), hu⟩
+
+/-- We can shrink a set to any smaller size. -/
+lemma exists_subset_card_eq (hns : n ≤ s.card) : ∃ t ⊆ s, t.card = n := by
+  simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
+
 /-- Given a set `A` and a set `B` inside it, we can shrink `A` to any appropriate size, and keep `B`
 inside it. -/
+@[deprecated exists_subsuperset_card_eq (since := "2024-06-23")]
 theorem exists_intermediate_set {A B : Finset α} (i : ℕ) (h₁ : i + card B ≤ card A) (h₂ : B ⊆ A) :
-    ∃ C : Finset α, B ⊆ C ∧ C ⊆ A ∧ card C = i + card B := by
-  classical
-    rcases Nat.le.dest h₁ with ⟨k, h⟩
-    clear h₁
-    induction' k with k ih generalizing A
-    · exact ⟨A, h₂, Subset.refl _, h.symm⟩
-    obtain ⟨a, ha⟩ : (A \ B).Nonempty := by rw [← card_pos, card_sdiff h₂]; omega
-    have z : i + card B + k = card (erase A a) := by
-      rw [card_erase_of_mem (mem_sdiff.1 ha).1, ← h,
-        Nat.add_sub_assoc (Nat.one_le_iff_ne_zero.mpr k.succ_ne_zero), ← pred_eq_sub_one,
-        k.pred_succ]
-    have : B ⊆ A.erase a := by
-      rintro t th
-      apply mem_erase_of_ne_of_mem _ (h₂ th)
-      rintro rfl
-      exact not_mem_sdiff_of_mem_right th ha
-    rcases ih this z with ⟨B', hB', B'subA', cards⟩
-    exact ⟨B', hB', B'subA'.trans (erase_subset _ _), cards⟩
+    ∃ C : Finset α, B ⊆ C ∧ C ⊆ A ∧ card C = i + card B :=
+  exists_subsuperset_card_eq h₂ (Nat.le_add_left ..) h₁
 #align finset.exists_intermediate_set Finset.exists_intermediate_set
 
 /-- We can shrink `A` to any smaller size. -/
+@[deprecated exists_subset_card_eq (since := "2024-06-23")]
 theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ card A) :
-    ∃ B : Finset α, B ⊆ A ∧ card B = i :=
-  let ⟨B, _, x₁, x₂⟩ := exists_intermediate_set i (by simpa) (empty_subset A)
-  ⟨B, x₁, x₂⟩
+    ∃ B : Finset α, B ⊆ A ∧ card B = i := exists_subset_card_eq h₁
 #align finset.exists_smaller_set Finset.exists_smaller_set
 
 theorem le_card_iff_exists_subset_card : n ≤ s.card ↔ ∃ t ⊆ s, t.card = n := by
   refine ⟨fun h => ?_, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
-  exact exists_smaller_set s n h
+  exact exists_subset_card_eq h
 
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
     (hXY : 2 * n < (X ∪ Y).card) : ∃ C : Finset α, n < C.card ∧ (C ⊆ X ∨ C ⊆ Y) := by
@@ -655,7 +663,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
   rw [h₂, Nat.two_mul] at hXY
   obtain h | h : n < X.card ∨ n < (Y \ X).card := by contrapose! hXY; omega
   · exact ⟨X, h, Or.inl (Finset.Subset.refl X)⟩
-  · exact ⟨Y \ X, h, Or.inr (Finset.sdiff_subset Y X)⟩
+  · exact ⟨Y \ X, h, Or.inr sdiff_subset⟩
 #align finset.exists_subset_or_subset_of_two_mul_lt_card Finset.exists_subset_or_subset_of_two_mul_lt_card
 
 /-! ### Explicit description of a finset from its card -/

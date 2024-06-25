@@ -356,6 +356,13 @@ lemma norm_natCast_cpow_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) :
 lemma norm_natCast_cpow_pos_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) : 0 < ‖(n : ℂ) ^ s‖ :=
   (norm_natCast_cpow_of_pos hn _).symm ▸ Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
 
+theorem cpow_mul_ofReal_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (z : ℂ) :
+    (x : ℂ) ^ (↑y * z) = (↑(x ^ y) : ℂ) ^ z := by
+  rw [cpow_mul, ofReal_cpow hx]
+  · rw [← ofReal_log hx, ← ofReal_mul, ofReal_im, neg_lt_zero]; exact Real.pi_pos
+  · rw [← ofReal_log hx, ← ofReal_mul, ofReal_im]; exact Real.pi_pos.le
+#align complex.cpow_mul_of_real_nonneg Complex.cpow_mul_ofReal_nonneg
+
 end Complex
 
 /-! ### Positivity extension -/

@@ -281,6 +281,16 @@ export IsAtomic (eq_bot_or_exists_atom_le)
 
 export IsCoatomic (eq_top_or_exists_le_coatom)
 
+lemma IsAtomic.exists_atom [OrderBot α] [Nontrivial α] [IsAtomic α] : ∃ a : α, IsAtom a :=
+  have ⟨b, hb⟩ := exists_ne (⊥ : α)
+  have ⟨a, ha⟩ := (eq_bot_or_exists_atom_le b).resolve_left hb
+  ⟨a, ha.1⟩
+
+lemma IsCoatomic.exists_coatom [OrderTop α] [Nontrivial α] [IsCoatomic α] : ∃ a : α, IsCoatom a :=
+  have ⟨b, hb⟩ := exists_ne (⊤ : α)
+  have ⟨a, ha⟩ := (eq_top_or_exists_le_coatom b).resolve_left hb
+  ⟨a, ha.1⟩
+
 variable {α}
 
 @[simp]
@@ -299,9 +309,9 @@ namespace IsAtomic
 
 variable [OrderBot α] [IsAtomic α]
 
-instance isCoatomic_dual : IsCoatomic αᵒᵈ :=
+instance _root_.OrderDual.instIsCoatomic : IsCoatomic αᵒᵈ :=
   isCoatomic_dual_iff_isAtomic.2 ‹IsAtomic α›
-#align is_atomic.is_coatomic_dual IsAtomic.isCoatomic_dual
+#align is_atomic.is_coatomic_dual OrderDual.instIsCoatomic
 
 instance Set.Iic.isAtomic {x : α} : IsAtomic (Set.Iic x) :=
   ⟨fun ⟨y, hy⟩ =>
@@ -315,9 +325,9 @@ namespace IsCoatomic
 
 variable [OrderTop α] [IsCoatomic α]
 
-instance isCoatomic : IsAtomic αᵒᵈ :=
+instance _root_.OrderDual.instIsAtomic : IsAtomic αᵒᵈ :=
   isAtomic_dual_iff_isCoatomic.2 ‹IsCoatomic α›
-#align is_coatomic.is_coatomic IsCoatomic.isCoatomic
+#align is_coatomic.is_coatomic OrderDual.instIsAtomic
 
 instance Set.Ici.isCoatomic {x : α} : IsCoatomic (Set.Ici x) :=
   ⟨fun ⟨y, hy⟩ =>
@@ -430,9 +440,9 @@ theorem isAtomistic_dual_iff_isCoatomistic : IsAtomistic αᵒᵈ ↔ IsCoatomis
 
 namespace IsAtomistic
 
-instance isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
+instance _root_.OrderDual.instIsCoatomistic [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
   isCoatomistic_dual_iff_isAtomistic.2 h
-#align is_atomistic.is_coatomistic_dual IsAtomistic.isCoatomistic_dual
+#align is_atomistic.is_coatomistic_dual OrderDual.instIsCoatomistic
 
 variable [IsAtomistic α]
 
@@ -476,9 +486,9 @@ end IsAtomistic
 
 namespace IsCoatomistic
 
-instance isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
+instance _root_.OrderDual.instIsAtomistic [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
   isAtomistic_dual_iff_isCoatomistic.2 h
-#align is_coatomistic.is_atomistic_dual IsCoatomistic.isAtomistic_dual
+#align is_coatomistic.is_atomistic_dual OrderDual.instIsAtomistic
 
 variable [IsCoatomistic α]
 
@@ -544,8 +554,8 @@ section IsSimpleOrder
 
 variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 
-instance {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒᵈ :=
-  isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
+instance OrderDual.instIsSimpleOrder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
+    IsSimpleOrder αᵒᵈ := isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :

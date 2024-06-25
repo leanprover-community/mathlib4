@@ -60,8 +60,8 @@ lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ 
 lemma measure_univ_eq (hP : IsProjectiveMeasureFamily P) (I J : Finset ι) :
     P I univ = P J univ := by
   classical
-  rw [← hP.measure_univ_eq_of_subset (Finset.subset_union_left I J),
-    ← hP.measure_univ_eq_of_subset (Finset.subset_union_right I J)]
+  rw [← hP.measure_univ_eq_of_subset I.subset_union_left,
+    ← hP.measure_univ_eq_of_subset (I.subset_union_right (s₂:= J))]
 
 lemma congr_cylinder_of_subset (hP : IsProjectiveMeasureFamily P)
     {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (hT : MeasurableSet T)
@@ -96,10 +96,10 @@ lemma congr_cylinder (hP : IsProjectiveMeasureFamily P)
   constructor
   · have h_eq_union : cylinder I S = cylinder (I ∪ J) U := by
       rw [← inter_cylinder, h_eq, inter_self]
-    exact hP.congr_cylinder_of_subset hS h_eq_union.symm (Finset.subset_union_left _ _)
+    exact hP.congr_cylinder_of_subset hS h_eq_union.symm Finset.subset_union_left
   · have h_eq_union : cylinder J T = cylinder (I ∪ J) U := by
       rw [← inter_cylinder, h_eq, inter_self]
-    exact hP.congr_cylinder_of_subset hT h_eq_union.symm (Finset.subset_union_right _ _)
+    exact hP.congr_cylinder_of_subset hT h_eq_union.symm Finset.subset_union_right
 
 end IsProjectiveMeasureFamily
 

@@ -230,18 +230,15 @@ theorem IsModularLattice.sup_inf_sup_assoc : (x ⊔ z) ⊓ (y ⊔ z) = (x ⊔ z)
   @IsModularLattice.inf_sup_inf_assoc αᵒᵈ _ _ _ _ _
 #align is_modular_lattice.sup_inf_sup_assoc IsModularLattice.sup_inf_sup_assoc
 
+theorem eq_of_le_of_inf_le_of_le_sup (hxy : x ≤ y) (hinf : y ⊓ z ≤ x) (hsup : y ≤ x ⊔ z) :
+    x = y := by
+  refine hxy.antisymm ?_
+  rw [← inf_eq_right, sup_inf_assoc_of_le _ hxy] at hsup
+  rwa [← hsup, sup_le_iff, and_iff_right rfl.le, inf_comm]
+
 theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z) (hsup : y ⊔ z ≤ x ⊔ z) :
     x = y :=
-  le_antisymm hxy <|
-    have h : y ≤ x ⊔ z :=
-      calc
-        y ≤ y ⊔ z := le_sup_left
-        _ ≤ x ⊔ z := hsup
-    calc
-      y ≤ (x ⊔ z) ⊓ y := le_inf h le_rfl
-      _ = x ⊔ z ⊓ y := sup_inf_assoc_of_le _ hxy
-      _ ≤ x ⊔ z ⊓ x := sup_le_sup_left (by rw [inf_comm, inf_comm z]; exact hinf) _
-      _ ≤ x := sup_le le_rfl inf_le_right
+  eq_of_le_of_inf_le_of_le_sup hxy (hinf.trans inf_le_left) (le_sup_left.trans hsup)
 #align eq_of_le_of_inf_le_of_sup_le eq_of_le_of_inf_le_of_sup_le
 
 theorem sup_lt_sup_of_lt_of_inf_le_inf (hxy : x < y) (hinf : y ⊓ z ≤ x ⊓ z) : x ⊔ z < y ⊔ z :=

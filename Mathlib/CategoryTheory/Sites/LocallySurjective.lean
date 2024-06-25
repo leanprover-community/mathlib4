@@ -294,8 +294,8 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
     ext ⟨Z, g, hg⟩
-    simpa using x.2 (Cover.Relation.mk _ _ _ g (𝟙 Z) f (g ≫ f) hf
-      (S.1.downward_closed hf g) (by simp))
+    simpa using x.2 (Cover.Relation.mk { hf := hf }
+        { hf := S.1.downward_closed hf g } { g₁ := g, g₂ := 𝟙 Z })
 
 instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallySurjective J (J.toSheafify P) := by
@@ -385,5 +385,23 @@ lemma isLocallySurjective_iff_epi {F G : Sheaf J (Type w)} (φ : F ⟶ G)
     apply isIso_of_mono_of_epi
 
 end Sheaf
+
+namespace Presieve.FamilyOfElements
+
+variable {R R' : Cᵒᵖ ⥤ Type w} (φ : R ⟶ R') {X : Cᵒᵖ} (r' : R'.obj X)
+
+/-- Given a morphism `φ : R ⟶ R'` of presheaves of types and `r' : R'.obj X`,
+this is the family of elements of `R` defined over the sieve `Presheaf.imageSieve φ r'`
+which sends a map in this sieve to an arbitrary choice of a preimage of the
+restriction of `r'`. -/
+noncomputable def localPreimage :
+    FamilyOfElements R (Presheaf.imageSieve φ r').arrows :=
+  fun _ f hf => Presheaf.localPreimage φ r' f hf
+
+lemma isAmalgamation_map_localPreimage :
+    ((localPreimage φ r').map φ).IsAmalgamation r' :=
+  fun _ f hf => (Presheaf.app_localPreimage φ r' f hf).symm
+
+end Presieve.FamilyOfElements
 
 end CategoryTheory

@@ -377,8 +377,8 @@ protected lemma comp  {f : β → γ} {g : α → β}
   rcases hg x with ⟨Kg, t, ht, hgL⟩
   rcases hf (g x) with ⟨Kf, u, hu, hfL⟩
   refine ⟨Kf * Kg, t ∩ g⁻¹' u, inter_mem ht (hg.continuous.continuousAt hu), ?_⟩
-  exact hfL.comp (hgL.mono (inter_subset_left _ _))
-    ((mapsTo_preimage g u).mono_left (inter_subset_right _ _))
+  exact hfL.comp (hgL.mono inter_subset_left)
+    ((mapsTo_preimage g u).mono_left inter_subset_right)
 
 /-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
 protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
@@ -387,7 +387,7 @@ protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (
   rcases hf x with ⟨Kf, t₁, h₁t, hfL⟩
   rcases hg x with ⟨Kg, t₂, h₂t, hgL⟩
   refine ⟨max Kf Kg, t₁ ∩ t₂, Filter.inter_mem h₁t h₂t, ?_⟩
-  exact (hfL.mono (inter_subset_left t₁ t₂)).prod (hgL.mono (inter_subset_right t₁ t₂))
+  exact (hfL.mono inter_subset_left).prod (hgL.mono inter_subset_right)
 
 protected theorem prod_mk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
   (LipschitzWith.prod_mk_left a).locallyLipschitz

@@ -75,7 +75,7 @@ theorem closure_toSubmonoid (S : Set G) :
   refine le_antisymm (fun x hx => ?_) (Submonoid.closure_le.2 ?_)
   · refine
       closure_induction hx
-        (fun x hx => Submonoid.closure_mono (subset_union_left S S⁻¹) (Submonoid.subset_closure hx))
+        (fun x hx => Submonoid.closure_mono subset_union_left (Submonoid.subset_closure hx))
         (Submonoid.one_mem _) (fun x y hx hy => Submonoid.mul_mem _ hx hy) fun x hx => ?_
     rwa [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
   · simp only [true_and_iff, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
@@ -275,7 +275,6 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
     simp only [mul_assoc, inv_mul_cancel_left]
 #align subgroup.sup_normal Subgroup.sup_normal
 
--- Porting note (#10756): new lemma
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by

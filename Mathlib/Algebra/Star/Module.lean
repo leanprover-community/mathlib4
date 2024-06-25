@@ -119,8 +119,7 @@ variable {A} [Invertible (2 : R)]
 def selfAdjointPart : A →ₗ[R] selfAdjoint A where
   toFun x :=
     ⟨(⅟ 2 : R) • (x + star x), by
-      simp only [selfAdjoint.mem_iff, star_smul, add_comm, StarAddMonoid.star_add, star_inv',
-        star_bit0, star_one, star_star, star_invOf (2 : R), star_trivial]⟩
+      rw [selfAdjoint.mem_iff, star_smul, star_trivial, star_add, star_star, add_comm]⟩
   map_add' x y := by
     ext
     simp [add_add_add_comm]

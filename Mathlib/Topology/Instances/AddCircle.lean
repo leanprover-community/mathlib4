@@ -385,7 +385,6 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by

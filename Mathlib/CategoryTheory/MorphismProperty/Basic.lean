@@ -380,6 +380,12 @@ def functorCategory (W : MorphismProperty C) (J : Type*) [Category J] :
     MorphismProperty (J ⥤ C) :=
   fun _ _ f => ∀ (j : J), W (f.app j)
 
+/-- Given `W : MorphismProperty C`, this is the morphism property on `Arrow C` of morphisms
+whose left and right parts are in `W`. -/
+def arrow (W : MorphismProperty C) :
+    MorphismProperty (Arrow C) :=
+  fun _ _ f => W f.left ∧ W f.right
+
 end MorphismProperty
 
 namespace NatTrans
