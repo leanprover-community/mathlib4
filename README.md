@@ -136,7 +136,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Patrick Massot (@patrickmassot): documentation, topology, geometry
 * Bhavik Mehta (@b-mehta): category theory, combinatorics
 * Kyle Miller (@kmill): combinatorics, tactics, metaprogramming
-* Scott Morrison (@semorrison): category theory, tactics
+* Kim Morrison (@semorrison): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
