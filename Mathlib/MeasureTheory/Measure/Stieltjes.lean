@@ -554,4 +554,12 @@ lemma measure_add (f g : StieltjesFunction) : (f + g).measure = f.measure + g.me
   rw [← ENNReal.ofReal_add (sub_nonneg_of_le (f.mono h.le)) (sub_nonneg_of_le (g.mono h.le))]
   ring_nf
 
+@[simp]
+lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction) : (c • f).measure = c • f.measure := by
+  refine Measure.ext_of_Ioc _ _ (fun a b _ ↦ ?_)
+  simp only [measure_Ioc, Measure.smul_apply]
+  change ofReal (c * f b - c * f a) = c • ofReal (f b - f a)
+  rw [← _root_.mul_sub, ENNReal.ofReal_mul zero_le_coe, ofReal_coe_nnreal, ← smul_eq_mul]
+  rfl
+
 end StieltjesFunction
