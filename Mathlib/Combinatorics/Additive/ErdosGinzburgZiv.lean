@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Data.Multiset.Fintype
 import Mathlib.FieldTheory.ChevalleyWarning
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
@@ -39,13 +40,12 @@ private noncomputable def f₂ (s : Finset ι) (a : ι → ZMod p) : MvPolynomia
 
 private lemma totalDegree_f₁_add_totalDegree_f₂ {a : ι → ZMod p} :
     (f₁ s a).totalDegree + (f₂ s a).totalDegree < 2 * p - 1 := by
-  refine (add_le_add (totalDegree_finset_sum _ _) $ (totalDegree_finset_sum _ _).trans $
-    Finset.sup_mono_fun fun a _ ↦ totalDegree_smul_le _ _).trans_lt ?_
-  simp only [totalDegree_X_pow, ← two_mul]
-  refine (mul_le_mul_left' Finset.sup_const_le _).trans_lt ?_
-  rw [mul_tsub, mul_one]
-  exact tsub_lt_tsub_left_of_le ((Fact.out : p.Prime).two_le.trans $
-    le_mul_of_one_le_left' one_le_two) one_lt_two
+  calc
+    _ ≤ (p - 1) + (p - 1) := by
+      gcongr <;> apply totalDegree_finsetSum_le <;> rintro i _
+      · exact (totalDegree_X_pow ..).le
+      · exact (totalDegree_smul_le ..).trans (totalDegree_X_pow ..).le
+    _ < 2 * p - 1 := by have := (Fact.out : p.Prime).two_le; omega
 
 /-- The prime case of the **Erdős–Ginzburg–Ziv theorem** for `ℤ/pℤ`.
 
@@ -103,8 +103,8 @@ variable {n : ℕ} {s : Finset ι}
 
 /-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ`.
 
-Any sequence of `2 * n - 1` elements of `ℤ` contains a subsequence of `n` elements whose sum is
-divisible by `n`. -/
+Any sequence of at least `2 * n - 1` elements of `ℤ` contains a subsequence of `n` elements whose
+sum is divisible by `n`. -/
 theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
     ∃ t ⊆ s, t.card = n ∧ ↑n ∣ ∑ i ∈ t, a i := by
   classical
@@ -114,11 +114,11 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
   -- When `n := 0`, we can set `t := ∅`.
   case zero => exact ⟨∅, by simp⟩
   -- When `n := 1`, we can take `t` to be any subset of `s` of size `2 * n - 1`.
-  case one => simpa using exists_smaller_set _ _ hs
+  case one => simpa using exists_subset_card_eq hs
   -- When `n := p` is prime, we use the prime case `Int.erdos_ginzburg_ziv_prime`.
   case prime p hp =>
     haveI := Fact.mk hp
-    obtain ⟨t, hts, ht⟩ := exists_smaller_set _ _ hs
+    obtain ⟨t, hts, ht⟩ := exists_subset_card_eq hs
     obtain ⟨u, hut, hu⟩ := Int.erdos_ginzburg_ziv_prime a ht
     exact ⟨u, hut.trans hts, hu⟩
   -- When `n := m * n` is composite, we pick (by induction hypothesis on `n`) `2 * m - 1` sets of
@@ -181,5 +181,23 @@ whose sum is zero. -/
 theorem ZMod.erdos_ginzburg_ziv (a : ι → ZMod n) (hs : 2 * n - 1 ≤ s.card) :
     ∃ t ⊆ s, t.card = n ∧ ∑ i ∈ t, a i = 0 := by
   simpa [← ZMod.intCast_zmod_eq_zero_iff_dvd] using Int.erdos_ginzburg_ziv (ZMod.cast ∘ a) hs
+
+/-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ` for multiset.
+
+Any multiset of at least `2 * n - 1` elements of `ℤ` contains a submultiset of `n` elements whose
+sum is divisible by `n`. -/
+theorem Int.erdos_ginzburg_ziv_multiset (s : Multiset ℤ) (hs : 2 * n - 1 ≤ Multiset.card s) :
+    ∃ t ≤ s, Multiset.card t = n ∧ ↑n ∣ t.sum := by
+  obtain ⟨t, hts, ht⟩ := Int.erdos_ginzburg_ziv (s := s.toEnumFinset) Prod.fst (by simpa using hs)
+  exact ⟨t.1.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
+
+/-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ/nℤ` for multiset.
+
+Any multiset of at least `2 * n - 1` elements of `ℤ` contains a submultiset of `n` elements whose
+sum is divisible by `n`. -/
+theorem ZMod.erdos_ginzburg_ziv_multiset (s : Multiset (ZMod n))
+    (hs : 2 * n - 1 ≤ Multiset.card s) : ∃ t ≤ s, Multiset.card t = n ∧ t.sum = 0 := by
+  obtain ⟨t, hts, ht⟩ := ZMod.erdos_ginzburg_ziv (s := s.toEnumFinset) Prod.fst (by simpa using hs)
+  exact ⟨t.1.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
 
 end composite
