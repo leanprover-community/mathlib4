@@ -24,7 +24,7 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.37"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.36"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
 
@@ -62,6 +62,8 @@ lean_exe checkYaml where
 lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
@@ -80,6 +82,8 @@ and then calculates the longest pole
 lean_exe pole where
   root := `LongestPole.Main
   supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /--
 `lake exe test` is a thin wrapper around `lake exe batteries/test`, until
