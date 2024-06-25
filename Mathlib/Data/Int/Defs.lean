@@ -435,6 +435,12 @@ lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := 
   · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
 #align int.nat_abs_pow Int.natAbs_pow
 
+lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
+  refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
+  convert Nat.pow_right_injective h using 2
+  rw [Function.comp_apply, natAbs_pow]
+#align int.pow_right_injective Int.pow_right_injective
+
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
 #align int.nat_abs_sq Int.natAbs_sq

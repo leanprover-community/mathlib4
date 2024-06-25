@@ -42,12 +42,6 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
   exact Int.ofNat_le.symm
 #align int.nat_abs_le_iff_mul_self_le Int.natAbs_le_iff_mul_self_le
 
-lemma pow_right_injective (h : 1 < a.natAbs) : Injective ((a ^ ·) : ℕ → ℤ) := by
-  refine (?_ : Injective (natAbs ∘ (a ^ · : ℕ → ℤ))).of_comp
-  convert Nat.pow_right_injective h using 2
-  rw [Function.comp_apply, natAbs_pow]
-#align int.pow_right_injective Int.pow_right_injective
-
 /-! ### units -/
 
 
