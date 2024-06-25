@@ -462,7 +462,8 @@ instance affine_hasPullback {A B C : CommRingCat}
     (g : Spec.obj (Opposite.op B) ⟶ Spec.obj (Opposite.op C)) : HasPullback f g := by
   rw [← Spec.map_preimage f, ← Spec.map_preimage g]
   exact
-    ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit Spec (Spec.preimage f) (Spec.preimage g)⟩⟩⟩
+    ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit Spec
+      (Scheme.Spec.preimage f) (Scheme.Spec.preimage g)⟩⟩⟩
 #align algebraic_geometry.Scheme.pullback.affine_has_pullback AlgebraicGeometry.Scheme.Pullback.affine_hasPullback
 
 theorem affine_affine_hasPullback {B C : CommRingCat} {X : Scheme}
