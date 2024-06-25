@@ -180,4 +180,29 @@ def preservesInitialObjectOfPreservesZeroMorphisms [PreservesZeroMorphisms F] :
 
 end ZeroObject
 
+section
+
+variable {J : Type*} [Category J] [HasZeroObject D] [HasZeroMorphisms D]
+  (G : C ⥤ D) (hG : IsZero G)
+
+/-- A zero functor preserves limits. -/
+def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G where
+  preservesLimit := ⟨fun hc => by
+    rw [Functor.isZero_iff] at hG
+    refine IsLimit.ofIsZero _ ?_ (hG _)
+    rw [Functor.isZero_iff]
+    intro X
+    apply hG⟩
+
+/-- A zero functor preserves colimits. -/
+def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G where
+  preservesColimit := ⟨fun hc => by
+    rw [Functor.isZero_iff] at hG
+    refine IsColimit.ofIsZero _ ?_ (hG _)
+    rw [Functor.isZero_iff]
+    intro X
+    apply hG⟩
+
+end
+
 end CategoryTheory.Functor

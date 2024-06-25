@@ -92,6 +92,12 @@ lemma comp_mk₀_id {a : M} (f : ShiftedHom X Y a) (m₀ : M) (hm₀ : m₀ = 0)
     f.comp (mk₀ m₀ hm₀ (𝟙 Y)) (by rw [hm₀, zero_add]) = f := by
   simp [comp_mk₀]
 
+lemma mk₀_comp_mk₀ (f : X ⟶ Y) (g : Y ⟶ Z) (a b c : M) (ha : a = 0) (hb : b = 0) (h : b + a = c) :
+    (mk₀ a ha f).comp (mk₀ b hb g) h = mk₀ c (by rw [← h, ha, hb, add_zero]) (f ≫ g) := by
+  subst ha hb
+  obtain rfl : c = 0 := by rw [← h, add_zero]
+  rw [mk₀_comp, mk₀, mk₀, assoc]
+
 section Preadditive
 
 variable [Preadditive C]
