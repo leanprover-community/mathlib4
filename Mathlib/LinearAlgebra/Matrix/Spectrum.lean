@@ -70,7 +70,7 @@ theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum �
 theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
   apply spectrum.of_algebraMap_mem 𝕜
   rw [← spectrum_toEuclideanLin]
-  apply LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
+  exact LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
