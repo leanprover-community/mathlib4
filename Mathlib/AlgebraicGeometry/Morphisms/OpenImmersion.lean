@@ -65,7 +65,7 @@ theorem isOpenImmersion_isLocalAtTarget : PropertyIsLocalAtTarget @IsOpenImmersi
       norm_cast
     · intro x
       have := Arrow.iso_w (morphismRestrictStalkMap
-        f (Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) ⟨x, 𝒰.Covers _⟩)
+        f (Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) ⟨x, 𝒰.covers _⟩)
       dsimp only [Arrow.mk_hom] at this
       rw [this]
       haveI : IsOpenImmersion (f ∣_ Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) :=
