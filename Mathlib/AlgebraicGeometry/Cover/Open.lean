@@ -48,7 +48,7 @@ structure OpenCover (X : Scheme.{u}) where
   /-- the embedding of subschemes to `X` -/
   map : ∀ j : J, obj j ⟶ X
   /-- given a point of `x : X`, `f x` is the index of the subscheme which contains `x`  -/
-  f : X.carrier → J
+  f : X → J
   /-- the subschemes covers `X` -/
   covers : ∀ x, x ∈ Set.range (map (f x)).1.base
   /-- the embedding of subschemes are open immersions -/
@@ -64,7 +64,7 @@ variable [∀ x, HasPullback (𝒰.map x ≫ f) g]
 
 /-- The affine cover of a scheme. -/
 def affineCover (X : Scheme.{u}) : OpenCover X where
-  J := X.carrier
+  J := X
   obj x := Spec (X.local_affine x).choose_spec.choose
   map x :=
     ((X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _ : _)
@@ -92,7 +92,7 @@ theorem OpenCover.iUnion_range {X : Scheme.{u}} (𝒰 : X.OpenCover) :
 #align algebraic_geometry.Scheme.open_cover.Union_range AlgebraicGeometry.Scheme.OpenCover.iUnion_range
 
 theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
-    ⨆ i, Scheme.Hom.opensRange (𝒰.map i) = ⊤ :=
+    ⨆ i, (𝒰.map i).opensRange = ⊤ :=
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
 #align algebraic_geometry.Scheme.open_cover.supr_opens_range AlgebraicGeometry.Scheme.OpenCover.iSup_opensRange
 
@@ -296,7 +296,7 @@ structure AffineOpenCover (X : Scheme.{u}) where
   /-- the embedding of subschemes to `X` -/
   map : ∀ j : J, Spec (obj j) ⟶ X
   /-- given a point of `x : X`, `f x` is the index of the subscheme which contains `x`  -/
-  f : X.carrier → J
+  f : X → J
   /-- the subschemes covers `X` -/
   covers : ∀ x, x ∈ Set.range (map (f x)).1.base
   /-- the embedding of subschemes are open immersions -/
