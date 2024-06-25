@@ -312,6 +312,34 @@ abbrev mk''
 
 end Hom
 
+section Iso
+
+variable {P Q : PresheafOfModules R} (app : ∀ X, P.obj X ≅ Q.obj X)
+
+variable (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
+  (app Y).hom (P.map f x) = Q.map f ((app X).hom x))
+
+/-- A constructor for isomorphisms in `PresheafOfModules R` that is based on the data
+of a family of isomorphisms in the various `ModuleCat (R.obj X)`. -/
+@[simps]
+def isoMk' : P ≅ Q where
+  hom := Hom.mk' (fun X ↦ (app X).hom) naturality
+  inv := Hom.mk' (fun X ↦ (app X).inv) sorry
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
+/-- A constructor for isomorphisms in `PresheafOfModules R` that is based on the data
+of a family of isomorphisms in the various `ModuleCat (R.obj X)`, and for which the
+naturality condition is stated using the restriction of scalars. -/
+abbrev isoMk''
+    (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
+      restrictionApp f P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y).hom =
+        ModuleCat.ofHom (app X).hom ≫ restrictionApp f Q) :
+    P ≅ Q :=
+  isoMk' app (fun _ _ f x => congr_hom (naturality f) x)
+
+end Iso
+
 end PresheafOfModules
 
 variable (R) in
