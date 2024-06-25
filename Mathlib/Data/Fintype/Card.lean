@@ -632,18 +632,6 @@ theorem card_of_bijective {f : α → β} (hf : Bijective f) : card α = card β
   card_congr (Equiv.ofBijective f hf)
 #align fintype.card_of_bijective Fintype.card_of_bijective
 
-theorem exists_superset_card_eq {α : Type*} [DecidableEq α] [Fintype α] {s : Finset α} {n : ℕ}
-    (h1 : s.card ≤ n) (h2 : n ≤ Fintype.card α) :
-    ∃ t : Finset α, s ⊆ t ∧ t.card = n := by
-  have := Finset.card_compl s -- for omega
-  have ⟨u, hu_ss, hu_card⟩ := Finset.exists_smaller_set sᶜ (n - s.card) (by omega)
-  use s.disjUnion u <| le_compl_iff_disjoint_left.mp (by assumption)
-  constructor
-  · simp only [disjUnion_eq_union]
-    exact subset_union_left
-  · simp only [Finset.card_disjUnion]
-    omega
-
 end Fintype
 
 namespace Finite
