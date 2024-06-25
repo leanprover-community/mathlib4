@@ -148,6 +148,12 @@ instance {i j k : ℕ} (hij : i < j) (κ : kernel ((x : Iic j) → X x) ((x : Io
   rw [split]
   infer_instance
 
+instance {i j k : ℕ} (hij : i < j) (κ : kernel ((x : Iic j) → X x) ((x : Ioc j k) → X x))
+    [IsFiniteKernel κ] :
+    IsFiniteKernel (split i j k hij κ) := by
+  rw [split]
+  infer_instance
+
 @[simp]
 lemma split_zero (i j k : ℕ) (hij : i < j) :
     split i j k hij (0 : kernel ((x : Iic j) → X x) ((x : Ioc j k) → X x)) = 0 := by
@@ -175,6 +181,14 @@ lemma compProd_eq {i j k : ℕ} (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j
 instance {i j k : ℕ} (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x))
     (η : kernel ((x : Iic j) → X x) ((x : Ioc j k) → X x)) :
     IsSFiniteKernel (compProd κ η) := by
+  rw [compProd]
+  split_ifs <;> infer_instance
+
+instance {i j k : ℕ} (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x))
+    [IsFiniteKernel κ]
+    (η : kernel ((x : Iic j) → X x) ((x : Ioc j k) → X x))
+    [IsFiniteKernel η] :
+    IsFiniteKernel (compProd κ η) := by
   rw [compProd]
   split_ifs <;> infer_instance
 
@@ -265,6 +279,11 @@ instance {i j k : ℕ} (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x
     IsSFiniteKernel (castPath κ h) := by
   rw [castPath]; infer_instance
 
+instance {i j k : ℕ} (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x)) (h : j = k)
+    [IsFiniteKernel κ] :
+    IsFiniteKernel (castPath κ h) := by
+  rw [castPath]; infer_instance
+
 section nat
 
 variable {α : ℕ → Type*} [∀ i, MeasurableSpace (α i)]
@@ -332,6 +351,14 @@ instance (κ₀ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x)) [h₀ : 
   | zero => rw [kerInterval_zero]; infer_instance
   | succ n _ => rw [kerInterval_succ]; split_ifs <;> infer_instance
 
+instance (κ₀ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x)) [h₀ : IsFiniteKernel κ₀]
+    (κ : ∀ k, kernel ((x : Iic k) → X x) (X (k + 1)))
+    [∀ k, IsFiniteKernel (κ k)] (k : ℕ) :
+    IsFiniteKernel (kerInterval κ₀ κ k) := by
+  induction k with
+  | zero => rw [kerInterval_zero]; infer_instance
+  | succ n _ => rw [kerInterval_succ]; split_ifs <;> infer_instance
+
 noncomputable
 def kerNat (κ : (k : ℕ) → kernel ((x : Iic k) → X x) (X (k + 1))) (i j : ℕ) :
     kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x) :=
@@ -361,6 +388,10 @@ lemma kerNat_of_ge (κ : (k : ℕ) → kernel ((x : Iic k) → X x) (X (k + 1)))
 
 instance (κ : (k : ℕ) → kernel ((x : Iic k) → X x) (X (k + 1))) [∀ i, IsSFiniteKernel (κ i)] :
     IsSFiniteKernel (kerNat κ i j) := by
+  rw [kerNat]; split_ifs <;> infer_instance
+
+instance (κ : (k : ℕ) → kernel ((x : Iic k) → X x) (X (k + 1))) [∀ i, IsFiniteKernel (κ i)] :
+    IsFiniteKernel (kerNat κ i j) := by
   rw [kerNat]; split_ifs <;> infer_instance
 
 lemma kerNat_succ (κ : (k : ℕ) → kernel ((x : Iic k) → X x) (X (k + 1))) (i : ℕ) :
@@ -409,5 +440,76 @@ theorem compProd_kerNat (κ : (k : ℕ) → kernel ((x : Iic k) → X x) (X (k +
         compProd_assoc _ _ _ (hij.trans_le hjl) (Nat.lt_succ_self l)]
       linarith
     · rw [kerNat_succ_right _ _ _ (hij.trans_le (Nat.lt_succ_iff.mp hjk))]
+
+theorem isMarkovKernel_compProd {i j k : ℕ}
+    (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x))
+    (η : kernel ((x : Iic j) → X x) ((x : Ioc j k) → X x))
+    [IsMarkovKernel κ] [IsMarkovKernel η] (hij : i < j) (hjk : j < k) :
+    IsMarkovKernel (κ ⊗ₖ' η) := by
+  rw [compProd]
+  simp only [hij, hjk, and_self, ↓reduceDite, split]
+  infer_instance
+
+theorem isMarkovKernel_castPath {i j k : ℕ}
+    (κ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x)) [IsMarkovKernel κ] (hjk : j = k)  :
+    IsMarkovKernel (castPath κ hjk) := by
+  rw [castPath]; infer_instance
+
+theorem isMarkovKernel_kerInterval {i j k : ℕ}
+    (κ₀ : kernel ((x : Iic i) → X x) ((x : Ioc i j) → X x)) [h₀ : IsMarkovKernel κ₀]
+    (κ : ∀ k, kernel ((x : Iic k) → X x) (X (k + 1))) [∀ k, IsMarkovKernel (κ k)]
+    (hij : i < j) (hjk : j ≤ k) :
+    IsMarkovKernel (kerInterval κ₀ κ k) := by
+  induction k with
+  | zero => linarith
+  | succ n hn =>
+    rw [kerInterval_succ]
+    split_ifs with h
+    · exact isMarkovKernel_castPath _ _
+    · have _ := hn (by omega)
+      exact isMarkovKernel_compProd _ _ (by omega) n.lt_succ_self
+
+theorem isMarkovKernel_kerNat {i j : ℕ}
+    (κ : ∀ k, kernel ((x : Iic k) → X x) (X (k + 1)))
+    [∀ k, IsMarkovKernel (κ k)] (hij : i < j) :
+    IsMarkovKernel (kerNat κ i j) := by
+  simp only [kerNat, hij, ↓reduceIte]
+  exact isMarkovKernel_kerInterval _ _ i.lt_succ_self (Nat.succ_le.2 hij)
+
+theorem proj_kerNat (κ : (k : ℕ) → kernel ((x : Iic k) → X x) (X (k + 1)))
+    [∀ i, IsMarkovKernel (κ i)]
+    {a b c : ℕ} (hab : a < b) (hbc : b ≤ c) :
+    kernel.map (kerNat κ a c)
+      (fun (x : ((i : Ioc a c) → X i)) (i : Ioc a b) ↦ x ⟨i.1, Ioc_subset_Ioc_right hbc i.2⟩)
+      (measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)) = kerNat κ a b := by
+  rcases eq_or_lt_of_le hbc with hbc | hbc
+  · cases hbc
+    exact kernel.map_id _
+  · ext x s ms
+    rw [kernel.map_apply' _ _ _ ms, ← compProd_kerNat κ hab hbc,
+      compProd_apply' _ _ hab hbc _ (measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) ms)]
+    simp_rw [Set.preimage_preimage]
+    refine Eq.trans (b := ∫⁻ b, s.indicator 1 b ∂kerNat κ a b x) ?_ ?_
+    · refine lintegral_congr fun b ↦ ?_
+      simp only [el, nonpos_iff_eq_zero, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, er,
+        Set.mem_preimage, Set.indicator, Pi.one_apply]
+      split_ifs with hb
+      · have := isMarkovKernel_kerNat κ hbc
+        convert measure_univ
+        · ext c
+          simp only [Set.mem_setOf_eq, Set.mem_univ, iff_true]
+          convert hb using 1
+          ext i
+          simp [(mem_Ioc.1 i.2).2]
+        · infer_instance
+      · convert measure_empty
+        · ext c
+          simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+          convert hb using 2
+          ext i
+          simp [(mem_Ioc.1 i.2).2]
+        · infer_instance
+    · rw [← one_mul (((kerNat κ a b) x) s)]
+      exact lintegral_indicator_const ms _
 
 end kerNat

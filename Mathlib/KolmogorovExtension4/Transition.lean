@@ -13,7 +13,7 @@ The goal of this file is to go around an issue with types of compositions of ker
 Say that we have 3 kernels, `κ : kernel α β`, `η : kernel (α × β) γ` and
 `ξ : kernel (α × β × γ) δ`. We want to compose them using `ProbabilityTheory.kernel.compProd`:
 we can form `κ ⊗ₖ η : kernel α (β × γ)` and can then compose this with `ξ` to get
-`(κ ⊗ₖ η) ⊗ₖ ξ : kernel α (α × β × γ)`. We may also want to compose them by starting from the right
+`(κ ⊗ₖ η) ⊗ₖ ξ : kernel α (β × γ × δ)`. We may also want to compose them by starting from the right
 and prove that composition of kernels is associative. However, we have two similar problems:
 - we cannot even write `κ ⊗ₖ (η ⊗ₖ ξ)`, since `ξ` has type `kernel (α × (β × γ)) δ` and not
   `kernel ((α × β) × γ) δ`. We need to insert an equivalence to change the type.

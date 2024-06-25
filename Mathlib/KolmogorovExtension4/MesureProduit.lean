@@ -51,71 +51,6 @@ theorem kolContent_eq_measure_pi [Fintype ι] {s : Set ((i : ι) → X i)} (hs :
     simp
   rw [this, Measure.map_apply maux hs]
 
-theorem Measure.map_prod_snd {X Y Z : Type*} [MeasurableSpace X] [MeasurableSpace Y]
-    [MeasurableSpace Z] (μ : Measure X) [IsProbabilityMeasure μ] (ν : Measure Y) [SFinite ν]
-    (f : Y → Z) :
-    (μ.prod ν).snd.map f = (μ.prod (ν.map f)).snd := by
-  rw [Measure.snd_prod, Measure.snd_prod]
-
-theorem Measure.map_snd_compProd {X Y Z : Type*} [MeasurableSpace X] [MeasurableSpace Y]
-    [MeasurableSpace Z] (μ : Measure X) [IsProbabilityMeasure μ] (κ : kernel X Y)
-    [IsSFiniteKernel κ] {f : Y → Z} (hf : Measurable f) :
-    (μ ⊗ₘ κ).snd.map f = Measure.snd (μ ⊗ₘ (kernel.map κ f hf)) := by
-  ext s ms
-  rw [Measure.map_apply hf ms, Measure.snd_apply (ms.preimage hf),
-    Measure.compProd_apply (measurable_snd (hf ms)), Measure.snd_apply ms,
-    Measure.compProd_apply (measurable_snd ms)]
-  refine lintegral_congr fun x ↦ ?_
-  simp_rw [Set.preimage_preimage]
-  rw [kernel.map_apply', Set.preimage_preimage]
-  exact measurable_id ms
-
-lemma indicator_const_mul {α : Type*} (s : Set α) (c : ℝ≥0∞) (a : α) :
-    (s.indicator 1 a) * c = s.indicator (fun _ ↦ c) a := by
-  simp [Set.indicator]
-
-theorem prod_iic (n : ℕ) (f : (Iic n) → ℝ≥0∞) :
-    (∏ i : Ioc 0 n, f ⟨i.1, Ioc_subset_Iic_self i.2⟩) * f ⟨0, mem_Iic.2 <| zero_le _⟩ =
-    ∏ i : Iic n, f i := by
-  let g : ℕ → ℝ≥0∞ := fun k ↦ if hk : k ∈ Iic n then f ⟨k, hk⟩ else 1
-  have h1 : ∏ i : Ioc 0 n, f ⟨i.1, Ioc_subset_Iic_self i.2⟩ = ∏ i : Ioc 0 n, g i := by
-    refine Finset.prod_congr rfl ?_
-    simp only [Finset.mem_univ, mem_Ioc, true_implies, Subtype.forall, g]
-    rintro k ⟨hk1, hk2⟩
-    rw [dif_pos <| mem_Iic.2 hk2]
-  have h2 : ∏ i : Iic n, f i = ∏ i : Iic n, g i := by
-    refine Finset.prod_congr rfl ?_
-    simp only [Finset.mem_univ, mem_Ioc, Subtype.coe_eta, dite_eq_ite, true_implies, Subtype.forall,
-      g]
-    intro k hk
-    simp [hk]
-  rw [h1, h2, Finset.prod_coe_sort, Finset.prod_coe_sort]
-  have : f ⟨0, mem_Iic.2 <| zero_le _⟩ = g 0 := by simp [g]
-  rw [this]
-  exact Finset.prod_Ioc_mul_eq_prod_Icc (zero_le n)
-
-theorem prod_ioc (n : ℕ) (f : (Ioc 0 (n + 1)) → ℝ≥0∞) :
-    (f ⟨n + 1, mem_Ioc.2 ⟨n.succ_pos, le_refl _⟩⟩) *
-      (∏ i : Ioc 0 n, f ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩) =
-    ∏ i : Ioc 0 (n + 1), f i := by
-  let g : ℕ → ℝ≥0∞ := fun k ↦ if hk : k ∈ Ioc 0 (n + 1) then f ⟨k, hk⟩ else 1
-  have h1 : ∏ i : Ioc 0 n, f ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩ =
-      ∏ i : Ioc 0 n, g i := by
-    refine Finset.prod_congr rfl ?_
-    simp only [Finset.mem_univ, mem_Ioc, true_implies, Subtype.forall, g]
-    rintro k ⟨hk1, hk2⟩
-    rw [dif_pos ⟨hk1, hk2.trans n.le_succ⟩]
-  have h2 : ∏ i : Ioc 0 (n + 1), f i = ∏ i : Ioc 0 (n + 1), g i := by
-    refine Finset.prod_congr rfl ?_
-    simp only [Finset.mem_univ, mem_Ioc, Subtype.coe_eta, dite_eq_ite, true_implies, Subtype.forall,
-      g]
-    intro k hk
-    simp [hk]
-  rw [h1, h2, Finset.prod_coe_sort, Finset.prod_coe_sort]
-  have : f ⟨n + 1, right_mem_Ioc.2 n.succ_pos⟩ = g (n + 1) := by simp [g]
-  rw [this]
-  exact Finset.mul_prod_Ico_eq_prod_Icc (Nat.le_add_left (0 + 1) n)
-
 end Preliminaries
 
 section Nat
@@ -131,12 +66,6 @@ noncomputable def prod_meas : Measure ((n : ℕ) → X n) :=
 instance : IsProbabilityMeasure (prod_meas μ) := by
   rw [prod_meas]
   infer_instance
-
-theorem kernel.comap_const {X Y Z : Type*} [MeasurableSpace X] [MeasurableSpace Y]
-    [MeasurableSpace Z] (μ : Measure Z) {f : X → Y} (hf : Measurable f) :
-    kernel.comap (kernel.const Y μ) f hf = kernel.const X μ := by
-  ext1 x
-  rw [kernel.const_apply, kernel.comap_apply, kernel.const_apply]
 
 theorem er_succ_preimage_pi {n : ℕ} (hn : 0 < n) (s : (i : Ioc 0 (n + 1)) → Set (X i)) :
     er 0 n (n + 1) hn n.le_succ ⁻¹' Set.univ.pi s =
@@ -199,7 +128,7 @@ theorem kerNat_prod {N : ℕ} (hN : 0 < N) :
           · exact (e n).measurable_invFun (ms ⟨n + 1, right_mem_Ioc.2 n.succ_pos⟩)
       simp_rw [this]
       rw [lintegral_indicator_const, hind, kernel.const_apply, Measure.pi_pi]
-      · exact prod_ioc n (fun i ↦ (μ i) (s i))
+      · exact prod_Ioc n (fun i ↦ (μ i) (s i))
       · exact MeasurableSet.univ_pi (fun i ↦ ms ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩)
     apply MeasurableSet.prod
     · exact MeasurableSet.univ_pi (fun i ↦ ms ⟨i.1, Ioc_subset_Ioc_right n.le_succ i.2⟩)
@@ -224,7 +153,7 @@ theorem prod_noyau_proj (N : ℕ) :
     simp only [id_eq, zer, el, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, mem_preimage, er']
     congrm (fun i ↦ ?_) ∈ s
     simp [(mem_Iic_zero i.2).symm]
-  · rw [my_ker_pos _ hN, kerNat_prod _ hN]
+  · rw [my_ker_pos _ hN, kerNat', kerNat_prod _ hN]
     rfl
 
 theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
@@ -269,9 +198,9 @@ theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
         Measure.dirac_apply', kernel.const_apply, Measure.pi_pi]
       · exact ms _
       · exact measurable_prod_mk_left (m := inferInstance) (measurable_snd mpis)
-    · simp_rw [indicator_const_mul, id_eq]
+    · simp_rw [indicator_one_mul_const, id_eq]
       rw [lintegral_indicator_const]
-      · exact prod_iic (I.sup id) (fun i ↦ (μ i) (s i))
+      · exact prod_Iic (I.sup id) (fun i ↦ (μ i) (s i))
       · exact ms _
 
 theorem kolContent_eq_prod_meas {A : Set ((n : ℕ) → X n)} (hA : A ∈ cylinders X) :
@@ -465,8 +394,8 @@ theorem thirdLemma (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ 
       Set.univ.pi (fun i : t n ↦ a ((aux n).symm i)) := by
     ext x
     simp only [Equiv.coe_fn_mk, Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies,
-      Subtype.forall, Equiv.coe_fn_symm_mk, g, aux]
-    exact ⟨fun h i hi1 hi2 ↦ h i (ts n ⟨i, hi1⟩ hi2), fun h i hi ↦ h i (su n hi) (st n i hi)⟩
+      Equiv.coe_fn_symm_mk, g]
+    exact ⟨fun h i ↦ h ((aux n).symm i), fun h i ↦ h (aux n i)⟩
   -- The pushforward measure of the product measure of `(μ_{φ k})_{k ∈ tₙ}` by `gₙ` is the
   -- product measre of `(∨ᵢ)_{i ∈ sₙ}`.
   have test' n : Measure.pi (fun i : s n ↦ μ i) =
