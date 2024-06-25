@@ -143,7 +143,7 @@ section BooleanAlgebra
 variable (α) [BooleanAlgebra α]
 
 /-- Taking complements as an order isomorphism to the order dual. -/
-@[simps]
+@[simps!]
 def OrderIso.compl : α ≃o αᵒᵈ where
   toFun := OrderDual.toDual ∘ HasCompl.compl
   invFun := HasCompl.compl ∘ OrderDual.ofDual

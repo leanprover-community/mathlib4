@@ -318,7 +318,7 @@ theorem some_lt_some : @LT.lt (WithBot α) _ (Option.some a) (Option.some b) ↔
 theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_coe _
 #align with_bot.none_lt_some WithBot.none_lt_some
 
-@[simp, deprecated not_lt_none "Don't mix Option and WithBot" (since := "2024-05-27")]
+@[simp, deprecated not_lt_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
 #align with_bot.not_lt_none WithBot.not_lt_none
 
@@ -365,12 +365,10 @@ instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
       cases' o₁ with a
       · cases' o₂ with b
         · rfl
-        have := h₂ b
         rcases h₂ b rfl with ⟨_, ⟨⟩, _⟩
       · rcases h₁ a rfl with ⟨b, ⟨⟩, h₁'⟩
         rcases h₂ b rfl with ⟨_, ⟨⟩, h₂'⟩
-        rw [le_antisymm h₁' h₂']
-         }
+        rw [le_antisymm h₁' h₂'] }
 #align with_bot.partial_order WithBot.partialOrder
 
 section Preorder

@@ -554,6 +554,14 @@ lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
 end Monoid
 end
 
+lemma SMulCommClass.of_commMonoid
+    (A B G : Type*) [CommMonoid G] [SMul A G] [SMul B G]
+    [IsScalarTower A G G] [IsScalarTower B G G] :
+    SMulCommClass A B G where
+  smul_comm r s x := by
+    rw [← one_smul G (s • x), ← smul_assoc, ← one_smul G x, ← smul_assoc s 1 x,
+      smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
+
 namespace MulAction
 
 variable (M α) in
