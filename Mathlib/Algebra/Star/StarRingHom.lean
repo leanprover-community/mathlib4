@@ -54,7 +54,7 @@ add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 /-- `NonUnitalStarRingHomClass F A B` states that `F` is a type of non-unital ⋆-ring homomorphisms.
 You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
 class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
-     [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
+    [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
     [FunLike F A B] [NonUnitalRingHomClass F A B] extends StarHomClass F A B : Prop
 
 namespace NonUnitalStarRingHomClass
