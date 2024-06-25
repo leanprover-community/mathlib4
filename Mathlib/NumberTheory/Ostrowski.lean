@@ -63,7 +63,7 @@ section Non_archimedean
 
 -- ## Non-archimedean case
 
-/-- The mulRingNorm corresponding to the p-adic norm on ℚ. -/
+/-- The mulRingNorm corresponding to the p-adic norm on `ℚ`. -/
 def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
 { toFun     := fun x : ℚ ↦ (padicNorm p x : ℝ),
   map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
@@ -77,10 +77,10 @@ def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
   map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, forall_const]
 }
 
-@[simp] lemma mulRingNorm_eq_padic_norm (p : ℕ) [Fact (Nat.Prime p)] (r : ℚ) :
+@[simp] lemma mulRingNorm_eq_padic_norm (p : ℕ) [Fact p.Prime] (r : ℚ) :
   mulRingNorm_padic p r = padicNorm p r := rfl
 
--- ## Step 1: define `p = smallest n s. t. 0 < |n| < 1`
+-- ## Step 1: define `p = minimal n s. t. 0 < f n < 1`
 
 variable (hf_nontriv : f ≠ 1) (bdd : ∀ n : ℕ, f n ≤ 1)
 
@@ -127,7 +127,7 @@ lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
     rw [Nat.cast_mul, map_mul] at hp1
     exact ((one_le_mul_of_one_le_of_one_le ha hb).trans_lt hp1).false
 
--- ## Step 3: if p does not divide m, then |m|=1
+-- ## Step 3: if p does not divide m, then f m = 1
 
 open Real
 
@@ -171,7 +171,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
       map_pos_of_ne_zero _ <| Nat.cast_ne_zero.2 fun H ↦ hpm <| H ▸ dvd_zero p
     linarith only [le_half hp0 hp1 le_sup_left, le_half hm₀ hm le_sup_right]
 
--- ## Step 4: |p| = p ^ (- t) for some positive real t
+-- ## Step 4: f p = p ^ (- t) for some positive real t
 
 /-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
 lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
@@ -182,9 +182,8 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
   simp only [ne_eq, Nat.cast_eq_one,Nat.Prime.ne_one pprime, not_false_eq_true]
 
 -- ## Non-archimedean case: end goal
-/--
-  If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value.
--/
+
+/-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem mulRingNorm_equiv_padic_of_bounded :
     ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
