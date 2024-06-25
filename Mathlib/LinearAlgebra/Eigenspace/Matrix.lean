@@ -39,8 +39,8 @@ lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
 lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} (b : Basis n R M) :
     HasEigenvalue (toLin b b (diagonal d)) μ ↔ ∃ i, d i = μ := by
-  have (i : n) : HasEigenvalue (toLin b b (diagonal d)) (d i) := by
-    exact hasEigenvalue_of_hasEigenvector <| hasEigenvector_toLin_diagonal _ d i b
+  have (i : n) : HasEigenvalue (toLin b b (diagonal d)) (d i) :=
+    hasEigenvalue_of_hasEigenvector <| hasEigenvector_toLin_diagonal d i b
   constructor
   · contrapose!
     intro hμ h_eig
@@ -51,7 +51,7 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} (b : Basis n R M) 
       apply Submodule.mem_iSup_of_mem (d i)
       apply Submodule.mem_iSup_of_mem ⟨i, rfl⟩
       rw [mem_eigenspace_iff]
-      exact (hasEigenvector_toLin_diagonal _ d i b).apply_eq_smul
+      exact (hasEigenvector_toLin_diagonal d i b).apply_eq_smul
     have hμ_not_mem : μ ∉ Set.range d := by simpa using fun i ↦ (hμ i)
     have := eigenspaces_independent (toLin b b (diagonal d)) |>.disjoint_biSup hμ_not_mem
     rw [h_iSup, disjoint_top] at this
@@ -62,15 +62,14 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} (b : Basis n R M) 
 /-- Eigenvalues of a diagonal linear operator with respect to standard basis
     are the diagonal entries. -/
 lemma hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
-    HasEigenvalue (toLin' (diagonal d)) μ ↔ ∃ i, d i = μ := by
-  exact hasEigenvalue_toLin_diagonal_iff (n → R) d (Pi.basisFun R n)
+    HasEigenvalue (toLin' (diagonal d)) μ ↔ (∃ i, d i = μ) :=
+  hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
 
 /-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/
 lemma spectrum_diagonal (d : n → R) :
     spectrum R (diagonal d) = Set.range d := by
   ext μ
-  rw [← AlgEquiv.spectrum_eq (toLinAlgEquiv <| Pi.basisFun R n),
-    ← hasEigenvalue_iff_mem_spectrum, Set.mem_range]
+  rw [← AlgEquiv.spectrum_eq (toLinAlgEquiv <| Pi.basisFun R n), ← hasEigenvalue_iff_mem_spectrum]
   exact hasEigenvalue_toLin'_diagonal_iff d
 
 end SpectrumDiagonal
