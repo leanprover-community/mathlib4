@@ -1261,7 +1261,7 @@ theorem right_distrib_of_nneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
         · norm_cast
         · norm_cast; exact right_distrib _ _ _
         · norm_cast
-          rw [add_top_of_ne_bot (coe_ne_bot a), top_mul_of_neg c_neg, add_bot]
+          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_neg c_neg, add_bot]
       · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_neg c_neg, bot_add]
     · exfalso; exact not_top_lt c_neg
   · simp
