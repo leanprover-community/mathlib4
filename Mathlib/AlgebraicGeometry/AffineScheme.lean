@@ -476,20 +476,6 @@ instance _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
     IsLocalization.Away r Γ(X, X.basicOpen r) :=
   isLocalization_basicOpen (isAffineOpen_top X) r
 
-lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U)
-    {V : Opens X} (hV : IsAffineOpen V) (e) (r : Γ(Y, U)) :
-    letI := hU.isLocalization_basicOpen r
-    letI := hV.isLocalization_basicOpen (f.appLE U V e r)
-    f.appLE (Y.basicOpen r) (X.basicOpen (f.appLE U V e r))
-      (by simpa [Scheme.Hom.appLE] using X.basicOpen_restrict _ _) =
-        IsLocalization.Away.map _ _ (f.appLE U V e) r := by
-  letI := hU.isLocalization_basicOpen r
-  letI := hV.isLocalization_basicOpen (f.appLE U V e r)
-  apply IsLocalization.ringHom_ext (.powers r)
-  rw [← CommRingCat.comp_eq_ring_hom_comp, IsLocalization.Away.map, IsLocalization.map_comp,
-    RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
-    Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
-
 theorem isLocalization_of_eq_basicOpen {V : Opens X} (i : V ⟶ U) (e : V = X.basicOpen f) :
     @IsLocalization.Away _ _ f Γ(X, V) _ (X.presheaf.map i.op).toAlgebra := by
   subst e; convert isLocalization_basicOpen hU f using 3
