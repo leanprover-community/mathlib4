@@ -236,7 +236,7 @@ lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
   _ = S'.c ^ 3 := by simp }
 
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
-lemma lambda_pow_two_dvd_c : λ ^ 2 ∣ S'.c := by
+lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   classical
   have  hm := S'.multiplicity_lambda_c_finite
   suffices 2 ≤ (multiplicity ((hζ.toInteger - 1)) S'.c).get hm by
@@ -256,7 +256,7 @@ lemma lambda_pow_two_dvd_c : λ ^ 2 ∣ S'.c := by
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/
 lemma Solution'.two_le_multiplicity : 2 ≤ S'.multiplicity := by
   simpa [← PartENat.coe_le_coe, Solution'.multiplicity] using
-    multiplicity.le_multiplicity_of_pow_dvd (lambda_pow_two_dvd_c S')
+    multiplicity.le_multiplicity_of_pow_dvd (lambda_sq_dvd_c S')
 
 /-- Given `S : Solution`, we have that `2 ≤ S.multiplicity`. -/
 lemma Solution.two_le_multiplicity : 2 ≤ S.multiplicity :=
@@ -301,7 +301,7 @@ lemma lambda_sq_dvd_or_dvd_or_dvd :
   replace h3' : (multiplicity (hζ.toInteger - 1) (S'.a + η ^ 2 * S'.b)).get h3' =
     multiplicity (hζ.toInteger - 1) (S'.a + η ^ 2 * S'.b) := by simp
   rw [← h1', coe_lt_coe] at h1; rw [← h2', coe_lt_coe] at h2; rw [← h3', coe_lt_coe] at h3
-  have := (pow_dvd_pow_of_dvd (lambda_pow_two_dvd_c S') 3).mul_left S'.u
+  have := (pow_dvd_pow_of_dvd (lambda_sq_dvd_c S') 3).mul_left S'.u
   rw [← pow_mul, ← S'.H, a_cube_add_b_cube_eq_mul, multiplicity.pow_dvd_iff_le_multiplicity,
     multiplicity.mul hζ.zeta_sub_one_prime', multiplicity.mul hζ.zeta_sub_one_prime', ← h1', ← h2',
     ← h3', ← Nat.cast_add, ← Nat.cast_add, coe_le_coe] at this
