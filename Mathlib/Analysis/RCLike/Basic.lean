@@ -959,7 +959,8 @@ lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing 
     OrderedSMul K A where
   smul_lt_smul_of_pos {x} {y} {c} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
   lt_of_smul_lt_smul_of_pos {x} {y} {c} hxy hc := by
-    have : c⁻¹ • c • x < c⁻¹ • c • y := StarModule.smul_lt_smul_of_pos hxy (inv_pos_of_pos hc)
+    have : c⁻¹ • c • x < c⁻¹ • c • y := StarModule.smul_lt_smul_of_pos hxy
+      (RCLike.inv_pos_of_pos hc)
     simpa [smul_smul, inv_mul_cancel ((ne_of_lt hc).symm)] using this
 
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
