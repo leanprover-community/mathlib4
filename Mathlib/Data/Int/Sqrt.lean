@@ -22,7 +22,7 @@ namespace Int
 /-- `sqrt z` is the square root of an integer `z`. If `z` is positive, it returns the largest
 integer `r` such that `r * r ≤ n`. If it is negative, it returns `0`. For example, `sqrt (-1) = 0`,
 `sqrt 1 = 1`, `sqrt 2 = 1` -/
--- @[pp_nodot] porting note: unknown attribute
+@[pp_nodot]
 def sqrt (z : ℤ) : ℤ :=
   Nat.sqrt <| Int.toNat z
 #align int.sqrt Int.sqrt
@@ -38,5 +38,13 @@ theorem exists_mul_self (x : ℤ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :
 theorem sqrt_nonneg (n : ℤ) : 0 ≤ sqrt n :=
   natCast_nonneg _
 #align int.sqrt_nonneg Int.sqrt_nonneg
+
+@[simp, norm_cast]
+theorem sqrt_natCast (n : ℕ) : Int.sqrt (n : ℤ) = Nat.sqrt n := by rw [sqrt, toNat_ofNat]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem sqrt_ofNat (n : ℕ) : Int.sqrt (no_index (OfNat.ofNat n) : ℤ) = Nat.sqrt (OfNat.ofNat n) :=
+  sqrt_natCast _
 
 end Int

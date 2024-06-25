@@ -107,7 +107,7 @@ theorem WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
 
 theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
     z ∈ spectrum ℂ a ↔ ∃ f : characterSpace ℂ A, f a = z := by
-  refine' ⟨fun hz => _, _⟩
+  refine ⟨fun hz => ?_, ?_⟩
   · obtain ⟨f, hf⟩ := WeakDual.CharacterSpace.exists_apply_eq_zero hz
     simp only [map_sub, sub_eq_zero, AlgHomClass.commutes] at hf
     exact ⟨_, hf.symm⟩
@@ -144,7 +144,7 @@ variable (A)
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   nontriviality A
-  refine' AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => _
+  refine AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => ?_
   /- By `spectrum.gelfandTransform_eq`, the spectra of `star a * a` and its
     `gelfandTransform` coincide. Therefore, so do their spectral radii, and since they are
     self-adjoint, so also do their norms. Applying the C⋆-property of the norm and taking square
@@ -160,7 +160,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
 
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
-  refine' ⟨(gelfandTransform_isometry A).injective, _⟩
+  refine ⟨(gelfandTransform_isometry A).injective, ?_⟩
   /- The range of `gelfandTransform ℂ A` is actually a `StarSubalgebra`. The key lemma below may be
     hard to spot; it's `map_star` coming from `WeakDual.Complex.instStarHomClass`, which is a
     nontrivial result. -/
@@ -181,8 +181,8 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     (StarSubalgebra.topologicalClosure_minimal le_rfl
       (gelfandTransform_isometry A).closedEmbedding.isClosed_range)
     (StarSubalgebra.le_topologicalClosure _)
-  refine' h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
-    _ (fun _ _ => _)
+  refine h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
+    _ (fun _ _ => ?_)
   /- Separating points just means that elements of the `characterSpace` which agree at all points
     of `A` are the same functional, which is just extensionality. -/
   contrapose!

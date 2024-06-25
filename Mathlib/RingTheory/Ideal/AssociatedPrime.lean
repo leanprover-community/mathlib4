@@ -88,7 +88,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     set_has_maximal_iff_noetherian.mpr H
       { P | (R ∙ x).annihilator ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (R ∙ y).annihilator }
       ⟨(R ∙ x).annihilator, rfl.le, this, x, rfl⟩
-  refine' ⟨_, ⟨⟨h₁, _⟩, y, rfl⟩, l⟩
+  refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
   intro a b hab
   rw [or_iff_not_imp_left]
   intro ha
@@ -173,7 +173,7 @@ theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.
     associatedPrimes R (R ⧸ I) = {I.radical} := by
   ext J
   rw [Set.mem_singleton_iff]
-  refine' ⟨IsAssociatedPrime.eq_radical hI, _⟩
+  refine ⟨IsAssociatedPrime.eq_radical hI, ?_⟩
   rintro rfl
   haveI : Nontrivial (R ⧸ I) := by
     refine ⟨(Ideal.Quotient.mk I : _) 1, (Ideal.Quotient.mk I : _) 0, ?_⟩

@@ -96,7 +96,7 @@ theorem rank_le_one_iff [Module.Free K V] :
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
-    refine' (rank_span_le _).trans_eq _
+    refine (rank_span_le _).trans_eq ?_
     simp
 #align rank_le_one_iff rank_le_one_iff
 
@@ -206,7 +206,6 @@ theorem finrank_eq_one_iff' [Module.Free K V] :
   exact toNat_eq_iff one_ne_zero
 #align finrank_eq_one_iff' finrank_eq_one_iff'
 
--- Not sure why this aren't found automatically.
 /-- A finite dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
