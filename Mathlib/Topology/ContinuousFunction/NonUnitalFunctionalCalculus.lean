@@ -139,10 +139,6 @@ lemma cfcₙHom_predicate (f : C(σₙ R a, R)₀) :
     p (cfcₙHom ha f) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2 f
 
-variable (R) in
-lemma cfcₙ_predicate_zero : p 0 :=
-  NonUnitalContinuousFunctionalCalculus.predicate_zero (R := R)
-
 lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueNonUnitalContinuousFunctionalCalculus R A]
     (φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ₁ : Continuous φ)
     (hφ₂ : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = a) : cfcₙHom ha = φ :=
@@ -264,8 +260,12 @@ lemma cfcₙ_id' : cfcₙ (fun x : R ↦ x) a = a := cfcₙ_id R a
 lemma cfcₙ_map_quasispectrum : σₙ R (cfcₙ f a) = f '' σₙ R a := by
   simp [cfcₙ_apply f a, cfcₙHom_map_quasispectrum (p := p)]
 
-lemma cfcₙ_predicate : p (cfcₙ f a) :=
-  cfcₙ_apply f a ▸ cfcₙHom_predicate (A := A) ha _
+variable (R) in
+lemma cfcₙ_predicate_zero : p 0 :=
+  NonUnitalContinuousFunctionalCalculus.predicate_zero (R := R)
+
+lemma cfcₙ_predicate (f : R → R) (a : A) : p (cfcₙ f a) :=
+  cfcₙ_cases p a f (cfcₙ_predicate_zero R) fun _ _ _ ↦ cfcₙHom_predicate ..
 
 lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     cfcₙ f a = cfcₙ g a := by

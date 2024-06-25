@@ -236,10 +236,6 @@ lemma cfcHom_predicate (f : C(spectrum R a, R)) :
     p (cfcHom ha f) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2 f
 
-variable (R) in
-lemma cfc_predicate_zero : p 0 :=
-  ContinuousFunctionalCalculus.predicate_zero (R := R)
-
 lemma cfcHom_eq_of_continuous_of_map_id [UniqueContinuousFunctionalCalculus R A]
     (φ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ₁ : Continuous φ)
     (hφ₂ : φ (.restrict (spectrum R a) <| .id R) = a) : cfcHom ha = φ :=
@@ -354,11 +350,15 @@ lemma cfc_const (r : R) (a : A) (ha : p a := by cfc_tac) :
   rw [cfc_apply (fun _ : R ↦ r) a, ← AlgHomClass.commutes (cfcHom ha (p := p)) r]
   congr
 
-lemma cfc_predicate : p (cfc f a) :=
-  cfc_apply f a ▸ cfcHom_predicate (A := A) ha _
+variable (R) in
+lemma cfc_predicate_zero : p 0 :=
+  ContinuousFunctionalCalculus.predicate_zero (R := R)
+
+lemma cfc_predicate (f : R → R) (a : A) : p (cfc f a) :=
+  cfc_cases p a f (cfc_predicate_zero R) fun _ _ ↦ cfcHom_predicate ..
 
 lemma cfc_predicate_algebraMap (r : R) : p (algebraMap R A r) :=
-  cfc_const r (0 : A) (cfc_predicate_zero R) ▸ cfc_predicate (fun _ ↦ r) 0 (cfc_predicate_zero R)
+  cfc_const r (0 : A) (cfc_predicate_zero R) ▸ cfc_predicate (fun _ ↦ r) 0
 
 variable (R) in
 lemma cfc_predicate_one : p 1 :=
