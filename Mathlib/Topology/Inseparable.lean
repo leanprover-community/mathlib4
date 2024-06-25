@@ -233,42 +233,42 @@ attribute [local instance] specializationPreorder
 /-- A continuous function is monotone with respect to the specialization preorders on the domain and
 the codomain. -/
 theorem Continuous.specialization_monotone (hf : Continuous f) : Monotone f :=
-fun _ _ h => h.map hf
+  fun _ _ h => h.map hf
 #align continuous.specialization_monotone Continuous.specialization_monotone
 
 lemma closure_singleton_eq_Iic (x : X) : closure {x} = Iic x :=
-ext fun _ ↦ specializes_iff_mem_closure.symm
+  ext fun _ ↦ specializes_iff_mem_closure.symm
 
 /-- A subset `S` of a topological space is stable under specialization
 if `x ∈ S → y ∈ S` for all `x ⤳ y`. -/
 def StableUnderSpecialization (s : Set X) : Prop :=
-∀ ⦃x y⦄, x ⤳ y → x ∈ s → y ∈ s
+  ∀ ⦃x y⦄, x ⤳ y → x ∈ s → y ∈ s
 
 /-- A subset `S` of a topological space is stable under specialization
 if `x ∈ S → y ∈ S` for all `y ⤳ x`. -/
 def StableUnderGeneralization (s : Set X) : Prop :=
-∀ ⦃x y⦄, y ⤳ x → x ∈ s → y ∈ s
+  ∀ ⦃x y⦄, y ⤳ x → x ∈ s → y ∈ s
 
 example {s : Set X} : StableUnderSpecialization s ↔ IsLowerSet s := Iff.rfl
 example {s : Set X} : StableUnderGeneralization s ↔ IsUpperSet s := Iff.rfl
 
 lemma IsClosed.stableUnderSpecialization {s : Set X} (hs : IsClosed s) :
     StableUnderSpecialization s :=
-fun _ _ e ↦ e.mem_closed hs
+  fun _ _ e ↦ e.mem_closed hs
 
 lemma IsOpen.stableUnderGeneralization {s : Set X} (hs : IsOpen s) :
     StableUnderGeneralization s :=
-fun _ _ e ↦ e.mem_open hs
+  fun _ _ e ↦ e.mem_open hs
 
 @[simp]
 lemma stableUnderSpecialization_compl_iff {s : Set X} :
     StableUnderSpecialization sᶜ ↔ StableUnderGeneralization s :=
-isLowerSet_compl
+  isLowerSet_compl
 
 @[simp]
 lemma stableUnderGeneralization_compl_iff {s : Set X} :
     StableUnderGeneralization sᶜ ↔ StableUnderSpecialization s :=
-isUpperSet_compl
+  isUpperSet_compl
 
 alias ⟨_, StableUnderGeneralization.compl⟩ := stableUnderSpecialization_compl_iff
 alias ⟨_, StableUnderSpecialization.compl⟩ := stableUnderGeneralization_compl_iff
@@ -280,43 +280,43 @@ lemma stableUnderGeneralization_empty : StableUnderGeneralization (∅ : Set X) 
 
 lemma stableUnderSpecialization_sUnion (S : Set (Set X))
     (H : ∀ s ∈ S, StableUnderSpecialization s) : StableUnderSpecialization (⋃₀ S) :=
-isLowerSet_sUnion H
+  isLowerSet_sUnion H
 
 lemma stableUnderSpecialization_sInter (S : Set (Set X))
     (H : ∀ s ∈ S, StableUnderSpecialization s) : StableUnderSpecialization (⋂₀ S) :=
-isLowerSet_sInter H
+  isLowerSet_sInter H
 
 lemma stableUnderGeneralization_sUnion (S : Set (Set X))
     (H : ∀ s ∈ S, StableUnderGeneralization s) : StableUnderGeneralization (⋃₀ S) :=
-isUpperSet_sUnion H
+  isUpperSet_sUnion H
 
 lemma stableUnderGeneralization_sInter (S : Set (Set X))
     (H : ∀ s ∈ S, StableUnderGeneralization s) : StableUnderGeneralization (⋂₀ S) :=
-isUpperSet_sInter H
+  isUpperSet_sInter H
 
 lemma stableUnderSpecialization_iUnion {ι : Sort*} (S : ι → Set X)
     (H : ∀ i, StableUnderSpecialization (S i)) : StableUnderSpecialization (⋃ i, S i) :=
-isLowerSet_iUnion H
+  isLowerSet_iUnion H
 
 lemma stableUnderSpecialization_iInter {ι : Sort*} (S : ι → Set X)
     (H : ∀ i, StableUnderSpecialization (S i)) : StableUnderSpecialization (⋂ i, S i) :=
-isLowerSet_iInter H
+  isLowerSet_iInter H
 
 lemma stableUnderGeneralization_iUnion {ι : Sort*} (S : ι → Set X)
     (H : ∀ i, StableUnderGeneralization (S i)) : StableUnderGeneralization (⋃ i, S i) :=
-isUpperSet_iUnion H
+  isUpperSet_iUnion H
 
 lemma stableUnderGeneralization_iInter {ι : Sort*} (S : ι → Set X)
     (H : ∀ i, StableUnderGeneralization (S i)) : StableUnderGeneralization (⋂ i, S i) :=
-isUpperSet_iInter H
+  isUpperSet_iInter H
 
 lemma Union_closure_singleton_eq_iff {s : Set X} :
     (⋃ x ∈ s, closure {x}) = s ↔ StableUnderSpecialization s :=
-show _ ↔ IsLowerSet s by simp only [closure_singleton_eq_Iic, ← lowerClosure_eq, coe_lowerClosure]
+  show _ ↔ IsLowerSet s by simp only [closure_singleton_eq_Iic, ← lowerClosure_eq, coe_lowerClosure]
 
 lemma stableUnderSpecialization_iff_Union_eq {s : Set X} :
     StableUnderSpecialization s ↔ (⋃ x ∈ s, closure {x}) = s :=
-Union_closure_singleton_eq_iff.symm
+  Union_closure_singleton_eq_iff.symm
 
 alias ⟨StableUnderSpecialization.Union_eq, _⟩ := stableUnderSpecialization_iff_Union_eq
 
@@ -341,22 +341,22 @@ lemma stableUnderGeneralization_iff_exists_sInter_eq {s : Set X} :
 lemma StableUnderSpecialization.preimage {s : Set Y}
     (hs : StableUnderSpecialization s) (hf : Continuous f) :
     StableUnderSpecialization (f ⁻¹' s) :=
-IsLowerSet.preimage hs hf.specialization_monotone
+  IsLowerSet.preimage hs hf.specialization_monotone
 
 lemma StableUnderGeneralization.preimage {s : Set Y}
     (hs : StableUnderGeneralization s) (hf : Continuous f) :
     StableUnderGeneralization (f ⁻¹' s) :=
-IsUpperSet.preimage hs hf.specialization_monotone
+  IsUpperSet.preimage hs hf.specialization_monotone
 
 /-- A map `f` between topological spaces is specializing if specializations lifts along `f`,
 i.e. for each `f x' ⤳ y` there is some `x` with `x' ⤳ x` whose image is `y`. -/
 def SpecializingMap (f : X → Y) : Prop :=
-Relation.Fibration (flip (· ⤳ ·)) (flip (· ⤳ ·)) f
+  Relation.Fibration (flip (· ⤳ ·)) (flip (· ⤳ ·)) f
 
 /-- A map `f` between topological spaces is generalizing if generalizations lifts along `f`,
 i.e. for each `y ⤳ f x'` there is some `x ⤳ x'` whose image is `y`. -/
 def GeneralizingMap (f : X → Y) : Prop :=
-Relation.Fibration (· ⤳ ·) (· ⤳ ·) f
+  Relation.Fibration (· ⤳ ·) (· ⤳ ·) f
 
 lemma specializingMap_iff_closure_singleton_subset :
     SpecializingMap f ↔ ∀ x, closure {f x} ⊆ f '' closure {x} := by
@@ -407,19 +407,19 @@ lemma Inducing.generalizingMap (hf : Inducing f) (h : StableUnderGeneralization 
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
 lemma OpenEmbedding.generalizingMap (hf : OpenEmbedding f) : GeneralizingMap f :=
-hf.toInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
+  hf.toInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
 
 lemma SpecializingMap.stableUnderSpecialization_range (h : SpecializingMap f) :
     StableUnderSpecialization (range f) :=
-@image_univ _ _ f ▸ stableUnderSpecialization_univ.image h
+  @image_univ _ _ f ▸ stableUnderSpecialization_univ.image h
 
 lemma GeneralizingMap.stableUnderGeneralization_image (hf : GeneralizingMap f) {s : Set X}
     (hs : StableUnderGeneralization s) : StableUnderGeneralization (f '' s) :=
-IsUpperSet.image_fibration hf hs
+  IsUpperSet.image_fibration hf hs
 
 lemma GeneralizingMap_iff_stableUnderGeneralization_image :
     GeneralizingMap f ↔ ∀ s, StableUnderGeneralization s → StableUnderGeneralization (f '' s) :=
-Relation.fibration_iff_isUpperSet_image
+  Relation.fibration_iff_isUpperSet_image
 
 alias StableUnderGeneralization.image := GeneralizingMap.stableUnderGeneralization_image
 
