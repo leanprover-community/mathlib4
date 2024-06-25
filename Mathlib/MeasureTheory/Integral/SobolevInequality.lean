@@ -9,6 +9,7 @@ import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.Tactic.FunProp.AEMeasurable
 import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Analysis.Calculus.Deriv.Pi
+import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -22,10 +23,11 @@ noncomputable section
 
 section fun_prop
 
+-- PRd
 attribute [fun_prop] ENNReal.continuous_coe ENNReal.continuous_rpow_const
-  Measurable.coe_nnreal_ennreal Measurable.nnnorm
-  measurable_fderiv contDiffAt_norm ContDiffAt.rpow Real.contDiffAt_rpow_of_ne
-attribute [fun_prop] Real.continuousAt_rpow_const Continuous.clm_comp
+  Real.continuousAt_rpow_const Continuous.clm_comp
+  Measurable.coe_nnreal_ennreal Measurable.nnnorm measurable_fderiv
+-- attribute [fun_prop] contDiffAt_norm ContDiffAt.rpow Real.contDiffAt_rpow_of_ne
 
 end fun_prop
 
@@ -60,60 +62,8 @@ theorem Real.continuous_rpow_const {q : ℝ} (h : 0 < q) :
 
 end RPow
 
-namespace MeasureTheory
-
-/-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
-`μ.restrict s` are the same. -/
-theorem snorm_restrict_eq {α : Type*} {F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup F]
-    (f : α → F) (p : ENNReal) (μ : MeasureTheory.Measure α) {s : Set α} (hs : MeasurableSet s)
-    (hsf : f.support ⊆ s) :
-    snorm f p (μ.restrict s) = snorm f p μ := by
-  dsimp only [snorm]
-  split_ifs with hp hp'
-  · rfl
-  · dsimp only [snormEssSup]
-    rw [← Function.support_comp_eq (fun x : F ↦ (‖x‖₊:ℝ≥0∞)) (by simp)] at hsf
-    rw [← Set.indicator_eq_self] at hsf
-    rw [← ENNReal.essSup_indicator_eq_essSup_restrict hs]
-    congr
-  · dsimp only [snorm']
-    rw [← Function.support_comp_eq (fun x : F ↦ (‖x‖₊:ℝ≥0∞) ^ p.toReal)] at hsf
-    · rw [← Set.indicator_eq_self] at hsf
-      rw [← lintegral_indicator _ hs]
-      congr
-    simp [ENNReal.toReal_pos hp hp']
-
-end MeasureTheory
-
-namespace Filter
-
-theorem eventually_of_isEmpty {α : Type*} (p : α → Prop) [IsEmpty α] (l : Filter α) :
-    ∀ᶠ (x : α) in l, p x :=
-  eventually_of_forall <| fun x ↦ isEmptyElim x
-
-end Filter
-
-section ClosedEmbedding
-variable {ι : Type*} {β : ι → Type*} [DecidableEq ι]
-  [(i : ι) → TopologicalSpace (β i)]
-  (x : (i : ι) → β i) (i : ι) {s : Set (β i)}
-
-theorem image_update : update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
-  ext y
-  simp [update_eq_iff, and_left_comm (a := _ ∈ s), forall_update_iff, eq_comm (a := y _)]
-
-theorem closedEmbedding_update [(i : ι) → T1Space (β i)] : ClosedEmbedding (update x i) := by
-  apply closedEmbedding_of_continuous_injective_closed
-  · exact continuous_const.update i continuous_id
-  · exact update_injective x i
-  · intro s hs
-    rw [image_update]
-    apply isClosed_set_pi
-    simp [forall_update_iff, hs, isClosed_singleton]
-
-end ClosedEmbedding
-
-section ContDiffAbsPow
+-- PRd
+section ContDiffNormPow
 
 open Asymptotics Real
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
@@ -214,7 +164,27 @@ theorem Differentiable.norm_rpow {f : F → E} (hf : Differentiable ℝ f) {p : 
     Differentiable ℝ (fun x ↦ ‖f x‖ ^ p) :=
   contDiff_norm_rpow hp |>.differentiable le_rfl |>.comp hf
 
-end ContDiffAbsPow
+end ContDiffNormPow
+
+section ClosedEmbedding
+variable {ι : Type*} {β : ι → Type*} [DecidableEq ι]
+  [(i : ι) → TopologicalSpace (β i)]
+  (x : (i : ι) → β i) (i : ι) {s : Set (β i)}
+
+theorem image_update : update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
+  ext y
+  simp [update_eq_iff, and_left_comm (a := _ ∈ s), forall_update_iff, eq_comm (a := y _)]
+
+theorem closedEmbedding_update [(i : ι) → T1Space (β i)] : ClosedEmbedding (update x i) := by
+  apply closedEmbedding_of_continuous_injective_closed
+  · exact continuous_const.update i continuous_id
+  · exact update_injective x i
+  · intro s hs
+    rw [image_update]
+    apply isClosed_set_pi
+    simp [forall_update_iff, hs, isClosed_singleton]
+
+end ClosedEmbedding
 
 namespace HasCompactSupport
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddGroup β] [Lattice β]
@@ -279,8 +249,30 @@ end Real.IsConjExponent
 
 namespace MeasureTheory
 
-variable {α E : Type*} [NormedAddCommGroup E] {_ : MeasurableSpace α}
-  {f : α → E} {μ : Measure α}
+variable {𝕜 α E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+  {_ : MeasurableSpace α} {f : α → E} {μ : Measure α}
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+
+/-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
+`μ.restrict s` are the same. -/
+theorem snorm_restrict_eq {α : Type*} {F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup F]
+    (f : α → F) (p : ENNReal) (μ : Measure α) {s : Set α} (hs : MeasurableSet s)
+    (hsf : f.support ⊆ s) :
+    snorm f p (μ.restrict s) = snorm f p μ := by
+  dsimp only [snorm]
+  split_ifs with hp hp'
+  · rfl
+  · dsimp only [snormEssSup]
+    rw [← Function.support_comp_eq (fun x : F ↦ (‖x‖₊:ℝ≥0∞)) (by simp)] at hsf
+    rw [← Set.indicator_eq_self] at hsf
+    rw [← ENNReal.essSup_indicator_eq_essSup_restrict hs]
+    congr
+  · dsimp only [snorm']
+    rw [← Function.support_comp_eq (fun x : F ↦ (‖x‖₊:ℝ≥0∞) ^ p.toReal)] at hsf
+    · rw [← Set.indicator_eq_self] at hsf
+      rw [← lintegral_indicator _ hs]
+      congr
+    simp [ENNReal.toReal_pos hp hp']
 
 lemma snorm_nnreal_eq_snorm' {p : ℝ≥0} (hp : p ≠ 0) : snorm f p μ = snorm' f p μ :=
   snorm_eq_snorm' (by exact_mod_cast hp) ENNReal.coe_ne_top
@@ -294,9 +286,29 @@ lemma snorm_nnreal_pow_eq_lintegral {p : ℝ≥0} (hp : p ≠ 0) :
   simp [snorm_eq_snorm' (by exact_mod_cast hp) ENNReal.coe_ne_top,
     lintegral_rpow_nnnorm_eq_rpow_snorm' (show 0 < (p : ℝ) from pos_iff_ne_zero.mpr hp)]
 
-end MeasureTheory
-
-namespace MeasureTheory
+lemma AEStronglyMeasurable.snorm_clm_comp_le {p : ℝ≥0∞} (hf : AEStronglyMeasurable f μ)
+    (L : E →L[𝕜] F) : snorm (L ∘ f) p μ ≤ ‖L‖₊ * snorm f p μ := by
+  dsimp only [snorm, snormEssSup, snorm']
+  split_ifs with hp h2p
+  · simp
+  · calc essSup (fun x ↦ (‖L (f x)‖₊ : ℝ≥0∞)) μ
+        ≤ essSup (fun x ↦ (‖L‖₊ : ℝ≥0∞) * ‖f x‖₊) μ := by
+          apply essSup_mono_ae
+          apply eventually_of_forall (fun x ↦ ?_)
+          simp only
+          norm_cast
+          exact L.le_opNorm (f x)
+      _ = ‖L‖₊ * essSup (fun x ↦ ↑‖f x‖₊) μ := ENNReal.essSup_const_mul
+  · calc (∫⁻ x, ‖L (f x)‖₊ ^ p.toReal ∂μ) ^ (1 / p.toReal)
+        ≤ (∫⁻ x, ‖L‖₊ ^ p.toReal * ‖f x‖₊ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
+          simp_rw [← ENNReal.mul_rpow_of_nonneg _ _ p.toReal_nonneg]
+          gcongr with x
+          norm_cast
+          exact L.le_opNorm (f x)
+      _ = ‖L‖₊ * (∫⁻ x, ‖f x‖₊ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
+        rw [lintegral_const_mul'' _ (hf.ennnorm.pow_const _),
+          ENNReal.mul_rpow_of_nonneg _ _ (by positivity), ← ENNReal.rpow_mul]
+        simp [mul_inv_cancel (p.toReal_pos hp h2p).ne']
 
 end MeasureTheory
 
@@ -349,9 +361,9 @@ def T (p : ℝ) (f : (∀ i, A i) → ℝ≥0∞) (s : Finset ι) : (∀ i, A i)
 variable {p : ℝ}
 
 @[simp] lemma T_univ (f : (∀ i, A i) → ℝ≥0∞) (x : ∀ i, A i) :
-    T μ p f univ x
-    = ∫⁻ (x : ∀ i, A i), (f x ^ (1 - (#ι - 1 : ℝ) * p)
-      * ∏ i : ι, (∫⁻ t : A i, f (update x i t) ∂(μ i)) ^ p) ∂(.pi μ) := by
+    T μ p f univ x =
+    ∫⁻ (x : ∀ i, A i), (f x ^ (1 - (#ι - 1 : ℝ) * p)
+    * ∏ i : ι, (∫⁻ t : A i, f (update x i t) ∂(μ i)) ^ p) ∂(.pi μ) := by
   simp [T, lmarginal_univ, lmarginal_singleton, card_univ]
 
 @[simp] lemma T_empty (f : (∀ i, A i) → ℝ≥0∞) (x : ∀ i, A i) :
@@ -691,7 +703,7 @@ is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 
 Note: The codomain of `u` needs to be an inner product space.
 -/
-theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
+theorem snorm_le_snorm_fderiv_of_eq' {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     ∃ C : ℝ≥0, ∀ {u : E → F'} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
@@ -786,6 +798,92 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
       by rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
 
+-- do we want this?
+/-- A space is linearly equivalent to an inner product space, but not necessarily isometric to one.
+-/
+class WeaklyInnerProductSpaceable.{v, u} (𝕜 : Type v) (E : Type u)
+    [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop :=
+  (out : Nonempty (Σ (F : Type (max u v)) (_ : NormedAddCommGroup F) (_ : InnerProductSpace 𝕜 F),
+    E ≃L[𝕜] F))
+
+instance {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] :
+    WeaklyInnerProductSpaceable 𝕜 E :=
+  ⟨⟨ULift E, by infer_instance, sorry, sorry⟩⟩
+
+instance {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [FiniteDimensional 𝕜 E] :
+    WeaklyInnerProductSpaceable 𝕜 E :=
+  ⟨⟨ULift (EuclideanSpace 𝕜 <| Fin <| finrank 𝕜 E), by infer_instance, by sorry, sorry⟩⟩
+
+set_option linter.unusedVariables false in
+variable (F) in
+-- TODO
+theorem snorm_le_snorm_fderiv_of_eq_findim [FiniteDimensional ℝ F] {p p' : ℝ≥0} (hp : 1 ≤ p)
+    (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq' μ F' hp h2p hp'
+  let C₁ : ℝ≥0 := ‖((toEuclidean (E := F)).symm : F' →L[ℝ] F)‖₊
+  let C₂ : ℝ≥0 := ‖(toEuclidean (E := F) : F →L[ℝ] F')‖₊
+  refine ⟨C₁ * C * C₂, @fun u hu h2u ↦ ?_⟩ -- nope?
+  have h3u : AEStronglyMeasurable u μ := sorry
+  let v := toEuclidean ∘ u
+  have hv : ContDiff ℝ 1 v := toEuclidean.contDiff.comp hu
+  have h2v : HasCompactSupport v := h2u.comp_left toEuclidean.map_zero
+  have h3v : AEStronglyMeasurable v μ := sorry
+  specialize hC hv h2v
+  rw [funext (f := fderiv _ _)
+    (fun x ↦ fderiv.comp x toEuclidean.differentiableAt (hu.differentiable le_rfl x))] at hC
+  calc snorm u p' μ
+      = snorm (toEuclidean.symm ∘ v) p' μ := by sorry
+    _ ≤ C₁ * snorm v p' μ := by sorry
+    _ ≤ C₁ * C * snorm (fderiv ℝ v) p μ := by sorry
+    _ = C₁ * C * snorm (fun x ↦ ‖fderiv ℝ v x‖) p μ := by sorry
+    _ ≤ C₁ * C * snorm (fun x ↦ ‖(fderiv ℝ toEuclidean (u x)).comp (fderiv ℝ u x)‖) p μ := by sorry
+    _ ≤ C₁ * C * snorm (fun x ↦ ‖fderiv ℝ toEuclidean (u x)‖ * ‖fderiv ℝ u x‖) p μ := by sorry
+    _ ≤ C₁ * C * snorm (fun x ↦ C₂ * ‖fderiv ℝ u x‖) p μ := by sorry
+    _ ≤ C₁ * C * C₂ * snorm (fun x ↦ ‖fderiv ℝ u x‖) p μ := by sorry
+    _ ≤ (C₁ * C * C₂ : ℝ≥0) * snorm (fderiv ℝ u) p μ := by sorry
+
+set_option linter.unusedVariables false in
+variable (F) in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
+with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
+There exists a constant `C` depending only on `E` and `p`, such that the `Lᵖ'` norm of `u`
+is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+
+This is the version where the codomain of `u` is a finite dimensional normed space.
+-/
+theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F] {p p' : ℝ≥0} (hp : 1 ≤ p)
+    (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq' μ F' hp h2p hp'
+  let C₁ : ℝ≥0 := ‖((toEuclidean (E := F)).symm : F' →L[ℝ] F)‖₊
+  let C₂ : ℝ≥0 := ‖(toEuclidean (E := F) : F →L[ℝ] F')‖₊
+  refine ⟨C₁ * C * C₂, @fun u hu h2u ↦ ?_⟩ -- nope?
+  have h3u : AEStronglyMeasurable u μ := sorry
+  let v := toEuclidean ∘ u
+  have hv : ContDiff ℝ 1 v := toEuclidean.contDiff.comp hu
+  have h2v : HasCompactSupport v := h2u.comp_left toEuclidean.map_zero
+  have h3v : AEStronglyMeasurable v μ := sorry
+  specialize hC hv h2v
+  rw [funext (f := fderiv _ _)
+    (fun x ↦ fderiv.comp x toEuclidean.differentiableAt (hu.differentiable le_rfl x))] at hC
+  calc snorm u p' μ
+      = snorm (toEuclidean.symm ∘ v) p' μ := by sorry
+    _ ≤ C₁ * snorm v p' μ := by sorry
+    _ ≤ C₁ * C * snorm (fderiv ℝ v) p μ := by sorry
+    _ = C₁ * C * snorm (fun x ↦ ‖fderiv ℝ v x‖) p μ := by sorry
+    _ ≤ C₁ * C * snorm (fun x ↦ ‖(fderiv ℝ toEuclidean (u x)).comp (fderiv ℝ u x)‖) p μ := by sorry
+    _ ≤ C₁ * C * snorm (fun x ↦ ‖fderiv ℝ toEuclidean (u x)‖ * ‖fderiv ℝ u x‖) p μ := by sorry
+    _ ≤ C₁ * C * snorm (fun x ↦ C₂ * ‖fderiv ℝ u x‖) p μ := by sorry
+    _ ≤ C₁ * C * C₂ * snorm (fun x ↦ ‖fderiv ℝ u x‖) p μ := by sorry
+    _ ≤ (C₁ * C * C₂ : ℝ≥0) * snorm (fderiv ℝ u) p μ := by sorry
+
 set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded measurable set `s` in a normed space `E` of finite dimension
@@ -815,7 +913,7 @@ theorem snorm_le_snorm_fderiv_of_le {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 1 ≤ q
         gcongr
       positivity
     · positivity
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq μ F' hp h2p hp'
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq' μ F' hp h2p hp'
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
   use t * C
   intro u hu h2u
