@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
-import Mathlib.Topology.Algebra.UniformConvergence
+import Mathlib.Topology.Algebra.Module.UniformConvergence
 
 /-!
 # Topology on continuous multilinear maps
@@ -123,7 +123,7 @@ theorem continuous_eval_const (x : Π i, E i) :
   exact (uniformContinuous_eval_const x).continuous
 #align continuous_multilinear_map.continuous_eval_left ContinuousMultilinearMap.continuous_eval_const
 
-@[deprecated] alias continuous_eval_left := continuous_eval_const
+@[deprecated (since := "2024-04-10")] alias continuous_eval_left := continuous_eval_const
 
 theorem continuous_coe_fun :
     Continuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=

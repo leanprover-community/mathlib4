@@ -8,6 +8,9 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.ProjectionNotation
+import Batteries.Tactic.Alias
+import Batteries.Tactic.Lint.Misc
+import Batteries.Logic -- Only needed for #align
 
 set_option autoImplicit true
 

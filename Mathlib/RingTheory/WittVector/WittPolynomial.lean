@@ -204,7 +204,6 @@ The polynomials `xInTermsOfW` give the coordinate transformation in the backward
 that corresponds to the ordinary `X n`. -/
 noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
   | n => (X n - ∑ i : Fin n,
-          have := i.2
           C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟ p : R) ^ n)
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W xInTermsOfW
@@ -295,7 +294,7 @@ set_option linter.uppercaseLean3 false in
 theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
     bind₁ (xInTermsOfW p R) (W_ R k) = X k := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum]
-  simp only [Nat.cast_pow, AlgHom.map_pow, C_pow, AlgHom.map_mul, algHom_C]
+  simp only [Nat.cast_pow, AlgHom.map_pow, C_pow, AlgHom.map_mul, algHom_C, algebraMap_eq]
   rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, bind₁_X_right, mul_comm, ← C_pow,
     xInTermsOfW_aux]
   simp only [Nat.cast_pow, C_pow, bind₁_X_right, sub_add_cancel]
@@ -317,6 +316,6 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
   apply sum_congr rfl
   intro i h
   rw [mem_range] at h
-  rw [AlgHom.map_mul, AlgHom.map_pow, algHom_C, H i h]
+  rw [AlgHom.map_mul, AlgHom.map_pow, algHom_C, H i h, algebraMap_eq]
 set_option linter.uppercaseLean3 false in
 #align bind₁_witt_polynomial_X_in_terms_of_W bind₁_wittPolynomial_xInTermsOfW

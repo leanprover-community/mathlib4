@@ -67,14 +67,14 @@ instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
 -- see https://github.com/leanprover/std4/issues/86
-@[simp, nolint simpNF]
+@[simp]
 theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   rfl
 #align UniformSpace.coe_comp UniformSpaceCat.coe_comp
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
 -- see https://github.com/leanprover/std4/issues/86
-@[simp, nolint simpNF]
+@[simp]
 theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id

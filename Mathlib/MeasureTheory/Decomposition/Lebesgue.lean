@@ -684,7 +684,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
   choose f hf₁ hf₂ hf₃ using this
   -- set `A` to be the intersection of all the negative parts of obtained Hahn decompositions
   -- and we show that `μ A = 0`
-  set A := ⋂ n, (f n)ᶜ with hA₁
+  let A := ⋂ n, (f n)ᶜ
   have hAmeas : MeasurableSet A := MeasurableSet.iInter fun n ↦ (hf₁ n).compl
   have hA₂ : ∀ n : ℕ, μ.toSignedMeasure - ((1 / (n + 1) : ℝ≥0) • ν).toSignedMeasure ≤[A] 0 := by
     intro n; exact restrict_le_restrict_subset _ _ (hf₁ n).compl (hf₃ n) (iInter_subset _ _)

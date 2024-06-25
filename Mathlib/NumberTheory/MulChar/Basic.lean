@@ -397,8 +397,7 @@ lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
     equivToUnitHom (χ₁ * χ₂) a = equivToUnitHom χ₁ a * equivToUnitHom χ₂ a := by
   apply_fun ((↑) : R'ˣ → R') using Units.ext
   push_cast
-  simp_rw [coe_equivToUnitHom]
-  rfl
+  simp_rw [coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply]
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups
 as a multiplicative equivalence. -/
@@ -431,12 +430,21 @@ section nontrivial
 
 variable {R : Type*} [CommMonoid R] {R' : Type*} [CommMonoidWithZero R']
 
+lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
+  simp only [ext_iff, one_apply_coe]
+
+lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
+  simp only [Ne, eq_one_iff, not_forall]
+
 /-- A multiplicative character is *nontrivial* if it takes a value `≠ 1` on a unit. -/
+@[deprecated (since := "2024-06-16")]
 def IsNontrivial (χ : MulChar R R') : Prop :=
   ∃ a : Rˣ, χ a ≠ 1
 #align mul_char.is_nontrivial MulChar.IsNontrivial
 
+set_option linter.deprecated false in
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
+@[deprecated (since := "2024-06-16")]
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
   simp only [IsNontrivial, Ne, ext_iff, not_forall, one_apply_coe]
 #align mul_char.is_nontrivial_iff MulChar.isNontrivial_iff
@@ -468,7 +476,23 @@ def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
     map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, map_zero] }
 #align mul_char.ring_hom_comp MulChar.ringHomComp
 
+lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
+    Function.Injective (ringHomComp (R := R) · f) := by
+  simpa only [Function.Injective, ext_iff, ringHomComp, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    using fun χ χ' h a ↦ hf (h a)
+
+lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
+    χ.ringHomComp f = 1 ↔ χ = 1 := by
+  conv_lhs => rw [← (show  (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
+  exact (injective_ringHomComp hf).eq_iff
+
+lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
+    χ.ringHomComp f ≠ 1 ↔ χ ≠ 1 :=
+  (ringHomComp_eq_one_iff hf).not
+
+set_option linter.deprecated false in
 /-- Composition with an injective ring homomorphism preserves nontriviality. -/
+@[deprecated ringHomComp_ne_one_iff (since := "2024-06-16")]
 theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' →+* R''}
     (hf : Function.Injective f) : (χ.ringHomComp f).IsNontrivial := by
   obtain ⟨a, ha⟩ := hχ
@@ -538,25 +562,22 @@ end Properties
 
 section Finite
 
-variable {M : Type*} [CommMonoid M] [Fintype M] [DecidableEq M]
+variable {M : Type*} [CommMonoid M]
 variable {R : Type*} [CommMonoidWithZero R]
 
-/-- A multiplicative character on a finite commutative monoid has finite (= positive) order. -/
-lemma orderOf_pos (χ : MulChar M R) : 0 < orderOf χ := by
-  let e := MulChar.mulEquivToUnitHom (R := M) (R' := R)
-  rw [← MulEquiv.orderOf_eq e χ]
-  have : orderOf (e χ) ∣ Fintype.card Mˣ := by
-    refine orderOf_dvd_of_pow_eq_one ?_
-    ext1 x
-    simp only [MonoidHom.pow_apply, ← map_pow (e χ), pow_card_eq_one, map_one, MonoidHom.one_apply]
-  exact Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero Fintype.card_ne_zero this
-
-/-- If `χ` is a multiplicative character on a finite commutative monoid `M`, then `χ ^ #Mˣ = 1`. -/
-protected
-lemma pow_card_eq_one (χ : MulChar M R) : χ ^ (Fintype.card Mˣ) = 1 := by
+/-- If `χ` is a multiplicative character on a commutative monoid `M` with finitely many units,
+then `χ ^ #Mˣ = 1`. -/
+protected lemma pow_card_eq_one [Fintype Mˣ] (χ : MulChar M R) : χ ^ (Fintype.card Mˣ) = 1 := by
   ext1
   rw [pow_apply_coe, ← map_pow, one_apply_coe, ← Units.val_pow_eq_pow_val, pow_card_eq_one,
     Units.val_eq_one.mpr rfl, map_one]
+
+/-- A multiplicative character on a commutative monoid with finitely many units
+has finite (= positive) order. -/
+lemma orderOf_pos [Finite Mˣ] (χ : MulChar M R) : 0 < orderOf χ := by
+  cases nonempty_fintype Mˣ
+  apply IsOfFinOrder.orderOf_pos
+  exact isOfFinOrder_iff_pow_eq_one.2 ⟨_, Fintype.card_pos, χ.pow_card_eq_one⟩
 
 end Finite
 
@@ -566,13 +587,17 @@ variable {R : Type*} [CommMonoid R] [Fintype R] {R' : Type*} [CommRing R']
 
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
-theorem IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'}
-    (hχ : χ.IsNontrivial) : ∑ a, χ a = 0 := by
-  rcases hχ with ⟨b, hb⟩
+theorem sum_eq_zero_of_ne_one [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1) : ∑ a, χ a = 0 := by
+  rcases ne_one_iff.mp hχ with ⟨b, hb⟩
   refine eq_zero_of_mul_eq_self_left hb ?_
-  simp only [Finset.mul_sum, ← map_mul]
-  exact Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
-#align mul_char.is_nontrivial.sum_eq_zero MulChar.IsNontrivial.sum_eq_zero
+  simpa only [Finset.mul_sum, ← map_mul] using b.mulLeft_bijective.sum_comp _
+#align mul_char.is_nontrivial.sum_eq_zero MulChar.sum_eq_zero_of_ne_one
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-06-16")]
+lemma IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'} (hχ : χ.IsNontrivial) :
+    ∑ a, χ a = 0 :=
+  sum_eq_zero_of_ne_one ((isNontrivial_iff _).mp hχ)
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/
