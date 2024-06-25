@@ -319,7 +319,6 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
 
 namespace ΓSpec
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem left_triangle (X : LocallyRingedSpace) :
     SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ :=
   X.Γ_Spec_left_triangle
@@ -409,51 +408,48 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
 --attribute [local semireducible] Spec.toLocallyRingedSpace
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
-def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
-  locallyRingedSpaceAdjunction.restrictFullyFaithful
-    Scheme.fullyFaithfulForgetToLocallyRingedSpace (Functor.FullyFaithful.id _)
-    (NatIso.ofComponents (fun X => Iso.refl _))
-    (NatIso.ofComponents (fun X => Iso.refl _))
+def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
+  homEquiv X Y := locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y
+  unit :=
+  { app := fun X ↦ locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace
+    naturality := fun _ _ f ↦ locallyRingedSpaceAdjunction.{u}.unit.naturality f }
+  counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
+  homEquiv_unit := rfl
+  homEquiv_counit := rfl
 #align algebraic_geometry.Γ_Spec.adjunction AlgebraicGeometry.ΓSpec.adjunction
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
-    ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
-  dsimp only [adjunction]
-  rw [Adjunction.restrictFullyFaithful_homEquiv_apply, Adjunction.homEquiv_unit]
-  simp
+    ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
 theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :
-    ΓSpec.adjunction.homEquiv X R = locallyRingedSpaceAdjunction.homEquiv X.1 R :=
-  Equiv.ext fun f => adjunction_homEquiv_apply f
+    ΓSpec.adjunction.homEquiv X R = locallyRingedSpaceAdjunction.homEquiv X.1 R := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv AlgebraicGeometry.ΓSpec.adjunction_homEquiv
 
 theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : X ⟶ Scheme.Spec.obj R) :
-    (ΓSpec.adjunction.homEquiv X R).symm f = (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f :=
-  by rw [adjunction_homEquiv]; rfl
+    (ΓSpec.adjunction.homEquiv X R).symm f =
+      (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem adjunction_counit_app' {R : CommRingCatᵒᵖ} :
-    ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by
-  rw [← Adjunction.homEquiv_symm_id, ← Adjunction.homEquiv_symm_id,
-    adjunction_homEquiv_symm_apply]
-  rfl
+    ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_counit_app AlgebraicGeometry.ΓSpec.adjunction_counit_app'
 
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
-    ΓSpec.adjunction.counit.app R = (Scheme.SpecΓIdentity.inv.app (unop R)).op := by
-  rw [adjunction_counit_app']
-  rfl
+    ΓSpec.adjunction.counit.app R = (Scheme.SpecΓIdentity.inv.app (unop R)).op := rfl
 
 -- This is not a simp lemma to respect the abstraction
 theorem adjunction_unit_app {X : Scheme} :
-    ΓSpec.adjunction.unit.app X = locallyRingedSpaceAdjunction.unit.app X.1 := by
-  rw [← Adjunction.homEquiv_id, ← Adjunction.homEquiv_id, adjunction_homEquiv_apply]; rfl
+    ΓSpec.adjunction.unit.app X = locallyRingedSpaceAdjunction.unit.app X.1 := rfl
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app AlgebraicGeometry.ΓSpec.adjunction_unit_app
+
+@[reassoc (attr := simp)]
+theorem adjunction_unit_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    f ≫ ΓSpec.adjunction.unit.app Y = ΓSpec.adjunction.unit.app X ≫ specMap (f.app ⊤) :=
+  ΓSpec.adjunction.unit.naturality f
 
 instance isIso_locallyRingedSpaceAdjunction_counit :
     IsIso.{u + 1, u + 1} locallyRingedSpaceAdjunction.counit :=
@@ -483,7 +479,7 @@ theorem adjunction_unit_app_Spec (R : CommRingCat.{u}) :
     adjunction.unit.app (𝖲𝗉𝖾𝖼 R) = 𝖲𝗉𝖾𝖼(Scheme.SpecΓIdentity.hom.app R) := by
   have := ΓSpec.adjunction.right_triangle_components (op R)
   dsimp at this
-  rwa [adjunction_counit_app, ← IsIso.eq_comp_inv, Category.id_comp,
+  rwa [← IsIso.eq_comp_inv, Category.id_comp,
     ← Functor.map_inv, ← op_inv, NatIso.inv_inv_app] at this
 
 lemma adjunction_unit_map_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
@@ -566,6 +562,36 @@ instance Spec.full : Scheme.Spec.Full  :=
 instance Spec.faithful : Scheme.Spec.Faithful :=
   Spec.fullyFaithful.faithful
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
+
+section
+
+variable {R S : CommRingCat.{u}} {φ ψ : R ⟶ S} (f : 𝖲𝗉𝖾𝖼 S ⟶ 𝖲𝗉𝖾𝖼 R)
+
+lemma SpecMap_inj : specMap φ = specMap ψ ↔ φ = ψ := by
+  rw [iff_comm, ← Quiver.Hom.op_inj.eq_iff, ← Scheme.Spec.map_injective.eq_iff]
+  rfl
+
+lemma SpecMap_injective {R S : CommRingCat} : Function.Injective (specMap : (R ⟶ S) → _) :=
+  fun _ _ ↦ SpecMap_inj.mp
+
+/-- The preimage under Spec. -/
+def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
+
+@[simp] lemma SpecMap_preimage : specMap (Spec.preimage f) = f := Scheme.Spec.map_preimage f
+
+variable (φ) in
+@[simp] lemma preimage_specMap : Spec.preimage (specMap φ) = φ :=
+  SpecMap_injective (SpecMap_preimage (specMap φ))
+
+/-- Spec is fully faithful -/
+@[simps]
+def Spec.homEquiv {R S : CommRingCat} : (𝖲𝗉𝖾𝖼 S ⟶ 𝖲𝗉𝖾𝖼 R) ≃ (R ⟶ S) where
+  toFun := Spec.preimage
+  invFun := specMap
+  left_inv := SpecMap_preimage
+  right_inv := preimage_specMap
+
+end
 
 instance : Spec.toLocallyRingedSpace.IsRightAdjoint  :=
   (ΓSpec.locallyRingedSpaceAdjunction).isRightAdjoint
