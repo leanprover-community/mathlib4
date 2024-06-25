@@ -6,7 +6,7 @@ Authors: Hannah Fechtner
 
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
 # Defining a monoid given by generators and relations
