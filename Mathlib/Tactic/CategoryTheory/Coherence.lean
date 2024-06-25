@@ -149,8 +149,8 @@ open Mathlib.Tactic.BicategoryCoherence
 It can prove any equality made up only of associators, unitors, and identities.
 ```lean
 example {C : Type} [Category C] [MonoidalCategory C] :
-  (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom :=
-by pure_coherence
+  (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
+  pure_coherence
 ```
 
 Users will typically just use the `coherence` tactic,

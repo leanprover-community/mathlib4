@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
 import Mathlib.Algebra.Field.Subfield
-import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Order.LocalExtr

@@ -60,8 +60,7 @@ variable {C}
 and `h : Z ⟶ X⟦1⟧`.
 -/
 @[simps]
-def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧) : Triangle C
-    where
+def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧) : Triangle C where
   obj₁ := X
   obj₂ := Y
   obj₃ := Z
@@ -125,8 +124,7 @@ attribute [reassoc (attr := simp)] TriangleMorphism.comm₁ TriangleMorphism.com
 /-- The identity triangle morphism.
 -/
 @[simps]
-def triangleMorphismId (T : Triangle C) : TriangleMorphism T T
-    where
+def triangleMorphismId (T : Triangle C) : TriangleMorphism T T where
   hom₁ := 𝟙 T.obj₁
   hom₂ := 𝟙 T.obj₂
   hom₃ := 𝟙 T.obj₃
@@ -150,8 +148,7 @@ def TriangleMorphism.comp (f : TriangleMorphism T₁ T₂) (g : TriangleMorphism
 /-- Triangles with triangle morphisms form a category.
 -/
 @[simps]
-instance triangleCategory : Category (Triangle C)
-    where
+instance triangleCategory : Category (Triangle C) where
   Hom A B := TriangleMorphism A B
   id A := triangleMorphismId A
   comp f g := f.comp g
@@ -330,6 +327,16 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     limMap_π_assoc, Discrete.natTrans_app, h j, comp_zero]
 
 end
+
+variable (C) in
+/-- The functor `C ⥤ Triangle C` which sends `X` to `contractibleTriangle X`. -/
+@[simps]
+def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] : C ⥤ Triangle C where
+  obj X := contractibleTriangle X
+  map f :=
+    { hom₁ := f
+      hom₂ := f
+      hom₃ := 0 }
 
 namespace Triangle
 

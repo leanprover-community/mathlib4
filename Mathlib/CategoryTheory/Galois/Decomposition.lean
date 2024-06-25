@@ -86,11 +86,11 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
     let t : ColimitCocone (pair Y Z) := { cocone := BinaryCofan.mk v u, isColimit := c }
     have hn1 : Nat.card (F.obj Y) < n := by
       rw [hn]
-      exact ltCardFiber_of_mono_of_notIso F v hvnoiso
+      exact lt_card_fiber_of_mono_of_notIso F v hvnoiso
     have i : X ≅ Y ⨿ Z := (colimit.isoColimitCocone t).symm
     have hnn : Nat.card (F.obj X) = Nat.card (F.obj Y) + Nat.card (F.obj Z) := by
-      rw [cardFiber_eq_of_iso F i]
-      exact cardFiber_coprod_eq_sum F Y Z
+      rw [card_fiber_eq_of_iso F i]
+      exact card_fiber_coprod_eq_sum F Y Z
     have hn2 : Nat.card (F.obj Z) < n := by
       rw [hn, hnn, lt_add_iff_pos_left]
       exact Nat.pos_of_ne_zero (non_zero_card_fiber_of_not_initial F Y hni)
@@ -174,7 +174,7 @@ If `X` is any object, then its fiber is represented by some Galois object: There
 a Galois object `A` and an element `a` in the fiber of `A` such that the
 evaluation at `a` from `A ⟶ X` to `F.obj X` is bijective.
 
-To show this we consider the product `∏ (fun _ : F.obj X ↦ X)` and let `A`
+To show this we consider the product `∏ᶜ (fun _ : F.obj X ↦ X)` and let `A`
 be the connected component whose fiber contains the element `a` in the fiber of the self product
 that has at each index `x : F.obj X` the element `x`.
 
@@ -192,7 +192,7 @@ variable (X : C)
 
 /-- The self product of `X` indexed by its fiber. -/
 @[simp]
-private noncomputable def selfProd : C := ∏ (fun _ : F.obj X ↦ X)
+private noncomputable def selfProd : C := ∏ᶜ (fun _ : F.obj X ↦ X)
 
 /-- For `g : F.obj X → F.obj X`, this is the element in the fiber of the self product,
 which has at index `x : F.obj X` the element `g x`. -/
@@ -228,7 +228,7 @@ private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
   apply Finite.injective_iff_bijective.mp
   intro t s (hs : F.map (selfProdProj u t) b = F.map (selfProdProj u s) b)
   show id t = id s
-  have h' : selfProdProj u t = selfProdProj u s := evaluationInjective_of_isConnected F A X b hs
+  have h' : selfProdProj u t = selfProdProj u s := evaluation_injective_of_isConnected F A X b hs
   rw [← selfProdProj_fiber h s, ← selfProdProj_fiber h t, h']
 
 /-- Twisting `u` by `fiberPerm h b` yields an inclusion of `A` into `selfProd F X`. -/
@@ -278,7 +278,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
     exact congr_fun (F.mapIso fi2).hom_inv_id y
-  · refine ⟨evaluationInjective_of_isConnected F A X a, ?_⟩
+  · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
     intro x
     use u ≫ Pi.π _ x
     exact (selfProdProj_fiber h1) x

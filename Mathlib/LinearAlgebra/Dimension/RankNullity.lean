@@ -100,12 +100,12 @@ theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
     apply ht'.ne_zero ⟨x, hxt⟩
     rw [Subtype.coe_mk, ← hsec x, Submodule.Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
-  refine ⟨s ∪ sec '' t, subset_union_left _ _, ?_, ?_⟩
-  rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
-    ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
-  · exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
+  refine ⟨s ∪ sec '' t, subset_union_left, ?_, ?_⟩
+  · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
+      ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
+    exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
   · apply LinearIndependent.union_of_quotient Submodule.subset_span hs
-    rwa [Function.comp, linearIndependent_image ((hsec'.symm ▸ injective_id).injOn t).image_of_comp,
+    rwa [Function.comp, linearIndependent_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
       ← image_comp, hsec', image_id]
 
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
@@ -152,7 +152,7 @@ theorem exists_smul_not_mem_of_rank_lt {N : Submodule R M} (h : Module.rank R N 
   simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
   exact this
 
-open BigOperators Cardinal Basis Submodule Function Set LinearMap
+open Cardinal Basis Submodule Function Set LinearMap
 
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
     Module.rank R (s ⊔ t : Submodule R M) + Module.rank R (s ⊓ t : Submodule R M) =

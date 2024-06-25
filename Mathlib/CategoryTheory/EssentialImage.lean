@@ -23,13 +23,14 @@ a functor decomposes into an essentially surjective functor and a fully faithful
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
 namespace CategoryTheory
 
-variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] {F : C ⥤ D}
+variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
+  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] {F : C ⥤ D}
 
 namespace Functor
 
@@ -173,10 +174,17 @@ theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
 lemma essSurj_of_iso {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
   mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
 
+instance essSurj_comp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [G.EssSurj] :
+    (F ⋙ G).EssSurj where
+  mem_essImage Z := ⟨_, ⟨G.mapIso (F.objObjPreimageIso _) ≪≫ G.objObjPreimageIso Z⟩⟩
+
+lemma essSurj_of_comp_fully_faithful (F : C ⥤ D) (G : D ⥤ E) [(F ⋙ G).EssSurj]
+    [G.Faithful] [G.Full] : F.EssSurj where
+  mem_essImage X := ⟨_, ⟨G.preimageIso ((F ⋙ G).objObjPreimageIso (G.obj X))⟩⟩
+
 end Functor
 
--- deprecated on 2024-04-06
-@[deprecated] alias EssSurj := Functor.EssSurj
-@[deprecated] alias Iso.map_essSurj := Functor.essSurj_of_iso
+@[deprecated (since := "2024-04-06")] alias EssSurj := Functor.EssSurj
+@[deprecated (since := "2024-04-06")] alias Iso.map_essSurj := Functor.essSurj_of_iso
 
 end CategoryTheory

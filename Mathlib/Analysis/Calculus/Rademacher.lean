@@ -44,7 +44,7 @@ See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
 
 open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
 
-open scoped BigOperators NNReal ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
@@ -198,7 +198,7 @@ theorem integral_lineDeriv_mul_eq
 coefficients. -/
 theorem ae_lineDeriv_sum_eq
     (hf : LipschitzWith C f) {ι : Type*} (s : Finset ι) (a : ι → ℝ) (v : ι → E) :
-    ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i in s, a i • v i) = ∑ i in s, a i • lineDeriv ℝ f x (v i) := by
+    ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i ∈ s, a i • v i) = ∑ i ∈ s, a i • lineDeriv ℝ f x (v i) := by
   /- Clever argument by Morrey: integrate against a smooth compactly supported function `g`, switch
   the derivative to `g` by integration by parts, and use the linearity of the derivative of `g` to
   conclude that the initial integrals coincide. -/
@@ -210,12 +210,12 @@ theorem ae_lineDeriv_sum_eq
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
       ((hf.memℒp_lineDeriv (v i)).const_smul (a i))
   rw [integral_finset_sum _ A]
-  suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i in s, a i • v i) * g x ∂μ
-      = ∑ i in s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by
+  suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i ∈ s, a i • v i) * g x ∂μ
+      = ∑ i ∈ s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by
     dsimp only [smul_eq_mul, Pi.smul_apply]
     simp_rw [← mul_assoc, mul_comm _ (a _), mul_assoc, integral_mul_left, mul_comm (g _), S1]
-  suffices S2 : ∫ x, (∑ i in s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
-                  ∑ i in s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
+  suffices S2 : ∫ x, (∑ i ∈ s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
+                  ∑ i ∈ s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
     obtain ⟨D, g_lip⟩ : ∃ D, LipschitzWith D g :=
       ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth le_top
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]

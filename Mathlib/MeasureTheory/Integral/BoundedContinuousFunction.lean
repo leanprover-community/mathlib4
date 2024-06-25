@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.Topology.Order.Bounded
 
 /-!
 # Integration of bounded continuous functions
@@ -48,7 +47,7 @@ theorem lintegral_lt_top_of_nnreal (f : X →ᵇ ℝ≥0) : ∫⁻ x, f x ∂μ 
 #align measure_theory.lintegral_lt_top_of_bounded_continuous_to_nnreal BoundedContinuousFunction.lintegral_lt_top_of_nnreal
 
 theorem integrable_of_nnreal (f : X →ᵇ ℝ≥0) : Integrable (((↑) : ℝ≥0 → ℝ) ∘ ⇑f) μ := by
-  refine' ⟨(NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable, _⟩
+  refine ⟨(NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable, ?_⟩
   simp only [HasFiniteIntegral, Function.comp_apply, NNReal.nnnorm_eq]
   exact lintegral_lt_top_of_nnreal _ f
 #align measure_theory.finite_measure.integrable_of_bounded_continuous_to_nnreal BoundedContinuousFunction.integrable_of_nnreal
@@ -103,8 +102,8 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
     _ ≤ ∫ x, ‖f x‖ ∂μ                       := by exact norm_integral_le_integral_norm _
     _ ≤ ∫ _, ‖f‖ ∂μ                         := ?_
     _ = ENNReal.toReal (μ Set.univ) • ‖f‖   := by rw [integral_const]
-  · apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
-    exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
+  apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
+  exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
 
 lemma norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ ‖f‖ := by
@@ -148,10 +147,8 @@ lemma tendsto_integral_of_forall_limsup_integral_le_integral {ι : Type*} {L : F
   rcases eq_or_neBot L with rfl|hL
   · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
-  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
-    isBounded_le_map_of_bounded_range _ obs
-  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
-    isBounded_ge_map_of_bounded_range _ obs
+  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ x, f x ∂μs i) := obs.bddAbove.isBoundedUnder
+  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) := obs.bddBelow.isBoundedUnder
   apply tendsto_of_le_liminf_of_limsup_le _ _ bdd_above bdd_below
   · have key := h _ (f.norm_sub_nonneg)
     simp_rw [f.integral_const_sub ‖f‖] at key
@@ -172,10 +169,8 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
   rcases eq_or_neBot L with rfl|hL
   · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
-  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
-    isBounded_le_map_of_bounded_range _ obs
-  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
-    isBounded_ge_map_of_bounded_range _ obs
+  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ x, f x ∂μs i) := obs.bddAbove.isBoundedUnder
+  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) := obs.bddBelow.isBoundedUnder
   apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, f x ∂ (μs i)) (∫ x, f x ∂μ)
   · have key := h _ (f.add_norm_nonneg)
     simp_rw [f.integral_add_const ‖f‖] at key

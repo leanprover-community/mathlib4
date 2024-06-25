@@ -25,7 +25,7 @@ We provide the following results:
 -/
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -74,7 +74,7 @@ theorem map_eq_zero_iff (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X
 instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesZeroMorphisms F where
   map_zero X Y := by
-    let adj := Adjunction.ofLeftAdjoint F
+    let adj := Adjunction.ofIsLeftAdjoint F
     calc
       F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
       _ = F.map 0 ≫ F.map ((rightAdjoint F).map (0 : F.obj X ⟶ _)) ≫ adj.counit.app (F.obj Y) := ?_
@@ -88,7 +88,7 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
 instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D) [IsRightAdjoint G] :
     PreservesZeroMorphisms G where
   map_zero X Y := by
-    let adj := Adjunction.ofRightAdjoint G
+    let adj := Adjunction.ofIsRightAdjoint G
     calc
       G.map (0 : X ⟶ Y) = adj.unit.app (G.obj X) ≫ G.map (adj.counit.app X) ≫ G.map 0 := ?_
       _ = adj.unit.app (G.obj X) ≫ G.map ((leftAdjoint G).map (0 : _ ⟶ G.obj X)) ≫ G.map 0 := ?_
@@ -179,5 +179,32 @@ def preservesInitialObjectOfPreservesZeroMorphisms [PreservesZeroMorphisms F] :
 #align category_theory.functor.preserves_initial_object_of_preserves_zero_morphisms CategoryTheory.Functor.preservesInitialObjectOfPreservesZeroMorphisms
 
 end ZeroObject
+
+section
+
+variable [HasZeroObject D] [HasZeroMorphisms D]
+  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category J]
+
+/-- A zero functor preserves limits. -/
+def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G where
+  preservesLimit {K} := ⟨fun hc => by
+    rw [Functor.isZero_iff] at hG
+    exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
+
+/-- A zero functor preserves colimits. -/
+def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G where
+  preservesColimit {K} := ⟨fun hc => by
+    rw [Functor.isZero_iff] at hG
+    exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
+
+/-- A zero functor preserves limits. -/
+def preservesLimitsOfSizeOfIsZero : PreservesLimitsOfSize.{v, u} G where
+  preservesLimitsOfShape := G.preservesLimitsOfShapeOfIsZero hG _
+
+/-- A zero functor preserves colimits. -/
+def preservesColimitsOfSizeOfIsZero : PreservesColimitsOfSize.{v, u} G where
+  preservesColimitsOfShape := G.preservesColimitsOfShapeOfIsZero hG _
+
+end
 
 end CategoryTheory.Functor

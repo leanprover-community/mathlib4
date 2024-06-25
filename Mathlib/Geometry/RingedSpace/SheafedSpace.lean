@@ -48,7 +48,7 @@ instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
-instance coeSort : CoeSort (SheafedSpace C) (Type*) where
+instance coeSort : CoeSort (SheafedSpace C) Type* where
   coe := fun X => X.1
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
@@ -143,8 +143,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem id_c_app (X : SheafedSpace C) (U) :
-    (𝟙 X : X ⟶ X).c.app U = eqToHom (by aesop_cat) := by
-  aesop_cat
+    (𝟙 X : X ⟶ X).c.app U = 𝟙 _ := rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_c_app AlgebraicGeometry.SheafedSpace.id_c_app
 
@@ -194,6 +193,12 @@ def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : Ope
   { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_openEmbedding h X.IsSheaf }
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.restrict AlgebraicGeometry.SheafedSpace.restrict
+
+/-- The map from the restriction of a presheafed space.
+-/
+@[simps!]
+def ofRestrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)}
+    (h : OpenEmbedding f) : X.restrict h ⟶ X := X.toPresheafedSpace.ofRestrict h
 
 /-- The restriction of a sheafed space `X` to the top subspace is isomorphic to `X` itself.
 -/

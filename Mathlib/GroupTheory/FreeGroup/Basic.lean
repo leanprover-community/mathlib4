@@ -166,7 +166,7 @@ theorem Step.cons_left_iff {a : α} {b : Bool} :
       simp [*]
     · simp at hL
       rcases hL with ⟨rfl, rfl⟩
-      refine' Or.inl ⟨s' ++ e, Step.not, _⟩
+      refine Or.inl ⟨s' ++ e, Step.not, ?_⟩
       simp
   · rintro (⟨L, h, rfl⟩ | rfl)
     · exact Step.cons h
@@ -410,8 +410,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 
       have H :
         1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
-          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) :=
-        by ac_rfl
+          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) := by
+        ac_rfl
       rw [H]
       apply Nat.lt_add_of_pos_right
       apply Nat.lt_add_right
@@ -428,7 +428,7 @@ theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n :=
   · exact ⟨0, rfl⟩
   · rcases ih with ⟨n, eq⟩
     exists 1 + n
-    simp [mul_add, eq, (Step.length h₂₃).symm, add_assoc]
+    simp [Nat.mul_add, eq, (Step.length h₂₃).symm, add_assoc]
 #align free_group.red.length FreeGroup.Red.length
 #align free_add_group.red.length FreeAddGroup.Red.length
 
@@ -561,8 +561,8 @@ theorem invRev_length : (invRev L₁).length = L₁.length := by simp [invRev]
 #align free_add_group.neg_rev_length FreeAddGroup.negRev_length
 
 @[to_additive (attr := simp)]
-theorem invRev_invRev : invRev (invRev L₁) = L₁ :=
-  by simp [invRev, List.map_reverse, (· ∘ ·)]
+theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
+  simp [invRev, List.map_reverse, (· ∘ ·)]
 #align free_group.inv_rev_inv_rev FreeGroup.invRev_invRev
 #align free_add_group.neg_rev_neg_rev FreeAddGroup.negRev_negRev
 
@@ -985,8 +985,7 @@ end Sum
 /-- The bijection between the free group on the empty type, and a type with one element. -/
 @[to_additive "The bijection between the additive free group on the empty type, and a type with one
   element."]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
-    where
+def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
@@ -995,8 +994,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
 #align free_add_group.free_add_group_empty_equiv_add_unit FreeAddGroup.freeAddGroupEmptyEquivAddUnit
 
 /-- The bijection between the free group on a singleton, and the integers. -/
-def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
-    where
+def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
     change (FreeGroup Unit →* FreeGroup ℤ)
@@ -1182,7 +1180,7 @@ theorem reduce.not {p : Prop} :
       rcases L2 with (_ | ⟨a, L2⟩)
       · injections; subst_vars
         simp at h
-      · refine' @reduce.not _ L1 L2 L3 x' b' _
+      · refine @reduce.not _ L1 L2 L3 x' b' ?_
         injection H with _ H
         rw [r, H]; rfl
 #align free_group.reduce.not FreeGroup.reduce.not

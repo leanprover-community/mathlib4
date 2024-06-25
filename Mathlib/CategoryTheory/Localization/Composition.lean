@@ -26,6 +26,7 @@ namespace CategoryTheory
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {E : Type u₄}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} E]
   {L₁ : C₁ ⥤ C₂} {L₂ : C₂ ⥤ C₃} {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+
 namespace Localization
 
 /-- Under some conditions on the `MorphismProperty`, functors satisfying the strict
@@ -38,7 +39,7 @@ def StrictUniversalPropertyFixedTarget.comp
     StrictUniversalPropertyFixedTarget (L₁ ⋙ L₂) W₃ E where
   inverts := hW₃
   lift F hF := h₂.lift (h₁.lift F (MorphismProperty.IsInvertedBy.of_le _ _  F hF hW₁₃)) (by
-    refine' MorphismProperty.IsInvertedBy.of_le _ _ _ _ hW₂₃
+    refine MorphismProperty.IsInvertedBy.of_le _ _ _ ?_ hW₂₃
     simpa only [MorphismProperty.IsInvertedBy.map_iff, h₁.fac F] using hF)
   fac F hF := by rw [Functor.assoc, h₂.fac, h₁.fac]
   uniq F₁ F₂ h := h₂.uniq _ _ (h₁.uniq _ _ (by simpa only [Functor.assoc] using h))
@@ -98,7 +99,7 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
     (by simpa only [W₃.map_map]
       using le_of_eq (W₃.map_eq_of_iso (compUniqFunctor L₁ W₁.Q W₁)))
   have : (W₁.Q ⋙ W₂'.Q).IsLocalization W₃ := by
-    refine' IsLocalization.mk' _ _ _ _
+    refine IsLocalization.mk' _ _ ?_ ?_
     all_goals
       exact (StrictUniversalPropertyFixedTarget.comp
         (strictUniversalPropertyFixedTargetQ W₁ _)

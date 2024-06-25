@@ -5,6 +5,7 @@ Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
 import Mathlib.Analysis.PSeries
 import Mathlib.Data.Real.Pi.Wallis
+import Mathlib.Tactic.AdaptationNote
 
 #align_import analysis.special_functions.stirling from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
@@ -32,7 +33,7 @@ formula for `π`.
 -/
 
 
-open scoped Topology Real BigOperators Nat Asymptotics
+open scoped Topology Real Nat Asymptotics
 
 open Finset Filter Nat Real
 
@@ -113,15 +114,15 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     exact inv_lt_one (one_lt_pow ((lt_add_iff_pos_left 1).mpr <| by positivity) two_ne_zero)
   have hab (k : ℕ) : (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) ≤
       (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) := by
-    refine' mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) _
+    refine mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) ?_
     rw [one_div]
     exact inv_le_one (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
 #align stirling.log_stirling_seq_diff_le_geo_sum Stirling.log_stirlingSeq_diff_le_geo_sum
 
--- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
--- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
--- other paths becomes slow.)
+#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
+(Part of the code was ignoring the `maxDischargeDepth` setting:
+ now that we have to increase it, other paths become slow.) -/
 set_option maxHeartbeats 400000 in
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
 -/
@@ -133,7 +134,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     rw [← mul_lt_mul_right h₃]
     have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
     convert H using 1 <;> field_simp [h₃.ne']
-  refine' (log_stirlingSeq_diff_le_geo_sum n).trans _
+  refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
   push_cast
   rw [div_le_div_iff h₂ h₁]
   field_simp [h₃.ne']
@@ -152,16 +153,16 @@ theorem log_stirlingSeq_bounded_aux :
   intro n
   have h₁ k : log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤ 1 / 4 * (1 / (↑(k + 1) : ℝ) ^ 2) := by
     convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
-  have h₂ : (∑ k : ℕ in range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
+  have h₂ : (∑ k ∈ range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
     exact sum_le_tsum (range n) (fun k _ => by positivity) this
   calc
     log (stirlingSeq 1) - log (stirlingSeq (n + 1)) = log_stirlingSeq' 0 - log_stirlingSeq' n :=
       rfl
-    _ = ∑ k in range n, (log_stirlingSeq' k - log_stirlingSeq' (k + 1)) := by
+    _ = ∑ k ∈ range n, (log_stirlingSeq' k - log_stirlingSeq' (k + 1)) := by
       rw [← sum_range_sub' log_stirlingSeq' n]
-    _ ≤ ∑ k in range n, 1 / 4 * (1 / ↑((k + 1)) ^ 2) := sum_le_sum fun k _ => h₁ k
-    _ = 1 / 4 * ∑ k in range n, 1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
+    _ ≤ ∑ k ∈ range n, 1 / 4 * (1 / ↑((k + 1)) ^ 2) := sum_le_sum fun k _ => h₁ k
+    _ = 1 / 4 * ∑ k ∈ range n, 1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
     _ ≤ 1 / 4 * d := by gcongr
 #align stirling.log_stirling_seq_bounded_aux Stirling.log_stirlingSeq_bounded_aux
 
@@ -179,7 +180,7 @@ theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirli
 -/
 theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a ≤ stirlingSeq (n + 1) := by
   cases' log_stirlingSeq_bounded_by_constant with c h
-  refine' ⟨exp c, exp_pos _, fun n => _⟩
+  refine ⟨exp c, exp_pos _, fun n => ?_⟩
   rw [← le_log_iff_exp_le (stirlingSeq'_pos n)]
   exact h n
 #align stirling.stirling_seq'_bounded_by_pos_constant Stirling.stirlingSeq'_bounded_by_pos_constant
@@ -193,7 +194,7 @@ theorem stirlingSeq'_antitone : Antitone (stirlingSeq ∘ succ) := fun n m h =>
 theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq atTop (𝓝 a) := by
   obtain ⟨x, x_pos, hx⟩ := stirlingSeq'_bounded_by_pos_constant
   have hx' : x ∈ lowerBounds (Set.range (stirlingSeq ∘ succ)) := by simpa [lowerBounds] using hx
-  refine' ⟨_, lt_of_lt_of_le x_pos (le_csInf (Set.range_nonempty _) hx'), _⟩
+  refine ⟨_, lt_of_lt_of_le x_pos (le_csInf (Set.range_nonempty _) hx'), ?_⟩
   rw [← Filter.tendsto_add_atTop_iff_nat 1]
   exact tendsto_atTop_ciInf stirlingSeq'_antitone ⟨x, hx'⟩
 #align stirling.stirling_seq_has_pos_limit_a Stirling.stirlingSeq_has_pos_limit_a
@@ -212,8 +213,8 @@ theorem tendsto_self_div_two_mul_self_add_one :
     · skip
     · skip
     rw [one_div, ← add_zero (2 : ℝ)]
-  refine' (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
-    ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => _⟩)
+  refine (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
+    ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => ?_⟩)
   rw [add_div' (1 : ℝ) 2 n (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn)), inv_div]
 #align stirling.tendsto_self_div_two_mul_self_add_one Stirling.tendsto_self_div_two_mul_self_add_one
 
@@ -236,8 +237,8 @@ Then the Wallis sequence `W n` has limit `a^2 / 2`.
 -/
 theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq atTop (𝓝 a)) :
     Tendsto Wallis.W atTop (𝓝 (a ^ 2 / 2)) := by
-  refine' Tendsto.congr' (eventually_atTop.mpr ⟨1, fun n hn =>
-    stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) _
+  refine Tendsto.congr' (eventually_atTop.mpr ⟨1, fun n hn =>
+    stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) ?_
   have h : a ^ 2 / 2 = a ^ 4 / a ^ 2 * (1 / 2) := by
     rw [mul_one_div, ← mul_one_div (a ^ 4) (a ^ 2), one_div, ← pow_sub_of_lt a]
     norm_num
