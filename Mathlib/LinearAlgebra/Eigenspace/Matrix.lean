@@ -14,13 +14,13 @@ This file collects results about eigenvectors, eigenvalues and spectrum specific
 over a field.
 
 ## Tags
-eigenspace, eigenvector, eigenvalue, eigen, spectrum, matrices, matrix
+eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 -/
 
 section SpectrumDiagonal
 
-variable {R : Type*} [Field R] {n : Type*} [DecidableEq n] [Fintype n] (M : Type*)
+variable {R n M : Type*} [Field R] [DecidableEq n] [Fintype n]
   [AddCommGroup M] [Module R M]
 
 open Matrix
@@ -28,13 +28,8 @@ open Module.End
 
 /-- Basis vectors are eigenvectors of associated diagonal linear operator. -/
 lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
-    Module.End.HasEigenvector (toLin b b (diagonal d)) (d i) (b i) := by
-  constructor
-  · refine mem_eigenspace_iff.mpr ?left.a
-    simp only [diagonal, Pi.basisFun_apply, toLin'_apply, mulVec_stdBasis_apply, transpose_apply,
-      of_apply, Pi.smul_apply, LinearMap.stdBasis_apply', smul_eq_mul, mul_ite, mul_one, mul_zero]
-    all_goals simp_all
-  · exact Basis.ne_zero b i
+    Module.End.HasEigenvector (toLin b b (diagonal d)) (d i) (b i) :=
+  ⟨mem_eigenspace_iff.mpr <| by simp [diagonal], Basis.ne_zero b i⟩
 
 /--  Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
