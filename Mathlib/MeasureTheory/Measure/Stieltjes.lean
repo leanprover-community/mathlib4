@@ -117,39 +117,28 @@ protected def const (c : ℝ) : StieltjesFunction where
 @[simp] lemma const_apply (c x : ℝ) : (StieltjesFunction.const c) x = c := rfl
 
 /-- The sum of two Stieltjes functions is a Stieltjes function. -/
-def add (f g : StieltjesFunction) : StieltjesFunction where
+protected def add (f g : StieltjesFunction) : StieltjesFunction where
   toFun := fun x => f x + g x
   mono' := f.mono.add g.mono
   right_continuous' := fun x => (f.right_continuous x).add (g.right_continuous x)
 
-instance : AddCommMonoid StieltjesFunction where
-  add f g := add f g
-  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
+instance : AddZeroClass StieltjesFunction where
+  add := StieltjesFunction.add
   zero := StieltjesFunction.const 0
   zero_add _ := ext fun _ ↦ zero_add _
   add_zero _ := ext fun _ ↦ add_zero _
-  nsmul n f := {
-    toFun := fun x ↦ n * f x
-    mono' := f.mono.const_mul n.cast_nonneg
-    right_continuous' := by
-      simp_rw [← smul_eq_mul]
-      exact fun x ↦ (f.right_continuous x).const_smul (n : ℝ≥0)}
-  nsmul_zero x := by
-    simp only [CharP.cast_eq_zero, zero_mul]
-    rfl
-  nsmul_succ n f := by
-    ext x
-    simp only [Nat.cast_add, Nat.cast_one]
-    exact add_one_mul ↑n (f x)
+
+instance : AddCommMonoid StieltjesFunction where
+  nsmul n f := nsmulRec n f
+  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
   add_comm _ _ := ext fun _ ↦ add_comm _ _
+  __ := StieltjesFunction.instAddZeroClass
 
 instance : Module ℝ≥0 StieltjesFunction where
   smul c f := {
     toFun := fun x ↦ c * f x
     mono' := f.mono.const_mul c.2
-    right_continuous' := by
-      simp_rw [← smul_eq_mul]
-      exact fun x ↦ (f.right_continuous x).const_smul c.1}
+    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1}
   one_smul _ := ext fun _ ↦ one_mul _
   mul_smul _ _ _ := ext fun _ ↦ mul_assoc _ _ _
   smul_zero _ := ext fun _ ↦ mul_zero _
