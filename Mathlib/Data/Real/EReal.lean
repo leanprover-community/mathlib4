@@ -1245,6 +1245,41 @@ instance : HasDistribNeg EReal where
     rw [x.mul_comm, x.mul_comm]
     exact y.neg_mul x
 
+theorem right_distrib_of_nneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    (a + b) * c = a * c + b * c := by
+  rcases eq_or_lt_of_le ha with (rfl | a_pos)
+  · simp
+  rcases eq_or_lt_of_le hb with (rfl | b_pos)
+  · simp
+  rcases lt_trichotomy c 0 with (c_neg | rfl | c_pos)
+  · induction' c using EReal.rec with c
+    · rw [mul_bot_of_pos a_pos, mul_bot_of_pos b_pos, mul_bot_of_pos (add_pos a_pos b_pos),
+        add_bot ⊥]
+    · induction' a using EReal.rec with a
+      · exfalso; exact not_lt_bot a_pos
+      · induction' b using EReal.rec with b
+        · norm_cast
+        · norm_cast; exact right_distrib a b c
+        · norm_cast
+          rw [add_top_of_ne_bot (coe_ne_bot a), top_mul_of_neg c_neg, add_bot]
+      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_neg c_neg, bot_add]
+    · exfalso; exact not_top_lt c_neg
+  · simp
+  · induction' c using EReal.rec with c
+    · exfalso; exact not_lt_bot c_pos
+    · induction' a using EReal.rec with a
+      · exfalso; exact not_lt_bot a_pos
+      · induction' b using EReal.rec with b
+        · norm_cast
+        · norm_cast; exact right_distrib a b c
+        · norm_cast
+          rw [add_top_of_ne_bot (coe_ne_bot a), top_mul_of_pos c_pos,
+            add_top_of_ne_bot (coe_ne_bot (a*c))]
+      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_pos c_pos,
+          top_add_of_ne_bot (ne_bot_of_gt (mul_pos b_pos c_pos))]
+    · rw [mul_top_of_pos a_pos, mul_top_of_pos b_pos, mul_top_of_pos (add_pos a_pos b_pos),
+        top_add_top]
+
 /-! ### Absolute value -/
 
 -- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
