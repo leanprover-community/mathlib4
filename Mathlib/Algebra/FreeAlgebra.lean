@@ -563,7 +563,7 @@ namespace FreeAlgebra
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
 preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
 -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 theorem induction {C : FreeAlgebra R X → Prop}
     (h_grade0 : ∀ r, C (algebraMap R (FreeAlgebra R X) r)) (h_grade1 : ∀ x, C (ι R x))
     (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))

@@ -95,7 +95,7 @@ lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.
   rw [← Multiset.singleton_add, ofAdd_add,
     of, FreeAbelianGroup.of_mul_of]
 
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
     C z :=
