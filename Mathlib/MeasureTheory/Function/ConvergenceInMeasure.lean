@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.MeasureTheory.Function.Egorov
 import Mathlib.MeasureTheory.Function.LpSpace
 
