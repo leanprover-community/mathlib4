@@ -213,13 +213,13 @@ lemma ih1_negy : IH1 x y → IH1 x (-y) :=
 variable (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a)
 
 lemma ihnx (h : IsOption x' x) : (x' * y).Numeric :=
-  ih (Args.P1 x' y) <| TransGen.single <| cutExpand_pair_left h
+  ih (Args.P1 x' y) <| TransGen.single (cutExpand_pair_left h)
 
 lemma ihny (h : IsOption y' y) : (x * y').Numeric :=
-  ih (Args.P1 x y') <| TransGen.single <| cutExpand_pair_right h
+  ih (Args.P1 x y') <| TransGen.single (cutExpand_pair_right h)
 
 lemma ihnxy (hx : IsOption x' x) (hy : IsOption y' y) : (x' * y').Numeric :=
-  ih (Args.P1 x' y') <| (TransGen.single <| cutExpand_pair_right hy).tail <| cutExpand_pair_left hx
+  ih (Args.P1 x' y') <| (TransGen.single <| cutExpand_pair_right hy).tail (cutExpand_pair_left hx)
 
 lemma ih1xy : IH1 x y := by
   rintro x₁ x₂ y' h₁ h₂ (rfl|hy) <;> apply ih (Args.P24 _ _ _)
