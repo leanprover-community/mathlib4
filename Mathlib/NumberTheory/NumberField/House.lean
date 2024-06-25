@@ -11,6 +11,10 @@ import Mathlib.NumberTheory.NumberField.Embeddings
 This file defines the house of an algebraic number `α`, which is
 the largest modulus of its conjugates.
 
+## References
+* [D. Marcus, *Number Fields*][marcus1977number]
+* [Keng, H. L, *Introduction to number theory*][keng1983house]
+
 ## Tags
 number field, algebraic number, house
 -/
