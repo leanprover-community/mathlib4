@@ -150,7 +150,7 @@ instance mono : Mono f := by
   rw [← H.isoRestrict_hom_ofRestrict]; apply mono_comp
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.mono AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.mono
 
-lemma c_iso' {V : Opens Y} (U : Opens X) (h : V = (openFunctor f).obj U) :
+lemma c_iso' {V : Opens Y} (U : Opens X) (h : V = (opensFunctor f).obj U) :
     IsIso (f.c.app (Opposite.op V)) := by
   subst h
   infer_instance
@@ -164,7 +164,7 @@ instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
     dsimp only [AlgebraicGeometry.PresheafedSpace.comp_c_app, unop_op, Functor.op, comp_base,
       Opens.map_comp_obj]
     apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
-    · exact c_iso' g ((openFunctor f).obj U) (by ext; simp)
+    · exact c_iso' g ((opensFunctor f).obj U) (by ext; simp)
     · apply c_iso' f U
       ext1
       dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base]
