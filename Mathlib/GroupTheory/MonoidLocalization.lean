@@ -2172,7 +2172,7 @@ protected def localizationMap : S.LocalizationMap R[S⁻¹] where
   map_mul' r₁ r₂ := by simp
   map_units' := numerator_isUnit
   surj' z := by
-    induction' z using OreLocalization.ind with r s
+    induction' z with r s
     use (r, s); dsimp
     rw [numeratorHom_apply, numeratorHom_apply, OreLocalization.expand' r 1 s]
     simp only [mul_div_one, mul_one, Submonoid.smul_def, smul_eq_mul, mul_comm r]
