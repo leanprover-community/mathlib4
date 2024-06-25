@@ -169,10 +169,10 @@ lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (
   ext u
   rw [cond_apply _ hmt, cond_apply _ hms, cond_apply _ hms, cond_apply _ (hms.inter hmt)]
   obtain hst | hst := eq_or_ne (μ (s ∩ t)) 0
-  · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null (Set.inter_subset_left _ _) hst
+  · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null Set.inter_subset_left hst
     simp [this, ← Set.inter_assoc]
   · have hcs' : μ s ≠ 0 :=
-      (measure_pos_of_superset (Set.inter_subset_left _ _) hst).ne'
+      (measure_pos_of_superset Set.inter_subset_left hst).ne'
     simp [*, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, ENNReal.mul_inv_cancel,
       mul_right_comm _ _ (μ s)⁻¹]
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'

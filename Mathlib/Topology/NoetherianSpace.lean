@@ -152,7 +152,7 @@ theorem NoetherianSpace.iUnion {ι : Type*} (f : ι → Set α) [Finite ι]
   simp_rw [noetherianSpace_set_iff] at hf ⊢
   intro t ht
   rw [← Set.inter_eq_left.mpr ht, Set.inter_iUnion]
-  exact isCompact_iUnion fun i => hf i _ (Set.inter_subset_right _ _)
+  exact isCompact_iUnion fun i => hf i _ Set.inter_subset_right
 #align topological_space.noetherian_space.Union TopologicalSpace.NoetherianSpace.iUnion
 
 -- This is not an instance since it makes a loop with `t2_space_discrete`.
@@ -226,8 +226,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
   classical
 
   let ι : Set (Set α) := irreducibleComponents α \ {Z}
-  have hι : ι.Finite := (NoetherianSpace.finite_irreducibleComponents (α := α)).subset
-    (Set.diff_subset _ _)
+  have hι : ι.Finite := NoetherianSpace.finite_irreducibleComponents.subset Set.diff_subset
   have hι' : Finite ι := by rwa [Set.finite_coe_iff]
 
   let U := Z \ ⋃ (x : ι), x

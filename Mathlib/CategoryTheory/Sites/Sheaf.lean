@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import category_theory.sites.sheaf from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
@@ -76,6 +77,13 @@ https://stacks.math.columbia.edu/tag/00VR
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
 #align category_theory.presheaf.is_sheaf CategoryTheory.Presheaf.IsSheaf
+
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike in
+/-- Condition that a presheaf with values in a concrete category is separated for
+a Grothendieck topology. -/
+def IsSeparated (P : Cᵒᵖ ⥤ A) [ConcreteCategory A] : Prop :=
+  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : P.obj (op X)),
+    (∀ (Y : C) (f : Y ⟶ X) (_ : S f), P.map f.op x = P.map f.op y) → x = y
 
 section LimitSheafCondition
 
@@ -193,7 +201,7 @@ theorem isSheaf_iff_isLimit :
     `S` of `J`, the natural cone associated to `P` and `S` admits at most one morphism from every
     cone in the same category. -/
 theorem isSeparated_iff_subsingleton :
-    (∀ E : A, IsSeparated J (P ⋙ coyoneda.obj (op E))) ↔
+    (∀ E : A, Presieve.IsSeparated J (P ⋙ coyoneda.obj (op E))) ↔
       ∀ ⦃X : C⦄ (S : Sieve X), S ∈ J X → ∀ c, Subsingleton (c ⟶ P.mapCone S.arrows.cocone.op) :=
   ⟨fun h _ S hS => (subsingleton_iff_isSeparatedFor P S).2 fun E => h E.unop S hS, fun h E _ S hS =>
     (subsingleton_iff_isSeparatedFor P S).1 (h S hS) (op E)⟩
@@ -418,6 +426,12 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
       rw [Presieve.IsSheafFor.valid_glue _ _ _ hf, ← hy _ hf]
       rfl
 #align category_theory.is_sheaf_iff_is_sheaf_of_type CategoryTheory.isSheaf_iff_isSheaf_of_type
+
+variable {J} in
+lemma Presheaf.IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hP : Presheaf.IsSheaf J P)
+    {X : C} (S : Sieve X) (hS : S ∈ J X) : Presieve.IsSheafFor P S.arrows := by
+  rw [isSheaf_iff_isSheaf_of_type] at hP
+  exact hP S hS
 
 /-- The category of sheaves taking values in Type is the same as the category of set-valued sheaves.
 -/

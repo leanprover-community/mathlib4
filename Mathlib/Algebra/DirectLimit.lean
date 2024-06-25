@@ -703,7 +703,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
     · refine
         ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, ?_,
-          isSupported_sub (isSupported_of.2 <| Or.inr (by exact rfl))
+          isSupported_sub (isSupported_of.2 <| Or.inr (Set.mem_singleton _))
             (isSupported_of.2 <| Or.inl rfl), fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | _⟩)
         · exact hij
@@ -716,7 +716,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           rw [this]
           · exact sub_self _
         exacts [Or.inl rfl, Or.inr rfl]
-    · refine ⟨i, {⟨i, 1⟩}, ?_, isSupported_sub (isSupported_of.2 (by exact rfl))
+    · refine ⟨i, {⟨i, 1⟩}, ?_, isSupported_sub (isSupported_of.2 (Set.mem_singleton _))
         isSupported_one, fun [_] => ?_⟩
       · rintro k (rfl | h)
         rfl
@@ -728,7 +728,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, ?_,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_add (isSupported_of.2 <| Or.inr <| Or.inl rfl)
-              (isSupported_of.2 <| Or.inr <| Or.inr (by exact rfl))),
+              (isSupported_of.2 <| Or.inr <| Or.inr (Set.mem_singleton _))),
           fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_add, restriction_of, restriction_of,
@@ -743,7 +743,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, ?_,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_mul (isSupported_of.2 <| Or.inr <| Or.inl rfl)
-              (isSupported_of.2 <| Or.inr <| Or.inr (by exact rfl))), fun [_] => ?_⟩
+              (isSupported_of.2 <| Or.inr <| Or.inr (Set.mem_singleton _))), fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_mul, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
@@ -767,12 +767,12 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       · exact le_trans (hj z hz) hjk
     refine
       ⟨k, s ∪ t, this,
-        isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
-          (isSupported_upwards hyt <| Set.subset_union_right s t), fun [_] => ?_⟩
+        isSupported_add (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hyt Set.subset_union_right), fun [_] => ?_⟩
     -- Porting note: was `(restriction _).map_add`
     classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
-      of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
-      of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
+      of.zero_exact_aux2 G f' hxs hi this hik Set.subset_union_left, ←
+      of.zero_exact_aux2 G f' hyt hj this hjk Set.subset_union_right, ihs,
       (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
   · rintro x y ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
@@ -784,11 +784,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       exacts [(hi z.1 <| Finset.mem_image.2 ⟨z, hz, rfl⟩).trans hik, (hj z hz).trans hjk]
     refine
       ⟨k, ↑s ∪ t, this,
-        isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
-          (isSupported_upwards hyt <| Set.subset_union_right (↑s) t), fun [_] => ?_⟩
+        isSupported_mul (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hyt Set.subset_union_right), fun [_] => ?_⟩
     -- Porting note: RingHom.map_mul was `(restriction _).map_mul`
     classical rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
-      of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
+      of.zero_exact_aux2 G f' hyt hj this hjk Set.subset_union_right, iht,
       (f' j k hjk).map_zero, mul_zero]
 #align ring.direct_limit.of.zero_exact_aux Ring.DirectLimit.of.zero_exact_aux
 

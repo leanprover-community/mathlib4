@@ -107,7 +107,7 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       exact opNorm_zero)
 #align continuous_linear_map.op_norm_zero_iff ContinuousLinearMap.opNorm_zero_iff
 
-@[deprecated] alias op_norm_zero_iff := opNorm_zero_iff -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_norm_zero_iff := opNorm_zero_iff
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
@@ -210,7 +210,7 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 #align continuous_linear_map.op_norm_comp_linear_isometry_equiv ContinuousLinearMap.opNorm_comp_linearIsometryEquiv
 
-@[deprecated] -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
 
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
@@ -275,16 +275,16 @@ theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRight
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 #align continuous_linear_map.norm_smul_rightL ContinuousLinearMap.norm_smulRightL
 
-variable (𝕜 E Fₗ) in
-/-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
-sense. This shouldn't be needed. See lean4#3927. -/
-def seminormedAddCommGroup_aux_for_smulRightL :
-    SeminormedAddCommGroup ((E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ) :=
-  toSeminormedAddCommGroup (F := Fₗ →L[𝕜] E →L[𝕜] Fₗ) (𝕜 := 𝕜) (σ₁₂ := RingHom.id 𝕜)
-
-lemma norm_smulRightL_le :
-    letI := seminormedAddCommGroup_aux_for_smulRightL 𝕜 E Fₗ
-    ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
+```
+letI : SeminormedAddCommGroup ((E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ) :=
+      toSeminormedAddCommGroup (F := Fₗ →L[𝕜] E →L[𝕜] Fₗ) (𝕜 := 𝕜) (σ₁₂ := RingHom.id 𝕜)
+```
+-/
+set_option maxSynthPendingDepth 2 in
+lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
 end ContinuousLinearMap

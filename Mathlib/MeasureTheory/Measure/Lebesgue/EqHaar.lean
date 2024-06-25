@@ -170,9 +170,9 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
       _ = 0 := by simp only [H, tsum_zero]
   intro R
   apply addHaar_eq_zero_of_disjoint_translates_aux μ u
-    (isBounded_closedBall.subset (inter_subset_right _ _)) hu _ (h's.inter measurableSet_closedBall)
+    (isBounded_closedBall.subset inter_subset_right) hu _ (h's.inter measurableSet_closedBall)
   refine pairwise_disjoint_mono hs fun n => ?_
-  exact add_subset_add Subset.rfl (inter_subset_left _ _)
+  exact add_subset_add Subset.rfl inter_subset_left
 #align measure_theory.measure.add_haar_eq_zero_of_disjoint_translates MeasureTheory.Measure.addHaar_eq_zero_of_disjoint_translates
 
 /-- A strict vector subspace has measure zero. -/
@@ -734,7 +734,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
       rw [H]; simpa only [ENNReal.zero_div] using εpos
     apply le_antisymm _ (zero_le _)
     calc
-      μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono (inter_subset_right _ _)
+      μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono inter_subset_right
       _ = 0 := by
         simp only [h't, addHaar_smul, image_add_left, measure_preimage_add, singleton_add,
           mul_zero]
@@ -743,7 +743,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
       Tendsto (fun n : ℕ => μ (t \ closedBall 0 n)) atTop
         (𝓝 (μ (⋂ n : ℕ, t \ closedBall 0 n))) := by
       have N : ∃ n : ℕ, μ (t \ closedBall 0 n) ≠ ∞ :=
-        ⟨0, ((measure_mono (diff_subset t _)).trans_lt h''t.lt_top).ne⟩
+        ⟨0, ((measure_mono diff_subset).trans_lt h''t.lt_top).ne⟩
       refine tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ ?_) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
     have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
@@ -756,7 +756,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
     Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) / μ ({x} + r • t)) (𝓝[>] 0)
       (𝓝 0) :=
     tendsto_addHaar_inter_smul_zero_of_density_zero_aux2 μ s x h _ t h't n (Nat.cast_pos.2 npos)
-      (inter_subset_right _ _)
+      inter_subset_right
   filter_upwards [(tendsto_order.1 L).2 _ (ENNReal.half_pos εpos.ne'), self_mem_nhdsWithin]
   rintro r hr (rpos : 0 < r)
   have I :
@@ -794,7 +794,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
     · simp only [uzero, ENNReal.inv_eq_top, imp_true_iff, Ne, not_false_iff]
     congr 1
     apply
-      ENNReal.sub_eq_of_add_eq (ne_top_of_le_ne_top utop (measure_mono (inter_subset_right _ _)))
+      ENNReal.sub_eq_of_add_eq (ne_top_of_le_ne_top utop (measure_mono inter_subset_right))
     rw [inter_comm _ u, inter_comm _ u]
     exact measure_inter_add_diff u vmeas
   have L : Tendsto (fun r => μ (sᶜ ∩ closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 0) := by
@@ -855,7 +855,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
       rintro r -
       apply ENNReal.div_le_of_le_mul
       rw [one_mul]
-      exact measure_mono (inter_subset_right _ _)
+      exact measure_mono inter_subset_right
   refine this.congr fun r => ?_
   congr 1
   apply measure_toMeasurable_inter_of_sFinite

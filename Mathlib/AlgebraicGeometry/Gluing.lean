@@ -406,7 +406,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
   intro x hx
   rw [𝒰.gluedCover.isOpen_iff] at hU
   use 𝒰.fromGlued.val.base '' U ∩ Set.range (𝒰.map (𝒰.f x)).1.base
-  use Set.inter_subset_left _ _
+  use Set.inter_subset_left
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
     apply (show IsOpenImmersion (𝒰.map (𝒰.f x)) from inferInstance).base_open.isOpenMap
