@@ -10,7 +10,7 @@ import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Order.Atoms
 
 /-!
-# Ordered instances on subgroups
+# Facts about ordered structures and ordered instances on subgroups
 -/
 
 open Subgroup
