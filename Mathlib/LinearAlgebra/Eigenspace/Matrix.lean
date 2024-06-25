@@ -14,7 +14,7 @@ This file collects results about eigenvectors, eigenvalues and spectrum specific
 over a field.
 
 ## Tags
-eigenspace, eigenvector, eigenvalue, eigen, spectrum, matrices, matrix
+eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 -/
 
