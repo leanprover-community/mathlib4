@@ -57,7 +57,7 @@ structure PreOpposite (α : Type*) : Type _ where
   /-- The element of `α` represented by `x : PreOpposite α`. -/ unop' : α
 
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
-reverses left and right in multiplication.-/
+reverses left and right in multiplication. -/
 @[to_additive
       "Additive opposite of a type. This type inherits all multiplicative structures on `α` and
       reverses left and right in addition."]

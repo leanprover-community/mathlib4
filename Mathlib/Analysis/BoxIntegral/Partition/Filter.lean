@@ -34,15 +34,15 @@ the corresponding integral, or in the proofs of its properties. We equip
 
 The structure `BoxIntegral.IntegrationParams` has 3 boolean fields with the following meaning:
 
-* `bRiemann`: the value `True` means that the filter corresponds to a Riemann-style integral, i.e.
+* `bRiemann`: the value `true` means that the filter corresponds to a Riemann-style integral, i.e.
   in the definition of integrability we require a constant upper estimate `r` on the size of boxes
-  of a tagged partition; the value `False` means that the estimate may depend on the position of the
+  of a tagged partition; the value `false` means that the estimate may depend on the position of the
   tag.
 
-* `bHenstock`: the value `True` means that we require that each tag belongs to its own closed box;
-  the value `False` means that we only require that tags belong to the ambient box.
+* `bHenstock`: the value `true` means that we require that each tag belongs to its own closed box;
+  the value `false` means that we only require that tags belong to the ambient box.
 
-* `bDistortion`: the value `True` means that `r` can depend on the maximal ratio of sides of the
+* `bDistortion`: the value `true` means that `r` can depend on the maximal ratio of sides of the
   same box of a partition. Presence of this case make quite a few proofs harder but we can prove the
   divergence theorem only for the filter `BoxIntegral.IntegrationParams.GP = ⊥ =
   {bRiemann := false, bHenstock := true, bDistortion := true}`.
@@ -183,15 +183,15 @@ open TaggedPrepartition
 /-- An `IntegrationParams` is a structure holding 3 boolean values used to define a filter to be
 used in the definition of a box-integrable function.
 
-* `bRiemann`: the value `True` means that the filter corresponds to a Riemann-style integral, i.e.
+* `bRiemann`: the value `true` means that the filter corresponds to a Riemann-style integral, i.e.
   in the definition of integrability we require a constant upper estimate `r` on the size of boxes
-  of a tagged partition; the value `False` means that the estimate may depend on the position of the
+  of a tagged partition; the value `false` means that the estimate may depend on the position of the
   tag.
 
-* `bHenstock`: the value `True` means that we require that each tag belongs to its own closed box;
-  the value `False` means that we only require that tags belong to the ambient box.
+* `bHenstock`: the value `true` means that we require that each tag belongs to its own closed box;
+  the value `false` means that we only require that tags belong to the ambient box.
 
-* `bDistortion`: the value `True` means that `r` can depend on the maximal ratio of sides of the
+* `bDistortion`: the value `true` means that `r` can depend on the maximal ratio of sides of the
   same box of a partition. Presence of this case makes quite a few proofs harder but we can prove
   the divergence theorem only for the filter `BoxIntegral.IntegrationParams.GP = ⊥ =
   {bRiemann := false, bHenstock := true, bDistortion := true}`.
@@ -395,13 +395,13 @@ protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c 
 
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
-  refine' ⟨fun J hJ => hπ.1 J (π.mem_filter.1 hJ).1, fun hH J hJ => hπ.2 hH J (π.mem_filter.1 hJ).1,
-    fun hD => (distortion_filter_le _ _).trans (hπ.3 hD), fun hD => _⟩
+  refine ⟨fun J hJ => hπ.1 J (π.mem_filter.1 hJ).1, fun hH J hJ => hπ.2 hH J (π.mem_filter.1 hJ).1,
+    fun hD => (distortion_filter_le _ _).trans (hπ.3 hD), fun hD => ?_⟩
   rcases hπ.4 hD with ⟨π₁, hπ₁U, hc⟩
   set π₂ := π.filter fun J => ¬p J
   have : Disjoint π₁.iUnion π₂.iUnion := by
     simpa [π₂, hπ₁U] using disjoint_sdiff_self_left.mono_right sdiff_le
-  refine' ⟨π₁.disjUnion π₂.toPrepartition this, _, _⟩
+  refine ⟨π₁.disjUnion π₂.toPrepartition this, ?_, ?_⟩
   · suffices ↑I \ π.iUnion ∪ π.iUnion \ (π.filter p).iUnion = ↑I \ (π.filter p).iUnion by
       simp [π₂, *]
     have h : (π.filter p).iUnion ⊆ π.iUnion :=
@@ -420,12 +420,12 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
 theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J}
     (h : ∀ J ∈ π, l.MemBaseSet J c r (πi J)) (hp : ∀ J ∈ π, (πi J).IsPartition)
     (hc : l.bDistortion → π.compl.distortion ≤ c) : l.MemBaseSet I c r (π.biUnionTagged πi) := by
-  refine' ⟨TaggedPrepartition.isSubordinate_biUnionTagged.2 fun J hJ => (h J hJ).1,
+  refine ⟨TaggedPrepartition.isSubordinate_biUnionTagged.2 fun J hJ => (h J hJ).1,
     fun hH => TaggedPrepartition.isHenstock_biUnionTagged.2 fun J hJ => (h J hJ).2 hH,
-    fun hD => _, fun hD => _⟩
+    fun hD => ?_, fun hD => ?_⟩
   · rw [Prepartition.distortion_biUnionTagged, Finset.sup_le_iff]
     exact fun J hJ => (h J hJ).3 hD
-  · refine' ⟨_, _, hc hD⟩
+  · refine ⟨_, ?_, hc hD⟩
     rw [π.iUnion_compl, ← π.iUnion_biUnion_partition hp]
     rfl
 #align box_integral.integration_params.bUnion_tagged_mem_base_set BoxIntegral.IntegrationParams.biUnionTagged_memBaseSet
@@ -507,13 +507,13 @@ theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J
       (l.toFilteriUnion J (Prepartition.single J I h)) := by
   simp only [toFilteriUnion, tendsto_iSup]; intro c
   set π₀ := Prepartition.single J I h
-  refine' le_iSup_of_le (max c π₀.compl.distortion) _
-  refine' ((l.hasBasis_toFilterDistortioniUnion I c ⊤).tendsto_iff
-    (l.hasBasis_toFilterDistortioniUnion J _ _)).2 fun r hr => _
-  refine' ⟨r, hr, fun π hπ => _⟩
+  refine le_iSup_of_le (max c π₀.compl.distortion) ?_
+  refine ((l.hasBasis_toFilterDistortioniUnion I c ⊤).tendsto_iff
+    (l.hasBasis_toFilterDistortioniUnion J _ _)).2 fun r hr => ?_
+  refine ⟨r, hr, fun π hπ => ?_⟩
   rw [mem_setOf_eq, Prepartition.iUnion_top] at hπ
-  refine' ⟨⟨hπ.1.1, hπ.1.2, fun hD => le_trans (hπ.1.3 hD) (le_max_left _ _), fun _ => _⟩, _⟩
-  · refine' ⟨_, π₀.iUnion_compl.trans _, le_max_right _ _⟩
+  refine ⟨⟨hπ.1.1, hπ.1.2, fun hD => le_trans (hπ.1.3 hD) (le_max_left _ _), fun _ => ?_⟩, ?_⟩
+  · refine ⟨_, π₀.iUnion_compl.trans ?_, le_max_right _ _⟩
     congr 1
     exact (Prepartition.iUnion_single h).trans hπ.2.symm
   · exact hπ.2.trans (Prepartition.iUnion_single _).symm
@@ -523,7 +523,7 @@ theorem exists_memBaseSet_le_iUnion_eq (l : IntegrationParams) (π₀ : Preparti
     (hc₁ : π₀.distortion ≤ c) (hc₂ : π₀.compl.distortion ≤ c) (r : (ι → ℝ) → Ioi (0 : ℝ)) :
     ∃ π, l.MemBaseSet I c r π ∧ π.toPrepartition ≤ π₀ ∧ π.iUnion = π₀.iUnion := by
   rcases π₀.exists_tagged_le_isHenstock_isSubordinate_iUnion_eq r with ⟨π, hle, hH, hr, hd, hU⟩
-  refine' ⟨π, ⟨hr, fun _ => hH, fun _ => hd.trans_le hc₁, fun _ => ⟨π₀.compl, _, hc₂⟩⟩, ⟨hle, hU⟩⟩
+  refine ⟨π, ⟨hr, fun _ => hH, fun _ => hd.trans_le hc₁, fun _ => ⟨π₀.compl, ?_, hc₂⟩⟩, ⟨hle, hU⟩⟩
   exact Prepartition.compl_congr hU ▸ π.toPrepartition.iUnion_compl
 #align box_integral.integration_params.exists_mem_base_set_le_Union_eq BoxIntegral.IntegrationParams.exists_memBaseSet_le_iUnion_eq
 

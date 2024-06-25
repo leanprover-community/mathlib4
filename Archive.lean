@@ -50,6 +50,7 @@ import Archive.Wiedijk100Theorems.AreaOfACircle
 import Archive.Wiedijk100Theorems.AscendingDescendingSequences
 import Archive.Wiedijk100Theorems.BallotProblem
 import Archive.Wiedijk100Theorems.BirthdayProblem
+import Archive.Wiedijk100Theorems.BuffonsNeedle
 import Archive.Wiedijk100Theorems.CubingACube
 import Archive.Wiedijk100Theorems.FriendshipGraphs
 import Archive.Wiedijk100Theorems.HeronsFormula

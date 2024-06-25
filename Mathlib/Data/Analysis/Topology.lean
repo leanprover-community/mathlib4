@@ -136,7 +136,7 @@ protected theorem mem_nhds [T : TopologicalSpace α] (F : Realizer α) {s : Set 
 
 theorem isOpen_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
     IsOpen s ↔ ∀ a ∈ s, ∃ b, a ∈ F.F b ∧ F.F b ⊆ s :=
-  isOpen_iff_mem_nhds.trans <| ball_congr fun _a _h ↦ F.mem_nhds
+  isOpen_iff_mem_nhds.trans <| forall₂_congr fun _a _h ↦ F.mem_nhds
 #align ctop.realizer.is_open_iff Ctop.Realizer.isOpen_iff
 
 theorem isClosed_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :

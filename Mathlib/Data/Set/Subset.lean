@@ -74,7 +74,7 @@ lemma preimage_val_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ 
   erw [sInter_image]
   simp_rw [sInter_eq_biInter, preimage_iInter]
 
-lemma preimage_val_sInter_eq_sInter : A ↓∩ (⋂₀ S) = ⋂₀ ((A ↓∩ .) '' S) := by
+lemma preimage_val_sInter_eq_sInter : A ↓∩ (⋂₀ S) = ⋂₀ ((A ↓∩ ·) '' S) := by
   simp only [preimage_sInter, sInter_image]
 
 lemma eq_of_preimage_val_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
@@ -102,9 +102,7 @@ lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
 
 @[simp]
 lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
-  -- TODO: missing `image_sUnion` lemma
-  erw [sUnion_image]
-  simp_rw [sUnion_eq_biUnion, image_iUnion]
+  rw [image_sUnion, image]
 
 @[simp]
 lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
@@ -112,11 +110,11 @@ lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
 @[simp]
 lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
   erw [sInter_image]
-  rw [sInter_eq_biInter, (Subtype.val_injective.injOn _).image_biInter_eq hT]
+  rw [sInter_eq_biInter, Subtype.val_injective.injOn.image_biInter_eq hT]
 
 @[simp]
 lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
-  (Subtype.val_injective.injOn _).image_iInter_eq
+  Subtype.val_injective.injOn.image_iInter_eq
 
 @[simp]
 lemma image_val_union_self_right_eq : A ∪ ↑D = A :=

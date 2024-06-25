@@ -3,7 +3,7 @@ Copyright (c) 2021 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.BigOperators.Ring.List
 
 /-!

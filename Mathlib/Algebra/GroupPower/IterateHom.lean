@@ -3,17 +3,16 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Int
 import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Logic.Function.Iterate
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 
 /-!
-# Iterates of monoid and ring homomorphisms
+# Iterates of monoid homomorphisms
 
-Iterate of a monoid/ring homomorphism is a monoid/ring homomorphism but it has a wrong type, so Lean
+Iterate of a monoid homomorphism is a monoid homomorphism but it has a wrong type, so Lean
 can't apply lemmas like `MonoidHom.map_one` to `f^[n] 1`. Though it is possible to define
 a monoid structure on the endomorphisms, quite often we do not want to convert from
 `M →* M` to `Monoid.End M` and from `f^[n]` to `f^n` just to apply a simple lemma.
@@ -27,6 +26,8 @@ We also prove formulas for iterates of add/mul left/right.
 homomorphism, iterate
 -/
 
+assert_not_exists DenselyOrdered
+assert_not_exists Ring
 
 open Function
 
@@ -77,38 +78,6 @@ theorem iterate_map_zpow {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass
     f^[n] (x ^ k) = f^[n] x ^ k :=
   Commute.iterate_left (map_zpow f · k) n x
 
-namespace MonoidHom
-
-variable [Monoid M] [Monoid N] [Group G] [Group H]
-
-theorem coe_pow {M} [CommMonoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align monoid_hom.coe_pow MonoidHom.coe_pow
-
-end MonoidHom
-
-theorem Monoid.End.coe_pow {M} [Monoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align monoid.End.coe_pow Monoid.End.coe_pow
-
-theorem AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align add_monoid.End.coe_pow AddMonoid.End.coe_pow
-
-namespace RingHom
-
-section Semiring
-
-variable {R : Type*} [Semiring R] (f : R →+* R) (n : ℕ) (x y : R)
-
-theorem coe_pow (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) f n
-#align ring_hom.coe_pow RingHom.coe_pow
-
-end Semiring
-
-end RingHom
-
 --what should be the namespace for this section?
 section Monoid
 
@@ -117,7 +86,7 @@ variable [Monoid G] (a : G) (n : ℕ)
 @[to_additive (attr := simp)]
 theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
-    Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
+    Nat.recOn n (by rw [iterate_zero, id, pow_zero, one_smul])
     fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ', mul_smul]
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
@@ -175,12 +144,13 @@ section Semigroup
 
 variable [Semigroup G] {a b c : G}
 
--- Porting note (#10971): need `dsimp only`, see https://leanprover.zulipchat.com/#narrow/stream/
+-- Porting note(#12129): additional beta reduction needed
+-- see also https://leanprover.zulipchat.com/#narrow/stream/
 -- 287929-mathlib4/topic/dsimp.20before.20rw/near/317063489
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
     Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j => by
-  dsimp only; rw [← mul_assoc, h.eq, mul_assoc]
+  beta_reduce; rw [← mul_assoc, h.eq, mul_assoc]
 #align semiconj_by.function_semiconj_mul_left SemiconjBy.function_semiconj_mul_left
 #align add_semiconj_by.function_semiconj_add_left AddSemiconjBy.function_semiconj_add_left
 

@@ -29,7 +29,7 @@ theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0)
   constructor
   · rintro ⟨k, h⟩
     simp_rw [← h]
-    refine' ⟨⟨(k % z).toNat, _⟩, k / z, _⟩
+    refine ⟨⟨(k % z).toNat, ?_⟩, k / z, ?_⟩
     · rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
       exact (Int.emod_lt _ hz).trans_eq (Int.abs_eq_natAbs _)
     rw [Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
@@ -43,7 +43,7 @@ theorem nsmul_mem_zmultiples_iff_exists_sub_div {r : R} {n : ℕ} (hn : n ≠ 0)
     n • r ∈ AddSubgroup.zmultiples p ↔
       ∃ k : Fin n, r - (k : ℕ) • (p / n : R) ∈ AddSubgroup.zmultiples p := by
   rw [← natCast_zsmul r, zsmul_mem_zmultiples_iff_exists_sub_div (Int.natCast_ne_zero.mpr hn),
-    Int.cast_ofNat]
+    Int.cast_natCast]
   rfl
 #align add_subgroup.nsmul_mem_zmultiples_iff_exists_sub_div AddSubgroup.nsmul_mem_zmultiples_iff_exists_sub_div
 
@@ -67,7 +67,7 @@ theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {
 theorem zmultiples_nsmul_eq_nsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {n : ℕ} (hz : n ≠ 0) :
     n • ψ = n • θ ↔ ∃ k : Fin n, ψ = θ + (k : ℕ) • (p / n : R) := by
   rw [← natCast_zsmul ψ, ← natCast_zsmul θ,
-    zmultiples_zsmul_eq_zsmul_iff (Int.natCast_ne_zero.mpr hz), Int.cast_ofNat]
+    zmultiples_zsmul_eq_zsmul_iff (Int.natCast_ne_zero.mpr hz), Int.cast_natCast]
   rfl
 #align quotient_add_group.zmultiples_nsmul_eq_nsmul_iff QuotientAddGroup.zmultiples_nsmul_eq_nsmul_iff
 

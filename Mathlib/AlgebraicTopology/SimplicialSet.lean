@@ -61,7 +61,6 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
@@ -287,7 +286,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     use Fin.last (n+3)
     simp only [hₙ.ne, not_false_eq_true, Fin.zero_eta, zero_add, true_and]
     intro j
-    fin_cases j <;> simp [Fin.ext_iff] <;> omega
+    fin_cases j <;> simp [Fin.ext_iff]
   · use 0
     simp only [h₀.ne', not_false_eq_true, true_and]
     intro j
@@ -356,7 +355,6 @@ instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
--- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :

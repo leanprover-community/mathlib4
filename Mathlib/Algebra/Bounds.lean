@@ -189,7 +189,7 @@ end Right
 
 section Left
 
-variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
+variable {ι : Sort*} {G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]

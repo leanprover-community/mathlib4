@@ -112,11 +112,11 @@ variable (A : ι → Type*)
 /-- A graded version of `Semiring`. -/
 class GSemiring [AddMonoid ι] [∀ i, AddCommMonoid (A i)] extends GNonUnitalNonAssocSemiring A,
   GradedMonoid.GMonoid A where
-  /-- The canonical map from ℕ to the zeroth component of a graded semiring.-/
+  /-- The canonical map from ℕ to the zeroth component of a graded semiring. -/
   natCast : ℕ → A 0
-  /-- The canonical map from ℕ to a graded semiring respects zero.-/
+  /-- The canonical map from ℕ to a graded semiring respects zero. -/
   natCast_zero : natCast 0 = 0
-  /-- The canonical map from ℕ to a graded semiring respects successors.-/
+  /-- The canonical map from ℕ to a graded semiring respects successors. -/
   natCast_succ : ∀ n : ℕ, natCast (n + 1) = natCast n + GradedMonoid.GOne.one
 #align direct_sum.gsemiring DirectSum.GSemiring
 
@@ -127,13 +127,13 @@ class GCommSemiring [AddCommMonoid ι] [∀ i, AddCommMonoid (A i)] extends GSem
 
 /-- A graded version of `Ring`. -/
 class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
-  /-- The canonical map from ℤ to the zeroth component of a graded ring.-/
+  /-- The canonical map from ℤ to the zeroth component of a graded ring. -/
   intCast : ℤ → A 0
   /-- The canonical map from ℤ to a graded ring extends the canonical map from ℕ to the underlying
-  graded semiring.-/
+  graded semiring. -/
   intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
   /-- On negative integers, the canonical map from ℤ to a graded ring is the negative extension of
-  the canonical map from ℕ to the underlying graded semiring.-/
+  the canonical map from ℕ to the underlying graded semiring. -/
   -- Porting note: -(n+1) -> Int.negSucc
   intCast_negSucc_ofNat : ∀ n : ℕ, intCast (Int.negSucc n) = -natCast (n + 1 : ℕ)
 #align direct_sum.gring DirectSum.GRing
@@ -304,8 +304,6 @@ theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A
   rw [List.ofFn_eq_map, ofList_dProd]
 #align direct_sum.list_prod_of_fn_of_eq_dprod DirectSum.list_prod_ofFn_of_eq_dProd
 
-open BigOperators
-
 theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
       = a.sum fun i ai => a'.sum fun j aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
@@ -328,9 +326,9 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a' =
-      ∑ ij in DFinsupp.support a ×ˢ DFinsupp.support a',
-        DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) :=
-  by simp only [mul_eq_dfinsupp_sum, DFinsupp.sum, Finset.sum_product]
+      ∑ ij ∈ DFinsupp.support a ×ˢ DFinsupp.support a',
+        DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) := by
+  simp only [mul_eq_dfinsupp_sum, DFinsupp.sum, Finset.sum_product]
 #align direct_sum.mul_eq_sum_support_ghas_mul DirectSum.mul_eq_sum_support_ghas_mul
 
 end Semiring

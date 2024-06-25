@@ -5,7 +5,8 @@ Authors: Scott Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.Tactic.ApplyFun
 
 #align_import category_theory.limits.concrete_category from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -25,7 +26,16 @@ attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeT
 
 section Limits
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{max w v} C] {J : Type w} [SmallCategory J]
+/-- If a functor `G : J ⥤ C` to a concrete category has a limit and that `forget C`
+is corepresentable, then `G ⋙ forget C).sections` is small. -/
+lemma Concrete.small_sections_of_hasLimit
+    {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
+    [(forget C).Corepresentable] {J : Type w} [Category.{t} J] (G : J ⥤ C) [HasLimit G] :
+    Small.{v} (G ⋙ forget C).sections := by
+  rw [← Types.hasLimit_iff_small_sections]
+  infer_instance
+
+variable {C : Type u} [Category.{v} C] [ConcreteCategory.{max w v} C] {J : Type w} [Category.{t} J]
   (F : J ⥤ C) [PreservesLimit F (forget C)]
 
 theorem Concrete.to_product_injective_of_isLimit {D : Cone F} (hD : IsLimit D) :

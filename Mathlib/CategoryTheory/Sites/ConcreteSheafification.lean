@@ -36,11 +36,11 @@ variable [ConcreteCategory.{max v u} D]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
 def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :=
   { x : ∀ I : S.Arrow, P.obj (op I.Y) //
-    ∀ I : S.Relation, P.map I.g₁.op (x I.fst) = P.map I.g₂.op (x I.snd) }
+    ∀ I : S.Relation, P.map I.r.g₁.op (x I.fst) = P.map I.r.g₂.op (x I.snd) }
 #align category_theory.meq CategoryTheory.Meq
 
 end
@@ -55,6 +55,12 @@ instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, P.obj (op I.Y) :=
   ⟨fun x => x.1⟩
 
+lemma congr_apply {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) {Y}
+    {f g : Y ⟶ X} (h : f = g) (hf : S f) :
+    x ⟨_, _, hf⟩ = x ⟨_, g, by simpa only [← h] using hf⟩ := by
+  subst h
+  rfl
+
 @[ext]
 theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x y : Meq P S) (h : ∀ I : S.Arrow, x I = y I) :
     x = y :=
@@ -62,15 +68,14 @@ theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x y : Meq P S) (h : ∀ I :
 #align category_theory.meq.ext CategoryTheory.Meq.ext
 
 theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.Relation) :
-    P.map I.g₁.op (x ((S.index P).fstTo I)) = P.map I.g₂.op (x ((S.index P).sndTo I)) :=
+    P.map I.r.g₁.op (x ((S.index P).fstTo I)) = P.map I.r.g₂.op (x ((S.index P).sndTo I)) :=
   x.2 _
 #align category_theory.meq.condition CategoryTheory.Meq.condition
 
 /-- Refine a term of `Meq P T` with respect to a refinement `S ⟶ T` of covers. -/
 def refine {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T) (e : S ⟶ T) : Meq P S :=
   ⟨fun I => x ⟨I.Y, I.f, (leOfHom e) _ I.hf⟩, fun I =>
-    x.condition
-      ⟨I.Y₁, I.Y₂, I.Z, I.g₁, I.g₂, I.f₁, I.f₂, (leOfHom e) _ I.h₁, (leOfHom e) _ I.h₂, I.w⟩⟩
+    x.condition (GrothendieckTopology.Cover.Relation.mk' (I.r.map e))⟩
 #align category_theory.meq.refine CategoryTheory.Meq.refine
 
 @[simp]
@@ -83,8 +88,7 @@ theorem refine_apply {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T)
 def pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     Meq P ((J.pullback f).obj S) :=
   ⟨fun I => x ⟨_, I.f ≫ f, I.hf⟩, fun I =>
-    x.condition
-      ⟨I.Y₁, I.Y₂, I.Z, I.g₁, I.g₂, I.f₁ ≫ f, I.f₂ ≫ f, I.h₁, I.h₂, by simp [I.w_assoc]⟩⟩
+    x.condition (GrothendieckTopology.Cover.Relation.mk' I.r.base)⟩
 #align category_theory.meq.pullback CategoryTheory.Meq.pullback
 
 @[simp]
@@ -103,7 +107,7 @@ theorem pullback_refine {Y X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (h : S �
 def mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) : Meq P S :=
   ⟨fun I => P.map I.f.op x, fun I => by
     dsimp
-    simp only [← comp_apply, ← P.map_comp, ← op_comp, I.w]⟩
+    simp only [← comp_apply, ← P.map_comp, ← op_comp, I.r.w]⟩
 #align category_theory.meq.mk CategoryTheory.Meq.mk
 
 theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) (I : S.Arrow) :
@@ -126,7 +130,6 @@ theorem equiv_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequaliz
   rfl
 #align category_theory.meq.equiv_apply CategoryTheory.Meq.equiv_apply
 
-@[simp]
 theorem equiv_symm_eq_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
     (x : Meq P S) (I : S.Arrow) :
     Multiequalizer.ι (S.index P) I ((Meq.equiv P S).symm x) = x I := by
@@ -200,15 +203,11 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   apply congr_arg
   apply Concrete.multiequalizer_ext
   intro i
-  dsimp [diagram]
-  rw [← comp_apply, ← comp_apply, ← comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
-    Multiequalizer.lift_ι]
+  dsimp
+  erw [← comp_apply, ← comp_apply, ← comp_apply]
+  rw [Multiequalizer.lift_ι, Multiequalizer.lift_ι, Multiequalizer.lift_ι]
   erw [Meq.equiv_symm_eq_apply]
-  let RR : S.Relation :=
-    ⟨_, _, _, i.f, 𝟙 _, I.f, i.f ≫ I.f, I.hf, Sieve.downward_closed _ I.hf _, by simp⟩
-  erw [x.condition RR]
-  simp only [unop_op, pullback_obj, op_id, Functor.map_id, id_apply]
-  rfl
+  simpa using (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
 #align category_theory.grothendieck_topology.plus.to_plus_apply CategoryTheory.GrothendieckTopology.Plus.toPlus_apply
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
@@ -255,8 +254,8 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     apply_fun fun ee => ee i at e
     convert e
     all_goals
-      dsimp [diagram]
-      rw [← comp_apply, Multiequalizer.lift_ι]
+      dsimp
+      erw [← comp_apply, Multiequalizer.lift_ι]
       erw [Meq.equiv_symm_eq_apply]
       cases i; rfl
 #align category_theory.grothendieck_topology.plus.eq_mk_iff_exists CategoryTheory.GrothendieckTopology.Plus.eq_mk_iff_exists
@@ -304,14 +303,8 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj
   let IW : (W IS).Arrow := I.toMiddle
   apply_fun fun e => e IW at hh
   convert hh using 1
-  · let Rx : Sx.Relation :=
-      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, leOfHom ex _ I.hf,
-        by simpa only [I.middle_spec] using leOfHom ex _ I.hf, by simp [I.middle_spec]⟩
-    simpa [id_apply] using x.condition Rx
-  · let Ry : Sy.Relation :=
-      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, leOfHom ey _ I.hf,
-        by simpa only [I.middle_spec] using leOfHom ey _ I.hf, by simp [I.middle_spec]⟩
-    simpa [id_apply] using y.condition Ry
+  · exact x.congr_apply I.middle_spec.symm _
+  · exact y.congr_apply I.middle_spec.symm _
 #align category_theory.grothendieck_topology.plus.sep CategoryTheory.GrothendieckTopology.Plus.sep
 
 theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
@@ -350,11 +343,12 @@ def meqOfSep (P : Cᵒᵖ ⥤ D)
       toPlus_apply (T II.snd.fromMiddle) (t II.snd.fromMiddle) II.snd.toMiddle, ← ht, ← ht, ←
       comp_apply, ← comp_apply, ← (J.plusObj P).map_comp, ← (J.plusObj P).map_comp]
     rw [← op_comp, ← op_comp]
-    let IR : S.Relation :=
-      ⟨_, _, _, II.g₁ ≫ II.fst.toMiddleHom, II.g₂ ≫ II.snd.toMiddleHom, II.fst.fromMiddleHom,
-        II.snd.fromMiddleHom, II.fst.from_middle_condition, II.snd.from_middle_condition, by
-          simpa only [Category.assoc, II.fst.middle_spec, II.snd.middle_spec] using II.w⟩
-    exact s.condition IR
+    exact s.condition
+      (Cover.Relation.mk { hf := II.fst.from_middle_condition }
+        { hf := II.snd.from_middle_condition }
+        { g₁ := II.r.g₁ ≫ II.fst.toMiddleHom
+          g₂ := II.r.g₂ ≫ II.snd.toMiddleHom
+          w := by simpa only [Category.assoc, Cover.Arrow.middle_spec] using II.r.w })
 #align category_theory.grothendieck_topology.plus.meq_of_sep CategoryTheory.GrothendieckTopology.Plus.meqOfSep
 
 theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
@@ -405,11 +399,11 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   apply inj IV.Y
   erw [toPlus_apply (T I) (t I) ID, toPlus_apply (T IB) (t IB) IC, ← ht, ← ht]
   -- Conclude by constructing the relation showing equality...
-  let IR : S.Relation := ⟨_, _, IV.Y, IC.f, ID.f, IB.f, I.f, IB.hf, I.hf, IA.middle_spec⟩
+  let IR : S.Relation := Cover.Relation.mk { hf := IB.hf } { hf := I.hf } { w := IA.middle_spec }
   exact s.condition IR
 #align category_theory.grothendieck_topology.plus.exists_of_sep CategoryTheory.GrothendieckTopology.Plus.exists_of_sep
 
-variable [ReflectsIsomorphisms (forget D)]
+variable [(forget D).ReflectsIsomorphisms]
 
 /-- If `P` is separated, then `P⁺` is a sheaf. -/
 theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
@@ -596,7 +590,7 @@ variable (J)
 variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
   [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]
 
 theorem GrothendieckTopology.sheafify_isSheaf (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.sheafify P) :=
   GrothendieckTopology.Plus.isSheaf_plus_plus _ _
@@ -618,7 +612,7 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext : 3
-    refine' colimit.hom_ext (fun j => _)
+    refine colimit.hom_ext (fun j => ?_)
     erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
 set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf_preserves_zero_morphisms CategoryTheory.plusPlusSheaf_preservesZeroMorphisms
@@ -640,10 +634,10 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
         rw [Category.assoc] }
 #align category_theory.sheafification_adjunction CategoryTheory.plusPlusAdjunction
 
-noncomputable instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPresheaf J D) :=
-  ⟨_, plusPlusAdjunction J D⟩
+instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint  :=
+  (plusPlusAdjunction J D).isRightAdjoint
 set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheafIsRightAdjoint
+#align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheaf_isRightAdjoint
 
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
   (sheafToPresheaf J D).map_mono _

@@ -1,0 +1,76 @@
+name: update nolints
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  build:
+    name: Build, lint and update nolints and style exceptions
+    runs-on: ubuntu-latest
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
+
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - uses: actions/checkout@v4
+
+      - name: print lean and lake versions
+        run: |
+          lean --version
+          lake --version
+
+      - name: prune ProofWidgets .lake
+        run: |
+          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
+          # but also `.oleans`, which may have been built with the wrong toolchain.
+          # This removes them.
+          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
+          rm -rf .lake/packages/proofwidgets/.lake/build/lib
+          rm -rf .lake/packages/proofwidgets/.lake/build/ir
+
+      - name: get cache
+        run: |
+          lake exe cache clean
+          lake exe cache get
+
+      - name: build mathlib
+        id: build
+        uses: liskin/gh-problem-matcher-wrap@v3
+        with:
+          linters: gcc
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+
+      - name: update nolints.json and style-exceptions.txt
+        shell: bash
+        run: |
+          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+          ./scripts/update-style-exceptions.sh
+
+      - name: configure git setup
+        run: |
+          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib.git"
+          git config user.email "leanprover.community@gmail.com"
+          git config user.name "leanprover-community-bot"
+
+          # By default, github actions overrides the credentials used to access any
+          # github url so that it uses the github-actions[bot] user.  We want to access
+          # github using a different username.
+          git config --unset http.https://github.com/.extraheader
+
+      - name: file a new PR to update nolints.json and style-exceptions.txt
+        run: ./scripts/update_nolints_CI.sh
+        env:
+          DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}

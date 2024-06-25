@@ -145,7 +145,7 @@ theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s �
 
 theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := by
-  refine' fun x hx y hy a b ha hb hab => _
+  refine fun x hx y hy a b ha hb hab => ?_
   have h := hf _ ⟨hx.1, le_max_left _ _⟩ ⟨hy.1, le_max_right _ _⟩ ha hb hab
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
 #align quasiconvex_on.convex_lt QuasiconvexOn.convex_lt
@@ -239,7 +239,7 @@ theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : Quasilinea
     MonotoneOn f s ∨ AntitoneOn f s := by
   simp_rw [monotoneOn_or_antitoneOn_iff_uIcc, ← segment_eq_uIcc]
   rintro a ha b hb c _ h
-  refine' ⟨((hf.2 _).segment_subset _ _ h).2, ((hf.1 _).segment_subset _ _ h).2⟩ <;> simp [*]
+  refine ⟨((hf.2 _).segment_subset ?_ ?_ h).2, ((hf.1 _).segment_subset ?_ ?_ h).2⟩ <;> simp [*]
 #align quasilinear_on.monotone_on_or_antitone_on QuasilinearOn.monotoneOn_or_antitoneOn
 
 theorem quasilinearOn_iff_monotoneOn_or_antitoneOn [LinearOrderedAddCommMonoid β]

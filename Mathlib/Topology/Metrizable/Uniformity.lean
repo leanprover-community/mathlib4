@@ -62,7 +62,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
       nonpos_iff_eq_zero.1 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp [dist_self]
   dist_comm x y :=
     NNReal.coe_inj.2 <| by
-      refine' reverse_surjective.iInf_congr _ fun l => _
+      refine reverse_surjective.iInf_congr _ fun l ↦ ?_
       rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm _ dist_comm]
@@ -71,7 +71,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
     -- Porting note: added `unfold`
     unfold dist
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
-    refine' NNReal.le_iInf_add_iInf fun lxy lyz => _
+    refine NNReal.le_iInf_add_iInf fun lxy lyz ↦ ?_
     calc
       ⨅ l, (zipWith d (x::l) (l ++ [z])).sum ≤
           (zipWith d (x::lxy ++ y::lyz) ((lxy ++ y::lyz) ++ [z])).sum :=
@@ -116,7 +116,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     `d xₖ₊₁ xₖ₊₂ + ... + d xₙ₋₁ xₙ` are less than or equal to `L / 2`.
     Then `d x₀ xₖ ≤ L`, `d xₖ xₖ₊₁ ≤ L`, and `d xₖ₊₁ xₙ ≤ L`, thus `d x₀ xₙ ≤ 2 * L`. -/
   rw [dist_ofPreNNDist, ← NNReal.coe_two, ← NNReal.coe_mul, NNReal.mul_iInf, NNReal.coe_le_coe]
-  refine' le_ciInf fun l => _
+  refine le_ciInf fun l => ?_
   have hd₀_trans : Transitive fun x y => d x y = 0 := by
     intro a b c hab hbc
     rw [← nonpos_iff_eq_zero]
@@ -150,7 +150,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]
   have hM_ltx : M < length (x::l) := lt_length_left_of_zipWith hM_lt
   have hM_lty : M < length (l ++ [y]) := lt_length_right_of_zipWith hM_lt
-  refine' ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, _, _, _⟩
+  refine ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, ?_, ?_, ?_⟩
   · cases M with
     | zero =>
       simp [dist_self, List.get]
@@ -158,7 +158,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       rw [Nat.succ_le_iff] at hMl
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
       simp only [List.get]
-      refine' (ihn _ hMl _ _ _ hMl').trans _
+      refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
       rw [zipWith_distrib_take, take, take_succ, get?_append hMl, get?_eq_get hMl, ← Option.coe_def,
         Option.toList_some, take_append_of_le_length hMl.le]
@@ -168,7 +168,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [get_append _ hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
-    refine' (ihn _ hlen_lt _ y _ hlen).trans _
+    refine (ihn _ hlen_lt _ y _ hlen).trans ?_
     rw [cons_get_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
       not_lt.1 fun h => (hMs.2 h.le).not_lt M.lt_succ_self
@@ -208,7 +208,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   set d : X → X → ℝ≥0 := fun x y => if h : ∃ n, (x, y) ∉ U n then (1 / 2) ^ Nat.find h else 0
   have hd₀ : ∀ {x y}, d x y = 0 ↔ Inseparable x y := by
     intro x y
-    refine' Iff.trans _ hB.inseparable_iff_uniformity.symm
+    refine Iff.trans ?_ hB.inseparable_iff_uniformity.symm
     simp only [d, true_imp_iff]
     split_ifs with h
     · rw [← not_forall] at h
@@ -229,25 +229,25 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     · push_neg at h
       simp only [h, not_true, (pow_pos hr.1 _).not_le]
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
-    refine' PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => _
+    refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
-    · refine' (dif_pos H).trans_le _
+    · refine (dif_pos H).trans_le ?_
       rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
-      refine' Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) _)
+      refine Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) ?_)
       exact ⟨x₂, h₁₂, x₃, h₂₃, h₃₄⟩
     · exact (dif_neg H).trans_le (zero_le _)
   -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
   -- `Subtype.val` applications instead of `NNReal.toReal`.
   rw [mem_Ioo, ← NNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hr
-  refine' ⟨I, UniformSpace.ext <| (uniformity_basis_dist_pow hr.1 hr.2).ext hB.toHasBasis _ _⟩
-  · refine' fun n hn => ⟨n, hn, fun x hx => (hdist_le _ _).trans_lt _⟩
+  refine ⟨I, UniformSpace.ext <| (uniformity_basis_dist_pow hr.1 hr.2).ext hB.toHasBasis ?_ ?_⟩
+  · refine fun n hn => ⟨n, hn, fun x hx => (hdist_le _ _).trans_lt ?_⟩
     rwa [← NNReal.coe_pow, NNReal.coe_lt_coe, ← not_le, hle_d, Classical.not_not]
-  · refine' fun n _ => ⟨n + 1, trivial, fun x hx => _⟩
+  · refine fun n _ => ⟨n + 1, trivial, fun x hx => ?_⟩
     rw [mem_setOf_eq] at hx
     contrapose! hx
-    refine' le_trans _ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
+    refine le_trans ?_ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
     rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ,
       mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel₀ _ (two_ne_zero' ℝ≥0), hle_d]
 #align uniform_space.metrizable_uniformity UniformSpace.metrizable_uniformity
@@ -279,3 +279,18 @@ theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (�
   letI := UniformSpace.metricSpace X
   infer_instance
 #align uniform_space.metrizable_space UniformSpace.metrizableSpace
+
+/-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
+from the more general `EMetric.subset_countable_closure_of_almost_dense_set`.-/
+lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (𝓤 X)]
+    {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s:= by
+  letI := (UniformSpace.pseudoMetricSpace (X := X)).toPseudoEMetricSpace
+  rw [EMetric.totallyBounded_iff] at h
+  have h' : ∀ ε > 0, ∃ t, Set.Countable t ∧ s ⊆ ⋃ y ∈ t, EMetric.closedBall y ε := by
+    intro ε hε
+    obtain ⟨t, ht⟩ := h ε hε
+    refine ⟨t, ht.1.countable, subset_trans ht.2 ?_⟩
+    gcongr
+    exact EMetric.ball_subset_closedBall
+  obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
+  exact ⟨t, htc, hts⟩
