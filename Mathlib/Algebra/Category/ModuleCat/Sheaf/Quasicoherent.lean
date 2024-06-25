@@ -98,7 +98,6 @@ noncomputable def quasicoherentDataOfIsFinitePresentation : M.QuasicoherentData 
   h.exists_quasicoherentData.choose
 
 -- the next two instances are terribly slow
-
 instance (i : M.quasicoherentDataOfIsFinitePresentation.I) :
     Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).generators.I :=
   (h.exists_quasicoherentData.choose_spec i).1

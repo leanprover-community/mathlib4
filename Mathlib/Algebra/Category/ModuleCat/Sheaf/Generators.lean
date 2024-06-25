@@ -36,8 +36,6 @@ variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf
 
 namespace SheafOfModules
 
-section
-
 variable (M N P : SheafOfModules.{u} R)
 
 /-- The type of sections which generate a sheaf of modules. -/
@@ -89,8 +87,6 @@ def equivOfIso (e : M ≅ N) :
     simp only [← opEpi_comp, e.inv_hom_id, opEpi_id]
 
 end GeneratingSections
-
-end
 
 variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGrp.{u}]
   [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrp.{u}]
