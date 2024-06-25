@@ -251,7 +251,7 @@ lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
     multiplicity (hζ.toInteger - 1) (S'.c ^ 3) := by simp
   rw [multiplicity.pow_dvd_iff_le_multiplicity, ← hm1, multiplicity.pow' hζ.zeta_sub_one_prime' hm,
     Nat.cast_ofNat, Nat.ofNat_le_cast] at this
-  linarith
+  omega
 
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/
 lemma Solution'.two_le_multiplicity : 2 ≤ S'.multiplicity := by
