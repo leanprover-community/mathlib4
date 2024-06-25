@@ -12,8 +12,26 @@ import Mathlib.Topology.DenseEmbedding
 
 Construction of the Stone-Čech compactification using ultrafilters.
 
-Parts of the formalization are based on "Ultrafilters and Topology"
-by Marius Stekelenburg, particularly section 5.
+For any topological space `α`, we build a compact Hausdorff space `StoneCech α` and a continuous
+map `stoneCechUnit : α → StoneCech α` which is minimal in the sense of the following universal
+property: for any compact Hausdorff space `β` and every map `f : α → β` such that
+`hf : Continuous f`, there is a unique map `stoneCechExtend hf : StoneCech α → β` such that
+`stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f`.
+Continuity of this extension is asserted by `continuous_stoneCechExtend` and uniqueness by
+`stoneCech_hom_ext`.
+
+Beware that the terminology “extend” is slightly misleading since `stoneCechUnit` is not always
+injective, so one cannot always think of `α` as being “inside” its compactification `StoneCech α`.
+
+## Implementation notes
+
+Parts of the formalization are based on “Ultrafilters and Topology”
+by Marius Stekelenburg, particularly section 5. However the construction in the general
+case is different because the equivalence relation on spaces of ultrafilters described
+by Stekelenburg causes issues with universes since it involves a condition
+on all compact Hausdorff spaces. We replace it by a two steps construction.
+The first step called `PreStoneCech` guarantees the expected universal property but
+not the Hausdorff condition. We then define `StoneCech α` as `t2Quotient (PreStoneCech α)`.
 -/
 
 
@@ -267,8 +285,8 @@ lemma preStoneCechCompat {F G : Ultrafilter α} {x : α} (hF : ↑F ≤ 𝓝 x) 
   rwa [show Ultrafilter.extend g G = g x by rwa [ultrafilter_extend_eq_iff, G.coe_map],
        ultrafilter_extend_eq_iff, F.coe_map]
 
-/-- The extension of a continuous function from α to a compact
-  Hausdorff space γ to the Stone-Čech compactification of α. -/
+/-- The extension of a continuous function from `α` to a compact
+  Hausdorff space `β` to the pre-Stone-Čech compactification of `α`. -/
 def preStoneCechExtend : PreStoneCech α → β :=
   Quot.lift (Ultrafilter.extend g) fun _ _ ⟨_, hF, hG⟩ ↦ preStoneCechCompat hg hF hG
 
@@ -333,8 +351,8 @@ theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech 
   (t2Quotient.continuous_mk _).comp continuous_preStoneCechUnit
 #align continuous_stone_cech_unit continuous_stoneCechUnit
 
-/-- The image of stone_cech_unit is dense. (But stone_cech_unit need
-  not be an embedding, for example if α is not Hausdorff.) -/
+/-- The image of `stoneCechUnit` is dense. (But `stoneCechUnit` need
+  not be an embedding, for example if the original space is not Hausdorff.) -/
 theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
   unfold stoneCechUnit t2Quotient.mk
   have : Function.Surjective (t2Quotient.mk : PreStoneCech α → StoneCech α) := by
@@ -347,8 +365,9 @@ section Extension
 variable {β : Type v} [TopologicalSpace β] [T2Space β] [CompactSpace β]
 variable {g : α → β} (hg : Continuous g)
 
-/-- The extension of a continuous function from α to a compact
-  Hausdorff space γ to the Stone-Čech compactification of α. -/
+/-- The extension of a continuous function from `α` to a compact
+  Hausdorff space `β` to the Stone-Čech compactification of `α`.
+  This extension implements the universal property of this compactification. -/
 def stoneCechExtend : StoneCech α → β :=
   t2Quotient.lift (continuous_preStoneCechExtend hg)
 #align stone_cech_extend stoneCechExtend
