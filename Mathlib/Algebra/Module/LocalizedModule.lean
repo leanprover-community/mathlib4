@@ -637,10 +637,7 @@ noncomputable def lift' (g : M →ₗ[R] M'')
       Module.End_algebraMap_isUnit_inv_apply_eq_iff]
     have : c • s • g m' = c • s' • g m := by
       simp only [Submonoid.smul_def, ← g.map_smul, eq1]
-    have : Function.Injective (h c).unit.inv := by
-      refine Function.injective_iff_hasLeftInverse.2 ⟨(h c).unit, fun x ↦ ?_⟩
-      change ((h c).unit.1 * (h c).unit.inv) x = x
-      simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, LinearMap.one_apply]
+    have : Function.Injective (h c).unit.inv := ((Module.End_isUnit_iff _).1 (by simp)).1
     apply_fun (h c).unit.inv
     erw [Units.inv_eq_val_inv, Module.End_algebraMap_isUnit_inv_apply_eq_iff, ←
       (h c).unit⁻¹.val.map_smul]
@@ -775,12 +772,6 @@ theorem fromLocalizedModule'_mk (m : M) (s : S) :
       (IsLocalizedModule.map_units f s).unit⁻¹.val (f m) :=
   rfl
 #align is_localized_module.from_localized_module'_mk IsLocalizedModule.fromLocalizedModule'_mk
-
-@[simp high] -- Needs to have higher priority than fromLocalizedModule'_mk
-lemma fromLocalizedModule'_mk_one (m : M) :
-    fromLocalizedModule' S f (LocalizedModule.mk m 1) = f m := by
-  have : (map_units f (1 : S)).unit = 1 := by ext; simp
-  rw [fromLocalizedModule'_mk, this, inv_one, Units.val_one, LinearMap.one_apply]
 
 theorem fromLocalizedModule'_add (x y : LocalizedModule S M) :
     fromLocalizedModule' S f (x + y) = fromLocalizedModule' S f x + fromLocalizedModule' S f y :=
@@ -1132,7 +1123,7 @@ lemma map_comp (h : M →ₗ[R] N) : (map S f g h) ∘ₗ f = g ∘ₗ h :=
 lemma map_apply (h : M →ₗ[R] N) (x) : map S f g h (f x) = g (h x) :=
   lift_apply S f (g ∘ₗ h) (IsLocalizedModule.map_units g) x
 
-open LocalizedModule LinearEquiv LinearMap
+open LocalizedModule LinearEquiv LinearMap Submonoid
 
 variable (M)
 
@@ -1156,21 +1147,14 @@ lemma map_LocalizedModules (g : M₀ →ₗ[R] M₁) (m : M₀) (s : S) :
   rw [iso_localizedModule_eq_refl, refl_apply] at this
   simpa [map, lift, iso_localizedModule_eq_refl S M₀]
 
-lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ ↑(iso S f₀) =
+lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ (iso S f₀) =
     (iso S f₁) ∘ₗ (map S (mkLinearMap S M₀) (mkLinearMap S M₁)) g := by
   ext x
-  refine induction_on (fun m s ↦ ?_) x
-  have hs : IsUnit ((algebraMap R (Module.End R M₁')) ↑s) := map_units f₁ s
-  have : Function.Injective (hs.unit : Module.End R M₁') := by
-    refine Function.injective_iff_hasLeftInverse.2 ⟨hs.unit.inv, fun x ↦ ?_⟩
-    change (hs.unit⁻¹ * hs.unit.1) x = x
-    rw [IsUnit.unit_spec, IsUnit.val_inv_mul, one_apply]
-  apply this
-  rw [IsUnit.unit_spec, Module.algebraMap_end_apply, Module.algebraMap_end_apply]
-  repeat rw [← CompatibleSMul.map_smul, smul'_mk, ← Submonoid.mk_smul, mk_cancel]
-  rw [coe_comp, coe_coe, Function.comp_apply, iso_apply, fromLocalizedModule'_mk_one, map_apply]
-  have one : (isUnit_one (M := Module.End R (LocalizedModule S M₁))).unit = 1 := by ext; simp
-  simp [map, lift, iso_localizedModule_eq_refl, lift_mk, one]
+  refine induction_on (fun m s ↦ ((Module.End_isUnit_iff _).1 (map_units f₁ s)).1 ?_) x
+  repeat rw [Module.algebraMap_end_apply, ← CompatibleSMul.map_smul, smul'_mk, ← mk_smul, mk_cancel,
+    coe_comp, coe_coe, Function.comp_apply, iso_apply]
+  simp -- Can't be combined with next simp. This uses map_apply, which would be preempted by map.
+  simp [map, lift, iso_localizedModule_eq_refl, lift_mk]
 
 end IsLocalizedModule
 
