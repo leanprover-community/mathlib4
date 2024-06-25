@@ -39,9 +39,9 @@ def addIsScalarTowerInstanceFromRingHomComp (t : Expr) : TacticM Unit := withMai
   let _ ←
     try let _pf ← assertDefEqQ t q(RingHom.comp $snd $fst)
     catch e => throwError e.toMessageData
-  let _algInstAB : Q(Algebra $A $B) ← synthInstanceQ q(Algebra $A $B)
-  let _algInstBC : Q(Algebra $B $C) ← synthInstanceQ q(Algebra $B $C)
-  let _algInstAC : Q(Algebra $A $C) ← synthInstanceQ q(Algebra $A $C)
+  let _algInstAB ← synthInstanceQ q(Algebra $A $B)
+  let _algInstBC ← synthInstanceQ q(Algebra $B $C)
+  let _algInstAC ← synthInstanceQ q(Algebra $A $C)
   let h ← mkFreshExprMVarQ q(algebraMap $A $C = RingHom.comp (algebraMap $B $C) (algebraMap $A $B))
   h.mvarId!.refl
   try
@@ -52,23 +52,51 @@ def addIsScalarTowerInstanceFromRingHomComp (t : Expr) : TacticM Unit := withMai
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
+def addFiniteTypeInstance (t : Expr) : TacticM Unit := withMainContext do
+  let u ← Meta.mkFreshLevelMVar
+  let v ← Meta.mkFreshLevelMVar
+  let A ← mkFreshExprMVarQ q(Type u)
+  let B ← mkFreshExprMVarQ q(Type v)
+  let _instA ← mkFreshExprMVarQ q(CommRing $A)
+  let _instB ← mkFreshExprMVarQ q(CommRing $B)
+  let f ← mkFreshExprMVarQ q($A →+* $B)
+  let _ ←
+    try let _pf ← assertDefEqQ t f
+    catch e => throwError e.toMessageData
+  let ft ← mkFreshExprMVarQ q(RingHom.FiniteType $f)
+  ft.mvarId!.assumption
+  let _algInstAB ← synthInstanceQ q(Algebra $A $B)
+  let _ ←
+    try let _ ← assertDefEqQ f q(algebraMap $A $B)
+    catch e => throwError e.toMessageData
+  liftMetaTactic fun mvarid => do
+    let nm ← mkFreshUserName `ftInst
+    let mvar ← mvarid.define nm q(Algebra.FiniteType $A $B) q($ft)
+    let (_, mvar) ← mvar.intro1P
+    return [mvar]
+
 syntax "algebraize" (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic
   | `(tactic| algebraize $[$t:term]*) => do
     for f in t do
       let f ← Term.elabTerm f none
-      try withMainContext <| addAlgebraInstanceFromRingHom f
+      addAlgebraInstanceFromRingHom f
+
+    for f in t do
+      let f ← Term.elabTerm f none
+      try addIsScalarTowerInstanceFromRingHomComp f
       catch _ => continue
 
     for f in t do
       let f ← Term.elabTerm f none
-      try withMainContext <| addIsScalarTowerInstanceFromRingHomComp f
+      try addFiniteTypeInstance f
       catch _ => continue
+
 
 example {A B C D : Type*}
     [CommRing A] [CommRing B] [CommRing C] [CommRing D]
-    (f : A →+* B) (g : B →+* C) (h : C →+* D) :
+    (f : A →+* B) (g : B →+* C) (h : C →+* D) (hf : f.FiniteType) (hhg : (h.comp g).FiniteType):
     True := by
   algebraize f g h (g.comp f) (h.comp g) (h.comp (g.comp f)) ((h.comp g).comp f)
   trivial
