@@ -86,6 +86,60 @@ protected abbrev sheaf (X : Scheme) :=
 instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
+namespace Hom
+
+variable {X Y : Scheme.{u}} (f : Hom X Y) {U U' : Opens Y} {V V' : Opens X}
+
+/-- Given a morphism of schemes `f : X ⟶ Y`, and open `U ⊆ Y`,
+this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
+abbrev app (U : Opens Y) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
+  f.1.c.app (op U)
+
+@[reassoc]
+lemma naturality (i : op U' ⟶ op U) :
+    Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.1.base).map i.unop).op :=
+  f.1.c.naturality i
+
+/-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
+this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
+def appLE (U : Opens Y) (V : Opens X) (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
+  f.app U ≫ X.presheaf.map (homOfLE e).op
+#align algebraic_geometry.Scheme.hom.app_le AlgebraicGeometry.Scheme.Hom.appLE
+
+@[reassoc (attr := simp)]
+lemma appLE_map (e : V ≤ f ⁻¹ᵁ U) (i : op V ⟶ op V') :
+    f.appLE U V e ≫ X.presheaf.map i = f.appLE U V' (i.unop.le.trans e) := by
+  rw [Hom.appLE, Category.assoc, ← Functor.map_comp]
+  rfl
+
+@[reassoc]
+lemma appLE_map' (e : V ≤ f ⁻¹ᵁ U) (i : V = V') :
+    f.appLE U V' (i ▸ e) ≫ X.presheaf.map (eqToHom i).op = f.appLE U V e :=
+  appLE_map _ _ _
+
+@[reassoc (attr := simp)]
+lemma map_appLE (e : V ≤ f ⁻¹ᵁ U) (i : op U' ⟶ op U) :
+    Y.presheaf.map i ≫ f.appLE U V e =
+      f.appLE U' V (e.trans ((Opens.map f.1.base).map i.unop).le) := by
+  rw [Hom.appLE, f.naturality_assoc, ← Functor.map_comp]
+  rfl
+
+@[reassoc]
+lemma map_appLE' (e : V ≤ f ⁻¹ᵁ U) (i : U' = U) :
+    Y.presheaf.map (eqToHom i).op ≫ f.appLE U' V (i ▸ e) = f.appLE U V e :=
+  map_appLE _ _ _
+
+lemma app_eq_appLE {U : Opens Y} :
+    f.app U = f.appLE U _ le_rfl := by
+  simp [Hom.appLE]
+
+lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
+    (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop) :
+    P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by
+  subst e₁; subst e₂; rfl
+
+end Hom
+
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
 def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
@@ -161,6 +215,18 @@ theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
   rfl
 #align algebraic_geometry.Scheme.comp_val_c_app AlgebraicGeometry.Scheme.comp_val_c_app
 
+theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
+    g.appLE U V e₁ ≫ f.appLE V W e₂ =
+      (f ≫ g).appLE U W (e₂.trans ((Opens.map f.1.base).map (homOfLE e₁)).le) := by
+  dsimp [Hom.appLE]
+  rw [Category.assoc, f.naturality_assoc, ← Functor.map_comp]
+  rfl
+
+@[simp, reassoc] -- reassoc lemma does not need `simp`
+theorem comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V e) :
+    (f ≫ g).appLE U V e = g.app U ≫ f.appLE _ V e := by
+  rw [g.app_eq_appLE, appLE_comp_appLE]
+
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.val.c.app U = g.val.c.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)) := by
   subst e; dsimp; simp
@@ -199,6 +265,10 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.val
   NatIso.isIso_app_of_isIso _ _
 
+instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
+  haveI := PresheafedSpace.c_isIso_of_iso f.val
+  NatIso.isIso_app_of_isIso _ _
+
 @[simp]
 theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X) :
     (inv f).val.c.app (op U) =
@@ -215,52 +285,43 @@ theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X) :
 theorem inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).val.c.app (op ⊤) = inv (f.val.c.app (op ⊤)) := by simp
 
-/-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
-this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
-abbrev Hom.appLe {X Y : Scheme} (f : X ⟶ Y) {V : Opens X} {U : Opens Y}
-    (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
-  f.1.c.app (op U) ≫ X.presheaf.map (homOfLE e).op
-#align algebraic_geometry.Scheme.hom.app_le AlgebraicGeometry.Scheme.Hom.appLe
+end Scheme
 
 /-- The spectrum of a commutative ring, as a scheme.
 -/
 def specObj (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
-#align algebraic_geometry.Scheme.Spec_obj AlgebraicGeometry.Scheme.specObj
+#align algebraic_geometry.Scheme.Spec_obj AlgebraicGeometry.specObj
 
-@[simp]
-theorem specObj_toLocallyRingedSpace (R : CommRingCat) :
+theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
     (specObj R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
-#align algebraic_geometry.Scheme.Spec_obj_to_LocallyRingedSpace AlgebraicGeometry.Scheme.specObj_toLocallyRingedSpace
+#align algebraic_geometry.Scheme.Spec_obj_to_LocallyRingedSpace AlgebraicGeometry.Spec_toLocallyRingedSpace
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of schemes.
 -/
 def specMap {R S : CommRingCat} (f : R ⟶ S) : specObj S ⟶ specObj R :=
   (Spec.locallyRingedSpaceMap f : Spec.locallyRingedSpaceObj S ⟶ Spec.locallyRingedSpaceObj R)
-#align algebraic_geometry.Scheme.Spec_map AlgebraicGeometry.Scheme.specMap
+#align algebraic_geometry.Scheme.Spec_map AlgebraicGeometry.specMap
 
 @[simp]
-theorem specMap_id (R : CommRingCat) : specMap (𝟙 R) = 𝟙 (specObj R) :=
+theorem SpecMap_id (R : CommRingCat) : specMap (𝟙 R) = 𝟙 (specObj R) :=
   Spec.locallyRingedSpaceMap_id R
-#align algebraic_geometry.Scheme.Spec_map_id AlgebraicGeometry.Scheme.specMap_id
+#align algebraic_geometry.Scheme.Spec_map_id AlgebraicGeometry.SpecMap_id
 
-theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+@[reassoc, simp]
+theorem SpecMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     specMap (f ≫ g) = specMap g ≫ specMap f :=
   Spec.locallyRingedSpaceMap_comp f g
-#align algebraic_geometry.Scheme.Spec_map_comp AlgebraicGeometry.Scheme.specMap_comp
+#align algebraic_geometry.Scheme.Spec_map_comp AlgebraicGeometry.SpecMap_comp
 
-/-- The spectrum, as a contravariant functor from commutative rings to schemes.
-
-The simp normal form should be `Scheme.Spec.obj (op R)` (with the notation `𝖲𝗉𝖾𝖼 R`) and
-`Scheme.Spec.map f.op` (with the notation `𝖲𝗉𝖾𝖼(f)`).
--/
-def Spec : CommRingCatᵒᵖ ⥤ Scheme where
+/-- The spectrum, as a contravariant functor from commutative rings to schemes. -/
+def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := specObj (unop R)
   map f := specMap f.unop
   map_id R := by simp
-  map_comp f g := by simp [specMap_comp]
+  map_comp f g := by simp
 #align algebraic_geometry.Scheme.Spec AlgebraicGeometry.Scheme.Spec
 
 /-- `𝖲𝗉𝖾𝖼 R` is notation for `Sceme.Spec.obj (op R)`. -/
@@ -268,6 +329,19 @@ scoped[AlgebraicGeometry] notation3 "𝖲𝗉𝖾𝖼 " R:20 => Scheme.Spec.obj 
 
 /-- `𝖲𝗉𝖾𝖼(f)` is notation for `Sceme.Spec.map f.op`. -/
 scoped[AlgebraicGeometry] notation3 "𝖲𝗉𝖾𝖼(" f ")" => Scheme.Spec.map (Quiver.Hom.op f)
+
+lemma SpecMap_eqToHom {R S : CommRingCat} (e : R = S) :
+    specMap (eqToHom e) = eqToHom (e ▸ rfl) := by
+  subst e; exact SpecMap_id _
+
+instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (specMap f) :=
+  inferInstanceAs (IsIso <| Scheme.Spec.map f.op)
+
+@[simp]
+lemma SpecMap_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
+    specMap (inv f) = inv (specMap f) := by
+  show Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
+  rw [op_inv, ← Scheme.Spec.map_inv]
 
 section
 
@@ -280,13 +354,15 @@ lemma Spec_obj_presheaf (R) : (𝖲𝗉𝖾𝖼 R).presheaf = (Spec.structureShe
 lemma Spec_map_base : 𝖲𝗉𝖾𝖼(f).1.base = PrimeSpectrum.comap f := rfl
 
 set_option maxHeartbeats 800000 in
-lemma Spec_map_c_app (U) :
-    𝖲𝗉𝖾𝖼(f).1.c.app (op U) = StructureSheaf.comap f U (𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ U) le_rfl := rfl
+lemma SpecMap_app (U) :
+    (specMap f).app U = StructureSheaf.comap f U (specMap f ⁻¹ᵁ U) le_rfl := rfl
 
-lemma Spec_map_appLE {U V} (e : U ≤ 𝖲𝗉𝖾𝖼(f) ⁻¹ᵁ V) :
-    Hom.appLe 𝖲𝗉𝖾𝖼(f) e = StructureSheaf.comap f V U e := rfl
+lemma SpecMap_appLE {U V} (e : U ≤ specMap f ⁻¹ᵁ V) :
+    (specMap f).appLE V U e = StructureSheaf.comap f V U e := rfl
 
 end
+
+namespace Scheme
 
 /-- The empty scheme.
 -/
@@ -333,13 +409,40 @@ theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.1.c.app (op ⊤
   rfl
 #align algebraic_geometry.Scheme.Γ_map_op AlgebraicGeometry.Scheme.Γ_map_op
 
-/-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as an isomorphism. -/
--- This is not marked simp to respect the abstraction
-@[simps! (config := .lemmasOnly) hom_app inv_app]
+/--
+The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as an isomorphism.
+This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
+-/
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1}
     (fun R => asIso (StructureSheaf.toOpen R ⊤))
     (fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f)
+
+variable (R : CommRingCat.{u})
+
+/-- The global sections of `Spec R` is isomorphic to `R`. -/
+def ΓSpecIso : Γ(𝖲𝗉𝖾𝖼 R, ⊤) ≅ R := SpecΓIdentity.app R
+
+lemma SpecΓIdentity_app : SpecΓIdentity.app R = ΓSpecIso R := rfl
+lemma SpecΓIdentity_hom_app : SpecΓIdentity.hom.app R = (ΓSpecIso R).hom := rfl
+lemma SpecΓIdentity_inv_app : SpecΓIdentity.inv.app R = (ΓSpecIso R).inv := rfl
+
+@[reassoc (attr := simp)]
+lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    (specMap f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
+
+-- The RHS is not necessarily simpler than the LHS, but this direction coincides with the simp
+-- direction of `NatTrans.naturality`.
+@[reassoc (attr := simp)]
+lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (specMap f).app ⊤ := SpecΓIdentity.inv.naturality f
+
+-- This is not marked simp to respect the abstraction
+lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
+
+lemma toOpen_eq (U) :
+    (by exact StructureSheaf.toOpen R U) =
+    (ΓSpecIso R).inv ≫ (𝖲𝗉𝖾𝖼 R).presheaf.map (homOfLE le_top).op := rfl
 
 section BasicOpen
 
