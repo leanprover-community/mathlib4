@@ -409,7 +409,10 @@ theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.1.c.app (op ⊤
   rfl
 #align algebraic_geometry.Scheme.Γ_map_op AlgebraicGeometry.Scheme.Γ_map_op
 
-/-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as an isomorphism. -/
+/--
+The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as an isomorphism.
+This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
+-/
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1}
     (fun R => asIso (StructureSheaf.toOpen R ⊤))
