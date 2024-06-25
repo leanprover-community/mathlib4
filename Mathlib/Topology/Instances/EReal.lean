@@ -217,8 +217,8 @@ theorem limsup_add_bot_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {
 -/
 
 /-
-TODO: Since `limsup_add_bot_ne_top` above is dependent from a lemma ported in `Mathlib.Data.Real.EReal`
-via the PR #14125, we need to:
+TODO: Since `limsup_add_bot_ne_top` above is dependent from a lemma ported in
+`Mathlib.Data.Real.EReal` via the PR #14125, we need to:
 -- Wait for PR #14125 to be merged
 -- Rebase to master
 -- Uncomment this theorem
