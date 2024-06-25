@@ -42,7 +42,7 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 namespace ADEInequality
 
 open Multiset
--- Porting note: ADE is a special name, exceptionally in upper case in Lean3
+
 set_option linter.uppercaseLean3 false
 
 /-- `A' q r := {1,q,r}` is a `Multiset ℕ+`

@@ -261,7 +261,6 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _ _)
 #align list.prev_mem List.prev_mem
 
--- Porting note (#10756): new theorem
 theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
     next l (l.get i) (get_mem _ _ _) = l.get ⟨(i + 1) % l.length,
       Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩
@@ -420,14 +419,13 @@ theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
   exact (reverse_reverse l).symm
 #align list.next_reverse_eq_prev List.next_reverse_eq_prev
 
-set_option linter.deprecated false in
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
     l.next x hx = l'.next x (h.mem_iff.mp hx) := by
-  obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
+  obtain ⟨k, hk, rfl⟩ := get_of_mem hx
   obtain ⟨n, rfl⟩ := id h
-  rw [next_nthLe _ hn]
-  simp_rw [← nthLe_rotate' _ n k]
-  rw [next_nthLe _ (h.nodup_iff.mp hn), ← nthLe_rotate' _ n]
+  rw [next_get _ hn]
+  simp_rw [get_eq_get_rotate _ n k]
+  rw [next_get _ (h.nodup_iff.mp hn), get_eq_get_rotate _ n]
   simp [add_assoc]
 #align list.is_rotated_next_eq List.isRotated_next_eq
 
@@ -844,7 +842,6 @@ nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α)
   Quotient.inductionOn' s prev_reverse_eq_next
 #align cycle.prev_reverse_eq_next Cycle.prev_reverse_eq_next
 
--- Porting note (#10756): new theorem
 @[simp]
 nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
     (hx : x ∈ s.reverse) :
@@ -857,7 +854,6 @@ theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ 
   simp [← prev_reverse_eq_next]
 #align cycle.next_reverse_eq_prev Cycle.next_reverse_eq_prev
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem next_reverse_eq_prev' (s : Cycle α) (hs : Nodup s.reverse) (x : α) (hx : x ∈ s.reverse) :
     s.reverse.next hs x hx = s.prev (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) := by
