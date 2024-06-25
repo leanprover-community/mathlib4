@@ -15,4 +15,5 @@ variable {α : Type u} [Fintype α]
 
 noncomputable instance Shrink.instFintype : Fintype (Shrink.{v} α) := .ofEquiv _ (equivShrink _)
 
-@[simp] lemma Fintype.card_shrink : card (Shrink.{v} α) = card α := ofEquiv_card _
+@[simp] lemma Fintype.card_shrink [Fintype (Shrink.{v} α)] : card (Shrink.{v} α) = card α :=
+  card_congr (equivShrink _).symm
