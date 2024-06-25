@@ -410,7 +410,7 @@ theorem basicOpen :
 theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)):
     IsAffineOpen (Scheme.ιOpens (X.basicOpen r) ⁻¹ᵁ U) := by
   apply (Scheme.ιOpens (X.basicOpen r)).isAffineOpen_iff_of_isOpenImmersion.mp
-  dsimp [Scheme.Hom.opensFunctor, PresheafedSpace.IsOpenImmersion.openFunctor]
+  dsimp [Scheme.Hom.opensFunctor, LocallyRingedSpace.IsOpenImmersion.opensFunctor]
   rw [Opens.functor_obj_map_obj, Opens.openEmbedding_obj_top, inf_comm,
     ← Scheme.basicOpen_res _ _ (homOfLE le_top).op]
   exact hU.basicOpen _
@@ -429,7 +429,7 @@ theorem exists_basicOpen_le {V : Opens X} (x : V) (h : ↑x ∈ U) :
     rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op,
       ← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
       op_id, CategoryTheory.Functor.map_id, Scheme.Hom.invApp]
-    erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
+    erw [LocallyRingedSpace.IsOpenImmersion.ofRestrict_invApp]
     congr
   use X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r
   rw [← this]
@@ -475,6 +475,20 @@ instance _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
     [IsAffine X] (r : Γ(X, ⊤)) :
     IsLocalization.Away r Γ(X, X.basicOpen r) :=
   isLocalization_basicOpen (isAffineOpen_top X) r
+
+lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U)
+    {V : Opens X} (hV : IsAffineOpen V) (e) (r : Γ(Y, U)) :
+    letI := hU.isLocalization_basicOpen r
+    letI := hV.isLocalization_basicOpen (f.appLE U V e r)
+    f.appLE (Y.basicOpen r) (X.basicOpen (f.appLE U V e r))
+      (by simpa [Scheme.Hom.appLE] using X.basicOpen_restrict _ _) =
+        IsLocalization.Away.map _ _ (f.appLE U V e) r := by
+  letI := hU.isLocalization_basicOpen r
+  letI := hV.isLocalization_basicOpen (f.appLE U V e r)
+  apply IsLocalization.ringHom_ext (.powers r)
+  rw [← CommRingCat.comp_eq_ring_hom_comp, IsLocalization.Away.map, IsLocalization.map_comp,
+    RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
+    Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
 theorem isLocalization_of_eq_basicOpen {V : Opens X} (i : V ⟶ U) (e : V = X.basicOpen f) :
     @IsLocalization.Away _ _ f Γ(X, V) _ (X.presheaf.map i.op).toAlgebra := by
@@ -550,7 +564,6 @@ theorem fromSpec_primeIdealOf (x : U) :
   rfl -- `rfl` was not needed before #13170
 #align algebraic_geometry.is_affine_open.from_Spec_prime_ideal_of AlgebraicGeometry.IsAffineOpen.fromSpec_primeIdealOf
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.1.base y ∈ U) :
     @IsLocalization.AtPrime
       (R := Γ(X, U))

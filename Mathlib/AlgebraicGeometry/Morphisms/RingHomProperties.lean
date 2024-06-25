@@ -369,19 +369,9 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
     let esto := Scheme.Γ.obj (Opposite.op (Y.restrict <| Opens.openEmbedding U.val))
     let eso := Scheme.Γ.obj (Opposite.op ((Scheme.openCoverOfIsIso
       (𝟙 (Y.restrict <| Opens.openEmbedding U.val))).obj i))
-    -- Porting note: Lean this needed this spelled out before
-    -- convert hP.HoldsAwayLocalizationAway _ (1 : Scheme.Γ.obj _) _
-    have : 𝟙 (Scheme.Γ.obj (Opposite.op (Y.restrict <| Opens.openEmbedding U.val)))
-      = @algebraMap esto eso _ _ (_) := (RingHom.algebraMap_toAlgebra _).symm
-    simp only [Scheme.Γ_obj, unop_op, Scheme.restrict_presheaf_obj, Scheme.openCoverOfIsIso_obj,
-      Scheme.openCoverOfIsIso_map, Category.comp_id, op_id, Scheme.Γ_map, unop_id,
-      Scheme.id_val_base, Scheme.id_app, eqToHom_refl, Scheme.restrict_presheaf_map,
-      CategoryTheory.Functor.map_id] at *
-    rw [this]
     have := hP.HoldsForLocalizationAway
-    convert @this esto eso _ _ ?_ ?_ ?_
-    · exact 1
-    -- Porting note: again we have to bypass TC synthesis to keep Lean from running away
+    convert @this esto eso _ _ ?_ 1 ?_
+    · exact (RingHom.algebraMap_toAlgebra (Scheme.Γ.map _)).symm
     · exact
         @IsLocalization.away_of_isUnit_of_bijective _ _ _ _ (_) _ isUnit_one Function.bijective_id
   · intro; exact H

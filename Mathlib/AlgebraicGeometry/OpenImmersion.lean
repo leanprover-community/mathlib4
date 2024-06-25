@@ -88,7 +88,7 @@ def opensRange : Opens Y :=
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor : Opens X ⥤ Opens Y :=
-  H.openFunctor
+  LocallyRingedSpace.IsOpenImmersion.opensFunctor f
 #align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
 
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
@@ -96,10 +96,11 @@ scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensF
 
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
 def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
-  H.invApp U
+  LocallyRingedSpace.IsOpenImmersion.invApp f U
 #align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
 
-instance (U) : IsIso (f.invApp U) := inferInstanceAs (IsIso <| H.invApp U)
+instance (U) : IsIso (f.invApp U) := inferInstanceAs
+  (IsIso <| PresheafedSpace.IsOpenImmersion.invApp f.1 U)
 
 @[reassoc (attr := simp)]
 theorem invApp_naturality {U V : Opens X} (i : op U ⟶ op V) :
@@ -316,11 +317,8 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
 #align algebraic_geometry.is_iso_iff_stalk_iso AlgebraicGeometry.isIso_iff_stalk_iso
 
 /-- An open immersion induces an isomorphism from the domain onto the image -/
-def isoRestrict : X ≅ (Z.restrict H.base_open : _) :=
-  ⟨(LocallyRingedSpace.IsOpenImmersion.isoRestrict H).hom,
-    (LocallyRingedSpace.IsOpenImmersion.isoRestrict H).inv,
-    (LocallyRingedSpace.IsOpenImmersion.isoRestrict H).hom_inv_id,
-    (LocallyRingedSpace.IsOpenImmersion.isoRestrict H).inv_hom_id⟩
+def isoRestrict : X ≅ (Z.restrict H.base_open : _) where
+  __ := (LocallyRingedSpace.IsOpenImmersion.isoRestrict f)
 #align algebraic_geometry.IsOpenImmersion.iso_restrict AlgebraicGeometry.IsOpenImmersion.isoRestrict
 
 local notation "forget" => Scheme.forgetToLocallyRingedSpace
