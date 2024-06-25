@@ -69,7 +69,9 @@ def addFiniteTypeInstance (t : Expr) : TacticM Unit := withMainContext do
   let _ ←
     try let _ ← assertDefEqQ f q(algebraMap $A $B)
     catch e => throwError e.toMessageData
-  liftMetaTactic fun mvarid => do
+  try
+    let _ ← synthInstanceQ q(Algebra.FiniteType $A $B)
+  catch _ => liftMetaTactic fun mvarid => do
     let nm ← mkFreshUserName `ftInst
     let mvar ← mvarid.define nm q(Algebra.FiniteType $A $B) q($ft)
     let (_, mvar) ← mvar.intro1P
@@ -96,7 +98,8 @@ elab_rules : tactic
 
 example {A B C D : Type*}
     [CommRing A] [CommRing B] [CommRing C] [CommRing D]
-    (f : A →+* B) (g : B →+* C) (h : C →+* D) (hf : f.FiniteType) (hhg : (h.comp g).FiniteType):
+    (f : A →+* B) (g : B →+* C) (h : C →+* D) (hf : f.FiniteType) (hhg : (h.comp g).FiniteType)
+    (hh : (h.comp g).comp f |>.FiniteType) :
     True := by
-  algebraize f g h (g.comp f) (h.comp g) (h.comp (g.comp f)) ((h.comp g).comp f)
+  algebraize f g h (g.comp f) (h.comp g) (h.comp (g.comp f))
   trivial
