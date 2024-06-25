@@ -3721,7 +3721,6 @@ import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Smooth.Basic
-import Mathlib.RingTheory.Smooth.Local
 import Mathlib.RingTheory.Smooth.Projective
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
