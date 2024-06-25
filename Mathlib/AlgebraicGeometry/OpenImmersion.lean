@@ -547,6 +547,8 @@ theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersi
   IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
 #align algebraic_geometry.IsOpenImmersion.lift_app AlgebraicGeometry.IsOpenImmersion.lift_app
 
+end IsOpenImmersion
+
 namespace Scheme
 
 theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f] {U : Opens X}
