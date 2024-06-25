@@ -82,8 +82,8 @@ theorem openEmbedding : OpenEmbedding f.1.base :=
 
 /-- The image of an open immersion as an open set. -/
 @[simps]
-def opensRange {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f] : Opens Y :=
-  ⟨_, H.base_open.isOpen_range⟩
+def opensRange : Opens Y :=
+  ⟨_, f.openEmbedding.isOpen_range⟩
 #align algebraic_geometry.Scheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
@@ -145,8 +145,7 @@ def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion
 namespace Scheme
 
 instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
-    AlgebraicGeometry.IsOpenImmersion
-      (Scheme.Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f))).op) := by
+    IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) := by
   apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
   · exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
   · intro x
@@ -155,16 +154,15 @@ instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
 
 theorem exists_affine_mem_range_and_range_subset
     {X : Scheme.{u}} {x : X} {U : Opens X} (hxU : x ∈ U) :
-    ∃ (R : CommRingCat) (f : Scheme.Spec.obj (op R) ⟶ X),
+    ∃ (R : CommRingCat) (f : Spec R ⟶ X),
       IsOpenImmersion f ∧ x ∈ Set.range f.1.base ∧ Set.range f.1.base ⊆ U := by
   obtain ⟨⟨V, hxV⟩, R, ⟨e⟩⟩ := X.2 x
   have : e.hom.1.base ⟨x, hxV⟩ ∈ (Opens.map (e.inv.1.base ≫ V.inclusion)).obj U :=
     show ((e.hom ≫ e.inv).1.base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
   obtain ⟨_, ⟨_, ⟨r : R, rfl⟩, rfl⟩, hr, hr'⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this (Opens.is_open' _)
-  let f : Scheme.Spec.obj (op (.of (Localization.Away r))) ⟶ X :=
-    Scheme.Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))).op ≫
-      (e.inv ≫ X.ofRestrict _ : _)
+  let f : Spec (CommRingCat.of (Localization.Away r)) ⟶ X :=
+    Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))) ≫ (e.inv ≫ X.ofRestrict _ : _)
   refine ⟨.of (Localization.Away r), f, inferInstance, ?_⟩
   rw [Scheme.comp_val_base, LocallyRingedSpace.comp_val, SheafedSpace.comp_base, TopCat.coe_comp,
     Set.range_comp]
@@ -239,8 +237,7 @@ def Scheme.restrict : Scheme :=
     toPresheafedSpace := X.toPresheafedSpace.restrict h }
 #align algebraic_geometry.Scheme.restrict AlgebraicGeometry.Scheme.restrict
 
-lemma Scheme.restrict_toPresheafedSpace
-    {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f) :
+lemma Scheme.restrict_toPresheafedSpace :
     (X.restrict h).toPresheafedSpace = X.toPresheafedSpace.restrict h := rfl
 
 /-- The canonical map from the restriction to the subspace. -/
@@ -426,8 +423,7 @@ instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forget
 #align algebraic_geometry.IsOpenImmersion.forget_to_Top_preserves_of_right AlgebraicGeometry.IsOpenImmersion.forgetToTopPreservesOfRight
 
 theorem range_pullback_snd_of_left :
-    Set.range (pullback.snd : pullback f g ⟶ Y).1.base =
-      ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.isOpen_range⟩).1 := by
+    Set.range (pullback.snd : pullback f g ⟶ Y).1.base = (g ⁻¹ᵁ f.opensRange).1 := by
   rw [← show _ = (pullback.snd : pullback f g ⟶ _).1.base from
       PreservesPullback.iso_hom_snd Scheme.forgetToTop f g]
   -- Porting note (#10691): was `rw`
@@ -471,8 +467,8 @@ theorem range_pullback_to_base_of_left :
     Set.range (pullback.fst ≫ f : pullback f g ⟶ Z).1.base =
       Set.range f.1.base ∩ Set.range g.1.base := by
   rw [pullback.condition, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp,
-    range_pullback_snd_of_left, Opens.carrier_eq_coe,
-    Opens.map_obj, Opens.coe_mk, Set.image_preimage_eq_inter_range]
+    range_pullback_snd_of_left, Opens.carrier_eq_coe, Opens.map_obj, Opens.coe_mk,
+    Set.image_preimage_eq_inter_range, Opens.carrier_eq_coe, Scheme.Hom.opensRange_coe]
 #align algebraic_geometry.IsOpenImmersion.range_pullback_to_base_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_left
 
 theorem range_pullback_to_base_of_right :
@@ -522,7 +518,7 @@ lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
     (isoOfRangeEq f g e).inv ≫ f = g :=
   lift_fac _ _ (le_of_eq e.symm)
 
-theorem app_eq_inv_app_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
+theorem app_eq_invApp_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U) :
     f ⁻¹ᵁ V = fg ⁻¹ᵁ (g ''ᵁ V) := by
   subst H
@@ -530,33 +526,24 @@ theorem app_eq_inv_app_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g 
   congr 1
   ext1
   exact (Set.preimage_image_eq _ h.base_open.inj).symm
-#align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux AlgebraicGeometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux
+#align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux AlgebraicGeometry.IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux
 
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
 theorem app_eq_invApp_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U) :
-    f.1.c.app (op V) =
-      Scheme.Hom.invApp g _ ≫
-        fg.1.c.app _ ≫
-          Y.presheaf.map
-            (eqToHom <| IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux f g fg H V).op := by
+    f.app V = g.invApp V ≫ fg.app (g ''ᵁ V) ≫ Y.presheaf.map
+      (eqToHom <| IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux f g fg H V).op := by
   subst H
-  rw [Scheme.comp_val_c_app, Category.assoc, Scheme.Hom.invApp,
-    LocallyRingedSpace.IsOpenImmersion.invApp_app_assoc, f.val.c.naturality_assoc,
-    TopCat.Presheaf.pushforwardObj_map, ← Functor.map_comp]
-  convert (Category.comp_id <| f.1.c.app (op V)).symm
-  convert Y.presheaf.map_id _
+  rw [Scheme.comp_app, Category.assoc, Scheme.Hom.invApp_app_assoc, f.naturality_assoc,
+    ← Functor.map_comp, ← op_comp, Quiver.Hom.unop_op, eqToHom_map, eqToHom_trans,
+    eqToHom_op, eqToHom_refl, CategoryTheory.Functor.map_id, Category.comp_id]
 #align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq AlgebraicGeometry.IsOpenImmersion.app_eq_invApp_app_of_comp_eq
 
 theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersion f] (H)
     (V : Opens U) :
-    (IsOpenImmersion.lift f g H).1.c.app (op V) =
-      Scheme.Hom.invApp f _ ≫
-        g.1.c.app _ ≫
-          X.presheaf.map
-            (eqToHom <|
-                IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux _ _ _
-                  (IsOpenImmersion.lift_fac f g H).symm V).op :=
+    (IsOpenImmersion.lift f g H).app V = f.invApp V ≫ g.app (f ''ᵁ V) ≫
+      X.presheaf.map (eqToHom <| IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux _ _ _
+        (IsOpenImmersion.lift_fac f g H).symm V).op :=
   IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
 #align algebraic_geometry.IsOpenImmersion.lift_app AlgebraicGeometry.IsOpenImmersion.lift_app
 
@@ -566,8 +553,8 @@ namespace Scheme
 
 theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f] {U : Opens X}
     (r : Γ(X, U)) :
-    f ''ᵁ X.basicOpen r = Y.basicOpen (Scheme.Hom.invApp f U r) := by
-  have e := Scheme.preimage_basicOpen f (Scheme.Hom.invApp f U r)
+    f ''ᵁ X.basicOpen r = Y.basicOpen (f.invApp U r) := by
+  have e := Scheme.preimage_basicOpen f (f.invApp U r)
   rw [Scheme.Hom.invApp] at e
   -- Porting note (#10691): was `rw`
   erw [PresheafedSpace.IsOpenImmersion.invApp_app_apply] at e

@@ -148,7 +148,7 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso @P) :
   · introv H U
     rw [← h₁.cancel_right_isIso _ (Scheme.Γ.map (Scheme.restrictMapIso e.inv U.1).hom.op), ←
       Functor.map_comp, ← op_comp]
-    convert H ⟨_, U.prop.map_isIso e.inv⟩ using 3
+    convert H ⟨_, U.prop.preimage_of_isIso e.inv⟩ using 3
     rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc, Category.assoc,
       e.inv_hom_id_assoc]
   · introv H U
@@ -294,9 +294,8 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme.{u}} (f : X ⟶ Y)
   intro U
   -- Porting note: here is what we are eliminating into Lean
   apply of_affine_open_cover
-    (P := fun V => P (Scheme.Γ.map (X.ofRestrict (Opens.openEmbedding V.val) ≫ f).op)) U
-  pick_goal 5
-  · exact Set.range S
+    (P := fun V => P (Scheme.Γ.map (X.ofRestrict (Opens.openEmbedding V.val) ≫ f).op)) S
+    𝒰.iSup_opensRange
   · intro U r H
     -- Porting note: failing on instance synthesis for an (unspecified) meta variable
     -- made φ explicit and forced to use dsimp in the proof
@@ -335,11 +334,7 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme.{u}} (f : X ⟶ Y)
       all_goals rw [Opens.openEmbedding_obj_top]; exact (Scheme.basicOpen_res_eq _ _ _).symm
   · introv hs hs'
     exact sourceAffineLocally_of_source_open_cover_aux hP.respectsIso hP.2 _ _ _ hs hs'
-  · rw [Set.eq_univ_iff_forall]
-    intro x
-    rw [Set.mem_iUnion]
-    exact ⟨⟨_, 𝒰.f x, rfl⟩, 𝒰.Covers x⟩
-  · rintro ⟨_, i, rfl⟩
+  · rintro i
     specialize H i
     rw [← hP.respectsIso.cancel_right_isIso _
         (Scheme.Γ.map
