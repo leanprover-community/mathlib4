@@ -174,7 +174,7 @@ If `X` is any object, then its fiber is represented by some Galois object: There
 a Galois object `A` and an element `a` in the fiber of `A` such that the
 evaluation at `a` from `A ⟶ X` to `F.obj X` is bijective.
 
-To show this we consider the product `∏ (fun _ : F.obj X ↦ X)` and let `A`
+To show this we consider the product `∏ᶜ (fun _ : F.obj X ↦ X)` and let `A`
 be the connected component whose fiber contains the element `a` in the fiber of the self product
 that has at each index `x : F.obj X` the element `x`.
 
@@ -192,7 +192,7 @@ variable (X : C)
 
 /-- The self product of `X` indexed by its fiber. -/
 @[simp]
-private noncomputable def selfProd : C := ∏ (fun _ : F.obj X ↦ X)
+private noncomputable def selfProd : C := ∏ᶜ (fun _ : F.obj X ↦ X)
 
 /-- For `g : F.obj X → F.obj X`, this is the element in the fiber of the self product,
 which has at index `x : F.obj X` the element `g x`. -/

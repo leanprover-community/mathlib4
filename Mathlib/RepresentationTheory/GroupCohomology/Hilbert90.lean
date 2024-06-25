@@ -47,7 +47,7 @@ for all $1 ≤ n.$
 
 -/
 
-open BigOperators
+
 namespace groupCohomology
 namespace Hilbert90
 

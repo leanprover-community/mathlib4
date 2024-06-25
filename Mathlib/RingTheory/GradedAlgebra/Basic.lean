@@ -41,7 +41,7 @@ graded algebra, graded ring, graded semiring, decomposition
 -/
 
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ι R A σ : Type*}
 
@@ -276,10 +276,10 @@ def GradedRing.projZeroRingHom : A →+* A where
     rw [decompose_add]
     rfl
   map_mul' := by
-    refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
+    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
-      refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
+      refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
       · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
         simp only [Subtype.coe_mk]

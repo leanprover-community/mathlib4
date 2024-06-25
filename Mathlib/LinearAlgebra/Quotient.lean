@@ -135,7 +135,6 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
@@ -287,7 +286,7 @@ variable {p}
 theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ := by
   constructor
   · rintro h
-    refine' eq_top_iff.mpr fun x _ => _
+    refine eq_top_iff.mpr fun x _ => ?_
     have : x - 0 ∈ p := (Submodule.Quotient.eq p).mp (Subsingleton.elim _ _)
     rwa [sub_zero] at this
   · rintro rfl

@@ -75,8 +75,12 @@ private noncomputable def inductiveStepRealization (n : ℕ)
   | (InductiveStep.coeq _ _ _ _ f g) => coeq f g
 
 /-- All steps of building the abstract filtered closure together with the realization function,
-    as a function of `ℕ`. -/
-private noncomputable def bundledAbstractFilteredClosure : ℕ → Σ t : Type (max v w), t → C
+    as a function of `ℕ`.
+
+   The function is defined by well-founded recursion, but we really want to use its
+   definitional equalities in the proofs below, so lets make it semireducible.  -/
+@[semireducible] private noncomputable def bundledAbstractFilteredClosure :
+    ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
   | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractFilteredClosure m)⟩
 
@@ -92,21 +96,21 @@ end FilteredClosureSmall
 
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (FullSubcategory (FilteredClosure f)) := by
-  refine' small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
-    FullSubcategory.ext _
+  refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
+    FullSubcategory.ext ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max _ _ x y⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max ?_ ?_ x y⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
   | coeq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq _ _ x y g g'⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq ?_ ?_ x y g g'⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
@@ -204,8 +208,12 @@ private noncomputable def inductiveStepRealization (n : ℕ)
   | (InductiveStep.eq _ _ _ _ f g) => eq f g
 
 /-- Implementation detail for the instance
-    `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
-private noncomputable def bundledAbstractCofilteredClosure : ℕ → Σ t : Type (max v w), t → C
+   `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`.
+
+   The function is defined by well-founded recursion, but we really want to use its
+   definitional equalities in the proofs below, so lets make it semireducible.  -/
+@[semireducible] private noncomputable def bundledAbstractCofilteredClosure :
+    ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
   | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractCofilteredClosure m)⟩
 
@@ -223,21 +231,21 @@ end CofilteredClosureSmall
 
 theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (FullSubcategory (CofilteredClosure f)) := by
-  refine' small_of_injective_of_exists
-    (CofilteredClosureSmall.abstractCofilteredClosureRealization f) FullSubcategory.ext _
+  refine small_of_injective_of_exists
+    (CofilteredClosureSmall.abstractCofilteredClosureRealization f) FullSubcategory.ext ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.min _ _ x y⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.min ?_ ?_ x y⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
   | eq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.eq _ _ x y g g'⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.eq ?_ ?_ x y g g'⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 

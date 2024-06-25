@@ -63,7 +63,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
     exists_linearIndependent_pair_of_one_lt_rank h x_ne_zero
   have A : Set.Countable {t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right _ _) hs
+    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c + x} ∩ s = ∅ := by
@@ -73,7 +73,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     apply Eq.subset
     apply segment_inter_eq_endpoint_of_linearIndependent_of_ne hy htt'.symm
   have B : Set.Countable {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right _ _) hs
+    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c - x} ∩ s = ∅ := by

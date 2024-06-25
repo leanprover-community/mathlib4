@@ -446,7 +446,7 @@ def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G
     fac := fun s j => by apply G.map_injective; rw [G.map_comp, h]; apply ht.fac
     uniq := fun s m w => by
       apply G.map_injective; rw [h]
-      refine' ht.uniq (mapCone G s) _ fun j => _
+      refine ht.uniq (mapCone G s) _ fun j => ?_
       convert ← congrArg (fun f => G.map f) (w j)
       apply G.map_comp }
 #align category_theory.limits.is_limit.of_faithful CategoryTheory.Limits.IsLimit.ofFaithful
@@ -970,7 +970,7 @@ def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) 
     fac := fun s j => by apply G.map_injective; rw [G.map_comp, h]; apply ht.fac
     uniq := fun s m w => by
       apply G.map_injective; rw [h]
-      refine' ht.uniq (mapCocone G s) _ fun j => _
+      refine ht.uniq (mapCocone G s) _ fun j => ?_
       convert ← congrArg (fun f => G.map f) (w j)
       apply G.map_comp }
 #align category_theory.limits.is_colimit.of_faithful CategoryTheory.Limits.IsColimit.ofFaithful

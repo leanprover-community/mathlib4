@@ -426,7 +426,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       have h :
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
-      refine' ValuationSubring.mul_mem _ _ _ _ x.2
+      refine ValuationSubring.mul_mem _ _ _ ?_ x.2
       --porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
       rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
@@ -459,7 +459,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
 instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
   eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
     rw [Algebra.smul_def, mul_eq_zero] at hcx
-    refine' hcx.imp_left fun hc => _
+    refine hcx.imp_left fun hc => ?_
     letI : UniformSpace K := v.adicValued.toUniformSpace
     rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
     exact

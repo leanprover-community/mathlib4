@@ -44,8 +44,6 @@ components.
 
 noncomputable section
 
-open BigOperators
-
 open Set Function Finset Finsupp AddMonoidAlgebra
 
 variable {R M : Type*} [CommSemiring R]
@@ -88,8 +86,9 @@ theorem weightedTotalDegree'_eq_bot_iff (w : σ → M) (p : MvPolynomial σ R) :
 #align mv_polynomial.weighted_total_degree'_eq_bot_iff MvPolynomial.weightedTotalDegree'_eq_bot_iff
 
 /-- The `weightedTotalDegree'` of the zero polynomial is `⊥`. -/
-theorem weightedTotalDegree'_zero (w : σ → M) : weightedTotalDegree' w (0 : MvPolynomial σ R) = ⊥ :=
-  by simp only [weightedTotalDegree', support_zero, Finset.sup_empty]
+theorem weightedTotalDegree'_zero (w : σ → M) :
+    weightedTotalDegree' w (0 : MvPolynomial σ R) = ⊥ := by
+  simp only [weightedTotalDegree', support_zero, Finset.sup_empty]
 #align mv_polynomial.weighted_total_degree'_zero MvPolynomial.weightedTotalDegree'_zero
 
 section OrderBot
@@ -118,8 +117,9 @@ theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p �
 #align mv_polynomial.weighted_total_degree_coe MvPolynomial.weightedTotalDegree_coe
 
 /-- The `weightedTotalDegree` of the zero polynomial is `⊥`. -/
-theorem weightedTotalDegree_zero (w : σ → M) : weightedTotalDegree w (0 : MvPolynomial σ R) = ⊥ :=
-  by simp only [weightedTotalDegree, support_zero, Finset.sup_empty]
+theorem weightedTotalDegree_zero (w : σ → M) :
+    weightedTotalDegree w (0 : MvPolynomial σ R) = ⊥ := by
+  simp only [weightedTotalDegree, support_zero, Finset.sup_empty]
 #align mv_polynomial.weighted_total_degree_zero MvPolynomial.weightedTotalDegree_zero
 
 theorem le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}
@@ -272,7 +272,7 @@ theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeighte
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
 theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M) {w : σ → M}
-    (h : ∀ i ∈ s, IsWeightedHomogeneous w (φ i) n) : IsWeightedHomogeneous w (∑ i in s, φ i) n :=
+    (h : ∀ i ∈ s, IsWeightedHomogeneous w (φ i) n) : IsWeightedHomogeneous w (∑ i ∈ s, φ i) n :=
   (weightedHomogeneousSubmodule R w n).sum_mem h
 #align mv_polynomial.is_weighted_homogeneous.sum MvPolynomial.IsWeightedHomogeneous.sum
 
@@ -287,7 +287,7 @@ theorem mul {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (hψ : IsWeighte
   equal to the sum of the weighted degrees. -/
 theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → M) {w : σ → M} :
     (∀ i ∈ s, IsWeightedHomogeneous w (φ i) (n i)) →
-      IsWeightedHomogeneous w (∏ i in s, φ i) (∑ i in s, n i) := by
+      IsWeightedHomogeneous w (∏ i ∈ s, φ i) (∑ i ∈ s, n i) := by
   classical
   refine Finset.induction_on s ?_ ?_
   · intro
@@ -346,7 +346,7 @@ theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
 
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
-      ∑ d in φ.support.filter fun d => weightedDegree w d = n, monomial d (coeff d φ) :=
+      ∑ d ∈ φ.support.filter fun d => weightedDegree w d = n, monomial d (coeff d φ) :=
   letI := Classical.decEq M
   Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weightedDegree w d = n) φ |>.trans <| by convert rfl
 #align mv_polynomial.weighted_homogeneous_component_apply MvPolynomial.weightedHomogeneousComponent_apply

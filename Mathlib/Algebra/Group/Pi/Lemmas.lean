@@ -31,6 +31,10 @@ variable {f : I → Type v}
 -- The family of types already equipped with instances
 variable (x y : ∀ i, f i) (i j : I)
 
+@[to_additive (attr := simp)]
+theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α → β) = {1} :=
+  range_const
+
 @[to_additive]
 theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
@@ -366,14 +370,14 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have hk := congr_fun h k
     have hl := congr_fun h l
     have hm := (congr_fun h m).symm
     have hn := (congr_fun h n).symm
     simp only [mul_apply, mulSingle_apply, if_pos rfl] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
-    · refine' Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv _).elim⟩
+    · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
       rcases eq_or_ne k l with (rfl | hkl)
       · rwa [if_neg hln.symm, if_neg hln.symm, one_mul, one_mul] at hn
       · rwa [if_neg hkl.symm, if_neg hln, one_mul, one_mul] at hl

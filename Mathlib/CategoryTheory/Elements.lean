@@ -130,7 +130,7 @@ instance : (π F).ReflectsIsomorphisms where
 @[simps]
 def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
   obj t := ⟨t.1, α.app t.1 t.2⟩
-  map {t₁ t₂} k := ⟨k.1, by simpa [← map_snd] using (FunctorToTypes.naturality _ _ α k.1 t₁.2).symm⟩
+  map {t₁ t₂} k := ⟨k.1, by simpa [map_snd] using (FunctorToTypes.naturality _ _ α k.1 t₁.2).symm⟩
 #align category_theory.category_of_elements.map CategoryTheory.CategoryOfElements.map
 
 @[simp]
@@ -228,7 +228,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
 /-- The unit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
 theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     (toCostructuredArrow F).rightOp ⋙ fromCostructuredArrow F = 𝟭 _ := by
-  refine' Functor.ext _ _
+  refine Functor.ext ?_ ?_
   · intro X
     exact Functor.Elements.ext _ _ rfl (by simp [yonedaEquiv])
   · intro X Y f
@@ -243,7 +243,7 @@ theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
 /-- The counit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
 theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     (fromCostructuredArrow F).rightOp ⋙ toCostructuredArrow F = 𝟭 _ := by
-  refine' Functor.ext _ _
+  refine Functor.ext ?_ ?_
   · intro X
     cases' X with X_left X_right X_hom
     cases X_right

@@ -90,8 +90,8 @@ theorem projective_def :
 #align module.projective_def Module.projective_def
 
 theorem projective_def' :
-    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id :=
-  by simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
+    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id := by
+  simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
 #align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
@@ -192,24 +192,25 @@ theorem Projective.iff_split : Module.Projective R P ↔
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
 theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)
     (hs : Function.Surjective s) :
-    Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id := by
-  refine ⟨fun h ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
+    Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
+  ⟨fun _ ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
 
+set_option maxSynthPendingDepth 2 in
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
     Module.Projective R (M ⊗[R₀] N) := by
-    obtain ⟨sM, hsM⟩ := hM
-    obtain ⟨sN, hsN⟩ := hN
-    have : Module.Projective R (M ⊗[R₀] (N →₀ R₀)) := by
-      fapply Projective.of_split (R := R) (M := ((M →₀ R) ⊗[R₀] (N →₀ R₀)))
-      · exact (AlgebraTensorModule.map sM (LinearMap.id (R := R₀) (M := N →₀ R₀)))
-      · exact (AlgebraTensorModule.map
-          (Finsupp.total M M R id) (LinearMap.id (R := R₀) (M := N →₀ R₀)))
-      · ext; simp [hsM _]
-    fapply Projective.of_split (R := R) (M := (M ⊗[R₀] (N →₀ R₀)))
-    · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) sN)
-    · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (Finsupp.total N N R₀ id))
-    · ext; simp [hsN _]
+  obtain ⟨sM, hsM⟩ := hM
+  obtain ⟨sN, hsN⟩ := hN
+  have : Module.Projective R (M ⊗[R₀] (N →₀ R₀)) := by
+    fapply Projective.of_split (R := R) (M := ((M →₀ R) ⊗[R₀] (N →₀ R₀)))
+    · exact (AlgebraTensorModule.map sM (LinearMap.id (R := R₀) (M := N →₀ R₀)))
+    · exact (AlgebraTensorModule.map
+        (Finsupp.total M M R id) (LinearMap.id (R := R₀) (M := N →₀ R₀)))
+    · ext; simp [hsM _]
+  fapply Projective.of_split (R := R) (M := (M ⊗[R₀] (N →₀ R₀)))
+  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) sN)
+  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (Finsupp.total N N R₀ id))
+  · ext; simp [hsN _]
 
 end Ring
 

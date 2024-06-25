@@ -3,7 +3,7 @@ Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Ring.Int
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 #align_import number_theory.number_field.basic from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -41,7 +41,7 @@ class NumberField (K : Type*) [Field K] : Prop where
 
 open Function Module
 
-open scoped Classical BigOperators nonZeroDivisors
+open scoped Classical nonZeroDivisors
 
 /-- `ℤ` with its usual ring structure is not a field. -/
 theorem Int.not_isField : ¬IsField ℤ := fun h =>

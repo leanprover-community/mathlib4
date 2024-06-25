@@ -37,8 +37,6 @@ this is a basis over `Fin 3 → R`.
 
 open Function Set Submodule
 
-open BigOperators
-
 namespace LinearMap
 
 variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)]
@@ -97,7 +95,7 @@ theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ
 
 theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
-  refine' iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 _
+  refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
   simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
   rw [proj_stdBasis_ne R φ j i, zero_apply]
@@ -112,7 +110,7 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
       intro b hb
       simp only [mem_iInf, mem_ker, proj_apply] at hb
       rw [←
-        show (∑ i in I, stdBasis R φ i (b i)) = b by
+        show (∑ i ∈ I, stdBasis R φ i (b i)) = b by
           ext i
           rw [Finset.sum_apply, ← stdBasis_same R φ i (b i)]
           refine Finset.sum_eq_single i (fun j _ ne => stdBasis_ne _ _ _ _ ne.symm _) ?_

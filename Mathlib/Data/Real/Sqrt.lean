@@ -34,14 +34,16 @@ square root
 -/
 
 open Set Filter
-open scoped BigOperators Filter NNReal Topology
+open scoped Filter NNReal Topology
 
 namespace NNReal
 
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- Porting note: was @[pp_nodot]
+-- Porting note (kmill): `pp_nodot` has no affect here
+-- unless RFC lean4#1910 leads to dot notation for CoeFun
+@[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
@@ -73,12 +75,11 @@ lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnecti
 lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisConnection _ _).symm
 #align nnreal.le_sqrt_iff NNReal.le_sqrt_iff_sq_le
 
--- 2024-02-14
-@[deprecated] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
-@[deprecated] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
-@[deprecated] alias sqrt_le_iff := sqrt_le_iff_le_sq
-@[deprecated] alias le_sqrt_iff := le_sqrt_iff_sq_le
-@[deprecated] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
+@[deprecated (since := "2024-02-14")] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
+@[deprecated (since := "2024-02-14")] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
+@[deprecated (since := "2024-02-14")] alias sqrt_le_iff := sqrt_le_iff_le_sq
+@[deprecated (since := "2024-02-14")] alias le_sqrt_iff := le_sqrt_iff_sq_le
+@[deprecated (since := "2024-02-14")] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
 
 @[simp] lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 := by simp [sqrt_eq_iff_eq_sq]
 #align nnreal.sqrt_eq_zero NNReal.sqrt_eq_zero
@@ -530,12 +531,12 @@ open Finset
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ≥0) :
-    ∑ i in s, f i * g i ≤ sqrt (∑ i in s, f i ^ 2) * sqrt (∑ i in s, g i ^ 2) :=
+    ∑ i ∈ s, f i * g i ≤ sqrt (∑ i ∈ s, f i ^ 2) * sqrt (∑ i ∈ s, g i ^ 2) :=
   (le_sqrt_iff_sq_le.2 $ sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul _ _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (f g : ι → ℝ≥0) :
-    ∑ i in s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i in s, f i) * sqrt (∑ i in s, g i) := by
+    ∑ i ∈ s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i ∈ s, f i) * sqrt (∑ i ∈ s, g i) := by
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ sqrt (f x)) (fun x ↦ sqrt (g x))
 
 end NNReal
@@ -546,13 +547,13 @@ open Finset
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ) :
-    ∑ i in s, f i * g i ≤ √(∑ i in s, f i ^ 2) * √(∑ i in s, g i ^ 2) :=
+    ∑ i ∈ s, f i * g i ≤ √(∑ i ∈ s, f i ^ 2) * √(∑ i ∈ s, g i ^ 2) :=
   (le_sqrt_of_sq_le <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul
     (sum_nonneg fun _ _ ↦ by positivity) _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i) :
-    ∑ i in s, √(f i) * √(g i) ≤ √(∑ i in s, f i) * √(∑ i in s, g i) := by
+    ∑ i ∈ s, √(f i) * √(g i) ≤ √(∑ i ∈ s, f i) * √(∑ i ∈ s, g i) := by
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ √(f x)) (fun x ↦ √(g x))
 
 end Real
