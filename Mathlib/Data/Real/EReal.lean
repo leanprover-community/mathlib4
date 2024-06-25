@@ -1075,6 +1075,12 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
   rfl
 #align ereal.to_real_sub EReal.toReal_sub
 
+theorem add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
+  induction a using EReal.rec
+  · rw [bot_add b, bot_sub b]
+  · norm_cast; linarith
+  · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
+
 /-! ### Multiplication -/
 
 @[simp] theorem top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
