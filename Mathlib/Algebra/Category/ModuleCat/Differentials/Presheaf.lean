@@ -95,6 +95,21 @@ structure Universal where
   postcomp_injective {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
     (φ φ' : M ⟶ M') (h : d.postcomp φ = d.postcomp φ') : φ = φ' := by aesop_cat
 
+attribute [simp] Universal.fac
+
+instance : Subsingleton d.Universal where
+  allEq h₁ h₂ := by
+    suffices ∀ {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
+      (d' : M'.Derivation φ), h₁.desc d' = h₂.desc d' by
+        cases h₁
+        cases h₂
+        simp only [Universal.mk.injEq]
+        ext : 2
+        apply this
+    intro M' d'
+    apply h₁.postcomp_injective
+    simp
+
 end Derivation
 
 /-- The property that there exists a universal derivation for
@@ -122,8 +137,37 @@ noncomputable def app (d : M.Derivation' φ') (X : Dᵒᵖ) : (M.obj X).Derivati
   ModuleCat.Derivation.mk (fun b ↦ d.d b)
 
 @[simp]
-lemma app_apply (d : M.Derivation' φ') {X : Dᵒᵖ} (b : R.obj X):
+lemma app_apply (d : M.Derivation' φ') {X : Dᵒᵖ} (b : R.obj X) :
     (d.app X).d b = d.d b := rfl
+
+section
+
+variable (d : ∀ (X : Dᵒᵖ), (M.obj X).Derivation (φ'.app X))
+    (d_map : ∀ ⦃X Y : Dᵒᵖ⦄ (f : X ⟶ Y) (x : R.obj X),
+      (d Y).d ((R.map f) x) = (M.map f) ((d X).d x))
+
+/-- Given a morphism of presheaves of commutative rings `φ'`, this is the
+in derivation `M.Derivation' φ'` that is given by a compatible family of derivations
+with values in the modules `M.obj X` for all `X`. -/
+def mk : M.Derivation' φ' where
+  d {X} := AddMonoidHom.mk' (d X).d (by simp)
+
+@[simp]
+lemma mk_app (X : Dᵒᵖ) : (mk d d_map).app X = d X := rfl
+
+/-- Constructor for `Derivation.Universal` in the case `F` is the identity functor. -/
+def Universal.mk {d : M.Derivation' φ'}
+    (desc : ∀ {M' : PresheafOfModules (R ⋙ forget₂ _ _)}
+      (_ : M'.Derivation' φ'), M ⟶ M')
+    (fac : ∀ {M' : PresheafOfModules (R ⋙ forget₂ _ _)}
+      (d' : M'.Derivation' φ'), d.postcomp (desc d') = d')
+    (postcomp_injective : ∀ {M' : PresheafOfModules (R ⋙ forget₂ _ _)}
+      (α β : M ⟶ M'), d.postcomp α = d.postcomp β → α = β) : d.Universal where
+  desc := desc
+  fac := fac
+  postcomp_injective := postcomp_injective
+
+end
 
 end Derivation'
 
@@ -160,26 +204,25 @@ lemma relativeDifferentials'_map_d {X Y : Dᵒᵖ} (f : X ⟶ Y)
   rw [relativeDifferentials'_map_apply, CommRingCat.KaehlerDifferential.map_d]
 
 /-- The universal derivation. -/
-noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' where
-  d := AddMonoidHom.mk' (fun x => CommRingCat.KaehlerDifferential.d x) (by simp)
-  d_map _ _ := by
-    rw [relativeDifferentials'_map_apply, AddMonoidHom.mk'_apply,
-      AddMonoidHom.mk'_apply, CommRingCat.KaehlerDifferential.map_d]
+noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' :=
+  Derivation'.mk (fun X ↦ CommRingCat.KaehlerDifferential.D (φ'.app X)) (fun X Y f x ↦ by
+    rw [relativeDifferentials'_map_apply, CommRingCat.KaehlerDifferential.map_d])
 
 /-- The derivation `derivation' φ'` is universal. -/
-noncomputable def isUniversal' : (derivation' φ').Universal where
-  desc {M} {d' : M.Derivation' φ'} := Hom.mk'' (fun X ↦ (d'.app X).desc) (fun X Y f ↦
-    CommRingCat.KaehlerDifferential.ext (fun b ↦ by
+noncomputable def isUniversal' : (derivation' φ').Universal :=
+  Derivation'.Universal.mk
+    (fun {M'} d' ↦ Hom.mk'' (fun X ↦ (d'.app X).desc) (fun X Y f ↦
+      CommRingCat.KaehlerDifferential.ext (fun b ↦ by
       dsimp [ModuleCat.ofHom]
       erw [restrictionApp_apply, restrictionApp_apply]
       simp only [relativeDifferentials'_map_d, ModuleCat.Derivation.desc_d,
-        d'.app_apply, d'.d_map]))
-  fac {M} {d' : M.Derivation' φ'} := by
-    ext X b
-    apply ModuleCat.Derivation.desc_d
-  postcomp_injective {M} α β h := by
-    ext1 X
-    exact CommRingCat.KaehlerDifferential.ext (Derivation.congr_d h)
+        d'.app_apply, d'.d_map])))
+    (fun {M'} d' ↦ by
+      ext X b
+      apply ModuleCat.Derivation.desc_d)
+    (fun {M} α β h ↦ by
+      ext1 X
+      exact CommRingCat.KaehlerDifferential.ext (Derivation.congr_d h))
 
 instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'⟩⟩
 
