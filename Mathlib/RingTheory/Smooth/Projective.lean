@@ -1,4 +1,4 @@
-import Mathlib.RingTheory.Kaehler
+import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.Algebra.Module.Projective
