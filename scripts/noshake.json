@@ -199,7 +199,6 @@
   "Mathlib.Tactic.Widget.SelectPanelUtils":
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
-  "Mathlib.Tactic.UnusedTactic": ["Std.Tactic.Unreachable"],
   "Mathlib.Tactic.Use": ["Batteries.Logic"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
