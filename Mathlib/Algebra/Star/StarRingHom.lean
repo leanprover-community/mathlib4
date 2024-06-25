@@ -45,7 +45,10 @@ structure NonUnitalStarRingHom (A B : Type*) [NonUnitalNonAssocSemiring A]
 infixr:25 " →⋆ₙ+* " => NonUnitalStarRingHom
 
 /-- Reinterpret a non-unital star ring homomorphism as a non-unital ring homomorphism
-by forgetting the interaction with the star operation. -/
+by forgetting the interaction with the star operation. 
+
+Users should not make use of this, but instead utilize the coercion obtained through
+the `NonUnitalRingHomClass` instance. -/
 add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 
 /-- `NonUnitalStarRingHomClass F A B` states that `F` is a type of non-unital ⋆-ring homomorphisms.
