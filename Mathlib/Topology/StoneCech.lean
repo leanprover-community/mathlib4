@@ -355,7 +355,7 @@ def stoneCechExtend : StoneCech α → β :=
 
 theorem stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
   ext x
-  erw [stoneCechExtend, Function.comp_apply, t2Quotient.lift_mk]
+  rw [stoneCechExtend, Function.comp_apply, stoneCechUnit, t2Quotient.lift_mk]
   apply congrFun (preStoneCechExtend_extends hg)
 #align stone_cech_extend_extends stoneCechExtend_extends
 
