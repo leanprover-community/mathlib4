@@ -66,15 +66,6 @@ h: a = a + b
 ```
 This new instance of `a` also turns out to be the third _occurrence_ of `a`.  Therefore,
 the next `nth_rewrite` with `h` rewrites this `a`.
-```lean
-/-
-a b: ℕ
-h: a = a + b
-⊢ a + a + (a + b + b) + a + a = 0
--/
-```
-This new instance of `a` also turns out to be the third _occurrence_ of `a`.  Therefore,
-the next `nth_rewrite` with `h` rewrites this `a`.
 -/
 syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (location)? : tactic
 
