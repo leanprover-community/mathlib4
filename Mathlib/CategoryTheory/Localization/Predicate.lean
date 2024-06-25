@@ -146,11 +146,27 @@ theorem inverts : W.IsInvertedBy L :=
 
 /-- The isomorphism `L.obj X ≅ L.obj Y` that is deduced from a morphism `f : X ⟶ Y` which
 belongs to `W`, when `L.IsLocalization W`. -/
-@[simps!]
+@[simps! hom]
 def isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) : L.obj X ≅ L.obj Y :=
   haveI : IsIso (L.map f) := inverts L W f hf
   asIso (L.map f)
 #align category_theory.localization.iso_of_hom CategoryTheory.Localization.isoOfHom
+
+@[reassoc (attr := simp)]
+lemma isoOfHom_hom_inv_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    L.map f ≫ (isoOfHom L W f hf).inv = 𝟙 _ :=
+  (isoOfHom L W f hf).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoOfHom_inv_hom_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    (isoOfHom L W f hf).inv ≫ L.map f = 𝟙 _ :=
+  (isoOfHom L W f hf).inv_hom_id
+
+@[simp]
+lemma isoOfHom_id_inv (X : C) (hX : W (𝟙 X)) :
+    (isoOfHom L W (𝟙 X) hX).inv = 𝟙 _ := by
+  rw [← cancel_mono (isoOfHom L W (𝟙 X) hX).hom, Iso.inv_hom_id, id_comp,
+    isoOfHom_hom, Functor.map_id]
 
 instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
   (inferInstance : L.IsLocalization W).isEquivalence
@@ -414,6 +430,10 @@ theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D �
     { inverts := h
       isEquivalence := Functor.isEquivalence_of_iso e' }
 #align category_theory.functor.is_localization.of_equivalence_target CategoryTheory.Functor.IsLocalization.of_equivalence_target
+
+instance (F : D ⥤ E) [F.IsEquivalence] [L.IsLocalization W] :
+    (L ⋙ F).IsLocalization W :=
+  of_equivalence_target L W _ F.asEquivalence (Iso.refl _)
 
 lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
     (hW : W ≤ MorphismProperty.isomorphisms C) [IsEquivalence L] :

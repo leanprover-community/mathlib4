@@ -212,6 +212,51 @@ end
 
 end OneHypercover
 
+namespace Cover
+
+variable {X : C} (S : J.Cover X)
+
+/-- The tautological 1-pre-hypercover induced by `S : J.Cover X`. Its index type `I₀`
+is given by `S.Arrow` (i.e. all the morphisms in the sieve `S`), while `I₁` is given
+by all possible pullback cones. -/
+@[simps]
+def preOneHypercover : PreOneHypercover.{max u v} X where
+  I₀ := S.Arrow
+  X f := f.Y
+  f f := f.f
+  I₁ f₁ f₂ := f₁.Relation f₂
+  Y _ _ r := r.Z
+  p₁ _ _ r := r.g₁
+  p₂ _ _ r := r.g₂
+  w _ _ r := r.w
+
+@[simp]
+lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.1 := by
+  ext Y f
+  constructor
+  · rintro ⟨_, _, _, ⟨g⟩, rfl⟩
+    exact S.1.downward_closed g.hf _
+  · intro hf
+    exact Sieve.ofArrows_mk _ _ ({ hf := hf } : S.Arrow)
+
+lemma preOneHypercover_sieve₁ (f₁ f₂ : S.Arrow) {W : C} (p₁ : W ⟶ f₁.Y) (p₂ : W ⟶ f₂.Y)
+    (w : p₁ ≫ f₁.f = p₂ ≫ f₂.f) :
+    S.preOneHypercover.sieve₁ p₁ p₂ = ⊤ := by
+  ext Y f
+  simp only [Sieve.top_apply, iff_true]
+  exact ⟨{ w := w}, f, rfl, rfl⟩
+
+/-- The tautological 1-hypercover induced by `S : J.Cover X`. Its index type `I₀`
+is given by `S.Arrow` (i.e. all the morphisms in the sieve `S`), while `I₁` is given
+by all possible pullback cones. -/
+@[simps toPreOneHypercover]
+def oneHypercover : J.OneHypercover X where
+  toPreOneHypercover := S.preOneHypercover
+  mem₀ := by simp
+  mem₁ f₁ f₂ _ p₁ p₂ w := by simp [S.preOneHypercover_sieve₁ f₁ f₂ p₁ p₂ w]
+
+end Cover
+
 end GrothendieckTopology
 
 end CategoryTheory
