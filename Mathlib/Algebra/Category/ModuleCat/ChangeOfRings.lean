@@ -44,7 +44,7 @@ Let `R, S` be rings and `f : R →+* S`
 
 suppress_compilation
 
-set_option linter.uppercaseLean3 false -- Porting note: Module
+set_option linter.uppercaseLean3 false
 
 open CategoryTheory Limits
 
@@ -529,7 +529,6 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd
-        set_option tactic.skipAssignedInstances false in
         dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
           RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
           MonoidHom.coe_coe, ZeroHom.coe_mk, smul_eq_mul, id_eq, eq_mpr_eq_cast, cast_eq,

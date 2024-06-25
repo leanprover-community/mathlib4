@@ -134,6 +134,13 @@ lemma sectionsMap_comp {M N P : SheafOfModules.{v} R} (f : M ⟶ N) (g : N ⟶ P
 lemma sectionsMap_id {M : SheafOfModules.{v} R} (s : M.sections) :
     sectionsMap (𝟙 M) s = s := rfl
 
+variable (R) in
+/-- The functor which sends a sheaf of modules to its type of sections. -/
+@[simps]
+def sectionsFunctor : SheafOfModules.{v} R ⥤ Type _ where
+  obj := sections
+  map f := sectionsMap f
+
 variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 
 variable (R) in

@@ -36,7 +36,7 @@ variable {b x y : ℝ}
 
 /-- The real logarithm in a given base. As with the natural logarithm, we define `logb b x` to
 be `logb b |x|` for `x < 0`, and `0` for `x = 0`. -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 noncomputable def logb (b x : ℝ) : ℝ :=
   log x / log b
 #align real.logb Real.logb

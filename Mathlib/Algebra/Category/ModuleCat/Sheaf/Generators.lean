@@ -30,16 +30,15 @@ universe u v' u'
 
 open CategoryTheory Limits
 
+section
+
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
+  [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
+  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 
 namespace SheafOfModules
 
 variable (M N P : SheafOfModules.{u} R)
-
-section
-
-variable [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 
 /-- The type of sections which generate a sheaf of modules. -/
 structure GeneratingSections where
