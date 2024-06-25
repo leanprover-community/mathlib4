@@ -449,9 +449,7 @@ def ofStarRingHom (f : F) (g : G) (h₁ : ∀ x, g (f x) = x) (h₂ : ∀ x, f (
 
 /-- Promote a bijective star ring homomorphism to a star ring equivalence. -/
 noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆+* B :=
-  {
-    RingEquiv.ofBijective f
-      (hf : Function.Bijective (f : A → B)) with
+  { RingEquiv.ofBijective f (hf : Function.Bijective (f : A → B)) with
     toFun := f
     map_star' := map_star f }
 
