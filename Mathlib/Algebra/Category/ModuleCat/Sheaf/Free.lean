@@ -12,6 +12,12 @@ import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 Given a type `I`, we construct `SheafOfModules.free I : SheafOfModules R` as
 the coproduct of copies indexed by `I` of `unit R`.
 
+## TODO
+
+* promote the definition of `SheafOfModules.free` as a functor
+`Type u ⥤ SheafOfModules.{u} R` and show it is the left adjoint
+to the sections functor using `freeHomEquiv`
+
 -/
 
 universe u v' u'
