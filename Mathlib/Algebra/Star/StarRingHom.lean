@@ -71,7 +71,7 @@ def toNonUnitalStarRingHom [NonUnitalStarRingHomClass F A B] (f : F) : A →⋆�
   { (f : A →ₙ+* B) with
     map_star' := map_star f }
 
-instance [NonUnitalStarRingHomClass F A B] : CoeTC F (A →⋆ₙ+* B) :=
+instance [NonUnitalStarRingHomClass F A B] : CoeHead F (A →⋆ₙ+* B) :=
   ⟨toNonUnitalStarRingHom⟩
 
 end NonUnitalStarRingHomClass
