@@ -951,7 +951,7 @@ lemma exists_subsuperset_card_eq {n : ℕ} (hst : s ⊆ t) (hsn : s.ncard ≤ n)
     (mod_cast hnt)
   exact ⟨u, mod_cast hsu, mod_cast hut, mod_cast hu⟩
 
-/-- We can shrink a set `s` to any smaller size. -/
+/-- We can shrink a set to any smaller size. -/
 lemma exists_subset_card_eq {n : ℕ} (hns : n ≤ s.ncard) : ∃ t ⊆ s, t.ncard = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
 

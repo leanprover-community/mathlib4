@@ -633,7 +633,7 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : s.card ≤ n) (hnt : n �
   obtain ⟨u, hsu, hut, hu⟩ := ih hst hk
   exact ⟨u, hsu, hut.trans (erase_subset ..), hu⟩
 
-/-- We can shrink a set `s` to any smaller size. -/
+/-- We can shrink a set to any smaller size. -/
 lemma exists_subset_card_eq (hns : n ≤ s.card) : ∃ t ⊆ s, t.card = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
 
