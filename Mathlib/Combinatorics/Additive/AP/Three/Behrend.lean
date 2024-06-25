@@ -196,8 +196,8 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
       map_zero' := funext fun _ => cast_zero
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
   refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
-    (cast_injective.comp_left.injOn _) (Set.subset_univ _) ?_
-  refine' (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => _)
+    cast_injective.comp_left.injOn (Set.subset_univ _) ?_
+  refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => ?_)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
 #align behrend.add_salem_spencer_sphere Behrend.threeAPFree_sphere
@@ -205,15 +205,15 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
 theorem threeAPFree_image_sphere :
     ThreeAPFree ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
-  refine' ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
+  apply ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
     (map_injOn.mono _) threeAPFree_sphere
+  · rw [Set.add_subset_iff]
+    rintro a ha b hb i
+    have hai := mem_box.1 (sphere_subset_box ha) i
+    have hbi := mem_box.1 (sphere_subset_box hb) i
+    rw [lt_tsub_iff_right, ← succ_le_iff, two_mul]
+    exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
   · exact x
-  rw [Set.add_subset_iff]
-  rintro a ha b hb i
-  have hai := mem_box.1 (sphere_subset_box ha) i
-  have hbi := mem_box.1 (sphere_subset_box hb) i
-  rw [lt_tsub_iff_right, ← succ_le_iff, two_mul]
-  exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
 #align behrend.add_salem_spencer_image_sphere Behrend.threeAPFree_image_sphere
 
 theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
@@ -239,13 +239,13 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   · dsimp; refine (card_le_univ _).trans_eq ?_; rfl
   cases d
   · simp
-  refine' threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
+  apply threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
   · intro; assumption
   · simp only [subset_iff, mem_image, and_imp, forall_exists_index, mem_range,
       forall_apply_eq_imp_iff₂, sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
-  refine' map_injOn.mono fun x => _
+  apply map_injOn.mono fun x => ?_
   · intro; assumption
   simp only [mem_coe, sphere, mem_filter, mem_box, and_imp, two_mul]
   exact fun h _ i => (h i).trans_le le_self_add
@@ -287,7 +287,7 @@ theorem exists_large_sphere (n d : ℕ) :
   apply one_le_mul_of_one_le_of_one_le
   · rwa [one_le_cast]
   rw [_root_.le_sub_iff_add_le]
-  set_option tactic.skipAssignedInstances false in norm_num
+  norm_num
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere
 
@@ -452,7 +452,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
   · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
     · rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
-      · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
+      · norm_num; exact le_sqrt_log hN
       · norm_num1
     · apply log_nonneg
       rw [one_le_cast]

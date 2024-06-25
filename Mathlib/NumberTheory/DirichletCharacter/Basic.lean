@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
 import Mathlib.Data.ZMod.Units
-import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+import Mathlib.NumberTheory.MulChar.Basic
 
 /-!
 # Dirichlet Characters
@@ -18,7 +18,7 @@ Main definitions:
 - `DirichletCharacter`: The type representing a Dirichlet character.
 - `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
 - `conductor`: The conductor of a Dirichlet character.
-- `isPrimitive`: If the level is equal to the conductor.
+- `IsPrimitive`: If the level is equal to the conductor.
 
 ## Tags
 
@@ -226,14 +226,16 @@ lemma conductor_le_conductor_mem_conductorSet {d : ℕ} (hd : d ∈ conductorSet
 variable (χ)
 
 /-- A character is primitive if its level is equal to its conductor. -/
-def isPrimitive : Prop := conductor χ = n
+def IsPrimitive : Prop := conductor χ = n
 
-lemma isPrimitive_def : isPrimitive χ ↔ conductor χ = n := Iff.rfl
+@[deprecated (since := "2024-06-16")] alias isPrimitive := IsPrimitive
 
-lemma isPrimitive_one_level_one : isPrimitive (1 : DirichletCharacter R 1) :=
+lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
+
+lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
   Nat.dvd_one.mp (conductor_dvd_level _)
 
-lemma isPritive_one_level_zero : isPrimitive (1 : DirichletCharacter R 0) :=
+lemma isPritive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
   conductor_eq_zero_iff_level_eq_zero.mpr rfl
 
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
@@ -244,7 +246,7 @@ lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n
 noncomputable def primitiveCharacter : DirichletCharacter R χ.conductor :=
   Classical.choose (factorsThrough_conductor χ).choose_spec
 
-lemma primitiveCharacter_isPrimitive : isPrimitive (χ.primitiveCharacter) := by
+lemma primitiveCharacter_isPrimitive : IsPrimitive (χ.primitiveCharacter) := by
   by_cases h : χ.conductor = 0
   · rw [isPrimitive_def]
     convert conductor_eq_zero_iff_level_eq_zero.mpr h
@@ -273,9 +275,11 @@ lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter
     χ.primitive_mul ψ = primitiveCharacter (mul χ ψ) :=
   rfl
 
-lemma isPrimitive.primitive_mul {m : ℕ} (ψ : DirichletCharacter R m) :
-    (primitive_mul χ ψ).isPrimitive :=
+lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
+    IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
+
+@[deprecated (since := "2024-06-16")] alias isPrimitive.primitive_mul := primitive_mul_isPrimitive
 
 /-
 ### Even and odd characters

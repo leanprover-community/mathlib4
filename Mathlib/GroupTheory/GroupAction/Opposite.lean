@@ -60,7 +60,7 @@ instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N
   smul_assoc _ _ _ := unop_injective <| smul_assoc _ _ _
 
 @[to_additive]
-instance instSmulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :
+instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass M N αᵐᵒᵖ where
   smul_comm _ _ _ := unop_injective <| smul_comm _ _ _
 

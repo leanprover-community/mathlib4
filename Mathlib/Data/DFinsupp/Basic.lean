@@ -96,17 +96,10 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
   DFunLike.ext _ _ h
 #align dfinsupp.ext DFinsupp.ext
 
-@[deprecated DFunLike.ext_iff]
-theorem ext_iff {f g : Π₀ i, β i} : f = g ↔ ∀ i, f i = g i :=
-  DFunLike.ext_iff
-#align dfinsupp.ext_iff DFinsupp.ext_iff
+#align dfinsupp.ext_iff DFunLike.ext_iff
+#align dfinsupp.coe_fn_injective DFunLike.coe_injective
 
 lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
-
-@[deprecated DFunLike.coe_injective]
-theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑) :=
-  DFunLike.coe_injective
-#align dfinsupp.coe_fn_injective DFinsupp.coeFn_injective
 
 instance : Zero (Π₀ i, β i) :=
   ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
@@ -1325,7 +1318,7 @@ noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Functio
   toFun x := f (h x)
   support' :=
     f.support'.map fun s =>
-      ⟨((Multiset.toFinset s.1).preimage h (hh.injOn _)).val, fun x =>
+      ⟨((Multiset.toFinset s.1).preimage h hh.injOn).val, fun x =>
         (s.prop (h x)).imp_left fun hx => mem_preimage.mpr <| Multiset.mem_toFinset.mpr hx⟩
 #align dfinsupp.comap_domain DFinsupp.comapDomain
 
@@ -1825,10 +1818,10 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
     [CommMonoid γ] {f g : Π₀ i, β i} {h : ∀ i, β i → γ} (h_zero : ∀ i, h i 0 = 1)
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) : (f + g).prod h = f.prod h * g.prod h :=
   have f_eq : (∏ i ∈ f.support ∪ g.support, h i (f i)) = f.prod h :=
-    (Finset.prod_subset (Finset.subset_union_left _ _) <| by
+    (Finset.prod_subset Finset.subset_union_left <| by
         simp (config := { contextual := true }) [mem_support_iff, h_zero]).symm
   have g_eq : (∏ i ∈ f.support ∪ g.support, h i (g i)) = g.prod h :=
-    (Finset.prod_subset (Finset.subset_union_right _ _) <| by
+    (Finset.prod_subset Finset.subset_union_right <| by
         simp (config := { contextual := true }) [mem_support_iff, h_zero]).symm
   calc
     (∏ i ∈ (f + g).support, h i ((f + g) i)) = ∏ i ∈ f.support ∪ g.support, h i ((f + g) i) :=
@@ -1882,8 +1875,8 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
     (f.support'.lift fun s => ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
-      have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left _ _
-      have H2 : sx.toFinset ∩ sy.toFinset ⊆ sy.toFinset := Finset.inter_subset_right _ _
+      have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left
+      have H2 : sx.toFinset ∩ sy.toFinset ⊆ sy.toFinset := Finset.inter_subset_right
       refine
         (Finset.sum_subset H1 ?_).symm.trans
           ((Finset.sum_congr rfl ?_).trans (Finset.sum_subset H2 ?_))

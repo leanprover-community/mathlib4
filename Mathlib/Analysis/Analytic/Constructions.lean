@@ -205,7 +205,7 @@ def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
 
 lemma formalMultilinearSeries_geometric_apply_norm (n : ℕ) :
     ‖formalMultilinearSeries_geometric 𝕜 A n‖ = 1 :=
-  ContinuousMultilinearMap.norm_mkPiAlgebraFin (Ei := fun _ ↦ A)
+  ContinuousMultilinearMap.norm_mkPiAlgebraFin
 
 end Geometric
 

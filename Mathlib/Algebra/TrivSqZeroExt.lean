@@ -391,10 +391,10 @@ theorem inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass M] (x : tsze R M) 
 
 /-- To show a property hold on all `TrivSqZeroExt R M` it suffices to show it holds
 on terms of the form `inl r + inr m`. -/
-@[induction_eliminator]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 theorem ind {R M} [AddZeroClass R] [AddZeroClass M] {P : TrivSqZeroExt R M → Prop}
-    (h : ∀ r m, P (inl r + inr m)) (x) : P x :=
-  inl_fst_add_inr_snd_eq x ▸ h x.1 x.2
+    (inl_add_inr : ∀ r m, P (inl r + inr m)) (x) : P x :=
+  inl_fst_add_inr_snd_eq x ▸ inl_add_inr x.1 x.2
 #align triv_sq_zero_ext.ind TrivSqZeroExt.ind
 
 /-- This cannot be marked `@[ext]` as it ends up being used instead of `LinearMap.prod_ext` when

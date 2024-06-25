@@ -48,7 +48,7 @@ noncomputable def withDensity (κ : kernel α β) [IsSFiniteKernel κ] (f : α �
   @dite _ (Measurable (Function.uncurry f)) (Classical.dec _) (fun hf =>
     (⟨fun a => (κ a).withDensity (f a),
       by
-        refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+        refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
         simp_rw [withDensity_apply _ hs]
         exact hf.set_lintegral_kernel_prod_right hs⟩ : kernel α β)) fun _ => 0
 #align probability_theory.kernel.with_density ProbabilityTheory.kernel.withDensity

@@ -1501,10 +1501,9 @@ theorem IsBigO.const_mul_left {f : α → R} (h : f =O[l] g) (c' : R) : (fun x =
 #align asymptotics.is_O.const_mul_left Asymptotics.IsBigO.const_mul_left
 
 theorem isBigOWith_self_const_mul' (u : Rˣ) (f : α → R) (l : Filter α) :
-    IsBigOWith ‖(↑u⁻¹ : R)‖ l f fun x => ↑u * f x := by
-  refine' (isBigOWith_const_mul_self ↑u⁻¹ _ l).congr_left _
-  exact fun x => u.inv_mul_cancel_left (f x)
-  -- Porting note: Lean just had trouble elaborating correctly, but this fixes it.
+    IsBigOWith ‖(↑u⁻¹ : R)‖ l f fun x => ↑u * f x :=
+  (isBigOWith_const_mul_self ↑u⁻¹ (fun x ↦ ↑u * f x) l).congr_left
+    fun x ↦ u.inv_mul_cancel_left (f x)
 #align asymptotics.is_O_with_self_const_mul' Asymptotics.isBigOWith_self_const_mul'
 
 theorem isBigOWith_self_const_mul (c : 𝕜) (hc : c ≠ 0) (f : α → 𝕜) (l : Filter α) :
@@ -2143,9 +2142,11 @@ theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
     rw [neg_sub, sub_neg_eq_add]
 #align asymptotics.is_O_with.right_le_add_of_lt_1 Asymptotics.IsBigOWith.right_le_add_of_lt_one
 
--- 2024-01-31
-@[deprecated] alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
-@[deprecated] alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
+@[deprecated (since := "2024-01-31")]
+alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
+
+@[deprecated (since := "2024-01-31")]
+alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
 
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =O[l] fun x => f₂ x - f₁ x :=

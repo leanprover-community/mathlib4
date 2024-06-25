@@ -251,8 +251,7 @@ theorem IsBlock.iff_subtype_val {C : SubMulAction G X} {B : Set C} :
     ← Set.image_eq_image Subtype.coe_injective]
   apply or_congr Iff.rfl
   simp only [Set.disjoint_iff, Set.subset_empty_iff, Set.image_eq_empty,
-    ← (Set.injOn_of_injective C.inclusion_injective _).image_inter
-        (Set.subset_univ _) (Set.subset_univ _)]
+    ← C.inclusion_injective.injOn.image_inter (Set.subset_univ _) (Set.subset_univ _)]
 
 theorem IsBlock.iff_top (B : Set X) :
     IsBlock G B ↔ IsBlock (⊤ : Subgroup G) B := by
@@ -290,7 +289,7 @@ theorem IsBlock.iInter {ι : Type*} {B : ι → Set X} (hB : ∀ i : ι, IsBlock
   by_cases h : ∃ i : ι, Disjoint (g • B i) (B i)
   · right
     obtain ⟨j, hj⟩ := h
-    refine' Disjoint.mono _ _ hj <;> apply Set.iInter_subset
+    refine Disjoint.mono ?_ ?_ hj <;> apply Set.iInter_subset
   · left
     simp only [not_exists] at h
     have : ∀ i : ι, g • B i = B i := fun i => ((hB i).smul_eq_or_disjoint g).resolve_right (h i)

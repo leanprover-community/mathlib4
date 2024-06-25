@@ -90,7 +90,7 @@ theorem exists_finset (x : M ⊗[R] N) :
   obtain ⟨S, h⟩ := exists_finsupp_left x
   use S.graph
   rw [h, Finsupp.sum]
-  refine' Finset.sum_nbij' (fun m ↦ ⟨m, S m⟩) Prod.fst .. <;> simp
+  apply Finset.sum_nbij' (fun m ↦ ⟨m, S m⟩) Prod.fst <;> simp
 
 /-- For a finite subset `s` of `M ⊗[R] N`, there are finitely generated
 submodules `M'` and `N'` of `M` and `N`, respectively, such that `s` is contained in the image

@@ -241,7 +241,7 @@ end TensorProduct
 
 variable (R S M N ι κ : Type*)
   [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-  [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
+  [Semiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
 
 open scoped Classical in
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/

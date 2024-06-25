@@ -231,7 +231,6 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
 #align free_monoid.lift FreeMonoid.lift
 #align free_add_monoid.lift FreeAddMonoid.lift
 
--- Porting note (#10756): new theorem
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
   prodAux_eq _

@@ -6,8 +6,9 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Star.Module
-import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Star.NonUnitalSubalgebra
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Tactic.Abel
 
 #align_import algebra.algebra.unitization from "leanprover-community/mathlib"@"8f66240cab125b938b327d3850169d490cfbcdd8"
 
@@ -325,11 +326,13 @@ theorem inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass A] (x : Unitizatio
 #align unitization.inl_fst_add_coe_snd_eq Unitization.inl_fst_add_inr_snd_eq
 
 /-- To show a property hold on all `Unitization R A` it suffices to show it holds
-on terms of the form `inl r + a`. -/
-@[induction_eliminator]
+on terms of the form `inl r + a`.
+
+This can be used as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 theorem ind {R A} [AddZeroClass R] [AddZeroClass A] {P : Unitization R A → Prop}
-    (h : ∀ (r : R) (a : A), P (inl r + (a : Unitization R A))) (x) : P x :=
-  inl_fst_add_inr_snd_eq x ▸ h x.1 x.2
+    (inl_add_inr : ∀ (r : R) (a : A), P (inl r + (a : Unitization R A))) (x) : P x :=
+  inl_fst_add_inr_snd_eq x ▸ inl_add_inr x.1 x.2
 #align unitization.ind Unitization.ind
 
 /-- This cannot be marked `@[ext]` as it ends up being used instead of `LinearMap.prod_ext` when
@@ -661,6 +664,14 @@ def inrNonUnitalStarAlgHom (R A : Type*) [CommSemiring R] [StarAddMonoid R]
     A →⋆ₙₐ[R] Unitization R A where
   toNonUnitalAlgHom := inrNonUnitalAlgHom R A
   map_star' := inr_star
+
+/-- The star algebra equivalence obtained by restricting `Unitization.inrNonUnitalStarAlgHom`
+to its range. -/
+@[simps!]
+def inrRangeEquiv (R A : Type*) [CommSemiring R] [StarAddMonoid R] [NonUnitalSemiring A]
+    [Star A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
+    A ≃⋆ₐ[R] NonUnitalStarAlgHom.range (inrNonUnitalStarAlgHom R A) :=
+  StarAlgEquiv.ofLeftInverse' (snd_inr R)
 
 end coe
 
