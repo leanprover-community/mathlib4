@@ -58,7 +58,8 @@ elab_rules : tactic
   | `(tactic| algebraize $[$t:term]*) => do
     for f in t do
       let f ← Term.elabTerm f none
-      withMainContext <| addAlgebraInstanceFromRingHom f
+      try withMainContext <| addAlgebraInstanceFromRingHom f
+      catch _ => continue
 
     for f in t do
       let f ← Term.elabTerm f none
