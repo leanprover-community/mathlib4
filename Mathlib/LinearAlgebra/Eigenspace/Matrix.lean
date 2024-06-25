@@ -20,21 +20,28 @@ eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 section SpectrumDiagonal
 
-variable {R n M : Type*} [Field R] [DecidableEq n] [Fintype n]
-  [AddCommGroup M] [Module R M]
+variable {R n M : Type*} [DecidableEq n][Fintype n]
 
 open Matrix
 open Module.End
 
+section NontrivialCommRing
+
+variable [CommRing R] [Nontrivial R] [AddCommGroup M] [Module R M]
+
 /-- Basis vectors are eigenvectors of associated diagonal linear operator. -/
 lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
-    Module.End.HasEigenvector (toLin b b (diagonal d)) (d i) (b i) :=
+    HasEigenvector (toLin b b (diagonal d)) (d i) (b i) :=
   ⟨mem_eigenspace_iff.mpr <| by simp [diagonal], Basis.ne_zero b i⟩
 
 /--  Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i)  :=
   hasEigenvector_toLin_diagonal ..
+
+section NoZeroSMulDivisors
+
+variable [NoZeroSMulDivisors R M]
 
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
 lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} (b : Basis n R M) :
@@ -58,6 +65,12 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} (b : Basis n R M) 
     exact h_eig this
   · rintro ⟨i, rfl⟩
     exact this i
+
+end NoZeroSMulDivisors
+
+end NontrivialCommRing
+
+variable [Field R]
 
 /-- Eigenvalues of a diagonal linear operator with respect to standard basis
     are the diagonal entries. -/
