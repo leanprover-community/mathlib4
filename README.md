@@ -105,9 +105,13 @@ The HTML files can then be found in `build/doc`.
 
 ### Dependencies
 
-If you are a mathlib contributor and want to update dependencies, use `lake update -Kdoc=on`.
+If you are a mathlib contributor and want to update dependencies, use `lake update`,
+or `lake update batteries aesop` (or similar) to update a subset of the dependencies.
 This will update the `lake-manifest.json` file correctly.
 You will need to make a PR after committing the changes to this file.
+
+Please do not run `lake update -Kdoc=on` as previously advised, as the documentation related
+dependencies should only be included when CI is building documentation.
 
 ## Maintainers:
 
