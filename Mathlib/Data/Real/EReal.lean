@@ -1280,6 +1280,11 @@ theorem right_distrib_of_nneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     · rw [mul_top_of_pos a_pos, mul_top_of_pos b_pos, mul_top_of_pos (add_pos a_pos b_pos),
         top_add_top]
 
+theorem left_distrib_of_nneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    c * (a + b) = c * a + c * b := by
+  nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
+  exact right_distrib_of_nneg ha hb
+
 /-! ### Absolute value -/
 
 -- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
