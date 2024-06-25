@@ -119,14 +119,14 @@ theorem AffineTargetMorphismProperty.respectsIso_mk {P : AffineTargetMorphismPro
 /-- For a `P : AffineTargetMorphismProperty`, `targetAffineLocally P` holds for
 `f : X ⟶ Y` whenever `P` holds for the restriction of `f` on every affine open subset of `Y`. -/
 def targetAffineLocally (P : AffineTargetMorphismProperty) : MorphismProperty Scheme :=
-  fun {X Y : Scheme} (f : X ⟶ Y) => ∀ U : Y.affineOpens, @P _ _ (f ∣_ U) U.prop
+  fun {X Y : Scheme} (f : X ⟶ Y) => ∀ U : Y.affineOpens, P (f ∣_ U)
 #align algebraic_geometry.target_affine_locally AlgebraicGeometry.targetAffineLocally
 
-theorem IsAffineOpen.map_isIso {X Y : Scheme} {U : Opens Y.carrier} (hU : IsAffineOpen U)
-    (f : X ⟶ Y) [IsIso f] : IsAffineOpen ((Opens.map f.1.base).obj U) :=
+theorem IsAffineOpen.preimage_of_isIso {X Y : Scheme} {U : Opens Y.carrier} (hU : IsAffineOpen U)
+    (f : X ⟶ Y) [IsIso f] : IsAffineOpen (f ⁻¹ᵁ U) :=
   haveI : IsAffine _ := hU
   isAffine_of_isIso (f ∣_ U)
-#align algebraic_geometry.is_affine_open.map_is_iso AlgebraicGeometry.IsAffineOpen.map_isIso
+#align algebraic_geometry.is_affine_open.map_is_iso AlgebraicGeometry.IsAffineOpen.preimage_of_isIso
 
 theorem targetAffineLocally_respectsIso {P : AffineTargetMorphismProperty}
     (hP : P.toProperty.RespectsIso) : (targetAffineLocally P).RespectsIso := by
@@ -136,9 +136,9 @@ theorem targetAffineLocally_respectsIso {P : AffineTargetMorphismProperty}
     exact H U
   · introv H
     rintro ⟨U, hU : IsAffineOpen U⟩; dsimp
-    haveI : IsAffine _ := hU.map_isIso e.hom
+    haveI : IsAffine _ := hU.preimage_of_isIso e.hom
     rw [morphismRestrict_comp, affine_cancel_right_isIso hP]
-    exact H ⟨(Opens.map e.hom.val.base).obj U, hU.map_isIso e.hom⟩
+    exact H ⟨(Opens.map e.hom.val.base).obj U, hU.preimage_of_isIso e.hom⟩
 #align algebraic_geometry.target_affine_locally_respects_iso AlgebraicGeometry.targetAffineLocally_respectsIso
 
 /-- We say that `P : AffineTargetMorphismProperty` is a local property if

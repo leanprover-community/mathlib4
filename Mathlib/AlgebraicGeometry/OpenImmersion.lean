@@ -538,10 +538,9 @@ theorem IsOpenImmersion.app_eq_invApp_app_of_comp_eq
     f.app V = g.invApp V ≫ fg.app (g ''ᵁ V) ≫ Y.presheaf.map
       (eqToHom <| IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux f g fg H V).op := by
   subst H
-  rw [Scheme.comp_app, Category.assoc, Scheme.Hom.invApp,
-    PresheafedSpace.IsOpenImmersion.invApp_app_assoc, f.naturality_assoc, ← Functor.map_comp,
-    ← op_comp, eqToHom_unop, eqToHom_map, eqToHom_trans, eqToHom_op, eqToHom_refl,
-    CategoryTheory.Functor.map_id, Category.comp_id]
+  rw [Scheme.comp_app, Category.assoc, Scheme.Hom.invApp_app_assoc, f.naturality_assoc,
+    ← Functor.map_comp, ← op_comp, Quiver.Hom.unop_op, eqToHom_map, eqToHom_trans,
+    eqToHom_op, eqToHom_refl, CategoryTheory.Functor.map_id, Category.comp_id]
 #align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq AlgebraicGeometry.IsOpenImmersion.app_eq_invApp_app_of_comp_eq
 
 theorem IsOpenImmersion.lift_app
