@@ -2517,37 +2517,29 @@ end CompletelyNormal
 def IsGδ₂ (s : Set X) : Prop :=
     ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
 
-/-- TODO use version merged from other PR soon hopefully
- `HasSeparatingCover`s can be useful witnesses for `SeparatedNhds`. -/
-def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
-  ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
-
-theorem has_separating_covers_iff_separated_nhds {h k : Set X} :
-    HasSeparatingCover h k ∧ HasSeparatingCover k h ↔ SeparatedNhds h k := sorry
-
-theorem Set.has_separating_cover_empty_left (s : Set X) : HasSeparatingCover ∅ s := by
+theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s := by
   refine ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
     fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩
 
-theorem Set.has_separating_cover_empty_right (s : Set X) : HasSeparatingCover s ∅ := by
+theorem Set.hasSeparatingCover_empty_right (s : Set X) : HasSeparatingCover s ∅ := by
   refine ⟨fun _ ↦ univ, (subset_univ s).trans univ.iUnion_const.symm.subset,
     fun _ ↦ ⟨isOpen_univ, by apply disjoint_empty⟩⟩
 
-theorem separating_cover_mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : HasSeparatingCover s₂ t₂)
+theorem HasSeparatingCover.mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : HasSeparatingCover s₂ t₂)
     (s_sub : s₁ ⊆ s₂) (t_sub : t₁ ⊆ t₂) : HasSeparatingCover s₁ t₁ := by
   obtain ⟨u, u_cov, u_props⟩ := sc_st
   refine ⟨u, s_sub.trans u_cov,
     fun n ↦ ⟨(u_props n).1, disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
 
-theorem closed_gdelta_has_separating_cover {s t : Set X} [NormalSpace X] (st_dis : Disjoint s t)
-    (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : HasSeparatingCover s t := by
+theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpace X]
+    (st_dis : Disjoint s t) (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : HasSeparatingCover s t := by
   obtain ⟨T, T_open, T_count, T_int⟩ := t_gd
   rcases T.eq_empty_or_nonempty with rfl | T_nonempty
   · have : s = ∅ := by
       rw [← disjoint_univ, ← sInter_empty, ← T_int]
       exact st_dis
     rw [this]
-    exact t.has_separating_cover_empty_left
+    exact t.hasSeparatingCover_empty_left
   obtain ⟨g, g_surj⟩ := T_count.exists_surjective T_nonempty
   choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
     apply normal_exists_closure_subset t_cl (T_open (g n).1 (g n).2)
@@ -2581,11 +2573,11 @@ class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
   completely_normal _ _ hd₁ hd₂ := separatedNhds_iff_disjoint.mp <|
-    has_separating_covers_iff_separated_nhds.mp ⟨
-      separating_cover_mono (closed_gdelta_has_separating_cover hd₂
-        isClosed_closure <| closed_gdelta isClosed_closure) (fun ⦃_⦄ a ↦ a) subset_closure,
-      separating_cover_mono (closed_gdelta_has_separating_cover (Disjoint.symm hd₁)
-        isClosed_closure <| closed_gdelta isClosed_closure) (fun ⦃_⦄ a ↦ a) subset_closure⟩
+    hasSeparatingCovers_iff_separatedNhds.mp
+      ⟨(hd₂.hasSeparatingCover_closed_gdelta_right isClosed_closure <|
+         closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure,
+       ((Disjoint.symm hd₁).hasSeparatingCover_closed_gdelta_right isClosed_closure <|
+         closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure⟩
 
 /-- A T₆ space is a perfectly normal T₁ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
