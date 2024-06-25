@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 #align_import ring_theory.algebra_tower from "leanprover-community/mathlib"@"94825b2b0b982306be14d891c4f063a1eca4f370"
 
@@ -170,21 +171,17 @@ theorem Basis.smul_apply {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (
   · simp [hi]
 #align basis.smul_apply Basis.smul_apply
 
-end Semiring
+variable (S) in
+theorem Module.Free.trans [Free R S] [Free S A] : Free R A :=
+  of_basis ((chooseBasis R S).smul <| chooseBasis S A)
 
-section Ring
+theorem Basis.algebraMap_injective {R S ι : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [Nonempty ι] (b : Basis ι R S) : Function.Injective (algebraMap R S) :=
+  fun _ _ h ↦ b.smul_left_injective (Classical.arbitrary ι) <| by simp_rw [Algebra.smul_def, h]
 
-variable {R S}
-variable [CommRing R] [Ring S] [Algebra R S]
-
--- Porting note: Needed to add Algebra.toModule below
-theorem Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
-    (b : @Basis ι R S _ _ Algebra.toModule) : Function.Injective (algebraMap R S) :=
-  have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
-  NoZeroSMulDivisors.algebraMap_injective R S
 #align basis.algebra_map_injective Basis.algebraMap_injective
 
-end Ring
+end Semiring
 
 section AlgHomTower
 

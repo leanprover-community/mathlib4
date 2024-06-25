@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.RingTheory.ClassGroup
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Group law on Weierstrass curves
@@ -99,17 +100,9 @@ section Algebra
 
 /-! ### The coordinate ring as an `R[X]`-algebra -/
 
-noncomputable instance : Algebra R W.CoordinateRing :=
-  Quotient.algebra R
-#align weierstrass_curve.coordinate_ring.algebra' WeierstrassCurve.Affine.CoordinateRing.instAlgebra
-
-noncomputable instance : Algebra R[X] W.CoordinateRing :=
-  Quotient.algebra R[X]
-#align weierstrass_curve.coordinate_ring.algebra WeierstrassCurve.Affine.CoordinateRing.instAlgebraPolynomial
-
-instance : IsScalarTower R R[X] W.CoordinateRing :=
-  Quotient.isScalarTower R R[X] _
-#align weierstrass_curve.coordinate_ring.is_scalar_tower WeierstrassCurve.Affine.CoordinateRing.instIsScalarTowerPolynomial
+#noalign weierstrass_curve.coordinate_ring.algebra'
+#noalign weierstrass_curve.coordinate_ring.algebra
+#noalign weierstrass_curve.coordinate_ring.is_scalar_tower
 
 instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
@@ -120,12 +113,74 @@ instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
 noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
   AdjoinRoot.mk W.polynomial
 
+variable {W} in
+lemma smul (x : R[X]) (y : W.CoordinateRing) : x • y = mk W (C x) * y :=
+  (algebraMap_smul W.CoordinateRing x y).symm
+#align weierstrass_curve.coordinate_ring.smul WeierstrassCurve.Affine.CoordinateRing.smul
+
+lemma mk_comp_algebraMap : (mk W).comp (algebraMap R R[X][Y]) = algebraMap R W.CoordinateRing := rfl
+
+@[simp] lemma mk_polynomial : mk W W.polynomial = 0 := AdjoinRoot.mk_self
+
+lemma equation_mk_X_mk_Y :
+    (W.baseChange W.CoordinateRing).toAffine.Equation (mk W (C X)) (mk W Y) := by
+  rw [Affine.Equation, baseChange, ← mk_comp_algebraMap, ← map_map, ← baseChange,
+    map_polynomial, map_mapRingHom_evalEval, baseChange_polynomial_evalEval_X_Y, mk_polynomial]
+
+/-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
+noncomputable def map : W.CoordinateRing →+* (W.map f).toAffine.CoordinateRing :=
+  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f) _ <| by
+    rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root]
+
+lemma map_mk (x : R[X][Y]) : map W f (mk W x) = mk (W.map f) (x.map <| mapRingHom f) := by
+  rw [map, AdjoinRoot.lift_mk, ← eval₂_map]
+  exact AdjoinRoot.aeval_eq <| x.map <| mapRingHom f
+
+lemma map_comp_mk : (map W f).comp (mk W) = (mk <| W.map f).comp (mapRingHom <| mapRingHom f) :=
+  RingHom.ext (map_mk _ _)
+
+variable {W} in
+protected lemma map_smul (x : R[X]) (y : W.CoordinateRing) :
+    map W f (x • y) = x.map f • map W f y := by
+  rw [smul, _root_.map_mul, map_mk, map_C, smul]
+  rfl
+
+variable {W} {x y : R} (eqn : W.Equation x y)
+
+noncomputable def eval : W.CoordinateRing →+* R :=
+  AdjoinRoot.lift (evalRingHom x) y <| by rwa [eval₂_evalRingHom]
+
+lemma eval_mk (p : R[X][Y]) : eval eqn (mk _ p) = p.evalEval x y := by
+  rw [← eval₂_evalRingHom]; exact AdjoinRoot.lift_mk _ p
+
+lemma eval_comp_mk : (eval eqn).comp (mk _) = evalEvalRingHom x y := RingHom.ext (eval_mk eqn)
+
+lemma eval_map (p : W.CoordinateRing) : eval (eqn.map f) (map W f p) = f (eval eqn p) := by
+  obtain ⟨p, rfl⟩ := AdjoinRoot.mk_surjective p
+  rw [map_mk, eval_mk, eval_mk, map_mapRingHom_evalEval]
+
+lemma eval_comp_map : (eval <| eqn.map f).comp (map W f) = f.comp (eval eqn) :=
+  RingHom.ext (eval_map f eqn)
+
+variable (W)
+
 -- Porting note: added `classical` explicitly
 /-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
   classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' W.monic_polynomial).basis.reindex <| finCongr W.natDegree_polynomial
 #align weierstrass_curve.coordinate_ring.basis WeierstrassCurve.Affine.CoordinateRing.basis
+
+instance : Module.Free R[X] W.CoordinateRing := .of_basis (CoordinateRing.basis W)
+instance : Module.Free R W.CoordinateRing := .trans R[X]
+
+lemma algebraMap_injective : Function.Injective (algebraMap R[X] W.CoordinateRing) :=
+  (CoordinateRing.basis W).algebraMap_injective
+
+lemma algebraMap_injective' : Function.Injective (algebraMap R W.CoordinateRing) :=
+  (algebraMap_injective W).comp C_injective
+
+instance [Nontrivial R] : Nontrivial W.CoordinateRing := (algebraMap_injective W).nontrivial
 
 lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W n = (AdjoinRoot.powerBasis' W.monic_polynomial).gen ^ (n : ℕ) := by
@@ -154,11 +209,6 @@ lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, m
   fin_cases n
   exacts [basis_zero W, basis_one W]
 #align weierstrass_curve.coordinate_ring.coe_basis WeierstrassCurve.Affine.CoordinateRing.coe_basis
-
-variable {W} in
-lemma smul (x : R[X]) (y : W.CoordinateRing) : x • y = mk W (C x) * y :=
-  (algebraMap_smul W.CoordinateRing x y).symm
-#align weierstrass_curve.coordinate_ring.smul WeierstrassCurve.Affine.CoordinateRing.smul
 
 variable {W} in
 lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W.CoordinateRing) + q • mk W Y = 0) :
@@ -195,33 +245,8 @@ lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W.CoordinateRing) + q • mk W
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.smul_basis_mul_Y WeierstrassCurve.Affine.CoordinateRing.smul_basis_mul_Y
 
-lemma algebraMap_injective : Function.Injective (algebraMap R[X] W.CoordinateRing) :=
-  (injective_iff_map_eq_zero _).mpr fun p hp ↦ And.left <|
-    smul_basis_eq_zero (W := W) (q := 0) <| by rwa [Algebra.smul_def, mul_one, zero_smul, add_zero]
-/- cf. AdjoinRoot.of.injective_of_degree_ne_zero (for domains)
-and AdjoinRoot.coe_injective (for fields);
-there isn't a general monic version, no PowerBasis.injective when dim > 0 -/
-
-lemma algebraMap_injective' : Function.Injective (algebraMap R W.CoordinateRing) :=
-  (algebraMap_injective W).comp C_injective
-
-/-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
-noncomputable def map : W.CoordinateRing →+* (W.map f).toAffine.CoordinateRing :=
-  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f) _ <| by
-    rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root]
-
-lemma map_mk (x : R[X][Y]) : map W f (mk W x) = mk (W.map f) (x.map <| mapRingHom f) := by
-  rw [map, AdjoinRoot.lift_mk, ← eval₂_map]
-  exact AdjoinRoot.aeval_eq <| x.map <| mapRingHom f
-
-variable {W} in
-protected lemma map_smul (x : R[X]) (y : W.CoordinateRing) :
-    map W f (x • y) = x.map f • map W f y := by
-  rw [smul, _root_.map_mul, map_mk, map_C, smul]
-  rfl
-
 variable {f} in
-lemma map_injective (hf : Function.Injective f) : Function.Injective <| map W f :=
+lemma map_injective (hf : Function.Injective f) : Function.Injective (map W f) :=
   (injective_iff_map_eq_zero _).mpr fun y hy => by
     obtain ⟨p, q, rfl⟩ := exists_smul_basis_eq y
     simp_rw [map_add, CoordinateRing.map_smul, map_one, map_mk, map_X] at hy
@@ -236,7 +261,67 @@ instance [IsDomain R] : IsDomain W.CoordinateRing :=
 #align weierstrass_curve.coordinate_ring.is_domain WeierstrassCurve.Affine.CoordinateRing.instIsDomain
 #noalign weierstrass_curve.coordinate_ring.is_domain_of_field
 
+lemma algebraMap_mem_nonzeroDivisors_iff {r : R} : algebraMap R _ r ∈ W.CoordinateRing⁰ ↔ r ∈ R⁰ :=
+  Module.Free.algebraMap_mem_nonZeroDivisors_iff (algebraMap_injective' W)
+
 end Algebra
+
+end CoordinateRing
+
+namespace FunctionField
+
+lemma algebraMap_injective : Function.Injective (algebraMap R[X] W.FunctionField) :=
+  (IsFractionRing.injective W.CoordinateRing W.FunctionField).comp
+    (CoordinateRing.algebraMap_injective _)
+
+lemma algebraMap_injective' : Function.Injective (algebraMap R W.FunctionField) :=
+  (FunctionField.algebraMap_injective W).comp C_injective
+
+@[simps!] noncomputable def mk : R[X][Y] →+* W.FunctionField :=
+  (algebraMap W.CoordinateRing _).comp (CoordinateRing.mk W)
+
+lemma mk_comp_algebraMap : (mk W).comp (algebraMap R R[X][Y]) = algebraMap R W.FunctionField := rfl
+
+@[simp] lemma mk_polynomial : mk W W.polynomial = 0 := by
+  rw [mk, RingHom.comp_apply, CoordinateRing.mk_polynomial, map_zero]
+
+lemma equation_mk_X_mk_Y :
+    (W.baseChange W.FunctionField).toAffine.Equation (mk W (C X)) (mk W Y) := by
+  rw [Affine.Equation, baseChange, ← mk_comp_algebraMap, ← map_map, ← baseChange,
+    map_polynomial, map_mapRingHom_evalEval, baseChange_polynomial_evalEval_X_Y, mk_polynomial]
+
+noncomputable section
+
+variable (h : W.Δ ∈ R⁰)
+
+/-- The base change of a Weierstrass curve to its function field is an ellitpic curve
+(i.e. has discriminant a unit), if the discriminant of the original Weierstrass curve is
+not a zero divisor. -/
+def curve : EllipticCurve W.FunctionField where
+  __ := W.baseChange W.FunctionField
+  Δ' := IsUnit.unit (IsLocalization.map_units _
+    ⟨_, (CoordinateRing.algebraMap_mem_nonzeroDivisors_iff W).mpr h⟩)
+  coe_Δ' := by rw [IsUnit.unit_spec, map_Δ]; rfl
+
+/-- The distinguished point over the function field of a Weierstrass curve. -/
+def affinePoint [Nontrivial R] : W⟮W.FunctionField⟯ :=
+  .some (EllipticCurve.Affine.nonsingular (curve W h) <| equation_mk_X_mk_Y W)
+
+/-- The distinguished point over the function field in Jacobian coordinates. -/
+def jacobianPoint [Nontrivial R] : Jacobian.Point (W.baseChange W.FunctionField) :=
+  Jacobian.Point.fromAffine (affinePoint W h)
+
+@[simp] lemma curve_a₁ : (curve W h).a₁ = mk W (CC W.a₁) := rfl
+@[simp] lemma curve_a₂ : (curve W h).a₂ = mk W (CC W.a₂) := rfl
+@[simp] lemma curve_a₃ : (curve W h).a₃ = mk W (CC W.a₃) := rfl
+@[simp] lemma curve_a₄ : (curve W h).a₄ = mk W (CC W.a₄) := rfl
+@[simp] lemma curve_a₆ : (curve W h).a₆ = mk W (CC W.a₆) := rfl
+
+end
+
+end FunctionField
+
+namespace CoordinateRing
 
 section Ring
 

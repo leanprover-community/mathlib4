@@ -109,6 +109,16 @@ instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDiv
   b.noZeroSMulDivisors
 #align module.free.no_zero_smul_divisors Module.Free.noZeroSMulDivisors
 
+open nonZeroDivisors in
+lemma algebraMap_mem_nonZeroDivisors_iff {R S} [CommSemiring R] [Semiring S] [Algebra R S]
+    [Module.Free R S] (inj: Function.Injective (algebraMap R S)) {r : R} :
+    algebraMap R S r ∈ S⁰ ↔ r ∈ R⁰ where
+  mp := (comap_nonZeroDivisors_le_nonZeroDivisors_of_injective _ inj ·)
+  mpr mem s := by
+    rw [← Algebra.commutes, ← Algebra.smul_def]
+    refine ((Module.Free.chooseBasis R S).smul_eq_zero_iff_of_mem_nonZeroDivisorsRight ?_).mp
+    rwa [← nonZeroDivisorsLeft_eq_right]
+
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
 
