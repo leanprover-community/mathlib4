@@ -15,6 +15,15 @@ import Mathlib.RingTheory.Generators
 ## Main results
 
 - `Algebra.FormallySmooth.iff_injective_and_projective`:
+  Given a formally smooth algebra `P` over `R`, such that the algebra homomorphism `P → S` is
+  surjective with kernel `I` (typically a presentation `R[X] → S`),
+  then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → B ⊗[A] Ω[A⁄R]` is injective.
+-
+  The first homology of the naive cotangent complex,
+  defined as the kernel of `I/I² → S ⊗[R[S]] Ω[R[S]⁄R]` with `0 → I → R[S] → S → 0` being the
+  standard presentation.
+- `Algebra.FormallySmooth.iff_subsingleton_and_projective`:
+  `S` is a formally smooth algebra over `R` iff `H¹(L[S/R]) = 0` and `Ω[S⁄R]` is projective.
 
 ## Future project
 
@@ -35,8 +44,14 @@ variable (hf : Surjective (algebraMap P S)) (hf' : (RingHom.ker (algebraMap P S)
 
 section ofSection
 
+-- Suppose we have a section (as alghom) of `P →ₐ[R] S`.
 variable (g : S →ₐ[R] P) (hg : (IsScalarTower.toAlgHom R P S).comp g = AlgHom.id R S)
 
+/--
+Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
+and a section `g : S →ₐ[R] P` (as an algebra hom),
+we get a `R`-derivation `P → I` via `x ↦ x - g (f x)`.
+-/
 @[simps]
 def derivationOfSectionOfKerSqZero : Derivation R P (RingHom.ker (algebraMap P S)) where
   toFun x := ⟨x - g (algebraMap _ _ x), by
@@ -75,6 +90,11 @@ lemma isScalarTower_of_section_of_ker_sqZero :
   refine Ideal.mul_mem_mul ?_ m.2
   simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg (algebraMap P S p)
 
+/--
+Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
+and a section `g : S →ₐ[R] P` (as algebra homs),
+we get a retraction of the injection `I → S ⊗[P] Ω[P/R]`.
+-/
 noncomputable
 def retractionOfSectionOfKerSqZero : S ⊗[P] Ω[P⁄R] →ₗ[P] RingHom.ker (algebraMap P S) :=
     letI := g.toRingHom.toAlgebra
@@ -110,6 +130,12 @@ lemma sectionOfRetractionKerToTensorAux_prop (x y) (h : algebraMap P S x = algeb
     ← map_sub, ← tmul_sub, ← map_sub]
   exact congr_arg Subtype.val (LinearMap.congr_fun hl.symm ⟨x - y, by simp [RingHom.mem_ker, h]⟩)
 
+/--
+Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
+and `σ` be an arbitrary (set-theoretic) section of `f`.
+Suppose we have a retraction `l` of the injection `l : I →ₗ[P] S ⊗[P] Ω[P/R]`, then
+`x ↦ σ x - l (1 ⊗ D x)` is an algebra homomorphism and a section to `f`.
+-/
 noncomputable
 def sectionOfRetractionKerToTensorAux : S →ₐ[R] P where
   toFun x := σ x - l (1 ⊗ₜ .D _ _ (σ x))
@@ -151,6 +177,11 @@ lemma toAlgHom_comp_sectionOfRetractionKerToTensor :
 
 end ofRetraction
 
+/--
+Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
+there is a one-to-one correspondance between algebra homomorphism sections of `f`,
+and `P`-linear retractions to `I →ₗ[P] S ⊗[P] Ω[P/R]`.
+-/
 noncomputable
 def retractionEquivSectionKerToTensor :
     { l // l ∘ₗ (kerToTensor R P S) = LinearMap.id } ≃
@@ -173,7 +204,7 @@ def retractionEquivSectionKerToTensor :
 
 attribute [local instance 99999] IsScalarTower.right
 
-instance : Algebra (P ⧸ (RingHom.ker (algebraMap P S) ^ 2)) S :=
+local instance Algebra.kerSquareLift : Algebra (P ⧸ (RingHom.ker (algebraMap P S) ^ 2)) S :=
   (Algebra.ofId P S).kerSquareLift.toAlgebra
 
 instance : IsScalarTower R (P ⧸ (RingHom.ker (algebraMap P S) ^ 2)) S :=
@@ -401,10 +432,10 @@ namespace Generators
 
 variable (P : Generators R S) in
 /--
-This is the first homology of the naive cotangent complex associated to a given presentation
-`P`,
-defined as the kernel of
-`I/I² → S ⊗[R[S]] Ω[R[S]⁄R]` with `0 → I → R[S] → R → 0` being the standard presentation.
+The first homology of the naive cotangent complex of `S` over `R`,
+induced by a given presentation `0 → I → P → R → 0`,
+defined as the kernel of `I/I² → S ⊗[P] Ω[P⁄R]`.
+TODO: show that this does not depend on the preseentation chosen.
 -/
 noncomputable
 def H1Cotangent : Type _ := LinearMap.ker (kerCotangentToTensor R P.Ring S)
@@ -462,14 +493,22 @@ end Algebra
 
 end H1Cotangent
 
-abbrev Algebra.H1Cotangent :
-
-/-- Given a formally smooth algebra `P` over `R`, such that the algebra homomorphism `P → S` is
-surjective with kernel `I` (typically a presentation `R[X] → S`),
-then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → B ⊗[A] Ω[A⁄R]` is injective.
+/--
+This is the first homology of the naive cotangent complex,
+defined as the kernel of `I/I² → S ⊗[R[S]] Ω[R[S]⁄R]` with `0 → I → R[S] → S → 0` being the
+standard presentation.
 -/
+variable (R S) in
+abbrev Algebra.H1Cotangent : Type _ := (Generators.self R S).H1Cotangent
+
+/-- `S` is a formally smooth algebra over `R` iff `H¹(L[S/R]) = 0` and `Ω[S⁄R]` is projective. -/
 theorem Algebra.FormallySmooth.iff_of_generators (P : Generators.{u} R S) :
     Algebra.FormallySmooth R S ↔ Subsingleton P.H1Cotangent ∧ Module.Projective S (Ω[S⁄R]) := by
   rw [P.subsingleton_h1Cotangent,
     ← @Algebra.FormallySmooth.iff_injective_and_projective R P.Ring S]
   exact P.algebraMap_surjective
+
+/-- `S` is a formally smooth algebra over `R` iff `H¹(L[S/R]) = 0` and `Ω[S⁄R]` is projective. -/
+theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
+    Algebra.FormallySmooth R S ↔ Subsingleton (H1Cotangent R S) ∧ Module.Projective S (Ω[S⁄R]) := by
+  Algebra.FormallySmooth.iff_of_generators _
