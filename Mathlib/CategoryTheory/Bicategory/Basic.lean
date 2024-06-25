@@ -489,6 +489,8 @@ section
 
 attribute [local simp] whisker_exchange
 
+-- TODO: put this here in a new file?
+
 /-- Precomposition of a 1-morphism as a functor. -/
 @[simps]
 def precomp (c : B) (f : a ⟶ b) : (b ⟶ c) ⥤ (a ⟶ c) where

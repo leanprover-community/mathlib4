@@ -17,6 +17,8 @@ import Mathlib.CategoryTheory.Bicategory.Coherence
 
 -/
 
+-- TODO: some API need to be added to prelax refactor
+
 namespace CategoryTheory
 
 open Category Bicategory Bicategory.Opposite
@@ -39,8 +41,9 @@ variable {B : Type u₁} [LocallySmallBicategory.{v₁} B]
 -- TODO: need more simps?
 @[simps]
 def representable (x : B) : Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁} where
+  -- On objects:
+  -- Hom functors: postcomposing (in `Bᴮᵒᵖ`).
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of ((bop x) ⟶ y))
-  -- TODO: did postcomposing to avoid having to take "bop" of the functor
       (fun a b => (postcomposing (bop x) a b))
   mapId := fun a => rightUnitorNatIso (bop x) a
   mapComp := fun {a b c} f g => (associatorNatIsoLeft (bop x) f g).symm
@@ -128,35 +131,50 @@ def yoneda.prelaxFunctor : PrelaxFunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, 
   map f := StrongNatTrans.representable f
   map₂ η := Modification.representable η
   map₂_id := by
-    intros
+    intros a b f
     dsimp
     apply OplaxNatTrans.ext
     intro c
-    -- some API is missing here
-    sorry
+    apply NatTrans.ext
+    ext x
+    -- why is this not applied by simp? (Q on zulip...)
+    rw [StrongNatTrans.homcategory_id]
+    dsimp
+    rw [NatTrans.id_app, id_whiskerRight]
+    dsimp
+
   map₂_comp := by
-    intros
-    dsimp
+    intros a b f g h η θ
     apply OplaxNatTrans.ext
     intro c
-    -- some API is missing here
-    sorry
+    apply NatTrans.ext
+    ext x
+    dsimp
+    -- TODO: why erw here?
+    erw [OplaxNatTrans.Modification.vcomp_app]
+    rw [NatTrans.comp_app, comp_whiskerRight]
+    simp
 
 def yoneda : Pseudofunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁}) where
   toPrelaxFunctor := yoneda.prelaxFunctor
-  -- maybe som mkOfIso here?
-  -- TODO: just look it up in the notes
-  mapId a :=
-  {
-    hom := {
-      -- at this point should be rightUnitor?
-      app := fun b => by dsimp; apply leftUnitor _
-      naturality := sorry
-    }
-    inv := sorry
-    hom_inv_id := sorry
-    inv_hom_id := sorry
-  }
+  -- Here need some "app" iso constructor + (leftUnitorNatIso (bop a) ·)
+
+  mapId a := by
+    -- TODO: strongnattrans.IsoOfComponents?
+    -- apply OplaxNatTrans.ModificationIso.ofComponents (η := yoneda.prelaxFunctor.map (𝟙 a))
+    --   (θ := 𝟙 (yoneda.prelaxFunctor.obj a))
+    sorry
+
+      --(fun b => leftUnitorNatIso (bop a) b)
+  -- {
+  --   hom := {
+  --     app := fun b => by dsimp; apply (leftUnitorNatIso (bop a) b).hom
+  --     naturality := sorry
+  --   }
+  --   inv := sorry
+  --   hom_inv_id := sorry
+  --   inv_hom_id := sorry
+  -- }
   mapComp := sorry
   map₂_whisker_left := sorry
   map₂_whisker_right := sorry
