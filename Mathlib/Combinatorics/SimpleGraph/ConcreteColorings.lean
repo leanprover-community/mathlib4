@@ -65,22 +65,4 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
   rw [Nat.odd_iff_not_even, c.even_length_iff_congr p]
   tauto
 
-theorem Coloring.bicoloring_apply_iff_of_walk {α} {G : SimpleGraph α}
-    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
-    c v ↔ (c u ↔ Even p.length) := by
-  rw [iff_left_comm, ← iff_assoc, Iff.comm]
-  exact c.even_length_iff_congr p
-
-theorem Coloring.bicoloring_apply_iff_of_head_walk {α} {G : SimpleGraph α}
-    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) (hcu : c u) :
-    c v ↔ Even p.length := by
-  rw [c.bicoloring_apply_iff_of_walk p]
-  exact iff_true_left hcu
-
-theorem Coloring.bicoloring_apply_iff_of_not_head_walk {α} {G : SimpleGraph α}
-    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) (hcu : !c u) :
-    c v ↔ Odd p.length := by
-  rw [c.bicoloring_apply_iff_of_walk p, Nat.even_iff_not_odd]
-  simp [(Bool.not_inj hcu : c u = false)]
-
 end SimpleGraph
