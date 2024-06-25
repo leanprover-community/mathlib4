@@ -164,7 +164,7 @@ theorem affineLocally_iff_affineOpens_le
     (hP : RingHom.RespectsIso @P) {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} (@P) f ↔
     ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ (Opens.map f.1.base).obj U.1),
-      P (Scheme.Hom.appLe f e) := by
+      P (f.appLE _ _ e) := by
   apply forall_congr'
   intro U
   delta sourceAffineLocally
@@ -184,9 +184,9 @@ theorem affineLocally_iff_affineOpens_le
       rw [e'']
       convert V.2
     have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, h⟩
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
-      ← X.presheaf.map_comp]
-    · dsimp; convert this using 1
+    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Scheme.Hom.appLE,
+      Category.assoc, ← X.presheaf.map_comp]
+    · convert this using 1
       congr 1
       rw [X.presheaf.map_comp]
       · simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
@@ -490,19 +490,9 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
     let esto := Scheme.Γ.obj (Opposite.op (Y.restrict <| Opens.openEmbedding U.val))
     let eso := Scheme.Γ.obj (Opposite.op ((Scheme.openCoverOfIsIso
       (𝟙 (Y.restrict <| Opens.openEmbedding U.val))).obj i))
-    -- Porting note: Lean this needed this spelled out before
-    -- convert hP.HoldsAwayLocalizationAway _ (1 : Scheme.Γ.obj _) _
-    have : 𝟙 (Scheme.Γ.obj (Opposite.op (Y.restrict <| Opens.openEmbedding U.val)))
-      = @algebraMap esto eso _ _ (_) := (RingHom.algebraMap_toAlgebra _).symm
-    simp only [Scheme.Γ_obj, unop_op, Scheme.restrict_presheaf_obj, Scheme.openCoverOfIsIso_obj,
-      Scheme.openCoverOfIsIso_map, Category.comp_id, op_id, Scheme.Γ_map, unop_id,
-      Scheme.id_val_base, Scheme.id_app, eqToHom_refl, Scheme.restrict_presheaf_map,
-      CategoryTheory.Functor.map_id] at *
-    rw [this]
     have := hP.HoldsForLocalizationAway
-    convert @this esto eso _ _ ?_ ?_ ?_
-    · exact 1
-    -- Porting note: again we have to bypass TC synthesis to keep Lean from running away
+    convert @this esto eso _ _ ?_ 1 ?_
+    · exact (RingHom.algebraMap_toAlgebra (Scheme.Γ.map _)).symm
     · exact
         @IsLocalization.away_of_isUnit_of_bijective _ _ _ _ (_) _ isUnit_one Function.bijective_id
   · intro; exact H
