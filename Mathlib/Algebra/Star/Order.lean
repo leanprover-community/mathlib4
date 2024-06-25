@@ -285,20 +285,10 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
         apply AddSubmonoid.subset_closure
         refine ⟨z • y, ?_⟩
         simp only [star_smul, smul_mul_smul, hz, hy]
-      case zeroc =>
-        simp only [zero_smul]
-        exact AddSubmonoid.zero_mem (AddSubmonoid.closure (Set.range fun s => star s * s))
-      case addc =>
-        intro c' d hc' hd
-        simp only [add_smul]
-        exact AddSubmonoid.add_mem (AddSubmonoid.closure (Set.range fun s => star s * s)) hc' hd
-    case zero =>
-      simp only [smul_zero]
-      exact AddSubmonoid.zero_mem (AddSubmonoid.closure (Set.range fun s => star s * s))
-    case add =>
-      intro x y hx hy
-      rw [smul_add]
-      exact AddSubmonoid.add_mem (AddSubmonoid.closure (Set.range fun s => star s * s)) hx hy
+      case zeroc => simpa only [zero_smul] using zero_mem _
+      case addc => exact fun c' d ↦ by simpa only [add_smul] using add_mem
+    case zero => simpa only [smul_zero] using zero_mem _
+    case add => exact fun x y ↦ by simpa only [smul_add] using add_mem
   case ne =>
     refine (smul_ne_zero ?_ ?_).symm
     · exact (ne_of_lt hc).symm
