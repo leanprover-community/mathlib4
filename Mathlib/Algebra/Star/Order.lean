@@ -278,8 +278,6 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
       refine AddSubmonoid.closure_induction hc ?memc ?zeroc ?addc
       case memc =>
         intro c' hc'
-        rw [Set.mem_range] at hc'
-        rw [Set.mem_range] at hx
         obtain ⟨z, hz⟩ := hc'
         obtain ⟨y, hy⟩ := hx
         apply AddSubmonoid.subset_closure

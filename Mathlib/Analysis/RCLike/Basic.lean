@@ -902,17 +902,17 @@ lemma ofReal_pos {x : ℝ} : 0 < (x : K) ↔ 0 < x := by
 lemma ofReal_lt_zero {x : ℝ} : (x : K) < 0 ↔ x < 0 := by
   rw [← ofReal_zero, ofReal_lt_ofReal]
 
-lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
+protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
   rw [pos_iff_exists_ofReal] at hz
   obtain ⟨x, hx, hx'⟩ := hz
   rw [← hx', ← ofReal_inv, ofReal_pos]
-  exact _root_.inv_pos_of_pos hx
+  exact inv_pos_of_pos hx
 
-lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
-  refine ⟨fun h => ?_, fun h => inv_pos_of_pos h⟩
+protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
+  refine ⟨fun h => ?_, fun h => RCLike.inv_pos_of_pos h⟩
   have : z = z⁻¹⁻¹ := by simp
   rw [this]
-  exact inv_pos_of_pos h
+  exact RCLike.inv_pos_of_pos h
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
