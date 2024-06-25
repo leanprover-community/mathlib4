@@ -113,7 +113,7 @@ lemma P3_neg : P3 x₁ x₂ y₁ y₂ ↔ P3 (-x₂) (-x₁) y₁ y₂ := by
   rw [← _root_.neg_lt_neg_iff]
   abel_nf
 
-lemma P2_negx : P2 x₁ x₂ y ↔ P2 (-x₂) (-x₁) y := by
+lemma P2_neg_left : P2 x₁ x₂ y ↔ P2 (-x₂) (-x₁) y := by
   rw [P2, P2]
   constructor
   · rw [quot_neg_mul, quot_neg_mul, eq_comm, neg_inj, neg_equiv_neg_iff, PGame.equiv_comm]
@@ -121,19 +121,19 @@ lemma P2_negx : P2 x₁ x₂ y ↔ P2 (-x₂) (-x₁) y := by
   · rw [PGame.equiv_comm, neg_equiv_neg_iff, quot_neg_mul, quot_neg_mul, neg_inj]
     tauto
 
-lemma P2_negy : P2 x₁ x₂ y ↔ P2 x₁ x₂ (-y) := by
+lemma P2_neg_right : P2 x₁ x₂ y ↔ P2 x₁ x₂ (-y) := by
   rw [P2, P2]
   rw [quot_mul_neg, quot_mul_neg, neg_inj]
 
-lemma P4_negx : P4 x₁ x₂ y ↔ P4 (-x₂) (-x₁) y := by
+lemma P4_neg_left : P4 x₁ x₂ y ↔ P4 (-x₂) (-x₁) y := by
   rw [P4, P4, PGame.neg_lt_neg_iff]
   simp [← P3_neg]
 
-lemma P4_negy : P4 x₁ x₂ y ↔ P4 x₁ x₂ (-y) := by
+lemma P4_neg_right : P4 x₁ x₂ y ↔ P4 x₁ x₂ (-y) := by
   rw [P4, P4, neg_neg, and_comm]
 
-lemma P24_negx : P24 x₁ x₂ y ↔ P24 (-x₂) (-x₁) y := by rw [P24, P24, P2_negx, P4_negx]
-lemma P24_negy : P24 x₁ x₂ y ↔ P24 x₁ x₂ (-y) := by rw [P24, P24, P2_negy, P4_negy]
+lemma P24_negx : P24 x₁ x₂ y ↔ P24 (-x₂) (-x₁) y := by rw [P24, P24, P2_neg_left, P4_neg_left]
+lemma P24_negy : P24 x₁ x₂ y ↔ P24 x₁ x₂ (-y) := by rw [P24, P24, P2_neg_right, P4_neg_right]
 
 /-! #### Explicit calculations necessary for the main proof -/
 
@@ -196,12 +196,12 @@ def ih1 (x y : PGame) : Prop :=
 
 /-! #### Symmetry properties of `ih1` -/
 
-lemma ih1_negx : ih1 x y → ih1 (-x) y :=
+lemma ih1_neg_left : ih1 x y → ih1 (-x) y :=
   fun h x₁ x₂ y' h₁ h₂ hy => by
     rw [isOption_neg] at h₁ h₂
     exact P24_negx.2 (h h₂ h₁ hy)
 
-lemma ih1_negy : ih1 x y → ih1 x (-y) :=
+lemma ih1_neg_right : ih1 x y → ih1 x (-y) :=
   fun h x₁ x₂ y' => by
     rw [← neg_eq_iff_eq_neg, isOption_neg, P24_negy]
     apply h
@@ -256,7 +256,7 @@ lemma mul_option_lt (i j k l) : (⟦mul_option x y i k⟧ : Game) < -⟦mul_opti
     exact mul_option_lt_iff_P1.2 (P1_of_eq h (P24_of_ih ihxy i j).1
       (ihxy (ml i) (ml j) $ Or.inr $ isOption_neg.1 $ ml l).1 $ P3_of_ih hy ihyx i k l) }
   { rw [mul_option_neg_neg, lt_neg]
-    exact mul_option_lt_of_lt hy.neg (ih1_negy ihxy) (ih1_negx ihyx) j i l _ h }
+    exact mul_option_lt_of_lt hy.neg (ih1_neg_right ihxy) (ih1_neg_left ihyx) j i l _ h }
 
 end
 
@@ -264,8 +264,8 @@ end
 theorem P1_of_ih : (x * y).Numeric := by
   have ihxy := ih1xy ih
   have ihyx := ih1yx ih
-  have ihxyn := ih1_negx (ih1_negy ihxy)
-  have ihyxn := ih1_negx (ih1_negy ihyx)
+  have ihxyn := ih1_neg_left (ih1_neg_right ihxy)
+  have ihyxn := ih1_neg_left (ih1_neg_right ihyx)
   refine numeric_def.mpr ⟨?_, ?_, ?_⟩
 
   · simp_rw [lt_iff_game_lt]
@@ -383,13 +383,13 @@ lemma ih4_neg : ih4 x₁ x₂ y → ih4 (-x₂) (-x₁) y ∧ ih4 x₁ x₂ (-y)
   simp_rw [ih4, isOption_neg]
   refine (fun h => ⟨fun z w h' => ?_, fun z w h' => ?_⟩)
   · specialize @h (-z) w h'
-    rw [P2_negx]
-    rw (config := {occs := .pos [2]}) [P2_negx]
+    rw [P2_neg_left]
+    rw (config := {occs := .pos [2]}) [P2_neg_left]
     simp [neg_neg]
     tauto
   · specialize @h z (-w) h'
-    rw [P2_negy]
-    rw (config := {occs := .pos [2]}) [P2_negy]
+    rw [P2_neg_right]
+    rw (config := {occs := .pos [2]}) [P2_neg_right]
     tauto
 
 lemma mul_option_lt_mul_of_equiv (hn : x₁.Numeric) (h : ih24 x₁ x₂ y) (he : x₁ ≈ x₂) (i j) :
