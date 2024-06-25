@@ -37,8 +37,7 @@ open EquivLike
 non-associative semirings `A` and `B` equipped with a `star` operation, and this homomorphism is
 also `star`-preserving. -/
 structure NonUnitalStarRingHom (A B : Type*) [NonUnitalNonAssocSemiring A]
-  [Star A] [NonUnitalNonAssocSemiring B]
-  [Star B] extends A →ₙ+* B where
+    [Star A] [NonUnitalNonAssocSemiring B] [Star B] extends A →ₙ+* B where
   /-- By definition, a non-unital ⋆-ring homomorphism preserves the `star` operation. -/
   map_star' : ∀ a : A, toFun (star a) = star (toFun a)
 
