@@ -191,7 +191,7 @@ lemma ArgsRel.numeric_closed {a' a} : ArgsRel a' a → a.Numeric → a'.Numeric 
   TransGen.closed2 $ @cutExpand_closed _ IsOption ⟨wf_isOption.isIrrefl.1⟩ _ Numeric.isOption
 
 /-- A specialized induction hypothesis used to prove P1. -/
-def ih1 (x y: PGame) : Prop :=
+def ih1 (x y : PGame) : Prop :=
   ∀ ⦃x₁ x₂ y'⦄, IsOption x₁ x → IsOption x₂ x → (y' = y ∨ IsOption y' y) → P24 x₁ x₂ y'
 
 /-! #### Symmetry properties of `ih1` -/
@@ -321,7 +321,7 @@ theorem P1_of_ih : (x * y).Numeric := by
   all_goals solve_by_elim [IsOption.mk_left, IsOption.mk_right]
 
 /-- A specialized induction hypothesis used to prove P2 and P4. -/
-def ih24 (x₁ x₂ y: PGame) : Prop :=
+def ih24 (x₁ x₂ y : PGame) : Prop :=
   ∀ ⦃z⦄, (IsOption z x₁ → P24 z x₂ y) ∧ (IsOption z x₂ → P24 x₁ z y) ∧ (IsOption z y → P24 x₁ x₂ z)
 
 /-- A specialized induction hypothesis used to prove P4. -/
@@ -428,7 +428,7 @@ theorem mul_right_le_of_equiv (h₁ : x₁.Numeric) (h₂ : x₂.Numeric)
       apply mul_option_lt_mul_of_equiv h₂.neg (ih24_neg h₁₂).1 he'
 
 /-- The statement that all left options of `x * y` of the first kind are less than itself. -/
-def mul_options_lt_mul (x y: PGame) : Prop := ∀ ⦃i j⦄, ⟦mul_option x y i j⟧ < (⟦x * y⟧ : Game)
+def mul_options_lt_mul (x y : PGame) : Prop := ∀ ⦃i j⦄, ⟦mul_option x y i j⟧ < (⟦x * y⟧ : Game)
 
 /-- That the left options of `x * y` are less than itself and the right options are greater, which
   is part of the condition that `x * y` is numeric, is equivalent to the conjunction of various
@@ -459,7 +459,7 @@ lemma mul_options_lt_mul_of_numeric (hn : (x * y).Numeric) :
   not necessarily an option of `y₂`, it follows from the induction hypothesis for P3 (with `x₂`
   replaced by a left option `x'`) after the `main` theorem (P124) is established, and is used to
   prove P3 in full (`P3_of_lt_of_lt`). -/
-def ih3 (x₁ x' x₂ y₁ y₂: PGame) : Prop :=
+def ih3 (x₁ x' x₂ y₁ y₂ : PGame) : Prop :=
     P2 x₁ x' y₁ ∧ P2 x₁ x' y₂ ∧ P3 x' x₂ y₁ y₂ ∧ (x₁ < x' → P3 x₁ x' y₁ y₂)
 
 lemma ih3_of_ih (h24 : ih24 x₁ x₂ y) (h4 : ih4 x₁ x₂ y) (hl : mul_options_lt_mul x₂ y)
