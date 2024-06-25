@@ -360,7 +360,7 @@ protected theorem coe_mul (x y : FreeRing α) : ↑(x * y) = (x : FreeCommRing �
 variable (α)
 
 protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x => by
-  induction x using FreeCommRing.induction_on with
+  induction x with
   | hn1 =>
     use -1
     rfl
