@@ -518,10 +518,7 @@ lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
     (isoOfRangeEq f g e).inv ≫ f = g :=
   lift_fac _ _ (le_of_eq e.symm)
 
-end IsOpenImmersion
-
-theorem IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux
-    {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
+theorem app_eq_invApp_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U) :
     f ⁻¹ᵁ V = fg ⁻¹ᵁ (g ''ᵁ V) := by
   subst H
@@ -529,24 +526,23 @@ theorem IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux
   congr 1
   ext1
   exact (Set.preimage_image_eq _ h.base_open.inj).symm
-#align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux AlgebraicGeometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux
+#align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux AlgebraicGeometry.IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux
 
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
-theorem IsOpenImmersion.app_eq_invApp_app_of_comp_eq
-    {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
+theorem app_eq_invApp_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U) :
     f.app V = g.invApp V ≫ fg.app (g ''ᵁ V) ≫ Y.presheaf.map
-      (eqToHom <| IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux f g fg H V).op := by
+      (eqToHom <| IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux f g fg H V).op := by
   subst H
   rw [Scheme.comp_app, Category.assoc, Scheme.Hom.invApp_app_assoc, f.naturality_assoc,
     ← Functor.map_comp, ← op_comp, Quiver.Hom.unop_op, eqToHom_map, eqToHom_trans,
     eqToHom_op, eqToHom_refl, CategoryTheory.Functor.map_id, Category.comp_id]
 #align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq AlgebraicGeometry.IsOpenImmersion.app_eq_invApp_app_of_comp_eq
 
-theorem IsOpenImmersion.lift_app
-    {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersion f] (H) (V : Opens U) :
+theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersion f] (H)
+    (V : Opens U) :
     (IsOpenImmersion.lift f g H).app V = f.invApp V ≫ g.app (f ''ᵁ V) ≫
-      X.presheaf.map (eqToHom <| IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux _ _ _
+      X.presheaf.map (eqToHom <| IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux _ _ _
         (IsOpenImmersion.lift_fac f g H).symm V).op :=
   IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
 #align algebraic_geometry.IsOpenImmersion.lift_app AlgebraicGeometry.IsOpenImmersion.lift_app
