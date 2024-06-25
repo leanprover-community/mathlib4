@@ -1706,12 +1706,12 @@ protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelo
     Disjoint s (lowerClosure t) ↔ Disjoint s t := hs.toDual.disjoint_upperClosure_right
 
 @[simp] lemma upperClosure_eq :
-  ↑(upperClosure s) = s ↔ IsUpperSet s :=
-⟨(· ▸ UpperSet.upper _), IsUpperSet.upperClosure⟩
+    ↑(upperClosure s) = s ↔ IsUpperSet s :=
+  ⟨(· ▸ UpperSet.upper _), IsUpperSet.upperClosure⟩
 
 @[simp] lemma lowerClosure_eq :
-  ↑(lowerClosure s) = s ↔ IsLowerSet s :=
-@upperClosure_eq αᵒᵈ _ _
+    ↑(lowerClosure s) = s ↔ IsLowerSet s :=
+  @upperClosure_eq αᵒᵈ _ _
 
 end closure
 
