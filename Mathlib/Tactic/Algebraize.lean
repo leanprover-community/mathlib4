@@ -12,6 +12,7 @@ elab_rules : tactic
       let .app (.app (.app (.app (.const ``RingHom _) _) _) _) _ ← Meta.inferType elabedF |
         throwError "Type of {elabedF} is not a ring hom"
       evalTactic <| ← `(tactic|letI := (RingHom.toAlgebra $f))
+      evalTactic <| ← `(tactic|have : $f = algebraMap _ _ := rfl)
 
 example {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (g : B →+* C) :
     True := by
