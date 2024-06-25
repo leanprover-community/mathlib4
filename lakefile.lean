@@ -24,7 +24,7 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.36"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.37"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
 
@@ -70,7 +70,7 @@ lean_exe shake where
 
 /-- `lake exe lint_style` runs text-based style linters. -/
 lean_exe lint_style where
-  root := `Mathlib.Tactic.Linter.TextBased
+  srcDir := "scripts"
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
