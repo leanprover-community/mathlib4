@@ -113,10 +113,10 @@ theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
       have ia : i + 1 ≤ a := Finset.mem_range.1 hi
       refine intervalIntegral.integral_mono_on (by simp) (by simp) (hint _ ia) fun x hx => ?_
       apply hf _ _ hx.2
-      · refine mem_Icc.2 ⟨le_trans ((le_add_iff_nonneg_right _).2 (Nat.cast_nonneg _)) hx.1,
+      · refine mem_Icc.2 ⟨le_trans (le_add_of_nonneg_right (Nat.cast_nonneg _)) hx.1,
           le_trans hx.2 ?_⟩
         simp only [Nat.cast_le, add_le_add_iff_left, ia]
-      · refine mem_Icc.2 ⟨(le_add_iff_nonneg_right _).2 (Nat.cast_nonneg _), ?_⟩
+      · refine mem_Icc.2 ⟨le_add_of_nonneg_right (Nat.cast_nonneg _), ?_⟩
         simp only [add_le_add_iff_left, Nat.cast_le, ia]
     _ = ∫ x in x₀..x₀ + a, f x := by
       convert intervalIntegral.sum_integral_adjacent_intervals hint
