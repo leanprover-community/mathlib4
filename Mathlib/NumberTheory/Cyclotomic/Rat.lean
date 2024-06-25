@@ -604,7 +604,6 @@ theorem absdiscr_prime_pow_succ [IsCyclotomicExtension {p ^ (k + 1)} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
     NumberField.discr K =
     (-1) ^ ((p : ℕ) ^ k * (p - 1) / 2) * p ^ ((p : ℕ) ^ k * ((p - 1) * (k + 1) - 1)) := by
-  have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   simpa [totient_prime_pow hp.out (succ_pos k)] using absdiscr_prime_pow p (k + 1) K
 
 /-- We compute the absolute discriminant of a `p`-th cyclotomic field where `p` is prime. -/
@@ -614,7 +613,6 @@ theorem absdiscr_prime [IsCyclotomicExtension {p} ℚ K] :
   have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by
     rw [zero_add, pow_one]
     infer_instance
-  have : NumberField K := IsCyclotomicExtension.numberField {p} ℚ K
   rw [absdiscr_prime_pow_succ p 0 K]
   simp only [Int.reduceNeg, pow_zero, one_mul, zero_add, mul_one, mul_eq_mul_left_iff, gt_iff_lt,
     Nat.cast_pos, PNat.pos, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq, false_and, or_false]
