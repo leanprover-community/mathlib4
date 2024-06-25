@@ -476,17 +476,6 @@ instance _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
     IsLocalization.Away r Γ(X, X.basicOpen r) :=
   isLocalization_basicOpen (isAffineOpen_top X) r
 
-theorem isLocalization_of_eq_basicOpen {V : Opens X} (i : V ⟶ U) (e : V = X.basicOpen f) :
-    @IsLocalization.Away _ _ f Γ(X, V) _ (X.presheaf.map i.op).toAlgebra := by
-  subst e; convert isLocalization_basicOpen hU f using 3
-#align algebraic_geometry.is_localization_of_eq_basic_open AlgebraicGeometry.IsAffineOpen.isLocalization_of_eq_basicOpen
-
-instance _root_.AlgebraicGeometry.Γ_restrict_isLocalization
-    (X : Scheme.{u}) [IsAffine X] (r : Scheme.Γ.obj (op X)) :
-    IsLocalization.Away r (Scheme.Γ.obj (op (X ∣_ᵤ X.basicOpen r))) :=
-  (isAffineOpen_top X).isLocalization_of_eq_basicOpen r _ (Opens.openEmbedding_obj_top _)
-#align algebraic_geometry.Γ_restrict_is_localization AlgebraicGeometry.Γ_restrict_isLocalization
-
 lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U)
     {V : Opens X} (hV : IsAffineOpen V) (e) (r : Γ(Y, U)) :
     letI := hU.isLocalization_basicOpen r
@@ -500,6 +489,17 @@ lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (hU : IsA
   rw [← CommRingCat.comp_eq_ring_hom_comp, IsLocalization.Away.map, IsLocalization.map_comp,
     RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
     Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
+
+theorem isLocalization_of_eq_basicOpen {V : Opens X} (i : V ⟶ U) (e : V = X.basicOpen f) :
+    @IsLocalization.Away _ _ f Γ(X, V) _ (X.presheaf.map i.op).toAlgebra := by
+  subst e; convert isLocalization_basicOpen hU f using 3
+#align algebraic_geometry.is_localization_of_eq_basic_open AlgebraicGeometry.IsAffineOpen.isLocalization_of_eq_basicOpen
+
+instance _root_.AlgebraicGeometry.Γ_restrict_isLocalization
+    (X : Scheme.{u}) [IsAffine X] (r : Scheme.Γ.obj (op X)) :
+    IsLocalization.Away r (Scheme.Γ.obj (op (X ∣_ᵤ X.basicOpen r))) :=
+  (isAffineOpen_top X).isLocalization_of_eq_basicOpen r _ (Opens.openEmbedding_obj_top _)
+#align algebraic_geometry.Γ_restrict_is_localization AlgebraicGeometry.Γ_restrict_isLocalization
 
 theorem basicOpen_basicOpen_is_basicOpen (g : Γ(X, X.basicOpen f)) :
     ∃ f' : Γ(X, U), X.basicOpen f' = X.basicOpen g := by
