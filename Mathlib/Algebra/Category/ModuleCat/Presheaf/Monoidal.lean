@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson, Jack McKoen, Joël Riou
+-/
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+
+/-!
+# The monoidal category structure on presheaves of modules
+
+-/
 
 noncomputable section
 
@@ -9,38 +19,39 @@ universe v u v₁ u₁
 
 namespace ModuleCat
 
-variable {R : Type u} [CommRing R] {M N P : ModuleCat.{u} R}
+variable {R : Type u} [CommRing R] {F G H K : ModuleCat.{u} R}
 
 section
 
-variable (f : M → N → P) (h₁ : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
+variable (f : F → G → H) (h₁ : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
   (h₂ : ∀ (a : R) m n, f (a • m) n = a • f m n)
   (h₃ : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
   (h₄ : ∀ (a : R) m n, f m (a • n) = a • f m n)
 
-def tensorLift : M ⊗ N ⟶ P := TensorProduct.lift (LinearMap.mk₂ R f h₁ h₂ h₃ h₄)
+def tensorLift : F ⊗ G ⟶ H := TensorProduct.lift (LinearMap.mk₂ R f h₁ h₂ h₃ h₄)
 
 @[simp]
-lemma tensorLift_apply (m : M) (n : N) :
+lemma tensorLift_apply (m : F) (n : G) :
   tensorLift f h₁ h₂ h₃ h₄ (m ⊗ₜ n) = f m n := rfl
 
 end
 
+lemma tensor_ext {f g : F ⊗ G ⟶ H} (h : ∀ m n, f (m ⊗ₜ n) = g (m ⊗ₜ n)) :
+    f = g :=
+  TensorProduct.ext (by ext; apply h)
+
+@[simp]
+lemma tensorHom_tmul (f : F ⟶ G) (g : H ⟶ K) (a : F) (b : H) :
+    (f ⊗ g) (a ⊗ₜ b) = f a ⊗ₜ g b := rfl
+
 end ModuleCat
 
 variable {C : Type*} [Category C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
-  -- the next variable is more the missing API
-  {S : Cᵒᵖ ⥤ RingCat.{u}}
 
 instance (X : Cᵒᵖ) : CommRing ((R ⋙ forget₂ _ RingCat).obj X) :=
   inferInstanceAs (CommRing (R.obj X))
 
 namespace PresheafOfModules
-
-abbrev obj' (F : PresheafOfModules.{v} S) (X : Cᵒᵖ) := (evaluation _ X).obj F
-
-abbrev Hom.app' {F G : PresheafOfModules.{v} S} (f : F ⟶ G) (X : Cᵒᵖ) :
-    F.obj' X ⟶ G.obj' X := (evaluation _ X).map f
 
 namespace Monoidal
 
@@ -50,9 +61,12 @@ def tensorObj' :
     BundledCorePresheafOfModules (R ⋙ forget₂ _ _) where
   obj X := F.obj' X ⊗ G.obj' X
   map {X Y} f := ModuleCat.tensorLift (fun x y ↦ (F.map f x) ⊗ₜ (G.map f y))
-    sorry sorry sorry sorry
-  map_id := sorry
-  map_comp := sorry
+    (by intros; dsimp; rw [map_add, TensorProduct.add_tmul])
+    (by intros; dsimp; erw [F.map_smul]; rfl)
+    (by intros; dsimp; rw [map_add, TensorProduct.tmul_add])
+    (by intros; dsimp; simp; rfl)
+  map_id X := ModuleCat.tensor_ext (by intros; dsimp; simp; rfl)
+  map_comp f g := ModuleCat.tensor_ext (by intros; dsimp; simp; rfl)
 
 def tensorObj : PresheafOfModules (R ⋙ forget₂ _ _) :=
   (tensorObj' F G).toPresheafOfModules
@@ -62,36 +76,38 @@ variable {F G H K}
 @[simp]
 lemma tensorObj_map_tmul {X Y : Cᵒᵖ}
     (x : F.obj' X) (y : G.obj' X) (f : X ⟶ Y) :
-    letI : CommSemiring ((R ⋙ forget₂ CommRingCat RingCat).obj X) :=
-        inferInstanceAs (CommSemiring (R.obj X))
-    letI : CommSemiring ((R ⋙ forget₂ CommRingCat RingCat).obj Y) :=
-        inferInstanceAs (CommSemiring (R.obj Y))
-    (tensorObj F G).map f (x ⊗ₜ y) = (F.map f x) ⊗ₜ (G.map f y) := rfl
+    (tensorObj F G).map f (x ⊗ₜ[R.obj X] y) = (F.map f x) ⊗ₜ[R.obj Y] (G.map f y) := rfl
+
+lemma tensorHom_aux (f : F ⟶ H) (g : G ⟶ K) {X Y : Cᵒᵖ} (φ : X ⟶ Y) :
+    restrictionApp φ (tensorObj F G) ≫
+      (ModuleCat.restrictScalars ((R ⋙ forget₂ _ RingCat).map φ)).map
+        (Hom.app' f Y ⊗ Hom.app' g Y) =
+      (Hom.app' f X ⊗ Hom.app' g X) ≫ restrictionApp φ (tensorObj H K) := by
+  apply ModuleCat.tensor_ext
+  intro a b
+  change (Hom.app' f Y ⊗ Hom.app' g Y) (F.map φ a ⊗ₜ[R.obj Y] G.map φ b) =
+    (H.map φ (Hom.app f X a)) ⊗ₜ[R.obj Y] (K.map φ (Hom.app g X b))
+  erw [ModuleCat.tensorHom_tmul]
+  congr 1
+  all_goals apply naturality_apply
 
 def tensorHom (f : F ⟶ H) (g : G ⟶ K) :
     tensorObj F G ⟶ tensorObj H K :=
-  Hom.mk'' (fun X ↦ Hom.app' f X ⊗ Hom.app' g X) (by
-    intro X Y h
-    apply TensorProduct.ext (R := R.obj X)
-    ext a b
-    dsimp
-    simp only [ModuleCat.restrictScalars, ModuleCat.RestrictScalars.map']
-    sorry)
-    -- change ((Hom.app f Y ⊗ Hom.app g Y) (restrictionApp _ _)) = _
-    -- erw [comp_apply]
-    -- erw [restrictionApp_apply, restrictionApp_apply]
-
+  Hom.mk'' (fun X ↦ Hom.app' f X ⊗ Hom.app' g X)
+    (by intros; apply tensorHom_aux)
 
 variable (F)
 
 def whiskerLeft (g : G ⟶ H) : tensorObj F G ⟶ tensorObj F H :=
-  Hom.mk'' (fun X ↦ F.obj' X ◁ Hom.app' g X) sorry
+  Hom.mk'' (fun X ↦ F.obj' X ◁ Hom.app' g X)
+    (fun _ _ φ ↦ tensorHom_aux (𝟙 F) g φ)
 
 variable {F}
 
 def whiskerRight (f : F ⟶ G) (H : PresheafOfModules (R ⋙ forget₂ _ _)) :
     tensorObj F H ⟶ tensorObj G H :=
-  Hom.mk'' (fun X ↦ Hom.app' f X ▷ H.obj' X ) sorry
+  Hom.mk'' (fun X ↦ Hom.app' f X ▷ H.obj' X )
+    (fun _ _ φ ↦ tensorHom_aux f (𝟙 H) φ)
 
 variable (F G H)
 
@@ -120,7 +136,7 @@ variable {F G H}
 
 @[simp]
 lemma evaluation_map_tensorHom (f : F ⟶ H) (g : G ⟶ K) (X : Cᵒᵖ) :
-    Hom.app' (f ⊗ g) X = Hom.app' f X ⊗ Hom.app' g X:= rfl
+    Hom.app' (f ⊗ g) X = Hom.app' f X ⊗ Hom.app' g X := rfl
 
 variable (F)
 
@@ -135,12 +151,9 @@ lemma evaluation_map_whiskerRight
     (f : F ⟶ G) (H : PresheafOfModules (R ⋙ forget₂ _ _)) (X : Cᵒᵖ) :
     Hom.app' (f ▷ H) X = Hom.app' f X ▷ H.obj' X := rfl
 
-lemma evaluation_jointly_faithful (f g : F ⟶ G)
-    (h : ∀ (X : Cᵒᵖ), Hom.app' f X = Hom.app' g X) : f = g := by
-  ext1 X
-  exact h _
-
 attribute [local ext] evaluation_jointly_faithful
+
+-- are the next two declarations local or global?
 attribute [-ext] Hom.ext
 attribute [-simp] evaluation_map
 
@@ -150,7 +163,8 @@ lemma evaluation_map_associator_hom (X : Cᵒᵖ) :
       by exact (α_ (F.obj' X) (G.obj' X) (H.obj' X)).hom := by
   rfl
 
-lemma pentagon (F G H K : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)) :
+variable (F G H K)
+lemma pentagon :
     (α_ F G H).hom ▷ K ≫ (α_ F (G ⊗ H) K).hom ≫ F ◁ (α_ G H K).hom =
       (α_ (F ⊗ G) H K).hom ≫ (α_ F G (H ⊗ K)).hom := by
   ext1 X
@@ -165,12 +179,13 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : PresheafOfModules.{
   ext1 X
   simp only [Functor.map_comp, evaluation_map_tensorHom,
     evaluation_map_associator_hom]
-  exact MonoidalCategory.associator_naturality (Hom.app' f₁ X) (Hom.app' f₂ X) (Hom.app' f₃ X)
+  exact MonoidalCategory.associator_naturality
+    (Hom.app' f₁ X) (Hom.app' f₂ X) (Hom.app' f₃ X)
 
 set_option maxHeartbeats 400000 in
 instance : MonoidalCategory (PresheafOfModules (R ⋙ forget₂ _ _)) where
   tensorHom_def _ _ := by ext1; simp [tensorHom_def]
-  tensor_id _ _ := by ext1;simp; rfl
+  tensor_id _ _ := by ext1; simp; rfl
   tensor_comp f₁ f₂ g₁ g₂ := by ext1; simp
   whiskerLeft_id _ _ := by ext1; simp; rfl
   id_whiskerRight _ _ := by ext1; simp; rfl
@@ -179,3 +194,7 @@ instance : MonoidalCategory (PresheafOfModules (R ⋙ forget₂ _ _)) where
   rightUnitor_naturality := sorry
   pentagon F G H K := pentagon F G H K
   triangle := sorry
+
+end Monoidal
+
+end PresheafOfModules

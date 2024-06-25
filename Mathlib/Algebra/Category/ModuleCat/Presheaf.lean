@@ -234,6 +234,16 @@ instance (X : Cᵒᵖ) : (evaluation R X).Additive where
 
 variable {R}
 
+abbrev obj' (F : PresheafOfModules.{v} R) (X : Cᵒᵖ) := (evaluation _ X).obj F
+
+abbrev Hom.app' {F G : PresheafOfModules.{v} R} (f : F ⟶ G) (X : Cᵒᵖ) :
+    F.obj' X ⟶ G.obj' X := (evaluation _ X).map f
+
+lemma evaluation_jointly_faithful {F G : PresheafOfModules.{v} R} {f g : F ⟶ G}
+    (h : ∀ (X : Cᵒᵖ), Hom.app' f X = Hom.app' g X) : f = g := by
+  ext1 X
+  exact h _
+
 /-- Given a presheaf of modules `M` on a category `C` and `f : X ⟶ Y` in `Cᵒᵖ`, this
 is the restriction map `M.obj X ⟶ M.obj Y`, considered as a linear map to
 the restriction of scalars of `M.obj Y`. -/
@@ -325,8 +335,8 @@ of a family of isomorphisms in the various `ModuleCat (R.obj X)`. -/
 def isoMk' : P ≅ Q where
   hom := Hom.mk' (fun X ↦ (app X).hom) naturality
   inv := Hom.mk' (fun X ↦ (app X).inv) sorry
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+  hom_inv_id := evaluation_jointly_faithful (fun X ↦ (app X).hom_inv_id)
+  inv_hom_id := evaluation_jointly_faithful (fun X ↦ (app X).inv_hom_id)
 
 /-- A constructor for isomorphisms in `PresheafOfModules R` that is based on the data
 of a family of isomorphisms in the various `ModuleCat (R.obj X)`, and for which the
