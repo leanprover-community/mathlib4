@@ -147,7 +147,7 @@ theorem helly_theorem {F : ι → Set E} [Fintype ι]
     (⋂ i, F i).Nonempty := by
   apply helly_theorem' h_convex
   intro I hI
-  obtain ⟨J, hJ_ss, hJ_card⟩ := Fintype.exists_superset_card_eq hI h_card
+  obtain ⟨J, hJ_ss, hJ_card⟩ := Finset.exists_superset_card_eq hI h_card
   apply Set.Nonempty.mono <| biInter_mono hJ_ss (by intro _ _; rfl)
   exact h_inter J hJ_card
 
@@ -237,7 +237,7 @@ theorem helly_theorem_compact [TopologicalSpace E] [T2Space E] {F : ι → Set E
     · exact Infinite.exists_superset_card_eq _ _ hI_card
     · have : Finite ι := Finite.of_not_infinite h
       have : Fintype ι := Fintype.ofFinite ι
-      apply Fintype.exists_superset_card_eq hI_card
+      apply Finset.exists_superset_card_eq hI_card
       simp only [PartENat.card_eq_coe_fintype_card] at h_card
       rwa [← Nat.cast_one, ← Nat.cast_add, Nat.cast_le] at h_card
   obtain ⟨J, hJ_ss, hJ_card⟩ := hJ
