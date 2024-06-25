@@ -39,13 +39,9 @@ lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i)  :=
   hasEigenvector_toLin_diagonal ..
 
-section NoZeroSMulDivisors
-
-variable [NoZeroSMulDivisors R M]
-
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
-lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} (b : Basis n R M) :
-    HasEigenvalue (toLin b b (diagonal d)) μ ↔ ∃ i, d i = μ := by
+lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisors R M]
+    (b : Basis n R M) : HasEigenvalue (toLin b b (diagonal d)) μ ↔ ∃ i, d i = μ := by
   have (i : n) : HasEigenvalue (toLin b b (diagonal d)) (d i) :=
     hasEigenvalue_of_hasEigenvector <| hasEigenvector_toLin_diagonal d i b
   constructor
@@ -66,25 +62,16 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} (b : Basis n R M) 
   · rintro ⟨i, rfl⟩
     exact this i
 
-end NoZeroSMulDivisors
-section NoZeroDivisors
-
-variable [NoZeroDivisors R]
-
 /-- Eigenvalues of a diagonal linear operator with respect to standard basis
     are the diagonal entries. -/
-lemma hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
+lemma hasEigenvalue_toLin'_diagonal_iff [NoZeroDivisors R] (d : n → R) {μ : R} :
     HasEigenvalue (toLin' (diagonal d)) μ ↔ (∃ i, d i = μ) :=
   hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
 
-end NoZeroDivisors
-
 end NontrivialCommRing
 
-variable [Field R]
-
 /-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/
-lemma spectrum_diagonal (d : n → R) :
+lemma spectrum_diagonal [Field R] (d : n → R) :
     spectrum R (diagonal d) = Set.range d := by
   ext μ
   rw [← AlgEquiv.spectrum_eq (toLinAlgEquiv <| Pi.basisFun R n), ← hasEigenvalue_iff_mem_spectrum]
