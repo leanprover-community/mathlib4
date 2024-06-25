@@ -184,7 +184,6 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     replace hs := (hs.map (Scheme.ΓSpecIso R).inv).eq_zero
     rw [Iso.hom_inv_id_apply] at hs
     rw [hs, map_zero]
-    -- exact @IsReduced.component_reduced _ hX ⊤
 #align algebraic_geometry.eq_zero_of_basic_open_eq_bot AlgebraicGeometry.eq_zero_of_basicOpen_eq_bot
 
 @[simp]
