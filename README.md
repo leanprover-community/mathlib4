@@ -60,7 +60,7 @@ You may want to subscribe to the `mathlib4` stream
 * If you added a new file, run the following command to update `Mathlib.lean`
 
   ```shell
-  scripts/mk_all.sh
+  lake exe mk_all
   ```
 
 ### Guidelines
