@@ -181,7 +181,7 @@ def ArgsRel := InvImage (TransGen $ CutExpand IsOption) Args.toMultiset
 /-- `ArgsRel` is well-founded. -/
 theorem argsRel_wf : WellFounded ArgsRel := InvImage.wf _ wf_isOption.cutExpand.transGen
 
-/-- The statement that we will be shown by induction using the well-founded relation `ArgsRel`. -/
+/-- The statement that we will show by induction using the well-founded relation `ArgsRel`. -/
 def P124 : Args → Prop
   | (Args.P1 x y) => Numeric (x * y)
   | (Args.P24 x₁ x₂ y) => P24 x₁ x₂ y
@@ -210,24 +210,24 @@ lemma ih1_neg_right : ih1 x y → ih1 x (-y) :=
 
 variable (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a)
 
-lemma ihnx (h : IsOption x' x) : (x' * y).Numeric :=
+lemma left_numeric_of_ih (h : IsOption x' x) : (x' * y).Numeric :=
   ih (Args.P1 x' y) $ TransGen.single $ cutExpand_pair_left h
 
-lemma ihny (h : IsOption y' y) : (x * y').Numeric :=
+lemma right_numeric_of_ih (h : IsOption y' y) : (x * y').Numeric :=
   ih (Args.P1 x y') $ TransGen.single $ cutExpand_pair_right h
 
-lemma ihnxy (hx : IsOption x' x) (hy : IsOption y' y) : (x' * y').Numeric :=
+lemma left_right_numeric_of_ih (hx : IsOption x' x) (hy : IsOption y' y) : (x' * y').Numeric :=
   ih (Args.P1 x' y') $ TransGen.tail (TransGen.single $ cutExpand_pair_right hy) $
     cutExpand_pair_left hx
 
-lemma ih1xy : ih1 x y := by
+lemma ih1_of_ih : ih1 x y := by
   rintro x₁ x₂ y' h₁ h₂ (rfl|hy) <;> apply ih (Args.P24 _ _ _)
   swap
   refine TransGen.tail ?_ (cutExpand_pair_right hy)
   all_goals { exact TransGen.single (cutExpand_double_left h₁ h₂) }
 
-lemma ih1yx : ih1 y x :=
-  ih1xy $ by
+lemma ih1_rev_of_ih : ih1 y x :=
+  ih1_of_ih $ by
     simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih ⊢
     exact ih
 
@@ -262,8 +262,8 @@ end
 
 /-- P1 follows from the induction hypothesis. -/
 theorem P1_of_ih : (x * y).Numeric := by
-  have ihxy := ih1xy ih
-  have ihyx := ih1yx ih
+  have ihxy := ih1_of_ih ih
+  have ihyx := ih1_rev_of_ih ih
   have ihxyn := ih1_neg_left (ih1_neg_right ihxy)
   have ihyxn := ih1_neg_left (ih1_neg_right ihyx)
   refine numeric_def.mpr ⟨?_, ?_, ?_⟩
@@ -313,11 +313,11 @@ theorem P1_of_ih : (x * y).Numeric := by
   all_goals
     apply Numeric.sub
     apply Numeric.add
-    apply ihnx ih
+    apply left_numeric_of_ih ih
     pick_goal 2
-    apply ihny ih
+    apply right_numeric_of_ih ih
     pick_goal 3
-    apply ihnxy ih
+    apply left_right_numeric_of_ih ih
   all_goals solve_by_elim [IsOption.mk_left, IsOption.mk_right]
 
 /-- A specialized induction hypothesis used to prove P2 and P4. -/
