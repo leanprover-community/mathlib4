@@ -91,8 +91,8 @@ theorem moveRight {x : PGame} (o : Numeric x) (j : x.RightMoves) : Numeric (x.mo
 
 lemma isOption {x' x} (h : IsOption x' x) (hx : Numeric x) : Numeric x' := by
   cases h
-  apply hx.moveLeft
-  apply hx.moveRight
+  · apply hx.moveLeft
+  · apply hx.moveRight
 
 end Numeric
 

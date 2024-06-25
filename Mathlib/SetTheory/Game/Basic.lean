@@ -853,71 +853,63 @@ def mul_option (x y : PGame) (i: LeftMoves x) (j: LeftMoves y) : PGame :=
   the first kind. -/
 lemma mul_option_neg_neg {x} (y) {i j} :
     mul_option x y i j = mul_option x (-(-y)) i (toLeftMovesNeg $ toRightMovesNeg j) := by
-  dsimp [mul_option]
+  dsimp only [mul_option]
   congr 2
   rw [neg_neg]
-  iterate 2 { rw [moveLeft_neg, moveRight_neg, neg_neg] }
+  iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
 lemma mul_option_symm (x y) {i j} : ⟦mul_option x y i j⟧ = (⟦mul_option y x j i⟧: Game) := by
-  dsimp [mul_option]
+  dsimp only [mul_option, quot_sub, quot_add]
   rw [add_comm]
   congr 1
-  congr 1
-  all_goals { rw [quot_mul_comm] }
+  on_goal 1 => congr 1
+  all_goals rw [quot_mul_comm]
 
 /-- The left options of `x * y` of the second kind are the left options of `(-x) * (-y)` of the
   first kind, up to equivalence. -/
 lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
     (∀ k, P ⟦(x * y).moveLeft k⟧) ↔
     (∀ i j, P ⟦mul_option x y i j⟧) ∧ (∀ i j, P ⟦mul_option (-x) (-y) i j⟧) := by
-  cases x
-  cases y
+  cases x; cases y
   constructor <;> intro h
-  constructor <;> intros i j
-  exact h (Sum.inl (i, j))
-  convert h (Sum.inr (i, j)) using 1
-  pick_goal 2
-  rintro (⟨i, j⟩ | ⟨i, j⟩)
-  exact h.1 i j
-  convert h.2 i j using 1
-  all_goals {
-    dsimp [mul_option]
+  on_goal 1 =>
+    constructor <;> intros i j
+    · exact h (Sum.inl (i, j))
+    convert h (Sum.inr (i, j)) using 1
+  on_goal 2 =>
+    rintro (⟨i, j⟩ | ⟨i, j⟩)
+    exact h.1 i j
+    convert h.2 i j using 1
+  all_goals
+    dsimp only [mk_mul_moveLeft_inr, quot_sub, quot_add, neg_def, mul_option, moveLeft_mk]
     rw [← neg_def, ← neg_def]
     congr 1
-    congr 1
-    all_goals {
-      rw [quot_neg_mul_neg]
-    }
-  }
+    on_goal 1 => congr 1
+    all_goals rw [quot_neg_mul_neg]
 
 /-- The right options of `x * y` are the left options of `x * (-y)` and of `(-x) * y` of the first
   kind, up to equivalence. -/
 lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
     (∀ k, P ⟦(x * y).moveRight k⟧) ↔
     (∀ i j, P (-⟦mul_option x (-y) i j⟧)) ∧ (∀ i j, P (-⟦mul_option (-x) y i j⟧)) := by
-  cases x
-  cases y
+  cases x; cases y
   constructor <;> intro h
-  constructor <;> (
-    intros i j
-  )
-  convert h (Sum.inl (i, j))
-  pick_goal 2
-  convert h (Sum.inr (i, j))
-  pick_goal 3
-  rintro (⟨i, j⟩ | ⟨i, j⟩)
-  convert h.1 i j using 1
-  pick_goal 2
-  convert h.2 i j using 1
-  all_goals (
+  on_goal 1 =>
+    constructor <;> intros i j
+    convert h (Sum.inl (i, j))
+  on_goal 2 => convert h (Sum.inr (i, j))
+  on_goal 3 =>
+    rintro (⟨i, j⟩ | ⟨i, j⟩)
+    convert h.1 i j using 1
+    on_goal 2 => convert h.2 i j using 1
+  all_goals
     dsimp [mul_option]
     rw [neg_sub', neg_add, ← neg_def]
     congr 1
-    congr 1
-  )
-  all_goals ( try rw [quot_neg_mul, neg_neg] )
-  iterate 6 ( rw [quot_mul_neg, neg_neg] )
+    on_goal 1 => congr 1
+  any_goals rw [quot_neg_mul, neg_neg]
+  iterate 6 rw [quot_mul_neg, neg_neg]
 
 /-- Because the two halves of the definition of `inv` produce more elements
 on each side, we have to define the two families inductively.

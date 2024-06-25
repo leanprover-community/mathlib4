@@ -138,19 +138,19 @@ lemma cutExpand_closed [IsIrrefl α r] (p : α → Prop)
   exacts [hsp a' (mem_of_mem_erase h'), h (hr a' h') (hsp a ha)]
 
 lemma cutExpand_double {a a₁ a₂} (h₁ : r a₁ a) (h₂ : r a₂ a) : CutExpand r {a₁, a₂} {a} :=
-  cutExpand_singleton $ by
+  cutExpand_singleton <| by
     simp only [insert_eq_cons, mem_cons, mem_singleton, forall_eq_or_imp, forall_eq]
     tauto
 
 lemma cutExpand_pair_left {a' a b} (hr : r a' a) : CutExpand r {a', b} {a, b} :=
-    (cutExpand_add_right {b}).2 $ cutExpand_singleton_singleton hr
+    (cutExpand_add_right {b}).2 (cutExpand_singleton_singleton hr)
 
 lemma cutExpand_pair_right {a b' b} (hr : r b' b) : CutExpand r {a, b'} {a, b} :=
-    (cutExpand_add_left {a}).2 $ cutExpand_singleton_singleton hr
+    (cutExpand_add_left {a}).2 (cutExpand_singleton_singleton hr)
 
 lemma cutExpand_double_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a₂ a) :
     CutExpand r {a₁, a₂, b} {a, b} :=
-  (cutExpand_add_right {b}).2 $ cutExpand_double h₁ h₂
+  (cutExpand_add_right {b}).2 (cutExpand_double h₁ h₂)
 
 /-- A multiset is accessible under `CutExpand` if all its singleton subsets are,
   assuming `r` is irreflexive. -/

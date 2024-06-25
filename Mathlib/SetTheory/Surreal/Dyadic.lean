@@ -219,8 +219,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
   rw [add_comm, pow_add, ← mul_assoc, mul_eq_mul_right_iff] at h₂
   cases' h₂ with h₂ h₂
   · rw [h₂, add_comm]
-    simp only [Int.cast_mul, Int.cast_pow, Int.cast_ofNat]
-    rw [zsmul_pow_two_powHalf m₂ c y₁]
+    simp_rw [Int.cast_mul, Int.cast_pow, Int.cast_ofNat, zsmul_pow_two_powHalf m₂ c y₁]
   · have := Nat.one_le_pow y₁ 2 Nat.succ_pos'
     norm_cast at h₂; omega
 #align surreal.dyadic_aux Surreal.dyadic_aux
@@ -244,10 +243,7 @@ noncomputable def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
         rwa [ha₁, ha₂, mul_comm, mul_comm m₂]
       · have : (1 : ℤ) ≤ 2 ^ y₃ := mod_cast Nat.one_le_pow y₃ 2 Nat.succ_pos'
         linarith
-  map_zero' := by
-    simp only
-    rw [Localization.liftOn_zero _ _]
-    simp only [Int.cast_zero, zero_mul]
+  map_zero' := by simp_rw [Localization.liftOn_zero _ _, Int.cast_zero, zero_mul]
   map_add' x y :=
     Localization.induction_on₂ x y <| by
       rintro ⟨a, ⟨b, ⟨b', rfl⟩⟩⟩ ⟨c, ⟨d, ⟨d', rfl⟩⟩⟩
