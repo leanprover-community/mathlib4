@@ -9,8 +9,8 @@ import Mathlib.Algebra.Star.Basic
 /-!
 # Morphisms of star rings
 
-This file defines morphisms between (non-unital) rings `A` and `B` where both
-`A` and `B` are equipped with a `star` operation. This morphisms, namely `NonUnitalStarRingHom` is
+This file defines a new type of morphism between (non-unital) rings `A` and `B` where both
+`A` and `B` are equipped with a `star` operation. This morphism, namely `NonUnitalStarRingHom`, is
 a direct extension of its non-`star`red counterpart with a field `map_star` which guarantees it
 preserves the star operation.
 
