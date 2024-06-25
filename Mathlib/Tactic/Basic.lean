@@ -10,6 +10,7 @@ import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.UnusedTactic
 import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.Linter.OldObtain
 
 set_option autoImplicit true
 

@@ -27,6 +27,9 @@ equivalences (and other files that use them) before the group structure is defin
 MulAut, AddAut
 -/
 
+-- TODO after #13161
+-- assert_not_exists MonoidWithZero
+assert_not_exists Ring
 
 variable {A : Type*} {M : Type*} {G : Type*}
 
@@ -103,8 +106,10 @@ theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
 #align mul_aut.inv_apply_self MulAut.inv_apply_self
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
-def toPerm : MulAut M →* Equiv.Perm M := by
-  refine' { toFun := MulEquiv.toEquiv, ..} <;> intros <;> rfl
+def toPerm : MulAut M →* Equiv.Perm M where
+  toFun := MulEquiv.toEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align mul_aut.to_perm MulAut.toPerm
 
 /-- The tautological action by `MulAut M` on `M`.
@@ -226,8 +231,10 @@ theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
 #align add_aut.inv_apply_self AddAut.inv_apply_self
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
-def toPerm : AddAut A →* Equiv.Perm A := by
-  refine' { toFun := AddEquiv.toEquiv, .. } <;> intros <;> rfl
+def toPerm : AddAut A →* Equiv.Perm A where
+  toFun := AddEquiv.toEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align add_aut.to_perm AddAut.toPerm
 
 /-- The tautological action by `AddAut A` on `A`.

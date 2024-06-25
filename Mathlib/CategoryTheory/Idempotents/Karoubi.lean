@@ -176,6 +176,10 @@ instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
 instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
 
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+attribute [nolint simpNF] CategoryTheory.Idempotents.instZero_zero
+
 instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   zero_add f := by
     ext
@@ -211,7 +215,7 @@ def inclusionHom [Preadditive C] (P Q : Karoubi C) : AddMonoidHom (P ⟶ Q) (P.X
 
 @[simp]
 theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type*} (s : Finset α) (f : α → (P ⟶ Q)) :
-    (∑ x in s, f x).f = ∑ x in s, (f x).f :=
+    (∑ x ∈ s, f x).f = ∑ x ∈ s, (f x).f :=
   map_sum (inclusionHom P Q) f s
 #align category_theory.idempotents.karoubi.sum_hom CategoryTheory.Idempotents.Karoubi.sum_hom
 
@@ -228,7 +232,7 @@ open Karoubi
 variable (C)
 
 instance : IsIdempotentComplete (Karoubi C) := by
-  refine' ⟨_⟩
+  refine ⟨?_⟩
   intro P p hp
   simp only [hom_ext_iff, comp_f] at hp
   use ⟨P.X, p.f, hp⟩

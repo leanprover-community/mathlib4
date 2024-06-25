@@ -41,8 +41,8 @@ variable {a b : Cardinal.{u}} {n m : ℕ}
 
 @[simp]
 theorem isUnit_iff : IsUnit a ↔ a = 1 := by
-  refine'
-    ⟨fun h => _, by
+  refine
+    ⟨fun h => ?_, by
       rintro rfl
       exact isUnit_one⟩
   rcases eq_or_ne a 0 with (rfl | ha)
@@ -74,7 +74,7 @@ theorem dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) 
 
 @[simp]
 theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
-  refine' ⟨(aleph0_pos.trans_le ha).ne', _, fun b c hbc => _⟩
+  refine ⟨(aleph0_pos.trans_le ha).ne', ?_, fun b c hbc => ?_⟩
   · rw [isUnit_iff]
     exact (one_lt_aleph0.trans_le ha).ne'
   rcases eq_or_ne (b * c) 0 with hz | hz
@@ -91,14 +91,14 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
-  refine' Or.inr fun h => _
+  refine Or.inr fun h => ?_
   simpa [mul_aleph0_eq ha, isUnit_iff, (one_lt_aleph0.trans_le ha).ne', one_lt_aleph0.ne'] using
     h a ℵ₀
 #align cardinal.not_irreducible_of_aleph_0_le Cardinal.not_irreducible_of_aleph0_le
 
 @[simp, norm_cast]
 theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
-  refine' ⟨_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
+  refine ⟨?_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
   rintro ⟨k, hk⟩
   have : ↑m < ℵ₀ := nat_lt_aleph0 m
   rw [hk, mul_lt_aleph0_iff] at this
@@ -111,7 +111,7 @@ theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
 @[simp]
 theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   simp only [Prime, Nat.prime_iff]
-  refine' and_congr (by simp) (and_congr _ ⟨fun h b c hbc => _, fun h b c hbc => _⟩)
+  refine and_congr (by simp) (and_congr ?_ ⟨fun h b c hbc => ?_, fun h b c hbc => ?_⟩)
   · simp only [isUnit_iff, Nat.isUnit_iff]
     exact mod_cast Iff.rfl
   · exact mod_cast h b c (mod_cast hbc)
@@ -128,10 +128,10 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
     rw [h, zero_dvd_iff, mul_eq_zero] at hbc
     cases hbc <;> contradiction
   wlog hℵ₀b : ℵ₀ ≤ b
-  refine' (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
-  rwa [mul_comm] at hbc
-  rwa [mul_comm] at h'
-  exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
+  apply (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
+  · rwa [mul_comm] at hbc
+  · rwa [mul_comm] at h'
+  · exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
 #align cardinal.nat_is_prime_iff Cardinal.nat_is_prime_iff
 
 theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, a = p ∧ p.Prime := by
@@ -147,8 +147,8 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
   simp only [h, Nat.cast_inj, exists_eq_left', false_or_iff, isPrimePow_nat_iff]
   lift a to ℕ using not_le.mp h
   rw [isPrimePow_def]
-  refine'
-    ⟨_, fun ⟨n, han, p, k, hp, hk, h⟩ =>
+  refine
+    ⟨?_, fun ⟨n, han, p, k, hp, hk, h⟩ =>
           ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact mod_cast h⟩⟩
   rintro ⟨p, k, hp, hk, hpk⟩
   have key : p ^ (1 : Cardinal) ≤ ↑a := by

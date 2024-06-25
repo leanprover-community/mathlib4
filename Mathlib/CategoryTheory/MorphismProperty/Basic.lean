@@ -159,11 +159,11 @@ theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
     (hP : ∀ (f g : Arrow C) (_ : f ≅ g) (_ : P f.hom), P g.hom) : RespectsIso P := by
   constructor
   · intro X Y Z e f hf
-    refine' hP (Arrow.mk f) (Arrow.mk (e.hom ≫ f)) (Arrow.isoMk e.symm (Iso.refl _) _) hf
+    refine hP (Arrow.mk f) (Arrow.mk (e.hom ≫ f)) (Arrow.isoMk e.symm (Iso.refl _) ?_) hf
     dsimp
     simp only [Iso.inv_hom_id_assoc, Category.comp_id]
   · intro X Y Z e f hf
-    refine' hP (Arrow.mk f) (Arrow.mk (f ≫ e.hom)) (Arrow.isoMk (Iso.refl _) e _) hf
+    refine hP (Arrow.mk f) (Arrow.mk (f ≫ e.hom)) (Arrow.isoMk (Iso.refl _) e ?_) hf
     dsimp
     simp only [Category.id_comp]
 #align category_theory.morphism_property.respects_iso.of_respects_arrow_iso CategoryTheory.MorphismProperty.RespectsIso.of_respects_arrow_iso
@@ -264,7 +264,7 @@ lemma inverseImage_equivalence_inverse_eq_map_functor
     P.inverseImage E.functor = P.map E.inverse := by
   apply le_antisymm
   · intro X Y f hf
-    refine' ⟨_, _, _, hf, ⟨_⟩⟩
+    refine ⟨_, _, _, hf, ⟨?_⟩⟩
     exact ((Functor.mapArrowFunctor _ _).mapIso E.unitIso.symm).app (Arrow.mk f)
   · rw [map_le_iff (hP.inverseImage E.functor)]
     intro X Y f hf

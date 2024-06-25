@@ -99,8 +99,8 @@ theorem coev_expComparison (A B : C) :
 
 theorem uncurry_expComparison (A B : C) :
     CartesianClosed.uncurry ((expComparison F A).app B) =
-      inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) :=
-  by rw [uncurry_eq, expComparison_ev]
+      inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
+  rw [uncurry_eq, expComparison_ev]
 #align category_theory.uncurry_exp_comparison CategoryTheory.uncurry_expComparison
 
 /-- The exponential comparison map is natural in `A`. -/

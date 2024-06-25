@@ -29,7 +29,7 @@ In this file we define a number of linear maps involving submodules of a module.
 submodule, subspace, linear map
 -/
 
-open BigOperators Function Set
+open Function Set
 
 universe u'' u' u v w
 
@@ -70,7 +70,10 @@ variable {r : R} {x y : M}
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →ₗ[R] M := by refine' { toFun := Subtype.val.. } <;> simp [coe_smul]
+protected def subtype : p →ₗ[R] M where
+  toFun := Subtype.val
+  map_add' := by simp [coe_smul]
+  map_smul' := by simp [coe_smul]
 #align submodule.subtype Submodule.subtype
 
 theorem subtype_apply (x : p) : p.subtype x = x :=
@@ -88,7 +91,7 @@ theorem injective_subtype : Injective p.subtype :=
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
 -- Porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
-theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
+theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 #align submodule.coe_sum Submodule.coe_sum
 
@@ -141,8 +144,10 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p. -/
-def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p := by
-  refine' { toFun := fun c => ⟨f c, h c⟩.. } <;> intros <;> apply SetCoe.ext <;> simp
+def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p where
+  toFun c := ⟨f c, h c⟩
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
 #align linear_map.cod_restrict LinearMap.codRestrict
 
 @[simp]
@@ -180,6 +185,14 @@ theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule
   rfl
 #align linear_map.restrict_apply LinearMap.restrict_apply
 
+lemma restrict_sub {R M M₁ : Type*}
+    [Ring R] [AddCommGroup M] [AddCommGroup M₁] [Module R M] [Module R M₁]
+    {p : Submodule R M} {q : Submodule R M₁} {f g : M →ₗ[R] M₁}
+    (hf : MapsTo f p q) (hg : MapsTo g p q)
+    (hfg : MapsTo (f - g) p q := fun _ hx ↦ q.sub_mem (hf hx) (hg hx)) :
+    f.restrict hf - g.restrict hg = (f - g).restrict hfg := by
+  ext; simp
+
 lemma restrict_comp
     {M₂ M₃ : Type*} [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₂] [Module R M₃]
     {p : Submodule R M} {p₂ : Submodule R M₂} {p₃ : Submodule R M₃}
@@ -213,13 +226,13 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodul
 #align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
 theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
-    (∑ d in t, f d) b = ∑ d in t, f d b :=
+    (∑ d ∈ t, f d) b = ∑ d ∈ t, f d b :=
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 #align linear_map.sum_apply LinearMap.sum_apply
 
 @[simp, norm_cast]
 theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
+    ⇑(∑ i ∈ t, f i) = ∑ i ∈ t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
       from { toFun := DFunLike.coe,
