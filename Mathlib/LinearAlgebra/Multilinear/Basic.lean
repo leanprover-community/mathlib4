@@ -1302,7 +1302,6 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
   ⟨fun f g =>
     ⟨fun m => f m - g m, fun m i x y => by
       simp only [MultilinearMap.map_add, sub_eq_add_neg, neg_add]
-      -- Porting note: used to be `cc`
       abel,
       fun m i c x => by simp only [MultilinearMap.map_smul, smul_sub]⟩⟩
 
