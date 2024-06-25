@@ -185,8 +185,7 @@ theorem limsup_le_limsup {α : Type*} {f : Filter α} {u v : α → EReal} (h : 
     limsup u f ≤ limsup v f := Filter.limsup_le_limsup h
 
 theorem limsup_add_le_lt₂ {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
-  (ha : limsup u f < a) (hb : limsup v f < b) :
-    limsup (u + v) f ≤ a + b := by
+    (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f ≤ a + b := by
   rcases eq_or_neBot f with (rfl | _); simp only [limsup_bot, bot_le]
   rw [← @limsup_const EReal α _ f _ (a+b)]
   apply limsup_le_limsup (Eventually.mp (Eventually.and (eventually_lt_of_limsup_lt ha)
