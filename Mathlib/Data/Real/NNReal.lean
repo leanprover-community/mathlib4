@@ -11,6 +11,7 @@ import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Algebra.Ring.Regular
 
 #align_import data.real.nnreal from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
@@ -165,7 +166,7 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
   NNReal.coe_injective.eq_iff
 #align nnreal.coe_eq NNReal.coe_inj
 
-@[deprecated] protected alias coe_eq := coe_inj -- 2024-02-03
+@[deprecated (since := "2024-02-03")] protected alias coe_eq := coe_inj
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 #align nnreal.coe_zero NNReal.coe_zero
@@ -408,7 +409,7 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
   NNReal.eq (NNReal.coe_natCast n).symm
 #align nnreal.mk_coe_nat NNReal.mk_natCast
 
-@[deprecated] alias mk_coe_nat := mk_natCast -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
 
 -- Porting note: place this in the `Real` namespace
 @[simp]
@@ -1186,7 +1187,9 @@ end Set
 namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
--- Porting note (#11180): removed @[pp_nodot]
+-- Porting note (kmill): `pp_nodot` has no affect here
+-- unless RFC lean4#1910 leads to dot notation for CoeFun
+@[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩
   map_zero' := by ext; simp

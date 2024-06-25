@@ -491,9 +491,9 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
 #align ideal.quotient_ker_alg_equiv_of_right_inverse.apply Ideal.quotientKerAlgEquivOfRightInverse_apply
 #align ideal.quotient_ker_alg_equiv_of_right_inverse_symm.apply Ideal.quotientKerAlgEquivOfRightInverse_symm_apply
 
-@[deprecated] -- 2024-02-27
+@[deprecated (since := "2024-02-27")]
 alias quotientKerAlgEquivOfRightInverse.apply := quotientKerAlgEquivOfRightInverse_apply
-@[deprecated] -- 2024-02-27
+@[deprecated (since := "2024-02-27")]
 alias QuotientKerAlgEquivOfRightInverseSymm.apply := quotientKerAlgEquivOfRightInverse_symm_apply
 
 /-- The **first isomorphism theorem** for algebras. -/
@@ -531,7 +531,7 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J �
   RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 #align ideal.quotient_map_comp_mk Ideal.quotientMap_comp_mk
 
-/-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+** S`, where `J = f(I)`. -/
+/-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+* S`, where `J = f(I)`. -/
 @[simps]
 def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
     R ⧸ I ≃+* S ⧸ J :=

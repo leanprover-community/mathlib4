@@ -36,7 +36,7 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 lean_lib Mathlib
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
--- `Mathlib/Util/GetAllModules.lean`.
+-- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
 lean_lib Archive
@@ -67,6 +67,10 @@ lean_exe mk_all where
 lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
+
+/-- `lake exe lint_style` runs text-based style linters. -/
+lean_exe lint_style where
+  srcDir := "scripts"
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,

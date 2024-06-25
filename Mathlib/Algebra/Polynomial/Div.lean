@@ -412,7 +412,7 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 #align polynomial.dvd_iff_mod_by_monic_eq_zero Polynomial.modByMonic_eq_zero_iff_dvd
 
-@[deprecated] alias dvd_iff_modByMonic_eq_zero := modByMonic_eq_zero_iff_dvd -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias dvd_iff_modByMonic_eq_zero := modByMonic_eq_zero_iff_dvd
 
 /-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/
