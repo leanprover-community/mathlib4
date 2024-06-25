@@ -251,9 +251,8 @@ add_decl_doc StarRingEquiv.toRingEquiv
 `B`.
 You should also extend this typeclass when you extend `StarRingEquiv`. -/
 class StarRingEquivClass (F : Type*) (A B : outParam Type*)
-  [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B]
-  extends RingEquivClass F A B : Prop
-  where
+    [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B]
+    extends RingEquivClass F A B : Prop where
   /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
 
