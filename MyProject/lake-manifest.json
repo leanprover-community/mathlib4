@@ -1,0 +1,5 @@
+{"version": "1.0.0",
+ "packagesDir": ".lake/packages",
+ "packages": [],
+ "name": "MyProject",
+ "lakeDir": ".lake"}

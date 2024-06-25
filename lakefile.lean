@@ -45,7 +45,19 @@ lean_lib Counterexamples
 lean_lib docs where
   roots := #[`docs]
 
+--this is section i changed
 /-!
+## MyProject as a subpackage
+-/
+
+lean_lib MyProject where
+  srcDir := "MyProject"
+
+--until here
+/-
+!
+
+
 ## Executables provided by Mathlib
 -/
 
