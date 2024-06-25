@@ -66,6 +66,7 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} (b : Basis n R M) 
   · rintro ⟨i, rfl⟩
     exact this i
 
+end NoZeroSMulDivisors
 section NoZeroDivisors
 
 variable [NoZeroDivisors R]
@@ -77,8 +78,6 @@ lemma hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
   hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
 
 end NoZeroDivisors
-
-end NoZeroSMulDivisors
 
 end NontrivialCommRing
 
