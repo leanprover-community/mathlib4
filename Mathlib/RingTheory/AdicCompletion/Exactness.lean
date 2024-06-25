@@ -64,7 +64,7 @@ variable (I)
 
 /-- Adic completion preserves surjectivity -/
 theorem LinearMap.adicCompletion_surjective :
-    Function.Surjective (f.adicCompletion I) := fun y ↦ by
+    Function.Surjective (map I f) := fun y ↦ by
   apply AdicCompletion.induction_on I N y (fun b ↦ ?_)
   let a := LinearMap.adicCompletionPreimage hf b
   refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩
@@ -86,7 +86,7 @@ variable [IsNoetherianRing R] [Module.Finite R N]
 
 /-- Adic completion preserves injectivity of finite modules over a Noetherian ring. -/
 theorem LinearMap.adicCompletion_injective (f : M →ₗ[R] N) (hf : Function.Injective f) :
-    Function.Injective (f.adicCompletion I) := by
+    Function.Injective (map I f) := by
   obtain ⟨k, hk⟩ := Ideal.exists_pow_inf_eq_pow_smul I (range f)
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro x
@@ -172,13 +172,14 @@ end
 
 /-- adicCompletion over a Noetherian ring is exact on finitely generated modules. -/
 theorem LinearMap.adicCompletion_exact :
-    Function.Exact (LinearMap.adicCompletion I f) (LinearMap.adicCompletion I g) := by
-  refine Function.Exact.of_linearMap_comp_eq_zero_of_ker_in_range ?_ (fun y ↦ ?_)
-  · rw [adicCompletion_comp, hfg.linearMap_comp_eq_zero, adicCompletion_zero]
+    Function.Exact (map I f) (map I g) := by
+  refine LinearMap.exact_of_comp_eq_zero_of_ker_le_range ?_ (fun y ↦ ?_)
+  · rw [map_comp, hfg.linearMap_comp_eq_zero, AdicCompletion.map_zero]
   · apply AdicCompletion.induction_on I N y (fun b ↦ ?_)
     intro hz
     obtain ⟨k, hk⟩ := Ideal.exists_pow_inf_eq_pow_smul I (LinearMap.range f)
-    have hb (n : ℕ) : g (b n) ∈ I ^ n • ⊤ := by simpa using congrArg (fun x ↦ x.val n) hz
+    have hb (n : ℕ) : g (b n) ∈ (I ^ n • ⊤ : Submodule R P) := by
+      simpa using congrArg (fun x ↦ x.val n) hz
     let a := adicCompletionExactAux hf hfg hg hk b hb
     refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩
     · refine fun n ↦ SModEq.symm ?_
