@@ -743,7 +743,6 @@ class StarAlgEquivClass (F : Type*) (R A B : outParam Type*)
 
 namespace StarAlgEquivClass
 
--- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 50) {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
     [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
