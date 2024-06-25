@@ -423,7 +423,7 @@ theorem IsBlock.orbit_stabilizer_eq
     exact ha
   · intro hx
     obtain ⟨k, rfl⟩ := exists_smul_eq G a x
-    refine ⟨⟨k, hB.def_mem ha hx⟩, rfl⟩
+    exact ⟨⟨k, hB.def_mem ha hx⟩, rfl⟩
 
 /-- A subgroup containing the stabilizer of `a`
   is the stabilizer of the orbit of `a` under that subgroup -/
