@@ -307,6 +307,29 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
   · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
 
+/-- The affine open sets of an open subscheme corresponds to
+the affine open sets containing in the image. -/
+@[simps]
+def _root_.AlgebraicGeometry.IsOpenImmersion.affineOpensEquiv (f : X ⟶ Y) [H : IsOpenImmersion f] :
+    X.affineOpens ≃ { U : Y.affineOpens // U ≤ f.opensRange } where
+  toFun U := ⟨⟨f ''ᵁ U, U.2.image_of_isOpenImmersion f⟩, Set.image_subset_range _ _⟩
+  invFun U := ⟨f ⁻¹ᵁ U, f.isAffineOpen_iff_of_isOpenImmersion.mp (by
+    rw [show f ''ᵁ f ⁻¹ᵁ U = U from Opens.ext (Set.image_preimage_eq_of_subset U.2)]; exact U.1.2)⟩
+  left_inv _ := Subtype.ext (Opens.ext (Set.preimage_image_eq _ H.base_open.inj))
+  right_inv U := Subtype.ext (Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2)))
+
+/-- The affine open sets of an open subscheme
+corresponds to the affine open sets containing in the subset. -/
+@[simps! apply_coe_coe]
+def _root_.AlgebraicGeometry.affineOpensRestrict {X : Scheme.{u}} (U : Opens X) :
+    (X ∣_ᵤ U).affineOpens ≃ { V : X.affineOpens // V ≤ U } :=
+  (IsOpenImmersion.affineOpensEquiv (Scheme.ιOpens U)).trans (Equiv.subtypeEquivProp (by simp))
+
+@[simp]
+lemma _root_.AlgebraicGeometry.affineOpensRestrict_symm_apply_coe
+    {X : Scheme.{u}} (U : Opens X) (V) :
+    ((affineOpensRestrict U).symm V).1 = Scheme.ιOpens U ⁻¹ᵁ V := rfl
+
 instance (priority := 100) _root_.AlgebraicGeometry.Scheme.compactSpace_of_isAffine
     (X : Scheme) [IsAffine X] :
     CompactSpace X :=
@@ -389,7 +412,7 @@ theorem basicOpen :
 theorem ιOpens_preimage (r : Γ(X, ⊤)):
     IsAffineOpen (Scheme.ιOpens (X.basicOpen r) ⁻¹ᵁ U) := by
   apply (Scheme.ιOpens (X.basicOpen r)).isAffineOpen_iff_of_isOpenImmersion.mp
-  dsimp [Scheme.Hom.opensFunctor, PresheafedSpace.IsOpenImmersion.openFunctor]
+  dsimp [Scheme.Hom.opensFunctor, LocallyRingedSpace.IsOpenImmersion.opensFunctor]
   rw [Opens.functor_obj_map_obj, Opens.openEmbedding_obj_top, inf_comm,
     ← Scheme.basicOpen_res _ _ (homOfLE le_top).op]
   exact hU.basicOpen _
@@ -408,7 +431,7 @@ theorem exists_basicOpen_le {V : Opens X} (x : V) (h : ↑x ∈ U) :
     rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op,
       ← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
       op_id, CategoryTheory.Functor.map_id, Scheme.Hom.invApp]
-    erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
+    erw [LocallyRingedSpace.IsOpenImmersion.ofRestrict_invApp]
     congr
   use X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r
   rw [← this]
@@ -455,6 +478,20 @@ instance _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
     [IsAffine X] (r : Γ(X, ⊤)) :
     IsLocalization.Away r Γ(X, X.basicOpen r) :=
   isLocalization_basicOpen (isAffineOpen_top X) r
+
+lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U)
+    {V : Opens X} (hV : IsAffineOpen V) (e) (r : Γ(Y, U)) :
+    letI := hU.isLocalization_basicOpen r
+    letI := hV.isLocalization_basicOpen (f.appLE U V e r)
+    f.appLE (Y.basicOpen r) (X.basicOpen (f.appLE U V e r))
+      (by simpa [Scheme.Hom.appLE] using X.basicOpen_restrict _ _) =
+        IsLocalization.Away.map _ _ (f.appLE U V e) r := by
+  letI := hU.isLocalization_basicOpen r
+  letI := hV.isLocalization_basicOpen (f.appLE U V e r)
+  apply IsLocalization.ringHom_ext (.powers r)
+  rw [← CommRingCat.comp_eq_ring_hom_comp, IsLocalization.Away.map, IsLocalization.map_comp,
+    RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra, ← CommRingCat.comp_eq_ring_hom_comp,
+    Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
 theorem isLocalization_of_eq_basicOpen {V : Opens X} (i : V ⟶ U) (e : V = X.basicOpen f) :
     @IsLocalization.Away _ _ f Γ(X, V) _ (X.presheaf.map i.op).toAlgebra := by
