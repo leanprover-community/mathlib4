@@ -1,43 +1,31 @@
-import Mathlib.RingTheory.Kaehler.Basic
+/-
+Copyright (c) 2020 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.Algebra.Module.Projective
+import Mathlib.RingTheory.Generators
+
+/-!
+# Relation of smoothness and `Ω[S⁄R]`
+
+## Main results
+
+- `Algebra.FormallySmooth.iff_injective_and_projective`:
+
+## Future project
+
+- Show that being smooth is local on stalks.
+- Show that being formally smooth is Zariski-local (very hard).
+
+-/
 
 universe u
 
-open TensorProduct
-
-section
-
-variable (R S T) [CommRing R] [CommRing S] [CommRing T]
-variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-
-open KaehlerDifferential (D)
-
-@[simps]
-noncomputable
-def kerToTensor :
-    RingHom.ker (algebraMap S T) →ₗ[S] T ⊗[S] Ω[S⁄R] where
-  toFun x := 1 ⊗ₜ D R S x
-  map_add' x y := by simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, map_add,
-    tmul_add]
-  map_smul' r x := by simp only [SetLike.val_smul, smul_eq_mul, Derivation.leibniz, tmul_add,
-    tmul_smul, smul_tmul', ← Algebra.algebraMap_eq_smul_one, (RingHom.mem_ker _).mp x.prop,
-    zero_tmul, add_zero, RingHom.id_apply]
-
-noncomputable
-def kerCotangentToTensor :
-    (RingHom.ker (algebraMap S T)).Cotangent →ₗ[S] T ⊗[S] Ω[S⁄R] := by
-  refine Submodule.liftQ _ (kerToTensor R S T) (iSup_le_iff.mpr ?_)
-  simp only [Submodule.map_le_iff_le_comap, Subtype.forall]
-  rintro x hx y -
-  simp only [Submodule.mem_comap, LinearMap.lsmul_apply, LinearMap.mem_ker, map_smul, zero_tmul,
-    kerToTensor_apply, ← Algebra.algebraMap_eq_smul_one, (RingHom.mem_ker _).mp hx, smul_tmul']
-
-lemma kerCotangentToTensor_apply (x) :
-  kerCotangentToTensor R S T (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.1 := rfl
-
-end
+open TensorProduct KaehlerDifferential
 
 open Function (Surjective)
 
@@ -74,7 +62,7 @@ def derivationOfSectionOfKerSqZero : Derivation R P (RingHom.ker (algebraMap P S
       mul_sub, AddSubmonoid.mk_add_mk, sub_mul, neg_sub]
     ring
 
-instance isScalarTower_of_section_of_ker_sqZero :
+lemma isScalarTower_of_section_of_ker_sqZero :
     letI := g.toRingHom.toAlgebra; IsScalarTower P S (RingHom.ker (algebraMap P S)) := by
   letI := g.toRingHom.toAlgebra
   constructor
@@ -313,131 +301,6 @@ theorem Algebra.FormallySmooth.iff_split_injection :
 
 attribute [local instance 99999] KaehlerDifferential.module'
 
-open LinearMap in
-noncomputable
-def Function.Exact.splitSurjectiveEquiv
-    {R M N P} [Semiring R] [AddCommGroup M] [AddCommGroup N]
-    [AddCommGroup P] [Module R M] [Module R N] [Module R P] {f : M →ₗ[R] N} {g : N →ₗ[R] P}
-    (h : Function.Exact f g) (hf : Function.Injective f) :
-    { l // g ∘ₗ l = .id } ≃
-      { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
-  refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (f ∘ₗ fst R M P + l.1 ∘ₗ snd R M P) ?_).symm, ?_⟩
-    invFun := fun e ↦ ⟨e.1.symm ∘ₗ inr R M P, ?_⟩
-    left_inv := ?_
-    right_inv := ?_ }
-  · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
-    have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
-    constructor
-    · intros x y e
-      simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
-      suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
-      simpa [h₁, h₂] using DFunLike.congr_arg g e
-    · intro x
-      obtain ⟨y, hy⟩ := (h (x - l.1 (g x))).mp (by simp [h₁, g.map_sub])
-      exact ⟨⟨y, g x⟩, by simp [hy]⟩
-  · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
-    have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
-    constructor
-    · ext; simp
-    · rw [LinearEquiv.eq_comp_toLinearMap_symm]
-      ext <;> simp [h₁, h₂]
-  · rw [← LinearMap.comp_assoc, (LinearEquiv.eq_comp_toLinearMap_symm _ _).mp e.2.2]; rfl
-  · intro; ext; simp
-  · rintro ⟨e, rfl, rfl⟩
-    ext1
-    apply LinearEquiv.symm_bijective.injective
-    ext
-    apply e.injective
-    ext <;> simp
-
-open LinearMap in
-noncomputable
-def Function.Exact.splitInjectiveEquiv
-    {R M N P} [Semiring R] [AddCommGroup M] [AddCommGroup N]
-    [AddCommGroup P] [Module R M] [Module R N] [Module R P] {f : M →ₗ[R] N} {g : N →ₗ[R] P}
-    (h : Function.Exact f g) (hg : Function.Surjective g) :
-    { l // l ∘ₗ f = .id } ≃
-      { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
-  refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (l.1.prod g) ?_), ?_⟩
-    invFun := fun e ↦ ⟨fst R M P ∘ₗ e.1, ?_⟩
-    left_inv := ?_
-    right_inv := ?_ }
-  · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
-    have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
-    constructor
-    · intros x y e
-      simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
-      obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
-      suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
-      rw [← h₁ z, hz, map_sub, e.1, sub_self]
-    · rintro ⟨x, y⟩
-      obtain ⟨y, rfl⟩ := hg y
-      refine ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩
-  · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
-    have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
-    constructor
-    · rw [LinearEquiv.eq_toLinearMap_symm_comp]
-      ext <;> simp [h₁, h₂]
-    · ext; simp
-  · rw [LinearMap.comp_assoc, (LinearEquiv.eq_toLinearMap_symm_comp _ _).mp e.2.1]; rfl
-  · intro; ext; simp
-  · rintro ⟨e, rfl, rfl⟩
-    ext x <;> simp
-
-theorem Function.Exact.split_tfae'
-    {R M N P} [Semiring R] [AddCommGroup M] [AddCommGroup N]
-    [AddCommGroup P] [Module R M] [Module R N] [Module R P] {f : M →ₗ[R] N} {g : N →ₗ[R] P}
-    (h : Function.Exact f g) :
-    List.TFAE [
-      Function.Injective f ∧ ∃ l, g ∘ₗ l = LinearMap.id,
-      Function.Surjective g ∧ ∃ l, l ∘ₗ f = LinearMap.id,
-      ∃ e : N ≃ₗ[R] M × P, f = e.symm ∘ₗ LinearMap.inl R M P ∧ g = LinearMap.snd R M P ∘ₗ e] := by
-  tfae_have 1 → 3
-  · rintro ⟨hf, l, hl⟩
-    exact ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).2⟩
-  tfae_have 2 → 3
-  · rintro ⟨hg, l, hl⟩
-    exact ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).2⟩
-  tfae_have 3 → 1
-  · rintro ⟨e, e₁, e₂⟩
-    have : Function.Injective f := e₁ ▸ e.symm.injective.comp LinearMap.inl_injective
-    refine ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
-  tfae_have 3 → 2
-  · rintro ⟨e, e₁, e₂⟩
-    have : Function.Surjective g := e₂ ▸ Prod.snd_surjective.comp e.surjective
-    refine ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
-  tfae_finish
-
-theorem Function.Exact.split_tfae
-    {R M N P} [Semiring R] [AddCommGroup M] [AddCommGroup N]
-    [AddCommGroup P] [Module R M] [Module R N] [Module R P] {f : M →ₗ[R] N} {g : N →ₗ[R] P}
-    (h : Function.Exact f g) (hf : Function.Injective f) (hg : Function.Surjective g) :
-    List.TFAE [
-      ∃ l, g ∘ₗ l = LinearMap.id,
-      ∃ l, l ∘ₗ f = LinearMap.id,
-      ∃ e : N ≃ₗ[R] M × P, f = e.symm ∘ₗ LinearMap.inl R M P ∧ g = LinearMap.snd R M P ∘ₗ e] := by
-  tfae_have 1 ↔ 3
-  · simpa using (h.splitSurjectiveEquiv hf).nonempty_congr
-  tfae_have 2 ↔ 3
-  · simpa using (h.splitInjectiveEquiv hg).nonempty_congr
-  tfae_finish
-
-local macro "finsupp_map" : term =>
-  `((Finsupp.mapRange.linearMap (Algebra.linearMap P S)).comp
-    (Finsupp.lmapDomain P P (algebraMap P S)))
-
-lemma KaehlerDifferential.ker_map_of_surjective (h : Function.Surjective (algebraMap P S)) :
-    LinearMap.ker (map R R P S) =
-      (LinearMap.ker finsupp_map).map (Finsupp.total P _ P (D R P)) := by
-  rw [ker_map, ← kerTotal_map' R P S h, Submodule.comap_map_eq, Submodule.map_sup,
-    Submodule.map_sup, ← kerTotal_eq, ← Submodule.comap_bot, Submodule.map_comap_eq_of_surjective,
-    bot_sup_eq, Submodule.map_span, ← Set.range_comp]
-  convert bot_sup_eq _
-  rw [Submodule.span_eq_bot]; simp
-  exact total_surjective _ _
-
 theorem range_kerCotangentToTensor :
     LinearMap.range (kerCotangentToTensor R P S) =
       (LinearMap.ker (KaehlerDifferential.mapBaseChange R P S)).restrictScalars P := by
@@ -446,12 +309,12 @@ theorem range_kerCotangentToTensor :
   constructor
   · rintro ⟨x, rfl⟩
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
-    simp [kerCotangentToTensor_apply, (RingHom.mem_ker _).mp x.2]
+    simp [kerCotangentToTensor_toCotangent, (RingHom.mem_ker _).mp x.2]
   · intro hx
     obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective (Ω[P⁄R]) (g := Algebra.linearMap P S) hf x
     obtain ⟨x, rfl⟩ := (TensorProduct.lid _ _).symm.surjective x
     replace hx : x ∈ LinearMap.ker (KaehlerDifferential.map R R P S) := by simpa using hx
-    rw [KaehlerDifferential.ker_map_of_surjective hf] at hx
+    rw [KaehlerDifferential.ker_map_of_surjective _ _ _ hf] at hx
     obtain ⟨x, hx, rfl⟩ := hx
     simp only [lid_symm_apply, LinearMap.rTensor_tmul, Algebra.linearMap_apply, _root_.map_one]
     rw [← Finsupp.sum_single x, Finsupp.sum, ← Finset.sum_fiberwise_of_maps_to
@@ -470,30 +333,13 @@ theorem range_kerCotangentToTensor :
         fun i ↦ x i • Ideal.toCotangent _ ⟨i - a, ?_⟩; swap
     · have : x i ≠ 0 ∧ algebraMap P S i = c := by simpa using i.prop
       simp [RingHom.mem_ker, ha, this.2]
-    · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_apply, map_sub]
+    · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]
       simp_rw [← TensorProduct.tmul_smul]
       simp only [smul_sub, TensorProduct.tmul_sub, Finset.sum_sub_distrib, ← TensorProduct.tmul_sum,
         ← Finset.sum_smul, Finset.sum_attach, sub_eq_self,
         Finset.sum_attach (f := fun i ↦ x i • KaehlerDifferential.D R P i)]
       rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, (RingHom.mem_ker _).mp this,
         TensorProduct.zero_tmul]
-
-theorem exact_kerCotangentToTensor_mapBaseChange :
-    Function.Exact (kerCotangentToTensor R P S) (KaehlerDifferential.mapBaseChange R P S) :=
-  SetLike.ext_iff.mp (range_kerCotangentToTensor hf).symm
-
-lemma KaehlerDifferential.subsingleton_of_surjective :
-    Subsingleton (Ω[S⁄P]) := by
-  suffices (⊤ : Submodule S (Ω[S⁄P])) ≤ ⊥ from
-    (subsingleton_iff_forall_eq 0).mpr fun y ↦ this trivial
-  rw [← KaehlerDifferential.span_range_derivation, Submodule.span_le]
-  rintro _ ⟨x, rfl⟩; obtain ⟨x, rfl⟩ := hf x; simp
-
-lemma KaehlerDifferential.mapBaseChange_surjective :
-    Function.Surjective (KaehlerDifferential.mapBaseChange R P S) := by
-  have := subsingleton_of_surjective hf
-  rw [← LinearMap.range_eq_top, KaehlerDifferential.range_mapBaseChange, ← top_le_iff]
-  exact fun x _ ↦ Subsingleton.elim _ _
 
 @[simps!]
 def LinearMap.restrictScalarsEquiv {R S M N} [CommSemiring R] [Semiring S] [AddCommMonoid M]
@@ -511,8 +357,8 @@ theorem Algebra.FormallySmooth.iff_injective_and_split :
     Algebra.FormallySmooth R S ↔ Function.Injective (kerCotangentToTensor R P S) ∧
       ∃ l, (KaehlerDifferential.mapBaseChange R P S) ∘ₗ l = LinearMap.id := by
   rw [Algebra.FormallySmooth.iff_split_injection hf]
-  refine (and_iff_right (KaehlerDifferential.mapBaseChange_surjective (R := R) hf)).symm.trans ?_
-  refine Iff.trans (((exact_kerCotangentToTensor_mapBaseChange hf).split_tfae'
+  refine (and_iff_right (KaehlerDifferential.mapBaseChange_surjective R _ _ hf)).symm.trans ?_
+  refine Iff.trans (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae'
     (g := (KaehlerDifferential.mapBaseChange R P S).restrictScalars P)).out 1 0)
     (and_congr Iff.rfl ?_)
   rw [(LinearMap.restrictScalarsEquiv hf).surjective.exists]
@@ -523,20 +369,107 @@ theorem Algebra.FormallySmooth.iff_injective_and_projective' :
     letI : Algebra (MvPolynomial S R) S := (MvPolynomial.aeval _root_.id).toAlgebra
     Algebra.FormallySmooth R S ↔
         Function.Injective (kerCotangentToTensor R (MvPolynomial S R) S) ∧
-        Module.Projective S (Ω[S⁄R]) := by sorry
-  -- letI : Algebra (MvPolynomial S R) S := (MvPolynomial.aeval _root_.id).toAlgebra
-  -- have : Function.Surjective (algebraMap (MvPolynomial S R) S) :=
-  --   fun x ↦ ⟨.X x, MvPolynomial.aeval_X _ _⟩
-  -- rw [Algebra.FormallySmooth.iff_injective_and_split this,
-  --   ← Module.Projective.iff_split_of_projective]
-  -- exact KaehlerDifferential.mapBaseChange_surjective this
+        Module.Projective S (Ω[S⁄R]) := by
+  letI : Algebra (MvPolynomial S R) S := (MvPolynomial.aeval _root_.id).toAlgebra
+  have : Function.Surjective (algebraMap (MvPolynomial S R) S) :=
+    fun x ↦ ⟨.X x, MvPolynomial.aeval_X _ _⟩
+  rw [Algebra.FormallySmooth.iff_injective_and_split this,
+    ← Module.Projective.iff_split_of_projective]
+  exact KaehlerDifferential.mapBaseChange_surjective _ _ _ this
 
 instance : Module.Projective P (Ω[P⁄R]) :=
   (Algebra.FormallySmooth.iff_injective_and_projective'.mp ‹_›).2
 
+/-- Given a formally smooth algebra `P` over `R`, such that the algebra homomorphism `P → S` is
+surjective with kernel `I` (typically a presentation `R[X] → S`),
+then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → B ⊗[A] Ω[A⁄R]` is injective.
+-/
 theorem Algebra.FormallySmooth.iff_injective_and_projective :
     Algebra.FormallySmooth R S ↔
-        Function.Injective (kerCotangentToTensor R P S) ∧ Module.Projective S (Ω[S⁄R]) := by sorry
-  -- rw [Algebra.FormallySmooth.iff_injective_and_split hf,
-  --   ← Module.Projective.iff_split_of_projective]
-  -- exact KaehlerDifferential.mapBaseChange_surjective hf
+        Function.Injective (kerCotangentToTensor R P S) ∧ Module.Projective S (Ω[S⁄R]) := by
+  rw [Algebra.FormallySmooth.iff_injective_and_split hf,
+    ← Module.Projective.iff_split_of_projective]
+  exact KaehlerDifferential.mapBaseChange_surjective _ _ _ hf
+
+open MvPolynomial
+
+section H1Cotangent
+
+namespace Algebra
+
+namespace Generators
+
+variable (P : Generators R S) in
+/--
+This is the first homology of the naive cotangent complex associated to a given presentation
+`P`,
+defined as the kernel of
+`I/I² → S ⊗[R[S]] Ω[R[S]⁄R]` with `0 → I → R[S] → R → 0` being the standard presentation.
+-/
+noncomputable
+def H1Cotangent : Type _ := LinearMap.ker (kerCotangentToTensor R P.Ring S)
+
+variable {P : Generators R S}
+
+noncomputable
+instance : AddCommGroup P.H1Cotangent := by delta H1Cotangent; infer_instance
+
+noncomputable
+instance : Module P.Ring P.H1Cotangent := by delta H1Cotangent; infer_instance
+
+lemma Ideal.Cotangent.smul_eq_zero_of_mem {R} [CommRing R] {I : Ideal R}
+    {x} (hx : x ∈ I) (m : I.Cotangent) : x • m = 0 := by
+  obtain ⟨m, rfl⟩ := Ideal.toCotangent_surjective _ m
+  rw [← map_smul, Ideal.toCotangent_eq_zero, pow_two]
+  exact Ideal.mul_mem_mul hx m.2
+
+lemma H1Cotangent.smul_eq_of_map_eq (r₁ r₂ : P.Ring) (x : P.H1Cotangent)
+    (e : algebraMap _ S r₁ = algebraMap _ S r₂) : r₁ • x = r₂ • x := by
+  apply Subtype.ext
+  rw [Submodule.coe_smul, Submodule.coe_smul, ← sub_eq_zero, ← sub_smul,
+    Ideal.Cotangent.smul_eq_zero_of_mem]
+  rwa [RingHom.mem_ker, map_sub, sub_eq_zero]
+
+noncomputable
+instance H1Cotangent.module : Module S P.H1Cotangent where
+  smul s x := P.σ s • x
+  smul_add r x y := smul_add (P.σ r) x y
+  smul_zero r := smul_zero (P.σ r)
+  zero_smul x := (smul_eq_of_map_eq (P.σ 0) 0 x (by simp)).trans (zero_smul _ x)
+  one_smul x := (smul_eq_of_map_eq (P.σ 1) 1 x (by simp)).trans (one_smul _ x)
+  add_smul r s x :=
+    (smul_eq_of_map_eq (P.σ (r + s)) (P.σ r + P.σ s) x (by simp)).trans (add_smul _ _ _)
+  mul_smul r s x :=
+    (smul_eq_of_map_eq (P.σ (r * s)) (P.σ r * P.σ s) x (by simp)).trans (mul_smul _ _ _)
+
+lemma H1Cotangent.σ_smul (r : S) (x : P.H1Cotangent) :
+    P.σ r • x = r • x := rfl
+
+instance H1Cotangent.isScalarTower : IsScalarTower P.Ring S P.H1Cotangent where
+  smul_assoc r s x :=
+    (smul_eq_of_map_eq (P.σ (r • s)) (r * P.σ s) x
+      (by simp [Algebra.smul_def])).trans (mul_smul _ _ _)
+
+lemma subsingleton_h1Cotangent (P : Generators R S) :
+    Subsingleton P.H1Cotangent ↔ Function.Injective (kerCotangentToTensor R P.Ring S) := by
+  delta H1Cotangent
+  rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, subsingleton_iff_forall_eq 0, Subtype.forall']
+  simp only [Subtype.ext_iff, Submodule.coe_zero]
+
+end Generators
+
+end Algebra
+
+end H1Cotangent
+
+abbrev Algebra.H1Cotangent :
+
+/-- Given a formally smooth algebra `P` over `R`, such that the algebra homomorphism `P → S` is
+surjective with kernel `I` (typically a presentation `R[X] → S`),
+then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → B ⊗[A] Ω[A⁄R]` is injective.
+-/
+theorem Algebra.FormallySmooth.iff_of_generators (P : Generators.{u} R S) :
+    Algebra.FormallySmooth R S ↔ Subsingleton P.H1Cotangent ∧ Module.Projective S (Ω[S⁄R]) := by
+  rw [P.subsingleton_h1Cotangent,
+    ← @Algebra.FormallySmooth.iff_injective_and_projective R P.Ring S]
+  exact P.algebraMap_surjective
