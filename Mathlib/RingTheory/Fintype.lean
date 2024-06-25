@@ -17,38 +17,41 @@ open Finset ZMod
 
 variable {R : Type*} [Ring R] [Fintype R] [DecidableEq R]
 
-lemma Finset.univ_of_card_eq_two (h : Fintype.card R = 2) :
+lemma Finset.univ_of_card_eq_two (h : Fintype.card R ≤ 2) :
     (univ : Finset R) = {0, 1} := by
-  have : Nontrivial R := by
-    refine Fintype.one_lt_card_iff_nontrivial.1 ?_
-    rw [h]
-    norm_num
-  refine (eq_of_subset_of_card_le (subset_univ _) ?_).symm
-  rw [card_univ, h, card_insert_of_not_mem, card_singleton]
-  rw [mem_singleton]
-  exact zero_ne_one
+  rcases subsingleton_or_nontrivial R
+  · exact le_antisymm (fun a _ ↦ by simp [Subsingleton.elim a 0]) (Finset.subset_univ _)
+  · refine (eq_of_subset_of_card_le (subset_univ _) ?_).symm
+    convert h
+    simp
 
-lemma Finset.univ_of_card_eq_three (h : Fintype.card R = 3) :
+lemma Finset.univ_of_card_eq_three (h : Fintype.card R ≤ 3) :
     (univ : Finset R) = {0, 1, -1} := by
-  have : Nontrivial R := by
-    refine Fintype.one_lt_card_iff_nontrivial.1 ?_
-    rw [h]
-    norm_num
   refine (eq_of_subset_of_card_le (subset_univ _) ?_).symm
-  rw [card_univ, h, card_insert_of_not_mem, card_insert_of_not_mem, card_singleton]
-  · rw [mem_singleton]
-    intro H
-    rw [← add_eq_zero_iff_eq_neg, one_add_one_eq_two] at H
-    apply_fun (ringEquivOfPrime R Nat.prime_three h).symm at H
-    simp only [map_ofNat, map_zero] at H
-    replace H : ((2 : ℕ) : ZMod 3) = 0 := H
-    rw [natCast_zmod_eq_zero_iff_dvd] at H
-    norm_num at H
-  · intro h
-    simp only [mem_insert, mem_singleton, zero_eq_neg] at h
-    rcases h with (h | h)
-    · exact zero_ne_one h
-    · exact zero_ne_one h.symm
+  rcases lt_or_eq_of_le h with h | h
+  · apply card_le_card
+    rw [Finset.univ_of_card_eq_two (Nat.lt_succ_iff.1 h)]
+    intro a ha
+    simp only [mem_insert, mem_singleton] at ha
+    rcases ha with rfl | rfl <;> simp
+  · have : Nontrivial R := by
+      refine Fintype.one_lt_card_iff_nontrivial.1 ?_
+      rw [h]
+      norm_num
+    rw [card_univ, h, card_insert_of_not_mem, card_insert_of_not_mem, card_singleton]
+    · rw [mem_singleton]
+      intro H
+      rw [← add_eq_zero_iff_eq_neg, one_add_one_eq_two] at H
+      apply_fun (ringEquivOfPrime R Nat.prime_three h).symm at H
+      simp only [map_ofNat, map_zero] at H
+      replace H : ((2 : ℕ) : ZMod 3) = 0 := H
+      rw [natCast_zmod_eq_zero_iff_dvd] at H
+      norm_num at H
+    · intro h
+      simp only [mem_insert, mem_singleton, zero_eq_neg] at h
+      rcases h with (h | h)
+      · exact zero_ne_one h
+      · exact zero_ne_one h.symm
 
 open scoped Classical
 
