@@ -20,7 +20,7 @@ eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 section SpectrumDiagonal
 
-variable {R n M : Type*} [DecidableEq n][Fintype n]
+variable {R n M : Type*} [DecidableEq n] [Fintype n]
 
 open Matrix
 open Module.End
