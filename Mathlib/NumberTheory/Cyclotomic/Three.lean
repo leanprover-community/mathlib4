@@ -128,7 +128,7 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ �
     rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
     simp only [PNat.val_ofNat, Nat.cast_ofNat, Int.reduceAbs]
-  rw [Finset.univ_of_card_eq_three h3.le] at this
+  rw [Finset.univ_of_card_le_three h3.le] at this
   simp only [Finset.mem_insert, Finset.mem_singleton] at this
   rcases this with h | h | h
   · left
