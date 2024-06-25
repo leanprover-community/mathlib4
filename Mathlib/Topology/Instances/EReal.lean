@@ -27,7 +27,6 @@ We endow `EReal` with the order topology, and prove basic properties of this top
 Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 -/
 
-
 noncomputable section
 
 open scoped Classical
@@ -333,7 +332,7 @@ theorem add_liminf_le_liminf_add {α : Type _} {f : Filter α} {u v : α → ERe
   have key₁ : (y - liminf v f) < liminf u f := by
     apply lt_of_lt_of_eq (EReal.sub_lt_sub_of_lt_of_le y_lt_sum (le_of_eq (Eq.refl (liminf v f)))
       (ne_of_gt v_nbot) (ne_of_lt v_ntop))
-    rw [← liminf_v_real, EReal.add_sub_cancel_right]
+    rw [← liminf_v_real, add_sub_cancel_right] -- Wait for the PR
   have key₂ : liminf v f + x - y < liminf v f := by
     rw [← liminf_v_real]
     norm_cast
@@ -346,7 +345,7 @@ theorem add_liminf_le_liminf_add {α : Type _} {f : Filter α} {u v : α → ERe
 
 theorem limsup_le_iff {α : Type _} {f : Filter α} {u : α → EReal} {b : EReal} :
     limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
-  rw [EReal.le_iff_le_forall_real_gt]
+  rw [EReal.le_iff_le_forall_real_gt] -- Wait for the PR
   constructor
   · intro h c b_lt_c
     rcases EReal.exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
