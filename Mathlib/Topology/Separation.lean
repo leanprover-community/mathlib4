@@ -199,6 +199,20 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         fun _ ↦
           ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
 
+theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s := by
+  refine ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
+    fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩
+
+theorem Set.hasSeparatingCover_empty_right (s : Set X) : HasSeparatingCover s ∅ := by
+  refine ⟨fun _ ↦ univ, (subset_univ s).trans univ.iUnion_const.symm.subset,
+    fun _ ↦ ⟨isOpen_univ, by apply disjoint_empty⟩⟩
+
+theorem HasSeparatingCover.mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : HasSeparatingCover s₂ t₂)
+    (s_sub : s₁ ⊆ s₂) (t_sub : t₁ ⊆ t₂) : HasSeparatingCover s₁ t₁ := by
+  obtain ⟨u, u_cov, u_props⟩ := sc_st
+  refine ⟨u, s_sub.trans u_cov,
+    fun n ↦ ⟨(u_props n).1, disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
+
 namespace SeparatedNhds
 
 variable {s s₁ s₂ t t₁ t₂ u : Set X}
@@ -2517,19 +2531,12 @@ end CompletelyNormal
 def IsGδ₂ (s : Set X) : Prop :=
     ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
 
-theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s := by
-  refine ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
-    fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩
+section PerfectlyNormal
 
-theorem Set.hasSeparatingCover_empty_right (s : Set X) : HasSeparatingCover s ∅ := by
-  refine ⟨fun _ ↦ univ, (subset_univ s).trans univ.iUnion_const.symm.subset,
-    fun _ ↦ ⟨isOpen_univ, by apply disjoint_empty⟩⟩
-
-theorem HasSeparatingCover.mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : HasSeparatingCover s₂ t₂)
-    (s_sub : s₁ ⊆ s₂) (t_sub : t₁ ⊆ t₂) : HasSeparatingCover s₁ t₁ := by
-  obtain ⟨u, u_cov, u_props⟩ := sc_st
-  refine ⟨u, s_sub.trans u_cov,
-    fun n ↦ ⟨(u_props n).1, disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
+/-- A topological space `X` is a *perfectly normal space* provided it is normal and
+closed sets are Gδ. -/
+class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
+    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ₂ h
 
 theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpace X]
     (st_dis : Disjoint s t) (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : HasSeparatingCover s t := by
@@ -2562,13 +2569,6 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
     simp only [closure_compl, disjoint_compl_left_iff_subset]
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
     exact subset_closure.trans <| (clt_sub_g' n).trans <| subset_interior_closure <| g'_open n
-
-section PerfectlyNormal
-
-/-- A topological space `X` is a *perfectly normal space* provided it is normal and
-closed sets are Gδ. -/
-class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
-    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ₂ h
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
