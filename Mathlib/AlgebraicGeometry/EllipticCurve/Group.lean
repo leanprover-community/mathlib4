@@ -139,6 +139,22 @@ lemma map_mk (x : R[X][Y]) : map W f (mk W x) = mk (W.map f) (x.map <| mapRingHo
 lemma map_comp_mk : (map W f).comp (mk W) = (mk <| W.map f).comp (mapRingHom <| mapRingHom f) :=
   RingHom.ext (map_mk _ _)
 
+lemma _root_.Polynomial.algebraMap_comp_algebraMap :
+    (algebraMap R[X] R[X][Y]).comp (algebraMap R R[X]) = algebraMap R R[X][Y] := rfl
+
+lemma _root_.Polynomial.mapRingHom_comp_algebraMap :
+    (mapRingHom f).comp (algebraMap R R[X]) = (algebraMap S S[X]).comp f := by
+  ext1; apply map_C
+
+lemma _root_.Polynomial.mapRingHom_mapRingHom_comp_algebraMap :
+    (mapRingHom <| mapRingHom f).comp (algebraMap R R[X][Y]) = (algebraMap S S[X][Y]).comp f := by
+  simp_rw [← algebraMap_comp_algebraMap, ← RingHom.comp_assoc, mapRingHom_comp_algebraMap,
+    RingHom.comp_assoc, mapRingHom_comp_algebraMap]
+
+lemma map_comp_algebraMap : (map W f).comp (algebraMap R _) = (algebraMap S _).comp f := by
+  simp_rw [← mk_comp_algebraMap, ← RingHom.comp_assoc, map_comp_mk, RingHom.comp_assoc,
+    mapRingHom_mapRingHom_comp_algebraMap]
+
 variable {W} in
 protected lemma map_smul (x : R[X]) (y : W.CoordinateRing) :
     map W f (x • y) = x.map f • map W f y := by
@@ -161,6 +177,9 @@ lemma eval_map (p : W.CoordinateRing) : eval (eqn.map f) (map W f p) = f (eval e
 
 lemma eval_comp_map : (eval <| eqn.map f).comp (map W f) = f.comp (eval eqn) :=
   RingHom.ext (eval_map f eqn)
+
+lemma eval_comp_algebraMap : (eval eqn).comp (algebraMap R _) = .id _ := by
+  rw [← mk_comp_algebraMap, ← RingHom.comp_assoc, eval_comp_mk, evalEvalRingHom_comp_algebraMap]
 
 variable (W)
 

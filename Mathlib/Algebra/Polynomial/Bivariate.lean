@@ -43,6 +43,13 @@ abbrev CC [Semiring R] (r : R) : R[X][Y] := C (C r)
 lemma coe_algebraMap_eq_CC [CommSemiring R] : algebraMap R R[X][Y] = CC (R := R) := rfl
 lemma coe_evalEvalRingHom [CommSemiring R] (x y : R) : evalEvalRingHom x y = evalEval x y := rfl
 
+lemma evalEval_CC [Semiring R] (x y z : R) : evalEval x y (CC z) = z := by
+  rw [evalEval, CC, eval_C, eval_C]
+
+lemma evalEvalRingHom_comp_algebraMap [CommSemiring R] (x y : R) :
+    (evalEvalRingHom x y).comp (algebraMap R R[X][Y]) = .id _ := by
+  ext; apply evalEval_CC
+
 lemma evalEvalRingHom_eq [CommSemiring R] (x : R) :
     evalEvalRingHom x = eval₂RingHom (evalRingHom x) := by
   ext <;> simp
