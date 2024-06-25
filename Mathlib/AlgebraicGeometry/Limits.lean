@@ -83,60 +83,52 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
   rfl
 #align algebraic_geometry.empty_is_initial_to AlgebraicGeometry.emptyIsInitial_to
 
-instance : IsEmpty Scheme.empty.carrier :=
+instance : IsEmpty (∅ : Scheme.{u}) :=
   show IsEmpty PEmpty by infer_instance
 
-instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUnit)).carrier :=
+instance spec_punit_isEmpty : IsEmpty (Spec (CommRingCat.of PUnit.{u+1})) :=
   inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 #align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_punit_isEmpty
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
-    [IsEmpty X.carrier] : IsOpenImmersion f := by
+    [IsEmpty X] : IsOpenImmersion f := by
   apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
-  · exact .of_isEmpty (X := X.carrier) _
-  · intro (i : X.carrier); exact isEmptyElim i
+  · exact .of_isEmpty (X := X) _
+  · intro (i : X); exact isEmptyElim i
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersion_of_isEmpty
 
-instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
+instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y] :
     IsIso f := by
-  haveI : IsEmpty X.carrier := f.1.base.1.isEmpty
+  haveI : IsEmpty X := f.1.base.1.isEmpty
   have : Epi f.1.base := by
-    rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier)
+    rw [TopCat.epi_iff_surjective]; rintro (x : Y)
     exact isEmptyElim x
   apply IsOpenImmersion.to_iso
 #align algebraic_geometry.is_iso_of_is_empty AlgebraicGeometry.isIso_of_isEmpty
 
 /-- A scheme is initial if its underlying space is empty . -/
-noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X.carrier] : IsInitial X :=
+noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 #align algebraic_geometry.is_initial_of_is_empty AlgebraicGeometry.isInitialOfIsEmpty
 
 /-- `Spec 0` is the initial object in the category of schemes. -/
-noncomputable def specPunitIsInitial : IsInitial (Scheme.Spec.obj (op <| CommRingCat.of PUnit)) :=
+noncomputable def specPunitIsInitial : IsInitial (Spec (.of PUnit.{u+1})) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 #align algebraic_geometry.Spec_punit_is_initial AlgebraicGeometry.specPunitIsInitial
 
-instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X.carrier] : IsAffine X :=
-  isAffine_of_isIso
-    (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Scheme.Spec.obj (op <| CommRingCat.of PUnit)))
+instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
+  isAffine_of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec (.of PUnit)))
 #align algebraic_geometry.is_affine_of_is_empty AlgebraicGeometry.isAffine_of_isEmpty
 
-instance : HasInitial Scheme :=
-  -- Porting note: this instance was not needed
-  haveI : (Y : Scheme) → Unique (Scheme.empty ⟶ Y) := Scheme.hom_unique_of_empty_source
-  hasInitial_of_unique Scheme.empty
+instance : HasInitial Scheme.{u} :=
+  hasInitial_of_unique ∅
 
-instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
+instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
   ⟨fun x => ((initial.to Scheme.empty : _).1.base x).elim⟩
 #align algebraic_geometry.initial_is_empty AlgebraicGeometry.initial_isEmpty
 
-theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
-  convert isAffineOpen_opensRange (initial.to X)
-  ext
-  -- Porting note: added this `erw` to turn LHS to `False`
-  erw [Set.mem_empty_iff_false]
-  rw [false_iff_iff]
-  exact fun x => isEmptyElim (show (⊥_ Scheme).carrier from x.choose)
+theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : Opens X) :=
+  @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
 #align algebraic_geometry.bot_is_affine_open AlgebraicGeometry.isAffineOpen_bot
 
 instance : HasStrictInitialObjects Scheme :=

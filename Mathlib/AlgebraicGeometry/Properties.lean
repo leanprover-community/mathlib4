@@ -88,9 +88,8 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImm
   have : U = f ⁻¹ᵁ f ''ᵁ U := by
     ext1; exact (Set.preimage_image_eq _ H.base_open.inj).symm
   rw [this]
-  exact isReduced_of_injective (inv <| f.1.c.app (op <| f ''ᵁ U))
-    (asIso <| f.1.c.app (op <| f ''ᵁ U) :
-      Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
+  exact isReduced_of_injective (inv <| f.app (f ''ᵁ U))
+    (asIso <| f.app (f ''ᵁ U) : Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReduced_of_isOpenImmersion
 
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
@@ -98,7 +97,6 @@ instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := 
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
-  rw [show (Spec R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
   exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
     (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
@@ -142,10 +140,10 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : Opens X), Prop)
   apply h₃
 #align algebraic_geometry.reduce_to_affine_global AlgebraicGeometry.reduce_to_affine_global
 
-theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X.carrier), Prop)
-    (h₁ : ∀ (R : CommRingCat) (x : PrimeSpectrum R), P (Scheme.Spec.obj <| op R) x)
-    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X.carrier), P X x → P Y (f.1.base x)) :
-    ∀ (X : Scheme) (x : X.carrier), P X x := by
+theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
+    (h₁ : ∀ R x, P (Spec R) x)
+    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f.1.base x)) :
+    ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
   convert h₂ (X.affineCover.map (X.affineCover.f x)) y _
@@ -187,14 +185,14 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
 #align algebraic_geometry.eq_zero_of_basic_open_eq_bot AlgebraicGeometry.eq_zero_of_basicOpen_eq_bot
 
 @[simp]
-theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : Opens X.carrier}
-    (s : X.presheaf.obj <| op U) : X.basicOpen s = ⊥ ↔ s = 0 := by
+theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : Opens X}
+    (s : Γ(X, U)) : X.basicOpen s = ⊥ ↔ s = 0 := by
   refine ⟨eq_zero_of_basicOpen_eq_bot s, ?_⟩
   rintro rfl
   simp
 #align algebraic_geometry.basic_open_eq_bot_iff AlgebraicGeometry.basicOpen_eq_bot_iff
 
-/-- A scheme `X` is integral if its carrier is nonempty,
+/-- A scheme `X` is integral if its is nonempty,
 and `𝒪ₓ(U)` is an integral domain for each `U ≠ ∅`. -/
 class IsIntegral : Prop where
   nonempty : Nonempty X := by infer_instance
@@ -285,7 +283,7 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenIm
   have : IsDomain Γ(Y, f ''ᵁ U) := by
     apply (config := { allowSynthFailures := true }) IsIntegral.component_integral
     exact ⟨⟨_, _, hU.some.prop, rfl⟩⟩
-  exact (asIso <| f.1.c.app (op <| f ''ᵁ U) :
+  exact (asIso <| f.app (f ''ᵁ U) :
     Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
 #align algebraic_geometry.is_integral_of_open_immersion AlgebraicGeometry.isIntegral_of_isOpenImmersion
 
@@ -301,10 +299,8 @@ theorem affine_isIntegral_iff (R : CommRingCat) :
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv.toMulEquiv, fun _ => inferInstance⟩
 #align algebraic_geometry.affine_is_integral_iff AlgebraicGeometry.affine_isIntegral_iff
 
-theorem isIntegral_of_isAffine_of_isDomain [IsAffine X] [Nonempty X]
-    [h : IsDomain Γ(X, ⊤)] : IsIntegral X :=
-  haveI : IsIntegral (Spec (Scheme.Γ.obj (op X))) := by
-    rw [affine_isIntegral_iff]; exact h
+theorem isIntegral_of_isAffine_of_isDomain [IsAffine X] [Nonempty X] [IsDomain Γ(X, ⊤)] :
+    IsIntegral X :=
   isIntegral_of_isOpenImmersion X.isoSpec.hom
 #align algebraic_geometry.is_integral_of_is_affine_is_domain AlgebraicGeometry.isIntegral_of_isAffine_of_isDomain
 
