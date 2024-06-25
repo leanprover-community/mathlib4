@@ -10,6 +10,7 @@ import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Algebra.PrimitiveTypes
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.RestrictScalars
