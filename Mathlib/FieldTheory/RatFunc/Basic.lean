@@ -219,8 +219,7 @@ theorem toFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : RatFunc K)
 
 theorem smul_eq_C_smul (x : RatFunc K) (r : K) : r • x = Polynomial.C r • x := by
   cases' x with x
-  -- Porting note: had to specify the induction principle manually
-  induction x using Localization.induction_on
+  induction x
   rw [← ofFractionRing_smul, ← ofFractionRing_smul, Localization.smul_mk,
     Localization.smul_mk, smul_eq_mul, Polynomial.smul_eq_C_mul]
 set_option linter.uppercaseLean3 false in
@@ -421,9 +420,8 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
   rintro ⟨x⟩ ⟨y⟩ h
-  -- Porting note: had to hint `induction` which induction principle to use
-  induction x using Localization.induction_on
-  induction y using Localization.induction_on
+  induction x
+  induction y
   simpa only [map_apply_ofFractionRing_mk, ofFractionRing_injective.eq_iff,
     Localization.mk_eq_mk_iff, Localization.r_iff_exists, mul_cancel_left_coe_nonZeroDivisors,
     exists_const, ← map_mul, hf.eq_iff] using h
@@ -499,8 +497,8 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
     (hφ' : R[X]⁰ ≤ G₀⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftMonoidWithZeroHom φ hφ') := by
   rintro ⟨x⟩ ⟨y⟩
-  induction' x using Localization.induction_on with a
-  induction' y using Localization.induction_on with a'
+  induction' x with a
+  induction' y with a'
   simp_rw [liftMonoidWithZeroHom_apply_ofFractionRing_mk]
   intro h
   congr 1
