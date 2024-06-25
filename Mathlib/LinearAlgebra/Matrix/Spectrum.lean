@@ -57,11 +57,6 @@ lemma mulVec_eigenvectorBasis (j : n) :
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
-/-- Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc.toEuclideanLin -/
-theorem ofReal_eigenvalue_mem_spectrum_toEuclideanLin (i : n) :
-    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
-  LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
-
 /-- The spectrum of a Hermitian matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
 theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
   AlgEquiv.spectrum_eq
@@ -75,7 +70,7 @@ theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum �
 theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
   apply spectrum.of_algebraMap_mem 𝕜
   rw [← spectrum_toEuclideanLin]
-  apply hA.ofReal_eigenvalue_mem_spectrum_toEuclideanLin
+  apply LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
