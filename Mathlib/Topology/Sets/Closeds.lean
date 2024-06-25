@@ -366,4 +366,59 @@ protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
 
 end Clopens
 
+/-! ### Irreducible closed sets -/
+
+/-- The type of irreducible closed subsets of a topological space. -/
+structure IrreducibleCloseds (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
+  carrier : Set α
+  irreducibleClosed' : IsIrreducibleClosed carrier
+namespace IrreducibleCloseds
+
+instance : SetLike (IrreducibleCloseds α) α where
+  coe := IrreducibleCloseds.carrier
+  coe_injective' s t h := by cases s; cases t; congr
+
+instance : CanLift (Set α) (IrreducibleCloseds α) (↑) IsIrreducibleClosed where
+  prf s hs := ⟨⟨s, hs⟩, rfl⟩
+
+theorem irreducibleClosed (s : IrreducibleCloseds α) : IsIrreducibleClosed (s : Set α) :=
+  s.irreducibleClosed'
+
+/-- See Note [custom simps projection]. -/
+def Simps.coe (s : IrreducibleCloseds α) : Set α := s
+
+initialize_simps_projections IrreducibleCloseds (carrier → coe, as_prefix coe)
+
+@[ext]
+protected theorem ext {s t : IrreducibleCloseds α} (h : (s : Set α) = t) : s = t :=
+  SetLike.ext' h
+
+@[simp]
+theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
+  rfl
+
+instance : LE (IrreducibleCloseds α) where
+  le a b := a.1 ≤ b.1
+
+/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
+@[simps]
+def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
+  ⟨{x}, ⟨isIrreducible_singleton, isClosed_singleton⟩⟩
+
+@[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
+variable (α) in
+def iso_subtype : (TopologicalSpace.IrreducibleCloseds α)ᵒᵈ ≃o
+    {x : Set α // IsIrreducibleClosed x }ᵒᵈ where
+      toFun x := ⟨x.1, x.2⟩
+      invFun x := ⟨x.1, x.2⟩
+      right_inv x := Subtype.coe_eta _ _
+      left_inv x := by simp only; rfl
+      map_rel_iff' := by
+        simp only [Equiv.coe_fn_mk, OrderDual.forall, toDual_le_toDual]
+        intro a b; rfl
+
+end IrreducibleCloseds
+
 end TopologicalSpace

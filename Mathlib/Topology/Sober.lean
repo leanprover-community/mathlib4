@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Topology.Separation
+import Mathlib.Topology.Sets.Closeds
 
 #align_import topology.sober from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -178,6 +179,24 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     refine specializes_iff_closure_subset.trans ?_
     simp [hs.2.closure_eq, ht.2.closure_eq]
 #align irreducible_set_equiv_points irreducibleSetEquivPoints
+
+/-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
+noncomputable def irreducibleSetEquivPoints' [QuasiSober α] [T0Space α] :
+    TopologicalSpace.IrreducibleCloseds α ≃o α where
+  toFun s := s.2.1.genericPoint
+  invFun x := ⟨closure ({x} : Set α), isIrreducible_singleton.closure, isClosed_closure⟩
+  left_inv s := by
+    refine TopologicalSpace.IrreducibleCloseds.ext ?_
+    simp only [IsIrreducible.genericPoint_closure_eq, TopologicalSpace.IrreducibleCloseds.coe_mk,
+      closure_eq_iff_isClosed.mpr s.2.2]
+    rfl
+  right_inv x := isIrreducible_singleton.closure.genericPoint_spec.eq
+      (by rw [closure_closure]; exact isGenericPoint_closure)
+  map_rel_iff' := by
+    rintro ⟨s, hs⟩ ⟨t, ht⟩
+    refine specializes_iff_closure_subset.trans ?_
+    simp [hs.2.closure_eq, ht.2.closure_eq]
+    rfl
 
 theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where

@@ -965,10 +965,10 @@ Zero loci of prime ideals are closed irreducible sets in the Zariski topology an
 irreducible set is a zero locus of some prime ideal.
 -/
 protected def pointsEquivIrreducibleCloseds :
-    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducibleClosed s}ᵒᵈ where
-  __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
+    PrimeSpectrum R ≃o (TopologicalSpace.IrreducibleCloseds (PrimeSpectrum R))ᵒᵈ where
+  __ := irreducibleSetEquivPoints'.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
-    (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
+    (RelIso.symm irreducibleSetEquivPoints').map_rel_iff.trans (le_iff_specializes p q).symm
 
 section LocalizationAtMinimal
 
@@ -999,12 +999,13 @@ open PrimeSpectrum in
 Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
 irreducible component is a zero locus of some minimal prime ideal.
 -/
-protected def minimalPrimes.equivIrreducibleComponents :
-    minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ :=
+protected def minimalPrimes.equivIrreducibleComponents' :
+    minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
-  (e.trans <| PrimeSpectrum.pointsEquivIrreducibleCloseds R).minimalsIsoMaximals.trans
-    (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_irreducibleClosed]).dual
+  rw [irreducibleComponents_eq_maximals_irreducibleClosed]
+  exact OrderIso.minimalsIsoMaximals (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
+     (TopologicalSpace.IrreducibleCloseds.iso_subtype (PrimeSpectrum R))))
 
 namespace PrimeSpectrum
 
