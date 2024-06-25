@@ -5,7 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.RingTheory.OreLocalization.Basic
 
@@ -97,6 +97,20 @@ variable {X : Type*} [AddCommMonoid X] [Module R X]
 instance : Module R[S⁻¹] X[S⁻¹] where
   add_smul := OreLocalization.add_smul
   zero_smul := OreLocalization.zero_smul
+
+instance : Module R X[S⁻¹] where
+  add_smul r s x := by
+    rw [← oreDiv_one_smul, ← oreDiv_one_smul, ← oreDiv_one_smul, ← add_oreDiv, add_smul]
+  zero_smul x := by
+    rw [← oreDiv_one_smul, zero_oreDiv, zero_smul]
+
+variable (S X) in
+/-- The function `m ↦ m /ₒ 1` as an `R`-linear map. -/
+@[simps]
+def mkLinearMap : X →ₗ[R] X[S⁻¹] where
+  toFun x := x /ₒ 1
+  map_add' x y := add_oreDiv.symm
+  map_smul' r x := by dsimp only; rw [← smul_div_one, oreDiv_one_smul, RingHom.id_apply]
 
 section UMP
 

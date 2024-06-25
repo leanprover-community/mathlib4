@@ -258,9 +258,8 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
 @[to_additive "the vector addition on the Ore localization of additive monoids."]
-protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
-  liftExpand smul'' fun r₁ r₂ s hs => by
-    ext x
+protected def smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
+  liftExpand (fun r s ↦ smul'' r s x) (fun r₁ r₂ s hs => by
     induction' x using OreLocalization.ind with x s₂
     show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
@@ -278,7 +277,7 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
     simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
     congr 1
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
-    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]
+    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]) y
 #align ore_localization.mul OreLocalization.smul
 
 @[to_additive]
