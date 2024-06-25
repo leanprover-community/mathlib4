@@ -24,7 +24,7 @@ mainly used in the definition of linearly disjointness (`Submodule.LinearDisjoin
 - `Submodule.mulMap'`: the natural map `M ⊗[R] N →ₗ[R] M * N`
   induced by multiplication in `S`, which is surjective (`Submodule.mulMap'_surjective`).
 
-- `Submodule.lTensorBot`, `Submodule.rTensorBot`: the natural isomorphism between
+- `Submodule.lTensorOne`, `Submodule.rTensorOne`: the natural isomorphism between
   `i(R) ⊗[R] N` and `N`, resp. `M ⊗[R] i(R)` and `M`, induced by multiplication in `S`,
   here `i : R → S` is the structure map. They generalize `TensorProduct.lid`
   and `TensorProduct.rid`, as `i(R)` is not necessarily isomorphic to `R`.
@@ -115,102 +115,102 @@ theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
 `i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This is promoted to an isomorphism as `Submodule.lTensorBot`. Use that instead. -/
-def lTensorBot' : (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N :=
+This is promoted to an isomorphism as `Submodule.lTensorOne`. Use that instead. -/
+def lTensorOne' : (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N :=
   show (1 : Submodule R S) ⊗[R] N →ₗ[R] N from
     (LinearEquiv.ofEq _ _ (by rw [mulMap_range, one_mul])).toLinearMap ∘ₗ (mulMap _ N).rangeRestrict
 
 @[simp]
-theorem lTensorBot'_tmul (y : R) (n : N) :
-    N.lTensorBot' (algebraMap R _ y ⊗ₜ[R] n) = y • n := Subtype.val_injective <| by
-  simp_rw [lTensorBot', LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+theorem lTensorOne'_tmul (y : R) (n : N) :
+    N.lTensorOne' (algebraMap R _ y ⊗ₜ[R] n) = y • n := Subtype.val_injective <| by
+  simp_rw [lTensorOne', LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.coe_ofEq_apply, LinearMap.codRestrict_apply, SetLike.val_smul, Algebra.smul_def]
   exact mulMap_tmul 1 N _ _
 
 @[simp]
-theorem lTensorBot'_one_tmul (n : N) : N.lTensorBot' (1 ⊗ₜ[R] n) = n := by
-  simpa using lTensorBot'_tmul N 1 n
+theorem lTensorOne'_one_tmul (n : N) : N.lTensorOne' (1 ⊗ₜ[R] n) = n := by
+  simpa using lTensorOne'_tmul N 1 n
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
 `i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
-def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N := by
-  refine LinearEquiv.ofLinear N.lTensorBot' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
+def lTensorOne : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N := by
+  refine LinearEquiv.ofLinear N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
     (by ext; simp) (TensorProduct.ext' fun r n ↦ ?_)
-  change 1 ⊗ₜ[R] lTensorBot' N _ = r ⊗ₜ[R] n
+  change 1 ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
   replace h : algebraMap R _ x = r := Subtype.val_injective h
-  rw [← h, lTensorBot'_tmul, ← TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
+  rw [← h, lTensorOne'_tmul, ← TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
 
 @[simp]
-theorem lTensorBot_tmul (y : R) (n : N) : N.lTensorBot (algebraMap R _ y ⊗ₜ[R] n) = y • n :=
-  N.lTensorBot'_tmul y n
+theorem lTensorOne_tmul (y : R) (n : N) : N.lTensorOne (algebraMap R _ y ⊗ₜ[R] n) = y • n :=
+  N.lTensorOne'_tmul y n
 
 @[simp]
-theorem lTensorBot_one_tmul (n : N) : N.lTensorBot (1 ⊗ₜ[R] n) = n :=
-  N.lTensorBot'_one_tmul n
+theorem lTensorOne_one_tmul (n : N) : N.lTensorOne (1 ⊗ₜ[R] n) = n :=
+  N.lTensorOne'_one_tmul n
 
 @[simp]
-theorem lTensorBot_symm_apply (n : N) : N.lTensorBot.symm n = 1 ⊗ₜ[R] n := rfl
+theorem lTensorOne_symm_apply (n : N) : N.lTensorOne.symm n = 1 ⊗ₜ[R] n := rfl
 
-theorem mulMap_one_left_eq : mulMap 1 N = N.subtype ∘ₗ N.lTensorBot.toLinearMap :=
+theorem mulMap_one_left_eq : mulMap 1 N = N.subtype ∘ₗ N.lTensorOne.toLinearMap :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This is promoted to an isomorphism as `Submodule.rTensorBot`. Use that instead. -/
-def rTensorBot' : M ⊗[R] (⊥ : Subalgebra R S) →ₗ[R] M :=
+This is promoted to an isomorphism as `Submodule.rTensorOne`. Use that instead. -/
+def rTensorOne' : M ⊗[R] (⊥ : Subalgebra R S) →ₗ[R] M :=
   show M ⊗[R] (1 : Submodule R S) →ₗ[R] M from
     (LinearEquiv.ofEq _ _ (by rw [mulMap_range, mul_one])).toLinearMap ∘ₗ (mulMap M _).rangeRestrict
 
 @[simp]
-theorem rTensorBot'_tmul (y : R) (m : M) :
-    M.rTensorBot' (m ⊗ₜ[R] algebraMap R _ y) = y • m := Subtype.val_injective <| by
-  simp_rw [rTensorBot', LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+theorem rTensorOne'_tmul (y : R) (m : M) :
+    M.rTensorOne' (m ⊗ₜ[R] algebraMap R _ y) = y • m := Subtype.val_injective <| by
+  simp_rw [rTensorOne', LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.coe_ofEq_apply, LinearMap.codRestrict_apply, SetLike.val_smul]
   rw [Algebra.smul_def, Algebra.commutes]
   exact mulMap_tmul M 1 _ _
 
 @[simp]
-theorem rTensorBot'_tmul_one (m : M) : M.rTensorBot' (m ⊗ₜ[R] 1) = m := by
-  simpa using rTensorBot'_tmul M 1 m
+theorem rTensorOne'_tmul_one (m : M) : M.rTensorOne' (m ⊗ₜ[R] 1) = m := by
+  simpa using rTensorOne'_tmul M 1 m
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
 `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
-def rTensorBot : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M := by
-  refine LinearEquiv.ofLinear M.rTensorBot' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
+def rTensorOne : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M := by
+  refine LinearEquiv.ofLinear M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
     TensorProduct.mk R (⊥ : Subalgebra R S) M 1) (by ext; simp) (TensorProduct.ext' fun n r ↦ ?_)
-  change rTensorBot' M _ ⊗ₜ[R] 1 = n ⊗ₜ[R] r
+  change rTensorOne' M _ ⊗ₜ[R] 1 = n ⊗ₜ[R] r
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
   replace h : algebraMap R _ x = r := Subtype.val_injective h
-  rw [← h, rTensorBot'_tmul, TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
+  rw [← h, rTensorOne'_tmul, TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
 
 @[simp]
-theorem rTensorBot_tmul (y : R) (m : M) : M.rTensorBot (m ⊗ₜ[R] algebraMap R _ y) = y • m :=
-  M.rTensorBot'_tmul y m
+theorem rTensorOne_tmul (y : R) (m : M) : M.rTensorOne (m ⊗ₜ[R] algebraMap R _ y) = y • m :=
+  M.rTensorOne'_tmul y m
 
 @[simp]
-theorem rTensorBot_tmul_one (m : M) : M.rTensorBot (m ⊗ₜ[R] 1) = m :=
-  M.rTensorBot'_tmul_one m
+theorem rTensorOne_tmul_one (m : M) : M.rTensorOne (m ⊗ₜ[R] 1) = m :=
+  M.rTensorOne'_tmul_one m
 
 @[simp]
-theorem rTensorBot_symm_apply (m : M) : M.rTensorBot.symm m = m ⊗ₜ[R] 1 := rfl
+theorem rTensorOne_symm_apply (m : M) : M.rTensorOne.symm m = m ⊗ₜ[R] 1 := rfl
 
-theorem mulMap_one_right_eq : mulMap M 1 = M.subtype ∘ₗ M.rTensorBot.toLinearMap :=
+theorem mulMap_one_right_eq : mulMap M 1 = M.subtype ∘ₗ M.rTensorOne.toLinearMap :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
 @[simp]
-theorem comm_trans_lTensorBot :
-    (TensorProduct.comm R _ _).trans M.lTensorBot = M.rTensorBot := by
+theorem comm_trans_lTensorOne :
+    (TensorProduct.comm R _ _).trans M.lTensorOne = M.rTensorOne := by
   refine LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun m r ↦ ?_
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
   replace h : algebraMap R _ x = r := Subtype.val_injective h
   rw [← h]; simp
 
 @[simp]
-theorem comm_trans_rTensorBot :
-    (TensorProduct.comm R _ _).trans M.rTensorBot = M.lTensorBot := by
+theorem comm_trans_rTensorOne :
+    (TensorProduct.comm R _ _).trans M.rTensorOne = M.lTensorOne := by
   refine LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun r m ↦ ?_
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
   replace h : algebraMap R _ x = r := Subtype.val_injective h
