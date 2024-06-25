@@ -108,6 +108,7 @@ instance instInhabited : Inhabited StieltjesFunction :=
   ⟨StieltjesFunction.id⟩
 #align stieltjes_function.inhabited StieltjesFunction.instInhabited
 
+/-- Constant functions are Stieltjes function. -/
 protected def const (c : ℝ) : StieltjesFunction where
   toFun := fun _ ↦ c
   mono' _ _ := by simp
@@ -115,6 +116,7 @@ protected def const (c : ℝ) : StieltjesFunction where
 
 @[simp] lemma const_apply (c x : ℝ) : (StieltjesFunction.const c) x = c := rfl
 
+/-- The sum of two Stieltjes functions is a Stieltjes function. -/
 def add (f g : StieltjesFunction) : StieltjesFunction where
   toFun := fun x => f x + g x
   mono' := f.mono.add g.mono
