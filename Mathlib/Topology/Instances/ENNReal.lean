@@ -195,8 +195,13 @@ theorem tendsto_coe_nhds_top {f : α → ℝ≥0} {l : Filter α} :
   rw [tendsto_nhds_top_iff_nnreal, atTop_basis_Ioi.tendsto_right_iff]; simp
 #align ennreal.tendsto_coe_nhds_top ENNReal.tendsto_coe_nhds_top
 
+@[simp]
+theorem tendsto_ofReal_nhds_top {f : α → ℝ} {l : Filter α} :
+    Tendsto (fun x ↦ ENNReal.ofReal (f x)) l (𝓝 ∞) ↔ Tendsto f l atTop :=
+  tendsto_coe_nhds_top.trans Real.tendsto_toNNReal_atTop_iff
+
 theorem tendsto_ofReal_atTop : Tendsto ENNReal.ofReal atTop (𝓝 ∞) :=
-  tendsto_coe_nhds_top.2 tendsto_real_toNNReal_atTop
+  tendsto_ofReal_nhds_top.2 tendsto_id
 #align ennreal.tendsto_of_real_at_top ENNReal.tendsto_ofReal_atTop
 
 theorem nhds_zero : 𝓝 (0 : ℝ≥0∞) = ⨅ (a) (_ : a ≠ 0), 𝓟 (Iio a) :=
