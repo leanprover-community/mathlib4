@@ -147,7 +147,7 @@ noncomputable def HasSplitEqualizer.isSplitEqualizer [HasSplitEqualizer f g] :
   Classical.choice (@splittable _ _ _ _ f g).choose_spec.choose_spec
 
 /-- If `f, g` is cosplit, then `G f, G g` is cosplit. -/
-instance map_is_split_pair [HasSplitEqualizer f g] : HasSplitEqualizer (G.map f) (G.map g) where
+instance map_is_cosplit_pair [HasSplitEqualizer f g] : HasSplitEqualizer (G.map f) (G.map g) where
   splittable :=
     ⟨_, _, ⟨IsSplitEqualizer.map (HasSplitEqualizer.isSplitEqualizer f g) _⟩⟩
 
