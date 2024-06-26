@@ -4,107 +4,26 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Equiv
-import Mathlib.Algebra.Module.Hom
-import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.Data.Set.Finite
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
-/-!
-# Linear algebra
-
-This file defines the basics of linear algebra. It sets up the "categorical/lattice structure" of
-modules over a ring, submodules, and linear maps.
-
-Many of the relevant definitions, including `Module`, `Submodule`, and `LinearMap`, are found in
-`Algebra/Module`.
-
-## Main definitions
-
-* Many constructors for (semi)linear maps
-
-See `LinearAlgebra.Span` for the span of a set (as a submodule),
-and `LinearAlgebra.Quotient` for quotients by submodules.
-
-## Main theorems
-
-See `LinearAlgebra.Isomorphisms` for Noether's three isomorphism theorems for modules.
-
-## Notations
-
-* We continue to use the notations `M →ₛₗ[σ] M₂` and `M →ₗ[R] M₂` for the type of semilinear
-  (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
-
-## Implementation notes
-
-We note that, when constructing linear maps, it is convenient to use operations defined on bundled
-maps (`LinearMap.prod`, `LinearMap.coprod`, arithmetic operations like `+`) instead of defining a
-function and proving it is linear.
-
-## TODO
-
-* Parts of this file have not yet been generalized to semilinear maps
-
-## Tags
-linear algebra, vector space, module
-
--/
+/-! ### Linear equivalences involving submodules -/
 
 open Function
 
-open Pointwise
-
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
-variable {S : Type*}
-variable {K : Type*} {K₂ : Type*}
-variable {M : Type*} {M' : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*} {M₄ : Type*}
-variable {N : Type*} {N₂ : Type*}
-variable {ι : Type*}
-variable {V : Type*} {V₂ : Type*}
-
-/-! ### Properties of linear maps -/
-
-namespace IsLinearMap
-
-theorem isLinearMap_add [Semiring R] [AddCommMonoid M] [Module R M] :
-    IsLinearMap R fun x : M × M => x.1 + x.2 := by
-  apply IsLinearMap.mk
-  · intro x y
-    simp only [Prod.fst_add, Prod.snd_add]
-    abel
-  · intro x y
-    simp [smul_add]
-#align is_linear_map.is_linear_map_add IsLinearMap.isLinearMap_add
-
-theorem isLinearMap_sub {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M] :
-    IsLinearMap R fun x : M × M => x.1 - x.2 := by
-  apply IsLinearMap.mk
-  · intro x y
-    -- porting note (#10745): was `simp [add_comm, add_left_comm, sub_eq_add_neg]`
-    rw [Prod.fst_add, Prod.snd_add]
-    abel
-  · intro x y
-    simp [smul_sub]
-#align is_linear_map.is_linear_map_sub IsLinearMap.isLinearMap_sub
-
-end IsLinearMap
-
-/-! ### Linear equivalences -/
+variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {N : Type*}
 
 namespace LinearEquiv
 
 section AddCommMonoid
 
-#align linear_equiv.map_sum map_sumₓ
-
 section
 
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [Semiring R] [Semiring R₂] [Semiring R₃]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable {module_M : Module R M} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
@@ -112,7 +31,6 @@ variable {σ₃₂ : R₃ →+* R₂}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 variable {re₂₃ : RingHomInvPair σ₂₃ σ₃₂} {re₃₂ : RingHomInvPair σ₃₂ σ₂₃}
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₁] M) (e : M ≃ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃] M₃)
-variable (e'' : M₂ ≃ₛₗ[σ₂₃] M₃)
 variable (p q : Submodule R M)
 
 /-- Linear equivalence between two equal submodules. -/
@@ -299,9 +217,6 @@ theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHom
 end
 
 end AddCommMonoid
-
-#align linear_equiv.map_neg map_negₓ
-#align linear_equiv.map_sub map_subₓ
 
 end LinearEquiv
 
