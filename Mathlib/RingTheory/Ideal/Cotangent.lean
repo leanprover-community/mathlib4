@@ -193,7 +193,7 @@ theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
   · rintro _ ⟨x, hx, rfl⟩; exact hx
 #align alg_hom.ker_ker_sqare_lift AlgHom.ker_kerSquareLift
 
-local instance Algebra.kerSquareLift : Algebra (R ⧸ (RingHom.ker (algebraMap R A) ^ 2)) A :=
+instance Algebra.kerSquareLift : Algebra (R ⧸ (RingHom.ker (algebraMap R A) ^ 2)) A :=
   (Algebra.ofId R A).kerSquareLift.toAlgebra
 
 instance [Algebra A B] [IsScalarTower R A B] :
