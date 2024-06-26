@@ -347,9 +347,9 @@ namespace StarAlgHomClass
 variable (F R A B : Type*)
 
 -- See note [lower instance priority]
-instance (priority := 100) toNonUnitalStarAlgHomClass {_ : CommSemiring R} {_ : Semiring A}
-  [Algebra R A] [Star A] {_ : Semiring B} [Algebra R B] [Star B]
-  [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] :
+instance (priority := 100) toNonUnitalStarAlgHomClass [CommSemiring R] [Semiring A] [Algebra R A]
+  [Star A] [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
+  [StarAlgHomClass F R A B] :
   NonUnitalStarAlgHomClass F R A B :=
   { }
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
@@ -747,41 +747,37 @@ class StarAlgEquivClass (F : Type*) (R A B : outParam Type*)
 
 namespace StarAlgEquivClass
 
--- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
-instance (priority := 50) {F R A B : Type*} {_ : Add A} {_ : Mul A} [SMul R A] {_ : Star A}
-    {_ : Add B} {_ : Mul B} [SMul R B] {_ : Star B}
-    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
+instance (priority := 50) {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
+    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
     [hF : StarAlgEquivClass F R A B] :
     StarHomClass F A B :=
   { hF with }
 
 -- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} {_ : Monoid R} {_ : NonUnitalNonAssocSemiring A}
-    [DistribMulAction R A] {_ : NonUnitalNonAssocSemiring B}
-    [DistribMulAction R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
+instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
+    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
+    [NonUnitalAlgEquivClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
   { }
 
 -- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} {_ : Monoid R} {_ : NonUnitalNonAssocSemiring A}
-    [DistribMulAction R A] {_ : Star A} {_ : NonUnitalNonAssocSemiring B}
-    [DistribMulAction R B] {_ : Star B} [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
-    [StarAlgEquivClass F R A B] :
+instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
+    [DistribMulAction R A] [Star A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
+    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B] :
     NonUnitalStarAlgHomClass F R A B :=
   { }
 
 -- See note [lower instance priority]
-instance (priority := 100) instAlgHomClass (F R A B : Type*) {_ : CommSemiring R}
-    {_ : Semiring A} [Algebra R A] {_ : Semiring B} [Algebra R B]
-    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
+instance (priority := 100) instAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
+    [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
 -- See note [lower instance priority]
-instance (priority := 100) instStarAlgHomClass (F R A B : Type*) {_ : CommSemiring R}
-    {_ : Semiring A} [Algebra R A] {_ : Star A} {_ : Semiring B} [Algebra R B] {_ : Star B}
-    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B] :
+instance (priority := 100) instStarAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
+    [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B] [EquivLike F A B]
+    [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B] :
     StarAlgHomClass F R A B :=
   { }
 
