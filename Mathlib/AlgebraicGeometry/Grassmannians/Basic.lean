@@ -10,8 +10,8 @@ noncomputable section
 universe u v w
 
 instance basic_open_isOpenImmersion' {R : Type*} [CommRing R] (f : R) :
-    IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) := by
-  sorry
+    IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
+  @basic_open_isOpenImmersion (CommRingCat.of R) _
 
 variable (K V : Type u) [Field K] [AddCommGroup V] [Module K V]
   [Module.Finite K V] [Module.Free K V]
@@ -37,14 +37,9 @@ def Grassmannian.element (i j : Basis (Fin (finrank K V)) K V) :
   exact (Grassmannian.matrix_chart (hr := hr) i j MvPolynomial.X
     (A := MvPolynomial ((Fin (finrank K V - r)) × Fin r) K)).det
 
-def Grassmannian.open_immersion (i j : Basis (Fin (finrank K V)) K V) :=
+abbrev Grassmannian.open_immersion (i j : Basis (Fin (finrank K V)) K V) :=
   Spec.map (CommRingCat.ofHom (algebraMap (MvPolynomial ((Fin (finrank K V - r)) × Fin r) K)
     (Localization.Away (Grassmannian.element K V r hr i j))))
-
-local instance (i j : Basis (Fin (finrank K V)) K V) : IsOpenImmersion
-    (Grassmannian.open_immersion K V r hr i j) :=
-  @basic_open_isOpenImmersion (CommRingCat.of (MvPolynomial
-    ((Fin (finrank K V - r)) × Fin r) K)) (Grassmannian.element (hr := hr) i j)
 
 def Grassmannian.glueData : GlueData where
   J := Basis (Fin (finrank K V)) K V
