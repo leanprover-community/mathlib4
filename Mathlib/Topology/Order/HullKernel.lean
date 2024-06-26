@@ -166,7 +166,7 @@ lemma sInter_Ici_eq (S : Set α) : ⋂₀ { T ↓∩ (Ici a) | a ∈ S } = T ↓
       Set.preimage_val_subset_preimage_val (antitone_Ici (CompleteLattice.le_sSup S a ha))⟩
 
 /- When `α` is complete, the relative basis for the Lower topology is also closed under arbitary
-unions.-/
+unions. -/
 lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
   rw [Set.preimage_compl, ← sInter_Ici_eq, compl_sInter, sUnion_eq_compl_sInter_compl]
   simp only [preimage_compl, sInter_image, mem_setOf_eq, iInter_exists, biInter_and',
