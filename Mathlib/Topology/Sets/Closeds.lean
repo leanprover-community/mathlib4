@@ -408,16 +408,19 @@ def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
 
+/-- Equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducibleClosed x }`. -/
+@[simps apply symm_apply]
+def equivSubtype : IrreducibleCloseds α ≃ {x : Set α // IsIrreducibleClosed x } where
+  toFun a   := ⟨a.1, a.2⟩
+  invFun a  := ⟨a.1, a.2⟩
+  left_inv  := fun ⟨_, _⟩ => rfl
+  right_inv := fun ⟨_, _⟩ => rfl
+
 variable (α) in
-def iso_subtype : (TopologicalSpace.IrreducibleCloseds α)ᵒᵈ ≃o
-    {x : Set α // IsIrreducibleClosed x }ᵒᵈ where
-      toFun x := ⟨x.1, x.2⟩
-      invFun x := ⟨x.1, x.2⟩
-      right_inv x := Subtype.coe_eta _ _
-      left_inv x := by simp only; rfl
-      map_rel_iff' := by
-        simp only [Equiv.coe_fn_mk, OrderDual.forall, toDual_le_toDual]
-        intro a b; rfl
+/-- The equivalence `IrreducibleCloseds α ≃ {x : Set α // IsIrreducibleClosed x }` is an order
+isomorphism.-/
+def orderIsoSubtype : IrreducibleCloseds α ≃o {x : Set α // IsIrreducibleClosed x } :=
+  equivSubtype.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 
 end IrreducibleCloseds
 

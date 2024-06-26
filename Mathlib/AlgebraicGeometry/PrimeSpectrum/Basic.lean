@@ -999,13 +999,13 @@ open PrimeSpectrum in
 Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
 irreducible component is a zero locus of some minimal prime ideal.
 -/
-protected def minimalPrimes.equivIrreducibleComponents' :
+protected def minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
   rw [irreducibleComponents_eq_maximals_irreducibleClosed]
   exact OrderIso.minimalsIsoMaximals (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
-     (TopologicalSpace.IrreducibleCloseds.iso_subtype (PrimeSpectrum R))))
+     (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype (PrimeSpectrum R)).dual))
 
 namespace PrimeSpectrum
 
