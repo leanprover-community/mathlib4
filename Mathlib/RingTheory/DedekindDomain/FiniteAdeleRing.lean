@@ -316,7 +316,10 @@ end ProdAdicCompletions
 open ProdAdicCompletions.IsFiniteAdele
 
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
-of `adicCompletion`, with respect to `adicCompletionIntegers`. -/
+of `adicCompletion`, with respect to `adicCompletionIntegers`.
+
+Note that we make this a `Type` rather than a `Subtype` (e.g., a `subalgebra`) since we wish
+to endow it with a finer topology than that of the subspace topology. -/
 def FiniteAdeleRing : Type _ := {x : K_hat R K // x.IsFiniteAdele}
 #align dedekind_domain.finite_adele_ring DedekindDomain.FiniteAdeleRing
 
@@ -343,6 +346,9 @@ instance : CommRing (FiniteAdeleRing R K) :=
 instance : Algebra K (FiniteAdeleRing R K) :=
   Subalgebra.algebra (subalgebra R K)
 
+instance : Algebra R (FiniteAdeleRing R K) :=
+  ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K)).toAlgebra
+
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
   coe := fun x ↦ x.1
 
@@ -363,6 +369,123 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   map_add' _ _ := by ext; rfl
   commutes' _ _ := mul_comm _ _
   smul_def' r x := rfl
+
+instance : CoeFun (FiniteAdeleRing R K)
+    (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
+  coe a v := a.1 v
+
+open scoped algebraMap in
+-- move to nearer definition
+lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
+    a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
+  ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
+
+section Topology
+
+open Classical
+
+open nonZeroDivisors
+
+open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
+
+open scoped DiscreteValuation
+
+open Multiplicative Additive
+
+variable {R K} in
+lemma clear_local_denominator (v : HeightOneSpectrum R)
+    (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
+  by_cases ha : a ∈ v.adicCompletionIntegers K
+  · use 1
+    simp [ha, Submonoid.one_mem]
+  · rw [not_mem_adicCompletionIntegers] at ha
+    -- Let the additive valuation of a be -d with d>0
+    obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
+      Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
+    rw [hd, WithZero.one_lt_coe, ← ofAdd_zero, ofAdd_lt] at ha
+    -- let ϖ be a uniformiser
+    obtain ⟨ϖ, hϖ⟩ := int_valuation_exists_uniformizer v
+    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
+    -- use ϖ^d
+    refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
+    -- now manually translate the goal (an inequality in ℤₘ₀) to an inequality in ℤ
+    rw [mem_adicCompletionIntegers, algebraMap.coe_pow, map_mul, hd, map_pow,
+      valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow,
+      ← WithZero.coe_mul, WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow,
+      toAdd_ofAdd, toAdd_one,
+      show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
+        Int.natCast_natAbs, smul_eq_mul],
+      ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+    -- and now it's easy
+    linarith
+
+open scoped DiscreteValuation
+
+variable {R K} in
+lemma clear_denominator (a : FiniteAdeleRing R K) :
+    ∃ (b : R⁰) (c : R_hat R K), a * ((b : R) : FiniteAdeleRing R K) = c := by
+  let S := {v | a v ∉ adicCompletionIntegers K v}
+  choose b hb h using clear_local_denominator (R := R) (K := K)
+  let p := ∏ᶠ v ∈ S, b v (a v)
+  have hp : p ∈ R⁰ := finprod_mem_induction (· ∈ R⁰) (one_mem _) (fun _ _ => mul_mem) <|
+    fun _ _ ↦ hb _ _
+  use ⟨p, hp⟩
+  rw [exists_finiteIntegralAdele_iff]
+  intro v
+  by_cases hv : a v ∈ adicCompletionIntegers K v
+  · exact mul_mem hv <| coe_mem_adicCompletionIntegers _ _
+  · change v ∈ S at hv
+    dsimp only
+    have pprod : p = b v (a v) * ∏ᶠ w ∈ S \ {v}, b w (a w) := by
+      rw [← finprod_mem_singleton (a := v) (f := fun v ↦ b v (a v)),
+        finprod_mem_mul_diff (singleton_subset_iff.2 hv) a.2]
+    rw [pprod]
+    push_cast
+    rw [← mul_assoc]
+    exact mul_mem (h v (a v)) <| coe_mem_adicCompletionIntegers _ _
+
+open scoped Pointwise
+
+theorem submodulesRingBasis : SubmodulesRingBasis
+    (fun (r : R⁰) ↦ Submodule.span (R_hat R K) {((r : R) : FiniteAdeleRing R K)}) where
+  inter i j := ⟨i * j, by
+    push_cast
+    simp only [le_inf_iff, Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
+    exact ⟨⟨((j : R) : R_hat R K), by rw [mul_comm]; rfl⟩, ⟨((i : R) : R_hat R K), rfl⟩⟩⟩
+  leftMul a r := by
+    rcases clear_denominator a with ⟨b, c, h⟩
+    use r * b
+    rintro x ⟨m, hm, rfl⟩
+    simp only [Submonoid.coe_mul, SetLike.mem_coe] at hm
+    rw [Submodule.mem_span_singleton] at hm ⊢
+    rcases hm with ⟨n, rfl⟩
+    simp only [LinearMapClass.map_smul, DistribMulAction.toLinearMap_apply, smul_eq_mul]
+    use n * c
+    push_cast
+    rw [mul_left_comm, h, mul_comm _ (c : FiniteAdeleRing R K),
+      Algebra.smul_def', Algebra.smul_def', ← mul_assoc]
+    rfl
+  mul r := ⟨r, by
+    intro x hx
+    rw [mem_mul] at hx
+    rcases hx with ⟨a, ha, b, hb, rfl⟩
+    simp only [SetLike.mem_coe, Submodule.mem_span_singleton] at ha hb ⊢
+    rcases ha with ⟨m, rfl⟩
+    rcases hb with ⟨n, rfl⟩
+    use m * n * (r : R)
+    simp only [Algebra.smul_def', map_mul]
+    rw [mul_mul_mul_comm, mul_assoc]
+    rfl
+  ⟩
+
+instance : Nonempty (R⁰) := ⟨1, Submonoid.one_mem R⁰⟩
+
+instance : TopologicalSpace (FiniteAdeleRing R K) :=
+  SubmodulesRingBasis.topology (submodulesRingBasis R K)
+
+--#synth TopologicalRing (FiniteAdeleRing R K) -- works
+
+end Topology
 
 end FiniteAdeleRing
 
