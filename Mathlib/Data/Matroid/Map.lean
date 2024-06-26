@@ -77,7 +77,7 @@ we define `mapEmbedding` and `mapEquiv` separately from `map`.
 
 For finite matroids, both maps and comaps are a special case of a construction of
 Perfect [perfect1969matroid] in which a matroid structure can be transported across an arbitrary
-bipartite graph that may not correspond to a function at all (See [oxley2011], Thm 11.2.12).
+bipartite graph that may not correspond to a function at all (See [oxley2011], Theorem 11.2.12).
 It would have been nice to use this more general construction as a basis for the definition
 of both `Matroid.map` and `Matroid.comap`.
 
@@ -96,11 +96,9 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 
 ## References
 
-[aignerhorev2012infinite] : E. Aigner-Horev, J. Carmesin, J. Fröhlic, Infinite Matroid Union,
-arXiv:1111.0602 [math.CO]
-
-[perfect1969matroid] : H. Perfect, Independence Spaces and Combinatorial Problems,
-Proc. London Math. Soc. (3) 19, 17-30
+* [E. Aigner-Horev, J. Carmesin, J. Fröhlic, Infinite Matroid Union][aignerhorev2012infinite]
+* [H. Perfect, Independence Spaces and Combinatorial Problems][perfect1969matroid]
+* [J. Oxley, Matroid Theory][oxley2011]
 -/
 
 open Set Function Set.Notation
