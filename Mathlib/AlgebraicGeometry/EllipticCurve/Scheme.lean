@@ -4,12 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Michael Stoll, Junyan Xu
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
+import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # Schemes associated to Weierstrass curves
 
-This file defines the affine scheme associated to a Weierstrass curve
+This file defines the affine and projective schemes associated to a Weierstrass curve.
 -/
 
 universe u v w
@@ -133,21 +135,16 @@ namespace Scheme
 /-- For an `R`-algebra `A`, the type of `A`-rational points of `Spec R[W]`. In other words, the type
 of morphisms of affine schemes from `Spec A` to `Spec R[W]`. -/
 def Point : Type u :=
-  Spec (of A) ⟶ scheme W
+  Spec (of A) ⟶ W.scheme
 
 /-- The morphism of spectra `Spec R[W] → Spec R` induced by an algebra homomorphism `R →+* R[W]`. -/
 noncomputable def map : (scheme W).Hom <| Spec <| of R :=
   Spec.map <| ofHom <| algebraMap R W.CoordinateRing
 
--- /-- The affine scheme `Spec R[W]` over `Spec R`. -/
--- noncomputable def over : Over <| Spec <| of R :=
---   .mk <| Spec.map <| ofHom <| algebraMap R W.CoordinateRing
-
 /-- For an `R`-algebra `A`, the type of `A`-rational points over `Spec R` of `Spec R[W]`. In other
 words, the type of morphisms of affine schemes over `Spec R` from `Spec A` to `Spec R[W]`. -/
 def PointOver : Type u :=
-  Over.mk (Spec.map <| ofHom <| algebraMap R A) ⟶
-    Over.mk (Spec.map <| ofHom <| algebraMap R W.CoordinateRing)
+  Over.mk (Spec.map <| ofHom <| algebraMap R A) ⟶ Over.mk (map W)
 
 variable (E : EllipticCurve R)
 
@@ -176,3 +173,65 @@ noncomputable def equiv' [Nontrivial A] :
 end Scheme
 
 end WeierstrassCurve.Affine
+
+namespace WeierstrassCurve.Projective
+
+open AlgebraicGeometry CategoryTheory CommRingCat MvPolynomial
+
+variable {R : Type u} [CommRing R] (W : Projective R)
+
+lemma isHomogenous_polynomial : W.polynomial.IsHomogeneous 3 := by
+  rw [← mem_homogeneousSubmodule]
+  refine sub_mem (add_mem (add_mem ?_ ?_) ?_) (add_mem (add_mem (add_mem ?_ ?_) ?_) ?_)
+  · exact (isHomogeneous_X_pow ..).mul <| isHomogeneous_X ..
+  · exact ((isHomogeneous_C_mul_X ..).mul <| isHomogeneous_X ..).mul <| isHomogeneous_X ..
+  · exact (isHomogeneous_C_mul_X ..).mul <| isHomogeneous_X_pow ..
+  · exact isHomogeneous_X_pow ..
+  · exact (isHomogeneous_C_mul_X_pow ..).mul <| isHomogeneous_X ..
+  · exact (isHomogeneous_C_mul_X ..).mul <| isHomogeneous_X_pow ..
+  · exact isHomogeneous_C_mul_X_pow ..
+
+-- MvPolynomial.IsHomogeneous.HomogeneousSubmodule.gcommSemiring?
+instance : GradedRing <| homogeneousSubmodule (Fin 3) R :=
+  sorry
+
+def I : Ideal <| MvPolynomial (Fin 3) R :=
+  Ideal.span {W.polynomial}
+
+lemma isHomogeneous_I : W.I.IsHomogeneous <| homogeneousSubmodule (Fin 3) R :=
+  Ideal.homogeneous_span (homogeneousSubmodule (Fin 3) R) {W.polynomial} <|
+    by simpa only [Set.mem_singleton_iff, forall_eq] using ⟨3, W.isHomogenous_polynomial⟩
+
+abbrev CoordinateRing : Type u :=
+  MvPolynomial (Fin 3) R ⧸ W.I
+
+def quotientGrading (n : ℕ) : AddSubgroup (MvPolynomial (Fin 3) R ⧸ W.I) :=
+  sorry
+
+def quotientGrading' (n : ℕ) : Submodule R W.CoordinateRing where
+  smul_mem' := sorry
+  __ := W.quotientGrading n
+
+instance : GradedAlgebra W.quotientGrading' :=
+  sorry
+
+noncomputable def scheme : Scheme :=
+  Proj W.quotientGrading'
+
+variable (A : Type u) [CommRing A] [Algebra R A]
+
+/-- For an `R`-algebra `A`, the type of `A`-rational points of `Proj R[W]`. In other words, the type
+of morphisms of affine schemes from `Spec A` to `Proj R[W]`. -/
+def Point : Type u :=
+  Spec (of A) ⟶ W.scheme
+
+/-- The morphism of spectra `Proj R[W] → Spec R` induced by an algebra homomorphism `R →+* R[W]`. -/
+noncomputable def map : (scheme W).Hom <| Spec <| of R :=
+  sorry
+
+/-- For an `R`-algebra `A`, the type of `A`-rational points over `Spec R` of `Proj R[W]`. In other
+words, the type of morphisms of affine schemes over `Spec R` from `Spec A` to `Proj R[W]`. -/
+def PointOver : Type u :=
+  Over.mk (Spec.map <| ofHom <| algebraMap R A) ⟶ sorry
+
+end WeierstrassCurve.Projective
