@@ -715,6 +715,7 @@ import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Algebra.Symmetrized
