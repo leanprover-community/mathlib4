@@ -52,8 +52,18 @@ def Grassmannian.glueData : GlueData where
   V ij := Spec (CommRingCat.of (Localization.Away (Grassmannian.element K V r hr ij.1 ij.2)))
   f i j := Grassmannian.open_immersion K V r hr i j
   f_mono _ _ := inferInstance
-  f_hasPullback := sorry
-  f_id := sorry
+  f_hasPullback := inferInstance
+  f_id i := by
+    rw [isIso_iff_isOpenImmersion]
+    constructor
+    · exact inferInstance
+    · rw [TopCat.epi_iff_surjective, ← Set.range_iff_surjective, ← Set.image_univ]
+      conv => lhs; rw [← TopologicalSpace.Opens.coe_top]
+              rw [← basicOpen_of_isUnit (U := ⊤) (f := 1) isUnit_one]
+      simp only
+--      change (Grassmannian.open_immersion K V r hr i i) '' _ = Set.univ
+      conv_lhs => erw [image_basicOpen (Grassmannian.open_immersion K V r hr i i) 1]
+
   t := sorry
   t_id := sorry
   t' := sorry
