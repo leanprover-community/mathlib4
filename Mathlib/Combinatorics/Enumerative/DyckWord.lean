@@ -206,7 +206,7 @@ def firstReturn : ℕ :=
 lemma firstReturn_pos (h : p.l ≠ []) : 0 < p.firstReturn := by
   by_contra f
   replace f : p.firstReturn = 0 := by omega
-  rw [firstReturn, findIdx_eq (by simp [h])] at f
+  rw [firstReturn, findIdx_eq (by rw [length_range]; exact length_pos.mpr h)] at f
   simp only [get_range, zero_add, decide_eq_true_eq, not_lt_zero', false_implies, implies_true,
     and_true] at f
   rw [← p.cons_tail_dropLast_concat h] at f
@@ -391,7 +391,7 @@ def treeEquiv : DyckWord ≃ Tree Unit where
 @[nolint unusedHavesSuffices]
 theorem semilength_eq_iff_numNodes_eq {n : ℕ} : p.semilength = n ↔ (treeEquiv p).numNodes = n := by
   induction' n using Nat.strongInductionOn with n ih generalizing p
-  by_cases hn : p = 0; · simp [hn]
+  by_cases hn : p = 0; · simp [hn, treeEquiv, treeEquivToFun]
   rw [treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
   simp_rw [hn, dite_false, numNodes]
   rw [eq_zero_iff, ← ne_eq] at hn
