@@ -33,7 +33,7 @@ jobs:
         id: generate_branch_name
         run: |
           timestamp=$(date -u +"%Y-%m-%d-%H-%M")
-          echo "branch_name=update-dependencies-$timestamp" >> $GITHUB_ENV
+          echo "branch_name=update-dependencies-$timestamp" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
