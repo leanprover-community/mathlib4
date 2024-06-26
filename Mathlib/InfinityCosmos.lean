@@ -217,6 +217,27 @@ def forget : Cat.{v, u} ⥤ ReflQuiv.{v, u} where
 
 end ReflQuiv
 
+namespace SimplexCategory
+
+def Δ (k : ℕ) := FullSubcategory fun n : SimplexCategory => n.len ≤ k
+
+instance (k : ℕ) : Category (Δ k) := inferInstanceAs (Category (FullSubcategory ..))
+
+def Δ.ι (k) : Δ k ⥤ SimplexCategory := fullSubcategoryInclusion _
+
+def Δ.ι_fullyFaithful (k) : (Δ.ι k).FullyFaithful := fullyFaithfulFullSubcategoryInclusion _
+
+def truncation (k) : SSet ⥤ (Δ k)ᵒᵖ ⥤ Type _ := (whiskeringLeft _ _ _).obj (Δ.ι k).op
+
+noncomputable def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
+noncomputable def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
+
+end SimplexCategory
+
+namespace Nerve
+
+end Nerve
+
 namespace Cat
 
 inductive FreeReflRel {V} [ReflQuiver V] : (X Y : Paths V) → (f g : X ⟶ Y) → Prop
@@ -450,6 +471,34 @@ def reflectiveOfCounitIso {C D} [Category C] [Category D] (R : D ⥤ C) (L : C �
   map_injective := sorry
   map_surjective := sorry
 
+def nerveCounitApp (C : Type u) [Category.{u} C] : SSet.hoFunctorObj (nerve C) ⥤ C := by
+  refine Quotient.lift _ ((ReflQuiv.adj.homEquiv _ (Cat.of C)).symm OneTruncation.ofNerve.hom) ?_
+  rintro _ _ _ _ ⟨φ⟩
+  simp
+  sorry
+
+def nerveCounitIso (C : Type u) [Category.{u} C] :
+    Cat.of (SSet.hoFunctorObj (nerve C)) ≅ Cat.of C where
+  hom := nerveCounitApp C
+  inv := sorry
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
+theorem nerveCounit.naturality {C D : Type u} [Category C] [Category D] (F : C ⥤ D) :
+  SSet.hoFunctorMap (nerveFunctor.map (X := Cat.of C) (Y := Cat.of D) F) ⋙ nerveCounitApp D =
+  nerveCounitApp C ⋙ F := sorry
+
+def nerveCounit : nerveFunctor ⋙ SSet.hoFunctor ⟶ 𝟭 Cat where
+  app C := nerveCounitApp C
+  naturality X Y f := by
+    simp [Functor.comp_eq_comp, SSet.hoFunctor]
+    convert nerveCounit.naturality f
+
+def nerveCounitNatIso : nerveFunctor ⋙ SSet.hoFunctor ≅ 𝟭 Cat :=
+  NatIso.ofComponents (fun C => nerveCounitIso C) (fun f => by
+    simp [nerveCounitIso, Functor.comp_eq_comp, SSet.hoFunctor]
+    convert nerveCounit.naturality f)
+
 def nerveAdjunction : SSet.hoFunctor ⊣ nerveFunctor where
   homEquiv V C := {
     toFun := fun F => by
@@ -461,26 +510,11 @@ def nerveAdjunction : SSet.hoFunctor ⊣ nerveFunctor where
     left_inv := sorry
     right_inv := sorry
   }
-  unit := sorry
-  counit := sorry
+  unit.app X := by simp; sorry
+  counit := nerveCounitNatIso.hom
 
-def nerveCounitApp (C : Type*) [Category C] : SSet.hoFunctorObj (nerve C) ⥤ C := by
-  refine Quotient.lift _ ((ReflQuiv.adj.homEquiv _ (Cat.of C)).symm OneTruncation.ofNerve.hom) ?_
-  rintro _ _ _ _ ⟨φ⟩
-  simp
-  sorry
-
-theorem nerveCounit.naturality {C D : Type u} [Category C] [Category D] (F : C ⥤ D) :
-  SSet.hoFunctorMap (nerveFunctor.map (X := Cat.of C) (Y := Cat.of D) F) ⋙ nerveCounitApp D =
-  nerveCounitApp C ⋙ F := sorry
-
-def nerveCounit : nerveFunctor ⋙ SSet.hoFunctor ⟶ 𝟭 Cat where
-  app C := nerveCounitApp C
-  naturality X Y f := by simp [Functor.comp_eq_comp, SSet.hoFunctor]; exact nerveCounit.naturality f
-
-instance : Reflective nerveFunctor.{u,u} :=
-  reflectiveOfCounitIso _ SSet.hoFunctor.{u,u} nerveAdjunction <| by
-    sorry
+instance : Reflective nerveFunctor.{u} :=
+  reflectiveOfCounitIso _ _ nerveAdjunction.{u} (Iso.isIso_hom nerveCounitNatIso.{u})
 
 instance : HasColimits Cat :=
   hasColimits_of_reflective nerveFunctor
