@@ -150,10 +150,9 @@ def glueData : GlueData where
       (fun pq ↦ (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K) (Localization.Away
       (element K V r hr i i))) (MvPolynomial.X pq)) = algebraMap _ _ := sorry
     simp_rw [heq]
-    ext a
+    ext _
     simp only [RingHom.id_apply]
-    change IsLocalization.awayLift _ _ = _
-    erw [IsLocalization.Away.AwayMap.lift_eq]
+    erw [IsLocalization.lift_id]
   t' := sorry
   t_fac := sorry
   cocycle := sorry
