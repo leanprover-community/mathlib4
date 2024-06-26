@@ -15,7 +15,7 @@ This actions is available in the `Pointwise` locale.
 
 ## Implementation notes
 
-This file is similar (but not identical) to `RingTheory/Subring/Pointwise.lean`.
+This file is similar (but not identical) to `Algebra/Ring/Subsemiring/Pointwise.lean`.
 Where possible, try to keep them in sync.
 
 -/
@@ -35,10 +35,10 @@ variable [Monoid M] [CommRing R] [MulSemiringAction M R]
 
 This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulSemiringAction : MulSemiringAction M (Ideal R) where
-  smul a I := Ideal.map (MulSemiringAction.toRingHom _ _ a) I
+  smul a := Ideal.map (MulSemiringAction.toRingHom _ _ a)
   one_smul I :=
     congr_arg (I.map ·) (RingHom.ext <| one_smul M) |>.trans I.map_id
-  mul_smul _a₁ _a₂ I :=
+  mul_smul a₁ a₂ I :=
     congr_arg (I.map ·) (RingHom.ext <| mul_smul _ _) |>.trans (I.map_map _ _).symm
   smul_one a := by simp only [Ideal.one_eq_top]; exact Ideal.map_top _
   smul_mul a I J := Ideal.map_mul (MulSemiringAction.toRingHom _ _ a) I J
