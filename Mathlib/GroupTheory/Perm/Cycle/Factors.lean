@@ -4,14 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
 
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Int.ModEq
-import Mathlib.GroupTheory.Perm.List
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Logic.Equiv.Fintype
-
+import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 #align_import group_theory.perm.cycle.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -40,19 +33,104 @@ section CycleOf
 
 variable [DecidableEq α] [Fintype α] {f g : Perm α} {x y : α}
 
-/-- `f.cycleOf x` is the cycle of the permutation `f` to which `x` belongs. -/
-def cycleOf (f : Perm α) (x : α) : Perm α :=
-  ofSubtype (subtypePerm f fun _ => sameCycle_apply_right.symm : Perm { y // SameCycle f x y })
-#align equiv.perm.cycle_of Equiv.Perm.cycleOf
+/- This section generalizes a `(f : Perm α) → DecidableRel (SameCycle f)` instance in some
+declarations to make `cycleOf` computable.
+All declarations in this section are specialized later.
+-/
+section GeneralizedDecRel
 
-theorem cycleOf_apply (f : Perm α) (x y : α) :
-    cycleOf f x y = if SameCycle f x y then f y else y := by
-  dsimp only [cycleOf]
+variable [(f : Perm α) → DecidableRel (SameCycle f)]
+
+/-- `f.cycleOfGDR x` is the `cycleOf` whose `(f : Perm α) → DecidableRel (SameCycle f)` instance is
+generalized. This function is required to make `cycleOf` computable. -/
+private def cycleOfGDR (f : Perm α) (x : α) : Perm α :=
+  ofSubtype (subtypePerm f fun _ => sameCycle_apply_right.symm : Perm { y // SameCycle f x y })
+
+private theorem cycleOfGDR_apply (f : Perm α) (x y : α) :
+    cycleOfGDR f x y = if SameCycle f x y then f y else y := by
+  dsimp only [cycleOfGDR]
   split_ifs with h
   · apply ofSubtype_apply_of_mem
     exact h
   · apply ofSubtype_apply_of_not_mem
     exact h
+
+private theorem cycleOfGDR_eq_one_iff (f : Perm α) : cycleOfGDR f x = 1 ↔ f x = x := by
+  simp_rw [ext_iff, cycleOfGDR_apply, one_apply]
+  refine ⟨fun h => (if_pos (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
+  by_cases hy : f y = y
+  · rw [hy, ite_self]
+  · exact if_neg (mt SameCycle.apply_eq_self_iff (by tauto))
+
+private theorem mem_support_cycleOfGDR_iff :
+    y ∈ support (f.cycleOfGDR x) ↔ SameCycle f x y ∧ x ∈ support f := by
+  by_cases hx : f x = x
+  · rw [(cycleOfGDR_eq_one_iff _).mpr hx]
+    simp [hx]
+  · rw [mem_support, cycleOfGDR_apply]
+    split_ifs with hy
+    · simp only [hx, hy, iff_true_iff, Ne, not_false_iff, and_self_iff, mem_support]
+      rcases hy with ⟨k, rfl⟩
+      rw [← not_mem_support]
+      simpa using hx
+    · simpa [hx] using hy
+
+private theorem mem_support_cycleOfGDR_iff' (hx : f x ≠ x) :
+    y ∈ support (f.cycleOfGDR x) ↔ SameCycle f x y := by
+  rw [mem_support_cycleOfGDR_iff, and_iff_left (mem_support.2 hx)]
+
+private theorem isCycleOn_support_cycleOfGDR (f : Perm α) (x : α) :
+    f.IsCycleOn (f.cycleOfGDR x).support :=
+  ⟨f.bijOn <| by
+    refine fun _ =>
+      ⟨fun h ↦ mem_support_cycleOfGDR_iff.2 ?_, fun h ↦ mem_support_cycleOfGDR_iff.2 ?_⟩
+    · exact ⟨sameCycle_apply_right.1 (mem_support_cycleOfGDR_iff.1 h).1,
+      (mem_support_cycleOfGDR_iff.1 h).2⟩
+    · exact ⟨sameCycle_apply_right.2 (mem_support_cycleOfGDR_iff.1 h).1,
+      (mem_support_cycleOfGDR_iff.1 h).2⟩
+    , fun a ha b hb =>
+      by
+        rw [mem_coe, mem_support_cycleOfGDR_iff] at ha hb
+        exact ha.1.symm.trans hb.1⟩
+
+private theorem SameCycle.exists_lt_card_support_cycleOfGDR_pow_eq_of_mem_support
+    (h : SameCycle f x y) (hx : x ∈ f.support) :
+    ∃ i < (f.cycleOfGDR x).support.card, (f ^ i) x = y := by
+  rw [mem_support] at hx
+  exact Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (f.isCycleOn_support_cycleOfGDR x)
+    (by rw [mem_support_cycleOfGDR_iff' hx]) (by rwa [mem_support_cycleOfGDR_iff' hx])
+
+end GeneralizedDecRel
+
+instance instDecidableRelSameCycle (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>
+  decidable_of_iff (y ∈ List.iterate f x (Fintype.card α)) <| by
+    simp only [List.mem_iterate, iterate_eq_pow, eq_comm (a := y)]
+    constructor
+    · rintro ⟨n, _, hn⟩
+      exact ⟨n, hn⟩
+    · intro hxy
+      by_cases hx : x ∈ f.support
+      case pos =>
+        -- we can't invoke the GDR lemmas above without obtaining the decidable instance we are
+        -- already building; but now we've left the data, so we can do this non-constructively
+        -- without sacrificing computability.
+        let _inst (f : Perm α) : DecidableRel (SameCycle f) := Classical.decRel _
+        rcases hxy.exists_lt_card_support_cycleOfGDR_pow_eq_of_mem_support hx with ⟨i, hixy, hi⟩
+        refine ⟨i, lt_of_lt_of_le hixy (card_le_univ _), hi⟩
+      case neg =>
+        haveI : Nonempty α := ⟨x⟩
+        rw [not_mem_support] at hx
+        exact ⟨0, Fintype.card_pos, hxy.eq_of_left hx⟩
+#align equiv.perm.same_cycle.decidable_rel Equiv.Perm.instDecidableRelSameCycle
+
+/-- `f.cycleOf x` is the cycle of the permutation `f` to which `x` belongs. -/
+def cycleOf (f : Perm α) (x : α) : Perm α :=
+  ofSubtype (subtypePerm f fun _ => sameCycle_apply_right.symm : Perm { y // SameCycle f x y })
+#align equiv.perm.cycle_of Equiv.Perm.cycleOf
+
+theorem cycleOf_apply : (f : Perm α) → (x y : α) →
+    cycleOf f x y = if SameCycle f x y then f y else y :=
+  cycleOfGDR_apply
 #align equiv.perm.cycle_of_apply Equiv.Perm.cycleOf_apply
 
 theorem cycleOf_inv (f : Perm α) (x : α) : (cycleOf f x)⁻¹ = cycleOf f⁻¹ x :=
@@ -128,12 +206,8 @@ theorem IsCycle.cycleOf_eq (hf : IsCycle f) (hx : f x ≠ x) : cycleOf f x = f :
 #align equiv.perm.is_cycle.cycle_of_eq Equiv.Perm.IsCycle.cycleOf_eq
 
 @[simp]
-theorem cycleOf_eq_one_iff (f : Perm α) : cycleOf f x = 1 ↔ f x = x := by
-  simp_rw [ext_iff, cycleOf_apply, one_apply]
-  refine ⟨fun h => (if_pos (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
-  by_cases hy : f y = y
-  · rw [hy, ite_self]
-  · exact if_neg (mt SameCycle.apply_eq_self_iff (by tauto))
+theorem cycleOf_eq_one_iff : ∀ (f : Perm α), cycleOf f x = 1 ↔ f x = x :=
+  cycleOfGDR_eq_one_iff
 #align equiv.perm.cycle_of_eq_one_iff Equiv.Perm.cycleOf_eq_one_iff
 
 @[simp]
@@ -228,21 +302,12 @@ theorem support_cycleOf_le (f : Perm α) (x : α) : support (f.cycleOf x) ≤ su
   · exact absurd rfl hy
 #align equiv.perm.support_cycle_of_le Equiv.Perm.support_cycleOf_le
 
-theorem mem_support_cycleOf_iff : y ∈ support (f.cycleOf x) ↔ SameCycle f x y ∧ x ∈ support f := by
-  by_cases hx : f x = x
-  · rw [(cycleOf_eq_one_iff _).mpr hx]
-    simp [hx]
-  · rw [mem_support, cycleOf_apply]
-    split_ifs with hy
-    · simp only [hx, hy, iff_true_iff, Ne, not_false_iff, and_self_iff, mem_support]
-      rcases hy with ⟨k, rfl⟩
-      rw [← not_mem_support]
-      simpa using hx
-    · simpa [hx] using hy
+theorem mem_support_cycleOf_iff : y ∈ support (f.cycleOf x) ↔ SameCycle f x y ∧ x ∈ support f :=
+  mem_support_cycleOfGDR_iff
 #align equiv.perm.mem_support_cycle_of_iff Equiv.Perm.mem_support_cycleOf_iff
 
-theorem mem_support_cycleOf_iff' (hx : f x ≠ x) : y ∈ support (f.cycleOf x) ↔ SameCycle f x y := by
-  rw [mem_support_cycleOf_iff, and_iff_left (mem_support.2 hx)]
+theorem mem_support_cycleOf_iff' : (hx : f x ≠ x) → y ∈ support (f.cycleOf x) ↔ SameCycle f x y :=
+  mem_support_cycleOfGDR_iff'
 #align equiv.perm.mem_support_cycle_of_iff' Equiv.Perm.mem_support_cycleOf_iff'
 
 theorem SameCycle.mem_support_iff (h : SameCycle f x y) : x ∈ support f ↔ y ∈ support f :=
@@ -265,24 +330,13 @@ theorem isCycle_cycleOf_iff (f : Perm α) : IsCycle (cycleOf f x) ↔ f x ≠ x 
   exact hx.ne_one
 #align equiv.perm.is_cycle_cycle_of_iff Equiv.Perm.isCycle_cycleOf_iff
 
-theorem isCycleOn_support_cycleOf (f : Perm α) (x : α) : f.IsCycleOn (f.cycleOf x).support :=
-  ⟨f.bijOn <| by
-    refine fun _ ↦ ⟨fun h ↦ mem_support_cycleOf_iff.2 ?_, fun h ↦ mem_support_cycleOf_iff.2 ?_⟩
-    · exact ⟨sameCycle_apply_right.1 (mem_support_cycleOf_iff.1 h).1,
-      (mem_support_cycleOf_iff.1 h).2⟩
-    · exact ⟨sameCycle_apply_right.2 (mem_support_cycleOf_iff.1 h).1,
-      (mem_support_cycleOf_iff.1 h).2⟩
-    , fun a ha b hb =>
-      by
-        rw [mem_coe, mem_support_cycleOf_iff] at ha hb
-        exact ha.1.symm.trans hb.1⟩
+theorem isCycleOn_support_cycleOf : ∀ (f : Perm α) (x : α), f.IsCycleOn (f.cycleOf x).support :=
+  isCycleOn_support_cycleOfGDR
 #align equiv.perm.is_cycle_on_support_cycle_of Equiv.Perm.isCycleOn_support_cycleOf
 
-theorem SameCycle.exists_pow_eq_of_mem_support (h : SameCycle f x y) (hx : x ∈ f.support) :
-    ∃ i < (f.cycleOf x).support.card, (f ^ i) x = y := by
-  rw [mem_support] at hx
-  exact Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (f.isCycleOn_support_cycleOf x)
-    (by rw [mem_support_cycleOf_iff' hx]) (by rwa [mem_support_cycleOf_iff' hx])
+theorem SameCycle.exists_pow_eq_of_mem_support : (h : SameCycle f x y) → (hx : x ∈ f.support) →
+    ∃ i < (f.cycleOf x).support.card, (f ^ i) x = y :=
+  SameCycle.exists_lt_card_support_cycleOfGDR_pow_eq_of_mem_support
 #align equiv.perm.same_cycle.exists_pow_eq_of_mem_support Equiv.Perm.SameCycle.exists_pow_eq_of_mem_support
 
 theorem SameCycle.exists_pow_eq (f : Perm α) (h : SameCycle f x y) :
@@ -316,53 +370,74 @@ section cycleFactors
 open scoped List in
 /-- Given a list `l : List α` and a permutation `f : Perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
-def cycleFactorsAux [DecidableEq α] [Fintype α] :
-    ∀ (l : List α) (f : Perm α),
-      (∀ {x}, f x ≠ x → x ∈ l) →
-        { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } := by
-  intro l f h
-  exact match l with
+def cycleFactorsAux [DecidableEq α] [Fintype α]
+    (l : List α) (f : Perm α) (h : ∀ {x}, f x ≠ x → x ∈ l) :
+    { pl : List (Perm α) // pl.prod = f ∧ (∀ g ∈ pl, IsCycle g) ∧ pl.Pairwise Disjoint } :=
+  go l f h (fun _ => rfl)
+where
+  /-- The auxiliary of `cycleFactorsAux`. This functions separates cycles from `f` instead of `g`
+  to prevent the process of a cycle gets complex. -/
+  go (l : List α) (g : Perm α) (hg : ∀ {x}, g x ≠ x → x ∈ l)
+    (hfg : ∀ {x}, g x ≠ x → cycleOf f x = cycleOf g x) :
+    { pl : List (Perm α) // pl.prod = g ∧ (∀ g' ∈ pl, IsCycle g') ∧ pl.Pairwise Disjoint } :=
+  match l with
   | [] => ⟨[], by
       { simp only [imp_false, List.Pairwise.nil, List.not_mem_nil, forall_const, and_true_iff,
           forall_prop_of_false, Classical.not_not, not_false_iff, List.prod_nil] at *
         ext
         simp [*]}⟩
-  | x::l =>
-    if hx : f x = x then cycleFactorsAux l f (by
-        intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (h hy))
+  | x :: l =>
+    if hx : g x = x then go l g (by
+        intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (hg hy)) hfg
     else
       let ⟨m, hm₁, hm₂, hm₃⟩ :=
-        cycleFactorsAux l ((cycleOf f x)⁻¹ * f) (by
-        intro y hy
-        exact List.mem_of_ne_of_mem
-            (fun h : y = x => by
-              rw [h, mul_apply, Ne, inv_eq_iff_eq, cycleOf_apply_self] at hy
-              exact hy rfl)
-            (h fun h : f y = y => by
-              rw [mul_apply, h, Ne, inv_eq_iff_eq, cycleOf_apply] at hy
-              split_ifs at hy <;> tauto))
-      ⟨cycleOf f x::m, by
-        rw [List.prod_cons, hm₁]
-        simp,
-        fun g hg ↦ ((List.mem_cons).1 hg).elim (fun hg => hg.symm ▸ isCycle_cycleOf _ hx) (hm₂ g),
-        List.pairwise_cons.2
-          ⟨fun g hg y =>
-            or_iff_not_imp_left.2 fun hfy =>
-              have hxy : SameCycle f x y :=
-                Classical.not_not.1 (mt cycleOf_apply_of_not_sameCycle hfy)
-              have hgm : (g::m.erase g) ~ m :=
-                List.cons_perm_iff_perm_erase.2 ⟨hg, List.Perm.refl _⟩
-              have : ∀ h ∈ m.erase g, Disjoint g h :=
-                (List.pairwise_cons.1 ((hgm.pairwise_iff Disjoint.symm).2 hm₃)).1
-              by_cases id fun hgy : g y ≠ y =>
-                (disjoint_prod_right _ this y).resolve_right <| by
-                  have hsc : SameCycle f⁻¹ x (f y) := by
-                    rwa [sameCycle_inv, sameCycle_apply_right]
-                  rw [disjoint_prod_perm hm₃ hgm.symm, List.prod_cons,
-                      ← eq_inv_mul_iff_mul_eq] at hm₁
-                  rwa [hm₁, mul_apply, mul_apply, cycleOf_inv, hsc.cycleOf_apply, inv_apply_self,
-                    inv_eq_iff_eq, eq_comm],
-            hm₃⟩⟩
+        go l ((cycleOf f x)⁻¹ * g) (by
+            rw [hfg hx]
+            intro y hy
+            exact List.mem_of_ne_of_mem
+              (fun h : y = x => by
+                rw [h, mul_apply, Ne, inv_eq_iff_eq, cycleOf_apply_self] at hy
+                exact hy rfl)
+              (hg fun h : g y = y => by
+                rw [mul_apply, h, Ne, inv_eq_iff_eq, cycleOf_apply] at hy
+                split_ifs at hy <;> tauto))
+          (by
+            rw [hfg hx]
+            intro y hy
+            simp [inv_eq_iff_eq, cycleOf_apply, eq_comm (a := g y)] at hy
+            rw [hfg (Ne.symm hy.right), ← mul_inv_eq_one, cycleOf_inv, mul_inv_rev, inv_inv,
+              cycleOf_mul_of_apply_right_eq_self, ← cycleOf_inv, mul_inv_eq_one]
+            · rw [Commute.inv_left_iff, commute_iff_eq]
+              ext z; by_cases hz : SameCycle g x z
+              · simp [cycleOf_apply, hz]
+              · simp [cycleOf_apply_of_not_sameCycle, hz]
+            · exact cycleOf_apply_of_not_sameCycle hy.left)
+      ⟨cycleOf f x :: m, by
+        rw [hfg hx] at hm₁ ⊢
+        constructor
+        · rw [List.prod_cons, hm₁]
+          simp
+        · exact
+            ⟨fun g' hg' =>
+              ((List.mem_cons).1 hg').elim (fun hg' => hg'.symm ▸ isCycle_cycleOf _ hx) (hm₂ g'),
+              List.pairwise_cons.2
+                ⟨fun g' hg' y =>
+                  or_iff_not_imp_left.2 fun hgy =>
+                    have hxy : SameCycle g x y :=
+                      Classical.not_not.1 (mt cycleOf_apply_of_not_sameCycle hgy)
+                    have hg'm : (g' :: m.erase g') ~ m :=
+                      List.cons_perm_iff_perm_erase.2 ⟨hg', List.Perm.refl _⟩
+                    have : ∀ h ∈ m.erase g', Disjoint g' h :=
+                      (List.pairwise_cons.1 ((hg'm.pairwise_iff Disjoint.symm).2 hm₃)).1
+                    by_cases id fun hg'y : g' y ≠ y =>
+                      (disjoint_prod_right _ this y).resolve_right <| by
+                        have hsc : SameCycle g⁻¹ x (g y) := by
+                          rwa [sameCycle_inv, sameCycle_apply_right]
+                        rw [disjoint_prod_perm hm₃ hg'm.symm, List.prod_cons,
+                            ← eq_inv_mul_iff_mul_eq] at hm₁
+                        rwa [hm₁, mul_apply, mul_apply, cycleOf_inv, hsc.cycleOf_apply,
+                          inv_apply_self, inv_eq_iff_eq, eq_comm],
+                  hm₃⟩⟩⟩
 #align equiv.perm.cycle_factors_aux Equiv.Perm.cycleFactorsAux
 
 theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
