@@ -164,10 +164,8 @@ instance of_powerSeries_localization [CommRing R] :
   map_units' := by
     rintro ⟨_, n, rfl⟩
     refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
-    · simp only [single_mul_single, mul_one, add_right_neg]
-      rfl
-    · simp only [single_mul_single, mul_one, add_left_neg]
-      rfl
+    · simp
+    · simp
     · dsimp; rw [ofPowerSeries_X_pow]
   surj' z := by
     by_cases h : 0 ≤ z.order
@@ -394,17 +392,14 @@ set_option linter.uppercaseLean3 false in
 theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
-  · simp only [Nat.cast_zero, pow_zero]
-    rfl
+  · simp
   · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
       add_comm]
 
 theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
     single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
   apply eq_inv_of_mul_eq_one_right
-  rw [HahnSeries.single_mul_single, add_right_neg, mul_comm,
-    inv_mul_cancel hα]
-  rfl
+  simp [hα]
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by

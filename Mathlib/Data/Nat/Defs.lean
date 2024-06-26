@@ -1341,7 +1341,6 @@ set_option linter.deprecated false in
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   rw [bit1, Nat.dvd_add_right, Nat.dvd_one]
-  -- Porting note: was `cc`
   · decide
   · rw [bit0, ← Nat.two_mul]
     exact Nat.dvd_mul_right _ _
@@ -1423,9 +1422,11 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
     show ∃ d, c / a = b * d from ⟨d, h2⟩
 #align nat.dvd_div_of_mul_dvd Nat.dvd_div_of_mul_dvd
 
-@[simp] lemma dvd_div_iff (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
+@[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
   ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
-#align nat.dvd_div_iff Nat.dvd_div_iff
+#align nat.dvd_div_iff Nat.dvd_div_iff_mul_dvd
+
+@[deprecated (since := "2024-06-18")] alias dvd_div_iff := dvd_div_iff_mul_dvd
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
   obtain ⟨e, rfl⟩ := hdiv
