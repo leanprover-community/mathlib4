@@ -1320,7 +1320,7 @@ theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z
 
 theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
   symm
-  refine ⟨fun  h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h , ?_⟩
+  refine ⟨fun h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h, ?_⟩
   intro h
   induction' x using EReal.rec with x
   · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
