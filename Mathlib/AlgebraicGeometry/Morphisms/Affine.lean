@@ -51,7 +51,7 @@ def affinePreimage {X Y : Scheme} (f : X ⟶ Y) [IsAffineHom f] (U : Y.affineOpe
   ⟨f ⁻¹ᵁ U.1, IsAffineHom.isAffine_preimage _ U.prop⟩
 
 instance (priority := 900) [IsIso f] : IsAffineHom f :=
-  ⟨fun _ hU ↦ hU.map_isIso f⟩
+  ⟨fun _ hU ↦ hU.preimage_of_isIso f⟩
 
 instance (priority := 900) [IsAffineHom f] : QuasiCompact f :=
   (quasiCompact_iff_forall_affine f).mpr
@@ -98,32 +98,6 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   erw [Subtype.range_coe]
   rfl
 
-lemma iSup_basicOpen_eq_top_of_span_eq_top {X : Scheme} (s : Set (X.presheaf.obj (op ⊤)))
-    (hs : Ideal.span s = ⊤) : (⨆ i ∈ s, X.basicOpen i) = ⊤ := by
-  conv_rhs => rw [← Opens.map_top (ΓSpec.adjunction.unit.app X).1.base]
-  rw [← PrimeSpectrum.iSup_basicOpen_eq_top_iff'.mpr hs]
-  simp only [← ΓSpec.adjunction_unit_map_basicOpen]
-  ext
-  simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.map_coe, Opens.coe_mk, Set.mem_iUnion,
-    Set.mem_preimage]
-
-lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
-    (hs : Ideal.span s = ⊤) : (⨆ i ∈ s, X.basicOpen i) = U := by
-  let i : Γ(X, U) ≅ Γ(X, Scheme.ιOpens U ''ᵁ ⊤) :=
-    X.presheaf.mapIso (eqToIso U.openEmbedding_obj_top).op
-  have := iSup_basicOpen_eq_top_of_span_eq_top (X := X ∣_ᵤ U) (i.hom '' s)
-    (by rw [← Ideal.map_span i.hom, hs, Ideal.map_top])
-  refine Eq.trans ?_ (congr(Scheme.ιOpens U ''ᵁ $(this)).trans U.openEmbedding_obj_top)
-  ext1
-  simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk, Scheme.restrict_presheaf_obj,
-    Set.mem_image, iSup_exists, Set.biUnion_and', Set.iUnion_iUnion_eq_right,
-    IsOpenMap.functor_obj_coe, Scheme.ofRestrict_val_base, Set.image_iUnion₂]
-  congr! with f _
-  have := (Scheme.image_basicOpen (Scheme.ιOpens U) (i.hom f)).symm
-  refine Eq.trans ?_ (congr_arg (↑) this)
-  rw [Scheme.Hom.invApp, PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
-  simp [i, CommRingCat.id_apply]
-
 lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     QuasiSeparatedSpace X := by
@@ -164,7 +138,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     · show IsAffineOpen _
       simp only [← basicOpen_eq_of_affine]
       exact (isAffineOpen_top (Scheme.Spec.obj (op _))).basicOpen _
-    · rw [morphismRestrict_c_app]
+    · rw [morphismRestrict_app]
       apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
       convert isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
       refine congr(IsIso ((ΓSpec.adjunction.unit.app X).val.c.app (op $(?_))))
@@ -183,7 +157,7 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen (U) (s : Set Γ(X, U))
   · rw [← Ideal.map_span i.hom, hs, Ideal.map_top]
   · rintro _ ⟨j, hj, rfl⟩
     rw [← (Scheme.ιOpens _).isAffineOpen_iff_of_isOpenImmersion, Scheme.image_basicOpen]
-    rw [Scheme.Hom.invApp, PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
+    rw [Scheme.ofRestrict_invApp]
     simpa [CommRingCat.id_apply, i] using hs₂ j hj
 
 lemma IsAffineHom.affineProperty_isLocal : affineProperty.IsLocal := by
