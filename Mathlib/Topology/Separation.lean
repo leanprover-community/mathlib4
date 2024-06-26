@@ -1101,7 +1101,7 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x 
 
 theorem closedEmbedding_update {ι : Type*} {β : ι → Type*}
     [DecidableEq ι] [(i : ι) → TopologicalSpace (β i)]
-    (x : (i : ι) → β i) (i : ι) {s : Set (β i)} [(i : ι) → T1Space (β i)] :
+    (x : (i : ι) → β i) (i : ι) [(i : ι) → T1Space (β i)] :
     ClosedEmbedding (update x i) := by
   apply closedEmbedding_of_continuous_injective_closed
   · exact continuous_const.update i continuous_id
