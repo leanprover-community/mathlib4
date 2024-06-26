@@ -268,10 +268,7 @@ theorem add_liminf_le_liminf_add {α : Type _} {f : Filter α} {u v : α → ERe
       (ne_of_gt v_nbot) (ne_of_lt v_ntop))
     rw [← liminf_v_real, add_sub_cancel_right]
   have key₂ : liminf v f + x - y < liminf v f := by
-    rw [← liminf_v_real]
-    norm_cast
-    norm_cast at x_lt_y
-    linarith
+    rw [← liminf_v_real]; norm_cast; norm_cast at x_lt_y; linarith
   apply le_of_eq_of_le _ (liminf_add_ge_gt₂ key₁ key₂)
   rw [← liminf_v_real]
   norm_cast
@@ -279,7 +276,7 @@ theorem add_liminf_le_liminf_add {α : Type _} {f : Filter α} {u v : α → ERe
 
 theorem limsup_le_iff {α : Type _} {f : Filter α} {u : α → EReal} {b : EReal} :
     limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
-  rw [EReal.le_iff_le_forall_real_gt] -- Wait for the PR
+  rw [← EReal.le_iff_le_forall_real_gt]
   constructor
   · intro h c b_lt_c
     rcases EReal.exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
