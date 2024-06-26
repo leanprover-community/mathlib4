@@ -170,6 +170,16 @@ instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
 
 end CommShift
 
+@[simp]
+lemma commShiftIso_id_hom_app (a : A) (X : C) :
+    (commShiftIso (𝟭 C) a).hom.app X = 𝟙 _ := by
+  apply comp_id
+
+@[simp]
+lemma commShiftIso_id_inv_app (a : A) (X : C) :
+    (commShiftIso (𝟭 C) a).inv.app X = 𝟙 _ := by
+  apply comp_id
+
 lemma commShiftIso_comp_hom_app [F.CommShift A] [G.CommShift A] (a : A) (X : C) :
     (commShiftIso (F ⋙ G) a).hom.app X =
       G.map ((commShiftIso F a).hom.app X) ≫ (commShiftIso G a).hom.app (F.obj X) := by

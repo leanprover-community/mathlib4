@@ -67,6 +67,7 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactorsh.hom ℤ :=
         (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh)
           F.mapDerivedCategory).hom ℤ)
 
-instance : F.mapDerivedCategory.IsTriangulated := sorry
+instance : F.mapDerivedCategory.IsTriangulated :=
+  Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
 end CategoryTheory.Functor
