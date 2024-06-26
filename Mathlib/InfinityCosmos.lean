@@ -217,27 +217,6 @@ def forget : Cat.{v, u} ⥤ ReflQuiv.{v, u} where
 
 end ReflQuiv
 
-namespace SimplexCategory
-
-def Δ (k : ℕ) := FullSubcategory fun n : SimplexCategory => n.len ≤ k
-
-instance (k : ℕ) : Category (Δ k) := inferInstanceAs (Category (FullSubcategory ..))
-
-def Δ.ι (k) : Δ k ⥤ SimplexCategory := fullSubcategoryInclusion _
-
-def Δ.ι_fullyFaithful (k) : (Δ.ι k).FullyFaithful := fullyFaithfulFullSubcategoryInclusion _
-
-def truncation (k) : SSet ⥤ (Δ k)ᵒᵖ ⥤ Type _ := (whiskeringLeft _ _ _).obj (Δ.ι k).op
-
-noncomputable def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
-noncomputable def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
-
-end SimplexCategory
-
-namespace Nerve
-
-end Nerve
-
 namespace Cat
 
 inductive FreeReflRel {V} [ReflQuiver V] : (X Y : Paths V) → (f g : X ⟶ Y) → Prop
@@ -293,6 +272,79 @@ end ReflQuiv
 open Opposite Simplicial
 local notation3:1000 (priority := high) X " _[" n "]" =>
     (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
+
+namespace SimplexCategory
+
+def Δ (k : ℕ) := FullSubcategory fun n : SimplexCategory => n.len ≤ k
+
+instance (k : ℕ) : Category (Δ k) := inferInstanceAs (Category (FullSubcategory ..))
+
+def Δ.ι (k) : Δ k ⥤ SimplexCategory := fullSubcategoryInclusion _
+
+def Δ.ι_fullyFaithful (k) : (Δ.ι k).FullyFaithful := fullyFaithfulFullSubcategoryInclusion _
+
+def truncation (k) : SSet ⥤ (Δ k)ᵒᵖ ⥤ Type _ := (whiskeringLeft _ _ _).obj (Δ.ι k).op
+
+noncomputable def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
+noncomputable def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
+
+end SimplexCategory
+
+-- ER: Moved this down because I need opposite and [n].
+namespace Nerve
+
+/-- ER: Fails because cannot infer that types have limits; maybe this is a universe issue? -/
+def cosk₂ : SSet ⥤ SSet := by sorry
+-- SimplexCategory.truncation 2 ⋙ ran (SimplexCategory.Δ.ι 2).op
+
+/-- ER: The natural map from a nerve. I don't know why this succeeds where the previous definition failed, but with it this has the form nerveFunctor ⟶ nerveFunctor ⋙ cosk₂ -/
+noncomputable def nerve2coskNatMap :
+    nerveFunctor ⟶ nerveFunctor ⋙ SimplexCategory.truncation 2 ⋙ ran (SimplexCategory.Δ.ι 2).op :=
+  whiskerLeft nerveFunctor (SimplexCategory.coskeletonAdj 2).unit
+
+-- ER: Because the above is "noncomputable" --- whatever that means --- we'll obtain the same map a second way.
+
+/-- ER: The truncated nerve of a category. -/
+def nerve2truncated (C : Type u) [Category.{v} C] : (SimplexCategory.Δ 2)ᵒᵖ ⥤ Type (max u v) :=
+  (SimplexCategory.truncation 2).obj (nerve C)
+
+
+/-- ER: A trivial natural transformation that induces something non-trivial. -/
+def nerve2truncatedNatTrans (C : Type u) [Category.{v} C] :
+    ((whiskeringLeft _ _ _).obj (SimplexCategory.Δ.ι 2).op).obj (nerve C) ⟶ (nerve2truncated C) :=
+  𝟙 (nerve2truncated C)
+
+/-- ER: The following should define a natural comparison map from the nerve of C to the right Kan
+extension but I need Lean to infer existence of limits that definitely exist.-/
+def nerve2coskMap (C : Type u) [Category.{v} C] :
+    ((nerve C) ⟶ Ran.loc (SimplexCategory.Δ.ι 2).op (nerve2truncated C)) := by sorry
+--  (Ran.equiv (nerve2truncated C) (nerve C)).symm (nerve2truncatedNatTrans C)
+
+/-- ER: A component of the above. -/
+def nerve2coskMapApp (C : Type u) [Category.{v} C] (n : ℕ) :
+    ((nerve C) _[n] ⟶ (Ran.loc (SimplexCategory.Δ.ι 2).op (nerve2truncated C)) _[n]) :=
+  (nerve2coskMap C).app (op [n])
+
+/-- ER: The nerve is 2-coskeletal because the following map is an isomorphism making the
+natural transformation a natural isomorphism. By construction this is a map from the type
+(nerve C) _[n] into an object defined by a limit. To prove that this is an isomorphism, we will show
+that this cone is a limit cone directly: showing any other cone factors uniquely through it.
+The factorization will involve the explicit consruction of an n-simplex in the nerve of C from the
+data in the cone. -/
+theorem nerve2coskMapApp.isIso (C : Type u) [Category.{v} C] (n : ℕ) :
+    IsIso (nerve2coskMapApp C n) := by sorry
+
+/-- ER: Since a natural transformation is a natural isomorphism iff its components are isomorphisms: -/
+theorem nerve2coskMap.isIso (C : Type u) [Category.{v} C] : IsIso (nerve2coskMap C) := by sorry
+
+/-- ER: It follows that we have a natural isomorphism between nerveFunctor and nerveFunctor ⋙ cosk₂
+whose components are the isomorphisms just established. -/
+def nerve2coskIso : nerveFunctor ≅ nerveFunctor ⋙ cosk₂ := by sorry
+
+end Nerve
+
+
+
 
 def OneTruncation (S : SSet) := S _[0]
 
