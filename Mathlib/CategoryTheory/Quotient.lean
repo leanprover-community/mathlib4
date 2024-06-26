@@ -115,11 +115,8 @@ def functor : C ⥤ Quotient r where
   map := @fun _ _ f ↦ Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance fullFunctor : (functor r).Full where
-  preimage := @fun X Y f ↦ Quot.out f
-  witness f := by
-    dsimp [functor]
-    simp
+instance full_functor : (functor r).Full where
+  map_surjective f:= ⟨Quot.out f, by simp [functor]⟩
 
 instance essSurj_functor : (functor r).EssSurj where
   mem_essImage Y :=
@@ -276,7 +273,7 @@ variable (D)
 
 instance full_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Full where
-  preimage := natTransLift r
+  map_surjective f := ⟨natTransLift r f, by aesop_cat⟩
 
 instance faithful_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Faithful := ⟨by apply natTrans_ext⟩

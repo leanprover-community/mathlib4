@@ -91,8 +91,7 @@ lemma incl_obj {i : I} (X : C i) : (incl i).obj X = ⟨i, X⟩ :=
 #align category_theory.sigma.incl_obj CategoryTheory.Sigma.incl_obj
 
 instance (i : I) : Functor.Full (incl i : C i ⥤ Σi, C i) where
-  preimage := fun ⟨f⟩ => f
-  witness := fun ⟨_⟩ => rfl
+  map_surjective := fun ⟨f⟩ => ⟨f, rfl⟩
 
 instance (i : I) : Functor.Faithful (incl i : C i ⥤ Σi, C i) where
   -- Porting note (#10936): was `tidy`

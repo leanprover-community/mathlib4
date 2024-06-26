@@ -36,7 +36,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace FintypeCat
 
-instance : CoeSort FintypeCat (Type*) :=
+instance : CoeSort FintypeCat Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
@@ -187,7 +187,7 @@ def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.incl FintypeCat.Skeleton.incl
 
-instance : incl.Full where preimage f := f
+instance : incl.Full where map_surjective f := ⟨f, rfl⟩
 
 instance : incl.Faithful where
 
@@ -199,8 +199,7 @@ instance : incl.EssSurj :=
         { hom := F.symm ∘ ULift.down
           inv := ULift.up ∘ F }⟩
 
-noncomputable instance : incl.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+noncomputable instance : incl.IsEquivalence where
 
 /-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/
 noncomputable def equivalence : Skeleton ≌ FintypeCat :=
@@ -218,7 +217,7 @@ set_option linter.uppercaseLean3 false in
 end Skeleton
 
 /-- `Fintype.Skeleton` is a skeleton of `Fintype`. -/
-noncomputable def isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
+lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
 set_option linter.uppercaseLean3 false in

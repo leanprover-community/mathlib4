@@ -105,8 +105,8 @@ noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
   Quotient.out'
 #align of_antisymmetrization ofAntisymmetrization
 
-instance [Inhabited α] : Inhabited (Antisymmetrization α r) :=
-  by unfold Antisymmetrization; infer_instance
+instance [Inhabited α] : Inhabited (Antisymmetrization α r) := by
+  unfold Antisymmetrization; infer_instance
 
 @[elab_as_elim]
 protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} :

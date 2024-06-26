@@ -197,9 +197,6 @@ section IsIdempotentComplete
 
 variable [IsIdempotentComplete D]
 
-noncomputable instance : (toKaroubi D).IsEquivalence :=
-  toKaroubiIsEquivalence D
-
 /-- The equivalence of categories `(C ⥤ D) ≌ (Karoubi C ⥤ Karoubi D)` when `D`
 is idempotent complete. -/
 @[simp]
@@ -220,7 +217,7 @@ when `D` is idempotent complete. -/
 @[simps!]
 noncomputable def functorExtension : (C ⥤ D) ⥤ Karoubi C ⥤ D :=
   functorExtension₂ C D ⋙
-    (whiskeringRight (Karoubi C) (Karoubi D) D).obj (toKaroubiIsEquivalence D).inverse
+    (whiskeringRight (Karoubi C) (Karoubi D) D).obj (toKaroubiEquivalence D).inverse
 #align category_theory.idempotents.functor_extension CategoryTheory.Idempotents.functorExtension
 
 /-- The equivalence `(C ⥤ D) ≌ (Karoubi C ⥤ D)` when `D` is idempotent complete. -/
@@ -237,22 +234,15 @@ noncomputable instance : (functorExtension C D).IsEquivalence := by
   rw [← karoubiUniversal_functor_eq]
   infer_instance
 
--- Porting note: added to avoid a timeout in the following definition
-lemma isEquivalence_whiskeringLeft_obj_toKaroubi_aux :
-    ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C) ⋙
-      (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙
-        (whiskeringRight C (Karoubi D) D).obj (Functor.inv (toKaroubi D))) =
-      (karoubiUniversal C D).inverse := by
-  rfl
-
-noncomputable instance : ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).IsEquivalence :=
-  Functor.IsEquivalence.cancelCompRight _
-  ((whiskeringRight C _ _).obj (toKaroubi D) ⋙ (whiskeringRight C _ _).obj (toKaroubi D).inv)
-  (Functor.IsEquivalence.ofEquivalence <| (toKaroubi D).asEquivalence.congrRight.trans
-    (toKaroubi D).asEquivalence.symm.congrRight)
-  (by
-    rw [isEquivalence_whiskeringLeft_obj_toKaroubi_aux]
-    infer_instance)
+instance : ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).IsEquivalence := by
+  have : ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C) ⋙
+    (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙
+    (whiskeringRight C (Karoubi D) D).obj (Functor.inv (toKaroubi D))).IsEquivalence := by
+    change (karoubiUniversal C D).inverse.IsEquivalence
+    infer_instance
+  exact Functor.isEquivalence_of_comp_right _
+    ((whiskeringRight C _ _).obj (toKaroubi D) ⋙
+      (whiskeringRight C (Karoubi D) D).obj (Functor.inv (toKaroubi D)))
 
 variable {C D}
 
@@ -262,7 +252,7 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
       F.map P.decompId_i ≫ τ.app P.X ≫ G.map P.decompId_p := by
   rw [natTrans_eq]
   congr 2
-  rw [← congr_app (((whiskeringLeft _ _ _).obj (toKaroubi _)).image_preimage τ) P.X]
+  rw [← congr_app (((whiskeringLeft _ _ _).obj (toKaroubi _)).map_preimage τ) P.X]
   dsimp
   congr
 #align category_theory.idempotents.whiskering_left_obj_preimage_app CategoryTheory.Idempotents.whiskeringLeft_obj_preimage_app

@@ -91,8 +91,8 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
   -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `component j`.
-  refine' ⟨l.pmap f hf, _, _⟩
-  · refine' @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => _) _ _ hl₁ h₁₂ _
+  refine ⟨l.pmap f hf, ?_, ?_⟩
+  · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
     exact zag_of_zag_obj (Component.ι _) h
   · erw [List.getLast_pmap _ f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
     exact FullSubcategory.ext _ _ hl₂
@@ -127,23 +127,15 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
   rfl
 #align category_theory.inclusion_comp_decomposed_to CategoryTheory.inclusion_comp_decomposedTo
 
-instance : (decomposedTo J).Full
-    where
-  preimage := by
+instance : (decomposedTo J).Full where
+  map_surjective := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
     dsimp at f
     have : j' = k' := by
       rw [← hX, ← hY, Quotient.eq'']
       exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
     subst this
-    exact Sigma.SigmaHom.mk f
-  witness := by
-    rintro ⟨j', X, hX⟩ ⟨_, Y, rfl⟩ f
-    have : Quotient.mk'' Y = j' := by
-      rw [← hX, Quotient.eq'']
-      exact Relation.ReflTransGen.single (Or.inr ⟨f⟩)
-    subst this
-    rfl
+    exact ⟨Sigma.SigmaHom.mk f, rfl⟩
 
 instance : (decomposedTo J).Faithful where
   map_injective := by
@@ -152,8 +144,7 @@ instance : (decomposedTo J).Faithful where
 
 instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
 
-instance : (decomposedTo J).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance : (decomposedTo J).IsEquivalence where
 
 -- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/

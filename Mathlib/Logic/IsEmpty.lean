@@ -17,9 +17,6 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
 
-set_option autoImplicit true
-
-
 variable {α β γ : Sort*}
 
 /-- `IsEmpty α` expresses that `α` is empty. -/
@@ -108,6 +105,7 @@ namespace IsEmpty
 
 open Function
 
+universe u in
 /-- Eliminate out of a type that `IsEmpty` (using projection notation). -/
 @[elab_as_elim]
 protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort*} (a : α) : p a :=
@@ -162,7 +160,6 @@ theorem isEmpty_pi {π : α → Sort*} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpt
   simp only [← not_nonempty_iff, Classical.nonempty_pi, not_forall]
 #align is_empty_pi isEmpty_pi
 
-@[simp]
 theorem isEmpty_fun : IsEmpty (α → β) ↔ Nonempty α ∧ IsEmpty β := by
   rw [isEmpty_pi, ← exists_true_iff_nonempty, ← exists_and_right, true_and]
 

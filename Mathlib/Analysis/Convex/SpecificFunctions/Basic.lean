@@ -33,7 +33,7 @@ theory.
 `Analysis.Convex.Mul` for convexity of `x ↦ x ^ n`
 -/
 
-open Real Set BigOperators NNReal
+open Real Set NNReal
 
 /-- `Real.exp` is strictly convex on the whole real line. -/
 theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
@@ -210,7 +210,7 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
 #align convex_on_rpow convexOn_rpow
 
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
-  refine' ⟨convex_Iio _, _⟩
+  refine ⟨convex_Iio _, ?_⟩
   intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
   have hx' : 0 < -x := by linarith
   have hy' : 0 < -y := by linarith

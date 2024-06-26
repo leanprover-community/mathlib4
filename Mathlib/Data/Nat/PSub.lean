@@ -85,7 +85,7 @@ theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
 theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
   cases s : psub m n <;> simp [eq_comm]
   · show m < n
-    refine' lt_of_not_ge fun h => _
+    refine lt_of_not_ge fun h => ?_
     cases' le.dest h with k e
     injection s.symm.trans (psub_eq_some.2 <| (add_comm _ _).trans e)
   · show n ≤ m
@@ -118,8 +118,8 @@ def psub' (m n : ℕ) : Option ℕ :=
 theorem psub'_eq_psub (m n) : psub' m n = psub m n := by
   rw [psub']
   split_ifs with h
-  exact (psub_eq_sub h).symm
-  exact (psub_eq_none.2 (not_le.1 h)).symm
+  · exact (psub_eq_sub h).symm
+  · exact (psub_eq_none.2 (not_le.1 h)).symm
 #align nat.psub'_eq_psub Nat.psub'_eq_psub
 
 end Nat

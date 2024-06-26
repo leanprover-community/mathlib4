@@ -24,9 +24,9 @@ generally, see `HasSum.tendsto_sum_nat`.
 ## Implementation notes
 
 We say that a function `f : β → α` has an unconditional product of `a` if the function
-`fun s : Finset β ↦ ∏ b in s, f b` converges to `a` on the `atTop` filter on `Finset β`. In other
+`fun s : Finset β ↦ ∏ b ∈ s, f b` converges to `a` on the `atTop` filter on `Finset β`. In other
 words, for every neighborhood `U` of `a`, there exists a finite set `s : Finset β` of indices such
-that `∏ b in s', f b ∈ U` for any finite set `s'` which is a superset of `s`.
+that `∏ b ∈ s', f b ∈ U` for any finite set `s'` which is a superset of `s`.
 
 This may yield some unexpected results. For example, according to this definition, the product
 `∏' n : ℕ, (1 : ℝ) / 2` unconditionally exists and is equal to `0`. More strikingly,
@@ -52,7 +52,7 @@ noncomputable section
 
 open Filter Function
 
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {α β γ : Type*}
 
@@ -84,7 +84,7 @@ This is based on Mario Carneiro's
 For the definition and many statements, `α` does not need to be a topological monoid. We only add
 this assumption later, for the lemmas where it is relevant."]
 def HasProd (f : β → α) (a : α) : Prop :=
-  Tendsto (fun s : Finset β ↦ ∏ b in s, f b) atTop (𝓝 a)
+  Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) atTop (𝓝 a)
 #align has_sum HasSum
 
 /-- `Multipliable f` means that `f` has some (infinite) product. Use `tprod` to get the value. -/
@@ -144,21 +144,21 @@ theorem hasProd_fintype [Fintype β] (f : β → α) : HasProd f (∏ b, f b) :=
 
 @[to_additive]
 protected theorem Finset.hasProd (s : Finset β) (f : β → α) :
-    HasProd (f ∘ (↑) : (↑s : Set β) → α) (∏ b in s, f b) := by
+    HasProd (f ∘ (↑) : (↑s : Set β) → α) (∏ b ∈ s, f b) := by
   rw [← prod_attach]
   exact hasProd_fintype _
 #align finset.has_sum Finset.hasSum
 
-/-- If a function `f` is `1` outside of a finite set `s`, then it `HasProd` `∏ b in s, f b`. -/
+/-- If a function `f` is `1` outside of a finite set `s`, then it `HasProd` `∏ b ∈ s, f b`. -/
 @[to_additive "If a function `f` vanishes outside of a finite set `s`, then it `HasSum`
-`∑ b in s, f b`."]
-theorem hasProd_prod_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) :
-    HasProd f (∏ b in s, f b) :=
+`∑ b ∈ s, f b`."]
+theorem hasProd_prod_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) :
+    HasProd f (∏ b ∈ s, f b) :=
   (hasProd_subtype_iff_of_mulSupport_subset <| mulSupport_subset_iff'.2 hf).1 <| s.hasProd f
 #align has_sum_sum_of_ne_finset_zero hasSum_sum_of_ne_finset_zero
 
 @[to_additive]
-theorem multipliable_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) : Multipliable f :=
+theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) : Multipliable f :=
   (hasProd_prod_of_ne_finset_one hf).multipliable
 #align summable_of_ne_finset_zero summable_of_ne_finset_zero
 

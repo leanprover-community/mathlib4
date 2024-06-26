@@ -59,7 +59,7 @@ irreducible_def vitaliFamily (K : ℝ) : VitaliFamily μ := by
     intro x
     apply frequently_iff.2 fun {U} hU => ?_
     obtain ⟨ε, εpos, hε⟩ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 hU
-    refine' ⟨min ε R, hε ⟨lt_min εpos Rpos, min_le_left _ _⟩, _⟩
+    refine ⟨min ε R, hε ⟨lt_min εpos Rpos, min_le_left _ _⟩, ?_⟩
     exact measure_mul_le_scalingConstantOf_mul μ
       ⟨zero_lt_three, le_max_right _ _⟩ (min_le_right _ _)
   exact (Vitali.vitaliFamily μ (scalingConstantOf μ (max (4 * K + 3) 3)) A).enlarge (R / 4)
@@ -84,7 +84,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     small, if the annulus `{y | ε ≤ dist y x ≤ R/4}` is empty. We split between the cases `r ≤ R`
     and `r > R`, and use the doubling for the former and rough estimates for the latter. -/
   rcases le_or_lt r R with (hr | hr)
-  · refine' ⟨(K + 1) * r, _⟩
+  · refine ⟨(K + 1) * r, ?_⟩
     constructor
     · apply closedBall_subset_closedBall'
       rw [dist_comm]
@@ -98,21 +98,21 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
       apply (measure_mono (I1.trans I2)).trans
       exact measure_mul_le_scalingConstantOf_mul _
         ⟨zero_lt_three.trans_le (le_max_right _ _), le_rfl⟩ hr
-  · refine' ⟨R / 4, H, _⟩
+  · refine ⟨R / 4, H, ?_⟩
     have : closedBall x (3 * (R / 4)) ⊆ closedBall y r := by
       apply closedBall_subset_closedBall'
       have A : y ∈ closedBall y r := mem_closedBall_self rpos.le
       have B := mem_closedBall'.1 (H A)
       linarith
     apply (measure_mono this).trans _
-    refine' le_mul_of_one_le_left (zero_le _) _
+    refine le_mul_of_one_le_left (zero_le _) ?_
     exact ENNReal.one_le_coe_iff.2 (le_max_right _ _)
 #align is_unif_loc_doubling_measure.closed_ball_mem_vitali_family_of_dist_le_mul IsUnifLocDoublingMeasure.closedBall_mem_vitaliFamily_of_dist_le_mul
 
 theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter ι} (w : ι → α)
     (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0)) (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)) :
     Tendsto (fun j => closedBall (w j) (δ j)) l ((vitaliFamily μ K).filterAt x) := by
-  refine' (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨_, fun ε hε => _⟩
+  refine (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨?_, fun ε hε => ?_⟩
   · filter_upwards [xmem, δlim self_mem_nhdsWithin] with j hj h'j
     exact closedBall_mem_vitaliFamily_of_dist_le_mul μ hj h'j
   · rcases l.eq_or_neBot with rfl | h

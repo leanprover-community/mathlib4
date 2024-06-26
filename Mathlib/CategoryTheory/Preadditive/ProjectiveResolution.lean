@@ -78,7 +78,7 @@ variable {Z : C} (P : ProjectiveResolution Z)
 lemma complex_exactAt_succ (n : ℕ) :
     P.complex.ExactAt (n + 1) := by
   rw [← quasiIsoAt_iff_exactAt' P.π (n + 1) (exactAt_succ_single_obj _ _)]
-  · infer_instance
+  infer_instance
 
 lemma exact_succ (n : ℕ):
     (ShortComplex.mk _ _ (P.complex.d_comp_d (n + 2) (n + 1) n)).Exact :=
