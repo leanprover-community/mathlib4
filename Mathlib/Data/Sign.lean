@@ -297,7 +297,6 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α w
   map_mul' x y := by cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
 #align sign_type.cast_hom SignType.castHom
 
--- Porting note (#10756): new theorem
 theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
   decide
 
@@ -499,7 +498,6 @@ theorem Right.sign_neg [CovariantClass α α (Function.swap (· + ·)) (· < ·)
 end AddGroup
 
 section LinearOrderedAddCommGroup
-open BigOperators
 
 variable [LinearOrderedAddCommGroup α]
 
@@ -530,8 +528,6 @@ theorem sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
 end Int
 
 open Finset Nat
-
-open BigOperators
 
 /- Porting note: For all the following theorems, needed to add {α : Type u_1} to the assumptions
 because lean4 infers α to live in a different universe u_2 otherwise -/

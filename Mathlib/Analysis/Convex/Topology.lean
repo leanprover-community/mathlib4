@@ -94,7 +94,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] 
 
 theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
-  exact image_closure_subset_closure_image (by continuity)
+  exact image_closure_subset_closure_image (by fun_prop)
 #align segment_subset_closure_open_segment segment_subset_closure_openSegment
 
 end TopologicalSpace
@@ -109,7 +109,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
 theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
   exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
-    Continuous.continuousOn <| by continuity).symm
+    Continuous.continuousOn <| by fun_prop).symm
 #align closure_open_segment closure_openSegment
 
 end PseudoMetricSpace
@@ -259,14 +259,15 @@ open AffineMap
 protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
     (h : (s \ interior s).Pairwise fun x y => ∃ c : 𝕜, lineMap x y c ∈ interior s) :
     StrictConvex 𝕜 s := by
-  refine' strictConvex_iff_openSegment_subset.2 _
+  refine strictConvex_iff_openSegment_subset.2 ?_
   intro x hx y hy hne
   by_cases hx' : x ∈ interior s
   · exact hs.openSegment_interior_self_subset_interior hx' hy
   by_cases hy' : y ∈ interior s
   · exact hs.openSegment_self_interior_subset_interior hx hy'
   rcases h ⟨hx, hx'⟩ ⟨hy, hy'⟩ hne with ⟨c, hc⟩
-  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset_iff.2 ⟨hc, union_subset _ _⟩)
+  refine (openSegment_subset_union x y ⟨c, rfl⟩).trans
+    (insert_subset_iff.2 ⟨hc, union_subset ?_ ?_⟩)
   exacts [hs.openSegment_self_interior_subset_interior hx hc,
     hs.openSegment_interior_self_subset_interior hc hy]
 #align convex.strict_convex' Convex.strictConvex'
@@ -277,10 +278,10 @@ protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
 protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
     (h : (s \ interior s).Pairwise fun x y => ([x -[𝕜] y] \ frontier s).Nonempty) :
     StrictConvex 𝕜 s := by
-  refine' hs.strictConvex' <| h.imp_on fun x hx y hy _ => _
+  refine hs.strictConvex' <| h.imp_on fun x hx y hy _ => ?_
   simp only [segment_eq_image_lineMap, ← self_diff_frontier]
   rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
-  refine' ⟨c, hs.segment_subset hx.1 hy.1 _, hcs⟩
+  refine ⟨c, hs.segment_subset hx.1 hy.1 ?_, hcs⟩
   exact (segment_eq_image_lineMap 𝕜 x y).symm ▸ mem_image_of_mem _ hc
 #align convex.strict_convex Convex.strictConvex
 
@@ -348,7 +349,7 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
 theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
     {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
-  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
+  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by fun_prop
   apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
   convert h
   rw [segment_eq_image ℝ x y]
@@ -356,7 +357,7 @@ theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
 /-- A nonempty convex set is path connected. -/
 protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
     IsPathConnected s := by
-  refine' isPathConnected_iff.mpr ⟨hne, _⟩
+  refine isPathConnected_iff.mpr ⟨hne, ?_⟩
   intro x x_in y y_in
   exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected

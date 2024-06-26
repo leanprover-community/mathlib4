@@ -20,7 +20,7 @@ see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
 open Filter Finset Function Bornology
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 

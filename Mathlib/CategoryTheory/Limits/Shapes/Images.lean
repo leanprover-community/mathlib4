@@ -6,6 +6,7 @@ Authors: Scott Morrison, Markus Himmel
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 #align_import category_theory.limits.shapes.images from "leanprover-community/mathlib"@"563aed347eb59dc4181cb732cda0d124d736eaa3"
 
@@ -788,8 +789,8 @@ abbrev image.map : image f.hom ⟶ image g.hom :=
   (HasImageMap.imageMap sq).map
 #align category_theory.limits.image.map CategoryTheory.Limits.image.map
 
-theorem image.factor_map : factorThruImage f.hom ≫ image.map sq = sq.left ≫ factorThruImage g.hom :=
-  by simp
+theorem image.factor_map :
+    factorThruImage f.hom ≫ image.map sq = sq.left ≫ factorThruImage g.hom := by simp
 #align category_theory.limits.image.factor_map CategoryTheory.Limits.image.factor_map
 
 theorem image.map_ι : image.map sq ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by simp
@@ -1027,6 +1028,19 @@ theorem image.isoStrongEpiMono_inv_comp_mono {I' : C} (e : X ⟶ I') (m : I' ⟶
     [StrongEpi e] [Mono m] : (image.isoStrongEpiMono e m comm).inv ≫ m = image.ι f :=
   image.lift_fac _
 #align category_theory.limits.image.iso_strong_epi_mono_inv_comp_mono CategoryTheory.Limits.image.isoStrongEpiMono_inv_comp_mono
+
+open MorphismProperty
+
+variable (C)
+
+/-- A category with strong epi mono factorisations admits functorial epi/mono factorizations. -/
+noncomputable def functorialEpiMonoFactorizationData :
+    FunctorialFactorizationData (epimorphisms C) (monomorphisms C) where
+  Z := im
+  i := { app := fun f => factorThruImage f.hom }
+  p := { app := fun f => image.ι f.hom }
+  hi _ := epimorphisms.infer_property _
+  hp _ := monomorphisms.infer_property _
 
 end CategoryTheory.Limits
 

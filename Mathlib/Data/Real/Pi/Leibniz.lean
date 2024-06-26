@@ -14,7 +14,7 @@ namespace Real
 
 open Filter Finset
 
-open scoped BigOperators Topology
+open scoped Topology
 
 /-- **Leibniz's series for `π`**. The alternating sum of odd number reciprocals is `π / 4`,
 proved by using Abel's limit theorem to extend the Maclaurin series of `arctan` to 1. -/

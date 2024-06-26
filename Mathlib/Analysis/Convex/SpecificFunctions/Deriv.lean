@@ -34,7 +34,7 @@ of these could also be switched to elementary proofs, like in
 
 open Real Set
 
-open scoped BigOperators NNReal
+open scoped NNReal
 
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
@@ -107,7 +107,7 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
   refine int_prod_range_pos (by decide) fun hm => ?_
   rw [← Finset.coe_Ico] at hm
   norm_cast at hm
-  fin_cases hm <;> simp_all -- Porting note: `simp_all` was `cc`
+  fin_cases hm <;> simp_all
 #align strict_convex_on_zpow strictConvexOn_zpow
 
 section SqrtMulLog

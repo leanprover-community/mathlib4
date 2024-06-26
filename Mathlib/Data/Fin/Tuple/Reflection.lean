@@ -145,8 +145,6 @@ def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
 #align fin_vec.sum FinVec.sum
 
-open BigOperators
-
 /-- This can be used to prove
 ```lean
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=

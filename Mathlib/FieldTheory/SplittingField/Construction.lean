@@ -33,7 +33,7 @@ actual `SplittingField` will be a quotient of a `MvPolynomial`, it has nice inst
 
 noncomputable section
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 universe u v w
 

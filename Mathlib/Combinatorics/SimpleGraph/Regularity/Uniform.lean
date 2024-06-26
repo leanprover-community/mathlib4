@@ -43,7 +43,6 @@ is less than `ε`.
 
 
 open Finset
-open scoped BigOperators
 
 variable {α 𝕜 : Type*} [LinearOrderedField 𝕜]
 

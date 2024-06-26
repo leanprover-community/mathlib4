@@ -16,7 +16,6 @@ which contain `Set.univ` and are closed under intersections, the induced *naive*
 of sets in the limit is, in fact, a topological basis.
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace
@@ -118,7 +117,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       rw [dif_pos he, ← Set.preimage_comp]
       apply congrFun
       apply congrArg
-      rw [← coe_comp, D.w]
+      erw [← coe_comp, D.w] -- now `erw` after #13170
       rfl
 #align Top.is_topological_basis_cofiltered_limit TopCat.isTopologicalBasis_cofiltered_limit
 

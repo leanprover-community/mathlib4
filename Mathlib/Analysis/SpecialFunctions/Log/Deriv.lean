@@ -25,7 +25,7 @@ logarithm, derivative
 
 open Filter Finset Set
 
-open scoped Topology BigOperators
+open scoped Topology
 
 namespace Real
 
@@ -216,8 +216,6 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
   simpa only [(· ∘ ·), inv_inv] using h₁.comp h₂
 #align real.tendsto_mul_log_one_plus_div_at_top Real.tendsto_mul_log_one_plus_div_atTop
 
-open scoped BigOperators
-
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
@@ -291,7 +289,9 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     _ ≤ |x| ^ i := by
       simpa [pow_succ] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
 #align real.has_sum_pow_div_log_of_abs_lt_1 Real.hasSum_pow_div_log_of_abs_lt_one
-@[deprecated] alias hasSum_pow_div_log_of_abs_lt_1 := hasSum_pow_div_log_of_abs_lt_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias hasSum_pow_div_log_of_abs_lt_1 := hasSum_pow_div_log_of_abs_lt_one
 
 /-- Power series expansion of `log(1 + x) - log(1 - x)` for `|x| < 1`. -/
 theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
@@ -314,7 +314,9 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     dsimp [term]
     rw [Even.neg_pow hm, neg_one_mul, neg_add_self]
 #align real.has_sum_log_sub_log_of_abs_lt_1 Real.hasSum_log_sub_log_of_abs_lt_one
-@[deprecated] alias hasSum_log_sub_log_of_abs_lt_1 := hasSum_log_sub_log_of_abs_lt_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias hasSum_log_sub_log_of_abs_lt_1 := hasSum_log_sub_log_of_abs_lt_one
 
 #adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
 (Part of the code was ignoring the `maxDischargeDepth` setting:
