@@ -76,6 +76,7 @@ Mathlib/GroupTheory/MonoidLocalization.lean : line 1 : ERR_NUM_LIN : 2300 file c
 Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1892 lines, try to split it up
 Mathlib/LinearAlgebra/Basis.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1618 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1902 lines, try to split it up
+Mathlib/LinearAlgebra/Finsupp.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1508 lines, try to split it up
 Mathlib/LinearAlgebra/LinearIndependent.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1558 lines, try to split it up
 Mathlib/LinearAlgebra/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1905 lines, try to split it up
 Mathlib/LinearAlgebra/TensorProduct/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1632 lines, try to split it up

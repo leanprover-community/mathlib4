@@ -606,6 +606,7 @@ import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.Algebra.Polynomial.CancelLeads
 import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.Algebra.Polynomial.Coeff
@@ -2877,6 +2878,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 import Mathlib.LinearAlgebra.Trace
