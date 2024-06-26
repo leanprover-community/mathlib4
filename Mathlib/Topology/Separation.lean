@@ -2542,10 +2542,9 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
     (st_dis : Disjoint s t) (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : HasSeparatingCover s t := by
   obtain ⟨T, T_open, T_count, T_int⟩ := t_gd
   rcases T.eq_empty_or_nonempty with rfl | T_nonempty
-  · have : s = ∅ := by
-      rw [← disjoint_univ, ← sInter_empty, ← T_int]
-      exact st_dis
-    rw [this]
+  · rw [sInter_empty] at T_int
+    rw [T_int] at st_dis
+    rw [(s.disjoint_univ).mp st_dis]
     exact t.hasSeparatingCover_empty_left
   obtain ⟨g, g_surj⟩ := T_count.exists_surjective T_nonempty
   choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
@@ -2555,21 +2554,18 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
   have clg'_int : t = ⋂ i, closure (g' i) := by
     apply (subset_iInter fun n ↦ (clt_sub_g' n).trans subset_closure).antisymm
     rw [T_int]
-    apply subset_sInter
-    intro t tinT
+    refine subset_sInter fun t tinT ↦ ?_
     obtain ⟨n, gn⟩ := g_surj ⟨t, tinT⟩
-    apply (iInter_subset_of_subset n)
-    apply (clg'_sub_g n).trans
+    refine iInter_subset_of_subset n <| (clg'_sub_g n).trans ?_
     rw [gn]
   use fun n ↦ (closure (g' n))ᶜ
   constructor
   · rw [← compl_iInter, subset_compl_comm, ← clg'_int]
-    exact Disjoint.subset_compl_left st_dis
+    exact st_dis.subset_compl_left
   · refine fun n ↦ ⟨isOpen_compl_iff.mpr isClosed_closure, ?_⟩
     simp only [closure_compl, disjoint_compl_left_iff_subset]
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
     exact subset_closure.trans <| (clt_sub_g' n).trans <| (g'_open n).subset_interior_closure
-
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
