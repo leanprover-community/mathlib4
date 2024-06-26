@@ -82,7 +82,7 @@ morphism between coproducts of copies of the sheaf of rings. -/
 class IsQuasicoherent : Prop where
   nonempty_quasicoherentData : Nonempty M.QuasicoherentData
 
-/-- A sheaf of modules is quasi-coherent if it is locally the cokernel of a
+/-- A sheaf of modules is finitely presented if it is locally the cokernel of a
 morphism between coproducts of finitely many copies of the sheaf of rings.. -/
 class IsFinitePresentation : Prop where
   exists_quasicoherentData :
