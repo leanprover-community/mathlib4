@@ -207,7 +207,7 @@ lemma a_cube_b_cube_congr_one_or_neg_one :
   rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd hζ S'.hb with
     (⟨y, hy⟩ | ⟨y, hy⟩)
   · exfalso
-    replace hζ : IsPrimitiveRoot ζ ((3 : ℕ+) ^ 1) := hζ
+    replace hζ : IsPrimitiveRoot ζ ((3 : ℕ+) ^ 1) := by rwa [pow_one]
     refine hζ.toInteger_sub_one_not_dvd_two (by decide) ⟨S'.u * λ ^ 2 * z ^ 3 - λ ^ 3 * (x + y), ?_⟩
     symm
     calc _ = S'.u * (λ * z) ^ 3 - λ ^ 4 * x - λ ^ 4 * y := by ring
