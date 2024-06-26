@@ -3,23 +3,19 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Lean.Meta
-import Std.Tactic.Relation.Symm
-import Lean.Elab.Tactic.Location
+import Lean.Meta.Tactic.Symm
 
 /-!
 # `relSidesIfSymm?`
-
-This may now be orphaned code which can be removed.
 -/
 
 set_option autoImplicit true
 
-open Lean Meta
+open Lean Meta Symm
 
 namespace Mathlib.Tactic
 
-open Lean.Elab.Tactic Std.Tactic
+open Lean.Elab.Tactic
 
 /-- If `e` is the form `@R .. x y`, where `R` is a symmetric
 relation, return `some (R, x, y)`.

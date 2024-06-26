@@ -24,18 +24,14 @@ renamed `homology'`. It is planned that this definition shall be removed and rep
 
 -/
 
-set_option autoImplicit true
-
-
-universe v u
+universe v u w
 
 open CategoryTheory CategoryTheory.Limits
 
 variable {ι : Type*}
-
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
-open Classical
+open scoped Classical
 
 noncomputable section
 
@@ -64,9 +60,9 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
   rfl
 #align subobject_of_le_as_image_to_kernel subobject_ofLE_as_imageToKernel
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instFunLike
 
--- porting note: removed elementwise attribute which does not seem to be helpful here
+-- Porting note: removed elementwise attribute which does not seem to be helpful here
 -- a more suitable lemma is added below
 @[reassoc (attr := simp)]
 theorem imageToKernel_arrow (w : f ≫ g = 0) :
@@ -174,7 +170,7 @@ instance imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
   simp only [imageToKernel_zero_right]
   haveI := epi_image_of_epi f
   rw [← imageSubobject_arrow]
-  refine' @epi_comp _ _ _ _ _ _ (epi_comp _ _) _ _
+  exact @epi_comp _ _ _ _ _ _ (epi_comp _ _) _ _
 #align image_to_kernel_epi_of_epi_of_zero imageToKernel_epi_of_epi_of_zero
 
 end
@@ -213,7 +209,7 @@ def homology'.desc {D : V} (k : (kernelSubobject g : V) ⟶ D) (p : imageToKerne
   cokernel.desc _ k p
 #align homology.desc homology'.desc
 
--- porting note: removed elementwise attribute which does not seem to be helpful here
+-- Porting note: removed elementwise attribute which does not seem to be helpful here
 @[reassoc (attr := simp)]
 theorem homology'.π_desc {D : V} (k : (kernelSubobject g : V) ⟶ D)
     (p : imageToKernel f g w ≫ k = 0) : homology'.π f g w ≫ homology'.desc f g w k p = k := by
@@ -292,7 +288,7 @@ def homology'.map (p : α.right = β.left) : homology' f g w ⟶ homology' f' g'
     simp only [cokernel.condition, comp_zero]
 #align homology.map homology'.map
 
--- porting note: removed elementwise attribute which does not seem to be helpful here,
+-- Porting note: removed elementwise attribute which does not seem to be helpful here,
 -- the correct lemma is stated below
 @[reassoc (attr := simp)]
 theorem homology'.π_map (p : α.right = β.left) :
@@ -303,7 +299,7 @@ theorem homology'.π_map (p : α.right = β.left) :
 
 section
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 @[simp]
 lemma homology'.π_map_apply [ConcreteCategory.{w} V] (p : α.right = β.left)
@@ -374,7 +370,7 @@ section
 variable {A B C : V} {f : A ⟶ B} {g : B ⟶ C} (w : f ≫ g = 0) {f' : A ⟶ B} {g' : B ⟶ C}
   (w' : f' ≫ g' = 0) [HasKernels V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
--- porting note: removed the private auxiliary tactic which becomes unnecessary
+-- Porting note: removed the private auxiliary tactic which becomes unnecessary
 --/-- Custom tactic to golf and speedup boring proofs in `homology.congr`. -/
 --private unsafe def aux_tac : tactic Unit :=
 --  sorry
@@ -468,7 +464,7 @@ variable [HasEqualizers V]
 /-- `homology f g w` can be computed as the cokernel of `kernel.lift g f w`.
 -/
 def homology'IsoCokernelLift (w : f ≫ g = 0) : homology' f g w ≅ cokernel (kernel.lift g f w) := by
-  refine' homology'IsoCokernelImageToKernel' f g w ≪≫ _
+  refine homology'IsoCokernelImageToKernel' f g w ≪≫ ?_
   have p : factorThruImage f ≫ imageToKernel' f g w = kernel.lift g f w := by
     ext
     simp [imageToKernel']

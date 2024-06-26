@@ -33,7 +33,7 @@ This file contains basic results on Fourier series for functions on the additive
   monomials `fourier n`.
 * `fourierCoeff f n`, for `f : AddCircle T → E` (with `E` a complete normed `ℂ`-vector space), is
   the `n`-th Fourier coefficient of `f`, defined as an integral over `AddCircle T`. The lemma
-  `fourierCoeff_eq_interval_integral` expresses this as an integral over `[a, a + T]` for any real
+  `fourierCoeff_eq_intervalIntegral` expresses this as an integral over `[a, a + T]` for any real
   `a`.
 * `fourierCoeffOn`, for `f : ℝ → E` and `a < b` reals, is the `n`-th Fourier
   coefficient of the unique periodic function of period `b - a` which agrees with `f` on `(a, b]`.
@@ -71,52 +71,10 @@ variable {T : ℝ}
 
 namespace AddCircle
 
-/-! ### Map from `AddCircle` to `Circle` -/
-
-
-theorem scaled_exp_map_periodic : Function.Periodic (fun x => expMapCircle (2 * π / T * x)) T := by
-  -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
-  rcases eq_or_ne T 0 with (rfl | hT)
-  · intro x; simp
-  · intro x; simp_rw [mul_add]; rw [div_mul_cancel _ hT, periodic_expMapCircle]
-#align add_circle.scaled_exp_map_periodic AddCircle.scaled_exp_map_periodic
-
-/-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
-If `T = 0` we understand this as the constant function 1. -/
-def toCircle : AddCircle T → circle :=
-  (@scaled_exp_map_periodic T).lift
-#align add_circle.to_circle AddCircle.toCircle
-
-theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
-    @toCircle T (x + y) = toCircle x * toCircle y := by
-  induction x using QuotientAddGroup.induction_on'
-  induction y using QuotientAddGroup.induction_on'
-  rw [← QuotientAddGroup.mk_add]
-  simp_rw [toCircle, Function.Periodic.lift_coe, mul_add, expMapCircle_add]
-#align add_circle.to_circle_add AddCircle.toCircle_add
-
-theorem continuous_toCircle : Continuous (@toCircle T) :=
-  continuous_coinduced_dom.mpr (expMapCircle.continuous.comp <| continuous_const.mul continuous_id')
-#align add_circle.continuous_to_circle AddCircle.continuous_toCircle
-
-theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
-  intro a b h
-  induction a using QuotientAddGroup.induction_on'
-  induction b using QuotientAddGroup.induction_on'
-  simp_rw [toCircle, Function.Periodic.lift_coe] at h
-  obtain ⟨m, hm⟩ := expMapCircle_eq_expMapCircle.mp h.symm
-  rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
-  use m
-  field_simp at hm
-  rw [← mul_right_inj' Real.two_pi_pos.ne']
-  linarith
-#align add_circle.injective_to_circle AddCircle.injective_toCircle
-
 /-! ### Measure on `AddCircle T`
 
 In this file we use the Haar measure on `AddCircle T` normalised to have total measure 1 (which is
 **not** the same as the standard measure defined in `Topology.Instances.AddCircle`). -/
-
 
 variable [hT : Fact (0 < T)]
 
@@ -160,7 +118,7 @@ theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
     expMapCircle_apply, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
-    Complex.ofReal_mul, Complex.ofReal_int_cast]
+    Complex.ofReal_mul, Complex.ofReal_intCast]
   norm_num
   congr 1; ring
 #align fourier_coe_apply fourier_coe_apply
@@ -188,7 +146,7 @@ theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
     zero_div, Complex.exp_zero]
 #align fourier_eval_zero fourier_eval_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fourier_apply, one_zsmul]
 #align fourier_one fourier_one
 
@@ -219,7 +177,7 @@ theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
   have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => abs_coe_circle _
   simp_rw [this]
-  exact @ciSup_const _ _ _ Zero.nonempty _
+  exact @ciSup_const _ _ _ Zero.instNonempty _
 #align fourier_norm fourier_norm
 
 /-- For `n ≠ 0`, a translation by `T / 2 / n` negates the function `fourier n`. -/
@@ -252,12 +210,12 @@ linear span of these functions. -/
 theorem fourierSubalgebra_coe :
     Subalgebra.toSubmodule (@fourierSubalgebra T).toSubalgebra = span ℂ (range (@fourier T)) := by
   apply adjoin_eq_span_of_subset
-  refine' Subset.trans _ Submodule.subset_span
+  refine Subset.trans ?_ Submodule.subset_span
   intro x hx
   refine Submonoid.closure_induction hx (fun _ => id) ⟨0, ?_⟩ ?_
   · ext1 z; exact fourier_zero
   · rintro _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
-    refine' ⟨m + n, _⟩
+    refine ⟨m + n, ?_⟩
     ext1 z
     exact fourier_add
 #align fourier_subalgebra_coe fourierSubalgebra_coe
@@ -272,7 +230,7 @@ variable [hT : Fact (0 < T)]
 separates points. -/
 theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoints := by
   intro x y hxy
-  refine' ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, _⟩
+  refine ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, ?_⟩
   dsimp only; rw [fourier_one, fourier_one]
   contrapose! hxy
   rw [Subtype.coe_inj] at hxy
@@ -358,7 +316,8 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
-  simp_rw [this]
+  -- After leanprover/lean4#3124, we need to add `singlePass := true` to avoid an infinite loop.
+  simp_rw (config := {singlePass := true}) [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
@@ -386,12 +345,12 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
     fourierCoeffOn hab f n =
       (1 / (b - a)) • ∫ x in a..b, fourier (-n) (x : AddCircle (b - a)) • f x := by
   haveI := Fact.mk (by linarith : 0 < b - a)
-  rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a, add_sub, add_sub_cancel']
+  rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a, add_sub, add_sub_cancel_left]
   congr 1
   simp_rw [intervalIntegral.integral_of_le hab.le]
-  refine' set_integral_congr measurableSet_Ioc fun x hx => _
+  refine setIntegral_congr measurableSet_Ioc fun x hx => ?_
   rw [liftIoc_coe_apply]
-  rwa [add_sub, add_sub_cancel']
+  rwa [add_sub, add_sub_cancel_left]
 #align fourier_coeff_on_eq_integral fourierCoeffOn_eq_integral
 
 theorem fourierCoeffOn.const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ) (hab : a < b) :
@@ -408,21 +367,21 @@ theorem fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : �
 theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIoc T a f) n =
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
-  rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral, add_sub_cancel' a T]
-  congr 1
-  refine' intervalIntegral.integral_congr_ae (ae_of_all _ fun x hx => _)
-  rw [liftIoc_coe_apply]
-  rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
+  rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral, add_sub_cancel_left a T]
+  · congr 1
+    refine intervalIntegral.integral_congr_ae (ae_of_all _ fun x hx => ?_)
+    rw [liftIoc_coe_apply]
+    rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
 #align fourier_coeff_lift_Ioc_eq fourierCoeff_liftIoc_eq
 
 theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIco T a f) n =
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
-  rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral _ _ a, add_sub_cancel' a T]
+  rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral _ _ a, add_sub_cancel_left a T]
   congr 1
   simp_rw [intervalIntegral.integral_of_le (lt_add_of_pos_right a hT.out).le]
   iterate 2 rw [integral_Ioc_eq_integral_Ioo]
-  refine' set_integral_congr measurableSet_Ioo fun x hx => _
+  refine setIntegral_congr measurableSet_Ioo fun x hx => ?_
   rw [liftIco_coe_apply (Ioo_subset_Ico_self hx)]
 #align fourier_coeff_lift_Ico_eq fourierCoeff_liftIco_eq
 
@@ -450,7 +409,7 @@ theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
     fourierBasis.repr f i = fourierCoeff f i := by
   trans ∫ t : AddCircle T, conj ((@fourierLp T hT 2 _ i : AddCircle T → ℂ) t) * f t ∂haarAddCircle
   · rw [fourierBasis.repr_apply_apply f i, MeasureTheory.L2.inner_def, coe_fourierBasis]
-    simp only [IsROrC.inner_apply]
+    simp only [RCLike.inner_apply]
   · apply integral_congr_ae
     filter_upwards [coeFn_fourierLp 2 i] with _ ht
     rw [ht, ← fourier_neg, smul_eq_mul]
@@ -473,10 +432,9 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     apply_mod_cast lp.norm_rpow_eq_tsum ?_ (fourierBasis.repr f)
     norm_num
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
-  have H₃ := congr_arg IsROrC.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
+  have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
   · simp only [← norm_sq_eq_inner] at H₃
-    conv_rhs at H₃ => enter [2, a]; rw [← norm_sq_eq_inner]
     rw [← H₁, H₂, H₃]
   · exact L2.integrable_inner f f
 #align tsum_sq_fourier_coeff tsum_sq_fourierCoeff
@@ -511,7 +469,7 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
     (x : AddCircle T) : HasSum (fun i => fourierCoeff f i • fourier i x) (f x) := by
-  convert (ContinuousMap.evalClm ℂ x).hasSum (hasSum_fourier_series_of_summable h)
+  convert (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
 #align has_pointwise_sum_fourier_series_of_summable has_pointwise_sum_fourier_series_of_summable
 
 end Convergence
@@ -530,9 +488,9 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier n (y : AddCircle T))
       (2 * π * I * n / T * fourier n (x : AddCircle T)) x := by
   simp_rw [fourier_coe_apply]
-  refine' (_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
+  refine (?_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
   rw [(fun α β => by ring : ∀ α β : ℂ, α * exp β = exp β * α)]
-  refine' (hasDerivAt_exp _).comp ↑x _
+  refine (hasDerivAt_exp _).comp (x : ℂ) ?_
   convert hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
   ext1 y; ring
 #align has_deriv_at_fourier hasDerivAt_fourier
@@ -550,19 +508,24 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
       (fourier (-n) (x : AddCircle T)) x := by
   convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
   · ext1 y; rw [div_div_eq_mul_div]; ring
-  · simp [mul_div_cancel_left, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
+  · simp [mul_div_cancel_left₀, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 #align has_antideriv_at_fourier_neg has_antideriv_at_fourier_neg
 
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
-theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ} {n : ℤ} (hn : n ≠ 0)
-    (hf : ∀ x, x ∈ [[a, b]] → HasDerivAt f (f' x) x) (hf' : IntervalIntegrable f' volume a b) :
+theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
+    {n : ℤ} (hn : n ≠ 0)
+    (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x, x ∈ Ioo (min a b) (max a b) → HasDerivWithinAt f (f' x) (Ioi x) x)
+    (hf' : IntervalIntegrable f' volume a b) :
     fourierCoeffOn hab f n = 1 / (-2 * π * I * n) *
       (fourier (-n) (a : AddCircle (b - a)) * (f b - f a) - (b - a) * fourierCoeffOn hab f' n) := by
   rw [← ofReal_sub]
   have hT : Fact (0 < b - a) := ⟨by linarith⟩
   simp_rw [fourierCoeffOn_eq_integral, smul_eq_mul, real_smul, ofReal_div, ofReal_one]
   conv => pattern (occs := 1 2 3) fourier _ _ * _ <;> (rw [mul_comm])
-  rw [integral_mul_deriv_eq_deriv_mul hf (fun x _ => has_antideriv_at_fourier_neg hT hn x) hf'
+  rw [integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right hf
+    (fun x _ ↦ has_antideriv_at_fourier_neg hT hn x |>.continuousAt |>.continuousWithinAt) hff'
+    (fun x _ ↦ has_antideriv_at_fourier_neg hT hn x |>.hasDerivWithinAt) hf'
     (((map_continuous (fourier (-n))).comp (AddCircle.continuous_mk' _)).intervalIntegrable _ _)]
   have : ∀ u v w : ℂ, u * ((b - a : ℝ) / v * w) = (b - a : ℝ) / v * (u * w) := by intros; ring
   conv in intervalIntegral _ _ _ _ => congr; ext; rw [this]
@@ -575,6 +538,26 @@ theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → �
     rw [div_eq_iff (ofReal_ne_zero.mpr hT.out.ne')]
     ring
   · ring
+
+/-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
+theorem fourierCoeffOn_of_hasDerivAt_Ioo {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
+    {n : ℤ} (hn : n ≠ 0)
+    (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x, x ∈ Ioo (min a b) (max a b) → HasDerivAt f (f' x) x)
+    (hf' : IntervalIntegrable f' volume a b) :
+    fourierCoeffOn hab f n = 1 / (-2 * π * I * n) *
+      (fourier (-n) (a : AddCircle (b - a)) * (f b - f a) - (b - a) * fourierCoeffOn hab f' n) :=
+  fourierCoeffOn_of_hasDeriv_right hab hn hf (fun x hx ↦ hff' x hx |>.hasDerivWithinAt) hf'
+
+/-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
+theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ} {n : ℤ} (hn : n ≠ 0)
+    (hf : ∀ x, x ∈ [[a, b]] → HasDerivAt f (f' x) x) (hf' : IntervalIntegrable f' volume a b) :
+    fourierCoeffOn hab f n = 1 / (-2 * π * I * n) *
+      (fourier (-n) (a : AddCircle (b - a)) * (f b - f a) - (b - a) * fourierCoeffOn hab f' n) :=
+  fourierCoeffOn_of_hasDerivAt_Ioo hab hn
+    (fun x hx ↦ hf x hx |>.continuousAt.continuousWithinAt)
+    (fun x hx ↦ hf x <| mem_Icc_of_Ioo hx)
+    hf'
 #align fourier_coeff_on_of_has_deriv_at fourierCoeffOn_of_hasDerivAt
 
 end deriv

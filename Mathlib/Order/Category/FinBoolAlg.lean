@@ -8,6 +8,7 @@ import Mathlib.Order.Category.BoolAlg
 import Mathlib.Order.Category.FinBddDistLat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.Set.Subsingleton
 
 #align_import order.category.FinBoolAlg from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
@@ -42,7 +43,7 @@ structure FinBoolAlg where
 
 namespace FinBoolAlg
 
-instance : CoeSort FinBoolAlg (Type*) :=
+instance : CoeSort FinBoolAlg Type* :=
   ⟨fun X => X.toBoolAlg⟩
 
 instance (X : FinBoolAlg) : BooleanAlgebra X :=
@@ -78,6 +79,9 @@ instance concreteCategory : ConcreteCategory FinBoolAlg :=
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
 #align FinBoolAlg.concrete_category FinBoolAlg.concreteCategory
 
+instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y :=
+  BoundedLatticeHom.instFunLike
+
 -- Porting note: added
 -- TODO: in all of the earlier bundled order categories,
 -- we should be constructing instances analogous to this,
@@ -95,11 +99,11 @@ instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget_comp := rfl
 #align FinBoolAlg.has_forget_to_FinBddDistLat FinBoolAlg.hasForgetToFinBddDistLat
 
-instance forgetToBoolAlgFull : Full (forget₂ FinBoolAlg BoolAlg) :=
+instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
   InducedCategory.full _
-#align FinBoolAlg.forget_to_BoolAlg_full FinBoolAlg.forgetToBoolAlgFull
+#align FinBoolAlg.forget_to_BoolAlg_full FinBoolAlg.forgetToBoolAlg_full
 
-instance forgetToBoolAlgFaithful : Faithful (forget₂ FinBoolAlg BoolAlg) :=
+instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
   InducedCategory.faithful _
 #align FinBoolAlg.forget_to_BoolAlg_faithful FinBoolAlg.forgetToBoolAlgFaithful
 
@@ -109,16 +113,16 @@ instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
   forget₂.map {X Y} f := show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f)
 #align FinBoolAlg.has_forget_to_FinPartOrd FinBoolAlg.hasForgetToFinPartOrd
 
-instance forgetToFinPartOrdFaithful : Faithful (forget₂ FinBoolAlg FinPartOrd) :=
+instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful :=
   -- Porting note: original code
   -- ⟨fun {X Y} f g h =>
   --   haveI := congr_arg (coeFn : _ → X → Y) h
-  --   FunLike.coe_injective this⟩
+  --   DFunLike.coe_injective this⟩
   -- Porting note: the coercions to functions for the various bundled order categories
   -- are quite inconsistent. We need to go back through and make all these files uniform.
   ⟨fun {X Y} f g h => by
     dsimp at *
-    apply FunLike.coe_injective
+    apply DFunLike.coe_injective
     dsimp
     ext x
     apply_fun (fun f => f x) at h

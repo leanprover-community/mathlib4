@@ -3,11 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The base change of a clifford algebra
@@ -95,8 +94,8 @@ noncomputable def toBaseChange (Q : QuadraticForm R V) :
       exact hpure_tensor v w
     intros v w
     rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
-      QuadraticForm.polarBilin_baseChange, BilinForm.baseChange_tmul, one_mul,
-      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticForm.polarBilin_apply]
+      QuadraticForm.polarBilin_baseChange, LinearMap.BilinForm.baseChange_tmul, one_mul,
+      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticForm.polarBilin_apply_apply]
 
 @[simp] theorem toBaseChange_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     toBaseChange A Q (ι (Q.baseChange A) (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
@@ -117,13 +116,13 @@ theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
 theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (involute x) =
       TensorProduct.map LinearMap.id (involute.toLinearMap) (toBaseChange A Q x) :=
-  FunLike.congr_fun (toBaseChange_comp_involute A Q) x
+  DFunLike.congr_fun (toBaseChange_comp_involute A Q) x
 
 open MulOpposite
 
 /-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
 theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
-    (toBaseChange A Q).op.comp (reverseOp) =
+    (toBaseChange A Q).op.comp reverseOp =
       ((Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)).toAlgHom.comp <|
         (Algebra.TensorProduct.map
           (AlgEquiv.toOpposite A A).toAlgHom (reverseOp (Q := Q))).comp
@@ -141,7 +140,7 @@ theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
 theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (reverse x) =
       TensorProduct.map LinearMap.id reverse (toBaseChange A Q x) := by
-  have := FunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
+  have := DFunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
   refine (congr_arg unop this).trans ?_; clear this
   refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
   rw [reverse, ← AlgEquiv.toLinearMap, ← AlgEquiv.toLinearEquiv_toLinearMap,

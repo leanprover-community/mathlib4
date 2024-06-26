@@ -1,5 +1,5 @@
 /-
-Copyright © 2023 Heather Macbeth. All rights reserved.
+Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
@@ -42,24 +42,25 @@ variable [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V] [VectorBundle �
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
 structure ContMDiffSection where
+  /-- the underlying function of this section -/
   protected toFun : ∀ x, V x
+  /-- proof that this section is `C^n` -/
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 #align cont_mdiff_section ContMDiffSection
 
 /-- Bundled smooth sections of a vector bundle. -/
-@[reducible]
-def SmoothSection :=
+abbrev SmoothSection :=
   ContMDiffSection I F ⊤ V
 #align smooth_section SmoothSection
 
-scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
+@[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
 namespace ContMDiffSection
 
 variable {I} {I'} {n} {F} {V}
 
-instance : FunLike Cₛ^n⟮I; F, V⟯ M V where
+instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
 
@@ -98,7 +99,7 @@ protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
 #align cont_mdiff_section.mdifferentiable_at ContMDiffSection.mdifferentiableAt
 
 theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align cont_mdiff_section.coe_inj ContMDiffSection.coe_inj
 
 theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :=
@@ -106,18 +107,18 @@ theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :
 #align cont_mdiff_section.coe_injective ContMDiffSection.coe_injective
 
 @[ext]
-theorem ext (h : ∀ x, s x = t x) : s = t := FunLike.ext _ _ h
+theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
 #align cont_mdiff_section.ext ContMDiffSection.ext
 
 instance instAdd : Add Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun s t => ⟨s + t, _⟩⟩
+  refine ⟨fun s t => ⟨s + t, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   have ht := t.contMDiff x₀
   rw [contMDiffAt_section] at hs ht ⊢
   set e := trivializationAt F V x₀
-  refine' (hs.add ht).congr_of_eventuallyEq _
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine (hs.add ht).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).1
 #align cont_mdiff_section.has_add ContMDiffSection.instAdd
@@ -128,14 +129,14 @@ theorem coe_add (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s + t) = ⇑s + t :=
 #align cont_mdiff_section.coe_add ContMDiffSection.coe_add
 
 instance instSub : Sub Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun s t => ⟨s - t, _⟩⟩
+  refine ⟨fun s t => ⟨s - t, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   have ht := t.contMDiff x₀
   rw [contMDiffAt_section] at hs ht ⊢
   set e := trivializationAt F V x₀
-  refine' (hs.sub ht).congr_of_eventuallyEq _
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine (hs.sub ht).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).map_sub
 #align cont_mdiff_section.has_sub ContMDiffSection.instSub
@@ -159,14 +160,13 @@ theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
 #align cont_mdiff_section.coe_zero ContMDiffSection.coe_zero
 
 instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun c s => ⟨c • ⇑s, _⟩⟩
+  refine ⟨fun c s => ⟨c • ⇑s, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢
   set e := trivializationAt F V x₀
-  refine' (contMDiffAt_const.smul hs).congr_of_eventuallyEq _
-  · exact c
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine ((contMDiffAt_const (c := c)).smul hs).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).2
 #align cont_mdiff_section.has_smul ContMDiffSection.instSMul
@@ -177,13 +177,13 @@ theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I
 #align cont_mdiff_section.coe_smul ContMDiffSection.coe_smul
 
 instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun s => ⟨-s, _⟩⟩
+  refine ⟨fun s => ⟨-s, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢
   set e := trivializationAt F V x₀
-  refine' hs.neg.congr_of_eventuallyEq _
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine hs.neg.congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).map_neg
 #align cont_mdiff_section.has_neg ContMDiffSection.instNeg
@@ -200,7 +200,7 @@ instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
   induction' k with k ih
-  · simp_rw [Nat.zero_eq, zero_smul]; rfl
+  · simp_rw [zero_smul]; rfl
   simp_rw [succ_nsmul, ← ih]; rfl
 #align cont_mdiff_section.coe_nsmul ContMDiffSection.coe_nsmul
 
@@ -211,10 +211,10 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   cases' z with n n
-  refine' (coe_nsmul s n).trans _
-  simp only [Int.ofNat_eq_coe, coe_nat_zsmul]
-  refine' (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans _
-  simp only [negSucc_zsmul, neg_inj]
+  · refine (coe_nsmul s n).trans ?_
+    simp only [Int.ofNat_eq_coe, natCast_zsmul]
+  · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
+    simp only [negSucc_zsmul, neg_inj]
 #align cont_mdiff_section.coe_zsmul ContMDiffSection.coe_zsmul
 
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=

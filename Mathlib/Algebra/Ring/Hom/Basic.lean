@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Basic
 
 #align_import algebra.hom.ring from "leanprover-community/mathlib"@"cf9386b56953fb40904843af98b7a80757bbe7f9"
 

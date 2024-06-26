@@ -123,7 +123,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
-    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr ⟩
+    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 #align pfun.equiv_subtype PFun.equivSubtype
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
@@ -276,7 +276,7 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
    fun h => by
     simp only [fix, Part.mem_assert_iff]
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
-    · refine' ⟨⟨_, fun y h' => _⟩, _⟩
+    · refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
       · rw [WellFounded.fixFEq]
         -- Porting note: used to be simp [h₁, h₂]
@@ -288,7 +288,7 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
           injection h₂.symm.trans e
     · simp [fix] at h₃
       cases' h₃ with h₃ h₄
-      refine' ⟨⟨_, fun y h' => _⟩, _⟩
+      refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
       · cases' h with h₁ h₂
@@ -328,11 +328,9 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 def fixInduction {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
   have h₂ := (Part.mem_assert_iff.1 h).snd
-  -- Porting note: revert/intro trick required to address `generalize_proofs` bug
-  revert h₂
-  generalize_proofs h₁
-  intro h₂; clear h
-  induction' h₁ with a ha IH
+  generalize_proofs at h₂
+  clear h
+  induction' ‹Acc _ _› with a ha IH
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 #align pfun.fix_induction PFun.fixInduction
@@ -341,9 +339,8 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
-  -- Porting note: `generalize` required to address `generalize_proofs` bug
-  generalize @fixInduction.proof_1 α β f b a h = ha
-  induction ha
+  generalize_proofs
+  induction ‹Acc _ _›
   rfl
 #align pfun.fix_induction_spec PFun.fixInduction_spec
 
@@ -354,7 +351,7 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
 def fixInduction' {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α}
     (h : b ∈ f.fix a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) : C a := by
-  refine' fixInduction h fun a' h ih => _
+  refine fixInduction h fun a' h ih => ?_
   rcases e : (f a').get (dom_of_mem_fix h) with b' | a'' <;> replace e : _ ∈ f a' := ⟨_, e⟩
   · apply hbase
     convert e
@@ -369,9 +366,8 @@ theorem fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {
   unfold fixInduction'
   rw [fixInduction_spec]
   -- Porting note: the explicit motive required because `simp` behaves differently
-  refine' Eq.rec (motive := fun x e =>
-      Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
-      (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) _
+  refine Eq.rec (motive := fun x e ↦
+      Sum.casesOn x ?_ ?_ (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) ?_
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
   simp
 #align pfun.fix_induction'_stop PFun.fixInduction'_stop
@@ -384,9 +380,9 @@ theorem fixInduction'_fwd {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
   unfold fixInduction'
   rw [fixInduction_spec]
   -- Porting note: the explicit motive required because `simp` behaves differently
-  refine' Eq.rec (motive := fun x e =>
-      Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
-      (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = _) _
+  refine Eq.rec (motive := fun x e =>
+      Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x ?_ ?_
+      (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = _) ?_
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
   simp
 #align pfun.fix_induction'_fwd PFun.fixInduction'_fwd
@@ -487,7 +483,7 @@ theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
 
 section
 
-open Classical
+open scoped Classical
 
 theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
   ext x
@@ -516,7 +512,7 @@ theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ 
 #align pfun.preimage_eq PFun.preimage_eq
 
 theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Domᶜ := by
-  rw [preimage_eq, Set.union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
+  rw [preimage_eq, Set.inter_union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
     Set.inter_univ, Set.union_eq_self_of_subset_right (f.compl_dom_subset_core s)]
 #align pfun.core_eq PFun.core_eq
 
@@ -695,16 +691,16 @@ theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
 
 @[simp]
 theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
-  ext fun _ _ => by simp [eq_comm]
+  ext fun _ _ ↦ by simp [eq_comm]
 #align pfun.prod_map_id_id PFun.prodMap_id_id
 
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- Porting note: was `by tidy`, below is a golf'd version of the `tidy?` proof
-  ext <| λ ⟨_, _⟩ ⟨_, _⟩ =>
-  ⟨λ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
-   λ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
+  -- Porting note: was `by tidy`, below is a golfed version of the `tidy?` proof
+  ext <| fun ⟨_, _⟩ ⟨_, _⟩ ↦
+  ⟨fun ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
+   fun ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
 #align pfun.prod_map_comp_comp PFun.prodMap_comp_comp
 
 end PFun

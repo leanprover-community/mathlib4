@@ -3,7 +3,6 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Analysis.Complex.Circle
 import Mathlib.Topology.ContinuousFunction.Algebra
 
 #align_import topology.algebra.continuous_monoid_hom from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
@@ -57,9 +56,10 @@ section
 homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
--- porting note : Changed A B to outParam to help synthesizing order
-class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMonoid B]
-  [TopologicalSpace A] [TopologicalSpace B] extends AddMonoidHomClass F A B where
+-- Porting note: Changed A B to outParam to help synthesizing order
+class ContinuousAddMonoidHomClass (A B : outParam Type*) [AddMonoid A] [AddMonoid B]
+    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
+    extends AddMonoidHomClass F A B : Prop where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
@@ -68,10 +68,11 @@ class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMon
 homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
--- porting note : Changed A B to outParam to help synthesizing order
+-- Porting note: Changed A B to outParam to help synthesizing order
 @[to_additive]
-class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
-    [TopologicalSpace A] [TopologicalSpace B] extends MonoidHomClass F A B where
+class ContinuousMonoidHomClass (A B : outParam Type*) [Monoid A] [Monoid B]
+    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
+    extends MonoidHomClass F A B : Prop where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_monoid_hom_class ContinuousMonoidHomClass
@@ -87,7 +88,7 @@ add_decl_doc ContinuousAddMonoidHom.toAddMonoidHom
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) ContinuousMonoidHomClass.toContinuousMapClass
-    [ContinuousMonoidHomClass F A B] : ContinuousMapClass F A B :=
+    [FunLike F A B] [ContinuousMonoidHomClass F A B] : ContinuousMapClass F A B :=
   { ‹ContinuousMonoidHomClass F A B› with }
 #align continuous_monoid_hom_class.to_continuous_map_class ContinuousMonoidHomClass.toContinuousMapClass
 #align continuous_add_monoid_hom_class.to_continuous_map_class ContinuousAddMonoidHomClass.toContinuousMapClass
@@ -97,28 +98,22 @@ namespace ContinuousMonoidHom
 variable {A B C D E}
 
 @[to_additive]
-instance ContinuousMonoidHom.ContinuousMonoidHomClass :
-  ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
+instance funLike : FunLike (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := g
     congr
 
+@[to_additive]
+instance ContinuousMonoidHomClass : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_continuous f := f.continuous_toFun
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
-directly. -/
-@[to_additive
-      "Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`."]
-instance : CoeFun (ContinuousMonoidHom A B) fun _ => A → B :=
-  FunLike.hasCoeToFun
-
 @[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align continuous_monoid_hom.ext ContinuousMonoidHom.ext
 #align continuous_add_monoid_hom.ext ContinuousAddMonoidHom.ext
 
@@ -131,11 +126,11 @@ def toContinuousMap (f : ContinuousMonoidHom A B) : C(A, B) :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert DFunLike.ext_iff.1 h
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
 
--- porting note: Removed simps because given definition is not a constructor application
+-- Porting note: Removed simps because given definition is not a constructor application
 /-- Construct a `ContinuousMonoidHom` from a `Continuous` `MonoidHom`. -/
 @[to_additive "Construct a `ContinuousAddMonoidHom` from a `Continuous` `AddMonoidHom`."]
 def mk' (f : A →* B) (hf : Continuous f) : ContinuousMonoidHom A B :=
@@ -298,7 +293,7 @@ lemma range_toContinuousMap :
 theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toEmbedding := embedding_toContinuousMap A B
-  closed_range := by
+  isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
     refine .inter (isClosed_singleton.preimage (ContinuousMap.continuous_eval_const 1)) <|
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_
@@ -382,81 +377,3 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
 #align continuous_add_monoid_hom.comp_right ContinuousAddMonoidHom.compRight
 
 end ContinuousMonoidHom
-
-
-
-/-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → circle`. -/
-def PontryaginDual :=
-  ContinuousMonoidHom A circle
-#align pontryagin_dual PontryaginDual
-
--- porting note: `deriving` doesn't derive these instances
-instance : TopologicalSpace (PontryaginDual A) :=
-  (inferInstance : TopologicalSpace (ContinuousMonoidHom A circle))
-
-instance : T2Space (PontryaginDual A) :=
-  (inferInstance : T2Space (ContinuousMonoidHom A circle))
-
--- porting note: instance is now noncomputable
-noncomputable instance : CommGroup (PontryaginDual A) :=
-  (inferInstance : CommGroup (ContinuousMonoidHom A circle))
-
-instance : TopologicalGroup (PontryaginDual A) :=
-  (inferInstance : TopologicalGroup (ContinuousMonoidHom A circle))
-
--- porting note: instance is now noncomputable
-noncomputable instance : Inhabited (PontryaginDual A) :=
-  (inferInstance : Inhabited (ContinuousMonoidHom A circle))
-
-
-variable {A B C D E}
-
-namespace PontryaginDual
-
-open ContinuousMonoidHom
-
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
-  ContinuousMonoidHom.ContinuousMonoidHomClass
-
-/-- `PontryaginDual` is a functor. -/
-noncomputable def map (f : ContinuousMonoidHom A B) :
-    ContinuousMonoidHom (PontryaginDual B) (PontryaginDual A) :=
-  f.compLeft circle
-#align pontryagin_dual.map PontryaginDual.map
-
-@[simp]
-theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
-    map f x y = x (f y) :=
-  rfl
-#align pontryagin_dual.map_apply PontryaginDual.map_apply
-
-@[simp]
-theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
-  ext fun x => ext (fun _y => OneHomClass.map_one x)
-#align pontryagin_dual.map_one PontryaginDual.map_one
-
-@[simp]
-theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
-    map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
-  ext fun _x => ext fun _y => rfl
-#align pontryagin_dual.map_comp PontryaginDual.map_comp
-
-
-@[simp]
-nonrec theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
-  ext fun x => ext fun y => map_mul x (f y) (g y)
-#align pontryagin_dual.map_mul PontryaginDual.map_mul
-
-variable (A B C D E)
-
-/-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
-noncomputable def mapHom [LocallyCompactSpace E] :
-    ContinuousMonoidHom (ContinuousMonoidHom A E)
-      (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
-  toFun := map
-  map_one' := map_one
-  map_mul' := map_mul
-  continuous_toFun := continuous_of_continuous_uncurry _ continuous_comp
-#align pontryagin_dual.map_hom PontryaginDual.mapHom
-
-end PontryaginDual

@@ -27,15 +27,11 @@ This file contains some results about vector spaces over the field of fractions 
 -/
 
 
-open BigOperators
-
 open nonZeroDivisors
 
 section Localization
 
 variable {R : Type*} (Rₛ : Type*) [CommSemiring R] (S : Submonoid R)
-
--- include hT
 
 section IsLocalizedModule
 
@@ -44,7 +40,6 @@ section AddCommMonoid
 open Submodule
 
 variable [CommSemiring Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
-
 variable {M M' : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTower R Rₛ M]
   [AddCommMonoid M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
   [IsLocalizedModule S f]
@@ -63,7 +58,7 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   rw [linearIndependent_iff'] at hv ⊢
   intro t g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S t g
-  have h0 : f (∑ i in t, g' i • v i) = 0 := by
+  have h0 : f (∑ i ∈ t, g' i • v i) = 0 := by
     apply_fun ((a : R) • ·) at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]
@@ -95,8 +90,8 @@ variable {M Mₛ : Type*} [AddCommGroup M] [AddCommGroup Mₛ] [Module R M] [Mod
 
 /-- If `M` has an `R`-basis, then localizing `M` at `S` has a basis over `R` localized at `S`. -/
 noncomputable def Basis.ofIsLocalizedModule : Basis ι Rₛ Mₛ :=
-  Basis.mk (b.linearIndependent.of_isLocalizedModule Rₛ S f)
-  (by rw [Set.range_comp, span_eq_top_of_isLocalizedModule Rₛ S _ b.span_eq])
+  .mk (b.linearIndependent.of_isLocalizedModule Rₛ S f) <| by
+    rw [Set.range_comp, span_eq_top_of_isLocalizedModule Rₛ S _ b.span_eq]
 
 @[simp]
 theorem Basis.ofIsLocalizedModule_apply (i : ι) : b.ofIsLocalizedModule Rₛ S f i = f (b i) := by
@@ -107,7 +102,7 @@ theorem Basis.ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     ((b.ofIsLocalizedModule Rₛ S f).repr (f m)) i = algebraMap R Rₛ (b.repr m i) := by
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
-    exact FunLike.congr_fun (LinearMap.congr_fun this m) i
+    exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
   refine Basis.ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,
@@ -128,18 +123,11 @@ end IsLocalizedModule
 section LocalizationLocalization
 
 variable {R : Type*} (Rₛ : Type*) [CommSemiring R] [CommRing Rₛ] [Algebra R Rₛ]
-
 variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
-
 variable {A : Type*} [CommRing A] [Algebra R A]
-
 variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
-
 variable [Algebra Rₛ Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ]
-
 variable [hA : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
-
---include hA
 
 open Submodule
 
@@ -183,7 +171,6 @@ end LocalizationLocalization
 section FractionRing
 
 variable (R K : Type*) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
-
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :

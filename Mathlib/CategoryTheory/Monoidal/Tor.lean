@@ -52,14 +52,14 @@ def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Tor' CategoryTheory.Tor'
 
--- porting note: the `checkType` linter complains about the automatically generated
+-- Porting note: the `checkType` linter complains about the automatically generated
 -- lemma `Tor'_map_app`, but not about this one
 @[simp]
 lemma Tor'_map_app' (n : ℕ) {X Y : C} (f : X ⟶ Y) (Z : C) :
     ((Tor' C n).map f).app Z = (Functor.leftDerived ((tensoringRight C).obj Z) n).map f := by
   rfl
 
--- porting note: this specific lemma was added because otherwise the internals of
+-- Porting note: this specific lemma was added because otherwise the internals of
 -- `NatTrans.leftDerived` leaks into the RHS (it was already so in mathlib)
 @[simp]
 lemma Tor'_obj_map (n : ℕ) {X Y : C} (Z : C) (f : X ⟶ Y) :

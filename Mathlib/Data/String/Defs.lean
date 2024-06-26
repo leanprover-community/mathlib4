@@ -3,7 +3,8 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 -/
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
+import Batteries.Data.String.Basic
 import Mathlib.Mathport.Rename
 
 #align_import data.string.defs from "leanprover-community/mathlib"@"e7131068d9696deec51e6cd7668b6d9ac69af6a4"
@@ -24,12 +25,20 @@ namespace String
 
 /-- Pad `s : String` with repeated occurrences of `c : Char` until it's of length `n`.
   If `s` is initially larger than `n`, just return `s`. -/
-def leftpad (n : Nat) (c : Char) (s : String) : String :=
+def leftpad (n : Nat) (c : Char := ' ') (s : String) : String :=
   ⟨List.leftpad n c s.data⟩
 
 /-- Construct the string consisting of `n` copies of the character `c`. -/
 def replicate (n : Nat) (c : Char) : String :=
   ⟨List.replicate n c⟩
+
+-- TODO bring this definition in line with the above, either by:
+-- adding `List.rightpad` to Batteries and changing the definition of `rightpad` here to match
+-- or by changing the definition of `leftpad` above to match this
+/-- Pad `s : String` with repeated occurrences of `c : Char` on the right until it's of length `n`.
+  If `s` is initially larger than `n`, just return `s`. -/
+def rightpad (n : Nat) (c : Char := ' ') (s : String) : String :=
+  s ++ String.replicate (n - s.length) c
 
 /-- `s.IsPrefix t` checks if the string `s` is a prefix of the string `t`. -/
 def IsPrefix : String → String → Prop
@@ -45,11 +54,8 @@ def mapTokens (c : Char) (f : String → String) : String → String :=
   intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
 #align string.map_tokens String.mapTokens
 
-/-- `getRest s t` returns `some r` if `s = t ++ r`.
-If `t` is not a prefix of `s`, it returns `none`. -/
-def getRest (s t : String) : Option String :=
-  List.asString <$> s.toList.getRest t.toList
-#align string.get_rest String.getRest
+@[deprecated (since := "2024-06-04")] alias getRest := dropPrefix?
+#align string.get_rest String.dropPrefix?
 
 #align string.popn String.drop
 

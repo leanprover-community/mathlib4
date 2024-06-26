@@ -17,17 +17,13 @@ at position `(i, j)`, and zeroes elsewhere.
 
 
 variable {l m n : Type*}
-
 variable {R α : Type*}
 
 namespace Matrix
 
 open Matrix
 
-open BigOperators
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
-
 variable [Semiring α]
 
 /-- `stdBasisMatrix i j a` is the matrix with `a` in the `i`-th row, `j`-th column,
@@ -38,11 +34,11 @@ def stdBasisMatrix (i : m) (j : n) (a : α) : Matrix m n α := fun i' j' =>
 #align matrix.std_basis_matrix Matrix.stdBasisMatrix
 
 @[simp]
-theorem smul_stdBasisMatrix (i : m) (j : n) (a b : α) :
-    b • stdBasisMatrix i j a = stdBasisMatrix i j (b • a) := by
+theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
+    r • stdBasisMatrix i j a = stdBasisMatrix i j (r • a) := by
   unfold stdBasisMatrix
   ext
-  simp
+  simp [smul_ite]
 #align matrix.smul_std_basis_matrix Matrix.smul_stdBasisMatrix
 
 @[simp]
@@ -57,6 +53,14 @@ theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
   unfold stdBasisMatrix; ext
   split_ifs with h <;> simp [h]
 #align matrix.std_basis_matrix_add Matrix.stdBasisMatrix_add
+
+theorem mulVec_stdBasisMatrix [Fintype m] (i : n) (j : m) (c : α) (x : m → α) :
+    mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → α) i (c * x j) := by
+  ext i'
+  simp [stdBasisMatrix, mulVec, dotProduct]
+  rcases eq_or_ne i i' with rfl|h
+  · simp
+  simp [h, h.symm]
 
 theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
@@ -79,7 +83,8 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
-    stdBasisMatrix i j 1 = vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
+    stdBasisMatrix i j (1 : α) =
+      vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
   ext i' j'
   -- Porting note: was `norm_num [std_basis_matrix, vec_mul_vec]` though there are no numerals
   -- involved.
@@ -91,9 +96,10 @@ theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
-protected theorem induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → Prop} (M : Matrix m n α)
+protected theorem induction_on' [Finite m] [Finite n] {P : Matrix m n α → Prop} (M : Matrix m n α)
     (h_zero : P 0) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ (i : m) (j : n) (x : α), P (stdBasisMatrix i j x)) : P M := by
+  cases nonempty_fintype m; cases nonempty_fintype n
   rw [matrix_eq_sum_std_basis M, ← Finset.sum_product']
   apply Finset.sum_induction _ _ h_add h_zero
   · intros
@@ -101,7 +107,7 @@ protected theorem induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → P
 #align matrix.induction_on' Matrix.induction_on'
 
 @[elab_as_elim]
-protected theorem induction_on [Fintype m] [Fintype n] [Nonempty m] [Nonempty n]
+protected theorem induction_on [Finite m] [Finite n] [Nonempty m] [Nonempty n]
     {P : Matrix m n α → Prop} (M : Matrix m n α) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ i j x, P (stdBasisMatrix i j x)) : P M :=
   Matrix.induction_on' M
@@ -204,7 +210,7 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a
-  -- Porting note: was `simp [h₁, h, h.symm]`
+  -- porting note (#10745): was `simp [h₁, h, h.symm]`
   · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
     refine Finset.sum_eq_zero (fun x _ => ?_)
     apply if_neg
@@ -215,6 +221,8 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
 #align matrix.std_basis_matrix.mul_of_ne Matrix.StdBasisMatrix.mul_of_ne
 
 end
+
+end StdBasisMatrix
 
 section Commute
 
@@ -249,14 +257,25 @@ theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rfl
     · exact diag_eq_of_commute_stdBasisMatrix (hM hij)
-  · push_neg at hkl
-    rw [diagonal_apply_ne _ hkl]
+  · rw [diagonal_apply_ne _ hkl]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [col_eq_zero_of_commute_stdBasisMatrix (hM hkl.symm) hkl]
     · rw [row_eq_zero_of_commute_stdBasisMatrix (hM hij) hkl.symm]
 
-end Commute
+theorem mem_range_scalar_iff_commute_stdBasisMatrix {M : Matrix n n α} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M := by
+  refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm ?_, mem_range_scalar_of_commute_stdBasisMatrix⟩
+  rw [scalar_commute_iff]
+  simp
 
-end StdBasisMatrix
+/-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`.​ -/
+theorem mem_range_scalar_iff_commute_stdBasisMatrix' {M : Matrix n n α} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (stdBasisMatrix i j 1) M := by
+  refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
+    fun hM => mem_range_scalar_iff_commute_stdBasisMatrix.mpr <| fun i j _ => hM i j⟩
+  rw [scalar_commute_iff]
+  simp
+
+end Commute
 
 end Matrix

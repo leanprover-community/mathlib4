@@ -3,7 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Defs
+import Mathlib.Order.Lattice
 
 #align_import order.monotone.monovary from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -311,7 +312,7 @@ end PartialOrder
 
 variable [LinearOrder ι]
 
-/-Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
+/- Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
 proof-/
 
 protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monovary f g :=

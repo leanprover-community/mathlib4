@@ -13,7 +13,8 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
-open Classical Real Topology Filter ComplexConjugate Finset Set
+open scoped Classical
+open Real Topology Filter ComplexConjugate Finset Set
 
 namespace Complex
 
@@ -137,21 +138,27 @@ lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) [n.AtLeastTwo] :
   cpow_mul_nat x y n
 
 @[simp, norm_cast]
-theorem cpow_nat_cast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
-#align complex.cpow_nat_cast Complex.cpow_nat_cast
+theorem cpow_natCast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
+#align complex.cpow_nat_cast Complex.cpow_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias cpow_nat_cast := cpow_natCast
 
 /-- See Note [no_index around OfNat.ofNat] -/
 @[simp]
 lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℂ) = x ^ (OfNat.ofNat n : ℕ) :=
-  cpow_nat_cast x n
+  cpow_natCast x n
 
 theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := cpow_ofNat x 2
 #align complex.cpow_two Complex.cpow_two
 
 @[simp, norm_cast]
-theorem cpow_int_cast (x : ℂ) (n : ℤ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_int_mul x n 1
-#align complex.cpow_int_cast Complex.cpow_int_cast
+theorem cpow_intCast (x : ℂ) (n : ℤ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_int_mul x n 1
+#align complex.cpow_int_cast Complex.cpow_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias cpow_int_cast := cpow_intCast
 
 @[simp]
 theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by
@@ -161,9 +168,9 @@ theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ
 
 /-- See Note [no_index around OfNat.ofNat] -/
 @[simp]
-lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [h : n.AtLeastTwo] :
+lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
     (x ^ ((no_index (OfNat.ofNat n) : ℂ)⁻¹)) ^ (no_index (OfNat.ofNat n) : ℕ) = x :=
-  cpow_nat_inv_pow _ (two_pos.trans_le h.1).ne'
+  cpow_nat_inv_pow _ (NeZero.ne n)
 
 /-- A version of `Complex.cpow_int_mul` with RHS that matches `Complex.cpow_mul`.
 
@@ -172,7 +179,7 @@ because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`. -/
 lemma cpow_int_mul' {x : ℂ} {n : ℤ} (hlt : -π < n * x.arg) (hle : n * x.arg ≤ π) (y : ℂ) :
     x ^ (n * y) = (x ^ n) ^ y := by
   rw [mul_comm] at hlt hle
-  rw [cpow_mul, cpow_int_cast] <;> simpa [log_im]
+  rw [cpow_mul, cpow_intCast] <;> simpa [log_im]
 
 /-- A version of `Complex.cpow_nat_mul` with RHS that matches `Complex.cpow_mul`.
 
@@ -193,10 +200,10 @@ lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (h₀ : n ≠ 0) (hlt : -(π / n) < x
   · rwa [← div_lt_iff' (Nat.cast_pos.2 h₀.bot_lt), neg_div]
   · rwa [← le_div_iff' (Nat.cast_pos.2 h₀.bot_lt)]
 
-lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [h : n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
+lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
     (hle : x.arg ≤ π / OfNat.ofNat n) :
     (x ^ (OfNat.ofNat n : ℕ)) ^ ((OfNat.ofNat n : ℂ)⁻¹) = x :=
-  pow_cpow_nat_inv (two_pos.trans_le h.1).ne' hlt hle
+  pow_cpow_nat_inv (NeZero.ne n) hlt hle
 
 /-- See also `Complex.pow_cpow_ofNat_inv` for a version that also works for `x * I`, `0 ≤ x`. -/
 lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : ℂ) = x :=
@@ -217,10 +224,18 @@ theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : �
     add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
 #align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_ofReal_nonneg
 
+lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
+  ofReal_natCast m ▸ ofReal_natCast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
+
+lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n : ℂ) ^ m) ^ z := by
+  refine cpow_nat_mul' (x := n) (n := m) ?_ ?_ z
+  · simp only [natCast_arg, mul_zero, Left.neg_neg_iff, pi_pos]
+  · simp only [natCast_arg, mul_zero, pi_pos.le]
+
 theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
     x⁻¹ ^ n = if x.arg = π then conj (x ^ conj n)⁻¹ else (x ^ n)⁻¹ := by
   simp_rw [Complex.cpow_def, log_inv_eq_ite, inv_eq_zero, map_eq_zero, ite_mul, neg_mul,
-    IsROrC.conj_inv, apply_ite conj, apply_ite exp, apply_ite Inv.inv, map_zero, map_one, exp_neg,
+    RCLike.conj_inv, apply_ite conj, apply_ite exp, apply_ite Inv.inv, map_zero, map_one, exp_neg,
     inv_one, inv_zero, ← exp_conj, map_mul, conj_conj]
   split_ifs with hx hn ha ha <;> rfl
 #align complex.inv_cpow_eq_ite Complex.inv_cpow_eq_ite
@@ -265,11 +280,11 @@ end Complex
 -- namespace NormNum
 
 -- theorem cpow_pos (a b : ℂ) (b' : ℕ) (c : ℂ) (hb : b = b') (h : a ^ b' = c) : a ^ b = c := by
---   rw [← h, hb, Complex.cpow_nat_cast]
+--   rw [← h, hb, Complex.cpow_natCast]
 -- #align norm_num.cpow_pos NormNum.cpow_pos
 
 -- theorem cpow_neg (a b : ℂ) (b' : ℕ) (c c' : ℂ) (hb : b = b') (h : a ^ b' = c) (hc : c⁻¹ = c') :
---     a ^ (-b) = c' := by rw [← hc, ← h, hb, Complex.cpow_neg, Complex.cpow_nat_cast]
+--     a ^ (-b) = c' := by rw [← hc, ← h, hb, Complex.cpow_neg, Complex.cpow_natCast]
 -- #align norm_num.cpow_neg NormNum.cpow_neg
 
 -- open Tactic

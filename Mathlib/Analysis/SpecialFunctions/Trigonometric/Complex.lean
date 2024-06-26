@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 #align_import analysis.special_functions.trigonometric.complex from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
@@ -32,10 +33,10 @@ theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1
   have h : (exp (θ * I) + exp (-θ * I)) / 2 = 0 ↔ exp (2 * θ * I) = -1 := by
     rw [@div_eq_iff _ _ (exp (θ * I) + exp (-θ * I)) 2 0 two_ne_zero, zero_mul,
       add_eq_zero_iff_eq_neg, neg_eq_neg_one_mul, ← div_eq_iff (exp_ne_zero _), ← exp_sub]
-    congr 3; ring_nf
+    ring_nf
   rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_exists_int, mul_right_comm]
-  refine' exists_congr fun x => _
-  refine' (iff_of_eq <| congr_arg _ _).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
+  refine exists_congr fun x => ?_
+  refine (iff_of_eq <| congr_arg _ ?_).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
   field_simp; ring
 #align complex.cos_eq_zero_iff Complex.cos_eq_zero_iff
 
@@ -60,22 +61,31 @@ theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π
   rw [← not_exists, not_iff_not, sin_eq_zero_iff]
 #align complex.sin_ne_zero_iff Complex.sin_ne_zero_iff
 
-theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 := by
-  have h := (sin_two_mul θ).symm
-  rw [mul_assoc] at h
-  rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← zero_mul (1 / 2 : ℂ), mul_one_div,
-    CancelDenoms.cancel_factors_eq_div h two_ne_zero, mul_comm]
-  simpa only [zero_div, zero_mul, Ne.def, not_false_iff, field_simps] using
-    sin_eq_zero_iff
+/-- The tangent of a complex number is equal to zero
+iff this number is equal to `k * π / 2` for an integer `k`.
+
+Note that this lemma takes into account that we use zero as the junk value for division by zero.
+See also `Complex.tan_eq_zero_iff'`.  -/
+theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ := by
+  rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← mul_right_inj' two_ne_zero, mul_zero,
+    ← mul_assoc, ← sin_two_mul, sin_eq_zero_iff]
+  field_simp [mul_comm, eq_comm]
 #align complex.tan_eq_zero_iff Complex.tan_eq_zero_iff
 
-theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π / 2 := by
+theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, (k * π / 2 : ℂ) ≠ θ := by
   rw [← not_exists, not_iff_not, tan_eq_zero_iff]
 #align complex.tan_ne_zero_iff Complex.tan_ne_zero_iff
 
 theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 #align complex.tan_int_mul_pi_div_two Complex.tan_int_mul_pi_div_two
+
+/-- If the tangent of a complex number is well-defined,
+then it is equal to zero iff the number is equal to `k * π` for an integer `k`.
+
+See also `Complex.tan_eq_zero_iff` for a version that takes into account junk values of `θ`. -/
+theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
+  simp only [tan, hθ, div_eq_zero_iff, sin_eq_zero_iff]; simp [eq_comm]
 
 theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
   calc
@@ -94,8 +104,24 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
 theorem sin_eq_sin_iff {x y : ℂ} :
     sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
   simp only [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, sub_eq_iff_eq_add]
-  refine' exists_congr fun k => or_congr _ _ <;> refine' Eq.congr rfl _ <;> field_simp <;> ring
+  refine exists_congr fun k => or_congr ?_ ?_ <;> refine Eq.congr rfl ?_ <;> field_simp <;> ring
 #align complex.sin_eq_sin_iff Complex.sin_eq_sin_iff
+
+theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ ∃ k : ℤ, k * (2 * π) = x := by
+  rw [← cos_zero, eq_comm, cos_eq_cos_iff]
+  simp [mul_assoc, mul_left_comm, eq_comm]
+
+theorem cos_eq_neg_one_iff {x : ℂ} : cos x = -1 ↔ ∃ k : ℤ, π + k * (2 * π) = x := by
+  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff]
+  simp only [eq_sub_iff_add_eq']
+
+theorem sin_eq_one_iff {x : ℂ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x := by
+  rw [← cos_sub_pi_div_two, cos_eq_one_iff]
+  simp only [eq_sub_iff_add_eq']
+
+theorem sin_eq_neg_one_iff {x : ℂ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x := by
+  rw [← neg_eq_iff_eq_neg, ← cos_add_pi_div_two, cos_eq_one_iff]
+  simp only [← sub_eq_neg_add, sub_eq_iff_eq_add]
 
 theorem tan_add {x y : ℂ}
     (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
@@ -162,7 +188,7 @@ theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
   rw [← sub_eq_zero]
   field_simp [cos, exp_neg, exp_ne_zero]
-  refine' Eq.congr _ rfl
+  refine Eq.congr ?_ rfl
   ring
 #align complex.cos_eq_iff_quadratic Complex.cos_eq_iff_quadratic
 
@@ -172,11 +198,11 @@ theorem cos_surjective : Function.Surjective cos := by
     rcases exists_quadratic_eq_zero one_ne_zero
         ⟨_, (cpow_nat_inv_pow _ two_ne_zero).symm.trans <| pow_two _⟩ with
       ⟨w, hw⟩
-    refine' ⟨w, _, hw⟩
+    refine ⟨w, ?_, hw⟩
     rintro rfl
     simp only [zero_add, one_ne_zero, mul_zero] at hw
-  refine' ⟨log w / I, cos_eq_iff_quadratic.2 _⟩
-  rw [div_mul_cancel _ I_ne_zero, exp_log w₀]
+  refine ⟨log w / I, cos_eq_iff_quadratic.2 ?_⟩
+  rw [div_mul_cancel₀ _ I_ne_zero, exp_log w₀]
   convert hw using 1
   ring
 #align complex.cos_surjective Complex.cos_surjective
@@ -207,8 +233,8 @@ theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1
   mod_cast @Complex.cos_eq_zero_iff θ
 #align real.cos_eq_zero_iff Real.cos_eq_zero_iff
 
-theorem cos_ne_zero_iff {θ : ℝ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
-  rw [← not_exists, not_iff_not, cos_eq_zero_iff]
+theorem cos_ne_zero_iff {θ : ℝ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 :=
+  mod_cast @Complex.cos_ne_zero_iff θ
 #align real.cos_ne_zero_iff Real.cos_ne_zero_iff
 
 theorem cos_eq_cos_iff {x y : ℝ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
@@ -219,6 +245,27 @@ theorem sin_eq_sin_iff {x y : ℝ} :
     sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x :=
   mod_cast @Complex.sin_eq_sin_iff x y
 #align real.sin_eq_sin_iff Real.sin_eq_sin_iff
+
+theorem cos_eq_neg_one_iff {x : ℝ} : cos x = -1 ↔ ∃ k : ℤ, π + k * (2 * π) = x :=
+  mod_cast @Complex.cos_eq_neg_one_iff x
+
+theorem sin_eq_one_iff {x : ℝ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x :=
+  mod_cast @Complex.sin_eq_one_iff x
+
+theorem sin_eq_neg_one_iff {x : ℝ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x :=
+  mod_cast @Complex.sin_eq_neg_one_iff x
+
+theorem tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ :=
+  mod_cast @Complex.tan_eq_zero_iff θ
+#align real.tan_eq_zero_iff Real.tan_eq_zero_iff
+
+theorem tan_eq_zero_iff' {θ : ℝ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
+  revert hθ
+  exact_mod_cast @Complex.tan_eq_zero_iff' θ
+
+theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, k * π / 2 ≠ θ :=
+  mod_cast @Complex.tan_ne_zero_iff θ
+#align real.tan_ne_zero_iff Real.tan_ne_zero_iff
 
 theorem lt_sin_mul {x : ℝ} (hx : 0 < x) (hx' : x < 1) : x < sin (π / 2 * x) := by
   simpa [mul_comm x] using

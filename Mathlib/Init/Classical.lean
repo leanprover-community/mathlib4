@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Logic
 
 /-! ### alignments from lean 3 `init.classical` -/
 

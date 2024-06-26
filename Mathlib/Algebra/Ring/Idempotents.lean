@@ -3,10 +3,11 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Conv
+import Mathlib.Data.Subtype
+import Mathlib.Order.Notation
 
 #align_import algebra.ring.idempotents from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
@@ -30,7 +31,6 @@ projection, idempotent
 
 
 variable {M N S M₀ M₁ R G G₀ : Type*}
-
 variable [Mul M] [Monoid N] [Semigroup S] [MulZeroClass M₀] [MulOneClass M₁] [NonAssocRing R]
   [Group G] [CancelMonoidWithZero G₀]
 
@@ -42,8 +42,8 @@ def IsIdempotentElem (p : M) : Prop :=
 
 namespace IsIdempotentElem
 
-theorem of_isIdempotent [IsIdempotent M (· * ·)] (a : M) : IsIdempotentElem a :=
-  IsIdempotent.idempotent a
+theorem of_isIdempotent [Std.IdempotentOp (α := M) (· * ·)] (a : M) : IsIdempotentElem a :=
+  Std.IdempotentOp.idempotent a
 #align is_idempotent_elem.of_is_idempotent IsIdempotentElem.of_isIdempotent
 
 theorem eq {p : M} (h : IsIdempotentElem p) : p * p = p :=
@@ -75,7 +75,7 @@ theorem one_sub_iff {p : R} : IsIdempotentElem (1 - p) ↔ IsIdempotentElem p :=
 theorem pow {p : N} (n : ℕ) (h : IsIdempotentElem p) : IsIdempotentElem (p ^ n) :=
   Nat.recOn n ((pow_zero p).symm ▸ one) fun n _ =>
     show p ^ n.succ * p ^ n.succ = p ^ n.succ by
-      conv_rhs => rw [← h.eq] --Porting note: was `nth_rw 3 [← h.eq]`
+      conv_rhs => rw [← h.eq] -- Porting note: was `nth_rw 3 [← h.eq]`
       rw [← sq, ← sq, ← pow_mul, ← pow_mul']
 #align is_idempotent_elem.pow IsIdempotentElem.pow
 
@@ -91,8 +91,8 @@ theorem iff_eq_one {p : G} : IsIdempotentElem p ↔ p = 1 :=
 
 @[simp]
 theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 := by
-  refine'
-    Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => _) fun h =>
+  refine
+    Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => ?_) fun h =>
       h.elim (fun hp => hp.symm ▸ zero) fun hp => hp.symm ▸ one
   exact mul_left_cancel₀ hp (h.trans (mul_one p).symm)
 #align is_idempotent_elem.iff_eq_zero_or_one IsIdempotentElem.iff_eq_zero_or_one

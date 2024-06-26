@@ -35,7 +35,7 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Notation
 
-This file introduces notation in the locale `isocrystal`.
+This file introduces notation in the locale `Isocrystal`.
 * `K(p, k)`: `FractionRing (WittVector p k)`
 * `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
 * `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
@@ -62,7 +62,6 @@ open FiniteDimensional
 namespace WittVector
 
 variable (p : ℕ) [Fact p.Prime]
-
 variable (k : Type*) [CommRing k]
 
 scoped[Isocrystal] notation "K(" p ", " k ")" => FractionRing (WittVector p k)
@@ -118,9 +117,7 @@ class Isocrystal (V : Type*) [AddCommGroup V] extends Module K(p, k) V where
 open WittVector
 
 variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
-
 variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
-
 variable {V}
 
 /--
@@ -135,15 +132,13 @@ variable (V)
 scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
 /-- A homomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 #align witt_vector.isocrystal_hom WittVector.IsocrystalHom
 
 /-- An isomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalEquiv extends V ≃ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearEquiv x) = toLinearEquiv (Φ(p, k) x)
 #align witt_vector.isocrystal_equiv WittVector.IsocrystalEquiv
@@ -158,19 +153,13 @@ open scoped Isocrystal
 
 /-! ### Classification of isocrystals in dimension 1 -/
 
-
-/-- A helper instance for type class inference. -/
-@[local instance]
-def FractionRing.module : Module K(p, k) K(p, k) :=
-  Semiring.toModule
-#align witt_vector.fraction_ring.module WittVector.FractionRing.module
+#noalign witt_vector.fraction_ring.module
 
 /-- Type synonym for `K(p, k)` to carry the standard 1-dimensional isocrystal structure
 of slope `m : ℤ`.
 -/
 @[nolint unusedArguments]
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
 #align witt_vector.standard_one_dim_isocrystal WittVector.StandardOneDimIsocrystal
@@ -213,7 +202,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
   obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x := by
     rw [finrank_eq_one_iff_of_nonzero' x hx] at h_dim
     obtain ⟨a, ha⟩ := h_dim (Φ(p, k) x)
-    refine' ⟨a, _, ha.symm⟩
+    refine ⟨a, ?_, ha.symm⟩
     intro ha'
     apply this
     simp only [← ha, ha', zero_smul]
@@ -222,17 +211,13 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
   use m
   let F₀ : StandardOneDimIsocrystal p k m →ₗ[K(p, k)] V := LinearMap.toSpanSingleton K(p, k) V x
   let F : StandardOneDimIsocrystal p k m ≃ₗ[K(p, k)] V := by
-    refine' LinearEquiv.ofBijective F₀ ⟨_, _⟩
+    refine LinearEquiv.ofBijective F₀ ⟨?_, ?_⟩
     · rw [← LinearMap.ker_eq_bot]
       exact LinearMap.ker_toSpanSingleton K(p, k) V hx
     · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
-  -- Porting note: `refine'` below gets confused when this is inlined.
-  let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
-  refine' ⟨⟨E, _⟩⟩
-  simp only
-  intro c
+  refine ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, fun c ↦ ?_⟩⟩
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
     LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
   -- Porting note: was

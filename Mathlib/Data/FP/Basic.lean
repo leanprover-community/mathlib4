@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Semiquot
-import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Nat.Size
+import Mathlib.Tactic.Ring.RingNF
 
 #align_import data.fp.basic from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
@@ -12,7 +13,7 @@ import Mathlib.Data.Rat.Floor
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note: TODO add docs and remove `@[nolint docBlame]`
+-- Porting note (#11215): TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
@@ -153,8 +154,8 @@ unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   cases' Int.shift2 d.1 n.1 (e₃ + prec) with d₂ n₂
   let r := mkRat n₂ d₂
   let m := r.floor
-  refine' (Float.finite Bool.false e₃ (Int.toNat m) _, r.den = 1)
-  · exact lcProof
+  refine (Float.finite Bool.false e₃ (Int.toNat m) ?_, r.den = 1)
+  exact lcProof
 #align fp.of_pos_rat_dn FP.ofPosRatDn
 
 -- Porting note: remove this line when you dropped 'lcProof'

@@ -4,8 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
-import Std.Lean.Expr
-import Std.Data.List.Basic
+import Lean.Meta.Tactic.Rewrite
+import Batteries.Lean.Expr
+import Batteries.Lean.Name
+import Batteries.Data.Rat.Basic
+import Batteries.Data.List.Basic
+import Batteries.Lean.Name
+import Batteries.Logic
 
 /-!
 # Additional operations on Expr and related types
@@ -61,16 +66,18 @@ def updateLast (f : String → String) : Name → Name
 
 /-- Get the last field of a name as a string.
 Doesn't raise an error when the last component is a numeric field. -/
-def getString : Name → String
+def lastComponentAsString : Name → String
   | .str _ s => s
   | .num _ n => toString n
   | .anonymous => ""
+
+@[deprecated (since := "2024-05-14")] alias getString := lastComponentAsString
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
   Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
-  let (nm2, nm1) := (nm.componentsRev.splitAt n)
+  let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
 /-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
@@ -184,6 +191,23 @@ def getAppApps (e : Expr) : Array Expr :=
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
 
+/-- Erase proofs in an expression by replacing them with `sorry`s.
+
+This function replaces all proofs in the expression
+and in the types that appear in the expression
+by `sorryAx`s.
+The resulting expression has the same type as the old one.
+
+It is useful, e.g., to verify if the proof-irrelevant part of a definition depends on a variable.
+-/
+def eraseProofs (e : Expr) : MetaM Expr :=
+  Meta.transform (skipConstInApp := true) e
+    (pre := fun e => do
+      if (← Meta.isProof e) then
+        return .continue (← mkSyntheticSorry (← inferType e))
+      else
+        return .continue)
+
 /--
 Check if an expression is a "rational in normal form",
 i.e. either an integer number in normal form,
@@ -232,10 +256,10 @@ def type? : Expr → Option Level
   it does a syntactic check that the expression does not depend on `yₙ`. -/
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
-  where
-    /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
-      `depth - 1`. -/
-    aux (depth : Nat) : Expr → Nat → Bool
+where
+  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+    `depth - 1`. -/
+  aux (depth : Nat) : Expr → Nat → Bool
     | .lam _ _ b _, n + 1  => aux depth b n
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
@@ -274,7 +298,7 @@ section recognizers
   - `Nat.succ x` where `isNumeral x`
   - `OfNat.ofNat _ x _` where `isNumeral x` -/
 partial def numeral? (e : Expr) : Option Nat :=
-  if let some n := e.natLit? then n
+  if let some n := e.rawNatLit? then n
   else
     let f := e.getAppFn
     if !f.isConst then none
@@ -322,17 +346,20 @@ def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M
   | app f a => mkApp f <$> modifier a
   | e => pure e
 
-def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
-  modifyAppArgM (M := Id) modifier
-
 def modifyRevArg (modifier : Expr → Expr) : Nat → Expr → Expr
-  | 0 => modifyAppArg modifier
-  | (i+1) => modifyAppArg (modifyRevArg modifier i)
+  | 0,     (.app f x) => .app f (modifier x)
+  | (i+1), (.app f x) => .app (modifyRevArg modifier i f) x
+  | _, e => e
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument or
 returns the original expression if out of bounds. -/
 def modifyArg (modifier : Expr → Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Expr :=
   modifyRevArg modifier (n - i - 1) e
+
+/-- Given `f a₀ a₁ ... aₙ₋₁`, sets the argument on the `i`th argument to `x` or
+returns the original expression if out of bounds. -/
+def setArg (e : Expr) (i : Nat) (x : Expr) (n := e.getAppNumArgs) : Expr :=
+  e.modifyArg (fun _ => x) i n
 
 def getRevArg? : Expr → Nat → Option Expr
   | app _ a, 0   => a

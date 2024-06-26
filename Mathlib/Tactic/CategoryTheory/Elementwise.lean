@@ -6,7 +6,7 @@ Authors: Scott Morrison, Kyle Miller
 
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Util.AddRelatedDecl
-import Std.Tactic.Lint
+import Batteries.Tactic.Lint
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -45,9 +45,9 @@ section theorems
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
     (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
-theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : FunLike.coe f = f := rfl
+theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
 theorem hom_elementwise [Category C] [ConcreteCategory C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
@@ -80,7 +80,7 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
     MetaM (Expr × Option Level) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
-    mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
+    mkHomElementwise type' (← mkExpectedTypeHint (mkAppN pf fvars) type') fun eqPf instConcr? => do
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then

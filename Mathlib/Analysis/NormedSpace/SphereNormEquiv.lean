@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.Basic
-import Mathlib.Topology.PartialHomeomorph
 
 /-!
 # Homeomorphism between a normed space and sphere times `(0, +∞)`

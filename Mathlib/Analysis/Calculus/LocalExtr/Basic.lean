@@ -87,18 +87,18 @@ theorem mem_posTangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segmen
     y - x ∈ posTangentConeAt s x := by
   let c := fun n : ℕ => (2 : ℝ) ^ n
   let d := fun n : ℕ => (c n)⁻¹ • (y - x)
-  refine' ⟨c, d, Filter.univ_mem' fun n => h _, tendsto_pow_atTop_atTop_of_one_lt one_lt_two, _⟩
-  show x + d n ∈ segment ℝ x y
-  · rw [segment_eq_image']
-    refine' ⟨(c n)⁻¹, ⟨_, _⟩, rfl⟩
+  refine ⟨c, d, Filter.univ_mem' fun n => h ?_, tendsto_pow_atTop_atTop_of_one_lt one_lt_two, ?_⟩
+  · show x + d n ∈ segment ℝ x y
+    rw [segment_eq_image']
+    refine ⟨(c n)⁻¹, ⟨?_, ?_⟩, rfl⟩
     exacts [inv_nonneg.2 (pow_nonneg zero_le_two _), inv_le_one (one_le_pow_of_one_le one_le_two _)]
-  show Tendsto (fun n => c n • d n) atTop (𝓝 (y - x))
-  · exact tendsto_const_nhds.congr fun n ↦ (smul_inv_smul₀ (pow_ne_zero _ two_ne_zero) _).symm
+  · show Tendsto (fun n => c n • d n) atTop (𝓝 (y - x))
+    exact tendsto_const_nhds.congr fun n ↦ (smul_inv_smul₀ (pow_ne_zero _ two_ne_zero) _).symm
 #align mem_pos_tangent_cone_at_of_segment_subset mem_posTangentConeAt_of_segment_subset
 
 theorem mem_posTangentConeAt_of_segment_subset' {s : Set E} {x y : E}
     (h : segment ℝ x (x + y) ⊆ s) : y ∈ posTangentConeAt s x := by
-  simpa only [add_sub_cancel'] using mem_posTangentConeAt_of_segment_subset h
+  simpa only [add_sub_cancel_left] using mem_posTangentConeAt_of_segment_subset h
 #align mem_pos_tangent_cone_at_of_segment_subset' mem_posTangentConeAt_of_segment_subset'
 
 theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
@@ -115,10 +115,10 @@ theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos {s : Set E} (h : IsLocalMaxOn f s 
     (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a) : f' y ≤ 0 := by
   rcases hy with ⟨c, d, hd, hc, hcd⟩
   have hc' : Tendsto (‖c ·‖) atTop atTop := tendsto_abs_atTop_atTop.comp hc
-  suffices : ∀ᶠ n in atTop, c n • (f (a + d n) - f a) ≤ 0
-  · exact le_of_tendsto (hf.lim atTop hd hc' hcd) this
-  replace hd : Tendsto (fun n => a + d n) atTop (𝓝[s] (a + 0))
-  · exact tendsto_nhdsWithin_iff.2 ⟨tendsto_const_nhds.add (tangentConeAt.lim_zero _ hc' hcd), hd⟩
+  suffices ∀ᶠ n in atTop, c n • (f (a + d n) - f a) ≤ 0 from
+    le_of_tendsto (hf.lim atTop hd hc' hcd) this
+  replace hd : Tendsto (fun n => a + d n) atTop (𝓝[s] (a + 0)) :=
+    tendsto_nhdsWithin_iff.2 ⟨tendsto_const_nhds.add (tangentConeAt.lim_zero _ hc' hcd), hd⟩
   rw [add_zero] at hd
   filter_upwards [hd.eventually h, hc.eventually_ge_atTop 0] with n hfn hcn
   exact mul_nonpos_of_nonneg_of_nonpos hcn (sub_nonpos.2 hfn)
@@ -230,7 +230,7 @@ variable {f : ℝ → ℝ} {f' : ℝ} {a b : ℝ}
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.hasDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasDerivAt f f' a) : f' = 0 := by
-  simpa using FunLike.congr_fun (h.hasFDerivAt_eq_zero (hasDerivAt_iff_hasFDerivAt.1 hf)) 1
+  simpa using DFunLike.congr_fun (h.hasFDerivAt_eq_zero (hasDerivAt_iff_hasFDerivAt.1 hf)) 1
 #align is_local_min.has_deriv_at_eq_zero IsLocalMin.hasDerivAt_eq_zero
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/

@@ -46,6 +46,16 @@ class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
 #align exp_char ExpChar
 #align exp_char.prime ExpChar.prime
 
+instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
+instance expChar_zero [CharZero R] : ExpChar R 1 := ExpChar.zero
+
+instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
+  obtain hp | ⟨hp⟩ := ‹ExpChar R p›
+  · have := Prod.charZero_of_left R S; exact .zero
+  obtain _ | _ := ‹ExpChar S p›
+  · exact (Nat.not_prime_one hp).elim
+  · have := Prod.charP R S p; exact .prime hp
+
 variable {R} in
 /-- The exponential characteristic is unique. -/
 theorem ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := by
@@ -70,13 +80,13 @@ theorem ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
 
 @[simp]
 theorem ringExpChar.eq_one (R : Type*) [NonAssocSemiring R] [CharZero R] : ringExpChar R = 1 := by
-  rw [ringExpChar, ringChar.eq_zero]; rfl
+  rw [ringExpChar, ringChar.eq_zero, max_eq_right zero_le_one]
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
 theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
   cases' hq with q hq_one hq_prime hq_hchar
   · rfl
-  · exact False.elim (lt_irrefl _ ((hp.eq R hq_hchar).symm ▸ hq_prime : (0 : ℕ).Prime).pos)
+  · exact False.elim <| hq_prime.ne_zero <| hq_hchar.eq R hp
 #align exp_char_one_of_char_zero expChar_one_of_char_zero
 
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
@@ -178,6 +188,20 @@ theorem expChar_of_injective_ringHom {R A : Type*}
   · haveI := charZero_of_injective_ringHom h; exact .zero
   haveI := charP_of_injective_ringHom h q; exact .prime hprime
 
+/-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
+exponential characteristic `p`. Similar to `RingHom.charZero`. -/
+theorem RingHom.expChar {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
+  cases ‹ExpChar A p› with
+  | zero => haveI := f.charZero; exact .zero
+  | prime hp => haveI := f.charP H p; exact .prime hp
+
+/-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
+also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/
+theorem RingHom.expChar_iff {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) : ExpChar R p ↔ ExpChar A p :=
+  ⟨fun _ ↦ expChar_of_injective_ringHom H p, fun _ ↦ f.expChar H p⟩
+
 /-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
 theorem expChar_of_injective_algebraMap {R A : Type*}
@@ -243,3 +267,185 @@ theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] 
   cases' hR with _ _ hprime _
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R q n
+
+section frobenius
+
+section CommSemiring
+
+variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →* S) (g : R →+* S) (p m n : ℕ)
+  [ExpChar R p] [ExpChar S p] (x y : R)
+
+/-- The frobenius map that sends x to x^p -/
+def frobenius : R →+* R where
+  __ := powMonoidHom p
+  map_zero' := zero_pow (expChar_pos R p).ne'
+  map_add' := add_pow_expChar R
+#align frobenius frobenius
+
+/-- The iterated frobenius map sending x to x^p^n -/
+def iterateFrobenius : R →+* R where
+  __ := powMonoidHom (p ^ n)
+  map_zero' := zero_pow (expChar_pow_pos R p n).ne'
+  map_add' := add_pow_expChar_pow R
+
+variable {R}
+
+theorem frobenius_def : frobenius R p x = x ^ p := rfl
+#align frobenius_def frobenius_def
+
+theorem iterateFrobenius_def : iterateFrobenius R p n x = x ^ p ^ n := rfl
+
+theorem iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr_fun (pow_iterate p n) x
+#align iterate_frobenius iterate_frobenius
+
+variable (R)
+
+theorem coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
+  (pow_iterate p n).symm
+
+theorem iterateFrobenius_one_apply : iterateFrobenius R p 1 x = x ^ p := by
+  rw [iterateFrobenius_def, pow_one]
+
+@[simp]
+theorem iterateFrobenius_one : iterateFrobenius R p 1 = frobenius R p :=
+  RingHom.ext (iterateFrobenius_one_apply R p)
+
+theorem iterateFrobenius_zero_apply : iterateFrobenius R p 0 x = x := by
+  rw [iterateFrobenius_def, pow_zero, pow_one]
+
+@[simp]
+theorem iterateFrobenius_zero : iterateFrobenius R p 0 = RingHom.id R :=
+  RingHom.ext (iterateFrobenius_zero_apply R p)
+
+theorem iterateFrobenius_add_apply :
+    iterateFrobenius R p (m + n) x = iterateFrobenius R p m (iterateFrobenius R p n x) := by
+  simp_rw [iterateFrobenius_def, add_comm m n, pow_add, pow_mul]
+
+theorem iterateFrobenius_add :
+    iterateFrobenius R p (m + n) = (iterateFrobenius R p m).comp (iterateFrobenius R p n) :=
+  RingHom.ext (iterateFrobenius_add_apply R p m n)
+
+theorem iterateFrobenius_mul_apply :
+    iterateFrobenius R p (m * n) x = (iterateFrobenius R p m)^[n] x := by
+  simp_rw [coe_iterateFrobenius, Function.iterate_mul]
+
+theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] :=
+  funext (iterateFrobenius_mul_apply R p m n)
+
+variable {R}
+
+theorem frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
+  map_mul (frobenius R p) x y
+#align frobenius_mul frobenius_mul
+
+theorem frobenius_one : frobenius R p 1 = 1 :=
+  one_pow _
+#align frobenius_one frobenius_one
+
+theorem MonoidHom.map_frobenius : f (frobenius R p x) = frobenius S p (f x) :=
+  map_pow f x p
+#align monoid_hom.map_frobenius MonoidHom.map_frobenius
+
+theorem RingHom.map_frobenius : g (frobenius R p x) = frobenius S p (g x) :=
+  map_pow g x p
+#align ring_hom.map_frobenius RingHom.map_frobenius
+
+theorem MonoidHom.map_iterate_frobenius (n : ℕ) :
+    f ((frobenius R p)^[n] x) = (frobenius S p)^[n] (f x) :=
+  Function.Semiconj.iterate_right (f.map_frobenius p) n x
+#align monoid_hom.map_iterate_frobenius MonoidHom.map_iterate_frobenius
+
+theorem RingHom.map_iterate_frobenius (n : ℕ) :
+    g ((frobenius R p)^[n] x) = (frobenius S p)^[n] (g x) :=
+  g.toMonoidHom.map_iterate_frobenius p x n
+#align ring_hom.map_iterate_frobenius RingHom.map_iterate_frobenius
+
+theorem MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
+    f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
+  iterate_map_pow f _ _ _
+#align monoid_hom.iterate_map_frobenius MonoidHom.iterate_map_frobenius
+
+theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
+    f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
+  iterate_map_pow f _ _ _
+#align ring_hom.iterate_map_frobenius RingHom.iterate_map_frobenius
+
+variable (R S)
+
+/-- The frobenius map of an algebra as a frobenius-semilinear map. -/
+nonrec def LinearMap.frobenius [Algebra R S] : S →ₛₗ[frobenius R p] S where
+  __ := frobenius S p
+  map_smul' r s := show frobenius S p _ = _ by
+    simp_rw [Algebra.smul_def, map_mul, ← (algebraMap R S).map_frobenius]; rfl
+
+/-- The iterated frobenius map of an algebra as a iterated-frobenius-semilinear map. -/
+nonrec def LinearMap.iterateFrobenius [Algebra R S] : S →ₛₗ[iterateFrobenius R p n] S where
+  __ := iterateFrobenius S p n
+  map_smul' f s := show iterateFrobenius S p n _ = _ by
+    simp_rw [iterateFrobenius_def, Algebra.smul_def, mul_pow, ← map_pow]; rfl
+
+theorem LinearMap.frobenius_def [Algebra R S] (x : S) : frobenius R S p x = x ^ p := rfl
+
+theorem LinearMap.iterateFrobenius_def [Algebra R S] (n : ℕ) (x : S) :
+    iterateFrobenius R S p n x = x ^ p ^ n := rfl
+
+theorem frobenius_zero : frobenius R p 0 = 0 :=
+  (frobenius R p).map_zero
+#align frobenius_zero frobenius_zero
+
+theorem frobenius_add : frobenius R p (x + y) = frobenius R p x + frobenius R p y :=
+  (frobenius R p).map_add x y
+#align frobenius_add frobenius_add
+
+theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
+  map_natCast (frobenius R p) n
+#align frobenius_nat_cast frobenius_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias frobenius_nat_cast := frobenius_natCast
+
+variable {R}
+
+theorem list_sum_pow_char (l : List R) : l.sum ^ p = (l.map (· ^ p : R → R)).sum :=
+  map_list_sum (frobenius R p) _
+#align list_sum_pow_char list_sum_pow_char
+
+theorem multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R → R)).sum :=
+  map_multiset_sum (frobenius R p) _
+#align multiset_sum_pow_char multiset_sum_pow_char
+
+theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (∑ i ∈ s, f i) ^ p = ∑ i ∈ s, f i ^ p :=
+  map_sum (frobenius R p) _ _
+#align sum_pow_char sum_pow_char
+
+variable (n : ℕ)
+
+theorem list_sum_pow_char_pow (l : List R) : l.sum ^ p ^ n = (l.map (· ^ p ^ n : R → R)).sum :=
+  map_list_sum (iterateFrobenius R p n) _
+
+theorem multiset_sum_pow_char_pow (s : Multiset R) :
+    s.sum ^ p ^ n = (s.map (· ^ p ^ n : R → R)).sum :=
+  map_multiset_sum (iterateFrobenius R p n) _
+
+theorem sum_pow_char_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (∑ i ∈ s, f i) ^ p ^ n = ∑ i ∈ s, f i ^ p ^ n :=
+  map_sum (iterateFrobenius R p n) _ _
+
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R] (p : ℕ) [ExpChar R p] (x y : R)
+
+theorem frobenius_neg : frobenius R p (-x) = -frobenius R p x :=
+  map_neg ..
+#align frobenius_neg frobenius_neg
+
+theorem frobenius_sub : frobenius R p (x - y) = frobenius R p x - frobenius R p y :=
+  map_sub ..
+#align frobenius_sub frobenius_sub
+
+end CommRing
+
+end frobenius

@@ -49,7 +49,7 @@ set_option linter.uppercaseLean3 false -- S
 
 noncomputable section
 
-open scoped Classical BigOperators BoundedContinuousFunction unitInterval
+open scoped Classical BoundedContinuousFunction unitInterval
 
 /-- The Bernstein polynomials, as continuous functions on `[0,1]`.
 -/
@@ -75,7 +75,8 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
-@[positivity FunLike.coe _ _]
+/-- Extension of the `positivity` tactic for Bernstein polynomials: they are always non-negative. -/
+@[positivity DFunLike.coe _ _]
 def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
@@ -120,10 +121,10 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
   dsimp
   conv_lhs => simp only [Finset.sum_mul, z]
-  conv_rhs => rw [div_mul_cancel _ h']
+  conv_rhs => rw [div_mul_cancel₀ _ h']
   have := bernsteinPolynomial.variance ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.nat_cast_mul] at this says
+  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.natCast_mul] at this says
     simp only [nsmul_eq_mul, Finset.sum_range, map_sum, map_mul, map_pow, map_sub, map_natCast,
       Polynomial.aeval_X, Polynomial.coe_aeval_eq_eval, map_one] at this
   convert this using 1
@@ -202,7 +203,7 @@ This particular formulation will be helpful later.
 theorem le_of_mem_S_compl {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k : Fin (n + 1)}
     (m : k ∈ (S f ε h n x)ᶜ) : (1 : ℝ) ≤ δ f ε h ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 := by
   -- Porting note: added parentheses to help `simp`
-  simp only [Finset.mem_compl, not_lt, (Set.mem_toFinset), Set.mem_setOf_eq, S] at m
+  simp only [Finset.mem_compl, not_lt, Set.mem_toFinset, Set.mem_setOf_eq, S] at m
   rw [zpow_neg, ← div_eq_inv_mul, zpow_two, ← pow_two, one_le_div (pow_pos δ_pos 2), sq_le_sq,
     abs_of_pos δ_pos]
   rwa [dist_comm] at m
@@ -232,7 +233,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   simp only [Metric.nhds_basis_ball.tendsto_right_iff, Metric.mem_ball, dist_eq_norm]
   intro ε h
   let δ := δ f ε h
-  have nhds_zero := tendsto_const_div_atTop_nhds_0_nat (2 * ‖f‖ * δ ^ (-2 : ℤ))
+  have nhds_zero := tendsto_const_div_atTop_nhds_zero_nat (2 * ‖f‖ * δ ^ (-2 : ℤ))
   filter_upwards [nhds_zero.eventually (gt_mem_nhds (half_pos h)), eventually_gt_atTop 0] with n nh
     npos'
   have npos : 0 < (n : ℝ) := by positivity
@@ -249,10 +250,10 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       rw [bernstein.probability]
     _ = |∑ k : Fin (n + 1), (f k/ₙ - f x) * bernstein n k x| := by
       simp [bernsteinApproximation, Finset.mul_sum, sub_mul]
-    _ ≤ ∑ k : Fin (n + 1), |(f k/ₙ - f x) * bernstein n k x| := (Finset.abs_sum_le_sum_abs _ _)
+    _ ≤ ∑ k : Fin (n + 1), |(f k/ₙ - f x) * bernstein n k x| := Finset.abs_sum_le_sum_abs _ _
     _ = ∑ k : Fin (n + 1), |f k/ₙ - f x| * bernstein n k x := by
       simp_rw [abs_mul, abs_eq_self.mpr bernstein_nonneg]
-    _ = (∑ k in S, |f k/ₙ - f x| * bernstein n k x) + ∑ k in Sᶜ, |f k/ₙ - f x| * bernstein n k x :=
+    _ = (∑ k ∈ S, |f k/ₙ - f x| * bernstein n k x) + ∑ k ∈ Sᶜ, |f k/ₙ - f x| * bernstein n k x :=
       (S.sum_add_sum_compl _).symm
     -- We'll now deal with the terms in `S` and the terms in `Sᶜ` in separate calc blocks.
     _ < ε / 2 + ε / 2 :=
@@ -261,10 +262,10 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   · -- We now work on the terms in `S`: uniform continuity and `bernstein.probability`
     -- quickly give us a bound.
     calc
-      ∑ k in S, |f k/ₙ - f x| * bernstein n k x ≤ ∑ k in S, ε / 2 * bernstein n k x := by
+      ∑ k ∈ S, |f k/ₙ - f x| * bernstein n k x ≤ ∑ k ∈ S, ε / 2 * bernstein n k x := by
         gcongr with _ m
         exact le_of_lt (lt_of_mem_S m)
-      _ = ε / 2 * ∑ k in S, bernstein n k x := by rw [Finset.mul_sum]
+      _ = ε / 2 * ∑ k ∈ S, bernstein n k x := by rw [Finset.mul_sum]
       -- In this step we increase the sum over `S` back to a sum over all of `Fin (n+1)`,
       -- so that we can use `bernstein.probability`.
       _ ≤ ε / 2 * ∑ k : Fin (n + 1), bernstein n k x := by
@@ -275,11 +276,11 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
     -- and then insert a `δ^(-2) * (x - k/n)^2` factor
     -- (which is at least one because we are not in `S`).
     calc
-      ∑ k in Sᶜ, |f k/ₙ - f x| * bernstein n k x ≤ ∑ k in Sᶜ, 2 * ‖f‖ * bernstein n k x := by
+      ∑ k ∈ Sᶜ, |f k/ₙ - f x| * bernstein n k x ≤ ∑ k ∈ Sᶜ, 2 * ‖f‖ * bernstein n k x := by
         gcongr
         apply f.dist_le_two_norm
-      _ = 2 * ‖f‖ * ∑ k in Sᶜ, bernstein n k x := by rw [Finset.mul_sum]
-      _ ≤ 2 * ‖f‖ * ∑ k in Sᶜ, δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
+      _ = 2 * ‖f‖ * ∑ k ∈ Sᶜ, bernstein n k x := by rw [Finset.mul_sum]
+      _ ≤ 2 * ‖f‖ * ∑ k ∈ Sᶜ, δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         gcongr with _ m
         conv_lhs => rw [← one_mul (bernstein _ _ _)]
         gcongr

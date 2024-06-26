@@ -37,11 +37,10 @@ choosing `S` to itself be a submodule of morphisms.
 
 namespace CliffordAlgebra
 
--- porting note: explicit universes
+-- Porting note: explicit universes
 universe uR uM uA uB
 
 variable {R : Type uR} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable {Q : QuadraticForm R M}
 
 -- put this after `Q` since we want to talk about morphisms from `CliffordAlgebra Q` to `A` and
@@ -58,7 +57,7 @@ def even : Subalgebra R (CliffordAlgebra Q) :=
     add_zero (0 : ZMod 2) ▸ SetLike.mul_mem_graded hx hy
 #align clifford_algebra.even CliffordAlgebra.even
 
--- porting note: added, otherwise Lean can't find this when it needs it
+-- Porting note: added, otherwise Lean can't find this when it needs it
 instance : AddCommMonoid (even Q) := AddSubmonoidClass.toAddCommMonoid _
 @[simp]
 theorem even_toSubmodule : Subalgebra.toSubmodule (even Q) = evenOdd Q 0 :=
@@ -89,7 +88,6 @@ def EvenHom.compr₂ (g : EvenHom Q A) (f : A →ₐ[R] B) : EvenHom Q B where
 variable (Q)
 
 /-- The embedding of pairs of vectors into the even subalgebra, as a bilinear map. -/
-@[simps! bilin_apply_apply_coe]
 nonrec def even.ι : EvenHom Q (even Q) where
   bilin :=
     LinearMap.mk₂ R (fun m₁ m₂ => ⟨ι Q m₁ * ι Q m₂, ι_mul_ι_mem_evenOdd_zero Q _ _⟩)
@@ -119,13 +117,13 @@ theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂
     f = g := by
   rw [EvenHom.ext_iff] at h
   ext ⟨x, hx⟩
-  refine' even_induction _ _ _ _ _ hx
-  · intro r
+  induction x, hx using even_induction with
+  | algebraMap r =>
     exact (f.commutes r).trans (g.commutes r).symm
-  · intro x y hx hy ihx ihy
+  | add x y hx hy ihx ihy =>
     have := congr_arg₂ (· + ·) ihx ihy
     exact (f.map_add _ _).trans (this.trans <| (g.map_add _ _).symm)
-  · intro m₁ m₂ x hx ih
+  | ι_mul_ι_mul m₁ m₂ x hx ih =>
     have := congr_arg₂ (· * ·) (LinearMap.congr_fun (LinearMap.congr_fun h m₁) m₂) ih
     exact (f.map_mul _ _).trans (this.trans <| (g.map_mul _ _).symm)
 #align clifford_algebra.even.alg_hom_ext CliffordAlgebra.even.algHom_ext
@@ -187,15 +185,15 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     rw [Algebra.smul_def, f.contract]
   · ext m₁
     change f.bilin _ _ * g m = Q m • g m₁
-    apply Submodule.span_induction' _ _ _ _ hg
+    refine Submodule.span_induction' ?_ ?_ ?_ ?_ hg
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
-    · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- porting note: `•` now needs the type of `0`
+    · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- Porting note: `•` now needs the type of `0`
       rw [mul_zero, smul_zero]
-    · rintro x hx y hy ihx ihy
+    · rintro x _hx y _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
-    · rintro x hx c ihx
+    · rintro x hx _c ihx
       rw [LinearMap.smul_apply, LinearMap.smul_apply, mul_smul_comm, ihx, smul_comm]
 
 -- Porting note: In Lean 3, `aux_apply` isn't a simp lemma. I changed `{ attrs := [] }` to
@@ -205,17 +203,17 @@ direction of that equivalence, but not in the fully-bundled form. -/
 @[simps! (config := .lemmasOnly) apply]
 def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
   refine ?_ ∘ₗ (even Q).val.toLinearMap
-  -- porting note: added, can't be found otherwise
+  -- Porting note: added, can't be found otherwise
   letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
   exact LinearMap.fst R _ _ ∘ₗ foldr Q (fFold f) (fFold_fFold f) (1, 0)
 #align clifford_algebra.even.lift.aux CliffordAlgebra.even.lift.aux
 
-@[simp]
+@[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
 #align clifford_algebra.even.lift.aux_one CliffordAlgebra.even.lift.aux_one
 
-@[simp]
+@[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
   (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
     (by
@@ -223,25 +221,25 @@ theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m
       exact mul_one _)
 #align clifford_algebra.even.lift.aux_ι CliffordAlgebra.even.lift.aux_ι
 
-@[simp]
+@[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
   (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
 #align clifford_algebra.even.lift.aux_algebra_map CliffordAlgebra.even.lift.aux_algebraMap
 
-@[simp]
+@[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   cases' x with x x_property
   cases y
-  refine' (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans _
+  refine (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans ?_
   dsimp only
-  refine' even_induction Q _ _ _ _ x_property
-  · intro r
+  induction x, x_property using even_induction Q with
+  | algebraMap r =>
     rw [foldr_algebraMap, aux_algebraMap]
     exact Algebra.smul_def r _
-  · intro x y hx hy ihx ihy
+  | add x y hx hy ihx ihy =>
     rw [LinearMap.map_add, Prod.fst_add, ihx, ihy, ← add_mul, ← LinearMap.map_add]
     rfl
-  · rintro m₁ m₂ x (hx : x ∈ even Q) ih
+  | ι_mul_ι_mul m₁ m₂ x hx ih =>
     rw [aux_apply, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold, ih, ← mul_assoc,
       Subtype.coe_mk, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold]
     rfl

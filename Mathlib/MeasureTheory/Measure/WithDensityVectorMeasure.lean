@@ -35,7 +35,6 @@ namespace MeasureTheory
 open TopologicalSpace
 
 variable {μ ν : Measure α}
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is
@@ -135,7 +134,7 @@ theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity {f : α → ℝ≥0} {
   ext s hs
   rw [withDensityᵥ_apply hfg hs,
     withDensityᵥ_apply ((integrable_withDensity_iff_integrable_smul₀ hf).mpr hfg) hs,
-    set_integral_withDensity_eq_set_integral_smul₀ hf.restrict _ hs]
+    setIntegral_withDensity_eq_setIntegral_smul₀ hf.restrict _ hs]
   rfl
 
 theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity' {f : α → ℝ≥0∞} {g : α → E}
@@ -149,7 +148,7 @@ theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity' {f : α → ℝ≥0�
 theorem Measure.withDensityᵥ_absolutelyContinuous (μ : Measure α) (f : α → ℝ) :
     μ.withDensityᵥ f ≪ᵥ μ.toENNRealVectorMeasure := by
   by_cases hf : Integrable f μ
-  · refine' VectorMeasure.AbsolutelyContinuous.mk fun i hi₁ hi₂ => _
+  · refine VectorMeasure.AbsolutelyContinuous.mk fun i hi₁ hi₂ => ?_
     rw [toENNRealVectorMeasure_apply_measurable hi₁] at hi₂
     rw [withDensityᵥ_apply hf hi₁, Measure.restrict_zero_set hi₂, integral_zero_measure]
   · rw [withDensityᵥ, dif_neg hf]
@@ -159,7 +158,7 @@ theorem Measure.withDensityᵥ_absolutelyContinuous (μ : Measure α) (f : α �
 /-- Having the same density implies the underlying functions are equal almost everywhere. -/
 theorem Integrable.ae_eq_of_withDensityᵥ_eq {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : μ.withDensityᵥ f = μ.withDensityᵥ g) : f =ᵐ[μ] g := by
-  refine' hf.ae_eq_of_forall_set_integral_eq f g hg fun i hi _ => _
+  refine hf.ae_eq_of_forall_setIntegral_eq f g hg fun i hi _ => ?_
   rw [← withDensityᵥ_apply hf hi, hfg, withDensityᵥ_apply hg hi]
 #align measure_theory.integrable.ae_eq_of_with_densityᵥ_eq MeasureTheory.Integrable.ae_eq_of_withDensityᵥ_eq
 
@@ -188,7 +187,7 @@ theorem withDensityᵥ_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) 
   ext i hi
   rw [withDensityᵥ_apply hfi hi, toSignedMeasure_apply_measurable hi, withDensity_apply _ hi,
     integral_toReal hfm.restrict]
-  refine' ae_lt_top' hfm.restrict (ne_top_of_le_ne_top hf _)
+  refine ae_lt_top' hfm.restrict (ne_top_of_le_ne_top hf ?_)
   conv_rhs => rw [← set_lintegral_univ]
   exact lintegral_mono_set (Set.subset_univ _)
 #align measure_theory.with_densityᵥ_to_real MeasureTheory.withDensityᵥ_toReal
@@ -218,7 +217,7 @@ theorem Integrable.withDensityᵥ_trim_eq_integral {m m0 : MeasurableSpace α} {
 theorem Integrable.withDensityᵥ_trim_absolutelyContinuous {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) (hfi : Integrable f μ) :
     (μ.withDensityᵥ f).trim hm ≪ᵥ (μ.trim hm).toENNRealVectorMeasure := by
-  refine' VectorMeasure.AbsolutelyContinuous.mk fun j hj₁ hj₂ => _
+  refine VectorMeasure.AbsolutelyContinuous.mk fun j hj₁ hj₂ => ?_
   rw [Measure.toENNRealVectorMeasure_apply_measurable hj₁, trim_measurableSet_eq hm hj₁] at hj₂
   rw [VectorMeasure.trim_measurableSet_eq hm hj₁, withDensityᵥ_apply hfi (hm _ hj₁)]
   simp only [Measure.restrict_eq_zero.mpr hj₂, integral_zero_measure]

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Arrow
 
 #align_import algebraic_topology.cech_nerve from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 
@@ -45,7 +45,6 @@ variable {C : Type u} [Category.{v} C]
 namespace CategoryTheory.Arrow
 
 variable (f : Arrow C)
-
 variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
 /-- The Čech nerve associated to an arrow. -/
@@ -127,7 +126,7 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
   left :=
     { app := fun x =>
         Limits.WidePullback.lift (X.hom.app _ ≫ G.right)
-          (fun i => X.left.map (SimplexCategory.const x.unop i).op ≫ G.left) fun i => by
+          (fun i => X.left.map (SimplexCategory.const _ x.unop i).op ≫ G.left) fun i => by
           dsimp
           erw [Category.assoc, Arrow.w, Augmented.toArrow_obj_hom, NatTrans.naturality_assoc,
             Functor.const_obj_map, Category.id_comp]
@@ -162,12 +161,12 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
       ext ⟨a, ha⟩
       change a < 1 at ha
       change 0 = a
-      linarith
+      omega
     · rfl
   right_inv := by
     intro A
     ext x : 2
-    · refine' WidePullback.hom_ext _ _ _ (fun j => _) _
+    · refine WidePullback.hom_ext _ _ _ (fun j => ?_) ?_
       · dsimp
         simp
         rfl
@@ -197,7 +196,6 @@ end CategoryTheory
 namespace CategoryTheory.Arrow
 
 variable (f : Arrow C)
-
 variable [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
 
 /-- The Čech conerve associated to an arrow. -/
@@ -205,8 +203,8 @@ variable [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fu
 def cechConerve : CosimplicialObject C where
   obj n := widePushout f.left (fun _ : Fin (n.len + 1) => f.right) fun _ => f.hom
   map {x y} g := by
-    refine' WidePushout.desc (WidePushout.head _)
-      (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) ?_ (g.toOrderHom i))) (fun j => _)
+    refine WidePushout.desc (WidePushout.head _)
+      (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) (_) (g.toOrderHom i))) (fun j => ?_)
     erw [← WidePushout.arrow_ι]
 #align category_theory.arrow.cech_conerve CategoryTheory.Arrow.cechConerve
 
@@ -284,11 +282,11 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
   right :=
     { app := fun x =>
         Limits.WidePushout.desc (G.left ≫ X.hom.app _)
-          (fun i => G.right ≫ X.right.map (SimplexCategory.const x i))
+          (fun i => G.right ≫ X.right.map (SimplexCategory.const _ x i))
           (by
             rintro j
             rw [← Arrow.w_assoc G]
-            have t := X.hom.naturality (x.const j)
+            have t := X.hom.naturality (SimplexCategory.const (SimplexCategory.mk 0) x j)
             dsimp at t ⊢
             simp only [Category.id_comp] at t
             rw [← t])
@@ -316,7 +314,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     intro A
     ext x : 2
     · rfl
-    · refine' WidePushout.hom_ext _ _ _ (fun j => _) _
+    · refine WidePushout.hom_ext _ _ _ (fun j => ?_) ?_
       · dsimp
         simp only [Category.assoc, ← NatTrans.naturality A.right, Arrow.augmentedCechConerve_right,
           SimplexCategory.len_mk, Arrow.cechConerve_map, colimit.ι_desc,
@@ -337,7 +335,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       ext ⟨a, ha⟩
       change a < 1 at ha
       change 0 = a
-      linarith
+      omega
 #align category_theory.cosimplicial_object.cech_conerve_equiv CategoryTheory.CosimplicialObject.cechConerveEquiv
 
 /-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/
@@ -350,7 +348,7 @@ end CosimplicialObject
 /-- Given an object `X : C`, the natural simplicial object sending `[n]` to `Xⁿ⁺¹`. -/
 def cechNerveTerminalFrom {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C) :
     SimplicialObject C where
-  obj n := ∏ fun _ : Fin (n.unop.len + 1) => X
+  obj n := ∏ᶜ fun _ : Fin (n.unop.len + 1) => X
   map f := Limits.Pi.lift fun i => Limits.Pi.π _ (f.unop.toOrderHom i)
 #align category_theory.cech_nerve_terminal_from CategoryTheory.cechNerveTerminalFrom
 
@@ -373,7 +371,7 @@ variable [HasFiniteProducts C]
 /-- The product `Xᶥ` is the vertex of a limit cone on `wideCospan ι X`. -/
 def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
   cone :=
-    { pt := ∏ fun _ : ι => X
+    { pt := ∏ᶜ fun _ : ι => X
       π :=
         { app := fun X => Option.casesOn X (terminal.from _) fun i => limit.π _ ⟨i⟩
           naturality := fun i j f => by
@@ -403,24 +401,24 @@ instance hasWidePullback [Finite ι] (X : C) :
   exact ⟨⟨wideCospan.limitCone ι X⟩⟩
 #align category_theory.cech_nerve_terminal_from.has_wide_pullback CategoryTheory.CechNerveTerminalFrom.hasWidePullback
 
--- porting note: added to make the following definitions work
+-- Porting note: added to make the following definitions work
 instance hasWidePullback' [Finite ι] (X : C) :
     HasWidePullback (⊤_ C)
       (fun _ : ι => X)
       (fun _ => terminal.from X) :=
   hasWidePullback _ _
 
--- porting note: added to make the following definitions work
+-- Porting note: added to make the following definitions work
 instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) := hasWidePullback _ _
 
--- porting note: added to ease the definition of `iso`
+-- Porting note: added to ease the definition of `iso`
 /-- the isomorphism to the product induced by the limit cone `wideCospan ι X` -/
 def wideCospan.limitIsoPi [Finite ι] (X : C) :
-    limit (wideCospan ι X) ≅ ∏ fun _ : ι => X :=
+    limit (wideCospan ι X) ≅ ∏ᶜ fun _ : ι => X :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
     (wideCospan.limitCone ι X).2)
 
--- porting note: added to ease the definition of `iso`
+-- Porting note: added to ease the definition of `iso`
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=

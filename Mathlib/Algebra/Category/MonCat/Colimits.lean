@@ -119,7 +119,7 @@ set_option linter.uppercaseLean3 false in
 
 attribute [instance] colimitSetoid
 
-/-- The underlying type of the colimit of a diagram in `Mon`.
+/-- The underlying type of the colimit of a diagram in `MonCat`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
@@ -218,8 +218,8 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | symm x y _ h => exact h.symm
     | trans x y z _ _ h₁ h₂ => exact h₁.trans h₂
     | map j j' f x => exact s.w_apply f x
-    | mul j x y => exact map_mul _ _ _
-    | one j => exact map_one _
+    | mul j x y => exact map_mul (s.ι.app j) x y
+    | one j => exact map_one (s.ι.app j)
     | mul_1 x x' y _ h => exact congr_arg (· * _) h
     | mul_2 x y y' _ h => exact congr_arg (_ * ·) h
     | mul_assoc x y z => exact mul_assoc _ _ _
@@ -254,7 +254,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     · rw [quot_one, map_one]
       rfl
     · rw [quot_mul, map_mul, hx, hy]
-      dsimp [descMorphism, FunLike.coe, descFun]
+      dsimp [descMorphism, DFunLike.coe, descFun]
       simp only [← quot_mul, descFunLift]
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.colimit_is_colimit MonCat.Colimits.colimitIsColimit

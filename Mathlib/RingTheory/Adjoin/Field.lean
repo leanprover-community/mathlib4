@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.AdjoinRoot
 
@@ -24,7 +24,7 @@ the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s`
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 section Embeddings
 
@@ -108,3 +108,14 @@ theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [IsScalarTower R K L]
     Splits (algebraMap K L) (minpoly K x) := by
   rw [IsScalarTower.algebraMap_eq R K L] at h
   exact int.minpoly_splits_tower_top' h
+
+/-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F`,
+then `[E[L] : E] ≤ [L : F]`. -/
+lemma Subalgebra.adjoin_rank_le {F : Type*} (E : Type*) {K : Type*}
+    [CommRing F] [StrongRankCondition F] [CommRing E] [StrongRankCondition E] [Ring K]
+    [SMul F E] [Algebra E K] [Algebra F K] [IsScalarTower F E K]
+    (L : Subalgebra F K) [Module.Free F L] :
+    Module.rank E (Algebra.adjoin E (L : Set K)) ≤ Module.rank F L := by
+  rw [← rank_toSubmodule, Module.Free.rank_eq_card_chooseBasisIndex F L,
+    L.adjoin_eq_span_basis E (Module.Free.chooseBasis F L)]
+  exact rank_span_le _ |>.trans Cardinal.mk_range_le

@@ -3,6 +3,7 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.Ring
@@ -29,13 +30,11 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
 
 open derangements Equiv Fintype
 
-open BigOperators
-
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
--- porting note: used to use the tactic delta_instance
+-- Porting note: used to use the tactic delta_instance
 instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
@@ -97,14 +96,12 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
   rcases n with _ | _ | n
-  -- porting note: the two `convert_to` weren't necessary before.
-  · convert_to card ↑{ f : Perm (Fin 0) | ∀ (x : Fin 0), f x ≠ x } = _ using 2; rfl
-  · convert_to card ↑{ f : Perm (Fin 1) | ∀ (x : Fin 1), f x ≠ x } = _ using 2; rfl
   -- knock out cases 0 and 1
+  · rfl
+  · rfl
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
-  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add,
-    hyp _ (Nat.lt_add_of_pos_right zero_lt_two), hyp _ (lt_add_one _)]
+  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> omega
 #align card_derangements_fin_eq_num_derangements card_derangements_fin_eq_numDerangements
 
 theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
@@ -115,14 +112,14 @@ theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [Decidabl
 
 theorem numDerangements_sum (n : ℕ) :
     (numDerangements n : ℤ) =
-      ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
+      ∑ k ∈ Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
   induction' n with n hn; · rfl
   rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
-    Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ, neg_one_mul, sub_eq_add_neg,
+    Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ', neg_one_mul, sub_eq_add_neg,
     add_left_inj, Finset.sum_congr rfl]
   -- show that (n + 1) * (-1)^x * asc_fac x (n - x) = (-1)^x * asc_fac x (n.succ - x)
   intro x hx
   have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
   rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_right_comm, add_tsub_cancel_of_le h_le,
-    Int.ofNat_mul, Int.ofNat_succ, mul_left_comm]
+    Int.ofNat_mul, Int.ofNat_add, mul_left_comm, Nat.cast_one]
 #align num_derangements_sum numDerangements_sum

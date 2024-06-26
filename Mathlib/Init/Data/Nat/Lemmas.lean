@@ -3,11 +3,14 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Std.Data.Nat.Lemmas
+import Batteries.Data.Nat.Lemmas
+import Batteries.WF
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Order.LinearOrder
+import Mathlib.Util.AssertExists
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
+
+assert_not_exists Preorder
 
 universe u
 
@@ -105,19 +108,6 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 #align nat.lt_of_le_and_ne Nat.lt_of_le_of_ne
 
 #align nat.lt_iff_le_not_le Nat.lt_iff_le_not_le
-
-instance linearOrder : LinearOrder ℕ where
-  le := Nat.le
-  le_refl := @Nat.le_refl
-  le_trans := @Nat.le_trans
-  le_antisymm := @Nat.le_antisymm
-  le_total := @Nat.le_total
-  lt := Nat.lt
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
-  decidableLT := inferInstance
-  decidableLE := inferInstance
-  decidableEq := inferInstance
-#align nat.linear_order Nat.linearOrder
 
 #align nat.eq_zero_of_le_zero Nat.eq_zero_of_le_zero
 
@@ -269,8 +259,8 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | n + 1, 0, h => by contradiction
   | n + 1, m + 1, h => by
     have : succ (succ (n + n)) = succ (succ (m + m)) := by
-      unfold bit0 at h; simp [add_one, add_succ, succ_add] at h
-      have aux : n + n = m + m := h; rw [aux]
+      unfold bit0 at h; simp only [add_one, add_succ, succ_add, succ_inj'] at h
+      rw [h]
     have : n + n = m + m := by repeat injection this with this
     have : n = m := Nat.bit0_inj this
     rw [this]
@@ -495,7 +485,7 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
 
 #align nat.strong_rec_on Nat.strongRecOn
 
--- porting note: added `elab_as_elim`
+-- Porting note: added `elab_as_elim`
 @[elab_as_elim]
 protected theorem strong_induction_on {p : Nat → Prop} (n : Nat)
     (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
@@ -694,7 +684,7 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
       if pm : p m then ⟨m, pm, al⟩
       else
         have : ∀ n ≤ m, ¬p n := fun n h =>
-          Or.elim (Decidable.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
+          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
     0 fun n h => absurd h (Nat.not_lt_zero _)
 #align nat.find_x Nat.findX
@@ -723,82 +713,9 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
 #align nat.find_min Nat.find_min
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-  le_of_not_lt fun l => Nat.find_min H l h
+  Nat.le_of_not_lt fun l => Nat.find_min H l h
 #align nat.find_min' Nat.find_min'
 
 end Find
-
-lemma to_digits_core_lens_eq_aux (b f : Nat) :
-    ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
-    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
-  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
-  | zero => assumption
-  | succ f ih =>
-    if hx : n / b = 0 then
-      simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
-    else
-      simp only [hx, if_false]
-      specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
-      simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
-      exact ih trivial
-
-lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
-    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
-  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
-  | succ f ih =>
-    if hnb : (n / b) = 0 then
-      simp only [hnb, if_true, List.length]
-    else
-      generalize hx: Nat.digitChar (n % b) = x
-      simp only [hx, hnb, if_false] at ih
-      simp only [hnb, if_false]
-      specialize ih (n / b) c (x :: tl)
-      rw [← ih]
-      have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
-      apply to_digits_core_lens_eq_aux
-      exact lens_eq
-
-lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
-  simp only [Nat.pow_succ]
-  exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
-
-/-- The String representation produced by toDigitsCore has the proper length relative to
-the number of digits in `n < e` for some base `b`. Since this works with any base greater
-than one, it can be used for binary, decimal, and hex. -/
-lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
-    (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
-  induction f generalizing n e hlt h_e_pos with
-    simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
-  | succ f ih =>
-    cases e with
-    | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
-    | succ e =>
-      if h_pred_pos : 0 < e then
-        have _ : 0 < b := Nat.lt_trans (by decide) h
-        specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
-        if hdiv_ten : n / b = 0 then
-          simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
-        else
-          simp only [hdiv_ten,
-            to_digits_core_lens_eq b f (n / b) (Nat.digitChar <| n % b), if_false]
-          exact Nat.succ_le_succ ih
-      else
-        obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
-        have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
-        have _ : n < b := ‹b ^ 1 = b› ▸ hlt
-        simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
-
-/-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
-number of digits in the decimal number (represented by `e`). For example, the decimal string
-representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e := by
-  cases n with
-    (intro e0 he; simp only [Nat.repr, Nat.toDigits, String.length, List.asString])
-  | zero => assumption
-  | succ n =>
-    if hterm : n.succ / 10 = 0 then
-      simp only [hterm, Nat.toDigitsCore]; assumption
-    else
-      exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 end Nat

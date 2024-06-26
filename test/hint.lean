@@ -32,7 +32,7 @@ example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-• decide
+• omega
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint

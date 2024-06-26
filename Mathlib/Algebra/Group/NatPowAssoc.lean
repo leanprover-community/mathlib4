@@ -3,12 +3,9 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.Group.Prod
 import Mathlib.GroupTheory.GroupAction.Prod
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Ring.Int
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Typeclasses for power-associative structures
@@ -36,6 +33,8 @@ We also produce the following instances:
 * to_additive?
 
 -/
+
+assert_not_exists DenselyOrdered
 
 variable {M : Type*}
 
@@ -73,13 +72,25 @@ theorem npow_mul_comm (m n : ℕ) (x : M) :
 theorem npow_mul (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ m) ^ n := by
   induction n with
   | zero => rw [npow_zero, Nat.mul_zero, npow_zero]
-  | succ n ih => rw [← Nat.add_one, mul_add, npow_add, ih, mul_one, npow_add, npow_one]
+  | succ n ih => rw [mul_add, npow_add, ih, mul_one, npow_add, npow_one]
 
 theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by
   rw [mul_comm]
   exact npow_mul x n m
 
 end MulOneClass
+
+section Neg
+
+theorem neg_npow_assoc {R : Type*} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (a b : R) (k : ℕ) :
+    (-1)^k * a * b = (-1)^k * (a * b) := by
+  induction k with
+  | zero => simp only [npow_zero, one_mul]
+  | succ k ih =>
+    rw [npow_add, npow_one, ← neg_mul_comm, mul_one]
+    simp only [neg_mul, ih]
+
+end Neg
 
 instance Pi.instNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, MulOneClass <| α i] [∀ i, Pow (α i) ℕ]
     [∀ i, NatPowAssoc <| α i] : NatPowAssoc (∀ i, α i) where
@@ -97,7 +108,7 @@ section Monoid
 
 variable [Monoid M]
 
-instance Monoid.PowAssoc [Monoid M] : NatPowAssoc M where
+instance Monoid.PowAssoc : NatPowAssoc M where
   npow_add _ _ _ := pow_add _ _ _
   npow_zero _ := pow_zero _
   npow_one _ := pow_one _
@@ -107,7 +118,7 @@ theorem Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc 
     (↑(n ^ m) : R) = (↑n : R) ^ m := by
   induction' m with m ih
   · simp only [pow_zero, Nat.cast_one, npow_zero]
-  · rw [← Nat.add_one, npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
+  · rw [npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
 
 @[simp, norm_cast]
 theorem Int.cast_npow (R : Type*) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]

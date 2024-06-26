@@ -3,10 +3,11 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
 -/
+import Mathlib.Algebra.Ring.Int
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 
-#align_import set_theory.game.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
+#align_import set_theory.game.basic from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
 
 /-!
 # Combinatorial games.
@@ -48,17 +49,18 @@ abbrev Game :=
 
 namespace Game
 
--- Porting note: added this definition
+-- Porting note (#11445): added this definition
 /-- Negation of games. -/
-def neg : Game → Game := Quot.lift (fun x => ⟦-x⟧) fun _ _ h => Quot.sound ((neg_equiv_neg_iff).2 h)
+instance : Neg Game where
+  neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
+
+instance : Zero Game where zero := ⟦0⟧
+instance : Add Game where
+  add := Quotient.map₂ HAdd.hAdd <| fun _ _ hx _ _ hy => PGame.add_congr hx hy
 
 instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   zero := ⟦0⟧
   one := ⟦1⟧
-  neg := neg
-  add :=
-    Quotient.lift₂ (fun x y : PGame => ⟦x + y⟧) fun x₁ y₁ x₂ y₂ hx hy =>
-      Quot.sound (PGame.add_congr hx hy)
   add_zero := by
     rintro ⟨x⟩
     exact Quot.sound (add_zero_equiv x)
@@ -68,12 +70,12 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   add_assoc := by
     rintro ⟨x⟩ ⟨y⟩ ⟨z⟩
     exact Quot.sound add_assoc_equiv
-  add_left_neg := by
-    rintro ⟨x⟩
-    exact Quot.sound (add_left_neg_equiv x)
+  add_left_neg := Quotient.ind <| fun x => Quot.sound (add_left_neg_equiv x)
   add_comm := by
     rintro ⟨x⟩ ⟨y⟩
     exact Quot.sound add_comm_equiv
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 instance : Inhabited Game :=
   ⟨0⟩
@@ -118,7 +120,7 @@ theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x := by
   exact PGame.not_lf
 #align game.not_lf SetTheory.Game.not_lf
 
--- porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
+-- Porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
 instance : IsTrichotomous Game LF :=
   ⟨by
     rintro ⟨x⟩ ⟨y⟩
@@ -129,7 +131,7 @@ instance : IsTrichotomous Game LF :=
 /-! It can be useful to use these lemmas to turn `PGame` inequalities into `Game` inequalities, as
 the `AddCommGroup` structure on `Game` often simplifies many proofs. -/
 
--- porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
+-- Porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
 -- In Lean4, quotients don't have the setoid as an instance argument,
 -- but as an explicit argument, see https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
 theorem PGame.le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ ⟦y⟧ :=
@@ -200,6 +202,30 @@ instance orderedAddCommGroup : OrderedAddCommGroup Game :=
     add_le_add_left := @add_le_add_left _ _ _ Game.covariantClass_add_le }
 #align game.ordered_add_comm_group SetTheory.Game.orderedAddCommGroup
 
+/-- A small family of games is bounded above. -/
+lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
+    BddAbove (Set.range f) := by
+  obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
+  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
+  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+
+/-- A small set of games is bounded above. -/
+lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
+  simpa using bddAbove_range_of_small (Subtype.val : s → Game.{u})
+#align game.bdd_above_of_small SetTheory.Game.bddAbove_of_small
+
+/-- A small family of games is bounded below. -/
+lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
+    BddBelow (Set.range f) := by
+  obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
+  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
+  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+
+/-- A small set of games is bounded below. -/
+lemma bddBelow_of_small (s : Set Game.{u}) [Small.{u} s] : BddBelow s := by
+  simpa using bddBelow_range_of_small (Subtype.val : s → Game.{u})
+#align game.bdd_below_of_small SetTheory.Game.bddBelow_of_small
+
 end Game
 
 namespace PGame
@@ -238,7 +264,7 @@ instance : Mul PGame.{u} :=
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
     have y := mk yl yr yL yR
-    refine' ⟨Sum (xl × yl) (xr × yr), Sum (xl × yr) (xr × yl), _, _⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
+    refine ⟨Sum (xl × yl) (xr × yr), Sum (xl × yr) (xr × yl), ?_, ?_⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
     · exact IHxl i y + IHyl j - IHxl i (yL j)
     · exact IHxr i y + IHyr j - IHxr i (yR j)
     · exact IHxl i y + IHyr j - IHxl i (yR j)
@@ -388,16 +414,15 @@ theorem rightMoves_mul_cases {x y : PGame} (k) {P : (x * y).RightMoves → Prop}
 def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
-      (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _)), _, _⟩
+    refine ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
+      (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _)), ?_, ?_⟩
       <;>
     rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
     { dsimp
       exact ((addCommRelabelling _ _).trans <|
         (mulCommRelabelling _ _).addCongr (mulCommRelabelling _ _)).subCongr
         (mulCommRelabelling _ _) }
-  termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y)
 #align pgame.mul_comm_relabelling SetTheory.PGame.mulCommRelabelling
 
 theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
@@ -463,21 +488,20 @@ theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = ⟦0⟧ :=
 def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
   match x, y with
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-      refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;>
+      refine ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, ?_, ?_⟩ <;>
       rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
       · dsimp
         apply ((negAddRelabelling _ _).trans _).symm
         apply ((negAddRelabelling _ _).trans (Relabelling.addCongr _ _)).subCongr
         -- Porting note: we used to just do `<;> exact (negMulRelabelling _ _).symm` from here.
-        exact (negMulRelabelling _ _).symm
-        exact (negMulRelabelling _ _).symm
+        · exact (negMulRelabelling _ _).symm
+        · exact (negMulRelabelling _ _).symm
         -- Porting note: not sure what has gone wrong here.
         -- The goal is hideous here, and the `exact` doesn't work,
         -- but if we just `change` it to look like the mathlib3 goal then we're fine!?
         change -(mk xl xr xL xR * _) ≡r _
         exact (negMulRelabelling _ _).symm
-  termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y)
 #align pgame.neg_mul_relabelling SetTheory.PGame.negMulRelabelling
 
 @[simp]
@@ -502,7 +526,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
-    refine' quot_eq_of_mk'_quot_eq _ _ _ _
+    refine quot_eq_of_mk'_quot_eq ?_ ?_ ?_ ?_
     · fconstructor
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
           -- Porting note: we've increased `maxDepth` here from `5` to `6`.
@@ -590,8 +614,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
         rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (zL k)]
         abel
-  termination_by _ => (x, y, z)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y, z)
 #align pgame.quot_left_distrib SetTheory.PGame.quot_left_distrib
 
 /-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
@@ -629,13 +652,10 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     unfold One.one
     unfold instOnePGame
     change mk _ _ _ _ * mk _ _ _ _ ≡r _
-    -- Porting note: changed `refine'` to `refine`,
-    -- otherwise there are typeclass inference failures.
     refine ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
       (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), ?_, ?_⟩ <;>
     (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
-    { (try intro i)
-      dsimp
+    { dsimp
       apply (Relabelling.subCongr (Relabelling.refl _) (mulZeroRelabelling _)).trans
       rw [sub_zero]
       exact (addZeroRelabelling _).trans <|
@@ -673,7 +693,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
-    refine' quot_eq_of_mk'_quot_eq _ _ _ _
+    refine quot_eq_of_mk'_quot_eq ?_ ?_ ?_ ?_
     · fconstructor
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
           -- Porting note: as above, increased the `maxDepth` here by 1.
@@ -815,8 +835,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
         rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (zL k)]
         rw [quot_mul_assoc (xR i) (yL j) (zL k)]
         abel
-  termination_by _ => (x, y, z)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y, z)
 #align pgame.quot_mul_assoc SetTheory.PGame.quot_mul_assoc
 
 /-- `x * y * z` is equivalent to `x * (y * z).`-/
@@ -845,7 +864,7 @@ instance uniqueInvTy (l r : Type u) [IsEmpty l] [IsEmpty r] : Unique (InvTy l r 
   { InvTy.instInhabited l r with
     uniq := by
       rintro (a | a | a)
-      rfl
+      · rfl
       all_goals exact isEmptyElim a }
 #align pgame.unique_inv_ty SetTheory.PGame.uniqueInvTy
 
@@ -893,7 +912,7 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
 /-- `inv' 0` has exactly the same moves as `1`. -/
 def inv'Zero : inv' 0 ≡r 1 := by
   change mk _ _ _ _ ≡r 1
-  refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩
+  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
   · apply Equiv.equivPUnit (InvTy _ _ _)
   · apply Equiv.equivPEmpty (InvTy _ _ _)
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
@@ -912,7 +931,7 @@ def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
   have : IsEmpty { _i : PUnit.{u + 1} // (0 : PGame.{u}) < 0 } := by
     rw [lt_self_iff_false]
     infer_instance
-  refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩ <;> dsimp
+  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩ <;> dsimp
   · apply Equiv.equivPUnit
   · apply Equiv.equivOfIsEmpty
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.

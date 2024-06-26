@@ -35,11 +35,8 @@ namespace CategoryTheory
 universe v v₂ u u₂
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {X Y : C} (f g : X ⟶ Y)
 
 /-- A split coequalizer diagram consists of morphisms
@@ -93,8 +90,7 @@ variable {f g}
 /-- Split coequalizers are absolute: they are preserved by any functor. -/
 @[simps]
 def IsSplitCoequalizer.map {Z : C} {π : Y ⟶ Z} (q : IsSplitCoequalizer f g π) (F : C ⥤ D) :
-    IsSplitCoequalizer (F.map f) (F.map g) (F.map π)
-    where
+    IsSplitCoequalizer (F.map f) (F.map g) (F.map π) where
   rightSection := F.map q.rightSection
   leftSection := F.map q.leftSection
   condition := by rw [← F.map_comp, q.condition, F.map_comp]

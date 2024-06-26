@@ -27,7 +27,7 @@ def CompleteLat :=
 
 namespace CompleteLat
 
-instance : CoeSort CompleteLat (Type*) :=
+instance : CoeSort CompleteLat Type* :=
   Bundled.coeSort
 
 instance (X : CompleteLat) : CompleteLattice X :=
@@ -50,7 +50,7 @@ instance : BundledHom @CompleteLatticeHom where
   toFun _ _ f := f.toFun
   id := @CompleteLatticeHom.id
   comp := @CompleteLatticeHom.comp
-  hom_ext _ _ _ _ h := FunLike.coe_injective h
+  hom_ext _ _ _ _ h := DFunLike.coe_injective h
 
 deriving instance LargeCategory for CompleteLat
 
@@ -67,7 +67,7 @@ instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : CompleteLatticeHom _ _) -- Porting note: TODO, wrong?
+  hom := (e : CompleteLatticeHom _ _) -- Porting note (#11215): TODO, wrong?
   inv := (e.symm : CompleteLatticeHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
 #align_import algebra.category.Module.monoidal.closed from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
@@ -22,7 +23,7 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
--- porting note: removed @[simps] as the simpNF linter complains
+-- Porting note: removed @[simps] as the simpNF linter complains
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
 -/
@@ -45,16 +46,15 @@ set_option linter.uppercaseLean3 false in
 
 instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=
-    { isAdj :=
-        { right := (linearCoyoneda R (ModuleCat.{u} R)).obj (op M)
-          adj := Adjunction.mkOfHomEquiv
+    { rightAdj := (linearCoyoneda R (ModuleCat.{u} R)).obj (op M)
+      adj := Adjunction.mkOfHomEquiv
             { homEquiv := fun N P => monoidalClosedHomEquiv M N P
-              -- porting note: this proof was automatic in mathlib3
+              -- Porting note: this proof was automatic in mathlib3
               homEquiv_naturality_left_symm := by
                 intros
                 apply TensorProduct.ext'
                 intro m n
-                rfl } } }
+                rfl } }
 
 theorem ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of R (M ⟶ N)) :
     (ihom M).map f g = g ≫ f :=
@@ -64,10 +64,10 @@ set_option linter.uppercaseLean3 false in
 
 open MonoidalCategory
 
--- porting note: `CoeFun` was replaced by `FunLike`
--- I can't seem to express the function coercion here without writing `@FunLike.coe`.
+-- Porting note: `CoeFun` was replaced by `DFunLike`
+-- I can't seem to express the function coercion here without writing `@DFunLike.coe`.
 theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
-    @FunLike.coe _ _ _ LinearMap.instFunLike
+    @DFunLike.coe _ _ _ LinearMap.instFunLike
       ((MonoidalClosed.curry f : N →ₗ[R] M →ₗ[R] P) y) x = f (x ⊗ₜ[R] y) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -77,7 +77,7 @@ set_option linter.uppercaseLean3 false in
 theorem monoidalClosed_uncurry
     {M N P : ModuleCat.{u} R} (f : N ⟶ M ⟶[ModuleCat.{u} R] P) (x : M) (y : N) :
     MonoidalClosed.uncurry f (x ⊗ₜ[R] y) =
-      @FunLike.coe _ _ _ LinearMap.instFunLike (f y) x :=
+      @DFunLike.coe _ _ _ LinearMap.instFunLike (f y) x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_uncurry ModuleCat.monoidalClosed_uncurry

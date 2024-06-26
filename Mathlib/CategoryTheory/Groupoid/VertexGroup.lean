@@ -3,13 +3,10 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PathCategory
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
 
 #align_import category_theory.groupoid.vertex_group from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
@@ -51,6 +48,10 @@ instance vertexGroup (c : C) : Group (c ⟶ c) where
   mul_left_inv := inv_comp
 #align category_theory.groupoid.vertex_group CategoryTheory.Groupoid.vertexGroup
 
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+attribute [nolint simpNF] CategoryTheory.Groupoid.vertexGroup_one
+
 /-- The inverse in the group is equal to the inverse given by `CategoryTheory.inv`. -/
 theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory.inv γ :=
   Groupoid.inv_eq_inv γ
@@ -60,8 +61,7 @@ theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory
 its endpoints.
 -/
 @[simps]
-def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d)
-    where
+def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) where
   toFun γ := inv f ≫ γ ≫ f
   invFun δ := f ≫ δ ≫ inv f
   left_inv γ := by

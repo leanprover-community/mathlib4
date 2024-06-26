@@ -36,8 +36,6 @@ especially when defining iterated derivatives.
 
 open Function Fin Set
 
-open BigOperators
-
 universe u v w w₁ w₁' w₂ w₃ w₄
 
 variable {R : Type u} {ι : Type v} {n : ℕ} {M : Fin n.succ → Type w} {M₁ : ι → Type w₁}
@@ -76,10 +74,12 @@ theorem toMultilinearMap_injective :
   | ⟨f, hf⟩, ⟨g, hg⟩, h => by subst h; rfl
 #align continuous_multilinear_map.to_multilinear_map_injective ContinuousMultilinearMap.toMultilinearMap_injective
 
-instance continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
-    where
+instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
   coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
+
+instance continuousMapClass :
+    ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   map_continuous := ContinuousMultilinearMap.cont
 #align continuous_multilinear_map.continuous_map_class ContinuousMultilinearMap.continuousMapClass
 
@@ -107,7 +107,7 @@ theorem coe_coe : (f.toMultilinearMap : (∀ i, M₁ i) → M₂) = f :=
 
 @[ext]
 theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align continuous_multilinear_map.ext ContinuousMultilinearMap.ext
 
 theorem ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by
@@ -219,7 +219,7 @@ def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ 
 
 @[simp]
 theorem sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂) (m : ∀ i, M₁ i)
-    {s : Finset α} : (∑ a in s, f a) m = ∑ a in s, f a m :=
+    {s : Finset α} : (∑ a ∈ s, f a) m = ∑ a ∈ s, f a m :=
   map_sum (applyAddHom m) f s
 #align continuous_multilinear_map.sum_apply ContinuousMultilinearMap.sum_apply
 
@@ -379,6 +379,23 @@ def domDomCongrEquiv {ι' : Type*} (e : ι ≃ ι') :
 #align continuous_multilinear_map.dom_dom_congr_equiv_apply ContinuousMultilinearMap.domDomCongrEquiv_apply
 #align continuous_multilinear_map.dom_dom_congr_equiv_symm_apply ContinuousMultilinearMap.domDomCongrEquiv_symm_apply
 
+section linearDeriv
+
+variable [ContinuousAdd M₂] [DecidableEq ι] [Fintype ι] (x y : ∀ i, M₁ i)
+
+/-- The derivative of a continuous multilinear map, as a continuous linear map
+from `∀ i, M₁ i` to `M₂`; see `ContinuousMultilinearMap.hasFDerivAt`. -/
+def linearDeriv : (∀ i, M₁ i) →L[R] M₂ := ∑ i : ι, (f.toContinuousLinearMap x i).comp (.proj i)
+
+@[simp]
+lemma linearDeriv_apply : f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
+  unfold linearDeriv toContinuousLinearMap
+  simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
+    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply]
+  rfl
+
+end linearDeriv
+
 /-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `(i : Fin (n+1)) → M i` using `cons`, one can express directly the
 additivity of a multilinear map along the first variable. -/
@@ -396,7 +413,7 @@ theorem cons_smul (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M 
 #align continuous_multilinear_map.cons_smul ContinuousMultilinearMap.cons_smul
 
 theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι) :
-    f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') :=
+    f (t.piecewise (m + m') m') = ∑ s ∈ t.powerset, f (s.piecewise m m') :=
   f.toMultilinearMap.map_piecewise_add _ _ _
 #align continuous_multilinear_map.map_piecewise_add ContinuousMultilinearMap.map_piecewise_add
 
@@ -418,7 +435,7 @@ sum of `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions wit
 `r n ∈ Aₙ`. This follows from multilinearity by expanding successively with respect to each
 coordinate. -/
 theorem map_sum_finset [DecidableEq ι] :
-    (f fun i => ∑ j in A i, g i j) = ∑ r in piFinset A, f fun i => g i (r i) :=
+    (f fun i => ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i => g i (r i) :=
   f.toMultilinearMap.map_sum_finset _ _
 #align continuous_multilinear_map.map_sum_finset ContinuousMultilinearMap.map_sum_finset
 
@@ -500,7 +517,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [
   (f : ContinuousMultilinearMap R M₁ M₂)
 
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
-    f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m :=
+    f (s.piecewise (fun i => c i • m i) m) = (∏ i ∈ s, c i) • f m :=
   f.toMultilinearMap.map_piecewise_smul _ _ _
 #align continuous_multilinear_map.map_piecewise_smul ContinuousMultilinearMap.map_piecewise_smul
 
@@ -630,5 +647,47 @@ def smulRight : ContinuousMultilinearMap R M₁ M₂ where
 #align continuous_multilinear_map.smul_right ContinuousMultilinearMap.smulRight
 
 end SMulRight
+
+section CommRing
+variable {M : Type*}
+variable [Fintype ι] [CommRing R] [AddCommMonoid M] [Module R M]
+variable [TopologicalSpace R] [TopologicalSpace M]
+variable [ContinuousMul R] [ContinuousSMul R M]
+
+variable (R ι) in
+/-- The canonical continuous multilinear map on `R^ι`, associating to `m` the product of all the
+`m i` (multiplied by a fixed reference element `z` in the target module) -/
+protected def mkPiRing (z : M) : ContinuousMultilinearMap R (fun _ : ι => R) M :=
+  (ContinuousMultilinearMap.mkPiAlgebra R ι R).smulRight z
+#align continuous_multilinear_map.mk_pi_field ContinuousMultilinearMap.mkPiRing
+
+
+@[simp]
+theorem mkPiRing_apply (z : M) (m : ι → R) :
+    (ContinuousMultilinearMap.mkPiRing R ι z : (ι → R) → M) m = (∏ i, m i) • z :=
+  rfl
+#align continuous_multilinear_map.mk_pi_field_apply ContinuousMultilinearMap.mkPiRing_apply
+
+theorem mkPiRing_apply_one_eq_self (f : ContinuousMultilinearMap R (fun _ : ι => R) M) :
+    ContinuousMultilinearMap.mkPiRing R ι (f fun _ => 1) = f :=
+  toMultilinearMap_injective f.toMultilinearMap.mkPiRing_apply_one_eq_self
+#align continuous_multilinear_map.mk_pi_field_apply_one_eq_self ContinuousMultilinearMap.mkPiRing_apply_one_eq_self
+
+theorem mkPiRing_eq_iff {z₁ z₂ : M} :
+    ContinuousMultilinearMap.mkPiRing R ι z₁ = ContinuousMultilinearMap.mkPiRing R ι z₂ ↔
+      z₁ = z₂ := by
+  rw [← toMultilinearMap_injective.eq_iff]
+  exact MultilinearMap.mkPiRing_eq_iff
+#align continuous_multilinear_map.mk_pi_field_eq_iff ContinuousMultilinearMap.mkPiRing_eq_iff
+
+theorem mkPiRing_zero : ContinuousMultilinearMap.mkPiRing R ι (0 : M) = 0 := by
+  ext; rw [mkPiRing_apply, smul_zero, ContinuousMultilinearMap.zero_apply]
+#align continuous_multilinear_map.mk_pi_field_zero ContinuousMultilinearMap.mkPiRing_zero
+
+theorem mkPiRing_eq_zero_iff (z : M) : ContinuousMultilinearMap.mkPiRing R ι z = 0 ↔ z = 0 := by
+  rw [← mkPiRing_zero, mkPiRing_eq_iff]
+#align continuous_multilinear_map.mk_pi_field_eq_zero_iff ContinuousMultilinearMap.mkPiRing_eq_zero_iff
+
+end CommRing
 
 end ContinuousMultilinearMap

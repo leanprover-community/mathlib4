@@ -1,5 +1,5 @@
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Rat.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -58,6 +58,13 @@ example (x : ℚ) (h₀ : x ≠ 0) :
 example (x : ℚ) (h₀ : x ≠ 0) :
     (4 / x)⁻¹ * ((3 * x^3) / x)^2 * ((1 / (2 * x))⁻¹)^3 = 18 * x^8 := by
   field_simp (discharger := simp; assumption)
+  ring
+
+/-- Specify a simp config. -/
+example (x : ℚ) (h₀ : x ≠ 0) :
+    (4 / x)⁻¹ * ((3 * x^3) / x)^2 * ((1 / (2 * x))⁻¹)^3 = 18 * x^8 := by
+  fail_if_success field_simp (config := {maxSteps := 0})
+  field_simp (config := {})
   ring
 
 example {x y z w : ℚ} (h : x / y = z / w) (hy : y ≠ 0) (hw : w ≠ 0) : x * w = z * y := by

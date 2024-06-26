@@ -35,7 +35,6 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
-
 variable {x₀ x₁ x₂ x₃ : X}
 
 noncomputable section
@@ -57,7 +56,7 @@ section
 variable {p₀ p₁ : Path x₀ x₁}
 
 theorem coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align path.homotopy.coe_fn_injective Path.Homotopy.coeFn_injective
 
 @[simp]

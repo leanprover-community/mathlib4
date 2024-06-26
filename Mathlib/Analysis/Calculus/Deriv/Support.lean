@@ -23,9 +23,7 @@ derivative, support
 universe u v
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f : 𝕜 → E}
 
 /-! ### Support of derivatives -/

@@ -119,20 +119,20 @@ theorem min_lt_of_right_lt (h : b < c) : min a b < c :=
   (min_le_right a b).trans_lt h
 #align min_lt_of_right_lt min_lt_of_right_lt
 
-theorem max_min_distrib_left : max a (min b c) = min (max a b) (max a c) :=
-  sup_inf_left
+lemma max_min_distrib_left (a b c : α) : max a (min b c) = min (max a b) (max a c) :=
+  sup_inf_left _ _ _
 #align max_min_distrib_left max_min_distrib_left
 
-theorem max_min_distrib_right : max (min a b) c = min (max a c) (max b c) :=
-  sup_inf_right
+lemma max_min_distrib_right (a b c : α) : max (min a b) c = min (max a c) (max b c) :=
+  sup_inf_right _ _ _
 #align max_min_distrib_right max_min_distrib_right
 
-theorem min_max_distrib_left : min a (max b c) = max (min a b) (min a c) :=
-  inf_sup_left
+lemma min_max_distrib_left (a b c : α) : min a (max b c) = max (min a b) (min a c) :=
+  inf_sup_left _ _ _
 #align min_max_distrib_left min_max_distrib_left
 
-theorem min_max_distrib_right : min (max a b) c = max (min a c) (min b c) :=
-  inf_sup_right
+lemma min_max_distrib_right (a b c : α) : min (max a b) c = max (min a c) (min b c) :=
+  inf_sup_right _ _ _
 #align min_max_distrib_right min_max_distrib_right
 
 theorem min_le_max : min a b ≤ max a b :=
@@ -180,7 +180,7 @@ theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b
 theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := by
   constructor
   · intro h
-    refine' Or.imp (fun h' => _) (fun h' => _) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
+    refine Or.imp (fun h' => ?_) (fun h' => ?_) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
   · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp [h]
 #align min_eq_iff min_eq_iff
 
@@ -206,13 +206,13 @@ theorem max_lt_max_right_iff : max a b < max a c ↔ b < c ∧ a < c :=
 #align max_lt_max_right_iff max_lt_max_right_iff
 
 /-- An instance asserting that `max a a = a` -/
-instance max_idem : IsIdempotent α max where
+instance max_idem : Std.IdempotentOp (α := α) max where
   idempotent := by simp
 #align max_idem max_idem
 
 -- short-circuit type class inference
 /-- An instance asserting that `min a a = a` -/
-instance min_idem : IsIdempotent α min where
+instance min_idem : Std.IdempotentOp (α := α) min where
   idempotent := by simp
 #align min_idem min_idem
 
@@ -299,10 +299,10 @@ theorem max_associative : Associative (max : α → α → α) :=
   max_assoc
 #align max_associative max_associative
 
-instance : IsCommutative α max where
+instance : Std.Commutative (α := α) max where
   comm := max_comm
 
-instance : IsAssociative α max where
+instance : Std.Associative (α := α) max where
   assoc := max_assoc
 
 theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
@@ -313,14 +313,14 @@ theorem min_commutative : Commutative (min : α → α → α) :=
   min_comm
 #align min_commutative min_commutative
 
-theorem min_associative : Associative (min : α → α → α) :=
+theorem min_associative : Associative (α := α) min :=
   min_assoc
 #align min_associative min_associative
 
-instance : IsCommutative α min where
+instance : Std.Commutative (α := α) min where
   comm := min_comm
 
-instance : IsAssociative α min where
+instance : Std.Associative (α := α) min where
   assoc := min_assoc
 
 theorem min_left_commutative : LeftCommutative (min : α → α → α) :=

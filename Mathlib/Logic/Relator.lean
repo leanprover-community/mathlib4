@@ -4,15 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 
-import Mathlib.Logic.Basic
+import Mathlib.Init.Function
 
 #align_import logic.relator from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Relator for functions, pairs, sums, and lists.
 -/
-
-set_option autoImplicit true
 
 namespace Relator
 universe u₁ u₂ v₁ v₂
@@ -140,6 +138,9 @@ lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)
 
 open Function
 
+variable {α : Type*} {r₁₁ : α → α → Prop} {r₁₂ : α → β → Prop} {r₂₁ : β → α → Prop}
+  {r₂₃ : β → γ → Prop} {r₁₃ : α → γ → Prop}
+
 namespace LeftTotal
 
 protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
@@ -158,8 +159,7 @@ end LeftTotal
 
 namespace RightTotal
 
-protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
-    RightTotal r₁₁ :=
+protected lemma refl (hr : ∀ a : α, r₁₁ a a) : RightTotal r₁₁ :=
   LeftTotal.refl hr
 
 protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :

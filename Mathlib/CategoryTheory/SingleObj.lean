@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Combinatorics.Quiver.SingleObj
@@ -53,8 +54,7 @@ namespace SingleObj
 variable (M G : Type u)
 
 /-- One and `flip (*)` become `id` and `comp` for morphisms of the single object category. -/
-instance categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M)
-    where
+instance categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M) where
   Hom _ _ := M
   comp x y := y * x
   id _ := 1
@@ -63,8 +63,7 @@ instance categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M)
 variable [Monoid M] [Group G]
 
 /-- Monoid laws become category laws for the single object category. -/
-instance category : Category (SingleObj M)
-    where
+instance category : Category (SingleObj M) where
   comp_id := one_mul
   id_comp := mul_one
   assoc x y z := (mul_assoc z y x).symm
@@ -78,12 +77,14 @@ theorem comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g 
   rfl
 #align category_theory.single_obj.comp_as_mul CategoryTheory.SingleObj.comp_as_mul
 
+/-- If `M` is finite and in universe zero, then `SingleObj M` is a `FinCategory`. -/
+instance finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M) where
+
 /-- Groupoid structure on `SingleObj M`.
 
 See <https://stacks.math.columbia.edu/tag/0019>.
 -/
-instance groupoid : Groupoid (SingleObj G)
-    where
+instance groupoid : Groupoid (SingleObj G) where
   inv x := x⁻¹
   inv_comp := mul_right_inv
   comp_inv := mul_left_inv
@@ -150,8 +151,7 @@ variable {C : Type v} [Category.{w} C]
 /-- Given a function `f : C → G` from a category to a group, we get a functor
     `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]
-def differenceFunctor (f : C → G) : C ⥤ SingleObj G
-    where
+def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   obj _ := ()
   map {x y} _ := f y * (f x)⁻¹
   map_id := by
@@ -192,8 +192,7 @@ variable {M : Type u} {N : Type v} [Monoid M] [Monoid N]
 
 /-- Reinterpret a monoid homomorphism `f : M → N` as a functor `(single_obj M) ⥤ (single_obj N)`.
 See also `CategoryTheory.SingleObj.mapHom` for an equivalence between these types. -/
-@[reducible]
-def toFunctor (f : M →* N) : SingleObj M ⥤ SingleObj N :=
+abbrev toFunctor (f : M →* N) : SingleObj M ⥤ SingleObj N :=
   SingleObj.mapHom M N f
 #align monoid_hom.to_functor MonoidHom.toFunctor
 
@@ -236,12 +235,10 @@ namespace Units
 
 variable (M : Type u) [Monoid M]
 
--- porting note: it was necessary to add `by exact` in this definition, presumably
--- so that Lean4 is not confused by the fact that `M` has two opposite multiplications
 /-- The units in a monoid are (multiplicatively) equivalent to
 the automorphisms of `star` when we think of the monoid as a single-object category. -/
 def toAut : Mˣ ≃* Aut (SingleObj.star M) :=
-  MulEquiv.trans (Units.mapEquiv (by exact SingleObj.toEnd M))
+  MulEquiv.trans (Units.mapEquiv (SingleObj.toEnd M))
     (Aut.unitsEndEquivAut (SingleObj.star M))
 set_option linter.uppercaseLean3 false in
 #align units.to_Aut Units.toAut
@@ -271,13 +268,12 @@ def toCat : MonCat ⥤ Cat where
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat MonCat.toCat
 
-instance toCatFull : Full toCat where
-  preimage := (SingleObj.mapHom _ _).invFun
-  witness _ := rfl
+instance toCat_full : toCat.Full  where
+  map_surjective := (SingleObj.mapHom _ _).surjective
 set_option linter.uppercaseLean3 false in
-#align Mon.to_Cat_full MonCat.toCatFull
+#align Mon.to_Cat_full MonCat.toCat_full
 
-instance toCat_faithful : Faithful toCat where
+instance toCat_faithful : toCat.Faithful where
   map_injective h := by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat_faithful MonCat.toCat_faithful

@@ -5,6 +5,7 @@ Authors: Eric Wieser, Kevin Buzzard
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Group.ConjFinite
+import Mathlib.Data.Fintype.Lattice
 import Mathlib.Tactic.FinCases
 
 #align_import direct_sum_is_internal from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
@@ -59,12 +60,12 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
   · rw [codisjoint_iff_le_sup]
     intro x _hx
     obtain hp | hn := (le_refl (0 : ℤ)).le_or_le x
-    exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
-    exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
+    · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
+    · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 #align counterexample.with_sign.is_compl Counterexample.withSign.isCompl
 
 def withSign.independent : CompleteLattice.Independent withSign := by
-  refine'
+  apply
     (CompleteLattice.independent_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
   intro i
   fin_cases i <;> simp
@@ -85,9 +86,7 @@ theorem withSign.not_injective :
     DirectSum.lof ℕ _ (fun i => withSign i) 1 p1 + DirectSum.lof ℕ _ (fun i => withSign i) (-1) n1
   have : z ≠ 0 := by
     intro h
-    -- porting note: `DFinsupp.singleAddHom_apply` doesn't work so we have to unfold
-    dsimp [DirectSum.lof_eq_of, DirectSum.of, DFinsupp.singleAddHom] at h
-    replace h := FunLike.congr_fun h 1
+    replace h := DFunLike.congr_fun h 1
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [DFinsupp.zero_apply, DFinsupp.add_apply, DFinsupp.single_eq_same,
       DFinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,
