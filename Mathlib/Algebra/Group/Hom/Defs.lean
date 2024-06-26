@@ -440,6 +440,7 @@ theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_self _
 #align map_inv map_inv
 #align map_neg map_neg
+#align linear_equiv.map_neg map_negₓ
 
 @[to_additive (attr := simp)]
 lemma map_comp_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) :
@@ -462,6 +463,7 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
     ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
 #align map_div map_div
 #align map_sub map_sub
+#align linear_equiv.map_sub map_subₓ
 
 @[to_additive (attr := simp)]
 lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
