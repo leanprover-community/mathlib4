@@ -259,9 +259,9 @@ instance oppositeRack : Rack Rᵐᵒᵖ where
   act x y := op (invAct (unop x) (unop y))
   self_distrib := by
     intro x y z
-    induction x using MulOpposite.rec'
-    induction y using MulOpposite.rec'
-    induction z using MulOpposite.rec'
+    induction x
+    induction y
+    induction z
     simp only [op_inj, unop_op, op_unop]
     rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
@@ -416,7 +416,7 @@ theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
 instance oppositeQuandle : Quandle Qᵐᵒᵖ where
   fix := by
     intro x
-    induction' x using MulOpposite.rec'
+    induction' x
     simp
 #align quandle.opposite_quandle Quandle.oppositeQuandle
 
