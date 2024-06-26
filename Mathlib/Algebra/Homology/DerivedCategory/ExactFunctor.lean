@@ -58,4 +58,10 @@ noncomputable instance :
       (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh) F.mapDerivedCategory :=
   ⟨F.mapDerivedCategoryFactorsh⟩
 
+instance : F.mapDerivedCategory.CommShift ℤ := by
+  have : (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh).CommShift ℤ := inferInstance
+  -- in addition to this, we need to get `Functor.CommShift` for functors that are
+  -- induced via localization
+  sorry
+
 end CategoryTheory.Functor
