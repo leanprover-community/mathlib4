@@ -758,14 +758,14 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
   {μ : Measure X} [IsFiniteMeasureOnCompacts μ]
 
 /-- A bounded measurable function with compact support is in L^p. -/
-theorem HasCompactSupport.memℒp_of_bound {f : X → E} (hf : HasCompactSupport f)
+theorem _root_.HasCompactSupport.memℒp_of_bound {f : X → E} (hf : HasCompactSupport f)
     (h2f : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ := by
   have := memℒp_top_of_bound h2f C hfC
   exact this.memℒp_of_exponent_le_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_nmem_tsupport) (hf.measure_lt_top.ne) le_top
 
 /-- A continuous function with compact support is in L^p. -/
-theorem Continuous.memℒp_of_hasCompactSupport [OpensMeasurableSpace X]
+theorem _root_.Continuous.memℒp_of_hasCompactSupport [OpensMeasurableSpace X]
     {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : Memℒp f p μ := by
   have := hf.memℒp_top_of_hasCompactSupport h'f μ
   exact this.memℒp_of_exponent_le_of_measure_support_ne_top
