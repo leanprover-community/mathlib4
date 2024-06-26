@@ -1309,6 +1309,34 @@ theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z
       exact not_le_of_lt (coe_lt_top (_ + 1)) h
   · exact le_top
 
+theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
+  symm
+  refine ⟨fun  h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h , ?_⟩
+  intro h
+  induction' x using EReal.rec with x
+  · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
+    intro z
+    apply lt_of_not_le
+    intro z_le_y
+    apply not_le_of_lt (bot_lt_coe (z - 1))
+    specialize h (z-1)
+    apply h (lt_of_lt_of_le _ z_le_y)
+    norm_cast
+    exact sub_one_lt z
+  · induction' y using EReal.rec with y
+    · exact bot_le
+    · norm_cast
+      norm_cast at h
+      by_contra x_lt_y
+      rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, ⟨x_lt_z, z_lt_y⟩⟩
+      specialize h z z_lt_y
+      exact not_le_of_lt x_lt_z h
+    · exfalso
+      specialize h (x + 1) (coe_lt_top (x+1))
+      norm_cast at h
+      exact not_le_of_lt (lt_add_one x) h
+  · exact le_top
+
 /-! ### Absolute value -/
 
 -- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
