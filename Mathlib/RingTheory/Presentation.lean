@@ -60,9 +60,16 @@ lemma ideal_eq_span_range_relation : P.Ideal = Ideal.span (Set.range <| P.relati
 protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.Ideal
 
 /-- `P.Quotient` is `P.Ring`-isomorphic to `S` and in particular `R`-isomorphic to `S`. -/
-@[simps!]
 def quotientEquiv : P.Quotient ≃ₐ[P.Ring] S :=
   Ideal.quotientKerAlgEquivOfRightInverse (f := Algebra.ofId P.Ring S) P.aeval_val_σ
+
+@[simp]
+lemma quotientEquiv_mk (p : P.Ring) : P.quotientEquiv p = algebraMap P.Ring S p :=
+  rfl
+
+@[simp]
+lemma quotientEquiv_symm (x : S) : P.quotientEquiv.symm x = P.σ x :=
+  rfl
 
 /-- A presentation is called finite if there are only finitely-many
 relations and finitely-many relations. -/
@@ -91,6 +98,59 @@ section Construction
 TODO: add constructor for `Presentation` with `Presentation.IsFinite` for
 a finitely-presented algebra.
 -/
+
+variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable (Q : Presentation S T) (P : Presentation R S)
+
+/-- Given presentations of `T` over `S` and of `S` over `R`,
+we may construct a presentation of `T` over `R`. -/
+@[simps relations, simps (config := .lemmasOnly) relation]
+noncomputable def comp : Presentation R T where
+  toGenerators := Q.toGenerators.comp P.toGenerators
+  relations := Q.relations ⊕ P.relations
+  relation := Sum.elim
+    (fun rq ↦ Finsupp.sum (Q.relation rq)
+      (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1))
+    (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
+  ker_algebraMap_eq_span_range_relation := by
+    ext p
+    sorry
+    /-
+    refine MvPolynomial.induction_on' p ?_ ?_
+    · intro u a
+      constructor
+      intro hua
+      simp [RingHom.mem_ker] at hua
+    · intro p q hp hq
+      constructor
+      · intro hl
+    -/
+
+lemma comp_relation_map (r : Q.relations) :
+    aeval (Sum.elim X (MvPolynomial.C ∘ P.val)) ((Q.comp P).relation (Sum.inl r)) = Q.relation r := by
+  simp only [comp_relation, Generators.comp_vars, Sum.elim_inl]
+  rw [map_finsupp_sum]
+  simp only [_root_.map_mul]
+  simp_rw [aeval_rename]
+  simp_rw [aeval_monomial]
+  simp only [Sum.elim_comp_inr, _root_.map_one, one_mul]
+  nth_rw 2 [← Finsupp.sum_single (Q.relation r)]
+  congr
+  ext u s m
+  congr
+  show _ = monomial u s
+  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  rw [monomial_eq, IsScalarTower.algebraMap_eq R S]
+  simp only [algebraMap_eq]
+  rw [← eval₂_comp_left, ← aeval_def, P.aeval_val_σ]
+  congr
+  rw [Finsupp.prod_mapDomain_index_inj]
+  simp only [Sum.elim_inl]
+  exact Sum.inl_injective
+
+instance comp_isFinite [P.IsFinite] [Q.IsFinite] : (Q.comp P).IsFinite where
+  finite_vars := inferInstanceAs <| Finite (Q.vars ⊕ P.vars)
+  finite_relations := inferInstanceAs <| Finite (Q.relations ⊕ P.relations)
 
 end Construction
 
