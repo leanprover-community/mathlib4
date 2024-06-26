@@ -123,17 +123,15 @@ lemma relativeLowerIsTopologicalBasis :
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
   ext R
   simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
-  constructor
-  · intro ha
-    cases' ha with a ha'
+  constructor <;> intro ha
+  · cases' ha with a ha'
     use {a}
     rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
     simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,
       Subtype.image_preimage_coe, diff_self_inter, preimage_diff, Subtype.coe_preimage_self,
       true_and]
     exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
-  · intro ha
-    cases' ha with F hF
+  · cases' ha with F hF
     lift F to Finset α using hF.1
     use Finset.inf F id
     rw [← (upperClosureFinite_eq hT), ← hF.2]
@@ -174,15 +172,13 @@ lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
 lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
-  constructor
-  · intro h
-    let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
+  constructor <;> intro h
+  · let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
     use sSup R
     rw [← sUnion_Ici_Compl_eq,
       IsTopologicalBasis.open_eq_sUnion' (relativeLowerIsTopologicalBasis hT) h]
     aesop
-  · intro h
-    cases' h with a ha
+  · cases' h with a ha
     use (Ici a)ᶜ
     constructor
     · rw [isOpen_compl_iff]
@@ -193,16 +189,10 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
 `T ↓∩ (Ici a)` for some `a` in `α`.-/
 lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici a) := by
   rw [← isOpen_compl_iff, (isOpen_iff hT)]
-  constructor
-  · intros h
-    cases' h with a ha
-    use a
-    rw [preimage_compl, compl_inj_iff] at ha
+  constructor <;> (intro h; cases' h with a ha; use a)
+  · rw [preimage_compl, compl_inj_iff] at ha
     exact ha
-  · intros h
-    cases' h with a ha
-    use a
-    rw [preimage_compl, compl_inj_iff]
+  · rw [preimage_compl, compl_inj_iff]
     exact ha
 
 /- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ (Ici a)` (hull) form an antitone Galois
