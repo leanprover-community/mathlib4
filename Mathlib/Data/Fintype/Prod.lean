@@ -76,7 +76,7 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
   exact H'.false
 #align infinite_prod infinite_prod
 
-instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivial <| π i] [Infinite ι] :
+instance Pi.infinite_of_left {ι : Sort*} {π : ι → Type*} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
   choose m n hm using fun i => exists_pair_ne (π i)
   refine Infinite.of_injective (fun i => update m i (n i)) fun x y h => of_not_not fun hne => ?_
@@ -98,7 +98,8 @@ instance Pi.infinite_of_right {ι : Sort*} {π : ι → Type*} [∀ i, Infinite 
 #align pi.infinite_of_right Pi.infinite_of_right
 
 /-- Non-dependent version of `Pi.infinite_of_left`. -/
-instance Function.infinite_of_left {ι π : Sort _} [Nontrivial π] [Infinite ι] : Infinite (ι → π) :=
+instance Function.infinite_of_left {ι : Sort*} {π : Type*} [Nontrivial π] [Infinite ι] :
+    Infinite (ι → π) :=
   Pi.infinite_of_left
 #align function.infinite_of_left Function.infinite_of_left
 
