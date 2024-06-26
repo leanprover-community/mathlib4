@@ -174,6 +174,17 @@ lemma ext_from_iff (i j : ℤ) (hij : j + 1 = i) {A : C} (f g : (mappingCone φ)
   · rintro ⟨h₁, h₂⟩
     exact ext_from φ i j hij h₁ h₂
 
+lemma decomp_to {i : ℤ} {A : C} (f : A ⟶ (mappingCone φ).X i) (j : ℤ) (hij : i + 1 = j) :
+    ∃ (a : A ⟶ F.X j) (b : A ⟶ G.X i), f = a ≫ (inl φ).v j i (by omega) + b ≫ (inr φ).f i :=
+  ⟨f ≫ (fst φ).1.v i j hij, f ≫ (snd φ).v i i (add_zero i),
+    by apply ext_to φ i j hij <;> simp⟩
+
+lemma decomp_from {j : ℤ} {A : C} (f : (mappingCone φ).X j ⟶ A) (i : ℤ) (hij : j + 1 = i) :
+    ∃ (a : F.X i ⟶ A) (b : G.X j ⟶ A),
+      f = (fst φ).1.v j i hij ≫ a + (snd φ).v j j (add_zero j) ≫ b :=
+  ⟨(inl φ).v i j (by omega) ≫ f, (inr φ).f j ≫ f,
+    by apply ext_from φ i j hij <;> simp⟩
+
 lemma ext_cochain_to_iff (i j : ℤ) (hij : i + 1 = j)
     {K : CochainComplex C ℤ} {γ₁ γ₂ : Cochain K (mappingCone φ) i} :
     γ₁ = γ₂ ↔ γ₁.comp (fst φ).1 hij = γ₂.comp (fst φ).1 hij ∧

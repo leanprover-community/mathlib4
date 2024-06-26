@@ -1976,7 +1976,7 @@ end
 
 section BinaryOp
 
-variable (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
+variable {α₁ β₁ : Type*} (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
 
 theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x => by simp
 #align equiv.semiconj_conj Equiv.semiconj_conj

@@ -4,7 +4,7 @@ name: Monitor Dependency Update Failures
 
 on:
   workflow_run:
-    workflows: ["Update Mathlib Dependencies"]
+    workflows: ["continuous integration"]
     types:
       - completed
 

@@ -800,6 +800,47 @@ theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ :=
   rfl
 #align ereal.top_add_coe EReal.top_add_coe
 
+/-- For any extended real number `x` which is not `⊥`, the sum of `⊤` and `x` is equal to `⊤`. -/
+@[simp]
+theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
+  induction x using EReal.rec
+  · exfalso; exact h (Eq.refl ⊥)
+  · exact top_add_coe _
+  · exact top_add_top
+
+/-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
+theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
+  constructor <;> intro h
+  · by_contra h'
+    rw [h', add_bot] at h
+    exact bot_ne_top h
+  · cases x
+    case h_bot => contradiction
+    case h_top => rfl
+    case h_real r => exact top_add_of_ne_bot h
+
+/-- For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`. -/
+@[simp]
+theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
+  rw [add_comm, top_add_of_ne_bot h]
+
+/-- For any extended real number `x`, the sum of `x` and `⊤` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
+theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
+
+/-- For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
+then their sum is also greater than `0`. -/
+theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by
+  induction a using EReal.rec
+  · exfalso; exact not_lt_bot ha
+  · induction b using EReal.rec
+    · exfalso; exact not_lt_bot hb
+    · norm_cast at *; exact Left.add_pos ha hb
+    · exact add_top_of_ne_bot (bot_lt_zero.trans ha).ne' ▸ hb
+  · rw [top_add_of_ne_bot (bot_lt_zero.trans hb).ne']
+    exact ha
+
 @[simp]
 theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
   rfl
@@ -1080,6 +1121,16 @@ theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
   rw [EReal.mul_comm]
   exact mul_top_of_pos h
 #align ereal.top_mul_of_pos EReal.top_mul_of_pos
+
+/-- The product of two positive extended real numbers is positive. -/
+theorem mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
+  induction' a using EReal.rec with a
+  · exfalso; exact not_lt_bot ha
+  · induction' b using EReal.rec with b
+    · exfalso; exact not_lt_bot hb
+    · norm_cast at *; exact Left.mul_pos ha hb
+    · rw [EReal.mul_comm, top_mul_of_pos ha]; exact hb
+  · rw [top_mul_of_pos hb]; exact ha
 
 theorem top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
   rw [EReal.mul_comm]
