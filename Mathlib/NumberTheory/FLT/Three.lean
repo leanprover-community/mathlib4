@@ -239,7 +239,7 @@ lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   classical
-  have  hm := S'.multiplicity_lambda_c_finite
+  have hm := S'.multiplicity_lambda_c_finite
   suffices 2 ≤ (multiplicity ((hζ.toInteger - 1)) S'.c).get hm by
     · obtain ⟨x, hx⟩ := multiplicity.pow_multiplicity_dvd hm
       refine ⟨λ ^ ((multiplicity ((hζ.toInteger - 1)) S'.c).get hm - 2) * x, ?_⟩
