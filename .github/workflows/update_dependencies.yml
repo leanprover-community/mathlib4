@@ -34,14 +34,15 @@ jobs:
         run: |
           timestamp=$(date -u +"%Y-%m-%d-%H-%M")
           echo "branch_name=update-dependencies-$timestamp" >> "$GITHUB_ENV"
+          echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: "${{ secrets.NIGHTLY_TESTING }}"
-          commit-message: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
+          commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
           branch: "${{ env.branch_name }}"
           base: master
-          title: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
+          title: "${{ env.pr_title }}"
           body: "This PR updates the Mathlib dependencies."
           labels: "auto-merge-after-CI"
