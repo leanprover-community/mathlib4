@@ -11,7 +11,7 @@ jobs:
       - name: Install elan
         run: |
           set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          curl -sSfL "https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz" | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.NIGHTLY_TESTING }}
+          token: "${{ secrets.NIGHTLY_TESTING }}"
 
       - name: Configure Git User
         run: |
@@ -38,9 +38,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.NIGHTLY_TESTING }}
+          token: "${{ secrets.NIGHTLY_TESTING }}"
           commit-message: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
-          branch: ${{ env.branch_name }}
+          branch: "${{ env.branch_name }}"
           base: master
           title: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
           body: "This PR updates the Mathlib dependencies."
