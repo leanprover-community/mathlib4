@@ -47,6 +47,7 @@ primitive spectrum of the lattice of M-ideals of a Banach space.
 ## References
 
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
+* [Henriksen et al, *Joincompact spaces, continuous lattices and C*-algebras*][henriksen_et_al1997]
 
 ## Tags
 
