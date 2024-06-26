@@ -233,91 +233,116 @@ attribute [local instance] toInner'
 /-- The norm squared function for `PreInnerProductSpace.Core` structure. -/
 def normSq (x : F) :=
   reK ⟪x, x⟫
+#align inner_product_space.core.norm_sq InnerProductSpace.Core.normSq
 
 local notation "normSqF" => @normSq 𝕜 F _ _ _ _
 
 theorem inner_conj_symm (x y : F) : ⟪y, x⟫† = ⟪x, y⟫ :=
   c.conj_symm x y
+#align inner_product_space.core.inner_conj_symm InnerProductSpace.Core.inner_conj_symm
 
 theorem inner_self_nonneg {x : F} : 0 ≤ re ⟪x, x⟫ :=
   c.nonneg_re _
+#align inner_product_space.core.inner_self_nonneg InnerProductSpace.Core.inner_self_nonneg
 
 theorem inner_self_im (x : F) : im ⟪x, x⟫ = 0 := by
   rw [← @ofReal_inj 𝕜, im_eq_conj_sub]
   simp [inner_conj_symm]
+#align inner_product_space.core.inner_self_im InnerProductSpace.Core.inner_self_im
 
 theorem inner_add_left (x y z : F) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
   c.add_left _ _ _
+#align inner_product_space.core.inner_add_left InnerProductSpace.Core.inner_add_left
 
 theorem inner_add_right (x y z : F) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ := by
   rw [← inner_conj_symm, inner_add_left, RingHom.map_add]; simp only [inner_conj_symm]
+#align inner_product_space.core.inner_add_right InnerProductSpace.Core.inner_add_right
 
 theorem ofReal_normSq_eq_inner_self (x : F) : (normSqF x : 𝕜) = ⟪x, x⟫ := by
   rw [ext_iff]
   exact ⟨by simp only [ofReal_re]; rfl, by simp only [inner_self_im, ofReal_im]⟩
+#align inner_product_space.core.coe_norm_sq_eq_inner_self InnerProductSpace.Core.ofReal_normSq_eq_inner_self
 
 theorem inner_re_symm (x y : F) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← inner_conj_symm, conj_re]
+#align inner_product_space.core.inner_re_symm InnerProductSpace.Core.inner_re_symm
 
 theorem inner_im_symm (x y : F) : im ⟪x, y⟫ = -im ⟪y, x⟫ := by rw [← inner_conj_symm, conj_im]
+#align inner_product_space.core.inner_im_symm InnerProductSpace.Core.inner_im_symm
 
 theorem inner_smul_left (x y : F) {r : 𝕜} : ⟪r • x, y⟫ = r† * ⟪x, y⟫ :=
   c.smul_left _ _ _
+#align inner_product_space.core.inner_smul_left InnerProductSpace.Core.inner_smul_left
 
 theorem inner_smul_right (x y : F) {r : 𝕜} : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
   rw [← inner_conj_symm, inner_smul_left];
     simp only [conj_conj, inner_conj_symm, RingHom.map_mul]
+#align inner_product_space.core.inner_smul_right InnerProductSpace.Core.inner_smul_right
 
 theorem inner_zero_left (x : F) : ⟪0, x⟫ = 0 := by
   rw [← zero_smul 𝕜 (0 : F), inner_smul_left];
     simp only [zero_mul, RingHom.map_zero]
+#align inner_product_space.core.inner_zero_left InnerProductSpace.Core.inner_zero_left
 
 theorem inner_zero_right (x : F) : ⟪x, 0⟫ = 0 := by
   rw [← inner_conj_symm, inner_zero_left]; simp only [RingHom.map_zero]
+#align inner_product_space.core.inner_zero_right InnerProductSpace.Core.inner_zero_right
 
 theorem inner_self_of_eq_zero {x : F} : x = 0 → ⟪x, x⟫ = 0 := by
     intro h
     rw [h]
     exact inner_zero_left _
+--#align inner_product_space.core.inner_self_eq_zero InnerProductSpace.Core.inner_self_eq_zero
 
 theorem normSq_eq_zero_of_eq_zero {x : F} : x = 0 → normSqF x = 0 := by
   intro h
   rw [normSq]
   rw [inner_self_of_eq_zero h]
   exact RCLike.zero_re'
+--#align inner_product_space.core.norm_sq_eq_zero InnerProductSpace.Core.normSq_eq_zero
 
 theorem ne_zero_of_inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 → x ≠ 0 := by
   exact fun P Q => P (inner_self_of_eq_zero Q)
+--#align inner_product_space.core.inner_self_ne_zero InnerProductSpace.Core.inner_self_ne_zero
 
 theorem inner_self_ofReal_re (x : F) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ := by
   norm_num [ext_iff, inner_self_im]
 set_option linter.uppercaseLean3 false in
+#align inner_product_space.core.inner_self_re_to_K InnerProductSpace.Core.inner_self_ofReal_re
 
 theorem norm_inner_symm (x y : F) : ‖⟪x, y⟫‖ = ‖⟪y, x⟫‖ := by rw [← inner_conj_symm, norm_conj]
+#align inner_product_space.core.norm_inner_symm InnerProductSpace.Core.norm_inner_symm
 
 theorem inner_neg_left (x y : F) : ⟪-x, y⟫ = -⟪x, y⟫ := by
   rw [← neg_one_smul 𝕜 x, inner_smul_left]
   simp
+#align inner_product_space.core.inner_neg_left InnerProductSpace.Core.inner_neg_left
 
 theorem inner_neg_right (x y : F) : ⟪x, -y⟫ = -⟪x, y⟫ := by
   rw [← inner_conj_symm, inner_neg_left]; simp only [RingHom.map_neg, inner_conj_symm]
+#align inner_product_space.core.inner_neg_right InnerProductSpace.Core.inner_neg_right
 
 theorem inner_sub_left (x y z : F) : ⟪x - y, z⟫ = ⟪x, z⟫ - ⟪y, z⟫ := by
   simp [sub_eq_add_neg, inner_add_left, inner_neg_left]
+#align inner_product_space.core.inner_sub_left InnerProductSpace.Core.inner_sub_left
 
 theorem inner_sub_right (x y z : F) : ⟪x, y - z⟫ = ⟪x, y⟫ - ⟪x, z⟫ := by
   simp [sub_eq_add_neg, inner_add_right, inner_neg_right]
+#align inner_product_space.core.inner_sub_right InnerProductSpace.Core.inner_sub_right
 
 theorem inner_mul_symm_re_eq_norm (x y : F) : re (⟪x, y⟫ * ⟪y, x⟫) = ‖⟪x, y⟫ * ⟪y, x⟫‖ := by
   rw [← inner_conj_symm, mul_comm]
   exact re_eq_norm_of_mul_conj (inner y x)
+#align inner_product_space.core.inner_mul_symm_re_eq_norm InnerProductSpace.Core.inner_mul_symm_re_eq_norm
 
 /-- Expand `inner (x + y) (x + y)` -/
 theorem inner_add_add_self (x y : F) : ⟪x + y, x + y⟫ = ⟪x, x⟫ + ⟪x, y⟫ + ⟪y, x⟫ + ⟪y, y⟫ := by
   simp only [inner_add_left, inner_add_right]; ring
+#align inner_product_space.core.inner_add_add_self InnerProductSpace.Core.inner_add_add_self
 
 -- Expand `inner (x - y) (x - y)`
 theorem inner_sub_sub_self (x y : F) : ⟪x - y, x - y⟫ = ⟪x, x⟫ - ⟪x, y⟫ - ⟪y, x⟫ + ⟪y, y⟫ := by
   simp only [inner_sub_left, inner_sub_right]; ring
+#align inner_product_space.core.inner_sub_sub_self InnerProductSpace.Core.inner_sub_sub_self
 
 theorem inner_smul_smul_re (x : F) {t : ℝ} :
     re ⟪(ofReal t : 𝕜) • x, (ofReal t : 𝕜) • x⟫ = normSqF x * t * t := by
