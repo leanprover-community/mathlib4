@@ -96,7 +96,7 @@ theorem mk_eq {m m' : M} {s s' : S} : mk m s = mk m' s' ↔ ∃ u : S, u • s' 
   Quotient.eq'
 #align localized_module.mk_eq LocalizedModule.mk_eq
 
-@[elab_as_elim, induction_eliminator]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 theorem induction_on {β : LocalizedModule S M → Prop} (h : ∀ (m : M) (s : S), β (mk m s)) :
     ∀ x : LocalizedModule S M, β x := by
   rintro ⟨⟨m, s⟩⟩
