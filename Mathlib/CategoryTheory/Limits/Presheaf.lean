@@ -154,7 +154,7 @@ noncomputable def yonedaAdjunction : L ⊣ restrictedYoneda A :=
         simp only [Equiv.symm_apply_apply]
         dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
         apply (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
-        rintro p
+        intro p
         rw [IsColimit.fac]
         dsimp [restrictedYoneda, yonedaEquiv]
         simp only [assoc]
