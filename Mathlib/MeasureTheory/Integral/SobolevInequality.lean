@@ -315,7 +315,7 @@ integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by
 `n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
     {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
-    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂μ ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ p := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
@@ -375,7 +375,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
   rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, ← mul_assoc, ENNReal.coe_rpow_of_ne_zero hc.ne']
   exact this
 
-set_option linter.unusedVariables false in
 variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
@@ -384,9 +383,8 @@ with Haar measure. There exists a constant `C` depending only on `E`, such that 
 of `u`. -/
 theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
     {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
-    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
-  obtain ⟨m, hm⟩ : ∃ m, finrank ℝ E = m + 2 := Nat.exists_eq_add_of_le' hE
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
   obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv F μ hE hp.coe
   use C ^ (p : ℝ)⁻¹
@@ -399,7 +397,7 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
   exact hC hu h2u
 
 variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
-set_option linter.unusedVariables false in
+
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
@@ -410,7 +408,7 @@ Note: The codomain of `u` needs to be a Hilbert space.
 -/
 theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
-    ∃ C : ℝ≥0, ∀ {u : E → F'} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {u : E → F'} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
@@ -432,7 +430,6 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
   have hq : Real.IsConjExponent p q := .conjExponent hp
   have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   have h1p : (p : ℝ) ≠ 1 := hq.one_lt.ne'
-  -- have h3p : (p : ℝ) ≠ 0 := hq.pos.ne'
   have h3p : (p : ℝ) - 1 ≠ 0 := sub_ne_zero_of_ne h1p
   have h0p' : p' ≠ 0 := by
     suffices 0 < (p' : ℝ) from (show 0 < p' from this) |>.ne'
@@ -503,7 +500,6 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
       rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
 
-set_option linter.unusedVariables false in
 variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
@@ -515,14 +511,14 @@ This is the version where the codomain of `u` is a finite dimensional normed spa
 -/
 theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F] {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
-    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
   let e : F ≃L[ℝ] F' := toEuclidean
   let C₁ : ℝ≥0 := ‖(e.symm : F' →L[ℝ] F)‖₊
   let C₂ : ℝ≥0 := ‖(e : F →L[ℝ] F')‖₊
   obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq_inner μ F' hp h2p hp'
-  refine ⟨C₁ * C * C₂, @fun u hu h2u ↦ ?_⟩ -- nope?
+  refine ⟨C₁ * C * C₂, @fun u hu h2u ↦ ?_⟩
   let v := e ∘ u
   have hv : ContDiff ℝ 1 v := e.contDiff.comp hu
   have h2v : HasCompactSupport v := h2u.comp_left e.map_zero
@@ -546,7 +542,6 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F] {p p' : ℝ≥0} (
     _ = (C₁ * C * C₂ : ℝ≥0) * snorm (fderiv ℝ u) p μ := by push_cast; simp_rw [mul_assoc]
 
 variable (F) in
-set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded measurable set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n` and `0 < q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.
@@ -558,7 +553,7 @@ Note: The codomain of `u` needs to be a finite dimensional normed space.
 theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F] {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 0 < q)
     (h2p : p < finrank ℝ E) (hpq : p⁻¹ - (finrank ℝ E : ℝ)⁻¹ ≤ (q : ℝ)⁻¹) {s : Set E}
     (hs : Bornology.IsBounded s) :
-    ∃ C : ℝ≥0, ∀ (u : E → F) (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
+    ∃ C : ℝ≥0, ∀ (u : E → F) (_hu : ContDiff ℝ 1 u) (_h2u : u.support ⊆ s),
     snorm u q μ ≤ C * snorm (fderiv ℝ u) p μ := by
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
@@ -600,7 +595,6 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F] {p q : ℝ≥0} (h
     _ = (t * C) * snorm (fderiv ℝ u) p μ := by ring
 
 variable (F) in
-set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n`.
@@ -611,7 +605,7 @@ Note: The codomain of `u` needs to be a finite dimensional normed space.
 -/
 theorem snorm_le_snorm_fderiv' [FiniteDimensional ℝ F]
     {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) {s : Set E} (hs : Bornology.IsBounded s) :
-    ∃ C : ℝ≥0, ∀ (u : E → F) (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
+    ∃ C : ℝ≥0, ∀ (u : E → F) (_hu : ContDiff ℝ 1 u) (_h2u : u.support ⊆ s),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) p μ := by
   refine snorm_le_snorm_fderiv_of_le F μ hp (zero_lt_one.trans_le hp) h2p ?_ hs
   norm_cast
