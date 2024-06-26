@@ -476,7 +476,7 @@ lemma autEquivRootsOfUnity_apply_rootOfSplit (σ : L ≃ₐ[K] L) :
   rw [MulEquiv.apply_symm_apply, autEquivRootsOfUnity]
   simp only [MulEquiv.symm_trans_apply, AlgEquiv.autCongr_symm, AlgEquiv.symm_symm,
     MulEquiv.symm_symm, AlgEquiv.autCongr_apply, AlgEquiv.trans_apply,
-    adjoinRootXPowSubCEquiv_symm_eq_root, autAdjoinRootXPowSubCEquiv_root, AlgEquiv.map_smul,
+    adjoinRootXPowSubCEquiv_symm_eq_root, autAdjoinRootXPowSubCEquiv_root, map_smul,
     adjoinRootXPowSubCEquiv_root]
   rfl
 
@@ -488,7 +488,7 @@ lemma autEquivRootsOfUnity_smul (σ : L ≃ₐ[K] L) :
     (rootOfSplitsXPowSubC_pow hn a L)] at hα
   simp only [Finset.range_val, Multiset.mem_map, Multiset.mem_range] at hα
   obtain ⟨i, _, rfl⟩ := hα
-  simp only [map_mul, ← map_pow, ← Algebra.smul_def, AlgEquiv.map_smul,
+  simp only [map_mul, ← map_pow, ← Algebra.smul_def, map_smul,
     autEquivRootsOfUnity_apply_rootOfSplit hζ hn H L]
   exact smul_comm _ _ _
 

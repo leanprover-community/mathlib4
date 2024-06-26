@@ -92,21 +92,20 @@ variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R'] [IsDomai
 
 -- A helper lemma for `gaussSum_mul_gaussSum_eq_card` below
 -- Is this useful enough in other contexts to be public?
-private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : χ.IsNontrivial) (ψ : AddChar R R')
+private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : χ ≠ 1) (ψ : AddChar R R')
     (b : R) :
     ∑ a, χ (a * b⁻¹) * ψ (a - b) = ∑ c, χ c * ψ (b * (c - 1)) := by
   rcases eq_or_ne b 0 with hb | hb
   · -- case `b = 0`
     simp only [hb, inv_zero, mul_zero, MulChar.map_zero, zero_mul,
-      Finset.sum_const_zero, map_zero_eq_one, mul_one]
-    exact (hχ.sum_eq_zero).symm
+      Finset.sum_const_zero, map_zero_eq_one, mul_one, χ.sum_eq_zero_of_ne_one hχ]
   · -- case `b ≠ 0`
     refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x ↦ ?_).symm
     rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel hb, one_mul, mul_sub, mul_one]
 
 /-- We have `gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R`
 when `χ` is nontrivial and `ψ` is primitive (and `R` is a field). -/
-theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ.IsNontrivial) {ψ : AddChar R R'}
+theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ ≠ 1) {ψ : AddChar R R'}
     (hψ : IsPrimitive ψ) :
     gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R := by
   simp only [gaussSum, AddChar.inv_apply, Finset.sum_mul, Finset.mul_sum, MulChar.inv_apply']
@@ -124,7 +123,7 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ.IsNontrivial
 
 /-- When `χ` is a nontrivial quadratic character, then the square of `gaussSum χ ψ`
 is `χ(-1)` times the cardinality of `R`. -/
-theorem gaussSum_sq {χ : MulChar R R'} (hχ₁ : χ.IsNontrivial) (hχ₂ : IsQuadratic χ)
+theorem gaussSum_sq {χ : MulChar R R'} (hχ₁ : χ ≠ 1) (hχ₂ : IsQuadratic χ)
     {ψ : AddChar R R'} (hψ : IsPrimitive ψ) :
     gaussSum χ ψ ^ 2 = χ (-1) * Fintype.card R := by
   rw [pow_two, ← gaussSum_mul_gaussSum_eq_card hχ₁ hψ, hχ₂.inv, mul_rotate']
@@ -212,7 +211,7 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
 /-- When `F` and `F'` are finite fields and `χ : F → F'` is a nontrivial quadratic character,
 then `(χ(-1) * #F)^(#F'/2) = χ #F'`. -/
 theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field F'] [Fintype F']
-    {χ : MulChar F F'} (hχ₁ : χ.IsNontrivial) (hχ₂ : IsQuadratic χ)
+    {χ : MulChar F F'} (hχ₁ : χ ≠ 1) (hχ₂ : IsQuadratic χ)
     (hch₁ : ringChar F' ≠ ringChar F) (hch₂ : ringChar F' ≠ 2) :
     (χ (-1) * Fintype.card F) ^ (Fintype.card F' / 2) = χ (Fintype.card F') := by
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
@@ -227,7 +226,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
   have := Fact.mk (hchar.subst hp')
   rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp' hp, ← isUnit_iff_not_dvd_char, hchar] at hch₁
   exact Char.card_pow_char_pow (hχ₂.comp _) ψ.char (ringChar FF') n' hch₁ (hchar ▸ hch₂)
-       (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
+       (gaussSum_sq ((ringHomComp_ne_one_iff (RingHom.injective _)).mpr hχ₁) (hχ₂.comp _) ψ.prim)
 #align char.card_pow_card Char.card_pow_card
 
 end GaussSumValues

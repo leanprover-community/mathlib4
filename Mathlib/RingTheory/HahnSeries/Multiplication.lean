@@ -57,6 +57,7 @@ theorem one_coeff [Zero R] [One R] {a : Γ} :
 
 @[simp]
 theorem single_zero_one [Zero R] [One R] : single (0 : Γ) (1 : R) = 1 :=
+theorem single_zero_one [Zero R] [One R] : single (0 : Γ) (1 : R) = 1 :=
   rfl
 #align hahn_series.single_zero_one HahnSeries.single_zero_one
 
