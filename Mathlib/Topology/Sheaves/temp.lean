@@ -17,7 +17,6 @@ For a comm-ringed space `ℛ`, think `ℛ.sheaf` as a sheaf of (not necessarily 
 def forget2Ring :=
   sheafCompose (Opens.grothendieckTopology ℛ) (forget₂ CommRingCat RingCat) |>.obj ℛ.sheaf
 
-
 variable (ℳ : SheafOfModules $ forget2Ring ℛ)
 variable (pt : ℛ) (U U' V V' : Opens ℛ)
 variable (pt_mem : pt ∈ U) (pt_mem' : pt ∈ V) (pt_mem'' : pt ∈ V') (pt_mem''' : pt ∈ U')
@@ -160,6 +159,32 @@ lemma sectionSMulSection.one_smul (m : (ℳ.1.obj $ op V)) :
   rw [map_one]
   exact (ℳ.1.module _).one_smul _
 
+lemma sectionSMulSection.smul_zero (r : (ℛ.presheaf.obj $ op U)) :
+    sectionSMulSection ℛ ℳ U V r 0 = 0 := by
+  delta sectionSMulSection
+  rw [map_zero]
+  exact (ℳ.1.module _).smul_zero _
+
+lemma sectionSMulSection.smul_add (r : (ℛ.presheaf.obj $ op U)) (x y : (ℳ.1.obj $ op V)) :
+    sectionSMulSection ℛ ℳ U V r (x + y) =
+    sectionSMulSection ℛ ℳ U V r x + sectionSMulSection ℛ ℳ U V r y := by
+  delta sectionSMulSection
+  rw [map_add]
+  exact (ℳ.1.module _).smul_add _ _ _
+
+lemma sectionSMulSection.add_smul (r s : ℛ.presheaf.obj $ op U) (m : ℳ.1.obj $ op V) :
+    sectionSMulSection ℛ ℳ U V (r + s) m =
+    sectionSMulSection ℛ ℳ U V r m + sectionSMulSection ℛ ℳ U V s m := by
+  delta sectionSMulSection
+  rw [map_add]
+  exact (ℳ.1.module _).add_smul _ _ _
+
+lemma sectionSMulSection.zero_smul (m : ℳ.1.obj $ op V) :
+    sectionSMulSection ℛ ℳ U V 0 m = 0 := by
+  delta sectionSMulSection
+  rw [map_zero]
+  exact (ℳ.1.module _).zero_smul _
+
 noncomputable def openSetModule (x : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
     Opens ℛ :=
   (TopCat.Presheaf.germ_exist ℳ.1.presheaf pt x).choose
@@ -217,6 +242,123 @@ lemma section_smul_germ (r : ℛ.presheaf.obj $ op U) (m : ℳ.1.obj $ op V) :
   · exact pt_mem'
   · exact germ_sectionOnOpenSetModule _ _ _ _
 
+lemma sectionSMulStalk.one_smul (m : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
+    sectionSMulStalk ℛ ℳ pt U pt_mem 1 m = m := by
+  obtain ⟨W, mem, w, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf pt m
+  erw [section_smul_germ]
+  rw [sectionSMulSection.one_smul]
+  erw [TopCat.Presheaf.germ_res_apply]
+
+lemma sectionSMulStalk.mul_smul
+    (r : ℛ.presheaf.obj $ op U) (r' : ℛ.presheaf.obj $ op U')
+    (m : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
+    sectionSMulStalk ℛ ℳ pt _ (by exact ⟨pt_mem, pt_mem'''⟩ : pt ∈ U ⊓ U')
+      (r|_ (U ⊓ U') * r' |_(U ⊓ U')) m =
+    sectionSMulStalk ℛ ℳ pt _ pt_mem r
+      (sectionSMulStalk ℛ ℳ pt _ pt_mem''' r' m) := by
+  obtain ⟨W, mem, w, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf pt m
+  erw [section_smul_germ, section_smul_germ]
+  rw [sectionSMulSection.mul_smul]
+  erw [TopCat.Presheaf.germ_res_apply]
+  fapply sectionSMulSection.germ
+  · exact pt_mem
+  · exact ⟨pt_mem''', mem⟩
+  · exact ⟨pt_mem''', by apply mem_openSetModule⟩
+  fapply sectionSMulSection.germ
+  · exact pt_mem'''
+  · exact mem
+  · apply mem_openSetModule
+  · rw [germ_sectionOnOpenSetModule]; rfl
+
+lemma sectionSMulStalk.mul_smul'
+    (r r' : ℛ.presheaf.obj $ op U)
+    (m : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
+    sectionSMulStalk ℛ ℳ pt _ pt_mem (r * r') m =
+    sectionSMulStalk ℛ ℳ pt _ pt_mem r
+      (sectionSMulStalk ℛ ℳ pt _ pt_mem r' m) := by
+  rw [← sectionSMulStalk.mul_smul]
+  obtain ⟨W, mem, w, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf pt m
+  erw [section_smul_germ, section_smul_germ]
+  fapply sectionSMulSection.germ'
+  · exact pt_mem
+  · exact mem
+  · exact mem
+  · exact ⟨pt_mem, pt_mem⟩
+  · fapply TopCat.Presheaf.germ_ext
+    · exact U
+    · exact pt_mem
+    · exact 𝟙 U
+    · exact homOfLE fun x hx => ⟨hx, hx⟩
+    simp only [op_id, CategoryTheory.Functor.map_id, map_mul, id_apply]
+    change _ = (ℛ.presheaf.map _ ≫ ℛ.presheaf.map _) _ * (ℛ.presheaf.map _ ≫ ℛ.presheaf.map _) _
+    rw [← ℛ.presheaf.map_comp, ← op_comp]
+    erw [ℛ.presheaf.map_id]
+    rfl
+  · rfl
+
+lemma sectionSMulStalk.smul_add
+    (r : ℛ.presheaf.obj $ op U)
+    (m m' : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
+    sectionSMulStalk ℛ ℳ pt _ pt_mem r (m + m') =
+    sectionSMulStalk ℛ ℳ pt _ pt_mem r m + sectionSMulStalk ℛ ℳ pt _ pt_mem r m' := by
+
+  obtain ⟨W, mem, w, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf pt m
+  obtain ⟨W', mem', w', rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf pt m'
+  have eq1 : TopCat.Presheaf.germ ℳ.1.presheaf ⟨pt, mem⟩ w +
+      TopCat.Presheaf.germ ℳ.1.presheaf ⟨pt, mem'⟩ w' =
+      TopCat.Presheaf.germ ℳ.1.presheaf (⟨pt, ⟨mem, mem'⟩⟩ : (W ⊓ W' : Opens _))
+        (w |_ (W ⊓ W') + w' |_ (W ⊓ W')) := by
+    rw [map_add]
+    congr 1
+    · fapply TopCat.Presheaf.germ_ext
+      · exact W ⊓ W'
+      · exact ⟨mem, mem'⟩
+      · exact homOfLE fun x hx => by aesop
+      · exact 𝟙 _
+      · change _ = (ℳ.1.presheaf.map _ ≫ _) _
+        rw [← ℳ.1.presheaf.map_comp]
+        rfl
+    · fapply TopCat.Presheaf.germ_ext
+      · exact W ⊓ W'
+      · exact ⟨mem, mem'⟩
+      · exact homOfLE fun x hx => by aesop
+      · exact 𝟙 _
+      · change _ = (ℳ.1.presheaf.map _ ≫ _) _
+        rw [← ℳ.1.presheaf.map_comp]
+        rfl
+
+  erw [eq1, section_smul_germ, section_smul_germ, section_smul_germ]
+  rw [sectionSMulSection.smul_add, map_add]
+  congr 1
+  · fapply sectionSMulSection.germ
+    · exact pt_mem
+    · exact ⟨mem, mem'⟩
+    · exact mem
+    · erw [TopCat.Presheaf.germ_res_apply]
+      rfl
+  · fapply sectionSMulSection.germ
+    · exact pt_mem
+    · exact ⟨mem, mem'⟩
+    · exact mem'
+    · erw [TopCat.Presheaf.germ_res_apply]
+      rfl
+
+lemma sectionSMulStalk.add_smul
+    (r s : ℛ.presheaf.obj $ op U)
+    (m : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
+    sectionSMulStalk ℛ ℳ pt _ pt_mem (r + s) m =
+    sectionSMulStalk ℛ ℳ pt _ pt_mem r m + sectionSMulStalk ℛ ℳ pt _ pt_mem s m := by
+  obtain ⟨W, mem, w, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf pt m
+  erw [section_smul_germ, section_smul_germ, section_smul_germ]
+  rw [sectionSMulSection.add_smul, map_add]
+
+lemma sectionSMulStalk.zero_smul
+    (m : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
+    sectionSMulStalk ℛ ℳ pt _ pt_mem 0 m = 0 := by
+  obtain ⟨W, mem, w, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf pt m
+  erw [section_smul_germ]
+  rw [sectionSMulSection.zero_smul, map_zero]
+
 noncomputable def stalkSMulStalk
     (x : (ℛ.presheaf.stalk pt))
     (y : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
@@ -241,12 +383,63 @@ lemma germ_smul_germ (r : ℛ.presheaf.obj $ op U) (m : ℳ.1.obj $ op V) :
   · apply germ_sectionOnOpenSetRing
   · apply germ_sectionOnOpenSetModule
 
+noncomputable instance SMul.section_stalk :
+    SMul (ℛ.presheaf.obj $ op U)
+      (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
+  smul x y := sectionSMulStalk _ _ _ _ pt_mem x y
 
-noncomputable instance :
+noncomputable instance MulAction.section_stalk :
+    MulAction (ℛ.presheaf.obj $ op U)
+      (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
+  __ := SMul.section_stalk ℛ ℳ _ _ pt_mem
+  one_smul m := by
+    change sectionSMulStalk _ _ _ _ _ 1 m = m
+    apply sectionSMulStalk.one_smul
+  mul_smul r r' m := by
+    change sectionSMulStalk _ _ _ _ _ _ _ =
+      sectionSMulStalk _ _ _ _ _ _ (sectionSMulStalk _ _ _ _ _ _ _)
+    apply sectionSMulStalk.mul_smul'
+
+noncomputable instance DistribMulAction.section_stalk :
+    DistribMulAction (ℛ.presheaf.obj $ op U)
+      (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
+  __ := MulAction.section_stalk ℛ ℳ _ _ pt_mem
+  smul_zero r := by
+    change sectionSMulStalk _ _ _ _ _ r 0 = 0
+    rw [show (0 : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) =
+      TopCat.Presheaf.germ ℳ.1.presheaf ⟨pt, pt_mem⟩ 0 by rw [map_zero]]
+    erw [section_smul_germ]
+    fapply TopCat.Presheaf.germ_ext
+    · exact U
+    · exact pt_mem
+    · exact homOfLE fun x hx => ⟨hx, hx⟩
+    · exact 𝟙 U
+    · rw [sectionSMulSection.smul_zero]
+      generalize_proofs h1
+      erw [(ℳ.1.presheaf.map (homOfLE h1).op).map_zero]
+      simp
+  smul_add r m m' := by
+    change sectionSMulStalk _ _ _ _ _ r _ =
+      sectionSMulStalk _ _ _ _ _ r _ + sectionSMulStalk _ _ _ _ _ r _
+    apply sectionSMulStalk.smul_add
+
+noncomputable instance Module.section_stalk :
+    Module (ℛ.presheaf.obj $ op U)
+      (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
+  __ := DistribMulAction.section_stalk ℛ ℳ _ _ pt_mem
+  add_smul r s m := by
+    change sectionSMulStalk _ _ _ _ _ (r + s) m =
+      sectionSMulStalk _ _ _ _ _ r m + sectionSMulStalk _ _ _ _ _ s m
+    apply sectionSMulStalk.add_smul
+  zero_smul m := by
+    change sectionSMulStalk _ _ _ _ _ 0 m = 0
+    apply sectionSMulStalk.zero_smul
+
+noncomputable instance SMul.stalk_stalk :
     SMul (ℛ.presheaf.stalk pt) (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
   smul x y := stalkSMulStalk _ _ pt x y
 
-noncomputable instance :
+noncomputable instance MulAction.stalk_stalk :
     MulAction (ℛ.presheaf.stalk pt)
       (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
   one_smul m := by
@@ -285,5 +478,99 @@ noncomputable instance :
     · rw [germ_sectionOnOpenSetRing]
     · rw [germ_sectionOnOpenSetModule]; rfl
 
+noncomputable instance DistribMulAction.stalk_stalk :
+    DistribMulAction (ℛ.presheaf.stalk pt)
+      (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
+  smul_zero r := by
+    obtain ⟨Or, mem_r, r, rfl⟩ := ℛ.presheaf.germ_exist _ r
+    change stalkSMulStalk _ _ _ _ _ = _
+    rw [show (0 : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) =
+      TopCat.Presheaf.germ ℳ.1.presheaf (⟨pt, mem_r⟩) 0 by rw [map_zero], germ_smul_germ,
+      sectionSMulSection.smul_zero, map_zero, map_zero]
+  smul_add r x y := by
+    obtain ⟨Or, mem_r, r, rfl⟩ := ℛ.presheaf.germ_exist _ r
+    obtain ⟨Ox, mem_x, x, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf _ x
+    obtain ⟨Oy, mem_y, y, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf _ y
+    change stalkSMulStalk _ _ _ _ _ =
+      stalkSMulStalk _ _ _ _ _ + stalkSMulStalk _ _ _ _ _
+    have eq1 : TopCat.Presheaf.germ ℳ.1.presheaf ⟨pt, mem_x⟩ x +
+      TopCat.Presheaf.germ ℳ.1.presheaf ⟨pt, mem_y⟩ y =
+      TopCat.Presheaf.germ ℳ.1.presheaf (⟨pt, ⟨mem_x, mem_y⟩⟩ : (Ox ⊓ Oy : Opens _))
+        (x |_ (Ox ⊓ Oy) + y |_ (Ox ⊓ Oy)) := by
+      rw [map_add]
+      congr 1
+      · fapply TopCat.Presheaf.germ_ext
+        · exact Ox ⊓ Oy
+        · exact ⟨mem_x, mem_y⟩
+        · exact homOfLE fun x hx => by aesop
+        · exact 𝟙 _
+        · change _ = (ℳ.1.presheaf.map _ ≫ _) _
+          rw [← ℳ.1.presheaf.map_comp]
+          rfl
+      · fapply TopCat.Presheaf.germ_ext
+        · exact Ox ⊓ Oy
+        · exact ⟨mem_x, mem_y⟩
+        · exact homOfLE fun x hx => by aesop
+        · exact 𝟙 _
+        · change _ = (ℳ.1.presheaf.map _ ≫ _) _
+          rw [← ℳ.1.presheaf.map_comp]
+          rfl
+    erw [eq1, germ_smul_germ, germ_smul_germ, germ_smul_germ]
+    rw [sectionSMulSection.smul_add, map_add]
+    congr 1
+    · fapply sectionSMulSection.germ
+      · exact mem_r
+      · exact ⟨mem_x, mem_y⟩
+      · exact mem_x
+      · erw [TopCat.Presheaf.germ_res_apply]
+        rfl
+    · fapply sectionSMulSection.germ
+      · exact mem_r
+      · exact ⟨mem_x, mem_y⟩
+      · exact mem_y
+      · erw [TopCat.Presheaf.germ_res_apply]
+        rfl
+
+noncomputable instance Module.stalk_stalk :
+    Module (ℛ.presheaf.stalk pt)
+      (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
+  add_smul r s m := by
+    obtain ⟨Or, mem_r, r, rfl⟩ := ℛ.presheaf.germ_exist _ r
+    obtain ⟨Os, mem_s, s, rfl⟩ := ℛ.presheaf.germ_exist _ s
+    obtain ⟨W, mem, w, rfl⟩ := TopCat.Presheaf.germ_exist (F := ℳ.1.presheaf) _ m
+    change stalkSMulStalk _ _ _ _ _ =
+      stalkSMulStalk _ _ _ _ _ + stalkSMulStalk _ _ _ _ _
+    have eq1 : ℛ.presheaf.germ ⟨pt, mem_r⟩ r + ℛ.presheaf.germ ⟨pt, mem_s⟩ s =
+      ℛ.presheaf.germ (⟨pt, ⟨mem_r, mem_s⟩⟩ : (Or ⊓ Os : Opens _))
+        (r |_ _ + s |_ _) := by
+      rw [map_add]
+      erw [TopCat.Presheaf.germ_res_apply, TopCat.Presheaf.germ_res_apply]
+    rw [eq1]
+    erw [germ_smul_germ, germ_smul_germ]
+    rw [sectionSMulSection.add_smul, map_add]
+    congr 1
+    · fapply sectionSMulSection.germ'
+      · exact ⟨mem_r, mem_s⟩
+      · exact mem
+      · exact mem
+      · exact mem_r
+      · erw [TopCat.Presheaf.germ_res_apply]
+      · rfl
+    · fapply sectionSMulSection.germ'
+      · exact ⟨mem_r, mem_s⟩
+      · exact mem
+      · apply mem_openSetModule
+      · apply mem_openSetRing
+      · erw [TopCat.Presheaf.germ_res_apply]
+        erw [germ_sectionOnOpenSetRing]
+      · erw [germ_sectionOnOpenSetModule]; rfl
+  zero_smul m := by
+    obtain ⟨W, mem, w, rfl⟩ := TopCat.Presheaf.germ_exist (F := ℳ.1.presheaf) _ m
+    change stalkSMulStalk _ _ _ _ _ = 0
+    have eq1 : (0 : ℛ.presheaf.stalk pt) = ℛ.presheaf.germ (⟨pt, ⟨⟩⟩ : (⊤ : Opens _)) 0 := by
+      rw [map_zero]
+    rw [eq1]
+    erw [germ_smul_germ]
+    rw [sectionSMulSection.zero_smul, map_zero]
 
 end modules
