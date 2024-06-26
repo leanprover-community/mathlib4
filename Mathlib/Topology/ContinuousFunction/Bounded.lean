@@ -1688,71 +1688,21 @@ variable (α γ : Type*) [TopologicalSpace α] [NormedRing γ]
 def CompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
   r x y := ∃ (z : α →ᵇ γ), (HasCompactSupport z ∧ x = y + z)
   iseqv := {
-    refl := by
-      intro x
-      use 0
-      constructor
-      · rw [HasCompactSupport]
-        have : tsupport (0 : α →ᵇ γ) = ∅ := by
-          rw [← closure_empty, tsupport]
-          simp only [coe_zero, support_zero', closure_empty]
-        rw [this]
-        exact isCompact_empty
-      · exact Eq.symm (AddLeftCancelMonoid.add_zero x)
+    refl := fun _ ↦ ⟨0, by simp, by simp⟩
     symm := by
-      intro x y h
-      obtain ⟨z, hz⟩ := h
-      use -z
-      constructor
-      · rw [HasCompactSupport, tsupport]
-        simp only [coe_neg, support_neg']
-        exact hz.1
-      · exact eq_add_neg_iff_add_eq.mpr (Eq.symm hz.2)
+      rintro x y ⟨z, hz, rfl⟩
+      exact ⟨-z, HasCompactSupport.neg hz, by simp⟩
     trans := by
-      intro x y z hxy hyz
-      obtain ⟨w1, hw1⟩ := hxy
-      obtain ⟨w2, hw2⟩ := hyz
-      use w1 + w2
-      constructor
-      · simp only [coe_add]
-        exact HasCompactSupport.add hw1.1 hw2.1
-      · rw [hw1.2, hw2.2]
-        rw [add_assoc, add_comm w2 w1]
-  }
+      rintro x y z ⟨w1, hw1, rfl⟩ ⟨w2, hw2, rfl⟩
+      exact ⟨w1 + w2, HasCompactSupport.add hw1 hw2, by rw [add_assoc, add_comm w2]⟩ }
   add' := by
-    intro w x y z hwx hyz
-    rw [Setoid.r] at hwx
-    rw [Setoid.r] at hyz
-    simp only
-    simp only at hwx
-    simp only at hyz
-    obtain ⟨a, ha⟩ := hwx
-    obtain ⟨b, hb⟩ := hyz
-    use a + b
-    constructor
-    · simp only [coe_add]
-      exact HasCompactSupport.add ha.1 hb.1
-    · rw [ha.2, hb.2]
-      abel
+    rintro w x y z ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    exact ⟨a + b, HasCompactSupport.add ha hb, add_add_add_comm ..⟩
   mul' := by
-    intro w x y z hwx hyz
-    rw [Setoid.r] at hwx
-    rw [Setoid.r] at hyz
-    simp only
-    simp only at hwx
-    simp only at hyz
-    obtain ⟨a, ha⟩ := hwx
-    obtain ⟨b, hb⟩ := hyz
-    use a * z + a * b + x * b
-    constructor
-    · simp only [coe_add, coe_mul]
-      apply HasCompactSupport.add
-      · apply HasCompactSupport.add
-        · exact HasCompactSupport.mul_right ha.1
-        · exact HasCompactSupport.mul_right ha.1
-      · exact HasCompactSupport.mul_left hb.1
-    · rw [ha.2, hb.2]
-      noncomm_ring
+    rintro w x y z ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    refine ⟨a * z + a * b + x * b, ?_, by noncomm_ring⟩
+    refine HasCompactSupport.add (HasCompactSupport.add ?_ ?_) <| HasCompactSupport.mul_left hb
+    all_goals exact HasCompactSupport.mul_right ha
 
 @[inherit_doc]
 scoped[BoundedContinuousFunction] notation
