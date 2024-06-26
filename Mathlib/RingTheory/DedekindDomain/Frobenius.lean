@@ -73,8 +73,13 @@ Formalising Mathematics 2024 course.
 
 ## TODO
 
-Show that this applies to number fields and their rings of integers,
-i.e. supply the finiteness typeclasses and descent hypothesis in this case.
+Application to number fields and their rings of integers. In other words,
+restrict to number field case, supply the finiteness typeclasses `Fintype (A ⧸ P)`
+and `Fintype (B ⧸ Q)`, supply the descent hypothesis (a Galois-stable element of `B`
+is in `A`) and finally apply the identification `(B ≃ₐ[A] B) ≃* (L ≃ₐ[K] L)` (which we have)
+to get Frobenius elements in finite Galois groups of number fields.
+
+Application to function fields over finite fields.
 
 -/
 
@@ -202,7 +207,8 @@ lemma F.descent (h : ∀ b : B, (∀ σ : B ≃ₐ[A] B, σ • b = b) → ∃ a
     · nth_rw 2 [← F.smul_eq_self σ]
       rfl
 
--- This will be true in applications to number fields etc.
+-- This will be true in applications to number fields etc. A Galois-invariant element
+-- of `B` is in `A`.
 variable (isGalois : ∀ b : B, (∀ σ : B ≃ₐ[A] B, σ • b = b) → ∃ a : A, b = a)
 
 noncomputable abbrev m := (F.descent A Q isGalois).choose
@@ -247,6 +253,8 @@ lemma exists_Frob : ∃ σ : B ≃ₐ[A] B, σ (y A Q) - (y A Q) ^ (Fintype.card
     sub_eq_zero] at hσ
   exact (Submodule.Quotient.eq Q).mp (hσ.symm)
 
+/-- TODO: if I put a docstring here does it show up on hover? And does the linter
+want it? -/
 noncomputable abbrev Frob := (exists_Frob A Q isGalois P).choose
 
 lemma Frob_spec : (Frob A Q isGalois P) • (y A Q) - (y A Q) ^ (Fintype.card (A⧸P)) ∈ Q :=
@@ -262,11 +270,6 @@ lemma Frob_Q : Frob A Q isGalois P • Q = Q := by
   simp only [sub_sub_cancel] at this
   apply y_not_in_Q A Q <| Ideal.IsPrime.mem_of_pow_mem (show Q.IsPrime by infer_instance) _ this
 
--- **TODO** move. This is problematic because Algebra.cast and Ideal.Quotient.mk are two
--- distinct coercions from R to R/I.
-lemma _root_.Ideal.Quotient.coe_eq_coe_iff_sub_mem {R : Type*} [CommRing R] {I : Ideal R}
-    (x y : R) : (Algebra.cast x : R ⧸ I) = y ↔ x - y ∈ I := Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _
-
 lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x^(Fintype.card (A⧸P)) ∈ Q := by
   by_cases hx : x ∈ Q
   · refine Q.sub_mem ?_ (Q.pow_mem_of_mem hx _ Fintype.card_pos)
@@ -281,18 +284,18 @@ lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x^(Fintype.card (A⧸
     obtain ⟨n, (hn : g Q ^ n = xbar)⟩ := g_spec Q xbar
     have hn2 : (g Q : B ⧸ Q) ^ n = xbar := by exact_mod_cast hn
     change _ = (x : B ⧸ Q) at hn2
-    rw [← Ideal.Quotient.coe_eq_coe_iff_sub_mem]
+    rw [← Ideal.Quotient.cast_eq_cast_iff_sub_mem]
     push_cast
     rw [← hn2]
     have := Frob_spec A Q isGalois P
-    rw [← Ideal.Quotient.coe_eq_coe_iff_sub_mem] at this
+    rw [← Ideal.Quotient.cast_eq_cast_iff_sub_mem] at this
     push_cast at this
     rw [← y_mod_Q' A Q, pow_right_comm, ← this]
     norm_cast
-    rw [Ideal.Quotient.coe_eq_coe_iff_sub_mem, ← smul_pow']
+    rw [Ideal.Quotient.cast_eq_cast_iff_sub_mem, ← smul_pow']
     change (Frob A Q isGalois P) • x - _ ∈ _
     rw [← smul_sub]
     nth_rw 3 [ ← Frob_Q A Q isGalois P]
-    rw [Ideal.smul_mem_pointwise_smul_iff, ← Ideal.Quotient.coe_eq_coe_iff_sub_mem,
+    rw [Ideal.smul_mem_pointwise_smul_iff, ← Ideal.Quotient.cast_eq_cast_iff_sub_mem,
       ← hn2, ← y_mod_Q A Q]
     norm_cast
