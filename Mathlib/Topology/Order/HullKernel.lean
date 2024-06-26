@@ -186,10 +186,8 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
 lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
   rw [← isOpen_compl_iff, (isOpen_iff hT)]
   constructor <;> (intro h; cases' h with a ha; use a)
-  · rw [preimage_compl, compl_inj_iff] at ha
-    exact ha
-  · rw [preimage_compl, compl_inj_iff]
-    exact ha
+  · exact compl_inj_iff.mp ha
+  · exact compl_inj_iff.mpr ha
 
 /- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ Ici a` (hull) form an antitone Galois
 connection betwen the subsets of `T` and `α`. -/
