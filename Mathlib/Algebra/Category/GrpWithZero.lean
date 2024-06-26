@@ -69,7 +69,7 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GrpWithZero where
   forget_faithful := ⟨fun h => DFunLike.coe_injective h⟩
 
 @[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
-  (forget GrpWithZero).map f = f := rfl
+  (forget GrpWithZero).map f = (f : X → Y) := rfl
 
 instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
   forget₂ :=
