@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.FieldTheory.Cardinality
 import Mathlib.RingTheory.Ideal.Pointwise
 
-/-
+/-!
 
 # Frobenius elements
 
