@@ -49,8 +49,8 @@ def matrix_F (i j : Basis (Fin (finrank K V)) K V) :
 def matrix_G (i j : Basis (Fin (finrank K V)) K V) :
     (((Fin (finrank K V - r)) × Fin r) → A) →
     Matrix (Fin (finrank K V - r)) (Fin r) A :=
-  fun φ  ↦ Matrix.submatrix (matrix K V r hr i j φ) (Fin.castLE (by simp)) id
-
+  fun φ  ↦ Matrix.submatrix (matrix K V r hr i j φ)
+    (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩) id
 
 lemma matrix_F_eq_id_of_diagonal (i : Basis (Fin (finrank K V)) K V)
     (M : ((Fin (finrank K V - r)) × Fin r) → A) :
@@ -66,7 +66,11 @@ lemma matrix_F_eq_id_of_diagonal (i : Basis (Fin (finrank K V)) K V)
 
 lemma matrix_G_eq_of_diagonal (i : Basis (Fin (finrank K V)) K V)
     (M : ((Fin (finrank K V - r)) × Fin r) → A) :
-    matrix_G K V r hr i i M = Matrix.of (fun p q ↦ M (p,q)) := by sorry
+    matrix_G K V r hr i i M = Matrix.of (fun p q ↦ M (p,q)) := by
+  ext _ _
+  simp only [matrix_G, matrix, Basis.toMatrix_self, map_zero, _root_.map_one, Matrix.map_one,
+    Matrix.one_mul, submatrix_apply, id_eq, of_apply, add_lt_iff_neg_right, not_lt_zero',
+    ↓reduceIte, add_tsub_cancel_right, Fin.eta]
 
 def element (i j : Basis (Fin (finrank K V)) K V) :
     (MvPolynomial ((Fin (finrank K V - r)) × Fin r) K) := by
@@ -84,12 +88,16 @@ abbrev matrix_G' (i j : Basis (Fin (finrank K V)) K V) :=
   (Localization.Away (element K V r hr i j)))
 
 lemma matrix_F'_eq_id_of_diagonal (i : Basis (Fin (finrank K V)) K V) :
-    matrix_F' K V r hr i i = 1 := sorry
+    matrix_F' K V r hr i i = 1 := by
+  simp only [matrix_F', matrix_F_eq_id_of_diagonal, _root_.map_one]
 
 lemma matrix_G'_eq_X_of_diagonal (i : Basis (Fin (finrank K V)) K V) :
     matrix_G' K V r hr i i = Matrix.of (fun p q ↦
     (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
-    (Localization.Away (element K V r hr i i)) (MvPolynomial.X (p,q)))) := by sorry
+    (Localization.Away (element K V r hr i i)) (MvPolynomial.X (p,q)))) := by
+  simp only [matrix_G', matrix_G_eq_of_diagonal]
+  ext _ _
+  simp only [map_apply, of_apply]
 
 lemma isUnit_F' (i j : Basis (Fin (finrank K V)) K V) :
     IsUnit (matrix_F' K V r hr i j) := by
