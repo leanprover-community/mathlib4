@@ -146,7 +146,7 @@ theorem refl_symm : (Homeomorph.refl X).symm = Homeomorph.refl X :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous (h : X ≃ₜ Y) : Continuous h :=
   h.continuous_toFun
 #align homeomorph.continuous Homeomorph.continuous

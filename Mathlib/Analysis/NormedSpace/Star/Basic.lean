@@ -33,7 +33,6 @@ To get a C⋆-algebra `E` over field `𝕜`, use
 
 -/
 
-
 open Topology
 
 local postfix:max "⋆" => star
