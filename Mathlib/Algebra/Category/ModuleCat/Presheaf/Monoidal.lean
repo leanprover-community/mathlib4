@@ -116,6 +116,7 @@ def whiskerRight (f : F ⟶ G) (H : PresheafOfModules (R ⋙ forget₂ _ _)) :
 
 variable (F G H)
 
+set_option maxHeartbeats 400000 in
 def associator :
     tensorObj (tensorObj F G) H ≅ tensorObj F (tensorObj G H) :=
   isoMk'' (fun X ↦ α_ (F.obj' X) (G.obj' X) (H.obj' X)) (by
@@ -123,7 +124,7 @@ def associator :
     dsimp only [Functor.comp_obj, Functor.comp_map, evaluation_obj, ModuleCat.of_coe]
     apply ModuleCat.tensor_ext₃'
     intro a b c
-    sorry)
+    erw [comp_apply])
 
 def leftUnitor : tensorObj (unit _) F ≅ F :=
   isoMk'' (fun X ↦ λ_ (F.obj' X)) sorry
