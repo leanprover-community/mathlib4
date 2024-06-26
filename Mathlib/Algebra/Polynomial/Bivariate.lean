@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Bivariate polynomials
@@ -99,6 +101,38 @@ When this polynomial is then evaluated at `X' = X`, the original polynomial `p` 
 lemma eval_C_X_eval₂_map_C_X {p : R[X][Y]} :
     eval (C X) (eval₂ (mapRingHom <| algebraMap R R[X][Y]) (C Y) p) = p :=
   congr($eval_C_X_comp_eval₂_map_C_X p)
+
+variable {A A'} [CommRing A] [Semiring A'] [Algebra R A] [Algebra R A'] (a : A)
+
+/-- -/
+def aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
+  .mk (eval₂RingHom (aeval x).toRingHom y) fun r ↦ by simp
+
+variable (R A) in
+/-- -/
+@[simps] def algHomPolynomial₂Equiv : (R[X][Y] →ₐ[R] A) ≃ A × A where
+  toFun f := (f (C X), f Y)
+  invFun xy := aevalAeval xy.1 xy.2
+  left_inv f := by ext <;> simp [aevalAeval]
+  right_inv xy := by simp [aevalAeval]
+
+open Ideal.Quotient in
+/-- -/
+@[simps] def _root_.quotientIdealSpanSingletonAlgHomEquiv :
+    (A ⧸ Ideal.span {a} →ₐ[R] A') ≃ {f : A →ₐ[R] A' // f a = 0} where
+  toFun f := ⟨f.comp (mkₐ _ _), by simp⟩
+  invFun f := Ideal.Quotient.liftₐ _ f fun x hx ↦ by
+    obtain ⟨x, rfl⟩ := Ideal.mem_span_singleton'.mp hx
+    rw [map_mul, f.2, mul_zero]
+  left_inv f := by ext ⟨_⟩; simp
+  right_inv f := by ext; simp
+
+/-- -/
+@[simps!] def _root_.adjoinRootAlgHomEquiv {R} [CommRing R] [Algebra R A] (p : R[X][Y]) :
+    (AdjoinRoot p →ₐ[R] A) ≃ {xy : A × A // aevalAeval xy.1 xy.2 p = 0} :=
+  (quotientIdealSpanSingletonAlgHomEquiv p).trans <|
+    ((algHomPolynomial₂Equiv R A).image _).trans <|
+    Equiv.setCongr <| by rw [Equiv.image_eq_preimage]; ext; simp; rfl
 
 end
 

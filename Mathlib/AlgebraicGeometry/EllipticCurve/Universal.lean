@@ -133,8 +133,8 @@ lemma polyEval_comp_eq_specialize : (polyEval W x y).comp (algebraMap _ _) = W.s
   ext <;> simp [polyEval]
 
 lemma ringEval_comp_eq_specialize : (ringEval eqn).comp (algebraMap _ _) = W.specialize := by
-  rw [ringEval,
-    algebraMap_ring_eq_comp, ← RingHom.comp_assoc, ringEval_comp_mk, polyEval_comp_eq_specialize]
+  rwa [ringEval, ← CoordinateRing.mk_comp_algebraMap, ← RingHom.comp_assoc, ← ringEval,
+    ringEval_comp_mk, polyEval_comp_eq_specialize]
 
 lemma curveRing_map_ringEval : curveRing.map (ringEval eqn) = W := by
   rw [curveRing, baseChange, map_map, ringEval_comp_eq_specialize, map_specialize]
