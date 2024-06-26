@@ -9,7 +9,6 @@ import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Nontriviality
 
-
 #align_import order.atoms from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
