@@ -16,7 +16,7 @@ the structure `M.GeneratingSections` which consists of a family of (global)
 sections `s : I → M.sections` which generate `M`.
 
 We also introduce the structure `M.LocalGeneratorsData` which contains the data
-of a covering `X i` on the terminal object and data of a
+of a covering `X i` of the terminal object and the data of a
 `(M.over (X i)).GeneratingSections` for all `i`. This is used in order to
 define sheaves of modules of finite type.
 

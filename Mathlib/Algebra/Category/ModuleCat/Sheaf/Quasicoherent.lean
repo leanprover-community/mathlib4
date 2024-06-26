@@ -38,7 +38,7 @@ variable [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGr
 
 /-- A global presentation of a sheaf of modules `M` consists of a family `generators.s`
 of sections `s` which generate `M`, and a family of sections which generate
-the kernel of the morphism `generators.π : free (generators.π) ⟶ M`. -/
+the kernel of the morphism `generators.π : free (generators.I) ⟶ M`. -/
 structure Presentation where
   /-- generators -/
   generators : M.GeneratingSections
@@ -78,7 +78,7 @@ def localGeneratorsData (q : M.QuasicoherentData) : M.LocalGeneratorsData where
 end QuasicoherentData
 
 /-- A sheaf of modules is quasi-coherent if it is locally the cokernel of a
-morphism between coproducts of copies of the sheaf of rings.. -/
+morphism between coproducts of copies of the sheaf of rings. -/
 class IsQuasicoherent : Prop where
   nonempty_quasicoherentData : Nonempty M.QuasicoherentData
 
