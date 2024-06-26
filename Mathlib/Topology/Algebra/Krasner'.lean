@@ -43,7 +43,10 @@ theorem of_minpoly_eq {x x' : A} (h : minpoly R x = minpoly R x') : IsConjRoot R
 
 theorem algEquiv_apply (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x) := sorry
 
-theorem algEquiv_apply' (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRoot R (s₁ x) (s₂ x) := sorry
+theorem algEquiv_apply₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRoot R (s₁ x) (s₂ x) := sorry
+
+variable {K} in
+theorem exist_algEquiv {x x': L} (h : IsConjRoot K x x') : ∃ σ : L ≃ₐ[K] L, x' = σ x := sorry
 
 theorem eq_of_isConjRoot_algebraMap {r : R} {x : A} (h : IsConjRoot R x (algebraMap R A r)) : x = algebraMap R A r := sorry
 
@@ -115,6 +118,13 @@ instance ContinuousSMul.instBotIntermediateField {K L : Type*} [Field K] [Field 
 
 end ContinuousSMul
 
+section NormedField
+
+instance {L : Type*} [NormedField L] (M : Subfield L) : NormedField M := sorry
+
+instance {K L : Type*} [Field K] [NormedField L] [Algebra K L] (M : IntermediateField K L) : NormedField M := inferInstanceAs (NormedField M.toSubfield)
+
+end NormedField
 
 open Algebra
 open IntermediateField
@@ -139,7 +149,12 @@ theorem IsKrasnerNorm.krasner_norm {K L : Type*} [Field K] [NormedField L] [Alge
 
 namespace IsKrasnerNorm
 
-variable {K L : Type*} [NK : NontriviallyNormedField K] (is_na : IsNonarchimedean (norm : K → ℝ)) [NL : NormedField L] [Algebra K L] (ext : FunctionExtends (norm : K → ℝ) (norm : L → ℝ))
+variable {K L : Type*} [NK : NontriviallyNormedField K] (is_na : IsNonarchimedean (norm : K → ℝ)) [NL : NormedField L] [Algebra K L] (extd : FunctionExtends (norm : K → ℝ) (norm : L → ℝ))
+
+variable (M : IntermediateField K L)
+#synth NormedField M
+
+$synth Algebra M L
 
 theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
   constructor
@@ -148,13 +163,19 @@ theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
   let M := K⟮y⟯
   let FDM := IntermediateField.adjoin.finiteDimensional hyK
   let uniM : UniformAddGroup M := inferInstanceAs (UniformAddGroup M.toSubfield)
+  let BotEquiv : NormedAddGroupHom K (⊥ : IntermediateField K L) := -- put this outside
+    {
+      (IntermediateField.botEquiv K L).symm with
+      bound' := by
+        use 1
+        intro x
+        erw [extd x]
+        simp only [one_mul, le_refl]
+    }
   have : ContinuousSMul K M := by -- decompose as `ContinuousSMul K L implies ContinuousSMul K M`
     apply Inducing.continuousSMul (N := K) (M := (⊥ : IntermediateField K L)) (X := M) (Y := M) (f := (IntermediateField.botEquiv K L).symm) inducing_id
-    · simpa only [bot_toSubalgebra] using
-      (continuous_induced_rng (f := (Subtype.val : (⊥ : IntermediateField K L) → L)) (g :=
-            (IntermediateField.botEquiv K L).symm)).mpr <|
-        h.toUniformInducing.inducing.continuous
-    · intro r m
+    · exact BotEquiv.continuous
+    · intros
       ext
       simp
   letI : CompleteSpace M := FiniteDimensional.complete K M-- @FiniteDimensional.complete K M sorry sorry _ _ _ sorry _ _ _  -- this need all topology on M is the same and complete?
@@ -175,7 +196,12 @@ theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
   simp only [ne_eq, Subtype.mk.injEq] at hne
   -- simp only [conjRootSet, Set.coe_setOf, Set.mem_toFinset, Set.mem_setOf_eq] at h1
   -- let vM : Valued M NNReal := sorry
-  have : ‖z‖ = ‖z'‖ := IsConjRoot.val_eq M hM (Polynomial.Separable.isIntegral zsep) h1 -- need rank one
+  have eq_spn: (norm : L → ℝ) = spectralNorm K L := funext <| spectralNorm_unique_field_norm_ext (f := NL.toMulRingNorm) extd is_na
+  have : ‖z‖ = ‖z'‖ := by
+    rw [eq_spn]
+    obtain ⟨σ , h⟩ := IsConjRoot.exist_algEquiv h1
+    exact spectralNorm_aut_isom M L σ -- spectralNorm K L = spectralnorm M L
+  -- IsConjRoot.val_eq M hM (Polynomial.Separable.isIntegral zsep) h1 -- need rank one -- exist_algEquiv
   have : ‖z - z'‖ < ‖z - z'‖ := by
     calc
       _ ≤ ‖x - y‖ := by simpa only [max_self, ← this] using Valuation.map_sub vL.v z z'
