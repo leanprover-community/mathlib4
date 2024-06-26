@@ -190,13 +190,15 @@ theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
   simp [h]
 #align equiv.perm.two_le_card_support_cycle_of_iff Equiv.Perm.two_le_card_support_cycleOf_iff
 
-@[simp] lemma support_cycleOf_nonempty [DecidableEq α] [Fintype α] : (cycleOf f x).support.Nonempty ↔ f x ≠ x := by
+@[simp] lemma support_cycleOf_nonempty [DecidableEq α] [Fintype α] :
+    (cycleOf f x).support.Nonempty ↔ f x ≠ x := by
   rw [← two_le_card_support_cycleOf_iff, ← card_pos, ← Nat.succ_le_iff]
   exact ⟨fun h => Or.resolve_left h.eq_or_lt (card_support_ne_one _).symm, zero_lt_two.trans_le⟩
 #align equiv.perm.card_support_cycle_of_pos_iff Equiv.Perm.support_cycleOf_nonempty
 
 @[deprecated support_cycleOf_nonempty (since := "2024-06-16")]
-theorem card_support_cycleOf_pos_iff [DecidableEq α] [Fintype α] : 0 < card (cycleOf f x).support ↔ f x ≠ x := by
+theorem card_support_cycleOf_pos_iff [DecidableEq α] [Fintype α] :
+    0 < card (cycleOf f x).support ↔ f x ≠ x := by
   rw [card_pos, support_cycleOf_nonempty]
 
 theorem pow_mod_orderOf_cycleOf_apply (f : Perm α) [DecidableRel f.SameCycle] (n : ℕ) (x : α) :
