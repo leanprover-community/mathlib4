@@ -218,7 +218,7 @@ jobs:
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run: lake exe mk_all
+        run: lake exe mk_all --check
 
       - name: check for noisy stdout lines
         id: noisy
