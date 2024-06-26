@@ -86,6 +86,12 @@ variable [Group M] [CommRing R] [MulSemiringAction M R]
 
 open Pointwise
 
+theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
+    a • S = S.comap (MulSemiringAction.toRingAut _ _ a).symm := by
+  ext
+  simp [pointwise_smul_def]
+  rfl
+
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
   ⟨fun h => by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h, smul_mem_pointwise_smul _ _ _⟩
@@ -94,6 +100,20 @@ theorem mem_pointwise_smul_iff_inv_smul_mem {a : M} {S : Ideal R} {x : R} :
     x ∈ a • S ↔ a⁻¹ • x ∈ S :=
   ⟨fun h => by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h,
     fun h => by simpa using smul_mem_pointwise_smul a _ _ h⟩
+
+@[simp]
+theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)
+    (ha : Function.Surjective fun r : R => a • r) :
+    (a • S).toAddSubmonoid = a • S.toAddSubmonoid := by
+  ext
+  exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
+
+@[simp]
+theorem pointwise_smul_toAddSubGroup (a : M) (S : Ideal R)
+    (ha : Function.Surjective fun r : R => a • r)  :
+    (a • S).toAddSubgroup = a • S.toAddSubgroup := by
+  ext
+  exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
 
 theorem mem_inv_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : x ∈ a⁻¹ • S ↔ a • x ∈ S := by
   rw [mem_pointwise_smul_iff_inv_smul_mem, inv_inv]
