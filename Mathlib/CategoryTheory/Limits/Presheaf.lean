@@ -144,8 +144,8 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_obj CategoryTheory.ColimitAdj.extendAlongYoneda_obj
 
--- Porting note (#5229): adding this lemma because lean 4 `ext` no longer applies all `ext` lemmas when
--- stuck (and hence can see through definitional equalities). The previous lemma shows that
+-- Porting note (#5229): adding this lemma because lean 4 `ext` no longer applies all `ext` lemmas
+-- when stuck (and hence can see through definitional equalities). The previous lemma shows that
 -- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the `ext` lemma is just
 -- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
 @[ext] lemma extendAlongYoneda_obj.hom_ext {X : ℰ} {P : Cᵒᵖ ⥤ Type u₁}
