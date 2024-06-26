@@ -157,9 +157,8 @@ def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
 #align kaehler_differential KaehlerDifferential
 
-instance : AddCommGroup (KaehlerDifferential R S) := by
-  unfold KaehlerDifferential
-  infer_instance
+instance : AddCommGroup (KaehlerDifferential R S) := inferInstanceAs <|
+  AddCommGroup (KaehlerDifferential.ideal R S).Cotangent
 
 instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
   Ideal.Cotangent.moduleOfTower _
