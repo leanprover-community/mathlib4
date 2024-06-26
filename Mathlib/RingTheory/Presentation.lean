@@ -5,7 +5,10 @@ Authors: Christian Merten
 -/
 import Mathlib.RingTheory.Generators
 import Mathlib.RingTheory.FinitePresentation
-
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.RingHom.Surjective
 /-!
 
 # Presentations of algebras
@@ -56,6 +59,10 @@ protected abbrev Ideal : Ideal P.Ring := RingHom.ker <| algebraMap P.Ring S
 lemma ideal_eq_span_range_relation : P.Ideal = Ideal.span (Set.range <| P.relation) :=
   P.ker_algebraMap_eq_span_range_relation
 
+lemma algebraMap_relation (i) : algebraMap (MvPolynomial P.vars R) S (P.relation i) = 0 := by
+  rw [← RingHom.mem_ker, ker_algebraMap_eq_span_range_relation]
+  exact Ideal.subset_span ⟨i, rfl⟩
+
 /-- The polynomial algebra wrt a family of generators module a family of relations. -/
 protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.Ideal
 
@@ -105,4 +112,97 @@ is standard smooth.
 noncomputable def dimension : ℕ :=
   Nat.card P.vars - Nat.card P.relations
 
-end Algebra.Presentation
+open TensorProduct
+
+noncomputable
+def foo {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+    (P : Generators R S) : Generators T (T ⊗[R] S) := by
+  --apply surjective_stableUnderBaseChange
+  apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
+  intro x
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨0, map_zero _⟩
+  | tmul a b =>
+    let X := P.σ b
+    use a • MvPolynomial.map (algebraMap R T) X
+    simp [X]
+    rw [aeval_map_algebraMap]
+    have : ∀ y : P.Ring,
+      aeval (fun x ↦ (1 ⊗ₜ[R] P.val x : T ⊗[R] S)) y = 1 ⊗ₜ aeval (fun x ↦ P.val x) y := by
+      intro y
+      induction y using MvPolynomial.induction_on with
+      | h_C a =>
+        rw [aeval_C, aeval_C]
+        show algebraMap R T a ⊗ₜ 1 = _
+        rw [algebraMap_eq_smul_one, smul_tmul, algebraMap_eq_smul_one]
+      | h_add p q hp hq =>
+        simp [tmul_add]
+        rw [hp, hq]
+      | h_X p i hp =>
+        rw[_root_.map_mul, hp]
+        rw[aeval_X]
+        rw[_root_.map_mul, aeval_X]
+        simp
+    rw[this, P.aeval_val_σ, smul_tmul', smul_eq_mul, mul_one]
+  | add x y ex ey =>
+    obtain ⟨a, ha⟩ := ex
+    obtain ⟨b, hb⟩ := ey
+    use (a + b)
+    rw[map_add, ha, hb]
+
+set_option synthInstance.maxHeartbeats 1000000
+set_option maxHeartbeats 10000000000
+noncomputable
+def foo2 {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+    (P : Presentation R S) : Presentation T (T ⊗[R] S) where
+  __ := foo P.toGenerators
+  relations := P.relations
+  relation := fun i ↦ MvPolynomial.map (algebraMap R T) (P.relation i)
+  ker_algebraMap_eq_span_range_relation := by
+    dsimp
+    apply le_antisymm
+    · intro x hx
+      rw [RingHom.mem_ker] at hx
+      have H := Algebra.TensorProduct.lTensor_ker (A := T) (IsScalarTower.toAlgHom R P.Ring S) P.algebraMap_surjective
+
+      let e := MvPolynomial.algebraTensorAlgEquiv (R := R) (σ := P.vars) (A := T)
+      have H' : e.symm x ∈ RingHom.ker (TensorProduct.map (AlgHom.id R T) (IsScalarTower.toAlgHom R P.Ring S)) := by
+        rw [RingHom.mem_ker, ← hx]
+        clear hx
+        induction x using MvPolynomial.induction_on with
+        | h_C a =>
+          simp only [Generators.algebraMap_apply, algHom_C, TensorProduct.algebraMap_apply,
+            id.map_eq_id, RingHom.id_apply, e]
+          erw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
+          simp
+        | h_add p q hp hq =>
+          simp only [map_add]
+          rw[hp, hq]
+
+
+        | h_X p i hp =>
+          repeat rw[_root_.map_mul]
+          rw[hp]
+          simp [e]
+          rfl
+        -- have Z : ∀ x : MvPolynomial (P.vars) (T), (algebraMap (MvPolynomial (foo P.toGenerators).vars T) x =
+      erw [H, ker_algebraMap_eq_span_range_relation] at H'
+      erw [← Ideal.mem_comap, Ideal.comap_symm, Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
+      convert H'
+      simp
+      rfl
+    · rw [Ideal.span_le]
+      intro x hx
+      obtain ⟨y, hy⟩ := hx
+      have Z := algebraMap_relation (P) y
+      apply_fun TensorProduct.includeRight (R := R) (A := T) at Z
+      rw [map_zero] at Z
+      show algebraMap _ _ x = 0
+      convert Z
+      rw [← hy]
+      simp
+      rw [aeval_map_algebraMap]
+      show _ = includeRight _
+      erw [map_aeval]
+      erw [includeRight.comp_algebraMap]
+      rfl
