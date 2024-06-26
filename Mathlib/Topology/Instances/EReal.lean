@@ -201,7 +201,7 @@ via the PR `#14125`, we need to:
 -- Rebase to master
 -- Uncomment this theorem
 -- Consider changing its name to `limsup_add_bot_of_ne_top` to stick to naming conventions
-
+-/
 theorem limsup_add_bot_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
     (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
     limsup (u+v) f = ⊥ := by
@@ -214,7 +214,6 @@ theorem limsup_add_bot_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {
   apply @EReal.limsup_add_le_lt₂ α f u v (x-y) y _ hy
   rw [h, ← EReal.coe_sub x y]
   exact EReal.bot_lt_coe (x-y)
--/
 
 /-
 TODO: Since `limsup_add_bot_ne_top` above is dependent from a lemma ported in
@@ -222,7 +221,7 @@ TODO: Since `limsup_add_bot_ne_top` above is dependent from a lemma ported in
 -- Wait for PR #14125 to be merged
 -- Rebase to master
 -- Uncomment this theorem
-
+-/
 theorem limsup_add_le_add_limsup {α : Type _} {f : Filter α} {u v : α → EReal}
     (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
@@ -253,7 +252,6 @@ theorem limsup_add_le_add_limsup {α : Type _} {f : Filter α} {u v : α → ERe
     rw [← limsup_v_real]; norm_cast; norm_cast at y_lt_x; linarith
   apply le_of_le_of_eq (EReal.limsup_add_le_lt₂ key₁ key₂); clear key₁ key₂ y_lt_x sum_lt_y
   rw [← limsup_v_real]; norm_cast; linarith
--/
 
 theorem ge_iff_le_forall_real_lt (x y : EReal) : y ≤ x ↔ ∀ (z : ℝ), (z < y) → (z ≤ x) := by
   constructor
