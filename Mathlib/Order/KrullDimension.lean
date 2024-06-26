@@ -27,7 +27,7 @@ sum of `-∞` and the Krull dimension of any other varieties.
 
 We could generalize the notion of Krull dimension to an arbitrary binary relation; many results
 in this file would generalize as well. But we don't think it would useful, so we only define
-Krull dimension of a partial order.
+Krull dimension of a preorder.
 -/
 
 section definitions
