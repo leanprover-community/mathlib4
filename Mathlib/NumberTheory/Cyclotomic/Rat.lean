@@ -576,7 +576,7 @@ variable (K p k)
 /-- We compute the absolute discriminant of a `p ^ k`-th cyclotomic field.
   Beware that in the cases `p ^ k = 1` and `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`.
   See also the results below. -/
-theorem absdiscr_prime_pow[IsCyclotomicExtension {p ^ k} ℚ K] :
+theorem absdiscr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {p ^ k} ℚ K
     NumberField.discr K =
     (-1) ^ ((p ^ k : ℕ).totient / 2) * p ^ ((p : ℕ) ^ (k - 1) * ((p - 1) * k - 1)) := by
