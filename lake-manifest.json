@@ -4,11 +4,7 @@
  [{"url": "https://github.com/leanprover-community/batteries",
    "type": "git",
    "subDir": null,
-<<<<<<< HEAD
-   "rev": "3055ff67f2dba9b6618931a1119966c50d0d323d",
-=======
    "rev": "555ec79bc6effe7009036184a5f73f7d8d4850ed",
->>>>>>> origin/master
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
@@ -26,11 +22,7 @@
   {"url": "https://github.com/leanprover-community/aesop",
    "type": "git",
    "subDir": null,
-<<<<<<< HEAD
-   "rev": "ffbc1fe11b9142518e0c217e6ea4b24aae9d83e1",
-=======
    "rev": "30619d94ce4a3d69cdb87bb1771562ca2e687cfa",
->>>>>>> origin/master
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
