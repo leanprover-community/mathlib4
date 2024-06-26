@@ -76,8 +76,8 @@ we define `mapEmbedding` and `mapEquiv` separately from `map`.
 ## Notes
 
 For finite matroids, both maps and comaps are a special case of a construction of
-Perfect (1969) in which a matroid structure can be transported across an arbitrary
-bipartite graph that may not correspond to a function at all [See Oxley, Thm 11.2.12].
+Perfect [perfect1969matroid] in which a matroid structure can be transported across an arbitrary
+bipartite graph that may not correspond to a function at all (See [oxley2011], Thm 11.2.12).
 It would have been nice to use this more general construction as a basis for the definition
 of both `Matroid.map` and `Matroid.comap`.
 
@@ -86,16 +86,18 @@ Specifically, if `M₁` and `M₂` are matroids on the same type `α`,
 and `f` is the natural function from `α ⊕ α` to `α`,
 then the images under `f` of the independent sets of the direct sum `M₁ ⊕ M₂` are
 the independent sets of a matroid if and only if the union of `M₁` and `M₂` is a matroid,
-and unions do not exist for some pairs of infinite matroids: see [1].
+and unions do not exist for some pairs of infinite matroids: see [aignerhorev2012infinite].
 For this reason, `Matroid.map` requires injectivity to be well-defined in general.
 
 ## TODO
 
 * Bundled matroid isomorphisms.
+* Maps of finite matroids across bipartite graphs.
 
 ## References
 
-[1] : E. Aigner-Horev, J. Carmesin, J. Fröhlic, Infinite Matroid Union, arXiv:1111.0602 [math.CO]
+[aignerhorev2012infinite] : E. Aigner-Horev, J. Carmesin, J. Fröhlic, Infinite Matroid Union,
+arXiv:1111.0602 [math.CO]
 -/
 
 open Set Function Set.Notation
@@ -109,36 +111,36 @@ Elements with the same (nonloop) image are parallel and the ground set is `f ⁻
 The matroids `M.comap f` and `M ↾ range f` have isomorphic simplifications;
 the preimage of each nonloop of `M ↾ range f` is a parallel class. -/
 def comap (N : Matroid β) (f : α → β) : Matroid α :=
-  IndepMatroid.matroid <| IndepMatroid.mk
-  ( E := f ⁻¹' N.E )
-  ( Indep := fun I ↦ N.Indep (f '' I) ∧ InjOn f I )
-  ( indep_empty := by simp )
-  ( indep_subset := fun I J h hIJ ↦ ⟨h.1.subset (image_subset _ hIJ), InjOn.mono hIJ h.2⟩ )
-  ( indep_aug := by
-    rintro I B ⟨hI, hIinj⟩ hImax hBmax
-    simp only [mem_maximals_iff, mem_setOf_eq, hI, hIinj, and_self, and_imp,
-      true_and, not_forall, exists_prop, exists_and_left] at hImax hBmax
+  IndepMatroid.matroid <|
+  { E := f ⁻¹' N.E
+    Indep := fun I ↦ N.Indep (f '' I) ∧ InjOn f I
+    indep_empty := by simp
+    indep_subset := fun I J h hIJ ↦ ⟨h.1.subset (image_subset _ hIJ), InjOn.mono hIJ h.2⟩
+    indep_aug := by
+      rintro I B ⟨hI, hIinj⟩ hImax hBmax
+      simp only [mem_maximals_iff, mem_setOf_eq, hI, hIinj, and_self, and_imp,
+        true_and, not_forall, exists_prop, exists_and_left] at hImax hBmax
 
-    obtain ⟨I', hI', hI'inj, hII', hne⟩ := hImax
+      obtain ⟨I', hI', hI'inj, hII', hne⟩ := hImax
 
-    have h₁ : ¬(N ↾ range f).Base (f '' I) := by
-      refine fun hB ↦ hne ?_
-      have h_im := hB.eq_of_subset_indep (by simpa) (image_subset _ hII')
-      rwa [hI'inj.image_eq_image_iff hII' Subset.rfl] at h_im
+      have h₁ : ¬(N ↾ range f).Base (f '' I) := by
+        refine fun hB ↦ hne ?_
+        have h_im := hB.eq_of_subset_indep (by simpa) (image_subset _ hII')
+        rwa [hI'inj.image_eq_image_iff hII' Subset.rfl] at h_im
 
-    have h₂ : (N ↾ range f).Base (f '' B) := by
-      refine Indep.base_of_forall_insert (by simpa using hBmax.1.1) ?_
-      rintro _ ⟨⟨e, heB, rfl⟩, hfe⟩ hi
-      rw [restrict_indep_iff, ← image_insert_eq] at hi
-      have hinj : InjOn f (insert e B) := by
-        rw [injOn_insert (fun heB ↦ hfe (mem_image_of_mem f heB))]; exact ⟨hBmax.1.2, hfe⟩
-      rw [hBmax.2 hi.1 hinj <| subset_insert _ _] at hfe; simp at hfe
+      have h₂ : (N ↾ range f).Base (f '' B) := by
+        refine Indep.base_of_forall_insert (by simpa using hBmax.1.1) ?_
+        rintro _ ⟨⟨e, heB, rfl⟩, hfe⟩ hi
+        rw [restrict_indep_iff, ← image_insert_eq] at hi
+        have hinj : InjOn f (insert e B) := by
+          rw [injOn_insert (fun heB ↦ hfe (mem_image_of_mem f heB))]; exact ⟨hBmax.1.2, hfe⟩
+        rw [hBmax.2 hi.1 hinj <| subset_insert _ _] at hfe; simp at hfe
 
-    obtain ⟨_, ⟨⟨e, he, rfl⟩, he'⟩, hei⟩ := Indep.exists_insert_of_not_base (by simpa) h₁ h₂
-    have heI : e ∉ I := fun heI ↦ he' (mem_image_of_mem f heI)
-    rw [← image_insert_eq, restrict_indep_iff] at hei
-    exact ⟨e, ⟨he, heI⟩, hei.1, (injOn_insert heI).2 ⟨hIinj, he'⟩⟩)
-  ( indep_maximal := by
+      obtain ⟨_, ⟨⟨e, he, rfl⟩, he'⟩, hei⟩ := Indep.exists_insert_of_not_base (by simpa) h₁ h₂
+      have heI : e ∉ I := fun heI ↦ he' (mem_image_of_mem f heI)
+      rw [← image_insert_eq, restrict_indep_iff] at hei
+      exact ⟨e, ⟨he, heI⟩, hei.1, (injOn_insert heI).2 ⟨hIinj, he'⟩⟩
+  indep_maximal := by
 
     rintro X - I ⟨hI, hIinj⟩ hIX
     obtain ⟨J, hJ⟩ := (N ↾ range f).existsMaximalSubsetProperty_indep (f '' X) (by simp)
@@ -155,8 +157,8 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       hJ₀X, and_imp, true_and]
     intro K hK hinj hIK hKX hJ₀K
     rw [← hinj.image_eq_image_iff hJ₀K Subset.rfl, hJ.2 hK (image_subset_range _ _)
-      (fun e he ↦ ⟨e, hIK he, rfl⟩) (image_subset _ hKX) (image_subset _ hJ₀K)] )
-  (subset_ground := fun I hI e heI  ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ )
+      (fun e he ↦ ⟨e, hIK he, rfl⟩) (image_subset _ hKX) (image_subset _ hJ₀K)]
+  subset_ground := fun I hI e heI  ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
 
 @[simp] lemma comap_indep_iff : (N.comap f).Indep I ↔ N.Indep (f '' I) ∧ InjOn f I := Iff.rfl
 
