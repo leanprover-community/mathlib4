@@ -17,6 +17,7 @@ open CategoryTheory MonoidalCategory Category
 
 universe v u v₁ u₁
 
+-- when cleaned up, this part should be moved to `ModuleCat.Monoidal.Basic`
 namespace ModuleCat
 
 variable {R : Type u} [CommRing R] {F G H K : ModuleCat.{u} R}
@@ -43,6 +44,14 @@ lemma tensor_ext {f g : F ⊗ G ⟶ H} (h : ∀ m n, f (m ⊗ₜ n) = g (m ⊗�
 @[simp]
 lemma tensorHom_tmul (f : F ⟶ G) (g : H ⟶ K) (a : F) (b : H) :
     (f ⊗ g) (a ⊗ₜ b) = f a ⊗ₜ g b := rfl
+
+lemma tensor_ext₃ {f g : F ⊗ G ⊗ H ⟶ K} (h : ∀ m n p, f (m ⊗ₜ (n ⊗ₜ p)) = g (m ⊗ₜ (n ⊗ₜ p))) :
+    f = g :=
+  sorry
+
+lemma tensor_ext₃' {f g : (F ⊗ G) ⊗ H ⟶ K} (h : ∀ m n p, f (m ⊗ₜ n ⊗ₜ p) = g (m ⊗ₜ n ⊗ₜ p)) :
+    f = g :=
+  sorry
 
 end ModuleCat
 
@@ -113,7 +122,12 @@ variable (F G H)
 
 def associator :
     tensorObj (tensorObj F G) H ≅ tensorObj F (tensorObj G H) :=
-  isoMk'' (fun X ↦ α_ (F.obj' X) (G.obj' X) (H.obj' X)) sorry
+  isoMk'' (fun X ↦ α_ (F.obj' X) (G.obj' X) (H.obj' X)) (by
+    intros X Y f
+    dsimp only [Functor.comp_obj, Functor.comp_map, evaluation_obj, ModuleCat.of_coe]
+    apply ModuleCat.tensor_ext₃'
+    intro a b c
+    sorry)
 
 def leftUnitor : tensorObj (unit _) F ≅ F :=
   isoMk'' (fun X ↦ λ_ (F.obj' X)) sorry
@@ -153,7 +167,7 @@ lemma evaluation_map_whiskerRight
 
 attribute [local ext] evaluation_jointly_faithful
 
--- are the next two declarations local or global?
+-- what is the scope of the next two, global, or only this file?
 attribute [-ext] Hom.ext
 attribute [-simp] evaluation_map
 
@@ -162,15 +176,6 @@ lemma evaluation_map_associator_hom (X : Cᵒᵖ) :
     Hom.app' (α_ F G H).hom X =
       by exact (α_ (F.obj' X) (G.obj' X) (H.obj' X)).hom := by
   rfl
-
-variable (F G H K)
-lemma pentagon :
-    (α_ F G H).hom ▷ K ≫ (α_ F (G ⊗ H) K).hom ≫ F ◁ (α_ G H K).hom =
-      (α_ (F ⊗ G) H K).hom ≫ (α_ F G (H ⊗ K)).hom := by
-  ext1 X
-  simp only [Functor.comp_obj, Functor.map_comp, evaluation_map_whiskerRight,
-    evaluation_map_associator_hom, evaluation_map_whiskerLeft]
-  apply MonoidalCategory.pentagon (F.obj' X) (G.obj' X) (H.obj' X) (K.obj' X)
 
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : PresheafOfModules.{u} (R ⋙ forget₂ _ _)}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃):
@@ -182,8 +187,24 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : PresheafOfModules.{
   exact MonoidalCategory.associator_naturality
     (Hom.app' f₁ X) (Hom.app' f₂ X) (Hom.app' f₃ X)
 
+variable (F G H K)
+
+lemma pentagon :
+    (α_ F G H).hom ▷ K ≫ (α_ F (G ⊗ H) K).hom ≫ F ◁ (α_ G H K).hom =
+      (α_ (F ⊗ G) H K).hom ≫ (α_ F G (H ⊗ K)).hom := by
+  ext1 X
+  simp only [Functor.comp_obj, Functor.map_comp, evaluation_map_whiskerRight,
+    evaluation_map_associator_hom, evaluation_map_whiskerLeft]
+  apply MonoidalCategory.pentagon (F.obj' X) (G.obj' X) (H.obj' X) (K.obj' X)
+
+lemma triangle : (α_ F (𝟙_ _) G).hom ≫ F ◁ (λ_ G).hom = (ρ_ F).hom ▷ G := by
+  ext1 X
+  simp only [Functor.map_comp, evaluation_map_associator_hom,
+    evaluation_map_whiskerLeft, evaluation_map_whiskerRight]
+  exact MonoidalCategory.triangle (F.obj' X) (G.obj' X)
+
 set_option maxHeartbeats 400000 in
-instance : MonoidalCategory (PresheafOfModules (R ⋙ forget₂ _ _)) where
+instance : MonoidalCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
   tensorHom_def _ _ := by ext1; simp [tensorHom_def]
   tensor_id _ _ := by ext1; simp; rfl
   tensor_comp f₁ f₂ g₁ g₂ := by ext1; simp
@@ -193,7 +214,7 @@ instance : MonoidalCategory (PresheafOfModules (R ⋙ forget₂ _ _)) where
   leftUnitor_naturality := sorry
   rightUnitor_naturality := sorry
   pentagon F G H K := pentagon F G H K
-  triangle := sorry
+  triangle F G := triangle F G
 
 end Monoidal
 
