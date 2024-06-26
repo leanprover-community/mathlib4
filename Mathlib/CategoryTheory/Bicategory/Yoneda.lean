@@ -90,7 +90,7 @@ def representable (x : B) : Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁} where
     simp [← triangle_assoc_comp_left]
 
 -- Could this be representable from normal coyoneda?
-@[simps?]
+@[simps]
 def StrongNatTrans.representable {x y : B} (f : x ⟶ y) : representable x ⟶ representable y where
   app z := (precomp z f.bop)
   naturality {a b} g := {
@@ -107,6 +107,9 @@ def StrongNatTrans.representable {x y : B} (f : x ⟶ y) : representable x ⟶ r
       rw [NatTrans.comp_app, NatTrans.id_app]
       simp
   }
+  naturality_naturality := sorry
+  naturality_id := sorry
+  naturality_comp := sorry
 
 -- TODO: invertible if f is?
 @[simps?]
@@ -157,24 +160,18 @@ def yoneda.prelaxFunctor : PrelaxFunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, 
 
 def yoneda : Pseudofunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁}) where
   toPrelaxFunctor := yoneda.prelaxFunctor
-  -- Here need some "app" iso constructor + (leftUnitorNatIso (bop a) ·)
-
-  mapId a := by
-    -- TODO: strongnattrans.IsoOfComponents?
-    -- apply OplaxNatTrans.ModificationIso.ofComponents (η := yoneda.prelaxFunctor.map (𝟙 a))
-    --   (θ := 𝟙 (yoneda.prelaxFunctor.obj a))
-    sorry
-
-      --(fun b => leftUnitorNatIso (bop a) b)
-  -- {
-  --   hom := {
-  --     app := fun b => by dsimp; apply (leftUnitorNatIso (bop a) b).hom
-  --     naturality := sorry
-  --   }
-  --   inv := sorry
-  --   hom_inv_id := sorry
-  --   inv_hom_id := sorry
-  -- }
+  mapId a := StrongNatTrans.isoOfComponents (η := yoneda.prelaxFunctor.map (𝟙 a))
+      (θ := 𝟙 (yoneda.prelaxFunctor.obj a)) (fun b => leftUnitorNatIso (bop a) b) <| by
+    intro a b f
+    apply NatTrans.ext
+    ext x
+    dsimp
+    rw [NatTrans.comp_app, NatTrans.comp_app, NatTrans.comp_app]
+    dsimp
+    rw [Cat.rightUnitor_hom_app, Cat.leftUnitor_inv_app]
+    simp only [Cat.comp_obj, postcomp_obj, eqToHom_refl, comp_id]
+    rw [@leftUnitor_comp]
+    rfl
   mapComp := sorry
   map₂_whisker_left := sorry
   map₂_whisker_right := sorry

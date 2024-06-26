@@ -213,6 +213,18 @@ lemma ext {F G : Pseudofunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀
     m = n :=
   OplaxNatTrans.ext w
 
+-- TODO: this should be deduced from functor to oplax modifications?
+def isoOfComponents {F G : Pseudofunctor B C} (η θ : F ⟶ G) (app : ∀ a, η.app a ≅ θ.app a)
+    (naturality : ∀ {a b} (f : a ⟶ b), F.toOplax.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
+        (η.naturality f).hom ≫ (app a).hom ▷ G.toOplax.map f) : η ≅ θ where
+  hom := { app := fun a => (app a).hom }
+  inv :=
+    { app := fun a => (app a).inv
+      naturality := fun {a b} f => by
+        simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
+
+  -- have := ModificationIso.ofComponents (η := η.toOplax) (θ := θ.toOplax) app naturality
+
 end
 
 end StrongNatTrans
