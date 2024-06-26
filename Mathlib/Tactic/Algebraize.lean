@@ -5,7 +5,12 @@ import Lean
 
 open Lean Elab Tactic Term Qq
 
+lemma RingHom.Finite.Algebraize (A B : Type*) [CommRing A] [CommRing B] {f : A →+* B}
+    (hf : f.Finite) : letI : Algebra A B := f.toAlgebra; Module.Finite A B :=
+  hf
+
 namespace Mathlib.Tactic
+
 
 def addAlgebraInstanceFromRingHom (t : Expr) : TacticM Unit := withMainContext do
   let u ← Meta.mkFreshLevelMVar
@@ -79,19 +84,70 @@ def addFiniteTypeInstance (t : Expr) : TacticM Unit := withMainContext do
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
-def toRingHomiveTypes : Array Expr := sorry
+-- q(.app nm _)
+-- name -> ident
 
--- WIP on searching through local context for types in a given array
-def addInstanceFromContext : TacticM Unit := withMainContext do
+def toRingHomiveTypes : Array Expr := #[q(RingHom.Finite), q(RingHom.FiniteType)]
+  -- #[(``RingHom.Finite, ``Module.Finite), (``RingHom.FiniteType, ``Algebra.FiniteType)]
+
+def addInstances (t : Expr) : TacticM Unit := withMainContext do
+  let u ← Meta.mkFreshLevelMVar
+  let v ← Meta.mkFreshLevelMVar
+  let A ← mkFreshExprMVarQ q(Type u)
+  let B ← mkFreshExprMVarQ q(Type v)
+  let _instA ← mkFreshExprMVarQ q(CommRing $A)
+  let _instB ← mkFreshExprMVarQ q(CommRing $B)
+  let f ← mkFreshExprMVarQ q($A →+* $B)
+  let _ ←
+    try let _pf ← assertDefEqQ t f
+    catch e => throwError e.toMessageData
+  let ft ← mkFreshExprMVarQ q(RingHom.FiniteType $f)
+  ft.mvarId!.assumption
+  let _algInstAB ← synthInstanceQ q(Algebra $A $B)
+  let _ ←
+    try let _ ← assertDefEqQ f q(algebraMap $A $B)
+    catch e => throwError e.toMessageData
+  try
+    let _ ← synthInstanceQ q(Algebra.FiniteType $A $B)
+  catch _ => liftMetaTactic fun mvarid => do
+    let nm ← mkFreshUserName `ftInst
+    let mvar ← mvarid.define nm q(Algebra.FiniteType $A $B) q($ft)
+    let (_, mvar) ← mvar.intro1P
+    return [mvar]
+
+def addInstance (oldname : Name) (args : Array Expr) (decl : LocalDecl) : TacticM Unit :=
+  withMainContext do
+    logInfo "hi"
+    liftMetaTactic fun mvarid => do
+      let nm ← mkFreshUserName `ftInst
+      -- let env ← getEnv
+      -- let some c := env.find? newname | throwError "Error"
+      -- let u ← Meta.mkFreshLevelMVarsFor c
+      let .const _ us := decl.type.getAppFn | throwError "Error"
+      let f := Meta.mkAppM (.const () us) args
+      let mvar ← mvarid.define nm f decl.toExpr
+      let (_, mvar) ← mvar.intro1P
+      return [mvar]
+
+#check mkAppN
+
+-- -- WIP on searching through local context for types in a given array
+def searchContext : TacticM Unit := withMainContext do
   let ctx ← MonadLCtx.getLCtx
   ctx.forM fun decl => do
     if decl.isImplementationDetail then
       return
-    let declExpr := decl.toExpr
-    let declType ← Lean.Meta.inferType declExpr
+    let declType := decl.type
+    -- let declType ← Lean.Meta.inferType declExpr
     for i in toRingHomiveTypes do
-      if ← Meta.isDefEq i declType then
-        return
+      let (nm, args) := declType.getAppFnArgs
+      if nm == i then
+        logInfo m!"declType: {declType}"
+        addInstance i args decl
+
+      -- if ← Meta.isDefEq i declType then
+      --   -- do something
+      --   return
     return
 
 syntax "algebraize" (ppSpace colGt term:max)* : tactic
@@ -112,13 +168,16 @@ elab_rules : tactic
       try addFiniteTypeInstance f
       catch _ => continue
 
-
 example {A B C D : Type*}
     [CommRing A] [CommRing B] [CommRing C] [CommRing D]
-    (f : A →+* B) (g : B →+* C) (h : C →+* D) (hf : f.FiniteType) (hhg : (h.comp g).FiniteType)
-    (hh : (h.comp g).comp f |>.FiniteType) :
+    (f : A →+* B)
+    --(g : B →+* C) (h : C →+* D)
+    (hf : f.FiniteType) : --(hhg : (h.comp g).FiniteType)
+    --(hh : (h.comp g).comp f |>.FiniteType) :
     True := by
-  algebraize f g h (g.comp f) (h.comp g) (h.comp (g.comp f))
+  algebraize f
+
+  --g h (g.comp f) (h.comp g) (h.comp (g.comp f))
   trivial
 
 /-
