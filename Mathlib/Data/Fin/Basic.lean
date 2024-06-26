@@ -404,38 +404,14 @@ theorem le_rev_iff {i j : Fin n} : i ≤ rev j ↔ j ≤ rev i := by
 
 @[simp] theorem val_rev_zero [NeZero n] : ((rev 0 : Fin n) : ℕ) = n.pred := rfl
 
-instance [NeZero n] : BoundedOrder (Fin n) where
-  top := rev 0
-  le_top i := Nat.le_pred_of_lt i.is_lt
-  bot := 0
-  bot_le := Fin.zero_le'
-
-instance : Lattice (Fin n) :=
-  LinearOrder.toLattice
-
-@[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
-@[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
-
 #align fin.last_pos Fin.last_pos
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
 
 theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
-theorem one_lt_last [NeZero n] : 1 < last (n + 1) := (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
-
-theorem bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := rfl
-#align fin.bot_eq_zero Fin.bot_eq_zero
-
-theorem top_eq_rev_zero (n : ℕ) [NeZero n] : ⊤ = rev (0 : Fin n) := rfl
-
-theorem top_eq_last (n : ℕ) : ⊤ = last n := rfl
-#align fin.top_eq_last Fin.top_eq_last
-
-/- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
-`[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
-require a change to the standard library, defining `NeZero n` and thus re-defining `last n`
-(and possibly make its argument implicit) as `rev 0`, of type `Fin n`. As we can see from these
-lemmas, this would be definitionally equal to the existing definition. -/
+theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
+  rw [lt_iff_val_lt_val, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
+  exact NeZero.ne n
 
 end Order
 
