@@ -1287,28 +1287,28 @@ theorem left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 
 theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
   symm
-  constructor
-  · exact fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z)
-  · intro h
-    induction x using EReal.rec
-    · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
-      intro z
-      specialize h (z-1) (bot_lt_coe (z-1))
-      apply lt_of_le_of_lt h
-      rw [EReal.coe_lt_coe_iff]
-      exact sub_one_lt z
-    · induction y using EReal.rec
-      · exact bot_le
-      · norm_cast
-        norm_cast at h
-        by_contra x_lt_y
-        rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, x_lt_z, z_lt_y⟩
-        specialize h z x_lt_z
-        exact not_le_of_lt z_lt_y h
-      · exfalso
-        specialize h (_+ 1) (EReal.coe_lt_coe_iff.2 (lt_add_one _))
-        exact not_le_of_lt (coe_lt_top (_ + 1)) h
-    · exact le_top
+  --constructor
+  refine ⟨fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z), ?_⟩
+  intro h
+  induction x using EReal.rec
+  · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
+    intro z
+    specialize h (z-1) (bot_lt_coe (z-1))
+    apply lt_of_le_of_lt h
+    rw [EReal.coe_lt_coe_iff]
+    exact sub_one_lt z
+  · induction y using EReal.rec
+    · exact bot_le
+    · norm_cast
+      norm_cast at h
+      by_contra x_lt_y
+      rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, x_lt_z, z_lt_y⟩
+      specialize h z x_lt_z
+      exact not_le_of_lt z_lt_y h
+    · exfalso
+      specialize h (_+ 1) (EReal.coe_lt_coe_iff.2 (lt_add_one _))
+      exact not_le_of_lt (coe_lt_top (_ + 1)) h
+  · exact le_top
 
 /-! ### Absolute value -/
 
