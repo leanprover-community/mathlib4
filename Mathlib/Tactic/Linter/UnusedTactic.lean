@@ -90,6 +90,7 @@ def allowed : HashSet SyntaxNodeKind:= HashSet.empty
   |>.insert `Lean.Parser.Tactic.traceState
   |>.insert `Mathlib.Tactic.tacticMatch_target_
   |>.insert `change?
+  |>.insert `«tactic#adaptation_note_»
 
 /--
 A list of blacklisted syntax kinds, which are expected to have subterms that contain
@@ -157,8 +158,6 @@ changed something. -/
 partial def eraseUsedTactics : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
---      dbg_trace "working on '{i.stx.getKind}': {i.stx}"
-     if let .original .. := i.stx.getHeadInfo then
       let stx := i.stx
       let kind := stx.getKind
       if let some r := stx.getRange? true then
@@ -166,13 +165,12 @@ partial def eraseUsedTactics : InfoTree → M Unit
         -- if the tactic is allowed to not change the goals
         then modify (·.erase r)
         else
-        --dbg_trace "{kind} {i.goalsAfter.map (·.name)} {i.goalsBefore.map (·.name)}"
         -- if the goals have changed
         if i.goalsAfter != i.goalsBefore
         then modify (·.erase r)
         -- bespoke check for `swap_var`: the only change that it does is
         -- in the usernames of local declarations, so we check the names before and after
-        else --dbg_trace "here";
+        else
         if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
                 (getNames i.mctxBefore != getNames i.mctxAfter)
         then modify (·.erase r)
