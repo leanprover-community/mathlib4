@@ -147,8 +147,14 @@ def glueData : GlueData where
     simp only [map_zero, _root_.map_one, Matrix.map_one, inv_one, Matrix.mul_one, of_apply,
       Prod.mk.eta]
     have heq : MvPolynomial.eval₂Hom (algebraMap K (Localization.Away (element K V r hr i i)))
-      (fun pq ↦ (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K) (Localization.Away
-      (element K V r hr i i))) (MvPolynomial.X pq)) = algebraMap _ _ := sorry
+        (fun pq ↦ (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K) (Localization.Away
+        (element K V r hr i i))) (MvPolynomial.X pq)) = algebraMap _ _ := by
+      ext a
+      · simp only [RingHom.coe_comp, MvPolynomial.coe_eval₂Hom, Function.comp_apply,
+        MvPolynomial.eval₂_C]
+        rw [← MvPolynomial.algebraMap_eq]
+        rw [← IsScalarTower.algebraMap_apply]
+      · simp only [MvPolynomial.eval₂Hom_X']
     simp_rw [heq]
     ext _
     simp only [RingHom.id_apply]
