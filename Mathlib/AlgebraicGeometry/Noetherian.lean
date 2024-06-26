@@ -126,12 +126,6 @@ theorem isLocallyNoetherian_of_affine_cover {S : Set X.affineOpens}
     apply isNoetherianRing_of_away
     assumption'
 
-lemma iSup_eq_top_iff_iUnion {S : Set X.affineOpens} :
-    (⨆ i ∈ S, i : Opens X) = ⊤ ↔ ⋃ i : S, (i : Set X) = Set.univ := by
-  rw [iSup_subtype']
-  rw [← Opens.coe_iSup]
-  exact Iff.symm Opens.coe_eq_univ
-
 /-- A scheme is locally Noetherian if and only if it is covered by affine opens whose sections
 are noetherian rings.
 
@@ -148,7 +142,6 @@ theorem isLocallyNoetherian_iff_of_affine_openCover {C : Scheme.OpenCover.{v, u}
     (hAff : ∀ (i : C.J), IsAffine (C.obj i)) :
     IsLocallyNoetherian X ↔
     ∀ (i : C.J), IsNoetherianRing (Scheme.Γ.obj (op <| C.obj i)) := by
-  -- FIXME: This proof is a bit of a mess
   constructor
   · intro h i
     let U := Scheme.Hom.opensRange (C.map i)
@@ -278,8 +271,7 @@ theorem isNoetherian_iff_of_finite_iSup_eq_top {S : Finset X.affineOpens}
     convert IsNoetherian.mk
     exact isLocallyNoetherian_of_affine_cover hS h
     constructor
-    have hUniv : ⋃ i : S, (i : Set X) = Set.univ := iSup_eq_top_iff_iUnion.mp hS
-    rw [← hUniv]
+    rw [← Opens.coe_top, ← hS, iSup_subtype', Opens.iSup_mk]
     apply isCompact_iUnion
     intro U
     apply isCompact_iff_isCompact_univ.mpr
