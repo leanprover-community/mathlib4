@@ -205,14 +205,14 @@ via the PR `#14125`, we need to:
 theorem limsup_add_bot_of_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
     (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) : limsup (u + v) f = ⊥ := by
   apply le_bot_iff.1
-  apply (EReal.le_iff_le_forall_real_gt ⊥ (limsup (u+v) f)).2
+  apply (le_iff_le_forall_real_gt ⊥ (limsup (u+v) f)).1
   intro x
-  rcases EReal.exists_between_coe_real (Ne.lt_top h') with ⟨y, ⟨hy, _⟩⟩
+  rcases exists_between_coe_real (h'.lt_top) with ⟨y, ⟨hy, _⟩⟩
   intro trash; clear trash
-  rw [← sub_add_cancel x y, EReal.coe_add (x-y) y, EReal.coe_sub x y]
-  apply @EReal.limsup_add_le_lt₂ α f u v (x-y) y _ hy
-  rw [h, ← EReal.coe_sub x y]
-  exact EReal.bot_lt_coe (x-y)
+  rw [← sub_add_cancel x y, coe_add (x-y) y, coe_sub x y]
+  apply @limsup_add_le_lt₂ α f u v (x-y) y _ hy
+  rw [h, ← coe_sub x y]
+  exact bot_lt_coe (x-y)
 
 /-
 TODO: Since `limsup_add_bot_of_ne_top` above is dependent from a lemma ported in
@@ -252,34 +252,34 @@ theorem limsup_add_le_add_limsup {α : Type _} {f : Filter α} {u v : α → ERe
   apply le_of_le_of_eq (EReal.limsup_add_le_lt₂ key₁ key₂); clear key₁ key₂ y_lt_x sum_lt_y
   rw [← limsup_v_real]; norm_cast; linarith
 
--- Put into Data/Real/EReal.lean ?
-theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
-  symm
-  refine ⟨fun  h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h , ?_⟩
-  intro h
-  induction' x using EReal.rec with x
-  · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
-    intro z
-    apply lt_of_not_le
-    intro z_le_y
-    apply not_le_of_lt (bot_lt_coe (z - 1))
-    specialize h (z-1)
-    apply h (lt_of_lt_of_le _ z_le_y)
-    norm_cast
-    exact sub_one_lt z
-  · induction' y using EReal.rec with y
-    · exact bot_le
-    · norm_cast
-      norm_cast at h
-      by_contra x_lt_y
-      rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, ⟨x_lt_z, z_lt_y⟩⟩
-      specialize h z z_lt_y
-      exact not_le_of_lt x_lt_z h
-    · exfalso
-      specialize h (x + 1) (coe_lt_top (x+1))
-      norm_cast at h
-      exact not_le_of_lt (lt_add_one x) h
-  · exact le_top
+-- -- Put into Data/Real/EReal.lean ?
+-- theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
+--   symm
+--   refine ⟨fun  h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h , ?_⟩
+--   intro h
+--   induction' x using EReal.rec with x
+--   · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
+--     intro z
+--     apply lt_of_not_le
+--     intro z_le_y
+--     apply not_le_of_lt (bot_lt_coe (z - 1))
+--     specialize h (z-1)
+--     apply h (lt_of_lt_of_le _ z_le_y)
+--     norm_cast
+--     exact sub_one_lt z
+--   · induction' y using EReal.rec with y
+--     · exact bot_le
+--     · norm_cast
+--       norm_cast at h
+--       by_contra x_lt_y
+--       rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, ⟨x_lt_z, z_lt_y⟩⟩
+--       specialize h z z_lt_y
+--       exact not_le_of_lt x_lt_z h
+--     · exfalso
+--       specialize h (x + 1) (coe_lt_top (x+1))
+--       norm_cast at h
+--       exact not_le_of_lt (lt_add_one x) h
+--   · exact le_top
 
 lemma liminf_add_ge_gt₂ {α : Type _} {f : Filter α} {u v : α → EReal} {a b : EReal}
     (ha : a < liminf u f) (hb : b < liminf v f) : a + b ≤ liminf (u + v) f := by
