@@ -422,6 +422,7 @@ import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.LinearMap.Polynomial
+import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.LocalizedModuleIntegers
 import Mathlib.Algebra.Module.MinimalAxioms
@@ -605,6 +606,7 @@ import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.Algebra.Polynomial.CancelLeads
 import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.Algebra.Polynomial.Coeff
@@ -1870,7 +1872,6 @@ import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Array.ExtractLemmas
 import Mathlib.Data.Array.Lemmas
-import Mathlib.Data.BinaryHeap
 import Mathlib.Data.BitVec
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
