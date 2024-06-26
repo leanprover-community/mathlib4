@@ -6,8 +6,6 @@ set_option autoImplicit true
 private axiom test_sorry : ∀ {α}, α
 namespace Tests
 
--- mutes `'with_reducible whnf' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 example : id (1 = 1) := by
   with_reducible whnf
   guard_target =ₛ id (1 = 1)
@@ -57,8 +55,6 @@ example : let x := 1; let y := 2; x + y = y + x := by
   guard_target =ₛ 1 + 2 = 2 + 1
   rfl
 
--- mutes `'unfold_let x' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 example : let x := 1; let y := 2 + x; y = 3 := by
   intro x y
   unfold_let x
@@ -131,8 +127,6 @@ example {α : Type u} (f : α → α) (a : α) :
   guard_target =ₛ f a = f a
   rfl
 
--- mutes `'eta_expand' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 example (f : Nat → Nat) : (fun a => f a) = (fun a => f (f a)) := by
   eta_expand
   guard_target =ₛ (fun a => f a) = (fun a => f (f a))

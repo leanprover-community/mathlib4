@@ -567,15 +567,11 @@ example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
   change _ at h₁
   linarith
 
--- mutes `'linarith [p _ garbage]' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /-- error: unknown identifier 'garbage' -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   linarith [p _ garbage]
 
--- mutes `'nlinarith [p _ garbage]' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /-- error: unknown identifier 'garbage' -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
@@ -597,8 +593,6 @@ p : ℤ → 1 = 2
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   linarith [p _]
 
--- mutes `'linarith [p ?a]' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /--
 error: Argument passed to linarith has metavariables:
   p ?a
@@ -607,8 +601,6 @@ error: Argument passed to linarith has metavariables:
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   linarith [p ?a]
 
--- mutes `'nlinarith [p ?a]' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /--
 error: Argument passed to nlinarith has metavariables:
   p ?a
