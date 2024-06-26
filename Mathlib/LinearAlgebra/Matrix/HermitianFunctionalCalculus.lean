@@ -80,13 +80,25 @@ lemma Matrix.spectrum_diagonal (d : n → R) :
 end SpectrumDiagonal
 namespace Matrix
 
-variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+variable {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜}
+
+lemma finite_real_spectrum : (spectrum ℝ A).Finite := by
+  rw [← spectrum.preimage_algebraMap 𝕜]
+  exact A.finite_spectrum.preimage (NoZeroSMulDivisors.algebraMap_injective ℝ 𝕜).injOn
+
+instance : Finite (spectrum ℝ A) := A.finite_real_spectrum
 
 namespace IsHermitian
 
-variable [DecidableEq n]
+variable (hA : IsHermitian A)
 
-variable {A : Matrix n n 𝕜} (hA : IsHermitian A)
+/-- The ℝ-spectrum of a Hermitian Matrix over RCLike field is the range of the eigenvalue function-/
+theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
+    (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
+  ext x
+  conv_lhs => rw [ha.spectral_theorem, unitary.spectrum.unitary_conjugate,
+  ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
+  simp
 
 /--Eigenvalues of a Hermitian Matrix, coerced, belong to the spectrum of the assoc.toEuclideanLin -/
 theorem ofReal_eigenvalue_mem_spectrum_toEuclideanLin (i : n) :
@@ -146,29 +158,6 @@ noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) 
     ext
     simp
 
-/- The following three results can go into the Spectrum file right before `end Decidable Eq`. Rather
-than creating a dependent PR, we can wait until the diagonal spectrum PR merges.-/
-
-/-- The ℝ-spectrum of a Hermitian Matrix over RCLike field is the range of the eigenvalue function-/
-theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
-    (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
-  ext x
-  conv_lhs => rw [ha.spectral_theorem, unitary.spectrum.unitary_conjugate,
-  ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
-  simp
-
-/--The ℝ-spectrum of an n x n Hermitian matrix is finite. -/
-theorem finite_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a).Finite := by
-  have H := Set.finite_range (ha.eigenvalues)
-  exact (ha.eigenvalues_eq_spectrum).symm ▸ H
-
-/-- The ℝ-spectrum of an n x n Hermitian matrix over an RCLike field is a compact space. -/
-theorem compact_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : CompactSpace (spectrum ℝ a) := by
-  convert Finite.compactSpace (X := spectrum ℝ a)
-  refine Set.finite_coe_iff.mpr ?_
-  apply finite_spectrum
-  assumption
-
 /-- Instance of the Continuous Functional Calculus for a Hermitian Matrix over an RCLike field.-/
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
@@ -176,7 +165,6 @@ instance instContinuousFunctionalCalculus :
     refine ⟨cfc ha, ?closedEmbedding, ?mapId, ?map_spec, ?hermitian⟩
     case closedEmbedding =>
       have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
-        have : Finite (spectrum ℝ a) := by refine finite_spectrum ha
         apply FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ))
         exact DFunLike.coe_injective
       have hcfc : LinearMap.ker ha.cfc = ⊥ := by
@@ -204,7 +192,6 @@ instance instContinuousFunctionalCalculus :
         rw [← diagonal_zero] at h2
         have := (diagonal_eq_diagonal_iff).mp h2
         exact RCLike.ofReal_eq_zero.mp (this i)
-      have H := ha.compact_spectrum
       apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
         (F := Matrix n n 𝕜) (f := ha.cfc) hcfc
     case mapId =>
