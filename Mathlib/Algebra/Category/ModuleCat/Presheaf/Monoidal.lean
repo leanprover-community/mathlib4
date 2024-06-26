@@ -45,13 +45,9 @@ lemma tensor_ext {f g : F ⊗ G ⟶ H} (h : ∀ m n, f (m ⊗ₜ n) = g (m ⊗�
 lemma tensorHom_tmul (f : F ⟶ G) (g : H ⟶ K) (a : F) (b : H) :
     (f ⊗ g) (a ⊗ₜ b) = f a ⊗ₜ g b := rfl
 
-lemma tensor_ext₃ {f g : F ⊗ G ⊗ H ⟶ K} (h : ∀ m n p, f (m ⊗ₜ (n ⊗ₜ p)) = g (m ⊗ₜ (n ⊗ₜ p))) :
-    f = g :=
-  sorry
-
 lemma tensor_ext₃' {f g : (F ⊗ G) ⊗ H ⟶ K} (h : ∀ m n p, f (m ⊗ₜ n ⊗ₜ p) = g (m ⊗ₜ n ⊗ₜ p)) :
     f = g :=
-  sorry
+  TensorProduct.ext_threefold h
 
 end ModuleCat
 
