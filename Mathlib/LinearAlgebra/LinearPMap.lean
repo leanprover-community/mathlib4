@@ -948,9 +948,11 @@ theorem le_graph_iff {f g : E →ₗ.[R] F} : f.graph ≤ g.graph ↔ f ≤ g :=
 #align linear_pmap.le_graph_iff LinearPMap.le_graph_iff
 
 theorem eq_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) : f = g := by
-  ext _ _ h'
+  ext
   · exact mem_domain_iff_of_eq_graph h
-  · exact (le_of_le_graph h.le).2 h'
+  · apply (le_of_le_graph h.le).2
+    assumption
+
 #align linear_pmap.eq_of_eq_graph LinearPMap.eq_of_eq_graph
 
 end Graph
