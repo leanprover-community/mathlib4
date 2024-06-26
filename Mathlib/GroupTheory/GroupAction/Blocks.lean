@@ -395,10 +395,12 @@ theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
   simp_rw [IsBlock.def_one, or_iff_not_imp_right, Set.not_disjoint_iff]
   rintro g ⟨-, ⟨-, ⟨h₁, rfl⟩, h⟩, ⟨h₂, rfl⟩⟩
-  simp_rw [← inv_smul_eq_iff, H.smul_def, ← mul_smul] at h
-  specialize hH h
-  rw [mul_mem_cancel_left h₂⁻¹.2, mul_mem_cancel_right h₁.2] at hH
-  rw [← Subgroup.coe_mk H g hH, ← H.smul_def, smul_orbit (⟨g, hH⟩ : H) a]
+  suffices g ∈ H by
+    rw [← Subgroup.coe_mk H g this, ← H.smul_def, smul_orbit (⟨g, this⟩ : H) a]
+  rw [← mul_mem_cancel_left h₂⁻¹.2, ← mul_mem_cancel_right h₁.2]
+  apply hH
+  simp only [mem_stabilizer_iff, InvMemClass.coe_inv, mul_smul, inv_smul_eq_iff]
+  exact h
 
 /-- If `B` is a block containing `a`, then the stabilizer of `B` contains the stabilizer of `a` -/
 theorem IsBlock.stabilizer_le {B : Set X} (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
@@ -407,7 +409,8 @@ theorem IsBlock.stabilizer_le {B : Set X} (hB : IsBlock G B) {a : X} (ha : a ∈
   apply Or.resolve_right (hB.smul_eq_or_disjoint g)
   rw [Set.not_disjoint_iff]
   refine ⟨a, ?_, ha⟩
-  rw [← hg, Set.smul_mem_smul_set_iff]; exact ha
+  rw [← hg, Set.smul_mem_smul_set_iff]
+  exact ha
 
 /-- A block containing `a` is the orbit of `a` under its stabilizer -/
 theorem IsBlock.orbit_stabilizer_eq
