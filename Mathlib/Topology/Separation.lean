@@ -216,8 +216,9 @@ theorem HasSeparatingCover.mono {s₁ s₂ t₁ t₂ : Set X} (sc_st : HasSepara
   exact
     ⟨u,
      s_sub.trans u_cov,
-     fun n ↦ ⟨(u_props n).1,
-     disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
+     fun n ↦
+       ⟨(u_props n).1,
+        disjoint_of_subset (fun ⦃_⦄ a ↦ a) t_sub (u_props n).2⟩⟩
 
 namespace SeparatedNhds
 
