@@ -2566,20 +2566,16 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
 
 end CompletelyNormal
 
-
-/-- TODO wire this up with GDelta.lean --/
-def IsGδ₂ (s : Set X) : Prop :=
-    ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
-
 section PerfectlyNormal
 
 /-- A topological space `X` is a *perfectly normal space* provided it is normal and
 closed sets are Gδ. -/
 class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
-    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ₂ h
+    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
 
+/-- Lemma that allows the easy conclusion that perfectly normal spaces are completely normal. -/
 theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpace X]
-    (st_dis : Disjoint s t) (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : HasSeparatingCover s t := by
+    (st_dis : Disjoint s t) (t_cl : IsClosed t) (t_gd : IsGδ t) : HasSeparatingCover s t := by
   obtain ⟨T, T_open, T_count, T_int⟩ := t_gd
   rcases T.eq_empty_or_nonempty with rfl | T_nonempty
   · rw [T_int, sInter_empty] at st_dis
