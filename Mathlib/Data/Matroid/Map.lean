@@ -140,25 +140,25 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       have heI : e ∉ I := fun heI ↦ he' (mem_image_of_mem f heI)
       rw [← image_insert_eq, restrict_indep_iff] at hei
       exact ⟨e, ⟨he, heI⟩, hei.1, (injOn_insert heI).2 ⟨hIinj, he'⟩⟩
-  indep_maximal := by
+    indep_maximal := by
 
-    rintro X - I ⟨hI, hIinj⟩ hIX
-    obtain ⟨J, hJ⟩ := (N ↾ range f).existsMaximalSubsetProperty_indep (f '' X) (by simp)
-      (f '' I) (by simpa) (image_subset _ hIX)
+      rintro X - I ⟨hI, hIinj⟩ hIX
+      obtain ⟨J, hJ⟩ := (N ↾ range f).existsMaximalSubsetProperty_indep (f '' X) (by simp)
+        (f '' I) (by simpa) (image_subset _ hIX)
 
-    simp only [restrict_indep_iff, image_subset_iff, mem_maximals_iff, mem_setOf_eq, and_imp] at hJ
+      simp only [restrict_indep_iff, image_subset_iff, mem_maximals_iff, mem_setOf_eq, and_imp] at hJ
 
-    obtain ⟨J₀, hIJ₀, hJ₀X, hbj⟩ := hIinj.bijOn_image.exists_extend_of_subset hIX
-      (image_subset f hJ.1.2.1) (image_subset_iff.2 <| preimage_mono hJ.1.2.2)
+      obtain ⟨J₀, hIJ₀, hJ₀X, hbj⟩ := hIinj.bijOn_image.exists_extend_of_subset hIX
+        (image_subset f hJ.1.2.1) (image_subset_iff.2 <| preimage_mono hJ.1.2.2)
 
-    have him := hbj.image_eq; rw [image_preimage_eq_of_subset hJ.1.1.2] at him; subst him
-    use J₀
-    simp only [mem_maximals_iff, mem_setOf_eq, hJ.1.1.1, hbj.injOn, and_self, hIJ₀,
-      hJ₀X, and_imp, true_and]
-    intro K hK hinj hIK hKX hJ₀K
-    rw [← hinj.image_eq_image_iff hJ₀K Subset.rfl, hJ.2 hK (image_subset_range _ _)
-      (fun e he ↦ ⟨e, hIK he, rfl⟩) (image_subset _ hKX) (image_subset _ hJ₀K)]
-  subset_ground := fun I hI e heI  ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
+      have him := hbj.image_eq; rw [image_preimage_eq_of_subset hJ.1.1.2] at him; subst him
+      use J₀
+      simp only [mem_maximals_iff, mem_setOf_eq, hJ.1.1.1, hbj.injOn, and_self, hIJ₀,
+        hJ₀X, and_imp, true_and]
+      intro K hK hinj hIK hKX hJ₀K
+      rw [← hinj.image_eq_image_iff hJ₀K Subset.rfl, hJ.2 hK (image_subset_range _ _)
+        (fun e he ↦ ⟨e, hIK he, rfl⟩) (image_subset _ hKX) (image_subset _ hJ₀K)]
+    subset_ground := fun I hI e heI  ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
 
 @[simp] lemma comap_indep_iff : (N.comap f).Indep I ↔ N.Indep (f '' I) ∧ InjOn f I := Iff.rfl
 
