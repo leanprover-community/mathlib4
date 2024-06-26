@@ -28,8 +28,8 @@ which are lattices with only two elements, and related ideas.
   * `IsCoatomic` indicates that every element other than `⊤` is below a coatom.
   * `IsAtomistic` indicates that every element is the `sSup` of a set of atoms.
   * `IsCoatomistic` indicates that every element is the `sInf` of a set of coatoms.
-  * `IsStronglyAtomic` indicates that for all `a < b`, `[a,b]` contains something covering `a`.
-  * `IsStronglyCoatomic` indicates that for all `a < b`, `[a,b]` contains something covered by `b`.
+  * `IsStronglyAtomic` indicates that for all `a < b`, `Icc a b` contains something covering `a`.
+  * `IsStronglyCoatomic` indicates that for all `a < b`, `Icc a b` contains something covered by `b`.
 
 ### Simple Lattices
   * `IsSimpleOrder` indicates that an order has only two unique elements, `⊥` and `⊤`.
