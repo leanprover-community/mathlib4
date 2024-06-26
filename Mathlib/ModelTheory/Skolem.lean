@@ -113,7 +113,7 @@ open Substructure
 variable (L) (M)
 
 instance Substructure.elementarySkolem₁Reduct.instSmall :
-    Small (⊥ : (L.sum L.skolem₁).Substructure M).elementarySkolem₁Reduct := by
+    Small.{max u v} (⊥ : (L.sum L.skolem₁).Substructure M).elementarySkolem₁Reduct := by
   rw [coeSort_elementarySkolem₁Reduct]
   infer_instance
 #align first_order.language.elementary_skolem₁_reduct.small FirstOrder.Language.Substructure.elementarySkolem₁Reduct.instSmall
