@@ -57,7 +57,7 @@ namespace AlgebraicGeometry
 /-- A scheme `X` is locally Noetherian if `𝒪ₓ(U)` is Noetherian for all affine `U`. -/
 class IsLocallyNoetherian (X : Scheme) : Prop where
   component_noetherian : ∀ (U : X.affineOpens),
-    IsNoetherianRing (X.presheaf.obj (op U)) := by infer_instance
+    IsNoetherianRing Γ(X, U) := by infer_instance
 
 section localizationProps
 
@@ -109,17 +109,13 @@ theorem isLocallyNoetherian_of_affine_cover {S : Set X.affineOpens}
     (hS : (⨆ i ∈ S, i : Opens X) = ⊤)
     (hS' : ∀ U ∈ S, IsNoetherianRing Γ(X, U)) : IsLocallyNoetherian X := by
   refine ⟨fun U => ?_⟩
-  have hS : ⋃ i : S, (i : Set X) = Set.univ := by
-    rw [← (Opens.coe_iSup _)]
-    apply Opens.coe_eq_univ.mpr
-    rw [iSup_subtype'] at hS
-    exact hS
-  apply of_affine_open_cover (P := _) U S _ _ hS (fun U => hS' U.1 U.2)
+  rw [iSup_subtype'] at hS
+  apply of_affine_open_cover (P := _) (fun i : S => i) hS U _ _ (fun U => hS' U.1 U.2)
   · intro U f hN
     have := U.prop.isLocalization_basicOpen f
     exact IsLocalization.isNoetherianRing (.powers f) Γ(X, X.basicOpen f) hN
   · intro U s _ hN
-    let R := X.presheaf.obj (op U)
+    let R := Γ(X, U)
     have : ∀ f : s, IsNoetherianRing (Away (M := R) f) := by
       intro ⟨f, hf⟩
       have : IsNoetherianRing Γ(X, X.basicOpen f) := hN ⟨f, hf⟩
@@ -149,7 +145,7 @@ theorem isLocallyNoetherian_iff_of_iSup_eq_top
 open CategoryTheory in
 /-- A version of `isLocallyNoetherian_iff_of_iSup_eq_top` using `Scheme.OpenCover`. -/
 theorem isLocallyNoetherian_iff_of_affine_openCover {C : Scheme.OpenCover.{v, u} X}
-  (hAff : ∀ (i : C.J), IsAffine (C.obj i)) :
+    (hAff : ∀ (i : C.J), IsAffine (C.obj i)) :
     IsLocallyNoetherian X ↔
     ∀ (i : C.J), IsNoetherianRing (Scheme.Γ.obj (op <| C.obj i)) := by
   -- FIXME: This proof is a bit of a mess
@@ -189,35 +185,34 @@ theorem isLocallyNoetherian_of_openCover (C : Scheme.OpenCover.{u, u} X)
       convert isAffineOpen_opensRange (m.app i)
       exact isAffine_Spec _
     ⟩
-    have hNoeth: IsNoetherianRing (X.presheaf.obj (op U)) := by
+    have hNoeth: IsNoetherianRing Γ(X, U) := by
       apply (hC (m.idx i)).component_noetherian
-    apply isNoetherianRing_of_ringEquiv (R := X.presheaf.obj (op U))
+    apply isNoetherianRing_of_ringEquiv (R := Γ(X, U))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
     symm
     exact Scheme.openImmersionΓ (m.app i)
 
 /-- If `R` is a noetherian ring, `Spec R` is a noetherian topological space. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :
-    NoetherianSpace (Scheme.Spec.obj <| op R) := by
+    NoetherianSpace (Spec R) := by
   convert PrimeSpectrum.instNoetherianSpace (R := R)
 
 lemma noetherianSpace_of_isAffine [IsAffine X]
     (hX : IsNoetherianRing <| Scheme.Γ.obj (op X)) :
     NoetherianSpace X := by
   let R := Scheme.Γ.obj (op X)
-  let SpecR := Scheme.Spec.obj (op R)
-  suffices f : SpecR.carrier ≃ₜ X.carrier by
+  suffices f : (Spec R).carrier ≃ₜ X.carrier by
     apply (noetherianSpace_iff_of_homeomorph f).mp
     infer_instance
   apply TopCat.homeoOfIso
   exact CategoryTheory.asIso (Scheme.isoSpec X).symm.hom.val.base
 
 lemma noetherianSpace_of_affineOpen (U : X.affineOpens)
-    (hU : IsNoetherianRing (X.presheaf.obj (op U))) :
+    (hU : IsNoetherianRing Γ(X, U)) :
     NoetherianSpace U := by
   suffices h : IsNoetherianRing (Scheme.Γ.obj { unop := X ∣_ᵤ ↑U }) by
     exact noetherianSpace_of_isAffine h
-  apply isNoetherianRing_of_ringEquiv (R := X.presheaf.obj (op U))
+  apply isNoetherianRing_of_ringEquiv (R := Γ(X, U))
   apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
   exact ((Scheme.restrictFunctorΓ X).app (op U)).symm
 
@@ -228,7 +223,7 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
     {f : Z ⟶ X} [h : IsOpenImmersion f] : QuasiCompact f := by
   apply (quasiCompact_iff_forall_affine f).mpr
   intro U hU
-  rw [← Set.preimage_inter_range]
+  rw [Opens.map_coe, ← Set.preimage_inter_range]
   apply Inducing.isCompact_preimage'
   constructor
   exact h.base_open.induced
@@ -273,7 +268,7 @@ open Classical in
 sections are noetherian rings. -/
 theorem isNoetherian_iff_of_finite_iSup_eq_top {S : Finset X.affineOpens}
     (hS : (⨆ i ∈ S, i : Opens X) = ⊤) :
-    IsNoetherian X ↔ ∀ U ∈ S, IsNoetherianRing (X.presheaf.obj (op U)) := by
+    IsNoetherian X ↔ ∀ U ∈ S, IsNoetherianRing Γ(X, U) := by
   constructor
   · intro h _ hU
     apply (isLocallyNoetherian_iff_of_iSup_eq_top hS).mp
@@ -332,9 +327,9 @@ instance (priority := 100) quasiCompact_of_noetherianSpace_source {X Y : Scheme}
 
 /-- If `R` is a Noetherian ring, `Spec R` is a locally Noetherian scheme. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :
-    IsLocallyNoetherian (Scheme.Spec.obj (op R)) := by
-  let X := Scheme.Spec.obj (op R)
-  apply isLocallyNoetherian_of_affine_cover (S := {⟨⊤, AlgebraicGeometry.isAffineOpen_top X⟩})
+    IsLocallyNoetherian (Spec R) := by
+  apply isLocallyNoetherian_of_affine_cover (
+    S := {⟨⊤, AlgebraicGeometry.isAffineOpen_top (Spec R)⟩})
   simp only [Set.mem_singleton_iff, Opens.iSup_mk, Opens.carrier_eq_coe, Set.iUnion_iUnion_eq_left,
     Opens.coe_top, Opens.mk_univ]
   rintro _ rfl
@@ -343,21 +338,20 @@ instance {R : CommRingCat} [IsNoetherianRing R] :
   exact CategoryTheory.asIso (toSpecΓ R)
 
 instance (priority := 100) {R : CommRingCat}
-    [h : IsLocallyNoetherian (Scheme.Spec.obj (op R))] : IsNoetherianRing R := by
-  let X := Scheme.Spec.obj (op R)
-  have := h.component_noetherian ⟨⊤, AlgebraicGeometry.isAffineOpen_top X⟩
-  apply isNoetherianRing_of_ringEquiv (X.presheaf.obj (op ⊤))
+    [h : IsLocallyNoetherian <| Spec R] : IsNoetherianRing R := by
+  have := h.component_noetherian ⟨⊤, AlgebraicGeometry.isAffineOpen_top (Spec R)⟩
+  apply isNoetherianRing_of_ringEquiv Γ(Spec R, ⊤)
   apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
   exact (CategoryTheory.asIso (toSpecΓ R)).symm
 
 /-- If `R` is a Noetherian ring, `Spec R` is a Noetherian scheme. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :
-    IsNoetherian (Scheme.Spec.obj (op R)) where
+    IsNoetherian (Spec R) where
 
 
 /-- `R` is a Noetherian ring if and only if `Spec R` is a Noetherian scheme. -/
 theorem isNoetherian_Spec {R : CommRingCat} :
-    IsNoetherian (Scheme.Spec.obj (op R)) ↔ IsNoetherianRing R :=
+    IsNoetherian (Spec R) ↔ IsNoetherianRing R :=
   ⟨fun _ => by infer_instance,
    fun _ => by infer_instance⟩
 
