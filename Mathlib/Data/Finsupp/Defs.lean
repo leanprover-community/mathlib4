@@ -134,27 +134,13 @@ theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 #align finsupp.ext Finsupp.ext
 
-@[deprecated DFunLike.ext_iff (since := "2023-01-17")]
-theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
-  DFunLike.ext_iff
-#align finsupp.ext_iff Finsupp.ext_iff
+#align finsupp.ext_iff DFunLike.ext_iff
 
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
-@[deprecated DFunLike.coe_fn_eq (since := "2023-01-17")]
-theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
-  DFunLike.coe_fn_eq
-#align finsupp.coe_fn_inj Finsupp.coeFn_inj
-
-@[deprecated DFunLike.coe_injective (since := "2023-01-17")]
-theorem coeFn_injective : @Function.Injective (α →₀ M) (α → M) (⇑) :=
-  DFunLike.coe_injective
-#align finsupp.coe_fn_injective Finsupp.coeFn_injective
-
-@[deprecated DFunLike.congr_fun (since := "2023-01-17")]
-theorem congr_fun {f g : α →₀ M} (h : f = g) (a : α) : f a = g a :=
-  DFunLike.congr_fun h _
-#align finsupp.congr_fun Finsupp.congr_fun
+#align finsupp.coe_fn_inj DFunLike.coe_fn_eq
+#align finsupp.coe_fn_injective DFunLike.coe_injective
+#align finsupp.congr_fun DFunLike.congr_fun
 
 @[simp, norm_cast]
 theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0) : ⇑(⟨s, f, h⟩ : α →₀ M) = f :=

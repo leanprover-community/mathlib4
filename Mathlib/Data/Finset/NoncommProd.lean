@@ -420,8 +420,8 @@ theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Di
      = noncommProd ⟨↑(sl ++ tl), Multiset.coe_nodup.2 (sl'.append tl' h)⟩ f
          (by convert comm; simp [Set.ext_iff]) := noncommProd_congr (by ext; simp) (by simp) _
    _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 subset_union_left) *
-         noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 subset_union_right) :=
-    by simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl', h]
+         noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 subset_union_right) := by
+    simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl', h]
 #align finset.noncomm_prod_union_of_disjoint Finset.noncommProd_union_of_disjoint
 #align finset.noncomm_sum_union_of_disjoint Finset.noncommSum_union_of_disjoint
 

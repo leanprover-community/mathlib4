@@ -120,7 +120,7 @@ theorem mem_mk {s : Set M} {x : M} (h_mul) : x ∈ mk s h_mul ↔ x ∈ s :=
 #align subsemigroup.mem_mk Subsemigroup.mem_mk
 #align add_subsemigroup.mem_mk AddSubsemigroup.mem_mk
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_set_mk {s : Set M} (h_mul) : (mk s h_mul : Set M) = s :=
   rfl
 #align subsemigroup.coe_set_mk Subsemigroup.coe_set_mk
