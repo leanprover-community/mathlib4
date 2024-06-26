@@ -71,7 +71,7 @@ namespace PrimitiveSpectrum
 
 /- The set of relative-closed sets of the form `T ↓∩ Ici a` for some `a` in `α` is closed under
 pairwise union. -/
-lemma ici_union_ici_eq (a b : α) :
+lemma Ici_union_Ici_eq (a b : α) :
     (T ↓∩ Ici a) ∪ (T ↓∩ Ici b) = T ↓∩ Ici (a ⊓ b) := by
   ext p
   constructor <;> intro h
