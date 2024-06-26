@@ -29,7 +29,7 @@ variable {C D} [Category C] [Category D] (F : C ⥤ D)
   Comma.map (F₁ := F) (F₂ := 𝟭 _) (F := F) (𝟙 _) { app := fun _ ↦ 𝟙 _ }
 
 @[simp] lemma CategoryTheory.Functor.mapOver_hom (c : C) (c' : Over c) :
-    ((F.mapOver c).obj c').hom = F.map c'.hom := by aesop_cat
+    ((F.mapOver c).obj c').hom = F.map c'.hom := by simp
 
 /-- -/
 noncomputable def Algebra.schemeSpecOver : Over (Scheme.Spec.obj <| op <| CommRingCat.of R) :=

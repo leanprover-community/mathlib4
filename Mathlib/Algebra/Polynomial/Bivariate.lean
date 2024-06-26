@@ -134,6 +134,15 @@ open Ideal.Quotient in
     ((algHomPolynomial₂Equiv R A).image _).trans <|
     Equiv.setCongr <| by rw [Equiv.image_eq_preimage]; ext; simp; rfl
 
+lemma evalEvalRingHom_comp_map_mapRingHom_algebraMap {x y : A} :
+    (evalEvalRingHom x y).comp (mapRingHom <| mapRingHom <| algebraMap R A) =
+      (aevalAeval x y).toRingHom := by
+  ext <;> simp [aevalAeval]
+
+lemma evalEval_map_mapRingHom_algebraMap (x y : A) (p : R[X][Y]) :
+    evalEval x y (p.map <| mapRingHom <| algebraMap R A) = aevalAeval x y p :=
+  congr($evalEvalRingHom_comp_map_mapRingHom_algebraMap p)
+
 end
 
 end Polynomial
