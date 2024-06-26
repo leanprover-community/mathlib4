@@ -98,7 +98,7 @@ if it can accommodate such a clique. -/
 theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : G.IsTuranMaximal r) :
     ¬G.CliqueFree r := by
   rintro h
-  obtain ⟨K, _, rfl⟩ := exists_smaller_set (univ : Finset V) r hn
+  obtain ⟨K, _, rfl⟩ := exists_subset_card_eq hn
   obtain ⟨a, -, b, -, hab, hGab⟩ : ∃ a ∈ K, ∃ b ∈ K, a ≠ b ∧ ¬ G.Adj a b := by
     simpa only [isNClique_iff, IsClique, Set.Pairwise, mem_coe, ne_eq, and_true, not_forall,
       exists_prop, exists_and_right] using h K

@@ -37,12 +37,7 @@ import sys
 import re
 import shutil
 
-ERR_COP = 0 # copyright header
 ERR_MOD = 2 # module docstring
-ERR_LIN = 3 # line length
-ERR_AUT = 7 # malformed authors list
-ERR_TAC = 9 # imported Mathlib.Tactic
-ERR_TAC2 = 10 # imported Lake in Mathlib
 ERR_IBY = 11 # isolated by
 ERR_IWH = 22 # isolated where
 ERR_DOT = 12 # isolated or low focusing dot
@@ -53,7 +48,6 @@ ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NSP = 20 # non-terminal simp
-ERR_ADN = 25 # the string "Adaptation note"
 
 exceptions = []
 
@@ -65,23 +59,9 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
-        if errno == "ERR_COP":
-            exceptions += [(ERR_COP, path, None)]
-        elif errno == "ERR_MOD":
+        if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
-        elif errno == "ERR_LIN":
-            exceptions += [(ERR_LIN, path, None)]
-        elif errno == "ERR_OPT":
-            exceptions += [(ERR_OPT, path, None)]
-        elif errno == "ERR_AUT":
-            exceptions += [(ERR_AUT, path, None)]
-        elif errno == "ERR_ADN":
-            exceptions += [(ERR_ADN, path, None)]
-        elif errno == "ERR_TAC":
-            exceptions += [(ERR_TAC, path, None)]
-        elif errno == "ERR_TAC2":
-            exceptions += [(ERR_TAC2, path, None)]
-        elif errno == "ERR_NUM_LIN":
+        elif errno in ["ERR_LIN", "ERR_ADN", "ERR_NUM_LIN"]:
             pass # maintained by the Lean style linter now
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
@@ -224,17 +204,6 @@ def nonterminal_simp_check(lines, path):
     newlines.append(lines[-1])
     return errors, newlines
 
-def long_lines_check(lines, path):
-    errors = []
-    # TODO: find a good way to break long lines
-    # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
-    for line_nr, line in lines:
-        if "http" in line or "#align" in line:
-            continue
-        if len(line) > 101:
-            errors += [(ERR_LIN, line_nr, path)]
-    return errors, lines
-
 def import_only_check(lines, path):
     for _, line, is_comment in annotate_comments(lines):
         if is_comment:
@@ -250,34 +219,14 @@ def regular_check(lines, path):
     errors = []
     copy_started = False
     copy_done = False
-    copy_start_line_nr = 1
-    copy_lines = ""
     for line_nr, line in lines:
         if not copy_started and line == "\n":
-            errors += [(ERR_COP, copy_start_line_nr, path)]
             continue
         if not copy_started and line == "/-\n":
             copy_started = True
-            copy_start_line_nr = line_nr
             continue
-        if not copy_started:
-            errors += [(ERR_COP, line_nr, path)]
         if copy_started and not copy_done:
-            copy_lines += line
-            if "Author" in line:
-                # Validating names is not a reasonable thing to do,
-                # so we just look for the two common variations:
-                # using ' and ' between names, and a '.' at the end of line.
-                if ((not line.startswith("Authors: ")) or
-                    ("  " in line) or
-                    (" and " in line) or
-                    (line[-2] == '.')):
-                    errors += [(ERR_AUT, line_nr, path)]
             if line == "-/\n":
-                if ((not "Copyright" in copy_lines) or
-                    (not "Apache" in copy_lines) or
-                    (not "Authors: " in copy_lines)):
-                    errors += [(ERR_COP, copy_start_line_nr, path)]
                 copy_done = True
             continue
         if copy_done and line == "\n":
@@ -288,20 +237,6 @@ def regular_check(lines, path):
             break
         if words[0] == "/-!":
             break
-    return errors, lines
-
-def banned_import_check(lines, path):
-    errors = []
-    for line_nr, line, is_comment in annotate_comments(lines):
-        if is_comment:
-            continue
-        imports = line.split()
-        if imports[0] != "import":
-            break
-        if imports[1] in ["Mathlib.Tactic"]:
-            errors += [(ERR_TAC, line_nr, path)]
-        elif imports[1] == "Lake" or imports[1].startswith("Lake."):
-            errors += [(ERR_TAC2, line_nr, path)]
     return errors, lines
 
 def isolated_by_dot_semicolon_check(lines, path):
@@ -357,14 +292,6 @@ def left_arrow_check(lines, path):
         newlines.append((line_nr, new_line))
     return errors, newlines
 
-def adaptation_note_check(lines, path):
-    errors = []
-    for line_nr, line in lines:
-        # We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
-        if "daptation note" in line:
-            errors += [(ERR_ADN, line_nr, path)]
-    return errors, lines
-
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -385,18 +312,8 @@ def format_errors(errors):
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
-        if errno == ERR_COP:
-            output_message(path, line_nr, "ERR_COP", "Malformed or missing copyright header")
         if errno == ERR_MOD:
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
-        if errno == ERR_LIN:
-            output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_AUT:
-            output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
-        if errno == ERR_TAC:
-            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
-        if errno == ERR_TAC2:
-            output_message(path, line_nr, "ERR_TAC2", "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to allow this linter.")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_IWH:
@@ -417,8 +334,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
         if errno == ERR_NSP:
             output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
-        if errno == ERR_ADN:
-            output_message(path, line_nr, "ERR_ADN", 'Found the string "Adaptation note:", please use the #adaptation_note command instead')
 
 def lint(path, fix=False):
     global new_exceptions
@@ -430,18 +345,14 @@ def lint(path, fix=False):
         newlines = enum_lines
         for error_check in [line_endings_check,
                             four_spaces_in_second_line,
-                            long_lines_check,
                             isolated_by_dot_semicolon_check,
                             left_arrow_check,
-                            adaptation_note_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 
         if not import_only_check(newlines, path):
             errs, newlines = regular_check(newlines, path)
-            format_errors(errs)
-            errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:
