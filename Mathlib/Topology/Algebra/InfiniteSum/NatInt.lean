@@ -331,13 +331,13 @@ lemma HasProd.nat_mul_neg_add_one {f : ℤ → M} (hf : HasProd f m) :
   change HasProd (fun n : ℕ ↦ f n * f (Int.negSucc n)) m
   have : Injective Int.negSucc := @Int.negSucc.inj
   refine hf.hasProd_of_prod_eq fun u ↦ ?_
-  refine ⟨u.preimage _ (Nat.cast_injective.injOn _) ∪ u.preimage _ (this.injOn _),
+  refine ⟨u.preimage _ Nat.cast_injective.injOn ∪ u.preimage _ this.injOn,
       fun v' hv' ↦ ⟨v'.image Nat.cast ∪ v'.image Int.negSucc, fun x hx ↦ ?_, ?_⟩⟩
   · simp only [mem_union, mem_image]
     cases x
     · exact Or.inl ⟨_, hv' (by simpa using Or.inl hx), rfl⟩
     · exact Or.inr ⟨_, hv' (by simpa using Or.inr hx), rfl⟩
-  · rw [prod_union, prod_image (Nat.cast_injective.injOn _), prod_image (this.injOn _),
+  · rw [prod_union, prod_image Nat.cast_injective.injOn, prod_image this.injOn,
       prod_mul_distrib]
     simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const]
@@ -371,8 +371,7 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
     this (hi₂.hasProd_range_iff.mpr hf₂)
 #align has_sum.nonneg_add_neg HasSum.of_nat_of_neg_add_one
 
--- deprecated 2024-03-04
-@[deprecated] alias HasSum.nonneg_add_neg := HasSum.of_nat_of_neg_add_one
+@[deprecated (since := "2024-03-04")] alias HasSum.nonneg_add_neg := HasSum.of_nat_of_neg_add_one
 
 @[to_additive Summable.of_nat_of_neg_add_one]
 lemma Multipliable.of_nat_of_neg_add_one {f : ℤ → M}
@@ -457,9 +456,8 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
     _ = ∏ b ∈ v', (f b * f (-b)) := prod_mul_distrib.symm⟩
 #align has_sum.sum_nat_of_sum_int HasSum.nat_add_neg
 
--- deprecated 2024-03-04
-@[deprecated HasSum.nat_add_neg] alias HasSum.sum_nat_of_sum_int :=
-  HasSum.nat_add_neg
+@[deprecated HasSum.nat_add_neg (since := "2024-03-04")]
+alias HasSum.sum_nat_of_sum_int := HasSum.nat_add_neg
 
 @[to_additive]
 theorem Multipliable.nat_mul_neg {f : ℤ → M} (hf : Multipliable f) :
@@ -478,9 +476,8 @@ theorem HasProd.of_add_one_of_neg_add_one {f : ℤ → M}
   HasProd.of_nat_of_neg_add_one (mul_comm _ m ▸ HasProd.zero_mul hf₁) hf₂
 #align has_sum.pos_add_zero_add_neg HasSum.of_add_one_of_neg_add_one
 
--- deprecated 2024-03-04
-@[deprecated HasSum.of_add_one_of_neg_add_one] alias HasSum.pos_add_zero_add_neg :=
-  HasSum.of_add_one_of_neg_add_one
+@[deprecated HasSum.of_add_one_of_neg_add_one (since := "2024-03-04")]
+alias HasSum.pos_add_zero_add_neg := HasSum.of_add_one_of_neg_add_one
 
 @[to_additive Summable.of_add_one_of_neg_add_one]
 lemma Multipliable.of_add_one_of_neg_add_one {f : ℤ → M}
@@ -514,9 +511,8 @@ lemma Multipliable.of_nat_of_neg {f : ℤ → G} (hf₁ : Multipliable fun n : �
   (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).multipliable
 #align summable_int_of_summable_nat Summable.of_nat_of_neg
 
--- deprecated 2024-03-04
-@[deprecated Summable.of_nat_of_neg] alias summable_int_of_summable_nat :=
-  Summable.of_nat_of_neg
+@[deprecated Summable.of_nat_of_neg (since := "2024-03-04")]
+alias summable_int_of_summable_nat := Summable.of_nat_of_neg
 
 @[to_additive]
 lemma tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}

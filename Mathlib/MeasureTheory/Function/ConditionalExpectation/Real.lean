@@ -79,7 +79,7 @@ theorem snorm_one_condexp_le_snorm (f : α → ℝ) : snorm (μ[f|m]) 1 μ ≤ s
           (stronglyMeasurable_condexp.mono hm).aestronglyMeasurable,
         ← integral_norm_eq_lintegral_nnnorm hf.1]
       simp_rw [Real.norm_eq_abs]
-      rw [← integral_condexp hm hf.abs]
+      rw (config := {occs := .pos [2]}) [← integral_condexp hm]
       refine integral_congr_ae ?_
       have : 0 ≤ᵐ[μ] μ[(|f|)|m] := by
         rw [← condexp_zero]

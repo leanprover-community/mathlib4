@@ -5,7 +5,7 @@ Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic
@@ -354,7 +354,6 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
       · exact w.ne_one l hl
     chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given a pair `(head, tail)`, we can form a word by prepending `head` to `tail`, except if `head`
 is `1 : M i` then we have to just return `Word` since we need the result to be reduced. -/
 def rcons {i} (p : Pair M i) : Word M :=
@@ -444,7 +443,6 @@ theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1
 
 variable [DecidableEq ι]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- This definition is computable but not very nice to look at. Thankfully we don't have to inspect
 -- it, since `rcons` is known to be injective.
 /-- Given `i : ι`, any reduced word can be decomposed into a pair `p` such that `w = rcons p`. -/
@@ -984,7 +982,7 @@ condition is only needed if `# ι = 2`, and we accept `3 ≤ # ι` as an alterna
 theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
   classical
     apply (injective_iff_map_eq_one (lift f)).mpr
-    rw [(CoprodI.Word.equiv).forall_congr_left']
+    rw [(CoprodI.Word.equiv).forall_congr_left]
     intro w Heq
     dsimp [Word.equiv] at *
     rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq, Word.prod_empty]
@@ -1079,7 +1077,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
-    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr ?_
+    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift.of]
@@ -1110,7 +1108,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
               _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
-        _ ⊆ X' i := Set.subset_union_left _ _
+        _ ⊆ X' i := Set.subset_union_left
     · have h1n : n ≤ -1 := by
         apply Int.le_of_lt_add_one
         simpa using hgt
@@ -1130,7 +1128,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
               _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi
-        _ ⊆ X' i := Set.subset_union_right _ _
+        _ ⊆ X' i := Set.subset_union_right
   show _ ∨ ∃ i, 3 ≤ #(H i)
   inhabit ι
   right

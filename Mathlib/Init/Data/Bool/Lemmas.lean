@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Logic
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Coe
 
 /-!
@@ -75,7 +76,8 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 #align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
 
--- Adaptation note: this is no longer a simp lemma, as after nightly-2024-03-05 the LHS simplifies.
+#adaptation_note /-- this is no longer a simp lemma,
+  as after nightly-2024-03-05 the LHS simplifies. -/
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
@@ -132,18 +134,15 @@ theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
   (decide_false_iff p).1
 #align of_to_bool_ff Bool.of_decide_false
 
-theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
-    decide p = decide q := by
-  cases h' : decide q with
-  | false => exact decide_false (mt h.1 <| of_decide_false h')
-  | true => exact decide_true (h.2 <| of_decide_true h')
+theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q :=
+  decide_eq_decide.mpr h
 #align to_bool_congr Bool.decide_congr
 
-theorem coe_or_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
-#align bor_coe_iff Bool.coe_or_iff
+@[deprecated (since := "2024-06-07")] alias coe_or_iff := or_eq_true_iff
+#align bor_coe_iff Bool.or_eq_true_iff
 
-theorem coe_and_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
-#align band_coe_iff Bool.coe_and_iff
+@[deprecated (since := "2024-06-07")] alias coe_and_iff := and_eq_true_iff
+#align band_coe_iff Bool.and_eq_true_iff
 
 theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
   cases a <;> cases b <;> decide

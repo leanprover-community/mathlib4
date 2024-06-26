@@ -721,7 +721,7 @@ theorem initial_iff_comp_equivalence [IsEquivalence G] : Initial F ↔ Initial (
 theorem initial_iff_equivalence_comp [IsEquivalence F] : Initial G ↔ Initial (F ⋙ G) :=
   ⟨fun _ => initial_equivalence_comp _ _, fun _ => initial_of_equivalence_comp F _⟩
 
-theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
+instance final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} C := AsSmall.equiv
   let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} D := AsSmall.equiv
   let s₃ : E ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} E := AsSmall.equiv
@@ -738,7 +738,7 @@ theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   rw [← colimit.pre_pre]
   infer_instance
 
-theorem initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
+instance initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
   suffices Final (F ⋙ G).op from initial_of_final_op _
   exact final_comp F.op G.op
 

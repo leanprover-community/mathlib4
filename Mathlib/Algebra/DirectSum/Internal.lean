@@ -237,7 +237,7 @@ theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι)
     swap
     · simp_rw [ZeroMemClass.coe_zero, zero_mul, ite_self]
       exact DFinsupp.sum_zero
-    · rw [DFinsupp.sum, Finset.sum_ite_of_false _ _ fun x _ H => _, Finset.sum_const_zero]
+    · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_right i x).trans_eq H)
 #align direct_sum.coe_of_mul_apply_of_not_le DirectSum.coe_of_mul_apply_of_not_le
 
@@ -249,7 +249,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
     swap
     · simp_rw [ZeroMemClass.coe_zero, mul_zero, ite_self]
       exact DFinsupp.sum_zero
-    · rw [DFinsupp.sum, Finset.sum_ite_of_false _ _ fun x _ H => _, Finset.sum_const_zero]
+    · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_left i x).trans_eq H)
 #align direct_sum.coe_mul_of_apply_of_not_le DirectSum.coe_mul_of_apply_of_not_le
 

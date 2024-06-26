@@ -56,7 +56,7 @@ instance instCoeFun : CoeFun StieltjesFunction fun _ => ℝ → ℝ :=
 initialize_simps_projections StieltjesFunction (toFun → apply)
 
 @[ext] lemma ext {f g : StieltjesFunction} (h : ∀ x, f x = g x) : f = g := by
-  exact (StieltjesFunction.mk.injEq ..).mpr (funext (by exact h))
+  exact (StieltjesFunction.mk.injEq ..).mpr (funext h)
 
 variable (f : StieltjesFunction)
 
@@ -107,6 +107,46 @@ theorem id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
 instance instInhabited : Inhabited StieltjesFunction :=
   ⟨StieltjesFunction.id⟩
 #align stieltjes_function.inhabited StieltjesFunction.instInhabited
+
+/-- Constant functions are Stieltjes function. -/
+protected def const (c : ℝ) : StieltjesFunction where
+  toFun := fun _ ↦ c
+  mono' _ _ := by simp
+  right_continuous' _ := continuousWithinAt_const
+
+@[simp] lemma const_apply (c x : ℝ) : (StieltjesFunction.const c) x = c := rfl
+
+/-- The sum of two Stieltjes functions is a Stieltjes function. -/
+protected def add (f g : StieltjesFunction) : StieltjesFunction where
+  toFun := fun x => f x + g x
+  mono' := f.mono.add g.mono
+  right_continuous' := fun x => (f.right_continuous x).add (g.right_continuous x)
+
+instance : AddZeroClass StieltjesFunction where
+  add := StieltjesFunction.add
+  zero := StieltjesFunction.const 0
+  zero_add _ := ext fun _ ↦ zero_add _
+  add_zero _ := ext fun _ ↦ add_zero _
+
+instance : AddCommMonoid StieltjesFunction where
+  nsmul n f := nsmulRec n f
+  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
+  add_comm _ _ := ext fun _ ↦ add_comm _ _
+  __ := StieltjesFunction.instAddZeroClass
+
+instance : Module ℝ≥0 StieltjesFunction where
+  smul c f := {
+    toFun := fun x ↦ c * f x
+    mono' := f.mono.const_mul c.2
+    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1}
+  one_smul _ := ext fun _ ↦ one_mul _
+  mul_smul _ _ _ := ext fun _ ↦ mul_assoc _ _ _
+  smul_zero _ := ext fun _ ↦ mul_zero _
+  smul_add _ _ _ := ext fun _ ↦ mul_add _ _ _
+  add_smul _ _ _ := ext fun _ ↦ add_mul _ _ _
+  zero_smul _ := ext fun _ ↦ zero_mul _
+
+@[simp] lemma add_apply (f g : StieltjesFunction) (x : ℝ) : (f + g) x = f x + g x := rfl
 
 /-- If a function `f : ℝ → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
 at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
@@ -354,9 +394,9 @@ theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   exact f.outer_Ioc a b
 #align stieltjes_function.measure_Ioc StieltjesFunction.measure_Ioc
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
-@[simp, nolint simpNF]
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma. -/
+@[simp]
 theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=
@@ -491,5 +531,24 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction) {y : ℝ}
       exact g.mono hxy
     · rw [sub_nonneg]
       exact f.mono hxy
+
+@[simp]
+lemma measure_const (c : ℝ) : (StieltjesFunction.const c).measure = 0 :=
+  Measure.ext_of_Ioc _ _ (fun _ _ _ ↦ by simp)
+
+@[simp]
+lemma measure_add (f g : StieltjesFunction) : (f + g).measure = f.measure + g.measure := by
+  refine Measure.ext_of_Ioc _ _ (fun a b h ↦ ?_)
+  simp only [measure_Ioc, add_apply, Measure.coe_add, Pi.add_apply]
+  rw [← ENNReal.ofReal_add (sub_nonneg_of_le (f.mono h.le)) (sub_nonneg_of_le (g.mono h.le))]
+  ring_nf
+
+@[simp]
+lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction) : (c • f).measure = c • f.measure := by
+  refine Measure.ext_of_Ioc _ _ (fun a b _ ↦ ?_)
+  simp only [measure_Ioc, Measure.smul_apply]
+  change ofReal (c * f b - c * f a) = c • ofReal (f b - f a)
+  rw [← _root_.mul_sub, ENNReal.ofReal_mul zero_le_coe, ofReal_coe_nnreal, ← smul_eq_mul]
+  rfl
 
 end StieltjesFunction

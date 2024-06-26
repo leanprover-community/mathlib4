@@ -123,9 +123,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
       have : ∀ (l) (z : s (n + l)), ∃ z' : s (n + l + 1), edist (z : α) z' ≤ B n / 2 ^ l := by
         intro l z
         obtain ⟨z', z'_mem, hz'⟩ : ∃ z' ∈ s (n + l + 1), edist (z : α) z' < B n / 2 ^ l := by
-          refine' exists_edist_lt_of_hausdorffEdist_lt _ _
-          · exact (s (n + l) : Set α)
-          · exact z.2
+          refine exists_edist_lt_of_hausdorffEdist_lt (s := s (n + l)) z.2 ?_
           simp only [ENNReal.inv_pow, div_eq_mul_inv]
           rw [← pow_add]
           apply hs <;> simp
@@ -225,7 +223,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         simp only [F, and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
         intro _ x hx hx'
         rwa [hx'] at hx
-      · exact SetLike.coe_injective.injOn F
+      · exact SetLike.coe_injective.injOn
     -- `F` is ε-dense
     · obtain ⟨t0, t0s, Dut0⟩ := main u
       have : IsClosed t0 := (fs.subset t0s).isCompact.isClosed

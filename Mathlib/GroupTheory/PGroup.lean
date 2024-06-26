@@ -48,7 +48,7 @@ theorem of_card [Fintype G] {n : ℕ} (hG : card G = p ^ n) : IsPGroup p G := fu
 #align is_p_group.of_card IsPGroup.of_card
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
-  of_card (Subgroup.card_bot.trans (pow_zero p).symm)
+  of_card (by rw [← Nat.card_eq_fintype_card, Subgroup.card_bot, pow_zero])
 #align is_p_group.of_bot IsPGroup.of_bot
 
 theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card G = p ^ n := by
@@ -255,9 +255,8 @@ theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.cente
 
 theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
   haveI := center_nontrivial hG
-  cases nonempty_fintype G
   classical exact
-      bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Fintype.one_lt_card)
+      bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Finite.one_lt_card)
 #align is_p_group.bot_lt_center IsPGroup.bot_lt_center
 
 end GIsPGroup
@@ -379,7 +378,9 @@ theorem cyclic_center_quotient_of_card_eq_prime_sq (hG : card G = p ^ 2) :
     IsCyclic (G ⧸ center G) := by
   classical
     rcases card_center_eq_prime_pow hG zero_lt_two with ⟨k, hk0, hk⟩
+    rw [← Nat.card_eq_fintype_card] at hG hk
     rw [card_eq_card_quotient_mul_card_subgroup (center G), mul_comm, hk] at hG
+    rw [Nat.card_eq_fintype_card] at hG
     have hk2 := (Nat.pow_dvd_pow_iff_le_right (Fact.out (p := p.Prime)).one_lt).1 ⟨_, hG.symm⟩
     interval_cases k
     · rw [sq, pow_one, mul_right_inj' (Fact.out (p := p.Prime)).ne_zero] at hG
