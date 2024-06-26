@@ -172,15 +172,9 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
 
 /-! ### Liminfs and Limsups -/
 
-/- The theorem `Filter.liminf_le_liminf` uses two hypotheses (that some sequences are bounded
-under/above). These two hypotheses are always satisfied in EReal.
-This specialization avoids them. -/
 theorem liminf_le_liminf {α : Type*} {f : Filter α} {u v : α → EReal} (h : u ≤ᶠ[f] v) :
     liminf u f ≤ liminf v f := Filter.liminf_le_liminf h
 
-/- The theorem `Filter.limsup_le_limsup` uses two hypotheses (that some sequences are bounded
-under/above). These two hypotheses are always satisfied in EReal.
-This specialization avoids them. -/
 theorem limsup_le_limsup {α : Type*} {f : Filter α} {u v : α → EReal} (h : u ≤ᶠ[f] v) :
     limsup u f ≤ limsup v f := Filter.limsup_le_limsup h
 
@@ -290,14 +284,11 @@ theorem limsup_le_iff {α : Type _} {f : Filter α} {u : α → EReal} {b : ERea
       exact @Filter.limsup_const EReal α _ f _ (c : EReal) ▸ limsup_le_limsup h
 
 theorem limsup_le_const_forall {α : Type _} {f : Filter α} {u : α → EReal} {b : EReal}
-    (h : ∀ a : α, u a ≤ b) :
-    limsup u f ≤ b :=
-  EReal.limsup_le_iff.2 fun _ b_lt_c ↦ eventually_of_forall
-    (fun a : α ↦ le_trans (h a) (le_of_lt b_lt_c))
+    (h : ∀ a : α, u a ≤ b) : limsup u f ≤ b :=
+  limsup_le_iff.2 fun _ b_lt_c ↦ eventually_of_forall (fun a : α ↦ le_trans (h a) (le_of_lt b_lt_c))
 
 theorem const_le_limsup_forall {α : Type _} {f : Filter α} [NeBot f] {u : α → EReal}
-    {b : EReal} (h : ∀ a : α, b ≤ u a) :
-    b ≤ limsup u f :=
+    {b : EReal} (h : ∀ a : α, b ≤ u a) : b ≤ limsup u f :=
   @Filter.limsup_const EReal α _ f _ b ▸ limsup_le_limsup (eventually_of_forall h)
 
 theorem liminf_le_const_forall {α : Type _} {f : Filter α} [NeBot f] {u : α → EReal}
@@ -316,7 +307,7 @@ theorem limsup_max {α : Type _} {f : Filter α} {u v : α → EReal} :
     limsup (fun a ↦ max (u a) (v a)) f = max (limsup u f) (limsup v f) := by
   rcases eq_or_neBot f with (rfl | _); simp [limsup_bot]
   apply le_antisymm
-  · apply EReal.limsup_le_iff.2
+  · apply limsup_le_iff.2
     intro b hb
     have hu := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_left _ _) hb)
     have hv := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb)
