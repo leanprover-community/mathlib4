@@ -27,11 +27,6 @@ Let `n` be the dimension of the domain.
   Note that in this case the constant depends on the support of `u`.
 -/
 
--- remove these once merging master
-set_option pp.explicit false --intentionally fail linter
-alias Continuous.memℒp_of_hasCompactSupport := MeasureTheory.Continuous.memℒp_of_hasCompactSupport
-alias Real.nnnorm_rpow_of_nonneg := NNReal.nnnorm_rpow_of_nonneg
-
 open scoped Classical BigOperators ENNReal NNReal Topology
 open Set Function Finset MeasureTheory Measure Filter
 
