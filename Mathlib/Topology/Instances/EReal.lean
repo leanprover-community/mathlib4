@@ -178,7 +178,7 @@ theorem liminf_le_liminf {α : Type*} {f : Filter α} {u v : α → EReal} (h : 
 theorem limsup_le_limsup {α : Type*} {f : Filter α} {u v : α → EReal} (h : u ≤ᶠ[f] v) :
     limsup u f ≤ limsup v f := Filter.limsup_le_limsup h
 
-theorem limsup_add_le_lt₂ {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
+theorem limsup_add_le_of_le {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
     (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f ≤ a + b := by
   rcases eq_or_neBot f with (rfl | _); simp only [limsup_bot, bot_le]
   rw [← @limsup_const EReal α _ f _ (a + b)]
@@ -188,6 +188,12 @@ theorem limsup_add_le_lt₂ {α : Type*} {f : Filter α} {u v : α → EReal} {a
   intro x
   exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
 
+theorem limsup_add_lt_of_lt {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
+    (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f < a + b := by
+  obtain ⟨c, hc, hca⟩ := DenselyOrdered.dense _ _ ha
+  obtain ⟨d, hd, hdb⟩ := DenselyOrdered.dense _ _ hb
+  exact (limsup_add_le_of_le hc hd).trans_lt (add_lt_add hca hdb)
+
 theorem limsup_add_bot_of_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
     (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) : limsup (u + v) f = ⊥ := by
   apply le_bot_iff.1
@@ -196,7 +202,7 @@ theorem limsup_add_bot_of_ne_top {α : Type _} {f : Filter α} {u : α → EReal
   rcases exists_between_coe_real (h'.lt_top) with ⟨y, ⟨hy, _⟩⟩
   rw [← sub_add_cancel x y, coe_add (x - y) y, coe_sub x y]
   intro _
-  apply @limsup_add_le_lt₂ α f u v (x - y) y _ hy
+  apply @limsup_add_le_of_le α f u v (x - y) y _ hy
   rw [h, ← coe_sub x y]
   exact bot_lt_coe (x - y)
 
@@ -223,7 +229,7 @@ theorem limsup_add_le_add_limsup {α : Type _} {f : Filter α} {u v : α → ERe
     rw [← limsup_v_real, add_sub_cancel_right]
   have key₂ : limsup v f < limsup v f + x - y := by
     rw [← limsup_v_real]; norm_cast; norm_cast at y_lt_x; linarith
-  apply le_of_le_of_eq (limsup_add_le_lt₂ key₁ key₂)
+  apply le_of_le_of_eq (limsup_add_le_of_le key₁ key₂)
   rw [← limsup_v_real]; norm_cast; linarith
 
 lemma liminf_add_ge_gt₂ {α : Type _} {f : Filter α} {u v : α → EReal} {a b : EReal}
