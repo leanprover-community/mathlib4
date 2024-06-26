@@ -66,7 +66,7 @@ theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum �
       (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm)
     _
 
-/--Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
+/-- Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
 theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
   apply spectrum.of_algebraMap_mem 𝕜
   rw [← spectrum_toEuclideanLin]
