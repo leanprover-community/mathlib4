@@ -2045,6 +2045,14 @@ theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) 
   Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| by simpa
 #align finset.prod_dvd_prod_of_subset Finset.prod_dvd_prod_of_subset
 
+@[to_additive]
+lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] {s : Finset α} {f : α → β} {b₁ b₂ : β}
+    (a : α) (ha : a ∈ s) (h : f a * b₁ = f a * b₂) :
+    (∏ a ∈ s, f a) * b₁ = (∏ a ∈ s, f a) * b₂ := by
+  rw [← insert_erase ha]
+  simp only [mem_erase, ne_eq, not_true_eq_false, false_and, not_false_eq_true, prod_insert]
+  rw [mul_assoc, mul_comm, mul_assoc, mul_comm b₁, h, ← mul_assoc, mul_comm _ (f a)]
+
 end CommMonoid
 
 section CancelCommMonoid
