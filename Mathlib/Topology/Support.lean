@@ -360,7 +360,7 @@ protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [
 
 end Monoid
 
-section InversionMonoid
+section DivisionMonoid
 
 @[to_additive]
 protected lemma HasCompactMulSupport.inv {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
@@ -368,7 +368,7 @@ protected lemma HasCompactMulSupport.inv {α β : Type*} [TopologicalSpace α] [
     HasCompactMulSupport (f⁻¹) := by
   simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
 
-end InversionMonoid
+end DivisionMonoid
 
 section SMulZeroClass
 
