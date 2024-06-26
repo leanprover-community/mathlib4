@@ -74,7 +74,7 @@ namespace PrimitiveSpectrum
 /- The set of relative-closed sets of the form `T ↓∩ Ici a` for some `a` in `α` is closed under
 pairwise union. -/
 lemma ici_union_ici_eq (a b : α) :
-    (T ↓∩ Ici a) ∪ (T ↓∩ Ici b) = (T ↓∩ Ici (a ⊓ b)) := by
+    (T ↓∩ Ici a) ∪ (T ↓∩ Ici b) = T ↓∩ Ici (a ⊓ b) := by
   ext p
   constructor <;> intro h
   · cases' h with h1 h3
@@ -85,7 +85,7 @@ lemma ici_union_ici_eq (a b : α) :
 /- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
 pairwise intersection. -/
 lemma ici_compl_inter_ici_compl_eq (a b : α) :
-    (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = (T ↓∩ (Ici (a ⊓ b))ᶜ) := by
+    (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = T ↓∩ (Ici (a ⊓ b))ᶜ := by
   rw [preimage_compl, preimage_compl, preimage_compl, ← (ici_union_ici_eq hT), compl_union]
 
 variable [DecidableEq α] [OrderTop α]
@@ -199,7 +199,7 @@ lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a
 connection betwen the subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
-    (fun S => toDual (sInf (S : (Set α)))) (fun a => T ↓∩ Ici (ofDual a)) := fun S a => by
+    (fun S => toDual (sInf (S : Set α))) (fun a => T ↓∩ Ici (ofDual a)) := fun S a => by
   constructor
   · intro h b hbS
     rw [mem_preimage, mem_Ici]
@@ -229,7 +229,7 @@ variable (hG : OrderGenerate T)
 When `T` is order generating, the kernel and the hull form a Galois insertion
 -/
 def gi : GaloisInsertion (α := Set T) (β := αᵒᵈ)
-    (fun S => OrderDual.toDual (sInf (S : (Set α))))
+    (fun S => OrderDual.toDual (sInf (S : Set α)))
     (fun a => T ↓∩ Ici (OrderDual.ofDual a)) :=
   gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
@@ -254,7 +254,7 @@ lemma gc_closureOperator_of_isClosed {C : Set T} (h : IsClosed C) : gc.closureOp
 lemma lowerTopology_closureOperator_eq (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S  = T ↓∩ Ici (sInf S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
-  have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ (T ↓∩ Ici (sInf ↑S)) := by
+  have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ T ↓∩ Ici (sInf ↑S) := by
       constructor
       · rw [(isClosed_iff hT)]
         use sInf ↑S
