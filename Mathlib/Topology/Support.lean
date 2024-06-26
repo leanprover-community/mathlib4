@@ -353,7 +353,22 @@ theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompact
 #align has_compact_mul_support.mul HasCompactMulSupport.mul
 #align has_compact_support.add HasCompactSupport.add
 
+@[to_additive, simp]
+protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
+    HasCompactMulSupport (1 : α → β) := by
+  simp [HasCompactMulSupport, mulTSupport]
+
 end Monoid
+
+section InversionMonoid
+
+@[to_additive]
+protected lemma HasCompactMulSupport.inv {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+    {f : α → β} (hf : HasCompactMulSupport f) :
+    HasCompactMulSupport (f⁻¹) := by
+  simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
+
+end InversionMonoid
 
 section SMulZeroClass
 
