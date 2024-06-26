@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Star.NonUnitalSubsemiring
 import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!
 # Star subrings
