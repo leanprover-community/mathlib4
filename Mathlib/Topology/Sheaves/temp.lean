@@ -127,6 +127,39 @@ lemma sectionSMulSection.germ'
   · exact pt_mem''
   · exact hm
 
+lemma sectionSMulSection.mul_smul
+    (r : (ℛ.presheaf.obj $ op U))
+    (r' : (ℛ.presheaf.obj $ op U'))
+    (m : (ℳ.1.obj $ op V)) :
+    sectionSMulSection ℛ ℳ _ _ (r|_ (U ⊓ U') * r' |_(U ⊓ U')) m =
+    ℳ.1.presheaf.map (op $ homOfLE $ by dsimp; exact le_of_eq (inf_assoc _ _ _))
+    (sectionSMulSection ℛ ℳ U _ r
+      (sectionSMulSection ℛ ℳ U' V r' m)) := by
+  delta sectionSMulSection
+  rw [map_mul]
+  erw [(ℳ.1.module _).mul_smul]
+  erw [ℳ.1.map_smul, ℳ.1.map_smul, ℳ.1.map_smul]
+  congr 1
+  · change (ℛ.presheaf.map _ ≫ ℛ.presheaf.map _) _ = (ℛ.presheaf.map _ ≫ ℛ.presheaf.map _) _
+    rw [← ℛ.presheaf.map_comp, ← ℛ.presheaf.map_comp]
+    rfl
+  · change _ = (ℳ.1.module _).smul ((ℛ.presheaf.map _ ≫ ℛ.presheaf.map _ ≫ ℛ.presheaf.map _) _) _
+    rw [← ℛ.presheaf.map_comp, ← ℛ.presheaf.map_comp]
+    congr 1
+    · change (ℛ.presheaf.map _ ≫ ℛ.presheaf.map _) _ = _
+      rw [← ℛ.presheaf.map_comp]
+      rfl
+    · change _ = ((ℳ.1.presheaf.map _ ≫ ℳ.1.presheaf.map _ ≫ ℳ.1.presheaf.map _) _)
+      rw [← Functor.map_comp, ← Functor.map_comp]
+      rfl
+
+lemma sectionSMulSection.one_smul (m : (ℳ.1.obj $ op V)) :
+    sectionSMulSection ℛ ℳ U V 1 m =
+    ℳ.1.presheaf.map (op $ homOfLE $ inf_le_right) m := by
+  delta sectionSMulSection
+  rw [map_one]
+  exact (ℳ.1.module _).one_smul _
+
 noncomputable def openSetModule (x : TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :
     Opens ℛ :=
   (TopCat.Presheaf.germ_exist ℳ.1.presheaf pt x).choose
@@ -207,6 +240,48 @@ lemma germ_smul_germ (r : ℛ.presheaf.obj $ op U) (m : ℳ.1.obj $ op V) :
   · assumption
   · apply germ_sectionOnOpenSetRing
   · apply germ_sectionOnOpenSetModule
+
+
+noncomputable instance :
+    SMul (ℛ.presheaf.stalk pt) (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
+  smul x y := stalkSMulStalk _ _ pt x y
+
+noncomputable instance :
+    MulAction (ℛ.presheaf.stalk pt)
+      (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) where
+  one_smul m := by
+    obtain ⟨W, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := ℳ.1.presheaf) _ m
+    change stalkSMulStalk _ _ _ _ _ = _
+    have eq1 : (1 : ℛ.presheaf.stalk pt) = ℛ.presheaf.germ (⟨pt, ⟨⟩⟩ : (⊤ : Opens _)) 1 := by
+      rw [map_one]
+    rw [eq1]
+    erw [germ_smul_germ]
+    rw [sectionSMulSection.one_smul]
+    erw [TopCat.Presheaf.germ_res_apply]
+  mul_smul r r' m := by
+    obtain ⟨Or, mem_r, r, rfl⟩ := ℛ.presheaf.germ_exist _ r
+    obtain ⟨Or', mem_r', r', rfl⟩ := ℛ.presheaf.germ_exist _ r'
+    obtain ⟨W, memW, m, rfl⟩ := TopCat.Presheaf.germ_exist (F := ℳ.1.presheaf) _ m
+    have eq1 : (ℛ.presheaf.germ ⟨pt, mem_r⟩) r * (ℛ.presheaf.germ ⟨pt, mem_r'⟩) r' =
+      ℛ.presheaf.germ (⟨pt, ⟨mem_r, mem_r'⟩⟩ : (Or ⊓ Or' : Opens _))
+        (r |_ _ * r' |_ _) := by sorry
+    rw [eq1]
+    change stalkSMulStalk _ _ _ _ _ = _
+    erw [germ_smul_germ]
+    rw [sectionSMulSection.mul_smul]
+    erw [TopCat.Presheaf.germ_res_apply]
+    change _ = stalkSMulStalk _ _ _ _ (stalkSMulStalk _ _ _ _ _)
+    erw [germ_smul_germ]
+    simp only [Opens.coe_inf, id_eq]
+    fapply sectionSMulSection.germ <;> try assumption
+    · exact ⟨mem_r', memW⟩
+    · exact ⟨by apply mem_openSetRing, by apply mem_openSetModule⟩
+
+    fapply sectionSMulSection.germ' <;> try assumption
+    · apply mem_openSetModule
+    · apply mem_openSetRing
+    · rw [germ_sectionOnOpenSetRing]
+    · rw [germ_sectionOnOpenSetModule]; rfl
 
 
 end modules
