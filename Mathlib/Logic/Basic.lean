@@ -353,19 +353,9 @@ alias Iff.or := or_congr
 alias ⟨Or.rotate, _⟩ := or_rotate
 #align or.rotate Or.rotate
 
-@[deprecated Or.imp (since := "2022-10-24")]
-theorem or_of_or_of_imp_of_imp {a b c d : Prop} (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → d) :
-    c ∨ d :=
-  Or.imp h₂ h₃ h₁
-#align or_of_or_of_imp_of_imp or_of_or_of_imp_of_imp
-
-@[deprecated Or.imp_left (since := "2022-10-24")]
-theorem or_of_or_of_imp_left {a c b : Prop} (h₁ : a ∨ c) (h : a → b) : b ∨ c := Or.imp_left h h₁
-#align or_of_or_of_imp_left or_of_or_of_imp_left
-
-@[deprecated Or.imp_right (since := "2022-10-24")]
-theorem or_of_or_of_imp_right {c a b : Prop} (h₁ : c ∨ a) (h : a → b) : c ∨ b := Or.imp_right h h₁
-#align or_of_or_of_imp_right or_of_or_of_imp_right
+#align or_of_or_of_imp_of_imp Or.imp
+#align or_of_or_of_imp_left Or.imp_left
+#align or_of_or_of_imp_right Or.imp_right
 
 theorem Or.elim3 {c d : Prop} (h : a ∨ b ∨ c) (ha : a → d) (hb : b → d) (hc : c → d) : d :=
   Or.elim h ha fun h₂ ↦ Or.elim h₂ hb hc
