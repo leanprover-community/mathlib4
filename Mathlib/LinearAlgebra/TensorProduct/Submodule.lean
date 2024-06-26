@@ -36,7 +36,7 @@ There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in ea
 
 -/
 
-open scoped Classical TensorProduct
+open scoped TensorProduct
 
 noncomputable section
 
@@ -217,13 +217,13 @@ theorem comm_trans_rTensorOne :
   rw [← h]; simp
 
 variable {M} in
-theorem mulLeftMap_eq_mulMap_comp {ι : Type*} (m : ι → M) :
+theorem mulLeftMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (m : ι → M) :
     mulLeftMap N m = mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m) ∘ₗ
       (TensorProduct.finsuppScalarLeft R N ι).symm.toLinearMap := by
   ext; simp
 
 variable {N} in
-theorem mulRightMap_eq_mulMap_comp {ι : Type*} (n : ι → N) :
+theorem mulRightMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (n : ι → N) :
     mulRightMap M n = mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n) ∘ₗ
       (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap := by
   ext; simp
