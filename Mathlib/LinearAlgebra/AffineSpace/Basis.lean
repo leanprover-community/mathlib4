@@ -41,7 +41,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 -/
 
 
-open Affine BigOperators
+open Affine
 
 open Set
 

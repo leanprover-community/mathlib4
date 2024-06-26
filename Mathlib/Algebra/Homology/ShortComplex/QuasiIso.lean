@@ -42,7 +42,7 @@ lemma quasiIso_iff (φ : S₁ ⟶ S₂) :
     exact ⟨h⟩
 
 instance quasiIso_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ] : QuasiIso φ :=
-  ⟨IsIso.of_iso (homologyMapIso (asIso φ))⟩
+  ⟨(homologyMapIso (asIso φ)).isIso_hom⟩
 
 instance quasiIso_comp (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ : QuasiIso φ] [hφ' : QuasiIso φ'] :
     QuasiIso (φ ≫ φ') := by

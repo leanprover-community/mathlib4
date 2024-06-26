@@ -294,8 +294,8 @@ theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
 
 theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
     ContMDiffAt I (I'.prod J') n f x ↔
-      ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x :=
-  by simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
+      ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x := by
+  simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
 #align cont_mdiff_at_prod_iff contMDiffAt_prod_iff
 
 theorem contMDiff_prod_iff (f : M → M' × N') :
@@ -319,7 +319,7 @@ theorem smooth_prod_assoc :
   smooth_fst.fst.prod_mk <| smooth_fst.snd.prod_mk smooth_snd
 #align smooth_prod_assoc smooth_prod_assoc
 
-section Prod_map
+section prodMap
 
 variable {g : N → N'} {r : Set N} {y : N}
 
@@ -384,7 +384,7 @@ nonrec theorem Smooth.prod_map (hf : Smooth I I' f) (hg : Smooth J J' g) :
   hf.prod_map hg
 #align smooth.prod_map Smooth.prod_map
 
-end Prod_map
+end prodMap
 
 section PiSpace
 

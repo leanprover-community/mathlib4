@@ -44,8 +44,6 @@ but rather use classical logic. -/
 noncomputable section
 open scoped Classical
 
-/-! We also want to use the notation `∑` for sums. -/
-open scoped BigOperators
 local notation "√" => Real.sqrt
 
 open Function Bool LinearMap Fintype FiniteDimensional Module.DualBases

@@ -891,7 +891,7 @@ noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fo
   · exact fun s => H.isLimit.lift (PullbackCone.mk s.ι s.ι s.condition)
   · exact fun s => H.isLimit.fac _ WalkingCospan.left
   · intro s m e
-    apply PullbackCone.IsLimit.hom_ext H.isLimit <;> refine' e.trans _ <;> symm <;>
+    apply PullbackCone.IsLimit.hom_ext H.isLimit <;> refine e.trans ?_ <;> symm <;>
       exact H.isLimit.fac _ _
 #align category_theory.is_pullback.is_limit_fork CategoryTheory.IsPullback.isLimitFork
 
@@ -903,7 +903,7 @@ noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) :
   · exact fun s => H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
   · exact fun s => H.isColimit.fac _ WalkingSpan.left
   · intro s m e
-    apply PushoutCocone.IsColimit.hom_ext H.isColimit <;> refine' e.trans _ <;> symm <;>
+    apply PushoutCocone.IsColimit.hom_ext H.isColimit <;> refine e.trans ?_ <;> symm <;>
       exact H.isColimit.fac _ _
 #align category_theory.is_pushout.is_limit_fork CategoryTheory.IsPushout.isLimitFork
 

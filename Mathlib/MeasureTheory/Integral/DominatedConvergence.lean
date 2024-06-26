@@ -36,7 +36,7 @@ open MeasureTheory
 section DominatedConvergenceTheorem
 
 open Set Filter TopologicalSpace ENNReal
-open scoped Topology BigOperators
+open scoped Topology
 
 namespace MeasureTheory
 

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.NumberTheory.Padics.PadicVal
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import number_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -29,8 +29,6 @@ This file contains results in number theory relating to multiplicity.
 
 
 open Ideal Ideal.Quotient Finset
-
-open BigOperators
 
 variable {R : Type*} {n : ℕ}
 
@@ -95,8 +93,8 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
   calc
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
-        mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) :=
-      by simp_rw [RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
+        mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) := by
+      simp_rw [RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
@@ -118,8 +116,8 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {s}) (↑p * a ^ (p - 1)) :=
-      by simp only [add_right_inj, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+          mk (span {s}) (↑p * a ^ (p - 1)) := by
+      simp only [add_right_inj, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
     _ =
         mk (span {s}) (↑p * b * ∑ x ∈ Finset.range p, a ^ (p - 2) * x) +
           mk (span {s}) (↑p * a ^ (p - 1)) := by
@@ -364,7 +362,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
   obtain hyx | hyx := le_total y x
   · iterate 3 rw [← multiplicity.Int.natCast_multiplicity]
     simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.ofNat_add,
-      Int.coe_nat_pow]
+      Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
     convert Int.two_pow_sub_pow hxy hx hn using 2

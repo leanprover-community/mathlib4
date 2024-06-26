@@ -13,6 +13,9 @@ import Mathlib.Algebra.Group.Semiconj.Units
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 variable {M : Type*}
 
 section Monoid

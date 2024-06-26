@@ -29,7 +29,7 @@ In this file we define the complement of a subgroup.
 -/
 
 open Set
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 namespace Subgroup
 
@@ -631,9 +631,9 @@ variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]
 noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
   smul f T :=
     ⟨f • (T : Set G), by
-      refine' mem_leftTransversals_iff_existsUnique_inv_mul_mem.mpr fun g => _
+      refine mem_leftTransversals_iff_existsUnique_inv_mul_mem.mpr fun g => ?_
       obtain ⟨t, ht1, ht2⟩ := mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp T.2 (f⁻¹ • g)
-      refine' ⟨⟨f • (t : G), Set.smul_mem_smul_set t.2⟩, _, _⟩
+      refine ⟨⟨f • (t : G), Set.smul_mem_smul_set t.2⟩, ?_, ?_⟩
       · exact smul_inv_smul f g ▸ QuotientAction.inv_mul_mem f ht1
       · rintro ⟨-, t', ht', rfl⟩ h
         replace h := QuotientAction.inv_mul_mem f⁻¹ h

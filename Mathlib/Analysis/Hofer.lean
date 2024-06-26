@@ -22,7 +22,7 @@ example of a proof needing to construct a sequence by induction in the middle of
 
 
 open scoped Classical
-open Topology BigOperators
+open Topology
 
 open Filter Finset
 

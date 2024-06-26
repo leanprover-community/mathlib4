@@ -18,7 +18,7 @@ see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
 open Function Set Filter
-open scoped Topology ENNReal Uniformity BigOperators
+open scoped Topology ENNReal Uniformity
 
 section
 

@@ -166,7 +166,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
   right_inv := by
     intro A
     ext x : 2
-    · refine' WidePullback.hom_ext _ _ _ (fun j => _) _
+    · refine WidePullback.hom_ext _ _ _ (fun j => ?_) ?_
       · dsimp
         simp
         rfl
@@ -203,8 +203,8 @@ variable [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fu
 def cechConerve : CosimplicialObject C where
   obj n := widePushout f.left (fun _ : Fin (n.len + 1) => f.right) fun _ => f.hom
   map {x y} g := by
-    refine' WidePushout.desc (WidePushout.head _)
-      (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) ?_ (g.toOrderHom i))) (fun j => _)
+    refine WidePushout.desc (WidePushout.head _)
+      (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) (_) (g.toOrderHom i))) (fun j => ?_)
     erw [← WidePushout.arrow_ι]
 #align category_theory.arrow.cech_conerve CategoryTheory.Arrow.cechConerve
 
@@ -314,7 +314,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     intro A
     ext x : 2
     · rfl
-    · refine' WidePushout.hom_ext _ _ _ (fun j => _) _
+    · refine WidePushout.hom_ext _ _ _ (fun j => ?_) ?_
       · dsimp
         simp only [Category.assoc, ← NatTrans.naturality A.right, Arrow.augmentedCechConerve_right,
           SimplexCategory.len_mk, Arrow.cechConerve_map, colimit.ι_desc,

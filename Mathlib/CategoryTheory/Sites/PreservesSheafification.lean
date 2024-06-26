@@ -18,8 +18,13 @@ also induces an isomorphism on the associated sheaves. (Note: it suffices to che
 this property for the map from any presheaf `P` to its associated sheaf, see
 `GrothendieckTopology.preservesSheafification_iff_of_adjunctions`).
 
-If this condition holds, there is an induced functor
-`sheafCompose' J F : Sheaf J A ⥤ Sheaf J B`.
+In general, we define `Sheaf.composeAndSheafify J F : Sheaf J A ⥤ Sheaf J B` as the functor
+which sends a sheaf `G` to the sheafification of the composition `G.val ⋙ F`.
+It `J.PreservesSheafification F`, we show that this functor can also be thought
+as the localization of the functor `_ ⋙ F` on presheaves: we construct an isomorphism
+`presheafToSheafCompComposeAndSheafifyIso` between
+`presheafToSheaf J A ⋙ Sheaf.composeAndSheafify J F` and
+`(whiskeringRight Cᵒᵖ A B).obj F ⋙ presheafToSheaf J B`.
 
 Moreover, if we assume `J.HasSheafCompose F`, we obtain an isomorphism
 `sheafifyComposeIso J F P : sheafify J (P ⋙ F) ≅ sheafify J P ⋙ F`.
@@ -30,9 +35,7 @@ functors between such concrete categories which commute both with
 suitable limits and colimits.
 
 ## TODO
-* construct an isomorphism `sheafCompose' J F ≅ sheafCompose J F`
-* show that the free module functor `Type u ⥤ ModuleCat.{u} R`
-preserves sheafification
+* construct an isomorphism `Sheaf.composeAndSheafify J F ≅ sheafCompose J F`
 
 -/
 
@@ -74,20 +77,48 @@ end GrothendieckTopology
 
 section
 
-variable [HasWeakSheafify J A] [HasWeakSheafify J B]
+variable [HasWeakSheafify J B]
 
-/-- The functor `Sheaf J A ⥤ Sheaf J B` induced by a functor `F : A ⥤ B` which
-preserves sheafification. -/
-noncomputable def sheafCompose' [J.PreservesSheafification F] : Sheaf J A ⥤ Sheaf J B :=
-  Localization.lift _ (J.W_isInvertedBy_whiskeringRight_presheafToSheaf F) (presheafToSheaf J A)
+/-- This is the functor sending a sheaf `X : Sheaf J A` to the sheafification
+of `X.val ⋙ F`. -/
+noncomputable abbrev Sheaf.composeAndSheafify : Sheaf J A ⥤ Sheaf J B :=
+  sheafToPresheaf J A ⋙ (whiskeringRight _ _ _).obj F ⋙ presheafToSheaf J B
+set_option linter.uppercaseLean3 false in
+#align category_theory.Sheaf.compose_and_sheafify CategoryTheory.Sheaf.composeAndSheafify
 
-/-- The canonical isomorphism between `presheafToSheaf J A ⋙ sheafCompose' J F`
-and `((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B` when `F : A ⥤ B`
+variable [HasWeakSheafify J A]
+
+/-- The canonical natural transformation from
+`(whiskeringRight Cᵒᵖ A B).obj F ⋙ presheafToSheaf J B` to
+`presheafToSheaf J A ⋙ Sheaf.composeAndSheafify J F`. -/
+@[simps!]
+noncomputable def toPresheafToSheafCompComposeAndSheafify :
+    (whiskeringRight Cᵒᵖ A B).obj F ⋙ presheafToSheaf J B ⟶
+      presheafToSheaf J A ⋙ Sheaf.composeAndSheafify J F :=
+  whiskerRight (sheafificationAdjunction J A).unit
+    ((whiskeringRight _ _ _).obj F ⋙ presheafToSheaf J B)
+
+variable [J.PreservesSheafification F]
+
+instance : IsIso (toPresheafToSheafCompComposeAndSheafify J F) := by
+  have : J.PreservesSheafification F := inferInstance
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro X
+  dsimp
+  simpa only [← J.W_iff] using J.W_of_preservesSheafification F _ (J.W_toSheafify X)
+
+/-- The canonical isomorphism between `presheafToSheaf J A ⋙ Sheaf.composeAndSheafify J F`
+and `(whiskeringRight Cᵒᵖ A B).obj F ⋙ presheafToSheaf J B` when `F : A ⥤ B`
 preserves sheafification. -/
-noncomputable def presheafToSheafCompSheafCompose' [J.PreservesSheafification F] :
-    presheafToSheaf J A ⋙ sheafCompose' J F ≅
-      ((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B :=
-  Localization.fac _ _ _
+@[simps! inv_app]
+noncomputable def presheafToSheafCompComposeAndSheafifyIso :
+    presheafToSheaf J A ⋙ Sheaf.composeAndSheafify J F ≅
+      (whiskeringRight Cᵒᵖ A B).obj F ⋙ presheafToSheaf J B :=
+  (asIso (toPresheafToSheafCompComposeAndSheafify J F)).symm
+
+noncomputable instance : Localization.Lifting (presheafToSheaf J A) J.W
+    ((whiskeringRight Cᵒᵖ A B).obj F ⋙ presheafToSheaf J B) (Sheaf.composeAndSheafify J F) :=
+  ⟨presheafToSheafCompComposeAndSheafifyIso J F⟩
 
 end
 

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
 import Mathlib.Order.Disjointed
+import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
 #align_import measure_theory.measurable_space_def from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
@@ -122,7 +123,7 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
     exact m.measurableSet_iUnion _ fun _ => h _
 #align measurable_set.Union MeasurableSet.iUnion
 
-@[deprecated MeasurableSet.iUnion]
+@[deprecated MeasurableSet.iUnion (since := "2023-02-06")]
 theorem MeasurableSet.biUnion_decode₂ [Encodable β] ⦃f : β → Set α⦄ (h : ∀ b, MeasurableSet (f b))
     (n : ℕ) : MeasurableSet (⋃ b ∈ decode₂ β n, f b) :=
   .iUnion fun _ => .iUnion fun _ => h _
@@ -528,8 +529,8 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
 #align measurable_space.measurable_set_Sup MeasurableSpace.measurableSet_sSup
 
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
-    MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s :=
-  by simp only [iSup, measurableSet_sSup, exists_range_iff]
+    MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
+  simp only [iSup, measurableSet_sSup, exists_range_iff]
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_iSup
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
@@ -550,6 +551,7 @@ end MeasurableSpace
 
 /-- A function `f` between measurable spaces is measurable if the preimage of every
   measurable set is measurable. -/
+@[fun_prop]
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 #align measurable Measurable
@@ -568,7 +570,7 @@ section MeasurableFunctions
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 #align measurable_id measurable_id
 
-@[measurability]
+@[fun_prop, measurability]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 #align measurable_id' measurable_id'
 
@@ -579,12 +581,12 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 #align measurable.comp Measurable.comp
 
 -- This is needed due to reducibility issues with the `measurability` tactic.
-@[aesop safe 50 (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf
 
-@[simp, measurability]
+@[simp, fun_prop, measurability]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 #align measurable_const measurable_const
