@@ -53,8 +53,6 @@ These have not yet been implemented.
 
 universe u u' v w
 
-open BigOperators
-
 /-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are indexed by `m`
 and whose columns are indexed by `n`. -/
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
@@ -254,9 +252,6 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
--- Porting note (#10756): added the following section with simp lemmas because `simp` fails
--- to apply the corresponding lemmas in the namespace `Pi`.
--- (e.g. `Pi.zero_apply` used on `OfNat.ofNat 0 i j`)
 section
 
 @[simp]
@@ -517,6 +512,22 @@ theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n �
   split_ifs <;> simp [h]
 #align matrix.diagonal_map Matrix.diagonal_map
 
+protected theorem map_natCast [DecidableEq n] [AddMonoidWithOne α] [AddMonoidWithOne β]
+    {f : α → β} (h : f 0 = 0) (d : ℕ) :
+    (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
+  diagonal_map h
+
+-- See note [no_index around OfNat.ofNat]
+protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
+    {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
+    (no_index (OfNat.ofNat d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
+  diagonal_map h
+
+protected theorem map_intCast [DecidableEq n] [AddGroupWithOne α] [AddGroupWithOne β]
+    {f : α → β} (h : f 0 = 0) (d : ℤ) :
+    (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
+  diagonal_map h
+
 @[simp]
 theorem diagonal_conjTranspose [AddMonoid α] [StarAddMonoid α] (v : n → α) :
     (diagonal v)ᴴ = diagonal (star v) := by
@@ -567,6 +578,14 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
   simp only [one_apply, Pi.single_apply, eq_comm]
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single
 
+lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i j : n) :
+    0 ≤ (1 : Matrix n n α) i j := by
+  by_cases hi : i = j <;> simp [hi]
+
+lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
+    0 ≤ (1 : Matrix n n α) i :=
+  zero_le_one_elem i
+
 end One
 
 instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n n α) where
@@ -597,14 +616,14 @@ section Numeral
 
 set_option linter.deprecated false
 
-@[deprecated, simp]
+@[deprecated (since := "2023-04-02"), simp]
 theorem bit0_apply [Add α] (M : Matrix m m α) (i : m) (j : m) : (bit0 M) i j = bit0 (M i j) :=
   rfl
 #align matrix.bit0_apply Matrix.bit0_apply
 
 variable [AddZeroClass α] [One α]
 
-@[deprecated]
+@[deprecated (since := "2023-04-02")]
 theorem bit1_apply (M : Matrix n n α) (i : n) (j : n) :
     (bit1 M) i j = if i = j then bit1 (M i j) else bit0 (M i j) := by
   dsimp [bit1]
@@ -612,12 +631,12 @@ theorem bit1_apply (M : Matrix n n α) (i : n) (j : n) :
   simp [h]
 #align matrix.bit1_apply Matrix.bit1_apply
 
-@[deprecated, simp]
+@[deprecated (since := "2023-04-02"), simp]
 theorem bit1_apply_eq (M : Matrix n n α) (i : n) : (bit1 M) i i = bit1 (M i i) := by
   simp [bit1_apply]
 #align matrix.bit1_apply_eq Matrix.bit1_apply_eq
 
-@[deprecated, simp]
+@[deprecated (since := "2023-04-02"), simp]
 theorem bit1_apply_ne (M : Matrix n n α) {i j : n} (h : i ≠ j) : (bit1 M) i j = bit0 (M i j) := by
   simp [bit1_apply, h]
 #align matrix.bit1_apply_ne Matrix.bit1_apply_ne
@@ -723,7 +742,7 @@ theorem diag_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix n n α)) :
 
 @[simp]
 theorem diag_sum {ι} [AddCommMonoid α] (s : Finset ι) (f : ι → Matrix n n α) :
-    diag (∑ i in s, f i) = ∑ i in s, diag (f i) :=
+    diag (∑ i ∈ s, f i) = ∑ i ∈ s, diag (f i) :=
   map_sum (diagAddMonoidHom n α) f s
 #align matrix.diag_sum Matrix.diag_sum
 
@@ -894,6 +913,9 @@ theorem neg_dotProduct : -v ⬝ᵥ w = -(v ⬝ᵥ w) := by simp [dotProduct]
 theorem dotProduct_neg : v ⬝ᵥ -w = -(v ⬝ᵥ w) := by simp [dotProduct]
 #align matrix.dot_product_neg Matrix.dotProduct_neg
 
+lemma neg_dotProduct_neg : -v ⬝ᵥ -w = v ⬝ᵥ w := by
+  rw [neg_dotProduct, dotProduct_neg, neg_neg]
+
 @[simp]
 theorem sub_dotProduct : (u - v) ⬝ᵥ w = u ⬝ᵥ w - v ⬝ᵥ w := by simp [sub_eq_add_neg]
 #align matrix.sub_dot_product Matrix.sub_dotProduct
@@ -909,13 +931,13 @@ section DistribMulAction
 variable [Monoid R] [Mul α] [AddCommMonoid α] [DistribMulAction R α]
 
 @[simp]
-theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) : x • v ⬝ᵥ w = x • (v ⬝ᵥ w) :=
-  by simp [dotProduct, Finset.smul_sum, smul_mul_assoc]
+theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) :
+    x • v ⬝ᵥ w = x • (v ⬝ᵥ w) := by simp [dotProduct, Finset.smul_sum, smul_mul_assoc]
 #align matrix.smul_dot_product Matrix.smul_dotProduct
 
 @[simp]
-theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) : v ⬝ᵥ x • w = x • (v ⬝ᵥ w) :=
-  by simp [dotProduct, Finset.smul_sum, mul_smul_comm]
+theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) :
+    v ⬝ᵥ x • w = x • (v ⬝ᵥ w) := by simp [dotProduct, Finset.smul_sum, mul_smul_comm]
 #align matrix.dot_product_smul Matrix.dotProduct_smul
 
 end DistribMulAction
@@ -965,7 +987,7 @@ theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {
 #align matrix.mul_apply' Matrix.mul_apply'
 
 theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
-    (∑ c in s, g c) i j = ∑ c in s, g c i j :=
+    (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
   (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
 #align matrix.sum_apply Matrix.sum_apply
 
@@ -1088,12 +1110,12 @@ def addMonoidHomMulRight [Fintype m] (M : Matrix m n α) : Matrix l m α →+ Ma
 #align matrix.add_monoid_hom_mul_right Matrix.addMonoidHomMulRight
 
 protected theorem sum_mul [Fintype m] (s : Finset β) (f : β → Matrix l m α) (M : Matrix m n α) :
-    (∑ a in s, f a) * M = ∑ a in s, f a * M :=
+    (∑ a ∈ s, f a) * M = ∑ a ∈ s, f a * M :=
   map_sum (addMonoidHomMulRight M) f s
 #align matrix.sum_mul Matrix.sum_mul
 
 protected theorem mul_sum [Fintype m] (s : Finset β) (f : β → Matrix m n α) (M : Matrix l m α) :
-    (M * ∑ a in s, f a) = ∑ a in s, M * f a :=
+    (M * ∑ a ∈ s, f a) = ∑ a ∈ s, M * f a :=
   map_sum (addMonoidHomMulLeft M) f s
 #align matrix.mul_sum Matrix.mul_sum
 
@@ -1936,6 +1958,9 @@ theorem vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : v ᵥ* (-A) 
   apply dotProduct_neg
 #align matrix.vec_mul_neg Matrix.vecMul_neg
 
+lemma neg_vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : (-v) ᵥ* (-A) = v ᵥ* A := by
+  rw [vecMul_neg, neg_vecMul, neg_neg]
+
 theorem neg_mulVec [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ v = - (A *ᵥ v) := by
   ext
   apply neg_dotProduct
@@ -1945,6 +1970,9 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   ext
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
+
+lemma neg_mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ (-v) = A *ᵥ v := by
+  rw [mulVec_neg, neg_mulVec, neg_neg]
 
 theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
     A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
@@ -2034,26 +2062,60 @@ theorem transpose_injective : Function.Injective (transpose : Matrix m n α → 
 @[simp] theorem transpose_inj {A B : Matrix m n α} : Aᵀ = Bᵀ ↔ A = B := transpose_injective.eq_iff
 
 @[simp]
-theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := by
-  ext
-  rfl
+theorem transpose_eq_diagonal [DecidableEq n] [Zero α] {M : Matrix n n α} {v : n → α} :
+    Mᵀ = diagonal v ↔ M = diagonal v :=
+  (Function.Involutive.eq_iff transpose_transpose).trans <|
+    by rw [diagonal_transpose]
+
+@[simp]
+theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := rfl
 #align matrix.transpose_zero Matrix.transpose_zero
 
 @[simp]
 theorem transpose_eq_zero [Zero α] {M : Matrix m n α} : Mᵀ = 0 ↔ M = 0 := transpose_inj
 
 @[simp]
-theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)ᵀ = 1 := by
-  ext i j
-  rw [transpose_apply, ← diagonal_one]
-  by_cases h : i = j
-  · simp only [h, diagonal_apply_eq]
-  · simp only [diagonal_apply_ne _ h, diagonal_apply_ne' _ h]
+theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)ᵀ = 1 :=
+  diagonal_transpose _
 #align matrix.transpose_one Matrix.transpose_one
 
 @[simp]
 theorem transpose_eq_one [DecidableEq n] [Zero α] [One α] {M : Matrix n n α} : Mᵀ = 1 ↔ M = 1 :=
-  (Function.Involutive.eq_iff transpose_transpose).trans <| by rw [transpose_one]
+  transpose_eq_diagonal
+
+@[simp]
+theorem transpose_natCast [DecidableEq n] [AddMonoidWithOne α] (d : ℕ) :
+    (d : Matrix n n α)ᵀ = d :=
+  diagonal_transpose _
+
+@[simp]
+theorem transpose_eq_natCast [DecidableEq n] [AddMonoidWithOne α] {M : Matrix n n α} {d : ℕ} :
+    Mᵀ = d ↔ M = d :=
+  transpose_eq_diagonal
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem transpose_ofNat [DecidableEq n] [AddMonoidWithOne α] (d : ℕ) [d.AtLeastTwo] :
+    (no_index (OfNat.ofNat d) : Matrix n n α)ᵀ = OfNat.ofNat d :=
+  transpose_natCast _
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem transpose_eq_ofNat [DecidableEq n] [AddMonoidWithOne α]
+    {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
+    Mᵀ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
+  transpose_eq_diagonal
+
+@[simp]
+theorem transpose_intCast [DecidableEq n] [AddGroupWithOne α] (d : ℤ) :
+    (d : Matrix n n α)ᵀ = d :=
+  diagonal_transpose _
+
+@[simp]
+theorem transpose_eq_intCast [DecidableEq n] [AddGroupWithOne α]
+    {M : Matrix n n α} {d : ℤ} :
+    Mᵀ = d ↔ M = d :=
+  transpose_eq_diagonal
 
 @[simp]
 theorem transpose_add [Add α] (M : Matrix m n α) (N : Matrix m n α) : (M + N)ᵀ = Mᵀ + Nᵀ := by
@@ -2112,7 +2174,7 @@ variable {m n α}
 
 theorem transpose_list_sum [AddMonoid α] (l : List (Matrix m n α)) :
     l.sumᵀ = (l.map transpose).sum :=
-  (transposeAddEquiv m n α).toAddMonoidHom.map_list_sum l
+  map_list_sum (transposeAddEquiv m n α) l
 #align matrix.transpose_list_sum Matrix.transpose_list_sum
 
 theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α)) :
@@ -2121,7 +2183,7 @@ theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α))
 #align matrix.transpose_multiset_sum Matrix.transpose_multiset_sum
 
 theorem transpose_sum [AddCommMonoid α] {ι : Type*} (s : Finset ι) (M : ι → Matrix m n α) :
-    (∑ i in s, M i)ᵀ = ∑ i in s, (M i)ᵀ :=
+    (∑ i ∈ s, M i)ᵀ = ∑ i ∈ s, (M i)ᵀ :=
   map_sum (transposeAddEquiv m n α) _ s
 #align matrix.transpose_sum Matrix.transpose_sum
 
@@ -2213,14 +2275,21 @@ theorem conjTranspose_injective [InvolutiveStar α] :
   conjTranspose_injective.eq_iff
 
 @[simp]
+theorem conjTranspose_eq_diagonal [DecidableEq n] [AddMonoid α] [StarAddMonoid α]
+    {M : Matrix n n α} {v : n → α} :
+    Mᴴ = diagonal v ↔ M = diagonal (star v) :=
+  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
+    by rw [diagonal_conjTranspose]
+
+@[simp]
 theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n α)ᴴ = 0 :=
   Matrix.ext <| by simp
 #align matrix.conj_transpose_zero Matrix.conjTranspose_zero
 
 @[simp]
 theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n α} :
-    Mᴴ = 0 ↔ M = 0 :=
-  by rw [← conjTranspose_inj (A := M), conjTranspose_zero]
+    Mᴴ = 0 ↔ M = 0 := by
+  rw [← conjTranspose_inj (A := M), conjTranspose_zero]
 
 @[simp]
 theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
@@ -2232,6 +2301,43 @@ theorem conjTranspose_eq_one [DecidableEq n] [Semiring α] [StarRing α] {M : Ma
     Mᴴ = 1 ↔ M = 1 :=
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
     by rw [conjTranspose_one]
+
+@[simp]
+theorem conjTranspose_natCast [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) :
+    (d : Matrix n n α)ᴴ = d := by
+  simp [conjTranspose, Matrix.map_natCast, diagonal_natCast]
+
+@[simp]
+theorem conjTranspose_eq_natCast [DecidableEq n] [Semiring α] [StarRing α]
+    {M : Matrix n n α} {d : ℕ} :
+    Mᴴ = d ↔ M = d :=
+  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
+    by rw [conjTranspose_natCast]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem conjTranspose_ofNat [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) [d.AtLeastTwo] :
+    (no_index (OfNat.ofNat d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
+  conjTranspose_natCast _
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
+    {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
+    Mᴴ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
+  conjTranspose_eq_natCast
+
+@[simp]
+theorem conjTranspose_intCast [DecidableEq n] [Ring α] [StarRing α] (d : ℤ) :
+    (d : Matrix n n α)ᴴ = d := by
+  simp [conjTranspose, Matrix.map_intCast, diagonal_intCast]
+
+@[simp]
+theorem conjTranspose_eq_intCast [DecidableEq n] [Ring α] [StarRing α]
+    {M : Matrix n n α} {d : ℤ} :
+    Mᴴ = d ↔ M = d :=
+  (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
+    by rw [conjTranspose_intCast]
 
 @[simp]
 theorem conjTranspose_add [AddMonoid α] [StarAddMonoid α] (M N : Matrix m n α) :
@@ -2332,10 +2438,10 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
   Matrix.ext <| by simp
 #align matrix.conj_transpose_rat_cast_smul Matrix.conjTranspose_ratCast_smul
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12231
-@[simp, nolint simpNF]
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma.
+See https://github.com/leanprover-community/mathlib4/issues/12231 -/
+@[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
@@ -2385,7 +2491,7 @@ variable {m n α}
 
 theorem conjTranspose_list_sum [AddMonoid α] [StarAddMonoid α] (l : List (Matrix m n α)) :
     l.sumᴴ = (l.map conjTranspose).sum :=
-  (conjTransposeAddEquiv m n α).toAddMonoidHom.map_list_sum l
+  map_list_sum (conjTransposeAddEquiv m n α) l
 #align matrix.conj_transpose_list_sum Matrix.conjTranspose_list_sum
 
 theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
@@ -2394,7 +2500,7 @@ theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
 #align matrix.conj_transpose_multiset_sum Matrix.conjTranspose_multiset_sum
 
 theorem conjTranspose_sum [AddCommMonoid α] [StarAddMonoid α] {ι : Type*} (s : Finset ι)
-    (M : ι → Matrix m n α) : (∑ i in s, M i)ᴴ = ∑ i in s, (M i)ᴴ :=
+    (M : ι → Matrix m n α) : (∑ i ∈ s, M i)ᴴ = ∑ i ∈ s, (M i)ᴴ :=
   map_sum (conjTransposeAddEquiv m n α) _ s
 #align matrix.conj_transpose_sum Matrix.conjTranspose_sum
 
@@ -2699,53 +2805,45 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
-@[reducible]
-def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
+abbrev subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
 /-- The right `n × r` part of an `n × (l+r)` matrix. -/
-@[reducible]
-def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
+abbrev subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)
 #align matrix.sub_right Matrix.subRight
 
 /-- The top `u × n` part of a `(u+d) × n` matrix. -/
-@[reducible]
-def subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
+abbrev subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
   submatrix A (Fin.castAdd d) id
 #align matrix.sub_up Matrix.subUp
 
 /-- The bottom `d × n` part of a `(u+d) × n` matrix. -/
-@[reducible]
-def subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
+abbrev subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
   submatrix A (Fin.natAdd u) id
 #align matrix.sub_down Matrix.subDown
 
 /-- The top-right `u × r` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin r) α :=
   subUp (subRight A)
 #align matrix.sub_up_right Matrix.subUpRight
 
 /-- The bottom-right `d × r` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin r) α :=
   subDown (subRight A)
 #align matrix.sub_down_right Matrix.subDownRight
 
 /-- The top-left `u × l` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin l) α :=
   subUp (subLeft A)
 #align matrix.sub_up_left Matrix.subUpLeft
 
 /-- The bottom-left `d × l` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin l) α :=
   subDown (subLeft A)
 #align matrix.sub_down_left Matrix.subDownLeft

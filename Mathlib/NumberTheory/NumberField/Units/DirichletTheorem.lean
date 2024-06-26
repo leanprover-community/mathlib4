@@ -72,7 +72,8 @@ def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 variable (K)
 
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
-def logEmbedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+def _root_.NumberField.Units.logEmbedding :
+    Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
 { toFun := fun x w => mult w.val * Real.log (w.val ↑(Additive.toMul x))
   map_zero' := by simp; rfl
   map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
@@ -86,8 +87,7 @@ theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w �
 theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     ∑ w, logEmbedding K x w = - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
   have h := congr_arg Real.log (prod_eq_abs_norm (x : K))
-  rw [show |(Algebra.norm ℚ) (x : K)| = 1 from isUnit_iff_norm.mp x.isUnit, Rat.cast_one,
-    Real.log_one, Real.log_prod] at h
+  rw [Units.norm, Rat.cast_one, Real.log_one, Real.log_prod] at h
   · simp_rw [Real.log_pow] at h
     rw [← insert_erase (mem_univ w₀), sum_insert (not_mem_erase w₀ univ), add_comm,
       add_eq_zero_iff_eq_neg] at h
@@ -172,7 +172,7 @@ theorem unitLattice_inter_ball_finite (r : ℝ) :
       · exact pos_iff.mpr (coe_ne_zero x)
       · rw [mem_closedBall_zero_iff] at hx
         exact (le_abs_self _).trans (log_le_of_logEmbedding_le hr hx w)
-    refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
+    refine Set.Finite.of_finite_image ?_ (coe_injective K).injOn
     refine (Embeddings.finite_of_norm_le K ℂ
         (Real.exp ((Fintype.card (InfinitePlace K)) * r))).subset ?_
     rintro _ ⟨x, ⟨⟨h_int, h_le⟩, rfl⟩⟩
@@ -196,23 +196,25 @@ sequence defining the same ideal and their quotient is the desired unit `u_w₁`
 
 open NumberField.mixedEmbedding NNReal
 
-/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
-attribute [-instance] FractionalIdeal.commSemiring
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
-    ∃ y : 𝓞 K, y ≠ 0 ∧ (∀ w, w ≠ w₁ → w y < w x) ∧ |Algebra.norm ℚ (y : K)| ≤ B := by
+    ∃ y : 𝓞 K, y ≠ 0 ∧
+      (∀ w, w ≠ w₁ → w y < w x) ∧
+      |Algebra.norm ℚ (y : K)| ≤ B := by
+  have hx' := RingOfIntegers.coe_ne_zero_iff.mpr hx
   let f : InfinitePlace K → ℝ≥0 :=
     fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
-    obtain ⟨y, hy, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
+    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
       (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑): NNReal → ENNReal) h_gprod)
-    refine ⟨⟨y, hy⟩, Subtype.coe_ne_coe.1 h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
+    refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
-        _ = ∏ w : InfinitePlace K, w y ^ mult w := (prod_eq_abs_norm (y : K)).symm
+        _ = ∏ w : InfinitePlace K, w (algebraMap _ K y) ^ mult w :=
+          (prod_eq_abs_norm (algebraMap _ K y)).symm
         _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by
           refine prod_le_prod ?_ ?_
           · exact fun _ _ => pow_nonneg (by positivity) _
@@ -221,10 +223,10 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)
     · refine div_lt_self ?_ (by norm_num)
-      simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx, not_false_eq_true]
+      exact pos_iff.mpr hx'
   intro _ _
-  rw [ne_eq, Nonneg.mk_eq_zero, div_eq_zero_iff, map_eq_zero, not_or, ZeroMemClass.coe_eq_zero]
-  exact ⟨hx, by norm_num⟩
+  rw [ne_eq, Nonneg.mk_eq_zero, div_eq_zero_iff, map_eq_zero, not_or]
+  exact ⟨hx', by norm_num⟩
 
 /-- An infinite sequence of nonzero algebraic integers of `K` satisfying the following properties:
 • `seq n` is nonzero;
@@ -236,9 +238,8 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
     ⟨(seq_next K w₁ hB (seq n).prop).choose, (seq_next K w₁ hB (seq n).prop).choose_spec.1⟩
 
 /-- The terms of the sequence are nonzero. -/
-theorem seq_ne_zero (n : ℕ) : (seq K w₁ hB n : K) ≠ 0 := by
-  refine (map_ne_zero_iff (algebraMap (𝓞 K) K) ?_).mpr (seq K w₁ hB n).prop
-  exact IsFractionRing.injective { x // x ∈ 𝓞 K } K
+theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
+  RingOfIntegers.coe_ne_zero_iff.mpr (seq K w₁ hB n).prop
 
 /-- The terms of the sequence have nonzero norm. -/
 theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
@@ -246,7 +247,7 @@ theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K)
 
 /-- The sequence is strictly decreasing at infinite places distinct from `w₁`. -/
 theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠ w₁) :
-    w (seq K w₁ hB m) < w (seq K w₁ hB n) := by
+    w (algebraMap (𝓞 K) K (seq K w₁ hB m)) < w (algebraMap (𝓞 K) K (seq K w₁ hB n)) := by
   induction m with
   | zero =>
       exfalso
@@ -286,12 +287,13 @@ theorem exists_unit (w₁ : InfinitePlace K) :
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, Units.ne_zero, not_false_eq_true]
+    · exact pos_iff.mpr (coe_ne_zero _)
     · calc
-        _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := by
-          rw [← congr_arg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul,
-            ← mul_assoc, inv_mul_cancel (seq_ne_zero K w₁ hB n), one_mul]
-        _ = w (seq K w₁ hB m) * w (seq K w₁ hB n)⁻¹ := _root_.map_mul _ _ _
+        _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
+          rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
+          ← mul_assoc, inv_mul_cancel (seq_ne_zero K w₁ hB n), one_mul]
+        _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
+          _root_.map_mul _ _ _
         _ < 1 := by
           rw [map_inv₀, mul_inv_lt_iff (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
           exact seq_decreasing K w₁ hB hnm w hw
@@ -352,7 +354,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   refine discreteTopology_of_isOpen_singleton_zero ?_
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
   · exact Metric.closedBall_mem_nhds _ (by norm_num)
-  · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective _)
+  · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective)
     convert unitLattice_inter_ball_finite K 1
     ext x
     refine ⟨?_, fun ⟨hx1, hx2⟩ => ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
@@ -372,29 +374,60 @@ theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
   rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
 
-/-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
-`ℤ`-module. -/
-def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by
-  refine AddEquiv.toIntLinearEquiv ?_
-  rw [unitLattice, ← AddMonoidHom.range_eq_map (logEmbedding K)]
-  refine (QuotientAddGroup.quotientKerEquivRange (logEmbedding K)).symm.trans ?_
-  refine (QuotientAddGroup.quotientAddEquivOfEq ?_).trans
-    (QuotientAddGroup.quotientKerEquivOfSurjective
-      (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (fun x => ?_))
-  · ext
-    rw [MonoidHom.coe_toAdditive_ker, QuotientGroup.ker_mk', AddMonoidHom.mem_ker,
-      logEmbedding_eq_zero_iff]
-    rfl
-  · refine ⟨Additive.ofMul x.out', ?_⟩
-    simp only [MonoidHom.toAdditive_apply_apply, toMul_ofMul, QuotientGroup.mk'_apply,
-      QuotientGroup.out_eq']
-    rfl
+/-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
+def logEmbeddingQuot :
+    Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+  MonoidHom.toAdditive' <|
+    (QuotientGroup.kerLift (AddMonoidHom.toMultiplicative' (logEmbedding K))).comp
+      (QuotientGroup.quotientMulEquivOfEq (by
+        ext
+        rw [MonoidHom.mem_ker, AddMonoidHom.toMultiplicative'_apply_apply, ofAdd_eq_one,
+          ← logEmbedding_eq_zero_iff]
+        rfl)).toMonoidHom
+
+@[simp]
+theorem logEmbeddingQuot_apply (x : (𝓞 K)ˣ) :
+    logEmbeddingQuot K ⟦x⟧ = logEmbedding K x := rfl
+
+theorem logEmbeddingQuot_injective :
+    Function.Injective (logEmbeddingQuot K) := by
+  unfold logEmbeddingQuot
+  intro _ _ h
+  simp_rw [MonoidHom.toAdditive'_apply_apply, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom,
+    Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
+  exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
+
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4119
+the `Module ℤ (Additive ((𝓞 K)ˣ ⧸ NumberField.Units.torsion K))` instance required below isn't found
+unless we use `set_option maxSynthPendingDepth 2`, or add
+explicit instances:
+```
+local instance : CommGroup (𝓞 K)ˣ := inferInstance
+```
+-/
+set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
+
+/-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
+`unitLattice` . -/
+def logEmbeddingEquiv :
+    Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) :=
+  (AddEquiv.ofBijective (AddMonoidHom.codRestrict (logEmbeddingQuot K) _
+  (Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸ AddSubgroup.mem_map_of_mem _ trivial))
+  ⟨fun _ _ ↦ by
+    rw [AddMonoidHom.codRestrict_apply, AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
+    apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simp [ha]⟩⟩).toIntLinearEquiv
+
+@[simp]
+theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :
+    logEmbeddingEquiv K ⟦x⟧ = logEmbedding K x := rfl
 
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
-  Module.Free.of_equiv (unitLatticeEquiv K)
+  Module.Free.of_equiv (logEmbeddingEquiv K).symm
 
 instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
-  Module.Finite.equiv (unitLatticeEquiv K)
+  Module.Finite.equiv (logEmbeddingEquiv K).symm
 
 -- Note that we prove this instance first and then deduce from it the instance
 -- `Monoid.FG (𝓞 K)ˣ`, and not the other way around, due to no `Subgroup` version
@@ -418,7 +451,7 @@ instance : Monoid.FG (𝓞 K)ˣ := by
 
 theorem rank_modTorsion :
     FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
-  rw [← LinearEquiv.finrank_eq (unitLatticeEquiv K), unitLattice_rank]
+  rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
@@ -430,6 +463,12 @@ units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
   fun i => Quotient.out' (Additive.toMul (basisModTorsion K i) :)
+
+theorem fundSystem_mk (i : Fin (rank K)) :
+    Additive.ofMul ⟦fundSystem K i⟧ = (basisModTorsion K i) := by
+  rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, @Quotient.mk_eq_iff_out,
+    Quotient.out', Quotient.out_equiv_out]
+  rfl
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
@@ -466,5 +505,6 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin
     rw [_root_.mul_inv_cancel_right]
 
 end statements
+
 
 end NumberField.Units

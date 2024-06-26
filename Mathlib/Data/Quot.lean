@@ -63,10 +63,10 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
     (fun a ↦ Quot.hrecOn qb (f a) (fun b₁ b₂ pb ↦ cb pb))
     fun a₁ a₂ pa ↦
       Quot.induction_on qb fun b ↦
-        have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) :=
-          by simp [heq_self_iff_true]
-        have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _)) :=
-          by simp [heq_self_iff_true]
+        have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) := by
+          simp [heq_self_iff_true]
+        have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _)) := by
+          simp [heq_self_iff_true]
         (h₁.trans (ca pa)).trans h₂
 #align quot.hrec_on₂ Quot.hrecOn₂
 
@@ -347,6 +347,11 @@ theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
 
+/-- `Quotient.mk` is a surjective function. -/
+theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
+    Function.Surjective (Quotient.mk s) :=
+  Quot.exists_rep
+
 /-- `Quotient.mk'` is a surjective function. -/
 theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
@@ -386,13 +391,13 @@ theorem Quotient.mk_out [Setoid α] (a : α) : ⟦a⟧.out ≈ a :=
 
 theorem Quotient.mk_eq_iff_out [s : Setoid α] {x : α} {y : Quotient s} :
     ⟦x⟧ = y ↔ x ≈ Quotient.out y := by
-  refine' Iff.trans _ Quotient.eq
+  refine Iff.trans ?_ Quotient.eq
   rw [Quotient.out_eq y]
 #align quotient.mk_eq_iff_out Quotient.mk_eq_iff_out
 
 theorem Quotient.eq_mk_iff_out [s : Setoid α] {x : Quotient s} {y : α} :
     x = ⟦y⟧ ↔ Quotient.out x ≈ y := by
-  refine' Iff.trans _ Quotient.eq
+  refine Iff.trans ?_ Quotient.eq
   rw [Quotient.out_eq x]
 #align quotient.eq_mk_iff_out Quotient.eq_mk_iff_out
 

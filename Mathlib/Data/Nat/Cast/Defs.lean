@@ -193,12 +193,12 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
 section deprecated
 set_option linter.deprecated false
 
-@[norm_cast, deprecated]
+@[norm_cast, deprecated (since := "2022-11-19")]
 theorem cast_bit0 [AddMonoidWithOne R] (n : ℕ) : ((bit0 n : ℕ) : R) = bit0 (n : R) :=
   Nat.cast_add _ _
 #align nat.cast_bit0 Nat.cast_bit0
 
-@[norm_cast, deprecated]
+@[norm_cast, deprecated (since := "2022-11-19")]
 theorem cast_bit1 [AddMonoidWithOne R] (n : ℕ) : ((bit1 n : ℕ) : R) = bit1 (n : R) := by
   rw [bit1, cast_add_one, cast_bit0]; rfl
 #align nat.cast_bit1 Nat.cast_bit1
@@ -213,14 +213,12 @@ attribute [simp, norm_cast] Int.natAbs_ofNat
 end Nat
 
 /-- `AddMonoidWithOne` implementation using unary recursion. -/
-@[reducible]
-protected def AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with }
 #align add_monoid_with_one.unary AddMonoidWithOne.unary
 
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
-@[reducible]
-protected def AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],

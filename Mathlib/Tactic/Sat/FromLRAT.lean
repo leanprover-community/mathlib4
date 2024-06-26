@@ -42,7 +42,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 set_option autoImplicit true
 
 open Lean hiding Literal HashMap
-open Std
+open Batteries
 
 namespace Sat
 

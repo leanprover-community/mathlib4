@@ -5,9 +5,9 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import algebra.category.Mon.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
@@ -102,8 +102,7 @@ noncomputable def limitCone : Cone F :=
     π :=
     { app := limitπMonoidHom F
       naturality := fun _ _ f =>
-        set_option linter.deprecated false in
-        MonoidHom.coe_inj ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
+        DFunLike.coe_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
 #align Mon.has_limits.limit_cone MonCat.HasLimits.limitCone
 #align AddMon.has_limits.limit_cone AddMonCat.HasLimits.limitCone
 

@@ -46,9 +46,9 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     split_ifs with h
     · subst h
       simp
-    · -- Adaptation note: after nightly-2024-03-07, the previous sensible proof
-      -- `rw [if_neg h]; simp` fails with "motive not type correct".
-      -- The following is horrible.
+    · #adaptation_note /-- after nightly-2024-03-07, the previous sensible proof
+      `rw [if_neg h]; simp` fails with "motive not type correct".
+      The following is horrible. -/
       convert (id_zero (C := V)).symm
       all_goals simp [if_neg h]
   map_comp f g := by
@@ -96,6 +96,18 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
   rfl
 #align homological_complex.single_map_f_self HomologicalComplex.single_map_f_self
 
+variable (V)
+
+/-- The natural isomorphism `single V c j ⋙ eval V c j ≅ 𝟭 V`. -/
+@[simps!]
+noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
+  NatIso.ofComponents (singleObjXSelf c j) (fun {A B} f => by simp [single_map_f_self])
+
+lemma isZero_single_comp_eval (j i : ι) (hi : i ≠ j) : IsZero (single V c j ⋙ eval V c i) :=
+  Functor.isZero _ (fun _ ↦ isZero_single_obj_X c _ _ _ hi)
+
+variable {V c}
+
 @[ext]
 lemma from_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
     {f g : (single V c j).obj A ⟶ K} (hfg : f.f j = g.f j) : f = g := by
@@ -125,8 +137,6 @@ instance (j : ι) : (single V c j).Full where
     ⟨(singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom, by
       ext
       simp [single_map_f_self]⟩
-
-variable {c}
 
 /-- Constructor for morphisms to a single homological complex. -/
 noncomputable def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
@@ -176,6 +186,8 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
   rw [dif_pos rfl, comp_id]
   rfl
 
+instance (j : ι) : (single V c j).PreservesZeroMorphisms where
+
 end HomologicalComplex
 
 namespace ChainComplex
@@ -186,7 +198,7 @@ noncomputable abbrev single₀ : V ⥤ ChainComplex V ℕ :=
 
 variable {V}
 
-@[simp, nolint simpNF]
+@[simp]
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
@@ -255,7 +267,7 @@ noncomputable abbrev single₀ : V ⥤ CochainComplex V ℕ :=
 
 variable {V}
 
-@[simp, nolint simpNF]
+@[simp]
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 

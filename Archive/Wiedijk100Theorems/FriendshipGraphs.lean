@@ -41,7 +41,7 @@ be phrased in terms of counting walks.
 -/
 
 
-open scoped Classical BigOperators
+open scoped Classical
 
 namespace Theorems100
 
@@ -206,7 +206,7 @@ end Nonempty
 theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R * of (fun _ _ => 1) = of (fun _ _ => (d : R)) := by
   ext x
-  simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_coe,
+  simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_cast,
     of_apply]
 #align theorems_100.friendship.adj_matrix_sq_mul_const_one_of_regular Theorems100.Friendship.adjMatrix_sq_mul_const_one_of_regular
 
@@ -317,7 +317,7 @@ theorem existsPolitician_of_degree_le_two (hd : G.IsRegularOfDegree d) (h : d �
     ExistsPolitician G := by
   interval_cases d
   iterate 2 apply existsPolitician_of_degree_le_one hG hd; norm_num
-  · exact existsPolitician_of_degree_eq_two hG hd
+  exact existsPolitician_of_degree_eq_two hG hd
 #align theorems_100.friendship.exists_politician_of_degree_le_two Theorems100.Friendship.existsPolitician_of_degree_le_two
 
 end Friendship

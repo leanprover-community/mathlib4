@@ -90,8 +90,8 @@ alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
 alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
 
 lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) :=
-  fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha <| hds.trans <| inter_subset_left _ _,
-    ht hd hd' ha <| hds.trans <| inter_subset_right _ _⟩
+  fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha <| hds.trans inter_subset_left,
+    ht hd hd' ha <| hds.trans inter_subset_right⟩
 
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
   rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
@@ -194,7 +194,7 @@ def scott (α : Type*) [Preorder α] : TopologicalSpace α := upperSet α ⊔ sc
 
 lemma upperSet_le_scott : upperSet α ≤ scott α := le_sup_left
 
-lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
+lemma scottHausdorff_le_scott : scottHausdorff α ≤ scott α := le_sup_right
 
 variable (α) [TopologicalSpace α]
 
@@ -224,7 +224,7 @@ lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirS
     ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ (scottHausdorff α) _ _,
       fun h' d d₁ d₂ _ d₃ ha ↦ ?_⟩
   obtain ⟨b, hbd, hbu⟩ := h' d₁ d₂ d₃ ha
-  exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.Ici_subset hbu)⟩
+  exact ⟨b, hbd, Subset.trans inter_subset_left (h.Ici_subset hbu)⟩
 
 lemma isClosed_iff_isLowerSet_and_dirSupClosed : IsClosed s ↔ IsLowerSet s ∧ DirSupClosed s := by
   rw [← isOpen_compl_iff, isOpen_iff_isUpperSet_and_dirSupInacc, isUpperSet_compl,
@@ -336,7 +336,13 @@ lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
 end WithScott
 end Scott
 
-variable [Preorder α] [TopologicalSpace α]
+variable [Preorder α]
+
+lemma scottHausdorff_le_lower : scottHausdorff α ≤ lower α :=
+  fun s h => @IsScottHausdorff.isOpen_of_isLowerSet  _ _ (scottHausdorff α) _ _
+      <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _  _ s h)
+
+variable [TopologicalSpace α]
 
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/

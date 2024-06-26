@@ -269,7 +269,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
-    intro x y; ring_nf -- Porting note: Originally, `cc` solved the entire goal
+    intro x y; ring_nf
   · -- Show that the claim is true if b = 0.
     simp
   · -- Show that the claim is true if a = b.

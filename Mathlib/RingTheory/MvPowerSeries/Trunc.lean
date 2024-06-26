@@ -23,8 +23,6 @@ so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 namespace MvPowerSeries
@@ -39,7 +37,7 @@ variable [CommSemiring R] (n : σ →₀ ℕ)
 
 /-- Auxiliary definition for the truncation function. -/
 def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
-  ∑ m in Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
+  ∑ m ∈ Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
 #align mv_power_series.trunc_fun MvPowerSeries.truncFun
 
 theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
@@ -88,7 +86,7 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
       exact if_neg (Ne.symm H')
     · symm
       rw [MvPolynomial.coeff_one]
-      refine' if_neg _
+      refine if_neg ?_
       rintro rfl
       apply H
       exact Ne.bot_lt hnn

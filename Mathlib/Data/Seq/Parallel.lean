@@ -109,10 +109,9 @@ theorem terminates_parallel.aux :
         simp [this]
     induction' h : parallel.aux2 l with a l'
     · exact lem1 _ _ ⟨a, h⟩
-    · have H2 : corec parallel.aux1 (l, S) = think _ := by
-        apply destruct_eq_think
+    · have H2 : corec parallel.aux1 (l, S) = think _ := destruct_eq_think (by
         simp only [parallel.aux1, rmap, corec_eq]
-        rw [h]
+        rw [h])
       rw [H2]
       refine @Computation.think_terminates _ _ ?_
       have := H1 _ h
@@ -141,10 +140,9 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         simp only [rmap]
       rw [C]
       infer_instance
-    · have C : corec parallel.aux1 (l, S) = _ := by
-        apply destruct_eq_think
-        · simp only [corec_eq, rmap, parallel.aux1.eq_1]
-          rw [h, H]
+    · have C : corec parallel.aux1 (l, S) = _ := destruct_eq_think (by
+        simp only [corec_eq, rmap, parallel.aux1.eq_1]
+        rw [h, H])
       rw [C]
       refine @Computation.think_terminates _ _ ?_
       apply terminates_parallel.aux _ T
@@ -160,10 +158,9 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         simp only [rmap]
       rw [C]
       infer_instance
-    · have C : corec parallel.aux1 (l, S) = _ := by
-        apply destruct_eq_think
-        · simp only [corec_eq, rmap, parallel.aux1.eq_1]
-          rw [h]
+    · have C : corec parallel.aux1 (l, S) = _ := destruct_eq_think (by
+        simp only [corec_eq, rmap, parallel.aux1.eq_1]
+        rw [h])
       rw [C]
       refine @Computation.think_terminates _ _ ?_
       have TT : ∀ l', Terminates (corec parallel.aux1 (l', S.tail)) := by
@@ -219,7 +216,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
       · rcases IH with ⟨c', cl, ac⟩
         exact ⟨c', List.Mem.tail _ cl, ac⟩
       · induction' h : destruct c with a c' <;> simp only [rmap]
-        · refine' ⟨c, List.mem_cons_self _ _, _⟩
+        · refine ⟨c, List.mem_cons_self _ _, ?_⟩
           rw [destruct_eq_pure h]
           apply ret_mem
         · intro a' h
@@ -227,7 +224,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
           simp? at dm says simp only [List.mem_cons] at dm
           cases' dm with e dl
           · rw [e] at ad
-            refine' ⟨c, List.mem_cons_self _ _, _⟩
+            refine ⟨c, List.mem_cons_self _ _, ?_⟩
             rw [destruct_eq_think h]
             exact think_mem ad
           · cases' IH a' ⟨d, dl, ad⟩ with d dm
@@ -252,31 +249,31 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
       · exact
           let ⟨c, cl, ac⟩ := this a ⟨d, dl, ad⟩
           ⟨c, Or.inl cl, ac⟩
-      · refine' ⟨d, Or.inr _, ad⟩
+      · refine ⟨d, Or.inr ?_, ad⟩
         rw [Seq.destruct_eq_cons e]
         exact Seq.mem_cons_of_mem _ dS'
       · simp at dl
         cases' dl with dc dl
         · rw [dc] at ad
-          refine' ⟨c, Or.inr _, ad⟩
+          refine ⟨c, Or.inr ?_, ad⟩
           rw [Seq.destruct_eq_cons e]
           apply Seq.mem_cons
         · exact
             let ⟨c, cl, ac⟩ := this a ⟨d, dl, ad⟩
             ⟨c, Or.inl cl, ac⟩
-      · refine' ⟨d, Or.inr _, ad⟩
+      · refine ⟨d, Or.inr ?_, ad⟩
         rw [Seq.destruct_eq_cons e]
         exact Seq.mem_cons_of_mem _ dS'
 #align computation.exists_of_mem_parallel Computation.exists_of_mem_parallel
 
 theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
-  refine'
+  refine
     eq_of_bisim
       (fun c1 c2 =>
         ∃ l S,
           c1 = map f (corec parallel.aux1 (l, S)) ∧
             c2 = corec parallel.aux1 (l.map (map f), S.map (map f)))
-      _ ⟨[], S, rfl, rfl⟩
+      ?_ ⟨[], S, rfl, rfl⟩
   intro c1 c2 h
   exact
     match c1, c2, h with
@@ -310,7 +307,7 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
   let T : WSeq (Computation (α × Computation α)) := S.map fun c => c.map fun a => (a, c)
   have : S = T.map (map fun c => c.1) := by
     rw [← WSeq.map_comp]
-    refine' (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) _)
+    refine (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) ?_)
     funext c
     dsimp [id, Function.comp_def]
     rw [← map_comp]

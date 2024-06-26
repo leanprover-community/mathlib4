@@ -243,7 +243,7 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
 @[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_intCast, abs_ofReal]
 #align complex.int_cast_abs Complex.abs_intCast
 
-@[deprecated] -- 2024-02-14
+@[deprecated (since := "2024-02-14")]
 lemma int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := (abs_intCast _).symm
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by

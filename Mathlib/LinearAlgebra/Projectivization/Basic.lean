@@ -112,7 +112,7 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
   · rintro ⟨a, ha⟩
     exact ⟨a, ha⟩
   · rintro ⟨a, ha⟩
-    refine' ⟨Units.mk0 a fun c => hv.symm _, ha⟩
+    refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
     rwa [c, zero_smul] at ha
 #align projectivization.mk_eq_mk_iff' Projectivization.mk_eq_mk_iff'
 
