@@ -846,21 +846,21 @@ theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
 #align pgame.mul_assoc_equiv SetTheory.PGame.mul_assoc_equiv
 
 /-- The left options of `x * y` of the first kind, i.e. of the form `xL * y + x * yL - xL * yL`. -/
-def mul_option (x y : PGame) (i: LeftMoves x) (j: LeftMoves y) : PGame :=
+def mulOption (x y : PGame) (i: LeftMoves x) (j: LeftMoves y) : PGame :=
     x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j
 
 /-- Any left option of `x * y` of the first kind is also a left option of `x * -(-y)` of
   the first kind. -/
-lemma mul_option_neg_neg {x} (y) {i j} :
-    mul_option x y i j = mul_option x (-(-y)) i (toLeftMovesNeg $ toRightMovesNeg j) := by
-  dsimp only [mul_option]
+lemma mulOption_neg_neg {x} (y) {i j} :
+    mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg $ toRightMovesNeg j) := by
+  dsimp only [mulOption]
   congr 2
   rw [neg_neg]
   iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
-lemma mul_option_symm (x y) {i j} : ⟦mul_option x y i j⟧ = (⟦mul_option y x j i⟧: Game) := by
-  dsimp only [mul_option, quot_sub, quot_add]
+lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧: Game) := by
+  dsimp only [mulOption, quot_sub, quot_add]
   rw [add_comm]
   congr 1
   on_goal 1 => congr 1
@@ -870,7 +870,7 @@ lemma mul_option_symm (x y) {i j} : ⟦mul_option x y i j⟧ = (⟦mul_option y 
   first kind, up to equivalence. -/
 lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
     (∀ k, P ⟦(x * y).moveLeft k⟧) ↔
-    (∀ i j, P ⟦mul_option x y i j⟧) ∧ (∀ i j, P ⟦mul_option (-x) (-y) i j⟧) := by
+    (∀ i j, P ⟦mulOption x y i j⟧) ∧ (∀ i j, P ⟦mulOption (-x) (-y) i j⟧) := by
   cases x; cases y
   constructor <;> intro h
   on_goal 1 =>
@@ -882,7 +882,7 @@ lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
     exact h.1 i j
     convert h.2 i j using 1
   all_goals
-    dsimp only [mk_mul_moveLeft_inr, quot_sub, quot_add, neg_def, mul_option, moveLeft_mk]
+    dsimp only [mk_mul_moveLeft_inr, quot_sub, quot_add, neg_def, mulOption, moveLeft_mk]
     rw [← neg_def, ← neg_def]
     congr 1
     on_goal 1 => congr 1
@@ -892,7 +892,7 @@ lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   kind, up to equivalence. -/
 lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
     (∀ k, P ⟦(x * y).moveRight k⟧) ↔
-    (∀ i j, P (-⟦mul_option x (-y) i j⟧)) ∧ (∀ i j, P (-⟦mul_option (-x) y i j⟧)) := by
+    (∀ i j, P (-⟦mulOption x (-y) i j⟧)) ∧ (∀ i j, P (-⟦mulOption (-x) y i j⟧)) := by
   cases x; cases y
   constructor <;> intro h
   on_goal 1 =>
@@ -904,7 +904,7 @@ lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
     convert h.1 i j using 1
     on_goal 2 => convert h.2 i j using 1
   all_goals
-    dsimp [mul_option]
+    dsimp [mulOption]
     rw [neg_sub', neg_add, ← neg_def]
     congr 1
     on_goal 1 => congr 1

@@ -132,16 +132,16 @@ lemma P24_neg_right : P24 x₁ x₂ y ↔ P24 x₁ x₂ (-y) := by rw [P24, P24,
 
 /-! #### Explicit calculations necessary for the main proof -/
 
-lemma mul_option_lt_iff_P1 {i j k l} :
-    (⟦mul_option x y i k⟧ : Game) < -⟦mul_option x (-y) j l⟧ ↔
+lemma mulOption_lt_iff_P1 {i j k l} :
+    (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ ↔
     P1 (x.moveLeft i) x (x.moveLeft j) y (y.moveLeft k) (-(-y).moveLeft l) := by
-  dsimp only [mul_option, quot_sub, quot_add, P1]
+  dsimp only [mulOption, quot_sub, quot_add, P1]
   convert Iff.rfl using 2
   simp_rw [neg_sub', neg_add, quot_mul_neg, neg_neg]
 
-lemma mul_option_lt_mul_iff_P3 {i j} :
-    ⟦mul_option x y i j⟧ < (⟦x * y⟧ : Game) ↔ P3 (x.moveLeft i) x (y.moveLeft j) y := by
-  dsimp only [mul_option, quot_sub, quot_add]
+lemma mulOption_lt_mul_iff_P3 {i j} :
+    ⟦mulOption x y i j⟧ < (⟦x * y⟧ : Game) ↔ P3 (x.moveLeft i) x (y.moveLeft j) y := by
+  dsimp only [mulOption, quot_sub, quot_add]
   exact sub_lt_iff_lt_add'
 
 lemma P1_of_eq (he : x₁ ≈ x₃) (h₁ : P2 x₁ x₃ y₁) (h₃ : P2 x₁ x₃ y₃) (h3 : P3 x₁ x₂ y₂ y₃) :
@@ -245,18 +245,18 @@ section
 
 variable (ihxy : IH1 x y) (ihyx : IH1 y x)
 
-lemma mul_option_lt_of_lt (i j k l) (h : x.moveLeft i < x.moveLeft j) :
-    (⟦mul_option x y i k⟧ : Game) < -⟦mul_option x (-y) j l⟧ :=
-  mul_option_lt_iff_P1.2 <| P1_of_lt (P3_of_ih hy ihyx j k l) <| ((P24_of_ih ihxy i j).2 h).1 k
+lemma mulOption_lt_of_lt (i j k l) (h : x.moveLeft i < x.moveLeft j) :
+    (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ :=
+  mulOption_lt_iff_P1.2 <| P1_of_lt (P3_of_ih hy ihyx j k l) <| ((P24_of_ih ihxy i j).2 h).1 k
 
-lemma mul_option_lt (i j k l) : (⟦mul_option x y i k⟧ : Game) < -⟦mul_option x (-y) j l⟧ := by
+lemma mulOption_lt (i j k l) : (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ := by
   obtain (h|h|h) := lt_or_equiv_or_gt (hx.moveLeft i) (hx.moveLeft j)
-  · exact mul_option_lt_of_lt hy ihxy ihyx i j k l h
+  · exact mulOption_lt_of_lt hy ihxy ihyx i j k l h
   · have ml := @IsOption.moveLeft
-    exact mul_option_lt_iff_P1.2 (P1_of_eq h (P24_of_ih ihxy i j).1
+    exact mulOption_lt_iff_P1.2 (P1_of_eq h (P24_of_ih ihxy i j).1
       (ihxy (ml i) (ml j) <| Or.inr <| isOption_neg.1 <| ml l).1 <| P3_of_ih hy ihyx i k l)
-  · rw [mul_option_neg_neg, lt_neg]
-    exact mul_option_lt_of_lt hy.neg (ih1_neg_right ihxy) (ih1_neg_left ihyx) j i l _ h
+  · rw [mulOption_neg_neg, lt_neg]
+    exact mulOption_lt_of_lt hy.neg (ih1_neg_right ihxy) (ih1_neg_left ihyx) j i l _ h
 
 end
 
@@ -271,13 +271,13 @@ theorem P1_of_ih : (x * y).Numeric := by
     intro i
     rw [rightMoves_mul_iff]
     constructor <;> (intro j l; revert i; rw [leftMoves_mul_iff (_ > ·)]; constructor <;> intro i k)
-    · apply mul_option_lt hx hy ihxy ihyx
-    · simp_rw [← mul_option_symm (-y), mul_option_neg_neg x]
-      apply mul_option_lt hy.neg hx.neg ihyxn ihxyn
-    · simp only [← mul_option_symm y]
-      apply mul_option_lt hy hx ihyx ihxy
-    · rw [mul_option_neg_neg y]
-      apply mul_option_lt hx.neg hy.neg ihxyn ihyxn
+    · apply mulOption_lt hx hy ihxy ihyx
+    · simp_rw [← mulOption_symm (-y), mulOption_neg_neg x]
+      apply mulOption_lt hy.neg hx.neg ihyxn ihxyn
+    · simp only [← mulOption_symm y]
+      apply mulOption_lt hy hx ihyx ihxy
+    · rw [mulOption_neg_neg y]
+      apply mulOption_lt hx.neg hy.neg ihxyn ihyxn
   all_goals
     cases x; cases y
     rintro (⟨i,j⟩|⟨i,j⟩)
@@ -347,8 +347,8 @@ lemma ih4_neg : IH4 x₁ x₂ y → IH4 (-x₂) (-x₁) y ∧ IH4 x₁ x₂ (-y)
   · convert (h h').symm using 2 <;> rw [P2_neg_left, neg_neg]
   · convert h h' using 2 <;> rw [P2_neg_right]
 
-lemma mul_option_lt_mul_of_equiv (hn : x₁.Numeric) (h : IH24 x₁ x₂ y) (he : x₁ ≈ x₂) (i j) :
-    ⟦mul_option x₁ y i j⟧ < (⟦x₂ * y⟧ : Game) := by
+lemma mulOption_lt_mul_of_equiv (hn : x₁.Numeric) (h : IH24 x₁ x₂ y) (he : x₁ ≈ x₂) (i j) :
+    ⟦mulOption x₁ y i j⟧ < (⟦x₂ * y⟧ : Game) := by
   convert sub_lt_iff_lt_add'.2 ((((@h _).1 <| IsOption.moveLeft i).2 _).1 j) using 1
   · rw [← ((@h _).2.2 <| IsOption.moveLeft j).1 he]
     rfl
@@ -361,22 +361,22 @@ theorem mul_right_le_of_equiv (h₁ : x₁.Numeric) (h₂ : x₂.Numeric)
   have he' := neg_equiv_neg_iff.2 he
   apply PGame.le_of_forall_lt <;> simp_rw [lt_iff_game_lt]
   · rw [leftMoves_mul_iff (_ > ·)]
-    refine ⟨mul_option_lt_mul_of_equiv h₁ h₁₂ he, ?_⟩
+    refine ⟨mulOption_lt_mul_of_equiv h₁ h₁₂ he, ?_⟩
     rw [← quot_neg_mul_neg]
-    exact mul_option_lt_mul_of_equiv h₁.neg (ih24_neg <| (ih24_neg h₂₁).1).2 he'
+    exact mulOption_lt_mul_of_equiv h₁.neg (ih24_neg <| (ih24_neg h₂₁).1).2 he'
   · rw [rightMoves_mul_iff]
     constructor <;> intros <;> rw [lt_neg]
     · rw [← quot_mul_neg]
-      apply mul_option_lt_mul_of_equiv h₂ (ih24_neg h₂₁).2 (symm he)
+      apply mulOption_lt_mul_of_equiv h₂ (ih24_neg h₂₁).2 (symm he)
     · rw [← quot_neg_mul]
-      apply mul_option_lt_mul_of_equiv h₂.neg (ih24_neg h₁₂).1 (symm he')
+      apply mulOption_lt_mul_of_equiv h₂.neg (ih24_neg h₁₂).1 (symm he')
 
 /-- The statement that all left options of `x * y` of the first kind are less than itself. -/
-def MulOptionsLTMul (x y : PGame) : Prop := ∀ ⦃i j⦄, ⟦mul_option x y i j⟧ < (⟦x * y⟧ : Game)
+def MulOptionsLTMul (x y : PGame) : Prop := ∀ ⦃i j⦄, ⟦mulOption x y i j⟧ < (⟦x * y⟧ : Game)
 
 /-- That the left options of `x * y` are less than itself and the right options are greater, which
   is part of the condition that `x * y` is numeric, is equivalent to the conjunction of various
-  `mul_options_lt_mul` statements for `x`, `y` and their negations. We only show the forward
+  `MulOptionsLTMul` statements for `x`, `y` and their negations. We only show the forward
   direction. -/
 lemma mulOptionsLTMul_of_numeric (hn : (x * y).Numeric) :
     (MulOptionsLTMul x y ∧ MulOptionsLTMul (-x) (-y)) ∧
@@ -408,7 +408,7 @@ lemma ih3_of_ih (h24 : IH24 x₁ x₂ y) (h4 : IH4 x₁ x₂ y) (hl : MulOptions
     (i j) : IH3 x₁ (x₂.moveLeft i) x₂ (y.moveLeft j) y :=
   have ml := @IsOption.moveLeft
   have h24 := (@h24 _).2.1 (ml i)
-  ⟨(h4 <| ml j).2 (ml i), h24.1, mul_option_lt_mul_iff_P3.1 (@hl i j), fun l ↦ (h24.2 l).1 _⟩
+  ⟨(h4 <| ml j).2 (ml i), h24.1, mulOption_lt_mul_iff_P3.1 (@hl i j), fun l ↦ (h24.2 l).1 _⟩
 
 lemma P3_of_le_left {y₁ y₂} (i) (h : IH3 x₁ (x₂.moveLeft i) x₂ y₁ y₂)
     (hl : x₁ ≤ x₂.moveLeft i) : P3 x₁ x₂ y₁ y₂ := by
