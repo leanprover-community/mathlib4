@@ -187,99 +187,51 @@ theorem limsup_le_limsup {α : Type*} {f : Filter α} {u v : α → EReal} (h : 
 theorem limsup_add_le_lt₂ {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
     (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f ≤ a + b := by
   rcases eq_or_neBot f with (rfl | _); simp only [limsup_bot, bot_le]
-  rw [← @limsup_const EReal α _ f _ (a+b)]
+  rw [← @limsup_const EReal α _ f _ (a + b)]
   apply limsup_le_limsup (Eventually.mp (Eventually.and (eventually_lt_of_limsup_lt ha)
     (eventually_lt_of_limsup_lt hb)) (eventually_of_forall _))
   simp only [Pi.add_apply, and_imp]
   intro x
   exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
 
-/-
-TODO: Since `EReal.le_iff_le_forall_real_gt` is ported in `Mathlib.Data.Real.EReal`
-via the PR `#14125`, we need to:
--- Wait for PR `#14125` to be merged
--- Rebase to master
--- Uncomment this theorem
--- Consider changing its name to `limsup_add_bot_of_ne_top` to stick to naming conventions
--/
 theorem limsup_add_bot_of_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
     (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) : limsup (u + v) f = ⊥ := by
   apply le_bot_iff.1
-  apply (le_iff_le_forall_real_gt ⊥ (limsup (u+v) f)).1
+  apply (le_iff_le_forall_real_gt ⊥ (limsup (u + v) f)).1
   intro x
   rcases exists_between_coe_real (h'.lt_top) with ⟨y, ⟨hy, _⟩⟩
-  intro trash; clear trash
-  rw [← sub_add_cancel x y, coe_add (x-y) y, coe_sub x y]
-  apply @limsup_add_le_lt₂ α f u v (x-y) y _ hy
+  rw [← sub_add_cancel x y, coe_add (x - y) y, coe_sub x y]
+  intro _
+  apply @limsup_add_le_lt₂ α f u v (x - y) y _ hy
   rw [h, ← coe_sub x y]
-  exact bot_lt_coe (x-y)
+  exact bot_lt_coe (x - y)
 
-/-
-TODO: Since `limsup_add_bot_of_ne_top` above is dependent from a lemma ported in
-`Mathlib.Data.Real.EReal` via the PR #14125, we need to:
--- Wait for PR #14125 to be merged
--- Rebase to master
--- Uncomment this theorem
--/
 theorem limsup_add_le_add_limsup {α : Type _} {f : Filter α} {u v : α → EReal}
     (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
-  /- WLOG, ⊥ < limsup u f. -/
   rcases eq_bot_or_bot_lt (limsup u f) with (u_bot | u_nbot)
   · rcases h with (u_nbot | v_ntop)
     · exfalso; exact u_nbot u_bot
     · rw [limsup_add_bot_of_ne_top u_bot v_ntop]; exact bot_le
-  /- WLOG, ⊥ < limsup v f. -/
   rcases eq_bot_or_bot_lt (limsup v f) with (v_bot | v_nbot)
   · rcases h' with (u_ntop | v_nbot)
     · rw [add_comm, limsup_add_bot_of_ne_top v_bot u_ntop]; exact bot_le
     · exfalso; exact v_nbot v_bot
   clear h h'
-  /- WLOG, limsup v f < ⊤. -/
   rcases eq_top_or_lt_top (limsup v f) with (v_top | v_ntop)
-  · rw [v_top, EReal.add_top_of_ne_bot (ne_of_gt u_nbot)]; exact le_top
-  /- General case. -/
-  have limsup_v_real := EReal.coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
-  apply (EReal.le_iff_le_forall_real_gt _ _).2
+  · rw [v_top, add_top_of_ne_bot (ne_of_gt u_nbot)]; exact le_top
+  have limsup_v_real := coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
+  apply (le_iff_le_forall_real_gt _ _).1
   intros x hx
-  rcases EReal.lt_iff_exists_real_btwn.1 hx with ⟨y, ⟨sum_lt_y, y_lt_x⟩⟩; clear hx
+  rcases lt_iff_exists_real_btwn.1 hx with ⟨y, ⟨sum_lt_y, y_lt_x⟩⟩
   have key₁ : limsup u f < (y - limsup v f) := by
-    apply lt_of_eq_of_lt _ (EReal.sub_lt_sub_of_lt_of_le sum_lt_y (le_of_eq (Eq.refl (limsup v f)))
+    apply lt_of_eq_of_lt _ (sub_lt_sub_of_lt_of_le sum_lt_y (le_of_eq (Eq.refl (limsup v f)))
       (ne_of_gt v_nbot) (ne_of_lt v_ntop))
     rw [← limsup_v_real, add_sub_cancel_right]
   have key₂ : limsup v f < limsup v f + x - y := by
     rw [← limsup_v_real]; norm_cast; norm_cast at y_lt_x; linarith
-  apply le_of_le_of_eq (EReal.limsup_add_le_lt₂ key₁ key₂); clear key₁ key₂ y_lt_x sum_lt_y
+  apply le_of_le_of_eq (limsup_add_le_lt₂ key₁ key₂)
   rw [← limsup_v_real]; norm_cast; linarith
-
--- -- Put into Data/Real/EReal.lean ?
--- theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
---   symm
---   refine ⟨fun  h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h , ?_⟩
---   intro h
---   induction' x using EReal.rec with x
---   · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
---     intro z
---     apply lt_of_not_le
---     intro z_le_y
---     apply not_le_of_lt (bot_lt_coe (z - 1))
---     specialize h (z-1)
---     apply h (lt_of_lt_of_le _ z_le_y)
---     norm_cast
---     exact sub_one_lt z
---   · induction' y using EReal.rec with y
---     · exact bot_le
---     · norm_cast
---       norm_cast at h
---       by_contra x_lt_y
---       rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, ⟨x_lt_z, z_lt_y⟩⟩
---       specialize h z z_lt_y
---       exact not_le_of_lt x_lt_z h
---     · exfalso
---       specialize h (x + 1) (coe_lt_top (x+1))
---       norm_cast at h
---       exact not_le_of_lt (lt_add_one x) h
---   · exact le_top
 
 lemma liminf_add_ge_gt₂ {α : Type _} {f : Filter α} {u v : α → EReal} {a b : EReal}
     (ha : a < liminf u f) (hb : b < liminf v f) : a + b ≤ liminf (u + v) f := by
