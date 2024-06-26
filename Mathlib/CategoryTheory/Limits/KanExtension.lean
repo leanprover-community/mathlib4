@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.PUnit
 This file defines the right Kan extensions of a functor.
 They exist under the assumption that the target category has enough limits.
 
-The main definitions is `Ran ι`, where `ι : S ⥤ L` is a functor.
+The main definition is `Ran ι`, where `ι : S ⥤ L` is a functor.
 Namely, `Ran ι : (S ⥤ D) ⥤ (L ⥤ D)` is the right Kan extension.
 
 To access the adjunction associated to this, use `Ran.adjunction`.
