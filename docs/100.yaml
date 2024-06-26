@@ -8,7 +8,7 @@
   author : Chris Hughes
 3:
   title  : The Denumerability of the Rational Numbers
-  decl   : Rat.instDenumerableRat
+  decl   : Rat.instDenumerable
   author : Chris Hughes
 4:
   title  : Pythagorean Theorem

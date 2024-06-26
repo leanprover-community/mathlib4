@@ -51,7 +51,7 @@ instance : BundledHom @ContinuousHom where
 deriving instance LargeCategory for ωCPO
 instance : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
 
-instance : CoeSort ωCPO (Type*) :=
+instance : CoeSort ωCPO Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled ωCPO from the underlying type and typeclass. -/

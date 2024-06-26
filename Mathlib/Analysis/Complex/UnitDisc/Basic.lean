@@ -16,7 +16,7 @@ introduce some basic operations on this disc.
 -/
 
 
-open Set Function Metric BigOperators
+open Set Function Metric
 
 noncomputable section
 

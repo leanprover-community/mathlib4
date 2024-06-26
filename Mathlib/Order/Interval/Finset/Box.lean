@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Order.Disjointed
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
@@ -48,6 +49,9 @@ lemma box_succ_disjUnion (n : ℕ) :
 
 @[simp] lemma zero_mem_box : (0 : α) ∈ box n ↔ n = 0 := by cases n <;> simp [box_succ_eq_sdiff]
 
+lemma eq_zero_iff_eq_zero_of_mem_box  {x : α} (hx : x ∈ box n) : x = 0 ↔ n = 0 :=
+  ⟨zero_mem_box.mp ∘ (· ▸ hx), fun hn ↦ by rwa [hn, box_zero, mem_singleton] at hx⟩
+
 end Finset
 
 open Finset
@@ -85,9 +89,9 @@ lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
   | 0 => by simp [Prod.ext_iff]
   | n + 1 => by
     simp [box_succ_eq_sdiff, Prod.le_def]
-    -- Adaptation note: v4.7.0-rc1. `omega` no longer identifies atoms up to defeq.
-    -- (This had become a performance bottleneck.)
-    -- We need a tactic for normalising instances, to avoid the `have`/`simp` dance below:
+    #adaptation_note /-- v4.7.0-rc1: `omega` no longer identifies atoms up to defeq.
+    (This had become a performance bottleneck.)
+    We need a tactic for normalising instances, to avoid the `have`/`simp` dance below: -/
     have : @Nat.cast ℤ instNatCastInt n = @Nat.cast ℤ AddMonoidWithOne.toNatCast n := rfl
     simp only [this]
     omega

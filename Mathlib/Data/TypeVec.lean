@@ -327,7 +327,7 @@ protected theorem casesCons_append1 (n : ℕ) {β : TypeVec (n + 1) → Sort*}
 def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort*}
     (f : β Fin2.elim0 Fin2.elim0 nilFun) :
     ∀ v v' fs, β v v' fs := fun v v' fs => by
-  refine' cast _ f
+  refine cast ?_ f
   have eq₁ : v = Fin2.elim0 := by funext i; contradiction
   have eq₂ : v' = Fin2.elim0 := by funext i; contradiction
   have eq₃ : fs = nilFun := by funext i; contradiction
@@ -426,20 +426,20 @@ def repeatEq : ∀ {n} (α : TypeVec n), (α ⊗ α) ⟹ «repeat» _ Prop
 #align typevec.repeat_eq TypeVec.repeatEq
 
 theorem const_append1 {β γ} (x : γ) {n} (α : TypeVec n) :
-    TypeVec.const x (α ::: β) = appendFun (TypeVec.const x α) fun _ => x :=
-  by ext i : 1; cases i <;> rfl
+    TypeVec.const x (α ::: β) = appendFun (TypeVec.const x α) fun _ => x := by
+  ext i : 1; cases i <;> rfl
 #align typevec.const_append1 TypeVec.const_append1
 
-theorem eq_nilFun {α β : TypeVec 0} (f : α ⟹ β) : f = nilFun :=
-  by ext x; cases x
+theorem eq_nilFun {α β : TypeVec 0} (f : α ⟹ β) : f = nilFun := by
+  ext x; cases x
 #align typevec.eq_nil_fun TypeVec.eq_nilFun
 
-theorem id_eq_nilFun {α : TypeVec 0} : @id _ α = nilFun :=
-  by ext x; cases x
+theorem id_eq_nilFun {α : TypeVec 0} : @id _ α = nilFun := by
+  ext x; cases x
 #align typevec.id_eq_nil_fun TypeVec.id_eq_nilFun
 
-theorem const_nil {β} (x : β) (α : TypeVec 0) : TypeVec.const x α = nilFun :=
-  by ext i : 1; cases i
+theorem const_nil {β} (x : β) (α : TypeVec 0) : TypeVec.const x α = nilFun := by
+  ext i : 1; cases i
 #align typevec.const_nil TypeVec.const_nil
 
 @[typevec]
@@ -645,7 +645,7 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction' i with _ _ _ i_ih
-  · simp only [comp, subtypeVal, repeatEq._eq_2, diagSub, prod.diag]
+  · simp only [comp, subtypeVal, repeatEq.eq_2, diagSub, prod.diag]
   apply @i_ih (drop α)
 #align typevec.diag_sub_val TypeVec.diag_sub_val
 
@@ -796,8 +796,8 @@ theorem subtypeVal_toSubtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
 @[simp]
 theorem toSubtype_of_subtype_assoc
     {α β : TypeVec n} (p : α ⟹ «repeat» n Prop) (f : β ⟹ Subtype_ p) :
-    @toSubtype n _ p ⊚ ofSubtype _ ⊚ f = f :=
-  by rw [← comp_assoc, toSubtype_of_subtype]; simp
+    @toSubtype n _ p ⊚ ofSubtype _ ⊚ f = f := by
+  rw [← comp_assoc, toSubtype_of_subtype]; simp
 #align typevec.to_subtype_of_subtype_assoc TypeVec.toSubtype_of_subtype_assoc
 
 @[simp]

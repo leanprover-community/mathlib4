@@ -45,7 +45,7 @@ universe u v w w'
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 variable {ι : Type w} {ι' : Type w'}
 
-open BigOperators Cardinal Basis Submodule Function Set
+open Cardinal Basis Submodule Function Set
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
@@ -113,7 +113,7 @@ theorem Basis.le_span'' {ι : Type*} [Fintype ι] (b : Basis ι R M) {w : Set M}
   fapply card_le_of_surjective' R
   · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
   · apply Surjective.comp (g := b.repr.toLinearMap)
-    apply LinearEquiv.surjective
+    · apply LinearEquiv.surjective
     rw [← LinearMap.range_eq_top, Finsupp.range_total]
     simpa using s
 #align basis.le_span'' Basis.le_span''
@@ -156,10 +156,10 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : #(r
       · subst b
         rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
         exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
-    refine' le_of_not_lt fun IJ => _
+    refine le_of_not_lt fun IJ => ?_
     suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_lt this ⟨Set.embeddingOfSubset _ _ hs⟩
-    refine' lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
-      (Cardinal.sum_le_sum _ (fun _ => ℵ₀) _)) _
+    refine lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
+      (Cardinal.sum_le_sum _ (fun _ => ℵ₀) ?_)) ?_
     · exact fun j => (Cardinal.lt_aleph0_of_finite _).le
     · simpa
 #align basis.le_span Basis.le_span
@@ -466,11 +466,12 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
   -- Porting note: can't use `‹_›` as that pulls the unused `N` into the context
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
-  refine' (ciSup_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
+  refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 #align finite_dimensional.rank_lt_aleph_0 rank_lt_aleph0
 
-@[deprecated] protected alias FiniteDimensional.rank_lt_aleph0 := rank_lt_aleph0
+@[deprecated (since := "2024-01-01")]
+protected alias FiniteDimensional.rank_lt_aleph0 := rank_lt_aleph0
 
 /-- If `M` is finite, `finrank M = rank M`. -/
 @[simp]
@@ -479,7 +480,8 @@ theorem finrank_eq_rank [Module.Finite R M] :
   rw [FiniteDimensional.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
 #align finite_dimensional.finrank_eq_rank finrank_eq_rank
 
-@[deprecated] protected alias FiniteDimensional.finrank_eq_rank := finrank_eq_rank
+@[deprecated (since := "2024-01-01")]
+protected alias FiniteDimensional.finrank_eq_rank := finrank_eq_rank
 
 variable {R M}
 variable {M'} [AddCommGroup M'] [Module R M']

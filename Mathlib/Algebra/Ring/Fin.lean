@@ -3,9 +3,9 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Logic.Equiv.Fin
 
 #align_import algebra.ring.fin from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

@@ -282,7 +282,7 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
     ∃ (T : Finset β) (f : β → Set α), (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
   induction' h_t with s h_s s t' h_gen_s h_gen_t' h_nonempty h_s h_t'
   · rcases h_s with ⟨t', ⟨⟨b, rfl⟩, h_s_in_t'⟩⟩
-    refine' ⟨{b}, fun _ => s, _⟩
+    refine ⟨{b}, fun _ => s, ?_⟩
     simpa using h_s_in_t'
   · rcases h_t' with ⟨T_t', ⟨f_t', ⟨rfl, h_t'⟩⟩⟩
     rcases h_s with ⟨T_s, ⟨f_s, ⟨rfl, h_s⟩⟩⟩
@@ -300,7 +300,7 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
       all_goals exact h1
     intro b h_b
     split_ifs with hbs hbt hbt
-    · refine' h_pi b (f_s b) (h_s b hbs) (f_t' b) (h_t' b hbt) (Set.Nonempty.mono _ h_nonempty)
+    · refine h_pi b (f_s b) (h_s b hbs) (f_t' b) (h_t' b hbt) (Set.Nonempty.mono ?_ h_nonempty)
       exact Set.inter_subset_inter (Set.biInter_subset_of_mem hbs) (Set.biInter_subset_of_mem hbt)
     · exact h_s b hbs
     · exact h_t' b hbt
@@ -322,9 +322,9 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
   rcases @mem_generatePiSystem_iUnion_elim α (Subtype s) (g ∘ Subtype.val)
       (fun b => h_pi b.val b.property) t this with
     ⟨T, ⟨f, ⟨rfl, h_t'⟩⟩⟩
-  refine'
+  refine
     ⟨T.image (fun x : s => (x : β)),
-      Function.extend (fun x : s => (x : β)) f fun _ : β => (∅ : Set α), by simp, _, _⟩
+      Function.extend (fun x : s => (x : β)) f fun _ : β => (∅ : Set α), by simp, ?_, ?_⟩
   · ext a
     constructor <;>
       · simp (config := { proj := false }) only
@@ -363,7 +363,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
     piiUnionInter π {i} = π i ∪ {univ} := by
   ext1 s
   simp only [piiUnionInter, exists_prop, mem_union]
-  refine' ⟨_, fun h => _⟩
+  refine ⟨?_, fun h => ?_⟩
   · rintro ⟨t, hti, f, hfπ, rfl⟩
     simp only [subset_singleton_iff, Finset.mem_coe] at hti
     by_cases hi : i ∈ t
@@ -381,12 +381,12 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
       simp [ht_empty, Finset.not_mem_empty, iInter_false, iInter_univ, Set.mem_singleton univ,
         or_true_iff]
   · cases' h with hs hs
-    · refine' ⟨{i}, _, fun _ => s, ⟨fun x hx => _, _⟩⟩
+    · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]
       · rw [Finset.mem_singleton] at hx
         rwa [hx]
       · simp only [Finset.mem_singleton, iInter_iInter_eq_left]
-    · refine' ⟨∅, _⟩
+    · refine ⟨∅, ?_⟩
       simpa only [Finset.coe_empty, subset_singleton_iff, mem_empty_iff_false, IsEmpty.forall_iff,
         imp_true_iff, Finset.not_mem_empty, iInter_false, iInter_univ, true_and_iff,
         exists_const] using hs
@@ -397,9 +397,9 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
       { s' : Set α | ∃ (t : Finset ι) (_ : ↑t ⊆ S), s' = ⋂ i ∈ t, s i } := by
   ext1 s'
   simp_rw [piiUnionInter, Set.mem_singleton_iff, exists_prop, Set.mem_setOf_eq]
-  refine' ⟨fun h => _, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
+  refine ⟨fun h => ?_, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
   obtain ⟨t, htS, f, hft_eq, rfl⟩ := h
-  refine' ⟨t, htS, _⟩
+  refine ⟨t, htS, ?_⟩
   congr! 3
   apply hft_eq
   assumption
@@ -407,12 +407,12 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
 
 theorem generateFrom_piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
     generateFrom (piiUnionInter (fun k => {s k}) S) = generateFrom { t | ∃ k ∈ S, s k = t } := by
-  refine' le_antisymm (generateFrom_le _) (generateFrom_mono _)
+  refine le_antisymm (generateFrom_le ?_) (generateFrom_mono ?_)
   · rintro _ ⟨I, hI, f, hf, rfl⟩
-    refine' Finset.measurableSet_biInter _ fun m hm => measurableSet_generateFrom _
+    refine Finset.measurableSet_biInter _ fun m hm => measurableSet_generateFrom ?_
     exact ⟨m, hI hm, (hf m hm).symm⟩
   · rintro _ ⟨k, hk, rfl⟩
-    refine' ⟨{k}, fun m hm => _, s, fun i _ => _, _⟩
+    refine ⟨{k}, fun m hm => ?_, s, fun i _ => ?_, ?_⟩
     · rw [Finset.mem_coe, Finset.mem_singleton] at hm
       rwa [hm]
     · exact Set.mem_singleton _
@@ -433,7 +433,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     simp_rw [← Set.inf_eq_inter]
     ext1 x
     simp only [g, inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
-    refine' ⟨fun h i _ => _, fun h => ⟨fun i hi1 => _, fun i hi2 => _⟩⟩
+    refine ⟨fun h i _ => ?_, fun h => ⟨fun i hi1 => ?_, fun i hi2 => ?_⟩⟩
     · split_ifs with h_1 h_2 h_2
       exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
         ⟨Set.mem_univ _, Set.mem_univ _⟩]
@@ -443,15 +443,15 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     · specialize h i (Or.inr hi2)
       rw [if_pos hi2] at h
       exact h.2
-  refine' ⟨fun n hn => _, h_inter_eq⟩
+  refine ⟨fun n hn => ?_, h_inter_eq⟩
   simp only [g]
   split_ifs with hn1 hn2 h
-  · refine' hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => _)
+  · refine hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => ?_)
     rw [h_inter_eq] at h_nonempty
     suffices h_empty : ⋂ i ∈ p1 ∪ p2, g i = ∅ from
       (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
-    refine' le_antisymm (Set.iInter_subset_of_subset n _) (Set.empty_subset _)
-    refine' Set.iInter_subset_of_subset hn _
+    refine le_antisymm (Set.iInter_subset_of_subset n ?_) (Set.empty_subset _)
+    refine Set.iInter_subset_of_subset hn ?_
     simp_rw [g, if_pos hn1, if_pos hn2]
     exact h.subset
   · simp [hf1m n hn1]
@@ -471,9 +471,9 @@ theorem piiUnionInter_mono_right {π : ι → Set (Set α)} {S T : Set ι} (hST 
 
 theorem generateFrom_piiUnionInter_le {m : MeasurableSpace α} (π : ι → Set (Set α))
     (h : ∀ n, generateFrom (π n) ≤ m) (S : Set ι) : generateFrom (piiUnionInter π S) ≤ m := by
-  refine' generateFrom_le _
+  refine generateFrom_le ?_
   rintro t ⟨ht_p, _, ft, hft_mem_pi, rfl⟩
-  refine' Finset.measurableSet_biInter _ fun x hx_mem => (h x) _ _
+  refine Finset.measurableSet_biInter _ fun x hx_mem => (h x) _ ?_
   exact measurableSet_generateFrom (hft_mem_pi x hx_mem)
 #align generate_from_pi_Union_Inter_le generateFrom_piiUnionInter_le
 
@@ -483,9 +483,9 @@ theorem subset_piiUnionInter {π : ι → Set (Set α)} {S : Set ι} {i : ι} (h
     intro j hj
     rw [mem_singleton_iff] at hj
     rwa [hj]
-  refine' Subset.trans _ (piiUnionInter_mono_right h_ss)
+  refine Subset.trans ?_ (piiUnionInter_mono_right h_ss)
   rw [piiUnionInter_singleton]
-  exact subset_union_left _ _
+  exact subset_union_left
 #align subset_pi_Union_Inter subset_piiUnionInter
 
 theorem mem_piiUnionInter_of_measurableSet (m : ι → MeasurableSpace α) {S : Set ι} {i : ι}
@@ -503,7 +503,7 @@ theorem measurableSet_iSup_of_mem_piiUnionInter (m : ι → MeasurableSpace α) 
     (ht : t ∈ piiUnionInter (fun n => { s | MeasurableSet[m n] s }) S) :
     MeasurableSet[⨆ i ∈ S, m i] t := by
   rcases ht with ⟨pt, hpt, ft, ht_m, rfl⟩
-  refine' pt.measurableSet_biInter fun i hi => _
+  refine pt.measurableSet_biInter fun i hi => ?_
   suffices h_le : m i ≤ ⨆ i ∈ S, m i from h_le (ft i) (ht_m i hi)
   have hi' : i ∈ S := hpt hi
   exact le_iSup₂ (f := fun i (_ : i ∈ S) => m i) i hi'
@@ -511,10 +511,10 @@ theorem measurableSet_iSup_of_mem_piiUnionInter (m : ι → MeasurableSpace α) 
 
 theorem generateFrom_piiUnionInter_measurableSet (m : ι → MeasurableSpace α) (S : Set ι) :
     generateFrom (piiUnionInter (fun n => { s | MeasurableSet[m n] s }) S) = ⨆ i ∈ S, m i := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · rw [← @generateFrom_measurableSet α (⨆ i ∈ S, m i)]
     exact generateFrom_mono (measurableSet_iSup_of_mem_piiUnionInter m S)
-  · refine' iSup₂_le fun i hi => _
+  · refine iSup₂_le fun i hi => ?_
     rw [← @generateFrom_measurableSet α (m i)]
     exact generateFrom_mono (mem_piiUnionInter_of_measurableSet m hi)
 #align generate_from_pi_Union_Inter_measurable_set generateFrom_piiUnionInter_measurableSet
@@ -603,8 +603,7 @@ instance : PartialOrder (DynkinSystem α) :=
     le_antisymm := fun a b h₁ h₂ => ext fun s => ⟨h₁ s, h₂ s⟩ }
 
 /-- Every measurable space (σ-algebra) forms a Dynkin system -/
-def ofMeasurableSpace (m : MeasurableSpace α) : DynkinSystem α
-    where
+def ofMeasurableSpace (m : MeasurableSpace α) : DynkinSystem α where
   Has := m.MeasurableSet'
   has_empty := m.measurableSet_empty
   has_compl {a} := m.measurableSet_compl a
@@ -627,15 +626,14 @@ inductive GenerateHas (s : Set (Set α)) : Set α → Prop
 #align measurable_space.dynkin_system.generate_has MeasurableSpace.DynkinSystem.GenerateHas
 
 theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
-  refine' ⟨_, GenerateHas.compl⟩
+  refine ⟨?_, GenerateHas.compl⟩
   intro h
   convert GenerateHas.compl h
   simp
 #align measurable_space.dynkin_system.generate_has_compl MeasurableSpace.DynkinSystem.generateHas_compl
 
 /-- The least Dynkin system containing a collection of basic sets. -/
-def generate (s : Set (Set α)) : DynkinSystem α
-    where
+def generate (s : Set (Set α)) : DynkinSystem α where
   Has := GenerateHas s
   has_empty := GenerateHas.empty
   has_compl {_} := GenerateHas.compl
@@ -679,12 +677,12 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
     rw [this]
     exact
       d.has_diff (d.has_compl hts) (d.has_compl h)
-        (compl_subset_compl.mpr <| inter_subset_right _ _)
+        (compl_subset_compl.mpr inter_subset_right)
   has_iUnion_nat {f} hd hf := by
     simp only []
     rw [iUnion_inter]
-    refine' d.has_iUnion_nat _ hf
-    exact hd.mono fun i j => Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _)
+    refine d.has_iUnion_nat ?_ hf
+    exact hd.mono fun i j => Disjoint.mono inter_subset_left inter_subset_left
 #align measurable_space.dynkin_system.restrict_on MeasurableSpace.DynkinSystem.restrictOn
 
 theorem generate_le {s : Set (Set α)} (h : ∀ t ∈ s, d.Has t) : generate s ≤ d := fun _ ht =>

@@ -190,7 +190,7 @@ theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
     · exact (mul_lt_mul_left hr).mpr a_h_left_right
   · rintro ⟨a_left, a_right⟩
     use x / r
-    refine' ⟨⟨(lt_div_iff' hr).mpr a_left, (div_lt_iff' hr).mpr a_right⟩, _⟩
+    refine ⟨⟨(lt_div_iff' hr).mpr a_left, (div_lt_iff' hr).mpr a_right⟩, ?_⟩
     rw [mul_div_cancel₀ _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ioo LinearOrderedField.smul_Ioo
 
@@ -204,7 +204,7 @@ theorem smul_Icc : r • Icc a b = Icc (r • a) (r • b) := by
     · exact (mul_le_mul_left hr).mpr a_h_left_right
   · rintro ⟨a_left, a_right⟩
     use x / r
-    refine' ⟨⟨(le_div_iff' hr).mpr a_left, (div_le_iff' hr).mpr a_right⟩, _⟩
+    refine ⟨⟨(le_div_iff' hr).mpr a_left, (div_le_iff' hr).mpr a_right⟩, ?_⟩
     rw [mul_div_cancel₀ _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Icc LinearOrderedField.smul_Icc
 
@@ -218,7 +218,7 @@ theorem smul_Ico : r • Ico a b = Ico (r • a) (r • b) := by
     · exact (mul_lt_mul_left hr).mpr a_h_left_right
   · rintro ⟨a_left, a_right⟩
     use x / r
-    refine' ⟨⟨(le_div_iff' hr).mpr a_left, (div_lt_iff' hr).mpr a_right⟩, _⟩
+    refine ⟨⟨(le_div_iff' hr).mpr a_left, (div_lt_iff' hr).mpr a_right⟩, ?_⟩
     rw [mul_div_cancel₀ _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ico LinearOrderedField.smul_Ico
 
@@ -232,7 +232,7 @@ theorem smul_Ioc : r • Ioc a b = Ioc (r • a) (r • b) := by
     · exact (mul_le_mul_left hr).mpr a_h_left_right
   · rintro ⟨a_left, a_right⟩
     use x / r
-    refine' ⟨⟨(lt_div_iff' hr).mpr a_left, (div_le_iff' hr).mpr a_right⟩, _⟩
+    refine ⟨⟨(lt_div_iff' hr).mpr a_left, (div_le_iff' hr).mpr a_right⟩, ?_⟩
     rw [mul_div_cancel₀ _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ioc LinearOrderedField.smul_Ioc
 

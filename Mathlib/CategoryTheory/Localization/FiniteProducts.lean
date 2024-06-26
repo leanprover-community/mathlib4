@@ -89,7 +89,7 @@ lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
     (hW : W.IsStableUnderProductsOfShape J) :
     HasProductsOfShape J D :=
   hasLimitsOfShape_iff_isLeftAdjoint_const.2
-    ⟨⟨_, HasProductsOfShapeAux.adj L hW⟩⟩
+    (HasProductsOfShapeAux.adj L hW).isLeftAdjoint
 
 /-- When `C` has finite products indexed by `J`, `W : MorphismProperty C` contains
 identities and is stable by products indexed by `J`,

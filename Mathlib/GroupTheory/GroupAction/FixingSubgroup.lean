@@ -3,7 +3,7 @@ Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Subgroup.Actions
+import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.FixedPoints
 
@@ -50,8 +50,7 @@ variable (M : Type*) {α : Type*} [Monoid M] [MulAction M α]
 
 /-- The submonoid fixing a set under a `MulAction`. -/
 @[to_additive " The additive submonoid fixing a set under an `AddAction`. "]
-def fixingSubmonoid (s : Set α) : Submonoid M
-    where
+def fixingSubmonoid (s : Set α) : Submonoid M where
   carrier := { ϕ : M | ∀ x : s, ϕ • (x : α) = x }
   one_mem' _ := one_smul _ _
   mul_mem' {x y} hx hy z := by rw [mul_smul, hy z, hx z]

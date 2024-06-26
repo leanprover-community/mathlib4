@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.GroupCat.FilteredColimits
+import Mathlib.Algebra.Category.Grp.FilteredColimits
 
 #align_import algebra.category.Ring.filtered_colimits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
 
@@ -268,8 +268,8 @@ set_option linter.uppercaseLean3 false in
 
 instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
   { (R F).str,
-    AddCommGroupCat.FilteredColimits.colimitAddCommGroup.{v, u}
-      (F ⋙ forget₂ RingCat AddCommGroupCat.{max v u}) with }
+    AddCommGrp.FilteredColimits.colimitAddCommGroup.{v, u}
+      (F ⋙ forget₂ RingCat AddCommGrp.{max v u}) with }
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.colimit_ring RingCat.FilteredColimits.colimitRing
 
