@@ -222,7 +222,7 @@ theorem of_linearDisjoint_finite_left
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
   rw [← hx', ← hy']; congr
-  exact (H M' hM).injective (by simp [← mulMap_comp_rTensor _ _ _ hM, hx', hy', hxy])
+  exact (H M' hM).injective (by simp [← mulMap_comp_rTensor _ hM, hx', hy', hxy])
 
 theorem of_linearDisjoint_finite_right
     (H : ∀ N' : Submodule R S, N' ≤ N → [Module.Finite R N'] → M.LinearDisjoint N') :
@@ -232,7 +232,7 @@ theorem of_linearDisjoint_finite_right
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
   rw [← hx', ← hy']; congr
-  exact (H N' hN).injective (by simp [← mulMap_comp_lTensor _ _ _ hN, hx', hy', hxy])
+  exact (H N' hN).injective (by simp [← mulMap_comp_lTensor _ hN, hx', hy', hxy])
 
 theorem of_linearDisjoint_finite
     (H : ∀ (M' N' : Submodule R S), M' ≤ M → N' ≤ N →
