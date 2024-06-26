@@ -238,12 +238,12 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
   desc s :=
     { app := fun X x => (s.ι.app (Opposite.op (Functor.elementsMk P X x))).app X (𝟙 _)
       naturality := fun X Y f => by
-        ext (x : P.obj X)
+        ext x
         have eq₁ := congr_fun (congr_app (s.w (CategoryOfElements.homMk (P.elementsMk X x)
           (P.elementsMk Y (P.map f x)) f rfl).op) Y) (𝟙 _)
         dsimp at eq₁ ⊢
-        rw [← eq₁, id_comp]
-        simpa using congr_fun ((s.ι.app (Opposite.op (P.elementsMk X x))).naturality f) (𝟙 _) }
+        simpa [← eq₁, id_comp] using 
+          congr_fun ((s.ι.app (Opposite.op (P.elementsMk X x))).naturality f) (𝟙 _) }
   fac s j := by
     ext X x
     dsimp
