@@ -202,9 +202,8 @@ via the PR `#14125`, we need to:
 -- Uncomment this theorem
 -- Consider changing its name to `limsup_add_bot_of_ne_top` to stick to naming conventions
 -/
-theorem limsup_add_bot_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
-    (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
-    limsup (u+v) f = ⊥ := by
+theorem limsup_add_bot_of_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
+    (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) : limsup (u + v) f = ⊥ := by
   apply le_bot_iff.1
   apply (EReal.le_iff_le_forall_real_gt ⊥ (limsup (u+v) f)).2
   intro x
@@ -216,7 +215,7 @@ theorem limsup_add_bot_ne_top {α : Type _} {f : Filter α} {u : α → EReal} {
   exact EReal.bot_lt_coe (x-y)
 
 /-
-TODO: Since `limsup_add_bot_ne_top` above is dependent from a lemma ported in
+TODO: Since `limsup_add_bot_of_ne_top` above is dependent from a lemma ported in
 `Mathlib.Data.Real.EReal` via the PR #14125, we need to:
 -- Wait for PR #14125 to be merged
 -- Rebase to master
@@ -229,16 +228,16 @@ theorem limsup_add_le_add_limsup {α : Type _} {f : Filter α} {u v : α → ERe
   rcases eq_bot_or_bot_lt (limsup u f) with (u_bot | u_nbot)
   · rcases h with (u_nbot | v_ntop)
     · exfalso; exact u_nbot u_bot
-    · rw [EReal.limsup_add_bot_ne_top u_bot v_ntop]; exact bot_le
+    · rw [limsup_add_bot_of_ne_top u_bot v_ntop]; exact bot_le
   /- WLOG, ⊥ < limsup v f. -/
   rcases eq_bot_or_bot_lt (limsup v f) with (v_bot | v_nbot)
   · rcases h' with (u_ntop | v_nbot)
-    · rw [add_comm, EReal.limsup_add_bot_ne_top v_bot u_ntop]; exact bot_le
+    · rw [add_comm, limsup_add_bot_of_ne_top v_bot u_ntop]; exact bot_le
     · exfalso; exact v_nbot v_bot
   clear h h'
   /- WLOG, limsup v f < ⊤. -/
   rcases eq_top_or_lt_top (limsup v f) with (v_top | v_ntop)
-  · rw [v_top, EReal.ne_bot_add_top (ne_of_gt u_nbot)]; exact le_top
+  · rw [v_top, EReal.add_top_of_ne_bot (ne_of_gt u_nbot)]; exact le_top
   /- General case. -/
   have limsup_v_real := EReal.coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
   apply (EReal.le_iff_le_forall_real_gt _ _).2
@@ -253,54 +252,49 @@ theorem limsup_add_le_add_limsup {α : Type _} {f : Filter α} {u v : α → ERe
   apply le_of_le_of_eq (EReal.limsup_add_le_lt₂ key₁ key₂); clear key₁ key₂ y_lt_x sum_lt_y
   rw [← limsup_v_real]; norm_cast; linarith
 
-theorem ge_iff_le_forall_real_lt (x y : EReal) : y ≤ x ↔ ∀ (z : ℝ), (z < y) → (z ≤ x) := by
-  constructor
-  · intros h z z_lt_y
-    exact le_trans (le_of_lt z_lt_y) h
-  · intro h
-    induction' x using EReal.rec with x
-    · apply le_of_eq
-      apply (eq_bot_iff_forall_lt y).2
-      intro z
-      apply lt_of_not_le
-      intro z_le_y
-      apply not_le_of_lt (bot_lt_coe (z-1))
-      specialize h (z-1)
-      apply h (lt_of_lt_of_le _ z_le_y)
-      norm_cast
-      exact sub_one_lt z
-    · induction' y using EReal.rec with y
-      · exact bot_le
-      · norm_cast
-        norm_cast at h
-        by_contra x_lt_y
-        rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, ⟨x_lt_z, z_lt_y⟩⟩
-        specialize h z z_lt_y
-        exact not_le_of_lt x_lt_z h
-      · exfalso
-        specialize h (x + 1) (coe_lt_top (x+1))
-        norm_cast at h
-        exact not_le_of_lt (lt_add_one x) h
-    · exact le_top
+-- Put into Data/Real/EReal.lean ?
+theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
+  symm
+  refine ⟨fun  h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h , ?_⟩
+  intro h
+  induction' x using EReal.rec with x
+  · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
+    intro z
+    apply lt_of_not_le
+    intro z_le_y
+    apply not_le_of_lt (bot_lt_coe (z - 1))
+    specialize h (z-1)
+    apply h (lt_of_lt_of_le _ z_le_y)
+    norm_cast
+    exact sub_one_lt z
+  · induction' y using EReal.rec with y
+    · exact bot_le
+    · norm_cast
+      norm_cast at h
+      by_contra x_lt_y
+      rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, ⟨x_lt_z, z_lt_y⟩⟩
+      specialize h z z_lt_y
+      exact not_le_of_lt x_lt_z h
+    · exfalso
+      specialize h (x + 1) (coe_lt_top (x+1))
+      norm_cast at h
+      exact not_le_of_lt (lt_add_one x) h
+  · exact le_top
 
 lemma liminf_add_ge_gt₂ {α : Type _} {f : Filter α} {u v : α → EReal} {a b : EReal}
-    (ha : a < liminf u f) (hb : b < liminf v f) :
-    a + b ≤ liminf (u + v) f := by
+    (ha : a < liminf u f) (hb : b < liminf v f) : a + b ≤ liminf (u + v) f := by
   rcases eq_or_neBot f with (rfl | _); simp only [liminf_bot, le_top]
-  rw [← @liminf_const EReal α _ f _ (a+b)]
-  apply liminf_le_liminf
-  apply Eventually.mp (Eventually.and
-    (eventually_lt_of_lt_liminf ha) (eventually_lt_of_lt_liminf hb))
-  apply eventually_of_forall
-  intros x
+  rw [← @liminf_const EReal α _ f _ (a + b)]
+  apply liminf_le_liminf (Eventually.mp (Eventually.and (eventually_lt_of_lt_liminf ha)
+    (eventually_lt_of_lt_liminf hb)) (eventually_of_forall _))
   simp only [Pi.add_apply, and_imp]
+  intro x
   exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
 
 lemma liminf_add_top_ne_bot {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
     (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) :
     liminf (u + v) f = ⊤ := by
-  apply top_le_iff.1
-  apply (EReal.ge_iff_le_forall_real_lt (liminf (u+v) f) ⊤).2
+  apply top_le_iff.1 (EReal.ge_iff_le_forall_real_lt (liminf (u+v) f) ⊤).2
   intro x
   rcases EReal.exists_between_coe_real (Ne.bot_lt h') with ⟨y, ⟨_, hy⟩⟩
   intro trash; clear trash
@@ -355,34 +349,30 @@ theorem limsup_le_iff {α : Type _} {f : Filter α} {u : α → EReal} {b : ERea
     rcases eq_or_neBot f with (rfl | _)
     · simp only [limsup_bot, bot_le]
     · specialize h c b_lt_c
-      rw [← @Filter.limsup_const EReal α _ f _ (c : EReal)]
-      exact limsup_le_limsup h
+      exact @Filter.limsup_const EReal α _ f _ (c : EReal) ▸ limsup_le_limsup h
 
 theorem limsup_le_const_forall {α : Type _} {f : Filter α} {u : α → EReal} {b : EReal}
     (h : ∀ a : α, u a ≤ b) :
-    limsup u f ≤ b := by
-  apply EReal.limsup_le_iff.2
-  exact fun c b_lt_c ↦ eventually_of_forall (fun a : α ↦ le_trans (h a) (le_of_lt b_lt_c))
+    limsup u f ≤ b :=
+  EReal.limsup_le_iff.2 fun _ b_lt_c ↦ eventually_of_forall
+    (fun a : α ↦ le_trans (h a) (le_of_lt b_lt_c))
 
 theorem const_le_limsup_forall {α : Type _} {f : Filter α} [NeBot f] {u : α → EReal}
     {b : EReal} (h : ∀ a : α, b ≤ u a) :
-    b ≤ limsup u f := by
-  rw [← @Filter.limsup_const EReal α _ f _ b]
-  exact limsup_le_limsup (eventually_of_forall h)
+    b ≤ limsup u f :=
+  @Filter.limsup_const EReal α _ f _ b ▸ limsup_le_limsup (eventually_of_forall h)
 
 theorem liminf_le_const_forall {α : Type _} {f : Filter α} [NeBot f] {u : α → EReal}
     {b : EReal} (h : ∀ a : α, u a ≤ b) :
-    liminf u f ≤ b := by
-  rw [← @Filter.liminf_const EReal α _ f _ b]
-  exact liminf_le_liminf (eventually_of_forall h)
+    liminf u f ≤ b :=
+  @Filter.liminf_const EReal α _ f _ b ▸ liminf_le_liminf (eventually_of_forall h)
 
 theorem const_le_liminf_forall {α : Type _} {f : Filter α} {u : α → EReal} {b : EReal}
     (h : ∀ a : α, b ≤ u a) :
     b ≤ liminf u f := by
   rcases eq_or_neBot f with (rfl | _)
   · simp only [liminf_bot, le_top]
-  · rw [← @Filter.liminf_const EReal α _ f _ b]
-    exact liminf_le_liminf (eventually_of_forall h)
+  · exact @Filter.liminf_const EReal α _ f _ b ▸ liminf_le_liminf (eventually_of_forall h)
 
 theorem limsup_max {α : Type _} {f : Filter α} {u v : α → EReal} :
     limsup (fun a ↦ max (u a) (v a)) f = max (limsup u f) (limsup v f) := by
@@ -396,9 +386,8 @@ theorem limsup_max {α : Type _} {f : Filter α} {u v : α → EReal} :
     intro a
     simp only [Set.mem_inter_iff, Set.mem_setOf_eq, max_le_iff, and_imp]
     exact fun hua hva ↦ ⟨le_of_lt hua, le_of_lt hva⟩
-  · apply max_le
-    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a)))
-    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a)))
+  · exact max_le (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a))))
+      (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a))))
 
 /-! ### Continuity of addition -/
 
