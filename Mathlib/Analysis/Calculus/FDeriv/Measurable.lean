@@ -854,11 +854,7 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   rcases exists_between hrt with ⟨t', hrt', ht't⟩
   obtain ⟨b, b_lt, hb⟩ : ∃ b, b < s * r ∧ ∀ y ∈ closedBall x t, ∀ z ∈ closedBall x t,
       ‖f a z - f a y - (L z - L y)‖ ≤ b := by
-    have B : Continuous (fun (p : E × E) ↦ ‖f a p.2 - f a p.1 - (L p.2 - L p.1)‖) := by
-      -- `continuity` took several seconds to solve this.
-      refine continuous_norm.comp' <| Continuous.sub ?_ ?_
-      · exact ha.comp' continuous_snd |>.sub <| ha.comp' continuous_fst
-      · exact L.continuous.comp' continuous_snd |>.sub <| L.continuous.comp' continuous_fst
+    have B : Continuous (fun (p : E × E) ↦ ‖f a p.2 - f a p.1 - (L p.2 - L p.1)‖) := by fun_prop
     have C : (closedBall x t ×ˢ closedBall x t).Nonempty := by simp; linarith
     rcases ((isCompact_closedBall x t).prod (isCompact_closedBall x t)).exists_isMaxOn
       C B.continuousOn with ⟨p, pt, hp⟩
@@ -871,9 +867,7 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
     ⟨(s * r - b) / 3, by linarith, by linarith⟩
   obtain ⟨u, u_open, au, hu⟩ : ∃ u, IsOpen u ∧ a ∈ u ∧ ∀ (p : α × E),
       p.1 ∈ u → p.2 ∈ closedBall x t → dist (f.uncurry p) (f.uncurry (a, p.2)) < ε := by
-    have C : Continuous (fun (p : α × E) ↦ f a p.2) :=
-      -- `continuity` took several seconds to solve this.
-      ha.comp' continuous_snd
+    have C : Continuous (fun (p : α × E) ↦ f a p.2) := by fun_prop
     have D : ({a} ×ˢ closedBall x t).EqOn f.uncurry (fun p ↦ f a p.2) := by
       rintro ⟨b, y⟩ ⟨hb, -⟩
       simp only [mem_singleton_iff] at hb
