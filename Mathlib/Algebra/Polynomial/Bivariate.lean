@@ -105,16 +105,16 @@ lemma eval_C_X_eval₂_map_C_X {p : R[X][Y]} :
 variable {A A'} [CommRing A] [Semiring A'] [Algebra R A] [Algebra R A'] (a : A)
 
 /-- -/
-def aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
+@[simps!] def aevalAEval (x y : A) : R[X][Y] →ₐ[R] A :=
   .mk (eval₂RingHom (aeval x).toRingHom y) fun r ↦ by simp
 
 variable (R A) in
 /-- -/
 @[simps] def algHomPolynomial₂Equiv : (R[X][Y] →ₐ[R] A) ≃ A × A where
   toFun f := (f (C X), f Y)
-  invFun xy := aevalAeval xy.1 xy.2
-  left_inv f := by ext <;> simp [aevalAeval]
-  right_inv xy := by simp [aevalAeval]
+  invFun xy := aevalAEval xy.1 xy.2
+  left_inv f := by ext <;> simp
+  right_inv xy := by simp
 
 open Ideal.Quotient in
 /-- -/
@@ -129,18 +129,18 @@ open Ideal.Quotient in
 
 /-- -/
 @[simps!] def _root_.adjoinRootAlgHomEquiv {R} [CommRing R] [Algebra R A] (p : R[X][Y]) :
-    (AdjoinRoot p →ₐ[R] A) ≃ {xy : A × A // aevalAeval xy.1 xy.2 p = 0} :=
+    (AdjoinRoot p →ₐ[R] A) ≃ {xy : A × A // aevalAEval xy.1 xy.2 p = 0} :=
   (quotientIdealSpanSingletonAlgHomEquiv p).trans <|
     ((algHomPolynomial₂Equiv R A).image _).trans <|
     Equiv.setCongr <| by rw [Equiv.image_eq_preimage]; ext; simp; rfl
 
 lemma evalEvalRingHom_comp_map_mapRingHom_algebraMap {x y : A} :
     (evalEvalRingHom x y).comp (mapRingHom <| mapRingHom <| algebraMap R A) =
-      (aevalAeval x y).toRingHom := by
-  ext <;> simp [aevalAeval]
+      (aevalAEval x y).toRingHom := by
+  ext <;> simp
 
 lemma evalEval_map_mapRingHom_algebraMap (x y : A) (p : R[X][Y]) :
-    evalEval x y (p.map <| mapRingHom <| algebraMap R A) = aevalAeval x y p :=
+    evalEval x y (p.map <| mapRingHom <| algebraMap R A) = aevalAEval x y p :=
   congr($evalEvalRingHom_comp_map_mapRingHom_algebraMap p)
 
 end
