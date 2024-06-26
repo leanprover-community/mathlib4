@@ -3,7 +3,7 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.AlgebraicGeometry.OpenImmersion
 
-open AlgebraicGeometry Scheme FiniteDimensional CategoryTheory
+open AlgebraicGeometry Scheme FiniteDimensional CategoryTheory Matrix
 
 noncomputable section
 
@@ -32,10 +32,28 @@ def Grassmannian.matrix_chart (i j : Basis (Fin (finrank K V)) K V) :
   set M := (Basis.toMatrix i j).map (algebraMap K A) * φ'
   exact Matrix.submatrix M (Fin.castLE hr.le) id
 
+lemma Grassmannian.chart_eq_id_of_diagonal (i : Basis (Fin (finrank K V)) K V)
+    (M : ((Fin (finrank K V - r)) × Fin r) → A) :
+    Grassmannian.matrix_chart K V r hr i i M = 1 := by
+  ext a b
+  simp only [matrix_chart, Basis.toMatrix_self, map_zero, _root_.map_one, Matrix.map_one,
+    Matrix.one_mul, submatrix_apply, id_eq, of_apply, Fin.coe_castLE, Fin.is_lt, ↓reduceIte]
+  by_cases h : a = b
+  · simp only [h, ↓reduceIte, one_apply_eq]
+  · simp only [ne_eq, h, not_false_eq_true, one_apply_ne, ite_eq_right_iff]
+    rw [← Fin.ext_iff]
+    simp only [h, false_implies]
+
 def Grassmannian.element (i j : Basis (Fin (finrank K V)) K V) :
     (MvPolynomial ((Fin (finrank K V - r)) × Fin r) K) := by
   exact (Grassmannian.matrix_chart (hr := hr) i j MvPolynomial.X
     (A := MvPolynomial ((Fin (finrank K V - r)) × Fin r) K)).det
+
+lemma Grassmannian.element_eq_one_of_diagonal (i : Basis (Fin (finrank K V)) K V) :
+    Grassmannian.element K V r hr i i = 1 := by
+  simp only [element]
+  rw [Grassmannian.chart_eq_id_of_diagonal]
+  simp only [det_one]
 
 abbrev Grassmannian.open_immersion (i j : Basis (Fin (finrank K V)) K V) :=
   Spec.map (CommRingCat.ofHom (algebraMap (MvPolynomial ((Fin (finrank K V - r)) × Fin r) K)
@@ -49,16 +67,13 @@ def Grassmannian.glueData : GlueData where
   f_mono _ _ := inferInstance
   f_hasPullback := inferInstance
   f_id i := by
-    rw [isIso_iff_isOpenImmersion]
-    constructor
-    · exact inferInstance
-    · rw [TopCat.epi_iff_surjective, ← Set.range_iff_surjective, ← Set.image_univ]
-      conv => lhs; rw [← TopologicalSpace.Opens.coe_top]
-              rw [← basicOpen_of_isUnit (U := ⊤) (f := 1) isUnit_one]
-      simp only
---      change (Grassmannian.open_immersion K V r hr i i) '' _ = Set.univ
-      conv_lhs => erw [image_basicOpen (Grassmannian.open_immersion K V r hr i i) 1]
-
+    simp only [Grassmannian.open_immersion]
+    suffices h : IsIso ((CommRingCat.ofHom (algebraMap (MvPolynomial
+      (Fin (finrank K V - r) × Fin r) K) (Localization.Away (element K V r hr i i))))) by
+      exact inferInstance
+    rw [Grassmannian.element_eq_one_of_diagonal]
+    exact localization_unit_isIso (CommRingCat.of
+      (MvPolynomial ((Fin (finrank K V - r)) × Fin r) K))
   t := sorry
   t_id := sorry
   t' := sorry
