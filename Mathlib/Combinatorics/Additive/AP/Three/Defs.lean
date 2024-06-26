@@ -380,7 +380,7 @@ theorem mulRothNumber_lt_of_forall_not_threeGPFree
   obtain ⟨t, hts, hcard, ht⟩ := mulRothNumber_spec s
   rw [← hcard, ← not_le]
   intro hn
-  obtain ⟨u, hut, rfl⟩ := exists_smaller_set t n hn
+  obtain ⟨u, hut, rfl⟩ := exists_subset_card_eq hn
   exact h _ (mem_powersetCard.2 ⟨hut.trans hts, rfl⟩) (ht.mono hut)
 #align mul_roth_number_lt_of_forall_not_mul_salem_spencer mulRothNumber_lt_of_forall_not_threeGPFree
 #align add_roth_number_lt_of_forall_not_add_salem_spencer addRothNumber_lt_of_forall_not_threeAPFree
