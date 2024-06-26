@@ -89,11 +89,9 @@ def addInstanceFromContext : TacticM Unit := withMainContext do
       return
     let declExpr := decl.toExpr
     let declType ← Lean.Meta.inferType declExpr
-    -- This is optional, but could make things faster if these all turn out to be props.
-    if ← Meta.isProp declType then
-      for i in toRingHomiveTypes do
-        if ← Meta.isDefEq i declType then
-          return
+    for i in toRingHomiveTypes do
+      if ← Meta.isDefEq i declType then
+        return
     return
 
 syntax "algebraize" (ppSpace colGt term:max)* : tactic
