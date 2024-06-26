@@ -74,11 +74,11 @@ abbrev matrix_F' (i j : Basis (Fin (finrank K V)) K V) :=
     (matrix_F K V r hr i j (MvPolynomial.X (R := K) (σ := Fin (finrank K V - r) × Fin r)))
 
 abbrev matrix_G' (i j : Basis (Fin (finrank K V)) K V) :=
+  (matrix_G K V r hr i j (MvPolynomial.X (R := K) (σ := Fin (finrank K V - r) × Fin r))).map
   (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
-    (Localization.Away (element K V r hr i j))).mapMatrix
-    (matrix_F K V r hr i j (MvPolynomial.X (R := K) (σ := Fin (finrank K V - r) × Fin r)))
+  (Localization.Away (element K V r hr i j)))
 
-lemma isUnit_F (i j : Basis (Fin (finrank K V)) K V) :
+lemma isUnit_F' (i j : Basis (Fin (finrank K V)) K V) :
     IsUnit (matrix_F' K V r hr i j) := by
     rw [Matrix.isUnit_iff_isUnit_det]
     rw [← RingHom.map_det]
@@ -119,8 +119,9 @@ def glueData : GlueData where
     apply CommRingCat.ofHom
     apply Localization.awayLift (r := element K V r hr j i)
     swap
-    ·
-    · sorry
+    · apply MvPolynomial.eval₂Hom (algebraMap K (Localization.Away (element K V r hr i j)))
+      exact fun pq ↦ ((matrix_G' K V r hr i j) * (matrix_F' K V r hr i j)⁻¹) pq.1 pq.2
+    · simp only [RingHom.mapMatrix_apply, MvPolynomial.coe_eval₂Hom]
   t_id := sorry
   t' := sorry
   t_fac := sorry
