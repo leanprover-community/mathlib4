@@ -1,163 +1,178 @@
 /-
-Copyright (c) 2024 .... All rights reserved.
+Copyright (c) 2024 David Kurniadi Angdinata All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: ...
+Authors: David Kurniadi Angdinata, Michael Stoll, Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 
-universe u v
+/-!
+# Schemes associated to Weierstrass curves
 
-open Polynomial PolynomialPolynomial
+This file defines the affine scheme associated to a Weierstrass curve
+-/
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] {x y : R} {p : R[X][Y]}
+universe u v w
 
-noncomputable abbrev Polynomial.evalEval (x y : R) (p : R[X][Y]) : R :=
-  Polynomial.eval x (Polynomial.eval (Polynomial.C y) p)
+namespace Polynomial -- `Algebra.Polynomial.Bivariate`
 
-@[simps!] noncomputable abbrev evalEvalRingHom (x y : R) : R[X][Y] →+* R :=
-  (evalRingHom x).comp (evalRingHom <| C y)
+variable {R : Type u} {A : Type v} {B : Type w}
 
-lemma coe_evalEvalRingHom (x y : R) : evalEvalRingHom x y = evalEval x y := rfl
+def aevalAeval [CommSemiring R] [CommSemiring A] [Algebra R A] (x y : A) : R[X][Y] →ₐ[R] A :=
+  .mk (eval₂RingHom (aeval x).toRingHom y) fun r => by simp
 
-lemma evalEvalRingHom_eq (x : R) :
-    evalEvalRingHom x = eval₂RingHom (evalRingHom x) := by
-  ext <;> simp
+variable (R A) in
+@[simps]
+noncomputable def algHomPolynomial₂Equiv [CommSemiring R] [CommSemiring A] [Algebra R A] :
+    (R[X][Y] →ₐ[R] A) ≃ A × A where
+  toFun f := (f (C X), f Y)
+  invFun xy := aevalAeval xy.1 xy.2
+  left_inv f := by ext <;> simp [aevalAeval]
+  right_inv xy := by simp [aevalAeval]
 
-lemma eval₂_evalRingHom (x : R) : eval₂ (evalRingHom x) = evalEval x := by
-  ext1; rw [← coe_evalEvalRingHom, evalEvalRingHom_eq, coe_eval₂RingHom]
-
-lemma map_mapRingHom_eval_map (f : R →+* S) (q : R[X]) :
-    (p.map <| mapRingHom f).eval (q.map f) = (p.eval q).map f := by
-  rw [eval_map, ← coe_mapRingHom, eval₂_hom]
-
-lemma map_mapRingHom_eval_map_eval (f : R →+* S) (q : R[X]) (r : R) :
-    ((p.map <| mapRingHom f).eval <| q.map f).eval (f r) = f ((p.eval q).eval r) := by
-  rw [map_mapRingHom_eval_map, eval_map, eval₂_hom]
-
-lemma map_mapRingHom_evalEval (f : R →+* S) (x y : R) :
-    (p.map <| mapRingHom f).evalEval (f x) (f y) = f (p.evalEval x y) := by
-  rw [evalEval, ← map_mapRingHom_eval_map_eval, map_C]
-
-namespace AdjoinRoot
+@[simps]
+def _root_.quotientIdealSpanSingletonAlgHomEquiv [CommSemiring R] [CommRing A] [Algebra R A]
+    [CommSemiring B] [Algebra R B] (a : A) :
+    (A ⧸ Ideal.span {a} →ₐ[R] B) ≃ {f : A →ₐ[R] B // f a = 0} where
+  toFun f := ⟨f.comp (Ideal.Quotient.mkₐ _ _), by simp⟩
+  invFun f := Ideal.Quotient.liftₐ _ f fun x hx ↦ by
+    obtain ⟨x, rfl⟩ := Ideal.mem_span_singleton'.mp hx
+    rw [map_mul, f.2, mul_zero]
+  left_inv f := by ext ⟨_⟩; simp
+  right_inv f := by ext; simp
 
 @[simps!]
-def evalEval (h : p.evalEval x y = 0) : AdjoinRoot p →+* R :=
-  lift (evalRingHom x) y <| eval₂_evalRingHom x ▸ h
+noncomputable def _root_.adjoinRootAlgHomEquiv [CommRing R] [CommSemiring A] [Algebra R A]
+    (p : R[X][Y]) : (AdjoinRoot p →ₐ[R] A) ≃ {xy : A × A // aevalAeval xy.1 xy.2 p = 0} :=
+  (quotientIdealSpanSingletonAlgHomEquiv p).trans <|
+    ((algHomPolynomial₂Equiv R A).image _).trans <|
+    Equiv.setCongr <| by rw [Equiv.image_eq_preimage]; ext; simp; rfl
 
-lemma evalEval_eq (h : p.evalEval x y = 0) (g : R[X][Y]) :
-    evalEval h (mk p g) = g.evalEval x y := by
-  erw [AdjoinRoot.lift_mk, eval₂_evalRingHom]
+lemma evalEvalRingHom_comp_map_mapRingHom_algebraMap [CommRing R] [CommSemiring A] [Algebra R A]
+    {x y : A} : (evalEvalRingHom x y).comp (mapRingHom <| mapRingHom <| algebraMap R A) =
+      (aevalAeval x y).toRingHom := by
+  ext <;> simp [aevalAeval]
 
-end AdjoinRoot
+lemma evalEval_map_mapRingHom_algebraMap [CommRing R] [CommSemiring A] [Algebra R A] (x y : A)
+    (p : R[X][Y]) : evalEval x y (p.map <| mapRingHom <| algebraMap R A) = aevalAeval x y p :=
+  congr($evalEvalRingHom_comp_map_mapRingHom_algebraMap p)
 
-variable {W : WeierstrassCurve.Affine R} {x y : R} (h : W.Equation x y) (f : R →+* S)
+end Polynomial
 
-lemma WeierstrassCurve.Affine.Equation.map (h : W.Equation x y) :
-    Equation (W.map f) (f x) (f y) := by
-  sorry
+section AlgHomEquiv -- `?`
 
-namespace WeierstrassCurve.Affine.CoordinateRing
+open AlgebraicGeometry CategoryTheory CommRingCat Opposite
 
-noncomputable def eval : W.CoordinateRing →+* R :=
-  AdjoinRoot.lift (evalRingHom x) y <| by rwa [eval₂_evalRingHom]
+variable (R A B : Type u) [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
-lemma eval_mk (p : R[X][Y]) : eval h (mk _ p) = p.evalEval x y := by
-  rw [← eval₂_evalRingHom]; exact AdjoinRoot.lift_mk _ p
+def Algebra.mkOver : Over <| op <| of R :=
+  .mk <| op <| ofHom <| algebraMap R A
 
-lemma eval_comp_mk : (eval h).comp (mk _) = evalEvalRingHom x y := RingHom.ext (eval_mk h)
+def AlgHom.equivHomOver : (A →ₐ[R] B) ≃ (Algebra.mkOver R B ⟶ Algebra.mkOver R A) where
+  toFun f := Over.homMk (op f.toRingHom) (unop_injective f.comp_algebraMap)
+  invFun f := .mk f.left.unop fun r => congr(Quiver.Hom.unop $(Over.w f) r)
+  left_inv f := by ext; simp
+  right_inv f := by simp; rfl
 
-lemma eval_map (p : W.CoordinateRing) : eval (h.map f) (map W f p) = f (eval h p) := by
-  obtain ⟨p, rfl⟩ := AdjoinRoot.mk_surjective p
-  rw [map_mk, eval_mk, eval_mk, map_mapRingHom_evalEval]
+variable {C D} [Category C] [Category D] (F : C ⥤ D)
 
-lemma eval_comp_map : (eval <| h.map f).comp (map W f) = f.comp (eval h) :=
-  RingHom.ext (eval_map h f)
+@[simps!] def CategoryTheory.Functor.mapOver (c : C) : Over c ⥤ Over (F.obj c) :=
+  Comma.map (F₁ := F) (F₂ := 𝟭 _) (F := F) (𝟙 _) { app := fun _ ↦ 𝟙 _ }
 
-end WeierstrassCurve.Affine.CoordinateRing
+@[simp] lemma CategoryTheory.Functor.mapOver_hom (c : C) (c' : Over c) :
+    ((F.mapOver c).obj c').hom = F.map c'.hom := by aesop_cat
 
-namespace AlgebraicGeometry
+noncomputable def Algebra.schemeSpecOver : Over (Scheme.Spec.obj <| op <| CommRingCat.of R) :=
+  (Scheme.Spec.mapOver _).obj (Algebra.mkOver R A)
 
-variable (W)
-noncomputable def AffineWeierstrassCurve : Scheme :=
-  Spec <| CommRingCat.of <| W.CoordinateRing
+variable {F} in
+def CategoryTheory.Functor.FullyFaithful.mapOver (ff : F.FullyFaithful) (c : C) :
+    (F.mapOver c).FullyFaithful where
+  preimage f := Over.homMk (ff.preimage f.left) (ff.map_injective <| by simpa using Over.w f)
 
--- Spec R[W] as an object of Sch / Spec R
-noncomputable def AffineWeierstrassCurve.map :
-    Scheme.Hom (AffineWeierstrassCurve W) (Spec <| CommRingCat.of R) :=
-  Spec.map <| CommRingCat.ofHom <| algebraMap R <| WeierstrassCurve.Affine.CoordinateRing W
+noncomputable def AlgHom.equivSchemeOver :
+    (A →ₐ[R] B) ≃ (Algebra.schemeSpecOver R B ⟶ Algebra.schemeSpecOver R A) :=
+  (AlgHom.equivHomOver R A B).trans (Spec.fullyFaithful.mapOver _).homEquiv
 
-variable (R) in
-private noncomputable abbrev overRing : Type (u + 1) :=
-  CategoryTheory.Over (Spec <| CommRingCat.of R)
+end AlgHomEquiv
 
-noncomputable def AffineWeierstrassCurveOver : overRing R :=
-  CategoryTheory.Over.mk <| AffineWeierstrassCurve.map W
+namespace WeierstrassCurve.Affine
 
-variable (A : Type u) [CommRing A] [Algebra R A]
+open AlgebraicGeometry CategoryTheory CommRingCat Polynomial
 
--- Spec A as an object of Sch / Spec R
-private noncomputable def temp : overRing R :=
-  CategoryTheory.Over.mk <| Spec.map <| CommRingCat.ofHom <| algebraMap R A
+variable {R : Type u} [CommRing R] (W : Affine R) (A : Type u) [CommRing A] [Algebra R A]
 
--- Hom_{Sch / Spec R}(Spec A, Spec R[W])
-def AffineWeierstrassCurvePoint : Type u :=
-  temp A ⟶ AffineWeierstrassCurveOver W
+namespace Point
 
-open WeierstrassCurve.Affine
+def equivOptionSubtypeFun (p : W.Point → Prop) :
+    {P : W.Point // p P} → Option {xy : R × R // ∃ h : W.Nonsingular xy.1 xy.2, p <| some h}
+  | ⟨zero, _⟩ => none
+  | ⟨@some _ _ _ x y h, ph⟩ => .some ⟨⟨x, y⟩, h, ph⟩
 
--- Hom_{R-Alg}(R[W], A)
-def equiv : AffineWeierstrassCurvePoint W A ≃ (CoordinateRing W →ₐ[R] A) := by
-  sorry
+@[simps]
+def equivOptionSubtype {p : W.Point → Prop} (p0 : p 0) :
+    {P : W.Point // p P} ≃ Option {xy : R × R // ∃ h : W.Nonsingular xy.1 xy.2, p <| some h} where
+  toFun := equivOptionSubtypeFun W p
+  invFun P := P.casesOn ⟨0, p0⟩ fun xy => ⟨some xy.property.choose, xy.property.choose_spec⟩
+  left_inv := by rintro (_ | _) <;> rfl
+  right_inv := by rintro (_ | _) <;> rfl
 
-variable {W A} in
-noncomputable def ringHom {x y : A} (h : (W.baseChange A).toAffine.Equation x y) :
-    CoordinateRing W →+* A :=
-  (CoordinateRing.eval h).comp <| CoordinateRing.map W <| algebraMap R A
-
-variable {W A} in
 @[simps!]
-noncomputable def algHom {x y : A} (h : (W.baseChange A).toAffine.Equation x y) :
-    CoordinateRing W →ₐ[R] A :=
-  AlgHom.mk (ringHom h) <| by
-    intro
-    simp
-    rw [ringHom, RingHom.comp_apply, CoordinateRing.map]
-    -- missing API
-    sorry
+def equivOption : W.Point ≃ Option {xy : R × R // W.Nonsingular xy.1 xy.2} :=
+  (Equiv.Set.univ W.Point).symm.trans <| (equivOptionSubtype W trivial).trans
+    (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
+
+end Point
+
+/-- The affine scheme `Spec R[W]`. -/
+noncomputable def scheme : Scheme :=
+  Spec <| of W.CoordinateRing
+
+namespace Scheme
+
+/-- For an `R`-algebra `A`, the type of `A`-rational points of `Spec R[W]`. In other words, the type
+of morphisms of affine schemes from `Spec A` to `Spec R[W]`. -/
+def Point : Type u :=
+  Spec (of A) ⟶ scheme W
+
+/-- The morphism of spectra `Spec R[W] → Spec R` induced by an algebra homomorphism `R →+* R[W]`. -/
+noncomputable def map : (scheme W).Hom <| Spec <| of R :=
+  Spec.map <| ofHom <| algebraMap R W.CoordinateRing
+
+-- /-- The affine scheme `Spec R[W]` over `Spec R`. -/
+-- noncomputable def over : Over <| Spec <| of R :=
+--   .mk <| Spec.map <| ofHom <| algebraMap R W.CoordinateRing
+
+/-- For an `R`-algebra `A`, the type of `A`-rational points over `Spec R` of `Spec R[W]`. In other
+words, the type of morphisms of affine schemes over `Spec R` from `Spec A` to `Spec R[W]`. -/
+def PointOver : Type u :=
+  Over.mk (Spec.map <| ofHom <| algebraMap R A) ⟶
+    Over.mk (Spec.map <| ofHom <| algebraMap R W.CoordinateRing)
 
 variable (E : EllipticCurve R)
 
+def equivOption [Nontrivial R] :
+    E.toAffine.Point ≃
+      Option {xy : R × R // E.toAffine.Equation xy.1 xy.2} :=
+  (Point.equivOption E.toWeierstrassCurve).trans
+    (Equiv.setCongr <| Set.ext fun _ => ⟨And.left, EllipticCurve.Affine.nonsingular E⟩).optionCongr
+
+def aevalAevalEquiv (p : R[X][Y]) :
+    {xy : A × A // aevalAeval xy.1 xy.2 p = 0} ≃
+      {xy : A × A // evalEval xy.1 xy.2 (p.map <| mapRingHom <| algebraMap R A) = 0} :=
+  Equiv.setCongr <| by simp only [evalEval_map_mapRingHom_algebraMap]
+
+noncomputable def equiv [Nontrivial A] :
+    (E.toAffine.CoordinateRing →ₐ[R] A) ≃
+      {xy : A × A // (E.baseChange A).toAffine.Equation xy.1 xy.2} :=
+  (adjoinRootAlgHomEquiv _).trans <| (aevalAevalEquiv ..).trans <| Equiv.setCongr <|
+    Set.ext fun _ => by simp only [EllipticCurve.map_toWeierstrassCurve, map_polynomial]
+
 noncomputable def equiv' [Nontrivial A] :
-    Option (CoordinateRing E.toWeierstrassCurve →ₐ[R] A) ≃ E.toWeierstrassCurve⟮A⟯ where
-  toFun P := match P with
-    | none => 0
-    | some f => .some
-      (x := f <| WeierstrassCurve.Affine.CoordinateRing.mk E.toWeierstrassCurve <| C X)
-      (y := f <| WeierstrassCurve.Affine.CoordinateRing.mk E.toWeierstrassCurve X) <| by
-        apply EllipticCurve.Affine.nonsingular <| E.baseChange A
-        -- missing API
-        sorry
-  invFun P := match P with
-    | 0 => none
-    | .some h => some <| algHom h.left
-  left_inv := by
-    rintro (_ | _)
-    rfl
-    simp
-    ext
-    simp
-    -- missing API
-    sorry
-  right_inv := by
-    rintro (_ | _)
-    rfl
-    simp
-    -- missing API
-    sorry
+    Option (PointOver E.toWeierstrassCurve A) ≃ E.toWeierstrassCurve⟮A⟯ :=
+  ((AlgHom.equivSchemeOver ..).symm.trans <| equiv ..).optionCongr.trans <|
+    (equivOption <| E.baseChange A).symm
 
-noncomputable example [Nontrivial A] :
-    Option (AffineWeierstrassCurvePoint E.toWeierstrassCurve A) ≃ E.toWeierstrassCurve⟮A⟯ :=
-  (Equiv.optionCongr <| equiv E.toWeierstrassCurve A).trans <| equiv' A E
+end Scheme
 
-end AlgebraicGeometry
+end WeierstrassCurve.Affine
