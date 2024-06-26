@@ -18,7 +18,7 @@ It also provides the expected value for specific probability mass functions.
 
 namespace PMF
 
-open MeasureTheory BigOperators ENNReal TopologicalSpace
+open MeasureTheory ENNReal TopologicalSpace
 
 section General
 

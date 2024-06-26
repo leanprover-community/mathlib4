@@ -34,14 +34,16 @@ square root
 -/
 
 open Set Filter
-open scoped BigOperators Filter NNReal Topology
+open scoped Filter NNReal Topology
 
 namespace NNReal
 
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- Porting note: was @[pp_nodot]
+-- Porting note (kmill): `pp_nodot` has no affect here
+-- unless RFC lean4#1910 leads to dot notation for CoeFun
+@[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
@@ -73,12 +75,11 @@ lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnecti
 lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisConnection _ _).symm
 #align nnreal.le_sqrt_iff NNReal.le_sqrt_iff_sq_le
 
--- 2024-02-14
-@[deprecated] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
-@[deprecated] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
-@[deprecated] alias sqrt_le_iff := sqrt_le_iff_le_sq
-@[deprecated] alias le_sqrt_iff := le_sqrt_iff_sq_le
-@[deprecated] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
+@[deprecated (since := "2024-02-14")] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
+@[deprecated (since := "2024-02-14")] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
+@[deprecated (since := "2024-02-14")] alias sqrt_le_iff := sqrt_le_iff_le_sq
+@[deprecated (since := "2024-02-14")] alias le_sqrt_iff := le_sqrt_iff_sq_le
+@[deprecated (since := "2024-02-14")] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
 
 @[simp] lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 := by simp [sqrt_eq_iff_eq_sq]
 #align nnreal.sqrt_eq_zero NNReal.sqrt_eq_zero

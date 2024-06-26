@@ -46,6 +46,8 @@ open Complex hiding abs_of_nonneg
 open Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate
 
+namespace HurwitzZeta
+
 section kernel_defs
 /-!
 ## Definitions and elementary properties of kernels
@@ -327,6 +329,8 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
     oddKernel_functional_equation a, one_div x, one_div x⁻¹, inv_rpow (le_of_lt hx), one_div,
     inv_inv]
 
+end FEPair
+
 /-!
 ## Definition of the completed odd Hurwitz zeta function
 -/
@@ -499,7 +503,7 @@ lemma hasSum_nat_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
       - SignType.sign (n + 1 - a) / (↑|n + 1 - a| : ℂ) ^ s) / 2) (hurwitzZetaOdd a s) := by
   refine (hasSum_int_hurwitzZetaOdd a hs).nat_add_neg_add_one.congr_fun fun n ↦ ?_
   rw [Int.cast_neg, Int.cast_add, Int.cast_one, sub_div, sub_eq_add_neg, Int.cast_natCast]
-  have : -(n + 1) + a = -(n + 1 - a) := by { push_cast; ring_nf }
+  have : -(n + 1) + a = -(n + 1 - a) := by ring_nf
   rw [this, Left.sign_neg, abs_neg, SignType.coe_neg, neg_div, neg_div]
 
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range, with sum over `ℕ`
@@ -574,3 +578,5 @@ lemma sinZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -
   rw [← Gammaℂ, sinZeta, (by ring : 1 - s + 1 = 2 - s), div_eq_mul_inv, inv_Gammaℝ_two_sub hs,
     completedSinZeta_one_sub, hurwitzZetaOdd, ← div_eq_mul_inv, ← mul_div_assoc, ← mul_div_assoc,
     mul_comm]
+
+end HurwitzZeta

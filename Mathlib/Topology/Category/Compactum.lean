@@ -71,7 +71,6 @@ We also add wrappers around structures which already exist. Here are the main on
 
 -/
 
--- Porting note: "Compactum" is already upper case
 set_option linter.uppercaseLean3 false
 universe u
 
@@ -115,7 +114,7 @@ def adj : free ⊣ forget :=
 instance : ConcreteCategory Compactum where forget := forget
 
 -- Porting note: changed from forget to X.A
-instance : CoeSort Compactum (Type*) :=
+instance : CoeSort Compactum Type* :=
   ⟨fun X => X.A⟩
 
 instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=

@@ -25,7 +25,7 @@ the roots of `p` for a polynomial `p` that splits (i.e. having as many roots as 
 -/
 
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Multiset
 

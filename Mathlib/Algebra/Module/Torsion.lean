@@ -113,7 +113,7 @@ theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι
   refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
   replace hv := CompleteLattice.independent_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
-  have : r • v i ∈ ⊥ := by
+  have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
     refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
     convert hi
@@ -395,8 +395,6 @@ variable {R M}
 
 section Coprime
 
-open BigOperators
-
 variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
 variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
@@ -481,8 +479,6 @@ section NeedsGroup
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Submodule
-
-open BigOperators
 
 variable {ι : Type*} [DecidableEq ι] {S : Finset ι}
 
@@ -743,8 +739,6 @@ end Torsion'
 section Torsion
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
-open BigOperators
 
 variable (R M)
 

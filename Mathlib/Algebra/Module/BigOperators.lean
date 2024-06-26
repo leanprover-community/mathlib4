@@ -13,8 +13,6 @@ import Mathlib.GroupTheory.GroupAction.BigOperators
 # Finite sums over modules over a ring
 -/
 
-open BigOperators
-
 variable {ι κ α β R M : Type*}
 
 section AddCommMonoid

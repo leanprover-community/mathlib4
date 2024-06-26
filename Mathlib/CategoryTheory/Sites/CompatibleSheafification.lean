@@ -61,8 +61,8 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
         PreservesLimit (W.index P).multicospan F] :
     (whiskeringLeft _ _ E).obj (J.sheafify P) ≅
     (whiskeringLeft _ _ _).obj P ⋙ J.sheafification E := by
-  refine' J.plusFunctorWhiskerLeftIso _ ≪≫ _ ≪≫ Functor.associator _ _ _
-  refine' isoWhiskerRight _ _
+  refine J.plusFunctorWhiskerLeftIso _ ≪≫ ?_ ≪≫ Functor.associator _ _ _
+  refine isoWhiskerRight ?_ _
   exact J.plusFunctorWhiskerLeftIso _
 #align category_theory.grothendieck_topology.sheafification_whisker_left_iso CategoryTheory.GrothendieckTopology.sheafificationWhiskerLeftIso
 
@@ -91,10 +91,10 @@ the sheafification of `P ⋙ F`, functorially in `P`. -/
 noncomputable def sheafificationWhiskerRightIso :
     J.sheafification D ⋙ (whiskeringRight _ _ _).obj F ≅
       (whiskeringRight _ _ _).obj F ⋙ J.sheafification E := by
-  refine' Functor.associator _ _ _ ≪≫ _
-  refine' isoWhiskerLeft (J.plusFunctor D) (J.plusFunctorWhiskerRightIso _) ≪≫ _
-  refine' _ ≪≫ Functor.associator _ _ _
-  refine' (Functor.associator _ _ _).symm ≪≫ _
+  refine Functor.associator _ _ _ ≪≫ ?_
+  refine isoWhiskerLeft (J.plusFunctor D) (J.plusFunctorWhiskerRightIso _) ≪≫ ?_
+  refine ?_ ≪≫ Functor.associator _ _ _
+  refine (Functor.associator _ _ _).symm ≪≫ ?_
   exact isoWhiskerRight (J.plusFunctorWhiskerRightIso _) (J.plusFunctor E)
 #align category_theory.grothendieck_topology.sheafification_whisker_right_iso CategoryTheory.GrothendieckTopology.sheafificationWhiskerRightIso
 

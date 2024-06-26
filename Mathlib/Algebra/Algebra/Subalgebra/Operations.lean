@@ -20,8 +20,6 @@ whatever ends up in the intersection.
 
 namespace AlgHom
 
-open BigOperators
-
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
@@ -31,7 +29,7 @@ end AlgHom
 
 namespace Subalgebra
 
-open BigOperators Algebra
+open Algebra
 
 variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S]
 variable (S' : Subalgebra R S)

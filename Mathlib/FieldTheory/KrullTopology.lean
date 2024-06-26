@@ -135,7 +135,7 @@ def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L �
   inter_sets := by
     rintro X Y ⟨H1, ⟨E1, h_E1, rfl⟩, rfl⟩ ⟨H2, ⟨E2, h_E2, rfl⟩, rfl⟩
     use (IntermediateField.fixingSubgroup (E1 ⊔ E2)).carrier
-    refine' ⟨⟨_, ⟨_, finiteDimensional_sup E1 E2 h_E1 h_E2, rfl⟩, rfl⟩, _⟩
+    refine ⟨⟨_, ⟨_, finiteDimensional_sup E1 E2 h_E1 h_E2, rfl⟩, rfl⟩, ?_⟩
     rw [Set.subset_inter_iff]
     exact
       ⟨IntermediateField.fixingSubgroup.antimono le_sup_left,
@@ -167,7 +167,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
   conj' := by
     rintro σ U ⟨H, ⟨E, hE, rfl⟩, rfl⟩
     let F : IntermediateField K L := E.map σ.symm.toAlgHom
-    refine' ⟨F.fixingSubgroup.carrier, ⟨⟨F.fixingSubgroup, ⟨F, _, rfl⟩, rfl⟩, fun g hg => _⟩⟩
+    refine ⟨F.fixingSubgroup.carrier, ⟨⟨F.fixingSubgroup, ⟨F, ?_, rfl⟩, rfl⟩, fun g hg => ?_⟩⟩
     · have : FiniteDimensional K E := hE
       apply im_finiteDimensional σ.symm
     change σ * g * σ⁻¹ ∈ E.fixingSubgroup

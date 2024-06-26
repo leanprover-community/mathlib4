@@ -20,7 +20,7 @@ We show that the following are analytic:
 noncomputable section
 
 open scoped Classical
-open Topology BigOperators NNReal Filter ENNReal
+open Topology NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
@@ -205,7 +205,7 @@ def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
 
 lemma formalMultilinearSeries_geometric_apply_norm (n : ℕ) :
     ‖formalMultilinearSeries_geometric 𝕜 A n‖ = 1 :=
-  ContinuousMultilinearMap.norm_mkPiAlgebraFin (Ei := fun _ ↦ A)
+  ContinuousMultilinearMap.norm_mkPiAlgebraFin
 
 end Geometric
 

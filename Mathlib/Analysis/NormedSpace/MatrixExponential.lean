@@ -61,7 +61,7 @@ results for general rings are instead stated about `Ring.inverse`:
 -/
 
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 open NormedSpace -- For `exp`.
 

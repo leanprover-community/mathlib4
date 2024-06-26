@@ -43,8 +43,6 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 noncomputable section
 
-open BigOperators
-
 open Nat Polynomial
 
 open Nat Finset

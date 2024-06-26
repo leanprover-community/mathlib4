@@ -38,8 +38,6 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 universe u v w
