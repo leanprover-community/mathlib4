@@ -247,7 +247,7 @@ lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
     convert hx using 3
     simp [this]
   have := lambda_pow_four_dvd_c_cube S'
-  have hm1 :(multiplicity (hζ.toInteger - 1) (S'.c ^ 3)).get
+  have hm1 : (multiplicity (hζ.toInteger - 1) (S'.c ^ 3)).get
     (multiplicity.finite_pow hζ.zeta_sub_one_prime' hm) =
     multiplicity (hζ.toInteger - 1) (S'.c ^ 3) := by simp
   rw [multiplicity.pow_dvd_iff_le_multiplicity, ← hm1, multiplicity.pow' hζ.zeta_sub_one_prime' hm,
