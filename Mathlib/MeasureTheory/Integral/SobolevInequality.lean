@@ -3,13 +3,11 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Data.Finset.Interval
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.Tactic.FunProp.AEMeasurable
-import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Analysis.Calculus.Deriv.Pi
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.Analysis.InnerProductSpace.NormPow
+import Mathlib.Data.Finset.Interval
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -28,6 +26,11 @@ Let `n` be the dimension of the domain.
   The bound holds when `1 ≤ p < n`, `0 ≤ q` and `p⁻¹ - n⁻¹ ≤ q⁻¹`.
   Note that in this case the constant depends on the support of `u`.
 -/
+
+-- removeme
+set_option pp.explicit false --intentionally fail linter
+alias Continuous.memℒp_of_hasCompactSupport := MeasureTheory.Continuous.memℒp_of_hasCompactSupport
+alias Real.nnnorm_rpow_of_nonneg := NNReal.nnnorm_rpow_of_nonneg
 
 open scoped Classical BigOperators ENNReal NNReal Topology
 open Set Function Finset MeasureTheory Measure Filter
@@ -474,7 +477,7 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
   have :=
   calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
         rw [← h2γ, snorm_nnreal_eq_lintegral hn.symm.pos.ne']
-        simp (discharger := positivity) [v, Real.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul,
+        simp (discharger := positivity) [v, NNReal.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul,
           ENNReal.coe_rpow_of_nonneg]
     _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC hv h2v
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
@@ -580,7 +583,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F] {p q : ℝ≥0} (h
   let s' := toMeasurable μ s
   have hs' : MeasurableSet s' := measurableSet_toMeasurable μ s
   have hus' : support u ⊆ s' := h2u.trans <| subset_toMeasurable μ s
-  calc snorm u q μ = snorm u q (μ.restrict s') := by rw [snorm_restrict_eq u q μ hs' hus']
+  calc snorm u q μ = snorm u q (μ.restrict s') := by rw [snorm_restrict_eq hs' hus']
     _ ≤ snorm u p' (μ.restrict s') * t := by
         convert snorm_le_snorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
         rw [← ENNReal.coe_rpow_of_nonneg]
@@ -589,7 +592,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F] {p q : ℝ≥0} (h
           norm_cast
           rw [hp']
           simpa using hpq
-    _ = snorm u p' μ * t := by rw [snorm_restrict_eq u p' μ hs' hus']
+    _ = snorm u p' μ * t := by rw [snorm_restrict_eq hs' hus']
     _ ≤ (C * snorm (fderiv ℝ u) p μ) * t := by
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
