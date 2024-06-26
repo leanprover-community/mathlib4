@@ -250,6 +250,22 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
   rfl
 #align category_theory.iso.hom_eq_inv CategoryTheory.Iso.hom_eq_inv
 
+/-- The bijection `(Z ⟶ X) ≃ (Z ⟶ Y)` induced by `α : X ≅ Y`. -/
+@[simps]
+def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
+  toFun f := f ≫ α.hom
+  invFun g := g ≫ α.inv
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+/-- The bijection `(X ⟶ Z) ≃ (Y ⟶ Z)` induced by `α : X ≅ Y`. -/
+@[simps]
+def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
+  toFun f := α.inv ≫ f
+  invFun g := α.hom ≫ g
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
 end Iso
 
 /-- `IsIso` typeclass expressing that a morphism is invertible. -/
@@ -374,9 +390,8 @@ theorem eq_inv_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
 instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
 #align category_theory.is_iso.id CategoryTheory.IsIso.id
 
--- deprecated on 2024-05-15
-@[deprecated] alias of_iso := CategoryTheory.Iso.isIso_hom
-@[deprecated] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
+@[deprecated (since := "2024-05-15")] alias of_iso := CategoryTheory.Iso.isIso_hom
+@[deprecated (since := "2024-05-15")] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
 
 variable {f g : X ⟶ Y} {h : Y ⟶ Z}
 

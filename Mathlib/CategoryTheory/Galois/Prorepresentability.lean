@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Limits.FunctorCategory
@@ -178,8 +178,8 @@ open PointedGaloisObject
 /-- The diagram sending each pointed Galois object to its automorphism group
 as an object of `C`. -/
 @[simps]
-noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} where
-  obj := fun A ↦ GroupCat.of <| Aut (A : C)
+noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ Grp.{u₂} where
+  obj := fun A ↦ Grp.of <| Aut (A : C)
   map := fun {A B} f ↦ (autMapHom f : Aut (A : C) →* Aut (B : C))
   map_id := fun A ↦ by
     ext (σ : Aut A.obj)
@@ -198,7 +198,7 @@ noncomputable instance : Group (AutGalois F) :=
 /-- The canonical projection from `AutGalois F` to the `C`-automorphism group of each
 pointed Galois object. -/
 noncomputable def AutGalois.π (A : PointedGaloisObject F) : AutGalois F →* Aut (A : C) :=
-  GroupCat.sectionsπMonoidHom (autGaloisSystem F) A
+  Grp.sectionsπMonoidHom (autGaloisSystem F) A
 
 /- Not a `simp` lemma, because we usually don't want to expose the internals here. -/
 lemma AutGalois.π_apply (A : PointedGaloisObject F) (x : AutGalois F) :
@@ -253,7 +253,7 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
 - `endEquivAutGalois : End F ≅ AutGalois F`: this is the composition of `endEquivSectionsFibers`
   with:
 
-  `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GroupCat).sections`
+  `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget Grp).sections`
 
   which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
 
@@ -293,7 +293,7 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
 
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
 noncomputable def autIsoFibers :
-    autGaloisSystem F ⋙ forget GroupCat ≅ incl F ⋙ F' :=
+    autGaloisSystem F ⋙ forget Grp ≅ incl F ⋙ F' :=
   NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
     (fun {A B} f ↦ by
       ext (φ : Aut A.obj)

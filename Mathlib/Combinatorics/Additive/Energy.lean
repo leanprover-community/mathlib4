@@ -94,7 +94,7 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
   refine
-    card_le_card_of_inj_on (@fun x => ((x.1, x.1), x.2, x.2)) (by
+    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by
     -- Porting note: changed this from a `simp` proof without `only` because of a timeout
       simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
         implies_true]) fun a _ b _ => ?_

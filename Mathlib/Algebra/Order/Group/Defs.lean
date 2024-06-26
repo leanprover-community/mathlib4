@@ -760,10 +760,10 @@ attribute [simp] div_le_iff_le_mul
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
 -- (a renamed version of) `tsub_le_iff_right`?
 -- see Note [lower instance priority]
-instance (priority := 100) AddGroup.toHasOrderedSub {α : Type*} [AddGroup α] [LE α]
+instance (priority := 100) AddGroup.toOrderedSub {α : Type*} [AddGroup α] [LE α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : OrderedSub α :=
   ⟨fun _ _ _ => sub_le_iff_le_add⟩
-#align add_group.to_has_ordered_sub AddGroup.toHasOrderedSub
+#align add_group.to_has_ordered_sub AddGroup.toOrderedSub
 
 end Right
 
