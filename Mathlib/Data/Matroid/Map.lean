@@ -98,6 +98,9 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 
 [aignerhorev2012infinite] : E. Aigner-Horev, J. Carmesin, J. Fröhlic, Infinite Matroid Union,
 arXiv:1111.0602 [math.CO]
+
+[perfect1969matroid] : H. Perfect, Independence Spaces and Combinatorial Problems,
+Proc. London Math. Soc. (3) 19, 17-30
 -/
 
 open Set Function Set.Notation
