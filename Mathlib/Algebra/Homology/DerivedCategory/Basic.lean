@@ -167,6 +167,12 @@ noncomputable instance : HasShift (DerivedCategory C) ℤ :=
 noncomputable instance : (Qh (C := C)).CommShift ℤ :=
   Functor.CommShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).W ℤ
 
+noncomputable instance : (Q (C := C)).CommShift ℤ :=
+  Functor.CommShift.ofIso (quotientCompQhIso C) ℤ
+
+instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
+  Functor.CommShift.ofIso_compatibility _ _
+
 instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
   rw [Localization.functor_additive_iff
     Qh (HomotopyCategory.subcategoryAcyclic C).W]
