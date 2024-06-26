@@ -272,7 +272,6 @@ lemma a_cube_add_b_cube_eq_mul :
   symm
   calc _ = S'.a^3+S'.a^2*S'.b*(η^2+η+1)+S'.a*S'.b^2*(η^2+η+η^3)+η^3*S'.b^3 := by ring
   _ = S'.a^3+S'.a^2*S'.b*(η^2+η+1)+S'.a*S'.b^2*(η^2+η+1)+S'.b^3 := by
-    norm_cast
     simp [hζ.toInteger_cube_eq_one]
   _ = S'.a ^ 3 + S'.b ^ 3 := by ext; simp [this]
 
