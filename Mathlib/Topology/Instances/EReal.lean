@@ -243,17 +243,17 @@ lemma liminf_add_ge_gt₂ {α : Type _} {f : Filter α} {u v : α → EReal} {a 
   intro x
   exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
 
-lemma liminf_add_top_ne_bot {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
+lemma liminf_add_top_of_ne_bot {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
     (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) :
     liminf (u + v) f = ⊤ := by
-  apply top_le_iff.1 (EReal.ge_iff_le_forall_real_lt (liminf (u+v) f) ⊤).2
+  apply top_le_iff.1 ((ge_iff_le_forall_real_lt (liminf (u + v) f) ⊤).1 _)
   intro x
-  rcases EReal.exists_between_coe_real (Ne.bot_lt h') with ⟨y, ⟨_, hy⟩⟩
+  rcases exists_between_coe_real (Ne.bot_lt h') with ⟨y, ⟨_, hy⟩⟩
   intro trash; clear trash
-  rw [← sub_add_cancel x y, EReal.coe_add (x-y) y, EReal.coe_sub x y]
-  apply @EReal.liminf_add_ge_gt₂ α f u v (x-y) y _ hy
-  rw [h, ← EReal.coe_sub x y]
-  exact EReal.coe_lt_top (x-y)
+  rw [← sub_add_cancel x y, coe_add (x-y) y, coe_sub x y]
+  apply @liminf_add_ge_gt₂ α f u v (x-y) y _ hy
+  rw [h, ← coe_sub x y]
+  exact coe_lt_top (x-y)
 
 theorem add_liminf_le_liminf_add {α : Type _} {f : Filter α} {u v : α → EReal}
     (h : liminf u f ≠ ⊥ ∨ liminf v f ≠ ⊤) (h' : liminf u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
