@@ -48,7 +48,6 @@ structure Algebra (T : Monad C) : Type max u₁ v₁ where
   assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by aesop_cat
 #align category_theory.monad.algebra CategoryTheory.Monad.Algebra
 
--- Porting note: Manually adding aligns.
 set_option linter.uppercaseLean3 false in
 #align category_theory.monad.algebra.A CategoryTheory.Monad.Algebra.A
 
@@ -314,7 +313,6 @@ structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   coassoc : a ≫ G.δ.app A = a ≫ G.map a := by aesop_cat
 #align category_theory.comonad.coalgebra CategoryTheory.Comonad.Coalgebra
 
--- Porting note: manually adding aligns.
 set_option linter.uppercaseLean3 false in
 #align category_theory.comonad.coalgebra.A CategoryTheory.Comonad.Coalgebra.A
 

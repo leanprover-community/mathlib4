@@ -126,8 +126,7 @@ theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : 
 -/
 theorem fermatPsp_base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatPsp n 1 := by
   refine ⟨show n ∣ 1 ^ (n - 1) - 1 from ?_, h₂, h₁⟩
-  exact show 0 = 1 ^ (n - 1) - 1 by
-    set_option tactic.skipAssignedInstances false in norm_num ▸ dvd_zero n
+  exact show 0 = 1 ^ (n - 1) - 1 by norm_num ▸ dvd_zero n
 #align fermat_psp.base_one Nat.fermatPsp_base_one
 
 -- Lemmas that are needed to prove statements in this file, but aren't directly related to Fermat
