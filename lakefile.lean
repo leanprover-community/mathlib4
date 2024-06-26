@@ -62,6 +62,8 @@ lean_exe checkYaml where
 lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
@@ -80,6 +82,8 @@ and then calculates the longest pole
 lean_exe pole where
   root := `LongestPole.Main
   supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /--
 `lake exe test` is a thin wrapper around `lake exe batteries/test`, until

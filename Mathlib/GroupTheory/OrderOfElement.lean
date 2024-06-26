@@ -1303,6 +1303,10 @@ theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrde
 #align is_of_fin_order.prod_mk IsOfFinOrder.prod_mk
 #align is_of_fin_add_order.prod_mk IsOfFinAddOrder.prod_mk
 
+@[to_additive]
+lemma orderOf_mk {a : α} {b : β} : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
+  (a, b).orderOf
+
 end Prod
 
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
