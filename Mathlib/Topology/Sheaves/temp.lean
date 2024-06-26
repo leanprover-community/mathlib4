@@ -599,6 +599,13 @@ open Classical
 noncomputable def injectiveHullModuleCat : ModuleCat (ℛ.presheaf.stalk pt) :=
   Injective.under <| ModuleCat.of _ (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt)
 
+noncomputable def toInjectiveHullModuleCat :
+    ModuleCat.of _ (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) ⟶
+    injectiveHullModuleCat ℛ ℳ pt :=
+  Injective.ι _
+
+instance : Mono (toInjectiveHullModuleCat ℛ ℳ pt) := Injective.ι_mono _
+
 noncomputable abbrev skyAux : (Opens ℛ)ᵒᵖ ⥤ AddCommGrp :=
 skyscraperPresheaf pt (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt)
 
@@ -612,6 +619,7 @@ noncomputable def skyAuxIsoOfNotMem (U : Opens ℛ) (h : pt ∉ U) :
   eqToIso (by aesop)
 
 
+@[simps]
 noncomputable def toSkyAux : ℳ.1.presheaf ⟶ skyAux ℛ ℳ pt where
   app U :=
     if h : pt ∈ U.unop
@@ -732,6 +740,7 @@ noncomputable def sky : SheafOfModules (forget2Ring ℛ) where
             (skyAuxIsoOfNotMem ℛ ℳ pt V.unop hV).hom).injective }
   isSheaf := skyscraperPresheaf_isSheaf pt _
 
+@[simps]
 noncomputable def toSky : ℳ ⟶ sky ℛ ℳ pt where
   val :=
     { hom := toSkyAux ℛ ℳ pt
@@ -756,13 +765,131 @@ noncomputable def toSky : ℳ ⟶ sky ℛ ℳ pt where
           · exact (ConcreteCategory.bijective_of_isIso
               (skyAuxIsoOfNotMem ℛ ℳ pt U.unop h).hom).injective }
 
-instance : Injective (sky ℛ ℳ pt) := by
-  haveI inst1 : Injective (injectiveHullModuleCat ℛ ℳ pt) := Injective.injective_under _
-  haveI inst2 := Injective.injective_of_adjoint
-    (adj := stalkSkyscraperSheafAdjunction pt (C := ModuleCat.{u} (ℛ.presheaf.stalk pt)))
-    (injectiveHullModuleCat ℛ ℳ pt)
-  constructor
-  rintro M₁ M₂ g f inst3
+noncomputable def nextSkyAux : (Opens ℛ)ᵒᵖ ⥤ AddCommGrp :=
+  skyscraperPresheaf pt (AddCommGrp.of $ injectiveHullModuleCat ℛ ℳ pt)
+
+noncomputable def skies : SheafOfModules $ forget2Ring ℛ :=
+  ∏ᶜ fun (pt : ℛ) => (sky ℛ ℳ pt)
+
+noncomputable def toSkies : ℳ ⟶ skies ℛ ℳ :=
+  Pi.lift fun pt => toSky ℛ ℳ pt
+
+instance toSkies_mono : Mono (toSkies ℛ ℳ) where
+  right_cancellation {𝒩} f g hfg := by
+    ext U x
+    refine TopCat.Presheaf.section_ext ((SheafOfModules.toSheaf _).obj ℳ) ?_ ?_ ?_ ?_
+    intro ⟨y, hy⟩
+    have : PresheafOfModules.Hom.app (f ≫ toSkies ℛ ℳ).val U x
+        = PresheafOfModules.Hom.app (g ≫ toSkies ℛ ℳ).val U x := by
+      rw [hfg]
+    apply_fun PresheafOfModules.Hom.app (Pi.π (sky ℛ ℳ) y).val U at this
+    simp only [SheafOfModules.comp_val, PresheafOfModules.Hom.comp_app, LinearMap.coe_comp,
+      Function.comp_apply, Functor.comp_obj, toSkies,
+      ← LinearMap.comp_apply, ← PresheafOfModules.Hom.comp_app] at this
+    erw [← LinearMap.comp_apply, ← LinearMap.comp_apply] at this
+    simp only [ ← PresheafOfModules.Hom.comp_app, ← SheafOfModules.comp_val,
+      Category.assoc, Pi.lift_π] at this
+    simp only [PresheafOfModules.Hom.app, sky_val_presheaf, skyscraperPresheaf_obj,
+      SheafOfModules.comp_val, PresheafOfModules.Hom.comp_hom, toSky_val_hom, NatTrans.comp_app,
+      toSkyAux_app, op_unop, dif_pos hy] at this
+    apply_fun (skyAuxIsoOfMem ℛ ℳ y U.unop hy).inv
+    exact this
+    · exact (ConcreteCategory.bijective_of_isIso (skyAuxIsoOfMem ℛ ℳ y U.unop hy).inv).1
+
+noncomputable def nextSky : SheafOfModules (forget2Ring ℛ) where
+  val :=
+    { presheaf := nextSkyAux ℛ ℳ pt
+      module := sorry
+      map_smul := sorry }
+  isSheaf := sorry
+
+noncomputable def nextSkies : SheafOfModules (forget2Ring ℛ) := ∏ᶜ fun x => nextSky ℛ ℳ x
+
+noncomputable def skiesToNextSkies : skies ℛ ℳ ⟶ nextSkies ℛ ℳ :=
+  Pi.map fun pt =>
+  { val :=
+  { hom := (skyscraperPresheafFunctor pt).map $
+      (forget₂ _ AddCommGrp).map (toInjectiveHullModuleCat ℛ ℳ pt)
+    map_smul := sorry } }
+
+instance : Mono (skiesToNextSkies ℛ ℳ) := by
+  unfold skiesToNextSkies
+  apply (config := {allowSynthFailures := true }) Pi.map_mono
+  intro x
   sorry
+
+instance : Injective (nextSky ℛ ℳ pt) := by sorry
+  -- haveI inst1 : Injective (injectiveHullModuleCat ℛ ℳ pt) := Injective.injective_under _
+  -- haveI inst2 : Injective _ := Injective.injective_of_adjoint
+  --   (adj := stalkSkyscraperSheafAdjunction pt (C := ModuleCat.{u} (ℛ.presheaf.stalk pt)))
+  --   (injectiveHullModuleCat ℛ ℳ pt)
+  -- constructor
+  -- rintro M₁ M₂ g f inst3
+
+  -- let M₁ₓ := ModuleCat.of (ℛ.presheaf.stalk pt)
+  --   (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) M₁.1.presheaf pt)
+  -- let M₂ₓ := ModuleCat.of (ℛ.presheaf.stalk pt)
+  --   (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) M₂.1.presheaf pt)
+  -- let fₓ : M₁ₓ ⟶ M₂ₓ := {
+  --   (TopCat.Presheaf.stalkFunctor AddCommGrp pt).map f.1.1 with
+  --   map_smul' := fun x y => by
+  --     dsimp only [TopCat.Presheaf.stalkFunctor_obj, ZeroHom.toFun_eq_coe,
+  --       AddMonoidHom.toZeroHom_coe, AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply]
+  --     obtain ⟨Ox, mem_x, x, rfl⟩ := ℛ.presheaf.germ_exist pt x
+  --     obtain ⟨Oy, mem_y, y, rfl⟩ := TopCat.Presheaf.germ_exist M₁.1.presheaf pt y
+  --     simp only
+  --     change (TopCat.Presheaf.stalkFunctor AddCommGrp pt).map f.val.hom
+  --       (stalkSMulStalk _ _ _ _ _) =
+  --       stalkSMulStalk _ _ _ _ _
+  --     erw [germ_smul_germ]
+  --     erw [TopCat.Presheaf.stalkFunctor_map_germ_apply (f := f.1.1) (x := ⟨pt, mem_y⟩)]
+
+  --     erw [TopCat.Presheaf.stalkFunctor_map_germ_apply (f := f.1.1)
+  --       (x := (⟨pt, ⟨mem_x, mem_y⟩⟩ : (Ox ⊓ Oy : Opens _)))]
+  --     erw [germ_smul_germ]
+  --     congr 1
+  --     erw [f.1.map_smul (op $ Ox ⊓ Oy) (x |_ _) (y |_ _)]
+  --     delta sectionSMulSection
+  --     congr! 1
+  --     change (M₁.1.presheaf.map _ ≫ f.1.1.app _) y = _
+  --     rw [f.1.1.naturality]
+  --     rfl
+  -- }
+  -- let e :
+  --     (skyscraperPresheaf pt (injectiveHullModuleCat ℛ ℳ pt)).stalk pt ≅ (injectiveHullModuleCat ℛ ℳ pt) :=
+  --   skyscraperPresheafStalkOfSpecializes pt (injectiveHullModuleCat ℛ ℳ pt)
+  --   (specializes_refl pt)
+  -- let e := skyscraperPresheafStalkOfSpecializes pt (injectiveHullModuleCat ℛ ℳ pt)
+  --   (specializes_refl pt)
+  -- let gₓ' : M₁ₓ ⟶ (skyscraperPresheaf pt (injectiveHullModuleCat ℛ ℳ pt)).stalk pt :=
+  --   sorry
+
+  -- let gₓ : M₁ₓ ⟶ (injectiveHullModuleCat ℛ ℳ pt) := gₓ' ≫ e.hom
+  -- have inst3' : Mono f.1.1 := by
+  --   sorry
+  -- have : Mono fₓ := by
+  --   suffices Mono ((TopCat.Presheaf.stalkFunctor AddCommGrp pt).map f.1.1) by
+  --     rw [ConcreteCategory.mono_iff_injective_of_preservesPullback] at this ⊢
+  --     exact this
+
+  --   convert TopCat.Presheaf.stalk_mono_of_mono.{u} (C := AddCommGrp)
+  --     (F := ⟨M₁.1.presheaf, M₁.isSheaf⟩) (G := ⟨M₂.1.presheaf, M₂.isSheaf⟩)
+  --     (f := ⟨f.1.1⟩) (x := pt)
+  --   apply Sheaf.Hom.mono_of_presheaf_mono
+
+  -- let hₓ := @Injective.factorThru _ _ _ M₁ₓ M₂ₓ inst1 gₓ fₓ inferInstance
+  -- let h : M₂.1.presheaf ⟶ skyscraperPresheaf pt _ := (skyscraperPresheafStalkAdjunction pt).homEquiv _ _ ((forget₂ _ AddCommGrp).map hₓ)
+  -- refine ⟨⟨⟨h ≫ (skyscraperPresheafFunctor _).map _, ?_⟩⟩, ?_⟩
+
+  -- sorry
+
+instance : Injective (nextSkies ℛ ℳ) := inferInstanceAs <| Injective $ ∏ᶜ fun _ => _
+
+instance : EnoughInjectives (SheafOfModules (forget2Ring ℛ)) where
+  presentation M := Nonempty.intro
+    { J := nextSkies ℛ M
+      injective := inferInstance
+      f := toSkies ℛ M ≫ skiesToNextSkies ℛ M
+      mono := inferInstance }
 
 end skyscraper
