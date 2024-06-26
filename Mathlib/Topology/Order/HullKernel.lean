@@ -76,7 +76,7 @@ pairwise union. -/
 lemma ici_union_ici_eq (a b : α) :
     (T ↓∩ (Ici a)) ∪ (T ↓∩ (Ici b)) = (T ↓∩ (Ici (a ⊓ b))) := by
   ext p
-  constructor
+  constructor <;> intro h
   · intro h
     cases' h with h1 h3
     · exact inf_le_of_left_le h1
