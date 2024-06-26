@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Tactic.Abel
@@ -51,43 +52,6 @@ function and proving it is linear.
 linear algebra, vector space, module
 
 -/
-
-open Function
-
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
-variable {S : Type*}
-variable {K : Type*} {K₂ : Type*}
-variable {M : Type*} {M' : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*} {M₄ : Type*}
-variable {N : Type*} {N₂ : Type*}
-variable {ι : Type*}
-variable {V : Type*} {V₂ : Type*}
-
-/-! ### Properties of linear maps -/
-
-namespace IsLinearMap
-
-theorem isLinearMap_add [Semiring R] [AddCommMonoid M] [Module R M] :
-    IsLinearMap R fun x : M × M => x.1 + x.2 := by
-  apply IsLinearMap.mk
-  · intro x y
-    simp only [Prod.fst_add, Prod.snd_add]
-    abel
-  · intro x y
-    simp [smul_add]
-#align is_linear_map.is_linear_map_add IsLinearMap.isLinearMap_add
-
-theorem isLinearMap_sub {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M] :
-    IsLinearMap R fun x : M × M => x.1 - x.2 := by
-  apply IsLinearMap.mk
-  · intro x y
-    -- porting note (#10745): was `simp [add_comm, add_left_comm, sub_eq_add_neg]`
-    rw [Prod.fst_add, Prod.snd_add]
-    abel
-  · intro x y
-    simp [smul_sub]
-#align is_linear_map.is_linear_map_sub IsLinearMap.isLinearMap_sub
-
-end IsLinearMap
 
 #align linear_equiv.map_sum map_sumₓ
 #align linear_equiv.map_neg map_negₓ

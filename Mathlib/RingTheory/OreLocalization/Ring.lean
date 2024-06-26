@@ -30,14 +30,14 @@ variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommMonoid X] [Module R X]
 
 protected theorem zero_smul (x : X[S⁻¹]) : (0 : R[S⁻¹]) • x = 0 := by
-  induction' x using OreLocalization.ind with r s
+  induction' x with r s
   rw [OreLocalization.zero_def, oreDiv_smul_char 0 r 1 s 0 1 (by simp)]; simp
 
 protected theorem add_smul (y z : R[S⁻¹]) (x : X[S⁻¹]) :
     (y + z) • x = y • x + z • x := by
-  induction' x using OreLocalization.ind with r₁ s₁
-  induction' y using OreLocalization.ind with r₂ s₂
-  induction' z using OreLocalization.ind with r₃ s₃
+  induction' x with r₁ s₁
+  induction' y with r₂ s₂
+  induction' z with r₃ s₃
   rcases oreDivAddChar' r₂ r₃ s₂ s₃ with ⟨ra, sa, ha, q⟩
   rw [q]
   clear q
@@ -121,8 +121,8 @@ def universalHom : R[S⁻¹] →+* T :=
       change (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) (x + y)
         = (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) x
         + (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) y
-      induction' x using OreLocalization.ind with r₁ s₁
-      induction' y using OreLocalization.ind with r₂ s₂
+      induction' x with r₁ s₁
+      induction' y with r₂ s₂
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'
@@ -239,7 +239,7 @@ protected theorem inv_def {r : R} {s : R⁰} :
 #align ore_localization.inv_def OreLocalization.inv_def
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
-  induction' x using OreLocalization.ind with r s
+  induction' x with r s
   rw [OreLocalization.inv_def, OreLocalization.one_def]
   by_cases hr : r = 0
   · exfalso
