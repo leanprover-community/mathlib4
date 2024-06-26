@@ -264,7 +264,9 @@ noncomputable instance :
     obtain ⟨W, memW, m, rfl⟩ := TopCat.Presheaf.germ_exist (F := ℳ.1.presheaf) _ m
     have eq1 : (ℛ.presheaf.germ ⟨pt, mem_r⟩) r * (ℛ.presheaf.germ ⟨pt, mem_r'⟩) r' =
       ℛ.presheaf.germ (⟨pt, ⟨mem_r, mem_r'⟩⟩ : (Or ⊓ Or' : Opens _))
-        (r |_ _ * r' |_ _) := by sorry
+        (r |_ _ * r' |_ _) := by
+      rw [map_mul]
+      erw [TopCat.Presheaf.germ_res_apply, TopCat.Presheaf.germ_res_apply]
     rw [eq1]
     change stalkSMulStalk _ _ _ _ _ = _
     erw [germ_smul_germ]
