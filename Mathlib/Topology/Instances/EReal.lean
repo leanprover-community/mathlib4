@@ -276,17 +276,15 @@ theorem add_liminf_le_liminf_add {α : Type _} {f : Filter α} {u v : α → ERe
 
 theorem limsup_le_iff {α : Type _} {f : Filter α} {u : α → EReal} {b : EReal} :
     limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
-  rw [← EReal.le_iff_le_forall_real_gt]
-  constructor
-  · intro h c b_lt_c
-    rcases EReal.exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
+  rw [← le_iff_le_forall_real_gt]
+  refine ⟨?_, ?_⟩ <;> intro h c b_lt_c
+  · rcases exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
     specialize h d b_lt_d
     have key := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt h d_lt_c)
     apply Filter.mem_of_superset key
-    simp only [Set.setOf_subset_setOf]
+    rw [Set.setOf_subset_setOf]
     exact fun a h' ↦ le_of_lt h'
-  · intro h c b_lt_c
-    rcases eq_or_neBot f with (rfl | _)
+  · rcases eq_or_neBot f with (rfl | _)
     · simp only [limsup_bot, bot_le]
     · specialize h c b_lt_c
       exact @Filter.limsup_const EReal α _ f _ (c : EReal) ▸ limsup_le_limsup h
