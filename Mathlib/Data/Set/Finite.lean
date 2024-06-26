@@ -1221,6 +1221,9 @@ theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
     (H0 : C S0) (H1 : ∀ S ≠ univ, C S → ∃ a ∉ S, C (insert a S)) : C univ :=
   finite_univ.induction_to S0 (subset_univ S0) H0 (by simpa [ssubset_univ_iff])
 
+protected theorem Finite.powerset {s : Set α} (h : s.Finite) : (𝒫 s).Finite :=
+  Set.Finite.finite_subsets h
+
 section
 
 attribute [local instance] Nat.fintypeIio
