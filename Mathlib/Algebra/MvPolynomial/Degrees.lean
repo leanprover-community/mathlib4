@@ -55,8 +55,6 @@ noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v}
@@ -133,7 +131,7 @@ theorem degrees_add [DecidableEq σ] (p q : MvPolynomial σ R) :
 #align mv_polynomial.degrees_add MvPolynomial.degrees_add
 
 theorem degrees_sum {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → MvPolynomial σ R) :
-    (∑ i in s, f i).degrees ≤ s.sup fun i => (f i).degrees := by
+    (∑ i ∈ s, f i).degrees ≤ s.sup fun i => (f i).degrees := by
   simp_rw [degrees_def]; exact supDegree_sum_le
 #align mv_polynomial.degrees_sum MvPolynomial.degrees_sum
 
@@ -144,7 +142,7 @@ theorem degrees_mul (p q : MvPolynomial σ R) : (p * q).degrees ≤ p.degrees + 
 #align mv_polynomial.degrees_mul MvPolynomial.degrees_mul
 
 theorem degrees_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
-    (∏ i in s, f i).degrees ≤ ∑ i in s, (f i).degrees := by
+    (∏ i ∈ s, f i).degrees ≤ ∑ i ∈ s, (f i).degrees := by
   classical exact supDegree_prod_le (map_zero _) (map_add _)
 #align mv_polynomial.degrees_prod MvPolynomial.degrees_prod
 
@@ -173,8 +171,8 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degre
     obtain ⟨j, hj⟩ := h0
     contrapose! h
     rw [mem_support_iff] at hd
-    refine' ⟨j, _, j, _, rfl⟩
-    all_goals rw [mem_degrees]; refine' ⟨d, _, hj⟩; assumption
+    refine ⟨j, ?_, j, ?_, rfl⟩
+    all_goals rw [mem_degrees]; refine ⟨d, ?_, hj⟩; assumption
 #align mv_polynomial.le_degrees_add MvPolynomial.le_degrees_add
 
 theorem degrees_add_of_disjoint [DecidableEq σ] {p q : MvPolynomial σ R}
@@ -223,7 +221,7 @@ theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h :
   classical
   simp only [degrees, Multiset.map_finset_sup p.support Finsupp.toMultiset f h,
     support_rename_of_injective h, Finset.sup_image]
-  refine' Finset.sup_congr rfl fun x _ => _
+  refine Finset.sup_congr rfl fun x _ => ?_
   exact (Finsupp.toMultiset_map _ _).symm
 #align mv_polynomial.degrees_rename_of_injective MvPolynomial.degrees_rename_of_injective
 
@@ -473,7 +471,6 @@ theorem totalDegree_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.total_degree_X_pow MvPolynomial.totalDegree_X_pow
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem totalDegree_list_prod :
     ∀ s : List (MvPolynomial σ R), s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum
   | [] => by rw [@List.prod_nil (MvPolynomial σ R) _, totalDegree_one]; rfl
@@ -484,14 +481,14 @@ theorem totalDegree_list_prod :
 
 theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
     s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum := by
-  refine' Quotient.inductionOn s fun l => _
+  refine Quotient.inductionOn s fun l => ?_
   rw [Multiset.quot_mk_to_coe, Multiset.prod_coe, Multiset.map_coe, Multiset.sum_coe]
   exact totalDegree_list_prod l
 #align mv_polynomial.total_degree_multiset_prod MvPolynomial.totalDegree_multiset_prod
 
 theorem totalDegree_finset_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
-    (s.prod f).totalDegree ≤ ∑ i in s, (f i).totalDegree := by
-  refine' le_trans (totalDegree_multiset_prod _) _
+    (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree := by
+  refine le_trans (totalDegree_multiset_prod _) ?_
   rw [Multiset.map_map]
   rfl
 #align mv_polynomial.total_degree_finset_prod MvPolynomial.totalDegree_finset_prod
@@ -524,12 +521,12 @@ theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
 #align mv_polynomial.exists_degree_lt MvPolynomial.exists_degree_lt
 
 theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ}
-    (h : f.totalDegree < ∑ i in d.support, d i) : coeff d f = 0 := by
+    (h : f.totalDegree < ∑ i ∈ d.support, d i) : coeff d f = 0 := by
   classical
     rw [totalDegree, Finset.sup_lt_iff] at h
     · specialize h d
       rw [mem_support_iff] at h
-      refine' not_not.mp (mt h _)
+      refine not_not.mp (mt h ?_)
       exact lt_irrefl _
     · exact lt_of_le_of_lt (Nat.zero_le _) h
 #align mv_polynomial.coeff_eq_zero_of_total_degree_lt MvPolynomial.coeff_eq_zero_of_totalDegree_lt

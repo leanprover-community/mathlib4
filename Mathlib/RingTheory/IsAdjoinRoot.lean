@@ -1,5 +1,4 @@
 /-
-
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
@@ -246,8 +245,8 @@ theorem lift_root (h : IsAdjoinRoot S f) : h.lift i x hx h.root = x := by
 #align is_adjoin_root.lift_root IsAdjoinRoot.lift_root
 
 @[simp]
-theorem lift_algebraMap (h : IsAdjoinRoot S f) (a : R) : h.lift i x hx (algebraMap R S a) = i a :=
-  by rw [h.algebraMap_apply, lift_map, eval₂_C]
+theorem lift_algebraMap (h : IsAdjoinRoot S f) (a : R) :
+    h.lift i x hx (algebraMap R S a) = i a := by rw [h.algebraMap_apply, lift_map, eval₂_C]
 #align is_adjoin_root.lift_algebra_map IsAdjoinRoot.lift_algebraMap
 
 /-- Auxiliary lemma for `apply_eq_lift` -/
@@ -410,7 +409,7 @@ theorem modByMonicHom_root (h : IsAdjoinRootMonic S f) (hdeg : 1 < natDegree f) 
 Auxiliary definition for `IsAdjoinRootMonic.powerBasis`. -/
 def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
   Basis.ofRepr
-    { toFun := fun x => (h.modByMonicHom x).toFinsupp.comapDomain _ (Fin.val_injective.injOn _)
+    { toFun := fun x => (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
       invFun := fun g => h.map (ofFinsupp (g.mapDomain _))
       left_inv := fun x => by
         cases subsingleton_or_nontrivial R
@@ -435,8 +434,8 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
         rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
-        dsimp only -- Porting note (#10752): added `dsimp only`
-        rw [Finsupp.mapDomain_apply Fin.val_injective]
+        · dsimp only -- Porting note (#10752): added `dsimp only`
+          rw [Finsupp.mapDomain_apply Fin.val_injective]
         rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
@@ -465,7 +464,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
 theorem basis_apply (h : IsAdjoinRootMonic S f) (i) : h.basis i = h.root ^ (i : ℕ) :=
   Basis.apply_eq_iff.mpr <|
     show (h.modByMonicHom (h.toIsAdjoinRoot.root ^ (i : ℕ))).toFinsupp.comapDomain _
-          (Fin.val_injective.injOn _) = Finsupp.single _ _ by
+          Fin.val_injective.injOn = Finsupp.single _ _ by
       ext j
       rw [Finsupp.comapDomain_apply, modByMonicHom_root_pow]
       · rw [X_pow_eq_monomial, toFinsupp_monomial, Finsupp.single_apply_left Fin.val_injective]
@@ -493,7 +492,7 @@ def powerBasis (h : IsAdjoinRootMonic S f) : PowerBasis R S where
 @[simp]
 theorem basis_repr (h : IsAdjoinRootMonic S f) (x : S) (i : Fin (natDegree f)) :
     h.basis.repr x i = (h.modByMonicHom x).coeff (i : ℕ) := by
-  change (h.modByMonicHom x).toFinsupp.comapDomain _ ( Fin.val_injective.injOn _) i = _
+  change (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn i = _
   rw [Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
 #align is_adjoin_root_monic.basis_repr IsAdjoinRootMonic.basis_repr
 
@@ -575,7 +574,7 @@ theorem coeff_algebraMap [Nontrivial S] (h : IsAdjoinRootMonic S f) (x : R) :
     h.coeff (algebraMap R S x) = Pi.single 0 x := by
   ext i
   rw [Algebra.algebraMap_eq_smul_one, map_smul, coeff_one, Pi.smul_apply, smul_eq_mul]
-  refine' (Pi.apply_single (fun _ y => x * y) _ 0 1 i).trans (by simp)
+  refine (Pi.apply_single (fun _ y => x * y) ?_ 0 1 i).trans (by simp)
   intros
   simp
 #align is_adjoin_root_monic.coeff_algebra_map IsAdjoinRootMonic.coeff_algebraMap
@@ -649,8 +648,8 @@ theorem aequiv_map (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) (z : R[X]) :
 #align is_adjoin_root.aequiv_map IsAdjoinRoot.aequiv_map
 
 @[simp]
-theorem aequiv_root (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) : h.aequiv h' h.root = h'.root :=
-  by rw [aequiv, AlgEquiv.coe_mk, liftHom_root]
+theorem aequiv_root (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) :
+    h.aequiv h' h.root = h'.root := by rw [aequiv, AlgEquiv.coe_mk, liftHom_root]
 #align is_adjoin_root.aequiv_root IsAdjoinRoot.aequiv_root
 
 @[simp]

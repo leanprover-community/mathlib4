@@ -17,6 +17,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.CC
 
 #align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -946,8 +947,7 @@ open Sum
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
 @[simps]
-def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i')
-    where
+def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
   toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
   invFun g := Sum.rec g.1 g.2
   left_inv f := by ext (i | i) <;> rfl
@@ -1321,7 +1321,7 @@ def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Pr
           apply sigmaCongrRight
           intro y
           apply Equiv.symm
-          refine' (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight _)
+          refine (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight ?_)
           intro x
           exact ⟨fun ⟨hp, h'⟩ => congr_arg Subtype.val h', fun h' => ⟨(h x).2 (h'.symm ▸ y.2),
             Subtype.eq h'⟩⟩ }
@@ -1562,10 +1562,9 @@ end
 equivalence relation `~`. Let `p₂` be a predicate on the quotient type `α/~`, and `p₁` be the lift
 of this predicate to `α`: `p₁ a ↔ p₂ ⟦a⟧`. Let `~₂` be the restriction of `~` to `{x // p₁ x}`.
 Then `{x // p₂ x}` is equivalent to the quotient of `{x // p₁ x}` by `~₂`. -/
-def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) [s₁ : Setoid α] [s₂ : Setoid (Subtype p₁)]
+def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} {s₂ : Setoid (Subtype p₁)}
     (p₂ : Quotient s₁ → Prop) (hp₂ : ∀ a, p₁ a ↔ p₂ ⟦a⟧)
-    (h : ∀ x y : Subtype p₁, @Setoid.r _ s₂ x y ↔ (x : α) ≈ y) :
-    { x // p₂ x } ≃ Quotient s₂ where
+    (h : ∀ x y : Subtype p₁, s₂.r x y ↔ s₁.r x y) : {x // p₂ x} ≃ Quotient s₂ where
   toFun a :=
     Quotient.hrecOn a.1 (fun a h => ⟦⟨a, (hp₂ _).2 h⟩⟧)
       (fun a b hab => hfunext (by rw [Quotient.sound hab]) fun h₁ h₂ _ =>
@@ -1609,18 +1608,7 @@ theorem swapCore_self (r a : α) : swapCore a a r = r := by
 #align equiv.swap_core_self Equiv.swapCore_self
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swapCore
-  -- Porting note: cc missing.
-  -- `casesm` would work here, with `casesm _ = _, ¬ _ = _`,
-  -- if it would just continue past failures on hypotheses matching the pattern
-  split_ifs with h₁ h₂ h₃ h₄ h₅
-  · subst h₁; exact h₂
-  · subst h₁; rfl
-  · cases h₃ rfl
-  · exact h₄.symm
-  · cases h₅ rfl
-  · cases h₅ rfl
-  · rfl
+  unfold swapCore; split_ifs <;> cc
 #align equiv.swap_core_swap_core Equiv.swapCore_swapCore
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
@@ -1680,7 +1668,7 @@ theorem symm_swap (a b : α) : (swap a b).symm = swap a b :=
 
 @[simp]
 theorem swap_eq_refl_iff {x y : α} : swap x y = Equiv.refl _ ↔ x = y := by
-  refine' ⟨fun h => (Equiv.refl _).injective _, fun h => h ▸ swap_self _⟩
+  refine ⟨fun h => (Equiv.refl _).injective ?_, fun h => h ▸ swap_self _⟩
   rw [← h, swap_apply_left, h, refl_apply]
 #align equiv.swap_eq_refl_iff Equiv.swap_eq_refl_iff
 
@@ -1988,7 +1976,7 @@ end
 
 section BinaryOp
 
-variable (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
+variable {α₁ β₁ : Type*} (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
 
 theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x => by simp
 #align equiv.semiconj_conj Equiv.semiconj_conj

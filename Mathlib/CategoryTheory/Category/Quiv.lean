@@ -48,8 +48,7 @@ instance : Inhabited Quiv :=
   ⟨Quiv.of (Quiver.Empty PEmpty)⟩
 
 /-- Category structure on `Quiv` -/
-instance category : LargeCategory.{max v u} Quiv.{v, u}
-    where
+instance category : LargeCategory.{max v u} Quiv.{v, u} where
   Hom C D := Prefunctor C D
   id C := Prefunctor.id C
   comp F G := Prefunctor.comp F G
@@ -58,8 +57,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The forgetful functor from categories to quivers. -/
 @[simps]
-def forget : Cat.{v, u} ⥤ Quiv.{v, u}
-    where
+def forget : Cat.{v, u} ⥤ Quiv.{v, u} where
   obj C := Quiv.of C
   map F := F.toPrefunctor
 set_option linter.uppercaseLean3 false in
@@ -71,8 +69,7 @@ namespace Cat
 
 /-- The functor sending each quiver to its path category. -/
 @[simps]
-def free : Quiv.{v, u} ⥤ Cat.{max u v, u}
-    where
+def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (Paths V)
   map F :=
     { obj := fun X => F.obj X

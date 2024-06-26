@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Subgroup.ZPowers
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 
 #align_import group_theory.group_action.conj_act from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"

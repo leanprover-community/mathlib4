@@ -61,8 +61,6 @@ subfield, subfields
 -/
 
 
-open BigOperators
-
 universe u v w
 
 variable {K : Type u} {L : Type v} {M : Type w}
@@ -114,10 +112,9 @@ lemma qsmul_mem (s : S) (q : ℚ) (hx : x ∈ s) : q • x ∈ s := by
   simpa only [Rat.smul_def] using mul_mem (ratCast_mem _ _) hx
 #align subfield_class.rat_smul_mem SubfieldClass.qsmul_mem
 
--- 2024-04-05
-@[deprecated] alias coe_rat_cast := coe_ratCast
-@[deprecated] alias coe_rat_mem := ratCast_mem
-@[deprecated] alias rat_smul_mem := qsmul_mem
+@[deprecated (since := "2024-04-05")] alias coe_rat_cast := coe_ratCast
+@[deprecated (since := "2024-04-05")] alias coe_rat_mem := ratCast_mem
+@[deprecated (since := "2024-04-05")] alias rat_smul_mem := qsmul_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
@@ -315,7 +312,7 @@ protected theorem multiset_sum_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) →
 
 /-- Sum of elements in a `Subfield` indexed by a `Finset` is in the `Subfield`. -/
 protected theorem sum_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
-    (∑ i in t, f i) ∈ s :=
+    (∑ i ∈ t, f i) ∈ s :=
   sum_mem h
 #align subfield.sum_mem Subfield.sum_mem
 
@@ -330,8 +327,7 @@ protected theorem zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 protected theorem intCast_mem (n : ℤ) : (n : K) ∈ s := intCast_mem s n
 #align subfield.coe_int_mem Subfield.intCast_mem
 
--- 2024-04-05
-@[deprecated] alias coe_int_mem := intCast_mem
+@[deprecated (since := "2024-04-05")] alias coe_int_mem := intCast_mem
 
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
@@ -643,7 +639,7 @@ theorem sInf_toSubring (s : Set (Subfield K)) :
 
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
-  refine' IsGLB.of_image this _
+  refine IsGLB.of_image this ?_
   convert isGLB_biInf (s := S) (f := SetLike.coe)
   exact coe_sInf _
 #align subfield.is_glb_Inf Subfield.isGLB_sInf
@@ -921,7 +917,7 @@ protected theorem multiset_prod_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) �
 
 /-- Product of elements of a subfield indexed by a `Finset` is in the subfield. -/
 protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
-    (∏ i in t, f i) ∈ s :=
+    (∏ i ∈ t, f i) ∈ s :=
   prod_mem h
 #align subfield.prod_mem Subfield.prod_mem
 

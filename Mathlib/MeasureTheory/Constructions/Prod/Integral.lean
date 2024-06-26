@@ -85,13 +85,13 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] �
   let s' : ℕ → α → SimpleFunc β E := fun n x => (s n).comp (Prod.mk x) measurable_prod_mk_left
   let f' : ℕ → α → E := fun n => {x | Integrable (f x) ν}.indicator fun x => (s' n x).integral ν
   have hf' : ∀ n, StronglyMeasurable (f' n) := by
-    intro n; refine' StronglyMeasurable.indicator _ (measurableSet_integrable hf)
+    intro n; refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
     have : ∀ x, ((s' n x).range.filter fun x => x ≠ 0) ⊆ (s n).range := by
-      intro x; refine' Finset.Subset.trans (Finset.filter_subset _ _) _; intro y
+      intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) ?_; intro y
       simp_rw [SimpleFunc.mem_range]; rintro ⟨z, rfl⟩; exact ⟨(x, z), rfl⟩
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
-    refine' Finset.stronglyMeasurable_sum _ fun x _ => _
-    refine' (Measurable.ennreal_toReal _).stronglyMeasurable.smul_const _
+    refine Finset.stronglyMeasurable_sum _ fun x _ => ?_
+    refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
     simp only [s', SimpleFunc.coe_comp, preimage_comp]
     apply measurable_measure_prod_mk_left
     exact (s n).measurableSet_fiber x
@@ -104,14 +104,15 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] �
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
       simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]
-      refine'
+      refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
-          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) _ _
-      · refine' fun n => eventually_of_forall fun y => SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
+          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
+      · refine fun n => eventually_of_forall fun y =>
+          SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
         -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable
         · simp
-      · refine' eventually_of_forall fun y => SimpleFunc.tendsto_approxOn _ _ _
+      · refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn ?_ ?_ ?_
         -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable.of_uncurry_left
         · simp
@@ -156,7 +157,7 @@ variable [SigmaFinite ν]
 
 theorem integrable_measure_prod_mk_left {s : Set (α × β)} (hs : MeasurableSet s)
     (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => (ν (Prod.mk x ⁻¹' s)).toReal) μ := by
-  refine' ⟨(measurable_measure_prod_mk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, _⟩
+  refine ⟨(measurable_measure_prod_mk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
   simp_rw [HasFiniteIntegral, ennnorm_eq_ofReal toReal_nonneg]
   convert h2s.lt_top using 1
   -- Porting note: was `simp_rw`
@@ -246,7 +247,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
   · intro h2f; rw [lintegral_congr_ae]
     filter_upwards [h2f] with x hx
     rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
-  · intro h2f; refine' ae_lt_top _ h2f.ne; exact h1f.ennnorm.lintegral_prod_right'
+  · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.ennnorm.lintegral_prod_right'
 #align measure_theory.has_finite_integral_prod_iff MeasureTheory.hasFiniteIntegral_prod_iff
 
 theorem hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMeasurable f (μ.prod ν)) :
@@ -307,7 +308,7 @@ theorem Integrable.integral_norm_prod_right [SigmaFinite μ] ⦃f : α × β →
 theorem Integrable.prod_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     {f : α → 𝕜} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) := by
-  refine' (integrable_prod_iff _).2 ⟨_, _⟩
+  refine (integrable_prod_iff ?_).2 ⟨?_, ?_⟩
   · exact hf.1.fst.smul hg.1.snd
   · exact eventually_of_forall fun x => hg.smul (f x)
   · simpa only [norm_smul, integral_mul_left] using hf.norm.mul_const _
@@ -356,7 +357,7 @@ theorem integral_fn_integral_add ⦃f g : α × β → E⦄ (F : E → E') (hf :
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, F (∫ y, f (x, y) + g (x, y) ∂ν) ∂μ) =
       ∫ x, F ((∫ y, f (x, y) ∂ν) + ∫ y, g (x, y) ∂ν) ∂μ := by
-  refine' integral_congr_ae _
+  refine integral_congr_ae ?_
   filter_upwards [hf.prod_right_ae, hg.prod_right_ae] with _ h2f h2g
   simp [integral_add h2f h2g]
 #align measure_theory.integral_fn_integral_add MeasureTheory.integral_fn_integral_add
@@ -367,7 +368,7 @@ theorem integral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → E') (hf :
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, F (∫ y, f (x, y) - g (x, y) ∂ν) ∂μ) =
       ∫ x, F ((∫ y, f (x, y) ∂ν) - ∫ y, g (x, y) ∂ν) ∂μ := by
-  refine' integral_congr_ae _
+  refine integral_congr_ae ?_
   filter_upwards [hf.prod_right_ae, hg.prod_right_ae] with _ h2f h2g
   simp [integral_sub h2f h2g]
 #align measure_theory.integral_fn_integral_sub MeasureTheory.integral_fn_integral_sub
@@ -378,7 +379,7 @@ theorem lintegral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → ℝ≥0�
     (hg : Integrable g (μ.prod ν)) :
     (∫⁻ x, F (∫ y, f (x, y) - g (x, y) ∂ν) ∂μ) =
       ∫⁻ x, F ((∫ y, f (x, y) ∂ν) - ∫ y, g (x, y) ∂ν) ∂μ := by
-  refine' lintegral_congr_ae _
+  refine lintegral_congr_ae ?_
   filter_upwards [hf.prod_right_ae, hg.prod_right_ae] with _ h2f h2g
   simp [integral_sub h2f h2g]
 #align measure_theory.lintegral_fn_integral_sub MeasureTheory.lintegral_fn_integral_sub
@@ -419,13 +420,13 @@ theorem integral_integral_sub' ⦃f g : α × β → E⦄ (hf : Integrable f (μ
 theorem continuous_integral_integral :
     Continuous fun f : α × β →₁[μ.prod ν] E => ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
   rw [continuous_iff_continuousAt]; intro g
-  refine'
+  refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
-      (eventually_of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) _
+      (eventually_of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
   simp_rw [←
     lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]
-  refine' tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖₊ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => ennnorm_integral_le_lintegral_ennnorm _
   show
@@ -441,7 +442,7 @@ theorem continuous_integral_integral :
     ext
     rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral]
   rw [← ofReal_zero]
-  refine' (continuous_ofReal.tendsto 0).comp _
+  refine (continuous_ofReal.tendsto 0).comp ?_
   rw [← tendsto_iff_norm_sub_tendsto_zero]; exact tendsto_id
 #align measure_theory.continuous_integral_integral MeasureTheory.continuous_integral_integral
 
@@ -505,9 +506,7 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
   exact integral_prod f hf
 #align measure_theory.set_integral_prod MeasureTheory.setIntegral_prod
 
-@[deprecated]
-alias set_integral_prod :=
-  setIntegral_prod -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")] alias set_integral_prod := setIntegral_prod
 
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
@@ -533,9 +532,7 @@ theorem setIntegral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L
   apply integral_prod_mul
 #align measure_theory.set_integral_prod_mul MeasureTheory.setIntegral_prod_mul
 
-@[deprecated]
-alias set_integral_prod_mul :=
-  setIntegral_prod_mul -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")] alias set_integral_prod_mul := setIntegral_prod_mul
 
 theorem integral_fun_snd (f : β → E) : ∫ z, f z.2 ∂μ.prod ν = (μ univ).toReal • ∫ y, f y ∂ν := by
   simpa using integral_prod_smul (1 : α → ℝ) f

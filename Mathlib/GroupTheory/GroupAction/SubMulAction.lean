@@ -25,6 +25,7 @@ For most uses, typically `Submodule R M` is more powerful.
 * `SubMulAction.mulAction'` - the `MulAction S M` transferred to the subtype when
   `IsScalarTower S R M`.
 * `SubMulAction.isScalarTower` - the `IsScalarTower S R M` transferred to the subtype.
+* `SubMulAction.inclusion` — the inclusion of a submulaction, as an equivariant map
 
 ## Tags
 
@@ -44,7 +45,7 @@ scalar action of `R` on `M`.
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead.
 -/
-class SMulMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [SMul R M] [SetLike S M] :
+class SMulMemClass (S : Type*) (R : outParam Type*) (M : Type*) [SMul R M] [SetLike S M] :
     Prop where
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
@@ -55,7 +56,7 @@ additive action of `R` on `M`.
 
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead. -/
-class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [SetLike S M] :
+class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetLike S M] :
     Prop where
   /-- Addition by a scalar with an element of the set remains in the set. -/
   vadd_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r +ᵥ m ∈ s
@@ -77,9 +78,11 @@ lemma AddSubgroupClass.zsmulMemClass {S M : Type*} [SubNegMonoid M] [SetLike S M
 
 namespace SetLike
 
-variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
-
 open SMulMemClass
+
+section SMul
+
+variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
@@ -132,6 +135,35 @@ theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike 
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 #align set_like.forall_smul_mem_iff SetLike.forall_smul_mem_iff
 
+end SMul
+
+section OfTower
+
+variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
+    [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] (s : S)
+
+-- lower priority so other instances are found first
+/-- A subset closed under the scalar action inherits that action. -/
+@[to_additive "A subset closed under the additive action inherits that action."]
+instance (priority := 900) smul' : SMul M s where
+  smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
+
+@[to_additive (attr := simp, norm_cast)]
+protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
+    r • (⟨x, hx⟩ : s) = ⟨r • x, smul_one_smul N r x ▸ smul_mem _ hx⟩ :=
+  rfl
+
+@[to_additive]
+theorem smul_of_tower_def (r : M) (x : s) :
+    r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
+  rfl
+
+end OfTower
+
 end SetLike
 
 /-- A SubMulAction is a set which is closed under scalar multiplication.  -/
@@ -163,8 +195,7 @@ theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 
 /-- Copy of a sub_mul_action with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M
-    where
+protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M where
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'
 #align sub_mul_action.copy SubMulAction.copy
@@ -215,7 +246,9 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →[R] M := by refine' { toFun := Subtype.val.. }; simp [val_smul]
+protected def subtype : p →[R] M where
+  toFun := Subtype.val
+  map_smul' := by simp [val_smul]
 #align sub_mul_action.subtype SubMulAction.subtype
 
 @[simp]
@@ -419,5 +452,35 @@ variable (p : SubMulAction R M) {s : S} {x y : M}
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
   p.smul_mem_iff' (Units.mk0 s s0)
 #align sub_mul_action.smul_mem_iff SubMulAction.smul_mem_iff
+
+end SubMulAction
+
+namespace SubMulAction
+
+/- The inclusion of a SubMulaction, as an equivariant map -/
+variable {M α : Type*} [Monoid M] [MulAction M α]
+
+
+/-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
+def inclusion (s : SubMulAction M α) : s →[M] α where
+-- The inclusion map of the inclusion of a SubMulAction
+  toFun := Subtype.val
+-- The commutation property
+  map_smul' _ _ := rfl
+
+theorem inclusion.toFun_eq_coe (s : SubMulAction M α) :
+    s.inclusion.toFun = Subtype.val := rfl
+
+theorem inclusion.coe_eq (s : SubMulAction M α) :
+    ⇑s.inclusion = Subtype.val := rfl
+
+lemma image_inclusion (s : SubMulAction M α) :
+    Set.range s.inclusion = s.carrier := by
+  rw [inclusion.coe_eq]
+  exact Subtype.range_coe
+
+lemma inclusion_injective (s : SubMulAction M α) :
+    Function.Injective s.inclusion :=
+  Subtype.val_injective
 
 end SubMulAction

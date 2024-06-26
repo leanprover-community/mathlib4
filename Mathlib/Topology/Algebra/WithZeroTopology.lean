@@ -61,7 +61,7 @@ theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
 theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠ 0) Iio := by
   rw [nhds_zero]
-  refine' hasBasis_biInf_principal _ ⟨1, one_ne_zero⟩
+  refine hasBasis_biInf_principal ?_ ⟨1, one_ne_zero⟩
   exact directedOn_iff_directed.2 (Monotone.directed_ge fun a b hab => Iio_subset_Iio hab)
 #align with_zero_topology.has_basis_nhds_zero WithZeroTopology.hasBasis_nhds_zero
 
@@ -173,7 +173,7 @@ scoped instance (priority := 100) t5Space : T5Space Γ₀ where
     · rwa [(isOpen_iff.2 (.inl hs)).nhdsSet_eq, disjoint_principal_nhdsSet]
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₃. -/
-@[deprecated t5Space] lemma t3Space : T3Space Γ₀ := inferInstance
+@[deprecated t5Space (since := "2023-03-17")] lemma t3Space : T3Space Γ₀ := inferInstance
 #align with_zero_topology.t3_space WithZeroTopology.t3Space
 
 /-- The topology on a linearly ordered group with zero element adjoined makes it a topological
@@ -193,8 +193,8 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       rintro ⟨x, y⟩ ⟨hx : x < γ, hy : y < 1⟩
       exact (mul_lt_mul₀ hx hy).trans_eq (mul_one γ)
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
-      refine' (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => _
-      refine' ⟨γ / y, div_ne_zero hγ hy, fun x hx => _⟩
+      refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => ?_
+      refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩
       calc x * y < γ / y * y := mul_lt_right₀ _ hx hy
       _ = γ := div_mul_cancel₀ _ hy
     · have hy : y ≠ 0 := ((zero_lt_iff.mpr hx).trans_le hle).ne'

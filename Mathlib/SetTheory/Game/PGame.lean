@@ -3,7 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
@@ -1353,16 +1353,16 @@ theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
 #align pgame.move_left_neg_symm SetTheory.PGame.moveLeft_neg_symm
 
-theorem moveLeft_neg_symm' {x : PGame} (i) : x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) :=
-  by simp
+theorem moveLeft_neg_symm' {x : PGame} (i) :
+    x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
 #align pgame.move_left_neg_symm' SetTheory.PGame.moveLeft_neg_symm'
 
 theorem moveRight_neg_symm {x : PGame} (i) :
     x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
 #align pgame.move_right_neg_symm SetTheory.PGame.moveRight_neg_symm
 
-theorem moveRight_neg_symm' {x : PGame} (i) : x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) :=
-  by simp
+theorem moveRight_neg_symm' {x : PGame} (i) :
+    x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 #align pgame.move_right_neg_symm' SetTheory.PGame.moveRight_neg_symm'
 
 /-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
@@ -1481,7 +1481,7 @@ instance : Add PGame.{u} :=
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
     have y := mk yl yr yL yR
-    refine' ⟨Sum xl yl, Sum xr yr, Sum.rec _ _, Sum.rec _ _⟩
+    refine ⟨Sum xl yl, Sum xr yr, Sum.rec ?_ ?_, Sum.rec ?_ ?_⟩
     · exact fun i => IHxl i y
     · exact IHyl
     · exact fun i => IHxr i y
@@ -1515,7 +1515,7 @@ instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpt
 /-- `x + 0` has exactly the same moves as `x`. -/
 def addZeroRelabelling : ∀ x : PGame.{u}, x + 0 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, _, _⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
+    refine ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, ?_, ?_⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
       apply addZeroRelabelling
 termination_by x => x
 #align pgame.add_zero_relabelling SetTheory.PGame.addZeroRelabelling
@@ -1528,7 +1528,7 @@ theorem add_zero_equiv (x : PGame.{u}) : x + 0 ≈ x :=
 /-- `0 + x` has exactly the same moves as `x`. -/
 def zeroAddRelabelling : ∀ x : PGame.{u}, 0 + x ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, _, _⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
+    refine ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, ?_, ?_⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
       apply zeroAddRelabelling
 #align pgame.zero_add_relabelling SetTheory.PGame.zeroAddRelabelling
 
@@ -1654,7 +1654,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     ⟨L₂, R₂, hL₂, hR₂⟩ => by
     let Hwx : ⟨wl, wr, wL, wR⟩ ≡r ⟨xl, xr, xL, xR⟩ := ⟨L₁, R₁, hL₁, hR₁⟩
     let Hyz : ⟨yl, yr, yL, yR⟩ ≡r ⟨zl, zr, zL, zR⟩ := ⟨L₂, R₂, hL₂, hR₂⟩
-    refine' ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, _, _⟩ <;> rintro (i | j)
+    refine ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, ?_, ?_⟩ <;> rintro (i | j)
     · exact (hL₁ i).addCongr Hyz
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
@@ -1679,7 +1679,7 @@ def Relabelling.subCongr {w x y z : PGame} (h₁ : w ≡r x) (h₂ : y ≡r z) :
 /-- `-(x + y)` has exactly the same moves as `-x + -y`. -/
 def negAddRelabelling : ∀ x y : PGame, -(x + y) ≡r -x + -y
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.refl _, Equiv.refl _, _, _⟩
+    refine ⟨Equiv.refl _, Equiv.refl _, ?_, ?_⟩
     all_goals
       exact fun j =>
         Sum.casesOn j (fun j => negAddRelabelling _ _) fun j =>
@@ -1694,7 +1694,7 @@ theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
 /-- `x + y` has exactly the same moves as `y + x`. -/
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
   | mk xl xr xL xR, mk yl yr yL yR => by
-    refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
+    refine ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, ?_, ?_⟩ <;> rintro (_ | _) <;>
       · dsimp
         apply addCommRelabelling
 termination_by x y => (x, y)
@@ -1711,7 +1711,7 @@ theorem add_comm_equiv {x y : PGame} : x + y ≈ y + x :=
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ⟨zl, zr, zL, zR⟩ => by
-    refine' ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, _, _⟩
+    refine ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, ?_, ?_⟩
     · rintro (⟨i | i⟩ | i)
       · apply addAssocRelabelling
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yL i)
@@ -1732,12 +1732,12 @@ theorem add_left_neg_le_zero : ∀ x : PGame, -x + x ≤ 0
     le_zero.2 fun i => by
       cases' i with i i
       · -- If Left played in -x, Right responds with the same move in x.
-        refine' ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), _⟩
+        refine ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), ?_⟩
         convert @add_left_neg_le_zero (xR i)
         apply add_moveRight_inr
       · -- If Left in x, Right responds with the same move in -x.
         dsimp
-        refine' ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), _⟩
+        refine ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), ?_⟩
         convert @add_left_neg_le_zero (xL i)
         apply add_moveRight_inl
 #align pgame.add_left_neg_le_zero SetTheory.PGame.add_left_neg_le_zero
@@ -1769,18 +1769,18 @@ theorem sub_self_equiv : ∀ (x : PGame), x - x ≈ 0 :=
 
 private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y + z
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
-    refine' le_def.2 ⟨fun i => _, fun i => _⟩ <;> cases' i with i i
+    refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> cases' i with i i
     · rw [le_def] at h
       cases' h with h_left h_right
       rcases h_left i with (⟨i', ih⟩ | ⟨j, jh⟩)
       · exact Or.inl ⟨toLeftMovesAdd (Sum.inl i'), add_le_add_right' ih⟩
-      · refine' Or.inr ⟨toRightMovesAdd (Sum.inl j), _⟩
+      · refine Or.inr ⟨toRightMovesAdd (Sum.inl j), ?_⟩
         convert add_le_add_right' jh
         apply add_moveRight_inl
     · exact Or.inl ⟨@toLeftMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
     · rw [le_def] at h
       rcases h.right i with (⟨i, ih⟩ | ⟨j', jh⟩)
-      · refine' Or.inl ⟨toLeftMovesAdd (Sum.inl i), _⟩
+      · refine Or.inl ⟨toLeftMovesAdd (Sum.inl i), ?_⟩
         convert add_le_add_right' ih
         apply add_moveLeft_inl
       · exact Or.inr ⟨toRightMovesAdd (Sum.inl j'), add_le_add_right' jh⟩

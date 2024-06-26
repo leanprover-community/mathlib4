@@ -5,7 +5,7 @@ Authors: Chris Hughes, Scott Morrison
 -/
 import Archive.Examples.IfNormalization.Statement
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Data.List.AList
 
 /-!

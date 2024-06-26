@@ -42,7 +42,7 @@ integral, center mass, average value
 
 open ENNReal MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Function
 
-open scoped Topology BigOperators ENNReal Convex
+open scoped Topology ENNReal Convex
 
 variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
@@ -188,16 +188,16 @@ theorem measure_mul_setLaverage (f : α → ℝ≥0∞) (h : μ s ≠ ∞) :
 
 theorem laverage_union (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ) :
     ⨍⁻ x in s ∪ t, f x ∂μ =
-      μ s / (μ s + μ t) * ⨍⁻ x in s, f x ∂μ + μ t / (μ s + μ t) * ⨍⁻ x in t, f x ∂μ :=
-  by rw [restrict_union₀ hd ht, laverage_add_measure, restrict_apply_univ, restrict_apply_univ]
+      μ s / (μ s + μ t) * ⨍⁻ x in s, f x ∂μ + μ t / (μ s + μ t) * ⨍⁻ x in t, f x ∂μ := by
+  rw [restrict_union₀ hd ht, laverage_add_measure, restrict_apply_univ, restrict_apply_univ]
 #align measure_theory.laverage_union MeasureTheory.laverage_union
 
 theorem laverage_union_mem_openSegment (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
     (hs₀ : μ s ≠ 0) (ht₀ : μ t ≠ 0) (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞) :
     ⨍⁻ x in s ∪ t, f x ∂μ ∈ openSegment ℝ≥0∞ (⨍⁻ x in s, f x ∂μ) (⨍⁻ x in t, f x ∂μ) := by
-  refine'
+  refine
     ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), ENNReal.div_pos hs₀ <| add_ne_top.2 ⟨hsμ, htμ⟩,
-      ENNReal.div_pos ht₀ <| add_ne_top.2 ⟨hsμ, htμ⟩, _, (laverage_union hd ht).symm⟩
+      ENNReal.div_pos ht₀ <| add_ne_top.2 ⟨hsμ, htμ⟩, ?_, (laverage_union hd ht).symm⟩
   rw [← ENNReal.add_div,
     ENNReal.div_self (add_eq_zero.not.2 fun h => hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
 #align measure_theory.laverage_union_mem_open_segment MeasureTheory.laverage_union_mem_openSegment
@@ -209,8 +209,8 @@ theorem laverage_union_mem_segment (hd : AEDisjoint μ s t) (ht : NullMeasurable
   · rw [← ae_eq_empty] at hs₀
     rw [restrict_congr_set (hs₀.union EventuallyEq.rfl), empty_union]
     exact right_mem_segment _ _ _
-  · refine'
-      ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), zero_le _, zero_le _, _, (laverage_union hd ht).symm⟩
+  · refine
+      ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), zero_le _, zero_le _, ?_, (laverage_union hd ht).symm⟩
     rw [← ENNReal.add_div,
       ENNReal.div_self (add_eq_zero.not.2 fun h => hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
 #align measure_theory.laverage_union_mem_segment MeasureTheory.laverage_union_mem_segment
@@ -343,7 +343,7 @@ theorem measure_smul_average [IsFiniteMeasure μ] (f : α → E) :
   rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, integral_zero_measure, average_zero_measure, smul_zero]
   · rw [average_eq, smul_inv_smul₀]
-    refine' (ENNReal.toReal_pos _ <| measure_ne_top _ _).ne'
+    refine (ENNReal.toReal_pos ?_ <| measure_ne_top _ _).ne'
     rwa [Ne, measure_univ_eq_zero]
 #align measure_theory.measure_smul_average MeasureTheory.measure_smul_average
 
@@ -418,9 +418,9 @@ theorem average_union_mem_segment {f : α → E} {s t : Set α} (hd : AEDisjoint
   · rw [← ae_eq_empty] at hse
     rw [restrict_congr_set (hse.union EventuallyEq.rfl), empty_union]
     exact right_mem_segment _ _ _
-  · refine'
+  · refine
       mem_segment_iff_div.mpr
-        ⟨(μ s).toReal, (μ t).toReal, ENNReal.toReal_nonneg, ENNReal.toReal_nonneg, _,
+        ⟨(μ s).toReal, (μ t).toReal, ENNReal.toReal_nonneg, ENNReal.toReal_nonneg, ?_,
           (average_union hd ht hsμ htμ hfs hft).symm⟩
     calc
       0 < (μ s).toReal := ENNReal.toReal_pos hse hsμ
@@ -519,19 +519,19 @@ variable {N : Set α} {f : α → ℝ}
 measure. -/
 theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : IntegrableOn f s μ) :
     0 < μ ({x ∈ s | f x ≤ ⨍ a in s, f a ∂μ}) := by
-  refine' pos_iff_ne_zero.2 fun H => _
+  refine pos_iff_ne_zero.2 fun H => ?_
   replace H : (μ.restrict s) {x | f x ≤ ⨍ a in s, f a ∂μ} = 0 := by
     rwa [restrict_apply₀, inter_comm]
     exact AEStronglyMeasurable.nullMeasurableSet_le hf.1 aestronglyMeasurable_const
   haveI := Fact.mk hμ₁.lt_top
-  refine' (integral_sub_average (μ.restrict s) f).not_gt _
-  refine' (setIntegral_pos_iff_support_of_nonneg_ae _ _).2 _
-  · refine' eq_bot_mono (measure_mono fun x hx => _) H
+  refine (integral_sub_average (μ.restrict s) f).not_gt ?_
+  refine (setIntegral_pos_iff_support_of_nonneg_ae ?_ ?_).2 ?_
+  · refine measure_mono_null (fun x hx ↦ ?_) H
     simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_setOf_eq, not_le] at hx
     exact hx.le
   · exact hf.sub (integrableOn_const.2 <| Or.inr <| lt_top_iff_ne_top.2 hμ₁)
   · rwa [pos_iff_ne_zero, inter_comm, ← diff_compl, ← diff_inter_self_eq_diff, measure_diff_null]
-    refine' eq_bot_mono (measure_mono _) (measure_inter_eq_zero_of_restrict H)
+    refine measure_mono_null ?_ (measure_inter_eq_zero_of_restrict H)
     exact inter_subset_inter_left _ fun a ha => (sub_eq_zero.1 <| of_not_not ha).le
 #align measure_theory.measure_le_set_average_pos MeasureTheory.measure_le_setAverage_pos
 
@@ -669,7 +669,7 @@ theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
     ← measure_diff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
-  refine' this.trans_le (measure_mono _)
+  refine this.trans_le (measure_mono ?_)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rwa [← toReal_laverage hf, toReal_le_toReal hx (setLaverage_lt_top h).ne] at hfx
@@ -691,7 +691,7 @@ theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   simp_rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
   rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
     measure_diff_null (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
-  refine' this.trans_le (measure_mono _)
+  refine this.trans_le (measure_mono ?_)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rw [← toReal_laverage hg.aemeasurable, toReal_le_toReal (setLaverage_lt_top hint).ne hx] at hfx
@@ -848,7 +848,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
   have L0 : Tendsto (fun i ↦ ∫ y, g i y • (f y - c) ∂μ) l (𝓝 0) := by
     have := hf.const_mul K
     simp only [mul_zero] at this
-    refine' squeeze_zero_norm' _ this
+    refine squeeze_zero_norm' ?_ this
     filter_upwards [g_supp, g_bound, f_int, (tendsto_order.1 hg).1 _ zero_lt_one]
       with i hi h'i h''i hi_int
     have mu_ai : μ (a i) < ∞ := by
@@ -864,8 +864,8 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       have : g i x = 0 := by rw [← Function.nmem_support]; exact fun h ↦ hx (hi h)
       simp [this]
     rw [← setIntegral_eq_integral_of_forall_compl_eq_zero this (μ := μ)]
-    refine' integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity)) _
-      (eventually_of_forall (fun x ↦ _))
+    refine integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity)) ?_
+      (eventually_of_forall (fun x ↦ ?_))
     · apply (Integrable.sub h''i _).norm.const_mul
       change IntegrableOn (fun _ ↦ c) (a i) μ
       simp [integrableOn_const, mu_ai]
