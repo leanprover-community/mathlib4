@@ -1688,7 +1688,7 @@ variable (α γ : Type*) [TopologicalSpace α] [NormedRing γ]
 def CompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
   r x y := ∃ (z : α →ᵇ γ), (HasCompactSupport z ∧ x = y + z)
   iseqv := {
-    refl := fun _ ↦ ⟨0, by simp, by simp⟩
+    refl := fun _ ↦ ⟨0, HasCompactSupport.zero, by simp⟩
     symm := by
       rintro x y ⟨z, hz, rfl⟩
       exact ⟨-z, HasCompactSupport.neg hz, by simp⟩
