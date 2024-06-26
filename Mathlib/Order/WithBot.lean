@@ -1067,6 +1067,16 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
   rfl
 #align with_bot.of_dual_map WithBot.ofDual_map
 
+theorem forall_iff_eq_bot [Preorder α] {x : WithBot α} :
+    (∀ y : α, x < y) ↔ x = ⊥ := by
+  symm
+  refine ⟨fun h ↦ h ▸ fun y ↦ WithBot.bot_lt_coe y, ?_⟩
+  intro h
+  by_contra h'
+  rcases WithBot.ne_bot_iff_exists.1 h' with ⟨y, hy⟩
+  specialize h y
+  exact ne_of_lt h (Eq.symm hy)
+
 section LE
 
 variable [LE α] {a b : α}
@@ -1263,6 +1273,15 @@ theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=
 @[simp]
 theorem coe_top_lt [OrderTop α] {x : WithTop α} : (⊤ : α) < x ↔ x = ⊤ :=
   WithBot.lt_coe_bot (α := αᵒᵈ)
+
+theorem forall_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ := by
+  symm
+  refine ⟨fun h ↦ h ▸ fun y ↦ coe_lt_top y, ?_⟩
+  intro h
+  by_contra h'
+  rcases ne_top_iff_exists.1 h' with ⟨y, hy⟩
+  specialize h y
+  exact ne_of_lt h hy
 
 end Preorder
 
