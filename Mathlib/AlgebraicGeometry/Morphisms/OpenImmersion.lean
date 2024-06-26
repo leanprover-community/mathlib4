@@ -114,7 +114,7 @@ lemma isomorphisms_isLocalAtTarget :
     rw [MorphismProperty.isomorphisms, isIso_iff_isOpenImmersion,
       IsOpenImmersion.openCover_iff 𝒰, TopCat.epi_iff_surjective]
     refine ⟨fun _ ↦ inferInstance, fun x ↦ ?_⟩
-    obtain ⟨y, e⟩ := 𝒰.Covers x
+    obtain ⟨y, e⟩ := 𝒰.covers x
     use (inv (Limits.pullback.snd (f := f) (g := 𝒰.map (𝒰.f x))) ≫ Limits.pullback.fst).1.base y
     rwa [← Scheme.comp_val_base_apply, Category.assoc, Limits.pullback.condition,
       IsIso.inv_hom_id_assoc]
