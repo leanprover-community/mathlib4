@@ -246,7 +246,6 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
           congr_fun ((s.ι.app (Opposite.op (P.elementsMk X x))).naturality f) (𝟙 _) }
   fac s j := by
     ext X x
-    dsimp
     let φ : j.unop ⟶ Functor.elementsMk P X ((yonedaEquiv.symm j.unop.2).app X x) := ⟨x.op, rfl⟩
     simpa using congr_fun (congr_app (s.ι.naturality φ.op).symm X) (𝟙 _)
   uniq s m hm := by
