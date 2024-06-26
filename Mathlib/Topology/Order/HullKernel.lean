@@ -25,9 +25,9 @@ structure topology also occur in the literature.
 
 ## Main statements
 
-- `PrimitiveSpectrum.relativeLowerIsTopologicalBasis` - the sets `T ↓∩ (Ici a)` form a basis for the
+- `PrimitiveSpectrum.relativeLowerIsTopologicalBasis` - the sets `T ↓∩ Ici a` form a basis for the
   relative lower topology on `T`.
-- `PrimitiveSpectrum.isOpen_iff` - for a complete lattice, the sets `T ↓∩ (Ici a)` are the relative
+- `PrimitiveSpectrum.isOpen_iff` - for a complete lattice, the sets `T ↓∩ Ici a` are the relative
   topology.
 - `PrimitiveSpectrum.gc` - the kernel and the hull form a Galois connection
 - `PrimitiveSpectrum.gi` - when `T` generates `α`, the Galois connection becomes an insertion.
@@ -71,10 +71,10 @@ namespace PrimitiveSpectrum
 
 -- b ⊓ c ≤ a → b ≤ a ∨ c ≤ a
 
-/- The set of relative-closed sets of the form `T ↓∩ (Ici a)` for some `a` in `α` is closed under
+/- The set of relative-closed sets of the form `T ↓∩ Ici a` for some `a` in `α` is closed under
 pairwise union. -/
 lemma ici_union_ici_eq (a b : α) :
-    (T ↓∩ (Ici a)) ∪ (T ↓∩ (Ici b)) = (T ↓∩ (Ici (a ⊓ b))) := by
+    (T ↓∩ Ici a) ∪ (T ↓∩ Ici b) = (T ↓∩ Ici (a ⊓ b)) := by
   ext p
   constructor <;> intro h
   · cases' h with h1 h3
@@ -91,10 +91,10 @@ lemma ici_compl_inter_ici_compl_eq (a b : α) :
 variable [DecidableEq α] [OrderTop α]
 
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
-relative-closed set of the form `T ↓∩ (Ici a)` where `a = ⊓ F`. -/
+relative-closed set of the form `T ↓∩ Ici a` where `a = ⊓ F`. -/
 open Finset in
 lemma upperClosureFinite_eq  (F : Finset α) :
-    T ↓∩ (↑(upperClosure F.toSet)) = T ↓∩ (Ici (inf F id)) := by
+    T ↓∩ ↑(upperClosure F.toSet) = T ↓∩ Ici (inf F id) := by
   rw [coe_upperClosure]
   induction' F using Finset.induction_on with a F' _ I4
   · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
@@ -149,7 +149,7 @@ variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
 namespace PrimitiveSpectrum
 
-lemma sInter_Ici_eq (S : Set α) : ⋂₀ { T ↓∩ (Ici a) | a ∈ S } = T ↓∩ (Ici (sSup S)) := by
+lemma sInter_Ici_eq (S : Set α) : ⋂₀ { T ↓∩ Ici a | a ∈ S } = T ↓∩ Ici (sSup S) := by
   rw [le_antisymm_iff]
   simp only [le_eq_subset, subset_sInter_iff, mem_setOf_eq, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
@@ -186,8 +186,8 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
     · rw [ha]
 
 /- When `α` is complete, a set is Lower topology relative-closed if and only if it is of the form
-`T ↓∩ (Ici a)` for some `a` in `α`.-/
-lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici a) := by
+`T ↓∩ Ici a` for some `a` in `α`.-/
+lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
   rw [← isOpen_compl_iff, (isOpen_iff hT)]
   constructor <;> (intro h; cases' h with a ha; use a)
   · rw [preimage_compl, compl_inj_iff] at ha
@@ -195,11 +195,11 @@ lemma isClosed_iff (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ (Ici 
   · rw [preimage_compl, compl_inj_iff]
     exact ha
 
-/- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ (Ici a)` (hull) form an antitone Galois
+/- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ Ici a` (hull) form an antitone Galois
 connection betwen the subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
-    (fun S => toDual (sInf (S : (Set α)))) (fun a => T ↓∩ (Ici (ofDual a))) := fun S a => by
+    (fun S => toDual (sInf (S : (Set α)))) (fun a => T ↓∩ Ici (ofDual a)) := fun S a => by
   constructor
   · intro h b hbS
     rw [mem_preimage, mem_Ici]
@@ -212,7 +212,7 @@ theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
       exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
     exact fun b _ hbS => h hbS
 
-lemma gc_closureOperator_eq (S : Set T) : gc.closureOperator S = T ↓∩ (Ici (sInf S)) := by
+lemma gc_closureOperator_eq (S : Set T) : gc.closureOperator S = T ↓∩ Ici (sInf S) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
@@ -230,7 +230,7 @@ When `T` is order generating, the kernel and the hull form a Galois insertion
 -/
 def gi : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (sInf (S : (Set α))))
-    (fun a => T ↓∩ (Ici (OrderDual.ofDual a))) :=
+    (fun a => T ↓∩ Ici (OrderDual.ofDual a)) :=
   gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
     cases' hG a with S hS
@@ -252,7 +252,7 @@ lemma gc_closureOperator_of_isClosed {C : Set T} (h : IsClosed C) : gc.closureOp
     (kernel_hull_eq hG)]
 
 lemma lowerTopology_closureOperator_eq (S : Set T) :
-    (TopologicalSpace.Closeds.gc (α := T)).closureOperator S  = T ↓∩ (Ici (sInf S)) := by
+    (TopologicalSpace.Closeds.gc (α := T)).closureOperator S  = T ↓∩ Ici (sInf S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ (T ↓∩ Ici (sInf ↑S)) := by
       constructor
