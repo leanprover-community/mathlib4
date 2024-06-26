@@ -417,7 +417,7 @@ theorem Quotient.mkₐ_ker (I : Ideal A) : RingHom.ker (Quotient.mkₐ R₁ I : 
   Ideal.mk_ker
 #align ideal.quotient.mkₐ_ker Ideal.Quotient.mkₐ_ker
 
-lemma cast_eq_cast_iff_sub_mem {I : Ideal A}
+lemma Quotient.cast_eq_cast_iff_sub_mem {I : Ideal A}
     (x y : A) : (Algebra.cast x : A ⧸ I) = y ↔ x - y ∈ I := Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _
 
 variable {R₁}
