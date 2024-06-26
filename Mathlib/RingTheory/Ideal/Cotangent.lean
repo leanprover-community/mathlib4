@@ -196,9 +196,10 @@ theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
 local instance Algebra.kerSquareLift : Algebra (R ⧸ (RingHom.ker (algebraMap R A) ^ 2)) A :=
   (Algebra.ofId R A).kerSquareLift.toAlgebra
 
-instance : IsScalarTower S (S' ⧸ (RingHom.ker (algebraMap S' R) ^ 2)) R :=
+instance [Algebra A B] [IsScalarTower R A B] :
+    IsScalarTower R (A ⧸ (RingHom.ker (algebraMap A B) ^ 2)) B :=
   IsScalarTower.of_algebraMap_eq'
-    (IsScalarTower.toAlgHom S S' R).kerSquareLift.comp_algebraMap.symm
+    (IsScalarTower.toAlgHom R A B).kerSquareLift.comp_algebraMap.symm
 
 /-- The quotient ring of `I ⧸ I ^ 2` is `R ⧸ I`. -/
 def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
