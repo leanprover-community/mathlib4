@@ -179,10 +179,7 @@ lemma isOpen_iff (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)�
     aesop
   · cases' h with a ha
     use (Ici a)ᶜ
-    constructor
-    · rw [isOpen_compl_iff]
-      exact isClosed_Ici
-    · rw [ha]
+    exact ⟨isOpen_compl_iff.mpr isClosed_Ici, ha.symm⟩
 
 /- When `α` is complete, a set is Lower topology relative-closed if and only if it is of the form
 `T ↓∩ Ici a` for some `a` in `α`.-/
