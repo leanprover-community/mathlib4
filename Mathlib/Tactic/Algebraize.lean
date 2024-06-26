@@ -1,4 +1,6 @@
 import Mathlib.RingTheory.RingHom.FiniteType
+import Mathlib.Util.AddRelatedDecl
+import Mathlib.Lean.Meta.Simp
 import Lean
 
 open Lean Elab Tactic Term Qq
@@ -77,6 +79,23 @@ def addFiniteTypeInstance (t : Expr) : TacticM Unit := withMainContext do
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
+def toRingHomiveTypes : Array Expr := sorry
+
+-- WIP on searching through local context for types in a given array
+def addInstanceFromContext : TacticM Unit := withMainContext do
+  let ctx ← MonadLCtx.getLCtx
+  ctx.forM fun decl => do
+    if decl.isImplementationDetail then
+      return
+    let declExpr := decl.toExpr
+    let declType ← Lean.Meta.inferType declExpr
+    -- This is optional, but could make things faster if these all turn out to be props.
+    if ← Meta.isProp declType then
+      for i in toRingHomiveTypes do
+        if ← Meta.isDefEq i declType then
+          return
+    return
+
 syntax "algebraize" (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic
@@ -103,3 +122,12 @@ example {A B C D : Type*}
     True := by
   algebraize f g h (g.comp f) (h.comp g) (h.comp (g.comp f))
   trivial
+
+/-
+Ideas to do:
+- Search through local context to match types in given array toRingHomiveTypes
+-- (I've started on this as addInstanceFromContext)
+- Define toRingHomiveTypes through some attribute thing
+- Try to add alghoms
+
+-/
