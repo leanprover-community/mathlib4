@@ -701,22 +701,29 @@ def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
 
 end CompatibleScalar
 
-variable (α)
-
 /-- The monoid of endomorphisms.
 
 Note that this is generalized by `CategoryTheory.End` to categories other than `Type u`. -/
-protected def Function.End := α → α
+protected structure Function.End (α : Type*) where
+  toFun : α → α
 #align function.End Function.End
 
+variable (α)
+
+instance : FunLike (Function.End α) α α where
+  coe := Function.End.toFun
+  coe_injective' := fun ⟨f⟩ ⟨g⟩ => by simp_rw [Function.End.mk.injEq, imp_self]
+
 instance : Monoid (Function.End α) where
-  one := id
-  mul := (· ∘ ·)
+  one := ⟨id⟩
+  mul f g := ⟨f ∘ g⟩
   mul_assoc f g h := rfl
   mul_one f := rfl
   one_mul f := rfl
-  npow n f := f^[n]
-  npow_succ n f := Function.iterate_succ _ _
+  npow n f := ⟨f.toFun^[n]⟩
+  npow_succ n f := DFunLike.ext' <| by
+    simp_rw [Function.iterate_succ, DFunLike.coe_fn_eq]
+    rfl
 
 instance : Inhabited (Function.End α) := ⟨1⟩
 
@@ -745,24 +752,22 @@ instance Function.End.applyMulAction : MulAction (Function.End α) α where
 @[simp] lemma Function.End.smul_def (f : Function.End α) (a : α) : f • a = f a := rfl
 #align function.End.smul_def Function.End.smul_def
 
---TODO - This statement should be somethting like `toFun (f * g) = toFun f ∘ toFun g`
-lemma Function.End.mul_def (f g : Function.End α) : (f * g) = f ∘ g := rfl
+lemma Function.End.mul_def (f g : Function.End α) : ⇑(f * g) = f ∘ g := rfl
 
---TODO - This statement should be somethting like `toFun 1 = id`
-lemma Function.End.one_def : (1 : Function.End α) = id := rfl
+lemma Function.End.one_def : ⇑(1 : Function.End α) = id := rfl
 
 /-- `Function.End.applyMulAction` is faithful. -/
 instance Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α :=
-  ⟨fun {_ _} ↦ funext⟩
+  ⟨fun {_ _} ↦ DFunLike.ext _ _⟩
 #align function.End.apply_has_faithful_smul Function.End.apply_FaithfulSMul
 
 /-- The monoid hom representing a monoid action.
 
 When `M` is a group, see `MulAction.toPermHom`. -/
 def MulAction.toEndHom [Monoid M] [MulAction M α] : M →* Function.End α where
-  toFun := (· • ·)
-  map_one' := funext (one_smul M)
-  map_mul' x y := funext (mul_smul x y)
+  toFun m := ⟨(m • ·)⟩
+  map_one' := DFunLike.ext _ _ (one_smul M)
+  map_mul' x y := DFunLike.ext _ _ (mul_smul x y)
 #align mul_action.to_End_hom MulAction.toEndHom
 
 /-- The monoid action induced by a monoid hom to `Function.End α`
