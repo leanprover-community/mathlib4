@@ -69,8 +69,6 @@ variable {T : Set α} (hT : ∀ p ∈ T, InfPrime p)
 
 namespace PrimitiveSpectrum
 
--- b ⊓ c ≤ a → b ≤ a ∨ c ≤ a
-
 /- The set of relative-closed sets of the form `T ↓∩ Ici a` for some `a` in `α` is closed under
 pairwise union. -/
 lemma ici_union_ici_eq (a b : α) :
