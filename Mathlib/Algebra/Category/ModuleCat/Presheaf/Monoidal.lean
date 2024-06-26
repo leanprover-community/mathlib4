@@ -49,6 +49,8 @@ lemma tensor_ext₃' {f g : (F ⊗ G) ⊗ H ⟶ K} (h : ∀ m n p, f (m ⊗ₜ n
     f = g :=
   TensorProduct.ext_threefold h
 
+lemma leftUnitor_apply (a : 𝟙_ (ModuleCat R)) (b : F) : (λ_ F).hom (a ⊗ₜ b) = a • b := rfl
+
 end ModuleCat
 
 variable {C : Type*} [Category C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
@@ -127,21 +129,33 @@ def associator :
     erw [comp_apply])
 
 def leftUnitor : tensorObj (unit _) F ≅ F :=
-  isoMk'' (fun X ↦ λ_ (F.obj' X)) sorry
+  isoMk'' (fun X ↦ λ_ (F.obj' X)) (by
+    intros X Y f
+    dsimp only [Functor.comp_obj, Functor.comp_map, evaluation_obj, ModuleCat.of_coe]
+    apply ModuleCat.tensor_ext
+    intro a b
+    -- times out unless we bump `maxHeartbeats`:
+    -- erw [comp_apply, comp_apply]
+    -- erw [ModuleCat.restrictScalars.map_apply]
+    -- erw [restrictionApp_apply]
+    -- erw [ModuleCat.leftUnitor_apply, ModuleCat.leftUnitor_apply]
+    -- erw [restrictionApp_apply]
+    sorry
+    )
 
 def rightUnitor : tensorObj F (unit _) ≅ F :=
   isoMk'' (fun X ↦ ρ_ (F.obj' X)) sorry
 
 instance monoidalCategoryStructPresheafOfModules :
     MonoidalCategoryStruct (PresheafOfModules (R ⋙ forget₂ _ _)) where
-  tensorObj F G := tensorObj F G
-  whiskerLeft F _ _ g := whiskerLeft F g
-  whiskerRight f H := whiskerRight f H
-  tensorHom f g := tensorHom f g
+  tensorObj := tensorObj
+  whiskerLeft := whiskerLeft
+  whiskerRight := whiskerRight
+  tensorHom := tensorHom
   tensorUnit := unit _
-  associator F G H := associator F G H
-  leftUnitor F := leftUnitor F
-  rightUnitor F := rightUnitor F
+  associator := associator
+  leftUnitor := leftUnitor
+  rightUnitor := rightUnitor
 
 variable {F G H}
 
