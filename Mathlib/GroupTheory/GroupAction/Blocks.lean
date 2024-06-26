@@ -207,7 +207,7 @@ theorem isBlock_top : IsBlock G (⊤ : Set X) :=
 
 variable {X}
 
-/-- Is B is a block for an action G, it is a block for the action of any subgroup of G -/
+/-- Is `B` is a block for an action of `G`, it is a block for the action of any subgroup of `G` -/
 theorem IsBlock.subgroup {H : Subgroup G} {B : Set X} (hfB : IsBlock G B) :
     IsBlock H B := by
   rw [IsBlock.def_one]; rintro ⟨g, _⟩
@@ -390,9 +390,8 @@ section Stabilizer
   - subgroups of G containing `stabilizer G a`.
   (Wielandt, th. 7.5) -/
 
-/-- The orbit of a under a subgroup containing the stabilizer of a
- is a block -/
-theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
+/-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/
+theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
   simp_rw [IsBlock.def_one, or_iff_not_imp_right, Set.not_disjoint_iff]
   rintro g ⟨-, ⟨-, ⟨h₁, rfl⟩, h⟩, ⟨h₂, rfl⟩⟩
@@ -401,9 +400,8 @@ theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
   rw [mul_mem_cancel_left h₂⁻¹.2, mul_mem_cancel_right h₁.2] at hH
   rw [← Subgroup.coe_mk H g hH, ← H.smul_def, smul_orbit (⟨g, hH⟩ : H) a]
 
-/-- If B is a block containing a , then the stabilizer of B contains the stabilizer of a -/
-theorem IsBlock.stabilizer_le
-    {B : Set X} (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
+/-- If `B` is a block containing `a`, then the stabilizer of `B` contains the stabilizer of `a` -/
+theorem IsBlock.stabilizer_le {B : Set X} (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
     stabilizer G a ≤ stabilizer G B := by
   intro g hg
   apply Or.resolve_right (hB.smul_eq_or_disjoint g)
@@ -411,10 +409,10 @@ theorem IsBlock.stabilizer_le
   refine ⟨a, ?_, ha⟩
   rw [← hg, Set.smul_mem_smul_set_iff]; exact ha
 
-/-- A block is the orbit of a under its stabilizer -/
+/-- A block containing `a` is the orbit of `a` under its stabilizer -/
 theorem IsBlock.orbit_stabilizer_eq
-    [htGX : IsPretransitive G X] {B : Set X} (hB : IsBlock G B)
-    {a : X} (ha : a ∈ B) : MulAction.orbit (stabilizer G B) a = B := by
+    [htGX : IsPretransitive G X] {B : Set X} (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
+    MulAction.orbit (stabilizer G B) a = B := by
   ext x
   constructor
   · rintro ⟨⟨k, k_mem⟩, rfl⟩
@@ -427,8 +425,7 @@ theorem IsBlock.orbit_stabilizer_eq
 
 /-- A subgroup containing the stabilizer of `a`
   is the stabilizer of the orbit of `a` under that subgroup -/
-theorem stabilizer_orbit_eq {a : X} {H : Subgroup G}
-    (hH : stabilizer G a ≤ H) :
+theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H) :
     stabilizer G (orbit H a) = H := by
   ext g
   constructor
@@ -442,13 +439,13 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G}
 
 variable (G)
 
-/-- Order equivalence between blocks in X containing a point a
- and subgroups of G containing the stabilizer of a (Wielandt, th. 7.5)-/
+/-- Order equivalence between blocks in `X` containing a point `a`
+ and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)-/
 def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
   invFun := fun ⟨H, hH⟩ =>
-    ⟨MulAction.orbit H a, MulAction.mem_orbit_self a, IsBlock.of_orbit' hH⟩
+    ⟨MulAction.orbit H a, MulAction.mem_orbit_self a, IsBlock.of_orbit hH⟩
   left_inv := fun ⟨B, ha, hB⟩ =>
     (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha)
   right_inv := fun ⟨H, hH⟩ =>
