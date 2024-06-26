@@ -96,7 +96,7 @@ section LocallyFinite
 variable [Preorder α] [LocallyFiniteOrder α]
 
 instance : IsStronglyAtomic α where
-  exists_covBy_le_of_lt a b hab := by
+  exists_covBy_le_of_lt' a b hab := by
     obtain ⟨x, hxmem, hx⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
       ⟨b, by simpa [LocallyFiniteOrder.finset_mem_Ioc]⟩
     simp only [LocallyFiniteOrder.finset_mem_Ioc, and_imp] at hxmem hx
