@@ -241,11 +241,11 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
     ≤ (∫⁻ x, f x ∂.pi μ) ^ p := by
   have h0 : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
   have h1 : (0:ℝ) < #ι - 1 := by linarith
-  have h3 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
-  have h4 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
-  have h5 : p = 1 + 1 / (↑#ι - 1) := by field_simp; rw [mul_comm, hp.sub_one_mul_conj]
-  rw [h5]
-  convert lintegral_mul_prod_lintegral_pow_le μ h3 h4 hf using 2
+  have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
+  have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
+  have h4 : p = 1 + 1 / (↑#ι - 1) := by field_simp; rw [mul_comm, hp.sub_one_mul_conj]
+  rw [h4]
+  convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
   field_simp
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
@@ -307,7 +307,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 
 open FiniteDimensional
 
-set_option linter.unusedVariables false in
 variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
