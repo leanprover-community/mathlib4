@@ -42,17 +42,18 @@ open Finset
 
 namespace SimpleGraph
 
-variable {V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj] {n r : ℕ}
+variable {V : Type*} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj] {n r : ℕ}
 
+variable (G) in
 /-- An `r + 1`-cliquefree graph is `r`-Turán-maximal if any other `r + 1`-cliquefree graph on
 the same vertex set has the same or fewer number of edges. -/
 def IsTuranMaximal (r : ℕ) : Prop :=
   G.CliqueFree (r + 1) ∧ ∀ (H : SimpleGraph V) [DecidableRel H.Adj],
     H.CliqueFree (r + 1) → H.edgeFinset.card ≤ G.edgeFinset.card
 
-variable {G} {H : SimpleGraph V}
-
 section Defs
+
+variable {H : SimpleGraph V}
 
 lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r + 1)) :
     G ≤ H ↔ G = H := by
@@ -270,26 +271,29 @@ theorem nonempty_iso_turanGraph : Nonempty (G ≃g turanGraph (Fintype.card V) r
 
 end IsTuranMaximal
 
-variable (hr : 0 < r)
-
 /-- **Turán's theorem**, reverse direction.
 
-Any graph isomorphic to `turanGraph n r` is itself Turán-maximal. -/
-theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) : G.IsTuranMaximal r := by
+Any graph isomorphic to `turanGraph n r` is itself Turán-maximal if `0 < r`. -/
+theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTuranMaximal r := by
   obtain ⟨J, _, j⟩ := exists_isTuranMaximal (V := V) hr
   obtain ⟨g⟩ := j.nonempty_iso_turanGraph
   rw [f.card_eq, Fintype.card_fin] at g
   use (turanGraph_cliqueFree (n := n) hr).comap f,
     fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 H cf
 
+/-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
+theorem IsTuranMaximal.iso {W : Type*} [Fintype W] [DecidableEq W] {H : SimpleGraph W}
+    [DecidableRel H.Adj] (h : G.IsTuranMaximal r) (f : G ≃g H) (hr : 0 < r) : H.IsTuranMaximal r :=
+  isTuranMaximal_of_iso (h.nonempty_iso_turanGraph.some.comp f.symm) hr
+
 /-- For `0 < r`, `turanGraph n r` is Turán-maximal. -/
-theorem isTuranMaximal_turanGraph : (turanGraph n r).IsTuranMaximal r :=
-  isTuranMaximal_of_iso hr Iso.refl
+theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal r :=
+  isTuranMaximal_of_iso Iso.refl hr
 
 /-- **Turán's theorem**. `turanGraph n r` is, up to isomorphism, the unique
 `r + 1`-cliquefree Turán-maximal graph on `n` vertices. -/
-theorem isTuranMaximal_iff_nonempty_iso_turanGraph :
+theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
     G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (Fintype.card V) r) :=
-  ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso hr h.some⟩
+  ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩
 
 end SimpleGraph
