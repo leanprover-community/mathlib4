@@ -376,7 +376,7 @@ compactly-supported function `u` on a normed space `E` of finite dimension `n �
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
-theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
+theorem snorm_le_snorm_fderiv_one (hE : 2 ≤ finrank ℝ E)
     {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
     ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
@@ -414,7 +414,7 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
   rcases hp.eq_or_lt with rfl|hp
   -- the case `p = 1`
-  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv F' μ h0n hn
+  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one F' μ h0n hn
     refine ⟨C, @fun u hu h2u ↦ ?_⟩
     convert hC hu h2u
     ext
@@ -447,7 +447,7 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
     field_simp [this]; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv ℝ μ h0n hn
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one ℝ μ h0n hn
   refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
@@ -598,7 +598,7 @@ is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 
 Note: The codomain of `u` needs to be a finite dimensional normed space.
 -/
-theorem snorm_le_snorm_fderiv' [FiniteDimensional ℝ F]
+theorem snorm_le_snorm_fderiv [FiniteDimensional ℝ F]
     {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) {s : Set E} (hs : Bornology.IsBounded s) :
     ∃ C : ℝ≥0, ∀ (u : E → F) (_hu : ContDiff ℝ 1 u) (_h2u : u.support ⊆ s),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) p μ := by
