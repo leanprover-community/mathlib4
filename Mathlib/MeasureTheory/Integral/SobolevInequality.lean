@@ -791,24 +791,6 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
       by rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
 
--- do we want this?
-
-/-- A space is linearly equivalent to an inner product space, but not necessarily isometric to one.
--/
-class WeaklyInnerProductSpaceable.{v, u} (𝕜 : Type v) (E : Type u)
-    [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop :=
-  (out : Nonempty (Σ (F : Type (max u v)) (_ : NormedAddCommGroup F) (_ : InnerProductSpace 𝕜 F),
-    E ≃L[𝕜] F))
-
-instance {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] :
-    WeaklyInnerProductSpaceable 𝕜 E :=
-  ⟨⟨ULift E, by infer_instance, sorry, sorry⟩⟩
-
-instance {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [FiniteDimensional 𝕜 E] :
-    WeaklyInnerProductSpaceable 𝕜 E :=
-  ⟨⟨ULift (EuclideanSpace 𝕜 <| Fin <| finrank 𝕜 E), by infer_instance, by sorry, sorry⟩⟩
-
 set_option linter.unusedVariables false in
 variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
@@ -919,3 +901,24 @@ theorem snorm_le_snorm_fderiv' [FiniteDimensional ℝ F]
   norm_cast
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   positivity
+
+
+
+-- do we want this? We can use it to have a common generalization of
+-- snorm_le_snorm_fderiv_of_eq_inner and snorm_le_snorm_fderiv_of_eq
+
+/-- A space is linearly equivalent to an inner product space, but not necessarily isometric to one.
+-/
+class WeaklyInnerProductSpaceable.{v, u} (𝕜 : Type v) (E : Type u)
+    [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop :=
+  (out : Nonempty (Σ (F : Type (max u v)) (_ : NormedAddCommGroup F) (_ : InnerProductSpace 𝕜 F),
+    E ≃L[𝕜] F))
+
+instance {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] :
+    WeaklyInnerProductSpaceable 𝕜 E :=
+  ⟨⟨ULift E, by infer_instance, sorry, sorry⟩⟩
+
+instance {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [FiniteDimensional 𝕜 E] :
+    WeaklyInnerProductSpaceable 𝕜 E :=
+  ⟨⟨ULift (EuclideanSpace 𝕜 <| Fin <| finrank 𝕜 E), by infer_instance, by sorry, sorry⟩⟩
