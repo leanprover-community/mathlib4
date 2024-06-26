@@ -10,6 +10,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Topology.Bornology.BoundedOperation
+import Mathlib.RingTheory.Congruence.Basic
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -1679,26 +1680,84 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 
 end
 
-variable {𝕜 : Type*} [NormedField 𝕜] [TopologicalSpace α] [NormedRing γ]
+section
 
-/-- The subtype of compactly supported functions as an ideal. -/
-def CompactlySupportedBoundedContinuousFunction : Ideal (α →ᵇ γ) where
-  carrier := { f : α →ᵇ γ | HasCompactSupport f }
-  add_mem' := by
-    intro _ _ h₁ h₂
-    exact h₁.add h₂
-  zero_mem' := by simp [HasCompactSupport, tsupport]
-  smul_mem' := by
-    intro _ _ h
-    rw [mem_setOf_eq, smul_eq_mul, coe_mul]
-    exact h.mul_left
+variable (α γ : Type*) [TopologicalSpace α] [NormedRing γ]
+
+/-- The ideal of compactly supported functions as `RingCon`. -/
+def CompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
+  r x y := ∃ (z : α →ᵇ γ), (HasCompactSupport z ∧ x = y + z)
+  iseqv := {
+    refl := by
+      intro x
+      use 0
+      constructor
+      · rw [HasCompactSupport]
+        have : tsupport (0 : α →ᵇ γ) = ∅ := by
+          rw [← closure_empty, tsupport]
+          simp only [coe_zero, support_zero', closure_empty]
+        rw [this]
+        exact isCompact_empty
+      · exact Eq.symm (AddLeftCancelMonoid.add_zero x)
+    symm := by
+      intro x y h
+      obtain ⟨z, hz⟩ := h
+      use -z
+      constructor
+      · rw [HasCompactSupport, tsupport]
+        simp only [coe_neg, support_neg']
+        exact hz.1
+      · exact eq_add_neg_iff_add_eq.mpr (Eq.symm hz.2)
+    trans := by
+      intro x y z hxy hyz
+      obtain ⟨w1, hw1⟩ := hxy
+      obtain ⟨w2, hw2⟩ := hyz
+      use w1 + w2
+      constructor
+      · simp only [coe_add]
+        exact HasCompactSupport.add hw1.1 hw2.1
+      · rw [hw1.2, hw2.2]
+        rw [add_assoc, add_comm w2 w1]
+  }
+  add' := by
+    intro w x y z hwx hyz
+    rw [Setoid.r] at hwx
+    rw [Setoid.r] at hyz
+    simp only
+    simp only at hwx
+    simp only at hyz
+    obtain ⟨a, ha⟩ := hwx
+    obtain ⟨b, hb⟩ := hyz
+    use a + b
+    constructor
+    · simp only [coe_add]
+      exact HasCompactSupport.add ha.1 hb.1
+    · rw [ha.2, hb.2]
+      abel
+  mul' := by
+    intro w x y z hwx hyz
+    rw [Setoid.r] at hwx
+    rw [Setoid.r] at hyz
+    simp only
+    simp only at hwx
+    simp only at hyz
+    obtain ⟨a, ha⟩ := hwx
+    obtain ⟨b, hb⟩ := hyz
+    use a * z + a * b + x * b
+    constructor
+    · simp only [coe_add, coe_mul]
+      apply HasCompactSupport.add
+      · apply HasCompactSupport.add
+        · exact HasCompactSupport.mul_right ha.1
+        · exact HasCompactSupport.mul_right ha.1
+      · exact HasCompactSupport.mul_left hb.1
+    · rw [ha.2, hb.2]
+      noncomm_ring
 
 @[inherit_doc]
-scoped[BoundedContinuousFunction] notation (priority := 2000)
+scoped[BoundedContinuousFunction] notation
   "C_cb(" α ", " γ ")" => CompactlySupportedBoundedContinuousFunction α γ
 
-@[inherit_doc]
-scoped[BoundedContinuousFunction] notation α " →C_cb " γ =>
-  CompactlySupportedBoundedContinuousFunction α γ
+end
 
 end BoundedContinuousFunction
