@@ -2542,8 +2542,7 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
     (st_dis : Disjoint s t) (t_cl : IsClosed t) (t_gd : IsGδ₂ t) : HasSeparatingCover s t := by
   obtain ⟨T, T_open, T_count, T_int⟩ := t_gd
   rcases T.eq_empty_or_nonempty with rfl | T_nonempty
-  · rw [sInter_empty] at T_int
-    rw [T_int] at st_dis
+  · rw [T_int, sInter_empty] at st_dis
     rw [(s.disjoint_univ).mp st_dis]
     exact t.hasSeparatingCover_empty_left
   obtain ⟨g, g_surj⟩ := T_count.exists_surjective T_nonempty
