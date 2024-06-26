@@ -325,8 +325,9 @@ namespace FiniteAdeleRing
 /-- The finite adèle ring of `R`, regarded as a `K`-subalgebra of the
 product of the local completions of `K`.
 
-Note that this definition exists to streamline the proof that the finite adèles are an algebra over `K`,
-rather than to express their relationship to `K_hat R K` which is essentially a detail of their construction.
+Note that this definition exists to streamline the proof that the finite adèles are an algebra
+over `K`, rather than to express their relationship to `K_hat R K` which is essentially a
+detail of their construction.
 -/
 def subalgebra : Subalgebra K (K_hat R K) where
   carrier := {x : K_hat R K | x.IsFiniteAdele}
