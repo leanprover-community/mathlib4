@@ -192,6 +192,15 @@ def OpenCover.pullbackCover {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 #align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
 
+/-- The family of morphisms from the pullback cover to the original cover. -/
+def OpenCover.pullbackHom {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) :
+    (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i :=
+  pullback.snd
+
+@[reassoc (attr := simp)]
+lemma OpenCover.pullbackHom_map {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) :
+    𝒰.pullbackHom f i ≫ 𝒰.map i = (𝒰.pullbackCover f).map i ≫ f := pullback.condition.symm
+
 /-- Given an open cover on `X`, we may pull them back along a morphism `f : W ⟶ X` to obtain
 an open cover of `W`. This is similar to `Scheme.OpenCover.pullbackCover`, but here we
 take `pullback (𝒰.map x) f` instead of `pullback f (𝒰.map x)`. -/
