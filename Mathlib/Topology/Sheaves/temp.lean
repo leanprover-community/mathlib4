@@ -205,7 +205,8 @@ lemma germ_smul_germ (r : ℛ.presheaf.obj $ op U) (m : ℳ.1.obj $ op V) :
   · apply mem_openSetModule
   · assumption
   · assumption
-  · apply germ_sectionOnOpenSetModule
   · apply germ_sectionOnOpenSetRing
+  · apply germ_sectionOnOpenSetModule
+
 
 end modules
