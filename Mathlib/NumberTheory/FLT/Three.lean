@@ -238,7 +238,6 @@ lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
 
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
-  classical
   have hm := S'.multiplicity_lambda_c_finite
   suffices 2 ≤ (multiplicity ((hζ.toInteger - 1)) S'.c).get hm by
     obtain ⟨x, hx⟩ := multiplicity.pow_multiplicity_dvd hm
@@ -280,7 +279,6 @@ open PartENat in
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :
     λ ^ 2 ∣ S'.a + S'.b ∨ λ ^ 2 ∣ S'.a + η * S'.b ∨ λ ^ 2 ∣ S'.a + η ^ 2 * S'.b := by
-  classical
   by_contra! h
   rcases h with ⟨h1, h2, h3⟩
   rw [← multiplicity.multiplicity_lt_iff_not_dvd] at h1 h2 h3
