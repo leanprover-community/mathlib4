@@ -196,7 +196,7 @@ theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
 #align equiv.perm.card_support_cycle_of_pos_iff Equiv.Perm.support_cycleOf_nonempty
 
 @[deprecated support_cycleOf_nonempty (since := "2024-06-16")]
-theorem card_support_cycleOf_pos_iff : 0 < card (cycleOf f x).support ↔ f x ≠ x := by
+theorem card_support_cycleOf_pos_iff [DecidableEq α] [Fintype α] : 0 < card (cycleOf f x).support ↔ f x ≠ x := by
   rw [card_pos, support_cycleOf_nonempty]
 
 theorem pow_mod_orderOf_cycleOf_apply (f : Perm α) [DecidableRel f.SameCycle] (n : ℕ) (x : α) :
