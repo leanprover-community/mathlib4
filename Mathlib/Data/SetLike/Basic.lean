@@ -36,7 +36,7 @@ structure MySubobject (X : Type*) [ObjectTypeclass X] :=
 
 namespace MySubobject
 
-variables {X : Type*} [ObjectTypeclass X] {x : X}
+variable {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
@@ -48,7 +48,7 @@ instance : SetLike (MySubobject X) X :=
 /-- Copy of a `MySubobject` with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. See Note [range copy pattern]. -/
 protected def copy (p : MySubobject X) (s : Set X) (hs : s = ↑p) : MySubobject X :=
-  { carrier := s,
+  { carrier := s
     op_mem' := hs.symm ▸ p.op_mem' }
 
 @[simp] lemma coe_copy (p : MySubobject X) (s : Set X) (hs : s = ↑p) :
@@ -94,7 +94,7 @@ This ensures your subclass will not have issues with synthesis of the `[Mul M]` 
 before the value of `M` is known.
 -/
 @[notation_class * carrier Simps.findCoercionArgs]
-class SetLike (A : Type*) (B : outParam <| Type*) where
+class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
@@ -187,7 +187,7 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
 #align set_like.coe_eq_coe SetLike.coe_eq_coe
 
 -- Porting note: this is not necessary anymore due to the way coercions work
- #noalign set_like.coe_mk
+#noalign set_like.coe_mk
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=

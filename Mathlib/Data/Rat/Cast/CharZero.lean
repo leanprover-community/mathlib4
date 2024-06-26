@@ -3,9 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Data.Int.CharZero
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Rat.Cast.Defs
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -28,7 +27,7 @@ variable [DivisionRing α]
 @[simp, norm_cast]
 theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ => by
-    refine' ⟨fun h => _, congr_arg _⟩
+    refine ⟨fun h => ?_, congr_arg _⟩
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
     have d₂a : (d₂ : α) ≠ 0 := Nat.cast_ne_zero.2 d₂0
     rw [num_den', num_den'] at h ⊢
@@ -36,8 +35,9 @@ theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
       simp only [divInt_ofNat, Int.cast_ofNat, ne_eq, Nat.cast_eq_zero, d₁0, d₂0,
         not_false_eq_true] at h ⊢
     rwa [eq_div_iff_mul_eq d₂a, division_def, mul_assoc, (d₁.cast_commute (d₂ : α)).inv_left₀.eq, ←
-      mul_assoc, ← division_def, eq_comm, eq_div_iff_mul_eq d₁a, eq_comm, ← Int.cast_ofNat d₁, ←
-      Int.cast_mul, ← Int.cast_ofNat d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0] at h
+      mul_assoc, ← division_def, eq_comm, eq_div_iff_mul_eq d₁a, eq_comm, ← Int.cast_natCast d₁, ←
+      Int.cast_mul, ← Int.cast_natCast d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0]
+      at h
 #align rat.cast_inj Rat.cast_inj
 
 theorem cast_injective [CharZero α] : Function.Injective ((↑) : ℚ → α)
@@ -119,7 +119,7 @@ theorem cast_zpow (q : ℚ) (n : ℤ) : ((q ^ n : ℚ) : α) = (q : α) ^ n :=
 
 @[norm_cast]
 theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
-  simp only [divInt_eq_div, cast_div, cast_coe_int]
+  simp only [divInt_eq_div, cast_div, cast_intCast]
 #align rat.cast_mk Rat.cast_mk
 
 @[simp, norm_cast]
@@ -130,6 +130,3 @@ theorem cast_pow (q : ℚ) (k : ℕ) : ↑(q ^ k) = (q : α) ^ k :=
 end WithDivRing
 
 end Rat
-
--- Guard against import creep regression.
-assert_not_exists zpow_add₀

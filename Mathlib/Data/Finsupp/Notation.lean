@@ -32,6 +32,23 @@ As a result, if multiple match arms coincide, the last one takes precedence. -/
 def fun₀ := leading_parser:maxPrec
   ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
+/-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
+local syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
+/-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
+local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
+
+/-- `Finsupp` elaborator for `single₀`. -/
+@[term_elab stxSingle₀]
+def elabSingle₀ : Elab.Term.TermElab
+  | `(term| single₀ $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.single $i $x)) ty
+  | _ => fun _ => Elab.throwUnsupportedSyntax
+
+/-- `Finsupp` elaborator for `update₀`. -/
+@[term_elab stxUpdate₀]
+def elabUpdate₀ : Elab.Term.TermElab
+  | `(term| update₀ $f $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.update $f $i $x)) ty
+  | _ => fun _ => Elab.throwUnsupportedSyntax
+
 macro_rules
   | `(term| fun₀ $x:matchAlt*) => do
     let mut stx : Term ← `(0)
@@ -41,9 +58,9 @@ macro_rules
         match xii with
         | `(matchAltExpr| | $pat => $val) =>
           if fst then
-            stx ← `(Finsupp.single $pat $val)
+            stx ← `(single₀ $pat $val)
           else
-            stx ← `(Finsupp.update $stx $pat $val)
+            stx ← `(update₀ $stx $pat $val)
           fst := false
         | _ => Macro.throwUnsupported
     pure stx
@@ -63,7 +80,7 @@ def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Display `Finsupp` using `fun₀` notation. -/
-unsafe instance {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
+unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
   reprPrec f p :=
     if f.support.card = 0 then
       "0"
@@ -72,5 +89,12 @@ unsafe instance {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) wher
         Std.Format.join (f.support.val.unquot.map <|
           fun a => " | " ++ repr a ++ " => " ++ repr (f a))
       if p ≥ leadPrec then Format.paren ret else ret
+#align finsupp.has_repr Finsupp.instRepr
+
+-- lean4#3497 causes a PANIC if we put this in `Mathlib.Data.DFinsupp.Notation` where it belongs
+extend_docs Finsupp.fun₀ after
+  "If the expected type is `Π₀ i, α i` (`DFinsupp`)
+  and `Mathlib.Data.DFinsupp.Notation` is imported,
+  then this is notation for `DFinsupp.single` and  `Dfinsupp.update` instead."
 
 end Finsupp

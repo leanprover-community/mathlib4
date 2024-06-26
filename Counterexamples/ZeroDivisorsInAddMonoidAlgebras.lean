@@ -61,10 +61,10 @@ if `A` is a group. -/
 theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n : ℕ} (a : A)
     (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
     ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
-  refine' ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, _, _⟩
+  refine ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, ?_, ?_⟩
   · exact sub_ne_zero.mpr (by simpa [single, AddMonoidAlgebra, single_eq_single_iff])
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
-      sub_eq_zero, add_zero, ← succ_nsmul, Nat.sub_add_cancel (one_le_two.trans n2), na]
+      sub_eq_zero, add_zero, ← succ_nsmul', Nat.sub_add_cancel (one_le_two.trans n2), na]
 #align counterexample.zero_divisors_of_periodic Counterexample.zero_divisors_of_periodic
 
 theorem single_zero_one {R A} [Semiring R] [Zero A] :
@@ -75,32 +75,32 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
 non-zero zero-divisors.  The elements are easy to write down:
-`∑ i in Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `R[A]`
+`∑ i ∈ Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `R[A]`
 whose product is zero.
 
 In particular, this applies whenever the additive monoid `A` is an additive group with a non-zero
 torsion element. -/
 theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a : A)
     (o2 : 2 ≤ addOrderOf a) : ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
-  refine'
-    ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, _, _,
-      _⟩
+  refine
+    ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, ?_, ?_,
+      ?_⟩
   · apply_fun fun x : R[A] => x 0
-    refine' ne_of_eq_of_ne (_ : (_ : R) = 1) one_ne_zero
+    refine ne_of_eq_of_ne (?_ : (_ : R) = 1) one_ne_zero
     dsimp only; rw [Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
       rw [single_pow, one_pow, single_eq_of_ne]
       exact nsmul_ne_zero_of_lt_addOrderOf' b0 (Finset.mem_range.mp hb)
-    · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, le_zero_iff,
+    · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, Nat.le_zero,
         false_imp_iff]
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
   · apply_fun fun x : R[A] => x 0
-    refine' sub_ne_zero.mpr (ne_of_eq_of_ne (_ : (_ : R) = 0) _)
+    refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0) ?_)
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
           (nsmul_ne_zero_of_lt_addOrderOf' one_ne_zero (Nat.succ_le_iff.mp o2))
-      simp only [a0, single_eq_of_ne, Ne.def, not_false_iff]
+      simp only [a0, single_eq_of_ne, Ne, not_false_iff]
     · simpa only [single_eq_same] using zero_ne_one
   · convert Commute.geom_sum₂_mul (α := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
     · rw [single_zero_one, one_pow, mul_one]
@@ -131,10 +131,10 @@ def List.dropUntil {α} [DecidableEq α] : List α → List α → List α
   | l, a :: as => ((a::as).getRest l).getD (dropUntil l as)
 #align counterexample.list.drop_until Counterexample.List.dropUntil
 
-open Lean Elab in
+open Lean Elab Command in
 /-- `guard_decl na mod` makes sure that the declaration with name `na` is in the module `mod`.
 ```lean
-guard_decl Nat.nontrivial Mathlib.Data.Nat.Basic -- does nothing
+guard_decl Nat.nontrivial Mathlib.Algebra.Ring.Nat -- does nothing
 
 guard_decl Nat.nontrivial Not.In.Here
 -- the module Not.In.Here is not imported!
@@ -143,7 +143,7 @@ guard_decl Nat.nontrivial Not.In.Here
 This test makes sure that the comment referring to this example is in the file claimed in the
 doc-module to this counterexample. -/
 elab "guard_decl" na:ident mod:ident : command => do
-  let dcl ← resolveGlobalConstNoOverloadWithInfo na
+  let dcl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo na
   let mdn := mod.getId
   let env ← getEnv
   let .some dcli := env.getModuleIdxFor? dcl | unreachable!
@@ -250,23 +250,22 @@ example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 
 
 example {α} [Zero α] :
     2 • (Finsupp.single 0 1 : α →₀ F) = Finsupp.single 0 1 ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
-  ⟨smul_single _ _ _, by simp [Ne.def, Finsupp.single_eq_zero, z01.ne]⟩
+  ⟨smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
 
 end F
 
 /-- A Type that does not have `UniqueProds`. -/
 example : ¬UniqueProds ℕ := by
   rintro ⟨h⟩
-  refine' not_not.mpr (h (Finset.singleton_nonempty 0) (Finset.insert_nonempty 0 {1})) _
+  refine not_not.mpr (h (Finset.singleton_nonempty 0) (Finset.insert_nonempty 0 {1})) ?_
   simp [UniqueMul, not_or]
-  exact ⟨⟨0, 1, by simp⟩, ⟨0, 0, by simp⟩⟩
 
 /-- Some Types that do not have `UniqueSums`. -/
 example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
   haveI : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
   haveI : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
   rintro ⟨h⟩
-  refine' not_not.mpr (h Finset.univ_nonempty Finset.univ_nonempty) _
+  refine not_not.mpr (h Finset.univ_nonempty Finset.univ_nonempty) ?_
   suffices ∀ x y : ZMod n, ∃ x' y' : ZMod n, x' + y' = x + y ∧ (x' = x → ¬y' = y) by
     simpa [UniqueAdd]
   exact fun x y => ⟨x - 1, y + 1, sub_add_add_cancel _ _ _, by simp⟩

@@ -60,7 +60,7 @@ General algebra:
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
-    quotient ring: 'Ideal.instHasQuotientIdealToSemiringToCommSemiring'
+    quotient ring: 'Ideal.instHasQuotient'
     prime ideal: 'Ideal.IsPrime'
     maximal ideal: 'Ideal.IsMaximal'
     Chinese remainder theorem: 'Ideal.quotientInfRingEquivPiQuotient'
@@ -84,7 +84,7 @@ General algebra:
     roots of a polynomial: 'Polynomial.roots'
     multiplicity: 'Polynomial.rootMultiplicity'
     separable polynomial: 'Polynomial.Separable'
-    $K[X]$ is Euclidean: 'Polynomial.instEuclideanDomainPolynomialToSemiringToDivisionSemiringToSemifield'
+    $K[X]$ is Euclidean: 'Polynomial.instEuclideanDomain'
     Hilbert basis theorem: 'Polynomial.isNoetherianRing'
     $A[X]$ has gcd and lcm if $A$ does: 'Polynomial.normalizedGcdMonoid'
     $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.uniqueFactorizationMonoid'
@@ -185,9 +185,9 @@ Linear algebra:
     eigenvector: 'Module.End.HasEigenvector'
     existence of an eigenvalue: 'Module.End.exists_eigenvalue'
   Bilinear and quadratic forms:
-    bilinear form: 'BilinForm'
-    alternating bilinear form: 'BilinForm.IsAlt'
-    symmetric bilinear form: 'BilinForm.IsSymm'
+    bilinear form: 'LinearMap.BilinForm'
+    alternating bilinear form: 'LinearMap.BilinForm.IsAlt'
+    symmetric bilinear form: 'LinearMap.BilinForm.IsSymm'
     matrix representation: 'BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticForm.polar'
@@ -234,7 +234,7 @@ Topology:
     extreme value theorem: 'IsCompact.exists_forall_le'
     limit infimum and supremum: 'order/liminf_limsup.html'
     topological group: 'TopologicalGroup'
-    completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroupCompletion'
+    completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroup'
     infinite sum: 'HasSum'
     topological ring: 'TopologicalRing'
     completion of a topological ring: 'UniformSpace.Completion.ring'
@@ -273,7 +273,7 @@ Analysis:
     Hahn-Banach theorem: 'exists_extension_norm_eq'
     dual of a normed space: 'NormedSpace.Dual'
     isometric inclusion in double dual: 'NormedSpace.inclusionInDoubleDualLi'
-    completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpaceBoundedContinuousFunctionToUniformSpaceInstPseudoMetricSpaceBoundedContinuousFunction'
+    completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpace'
 
   Hilbert spaces:
     Inner product space, over $R$ or $C$: 'InnerProductSpace'
@@ -341,7 +341,7 @@ Analysis:
     fundamental theorem of calculus, part 2: 'intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le'
     Fubini's theorem: 'MeasureTheory.integral_prod'
     product of finitely many measures: 'MeasureTheory.Measure.pi'
-    convolution: 'convolution'
+    convolution: 'MeasureTheory.convolution'
     approximation by convolution: 'ContDiffBump.convolution_tendsto_right'
     regularization by convolution: 'HasCompactSupport.contDiff_convolution_left'
     change of variables formula: 'MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul'
@@ -387,7 +387,7 @@ Probability Theory:
   Convergence of a sequence of random variables:
     convergence in probability: 'MeasureTheory.TendstoInMeasure'
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
-    almost sure convergence: 'MeasureTheory.Measure.ae'
+    almost sure convergence: 'MeasureTheory.ae'
     convergence in distribution: 'MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
     Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
@@ -453,7 +453,7 @@ Data structures:
     list: 'List'
     array: 'Array'
     # buffer: 'buffer'
-    difference list: 'Std.DList'
+    difference list: 'Batteries.DList'
     lazy list: 'LazyList'
     stream: 'Stream'''
     sequence: 'Stream''.Seq'
@@ -467,14 +467,14 @@ Data structures:
 
   Maps:
     key-value map: 'AList'
-    red-black map: 'Std.RBMap'
-    hash map: 'Std.HashMap'
+    red-black map: 'Batteries.RBMap'
+    hash map: 'Batteries.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 
   Trees:
     tree: 'Tree'
-    red-black tree: 'Std.RBSet'
+    red-black tree: 'Batteries.RBSet'
     size-balanced binary search tree: 'Ordnode'
     W type: 'WType'
 

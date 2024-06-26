@@ -269,7 +269,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl⟩
+instance FooClass_one [One α] : FooClass α := ⟨fun _ ↦ rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 
@@ -279,13 +279,13 @@ end instances
 
 /- Test that we can rewrite with definitions with the `@[to_additive]` attribute. -/
 @[to_additive]
-lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 :=
-  by rw [npowRec]
+lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
+  rw [npowRec]
 
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
-lemma optiontest (x : Option α) : x.elim .none Option.some = x :=
-  by cases x <;> rw [Option.elim]
+lemma optiontest (x : Option α) : x.elim .none Option.some = x := by
+  cases x <;> rw [Option.elim]
 
 /- Check that `to_additive` works if a `_match` aux declaration is created. -/
 @[to_additive]

@@ -133,7 +133,7 @@ protected def sum (L : Language.{u, v}) (L' : Language.{u', v'}) : Language :=
 variable (L : Language.{u, v})
 
 /-- The type of constants in a given language. -/
--- Porting note: The linter does not exist yet, according to Algebra.Hom.GroupAction.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 protected def Constants :=
   L.Functions 0
@@ -146,7 +146,7 @@ theorem constants_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
 #align first_order.language.constants_mk₂ FirstOrder.Language.constants_mk₂
 
 /-- The type of symbols in a given language. -/
--- Porting note: The linter does not exist yet, according to Algebra.Hom.GroupAction.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def Symbols :=
   Sum (Σl, L.Functions l) (Σl, L.Relations l)
@@ -365,7 +365,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 -- The former reported an error.
 variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default
@@ -412,9 +412,7 @@ set_option linter.uppercaseLean3 false in
 namespace Structure
 
 variable {c f₁ f₂ : Type u} {r₁ r₂ : Type v}
-
 variable {c' : c → M} {f₁' : f₁ → M → M} {f₂' : f₂ → M → M → M}
-
 variable {r₁' : r₁ → Set M} {r₂' : r₂ → M → M → Prop}
 
 @[simp]
@@ -669,6 +667,15 @@ theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.embedding.ext_iff FirstOrder.Language.Embedding.ext_iff
 
+theorem toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHom) := by
+  intro f f' h
+  ext
+  exact congr_fun (congr_arg (↑) h) _
+
+@[simp]
+theorem toHom_inj {f g : M ↪[L] N} : f.toHom = g.toHom ↔ f = g :=
+  ⟨fun h ↦ toHom_injective h, fun h ↦ congr_arg (·.toHom) h⟩
+
 theorem injective (f : M ↪[L] N) : Function.Injective f :=
   f.toEmbedding.injective
 #align first_order.language.embedding.injective FirstOrder.Language.Embedding.injective
@@ -799,11 +806,11 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
     map_fun' := fun n f' {x} => by
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
-      refine' Eq.trans _ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
+      refine Eq.trans ?_ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
-      refine' (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans _
+      refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 

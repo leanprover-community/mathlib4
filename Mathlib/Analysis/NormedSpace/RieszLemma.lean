@@ -29,9 +29,7 @@ open Set Metric
 open Topology
 
 variable {𝕜 : Type*} [NormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- Riesz's lemma, which usually states that it is possible to find a
@@ -61,14 +59,14 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
       have : x - y₀ + y₀ ∈ F := F.add_mem h hy₀F
       simp only [neg_add_cancel_right, sub_eq_add_neg] at this
       exact hx this
-    refine' ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt _⟩
+    refine ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt ?_⟩
     have hy₀y : y₀ + y ∈ F := F.add_mem hy₀F hy
     calc
       r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
       _ < d := by
         rw [← dist_eq_norm]
         exact (lt_div_iff' hlt).1 hxy₀
-      _ ≤ dist x (y₀ + y) := (Metric.infDist_le_dist_of_mem hy₀y)
+      _ ≤ dist x (y₀ + y) := Metric.infDist_le_dist_of_mem hy₀y
       _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
 #align riesz_lemma riesz_lemma
 
@@ -94,7 +92,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
   obtain ⟨d, d0, dxlt, ledx, -⟩ :
     ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < R ∧ R / ‖c‖ ≤ ‖d • x‖ ∧ ‖d‖⁻¹ ≤ R⁻¹ * ‖c‖ * ‖x‖ :=
     rescale_to_shell hc Rpos x0
-  refine' ⟨d • x, dxlt.le, fun y hy => _⟩
+  refine ⟨d • x, dxlt.le, fun y hy => ?_⟩
   set y' := d⁻¹ • y
   have yy' : y = d • y' := by simp [y', smul_smul, mul_inv_cancel d0]
   calc

@@ -57,7 +57,7 @@ instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Fini
 #align finite.of_subsingleton Finite.of_subsingleton
 
 -- Higher priority for `Prop`s
--- @[nolint instance_priority] -- Porting note: linter not found
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 #align finite.prop Finite.prop
@@ -133,7 +133,7 @@ instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ 
     -- "stuck at solving universe constraint" error.
     apply Finite.of_subsingleton
 
-  · refine' h.elim fun f => _
+  · refine h.elim fun f => ?_
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ DFunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite

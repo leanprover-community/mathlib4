@@ -15,9 +15,6 @@ Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
 
-set_option autoImplicit true
-
-
 /-- Propositions form a distributive lattice. -/
 instance Prop.instDistribLattice : DistribLattice Prop where
   sup := Or
@@ -39,10 +36,12 @@ instance Prop.instBoundedOrder : BoundedOrder Prop where
   bot_le := @False.elim
 #align Prop.bounded_order Prop.instBoundedOrder
 
+@[simp]
 theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
   rfl
 #align Prop.bot_eq_false Prop.bot_eq_false
 
+@[simp]
 theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 #align Prop.top_eq_true Prop.top_eq_true
@@ -75,10 +74,8 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
   classical
   constructor
   · intro h i x hf hg
-    refine' (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ => _⟩)
-      (update_le_iff.mpr ⟨hg, fun _ _ => _⟩)).1
-    · exact bot_le
-    · exact bot_le
+    exact (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ => bot_le⟩)
+      (update_le_iff.mpr ⟨hg, fun _ _ => bot_le⟩)).1
   · intro h x hf hg i
     apply h i (hf i) (hg i)
 #align pi.disjoint_iff Pi.disjoint_iff
@@ -113,6 +110,8 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
 
 -- Porting note: Lean 3 would unfold these for us, but we need to do it manually now
 section decidable_instances
+
+universe u
 variable {α : Type u}
 
 instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse

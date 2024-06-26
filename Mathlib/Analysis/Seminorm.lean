@@ -37,7 +37,7 @@ seminorm, locally convex, LCTVS
 
 open NormedField Set Filter
 
-open scoped BigOperators NNReal Pointwise Topology Uniformity
+open scoped NNReal Pointwise Topology Uniformity
 
 variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type*}
 
@@ -55,7 +55,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 /-- `SeminormClass F 𝕜 E` states that `F` is a type of seminorms on the `𝕜`-module `E`.
 
 You should extend this class when you extend `Seminorm`. -/
-class SeminormClass (F : Type*) (𝕜 E : outParam <| Type*) [SeminormedRing 𝕜] [AddGroup E]
+class SeminormClass (F : Type*) (𝕜 E : outParam Type*) [SeminormedRing 𝕜] [AddGroup E]
   [SMul 𝕜 E] [FunLike F E ℝ] extends AddGroupSeminormClass F E ℝ : Prop where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -87,7 +87,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
-    refine' le_antisymm (smul_le r x) _
+    refine le_antisymm (smul_le r x) ?_
     by_cases h : r = 0
     · simp [h, map_zero]
     rw [← mul_le_mul_left (inv_pos.mpr (norm_pos_iff.mpr h))]
@@ -282,17 +282,11 @@ end AddGroup
 section Module
 
 variable [SeminormedRing 𝕜₂] [SeminormedRing 𝕜₃]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
-
 variable {σ₂₃ : 𝕜₂ →+* 𝕜₃} [RingHomIsometric σ₂₃]
-
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomIsometric σ₁₃]
-
 variable [AddCommGroup E] [AddCommGroup E₂] [AddCommGroup E₃]
-
 variable [AddCommGroup F] [AddCommGroup G]
-
 variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module 𝕜 F] [Module 𝕜 G]
 
 -- Porting note: even though this instance is found immediately by typeclass search,
@@ -414,9 +408,9 @@ theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥
   symm
   exact congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.mul_finset_sup C s (fun i ↦ ⟨p i x, apply_nonneg _ _⟩))
 
-theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i in s, p i := by
+theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i ∈ s, p i := by
   classical
-  refine' Finset.sup_le_iff.mpr _
+  refine Finset.sup_le_iff.mpr ?_
   intro i hi
   rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
   exact bot_le
@@ -452,9 +446,7 @@ end SeminormedRing
 section SeminormedCommRing
 
 variable [SeminormedRing 𝕜] [SeminormedCommRing 𝕜₂]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
-
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
@@ -490,16 +482,16 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
         intro a x
         obtain rfl | ha := eq_or_ne a 0
         · rw [norm_zero, zero_mul, zero_smul]
-          refine'
+          refine
             ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
               -- Porting note: the following was previously `fun i => by positivity`
               (fun i => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _))
               fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
         simp_rw [Real.mul_iInf_of_nonneg (norm_nonneg a), mul_add, ← map_smul_eq_mul p, ←
           map_smul_eq_mul q, smul_sub]
-        refine'
+        refine
           Function.Surjective.iInf_congr ((a⁻¹ • ·) : E → E)
-            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => _
+            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => ?_
         rw [smul_inv_smul₀ ha] }
 
 @[simp]
@@ -561,12 +553,12 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
           · simp [Real.iSup_of_isEmpty]
           haveI : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
-          refine' ciSup_le fun i =>
+          refine ciSup_le fun i =>
             ((i : Seminorm 𝕜 E).add_le' x y).trans <| add_le_add
               -- Porting note: `f` is provided to force `Subtype.val` to appear.
               -- A type ascription on `_` would have also worked, but would have been more verbose.
-              (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun x) ⟨q x, _⟩ i)
-              (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, _⟩ i)
+              (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun x) ⟨q x, ?_⟩ i)
+              (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, ?_⟩ i)
           <;> rw [mem_upperBounds, forall_mem_range]
           <;> exact fun j => hq (mem_image_of_mem _ j.2) _
         neg' := fun x => by
@@ -599,7 +591,7 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
         le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq (mem_image_of_mem _ i.2) x⟩ ⟨p, hp⟩⟩⟩
 #align seminorm.bdd_above_iff Seminorm.bddAbove_iff
 
-protected theorem bddAbove_range_iff {p : ι → Seminorm 𝕜 E} :
+protected theorem bddAbove_range_iff {ι : Sort*} {p : ι → Seminorm 𝕜 E} :
     BddAbove (range p) ↔ ∀ x, BddAbove (range fun i ↦ p i x) := by
   rw [Seminorm.bddAbove_iff, ← range_comp, bddAbove_range_pi]; rfl
 
@@ -608,7 +600,7 @@ protected theorem coe_sSup_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
   Seminorm.coe_sSup_eq' (Seminorm.bddAbove_iff.mp hs)
 #align seminorm.coe_Sup_eq Seminorm.coe_sSup_eq
 
-protected theorem coe_iSup_eq {ι : Type*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
+protected theorem coe_iSup_eq {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
     ↑(⨆ i, p i) = ⨆ i, ((p i : Seminorm 𝕜 E) : E → ℝ) := by
   rw [← sSup_range, Seminorm.coe_sSup_eq hp]
   exact iSup_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
@@ -618,7 +610,7 @@ protected theorem sSup_apply {s : Set (Seminorm 𝕜 E)} (hp : BddAbove s) {x : 
     (sSup s) x = ⨆ p : s, (p : E → ℝ) x := by
   rw [Seminorm.coe_sSup_eq hp, iSup_apply]
 
-protected theorem iSup_apply {ι : Type*} {p : ι → Seminorm 𝕜 E}
+protected theorem iSup_apply {ι : Sort*} {p : ι → Seminorm 𝕜 E}
     (hp : BddAbove (range p)) {x : E} : (⨆ i, p i) x = ⨆ i, p i x := by
   rw [Seminorm.coe_iSup_eq hp, iSup_apply]
 
@@ -629,7 +621,7 @@ protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
 
 private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
-  refine' ⟨fun p hp x => _, fun p hp x => _⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
+  refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
     dsimp <;> rw [Seminorm.coe_sSup_eq hs₁, iSup_apply]
   · rcases hs₁ with ⟨q, hq⟩
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
@@ -754,18 +746,20 @@ theorem closedBall_sup (p : Seminorm 𝕜 E) (q : Seminorm 𝕜 E) (e : E) (r : 
 
 theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E) (r : ℝ) :
     ball (s.sup' H p) e r = s.inf' H fun i => ball (p i) e r := by
-  induction' H using Finset.Nonempty.cons_induction with a a s ha hs ih
-  · classical simp
-  · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup]
+  induction H using Finset.Nonempty.cons_induction with
+  | singleton => simp
+  | cons _ _ _ hs ih =>
+    rw [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup]
     -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
     simp only [inf_eq_inter, ih]
 #align seminorm.ball_finset_sup' Seminorm.ball_finset_sup'
 
 theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E)
     (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
-  induction' H using Finset.Nonempty.cons_induction with a a s ha hs ih
-  · classical simp
-  · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup]
+  induction H using Finset.Nonempty.cons_induction with
+  | singleton => simp
+  | cons _ _ _ hs ih =>
+    rw [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup]
     -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
     simp only [inf_eq_inter, ih]
 #align seminorm.closed_ball_finset_sup' Seminorm.closedBall_finset_sup'
@@ -821,9 +815,7 @@ end SMul
 section Module
 
 variable [Module 𝕜 E]
-
 variable [SeminormedRing 𝕜₂] [AddCommGroup E₂] [Module 𝕜₂ E₂]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
@@ -982,8 +974,8 @@ section NormedField
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {A B : Set E} {a : 𝕜}
   {r : ℝ} {x : E}
 
-theorem closedBall_iSup {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E) {r : ℝ}
-    (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
+theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
+    {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
   cases isEmpty_or_nonempty ι
   · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
     exact closedBall_bot _ hr
@@ -998,7 +990,7 @@ theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     exact empty_subset _
   · intro x
     rw [Set.mem_smul_set, Seminorm.mem_ball_zero]
-    refine' fun hx => ⟨k⁻¹ • x, _, _⟩
+    refine fun hx => ⟨k⁻¹ • x, ?_, ?_⟩
     · rwa [Seminorm.mem_ball_zero, map_smul_eq_mul, norm_inv, ←
         mul_lt_mul_left <| norm_pos_iff.mpr hk, ← mul_assoc, ← div_eq_mul_inv ‖k‖ ‖k‖,
         div_self (ne_of_gt <| norm_pos_iff.mpr hk), one_mul]
@@ -1022,10 +1014,10 @@ theorem smul_closedBall_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
 
 theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 < ‖k‖) :
     k • p.closedBall 0 r = p.closedBall 0 (‖k‖ * r) := by
-  refine' subset_antisymm smul_closedBall_subset _
+  refine subset_antisymm smul_closedBall_subset ?_
   intro x
   rw [Set.mem_smul_set, Seminorm.mem_closedBall_zero]
-  refine' fun hx => ⟨k⁻¹ • x, _, _⟩
+  refine fun hx => ⟨k⁻¹ • x, ?_, ?_⟩
   · rwa [Seminorm.mem_closedBall_zero, map_smul_eq_mul, norm_inv, ← mul_le_mul_left hk, ← mul_assoc,
       ← div_eq_mul_inv ‖k‖ ‖k‖, div_self (ne_of_gt hk), one_mul]
   rw [← smul_assoc, smul_eq_mul, ← div_eq_mul_inv, div_self (norm_pos_iff.mp hk), one_smul]
@@ -1049,19 +1041,19 @@ protected theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (ball p (0 :
 
 /-- Closed seminorm-balls at the origin are absorbent. -/
 protected theorem absorbent_closedBall_zero (hr : 0 < r) : Absorbent 𝕜 (closedBall p (0 : E) r) :=
-  (p.absorbent_ball_zero hr).subset (p.ball_subset_closedBall _ _)
+  (p.absorbent_ball_zero hr).mono (p.ball_subset_closedBall _ _)
 #align seminorm.absorbent_closed_ball_zero Seminorm.absorbent_closedBall_zero
 
 /-- Seminorm-balls containing the origin are absorbent. -/
 protected theorem absorbent_ball (hpr : p x < r) : Absorbent 𝕜 (ball p x r) := by
-  refine' (p.absorbent_ball_zero <| sub_pos.2 hpr).subset fun y hy => _
+  refine (p.absorbent_ball_zero <| sub_pos.2 hpr).mono fun y hy => ?_
   rw [p.mem_ball_zero] at hy
   exact p.mem_ball.2 ((map_sub_le_add p _ _).trans_lt <| add_lt_of_lt_sub_right hy)
 #align seminorm.absorbent_ball Seminorm.absorbent_ball
 
 /-- Seminorm-balls containing the origin are absorbent. -/
 protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedBall p x r) := by
-  refine' (p.absorbent_closedBall_zero <| sub_pos.2 hpr).subset fun y hy => _
+  refine (p.absorbent_closedBall_zero <| sub_pos.2 hpr).mono fun y hy => ?_
   rw [p.mem_closedBall_zero] at hy
   exact p.mem_closedBall.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
 #align seminorm.absorbent_closed_ball Seminorm.absorbent_closedBall
@@ -1086,7 +1078,7 @@ variable [SMul ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E)
 
 /-- A seminorm is convex. Also see `convexOn_norm`. -/
 protected theorem convexOn : ConvexOn ℝ univ p := by
-  refine' ⟨convex_univ, fun x _ y _ a b ha hb _ => _⟩
+  refine ⟨convex_univ, fun x _ y _ a b ha hb _ => ?_⟩
   calc
     p (a • x + b • y) ≤ p (a • x) + p (b • y) := map_add_le_add p _ _
     _ = ‖a • (1 : 𝕜)‖ * p x + ‖b • (1 : 𝕜)‖ * p y := by
@@ -1126,7 +1118,7 @@ variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [Norme
   [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will
-typically be used with `IsROrC 𝕜'` and `𝕜 = ℝ`. -/
+typically be used with `RCLike 𝕜'` and `𝕜 = ℝ`. -/
 protected def restrictScalars (p : Seminorm 𝕜' E) : Seminorm 𝕜 E :=
   { p with
     smul' := fun a x => by rw [← smul_one_smul 𝕜' a x, p.smul', norm_smul, norm_one, mul_one] }
@@ -1156,7 +1148,6 @@ end RestrictScalars
 section Continuity
 
 variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
-
 variable [Module 𝕝 E]
 
 /-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1343,7 +1334,7 @@ lemma rescale_to_shell (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) {ε :
     ∃d:𝕜, d ≠ 0 ∧ p (d • x) < ε ∧ (ε/‖c‖ ≤ p (d • x)) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) :=
 let ⟨_, hn⟩ := p.rescale_to_shell_zpow hc εpos hx; ⟨_, hn⟩
 
-/-- Let `p` and `q` be two seminorms on a vector space over a `nontrivially_normed_field`.
+/-- Let `p` and `q` be two seminorms on a vector space over a `NontriviallyNormedField`.
 If we have `q x ≤ C * p x` on some shell of the form `{x | ε/‖c‖ ≤ p x < ε}` (where `ε > 0`
 and `‖c‖ > 1`), then we also have `q x ≤ C * p x` for all `x` such that `p x ≠ 0`. -/
 lemma bound_of_shell
@@ -1384,7 +1375,7 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 /-- Let `p i` be a family of seminorms on `E`. Let `s` be an absorbent set in `𝕜`.
 If all seminorms are uniformly bounded at every point of `s`,
 then they are bounded in the space of seminorms. -/
-lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absorbent 𝕜 s)
+lemma bddAbove_of_absorbent {ι : Sort*} {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absorbent 𝕜 s)
     (h : ∀ x ∈ s, BddAbove (range (p · x))) : BddAbove (range p) := by
   rw [Seminorm.bddAbove_range_iff]
   intro x

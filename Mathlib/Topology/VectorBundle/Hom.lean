@@ -1,5 +1,5 @@
 /-
-Copyright © 2022 Heather Macbeth. All rights reserved.
+Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
@@ -46,7 +46,6 @@ variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [
   (σ : 𝕜₁ →+* 𝕜₂) [iσ : RingHomIsometric σ]
 
 variable {B : Type*}
-
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜₁ (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
 
@@ -58,8 +57,7 @@ helps with instance search.
 
 Porting note: after the port is done, we may want to remove this definition.
 -/
-@[reducible]
-protected def Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
+protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
     [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x => E₁ x →SL[σ] E₂ x
 #align bundle.continuous_linear_map Bundle.ContinuousLinearMap
 
@@ -71,7 +69,6 @@ instance Bundle.ContinuousLinearMap.module [∀ x, TopologicalSpace (E₁ x)]
 #align bundle.continuous_linear_map.module Bundle.ContinuousLinearMap.module
 
 variable {E₁ E₂}
-
 variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
 
@@ -89,9 +86,7 @@ def continuousLinearMapCoordChange [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜�
 #align pretrivialization.continuous_linear_map_coord_change Pretrivialization.continuousLinearMapCoordChange
 
 variable {σ e₁ e₁' e₂ e₂'}
-
 variable [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁]
-
 variable [∀ x, TopologicalSpace (E₂ x)] [ita : ∀ x, TopologicalAddGroup (E₂ x)] [FiberBundle F₂ E₂]
 
 theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E₁] [VectorBundle 𝕜₂ F₂ E₂]
@@ -103,7 +98,7 @@ theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E
   have h₂ := (ContinuousLinearMap.flip (compSL F₁ F₁ F₂ (RingHom.id 𝕜₁) σ)).continuous
   have h₃ := continuousOn_coordChange 𝕜₁ e₁' e₁
   have h₄ := continuousOn_coordChange 𝕜₂ e₂ e₂'
-  refine' ((h₁.comp_continuousOn (h₄.mono _)).clm_comp (h₂.comp_continuousOn (h₃.mono _))).congr _
+  refine ((h₁.comp_continuousOn (h₄.mono ?_)).clm_comp (h₂.comp_continuousOn (h₃.mono ?_))).congr ?_
   · mfld_set_tac
   · mfld_set_tac
   · intro b _; ext L v
@@ -183,7 +178,9 @@ theorem continuousLinearMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ e�
     (L : F₁ →SL[σ] F₂) :
     (continuousLinearMap σ e₁ e₂).symm b L =
       (e₂.symmL 𝕜₂ b).comp (L.comp <| e₁.continuousLinearMapAt 𝕜₁ b) := by
-  rw [symm_apply]; rfl; exact hb
+  rw [symm_apply]
+  · rfl
+  · exact hb
 #align pretrivialization.continuous_linear_map_symm_apply' Pretrivialization.continuousLinearMap_symm_apply'
 
 theorem continuousLinearMapCoordChange_apply (b : B)
@@ -206,11 +203,8 @@ end Pretrivialization
 open Pretrivialization
 
 variable (F₁ E₁ F₂ E₂)
-
 variable [∀ x : B, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜₁ F₁ E₁]
-
 variable [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜₂ F₂ E₂]
-
 variable [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
 
 /-- The continuous `σ`-semilinear maps between two topological vector bundles form a

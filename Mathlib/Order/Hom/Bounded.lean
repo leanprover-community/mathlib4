@@ -129,9 +129,7 @@ instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
     [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
-  { --⟨λ f, le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le⟩
-    show OrderHomClass F α β from inferInstance with
-    map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
+  { map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 #align order_iso_class.to_bot_hom_class OrderIsoClass.toBotHomClass
 
 -- See note [lower instance priority]
@@ -182,8 +180,6 @@ def BotHomClass.toBotHom [Bot α] [Bot β] [BotHomClass F α β] (f : F) : BotHo
 
 instance [Bot α] [Bot β] [BotHomClass F α β] : CoeTC F (BotHom α β) :=
   ⟨BotHomClass.toBotHom⟩
-
-variable [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `BoundedOrderHomClass F α β` into an actual
 `BoundedOrderHom`. This is declared as the default coercion from `F` to `BoundedOrderHom α β`. -/
@@ -311,6 +307,9 @@ theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injectiv
 
 end Top
 
+instance instLE [LE β] [Top β] : LE (TopHom α β) where
+  le f g := (f : α → β) ≤ g
+
 instance [Preorder β] [Top β] : Preorder (TopHom α β) :=
   Preorder.lift (DFunLike.coe : TopHom α β → α → β)
 
@@ -319,7 +318,7 @@ instance [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
 
 section OrderTop
 
-variable [Preorder β] [OrderTop β]
+variable [LE β] [OrderTop β]
 
 instance : OrderTop (TopHom α β) where
   top := ⟨⊤, rfl⟩
@@ -504,6 +503,9 @@ theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injectiv
 
 end Bot
 
+instance instLE [LE β] [Bot β] : LE (BotHom α β) where
+  le f g := (f : α → β) ≤ g
+
 instance [Preorder β] [Bot β] : Preorder (BotHom α β) :=
   Preorder.lift (DFunLike.coe : BotHom α β → α → β)
 
@@ -512,7 +514,7 @@ instance [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
 
 section OrderBot
 
-variable [Preorder β] [OrderBot β]
+variable [LE β] [OrderBot β]
 
 instance : OrderBot (BotHom α β) where
   bot := ⟨⊥, rfl⟩

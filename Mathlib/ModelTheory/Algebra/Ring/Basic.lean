@@ -259,35 +259,35 @@ variable (R : Type*) [Language.ring.Structure R]
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def addOfRingStructure : Add R :=
+abbrev addOfRingStructure : Add R :=
   { add := fun x y => funMap addFunc ![x, y] }
 
 /-- A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def mulOfRingStructure : Mul R :=
+abbrev mulOfRingStructure : Mul R :=
   { mul := fun x y => funMap mulFunc ![x, y] }
 
 /-- A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def negOfRingStructure : Neg R :=
+abbrev negOfRingStructure : Neg R :=
   { neg := fun x => funMap negFunc ![x] }
 
 /-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def zeroOfRingStructure : Zero R :=
+abbrev zeroOfRingStructure : Zero R :=
   { zero := funMap zeroFunc ![] }
 
 /-- A def to put an `One` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def oneOfRingStructure : One R :=
+abbrev oneOfRingStructure : One R :=
   { one := funMap oneFunc ![] }
 
 attribute [local instance] addOfRingStructure mulOfRingStructure negOfRingStructure
@@ -300,7 +300,7 @@ Given a Type `R` with a `Language.ring.Structure R`, the instance given by
 This definition is only to be used when `addOfRingStructure`, `mulOfRingStructure` etc
 are local instances.
 -/
-@[reducible] def compatibleRingOfRingStructure : CompatibleRing R :=
+abbrev compatibleRingOfRingStructure : CompatibleRing R :=
   { funMap_add := by
       simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
       intros; rfl
@@ -312,10 +312,10 @@ are local instances.
       intros; rfl
     funMap_zero := by
       simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
-      intros; rfl
+      rfl
     funMap_one := by
       simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
-      intros; rfl  }
+      rfl  }
 
 end Ring
 

@@ -189,25 +189,18 @@ theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rf
 
 instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
-instance : AddCommGroup (Poly α) := by
-  refine' { add := ((· + ·) : Poly α → Poly α → Poly α)
-            neg := (Neg.neg : Poly α → Poly α)
-            sub := Sub.sub
-            zero := 0
-            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
-            nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
-            .. }
-  all_goals
-    intros
-    first
-      | rfl
-      | ext; simp_rw [add_apply]
-        first
-          | rw [← add_assoc]
-          | rw [zero_apply, zero_add]
-          | rw [zero_apply, add_zero]
-          | rw [neg_apply, add_left_neg, zero_apply]
-          | rw [add_comm]
+instance : AddCommGroup (Poly α) where
+  add := ((· + ·) : Poly α → Poly α → Poly α)
+  neg := (Neg.neg : Poly α → Poly α)
+  sub := Sub.sub
+  zero := 0
+  nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
+  zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
+  add_zero _ := by ext; simp_rw [add_apply, zero_apply, add_zero]
+  zero_add _ := by ext; simp_rw [add_apply, zero_apply, zero_add]
+  add_comm _ _ := by ext; simp_rw [add_apply, add_comm]
+  add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
+  add_left_neg _ := by ext; simp_rw [add_apply, neg_apply, add_left_neg, zero_apply]
 
 instance : AddGroupWithOne (Poly α) :=
   { (inferInstance : AddCommGroup (Poly α)) with
@@ -215,32 +208,28 @@ instance : AddGroupWithOne (Poly α) :=
       natCast := fun n => Poly.const n
       intCast := Poly.const }
 
-instance : CommRing (Poly α) := by
-  refine' { (inferInstance : AddCommGroup (Poly α)),
-            (inferInstance : AddGroupWithOne (Poly α)) with
-              mul := (· * ·)
-              npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
-              .. }
-  all_goals
-    intros
-    first
-      | rfl
-      | ext; simp only [add_apply, mul_apply]
-        first
-          | rw [mul_add]
-          | rw [add_mul]
-          | rw [zero_apply, zero_mul]
-          | rw [zero_apply, mul_zero]
-          | rw [← mul_assoc]
-          | rw [one_apply, one_mul]
-          | rw [one_apply, mul_one]
-          | rw [mul_comm]
+instance : CommRing (Poly α) where
+  __ := (inferInstance : AddCommGroup (Poly α))
+  __ := (inferInstance : AddGroupWithOne (Poly α))
+  mul := (· * ·)
+  npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
+  mul_zero _ := by ext; rw [mul_apply, zero_apply, mul_zero]
+  zero_mul _ := by ext; rw [mul_apply, zero_apply, zero_mul]
+  mul_one _ := by ext; rw [mul_apply, one_apply, mul_one]
+  one_mul _ := by ext; rw [mul_apply, one_apply, one_mul]
+  mul_comm _ _ := by ext; simp_rw [mul_apply, mul_comm]
+  mul_assoc _ _ _ := by ext; simp_rw [mul_apply, mul_assoc]
+  left_distrib _ _ _ := by ext; simp_rw [add_apply, mul_apply]; apply mul_add
+  right_distrib _ _ _ :=  by ext; simp only [add_apply, mul_apply]; apply add_mul
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
   cases' f with f pf
   induction' pf with i n f g pf pg ihf ihg f g pf pg ihf ihg
-  apply H1; apply H2; apply H3 _ _ ihf ihg; apply H4 _ _ ihf ihg
+  · apply H1
+  · apply H2
+  · apply H3 _ _ ihf ihg
+  · apply H4 _ _ ihf ihg
 #align poly.induction Poly.induction
 
 /-- The sum of squares of a list of polynomials. This is relevant for
@@ -354,7 +343,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction' l with S l IH
-  exact ⟨ULift Empty, [], fun _ => by simp⟩
+  · exact ⟨ULift Empty, [], fun _ => by simp⟩
   simp? at d says simp only [List.forall_cons] at d
   exact
     let ⟨⟨β, p, pe⟩, dl⟩ := d
@@ -397,12 +386,12 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
                   (q ((v ⊗ t) ∘ (inl ⊗ inr ∘ inr)))).symm))
       -- Porting note: putting everything on the same line fails
       · refine inject_dummies_lem _ ?_ ?_ _ _
-        exact some ⊗ fun _ => none
-        exact fun _ => by simp only [elim_inl]
+        · exact some ⊗ fun _ => none
+        · exact fun _ => by simp only [elim_inl]
       -- Porting note: putting everything on the same line fails
       · refine inject_dummies_lem _ ?_ ?_ _ _
-        exact (fun _ => none) ⊗ some
-        exact fun _ => by simp only [elim_inr]⟩
+        · exact (fun _ => none) ⊗ some
+        · exact fun _ => by simp only [elim_inr]⟩
 #align dioph.union Dioph.union
 
 /-- A partial function is Diophantine if its graph is Diophantine. -/
@@ -461,7 +450,7 @@ theorem dom_dioph {f : (α → ℕ) →. ℕ} (d : DiophPFun f) : Dioph f.Dom :=
 #align dioph.dom_dioph Dioph.dom_dioph
 
 theorem diophFn_iff_pFun (f : (α → ℕ) → ℕ) : DiophFn f = @DiophPFun α f := by
-  refine' congr_arg Dioph (Set.ext fun v => _); exact PFun.lift_graph.symm
+  refine congr_arg Dioph (Set.ext fun v => ?_); exact PFun.lift_graph.symm
 #align dioph.dioph_fn_iff_pfun Dioph.diophFn_iff_pFun
 
 theorem abs_poly_dioph (p : Poly α) : DiophFn fun v => (p v).natAbs :=
@@ -478,7 +467,7 @@ theorem diophPFun_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f} (df : Di
   ext (ex1_dioph (d.inter df)) fun v =>
     ⟨fun ⟨x, hS, (h : Exists _)⟩ => by
       rw [show (x ::ₒ v) ∘ some = v from funext fun s => rfl] at h;
-        cases' h with hf h; refine' ⟨hf, _⟩; rw [PFun.fn, h]; exact hS,
+        cases' h with hf h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
     fun ⟨x, hS⟩ =>
       ⟨f.fn v x, hS, show Exists _ by
         rw [show (f.fn v x ::ₒ v) ∘ some = v from funext fun s => rfl]; exact ⟨x, rfl⟩⟩⟩
@@ -608,21 +597,18 @@ theorem eq_dioph : Dioph fun v => f v = g v :=
       exact Int.ofNat_inj.symm.trans ⟨@sub_eq_zero_of_eq ℤ _ (v &0) (v &1), eq_of_sub_eq_zero⟩
 #align dioph.eq_dioph Dioph.eq_dioph
 
--- mathport name: eq_dioph
 scoped infixl:50 " D= " => Dioph.eq_dioph
 
 theorem add_dioph : DiophFn fun v => f v + g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 + @Poly.proj (Fin2 2) &1)
 #align dioph.add_dioph Dioph.add_dioph
 
--- mathport name: add_dioph
 scoped infixl:80 " D+ " => Dioph.add_dioph
 
 theorem mul_dioph : DiophFn fun v => f v * g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 * @Poly.proj (Fin2 2) &1)
 #align dioph.mul_dioph Dioph.mul_dioph
 
--- mathport name: mul_dioph
 scoped infixl:90 " D* " => Dioph.mul_dioph
 
 theorem le_dioph : Dioph {v | f v ≤ g v} :=
@@ -676,7 +662,8 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
         (vectorAll_iff_forall _).1 fun z x y =>
           show ((y = 0 ∨ z < y) ∧ ∃ c, z + y * c = x) ↔ x % y = z from
             ⟨fun ⟨h, c, hc⟩ => by
-              rw [← hc]; simp; cases' h with x0 hl; rw [x0, mod_zero]
+              rw [← hc]; simp; cases' h with x0 hl
+              · rw [x0, mod_zero]
               exact mod_eq_of_lt hl, fun e => by
                 rw [← e]
                 exact ⟨or_iff_not_imp_left.2 fun h => mod_lt _ (Nat.pos_of_ne_zero h), x / y,
@@ -713,7 +700,6 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
                     Iff.trans ⟨lt_succ_of_le, le_of_lt_succ⟩ (div_lt_iff_lt_mul ypos)).symm
 #align dioph.div_dioph Dioph.div_dioph
 
--- mathport name: div_dioph
 scoped infixl:80 " D/ " => Dioph.div_dioph
 
 open Pell
