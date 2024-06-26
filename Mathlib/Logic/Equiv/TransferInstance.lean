@@ -728,7 +728,7 @@ theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (
 theorem algEquiv_symm_apply (e : α ≃ β) [Semiring β] [Algebra R β] (b : β) : by
     letI := Equiv.semiring e
     letI := Equiv.algebra R e
-    exact (algEquiv R e).symm b = e.symm b := by intros; rfl
+    exact (algEquiv R e).symm b = e.symm b := rfl
 
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves algebra structure. -/
