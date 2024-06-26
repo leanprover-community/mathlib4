@@ -1014,6 +1014,15 @@ theorem neg_lt_iff_neg_lt {a b : EReal} : -a < b ↔ -b < a := by
 theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_iff_neg_lt.1 h
 #align ereal.neg_lt_of_neg_lt EReal.neg_lt_of_neg_lt
 
+lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
+    - (x + y) = - x - y := by
+  induction x using EReal.rec <;> induction y using EReal.rec <;> try tauto
+  rw [← coe_add, ← coe_neg, ← coe_neg, ← coe_sub, neg_add']
+
+lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y ≠ ⊤) :
+    - (x - y) = - x + y := by
+  rw [sub_eq_add_neg, neg_add _ _, sub_eq_add_neg, neg_neg] <;> simp_all
+
 /-!
 ### Subtraction
 
