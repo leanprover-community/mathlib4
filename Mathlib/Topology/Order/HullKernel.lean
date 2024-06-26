@@ -228,11 +228,9 @@ def gi : GaloisInsertion (α := Set T) (β := αᵒᵈ)
   gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
     cases' hG a with S hS
-    have e1 : S ⊆ T ↓∩ Ici (OrderDual.ofDual a) := by
-      intros c hcS
-      rw [mem_preimage, mem_Ici, hS]
-      exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS)
-    exact le_of_le_of_eq (sInf_le_sInf (image_val_mono e1)) (id (Eq.symm hS)))
+    exact le_of_le_of_eq (sInf_le_sInf (image_val_mono (fun c hcS => mem_preimage.mpr (mem_Ici.mpr
+      (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
+      (hS.symm))
 
 lemma kernel_hull_eq (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
   conv_rhs => rw [← (OrderDual.ofDual_toDual a),
