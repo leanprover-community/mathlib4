@@ -123,6 +123,12 @@ protected lemma zpow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (z :
   · simpa using hM.pow n
   · simpa using (hM.pow n).inv
 
+protected lemma add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) : (A + B).PosSemidef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_nonneg (hA.2 x) (hB.2 x)⟩
+
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
@@ -314,6 +320,22 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
+
+protected lemma add_posSemidef {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_pos_of_pos_of_nonneg (hA.2 x hx) (hB.2 x)⟩
+
+protected lemma posSemidef_add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
+
+protected lemma add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
+  hA.add_posSemidef hB.posSemidef
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
