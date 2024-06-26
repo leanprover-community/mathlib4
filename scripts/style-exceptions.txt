@@ -1,28 +1,4 @@
-Mathlib/Algebra/BigOperators/Group/Finset.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2617 lines, try to split it up
-Mathlib/Algebra/Group/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 3900 file contains 3705 lines, try to split it up
-Mathlib/Algebra/Group/Submonoid/Operations.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1527 lines, try to split it up
-Mathlib/Algebra/Lie/Submodule.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1554 lines, try to split it up
-Mathlib/Algebra/MonoidAlgebra/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2190 lines, try to split it up
-Mathlib/Algebra/MvPolynomial/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1778 lines, try to split it up
-Mathlib/Algebra/Order/Floor.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1813 lines, try to split it up
-Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1709 lines, try to split it up
-Mathlib/Algebra/Polynomial/Degree/Definitions.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1703 lines, try to split it up
-Mathlib/Algebra/Quaternion.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1590 lines, try to split it up
-Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1514 lines, try to split it up
-Mathlib/Analysis/Asymptotics/Asymptotics.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2335 lines, try to split it up
-Mathlib/Analysis/Calculus/ContDiff/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2175 lines, try to split it up
-Mathlib/Analysis/Calculus/ContDiff/Defs.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1768 lines, try to split it up
-Mathlib/Analysis/Convolution.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1504 lines, try to split it up
-Mathlib/Analysis/InnerProductSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2386 lines, try to split it up
-Mathlib/Analysis/Normed/Group/Basic.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2896 lines, try to split it up
-Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1540 lines, try to split it up
-Mathlib/CategoryTheory/Limits/Shapes/Biproducts.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2242 lines, try to split it up
-Mathlib/CategoryTheory/Limits/Shapes/Pullbacks.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2734 lines, try to split it up
-Mathlib/Combinatorics/SimpleGraph/Connectivity.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2726 lines, try to split it up
-Mathlib/Computability/Primrec.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1658 lines, try to split it up
-Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2071 lines, try to split it up
-Mathlib/Computability/TuringMachine.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2817 lines, try to split it up
-Mathlib/Data/Array/Basic.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/BinaryHeap.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/ByteArray.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/QPF/Multivariate/Basic.lean : line 75 : ERR_LIN : Line has more than 100 characters
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late

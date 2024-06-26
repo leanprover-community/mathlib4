@@ -71,7 +71,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp only [apply_ite, eval_ite_var, ite_eq_iff']
+          simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
           · simp_all
             congr
