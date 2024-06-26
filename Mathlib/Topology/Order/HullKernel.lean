@@ -84,7 +84,6 @@ lemma ici_union_ici_eq (a b : α) :
   · intro h
     exact ((hT p (Subtype.coe_prop p)).2) h
 
-
 /- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
 pairwise intersection. -/
 lemma ici_compl_inter_ici_compl_eq (a b : α) :
