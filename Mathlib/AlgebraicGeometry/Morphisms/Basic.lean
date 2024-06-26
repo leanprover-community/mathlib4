@@ -269,8 +269,7 @@ theorem AffineTargetMorphismProperty.isLocalOfOpenCoverImply (P : AffineTargetMo
       rwa [affine_cancel_left_isIso hP] at hs'
 #align algebraic_geometry.affine_target_morphism_property.is_local_of_open_cover_imply AlgebraicGeometry.AffineTargetMorphismProperty.isLocalOfOpenCoverImply
 
-theorem targetAffineLocally_iff_of_isAffine {P : AffineTargetMorphismProperty}
-    (hP : P.IsLocal) {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] :
+theorem targetAffineLocally_iff_of_isAffine [IsAffine Y] :
     targetAffineLocally P f ↔ P f := by
   haveI : ∀ i, IsAffine (Scheme.OpenCover.obj (Scheme.openCoverOfIsIso (𝟙 Y)) i) := fun i => by
     dsimp; infer_instance
@@ -279,6 +278,16 @@ theorem targetAffineLocally_iff_of_isAffine {P : AffineTargetMorphismProperty}
   · exact ⟨fun H => H PUnit.unit, fun H _ => H⟩
   rw [← Category.comp_id pullback.snd, ← pullback.condition, affine_cancel_left_isIso hP.1]
 #align algebraic_geometry.affine_target_morphism_property.is_local.affine_target_iff AlgebraicGeometry.targetAffineLocally_iff_of_isAffine
+
+theorem targetAffineLocally_morphsimRestrict_affineOpens
+    (U : Y.affineOpens) (H : targetAffineLocally P f) : P (f ∣_ U) := by
+  rw [← targetAffineLocally_iff_of_isAffine hP]
+  exact targetAffineLocally_morphsimRestrict hP f _ H
+
+theorem targetAffineLocally_pullback_of_isAffine {U} (g : U ⟶ Y) [IsOpenImmersion g] [IsAffine U]
+    (h : targetAffineLocally P f) : P (pullback.snd : pullback f g ⟶ _) := by
+  rw [← targetAffineLocally_iff_of_isAffine hP]
+  exact targetAffineLocally_pullback hP f _ h
 
 end targetAffineLocally
 
@@ -320,6 +329,15 @@ lemma PropertyIsLocalAtTarget.of_openCover (H : ∀ i, P (𝒰.pullbackHom f i))
 instance {X : Scheme} (𝒰 : X.AffineOpenCover) (i) : IsAffine (𝒰.openCover.obj i) := by
   dsimp; infer_instance
 
+def Scheme.OpenCover.pullbackCoverAffineRefinemenObj (𝒰 : Y.OpenCover) (i) :
+    (𝒰.affineRefinement.openCover.pullbackCover f).obj i ≅
+      pullback (𝒰.pullbackHom f i.1) ((𝒰.obj i.1).affineCover.map i.2) := by
+  refine pullbackSymmetry _ _ ≪≫ (pullbackRightPullbackFstIso _ _ _).symm ≪≫
+    pullbackSymmetry _ _ ≪≫
+      asIso (pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) ?_ ?_)
+  · simp [pullbackHom]
+  · simp
+
 theorem targetAffineLocally_isLocal
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) :
     PropertyIsLocalAtTarget (targetAffineLocally P) := by
@@ -333,8 +351,13 @@ theorem targetAffineLocally_isLocal
     let 𝒰 := Y.openCoverOfSuprEqTop (fun i : Us ↦ i) (by rwa [iSup_subtype, ← sSup_eq_iSup])
     apply targetAffineLocally_of_openCover hP _ 𝒰.affineRefinement.openCover
     rintro ⟨i, j⟩
-    have : targetAffineLocally P ()
-    dsimp [Scheme.OpenCover.affineRefinement, Scheme.AffineOpenCover.openCover]
+    have : targetAffineLocally P (𝒰.pullbackHom f i) := by
+      refine ((targetAffineLocally_respectsIso hP.1).arrow_mk_iso_iff
+        (morphismRestrictEq _ ?_ ≪≫ morphismRestrictOpensRange f (𝒰.map i))).mp (H _ i.2)
+      exact (opensRange_ιOpens _).symm
+    rw [← (affine_cancel_left_iff)]
+    convert targetAffineLocally_pullback_of_isAffine hP _ ((𝒰.obj i).affineCover.map j) this using 1
+    -- dsimp [Scheme.OpenCover.affineRefinement, Scheme.AffineOpenCover.openCover]
     -- Porting note: rewrite `[(hP.affine_openCover_TFAE f).out 0 1` directly complains about
     -- metavariables
     have h01 := (hP.affine_openCover_TFAE f).out 0 1
