@@ -3,10 +3,10 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Topology.Order.LowerUpperTopology
-import Mathlib.Order.Irreducible
 import Mathlib.Data.Set.Subset
 import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Order.Irreducible
+import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Topology.Sets.Closeds
 
 /-!
