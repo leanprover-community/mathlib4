@@ -468,7 +468,7 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
   have :=
   calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
         rw [← h2γ, snorm_nnreal_eq_lintegral hn.symm.pos.ne']
-        simp (discharger := positivity) [v, NNReal.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul,
+        simp (discharger := positivity) [v, Real.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul,
           ENNReal.coe_rpow_of_nonneg]
     _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC hv h2v
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
