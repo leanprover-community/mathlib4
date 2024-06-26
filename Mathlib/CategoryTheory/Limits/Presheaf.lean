@@ -253,7 +253,6 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     ext X x
     dsimp
     rw [← hm]
-    dsimp
     apply congr_arg
     simp [coconeOfRepresentable_ι_app, yonedaEquiv]
 #align category_theory.colimit_of_representable CategoryTheory.Presheaf.colimitOfRepresentable
