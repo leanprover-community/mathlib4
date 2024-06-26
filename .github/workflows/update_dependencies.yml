@@ -1,8 +1,5 @@
 name: Update Mathlib Dependencies
 
-# This action currently uses the NIGHTLY_TESTING secret, but could be moved to a separate secret.
-# Despite this, this action is acting on the `master` branch, not the `nightly-testing` branch.
-
 on:
   schedule:
     - cron: '0 * * * *'  # This will run every hour
@@ -87,5 +84,6 @@ jobs:
           token: ${{ secrets.NIGHTLY_TESTING }}
           commit-message: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
           branch: ${{ env.branch_name }}
+          base: master  # Ensure the base branch is explicitly set to master
           title: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
           labels: "auto-merge-after-CI"
