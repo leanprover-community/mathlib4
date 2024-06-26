@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
+import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
-
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -136,6 +136,16 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         ext1 s
         exact Nat.eq_zero_of_le_zero (H s)
 #align mv_power_series.mul_inv_of_unit MvPowerSeries.mul_invOfUnit
+
+theorem isUnit_iff_constantCoeff (φ : MvPowerSeries σ R) :
+    IsUnit φ ↔ IsUnit (MvPowerSeries.constantCoeff σ R φ) := by
+  constructor
+  · exact IsUnit.map _
+  · rintro ⟨u, hu⟩
+    rw [isUnit_iff_exists]
+    use φ.invOfUnit u
+    simp only [mul_invOfUnit φ u hu.symm, true_and]
+    sorry
 
 end Ring
 
