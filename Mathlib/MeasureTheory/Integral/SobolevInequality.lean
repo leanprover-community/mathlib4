@@ -848,6 +848,7 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F] {p p' : ℝ≥0} (
       gcongr; exact snorm_le_mul_snorm <| eventually_of_forall h4v
     _ = (C₁ * C * C₂ : ℝ≥0) * snorm (fderiv ℝ u) p μ := by push_cast; simp_rw [mul_assoc]
 
+variable (F) in
 set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded measurable set `s` in a normed space `E` of finite dimension
@@ -855,12 +856,12 @@ function `u` supported in a bounded measurable set `s` in a normed space `E` of 
 There exists a constant `C` depending only on `E`, `s`, `p` and `q`, such that the `L^q` norm of `u`
 is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be an inner product space.
+Note: The codomain of `u` needs to be a finite dimensional normed space.
 -/
-theorem snorm_le_snorm_fderiv_of_le {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 1 ≤ q)
+theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F] {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 1 ≤ q)
     (h2p : p < finrank ℝ E) (hpq : p⁻¹ - (finrank ℝ E : ℝ)⁻¹ ≤ (q : ℝ)⁻¹) {s : Set E}
     (hs : MeasurableSet s) (hs' : Bornology.IsBounded s) :
-    ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
+    ∃ C : ℝ≥0, ∀ (u : E → F) (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
     snorm u q μ ≤ C * snorm (fderiv ℝ u) p μ := by
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
@@ -877,7 +878,7 @@ theorem snorm_le_snorm_fderiv_of_le {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 1 ≤ q
         gcongr
       positivity
     · positivity
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq_inner μ F' hp h2p hp'
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq F μ hp h2p hp'
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
   use t * C
   intro u hu h2u
@@ -899,6 +900,7 @@ theorem snorm_le_snorm_fderiv_of_le {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 1 ≤ q
         rel [hC hu h2u']
     _ = (t * C) * snorm (fderiv ℝ u) p μ := by ring
 
+variable (F) in
 set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded measurable set `s` in a normed space `E` of finite dimension
@@ -906,13 +908,14 @@ function `u` supported in a bounded measurable set `s` in a normed space `E` of 
 There exists a constant `C` depending only on `E`, `s` and `p`, such that the `Lᵖ` norm of `u`
 is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be an inner product space.
+Note: The codomain of `u` needs to be a finite dimensional normed space.
 -/
-theorem snorm_le_snorm_fderiv' {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) {s : Set E}
+theorem snorm_le_snorm_fderiv' [FiniteDimensional ℝ F]
+    {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) {s : Set E}
     (hs : MeasurableSet s) (hs' : Bornology.IsBounded s) :
-    ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
+    ∃ C : ℝ≥0, ∀ (u : E → F) (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) p μ := by
-  refine snorm_le_snorm_fderiv_of_le μ F' hp hp h2p ?_ hs hs'
+  refine snorm_le_snorm_fderiv_of_le F μ hp hp h2p ?_ hs hs'
   norm_cast
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   positivity
