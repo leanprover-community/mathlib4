@@ -28,14 +28,6 @@ variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemi
   [Algebra R S] [Algebra P Q] [IsLocalization M S] [IsLocalization T Q]
   (g : R →+* P)
 
-local instance : IsLocalizedModule M (Algebra.ofId R S).toLinearMap := by
-  rw [isLocalizedModule_iff_isLocalization']
-  infer_instance
-
-local instance : IsLocalizedModule T (Algebra.ofId P Q).toLinearMap := by
-  rw [isLocalizedModule_iff_isLocalization']
-  infer_instance
-
 variable (S) in
 /-- The canonical linear map from the kernel of `g` to the kernel of its localization. -/
 def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
@@ -138,17 +130,21 @@ lemma mapₐ_apply (f : A →ₐ[R] B) (x : Aₚ) :
     (mapₐ M f : Aₚ →ₐ[Rₚ] Bₚ) x = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f) x :=
   rfl
 
-local instance (f : A →ₐ[R] B) :
+lemma isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
     IsLocalization ((Algebra.algebraMapSubmonoid A M).map f.toRingHom) Bₚ := by
   erw [map_algebraMapSubmonoid_eq M f]
   infer_instance
 
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :
     Function.Injective (mapₐ M f : Aₚ →ₐ[Rₚ] Bₚ) :=
+  haveI : IsLocalization ((Algebra.algebraMapSubmonoid A M).map f.toRingHom) Bₚ :=
+    isLocalization_algebraMapSubmonoid_map_algHom M f
   IsLocalization.map_injective_of_injective _ _ _ hf
 
 lemma mapₐ_surjective_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f) :
     Function.Surjective (mapₐ M f : Aₚ →ₐ[Rₚ] Bₚ) :=
+  haveI : IsLocalization ((Algebra.algebraMapSubmonoid A M).map f.toRingHom) Bₚ :=
+    isLocalization_algebraMapSubmonoid_map_algHom M f
   IsLocalization.map_surjective_of_surjective _ _ _ hf
 
 end IsLocalization
