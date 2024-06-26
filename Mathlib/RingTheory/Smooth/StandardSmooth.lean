@@ -8,6 +8,16 @@ import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.RingTheory.FinitePresentation
 
+/-!
+# Standard smooth algebras
+
+In this file we define standard smooth presentations for algebras. This notion
+is introduced for `SubmersivePresentations`, which is a `Presentation`
+that has less relations than generators. More precisely there exists
+an injective map from `P.relations` to `P.vars`.
+
+-/
+
 variable (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
 namespace Algebra
@@ -66,6 +76,14 @@ class IsStandardSmooth (P : SubmersivePresentation R S) : Prop where
   det_isUnit : IsUnit P.det
   presentation_finite : P.IsFinite
 
+/--
+A `SubmersivePresentation` is standard smooth of relative dimension `n` if it is
+standard smooth and the presentation is of dimension `n`.
+-/
+class IsStandardSmoothOfRelativeDimension (P : SubmersivePresentation R S) (n : ℕ) : Prop where
+  isStandardSmooth : P.IsStandardSmooth
+  of_relative_dimension : P.dimension = n
+
 end SubmersivePresentation
 
 /--
@@ -74,3 +92,10 @@ exists a standard smooth submersive presentation.
 -/
 class IsStandardSmooth : Prop where
   out : ∃ (P : SubmersivePresentation R S), P.IsStandardSmooth
+
+/--
+An `R`-algebra `S` is called standard smooth of relative dimension `n`, if there
+exists a standard smooth submersive presentation.
+-/
+class IsStandardSmoothOfRelativeDimension (n : ℕ) : Prop where
+  out : ∃ (P : SubmersivePresentation R S), P.IsStandardSmoothOfRelativeDimension n
