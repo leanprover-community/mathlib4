@@ -46,7 +46,6 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
     (by
       intro A B f
       -- Porting note (#11041): this used to work with `ext`
-      apply Multiequalizer.hom_ext
       dsimp
       ext g
       simp [← F.map_comp])
@@ -140,8 +139,6 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
   dsimp
   simp
   -- Porting note: in mathlib3 `simp` managed to apply this.
-  erw [η.naturality]
-  aesop_cat
 #align category_theory.grothendieck_topology.plus_comp_iso_whisker_left CategoryTheory.GrothendieckTopology.plusCompIso_whiskerLeft
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `F`. -/
