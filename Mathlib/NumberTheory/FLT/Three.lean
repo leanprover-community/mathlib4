@@ -218,7 +218,7 @@ lemma a_cube_b_cube_congr_one_or_neg_one :
   · right
     exact ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
   · exfalso
-    replace hζ : IsPrimitiveRoot ζ ((3 : ℕ+) ^ 1) := hζ
+    replace hζ : IsPrimitiveRoot ζ ((3 : ℕ+) ^ 1) := by rwa [pow_one]
     refine hζ.toInteger_sub_one_not_dvd_two (by decide) ⟨λ ^ 3 * (x + y) - S'.u * λ ^ 2 * z ^ 3, ?_⟩
     symm
     calc _ =  λ ^ 4 * x + λ ^ 4 * y - S'.u * (λ * z) ^ 3 := by ring
