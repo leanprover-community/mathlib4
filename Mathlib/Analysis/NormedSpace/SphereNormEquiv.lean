@@ -40,7 +40,7 @@ noncomputable def homeomorphUnitSphereProd :
   continuous_toFun := by
     refine .prod_mk (.codRestrict (.smul (.inv₀ ?_ ?_) ?_) _) ?_
     · fun_prop
-    · continuity
+    · simp
     · fun_prop
-    · apply Continuous.subtype_mk (by fun_prop)
+    · fun_prop
   continuous_invFun := by apply Continuous.subtype_mk (by fun_prop)
