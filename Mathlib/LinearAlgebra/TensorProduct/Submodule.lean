@@ -77,15 +77,18 @@ theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.1 n.1) :
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul, mulMap_tmul]
   exact (hc m n).symm
 
-theorem mulMap_comp_rTensor (M' : Submodule R S) (hM : M' ≤ M) :
+variable {M} in
+theorem mulMap_comp_rTensor {M' : Submodule R S} (hM : M' ≤ M) :
     mulMap M N ∘ₗ (inclusion hM).rTensor N = mulMap M' N :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
-theorem mulMap_comp_lTensor (N' : Submodule R S) (hN : N' ≤ N) :
+variable {N} in
+theorem mulMap_comp_lTensor {N' : Submodule R S} (hN : N' ≤ N) :
     mulMap M N ∘ₗ (inclusion hN).lTensor M = mulMap M N' :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
-theorem mulMap_comp_map_inclusion (M' N' : Submodule R S) (hM : M' ≤ M) (hN : N' ≤ N) :
+variable {M N} in
+theorem mulMap_comp_map_inclusion {M' N' : Submodule R S} (hM : M' ≤ M) (hN : N' ≤ N) :
     mulMap M N ∘ₗ TensorProduct.map (inclusion hM) (inclusion hN) = mulMap M' N' :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
@@ -106,6 +109,7 @@ which is surjective (`Submodule.mulMap'_surjective`). -/
 def mulMap' : M ⊗[R] N →ₗ[R] ↥(M * N) :=
   (LinearEquiv.ofEq _ _ (mulMap_range M N)).toLinearMap ∘ₗ (mulMap M N).rangeRestrict
 
+variable {M N} in
 @[simp]
 theorem val_mulMap'_tmul (m : M) (n : N) : (mulMap' M N (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
@@ -120,6 +124,7 @@ def lTensorOne' : (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N :=
   show (1 : Submodule R S) ⊗[R] N →ₗ[R] N from
     (LinearEquiv.ofEq _ _ (by rw [mulMap_range, one_mul])).toLinearMap ∘ₗ (mulMap _ N).rangeRestrict
 
+variable {N} in
 @[simp]
 theorem lTensorOne'_tmul (y : R) (n : N) :
     N.lTensorOne' (algebraMap R _ y ⊗ₜ[R] n) = y • n := Subtype.val_injective <| by
@@ -127,29 +132,33 @@ theorem lTensorOne'_tmul (y : R) (n : N) :
     LinearEquiv.coe_ofEq_apply, LinearMap.codRestrict_apply, SetLike.val_smul, Algebra.smul_def]
   exact mulMap_tmul 1 N _ _
 
+variable {N} in
 @[simp]
 theorem lTensorOne'_one_tmul (n : N) : N.lTensorOne' (1 ⊗ₜ[R] n) = n := by
-  simpa using lTensorOne'_tmul N 1 n
+  simpa using lTensorOne'_tmul 1 n
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
 `i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
-def lTensorOne : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N := by
-  refine LinearEquiv.ofLinear N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
-    (by ext; simp) (TensorProduct.ext' fun r n ↦ ?_)
+def lTensorOne : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N :=
+  LinearEquiv.ofLinear N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
+    (by ext; simp) <| TensorProduct.ext' fun r n ↦ by
   change 1 ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
   replace h : algebraMap R _ x = r := Subtype.val_injective h
   rw [← h, lTensorOne'_tmul, ← TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
 
+variable {N} in
 @[simp]
 theorem lTensorOne_tmul (y : R) (n : N) : N.lTensorOne (algebraMap R _ y ⊗ₜ[R] n) = y • n :=
   N.lTensorOne'_tmul y n
 
+variable {N} in
 @[simp]
 theorem lTensorOne_one_tmul (n : N) : N.lTensorOne (1 ⊗ₜ[R] n) = n :=
   N.lTensorOne'_one_tmul n
 
+variable {N} in
 @[simp]
 theorem lTensorOne_symm_apply (n : N) : N.lTensorOne.symm n = 1 ⊗ₜ[R] n := rfl
 
@@ -163,6 +172,7 @@ def rTensorOne' : M ⊗[R] (⊥ : Subalgebra R S) →ₗ[R] M :=
   show M ⊗[R] (1 : Submodule R S) →ₗ[R] M from
     (LinearEquiv.ofEq _ _ (by rw [mulMap_range, mul_one])).toLinearMap ∘ₗ (mulMap M _).rangeRestrict
 
+variable {M} in
 @[simp]
 theorem rTensorOne'_tmul (y : R) (m : M) :
     M.rTensorOne' (m ⊗ₜ[R] algebraMap R _ y) = y • m := Subtype.val_injective <| by
@@ -171,29 +181,33 @@ theorem rTensorOne'_tmul (y : R) (m : M) :
   rw [Algebra.smul_def, Algebra.commutes]
   exact mulMap_tmul M 1 _ _
 
+variable {M} in
 @[simp]
 theorem rTensorOne'_tmul_one (m : M) : M.rTensorOne' (m ⊗ₜ[R] 1) = m := by
-  simpa using rTensorOne'_tmul M 1 m
+  simpa using rTensorOne'_tmul 1 m
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
 `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
-def rTensorOne : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M := by
-  refine LinearEquiv.ofLinear M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
-    TensorProduct.mk R (⊥ : Subalgebra R S) M 1) (by ext; simp) (TensorProduct.ext' fun n r ↦ ?_)
+def rTensorOne : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M :=
+  LinearEquiv.ofLinear M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
+    TensorProduct.mk R (⊥ : Subalgebra R S) M 1) (by ext; simp) <| TensorProduct.ext' fun n r ↦ by
   change rTensorOne' M _ ⊗ₜ[R] 1 = n ⊗ₜ[R] r
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
   replace h : algebraMap R _ x = r := Subtype.val_injective h
   rw [← h, rTensorOne'_tmul, TensorProduct.smul_tmul, Algebra.smul_def, mul_one]
 
+variable {M} in
 @[simp]
 theorem rTensorOne_tmul (y : R) (m : M) : M.rTensorOne (m ⊗ₜ[R] algebraMap R _ y) = y • m :=
   M.rTensorOne'_tmul y m
 
+variable {M} in
 @[simp]
 theorem rTensorOne_tmul_one (m : M) : M.rTensorOne (m ⊗ₜ[R] 1) = m :=
   M.rTensorOne'_tmul_one m
 
+variable {M} in
 @[simp]
 theorem rTensorOne_symm_apply (m : M) : M.rTensorOne.symm m = m ⊗ₜ[R] 1 := rfl
 
