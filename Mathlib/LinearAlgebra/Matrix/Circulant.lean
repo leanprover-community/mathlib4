@@ -5,6 +5,7 @@ Authors: Lu-Ming Zhang
 -/
 import Mathlib.Algebra.Group.Fin
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.matrix.circulant from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
