@@ -217,7 +217,6 @@ theorem limsup_add_le_add_limsup {α : Type _} {f : Filter α} {u v : α → ERe
   · rcases h' with (u_ntop | v_nbot)
     · rw [add_comm, limsup_add_bot_of_ne_top v_bot u_ntop]; exact bot_le
     · exfalso; exact v_nbot v_bot
-  clear h h'
   rcases eq_top_or_lt_top (limsup v f) with (v_top | v_ntop)
   · rw [v_top, add_top_of_ne_bot (ne_of_gt u_nbot)]; exact le_top
   have limsup_v_real := coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
@@ -244,44 +243,36 @@ lemma liminf_add_ge_gt₂ {α : Type _} {f : Filter α} {u v : α → EReal} {a 
   exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
 
 lemma liminf_add_top_of_ne_bot {α : Type _} {f : Filter α} {u : α → EReal} {v : α → EReal}
-    (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) :
-    liminf (u + v) f = ⊤ := by
+    (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) : liminf (u + v) f = ⊤ := by
   apply top_le_iff.1 ((ge_iff_le_forall_real_lt (liminf (u + v) f) ⊤).1 _)
   intro x
   rcases exists_between_coe_real (Ne.bot_lt h') with ⟨y, ⟨_, hy⟩⟩
-  intro trash; clear trash
-  rw [← sub_add_cancel x y, coe_add (x-y) y, coe_sub x y]
-  apply @liminf_add_ge_gt₂ α f u v (x-y) y _ hy
-  rw [h, ← coe_sub x y]
-  exact coe_lt_top (x-y)
+  intro _
+  rw [← sub_add_cancel x y, coe_add (x-y) y]
+  exact coe_sub x y ▸ @liminf_add_ge_gt₂ α f u v (x-y) y (h ▸ coe_sub x y ▸ coe_lt_top (x-y)) hy
 
 theorem add_liminf_le_liminf_add {α : Type _} {f : Filter α} {u v : α → EReal}
-    (h : liminf u f ≠ ⊥ ∨ liminf v f ≠ ⊤) (h' : liminf u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
-    (liminf u f) + (liminf v f) ≤ liminf (u + v) f:= by
-  /- WLOG, liminf v f < ⊤. -/
+    (h : liminf u f ≠ ⊥ ∨ liminf v f ≠ ⊤): (liminf u f) + (liminf v f) ≤ liminf (u + v) f:= by
   rcases eq_top_or_lt_top (liminf v f) with (v_top | v_ntop)
   · rcases h with (u_nbot | v_ntop)
-    · rw [add_comm u v, EReal.liminf_add_top_ne_bot v_top u_nbot]; exact le_top
+    · rw [add_comm u v, liminf_add_top_of_ne_bot v_top u_nbot]; exact le_top
     · exfalso; exact v_ntop v_top
-  clear h h'
-  /- WLOG, ⊥ < liminf v f. -/
   rcases eq_bot_or_bot_lt (liminf v f) with (v_bot | v_nbot)
-  · rw [v_bot, EReal.add_bot]; exact bot_le
-  /- General case. -/
-  have liminf_v_real := EReal.coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
-  apply (EReal.ge_iff_le_forall_real_lt _ _).2
+  · rw [v_bot, add_bot]; exact bot_le
+  have liminf_v_real := coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
+  apply (ge_iff_le_forall_real_lt _ _).1
   intros x hx
-  rcases EReal.lt_iff_exists_real_btwn.1 hx with ⟨y, ⟨x_lt_y, y_lt_sum⟩⟩; clear hx
+  rcases lt_iff_exists_real_btwn.1 hx with ⟨y, ⟨x_lt_y, y_lt_sum⟩⟩
   have key₁ : (y - liminf v f) < liminf u f := by
-    apply lt_of_lt_of_eq (EReal.sub_lt_sub_of_lt_of_le y_lt_sum (le_of_eq (Eq.refl (liminf v f)))
+    apply lt_of_lt_of_eq (sub_lt_sub_of_lt_of_le y_lt_sum (le_of_eq (Eq.refl (liminf v f)))
       (ne_of_gt v_nbot) (ne_of_lt v_ntop))
-    rw [← liminf_v_real, add_sub_cancel_right] -- Wait for the PR
+    rw [← liminf_v_real, add_sub_cancel_right]
   have key₂ : liminf v f + x - y < liminf v f := by
     rw [← liminf_v_real]
     norm_cast
     norm_cast at x_lt_y
     linarith
-  apply le_of_eq_of_le _ (EReal.liminf_add_ge_gt₂ key₁ key₂); clear key₁ key₂ x_lt_y y_lt_sum
+  apply le_of_eq_of_le _ (liminf_add_ge_gt₂ key₁ key₂)
   rw [← liminf_v_real]
   norm_cast
   linarith
@@ -333,8 +324,8 @@ theorem limsup_max {α : Type _} {f : Filter α} {u v : α → EReal} :
   · apply EReal.limsup_le_iff.2
     intro b hb
     have hu := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_left _ _) hb)
-    have hv := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb); clear hb
-    apply Filter.mem_of_superset (Filter.inter_mem hu hv); clear hu hv
+    have hv := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb)
+    apply Filter.mem_of_superset (Filter.inter_mem hu hv)
     intro a
     simp only [Set.mem_inter_iff, Set.mem_setOf_eq, max_le_iff, and_imp]
     exact fun hua hva ↦ ⟨le_of_lt hua, le_of_lt hva⟩
