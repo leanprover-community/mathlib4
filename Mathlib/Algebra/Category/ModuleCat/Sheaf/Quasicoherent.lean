@@ -9,7 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 # Quasicoherent sheaves
 
 A sheaf of modules is quasi-coherent if it admits locally a presentation as the
-cokernel of a morphisms between coproducts of copies of the sheaf of rings.
+cokernel of a morphism between coproducts of copies of the sheaf of rings.
 When these coproducts are finite, we say that the sheaf is of finite presentation.
 
 ## References
