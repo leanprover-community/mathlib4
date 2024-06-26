@@ -417,9 +417,7 @@ theorem rev_ne_iff {i j : Fin n} : rev i ≠ j ↔ i ≠ rev j := rev_eq_iff.not
 #align fin.last_val Fin.val_last
 #align fin.le_last Fin.le_last
 
-theorem val_rev_zero : ((rev 0 : Fin (n + 1)) : ℕ) = n := rfl
-
-theorem val_rev_zero' [NeZero n]: ((rev 0 : Fin n) : ℕ) = n.pred := rfl
+@[simp] theorem val_rev_zero [NeZero n] : ((rev 0 : Fin n) : ℕ) = n.pred := rfl
 
 instance [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
@@ -450,9 +448,9 @@ theorem top_eq_last (n : ℕ) : ⊤ = last n := rfl
 
 /- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
 `[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
-require a change to the standard library, defining `NeZero n` and thus re-defining `last n`,
-or possibly just `last`, as `rev 0`, of type `Fin n`. As we can see from these lemmas, this
-would be definitionally equal to the existing definition. -/
+require a change to the standard library, defining `NeZero n` and thus re-defining `last n`
+(and possibly make its argument implicit) as `rev 0`, of type `Fin n`. As we can see from these
+lemmas, this would be definitionally equal to the existing definition. -/
 
 section
 
