@@ -1285,8 +1285,8 @@ theorem left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
   exact right_distrib_of_nonneg ha hb
 
-theorem le_iff_le_forall_real_gt (x y : EReal) :
-    y ≤ x ↔ ∀ (z : ℝ), (x < z) → (y ≤ z) := by
+theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
+  symm
   constructor
   · exact fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z)
   · intro h
