@@ -77,12 +77,10 @@ lemma ici_union_ici_eq (a b : α) :
     (T ↓∩ (Ici a)) ∪ (T ↓∩ (Ici b)) = (T ↓∩ (Ici (a ⊓ b))) := by
   ext p
   constructor <;> intro h
-  · intro h
-    cases' h with h1 h3
+  · cases' h with h1 h3
     · exact inf_le_of_left_le h1
     · exact inf_le_of_right_le h3
-  · intro h
-    exact (hT p p.2).2 h
+  · exact (hT p p.2).2 h
 
 /- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
 pairwise intersection. -/
