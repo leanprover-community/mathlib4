@@ -363,7 +363,7 @@ variable {α : Type*} {a b : α} [Preorder α]
 contains an element covering `a`. -/
 @[mk_iff]
 class IsStronglyAtomic (α : Type*) [Preorder α] : Prop where
-  (exists_covBy_le_of_lt : ∀ (a b : α), a < b → ∃ x, a ⋖ x ∧ x ≤ b)
+  exists_covBy_le_of_lt : ∀ (a b : α), a < b → ∃ x, a ⋖ x ∧ x ≤ b
 
 theorem LT.lt.exists_covby_le [IsStronglyAtomic α] (h : a < b) : ∃ x, a ⋖ x ∧ x ≤ b :=
   IsStronglyAtomic.exists_covBy_le_of_lt a b h
