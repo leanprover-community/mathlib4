@@ -96,8 +96,8 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
         rw [← CostructuredArrow.w φ]
         dsimp [yonedaEquiv]
         simp only [comp_id, id_comp]
-        refine' (congr_fun (g.naturality φ.left.op) (X₂.hom.app (Opposite.op X₂.left)
-          (𝟙 _))).symm.trans _
+        refine (congr_fun (g.naturality φ.left.op) (X₂.hom.app (Opposite.op X₂.left)
+          (𝟙 _))).symm.trans ?_
         dsimp
         apply congr_arg
         simpa using congr_fun (X₂.hom.naturality φ.left.op).symm (𝟙 _) }
