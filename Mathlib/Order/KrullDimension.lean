@@ -68,30 +68,30 @@ lemma krullDim_eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := WithBot.ciS
 
 lemma krullDim_eq_top_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] :
     krullDim α = ⊤ :=
-le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
-| ⊥, hm => False.elim <| by
-  haveI : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
-  exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
-| some ⊤, _ => le_refl _
-| some (some m), hm => by
-  refine (not_lt_of_le (hm (LTSeries.withLength _ (m + 1))) ?_).elim
-  erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
-  simp
+  le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
+  | ⊥, hm => False.elim <| by
+    haveI : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
+    exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
+  | some ⊤, _ => le_refl _
+  | some (some m), hm => by
+    refine (not_lt_of_le (hm (LTSeries.withLength _ (m + 1))) ?_).elim
+    erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
+    simp
 
 lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
-  iSup_le <| fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
+    iSup_le <| fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
 
 lemma height_mono {a b : α} (h : a ≤ b) : height α a ≤ height α b :=
-  krullDim_le_of_strictMono (fun x ↦ ⟨x, le_trans x.2 h⟩) <| fun _ _ ↦ id
+    krullDim_le_of_strictMono (fun x ↦ ⟨x, le_trans x.2 h⟩) <| fun _ _ ↦ id
 
 lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
     krullDim α = (LTSeries.longestOf α).length :=
-le_antisymm
-  (iSup_le <| fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
-    RelSeries.length_le_length_longestOf _ _) <|
-  le_iSup (fun (i : LTSeries _) ↦ (i.length : WithBot (WithTop ℕ))) <| LTSeries.longestOf _
+  le_antisymm
+    (iSup_le <| fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
+      RelSeries.length_le_length_longestOf _ _) <|
+    le_iSup (fun (i : LTSeries _) ↦ (i.length : WithBot (WithTop ℕ))) <| LTSeries.longestOf _
 
-lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 :=  by
+lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 := by
   rw [krullDim_eq_length_of_finiteDimensionalOrder (α := α), Nat.cast_eq_zero]
   refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
   by_contra r
