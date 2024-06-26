@@ -32,7 +32,7 @@ def tensorLift : F ⊗ G ⟶ H := TensorProduct.lift (LinearMap.mk₂ R f h₁ h
 
 @[simp]
 lemma tensorLift_apply (m : F) (n : G) :
-  tensorLift f h₁ h₂ h₃ h₄ (m ⊗ₜ n) = f m n := rfl
+    tensorLift f h₁ h₂ h₃ h₄ (m ⊗ₜ n) = f m n := rfl
 
 end
 
