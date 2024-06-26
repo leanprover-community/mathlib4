@@ -39,24 +39,21 @@ The specialized version of P3 is called P4, which takes only three arguments `x�
 requires that `y₂ = y` or `-y` and that `y₁` is a left option of `y₂`. After P1, P2 and P4 are
 shown, a further inductive argument (this time using the `GameAdd` relation) proves P3 in full.
 
-Our proof features a clear separation into components/submodules:
-* calculation (e.g. ...),
-* specialize induction hypothesis to a form easier to apply
-  (that direct takes in `IsOption` arguments),
-* application of specialized indution hypothesis,
-* verification of symmetry properties,
-* verification of `CutExpand` relations, (of P1, P2, and P4 ...)
-* `Numeric`ity of options (filled in at the last moment ).
-and we utilize symmetry (permutation and negation of arguments) to minimize calculation.
-
-  strategy: extract specialized versions of the induction hypothesis that easier to apply
-  (example: `ih1`, ...),
-  show they are invariant under certain symmetries (permutation and negation of variables),
+Implementation strategy of the inductive argument: we
+* extract specialized versions (`IH1`, `IH2`, `IH3`, `IH4` and `IH24`) of the
+  induction hypothesis that are easier to apply (takes `IsOption` arguments directly), and
+* show they are invariant under certain symmetries (permutation and negation of arguments)
   and that the induction hypothesis indeed implies the specialized versions.
-  (Actually the induction hypotheses themselves already have those symmetries ..? No, not usually
-  the negation symmetries).
+* utilize the symmetries to minimize calculation.
 
-  add the numeric hypothesis only at the last moment ..
+The whole proof features a clear separation into lemmas of different roles:
+* verification of symmetry properties of P and IH (`P3_comm`, `ih1_neg_left`, etc.),
+* calculations that connects P1, P2, P3, and inequalities between the product of
+  two surreals and its options (`mulOption_lt_iff_P1`, etc.),
+* specializations of the induction hypothesis
+  (`numeric_option_mul`, `ih1`, `ih1_swap`, `ih₁₂`, `ih4`, etc.),
+* application of specialized indution hypothesis
+  (`P1_of_ih`, `mul_right_le_of_equiv`, `P3_of_lt`, etc.).
 
 ## References
 
@@ -135,8 +132,8 @@ lemma P24_neg_right : P24 x₁ x₂ y ↔ P24 x₁ x₂ (-y) := by rw [P24, P24,
 lemma mulOption_lt_iff_P1 {i j k l} :
     (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ ↔
     P1 (x.moveLeft i) x (x.moveLeft j) y (y.moveLeft k) (-(-y).moveLeft l) := by
-  dsimp only [mulOption, quot_sub, quot_add, P1]
-  convert Iff.rfl using 2
+  dsimp only [P1, mulOption, quot_sub, quot_add]
+  congr
   simp_rw [neg_sub', neg_add, quot_mul_neg, neg_neg]
 
 lemma mulOption_lt_mul_iff_P3 {i j} :
@@ -226,10 +223,9 @@ lemma ih1 : IH1 x y := by
   on_goal 2 => refine TransGen.tail ?_ (cutExpand_pair_right hy)
   all_goals exact TransGen.single (cutExpand_double_left h₁ h₂)
 
-lemma ih1_swap : IH1 y x :=
-  ih1 <| by
-    simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih ⊢
-    exact ih
+lemma ih1_swap : IH1 y x := ih1 <| by
+  simp_rw [ArgsRel, InvImage, Args.toMultiset, Multiset.pair_comm] at ih ⊢
+  exact ih
 
 lemma P3_of_ih (hy : Numeric y) (ihyx : IH1 y x) (i k l) :
     P3 (x.moveLeft i) x (y.moveLeft k) (-(-y).moveLeft l) :=
@@ -280,15 +276,10 @@ theorem P1_of_ih : (x * y).Numeric := by
       apply mulOption_lt hx.neg hy.neg ihxyn ihyxn
   all_goals
     cases x; cases y
-    rintro (⟨i,j⟩|⟨i,j⟩)
-  on_goal 1 => rw [mk_mul_moveLeft_inl]
-  on_goal 2 => rw [mk_mul_moveLeft_inr]
-  on_goal 3 => rw [mk_mul_moveRight_inl]
-  on_goal 4 => rw [mk_mul_moveRight_inr]
-  all_goals
+    rintro (⟨i,j⟩|⟨i,j⟩) <;>
     refine ((numeric_option_mul ih ?_).add <| numeric_mul_option ih ?_).sub
-      (numeric_option_mul_option ih ?_ ?_)
-  all_goals solve_by_elim [IsOption.mk_left, IsOption.mk_right]
+      (numeric_option_mul_option ih ?_ ?_) <;>
+    solve_by_elim [IsOption.mk_left, IsOption.mk_right]
 
 /-- A specialized induction hypothesis used to prove P2 and P4. -/
 def IH24 (x₁ x₂ y : PGame) : Prop :=
@@ -316,7 +307,7 @@ lemma ih₂₁ : IH24 x₂ x₁ y := ih₁₂ <| by
   dsimp only [Multiset.insert_eq_cons, ← Multiset.singleton_add] at ih' ⊢
   abel
 
-lemma ih4_of_ih : IH4 x₁ x₂ y := by
+lemma ih4 : IH4 x₁ x₂ y := by
   refine fun z w h ↦ ⟨?_, ?_⟩
   all_goals
     intro h'
@@ -355,7 +346,7 @@ lemma mulOption_lt_mul_of_equiv (hn : x₁.Numeric) (h : IH24 x₁ x₂ y) (he :
   · rw [← lt_congr_right he]
     apply hn.moveLeft_lt
 
-/-- P2 follows from specialized induction hypotheses ("one half" of the equality). -/
+/-- P2 follows from specialized induction hypotheses (one half of the equality). -/
 theorem mul_right_le_of_equiv (h₁ : x₁.Numeric) (h₂ : x₂.Numeric)
     (h₁₂ : IH24 x₁ x₂ y) (h₂₁ : IH24 x₂ x₁ y) (he : x₁ ≈ x₂) : x₁ * y ≤ x₂ * y := by
   have he' := neg_equiv_neg_iff.2 he
@@ -397,21 +388,21 @@ lemma mulOptionsLTMul_of_numeric (hn : (x * y).Numeric) :
 
 /-- A condition just enough to deduce P3, which will always be used with `x'` being a left
   option of `x₂`. When `y₁` is a left option of `y₂`, it can be deduced from induction hypotheses
-  `IH24 x₁ x₂ y₂`, `IH4 x₁ x₂ y₂`, and `(x₂ * y₂).numeric` for P124 (`P3_cond_of_ih`); when `y₁` is
+  `IH24 x₁ x₂ y₂`, `IH4 x₁ x₂ y₂`, and `(x₂ * y₂).Numeric` (`ih3_of_ih`); when `y₁` is
   not necessarily an option of `y₂`, it follows from the induction hypothesis for P3 (with `x₂`
   replaced by a left option `x'`) after the `main` theorem (P124) is established, and is used to
   prove P3 in full (`P3_of_lt_of_lt`). -/
 def IH3 (x₁ x' x₂ y₁ y₂ : PGame) : Prop :=
     P2 x₁ x' y₁ ∧ P2 x₁ x' y₂ ∧ P3 x' x₂ y₁ y₂ ∧ (x₁ < x' → P3 x₁ x' y₁ y₂)
 
-lemma ih3_of_ih (h24 : IH24 x₁ x₂ y) (h4 : IH4 x₁ x₂ y) (hl : MulOptionsLTMul x₂ y)
-    (i j) : IH3 x₁ (x₂.moveLeft i) x₂ (y.moveLeft j) y :=
+lemma ih3_of_ih (h24 : IH24 x₁ x₂ y) (h4 : IH4 x₁ x₂ y) (hl : MulOptionsLTMul x₂ y) (i j) :
+    IH3 x₁ (x₂.moveLeft i) x₂ (y.moveLeft j) y :=
   have ml := @IsOption.moveLeft
   have h24 := (@h24 _).2.1 (ml i)
   ⟨(h4 <| ml j).2 (ml i), h24.1, mulOption_lt_mul_iff_P3.1 (@hl i j), fun l ↦ (h24.2 l).1 _⟩
 
-lemma P3_of_le_left {y₁ y₂} (i) (h : IH3 x₁ (x₂.moveLeft i) x₂ y₁ y₂)
-    (hl : x₁ ≤ x₂.moveLeft i) : P3 x₁ x₂ y₁ y₂ := by
+lemma P3_of_le_left {y₁ y₂} (i) (h : IH3 x₁ (x₂.moveLeft i) x₂ y₁ y₂) (hl : x₁ ≤ x₂.moveLeft i) :
+    P3 x₁ x₂ y₁ y₂ := by
   obtain (hl|he) := lt_or_equiv_of_le hl
   · exact (h.2.2.2 hl).trans h.2.2.1
   · rw [P3, h.1 he, h.2.1 he]
@@ -420,7 +411,8 @@ lemma P3_of_le_left {y₁ y₂} (i) (h : IH3 x₁ (x₂.moveLeft i) x₂ y₁ y�
 /-- P3 follows from `IH3` (so P4 (with `y₁` a left option of `y₂`) follows from the induction
   hypothesis). -/
 theorem P3_of_lt {y₁ y₂} (h : ∀ i, IH3 x₁ (x₂.moveLeft i) x₂ y₁ y₂)
-    (hs : ∀ i, IH3 (-x₂) ((-x₁).moveLeft i) (-x₁) y₁ y₂) (hl : x₁ < x₂) : P3 x₁ x₂ y₁ y₂ := by
+    (hs : ∀ i, IH3 (-x₂) ((-x₁).moveLeft i) (-x₁) y₁ y₂) (hl : x₁ < x₂) :
+    P3 x₁ x₂ y₁ y₂ := by
   obtain (⟨i,hi⟩|⟨i,hi⟩) := lf_iff_exists_le.1 (lf_of_lt hl)
   · exact P3_of_le_left i (h i) hi
   · exact P3_neg.2 <| P3_of_le_left _ (hs _) <| by
@@ -440,7 +432,7 @@ theorem main (a : Args) : a.Numeric → P124 a := by
   | P24 x₁ x₂ y =>
     have h₁₂ := ih₁₂ ih
     have h₂₁ := ih₂₁ ih
-    have h4 := ih4_of_ih ih
+    have h4 := ih4 ih
     obtain ⟨h₁₂x, h₁₂y⟩ := ih24_neg h₁₂
     obtain ⟨h4x, h4y⟩ := ih4_neg h4
     refine ⟨fun he ↦ Quotient.sound ?_, fun hl ↦ ?_⟩
