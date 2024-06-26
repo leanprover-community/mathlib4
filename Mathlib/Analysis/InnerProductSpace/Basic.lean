@@ -210,6 +210,8 @@ def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 
 
 namespace InnerProductSpace.Core
 
+section PreInnerProductSpace.Core
+
 variable [AddCommGroup F] [Module 𝕜 F] [c : PreInnerProductSpace.Core 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
@@ -225,17 +227,16 @@ local postfix:90 "†" => starRingEnd _
 /-- Inner product defined by the `PreInnerProductSpace.Core` structure. We can't reuse
 `PreInnerProductSpace.Core.toInner` because it takes `PreInnerProductSpace.Core` as an explicit
 argument. -/
-def toInner' : Inner 𝕜 F :=
+def toPreInner' : Inner 𝕜 F :=
   c.toInner
 
-attribute [local instance] toInner'
+attribute [local instance] toPreInner'
 
 /-- The norm squared function for `PreInnerProductSpace.Core` structure. -/
-def normSq (x : F) :=
+def seminormSq (x : F) :=
   reK ⟪x, x⟫
-#align inner_product_space.core.norm_sq InnerProductSpace.Core.normSq
 
-local notation "normSqF" => @normSq 𝕜 F _ _ _ _
+local notation "seminormSqF" => @seminormSq 𝕜 F _ _ _ _
 
 theorem inner_conj_symm (x y : F) : ⟪y, x⟫† = ⟪x, y⟫ :=
   c.conj_symm x y
@@ -258,10 +259,10 @@ theorem inner_add_right (x y z : F) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ :
   rw [← inner_conj_symm, inner_add_left, RingHom.map_add]; simp only [inner_conj_symm]
 #align inner_product_space.core.inner_add_right InnerProductSpace.Core.inner_add_right
 
-theorem ofReal_normSq_eq_inner_self (x : F) : (normSqF x : 𝕜) = ⟪x, x⟫ := by
+theorem ofReal_seminormSq_eq_inner_self (x : F) : (seminormSqF x : 𝕜) = ⟪x, x⟫ := by
   rw [ext_iff]
   exact ⟨by simp only [ofReal_re]; rfl, by simp only [inner_self_im, ofReal_im]⟩
-#align inner_product_space.core.coe_norm_sq_eq_inner_self InnerProductSpace.Core.ofReal_normSq_eq_inner_self
+#align inner_product_space.core.coe_norm_sq_eq_inner_self InnerProductSpace.Core.ofReal_seminormSq_eq_inner_self
 
 theorem inner_re_symm (x y : F) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← inner_conj_symm, conj_re]
 #align inner_product_space.core.inner_re_symm InnerProductSpace.Core.inner_re_symm
@@ -291,18 +292,15 @@ theorem inner_self_of_eq_zero {x : F} : x = 0 → ⟪x, x⟫ = 0 := by
     intro h
     rw [h]
     exact inner_zero_left _
---#align inner_product_space.core.inner_self_eq_zero InnerProductSpace.Core.inner_self_eq_zero
 
-theorem normSq_eq_zero_of_eq_zero {x : F} : x = 0 → normSqF x = 0 := by
+theorem seminormSq_eq_zero_of_eq_zero {x : F} : x = 0 → seminormSqF x = 0 := by
   intro h
-  rw [normSq]
+  rw [seminormSq]
   rw [inner_self_of_eq_zero h]
   exact RCLike.zero_re'
---#align inner_product_space.core.norm_sq_eq_zero InnerProductSpace.Core.normSq_eq_zero
 
 theorem ne_zero_of_inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 → x ≠ 0 := by
   exact fun P Q => P (inner_self_of_eq_zero Q)
---#align inner_product_space.core.inner_self_ne_zero InnerProductSpace.Core.inner_self_ne_zero
 
 theorem inner_self_ofReal_re (x : F) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ := by
   norm_num [ext_iff, inner_self_im]
@@ -345,9 +343,9 @@ theorem inner_sub_sub_self (x y : F) : ⟪x - y, x - y⟫ = ⟪x, x⟫ - ⟪x, y
 #align inner_product_space.core.inner_sub_sub_self InnerProductSpace.Core.inner_sub_sub_self
 
 theorem inner_smul_smul_re (x : F) {t : ℝ} :
-    re ⟪(ofReal t : 𝕜) • x, (ofReal t : 𝕜) • x⟫ = normSqF x * t * t := by
+    re ⟪(ofReal t : 𝕜) • x, (ofReal t : 𝕜) • x⟫ = seminormSqF x * t * t := by
   rw [inner_smul_left, inner_smul_right, conj_ofReal, RCLike.re_ofReal_mul, RCLike.re_ofReal_mul,
-  ← mul_assoc, mul_comm, ← mul_assoc, normSq]
+  ← mul_assoc, mul_comm, ← mul_assoc, seminormSq]
 
 theorem inner_smul_left_re (x y : F) {t : ℝ} : ⟪(ofReal t : 𝕜) • x, y⟫ = ⟪x, y⟫  * t := by
   rw [inner_smul_left, conj_ofReal, mul_comm]
@@ -357,66 +355,106 @@ theorem inner_smul_right_re (x y : F) {t : ℝ} : ⟪x, (ofReal t : 𝕜) • y�
 
 /-- An auxiliary equality useful to prove the **Cauchy–Schwarz inequality**. Here we use the
 standard argument involving the discriminant of quadratic form. -/
-lemma cauchy_schwarz_aux (x y : F) (t : ℝ) : 0 ≤ normSqF x * t * t + 2 * re ⟪x, y⟫ * t
-    + normSqF y := by
+lemma cauchy_schwarz_aux' (x y : F) (t : ℝ) : 0 ≤ seminormSqF x * t * t + 2 * re ⟪x, y⟫ * t
+    + seminormSqF y := by
   calc 0 ≤ re ⟪(ofReal t : 𝕜) • x + y, (ofReal t : 𝕜) • x + y⟫ := inner_self_nonneg
   _ = re (⟪(ofReal t : 𝕜) • x, (ofReal t : 𝕜) • x⟫ + ⟪(ofReal t : 𝕜) • x, y⟫
       + ⟪y, (ofReal t : 𝕜) • x⟫ + ⟪y, y⟫) := by rw [inner_add_add_self ((ofReal t : 𝕜) • x) y]
   _ = re ⟪(ofReal t : 𝕜) • x, (ofReal t : 𝕜) • x⟫
       + re ⟪(ofReal t : 𝕜) • x, y⟫ + re ⟪y, (ofReal t : 𝕜) • x⟫ + re ⟪y, y⟫ := by
       simp only [map_add]
-  _ = normSq x * t * t + re (⟪x, y⟫ * t) + re (⟪y, x⟫ * t) + re ⟪y, y⟫ := by rw
+  _ = seminormSq x * t * t + re (⟪x, y⟫ * t) + re (⟪y, x⟫ * t) + re ⟪y, y⟫ := by rw
     [inner_smul_smul_re, inner_smul_left_re, inner_smul_right_re]
-  _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + re ⟪y, y⟫ := by rw [mul_comm ⟪x,y⟫ _,
+  _ = seminormSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + re ⟪y, y⟫ := by rw [mul_comm ⟪x,y⟫ _,
     RCLike.re_ofReal_mul, mul_comm t _, mul_comm ⟪y,x⟫ _, RCLike.re_ofReal_mul, mul_comm t _]
-  _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + normSq y := by exact rfl
-  _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪x, y⟫ * t + normSq y := by rw [inner_re_symm y x]
-  _ = normSq x * t * t + 2 * re ⟪x, y⟫ * t + normSq y := by ring
+  _ = seminormSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + seminormSq y := by exact rfl
+  _ = seminormSq x * t * t + re ⟪x, y⟫ * t + re ⟪x, y⟫ * t + seminormSq y := by rw [inner_re_symm]
+  _ = seminormSq x * t * t + 2 * re ⟪x, y⟫ * t + seminormSq y := by ring
+
+/-- Another auxiliary equality related with the **Cauchy–Schwarz inequality**: the square of the
+seminorm of `⟪x, y⟫ • x - ⟪x, x⟫ • y` is equal to `‖x‖ ^ 2 * (‖x‖ ^ 2 * ‖y‖ ^ 2 - ‖⟪x, y⟫‖ ^ 2)`.
+We use `InnerProductSpace.ofCore.normSq x` etc (defeq to `is_R_or_C.re ⟪x, x⟫`) instead of `‖x‖ ^ 2`
+etc to avoid extra rewrites when applying it to an `InnerProductSpace`. -/
+theorem cauchy_schwarz_aux (x y : F) : seminormSqF (⟪x, y⟫ • x - ⟪x, x⟫ • y)
+    = seminormSqF x * (seminormSqF x * seminormSqF y - ‖⟪x, y⟫‖ ^ 2) := by
+  rw [← @ofReal_inj 𝕜, ofReal_seminormSq_eq_inner_self]
+  simp only [inner_sub_sub_self, inner_smul_left, inner_smul_right, conj_ofReal, mul_sub, ←
+    ofReal_seminormSq_eq_inner_self x, ← ofReal_seminormSq_eq_inner_self y]
+  rw [← mul_assoc, mul_conj, RCLike.conj_mul, mul_left_comm, ← inner_conj_symm y, mul_conj]
+  push_cast
+  ring
+#align inner_product_space.core.cauchy_schwarz_aux InnerProductSpace.Core.cauchy_schwarz_aux
 
 /-- **Cauchy–Schwarz inequality**.
 We need this for the `PreInnerProductSpace.Core` structure to take the quotient.
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by
-  have hdiscrim : ∀ (t : ℝ), 0 ≤ normSqF x * t * t  + 2 * ‖⟪x, y⟫‖ * t + normSqF y := by
+  have hdiscrim : ∀ (t : ℝ), 0 ≤ seminormSqF x * t * t  + 2 * ‖⟪x, y⟫‖ * t + seminormSqF y := by
     intro t
     by_cases hzero : ⟪x, y⟫ = 0
     · rw [hzero]
       simp only [norm_zero, mul_zero, zero_mul, add_zero]
       apply add_nonneg
-      · rw [mul_assoc, ← sq, normSq]
+      · rw [mul_assoc, ← sq, seminormSq]
         exact mul_nonneg inner_self_nonneg (sq_nonneg t)
-      · rw [normSq]
+      · rw [seminormSq]
         exact inner_self_nonneg
     · push_neg at hzero
       rw [← norm_ne_zero_iff] at hzero
-      have htxy: 0 ≤ normSqF (⟪x,y⟫ • x) * (t / ‖⟪x,y⟫‖) * (t / ‖⟪x,y⟫‖)
-          + 2 * re ⟪⟪x,y⟫ • x, y⟫ * (t / ‖⟪x,y⟫‖) + normSqF y := by
-        exact cauchy_schwarz_aux (⟪x,y⟫ • x) y (t/‖⟪x,y⟫‖)
-      rw [inner_smul_left, RCLike.conj_mul, sq, ← RCLike.ofReal_mul, RCLike.ofReal_re, normSq,
+      have htxy: 0 ≤ seminormSqF (⟪x,y⟫ • x) * (t / ‖⟪x,y⟫‖) * (t / ‖⟪x,y⟫‖)
+          + 2 * re ⟪⟪x,y⟫ • x, y⟫ * (t / ‖⟪x,y⟫‖) + seminormSqF y := by
+        exact cauchy_schwarz_aux' (⟪x,y⟫ • x) y (t/‖⟪x,y⟫‖)
+      rw [inner_smul_left, RCLike.conj_mul, sq, ← RCLike.ofReal_mul, RCLike.ofReal_re, seminormSq,
         inner_smul_left, inner_smul_right, ← mul_assoc, RCLike.conj_mul, sq, ← RCLike.ofReal_mul]
         at htxy
       simp only [ofReal_mul, mul_re, ofReal_re, ofReal_im, mul_zero, sub_zero, mul_im, zero_mul,
         add_zero] at htxy
-      rw [normSq, normSq]
+      rw [seminormSq, seminormSq]
       have : 0 ≤ ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * re ⟪x, x⟫ * t * t +
-          ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * 2 * ‖⟪x, y⟫‖ * t + normSqF y := by
+          ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * 2 * ‖⟪x, y⟫‖ * t + seminormSqF y := by
         calc 0 ≤ ‖⟪x, y⟫‖ * ‖⟪x, y⟫‖ * re ⟪x, x⟫ * (t / ‖⟪x, y⟫‖) * (t / ‖⟪x, y⟫‖) +
-          2 * (‖⟪x, y⟫‖ * ‖⟪x, y⟫‖) * (t / ‖⟪x, y⟫‖) + normSq y := htxy
+          2 * (‖⟪x, y⟫‖ * ‖⟪x, y⟫‖) * (t / ‖⟪x, y⟫‖) + seminormSq y := htxy
           _ = ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * re ⟪x, x⟫ * t * t +
-          ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * 2* ‖⟪x, y⟫‖ * t + normSq y := by ring
+          ‖⟪x, y⟫‖ / ‖⟪x, y⟫‖ * 2* ‖⟪x, y⟫‖ * t + seminormSq y := by ring
       rw [div_self hzero, one_mul, one_mul, div_self hzero, one_mul] at this
       exact this
-  have hnegdiscrim : (2 * ‖⟪x, y⟫‖)^2 - 4 * normSqF x * normSqF y ≤ 0 := by
+  have hnegdiscrim : (2 * ‖⟪x, y⟫‖)^2 - 4 * seminormSqF x * seminormSqF y ≤ 0 := by
     rw [← discrim]
     exact discrim_le_zero hdiscrim
-  rw [normSq, normSq, sq] at hnegdiscrim
+  rw [seminormSq, seminormSq, sq] at hnegdiscrim
   nth_rw 1 [norm_inner_symm x y] at hnegdiscrim
   linarith
 
-variable [cd : InnerProductSpace.Core 𝕜 F]
+end PreInnerProductSpace.Core
 
--- problem: ⟪x, x⟫ is defined above in the local notation,
--- so it is c.inner. here we want it to be cd.inner.
+section InnerProductSpace.Core
+
+variable [AddCommGroup F] [Module 𝕜 F] [cd : InnerProductSpace.Core 𝕜 F]
+
+local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
+
+local notation "normSqK" => @RCLike.normSq 𝕜 _
+
+local notation "reK" => @RCLike.re 𝕜 _
+
+local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
+
+local postfix:90 "†" => starRingEnd _
+
+/-- Inner product defined by the `InnerProductSpace.Core` structure. We can't reuse
+`InnerProductSpace.Core.toInner` because it takes `InnerProductSpace.Core` as an explicit
+argument. -/
+def toInner' : Inner 𝕜 F :=
+  cd.toInner
+
+attribute [local instance] toInner'
+
+/-- The norm squared function for `InnerProductSpace.Core` structure. -/
+def normSq (x : F) :=
+  reK ⟪x, x⟫
+#align inner_product_space.core.norm_sq InnerProductSpace.Core.normSq
+
+local notation "normSqF" => @normSq 𝕜 F _ _ _ _
 
 theorem inner_self_eq_zero {x : F} : ⟪x, x⟫ = 0 ↔ x = 0 :=
   ⟨cd.definite _, by
@@ -486,11 +524,14 @@ attribute [local instance] toNormedAddCommGroup
 def toNormedSpace : NormedSpace 𝕜 F where
   norm_smul_le r x := by
     rw [norm_eq_sqrt_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
-    rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
+    rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_seminormSq_eq_inner_self,
       ofReal_re]
-    · simp [sqrt_normSq_eq_norm, RCLike.sqrt_normSq_eq_norm]
+    · rw [seminormSq, ← normSq]
+      simp [sqrt_normSq_eq_norm, RCLike.sqrt_normSq_eq_norm]
     · positivity
 #align inner_product_space.core.to_normed_space InnerProductSpace.Core.toNormedSpace
+
+end InnerProductSpace.Core
 
 end InnerProductSpace.Core
 
@@ -501,13 +542,13 @@ attribute [local instance] InnerProductSpace.Core.toNormedAddCommGroup
 /-- Given an `InnerProductSpace.Core` structure on a space, one can use it to turn
 the space into an inner product space. The `NormedAddCommGroup` structure is expected
 to already be defined with `InnerProductSpace.ofCore.toNormedAddCommGroup`. -/
-def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (c : PreInnerProductSpace.Core 𝕜 F) :
+def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProductSpace.Core 𝕜 F) :
     InnerProductSpace 𝕜 F :=
-  letI : NormedSpace 𝕜 F := @InnerProductSpace.Core.toNormedSpace 𝕜 F _ _ _ c
-  { c with
+  letI : NormedSpace 𝕜 F := @InnerProductSpace.Core.toNormedSpace 𝕜 F _ _ _ cd
+  { cd with
     norm_sq_eq_inner := fun x => by
-      have h₁ : ‖x‖ ^ 2 = √(re (c.inner x x)) ^ 2 := rfl
-      have h₂ : 0 ≤ re (c.inner x x) := InnerProductSpace.Core.inner_self_nonneg
+      have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
+      have h₂ : 0 ≤ re (cd.inner x x) := InnerProductSpace.Core.inner_self_nonneg
       simp [h₁, sq_sqrt, h₂] }
 #align inner_product_space.of_core InnerProductSpace.ofCore
 
