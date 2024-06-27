@@ -76,6 +76,7 @@ def comparisonRightAdjointObj (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app _)] : C :=
   equalizer (G.map A.a) (adj.unit.app _)
 
+--TODO: CLEAN THIS UP!
 /--
 We have a bijection of homsets which will be used to construct the right adjoint to the comparison
 functor.
@@ -158,16 +159,7 @@ theorem comparisonAdjunction_counit_f
       (adj.unit.app (G.obj A.A))]
     (A : adj.toComonad.Coalgebra) :
     ((comparisonAdjunction adj).counit.app A).f = (beckEqualizer A).lift (counitFork A) := by
-  apply Limits.Fork.IsLimit.hom_ext (beckEqualizer A)
-  rw [Fork.IsLimit.lift_ι]
-  dsimp only [beckFork_ι, unitFork_ι]
-  rw [comparisonAdjunction_counit_f_aux]
   simp
-  suffices h : adj.counit.app A.A ≫ A.a = 𝟙 _ by {
-    rw [h]
-    simp only [Functor.comp_obj, Category.comp_id]
-  }
-  sorry
 
 variable (adj)
 
