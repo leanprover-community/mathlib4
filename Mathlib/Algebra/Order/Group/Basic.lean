@@ -160,7 +160,7 @@ lemma top_ne_zero' :
   mpr h := h ▸ neg_top
 
 @[simp]
-lemma add_eq_top_iff {a b : α} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ where
+lemma add_eq_top {a b : α} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ where
   mp h := by
     by_contra nh
     rw [not_or] at nh

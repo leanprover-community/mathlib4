@@ -129,7 +129,7 @@ theorem add_top (a : WithTop α) : a + ⊤ = ⊤ := by cases a <;> rfl
 #align with_top.add_top WithTop.add_top
 
 @[simp]
-theorem add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
+protected theorem add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   match a, b with
   | ⊤, _ => simp
   | _, ⊤ => simp
