@@ -188,6 +188,7 @@ lemma F.y_eq_zero : (F A Q).eval (y A Q) = 0 := by
 
 open scoped algebraMap
 
+-- This trick enables us to use `norm_cast` to make some proofs less painful.
 /-- An auxiliary local instance, enabling us to coerce polynomials
 cheaply from `A[X]` to `B[X]` given that `B` is an `A`-algebra.  -/
 noncomputable local instance : Algebra A[X] B[X] :=
