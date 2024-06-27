@@ -227,10 +227,10 @@ def createsGSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g :
     -- Porting note: oddly (config := {allowSynthFailures := true}) had no effect here and below
   · apply @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
-    sorry --infer_instance
+    infer_instance
   · apply @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
-    sorry --infer_instance
+    infer_instance
 
 section BeckComonadicity
 
