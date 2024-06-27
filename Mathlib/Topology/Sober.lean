@@ -182,6 +182,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     refine specializes_iff_closure_subset.trans ?_
     simp [hs.2.closure_eq, ht.2.closure_eq]
     rfl
+#align irreducible_set_equiv_points irreducibleSetEquivPoints
 
 theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
