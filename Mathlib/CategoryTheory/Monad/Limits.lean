@@ -544,7 +544,8 @@ def conePoint : Coalgebra T where
   A := c.pt
   a := lambda c t
   counit := t.hom_ext fun j ↦ by
-    sorry
+    rw [assoc, ← show _ = _ ≫ c.π.app j from T.ε.naturality _, ← assoc, commuting, assoc]
+    simp [Coalgebra.counit (D.obj j)]
   coassoc := by
     have : PreservesLimit ((D ⋙ T.forget) ⋙ T.toFunctor) T.toFunctor := sorry
     apply (isLimitOfPreserves _ (isLimitOfPreserves _ t)).hom_ext
