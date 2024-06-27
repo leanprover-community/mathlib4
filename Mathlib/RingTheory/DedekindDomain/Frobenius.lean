@@ -107,6 +107,8 @@ variable (Q : Ideal B) [Q.IsMaximal]
 
 variable [Fintype (B ⧸ Q)]
 
+/-- An auxiliary definition needed in the definition of Frobenius elements;
+`g` is a generator of the units of the finite field `B ⧸ Q`.-/
 noncomputable abbrev g : (B ⧸ Q)ˣ := (IsCyclic.exists_monoid_generator (α := (B ⧸ Q)ˣ)).choose
 
 lemma g_spec : ∀ (z : (B ⧸ Q)ˣ), z ∈ Submonoid.powers (g Q) :=
@@ -141,6 +143,11 @@ lemma exists_y :
     specialize hy ⟨σ • Q, σ, rfl⟩
     simp_all
 
+/-- An auxiliary definition needed for the definition of an abstract Frobenius
+element; `y ∈ B` reduces mod `Q` to a generator of the unit group,
+and reduces mod `Q'` to `0` for any other maximal ideal Galois-conjugate to `Q`.
+Its existence is trivial from the Chinese Remainder Theorem but we need an
+explicit name for it. -/
 noncomputable abbrev y : B :=
   (exists_y A Q).choose
 
@@ -181,6 +188,8 @@ lemma F.y_eq_zero : (F A Q).eval (y A Q) = 0 := by
 
 open scoped algebraMap
 
+/-- An auxiliary local instance, enabling us to coerce polynomials
+cheaply from `A[X]` to `B[X]` given that `B` is an `A`-algebra.  -/
 noncomputable local instance : Algebra A[X] B[X] :=
   RingHom.toAlgebra (Polynomial.mapRingHom (Algebra.toRingHom))
 
@@ -211,6 +220,8 @@ lemma F.descent (h : ∀ b : B, (∀ σ : B ≃ₐ[A] B, σ • b = b) → ∃ a
 -- of `B` is in `A`.
 variable (isGalois : ∀ b : B, (∀ σ : B ≃ₐ[A] B, σ • b = b) → ∃ a : A, b = a)
 
+/-- An auxiliary polynomial, needed in the definition of Frobenius elements.
+It's the descent to `A[X]` of a certain auxiliary Galois-invariant polynomial in `B[X]`. -/
 noncomputable abbrev m := (F.descent A Q isGalois).choose
 
 lemma m_spec : ((m A Q isGalois) : B[X]) = F A Q := (F.descent A Q isGalois).choose_spec
