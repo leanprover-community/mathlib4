@@ -385,7 +385,9 @@ section Comp
 
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-lemma comp [IsStandardSmooth.{t, w} R S] [IsStandardSmooth.{t', w'} S T] :
+/-- If `T` is a standard-smooth `S`-algebra and `S` is a standard-smooth `R`-algebra, then
+`T` is a standard-smooth `R` algebra. -/
+lemma trans [IsStandardSmooth.{t, w} R S] [IsStandardSmooth.{t', w'} S T] :
     IsStandardSmooth.{max t t', max w w'} R T where
   out := by
     obtain ⟨P, hP⟩ := ‹IsStandardSmooth R S›

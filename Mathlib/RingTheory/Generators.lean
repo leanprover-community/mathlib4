@@ -25,10 +25,6 @@ import Mathlib.RingTheory.Ideal.Cotangent
 - `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
-## TODO
-* Define `Algebra.Presentation` that extends `Generators` and contains the data of a family of
-  relations that spans the kernel of the presentation.
-
 -/
 
 universe w u v
