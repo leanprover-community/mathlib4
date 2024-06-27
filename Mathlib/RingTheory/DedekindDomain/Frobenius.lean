@@ -3,11 +3,10 @@ Copyright (c) 2024 Jou Glasheen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jou Glasheen, Amelia Livingston, Jujian Zhang, Kevin Buzzard
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal
-import Mathlib.RingTheory.IntegralRestrict
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.FieldTheory.Cardinality
 import Mathlib.RingTheory.Ideal.Pointwise
+import Mathlib.Algebra.Polynomial.GroupRingAction
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 
