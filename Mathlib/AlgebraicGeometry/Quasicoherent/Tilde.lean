@@ -1,5 +1,20 @@
+/-
+Copyright (c) 2024 Weihong Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Weihong Xu
+-/
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
+
+/-!
+
+# Construction of M^~
+
+Given any commutative ring `R` and `R`-module `M`, we construct the sheaf `M^~` of `𝒪_SpecR`-modules
+such that `M^~(U)` is the set of dependent functions that are locally fractions.
+
+-/
+
 open TopCat AlgebraicGeometry TopologicalSpace CategoryTheory Opposite
 
 variable (R: Type) [CommRing R] (M: Type) [AddCommGroup M] [Module R M]
@@ -12,7 +27,8 @@ LocalizedModule P.asIdeal.primeCompl M
 
 /--a section is globally a fraction m/s-/
 def IsFraction {U : Opens (PrimeSpectrum.Top R)} (f : ∀ ℘ : U, Localizations R M ℘) : Prop :=
-  ∃ (m: M)(s: R), ∀ x : U, ¬s ∈ x.1.asIdeal ∧ s• f x = LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m
+  ∃ (m: M) (s: R), ∀ x : U, ¬s ∈ x.1.asIdeal ∧ s •
+    f x = LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m
 
 def isFractionPrelocal : PrelocalPredicate (Localizations R M) where
   pred {U} f := IsFraction R M f
@@ -28,56 +44,61 @@ def TildeInType : Sheaf (Type) (PrimeSpectrum.Top R):=subsheafToTypes (Tilde.isL
 namespace Tilde
 
 @[simp]
-theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)} (f : ∀ x : U, Localizations R M x) :
+theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
+    (f : ∀ x : U, Localizations R M x) :
     (isLocallyFraction R M).pred f =
       ∀ y : U,
         ∃ (V : _) (_ : y.1 ∈ V) (i : V ⟶ U),
-            ∃ (m: M)(s: R), ∀ x : V, ¬s ∈ x.1.asIdeal ∧ s• f (i x) = LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m:=
+          ∃ (m: M) (s: R), ∀ x : V, ¬s ∈ x.1.asIdeal ∧ s• f (i x) =
+            LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m :=
   rfl
 
-def sectionsAddSubgroup (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    AddSubgroup (∀ x : U.unop, Localizations R M x) where
-  carrier := { f | (isLocallyFraction R M).pred f }
-  zero_mem' := by
-    refine fun x => ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨?_, ?_⟩⟩
-    · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
-    · simp
-  add_mem' := by
-    intro a b ha hb x
-    rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
-    rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
-    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia,  sb• ra+ sa•rb , sa * sb, ?_⟩
-    intro y
-    rcases wa (Opens.infLELeft _ _ y) with ⟨nma, wa⟩
-    rcases wb (Opens.infLERight _ _ y) with ⟨nmb, wb⟩
-    fconstructor
-    · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Opens.coe_inf, Pi.add_apply, smul_add, map_add, LinearMapClass.map_smul]
-      erw [← wa, ← wb]
-      dsimp
-      rw [← smul_assoc,← smul_assoc]
-      congr 2
-      simp [mul_comm]
-  neg_mem' := by
-    intro a ha x
-    rcases ha x with ⟨V, m, i, r, s, w⟩
-    refine ⟨V, m, i, -r, s, ?_⟩
-    intro y
-    rcases w y with ⟨nm, w⟩
-    fconstructor
-    · exact nm
-    · simp only [Pi.neg_apply, smul_neg, map_neg, neg_inj]
-      erw [← w]
-
-def tmp (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : ↥U.unop):((Spec.structureSheaf R).val.obj U) →+* Localization.AtPrime x.1.asIdeal:=StructureSheaf.openToLocalization R U.unop x x.2
-
+-- def sectionsAddSubgroup (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+--     AddSubgroup (∀ x : U.unop, Localizations R M x) where
+--   carrier := { f | (isLocallyFraction R M).pred f }
+--   zero_mem' := by
+--     refine fun x => ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨?_, ?_⟩⟩
+--     · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
+--     · simp
+--   add_mem' := by
+--     intro a b ha hb x
+--     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
+--     rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
+--     refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia,  sb• ra+ sa•rb , sa * sb, ?_⟩
+--     intro y
+--     rcases wa (Opens.infLELeft _ _ y) with ⟨nma, wa⟩
+--     rcases wb (Opens.infLERight _ _ y) with ⟨nmb, wb⟩
+--     fconstructor
+--     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
+--     · simp only [Opens.coe_inf, Pi.add_apply, smul_add, map_add, LinearMapClass.map_smul]
+--       erw [← wa, ← wb]
+--       dsimp
+--       rw [← smul_assoc,← smul_assoc]
+--       congr 2
+--       simp [mul_comm]
+--   neg_mem' := by
+--     intro a ha x
+--     rcases ha x with ⟨V, m, i, r, s, w⟩
+--     refine ⟨V, m, i, -r, s, ?_⟩
+--     intro y
+--     rcases w y with ⟨nm, w⟩
+--     fconstructor
+--     · exact nm
+--     · simp only [Pi.neg_apply, smul_neg, map_neg, neg_inj]
+--       erw [← w]
 
 /--M_x is an O_SpecR(U)-module when x is in U-/
-noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : ↥U.unop): Module (↑((Spec.structureSheaf R).val.obj U)) (Localizations R M ↑x):=
-Module.compHom _ (tmp R U x)
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop):
+    Module ((Spec.structureSheaf R).val.obj U) (Localizations R M ↑x):=
+  Module.compHom (R := (Localization.AtPrime x.1.asIdeal)) _
+    (StructureSheaf.openToLocalization R U.unop x x.2 :
+      (Spec.structureSheaf R).val.obj U →+* Localization.AtPrime x.1.asIdeal)
 
-lemma Smul_def (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : ↥U.unop) (r : ((Spec.structureSheaf R).val.obj U)) (m : Localizations R M ↑x) :
-r• m=tmp R U x r• m:= rfl
+lemma smul_def (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop)
+    (r : (Spec.structureSheaf R).val.obj U)
+    (m : Localizations R M ↑x) :
+  r • m = r.1 x • m := rfl
+
 /--M(U) is a O(U)-submodule of Π M_x-/
 def sectionsSubmodule (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Submodule ((Spec.structureSheaf R).1.obj U) (∀ x : U.unop, Localizations R M x) where
@@ -114,22 +135,20 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
     · simp only [Opens.coe_inf, Pi.smul_apply, LinearMapClass.map_smul]
       dsimp at wa wr ⊢
-      --change (sr*sa) • tmp R U y r • _=_
-      rw[Smul_def]
+      rw[smul_def]
       erw [← wa]
-      dsimp [tmp]
-      rw [← smul_assoc,← smul_assoc,StructureSheaf.openToLocalization_apply]
+      rw [← smul_assoc,← smul_assoc]
       congr 2
       simp [mul_comm]
       erw [← wr]
       erw [mul_left_comm,← RingHom.map_mul]
-      rw [mult_right_comm]
-
+      conv_rhs => rw [mul_comm]
+      rw [Algebra.smul_def]
+      rfl
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     AddCommGroup ((TildeInType R M).1.obj U) :=
-  (sectionsAddSubgroup R M U).toAddCommGroup
-
+  inferInstanceAs $ AddCommGroup (sectionsSubmodule R M U)
 
 def PresheafInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
   obj U := AddCommGrp.of ((TildeInType R M).1.obj U)
@@ -151,21 +170,19 @@ def SheafInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
 
 /--sheaf of comm ring--sheaf of ring>-/
 def forget2Ring :=
-  sheafCompose (Opens.grothendieckTopology (PrimeSpectrum.Top R))  (forget₂ CommRingCat RingCat) |>.obj (Spec.structureSheaf R)
+  sheafCompose (Opens.grothendieckTopology (PrimeSpectrum.Top R))
+    (forget₂ CommRingCat RingCat) |>.obj (Spec.structureSheaf R)
 
-instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) : Module ((forget2Ring R).val.obj U) ((PresheafInAddCommGrp R M).obj U) where
-  smul := sorry
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  add_smul := sorry
-  zero_smul := sorry
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+    Module ((forget2Ring R).val.obj U) ((PresheafInAddCommGrp R M).obj U) :=
+  inferInstanceAs $ Module _ (sectionsSubmodule R M U)
 
-example : SheafOfModules (forget2Ring R)where
+noncomputable example : SheafOfModules (forget2Ring R) where
   val := {
     presheaf := (PresheafInAddCommGrp R M)
     module := inferInstance
     map_smul := sorry
   }
   isSheaf := (SheafInAddCommGrp R M).2
+
+end Tilde
