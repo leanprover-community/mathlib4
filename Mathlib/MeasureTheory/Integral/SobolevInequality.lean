@@ -36,6 +36,12 @@ inside. The Hölder's inequality step is done using `ENNReal.lintegral_mul_prod_
 * `MeasureTheory.snorm_le_snorm_fderiv_of_le`:
   The bound holds when `1 ≤ p < n`, `0 ≤ q` and `p⁻¹ - n⁻¹ ≤ q⁻¹`.
   Note that in this case the constant depends on the support of `u`.
+
+Potentially also useful:
+* `MeasureTheory.snorm_le_snorm_fderiv_one`: this is the inequality for `p = 1`. In this version,
+  the codomain can be an arbitrary Banach space.
+* `MeasureTheory.snorm_le_snorm_fderiv_of_eq_inner`: in this version the codomain is assumed to be
+  a Hilbert space, without restrictions on its dimension.
 -/
 
 open scoped Classical BigOperators ENNReal NNReal Topology
@@ -343,8 +349,13 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {p : ℝ} (hp : Real.IsConjExponen
     ∃ C : ℝ≥0, ∀ {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂μ ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ p := by
-  -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
-  -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
+  /- We reduce to the case where `E` is `ℝⁿ`, for which we have already proved the result using
+  an explicit basis in `MeasureTheory.lintegral_pow_le_pow_lintegral_fderiv_aux`.
+  This proof is not too hard, but takes quite some steps, reasoning about the equivalence
+  `e : E ≃ ℝⁿ`, relating the measures on each sides of the equivalence,
+  and estimating the derivative using the chain rule.
+  The constant `C` is determined by the ratio of the measures on `E` and `ℝⁿ` and
+  the operator norm of `e` (raised to suitable powers involving `p`). -/
   let ι := Fin (finrank ℝ E)
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
@@ -434,6 +445,10 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 
     ∃ C : ℝ≥0, ∀ (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
       {u : E → F'} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  /- Here we derive the GNS-inequality for `p ≥ 1` from the version with `p = 1`.
+  For `p > 1` we apply the previous version to the function `|u|^γ` for a suitably chosen `γ`.
+  The proof requires that `x ↦ |x|^p` is smooth in the codomain, so we require that it is a
+  Hilbert space. -/
   by_cases hp'0 : p' = 0
   · simp [hp'0]
   set n := finrank ℝ E
@@ -545,6 +560,9 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F] {p p' : ℝ≥0} (
     (hn : 0 < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  /- Here we derive the GNS-inequality with a Hilbert space as codomain to the case with a
+  finite-dimensional normed space as codomain, by transferring the result along the equivalence
+  `F ≃ ℝᵐ`. -/
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
   let e : F ≃L[ℝ] F' := toEuclidean
   let C₁ : ℝ≥0 := ‖(e.symm : F' →L[ℝ] F)‖₊
