@@ -40,19 +40,19 @@ def bitIndices (n : ℕ) : List ℕ :=
 @[simp] theorem bitIndices_one : bitIndices 1 = [0] := by rfl
 
 theorem bitIndices_bit_true (n : ℕ) :
-    bitIndices (bit true n) = ((bitIndices n).map (· + 1)).cons 0 :=
+    bitIndices (bit true n) = 0 :: ((bitIndices n).map (· + 1)) :=
   binaryRec_eq rfl _ _
 
 theorem bitIndices_bit_false (n : ℕ) :
     bitIndices (bit false n) = ((bitIndices n).map (· + 1)) :=
   binaryRec_eq rfl _ _
 
-@[simp] theorem bitIndices_two_mul_add_one (n : ℕ) : bitIndices (2 * n + 1) =
-    ((bitIndices n).map (· + 1)).cons 0 := by
+@[simp] theorem bitIndices_two_mul_add_one (n : ℕ) :
+    bitIndices (2 * n + 1) = 0 :: (bitIndices n).map (· + 1) := by
   rw [← bitIndices_bit_true, bit_true, bit1_val]
 
-@[simp] theorem bitIndices_two_mul (n : ℕ) : bitIndices (2 * n) =
-    (bitIndices n).map (· + 1) := by
+@[simp] theorem bitIndices_two_mul (n : ℕ) :
+    bitIndices (2 * n) = (bitIndices n).map (· + 1) := by
   rw [← bitIndices_bit_false, bit_false, bit0_val]
 
 @[simp] theorem bitIndices_sorted {n : ℕ} : n.bitIndices.Sorted (· < ·) := by
