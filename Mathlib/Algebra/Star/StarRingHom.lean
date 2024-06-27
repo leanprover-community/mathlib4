@@ -317,6 +317,9 @@ instance : FunLike (A ≃⋆+* B) A B where
 theorem toRingEquiv_eq_coe (e : A ≃⋆+* B) : e.toRingEquiv = e :=
   rfl
 
+@[simp]
+theorem coe_toRingEquiv (e : A ≃⋆+* B) : ((e : A ≃+* B) : A → B) = e := rfl
+
 @[ext]
 theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
@@ -387,9 +390,7 @@ theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.ref
 @[trans]
 def trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
-    map_star' := fun a =>
-      show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
-        rw [e₁.map_star', e₂.map_star'] }
+    map_star' := fun a => by simp [map_star] }
 
 @[simp]
 theorem apply_symm_apply (e : A ≃⋆+* B) : ∀ x, e (e.symm x) = x :=
