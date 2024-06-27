@@ -491,7 +491,180 @@ lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (qnot1 : q ≠ 1) (xne0: x ≠ 
 
 open Filter Topology
 
--- TODO Assumptions not needed (use junk value after proving that ¬DifferentiableAt there)
+
+-- TODO delete
+lemma tendsto_nhdsWithin_of_eventuallyEq (f g : ℝ → ℝ) (x : ℝ) (l : Filter ℝ)
+    (evEq : f =ᶠ[𝓝[>] x] g) (ftend: Tendsto f (𝓝[>] x) l) :
+    Tendsto g (𝓝[>] x) l := Filter.Tendsto.congr' evEq ftend
+
+lemma eventuallyEq_nhdsWithin_of_eqOn_interval
+    (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Set.Ioo x (x + ε), f y = g y) :
+    f =ᶠ[𝓝[>] x] g := by
+  apply eventuallyEq_nhdsWithin_iff.mpr
+  apply Metric.eventually_nhds_iff.mpr
+  use ε
+  constructor
+  · exact epsPos
+  · intro y yclose ygex
+    have : y ∈ Set.Ioo x (x + ε) := by
+      simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioi, true_and]
+      have : dist y x = y - x := by
+        simp_all only [Real.dist_eq, abs_eq_self, sub_nonneg, le_of_lt ygex]
+      linarith
+    simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioi, true_and]
+
+lemma eventuallyEq_nhdsWithin_of_eqOn_interval_left
+    (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Set.Ioo (x - ε) x, f y = g y) :
+    f =ᶠ[𝓝[<] x] g := by
+  apply eventuallyEq_nhdsWithin_iff.mpr
+  apply Metric.eventually_nhds_iff.mpr
+  use ε
+  constructor
+  · exact epsPos
+  · intro y yclose ygex
+    have : y ∈ Set.Ioo (x - ε) x := by
+      simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioi, true_and]
+      constructor
+      · simp_all only [Set.mem_Iio]
+        exact sub_lt_of_abs_sub_lt_left yclose
+      · exact ygex
+    simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioi, true_and]
+
+-- TODO remove
+lemma ne_one_of_lt_onehalf (x : ℝ) (hx : x < 2⁻¹) : x ≠ 1 := by
+  linarith [two_inv_lt_one (α:=ℝ)]
+
+lemma tendsto_atTop_if_tendsto_neg_atBot {f : ℝ → ℝ} {l : Filter ℝ} :
+    Tendsto f l atBot ↔ Tendsto (fun x ↦ -f x) l atTop := by
+  constructor
+  · apply Tendsto.comp
+    exact tendsto_neg_atBot_atTop
+  · intro
+    simp_all only [tendsto_neg_atTop_iff]
+
+private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
+    Tendsto (fun (x:ℝ) ↦ (1 - x).log - x.log) (𝓝[>] 0) atTop := by
+  apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
+  · have : 𝓝[>] (0:ℝ) ≤ 𝓝 0 := nhdsWithin_le_nhds
+    apply Eventually.filter_mono this
+    apply Metric.eventually_nhds_iff.mpr
+    use 1/2
+    constructor
+    · norm_num
+    · intro y hy
+      suffices log (1 / 2) < (1 - y).log by linarith
+      apply Real.strictMonoOn_log
+      · norm_num
+      · simp_all
+        have : y < 2⁻¹ := lt_of_abs_lt hy
+        linarith [two_inv_lt_one (α:=ℝ)]
+      · simp_all
+        have : (1 : ℝ) = 2⁻¹ + 2⁻¹ := by norm_num
+        by_cases ypos : 0 < y
+        · have : y < 2⁻¹ := lt_of_abs_lt hy
+          linarith
+        · have : (0 : ℝ) < 2⁻¹ := by simp_all only [not_lt, inv_pos, Nat.ofNat_pos]
+          have : -2⁻¹ < y := neg_lt_of_abs_lt hy
+          linarith
+  · apply tendsto_atTop_if_tendsto_neg_atBot.mp tendsto_log_nhdsWithin_zero_right
+
+private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
+    Tendsto (fun (x:ℝ) ↦ (1 - x).log - x.log) (𝓝[<] 1) atBot := by
+  apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
+  · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
+    apply Tendsto.comp (f:=(fun x ↦ 1 - x)) (g:=Real.log) this
+    have contF : Continuous (fun (x:ℝ) ↦ 1 - x) := by exact continuous_sub_left 1
+    have : Set.MapsTo (fun (x:ℝ) ↦ 1 - x)  (Set.Iio 1) (Set.Ioi 0) := by
+      intro x hx
+      simp_all only [Set.mem_Iio, Set.mem_Ioi, sub_pos]
+    convert ContinuousWithinAt.tendsto_nhdsWithin (x:=(1:ℝ)) contF.continuousWithinAt this
+    exact Eq.symm (sub_eq_zero_of_eq rfl)
+  · have : 𝓝[<] (1:ℝ) ≤ 𝓝 1 := nhdsWithin_le_nhds
+    apply Eventually.filter_mono this
+    apply Metric.eventually_nhds_iff.mpr
+    use 2⁻¹
+    simp_all only [Real.dist_eq]
+    constructor
+    · norm_num
+    · intro y hy
+      simp only [neg_le_neg_iff]
+      suffices log (1 - 2⁻¹) < y.log by linarith
+      apply strictMonoOn_log
+      simp
+      · norm_num
+      · by_cases abspos : 0 ≤ y - 1
+        · simp [abs_eq_self.mpr abspos] at hy
+          have : 0 < y := by
+            linarith
+          exact this
+        · have :  y - 1 ≤ 0 := by linarith
+          simp [abs_eq_neg_self.mpr this] at hy
+          have : 0 < y := by
+            have : (1:ℝ) = 2⁻¹ + 2⁻¹ := by norm_num
+            linarith
+          exact this
+      · by_cases abspos : 0 ≤ y - 1
+        · simp [abs_eq_self.mpr abspos] at hy
+          linarith
+        · have : |y - 1| = 1 - y := by
+            have :  y - 1 ≤ 0 := by linarith
+            simp_all only [abs_eq_neg_self.mpr this]
+            simp only [neg_sub]
+          rw [this] at hy
+          linarith
+
+
+theorem extracted_1 {q : ℕ} {x : ℝ}
+    (h : DifferentiableAt ℝ (deriv (qaryEntropy q)) x)
+    (contAt : ContinuousAt (deriv (qaryEntropy q)) x) (xis1 : x = 1) :
+    ¬ContinuousAt (deriv (qaryEntropy q)) x := by
+  apply not_continuousAt_of_tendsto_nhdsWithin_Iio_atBot
+  rw [xis1]
+  have asdf : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[<] 1) atBot := by
+    have : (fun (x:ℝ) ↦ log (q - 1) + (1 - x).log - x.log)
+      = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by
+      ext x
+      ring
+    rw [this]
+    apply tendsto_atBot_add_const_left
+    exact tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot
+  apply Filter.Tendsto.congr' _ asdf
+  apply eventuallyEq_nhdsWithin_of_eqOn_interval_left (fun x ↦ log (q - 1) + log (1 - x) - log x)
+    (deriv (qaryEntropy q)) 1 2⁻¹
+  · norm_num
+  · intro y hy
+    apply Eq.symm (deriv_qaryEntropy _ _)
+    simp_all
+    · have : (1 : ℝ) = 2⁻¹ + 2⁻¹ := by norm_num
+      linarith
+    · simp_all
+      linarith [two_inv_lt_one (α:=ℝ)]
+
+private lemma extracted_2 {q : ℕ} {x : ℝ}
+  (h : DifferentiableAt ℝ (deriv (qaryEntropy q)) x)
+  (contAt : ContinuousAt (deriv (qaryEntropy q)) x) (xis0 : x = 0) :
+  ¬ContinuousAt (deriv (qaryEntropy q)) x := by
+  apply not_continuousAt_of_tendsto_nhdsWithin_Ioi_atTop
+  rw [xis0]
+  have asdf : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[>] 0) atTop := by
+    have : (fun (x:ℝ) ↦ log (q - 1) + (1 - x).log - x.log)
+      = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by
+      ext x
+      ring
+    rw [this]
+    apply tendsto_atTop_add_const_left
+    exact tendsto_log_one_sub_sub_log_nhdsWithin_atAtop
+  apply Filter.Tendsto.congr' _ asdf
+  apply eventuallyEq_nhdsWithin_of_eqOn_interval (fun x ↦ log (q - 1) + log (1 - x) - log x)
+    (deriv (qaryEntropy q)) 0 2⁻¹
+  · norm_num
+  · intro y hy
+    apply Eq.symm (deriv_qaryEntropy _ _)
+    simp_all
+    · linarith
+    · simp_all
+      linarith [two_inv_lt_one (α:=ℝ)]
+
 /-- Second derivative of q-ary entropy. -/
 lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
     deriv^[2] (qaryEntropy q) x = -1 / (x * (1 - x)) := by
@@ -519,17 +692,15 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
     · cases this with  -- surely this can be shortened?
       | inl xis0 => simp_all only [zero_ne_one, sub_zero, mul_one, div_zero]
       | inr xis1 => simp_all only [one_ne_zero, sub_self, mul_zero, div_zero]
-    · sorry
--- rw [qaryEntropy_eq_log_mul_add_binaryEntropy']
--- have : ((fun p ↦ p * ((q:ℝ) - 1).log) + binaryEntropy)
---       = (fun x ↦ (fun p ↦ p * ((q:ℝ) - 1).log) x + binaryEntropy x) := by
---   simp only [ne_eq, not_and, Decidable.not_not]; rfl
--- rw [this]
--- have is_diff : DifferentiableAt ℝ (fun p ↦ p * ((q:ℝ) - 1).log) x := by
---   simp only [differentiableAt_id', differentiableAt_const, DifferentiableAt.mul]
--- have not_diff : ¬ DifferentiableAt ℝ binaryEntropy x := by
---   sorry
--- apply not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt (x := x) is_diff not_diff
+    · intro h
+      have contAt := h.continuousAt
+      cases this with
+      | inl xis0 =>
+        have := extracted_2 h contAt xis0
+        contradiction
+      | inr xis1 =>
+        have := extracted_1 h contAt xis1
+        contradiction
 
 lemma deriv2_binaryEntropy {x : ℝ} : deriv^[2] binaryEntropy x = -1 / (x * (1-x)) :=
   deriv2_qaryEntropy

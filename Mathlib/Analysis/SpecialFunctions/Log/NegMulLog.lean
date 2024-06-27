@@ -52,7 +52,6 @@ lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * lo
   refine DifferentiableOn.differentiableAt differentiableOn_mul_log ?_
   simp [hx]
 
--- TODO Maybe replace by shorter argument or put in different file?
 lemma abs_min_lt_of_nonneg {α : Type} [LinearOrderedAddCommGroup α] {L R x : α}
     (hL : 0 ≤ L) (hR : 0 ≤ R) (Llx : L < x) :
     |min L R| < x := by
@@ -63,10 +62,8 @@ lemma abs_min_lt_of_nonneg {α : Type} [LinearOrderedAddCommGroup α] {L R x : �
     rw [abs_eq_self.mpr hR]
     exact lt_of_le_of_lt (le_of_not_lt xlt) Llx
 
--- helper lemma for `not_eventually_bounded_zero_mul_log`
--- Is using `protected` good here? Probably nobody will ever want to use this?
--- Should it be inlined?
-protected lemma NegMulLog.one_lt_log_sub_const_of_lt_exp_sub
+/- helper lemma for `not_eventually_bounded_zero_mul_log` -/
+private lemma NegMulLog.one_lt_log_sub_const_of_lt_exp_sub
     (x D : ℝ) (hx : 0 < x) (h : x < rexp (D - 2)) :
     1 < |x.log - D| := by
   by_cases abs_eq : x.log - D < 0
@@ -133,10 +130,35 @@ lemma tendsto_deriv_mul_log_nhdsWithin_zero :
     exact ne_of_gt hx
   simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
 
+-- TODO put elsewhere, generalize, maybe add other nhdsWithin variants?
+open Filter in
+lemma not_continuousAt_of_tendsto_nhdsWithin_Ioi_atTop {f : ℝ → ℝ} {x : ℝ}
+    (hf : Tendsto f (𝓝[>] x) atTop) :
+    ¬ ContinuousAt f x := fun h ↦
+  not_tendsto_nhds_of_tendsto_atTop hf _ (h.tendsto.mono_left inf_le_left)
+
+-- TODO put elsewhere, generalize?
+open Filter in
+lemma not_continuousAt_of_tendsto_nhdsWithin_Ioi_atBot {f : ℝ → ℝ} {x : ℝ}
+    (hf : Filter.Tendsto f (𝓝[>] x) Filter.atBot) :
+    ¬ ContinuousAt f x := fun h ↦
+  not_tendsto_nhds_of_tendsto_atBot hf _ (h.tendsto.mono_left inf_le_left)
+
+open Filter in
+lemma not_continuousAt_of_tendsto_nhdsWithin_Iio_atTop {f : ℝ → ℝ} {x : ℝ}
+    (hf : Filter.Tendsto f (𝓝[<] x) Filter.atTop) :
+    ¬ ContinuousAt f x := fun h ↦
+  not_tendsto_nhds_of_tendsto_atTop hf _ (h.tendsto.mono_left inf_le_left)
+
+open Filter in
+lemma not_continuousAt_of_tendsto_nhdsWithin_Iio_atBot {f : ℝ → ℝ} {x : ℝ}
+    (hf : Filter.Tendsto f (𝓝[<] x) Filter.atBot) :
+    ¬ ContinuousAt f x := fun h ↦
+  not_tendsto_nhds_of_tendsto_atBot hf _ (h.tendsto.mono_left inf_le_left)
+
 lemma not_continuousAt_deriv_mul_log_zero :
-    ¬ ContinuousAt (deriv (fun (x : ℝ) ↦ x * log x)) 0 := fun h ↦
-  not_tendsto_nhds_of_tendsto_atBot tendsto_deriv_mul_log_nhdsWithin_zero _
-    (h.tendsto.mono_left inf_le_left)
+    ¬ ContinuousAt (deriv (fun (x : ℝ) ↦ x * log x)) 0 :=
+  not_continuousAt_of_tendsto_nhdsWithin_Ioi_atBot tendsto_deriv_mul_log_nhdsWithin_zero
 
 lemma deriv2_mul_log {x : ℝ} : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, Function.comp_apply]
