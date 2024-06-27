@@ -119,27 +119,6 @@ example (i j k : Basis (Fin (finrank K V)) K V) : B i j * B j k = B i k :=
 example (i j : Basis (Fin (finrank K V)) K V) : B i j * B j i = 1 :=
   Basis.toMatrix_mul_toMatrix_flip _ _
 
-abbrev matrix_generic (i j : Basis (Fin (finrank K V)) K V) :
-    (((Fin (finrank K V - r)) × Fin r) → A) →
-    Matrix (Fin (finrank K V)) (Fin r) A := by
-  intro φ
-  set φ' : Matrix (Fin (finrank K V)) (Fin r) A := Matrix.of
-    (fun x y ↦
-      if x < r then if x.1 = y.1 then 1 else 0
-      else φ (⟨x.1 - r, by have := x.2; omega⟩, y))
-  exact (B j i).map (algebraMap K A) * φ'
-
-abbrev matrix_F_generic (i j : Basis (Fin (finrank K V)) K V) :
-    (((Fin (finrank K V - r)) × Fin r) → A) →
-    Matrix (Fin r) (Fin r) A :=
-  fun φ  ↦ Matrix.submatrix (matrix_generic hr i j φ) (Fin.castLE hr.le) id
-
-abbrev matrix_G_generic (i j : Basis (Fin (finrank K V)) K V) :
-    (((Fin (finrank K V - r)) × Fin r) → A) →
-    Matrix (Fin (finrank K V - r)) (Fin r) A :=
-  fun φ  ↦ Matrix.submatrix (matrix_generic hr i j φ)
-    (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩) id
-
 abbrev matrix (i j : Basis (Fin (finrank K V)) K V) :=
   (B j i).map (algebraMap K _) * matrix_coord K V hr
 
@@ -201,8 +180,7 @@ local instance isUnit_F' (i j : Basis (Fin (finrank K V)) K V) :
     rw [← RingHom.map_det]
     simp only [equation]
     refine isUnit_iff_exists_inv.mpr ?_
-    existsi IsLocalization.Away.invSelf (matrix_F_generic hr i j
-      (MvPolynomial.X (R := K))).det
+    existsi IsLocalization.Away.invSelf (matrix_F hr i j).det
     simp only [IsLocalization.Away.mul_invSelf]
 
 lemma equation_eq_one_of_diagonal (i : Basis (Fin (finrank K V)) K V) :
@@ -364,7 +342,11 @@ def glueData : GlueData where
     ext _
     simp only [RingHom.id_apply]
     erw [IsLocalization.lift_id]
-  t' := sorry
+  t' i j k := by
+    refine Limits.pullback.lift ?_ ?_ ?_
+    · sorry
+    · sorry
+    · sorry
   t_fac := sorry
   cocycle := sorry
   f_open _ _ := inferInstance
