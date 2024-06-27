@@ -122,8 +122,8 @@ theorem isIntegral_algHom_iff {x : A} : IsIntegral R (f x) ↔ IsIntegral R x :=
 
 theorem Subalgebra.isIntegral_iff (S : Subalgebra R A) :
     Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
-  (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm).trans
-    Subtype.forall
+  Algebra.isIntegral_def.trans <| .trans
+    (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
 
 theorem Algebra.IsIntegral.of_injective [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
   ⟨fun _ ↦ (isIntegral_algHom_iff f hf).mp (isIntegral _)⟩
@@ -464,8 +464,9 @@ theorem IsIntegral.inv_mem {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S
 
 /-- An integral subalgebra of a division ring over a field is closed under inverses. -/
 theorem Algebra.IsIntegral.inv_mem {R S} [Field R] [DivisionRing S] [Algebra R S]
-    {A : Subalgebra R S} (hA : Algebra.IsIntegral R A) {x : S} (hx : x ∈ A) : x⁻¹ ∈ A :=
-  ((isIntegral_algHom_iff A.val Subtype.val_injective).mpr <| hA ⟨x, hx⟩).inv_mem hx
+    {A : Subalgebra R S} [Algebra.IsIntegral R A] {x : S} (hx : x ∈ A) : x⁻¹ ∈ A :=
+  ((isIntegral_algHom_iff A.val Subtype.val_injective).mpr <|
+    Algebra.IsIntegral.isIntegral (⟨x, hx⟩ : A)).inv_mem hx
 
 /-- The inverse of an integral element in a division ring over a field is also integral. -/
 theorem IsIntegral.inv {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
@@ -478,12 +479,12 @@ theorem IsIntegral.mem_of_inv_mem {R S} [Field R] [DivisionRing S] [Algebra R S]
 
 /-- An commutative domain that is an integral algebra over a field is a field. -/
 theorem isField_of_isIntegral_of_isField' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
-    [Algebra R S] [H : Algebra.IsIntegral R S] (hR : IsField R) : IsField S where
+    [Algebra R S] [Algebra.IsIntegral R S] (hR : IsField R) : IsField S where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   mul_comm := mul_comm
   mul_inv_cancel {x} hx := by
     letI := hR.toField
-    obtain ⟨y, rfl⟩ := (H x).isUnit hx
+    obtain ⟨y, rfl⟩ := (Algebra.IsIntegral.isIntegral (R := R) x).isUnit hx
     exact ⟨y.inv, y.val_inv⟩
 #align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_isField'
 
@@ -868,7 +869,9 @@ theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
 
 /-- The integral closure of a field in a commutative domain is always a field. -/
 theorem isField [Algebra R A] [IsScalarTower R A B] [IsDomain A] (hR : IsField R) :
-    IsField A := isField_of_isIntegral_of_isField' (IsIntegralClosure.isIntegral R B) hR
+    IsField A :=
+  have := IsIntegralClosure.isIntegral_algebra R (A := A) B
+  isField_of_isIntegral_of_isField' hR
 
 section lift
 
