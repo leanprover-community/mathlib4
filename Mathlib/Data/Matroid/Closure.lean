@@ -73,8 +73,8 @@ lemma ground_subset_cl_iff : M.E ⊆ M.cl X ↔ M.cl X = M.E := by
   simp [M.cl_subset_ground X, subset_antisymm_iff]
 
 lemma cl_eq_sInter_of_subset (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
-    M.cl X = ⋂₀ {F : Set α | M.Flat F ∧ X ⊆ F} :=
-  by rw [cl, inter_eq_self_of_subset_left hX]
+    M.cl X = ⋂₀ {F : Set α | M.Flat F ∧ X ⊆ F} := by
+  rw [cl, inter_eq_self_of_subset_left hX]
 
 @[simp] lemma cl_inter_ground (M : Matroid α) (X : Set α) : M.cl (X ∩ M.E) = M.cl X := by
   simp_rw [cl_def, inter_assoc, inter_self]
