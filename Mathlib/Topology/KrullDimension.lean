@@ -13,7 +13,7 @@ The Krull dimension of a topological space is the order-theoretic Krull dimensio
 collection of all its subsets that are closed and irreducible. Unfolding this definition, it is
 the length of longest series of closed irreducible subsets ordered by inclusion.
 
-TODO: The Krull dimension of `Spec(R)` equal to the Krull dimension of `R`, for `R` a commutative
+TODO: The Krull dimension of `Spec(R)` equals the Krull dimension of `R`, for `R` a commutative
   ring.
 -/
 
