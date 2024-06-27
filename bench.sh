@@ -9,11 +9,6 @@ tgt='cf9a210c-14f3-42e0-8ad8-827f5aed7f56'
 # and prints the files / categories with an instruction change of at least 10^9,
 # first the ones that got slower, then the ones that got faster
 
-curl "http://speed.lean-fro.org/mathlib4/api/compare/${src}/to/${tgt}?all_values=true" > temp.json
-
-jq '.differences | .[] | select(.dimension.metric == "instructions") |  select(.diff >= 1000000000) | [.dimension.benchmark, .diff, (.reldiff * 100)]' temp.json > temp1
-jq '.differences | .[] | select(.dimension.metric == "instructions") |  select(.diff <= -1000000000) | [.dimension.benchmark, .diff, (.reldiff * 100)]' temp.json > temp2
-
 extractVariations () {
   local threshold=1000000000
   local reg='^[0-9]+$'
@@ -34,7 +29,13 @@ extractVariations () {
     jq -n 'reduce inputs as $in (null; . + $in)'
 }
 
- : <<'MAGMA_CODE'
+ : <<'BASH_MAGMA_CODE'
+
+curl "http://speed.lean-fro.org/mathlib4/api/compare/${src}/to/${tgt}?all_values=true" > temp.json
+
+jq '.differences | .[] | select(.dimension.metric == "instructions") |  select(.diff >= 1000000000) | [.dimension.benchmark, .diff, (.reldiff * 100)]' temp.json > temp1
+jq '.differences | .[] | select(.dimension.metric == "instructions") |  select(.diff <= -1000000000) | [.dimension.benchmark, .diff, (.reldiff * 100)]' temp.json > temp2
+
 magma -b ~/lean4/significant.magma
 
 // read in the two files with the data
@@ -103,4 +104,4 @@ end for;
 printf "="^78*"\n";
 
 quit;
-MAGMA_CODE
+BASH_MAGMA_CODE
