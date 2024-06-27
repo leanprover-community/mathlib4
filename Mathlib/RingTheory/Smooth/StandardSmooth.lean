@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
+Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
 import Mathlib.RingTheory.Presentation
 import Mathlib.Algebra.MvPolynomial.PDeriv
@@ -23,6 +23,8 @@ universe t t' w w' u v
 
 variable (R : Type u) [CommRing R]
 variable (S : Type v) [CommRing S] [Algebra R S]
+
+open TensorProduct
 
 namespace Algebra
 
@@ -158,7 +160,7 @@ lemma linearMap_comp_basis_Q_inr (i : Q.relations) (j : Q.relations) :
     erw [aeval_C]
     simp
   · simp [hp, hq]
-  · simp only [Derivation.leibniz, smul_eq_mul, map_add, map_mul, aeval_X, h, add_left_inj]
+  · simp only [Derivation.leibniz, smul_eq_mul, map_add, _root_.map_mul, aeval_X, h, add_left_inj]
     congr
     classical
     rw [pderiv_X]
@@ -321,6 +323,53 @@ instance {n m : ℕ} [P.IsStandardSmoothOfRelativeDimension n]
 
 end Comp
 
+section BaseChange
+
+noncomputable
+def baseChange {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+    (P : SubmersivePresentation R S) : SubmersivePresentation T (T ⊗[R] S) where
+  __ := P.toPresentation.baseChange
+  map := P.map
+  map_inj := P.map_inj
+  relations_finite := P.relations_finite
+
+theorem baseChange_isStandardSmooth {R S T} [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] (P : SubmersivePresentation R S) (hP : P.IsStandardSmooth) :
+      (baseChange P (T := T)).IsStandardSmooth := by
+  classical
+  constructor
+  let P' := baseChange P (T := T)
+  cases nonempty_fintype P.relations
+  obtain ⟨a⟩ := nonempty_fintype P'.relations
+  have : LinearMap.toMatrix (Pi.basisFun _ _) (Pi.basisFun _ _) P'.linearMap =
+    (MvPolynomial.map (algebraMap R T)).mapMatrix
+      (LinearMap.toMatrix (Pi.basisFun _ _) (Pi.basisFun _ _) P.linearMap) := by
+    ext i j : 1
+    simp [LinearMap.toMatrix, SubmersivePresentation.linearMap, P', baseChange, Presentation.baseChange]
+    induction' P.relation j using MvPolynomial.induction_on
+    · simp
+      erw [MvPolynomial.map_C]
+      simp
+    · simp[*]
+    · simp[*, Pi.single_apply]
+      split <;> rfl
+  apply_fun Matrix.det at this
+  erw [← RingHom.map_det] at this
+  simp only [LinearMap.det_toMatrix] at this
+  erw [SubmersivePresentation.det, this]
+  have := hP.1.map (Algebra.TensorProduct.includeRight (R := R) (A := T))
+  convert this
+  erw [LinearMap.det_toMatrix]
+  simp
+  erw [MvPolynomial.aeval_map_algebraMap]
+  show _ = Algebra.TensorProduct.includeRight (MvPolynomial.aeval _ _)
+  erw [MvPolynomial.map_aeval]
+  erw [(Algebra.TensorProduct.includeRight).comp_algebraMap]
+  rfl
+  exact ⟨hP.2.1, hP.2.2⟩
+
+end BaseChange
+
 end SubmersivePresentation
 
 /--
@@ -356,47 +405,3 @@ class IsStandardSmoothOfRelativeDimension (n : ℕ) : Prop where
   out : ∃ (P : SubmersivePresentation.{t, w} R S), P.IsStandardSmoothOfRelativeDimension n
 
 end Algebra
-
-open TensorProduct Algebra
-
-noncomputable
-def foo2 {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-    (P : SubmersivePresentation R S) : SubmersivePresentation T (T ⊗[R] S) where
-  __ := P.foo2
-  map := P.map
-  map_inj := P.map_inj
-  relations_finite := P.relations_finite
-
-theorem GOAL {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-    (P : SubmersivePresentation R S) (hP : P.IsStandardSmooth) : (foo2 P (T := T)).IsStandardSmooth := by
-  classical
-  constructor
-  let P' := foo2 P (T := T)
-  cases nonempty_fintype P.relations
-  obtain ⟨a⟩ := nonempty_fintype P'.relations
-  have : LinearMap.toMatrix (Pi.basisFun _ _) (Pi.basisFun _ _) P'.linearMap =
-    (MvPolynomial.map (algebraMap R T)).mapMatrix
-      (LinearMap.toMatrix (Pi.basisFun _ _) (Pi.basisFun _ _) P.linearMap) := by
-    ext i j : 1
-    simp [LinearMap.toMatrix, SubmersivePresentation.linearMap, P', foo2, Presentation.foo2]
-    induction' P.relation j using MvPolynomial.induction_on
-    · simp
-      erw [MvPolynomial.map_C]
-      simp
-    · simp[*]
-    · simp[*, Pi.single_apply]
-      split <;> rfl
-  apply_fun Matrix.det at this
-  erw [← RingHom.map_det] at this
-  simp only [LinearMap.det_toMatrix] at this
-  erw [SubmersivePresentation.det, this]
-  have := hP.1.map (Algebra.TensorProduct.includeRight (R := R) (A := T))
-  convert this
-  erw [LinearMap.det_toMatrix]
-  simp
-  erw [MvPolynomial.aeval_map_algebraMap]
-  show _ = Algebra.TensorProduct.includeRight (MvPolynomial.aeval _ _)
-  erw [MvPolynomial.map_aeval]
-  erw [(Algebra.TensorProduct.includeRight).comp_algebraMap]
-  rfl
-  exact ⟨hP.2.1, hP.2.2⟩

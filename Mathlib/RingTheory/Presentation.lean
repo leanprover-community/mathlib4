@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
+Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
 import Mathlib.RingTheory.Generators
 import Mathlib.RingTheory.FinitePresentation
@@ -236,31 +236,62 @@ lemma foov_image :
     simp
     rw [comp_relation_aux_map]
 
-lemma foov_ker : RingHom.ker (Q.foov P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
-  apply le_antisymm
-  · intro p hp
-    rw [RingHom.mem_ker] at hp
-    induction p using MvPolynomial.induction_on with
-    | h_C a =>
-        simp [foov] at hp
-        rw [← map_zero C, (C_injective _ _).eq_iff] at hp
-        convert_to (rename Sum.inr) (C a) ∈ Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val))
-        simp
-        apply Ideal.mem_map_of_mem
-        rw [RingHom.mem_ker]
-        simpa
-    | h_X p i h =>
-        match i with
-        | Sum.inl i =>
-            simp_all
-            apply Ideal.mul_mem_right
-            exact h
-        | Sum.inr i =>
-            simp_all
-            sorry
-    | h_add p q hp hq => sorry
-  · intro p hp
-    sorry
+noncomputable def foovEquiv :
+    MvPolynomial (Q.vars ⊕ P.vars) R ≃ₐ[R] MvPolynomial Q.vars (MvPolynomial P.vars R) :=
+  sumAlgEquiv R _ _
+
+lemma foov_eq_comp : Q.foov P =
+    (MvPolynomial.mapAlgHom (aeval P.val)).comp (Q.foovEquiv P).toAlgHom := by
+  ext i : 1
+  match i with
+  | Sum.inl i => simp [foovEquiv]
+  | Sum.inr i => simp [foovEquiv]
+
+lemma barv_comp :
+    (((Q.foovEquiv P).toAlgHom).comp (rename Sum.inr)).toRingHom = C := by
+  apply RingHom.ext
+  intro x
+  induction x using MvPolynomial.induction_on with
+  | h_C a => simp
+  | h_add p q hp hq =>
+      simp
+      erw [hp, hq]
+  | h_X p n h =>
+      simp
+      erw [h]
+      congr
+      simp [foovEquiv]
+
+lemma Ideal.comap_map_ofEquiv {R S : Type*} [CommRing R] [CommRing S]
+    (e : R ≃+* S) (I : Ideal R) :
+    Ideal.comap e (Ideal.map e I) = I := by
+  ext x
+  constructor
+  · intro hx
+    simp_all
+    have : x = e.symm (e x) := by simp
+    rw [this]
+    have : I = Ideal.map e.symm (Ideal.map e I) := by
+      show I = Ideal.map e.symm.toRingHom (Ideal.map e.toRingHom I)
+      rw [Ideal.map_map]
+      simp
+    rw [this]
+    exact Ideal.mem_map_of_mem e.symm hx
+  · intro hx
+    simp only [Ideal.mem_comap]
+    exact Ideal.mem_map_of_mem e hx
+
+lemma foov_ker :
+    RingHom.ker (Q.foov P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
+  rw [foov_eq_comp]
+  erw [← RingHom.comap_ker]
+  erw [MvPolynomial.ker_map]
+  simp
+  rw [← barv_comp]
+  erw [← Ideal.map_map]
+  simp
+  erw [Ideal.comap_map_ofEquiv]
+  rfl
 
 /-- Given presentations of `T` over `S` and of `S` over `R`,
 we may construct a presentation of `T` over `R`. -/
@@ -287,7 +318,8 @@ noncomputable def comp : Presentation R T where
       rw [← RingHom.comap_ker]
       erw [ker_algebraMap_eq_span_range_relation]
       let s : Set (MvPolynomial Q.vars S) := Set.range Q.relation
-      let t : Set (MvPolynomial (Q.vars ⊕ P.vars) R) := Set.range (Algebra.Presentation.comp_relation_aux Q P)
+      let t : Set (MvPolynomial (Q.vars ⊕ P.vars) R) :=
+        Set.range (Algebra.Presentation.comp_relation_aux Q P)
       have hts : v '' t = s := Q.foov_image P
       have hv : Function.Surjective v := Q.foov_surjective P
       have hvker : RingHom.ker v.toRingHom =
@@ -364,7 +396,7 @@ noncomputable def dimension : ℕ :=
 open TensorProduct
 
 noncomputable
-def foo {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+def Generators.baseChange {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
     (P : Generators R S) : Generators T (T ⊗[R] S) := by
   --apply surjective_stableUnderBaseChange
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
@@ -402,9 +434,9 @@ def foo {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R 
 set_option synthInstance.maxHeartbeats 1000000
 set_option maxHeartbeats 10000000000
 noncomputable
-def foo2 {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+def baseChange {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
     (P : Presentation R S) : Presentation T (T ⊗[R] S) where
-  __ := foo P.toGenerators
+  __ := Generators.baseChange P.toGenerators
   relations := P.relations
   relation := fun i ↦ MvPolynomial.map (algebraMap R T) (P.relation i)
   ker_algebraMap_eq_span_range_relation := by
