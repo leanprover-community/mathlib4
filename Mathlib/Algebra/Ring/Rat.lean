@@ -101,6 +101,6 @@ lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast
 
 @[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 
-@[deprecated] alias coe_nat_eq_divInt := natCast_eq_divInt
+@[deprecated (since := "2024-04-07")] alias coe_nat_eq_divInt := natCast_eq_divInt
 
 end Rat

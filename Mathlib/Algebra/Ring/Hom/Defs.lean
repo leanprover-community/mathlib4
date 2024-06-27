@@ -379,11 +379,7 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
-set_option linter.deprecated false in
-/-- Ring homomorphisms preserve `bit1`. -/
-@[simp] lemma map_bit1 [NonAssocSemiring α] [NonAssocSemiring β] [RingHomClass F α β]
-    (f : F) (a : α) : (f (bit1 a) : β) = bit1 (f a) := by simp [bit1]
-#align map_bit1 map_bit1
+#noalign map_bit1
 
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]

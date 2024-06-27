@@ -182,6 +182,28 @@ noncomputable def integralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
 /-- Abbreviation to see a primitive root of unity as a member of the ring of integers. -/
 abbrev toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : 𝓞 K := ⟨ζ, hζ.isIntegral k.pos⟩
 
+lemma coe_toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
+
+/-- `𝓞 K ⧸ Ideal.span {ζ - 1}` is finite. -/
+lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
+    (hζ : IsPrimitiveRoot ζ k) : Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
+  refine (finite_iff_nonempty_fintype _).2 ⟨?_⟩
+  refine Ideal.fintypeQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
+  simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
+  exact hζ.ne_one hk (RingOfIntegers.ext_iff.1 h)
+
+/-- We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
+
+See the results below to compute this norm in various cases. -/
+lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
+    (hζ : IsPrimitiveRoot ζ k) :
+    Nat.card (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) =
+      (Algebra.norm ℤ (hζ.toInteger - 1)).natAbs := by
+  have := hζ.finite_quotient_toInteger_sub_one hk
+  let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1})
+  rw [Nat.card_eq_fintype_card, ← Submodule.cardQuot_apply, ← Ideal.absNorm_apply,
+    Ideal.absNorm_span_singleton]
+
 lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
     IsPrimitiveRoot hζ.toInteger k :=
   IsPrimitiveRoot.of_map_of_injective (by exact hζ) RingOfIntegers.coe_injective

@@ -245,14 +245,9 @@ attribute [simp] nil_subperm
 
 @[simp]
 theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
-  match l with
-  | [] => by simp
-  | head :: tail => by
-    simp only [iff_false]
-    intro h
-    have := h.length_le
-    simp only [List.length_cons, List.length_nil, Nat.succ_ne_zero, ← Nat.not_lt, Nat.zero_lt_succ,
-      not_true_eq_false] at this
+  ⟨fun h ↦ length_eq_zero.1 <| Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
+
+lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons _ _⟩
 
 #align list.perm.countp_eq List.Perm.countP_eq
 
@@ -689,7 +684,7 @@ private theorem DecEq_eq [DecidableEq α] :
   congr_arg BEq.mk <| by
     funext l₁ l₂
     show (l₁ == l₂) = _
-    rw [Bool.eq_iff_eq_true_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
+    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).bind (permutations'Aux b) ~
