@@ -651,7 +651,6 @@ def decompose' [DecidableEq M] := fun φ : MvPolynomial σ R =>
     (Finset.image (weightedDegree w) φ.support) fun m =>
       ⟨weightedHomogeneousComponent w m φ, weightedHomogeneousComponent_mem w φ m⟩
 
-#check DirectSum.mk_apply_of_mem
 theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
     (decompose' R w φ m : MvPolynomial σ R) = weightedHomogeneousComponent w m φ := by
   rw [decompose']

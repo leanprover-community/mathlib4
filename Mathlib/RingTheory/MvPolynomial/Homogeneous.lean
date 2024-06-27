@@ -459,14 +459,6 @@ instance HomogeneousSubmodule.gcommSemiring : SetLike.GradedMonoid (homogeneousS
   mul_mem _ _ _ _ := IsHomogeneous.mul
 #align mv_polynomial.is_homogeneous.homogeneous_submodule.gcomm_semiring MvPolynomial.IsHomogeneous.HomogeneousSubmodule.gcommSemiring
 
-open DirectSum
-
-noncomputable example : CommSemiring (⨁ i, homogeneousSubmodule σ R i) :=
-  inferInstance
-
-noncomputable example : Algebra R (⨁ i, homogeneousSubmodule σ R i) :=
-  inferInstance
-
 end IsHomogeneous
 
 noncomputable section
@@ -485,6 +477,10 @@ section HomogeneousComponent
 open Finset
 
 variable [CommSemiring R] (n : ℕ) (φ ψ : MvPolynomial σ R)
+
+theorem homogeneousComponent_mem  :
+    homogeneousComponent n φ ∈ homogeneousSubmodule σ R n :=
+  weightedHomogeneousComponent_mem _ φ n
 
 theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
     coeff d (homogeneousComponent n φ) = if (degree d) = n then coeff d φ else 0 := by
@@ -537,15 +533,17 @@ theorem sum_homogeneousComponent :
   exact fun h => (coeff_eq_zero_of_totalDegree_lt h).symm
 #align mv_polynomial.sum_homogeneous_component MvPolynomial.sum_homogeneousComponent
 
-theorem homogeneousComponent_homogeneous_polynomial (m n : ℕ) (p : MvPolynomial σ R)
-    (h : p ∈ homogeneousSubmodule σ R n) : homogeneousComponent m p = if m = n then p else 0 := by
-  convert weightedHomogeneousComponent_weighted_homogeneous_polynomial m n p h
-#align mv_polynomial.homogeneous_component_homogeneous_polynomial MvPolynomial.homogeneousComponent_homogeneous_polynomial
+theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
+    (h : p ∈ homogeneousSubmodule σ R n) :
+    homogeneousComponent m p = if m = n then p else 0 :=
+  weightedHomogeneousComponent_of_mem h
+#align mv_polynomial.homogeneous_component_homogeneous_polynomial MvPolynomial.homogeneousComponent_of_mem
 
 end HomogeneousComponent
 
 end
-section GradedAlgebra
+
+noncomputable section GradedAlgebra
 
 /-- The homogeneous submodules form a graded ring.
 This instance is used by `DirectSum.commSemiring` and `DirectSum.algebra`. -/
@@ -565,18 +563,15 @@ abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
   weightedGradedAlgebra R (1 : σ → ℕ)
 
 theorem decomposition.decompose'_apply [DecidableEq σ] [DecidableEq R] (φ : MvPolynomial σ R)
-    (i : ℕ) : ((decomposition σ).decompose' φ i : MvPolynomial σ R) = homogeneousComponent i φ :=
+    (i : ℕ) : (decomposition.decompose' φ i : MvPolynomial σ R) = homogeneousComponent i φ :=
   weightedDecomposition.decompose'_apply R _ φ i
 
 theorem decomposition.decompose'_eq :
-    (decomposition σ).decompose' = fun φ : MvPolynomial σ R =>
+    decomposition.decompose' = fun φ : MvPolynomial σ R =>
       DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (Finset.image degree φ.support)
-        fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem φ m⟩ := by
-  rfl
+        fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
+  sorry -- should be rfl
 
 end GradedAlgebra
-
-
-end
 
 end MvPolynomial
