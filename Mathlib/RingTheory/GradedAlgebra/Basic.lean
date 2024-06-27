@@ -364,3 +364,40 @@ theorem coe_decompose_mul_of_right_mem (n) [Decidable (i ≤ n)] (b_mem : b ∈ 
 end DirectSum
 
 end CanonicalOrder
+
+namespace DirectSum.IsInternal
+
+/- Given an R-algebra A and a family (ι → submodule R A) of submodules
+parameterized by an additive monoid
+and statisfying `set_like.graded_monoid M` (essentially, is multiplicative)
+such that `direct_sum.is_internal M` (A is the direct sum of the M i),
+we endow A with the structure of a graded algebra.
+The submodules are the *homogeneous* parts -/
+
+variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
+variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
+variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
+
+-- The following lines were given on Zulip by Adam Topaz
+noncomputable def coeAlgIso (hM : DirectSum.IsInternal M) :
+    (DirectSum ι fun i => ↥(M i)) ≃ₐ[R] A :=
+  { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with commutes' := fun r => by simp }
+
+noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M :=
+  { (inferInstance : SetLike.GradedMonoid M) with
+    decompose' := hM.coeAlgIso.symm
+    left_inv := hM.coeAlgIso.symm.left_inv
+    right_inv := hM.coeAlgIso.left_inv }
+
+end DirectSum.IsInternal
+
+namespace DirectSum.Decomposition
+
+variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
+variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
+variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
+
+def gradedAlgebra (dM : DirectSum.Decomposition M) : GradedAlgebra M :=
+  { (inferInstance : SetLike.GradedMonoid M) with toDecomposition := dM }
+
+end DirectSum.Decomposition
