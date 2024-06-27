@@ -564,7 +564,8 @@ variable {F} {α}
 
 theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
     (IntermediateField.adjoin F S).toSubalgebra = Algebra.adjoin F S :=
-  adjoin_eq_algebra_adjoin _ _ (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
+  adjoin_eq_algebra_adjoin _ _ fun _ ↦
+    (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 #align intermediate_field.adjoin_algebraic_to_subalgebra IntermediateField.adjoin_algebraic_toSubalgebra
 
 theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
