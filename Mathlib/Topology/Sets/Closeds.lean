@@ -373,6 +373,7 @@ structure IrreducibleCloseds (α : Type*) [TopologicalSpace α] where
   /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   irreducibleClosed' : IsIrreducibleClosed carrier
+
 namespace IrreducibleCloseds
 
 instance : SetLike (IrreducibleCloseds α) α where
