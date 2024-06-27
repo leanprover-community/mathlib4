@@ -68,6 +68,10 @@ def toLinear : L →ₗ[R] R where
 instance instCoeLinearMap : CoeOut (Weight R L M) (L →ₗ[R] R) where
   coe := Weight.toLinear R L M
 
+instance instLinearMapClass : LinearMapClass (Weight R L M) R L R where
+  map_add χ := LinearWeights.map_add χ χ.weightSpace_ne_bot
+  map_smulₛₗ χ := LinearWeights.map_smul χ χ.weightSpace_ne_bot
+
 variable {R L M χ}
 
 @[simp]
@@ -125,7 +129,7 @@ lemma trace_comp_toEnd_weightSpace_eq (χ : L → R) :
   rw [LinearMap.comp_apply, LieHom.coe_toLinearMap, h₁, map_add, h₂]
   simp [mul_comm (χ x)]
 
-@[deprecated] -- 2024-04-06
+@[deprecated (since := "2024-04-06")]
 alias trace_comp_toEnd_weight_space_eq := trace_comp_toEnd_weightSpace_eq
 
 variable {R L M} in

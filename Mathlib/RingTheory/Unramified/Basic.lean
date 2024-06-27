@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.QuotientNilpotent
@@ -27,10 +28,6 @@ under `R`-algebra homomorphisms and compositions.
 
 We show that unramified is stable under algebra isomorphisms, composition and
 localization at an element.
-
-# TODO
-
-- Show that unramified is stable under base change.
 
 -/
 
@@ -124,7 +121,7 @@ theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
   intro C _ _ I hI f₁ f₂ e'
   rw [← f₁.comp_id, ← f₂.comp_id, ← e.comp_symm, ← AlgHom.comp_assoc, ← AlgHom.comp_assoc]
   congr 1
-  refine' FormallyUnramified.comp_injective I hI _
+  refine FormallyUnramified.comp_injective I hI ?_
   rw [← AlgHom.comp_assoc, e', AlgHom.comp_assoc]
 #align algebra.formally_unramified.of_equiv Algebra.FormallyUnramified.of_equiv
 
@@ -157,7 +154,7 @@ theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   intro Q _ _ I e f₁ f₂ e'
   letI := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
   letI : IsScalarTower R A Q := IsScalarTower.of_algebraMap_eq' rfl
-  refine' AlgHom.restrictScalars_injective R _
+  refine AlgHom.restrictScalars_injective R ?_
   refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
   exact AlgHom.congr_fun e' x
@@ -202,7 +199,7 @@ theorem of_isLocalization : FormallyUnramified R Rₘ := by
   constructor
   intro Q _ _ I _ f₁ f₂ _
   apply AlgHom.coe_ringHom_injective
-  refine' IsLocalization.ringHom_ext M _
+  refine IsLocalization.ringHom_ext M ?_
   ext
   simp
 #align algebra.formally_unramified.of_is_localization Algebra.FormallyUnramified.of_isLocalization
@@ -266,13 +263,16 @@ theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R 
 section Comp
 
 variable (R A B)
-variable [Algebra A B] [IsScalarTower R A B]
 
 /-- Unramified is stable under composition. -/
-theorem comp [Unramified R A] [Unramified A B] : Unramified R B where
+theorem comp [Algebra A B] [IsScalarTower R A B] [Unramified R A] [Unramified A B] :
+    Unramified R B where
   formallyUnramified := FormallyUnramified.comp R A B
   finiteType := FiniteType.trans (S := A) Unramified.finiteType
     Unramified.finiteType
+
+/-- Unramified is stable under base change. -/
+instance baseChange [Unramified R A] : Unramified B (B ⊗[R] A) where
 
 end Comp
 

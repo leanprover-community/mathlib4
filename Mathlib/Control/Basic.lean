@@ -186,8 +186,8 @@ theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp
 #align guard_true guard_true
 
 @[simp]
-theorem guard_false {h : Decidable False} : @guard F _ False h = failure :=
-  by simp [guard, if_neg not_false]
+theorem guard_false {h : Decidable False} : @guard F _ False h = failure := by
+  simp [guard, if_neg not_false]
 #align guard_false guard_false
 
 end Alternative
@@ -208,7 +208,7 @@ instance : Monad (Sum.{v, u} e) where
   bind := @Sum.bind e
 
 instance : LawfulFunctor (Sum.{v, u} e) := by
-  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
+  constructor <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by

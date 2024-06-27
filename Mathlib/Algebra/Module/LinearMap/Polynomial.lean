@@ -61,7 +61,7 @@ The proof concludes because characteristic polynomials are independent of the ch
 
 -/
 
-open scoped BigOperators Matrix
+open scoped Matrix
 
 namespace Matrix
 
@@ -136,14 +136,16 @@ end Matrix
 
 namespace LinearMap
 
-variable {R M₁ M₂ M₃ ι₁ ι₂ ι₃ : Type*}
-variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module R M₁] [Module R M₂] [Module R M₃]
-variable [Fintype ι₁] [Fintype ι₂] [Fintype ι₃]
-variable [DecidableEq ι₁] [DecidableEq ι₂] [DecidableEq ι₃]
-variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) (b₃ : Basis ι₃ R M₃)
-
 open MvPolynomial
+
+section
+
+variable {R M₁ M₂ ι₁ ι₂ : Type*}
+variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂]
+variable [Module R M₁] [Module R M₂]
+variable [Fintype ι₁] [Finite ι₂]
+variable [DecidableEq ι₁]
+variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂)
 
 /-- Let `f : M₁ →ₗ[R] M₂` be an `R`-linear map
 between modules `M₁` and `M₂` with bases `b₁` and `b₂` respectively.
@@ -190,6 +192,15 @@ lemma toMvPolynomial_id : (id : M₁ →ₗ[R] M₁).toMvPolynomial b₁ b₁ = 
 lemma toMvPolynomial_add (f g : M₁ →ₗ[R] M₂) :
     (f + g).toMvPolynomial b₁ b₂ = f.toMvPolynomial b₁ b₂ + g.toMvPolynomial b₁ b₂ := by
   unfold toMvPolynomial; simp only [map_add, Matrix.toMvPolynomial_add]
+
+end
+
+variable {R M₁ M₂ M₃ ι₁ ι₂ ι₃ : Type*}
+variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M₁] [Module R M₂] [Module R M₃]
+variable [Fintype ι₁] [Fintype ι₂] [Finite ι₃]
+variable [DecidableEq ι₁] [DecidableEq ι₂]
+variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) (b₃ : Basis ι₃ R M₃)
 
 lemma toMvPolynomial_comp (g : M₂ →ₗ[R] M₃) (f : M₁ →ₗ[R] M₂) (i : ι₃) :
     (g ∘ₗ f).toMvPolynomial b₁ b₃ i =
@@ -241,7 +252,13 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, bind₁_X_right]
     classical
     rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
-    suffices toMvPolynomial (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
+    #adaptation_note
+    /--
+    After https://github.com/leanprover/lean4/pull/4119 we either need to specify the `M₂` argument,
+    or use `set_option maxSynthPendingDepth 2 in`.
+    -/
+    suffices toMvPolynomial (M₂ := (Module.End A (TensorProduct R A M)))
+        (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
       rw [this, bind₁_X_right]
     simp only [toMvPolynomial, Matrix.toMvPolynomial]
     suffices ∀ kl,

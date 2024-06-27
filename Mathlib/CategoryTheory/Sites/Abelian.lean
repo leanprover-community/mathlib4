@@ -33,7 +33,7 @@ universe w' w v u
 variable {C : Type u} [Category.{v} C]
 variable {D : Type w} [Category.{w'} D] [Abelian D]
 variable {J : GrothendieckTopology C}
-variable [HasSheafify J D] [HasFiniteLimits D]
+variable [HasSheafify J D]
 
 instance sheafIsAbelian : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D

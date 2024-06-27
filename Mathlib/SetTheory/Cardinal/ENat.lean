@@ -268,7 +268,7 @@ lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injO
 @[simp] lemma ofENat_add_aleph0 (m : ℕ∞) : m + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_ofENat]
 
 @[simp] lemma ofENat_mul_aleph0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ℵ₀ = ℵ₀ := by
-  induction m using ENat.recTopCoe with
+  induction m with
   | top => exact aleph0_mul_aleph0
   | coe m => rw [ofENat_nat, nat_mul_aleph0 (mod_cast hm)]
 

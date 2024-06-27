@@ -563,7 +563,7 @@ namespace FreeAlgebra
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
 preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
 -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 theorem induction {C : FreeAlgebra R X → Prop}
     (h_grade0 : ∀ r, C (algebraMap R (FreeAlgebra R X) r)) (h_grade1 : ∀ x, C (ι R x))
     (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
@@ -591,7 +591,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
 theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
   set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
   refine top_unique fun x hx => ?_; clear hx
-  induction x using FreeAlgebra.induction with
+  induction x with
   | h_grade0 => exact S.algebraMap_mem _
   | h_add x y hx hy => exact S.add_mem hx hy
   | h_mul x y hx hy => exact S.mul_mem hx hy

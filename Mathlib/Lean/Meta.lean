@@ -7,8 +7,6 @@ import Lean.Elab.Term
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Batteries.Data.List.Basic
-import Batteries.Logic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
@@ -52,11 +50,6 @@ where
 end Lean.MVarId
 
 namespace Lean.Meta
-
-/-- Count how many local hypotheses appear in an expression. -/
-def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
-  let e' ← instantiateMVars e
-  return (← getLocalHyps).toList.countP fun h => h.occurs e'
 
 /-- Get the type the given metavariable after instantiating metavariables and cleaning up
 annotations. -/

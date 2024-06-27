@@ -21,7 +21,7 @@ variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
 
-open BigOperators
+
 open Polynomial
 open PowerBasis
 
@@ -111,7 +111,7 @@ theorem repr_gen_pow_isIntegral [IsDomain S]
     exact degree_modByMonic_lt _ (minpoly.monic hB)
   rw [this, aeval_eq_sum_range' hlt]
   simp only [map_sum, LinearEquiv.map_smulₛₗ, RingHom.id_apply, Finset.sum_apply']
-  refine' IsIntegral.sum _ fun j hj => _
+  refine IsIntegral.sum _ fun j hj => ?_
   replace hj := Finset.mem_range.1 hj
   rw [← Fin.val_mk hj, ← B.basis_eq_pow, Algebra.smul_def, IsScalarTower.algebraMap_apply R S A, ←
     Algebra.smul_def, LinearEquiv.map_smul]
@@ -134,7 +134,7 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
   intro i
   rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, ← Finset.sum_product',
     map_sum, Finset.sum_apply']
-  refine' IsIntegral.sum _ fun I _ => _
+  refine IsIntegral.sum _ fun I _ => ?_
   simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, LinearEquiv.map_smulₛₗ,
     RingHom.id_apply, Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
   refine (hy _).mul ((hx _).mul ?_)
@@ -151,10 +151,10 @@ theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.ba
     ∀ i, IsIntegral R (B.basis.repr (x ^ n) i) := by
   nontriviality A using Subsingleton.elim (x ^ n) 0, isIntegral_zero
   revert hx
-  refine' Nat.case_strong_induction_on
+  refine Nat.case_strong_induction_on
     -- Porting note: had to hint what to induct on
     (p := fun n ↦ _ → ∀ (i : Fin B.dim), IsIntegral R (B.basis.repr (x ^ n) i))
-    n _ fun n hn => _
+    n ?_ fun n hn => ?_
   · intro _ i
     rw [pow_zero, ← pow_zero B.gen, ← Fin.val_mk B.dim_pos, ← B.basis_eq_pow,
       B.basis.repr_self_apply]
@@ -175,9 +175,9 @@ theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen 
     ∀ i j, IsIntegral R (B.basis.toMatrix B'.basis i j) := by
   intro i j
   rw [B.basis.toMatrix_apply, B'.coe_basis]
-  refine' repr_pow_isIntegral hB (fun i => _) hmin _ _
+  refine repr_pow_isIntegral hB (fun i => ?_) hmin _ _
   rw [← h, aeval_eq_sum_range, map_sum, Finset.sum_apply']
-  refine' IsIntegral.sum _ fun n _ => _
+  refine IsIntegral.sum _ fun n _ => ?_
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R K S, ← Algebra.smul_def,
     LinearEquiv.map_smul, algebraMap_smul]
   exact (repr_gen_pow_isIntegral hB hmin _ _).smul _

@@ -3,7 +3,7 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -400,18 +400,18 @@ Examples:
 
 ```lean
 example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
-  x*y = -2*y + 1 :=
-by polyrith
+    x*y = -2*y + 1 := by
+  polyrith
 -- Try this: linear_combination h1 - 2 * h2
 
-example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w :=
-by polyrith
+example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w := by
+  polyrith
 -- Try this: linear_combination (2 * y + x) * hzw
 
 constant scary : ∀ a b : ℚ, a + b = 0
 
-example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0) : a + b + c + d = 0 :=
-by polyrith only [scary c d, h]
+example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0) : a + b + c + d = 0 := by
+  polyrith only [scary c d, h]
 -- Try this: linear_combination scary c d + h
 ```
 -/

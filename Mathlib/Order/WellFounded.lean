@@ -84,7 +84,7 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   refine ⟨fun h => h.has_min, fun h => ⟨fun x => ?_⟩⟩
   by_contra hx
   obtain ⟨m, hm, hm'⟩ := h {x | ¬Acc r x} ⟨x, hx⟩
-  refine' hm ⟨_, fun y hy => _⟩
+  refine hm ⟨_, fun y hy => ?_⟩
   by_contra hy'
   exact hm' y hy' hy
 #align well_founded.well_founded_iff_has_min WellFounded.wellFounded_iff_has_min

@@ -728,12 +728,12 @@ run_cmd liftTermElabM <| do
 protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
-example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z :=
-by simp only [Equiv.trans_apply]; rw [h]
+example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z := by
+  simp only [Equiv.trans_apply]; rw [h]
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : γ) {z} (h : e₁.symm (e₂.symm x) = z) :
-  (e₁.trans e₂).symm x = z :=
-by simp only [Equiv.trans_symm_apply]; rw [h]
+    (e₁.trans e₂).symm x = z := by
+  simp only [Equiv.trans_symm_apply]; rw [h]
 
 -- the new projection names are parsed correctly (the old projection names won't work anymore)
 @[simps apply symm_apply] protected def Equiv.trans2 (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=

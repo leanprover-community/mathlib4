@@ -65,7 +65,7 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
 #align counterexample.with_sign.is_compl Counterexample.withSign.isCompl
 
 def withSign.independent : CompleteLattice.Independent withSign := by
-  refine'
+  apply
     (CompleteLattice.independent_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
   intro i
   fin_cases i <;> simp
