@@ -363,7 +363,7 @@ end Monoid
 section DivisionMonoid
 
 @[to_additive]
-protected lemma HasCompactMulSupport.inv {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+protected lemma HasCompactMulSupport.inv' {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
     {f : α → β} (hf : HasCompactMulSupport f) :
     HasCompactMulSupport (f⁻¹) := by
   simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
