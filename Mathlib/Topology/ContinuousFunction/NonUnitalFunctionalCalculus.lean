@@ -200,6 +200,13 @@ variable (ha : p a := by cfc_tac)
 lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.restrict⟩, hf0⟩ := by
   rw [cfcₙ_def, dif_pos ⟨ha, hf, hf0⟩]
 
+lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_tac)
+    (hf : ∀ i, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
+    (hf0 : ∀ i, f i 0 = 0 := by cfc_zero_tac) :
+    (fun i => cfcₙ (f i) a) = (fun i => cfcₙHom (a := a) ha ⟨⟨_, (hf i).restrict⟩, hf0 i⟩) := by
+  ext i
+  simp only [cfcₙ_apply (f i) a (hf i) (hf0 i)]
+
 lemma cfcₙ_apply_of_not_and_and {f : R → R} (a : A)
     (ha : ¬ (p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0)) :
     cfcₙ f a = 0 := by
@@ -310,6 +317,30 @@ lemma cfcₙ_add : cfcₙ (fun x ↦ f x + g x) a = cfcₙ f a + cfcₙ g a := b
     simp_rw [← map_add]
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
+
+open Finset in
+lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
+    (hf0 : ∀ i ∈ s, f i 0 = 0 := by cfc_zero_tac) :
+    cfcₙ (∑ i in s, f i) a = ∑ i in s, cfcₙ (f i) a := by
+  by_cases ha : p a
+  · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
+    have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
+      rw [sum_coe_sort s, hsum]
+      exact continuousOn_finset_sum s fun i hi => hf i hi
+    rw [← sum_coe_sort s, ← sum_coe_sort s]
+    rw [cfcₙ_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfcₙ_apply _ a hf']
+    congr 1
+    ext
+    simp
+  · simp [cfcₙ_apply_of_not_predicate a ha]
+
+open Finset in
+lemma cfcₙ_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R) (a : A)
+    (hf : ∀ i, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
+    (hf0 : ∀ i, f i 0 = 0 := by cfc_zero_tac) :
+    cfcₙ (∑ i, f i) a = ∑ i, cfcₙ (f i) a :=
+  cfcₙ_sum f a _ (fun i _ ↦ hf i) (fun i _ ↦ hf0 i)
 
 lemma cfcₙ_smul {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]

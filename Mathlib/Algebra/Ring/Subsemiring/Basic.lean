@@ -41,8 +41,7 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 #align nat_cast_mem natCast_mem
 #align coe_nat_mem natCast_mem
 
--- 2024-04-05
-@[deprecated] alias coe_nat_mem := natCast_mem
+@[deprecated (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :

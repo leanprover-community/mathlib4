@@ -471,7 +471,7 @@ theorem measure_preimage_inv (μ : Measure G) [IsInvInvariant μ] (A : Set G) :
 
 @[to_additive]
 instance inv.instSigmaFinite (μ : Measure G) [SigmaFinite μ] : SigmaFinite μ.inv :=
-  (MeasurableEquiv.inv G).sigmaFinite_map ‹_›
+  (MeasurableEquiv.inv G).sigmaFinite_map
 #align measure_theory.measure.inv.measure_theory.sigma_finite MeasureTheory.Measure.inv.instSigmaFinite
 #align measure_theory.measure.neg.measure_theory.sigma_finite MeasureTheory.Measure.neg.instSigmaFinite
 
@@ -783,7 +783,7 @@ lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s)
     simp only [iUnion_smul, h''f]
 
 /-- If a compact set is included in a measurable set, then so is its closure. -/
-@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet)] -- Since 28 Jan 2024
+@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet (since := "2024-01-28"))]
 lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
     (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s :=
   hk.closure_subset_measurableSet hs h
@@ -799,7 +799,7 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
   rw [← t_meas.mul_closure_one_eq]
   exact smul_subset_smul_right kt
 
-@[to_additive (attr := deprecated IsCompact.measure_closure)] -- Since 28 Jan 2024
+@[to_additive (attr := deprecated IsCompact.measure_closure (since := "2024-01-28"))]
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
     μ (closure k) = μ k :=
   hk.measure_closure μ

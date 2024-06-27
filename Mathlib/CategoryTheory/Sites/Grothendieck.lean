@@ -487,34 +487,34 @@ structure Arrow (S : J.Cover X) where
   hf : S f
 #align category_theory.grothendieck_topology.cover.arrow CategoryTheory.GrothendieckTopology.Cover.Arrow
 
-/-- An auxiliary structure, used to define `S.index`. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance, ext]
+/-- Relation between two elements in `S.arrow`, the data of which
+involves a commutative square. -/
 @[ext]
-structure Relation (S : J.Cover X) where
-  /-- The source of the first arrow. -/
-  Y₁ : C
-  /-- The source of the second arrow. -/
-  Y₂ : C
+structure Arrow.Relation {S : J.Cover X} (I₁ I₂ : S.Arrow) where
   /-- The source of the arrows defining the relation. -/
   Z : C
   /-- The first arrow defining the relation. -/
-  g₁ : Z ⟶ Y₁
+  g₁ : Z ⟶ I₁.Y
   /-- The second arrow defining the relation. -/
-  g₂ : Z ⟶ Y₂
-  /-- The first arrow which is part of the relation. -/
-  f₁ : Y₁ ⟶ X
-  /-- The second arrow which is part of the relation. -/
-  f₂ : Y₂ ⟶ X
-  /-- The first arrow which is part of the relation is contained in the given sieve. -/
-  h₁ : S f₁
-  /-- The second arrow which is part of the relation is contained in the given sieve. -/
-  h₂ : S f₂
+  g₂ : Z ⟶ I₂.Y
   /-- The relation itself. -/
-  w : g₁ ≫ f₁ = g₂ ≫ f₂
-#align category_theory.grothendieck_topology.cover.relation CategoryTheory.GrothendieckTopology.Cover.Relation
+  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by aesop_cat
 
-attribute [reassoc] Relation.w
+attribute [reassoc] Arrow.Relation.w
+
+/-- Given `I : S.Arrow` and a morphism `g : Z ⟶ I.Y`, this is the arrow in `S.Arrow`
+corresponding to `g ≫ I.f`. -/
+@[simps]
+def Arrow.precomp {S : J.Cover X} (I : S.Arrow) {Z : C} (g : Z ⟶ I.Y) : S.Arrow :=
+  ⟨Z, g ≫ I.f, S.1.downward_closed I.hf g⟩
+
+/-- Given `I : S.Arrow` and a morphism `g : Z ⟶ I.Y`, this is the obvious relation
+from `I.precomp g` to `I`. -/
+@[simps]
+def Arrow.precompRelation {S : J.Cover X} (I : S.Arrow) {Z : C} (g : Z ⟶ I.Y) :
+    (I.precomp g).Relation I where
+  g₁ := 𝟙 _
+  g₂ := g
 
 /-- Map an `Arrow` along a refinement `S ⟶ T`. -/
 @[simps]
@@ -522,37 +522,11 @@ def Arrow.map {S T : J.Cover X} (I : S.Arrow) (f : S ⟶ T) : T.Arrow :=
   ⟨I.Y, I.f, f.le _ I.hf⟩
 #align category_theory.grothendieck_topology.cover.arrow.map CategoryTheory.GrothendieckTopology.Cover.Arrow.map
 
-/-- Map a `Relation` along a refinement `S ⟶ T`. -/
+/-- Map an `Arrow.Relation` along a refinement `S ⟶ T`. -/
 @[simps]
-def Relation.map {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) : T.Relation :=
-  ⟨_, _, _, I.g₁, I.g₂, I.f₁, I.f₂, f.le _ I.h₁, f.le _ I.h₂, I.w⟩
-#align category_theory.grothendieck_topology.cover.relation.map CategoryTheory.GrothendieckTopology.Cover.Relation.map
-
-/-- The first `Arrow` associated to a `Relation`.
-Used in defining `index`. -/
-@[simps]
-def Relation.fst {S : J.Cover X} (I : S.Relation) : S.Arrow :=
-  ⟨I.Y₁, I.f₁, I.h₁⟩
-#align category_theory.grothendieck_topology.cover.relation.fst CategoryTheory.GrothendieckTopology.Cover.Relation.fst
-
-/-- The second `Arrow` associated to a `Relation`.
-Used in defining `index`. -/
-@[simps]
-def Relation.snd {S : J.Cover X} (I : S.Relation) : S.Arrow :=
-  ⟨I.Y₂, I.f₂, I.h₂⟩
-#align category_theory.grothendieck_topology.cover.relation.snd CategoryTheory.GrothendieckTopology.Cover.Relation.snd
-
-@[simp]
-theorem Relation.map_fst {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) :
-    I.fst.map f = (I.map f).fst :=
-  rfl
-#align category_theory.grothendieck_topology.cover.relation.map_fst CategoryTheory.GrothendieckTopology.Cover.Relation.map_fst
-
-@[simp]
-theorem Relation.map_snd {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) :
-    I.snd.map f = (I.map f).snd :=
-  rfl
-#align category_theory.grothendieck_topology.cover.relation.map_snd CategoryTheory.GrothendieckTopology.Cover.Relation.map_snd
+def Arrow.Relation.map {S T : J.Cover X} {I₁ I₂ : S.Arrow}
+    (r : I₁.Relation I₂) (f : S ⟶ T) : (I₁.map f).Relation (I₂.map f) where
+  w := r.w
 
 /-- Pull back a cover along a morphism. -/
 def pullback (S : J.Cover X) (f : Y ⟶ X) : J.Cover Y :=
@@ -566,22 +540,12 @@ def Arrow.base {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Arrow) : S.Arro
 #align category_theory.grothendieck_topology.cover.arrow.base CategoryTheory.GrothendieckTopology.Cover.Arrow.base
 
 /-- A relation of `S.pullback f` gives rise to a relation of `S`. -/
-@[simps]
-def Relation.base {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Relation) : S.Relation :=
-  ⟨_, _, _, I.g₁, I.g₂, I.f₁ ≫ f, I.f₂ ≫ f, I.h₁, I.h₂, by simp [reassoc_of% I.w]⟩
-#align category_theory.grothendieck_topology.cover.relation.base CategoryTheory.GrothendieckTopology.Cover.Relation.base
-
-@[simp]
-theorem Relation.base_fst {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Relation) :
-    I.fst.base = I.base.fst :=
-  rfl
-#align category_theory.grothendieck_topology.cover.relation.base_fst CategoryTheory.GrothendieckTopology.Cover.Relation.base_fst
-
-@[simp]
-theorem Relation.base_snd {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Relation) :
-    I.snd.base = I.base.snd :=
-  rfl
-#align category_theory.grothendieck_topology.cover.relation.base_snd CategoryTheory.GrothendieckTopology.Cover.Relation.base_snd
+def Arrow.Relation.base
+    {f : Y ⟶ X} {S : J.Cover X} {I₁ I₂ : (S.pullback f).Arrow}
+    (r : I₁.Relation I₂) : I₁.base.Relation I₂.base where
+  g₁ := r.g₁
+  g₂ := r.g₂
+  w := by simp [r.w_assoc]
 
 @[simp]
 theorem coe_pullback {Z : C} (f : Y ⟶ X) (g : Z ⟶ Y) (S : J.Cover X) :
@@ -665,9 +629,29 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.2
 #align category_theory.grothendieck_topology.cover.arrow.middle_spec CategoryTheory.GrothendieckTopology.Cover.Arrow.middle_spec
 
+/-- An auxiliary structure, used to define `S.index`. -/
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance, ext]
+@[ext]
+structure Relation (S : J.Cover X) where
+  /-- The first arrow. -/
+  fst : S.Arrow
+  /-- The second arrow. -/
+  snd : S.Arrow
+  /-- The relation between the two arrows. -/
+  r : fst.Relation snd
+
+/-- Constructor for `Cover.Relation` which takes as an input
+`r : I₁.Relation I₂` with `I₁ I₂ : S.Arrow`. -/
+@[simps]
+def Relation.mk' {S : J.Cover X} {fst snd : S.Arrow} (r : fst.Relation snd) :
+    S.Relation where
+  r := r
+
 -- This is used extensively in `Plus.lean`, etc.
 -- We place this definition here as it will be used in `Sheaf.lean` as well.
 /-- To every `S : J.Cover X` and presheaf `P`, associate a `MulticospanIndex`. -/
+@[simps]
 def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.MulticospanIndex D where
   L := S.Arrow
@@ -675,9 +659,9 @@ def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D
   fstTo I := I.fst
   sndTo I := I.snd
   left I := P.obj (Opposite.op I.Y)
-  right I := P.obj (Opposite.op I.Z)
-  fst I := P.map I.g₁.op
-  snd I := P.map I.g₂.op
+  right I := P.obj (Opposite.op I.r.Z)
+  fst I := P.map I.r.g₁.op
+  snd I := P.map I.r.g₂.op
 #align category_theory.grothendieck_topology.cover.index CategoryTheory.GrothendieckTopology.Cover.index
 
 /-- The natural multifork associated to `S : J.Cover X` for a presheaf `P`.
@@ -690,8 +674,8 @@ abbrev multifork {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒ�
   Limits.Multifork.ofι _ (P.obj (Opposite.op X)) (fun I => P.map I.f.op)
     (by
       intro I
-      dsimp [index]
-      simp only [← P.map_comp, ← op_comp, I.w])
+      dsimp
+      simp only [← P.map_comp, ← op_comp, I.r.w])
 #align category_theory.grothendieck_topology.cover.multifork CategoryTheory.GrothendieckTopology.Cover.multifork
 
 /-- The canonical map from `P.obj (op X)` to the multiequalizer associated to a covering sieve,
@@ -704,7 +688,7 @@ noncomputable abbrev toMultiequalizer {D : Type u₁} [Category.{v₁} D] (S : J
     (by
       intro I
       dsimp only [index, Relation.fst, Relation.snd]
-      simp only [← P.map_comp, ← op_comp, I.w])
+      simp only [← P.map_comp, ← op_comp, I.r.w])
 #align category_theory.grothendieck_topology.cover.to_multiequalizer CategoryTheory.GrothendieckTopology.Cover.toMultiequalizer
 
 end Cover

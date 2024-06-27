@@ -9,6 +9,8 @@ import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
 
 /-! # Continuous functions as a star-ordered ring -/
 
+open scoped NNReal
+
 namespace ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α]
@@ -64,66 +66,49 @@ namespace ContinuousMapZero
 
 variable {α : Type*} [TopologicalSpace α] [Zero α]
 
-lemma starOrderedRing_of_sqrt {R : Type*} [PartialOrder R] [CommRing R] [StarRing R]
-    [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [TopologicalRing R]
-    (sqrt : R → R) (h_continuous : Continuous sqrt)
-    (sqrt_map_zero : sqrt 0 = 0)
-    (h_sqrt : ∀ x, 0 ≤ x → star (sqrt x) * sqrt x = x) : StarOrderedRing C(α, R)₀ := by
-  refine StarOrderedRing.of_nonneg_iff' ?_ ?_
-  · intro x y hxy z
-    rw [ContinuousMapZero.le_def]
-    intro i
-    simp [hxy i]
-  · intro x
-    refine ⟨fun hf => ?_, ?_⟩
-    · let sqrtC : C(R, R)₀ :=
-      { toFun := sqrt
-        continuous_toFun := h_continuous
-        map_zero' := sqrt_map_zero }
-      refine ⟨sqrtC.comp x, ?_⟩
-      ext i
-      simp [sqrtC, h_sqrt (x i) (hf i)]
-    · rintro ⟨f, rfl⟩
-      rw [ContinuousMapZero.le_def]
-      intro i
-      simp [star_mul_self_nonneg (f i)]
-
-open scoped ComplexOrder in
-open RCLike in
-instance (priority := 100) instStarOrderedRingRCLike {𝕜 : Type*} [RCLike 𝕜] :
-    StarOrderedRing C(α, 𝕜)₀ :=
-  starOrderedRing_of_sqrt ((↑) ∘ Real.sqrt ∘ re) (by fun_prop) (by simp) <| fun x hx => by
-    simp only [Function.comp_apply,star_def]
-    obtain hx' := nonneg_iff.mp hx |>.right
-    rw [← conj_eq_iff_im, conj_eq_iff_re] at hx'
-    rw [conj_ofReal, ← ofReal_mul, Real.mul_self_sqrt, hx']
-    rw [nonneg_iff]
-    simpa using nonneg_iff.mp hx |>.left
+instance instStarOrderedRing {R : Type*}
+    [TopologicalSpace R] [OrderedCommSemiring R] [NoZeroDivisors R] [StarRing R] [StarOrderedRing R]
+    [TopologicalSemiring R] [ContinuousStar R] [StarOrderedRing C(α, R)] :
+    StarOrderedRing C(α, R)₀ where
+  le_iff f g := by
+    constructor
+    · rw [le_def, ← ContinuousMap.coe_coe, ← ContinuousMap.coe_coe g, ← ContinuousMap.le_def,
+        StarOrderedRing.le_iff]
+      rintro ⟨p, hp_mem, hp⟩
+      induction hp_mem using AddSubmonoid.closure_induction_left generalizing f g with
+      | one => exact ⟨0, zero_mem _, by ext x; congrm($(hp) x)⟩
+      | mul_left s s_mem p p_mem hp' =>
+        obtain ⟨s, rfl⟩ := s_mem
+        simp only at *
+        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($(hp) 0).symm
+        rw [← add_assoc] at hp
+        have p'₀ : 0 ≤ p 0 := by rw [← StarOrderedRing.nonneg_iff] at p_mem; exact p_mem 0
+        have s₉ : (star s * s) 0 = 0 := le_antisymm ((le_add_of_nonneg_right p'₀).trans_eq h₀)
+          (star_mul_self_nonneg (s 0))
+        have s₀' : s 0 = 0 := by aesop
+        let s' : C(α, R)₀ := ⟨s, s₀'⟩
+        obtain ⟨p', hp'_mem, rfl⟩ := hp' (f + star s' * s') g hp
+        refine ⟨star s' * s' + p', ?_, by rw [add_assoc]⟩
+        exact add_mem (AddSubmonoid.subset_closure ⟨s', rfl⟩) hp'_mem
+    · rintro ⟨p, hp, rfl⟩
+      induction hp using AddSubmonoid.closure_induction' generalizing f with
+      | mem s s_mem =>
+        obtain ⟨s, rfl⟩ := s_mem
+        exact fun x ↦ le_add_of_nonneg_right (star_mul_self_nonneg (s x))
+      | one => simp
+      | mul g₁ _ g₂ _ h₁ h₂ => calc
+          f ≤ f + g₁ := h₁ f
+          _ ≤ (f + g₁) + g₂ := h₂ (f + g₁)
+          _ = f + (g₁ + g₂) := add_assoc _ _ _
 
 instance instStarOrderedRingReal : StarOrderedRing C(α, ℝ)₀ :=
-  instStarOrderedRingRCLike (𝕜 := ℝ)
+  instStarOrderedRing (R := ℝ)
 
 open scoped ComplexOrder in
-open Complex in
 instance instStarOrderedRingComplex : StarOrderedRing C(α, ℂ)₀ :=
-  instStarOrderedRingRCLike (𝕜 := ℂ)
+  instStarOrderedRing (R := ℂ)
 
-open NNReal in
 instance instStarOrderedRingNNReal : StarOrderedRing C(α, ℝ≥0)₀ :=
-  StarOrderedRing.of_le_iff fun f g ↦ by
-    refine ⟨fun hfg => ?_, ?_⟩
-    · let sqrtC : C(ℝ≥0, ℝ≥0)₀ :=
-      { toFun := sqrt
-        continuous_toFun := by fun_prop
-        map_zero' := by simp }
-      let g_sub_f : C(α, ℝ≥0)₀ :=
-      { toFun := g - f
-        continuous_toFun := Continuous.sub (by fun_prop) (by fun_prop)
-        map_zero' := by simp }
-      use .comp sqrtC g_sub_f
-      ext1 x
-      simpa [sqrtC, g_sub_f] using add_tsub_cancel_of_le (hfg x) |>.symm
-    · rintro ⟨s, rfl⟩
-      exact fun _ ↦ by simp
+  instStarOrderedRing (R := ℝ≥0)
 
 end ContinuousMapZero
