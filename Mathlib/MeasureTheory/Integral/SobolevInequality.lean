@@ -18,6 +18,17 @@ we can bound the `L^p`-norm of `u` by the `L^q` norm of the derivative of `u`.
 The bound is up to a constant that is independent of the function `u`.
 Let `n` be the dimension of the domain.
 
+The main step in the proof, which we dubbed the "grid-lines lemma" below, is a complicated
+inductive argument that involves manipulating an `n+1`-fold iterated integral and a product of
+`n+2` factors. In each step, one pushes one of the integral inside (all but one of)
+the factors of the product using Hölder's inequality. The precise formulation of the induction
+hypothesis (`MeasureTheory.GridLines.T_insert_le_T_lmarginal_singleton`) is tricky,
+and none of the 5 sources we referenced stated it.
+
+In the formalization we use the operation `MeasureTheory.lmarginal` to work with the iterated
+integrals, and use `MeasureTheory.lmarginal_insert'` to conveniently push one of the integrals
+inside. The Hölder's inequality step is done using `ENNReal.lintegral_mul_prod_norm_pow_le`.
+
 ## Main results
 
 * `MeasureTheory.snorm_le_snorm_fderiv_of_eq`:
@@ -84,9 +95,18 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
     (hp : (s.card : ℝ) * p ≤ 1)
     (i : ι) (hi : i ∉ s) {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
     T μ p f (insert i s) ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := by
+  /- The proof is a tricky computation that relies on Hölder's inequality at its heart.
+  The left-hand-side is an `|s|+1`-times iterated integral. Let `xᵢ` denote the `i`-th variable.
+  We first push the integral over the `i`-th variable as the
+  innermost integral. This is done in a single step with `MeasureTheory.lmarginal_insert'`,
+  but in fact hides a repeated application of Fubini's theorem.
+  The integrand is a product of `|s|+2` factors, in `|s|+1` of them we integrate over one
+  additional variable. We split of the factor that integrates over `xᵢ`, and apply Hölder's inequality to the remaining factors (whose powers sum exactly to 1).
+  After reordering factors, and combining two factors into one we obtain the right-hand side. -/
   calc T μ p f (insert i s)
       = ∫⋯∫⁻_insert i s,
             f ^ (1 - (s.card : ℝ) * p) * ∏ j in (insert i s), (∫⋯∫⁻_{j}, f ∂μ) ^ p ∂μ := by
+          -- unfold `T` and reformulate the exponents
           simp_rw [T, card_insert_of_not_mem hi]
           congr!
           push_cast
@@ -94,6 +114,7 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
     _ = ∫⋯∫⁻_s, (fun x ↦ ∫⁻ (t : A i),
             (f (update x i t) ^ (1 - (s.card : ℝ) * p)
             * ∏ j in (insert i s), (∫⋯∫⁻_{j}, f ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
+          -- pull out the integral over `xᵢ`
           rw [lmarginal_insert' _ _ hi]
           · congr! with x t
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
@@ -102,13 +123,14 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
             refine (hf.pow_const _).mul <| Finset.measurable_prod _ ?_
             exact fun _ _ ↦ hf.lmarginal μ |>.pow_const _
     _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s:=s) (fun x ↦ ?_)
+  -- The remainder of the computation happens within an `|s|`-fold iterated integral
   simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
-  have hF₁ : ∀ {j : ι}, Measurable fun t ↦ (∫⋯∫⁻_{j}, f ∂μ) (update x i t) :=
+  set X := update x i
+  have hF₁ : ∀ {j : ι}, Measurable fun t ↦ (∫⋯∫⁻_{j}, f ∂μ) (X t) :=
     fun {_} ↦ hf.lmarginal μ |>.comp <| measurable_update _
-  have hF₀ : Measurable fun t ↦ f (update x i t) := hf.comp <| measurable_update _
+  have hF₀ : Measurable fun t ↦ f (X t) := hf.comp <| measurable_update _
   let k : ℝ := s.card
   have hk' : 0 ≤ 1 - k * p := by linarith only [hp]
-  let X := update x i
   calc ∫⁻ t, f (X t) ^ (1 - k * p)
           * ∏ j in (insert i s), (∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p ∂ (μ i)
       = ∫⁻ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) ^ p * (f (X t) ^ (1 - k * p)
@@ -259,6 +281,12 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
     {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
+  /- For a function `f` in one variable and `t ∈ ℝ` we have
+  `|f(t)| = `|∫_{-∞}^t Df(s)∂s| ≤ ∫_ℝ |Df(s)| ∂s` where we use the fundamental theorem of calculus.
+  For each `x ∈ ℝⁿ` we let `u` vary in one of the `n` coordinates and apply the inequality above.
+  By taking the product over these `n` factors, raising them to the power `(n-1)⁻¹` and integrating,
+  we get the inequality `∫ |u| ^ (n/(n-1)) ≤ ∫ x, ∏ i, (∫ xᵢ, |Du(update x i xᵢ)|)^(n-1)⁻¹`.
+  The result then follows from the grid-lines lemma. -/
   have : Nontrivial ι :=
     Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.one_lt)
   have : (1:ℝ) ≤ ↑#ι - 1 := by
@@ -279,6 +307,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p :=
         -- apply the grid-lines lemma
         lintegral_prod_lintegral_pow_le _ hp (by fun_prop)
+  -- we estimate |u x| using the fundamental theorem of calculus.
   gcongr with x i
   calc (‖u x‖₊ : ℝ≥0∞)
       = (‖∫ xᵢ in Iic (x i), deriv (u ∘ update x i) xᵢ‖₊ : ℝ≥0∞) := by
