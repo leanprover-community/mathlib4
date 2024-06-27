@@ -329,7 +329,7 @@ end Mem
 instance : Singleton α (Multiset α) :=
   ⟨fun a => a ::ₘ 0⟩
 
-instance : IsLawfulSingleton α (Multiset α) :=
+instance : LawfulSingleton α (Multiset α) :=
   ⟨fun _ => rfl⟩
 
 @[simp]
@@ -765,7 +765,7 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
   rw [← coe_card, coe_toList]
 #align multiset.length_to_list Multiset.length_toList
 
-@[simp, nolint simpNF] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
+@[simp] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
 theorem card_zero : @card α 0 = 0 :=
   rfl
 #align multiset.card_zero Multiset.card_zero
@@ -1043,7 +1043,7 @@ theorem coe_erase (l : List α) (a : α) : erase (l : Multiset α) a = l.erase a
   rfl
 #align multiset.coe_erase Multiset.coe_erase
 
-@[simp, nolint simpNF] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
+@[simp] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
 theorem erase_zero (a : α) : (0 : Multiset α).erase a = 0 :=
   rfl
 #align multiset.erase_zero Multiset.erase_zero
@@ -1783,11 +1783,9 @@ theorem map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f)
     congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
 #align multiset.map_union Multiset.map_union
 
--- Porting note (#10756): new theorem
 @[simp] theorem zero_union : 0 ∪ s = s := by
   simp [union_def]
 
--- Porting note (#10756): new theorem
 @[simp] theorem union_zero : s ∪ 0 = s := by
   simp [union_def]
 
@@ -2434,7 +2432,7 @@ theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a := by
   rfl
 #align multiset.coe_count Multiset.coe_count
 
-@[simp, nolint simpNF] -- Porting note (#10618): simp can prove this at EOF, but not right now
+@[simp] -- Porting note (#10618): simp can prove this at EOF, but not right now
 theorem count_zero (a : α) : count a 0 = 0 :=
   rfl
 #align multiset.count_zero Multiset.count_zero
@@ -2627,8 +2625,6 @@ theorem count_map {α β : Type*} (f : α → β) (s : Multiset α) [DecidableEq
   simp [Bool.beq_eq_decide_eq, eq_comm, count, countP_map]
 #align multiset.count_map Multiset.count_map
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning:
-  expanding binder collection (x «expr ∈ » s) -/
 /-- `Multiset.map f` preserves `count` if `f` is injective on the set of elements contained in
 the multiset -/
 theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
@@ -2645,7 +2641,7 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
 theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (hf : Function.Injective f)
     (x : α) : (s.map f).count (f x) = s.count x := by
   by_cases H : x ∈ s
-  · exact count_map_eq_count f _ (Set.injOn_of_injective hf _) _ H
+  · exact count_map_eq_count f _ hf.injOn _ H
   · rw [count_eq_zero_of_not_mem H, count_eq_zero, mem_map]
     rintro ⟨k, hks, hkx⟩
     rw [hf hkx] at hks
@@ -3210,7 +3206,7 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
   rfl
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingletonEquiv
 
-@[deprecated] alias card_le_of_le := card_le_card -- 2023-12-27
-@[deprecated] alias card_lt_of_lt := card_lt_card -- 2023-12-27
+@[deprecated (since := "2023-12-27")] alias card_le_of_le := card_le_card
+@[deprecated (since := "2023-12-27")] alias card_lt_of_lt := card_lt_card
 
 end Multiset

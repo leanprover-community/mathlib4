@@ -128,7 +128,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
     rw [h, zero_dvd_iff, mul_eq_zero] at hbc
     cases hbc <;> contradiction
   wlog hℵ₀b : ℵ₀ ≤ b
-  refine' (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
+  apply (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
   · rwa [mul_comm] at hbc
   · rwa [mul_comm] at h'
   · exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)

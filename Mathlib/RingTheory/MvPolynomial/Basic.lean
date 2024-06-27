@@ -152,8 +152,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.linear_independent_X MvPolynomial.linearIndependent_X
 
 private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
-  ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage <|
-    DFunLike.coe_injective.injOn _).to_subtype
+  ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage DFunLike.coe_injective.injOn).to_subtype
 
 instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
   have := finite_setOf_bounded σ N
@@ -169,6 +168,29 @@ instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
   Module.Finite.of_basis (basisRestrictSupport R _)
 
 end Degree
+
+section Algebra
+
+variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+/--
+If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra.
+
+Warning: This produces a diamond for
+`Algebra (MvPolynomial σ R) (MvPolynomial σ (MvPolynomial σ S))`. That's why it is not a
+global instance.
+-/
+noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
+  (MvPolynomial.map (algebraMap R S)).toAlgebra
+
+attribute [local instance] algebraMvPolynomial
+
+@[simp]
+lemma algebraMap_def :
+    algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
+  rfl
+
+end Algebra
 
 end MvPolynomial
 

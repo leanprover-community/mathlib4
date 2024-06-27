@@ -534,6 +534,13 @@ theorem exists_eq_pow_mul_and_not_dvd {n : ℕ} (hn : n ≠ 0) (p : ℕ) (hp : p
   ⟨_, a', h₂, h₁⟩
 #align nat.exists_eq_pow_mul_and_not_dvd Nat.exists_eq_pow_mul_and_not_dvd
 
+/-- Any nonzero natural number is the product of an odd part `m` and a power of
+two `2 ^ k`. -/
+theorem exists_eq_two_pow_mul_odd {n : ℕ} (hn : n ≠ 0) :
+    ∃ k m : ℕ, Odd m ∧ n = 2 ^ k * m :=
+  let ⟨k, m, hm, hn⟩ := exists_eq_pow_mul_and_not_dvd hn 2 (succ_ne_self 1)
+  ⟨k, m, odd_iff_not_even.mpr (mt Even.two_dvd hm), hn⟩
+
 theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d ≤ n) :
     d ∣ n ↔ (n / d).factorization = n.factorization - d.factorization := by
   refine ⟨factorization_div, ?_⟩
@@ -856,7 +863,7 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
       haveI htp : 0 < t := hp.factorization_pos_of_dvd (k + 1).succ_ne_zero (k + 2).minFac_dvd
       convert h ((k + 2) / p ^ t) p t hp _ htp (hk _ (Nat.div_lt_of_lt_mul _)) using 1
       · rw [Nat.mul_div_cancel' hpt]
-      · rw [Nat.dvd_div_iff hpt, ← Nat.pow_succ]
+      · rw [Nat.dvd_div_iff_mul_dvd hpt, ← Nat.pow_succ]
         exact pow_succ_factorization_not_dvd (k + 1).succ_ne_zero hp
       · simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne', hp.one_lt]
 #align nat.rec_on_prime_pow Nat.recOnPrimePow
@@ -872,10 +879,10 @@ def recOnPosPrimePosCoprime {P : ℕ → Sort*} (hp : ∀ p n : ℕ, Prime p →
     by_cases ha1 : a = 1
     · rw [ha1, mul_one]
       exact hp p n hp' hn
-    refine' h (p ^ n) a (hp'.one_lt.trans_le (le_self_pow hn.ne' _)) _ _ (hp _ _ hp' hn) hPa
+    refine h (p ^ n) a (hp'.one_lt.trans_le (le_self_pow hn.ne' _)) ?_ ?_ (hp _ _ hp' hn) hPa
     · contrapose! hpa
       simp [lt_one_iff.1 (lt_of_le_of_ne hpa ha1)]
-    simpa [hn, Prime.coprime_iff_not_dvd hp']
+    · simpa [hn, Prime.coprime_iff_not_dvd hp']
 #align nat.rec_on_pos_prime_pos_coprime Nat.recOnPosPrimePosCoprime
 
 /-- Given `P 0`, `P (p ^ n)` for all prime powers, and a way to extend `P a` and `P b` to
