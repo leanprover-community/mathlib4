@@ -174,32 +174,14 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial,
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
 
-variable {R : Type*} [CommRing R] [CharZero R] [IsLeftCancelMulZero R] [Algebra ℚ R]
-
-/-- Inductive definition of the multichoose function. -/
-noncomputable def multichoose: R → ℕ → R
-  | _, 0 => 1
-  | r, k+1 => ((k+1)⁻¹:ℚ)•(r+k)*(multichoose r k)
-
-noncomputable instance instBinomialRing : BinomialRing R where
+noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   nsmul_right_injective n hn r s hrs := by
-    simp only [nsmul_eq_mul] at hrs
-    exact (mul_left_cancel₀ (Nat.cast_ne_zero.mpr hn) hrs)
-  multichoose := multichoose
+    rw [← one_smul ℚ≥0 r, ← one_smul ℚ≥0 s, show 1 = (n : ℚ≥0)⁻¹ • (n : ℚ≥0) by simp_all]
+    simp_all only [smul_assoc, ← nsmul_eq_smul_cast]
+  multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
-    induction' n with n ih
-    case zero =>
-      simp only [Nat.factorial_zero, multichoose, one_smul, ascPochhammer_zero,
-        Polynomial.smeval_one, pow_zero]
-    case succ =>
-      rw [Polynomial.ascPochhammer_smeval_eq_eval] at ih
-      rw [Polynomial.ascPochhammer_smeval_eq_eval, ascPochhammer_succ_eval, ← ih, multichoose,
-        Nat.factorial]
-      nth_rewrite 1 [← (one_smul ℚ (multichoose r n))]
-      rw [smul_mul_smul, ← smul_assoc, ← smul_mul_smul]
-      field_simp
-      rw [Algebra.smul_def', map_natCast]
-      ring_nf
+    simp only [← smul_assoc]
+    field_simp
 end Basic_Instances
 
 section Choose
