@@ -532,12 +532,13 @@ theorem mk_coe' (f h₁ h₂ h₃ h₄) :
   symm_bijective.injective <| ext fun _ => rfl
 #align linear_equiv.mk_coe' LinearEquiv.mk_coe'
 
+/-- Auxilliary definition to avoid looping in `dsimp` with `LinearEquiv.symm_mk`. -/
+protected def symm_mk.aux (f h₁ h₂ h₃ h₄) := (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm
+
 @[simp]
 theorem symm_mk (f h₁ h₂ h₃ h₄) :
     (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm =
-      {
-        (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ]
-              M₂).symm with
+      { symm_mk.aux e f h₁ h₂ h₃ h₄ with
         toFun := f
         invFun := e } :=
   rfl
