@@ -245,7 +245,7 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
-variable [Nontrivial ι] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
@@ -259,8 +259,10 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
     {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
+  have : Nontrivial ι :=
+    Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.one_lt)
   have : (1:ℝ) ≤ ↑#ι - 1 := by
-    have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
+    have hι : (2:ℝ) ≤ #ι := by exact_mod_cast hp.one_lt
     linarith
   calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p
       = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ))) ^ (#ι : ℝ) := by
@@ -308,15 +310,13 @@ compactly-supported function `u` on a normed space `E` of finite dimension `n �
 with Haar measure. There exists a constant `C` depending only on `E`, such that the Lebesgue
 integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by `C` times the
 `n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
-theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
-    {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
+theorem lintegral_pow_le_pow_lintegral_fderiv {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
     ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂μ ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ p := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
   let ι := Fin (finrank ℝ E)
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
-  have : Nontrivial ι := by rwa [Fin.nontrivial_iff_two_le]
   have : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [hιcard]
   have e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
@@ -376,12 +376,11 @@ compactly-supported function `u` on a normed space `E` of finite dimension `n �
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
-theorem snorm_le_snorm_fderiv_one (hE : 2 ≤ finrank ℝ E)
-    {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
+theorem snorm_le_snorm_fderiv_one {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
     ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
-  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv F μ hE hp.coe
+  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv F μ hp.coe
   use C ^ (p : ℝ)⁻¹
   intro u hu h2u
   rw [snorm_one_eq_lintegral_nnnorm,
@@ -395,18 +394,26 @@ variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [Comple
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
-with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
+with Haar measure, let `1 ≤ p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 There exists a constant `C` depending only on `E` and `p`, such that the `Lᵖ'` norm of `u`
 is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 
 Note: The codomain of `u` needs to be a Hilbert space.
 -/
-theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
-    (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
+    (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     ∃ C : ℝ≥0, ∀ {u : E → F'} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  by_cases hp'0 : p' = 0
+  · simp [hp'0]
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
+  have h2p : (p : ℝ) < n := by
+    have : 0 < p⁻¹ - (n : ℝ)⁻¹ :=
+      NNReal.coe_lt_coe.mpr (pos_iff_ne_zero.mpr (inv_ne_zero hp'0)) |>.trans_eq hp'
+    simp [sub_pos] at this
+    rwa [inv_lt_inv _ (zero_lt_one.trans_le (NNReal.coe_le_coe.mpr hp))] at this
+    exact_mod_cast hn
   have h0n : 2 ≤ n := Nat.succ_le_of_lt <| Nat.one_lt_cast.mp <| hp.trans_lt h2p
   have hn : NNReal.IsConjExponent n n' := .conjExponent (by norm_cast)
   have h1n : 1 ≤ (n : ℝ≥0) := hn.one_le
@@ -414,7 +421,7 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
   rcases hp.eq_or_lt with rfl|hp
   -- the case `p = 1`
-  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one F' μ h0n hn
+  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one F' μ hn
     refine ⟨C, @fun u hu h2u ↦ ?_⟩
     convert hC hu h2u
     ext
@@ -447,7 +454,7 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p)
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
     field_simp [this]; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one ℝ μ h0n hn
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one ℝ μ hn
   refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
@@ -505,14 +512,14 @@ is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 This is the version where the codomain of `u` is a finite dimensional normed space.
 -/
 theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F] {p p' : ℝ≥0} (hp : 1 ≤ p)
-    (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+    (hn : 0 < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
   let e : F ≃L[ℝ] F' := toEuclidean
   let C₁ : ℝ≥0 := ‖(e.symm : F' →L[ℝ] F)‖₊
   let C₂ : ℝ≥0 := ‖(e : F →L[ℝ] F')‖₊
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq_inner μ F' hp h2p hp'
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq_inner μ F' hp hn hp'
   refine ⟨C₁ * C * C₂, @fun u hu h2u ↦ ?_⟩
   let v := e ∘ u
   have hv : ContDiff ℝ 1 v := e.contDiff.comp hu
@@ -565,7 +572,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F] {p q : ℝ≥0} (h
         gcongr
       positivity
     · positivity
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq F μ hp h2p hp'
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq F μ hp (mod_cast (zero_le p).trans_lt h2p) hp'
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
   use t * C
   intro u hu h2u
