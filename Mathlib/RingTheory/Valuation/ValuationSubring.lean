@@ -35,6 +35,8 @@ structure ValuationSubring extends Subring K where
   mem_or_inv_mem' : ∀ x : K, x ∈ carrier ∨ x⁻¹ ∈ carrier
 #align valuation_subring ValuationSubring
 
+structure Place (R) [CommSemiring R] [Algebra R K] extends ValuationSubring K, Subalgebra R K
+
 namespace ValuationSubring
 
 variable {K}
@@ -76,6 +78,13 @@ theorem neg_mem (x : K) : x ∈ A → -x ∈ A := A.toSubring.neg_mem
 
 theorem mem_or_inv_mem (x : K) : x ∈ A ∨ x⁻¹ ∈ A := A.mem_or_inv_mem' _
 #align valuation_subring.mem_or_inv_mem ValuationSubring.mem_or_inv_mem
+
+theorem Place.integralClosure_le {R} [Field R] [Algebra R K] (v : Place K R) :
+    integralClosure R K ≤ v.toSubalgebra := by
+  intro z hz
+  by_contra hzv
+  have : z⁻¹ ∈ v.toSubalgebra := (mem_or_inv_mem v.toValuationSubring z).resolve_left hzv
+  exact hzv (IsIntegral.mem_of_inv_mem hz this)
 
 instance : SubringClass (ValuationSubring K) K where
   zero_mem := zero_mem
