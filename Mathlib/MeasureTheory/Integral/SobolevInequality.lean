@@ -340,7 +340,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 
 open FiniteDimensional
 
-variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. There exists a constant `C` depending only on `E`, such that the Lebesgue
@@ -412,7 +411,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {p : ℝ} (hp : Real.IsConjExponen
   rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, ← mul_assoc, ENNReal.coe_rpow_of_ne_zero hc.ne']
   exact this
 
-variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
