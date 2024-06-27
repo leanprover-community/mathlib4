@@ -86,12 +86,19 @@ def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
     ((comparison adj).obj B ⟶ A) ≃ (B ⟶ comparisonRightAdjointObj adj A) where
       toFun f := by
         refine equalizer.lift (adj.homEquiv _ _ f.f) ?_
-        congr
-        sorry
+        simp only [Adjunction.toComonad_coe, Functor.comp_obj, Adjunction.homEquiv_unit,
+          Functor.id_obj, Category.assoc, ← G.map_comp, ← f.h]
+        simp
       invFun f := by
         refine ⟨(adj.homEquiv _ _).symm (f ≫ (equalizer.ι _ _)), ?_⟩
-        simp
-        sorry
+        apply (adj.homEquiv _ _).injective
+        simp only [Adjunction.toComonad_coe, Functor.comp_obj, comparison_obj_A, comparison_obj_a,
+          Adjunction.homEquiv_counit, Functor.id_obj, Functor.map_comp, Category.assoc,
+          Functor.comp_map, Adjunction.homEquiv_unit, Adjunction.unit_naturality_assoc,
+          Adjunction.unit_naturality, Adjunction.right_triangle_components_assoc]
+        congr 1
+        symm
+        apply equalizer.condition
       left_inv f := by aesop
       right_inv f := by apply equalizer.hom_ext; simp
 
