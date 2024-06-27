@@ -287,8 +287,8 @@ notation "Ι" => Set.uIoc
 
 @[simp] lemma uIoc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [uIoc, h]
 #align set.uIoc_of_le Set.uIoc_of_le
-@[simp] lemma uIoc_of_lt (h : b < a) : Ι a b = Ioc b a := by simp [uIoc, le_of_lt h]
-#align set.uIoc_of_lt Set.uIoc_of_lt
+@[simp] lemma uIoc_of_ge (h : b ≤ a) : Ι a b = Ioc b a := by simp [uIoc, h]
+#align set.uIoc_of_lt Set.uIoc_of_ge
 
 lemma uIoc_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
   cases le_total a b <;> simp [uIoc, *]
