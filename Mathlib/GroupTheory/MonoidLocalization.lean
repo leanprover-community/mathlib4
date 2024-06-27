@@ -368,7 +368,7 @@ theorem liftOn_mk {p : Sort u} (f : M → S → p) (H) (a : M) (b : S) :
 #align localization.lift_on_mk Localization.liftOn_mk
 #align add_localization.lift_on_mk AddLocalization.liftOn_mk
 
-@[to_additive (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim, induction_eliminator, cases_eliminator)]
 theorem ind {p : Localization S → Prop} (H : ∀ y : M × S, p (mk y.1 y.2)) (x) : p x :=
   rec (fun a b ↦ H (a, b)) (fun _ ↦ rfl) x
 #align localization.ind Localization.ind
@@ -2172,7 +2172,7 @@ protected def localizationMap : S.LocalizationMap R[S⁻¹] where
   map_mul' r₁ r₂ := by simp
   map_units' := numerator_isUnit
   surj' z := by
-    induction' z using OreLocalization.ind with r s
+    induction' z with r s
     use (r, s); dsimp
     rw [numeratorHom_apply, numeratorHom_apply, OreLocalization.expand' r 1 s]
     simp only [mul_div_one, mul_one, Submonoid.smul_def, smul_eq_mul, mul_comm r]
