@@ -1,11 +1,14 @@
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Seminorm
 import Mathlib.RingTheory.Algebraic
+import Mathlib.FieldTheory.Minpoly.Basic
 
 /-
 In this file, we state Maria and Fillipo's result. waiting for their work wo be merged into Mathlib.
 
 -/
+
+noncomputable section
 
 def FunctionExtends {α : Type _} [CommRing α] (g : α → ℝ) {β : Type _} [Ring β] [Algebra α β]
     (f : β → ℝ) : Prop :=
@@ -83,17 +86,33 @@ theorem extends_norm {f : AlgebraNorm R S} (hf1 : f 1 = 1) (a : R) : f (algebraM
 
 end AlgebraNorm
 
+noncomputable
 section spectralNorm
 
 variable (K : Type _) [NormedField K] (L : Type _) [Field L] [Algebra K L]
 
+variable {R : Type _} [SeminormedRing R]
+open Polynomial
+
+/-- The function `ℕ → ℝ` sending `n` to `‖ p.coeff n ‖^(1/(p.natDegree - n : ℝ))`, if
+  `n < p.natDegree`, or to `0` otherwise. -/
+def spectralValueTerms (p : R[X]) : ℕ → ℝ := fun n : ℕ =>
+  if n < p.natDegree then ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) else 0
+
+/-- The spectral value of a polynomial in `R[X]`. -/
+def spectralValue (p : R[X]) : ℝ :=
+  iSup (spectralValueTerms p)
+
 /-- The spectral norm `|y|_sp` is the spectral value of the minimal of `y` over `K`. -/
-def spectralNorm (K : Type _) [NormedField K] (L : Type _) [Field L] [Algebra K L] (y : L) : ℝ :=
-  sorry
+def spectralNorm (y : L) : ℝ :=
+  spectralValue (minpoly K y)
 
 /-- The `K`-algebra automorphisms of `L` are isometries with respect to the spectral norm. -/
 theorem spectralNorm_aut_isom (σ : L ≃ₐ[K] L) (x : L) :
     spectralNorm K L x = spectralNorm K L (σ x) := by sorry
+
+theorem spectralNorm_isNonarchimedean (h : IsNonarchimedean (norm : K → ℝ)) :
+    IsNonarchimedean (spectralNorm K L) := by sorry
 
 /-- The spectral norm extends the norm on `K`. -/
 theorem spectralNorm_extends (k : K) : spectralNorm K L (algebraMap K L k) = ‖k‖ := sorry
@@ -184,6 +203,13 @@ instance (priority := 100) spectral_norm_completeSpace [CompleteSpace K]
   letI := (spectralNormToNormedSpace (L :=L) h)
   sorry--exact FiniteDimensional.complete K L
 
+/-- A multiplicative algebra norm on an `R`-algebra norm `S` is a multiplicative ring norm on `S`
+  compatible with the action of `R`. -/
+structure MulAlgebraNorm (R : Type _) [SeminormedCommRing R] (S : Type _) [Ring S]
+    [Algebra R S] extends MulRingNorm S, Seminorm R S
+
+attribute [nolint docBlame] MulAlgebraNorm.toSeminorm MulAlgebraNorm.toMulRingNorm
+
 -- FromMathlib.RingSeminorm
 /-- The norm on a `normed_field`, as a `mul_ring_norm`. -/
 def NormedField.toMulRingNorm (R : Type _) [NormedField R] : MulRingNorm R where
@@ -194,3 +220,11 @@ def NormedField.toMulRingNorm (R : Type _) [NormedField R] : MulRingNorm R where
   map_mul'  := norm_mul
   neg'      := norm_neg
   eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
+
+
+/-- The spectral norm is a multiplicative `K`-algebra norm on `L`.-/
+def spectralMulAlgNorm [CompleteSpace K] (hna : IsNonarchimedean (norm : K → ℝ)) :
+    MulAlgebraNorm K L :=
+  { spectralAlgNorm hna with
+    map_one' := sorry--spectralAlgNorm_is_norm_one_class hna
+    map_mul' := sorry }
