@@ -21,7 +21,10 @@ presheaves.
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor
 
-variable (C : Type*) [Category C]
+universe u v
+
+variable (C : Type u) [Category.{v} C]
+
 
 -- Porting note: removed
 -- local attribute [tidy] tactic.op_induction'
@@ -194,6 +197,12 @@ def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : Ope
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.restrict AlgebraicGeometry.SheafedSpace.restrict
 
+/-- The map from the restriction of a presheafed space.
+-/
+@[simps!]
+def ofRestrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)}
+    (h : OpenEmbedding f) : X.restrict h ⟶ X := X.toPresheafedSpace.ofRestrict h
+
 /-- The restriction of a sheafed space `X` to the top subspace is isomorphic to `X` itself.
 -/
 @[simps! hom inv]
@@ -245,7 +254,7 @@ noncomputable instance [HasLimits C] :
           limit_isSheaf _ fun j => Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
         (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
 
-instance [HasLimits C] : HasColimits (SheafedSpace C) :=
+instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
   hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
 noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
