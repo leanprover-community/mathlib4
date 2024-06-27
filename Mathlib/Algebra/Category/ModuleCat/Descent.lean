@@ -21,6 +21,11 @@ example : extendScalars f ⋙ restrictScalars f ≅
     tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) :=
   Iso.refl _
 
+instance : Module.Flat A ((restrictScalars f).obj (ModuleCat.of B B)) :=
+  -- algebraize f
+  let _ : Algebra A B := f.toAlgebra
+  (inferInstance : f.Flat).1.1
+
 instance : PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) :=
   sorry -- This is in a PR
 
