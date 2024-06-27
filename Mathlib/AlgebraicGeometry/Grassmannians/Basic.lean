@@ -74,7 +74,7 @@ instance basic_open_isOpenImmersion' {R : Type*} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
   @basic_open_isOpenImmersion (CommRingCat.of R) _
 
-variable (K V : Type u) [Field K] [AddCommGroup V] [Module K V]
+variable (K V : Type u) [CommRing K] [AddCommGroup V] [Module K V]
   [Module.Finite K V] [Module.Free K V]
 variable (r : ℕ) (hr : r < finrank K V)
 variable {A : Type*} [CommRing A] [Algebra K A]
@@ -100,7 +100,7 @@ lemma matrix_coord_submatrix₁ : (matrix_coord K V hr).submatrix (Fin.castLE hr
   by_cases h : p = q
   · simp only [h, ↓reduceIte, one_apply_eq]
   · simp only [ne_eq, h, not_false_eq_true, one_apply_ne, ite_eq_right_iff, one_ne_zero, imp_false]
-    rw [← Fin.ext_iff]; exact h
+    rw [← Fin.ext_iff]; intro h'; exfalso; exact h h'
 
 lemma matrix_coord_submatrix₂ : (matrix_coord K V hr).submatrix
     (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩ : Fin (finrank K V - r) → Fin (finrank K V)) id
