@@ -85,7 +85,7 @@ namespace EllSequence
 where integers `m` and `n` should have the same parity. -/
 private def addMulSub (m n : ℤ) : R := W ((m + n).div 2) * W ((m - n).div 2)
 /- Implementation note: we use `Int.div _ 2` instead of `_ / 2` so that `(-m).div 2 = -(m.div 2)`
-and lemmas like `addMulSub_neg₀` hold unconditionally, even though in the case we care about
+and lemmas like `addMulSub_neg_left` hold unconditionally, even though in the case we care about
 (`m` and `n` both even or both odd) both are equal. -/
 
 /-- The four-index elliptic relation, defined in terms of `addMulSub`,
@@ -103,7 +103,7 @@ while in `rel₄` all four indices can be freely permuted.
 
 The order of the last two terms are changed and two signs are swapped compared to Stange's
 paper to make the equivalence with elliptic relations unconditional (indepedent of W
-being an odd function). This should also avoid peculiarities in characterstic 3. -/
+being an odd function). This should also avoid peculiarities in characteristic 3. -/
 def net (p q r s : ℤ) : R :=
   W (p + q + s) * W (p - q) * W (r + s) * W r
     - W (p + r + s) * W (p - r) * W (q + s) * W q
@@ -136,10 +136,9 @@ def invarNum (s n : ℤ) : R :=
 /-- The denominator of an invariant of an elliptic sequence. -/
 def invarDenom (s n : ℤ) : R := W (n + s) * W n * W (n - s)
 
-theorem invar_of_net (net_eq_zero : ∀ p q r s, net W p q r s = 0) (s m n : ℤ) :
+theorem invarNum_mul_invarDenom_of_net (net_eq_zero : ∀ p q r s, net W p q r s = 0) (s m n : ℤ) :
     invarNum W s m * invarDenom W s n = invarNum W s n * invarDenom W s m := by
-  simp_rw [invarNum, invarDenom]
-  linear_combination (norm := (simp_rw [net]; ring_nf))
+  linear_combination (norm := (simp_rw [invarNum, invarDenom, net]; ring_nf))
     net_eq_zero m n s 0 * W m * W n * W (2 * s) ^ 2
       - (net_eq_zero m n s s * W (m - s) * W (n - s)
         + net_eq_zero (m - s) (n - s) s s * W (m + s) * W (n + s)
@@ -149,7 +148,8 @@ lemma net_add_sub_iff (m n : ℤ) :
     net W (m + n) m (m - n) n = 0 ↔
       W (2 * (m + n)) * W (m - n) * W m * W n =
         (W (2 * m + n) * W (2 * n) * W m - W (m + 2 * n) * W (2 * m) * W n) * W (m + n) := by
-  rw [net]; conv_rhs => rw [← sub_eq_zero]
+  rw [net]
+  conv_rhs => rw [← sub_eq_zero]
   ring_nf
 
 private lemma addMulSub_two_zero : addMulSub W 2 0 = W 1 ^ 2 := (sq _).symm
@@ -163,28 +163,28 @@ private lemma addMulSub_odd (m n : ℤ) :
   have h k := Int.mul_div_cancel_left k two_ne_zero
   rw [addMulSub, ← h (m + n + 1), ← h (m - n)]; congr <;> ring
 
-private lemma addMulSub_same (zero : W 0 = 0) (m : ℤ) : addMulSub W m m = 0 := by
+private lemma addMulSub_self (zero : W 0 = 0) (m : ℤ) : addMulSub W m m = 0 := by
   rw [addMulSub, sub_self, Int.zero_div, zero, mul_zero]
 
-private lemma addMulSub_neg₀ (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
+private lemma addMulSub_neg_left (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W (-m) n = addMulSub W m n := by
   simp_rw [addMulSub, ← neg_add', neg_add_eq_sub, ← neg_sub m, Int.neg_div, neg]; ring
 
-private lemma addMulSub_neg₁ (m n : ℤ) : addMulSub W m (-n) = addMulSub W m n := by
+private lemma addMulSub_neg_right (m n : ℤ) : addMulSub W m (-n) = addMulSub W m n := by
   rw [addMulSub, addMulSub, mul_comm]; abel_nf
 
-private lemma addMulSub_abs₀ (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
+private lemma addMulSub_abs_left (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W |m| n = addMulSub W m n := by
-  obtain h | h := abs_choice m <;> simp only [h, addMulSub_neg₀ W neg]
+  obtain h | h := abs_choice m <;> simp only [h, addMulSub_neg_left W neg]
 
-private lemma addMulSub_abs₁ (m n : ℤ) : addMulSub W m |n| = addMulSub W m n := by
-  obtain h | h := abs_choice n <;> simp only [h, addMulSub_neg₁]
+private lemma addMulSub_abs_right (m n : ℤ) : addMulSub W m |n| = addMulSub W m n := by
+  obtain h | h := abs_choice n <;> simp only [h, addMulSub_neg_right]
 
 private lemma addMulSub_swap (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W m n = - addMulSub W n m := by
   rw [addMulSub, addMulSub, ← neg_sub, Int.neg_div, neg]; ring_nf
 
-private lemma rel₃_iff₄ (m n r : ℤ) :
+private lemma rel₃_iff_rel₄_eq_zero (m n r : ℤ) :
     Rel₃ W m n r ↔ rel₄ W (2 * m) (2 * n) (2 * r) 0 = 0 := by
   rw [rel₄, ← mul_zero 2, Rel₃]
   simp_rw [addMulSub_even, add_zero, sub_zero]
@@ -250,6 +250,9 @@ private lemma addMulSub₄_mul_addMulSub₄ :
     addMulSub₄ W a b c d * addMulSub₄ W c d a b = addMulSub W a b * addMulSub W c d := by
   simp_rw [addMulSub₄, addMulSub]; ring
 
+/-! Preservation of `rel₄`, `HaveSameParity₄`, and `strictAnti₄` under the transformation
+  `(a,b,c,d) ↦ (avg₄ a b c d - d, avg₄ a b c d - c, avg₄ a b c d - b, |avg₄ a b c d - a|)`. -/
+
 private lemma addMulSub_transf :
     addMulSub W (avg₄ a b c d - d) (avg₄ a b c d - c) = addMulSub₄ W a b c d ∧
       addMulSub W (avg₄ a b c d - d) (avg₄ a b c d - b) = addMulSub₄ W a c b d ∧
@@ -257,7 +260,7 @@ private lemma addMulSub_transf :
       addMulSub W (avg₄ a b c d - c) (avg₄ a b c d - b) = addMulSub₄ W a d b c ∧
       addMulSub W (avg₄ a b c d - c) |avg₄ a b c d - a| = addMulSub₄ W b d a c ∧
       addMulSub W (avg₄ a b c d - b) |avg₄ a b c d - a| = addMulSub₄ W c d a b := by
-  simp_rw [addMulSub_abs₁, addMulSub, addMulSub₄, sub_add_sub_comm, same.avg₄_add_avg₄]
+  simp_rw [addMulSub_abs_right, addMulSub, addMulSub₄, sub_add_sub_comm, same.avg₄_add_avg₄]
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> ring_nf
 
 private theorem rel₄_transf :
@@ -460,7 +463,8 @@ private theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 �
   -- the `b + 2 = a'` case is handled by oddRec or evenRec depending on the parity of `b`
   · have ea : Even a := by rw [← ha']; exact (even_two_mul _).add even_two
     simp_rw [cMin, dMin, if_pos ea]
-    convert (rel₃_iff₄ W (m + 1) m 1).mp ((rel₃_iff_oddRec W m).mpr <| oddRec _ ?_) using 2
+    convert (rel₃_iff_rel₄_eq_zero W (m + 1) m 1).mp
+      ((rel₃_iff_oddRec W m).mpr <| oddRec _ ?_) using 2
     · ring
     · linarith only [h6, ha']
   · have nea : ¬ Even a := by
@@ -477,7 +481,7 @@ section Perm
 variable (neg : ∀ k, W (-k) = -W k)
 
 private lemma rel₄_abs {m n r s : ℤ} : rel₄ W |m| |n| |r| |s| = rel₄ W m n r s := by
-  simp_rw [rel₄, addMulSub_abs₀ W neg, addMulSub_abs₁]
+  simp_rw [rel₄, addMulSub_abs_left W neg, addMulSub_abs_right]
 
 private lemma rel₄_swap₀₁ {m n r s : ℤ} : rel₄ W m n r s = - rel₄ W n m r s := by
   simp_rw [rel₄, addMulSub_swap W neg n m]; ring
@@ -513,13 +517,13 @@ variable (zero : W 0 = 0)
 /-! `rel₄` is trivial when two indices are equal. -/
 
 private lemma rel₄_same₀₁ (m r s : ℤ) : rel₄ W m m r s = 0 := by
-  simp_rw [rel₄, addMulSub_same W zero]; ring
+  simp_rw [rel₄, addMulSub_self W zero]; ring
 
 private lemma rel₄_same₁₂ (m n s : ℤ) : rel₄ W m n n s = 0 := by
-  simp_rw [rel₄, addMulSub_same W zero]; ring
+  simp_rw [rel₄, addMulSub_self W zero]; ring
 
 private lemma rel₄_same₂₃ (m n r : ℤ) : rel₄ W m n r r = 0 := by
-  simp_rw [rel₄, addMulSub_same W zero]; ring
+  simp_rw [rel₄, addMulSub_self W zero]; ring
 
 variable (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   (oddRec : ∀ m ≥ 2, OddRec W m) (evenRec : ∀ m ≥ 3, EvenRec W m)
@@ -548,7 +552,7 @@ private theorem rel₄_of_oddRec_evenRec {a b c d : ℤ} (same : HaveSameParity�
 all integers by symmetry (to make an odd function), is an elliptic sequence, provided its
 first two terms are not zero divisors. -/
 theorem _root_.IsEllSequence.of_oddRec_evenRec : IsEllSequence W := fun m n r ↦ by
-  rw [rel₃_iff₄, rel₄_of_oddRec_evenRec neg zero one two oddRec evenRec]
+  rw [rel₃_iff_rel₄_eq_zero, rel₄_of_oddRec_evenRec neg zero one two oddRec evenRec]
   refine ⟨?_, ?_, ?_⟩ <;> simp only [negOnePow_two_mul, negOnePow_zero]
 
 end Perm
@@ -644,8 +648,9 @@ protected lemma net (p q r s : ℤ) : net W p q r s = 0 := by
   refine ell.rel₄ one two ?_
   simp_rw [HaveSameParity₄, Int.negOnePow_add, Int.negOnePow_two_mul, one_mul, true_and]
 
-lemma invar (s m n : ℤ) : invarNum W s m * invarDenom W s n = invarNum W s n * invarDenom W s m :=
-  invar_of_net _ (ell.net one two) _ _ _
+lemma invarNum_mul_invarDenom (s m n : ℤ) :
+    invarNum W s m * invarDenom W s n = invarNum W s n * invarDenom W s m :=
+  invarNum_mul_invarDenom_of_net _ (ell.net one two) _ _ _
 
 end IsEllSequence
 
