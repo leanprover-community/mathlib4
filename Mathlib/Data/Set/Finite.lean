@@ -1035,6 +1035,9 @@ theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | 
     ← and_assoc, Finset.coeEmb] using h.subset
 #align set.finite.finite_subsets Set.Finite.finite_subsets
 
+protected theorem Finite.powerset {s : Set α} (h : s.Finite) : (𝒫 s).Finite :=
+  h.finite_subsets
+
 theorem exists_subset_image_finite_and {f : α → β} {s : Set α} {p : Set β → Prop} :
     (∃ t ⊆ f '' s, t.Finite ∧ p t) ↔ ∃ t ⊆ s, t.Finite ∧ p (f '' t) := by
   classical
