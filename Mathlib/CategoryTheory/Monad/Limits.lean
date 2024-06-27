@@ -519,6 +519,7 @@ def newCone : Cone ((D ⋙ forget T) ⋙ (T : C ⥤ C)) where
   π := c.π ≫ γ
 
 variable [PreservesLimit (D ⋙ forget T) (T : C ⥤ C)]
+  [PreservesLimit ((D ⋙ T.forget) ⋙ T.toFunctor) T.toFunctor]
 
 /-- (Impl)
 Define the map `λ : TL ⟶ L`, which will serve as the structure of the algebra on `L`, and
@@ -547,16 +548,12 @@ def conePoint : Coalgebra T where
     rw [assoc, ← show _ = _ ≫ c.π.app j from T.ε.naturality _, ← assoc, commuting, assoc]
     simp [Coalgebra.counit (D.obj j)]
   coassoc := by
-    have : PreservesLimit ((D ⋙ T.forget) ⋙ T.toFunctor) T.toFunctor := sorry
-    apply (isLimitOfPreserves _ (isLimitOfPreserves _ t)).hom_ext
-    intro j
-    simp
-    rw [← Functor.map_comp, commuting, Functor.map_comp]
-    erw [← T.δ.naturality (c.π.app j)]
-    congr 1
-    -- (D.obj j).coassoc
-    simp
-    sorry
+    refine (isLimitOfPreserves _ (isLimitOfPreserves _ t)).hom_ext fun j => ?_
+    rw [Functor.mapCone_π_app, Functor.mapCone_π_app, assoc,
+      ← show _ = _ ≫ T.map (T.map _) from T.δ.naturality _, assoc, ← Functor.map_comp, commuting,
+      Functor.map_comp, ← assoc, commuting]
+    simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
+    rw [(D.obj j).coassoc,  ← assoc, ← assoc, commuting]
 
 /-- (Impl) Construct the lifted cocone in `Coalgebra T` which will be colimiting. -/
 @[simps]
