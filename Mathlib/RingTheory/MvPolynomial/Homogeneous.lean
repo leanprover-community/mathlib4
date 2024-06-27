@@ -121,6 +121,11 @@ theorem isHomogeneous_monomial {d : σ →₀ ℕ} (r : R) {n : ℕ} (hn : degre
 
 variable (σ)
 
+theorem totalDegree_eq_zero_iff (p : MvPolynomial σ R) :
+    p.totalDegree = 0 ↔ ∀ (m : σ →₀ ℕ) (_ : m ∈ p.support) (x : σ), m x = 0 := by
+  rw [← weightedTotalDegree_one, weightedTotalDegree_eq_zero_iff _ p]
+  exact nonTorsionWeight_of (Function.const σ one_ne_zero)
+
 theorem totalDegree_zero_iff_isHomogeneous {p : MvPolynomial σ R} :
     p.totalDegree = 0 ↔ IsHomogeneous p 0 := by
   rw [← weightedTotalDegree_one,
@@ -538,6 +543,39 @@ theorem homogeneousComponent_homogeneous_polynomial (m n : ℕ) (p : MvPolynomia
 #align mv_polynomial.homogeneous_component_homogeneous_polynomial MvPolynomial.homogeneousComponent_homogeneous_polynomial
 
 end HomogeneousComponent
+
+end
+section GradedAlgebra
+
+/-- The homogeneous submodules form a graded ring.
+This instance is used by `DirectSum.commSemiring` and `DirectSum.algebra`. -/
+instance HomogeneousSubmodule.gcomm_monoid [DecidableEq σ] :
+    SetLike.GradedMonoid (homogeneousSubmodule σ R) :=
+  IsWeightedHomogeneous.WeightedHomogeneousSubmodule.gcomm_monoid
+
+variable [DecidableEq σ] [DecidableEq R]
+
+/-- The decomposition of `MvPolynomial σ R` into  homogeneous submodules -/
+abbrev decomposition  :
+    DirectSum.Decomposition (homogeneousSubmodule σ R) :=
+  weightedDecomposition R (1 : σ → ℕ)
+
+/-- Given a weight, `MvPolynomial σ R` as a graded algebra -/
+abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
+  weightedGradedAlgebra R (1 : σ → ℕ)
+
+theorem decomposition.decompose'_apply [DecidableEq σ] [DecidableEq R] (φ : MvPolynomial σ R)
+    (i : ℕ) : ((decomposition σ).decompose' φ i : MvPolynomial σ R) = homogeneousComponent i φ :=
+  weightedDecomposition.decompose'_apply R _ φ i
+
+theorem decomposition.decompose'_eq :
+    (decomposition σ).decompose' = fun φ : MvPolynomial σ R =>
+      DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (Finset.image degree φ.support)
+        fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem φ m⟩ := by
+  rfl
+
+end GradedAlgebra
+
 
 end
 
