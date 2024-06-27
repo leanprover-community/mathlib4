@@ -28,6 +28,8 @@ We add some local simp lemmas so we can unfold the definitions of the normalizat
 attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint
 
+attribute [local simp] apply_ite ite_eq_iff'
+
 /-!
 Simp lemmas for `eval`.
 We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we know the shape of `i`.
