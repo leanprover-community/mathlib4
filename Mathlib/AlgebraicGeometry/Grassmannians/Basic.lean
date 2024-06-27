@@ -297,6 +297,9 @@ abbrev transition (i j : Basis (Fin (finrank K V)) K V) :
   erw [transition_aux_equation]
   exact IsLocalization.Away.invSelf_unit _ (equation hr i j)
 
+abbrev transition_Spec (i j : Basis (Fin (finrank K V)) K V) :=
+  Spec.map (CommRingCat.ofHom (transition hr i j))
+
 variable (K V r)
 
 def glueData : GlueData where
@@ -314,13 +317,9 @@ def glueData : GlueData where
     rw [equation_eq_one_of_diagonal]
     exact localization_unit_isIso (CommRingCat.of
       (MvPolynomial ((Fin (finrank K V - r)) × Fin r) K))
-  t i j := by
-    simp only
-    apply Spec.map
-    apply CommRingCat.ofHom
-    exact transition hr i j
+  t i j := transition_Spec hr i j
   t_id i := by
-    simp only [transition, AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply, id_eq]
+    simp only [transition_Spec, transition, AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply, id_eq]
     rw [← Spec.map_id]
     apply congrArg
     change _ = CommRingCat.ofHom (RingHom.id _)
@@ -343,10 +342,11 @@ def glueData : GlueData where
     simp only [RingHom.id_apply]
     erw [IsLocalization.lift_id]
   t' i j k := by
-    refine Limits.pullback.lift ?_ ?_ ?_
-    · sorry
-    · sorry
-    · sorry
+    refine IsOpenImmersion.lift
+      (Limits.pullback.snd (f := open_immersion hr j k) (g := open_immersion hr j i))
+      (Limits.pullback.fst (f := open_immersion hr i j) (g := open_immersion hr i k) ≫
+      transition_Spec hr i j) ?_
+    sorry
   t_fac := sorry
   cocycle := sorry
   f_open _ _ := inferInstance
