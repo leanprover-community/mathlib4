@@ -195,7 +195,7 @@ noncomputable local instance : Algebra A[X] B[X] :=
   RingHom.toAlgebra (Polynomial.mapRingHom (Algebra.toRingHom))
 
 @[simp, norm_cast]
-lemma _root_.Polynomial.coe_monomial (n : ℕ) (a : A) :
+lemma _root_.Polynomial.coe_monomial' (n : ℕ) (a : A) :
     ((monomial n a : A[X]) : B[X]) = monomial n (a : B) :=
   map_monomial _
 
