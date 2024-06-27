@@ -64,6 +64,23 @@ lemma condition : yoneda.map (hf'.fst g) ≫ f' = yoneda.map (hf'.snd g) ≫ g :
 
 variable {g}
 
+@[ext 100]
+lemma hom_ext {Z : C} {a b : Z ⟶ hf.pullback g}
+    (h₁ : yoneda.map a ≫ (hf.pullbackIso g).hom ≫ pullback.fst =
+      yoneda.map b ≫ (hf.pullbackIso g).hom ≫ pullback.fst)
+    (h₂ : a ≫ hf.snd g = b ≫ hf.snd g) : a = b := by
+  apply yoneda.map_injective
+  rw [← cancel_mono (hf.pullbackIso g).hom]
+  ext1
+  · simpa using h₁
+  · simpa using yoneda.congr_map h₂
+
+@[ext]
+lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g}
+    (h₁ : a ≫ hf'.fst g = b ≫ hf'.fst g)
+    (h₂ : a ≫ hf'.snd g = b ≫ hf'.snd g) : a = b :=
+  hf'.hom_ext (by simpa using yoneda.congr_map h₁) h₂
+
 section
 
 variable {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X)
@@ -106,6 +123,9 @@ lemma symmetry_fst : hf'.symmetry hg ≫ hg.fst f' = hf'.snd g := by simp [symme
 
 @[reassoc (attr := simp)]
 lemma symmetry_snd : hf'.symmetry hg ≫ hg.snd f' = hf'.fst g := by simp [symmetry]
+
+@[reassoc (attr := simp)]
+lemma symmetry_symmetry : hf'.symmetry hg ≫ hg.symmetry hf' = 𝟙 _ := by aesop_cat
 
 end
 
