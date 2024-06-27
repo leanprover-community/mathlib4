@@ -128,37 +128,6 @@ theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum �
 
 /--Definition of the StarAlgHom for the functional calculus of a Hermitian matrix. -/
 @[simps]
-noncomputable def cfc : StarAlgHom ℝ (spectrum ℝ A → ℝ) (Matrix n n 𝕜) where
-  toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-    diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩))
-    * star (eigenvectorUnitary hA : Matrix n n 𝕜)
-  map_one' := by simp [Pi.one_def (f := fun _ : n ↦ 𝕜)]
-  map_mul' f g := by
-    have {a b c d e f : Matrix n n 𝕜} : (a * b * c) * (d * e * f) = a * (b * (c * d) * e) * f := by
-      simp only [mul_assoc]
-    simp only [this, ContinuousMap.coe_mul, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one,
-      diagonal_mul_diagonal, Function.comp_apply]
-    congr! with i
-    simp
-  map_zero' := by simp [Pi.zero_def (f := fun _ : n ↦ 𝕜)]
-  map_add' f g := by
-    simp only [ContinuousMap.coe_add, ← add_mul, ← mul_add, diagonal_add, Function.comp_apply]
-    congr! with i
-    simp
-  commutes' r := by
-    simp only [Function.comp, algebraMap_apply, smul_eq_mul, mul_one]
-    rw [IsScalarTower.algebraMap_apply ℝ 𝕜 _ r, RCLike.algebraMap_eq_ofReal,
-      ← mul_one (algebraMap _ _ _), ← unitary.coe_mul_star_self hA.eigenvectorUnitary,
-      ← Algebra.left_comm, unitary.coe_star, mul_assoc]
-    congr!
-  map_star' f := by
-    simp only [star_trivial, StarMul.star_mul, star_star, star_eq_conjTranspose (diagonal _),
-      diagonal_conjTranspose, mul_assoc]
-    congr!
-    ext
-    simp
-/-
-@[simps]
 noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
     diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩))
@@ -188,7 +157,6 @@ noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) 
     congr!
     ext
     simp
--/
 
 /-- Instance of the Continuous Functional Calculus for a Hermitian Matrix over an RCLike field.-/
 instance instContinuousFunctionalCalculus :
