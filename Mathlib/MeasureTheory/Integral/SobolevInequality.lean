@@ -311,7 +311,8 @@ with Haar measure. There exists a constant `C` depending only on `E`, such that 
 integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by `C` times the
 `n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
-    ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂μ ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ p := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
@@ -332,7 +333,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {p : ℝ} (hp : Real.IsConjExponen
     use (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹
     rw [inv_mul_cancel_right₀]
     exact (NNReal.rpow_pos hc).ne'
-  refine this.imp fun C hC u hu h2u ↦ ?_
+  refine this.imp fun C hC F _ _ _ u hu h2u ↦ ?_
   rw [h2c, ENNReal.smul_def, lintegral_smul_measure, lintegral_smul_measure]
   let v : (ι → ℝ) → F := u ∘ e.symm
   have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
@@ -377,20 +378,19 @@ with Haar measure. There exists a constant `C` depending only on `E`, such that 
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
 theorem snorm_le_snorm_fderiv_one {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
-    ∃ C : ℝ≥0, ∀ {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    {u : E → F} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
-  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv F μ hp.coe
+  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv μ hp.coe
   use C ^ (p : ℝ)⁻¹
-  intro u hu h2u
+  intro F _ _ _ u hu h2u
   rw [snorm_one_eq_lintegral_nnnorm,
     ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
     ENNReal.coe_rpow_of_nonneg _ h0p.le, ← NNReal.rpow_mul,
     snorm_nnreal_pow_eq_lintegral hp.symm.pos.ne',
     inv_mul_cancel h0p.ne', NNReal.rpow_one]
   exact hC hu h2u
-
-variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
@@ -402,7 +402,8 @@ Note: The codomain of `u` needs to be a Hilbert space.
 -/
 theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
     (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
-    ∃ C : ℝ≥0, ∀ {u : E → F'} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
+      {u : E → F'} (_hu : ContDiff ℝ 1 u) (_h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   by_cases hp'0 : p' = 0
   · simp [hp'0]
@@ -421,8 +422,8 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
   rcases hp.eq_or_lt with rfl|hp
   -- the case `p = 1`
-  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one F' μ hn
-    refine ⟨C, @fun u hu h2u ↦ ?_⟩
+  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one μ hn
+    refine ⟨C, @fun F _ _ _ u hu h2u ↦ ?_⟩
     convert hC hu h2u
     ext
     rw [← inv_inj, hp']
@@ -454,8 +455,8 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
     field_simp [this]; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one ℝ μ hn
-  refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one μ hn
+  refine ⟨C * γ, @fun F _ _ _ u hu h2u ↦ ?_⟩
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := by
@@ -491,7 +492,7 @@ theorem snorm_le_snorm_fderiv_of_eq_inner {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 
         convert ENNReal.lintegral_mul_le_Lp_mul_Lq μ
           (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp) ?_ ?_ using 5
         · simp_rw [← ENNReal.rpow_mul, ← h3γ]
-        · borelize F'
+        · borelize F
           fun_prop
         · fun_prop
     _ = C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) *
@@ -519,12 +520,12 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F] {p p' : ℝ≥0} (
   let e : F ≃L[ℝ] F' := toEuclidean
   let C₁ : ℝ≥0 := ‖(e.symm : F' →L[ℝ] F)‖₊
   let C₂ : ℝ≥0 := ‖(e : F →L[ℝ] F')‖₊
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq_inner μ F' hp hn hp'
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq_inner μ hp hn hp'
   refine ⟨C₁ * C * C₂, @fun u hu h2u ↦ ?_⟩
   let v := e ∘ u
   have hv : ContDiff ℝ 1 v := e.contDiff.comp hu
   have h2v : HasCompactSupport v := h2u.comp_left e.map_zero
-  specialize hC hv h2v
+  specialize hC F' hv h2v
   have h4v : ∀ x, ‖fderiv ℝ v x‖ ≤ C₂ * ‖fderiv ℝ u x‖ := fun x ↦ calc
     ‖fderiv ℝ v x‖
       = ‖(fderiv ℝ e (u x)).comp (fderiv ℝ u x)‖ := by
@@ -545,7 +546,7 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F] {p p' : ℝ≥0} (
 
 variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
-function `u` supported in a bounded measurable set `s` in a normed space `E` of finite dimension
+function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n` and `0 < q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.
 There exists a constant `C` depending only on `E`, `s`, `p` and `q`, such that the `L^q` norm of `u`
 is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
