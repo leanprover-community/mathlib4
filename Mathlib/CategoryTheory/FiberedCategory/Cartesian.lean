@@ -109,6 +109,7 @@ lemma map_self : IsCartesian.map p f φ φ = 𝟙 a := by
 
 /-- The canonical isomorphism between the domains of two cartesian morphisms
 lying over the same object. -/
+@[simps]
 noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
   hom := IsCartesian.map p f φ φ'
   inv := IsCartesian.map p f φ' φ
