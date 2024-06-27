@@ -14,15 +14,16 @@ import Mathlib.Tactic.SuppressCompilation
 # Tensor product of modules over commutative semirings.
 
 This file constructs the tensor product of modules over commutative semirings. Given a semiring `R`
-and modules over it `M` and `N`, the standard construction of the tensor product is `TensorProduct R
-M N`. It is also a module over `R`.
+and modules over it `M` and `N`, the standard construction of the tensor product is
+`TensorProduct R M N`. It is also a module over `R`.
 
-It comes with a canonical bilinear map `TensorProduct.mk R M N : M →ₗ[R] N →ₗ[R] TensorProduct R M
-N`.
+It comes with a canonical bilinear map
+`TensorProduct.mk R M N : M →ₗ[R] N →ₗ[R] TensorProduct R M N`.
 
-Given any bilinear map `f : M →ₗ[R] N →ₗ[R] P`, there is a unique linear map `TensorProduct.lift f :
-TensorProduct R M N →ₗ[R] P` whose composition with the canonical bilinear map `TensorProduct.mk` is
-the given bilinear map `f`.  Uniqueness is shown in the theorem `TensorProduct.lift.unique`.
+Given any bilinear map `f : M →ₗ[R] N →ₗ[R] P`, there is a unique linear map
+`TensorProduct.lift f : TensorProduct R M N →ₗ[R] P` whose composition with the canonical bilinear
+map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+`TensorProduct.lift.unique`.
 
 
 ## Notation
