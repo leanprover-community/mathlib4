@@ -40,7 +40,7 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
   rcases exists_countable_basis X with ⟨B, hBc, -, hB⟩
   let s : Set (Set X × Set X) := { UV ∈ B ×ˢ B | closure UV.1 ⊆ UV.2 }
   -- `s` is a countable set.
-  haveI : Encodable s := ((hBc.prod hBc).mono (inter_subset_left _ _)).toEncodable
+  haveI : Encodable s := ((hBc.prod hBc).mono inter_subset_left).toEncodable
   -- We don't have the space of bounded (possibly discontinuous) functions, so we equip `s`
   -- with the discrete topology and deal with `s →ᵇ ℝ` instead.
   letI : TopologicalSpace s := ⊥

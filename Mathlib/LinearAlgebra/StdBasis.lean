@@ -37,8 +37,6 @@ this is a basis over `Fin 3 → R`.
 
 open Function Set Submodule
 
-open BigOperators
-
 namespace LinearMap
 
 variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)]
@@ -112,7 +110,7 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
       intro b hb
       simp only [mem_iInf, mem_ker, proj_apply] at hb
       rw [←
-        show (∑ i in I, stdBasis R φ i (b i)) = b by
+        show (∑ i ∈ I, stdBasis R φ i (b i)) = b by
           ext i
           rw [Finset.sum_apply, ← stdBasis_same R φ i (b i)]
           refine Finset.sum_eq_single i (fun j _ ne => stdBasis_ne _ _ _ _ ne.symm _) ?_

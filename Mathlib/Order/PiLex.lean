@@ -188,7 +188,7 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
     rintro _ a₂ ⟨i, h, hi⟩
     obtain ⟨a, ha₁, ha₂⟩ := exists_between hi
     classical
-      refine' ⟨Function.update a₂ _ a, ⟨i, fun j hj => _, _⟩, i, fun j hj => _, _⟩
+      refine ⟨Function.update a₂ _ a, ⟨i, fun j hj => ?_, ?_⟩, i, fun j hj => ?_, ?_⟩
       · rw [h j hj]
         dsimp only at hj
         rw [Function.update_noteq hj.ne a]

@@ -112,7 +112,7 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
     exact h _ _
 #align flow.ext Flow.ext
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
     {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
   ϕ.cont'.comp (ht.prod_mk hf)

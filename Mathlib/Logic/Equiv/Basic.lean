@@ -17,6 +17,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.CC
 
 #align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -1320,7 +1321,7 @@ def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Pr
           apply sigmaCongrRight
           intro y
           apply Equiv.symm
-          refine' (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight _)
+          refine (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight ?_)
           intro x
           exact ⟨fun ⟨hp, h'⟩ => congr_arg Subtype.val h', fun h' => ⟨(h x).2 (h'.symm ▸ y.2),
             Subtype.eq h'⟩⟩ }
@@ -1607,18 +1608,7 @@ theorem swapCore_self (r a : α) : swapCore a a r = r := by
 #align equiv.swap_core_self Equiv.swapCore_self
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swapCore
-  -- Porting note: cc missing.
-  -- `casesm` would work here, with `casesm _ = _, ¬ _ = _`,
-  -- if it would just continue past failures on hypotheses matching the pattern
-  split_ifs with h₁ h₂ h₃ h₄ h₅
-  · subst h₁; exact h₂
-  · subst h₁; rfl
-  · cases h₃ rfl
-  · exact h₄.symm
-  · cases h₅ rfl
-  · cases h₅ rfl
-  · rfl
+  unfold swapCore; split_ifs <;> cc
 #align equiv.swap_core_swap_core Equiv.swapCore_swapCore
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
@@ -1678,7 +1668,7 @@ theorem symm_swap (a b : α) : (swap a b).symm = swap a b :=
 
 @[simp]
 theorem swap_eq_refl_iff {x y : α} : swap x y = Equiv.refl _ ↔ x = y := by
-  refine' ⟨fun h => (Equiv.refl _).injective _, fun h => h ▸ swap_self _⟩
+  refine ⟨fun h => (Equiv.refl _).injective ?_, fun h => h ▸ swap_self _⟩
   rw [← h, swap_apply_left, h, refl_apply]
 #align equiv.swap_eq_refl_iff Equiv.swap_eq_refl_iff
 
@@ -1986,7 +1976,7 @@ end
 
 section BinaryOp
 
-variable (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
+variable {α₁ β₁ : Type*} (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
 
 theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x => by simp
 #align equiv.semiconj_conj Equiv.semiconj_conj

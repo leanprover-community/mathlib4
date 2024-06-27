@@ -303,7 +303,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     refine this.trans ?_
     convert approxAddOrderOf.vadd_subset_of_coprime (p * δ n) h_cop
     rw [hu₀, Subtype.coe_mk, mul_comm p, h_div]
-  change (∀ᵐ x, x ∉ E) ∨ E ∈ volume.ae
+  change (∀ᵐ x, x ∉ E) ∨ E ∈ ae volume
   rw [← eventuallyEq_empty, ← eventuallyEq_univ]
   have hC : ∀ p : Nat.Primes, u p +ᵥ C p = C p := by
     intro p
@@ -348,8 +348,8 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     refine ⟨j - i, ⟨le_tsub_of_add_le_left hij, ?_⟩, ?_⟩
     · simpa only [tsub_le_iff_right] using j.property.2.trans le_self_add
     · rw [sub_nsmul _ (Subtype.coe_le_coe.mpr hij.le), ← sub_eq_add_neg, ← dist_eq_norm]
-      refine' (dist_triangle (↑j • ξ) x (↑i • ξ)).trans _
-      linarith [mem_closedBall.mp hx.1, mem_closedBall'.mp hx.2]
+      exact (dist_triangle ((j : ℕ) • ξ) x ((i : ℕ) • ξ)).trans (by
+        linarith [mem_closedBall.mp hx.1, mem_closedBall'.mp hx.2])
   by_contra h
   apply hn.ne'
   have h' : ⋃ j, B j = univ := by

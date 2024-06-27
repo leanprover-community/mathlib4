@@ -51,7 +51,7 @@ universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical BigOperators Topology
+open Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical Topology
   NNReal Metric
 
 namespace LinearIsometry
@@ -263,17 +263,17 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     tendsto_finset_sum _ fun i _ =>
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
-  refine' (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => _
+  refine (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => ?_
   replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹ := by
     rw [← NNReal.coe_lt_coe]
     push_cast
     exact hg
   rw [LinearMap.ker_eq_bot]
-  refine' (hK.add_sub_lipschitzWith (LipschitzWith.of_dist_le_mul fun v u => _) hg).injective
+  refine (hK.add_sub_lipschitzWith (LipschitzWith.of_dist_le_mul fun v u => ?_) hg).injective
   simp only [dist_eq_norm, LinearMap.lsum_apply, Pi.sub_apply, LinearMap.sum_apply,
     LinearMap.comp_apply, LinearMap.proj_apply, LinearMap.smulRight_apply, LinearMap.id_apply, ←
     Finset.sum_sub_distrib, ← smul_sub, ← sub_smul, NNReal.coe_sum, coe_nnnorm, Finset.sum_mul]
-  refine' norm_sum_le_of_le _ fun i _ => _
+  refine norm_sum_le_of_le _ fun i _ => ?_
   rw [norm_smul, mul_comm]
   gcongr
   exact norm_le_pi_norm (v - u) i
@@ -312,7 +312,7 @@ theorem Basis.opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
 #align basis.op_nnnorm_le Basis.opNNNorm_le
 
-@[deprecated] alias Basis.op_nnnorm_le := Basis.opNNNorm_le -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias Basis.op_nnnorm_le := Basis.opNNNorm_le
 
 theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
@@ -320,7 +320,7 @@ theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E �
   simpa using NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
 #align basis.op_norm_le Basis.opNorm_le
 
-@[deprecated] alias Basis.op_norm_le := Basis.opNorm_le -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias Basis.op_norm_le := Basis.opNorm_le
 
 /-- A weaker version of `Basis.opNNNorm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
@@ -332,7 +332,7 @@ theorem Basis.exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) 
       (v.opNNNorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
 #align basis.exists_op_nnnorm_le Basis.exists_opNNNorm_le
 
-@[deprecated] alias Basis.exists_op_nnnorm_le := Basis.exists_opNNNorm_le -- 2024-02-02
+@[deprecated (since := "2024-02-02")] alias Basis.exists_op_nnnorm_le := Basis.exists_opNNNorm_le
 
 /-- A weaker version of `Basis.opNorm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
@@ -344,7 +344,7 @@ theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
   simpa using h ⟨M, hM⟩ H
 #align basis.exists_op_norm_le Basis.exists_opNorm_le
 
-@[deprecated] alias Basis.exists_op_norm_le := Basis.exists_opNorm_le -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias Basis.exists_op_norm_le := Basis.exists_opNorm_le
 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
@@ -488,7 +488,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 #align finite_dimensional_of_is_compact_closed_ball₀ FiniteDimensional.of_isCompact_closedBall₀
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_isCompact_closedBall₀ := FiniteDimensional.of_isCompact_closedBall₀
 
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
@@ -498,7 +498,7 @@ theorem FiniteDimensional.of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : 
   .of_isCompact_closedBall₀ 𝕜 rpos <| by simpa using h.vadd (-c)
 #align finite_dimensional_of_is_compact_closed_ball FiniteDimensional.of_isCompact_closedBall
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_isCompact_closedBall := FiniteDimensional.of_isCompact_closedBall
 
 /-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
@@ -507,7 +507,7 @@ theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
   let ⟨_r, rpos, hr⟩ := exists_isCompact_closedBall (0 : E)
   .of_isCompact_closedBall₀ 𝕜 rpos hr
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_locallyCompactSpace := FiniteDimensional.of_locallyCompactSpace
 
 /-- If a function has compact support, then either the function is trivial
@@ -543,7 +543,7 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (eventually_of_forall hC)
 
-@[deprecated] -- Since 2024-01-31
+@[deprecated (since := "2024-01-31")]
 alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
 
 variable (E)
@@ -556,7 +556,7 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     apply ClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
 
-@[deprecated] -- Since 2024-01-31
+@[deprecated (since := "2024-01-31")]
 alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
 
 end Riesz
@@ -570,7 +570,7 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
     ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
   { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
     continuous_toFun := by
-      refine' continuous_pi fun i => _
+      refine continuous_pi fun i => ?_
       exact (ContinuousLinearMap.apply 𝕜 E (Pi.single i 1)).continuous
     continuous_invFun := by
       simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
@@ -585,7 +585,7 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
         LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
       apply le_trans (norm_sum_le _ _)
       rw [smul_mul_assoc]
-      refine' Finset.sum_le_card_nsmul _ _ _ fun i _ => _
+      refine Finset.sum_le_card_nsmul _ _ _ fun i _ => ?_
       rw [norm_smul, mul_comm]
       gcongr <;> apply norm_le_pi_norm }
 #align continuous_linear_equiv.pi_ring ContinuousLinearEquiv.piRing

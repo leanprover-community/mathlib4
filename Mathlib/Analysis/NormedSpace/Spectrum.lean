@@ -10,6 +10,7 @@ import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.NormedSpace.UnitizationL1
 
 #align_import analysis.normed_space.spectrum from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
@@ -148,6 +149,29 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
   exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+
+section QuasispectrumCompact
+
+variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
+variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
+
+theorem _root_.quasispectrum.isCompact (a : B) : IsCompact (quasispectrum 𝕜 a) := by
+  rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
+    ← AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 B)]
+  exact spectrum.isCompact _
+
+instance _root_.quasispectrum.instCompactSpace (a : B) :
+    CompactSpace (quasispectrum 𝕜 a) :=
+  isCompact_iff_compactSpace.mp <| quasispectrum.isCompact a
+
+instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScalarTower ℝ B B]
+    [SMulCommClass ℝ B B] (a : B) [CompactSpace (quasispectrum ℝ a)] :
+    CompactSpace (quasispectrum ℝ≥0 a) := by
+  rw [← isCompact_iff_compactSpace] at *
+  rw [← quasispectrum.preimage_algebraMap ℝ]
+  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+
+end QuasispectrumCompact
 
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine iSup₂_le fun k hk => ?_

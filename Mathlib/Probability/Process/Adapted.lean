@@ -37,7 +37,7 @@ adapted, progressively measurable
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
+open scoped Classical MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -154,7 +154,7 @@ protected theorem mul [Mul β] [ContinuousMul β] (hu : ProgMeasurable f u)
 
 @[to_additive]
 protected theorem finset_prod' {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
-    {s : Finset γ} (h : ∀ c ∈ s, ProgMeasurable f (U c)) : ProgMeasurable f (∏ c in s, U c) :=
+    {s : Finset γ} (h : ∀ c ∈ s, ProgMeasurable f (U c)) : ProgMeasurable f (∏ c ∈ s, U c) :=
   Finset.prod_induction U (ProgMeasurable f) (fun _ _ => ProgMeasurable.mul)
     (progMeasurable_const _ 1) h
 #align measure_theory.prog_measurable.finset_prod' MeasureTheory.ProgMeasurable.finset_prod'
@@ -163,7 +163,7 @@ protected theorem finset_prod' {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
 @[to_additive]
 protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, ProgMeasurable f (U c)) :
-    ProgMeasurable f fun i a => ∏ c in s, U c i a := by
+    ProgMeasurable f fun i a => ∏ c ∈ s, U c i a := by
   convert ProgMeasurable.finset_prod' h using 1; ext (i a); simp only [Finset.prod_apply]
 #align measure_theory.prog_measurable.finset_prod MeasureTheory.ProgMeasurable.finset_prod
 #align measure_theory.prog_measurable.finset_sum MeasureTheory.ProgMeasurable.finset_sum

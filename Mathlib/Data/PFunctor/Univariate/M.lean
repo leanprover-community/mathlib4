@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2017 Simon Hudon All rights reserved.
+Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
@@ -341,7 +341,9 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   cases' h : x.approx (succ n) with _ hd ch
   have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
-    apply x.consistent
+    · split
+      injections
+    · apply x.consistent
   revert ch
   rw [h']
   intros ch h

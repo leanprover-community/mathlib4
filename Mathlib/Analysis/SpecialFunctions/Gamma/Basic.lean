@@ -303,7 +303,7 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 #align complex.Gamma_aux_recurrence2 Complex.GammaAux_recurrence2
 
 /-- The `Γ` function (of a complex variable `s`). -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 irreducible_def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 #align complex.Gamma Complex.Gamma
@@ -427,7 +427,7 @@ theorem GammaIntegral_eq_mellin : GammaIntegral = mellin fun x => ↑(Real.exp (
   funext fun s => by simp only [mellin, GammaIntegral, smul_eq_mul, mul_comm]
 #align complex.Gamma_integral_eq_mellin Complex.GammaIntegral_eq_mellin
 
-/-- The derivative of the `Γ` integral, at any `s ∈ ℂ` with `1 < re s`, is given by the Melllin
+/-- The derivative of the `Γ` integral, at any `s ∈ ℂ` with `1 < re s`, is given by the Mellin
 transform of `log t * exp (-t)`. -/
 theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
     HasDerivAt GammaIntegral (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
@@ -500,7 +500,7 @@ end Complex
 namespace Real
 
 /-- The `Γ` function (of a real variable `s`). -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 def Gamma (s : ℝ) : ℝ :=
   (Complex.Gamma s).re
 #align real.Gamma Real.Gamma
