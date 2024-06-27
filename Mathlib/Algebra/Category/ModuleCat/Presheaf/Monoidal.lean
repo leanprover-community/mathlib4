@@ -198,6 +198,22 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : PresheafOfModules.{
   exact MonoidalCategory.associator_naturality
     (Hom.app' f₁ X) (Hom.app' f₂ X) (Hom.app' f₃ X)
 
+lemma leftUnitor_naturality {X Y : PresheafOfModules.{u} (R ⋙ forget₂ _ _)} (f : X ⟶ Y) :
+    𝟙_ (PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)) ◁ f ≫ (λ_ Y).hom =
+      (λ_ X).hom ≫ f := by
+  ext1 X
+  simp only [Functor.map_comp, evaluation_map_whiskerLeft,
+    evaluation_map_associator_hom, evaluation_map_whiskerRight]
+  exact MonoidalCategory.leftUnitor_naturality (Hom.app' f X)
+
+lemma rightUnitor_naturality {X Y : PresheafOfModules.{u} (R ⋙ forget₂ _ _)} (f : X ⟶ Y) :
+    f ▷ 𝟙_ (PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)) ≫ (ρ_ Y).hom =
+      (ρ_ X).hom ≫ f := by
+  ext1 X
+  simp only [Functor.map_comp, evaluation_map_whiskerLeft,
+    evaluation_map_associator_hom, evaluation_map_whiskerRight]
+  exact MonoidalCategory.rightUnitor_naturality (Hom.app' f X)
+
 variable (F G H K)
 
 lemma pentagon :
@@ -222,8 +238,8 @@ instance : MonoidalCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
   whiskerLeft_id _ _ := by ext1; simp; rfl
   id_whiskerRight _ _ := by ext1; simp; rfl
   associator_naturality := associator_naturality
-  leftUnitor_naturality := sorry
-  rightUnitor_naturality := sorry
+  leftUnitor_naturality := leftUnitor_naturality
+  rightUnitor_naturality := rightUnitor_naturality
   pentagon F G H K := pentagon F G H K
   triangle F G := triangle F G
 
