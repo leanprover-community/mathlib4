@@ -305,14 +305,14 @@ def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAl
     (Set.singleton_subset_iff.mpr hx) (hS x hx).isIntegral.inv_mem_adjoin
 
 /-- Turn an algebraic subalgebra into an intermediate field, `Algebra.IsAlgebraic` version. -/
-abbrev Algebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : Algebra.IsAlgebraic K S) :
-    IntermediateField K L := (S.isAlgebraic_iff.mpr hS).toIntermediateField
+abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
+    IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
 
 /-- The algebraic closure of a field `K` in an extension `L`. Definitionally, this is exactly
   `integralClosure K L` as an intermediate field. We choose the name `algClosure` to
   distinguish the intermediate field from the subalgebra, and from `AlgebraicClosure`. -/
 def IntermediateField.algClosure : IntermediateField K L :=
-  ((le_integralClosure_iff_isIntegral (R := K) (A := L)).mp le_rfl).isAlgebraic.toIntermediateField
+  Algebra.IsAlgebraic.toIntermediateField (integralClosure K L)
 
 /-- Turn a subalgebra satisfying `IsField` into an intermediate_field -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
