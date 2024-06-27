@@ -51,7 +51,8 @@ open scoped Topology
 def ContinuousLinearMapWOT (𝕜 : Type*) (E : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup E]
     [TopologicalSpace E] [Module 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] := E →L[𝕜] F
 
-notation E " →WOT[" 𝕜 "]" F => ContinuousLinearMapWOT 𝕜 E F
+@[inherit_doc]
+notation:25 E " →WOT[" 𝕜 "]" F => ContinuousLinearMapWOT 𝕜 E F
 
 namespace ContinuousLinearMapWOT
 
