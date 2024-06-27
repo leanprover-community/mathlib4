@@ -42,6 +42,17 @@ TODO
 /-- The degree of a monomial. -/
 def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
+lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
+  simp only [MvPolynomial.degree, Finset.sum_eq_zero_iff]
+  constructor
+  · intro hd
+    ext s
+    by_cases hs : s ∈ d.support
+    simp only [hd s hs, Finsupp.coe_zero, Pi.zero_apply]
+    simpa only [Finsupp.mem_support_iff, ne_eq, Decidable.not_not] using hs
+  · intro hd
+    simp [hd]
+
 theorem weightedDegree_one (d : σ →₀ ℕ) :
     weightedDegree 1 d = degree d := by
   simp [weightedDegree, degree, Finsupp.total, Finsupp.sum]

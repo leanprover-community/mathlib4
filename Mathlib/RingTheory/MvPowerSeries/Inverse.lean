@@ -7,6 +7,7 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.MvPowerSeries.NonZeroDivisors
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -138,14 +139,17 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
 #align mv_power_series.mul_inv_of_unit MvPowerSeries.mul_invOfUnit
 
 theorem isUnit_iff_constantCoeff (φ : MvPowerSeries σ R) :
-    IsUnit φ ↔ IsUnit (MvPowerSeries.constantCoeff σ R φ) := by
+    IsUnit φ ↔ IsUnit (constantCoeff σ R φ) := by
   constructor
   · exact IsUnit.map _
   · rintro ⟨u, hu⟩
     rw [isUnit_iff_exists]
     use φ.invOfUnit u
     simp only [mul_invOfUnit φ u hu.symm, true_and]
-    sorry
+    rw [← mul_cancel_right_mem_nonZeroDivisors (r := φ.invOfUnit u)]
+    rw [mul_assoc, one_mul, mul_invOfUnit _  _ hu.symm, mul_one]
+    apply mem_nonZeroDivisors_of_constantCoeff
+    simp only [constantCoeff_invOfUnit, IsUnit.mem_nonZeroDivisors (Units.isUnit u⁻¹)]
 
 end Ring
 
@@ -188,45 +192,53 @@ end LocalRing
 
 section Field
 
-variable {k : Type*} [Field k]
+variable {R k : Type*} [Ring R] [Inv R] [Field k]
 
-/-- The inverse `1/f` of a multivariable power series `f` over a field -/
-protected def inv (φ : MvPowerSeries σ k) : MvPowerSeries σ k :=
-  inv.aux (constantCoeff σ k φ)⁻¹ φ
+/-- The inverse `1/f` of a multivariable power series `f` over a ring with `Inv` -/
+protected def inv (φ : MvPowerSeries σ R) : MvPowerSeries σ R :=
+  inv.aux (constantCoeff σ R φ)⁻¹ φ
 #align mv_power_series.inv MvPowerSeries.inv
 
-instance : Inv (MvPowerSeries σ k) :=
+instance : Inv (MvPowerSeries σ R) :=
   ⟨MvPowerSeries.inv⟩
 
-theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k) :
-    coeff k n φ⁻¹ =
-      if n = 0 then (constantCoeff σ k φ)⁻¹
+theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+    coeff R n φ⁻¹ =
+      if n = 0 then (constantCoeff σ R φ)⁻¹
       else
-        -(constantCoeff σ k φ)⁻¹ *
-          ∑ x ∈ antidiagonal n, if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 :=
+        -(constantCoeff σ R φ)⁻¹ *
+          ∑ x ∈ antidiagonal n, if x.2 < n then coeff R x.1 φ * coeff R x.2 φ⁻¹ else 0 :=
   coeff_inv_aux n _ φ
 #align mv_power_series.coeff_inv MvPowerSeries.coeff_inv
 
 @[simp]
-theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
-    constantCoeff σ k φ⁻¹ = (constantCoeff σ k φ)⁻¹ := by
+theorem constantCoeff_inv (φ : MvPowerSeries σ R) :
+    constantCoeff σ R φ⁻¹ = (constantCoeff σ R φ)⁻¹ := by
   classical
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, if_pos rfl]
 #align mv_power_series.constant_coeff_inv MvPowerSeries.constantCoeff_inv
 
-theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 :=
-  ⟨fun h => by simpa using congr_arg (constantCoeff σ k) h, fun h =>
+theorem inv_eq_zero' {φ : MvPowerSeries σ R} :
+    φ⁻¹ = 0 ↔ (constantCoeff σ R φ)⁻¹ = 0 :=
+  ⟨fun h => by simpa using congr_arg (constantCoeff σ R) h, fun h =>
     ext fun n => by
       classical
       rw [coeff_inv]
       split_ifs <;>
         simp only [h, map_zero, zero_mul, inv_zero, neg_zero]⟩
+
+theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 := by
+  rw [inv_eq_zero', _root_.inv_eq_zero]
 #align mv_power_series.inv_eq_zero MvPowerSeries.inv_eq_zero
 
 @[simp]
 theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 #align mv_power_series.zero_inv MvPowerSeries.zero_inv
+
+theorem invOfUnit_eq' (φ : MvPowerSeries σ R) (h : IsUnit (constantCoeff σ R φ) ):
+    invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
+  rfl
 
 -- Porting note (#10618): simp can prove this.
 -- @[simp]
