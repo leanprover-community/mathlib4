@@ -408,7 +408,7 @@ def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
 
 /-- Equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducibleClosed x }`. -/
 @[simps apply symm_apply]
-def equivSubtype : IrreducibleCloseds α ≃ {x : Set α // IsIrreducibleClosed x } where
+def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducibleClosed x } where
   toFun a   := ⟨a.1, a.2⟩
   invFun a  := ⟨a.1, a.2⟩
   left_inv  := fun ⟨_, _⟩ => rfl
