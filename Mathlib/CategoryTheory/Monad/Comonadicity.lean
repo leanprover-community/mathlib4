@@ -336,7 +336,7 @@ def comonadicOfCreatesGSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
 /-- An alternate version of Beck's comonadicity theorem. If `F` reflects isomorphisms, preserves
 equalizers of `F`-cosplit pairs and `C` has equalizers of `F`-cosplit pairs, then it is comonadic.
 -/
-def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [F.ReflectsIsomorphisms]
+def comonadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [F.ReflectsIsomorphisms]
     [HasEqualizerOfIsCosplitPair F] [PreservesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
   have : ReflectsLimitOfIsCosplitPair F := ⟨fun f g _ => by
