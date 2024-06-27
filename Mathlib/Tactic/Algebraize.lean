@@ -92,12 +92,7 @@ def searchContext (t : Array (TSyntax `term)) : TacticM Unit := withMainContext 
       if nm != i' then
         continue
       let f := args[args.size - 1]!
-      let mut happy := false
-      for j in t' do
-        if (← Meta.isDefEq j f) then
-          happy := true
-          break
-      if ¬happy then
+      if ¬ (← t'.anyM (fun j => Meta.isDefEq j f)) then
         continue
       let h : Ident := mkIdent i
       let hf := mkIdent decl.userName
