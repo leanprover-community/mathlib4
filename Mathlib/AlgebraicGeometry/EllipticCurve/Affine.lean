@@ -1089,11 +1089,15 @@ abbrev EllipticCurve.toAffine {R : Type u} [CommRing R] (E : EllipticCurve R) :
 
 namespace EllipticCurve.Affine
 
-variable {R : Type u} [CommRing R] (E : EllipticCurve R)
+variable {R : Type u} [Nontrivial R] [CommRing R] {E : EllipticCurve R}
 
-lemma nonsingular [Nontrivial R] {x y : R} (h : E.toAffine.Equation x y) :
-    E.toAffine.Nonsingular x y :=
+lemma nonsingular {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Nonsingular x y :=
   E.toAffine.nonsingular_of_Δ_ne_zero h <| E.coe_Δ' ▸ E.Δ'.ne_zero
 #align elliptic_curve.nonsingular EllipticCurve.Affine.nonsingular
+
+/-- An affine point on an elliptic curve `E` over `R`. -/
+def Point.mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
+  WeierstrassCurve.Affine.Point.some <| nonsingular h
+#align elliptic_curve.point.mk EllipticCurve.Affine.Point.mk
 
 end EllipticCurve.Affine
