@@ -613,7 +613,6 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
           rw [this] at hy
           linarith
 
-
 theorem extracted_1 {q : ℕ} {x : ℝ}
     (h : DifferentiableAt ℝ (deriv (qaryEntropy q)) x)
     (contAt : ContinuousAt (deriv (qaryEntropy q)) x) (xis1 : x = 1) :
@@ -708,9 +707,6 @@ lemma deriv2_binaryEntropy {x : ℝ} : deriv^[2] binaryEntropy x = -1 / (x * (1-
 /-! ### Strict Monotonicity of binary entropy -/
 
 open Set
-
-lemma aux {a b c : ℝ} (h : 0 < a) (hh : a * b < a * c) : b < c := by
-  exact (mul_lt_mul_left h).mp hh
 
 /-- Qary entropy is strictly increasing in interval [0, 1 - q⁻¹]. -/
 lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
