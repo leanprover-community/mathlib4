@@ -505,8 +505,8 @@ theorem empty_eq : ∅ = @nil α :=
 instance : Inhabited (Cycle α) :=
   ⟨nil⟩
 
-/-- An induction principle for `Cycle`. Use as `induction s using Cycle.induction_on`. -/
-@[elab_as_elim]
+/-- An induction principle for `Cycle`. Use as `induction s`. -/
+@[elab_as_elim, induction_eliminator]
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
   Quotient.inductionOn' s fun l => by
