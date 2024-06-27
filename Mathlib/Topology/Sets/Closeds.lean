@@ -399,7 +399,7 @@ protected theorem ext {s t : IrreducibleCloseds α} (h : (s : Set α) = t) : s =
 theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 
-/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
+/-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
 @[simps]
 def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
   ⟨{x}, ⟨isIrreducible_singleton, isClosed_singleton⟩⟩
