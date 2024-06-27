@@ -534,6 +534,13 @@ theorem exists_eq_pow_mul_and_not_dvd {n : ℕ} (hn : n ≠ 0) (p : ℕ) (hp : p
   ⟨_, a', h₂, h₁⟩
 #align nat.exists_eq_pow_mul_and_not_dvd Nat.exists_eq_pow_mul_and_not_dvd
 
+/-- Any nonzero natural number is the product of an odd part `m` and a power of
+two `2 ^ k`. -/
+theorem exists_eq_two_pow_mul_odd {n : ℕ} (hn : n ≠ 0) :
+    ∃ k m : ℕ, Odd m ∧ n = 2 ^ k * m :=
+  let ⟨k, m, hm, hn⟩ := exists_eq_pow_mul_and_not_dvd hn 2 (succ_ne_self 1)
+  ⟨k, m, odd_iff_not_even.mpr (mt Even.two_dvd hm), hn⟩
+
 theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d ≤ n) :
     d ∣ n ↔ (n / d).factorization = n.factorization - d.factorization := by
   refine ⟨factorization_div, ?_⟩

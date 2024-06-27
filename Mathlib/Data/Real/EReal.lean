@@ -1075,6 +1075,12 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
   rfl
 #align ereal.to_real_sub EReal.toReal_sub
 
+theorem add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
+  induction a using EReal.rec
+  · rw [bot_add b, bot_sub b]
+  · norm_cast; linarith
+  · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
+
 /-! ### Multiplication -/
 
 @[simp] theorem top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
@@ -1238,6 +1244,70 @@ instance : HasDistribNeg EReal where
   mul_neg := fun x y => by
     rw [x.mul_comm, x.mul_comm]
     exact y.neg_mul x
+
+theorem right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    (a + b) * c = a * c + b * c := by
+  rcases eq_or_lt_of_le ha with (rfl | a_pos)
+  · simp
+  rcases eq_or_lt_of_le hb with (rfl | b_pos)
+  · simp
+  rcases lt_trichotomy c 0 with (c_neg | rfl | c_pos)
+  · induction c using EReal.rec
+    · rw [mul_bot_of_pos a_pos, mul_bot_of_pos b_pos, mul_bot_of_pos (add_pos a_pos b_pos),
+        add_bot ⊥]
+    · induction a using EReal.rec
+      · exfalso; exact not_lt_bot a_pos
+      · induction b using EReal.rec
+        · norm_cast
+        · norm_cast; exact right_distrib _ _ _
+        · norm_cast
+          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_neg c_neg, add_bot]
+      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_neg c_neg, bot_add]
+    · exfalso; exact not_top_lt c_neg
+  · simp
+  · induction c using EReal.rec
+    · exfalso; exact not_lt_bot c_pos
+    · induction a using EReal.rec
+      · exfalso; exact not_lt_bot a_pos
+      · induction b using EReal.rec
+        · norm_cast
+        · norm_cast; exact right_distrib _ _ _
+        · norm_cast
+          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_pos c_pos,
+            add_top_of_ne_bot (coe_ne_bot _)]
+      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_pos c_pos,
+          top_add_of_ne_bot (ne_bot_of_gt (mul_pos b_pos c_pos))]
+    · rw [mul_top_of_pos a_pos, mul_top_of_pos b_pos, mul_top_of_pos (add_pos a_pos b_pos),
+        top_add_top]
+
+theorem left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    c * (a + b) = c * a + c * b := by
+  nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
+  exact right_distrib_of_nonneg ha hb
+
+theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
+  symm
+  refine ⟨fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z), ?_⟩
+  intro h
+  induction x using EReal.rec
+  · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
+    intro z
+    specialize h (z-1) (bot_lt_coe (z-1))
+    apply lt_of_le_of_lt h
+    rw [EReal.coe_lt_coe_iff]
+    exact sub_one_lt z
+  · induction y using EReal.rec
+    · exact bot_le
+    · norm_cast
+      norm_cast at h
+      by_contra x_lt_y
+      rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, x_lt_z, z_lt_y⟩
+      specialize h z x_lt_z
+      exact not_le_of_lt z_lt_y h
+    · exfalso
+      specialize h (_+ 1) (EReal.coe_lt_coe_iff.2 (lt_add_one _))
+      exact not_le_of_lt (coe_lt_top (_ + 1)) h
+  · exact le_top
 
 /-! ### Absolute value -/
 
