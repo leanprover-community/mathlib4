@@ -66,6 +66,7 @@ lemma symm_add : φ.symm.add = φ.add := by
   congr 1
   apply add_comm
 
+@[simp]
 lemma map_add (F : C ⥤ D) (hF : W.IsInvertedBy F) [Preadditive D] [F.Additive] :
     φ.add.map F hF = φ.fst.map F hF + φ.snd.map F hF := by
   have := hF φ.s φ.hs
@@ -314,7 +315,7 @@ lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive
     infer_instance
   · intro h
     suffices ∀ ⦃X Y : C⦄ (f g : L.obj X ⟶ L.obj Y), G.map (f + g) = G.map f + G.map g by
-      refine' ⟨fun {X Y f g} => _⟩
+      refine ⟨fun {X Y f g} => ?_⟩
       have hL := essSurj L W
       have eq := this ((L.objObjPreimageIso X).hom ≫ f ≫ (L.objObjPreimageIso Y).inv)
         ((L.objObjPreimageIso X).hom ≫ g ≫ (L.objObjPreimageIso Y).inv)
@@ -330,11 +331,6 @@ lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive
       LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, ← Functor.comp_map,
       Functor.map_add, Functor.comp_map, Functor.comp_map]
 
-lemma functor_additive_iff' {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
-    (H : C ⥤ E) (G : D ⥤ E) [Localization.Lifting L W H G]:
-    G.Additive ↔ H.Additive := by
-  rw [functor_additive_iff L W G, Functor.additive_iff_of_iso (Lifting.iso L W H G)]
-
 noncomputable instance : Preadditive W.Localization := preadditive W.Q W
 instance : W.Q.Additive := functor_additive W.Q W
 instance [HasZeroObject C] : HasZeroObject W.Localization := W.Q.hasZeroObject_of_additive
@@ -344,7 +340,6 @@ variable [W.HasLocalization]
 noncomputable instance : Preadditive W.Localization' := preadditive W.Q' W
 instance : W.Q'.Additive := functor_additive W.Q' W
 instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject_of_additive
-
 
 end Localization
 

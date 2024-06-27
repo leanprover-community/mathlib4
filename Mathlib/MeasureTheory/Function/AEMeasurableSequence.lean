@@ -51,7 +51,7 @@ theorem mk_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (
     (i : ι) : (hf i).mk (f i) x = f i x :=
   haveI h_ss : aeSeqSet hf p ⊆ { x | ∀ i, f i x = (hf i).mk (f i) x } := by
     rw [aeSeqSet, ← compl_compl { x | ∀ i, f i x = (hf i).mk (f i) x }, Set.compl_subset_compl]
-    refine' Set.Subset.trans (Set.compl_subset_compl.mpr fun x h => _) (subset_toMeasurable _ _)
+    refine Set.Subset.trans (Set.compl_subset_compl.mpr fun x h => ?_) (subset_toMeasurable _ _)
     exact h.1
   (h_ss hx i).symm
 #align ae_seq.mk_eq_fun_of_mem_ae_seq_set aeSeq.mk_eq_fun_of_mem_aeSeqSet
@@ -72,7 +72,7 @@ theorem prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : 
   rw [funext fun n => mk_eq_fun_of_mem_aeSeqSet hf hx n]
   have h_ss : aeSeqSet hf p ⊆ { x | p x fun n => f n x } := by
     rw [← compl_compl { x | p x fun n => f n x }, aeSeqSet, Set.compl_subset_compl]
-    refine' Set.Subset.trans (Set.compl_subset_compl.mpr _) (subset_toMeasurable _ _)
+    refine Set.Subset.trans (Set.compl_subset_compl.mpr ?_) (subset_toMeasurable _ _)
     exact fun x hx => hx.2
   have hx' := Set.mem_of_subset_of_mem h_ss hx
   exact hx'

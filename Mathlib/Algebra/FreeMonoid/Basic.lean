@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Units
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.free_monoid.basic from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -151,8 +151,9 @@ theorem of_injective : Function.Injective (@of α) := List.singleton_injective
 #align free_add_monoid.of_injective FreeAddMonoid.of_injective
 
 /-- Recursor for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of `[]` and `x :: xs`. -/
-@[to_additive (attr := elab_as_elim) "Recursor for `FreeAddMonoid` using `0` and
-`FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
+@[to_additive (attr := elab_as_elim, induction_eliminator)
+  "Recursor for `FreeAddMonoid` using `0` and
+  FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
 -- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
 def recOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
@@ -174,8 +175,9 @@ theorem recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α)
 
 /-- A version of `List.cases_on` for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of
 `[]` and `x :: xs`. -/
-@[to_additive (attr := elab_as_elim) "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
-`FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
+@[to_additive (attr := elab_as_elim, cases_eliminator)
+  "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
+  `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
 def casesOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : C xs := List.casesOn xs h0 ih
 #align free_monoid.cases_on FreeMonoid.casesOn
@@ -231,7 +233,6 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
 #align free_monoid.lift FreeMonoid.lift
 #align free_add_monoid.lift FreeAddMonoid.lift
 
--- Porting note (#10756): new theorem
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
   prodAux_eq _

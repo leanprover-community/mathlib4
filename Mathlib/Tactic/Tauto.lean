@@ -25,7 +25,18 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   let .fvar fvarId := hypFVar | throwError "not fvar {hypFVar}"
   let h ← fvarId.getDecl
   let e : Q(Prop) ← (do guard <| ← Meta.isProp h.type; pure h.type)
-  let replace (p : Expr) := g.replace h.fvarId p
+  let replace (p : Expr) : MetaM AssertAfterResult := do
+    commitIfNoEx do
+      let result ← g.assertAfter fvarId h.userName (← inferType p) p
+      /-
+        We attempt to clear the old hypothesis. Doing so is crucial for
+        avoiding infinite loops. On failure, we roll back the MetaM state
+        and ignore this hypothesis. See
+        https://github.com/leanprover-community/mathlib4/issues/10590.
+      -/
+      let newGoal ← result.mvarId.clear fvarId
+      return { result with mvarId := newGoal }
+
   match e with
   | ~q(¬ ($a : Prop) = $b) => do
     let h' : Q(¬$a = $b) := h.toExpr

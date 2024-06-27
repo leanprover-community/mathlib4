@@ -67,7 +67,7 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
       (fun x' => g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' => f x' - f x :=
         hg.isLittleO.comp_tendsto le_rfl
       _ =O[L] fun x' => x' - x := hf.isBigO_sub
-  refine' .of_isLittleO <| this.triangle _
+  refine .of_isLittleO <| this.triangle ?_
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
     _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := eventually_of_forall fun x' => by simp
@@ -113,7 +113,7 @@ theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
 theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp x (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp x (hf.mono inter_subset_left) inter_subset_right
 #align differentiable_within_at.comp' DifferentiableWithinAt.comp'
 
 @[fun_prop]
@@ -223,7 +223,7 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
 @[fun_prop]
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
-  refine' HasFDerivAtFilter.iterate hf _ hx n
+  refine HasFDerivAtFilter.iterate hf ?_ hx n
   -- Porting note: was `convert hf.continuousAt`
   convert hf.continuousAt.tendsto
   exact hx.symm
@@ -233,7 +233,7 @@ protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : 
 protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
     HasFDerivWithinAt f^[n] (f' ^ n) s x := by
-  refine' HasFDerivAtFilter.iterate hf _ hx n
+  refine HasFDerivAtFilter.iterate hf ?_ hx n
   rw [_root_.nhdsWithin] -- Porting note: Added `rw` to get rid of an error
   convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
   exacts [hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]

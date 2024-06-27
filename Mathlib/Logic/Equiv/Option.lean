@@ -87,8 +87,8 @@ def removeNone_aux (x : α) : β :=
 -- #align equiv.remove_none_aux Equiv.removeNone_aux
 
 theorem removeNone_aux_some {x : α} (h : ∃ x', e (some x) = some x') :
-    some (removeNone_aux e x) = e (some x) :=
-  by simp [removeNone_aux, Option.isSome_iff_exists.mpr h]
+    some (removeNone_aux e x) = e (some x) := by
+  simp [removeNone_aux, Option.isSome_iff_exists.mpr h]
 -- Porting note: private
 -- #align equiv.remove_none_aux_some Equiv.removeNone_aux_some
 

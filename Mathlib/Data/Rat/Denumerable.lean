@@ -3,8 +3,8 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Data.Rat.Order
 
 #align_import data.rat.denumerable from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 
@@ -14,6 +14,8 @@ import Mathlib.Data.Rat.Order
 This file proves that ℚ is infinite, denumerable, and deduces that it has cardinality `omega`.
 -/
 
+assert_not_exists Module
+assert_not_exists Field
 
 namespace Rat
 

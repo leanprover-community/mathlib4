@@ -228,7 +228,7 @@ instance π_epi : Epi D.π := by
 
 end
 
-theorem types_π_surjective (D : GlueData (Type*)) : Function.Surjective D.π :=
+theorem types_π_surjective (D : GlueData Type*) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 #align category_theory.glue_data.types_π_surjective CategoryTheory.GlueData.types_π_surjective
 
@@ -243,7 +243,7 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
         (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
   rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
   exact ⟨i, y, by
-    simp [← Multicoequalizer.ι_sigmaπ, -Multicoequalizer.ι_sigmaπ]
+    simp [← Multicoequalizer.ι_sigmaπ]
     rfl ⟩
 #align category_theory.glue_data.types_ι_jointly_surjective CategoryTheory.GlueData.types_ι_jointly_surjective
 

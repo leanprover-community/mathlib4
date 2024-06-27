@@ -54,6 +54,7 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 submonoid, submonoids
 -/
 
+assert_not_exists MonoidWithZero
 
 -- Only needed for notation
 -- Only needed for notation
@@ -453,7 +454,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
     p x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ closure s) (hc : p x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ closure s) (hc : p x hx) => hc
   exact
     closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
       ⟨_, mul _ _ _ _ hx hy⟩
@@ -578,8 +579,9 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
 #align add_submonoid.supr_eq_closure AddSubmonoid.iSup_eq_closure
 
 @[to_additive]
-theorem disjoint_def {p₁ p₂ : Submonoid M} : Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 :=
-  by simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
+theorem disjoint_def {p₁ p₂ : Submonoid M} :
+    Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 := by
+  simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
 #align submonoid.disjoint_def Submonoid.disjoint_def
 #align add_submonoid.disjoint_def AddSubmonoid.disjoint_def
 

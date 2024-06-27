@@ -91,8 +91,8 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
   -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `component j`.
-  refine' ⟨l.pmap f hf, _, _⟩
-  · refine' @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => _) _ _ hl₁ h₁₂ _
+  refine ⟨l.pmap f hf, ?_, ?_⟩
+  · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
     exact zag_of_zag_obj (Component.ι _) h
   · erw [List.getLast_pmap _ f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
     exact FullSubcategory.ext _ _ hl₂

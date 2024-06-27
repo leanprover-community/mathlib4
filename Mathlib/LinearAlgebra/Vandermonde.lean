@@ -6,7 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
 #align_import linear_algebra.vandermonde from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -31,7 +31,7 @@ variable {R : Type*} [CommRing R]
 
 open Equiv Finset
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 
@@ -51,8 +51,8 @@ theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
       Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i => Fin.cons 1
       fun j => v i * vandermonde v i j := by
   ext i j
-  refine' Fin.cases (by simp) (fun i => _) i
-  refine' Fin.cases (by simp) (fun j => _) j
+  refine Fin.cases (by simp) (fun i => ?_) i
+  refine Fin.cases (by simp) (fun j => ?_) j
   simp [pow_succ']
 #align matrix.vandermonde_cons Matrix.vandermonde_cons
 
@@ -75,7 +75,7 @@ theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) 
 #align matrix.vandermonde_transpose_mul_vandermonde Matrix.vandermonde_transpose_mul_vandermonde
 
 theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
-    det (vandermonde v) = ∏ i : Fin n, ∏ j in Ioi i, (v j - v i) := by
+    det (vandermonde v) = ∏ i : Fin n, ∏ j ∈ Ioi i, (v j - v i) := by
   unfold vandermonde
   induction' n with n ih
   · exact det_eq_one_of_card_eq_zero (Fintype.card_fin 0)
@@ -98,20 +98,20 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
         det
           (of fun i j : Fin n =>
               (v (Fin.succ i) - v 0) *
-                ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :
+                ∑ k ∈ Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :
             Matrix _ _ R) := by
       congr
       ext i j
       rw [Fin.succAbove_zero, Matrix.cons_val_succ, Fin.val_succ, mul_comm]
       exact (geom_sum₂_mul (v i.succ) (v 0) (j + 1 : ℕ)).symm
     _ =
-        (∏ i in Finset.univ, (v (Fin.succ i) - v 0)) *
+        (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
           det fun i j : Fin n =>
-            ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
+            ∑ k ∈ Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
       (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
-    _ = (∏ i in Finset.univ, (v (Fin.succ i) - v 0)) *
+    _ = (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
     det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) := congr_arg _ ?_
-    _ = ∏ i : Fin n.succ, ∏ j in Ioi i, (v j - v i) := by
+    _ = ∏ i : Fin n.succ, ∏ j ∈ Ioi i, (v j - v i) := by
       simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
       have h := ih (v ∘ Fin.succ)
       unfold Function.comp at h
@@ -120,7 +120,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
   · intro i j
     simp_rw [of_apply]
     rw [Matrix.cons_val_zero]
-    refine' Fin.cases _ (fun i => _) i
+    refine Fin.cases ?_ (fun i => ?_) i
     · simp
     rw [Matrix.cons_val_succ, Matrix.cons_val_succ, Pi.one_apply]
     ring
@@ -134,7 +134,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
       simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
       rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
       congr 1
-      refine' Finset.sum_congr rfl fun i' hi' => _
+      refine Finset.sum_congr rfl fun i' hi' => ?_
       rw [mul_left_comm (v 0), Nat.succ_sub, pow_succ']
       exact Nat.lt_succ_iff.mp (Finset.mem_range.mp hi')
 #align matrix.det_vandermonde Matrix.det_vandermonde
@@ -146,7 +146,7 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
     rintro i ⟨_, j, h₁, h₂⟩
     exact ⟨j, i, h₂, (mem_Ioi.mp h₁).ne'⟩
   · simp only [Ne, forall_exists_index, and_imp]
-    refine' fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => _)
+    refine fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => ?_)
     rw [vandermonde_apply, vandermonde_apply, h₁]
 #align matrix.det_vandermonde_eq_zero_iff Matrix.det_vandermonde_eq_zero_iff
 

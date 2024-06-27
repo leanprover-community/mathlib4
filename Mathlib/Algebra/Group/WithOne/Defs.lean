@@ -41,6 +41,7 @@ assert_not_exists div_right_inj
 assert_not_exists pow_ite
 
 assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 universe u v w
 
@@ -115,20 +116,13 @@ instance coeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
-@[to_additive (attr := elab_as_elim)
+@[to_additive (attr := elab_as_elim, induction_eliminator, cases_eliminator)
   "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
 def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
   | Option.some x => h₂ x
 #align with_one.rec_one_coe WithOne.recOneCoe
 #align with_zero.rec_zero_coe WithZero.recZeroCoe
-
--- Porting note: in Lean 3 the to-additivised declaration
--- would automatically get this; right now in Lean 4...I don't
--- know if it does or not, and I don't know how to check, so
--- I'll add it manually just to be sure.
-attribute [elab_as_elim] WithZero.recZeroCoe
-
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
@@ -189,9 +183,6 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
   Option.casesOn
 #align with_one.cases_on WithOne.cases_on
 #align with_zero.cases_on WithZero.cases_on
-
--- Porting note: I don't know if `elab_as_elim` is being added to the additivised declaration.
-attribute [elab_as_elim] WithZero.cases_on
 
 @[to_additive]
 instance mulOneClass [Mul α] : MulOneClass (WithOne α) where

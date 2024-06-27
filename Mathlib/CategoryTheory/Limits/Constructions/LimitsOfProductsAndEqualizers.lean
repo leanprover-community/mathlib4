@@ -74,8 +74,8 @@ its construction are.
 def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     IsLimit (buildLimit s t hs ht i) where
   lift q := by
-    refine' hi.lift (Fork.ofι _ _)
-    · refine' t₁.lift (Fan.mk _ fun j => _)
+    refine hi.lift (Fork.ofι ?_ ?_)
+    · refine t₁.lift (Fan.mk _ fun j => ?_)
       apply q.π.app j
     · apply t₂.hom_ext
       intro ⟨j⟩
@@ -120,7 +120,7 @@ theorem hasLimit_of_equalizer_and_product (F : J ⥤ C) [HasLimit (Discrete.func
 
 /-- A limit can be realised as a subobject of a product. -/
 noncomputable def limitSubobjectProduct [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
-    limit F ⟶ ∏ fun j => F.obj j :=
+    limit F ⟶ ∏ᶜ fun j => F.obj j :=
   have := hasFiniteLimits_of_hasLimitsOfSize C
   (limit.isoLimitCone (limitConeOfEqualizerAndProduct F)).hom ≫ equalizer.ι _ _
 #align category_theory.limits.limit_subobject_product CategoryTheory.Limits.limitSubobjectProduct
@@ -167,8 +167,8 @@ variable (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
 /-- If a functor preserves equalizers and the appropriate products, it preserves limits. -/
 noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimitsOfShape J G where
   preservesLimit {K} := by
-    let P := ∏ K.obj
-    let Q := ∏ fun f : Σp : J × J, p.fst ⟶ p.snd => K.obj f.1.2
+    let P := ∏ᶜ K.obj
+    let Q := ∏ᶜ fun f : Σp : J × J, p.fst ⟶ p.snd => K.obj f.1.2
     let s : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨_⟩ ≫ K.map f.2
     let t : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨f.1.2⟩
     let I := equalizer s t
@@ -177,7 +177,7 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
       preservesLimitOfPreservesLimitCone
         (buildIsLimit s t (by simp [s]) (by simp [t]) (limit.isLimit _) (limit.isLimit _)
           (limit.isLimit _))
-    refine' IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
+    apply IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
     · exact Fan.mk _ fun j => G.map (Pi.π _ j)
     · exact Fan.mk (G.obj Q) fun f => G.map (Pi.π _ f)
     · apply G.map s
@@ -294,8 +294,8 @@ provided the cocones used in its construction are.
 def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColimit i) :
     IsColimit (buildColimit s t hs ht i) where
   desc q := by
-    refine' hi.desc (Cofork.ofπ _ _)
-    · refine' t₂.desc (Cofan.mk _ fun j => _)
+    refine hi.desc (Cofork.ofπ ?_ ?_)
+    · refine t₂.desc (Cofan.mk _ fun j => ?_)
       apply q.ι.app j
     · apply t₁.hom_ext
       intro j
@@ -403,7 +403,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
       preservesColimitOfPreservesColimitCocone
         (buildIsColimit s t (by simp [s]) (by simp [t]) (colimit.isColimit _) (colimit.isColimit _)
           (colimit.isColimit _))
-    refine' IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
+    apply IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
     · refine Cofan.mk (G.obj Q) fun j => G.map ?_
       apply Sigma.ι _ j
     -- fun j => G.map (Sigma.ι _ j)
@@ -426,7 +426,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     · apply isColimitOfHasCoproductOfPreservesColimit
     · apply isColimitCoforkMapOfIsColimit
       apply coequalizerIsCoequalizer
-    refine' Cocones.ext (Iso.refl _) _
+    refine Cocones.ext (Iso.refl _) ?_
     intro j
     dsimp
     simp

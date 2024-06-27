@@ -23,7 +23,7 @@ defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
 defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 
 -/
-open BigOperators nonZeroDivisors
+open nonZeroDivisors
 
 variable (A K L B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K] [Algebra B L]
