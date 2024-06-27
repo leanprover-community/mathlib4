@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Init.Data.Nat.Lemmas
 
 #align_import data.int.cast.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -95,7 +95,7 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   cases e : n - m
   · simp only [ofNat_eq_coe]
     simp [e, Nat.le_of_sub_eq_zero e]
-  · rw [cast_negSucc, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e, neg_sub]
+  · rw [cast_negSucc, ← e, Nat.cast_sub <| Nat.le_of_lt <| Nat.lt_of_sub_eq_succ e, neg_sub]
 #align int.cast_sub_nat_nat Int.cast_subNatNatₓ
 -- type had `HasLiftT`
 

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.GetD
+import Mathlib.Order.Nat
 
 #align_import data.set.list from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"
 

@@ -16,6 +16,8 @@ universe u
 
 namespace Nat
 
+attribute [refl] Nat.le_refl
+
 /-! addition -/
 
 #align nat.add_comm Nat.add_comm

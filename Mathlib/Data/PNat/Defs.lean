@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
+import Mathlib.Order.Nat
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
 import Mathlib.Init.Data.Int.Order

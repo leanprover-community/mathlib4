@@ -3,11 +3,13 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Init.Order.Defs
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.GCongr.ForwardAttr
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
+import Lean.Meta.Tactic.Rfl
+import Lean.Meta.Tactic.Symm
+import Mathlib.Tactic.Core
+import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Util.AssertExists
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -122,6 +124,8 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
 The `rel` tactic is finishing-only: if fails if any main or side goals are not resolved.
 -/
 
+assert_not_exists Preorder
+
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
@@ -229,10 +233,6 @@ open Elab Tactic
     let m ← mkFreshExprMVar none
     goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
     goal.applyRfl
-
-/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
 
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where

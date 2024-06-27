@@ -9,6 +9,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Set
+import Mathlib.Order.Nat
 import Mathlib.Order.SetNotation
 
 #align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"

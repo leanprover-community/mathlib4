@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Basic
+import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Order.Defs
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.RelClasses
 import Mathlib.Order.ULift
 import Mathlib.Tactic.GCongr.Core
 
@@ -893,7 +895,6 @@ instance (priority := 100) {α : Type u} [LinearOrder α] : DistribLattice α wh
     | Or.inl h => inf_le_of_left_le <| sup_le_sup_left (le_inf (le_refl b) h) _
     | Or.inr h => inf_le_of_right_le <| sup_le_sup_left (le_inf h (le_refl c)) _
 
-instance : DistribLattice ℕ := inferInstance
 instance : Lattice ℤ := inferInstance
 
 /-! ### Dual order -/

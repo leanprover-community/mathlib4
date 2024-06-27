@@ -7,6 +7,7 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Order.Basic
+import Mathlib.Order.Nat
 
 /-!
 # `zify` tactic
