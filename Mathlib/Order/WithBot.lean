@@ -1067,9 +1067,6 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
   rfl
 #align with_bot.of_dual_map WithBot.ofDual_map
 
-
-#check Option.ne_none_iff_exists
-
 theorem forall_lt_iff_eq_bot [Preorder α] {x : WithBot α} :
     (∀ y : α, x < y) ↔ x = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ fun y ↦ WithBot.bot_lt_coe y⟩
