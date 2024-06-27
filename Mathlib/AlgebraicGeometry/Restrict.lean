@@ -184,7 +184,7 @@ def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ S
   of `U` and the sections of `X` at the image of `f`. -/
 noncomputable
 def Scheme.openImmersionΓ {U X : Scheme} (f : U ⟶ X) [h : IsOpenImmersion f] :
-    Scheme.Γ.obj (op <| U) ≅ X.presheaf.obj (op <| Scheme.Hom.opensRange f) := by
+    Γ(U, ⊤) ≅ Γ(X, Scheme.Hom.opensRange f) := by
   let U' := Scheme.Hom.opensRange f
   symm
   trans
