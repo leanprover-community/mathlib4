@@ -575,15 +575,20 @@ def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
   map_smul' _ _ := rfl
   map_add' _ _ := rfl
 
-variable [Fintype ι] [DecidableEq ι] (R')
+instance : DistribMulAction (Equiv.Perm ι) (ContinuousMultilinearMap A (fun _ : ι ↦ M₂) M₃) where
+  smul σ f := f.domDomCongr σ
+  one_smul _ := rfl
+  mul_smul σ₁ σ₂ f := toMultilinearMap_injective <| f.toMultilinearMap.domDomCongr_trans σ₂ σ₁
+  smul_zero _ := rfl
+  smul_add _ _ _ := rfl
 
-/-- Symmetrization of a continuous multilinear map (without the `1/(#ι)!` normalization). -/
-def symmetrize : Module.End R' (ContinuousMultilinearMap A (fun _ : ι ↦ M₂) M₃) :=
-  ∑ σ : Equiv.Perm ι, (domDomCongrLinearEquiv σ).toLinearMap
+instance : SMulCommClass (Equiv.Perm ι) R' (ContinuousMultilinearMap A (fun _ : ι ↦ M₂) M₃) where
+  smul_comm _ _ _ := rfl
 
-theorem symmetrize_apply (m : ContinuousMultilinearMap A (fun _ : ι ↦ M₂) M₃) (x : ι → M₂) :
-    symmetrize R' m x = ∑ σ : Equiv.Perm ι, m (x ∘ σ) := by
-  rw [symmetrize, LinearMap.sum_apply, sum_apply]; rfl
+variable (σ : Equiv.Perm ι) (f : ContinuousMultilinearMap A (fun _ : ι ↦ M₂) M₃)
+
+theorem perm_smul : σ • f = f.domDomCongr σ := rfl
+theorem perm_smul_apply (x : ι → M₂) : (σ • f) x = f (x ∘ σ) := rfl
 
 end Module
 

@@ -760,13 +760,17 @@ theorem domDomCongr_eq_iff (σ : ι₁ ≃ ι₂) (f g : MultilinearMap R (fun _
   (domDomCongrEquiv σ : _ ≃+ MultilinearMap R (fun _ => M₂) M₃).apply_eq_iff_eq
 #align multilinear_map.dom_dom_congr_eq_iff MultilinearMap.domDomCongr_eq_iff
 
-variable [Fintype ι₁] [DecidableEq ι₁] (m : MultilinearMap R (fun _ : ι₁ ↦ M₂) M₃)
+variable (σ : Equiv.Perm ι₁) (f : MultilinearMap R (fun _ : ι₁ ↦ M₂) M₃)
 
-/-- Symmetrization of a multilinear map (without dividing by the factorial). -/
-def symmetrize : MultilinearMap R (fun _ : ι₁ ↦ M₂) M₃ := ∑ σ : Equiv.Perm ι₁, m.domDomCongr σ
+instance : DistribMulAction (Equiv.Perm ι₁) (MultilinearMap R (fun _ : ι₁ ↦ M₂) M₃) where
+  smul σ f := f.domDomCongr σ
+  one_smul _ := rfl
+  mul_smul σ₁ σ₂ := domDomCongr_trans σ₂ σ₁
+  smul_zero _ := rfl
+  smul_add _ _ _ := rfl
 
-theorem symmetrize_apply (x : ι₁ → M₂) : m.symmetrize x = ∑ σ : Equiv.Perm ι₁, m (x ∘ σ) :=
-  sum_apply ..
+theorem perm_smul : σ • f = f.domDomCongr σ := rfl
+theorem perm_smul_apply (x : ι₁ → M₂) : (σ • f) x = f (x ∘ σ) := rfl
 
 end
 

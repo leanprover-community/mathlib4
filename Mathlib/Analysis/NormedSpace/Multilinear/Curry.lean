@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.GroupTheory.GroupAction.Symmetrization
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
@@ -548,21 +549,24 @@ def domDomCongrₗᵢ (σ : ι ≃ ι') :
 
 section symmetrize
 
+instance : ContinuousConstSMul (Equiv.Perm ι) (ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G') where
+  continuous_const_smul σ := (domDomCongrₗᵢ 𝕜 G G' σ).continuous
+
 variable [DecidableEq ι] (ι) (m : ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G') (x : ι → G)
 
-/-- Symmetrization of a continuous multilinear map as a continuous linear map
-  (without the `1/(#ι)!` normalization). -/
-def continuousSymmetrize :
-    ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G' →L[𝕜]
-    ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G' :=
+/-- Symmetrization of continuous multilinear maps as a continuous linear map. -/
+def symmetrize :=
   ∑ σ : Equiv.Perm ι, (domDomCongrₗᵢ 𝕜 G G' σ).toLinearIsometry.toContinuousLinearMap
 
-theorem continuousSymmetrize_apply :
-    continuousSymmetrize 𝕜 ι G G' m x = ∑ σ : Equiv.Perm ι, m (x ∘ σ) := by
-  rw [continuousSymmetrize, ContinuousLinearMap.sum_apply, sum_apply]; rfl
+theorem symmetrize_eq : symmetrize 𝕜 ι G G' =
+    ContinuousLinearMap.symmetrize (Equiv.Perm ι) 𝕜 (ContinuousMultilinearMap 𝕜 _ G') := by
+  ext; simp only [symmetrize, ContinuousLinearMap.symmetrize_apply, sum_apply,
+    ContinuousLinearMap.coe_sum', Finset.sum_apply]; rfl
 
-theorem norm_continuousSymmetrize_le :
-    ‖continuousSymmetrize 𝕜 ι G G'‖ ≤ (Fintype.card ι).factorial :=
+theorem symmetrize_apply : symmetrize 𝕜 ι G G' m x = ∑ σ : Equiv.Perm ι, m (x ∘ σ) := by
+  rw [symmetrize, ContinuousLinearMap.sum_apply, sum_apply]; rfl
+
+theorem norm_symmetrize_le : ‖symmetrize 𝕜 ι G G'‖ ≤ (Fintype.card ι).factorial :=
   (norm_sum_le _ _).trans <|
     (sum_le_sum fun _ _ ↦ LinearIsometry.norm_toContinuousLinearMap_le _).trans_eq <| by
       rw [Finset.sum_const, nsmul_eq_mul, mul_one, ← Fintype.card, Fintype.card_perm]

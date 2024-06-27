@@ -87,9 +87,7 @@ theorem HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOn
 
 /-- If a function has a power series on a ball, then so does its derivative. -/
 theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r) :
-    HasFPowerSeriesOnBall (fderiv 𝕜 f)
-      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
-        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x r := by
+    HasFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x r := by
   refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
     fun z hz ↦ ?_
   · refine continuousMultilinearCurryFin1 𝕜 E F
@@ -101,11 +99,27 @@ theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBal
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 #align has_fpower_series_on_ball.fderiv HasFPowerSeriesOnBall.fderiv
 
-open ContinuousMultilinearMap in
-theorem HasFPowerSeriesOnBall.iteratedFDeriv [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
-    (n : ℕ) : HasFPowerSeriesOnBall (iteratedFDeriv 𝕜 n f) ((continuousSymmetrize 𝕜 (Fin n) E F)
-      |>.compFormalMultilinearSeries <| p.changeOriginSeries n) x r :=
+section iteratedDeriv
+
+variable [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r) (n : ℕ)
+
+open ContinuousMultilinearMap
+
+theorem HasFPowerSeriesOnBall.iteratedFDeriv :
+    HasFPowerSeriesOnBall (iteratedFDeriv 𝕜 n f) (p.symmetrizedChangeOriginSeries n) x r := by
+  induction' n with n ih
+  convert h
   sorry
+  rw [← p.curry_derivSeries_symmetrizedChangeOriginSeries]
+  convert ContinuousLinearMap.comp_hasFPowerSeriesOnBall _ ih.fderiv
+  rfl
+
+theorem iteratedFDeriv_eq_symmetrize : iteratedFDeriv 𝕜 n f x = symmetrize 𝕜 (Fin n) E F (p n) :=
+  ((h.iteratedFDeriv n).coeff_zero fun _ ↦ x).symm.trans <| by
+    rw [FormalMultilinearSeries.symmetrizedChangeOriginSeries, symmetrize_eq]
+
+
+end iteratedDeriv
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
 theorem AnalyticOn.fderiv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) :
@@ -210,9 +224,7 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f
 /-- If a function has a finite power series on a ball, then so does its derivative. -/
 protected theorem HasFiniteFPowerSeriesOnBall.fderiv
     (h : HasFiniteFPowerSeriesOnBall f p x (n + 1) r) :
-    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f)
-      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
-        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x n r := by
+    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x n r := by
   refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
     fun z hz ↦ ?_
   · refine continuousMultilinearCurryFin1 𝕜 E F
@@ -227,9 +239,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
 This is a variant of `HasFiniteFPowerSeriesOnBall.fderiv` where the degree of `f` is `< n`
 and not `< n + 1`. -/
 theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p x n r) :
-    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f)
-      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
-        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x (n - 1) r := by
+    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x (n - 1) r := by
   obtain rfl | hn := eq_or_ne n 0
   · rw [zero_tsub]
     refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (fun y hy ↦ ?_) h.r_pos fun n ↦ ?_

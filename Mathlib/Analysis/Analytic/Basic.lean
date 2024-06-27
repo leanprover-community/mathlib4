@@ -1117,10 +1117,10 @@ The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fu
 p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 -/
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
-    E[×l]→L[𝕜] E[×k]→L[𝕜] F := by
-  let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
+    E[×l]→L[𝕜] E[×k]→L[𝕜] F :=
+  ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
     (by erw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
-  exact a (p (k + l))
+    (p (k + l))
 #align formal_multilinear_series.change_origin_series_term FormalMultilinearSeries.changeOriginSeriesTerm
 
 theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l)
@@ -1129,6 +1129,10 @@ theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs 
       p (k + l) (s.piecewise (fun _ => x) fun _ => y) :=
   ContinuousMultilinearMap.curryFinFinset_apply_const _ _ _ _ _
 #align formal_multilinear_series.change_origin_series_term_apply FormalMultilinearSeries.changeOriginSeriesTerm_apply
+
+/- theorem changeOriginSeriesTerm_zero (l s hs x) : p.changeOriginSeriesTerm 0 l s hs x =
+    ContinuousMultilinearMap.curry0 𝕜 E F (p l) x := by
+  _ -/
 
 @[simp]
 theorem norm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
@@ -1160,6 +1164,44 @@ the series `p.changeOriginSeries k`. -/
 def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E[×k]→L[𝕜] F) := fun l =>
   ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.2
 #align formal_multilinear_series.change_origin_series FormalMultilinearSeries.changeOriginSeries
+
+def sumEquivStrictMonoEquiv (k l : ℕ) : {s : Finset (Fin (k + l)) // Finset.card s = l} ≃
+    {f : Fin l ⊕ Fin k ≃ Fin (k + l) // StrictMono (f ∘ .inl) ∧ StrictMono (f ∘ .inr)} where
+  toFun s := ⟨finSumEquivOfFinset s.2
+    (by rw [Finset.card_compl, Fintype.card_fin, s.2, add_tsub_cancel_right]),
+    (s.1.orderEmbOfFin s.2).strictMono, by
+      simp_rw [Function.comp, finSumEquivOfFinset_inr]; apply (Finset.orderEmbOfFin _ _).strictMono⟩
+  invFun f := ⟨toFinset (range (f.1 ∘ .inl)), by
+    simp [Finset.card_image_of_injective _ (f.1.injective.comp Sum.inl_injective)]⟩
+  left_inv s := Subtype.ext <| by simp [Function.comp]
+  right_inv f := Subtype.ext <| Equiv.ext <| Sum.forall.mpr <| by
+    simp_rw [finSumEquivOfFinset_inl, finSumEquivOfFinset_inr]; constructor <;>
+      refine congr_fun (Fin.strictMono_unique (Finset.orderEmbOfFin _ _).strictMono ?_ ?_)
+    exacts [f.2.1, by simp, f.2.2, by
+      simp_rw [← Function.comp_def f.1]; simp [range_comp, ← f.1.image_compl]]
+
+def permProdSumEquivStrictMonoEquiv (k l : ℕ) : Equiv.Perm (Fin k) ×
+    {f : Fin l ⊕ Fin k ≃ Fin (k + l) // StrictMono (f ∘ .inl) ∧ StrictMono (f ∘ .inr)} ≃
+    {f : Fin l ⊕ Fin k ≃ Fin (k + l) // StrictMono (f ∘ .inl)} where
+  toFun f := _
+  invFun f := _
+  left_inv f := _
+  right_inv f := _
+
+
+theorem changeOriginSeries_apply (k l : ℕ) (x y) : p.changeOriginSeries k l x y =
+    ∑ f : {f : Fin l ⊕ Fin k ≃ Fin (k + l) // StrictMono (f ∘ .inl) ∧ StrictMono (f ∘ .inr)},
+      p (k + l) (Sum.elim x y ∘ f.1.symm) := by
+  simp_rw [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
+  exact Fintype.sum_equiv (sumEquivStrictMonoEquiv k l) _ _ fun _ ↦ rfl
+
+theorem changeOriginSeries_zero : p.changeOriginSeries 0 = (continuousMultilinearCurryFin0 𝕜 E F
+    |>.symm.toLinearIsometry.toContinuousLinearMap.compFormalMultilinearSeries p) := by
+  ext1 l
+  letI : Unique {s : Finset (Fin (0 + l)) // s.card = l} :=
+    ⟨⟨⟨Finset.univ, by simp⟩⟩, fun s ↦ Subtype.ext <| s.1.eq_univ_of_card <| by simp [s.2]⟩
+  rw [changeOriginSeries, Fintype.sum_unique]
+  sorry
 
 theorem nnnorm_changeOriginSeries_le_tsum (k l : ℕ) :
     ‖p.changeOriginSeries k l‖₊ ≤
@@ -1227,7 +1269,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
 
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
-    Summable fun s : Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
+    Summable fun s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (s.1 + s.2.1)‖₊ * r ^ s.2.1 * r' ^ s.1 := by
   rw [← changeOriginIndexEquiv.symm.summable_iff]
   dsimp only [Function.comp_def, changeOriginIndexEquiv_symm_apply_fst,
@@ -1248,7 +1290,7 @@ theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ�
 #align formal_multilinear_series.change_origin_series_summable_aux₁ FormalMultilinearSeries.changeOriginSeries_summable_aux₁
 
 theorem changeOriginSeries_summable_aux₂ (hr : (r : ℝ≥0∞) < p.radius) (k : ℕ) :
-    Summable fun s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
+    Summable fun s : Σ l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (k + s.1)‖₊ * r ^ s.1 := by
   rcases ENNReal.lt_iff_exists_add_pos_lt.1 hr with ⟨r', h0, hr'⟩
   simpa only [mul_inv_cancel_right₀ (pow_pos h0 _).ne'] using
@@ -1270,7 +1312,7 @@ theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSer
 
 theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radius) :
     ‖p.changeOrigin x k‖₊ ≤
-      ∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1 := by
+      ∑' s : Σ l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1 := by
   refine' tsum_of_nnnorm_bounded _ fun l => p.nnnorm_changeOriginSeries_apply_le_tsum k l x
   have := p.changeOriginSeries_summable_aux₂ h k
   refine' HasSum.sigma this.hasSum fun l => _
@@ -1294,6 +1336,29 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
   simpa only [← NNReal.tsum_mul_right] using
     (NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr)).2
 #align formal_multilinear_series.change_origin_radius FormalMultilinearSeries.changeOrigin_radius
+
+/-- `derivSeries p` is a power series for `fderiv 𝕜 f` if `p` is a power series for `f`,
+see `HasFPowerSeriesOnBall.fderiv`. -/
+def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
+  (continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
+    |>.compFormalMultilinearSeries (p.changeOriginSeries 1)
+
+variable (k l : ℕ)
+
+/-- Symmetrization of `changeOriginSeries`. -/
+def symmetrizedChangeOriginSeries :=
+  (ContinuousMultilinearMap.symmetrize 𝕜 (Fin k) E F).compFormalMultilinearSeries <|
+    p.changeOriginSeries k
+
+theorem curry_derivSeries_symmetrizedChangeOriginSeries_apply (x) :
+    ContinuousLinearMap.uncurryLeft (derivSeries (symmetrizedChangeOriginSeries p k) l x) =
+    symmetrizedChangeOriginSeries p (k+1) l x := by
+  sorry
+
+theorem curry_derivSeries_symmetrizedChangeOriginSeries : (continuousMultilinearCurryLeftEquiv
+    𝕜 (fun _ : Fin (k+1) ↦ E) F).toLinearIsometry.toContinuousLinearMap.compFormalMultilinearSeries
+    (derivSeries <| symmetrizedChangeOriginSeries p k) = symmetrizedChangeOriginSeries p (k+1) := by
+  ext1; ext1; apply curry_derivSeries_symmetrizedChangeOriginSeries_apply
 
 end
 
