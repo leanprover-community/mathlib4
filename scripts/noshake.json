@@ -125,6 +125,7 @@
   "Mathlib.Tactic.NoncommRing",
   "Mathlib.Tactic.Nontriviality",
   "Mathlib.Tactic.NormNum",
+  "Mathlib.Tactic.NormNum.Basic",
   "Mathlib.Tactic.NormNum.Core",
   "Mathlib.Tactic.NormNum.Eq",
   "Mathlib.Tactic.NormNum.Ineq",
@@ -218,6 +219,7 @@
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators": ["Mathlib.Data.List.FinRange"],
   "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Logic.Nontrivial.Basic"],
+  "Mathlib.Tactic.NoncommRing": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Tactic.MoveAdd":
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
   "Mathlib.Tactic.Measurability":
