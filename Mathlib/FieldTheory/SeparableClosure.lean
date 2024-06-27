@@ -142,8 +142,8 @@ instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure 
   ⟨fun x ↦ isAlgebraic_iff.2 x.2.isIntegral.isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
-instance separableClosure.isSeparable : IsSeparable F (separableClosure F E) :=
-  ⟨fun x ↦ by simpa only [minpoly_eq] using x.2⟩
+instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
+  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if all of its elements are separable over `F`. -/
@@ -152,14 +152,14 @@ theorem le_separableClosure' {L : IntermediateField F E} (hs : ∀ x : L, (minpo
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if it is separable over `F`. -/
-theorem le_separableClosure (L : IntermediateField F E) [IsSeparable F L] :
-    L ≤ separableClosure F E := le_separableClosure' F E (IsSeparable.separable F)
+theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L] :
+    L ≤ separableClosure F E := le_separableClosure' F E (Algebra.IsSeparable.separable F)
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if and only if it is separable over `F`. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
-    L ≤ separableClosure F E ↔ IsSeparable F L :=
-  ⟨fun h ↦ ⟨fun x ↦ by simpa only [minpoly_eq] using h x.2⟩, fun _ ↦ le_separableClosure _ _ _⟩
+    L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
+  ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩, fun _ ↦ le_separableClosure _ _ _⟩
 
 /-- The separable closure in `E` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.separableClosure_eq_bot :
@@ -170,7 +170,7 @@ theorem separableClosure.separableClosure_eq_bot :
 theorem separableClosure.normalClosure_eq_self :
     normalClosure F (separableClosure F E) E = separableClosure F E :=
   le_antisymm (normalClosure_le_iff.2 fun i ↦
-    haveI : IsSeparable F i.fieldRange := (AlgEquiv.ofInjectiveField i).isSeparable
+    haveI : Algebra.IsSeparable F i.fieldRange := (AlgEquiv.ofInjectiveField i).isSeparable
     le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
@@ -206,14 +206,14 @@ abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem IntermediateField.isSeparable_adjoin_iff_separable {S : Set E} :
-    IsSeparable F (adjoin F S) ↔ ∀ x ∈ S, (minpoly F x).Separable :=
+    Algebra.IsSeparable F (adjoin F S) ↔ ∀ x ∈ S, (minpoly F x).Separable :=
   (le_separableClosure_iff F E _).symm.trans adjoin_le_iff
 
 /-- The separable closure of `F` in `E` is equal to `E` if and only if `E / F` is
 separable. -/
-theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ IsSeparable F E :=
+theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ Algebra.IsSeparable F E :=
   ⟨fun h ↦ ⟨fun _ ↦ mem_separableClosure_iff.1 (h ▸ mem_top)⟩,
-    fun _ ↦ top_unique fun x _ ↦ mem_separableClosure_iff.2 (IsSeparable.separable _ x)⟩
+    fun _ ↦ top_unique fun x _ ↦ mem_separableClosure_iff.2 (Algebra.IsSeparable.separable _ x)⟩
 
 /-- If `K / E / F` is a field extension tower, then `separableClosure F K` is contained in
 `separableClosure E K`. -/
@@ -223,7 +223,7 @@ theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/
 theorem separableClosure.eq_restrictScalars_of_isSeparable [Algebra E K] [IsScalarTower F E K]
-    [IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F :=
+    [Algebra.IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F :=
   (separableClosure.le_restrictScalars F E K).antisymm fun _ h ↦ h.comap_minpoly_of_isSeparable F
 
 /-- If `K / E / F` is a field extension tower, then `E` adjoin `separableClosure F K` is contained
@@ -234,14 +234,14 @@ theorem separableClosure.adjoin_le [Algebra E K] [IsScalarTower F E K] :
 
 /-- A compositum of two separable extensions is separable. -/
 instance IntermediateField.isSeparable_sup (L1 L2 : IntermediateField F E)
-    [h1 : IsSeparable F L1] [h2 : IsSeparable F L2] :
-    IsSeparable F (L1 ⊔ L2 : IntermediateField F E) := by
+    [h1 : Algebra.IsSeparable F L1] [h2 : Algebra.IsSeparable F L2] :
+    Algebra.IsSeparable F (L1 ⊔ L2 : IntermediateField F E) := by
   rw [← le_separableClosure_iff] at h1 h2 ⊢
   exact sup_le h1 h2
 
 /-- A compositum of separable extensions is separable. -/
 instance IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
-    [h : ∀ i, IsSeparable F (t i)] : IsSeparable F (⨆ i, t i : IntermediateField F E) := by
+    [h : ∀ i, Algebra.IsSeparable F (t i)] : Algebra.IsSeparable F (⨆ i, t i : IntermediateField F E) := by
   simp_rw [← le_separableClosure_iff] at h ⊢
   exact iSup_le h
 
@@ -381,13 +381,13 @@ end Tower
 end IntermediateField
 
 /-- A separable extension has separable degree equal to degree. -/
-theorem IsSeparable.sepDegree_eq [IsSeparable F E] : sepDegree F E = Module.rank F E := by
+theorem Algebra.IsSeparable.sepDegree_eq [Algebra.IsSeparable F E] : sepDegree F E = Module.rank F E := by
   rw [sepDegree, (separableClosure.eq_top_iff F E).2 ‹_›, IntermediateField.rank_top']
 
 /-- A separable extension has inseparable degree one. -/
-theorem IsSeparable.insepDegree_eq [IsSeparable F E] : insepDegree F E = 1 := by
+theorem Algebra.IsSeparable.insepDegree_eq [Algebra.IsSeparable F E] : insepDegree F E = 1 := by
   rw [insepDegree, (separableClosure.eq_top_iff F E).2 ‹_›, IntermediateField.rank_top]
 
 /-- A separable extension has finite inseparable degree one. -/
-theorem IsSeparable.finInsepDegree_eq [IsSeparable F E] : finInsepDegree F E = 1 :=
+theorem Algebra.IsSeparable.finInsepDegree_eq [Algebra.IsSeparable F E] : finInsepDegree F E = 1 :=
   Cardinal.one_toNat ▸ congr(Cardinal.toNat $(insepDegree_eq F E))
