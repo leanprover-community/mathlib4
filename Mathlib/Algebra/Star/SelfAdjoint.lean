@@ -117,7 +117,7 @@ section AddMonoid
 variable [AddMonoid R] [StarAddMonoid R]
 variable (R)
 
-@[simp] theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) := star_zero R
+@[simp] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
 #align is_self_adjoint_zero isSelfAdjoint_zero
 
 variable {R}
@@ -151,11 +151,11 @@ section AddCommMonoid
 
 variable [AddCommMonoid R] [StarAddMonoid R]
 
-theorem _root_.isSelfAdjoint_add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
+theorem add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 #align is_self_adjoint_add_star_self isSelfAdjoint_add_star_self
 
-theorem _root_.isSelfAdjoint_star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
+theorem star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 #align is_self_adjoint_star_add_self isSelfAdjoint_star_add_self
 
@@ -187,7 +187,7 @@ section MulOneClass
 variable [MulOneClass R] [StarMul R]
 variable (R)
 
-@[simp] theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
+@[simp] protected theorem one : IsSelfAdjoint (1 : R) :=
   star_one R
 #align is_self_adjoint_one isSelfAdjoint_one
 
@@ -211,13 +211,13 @@ variable [Semiring R] [StarRing R]
 #noalign is_self_adjoint.bit1
 
 @[simp]
-theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
+protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 #align is_self_adjoint_nat_cast isSelfAdjoint_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem _root_.isSelfAdjoint_ofNat (n : ℕ) [n.AtLeastTwo] :
+protected theorem ofNat (n : ℕ) [n.AtLeastTwo] :
     IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
   _root_.isSelfAdjoint_natCast n
 
@@ -247,7 +247,7 @@ section Ring
 variable [Ring R] [StarRing R]
 
 @[simp]
-theorem _root_.isSelfAdjoint_intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
+protected theorem intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
   star_intCast _
 #align is_self_adjoint_int_cast isSelfAdjoint_intCast
 
@@ -267,7 +267,7 @@ theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) :=
   simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 #align is_self_adjoint.zpow IsSelfAdjoint.zpow
 
-lemma _root_.isSelfAdjoint_nnratCast (q : ℚ≥0) : IsSelfAdjoint (q : R) := star_nnratCast _
+protected lemma nnratCast (q : ℚ≥0) : IsSelfAdjoint (q : R) := star_nnratCast _
 
 end DivisionSemiring
 
@@ -275,7 +275,7 @@ section DivisionRing
 
 variable [DivisionRing R] [StarRing R]
 
-theorem _root_.isSelfAdjoint_ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
+protected theorem ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
   star_ratCast _
 #align is_self_adjoint_rat_cast isSelfAdjoint_ratCast
 
