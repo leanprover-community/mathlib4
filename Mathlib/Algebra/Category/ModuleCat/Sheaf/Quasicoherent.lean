@@ -97,20 +97,17 @@ variable [h : M.IsFinitePresentation]
 noncomputable def quasicoherentDataOfIsFinitePresentation : M.QuasicoherentData :=
   h.exists_quasicoherentData.choose
 
--- This is an auxiliary definition needed to avoid the following two instances being slow.
-theorem quasicoherentDataOfIsFinitePresentation_spec
-    (i : M.quasicoherentDataOfIsFinitePresentation.I) :
-    Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).generators.I ∧
-      Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).relations.I :=
-  h.exists_quasicoherentData.choose_spec i
-
 instance (i : M.quasicoherentDataOfIsFinitePresentation.I) :
     Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).generators.I :=
-  (M.quasicoherentDataOfIsFinitePresentation_spec i).1
+  have : _ ∧ Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).relations.I :=
+    h.exists_quasicoherentData.choose_spec i
+  this.1
 
 instance (i : M.quasicoherentDataOfIsFinitePresentation.I) :
     Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).relations.I :=
-  (M.quasicoherentDataOfIsFinitePresentation_spec i).2
+  have : _ ∧ Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).relations.I :=
+    h.exists_quasicoherentData.choose_spec i
+  this.2
 
 end
 
