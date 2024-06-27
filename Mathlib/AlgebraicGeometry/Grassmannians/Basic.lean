@@ -259,32 +259,30 @@ lemma transition_aux_matrix (i j k l : Basis (Fin (finrank K V)) K V) :
   conv_lhs => rw [RingHom.map_matrix_mul']
   rfl
 
-lemma transition_aux_F (i j : Basis (Fin (finrank K V)) K V) :
-    Matrix.map (matrix_F hr j i) (transition_aux hr i j) = (matrix_F' hr i j)⁻¹ := by
+lemma transition_aux_F (i j k : Basis (Fin (finrank K V)) K V) :
+    Matrix.map (matrix_F hr j k) (transition_aux hr i j) =
+    (matrix_F hr i k).map (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
+    (Localization.Away (equation hr i j))) * (matrix_F' hr i j)⁻¹ := by
   simp only [matrix_F]
   rw [← Matrix.submatrix_map, transition_aux_matrix]
+  erw [← RingHom.map_matrix_mul']; rw [Basis.toMatrix_mul_toMatrix k j i]
   rw [Matrix.submatrix_mul _ _ (e₁ := (Fin.castLE hr.le)) (e₂ := id (α := Fin r)) _
     Function.bijective_id, Matrix.submatrix_id_id]
-  slice_lhs 1 2 => rw [← RingHom.mapMatrix_apply, ← RingHom.mapMatrix_apply, ← RingHom.map_mul,
-                     Basis.toMatrix_mul_toMatrix_flip i j, RingHom.map_one]
-  rw [Matrix.one_mul]
-  conv_rhs => rw [← one_mul (matrix_F' hr i j)⁻¹]
   congr 1
-  apply Matrix.ext; intro a b
-  simp only [submatrix_apply, id_eq, map_apply, of_apply, Fin.coe_castLE, Fin.is_lt, ↓reduceIte,
-    RingHom.map_ite_one_zero]
-  by_cases h : a = b
-  · simp only [h, ↓reduceIte, one_apply_eq]
-  · simp only [ne_eq, h, not_false_eq_true, one_apply_ne, ite_eq_right_iff]
-    rw [← Fin.ext_iff]
-    simp only [h, false_implies]
+  rw [← Matrix.submatrix_map]
+  conv_rhs => rw [RingHom.map_matrix_mul']
+  rfl
+lemma transition_aux_F_flip (i j : Basis (Fin (finrank K V)) K V) :
+    Matrix.map (matrix_F hr j i) (transition_aux hr i j) = (matrix_F' hr i j)⁻¹ := by
+  rw [transition_aux_F, matrix_F_eq_id_of_diagonal]
+  simp only [map_zero, _root_.map_one, Matrix.map_one, RingHom.mapMatrix_apply, one_mul]
 
 lemma transition_aux_equation (i j : Basis (Fin (finrank K V)) K V) :
     transition_aux hr i j (equation hr j i) = IsLocalization.Away.invSelf (equation hr i j) := by
   simp only [equation]
   conv_lhs => erw [RingHom.map_det (transition_aux hr i j).toRingHom (matrix_F hr j i)]
-              rw [RingHom.mapMatrix_apply]; erw [transition_aux_F]; rw [det_nonsing_inv, matrix_F']
-              rw [← RingHom.map_det]
+              rw [RingHom.mapMatrix_apply]; erw [transition_aux_F_flip]
+              rw [det_nonsing_inv, matrix_F', ← RingHom.map_det]
   rw [← one_mul (Ring.inverse _)]
   symm
   simp only [equation]
