@@ -12,7 +12,7 @@ universe u v w
 
 section
 
-variable {m n o α β : Type*} [Fintype m] [Fintype n] [Fintype o]
+variable {m n o α β : Type*} [Fintype n]
   [NonAssocSemiring α] [NonAssocSemiring β] (M : Matrix m n α) (N : Matrix n o α) (f : α →+* β)
 
 theorem RingHom.map_matrix_mul' :
@@ -22,6 +22,36 @@ theorem RingHom.map_matrix_mul' :
     MonoidHom.toOneHom_coe, MonoidHom.coe_coe]
 
 end
+
+namespace Matrix
+
+variable {m n m₁ m₂ α : Type*} (e₁ : m₁ → m) (e₂ : m₂ → m)
+  (M : Matrix m n α) (N : Matrix m n α)
+
+lemma eq_of_submatrix_eq (h₁ : M.submatrix e₁ id = N.submatrix e₁ id)
+    (h₂ : M.submatrix e₂ id = N.submatrix e₂ id) (hsurj : ∀ (x : m),
+  (∃ (y : m₁), e₁ y = x) ∨ (∃ (y : m₂), e₂ y = x)) :
+    M = N := by
+  apply Matrix.ext; intro p q
+  cases (hsurj p) with
+  | inl h =>
+    obtain ⟨p', h⟩ := h
+    rw [← h]
+    conv_lhs => congr; rfl; change id q
+    rw [← Matrix.submatrix_apply M e₁ id]
+    conv_rhs => congr; rfl; change id q
+    rw [← Matrix.submatrix_apply N e₁ id]
+    rw [h₁]
+  | inr h =>
+    obtain ⟨p', h⟩ := h
+    rw [← h]
+    conv_lhs => congr; rfl; change id q
+    rw [← Matrix.submatrix_apply M e₂ id]
+    conv_rhs => congr; rfl; change id q
+    rw [← Matrix.submatrix_apply N e₂ id]
+    rw [h₂]
+
+end Matrix
 
 section
 
@@ -63,6 +93,21 @@ abbrev matrix_coord : Matrix (Fin (finrank K V)) (Fin r) (functions_chart K V r)
     (fun x y ↦
       if x < r then if x.1 = y.1 then 1 else 0
       else MvPolynomial.X (⟨x.1 - r, by have := x.2; omega⟩, y))
+
+lemma matrix_coord_submatrix₁ : (matrix_coord K V hr).submatrix (Fin.castLE hr.le) id = 1 := by
+  apply Matrix.ext; intro p q
+  simp only [submatrix_apply, id_eq, of_apply, Fin.coe_castLE, Fin.is_lt, ↓reduceIte]
+  by_cases h : p = q
+  · simp only [h, ↓reduceIte, one_apply_eq]
+  · simp only [ne_eq, h, not_false_eq_true, one_apply_ne, ite_eq_right_iff, one_ne_zero, imp_false]
+    rw [← Fin.ext_iff]; exact h
+
+lemma matrix_coord_submatrix₂ : (matrix_coord K V hr).submatrix
+    (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩ : Fin (finrank K V - r) → Fin (finrank K V)) id
+    = Matrix.of (fun p q ↦ MvPolynomial.X (p,q)) := by
+  apply Matrix.ext; intro p q
+  simp only [submatrix_apply, id_eq, of_apply, add_lt_iff_neg_right, not_lt_zero', ↓reduceIte,
+    add_tsub_cancel_right, Fin.eta]
 
 variable {K V}
 
@@ -106,37 +151,6 @@ abbrev matrix_G (i j : Basis (Fin (finrank K V)) K V) :
     Matrix (Fin (finrank K V - r)) (Fin r) (functions_chart K V r) :=
   Matrix.submatrix ((B j i).map (algebraMap K _) * matrix_coord K V hr)
     (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩) id
-
-
-/-
-abbrev matrix_F (i j : Basis (Fin (finrank K V)) K V) :=
-  matrix_F_generic hr i j (MvPolynomial.X (R := K) (σ := Fin (finrank K V - r) × Fin r))
-
-abbrev matrix_G (i j : Basis (Fin (finrank K V)) K V) :=
-  matrix_G_generic hr i j (MvPolynomial.X (R := K) (σ := Fin (finrank K V - r) × Fin r))
--/
-
-/-
-lemma matrix_F_generic_eq_id_of_diagonal (i : Basis (Fin (finrank K V)) K V)
-    (M : ((Fin (finrank K V - r)) × Fin r) → A) :
-    matrix_F_generic hr i i M = 1 := by
-  ext a b
-  simp only [matrix, matrix_F_generic, Basis.toMatrix_self, map_zero, _root_.map_one, Matrix.map_one,
-    Matrix.one_mul, submatrix_apply, id_eq, of_apply, Fin.coe_castLE, Fin.is_lt, ↓reduceIte]
-  by_cases h : a = b
-  · simp only [h, ↓reduceIte, one_apply_eq]
-  · simp only [ne_eq, h, not_false_eq_true, one_apply_ne, ite_eq_right_iff]
-    rw [← Fin.ext_iff]
-    simp only [h, false_implies]
-
-lemma matrix_G_generic_eq_of_diagonal (i : Basis (Fin (finrank K V)) K V)
-    (M : ((Fin (finrank K V - r)) × Fin r) → A) :
-    matrix_G_generic hr i i M = Matrix.of (fun p q ↦ M (p,q)) := by
-  ext _ _
-  simp only [matrix_G_generic, matrix, Basis.toMatrix_self, map_zero, _root_.map_one, Matrix.map_one,
-    Matrix.one_mul, submatrix_apply, id_eq, of_apply, add_lt_iff_neg_right, not_lt_zero',
-    ↓reduceIte, add_tsub_cancel_right, Fin.eta]
--/
 
 lemma matrix_F_eq_id_of_diagonal (i : Basis (Fin (finrank K V)) K V) :
     matrix_F hr i i = 1 := by
@@ -214,7 +228,34 @@ lemma transition_aux_matrix_coord (i j : Basis (Fin (finrank K V)) K V) :
     Matrix.map (matrix_coord K V hr) (transition_aux hr i j) =
     (matrix hr i j).map (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
     (Localization.Away (equation hr i j))) * (matrix_F' hr i j)⁻¹ := by
-  sorry
+  refine Matrix.eq_of_submatrix_eq (Fin.castLE hr.le)
+    (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩ : Fin (finrank K V - r) → Fin (finrank K V))
+    _ _ ?_ ?_ ?_
+  · rw [Matrix.submatrix_mul _ _ (Fin.castLE hr.le) id id Function.bijective_id,
+      Matrix.submatrix_id_id, Matrix.submatrix_map, matrix_coord_submatrix₁]
+    rw [Matrix.submatrix_map]
+    conv_rhs => congr; change matrix_F' hr i j
+    have := IsUnit.invertible (isUnit_F' hr i j)
+    rw [Matrix.mul_inv_of_invertible]
+    simp only [AlgHom.coe_mk, RingHom.mapMatrix_apply, MvPolynomial.coe_eval₂Hom,
+      MvPolynomial.eval₂_zero, MvPolynomial.eval₂_one, Matrix.map_one]
+  · rw [Matrix.submatrix_mul _ _ _ id id Function.bijective_id,
+      Matrix.submatrix_id_id, Matrix.submatrix_map, matrix_coord_submatrix₂]
+    rw [Matrix.submatrix_map]
+    conv_rhs => congr; change matrix_G' hr i j
+    apply Matrix.ext; intro _ _
+    simp only [AlgHom.coe_mk, RingHom.mapMatrix_apply, MvPolynomial.coe_eval₂Hom, map_apply,
+      of_apply, MvPolynomial.eval₂_X]
+  · intro i
+    by_cases h : i.1 < r
+    · left
+      existsi ⟨i.1, h⟩
+      simp only [Fin.castLE_mk, Fin.eta]
+    · right
+      existsi ⟨i - r, by have := i.2; omega⟩
+      simp only; rw [Fin.ext_iff]
+      rw [lt_iff_not_le, not_not] at h
+      simp only [h, Nat.sub_add_cancel]
 
 lemma transition_aux_matrix (i j k l : Basis (Fin (finrank K V)) K V) :
     Matrix.map (matrix hr k l) (transition_aux hr i j) =
