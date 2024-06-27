@@ -11,7 +11,7 @@ noncomputable section
 open CategoryTheory Comonad ModuleCat Limits MonoidalCategory
 
 variable {A B : Type} [CommRing.{0} A] [CommRing.{0} B] (f : A →+* B) [f.Flat]
-  [(extendScalars f).ReflectsIsomorphisms] -- `f` is faithfully flat.
+  -- [(extendScalars f).ReflectsIsomorphisms] -- `f` is faithfully flat.
 
 example : ModuleCat A ⥤ ModuleCat B := ModuleCat.extendScalars f
 
@@ -34,6 +34,7 @@ def extendScalarsComonadic : ComonadicLeftAdjoint (extendScalars f) := by
   apply (config := {allowSynthFailures := true})
     monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms (G := restrictScalars f)
   · exact (extendRestrictScalarsAdj f)
+  · sorry -- This follows from `f` being faithfully flat.
   · constructor
     intros
     infer_instance
@@ -44,3 +45,8 @@ def extendScalarsComonadic : ComonadicLeftAdjoint (extendScalars f) := by
       apply CategoryTheory.Functor.preservesEqualizerOfPreservesKernels
     intro M N g
     infer_instance
+
+example : Comonad (ModuleCat B) := (extendRestrictScalarsAdj f).toComonad
+
+example (Q : Coalgebra (extendRestrictScalarsAdj f).toComonad) : ModuleCat A :=
+  (comparison (extendScalarsComonadic f).adj).asEquivalence.inverse.obj Q
