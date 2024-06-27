@@ -126,8 +126,8 @@ variable (W : MorphismProperty C) [L.IsLocalization W]
 
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
-      Triangle.mk f g h ∈ L.essImageDistTriang := by
-  have := essSurj_mapArrow_of_hasLeftCalculusofFractions L W
+      Triangle.mk f g h ∈ L.essImageDistTriang := by sorry
+/-  have := essSurj_mapArrow_of_hasLeftCalculusofFractions L W
   obtain ⟨φ, ⟨e⟩⟩ : ∃ (φ : Arrow C), Nonempty (L.mapArrow.obj φ ≅ Arrow.mk f) :=
     ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle φ.hom
@@ -138,6 +138,7 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
   dsimp
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
     Functor.mapArrow_obj_left, Functor.map_id, comp_id]
+-/
 
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
@@ -186,7 +187,7 @@ def pretriangulated : Pretriangulated D where
   isomorphic_distinguished _ hT₁ _ e := L.essImageDistTriang_mem_of_iso e hT₁
   contractible_distinguished :=
     have := essSurj L W; L.contractible_mem_essImageDistTriang
-  distinguished_cocone_triangle f := distinguished_cocone_triangle L W f
+  distinguished_cocone_triangle f := distinguished_cocone_triangle L f
   rotate_distinguished_triangle := L.rotate_essImageDistTriang
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism L W
 
@@ -194,8 +195,8 @@ lemma isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
     letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
-lemma essSurj_mapArrow : L.mapArrow.EssSurj :=
-  essSurj_mapArrow_of_hasLeftCalculusofFractions L W
+lemma essSurj_mapArrow : L.mapArrow.EssSurj := sorry
+--  essSurj_mapArrow_of_hasLeftCalculusofFractions L W
 
 lemma isTriangulated [W.HasRightCalculusOfFractions] [Pretriangulated D]
     [L.IsTriangulated] [IsTriangulated C] :

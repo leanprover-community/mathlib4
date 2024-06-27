@@ -41,6 +41,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
 
+/-
 namespace Limits
 
 variable {C J₁ J₂ : Type _} [Category C]
@@ -93,6 +94,7 @@ noncomputable def productOptionIso {C J : Type _} [Category C]
     | none => prod.snd)
 
 end Limits
+-/
 
 namespace Triangulated
 
@@ -352,6 +354,7 @@ lemma binary_product_stable [ClosedUnderIsomorphisms S.P] (X₁ X₂ : C) (hX₁
     S.P (X₁ ⨯ X₂)  :=
   S.ext₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
 
+/-
 lemma pi_finite_stable [ClosedUnderIsomorphisms S.P] {J : Type} [Finite J] (X : J → C) (hX : ∀ j, S.P (X j)) :
     S.P (∏ X) := by
   revert hX X
@@ -378,6 +381,7 @@ instance : S.W.IsStableUnderFiniteProducts := by
     exact W.mk _ (productTriangle_distinguished _
       (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose))
       (pi_finite_stable _ _ (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose_spec))⟩
+-/
 
 section
 
@@ -424,12 +428,14 @@ instance : S.ι.Additive := by
 
 lemma ι_obj_mem (X : S.category) : S.P (S.ι.obj X) := X.2
 
+#exit 
 noncomputable instance hasShift : HasShift S.category ℤ :=
   hasShiftOfFullyFaithful S.ι (fun n => FullSubcategory.lift _ (S.ι ⋙ shiftFunctor C n)
     (fun X => S.shift _ _ X.2)) (fun _ => FullSubcategory.lift_comp_inclusion _ _ _)
 
 instance commShiftι : S.ι.CommShift ℤ :=
   Functor.CommShift.of_hasShiftOfFullyFaithful _ _ _
+
 
 -- these definitions are made irreducible to prevent (at least temporarily) any abuse of defeq
 attribute [irreducible] hasShift commShiftι

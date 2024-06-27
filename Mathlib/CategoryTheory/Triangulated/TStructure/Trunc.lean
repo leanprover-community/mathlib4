@@ -1616,6 +1616,7 @@ noncomputable def homology₀CompιHeartIsoTruncLEGE : t.homology' 0 ⋙ t.ιHea
 
 end TStructure
 
+/-
 namespace Subcategory
 
 lemma HasInducedTStructure.mk' (S : Subcategory C) (t : TStructure C)
@@ -1665,6 +1666,7 @@ instance (S S' : Subcategory C) (t : TStructure C) [S.HasInducedTStructure t]
         (n - 1) n (by omega) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
 
 end Subcategory
+
 
 instance [IsTriangulated C] : t.plus.HasInducedTStructure t := by
   apply Subcategory.HasInducedTStructure.mk'
@@ -1723,6 +1725,7 @@ instance (X : C) (n : ℤ) [t.IsGE X n] (i : ℤt) :
     simp
 
 end TStructure
+-/
 
 end Triangulated
 

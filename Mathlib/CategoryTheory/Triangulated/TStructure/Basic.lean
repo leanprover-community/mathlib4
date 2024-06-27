@@ -360,6 +360,7 @@ noncomputable def liftHeartιHeart {D : Type*} [Category D]
 
 end TStructure
 
+/-
 namespace Subcategory
 
 variable {C}
@@ -418,6 +419,7 @@ lemma tStructure_isGE_iff (X : S.category) (n : ℤ) :
   ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
 
 end Subcategory
+-/
 
 end Triangulated
 

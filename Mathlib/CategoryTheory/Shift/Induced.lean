@@ -259,7 +259,7 @@ lemma iso_hom_app (a : A) (X : C) :
         (e.inv.app X)⟦a⟧' := by
   letI := hF'.1.some
   have h : whiskerLeft F (iso e hF' a).hom = _ :=
-    ((whiskeringLeft C D E).obj F).image_preimage _
+    ((whiskeringLeft C D E).obj F).map_preimage _
   exact (NatTrans.congr_app h X).trans (by simp)
 
 end Induced

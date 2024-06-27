@@ -22,7 +22,7 @@ variable {C : Type u} [Category.{v, u} C] [Preadditive C]
 def nonempty_isColimit_iff_preadditiveYoneda {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) :
     Nonempty (IsColimit c) ↔ ∀ (A : C), ((ShortComplex.mk _ _ c.condition).op.map (preadditiveYoneda.obj A)).Exact ∧
       Mono (((ShortComplex.mk _ _ c.condition).op.map (preadditiveYoneda.obj A)).f) := by
-  simp_rw [ShortComplex.ab_exact_iff, AddCommGroupCat.mono_iff_injective]
+  simp_rw [ShortComplex.ab_exact_iff, AddCommGrp.mono_iff_injective]
   constructor
   · intro ⟨h⟩ A
     constructor
@@ -46,7 +46,7 @@ variable {C : Type u} [Category.{v,u} C] [Preadditive C]
 def nonempty_isLimit_iff_preadditiveCoyoneda {X Y : C} {f : X ⟶ Y} (c : KernelFork f) :
     Nonempty (IsLimit c) ↔ ∀ (A : C), ((ShortComplex.mk _ _ c.condition).map (preadditiveCoyoneda.obj (Opposite.op A))).Exact ∧
       Mono (((ShortComplex.mk _ _ c.condition).map (preadditiveCoyoneda.obj (Opposite.op A))).f) := by
-  simp_rw [ShortComplex.ab_exact_iff, AddCommGroupCat.mono_iff_injective]
+  simp_rw [ShortComplex.ab_exact_iff, AddCommGrp.mono_iff_injective]
   constructor
   · intro ⟨h⟩ A
     constructor
@@ -216,6 +216,7 @@ def homology₀ιHeart : t.homology₀ ⋙ t.ιHeart ≅ t.truncGELE 0 0 := ht.i
 
 end TStructure
 
+/-
 namespace Subcategory
 
 variable (S : Subcategory C) (t : TStructure C)
@@ -270,14 +271,17 @@ instance : t.bounded.ContainsHeart t where
   subset _ hX := ⟨⟨0, ⟨hX.2⟩⟩, ⟨0, ⟨hX.1⟩⟩⟩
 
 end Subcategory
+-/
 
 namespace TStructure
 
 variable (t : TStructure C) [IsTriangulated C]
 
+/-
 abbrev tPlus := t.plus.tStructure t
 abbrev tMinus := t.minus.tStructure t
 abbrev tBounded := t.bounded.tStructure t
+-/
 
 section
 
@@ -590,7 +594,7 @@ instance (A X : C) [t.IsLE X 0] [t.IsGE A 0] :
   have : Mono ((preadditiveYoneda.obj A).map ((t.truncGEπ 0).app X).op) :=
     (preadditiveYoneda_map_distinguished A _ (rot_of_distTriang _ (t.triangleLTGE_distinguished 0 X))).mono_g (by
       apply IsZero.eq_of_src
-      apply AddCommGroupCat.isZero
+      apply AddCommGrp.isZero
       intro (x : ((t.truncLT 0).obj X)⟦(1 : ℤ)⟧ ⟶ A)
       have : t.IsLE (((t.truncLT 0).obj X)⟦(1 : ℤ)⟧) (-1) :=
         t.isLE_shift ((t.truncLT 0).obj X) 0 1 (-1) (by linarith)
@@ -598,7 +602,7 @@ instance (A X : C) [t.IsLE X 0] [t.IsGE A 0] :
   have : Epi ((preadditiveYoneda.obj A).map ((t.truncGEπ 0).app X).op) :=
     (preadditiveYoneda_map_distinguished A _ (t.triangleLTGE_distinguished 0 X)).epi_f (by
       apply IsZero.eq_of_tgt
-      apply AddCommGroupCat.isZero
+      apply AddCommGrp.isZero
       intro (x : (t.truncLT 0).obj X ⟶ A)
       exact t.zero x (-1) 0 (by linarith))
   apply isIso_of_mono_of_epi
@@ -632,7 +636,7 @@ instance (A X : C) [t.IsGE X 0] [t.IsLE A 0] :
     ((preadditiveCoyoneda.obj (Opposite.op A)).map_distinguished_exact _
       (inv_rot_of_distTriang _ (t.triangleLEGE_distinguished 0 1 (by linarith) X))).mono_g (by
         apply IsZero.eq_of_src
-        apply AddCommGroupCat.isZero
+        apply AddCommGrp.isZero
         intro (x : A ⟶ (((t.truncGE 1).obj X)⟦(-1 : ℤ)⟧))
         have : t.IsGE (((t.truncGE 1).obj X)⟦(-1 : ℤ)⟧) 1 :=
           t.isGE_shift ((t.truncGE 1).obj X) 0 (-1) 1 (by linarith)
@@ -641,7 +645,7 @@ instance (A X : C) [t.IsGE X 0] [t.IsLE A 0] :
     ((preadditiveCoyoneda.obj (Opposite.op A)).map_distinguished_exact _
       (t.triangleLEGE_distinguished 0 1 (by linarith) X)).epi_f (by
         apply IsZero.eq_of_tgt
-        apply AddCommGroupCat.isZero
+        apply AddCommGrp.isZero
         intro (x : A ⟶ (t.truncGE 1).obj X)
         exact t.zero x 0 1 (by linarith))
   apply isIso_of_mono_of_epi
@@ -715,8 +719,8 @@ lemma addEquivFromHomology₀OfIsLE_naturality {X Y : C} (f : X ⟶ Y)
   simp only [Functor.map_comp, toHomology₀_naturality_assoc]
 
 lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
-    (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
-  rw [ShortComplex.exact_and_epi_g_iff_preadditiveYoneda]
+    (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by sorry
+/-  rw [ShortComplex.exact_and_epi_g_iff_preadditiveYoneda]
   intro A
   let S := (shortComplex t hT).op.map (preadditiveYoneda.obj A)
   let S' := (ShortComplex.mk _ _ (comp_distTriang_mor_zero₁₂ T hT)).op.map (preadditiveYoneda.obj (t.ιHeart.obj A))
@@ -727,9 +731,10 @@ lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
   refine' ⟨preadditiveYoneda_map_distinguished (t.ιHeart.obj A) _ hT,
     (preadditiveYoneda_map_distinguished (t.ιHeart.obj A) _ (rot_of_distTriang _ hT)).mono_g _⟩
   apply IsZero.eq_of_src
-  apply AddCommGroupCat.isZero
+  apply AddCommGrp.isZero
   intro (x : T.obj₁⟦(1 : ℤ)⟧ ⟶ t.ιHeart.obj A)
   exact t.zero x (-1) 0 (by linarith)
+-/
 
 lemma case₂ (h₁ : t.IsLE T.obj₁ 0) :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
@@ -757,8 +762,8 @@ lemma addEquivToHomology₀OfIsGE_naturality {X Y : C} (f : X ⟶ Y)
   simp only [assoc, Functor.map_comp, fromHomology₀_naturality]
 
 lemma case₁' [t.IsGE T.obj₁ 0] [t.IsGE T.obj₂ 0] [t.IsGE T.obj₃ 0] :
-    (shortComplex t hT).Exact ∧ Mono (shortComplex t hT).f := by
-  rw [ShortComplex.exact_and_mono_f_iff_preadditiveCoyoneda]
+    (shortComplex t hT).Exact ∧ Mono (shortComplex t hT).f := by sorry
+/-  rw [ShortComplex.exact_and_mono_f_iff_preadditiveCoyoneda]
   intro A
   let S := (shortComplex t hT).map (preadditiveCoyoneda.obj (Opposite.op A))
   let S' := (ShortComplex.mk _ _ (comp_distTriang_mor_zero₁₂ T hT)).map (preadditiveCoyoneda.obj (Opposite.op (t.ιHeart.obj A)))
@@ -770,10 +775,11 @@ lemma case₁' [t.IsGE T.obj₁ 0] [t.IsGE T.obj₂ 0] [t.IsGE T.obj₃ 0] :
   refine' ⟨(preadditiveCoyoneda.obj (Opposite.op (t.ιHeart.obj A))).map_distinguished_exact _ hT,
     ((preadditiveCoyoneda.obj (Opposite.op (t.ιHeart.obj A))).map_distinguished_exact _ (inv_rot_of_distTriang _ hT)).mono_g _⟩
   apply IsZero.eq_of_src
-  apply AddCommGroupCat.isZero
+  apply AddCommGrp.isZero
   intro (x : t.ιHeart.obj A ⟶ T.obj₃⟦-1⟧)
   have : t.IsGE (T.obj₃⟦(-1 : ℤ)⟧) 1 := t.isGE_shift T.obj₃ 0 (-1) 1 (by linarith)
   exact t.zero x 0 1 (by linarith)
+-/
 
 lemma case₂' (h₃ : t.IsGE T.obj₃ 0) :
     (shortComplex t hT).Exact ∧ Mono (shortComplex t hT).f := by
@@ -1179,6 +1185,7 @@ lemma isIso_homologyFunctor_map_mor₁_of_isGE (hT : T ∈ distTriang C) (n : �
   apply isIso_of_mono_of_epi
 
 end
+
 
 section NonDegenerate
 

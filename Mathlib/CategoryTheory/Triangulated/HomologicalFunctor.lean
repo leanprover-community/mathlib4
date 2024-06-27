@@ -142,14 +142,12 @@ instance (priority := 100) [F.IsHomological] : F.Additive :=
   F.additive_of_preserves_binary_products
 
 lemma isHomological_of_localization (L : C ⥤ D)
-    [L.CommShift ℤ] [L.IsTriangulated] [L.mapArrow.EssSurj] (F : D ⥤ A)
-    (G : C ⥤ A) (e : L ⋙ F ≅ G) [G.IsHomological] :
-    F.IsHomological := by
-  have : F.PreservesZeroMorphisms := preservesZeroMorphisms_of_map_zero_object
-    (F.mapIso L.mapZeroObject.symm ≪≫ e.app _ ≪≫ G.mapZeroObject)
+    [L.CommShift ℤ] [L.IsTriangulated] [EssSurj L.mapArrow] (F : D ⥤ A)
+    (G : C ⥤ A) (e : L ⋙ F ≅ G) [G.PreservesZeroMorphisms] [G.IsHomological]
+    [F.PreservesZeroMorphisms] : F.IsHomological := by
   have : (L ⋙ F).IsHomological := IsHomological.of_iso e.symm
-  refine IsHomological.mk' _ (fun T hT => ?_)
-  rw [L.distTriang_iff] at hT
+  refine' IsHomological.mk' _ (fun T hT => _)
+  rw [Triangulated.Localization.distTriang_iff L] at hT
   obtain ⟨T₀, e, hT₀⟩ := hT
   exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
 

@@ -215,6 +215,7 @@ lemma map_distinguished_iff [F.IsTriangulated] [Full F] [Faithful F] (T : Triang
       (by simp)
   · exact F.map_distinguished T
 
+/-
 def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
     [NatTrans.CommShift e.hom ℤ] : F₁.mapTriangle ≅ F₂.mapTriangle :=
   NatIso.ofComponents (fun T =>
@@ -222,6 +223,7 @@ def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ
       dsimp
       simp only [assoc, NatTrans.CommShift.comm_app e.hom (1 : ℤ) T.obj₁,
         NatTrans.naturality_assoc])) (by aesop_cat)
+-/
 
 lemma isTriangulated_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
     [NatTrans.CommShift e.hom ℤ] [F₁.IsTriangulated] : F₂.IsTriangulated where
@@ -298,6 +300,7 @@ end Triangulated
 
 open Triangulated
 
+/-
 /-- If `F : C ⥤ D` is a triangulated functor from a triangulated category, then `D`
 is also triangulated if tuples of composables arrows in `D` can be lifted to `C`. -/
 lemma isTriangulated_of_essSurj_mapComposableArrows_two
@@ -318,6 +321,7 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (comm₁₂ := ComposableArrows.naturality' e.inv 0 1)
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
     (H := sorry) sorry sorry sorry sorry sorry⟩ --(someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) _ _ _ _ _⟩-/
+-/
 
 section
 
@@ -361,6 +365,7 @@ variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D �
 
 namespace Triangulated
 
+/-
 namespace Octahedron
 
 variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
@@ -385,6 +390,7 @@ def map : Octahedron (by dsimp; rw [← F.map_comp, comm])
     (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
 end Octahedron
+-/
 
 end Triangulated
 
