@@ -141,7 +141,7 @@ end Polynomial
 
 end Pochhammer
 
-section Nat_Int
+section Basic_Instances
 
 open Polynomial
 
@@ -174,10 +174,6 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial,
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
 
-end Nat_Int
-
-section Rat_Algebra
-
 variable {R : Type*} [CommRing R] [CharZero R] [IsLeftCancelMulZero R] [Algebra ℚ R]
 
 /-- Inductive definition of the multichoose function. -/
@@ -204,7 +200,8 @@ noncomputable instance instBinomialRing : BinomialRing R where
       field_simp
       rw [Algebra.smul_def', map_natCast]
       ring_nf
-end Rat_Algebra
+end Basic_Instances
+
 section Choose
 
 namespace Ring
