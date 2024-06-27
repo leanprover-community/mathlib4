@@ -109,38 +109,15 @@ a finitely-presented algebra.
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (Q : Presentation S T) (P : Presentation R S)
 
-/-- Given presentations of `T` over `S` and of `S` over `R`,
-we may construct a presentation of `T` over `R`. -/
-@[simps relations, simps (config := .lemmasOnly) relation]
-noncomputable def comp : Presentation R T where
-  toGenerators := Q.toGenerators.comp P.toGenerators
-  relations := Q.relations ⊕ P.relations
-  relation := Sum.elim
-    (fun rq ↦ Finsupp.sum (Q.relation rq)
-      (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1))
-    (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
-  ker_algebraMap_eq_span_range_relation := by
-    ext p
-    sorry
-    /-
-    refine MvPolynomial.induction_on' p ?_ ?_
-    · intro u a
-      constructor
-      intro hua
-      simp [RingHom.mem_ker] at hua
-    · intro p q hp hq
-      constructor
-      · intro hl
-    -/
+private noncomputable def comp_relation_aux (r : Q.relations) : MvPolynomial (Q.vars ⊕ P.vars) R :=
+  Finsupp.sum (Q.relation r)
+    (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
 
-lemma comp_relation_map (r : Q.relations) :
-    aeval (Sum.elim X (MvPolynomial.C ∘ P.val)) ((Q.comp P).relation (Sum.inl r)) = Q.relation r := by
-  simp only [comp_relation, Generators.comp_vars, Sum.elim_inl]
-  rw [map_finsupp_sum]
-  simp only [_root_.map_mul]
-  simp_rw [aeval_rename]
-  simp_rw [aeval_monomial]
-  simp only [Sum.elim_comp_inr, _root_.map_one, one_mul]
+lemma comp_relation_aux_map (r : Q.relations) :
+    aeval (Sum.elim X (MvPolynomial.C ∘ P.val)) (Q.comp_relation_aux P r) = Q.relation r := by
+  simp only [comp_relation_aux, Generators.comp_vars, Sum.elim_inl, map_finsupp_sum]
+  simp only [_root_.map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr, _root_.map_one,
+    one_mul]
   nth_rw 2 [← Finsupp.sum_single (Q.relation r)]
   congr
   ext u s m
@@ -154,6 +131,218 @@ lemma comp_relation_map (r : Q.relations) :
   rw [Finsupp.prod_mapDomain_index_inj]
   simp only [Sum.elim_inl]
   exact Sum.inl_injective
+
+lemma comp_aeval_aeval_apply (p : MvPolynomial (Q.vars ⊕ P.vars) R) :
+    (aeval (Q.comp P.toGenerators).val) p =
+      (aeval Q.val) ((aeval (Sum.elim X (⇑C ∘ P.val))) p) := by
+  induction p using MvPolynomial.induction_on with
+  | h_C a =>
+      simp
+      rw [← IsScalarTower.algebraMap_apply]
+  | h_X p i h =>
+      rw [_root_.map_mul, h, _root_.map_mul, _root_.map_mul]
+      congr
+      rw [aeval_X, aeval_X]
+      match i with
+      | Sum.inl i => simp
+      | Sum.inr i => simp
+  | h_add p q hp hq => simp_rw [_root_.map_add, hp, hq]
+
+lemma comap_span_of_surj {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) (hf : Function.Surjective f)
+    (s : Set S) (t : Set R) (hts : f '' t = s) :
+    Ideal.comap f (Ideal.span s) = Ideal.span t ⊔ RingHom.ker f := by
+  apply le_antisymm
+  · intro x hx
+    simp at hx
+    let v (x : t) : S := f x
+    have : Set.range v = s := by
+      rw [← hts]
+      exact (Set.image_eq_range f t).symm
+    rw [← this] at hx
+    rw [Finsupp.mem_ideal_span_range_iff_exists_finsupp] at hx
+    obtain ⟨c, hc⟩ := hx
+    simp [v] at hc
+    have hfa (a : S) : f (Function.invFun f a) = a := Function.rightInverse_invFun hf a
+    have : (c.sum fun i a ↦ a * f ↑i) = (c.sum fun i a ↦ f (Function.invFun f a) * f ↑i) := by
+      congr
+      ext i a
+      rw [hfa a]
+    rw [this] at hc
+    simp_rw [← RingHom.map_mul] at hc
+    rw [← map_finsupp_sum] at hc
+    rw [← RingHom.sub_mem_ker_iff] at hc
+    have : x = x - (c.sum fun i a ↦ Function.invFun f a * ↑i) + (c.sum fun i a ↦ Function.invFun f a * ↑i) := by
+      simp
+    rw [this]
+    apply Ideal.add_mem
+    · rw [← Ideal.neg_mem_iff]
+      simp
+      apply Ideal.mem_sup_right
+      assumption
+    · apply Ideal.mem_sup_left
+      apply Ideal.sum_mem
+      rintro x -
+      simp
+      apply Ideal.mul_mem_left
+      apply Ideal.subset_span
+      exact x.property
+  · apply sup_le
+    · rw [Ideal.span_le]
+      intro a ha
+      simp
+      apply Ideal.subset_span
+      rw [← hts]
+      exact Set.mem_image_of_mem f ha
+    · intro x hx
+      rw [RingHom.mem_ker] at hx
+      simp [hx]
+
+noncomputable abbrev foov : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S :=
+  aeval (Sum.elim X (⇑C ∘ P.val))
+
+lemma foov_surjective : Function.Surjective (Q.foov P) := by
+  intro p
+  induction' p using MvPolynomial.induction_on with a p q hp hq p i h
+  · simp [foov]
+    use (rename Sum.inr <| P.σ a)
+    rw [aeval_rename]
+    simp
+    have (p : MvPolynomial P.vars R) :
+        aeval (C ∘ P.val) p = (C (aeval P.val p) : MvPolynomial Q.vars S) := by
+      induction' p using MvPolynomial.induction_on with a p q hp hq p i h
+      · simp
+      · simp [hp, hq]
+      · simp [h]
+    rw [this]
+    simp
+  · obtain ⟨a, rfl⟩ := hp
+    obtain ⟨b, rfl⟩ := hq
+    use a + b
+    simp
+  · obtain ⟨a, rfl⟩ := h
+    use (a * X (Sum.inl i))
+    simp
+
+lemma foov_image :
+    Q.foov P '' (Set.range (Algebra.Presentation.comp_relation_aux Q P)) =
+      Set.range Q.relation := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨a, rfl⟩, rfl⟩
+    use a
+    rw [comp_relation_aux_map]
+  · rintro ⟨y, rfl⟩
+    use Q.comp_relation_aux P y
+    simp
+    rw [comp_relation_aux_map]
+
+lemma foo : RingHom.ker (Q.foov P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
+  apply le_antisymm
+  · intro p hp
+    rw [RingHom.mem_ker] at hp
+    induction p using MvPolynomial.induction_on with
+    | h_C a =>
+        simp [foov] at hp
+        rw [← map_zero C, (C_injective _ _).eq_iff] at hp
+        convert_to (rename Sum.inr) (C a) ∈ Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val))
+        simp
+        apply Ideal.mem_map_of_mem
+        rw [RingHom.mem_ker]
+        simpa
+    | h_X p i h =>
+        match i with
+        | Sum.inl i =>
+            simp_all
+            apply Ideal.mul_mem_right
+            exact h
+        | Sum.inr i =>
+            simp_all
+            sorry
+    | h_add p q hp hq => sorry
+  · intro p hp
+    sorry
+
+/-- Given presentations of `T` over `S` and of `S` over `R`,
+we may construct a presentation of `T` over `R`. -/
+@[simps relations, simps (config := .lemmasOnly) relation]
+noncomputable def comp : Presentation R T where
+  toGenerators := Q.toGenerators.comp P.toGenerators
+  relations := Q.relations ⊕ P.relations
+  relation := Sum.elim (Q.comp_relation_aux P)
+    (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
+  ker_algebraMap_eq_span_range_relation := by
+    apply le_antisymm
+    · show RingHom.ker (aeval _) ≤ _
+      set f : MvPolynomial _ R →ₐ[R] T := aeval (Q.toGenerators.comp P.toGenerators).val
+      set u : MvPolynomial Q.vars S →ₐ[S] T := aeval Q.val
+      set v : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S := Q.foov P
+      set f' : MvPolynomial (Q.vars ⊕ P.vars) R →+* T := u.toRingHom.comp v
+      have : f.toRingHom = f' := by
+        apply RingHom.ext (fun p ↦ ?_)
+        simp [f, f', u, v, foov]
+        apply Q.comp_aeval_aeval_apply P
+      show RingHom.ker f.toRingHom ≤ _
+      rw [this]
+      simp [f']
+      rw [← RingHom.comap_ker]
+      erw [ker_algebraMap_eq_span_range_relation]
+      let s : Set (MvPolynomial Q.vars S) := Set.range Q.relation
+      let t : Set (MvPolynomial (Q.vars ⊕ P.vars) R) := Set.range (Algebra.Presentation.comp_relation_aux Q P)
+      have hts : v '' t = s := Q.foov_image P
+      have hv : Function.Surjective v := Q.foov_surjective P
+      have hvker : RingHom.ker v.toRingHom =
+          Ideal.span (Set.range fun rp ↦ (rename Sum.inr) (P.relation rp)) := by
+        simp [v]
+        erw [foo]
+        erw [P.ker_algebraMap_eq_span_range_relation]
+        rw [Ideal.map_span]
+        congr
+        ext
+        simp
+      rw [comap_span_of_surj v hv s t hts]
+      apply sup_le
+      · rw [Ideal.span_le]
+        intro x hx
+        apply Ideal.subset_span
+        apply Set.mem_union_left
+        exact hx
+      · rw [Ideal.span_union]
+        erw [hvker]
+        apply le_sup_right
+    · rw [Ideal.span_le]
+      rintro x ⟨y, rfl⟩
+      match y with
+      | Sum.inl y =>
+          simp
+          rw [RingHom.mem_ker]
+          have : aeval Q.val (Q.relation y) = 0 := by
+            rw [← RingHom.mem_ker]
+            erw [Q.ker_algebraMap_eq_span_range_relation]
+            apply Ideal.subset_span
+            exact Set.mem_range_self y
+          show (aeval _) (Algebra.Presentation.comp_relation_aux Q P y) = 0
+          rw [← this, ← Q.comp_relation_aux_map P]
+          apply comp_aeval_aeval_apply
+      | Sum.inr y =>
+          simp
+          rw [RingHom.mem_ker]
+          show (aeval _) _ = 0
+          erw [aeval_rename]
+          have : (Q.toGenerators.comp P.toGenerators).val ∘ Sum.inr = algebraMap S T ∘ P.val := by
+            ext j
+            simp
+          rw [this]
+          rw [MvPolynomial.aeval_algebraMap_apply]
+          have : aeval P.val (P.relation y) = 0 := by
+            rw [← RingHom.mem_ker]
+            erw [P.ker_algebraMap_eq_span_range_relation]
+            apply Ideal.subset_span
+            exact Set.mem_range_self y
+          simp [this]
+
+lemma comp_relation_map (r : Q.relations) :
+    aeval (Sum.elim X (MvPolynomial.C ∘ P.val)) ((Q.comp P).relation (Sum.inl r)) = Q.relation r := by
+  simp [comp_relation, comp_relation_aux_map]
 
 instance comp_isFinite [P.IsFinite] [Q.IsFinite] : (Q.comp P).IsFinite where
   finite_vars := inferInstanceAs <| Finite (Q.vars ⊕ P.vars)
@@ -203,7 +392,7 @@ def foo {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R 
         rw[aeval_X]
         rw[_root_.map_mul, aeval_X]
         simp
-    rw[this, P.aeval_val_σ, smul_tmul', smul_eq_mul, mul_one]
+    rw [this, P.aeval_val_σ, smul_tmul', smul_eq_mul, mul_one]
   | add x y ex ey =>
     obtain ⟨a, ha⟩ := ex
     obtain ⟨b, hb⟩ := ey
