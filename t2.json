@@ -1,0 +1,67 @@
+[
+  {
+    "file": "~Mathlib.Algebra.Star.Order",
+    "diff": 1268586701,
+    "reldiff": 0.049171003920136014
+  },
+  {
+    "file": "~Mathlib.LinearAlgebra.Multilinear.Basic",
+    "diff": 1885233103,
+    "reldiff": 0.012325269385534377
+  },
+  {
+    "file": "~Mathlib.Algebra.Group.Subgroup.Order",
+    "diff": 1980941426,
+    "reldiff": 0.17398943347158344
+  },
+  {
+    "file": "~Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Restrict",
+    "diff": -2333523049,
+    "reldiff": -0.017088027604334317
+  },
+  {
+    "file": "~Mathlib.Algebra.Homology.HomotopyCategory.Triangulated",
+    "diff": 1551678483,
+    "reldiff": 0.008452146830490372
+  },
+  {
+    "file": "~Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm",
+    "diff": 8657140833,
+    "reldiff": 0.03021238234977568
+  },
+  {
+    "file": "build",
+    "diff": 38644154163,
+    "reldiff": 0.0003146533530397911
+  },
+  {
+    "file": "~Mathlib.Data.Matrix.Rank",
+    "diff": 4736378726,
+    "reldiff": 0.1338586588691776
+  },
+  {
+    "file": "~Mathlib.LinearAlgebra.Matrix.DotProduct",
+    "diff": 1101892179,
+    "reldiff": 0.07649445911847265
+  },
+  {
+    "file": "~Mathlib.Data.Real.Sqrt",
+    "diff": 1314228260,
+    "reldiff": 0.05738226591309727
+  },
+  {
+    "file": "~Mathlib.Analysis.RCLike.Basic",
+    "diff": 2613311653,
+    "reldiff": 0.030373956704959234
+  },
+  {
+    "file": "~Mathlib.Algebra.Group.Subgroup.Basic",
+    "diff": -5703947233,
+    "reldiff": -0.04665876205647897
+  },
+  {
+    "file": "~Mathlib.RingTheory.FractionalIdeal.Norm",
+    "diff": -1634931188,
+    "reldiff": -0.037344554713073096
+  }
+]
