@@ -79,55 +79,32 @@ def addIsScalarTowerInstanceFromRingHomComp (t : Expr) : TacticM Unit := withMai
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
-def addFiniteTypeInstance (t : Expr) : TacticM Unit := withMainContext do
-  let u ← Meta.mkFreshLevelMVar
-  let v ← Meta.mkFreshLevelMVar
-  let A ← mkFreshExprMVarQ q(Type u)
-  let B ← mkFreshExprMVarQ q(Type v)
-  let _instA ← mkFreshExprMVarQ q(CommRing $A)
-  let _instB ← mkFreshExprMVarQ q(CommRing $B)
-  let f ← mkFreshExprMVarQ q($A →+* $B)
-  let _ ←
-    try let _pf ← assertDefEqQ t f
-    catch e => throwError e.toMessageData
-  let ft ← mkFreshExprMVarQ q(RingHom.FiniteType $f)
-  ft.mvarId!.assumption
-  let _algInstAB ← synthInstanceQ q(Algebra $A $B)
-  let _ ←
-    try let _ ← assertDefEqQ f q(algebraMap $A $B)
-    catch e => throwError e.toMessageData
-  try
-    let _ ← synthInstanceQ q(Algebra.FiniteType $A $B)
-  catch _ => liftMetaTactic fun mvarid => do
-    let nm ← mkFreshUserName `ftInst
-    let mvar ← mvarid.define nm q(Algebra.FiniteType $A $B) q($ft)
-    let (_, mvar) ← mvar.intro1P
-    return [mvar]
+-- def addFiniteTypeInstance (t : Expr) : TacticM Unit := withMainContext do
+--   let u ← Meta.mkFreshLevelMVar
+--   let v ← Meta.mkFreshLevelMVar
+--   let A ← mkFreshExprMVarQ q(Type u)
+--   let B ← mkFreshExprMVarQ q(Type v)
+--   let _instA ← mkFreshExprMVarQ q(CommRing $A)
+--   let _instB ← mkFreshExprMVarQ q(CommRing $B)
+--   let f ← mkFreshExprMVarQ q($A →+* $B)
+--   let _ ←
+--     try let _pf ← assertDefEqQ t f
+--     catch e => throwError e.toMessageData
+--   let ft ← mkFreshExprMVarQ q(RingHom.FiniteType $f)
+--   ft.mvarId!.assumption
+--   let _algInstAB ← synthInstanceQ q(Algebra $A $B)
+--   let _ ←
+--     try let _ ← assertDefEqQ f q(algebraMap $A $B)
+--     catch e => throwError e.toMessageData
+--   try
+--     let _ ← synthInstanceQ q(Algebra.FiniteType $A $B)
+--   catch _ => liftMetaTactic fun mvarid => do
+--     let nm ← mkFreshUserName `ftInst
+--     let mvar ← mvarid.define nm q(Algebra.FiniteType $A $B) q($ft)
+--     let (_, mvar) ← mvar.intro1P
+--     return [mvar]
 
-def addInstances (t : Expr) : TacticM Unit := withMainContext do
-  let u ← Meta.mkFreshLevelMVar
-  let v ← Meta.mkFreshLevelMVar
-  let A ← mkFreshExprMVarQ q(Type u)
-  let B ← mkFreshExprMVarQ q(Type v)
-  let _instA ← mkFreshExprMVarQ q(CommRing $A)
-  let _instB ← mkFreshExprMVarQ q(CommRing $B)
-  let f ← mkFreshExprMVarQ q($A →+* $B)
-  let _ ←
-    try let _pf ← assertDefEqQ t f
-    catch e => throwError e.toMessageData
-  let ft ← mkFreshExprMVarQ q(RingHom.FiniteType $f)
-  ft.mvarId!.assumption
-  let _algInstAB ← synthInstanceQ q(Algebra $A $B)
-  let _ ←
-    try let _ ← assertDefEqQ f q(algebraMap $A $B)
-    catch e => throwError e.toMessageData
-  try
-    let _ ← synthInstanceQ q(Algebra.FiniteType $A $B)
-  catch _ => liftMetaTactic fun mvarid => do
-    let nm ← mkFreshUserName `ftInst
-    let mvar ← mvarid.define nm q(Algebra.FiniteType $A $B) q($ft)
-    let (_, mvar) ← mvar.intro1P
-    return [mvar]
+-- #check matchExpr :(
 
 -- def addInstance (oldname : Name) (args : Array Expr) (decl : LocalDecl) : TacticM Unit :=
 --   withMainContext do
@@ -169,10 +146,8 @@ def searchContext (t : Array (TSyntax `term)) : TacticM Unit := withMainContext 
           break
       if ¬happy then
         continue
-      logInfo m!"{f} : {t'}"
       let h : Ident := mkIdent i
       let hf := mkIdent decl.userName
-      -- logInfo m!"{h} : {hf}"
       let sn ← `(term| $h:ident $hf:ident)
       let m ← Term.elabTerm sn none
 
