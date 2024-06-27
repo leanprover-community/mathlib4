@@ -715,6 +715,7 @@ import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Algebra.Symmetrized
@@ -1009,6 +1010,7 @@ import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
 import Mathlib.Analysis.InnerProductSpace.MeanErgodic
+import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Analysis.InnerProductSpace.OfNorm
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
@@ -2119,6 +2121,7 @@ import Mathlib.Data.Matroid.Constructions
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
+import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Restrict
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
@@ -3587,6 +3590,7 @@ import Mathlib.RingTheory.Generators
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.Radical
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
@@ -3797,6 +3801,7 @@ import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.SetTheory.Surreal.Basic
 import Mathlib.SetTheory.Surreal.Dyadic
+import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.Tactic
