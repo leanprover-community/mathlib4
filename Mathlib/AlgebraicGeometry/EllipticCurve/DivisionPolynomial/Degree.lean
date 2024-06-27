@@ -270,16 +270,16 @@ lemma natDegree_preΨ_le (n : ℤ) : (W.preΨ n).natDegree ≤
     (n.natAbs ^ 2 - if Even n then 4 else 1) / 2 := by
   induction n using Int.negInduction with
   | nat n => exact_mod_cast W.preΨ_ofNat n ▸ W.natDegree_preΨ'_le n
-  | neg => simpa only [preΨ_neg, natDegree_neg, Int.natAbs_neg, even_neg]
+  | neg ih => simp only [preΨ_neg, natDegree_neg, Int.natAbs_neg, even_neg, ih]
 
 @[simp]
 lemma coeff_preΨ (n : ℤ) : (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 4 else 1) / 2) =
     if Even n then n / 2 else n := by
   induction n using Int.negInduction with
   | nat n => exact_mod_cast W.preΨ_ofNat n ▸ W.coeff_preΨ' n
-  | neg n ih =>
+  | neg ih n =>
     simp only [preΨ_neg, coeff_neg, Int.natAbs_neg, even_neg]
-    rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;>
+    rcases ih n, n.even_or_odd' with ⟨ih, ⟨n, rfl | rfl⟩⟩ <;>
       push_cast [even_two_mul, Int.not_even_two_mul_add_one, Int.neg_ediv_of_dvd ⟨n, rfl⟩] at * <;>
       rw [ih]
 
@@ -288,8 +288,8 @@ lemma coeff_preΨ_ne_zero {n : ℤ} (h : (n : R) ≠ 0) :
   induction n using Int.negInduction with
   | nat n => simpa only [preΨ_ofNat, Int.even_coe_nat]
       using W.coeff_preΨ'_ne_zero <| by exact_mod_cast h
-  | neg n ih => simpa only [preΨ_neg, coeff_neg, neg_ne_zero, Int.natAbs_neg, even_neg]
-      using ih <| neg_ne_zero.mp <| by exact_mod_cast h
+  | neg ih n => simpa only [preΨ_neg, coeff_neg, neg_ne_zero, Int.natAbs_neg, even_neg]
+        using ih n <| neg_ne_zero.mp <| by exact_mod_cast h
 
 @[simp]
 lemma natDegree_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
@@ -300,8 +300,8 @@ lemma natDegree_preΨ_pos {n : ℤ} (hn : 2 < n.natAbs) (h : (n : R) ≠ 0) :
     0 < (W.preΨ n).natDegree := by
   induction n using Int.negInduction with
   | nat n => simpa only [preΨ_ofNat] using W.natDegree_preΨ'_pos hn <| by exact_mod_cast h
-  | neg n ih => simpa only [preΨ_neg, natDegree_neg]
-        using ih (by rwa [← Int.natAbs_neg]) <| neg_ne_zero.mp <| by exact_mod_cast h
+  | neg ih n => simpa only [preΨ_neg, natDegree_neg]
+        using ih n (by rwa [← Int.natAbs_neg]) <| neg_ne_zero.mp <| by exact_mod_cast h
 
 @[simp]
 lemma leadingCoeff_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
@@ -311,7 +311,8 @@ lemma leadingCoeff_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
 lemma preΨ_ne_zero [Nontrivial R] {n : ℤ} (h : (n : R) ≠ 0) : W.preΨ n ≠ 0 := by
   induction n using Int.negInduction with
   | nat n => simpa only [preΨ_ofNat] using W.preΨ'_ne_zero <| by exact_mod_cast h
-  | neg n ih => simpa only [preΨ_neg, neg_ne_zero] using ih <| neg_ne_zero.mp <| by exact_mod_cast h
+  | neg ih n => simpa only [preΨ_neg, neg_ne_zero]
+        using ih n <| neg_ne_zero.mp <| by exact_mod_cast h
 
 end preΨ
 
@@ -340,13 +341,13 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
 lemma natDegree_ΨSq_le (n : ℤ) : (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 := by
   induction n using Int.negInduction with
   | nat n => exact (W.natDegree_coeff_ΨSq_ofNat n).left
-  | neg => rwa [ΨSq_neg, Int.natAbs_neg]
+  | neg ih => simp only [ΨSq_neg, Int.natAbs_neg, ih]
 
 @[simp]
 lemma coeff_ΨSq (n : ℤ) : (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = n ^ 2 := by
   induction n using Int.negInduction with
   | nat n => exact_mod_cast (W.natDegree_coeff_ΨSq_ofNat n).right
-  | neg => rwa [ΨSq_neg, Int.natAbs_neg, ← Int.cast_pow, neg_sq, Int.cast_pow]
+  | neg ih => simp_rw [ΨSq_neg, Int.natAbs_neg, ← Int.cast_pow, neg_sq, Int.cast_pow, ih]
 
 lemma coeff_ΨSq_ne_zero [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
     (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) ≠ 0 := by
@@ -415,13 +416,13 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
 lemma natDegree_Φ_le (n : ℤ) : (W.Φ n).natDegree ≤ n.natAbs ^ 2 := by
   induction n using Int.negInduction with
   | nat n => exact (W.natDegree_coeff_Φ_ofNat n).left
-  | neg => rwa [Φ_neg, Int.natAbs_neg]
+  | neg ih => simp only [Φ_neg, Int.natAbs_neg, ih]
 
 @[simp]
 lemma coeff_Φ (n : ℤ) : (W.Φ n).coeff (n.natAbs ^ 2) = 1 := by
   induction n using Int.negInduction with
   | nat n => exact (W.natDegree_coeff_Φ_ofNat n).right
-  | neg => rwa [Φ_neg, Int.natAbs_neg]
+  | neg ih => simp only [Φ_neg, Int.natAbs_neg, ih]
 
 lemma coeff_Φ_ne_zero [Nontrivial R] (n : ℤ) : (W.Φ n).coeff (n.natAbs ^ 2) ≠ 0 :=
   W.coeff_Φ n ▸ one_ne_zero
