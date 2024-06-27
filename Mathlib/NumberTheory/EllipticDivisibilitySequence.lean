@@ -65,7 +65,8 @@ polynomials of elliptic curves, omitting a factor of the bivariate $2$-division 
 
 ## References
 
-M Ward, *Memoir on Elliptic Divisibility Sequences*
+M. Ward, *Memoir on Elliptic Divisibility Sequences*
+[K Stange, *Elliptic nets and elliptic curves*][Stange2011]
 
 ## Tags
 
@@ -96,7 +97,7 @@ private def rel₄ (a b c d : ℤ) : R :=
     - addMulSub W a c * addMulSub W b d
     + addMulSub W a d * addMulSub W b c
 
-/-- The defining property of Stange's elliptic nets,
+/-- The defining property of elliptic nets in [Stange2011],
 equivalent to a suitable valid (same-parity indices) `rel₄` relation,
 but here only the first three indices enjoy symmetry under permutation,
 while in `rel₄` all four indices can be freely permuted.
