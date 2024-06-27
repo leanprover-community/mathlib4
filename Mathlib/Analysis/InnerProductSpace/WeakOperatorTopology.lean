@@ -48,7 +48,7 @@ open scoped Topology
 /-- The type copy of `E →L[𝕜] F` endowed with the weak operator topology, denoted as
 `E →WOT[𝕜] F`. -/
 def ContinuousLinearMapWOT (𝕜 : Type*) (E : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup E]
-  [TopologicalSpace E] [Module 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] := E →L[𝕜] F
+    [TopologicalSpace E] [Module 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] := E →L[𝕜] F
 
 notation E " →WOT[" 𝕜 "]" F => ContinuousLinearMapWOT 𝕜 E F
 
