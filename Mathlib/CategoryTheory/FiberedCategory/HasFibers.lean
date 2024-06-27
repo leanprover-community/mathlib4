@@ -203,10 +203,10 @@ R ====== R --f--> S
 ```
 Then the induced map τ : b' ⟶ b can be lifted to the fiber over R -/
 noncomputable def inducedMap : b ⟶ b' :=
-  mapPreimage (IsCartesian.inducedMap p f ψ φ)
+  mapPreimage (IsCartesian.map p f ψ φ)
 
 lemma inducedMap_comp : (ι R).map (inducedMap f ψ φ) ≫ ψ = φ := by
-  simp only [inducedMap, mapPreimage_eq, IsCartesian.inducedMap_comp]
+  simp only [inducedMap, mapPreimage_eq, IsCartesian.fac]
 
 end
 
