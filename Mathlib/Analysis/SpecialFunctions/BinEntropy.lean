@@ -489,16 +489,10 @@ lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (qnot1 : q ≠ 1) (xne0: x ≠ 
   convert hasDerivAt_deriv_iff.mpr diffAt using 1
   exact Eq.symm (deriv_qaryEntropy' xne0 gne1)
 
-open Filter Topology
-
-
--- TODO delete
-lemma tendsto_nhdsWithin_of_eventuallyEq (f g : ℝ → ℝ) (x : ℝ) (l : Filter ℝ)
-    (evEq : f =ᶠ[𝓝[>] x] g) (ftend: Tendsto f (𝓝[>] x) l) :
-    Tendsto g (𝓝[>] x) l := Filter.Tendsto.congr' evEq ftend
+open Filter Topology Set
 
 lemma eventuallyEq_nhdsWithin_of_eqOn_interval
-    (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Set.Ioo x (x + ε), f y = g y) :
+    (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Ioo x (x + ε), f y = g y) :
     f =ᶠ[𝓝[>] x] g := by
   apply eventuallyEq_nhdsWithin_iff.mpr
   apply Metric.eventually_nhds_iff.mpr
@@ -506,15 +500,15 @@ lemma eventuallyEq_nhdsWithin_of_eqOn_interval
   constructor
   · exact epsPos
   · intro y yclose ygex
-    have : y ∈ Set.Ioo x (x + ε) := by
-      simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioi, true_and]
+    have : y ∈ Ioo x (x + ε) := by
+      simp_all only [mem_Ioo, and_imp, mem_Ioi, true_and]
       have : dist y x = y - x := by
         simp_all only [Real.dist_eq, abs_eq_self, sub_nonneg, le_of_lt ygex]
       linarith
-    simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioi, true_and]
+    simp_all only [mem_Ioo, and_imp, mem_Ioi, true_and]
 
 lemma eventuallyEq_nhdsWithin_of_eqOn_interval_left
-    (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Set.Ioo (x - ε) x, f y = g y) :
+    (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Ioo (x - ε) x, f y = g y) :
     f =ᶠ[𝓝[<] x] g := by
   apply eventuallyEq_nhdsWithin_iff.mpr
   apply Metric.eventually_nhds_iff.mpr
@@ -522,17 +516,13 @@ lemma eventuallyEq_nhdsWithin_of_eqOn_interval_left
   constructor
   · exact epsPos
   · intro y yclose ygex
-    have : y ∈ Set.Ioo (x - ε) x := by
-      simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioi, true_and]
+    have : y ∈ Ioo (x - ε) x := by
+      simp_all only [mem_Ioo, and_imp, mem_Ioi, true_and]
       constructor
-      · simp_all only [Set.mem_Iio]
+      · simp_all only [mem_Iio]
         exact sub_lt_of_abs_sub_lt_left yclose
       · exact ygex
-    simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioi, true_and]
-
--- TODO remove
-lemma ne_one_of_lt_onehalf (x : ℝ) (hx : x < 2⁻¹) : x ≠ 1 := by
-  linarith [two_inv_lt_one (α:=ℝ)]
+    simp_all only [mem_Ioo, and_imp, mem_Ioi, true_and]
 
 lemma tendsto_atTop_if_tendsto_neg_atBot {f : ℝ → ℝ} {l : Filter ℝ} :
     Tendsto f l atBot ↔ Tendsto (fun x ↦ -f x) l atTop := by
@@ -574,9 +564,9 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
   · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
     apply Tendsto.comp (f:=(fun x ↦ 1 - x)) (g:=Real.log) this
     have contF : Continuous (fun (x:ℝ) ↦ 1 - x) := by exact continuous_sub_left 1
-    have : Set.MapsTo (fun (x:ℝ) ↦ 1 - x)  (Set.Iio 1) (Set.Ioi 0) := by
+    have : MapsTo (fun (x:ℝ) ↦ 1 - x)  (Iio 1) (Ioi 0) := by
       intro x hx
-      simp_all only [Set.mem_Iio, Set.mem_Ioi, sub_pos]
+      simp_all only [mem_Iio, mem_Ioi, sub_pos]
     convert ContinuousWithinAt.tendsto_nhdsWithin (x:=(1:ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
   · have : 𝓝[<] (1:ℝ) ≤ 𝓝 1 := nhdsWithin_le_nhds
@@ -694,23 +684,17 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
     · intro h
       have contAt := h.continuousAt
       cases this with
-      | inl xis0 =>
-        have := extracted_2 h contAt xis0
-        contradiction
-      | inr xis1 =>
-        have := extracted_1 h contAt xis1
-        contradiction
+      | inl xis0 => exact (extracted_2 h contAt xis0) contAt
+      | inr xis1 => exact (extracted_1 h contAt xis1) contAt
 
 lemma deriv2_binaryEntropy {x : ℝ} : deriv^[2] binaryEntropy x = -1 / (x * (1-x)) :=
   deriv2_qaryEntropy
 
 /-! ### Strict Monotonicity of binary entropy -/
 
-open Set
-
 /-- Qary entropy is strictly increasing in interval [0, 1 - q⁻¹]. -/
 lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
-    StrictMonoOn (qaryEntropy q) (Set.Icc 0 (1 - 1/q)) := by
+    StrictMonoOn (qaryEntropy q) (Icc 0 (1 - 1/q)) := by
   intro p1 hp1 p2 hp2 p1le2
   apply strictMonoOn_of_deriv_pos (convex_Icc 0 (1 - 1/(q:ℝ))) _ _ hp1 hp2 p1le2
   · apply qaryEntropy_continuous.continuousOn
@@ -743,7 +727,7 @@ lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
     exact (ne_of_gt (lt_add_neg_iff_lt.mp this : x < 1)).symm
 
 /-- Binary entropy is strictly increasing in interval [0, 1/2]. -/
-lemma binaryEntropy_strictMono : StrictMonoOn binaryEntropy (Set.Icc 0 2⁻¹) := by
+lemma binaryEntropy_strictMono : StrictMonoOn binaryEntropy (Icc 0 2⁻¹) := by
   unfold binaryEntropy
   have : Icc (0:ℝ) 2⁻¹ = Icc 0 (1 - 1/2) := by norm_num
   rw [this]
