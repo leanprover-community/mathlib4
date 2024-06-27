@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Monad.Limits
 
 #align_import category_theory.abelian.transfer from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -49,27 +50,22 @@ variable (F : C ⥤ D)
 variable (G : D ⥤ C) [Functor.PreservesZeroMorphisms G]
 variable (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F)
 
+def reflective : Reflective F where
+  map_injective := (adj.fullyFaithfulROfCompIsoId i).map_injective
+  map_surjective := (adj.fullyFaithfulROfCompIsoId i).map_surjective
+  L := G
+  adj := adj
+
 /-- No point making this an instance, as it requires `i`. -/
 theorem hasKernels [PreservesFiniteLimits G] : HasKernels C :=
-  { has_limit := fun f => by
-      have := NatIso.naturality_1 i f
-      simp? at this says
-        simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map] at this
-      rw [← this]
-      haveI : HasKernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasKernel_comp_mono _ _
-      apply Limits.hasKernel_iso_comp }
+  letI := reflective F G i adj
+  { has_limit := fun _ ↦ hasLimit_of_reflective _ F }
 #align category_theory.abelian_of_adjunction.has_kernels CategoryTheory.AbelianOfAdjunction.hasKernels
 
 /-- No point making this an instance, as it requires `i` and `adj`. -/
 theorem hasCokernels : HasCokernels C :=
-  { has_colimit := fun f => by
-      have : PreservesColimits G := adj.leftAdjointPreservesColimits
-      have := NatIso.naturality_1 i f
-      simp? at this says
-        simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map] at this
-      rw [← this]
-      haveI : HasCokernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasCokernel_comp_iso _ _
-      apply Limits.hasCokernel_epi_comp }
+  letI := reflective F G i adj
+  { has_colimit := fun _ ↦ hasColimit_of_reflective _ F }
 #align category_theory.abelian_of_adjunction.has_cokernels CategoryTheory.AbelianOfAdjunction.hasCokernels
 
 variable [Limits.HasCokernels C]
@@ -164,7 +160,7 @@ def abelianOfAdjunction {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFin
     {D : Type u₂} [Category.{v} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
     (G : D ⥤ C) [Functor.PreservesZeroMorphisms G] [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C)
     (adj : G ⊣ F) : Abelian C := by
-  haveI := hasKernels F G i
+  haveI := hasKernels F G i adj
   haveI := hasCokernels F G i adj
   have : ∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f) := by
     intro X Y f
