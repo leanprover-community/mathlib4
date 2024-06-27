@@ -188,12 +188,22 @@ instance : Preadditive (PresheafOfModules R) where
   add_comp := by intros; ext1; simp only [comp_app, add_app, comp_add]
   comp_add := by intros; ext1; simp only [comp_app, add_app, add_comp]
 
+-- There are unfortunately two ways to express the coercion to a function,
+-- and we set a simp normal form here.
+-- Ideally this decision would just be made at the `ModuleCat` level,
+-- but that will require more work.
+-- If that is done, the `simpNF` linter should tell us we can remove this.
+@[simp] theorem coe_eq_coe {X : Cᵒᵖ} (f : P.obj X ⟶ Q.obj X) :
+    @DFunLike.coe ((P.obj X) ⟶ (Q.obj X)) ↑(P.obj X) _ _ f =
+      @DFunLike.coe (↑(P.obj X) →ₗ[↑(R.obj X)] ↑(Q.obj X)) ↑(P.obj X) _ _ f := rfl
+
 end Hom
 
-lemma naturality_apply {P Q : PresheafOfModules R} (f : P ⟶ Q)
+@[simp] lemma naturality_apply {P Q : PresheafOfModules R} (f : P ⟶ Q)
     {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : P.obj X) :
     f.app Y (P.map g x) = Q.map g (f.app X x) :=
   congr_fun ((forget _).congr_map (f.hom.naturality g)) x
+
 
 variable (R)
 
@@ -334,7 +344,11 @@ of a family of isomorphisms in the various `ModuleCat (R.obj X)`. -/
 @[simps]
 def isoMk' : P ≅ Q where
   hom := Hom.mk' (fun X ↦ (app X).hom) naturality
-  inv := Hom.mk' (fun X ↦ (app X).inv) sorry
+  inv := Hom.mk' (fun X ↦ (app X).inv) (by
+    intros X Y f x
+    specialize naturality f ((app X).inv x)
+    simp only [ModuleCat.inv_hom_id_apply] at naturality
+    simp [← naturality])
   hom_inv_id := evaluation_jointly_faithful (fun X ↦ (app X).hom_inv_id)
   inv_hom_id := evaluation_jointly_faithful (fun X ↦ (app X).inv_hom_id)
 

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 #align_import algebra.category.Module.basic from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
@@ -229,6 +230,26 @@ theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
 #align Module.comp_def ModuleCat.comp_def
 
 @[simp] lemma forget_map (f : M ⟶ N) : (forget (ModuleCat R)).map f = (f : M → N) := rfl
+
+@[simp] theorem hom_inv_id_apply (f : M ≅ N) (x : M) : f.inv (f.hom x) = x :=
+  (elementwise_of% f.hom_inv_id) x
+
+@[simp] theorem inv_hom_id_apply (f : M ≅ N) (x : N) : f.hom (f.inv x) = x :=
+  (elementwise_of% f.inv_hom_id) x
+
+/-!
+This is a disaster, but for now we need two versions of these lemmas, depending on how the
+coercion to a function is setup. When someone makes this less insane, the `simpNF` linter
+will tell us to remove the redundant lemma.
+-/
+
+@[simp] theorem hom_inv_id_apply' (f : M ≅ N) (x : M) :
+    @DFunLike.coe (N →ₗ[R] M) ↑N _ _ f.inv (@DFunLike.coe (M →ₗ[R] N) ↑M _ _ f.hom x) = x :=
+  hom_inv_id_apply f x
+
+@[simp] theorem inv_hom_id_apply' (f : M ≅ N) (x : N) :
+    @DFunLike.coe (M →ₗ[R] N) ↑M _ _ f.hom (@DFunLike.coe (N →ₗ[R] M) ↑N _ _ f.inv x) = x :=
+  inv_hom_id_apply f x
 
 end ModuleCat
 
