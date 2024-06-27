@@ -51,7 +51,7 @@ theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
   rfl
 #align with_top.coe_neg WithTop.LinearOrderedAddCommGroup.coe_neg
 
-@[simp, nolint simpNF]
+@[simp]
 theorem neg_top : -(⊤ : WithTop α) = ⊤ := rfl
 
 @[simp, norm_cast]
