@@ -78,6 +78,17 @@ lemma quotientEquiv_mk (p : P.Ring) : P.quotientEquiv p = algebraMap P.Ring S p 
 lemma quotientEquiv_symm (x : S) : P.quotientEquiv.symm x = P.σ x :=
   rfl
 
+/--
+Dimension of a presentation defined as the cardinality of the generators
+minus the cardinality of the relations.
+
+Note: this definition is completely non-sensical for non-finite presentations and
+even then for this to make sense, you should assume that the presentation
+is standard smooth.
+-/
+noncomputable def dimension : ℕ :=
+  Nat.card P.vars - Nat.card P.relations
+
 /-- A presentation is called finite if there are only finitely-many
 relations and finitely-many relations. -/
 class IsFinite (P : Presentation.{t, w} R S) : Prop where
@@ -105,6 +116,133 @@ section Construction
 TODO: add constructor for `Presentation` with `Presentation.IsFinite` for
 a finitely-presented algebra.
 -/
+
+section Localization
+
+variable (r : R) [IsLocalization.Away r S]
+
+noncomputable def auxHom : ((MvPolynomial Unit R) ⧸ (Ideal.span { C r * X () - 1 })) →ₐ[R] S :=
+  Ideal.Quotient.liftₐ (Ideal.span { C r * X () - 1})
+    (aeval (Generators.localizationAway r).val) <| by
+    intro p hp
+    refine Submodule.span_induction hp ?_ ?_ ?_ ?_
+    · rintro p ⟨q, rfl⟩
+      simp
+    · simp
+    · intro p q hp hq
+      simp [hp, hq]
+    · intro a x hx
+      simp [hx]
+
+@[simp]
+lemma auxHom_mk (p : MvPolynomial Unit R) :
+    auxHom r p = aeval (S₁ := S) (Generators.localizationAway r).val p :=
+  rfl
+
+lemma auxHom_mk' (p : MvPolynomial Unit R) :
+    auxHom r ⟦p⟧ = aeval (S₁ := S) (Generators.localizationAway r).val p :=
+  rfl
+
+noncomputable def auxInv : S →+* ((MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 }) :=
+  letI g : R →+* MvPolynomial Unit R ⧸ (Ideal.span { C r * X () - 1 }) :=
+    (Ideal.Quotient.mk _).comp C
+  haveI : IsUnit (g r) := by
+    simp [g]
+    rw [isUnit_iff_exists_inv]
+    use (Ideal.Quotient.mk _ <| X ())
+    rw [← _root_.map_mul, ← map_one (Ideal.Quotient.mk _)]
+    rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    exact Ideal.mem_span_singleton_self (C r * X () - 1)
+  IsLocalization.Away.lift (S := S) r this
+
+lemma auxHom_auxInv : (auxHom r).toRingHom.comp (auxInv r) = RingHom.id S := by
+  apply IsLocalization.ringHom_ext (Submonoid.powers r)
+  ext x
+  simp [auxInv]
+
+lemma auxInv_auxHom : (auxInv r).comp (auxHom (S := S) r).toRingHom = RingHom.id _ := by
+  have hf : Function.Surjective (Ideal.Quotient.mk (Ideal.span { C r * X () - 1 })) :=
+    Ideal.Quotient.mk_surjective
+  rw [← RingHom.cancel_right hf]
+  ext x
+  simp [auxInv]
+  simp [auxInv]
+  erw [IsLocalization.lift_mk'_spec]
+  simp
+  rw [← _root_.map_one (Ideal.Quotient.mk _)]
+  erw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+  rw [← Ideal.neg_mem_iff]
+  simp only [neg_sub]
+  exact Ideal.mem_span_singleton_self (C r * X x - 1)
+
+noncomputable def auxEquiv : ((MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 }) ≃ₐ[R] S where
+  toFun := auxHom r
+  invFun :=
+    letI g : R →+* MvPolynomial Unit R ⧸ (Ideal.span { C r * X () - 1 }) :=
+      (Ideal.Quotient.mk _).comp C
+    haveI : IsUnit (g r) := by
+      simp [g]
+      rw [isUnit_iff_exists_inv]
+      use (Ideal.Quotient.mk _ <| X ())
+      rw [← _root_.map_mul, ← map_one (Ideal.Quotient.mk _)]
+      rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+      exact Ideal.mem_span_singleton_self (C r * X () - 1)
+    IsLocalization.Away.lift (S := S) r this
+  left_inv := by
+    intro x
+    have := auxInv_auxHom (S := S) r
+    have : ((auxInv r).comp (auxHom (S := S) r).toRingHom) x = RingHom.id _ x := by
+      exact congrFun (congrArg DFunLike.coe this) x
+    simp at this
+    exact this
+  right_inv := by
+    intro s
+    have := auxHom_auxInv (S := S) r
+    have : ((auxHom r).toRingHom.comp (auxInv r)) s = RingHom.id S s := by
+      exact congrFun (congrArg DFunLike.coe this) s
+    simp at this
+    exact this
+  map_mul' := by simp
+  map_add' := by simp
+  commutes' := by simp
+
+lemma ker_eq_span : RingHom.ker (aeval (S₁ := S) (Generators.localizationAway r).val) =
+    Ideal.span { C r * X () - 1 } := by
+  let I := (Ideal.span {C r * X () - 1})
+  --erw [← Ideal.Quotient.mkₐ_ker R (Ideal.span {C r * X () - 1})]
+  --have : (auxEquiv r).comp (Ideal.Quotient.mkₐ_ker R I)
+  have : aeval (S₁ := S) (Generators.localizationAway r).val =
+      (auxHom r).comp (Ideal.Quotient.mkₐ R I) := by
+    symm
+    apply Ideal.Quotient.liftₐ_comp
+  rw [this]
+  erw [← RingHom.comap_ker]
+  simp
+  show Ideal.comap _ (RingHom.ker (auxEquiv r)) = Ideal.span {C r * X () - 1}
+  simp
+  rw [← RingHom.ker_eq_comap_bot]
+  simp
+
+@[simps relations relation]
+noncomputable def localizationAway : Presentation R S where
+  toGenerators := Generators.localizationAway r
+  relations := Unit
+  relation _ := C r * X () - 1
+  ker_algebraMap_eq_span_range_relation := by
+    simp
+    apply ker_eq_span (S := S) r
+
+instance localizationAway_isFinite : (localizationAway r (S := S)).IsFinite where
+  finite_vars := inferInstanceAs <| Finite Unit
+  finite_relations := inferInstanceAs <| Finite Unit
+
+@[simp]
+lemma localizationAway_dimension_zero : (localizationAway r (S := S)).dimension = 0 := by
+  simp [Presentation.dimension]
+  show Nat.card Unit - 1 = 0
+  simp
+
+end Localization
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (Q : Presentation S T) (P : Presentation R S)
@@ -382,17 +520,6 @@ instance comp_isFinite [P.IsFinite] [Q.IsFinite] : (Q.comp P).IsFinite where
 
 end Construction
 
-/--
-Dimension of a presentation defined as the cardinality of the generators
-minus the cardinality of the relations.
-
-Note: this definition is completely non-sensical for non-finite presentations and
-even then for this to make sense, you should assume that the presentation
-is standard smooth.
--/
-noncomputable def dimension : ℕ :=
-  Nat.card P.vars - Nat.card P.relations
-
 open TensorProduct
 
 noncomputable
@@ -445,7 +572,6 @@ def baseChange {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Alg
     · intro x hx
       rw [RingHom.mem_ker] at hx
       have H := Algebra.TensorProduct.lTensor_ker (A := T) (IsScalarTower.toAlgHom R P.Ring S) P.algebraMap_surjective
-
       let e := MvPolynomial.algebraTensorAlgEquiv (R := R) (σ := P.vars) (A := T)
       have H' : e.symm x ∈ RingHom.ker (TensorProduct.map (AlgHom.id R T) (IsScalarTower.toAlgHom R P.Ring S)) := by
         rw [RingHom.mem_ker, ← hx]
@@ -459,8 +585,6 @@ def baseChange {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Alg
         | h_add p q hp hq =>
           simp only [map_add]
           rw[hp, hq]
-
-
         | h_X p i hp =>
           repeat rw[_root_.map_mul]
           rw[hp]

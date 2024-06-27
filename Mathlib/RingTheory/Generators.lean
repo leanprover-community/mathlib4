@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!
 
@@ -121,6 +124,62 @@ def self : Generators R S where
   val := _root_.id
   σ' := X
   aeval_val_σ' := aeval_X _
+
+
+section
+
+variable {T} [CommRing T] [Algebra S T]
+variable (s : S) [IsLocalization.Away s T]
+
+noncomputable def _root_.IsLocalization.Away.sec (t : T) : S × ℕ :=
+  ⟨(IsLocalization.sec (Submonoid.powers s) t).1,
+  (IsLocalization.sec (Submonoid.powers s) t).2.property.choose⟩
+
+lemma _root_.IsLocalization.Away.sec_spec (t : T) :
+    t * (algebraMap S T) (s ^ (IsLocalization.Away.sec s t).2) =
+      algebraMap S T (IsLocalization.Away.sec s t).1 := by
+  simp only [IsLocalization.Away.sec]
+  rw [← IsLocalization.sec_spec]
+  congr
+  exact (IsLocalization.sec (Submonoid.powers s) t).2.property.choose_spec
+
+end
+
+section
+
+variable (M : Submonoid R) [IsLocalization M S]
+
+lemma _root_.IsLocalization.mk'_pow (r : R) (x : M) (n : ℕ) :
+    IsLocalization.mk' S r x ^ n = IsLocalization.mk' S (r ^ n) (x ^ n) := by
+  rw [IsLocalization.eq_mk'_iff_mul_eq]
+  simp only [SubmonoidClass.coe_pow, map_pow]
+  rw [← mul_pow]
+  simp
+
+end
+
+section
+
+variable (r : R) [IsLocalization.Away r S]
+
+@[simps vars val, simps (config := .lemmasOnly) σ]
+noncomputable def localizationAway : Generators R S where
+  vars := Unit
+  val _ := IsLocalization.mk' S 1 (⟨r, 1, by simp⟩ : Submonoid.powers r)
+  σ' s :=
+    let a : R := (IsLocalization.Away.sec r s).1
+    let n : ℕ := (IsLocalization.Away.sec r s).2
+    C a * X () ^ n
+  aeval_val_σ' s := by
+    simp only [_root_.map_mul, algHom_C, map_pow, aeval_X]
+    rw [← IsLocalization.Away.sec_spec, map_pow, _root_.IsLocalization.mk'_pow, one_pow]
+    rw [← IsLocalization.mk'_one (M := Submonoid.powers r) S r, _root_.IsLocalization.mk'_pow]
+    rw [one_pow, mul_assoc, ← IsLocalization.mk'_mul, mul_one, one_mul]
+    rw [← _root_.IsLocalization.mk'_pow]
+    simp
+
+end
+
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 

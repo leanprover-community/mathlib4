@@ -75,6 +75,19 @@ noncomputable def det : S :=
 
 section Constructors
 
+section Localization
+
+variable (r : R) [IsLocalization.Away r S]
+
+@[simps map]
+noncomputable def localizationAway : SubmersivePresentation R S where
+  toPresentation := Presentation.localizationAway r
+  map _ := ()
+  map_inj _ _ h := h
+  relations_finite := inferInstanceAs <| Finite Unit
+
+end Localization
+
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (Q : SubmersivePresentation S T) (P : SubmersivePresentation R S)
 
@@ -275,6 +288,36 @@ class IsStandardSmooth (P : SubmersivePresentation R S) : Prop where
 
 attribute [instance] IsStandardSmooth.presentation_finite
 
+section Localization
+
+variable (r : R) [IsLocalization.Away r S]
+
+lemma localizationAway_det : (localizationAway r (S := S)).det = algebraMap R S r := by
+  simp [det]
+  classical
+  letI : Fintype (localizationAway r (S := S)).relations := inferInstanceAs <| Fintype Unit
+  rw [← LinearMap.det_toMatrix (localizationAway r (S := S)).basis]
+  have : (LinearMap.toMatrix (localizationAway r (S := S)).basis (localizationAway r).basis)
+      (localizationAway r).linearMap = Matrix.diagonal (fun () ↦ MvPolynomial.C r) := by
+    ext (i : Unit) (j : Unit) : 1
+    simp [linearMap, LinearMap.toMatrix]
+    erw [Presentation.localizationAway_relation]
+    rw [map_sub]
+    erw [MvPolynomial.pderiv_C_mul]
+    rw [MvPolynomial.pderiv_X]
+    simp
+  rw [this]
+  rw [Matrix.det_diagonal]
+  simp
+
+instance isLocalizationAway_isStandardSmooth : (localizationAway r (S := S)).IsStandardSmooth where
+  det_isUnit := by
+    rw [localizationAway_det]
+    apply IsLocalization.map_units' (⟨r, 1, by simp⟩ : Submonoid.powers r)
+  presentation_finite := Presentation.localizationAway_isFinite r
+
+end Localization
+
 section Comp
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -407,3 +450,13 @@ class IsStandardSmoothOfRelativeDimension (n : ℕ) : Prop where
   out : ∃ (P : SubmersivePresentation.{t, w} R S), P.IsStandardSmoothOfRelativeDimension n
 
 end Algebra
+
+namespace RingHom
+
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+
+/-- A ring morphism `A →+* B` is standard-smooth, if `B` is a standard-smooth `A`-algebra. -/
+def IsStandardSmooth (f : A →+* B) : Prop :=
+  @Algebra.IsStandardSmooth.{0, 0} A _ B _ f.toAlgebra
+
+end RingHom
