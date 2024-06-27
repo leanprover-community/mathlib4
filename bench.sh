@@ -17,15 +17,19 @@ jq '.differences | .[] | select(.dimension.metric == "instructions") |  select(.
 extractVariations () {
   local threshold=1000000000
   local reg='^[0-9]+$'
+  local src="${1}"
+  local tgt="${2}"
+  shift; shift
   if [[ "${1}" =~ ${reg} ]]
   then
     threshold="${1}"
     shift
   fi
+  curl "http://speed.lean-fro.org/mathlib4/api/compare/${src}/to/${tgt}?all_values=true" |
   jq -r --arg thr "${threshold}" '.differences | .[] |
       ($thr|tonumber) as $th |
       select(.dimension.metric == "instructions" and ((.diff >= $th) or (.diff <= -$th)))
-    ' "${1}" |
+    ' |
     jq -c '[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]' |
     jq -n 'reduce inputs as $in (null; . + $in)'
 }

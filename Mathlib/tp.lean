@@ -49,8 +49,8 @@ def summary (bc : Bench) :=
 
 /-- Assuming that the input is a `json`-string formatted to produce an array of `Bench`,
 `benchOutput` prints the "significant" changes in numbers of instructions. -/
-def benchOutput (js : String) : IO Unit := do
-  let dats ← IO.ofExcept (Json.parse js >>= fromJson? (α := Array Bench))
+def benchOutput (js : System.FilePath) : IO Unit := do
+  let dats ← IO.ofExcept (Json.parse (← IO.FS.readFile js) >>= fromJson? (α := Array Bench))
   let (pos, neg) := dats.partition (0 < ·.diff)
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
   let mut msg := #[s!"{header}\n|`Increase`|||"]
@@ -61,7 +61,7 @@ def benchOutput (js : String) : IO Unit := do
     msg := msg.push (summary d)
   IO.println ("\n".intercalate msg.toList)
 
-run_cmd benchOutput (← IO.FS.readFile "t2.json")
+run_cmd benchOutput "t2.json"
 
 #eval show IO _ from do
   let dats ← IO.ofExcept (Json.parse (← IO.FS.readFile "t2.json") >>= fromJson? (α := Array Bench))
