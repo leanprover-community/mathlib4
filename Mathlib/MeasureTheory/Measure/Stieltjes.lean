@@ -194,6 +194,8 @@ instance : AddZeroClass (StieltjesFunction R) where
   zero_add _ := ext fun _ ↦ zero_add _
   add_zero _ := ext fun _ ↦ add_zero _
 
+@[simp] lemma add_apply (f g : StieltjesFunction R) (x : R) : (f + g) x = f x + g x := rfl
+
 instance : AddCommMonoid (StieltjesFunction R) where
   nsmul n f := nsmulRec n f
   add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
@@ -214,7 +216,7 @@ instance : Module ℝ≥0 (StieltjesFunction R) where
 
 @[simp] lemma zero_apply (x : R) : (0 : StieltjesFunction R) x = 0 := rfl
 
-@[simp] lemma add_apply (f g : StieltjesFunction R) (x : R) : (f + g) x = f x + g x := rfl
+lemma smul_def (c : ℝ≥0) (f : StieltjesFunction R) (x : R) : (c • f) x = c * f x := rfl
 
 /-- If a function `f : R → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
 at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
@@ -777,15 +779,12 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
 @[simp]
 lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction R) : (c • f).measure = c • f.measure := by
   refine Measure.ext_of_Icc _ _ (fun a b h ↦ ?_)
-  simp only [measure_Icc, Measure.smul_apply]
-  change ofReal (c * f b - leftLim (c • f) a) = c • ofReal (f b - leftLim f a)
   have : leftLim (c • f) a = c * leftLim f a := by
     rcases Filter.eq_or_neBot (𝓝[<] a) with ha | ha
-    · simp [leftLim_eq_of_eq_bot _ ha]
-      rfl
+    · simp [leftLim_eq_of_eq_bot _ ha, smul_def]
     · exact tendsto_nhds_unique ((c • f).mono.tendsto_leftLim a)
         ((f.mono.tendsto_leftLim a).const_smul c)
-  rw [this, ← _root_.mul_sub, ENNReal.ofReal_mul zero_le_coe, ofReal_coe_nnreal, ← smul_eq_mul]
-  rfl
+  simp_rw [Measure.smul_apply, measure_Icc, this, smul_def, ← mul_sub,
+    ENNReal.ofReal_mul zero_le_coe, ofReal_coe_nnreal, ENNReal.smul_def, smul_eq_mul]
 
 end StieltjesFunction
