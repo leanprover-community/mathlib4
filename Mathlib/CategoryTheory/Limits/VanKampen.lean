@@ -132,7 +132,7 @@ theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : Is
   have : F' = Functor.empty C := by apply Functor.hext <;> rintro ⟨⟨⟩⟩
   subst this
   haveI := h.isIso_to f
-  refine' ⟨by rintro _ ⟨⟨⟩⟩,
+  refine ⟨by rintro _ ⟨⟨⟩⟩,
     fun _ => ⟨IsColimit.ofIsoColimit h (Cocones.ext (asIso f).symm <| by rintro ⟨⟨⟩⟩)⟩⟩
 #align category_theory.is_initial.is_van_kampen_colimit CategoryTheory.IsInitial.isVanKampenColimit
 
@@ -213,9 +213,9 @@ theorem IsVanKampenColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone 
     [ReflectsColimitsOfShape J G]
     (H : IsVanKampenColimit (G.mapCocone c)) : IsVanKampenColimit c := by
   intro F' c' α f h hα
-  refine' (Iff.trans _ (H (G.mapCocone c') (whiskerRight α G) (G.map f)
+  refine (Iff.trans ?_ (H (G.mapCocone c') (whiskerRight α G) (G.map f)
       (by ext j; simpa using G.congr_map (NatTrans.congr_app h j))
-      (hα.whiskerRight G))).trans (forall_congr' fun j => _)
+      (hα.whiskerRight G))).trans (forall_congr' fun j => ?_)
   · exact ⟨fun h => ⟨isColimitOfPreserves G h.some⟩, fun h => ⟨isColimitOfReflects G h.some⟩⟩
   · exact IsPullback.map_iff G (NatTrans.congr_app h.symm j)
 #align category_theory.is_van_kampen_colimit.of_map CategoryTheory.IsVanKampenColimit.of_mapCocone
@@ -294,8 +294,8 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
       (hα.whiskerRight _)
   constructor
   · rintro ⟨hc'⟩ j
-    refine' ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ _⟩⟩
-    refine' fun x => (isLimitMapConePullbackConeEquiv _ _).symm _
+    refine ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ ?_⟩⟩
+    refine fun x => (isLimitMapConePullbackConeEquiv _ _).symm ?_
     exact ((this x).mp ⟨PreservesColimit.preserves hc'⟩ _).isLimit
   · exact fun H => ⟨evaluationJointlyReflectsColimits _ fun x =>
       ((this x).mpr fun j => (H j).map ((evaluation C D).obj x)).some⟩
@@ -477,8 +477,8 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
         obtain ⟨l, h₁, h₂⟩ := Limits.BinaryCofan.IsColimit.desc' this (f ≫ initial.to A) (𝟙 A)
         rcases(Category.id_comp _).symm.trans h₂ with rfl
         exact ⟨⟨_, ((Category.id_comp _).symm.trans h₁).symm, initialIsInitial.hom_ext _ _⟩⟩
-      refine' (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> simp)
-        (mapPair_equifibered _) _).some
+      refine (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> simp)
+        (mapPair_equifibered _) ?_).some
       rintro ⟨⟨⟩⟩ <;> dsimp <;>
         exact IsPullback.of_horiz_isIso ⟨(Category.id_comp _).trans (Category.comp_id _).symm⟩)
 #align category_theory.has_strict_initial_of_is_universal CategoryTheory.hasStrictInitial_of_isUniversal
@@ -564,7 +564,7 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
         simp
       exact (IsPullback.of_vert_isIso ⟨this⟩).paste_vert hr
   · rintro ⟨H₁, H₂⟩
-    refine' ⟨IsColimit.ofIsoColimit _ <| (isoBinaryCofanMk _).symm⟩
+    refine ⟨IsColimit.ofIsoColimit ?_ <| (isoBinaryCofanMk _).symm⟩
     let e₁ : X' ≅ _ := H₁.isLimit.conePointUniqueUpToIso (limits _ _)
     let e₂ : Y' ≅ _ := H₂.isLimit.conePointUniqueUpToIso (limits _ _)
     have he₁ : c'.inl = e₁.hom ≫ (cones f c.inl).fst := by simp [e₁]
@@ -577,9 +577,9 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
 
 theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : Mono c.inr := by
-  refine' PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit _)
-  refine' (h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr _
-      (mapPair_equifibered _)).mp ⟨_⟩ ⟨WalkingPair.right⟩
+  refine PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit ?_)
+  refine (h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr ?_
+      (mapPair_equifibered _)).mp ⟨?_⟩ ⟨WalkingPair.right⟩
   · ext ⟨⟨⟩⟩ <;> dsimp; simp
   · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
@@ -588,8 +588,8 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
 
 theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
-  refine' ((h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr _
-      (mapPair_equifibered _)).mp ⟨_⟩ ⟨WalkingPair.left⟩).flip
+  refine ((h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr ?_
+      (mapPair_equifibered _)).mp ⟨?_⟩ ⟨WalkingPair.left⟩).flip
   · ext ⟨⟨⟩⟩ <;> dsimp; simp
   · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
@@ -775,7 +775,7 @@ theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι �
     Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
-  refine' PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit _)
+  refine PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit ?_)
   nth_rw 1 [← Category.id_comp (c.ι.app i)]
   convert IsPullback.paste_vert _ (isPullback_of_cofan_isVanKampen hc i.as i.as)
   swap

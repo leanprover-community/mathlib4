@@ -3,7 +3,7 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.UniformSpace.Equicontinuity
 
 #align_import topology.metric_space.equicontinuity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -65,7 +65,7 @@ protected theorem equicontinuousAt_iff_pair {ι : Type*} [TopologicalSpace β] {
     exact H _ (dist_mem_uniformity hε)
   · intro U hU
     rcases mem_uniformity_dist.mp hU with ⟨ε, hε, hεU⟩
-    refine' Exists.imp (fun V => And.imp_right fun h => _) (H _ hε)
+    refine Exists.imp (fun V => And.imp_right fun h => ?_) (H _ hε)
     exact fun x hx x' hx' i => hεU (h _ hx _ hx' i)
 #align metric.equicontinuous_at_iff_pair Metric.equicontinuousAt_iff_pair
 
@@ -106,7 +106,7 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSp
   rw [Metric.uniformEquicontinuous_iff]
   intro ε ε0
   rcases tendsto_nhds_nhds.1 b_lim ε ε0 with ⟨δ, δ0, hδ⟩
-  refine' ⟨δ, δ0, fun x y hxy i => _⟩
+  refine ⟨δ, δ0, fun x y hxy i => ?_⟩
   calc
     dist (F i x) (F i y) ≤ b (dist x y) := H x y i
     _ ≤ |b (dist x y)| := le_abs_self _

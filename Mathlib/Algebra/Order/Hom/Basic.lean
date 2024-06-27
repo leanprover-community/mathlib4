@@ -88,8 +88,7 @@ class SubadditiveHomClass (F α β : Type*) [Add α] [Add β] [LE β] [FunLike F
 
 /-- `SubmultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
 @[to_additive SubadditiveHomClass]
-class SubmultiplicativeHomClass (F α β : Type*) [Mul α] [Mul β] [LE β] [FunLike F α β] : Prop
-  where
+class SubmultiplicativeHomClass (F α β : Type*) [Mul α] [Mul β] [LE β] [FunLike F α β] : Prop where
   /-- the image of a product is less or equal than the product of the images. -/
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
 #align submultiplicative_hom_class SubmultiplicativeHomClass

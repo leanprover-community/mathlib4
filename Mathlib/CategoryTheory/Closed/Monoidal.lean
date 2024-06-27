@@ -277,8 +277,7 @@ end Pre
 
 /-- The internal hom functor given by the monoidal closed structure. -/
 @[simps]
-def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C
-    where
+def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 #align category_theory.monoidal_closed.internal_hom CategoryTheory.MonoidalClosed.internalHom

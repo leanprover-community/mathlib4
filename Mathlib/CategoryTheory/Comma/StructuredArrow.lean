@@ -125,6 +125,11 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
 picks up on it (seems like a bug). Either way simp solves it.  -/
 attribute [-simp, nolint simpNF] homMk_left
 
+theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
+    ∃ (ψ : f.right ⟶ f'.right) (hψ : f.hom ≫ T.map ψ = f'.hom),
+      φ = StructuredArrow.homMk ψ hψ :=
+  ⟨φ.right, StructuredArrow.w φ, rfl⟩
+
 /-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
     structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
 @[simps]
@@ -222,6 +227,10 @@ def eta (f : StructuredArrow S T) : f ≅ mk f.hom :=
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] eta_hom_left_down_down eta_inv_left_down_down
 
+lemma mk_surjective (f : StructuredArrow S T) :
+    ∃ (Y : C) (g : S ⟶ T.obj Y), f = mk g :=
+  ⟨_, _, eq_mk f⟩
+
 /-- A morphism between source objects `S ⟶ S'`
 contravariantly induces a functor between structured arrows,
 `StructuredArrow S' T ⥤ StructuredArrow S T`.
@@ -308,8 +317,8 @@ instance isEquivalence_pre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence]
 
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
-def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
-    where
+def post (S : C) (F : B ⥤ C) (G : C ⥤ D) :
+    StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G) where
   obj X := StructuredArrow.mk (G.map X.hom)
   map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
@@ -491,6 +500,11 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
 picks up on it. Either way simp can prove this -/
 attribute [-simp, nolint simpNF] homMk_right_down_down
 
+theorem homMk_surjective {f f' : CostructuredArrow S T} (φ : f ⟶ f') :
+    ∃ (ψ : f.left ⟶ f'.left) (hψ : S.map ψ ≫ f'.hom = f.hom),
+      φ = CostructuredArrow.homMk ψ hψ :=
+  ⟨φ.left, CostructuredArrow.w φ, rfl⟩
+
 /-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
     costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/
 @[simps]
@@ -584,6 +598,10 @@ def eta (f : CostructuredArrow S T) : f ≅ mk f.hom :=
 /- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] eta_hom_right_down_down eta_inv_right_down_down
+
+lemma mk_surjective (f : CostructuredArrow S T) :
+    ∃ (Y : C) (g : S.obj Y ⟶ T), f = mk g :=
+  ⟨_, _, eq_mk f⟩
 
 /-- A morphism between target objects `T ⟶ T'`
 covariantly induces a functor between costructured arrows,
@@ -847,8 +865,7 @@ category of structured arrows `op d ⟶ F.op.obj c` to the category of costructu
 -/
 @[simps]
 def toCostructuredArrow' (F : C ⥤ D) (d : D) :
-    (StructuredArrow (op d) F.op)ᵒᵖ ⥤ CostructuredArrow F d
-    where
+    (StructuredArrow (op d) F.op)ᵒᵖ ⥤ CostructuredArrow F d where
   obj X := @CostructuredArrow.mk _ _ _ _ _ (unop X.unop.right) F X.unop.hom.unop
   map f :=
     CostructuredArrow.homMk f.unop.right.unop
@@ -868,8 +885,8 @@ category of costructured arrows `F.obj c ⟶ d` to the category of structured ar
 `op d ⟶ F.op.obj c`.
 -/
 @[simps]
-def toStructuredArrow (F : C ⥤ D) (d : D) : (CostructuredArrow F d)ᵒᵖ ⥤ StructuredArrow (op d) F.op
-    where
+def toStructuredArrow (F : C ⥤ D) (d : D) :
+    (CostructuredArrow F d)ᵒᵖ ⥤ StructuredArrow (op d) F.op where
   obj X := @StructuredArrow.mk _ _ _ _ _ (op X.unop.left) F.op X.unop.hom.op
   map f :=
     StructuredArrow.homMk f.unop.left.op
@@ -884,8 +901,8 @@ category of costructured arrows `F.op.obj c ⟶ op d` to the category of structu
 `d ⟶ F.obj c`.
 -/
 @[simps]
-def toStructuredArrow' (F : C ⥤ D) (d : D) : (CostructuredArrow F.op (op d))ᵒᵖ ⥤ StructuredArrow d F
-    where
+def toStructuredArrow' (F : C ⥤ D) (d : D) :
+    (CostructuredArrow F.op (op d))ᵒᵖ ⥤ StructuredArrow d F where
   obj X := @StructuredArrow.mk _ _ _ _ _ (unop X.unop.left) F X.unop.hom.unop
   map f :=
     StructuredArrow.homMk f.unop.left.unop

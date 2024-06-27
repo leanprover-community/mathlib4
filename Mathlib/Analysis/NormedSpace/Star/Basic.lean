@@ -33,7 +33,6 @@ To get a C⋆-algebra `E` over field `𝕜`, use
 
 -/
 
-
 open Topology
 
 local postfix:max "⋆" => star
@@ -171,8 +170,8 @@ instance _root_.Prod.cstarRing : CstarRing (R₁ × R₂) where
   norm_star_mul_self {x} := by
     dsimp only [norm]
     simp only [Prod.fst_mul, Prod.fst_star, Prod.snd_mul, Prod.snd_star, norm_star_mul_self, ← sq]
-    refine' le_antisymm _ _
-    · refine' max_le _ _ <;> rw [sq_le_sq, abs_of_nonneg (norm_nonneg _)]
+    refine le_antisymm ?_ ?_
+    · refine max_le ?_ ?_ <;> rw [sq_le_sq, abs_of_nonneg (norm_nonneg _)]
       · exact (le_max_left _ _).trans (le_abs_self _)
       · exact (le_max_right _ _).trans (le_abs_self _)
     · rw [le_sup_iff]
@@ -222,7 +221,7 @@ theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U
 @[simp]
 theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ := by
   nontriviality E
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · calc
       _ ≤ ‖(U : E)‖ * ‖A‖ := norm_mul_le _ _
       _ = ‖A‖ := by rw [norm_coe_unitary, one_mul]

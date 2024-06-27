@@ -237,15 +237,15 @@ def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens 
       (colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s) _*
             limit (pushforwardDiagramToColimit F).leftOp).obj
         U := by
-  refine'
+  refine
     limit.lift _
         { pt := s.pt.presheaf.obj U
           π :=
-            { app := fun j => _
-              naturality := fun j j' f => _ } } ≫
+            { app := fun j => ?_
+              naturality := fun j j' f => ?_ } } ≫
       (limitObjIsoLimitCompEvaluation _ _).inv
   -- We still need to construct the `app` and `naturality'` fields omitted above.
-  · refine' (s.ι.app (unop j)).c.app U ≫ (F.obj (unop j)).presheaf.map (eqToHom _)
+  · refine (s.ι.app (unop j)).c.app U ≫ (F.obj (unop j)).presheaf.map (eqToHom ?_)
     dsimp
     rw [← Opens.map_comp_obj]
     simp
@@ -384,14 +384,14 @@ via taking componentwise limits.
 def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
     (U : Opens (Limits.colimit F).carrier) :
     (Limits.colimit F).presheaf.obj (op U) ≅ limit (componentwiseDiagram F U) := by
-  refine'
+  refine
     ((sheafIsoOfIso (colimit.isoColimitCocone ⟨_, colimitCoconeIsColimit F⟩).symm).app
           (op U)).trans
-      _
-  refine' (limitObjIsoLimitCompEvaluation _ _).trans (Limits.lim.mapIso _)
+      ?_
+  refine (limitObjIsoLimitCompEvaluation _ _).trans (Limits.lim.mapIso ?_)
   fapply NatIso.ofComponents
   · intro X
-    refine' (F.obj (unop X)).presheaf.mapIso (eqToIso _)
+    refine (F.obj (unop X)).presheaf.mapIso (eqToIso ?_)
     simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
     refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
@@ -437,8 +437,8 @@ set_option linter.uppercaseLean3 false in
 theorem colimitPresheafObjIsoComponentwiseLimit_hom_π (F : J ⥤ PresheafedSpace.{_, _, v} C)
     (U : Opens (Limits.colimit F).carrier) (j : J) :
     (colimitPresheafObjIsoComponentwiseLimit F U).hom ≫ limit.π _ (op j) =
-      (colimit.ι F j).c.app (op U) :=
-  by rw [← Iso.eq_inv_comp, colimitPresheafObjIsoComponentwiseLimit_inv_ι_app]
+      (colimit.ι F j).c.app (op U) := by
+  rw [← Iso.eq_inv_comp, colimitPresheafObjIsoComponentwiseLimit_inv_ι_app]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_presheaf_obj_iso_componentwise_limit_hom_π AlgebraicGeometry.PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π
 

@@ -44,7 +44,7 @@ theorem sin_lt (h : 0 < x) : sin x < x := by
   rw [sub_le_iff_le_add', hx] at this
   apply this.trans_lt
   rw [sub_add, sub_lt_self_iff, sub_pos, div_eq_mul_inv (x ^ 3)]
-  refine' mul_lt_mul' _ (by norm_num) (by norm_num) (pow_pos h 3)
+  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   norm_num
 #align real.sin_lt Real.sin_lt
@@ -63,8 +63,7 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   suffices MonotoneOn (fun x ↦ cos x + x ^ 2 / 2) (Ici 0) by
     simpa using this left_mem_Ici hx₀ hx₀
   refine monotoneOn_of_hasDerivWithinAt_nonneg
-    (convex_Ici _)
-    (Continuous.continuousOn <| by continuity)
+    (convex_Ici _) (by fun_prop)
     (fun x _ ↦ ((hasDerivAt_cos ..).add <| (hasDerivAt_pow ..).div_const _).hasDerivWithinAt)
     fun x hx ↦ ?_
   simpa [mul_div_cancel_left₀] using sin_le <| interior_subset hx
@@ -75,7 +74,7 @@ lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x �
   suffices ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x) by
     refine (le_min ?_ ?_).trans $ this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
   exact concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-    (Continuous.continuousOn $ by continuity)
+    (Continuous.continuousOn $ by fun_prop)
     (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
     (fun x _ ↦ (hasDerivAt_cos ..).hasDerivWithinAt.sub_const _)
     fun x hx ↦ neg_nonpos.2 $ sin_nonneg_of_mem_Icc $ Icc_subset_Icc_right (by linarith) $
@@ -100,9 +99,11 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   simp only [Nat.cast_ofNat, Nat.succ_sub_succ_eq_sub, tsub_zero, pow_one, ← neg_sub', neg_sub,
     ← mul_assoc] at hderiv
   have hmono : MonotoneOn (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) (Icc 0 (π / 2)) := by
+    -- Compiles without this option, but somewhat slower.
+    set_option tactic.skipAssignedInstances false in
     refine monotoneOn_of_hasDerivWithinAt_nonneg
       (convex_Icc ..)
-      (Continuous.continuousOn $ by continuity)
+      (Continuous.continuousOn $ by fun_prop)
       (fun x _ ↦ (hderiv _).hasDerivWithinAt)
       fun x hx ↦ sub_nonneg.2 ?_
     have ⟨hx₀, hx⟩ := interior_subset hx
@@ -112,9 +113,10 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
           gcongr; exacts [div_le_one_of_le two_le_pi (by positivity), two_div_pi_mul_le_sin hx₀ hx]
       _ = sin x := one_mul _
   have hconc : ConcaveOn ℝ (Icc (π / 2) π) (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) := by
+    -- Compiles without this option, but somewhat slower.
     set_option tactic.skipAssignedInstances false in
     refine concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-      (Continuous.continuousOn $ by continuity) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
+      (Continuous.continuousOn $ by fun_prop) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
       (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
       fun x hx ↦ ?_
     have ⟨hx, hx'⟩ := interior_subset hx
@@ -127,8 +129,7 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   rw [← sub_nonneg]
   obtain hx' | hx' := le_total x (π / 2)
   · simpa using hmono (left_mem_Icc.2 $ by positivity) ⟨hx₀, hx'⟩ hx₀
-  · set_option tactic.skipAssignedInstances false in
-    refine (le_min ?_ ?_).trans $ hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
+  · refine (le_min ?_ ?_).trans $ hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
 
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 
@@ -139,10 +140,10 @@ theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < s
   have hx : |x| = x := abs_of_nonneg h.le
   have := neg_le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
   rw [le_sub_iff_add_le, hx] at this
-  refine' lt_of_lt_of_le _ this
+  refine lt_of_lt_of_le ?_ this
   have : x ^ 3 / ↑4 - x ^ 3 / ↑6 = x ^ 3 * 12⁻¹ := by norm_num [div_eq_mul_inv, ← mul_sub]
   rw [add_comm, sub_add, sub_neg_eq_add, sub_lt_sub_iff_left, ← lt_sub_iff_add_lt', this]
-  refine' mul_lt_mul' _ (by norm_num) (by norm_num) (pow_pos h 3)
+  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   norm_num
 #align real.sin_gt_sub_cube Real.sin_gt_sub_cube
@@ -218,7 +219,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
       abs_of_nonneg (tan_nonneg_of_nonneg_of_le_pi_div_two hy1.le hy2'.le)]
     exact Real.lt_tan hy1 hy2'
   · -- Easy case : `π / 2 ≤ y ≤ 3 * π / 2`
-    refine' lt_of_le_of_lt _ (one_div_pos.mpr <| sqrt_pos_of_pos hy3)
+    refine lt_of_le_of_lt ?_ (one_div_pos.mpr <| sqrt_pos_of_pos hy3)
     exact cos_nonpos_of_pi_div_two_le_of_le hy1' (by linarith [pi_pos])
 #align real.cos_lt_one_div_sqrt_sq_add_one Real.cos_lt_one_div_sqrt_sq_add_one
 

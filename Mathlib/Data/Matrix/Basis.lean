@@ -23,8 +23,6 @@ namespace Matrix
 
 open Matrix
 
-open BigOperators
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
 variable [Semiring α]
 

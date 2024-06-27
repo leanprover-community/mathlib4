@@ -210,7 +210,7 @@ def finiteSubspace : Subspace 𝕜 V where
 to ensure that this definition agrees with `e.emetricSpace`. -/
 instance metricSpace : MetricSpace e.finiteSubspace := by
   letI := e.emetricSpace
-  refine' EMetricSpace.toMetricSpace fun x y => _
+  refine EMetricSpace.toMetricSpace fun x y => ?_
   change e (x - y) ≠ ⊤
   exact ne_top_of_le_ne_top (ENNReal.add_lt_top.2 ⟨x.2, y.2⟩).ne (e.map_sub_le x y)
 

@@ -95,7 +95,7 @@ set_option autoImplicit true
 
 theorem mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
   simp only [maximals, Set.mem_sep_iff, and_congr_right_iff]
-  refine' fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ _⟩
+  refine fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ ?_⟩
   convert hxy <;> rw [h hys hxy]
 
 theorem mem_maximals_setOf_iff : x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
@@ -162,11 +162,24 @@ theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
     x ∈ maximals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x < y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· < ·)
 
--- Porting note (#10756): new theorem
+theorem Set.mem_maximals_iff_forall_insert {P : Set α → Prop} (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
+    s ∈ maximals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
+  simp only [mem_maximals_iff, mem_setOf_eq, and_congr_right_iff]
+  refine fun _ ↦ ⟨fun h x hx hxs ↦ hx ?_, fun h t ht hst ↦ hst.antisymm fun x hxt ↦ ?_⟩
+  · rw [h hxs (subset_insert _ _)]; apply mem_insert
+  exact by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))
+
+theorem Set.mem_minimals_iff_forall_diff_singleton {P : Set α → Prop}
+    (hP : ∀ ⦃s t⦄, P s → s ⊆ t → P t) :
+    s ∈ minimals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) := by
+  simp only [mem_minimals_iff, mem_setOf_eq, and_congr_right_iff]
+  refine fun _ ↦ ⟨fun h x hx hxs ↦ ?_, fun h t ht hst ↦ Eq.symm <| hst.antisymm (fun x hxs ↦ ?_)⟩
+  · rw [(h hxs diff_subset)] at hx; simp at hx
+  exact by_contra fun hxt ↦ h x hxs (hP ht (subset_diff_singleton hst hxt))
+
 theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
--- Porting note (#10756): new theorem
 theorem minimals_of_symm [IsSymm α r] : minimals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
@@ -254,7 +267,7 @@ theorem minimals_idem : minimals r (minimals r s) = minimals r s :=
 equal to `t`. -/
 theorem IsAntichain.max_maximals (ht : IsAntichain r t) (h : maximals r s ⊆ t)
     (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ maximals r s, r b a) : maximals r s = t := by
-  refine' h.antisymm fun a ha => _
+  refine h.antisymm fun a ha => ?_
   obtain ⟨b, hb, hr⟩ := hs ha
   rwa [of_not_not fun hab => ht (h hb) ha (Ne.symm hab) hr]
 #align is_antichain.max_maximals IsAntichain.max_maximals
@@ -263,7 +276,7 @@ theorem IsAntichain.max_maximals (ht : IsAntichain r t) (h : maximals r s ⊆ t)
 equal to `t`. -/
 theorem IsAntichain.max_minimals (ht : IsAntichain r t) (h : minimals r s ⊆ t)
     (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ minimals r s, r a b) : minimals r s = t := by
-  refine' h.antisymm fun a ha => _
+  refine h.antisymm fun a ha => ?_
   obtain ⟨b, hb, hr⟩ := hs ha
   rwa [of_not_not fun hab => ht ha (h hb) hab hr]
 #align is_antichain.max_minimals IsAntichain.max_minimals
