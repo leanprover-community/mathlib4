@@ -87,6 +87,14 @@ theorem ordT5Nhd_mem_nhdsSet (hd : Disjoint s (closure t)) : ordT5Nhd s t ∈ �
     (compl_section_ordSeparatingSet_mem_nhds hd hx)
 #align set.ord_t5_nhd_mem_nhds_set Set.ordT5Nhd_mem_nhdsSet
 
+def ordT5OpenNhd (s t : Set X) : Set X := interior <| ordT5Nhd s t
+
+theorem disjoint_ordT5OpenNhd : Disjoint (ordT5OpenNhd s t) (ordT5OpenNhd t s) :=
+    disjoint_ordT5Nhd.mono interior_subset interior_subset
+
+theorem subset_ordT5OpenNhd (hd : Disjoint s (closure t)) : s ⊆ ordT5OpenNhd s t :=
+  subset_interior_iff_mem_nhdsSet.mpr <| ordT5Nhd_mem_nhdsSet hd
+
 end Set
 
 open Set
