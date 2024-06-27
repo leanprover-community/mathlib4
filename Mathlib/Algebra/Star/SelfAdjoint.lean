@@ -118,7 +118,7 @@ variable [AddMonoid R] [StarAddMonoid R]
 variable (R)
 
 @[simp] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
-#align is_self_adjoint_zero isSelfAdjoint_zero
+#align is_self_adjoint_zero IsSelfAdjoint.zero
 
 variable {R}
 
@@ -153,11 +153,11 @@ variable [AddCommMonoid R] [StarAddMonoid R]
 
 theorem add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
-#align is_self_adjoint_add_star_self isSelfAdjoint_add_star_self
+#align is_self_adjoint_add_star_self IsSelfAdjoint.add_star_self
 
 theorem star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
-#align is_self_adjoint_star_add_self isSelfAdjoint_star_add_self
+#align is_self_adjoint_star_add_self IsSelfAdjoint.star_add_self
 
 end AddCommMonoid
 
@@ -189,7 +189,7 @@ variable (R)
 
 @[simp] protected theorem one : IsSelfAdjoint (1 : R) :=
   star_one R
-#align is_self_adjoint_one isSelfAdjoint_one
+#align is_self_adjoint_one IsSelfAdjoint.one
 
 end MulOneClass
 
@@ -213,13 +213,13 @@ variable [Semiring R] [StarRing R]
 @[simp]
 protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
-#align is_self_adjoint_nat_cast isSelfAdjoint_natCast
+#align is_self_adjoint_nat_cast IsSelfAdjoint.natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem ofNat (n : ℕ) [n.AtLeastTwo] :
     IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
-  _root_.isSelfAdjoint_natCast n
+  .natCast n
 
 end Semiring
 
@@ -249,7 +249,7 @@ variable [Ring R] [StarRing R]
 @[simp]
 protected theorem intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
   star_intCast _
-#align is_self_adjoint_int_cast isSelfAdjoint_intCast
+#align is_self_adjoint_int_cast IsSelfAdjoint.intCast
 
 end Ring
 
@@ -277,7 +277,7 @@ variable [DivisionRing R] [StarRing R]
 
 protected theorem ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
   star_ratCast _
-#align is_self_adjoint_rat_cast isSelfAdjoint_ratCast
+#align is_self_adjoint_rat_cast IsSelfAdjoint.ratCast
 
 end DivisionRing
 
@@ -355,7 +355,7 @@ section Ring
 variable [Ring R] [StarRing R]
 
 instance : One (selfAdjoint R) :=
-  ⟨⟨1, isSelfAdjoint_one R⟩⟩
+  ⟨⟨1, .one R⟩⟩
 
 @[simp, norm_cast]
 theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
@@ -366,10 +366,10 @@ instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, ne_of_apply_ne Subtype.val zero_ne_one⟩⟩
 
 instance : NatCast (selfAdjoint R) where
-  natCast n := ⟨n, isSelfAdjoint_natCast _⟩
+  natCast n := ⟨n, .natCast _⟩
 
 instance : IntCast (selfAdjoint R) where
-  intCast n := ⟨n, isSelfAdjoint_intCast _⟩
+  intCast n := ⟨n, .intCast _⟩
 
 instance : Pow (selfAdjoint R) ℕ where
   pow x n := ⟨(x : R) ^ n, x.prop.pow n⟩
@@ -436,20 +436,20 @@ theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
 #align self_adjoint.coe_zpow selfAdjoint.val_zpow
 
 instance instNNRatCast : NNRatCast (selfAdjoint R) where
-  nnratCast q := ⟨q, isSelfAdjoint_nnratCast q⟩
+  nnratCast q := ⟨q, .nnratCast q⟩
 
 instance instRatCast : RatCast (selfAdjoint R) where
-  ratCast q := ⟨q, isSelfAdjoint_ratCast q⟩
+  ratCast q := ⟨q, .ratCast q⟩
 
 @[simp, norm_cast] lemma val_nnratCast (q : ℚ≥0) : (q : selfAdjoint R) = (q : R) := rfl
 @[simp, norm_cast] lemma val_ratCast (q : ℚ) : (q : selfAdjoint R) = (q : R) := rfl
 #align self_adjoint.coe_rat_cast selfAdjoint.val_ratCast
 
 instance instSMulNNRat : SMul ℚ≥0 (selfAdjoint R) where
-  smul a x := ⟨a • (x : R), by rw [NNRat.smul_def]; exact (isSelfAdjoint_nnratCast a).mul x.prop⟩
+  smul a x := ⟨a • (x : R), by rw [NNRat.smul_def]; exact .mul (.nnratCast a) x.prop⟩
 
 instance instSMulRat : SMul ℚ (selfAdjoint R) where
-  smul a x := ⟨a • (x : R), by rw [Rat.smul_def]; exact (isSelfAdjoint_ratCast a).mul x.prop⟩
+  smul a x := ⟨a • (x : R), by rw [Rat.smul_def]; exact .mul (.ratCast a) x.prop⟩
 #align self_adjoint.has_qsmul selfAdjoint.instSMulRat
 
 @[simp, norm_cast] lemma val_nnqsmul (q : ℚ≥0) (x : selfAdjoint R) : ↑(q • x) = q • (x : R) := rfl
