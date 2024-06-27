@@ -21,7 +21,8 @@ properties about separable polynomials here.
 ## Main definitions
 
 * `Polynomial.Separable f`: a polynomial `f` is separable iff it is coprime with its derivative.
-
+* `IsSeparable K x`: an element `x` is separable over `K` iff the minimal polynomial of `x` over `K` is separable.
+* `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable over `K`
 -/
 
 
@@ -555,6 +556,12 @@ variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 -- Note that right now a Galois extension (class `IsGalois`) is defined to be an extension which
 -- is separable and normal, so if the definition of separable changes here at some point
 -- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
+
+
+variable {K} in
+def IsSeparable (x : K) : Prop :=
+  (minpoly F x).Separable
+
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
 extension, because the minimal polynomial of a non-integral element is `0`, which is not
@@ -563,11 +570,13 @@ separable.
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
 is needed for a proof.
 -/
-@[mk_iff isSeparable_def] class IsSeparable : Prop where
-  separable' (x : K) : (minpoly F x).Separable
+@[mk_iff isSeparable_def] class Algebra.IsSeparable : Prop where
+  separable' (x : K) : IsSeparable F x
 #align is_separable IsSeparable
 
 variable {K}
+
+open Algebra
 
 theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separable :=
   IsSeparable.separable'
@@ -596,7 +605,7 @@ variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
 
 /-- Transfer `IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable [IsSeparable F K] : IsSeparable F E :=
-  ⟨fun _ ↦ by rw [← minpoly.algEquiv_eq e.symm]; exact IsSeparable.separable F _⟩
+  ⟨fun _ ↦ by rw [_root_.IsSeparable, ← minpoly.algEquiv_eq e.symm]; exact IsSeparable.separable F _⟩
 
 theorem AlgEquiv.isSeparable_iff : IsSeparable F K ↔ IsSeparable F E :=
   ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
@@ -608,7 +617,7 @@ instance IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAl
 
 end CommRing
 
-instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
+instance isSeparable_self (F : Type*) [Field F] : Algebra.IsSeparable F F :=
   ⟨fun x => by
     rw [minpoly.eq_X_sub_C']
     exact separable_X_sub_C⟩
@@ -617,7 +626,7 @@ instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
 -- See note [lower instance priority]
 /-- A finite field extension in characteristic 0 is separable. -/
 instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field K] [Algebra F K]
-    [FiniteDimensional F K] [CharZero F] : IsSeparable F K :=
+    [FiniteDimensional F K] [CharZero F] : Algebra.IsSeparable F K :=
   ⟨fun x => (minpoly.irreducible <| .of_finite F x).separable⟩
 #align is_separable.of_finite IsSeparable.of_finite
 
