@@ -417,7 +417,7 @@ def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducibleClosed
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducibleClosed x }` is an order
 isomorphism.-/
-def orderIsoSubtype : IrreducibleCloseds α ≃o {x : Set α // IsIrreducibleClosed x } :=
+def orderIsoSubtype : IrreducibleCloseds α ≃o { x : Set α // IsIrreducibleClosed x } :=
   equivSubtype.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 
 end IrreducibleCloseds
