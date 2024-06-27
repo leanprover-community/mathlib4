@@ -143,6 +143,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCom
     OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
+  protected add_eq_top : ∀ x y : α, x + y = ⊤ ↔ x = ⊤ ∨ y = ⊤
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
 #align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
@@ -159,6 +160,16 @@ theorem top_add (a : α) : ⊤ + a = ⊤ :=
 theorem add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
 #align add_top add_top
+
+@[simp]
+theorem add_eq_top {a b : α} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
+  LinearOrderedAddCommMonoidWithTop.add_eq_top a b
+
+theorem add_ne_top {a b : α} : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
+  add_eq_top.not.trans not_or
+
+theorem add_lt_top {a b : α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
+  simp_rw [lt_top_iff_ne_top, add_ne_top]
 
 end LinearOrderedAddCommMonoidWithTop
 

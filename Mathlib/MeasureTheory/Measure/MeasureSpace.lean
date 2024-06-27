@@ -995,7 +995,7 @@ theorem measure_toMeasurable_add_inter_left {s t : Set α} (hs : MeasurableSet s
       measure_eq_left_of_subset_of_measure_add_eq ?_ (subset_toMeasurable _ _)
         (measure_toMeasurable t).symm
     rwa [measure_toMeasurable t]
-  · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at ht
+  · simp only [not_or, add_eq_top, Pi.add_apply, Ne, coe_add] at ht
     exact ht.1
 #align measure_theory.measure.measure_to_measurable_add_inter_left MeasureTheory.Measure.measure_toMeasurable_add_inter_left
 

@@ -159,25 +159,6 @@ lemma top_ne_zero' :
     exact top_ne_zero' nh
   mpr h := h ▸ neg_top
 
-@[simp]
-lemma add_eq_top {a b : α} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ where
-  mp h := by
-    by_contra nh
-    rw [not_or] at nh
-    replace h := congrArg (-a + ·) h
-    dsimp only at h
-    rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top,
-      zero_add] at h
-    · exact nh.2 h
-    · exact nh.1
-  mpr h := by cases h <;> simp_all
-
-theorem add_ne_top {a b : α} : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
-  add_eq_top.not.trans not_or
-
-theorem add_lt_top {a b : α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
-  simp_rw [lt_top_iff_ne_top, add_ne_top]
-
 instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
   neg_neg a := by
     by_cases h : a = ⊤
