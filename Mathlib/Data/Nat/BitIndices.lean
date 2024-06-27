@@ -12,8 +12,6 @@ import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Indexes
 import Mathlib.Algebra.Order.Sub.Defs
 
--- #synth OrderedAddCommMonoid ℕ
-
 /-!
 # Bit Indices
 
@@ -34,12 +32,8 @@ variable {a n : ℕ}
 
 /-- The function which maps each natural number `∑ i in s, 2^i` to the list of
 elements of `s` in increasing order. -/
-def bitIndices (n : ℕ) : List ℕ := by
-  induction' n using binaryRec with b _ s
-  · exact []
-  cases b
-  · exact s.map (· + 1)
-  exact (s.map (· + 1)).cons 0
+def bitIndices (n : ℕ) : List ℕ :=
+  @binaryRec (fun _ ↦ List ℕ) [] (fun b _ s ↦ b.casesOn (s.map (· + 1)) (0 :: s.map (· + 1))) n
 
 @[simp] theorem bitIndices_zero : bitIndices 0 = [] := by rfl
 
