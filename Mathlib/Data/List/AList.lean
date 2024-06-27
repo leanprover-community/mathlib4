@@ -374,8 +374,8 @@ def insertRec {C : AList β → Sort*} (H0 : C ∅)
     exact not_mem_keys_of_nodupKeys_cons h
 #align alist.insert_rec AList.insertRec
 
--- Test that the `induction` tactic works on `insert_rec`.
-example (l : AList β) : True := by induction l using AList.insertRec <;> trivial
+-- Test that the `induction` tactic works on `insertRec`.
+example (l : AList β) : True := by induction l <;> trivial
 
 @[simp]
 theorem insertRec_empty {C : AList β → Sort*} (H0 : C ∅)
