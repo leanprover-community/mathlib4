@@ -111,7 +111,6 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
     rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (not_mem_erase _ _), this, mul_one]
 #align finite_field.prod_univ_units_id_eq_neg_one FiniteField.prod_univ_units_id_eq_neg_one
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial K]
     (G : Subgroup Kˣ) [Fintype G] : (Fintype.card G : K) ≠ 0 := by
   let n := Fintype.card G
@@ -366,7 +365,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     apply nodup_roots
     rw [separable_def]
     convert isCoprime_one_right.neg_right (R := K[X]) using 1
-    rw [derivative_sub, derivative_X, derivative_X_pow, CharP.cast_card_eq_zero K, C_0,
+    rw [derivative_sub, derivative_X, derivative_X_pow, Nat.cast_card_eq_zero K, C_0,
       zero_mul, zero_sub]
 set_option linter.uppercaseLean3 false in
 #align finite_field.roots_X_pow_card_sub_X FiniteField.roots_X_pow_card_sub_X
@@ -532,6 +531,12 @@ theorem pow_card_sub_one_eq_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a �
     have h := FiniteField.pow_card_sub_one_eq_one a ha
     rwa [ZMod.card p] at h
 #align zmod.pow_card_sub_one_eq_one ZMod.pow_card_sub_one_eq_one
+
+lemma pow_card_sub_one {p : ℕ} [Fact p.Prime] (a : ZMod p) :
+    a ^ (p - 1) = if a ≠ 0 then 1 else 0 := by
+  split_ifs with ha
+  · exact pow_card_sub_one_eq_one ha
+  · simp [of_not_not ha, (Fact.out : p.Prime).one_lt, tsub_eq_zero_iff_le]
 
 theorem orderOf_units_dvd_card_sub_one {p : ℕ} [Fact p.Prime] (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
   orderOf_dvd_of_pow_eq_one <| units_pow_card_sub_one_eq_one _ _

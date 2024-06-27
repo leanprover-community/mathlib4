@@ -225,5 +225,5 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
 lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
   natDegree_le_iff_degree_le.2 hp.degree_le_two
 
-@[deprecated] -- 2024-02-18
+@[deprecated (since := "2024-02-18")]
 alias Irreducible.nat_degree_le_two := Irreducible.natDegree_le_two

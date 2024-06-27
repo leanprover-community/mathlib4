@@ -242,7 +242,7 @@ theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 #align local_homeomorph.source_preimage_target PartialHomeomorph.source_preimage_target
 
-@[deprecated toPartialEquiv_injective]
+@[deprecated toPartialEquiv_injective (since := "2023-02-18")]
 theorem eq_of_partialEquiv_eq {e e' : PartialHomeomorph X Y}
     (h : e.toPartialEquiv = e'.toPartialEquiv) : e = e' :=
   toPartialEquiv_injective h
@@ -1504,10 +1504,10 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph X Y) :
   rw [← ofSet_trans _ openness₁, ← trans_assoc, ← trans_assoc]
   refine EqOnSource.trans' ?_ (eqOnSource_refl _)
   -- f' has been eliminated !!!
-  have sets_identity : f.symm.source ∩ (f.target ∩ f.symm ⁻¹' s) = f.symm.source ∩ f.symm ⁻¹' s :=
-    by mfld_set_tac
+  have set_identity : f.symm.source ∩ (f.target ∩ f.symm ⁻¹' s) = f.symm.source ∩ f.symm ⁻¹' s := by
+    mfld_set_tac
   have openness₂ : IsOpen (s : Set X) := s.2
-  rw [ofSet_trans', sets_identity, ← trans_of_set' _ openness₂, trans_assoc]
+  rw [ofSet_trans', set_identity, ← trans_of_set' _ openness₂, trans_assoc]
   refine EqOnSource.trans' (eqOnSource_refl _) ?_
   -- f has been eliminated !!!
   refine Setoid.trans (symm_trans_self (s.partialHomeomorphSubtypeCoe hs)) ?_

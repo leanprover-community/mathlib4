@@ -378,7 +378,9 @@ theorem cyclic_center_quotient_of_card_eq_prime_sq (hG : card G = p ^ 2) :
     IsCyclic (G ⧸ center G) := by
   classical
     rcases card_center_eq_prime_pow hG zero_lt_two with ⟨k, hk0, hk⟩
+    rw [← Nat.card_eq_fintype_card] at hG hk
     rw [card_eq_card_quotient_mul_card_subgroup (center G), mul_comm, hk] at hG
+    rw [Nat.card_eq_fintype_card] at hG
     have hk2 := (Nat.pow_dvd_pow_iff_le_right (Fact.out (p := p.Prime)).one_lt).1 ⟨_, hG.symm⟩
     interval_cases k
     · rw [sq, pow_one, mul_right_inj' (Fact.out (p := p.Prime)).ne_zero] at hG
