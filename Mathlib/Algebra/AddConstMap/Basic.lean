@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Logic.Function.Iterate
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -48,7 +49,7 @@ Note that `a` and `b` are `outParam`s,
 so one should not add instances like
 `[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`. -/
 class AddConstMapClass (F : Type*) (G H : outParam Type*) [Add G] [Add H]
-    (a : outParam G) (b : outParam H) extends DFunLike F G fun _ ↦ H where
+    (a : outParam G) (b : outParam H) [FunLike F G H] : Prop where
   /-- A map of `AddConstMapClass` class semiconjugates shift by `a` to the shift by `b`:
   `∀ x, f (x + a) = f x + b`. -/
   map_add_const (f : F) (x : G) : f (x + a) = f x + b
@@ -63,7 +64,7 @@ In this section we prove properties like `f (x + n • a) = f x + n • b`.
 
 attribute [simp] map_add_const
 
-variable {F G H : Type*} {a : G} {b : H}
+variable {F G H : Type*} [FunLike F G H] {a : G} {b : H}
 
 protected theorem semiconj [Add G] [Add H] [AddConstMapClass F G H a b] (f : F) :
     Semiconj f (· + a) (· + b) :=
@@ -227,7 +228,7 @@ theorem map_int_add [AddCommGroupWithOne G] [AddGroupWithOne H] [AddConstMapClas
     (f : F) (n : ℤ) (x : G) : f (↑n + x) = f x + n := by simp
 
 theorem map_fract {R : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup H]
-    [AddConstMapClass F R H 1 b] (f : F) (x : R) :
+    [FunLike F R H] [AddConstMapClass F R H 1 b] (f : F) (x : R) :
     f (Int.fract x) = f x - ⌊x⌋ • b :=
   map_sub_int' ..
 
@@ -309,13 +310,16 @@ variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 ### Coercion to function
 -/
 
-instance : AddConstMapClass (G →+c[a, b] H) G H a b where
+instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
-  map_add_const f := f.map_add_const'
 
 @[simp] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
 @[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl
+@[simp] theorem toFun_eq_coe (f : G →+c[a, b] H) : f.toFun = f := rfl
+
+instance : AddConstMapClass (G →+c[a, b] H) G H a b where
+  map_add_const f := f.map_add_const'
 
 @[ext] protected theorem ext {f g : G →+c[a, b] H} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
@@ -369,12 +373,14 @@ instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
 ### Monoid structure on endomorphisms `G →+c[a, a] G`
 -/
 
-instance : Monoid (G →+c[a, a] G) where
-  mul := comp
-  one := .id
-  mul_assoc _ _ _ := rfl
-  one_mul := id_comp
-  mul_one := comp_id
+instance : Mul (G →+c[a, a] G) := ⟨comp⟩
+instance : One (G →+c[a, a] G) := ⟨.id⟩
+
+instance : Pow (G →+c[a, a] G) ℕ where
+  pow f n := ⟨f^[n], Commute.iterate_left (AddConstMapClass.semiconj f) _⟩
+
+instance : Monoid (G →+c[a, a] G) :=
+  DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
 @[simp] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
@@ -382,11 +388,9 @@ theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
 theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
 @[simp] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
-theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+@[simp] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
-theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x :=
-  congr_fun (coe_pow f n) x
+theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
 end Add
 
