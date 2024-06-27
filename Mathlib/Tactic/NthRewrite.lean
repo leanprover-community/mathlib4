@@ -87,7 +87,7 @@ syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (lo
 
 /--
 `nth_rw` is a variant of `rw` that only changes the `n`ᵗʰ _occurrence_ of the expression to be
-rewritten. Like `rw`, unlike `nth_rewrite` it will try to close the goal by trying `rfl` afterwards.
+rewritten. Like `rw`, unlike `nth_rewrite`, it will try to close the goal by trying `rfl` afterwards.
 `nth_rw n [eq₁, eq₂,..., eqₘ]` will rewrite the `n`ᵗʰ _occurrence_ of each of the `m` equalities
 `eqᵢ`in that order. Occurrences are counted beginning with `1` in order of precedence. For example,
 ```lean
