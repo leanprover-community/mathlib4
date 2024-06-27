@@ -87,6 +87,7 @@ theorem ordT5Nhd_mem_nhdsSet (hd : Disjoint s (closure t)) : ordT5Nhd s t ‚àà ù
     (compl_section_ordSeparatingSet_mem_nhds hd hx)
 #align set.ord_t5_nhd_mem_nhds_set Set.ordT5Nhd_mem_nhdsSet
 
+/-- Refines ordT5Nhd to satisfy `IsOpen` -/
 def ordT5OpenNhd (s t : Set X) : Set X := interior <| ordT5Nhd s t
 
 theorem disjoint_ordT5OpenNhd : Disjoint (ordT5OpenNhd s t) (ordT5OpenNhd t s) :=
