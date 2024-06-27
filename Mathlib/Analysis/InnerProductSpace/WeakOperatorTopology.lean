@@ -47,6 +47,7 @@ open scoped Topology
 
 /-- The type copy of `E →L[𝕜] F` endowed with the weak operator topology, denoted as
 `E →WOT[𝕜] F`. -/
+@[irreducible]
 def ContinuousLinearMapWOT (𝕜 : Type*) (E : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup E]
     [TopologicalSpace E] [Module 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] := E →L[𝕜] F
 
@@ -67,12 +68,16 @@ the module structure, `FunLike`, etc.
 -/
 section Basic
 
+unseal ContinuousLinearMapWOT in
 instance instAddCommGroup : AddCommGroup (E →WOT[𝕜] F) :=
   inferInstanceAs <| AddCommGroup (E →L[𝕜] F)
 
+unseal ContinuousLinearMapWOT in
 instance instModule : Module 𝕜 (E →WOT[𝕜] F) := inferInstanceAs <| Module 𝕜 (E →L[𝕜] F)
 
 variable (𝕜) (E) (F)
+
+unseal ContinuousLinearMapWOT in
 /-- The equivalence that sends a continuous linear map to the type copy endowed with the
 weak operator topology.  -/
 def _root_.ContinuousLinearMap.toWOT : (E →L[𝕜] F) ≃ₗ[𝕜] (E →WOT[𝕜] F) := LinearEquiv.refl 𝕜 _
@@ -91,6 +96,7 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (E →WOT[𝕜]
 lemma _root_.ContinuousLinearMap.toWOT_apply {A : E →L[𝕜] F} {x : E} :
     ((ContinuousLinearMap.toWOT 𝕜 E F) A) x = A x := rfl
 
+unseal ContinuousLinearMapWOT in
 lemma ext_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x, A x = B x := ContinuousLinearMap.ext_iff
 
 lemma ext_inner_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x y, ⟪y, A x⟫ = ⟪y, B x⟫ := by
@@ -100,12 +106,15 @@ lemma ext_inner_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x y, ⟪y, A x⟫ =
 
 @[simp] lemma zero_apply (x : E) : (0 : E →WOT[𝕜] F) x = 0 := by simp only [DFunLike.coe]; rfl
 
+unseal ContinuousLinearMapWOT in
 @[simp] lemma add_apply {f g : E →WOT[𝕜] F} (x : E) : (f + g) x = f x + g x := by
   simp only [DFunLike.coe]; rfl
 
+unseal ContinuousLinearMapWOT in
 @[simp] lemma neg_apply {f : E →WOT[𝕜] F} (x : E) : (-f) x = -(f x) := by
   simp only [DFunLike.coe]; rfl
 
+unseal ContinuousLinearMapWOT in
 @[simp] lemma smul_apply {f : E →WOT[𝕜] F} (c : 𝕜) (x : E) : (c • f) x = c • (f x) := by
   simp only [DFunLike.coe]; rfl
 
