@@ -4,6 +4,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Yoneda
 
 
 namespace CategoryTheory
@@ -38,6 +39,11 @@ variable {F G : Cᵒᵖ ⥤ Type v} {f : F ⟶ G} (hf : Presheaf.representable f
   {Y : C} {f' : yoneda.obj Y ⟶ G} (hf' : Presheaf.representable f')
   {X : C} (g : yoneda.obj X ⟶ G) (hg : Presheaf.representable g)
 
+/-- Let `f : F ⟶ G` be a morphism in the category of presheaves of types on
+a category `C`, such that `hf : Presheaf.representable f`. Then, for any
+`g : yoneda.obj X ⟶ G`, this is a choice of an object `hf.pullback g` equipped
+with an isomorphism between `yoneda.obj (hf.pullback g)` and the categorical
+pullback of `f` and `g` in the category of presheaves. -/
 noncomputable def pullback : C :=
   Functor.reprX (hF := hf g)
 
@@ -132,7 +138,6 @@ end
 lemma yoneda_map [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     Presheaf.representable (yoneda.map f) := fun Z g ↦ by
   obtain ⟨g, rfl⟩ := yoneda.map_surjective g
-  have : PreservesLimit (cospan f g) yoneda := sorry
   exact ⟨Limits.pullback f g, ⟨PreservesPullback.iso _ _ _⟩⟩
 
 end Presheaf.representable
