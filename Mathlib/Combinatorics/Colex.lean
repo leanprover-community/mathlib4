@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
 

@@ -9,7 +9,6 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Star.Order
 import Mathlib.Data.List.Sort
-import Mathlib.Data.List.Indexes
 import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
