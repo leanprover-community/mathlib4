@@ -34,21 +34,6 @@ extractVariations () {
     jq -n 'reduce inputs as $in (null; . + $in)'
 }
 
-
-
-echo "["
-jq '.differences |
-    .[] | select(.dimension.metric == "instructions") |
-    select(.diff <= -1000000000) |
-    [.dimension.benchmark, .diff, (.reldiff * 100)]' temp.json |
-  awk '
-    { gsub(/\[/, "{"); gsub(/\]/, "},") }
-    (NR % 5 == 2) { printf("\"file\": ") }
-    (NR % 5 == 3) { printf("\"diff\": ") }
-    (NR % 5 == 4) { printf("\"reldiff\": ") }
-    { print $0 }'
-echo "]"
-)
  : <<'MAGMA_CODE'
 magma -b ~/lean4/significant.magma
 
