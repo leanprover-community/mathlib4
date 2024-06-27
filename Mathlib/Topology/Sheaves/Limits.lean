@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 
 noncomputable section
 
-universe v u
+universe v u w
 
 open CategoryTheory
 
@@ -26,16 +26,16 @@ variable {C : Type u} [Category.{v} C] {J : Type v} [SmallCategory J]
 
 namespace TopCat
 
-instance [HasLimits C] (X : TopCat) : HasLimits (Presheaf C X) :=
+instance [HasLimits C] (X : TopCat.{v}) : HasLimits.{v} (Presheaf C X) :=
   Limits.functorCategoryHasLimitsOfSize.{v, v}
 
-instance [HasColimits C] (X : TopCat) : HasColimitsOfSize.{v} (Presheaf C X) :=
+instance [HasColimits.{v, u} C] (X : TopCat.{w}) : HasColimitsOfSize.{v, v} (Presheaf C X) :=
   Limits.functorCategoryHasColimitsOfSize
 
-instance [HasLimits C] (X : TopCat) : CreatesLimits (Sheaf.forget C X) :=
+instance [HasLimits C] (X : TopCat) : CreatesLimits.{v, v} (Sheaf.forget C X) :=
   Sheaf.createsLimits.{u, v, v}
 
-instance [HasLimits C] (X : TopCat) : HasLimitsOfSize.{v} (Sheaf.{v} C X) :=
+instance [HasLimits C] (X : TopCat.{v}) : HasLimitsOfSize.{v, v} (Sheaf.{v} C X) :=
   hasLimits_of_hasLimits_createsLimits (Sheaf.forget C X)
 
 theorem isSheaf_of_isLimit [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)

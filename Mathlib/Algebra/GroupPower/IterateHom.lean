@@ -78,24 +78,6 @@ theorem iterate_map_zpow {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass
     f^[n] (x ^ k) = f^[n] x ^ k :=
   Commute.iterate_left (map_zpow f · k) n x
 
-namespace MonoidHom
-
-variable [Monoid M] [Monoid N] [Group G] [Group H]
-
-theorem coe_pow {M} [CommMonoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align monoid_hom.coe_pow MonoidHom.coe_pow
-
-end MonoidHom
-
-theorem Monoid.End.coe_pow {M} [Monoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align monoid.End.coe_pow Monoid.End.coe_pow
-
-theorem AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align add_monoid.End.coe_pow AddMonoid.End.coe_pow
-
 --what should be the namespace for this section?
 section Monoid
 

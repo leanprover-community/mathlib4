@@ -122,11 +122,10 @@ theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
     exact ⟨ha.mul hb, hb.mul ha⟩
 #align is_smul_regular.mul_and_mul_iff IsSMulRegular.mul_and_mul_iff
 
-lemma isSMulRegular_of_injective_of_isSMulRegular {N F} [SMul R N]
-    [FunLike F M N] [MulActionHomClass F R M N] (f : F) {r : R}
-    (h1 : Function.Injective f) (h2 : IsSMulRegular N r) : IsSMulRegular M r :=
-    fun x y h3 => h1 <| h2 <| (map_smulₛₗ f r x).symm.trans <|
-      (congrArg f h3).trans <| map_smulₛₗ f r y
+lemma of_injective {N F} [SMul R N] [FunLike F M N] [MulActionHomClass F R M N]
+    (f : F) {r : R} (h1 : Function.Injective f) (h2 : IsSMulRegular N r) :
+    IsSMulRegular M r := fun x y h3 => h1 <| h2 <|
+  (map_smulₛₗ f r x).symm.trans ((congrArg f h3).trans (map_smulₛₗ f r y))
 
 end SMul
 
