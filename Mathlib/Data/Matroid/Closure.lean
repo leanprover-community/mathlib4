@@ -120,7 +120,7 @@ lemma cl_subset_cl_of_subset_cl (hXY : X ⊆ M.cl Y) : M.cl X ⊆ M.cl Y :=
 
 lemma cl_subset_cl_iff_subset_cl (hX : X ⊆ M.E := by aesop_mat) :
     M.cl X ⊆ M.cl Y ↔ X ⊆ M.cl Y :=
-  ⟨(M.subset_cl X).trans, cl_subset_c_of_subset_cl⟩
+  ⟨(M.subset_cl X).trans, cl_subset_cl_of_subset_cl⟩
 
 lemma subset_cl_of_subset (M : Matroid α) (hXY : X ⊆ Y) (hY : Y ⊆ M.E := by aesop_mat) :
     X ⊆ M.cl Y :=
