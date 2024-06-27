@@ -150,19 +150,19 @@ abbrev Functor.IsSplitPair : Prop :=
 
 /-- Get the coequalizer object from the typeclass `IsSplitPair`. -/
 noncomputable def HasSplitCoequalizer.coequalizerOfSplit [HasSplitCoequalizer f g] : C :=
-  (@splittable _ _ _ _ f g).choose
+  (splittable (f := f) (g := g)).choose
 #align category_theory.has_split_coequalizer.coequalizer_of_split CategoryTheory.HasSplitCoequalizer.coequalizerOfSplit
 
 /-- Get the coequalizer morphism from the typeclass `IsSplitPair`. -/
 noncomputable def HasSplitCoequalizer.coequalizerπ [HasSplitCoequalizer f g] :
     Y ⟶ HasSplitCoequalizer.coequalizerOfSplit f g :=
-  (@splittable _ _ _ _ f g).choose_spec.choose
+  (splittable (f := f) (g := g)).choose_spec.choose
 #align category_theory.has_split_coequalizer.coequalizer_π CategoryTheory.HasSplitCoequalizer.coequalizerπ
 
 /-- The coequalizer morphism `coequalizeπ` gives a split coequalizer on `f,g`. -/
 noncomputable def HasSplitCoequalizer.isSplitCoequalizer [HasSplitCoequalizer f g] :
     IsSplitCoequalizer f g (HasSplitCoequalizer.coequalizerπ f g) :=
-  Classical.choice (@splittable _ _ _ _ f g).choose_spec.choose_spec
+  Classical.choice (splittable (f := f) (g := g)).choose_spec.choose_spec
 #align category_theory.has_split_coequalizer.is_split_coequalizer CategoryTheory.HasSplitCoequalizer.isSplitCoequalizer
 
 /-- If `f, g` is split, then `G f, G g` is split. -/
