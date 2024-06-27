@@ -457,6 +457,10 @@ theorem IsIntegral.inv {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
     (int : IsIntegral R x) : IsIntegral R x⁻¹ :=
   .of_mem_of_fg _ int.fg_adjoin_singleton _ int.inv_mem_adjoin
 
+theorem IsIntegral.mem_of_inv_mem {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
+    {A : Subalgebra R S} (int : IsIntegral R x) (inv_mem : x⁻¹ ∈ A) : x ∈ A := by
+  rw [← inv_inv x]; exact int.inv.inv_mem inv_mem
+
 /-- An commutative domain that is an integral algebra over a field is a field. -/
 theorem isField_of_isIntegral_of_isField' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
     [Algebra R S] (H : Algebra.IsIntegral R S) (hR : IsField R) : IsField S where
