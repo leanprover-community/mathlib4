@@ -172,6 +172,12 @@ lemma add_eq_top {a b : α} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ where
     · exact nh.1
   mpr h := by cases h <;> simp_all
 
+theorem add_ne_top {a b : α} : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
+  add_eq_top.not.trans not_or
+
+theorem add_lt_top {a b : α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
+  simp_rw [lt_top_iff_ne_top, add_ne_top]
+
 instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
   neg_neg a := by
     by_cases h : a = ⊤

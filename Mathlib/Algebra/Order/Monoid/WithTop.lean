@@ -136,12 +136,12 @@ protected theorem add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   | (a : α), (b : α) => simp only [← coe_add, coe_ne_top, or_false]
 #align with_top.add_eq_top WithTop.add_eq_top
 
-theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
-  add_eq_top.not.trans not_or
+protected theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
+  WithTop.add_eq_top.not.trans not_or
 #align with_top.add_ne_top WithTop.add_ne_top
 
-theorem add_lt_top [LT α] {a b : WithTop α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
-  simp_rw [WithTop.lt_top_iff_ne_top, add_ne_top]
+protected theorem add_lt_top [LT α] {a b : WithTop α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
+  simp_rw [WithTop.lt_top_iff_ne_top, WithTop.add_ne_top]
 #align with_top.add_lt_top WithTop.add_lt_top
 
 theorem add_eq_coe :
