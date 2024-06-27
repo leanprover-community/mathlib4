@@ -649,7 +649,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
   by_cases hμs' : μ s = 0
   · rw [(snorm_eq_zero_iff ((hf i).indicator hs).aestronglyMeasurable hpzero).2
         (indicator_meas_zero hμs')]
-    set_option tactic.skipAssignedInstances false in norm_num
+    norm_num
   calc
     snorm (Set.indicator s (f i)) p μ ≤
         snorm (Set.indicator (s ∩ { x | C ≤ ‖f i x‖₊ }) (f i)) p μ +
@@ -870,7 +870,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
           refine mul_le_mul' le_rfl
             (ENNReal.rpow_le_rpow (hℐ C).le (one_div_nonneg.2 ENNReal.toReal_nonneg))
         _ ≤ snorm ({ x | C ≤ ‖f (ℐ C) x‖₊ }.indicator (f (ℐ C))) p μ := by
-          refine snorm_indicator_ge_of_bdd_below hp hp' _
+          refine le_snorm_of_bddBelow hp hp' _
             (measurableSet_le measurable_const (hf _).nnnorm.measurable)
             (eventually_of_forall fun x hx => ?_)
           rwa [nnnorm_indicator_eq_indicator_nnnorm, Set.indicator_of_mem hx]
