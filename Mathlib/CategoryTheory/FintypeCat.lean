@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Adam Topaz
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Data.Fintype.Card
 
 #align_import category_theory.Fintype from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -25,7 +24,7 @@ We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat
 -/
 
 
-open Classical
+open scoped Classical
 
 open CategoryTheory
 
@@ -37,7 +36,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace FintypeCat
 
-instance : CoeSort FintypeCat (Type*) :=
+instance : CoeSort FintypeCat Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
@@ -62,13 +61,16 @@ def incl : FintypeCat ⥤ Type* :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.incl FintypeCat.incl
 
-instance : Full incl := InducedCategory.full _
-instance : Faithful incl := InducedCategory.faithful _
+instance : incl.Full := InducedCategory.full _
+instance : incl.Faithful := InducedCategory.faithful _
 
 instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
   ⟨incl⟩
 set_option linter.uppercaseLean3 false in
 #align Fintype.concrete_category_Fintype FintypeCat.concreteCategoryFintype
+
+/- Help typeclass inference infer fullness of forgetful functor. -/
+instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
@@ -82,7 +84,15 @@ theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f
 set_option linter.uppercaseLean3 false in
 #align Fintype.comp_apply FintypeCat.comp_apply
 
--- porting note: added to ease automation
+@[simp]
+lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
+  congr_fun f.hom_inv_id x
+
+@[simp]
+lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
+  congr_fun f.inv_hom_id y
+
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
@@ -177,20 +187,19 @@ def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.incl FintypeCat.Skeleton.incl
 
-instance : Full incl where preimage f := f
+instance : incl.Full where map_surjective f := ⟨f, rfl⟩
 
-instance : Faithful incl where
+instance : incl.Faithful where
 
-instance : EssSurj incl :=
-  EssSurj.mk fun X =>
+instance : incl.EssSurj :=
+  Functor.EssSurj.mk fun X =>
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
       Nonempty.intro
         { hom := F.symm ∘ ULift.down
           inv := ULift.up ∘ F }⟩
 
-noncomputable instance : IsEquivalence incl :=
-  Equivalence.ofFullyFaithfullyEssSurj _
+noncomputable instance : incl.IsEquivalence where
 
 /-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/
 noncomputable def equivalence : Skeleton ≌ FintypeCat :=
@@ -208,10 +217,11 @@ set_option linter.uppercaseLean3 false in
 end Skeleton
 
 /-- `Fintype.Skeleton` is a skeleton of `Fintype`. -/
-noncomputable def isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
+lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
 set_option linter.uppercaseLean3 false in
 #align Fintype.is_skeleton FintypeCat.isSkeleton
+
 
 end FintypeCat

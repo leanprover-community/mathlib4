@@ -10,10 +10,11 @@ import Mathlib.Condensed.Basic
 
 # Discrete-underlying adjunction
 
-Given a well-behaved concrete category `C`, we define a functor `C ⥤ Condensed C` which associates
-to an object of `C` the corresponding "discrete" condensed object (see `Condensed.discrete`).
+Given a category `C` with sheafification with respect to the coherent topology on compact Hausdorff
+spaces, we define a functor `C ⥤ Condensed C` which associates to an object of `C` the
+corresponding "discrete" condensed object (see `Condensed.discrete`).
 
-In `Condensed.discrete_underlying_adj` we prove that this functor is left adjoint to the forgetful
+In `Condensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the forgetful
 functor from `Condensed C` to `C`.
 -/
 
@@ -21,14 +22,7 @@ universe u v w
 
 open CategoryTheory Limits Opposite GrothendieckTopology
 
-variable (C : Type w) [Category.{u+1} C] [ConcreteCategory C]
-  [PreservesLimits (forget C)] [ReflectsIsomorphisms (forget C)]
-  [∀ (P : CompHausᵒᵖ ⥤ C) X (S : Cover (coherentTopology CompHaus) X),
-    HasMultiequalizer (Cover.index S P)]
-  [∀ X, HasColimitsOfShape (Cover (coherentTopology CompHaus) X)ᵒᵖ C]
-  [∀ X, PreservesColimitsOfShape (Cover (coherentTopology CompHaus) X)ᵒᵖ (forget C)]
--- These conditions are satisfied by the category of abelian groups, and other "algebraic"
--- categories.
+variable (C : Type w) [Category.{u+1} C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
 
 /--
 The discrete condensed object associated to an object of `C` is the constant sheaf at that object.
@@ -41,11 +35,12 @@ The underlying object of a condensed object in `C` is the condensed object eval
 This can be viewed as a sort of forgetful functor from `Condensed C` to `C`
 -/
 @[simps!]
-noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C := (sheafSections _ _).obj (op (⊤_ _))
+noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C :=
+  (sheafSections _ _).obj ⟨CompHaus.of PUnit.{u+1}⟩
 
 /--
 Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to
 `TopCat.adj₁ : TopCat.discrete ⊣ forget TopCat`.  
 -/
-noncomputable def Condensed.discrete_underlying_adj : discrete C ⊣ underlying C :=
-  constantSheafAdj _ _ terminalIsTerminal
+noncomputable def Condensed.discreteUnderlyingAdj : discrete C ⊣ underlying C :=
+  constantSheafAdj _ _ CompHaus.isTerminalPUnit

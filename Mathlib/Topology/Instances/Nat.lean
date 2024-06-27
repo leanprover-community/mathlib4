@@ -32,8 +32,8 @@ theorem dist_coe_int (x y : ℕ) : dist (x : ℤ) (y : ℤ) = dist x y := rfl
 theorem dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y := rfl
 #align nat.dist_cast_real Nat.dist_cast_real
 
-theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun m n hne =>
-  Int.pairwise_one_le_dist <| by exact_mod_cast hne
+theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun _ _ hne =>
+  Int.pairwise_one_le_dist <| mod_cast hne
 #align nat.pairwise_one_le_dist Nat.pairwise_one_le_dist
 
 theorem uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℕ → ℝ) :=
@@ -59,7 +59,7 @@ theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r
   · rw [closedBall_eq_empty.2 hr, Icc_eq_empty_of_lt]
     calc ⌊(x : ℝ) + r⌋₊ ≤ ⌊(x : ℝ)⌋₊ := floor_mono <| by linarith
     _ < ⌈↑x - r⌉₊ := by
-      rw [floor_coe, Nat.lt_ceil]
+      rw [floor_natCast, Nat.lt_ceil]
       linarith
 #align nat.closed_ball_eq_Icc Nat.closedBall_eq_Icc
 
@@ -72,4 +72,3 @@ instance : NoncompactSpace ℕ :=
   noncompactSpace_of_neBot <| by simp [Filter.atTop_neBot]
 
 end Nat
-

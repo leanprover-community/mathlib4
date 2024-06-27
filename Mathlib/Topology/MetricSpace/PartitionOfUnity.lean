@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Analysis.Convex.PartitionOfUnity
 
 #align_import topology.metric_space.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -26,7 +27,7 @@ lemma.
 metric space, partition of unity, locally finite
 -/
 
-open Topology ENNReal BigOperators NNReal Filter Set Function TopologicalSpace
+open Topology ENNReal NNReal Filter Set Function TopologicalSpace
 
 variable {ι X : Type*}
 
@@ -56,7 +57,7 @@ theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i
   apply hR
   calc
     edist z x ≤ edist z p.2 + edist p.2 x := edist_triangle _ _ _
-    _ ≤ p.1 + (R - p.1) := (add_le_add hz <| le_trans hp.2 <| tsub_le_tsub_left hp.1.out.le _)
+    _ ≤ p.1 + (R - p.1) := add_le_add hz <| le_trans hp.2 <| tsub_le_tsub_left hp.1.out.le _
     _ = R := add_tsub_cancel_of_le (lt_trans (by exact hp.1) hrR).le
 #align emetric.eventually_nhds_zero_forall_closed_ball_subset EMetric.eventually_nhds_zero_forall_closedBall_subset
 
@@ -67,7 +68,7 @@ theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU 
   have := (ENNReal.continuous_ofReal.tendsto' 0 0 ENNReal.ofReal_zero).eventually
     (eventually_nhds_zero_forall_closedBall_subset hK hU hKU hfin x).curry
   rcases this.exists_gt with ⟨r, hr0, hr⟩
-  refine' ⟨r, hr.mono fun y hy => ⟨hr0, _⟩⟩
+  refine ⟨r, hr.mono fun y hy => ⟨hr0, ?_⟩⟩
   rwa [mem_preimage, mem_iInter₂]
 #align emetric.exists_forall_closed_ball_subset_aux₁ EMetric.exists_forall_closedBall_subset_aux₁
 
@@ -96,14 +97,14 @@ theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
 exists a positive continuous function `δ : C(X, ℝ≥0)` such that for any `i` and `x ∈ K i`,
 we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
-theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
+theorem exists_continuous_nnreal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
   rcases exists_continuous_real_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ₀, hδ⟩
   lift δ to C(X, ℝ≥0) using fun x => (hδ₀ x).le
-  refine' ⟨δ, hδ₀, fun i x hi => _⟩
+  refine ⟨δ, hδ₀, fun i x hi => ?_⟩
   simpa only [← ENNReal.ofReal_coe_nnreal] using hδ i x hi
-#align emetric.exists_continuous_nnreal_forall_closed_ball_subset EMetric.exists_continuous_nNReal_forall_closedBall_subset
+#align emetric.exists_continuous_nnreal_forall_closed_ball_subset EMetric.exists_continuous_nnreal_forall_closedBall_subset
 
 /-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
@@ -112,7 +113,7 @@ we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
 theorem exists_continuous_eNNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0∞), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i :=
-  let ⟨δ, hδ₀, hδ⟩ := exists_continuous_nNReal_forall_closedBall_subset hK hU hKU hfin
+  let ⟨δ, hδ₀, hδ⟩ := exists_continuous_nnreal_forall_closedBall_subset hK hU hKU hfin
   ⟨ContinuousMap.comp ⟨Coe.coe, ENNReal.continuous_coe⟩ δ, fun x => ENNReal.coe_pos.2 (hδ₀ x), hδ⟩
 #align emetric.exists_continuous_ennreal_forall_closed_ball_subset EMetric.exists_continuous_eNNReal_forall_closedBall_subset
 
@@ -126,14 +127,14 @@ variable [MetricSpace X] {K : ι → Set X} {U : ι → Set X}
 `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
 positive continuous function `δ : C(X, ℝ≥0)` such that for any `i` and `x ∈ K i`, we have
 `Metric.closedBall x (δ x) ⊆ U i`. -/
-theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
+theorem exists_continuous_nnreal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
-  rcases EMetric.exists_continuous_nNReal_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
-  refine' ⟨δ, hδ0, fun i x hx => _⟩
+  rcases EMetric.exists_continuous_nnreal_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
+  refine ⟨δ, hδ0, fun i x hx => ?_⟩
   rw [← emetric_closedBall_nnreal]
   exact hδ i x hx
-#align metric.exists_continuous_nnreal_forall_closed_ball_subset Metric.exists_continuous_nNReal_forall_closedBall_subset
+#align metric.exists_continuous_nnreal_forall_closed_ball_subset Metric.exists_continuous_nnreal_forall_closedBall_subset
 
 /-- Let `X` be a metric space. Let `K : ι → Set X` be a locally finite family of closed sets, let
 `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
@@ -142,7 +143,7 @@ positive continuous function `δ : C(X, ℝ)` such that for any `i` and `x ∈ K
 theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i :=
-  let ⟨δ, hδ₀, hδ⟩ := exists_continuous_nNReal_forall_closedBall_subset hK hU hKU hfin
+  let ⟨δ, hδ₀, hδ⟩ := exists_continuous_nnreal_forall_closedBall_subset hK hU hKU hfin
   ⟨ContinuousMap.comp ⟨Coe.coe, NNReal.continuous_coe⟩ δ, hδ₀, hδ⟩
 #align metric.exists_continuous_real_forall_closed_ball_subset Metric.exists_continuous_real_forall_closedBall_subset
 

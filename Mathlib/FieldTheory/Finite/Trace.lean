@@ -28,7 +28,7 @@ theorem trace_to_zmod_nondegenerate (F : Type*) [Field F] [Finite F]
   haveI : Fact (ringChar F).Prime := ⟨CharP.char_is_prime F _⟩
   have htr := traceForm_nondegenerate (ZMod (ringChar F)) F a
   simp_rw [Algebra.traceForm_apply] at htr
-  by_contra' hf
+  by_contra! hf
   exact ha (htr hf)
 #align finite_field.trace_to_zmod_nondegenerate FiniteField.trace_to_zmod_nondegenerate
 

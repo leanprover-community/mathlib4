@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extension for `Nat.fib`

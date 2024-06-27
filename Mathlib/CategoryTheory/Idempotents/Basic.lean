@@ -72,7 +72,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
             isLimit := by
               apply Fork.IsLimit.mk'
               intro s
-              refine' ⟨s.ι ≫ e, _⟩
+              refine ⟨s.ι ≫ e, ?_⟩
               constructor
               · erw [assoc, h₂, ← Limits.Fork.condition s, comp_id]
               · intro m hm
@@ -81,11 +81,11 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
                 simp only [← hm, assoc, h₁]
                 exact (comp_id m).symm }⟩
   · intro h
-    refine' ⟨_⟩
+    refine ⟨?_⟩
     intro X p hp
     haveI : HasEqualizer (𝟙 X) p := h X p hp
-    refine' ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
-      equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), _, equalizer.lift_ι _ _⟩
+    refine ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
+      equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), ?_, equalizer.lift_ι _ _⟩
     ext
     simp only [assoc, limit.lift_π, Eq.ndrec, id_eq, eq_mpr_eq_cast, Fork.ofι_pt,
       Fork.ofι_π_app, id_comp]
@@ -156,7 +156,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
 
 theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
-  refine' ⟨_⟩
+  refine ⟨?_⟩
   intro X' p hp
   let φ := ε.counitIso.symm.app X'
   erw [split_iff_of_iso φ p (φ.inv ≫ p ≫ φ.hom)
@@ -183,7 +183,7 @@ theorem isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C
 
 theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentComplete Cᵒᵖ) :
     IsIdempotentComplete C := by
-  refine' ⟨_⟩
+  refine ⟨?_⟩
   intro X p hp
   rcases IsIdempotentComplete.idempotents_split (op X) p.op (by rw [← op_comp, hp]) with
     ⟨Y, i, e, ⟨h₁, h₂⟩⟩

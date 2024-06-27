@@ -73,7 +73,7 @@ def unopHom (X Y : Cᵒᵖ) : (X ⟶ Y) →+ (Opposite.unop Y ⟶ Opposite.unop 
 @[simp]
 theorem unop_sum (X Y : Cᵒᵖ) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
     (s.sum f).unop = s.sum fun i => (f i).unop :=
-  (unopHom X Y).map_sum _ _
+  map_sum (unopHom X Y) _ _
 #align category_theory.unop_sum CategoryTheory.unop_sum
 
 /-- `op` induces morphisms of monoids on hom groups of a preadditive category -/
@@ -85,7 +85,7 @@ def opHom (X Y : C) : (X ⟶ Y) →+ (Opposite.op Y ⟶ Opposite.op X) :=
 @[simp]
 theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
     (s.sum f).op = s.sum fun i => (f i).op :=
-  (opHom X Y).map_sum _ _
+  map_sum (opHom X Y) _ _
 #align category_theory.op_sum CategoryTheory.op_sum
 
 variable {D : Type*} [Category D] [Preadditive D]

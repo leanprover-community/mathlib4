@@ -3,7 +3,6 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -55,7 +54,7 @@ set_option linter.uppercaseLean3 false in
 variable [Monoid β]
 
 /-- The Lipschitz constant of a monoid `β` satisfying `LipschitzMul` -/
-@[to_additive existing] -- porting note: had to add `LipschitzAdd.C`. to_additive silently failed
+@[to_additive existing] -- Porting note: had to add `LipschitzAdd.C`. to_additive silently failed
 def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
 set_option linter.uppercaseLean3 false in
 #align has_lipschitz_mul.C LipschitzMul.C
@@ -105,7 +104,7 @@ instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
 -- this instance could be deduced from `NormedAddCommGroup.lipschitzAdd`, but we prove it
 -- separately here so that it is available earlier in the hierarchy
 instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
-  lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul <| fun p q => by
+  lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q => by
     simp only [Real.dist_eq, Prod.dist_eq, Prod.fst_sub, Prod.snd_sub, NNReal.coe_ofNat,
       add_sub_add_comm, two_mul]
     refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) ?_
@@ -152,8 +151,8 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
   continuous_smul := by
     rw [Metric.continuous_iff]
     rintro ⟨a, b⟩ ε ε0
-    obtain ⟨δ, δ0, hδε⟩ : ∃ δ > 0, δ * (δ + dist b 0) + dist a 0 * δ < ε
-    · have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by continuity
+    obtain ⟨δ, δ0, hδε⟩ : ∃ δ > 0, δ * (δ + dist b 0) + dist a 0 * δ < ε := by
+      have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by fun_prop
       refine ((this.tendsto' _ _ ?_).eventually (gt_mem_nhds ε0)).exists_gt
       simp
     refine ⟨δ, δ0, fun (a', b') hab' => ?_⟩
@@ -164,7 +163,7 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
         add_le_add (dist_pair_smul _ _ _) (dist_smul_pair _ _ _)
       _ ≤ δ * (δ + dist b 0) + dist a 0 * δ := by
           have : dist b' 0 ≤ δ + dist b 0 := (dist_triangle _ _ _).trans <| add_le_add_right hb.le _
-          mono* <;> apply_rules [dist_nonneg, le_of_lt]
+          gcongr
       _ < ε := hδε
 #align has_bounded_smul.has_continuous_smul BoundedSMul.continuousSMul
 

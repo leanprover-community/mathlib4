@@ -40,3 +40,10 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           body: |
             🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}.
+      - name: Add label to PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { owner, repo, number: issue_number } = context.issue;
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });

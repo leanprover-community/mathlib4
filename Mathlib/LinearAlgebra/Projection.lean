@@ -58,7 +58,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   · rw [codisjoint_iff_le_sup]
     intro x _
     rw [mem_sup']
-    refine' ⟨f x, ⟨x - f x, _⟩, add_sub_cancel'_right _ _⟩
+    refine ⟨f x, ⟨x - f x, ?_⟩, add_sub_cancel _ _⟩
     rw [mem_ker, LinearMap.map_sub, hf, sub_self]
 #align linear_map.is_compl_of_proj LinearMap.isCompl_of_proj
 
@@ -361,6 +361,21 @@ theorem coe_isComplEquivProj_symm_apply (f : { f : E →ₗ[R] p // ∀ x : p, f
     (p.isComplEquivProj.symm f : Submodule R E) = ker (f : E →ₗ[R] p) := rfl
 #align submodule.coe_is_compl_equiv_proj_symm_apply Submodule.coe_isComplEquivProj_symm_apply
 
+/-- The idempotent endomorphisms of a module with range equal to a submodule are in 1-1
+correspondence with linear maps to the submodule that restrict to the identity on the submodule. -/
+@[simps] def isIdempotentElemEquiv :
+    { f : Module.End R E // IsIdempotentElem f ∧ range f = p } ≃
+    { f : E →ₗ[R] p // ∀ x : p, f x = x } where
+  toFun f := ⟨f.1.codRestrict _ fun x ↦ by simp_rw [← f.2.2]; exact mem_range_self f.1 x,
+    fun ⟨x, hx⟩ ↦ Subtype.ext <| by
+      obtain ⟨x, rfl⟩ := f.2.2.symm ▸ hx
+      exact DFunLike.congr_fun f.2.1 x⟩
+  invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
+    ((range_comp_le_range _ _).trans_eq p.range_subtype)
+    fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 end Submodule
 
 namespace LinearMap
@@ -373,7 +388,7 @@ of `E` to `p` and fixes every element of `p`.
 The definition allow more generally any `FunLike` type and not just linear maps, so that it can be
 used for example with `ContinuousLinearMap` or `Matrix`.
 -/
-structure IsProj {F : Type*} [FunLike F M fun _ => M] (f : F) : Prop where
+structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
   map_id : ∀ x ∈ m, f x = x
 #align linear_map.is_proj LinearMap.IsProj

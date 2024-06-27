@@ -31,7 +31,7 @@ def Pi.empty (β : α → Sort*) (a : α) (h : a ∈ (∅ : Finset α)) : β a :
 #align finset.pi.empty Finset.Pi.empty
 
 universe u v
-variable {β : α → Type u} {δ : α → Sort v} [DecidableEq α]
+variable {β : α → Type u} {δ : α → Sort v} [DecidableEq α] {s : Finset α} {t : ∀ a, Finset (β a)}
 
 /-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
@@ -78,8 +78,8 @@ theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
       funext fun h =>
         have :
           Pi.cons s a b e₁ e (by simpa only [Multiset.mem_cons, mem_insert] using h) =
-            Pi.cons s a b e₂ e (by simpa only [Multiset.mem_cons, mem_insert] using h) :=
-          by rw [eq]
+            Pi.cons s a b e₂ e (by simpa only [Multiset.mem_cons, mem_insert] using h) := by
+          rw [eq]
         this
 #align finset.pi.cons_injective Finset.Pi.cons_injective
 
@@ -88,14 +88,18 @@ theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = sing
   rfl
 #align finset.pi_empty Finset.pi_empty
 
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+lemma pi_nonempty : (s.pi t).Nonempty ↔ ∀ a ∈ s, (t a).Nonempty := by
+  simp [Finset.Nonempty, Classical.skolem]
+
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
     (ha : a ∉ s) : pi (insert a s) t = (t a).biUnion fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq
   rw [← (pi (insert a s) t).2.dedup]
-  refine'
+  refine
     (fun s' (h : s' = a ::ₘ s.1) =>
-        (_ :
+        (?_ :
           dedup (Multiset.pi s' fun a => (t a).1) =
             dedup
               ((t a).1.bind fun b =>

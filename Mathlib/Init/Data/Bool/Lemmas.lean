@@ -3,8 +3,8 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Logic
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Coe
 
 /-!
@@ -33,18 +33,8 @@ set_option autoImplicit true
 
 namespace Bool
 
--- In Lean 3 we had `attribute [simp] cond or and not xor` in the corresponding
--- file, but in Lean 4 this makes the `simpNF` linter complain, so instead we
--- manually generate the corresponding equation lemmas and tag them with `@[simp]` instead.
--- `or`, `and`, and `not` are already done in core Lean 4; here is `cond`, and `xor` is done below.
-@[simp] lemma cond_true {α : Type u} {a b : α} : cond true a b = a := rfl
 #align bool.cond_tt Bool.cond_true
-
-@[simp] lemma cond_false {α : Type u} {a b : α} : cond false a b = b := rfl
 #align bool.cond_ff Bool.cond_false
-
-@[simp]
-theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
 #align cond_a_a Bool.cond_self
 
 attribute [simp] xor_self
@@ -86,13 +76,13 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 #align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
 
-@[simp]
+#adaptation_note /-- this is no longer a simp lemma,
+  as after nightly-2024-03-05 the LHS simplifies. -/
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
 #align band_eq_false_eq_eq_ff_or_eq_ff Bool.and_eq_false_eq_eq_false_or_eq_false
 
-@[simp]
 theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
     ((a || b) = false) = (a = false ∧ b = false) := by
   cases a <;> cases b <;> simp
@@ -107,10 +97,10 @@ theorem coe_false : ↑false = False := by simp
 theorem coe_true : ↑true = True := by simp
 #align coe_tt Bool.coe_true
 
-theorem coe_sort_false : (↥false : Prop) = False := by simp
+theorem coe_sort_false : (false : Prop) = False := by simp
 #align coe_sort_ff Bool.coe_sort_false
 
-theorem coe_sort_true : (↥true : Prop) = True := by simp
+theorem coe_sort_true : (true : Prop) = True := by simp
 #align coe_sort_tt Bool.coe_sort_true
 
 theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
@@ -125,7 +115,7 @@ theorem of_decide_true {p : Prop} [Decidable p] : decide p → p :=
   (decide_iff p).1
 #align of_to_bool_true Bool.of_decide_true
 
-theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> exact by decide
+theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> decide
 #align bool_iff_false Bool.bool_iff_false
 
 theorem bool_eq_false {b : Bool} : ¬b → b = false :=
@@ -144,32 +134,21 @@ theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
   (decide_false_iff p).1
 #align of_to_bool_ff Bool.of_decide_false
 
-theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
-    decide p = decide q := by
-  cases h' : decide q with
-  | false => exact decide_false (mt h.1 <| of_decide_false h')
-  | true => exact decide_true (h.2 <| of_decide_true h')
+theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q :=
+  decide_eq_decide.mpr h
 #align to_bool_congr Bool.decide_congr
 
-theorem coe_or_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
-#align bor_coe_iff Bool.coe_or_iff
+@[deprecated (since := "2024-06-07")] alias coe_or_iff := or_eq_true_iff
+#align bor_coe_iff Bool.or_eq_true_iff
 
-theorem coe_and_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
-#align band_coe_iff Bool.coe_and_iff
+@[deprecated (since := "2024-06-07")] alias coe_and_iff := and_eq_true_iff
+#align band_coe_iff Bool.and_eq_true_iff
 
 theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
-  cases a <;> cases b <;> exact by decide
+  cases a <;> cases b <;> decide
 #align bxor_coe_iff Bool.coe_xor_iff
 
-@[simp]
-theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
-    ((if c then a else b) = true) = if c then a = true else b = true := by by_cases c <;> simp [*]
 #align ite_eq_tt_distrib Bool.ite_eq_true_distrib
-
-@[simp]
-theorem ite_eq_false_distrib (c : Prop) [Decidable c] (a b : Bool) :
-    ((if c then a else b) = false) = if c then a = false else b = false := by
-  by_cases c <;> simp [*]
 #align ite_eq_ff_distrib Bool.ite_eq_false_distrib
 
 end Bool

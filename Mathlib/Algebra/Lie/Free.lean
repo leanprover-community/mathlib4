@@ -3,10 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.UniversalEnveloping
-import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import algebra.lie.free from "leanprover-community/mathlib"@"841ac1a3d9162bf51c6327812ecb6e5e71883ac4"
 
@@ -57,21 +57,16 @@ noncomputable section
 
 variable (R : Type u) (X : Type v) [CommRing R]
 
--- mathport name: exprlib
 /- We save characters by using Bourbaki's name `lib` (as in «libre») for
 `FreeNonUnitalNonAssocAlgebra` in this file. -/
 local notation "lib" => FreeNonUnitalNonAssocAlgebra
 
--- mathport name: «exprlib.lift»
 local notation "lib.lift" => FreeNonUnitalNonAssocAlgebra.lift
 
--- mathport name: «exprlib.of»
 local notation "lib.of" => FreeNonUnitalNonAssocAlgebra.of
 
--- mathport name: «exprlib.lift_of_apply»
 local notation "lib.lift_of_apply" => FreeNonUnitalNonAssocAlgebra.lift_of_apply
 
--- mathport name: «exprlib.lift_comp_of»
 local notation "lib.lift_comp_of" => FreeNonUnitalNonAssocAlgebra.lift_comp_of
 
 namespace FreeLieAlgebra
@@ -123,7 +118,7 @@ instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_insta
 namespace FreeLieAlgebra
 
 instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
-    SMul S (FreeLieAlgebra R X) where smul t := Quot.map ((· • ·) t) (Rel.smulOfTower t)
+    SMul S (FreeLieAlgebra R X) where smul t := Quot.map (t • ·) (Rel.smulOfTower t)
 
 instance {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
     [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where
@@ -201,14 +196,14 @@ theorem liftAux_map_mul (f : X → L) (a b : lib R X) :
 
 theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
     liftAux R f a = liftAux R f b := by
-  induction h
-  case lie_self a' => simp only [liftAux_map_mul, NonUnitalAlgHom.map_zero, lie_self]
-  case leibniz_lie a' b' c' =>
+  induction h with
+  | lie_self a' => simp only [liftAux_map_mul, NonUnitalAlgHom.map_zero, lie_self]
+  | leibniz_lie a' b' c' =>
     simp only [liftAux_map_mul, liftAux_map_add, sub_add_cancel, lie_lie]
-  case smul t a' b' _ h₂ => simp only [liftAux_map_smul, h₂]
-  case add_right a' b' c' _ h₂ => simp only [liftAux_map_add, h₂]
-  case mul_left a' b' c' _ h₂ => simp only [liftAux_map_mul, h₂]
-  case mul_right a' b' c' _ h₂ => simp only [liftAux_map_mul, h₂]
+  | smul b' _ h₂ => simp only [liftAux_map_smul, h₂]
+  | add_right c' _ h₂ => simp only [liftAux_map_add, h₂]
+  | mul_left c' _ h₂ => simp only [liftAux_map_mul, h₂]
+  | mul_right c' _ h₂ => simp only [liftAux_map_mul, h₂]
 #align free_lie_algebra.lift_aux_spec FreeLieAlgebra.liftAux_spec
 
 /-- The quotient map as a `NonUnitalAlgHom`. -/

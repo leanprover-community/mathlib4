@@ -51,8 +51,8 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : �
     -- Let `b` be the inverse of `a`.
     cases' a_unit.exists_left_inv with a_inv h_inv_mul_a
     have rn_cast_zero : ↑(r ^ n) = (0 : R) := by
-      rw [← @mul_one R _ ↑(r ^ n), mul_comm, ←Classical.choose_spec a_unit.exists_left_inv,
-        mul_assoc, ← Nat.cast_mul, ←q_eq_a_mul_rn, CharP.cast_eq_zero R q]
+      rw [← @mul_one R _ ↑(r ^ n), mul_comm, ← Classical.choose_spec a_unit.exists_left_inv,
+        mul_assoc, ← Nat.cast_mul, ← q_eq_a_mul_rn, CharP.cast_eq_zero R q]
       simp
     have q_eq_rn := Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R q (r ^ n)).mp rn_cast_zero) rn_dvd_q
     have n_pos : n ≠ 0 := fun n_zero =>

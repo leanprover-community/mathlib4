@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 
 #align_import category_theory.monoidal.coherence_lemmas from "leanprover-community/mathlib"@"b8b8bf3ea0c625fa1f950034a184e07c67f7bcfe"
 
@@ -26,21 +27,21 @@ variable {C : Type*} [Category C] [MonoidalCategory C]
 
 -- See Proposition 2.2.4 of <http://www-math.mit.edu/~etingof/egnobookfinal.pdf>
 @[reassoc]
-theorem leftUnitor_tensor' (X Y : C) :
+theorem leftUnitor_tensor'' (X Y : C) :
     (α_ (𝟙_ C) X Y).hom ≫ (λ_ (X ⊗ Y)).hom = (λ_ X).hom ⊗ 𝟙 Y := by
   coherence
-#align category_theory.monoidal_category.left_unitor_tensor' CategoryTheory.MonoidalCategory.leftUnitor_tensor'
-
-@[reassoc, simp]
-theorem leftUnitor_tensor (X Y : C) :
-    (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ ((λ_ X).hom ⊗ 𝟙 Y) := by
-  coherence
-#align category_theory.monoidal_category.left_unitor_tensor CategoryTheory.MonoidalCategory.leftUnitor_tensor
+#align category_theory.monoidal_category.left_unitor_tensor' CategoryTheory.MonoidalCategory.leftUnitor_tensor''
 
 @[reassoc]
-theorem leftUnitor_tensor_inv (X Y : C) :
+theorem leftUnitor_tensor' (X Y : C) :
+    (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ ((λ_ X).hom ⊗ 𝟙 Y) := by
+  coherence
+#align category_theory.monoidal_category.left_unitor_tensor CategoryTheory.MonoidalCategory.leftUnitor_tensor'
+
+@[reassoc]
+theorem leftUnitor_tensor_inv' (X Y : C) :
     (λ_ (X ⊗ Y)).inv = ((λ_ X).inv ⊗ 𝟙 Y) ≫ (α_ (𝟙_ C) X Y).hom := by coherence
-#align category_theory.monoidal_category.left_unitor_tensor_inv CategoryTheory.MonoidalCategory.leftUnitor_tensor_inv
+#align category_theory.monoidal_category.left_unitor_tensor_inv CategoryTheory.MonoidalCategory.leftUnitor_tensor_inv'
 
 @[reassoc]
 theorem id_tensor_rightUnitor_inv (X Y : C) : 𝟙 X ⊗ (ρ_ Y).inv = (ρ_ _).inv ≫ (α_ _ _ _).hom := by
@@ -58,12 +59,6 @@ theorem pentagon_inv_inv_hom (W X Y Z : C) :
       (𝟙 W ⊗ (α_ X Y Z).hom) ≫ (α_ W X (Y ⊗ Z)).inv := by
   coherence
 #align category_theory.monoidal_category.pentagon_inv_inv_hom CategoryTheory.MonoidalCategory.pentagon_inv_inv_hom
-
-@[reassoc (attr := simp)]
-theorem triangle_assoc_comp_right_inv (X Y : C) :
-    ((ρ_ X).inv ⊗ 𝟙 Y) ≫ (α_ X (𝟙_ C) Y).hom = 𝟙 X ⊗ (λ_ Y).inv := by
-  coherence
-#align category_theory.monoidal_category.triangle_assoc_comp_right_inv CategoryTheory.MonoidalCategory.triangle_assoc_comp_right_inv
 
 theorem unitors_equal : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
   coherence

@@ -6,6 +6,7 @@ Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Tactic.Common
 
 #align_import algebra.divisibility.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -95,27 +96,42 @@ theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
 
 section map_dvd
 
-variable {M N : Type*} [Monoid M] [Monoid N]
+variable {M N : Type*}
 
-theorem map_dvd {F : Type*} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
+theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [FunLike F M N] [MulHomClass F M N]
+    (f : F) {a b} : a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 
-theorem MulHom.map_dvd (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
+theorem MulHom.map_dvd [Semigroup M] [Semigroup N] (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align mul_hom.map_dvd MulHom.map_dvd
 
-theorem MonoidHom.map_dvd (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
+theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align monoid_hom.map_dvd MonoidHom.map_dvd
 
 end map_dvd
 
+/-- An element `a` in a semigroup is primal if whenever `a` is a divisor of `b * c`, it can be
+factored as the product of a divisor of `b` and a divisor of `c`. -/
+def IsPrimal (a : α) : Prop := ∀ ⦃b c⦄, a ∣ b * c → ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂
+
+variable (α) in
+/-- A monoid is a decomposition monoid if every element is primal. An integral domain whose
+multiplicative monoid is a decomposition monoid, is called a pre-Schreier domain; it is a
+Schreier domain if it is moreover integrally closed. -/
+@[mk_iff] class DecompositionMonoid : Prop where
+  primal (a : α) : IsPrimal a
+
+theorem exists_dvd_and_dvd_of_dvd_mul [DecompositionMonoid α] {b c a : α} (H : a ∣ b * c) :
+    ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂ := DecompositionMonoid.primal a H
+#align exists_dvd_and_dvd_of_dvd_mul exists_dvd_and_dvd_of_dvd_mul
+
 end Semigroup
 
 section Monoid
-
-variable [Monoid α] {a b : α}
+variable [Monoid α] {a b c : α} {m n : ℕ}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -137,6 +153,26 @@ theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
 
 alias Eq.dvd := dvd_of_eq
 #align eq.dvd Eq.dvd
+
+lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
+  ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
+#align pow_dvd_pow pow_dvd_pow
+
+lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
+  | 0,     hn => (hn rfl).elim
+  | n + 1, _  => by rw [pow_succ']; exact hab.mul_right _
+#align dvd_pow dvd_pow
+
+alias Dvd.dvd.pow := dvd_pow
+
+lemma dvd_pow_self (a : α) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n := dvd_rfl.pow hn
+#align dvd_pow_self dvd_pow_self
+
+theorem mul_dvd_mul_left (a : α) (h : b ∣ c) : a * b ∣ a * c := by
+  obtain ⟨d, rfl⟩ := h
+  use d
+  rw [mul_assoc]
+#align mul_dvd_mul_left mul_dvd_mul_left
 
 end Monoid
 
@@ -186,25 +222,28 @@ theorem dvd_of_mul_left_dvd (h : a * b ∣ c) : b ∣ c :=
   Dvd.elim h fun d ceq => Dvd.intro (a * d) (by simp [ceq])
 #align dvd_of_mul_left_dvd dvd_of_mul_left_dvd
 
+theorem dvd_mul [DecompositionMonoid α] {k m n : α} :
+    k ∣ m * n ↔ ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
+  refine ⟨exists_dvd_and_dvd_of_dvd_mul, ?_⟩
+  rintro ⟨d₁, d₂, hy, hz, rfl⟩
+  exact mul_dvd_mul hy hz
+#align dvd_mul dvd_mul
+
 end CommSemigroup
 
 section CommMonoid
 
 variable [CommMonoid α] {a b : α}
 
-theorem mul_dvd_mul_left (a : α) {b c : α} (h : b ∣ c) : a * b ∣ a * c :=
-  mul_dvd_mul (dvd_refl a) h
-#align mul_dvd_mul_left mul_dvd_mul_left
-
 theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c :=
   mul_dvd_mul h (dvd_refl c)
 #align mul_dvd_mul_right mul_dvd_mul_right
 
-theorem pow_dvd_pow_of_dvd {a b : α} (h : a ∣ b) : ∀ n : ℕ, a ^ n ∣ b ^ n
+theorem pow_dvd_pow_of_dvd (h : a ∣ b) : ∀ n : ℕ, a ^ n ∣ b ^ n
   | 0 => by rw [pow_zero, pow_zero]
   | n + 1 => by
     rw [pow_succ, pow_succ]
-    exact mul_dvd_mul h (pow_dvd_pow_of_dvd h n)
+    exact mul_dvd_mul (pow_dvd_pow_of_dvd h n) h
 #align pow_dvd_pow_of_dvd pow_dvd_pow_of_dvd
 
 end CommMonoid

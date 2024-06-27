@@ -59,7 +59,7 @@ private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n)
   · -- base case
     constructor
   · -- inductive step
-    rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, replicate_add]
+    rw [pow_add, pow_one 2, mul_two, replicate_add]
     exact Derivable.r2 hk
 
 /-!
@@ -119,7 +119,7 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     specialize ha (U :: xs)
     intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [succ_eq_add_one, replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
+    rw [replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
       singleton_append]
     apply ha
     apply Derivable.r3
@@ -154,10 +154,10 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
   rcases hk with ⟨g, hkg, hgmod⟩
   by_cases hp : c + 3 * (k + 1) ≤ 2 ^ g
   · use g, hp, hgmod
-  refine' ⟨g + 2, _, _⟩
+  refine ⟨g + 2, ?_, ?_⟩
   · rw [mul_succ, ← add_assoc, pow_add]
     change c + 3 * k + 3 ≤ 2 ^ g * (1 + 3); rw [mul_add (2 ^ g) 1 3, mul_one]
-    linarith [hkg, one_le_two_pow g]
+    linarith [hkg, @Nat.one_le_two_pow g]
   · rw [pow_add, ← mul_one c]
     exact ModEq.mul hgmod rfl
 
@@ -268,7 +268,6 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
       · rw [mem_cons, not_or] at hm; exact hm.2
     · -- case `x = U` gives a contradiction.
       exfalso; simp only [count, countP_cons_of_pos (· == U) _ (rfl : U == U)] at hu
-      exact succ_ne_zero _ hu
 set_option linter.uppercaseLean3 false in
 #align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_I_eq_length_of_count_U_zero_and_neg_mem
 
@@ -284,7 +283,7 @@ theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Deri
   rsuffices ⟨c, rfl, hc⟩ : ∃ c, replicate c I = ys ∧ (c % 3 = 1 ∨ c % 3 = 2)
   · exact der_replicate_I_of_mod3 c hc
   · use count I ys
-    refine' And.intro _ hi
+    refine And.intro ?_ hi
     apply replicate_count_eq_of_count_eq_length
     exact count_I_eq_length_of_count_U_zero_and_neg_mem hu nmtail
 #align miu.base_case_suf Miu.base_case_suf
@@ -306,7 +305,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
-  mem_split (mem_of_count_U_eq_succ h)
+  append_of_mem (mem_of_count_U_eq_succ h)
 set_option linter.uppercaseLean3 false in
 #align miu.eq_append_cons_U_of_count_U_pos Miu.eq_append_cons_U_of_count_U_pos
 

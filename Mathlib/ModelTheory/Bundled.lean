@@ -3,7 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementaryMaps
+import Mathlib.ModelTheory.ElementarySubstructures
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 #align_import model_theory.bundled from "leanprover-community/mathlib"@"b3951c65c6e797ff162ae8b69eab0063bcfb3d73"
@@ -23,7 +23,7 @@ This file bundles types together with their first-order structure.
 
 set_option linter.uppercaseLean3 false
 
-universe u v w w'
+universe u v w w' x
 
 variable {L : FirstOrder.Language.{u, v}}
 
@@ -224,7 +224,7 @@ def ElementarySubstructure.toModel {M : T.ModelType} (S : L.ElementarySubstructu
 #align first_order.language.elementary_substructure.to_Model FirstOrder.Language.ElementarySubstructure.toModel
 
 instance ElementarySubstructure.toModel.instSmall {M : T.ModelType}
-    (S : L.ElementarySubstructure M) [h : Small S] : Small (S.toModel T) :=
+    (S : L.ElementarySubstructure M) [h : Small.{w, x} S] : Small.{w, x} (S.toModel T) :=
   h
 #align first_order.language.to_Model.small FirstOrder.Language.ElementarySubstructure.toModel.instSmall
 

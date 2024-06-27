@@ -49,7 +49,7 @@ theorem not_zero {n : ℕ} (h1 : ProblemPredicate n) : n ≠ 0 :=
 theorem ge_100 {n : ℕ} (h1 : ProblemPredicate n) : 100 ≤ n := by
   have h2 : 10 ^ 3 ≤ 10 * n := by
     rw [← h1.left]
-    refine' Nat.base_pow_length_digits_le 10 n _ (not_zero h1)
+    refine Nat.base_pow_length_digits_le 10 n ?_ (not_zero h1)
     simp
   linarith
 #align imo1960_q1.ge_100 Imo1960Q1.ge_100
@@ -57,7 +57,7 @@ theorem ge_100 {n : ℕ} (h1 : ProblemPredicate n) : 100 ≤ n := by
 theorem lt_1000 {n : ℕ} (h1 : ProblemPredicate n) : n < 1000 := by
   have h2 : n < 10 ^ 3 := by
     rw [← h1.left]
-    refine' Nat.lt_base_pow_length_digits _
+    refine Nat.lt_base_pow_length_digits ?_
     simp
   linarith
 #align imo1960_q1.lt_1000 Imo1960Q1.lt_1000
@@ -77,12 +77,12 @@ theorem searchUpTo_step {c n} (H : SearchUpTo c n) {c' n'} (ec : c + 1 = c') (en
     (el : Nat.digits 10 n = l) (H' : c = sumOfSquares l → c = 50 ∨ c = 73) : SearchUpTo c' n' := by
   subst ec; subst en; subst el
   obtain ⟨rfl, H⟩ := H
-  refine' ⟨by ring, fun m l p => _⟩
+  refine ⟨by ring, fun m l p => ?_⟩
   obtain ⟨h₁, ⟨m, rfl⟩, h₂⟩ := id p
   by_cases h : 11 * m < c * 11; · exact H _ h p
   obtain rfl : m = c := by linarith
   rw [Nat.mul_div_cancel_left _ (by norm_num : 11 > 0), mul_comm] at h₂
-  refine' (H' h₂).imp _ _ <;> · rintro rfl; norm_num
+  refine (H' h₂).imp ?_ ?_ <;> · rintro rfl; norm_num
 #align imo1960_q1.search_up_to_step Imo1960Q1.searchUpTo_step
 
 theorem searchUpTo_end {c} (H : SearchUpTo c 1001) {n : ℕ} (ppn : ProblemPredicate n) :
@@ -90,17 +90,12 @@ theorem searchUpTo_end {c} (H : SearchUpTo c 1001) {n : ℕ} (ppn : ProblemPredi
   H.2 _ (by linarith [lt_1000 ppn]) ppn
 #align imo1960_q1.search_up_to_end Imo1960Q1.searchUpTo_end
 
-set_option maxHeartbeats 800000 in
 theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n := by
   have := searchUpTo_start
   iterate 82
     replace :=
-      searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) (by norm_num1; rfl)
-        (by -- This used to be just `norm_num`, but after leanprover/lean4#2790,
-            -- that triggers a max recursion depth exception. As a workaround, we
-            -- manually rewrite with `Nat.digits_of_two_le_of_pos` first.
-            rw [Nat.digits_of_two_le_of_pos (by norm_num) (by norm_num)]
-            norm_num <;> decide)
+      searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) rfl
+        (by norm_num <;> decide)
   exact searchUpTo_end this
 #align imo1960_q1.right_direction Imo1960Q1.right_direction
 
@@ -108,8 +103,7 @@ theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n :
 Now we just need to prove the equivalence, for the precise problem statement.
 -/
 theorem left_direction (n : ℕ) (spn : SolutionPredicate n) : ProblemPredicate n := by
-  -- Porting note: This is very slow
-  rcases spn with (rfl | rfl) <;> refine' ⟨_, by decide, _⟩ <;> rfl
+  rcases spn with (rfl | rfl) <;> refine ⟨?_, by decide, ?_⟩ <;> norm_num <;> rfl
 #align imo1960_q1.left_direction Imo1960Q1.left_direction
 
 end Imo1960Q1

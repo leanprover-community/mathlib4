@@ -19,7 +19,7 @@ open Nat
 
 universe u v
 
-variable {α β : Type*}
+variable {ι α β : Type*}
 
 namespace Finset
 
@@ -38,7 +38,7 @@ theorem inf_univ_eq_iInf [CompleteLattice β] (f : α → β) : Finset.univ.inf 
 @[simp]
 theorem fold_inf_univ [SemilatticeInf α] [OrderBot α] (a : α) :
     -- Porting note: added `haveI`
-    haveI : IsCommutative α (· ⊓ ·) := inferInstance
+    haveI : Std.Commutative (α := α) (· ⊓ ·) := inferInstance
     (Finset.univ.fold (· ⊓ ·) a fun x => x) = ⊥ :=
   eq_bot_iff.2 <|
     ((Finset.fold_op_rel_iff_and <| @le_inf_iff α _).1 le_rfl).2 ⊥ <| Finset.mem_univ _
@@ -47,10 +47,13 @@ theorem fold_inf_univ [SemilatticeInf α] [OrderBot α] (a : α) :
 @[simp]
 theorem fold_sup_univ [SemilatticeSup α] [OrderTop α] (a : α) :
     -- Porting note: added `haveI`
-    haveI : IsCommutative α (· ⊔ ·) := inferInstance
+    haveI : Std.Commutative (α := α) (· ⊔ ·) := inferInstance
     (Finset.univ.fold (· ⊔ ·) a fun x => x) = ⊤ :=
   @fold_inf_univ αᵒᵈ _ _ _ _
 #align finset.fold_sup_univ Finset.fold_sup_univ
+
+lemma mem_inf [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α} :
+    a ∈ s.inf f ↔ ∀ i ∈ s, a ∈ f i := by induction' s using Finset.cons_induction <;> simp [*]
 
 end Finset
 

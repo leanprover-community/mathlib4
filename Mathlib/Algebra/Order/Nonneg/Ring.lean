@@ -3,10 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
 
@@ -70,14 +70,13 @@ instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α /
   Set.Ici.distribLattice
 #align nonneg.distrib_lattice Nonneg.distribLattice
 
-instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
+instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
   show DenselyOrdered (Ici a) from Set.instDenselyOrdered
-#align nonneg.densely_ordered Nonneg.densely_ordered
+#align nonneg.densely_ordered Nonneg.instDenselyOrdered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
-@[reducible]
-protected noncomputable def conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
+protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
     {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
   { @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _ with }
 #align nonneg.conditionally_complete_linear_order Nonneg.conditionallyCompleteLinearOrder
@@ -87,9 +86,9 @@ protected noncomputable def conditionallyCompleteLinearOrder [ConditionallyCompl
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.
 The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
-@[reducible]
-protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
-    (a : α) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
+protected noncomputable abbrev conditionallyCompleteLinearOrderBot
+    [ConditionallyCompleteLinearOrder α] (a : α) :
+    ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
     csSup_empty := by
       rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }
@@ -220,18 +219,24 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
     Nonneg.orderedAddCommMonoid with
     natCast := fun n => ⟨n, Nat.cast_nonneg n⟩
     natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl }
+    natCast_succ := fun _ => by ext; simp }
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
-protected theorem coe_nat_cast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
+protected theorem coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
   rfl
-#align nonneg.coe_nat_cast Nonneg.coe_nat_cast
+#align nonneg.coe_nat_cast Nonneg.coe_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := Nonneg.coe_natCast
 
 @[simp]
-theorem mk_nat_cast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
+theorem mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
-#align nonneg.mk_nat_cast Nonneg.mk_nat_cast
+#align nonneg.mk_nat_cast Nonneg.mk_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias mk_nat_cast := mk_natCast
 
 instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
@@ -323,7 +328,7 @@ instance canonicallyOrderedAddCommMonoid [OrderedRing α] :
   { Nonneg.orderedAddCommMonoid, Nonneg.orderBot with
     le_self_add := fun _ b => le_add_of_nonneg_right b.2
     exists_add_of_le := fun {a b} h =>
-      ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
+      ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩ }
 #align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddCommMonoid
 
 instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α] :
@@ -336,7 +341,7 @@ instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α]
 
 instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
     CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Subtype.linearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
+  { Subtype.instLinearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
 #align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddCommMonoid
 
 section LinearOrder

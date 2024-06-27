@@ -30,11 +30,11 @@ See `preservesProductOfIsSheafFor`.
 See `isSheafFor_of_preservesProduct`.
 -/
 
-universe v u
+universe v u w
 
 namespace CategoryTheory.Presieve
 
-variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ Type (max u v))
+variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ Type w)
 
 open Limits Opposite
 
@@ -74,7 +74,7 @@ variable (hI : IsInitial I)
 -- This is the data of a particular disjoint coproduct in `C`.
 variable {α : Type} {X : α → C} (c : Cofan X) (hc : IsColimit c) [(ofArrows X c.inj).hasPullbacks]
     [HasInitial C] [∀ i, Mono (c.inj i)]
-    (hd : ∀ i j, i ≠ j → IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
+    (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
 
 /--
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
@@ -88,7 +88,7 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X c.inj =
   by_cases hi : i = j
   · rw [hi, Mono.right_cancellation _ _ pullback.condition]
   · have := preservesTerminalOfIsSheafForEmpty F hF hI
-    apply_fun (F.mapIso ((hd i j hi).isoPullback).op ≪≫ F.mapIso (terminalIsoIsTerminal
+    apply_fun (F.mapIso ((hd hi).isoPullback).op ≪≫ F.mapIso (terminalIsoIsTerminal
       (terminalOpOfInitial initialIsInitial)).symm ≪≫ (PreservesTerminal.iso F)).hom using
       injective_of_mono _
     ext ⟨i⟩
@@ -138,7 +138,7 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
   apply_fun F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) using injective_of_mono _
   simp only [← FunctorToTypes.map_comp_apply, Iso.op, Category.assoc]
   rw [ht₂ (F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) y) (by simp [← hy])]
-  change (𝟙 (F.obj (∏ fun x ↦ op (X x)))) t = _
+  change (𝟙 (F.obj (∏ᶜ fun x ↦ op (X x)))) t = _
   rw [← Functor.map_id]
   refine congrFun ?_ t
   congr

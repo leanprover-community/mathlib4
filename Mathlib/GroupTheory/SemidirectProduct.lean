@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Logic.Function.Basic
 
 #align_import group_theory.semidirect_product from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
@@ -214,12 +214,12 @@ variable (f₁ : N →* H) (f₂ : G →* H)
 
 /-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H`  -/
 def lift (f₁ : N →* H) (f₂ : G →* H)
-    (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁) : N ⋊[φ] G →* H
-    where
+    (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁) :
+    N ⋊[φ] G →* H where
   toFun a := f₁ a.1 * f₂ a.2
   map_one' := by simp
   map_mul' a b := by
-    have := fun n g ↦ FunLike.ext_iff.1 (h n) g
+    have := fun n g ↦ DFunLike.ext_iff.1 (h n) g
     simp only [MulAut.conj_apply, MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom] at this
     simp only [mul_left, mul_right, map_mul, this, mul_assoc, inv_mul_cancel_left]
 #align semidirect_product.lift SemidirectProduct.lift
@@ -242,7 +242,7 @@ theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext; simp
 
 theorem lift_unique (F : N ⋊[φ] G →* H) :
     F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext; simp [inl_aut] := by
-  rw [FunLike.ext_iff]
+  rw [DFunLike.ext_iff]
   simp only [lift, MonoidHom.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk, ← map_mul,
     inl_left_mul_inr_right, forall_const]
 #align semidirect_product.lift_unique SemidirectProduct.lift_unique
@@ -269,7 +269,7 @@ def map (f₁ : N →* N₁) (f₂ : G →* G₁)
   toFun x := ⟨f₁ x.1, f₂ x.2⟩
   map_one' := by simp
   map_mul' x y := by
-    replace h := FunLike.ext_iff.1 (h x.right) y.left
+    replace h := DFunLike.ext_iff.1 (h x.right) y.left
     ext <;> simp_all
 #align semidirect_product.map SemidirectProduct.map
 

@@ -112,7 +112,7 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     · simp only [Category.comp_id]
       apply Functor.map_id
     · simp only [Category.comp_id, Category.id_comp] at ih ⊢
-      -- porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
+      -- Porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
       -- versions in this `have` clause (elsewhere too).
       have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') := by
         convert Functor.map_comp Φ p (Quiver.Hom.toPath f')
@@ -154,7 +154,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 open Quiver
 
--- porting note:
+-- Porting note:
 -- This def was originally marked `@[simp]`, but the meaning is different in lean4: lean4#2042
 -- So, the `@[simp]` was removed, and the two equational lemmas below added instead.
 /-- A path in a category can be composed to a single morphism. -/
@@ -181,7 +181,7 @@ theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
 #align category_theory.compose_path_comp CategoryTheory.composePath_comp
 
 @[simp]
--- porting note: TODO get rid of `(id X : C)` somehow?
+-- Porting note (#11215): TODO get rid of `(id X : C)` somehow?
 theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) := rfl
 #align category_theory.compose_path_id CategoryTheory.composePath_id
 
@@ -235,7 +235,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   unitIso :=
     NatIso.ofComponents
       (fun X => by cases X; rfl)
-      (Quot.ind $ fun f => by
+      (Quot.ind fun f => by
         apply Quot.sound
         apply Quotient.CompClosure.of
         simp [Category.comp_id, Category.id_comp, pathsHomRel])

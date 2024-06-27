@@ -3,8 +3,8 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Real.ENNReal
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Data.ENNReal.Basic
+import Mathlib.RingTheory.Finiteness
 
 /-! # The `WithLp` type synonym
 
@@ -56,6 +56,7 @@ back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
 instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
+instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
 
 variable [Semiring K] [Semiring K'] [AddCommGroup V]
 

@@ -105,7 +105,7 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
       let err ← mkHasTypeButIsExpectedMsg (← inferType u) (← inferType ginj)
       throwError "Using clause {err}"
   -- Try an assumption
-  if ←ginj.mvarId!.assumptionCore then
+  if ← ginj.mvarId!.assumptionCore then
     return true
   -- Try using that this is an equivalence
   -- Note: if `f` is itself a metavariable, this can cause it to become an equivalence;

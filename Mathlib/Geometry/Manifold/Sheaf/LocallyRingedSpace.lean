@@ -1,5 +1,5 @@
 /-
-Copyright © 2023 Heather Macbeth. All rights reserved.
+Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
@@ -80,13 +80,15 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     · refine ⟨⟨S.germ ⟨x, hxV⟩ (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ ⟨x, hxV⟩ g,
         ?_, ?_⟩, S.germ_res_apply hUV.hom ⟨x, hxV⟩ f⟩
       · rw [← map_mul]
-        convert map_one _
+        -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
+        convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply mul_inv_cancel
         exact hVf y
       · rw [← map_mul]
-        convert map_one _
+        -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
+        convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply inv_mul_cancel

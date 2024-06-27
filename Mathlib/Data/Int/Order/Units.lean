@@ -3,9 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Int.Units
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Ring.Abs
 
 #align_import data.int.order.units from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
@@ -17,7 +15,7 @@ import Mathlib.Algebra.GroupPower.Order
 namespace Int
 
 theorem isUnit_iff_abs_eq {x : ℤ} : IsUnit x ↔ abs x = 1 := by
-  rw [isUnit_iff_natAbs_eq, abs_eq_natAbs, ← Int.ofNat_one, coe_nat_inj']
+  rw [isUnit_iff_natAbs_eq, abs_eq_natAbs, ← Int.ofNat_one, natCast_inj]
 #align int.is_unit_iff_abs_eq Int.isUnit_iff_abs_eq
 
 theorem isUnit_sq {a : ℤ} (ha : IsUnit a) : a ^ 2 = 1 := by rw [sq, isUnit_mul_self ha]
@@ -48,9 +46,7 @@ theorem units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by
   rw [← Units.val_mul, units_mul_self, Units.val_one]
 #align int.units_coe_mul_self Int.units_coe_mul_self
 
-@[simp]
-theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 :=
-  pow_ne_zero _ (abs_pos.mp (by simp))
+theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 := by simp
 #align int.neg_one_pow_ne_zero Int.neg_one_pow_ne_zero
 
 theorem sq_eq_one_of_sq_lt_four {x : ℤ} (h1 : x ^ 2 < 4) (h2 : x ≠ 0) : x ^ 2 = 1 :=

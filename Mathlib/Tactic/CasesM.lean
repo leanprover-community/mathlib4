@@ -3,7 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean
+import Lean.Elab.Tactic.Conv.Pattern
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
@@ -96,7 +96,7 @@ elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
     (recursive := false) (allowSplit := true) : TacticM Unit := do
-  let heads ← heads.mapM resolveGlobalConstNoOverloadWithInfo
+  let heads ← heads.mapM (fun stx => realizeGlobalConstNoOverloadWithInfo stx)
   liftMetaTactic (casesType heads recursive allowSplit)
 
 /--

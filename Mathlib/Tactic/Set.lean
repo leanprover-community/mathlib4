@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Ian Benway. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ian Benway.
+Authors: Ian Benway
 -/
 import Lean
 
@@ -51,7 +51,8 @@ elab_rules : tactic
     let fvar ← liftMetaTacticAux fun goal ↦ do
       let (fvar, goal) ← (← goal.define a.getId ty vale).intro1P
       pure (fvar, [goal])
-    Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
+    withMainContext <|
+      Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
     if rw.isNone then
       evalTactic (← `(tactic| try rewrite [show $(← Term.exprToSyntax vale) = $a from rfl] at *))
     match h, rev with

@@ -31,13 +31,13 @@ variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing 
 theorem unitary.spectrum_subset_circle (u : unitary E) :
     spectrum 𝕜 (u : E) ⊆ Metric.sphere 0 1 := by
   nontriviality E
-  refine' fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm _ _)
+  refine fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm ?_ ?_)
   · simpa only [CstarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
   · rw [← unitary.val_toUnits_apply u] at hk
     have hnk := ne_zero_of_mem_of_unit hk
     rw [← inv_inv (unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
-    have : ‖k‖⁻¹ ≤ ‖(↑(unitary.toUnits u)⁻¹ : E)‖ :=
-      by simpa only [norm_inv] using norm_le_norm_of_mem hk
+    have : ‖k‖⁻¹ ≤ ‖(↑(unitary.toUnits u)⁻¹ : E)‖ := by
+      simpa only [norm_inv] using norm_le_norm_of_mem hk
     simpa using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
 #align unitary.spectrum_subset_circle unitary.spectrum_subset_circle
 
@@ -60,23 +60,23 @@ local notation "↑ₐ" => algebraMap ℂ A
 theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
-  refine' tendsto_nhds_unique _ hconst
+  refine tendsto_nhds_unique ?_ hconst
   convert
     (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
       (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
-  refine' funext fun n => _
-  rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_nat_cast, ← rpow_mul]
+  refine funext fun n => ?_
+  rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
 #align is_self_adjoint.spectral_radius_eq_nnnorm IsSelfAdjoint.spectralRadius_eq_nnnorm
 
 theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
-  refine' (ENNReal.pow_strictMono two_ne_zero).injective _
+  refine (ENNReal.pow_strictMono two_ne_zero).injective ?_
   have heq :
     (fun n : ℕ => (‖(a⋆ * a) ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) =
       (fun x => x ^ 2) ∘ fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
     funext n
-    rw [Function.comp_apply, ← rpow_nat_cast, ← rpow_mul, mul_comm, rpow_mul, rpow_nat_cast, ←
+    rw [Function.comp_apply, ← rpow_natCast, ← rpow_mul, mul_comm, rpow_mul, rpow_natCast, ←
       coe_pow, sq, ← nnnorm_star_mul_self, Commute.mul_pow (star_comm_self' a), star_pow]
   have h₂ :=
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
@@ -126,7 +126,7 @@ namespace StarAlgHom
 
 variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
-  [hF : StarAlgHomClass F ℂ A B] (φ : F)
+  [FunLike F A B] [AlgHomClass F ℂ A B] [StarAlgHomClass F ℂ A B] (φ : F)
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
@@ -134,11 +134,11 @@ theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
     exact nonneg_le_nonneg_of_sq_le_sq zero_le' <| by
       simpa only [nnnorm_star_mul_self, map_star, map_mul]
       using this _ (IsSelfAdjoint.star_mul_self a)
-  · intro s hs
-    simpa only [hs.spectralRadius_eq_nnnorm, (hs.starHom_apply φ).spectralRadius_eq_nnnorm,
-      coe_le_coe] using
-      show spectralRadius ℂ (φ s) ≤ spectralRadius ℂ s from
-        iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset φ s)
+  intro s hs
+  simpa only [hs.spectralRadius_eq_nnnorm, (hs.starHom_apply φ).spectralRadius_eq_nnnorm,
+    coe_le_coe] using
+    show spectralRadius ℂ (φ s) ≤ spectralRadius ℂ s from
+      iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset φ s)
 #align star_alg_hom.nnnorm_apply_le StarAlgHom.nnnorm_apply_le
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
@@ -155,6 +155,24 @@ noncomputable instance (priority := 100) : ContinuousLinearMapClass F ℂ A B :=
 
 end StarAlgHom
 
+namespace StarAlgEquiv
+
+variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
+  [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
+  [EquivLike F A B] [NonUnitalAlgEquivClass F ℂ A B] [StarAlgEquivClass F ℂ A B]
+
+lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
+  le_antisymm (StarAlgHom.nnnorm_apply_le φ a) <| by
+    simpa using StarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
+
+lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
+  congr_arg NNReal.toReal (nnnorm_map φ a)
+
+lemma isometry (φ : F) : Isometry φ :=
+  AddMonoidHomClass.isometry_of_norm φ (norm_map φ)
+
+end StarAlgEquiv
+
 end
 
 namespace WeakDual
@@ -164,35 +182,33 @@ open ContinuousMap Complex
 open scoped ComplexStarModule
 
 variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CstarRing A] [StarModule ℂ A] [hF : AlgHomClass F ℂ A ℂ]
+  [CstarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
-  coe φ := φ
-  coe_injective' := FunLike.coe_injective'
   map_star φ a := by
-    suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s
-    · rw [← realPart_add_I_smul_imaginaryPart a]
+    suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s by
+      rw [← realPart_add_I_smul_imaginaryPart a]
       simp only [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
-    · intro s
-      have := AlgHom.apply_mem_spectrum φ (s : A)
-      rw [selfAdjoint.val_re_map_spectrum s] at this
-      rcases this with ⟨⟨_, _⟩, _, heq⟩
-      simp only [Function.comp_apply] at heq
-      rw [← heq, IsROrC.star_def]
-      exact IsROrC.conj_ofReal _
+    intro s
+    have := AlgHom.apply_mem_spectrum φ (s : A)
+    rw [selfAdjoint.val_re_map_spectrum s] at this
+    rcases this with ⟨⟨_, _⟩, _, heq⟩
+    simp only [Function.comp_apply] at heq
+    rw [← heq, RCLike.star_def]
+    exact RCLike.conj_ofReal _
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
-noncomputable def _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
-  { WeakDual.Complex.instStarHomClass, hF with coe := fun f => f }
+lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
+  { WeakDual.Complex.instStarHomClass, hF with }
 #align alg_hom_class.star_alg_hom_class AlgHomClass.instStarAlgHomClass
 
 namespace CharacterSpace
 
 noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
-  { AlgHomClass.instStarAlgHomClass with coe := fun f => f }
+  { AlgHomClass.instStarAlgHomClass with }
 
 end CharacterSpace
 

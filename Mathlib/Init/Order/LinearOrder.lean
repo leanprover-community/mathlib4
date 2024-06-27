@@ -31,42 +31,42 @@ theorem max_def (a b : α) : max a b = if a ≤ b then b else a := by
 #align max_def max_def
 
 theorem min_le_left (a b : α) : min a b ≤ a := by
-  -- porting note: no `min_tac` tactic
+  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
   else simp [min_def, if_neg h]; exact le_of_not_le h
 #align min_le_left min_le_left
 
 theorem min_le_right (a b : α) : min a b ≤ b := by
-  -- porting note: no `min_tac` tactic
+  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [min_def, if_pos h]; exact h
   else simp [min_def, if_neg h, le_refl]
 #align min_le_right min_le_right
 
 theorem le_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
-  -- porting note: no `min_tac` tactic
+  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [min_def, if_pos h]; exact h₁
   else simp [min_def, if_neg h]; exact h₂
 #align le_min le_min
 
 theorem le_max_left (a b : α) : a ≤ max a b := by
-  -- porting note: no `min_tac` tactic
+  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [max_def, if_pos h]; exact h
   else simp [max_def, if_neg h, le_refl]
 #align le_max_left le_max_left
 
 theorem le_max_right (a b : α) : b ≤ max a b := by
-  -- porting note: no `min_tac` tactic
+  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [max_def, if_pos h, le_refl]
   else simp [max_def, if_neg h]; exact le_of_not_le h
 #align le_max_right le_max_right
 
 theorem max_le {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
-  -- porting note: no `min_tac` tactic
+  -- Porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [max_def, if_pos h]; exact h₂
   else simp [max_def, if_neg h]; exact h₁
@@ -157,17 +157,17 @@ theorem max_eq_right_of_lt {a b : α} (h : a < b) : max a b = b :=
 
 -- these use the fact that it is a linear ordering
 theorem lt_min {a b c : α} (h₁ : a < b) (h₂ : a < c) : a < min b c :=
-  -- porting note: no `min_tac` tactic
+  -- Porting note: no `min_tac` tactic
   Or.elim (le_or_gt b c)
-    (λ h : b ≤ c => by rwa [min_eq_left h])
-    (λ h : b > c => by rwa [min_eq_right_of_lt h])
+    (fun h : b ≤ c ↦ by rwa [min_eq_left h])
+    (fun h : b > c ↦ by rwa [min_eq_right_of_lt h])
 #align lt_min lt_min
 
 theorem max_lt {a b c : α} (h₁ : a < c) (h₂ : b < c) : max a b < c :=
-  -- porting note: no `min_tac` tactic
+  -- Porting note: no `min_tac` tactic
   Or.elim (le_or_gt a b)
-    (λ h : a ≤ b => by rwa [max_eq_right h])
-    (λ h : a > b => by rwa [max_eq_left_of_lt h])
+    (fun h : a ≤ b ↦ by rwa [max_eq_right h])
+    (fun h : a > b ↦ by rwa [max_eq_left_of_lt h])
 #align max_lt max_lt
 
 end

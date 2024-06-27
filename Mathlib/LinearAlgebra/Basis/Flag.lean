@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.Data.Fin.FlagRange
 
 /-!
@@ -36,7 +37,7 @@ theorem flag_last (b : Basis (Fin n) R M) : b.flag (.last n) = ⊤ := by
 
 theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
     b.flag k ≤ p ↔ ∀ i : Fin n, i.castSucc < k → b i ∈ p :=
-  span_le.trans ball_image_iff
+  span_le.trans forall_mem_image
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.succ = (R ∙ b k) ⊔ b.flag k.castSucc := by
@@ -79,26 +80,31 @@ theorem flag_le_ker_coord (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n}
   nontriviality R
   exact b.flag_le_ker_coord_iff.2 h
 
+theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
+    b.flag k.castSucc ≤ LinearMap.ker (b.dualBasis k) := by
+  nontriviality R
+  rw [coe_dualBasis, b.flag_le_ker_coord_iff]
+
 end CommRing
 
 section DivisionRing
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {n : ℕ}
 
-theorem flag_covby (b : Basis (Fin n) K V) (i : Fin n) :
+theorem flag_covBy (b : Basis (Fin n) K V) (i : Fin n) :
     b.flag i.castSucc ⋖ b.flag i.succ := by
   rw [flag_succ]
-  apply covby_span_singleton_sup
+  apply covBy_span_singleton_sup
   simp
 
-theorem flag_wcovby (b : Basis (Fin n) K V) (i : Fin n) :
+theorem flag_wcovBy (b : Basis (Fin n) K V) (i : Fin n) :
     b.flag i.castSucc ⩿ b.flag i.succ :=
-  (b.flag_covby i).wcovby
+  (b.flag_covBy i).wcovBy
 
 /-- Range of `Basis.flag` as a `Flag`. -/
 @[simps!]
 def toFlag (b : Basis (Fin n) K V) : Flag (Submodule K V) :=
-  .rangeFin b.flag b.flag_zero b.flag_last b.flag_wcovby
+  .rangeFin b.flag b.flag_zero b.flag_last b.flag_wcovBy
 
 @[simp]
 theorem mem_toFlag (b : Basis (Fin n) K V) {p : Submodule K V} : p ∈ b.toFlag ↔ ∃ k, b.flag k = p :=

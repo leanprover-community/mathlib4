@@ -75,7 +75,7 @@ theorem IsOpen.exists_smul_mem [IsMinimal M α] (x : α) {U : Set α} (hUo : IsO
 
 @[to_additive]
 theorem IsOpen.iUnion_preimage_smul [IsMinimal M α] {U : Set α} (hUo : IsOpen U)
-    (hne : U.Nonempty) : ⋃ c : M, (· • ·) c ⁻¹' U = univ :=
+    (hne : U.Nonempty) : ⋃ c : M, (c • ·) ⁻¹' U = univ :=
   iUnion_eq_univ_iff.2 fun x ↦ hUo.exists_smul_mem M x hne
 #align is_open.Union_preimage_smul IsOpen.iUnion_preimage_smul
 #align is_open.Union_preimage_vadd IsOpen.iUnion_preimage_vadd
@@ -121,7 +121,7 @@ theorem isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
   constructor
   · intro _ _
     exact eq_empty_or_univ_of_smul_invariant_closed M
-  refine' fun H ↦ ⟨fun _ ↦ dense_iff_closure_eq.2 <| (H _ _ _).resolve_left _⟩
+  refine fun H ↦ ⟨fun _ ↦ dense_iff_closure_eq.2 <| (H _ ?_ ?_).resolve_left ?_⟩
   exacts [isClosed_closure, fun _ ↦ smul_closure_orbit_subset _ _,
     (orbit_nonempty _).closure.ne_empty]
 #align is_minimal_iff_closed_smul_invariant isMinimal_iff_closed_smul_invariant
