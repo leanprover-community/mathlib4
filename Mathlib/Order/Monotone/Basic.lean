@@ -1256,3 +1256,10 @@ theorem const_strictMono [Nonempty β] : StrictMono (const β : α → β → α
 #align function.const_strict_mono Function.const_strictMono
 
 end Function
+
+theorem prod_map_iterate {X Y : Type _} (S : X → X) (T : Y → Y) (n : ℕ) :
+    (Prod.map S T)^[n] = Prod.map S^[n] T^[n] := by
+  induction' n with n hn
+  · rw [Function.iterate_zero, Function.iterate_zero, Function.iterate_zero, Prod.map_id]
+  · rw [Function.iterate_succ, hn, Prod.map_comp_map, ← Function.iterate_succ,
+    ← Function.iterate_succ]
