@@ -11,7 +11,7 @@ import Mathlib.Data.Fin.Tuple.Reflection
 # Torsion points on Weierstrass curves
 -/
 
-open Polynomial PolynomialPolynomial
+open Polynomial
 
 universe u v
 
@@ -42,47 +42,6 @@ noncomputable def fiberEquivOfSurjective (h h' : H) : f ⁻¹' {h} ≃ f ⁻¹' 
 
 end MonoidHom
 
-namespace Polynomial
-
-variable {R : Type u} [CommSemiring R] (x y : R) (p : R[X][Y])
-
-noncomputable def evalEval : R :=
-  (p.eval <| C y).eval x
-
-lemma evalEval_C (p : R[X]) : (C p).evalEval x y = p.eval x := by
-  rw [evalEval, eval_C]
-
-@[simps!]
-noncomputable def evalEvalRingHom : R[X][Y] →+* R :=
-  (evalRingHom x).comp <| evalRingHom <| C y
-
-lemma coe_evalEvalRingHom : evalEvalRingHom x y = evalEval x y :=
-  rfl
-
-lemma evalEvalRingHom_eq : evalEvalRingHom x = eval₂RingHom (evalRingHom x) := by
-  ext <;> simp
-
-lemma eval₂_evalRingHom : eval₂ (evalRingHom x) y p = p.evalEval x y := by
-  rw [← coe_evalEvalRingHom, evalEvalRingHom_eq, coe_eval₂RingHom]
-
-lemma map_evalRingHom_eval : (p.map <| evalRingHom x).eval y = p.evalEval x y := by
-  rw [eval_map, eval₂_evalRingHom]
-
-end Polynomial
-
-namespace AdjoinRoot
-
-variable {R : Type u} [CommRing R] {x y : R} {p : R[X][Y]} (h : p.evalEval x y = 0)
-
-@[simps!]
-def evalEval : AdjoinRoot p →+* R :=
-  lift (evalRingHom x) y <| eval₂_evalRingHom x y p ▸ h
-
-lemma evalEval_eq (g : R[X][Y]) : evalEval h (mk p g) = g.evalEval x y := by
-  erw [AdjoinRoot.lift_mk, eval₂_evalRingHom]
-
-end AdjoinRoot
-
 namespace WeierstrassCurve
 
 variable {R : Type u} [CommRing R] {F : Type v} [Field F]
@@ -91,19 +50,6 @@ protected noncomputable def ω (W : WeierstrassCurve R) (n : ℤ) : R[X][Y] :=
   sorry
 
 namespace Affine
-
-namespace CoordinateRing
-
-lemma mk_Ψ_sq (W : WeierstrassCurve R) (n : ℤ) : mk W (W.Ψ n) ^ 2 = mk W (C <| W.ΨSq n) := by
-  sorry
-
-lemma mk_ψ (W : WeierstrassCurve R) (n : ℤ) : mk W (W.ψ n) = mk W (W.Ψ n) :=
-  sorry
-
-lemma mk_φ (W : WeierstrassCurve R) (n : ℤ) : mk W (W.φ n) = mk W (C <| W.Φ n) :=
-  sorry
-
-end CoordinateRing
 
 namespace Point
 
@@ -188,21 +134,19 @@ end Affine
 
 lemma evalEval_Ψ_sq (W : WeierstrassCurve R) (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
     (W.Ψ n).evalEval x y ^ 2 = (W.ΨSq n).eval x := by
-  rw [← AdjoinRoot.evalEval_eq h, ← map_pow, Affine.CoordinateRing.mk_Ψ_sq,
-    AdjoinRoot.evalEval_eq h, evalEval_C]
+  rw [← AdjoinRoot.evalEval_mk h, ← map_pow, Affine.CoordinateRing.mk_Ψ_sq,
+    AdjoinRoot.evalEval_mk h, Polynomial.evalEval_C]
 
 lemma evalEval_ψ (W : WeierstrassCurve R) (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
     (W.ψ n).evalEval x y = (W.Ψ n).evalEval x y := by
-  rw [← AdjoinRoot.evalEval_eq h, Affine.CoordinateRing.mk_ψ, AdjoinRoot.evalEval_eq h]
+  rw [← AdjoinRoot.evalEval_mk h, Affine.CoordinateRing.mk_ψ, AdjoinRoot.evalEval_mk h]
 
 lemma evalEval_φ (W : WeierstrassCurve R) (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
     (W.φ n).evalEval x y = (W.Φ n).eval x := by
-  rw [← AdjoinRoot.evalEval_eq h, Affine.CoordinateRing.mk_φ, AdjoinRoot.evalEval_eq h, evalEval_C]
+  rw [← AdjoinRoot.evalEval_mk h, Affine.CoordinateRing.mk_φ, AdjoinRoot.evalEval_mk h,
+    Polynomial.evalEval_C]
 
 namespace Jacobian
-
-lemma comp_fin3 {S : Type v} (f : R → S) (x y z : R) : f ∘ ![x, y, z] = ![f x, f y, f z] :=
-  (FinVec.map_eq ..).symm
 
 variable {W : Jacobian F}
 
