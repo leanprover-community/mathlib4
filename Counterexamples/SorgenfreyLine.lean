@@ -188,25 +188,36 @@ instance : TotallyDisconnectedSpace ℝₗ :=
 instance : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
 
+
+/-- Applies Ico to each point of a set; used to witness SeparatedNhds in proof
+of `CompletelyNormalSpace ℝₗ`.-/
+def SetIco (s : Set ℝₗ) (X : ℝₗ → ℝₗ) := ⋃ x ∈ s, Ico x (X x)
+
+theorem isOpen_SetIco {s : Set ℝₗ} {X : ℝₗ → ℝₗ} : IsOpen (SetIco s X) :=
+    isOpen_biUnion fun x _ ↦ isOpen_Ico x (X x)
+
+theorem subset_SetIco {s : Set ℝₗ} {X : ℝₗ → ℝₗ} (h : ∀ x ∈ s, X x > x) : s ⊆ SetIco s X :=
+    fun x xins ↦ mem_biUnion xins <| left_mem_Ico.2 (h x xins).gt
+
+
 /-- Sorgenfrey line is a completely normal topological space.
     (Hausdorff follows as TotallyDisconnectedSpace → T₁) -/
 instance : CompletelyNormalSpace ℝₗ := by
   /-
-  Let `s` and `t` be disjoint closed sets.
-  For each `x ∈ s` we choose `X x` such that `Set.Ico x (X x)` is disjoint with `t`.
-  Similarly, for each `y ∈ t` we choose `Y y` such that `Set.Ico y (Y y)` is disjoint with `s`.
-  Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
-  disjoint open sets that include `s` and `t`.
+  Let `s` and `t` be sets where `Disjoint s (closure t)` and `Disjoint (closure s) t`.
+  For each `x ∈ s` we choose `X x` such that `Set.Ico x (X x)` is disjoint with `closure t`.
+  Similarly, for each `y ∈ t` we choose `Y y` such that `Set.Ico y (Y y)` is disjoint with
+  `closure s`. Then `SetIco s X := ⋃ x ∈ s, Ico x (X x)` and
+  `SetIco t Y := ⋃ y ∈ t, Ico y (Y y)` are disjoint open sets that include `s` and `t`.
   -/
   refine ⟨fun s t hd₁ hd₂ ↦ ?_⟩
   choose! X hX hXd using fun x (hx : x ∈ s) ↦
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
   choose! Y hY hYd using fun y (hy : y ∈ t) ↦
     exists_Ico_disjoint_closed isClosed_closure (disjoint_right.1 hd₁ hy)
-  refine separatedNhds_iff_disjoint.mpr <| disjoint_of_disjoint_of_mem ?_
-    (bUnion_mem_nhdsSet fun x hx ↦ (isOpen_Ico x (X x)).mem_nhds <| left_mem_Ico.2 (hX x hx))
-    (bUnion_mem_nhdsSet fun y hy ↦ (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
-  simp only [disjoint_iUnion_left, disjoint_iUnion_right, Ico_disjoint_Ico]
+  refine
+    ⟨SetIco s X, SetIco t Y, isOpen_SetIco, isOpen_SetIco, subset_SetIco hX, subset_SetIco hY, ?_⟩
+  simp only [SetIco, disjoint_iUnion_left, disjoint_iUnion_right, Ico_disjoint_Ico]
   intro y hy x hx
   rcases le_total x y with hle | hle
   · calc
