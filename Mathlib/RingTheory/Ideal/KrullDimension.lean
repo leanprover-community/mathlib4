@@ -15,7 +15,7 @@ prime ideals ordered by inclusion.
 -/
 
 /--
-The ring theoretic Krull dimension is the Krull dimension of the spectrum ordered by inclusion.
+The ring theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
 -/
 noncomputable abbrev ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop ℕ) :=
   krullDim (PrimeSpectrum R)
