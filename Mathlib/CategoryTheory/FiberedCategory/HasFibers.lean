@@ -118,8 +118,8 @@ section
 variable {p : 𝒳 ⥤ 𝒮} [HasFibers p]
 
 @[simp]
-lemma proj_eq {S : 𝒮} (a : Fib p S) : p.obj ((ι S).obj a) = S :=
-  by simp only [← comp_obj, comp_const, const_obj_obj]
+lemma proj_eq {S : 𝒮} (a : Fib p S) : p.obj ((ι S).obj a) = S := by
+  simp only [← comp_obj, comp_const, const_obj_obj]
 
 /-- The morphism `R ⟶ S` in `𝒮` obtained by projecting a morphism
 `φ : (ι R).obj a ⟶ (ι S).obj b`. -/
