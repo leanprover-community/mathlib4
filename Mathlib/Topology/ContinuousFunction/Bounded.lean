@@ -1691,7 +1691,7 @@ def CompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
     refl := fun _ ↦ ⟨0, HasCompactSupport.zero, by simp⟩
     symm := by
       rintro x y ⟨z, hz, rfl⟩
-      exact ⟨-z, HasCompactSupport.neg hz, by simp⟩
+      exact ⟨-z, HasCompactSupport.neg' hz, by simp⟩
     trans := by
       rintro x y z ⟨w1, hw1, rfl⟩ ⟨w2, hw2, rfl⟩
       exact ⟨w1 + w2, HasCompactSupport.add hw1 hw2, by rw [add_assoc, add_comm w2]⟩ }
