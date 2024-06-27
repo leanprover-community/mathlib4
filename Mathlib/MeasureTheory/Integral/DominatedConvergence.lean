@@ -41,7 +41,7 @@ open scoped Topology
 namespace MeasureTheory
 
 variable {α E G: Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
 
@@ -140,6 +140,8 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
 lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
     (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
     HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
+  by_cases hE : CompleteSpace E; swap
+  · simp [integral, hE, hasSum_zero]
   rw [integral_tsum (fun i ↦ (hF_int i).1)]
   · exact (hF_sum.of_norm_bounded _ fun i ↦ norm_integral_le_integral_norm _).hasSum
   have (i : ι) : ∫⁻ (a : α), ‖F i a‖₊ ∂μ = ‖(∫ a : α, ‖F i a‖ ∂μ)‖₊ := by
@@ -197,7 +199,7 @@ namespace intervalIntegral
 
 section DCT
 
-variable {ι 𝕜 E F : Type*} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable {ι 𝕜 E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {a b : ℝ} {f : ℝ → E} {μ : Measure ℝ}
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
@@ -235,6 +237,8 @@ special case of the dominated convergence theorem). -/
 theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}
     (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
     HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by
+  by_cases hE : CompleteSpace E; swap
+  · simp [intervalIntegral, integral, hE, hasSum_zero]
   apply hasSum_integral_of_dominated_convergence
     (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
     (fun i => (map_continuous <| f i).aestronglyMeasurable)
@@ -244,8 +248,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
   · exact ae_of_all _ fun x _ => hf_sum
   · exact intervalIntegrable_const
   · refine ae_of_all _ fun x hx => Summable.hasSum ?_
-    let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ?_⟩; swap
-    · exact ⟨hx.1.le, hx.2⟩
+    let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ⟨hx.1.le, hx.2⟩⟩
     have := hf_sum.of_norm
     simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
       using ContinuousMap.summable_apply this x
@@ -312,7 +315,7 @@ section ContinuousPrimitive
 
 open scoped Interval
 
-variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable {E X : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
   {a b b₀ b₁ b₂ : ℝ} {μ : Measure ℝ} {f : ℝ → E}
 
 theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
@@ -380,9 +383,6 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
   · apply continuousWithinAt_of_not_mem_closure
     rwa [closure_Icc]
 #align interval_integral.continuous_within_at_primitive intervalIntegral.continuousWithinAt_primitive
-
-variable {X : Type*} [TopologicalSpace X]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X]
     {F : X → ℝ → E} (bound : ℝ → ℝ) (a b : ℝ)
@@ -595,14 +595,14 @@ theorem continuous_parametric_primitive_of_continuous
       · exact norm_integral_le_integral_norm_Ioc
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), ‖f p t‖ ∂μ + ∫ t in Icc a b, ‖f p t - f q t‖ ∂μ := by
       gcongr
-      · apply set_integral_mono_set
+      · apply setIntegral_mono_set
         · exact (hf.uncurry_left _).norm.integrableOn_Icc
         · exact eventually_of_forall (fun x ↦ norm_nonneg _)
         · have : Ι b₀ s ⊆ Icc (b₀ - δ) (b₀ + δ) := by
             apply (uIoc_subset_uIcc _ _).trans (uIcc_subset_Icc ?_ ⟨hs.1.le, hs.2.le⟩ )
             simp [δpos.le]
           exact eventually_of_forall this
-      · apply set_integral_mono_set
+      · apply setIntegral_mono_set
         · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
         · exact eventually_of_forall (fun x ↦ norm_nonneg _)
         · have : Ι a₀ b₀ ⊆ Icc a b := (uIoc_subset_uIcc _ _).trans
@@ -610,7 +610,7 @@ theorem continuous_parametric_primitive_of_continuous
           exact eventually_of_forall this
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
       gcongr
-      · apply set_integral_mono_on
+      · apply setIntegral_mono_on
         · exact (hf.uncurry_left _).norm.integrableOn_Icc
         · exact continuous_const.integrableOn_Icc
         · exact measurableSet_Icc
@@ -626,7 +626,7 @@ theorem continuous_parametric_primitive_of_continuous
                 exact h'δ hx
               · exact le_of_lt (hv _ hp _ (h'δ hx))
           _ ≤ M + 1 := by linarith
-      · apply set_integral_mono_on
+      · apply setIntegral_mono_on
         · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
         · exact continuous_const.integrableOn_Icc
         · exact measurableSet_Icc
